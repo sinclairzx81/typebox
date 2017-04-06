@@ -1,0 +1,1 @@
+cd test && tsc-bundle ./index.ts ../bin/test.js --lib es2015,dom --removeComments && cd ..
