@@ -26,7 +26,8 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import * as typebox from "../src/index"
+
+import * as typebox from "../../src/index"
 import * as assert  from "assert"
 
 describe("reflect", () => {

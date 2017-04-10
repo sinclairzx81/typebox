@@ -26,7 +26,8 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import * as typebox from "../src/index"
+
+import * as typebox from "../../src/index"
 import * as assert from "assert"
 
 const complex = typebox.Object({
@@ -39,7 +40,6 @@ const complex = typebox.Object({
   g: typebox.Number(),
   h: typebox.String(),
   i: typebox.Boolean(),
-  j: typebox.Function(),
   k: typebox.Union(typebox.Any()),
   l: typebox.Literal(10),
 })
@@ -47,86 +47,96 @@ const complex = typebox.Object({
 describe("spec", () => {
   it("Any should conform to specification.", () => {
     assert.deepEqual(typebox.Any(), {
-      type: "any"
+      kind: "any"
     })
   })
   it("Null should conform to specification.", () => {
     assert.deepEqual(typebox.Null(), {
-      type: "null"
+      kind: "null"
     })
   })
   it("Undefined should conform to specification.", () => {
     assert.deepEqual(typebox.Undefined(), {
-      type: "undefined"
+      kind: "undefined"
     })
   })
   it("Object should conform to specification.", () => {
     assert.deepEqual(complex, {
-      "type": "object",
+      "kind": "object",
       "properties": {
-        "a": { "type": "any" },
-        "b": { "type": "null" },
-        "c": { "type": "undefined" },
-        "d": { "type": "object", "properties": {} },
-        "e": { "type": "array", "items": { "type": "any" } },
-        "f": { "type": "tuple", "items": [{ "type": "any" }] },
-        "g": { "type": "number" },
-        "h": { "type": "string" },
-        "i": { "type": "boolean" },
-        "j": { "type": "function" },
-        "k": { "type": "union", "items": [{ "type": "any" }] },
-        "l": { "type": "literal", "value": 10 }
+        "a": { "kind": "any" },
+        "b": { "kind": "null" },
+        "c": { "kind": "undefined" },
+        "d": { "kind": "object", "properties": {} },
+        "e": { "kind": "array", "type": { "kind": "any" } },
+        "f": { "kind": "tuple", "types": [{ "kind": "any" }] },
+        "g": { "kind": "number" },
+        "h": { "kind": "string" },
+        "i": { "kind": "boolean" },
+        "k": { "kind": "union", "types": [{ "kind": "any" }] },
+        "l": { "kind": "literal", "value": 10 }
       }
     })
   })
   it("Array should conform to specification.", () => {
     assert.deepEqual(typebox.Array(typebox.Any()), {
-      type: "array",
-      items: { type: "any" }
+      kind: "array",
+      type: { kind: "any" }
     })
   })
   it("Array should default to type 'any' with zero arguments", () => {
-    assert.deepEqual(typebox.Array(), {
-      type: "array",
-      items: { type: "any" }
+    assert.deepEqual(typebox.Array(typebox.Any()), {
+      kind: "array",
+      type: { kind: "any" }
     })
   })
   it("Tuple should conform to specification.", () => {
     assert.deepEqual(typebox.Tuple(typebox.Any()), {
-      type: "tuple",
-      items: [{ type: "any" }]
+      kind: "tuple",
+      types: [{ kind: "any" }]
     })
+  })
+  it("Tuple should throw on no arguments.", () => {
+    let test = typebox.Tuple as any
+    assert.throws(() => test())
   })
   it("Number should conform to specification.", () => {
     assert.deepEqual(typebox.Number(), {
-      type: "number"
+      kind: "number"
     })
   })
   it("String should conform to specification.", () => {
     assert.deepEqual(typebox.String(), {
-      type: "string"
+      kind: "string"
     })
   })
   it("Boolean should conform to specification.", () => {
     assert.deepEqual(typebox.Boolean(), {
-      type: "boolean"
-    })
-  })
-  it("Date should conform to specification.", () => {
-    assert.deepEqual(typebox.Date(), {
-      type: "date"
+      kind: "boolean"
     })
   })
   it("Literal should conform to specification.", () => {
     assert.deepEqual(typebox.Literal(1), {
-      type: "literal",
+      kind: "literal",
       value: 1
     })
   })
-  it("Literal should throw on non string | numeric types.", () => {
-    assert.throws(() => typebox.Literal((<any>{})))
-    assert.throws(() => typebox.Literal((<any>[])))
-    assert.throws(() => typebox.Literal((<any>true)))
+  it("Literal should throw on non string or numeric values.", () => {
+    let test = typebox.Literal as any
+    assert.throws(() => test({}))
+    assert.throws(() => test(true))
+    assert.throws(() => test(new Date()))
+    assert.throws(() => test([]))
+  })
+  it("Union should conform to specification.", () => {
+    assert.deepEqual(typebox.Union(typebox.Any()), {
+      kind: "union",
+      types: [{ kind: "any" }]
+    })
+  })
+  it("Union should throw on no arguments.", () => {
+    let test = typebox.Union as any
+    assert.throws(() => test())
   })
 })
 

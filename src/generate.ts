@@ -26,72 +26,107 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import {
-    TAny,
-    TNull,
-    TUndefined,
-    TObject, 
-    TArray,
-    TTuple,
-    TNumber,
-    TString,
-    TBoolean,
-    TDate,
-    TFunction,
-    TUnion, 
-    TLiteral
-} from "./spec"
+import * as spec from "./spec"
 
-function generate_Any(t: TAny): any {
+/**
+ * generates a any type.
+ * @param {TAny} type the type.
+ * @returns {any}
+ */
+function generate_Any(type: spec.TAny): any {
   return {}
 }
-function generate_Null(t: TNull): any {
+
+/**
+ * generates a any type.
+ * @param {TAny} type the type.
+ * @returns {any}
+ */
+function generate_Null(type: spec.TNull): any {
   return null
 }
-function generate_Undefined(t: TUndefined): any {
+
+/**
+ * generates a any type.
+ * @param {TAny} type the type.
+ * @returns {any}
+ */
+function generate_Undefined(type: spec.TUndefined): any {
   return undefined
 }
-function generate_Object(t: TObject): any {
-  return Object.keys(t.properties)
-    .map(key => ({key: key, value: generate(t.properties[key])}))
+
+/**
+ * generates a any type.
+ * @param {TAny} type the type.
+ * @returns {any}
+ */
+function generate_Object(type: spec.TObject<spec.TObjectProperties>): any {
+  return Object.keys(type.properties)
+    .map(key => ({key: key, value: generate(type.properties[key])}))
     .reduce((acc, value) => {
       acc[value.key] = value.value
       return acc
     }, {})
 }
-function generate_Array(t: TArray): any[] {
+
+/**
+ * generates a any type.
+ * @param {TAny} type the type.
+ * @returns {any}
+ */
+function generate_Array(t: spec.TArray<spec.TBase<any>>): any[] {
   return [
-    generate(t.items), 
-    generate(t.items), 
-    generate(t.items)
+    generate(t.type), 
+    generate(t.type), 
+    generate(t.type)
   ]
 }
-function generate_Tuple(t: TTuple): any[] {
-  return t.items.map(type => generate(type))
+
+/**
+ * generates a any type.
+ * @param {TAny} type the type.
+ * @returns {any}
+ */
+function generate_Tuple(t: spec.TTuple1<spec.TBase<any>>): any[] {
+  return t.types.map(type => generate(type))
 }
-function generate_Number(t: TNumber): number {
+
+/**
+ * generates a any type.
+ * @param {TAny} type the type.
+ * @returns {any}
+ */
+function generate_Number(t: spec.TNumber): number {
   return 0
 }
-function generate_String(t: TString): string {
+
+/**
+ * generates a any type.
+ * @param {TAny} type the type.
+ * @returns {any}
+ */
+function generate_String(t: spec.TString): string {
   return "string"
 }
-function generate_Boolean(t: TBoolean): boolean {
+
+/**
+ * generates a any type.
+ * @param {TAny} type the type.
+ * @returns {any}
+ */
+function generate_Boolean(t: spec.TBoolean): boolean {
   return true
 }
-function generate_Date(t: TDate): Date {
-  return new Date()
-}
-function generate_Function(t: TFunction): any {
-  return function() {}
-}
-function generate_Union(t: TUnion): any {
-  if(t.items.length === 0) {
+
+function generate_Union(t: spec.TUnion1<spec.TBase<any>>): any {
+  if(t.types.length === 0) {
     return {}
   } else {
-    return generate(t.items[0])
+    return generate(t.types[0])
   }
 }
-function generate_Literal(t: TLiteral): any {
+
+function generate_Literal(t: spec.TLiteral<spec.TLiteralType>): any {
   return t.value
 }
 
@@ -100,21 +135,19 @@ function generate_Literal(t: TLiteral): any {
  * @param {TAny} t the type to generate.
  * @returns {any}
  */
-export function generate(t: TAny): any {
-    switch (t.type) {
-      case "any":       return generate_Any       (t as TAny)
-      case "null":      return generate_Null      (t as TNull)
-      case "undefined": return generate_Undefined (t as TUndefined)
-      case "object":    return generate_Object    (t as TObject)
-      case "array":     return generate_Array     (t as TArray)
-      case "tuple":     return generate_Tuple     (t as TTuple)
-      case "number":    return generate_Number    (t as TNumber)
-      case "string":    return generate_String    (t as TString)
-      case "boolean":   return generate_Boolean   (t as TBoolean)
-      case "date":      return generate_Date      (t as TDate)
-      case "function":  return generate_Function  (t as TFunction)
-      case "union":     return generate_Union     (t as TUnion)
-      case "literal":   return generate_Literal   (t as TLiteral)
+export function generate(type: spec.TBase<any>): any {
+    switch (type.kind) {
+      case "any":       return generate_Any       (type as spec.TAny)
+      case "null":      return generate_Null      (type as spec.TNull)
+      case "undefined": return generate_Undefined (type as spec.TUndefined)
+      case "object":    return generate_Object    (type as spec.TObject<spec.TObjectProperties>)
+      case "array":     return generate_Array     (type as spec.TArray<spec.TBase<any>>)
+      case "tuple":     return generate_Tuple     (type as spec.TTuple1<spec.TBase<any>>)
+      case "number":    return generate_Number    (type as spec.TNumber)
+      case "string":    return generate_String    (type as spec.TString)
+      case "boolean":   return generate_Boolean   (type as spec.TBoolean)
+      case "union":     return generate_Union     (type as spec.TUnion1<spec.TBase<any>>)
+      case "literal":   return generate_Literal   (type as spec.TLiteral<spec.TLiteralType>)
       default: throw Error("unknown type.")
     }
 }

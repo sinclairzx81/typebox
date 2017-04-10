@@ -26,446 +26,362 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import {reflect} from "./reflect"
+import { reflect } from "./reflect"
+import * as spec   from "./spec"
 
-import {
-    TAny,
-    TArray,
-    TBoolean,
-    TDate,
-    TFunction,
-    TNull,
-    TNumber, 
-    TObject, 
-    TUnion, 
-    TString,
-    TUndefined,
-    TTuple,
-    TLiteral
-} from "./spec"
 
+/**
+ * TypeCheckError: encapsulates a type check error.
+ */
 export interface TypeCheckError {
-    message : string
-    expect  : string
-    actual  : string
+    binding: string
+    message: string
+    expect:  string
+    actual:  string
 }
+
+/**
+ * TypeCheckResult: encapsulates a type check result.
+ */
 export interface TypeCheckResult {
-    success : boolean
-    errors  : TypeCheckError[]
+    success: boolean
+    errors: Array<TypeCheckError>
 }
 
 /**
- * validates this object as a TNull.
- * @param {TNull} t the type.
- * @param {string} name the name of the type.
- * @param {any} obj the object to validate.
- * @returns {TypeCheckResult}
+ * creates a successful typecheck result.
  */
-function validate_Null(t: TNull, name: string, value: any): TypeCheckResult {
-    let typename = reflect(value)
-    if (typename !== "null") {
-        return {
-            success: false,
-            errors: [{
-                message: `${name} is not null`,
-                expect : t.type,
-                actual : typename
-            }]
-        }
-    } else {
-        return {
-            success: true,
-            errors: []
-        }
+function Ok(): TypeCheckResult {
+    return {
+        success: true,
+        errors: []
+    }
+}
+/**
+ * creates a failed typecheck result.
+ */
+function FailBinding(binding: string, expect: string, actual: string): TypeCheckResult {
+    return {
+        success: false,
+        errors: [{
+            binding: binding,
+            message: `Type '${actual}' is not assignable to type '${expect}'`,
+            expect :  expect,
+            actual :  actual
+        }]
     }
 }
 
 /**
- * validates this object as a TUndefined.
- * @param {TUndefined} t the type.
- * @param {string} name the name of the type.
- * @param {any} obj the object to validate.
- * @returns {TypeCheckResult}
+ * creates a failed typecheck result.
  */
-function validate_Undefined(t: TUndefined, name: string, value: any): TypeCheckResult {
-    let typename = reflect(value)
-    if (typename !== "undefined") {
-        return {
-            success: false,
-            errors: [{
-                message: `${name} is not undefined`,
-                expect : t.type,
-                actual : typename
-            }]
-        }
-    } else {
-        return {
-            success: true,
-            errors: []
-        }
+function FailRequired(binding: string, expect: string, actual: string): TypeCheckResult {
+    return {
+        success: false,
+        errors: [{
+            binding: binding,
+            message: `Property of type '${expect}' is required`,
+            expect :  expect,
+            actual :  actual
+        }]
     }
 }
+
 /**
- * validates this object as a TObject.
- * @param {TObject} t the type.
- * @param {string} name the name of the type.
- * @param {any} obj the object to validate.
+ * creates a failed typecheck result.
+ */
+function FailLengthMismatch(binding: string, expect: string, actual: string, expect_length: number, actual_length: number): TypeCheckResult {
+    return {
+        success: false,
+        errors: [{
+            binding: binding,
+            message: `Property of type '${actual}' with a length ${actual_length} is invalid. Expect length of ${expect_length}`,
+            expect :  expect,
+            actual :  actual
+        }]
+    }
+}
+
+/**
+ * creates a failed typecheck result.
+ */
+function FailUnexpected(binding: string, expect: string, actual: string): TypeCheckResult {
+    let parts    = binding.split(".")
+    let property = parts[parts.length - 1]
+    return {
+        success: false,
+        errors: [{
+            binding: binding,
+            message: `Property of type '${actual}' is not valid for this object`,
+            expect :  expect,
+            actual :  actual
+        }]
+    }
+}
+
+/**
+ * validates the given value against the given TAny type.
+ * @param {TAny} type the type.
+ * @param {string} the name of the property.
+ * @param {string} the value to validate.
  * @returns {TypeCheckResult}
  */
-function validate_Object(t: TObject, name: string, value: any) : TypeCheckResult {
-    let typename = reflect(value)
-    if(typename !== "object") {
-        return {
-            success: false,
-            errors: [{
-                message: `${name} is not an object`,
-                expect : t.type,
-                actual : typename
-            }]
-        }
+function check_Any(type: spec.TAny, name: string, value: any): TypeCheckResult {
+    return Ok()
+}
+
+/**
+ * validates the given value against the given TUndefined type.
+ * @param {TUndefined} type the type.
+ * @param {string} the name of the property.
+ * @param {string} the value to validate.
+ * @returns {TypeCheckResult}
+ */
+function check_Undefined(type: spec.TUndefined, name: string, value: any): TypeCheckResult {
+    let kind = reflect(value)
+    return (kind !== "undefined")
+        ? FailBinding(name, type.kind, kind)
+        : Ok()
+}
+
+/**
+ * validates the given value against the given TNull type.
+ * @param {TNull} type the type.
+ * @param {string} the name of the property.
+ * @param {string} the value to validate.
+ * @returns {TypeCheckResult}
+ */
+function check_Null(type: spec.TNull, name: string, value: any): TypeCheckResult {
+    let kind = reflect(value)
+    return (kind !== "null")
+        ? FailBinding(name, type.kind, kind)
+        : Ok()
+}
+
+/**
+ * validates the given value against the given TLiteral type.
+ * @param {TLiteral} type the type.
+ * @param {string} the name of the property.
+ * @param {string} the value to validate.
+ * @returns {TypeCheckResult}
+ */
+function check_Literal(type: spec.TLiteral<spec.TLiteralType>, name: string, value: any): TypeCheckResult {
+    let actual = reflect(value)
+    let expect = reflect(type.value)
+    if (actual !== expect) {
+        return FailBinding(name, expect, actual)
+    } else if (type.value !== value) {
+        return FailBinding(name, type.value as string, actual)
     } else {
-        let results:TypeCheckResult[] = []
+        return Ok()
+    }
+}
+
+/**
+ * validates the given value against the given TString type.
+ * @param {TString} type the type.
+ * @param {string} the name of the property.
+ * @param {string} the value to validate.
+ * @returns {TypeCheckResult}
+ */
+function check_String(type: spec.TString, name: string, value: any): TypeCheckResult {
+    let kind = reflect(value)
+    return (kind !== "string")
+        ? FailBinding(name, type.kind, kind)
+        : Ok()
+}
+/**
+ * validates the given value against the given TNumber type.
+ * @param {TNumber} type the type.
+ * @param {string} the name of the property.
+ * @param {string} the value to validate.
+ * @returns {TypeCheckResult}
+ */
+function check_Number(type: spec.TNumber, name: string, value: any): TypeCheckResult {
+    let kind = reflect(value)
+    return (kind !== "number")
+        ? FailBinding(name, type.kind, kind)
+        : Ok()
+}
+/**
+ * validates the given value against the given TBoolean type.
+ * @param {TBoolean} type the type.
+ * @param {string} the name of the property.
+ * @param {string} the value to validate.
+ * @returns {TypeCheckResult}
+ */
+function check_Boolean(type: spec.TBoolean, name: string, value: any): TypeCheckResult {
+    let kind = reflect(value)
+    return (kind !== "boolean")
+        ? FailBinding(name, type.kind, kind)
+        : Ok()
+}
+
+/**
+ * validates the given value against the given TObject type.
+ * @param {TObject} type the type.
+ * @param {string} the name of the property.
+ * @param {string} the value to validate.
+ * @returns {TypeCheckResult}
+ */
+function check_Object(type: spec.TObject<spec.TObjectProperties>, name: string, value: any): TypeCheckResult {
+    let kind = reflect(value)
+    if (kind !== "object") {
+        return FailBinding(name, type.kind, kind)
+    } else {
+        let results = new Array<TypeCheckResult>()
+
         // scan for unexpected properties.
         let unexpected_queue = Object.keys(value).map(key => ({ key: key, value: value[key] }));
-        while(unexpected_queue.length > 0) {
+        while (unexpected_queue.length > 0) {
             let property = unexpected_queue.shift()
-            if(t.properties[property.key] === undefined) {
-                results.push({
-                    success: false,
-                    errors : [{
-                        message: `${t.properties[property.key], name + "." + property.key} unexpected.`,
-                        expect : 'undefined',
-                        actual : reflect(property.value) 
-                    }]
-                })
+            if (type.properties[property.key] === undefined) {
+                results.push(
+                    FailUnexpected(name + "." + property.key, "undefined", reflect(property.value))
+                    )
             }
         }
+
         // scan for expected properties.
-        let expected_queue = Object.keys(t.properties).map(key => ({key: key, type:t.properties[key]}))
-        while(expected_queue.length > 0) {
-            let descriptor = expected_queue.shift()
-            if(value[descriptor.key] === undefined && descriptor.type.type !== "undefined") {
-                results.push({
-                    success: false,
-                    errors : [{
-                        message: `${t.properties[descriptor.key], name + "." + descriptor.key} not found.`,
-                        expect : `${descriptor.type.type}`,
-                        actual : 'undefined'
-                    }]
-                })
+        let expected_queue = Object.keys(type.properties).map(key => ({ key: key, type: type.properties[key] }))
+        while (expected_queue.length > 0) {
+            let property = expected_queue.shift()
+            if (value[property.key] === undefined && property.type.kind !== "undefined") {
+                results.push(
+                    FailRequired(name + "." + property.key, property.type.kind, "undefined")
+                )
             } else {
-                results.push(validate_Any(descriptor.type, name + "." + descriptor.key, value[descriptor.key]))
+                results.push(
+                    check_All(property.type, name + "." + property.key, value[property.key])
+                )
             }
         }
+
         // gather results.
-        return results.reduce((acc, c) => {
-            if(c.errors.length > 0) 
+        return results.reduce((acc, result) => {
+            if (result.errors.length > 0)
                 acc.success = false
-            for(let i = 0; i < c.errors.length; i++)
-                acc.errors.push(c.errors[i])
+            for (let i = 0; i < result.errors.length; i++)
+                acc.errors.push(result.errors[i])
             return acc
-        }, {success: true, errors: []})
+        }, { success: true, errors: [] })
     }
 }
 
 /**
- * validates this object as a TObject.
- * @param {TArray} t the type.
- * @param {string} name the name of the type.
- * @param {any} obj the object to validate.
+ * validates the given value against the given TArray type.
+ * @param {TArray} type the type.
+ * @param {string} the name of the property.
+ * @param {string} the value to validate.
  * @returns {TypeCheckResult}
  */
-function validate_Array(t: TArray, name: string, value: any) : TypeCheckResult {
-    let typename = reflect(value)
-    if(typename !== "array") {
-        return {
-            success: false,
-            errors: [{
-                message: `${name} is not an array`,
-                expect : t.type,
-                actual : typename
-            }]
-        }
+function check_Array(type: spec.TArray<spec.TBase<any>>, name: string, value: any): TypeCheckResult {
+    let kind = reflect(value)
+    if (kind !== "array") {
+        return FailBinding(name, type.kind, kind)
     } else {
-        return (<Array<any>>value).map((item, index) => 
-            validate_Any(t.items, name + `[${index}]`, item)
+        let array = value as Array<any>
+        return array.map((item, index) => check_All(type.type, name + `[${index}]`, item)).reduce((acc, result) => {
+            if (result.errors.length > 0) {
+                acc.success = false
+            }
+            for (let i = 0; i < result.errors.length; i++) {
+                acc.errors.push(result.errors[i])
+            }
+            return acc
+        }, { success: true, errors: [] })
+    }
+}
+
+/**
+ * validates the given value against the given TTuple1 type.
+ * @param {TTuple1} type the type.
+ * @param {string} the name of the property.
+ * @param {string} the value to validate.
+ * @returns {TypeCheckResult}
+ */
+function check_Tuple(type: spec.TTuple1<spec.TBase<any>>, name: string, value: any): TypeCheckResult {
+    let kind = reflect(value)
+    let array = value as Array<any>
+    if (kind !== "array") {
+        return FailBinding("name", type.kind, kind)
+    } else if (array.length !== type.types.length) {
+        return FailLengthMismatch(name, type.kind, kind, type.types.length, array.length)
+    } else {
+        return array.map((item, index) =>
+            check_All(type.types[index], name + `[${index}]`, item)
         ).reduce((acc, c) => {
-            if(c.errors.length > 0) {
+            if (c.errors.length > 0) {
                 acc.success = false
             }
-            for(let i = 0; i < c.errors.length; i++){
+            for (let i = 0; i < c.errors.length; i++) {
                 acc.errors.push(c.errors[i])
             }
             return acc
-        }, {success: true, errors: []})
-    }
-}
-/**
- * validates this object as a TTuple.
- * @param {TUnion} t the type.
- * @param {string} name the name of the type.
- * @param {any} obj the object to validate.
- * @returns {TypeCheckResult}
- */
-function validate_Tuple(t: TTuple, name: string, value: any): TypeCheckResult {
-    let typename = reflect(value)
-    if(typename !== "array") {
-        return {
-            success: false,
-            errors: [{
-                message: `${name} is not an tuple`,
-                expect : t.type,
-                actual : typename
-            }]
-        }
-    } else if((<Array<any>>value).length !== t.items.length) {
-        return {
-            success: false,
-            errors: [{
-                message: `${name} tuple length mismatch`,
-                expect : t.type,
-                actual : typename
-            }]
-        }
-    } else {
-        return (<Array<any>>value).map((item, index) => 
-            validate_Any(t.items[index], name + `[${index}]`, item)
-        ).reduce((acc, c) => {
-            if(c.errors.length > 0) {
-                acc.success = false
-            }
-            for(let i = 0; i < c.errors.length; i++){
-                acc.errors.push(c.errors[i])
-            }
-            return acc
-        }, {success: true, errors: []})
-    }
-}
-/**
- * validates this object as a TNumber.
- * @param {TNumber} t the type.
- * @param {string} name the name of the type.
- * @param {any} obj the object to validate.
- * @returns {TypeCheckResult}
- */
-function validate_Number(t: TNumber, name: string, value: any) : TypeCheckResult {
-    let typename = reflect(value)
-    if (typename !== "number") {
-        return {
-            success: false,
-            errors: [{
-                message: `${name} is not a number`,
-                expect : t.type,
-                actual : typename
-            }]
-        }
-    } else {
-        return {
-            success: true,
-            errors: []
-        }
+        }, { success: true, errors: [] })
     }
 }
 
 /**
- * validates this object as a TString.
- * @param {TString} t the type.
- * @param {string} name the name of the type.
- * @param {any} obj the object to validate.
+ * validates the given value against the given TUnion1 type.
+ * @param {TUnion1} type the type.
+ * @param {string} the name of the property.
+ * @param {string} the value to validate.
  * @returns {TypeCheckResult}
  */
-function validate_String(t: TString, name: string, value: any) : TypeCheckResult {
-    let typename = reflect(value)
-    if (typename !== "string") {
-        return {
-            success: false,
-            errors: [{
-                message: `${name} is not a string`,
-                expect : t.type,
-                actual : typename
-            }]
-        }
-    } else {
-        return {
-            success: true,
-            errors: []
-        }
-    }
-}
-/**
- * validates this object as a TBoolean.
- * @param {TBoolean} t the type.
- * @param {string} name the name of the type.
- * @param {any} obj the object to validate.
- * @returns {TypeCheckResult}
- */
-function validate_Boolean(t: TBoolean, name: string, value: any) : TypeCheckResult {
-    let typename = reflect(value)
-    if (typename !== "boolean") {
-        return {
-            success: false,
-            errors: [{
-                message: `${name} is not a boolean`,
-                expect : t.type,
-                actual : typename
-            }]
-        }
-    } else {
-        return {
-            success: true,
-            errors: []
-        }
-    }
-}
-
-/**
- * validates this object as a TDate.
- * @param {TDate} t the type.
- * @param {string} name the name of the type.
- * @param {any} obj the object to validate.
- * @returns {TypeCheckResult}
- */
-function validate_Date(t: TDate, name: string, value: any) : TypeCheckResult {
-    let typename = reflect(value)
-    if (typename !== "date") {
-        return {
-            success: false,
-            errors: [{
-                message: `${name} is not a date`,
-                expect : t.type,
-                actual : typename
-            }]
-        }
-    } else {
-        return {
-            success: true,
-            errors: []
-        }
-    }
-}
-
-/**
- * validates this object as a TFunction.
- * @param {TFunction} t the type.
- * @param {string} name the name of the type.
- * @param {any} obj the object to validate.
- * @returns {TypeCheckResult}
- */
-function validate_Function(t: TFunction, name: string, value: any) : TypeCheckResult {
-    let typename = reflect(value)
-    if (typename !== "function") {
-        return {
-            success: false,
-            errors: [{
-                message: `${name} is not a function`,
-                expect : t.type,
-                actual : typename
-            }]
-        }
-    } else {
-        return {
-            success: true,
-            errors: []
-        }
-    }
-}
-
-/**
- * validates this object as a TUnion.
- * @param {TUnion} t the type.
- * @param {string} name the name of the type.
- * @param {any} obj the object to validate.
- * @returns {TypeCheckResult}
- */
-function validate_Union (t: TUnion, name: string, value: any): TypeCheckResult {
-    let results = t.items.map(type => validate_Any(type, name, value))
-    let failed  = results.reduce((acc, c) => {
-        if(c.success === false) {
+function check_Union(type: spec.TUnion1<spec.TBase<any>>, name: string, value: any): TypeCheckResult {
+    let results = type.types.map(type => check_All(type, name, value))
+    
+    // test for failed, we expect at least one to pass.
+    let failed = results.reduce((acc, result) => {
+        if (result.success === false) {
             acc += 1;
         } return acc
     }, 0)
-    if(failed === t.items.length) {
-        return {
-            success: false,
-            errors: [{
-                message: `${name} is not ${t.items.map(n => (n.type === "literal") ? (<TLiteral>n).value : n.type).join(" or ")}.`,
-                expect : `${t.items.map(n => n.type).join(" | ")}`,
-                actual : reflect(value)
-            }]
-        }
+
+    // if they all fail, then we need to resolve a error.
+    if (failed === type.types.length) {
+        let unionkind = type.types.map(type => {
+            return type.kind === "literal"
+                ? (<spec.TLiteral<spec.TLiteralType>>type).value
+                : type.kind
+        }).join(" | ")
+        return FailBinding(name, unionkind, reflect(value))
     } else {
-        return {success: true, errors: []}
+        return Ok()
     }
 }
 
-/**
- * validates this object as a TUndefined.
- * @param {TUndefined} t the type.
- * @param {string} name the name of the type.
- * @param {any} obj the object to validate.
- * @returns {TypeCheckResult}
- */
-function validate_Literal(t: TLiteral, name: string, value: any): TypeCheckResult {
-    let actual = reflect(value)
-    let expect = reflect(t.value)
-    if (actual !== expect) {
-        return {
-            success: false,
-            errors: [{
-                message: `${name} is not a ${expect}`,
-                expect : expect,
-                actual : actual
-            }]
-        }
-    } else if (t.value !== value) {
-        return {
-            success: false,
-            errors: [{
-                message: `${name} does not equal ${t.value}`,
-                expect : expect,
-                actual : actual
-            }]
-        }
-    } else {
-        return {
-            success: true,
-            errors: []
-        }
-    }
-}
 
 /**
- * validates this object as a TAny.
- * @param {TAny} t the type.
- * @param {string} name the name of the type.
- * @param {any} obj the object to validate.
- * @returns {TypeCheckResult}
- */
-function validate_Any(t: TAny, name: string, value: any): TypeCheckResult {
-    switch (t.type) {
-        case "any":       return { success:true, errors: []}
-        case "null":      return validate_Null      (t as TNull,      name, value)
-        case "undefined": return validate_Undefined (t as TUndefined, name, value) 
-        case "object":    return validate_Object    (t as TObject,    name, value)
-        case "array":     return validate_Array     (t as TArray,     name, value)
-        case "tuple":     return validate_Tuple     (t as TTuple,     name, value)
-        case "number":    return validate_Number    (t as TNumber,    name, value)
-        case "string":    return validate_String    (t as TString,    name, value)
-        case "boolean":   return validate_Boolean   (t as TBoolean,   name, value) 
-        case "date":      return validate_Date      (t as TDate,      name, value) 
-        case "function":  return validate_Function  (t as TFunction,  name, value)
-        case "union":     return validate_Union     (t as TUnion,     name, value)
-        case "literal":   return validate_Literal   (t as TLiteral,   name, value)
-        default: throw Error("unknown type.")
-    }
-}
-
-/**
- * typechecks the given object against the type.
- * @param {TAny} t the type to check.
+ * typechecks the given value against the given type.
+ * @param {T} type the type to check.
  * @param {any} value the value to check.
  * @returns {TypeCheckResult}
  */
-export function check(t: TAny, value: any) : TypeCheckResult {
-    return validate_Any(t, "value", value)
+function check_All(type: spec.TBase<any>, name: string, value: any): TypeCheckResult {
+    switch (type.kind) {
+        case "any":       return check_Any       (type as spec.TAny, name, value)
+        case "undefined": return check_Undefined (type as spec.TUndefined, name, value)
+        case "null":      return check_Null      (type as spec.TNull, name, value)
+        case "literal":   return check_Literal   (type as spec.TLiteral<spec.TLiteralType>, name, value)
+        case "string":    return check_String    (type as spec.TString, name, value)
+        case "number":    return check_Number    (type as spec.TNumber, name, value)
+        case "boolean":   return check_Boolean   (type as spec.TBoolean, name, value)
+        case "object":    return check_Object    (type as spec.TObject<spec.TObjectProperties>, name, value)
+        case "array":     return check_Array     (type as spec.TArray<spec.TBase<any>>, name, value)
+        case "tuple":     return check_Tuple     (type as spec.TTuple1<spec.TBase<any>>, name, value)
+        case "union":     return check_Union     (type as spec.TUnion1<spec.TBase<any>>, name, value)
+        default: throw new Error("unknown type.")
+    }
+}
+
+/**
+ * typechecks the given value against the given type.
+ * @param {T} type the type to check.
+ * @param {any} value the value to check.
+ * @returns {TypeCheckResult}
+ */
+export function check(type: spec.TBase<any>, value: any): TypeCheckResult {
+    return check_All(type, "value", value)
 }

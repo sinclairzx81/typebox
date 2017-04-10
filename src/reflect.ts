@@ -29,11 +29,11 @@ THE SOFTWARE.
 export type TypeName = "undefined" | "null" | "function" | "string" | "number" | "boolean" | "date" | "array" | "object"
 
 /**
- * Reflects the given type object and returns its type.
+ * returns the typename for the given value.
  * @param {any} value the value to reflect.
- * @returns {TypeId}
+ * @returns {TypeName}
  */
-export const reflect = (value: any): TypeName => {
+export function reflect(value: any): TypeName {
     if (value === undefined) return "undefined"
     if (value === null)      return "null"
     if (typeof value === "function") return "function"

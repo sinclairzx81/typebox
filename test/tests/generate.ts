@@ -26,20 +26,20 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import * as typebox from "../src/index"
+
+import * as typebox from "../../src/index"
 import * as assert  from "assert"
 
 const complex = typebox.Object({
   a: typebox.Any(),
   b: typebox.Null(),
   c: typebox.Undefined(),
-  d: typebox.Object(),
+  d: typebox.Object({}),
   e: typebox.Array(typebox.Any()),
   f: typebox.Tuple(typebox.Any()),
   g: typebox.Number(),
   h: typebox.String(),
   i: typebox.Boolean(),
-  j: typebox.Function(),
   k: typebox.Union(typebox.Any()),
   l: typebox.Literal(10),
 })
@@ -71,7 +71,7 @@ describe("generate", () => {
     assert.equal(typebox.reflect(value), "array")
   })
   it("Tuple should generate a array", () => {
-    let type  = typebox.Tuple();
+    let type  = typebox.Tuple(typebox.String());
     let value = typebox.generate(type);
     assert.equal(typebox.reflect(value), "array")
   }) 
@@ -94,21 +94,6 @@ describe("generate", () => {
     let type  = typebox.Boolean();
     let value = typebox.generate(type);
     assert.equal(typebox.reflect(value), "boolean")
-  })
-  it("Date should generate a date", () => {
-    let type  = typebox.Date();
-    let value = typebox.generate(type);
-    assert.equal(typebox.reflect(value), "date")
-  })
-  it("Function should generate a function", () => {
-    let type  = typebox.Function();
-    let value = typebox.generate(type);
-    assert.equal(typebox.reflect(value), "function")
-  })
-  it("Union should generate an object if empty.", () => {
-    let type  = typebox.Union();
-    let value = typebox.generate(type);
-    assert.equal(typebox.reflect(value), "object")
   })
   it("Union should generate the first type", () => {
     let type  = typebox.Union(typebox.Number());

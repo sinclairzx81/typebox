@@ -26,44 +26,28 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import {
-    TAny,
-    TNull,
-    TUndefined,
-    TObject, 
-    TArray,
-    TTuple,
-    TNumber,
-    TString,
-    TBoolean,
-    TDate,
-    TFunction,
-    TUnion, 
-    TLiteral
-} from "./spec"
+import * as spec from "./spec"
 
 /**
- * tests the left and right type for structural similarity. If this function
+ * tests the left and right type for structural compatiable. If this function
  * returns true, it means that the left type is compatiable with the right.
  * @param {TAny} left the left type.
  * @param {TAny} right the right type.
  * @returns {boolean}
  */
-export function compare(left: TAny, right: TAny): boolean {
-  if(left.type === "any"       || right.type === "any")       return true
-  if(left.type === "string"    && right.type === "string")    return true
-  if(left.type === "number"    && right.type === "number")    return true
-  if(left.type === "null"      && right.type === "null")      return true
-  if(left.type === "undefined" && right.type === "undefined") return true
-  if(left.type === "boolean"   && right.type === "boolean")   return true
-  if(left.type === "date"      && right.type === "date")      return true
-  if(left.type === "function"  && right.type === "function")  return true
-  if(left.type === "literal"   && right.type === "literal")   return (<TLiteral>left).value === (<TLiteral>right).value
+export function compare(left: spec.TBase<any>, right: spec.TBase<any>): boolean {
+  if(left.kind === "any"       || right.kind === "any")       return true
+  if(left.kind === "string"    && right.kind === "string")    return true
+  if(left.kind === "number"    && right.kind === "number")    return true
+  if(left.kind === "null"      && right.kind === "null")      return true
+  if(left.kind === "undefined" && right.kind === "undefined") return true
+  if(left.kind === "boolean"   && right.kind === "boolean")   return true
+  if(left.kind === "literal"   && right.kind === "literal")   return (<spec.TLiteral<spec.TLiteralType>>left).value === (<spec.TLiteral<spec.TLiteralType>>right).value
   
   // Object
-  if(left.type === "object" && right.type === "object") {
-    let object_left   = <TObject>left
-    let object_right  = <TObject>right
+  if(left.kind === "object" && right.kind === "object") {
+    let object_left   = <spec.TObject<{[key in string]: spec.TBase<any>}>>left
+    let object_right  = <spec.TObject<{[key in string]: spec.TBase<any>}>>right
     let keys          = Object.keys(object_left.properties)
     if(keys.length !== Object.keys(object_right.properties).length) {
       return false
@@ -81,47 +65,47 @@ export function compare(left: TAny, right: TAny): boolean {
   }
 
   // Array
-  if(left.type === "array" && right.type === "array") {
-    let array_left   = <TArray>left
-    let array_right  = <TArray>right
-    return compare(array_left.items, array_right.items)
+  if(left.kind === "array" && right.kind === "array") {
+    let array_left   = <spec.TArray<spec.TBase<any>>>left
+    let array_right  = <spec.TArray<spec.TBase<any>>>right
+    return compare(array_left.type, array_right.type)
   }
 
   // Tuple
-  if(left.type === "tuple" && right.type === "tuple") {
-    let tuple_left   = <TTuple>left
-    let tuple_right  = <TTuple>right
-    if(tuple_left.items.length !== tuple_right.items.length) return false
-    for(let i = 0; i < tuple_left.items.length; i++) {
-      if(compare(tuple_left.items[i], tuple_right.items[i]) === false) {
+  if(left.kind === "tuple" && right.kind === "tuple") {
+    let tuple_left   = <spec.TTuple1<spec.TBase<any>>>left
+    let tuple_right  = <spec.TTuple1<spec.TBase<any>>>right
+    if(tuple_left.types.length !== tuple_right.types.length) return false
+    for(let i = 0; i < tuple_left.types.length; i++) {
+      if(compare(tuple_left.types[i], tuple_right.types[i]) === false) {
         return false
       }
     } return true
   }
 
   // union:zero length for left and right.
-  if(left.type === "union" && right.type === "union") {
-    let union_left   = <TUnion>left
-    let union_right  = <TUnion>right
-    if(union_left.items.length === 0 && union_right.items.length === 0) {
+  if(left.kind === "union" && right.kind === "union") {
+    let union_left   = <spec.TUnion1<spec.TBase<any>>>left
+    let union_right  = <spec.TUnion1<spec.TBase<any>>>right
+    if(union_left.types.length === 0 && union_right.types.length === 0) {
       return true
     }
   }
 
   // union:left
-  if(left.type === "union") {
-    let union_left   = <TUnion>left
-    for(let i = 0; i < union_left.items.length; i++) {
-      if(compare(union_left.items[i], right) === true) {
+  if(left.kind === "union") {
+    let union_left   = <spec.TUnion1<spec.TBase<any>>>left
+    for(let i = 0; i < union_left.types.length; i++) {
+      if(compare(union_left.types[i], right) === true) {
         return true
       } 
     }
   }
   // union:right
-  if(right.type === "union") {
-    let union_right  = <TUnion>right
-    for(let i = 0; i < union_right.items.length; i++) {
-      if(compare(union_right.items[i], left) === true) {
+  if(right.kind === "union") {
+    let union_right  = <spec.TUnion1<spec.TBase<any>>>right
+    for(let i = 0; i < union_right.types.length; i++) {
+      if(compare(union_right.types[i], left) === true) {
         return true
       } 
     }

@@ -26,14 +26,15 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import * as typebox from "../src/index"
+
+import * as typebox from "../../src/index"
 import * as assert  from "assert"
 
 describe("infer", () => {
   describe("Object", () => {
     it("should infer a object #1", () => {
       let type = typebox.infer({})
-      assert.equal(type.type, "object")
+      assert.equal(type.kind, "object")
     })
     it("should infer a object #2", () => {
       let type = typebox.infer({
@@ -45,95 +46,77 @@ describe("infer", () => {
         f: null,
         g: {}
       })
-      assert.equal(type.type, "object")
-      let t = type as typebox.TObject
-      assert.equal(t.properties['a'].type, "string")
-      assert.equal(t.properties['b'].type, "number")
-      assert.equal(t.properties['c'].type, "boolean")
-      assert.equal(t.properties['d'].type, "array")
-      assert.equal(t.properties['e'].type, "undefined")
-      assert.equal(t.properties['f'].type, "null")
-      assert.equal(t.properties['g'].type, "object")
+      assert.equal(type.kind, "object")
+      let t = type as typebox.TObject<typebox.TObjectProperties>
+      assert.equal(t.properties['a'].kind, "string")
+      assert.equal(t.properties['b'].kind, "number")
+      assert.equal(t.properties['c'].kind, "boolean")
+      assert.equal(t.properties['d'].kind, "array")
+      assert.equal(t.properties['e'].kind, "undefined")
+      assert.equal(t.properties['f'].kind, "null")
+      assert.equal(t.properties['g'].kind, "object")
     })
   })
 
   describe("Array", () => {
     it("an empty array should infer Array<Any>", () => {
       let type = typebox.infer([])
-      assert.equal(type.type, "array")
-      let t = type as typebox.TArray
-      assert.equal(t.items.type, "any")
+      assert.equal(type.kind, "array")
+      let t = type as typebox.TArray<typebox.TBase<any>>
+      assert.equal(t.type.kind, "any")
     })
 
     it("string elements should infer Array<String>", () => {
       let type = typebox.infer(["hello"])
-      assert.equal(type.type, "array")
-      let t = type as typebox.TArray
-      assert.equal(t.items.type, "string")
+      assert.equal(type.kind, "array")
+      let t = type as typebox.TArray<typebox.TBase<any>>
+      assert.equal(t.type.kind, "string")
     })
 
     it("numeric elements should infer Array<Number>", () => {
       let type = typebox.infer([1])
-      assert.equal(type.type, "array")
-      let t = type as typebox.TArray
-      assert.equal(t.items.type, "number")
+      assert.equal(type.kind, "array")
+      let t = type as typebox.TArray<typebox.TBase<any>>
+      assert.equal(t.type.kind, "number")
     })
 
     it("a mixed array should infer a union Array<String | Number>", () => {
       let type = typebox.infer([1, "hello"])
-      assert.equal(type.type, "array")
-      let t = type as typebox.TArray
-      assert.equal(t.items.type, "union")
-      let u = t.items as typebox.TUnion
-      assert.equal(u.items[0].type, "number")
-      assert.equal(u.items[1].type, "string")
+      assert.equal(type.kind, "array")
+      let t = type as typebox.TArray<typebox.TBase<any>>
+      assert.equal(t.type.kind, "union")
+      let u = t.type as typebox.TUnion1<typebox.TBase<any>>
+      assert.equal(u.types[0].kind, "number")
+      assert.equal(u.types[1].kind, "string")
     })
   })
 
   describe("String", () => {
     it("should infer a string", () => {
       let type = typebox.infer("hello world")
-      assert.equal(type.type, "string")
+      assert.equal(type.kind, "string")
     })
   })
 
   describe("Number", () => {
     it("should infer a number #1", () => {
       let type = typebox.infer(1)
-      assert.equal(type.type, "number")
+      assert.equal(type.kind, "number")
     })
     it("should infer a number #2", () => {
       let type = typebox.infer(NaN)
-      assert.equal(type.type, "number")
+      assert.equal(type.kind, "number")
     })
   })
 
   describe("Boolean", () => {
     it("should infer a boolean #1", () => {
       let type = typebox.infer(true)
-      assert.equal(type.type, "boolean")
+      assert.equal(type.kind, "boolean")
     })
     it("should infer a boolean #2", () => {
       let type = typebox.infer(false)
-      assert.equal(type.type, "boolean")
-    })
-  })
-
-  describe("Date", () => {
-    it("should infer a date", () => {
-      let type = typebox.infer(new Date())
-      assert.equal(type.type, "date")
-    })
-  })
-
-  describe("Function", () => {
-    it("should infer a function #1", () => {
-      let type = typebox.infer(function() {})
-      assert.equal(type.type, "function")
-    })
-    it("should infer a function #2", () => {
-      let type = typebox.infer(() => {})
-      assert.equal(type.type, "function")
+      assert.equal(type.kind, "boolean")
     })
   })
 
@@ -207,7 +190,7 @@ describe("infer", () => {
       assert.equal(result.success, true)
     })
     it("should validate against the original value #9", () => {
-      let value = new Date()
+      let value  = undefined
       let type   = typebox.infer(value)
       let result = typebox.check(type, value)
       assert.equal(result.success, true)
