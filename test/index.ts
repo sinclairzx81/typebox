@@ -32,30 +32,15 @@ THE SOFTWARE.
 //-------------------------------
 // tests
 //-------------------------------
-// import "./tests/spec"
-// import "./tests/compare"
-// import "./tests/generate"
-// import "./tests/reflect"
-// import "./tests/infer"
-// import "./tests/check"
+import "./tests/spec"
+import "./tests/compare"
+import "./tests/generate"
+import "./tests/reflect"
+import "./tests/infer"
+import "./tests/check"
 
 
 import * as typebox from "../src/index"
 
 
-const Ship = typebox.Object({
-  pilot : typebox.String(),
-  position : typebox.Tuple(
-    typebox.Number(), 
-    typebox.Number()
-  ),
-  color : typebox.Union (
-    typebox.Literal("red"), 
-    typebox.Literal("blue"),
-    typebox.Literal("green")
-  )
-})
 
-let result = typebox.schema(Ship)
-
-console.log(JSON.stringify(result, null, 2))
