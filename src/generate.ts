@@ -60,9 +60,9 @@ function generate_Undefined(type: spec.TUndefined): any {
  * @param {TAny} type the type.
  * @returns {any}
  */
-function generate_Object(type: spec.TObject<spec.TObjectProperties>): any {
+function generate_Complex(type: spec.TComplex<spec.TComplexProperties>): any {
   return Object.keys(type.properties)
-    .map(key => ({key: key, value: generate(type.properties[key])}))
+    .map(key => ({ key: key, value: generate(type.properties[key]) }))
     .reduce((acc, value) => {
       acc[value.key] = value.value
       return acc
@@ -76,8 +76,8 @@ function generate_Object(type: spec.TObject<spec.TObjectProperties>): any {
  */
 function generate_Array(t: spec.TArray<spec.TBase<any>>): any[] {
   return [
-    generate(t.type), 
-    generate(t.type), 
+    generate(t.type),
+    generate(t.type),
     generate(t.type)
   ]
 }
@@ -118,14 +118,23 @@ function generate_Boolean(t: spec.TBoolean): boolean {
   return true
 }
 
+/**
+ * generates a union type
+ * @param {TAny} t the union type.
+ * @returns {any}
+ */
 function generate_Union(t: spec.TUnion1<spec.TBase<any>>): any {
-  if(t.types.length === 0) {
+  if (t.types.length === 0) {
     return {}
   } else {
     return generate(t.types[0])
   }
 }
 
+/**
+ * generates a literal type.
+ * @param t 
+ */
 function generate_Literal(t: spec.TLiteral<spec.TLiteralType>): any {
   return t.value
 }
@@ -136,18 +145,18 @@ function generate_Literal(t: spec.TLiteral<spec.TLiteralType>): any {
  * @returns {any}
  */
 export function generate(type: spec.TBase<any>): any {
-    switch (type.kind) {
-      case "any":       return generate_Any       (type as spec.TAny)
-      case "null":      return generate_Null      (type as spec.TNull)
-      case "undefined": return generate_Undefined (type as spec.TUndefined)
-      case "object":    return generate_Object    (type as spec.TObject<spec.TObjectProperties>)
-      case "array":     return generate_Array     (type as spec.TArray<spec.TBase<any>>)
-      case "tuple":     return generate_Tuple     (type as spec.TTuple1<spec.TBase<any>>)
-      case "number":    return generate_Number    (type as spec.TNumber)
-      case "string":    return generate_String    (type as spec.TString)
-      case "boolean":   return generate_Boolean   (type as spec.TBoolean)
-      case "union":     return generate_Union     (type as spec.TUnion1<spec.TBase<any>>)
-      case "literal":   return generate_Literal   (type as spec.TLiteral<spec.TLiteralType>)
-      default: throw Error("unknown type.")
-    }
+  switch (type.kind) {
+    case "any":       return generate_Any      (type as spec.TAny)
+    case "null":      return generate_Null     (type as spec.TNull)
+    case "undefined": return generate_Undefined(type as spec.TUndefined)
+    case "complex":   return generate_Complex  (type as spec.TComplex<spec.TComplexProperties>)
+    case "array":     return generate_Array    (type as spec.TArray<spec.TBase<any>>)
+    case "tuple":     return generate_Tuple    (type as spec.TTuple1<spec.TBase<any>>)
+    case "number":    return generate_Number   (type as spec.TNumber)
+    case "string":    return generate_String   (type as spec.TString)
+    case "boolean":   return generate_Boolean  (type as spec.TBoolean)
+    case "union":     return generate_Union    (type as spec.TUnion1<spec.TBase<any>>)
+    case "literal":   return generate_Literal  (type as spec.TLiteral<spec.TLiteralType>)
+    default: throw Error("unknown type.")
+  }
 }

@@ -30,11 +30,11 @@ THE SOFTWARE.
 import * as typebox from "../../src/index"
 import * as assert  from "assert"
 
-const complex = typebox.Object({
+const complex = typebox.Complex({
   a: typebox.Any(),
   b: typebox.Null(),
   c: typebox.Undefined(),
-  d: typebox.Object({}),
+  d: typebox.Complex({}),
   e: typebox.Array(typebox.Any()),
   f: typebox.Tuple(typebox.Any()),
   g: typebox.Number(),
@@ -45,10 +45,10 @@ const complex = typebox.Object({
 })
 
 describe("generate", () => {
-  it("Any should generate a empty object", () => {
+  it("Any should generate a empty complex", () => {
     let type  = typebox.Any();
     let value = typebox.generate(type);
-    assert.equal(typebox.reflect(value), "object")
+    assert.equal(typebox.reflect(value), "complex")
   })
   it("Null should generate a null", () => {
     let type  = typebox.Null();
@@ -60,10 +60,10 @@ describe("generate", () => {
     let value = typebox.generate(type);
     assert.equal(typebox.reflect(value), "undefined")
   })
-  it("Object should generate a object", () => {
-    let type  = typebox.Object();
+  it("Object should generate a complex", () => {
+    let type  = typebox.Complex();
     let value = typebox.generate(type);
-    assert.equal(typebox.reflect(value), "object")
+    assert.equal(typebox.reflect(value), "complex")
   })
   it("Array should generate a array", () => {
     let type  = typebox.Array();

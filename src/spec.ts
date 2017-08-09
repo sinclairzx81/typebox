@@ -35,7 +35,7 @@ export type Static<T extends TBase<any>> = T["phantom"]
  * TBase<T>: base type for all supported types.
  */
 export interface TBase<T> {
-  kind: "any" | "undefined" | "null" | "literal" | "string" | "number" | "boolean" | "object" | "array" | "tuple" | "union" | "intersect"
+  kind: "any" | "undefined" | "null" | "literal" | "string" | "number" | "boolean" | "complex" | "array" | "tuple" | "union" | "intersect"
   phantom: T
 }
 
@@ -95,15 +95,15 @@ export interface TBoolean extends TBase<boolean> {
 }
 
 /**
- * TObjectProperties: TObject type parameter constraint.
+ * TComplexProperties: TObject type parameter constraint.
  */
-export type TObjectProperties = {[key in string]: TBase<any>}
+export type TComplexProperties = {[key in string]: TBase<any>}
 
 /**
- * TObject: represents a complex type.
+ * TComplex: represents a complex type.
  */
-export interface TObject<T extends TObjectProperties> extends TBase<{[K in keyof T]: Static<T[K]>}> {
-  kind: "object"
+export interface TComplex<T extends TComplexProperties> extends TBase<{[K in keyof T]: Static<T[K]>}> {
+  kind: "complex"
   properties: T
 }
 
@@ -379,14 +379,14 @@ export function Boolean(): TBoolean {
 }
 /**
  * creates a object type.
- * @param {TObjectProperties} properties the properties for this complex type.
- * @returns {TObject<T>}
+ * @param {TComplexProperties} properties the properties for this complex type.
+ * @returns {TComplex<T>}
  */
-export function Object<T extends TObjectProperties>(properties: T = {} as T): TObject<T> {
+export function Complex<T extends TComplexProperties>(properties: T = {} as T): TComplex<T> {
   return {
-    kind      : "object",
+    kind      : "complex",
     properties: properties
-  } as TObject<T>
+  } as TComplex<T>
 }
 
 /**

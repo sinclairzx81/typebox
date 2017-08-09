@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export type TypeName = "undefined" | "null" | "function" | "string" | "number" | "boolean" | "date" | "array" | "object"
+export type TypeName = "undefined" | "null" | "function" | "string" | "number" | "boolean" | "date" | "array" | "complex"
 
 /**
  * returns the typename for the given value.
@@ -43,5 +43,5 @@ export function reflect(value: any): TypeName {
     if (typeof value === "object") {
         if (value instanceof Array) return "array"
         if (value instanceof Date)  return "date"
-    } return "object"
+    } return "complex"
 }

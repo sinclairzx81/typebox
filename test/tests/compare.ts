@@ -30,11 +30,11 @@ THE SOFTWARE.
 import * as typebox from "../../src/index"
 import * as assert from "assert"
 
-const complex = typebox.Object({
+const complex = typebox.Complex({
   a: typebox.Any(),
   b: typebox.Null(),
   c: typebox.Undefined(),
-  d: typebox.Object({}),
+  d: typebox.Complex({}),
   e: typebox.Array(typebox.Any()),
   f: typebox.Tuple(typebox.Any()),
   g: typebox.Number(),
@@ -44,7 +44,7 @@ const complex = typebox.Object({
   k: typebox.Literal(10),
 })
 
-const hyper_complex = typebox.Object({
+const hyper_complex = typebox.Complex({
   a: typebox.Array(
     typebox.Union(complex, typebox.Union(typebox.Number(), typebox.Boolean(), complex)),
   ),
@@ -61,7 +61,7 @@ describe("compare", () => {
     it("should compare with Any", () => assert.equal(typebox.compare(typebox.Any(), typebox.Any()), true))
     it("should compare with Null", () => assert.equal(typebox.compare(typebox.Any(), typebox.Null()), true))
     it("should compare with Undefined", () => assert.equal(typebox.compare(typebox.Any(), typebox.Undefined()), true))
-    it("should compare with Object", () => assert.equal(typebox.compare(typebox.Any(), typebox.Object()), true))
+    it("should compare with Object", () => assert.equal(typebox.compare(typebox.Any(), typebox.Complex()), true))
     it("should compare with Array", () => assert.equal(typebox.compare(typebox.Any(), typebox.Array()), true))
     it("should compare with Tuple", () => assert.equal(typebox.compare(typebox.Any(), typebox.Tuple(typebox.Any())), true))
     it("should compare with Number", () => assert.equal(typebox.compare(typebox.Any(), typebox.Number()), true))
@@ -73,7 +73,7 @@ describe("compare", () => {
     it("should compare with Any", () => assert.equal(typebox.compare(typebox.Null(), typebox.Any()), true))
     it("should compare with Null", () => assert.equal(typebox.compare(typebox.Null(), typebox.Null()), true))
     it("should not compare with Undefined", () => assert.equal(typebox.compare(typebox.Null(), typebox.Undefined()), false))
-    it("should not compare with Object", () => assert.equal(typebox.compare(typebox.Null(), typebox.Object()), false))
+    it("should not compare with Object", () => assert.equal(typebox.compare(typebox.Null(), typebox.Complex()), false))
     it("should not compare with Array", () => assert.equal(typebox.compare(typebox.Null(), typebox.Array()), false))
     it("should not compare with Tuple", () => assert.equal(typebox.compare(typebox.Null(), typebox.Tuple(typebox.Any())), false))
     it("should not compare with Number", () => assert.equal(typebox.compare(typebox.Null(), typebox.Number()), false))
@@ -85,7 +85,7 @@ describe("compare", () => {
     it("should compare with Any", () => assert.equal(typebox.compare(typebox.Undefined(), typebox.Any()), true))
     it("should not compare with Null", () => assert.equal(typebox.compare(typebox.Undefined(), typebox.Null()), false))
     it("should compare with Undefined", () => assert.equal(typebox.compare(typebox.Undefined(), typebox.Undefined()), true))
-    it("should not compare with Object", () => assert.equal(typebox.compare(typebox.Undefined(), typebox.Object()), false))
+    it("should not compare with Object", () => assert.equal(typebox.compare(typebox.Undefined(), typebox.Complex()), false))
     it("should not compare with Array", () => assert.equal(typebox.compare(typebox.Undefined(), typebox.Array()), false))
     it("should not compare with Tuple", () => assert.equal(typebox.compare(typebox.Undefined(), typebox.Tuple(typebox.Any())), false))
     it("should not compare with Number", () => assert.equal(typebox.compare(typebox.Undefined(), typebox.Number()), false))
@@ -94,16 +94,16 @@ describe("compare", () => {
     it("should not compare with Union", () => assert.equal(typebox.compare(typebox.Undefined(), typebox.Union(typebox.String())), false))
   })
   describe("Object", () => {
-    it("should compare with Any", () => assert.equal(typebox.compare(typebox.Object(), typebox.Any()), true))
-    it("should not compare with Null", () => assert.equal(typebox.compare(typebox.Object(), typebox.Null()), false))
-    it("should not compare with Undefined", () => assert.equal(typebox.compare(typebox.Object(), typebox.Undefined()), false))
-    it("should compare with Object", () => assert.equal(typebox.compare(typebox.Object(), typebox.Object()), true))
-    it("should not compare with Array", () => assert.equal(typebox.compare(typebox.Object(), typebox.Array()), false))
-    it("should not compare with Tuple", () => assert.equal(typebox.compare(typebox.Object(), typebox.Tuple(typebox.Any())), false))
-    it("should not compare with Number", () => assert.equal(typebox.compare(typebox.Object(), typebox.Number()), false))
-    it("should not compare with String", () => assert.equal(typebox.compare(typebox.Object(), typebox.String()), false))
-    it("should not compare with Boolean", () => assert.equal(typebox.compare(typebox.Object(), typebox.Boolean()), false))
-    it("should not compare with Union", () => assert.equal(typebox.compare(typebox.Object(), typebox.Union(typebox.String())), false))
+    it("should compare with Any", () => assert.equal(typebox.compare(typebox.Complex(), typebox.Any()), true))
+    it("should not compare with Null", () => assert.equal(typebox.compare(typebox.Complex(), typebox.Null()), false))
+    it("should not compare with Undefined", () => assert.equal(typebox.compare(typebox.Complex(), typebox.Undefined()), false))
+    it("should compare with Object", () => assert.equal(typebox.compare(typebox.Complex(), typebox.Complex()), true))
+    it("should not compare with Array", () => assert.equal(typebox.compare(typebox.Complex(), typebox.Array()), false))
+    it("should not compare with Tuple", () => assert.equal(typebox.compare(typebox.Complex(), typebox.Tuple(typebox.Any())), false))
+    it("should not compare with Number", () => assert.equal(typebox.compare(typebox.Complex(), typebox.Number()), false))
+    it("should not compare with String", () => assert.equal(typebox.compare(typebox.Complex(), typebox.String()), false))
+    it("should not compare with Boolean", () => assert.equal(typebox.compare(typebox.Complex(), typebox.Boolean()), false))
+    it("should not compare with Union", () => assert.equal(typebox.compare(typebox.Complex(), typebox.Union(typebox.String())), false))
     it("should compare with Complex", () => assert.equal(typebox.compare(complex, complex), true)),
     it("should compare with Hyper Complex", () => assert.equal(typebox.compare(hyper_complex, hyper_complex), true))
   })
@@ -111,7 +111,7 @@ describe("compare", () => {
     it("should compare with Any", () => assert.equal(typebox.compare(typebox.Array(), typebox.Any()), true))
     it("should not compare with Null", () => assert.equal(typebox.compare(typebox.Array(), typebox.Null()), false))
     it("should not compare with Undefined", () => assert.equal(typebox.compare(typebox.Array(), typebox.Undefined()), false))
-    it("should not compare with Object", () => assert.equal(typebox.compare(typebox.Array(), typebox.Object()), false))
+    it("should not compare with Object", () => assert.equal(typebox.compare(typebox.Array(), typebox.Complex()), false))
     it("should compare with Array", () => assert.equal(typebox.compare(typebox.Array(), typebox.Array()), true))
     it("should not compare with Tuple", () => assert.equal(typebox.compare(typebox.Array(), typebox.Tuple(typebox.Any())), false))
     it("should not compare with Number", () => assert.equal(typebox.compare(typebox.Array(), typebox.Number()), false))
@@ -126,7 +126,7 @@ describe("compare", () => {
     it("should compare with Any",                           () => assert.equal(typebox.compare(typebox.Tuple(typebox.Any()), typebox.Any()), true))
     it("should not compare with Null",                      () => assert.equal(typebox.compare(typebox.Tuple(typebox.Any()), typebox.Null()), false))
     it("should not compare with Undefined",                 () => assert.equal(typebox.compare(typebox.Tuple(typebox.Any()), typebox.Undefined()), false))
-    it("should not compare with Object",                    () => assert.equal(typebox.compare(typebox.Tuple(typebox.Any()), typebox.Object()), false))
+    it("should not compare with Object",                    () => assert.equal(typebox.compare(typebox.Tuple(typebox.Any()), typebox.Complex()), false))
     it("should not compare with Array",                     () => assert.equal(typebox.compare(typebox.Tuple(typebox.Any()), typebox.Array()), false))
     it("should compare with Tuple",                         () => assert.equal(typebox.compare(typebox.Tuple(typebox.Any()), typebox.Tuple(typebox.Any())), true))
     it("should not compare with Number",                    () => assert.equal(typebox.compare(typebox.Tuple(typebox.Any()), typebox.Number()), false))
@@ -141,7 +141,7 @@ describe("compare", () => {
     it("should compare with Any",         () => assert.equal(typebox.compare(typebox.Number(), typebox.Any()), true))
     it("should not compare with Null",    () => assert.equal(typebox.compare(typebox.Number(), typebox.Null()), false))
     it("should compare with Undefined",   () => assert.equal(typebox.compare(typebox.Number(), typebox.Undefined()), false))
-    it("should not compare with Object",  () => assert.equal(typebox.compare(typebox.Number(), typebox.Object()), false))
+    it("should not compare with Object",  () => assert.equal(typebox.compare(typebox.Number(), typebox.Complex()), false))
     it("should not compare with Array",   () => assert.equal(typebox.compare(typebox.Number(), typebox.Array()), false))
     it("should not compare with Tuple",   () => assert.equal(typebox.compare(typebox.Number(), typebox.Tuple(typebox.Any())), false))
     it("should compare with Number",      () => assert.equal(typebox.compare(typebox.Number(), typebox.Number()), true))
@@ -153,7 +153,7 @@ describe("compare", () => {
     it("should compare with Any",         () => assert.equal(typebox.compare(typebox.String(), typebox.Any()), true))
     it("should not compare with Null",    () => assert.equal(typebox.compare(typebox.String(), typebox.Null()), false))
     it("should compare with Undefined",   () => assert.equal(typebox.compare(typebox.String(), typebox.Undefined()), false))
-    it("should not compare with Object",  () => assert.equal(typebox.compare(typebox.String(), typebox.Object()), false))
+    it("should not compare with Object",  () => assert.equal(typebox.compare(typebox.String(), typebox.Complex()), false))
     it("should not compare with Array",   () => assert.equal(typebox.compare(typebox.String(), typebox.Array()), false))
     it("should not compare with Tuple",   () => assert.equal(typebox.compare(typebox.String(), typebox.Tuple(typebox.Any())), false))
     it("should not compare with Number",  () => assert.equal(typebox.compare(typebox.String(), typebox.Number()), false))
@@ -165,7 +165,7 @@ describe("compare", () => {
     it("should compare with Any", () => assert.equal(typebox.compare(typebox.Boolean(), typebox.Any()), true))
     it("should not compare with Null", () => assert.equal(typebox.compare(typebox.Boolean(), typebox.Null()), false))
     it("should compare with Undefined", () => assert.equal(typebox.compare(typebox.Boolean(), typebox.Undefined()), false))
-    it("should not compare with Object", () => assert.equal(typebox.compare(typebox.Boolean(), typebox.Object()), false))
+    it("should not compare with Object", () => assert.equal(typebox.compare(typebox.Boolean(), typebox.Complex()), false))
     it("should not compare with Array", () => assert.equal(typebox.compare(typebox.Boolean(), typebox.Array()), false))
     it("should not compare with Tuple", () => assert.equal(typebox.compare(typebox.Boolean(), typebox.Tuple(typebox.Any())), false))
     it("should not compare with Number", () => assert.equal(typebox.compare(typebox.Boolean(), typebox.Number()), false))
@@ -178,7 +178,7 @@ describe("compare", () => {
     it("should compare with Any",           () => assert.equal(typebox.compare(typebox.Union(typebox.Any()), typebox.Any()), true))
     it("should not compare with Null",      () => assert.equal(typebox.compare(typebox.Union(typebox.String()), typebox.Null()), false))
     it("should not compare with Undefined", () => assert.equal(typebox.compare(typebox.Union(typebox.String()), typebox.Undefined()), false))
-    it("should not compare with Object",    () => assert.equal(typebox.compare(typebox.Union(typebox.String()), typebox.Object()), false))
+    it("should not compare with Object",    () => assert.equal(typebox.compare(typebox.Union(typebox.String()), typebox.Complex()), false))
     it("should not compare with Array",     () => assert.equal(typebox.compare(typebox.Union(typebox.String()), typebox.Array()), false))
     it("should not compare with Tuple",     () => assert.equal(typebox.compare(typebox.Union(typebox.String()), typebox.Tuple(typebox.Any())), false))
     it("should not compare with Number",    () => assert.equal(typebox.compare(typebox.Union(typebox.String()), typebox.Number()), false))

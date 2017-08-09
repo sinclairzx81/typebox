@@ -61,12 +61,11 @@ function schema_Null(type: spec.TNull): any {
  * @returns {any}
  */
 function schema_Literal(type: spec.TLiteral<spec.TLiteralType>): any {
-  let kind = reflect(type.value)
+  const kind = reflect(type.value)
   switch(kind) {
     case "string": return { "type": "string", "pattern": type.value  }
     case "number": return { "type": "number", "minimum": type.value, "maximum": type.value }
   }
-
 }
 
 /**
@@ -100,7 +99,7 @@ function schema_Boolean(type: spec.TBoolean): any {
  * @param {spec.TAny} type the type
  * @returns {any}
  */
-function schema_Object(type: spec.TObject<spec.TObjectProperties>): any {
+function schema_Complex(type: spec.TComplex<spec.TComplexProperties>): any {
   const expanded  = Object.keys(type.properties).map(key => ({
     key: key,
     type: type.properties[key]
@@ -154,7 +153,7 @@ function schema_Tuple(type: spec.TTuple1<spec.TBase<any>>): any {
  * @returns {any}
  */
 function schema_Union(type: spec.TUnion1<spec.TBase<any>>): any {
-  let types = type.types.map(type => schema_Base(type))
+  const types = type.types.map(type => schema_Base(type))
   return {
     "anyOf": types
   }
@@ -170,21 +169,26 @@ function schema_Base(type: spec.TBase<any>): any {
     case "any":       return schema_Any(type as spec.TAny)
     case "undefined": return schema_Undefined(type as spec.TUndefined)
     case "null":      return schema_Null(type as spec.TNull)
-    case "literal": return schema_Literal(type as spec.TLiteral<spec.TLiteralType>)
-    case "string": return schema_String(type as spec.TString)
-    case "number": return schema_Number(type as spec.TNumber)
-    case "boolean": return schema_Boolean(type as spec.TBoolean)
-    case "object": return schema_Object(type as spec.TObject<spec.TObjectProperties>)
-    case "array": return schema_Array(type as spec.TArray<spec.TBase<any>>)
-    case "tuple": return schema_Tuple(type as spec.TTuple1<spec.TBase<any>>)
-    case "union": return schema_Union(type as spec.TUnion1<spec.TBase<any>>)
+    case "literal":   return schema_Literal(type as spec.TLiteral<spec.TLiteralType>)
+    case "string":    return schema_String(type as spec.TString)
+    case "number":    return schema_Number(type as spec.TNumber)
+    case "boolean":   return schema_Boolean(type as spec.TBoolean)
+    case "complex":   return schema_Complex(type as spec.TComplex<spec.TComplexProperties>)
+    case "array":     return schema_Array(type as spec.TArray<spec.TBase<any>>)
+    case "tuple":     return schema_Tuple(type as spec.TTuple1<spec.TBase<any>>)
+    case "union":     return schema_Union(type as spec.TUnion1<spec.TBase<any>>)
     default: throw new Error("unknown type.")
   }
 }
 
+/**
+ * maps the given typebox type into JSONSchema.
+ * @param {spec.TBase<any>} type the type to convert.
+ * @returns {any}
+ */
 export function schema(type: spec.TBase<any>): any {
-  let base = schema_Base(type)
-  let schema = {
+  const base = schema_Base(type)
+  const schema = {
     "$schema": "http://json-schema.org/draft-04/schema#"
   }
   return Object.keys(base).reduce((acc, key) => {

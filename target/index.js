@@ -1,4 +1,4 @@
-var typebox = (function () {
+(function () {
   var main = null;
   var modules = {
       "require": {
@@ -27,7 +27,13 @@ var typebox = (function () {
                   if(modules[id] !== undefined) {
                     resolve(modules[id]);
                     return modules[id].exports;
-                  } else return require(id)
+                  } else {
+                    try {
+                      return require(id);
+                    } catch(e) {
+                      throw Error("module '" + id + "' not found.");
+                    }
+                  }
               })();
       });
       definition.factory.apply(null, dependencies);
@@ -61,7 +67,7 @@ var typebox = (function () {
               if (value instanceof Date)
                   return "date";
           }
-          return "object";
+          return "complex";
       }
       exports.reflect = reflect;
   });
@@ -70,26 +76,25 @@ var typebox = (function () {
       exports.__esModule = true;
       function Any() {
           return {
-              kind: "any",
-              phantom: undefined
+              kind: "any"
           };
       }
       exports.Any = Any;
       function Undefined() {
           return {
-              kind: "undefined",
-              phantom: undefined
+              kind: "undefined"
           };
       }
       exports.Undefined = Undefined;
       function Null() {
           return {
-              kind: "null",
-              phantom: undefined
+              kind: "null"
           };
       }
       exports.Null = Null;
       function Literal(value) {
+          if (typeof value !== "string" && typeof value !== "number")
+              throw Error("Literal only allows for string or numeric values.");
           return {
               kind: "literal",
               value: value
@@ -114,14 +119,16 @@ var typebox = (function () {
           };
       }
       exports.Boolean = Boolean;
-      function Object(properties) {
+      function Complex(properties) {
+          if (properties === void 0) { properties = {}; }
           return {
-              kind: "object",
+              kind: "complex",
               properties: properties
           };
       }
-      exports.Object = Object;
+      exports.Complex = Complex;
       function Array(type) {
+          if (type === void 0) { type = Any(); }
           return {
               kind: "array",
               type: type
@@ -133,6 +140,8 @@ var typebox = (function () {
           for (var _i = 0; _i < arguments.length; _i++) {
               types[_i] = arguments[_i];
           }
+          if (types.length === 0)
+              throw Error("Type tuple requires at least one type.");
           return {
               kind: "tuple",
               types: types
@@ -144,23 +153,14 @@ var typebox = (function () {
           for (var _i = 0; _i < arguments.length; _i++) {
               types[_i] = arguments[_i];
           }
+          if (types.length === 0)
+              throw Error("Type union requires at least one type.");
           return {
               kind: "union",
               types: types
           };
       }
       exports.Union = Union;
-      function Intersect() {
-          var types = [];
-          for (var _i = 0; _i < arguments.length; _i++) {
-              types[_i] = arguments[_i];
-          }
-          return {
-              kind: "intersect",
-              types: types
-          };
-      }
-      exports.Intersect = Intersect;
   });
   define("check", ["require", "exports", "reflect"], function (require, exports, reflect_1) {
       "use strict";
@@ -198,7 +198,7 @@ var typebox = (function () {
               success: false,
               errors: [{
                       binding: binding,
-                      message: "Property of type '" + actual + "' with length '" + actual_length + "' is invalid",
+                      message: "Property of type '" + actual + "' with a length " + actual_length + " is invalid. Expect length of " + expect_length,
                       expect: expect,
                       actual: actual
                   }]
@@ -263,9 +263,9 @@ var typebox = (function () {
               ? FailBinding(name, type.kind, kind)
               : Ok();
       }
-      function check_Object(type, name, value) {
+      function check_Complex(type, name, value) {
           var kind = reflect_1.reflect(value);
-          if (kind !== "object") {
+          if (kind !== "complex") {
               return FailBinding(name, type.kind, kind);
           }
           else {
@@ -346,15 +346,16 @@ var typebox = (function () {
               return acc;
           }, 0);
           if (failed === type.types.length) {
-              var unionkind = type.types.map(function (type) { return type.kind; }).join(" | ");
+              var unionkind = type.types.map(function (type) {
+                  return type.kind === "literal"
+                      ? type.value
+                      : type.kind;
+              }).join(" | ");
               return FailBinding(name, unionkind, reflect_1.reflect(value));
           }
           else {
               return Ok();
           }
-      }
-      function check_Intersect(type, name, value) {
-          return Ok();
       }
       function check_All(type, name, value) {
           switch (type.kind) {
@@ -365,11 +366,10 @@ var typebox = (function () {
               case "string": return check_String(type, name, value);
               case "number": return check_Number(type, name, value);
               case "boolean": return check_Boolean(type, name, value);
-              case "object": return check_Object(type, name, value);
+              case "complex": return check_Complex(type, name, value);
               case "array": return check_Array(type, name, value);
               case "tuple": return check_Tuple(type, name, value);
               case "union": return check_Union(type, name, value);
-              case "intersect": return check_Intersect(type, name, value);
               default: throw new Error("unknown type.");
           }
       }
@@ -378,11 +378,100 @@ var typebox = (function () {
       }
       exports.check = check;
   });
-  define("schema", ["require", "exports"], function (require, exports) {
+  define("schema", ["require", "exports", "reflect"], function (require, exports, reflect_2) {
       "use strict";
       exports.__esModule = true;
-      function schema(type) {
+      function schema_Any(type) {
           return {};
+      }
+      function schema_Undefined(type) {
+          return { "type": "null" };
+      }
+      function schema_Null(type) {
+          return { "type": "null" };
+      }
+      function schema_Literal(type) {
+          var kind = reflect_2.reflect(type.value);
+          switch (kind) {
+              case "string": return { "type": "string", "pattern": type.value };
+              case "number": return { "type": "number", "minimum": type.value, "maximum": type.value };
+          }
+      }
+      function schema_String(type) {
+          return { "type": "string" };
+      }
+      function schema_Number(type) {
+          return { "type": "number" };
+      }
+      function schema_Boolean(type) {
+          return { "type": "boolean" };
+      }
+      function schema_Complex(type) {
+          var expanded = Object.keys(type.properties).map(function (key) { return ({
+              key: key,
+              type: type.properties[key]
+          }); });
+          var properties = expanded
+              .reduce(function (acc, c) {
+              acc[c.key] = schema_Base(c.type);
+              return acc;
+          }, {});
+          var required = expanded
+              .filter(function (property) { return property.type.kind !== "undefined"; })
+              .map(function (property) { return property.key; });
+          return {
+              "type": "object",
+              "properties": properties,
+              "required": required
+          };
+      }
+      function schema_Array(type) {
+          return {
+              "type": "array",
+              "items": schema_Base(type.type)
+          };
+      }
+      function schema_Tuple(type) {
+          var items = type.types.map(function (type) { return schema_Base(type); });
+          return {
+              "type": "array",
+              "items": items,
+              "additionalItems": false,
+              "minItems": items.length,
+              "maxItems": items.length
+          };
+      }
+      function schema_Union(type) {
+          var types = type.types.map(function (type) { return schema_Base(type); });
+          return {
+              "anyOf": types
+          };
+      }
+      function schema_Base(type) {
+          switch (type.kind) {
+              case "any": return schema_Any(type);
+              case "undefined": return schema_Undefined(type);
+              case "null": return schema_Null(type);
+              case "literal": return schema_Literal(type);
+              case "string": return schema_String(type);
+              case "number": return schema_Number(type);
+              case "boolean": return schema_Boolean(type);
+              case "complex": return schema_Complex(type);
+              case "array": return schema_Array(type);
+              case "tuple": return schema_Tuple(type);
+              case "union": return schema_Union(type);
+              default: throw new Error("unknown type.");
+          }
+      }
+      function schema(type) {
+          var base = schema_Base(type);
+          var schema = {
+              "$schema": "http://json-schema.org/draft-04/schema#"
+          };
+          return Object.keys(base).reduce(function (acc, key) {
+              acc[key] = base[key];
+              return acc;
+          }, schema);
       }
       exports.schema = schema;
   });
@@ -404,7 +493,7 @@ var typebox = (function () {
               return true;
           if (left.kind === "literal" && right.kind === "literal")
               return left.value === right.value;
-          if (left.kind === "object" && right.kind === "object") {
+          if (left.kind === "complex" && right.kind === "complex") {
               var object_left = left;
               var object_right = right;
               var keys = Object.keys(object_left.properties);
@@ -467,11 +556,11 @@ var typebox = (function () {
       }
       exports.compare = compare;
   });
-  define("infer", ["require", "exports", "reflect", "compare", "spec"], function (require, exports, reflect_2, compare_1, spec) {
+  define("infer", ["require", "exports", "reflect", "compare", "spec"], function (require, exports, reflect_3, compare_1, spec) {
       "use strict";
       exports.__esModule = true;
       function infer(value) {
-          var kind = reflect_2.reflect(value);
+          var kind = reflect_3.reflect(value);
           switch (kind) {
               case "undefined": return spec.Undefined();
               case "null": return spec.Null();
@@ -504,8 +593,8 @@ var typebox = (function () {
                           ? spec.Union.apply(this, types)
                           : types[0]);
                   }
-              case "object":
-                  return spec.Object(Object.keys(value)
+              case "complex":
+                  return spec.Complex(Object.keys(value)
                       .map(function (key) { return ({
                       key: key,
                       type: infer(value[key])
@@ -519,13 +608,83 @@ var typebox = (function () {
       }
       exports.infer = infer;
   });
-  define("index", ["require", "exports", "reflect", "check", "schema", "infer", "spec"], function (require, exports, reflect_3, check_1, schema_1, infer_1, spec_1) {
+  define("generate", ["require", "exports"], function (require, exports) {
       "use strict";
       exports.__esModule = true;
-      exports.reflect = reflect_3.reflect;
+      function generate_Any(type) {
+          return {};
+      }
+      function generate_Null(type) {
+          return null;
+      }
+      function generate_Undefined(type) {
+          return undefined;
+      }
+      function generate_Complex(type) {
+          return Object.keys(type.properties)
+              .map(function (key) { return ({ key: key, value: generate(type.properties[key]) }); })
+              .reduce(function (acc, value) {
+              acc[value.key] = value.value;
+              return acc;
+          }, {});
+      }
+      function generate_Array(t) {
+          return [
+              generate(t.type),
+              generate(t.type),
+              generate(t.type)
+          ];
+      }
+      function generate_Tuple(t) {
+          return t.types.map(function (type) { return generate(type); });
+      }
+      function generate_Number(t) {
+          return 0;
+      }
+      function generate_String(t) {
+          return "string";
+      }
+      function generate_Boolean(t) {
+          return true;
+      }
+      function generate_Union(t) {
+          if (t.types.length === 0) {
+              return {};
+          }
+          else {
+              return generate(t.types[0]);
+          }
+      }
+      function generate_Literal(t) {
+          return t.value;
+      }
+      function generate(type) {
+          switch (type.kind) {
+              case "any": return generate_Any(type);
+              case "null": return generate_Null(type);
+              case "undefined": return generate_Undefined(type);
+              case "complex": return generate_Complex(type);
+              case "array": return generate_Array(type);
+              case "tuple": return generate_Tuple(type);
+              case "number": return generate_Number(type);
+              case "string": return generate_String(type);
+              case "boolean": return generate_Boolean(type);
+              case "union": return generate_Union(type);
+              case "literal": return generate_Literal(type);
+              default: throw Error("unknown type.");
+          }
+      }
+      exports.generate = generate;
+  });
+  define("index", ["require", "exports", "reflect", "check", "schema", "infer", "compare", "generate", "spec"], function (require, exports, reflect_4, check_1, schema_1, infer_1, compare_2, generate_1, spec_1) {
+      "use strict";
+      exports.__esModule = true;
+      exports.reflect = reflect_4.reflect;
       exports.check = check_1.check;
       exports.schema = schema_1.schema;
       exports.infer = infer_1.infer;
+      exports.compare = compare_2.compare;
+      exports.generate = generate_1.generate;
       exports.Any = spec_1.Any;
       exports.Undefined = spec_1.Undefined;
       exports.Null = spec_1.Null;
@@ -533,11 +692,10 @@ var typebox = (function () {
       exports.String = spec_1.String;
       exports.Number = spec_1.Number;
       exports.Boolean = spec_1.Boolean;
-      exports.Object = spec_1.Object;
+      exports.Complex = spec_1.Complex;
       exports.Array = spec_1.Array;
       exports.Tuple = spec_1.Tuple;
       exports.Union = spec_1.Union;
-      exports.Intersect = spec_1.Intersect;
   });
   
   return collect(); 

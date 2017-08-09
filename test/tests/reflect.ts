@@ -41,7 +41,7 @@ describe("reflect", () => {
   it("should reflect a boolean",     () =>  assert.equal(typebox.reflect(true),          "boolean"))
   it("should reflect a date",        () =>  assert.equal(typebox.reflect(new Date()),    "date"))
   it("should reflect an array",      () =>  assert.equal(typebox.reflect([]),            "array"))
-  it("should reflect an object",     () =>  assert.equal(typebox.reflect({}),            "object")) 
+  it("should reflect an complex",    () =>  assert.equal(typebox.reflect({}),            "complex")) 
 })
 
 export {/** */}

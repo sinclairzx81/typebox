@@ -26,9 +26,6 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-/// <reference path="./typings/node/index.d.ts" />
-/// <reference path="./typings/mocha/index.d.ts" />
-
 //-------------------------------
 // tests
 //-------------------------------
@@ -39,8 +36,8 @@ import "./tests/reflect"
 import "./tests/infer"
 import "./tests/check"
 
-
 import * as typebox from "../src/index"
+
 
 
 

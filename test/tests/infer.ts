@@ -31,10 +31,10 @@ import * as typebox from "../../src/index"
 import * as assert  from "assert"
 
 describe("infer", () => {
-  describe("Object", () => {
-    it("should infer a object #1", () => {
+  describe("complex", () => {
+    it("should infer a complex #1", () => {
       let type = typebox.infer({})
-      assert.equal(type.kind, "object")
+      assert.equal(type.kind, "complex")
     })
     it("should infer a object #2", () => {
       let type = typebox.infer({
@@ -46,15 +46,15 @@ describe("infer", () => {
         f: null,
         g: {}
       })
-      assert.equal(type.kind, "object")
-      let t = type as typebox.TObject<typebox.TObjectProperties>
+      assert.equal(type.kind, "complex")
+      let t = type as typebox.TComplex<typebox.TComplexProperties>
       assert.equal(t.properties['a'].kind, "string")
       assert.equal(t.properties['b'].kind, "number")
       assert.equal(t.properties['c'].kind, "boolean")
       assert.equal(t.properties['d'].kind, "array")
       assert.equal(t.properties['e'].kind, "undefined")
       assert.equal(t.properties['f'].kind, "null")
-      assert.equal(t.properties['g'].kind, "object")
+      assert.equal(t.properties['g'].kind, "complex")
     })
   })
 

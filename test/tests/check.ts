@@ -29,11 +29,11 @@ THE SOFTWARE.
 import * as typebox from "../../src/index"
 import * as assert  from "assert"
 
-const complex = typebox.Object({
+const complex = typebox.Complex({
   a: typebox.Any(),
   b: typebox.Null(),
   c: typebox.Undefined(),
-  d: typebox.Object({}),
+  d: typebox.Complex({}),
   e: typebox.Array(typebox.Any()),
   f: typebox.Tuple(typebox.Any()),
   g: typebox.Number(),
@@ -42,8 +42,7 @@ const complex = typebox.Object({
   k: typebox.Union(typebox.Any()),
   l: typebox.Literal(10),
 })
-
-const hyper = typebox.Object({
+const hyper = typebox.Complex({
   a: typebox.Array(
     typebox.Union(complex, typebox.Union(typebox.Number(), typebox.Boolean(), complex)),
   ),
@@ -87,15 +86,15 @@ describe("check", () => {
     it("should not validate a boolean",   () => assert.equal(typebox.check(typebox.Undefined(), true).success,         false))
   })
   describe("Object", () => {
-    it("should not validate a null",      () => assert.equal(typebox.check(typebox.Object(), null).success,         false))
-    it("should not validate a undefined", () => assert.equal(typebox.check(typebox.Object(), undefined).success,    false))
-    it("should validate a object",        () => assert.equal(typebox.check(typebox.Object(), {}).success,           true))
-    it("should not validate a array",     () => assert.equal(typebox.check(typebox.Object(), []).success,           false))
-    it("should not validate a number",    () => assert.equal(typebox.check(typebox.Object(), 1).success,            false))
-    it("should not validate a string",    () => assert.equal(typebox.check(typebox.Object(), "hello").success,      false))
-    it("should not validate a boolean",   () => assert.equal(typebox.check(typebox.Object(), true).success,         false))
-    it("should not validate for missing properties",  () => assert.equal(typebox.check(typebox.Object({name: typebox.String()}), {}).success, false))
-    it("should not validate for extra properties",    () => assert.equal(typebox.check(typebox.Object({name: typebox.String()}), {name: "dave", age: 37}).success, false))
+    it("should not validate a null",      () => assert.equal(typebox.check(typebox.Complex(), null).success,         false))
+    it("should not validate a undefined", () => assert.equal(typebox.check(typebox.Complex(), undefined).success,    false))
+    it("should validate a object",        () => assert.equal(typebox.check(typebox.Complex(), {}).success,           true))
+    it("should not validate a array",     () => assert.equal(typebox.check(typebox.Complex(), []).success,           false))
+    it("should not validate a number",    () => assert.equal(typebox.check(typebox.Complex(), 1).success,            false))
+    it("should not validate a string",    () => assert.equal(typebox.check(typebox.Complex(), "hello").success,      false))
+    it("should not validate a boolean",   () => assert.equal(typebox.check(typebox.Complex(), true).success,         false))
+    it("should not validate for missing properties",  () => assert.equal(typebox.check(typebox.Complex({name: typebox.String()}), {}).success, false))
+    it("should not validate for extra properties",    () => assert.equal(typebox.check(typebox.Complex({name: typebox.String()}), {name: "dave", age: 37}).success, false))
   })
   describe("Array", () => {
     it("should not validate a null",           () => assert.equal(typebox.check(typebox.Array(), null).success,         false))

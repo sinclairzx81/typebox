@@ -3,7 +3,7 @@
 A runtime type system for javascript.
 
 ```javascript
-const Customer = typebox.Object({
+const Customer = typebox.Complex({
   firstname: typebox.String(),
   lastname : typebox.String(),
   email    : typebox.String(),
@@ -34,7 +34,7 @@ type         | typescript                                 | typebox
 Any          | ```type T = any```                         | ```const T = typebox.Any()```               |
 Null         | ```type T = null```                        | ```const T = typebox.Null()```              |
 Undefined    | ```type T = undefined```                   | ```const T = typebox.Undefined()```         |
-Object       | ```type T = {name: string}```              | ```const T = typebox.Object({name: typebox.String()})```    |
+Complex      | ```type T = {name: string}```              | ```const T = typebox.Complex({name: typebox.String()})```    |
 Array        | ```type T = number[]```                    | ```const T = typebox.Array(typebox.String())``` |
 Tuple        | ```type T = [string, number]```            | ```const T = typebox.Tuple(typebox.String(), typebox.Number())``` |
 Number       | ```type T = number```                      | ```const T = typebox.Number()```  |
@@ -48,7 +48,7 @@ Literal      | ```type T = "click"```                     | ```const T = typebox
 Once a type is created, an object can be type checked against it by calling the ```typebox.check(...)``` method.
 
 ```javascript
-const Ship = typebox.Object({
+const Ship = typebox.Complex({
   pilot : typebox.String(),
   position : typebox.Tuple(
     typebox.Number(), 
@@ -69,7 +69,7 @@ let result = typebox.check(Ship, {
 The ```typebox.check(...)``` function returns a type check result object. Callers can inspect this result with.
 
 ```javascript
-const Ship = typebox.Object({
+const Ship = typebox.Complex({
   pilot : typebox.String(),
   position : typebox.Tuple(
     typebox.Number(), 
@@ -130,7 +130,7 @@ note: static type resolution has been tested with TypeScript version 2.2.2 and i
 
 ```typescript
 // typebox type.
-const User = typebox.Object({
+const User = typebox.Complex({
   name  : typebox.String(),
   email : typebox.String(),
   roles : typebox.Array(typebox.String()),
@@ -150,7 +150,7 @@ typebox provides functionality to generate draft-4 compatiable JSONschema from t
 to be shared to JSONSchema compatible user.
 
 ```javascript
-const Ship = typebox.Object({
+const Ship = typebox.Complex({
   pilot : typebox.String(),
   position : typebox.Tuple(
     typebox.Number(), 

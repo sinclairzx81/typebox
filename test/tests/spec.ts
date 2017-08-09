@@ -30,11 +30,11 @@ THE SOFTWARE.
 import * as typebox from "../../src/index"
 import * as assert from "assert"
 
-const complex = typebox.Object({
+const complex = typebox.Complex({
   a: typebox.Any(),
   b: typebox.Null(),
   c: typebox.Undefined(),
-  d: typebox.Object({}),
+  d: typebox.Complex({}),
   e: typebox.Array(typebox.Any()),
   f: typebox.Tuple(typebox.Any()),
   g: typebox.Number(),
@@ -62,12 +62,12 @@ describe("spec", () => {
   })
   it("Object should conform to specification.", () => {
     assert.deepEqual(complex, {
-      "kind": "object",
+      "kind": "complex",
       "properties": {
         "a": { "kind": "any" },
         "b": { "kind": "null" },
         "c": { "kind": "undefined" },
-        "d": { "kind": "object", "properties": {} },
+        "d": { "kind": "complex", "properties": {} },
         "e": { "kind": "array", "type": { "kind": "any" } },
         "f": { "kind": "tuple", "types": [{ "kind": "any" }] },
         "g": { "kind": "number" },

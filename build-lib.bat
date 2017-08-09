@@ -1,1 +1,0 @@
-cd src && tsc-bundle ./index.ts ../bin/index.js -gns typebox --lib es2015,dom --removeComments && cd .. 

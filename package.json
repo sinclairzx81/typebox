@@ -1,0 +1,17 @@
+{
+  "name": "typebox",
+  "version": "0.9.0",
+  "description": "A runtime type system for javascript.",
+  "main": "./target/index.js",
+  "test": "node ./target/test.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sinclairzx81/typebox"
+  },
+  "author": "sinclairzx81",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/mocha": "^2.2.41",
+    "@types/node": "^8.0.7"
+  }
+}
