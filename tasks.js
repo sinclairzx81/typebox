@@ -38,8 +38,7 @@ const TYPESCRIPT_TEST  = "tsc-bundle ./test/index.ts ./target/test.js --lib es20
 //------------------------------------------------------
 const clean = async () => {
   await shell("shx rm -rf ./node_modules"),
-  await shell("shx rm -rf ./target/index.js")
-  await shell("shx rm -rf ./target/test.js")
+  await shell("shx rm -rf ./target")
 }
 
 const install = async () => {
