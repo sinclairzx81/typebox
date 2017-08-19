@@ -2,6 +2,8 @@
 
 A runtime type system for javascript.
 
+[![Build Status](https://travis-ci.org/sinclairzx81/server-one.svg?branch=master)](https://travis-ci.org/sinclairzx81/server-one)
+
 ```javascript
 const Customer = typebox.Complex({
   firstname: typebox.String(),
