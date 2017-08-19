@@ -1,17 +1,27 @@
 {
-  "name": "typebox",
-  "version": "0.9.0",
-  "description": "A runtime type system for javascript.",
-  "main": "./target/index.js",
-  "test": "node ./target/test.js",
+  "name": "project-name",
+  "version": "1.0.0",
+  "description": "project-name",
+  "test": "node test",
+  "scripts": {
+    "clean": "node tasks clean",
+    "start": "node tasks start",
+    "build": "node tasks build",
+    "test": "node tasks test"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/sinclairzx81/typebox"
+    "url": "https://github.com/sinclairzx81/project-name"
   },
   "author": "sinclairzx81",
   "license": "MIT",
   "devDependencies": {
     "@types/mocha": "^2.2.41",
-    "@types/node": "^8.0.7"
+    "@types/node": "^8.0.7",
+    "fsrun": "^0.9.4",
+    "mocha": "^3.5.0",
+    "shx": "^0.2.2",
+    "typescript": "^2.4.2",
+    "typescript-bundle": "^0.8.6"
   }
 }

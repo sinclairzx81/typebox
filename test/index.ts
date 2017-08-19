@@ -26,6 +26,8 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import * as typebox from "../src/index"
+
 //-------------------------------
 // tests
 //-------------------------------
@@ -36,7 +38,7 @@ import "./tests/reflect"
 import "./tests/infer"
 import "./tests/check"
 
-import * as typebox from "../src/index"
+
 
 
 
