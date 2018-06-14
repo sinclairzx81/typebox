@@ -30,7 +30,7 @@ console.log(Foo)
 
 ## overview
 
-typebox is a type builder which allows developers to compose json schema objects and allow these json schema objects to be statically resolved as TypeScript types. The aim of this project is to find parity with respect to the TypeScript type checker and JSON schema, allowing for runtime type verification using standard json schema validation that lines up to TypeScripts structural type checker.
+typebox is a type builder library which allows developers to compose json schema objects and allow these json schema objects to be statically resolved as TypeScript types. The aim of this project is to find parity with respect to the TypeScript type checker and JSON schema, allowing for runtime type verification using standard json schema validation that lines up to TypeScripts structural type checker.
 
 note: typebox doesn't is only concerned with generating valid JSON schema and static resolution and does not come with a JSON schema validator. For JSON schema validation, recommend the `ajv` library for JavaScript.
 
