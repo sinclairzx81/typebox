@@ -1,10 +1,10 @@
 /*--------------------------------------------------------------------------
 
-typebox - runtime structural type system for javascript.
+typebox - A json schema type builder with static type resolution for typescript.
 
 The MIT License (MIT)
 
-Copyright (c) 2017 Haydn Paterson (sinclair) <haydn.developer@gmail.com>
+Copyright (c) 2018 Haydn Paterson (sinclair) <haydn.developer@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

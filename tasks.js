@@ -12,16 +12,6 @@ const shell = (command) => new Promise((resolve, reject) => {
   ls.on('close', (code) => resolve(code))
 })
 
-const watch = (directory, func) => new Promise((resolve, reject) => {
-  const fs   = require("fs")
-  const path = require("path")
-  fs.watch(directory, func)
-  const paths = fs.readdirSync(directory).map(n => path.join(directory, n))
-  const stats = paths.map(n => ({path: n, stat: fs.statSync(n)}))
-  const dirs  = stats.filter(stat => stat.stat.isDirectory())
-  return Promise.all([dirs.map(dir => watch(dir.path, func))])
-})
-
 const cli = async (args, tasks) => {
   const task = (args.length === 3) ? args[2] : "none"
   const func = (tasks[task]) ? tasks[task] : () => {
@@ -35,16 +25,19 @@ const cli = async (args, tasks) => {
 //------------------------------------------------------
 
 const TYPESCRIPT_SOURCE = "tsc-bundle --project ./src/tsconfig.json"
-const TYPESCRIPT_TEST   = "tsc-bundle --project ./test/tsconfig.json"
+const TYPESCRIPT_TEST   = "tsc-bundle --project ./spec/tsconfig.json"
 
 //------------------------------------------------------
 //  tasks:
 //------------------------------------------------------
 
 const clean = async () => {
+  await shell("shx rm -rf ./bin")
   await shell("shx rm -rf ./index.js")
-  await shell("shx rm -rf ./test.js")
+  await shell("shx rm -rf ./spec.js")
+  await shell("shx rm -rf ./package-lock.json")
   await shell("shx rm -rf ./node_modules")
+  
 }
 
 const start = async () => {
@@ -56,17 +49,25 @@ const start = async () => {
   ])
 }
 
-const test = async () => {
-  await shell("npm install")
+const spec = async () => {
+  // await shell("npm install")
   await shell(`${TYPESCRIPT_TEST}`)
-  await shell(`${TYPESCRIPT_SOURCE}`)
-  await shell("mocha ./test.js")
-  await clean()
+  await shell("mocha ./spec.js")
+}
+
+const lint = async () => {
+  await shell("tslint ./src/typebox.ts")
 }
 
 const build = async () => {
   await shell("npm install")
   await shell(`${TYPESCRIPT_SOURCE}`)
+  await shell(`shx rm   -rf ./bin`)
+  await shell(`shx mkdir -p ./bin`)
+  await shell(`shx cp ./index.js     ./bin/index.js`)
+  await shell(`shx cp ./package.json ./bin/package.json`)
+  await shell(`shx cp ./readme.md    ./bin/readme.md`)
+  await shell(`shx cp ./license.md   ./bin/license.md`)
 }
 
 //------------------------------------------------------
@@ -75,6 +76,7 @@ const build = async () => {
 cli(process.argv, {
   clean,
   start,
-  test,
-  build
+  build,
+  spec,
+  lint
 }).catch(console.log)
