@@ -65,9 +65,9 @@ String      | `const T = Type.String()`                                    | `ty
 Boolean     | `const T = Type.Boolean()`                                   | `type T = boolean`              |
 Object      | `const T = Type.Object({ name: Type.String() })`             | `type T = {name: string}`       |
 Array       | `const T = Type.Array(Type.Object({ name: Type.String() }))` | `type T = {name: string}[]`     |
-Enum        | `const T = Type.Enum("yes", "no")`                           | `type T = "yes" | "no"`         |
+Enum        | `const T = Type.Enum("yes", "no")`                           | `type T = "yes" \| "no"`         |
 Tuple       | `const T = Type.Tuple(Type.String(), Type.Number())`         | `type T = [string, number]`     |
-Union       | `const T = Type.Union(Type.String(), Type.Number())`         | `type T = string | number`      |
+Union       | `const T = Type.Union(Type.String(), Type.Number())`         | `type T = string \| number`      |
 Intersect   | `const T = Type.Intersect(Type.String(), Type.Number())`     | `type T = string & number`      |
 Literal     | `const T = Type.Literal("click")`                            | `type T = "click"`              |
 Pattern     | `const T = Type.Pattern(/foo/)`                              | `type T = string`               |
