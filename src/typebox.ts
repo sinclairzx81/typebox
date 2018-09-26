@@ -72,6 +72,10 @@ export interface TBoolean extends TBase<boolean> { type: "boolean" }
 export interface TOptional<T extends TBase<any>> extends TBase<Static<T>> { }
 export type TObjectProperties = { [K in string]: TBase<any> }
 export interface TObject<T extends TObjectProperties> extends TBase<{ [K in keyof T]: Static<T[K]> }> { type: "object", properties: T, required: string[] }
+export interface TDictionary<T extends TBase<any>> extends TBase<{ [key: string]: Static<T> }> {
+  type: 'object'
+  additionalProperties: T
+}
 export interface TArray<T extends TBase<any>> extends TBase<Array<Static<T>>> { type: "array", items: T }
 export interface TTuple1<T1 extends TBase<any>> extends TBase<[Static<T1>]> {
   type: "array"
@@ -233,14 +237,24 @@ class TypeBuilder {
   public Boolean(): TBoolean {
     return { type: "boolean" } as TBoolean
   }
+  /** creates boolean literal value. Statically resolves to the given type 'boolean' */
+  public Literal(value: boolean): TBoolean
+  /** creates string literal value. Statically resolves to the given type 'string' */
+  public Literal(value: string): TString
+  /** creates number literal value. Statically resolves to the given type 'number' */
+  public Literal(value: number): TNumber
   /** Creates a json schema literal validator for the given literal value. Statically resolves to the given type 'boolean' or 'string' or 'number' */
   public Literal<T extends TLiteralType>(value: T): TString | TNumber | TBoolean {
     const type = reflect(value)
     switch (type) {
-      case "number":  return ({ type, enum: [value] } as any) as TNumber
-      case "boolean": return ({ type, enum: [value] } as any) as TBoolean
-      case "string":  return ({ type, enum: [value] } as any) as TString
-      default: throw Error("Literal only allows for string, number and boolean values.")
+      case 'number':
+        return ({ type, enum: [value] } as any) as TNumber
+      case 'boolean':
+        return ({ type, enum: [value] } as any) as TBoolean
+      case 'string':
+        return ({ type, enum: [value] } as any) as TString
+      default:
+        throw Error('Literal only allows for string, number and boolean values.')
     }
   }
   /** Creates a json schema optional validator. Statically resolves to a T | undefined only when wrapped in an object. */
@@ -254,6 +268,10 @@ class TypeBuilder {
       return type.optional === undefined || type.optional === false
     })
     return { type: "object", properties, required } as TObject<T>
+  }
+  /** Creates a json schema dictionary with string keys. Statically resolves to an TDictionary<T> */
+  public Dictionary<T extends TBase<any>>(type: T = (undefined as any) as T): TDictionary<T> {
+    return { type: 'object', additionalProperties: type } as TDictionary<T>
   }
   /** Creates a json schema array. Statically resolves to an Array<T> */
   public Array<T extends TBase<any>>(type: T = undefined as any as T): TArray<T> {

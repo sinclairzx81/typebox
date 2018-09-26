@@ -21,12 +21,12 @@ describe("Literal", () => {
     try {
       Type.Literal({} as any as string)
       throw Error("expected throw")
-    } catch(e) { }
+    } catch (e) { /* */ }
   })
   it("should throw on non literal type (array)", () => {
     try {
       Type.Literal([] as any as string)
       throw Error("expected throw")
-    } catch(e) { }
+    } catch (e) {/* */ }
   })
 })
