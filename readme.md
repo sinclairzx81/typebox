@@ -13,12 +13,13 @@ const Foo = Type.Object({
 
 // statically resolve type Foo.
 function createFoo(foo: Static<typeof Foo>) {
-  // foo.a - string
-  // foo.b - number
-  // foo.c - boolean
+  // foo is {
+  //   a: string
+  //   b: number
+  //   c: string
+  // }
 }
 
-// Foo itself is just JSON schema.
 console.log(Foo)
 // -> { type: 'object',
 //     properties: 
