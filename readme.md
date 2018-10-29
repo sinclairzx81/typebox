@@ -5,11 +5,6 @@ A type system in a box + json schema
 ```typescript
 import { Type, Static } from "./typebox"
 
-// type Foo = {
-//   a: string,
-//   b: number,
-//   c: boolean
-// }
 const Foo = Type.Object({
   a: Type.String(),
   b: Type.Number(),
