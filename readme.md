@@ -1,4 +1,4 @@
-# typebox
+# Typebox
 
 A typescript types expressed as json schema
 
