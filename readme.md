@@ -2,6 +2,8 @@
 
 TypeScript types expressed as JSON schema
 
+![badge](https://travis-ci.org/sinclairzx81/typebox.svg?branch=master)
+
 ![example](./doc/example.gif)
 
 ## overview
