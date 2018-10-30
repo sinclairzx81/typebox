@@ -13,10 +13,10 @@ const Foo = Type.Object({
 
 // statically resolve type Foo.
 function createFoo(foo: Static<typeof Foo>) {
-  // foo is {
+  // foo = {
   //   a: string
   //   b: number
-  //   c: string
+  //   c: boolean
   // }
 }
 
