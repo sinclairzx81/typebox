@@ -1,33 +1,8 @@
 # typebox
 
-A type system in a box + json schema
+A typescript types expressed as json schema
 
-```typescript
-import { Type, Static } from "./typebox"
-
-const Foo = Type.Object({
-  a: Type.String(),
-  b: Type.Number(),
-  c: Type.Boolean()
-})
-
-// statically resolve type Foo.
-function createFoo(foo: Static<typeof Foo>) {
-  // foo = {
-  //   a: string
-  //   b: number
-  //   c: boolean
-  // }
-}
-
-console.log(Foo)
-// -> { type: 'object',
-//     properties: 
-//      { a: { type: 'string' },
-//        b: { type: 'number' },
-//        c: { type: 'boolean' } },
-//     required: [ 'a', 'b', 'c' ] }
-```
+![example](./doc/example.gif)
 
 ## overview
 
