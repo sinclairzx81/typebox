@@ -8,11 +8,11 @@ A typescript types expressed as json schema
 
 Typebox is a type builder library which allows developers to compose json schema objects and allow these json schema objects to be statically resolved as TypeScript types. The aim of this project is to find parity with respect to the TypeScript type checker and JSON schema, allowing for runtime type verification using standard json schema validation that lines up to TypeScripts structural type checker.
 
-note: typebox is only concerned with generating valid JSON schema and providing static resolution. It does not come with a JSON schema validator. For JSON schema validation, it is recommended to use the `ajv` library for JavaScript.
+note: Typebox is only concerned with generating valid JSON schema and providing static resolution. It does not come with a JSON schema validator. For JSON schema validation, it is recommended to use the `ajv` library for JavaScript.
 
 ## usage
 
-typebox is written as a portable single file that can be copied into any typescript project. Copy the `./src/typebox.ts` file into your project and you're all setup.
+Typebox is written as a portable single file that can be copied into any typescript project. Copy the `./src/typebox.ts` file into your project and you're all setup.
 
 ```typescript
 import { Type, Static } from "./typebox"
@@ -28,7 +28,7 @@ const f = (s: Static<typeof TString>) => { /* ... */ }
 // and so on...
 ```
 
-## typebox > typescript
+## Typebox > Typescript
 
 The following are the typebox to typescript mappings.
 
@@ -50,7 +50,7 @@ Literal     | `const T = Type.Literal("click")`                                 
 Pattern     | `const T = Type.Pattern(/foo/)`                                   | `type T = string`                  |
 Range       | `const T = Type.Range(0, 100)`                                    | `type T = number`                  |
 
-## typebox > json schema
+## Typebox > JSON schema
 
 The following are the typebox to json schema mappings.
 
