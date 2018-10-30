@@ -1,6 +1,6 @@
 # Typebox
 
-TypeScript types expressed as JSONschema
+TypeScript types expressed as JSON schema
 
 ![example](./doc/example.gif)
 
