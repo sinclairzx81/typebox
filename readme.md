@@ -12,7 +12,7 @@ note: Typebox is only concerned with generating valid JSON schema and providing 
 
 ## usage
 
-Typebox is written as a portable single file that can be copied into any typescript project. Copy the `./src/typebox.ts` file into your project and you're all setup.
+Typebox is written as a portable single file that can be copied into any TypeScript project. Copy the `./src/typebox.ts` file into your project and you're all setup.
 
 ```typescript
 import { Type, Static } from "./typebox"
@@ -28,11 +28,11 @@ const f = (s: Static<typeof TString>) => { /* ... */ }
 // and so on...
 ```
 
-## Typebox > Typescript
+## Typebox > TypeScript
 
 The following are the typebox to typescript mappings.
 
-type        | typbox                                                            | typescript
+Type        | Typebox                                                            | TypeScript
 ---         | ---                                                               | --- 
 Any         | `const T = Type.Any()`                                            | `type T = any`                     |
 Null        | `const T = Type.Null()`                                           | `type T = null`                    |
@@ -54,7 +54,7 @@ Range       | `const T = Type.Range(0, 100)`                                    
 
 The following are the typebox to json schema mappings.
 
-type        | typbox                                                       | json schema
+Type        | Typebox                                                       | JSON schema
 ---         | ---                                                          | --- 
 Any         | `const T = Type.Any()`                                       | `{ }`                  |
 Null        | `const T = Type.Null()`                                      | `{ type: "null" }`                 |
