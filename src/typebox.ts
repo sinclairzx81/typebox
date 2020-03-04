@@ -286,7 +286,7 @@ class TypeBuilder {
     return { type: "string", pattern: regex.source } as any as TString
   }
   /** Creates a json schema string with format 'date-time'. Statically resolves to type 'string' */
-  public DateTime(): TString {
+  public Format(format: 'date-time'): TString {
     return { type: "string", format: "date-time" } as any as TString
   }
   /** Creates a json schema tuple validator. Statically resolves to type '[T1, T2, T3, ...]' */
