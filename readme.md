@@ -50,6 +50,7 @@ Union       | `const T = Type.Union(Type.String(), Type.Number())`              
 Intersect   | `const T = Type.Intersect(Type.String(), Type.Number())`          | `type T = string & number`         |
 Literal     | `const T = Type.Literal("click")`                                 | `type T = "click"`                 |
 Pattern     | `const T = Type.Pattern(/foo/)`                                   | `type T = string`                  |
+Format      | `const T = Type.Format('date-time')`                              | `type T = string`                  |
 Range       | `const T = Type.Range(0, 100)`                                    | `type T = number`                  |
 
 ## Typebox > JSON schema
@@ -72,5 +73,6 @@ Union       | `const T = Type.Union(Type.String(), Type.Number())`         | `{ 
 Intersect   | `const T = Type.Intersect(Type.String(), Type.Number())`     | `{ allOf: [{ type: "string"}, {type: "number"}] }`      |
 Literal     | `const T = Type.Literal("click")`                            | `{ type: "string", enum: ["click"] }`              |
 Pattern     | `const T = Type.Pattern(/foo/)`                              | `{ type: "string", pattern: "foo" }`               |
+Format      | `const T = Type.Format('date-time')`                         | `{ type: "string", format: "date-time" }`          |
 Range       | `const T = Type.Range(0, 100)`                               | `{ type: "number", minimum: 0, maximum: 100 }`    |
 
