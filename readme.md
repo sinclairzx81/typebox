@@ -1,6 +1,6 @@
 <div align='center'>
 
-<h1>Type&lt;Box&gt;</h1>
+<h1>TypeBox</h1>
 
 <p>JSONSchema Type Builder with Static Type Resolution for TypeScript</p>
 
