@@ -1,13 +1,16 @@
 {
   "compilerOptions": {
-    "module":           "amd",
-    "outFile":          "../typebox.js",
+    "strict": true,
+    "module": "CommonJS",
+    "target": "ESNext",
     "moduleResolution": "node",
-    "removeComments":   true,
-    "lib":              ["es2015", "dom"],
-    "strict": true,        /* Enable all strict type-checking options. */
-    "alwaysStrict": true,  /* Parse in strict mode and emit "use strict" for each source file. */
-
+    "lib": [
+      "ESNext"
+    ],
+    "declaration": true,
+    "outDir": "../dist/",
   },
-  "files": ["typebox.ts"]
+  "files": [
+    "typebox.ts"
+  ]
 }

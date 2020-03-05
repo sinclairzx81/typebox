@@ -1,10 +1,10 @@
 /*--------------------------------------------------------------------------
 
-typebox - A json schema type builder with static type resolution for typescript.
+TypeBox: JSONSchema Type Builder with Static Type Resolution for TypeScript
 
 The MIT License (MIT)
 
-Copyright (c) 2018 Haydn Paterson (sinclair) <haydn.developer@gmail.com>
+Copyright (c) 2020 Haydn Paterson (sinclair) <haydn.developer@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,376 +26,479 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// retlects the simple typename
-type ReflectedTypeName = | "undefined" | "null" | "function" | "string" | "number" | "boolean" | "date" | "array" | "object"
-function reflect(value: any): ReflectedTypeName {
-  if (value === undefined) { return "undefined" }
-  if (value === null) { return "null" }
-  if (typeof value === "function") { return "function" }
-  if (typeof value === "string") { return "string" }
-  if (typeof value === "number") { return "number" }
-  if (typeof value === "boolean") { return "boolean" }
-  if (typeof value === "object") {
-    if (value instanceof Array) { return "array" }
-    if (value instanceof Date) { return "date" }
-  }
-  return "object"
-}
-// returns elements as distinct
-function distinct(items: string[]): string[] {
-  return items.reduce<string[]>((acc, c) => {
-    if (acc.indexOf(c) === -1) { acc.push(c) }
-    return acc
-  }, [])
-}
-
-/** Static<T>: resolves a TBase<T> to a static typescript type. */
-export type Static<T extends TBase<any>> = T["static"]
-
-export type TLiteralType = number | string | boolean
-
-export interface TBase<T> {
-  static: T
-  optional?: boolean
-}
-
-export interface TAny extends TBase<any> {}
-export interface TNever extends TBase<never> {}
-export interface TUndefined extends TBase<undefined> {}
-export interface TNull extends TBase<null> { type: "null" }
-export interface TLiteral<T extends TLiteralType> extends TBase<T> { type: TLiteralType, enum: [T] }
-export interface TString extends TBase<string> { type: "string" }
-export interface TPattern extends TBase<string> { type: "string", pattern: string }
-export interface TNumber extends TBase<number> { type: "number" }
-export interface TRange extends TBase<number> { type: "number",  minimum: number, maximum: number }
-export interface TBoolean extends TBase<boolean> { type: "boolean" }
-export interface TOptional<T extends TBase<any>> extends TBase<Static<T>> { }
-export type TObjectProperties = { [K in string]: TBase<any> }
-export interface TObject<T extends TObjectProperties> extends TBase<{ [K in keyof T]: Static<T[K]> }> { type: "object", properties: T, required: string[] }
-export interface TDictionary<T extends TBase<any>> extends TBase<{ [key: string]: Static<T> }> {
-  type: 'object'
-  additionalProperties: T
-}
-export interface TArray<T extends TBase<any>> extends TBase<Array<Static<T>>> { type: "array", items: T }
-export interface TTuple1<T1 extends TBase<any>> extends TBase<[Static<T1>]> {
-  type: "array"
-  items: [T1]
-  additionalItems: false
-  minItems: number
-  maxItems: number
-}
-export interface TTuple2<T1 extends TBase<any>, T2 extends TBase<any>> extends TBase<[Static<T1>, Static<T2>]> {
-  type: "array"
-  items: [T1, T2]
-  additionalItems: false
-  minItems: number
-  maxItems: number
-}
-export interface TTuple3<T1 extends TBase<any>, T2 extends TBase<any>, T3 extends TBase<any>> extends TBase<[Static<T1>, Static<T2>, Static<T3>]> {
-  type: "array"
-  items: [T1, T2, T3]
-  additionalItems: false
-  minItems: number
-  maxItems: number
-}
-export interface TTuple4<T1 extends TBase<any>, T2 extends TBase<any>, T3 extends TBase<any>, T4 extends TBase<any>> extends TBase<[Static<T1>, Static<T2>, Static<T3>, Static<T4>]> {
-  type: "array"
-  items: [T1, T2, T3, T4]
-  additionalItems: false
-  minItems: number
-  maxItems: number
-}
-export interface TTuple5<T1 extends TBase<any>, T2 extends TBase<any>, T3 extends TBase<any>, T4 extends TBase<any>, T5 extends TBase<any>> extends TBase<[Static<T1>, Static<T2>, Static<T3>, Static<T4>, Static<T5>]> {
-  type: "array"
-  items: [T1, T2, T3, T4, T5]
-  additionalItems: false
-  minItems: number
-  maxItems: number
-}
-export interface TTuple6<T1 extends TBase<any>, T2 extends TBase<any>, T3 extends TBase<any>, T4 extends TBase<any>, T5 extends TBase<any>, T6 extends TBase<any>> extends TBase<[Static<T1>, Static<T2>, Static<T3>, Static<T4>, Static<T5>, Static<T6>]> {
-  type: "array"
-  items: [T1, T2, T3, T4, T5, T6]
-  additionalItems: false
-  minItems: number
-  maxItems: number
-}
-export interface TTuple7<T1 extends TBase<any>, T2 extends TBase<any>, T3 extends TBase<any>, T4 extends TBase<any>, T5 extends TBase<any>, T6 extends TBase<any>, T7 extends TBase<any>> extends TBase<[Static<T1>, Static<T2>, Static<T3>, Static<T4>, Static<T5>, Static<T6>, Static<T7>]> {
-  type: "array"
-  items: [T1, T2, T3, T4, T5, T6, T7]
-  additionalItems: false
-  minItems: number
-  maxItems: number
-}
-export interface TTuple8<T1 extends TBase<any>, T2 extends TBase<any>, T3 extends TBase<any>, T4 extends TBase<any>, T5 extends TBase<any>, T6 extends TBase<any>, T7 extends TBase<any>, T8 extends TBase<any>> extends TBase<[Static<T1>, Static<T2>, Static<T3>, Static<T4>, Static<T5>, Static<T6>, Static<T7>, Static<T8>]> {
-  type: "array"
-  items: [T1, T2, T3, T4, T5, T6, T7, T8]
-  additionalItems: false
-  minItems: number
-  maxItems: number
-}
-export interface TEnum1<T1 extends TLiteralType> extends TBase<T1> {
-  type: TLiteralType
-  enum: [T1]
-}
-export interface TEnum2<T1 extends TLiteralType, T2 extends TLiteralType> extends TBase<T1 | T2> {
-  type: TLiteralType
-  enum: [T1, T2]
-}
-export interface TEnum3<T1 extends TLiteralType, T2 extends TLiteralType, T3 extends TLiteralType> extends TBase<T1 | T2 | T3> {
-  type: TLiteralType
-  enum: [T1, T2, T3]
-}
-export interface TEnum4<T1 extends TLiteralType, T2 extends TLiteralType, T3 extends TLiteralType, T4 extends TLiteralType> extends TBase<T1 | T2 | T3 | T4> {
-  type: TLiteralType
-  enum: [T1, T2, T3, T4]
-}
-export interface TEnum5<T1 extends TLiteralType, T2 extends TLiteralType, T3 extends TLiteralType, T4 extends TLiteralType, T5 extends TLiteralType> extends TBase<T1 | T2 | T3 | T4 | T5> {
-  type: TLiteralType
-  enum: [T1, T2, T3, T4, T5]
-}
-export interface TEnum6<T1 extends TLiteralType, T2 extends TLiteralType, T3 extends TLiteralType, T4 extends TLiteralType, T5 extends TLiteralType, T6 extends TLiteralType> extends TBase<T1 | T2 | T3 | T4 | T5 | T6> {
-  type: TLiteralType
-  enum: [T1, T2, T3, T4, T5, T6]
-}
-export interface TEnum7<T1 extends TLiteralType, T2 extends TLiteralType, T3 extends TLiteralType, T4 extends TLiteralType, T5 extends TLiteralType, T6 extends TLiteralType, T7 extends TLiteralType> extends TBase<T1 | T2 | T3 | T4 | T5 | T6 | T7> {
-  type: TLiteralType
-  enum: [T1, T2, T3, T4, T5, T6, T7]
-}
-export interface TEnum8<T1 extends TLiteralType, T2 extends TLiteralType, T3 extends TLiteralType, T4 extends TLiteralType, T5 extends TLiteralType, T6 extends TLiteralType, T7 extends TLiteralType, T8 extends TLiteralType> extends TBase<T1 | T2 | T3 | T4 | T5 | T6 | T7 | T8> {
-  type: TLiteralType
-  enum: [T1, T2, T3, T4, T5, T6, T7, T8]
-}
-export interface TTUnion1<T1 extends TBase<any>> extends TBase<Static<T1>> {
-  anyOf: [T1]
-}
-export interface TTUnion2<T1 extends TBase<any>, T2 extends TBase<any>>
-  extends TBase<Static<T1> | Static<T2>> {
-  anyOf: [T1, T2]
-}
-export interface TTUnion3<T1 extends TBase<any>, T2 extends TBase<any>, T3 extends TBase<any>> extends TBase<Static<T1> | Static<T2> | Static<T3>> {
-  anyOf: [T1, T2, T3]
-}
-export interface TTUnion4<T1 extends TBase<any>, T2 extends TBase<any>, T3 extends TBase<any>, T4 extends TBase<any>> extends TBase<Static<T1> | Static<T2> | Static<T3> | Static<T4>> {
-  anyOf: [T1, T2, T3, T4]
-}
-export interface TTUnion5<T1 extends TBase<any>, T2 extends TBase<any>, T3 extends TBase<any>, T4 extends TBase<any>, T5 extends TBase<any>> extends TBase<Static<T1> | Static<T2> | Static<T3> | Static<T4> | Static<T5>> {
-  anyOf: [T1, T2, T3, T4, T5]
-}
-export interface TTUnion6<T1 extends TBase<any>, T2 extends TBase<any>, T3 extends TBase<any>, T4 extends TBase<any>, T5 extends TBase<any>, T6 extends TBase<any>> extends TBase<Static<T1> | Static<T2> | Static<T3> | Static<T4> | Static<T5> | Static<T6>> {
-  anyOf: [T1, T2, T3, T4, T5, T6]
-}
-export interface TTUnion7<T1 extends TBase<any>, T2 extends TBase<any>, T3 extends TBase<any>, T4 extends TBase<any>, T5 extends TBase<any>, T6 extends TBase<any>, T7 extends TBase<any>> extends TBase<Static<T1> | Static<T2> | Static<T3> | Static<T4> | Static<T5> | Static<T6> | Static<T7>> {
-  anyOf: [T1, T2, T3, T4, T5, T6, T7]
-}
-export interface TTUnion8<T1 extends TBase<any>, T2 extends TBase<any>, T3 extends TBase<any>, T4 extends TBase<any>, T5 extends TBase<any>, T6 extends TBase<any>, T7 extends TBase<any>, T8 extends TBase<any>> extends TBase<Static<T1> | Static<T2> | Static<T3> | Static<T4> | Static<T5> | Static<T6> | Static<T7> | Static<T8>> {
-  anyOf: [T1, T2, T3, T4, T5, T6, T7, T8]
-}
-export interface TIntersect1<T1 extends TBase<any>> extends TBase<Static<T1>> {
-  allOf: [T1]
-}
-export interface TIntersect2<T1 extends TBase<any>, T2 extends TBase<any>>
-  extends TBase<Static<T1> & Static<T2>> {
-  allOf: [T1, T2]
-}
-export interface TIntersect3<T1 extends TBase<any>, T2 extends TBase<any>, T3 extends TBase<any>> extends TBase<Static<T1> & Static<T2> & Static<T3>> {
-  allOf: [T1, T2, T3]
-}
-export interface TIntersect4<T1 extends TBase<any>, T2 extends TBase<any>, T3 extends TBase<any>, T4 extends TBase<any>> extends TBase<Static<T1> & Static<T2> & Static<T3> & Static<T4>> {
-  allOf: [T1, T2, T3, T4]
-}
-export interface TIntersect5<T1 extends TBase<any>, T2 extends TBase<any>, T3 extends TBase<any>, T4 extends TBase<any>, T5 extends TBase<any>> extends TBase<Static<T1> & Static<T2> & Static<T3> & Static<T4> & Static<T5>> {
-  allOf: [T1, T2, T3, T4, T5]
-}
-export interface TIntersect6<T1 extends TBase<any>, T2 extends TBase<any>, T3 extends TBase<any>, T4 extends TBase<any>, T5 extends TBase<any>, T6 extends TBase<any>> extends TBase<Static<T1> & Static<T2> & Static<T3> & Static<T4> & Static<T5> & Static<T6>> {
-  allOf: [T1, T2, T3, T4, T5, T6]
-}
-export interface TIntersect7<T1 extends TBase<any>, T2 extends TBase<any>, T3 extends TBase<any>, T4 extends TBase<any>, T5 extends TBase<any>, T6 extends TBase<any>, T7 extends TBase<any>> extends TBase< Static<T1> & Static<T2> & Static<T3> & Static<T4> & Static<T5> & Static<T6> & Static<T7>> {
-  allOf: [T1, T2, T3, T4, T5, T6, T7]
-}
-export interface TIntersect8<T1 extends TBase<any>, T2 extends TBase<any>, T3 extends TBase<any>, T4 extends TBase<any>, T5 extends TBase<any>, T6 extends TBase<any>, T7 extends TBase<any>, T8 extends TBase<any>> extends TBase< Static<T1> & Static<T2> & Static<T3> & Static<T4> & Static<T5> & Static<T6> & Static<T7> & Static<T8>> {
-  allOf: [T1, T2, T3, T4, T5, T6, T7, T8]
-}
-
-class TypeBuilder {
-  /** Creates a json schema any type. Statically resolves to type 'any' */
-  public Any(): TAny {
-    return { } as TAny
-  }
-  /** Creates a json schema null type. Statically resolves to type 'null' */
-  public Null(): TNull {
-    return { type: "null" } as TNull
-  }
-  /** Creates a json schema number type. Statically resolves to type 'number' */
-  public Number(): TNumber {
-    return { type: "number" } as TNumber
-  }
-  /** Creates a json schema string type. Statically resolves to type 'string' */
-  public String(): TString {
-    return { type: "string" } as TString
-  }
-  /** Creates a json schema boolean type. Statically resolves to type 'boolean' */
-  public Boolean(): TBoolean {
-    return { type: "boolean" } as TBoolean
-  }
-  /** creates boolean literal value. Statically resolves to the given type 'boolean' */
-  public Literal(value: boolean): TBoolean
-  /** creates string literal value. Statically resolves to the given type 'string' */
-  public Literal(value: string): TString
-  /** creates number literal value. Statically resolves to the given type 'number' */
-  public Literal(value: number): TNumber
-  /** Creates a json schema literal validator for the given literal value. Statically resolves to the given type 'boolean' or 'string' or 'number' */
-  public Literal<T extends TLiteralType>(value: T): TString | TNumber | TBoolean {
-    const type = reflect(value)
-    switch (type) {
-      case 'number':
-        return ({ type, enum: [value] } as any) as TNumber
-      case 'boolean':
-        return ({ type, enum: [value] } as any) as TBoolean
-      case 'string':
-        return ({ type, enum: [value] } as any) as TString
-      default:
-        throw Error('Literal only allows for string, number and boolean values.')
-    }
-  }
-  /** Creates a json schema optional validator. Statically resolves to a T | undefined only when wrapped in an object. */
-  public Optional<T extends TBase<any>>(value: T): TOptional<T | TUndefined> {
-    return Object.assign({optional: true}, value) as TOptional<T | TUndefined>
-  }
-  /** Creates a json schema object. Statically resolves to an object of the given property types. */
-  public Object<T extends TObjectProperties>(properties: T = {} as T): TObject<T> {
-    const required = Object.keys(properties).filter((key) => {
-      const type = properties[key]
-      return type.optional === undefined || type.optional === false
-    })
-    return { type: "object", properties, required } as TObject<T>
-  }
-  /** Creates a json schema dictionary with string keys. Statically resolves to an TDictionary<T> */
-  public Dictionary<T extends TBase<any>>(type: T = (undefined as any) as T): TDictionary<T> {
-    return { type: 'object', additionalProperties: type } as TDictionary<T>
-  }
-  /** Creates a json schema array. Statically resolves to an Array<T> */
-  public Array<T extends TBase<any>>(type: T = undefined as any as T): TArray<T> {
-    return { type: "array", items: type === undefined ? { } : type } as TArray<T>
-  }
-  /** Creates a json schema range validator. Statically resolves to type 'number' */
-  public Range(minimum: number, maximum: number): TNumber {
-    return { type: "number", minimum, maximum } as any as TNumber
-  }
-  /** Creates a json schema pattern validator. Statically resolves to type 'string' */
-  public Pattern(regex: RegExp): TString {
-    return { type: "string", pattern: regex.source } as any as TString
-  }
-  /** Creates a json schema string with format 'date-time'. Statically resolves to type 'string' */
-  public Format(format: 'date-time'): TString {
-    return { type: "string", format: "date-time" } as any as TString
-  }
-  /** Creates a json schema tuple validator. Statically resolves to type '[T1, T2, T3, ...]' */
-  public Tuple<T1 extends TBase<any>>(t1: T1): TTuple1<T1>
-  /** Creates a json schema tuple validator. Statically resolves to type '[T1, T2, T3, ...]' */
-  public Tuple<T1 extends TBase<any>, T2 extends TBase<any>>(t1: T1, t2: T2): TTuple2<T1, T2>
-  /** Creates a json schema tuple validator. Statically resolves to type '[T1, T2, T3, ...]' */
-  public Tuple<T1 extends TBase<any>, T2 extends TBase<any>, T3 extends TBase<any>>(t1: T1, t2: T2, t3: T3): TTuple3<T1, T2, T3>
-  /** Creates a json schema tuple validator. Statically resolves to type '[T1, T2, T3, ...]' */
-  public Tuple<T1 extends TBase<any>, T2 extends TBase<any>, T3 extends TBase<any>, T4 extends TBase<any>>(t1: T1, t2: T2, t3: T3, t4: T4): TTuple4<T1, T2, T3, T4>
-  /** Creates a json schema tuple validator. Statically resolves to type '[T1, T2, T3, ...]' */
-  public Tuple<T1 extends TBase<any>, T2 extends TBase<any>, T3 extends TBase<any>, T4 extends TBase<any>, T5 extends TBase<any>>(t1: T1, t2: T2, t3: T3, t4: T4, t5: T5): TTuple5<T1, T2, T3, T4, T5>
-  /** Creates a json schema tuple validator. Statically resolves to type '[T1, T2, T3, ...]' */
-  public Tuple<T1 extends TBase<any>, T2 extends TBase<any>, T3 extends TBase<any>, T4 extends TBase<any>, T5 extends TBase<any>, T6 extends TBase<any>>(t1: T1, t2: T2, t3: T3, t4: T4, t5: T5, t6: T6): TTuple6<T1, T2, T3, T4, T5, T6>
-  /** Creates a json schema tuple validator. Statically resolves to type '[T1, T2, T3, ...]' */
-  public Tuple<T1 extends TBase<any>, T2 extends TBase<any>, T3 extends TBase<any>, T4 extends TBase<any>, T5 extends TBase<any>, T6 extends TBase<any>, T7 extends TBase<any>>(t1: T1, t2: T2, t3: T3, t4: T4, t5: T5, t6: T6, t7: T7): TTuple7<T1, T2, T3, T4, T5, T6, T7>
-  /** Creates a json schema tuple validator. Statically resolves to type '[T1, T2, T3, ...]' */
-  public Tuple<T1 extends TBase<any>, T2 extends TBase<any>, T3 extends TBase<any>, T4 extends TBase<any>, T5 extends TBase<any>, T6 extends TBase<any>, T7 extends TBase<any>, T8 extends TBase<any>>(t1: T1, t2: T2, t3: T3, t4: T4, t5: T5, t6: T6, t7: T7, t8: T8): TTuple8<T1, T2, T3, T4, T5, T6, T7, T8>
-  /** Creates a json schema tuple validator. Statically resolves to type '[T1, T2, T3, ...]' */
-  public Tuple(...items: any[]) {
-    if (items.length === 0) {
-      throw Error("Type tuple requires at least one type.")
-    }
-    const additionalItems = false
-    const minItems = items.length
-    const maxItems = items.length
-    return { type: "array", items, additionalItems, minItems, maxItems }
-  }
-  /** Creates a json schema enum validator for the given literal values. Statically resolves to a type union for the given types */
-  public Enum<T1 extends TLiteralType>(t1: T1): TEnum1<T1>
-  /** Creates a json schema enum validator for the given literal values. Statically resolves to a type union for the given types */
-  public Enum<T1 extends TLiteralType, T2 extends TLiteralType>(t1: T1, t2: T2): TEnum2<T1, T2>
-  /** Creates a json schema enum validator for the given literal values. Statically resolves to a type union for the given types */
-  public Enum<T1 extends TLiteralType, T2 extends TLiteralType, T3 extends TLiteralType>(t1: T1, t2: T2, t3: T3): TEnum3<T1, T2, T3>
-  /** Creates a json schema enum validator for the given literal values. Statically resolves to a type union for the given types */
-  public Enum<T1 extends TLiteralType, T2 extends TLiteralType, T3 extends TLiteralType, T4 extends TLiteralType>(t1: T1, t2: T2, t3: T3, t4: T4): TEnum4<T1, T2, T3, T4>
-  /** Creates a json schema enum validator for the given literal values. Statically resolves to a type union for the given types */
-  public Enum<T1 extends TLiteralType, T2 extends TLiteralType, T3 extends TLiteralType, T4 extends TLiteralType, T5 extends TLiteralType>(t1: T1, t2: T2, t3: T3, t4: T4, t5: T5): TEnum5<T1, T2, T3, T4, T5>
-  /** Creates a json schema enum validator for the given literal values. Statically resolves to a type union for the given types */
-  public Enum<T1 extends TLiteralType, T2 extends TLiteralType, T3 extends TLiteralType, T4 extends TLiteralType, T5 extends TLiteralType, T6 extends TLiteralType>(t1: T1, t2: T2, t3: T3, t4: T4, t5: T5, t6: T6): TEnum6<T1, T2, T3, T4, T5, T6>
-  /** Creates a json schema enum validator for the given literal values. Statically resolves to a type union for the given types */
-  public Enum<T1 extends TLiteralType, T2 extends TLiteralType, T3 extends TLiteralType, T4 extends TLiteralType, T5 extends TLiteralType, T6 extends TLiteralType, T7 extends TLiteralType>(t1: T1, t2: T2, t3: T3, t4: T4, t5: T5, t6: T6, t7: T7): TEnum7<T1, T2, T3, T4, T5, T6, T7>
-  /** Creates a json schema enum validator for the given literal values. Statically resolves to a type union for the given types */
-  public Enum<T1 extends TLiteralType, T2 extends TLiteralType, T3 extends TLiteralType, T4 extends TLiteralType, T5 extends TLiteralType, T6 extends TLiteralType, T7 extends TLiteralType, T8 extends TLiteralType>(t1: T1, t2: T2, t3: T3, t4: T4, t5: T5, t6: T6, t7: T7, t8: T8): TEnum8<T1, T2, T3, T4, T5, T6, T7, T8>
-  /** Creates a json schema enum validator for the given literal values. Statically resolves to a type union for the given types */
-  public Enum(...items: TLiteralType[]) {
-    if (items.length === 0) {
-      throw Error("Enum types must have at least one value.")
-    }
-    const typenames = items.map((item) => reflect(item))
-    if (distinct(typenames).length > 1) {
-      throw Error("Enum types must all be of the same literal type.")
-    }
-    const typename = typenames[0]
-    switch (typename) {
-      case "number":  return { type: "number", enum: items } as any
-      case "boolean": return { type: "boolean", enum: items } as any
-      case "string":  return { type: "string", enum: items } as any
-      default: throw Error("enum types only allows for string, number and boolean values.")
-    }
-  }
-  /** Creates a json schema union (anyOf) validator for the given types. Statically resolves to a type union. */
-  public Union<T1 extends TBase<any>>(t1: T1): TTUnion1<T1>
-  /** Creates a json schema union validator for the given types. Statically resolves to a type union. */
-  public Union<T1 extends TBase<any>, T2 extends TBase<any>>(t1: T1, t2: T2): TTUnion2<T1, T2>
-  /** Creates a json schema union validator for the given types. Statically resolves to a type union. */
-  public Union<T1 extends TBase<any>, T2 extends TBase<any>, T3 extends TBase<any>>(t1: T1, t2: T2, t3: T3): TTUnion3<T1, T2, T3>
-  /** Creates a json schema union validator for the given types. Statically resolves to a type union. */
-  public Union<T1 extends TBase<any>, T2 extends TBase<any>, T3 extends TBase<any>, T4 extends TBase<any>>(t1: T1, t2: T2, t3: T3, t4: T4): TTUnion4<T1, T2, T3, T4>
-  /** Creates a json schema union validator for the given types. Statically resolves to a type union. */
-  public Union<T1 extends TBase<any>, T2 extends TBase<any>, T3 extends TBase<any>, T4 extends TBase<any>, T5 extends TBase<any>>(t1: T1, t2: T2, t3: T3, t4: T4, t5: T5): TTUnion5<T1, T2, T3, T4, T5>
-  /** Creates a json schema union validator for the given types. Statically resolves to a type union. */
-  public Union<T1 extends TBase<any>, T2 extends TBase<any>, T3 extends TBase<any>, T4 extends TBase<any>, T5 extends TBase<any>, T6 extends TBase<any>>(t1: T1, t2: T2, t3: T3, t4: T4, t5: T5, t6: T6): TTUnion6<T1, T2, T3, T4, T5, T6>
-  /** Creates a json schema union validator for the given types. Statically resolves to a type union. */
-  public Union<T1 extends TBase<any>, T2 extends TBase<any>, T3 extends TBase<any>, T4 extends TBase<any>, T5 extends TBase<any>, T6 extends TBase<any>, T7 extends TBase<any>>( t1: T1, t2: T2, t3: T3, t4: T4, t5: T5, t6: T6, t7: T7): TTUnion7<T1, T2, T3, T4, T5, T6, T7>
-  /** Creates a json schema union validator for the given types. Statically resolves to a type union. */
-  public Union<T1 extends TBase<any>, T2 extends TBase<any>, T3 extends TBase<any>, T4 extends TBase<any>, T5 extends TBase<any>, T6 extends TBase<any>, T7 extends TBase<any>, T8 extends TBase<any>>(t1: T1, t2: T2, t3: T3, t4: T4, t5: T5, t6: T6, t7: T7, t8: T8): TTUnion8<T1, T2, T3, T4, T5, T6, T7, T8>
-  /** Creates a json schema union validator for the given types. Statically resolves to a type union. */
-  public Union(...types: any[]) {
-    if (types.length === 0) {
-      throw Error("Type TUnion requires at least one type.")
-    }
-    return { anyOf: types }
-  }
-  /** Creates a json schema intersect (allOf) validator for the given types. Statically resolves to a type intersect. */
-  public Intersect<T1 extends TBase<any>>(t1: T1): TIntersect1<T1>
-  /** Creates a json schema intersect (allOf) validator for the given types. Statically resolves to a type intersect. */
-  public Intersect<T1 extends TBase<any>, T2 extends TBase<any>>(t1: T1, t2: T2): TIntersect2<T1, T2>
-  /** Creates a json schema intersect (allOf) validator for the given types. Statically resolves to a type intersect. */
-  public Intersect<T1 extends TBase<any>, T2 extends TBase<any>, T3 extends TBase<any>>(t1: T1, t2: T2, t3: T3): TIntersect3<T1, T2, T3>
-  /** Creates a json schema intersect (allOf) validator for the given types. Statically resolves to a type intersect. */
-  public Intersect<T1 extends TBase<any>, T2 extends TBase<any>, T3 extends TBase<any>, T4 extends TBase<any>>(t1: T1, t2: T2, t3: T3, t4: T4): TIntersect4<T1, T2, T3, T4>
-  /** Creates a json schema intersect (allOf) validator for the given types. Statically resolves to a type intersect. */
-  public Intersect<T1 extends TBase<any>, T2 extends TBase<any>, T3 extends TBase<any>, T4 extends TBase<any>, T5 extends TBase<any>>(t1: T1, t2: T2, t3: T3, t4: T4, t5: T5): TIntersect5<T1, T2, T3, T4, T5>
-  /** Creates a json schema intersect (allOf) validator for the given types. Statically resolves to a type intersect. */
-  public Intersect<T1 extends TBase<any>, T2 extends TBase<any>, T3 extends TBase<any>, T4 extends TBase<any>, T5 extends TBase<any>, T6 extends TBase<any>>(t1: T1, t2: T2, t3: T3, t4: T4, t5: T5, t6: T6 ): TIntersect6<T1, T2, T3, T4, T5, T6>
-  /** Creates a json schema intersect (allOf) validator for the given types. Statically resolves to a type intersect. */
-  public Intersect<T1 extends TBase<any>, T2 extends TBase<any>, T3 extends TBase<any>, T4 extends TBase<any>, T5 extends TBase<any>, T6 extends TBase<any>, T7 extends TBase<any>>( t1: T1, t2: T2, t3: T3, t4: T4, t5: T5, t6: T6, t7: T7): TIntersect7<T1, T2, T3, T4, T5, T6, T7>
-  /** Creates a json schema intersect (allOf) validator for the given types. Statically resolves to a type intersect. */
-  public Intersect<T1 extends TBase<any>, T2 extends TBase<any>, T3 extends TBase<any>, T4 extends TBase<any>, T5 extends TBase<any>, T6 extends TBase<any>, T7 extends TBase<any>, T8 extends TBase<any>>(t1: T1, t2: T2, t3: T3, t4: T4, t5: T5, t6: T6, t7: T7, t8: T8): TIntersect8<T1, T2, T3, T4, T5, T6, T7, T8>
-  /** Creates a json schema intersect (allOf) validator for the given types. Statically resolves to a type intersect. */
-  public Intersect(...types: Array<TBase<any>>) {
-    if (types.length === 0) {
-      throw Error("Type intersect requires at least one type.")
-    }
-    return { allOf: types }
+function reflect(value: any): 'string' | 'number' | 'boolean' | 'unknown' {
+  switch(typeof value) {
+      case 'string':  return 'string'
+      case 'number':  return 'number'
+      case 'boolean': return 'boolean'
+      default: return 'unknown'
   }
 }
 
-const Builder = new TypeBuilder()
+// #region TIntrinsics
 
-export { Builder as Type }
+interface TFunction8<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema, T7 extends TSchema, U extends TSchema> { type: 'function', arguments: [T0, T1, T2, T3, T4, T5, T6, T7], return: U }
+interface TFunction7<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema, U extends TSchema> { type: 'function', arguments: [T0, T1, T2, T3, T4, T5, T6], return: U }
+interface TFunction6<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, U extends TSchema> { type: 'function', arguments: [T0, T1, T2, T3, T4, T5], return: U }
+interface TFunction5<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, U extends TSchema> { type: 'function', arguments: [T0, T1, T2, T3, T4], return: U }
+interface TFunction4<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, U extends TSchema> { type: 'function', arguments: [T0, T1, T2, T3], return: U }
+interface TFunction3<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, U extends TSchema> { type: 'function', arguments: [T0, T1, T2], return: U }
+interface TFunction2<T0 extends TSchema, T1 extends TSchema, U extends TSchema> { type: 'function', arguments: [T0, T1], return: U }
+interface TFunction1<T0 extends TSchema, U extends TSchema> { type: 'function', arguments: [T0], return: U }
+interface TFunction0<U extends TSchema> { type: 'function', arguments: [], returns: U }
+export type TFunction = TFunction8<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
+    TFunction7<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
+    TFunction6<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
+    TFunction5<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
+    TFunction4<TSchema, TSchema, TSchema, TSchema, TSchema> |
+    TFunction3<TSchema, TSchema, TSchema, TSchema> |
+    TFunction2<TSchema, TSchema, TSchema> |
+    TFunction1<TSchema, TSchema> |
+    TFunction0<TSchema>
+
+export type TIntrinsic = TFunction | TVoid | TUndefined | TPromise<any>
+export interface TPromise<T extends TSchema | TVoid | TUndefined> { type: 'promise', item: T }
+export interface TVoid      { type: 'void' }
+export interface TUndefined { type: 'undefined' }
+
+// #endregion
+
+// #region TComposite
+
+interface TIntersect8<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema, T7 extends TSchema> { allOf: [T0, T1, T2, T3, T4, T5, T6, T7] }
+interface TIntersect7<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema> { allOf: [T0, T1, T2, T3, T4, T5, T6] }
+interface TIntersect6<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema> { allOf: [T0, T1, T2, T3, T4, T5] }
+interface TIntersect5<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema> { allOf: [T0, T1, T2, T3, T4] }
+interface TIntersect4<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema> { allOf: [T0, T1, T2, T3] }
+interface TIntersect3<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema> { allOf: [T0, T1, T2] }
+interface TIntersect2<T0 extends TSchema, T1 extends TSchema> { allOf: [T0, T1] }
+interface TIntersect1<T0 extends TSchema> { allOf: [T0] }
+export type TIntersect = TIntersect8<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
+  TIntersect7<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
+  TIntersect6<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
+  TIntersect5<TSchema, TSchema, TSchema, TSchema, TSchema> |
+  TIntersect4<TSchema, TSchema, TSchema, TSchema> |
+  TIntersect3<TSchema, TSchema, TSchema> |
+  TIntersect2<TSchema, TSchema> |
+  TIntersect1<TSchema>;
+
+interface TUnion8<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema, T7 extends TSchema> { oneOf: [T0, T1, T2, T3, T4, T5, T6, T7] }
+interface TUnion7<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema> { oneOf: [T0, T1, T2, T3, T4, T5, T6] }
+interface TUnion6<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema> { oneOf: [T0, T1, T2, T3, T4, T5] }
+interface TUnion5<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema> { oneOf: [T0, T1, T2, T3, T4] }
+interface TUnion4<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema> { oneOf: [T0, T1, T2, T3] }
+interface TUnion3<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema> { oneOf: [T0, T1, T2] }
+interface TUnion2<T0 extends TSchema, T1 extends TSchema> { oneOf: [T0, T1] }
+interface TUnion1<T0 extends TSchema> { oneOf: [T0] }
+export type TUnion = TUnion8<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
+  TUnion7<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
+  TUnion6<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
+  TUnion5<TSchema, TSchema, TSchema, TSchema, TSchema> |
+  TUnion4<TSchema, TSchema, TSchema, TSchema> |
+  TUnion3<TSchema, TSchema, TSchema> |
+  TUnion2<TSchema, TSchema> |
+  TUnion1<TSchema>;
+
+
+interface TTuple8<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema, T7 extends TSchema> { type: 'array', items: [T0, T1, T2, T3, T4, T5, T6, T7], additionalItems: false, minItems: 8, maxItems: 8 }
+interface TTuple7<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema> { type: 'array', items: [T0, T1, T2, T3, T4, T5, T6], additionalItems: false, minItems: 7, maxItems: 7 }
+interface TTuple6<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema> { type: 'array', items: [T0, T1, T2, T3, T4, T5], additionalItems: false, minItems: 6, maxItems: 6 }
+interface TTuple5<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema> { type: 'array', items: [T0, T1, T2, T3, T4], additionalItems: false, minItems: 5, maxItems: 5 }
+interface TTuple4<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema> { type: 'array', items: [T0, T1, T2, T3], additionalItems: false, minItems: 4, maxItems: 4 }
+interface TTuple3<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema> { type: 'array', items: [T0, T1, T2], additionalItems: false, minItems: 3, maxItems: 3 }
+interface TTuple2<T0 extends TSchema, T1 extends TSchema> { type: 'array', items: [T0, T1], additionalItems: false, minItems: 2, maxItems: 2 }
+interface TTuple1<T0 extends TSchema> { type: 'array', items: [T0], additionalItems: false, minItems: 1, maxItems: 1 }
+export type TTuple = TTuple8<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
+  TTuple7<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
+  TTuple6<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
+  TTuple5<TSchema, TSchema, TSchema, TSchema, TSchema> |
+  TTuple4<TSchema, TSchema, TSchema, TSchema> |
+  TTuple3<TSchema, TSchema, TSchema> |
+  TTuple2<TSchema, TSchema> |
+  TTuple1<TSchema>;
+
+export type TComposite = TIntersect | TUnion | TTuple
+
+// #endregion
+
+// #region TModifier
+
+export type TOptional<T extends TSchema | TUnion | TIntersect | TTuple> = T & { modifier: 'optional' }
+export type TReadonly<T extends TSchema | TUnion | TIntersect | TTuple> = T & { modifier: 'readonly' }
+export type TModifier = TOptional<any> | TReadonly<any>
+
+// #endregion
+
+// #region TSchema
+
+type SchemaFormat =
+  | 'date-time' | 'time' | 'date' | 'email' | 'idn-email' | 'hostname' 
+  | 'idn-hostname' | 'ipv4' | 'ipv6' | 'uri' | 'uri-reference' | 'iri'
+  | 'iri-reference' | 'uri-template' | 'json-pointer' | 'relative-json-pointer'
+  | 'regex'
+
+export type TLiteral = TStringLiteral<string> | TNumberLiteral<number> | TBooleanLiteral<boolean>
+export interface TStringLiteral<T>  { type: 'string',  enum: [T] }
+export interface TNumberLiteral<T>  { type: 'number',  enum: [T] }
+export interface TBooleanLiteral<T> { type: 'boolean', enum: [T] }
+export interface TProperties { [key: string]: TSchema | TUnion | TIntersect | TTuple | TOptional<TSchema | TUnion | TIntersect | TTuple> | TReadonly<TSchema | TUnion | TIntersect | TTuple> }
+export interface TObject<T extends TProperties> { type: 'object', properties: T, required: string[] }
+export interface TMap   <T extends TSchema | TUnion | TIntersect | TTuple> { type: 'object', additionalProperties: T }
+export interface TArray <T extends TSchema | TUnion | TIntersect | TTuple> { type: 'array', items: T }
+export interface TNumber  { type: 'number' }
+export interface TString  { type: 'string' }
+export interface TBoolean { type: 'boolean' }
+export interface TPattern { type: 'string', pattern: string }
+export interface TFormat  { type: 'string', format: SchemaFormat }
+export interface TRange   { type: 'number', minimum: number, maximum: number }
+export interface TNull    { type: 'null' }
+export interface TAny     { }
+
+export type TSchema = TLiteral | TNumber | TBoolean | TString | TObject<any> | TArray<any> | TMap<any>| TPattern | TRange | TFormat | TNull | TAny  
+
+// #endregion
+
+// #region StaticIntrinsic
+
+type StaticFunction<T> =
+  T extends TFunction8<infer U0, infer U1, infer U2, infer U3, infer U4, infer U5, infer U6, infer U7, infer R> ? (arg0: Static<U0>, arg1: Static<U1>, arg2: Static<U2>, arg3: Static<U3>, arg4: Static<U4>, arg5: Static<U5>, arg6: Static<U6>, arg7: Static<U7>) => Static<R> :
+  T extends TFunction7<infer U0, infer U1, infer U2, infer U3, infer U4, infer U5, infer U6, infer R> ? (arg0: Static<U0>, arg1: Static<U1>, arg2: Static<U2>, arg3: Static<U3>, arg4: Static<U4>, arg5: Static<U5>, arg6: Static<U6>) => Static<R> :
+  T extends TFunction6<infer U0, infer U1, infer U2, infer U3, infer U4, infer U5, infer R> ? (arg0: Static<U0>, arg1: Static<U1>, arg2: Static<U2>, arg3: Static<U3>, arg4: Static<U4>, arg5: Static<U5>) => Static<R> :
+  T extends TFunction5<infer U0, infer U1, infer U2, infer U3, infer U4, infer R> ? (arg0: Static<U0>, arg1: Static<U1>, arg2: Static<U2>, arg3: Static<U3>, arg4: Static<U4>) => Static<R> :
+  T extends TFunction4<infer U0, infer U1, infer U2, infer U3, infer R> ? (arg0: Static<U0>, arg1: Static<U1>, arg2: Static<U2>, arg3: Static<U3>) => Static<R> :
+  T extends TFunction3<infer U0, infer U1, infer U2, infer R> ? (arg0: Static<U0>, arg1: Static<U1>, arg2: Static<U2>) => Static<R> :
+  T extends TFunction2<infer U0, infer U1, infer R> ? (arg0: Static<U0>, arg1: Static<U1>) => Static<R> :
+  T extends TFunction1<infer U0, infer R> ? (arg0: Static<U0>) => Static<R> :
+  T extends TFunction0<infer R> ? () => Static<R> :
+  never;
+
+type StaticInstrinsic<T extends TIntrinsic> =
+  T extends TFunction         ? StaticFunction<T> :  
+  T extends TPromise<infer U> ? Promise<Static<U>> :
+  T extends TVoid             ? void :
+  T extends TUndefined        ? undefined :
+  never;
+
+// #endregion
+
+// #region StaticComposite
+
+type StaticIntersect<T> =
+  T extends TIntersect8<infer U0, infer U1, infer U2, infer U3, infer U4, infer U5, infer U6, infer U7> ? StaticSchema<U0> & StaticSchema<U1> & StaticSchema<U2> & StaticSchema<U3> & StaticSchema<U4> & StaticSchema<U5> & StaticSchema<U6> & StaticSchema<U7> :
+  T extends TIntersect7<infer U0, infer U1, infer U2, infer U3, infer U4, infer U5, infer U6> ? StaticSchema<U0> & StaticSchema<U1> & StaticSchema<U2> & StaticSchema<U3> & StaticSchema<U4> & StaticSchema<U5> & StaticSchema<U6> :
+  T extends TIntersect6<infer U0, infer U1, infer U2, infer U3, infer U4, infer U5> ? StaticSchema<U0> & StaticSchema<U1> & StaticSchema<U2> & StaticSchema<U3> & StaticSchema<U4> & StaticSchema<U5> :
+  T extends TIntersect5<infer U0, infer U1, infer U2, infer U3, infer U4> ? StaticSchema<U0> & StaticSchema<U1> & StaticSchema<U2> & StaticSchema<U3> & StaticSchema<U4> :
+  T extends TIntersect4<infer U0, infer U1, infer U2, infer U3> ? StaticSchema<U0> & StaticSchema<U1> & StaticSchema<U2> & StaticSchema<U3> :
+  T extends TIntersect3<infer U0, infer U1, infer U2> ? StaticSchema<U0> & StaticSchema<U1> & StaticSchema<U2> :
+  T extends TIntersect2<infer U0, infer U1> ? StaticSchema<U1> & StaticSchema<U0> :
+  T extends TIntersect1<infer U0> ? StaticSchema<U0> :
+  never;
+
+type StaticUnion<T> =
+  T extends TUnion8<infer U0, infer U1, infer U2, infer U3, infer U4, infer U5, infer U6, infer U7> ? StaticSchema<U0> | StaticSchema<U1> | StaticSchema<U2> | StaticSchema<U3> | StaticSchema<U4> | StaticSchema<U5> | StaticSchema<U6> | StaticSchema<U7> :
+  T extends TUnion7<infer U0, infer U1, infer U2, infer U3, infer U4, infer U5, infer U6> ? StaticSchema<U0> | StaticSchema<U1> | StaticSchema<U2> | StaticSchema<U3> | StaticSchema<U4> | StaticSchema<U5> | StaticSchema<U6> :
+  T extends TUnion6<infer U0, infer U1, infer U2, infer U3, infer U4, infer U5> ? StaticSchema<U0> | StaticSchema<U1> | StaticSchema<U2> | StaticSchema<U3> | StaticSchema<U4> | StaticSchema<U5> :
+  T extends TUnion5<infer U0, infer U1, infer U2, infer U3, infer U4> ? StaticSchema<U0> | StaticSchema<U1> | StaticSchema<U2> | StaticSchema<U3> | StaticSchema<U4> :
+  T extends TUnion4<infer U0, infer U1, infer U2, infer U3> ? StaticSchema<U0> | StaticSchema<U1> | StaticSchema<U2> | StaticSchema<U3> :
+  T extends TUnion3<infer U0, infer U1, infer U2> ? StaticSchema<U0> | StaticSchema<U1> | StaticSchema<U2> :
+  T extends TUnion2<infer U0, infer U1> ? StaticSchema<U0> | StaticSchema<U1> :
+  T extends TUnion1<infer U0> ? StaticSchema<U0> :
+  never;
+
+type StaticTuple<T> =
+  T extends TTuple8<infer U0, infer U1, infer U2, infer U3, infer U4, infer U5, infer U6, infer U7> ? [Static<U0>, Static<U1>, Static<U2>, Static<U3>, Static<U4>, Static<U5>, Static<U6>, Static<U7>] :
+  T extends TTuple7<infer U0, infer U1, infer U2, infer U3, infer U4, infer U5, infer U6> ? [Static<U0>, Static<U1>, Static<U2>, Static<U3>, Static<U4>, Static<U5>, Static<U6>] :
+  T extends TTuple6<infer U0, infer U1, infer U2, infer U3, infer U4, infer U5> ? [Static<U0>, Static<U1>, Static<U2>, Static<U3>, Static<U4>, Static<U5>] :
+  T extends TTuple5<infer U0, infer U1, infer U2, infer U3, infer U4> ? [Static<U0>, Static<U1>, Static<U2>, Static<U3>, Static<U4>] :
+  T extends TTuple4<infer U0, infer U1, infer U2, infer U3> ? [Static<U0>, Static<U1>, Static<U2>, Static<U3>] :
+  T extends TTuple3<infer U0, infer U1, infer U2> ? [Static<U0>, Static<U1>, Static<U2>] :
+  T extends TTuple2<infer U0, infer U1> ? [Static<U0>, Static<U1>] :
+  T extends TTuple1<infer U0> ? [Static<U0>] :
+  never;
+
+type StaticComposite<T extends TComposite> =
+  T extends TIntersect ? StaticIntersect<T> :
+  T extends TUnion     ? StaticUnion<T> :
+  T extends TTuple     ? StaticTuple<T> :
+  never;
+
+// #endregion
+
+// #region StaticSchema
+
+type StaticLiteral<T> =
+  T extends TStringLiteral<infer U>  ? U : 
+  T extends TNumberLiteral<infer U>  ? U : 
+  T extends TBooleanLiteral<infer U> ? U :
+  never;
+
+// Extract 'optional', 'readonly' and 'general' property keys from T
+type ReadonlyPropertyKeys<T> = { [K in keyof T]: T[K] extends TReadonly<infer U> ? K : never }[keyof T]
+type OptionalPropertyKeys<T> = { [K in keyof T]: T[K] extends TOptional<infer U> ? K : never }[keyof T]
+type PropertyKeys<T> = keyof Omit<T, OptionalPropertyKeys<T> | ReadonlyPropertyKeys<T>>
+
+type StaticObjectProperties<T> = 
+  { readonly [K in ReadonlyPropertyKeys<T>]:  Static<T[K]> } &
+  {          [K in OptionalPropertyKeys<T>]?: Static<T[K]> } &
+  {          [K in PropertyKeys<T>]:          Static<T[K]> }
+
+type StaticSchema<T extends TSchema> =
+  T extends TObject<infer U> ? StaticObjectProperties<U> :
+  T extends TMap<infer U>    ? { [key: string]: Static<U> } :
+  T extends TArray<infer U>  ? Array<Static<U>> :
+  T extends TLiteral         ? StaticLiteral<T> :
+  T extends TString          ? string  :
+  T extends TNumber          ? number  :
+  T extends TBoolean         ? boolean :
+  T extends TNull            ? null    :
+  T extends TAny             ? any     :
+  T extends TPattern         ? string  :
+  T extends TFormat          ? string  :
+  T extends TRange           ? number  :
+  never;
+
+// #endregion
+
+export type TStatic = TComposite | TSchema | TIntrinsic | TModifier
+
+// Static
+export type Static<T extends TStatic> =
+  T extends TIntrinsic         ? StaticInstrinsic<T> :  
+  T extends TComposite         ? StaticComposite<T>  :
+  T extends TSchema            ? StaticSchema<T>     :
+  never;
+
+// Type Builder
+export class Type {
+
+  // #region Modifiers
+
+  /** Modifies the inner type T into an optional T. */
+  public static Optional<T extends TSchema | TUnion | TIntersect>(item: T): TOptional<T> { 
+    return { ...item, modifier: 'optional' } 
+  }
+  
+  /** Modifies the inner type T into an readonly T. */
+  public static Readonly<T extends TSchema | TUnion | TIntersect>(item: T): TReadonly<T>  { 
+    return { ...item, modifier: 'readonly' } 
+  }
+
+  // #endregion
+
+  // #region Primitives
+  
+  /** Creates a Object type with the given properties. */
+  public static Object<T extends TProperties>(properties: T): TObject<T> {
+      const property_names = Object.keys(properties)
+      const optional = property_names.filter(name => {
+        const candidate = properties[name] as TOptional<any>
+        return (candidate.modifier && candidate.modifier === 'optional')
+      })
+      const required = property_names.filter(name => !optional.includes(name))
+      return { type: 'object', properties, required }
+  }
+
+  /** Creates a Map type of the given type. Keys are indexed with type string. */
+  public static Map<T extends TSchema | TUnion | TIntersect | TTuple>(additionalProperties: T): TMap<T> {
+    return { type: 'object', additionalProperties }
+  }
+
+  /** Creates an Array type of the given argument T. */
+  public static Array<T extends TSchema | TUnion | TIntersect | TTuple>(items: T): TArray<T> {
+      return { type: 'array', items }
+  }
+
+  /** Creates a String type. */
+  public static String(): TString {
+      return { type: 'string' }
+  }
+
+  /** Creates a Number type. */
+  public static Number(): TNumber {
+      return { type: 'number' }
+  }
+
+  /** Creates a Boolean type. */
+  public static Boolean(): TBoolean { 
+      return { type: 'boolean' } 
+  }
+
+  /** Creates a Null type. */
+  public static Null(): TNull { 
+    return { type: 'null' } 
+  }
+
+  /** Creates a Any type. */
+  public static Any(): TAny { 
+      return { } 
+  }
+
+  // #endregion
+  
+  // #region PrimitiveExtended
+  
+  /** Creates a Promise type. */
+  public static Promise<T extends TSchema>(t: T): TPromise<T> { 
+    return { type: 'promise', item: t } 
+  }
+  
+  /** Creates a Void type. */
+  public static Void(): TVoid {
+    return { type: 'void' }
+  }
+
+  /** Creates a Undefined type. */
+  public static Undefined(): TUndefined {
+    return { type: 'undefined' }
+  }
+
+  // #endregion
+
+  // #region Literal
+
+  /** Creates a StringLiteral for the given value. */
+  public static Literal<T extends string>(value: T):  TStringLiteral<T>
+  /** Creates a NumberLiteral for the given value. */
+  public static Literal<T extends number>(value: T):  TNumberLiteral<T>
+  /** Creates a BooleanLiteral for the given value. */
+  public static Literal<T extends boolean>(value: T): TBooleanLiteral<T>
+  /** Creates a Literal for the given value. */
+  public static Literal(value: any): TLiteral {
+      const type = reflect(value)
+      if(type === 'unknown') { throw Error('Invalid literal value') }
+      return { type, enum: [value] } as TLiteral
+  }
+
+  // #endregion
+
+  // #region TUnion
+
+  /** Creates a Union type for the given arguments. */
+  public static Union<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema, T7 extends TSchema>(t0: T0, t1: T1, t2: T2, t3: T3, t4: T4, t5: T5, t6: T6, t7: T7): TUnion8<T0, T1, T2, T3, T4, T5, T6, T7>
+  /** Creates a Union type for the given arguments. */
+  public static Union<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema>(t0: T0, t1: T1, t2: T2, t3: T3, t4: T4, t5: T5, t6: T6): TUnion7<T0, T1, T2, T3, T4, T5, T6>
+  /** Creates a Union type for the given arguments. */
+  public static Union<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema>(t0: T0, t1: T1, t2: T2, t3: T3, t4: T4, t5: T5): TUnion6<T0, T1, T2, T3, T4, T5>
+  /** Creates a Union type for the given arguments. */
+  public static Union<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema>(t0: T0, t1: T1, t2: T2, t3: T3, t4: T4): TUnion5<T0, T1, T2, T3, T4>
+  /** Creates a Union type for the given arguments. */
+  public static Union<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema>(t0: T0, t1: T1, t2: T2, t3: T3): TUnion4<T0, T1, T2, T3>
+  /** Creates a Union type for the given arguments. */
+  public static Union<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema>(t0: T0, t1: T1, t2: T2): TUnion3<T0, T1, T2>
+  /** Creates a Union type for the given arguments. */
+  public static Union<T0 extends TSchema, T1 extends TSchema>(t0: T0, t1: T1): TUnion2<T0, T1>
+  /** Creates a Union type for the given arguments. */
+  public static Union<T0 extends TSchema>(t0: T0): TUnion1<T0>
+  /** Creates a Union type for the given arguments. */
+  public static Union(...types: TSchema[]): TUnion {
+      return { oneOf: [...types] } as TUnion
+  }
+
+  // #region Intersect
+
+  /** Creates an Intersect type for the given arguments. */
+  public static Intersect<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema, T7 extends TSchema>(t0: T0, t1: T1, t2: T2, t3: T3, t4: T4, t5: T5, t6: T6, t7: T7): TIntersect8<T0, T1, T2, T3, T4, T5, T6, T7>
+  /** Creates an Intersect type for the given arguments. */
+  public static Intersect<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema>(t0: T0, t1: T1, t2: T2, t3: T3, t4: T4, t5: T5, t6: T6): TIntersect7<T0, T1, T2, T3, T4, T5, T6>
+  /** Creates an Intersect type for the given arguments. */
+  public static Intersect<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema>(t0: T0, t1: T1, t2: T2, t3: T3, t4: T4, t5: T5): TIntersect6<T0, T1, T2, T3, T4, T5>
+  /** Creates an Intersect type for the given arguments. */
+  public static Intersect<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema>(t0: T0, t1: T1, t2: T2, t3: T3, t4: T4): TIntersect5<T0, T1, T2, T3, T4>
+  /** Creates an Intersect type for the given arguments. */
+  public static Intersect<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema>(t0: T0, t1: T1, t2: T2, t3: T3): TIntersect4<T0, T1, T2, T3>
+  /** Creates an Intersect type for the given arguments. */
+  public static Intersect<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema>(t0: T0, t1: T1, t2: T2): TIntersect3<T0, T1, T2>
+  /** Creates an Intersect type for the given arguments. */
+  public static Intersect<T0 extends TSchema, T1 extends TSchema>(t0: T0, t1: T1): TIntersect2<T0, T1>
+  /** Creates an Intersect type for the given arguments. */
+  public static Intersect<T0 extends TSchema>(t0: T0): TIntersect1<T0>
+  /** Creates an Intersect type for the given arguments. */
+  public static Intersect(...types: TSchema[]): TIntersect {
+      return { allOf: [...types] } as TIntersect
+  }
+
+  // #endregion
+
+  // #region Tuple
+
+  /** Creates a Tuple type for the given arguments. */
+  public static Tuple<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema, T7 extends TSchema>(t0: T0, t1: T1, t2: T2, t3: T3, t4: T4, t5: T5, t6: T6, t7: T7): TTuple8<T0, T1, T2, T3, T4, T5, T6, T7>
+  /** Creates a Tuple type for the given arguments. */
+  public static Tuple<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema>(t0: T0, t1: T1, t2: T2, t3: T3, t4: T4, t5: T5, t6: T6): TTuple7<T0, T1, T2, T3, T4, T5, T6>
+  /** Creates a Tuple type for the given arguments. */
+  public static Tuple<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema>(t0: T0, t1: T1, t2: T2, t3: T3, t4: T4, t5: T5): TTuple6<T0, T1, T2, T3, T4, T5>
+  /** Creates a Tuple type for the given arguments. */
+  public static Tuple<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema>(t0: T0, t1: T1, t2: T2, t3: T3, t4: T4): TTuple5<T0, T1, T2, T3, T4>
+  /** Creates a Tuple type for the given arguments. */
+  public static Tuple<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema>(t0: T0, t1: T1, t2: T2, t3: T3): TTuple4<T0, T1, T2, T3>
+  /** Creates a Tuple type for the given arguments. */
+  public static Tuple<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema>(t0: T0, t1: T1, t2: T2): TTuple3<T0, T1, T2>
+  /** Creates a Tuple type for the given arguments. */
+  public static Tuple<T0 extends TSchema, T1 extends TSchema>(t0: T0, t1: T1): TTuple2<T0, T1>
+  /** Creates a Tuple type for the given arguments. */
+  public static Tuple<T0 extends TSchema>(t0: T0): TTuple1<T0>
+  /** Creates a Tuple type for the given arguments. */
+  public static Tuple(...types: TSchema[]): TTuple {
+      const type = 'array'
+      const additionalItems = false
+      const minItems = types.length
+      const maxItems = types.length
+      return { type, items: [...types], additionalItems, minItems, maxItems } as TTuple
+  }
+
+  // #endregion
+
+  // #region TFunction
+  /** Creates a Function type for the given arguments. */
+  public static Function<T0 extends TStatic, T1 extends TStatic, T2 extends TStatic, T3 extends TStatic, T4 extends TStatic, T5 extends TStatic, T6 extends TStatic, T7 extends TStatic, U extends TStatic>(args: [T0, T1, T2, T3, T4, T5, T6, T7], returns: U): TFunction8<T0, T1, T2, T3, T4, T5, T6, T7, U>
+  /** Creates a Function type for the given arguments. */
+  public static Function<T0 extends TStatic, T1 extends TStatic, T2 extends TStatic, T3 extends TStatic, T4 extends TStatic, T5 extends TStatic, T6 extends TStatic, U extends TStatic>(args: [T0, T1, T2, T3, T4, T5, T6], returns: U): TFunction7<T0, T1, T2, T3, T4, T5, T6, U>
+  /** Creates a Function type for the given arguments. */
+  public static Function<T0 extends TStatic, T1 extends TStatic, T2 extends TStatic, T3 extends TStatic, T4 extends TStatic, T5 extends TStatic, U extends TStatic>(args: [T0, T1, T2, T3, T4, T5], returns: U): TFunction6<T0, T1, T2, T3, T4, T5, U>
+  /** Creates a Function type for the given arguments. */
+  public static Function<T0 extends TStatic, T1 extends TStatic, T2 extends TStatic, T3 extends TStatic, T4 extends TStatic, U extends TStatic>(args: [T0, T1, T2, T3, T4], returns: U): TFunction5<T0, T1, T2, T3, T4, U>
+  /** Creates a Function type for the given arguments. */
+  public static Function<T0 extends TStatic, T1 extends TStatic, T2 extends TStatic, T3 extends TStatic, U extends TStatic>(args: [T0, T1, T2, T3], returns: U): TFunction4<T0, T1, T2, T3, U>
+  /** Creates a Function type for the given arguments. */
+  public static Function<T0 extends TStatic, T1 extends TStatic, T2 extends TStatic, U extends TStatic>(args: [T0, T1, T2], returns: U): TFunction3<T0, T1, T2, U>
+  /** Creates a Function type for the given arguments. */
+  public static Function<T0 extends TStatic, T1 extends TStatic, U extends TStatic>(args: [T0, T1], returns: U): TFunction2<T0, T1, U>
+  /** Creates a Function type for the given arguments. */
+  public static Function<T0 extends TStatic, U extends TStatic>(args: [T0], returns: U): TFunction1<T0, U>
+  /** Creates a Function type for the given arguments. */
+  public static Function<U extends TStatic>(args: [], returns: U): TFunction0<U>
+  /** Creates a Function type for the given arguments. */
+  public static Function(args: TStatic[], returns: TStatic): TFunction {
+      return { type: 'function', arguments: args, returns: returns } as TFunction
+  }
+  
+  // #endregion
+
+  // #region Extended
+
+  /** Creates a Pattern type that resolves to a string. */
+  public static Pattern(regex: RegExp): TPattern {
+      return { type: 'string', pattern: regex.source }
+  }
+  
+  /** Creates a Format type that resolves to a string. */
+  public static Format(format: SchemaFormat): TFormat {
+      return { type: 'string', format }
+  }
+
+  /** Creates a Range type that resolves to a number. */
+  public static Range(minimum: number, maximum: number): TRange {
+      return { type: 'number', minimum, maximum }
+  }
+  
+  // #endregion
+
+  // #region Experimental
+  
+  /** Creates a Pattern type to validate UUID-4. */
+  public static Guid(): TPattern {
+    return this.Pattern(/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/)
+  }
+
+  // #endregion
+}

@@ -1,12 +1,28 @@
-import "./primitives"
-import "./literal"
-import "./enum"
-import "./object"
-import "./dictionary"
-import "./union"
-import "./intersect"
-import "./optional"
-import "./pattern"
-import "./format"
-import "./array"
-import "./static"
+// TS Asserts
+import './asserts'
+
+// TSchema
+import './literal'
+import './string'
+import './number'
+import './boolean'
+import './any'
+import './null'
+import './object'
+import './array'
+import './map'
+
+// TSchema: extended
+import './pattern'
+import './range'
+import './format'
+
+// TComposite
+import './intersect'
+import './union'
+import './tuple'
+
+// Experimental
+import './guid'
+
+

@@ -1,10 +1,10 @@
 /*--------------------------------------------------------------------------
 
-typebox - A json schema type builder with static type resolution for typescript.
+TypeBox: JSONSchema Type Builder with Static Type Resolution for TypeScript
 
 The MIT License (MIT)
 
-Copyright (c) 2018 Haydn Paterson (sinclair) <haydn.developer@gmail.com>
+Copyright (c) 2020 Haydn Paterson (sinclair) <haydn.developer@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

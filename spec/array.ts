@@ -1,70 +1,50 @@
-import { Type } from "../src/typebox"
-import { ok, fail }     from "./validate"
-
-const a_any      = () => [1, true, "hello", {}, []]
-const a_null     = () => [null, null]
-const a_number   = () => [1, 2, 3]
-const a_string   = () => ["a", "b", "c"]
-const a_boolean  = () => [true, false, true]
-const a_object   = () => [{}, {}, {}]
-const a_array    = () => [[], [], []]
+import { Type } from '../src/typebox'
+import { ok, fail } from './validate'
 
 describe("Array", () => {
-  it("should validate null",  () => {
-    ok(Type.Array(Type.Null()),   a_null())
-    fail(Type.Array(Type.Null()), a_number())
-    fail(Type.Array(Type.Null()), a_string())
-    fail(Type.Array(Type.Null()), a_boolean())
-    fail(Type.Array(Type.Null()), a_object())
-    fail(Type.Array(Type.Null()), a_array())
+  it('Array <any>',  () => {
+    const T = Type.Array(Type.Any())
+    ok(T, [])
+    ok(T, [0, true, 'hello', {}])
   })
-  it("should validate any",  () => {
-    ok(Type.Array(Type.Any()), a_any())
-    ok(Type.Array(Type.Any()), a_null())
-    ok(Type.Array(Type.Any()), a_number())
-    ok(Type.Array(Type.Any()), a_string())
-    ok(Type.Array(Type.Any()), a_boolean())
-    ok(Type.Array(Type.Any()), a_object())
-    ok(Type.Array(Type.Any()), a_array())
+
+  it('Array <A>',  () => {
+    const A = Type.Number()
+    const T = Type.Array(A)
+    ok(T,   [])
+    ok(T,   [1, 2, 3, 4])
+    fail(T, [true])
+    fail(T, [null])
   })
-  it("should validate number",  () => {
-    fail(Type.Array(Type.Number()),   a_null())
-    ok(Type.Array(Type.Number()), a_number())
-    fail(Type.Array(Type.Number()), a_string())
-    fail(Type.Array(Type.Number()), a_boolean())
-    fail(Type.Array(Type.Number()), a_object())
-    fail(Type.Array(Type.Number()), a_array())
+
+  it('Array <A | B>',  () => {
+    const A = Type.Number()
+    const B = Type.String()
+    const T = Type.Array(Type.Union(A, B))
+    ok(T,   [])
+    ok(T,   [1, 'hello', 3, 'world'])
+    fail(T, [1, 'hello', 3, 'world', null])
+    fail(T, [null])
   })
-  it("should validate string",  () => {
-    fail(Type.Array(Type.String()),   a_null())
-    fail(Type.Array(Type.String()), a_number())
-    ok(Type.Array(Type.String()), a_string())
-    fail(Type.Array(Type.String()), a_boolean())
-    fail(Type.Array(Type.String()), a_object())
-    fail(Type.Array(Type.String()), a_array())
+
+  it('Array <A & B>',  () => {
+    const A = Type.Object({ a: Type.String() })
+    const B = Type.Object({ b: Type.String() })
+    const T = Type.Array(Type.Intersect(A, B))
+    ok(T,   [])
+    ok(T,   [{a: 'hello', b: 'world'}])
+    fail(T, [{a: 'hello'}])
+    fail(T, [{b: 'world'}])
+    fail(T, [null])
   })
-  it("should validate boolean",  () => {
-    fail(Type.Array(Type.Boolean()), a_null())
-    fail(Type.Array(Type.Boolean()), a_number())
-    fail(Type.Array(Type.Boolean()), a_string())
-    ok(Type.Array(Type.Boolean()), a_boolean())
-    fail(Type.Array(Type.Boolean()), a_object())
-    fail(Type.Array(Type.Boolean()), a_array())
-  })
-  it("should validate object",  () => {
-    fail(Type.Array(Type.Object()),   a_null())
-    fail(Type.Array(Type.Object()), a_number())
-    fail(Type.Array(Type.Object()), a_string())
-    fail(Type.Array(Type.Object()), a_boolean())
-    ok(Type.Array(Type.Object()), a_object())
-    fail(Type.Array(Type.Object()), a_array())
-  })
-  it("should validate array",  () => {
-    fail(Type.Array(Type.Array()), a_null())
-    fail(Type.Array(Type.Array()), a_number())
-    fail(Type.Array(Type.Array()), a_string())
-    fail(Type.Array(Type.Array()), a_boolean())
-    fail(Type.Array(Type.Array()), a_object())
-    ok(Type.Array(Type.Array()), a_array())
+
+  it('Array <[A, B]>',  () => {
+    const A = Type.String()
+    const B = Type.Number()
+    const T = Type.Array(Type.Tuple(A, B))
+    ok(T,   [])
+    ok(T,   [['hello', 42]])
+    fail(T, [[42, 'hello']])
+    fail(T, [null])
   })
 })

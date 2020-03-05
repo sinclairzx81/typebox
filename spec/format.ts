@@ -1,12 +1,19 @@
-import { Type } from "../src/typebox"
-import { ok, fail } from "./validate"
+import { Type } from '../src/typebox'
+import { ok, fail } from './validate'
 
-describe("Format", () => {
-  it("should validate a date-time Format",  () => {
-    const type = Type.Format('date-time')
-    ok(type, "2018-11-13T20:20:39+00:00")
-    fail(type, "2018-11-13")
-    fail(type, "20:20:39+00:00")
-    fail(type, "string")
-  })
+describe('Format', () => {
+
+    it('date-time', () => {
+        const T = Type.Format('date-time')
+        ok(T, "2018-11-13T20:20:39+00:00")
+        fail(T, "2018-11-13")
+        fail(T, "20:20:39+00:00")
+        fail(T, "string")
+    })
+
+    it('email', () => {
+        const T = Type.Format('email')
+        ok(T, "dave@domain.com")
+        fail(T, "orange")
+    })
 })

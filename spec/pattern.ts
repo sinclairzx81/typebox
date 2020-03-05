@@ -1,15 +1,16 @@
-import { Type } from "../src/typebox"
-import { ok, fail } from "./validate"
+import { Type } from '../src/typebox'
+import { ok, fail } from './validate'
 
-describe("Pattern", () => {
-  it("should validate a pattern",  () => {
-    const type = Type.Pattern(/[012345]/)
-    ok(type, "0")
-    ok(type, "1")
-    ok(type, "2")
-    ok(type, "3")
-    ok(type, "4")
-    ok(type, "5")
-    fail(type, "6")
+describe('Pattern', () => {
+
+  it('Numeric',  () => {
+    const T = Type.Pattern(/[012345]/)
+    ok(T, '0')
+    ok(T, '1')
+    ok(T, '2')
+    ok(T, '3')
+    ok(T, '4')
+    ok(T, '5')
+    fail(T, '6')
   })
 })

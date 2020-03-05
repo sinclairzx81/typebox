@@ -1,13 +1,12 @@
 {
   "compilerOptions": {
-    "module":           "amd",
-    "outFile":          "../spec.js",
+    "strict": true,
+    "target": "ESNext",
     "moduleResolution": "node",
-    "removeComments":   true,
-    "lib":              ["es2015", "dom"],
-    "strict": true,        /* Enable all strict type-checking options. */
-    "alwaysStrict": true,  /* Parse in strict mode and emit "use strict" for each source file. */
-
+    "removeComments": true,
+    "lib": ["ESNext"],
+    "alwaysStrict": true,
+    "outFile": "../spec.js",
   },
   "files": ["index.ts"]
 }
