@@ -23,9 +23,7 @@ $ npm install @sinclair/typebox --save
 
 ## Overview
 
-TypeBox is a type builder library that allows developers to compose complex in-memory JSONSchema objects that can be resolved to static TypeScript types. The schemas produced by TypeBox can be used directly as validation schemas or reflected upon by navigating the standard JSONSchema properties at runtime.
-
-TypeBox can be used as a simple tool to build complex schemas or integrated into RPC or REST services to help validate JSON data received over the wire.
+TypeBox is a type builder library that allows developers to compose complex in-memory JSONSchema objects that can be resolved to static TypeScript types. The schemas produced by TypeBox can be used directly as validation schemas or reflected upon by navigating the standard JSONSchema properties at runtime. TypeBox can be used as a simple tool to build complex schemas or integrated into RPC or REST services to help validate JSON data received over the wire.
 
 TypeBox does not provide any mechanism for validating JSONSchema. Please refer to libraries such as [AJV](https://www.npmjs.com/package/ajv) or similar to validate the schemas created with this library.
 
