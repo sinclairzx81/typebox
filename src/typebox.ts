@@ -37,15 +37,15 @@ function reflect(value: any): 'string' | 'number' | 'boolean' | 'unknown' {
 
 // #region TContract
 
-interface TFunction8<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema, T7 extends TSchema, U extends TSchema> { type: 'function', arguments: [T0, T1, T2, T3, T4, T5, T6, T7], returns: U }
-interface TFunction7<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema, U extends TSchema> { type: 'function', arguments: [T0, T1, T2, T3, T4, T5, T6], returns: U }
-interface TFunction6<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, U extends TSchema> { type: 'function', arguments: [T0, T1, T2, T3, T4, T5], returns: U }
-interface TFunction5<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, U extends TSchema> { type: 'function', arguments: [T0, T1, T2, T3, T4], returns: U }
-interface TFunction4<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, U extends TSchema> { type: 'function', arguments: [T0, T1, T2, T3], returns: U }
-interface TFunction3<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, U extends TSchema> { type: 'function', arguments: [T0, T1, T2], returns: U }
-interface TFunction2<T0 extends TSchema, T1 extends TSchema, U extends TSchema> { type: 'function', arguments: [T0, T1], returns: U }
-interface TFunction1<T0 extends TSchema, U extends TSchema> { type: 'function', arguments: [T0], returns: U }
-interface TFunction0<U extends TSchema> { type: 'function', arguments: [], returns: U }
+export interface TFunction8<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema, T7 extends TSchema, U extends TSchema> { type: 'function', arguments: [T0, T1, T2, T3, T4, T5, T6, T7], returns: U }
+export interface TFunction7<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema, U extends TSchema> { type: 'function', arguments: [T0, T1, T2, T3, T4, T5, T6], returns: U }
+export interface TFunction6<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, U extends TSchema> { type: 'function', arguments: [T0, T1, T2, T3, T4, T5], returns: U }
+export interface TFunction5<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, U extends TSchema> { type: 'function', arguments: [T0, T1, T2, T3, T4], returns: U }
+export interface TFunction4<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, U extends TSchema> { type: 'function', arguments: [T0, T1, T2, T3], returns: U }
+export interface TFunction3<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, U extends TSchema> { type: 'function', arguments: [T0, T1, T2], returns: U }
+export interface TFunction2<T0 extends TSchema, T1 extends TSchema, U extends TSchema> { type: 'function', arguments: [T0, T1], returns: U }
+export interface TFunction1<T0 extends TSchema, U extends TSchema> { type: 'function', arguments: [T0], returns: U }
+export interface TFunction0<U extends TSchema> { type: 'function', arguments: [], returns: U }
 export type TFunction = TFunction8<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
   TFunction7<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
   TFunction6<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
@@ -56,15 +56,15 @@ export type TFunction = TFunction8<TSchema, TSchema, TSchema, TSchema, TSchema, 
   TFunction1<TSchema, TSchema> |
   TFunction0<TSchema>
 
-interface TConstructor8<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema, T7 extends TSchema, U extends TSchema> { type: 'constructor', arguments: [T0, T1, T2, T3, T4, T5, T6, T7], returns: U }
-interface TConstructor7<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema, U extends TSchema> { type: 'constructor', arguments: [T0, T1, T2, T3, T4, T5, T6], returns: U }
-interface TConstructor6<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, U extends TSchema> { type: 'constructor', arguments: [T0, T1, T2, T3, T4, T5], returns: U }
-interface TConstructor5<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, U extends TSchema> { type: 'constructor', arguments: [T0, T1, T2, T3, T4], returns: U }
-interface TConstructor4<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, U extends TSchema> { type: 'constructor', arguments: [T0, T1, T2, T3], returns: U }
-interface TConstructor3<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, U extends TSchema> { type: 'constructor', arguments: [T0, T1, T2], returns: U }
-interface TConstructor2<T0 extends TSchema, T1 extends TSchema, U extends TSchema> { type: 'constructor', arguments: [T0, T1], returns: U }
-interface TConstructor1<T0 extends TSchema, U extends TSchema> { type: 'constructor', arguments: [T0], returns: U }
-interface TConstructor0<U extends TSchema> { type: 'constructor', arguments: [], returns: U }
+export interface TConstructor8<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema, T7 extends TSchema, U extends TSchema> { type: 'constructor', arguments: [T0, T1, T2, T3, T4, T5, T6, T7], returns: U }
+export interface TConstructor7<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema, U extends TSchema> { type: 'constructor', arguments: [T0, T1, T2, T3, T4, T5, T6], returns: U }
+export interface TConstructor6<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, U extends TSchema> { type: 'constructor', arguments: [T0, T1, T2, T3, T4, T5], returns: U }
+export interface TConstructor5<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, U extends TSchema> { type: 'constructor', arguments: [T0, T1, T2, T3, T4], returns: U }
+export interface TConstructor4<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, U extends TSchema> { type: 'constructor', arguments: [T0, T1, T2, T3], returns: U }
+export interface TConstructor3<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, U extends TSchema> { type: 'constructor', arguments: [T0, T1, T2], returns: U }
+export interface TConstructor2<T0 extends TSchema, T1 extends TSchema, U extends TSchema> { type: 'constructor', arguments: [T0, T1], returns: U }
+export interface TConstructor1<T0 extends TSchema, U extends TSchema> { type: 'constructor', arguments: [T0], returns: U }
+export interface TConstructor0<U extends TSchema> { type: 'constructor', arguments: [], returns: U }
 export type TConstructor = TConstructor8<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
   TConstructor7<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
   TConstructor6<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
@@ -84,14 +84,14 @@ export interface TUndefined { type: 'undefined' }
 
 // #region TComposite
 
-interface TIntersect8<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema, T7 extends TSchema> { allOf: [T0, T1, T2, T3, T4, T5, T6, T7] }
-interface TIntersect7<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema> { allOf: [T0, T1, T2, T3, T4, T5, T6] }
-interface TIntersect6<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema> { allOf: [T0, T1, T2, T3, T4, T5] }
-interface TIntersect5<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema> { allOf: [T0, T1, T2, T3, T4] }
-interface TIntersect4<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema> { allOf: [T0, T1, T2, T3] }
-interface TIntersect3<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema> { allOf: [T0, T1, T2] }
-interface TIntersect2<T0 extends TSchema, T1 extends TSchema> { allOf: [T0, T1] }
-interface TIntersect1<T0 extends TSchema> { allOf: [T0] }
+export interface TIntersect8<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema, T7 extends TSchema> { allOf: [T0, T1, T2, T3, T4, T5, T6, T7] }
+export interface TIntersect7<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema> { allOf: [T0, T1, T2, T3, T4, T5, T6] }
+export interface TIntersect6<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema> { allOf: [T0, T1, T2, T3, T4, T5] }
+export interface TIntersect5<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema> { allOf: [T0, T1, T2, T3, T4] }
+export interface TIntersect4<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema> { allOf: [T0, T1, T2, T3] }
+export interface TIntersect3<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema> { allOf: [T0, T1, T2] }
+export interface TIntersect2<T0 extends TSchema, T1 extends TSchema> { allOf: [T0, T1] }
+export interface TIntersect1<T0 extends TSchema> { allOf: [T0] }
 export type TIntersect = TIntersect8<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
   TIntersect7<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
   TIntersect6<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
@@ -101,14 +101,14 @@ export type TIntersect = TIntersect8<TSchema, TSchema, TSchema, TSchema, TSchema
   TIntersect2<TSchema, TSchema> |
   TIntersect1<TSchema>;
 
-interface TUnion8<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema, T7 extends TSchema> { oneOf: [T0, T1, T2, T3, T4, T5, T6, T7] }
-interface TUnion7<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema> { oneOf: [T0, T1, T2, T3, T4, T5, T6] }
-interface TUnion6<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema> { oneOf: [T0, T1, T2, T3, T4, T5] }
-interface TUnion5<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema> { oneOf: [T0, T1, T2, T3, T4] }
-interface TUnion4<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema> { oneOf: [T0, T1, T2, T3] }
-interface TUnion3<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema> { oneOf: [T0, T1, T2] }
-interface TUnion2<T0 extends TSchema, T1 extends TSchema> { oneOf: [T0, T1] }
-interface TUnion1<T0 extends TSchema> { oneOf: [T0] }
+export interface TUnion8<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema, T7 extends TSchema> { oneOf: [T0, T1, T2, T3, T4, T5, T6, T7] }
+export interface TUnion7<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema> { oneOf: [T0, T1, T2, T3, T4, T5, T6] }
+export interface TUnion6<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema> { oneOf: [T0, T1, T2, T3, T4, T5] }
+export interface TUnion5<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema> { oneOf: [T0, T1, T2, T3, T4] }
+export interface TUnion4<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema> { oneOf: [T0, T1, T2, T3] }
+export interface TUnion3<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema> { oneOf: [T0, T1, T2] }
+export interface TUnion2<T0 extends TSchema, T1 extends TSchema> { oneOf: [T0, T1] }
+export interface TUnion1<T0 extends TSchema> { oneOf: [T0] }
 export type TUnion = TUnion8<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
   TUnion7<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
   TUnion6<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
@@ -119,14 +119,14 @@ export type TUnion = TUnion8<TSchema, TSchema, TSchema, TSchema, TSchema, TSchem
   TUnion1<TSchema>;
 
 
-interface TTuple8<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema, T7 extends TSchema> { type: 'array', items: [T0, T1, T2, T3, T4, T5, T6, T7], additionalItems: false, minItems: 8, maxItems: 8 }
-interface TTuple7<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema> { type: 'array', items: [T0, T1, T2, T3, T4, T5, T6], additionalItems: false, minItems: 7, maxItems: 7 }
-interface TTuple6<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema> { type: 'array', items: [T0, T1, T2, T3, T4, T5], additionalItems: false, minItems: 6, maxItems: 6 }
-interface TTuple5<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema> { type: 'array', items: [T0, T1, T2, T3, T4], additionalItems: false, minItems: 5, maxItems: 5 }
-interface TTuple4<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema> { type: 'array', items: [T0, T1, T2, T3], additionalItems: false, minItems: 4, maxItems: 4 }
-interface TTuple3<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema> { type: 'array', items: [T0, T1, T2], additionalItems: false, minItems: 3, maxItems: 3 }
-interface TTuple2<T0 extends TSchema, T1 extends TSchema> { type: 'array', items: [T0, T1], additionalItems: false, minItems: 2, maxItems: 2 }
-interface TTuple1<T0 extends TSchema> { type: 'array', items: [T0], additionalItems: false, minItems: 1, maxItems: 1 }
+export interface TTuple8<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema, T7 extends TSchema> { type: 'array', items: [T0, T1, T2, T3, T4, T5, T6, T7], additionalItems: false, minItems: 8, maxItems: 8 }
+export interface TTuple7<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema> { type: 'array', items: [T0, T1, T2, T3, T4, T5, T6], additionalItems: false, minItems: 7, maxItems: 7 }
+export interface TTuple6<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema> { type: 'array', items: [T0, T1, T2, T3, T4, T5], additionalItems: false, minItems: 6, maxItems: 6 }
+export interface TTuple5<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema> { type: 'array', items: [T0, T1, T2, T3, T4], additionalItems: false, minItems: 5, maxItems: 5 }
+export interface TTuple4<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema> { type: 'array', items: [T0, T1, T2, T3], additionalItems: false, minItems: 4, maxItems: 4 }
+export interface TTuple3<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema> { type: 'array', items: [T0, T1, T2], additionalItems: false, minItems: 3, maxItems: 3 }
+export interface TTuple2<T0 extends TSchema, T1 extends TSchema> { type: 'array', items: [T0, T1], additionalItems: false, minItems: 2, maxItems: 2 }
+export interface TTuple1<T0 extends TSchema> { type: 'array', items: [T0], additionalItems: false, minItems: 1, maxItems: 1 }
 export type TTuple = TTuple8<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
   TTuple7<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
   TTuple6<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
@@ -151,7 +151,7 @@ export type TModifier = TOptional<any> | TReadonly<any> | TReadonlyOptional<any>
 
 // #region TSchema
 
-type FormatOption =
+export type FormatOption =
   | 'date-time' | 'time' | 'date' | 'email' | 'idn-email' | 'hostname'
   | 'idn-hostname' | 'ipv4' | 'ipv6' | 'uri' | 'uri-reference' | 'iri'
   | 'iri-reference' | 'uri-template' | 'json-pointer' | 'relative-json-pointer'
