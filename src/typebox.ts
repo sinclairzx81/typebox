@@ -289,10 +289,14 @@ type ReadonlyPropertyKeys<T> = { [K in keyof T]: T[K] extends TReadonly<infer U>
 type OptionalPropertyKeys<T> = { [K in keyof T]: T[K] extends TOptional<infer U> ? K : never }[keyof T]
 type PropertyKeys<T> = keyof Omit<T, OptionalPropertyKeys<T> | ReadonlyPropertyKeys<T>>
 
-type StaticObjectProperties<T> =
+type StaticObjectPropertiesExpansion<T> =
   { readonly [K in ReadonlyPropertyKeys<T>]: Static<T[K]> } &
   { [K in OptionalPropertyKeys<T>]?: Static<T[K]> } &
   { [K in PropertyKeys<T>]: Static<T[K]> }
+
+type StaticObjectProperties<T> = {
+  [K in keyof StaticObjectPropertiesExpansion<T>]: StaticObjectPropertiesExpansion<T>[K] 
+}
 
 type StaticSchema<T extends TSchema> =
   T extends TObject<infer U> ? StaticObjectProperties<U> :
