@@ -349,7 +349,7 @@ For more information on their use, see the [Functions](#Functions) and [Generics
         <tr>
             <th>Intrinsic</th>
             <th>TypeBox</th>
-            <th>TypeScript</th>
+            <th>Metadata</th>
         </tr>
     </thead>
     <tbody>
