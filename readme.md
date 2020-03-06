@@ -456,7 +456,7 @@ type X = Static<typeof NumberToString>
 
 // X is (arg0: number) => string
 ```
- To take things a bit further, the following code contains some generic TypeScript REST setup with controllers that take some generic resource of type `T`. Below this we expresses that same setup using TypeBox. The resulting type `IRecordController` contains reflectable metadata about the `RecordController`.
+ To take things a bit further, the following code contains some generic TypeScript REST setup with controllers that take some generic resource of type `T`. Below this we express that same setup using TypeBox. The resulting type `IRecordController` contains reflectable interface metadata about the `RecordController`.
 ### TypeScript
 ```typescript
 interface IController<T> {
@@ -507,7 +507,7 @@ class RecordController implements IRecordController {
     async delete(resource: Record): Promise<void> { /* */  }
 }
 
-// Reflect !!
+// Reflect
 console.log(IRecordController)
 ```
 <a href='Validation'></a>
