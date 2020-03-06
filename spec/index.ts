@@ -12,17 +12,14 @@ import './object'
 import './array'
 import './map'
 
-// TSchema: extended
-import './pattern'
-import './range'
-import './format'
-
 // TComposite
 import './intersect'
 import './union'
 import './tuple'
 
-// Experimental
+// Extended
+import './pattern'
+import './format'
 import './guid'
 
 

@@ -36,7 +36,7 @@ License MIT
 - [Overview](#Overview)
 - [Example](#Example)
 - [Types](#Types)
-- [More Types](#Intrinsics)
+- [Function Types](#Contracts)
 - [Functions](#Functions)
 - [Generics](#Generics)
 - [Validation](#Validation)
@@ -62,7 +62,7 @@ type Order = {
 const Order = Type.Object({
     email:    Type.Format('email'), 
     address:  Type.String(),
-    quantity: Type.Range(1, 99),
+    quantity: Type.Number({ minimum: 1, maximum: 99 }),
     option:   Type.Union(
         Type.Literal('pizza'), 
         Type.Literal('salad'),
@@ -183,11 +183,6 @@ TypeBox provides many functions generate JSONschema data types. The following ta
             <td><code>type T = string</code></td>
         </tr>
         <tr>
-            <td>Range</td>
-            <td><code>const T = Type.Range(20, 30)</code></td>
-            <td><code>type T = number</code></td>
-        </tr>
-        <tr>
             <td>Format</td>
             <td><code>const T = Type.Format('date-time')</code></td>
             <td><code>type T = string</code></td>
@@ -277,11 +272,6 @@ TypeBox provides many functions generate JSONschema data types. The following ta
             <td><code>{ type: 'string', pattern: 'foo' }</code></td>
         </tr>
         <tr>
-            <td>Range</td>
-            <td><code>const T = Type.Range(20, 30)</code></td>
-            <td><code>{ type: 'number', minimum: 20, maximum: 30 }</code></td>
-        </tr>
-        <tr>
             <td>Format</td>
             <td><code>const T = Type.Format('date-time')</code></td>
             <td><code>{ type: 'string',format: 'date-time' }</code></td>
@@ -295,13 +285,30 @@ TypeBox provides many functions generate JSONschema data types. The following ta
 </table>
 
 
-<a name="Intrinsics"></a>
+<a name="Contracts"></a>
 
-## More Types
+## Function Types
 
-In addition to the JSONSchema functions, TypeBox also provides some non-standard schemas that provide reflectable metadata for function signatures. These functions allow TypeBox to express `function` and `constructor` signatures where the arguments and return types may be JSONSchema.
+TypeBox allows function signatures to be composed in a similar way to other types. It uses a custom schema represenation to achieve this. Note, this format is not JSONSchema, rather it uses JSONSchema to encode function `arguments` and `return` types. It also provides additional types; `Type.Constructor()`, `Type.Void()`, `Type.Undefined()`, and `Type.Promise()`.
 
-For more information on their use, see the [Functions](#Functions) and [Generics](#Generics) sections below.
+For more information on their using functions, see the [Functions](#Functions) and [Generics](#Generics) sections below.
+
+### Format
+
+The following is an example of how TypeBox encodes function signatures. 
+
+```typescript
+type T = (a: string, b: number) => boolean
+
+{
+    "type": "function",
+    "returns": { "type": "boolean" },
+    "arguments": [
+        {"type": "string" }, 
+        {"type": "number" },
+    ]
+}
+```
 
 ### TypeBox > TypeScript
 
@@ -342,14 +349,14 @@ For more information on their use, see the [Functions](#Functions) and [Generics
     </tbody>
 </table>
 
-### TypeBox > TypeBox Schema
+### TypeBox > JSON Function
 
 <table>
     <thead>
         <tr>
             <th>Intrinsic</th>
             <th>TypeBox</th>
-            <th>Metadata</th>
+            <th>JSON Function</th>
         </tr>
     </thead>
     <tbody>
