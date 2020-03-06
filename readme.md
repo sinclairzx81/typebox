@@ -133,6 +133,11 @@ TypeBox provides many functions generate JSONschema data types. The following ta
             <td><code>type T = number</code></td>
         </tr>
         <tr>
+            <td>Integer</td>
+            <td><code>const T = Type.Integer()</code></td>
+            <td><code>type T = number</code></td>
+        </tr>
+        <tr>
             <td>Boolean</td>
             <td><code>const T = Type.Boolean()</code></td>
             <td><code>type T = boolean</code></td>
@@ -220,6 +225,11 @@ TypeBox provides many functions generate JSONschema data types. The following ta
             <td>Number</td>
             <td><code>const T = Type.Number()</code></td>
             <td><code>{ type: 'number' }</code></td>
+        </tr>
+        <tr>
+            <td>Integer</td>
+            <td><code>const T = Type.Number()</code></td>
+            <td><code>{ type: 'integer' }</code></td>
         </tr>
         <tr>
             <td>Boolean</td>
