@@ -17,7 +17,7 @@ export async function build() {
     await shell('tsc -p ./src/tsconfig.json --outDir dist').exec()
     await folder('dist').add('package.json').exec()
     await folder('dist').add('readme.md').exec()
-    await folder('dist').add('license.md').exec()
+    await folder('dist').add('license').exec()
     await shell('cd dist && npm pack').exec()
     
     // npm publish sinclair-typebox-0.x.x.tgz --access=public

@@ -37,14 +37,14 @@ function reflect(value: any): 'string' | 'number' | 'boolean' | 'unknown' {
 
 // #region TIntrinsics
 
-interface TFunction8<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema, T7 extends TSchema, U extends TSchema> { type: 'function', arguments: [T0, T1, T2, T3, T4, T5, T6, T7], return: U }
-interface TFunction7<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema, U extends TSchema> { type: 'function', arguments: [T0, T1, T2, T3, T4, T5, T6], return: U }
-interface TFunction6<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, U extends TSchema> { type: 'function', arguments: [T0, T1, T2, T3, T4, T5], return: U }
-interface TFunction5<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, U extends TSchema> { type: 'function', arguments: [T0, T1, T2, T3, T4], return: U }
-interface TFunction4<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, U extends TSchema> { type: 'function', arguments: [T0, T1, T2, T3], return: U }
-interface TFunction3<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, U extends TSchema> { type: 'function', arguments: [T0, T1, T2], return: U }
-interface TFunction2<T0 extends TSchema, T1 extends TSchema, U extends TSchema> { type: 'function', arguments: [T0, T1], return: U }
-interface TFunction1<T0 extends TSchema, U extends TSchema> { type: 'function', arguments: [T0], return: U }
+interface TFunction8<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema, T7 extends TSchema, U extends TSchema> { type: 'function', arguments: [T0, T1, T2, T3, T4, T5, T6, T7], returns: U }
+interface TFunction7<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema, U extends TSchema> { type: 'function', arguments: [T0, T1, T2, T3, T4, T5, T6], returns: U }
+interface TFunction6<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, U extends TSchema> { type: 'function', arguments: [T0, T1, T2, T3, T4, T5], returns: U }
+interface TFunction5<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, U extends TSchema> { type: 'function', arguments: [T0, T1, T2, T3, T4], returns: U }
+interface TFunction4<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, U extends TSchema> { type: 'function', arguments: [T0, T1, T2, T3], returns: U }
+interface TFunction3<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, U extends TSchema> { type: 'function', arguments: [T0, T1, T2], returns: U }
+interface TFunction2<T0 extends TSchema, T1 extends TSchema, U extends TSchema> { type: 'function', arguments: [T0, T1], returns: U }
+interface TFunction1<T0 extends TSchema, U extends TSchema> { type: 'function', arguments: [T0], returns: U }
 interface TFunction0<U extends TSchema> { type: 'function', arguments: [], returns: U }
 export type TFunction = TFunction8<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
     TFunction7<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
@@ -56,7 +56,26 @@ export type TFunction = TFunction8<TSchema, TSchema, TSchema, TSchema, TSchema, 
     TFunction1<TSchema, TSchema> |
     TFunction0<TSchema>
 
-export type TIntrinsic = TFunction | TVoid | TUndefined | TPromise<any>
+interface TConstructor8<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema, T7 extends TSchema, U extends TSchema> { type: 'constructor', arguments: [T0, T1, T2, T3, T4, T5, T6, T7], returns: U }
+interface TConstructor7<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema, U extends TSchema> { type: 'constructor', arguments: [T0, T1, T2, T3, T4, T5, T6], returns: U }
+interface TConstructor6<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, U extends TSchema> { type: 'constructor', arguments: [T0, T1, T2, T3, T4, T5], returns: U }
+interface TConstructor5<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, U extends TSchema> { type: 'constructor', arguments: [T0, T1, T2, T3, T4], returns: U }
+interface TConstructor4<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, U extends TSchema> { type: 'constructor', arguments: [T0, T1, T2, T3], returns: U }
+interface TConstructor3<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, U extends TSchema> { type: 'constructor', arguments: [T0, T1, T2], returns: U }
+interface TConstructor2<T0 extends TSchema, T1 extends TSchema, U extends TSchema> { type: 'constructor', arguments: [T0, T1], returns: U }
+interface TConstructor1<T0 extends TSchema, U extends TSchema> { type: 'constructor', arguments: [T0], returns: U }
+interface TConstructor0<U extends TSchema> { type: 'constructor', arguments: [], returns: U }
+export type TConstructor = TConstructor8<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
+    TConstructor7<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
+    TConstructor6<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
+    TConstructor5<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
+    TConstructor4<TSchema, TSchema, TSchema, TSchema, TSchema> |
+    TConstructor3<TSchema, TSchema, TSchema, TSchema> |
+    TConstructor2<TSchema, TSchema, TSchema> |
+    TConstructor1<TSchema, TSchema> |
+    TConstructor0<TSchema>
+
+export type TIntrinsic = TFunction | TConstructor | TPromise<any> | TVoid | TUndefined
 export interface TPromise<T extends TSchema | TVoid | TUndefined> { type: 'promise', item: T }
 export interface TVoid      { type: 'void' }
 export interface TUndefined { type: 'undefined' }
@@ -123,8 +142,8 @@ export type TComposite = TIntersect | TUnion | TTuple
 
 // #region TModifier
 
-export type TOptional<T extends TSchema | TUnion | TIntersect | TTuple> = T & { modifier: 'optional' }
-export type TReadonly<T extends TSchema | TUnion | TIntersect | TTuple> = T & { modifier: 'readonly' }
+export type TOptional<T extends TSchema | TComposite> = T & { modifier: 'optional' }
+export type TReadonly<T extends TSchema | TComposite> = T & { modifier: 'readonly' }
 export type TModifier = TOptional<any> | TReadonly<any>
 
 // #endregion
@@ -141,10 +160,10 @@ export type TLiteral = TStringLiteral<string> | TNumberLiteral<number> | TBoolea
 export interface TStringLiteral<T>  { type: 'string',  enum: [T] }
 export interface TNumberLiteral<T>  { type: 'number',  enum: [T] }
 export interface TBooleanLiteral<T> { type: 'boolean', enum: [T] }
-export interface TProperties { [key: string]: TSchema | TUnion | TIntersect | TTuple | TOptional<TSchema | TUnion | TIntersect | TTuple> | TReadonly<TSchema | TUnion | TIntersect | TTuple> }
+export interface TProperties { [key: string]: TSchema | TComposite | TOptional<TSchema | TComposite> | TReadonly<TSchema | TComposite> }
 export interface TObject<T extends TProperties> { type: 'object', properties: T, required: string[] }
-export interface TMap   <T extends TSchema | TUnion | TIntersect | TTuple> { type: 'object', additionalProperties: T }
-export interface TArray <T extends TSchema | TUnion | TIntersect | TTuple> { type: 'array', items: T }
+export interface TMap   <T extends TSchema | TComposite> { type: 'object', additionalProperties: T }
+export interface TArray <T extends TSchema | TComposite> { type: 'array', items: T }
 export interface TNumber  { type: 'number' }
 export interface TString  { type: 'string' }
 export interface TBoolean { type: 'boolean' }
@@ -172,8 +191,22 @@ type StaticFunction<T> =
   T extends TFunction0<infer R> ? () => Static<R> :
   never;
 
+
+type StaticConstructor<T> =
+  T extends TConstructor8<infer U0, infer U1, infer U2, infer U3, infer U4, infer U5, infer U6, infer U7, infer R> ? new (arg0: Static<U0>, arg1: Static<U1>, arg2: Static<U2>, arg3: Static<U3>, arg4: Static<U4>, arg5: Static<U5>, arg6: Static<U6>, arg7: Static<U7>) => Static<R> :
+  T extends TConstructor7<infer U0, infer U1, infer U2, infer U3, infer U4, infer U5, infer U6, infer R> ? new (arg0: Static<U0>, arg1: Static<U1>, arg2: Static<U2>, arg3: Static<U3>, arg4: Static<U4>, arg5: Static<U5>, arg6: Static<U6>) => Static<R> :
+  T extends TConstructor6<infer U0, infer U1, infer U2, infer U3, infer U4, infer U5, infer R> ? new (arg0: Static<U0>, arg1: Static<U1>, arg2: Static<U2>, arg3: Static<U3>, arg4: Static<U4>, arg5: Static<U5>) => Static<R> :
+  T extends TConstructor5<infer U0, infer U1, infer U2, infer U3, infer U4, infer R> ? new (arg0: Static<U0>, arg1: Static<U1>, arg2: Static<U2>, arg3: Static<U3>, arg4: Static<U4>) => Static<R> :
+  T extends TConstructor4<infer U0, infer U1, infer U2, infer U3, infer R> ? new (arg0: Static<U0>, arg1: Static<U1>, arg2: Static<U2>, arg3: Static<U3>) => Static<R> :
+  T extends TConstructor3<infer U0, infer U1, infer U2, infer R> ? new (arg0: Static<U0>, arg1: Static<U1>, arg2: Static<U2>) => Static<R> :
+  T extends TConstructor2<infer U0, infer U1, infer R> ? new (arg0: Static<U0>, arg1: Static<U1>) => Static<R> :
+  T extends TConstructor1<infer U0, infer R> ? new (arg0: Static<U0>) => Static<R> :
+  T extends TConstructor0<infer R> ? new () => Static<R> :
+  never;
+
 type StaticInstrinsic<T extends TIntrinsic> =
-  T extends TFunction         ? StaticFunction<T> :  
+  T extends TFunction         ? StaticFunction<T> :    
+  T extends TConstructor      ? StaticConstructor<T> :
   T extends TPromise<infer U> ? Promise<Static<U>> :
   T extends TVoid             ? void :
   T extends TUndefined        ? undefined :
@@ -334,25 +367,6 @@ export class Type {
   }
 
   // #endregion
-  
-  // #region PrimitiveExtended
-  
-  /** Creates a Promise type. */
-  public static Promise<T extends TSchema>(t: T): TPromise<T> { 
-    return { type: 'promise', item: t } 
-  }
-  
-  /** Creates a Void type. */
-  public static Void(): TVoid {
-    return { type: 'void' }
-  }
-
-  /** Creates a Undefined type. */
-  public static Undefined(): TUndefined {
-    return { type: 'undefined' }
-  }
-
-  // #endregion
 
   // #region Literal
 
@@ -448,7 +462,8 @@ export class Type {
 
   // #endregion
 
-  // #region TFunction
+  // #region TIntrinsic
+
   /** Creates a Function type for the given arguments. */
   public static Function<T0 extends TStatic, T1 extends TStatic, T2 extends TStatic, T3 extends TStatic, T4 extends TStatic, T5 extends TStatic, T6 extends TStatic, T7 extends TStatic, U extends TStatic>(args: [T0, T1, T2, T3, T4, T5, T6, T7], returns: U): TFunction8<T0, T1, T2, T3, T4, T5, T6, T7, U>
   /** Creates a Function type for the given arguments. */
@@ -471,7 +486,45 @@ export class Type {
   public static Function(args: TStatic[], returns: TStatic): TFunction {
       return { type: 'function', arguments: args, returns: returns } as TFunction
   }
+
+  /** Creates a Constructor type for the given arguments. */
+  public static Constructor<T0 extends TStatic, T1 extends TStatic, T2 extends TStatic, T3 extends TStatic, T4 extends TStatic, T5 extends TStatic, T6 extends TStatic, T7 extends TStatic, U extends TStatic>(args: [T0, T1, T2, T3, T4, T5, T6, T7], returns: U): TConstructor8<T0, T1, T2, T3, T4, T5, T6, T7, U>
+  /** Creates a Constructor type for the given arguments. */
+  public static Constructor<T0 extends TStatic, T1 extends TStatic, T2 extends TStatic, T3 extends TStatic, T4 extends TStatic, T5 extends TStatic, T6 extends TStatic, U extends TStatic>(args: [T0, T1, T2, T3, T4, T5, T6], returns: U): TConstructor7<T0, T1, T2, T3, T4, T5, T6, U>
+  /** Creates a Constructor type for the given arguments. */
+  public static Constructor<T0 extends TStatic, T1 extends TStatic, T2 extends TStatic, T3 extends TStatic, T4 extends TStatic, T5 extends TStatic, U extends TStatic>(args: [T0, T1, T2, T3, T4, T5], returns: U): TConstructor6<T0, T1, T2, T3, T4, T5, U>
+  /** Creates a Constructor type for the given arguments. */
+  public static Constructor<T0 extends TStatic, T1 extends TStatic, T2 extends TStatic, T3 extends TStatic, T4 extends TStatic, U extends TStatic>(args: [T0, T1, T2, T3, T4], returns: U): TConstructor5<T0, T1, T2, T3, T4, U>
+  /** Creates a Constructor type for the given arguments. */
+  public static Constructor<T0 extends TStatic, T1 extends TStatic, T2 extends TStatic, T3 extends TStatic, U extends TStatic>(args: [T0, T1, T2, T3], returns: U): TConstructor4<T0, T1, T2, T3, U>
+  /** Creates a Constructor type for the given arguments. */
+  public static Constructor<T0 extends TStatic, T1 extends TStatic, T2 extends TStatic, U extends TStatic>(args: [T0, T1, T2], returns: U): TConstructor3<T0, T1, T2, U>
+  /** Creates a Constructor type for the given arguments. */
+  public static Constructor<T0 extends TStatic, T1 extends TStatic, U extends TStatic>(args: [T0, T1], returns: U): TConstructor2<T0, T1, U>
+  /** Creates a Constructor type for the given arguments. */
+  public static Constructor<T0 extends TStatic, U extends TStatic>(args: [T0], returns: U): TConstructor1<T0, U>
+  /** Creates a Constructor type for the given arguments. */
+  public static Constructor<U extends TStatic>(args: [], returns: U): TConstructor0<U>
+  /** Creates a Constructor type for the given arguments. */
+  public static Constructor(args: TStatic[], returns: TStatic): TConstructor {
+      return { type: 'constructor', arguments: args, returns: returns } as TConstructor
+  }
+
+  /** Creates a Promise type. */
+  public static Promise<T extends TSchema>(t: T): TPromise<T> { 
+    return { type: 'promise', item: t } 
+  }
   
+  /** Creates a Void type. */
+  public static Void(): TVoid {
+    return { type: 'void' }
+  }
+
+  /** Creates a Undefined type. */
+  public static Undefined(): TUndefined {
+    return { type: 'undefined' }
+  }
+
   // #endregion
 
   // #region Extended

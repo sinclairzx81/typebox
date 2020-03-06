@@ -9,26 +9,25 @@
 
 <img src='./doc/example.gif'></img>
 
-
 </div>
 
 <a name="Install"></a>
 
 ## Install
 
-```
-npm install @sinclair/typebox --save
+```bash
+$ npm install @sinclair/typebox --save
 ```
 
 <a name="Overview"></a>
 
 ## Overview
 
-TypeBox is a type builder library that allows developers to compose complex in-memory JSONSchema objects that can be resolved to static TypeScript types. TypeBox internally represents its types as plain JSONSchema objects and leverages TypeScript's [Mapped Types](https://www.typescriptlang.org/docs/handbook/advanced-types.html#mapped-types) to infer schemas to equivalent static type representations. No additional build process is required.
+TypeBox is a type builder library that allows developers to compose complex in-memory JSONSchema objects that can be resolved to static TypeScript types. The schemas produced by TypeBox can be used directly as validation schemas or reflected upon by navigating the standard JSONSchema properties at runtime.
 
-TypeBox can be used as a tool to build and validate complex schemas, or integrated into RPC or REST services to help validate data received over the wire or published directly to consumers to service as developer documentation.
+TypeBox can be used as a simple tool to build complex schemas or integrated into RPC or REST services to help validate JSON data received over the wire.
 
-Note that TypeBox does not provide any mechanisms for validating JSONSchema. Please refer to libraries such as [AJV](https://www.npmjs.com/package/ajv) or similar to validate the schemas created with this library.
+TypeBox does not provide any mechanism for validating JSONSchema. Please refer to libraries such as [AJV](https://www.npmjs.com/package/ajv) or similar to validate the schemas created with this library.
 
 Requires TypeScript 3.8.3 and above.
 
@@ -39,13 +38,14 @@ License MIT
 - [Overview](#Overview)
 - [Example](#Example)
 - [Types](#Types)
-- [Other Types](#Intrinsics)
+- [More Types](#Intrinsics)
 - [Functions](#Functions)
+- [Generics](#Generics)
 - [Validation](#Validation)
 
 ## Example
 
-The following shows the type alias for `Order` and its TypeBox equivalent.
+The following shows the general usage.
 
 ```typescript
 import { Type, Static } from '@sinclair/typebox'
@@ -96,11 +96,9 @@ JSON.validate(Order, {  // IETF | TC39 ?
 
 ## Types
 
-TypeBox functions generate JSONschema objects. The following table outlines the TypeScript and JSONSchema equivalence.
+TypeBox provides many functions generate JSONschema data types. The following tables list the functions TypeBox provides and their respective TypeScript and JSONSchema equivalents. 
 
 ### TypeBox > TypeScript
-
-The following types and modifiers are compatible with JSONschema and have both JSONschema and TypeScript representations.
 
 <table>
     <thead>
@@ -206,8 +204,6 @@ The following types and modifiers are compatible with JSONschema and have both J
 
 ### TypeBox > JSONSchema
 
-The following shows the TypeBox to JSONSchema mappings. The following schemas are returned from each function.
-
 <table>
     <thead>
         <tr>
@@ -264,7 +260,7 @@ The following shows the TypeBox to JSONSchema mappings. The following schemas ar
         </tr>
         <tr>
             <td>Tuple</td>
-            <td><code>const T = Type.Union(Type.Number(), Type.String())</code></td>
+            <td><code>const T = Type.Tuple(Type.Number(), Type.String())</code></td>
             <td><code>{ type: "array", items: [{type: 'string'}, {type: 'number'}], additionalItems: false, minItems: 2, maxItems: 2 }</code></td>
         </tr>
         <tr>
@@ -303,13 +299,13 @@ The following shows the TypeBox to JSONSchema mappings. The following schemas ar
 
 <a name="Intrinsics"></a>
 
-## Other Types
+## More Types
 
-TypeBox provides some non-standard JSONSchema functions that TypeBox refers to as Intrinsic types. While these types cannot be used with JSONSchema, they do provide similar reflection and introspection metadata for expressing function signatures with TypeBox.
+In addition to the JSONSchema functions, TypeBox also provides some non-standard schemas that provide reflectable metadata for function signatures. These functions allow TypeBox to express `function` and `constructor` signatures where the arguments and return types may be JSONSchema.
 
- See [Functions](#Functions) section for more details.
+For more information on their use, see the [Functions](#Functions) and [Generics](#Generics) sections below.
 
-### TypeBox > Intrinsics
+### TypeBox > TypeScript
 
 <table>
     <thead>
@@ -324,7 +320,12 @@ TypeBox provides some non-standard JSONSchema functions that TypeBox refers to a
             <td>Function</td>
             <td><code>const T = Type.Function([Type.String()], Type.String())</code></td>
             <td><code>type T = (arg0: string) => string</code></td>
-        </tr>       
+        </tr>  
+        <tr>
+            <td>Constructor</td>
+            <td><code>const T = Type.Constructor([Type.String()], Type.String())</code></td>
+            <td><code>type T = new (arg0: string) => string</code></td>
+        </tr>      
         <tr>
             <td>Promise</td>
             <td><code>const T = Type.Promise(Type.String())</code></td>
@@ -343,7 +344,7 @@ TypeBox provides some non-standard JSONSchema functions that TypeBox refers to a
     </tbody>
 </table>
 
-### TypeBox > Non Schema
+### TypeBox > TypeBox Schema
 
 <table>
     <thead>
@@ -358,7 +359,12 @@ TypeBox provides some non-standard JSONSchema functions that TypeBox refers to a
             <td>Function</td>
             <td><code>const T = Type.Function([Type.String()], Type.Number())</code></td>
             <td><code>{ type: 'function', arguments: [ { type: 'string' } ], returns: { type: 'number' } }</code></td>
-        </tr>       
+        </tr>
+        <tr>
+            <td>Constructor</td>
+            <td><code>const T = Type.Constructor([Type.String()], Type.Number())</code></td>
+            <td><code>{ type: 'constructor', arguments: [ { type: 'string' } ], returns: { type: 'number' } }</code></td>
+        </tr>
         <tr>
             <td>Promise</td>
             <td><code>const T = Type.Promise(Type.String())</code></td>
@@ -381,13 +387,12 @@ TypeBox provides some non-standard JSONSchema functions that TypeBox refers to a
 
 ## Functions
 
-TypeBox provides some capabilities for building typed function signatures. It is important to note however that unlike the other functions available on `Type` the `Type.Function(...)` and other intrinsic types do not produce valid JSONSchema. However, the types returned from `Type.Function(...)` may be comprised of schemas that describe its `arguments` and `return` types. Consider the following TypeScript and TypeBox variants.
+The following demonstrates creating function signatures for the following TypeScript types.
+
+### TypeScript
 
 ```typescript
-
-// TypeScript
-
-type T0 = (a0: number, a0: number) => number;
+type T0 = (a0: number, a1: string) => boolean;
 
 type T1 = (a0: string, a1: () => string) => void;
 
@@ -395,28 +400,106 @@ type T2 = (a0: string) => Promise<number>;
 
 type T3 = () => () => string;
 
-// Convention
+type T4 = new () => string
+```
 
-Type.Function([...Arguments], ReturnType)
+### TypeBox
 
-// TypeBox
-
-const T0 = Type.Function([Type.Number(), Type.Number()], Type.Number())
+```typescript
+const T0 = Type.Function([Type.Number(), Type.String()], Type.Boolean())
 
 const T1 = Type.Function([Type.String(), Type.Function([], Type.String())], Type.Void())
 
 const T2 = Type.Function([Type.String()], Type.Promise(Type.Number()))
 
 const T3 = Type.Function([], Type.Function([], Type.String()))
+
+const T4 = Type.Constructor([], Type.String())
 ```
 
+<a name="Generics"></a>
+
+## Generics
+
+Generic function signatures can be composed with TypeScript functions with [Generic Constraints](https://www.typescriptlang.org/docs/handbook/generics.html#generic-constraints).
+
+### TypeScript
+```typescript
+type ToString = <T>(t: T) => string
+```
+### TypeBox
+```typescript
+import { Type, Static, TStatic } from '@sinclair/typebox'
+
+const ToString = <G extends TStatic>(T: G) => Type.Function([T], Type.String())
+```
+However, it's not possible to statically infer what type `ToString` is without first creating some specialized variant of it. The following creates a specialization called `NumberToString`.
+```typescript
+const NumberToString = ToString(Type.Number())
+
+type X = Static<typeof NumberToString>
+
+// X is (arg0: number) => string
+```
+ To take things a bit further, the following code contains some generic TypeScript REST setup with controllers that take some generic resource of type `T`. Below this we expresses that same setup using TypeBox. The resulting type `IRecordController` contains reflectable metadata about the `RecordController`.
+### TypeScript
+```typescript
+interface IController<T> {
+    get    (): Promise<T>
+    post   (resource: T): Promise<void>
+    put    (resource: T): Promise<void>
+    delete (resource: T): Promise<void>
+}
+
+interface Record {
+     key: string
+     value: string
+}
+
+class StringController implements IController<Record> {
+    async get   (): Promise<Record> { throw 'not implemented' }
+    async post  (resource: Record): Promise<void> { /* */  }
+    async put   (resource: Record): Promise<void> { /* */  }
+    async delete(resource: Record): Promise<void> { /* */  }
+}
+```
+
+### TypeBox
+
+```typescript
+import { Type, Static, TStatic } from '@sinclair/typebox'
+
+const IController = <G extends TStatic>(T: G) => Type.Object({
+    get:    Type.Function([], Type.Promise(T)),
+    post:   Type.Function([T], Type.Promise(Type.Void())),
+    put:    Type.Function([T], Type.Promise(Type.Void())),
+    delete: Type.Function([T], Type.Promise(Type.Void())),
+})
+
+type Record = Static<typeof Record>
+const Record = Type.Object({
+    key: Type.String(),
+    value: Type.String()
+})
+
+type IRecordController = Static<typeof IRecordController>
+const IRecordController = IController(Record)
+
+class RecordController implements IRecordController {
+    async get   (): Promise<Record> { throw 'not implemented' }
+    async post  (resource: Record): Promise<void> { /* */  }
+    async put   (resource: Record): Promise<void> { /* */  }
+    async delete(resource: Record): Promise<void> { /* */  }
+}
+
+// Reflect !!
+console.log(IRecordController)
+```
 <a href='Validation'></a>
 
 ## Validation
 
-TypeBox does not provide any mechanism for validating JSONSchema out of the box. Users are expected to bring their own JSONSchema validation library. The following demonstrates how you might enable validation with the AJV npm module.
-
-### General
+The following uses the library [Ajv](https://www.npmjs.com/package/ajv) to validate a type.
 
 ```typescript
 import * Ajv from 'ajv'
@@ -426,50 +509,4 @@ const ajv = new Ajv({ })
 ajv.validate(Type.String(), 'hello')  // true
 
 ajv.validate(Type.String(), 123)      // false
-```
-
-### Runtime Type Validation
-
-The following demonstrates how you might want to approach runtime type validation with TypeBox. The following
-code creates a function that takes a signature type `S` which is used to infer function arguments. The body
-of the function validates with the signatures `arguments` and `returns` schemas against values passed by the
-caller.
-
-```typescript
-import { Type, Static, TFunction } from '@sinclair/typebox'
-
-// Some validation function.
-declare function validate(schema: any, data: any): boolean;
-
-// A function that returns a closure that validates its 
-// arguments and return value from the given signature.
-function Func<S extends TFunction>(signature: S, func: Static<S>): Static<S> {    
-    const validator = (...params: any[]) => {
-        params.forEach((param, index) => {
-            if(!validate(signature.arguments[index], param)) {
-                console.log('error on argument', index)
-            }
-        })
-        const result = (func as Function)(...params);
-        if(!validate(signature.return, result)) {
-            console.log('error on return')
-        }
-        return result
-    }
-    return validator as Static<S>
-}
-
-// Create some function.
-const Add = Func(
-    Type.Function([
-        Type.Number(), 
-        Type.Number()
-    ], Type.Number()), 
-    (a, b) => {
-        return a + b
-    })
-
-// Call it
-Add(20, 30)
-
 ```
