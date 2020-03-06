@@ -144,7 +144,8 @@ export type TComposite = TIntersect | TUnion | TTuple
 
 export type TOptional<T extends TSchema | TComposite> = T & { modifier: 'optional' }
 export type TReadonly<T extends TSchema | TComposite> = T & { modifier: 'readonly' }
-export type TModifier = TOptional<any> | TReadonly<any>
+export type TReadonlyOptional<T extends TSchema | TComposite> = T & { modifier: 'readonly-optional' }
+export type TModifier = TOptional<any> | TReadonly<any> | TReadonlyOptional<any>
 
 // #endregion
 
@@ -285,11 +286,13 @@ type StaticLiteral<T> =
   never;
 
 // Extract 'optional', 'readonly' and 'general' property keys from T
+type ReadonlyOptionalPropertyKeys<T> = { [K in keyof T]: T[K] extends TReadonlyOptional<infer U> ? K : never }[keyof T]
 type ReadonlyPropertyKeys<T> = { [K in keyof T]: T[K] extends TReadonly<infer U> ? K : never }[keyof T]
 type OptionalPropertyKeys<T> = { [K in keyof T]: T[K] extends TOptional<infer U> ? K : never }[keyof T]
-type PropertyKeys<T> = keyof Omit<T, OptionalPropertyKeys<T> | ReadonlyPropertyKeys<T>>
+type PropertyKeys<T> = keyof Omit<T, OptionalPropertyKeys<T> | ReadonlyPropertyKeys<T> | ReadonlyOptionalPropertyKeys<T>>
 
 type StaticObjectPropertiesExpansion<T> =
+  { readonly [K in ReadonlyOptionalPropertyKeys<T>]?: Static<T[K]> } &
   { readonly [K in ReadonlyPropertyKeys<T>]: Static<T[K]> } &
   { [K in OptionalPropertyKeys<T>]?: Static<T[K]> } &
   { [K in PropertyKeys<T>]: Static<T[K]> }
@@ -323,88 +326,6 @@ export type Static<T extends TStatic> =
   never;
 
 export class Type {
-
-  // #region TModifier
-
-  /** Modifies the inner type T into an optional T. */
-  public static Optional<T extends TSchema | TUnion | TIntersect>(item: T): TOptional<T> {
-    return { ...item, modifier: 'optional' }
-  }
-
-  /** Modifies the inner type T into an readonly T. */
-  public static Readonly<T extends TSchema | TUnion | TIntersect>(item: T): TReadonly<T> {
-    return { ...item, modifier: 'readonly' }
-  }
-
-  // #endregion
-
-  // #region TSchema
-
-  /** Creates a StringLiteral for the given value. */
-  public static Literal<T extends string>(value: T): TStringLiteral<T>
-  /** Creates a NumberLiteral for the given value. */
-  public static Literal<T extends number>(value: T): TNumberLiteral<T>
-  /** Creates a BooleanLiteral for the given value. */
-  public static Literal<T extends boolean>(value: T): TBooleanLiteral<T>
-  /** Creates a Literal for the given value. */
-  public static Literal(value: any): TLiteral {
-    const type = reflect(value)
-    if (type === 'unknown') { throw Error('Invalid literal value') }
-    return { type, enum: [value] } as TLiteral
-  }
-
-  /** Creates a Object type with the given properties. */
-  public static Object<T extends TProperties>(properties: T): TObject<T> {
-    const property_names = Object.keys(properties)
-    const optional = property_names.filter(name => {
-      const candidate = properties[name] as TOptional<any>
-      return (candidate.modifier && candidate.modifier === 'optional')
-    })
-    const required = property_names.filter(name => !optional.includes(name))
-    return { type: 'object', properties, required }
-  }
-
-  /** Creates a Map type of the given type. Keys are indexed with type string. */
-  public static Map<T extends TSchema | TUnion | TIntersect | TTuple>(item: T): TMap<T> {
-    return { type: 'object', additionalProperties: item }
-  }
-
-  /** Creates an Array type of the given argument T. */
-  public static Array<T extends TSchema | TUnion | TIntersect | TTuple>(items: T, options: ArrayOptions = {}): TArray<T> {
-    return { type: 'array', items, ...options }
-  }
-
-  /** Creates a String type. */
-  public static String(options: StringOptions = {}): TString {
-    return { type: 'string', ...options }
-  }
-
-  /** Creates a Number type. */
-  public static Number(options: NumberOptions = {}): TNumber {
-    return { type: 'number', ...options }
-  }
-
-  /** Creates a Integer type. */
-  public static Integer(options: NumberOptions = {}): TInteger {
-    return { type: 'integer', ...options }
-  }
-
-  /** Creates a Boolean type. */
-  public static Boolean(): TBoolean {
-    return { type: 'boolean' }
-  }
-
-  /** Creates a Null type. */
-  public static Null(): TNull {
-    return { type: 'null' }
-  }
-
-  /** Creates a Any type. */
-  public static Any(): TAny {
-    return {}
-  }
-
-  // #endregion
 
   // #region TComposite
 
@@ -538,6 +459,95 @@ export class Type {
   /** Creates a Undefined type. */
   public static Undefined(): TUndefined {
     return { type: 'undefined' }
+  }
+
+  // #endregion
+
+  // #region TModifier
+
+  /** Modifies the inner type T into a readonly optional T. */
+  public static ReadonlyOptional<T extends TSchema | TUnion | TIntersect>(item: T): TReadonlyOptional<T> {
+    return { ...item, modifier: 'readonly-optional' }
+  }
+
+  /** Modifies the inner type T into an optional T. */
+  public static Optional<T extends TSchema | TUnion | TIntersect>(item: T): TOptional<T> {
+    return { ...item, modifier: 'optional' }
+  }
+
+  /** Modifies the inner type T into an readonly T. */
+  public static Readonly<T extends TSchema | TUnion | TIntersect>(item: T): TReadonly<T> {
+    return { ...item, modifier: 'readonly' }
+  }
+
+  // #endregion
+
+  // #region TSchema
+
+  /** Creates a StringLiteral for the given value. */
+  public static Literal<T extends string>(value: T): TStringLiteral<T>
+  /** Creates a NumberLiteral for the given value. */
+  public static Literal<T extends number>(value: T): TNumberLiteral<T>
+  /** Creates a BooleanLiteral for the given value. */
+  public static Literal<T extends boolean>(value: T): TBooleanLiteral<T>
+  /** Creates a Literal for the given value. */
+  public static Literal(value: any): TLiteral {
+    const type = reflect(value)
+    if (type === 'unknown') { throw Error('Invalid literal value') }
+    return { type, enum: [value] } as TLiteral
+  }
+
+  /** Creates a Object type with the given properties. */
+  public static Object<T extends TProperties>(properties: T): TObject<T> {
+    const property_names = Object.keys(properties)
+    const optional = property_names.filter(name => {
+      const candidate = properties[name] as TModifier
+      return (candidate.modifier && 
+          (candidate.modifier === 'readonly-optional' || 
+          candidate.modifier === 'optional'))
+    })
+    const required = property_names.filter(name => !optional.includes(name))
+    return { type: 'object', properties, required }
+  }
+
+  /** Creates a Map type of the given type. Keys are indexed with type string. */
+  public static Map<T extends TSchema | TUnion | TIntersect | TTuple>(item: T): TMap<T> {
+    return { type: 'object', additionalProperties: item }
+  }
+
+  /** Creates an Array type of the given argument T. */
+  public static Array<T extends TSchema | TUnion | TIntersect | TTuple>(items: T, options: ArrayOptions = {}): TArray<T> {
+    return { type: 'array', items, ...options }
+  }
+
+  /** Creates a String type. */
+  public static String(options: StringOptions = {}): TString {
+    return { type: 'string', ...options }
+  }
+
+  /** Creates a Number type. */
+  public static Number(options: NumberOptions = {}): TNumber {
+    return { type: 'number', ...options }
+  }
+
+  /** Creates a Integer type. */
+  public static Integer(options: NumberOptions = {}): TInteger {
+    return { type: 'integer', ...options }
+  }
+
+  /** Creates a Boolean type. */
+  public static Boolean(): TBoolean {
+    return { type: 'boolean' }
+  }
+
+  /** Creates a Null type. */
+  public static Null(): TNull {
+    return { type: 'null' }
+  }
+
+  /** Creates a Any type. */
+  public static Any(): TAny {
+    return {}
   }
 
   // #endregion

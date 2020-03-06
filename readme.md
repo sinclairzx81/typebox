@@ -96,7 +96,9 @@ JSON.validate(Order, {  // IETF | TC39 ?
 
 TypeBox provides many functions generate JSONschema data types. The following tables list the functions TypeBox provides and their respective TypeScript and JSONSchema equivalents. 
 
-### TypeBox > TypeScript
+### Type Modifiers 
+
+The following are object property modifiers. Note that `Type.Optional(...)` will make the schema object property optional. `Type.Readonly(...)` however has no effect on the underlying schema as is only meaningful to TypeScript.
 
 <table>
     <thead>
@@ -108,15 +110,34 @@ TypeBox provides many functions generate JSONschema data types. The following ta
     </thead>
     <tbody>
         <tr>
-            <td>Optional</td>
-            <td><code>const T = Type.Object({ email: Type.Optional(Type.String()) })</code></td>
-            <td><code>type T = { email?: string }</code></td>
-        </tr>       
+            <td>ReadonlyOptional</td>
+            <td><code>const T = Type.Object({ email: Type.ReadonlyOptional(Type.String()) })</code></td>
+            <td><code>type T = { readonly email?: string }</code></td>
+        </tr>
         <tr>
             <td>Readonly</td>
             <td><code>const T = Type.Object({ email: Type.Readonly(Type.String()) })</code></td>
             <td><code>type T = { readonly email: string }</code></td>
         </tr>
+        <tr>
+            <td>Optional</td>
+            <td><code>const T = Type.Object({ email: Type.Optional(Type.String()) })</code></td>
+            <td><code>type T = { email?: string }</code></td>
+        </tr>
+    </tbody>
+</table>
+
+### TypeBox > TypeScript
+
+<table>
+    <thead>
+        <tr>
+            <th>Type</th>
+            <th>TypeBox</th>
+            <th>TypeScript</th>
+        </tr>
+    </thead>
+    <tbody>
         <tr>
             <td>Literal</td>
             <td><code>const T = Type.Literal(123)</code></td>
