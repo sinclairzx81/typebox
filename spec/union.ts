@@ -6,7 +6,7 @@ describe('Union', () => {
   it('number | string', () => {
     const A = Type.String()
     const B = Type.Number()
-    const T = Type.Union(A, B)
+    const T = Type.Union([A, B])
     
     fail(T, { })
     ok(T, 'hello')
@@ -16,7 +16,7 @@ describe('Union', () => {
   it('A | B', () => {
     const A = Type.Object({ a: Type.String() })
     const B = Type.Object({ b: Type.Number() })
-    const T = Type.Union(A, B)
+    const T = Type.Union([A, B])
     
     fail(T, {a: 'hello', b: 42 })
     ok(T, { a: 'hello' })
@@ -27,7 +27,7 @@ describe('Union', () => {
     const A = Type.Object({ a: Type.String() })
     const B = Type.Object({ b: Type.Number() })
     const C = Type.Object({ c: Type.Boolean() })
-    const T = Type.Union(A, B, C)
+    const T = Type.Union([A, B, C])
     
     fail(T, {a: 'hello', b: 42, c: true })
     ok(T, {a: 'hello' })

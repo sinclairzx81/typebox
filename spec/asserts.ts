@@ -16,7 +16,7 @@ import { Type, Static } from '../src/typebox'
   const Boolean = Type.Boolean()
   const Array   = Type.Array(Type.Any())
   const Object  = Type.Object({})
-  const Union   = Type.Union(Type.String(), Type.Number(), Type.Object({ a: Type.String() }))
+  const Union   = Type.Union([Type.String(), Type.Number(), Type.Object({ a: Type.String() })])
   
   ;((x: Static<typeof Literal>) => { })('hello')
   ;((x: Static<typeof String>)  => { })('a string')
@@ -60,7 +60,7 @@ import { Type, Static } from '../src/typebox'
 
 // tagged union descrimination
 {
-  const Union = Type.Union(
+  const Union = Type.Union([
     Type.Object({
       kind: Type.Literal('a'),
       a: Type.String()
@@ -69,7 +69,7 @@ import { Type, Static } from '../src/typebox'
       kind: Type.Literal('b'),
       b: Type.Number()
     })
-  )
+  ])
   const method = (union: Static<typeof Union>) => {
     switch(union.kind) {
       case 'a': {

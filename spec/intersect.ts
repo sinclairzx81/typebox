@@ -5,7 +5,7 @@ describe('Intersect', () => {
   it('A & B', () => {
     const A = Type.Object({ a: Type.String() })
     const B = Type.Object({ b: Type.Number() })
-    const T = Type.Intersect(A, B)
+    const T = Type.Intersect([A, B])
     
     ok(T, {a: 'hello', b: 42 })
     fail(T, {a: 'hello' })
@@ -15,7 +15,7 @@ describe('Intersect', () => {
     const A = Type.Object({ a: Type.String() })
     const B = Type.Object({ b: Type.Number() })
     const C = Type.Object({ c: Type.Boolean() })
-    const T = Type.Intersect(A, B, C)
+    const T = Type.Intersect([A, B, C])
     
     ok(T, {a: 'hello', b: 42, c: true })
     fail(T, {a: 'hello' })

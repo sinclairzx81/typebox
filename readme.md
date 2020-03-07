@@ -2,7 +2,7 @@
 
 <h1>TypeBox</h1>
 
-<p>JSONSchema Type Builder with Static Type Resolution for TypeScript</p>
+<p>JSON Schema Type Builder with Static Type Resolution for TypeScript</p>
 
 [![npm version](https://badge.fury.io/js/%40sinclair%2Ftypebox.svg)](https://badge.fury.io/js/%40sinclair%2Ftypebox)
 [![Build Status](https://travis-ci.org/sinclairzx81/typebox.svg?branch=master)](https://travis-ci.org/sinclairzx81/TypeBox)
@@ -23,9 +23,9 @@ $ npm install @sinclair/typebox --save
 
 ## Overview
 
-TypeBox is a type builder library that allows developers to compose complex in-memory JSONSchema objects that can be resolved to static TypeScript types. The schemas produced by TypeBox can be used directly as validation schemas or reflected upon by navigating the standard JSONSchema properties at runtime. TypeBox can be used as a simple tool to build complex schemas or integrated into RPC or REST services to help validate JSON data received over the wire.
+TypeBox is a type builder library that allows developers to compose in-memory JSON Schema objects that can be statically resolved to TypeScript types. The schemas produced by TypeBox can be used directly as validation schemas or reflected upon by navigating the standard JSON Schema properties at runtime. TypeBox can be used as a simple tool to build up complex schemas or integrated into RPC or REST services to help validate JSON data received over the wire.
 
-TypeBox does not provide any mechanism for validating JSONSchema. Please refer to libraries such as [AJV](https://www.npmjs.com/package/ajv) or similar to validate the schemas created with this library.
+TypeBox does not provide any mechanism for validating JSON Schema. Please refer to libraries such as [AJV](https://www.npmjs.com/package/ajv) or similar to validate the schemas created with this library.
 
 Requires TypeScript 3.8.3 and above.
 
@@ -78,7 +78,7 @@ console.log(JSON.stringify(Order, null, 2))
 
 type TOrder = Static<typeof Order>
 
-// .. and validated as JSONSchema
+// .. and validated as JSON Schema
 
 JSON.validate(Order, {  // IETF | TC39 ?
     email: 'dave@domain.com', 
@@ -94,7 +94,7 @@ JSON.validate(Order, {  // IETF | TC39 ?
 
 ## Types
 
-TypeBox provides many functions generate JSONschema data types. The following tables list the functions TypeBox provides and their respective TypeScript and JSONSchema equivalents. 
+TypeBox provides many functions generate JSON Schema data types. The following tables list the functions TypeBox provides and their respective TypeScript and JSON Schema equivalents. 
 
 ### TypeBox > TypeScript
 
@@ -149,17 +149,17 @@ TypeBox provides many functions generate JSONschema data types. The following ta
         </tr>
         <tr>
             <td>Intersect</td>
-            <td><code>const T = Type.Intersect(Type.String(), Type.Number())</code></td>
+            <td><code>const T = Type.Intersect([Type.String(), Type.Number()])</code></td>
             <td><code>type T = string & number</code></td>
         </tr>
         <tr>
             <td>Union</td>
-            <td><code>const T = Type.Union(Type.String(), Type.Number())</code></td>
+            <td><code>const T = Type.Union([Type.String(), Type.Number()])</code></td>
             <td><code>type T = string | number</code></td>
         </tr>
         <tr>
             <td>Tuple</td>
-            <td><code>const T = Type.Tuple(Type.String(), Type.Number())</code></td>
+            <td><code>const T = Type.Tuple([Type.String(), Type.Number()])</code></td>
             <td><code>type T = [string, number]</code></td>
         </tr>
         <tr>
@@ -190,14 +190,14 @@ TypeBox provides many functions generate JSONschema data types. The following ta
     </tbody>
 </table>
 
-### TypeBox > JSONSchema
+### TypeBox > JSON Schema
 
 <table>
     <thead>
         <tr>
             <th>Type</th>
             <th>TypeBox</th>
-            <th>JSONSchema</th>
+            <th>JSON Schema</th>
         </tr>
     </thead>
     <tbody>
@@ -243,17 +243,17 @@ TypeBox provides many functions generate JSONschema data types. The following ta
         </tr>
         <tr>
             <td>Intersect</td>
-            <td><code>const T = Type.Intersect(Type.Number(), Type.String())</code></td>
+            <td><code>const T = Type.Intersect([Type.Number(), Type.String()])</code></td>
             <td><code>{ allOf: [{ type: 'number'}, {type: 'string'}] }</code></td>
         </tr>
         <tr>
             <td>Union</td>
-            <td><code>const T = Type.Union(Type.Number(), Type.String())</code></td>
+            <td><code>const T = Type.Union([Type.Number(), Type.String()])</code></td>
             <td><code>{ oneOf: [{ type: 'number'}, {type: 'string'}] }</code></td>
         </tr>
         <tr>
             <td>Tuple</td>
-            <td><code>const T = Type.Tuple(Type.Number(), Type.String())</code></td>
+            <td><code>const T = Type.Tuple([Type.Number(), Type.String()])</code></td>
             <td><code>{ type: "array", items: [{type: 'string'}, {type: 'number'}], additionalItems: false, minItems: 2, maxItems: 2 }</code></td>
         </tr>
         <tr>
@@ -315,13 +315,42 @@ The following are object property modifiers. Note that `Type.Optional(...)` will
     </tbody>
 </table>
 
+### User Defined Schema Properties
+
+It's possible to specify custom properties on schemas. The last parameter on each TypeBox function accepts an optional `UserDefinedOptions` object. Properties specified in this object will appear as properties on the resulting schema object. Consider the following. 
+
+```typescript
+const T = Type.Object({
+    value: Type.String({ 
+        description: 'A required string.'
+    })
+}, {
+    description: 'An object with a value'
+})
+```
+```json
+{
+  "description": "An object with a value",
+  "type": "object",
+  "properties": {
+    "value": {
+      "description": "A required string.",
+      "type": "string"
+    }
+  },
+  "required": [
+    "value"
+  ]
+}
+```
+
 <a name="Contracts"></a>
 
 ## Function Types
 
-TypeBox allows function signatures to be composed in a similar way to other types. It uses a custom schema represenation to achieve this. Note, this format is not JSONSchema, rather it uses JSONSchema to encode function `arguments` and `return` types. It also provides additional types; `Type.Constructor()`, `Type.Void()`, `Type.Undefined()`, and `Type.Promise()`.
+TypeBox allows function signatures to be composed in a similar way to other types, but uses a custom schema format to achieve this. Note, this format is not JSON Schema, rather it embeds JSON Schema to encode function `arguments` and `return` types. The format also provides additional types not present in JSON Schema; `Type.Constructor()`, `Type.Void()`, `Type.Undefined()`, and `Type.Promise()`.
 
-For more information on their using functions, see the [Functions](#Functions) and [Generics](#Generics) sections below.
+For more information on using functions, see the [Functions](#Functions) and [Generics](#Generics) sections below.
 
 ### Format
 
