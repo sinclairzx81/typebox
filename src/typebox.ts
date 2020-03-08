@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------------
 
-TypeBox: JSONSchema Type Builder with Static Type Resolution for TypeScript
+TypeBox: JSON Schema Type Builder with Static Type Resolution for TypeScript
 
 The MIT License (MIT)
 
@@ -558,11 +558,6 @@ export class Type {
   // #endregion
 
   // #region Aliases
-
-  /** Creates a `string` type that validates with the given format. Alias for ```Type.String({ format: '...' })``` */
-  public static Format(format: FormatOption): TString {
-    return this.String({ format })
-  }
 
   /** Creates a `string` type that validates for the given regular expression. Alias for ```Type.String({ pattern: '...' })``` */
   public static Pattern(regex: RegExp): TString {

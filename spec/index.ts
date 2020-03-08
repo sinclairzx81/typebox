@@ -19,7 +19,6 @@ import './tuple'
 
 // Extended
 import './pattern'
-import './format'
 import './guid'
 
 

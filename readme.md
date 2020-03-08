@@ -48,7 +48,7 @@ The following shows the general usage.
 ```typescript
 import { Type, Static } from '@sinclair/typebox'
 
-// Some type...
+// some type ...
 
 type Order = {
     email:    string,
@@ -57,17 +57,17 @@ type Order = {
     option:   'pizza' | 'salad' | 'pie'
 }
 
-// ...can be expressed as...
+// ... can be expressed as ...
 
 const Order = Type.Object({
-    email:    Type.Format('email'), 
+    email:    Type.String({ format: 'email' }), 
     address:  Type.String(),
     quantity: Type.Number({ minimum: 1, maximum: 99 }),
-    option:   Type.Union(
+    option:   Type.Union([
         Type.Literal('pizza'), 
         Type.Literal('salad'),
         Type.Literal('pie')
-    )
+    ])
 })
 
 // ... which can be reflected
@@ -178,11 +178,6 @@ TypeBox provides many functions generate JSON Schema data types. The following t
             <td><code>type T = string</code></td>
         </tr>
         <tr>
-            <td>Format</td>
-            <td><code>const T = Type.Format('date-time')</code></td>
-            <td><code>type T = string</code></td>
-        </tr>
-        <tr>
             <td>Guid</td>
             <td><code>const T = Type.Guid()</code></td>
             <td><code>type T = string</code></td>
@@ -272,14 +267,9 @@ TypeBox provides many functions generate JSON Schema data types. The following t
             <td><code>{ type: 'string', pattern: 'foo' }</code></td>
         </tr>
         <tr>
-            <td>Format</td>
-            <td><code>const T = Type.Format('date-time')</code></td>
-            <td><code>{ type: 'string',format: 'date-time' }</code></td>
-        </tr>
-        <tr>
             <td>Guid</td>
             <td><code>const T = Type.Guid()</code></td>
-            <td><code>{ type: 'string', format: '<guid-regex>' }</code></td>
+            <td><code>{ type: 'string', pattern: '&lt;guid-regex&gt;' }</code></td>
         </tr>
     </tbody>
 </table>
