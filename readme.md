@@ -5,7 +5,7 @@
 <p>JSON Schema Type Builder with Static Type Resolution for TypeScript</p>
 
 [![npm version](https://badge.fury.io/js/%40sinclair%2Ftypebox.svg)](https://badge.fury.io/js/%40sinclair%2Ftypebox)
-[![Build Status](https://travis-ci.org/sinclairzx81/typebox.svg?branch=master)](https://travis-ci.org/sinclairzx81/TypeBox)[![GitHub CI](https://github.com/sinclairzx81/typebox/workflows/GitHub%20CI/badge.svg)](https://github.com/sinclairzx81/typebox/actions)
+[![GitHub CI](https://github.com/sinclairzx81/typebox/workflows/GitHub%20CI/badge.svg)](https://github.com/sinclairzx81/typebox/actions)
 
 <img src='./doc/example.gif'></img>
 
