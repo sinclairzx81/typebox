@@ -179,8 +179,8 @@ export type StringOptions = {
   minLength?: number
   maxLength?: number
   pattern?: string
-  format?: FormatOption
-} & UserDefinedOptions
+  format?: FormatOption | UserDefinedOptions['format']
+} & Omit<UserDefinedOptions, 'format'>
 
 export type TLiteral = TStringLiteral<string> | TNumberLiteral<number> | TBooleanLiteral<boolean>
 export type TStringLiteral<T> = { type: 'string', enum: [T] } & UserDefinedOptions
