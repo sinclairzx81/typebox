@@ -196,8 +196,9 @@ export type TString = { type: 'string' } & StringOptions
 export type TBoolean = { type: 'boolean' } & UserDefinedOptions
 export type TNull = { type: 'null' }  & UserDefinedOptions
 export type TAny = {} & UserDefinedOptions
+export type TEnum<T> = { enum: Array<string | number> };
 
-export type TSchema = TLiteral | TNumber | TInteger | TBoolean | TString | TObject<any> | TArray<any> | TMap<any> | TNull | TAny
+export type TSchema = TLiteral | TNumber | TInteger | TBoolean | TString | TEnum<any> | TObject<any> | TArray<any> | TMap<any> | TNull | TAny
 
 // #endregion
 
@@ -310,6 +311,7 @@ type StaticSchema<T extends TSchema> =
   T extends TMap<infer U> ? { [key: string]: Static<U> } :
   T extends TArray<infer U> ? Array<Static<U>> :
   T extends TLiteral ? StaticLiteral<T> :
+  T extends TEnum<infer U> ? U :
   T extends TString ? string :
   T extends TNumber ? number :
   T extends TInteger ? number :
@@ -525,6 +527,11 @@ export class Type {
     return { ...options, type: 'array', items }
   }
 
+  /** Creates an `Enum<T>` from an existing TypeScript enum */
+   public static Enum<T extends Record<keyof T, string | number>>(enumObj: T, options?: UserDefinedOptions): TEnum<T[keyof T]> {
+    return { ...options, enum: getEnumValues(enumObj) };
+  }
+
   /** Creates a `string` type. */
   public static String(options: StringOptions = {}): TString {
     return { ...options, type: 'string' }
@@ -571,4 +578,23 @@ export class Type {
   }
 
   // #endregion
+}
+
+function getEnumValues(enumObj: Record<string, string|number>) {
+  // we explicitly want to ignore reverse-lookup entries for number enums
+  // hence we are getting only keys which are non-numeric and retrieve their value.
+  // credits to https://github.com/UselessPickles/ts-enum-util (Jeff Lau) for inspiration.
+  const stringKeys = getOwnEnumerableNonNumericKeys(enumObj);
+  return stringKeys.map(key => enumObj[key]);
+}
+
+/**
+ * Get all own enumerable string (non-numeric) keys of an object.
+ */
+function getOwnEnumerableNonNumericKeys(obj: Record<string, any>): string[] {
+  return Object.getOwnPropertyNames(obj).filter(key => obj.propertyIsEnumerable(key) && isNonNumericKey(key));
+}
+
+function isNonNumericKey(key: string): boolean {
+  return key !== String(parseFloat(key));
 }

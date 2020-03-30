@@ -305,6 +305,33 @@ The following are object property modifiers. Note that `Type.Optional(...)` will
     </tbody>
 </table>
 
+### Enums
+
+It is possible to define TypeScript enums and use them as part of your TypeBox schema.
+Both number and string-valued enums are supported.
+
+```ts
+enum Color {
+    Red = 'red',
+    Blue = 'blue'
+}
+
+T = Type.Enum(Color); // -> json-schema: `{ enum: ['red','green'] }`
+```
+
+Note that the generated json-schema will only permit the *values* of the enum, not its *keys*.
+In TypeScript, if you omit the *value* for an enum option, TypeScript will implicitly assign the option a numeric value.
+
+E.g.:
+```ts
+enum Color {
+    Red, // implicitly gets value `0`
+    Blue // implicitly gets value `1`
+}
+
+T = Type.Enum(Color); // -> json-schema: `{ enum: [0, 1] }`
+```
+
 ### User Defined Schema Properties
 
 It's possible to specify custom properties on schemas. The last parameter on each TypeBox function accepts an optional `UserDefinedOptions` object. Properties specified in this object will appear as properties on the resulting schema object. Consider the following. 
