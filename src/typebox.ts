@@ -175,12 +175,17 @@ export type NumberOptions = {
   multipleOf?: number
 } & UserDefinedOptions
 
-export type StringOptions = {
-  minLength?: number
-  maxLength?: number
-  pattern?: string
-  format?: FormatOption
-} & UserDefinedOptions
+type UnionToIntersection<U> =
+  (U extends any ? (k: U) => void : never) extends ((k: infer I) => void) ? I : never;
+type IsUnion<T> = [T] extends [UnionToIntersection<T>] ? false : true;
+export declare type StringOptions = {
+  minLength?: number;
+  maxLength?: number;
+  pattern?: string;
+  format?: IsUnion<UserDefinedOptions['format']> extends true 
+    ? UserDefinedOptions['format'] | FormatOption 
+    : FormatOption;
+} & Omit<UserDefinedOptions, 'format'>;
 
 export type TLiteral = TStringLiteral<string> | TNumberLiteral<number> | TBooleanLiteral<boolean>
 export type TStringLiteral<T> = { type: 'string', enum: [T] } & UserDefinedOptions
