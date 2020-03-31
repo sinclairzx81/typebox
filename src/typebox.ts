@@ -190,15 +190,16 @@ export type TProperties = { [key: string]: TSchema | TComposite | TOptional<TSch
 export type TObject<T extends TProperties> = { type: 'object', properties: T, required: string[] } & UserDefinedOptions
 export type TMap<T extends TSchema | TComposite> = { type: 'object', additionalProperties: T } & UserDefinedOptions
 export type TArray<T extends TSchema | TComposite> = { type: 'array', items: T } & ArrayOptions
+export type TEnum<T> = { enum: T[keyof T][] }
 export type TNumber = { type: 'number' } & NumberOptions
 export type TInteger = { type: 'integer' } & NumberOptions
 export type TString = { type: 'string' } & StringOptions
 export type TBoolean = { type: 'boolean' } & UserDefinedOptions
-export type TNull = { type: 'null' }  & UserDefinedOptions
+export type TNull = { type: 'null' } & UserDefinedOptions
 export type TAny = {} & UserDefinedOptions
-export type TEnum<T> = { enum: Array<string | number> };
 
-export type TSchema = TLiteral | TNumber | TInteger | TBoolean | TString | TEnum<any> | TObject<any> | TArray<any> | TMap<any> | TNull | TAny
+
+export type TSchema = TLiteral | TNumber | TInteger | TBoolean | TString | TObject<any> | TArray<any> | TEnum<any> | TMap<any> | TNull | TAny
 
 // #endregion
 
@@ -303,15 +304,15 @@ type StaticObjectPropertiesExpansion<T> =
   { [K in PropertyKeys<T>]: Static<T[K]> }
 
 type StaticObjectProperties<T> = {
-  [K in keyof StaticObjectPropertiesExpansion<T>]: StaticObjectPropertiesExpansion<T>[K] 
+  [K in keyof StaticObjectPropertiesExpansion<T>]: StaticObjectPropertiesExpansion<T>[K]
 }
 
 type StaticSchema<T extends TSchema> =
   T extends TObject<infer U> ? StaticObjectProperties<U> :
   T extends TMap<infer U> ? { [key: string]: Static<U> } :
   T extends TArray<infer U> ? Array<Static<U>> :
-  T extends TLiteral ? StaticLiteral<T> :
   T extends TEnum<infer U> ? U :
+  T extends TLiteral ? StaticLiteral<T> :
   T extends TString ? string :
   T extends TNumber ? number :
   T extends TInteger ? number :
@@ -384,7 +385,7 @@ export class Type {
   /** Creates an Intersect type for the given arguments. */
   public static Intersect<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema>(items: [T0, T1, T2, T3, T4], options?: UserDefinedOptions): TIntersect5<T0, T1, T2, T3, T4>
   /** Creates an Intersect type for the given arguments. */
-  public static Intersect<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema>(items: [T0, T1, T2,  T3], options?: UserDefinedOptions): TIntersect4<T0, T1, T2, T3>
+  public static Intersect<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema>(items: [T0, T1, T2, T3], options?: UserDefinedOptions): TIntersect4<T0, T1, T2, T3>
   /** Creates an Intersect type for the given arguments. */
   public static Intersect<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema>(items: [T0, T1, T2], options?: UserDefinedOptions): TIntersect3<T0, T1, T2>
   /** Creates an Intersect type for the given arguments. */
@@ -508,8 +509,8 @@ export class Type {
     const property_names = Object.keys(properties)
     const optional = property_names.filter(name => {
       const candidate = properties[name] as TModifier
-      return (candidate.modifier && 
-          (candidate.modifier === 'readonly-optional' || 
+      return (candidate.modifier &&
+        (candidate.modifier === 'readonly-optional' ||
           candidate.modifier === 'optional'))
     })
     const required = property_names.filter(name => !optional.includes(name))
@@ -526,10 +527,14 @@ export class Type {
   public static Array<T extends TSchema | TUnion | TIntersect | TTuple>(items: T, options: ArrayOptions = {}): TArray<T> {
     return { ...options, type: 'array', items }
   }
-
-  /** Creates an `Enum<T>` from an existing TypeScript enum */
-   public static Enum<T extends Record<keyof T, string | number>>(enumObj: T, options?: UserDefinedOptions): TEnum<T[keyof T]> {
-    return { ...options, enum: getEnumValues(enumObj) };
+  
+  /** Creates an `Enum<T>` from an existing TypeScript enum definition. */
+  public static Enum<T extends Record<string, string | number>>(item: T, options?: UserDefinedOptions): TEnum<T> {
+    // We explicitly want to ignore reverse-lookup entries for number enums hence we are 
+    // getting only keys which are non-numeric and retrieve their value. Credits to 
+    // https://github.com/UselessPickles/ts-enum-util (Jeff Lau) for inspiration.
+    const values = Object.keys(item).filter(key => isNaN(key as any)).map(key => item[key]) as T[keyof T][]
+    return { ...options, enum: values }
   }
 
   /** Creates a `string` type. */
@@ -580,21 +585,3 @@ export class Type {
   // #endregion
 }
 
-function getEnumValues(enumObj: Record<string, string|number>) {
-  // we explicitly want to ignore reverse-lookup entries for number enums
-  // hence we are getting only keys which are non-numeric and retrieve their value.
-  // credits to https://github.com/UselessPickles/ts-enum-util (Jeff Lau) for inspiration.
-  const stringKeys = getOwnEnumerableNonNumericKeys(enumObj);
-  return stringKeys.map(key => enumObj[key]);
-}
-
-/**
- * Get all own enumerable string (non-numeric) keys of an object.
- */
-function getOwnEnumerableNonNumericKeys(obj: Record<string, any>): string[] {
-  return Object.getOwnPropertyNames(obj).filter(key => obj.propertyIsEnumerable(key) && isNonNumericKey(key));
-}
-
-function isNonNumericKey(key: string): boolean {
-  return key !== String(parseFloat(key));
-}
