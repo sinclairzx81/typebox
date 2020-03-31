@@ -157,7 +157,7 @@ export type TModifier = TOptional<any> | TReadonly<any> | TReadonlyOptional<any>
 
 export type FormatOption =
   | 'date-time' | 'time' | 'date' | 'email' | 'idn-email' | 'hostname'
-  | 'idn-hostname' | 'ipv4' | 'ipv6' | 'uri' | 'uri-reference' | 'iri'
+  | 'idn-hostname' | 'ipv4' | 'ipv6' | 'uri' | 'uri-reference' | 'iri' | 'uuid'
   | 'iri-reference' | 'uri-template' | 'json-pointer' | 'relative-json-pointer'
   | 'regex'
 
