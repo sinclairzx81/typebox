@@ -195,7 +195,7 @@ export type TProperties = { [key: string]: TSchema | TComposite | TOptional<TSch
 export type TObject<T extends TProperties> = { type: 'object', properties: T, required: string[] } & UserDefinedOptions
 export type TMap<T extends TSchema | TComposite> = { type: 'object', additionalProperties: T } & UserDefinedOptions
 export type TArray<T extends TSchema | TComposite> = { type: 'array', items: T } & ArrayOptions
-export type TEnum<T> = { enum: T[keyof T][] }
+export type TEnum<T extends string | number> = { enum: Array<T> }
 export type TNumber = { type: 'number' } & NumberOptions
 export type TInteger = { type: 'integer' } & NumberOptions
 export type TString = { type: 'string' } & StringOptions
@@ -534,7 +534,7 @@ export class Type {
   }
   
   /** Creates an `Enum<T>` from an existing TypeScript enum definition. */
-  public static Enum<T extends Record<string, string | number>>(item: T, options?: UserDefinedOptions): TEnum<T> {
+  public static Enum<T extends Record<string, string | number>>(item: T, options?: UserDefinedOptions): TEnum<T[keyof T]> {
     // We explicitly want to ignore reverse-lookup entries for number enums hence we are 
     // getting only keys which are non-numeric and retrieve their value. Credits to 
     // https://github.com/UselessPickles/ts-enum-util (Jeff Lau) for inspiration.
@@ -593,4 +593,3 @@ export class Type {
 
   // #endregion
 }
-
