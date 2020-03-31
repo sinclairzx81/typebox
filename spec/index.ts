@@ -11,6 +11,7 @@ import './null'
 import './object'
 import './array'
 import './map'
+import './enum'
 
 // TComposite
 import './intersect'
