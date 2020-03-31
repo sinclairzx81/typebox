@@ -175,17 +175,17 @@ export type NumberOptions = {
   multipleOf?: number
 } & UserDefinedOptions
 
-type UnionToIntersection<U> =
-  (U extends any ? (k: U) => void : never) extends ((k: infer I) => void) ? I : never;
-type IsUnion<T> = [T] extends [UnionToIntersection<T>] ? false : true;
+/** Augmentation support for UserDefinedOptions. Used specifically for adding custom string formats. */
+type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends ((k: infer I) => void) ? I : never
+type IsUnion<T> = [T] extends [UnionToIntersection<T>] ? false : true
 export declare type StringOptions = {
-  minLength?: number;
-  maxLength?: number;
-  pattern?: string;
+  minLength?: number
+  maxLength?: number
+  pattern?: string
   format?: IsUnion<UserDefinedOptions['format']> extends true 
     ? UserDefinedOptions['format'] | FormatOption 
     : FormatOption;
-} & Omit<UserDefinedOptions, 'format'>;
+}
 
 export type TLiteral = TStringLiteral<string> | TNumberLiteral<number> | TBooleanLiteral<boolean>
 export type TStringLiteral<T> = { type: 'string', enum: [T] } & UserDefinedOptions
@@ -581,7 +581,11 @@ export class Type {
     return this.String({ pattern: regex.source })
   }
 
-  /** Creates a `string` type that validate a Guid. Alias for ```Type.String({ pattern: '...' })``` */
+  /** 
+   * Deprecated: Use `Type.String({ format: 'uuid' })`
+   * 
+   * Creates a `string` type that validate a Guid. Alias for ```Type.String({ pattern: '...' })``` 
+   */
   public static Guid(): TString {
     const regex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
     return this.String({ pattern: regex.source })

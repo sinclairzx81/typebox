@@ -316,7 +316,7 @@ enum Color {
     Blue = 'blue'
 }
 
-T = Type.Enum(Color); // -> json-schema: `{ enum: ['red','green'] }`
+const T = Type.Enum(Color); // -> json-schema: `{ enum: ['red','green'] }`
 ```
 
 Note that the generated json-schema will only permit the *values* of the enum, not its *keys*.
@@ -329,7 +329,7 @@ enum Color {
     Blue // implicitly gets value `1`
 }
 
-T = Type.Enum(Color); // -> json-schema: `{ enum: [0, 1] }`
+const T = Type.Enum(Color); // -> json-schema: `{ enum: [0, 1] }`
 ```
 
 ### User Defined Schema Properties
