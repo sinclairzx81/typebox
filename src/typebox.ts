@@ -185,7 +185,7 @@ export declare type StringOptions = {
   format?: IsUnion<UserDefinedOptions['format']> extends true 
     ? UserDefinedOptions['format'] | FormatOption 
     : FormatOption;
-}
+} & Omit<UserDefinedOptions, 'format'>
 
 export type TLiteral = TStringLiteral<string> | TNumberLiteral<number> | TBooleanLiteral<boolean>
 export type TStringLiteral<T> = { type: 'string', enum: [T] } & UserDefinedOptions
