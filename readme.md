@@ -537,7 +537,7 @@ interface Record {
      value: string
 }
 
-class StringController implements IController<Record> {
+class RecordController implements IController<Record> {
     async get   (): Promise<Record> { throw 'not implemented' }
     async post  (resource: Record): Promise<void> { /* */  }
     async put   (resource: Record): Promise<void> { /* */  }
