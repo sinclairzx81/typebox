@@ -146,13 +146,10 @@ export type TComposite = TIntersect | TUnion | TTuple
 
 // #region TModifier
 
-export const ReadonlyOptional = Symbol('ReadonlyOptional')
-export const Readonly = Symbol('Readonly')
-export const Optional = Symbol('Optional')
-
-export type TOptional<T extends TSchema | TComposite> = T & { modifier: typeof Optional }
-export type TReadonly<T extends TSchema | TComposite> = T & { modifier: typeof Readonly }
-export type TReadonlyOptional<T extends TSchema | TComposite> = T & { modifier: typeof ReadonlyOptional }
+export const modifier = Symbol('Modifier')
+export type TOptional<T extends TSchema | TComposite> = T & { [modifier]: 'optional' }
+export type TReadonly<T extends TSchema | TComposite> = T & { [modifier]: 'readonly' }
+export type TReadonlyOptional<T extends TSchema | TComposite> = T & { [modifier]: 'readonly-optional' }
 export type TModifier = TOptional<any> | TReadonly<any> | TReadonlyOptional<any>
 
 // #endregion
@@ -347,17 +344,17 @@ export class Type {
 
   /** Modifies the inner type T into a readonly optional T. */
   public static ReadonlyOptional<T extends TSchema | TUnion | TIntersect>(item: T): TReadonlyOptional<T> {
-    return { ...item, modifier: ReadonlyOptional }
+    return { ...item, [modifier]: 'readonly-optional' }
   }
 
   /** Modifies the inner type T into an optional T. */
   public static Optional<T extends TSchema | TUnion | TIntersect>(item: T): TOptional<T> {
-    return { ...item, modifier: Optional }
+    return { ...item, [modifier]: 'optional' }
   }
 
   /** Modifies the inner type T into an readonly T. */
   public static Readonly<T extends TSchema | TUnion | TIntersect>(item: T): TReadonly<T> {
-    return { ...item, modifier: Readonly }
+    return { ...item, [modifier]: 'readonly' }
   }
 
   // #endregion
@@ -518,9 +515,9 @@ export class Type {
     const property_names = Object.keys(properties)
     const optional = property_names.filter(name => {
       const candidate = properties[name] as TModifier
-      return (candidate.modifier &&
-        (candidate.modifier === ReadonlyOptional ||
-          candidate.modifier === Optional))
+      return (candidate[modifier] &&
+        (candidate[modifier] === 'readonly-optional' ||
+         candidate[modifier] === 'optional'))
     })
     const required = property_names.filter(name => !optional.includes(name))
     return { ...options, type: 'object', properties, required }
