@@ -1,6 +1,9 @@
 // TS Asserts
 import './asserts'
 
+// TModifer
+import './modifier'
+
 // TSchema
 import './literal'
 import './string'
