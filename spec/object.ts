@@ -1,3 +1,4 @@
+import * as assert from 'assert';
 import { Type } from '../src/typebox'
 import { ok, fail } from './validate'
 
@@ -94,4 +95,27 @@ describe('Object', () => {
     fail(T, 123)
     fail(T, null)
   })
+
+  describe('Required', () => {
+    it('Contains all non-optional properties', () => {
+      const T = Type.Object({
+        a: Type.String(),
+        b: Type.Optional(Type.String()),
+        c: Type.String(),
+      });
+
+      assert.deepEqual(T.required, ['a', 'c']);
+    });
+
+    it('Is omitted when no properties are required', () => {
+      const T = Type.Object({
+        a: Type.Optional(Type.String()),
+        b: Type.Optional(Type.String()),
+        c: Type.Optional(Type.String()),
+      });
+
+      assert.equal(T.required, undefined);
+    });
+  });
+
 })
