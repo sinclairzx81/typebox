@@ -193,7 +193,7 @@ export type TStringLiteral<T> = { type: 'string', enum: [T] } & UserDefinedOptio
 export type TNumberLiteral<T> = { type: 'number', enum: [T] } & UserDefinedOptions
 export type TBooleanLiteral<T> = { type: 'boolean', enum: [T] } & UserDefinedOptions
 export type TProperties = { [key: string]: TSchema | TComposite | TOptional<TSchema | TComposite> | TReadonly<TSchema | TComposite> }
-export type TObject<T extends TProperties> = { type: 'object', properties: T, required: string[] } & UserDefinedOptions
+export type TObject<T extends TProperties> = { type: 'object', properties: T, required?: string[] } & UserDefinedOptions
 export type TMap<T extends TSchema | TComposite> = { type: 'object', additionalProperties: T } & UserDefinedOptions
 export type TArray<T extends TSchema | TComposite> = { type: 'array', items: T } & ArrayOptions
 export type TEnum<T extends string | number> = { enum: Array<T> } & UserDefinedOptions
@@ -520,7 +520,7 @@ export class Type {
          candidate[modifierSymbol] === 'optional'))
     })
     const required = property_names.filter(name => !optional.includes(name))
-    return { ...options, type: 'object', properties, required }
+    return { ...options, type: 'object', properties, required: required.length? required : undefined }
   }
 
   /** Creates a `{[key: string]: T}` type for the given item. */
