@@ -183,9 +183,9 @@ export declare type StringOptions = {
   minLength?: number
   maxLength?: number
   pattern?: string
-  format?: IsUnion<UserDefinedOptions['format']> extends true 
-    ? UserDefinedOptions['format'] | FormatOption 
-    : FormatOption;
+  format?: IsUnion<UserDefinedOptions['format']> extends true
+  ? UserDefinedOptions['format'] | FormatOption
+  : FormatOption;
 } & Omit<UserDefinedOptions, 'format'>
 
 export type TLiteral = TStringLiteral<string> | TNumberLiteral<number> | TBooleanLiteral<boolean>
@@ -517,10 +517,10 @@ export class Type {
       const candidate = properties[name] as TModifier
       return (candidate[modifierSymbol] &&
         (candidate[modifierSymbol] === 'readonly-optional' ||
-         candidate[modifierSymbol] === 'optional'))
+          candidate[modifierSymbol] === 'optional'))
     })
     const required = property_names.filter(name => !optional.includes(name))
-    return { ...options, type: 'object', properties, required: required.length? required : undefined }
+    return { ...options, type: 'object', properties, required: required.length ? required : undefined }
   }
 
   /** Creates a `{[key: string]: T}` type for the given item. */
@@ -533,7 +533,7 @@ export class Type {
   public static Array<T extends TSchema | TUnion | TIntersect | TTuple>(items: T, options: ArrayOptions = {}): TArray<T> {
     return { ...options, type: 'array', items }
   }
-  
+
   /** Creates an `Enum<T>` from an existing TypeScript enum definition. */
   public static Enum<T extends Record<string, string | number>>(item: T, options?: UserDefinedOptions): TEnum<T[keyof T]> {
     // We explicitly want to ignore reverse-lookup entries for number enums hence we are 
