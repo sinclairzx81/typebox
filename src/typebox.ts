@@ -79,10 +79,8 @@ export type TConstructor = TConstructor8<TSchema, TSchema, TSchema, TSchema, TSc
   TConstructor1<TSchema, TSchema> |
   TConstructor0<TSchema>
 
-export type TContract = TFunction | TConstructor | TPromise<any> | TVoid | TUndefined
-export type TPromise<T extends TSchema | TVoid | TUndefined> = { type: 'promise', item: T } & UserDefinedOptions
-export type TUndefined = { type: 'undefined' } & UserDefinedOptions
-export type TVoid = { type: 'void' } & UserDefinedOptions
+type TContract = TConstructor | TFunction
+
 
 // #endregion
 
@@ -203,9 +201,12 @@ export type TString = { type: 'string' } & StringOptions
 export type TBoolean = { type: 'boolean' } & UserDefinedOptions
 export type TNull = { type: 'null' } & UserDefinedOptions
 export type TAny = {} & UserDefinedOptions
+// Extended
+export type TPromise<T extends TSchema | TVoid | TUndefined> = { type: 'promise', item: T } & UserDefinedOptions
+export type TUndefined = { type: 'undefined' } & UserDefinedOptions
+export type TVoid = { type: 'void' } & UserDefinedOptions
 
-
-export type TSchema = TLiteral | TNumber | TInteger | TBoolean | TString | TObject<any> | TArray<any> | TEnum<any> | TMap<any> | TNull | TAny
+export type TSchema = TLiteral | TNumber | TInteger | TBoolean | TString | TObject<any> | TArray<any> | TEnum<any> | TMap<any> | TNull | TAny | TPromise<any> | TUndefined | TVoid
 
 // #endregion
 
@@ -236,12 +237,9 @@ type StaticConstructor<T> =
   T extends TConstructor0<infer R> ? new () => Static<R> :
   never;
 
-type StaticContract<T extends TContract> =
+type StaticContract<T extends TSchema> =
   T extends TFunction ? StaticFunction<T> :
   T extends TConstructor ? StaticConstructor<T> :
-  T extends TPromise<infer U> ? Promise<Static<U>> :
-  T extends TVoid ? void :
-  T extends TUndefined ? undefined :
   never;
 
 // #endregion
@@ -303,15 +301,11 @@ type ReadonlyPropertyKeys<T> = { [K in keyof T]: T[K] extends TReadonly<infer U>
 type OptionalPropertyKeys<T> = { [K in keyof T]: T[K] extends TOptional<infer U> ? K : never }[keyof T]
 type PropertyKeys<T> = keyof Omit<T, OptionalPropertyKeys<T> | ReadonlyPropertyKeys<T> | ReadonlyOptionalPropertyKeys<T>>
 
-type StaticObjectPropertiesExpansion<T> =
+type StaticObjectProperties<T> =
   { readonly [K in ReadonlyOptionalPropertyKeys<T>]?: Static<T[K]> } &
   { readonly [K in ReadonlyPropertyKeys<T>]: Static<T[K]> } &
   { [K in OptionalPropertyKeys<T>]?: Static<T[K]> } &
   { [K in PropertyKeys<T>]: Static<T[K]> }
-
-type StaticObjectProperties<T> = {
-  [K in keyof StaticObjectPropertiesExpansion<T>]: StaticObjectPropertiesExpansion<T>[K]
-}
 
 type StaticSchema<T extends TSchema> =
   T extends TObject<infer U> ? StaticObjectProperties<U> :
@@ -325,11 +319,15 @@ type StaticSchema<T extends TSchema> =
   T extends TBoolean ? boolean :
   T extends TNull ? null :
   T extends TAny ? any :
+  // Extended
+  T extends TPromise<infer U> ? Promise<Static<U>> :
+  T extends TVoid ? void :
+  T extends TUndefined ? undefined :
   never;
 
 // #endregion
 
-export type TStatic = TComposite | TSchema | TContract | TModifier
+export type TStatic = TComposite | TSchema | TModifier | TContract
 
 // Static
 export type Static<T extends TStatic> =
@@ -433,48 +431,48 @@ export class Type {
   // #region TContract
 
   /** Creates a `function` type for the given arguments. */
-  public static Function<T0 extends TStatic, T1 extends TStatic, T2 extends TStatic, T3 extends TStatic, T4 extends TStatic, T5 extends TStatic, T6 extends TStatic, T7 extends TStatic, U extends TStatic>(args: [T0, T1, T2, T3, T4, T5, T6, T7], returns: U, options?: UserDefinedOptions): TFunction8<T0, T1, T2, T3, T4, T5, T6, T7, U>
+  public static Function<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema, T7 extends TSchema, U extends TSchema>(args: [T0, T1, T2, T3, T4, T5, T6, T7], returns: U, options?: UserDefinedOptions): TFunction8<T0, T1, T2, T3, T4, T5, T6, T7, U>
   /** Creates a `function` type for the given arguments. */
-  public static Function<T0 extends TStatic, T1 extends TStatic, T2 extends TStatic, T3 extends TStatic, T4 extends TStatic, T5 extends TStatic, T6 extends TStatic, U extends TStatic>(args: [T0, T1, T2, T3, T4, T5, T6], returns: U, options?: UserDefinedOptions): TFunction7<T0, T1, T2, T3, T4, T5, T6, U>
+  public static Function<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema, U extends TSchema>(args: [T0, T1, T2, T3, T4, T5, T6], returns: U, options?: UserDefinedOptions): TFunction7<T0, T1, T2, T3, T4, T5, T6, U>
   /** Creates a `function` type for the given arguments. */
-  public static Function<T0 extends TStatic, T1 extends TStatic, T2 extends TStatic, T3 extends TStatic, T4 extends TStatic, T5 extends TStatic, U extends TStatic>(args: [T0, T1, T2, T3, T4, T5], returns: U, options?: UserDefinedOptions): TFunction6<T0, T1, T2, T3, T4, T5, U>
+  public static Function<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, U extends TSchema>(args: [T0, T1, T2, T3, T4, T5], returns: U, options?: UserDefinedOptions): TFunction6<T0, T1, T2, T3, T4, T5, U>
   /** Creates a `function` type for the given arguments. */
-  public static Function<T0 extends TStatic, T1 extends TStatic, T2 extends TStatic, T3 extends TStatic, T4 extends TStatic, U extends TStatic>(args: [T0, T1, T2, T3, T4], returns: U, options?: UserDefinedOptions): TFunction5<T0, T1, T2, T3, T4, U>
+  public static Function<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, U extends TSchema>(args: [T0, T1, T2, T3, T4], returns: U, options?: UserDefinedOptions): TFunction5<T0, T1, T2, T3, T4, U>
   /** Creates a `function` type for the given arguments. */
-  public static Function<T0 extends TStatic, T1 extends TStatic, T2 extends TStatic, T3 extends TStatic, U extends TStatic>(args: [T0, T1, T2, T3], returns: U, options?: UserDefinedOptions): TFunction4<T0, T1, T2, T3, U>
+  public static Function<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, U extends TSchema>(args: [T0, T1, T2, T3], returns: U, options?: UserDefinedOptions): TFunction4<T0, T1, T2, T3, U>
   /** Creates a `function` type for the given arguments. */
-  public static Function<T0 extends TStatic, T1 extends TStatic, T2 extends TStatic, U extends TStatic>(args: [T0, T1, T2], returns: U, options?: UserDefinedOptions): TFunction3<T0, T1, T2, U>
+  public static Function<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, U extends TSchema>(args: [T0, T1, T2], returns: U, options?: UserDefinedOptions): TFunction3<T0, T1, T2, U>
   /** Creates a `function` type for the given arguments. */
-  public static Function<T0 extends TStatic, T1 extends TStatic, U extends TStatic>(args: [T0, T1], returns: U, options?: UserDefinedOptions): TFunction2<T0, T1, U>
+  public static Function<T0 extends TSchema, T1 extends TSchema, U extends TSchema>(args: [T0, T1], returns: U, options?: UserDefinedOptions): TFunction2<T0, T1, U>
   /** Creates a `function` type for the given arguments. */
-  public static Function<T0 extends TStatic, U extends TStatic>(args: [T0], returns: U, options?: UserDefinedOptions): TFunction1<T0, U>
+  public static Function<T0 extends TSchema, U extends TSchema>(args: [T0], returns: U, options?: UserDefinedOptions): TFunction1<T0, U>
   /** Creates a `function` type for the given arguments. */
-  public static Function<U extends TStatic>(args: [], returns: U, options?: UserDefinedOptions): TFunction0<U>
+  public static Function<U extends TSchema>(args: [], returns: U, options?: UserDefinedOptions): TFunction0<U>
   /** Creates a `function` type for the given arguments. */
-  public static Function(args: TStatic[], returns: TStatic, options: UserDefinedOptions = {}): TFunction {
+  public static Function(args: TSchema[], returns: TSchema, options: UserDefinedOptions = {}): TFunction {
     return { ...options, type: 'function', arguments: args, returns } as TFunction
   }
 
   /** Creates a `constructor` type for the given arguments. */
-  public static Constructor<T0 extends TStatic, T1 extends TStatic, T2 extends TStatic, T3 extends TStatic, T4 extends TStatic, T5 extends TStatic, T6 extends TStatic, T7 extends TStatic, U extends TStatic>(args: [T0, T1, T2, T3, T4, T5, T6, T7], returns: U, options?: UserDefinedOptions): TConstructor8<T0, T1, T2, T3, T4, T5, T6, T7, U>
+  public static Constructor<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema, T7 extends TSchema, U extends TSchema>(args: [T0, T1, T2, T3, T4, T5, T6, T7], returns: U, options?: UserDefinedOptions): TConstructor8<T0, T1, T2, T3, T4, T5, T6, T7, U>
   /** Creates a `constructor` type for the given arguments. */
-  public static Constructor<T0 extends TStatic, T1 extends TStatic, T2 extends TStatic, T3 extends TStatic, T4 extends TStatic, T5 extends TStatic, T6 extends TStatic, U extends TStatic>(args: [T0, T1, T2, T3, T4, T5, T6], returns: U, options?: UserDefinedOptions): TConstructor7<T0, T1, T2, T3, T4, T5, T6, U>
+  public static Constructor<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema, U extends TSchema>(args: [T0, T1, T2, T3, T4, T5, T6], returns: U, options?: UserDefinedOptions): TConstructor7<T0, T1, T2, T3, T4, T5, T6, U>
   /** Creates a `constructor` type for the given arguments. */
-  public static Constructor<T0 extends TStatic, T1 extends TStatic, T2 extends TStatic, T3 extends TStatic, T4 extends TStatic, T5 extends TStatic, U extends TStatic>(args: [T0, T1, T2, T3, T4, T5], returns: U, options?: UserDefinedOptions): TConstructor6<T0, T1, T2, T3, T4, T5, U>
+  public static Constructor<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, U extends TSchema>(args: [T0, T1, T2, T3, T4, T5], returns: U, options?: UserDefinedOptions): TConstructor6<T0, T1, T2, T3, T4, T5, U>
   /** Creates a `constructor` type for the given arguments. */
-  public static Constructor<T0 extends TStatic, T1 extends TStatic, T2 extends TStatic, T3 extends TStatic, T4 extends TStatic, U extends TStatic>(args: [T0, T1, T2, T3, T4], returns: U, options?: UserDefinedOptions): TConstructor5<T0, T1, T2, T3, T4, U>
+  public static Constructor<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, U extends TSchema>(args: [T0, T1, T2, T3, T4], returns: U, options?: UserDefinedOptions): TConstructor5<T0, T1, T2, T3, T4, U>
   /** Creates a `constructor` type for the given arguments. */
-  public static Constructor<T0 extends TStatic, T1 extends TStatic, T2 extends TStatic, T3 extends TStatic, U extends TStatic>(args: [T0, T1, T2, T3], returns: U, options?: UserDefinedOptions): TConstructor4<T0, T1, T2, T3, U>
+  public static Constructor<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, U extends TSchema>(args: [T0, T1, T2, T3], returns: U, options?: UserDefinedOptions): TConstructor4<T0, T1, T2, T3, U>
   /** Creates a `constructor` type for the given arguments. */
-  public static Constructor<T0 extends TStatic, T1 extends TStatic, T2 extends TStatic, U extends TStatic>(args: [T0, T1, T2], returns: U, options?: UserDefinedOptions): TConstructor3<T0, T1, T2, U>
+  public static Constructor<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, U extends TSchema>(args: [T0, T1, T2], returns: U, options?: UserDefinedOptions): TConstructor3<T0, T1, T2, U>
   /** Creates a `constructor` type for the given arguments. */
-  public static Constructor<T0 extends TStatic, T1 extends TStatic, U extends TStatic>(args: [T0, T1], returns: U, options?: UserDefinedOptions): TConstructor2<T0, T1, U>
+  public static Constructor<T0 extends TSchema, T1 extends TSchema, U extends TSchema>(args: [T0, T1], returns: U, options?: UserDefinedOptions): TConstructor2<T0, T1, U>
   /** Creates a `constructor` type for the given arguments. */
-  public static Constructor<T0 extends TStatic, U extends TStatic>(args: [T0], returns: U, options?: UserDefinedOptions): TConstructor1<T0, U>
+  public static Constructor<T0 extends TSchema, U extends TSchema>(args: [T0], returns: U, options?: UserDefinedOptions): TConstructor1<T0, U>
   /** Creates a `constructor` type for the given arguments. */
-  public static Constructor<U extends TStatic>(args: [], returns: U, options?: UserDefinedOptions): TConstructor0<U>
+  public static Constructor<U extends TSchema>(args: [], returns: U, options?: UserDefinedOptions): TConstructor0<U>
   /** Creates a `constructor` type for the given arguments. */
-  public static Constructor(args: TStatic[], returns: TStatic, options: UserDefinedOptions = {}): TConstructor {
+  public static Constructor(args: TSchema[], returns: TSchema, options: UserDefinedOptions = {}): TConstructor {
     return { ...options, type: 'constructor', arguments: args, returns } as TConstructor
   }
 
