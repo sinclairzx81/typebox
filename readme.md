@@ -288,11 +288,6 @@ The following are object property modifiers. Note that `Type.Optional(...)` will
     </thead>
     <tbody>
         <tr>
-            <td>ReadonlyOptional</td>
-            <td><code>const T = Type.Object({ email: Type.ReadonlyOptional(Type.String()) })</code></td>
-            <td><code>type T = { readonly email?: string }</code></td>
-        </tr>
-        <tr>
             <td>Readonly</td>
             <td><code>const T = Type.Object({ email: Type.Readonly(Type.String()) })</code></td>
             <td><code>type T = { readonly email: string }</code></td>

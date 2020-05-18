@@ -147,8 +147,7 @@ export type TComposite = TIntersect | TUnion | TTuple
 export const modifierSymbol = Symbol('Modifier')
 export type TOptional<T extends TSchema | TComposite> = T & { [modifierSymbol]: 'optional' }
 export type TReadonly<T extends TSchema | TComposite> = T & { [modifierSymbol]: 'readonly' }
-export type TReadonlyOptional<T extends TSchema | TComposite> = T & { [modifierSymbol]: 'readonly-optional' }
-export type TModifier = TOptional<any> | TReadonly<any> | TReadonlyOptional<any>
+export type TModifier = TOptional<any> | TReadonly<any>
 
 // #endregion
 
@@ -296,13 +295,11 @@ type StaticLiteral<T> =
   never;
 
 // Extract 'optional', 'readonly' and 'general' property keys from T
-type ReadonlyOptionalPropertyKeys<T> = { [K in keyof T]: T[K] extends TReadonlyOptional<infer U> ? K : never }[keyof T]
 type ReadonlyPropertyKeys<T> = { [K in keyof T]: T[K] extends TReadonly<infer U> ? K : never }[keyof T]
 type OptionalPropertyKeys<T> = { [K in keyof T]: T[K] extends TOptional<infer U> ? K : never }[keyof T]
-type PropertyKeys<T> = keyof Omit<T, OptionalPropertyKeys<T> | ReadonlyPropertyKeys<T> | ReadonlyOptionalPropertyKeys<T>>
+type PropertyKeys<T> = keyof Omit<T, OptionalPropertyKeys<T> | ReadonlyPropertyKeys<T>>
 
 type StaticObjectProperties<T> =
-  { readonly [K in ReadonlyOptionalPropertyKeys<T>]?: Static<T[K]> } &
   { readonly [K in ReadonlyPropertyKeys<T>]: Static<T[K]> } &
   { [K in OptionalPropertyKeys<T>]?: Static<T[K]> } &
   { [K in PropertyKeys<T>]: Static<T[K]> }
@@ -339,11 +336,6 @@ export type Static<T extends TStatic> =
 export class Type {
 
   // #region TModifier
-
-  /** Modifies the inner type T into a readonly optional T. */
-  public static ReadonlyOptional<T extends TSchema | TUnion | TIntersect>(item: T): TReadonlyOptional<T> {
-    return { ...item, [modifierSymbol]: 'readonly-optional' }
-  }
 
   /** Modifies the inner type T into an optional T. */
   public static Optional<T extends TSchema | TUnion | TIntersect>(item: T): TOptional<T> {
@@ -513,9 +505,7 @@ export class Type {
     const property_names = Object.keys(properties)
     const optional = property_names.filter(name => {
       const candidate = properties[name] as TModifier
-      return (candidate[modifierSymbol] &&
-        (candidate[modifierSymbol] === 'readonly-optional' ||
-          candidate[modifierSymbol] === 'optional'))
+      return (candidate[modifierSymbol] && candidate[modifierSymbol] === 'optional')
     })
     const required = property_names.filter(name => !optional.includes(name))
     return { ...options, type: 'object', properties, required: required.length ? required : undefined }
@@ -576,7 +566,7 @@ export class Type {
   // #region Aliases
 
   /** Creates a `string` type that validates for the given regular expression. Alias for ```Type.String({ pattern: '...' })``` */
-  public static Pattern(regex: RegExp): TString {
+  public static Pattern(regex: RegExp) {
     return this.String({ pattern: regex.source })
   }
 
@@ -585,7 +575,7 @@ export class Type {
    * 
    * Creates a `string` type that validate a Guid. Alias for ```Type.String({ pattern: '...' })``` 
    */
-  public static Guid(): TString {
+  public static Guid() {
     const regex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
     return this.String({ pattern: regex.source })
   }
