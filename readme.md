@@ -94,7 +94,7 @@ JSON.validate(Order, {  // IETF | TC39 ?
 
 ## Types
 
-TypeBox provides many functions generate JSON Schema data types. The following tables list the functions TypeBox provides and their respective TypeScript and JSON Schema equivalents. 
+TypeBox provides a number of functions to generate JSON Schema data types. The following tables list the functions TypeBox provides and their respective TypeScript and JSON Schema equivalents. 
 
 ### TypeBox > TypeScript
 
