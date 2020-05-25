@@ -1,8 +1,8 @@
-import { Type, modifierSymbol } from '../src/typebox'
+import { Type, ReadonlyModifier, OptionalModifier } from '../src/typebox'
 import * as assert from 'assert'
 
 describe('Modifier', () => {
-  it('Omit modifierSymbol',  () => {
+  it('Omit modifier',  () => {
 
     const T = Type.Object({
       a: Type.Readonly(Type.String()),
@@ -13,11 +13,11 @@ describe('Modifier', () => {
     const P = JSON.parse(S) as any
 
     // check assignment on Type
-    assert.equal(T.properties.a[modifierSymbol], 'readonly')
-    assert.equal(T.properties.b[modifierSymbol], 'optional')
+    assert.equal(T.properties.a['modifier'], ReadonlyModifier)
+    assert.equal(T.properties.b['modifier'], OptionalModifier)
     
     // check deserialized
-    assert.equal(P.properties.a[modifierSymbol], undefined)
-    assert.equal(P.properties.b[modifierSymbol], undefined)
+    assert.equal(P.properties.a['modifier'], undefined)
+    assert.equal(P.properties.b['modifier'], undefined)
   })
 })

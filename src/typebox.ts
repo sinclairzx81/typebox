@@ -144,9 +144,10 @@ export type TComposite = TIntersect | TUnion | TTuple
 
 // #region TModifier
 
-export const modifierSymbol = Symbol('Modifier')
-export type TOptional<T extends TSchema | TComposite> = T & { [modifierSymbol]: 'optional' }
-export type TReadonly<T extends TSchema | TComposite> = T & { [modifierSymbol]: 'readonly' }
+export const OptionalModifier = Symbol('OptionalModifier')
+export const ReadonlyModifier = Symbol('ReadonlyModifier')
+export type TOptional<T extends TSchema | TComposite> = T & { modifier: typeof OptionalModifier }
+export type TReadonly<T extends TSchema | TComposite> = T & { modifier: typeof ReadonlyModifier }
 export type TModifier = TOptional<any> | TReadonly<any>
 
 // #endregion
@@ -339,12 +340,12 @@ export class Type {
 
   /** Modifies the inner type T into an optional T. */
   public static Optional<T extends TSchema | TUnion | TIntersect>(item: T): TOptional<T> {
-    return { ...item, [modifierSymbol]: 'optional' }
+    return { ...item, modifier: OptionalModifier }
   }
 
   /** Modifies the inner type T into an readonly T. */
   public static Readonly<T extends TSchema | TUnion | TIntersect>(item: T): TReadonly<T> {
-    return { ...item, [modifierSymbol]: 'readonly' }
+    return { ...item, modifier: ReadonlyModifier }
   }
 
   // #endregion
@@ -505,7 +506,7 @@ export class Type {
     const property_names = Object.keys(properties)
     const optional = property_names.filter(name => {
       const candidate = properties[name] as TModifier
-      return (candidate[modifierSymbol] && candidate[modifierSymbol] === 'optional')
+      return (candidate.modifier && candidate.modifier === OptionalModifier)
     })
     const required = property_names.filter(name => !optional.includes(name))
     return { ...options, type: 'object', properties, required: required.length ? required : undefined }
