@@ -33,38 +33,62 @@ describe('Object', () => {
     fail(T, 123)
     fail(T, null)
   })
-  it('Optional',  () => {
-    const T = Type.Object({
-      a: Type.Optional(Type.Number()),
-      b: Type.Optional(Type.String()),
-      c: Type.Optional(Type.Boolean()),
-      d: Type.Optional(Type.Array(Type.Number())),
-      e: Type.Optional(Type.Object({
-        x: Type.Number(),
-        y: Type.Number()
-      }))
+
+  describe('Optional', () => {
+    it('Optional',  () => {
+      const T = Type.Object({
+        a: Type.Optional(Type.Number()),
+        b: Type.Optional(Type.String()),
+        c: Type.Optional(Type.Boolean()),
+        d: Type.Optional(Type.Array(Type.Number())),
+        e: Type.Optional(Type.Object({
+          x: Type.Number(),
+          y: Type.Number()
+        }))
+      })
+
+      ok(T, {
+        a: 10,
+        b: '',
+        c: true,
+        d: [1, 2, 3],
+        e: {
+          x: 10,
+          y: 20
+        }
+      })
+
+      ok(T, {})
+
+      // fail(T, {z: null}) // should this fail?
+      fail(T, [])
+      fail(T, 'hello')
+      fail(T, true)
+      fail(T, 123)
+      fail(T, null)
     })
 
-    ok(T, {
-      a: 10,
-      b: '',
-      c: true,
-      d: [1, 2, 3],
-      e: {
-        x: 10,
-        y: 20
-      }
+    it('should add null type array in json schema for Optional type',  () => {
+      const T = Type.Object({
+        a: Type.Optional(Type.Number()),
+        b: Type.Optional(Type.String()),
+        c: Type.Optional(Type.Boolean()),
+        d: Type.Optional(Type.Array(Type.Number())),
+        e: Type.Optional(Type.Object({
+          x: Type.Number(),
+          y: Type.Number()
+        }))
+      })
+
+      assert.deepEqual(T.properties.a.type, ['number', 'null']);
+      assert.deepEqual(T.properties.b.type, ['string', 'null']);
+      assert.deepEqual(T.properties.c.type, ['boolean', 'null']);
+      assert.deepEqual(T.properties.d.type, ['array', 'null']);
+      assert.deepEqual(T.properties.e.type, ['object', 'null']);
+
     })
-
-    ok(T, {})
-
-    // fail(T, {z: null}) // should this fail?
-    fail(T, [])
-    fail(T, 'hello')
-    fail(T, true)
-    fail(T, 123)
-    fail(T, null)
   })
+
   it('Readonly',  () => {
     const T = Type.Object({
       a: Type.Readonly(Type.Number()),

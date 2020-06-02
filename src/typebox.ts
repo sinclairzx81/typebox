@@ -340,7 +340,8 @@ export class Type {
 
   /** Modifies the inner type T into an optional T. */
   public static Optional<T extends TSchema | TUnion | TIntersect>(item: T): TOptional<T> {
-    return { ...item, modifier: OptionalModifier }
+    const nullableItem = { ...item, type: [item.type, 'null']}
+    return { ...nullableItem, modifier: OptionalModifier }
   }
 
   /** Modifies the inner type T into an readonly T. */
