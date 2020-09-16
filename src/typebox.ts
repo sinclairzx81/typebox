@@ -41,43 +41,9 @@ export interface UserDefinedOptions {
 
 // #region TContract
 
-export type TFunction8<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema, T7 extends TSchema, U extends TSchema> = { type: 'function', arguments: [T0, T1, T2, T3, T4, T5, T6, T7], returns: U } & UserDefinedOptions
-export type TFunction7<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema, U extends TSchema> = { type: 'function', arguments: [T0, T1, T2, T3, T4, T5, T6], returns: U } & UserDefinedOptions
-export type TFunction6<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, U extends TSchema> = { type: 'function', arguments: [T0, T1, T2, T3, T4, T5], returns: U } & UserDefinedOptions
-export type TFunction5<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, U extends TSchema> = { type: 'function', arguments: [T0, T1, T2, T3, T4], returns: U } & UserDefinedOptions
-export type TFunction4<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, U extends TSchema> = { type: 'function', arguments: [T0, T1, T2, T3], returns: U } & UserDefinedOptions
-export type TFunction3<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, U extends TSchema> = { type: 'function', arguments: [T0, T1, T2], returns: U } & UserDefinedOptions
-export type TFunction2<T0 extends TSchema, T1 extends TSchema, U extends TSchema> = { type: 'function', arguments: [T0, T1], returns: U } & UserDefinedOptions
-export type TFunction1<T0 extends TSchema, U extends TSchema> = { type: 'function', arguments: [T0], returns: U } & UserDefinedOptions
-export type TFunction0<U extends TSchema> = { type: 'function', arguments: [], returns: U } & UserDefinedOptions
-export type TFunction = TFunction8<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
-  TFunction7<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
-  TFunction6<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
-  TFunction5<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
-  TFunction4<TSchema, TSchema, TSchema, TSchema, TSchema> |
-  TFunction3<TSchema, TSchema, TSchema, TSchema> |
-  TFunction2<TSchema, TSchema, TSchema> |
-  TFunction1<TSchema, TSchema> |
-  TFunction0<TSchema>
+export type TFunction<U extends TSchema = TSchema, T extends TSchema[] = []> = { type: 'function', arguments: [...T], returns: U } & UserDefinedOptions
 
-export type TConstructor8<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema, T7 extends TSchema, U extends TSchema> = { type: 'constructor', arguments: [T0, T1, T2, T3, T4, T5, T6, T7], returns: U } & UserDefinedOptions
-export type TConstructor7<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema, U extends TSchema> = { type: 'constructor', arguments: [T0, T1, T2, T3, T4, T5, T6], returns: U } & UserDefinedOptions
-export type TConstructor6<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, U extends TSchema> = { type: 'constructor', arguments: [T0, T1, T2, T3, T4, T5], returns: U } & UserDefinedOptions
-export type TConstructor5<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, U extends TSchema> = { type: 'constructor', arguments: [T0, T1, T2, T3, T4], returns: U } & UserDefinedOptions
-export type TConstructor4<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, U extends TSchema> = { type: 'constructor', arguments: [T0, T1, T2, T3], returns: U } & UserDefinedOptions
-export type TConstructor3<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, U extends TSchema> = { type: 'constructor', arguments: [T0, T1, T2], returns: U } & UserDefinedOptions
-export type TConstructor2<T0 extends TSchema, T1 extends TSchema, U extends TSchema> = { type: 'constructor', arguments: [T0, T1], returns: U } & UserDefinedOptions
-export type TConstructor1<T0 extends TSchema, U extends TSchema> = { type: 'constructor', arguments: [T0], returns: U } & UserDefinedOptions
-export type TConstructor0<U extends TSchema> = { type: 'constructor', arguments: [], returns: U } & UserDefinedOptions
-export type TConstructor = TConstructor8<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
-  TConstructor7<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
-  TConstructor6<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
-  TConstructor5<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
-  TConstructor4<TSchema, TSchema, TSchema, TSchema, TSchema> |
-  TConstructor3<TSchema, TSchema, TSchema, TSchema> |
-  TConstructor2<TSchema, TSchema, TSchema> |
-  TConstructor1<TSchema, TSchema> |
-  TConstructor0<TSchema>
+export type TConstructor<U extends TSchema = TSchema, T extends TSchema[] = []> = { type: 'constructor', arguments: [...T], returns: U } & UserDefinedOptions
 
 type TContract = TConstructor | TFunction
 
@@ -86,57 +52,10 @@ type TContract = TConstructor | TFunction
 
 // #region TComposite
 
-export type TIntersect8<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema, T7 extends TSchema> = { allOf: [T0, T1, T2, T3, T4, T5, T6, T7] } & UserDefinedOptions
-export type TIntersect7<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema> = { allOf: [T0, T1, T2, T3, T4, T5, T6] } & UserDefinedOptions
-export type TIntersect6<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema> = { allOf: [T0, T1, T2, T3, T4, T5] } & UserDefinedOptions
-export type TIntersect5<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema> = { allOf: [T0, T1, T2, T3, T4] } & UserDefinedOptions
-export type TIntersect4<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema> = { allOf: [T0, T1, T2, T3] } & UserDefinedOptions
-export type TIntersect3<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema> = { allOf: [T0, T1, T2] } & UserDefinedOptions
-export type TIntersect2<T0 extends TSchema, T1 extends TSchema> = { allOf: [T0, T1] } & UserDefinedOptions
-export type TIntersect1<T0 extends TSchema> = { allOf: [T0] } & UserDefinedOptions
-export type TIntersect = TIntersect8<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
-  TIntersect7<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
-  TIntersect6<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
-  TIntersect5<TSchema, TSchema, TSchema, TSchema, TSchema> |
-  TIntersect4<TSchema, TSchema, TSchema, TSchema> |
-  TIntersect3<TSchema, TSchema, TSchema> |
-  TIntersect2<TSchema, TSchema> |
-  TIntersect1<TSchema>;
+export type TIntersect<T extends TSchema[] = any> = { allOf: [...T] } & UserDefinedOptions
+export type TUnion<T extends TSchema[] = any> = { oneOf: [...T] } & UserDefinedOptions
 
-export type TUnion8<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema, T7 extends TSchema> = { oneOf: [T0, T1, T2, T3, T4, T5, T6, T7] } & UserDefinedOptions
-export type TUnion7<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema> = { oneOf: [T0, T1, T2, T3, T4, T5, T6] } & UserDefinedOptions
-export type TUnion6<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema> = { oneOf: [T0, T1, T2, T3, T4, T5] } & UserDefinedOptions
-export type TUnion5<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema> = { oneOf: [T0, T1, T2, T3, T4] } & UserDefinedOptions
-export type TUnion4<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema> = { oneOf: [T0, T1, T2, T3] } & UserDefinedOptions
-export type TUnion3<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema> = { oneOf: [T0, T1, T2] } & UserDefinedOptions
-export type TUnion2<T0 extends TSchema, T1 extends TSchema> = { oneOf: [T0, T1] } & UserDefinedOptions
-export type TUnion1<T0 extends TSchema> = { oneOf: [T0] } & UserDefinedOptions
-export type TUnion = TUnion8<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
-  TUnion7<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
-  TUnion6<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
-  TUnion5<TSchema, TSchema, TSchema, TSchema, TSchema> |
-  TUnion4<TSchema, TSchema, TSchema, TSchema> |
-  TUnion3<TSchema, TSchema, TSchema> |
-  TUnion2<TSchema, TSchema> |
-  TUnion1<TSchema>;
-
-
-export type TTuple8<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema, T7 extends TSchema> = { type: 'array', items: [T0, T1, T2, T3, T4, T5, T6, T7], additionalItems: false, minItems: 8, maxItems: 8 } & UserDefinedOptions
-export type TTuple7<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema> = { type: 'array', items: [T0, T1, T2, T3, T4, T5, T6], additionalItems: false, minItems: 7, maxItems: 7 } & UserDefinedOptions
-export type TTuple6<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema> = { type: 'array', items: [T0, T1, T2, T3, T4, T5], additionalItems: false, minItems: 6, maxItems: 6 } & UserDefinedOptions
-export type TTuple5<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema> = { type: 'array', items: [T0, T1, T2, T3, T4], additionalItems: false, minItems: 5, maxItems: 5 } & UserDefinedOptions
-export type TTuple4<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema> = { type: 'array', items: [T0, T1, T2, T3], additionalItems: false, minItems: 4, maxItems: 4 } & UserDefinedOptions
-export type TTuple3<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema> = { type: 'array', items: [T0, T1, T2], additionalItems: false, minItems: 3, maxItems: 3 } & UserDefinedOptions
-export type TTuple2<T0 extends TSchema, T1 extends TSchema> = { type: 'array', items: [T0, T1], additionalItems: false, minItems: 2, maxItems: 2 } & UserDefinedOptions
-export type TTuple1<T0 extends TSchema> = { type: 'array', items: [T0], additionalItems: false, minItems: 1, maxItems: 1 } & UserDefinedOptions
-export type TTuple = TTuple8<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
-  TTuple7<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
-  TTuple6<TSchema, TSchema, TSchema, TSchema, TSchema, TSchema> |
-  TTuple5<TSchema, TSchema, TSchema, TSchema, TSchema> |
-  TTuple4<TSchema, TSchema, TSchema, TSchema> |
-  TTuple3<TSchema, TSchema, TSchema> |
-  TTuple2<TSchema, TSchema> |
-  TTuple1<TSchema>;
+export type TTuple<T extends TSchema[] = any> = { type: 'array', items: [...T], additionalItems: false, minItems: number, maxItems: number } & UserDefinedOptions
 
 export type TComposite = TIntersect | TUnion | TTuple
 
@@ -213,28 +132,12 @@ export type TSchema = TLiteral | TNumber | TInteger | TBoolean | TString | TObje
 // #region StaticContract
 
 type StaticFunction<T> =
-  T extends TFunction8<infer U0, infer U1, infer U2, infer U3, infer U4, infer U5, infer U6, infer U7, infer R> ? (arg0: Static<U0>, arg1: Static<U1>, arg2: Static<U2>, arg3: Static<U3>, arg4: Static<U4>, arg5: Static<U5>, arg6: Static<U6>, arg7: Static<U7>) => Static<R> :
-  T extends TFunction7<infer U0, infer U1, infer U2, infer U3, infer U4, infer U5, infer U6, infer R> ? (arg0: Static<U0>, arg1: Static<U1>, arg2: Static<U2>, arg3: Static<U3>, arg4: Static<U4>, arg5: Static<U5>, arg6: Static<U6>) => Static<R> :
-  T extends TFunction6<infer U0, infer U1, infer U2, infer U3, infer U4, infer U5, infer R> ? (arg0: Static<U0>, arg1: Static<U1>, arg2: Static<U2>, arg3: Static<U3>, arg4: Static<U4>, arg5: Static<U5>) => Static<R> :
-  T extends TFunction5<infer U0, infer U1, infer U2, infer U3, infer U4, infer R> ? (arg0: Static<U0>, arg1: Static<U1>, arg2: Static<U2>, arg3: Static<U3>, arg4: Static<U4>) => Static<R> :
-  T extends TFunction4<infer U0, infer U1, infer U2, infer U3, infer R> ? (arg0: Static<U0>, arg1: Static<U1>, arg2: Static<U2>, arg3: Static<U3>) => Static<R> :
-  T extends TFunction3<infer U0, infer U1, infer U2, infer R> ? (arg0: Static<U0>, arg1: Static<U1>, arg2: Static<U2>) => Static<R> :
-  T extends TFunction2<infer U0, infer U1, infer R> ? (arg0: Static<U0>, arg1: Static<U1>) => Static<R> :
-  T extends TFunction1<infer U0, infer R> ? (arg0: Static<U0>) => Static<R> :
-  T extends TFunction0<infer R> ? () => Static<R> :
+  T extends TFunction<infer R, infer U> ? (args: [...Static<U>]) => Static<R> :
   never;
 
 
 type StaticConstructor<T> =
-  T extends TConstructor8<infer U0, infer U1, infer U2, infer U3, infer U4, infer U5, infer U6, infer U7, infer R> ? new (arg0: Static<U0>, arg1: Static<U1>, arg2: Static<U2>, arg3: Static<U3>, arg4: Static<U4>, arg5: Static<U5>, arg6: Static<U6>, arg7: Static<U7>) => Static<R> :
-  T extends TConstructor7<infer U0, infer U1, infer U2, infer U3, infer U4, infer U5, infer U6, infer R> ? new (arg0: Static<U0>, arg1: Static<U1>, arg2: Static<U2>, arg3: Static<U3>, arg4: Static<U4>, arg5: Static<U5>, arg6: Static<U6>) => Static<R> :
-  T extends TConstructor6<infer U0, infer U1, infer U2, infer U3, infer U4, infer U5, infer R> ? new (arg0: Static<U0>, arg1: Static<U1>, arg2: Static<U2>, arg3: Static<U3>, arg4: Static<U4>, arg5: Static<U5>) => Static<R> :
-  T extends TConstructor5<infer U0, infer U1, infer U2, infer U3, infer U4, infer R> ? new (arg0: Static<U0>, arg1: Static<U1>, arg2: Static<U2>, arg3: Static<U3>, arg4: Static<U4>) => Static<R> :
-  T extends TConstructor4<infer U0, infer U1, infer U2, infer U3, infer R> ? new (arg0: Static<U0>, arg1: Static<U1>, arg2: Static<U2>, arg3: Static<U3>) => Static<R> :
-  T extends TConstructor3<infer U0, infer U1, infer U2, infer R> ? new (arg0: Static<U0>, arg1: Static<U1>, arg2: Static<U2>) => Static<R> :
-  T extends TConstructor2<infer U0, infer U1, infer R> ? new (arg0: Static<U0>, arg1: Static<U1>) => Static<R> :
-  T extends TConstructor1<infer U0, infer R> ? new (arg0: Static<U0>) => Static<R> :
-  T extends TConstructor0<infer R> ? new () => Static<R> :
+  T extends TConstructor<infer R, infer U> ? new (args: [...Static<U>]) => Static<R> :
   never;
 
 type StaticContract<T extends TSchema> =
@@ -246,37 +149,18 @@ type StaticContract<T extends TSchema> =
 
 // #region StaticComposite
 
+type MapStatic<T> = { [P in keyof T]: Static<T[P]> };
+
 type StaticIntersect<T> =
-  T extends TIntersect8<infer U0, infer U1, infer U2, infer U3, infer U4, infer U5, infer U6, infer U7> ? StaticSchema<U0> & StaticSchema<U1> & StaticSchema<U2> & StaticSchema<U3> & StaticSchema<U4> & StaticSchema<U5> & StaticSchema<U6> & StaticSchema<U7> :
-  T extends TIntersect7<infer U0, infer U1, infer U2, infer U3, infer U4, infer U5, infer U6> ? StaticSchema<U0> & StaticSchema<U1> & StaticSchema<U2> & StaticSchema<U3> & StaticSchema<U4> & StaticSchema<U5> & StaticSchema<U6> :
-  T extends TIntersect6<infer U0, infer U1, infer U2, infer U3, infer U4, infer U5> ? StaticSchema<U0> & StaticSchema<U1> & StaticSchema<U2> & StaticSchema<U3> & StaticSchema<U4> & StaticSchema<U5> :
-  T extends TIntersect5<infer U0, infer U1, infer U2, infer U3, infer U4> ? StaticSchema<U0> & StaticSchema<U1> & StaticSchema<U2> & StaticSchema<U3> & StaticSchema<U4> :
-  T extends TIntersect4<infer U0, infer U1, infer U2, infer U3> ? StaticSchema<U0> & StaticSchema<U1> & StaticSchema<U2> & StaticSchema<U3> :
-  T extends TIntersect3<infer U0, infer U1, infer U2> ? StaticSchema<U0> & StaticSchema<U1> & StaticSchema<U2> :
-  T extends TIntersect2<infer U0, infer U1> ? StaticSchema<U1> & StaticSchema<U0> :
-  T extends TIntersect1<infer U0> ? StaticSchema<U0> :
+  T extends TIntersect<infer U> ? UnionToIntersection<MapStatic<U>[number]> :
   never;
 
 type StaticUnion<T> =
-  T extends TUnion8<infer U0, infer U1, infer U2, infer U3, infer U4, infer U5, infer U6, infer U7> ? StaticSchema<U0> | StaticSchema<U1> | StaticSchema<U2> | StaticSchema<U3> | StaticSchema<U4> | StaticSchema<U5> | StaticSchema<U6> | StaticSchema<U7> :
-  T extends TUnion7<infer U0, infer U1, infer U2, infer U3, infer U4, infer U5, infer U6> ? StaticSchema<U0> | StaticSchema<U1> | StaticSchema<U2> | StaticSchema<U3> | StaticSchema<U4> | StaticSchema<U5> | StaticSchema<U6> :
-  T extends TUnion6<infer U0, infer U1, infer U2, infer U3, infer U4, infer U5> ? StaticSchema<U0> | StaticSchema<U1> | StaticSchema<U2> | StaticSchema<U3> | StaticSchema<U4> | StaticSchema<U5> :
-  T extends TUnion5<infer U0, infer U1, infer U2, infer U3, infer U4> ? StaticSchema<U0> | StaticSchema<U1> | StaticSchema<U2> | StaticSchema<U3> | StaticSchema<U4> :
-  T extends TUnion4<infer U0, infer U1, infer U2, infer U3> ? StaticSchema<U0> | StaticSchema<U1> | StaticSchema<U2> | StaticSchema<U3> :
-  T extends TUnion3<infer U0, infer U1, infer U2> ? StaticSchema<U0> | StaticSchema<U1> | StaticSchema<U2> :
-  T extends TUnion2<infer U0, infer U1> ? StaticSchema<U0> | StaticSchema<U1> :
-  T extends TUnion1<infer U0> ? StaticSchema<U0> :
+  T extends TUnion<infer U> ? MapStatic<U>[number] :
   never;
 
 type StaticTuple<T> =
-  T extends TTuple8<infer U0, infer U1, infer U2, infer U3, infer U4, infer U5, infer U6, infer U7> ? [Static<U0>, Static<U1>, Static<U2>, Static<U3>, Static<U4>, Static<U5>, Static<U6>, Static<U7>] :
-  T extends TTuple7<infer U0, infer U1, infer U2, infer U3, infer U4, infer U5, infer U6> ? [Static<U0>, Static<U1>, Static<U2>, Static<U3>, Static<U4>, Static<U5>, Static<U6>] :
-  T extends TTuple6<infer U0, infer U1, infer U2, infer U3, infer U4, infer U5> ? [Static<U0>, Static<U1>, Static<U2>, Static<U3>, Static<U4>, Static<U5>] :
-  T extends TTuple5<infer U0, infer U1, infer U2, infer U3, infer U4> ? [Static<U0>, Static<U1>, Static<U2>, Static<U3>, Static<U4>] :
-  T extends TTuple4<infer U0, infer U1, infer U2, infer U3> ? [Static<U0>, Static<U1>, Static<U2>, Static<U3>] :
-  T extends TTuple3<infer U0, infer U1, infer U2> ? [Static<U0>, Static<U1>, Static<U2>] :
-  T extends TTuple2<infer U0, infer U1> ? [Static<U0>, Static<U1>] :
-  T extends TTuple1<infer U0> ? [Static<U0>] :
+  T extends TTuple<infer U> ? MapStatic<U> :
   never;
 
 type StaticComposite<T extends TComposite> =
@@ -353,70 +237,22 @@ export class Type {
   // #region TComposite
 
   /** Creates a Union type for the given arguments. */
-  public static Union<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema, T7 extends TSchema>(items: [T0, T1, T2, T3, T4, T5, T6, T7], options?: UserDefinedOptions): TUnion8<T0, T1, T2, T3, T4, T5, T6, T7>
-  /** Creates a Union type for the given arguments. */
-  public static Union<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema>(items: [T0, T1, T2, T3, T4, T5, T6], options?: UserDefinedOptions): TUnion7<T0, T1, T2, T3, T4, T5, T6>
-  /** Creates a Union type for the given arguments. */
-  public static Union<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema>(items: [T0, T1, T2, T3, T4, T5], options?: UserDefinedOptions): TUnion6<T0, T1, T2, T3, T4, T5>
-  /** Creates a Union type for the given arguments. */
-  public static Union<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema>(items: [T0, T1, T2, T3, T4], options?: UserDefinedOptions): TUnion5<T0, T1, T2, T3, T4>
-  /** Creates a Union type for the given arguments. */
-  public static Union<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema>(items: [T0, T1, T2, T3], options?: UserDefinedOptions): TUnion4<T0, T1, T2, T3>
-  /** Creates a Union type for the given arguments. */
-  public static Union<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema>(items: [T0, T1, T2], options?: UserDefinedOptions): TUnion3<T0, T1, T2>
-  /** Creates a Union type for the given arguments. */
-  public static Union<T0 extends TSchema, T1 extends TSchema>(items: [T0, T1], options?: UserDefinedOptions): TUnion2<T0, T1>
-  /** Creates a Union type for the given arguments. */
-  public static Union<T0 extends TSchema>(items: [T0], options?: UserDefinedOptions): TUnion1<T0>
-  /** Creates a Union type for the given arguments. */
-  public static Union(items: TSchema[], options: UserDefinedOptions = {}): TUnion {
-    return { ...options, oneOf: items } as TUnion
+  public static Union<T extends TSchema[]>(items: [...T], options: UserDefinedOptions = {}): TUnion<T> {
+    return { ...options, oneOf: items };
   }
 
   /** Creates an Intersect type for the given arguments. */
-  public static Intersect<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema, T7 extends TSchema>(items: [T0, T1, T2, T3, T4, T5, T6, T7], options?: UserDefinedOptions): TIntersect8<T0, T1, T2, T3, T4, T5, T6, T7>
-  /** Creates an Intersect type for the given arguments. */
-  public static Intersect<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema>(items: [T0, T1, T2, T3, T4, T5, T6], options?: UserDefinedOptions): TIntersect7<T0, T1, T2, T3, T4, T5, T6>
-  /** Creates an Intersect type for the given arguments. */
-  public static Intersect<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema>(items: [T0, T1, T2, T3, T4, T5], options?: UserDefinedOptions): TIntersect6<T0, T1, T2, T3, T4, T5>
-  /** Creates an Intersect type for the given arguments. */
-  public static Intersect<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema>(items: [T0, T1, T2, T3, T4], options?: UserDefinedOptions): TIntersect5<T0, T1, T2, T3, T4>
-  /** Creates an Intersect type for the given arguments. */
-  public static Intersect<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema>(items: [T0, T1, T2, T3], options?: UserDefinedOptions): TIntersect4<T0, T1, T2, T3>
-  /** Creates an Intersect type for the given arguments. */
-  public static Intersect<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema>(items: [T0, T1, T2], options?: UserDefinedOptions): TIntersect3<T0, T1, T2>
-  /** Creates an Intersect type for the given arguments. */
-  public static Intersect<T0 extends TSchema, T1 extends TSchema>(items: [T0, T1], options?: UserDefinedOptions): TIntersect2<T0, T1>
-  /** Creates an Intersect type for the given arguments. */
-  public static Intersect<T0 extends TSchema>(items: [T0], options?: UserDefinedOptions): TIntersect1<T0>
-  /** Creates an Intersect type for the given arguments. */
-  public static Intersect(items: TSchema[], options: UserDefinedOptions = {}): TIntersect {
-    return { ...options, allOf: items } as TIntersect
+  public static Intersect<T extends TSchema[]>(items: [...T], options: UserDefinedOptions = {}): TIntersect<T> {
+    return { ...options, allOf: items };
   }
 
   /** Creates a Tuple type for the given arguments. */
-  public static Tuple<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema, T7 extends TSchema>(items: [T0, T1, T2, T3, T4, T5, T6, T7], options?: UserDefinedOptions): TTuple8<T0, T1, T2, T3, T4, T5, T6, T7>
-  /** Creates a Tuple type for the given arguments. */
-  public static Tuple<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema>(items: [T0, T1, T2, T3, T4, T5, T6], options?: UserDefinedOptions): TTuple7<T0, T1, T2, T3, T4, T5, T6>
-  /** Creates a Tuple type for the given arguments. */
-  public static Tuple<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema>(items: [T0, T1, T2, T3, T4, T5], options?: UserDefinedOptions): TTuple6<T0, T1, T2, T3, T4, T5>
-  /** Creates a Tuple type for the given arguments. */
-  public static Tuple<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema>(items: [T0, T1, T2, T3, T4], options?: UserDefinedOptions): TTuple5<T0, T1, T2, T3, T4>
-  /** Creates a Tuple type for the given arguments. */
-  public static Tuple<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema>(items: [T0, T1, T2, T3], options?: UserDefinedOptions): TTuple4<T0, T1, T2, T3>
-  /** Creates a Tuple type for the given arguments. */
-  public static Tuple<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema>(items: [T0, T1, T2], options?: UserDefinedOptions): TTuple3<T0, T1, T2>
-  /** Creates a Tuple type for the given arguments. */
-  public static Tuple<T0 extends TSchema, T1 extends TSchema>(items: [T0, T1], options?: UserDefinedOptions): TTuple2<T0, T1>
-  /** Creates a Tuple type for the given arguments. */
-  public static Tuple<T0 extends TSchema>(items: [T0], options?: UserDefinedOptions): TTuple1<T0>
-  /** Creates a Tuple type for the given arguments. */
-  public static Tuple(items: TSchema[], options: UserDefinedOptions = {}): TTuple {
+  public static Tuple<T extends TSchema[]>(items: [...T], options: UserDefinedOptions = {}): TTuple<T> {
     const type = 'array'
     const additionalItems = false
     const minItems = items.length
     const maxItems = items.length
-    return { ...options, type, items, additionalItems, minItems, maxItems } as TTuple
+    return { ...options, type, items, additionalItems, minItems, maxItems };
   }
 
   // #endregion
@@ -424,49 +260,13 @@ export class Type {
   // #region TContract
 
   /** Creates a `function` type for the given arguments. */
-  public static Function<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema, T7 extends TSchema, U extends TSchema>(args: [T0, T1, T2, T3, T4, T5, T6, T7], returns: U, options?: UserDefinedOptions): TFunction8<T0, T1, T2, T3, T4, T5, T6, T7, U>
-  /** Creates a `function` type for the given arguments. */
-  public static Function<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema, U extends TSchema>(args: [T0, T1, T2, T3, T4, T5, T6], returns: U, options?: UserDefinedOptions): TFunction7<T0, T1, T2, T3, T4, T5, T6, U>
-  /** Creates a `function` type for the given arguments. */
-  public static Function<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, U extends TSchema>(args: [T0, T1, T2, T3, T4, T5], returns: U, options?: UserDefinedOptions): TFunction6<T0, T1, T2, T3, T4, T5, U>
-  /** Creates a `function` type for the given arguments. */
-  public static Function<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, U extends TSchema>(args: [T0, T1, T2, T3, T4], returns: U, options?: UserDefinedOptions): TFunction5<T0, T1, T2, T3, T4, U>
-  /** Creates a `function` type for the given arguments. */
-  public static Function<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, U extends TSchema>(args: [T0, T1, T2, T3], returns: U, options?: UserDefinedOptions): TFunction4<T0, T1, T2, T3, U>
-  /** Creates a `function` type for the given arguments. */
-  public static Function<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, U extends TSchema>(args: [T0, T1, T2], returns: U, options?: UserDefinedOptions): TFunction3<T0, T1, T2, U>
-  /** Creates a `function` type for the given arguments. */
-  public static Function<T0 extends TSchema, T1 extends TSchema, U extends TSchema>(args: [T0, T1], returns: U, options?: UserDefinedOptions): TFunction2<T0, T1, U>
-  /** Creates a `function` type for the given arguments. */
-  public static Function<T0 extends TSchema, U extends TSchema>(args: [T0], returns: U, options?: UserDefinedOptions): TFunction1<T0, U>
-  /** Creates a `function` type for the given arguments. */
-  public static Function<U extends TSchema>(args: [], returns: U, options?: UserDefinedOptions): TFunction0<U>
-  /** Creates a `function` type for the given arguments. */
-  public static Function(args: TSchema[], returns: TSchema, options: UserDefinedOptions = {}): TFunction {
-    return { ...options, type: 'function', arguments: args, returns } as TFunction
+  public static Function<U extends TSchema, T extends TSchema[] = []>(args: T, returns: U, options: UserDefinedOptions = {}): TFunction<U, T> {
+    return { ...options, type: 'function', arguments: args, returns };
   }
 
   /** Creates a `constructor` type for the given arguments. */
-  public static Constructor<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema, T7 extends TSchema, U extends TSchema>(args: [T0, T1, T2, T3, T4, T5, T6, T7], returns: U, options?: UserDefinedOptions): TConstructor8<T0, T1, T2, T3, T4, T5, T6, T7, U>
-  /** Creates a `constructor` type for the given arguments. */
-  public static Constructor<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, T6 extends TSchema, U extends TSchema>(args: [T0, T1, T2, T3, T4, T5, T6], returns: U, options?: UserDefinedOptions): TConstructor7<T0, T1, T2, T3, T4, T5, T6, U>
-  /** Creates a `constructor` type for the given arguments. */
-  public static Constructor<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, T5 extends TSchema, U extends TSchema>(args: [T0, T1, T2, T3, T4, T5], returns: U, options?: UserDefinedOptions): TConstructor6<T0, T1, T2, T3, T4, T5, U>
-  /** Creates a `constructor` type for the given arguments. */
-  public static Constructor<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, T4 extends TSchema, U extends TSchema>(args: [T0, T1, T2, T3, T4], returns: U, options?: UserDefinedOptions): TConstructor5<T0, T1, T2, T3, T4, U>
-  /** Creates a `constructor` type for the given arguments. */
-  public static Constructor<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, T3 extends TSchema, U extends TSchema>(args: [T0, T1, T2, T3], returns: U, options?: UserDefinedOptions): TConstructor4<T0, T1, T2, T3, U>
-  /** Creates a `constructor` type for the given arguments. */
-  public static Constructor<T0 extends TSchema, T1 extends TSchema, T2 extends TSchema, U extends TSchema>(args: [T0, T1, T2], returns: U, options?: UserDefinedOptions): TConstructor3<T0, T1, T2, U>
-  /** Creates a `constructor` type for the given arguments. */
-  public static Constructor<T0 extends TSchema, T1 extends TSchema, U extends TSchema>(args: [T0, T1], returns: U, options?: UserDefinedOptions): TConstructor2<T0, T1, U>
-  /** Creates a `constructor` type for the given arguments. */
-  public static Constructor<T0 extends TSchema, U extends TSchema>(args: [T0], returns: U, options?: UserDefinedOptions): TConstructor1<T0, U>
-  /** Creates a `constructor` type for the given arguments. */
-  public static Constructor<U extends TSchema>(args: [], returns: U, options?: UserDefinedOptions): TConstructor0<U>
-  /** Creates a `constructor` type for the given arguments. */
-  public static Constructor(args: TSchema[], returns: TSchema, options: UserDefinedOptions = {}): TConstructor {
-    return { ...options, type: 'constructor', arguments: args, returns } as TConstructor
+  public static Constructor<U extends TSchema, T extends TSchema[] = []>(args: T, returns: U, options?: UserDefinedOptions): TConstructor<U, T> {
+    return { ...options, type: 'constructor', arguments: args, returns };
   }
 
   /** Creates a `Promise<T>` type. */
@@ -525,8 +325,8 @@ export class Type {
 
   /** Creates an `Enum<T>` from an existing TypeScript enum definition. */
   public static Enum<T extends Record<string, string | number>>(item: T, options?: UserDefinedOptions): TEnum<T[keyof T]> {
-    // We explicitly want to ignore reverse-lookup entries for number enums hence we are 
-    // getting only keys which are non-numeric and retrieve their value. Credits to 
+    // We explicitly want to ignore reverse-lookup entries for number enums hence we are
+    // getting only keys which are non-numeric and retrieve their value. Credits to
     // https://github.com/UselessPickles/ts-enum-util (Jeff Lau) for inspiration.
     const values = Object.keys(item).filter(key => isNaN(key as any)).map(key => item[key]) as T[keyof T][]
     return { ...options, enum: values }
@@ -571,10 +371,10 @@ export class Type {
     return this.String({ pattern: regex.source })
   }
 
-  /** 
+  /**
    * Deprecated: Use `Type.String({ format: 'uuid' })`
-   * 
-   * Creates a `string` type that validate a Guid. Alias for ```Type.String({ pattern: '...' })``` 
+   *
+   * Creates a `string` type that validate a Guid. Alias for ```Type.String({ pattern: '...' })```
    */
   public static Guid() {
     const regex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
