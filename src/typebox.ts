@@ -67,7 +67,7 @@ export const OptionalModifier = Symbol('OptionalModifier')
 export const ReadonlyModifier = Symbol('ReadonlyModifier')
 export type TOptional<T extends TSchema | TComposite> = T & { modifier: typeof OptionalModifier }
 export type TReadonly<T extends TSchema | TComposite> = T & { modifier: typeof ReadonlyModifier }
-export type TModifier = TOptional<any> | TReadonly<any>
+export type TModifier = TOptional<TSchema | TComposite> | TReadonly<TSchema | TComposite>
 
 // #endregion
 
