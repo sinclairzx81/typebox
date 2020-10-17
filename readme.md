@@ -27,7 +27,7 @@ TypeBox is a type builder library that allows developers to compose in-memory JS
 
 TypeBox does not provide any mechanism for validating JSON Schema. Please refer to libraries such as [AJV](https://www.npmjs.com/package/ajv) or similar to validate the schemas created with this library.
 
-Requires TypeScript 3.8.3 and above.
+Requires TypeScript 4.0.3 and above.
 
 License MIT
 
