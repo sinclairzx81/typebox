@@ -244,7 +244,7 @@ TypeBox provides a number of functions to generate JSON Schema data types. The f
         <tr>
             <td>Union</td>
             <td><code>const T = Type.Union([Type.Number(), Type.String()])</code></td>
-            <td><code>{ oneOf: [{ type: 'number'}, {type: 'string'}] }</code></td>
+            <td><code>{ anyOf: [{ type: 'number'}, {type: 'string'}] }</code></td>
         </tr>
         <tr>
             <td>Tuple</td>

@@ -13,14 +13,14 @@ describe('Union', () => {
     ok(T, 42)
   })
 
-  it('A | B', () => {
+  it('A | (A & B)', () => {
     const A = Type.Object({ a: Type.String() })
-    const B = Type.Object({ b: Type.Number() })
+    const B = Type.Object({ a: Type.String(), b: Type.Optional(Type.Number()) })
     const T = Type.Union([A, B])
-    
-    fail(T, {a: 'hello', b: 42 })
+
+    fail(T, { })
+    ok(T, {a: 'hello', b: 42 })
     ok(T, { a: 'hello' })
-    ok(T, { b: 42 })
   })
 
   it('A | B | C', () => {
@@ -29,7 +29,7 @@ describe('Union', () => {
     const C = Type.Object({ c: Type.Boolean() })
     const T = Type.Union([A, B, C])
     
-    fail(T, {a: 'hello', b: 42, c: true })
+    fail(T, { })
     ok(T, {a: 'hello' })
     ok(T, {b: 42 })
     ok(T, {c: true })

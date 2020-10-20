@@ -53,7 +53,7 @@ type TContract = TConstructor | TFunction
 // #region TComposite
 
 export type TIntersect<T extends TSchema[] = any> = { allOf: [...T] } & UserDefinedOptions
-export type TUnion<T extends TSchema[] = any> = { oneOf: [...T] } & UserDefinedOptions
+export type TUnion<T extends TSchema[] = any> = { anyOf: [...T] } & UserDefinedOptions
 
 export type TTuple<T extends TSchema[] = any> = { type: 'array', items: [...T], additionalItems: false, minItems: number, maxItems: number } & UserDefinedOptions
 
@@ -238,7 +238,7 @@ export class Type {
 
   /** Creates a Union type for the given arguments. */
   public static Union<T extends TSchema[]>(items: [...T], options: UserDefinedOptions = {}): TUnion<T> {
-    return { ...options, oneOf: items };
+    return { ...options, anyOf: items };
   }
 
   /** Creates an Intersect type for the given arguments. */
