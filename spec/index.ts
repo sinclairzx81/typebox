@@ -1,2 +1,2 @@
-import './static/index'
 import './schema/index'
+import './static/index'
