@@ -8,7 +8,8 @@ const T0 = Type.Object({
     c: Type.Boolean(),
     d: Type.Object({
         e: Type.Array(Type.String()),
-    })
+    }),
+    e: Type.Dict(Type.String()),
 })
 
 const F0 = (arg: Static<typeof T0>) => {}
@@ -19,6 +20,7 @@ F0({
     c: true,
     d: { 
         e: [''] 
-    }
+    },
+    e: { a: '' }
 })
 

@@ -137,6 +137,7 @@ export type TSchema =
     | TUnion<any>
     | TTuple<any>
     | TObject<TProperties>
+    | TDict<any>
     | TArray<any>
     | TEnum<any>
     | TLiteral<any>
