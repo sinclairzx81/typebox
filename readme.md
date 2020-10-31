@@ -98,6 +98,8 @@ TypeBox provides a number of functions to generate JSON Schema data types. The f
 
 ### TypeBox > TypeScript
 
+The following table outlines the TypeScript type inferred via `Static<TSchema>`.
+
 <table>
     <thead>
         <tr>
@@ -143,8 +145,8 @@ TypeBox provides a number of functions to generate JSON Schema data types. The f
             <td><code>type T = number[]</code></td>
         </tr>
         <tr>
-            <td>Map</td>
-            <td><code>const T = Type.Map(Type.Number())</code></td>
+            <td>Dict</td>
+            <td><code>const T = Type.Dict(Type.Number())</code></td>
             <td><code>type T = { [key: string] } : number</code></td>
         </tr>
         <tr>
@@ -168,24 +170,26 @@ TypeBox provides a number of functions to generate JSON Schema data types. The f
             <td><code>type T = any</code></td>
         </tr>
         <tr>
+            <td>Unknown</td>
+            <td><code>const T = Type.Unknown()</code></td>
+            <td><code>type T = unknown</code></td>
+        </tr>
+        <tr>
             <td>Null</td>
             <td><code>const T = Type.Null()</code></td>
             <td><code>type T = null</code></td>
         </tr>
         <tr>
-            <td>Pattern</td>
-            <td><code>const T = Type.Pattern(/foo/)</code></td>
-            <td><code>type T = string</code></td>
-        </tr>
-        <tr>
-            <td>Guid</td>
-            <td><code>const T = Type.Guid()</code></td>
+            <td>RegEx</td>
+            <td><code>const T = Type.RegEx(/foo/)</code></td>
             <td><code>type T = string</code></td>
         </tr>
     </tbody>
 </table>
 
 ### TypeBox > JSON Schema
+
+The following table outlines the JSON Schema data structures.
 
 <table>
     <thead>
@@ -232,8 +236,8 @@ TypeBox provides a number of functions to generate JSON Schema data types. The f
             <td><code>{ type: 'array': items: { type: 'string' } }</code></td>
         </tr>
         <tr>
-            <td>Map</td>
-            <td><code>const T = Type.Map(Type.Number())</code></td>
+            <td>Dict</td>
+            <td><code>const T = Type.Dict(Type.Number())</code></td>
             <td><code>{ type: 'object', additionalProperties: { type: 'number' } }</code></td>
         </tr>
         <tr>
@@ -262,14 +266,9 @@ TypeBox provides a number of functions to generate JSON Schema data types. The f
             <td><code>{ type: 'null' }</code></td>
         </tr>
         <tr>
-            <td>Pattern</td>
-            <td><code>const T = Type.Pattern(/foo/)</code></td>
+            <td>RegEx</td>
+            <td><code>const T = Type.RegEx(/foo/)</code></td>
             <td><code>{ type: 'string', pattern: 'foo' }</code></td>
-        </tr>
-        <tr>
-            <td>Guid</td>
-            <td><code>const T = Type.Guid()</code></td>
-            <td><code>{ type: 'string', pattern: '&lt;guid-regex&gt;' }</code></td>
         </tr>
     </tbody>
 </table>
@@ -296,6 +295,11 @@ The following are object property modifiers. Note that `Type.Optional(...)` will
             <td>Optional</td>
             <td><code>const T = Type.Object({ email: Type.Optional(Type.String()) })</code></td>
             <td><code>type T = { email?: string }</code></td>
+        </tr>
+        <tr>
+            <td>ReadonlyOptional</td>
+            <td><code>const T = Type.Object({ email: Type.ReadonlyOptional(Type.String()) })</code></td>
+            <td><code>type T = { readonly email?: string }</code></td>
         </tr>
     </tbody>
 </table>

@@ -4,9 +4,7 @@
     "module": "CommonJS",
     "target": "ESNext",
     "moduleResolution": "node",
-    "lib": [
-      "ESNext"
-    ],
+    "lib": ["ESNext"],
     "declaration": true,
     "outDir": "../dist/",
   },

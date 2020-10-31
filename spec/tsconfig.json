@@ -7,6 +7,10 @@
     "lib": ["ESNext"],
     "alwaysStrict": true,
     "outFile": "../spec.js",
+    "baseUrl": ".",
+    "paths": {
+      "@sinclair/typebox": ["../src/typebox.ts"]
+    }
   },
   "files": ["index.ts"]
 }
