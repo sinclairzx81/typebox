@@ -1,7 +1,7 @@
 import * as Ajv from 'ajv'
 
 export function ok(type: any, data: any) {
-  const ajv       = new Ajv({})
+  const ajv = new Ajv({})
   const result = ajv.validate(type, data) as boolean
   if (result === false) {
     console.log('---------------------------')

@@ -1,4 +1,4 @@
-import { Type } from '../src/typebox'
+import { Type } from '@sinclair/typebox'
 import { ok, fail } from './validate'
 
 describe("Boolean", () => {

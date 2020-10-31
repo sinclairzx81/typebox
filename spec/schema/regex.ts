@@ -1,10 +1,10 @@
-import { Type } from '../src/typebox'
+import { Type } from '@sinclair/typebox'
 import { ok, fail } from './validate'
 
-describe('Pattern', () => {
+describe('RegEx', () => {
 
   it('Numeric',  () => {
-    const T = Type.Pattern(/[012345]/)
+    const T = Type.RegEx(/[012345]/)
     ok(T, '0')
     ok(T, '1')
     ok(T, '2')

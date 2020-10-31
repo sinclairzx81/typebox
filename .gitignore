@@ -1,5 +1,4 @@
 node_modules/
 dist/
-index.ts
 index.js
 spec.js

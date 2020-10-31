@@ -1,10 +1,10 @@
-import { Type } from '../src/typebox'
+import { Type } from '@sinclair/typebox'
 import { ok, fail } from './validate'
 
-describe('Map', () => {
+describe('Dict', () => {
 
-  it('Map <string, any>',  () => {
-    const T = Type.Map(Type.Any())
+  it('Dict <string, any>',  () => {
+    const T = Type.Dict(Type.Any())
 
     ok(T, { key: 32 })
     ok(T, { key: 'hello' })
@@ -14,9 +14,9 @@ describe('Map', () => {
     ok(T, { key: null })
   })
 
-  it('Map <string, A>',  () => {
+  it('Dict <string, A>',  () => {
     const A = Type.String()
-    const T = Type.Map(A)
+    const T = Type.Dict(A)
   
     ok(T, { key: 'hello' })
     fail(T, { key: 32 })
@@ -26,10 +26,10 @@ describe('Map', () => {
     fail(T, { key: null })
   })
 
-  it('Map <A | B>',  () => {
+  it('Dict <A | B>',  () => {
     const A = Type.Number()
     const B = Type.String()
-    const T = Type.Map(Type.Union([A, B]))
+    const T = Type.Dict(Type.Union([A, B]))
 
     ok(T, { key: 'hello' })
     ok(T, { key: 32 })
@@ -39,10 +39,10 @@ describe('Map', () => {
     fail(T, { key: null })
   })
 
-  it('Map <A & B>',  () => {
+  it('Dict <A & B>',  () => {
     const A = Type.Object({ a: Type.String() })
     const B = Type.Object({ b: Type.String() })
-    const T = Type.Map(Type.Intersect([A, B]))
+    const T = Type.Dict(Type.Intersect([A, B]))
 
     ok(T, { key: {a: 'hello', b: 'world'} })
     fail(T, { key: {b: 'world'} })
@@ -53,10 +53,10 @@ describe('Map', () => {
     fail(T, { key: null })
   })
 
-  it('Map <[A, B]>',  () => {
+  it('Dict <[A, B]>',  () => {
     const A = Type.String()
     const B = Type.Number()
-    const T = Type.Map(Type.Tuple([A, B]))
+    const T = Type.Dict(Type.Tuple([A, B]))
 
     ok(T, { key: ['hello', 42] })
     fail(T, { key: [42, 'hello'] })

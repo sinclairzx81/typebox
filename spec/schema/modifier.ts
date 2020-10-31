@@ -1,4 +1,4 @@
-import { Type, ReadonlyModifier, OptionalModifier } from '../src/typebox'
+import { Type, ReadonlyModifier, OptionalModifier } from '@sinclair/typebox'
 import * as assert from 'assert'
 
 describe('Modifier', () => {

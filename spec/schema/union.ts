@@ -1,4 +1,4 @@
-import { Type } from '../src/typebox'
+import { Type } from '@sinclair/typebox'
 import { ok, fail } from './validate'
 
 describe('Union', () => {
@@ -7,8 +7,8 @@ describe('Union', () => {
     const A = Type.String()
     const B = Type.Number()
     const T = Type.Union([A, B])
-    
-    fail(T, { })
+
+    fail(T, {})
     ok(T, 'hello')
     ok(T, 42)
   })
@@ -18,8 +18,8 @@ describe('Union', () => {
     const B = Type.Object({ a: Type.String(), b: Type.Optional(Type.Number()) })
     const T = Type.Union([A, B])
 
-    fail(T, { })
-    ok(T, {a: 'hello', b: 42 })
+    fail(T, {})
+    ok(T, { a: 'hello', b: 42 })
     ok(T, { a: 'hello' })
   })
 
@@ -28,10 +28,10 @@ describe('Union', () => {
     const B = Type.Object({ b: Type.Number() })
     const C = Type.Object({ c: Type.Boolean() })
     const T = Type.Union([A, B, C])
-    
-    fail(T, { })
-    ok(T, {a: 'hello' })
-    ok(T, {b: 42 })
-    ok(T, {c: true })
+
+    fail(T, {})
+    ok(T, { a: 'hello' })
+    ok(T, { b: 42 })
+    ok(T, { c: true })
   })
 })
