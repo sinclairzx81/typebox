@@ -301,8 +301,8 @@ export class TypeBuilder {
     }
 
     /** Creates a `string` schema from a regular expression. */
-    public RegEx(regex: RegExp): TString {
-        return this.String({ pattern: regex.source })
+    public RegEx(regex: RegExp, options: CustomOptions = {}): TString {
+        return this.String({ ...options, pattern: regex.source })
     }
 
     /** Creates a `number` schema. */
