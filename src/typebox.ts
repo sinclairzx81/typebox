@@ -162,7 +162,7 @@ export type UnionToIntersect<U>             = (U extends any ? (k: U) => void : 
 export type ReadonlyOptionalPropertyKeys<T> = { [K in keyof T]: T[K] extends TReadonlyOptional<infer U> ? K : never }[keyof T]
 export type ReadonlyPropertyKeys<T>         = { [K in keyof T]: T[K] extends TReadonly<infer U> ? K : never }[keyof T]
 export type OptionalPropertyKeys<T>         = { [K in keyof T]: T[K] extends TOptional<infer U> ? K : never }[keyof T]
-export type PropertyKeys<T>                 = keyof Omit<T, OptionalPropertyKeys<T> | ReadonlyPropertyKeys<T> | ReadonlyPropertyKeys<T>>
+export type PropertyKeys<T>                 = keyof Omit<T, ReadonlyOptionalPropertyKeys<T> | ReadonlyPropertyKeys<T> | OptionalPropertyKeys<T>>
 export type StaticProperties<T> =
     { readonly [K in ReadonlyOptionalPropertyKeys<T>]?: Static<T[K]> } &
     { readonly [K in ReadonlyPropertyKeys<T>]: Static<T[K]>          } &
