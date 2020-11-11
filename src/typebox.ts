@@ -69,15 +69,12 @@ export type StringFormatOption =
     | 'uuid'         | 'iri-reference' | 'uri-template' | 'json-pointer' | 'relative-json-pointer'
     | 'regex'
 
-type IsUnion<T> = [T] extends [UnionToIntersect<T>] ? false : true
-export declare type StringOptions = {
+export declare type StringOptions<TFormat extends string> = {
     minLength?: number
     maxLength?: number
     pattern?:   string
-    format?:    IsUnion<CustomOptions['format']> extends true
-        ? CustomOptions['format'] | StringFormatOption
-        : StringFormatOption
-} & Omit<CustomOptions, 'format'>
+    format?:    TFormat
+} & CustomOptions
 
 export type ArrayOptions = {
     uniqueItems?: boolean
@@ -105,7 +102,7 @@ export type TDict<T extends TSchema>        = { kind: typeof DictKind, type: 'ob
 export type TArray<T extends TSchema>       = { kind: typeof ArrayKind, type: 'array', items: T } & ArrayOptions
 export type TLiteral<T extends TValue>      = { kind: typeof LiteralKind, type: 'string' | 'number' | 'boolean', enum: [T] } & CustomOptions
 export type TEnum<T extends TKey>           = { kind: typeof EnumKind, enum: T[] } & CustomOptions
-export type TString                         = { kind: typeof StringKind, type: 'string' } & StringOptions
+export type TString                         = { kind: typeof StringKind, type: 'string' } & StringOptions<string>
 export type TNumber                         = { kind: typeof NumberKind, type: 'number' } & NumberOptions
 export type TInteger                        = { kind: typeof IntegerKind, type: 'integer' } & NumberOptions
 export type TBoolean                        = { kind: typeof BooleanKind, type: 'boolean' } & CustomOptions
@@ -296,7 +293,7 @@ export class TypeBuilder {
     }
 
     /** Creates a `string` schema. */
-    public String(options: StringOptions = {}): TString {
+    public String<TCustomFormatOption extends string>(options: StringOptions<StringFormatOption | TCustomFormatOption> = {}): TString {
         return { ...options, kind: StringKind, type: 'string' }
     }
 
@@ -362,4 +359,3 @@ export class TypeBuilder {
 }
 
 export const Type = new TypeBuilder()
-
