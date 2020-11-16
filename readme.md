@@ -72,7 +72,7 @@ type Record = {
 
 //--------------------------------------------------------------------------------------------
 //
-// ...you can construct a JSON schema representation of this type in the following way...
+// ...you can express this type in the following way.
 //
 //--------------------------------------------------------------------------------------------
 
@@ -98,7 +98,7 @@ const Record = Type.Object({        // const Record = {
 
 //--------------------------------------------------------------------------------------------
 //
-// ...then infer a back the static type represenation of it this way.
+// ...then infer back to the original static type this way.
 //
 //--------------------------------------------------------------------------------------------
 
@@ -110,13 +110,16 @@ type Record = Static<typeof Record> // type Record = {
 
 //--------------------------------------------------------------------------------------------
 //
-// The type `Record` can now be used as both JSON schema and as a TypeScript type.
+// ...then use the type both as JSON schema and as a TypeScript type.
 //
 //--------------------------------------------------------------------------------------------
 
-function receive(record: Record) {
-
-    if(JSON.validate(Record, { id: '42', name: 'dave', timestamp: Date.now() })) {
+function receive(record: Record) { // as a type
+    if(JSON.validate(Record, {     // as a schema
+        id: '42', 
+        name: 'dave', 
+        timestamp: Date.now() 
+    })) {
         // ok...
     }
 }
