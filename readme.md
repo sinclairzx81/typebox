@@ -30,7 +30,7 @@ $ npm install @sinclair/typebox --save
 
 ## Overview
 
-TypeBox is a type builder library that creates in-memory JSON Schema objects that can be statically resolved to TypeScript types. The schemas produced by this library are built to match the static type checking rules of the TypeScript compiler. This allows for a single unified type that can be both statically checked by the TypeScript compiler and runtime asserted using standard JSON schema validation.
+TypeBox is a type builder library that creates in-memory JSON Schema objects that can be statically resolved to TypeScript types. The schemas produced by this library are built to match the static type checking rules of the TypeScript compiler. TypeBox allows one to create single unified type that can be both statically checked by the TypeScript compiler and runtime asserted using standard JSON schema validation.
 
 TypeBox can be used as a simple tool to build up complex schemas or integrated into RPC or REST services to help validate JSON data received over the wire. TypeBox does not provide any JSON schema validation. Please use libraries such as [AJV](https://www.npmjs.com/package/ajv) to validate schemas built with this library.
 
@@ -114,8 +114,8 @@ type Record = Static<typeof Record> // type Record = {
 //
 //--------------------------------------------------------------------------------------------
 
-function receive(record: Record) { // as a type
-    if(JSON.validate(Record, {     // as a schema
+function receive(record: Record) { // ...as a type
+    if(JSON.validate(Record, {     // ...as a schema
         id: '42', 
         name: 'dave', 
         timestamp: Date.now() 
@@ -351,7 +351,7 @@ In addition to JSON schema types, TypeBox provides several extended types that a
 
 ### Interfaces
 
-It is possible to create interfaces from TypeBox types. Consider the following code that creates a `ControllerInterface` type that has a single function `createRecord(...)`. The following code is typical TypeScript that describes an interface.
+It is possible to create interfaces from TypeBox types. Consider the following code that creates a `ControllerInterface` type that has a single function `createRecord(...)`. The following is how one would approach this in TypeScript.
 
 ```typescript
 interface CreateRecordRequest {
