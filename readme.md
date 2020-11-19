@@ -194,7 +194,11 @@ The following table outlines the TypeBox mappings between TypeScript and JSON sc
 │   	                         │                             │      email: {               │
 │                                │                             │        type: 'string'       │
 │   	                         │                             │      }                      │
-│   	                         │                             │   }                         │
+│   	                         │                             │   },                        │
+│                                │                             │   required: [               │
+│                                │                             │      'name',                │
+│                                │                             │      'email'                │
+│                                │                             │   ]                         |
 │   	                         │                             │ }                           │
 ├────────────────────────────────┼─────────────────────────────┼─────────────────────────────┤
 │ const T = Type.Tuple([         │ type T = [string, number]   │ const T = {                 │
