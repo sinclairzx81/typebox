@@ -43,7 +43,8 @@ License MIT
 - [Overview](#Overview)
 - [Example](#Example)
 - [Types](#Types)
-- [Modifiers](#Modifers)
+- [Modifiers](#Modifiers)
+- [Options](#Options)
 - [Functions](#Functions)
 - [Interfaces](#Interfaces)
 - [Validation](#Validation)
@@ -264,10 +265,8 @@ TypeBox provides modifiers that can be applied to an objects properties. These a
 │   )	                         │                             │      name: {                │
 │ })  	                         │                             │        type: 'string'       │
 │   	                         │                             │      }                      │
-│   	                         │                             │   },                        │
-│                                │                             │   required: []              │
+│   	                         │                             │   }                         │
 │   	                         │                             │ }                           │
-│   	                         │                             │                             │
 │   	                         │                             │                             │
 ├────────────────────────────────┼─────────────────────────────┼─────────────────────────────┤
 │ const T = Type.Object({        │ type T = {                  │ const T = {                 │
@@ -280,7 +279,6 @@ TypeBox provides modifiers that can be applied to an objects properties. These a
 │                                │                             │   required: ['name']        │
 │   	                         │                             │ }                           │
 │   	                         │                             │                             │
-│   	                         │                             │                             │
 ├────────────────────────────────┼─────────────────────────────┼─────────────────────────────┤
 │ const T = Type.Object({        │ type T = {                  │ const T = {                 │
 │   name: Type.ReadonlyOptional( │    readonly name?: string,  │   type: 'object',           │
@@ -288,12 +286,26 @@ TypeBox provides modifiers that can be applied to an objects properties. These a
 │   )	                         │                             │      name: {                │
 │ })  	                         │                             │        type: 'string'       │
 │   	                         │                             │      }                      │
-│   	                         │                             │   },                        │
-│                                │                             │   required: []              │
-│   	                         │                             │ }                           │
-│   	                         │                             │                             │
+│   	                         │                             │   }                         │
+│                                │                             │ }                           │
 │   	                         │                             │                             │
 └────────────────────────────────┴─────────────────────────────┴─────────────────────────────┘
+```
+<a name="Options"></a>
+
+### Options
+
+You can pass additional JSON schema properties on the last argument of any given type. The following are some examples.
+
+```typescript
+// string must be an email
+const T = Type.String({ format: 'email' })
+
+// number must be a multiple of 2
+const T = Type.Number({ multipleOf: 2 })
+
+// array must have at least 5 integer values
+const T = Type.Array(Type.Integer(), { minItems: 5 })
 ```
 
 <a name="Functions"></a>

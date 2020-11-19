@@ -60,6 +60,10 @@ export const UnknownKind   = Symbol('UnknownKind')
 export const AnyKind       = Symbol('AnyKind')
 
 export interface CustomOptions {
+    title?: string
+    description?: string
+    default?: any
+    examples?: any
     [prop: string]: any
 }
 
@@ -72,22 +76,29 @@ export type StringFormatOption =
 export declare type StringOptions<TFormat extends string> = {
     minLength?: number
     maxLength?: number
-    pattern?:   string
-    format?:    TFormat
+    pattern?: string
+    format?: TFormat
+    contentEncoding?: '7bit' | '8bit' | 'binary' | 'quoted-printable' | 'base64'
+    contentMediaType?: string
 } & CustomOptions
 
 export type ArrayOptions = {
     uniqueItems?: boolean
-    minItems?:    number
-    maxItems?:    number
+    minItems?: number
+    maxItems?: number
 } & CustomOptions
 
 export type NumberOptions = {
     exclusiveMaximum?: number
     exclusiveMinimum?: number
-    maximum?:          number
-    minimum?:          number
-    multipleOf?:       number
+    maximum?: number
+    minimum?: number
+    multipleOf?: number
+} & CustomOptions
+
+export type DictOptions = {
+    minProperties?: number
+    maxProperties?: number
 } & CustomOptions
 
 export type TEnumType = Record<string, string | number>
@@ -98,7 +109,7 @@ export type TUnion<T extends TSchema[]>     = { kind: typeof UnionKind, anyOf: [
 export type TTuple<T extends TSchema[]>     = { kind: typeof TupleKind, type: 'array', items: [...T], additionalItems: false, minItems: number, maxItems: number } & CustomOptions
 export type TProperties                     = { [key: string]: TSchema }
 export type TObject<T extends TProperties>  = { kind: typeof ObjectKind, type: 'object', properties: T, required?: string[] } & CustomOptions
-export type TDict<T extends TSchema>        = { kind: typeof DictKind, type: 'object', additionalProperties: T } & CustomOptions
+export type TDict<T extends TSchema>        = { kind: typeof DictKind, type: 'object', additionalProperties: T } & DictOptions
 export type TArray<T extends TSchema>       = { kind: typeof ArrayKind, type: 'array', items: T } & ArrayOptions
 export type TLiteral<T extends TValue>      = { kind: typeof LiteralKind, type: 'string' | 'number' | 'boolean', enum: [T] } & CustomOptions
 export type TEnum<T extends TKey>           = { kind: typeof EnumKind, enum: T[] } & CustomOptions
@@ -269,7 +280,7 @@ export class TypeBuilder {
     }
 
     /** Creates a `{ [key: string]: T }` schema. */
-    public Dict<T extends TSchema>(item: T, options: CustomOptions = {}): TDict<T> {
+    public Dict<T extends TSchema>(item: T, options: DictOptions = {}): TDict<T> {
         const additionalProperties = item
         return { ...options, kind: DictKind, type: 'object', additionalProperties }
     }
@@ -332,27 +343,27 @@ export class TypeBuilder {
         return { ...options, kind: AnyKind }
     }
 
-    /** `NON-STANDARD` Creates a `constructor` schema. */
+    /** `EXTENDED` Creates a `constructor` schema. */
     public Constructor<T extends TSchema[], U extends TSchema>(args: [...T], returns: U, options: CustomOptions = {}): TConstructor<T, U> {
         return { ...options, kind: ConstructorKind, type: 'constructor', arguments: args, returns };
     }
 
-    /** `NON-STANDARD` Creates a `function` schema. */
+    /** `EXTENDED` Creates a `function` schema. */
     public Function<T extends TSchema[], U extends TSchema>(args: [...T], returns: U, options: CustomOptions = {}): TFunction<T, U> {
         return { ...options, kind: FunctionKind, type: 'function', arguments: args, returns };
     }
 
-    /** `NON-STANDARD` Creates a `Promise<T>` schema. */
+    /** `EXTENDED` Creates a `Promise<T>` schema. */
     public Promise<T extends TSchema>(item: T, options: CustomOptions = {}): TPromise<T> {
         return { ...options, type: 'promise', kind: PromiseKind, item }
     }
 
-    /** `NON-STANDARD` Creates a `undefined` schema. */
+    /** `EXTENDED` Creates a `undefined` schema. */
     public Undefined(options: CustomOptions = {}): TUndefined {
         return { ...options, type: 'undefined', kind: UndefinedKind }
     }
 
-    /** `NON-STANDARD` Creates a `void` schema. */
+    /** `EXTENDED` Creates a `void` schema. */
     public Void(options: CustomOptions = {}): TVoid {
         return { ...options, type: 'void', kind: VoidKind }
     }
