@@ -390,7 +390,6 @@ class Controller implements ControllerInterface {
 ```
 The following is the TypeBox equivalent.
 ```typescript
-
 import { Type, Static } from '@sinclair/typebox'
 
 type CreateRecordRequest = Static<typeof CreateRecordRequest>
@@ -403,7 +402,7 @@ const CreateRecordResponse = Type.Object({
 })
 
 type ControllerInterface = Static<typeof ControllerInterface>
-const IController = Type.Object({
+const ControllerInterface = Type.Object({
     createRecord: Type.Function([CreateRecordRequest], Type.Promise(CreateRecordResponse))
 })
 
