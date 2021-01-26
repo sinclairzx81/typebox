@@ -34,4 +34,24 @@ describe('Union', () => {
     ok(T, { b: 42 })
     ok(T, { c: true })
   })
+
+  it('A | B (tagged union)', () => {
+    const T = Type.Union([
+      Type.Object({ 
+        kind: Type.Literal('string'),
+        value: Type.String()
+      }),
+      Type.Object({
+        kind: Type.Literal('number'),
+        value: Type.Number()
+      })
+    ])
+
+    ok  (T, { kind: 'string', value: 'hello' })
+    ok  (T, { kind: 'number', value: 1 })
+
+    fail(T, { kind: 'string', value: 1 })
+    fail(T, { kind: 'number', value: 'hello' })
+  })
 })
+
