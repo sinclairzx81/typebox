@@ -469,9 +469,9 @@ A good validation library to use is [AJV](https://www.npmjs.com/package/ajv). Th
 ```typescript
 import { Type } from '@sinclair/typebox'
 
-import * as Ajv from 'ajv'
+import Ajv from 'ajv'
 
-const ajv = new Ajv()
+const ajv = new Ajv({})
 
 const User = Type.Object({
     name:  Type.String(),
