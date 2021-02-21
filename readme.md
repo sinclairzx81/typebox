@@ -257,7 +257,7 @@ The following table outlines the TypeBox mappings between TypeScript and JSON sc
 
 ### Modifiers
 
-TypeBox provides modifiers that can be applied to an objects properties. These allows for `optional` and `readonly` to be applied to that property. The following table illustates how they map between TypeScript and JSON Schema.
+TypeBox provides modifiers that can be applied to an objects properties. This allows for `optional` and `readonly` to be applied to that property. The following table illustates how they map between TypeScript and JSON Schema.
 
 ```typescript
 ┌────────────────────────────────┬─────────────────────────────┬─────────────────────────────┐
@@ -471,16 +471,55 @@ import { Type } from '@sinclair/typebox'
 
 import * as Ajv from 'ajv'
 
+const ajv = new Ajv()
+
 const User = Type.Object({
     name:  Type.String(),
     email: Type.String({ format: 'email' })
 })
 
-const ajv = new Ajv()
+const isValid = ajv.validate(User, { 
+    name:  'dave', 
+    email: 'dave@domain.com' 
+})
 
-const user = { name: 'dave', email: 'dave@domain.com' }
-
-const isValid = ajv.validate(User, user)
 //
-// -> true
+// isValid -> true
+```
+
+#### Strict
+
+By default, TypeBox will create `kind` and `modifier` properties on the underlying schemas. TypeBox uses these to help statically resolve the schemas to TypeScript types as well as apply the appropriate modifiers to an objects properties (such as optional). In most cases this is fine, however if using a validator that mandates on strict JSON schemas with known schema properties, you can use `Type.Strict()` to omit the `kind` and `modifier` properties. As follows.
+
+```typescript
+import { Type, Static } from '@sinclair/typebox'
+
+const T = Type.Object({
+    email: Type.Optional(Type.String())
+})
+
+// const T = {
+//   kind: Symbol(ObjectKind),
+//   type: 'object',
+//   properties: {
+//     email: {
+//       kind: Symbol(StringKind),
+//       type: 'string',
+//       modifier: Symbol(OptionalModifier)
+//     }
+//   }
+// }
+
+const U = Type.Strict(Type.Object({
+    email: Type.Optional(Type.String())
+}))
+
+// const U = { 
+//     type: 'object', 
+//     properties: { 
+//         email: { 
+//             type: 'string' 
+//         } 
+//     } 
+// }
 ```

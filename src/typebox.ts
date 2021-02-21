@@ -275,8 +275,10 @@ export class TypeBuilder {
                     candidate.modifier === ReadonlyOptionalModifier))
         })
         const required_names = property_names.filter(name => !optional.includes(name))
-        const required = required_names.length ? required_names : undefined
-        return { ...options, kind: ObjectKind, type: 'object', properties, required }
+        const required = (required_names.length > 0) ? required_names : undefined
+        return (required) ? 
+            { ...options, kind: ObjectKind, type: 'object', properties, required } : 
+            { ...options, kind: ObjectKind, type: 'object', properties }
     }
 
     /** Creates a `{ [key: string]: T }` schema. */
@@ -366,6 +368,11 @@ export class TypeBuilder {
     /** `EXTENDED` Creates a `void` schema. */
     public Void(options: CustomOptions = {}): TVoid {
         return { ...options, type: 'void', kind: VoidKind }
+    }
+
+    /** `EXPERIMENTAL` Omits the `kind` and `modifier` properties from the given schema. */
+    public Strict<T extends TSchema>(schema: T): T {
+        return JSON.parse(JSON.stringify(schema)) as T
     }
 }
 
