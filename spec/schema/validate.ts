@@ -1,7 +1,30 @@
-import * as Ajv from 'ajv'
+import Ajv        from 'ajv'
+import addFormats from 'ajv-formats'
+
+function setupAjv(): Ajv {
+  const ajv = new Ajv()
+  ajv.addKeyword('kind')
+  ajv.addKeyword('modifier')
+  return addFormats(ajv, [
+    'date-time', 
+    'time', 
+    'date', 
+    'email',  
+    'hostname', 
+    'ipv4', 
+    'ipv6', 
+    'uri', 
+    'uri-reference', 
+    'uuid',
+    'uri-template', 
+    'json-pointer', 
+    'relative-json-pointer', 
+    'regex'
+  ])
+}
 
 export function ok(type: any, data: any) {
-  const ajv = new Ajv({})
+  const ajv = setupAjv()
   const result = ajv.validate(type, data) as boolean
   if (result === false) {
     console.log('---------------------------')
@@ -21,7 +44,7 @@ export function ok(type: any, data: any) {
 }
 
 export function fail(type: any, data: any) {
-  const ajv = new Ajv({})
+  const ajv = setupAjv()
   const result = ajv.validate(type, data) as boolean
   if (result === true) {
     console.log('---------------------------')

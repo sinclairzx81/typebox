@@ -45,6 +45,7 @@ License MIT
 - [Types](#Types)
 - [Modifiers](#Modifiers)
 - [Options](#Options)
+- [Strict](#Strict)
 - [Functions](#Functions)
 - [Interfaces](#Interfaces)
 - [Validation](#Validation)
@@ -73,7 +74,7 @@ type Record = {
 
 //--------------------------------------------------------------------------------------------
 //
-// ...you can express this type in the following way.
+// ... you can express this type in the following way.
 //
 //--------------------------------------------------------------------------------------------
 
@@ -99,7 +100,7 @@ const Record = Type.Object({        // const Record = {
 
 //--------------------------------------------------------------------------------------------
 //
-// ...then infer back to the original static type this way.
+// ... then infer back to the original static type this way.
 //
 //--------------------------------------------------------------------------------------------
 
@@ -111,12 +112,12 @@ type Record = Static<typeof Record> // type Record = {
 
 //--------------------------------------------------------------------------------------------
 //
-// ...then use the type both as JSON schema and as a TypeScript type.
+// ... then use the type both as JSON schema and as a TypeScript type.
 //
 //--------------------------------------------------------------------------------------------
 
-function receive(record: Record) { // ...as a type
-    if(JSON.validate(Record, {     // ...as a schema
+function receive(record: Record) { // ... as a type
+    if(JSON.validate(Record, {     // ... as a schema
         id: '42', 
         name: 'dave', 
         timestamp: Date.now() 
@@ -312,6 +313,35 @@ const T = Type.Number({ multipleOf: 2 })
 const T = Type.Array(Type.Integer(), { minItems: 5 })
 ```
 
+<a name="Strict"></a>
+
+### Strict
+
+TypeBox includes the properties `kind` and `modifier` on each underlying schema. These properties are used to help TypeBox statically resolve the schemas to the appropriate TypeScript type as well as apply the appropriate modifiers to an objects properties (such as optional). These properties are not strictly valid JSON schema so in some cases it may be desirable to omit them. TypeBox provides a `Type.Strict()` function that will omit these properties if nessasary.
+
+```typescript
+const T = Type.Object({                 // const T = {
+    name: Type.Optional(Type.String())  //   kind: Symbol(ObjectKind),
+})                                      //   type: 'object',
+                                        //   properties: {
+                                        //     name: {
+                                        //       kind: Symbol(StringKind),
+                                        //       type: 'string',
+                                        //       modifier: Symbol(OptionalModifier)
+                                        //     }
+                                        //   }
+                                        // }
+
+const U = Type.Strict(T)                // const U = {
+                                        //     type: 'object', 
+                                        //     properties: { 
+                                        //         name: { 
+                                        //             type: 'string' 
+                                        //         } 
+                                        //     } 
+                                        // }
+```
+
 <a name="Functions"></a>
 
 ### Functions
@@ -462,64 +492,54 @@ console.log(JSON.stringify(ControllerInterface, null, 2))
 
 ### Validation
 
-TypeBox does not provide JSON schema validation out of the box and expects users to select an appropriate JSON schema validation library. TypeBox schemas should match JSON Schema draft 6. So any validation library capable of draft 6 should be fine.
+TypeBox does not provide JSON schema validation out of the box and expects users to select an appropriate JSON schema validation library for their needs. TypeBox schemas should match JSON Schema draft 6 so any library capable of draft 6 should be fine. A good library to use for validation is [Ajv](https://www.npmjs.com/package/ajv). The following example shows setting up Ajv 7 to work with TypeBox.
 
-A good validation library to use is [AJV](https://www.npmjs.com/package/ajv). The following demonstrates basic usage.
+```bash
+$ npm install ajv ajv-formats --save
+```
 
 ```typescript
 import { Type } from '@sinclair/typebox'
-
+import addFormats from 'ajv-formats'
 import Ajv from 'ajv'
 
-const ajv = new Ajv({})
+// Setup
+function setupAjv(): Ajv {
+    const ajv = new Ajv()
+    ajv.addKeyword('kind')
+    ajv.addKeyword('modifier')
+    return addFormats(ajv, [
+        'date-time', 
+        'time', 
+        'date', 
+        'email',  
+        'hostname', 
+        'ipv4', 
+        'ipv6', 
+        'uri', 
+        'uri-reference', 
+        'uuid',
+        'uri-template', 
+        'json-pointer', 
+        'relative-json-pointer', 
+        'regex'
+    ])
+}
 
+// TypeBox
 const User = Type.Object({
-    name:  Type.String(),
+    name: Type.String(),
     email: Type.String({ format: 'email' })
 })
 
-const isValid = ajv.validate(User, { 
-    name:  'dave', 
+// Validate
+const isValid = setupAjv().validate(User, { 
+    name: 'dave', 
     email: 'dave@domain.com' 
 })
 
 //
 // isValid -> true
+//
 ```
 
-#### Strict
-
-By default, TypeBox will create `kind` and `modifier` properties on the underlying schemas. TypeBox uses these to help statically resolve the schemas to TypeScript types as well as apply the appropriate modifiers to an objects properties (such as optional). In most cases this is fine, however if using a validator that mandates on strict JSON schemas with known schema properties, you can use `Type.Strict()` to omit the `kind` and `modifier` properties. As follows.
-
-```typescript
-import { Type, Static } from '@sinclair/typebox'
-
-const T = Type.Object({
-    email: Type.Optional(Type.String())
-})
-
-// const T = {
-//   kind: Symbol(ObjectKind),
-//   type: 'object',
-//   properties: {
-//     email: {
-//       kind: Symbol(StringKind),
-//       type: 'string',
-//       modifier: Symbol(OptionalModifier)
-//     }
-//   }
-// }
-
-const U = Type.Strict(Type.Object({
-    email: Type.Optional(Type.String())
-}))
-
-// const U = { 
-//     type: 'object', 
-//     properties: { 
-//         email: { 
-//             type: 'string' 
-//         } 
-//     } 
-// }
-```

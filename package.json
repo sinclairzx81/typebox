@@ -1,6 +1,6 @@
 {
   "name": "@sinclair/typebox",
-  "version": "0.12.8",
+  "version": "0.12.9",
   "description": "JSONSchema Type Builder with Static Type Resolution for TypeScript",
   "keywords": [
     "json-schema",
@@ -22,11 +22,11 @@
     "test": "smoke-task spec"
   },
   "devDependencies": {
-    "@types/ajv": "^1.0.0",
     "@types/chai": "^4.1.3",
     "@types/mocha": "^5.2.0",
     "@types/node": "^13.7.7",
-    "ajv": "^6.12.0",
+    "ajv": "^7.1.1",
+    "ajv-formats": "^1.5.1",
     "chai": "^4.1.2",
     "mocha": "^7.1.1",
     "smoke-task": "^1.1.2",
