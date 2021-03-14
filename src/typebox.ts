@@ -144,7 +144,7 @@ export type TSchema =
     | TIntersect<any>
     | TUnion<any>
     | TTuple<any>
-    | TObject<TProperties>
+    | TObject<any>
     | TDict<any>
     | TArray<any>
     | TEnum<any>
@@ -161,6 +161,27 @@ export type TSchema =
     | TPromise<any>
     | TUndefined
     | TVoid
+
+// ------------------------------------------------------------------------
+// Utility Types
+// ------------------------------------------------------------------------
+
+export type TPick<T extends TObject<TProperties>, K extends Array<keyof T['properties']>> = UnionToIntersect<K extends Array<infer U> ? U extends keyof T['properties'] ? TObject<Pick<T['properties'], U>> : never : never>
+export type TOmit<T extends TObject<TProperties>, K extends Array<keyof T['properties']>> = K extends Array<infer U> ? U extends keyof T['properties'] ? TObject<Omit<T['properties'], U>> : never : never   
+export type TRequired<T extends TObject<TProperties>> = TObject<{
+    [K in keyof T['properties']]: 
+        T['properties'][K] extends TReadonlyOptional<infer U> ? TReadonly<U> :  
+        T['properties'][K] extends TReadonly<infer U>         ? TReadonly<U> :
+        T['properties'][K] extends TOptional<infer U>         ? U :  
+        T['properties'][K]
+}>
+export type TPartial<T extends TObject<TProperties>> = TObject<{
+    [K in keyof T['properties']]: 
+        T['properties'][K] extends TReadonlyOptional<infer U> ? TReadonlyOptional<U> :  
+        T['properties'][K] extends TReadonly<infer U>         ? TReadonlyOptional<U> :
+        T['properties'][K] extends TOptional<infer U>         ? TOptional<U> :
+        TOptional<T['properties'][K]>
+}>
 
 // ------------------------------------------------------------------------
 // Static Inference
@@ -325,22 +346,22 @@ export class TypeBuilder {
         return { ...options, kind: IntegerKind, type: 'integer' }
     }
 
-    /** Creates a `boolean` type. */
+    /** Creates a `boolean` schema. */
     public Boolean(options: CustomOptions = {}): TBoolean {
         return { ...options, kind: BooleanKind, type: 'boolean' }
     }
 
-    /** Creates a `null` type. */
+    /** Creates a `null` schema. */
     public Null(options: CustomOptions = {}): TNull {
         return { ...options, kind: NullKind, type: 'null' }
     }
 
-    /** Creates an `unknown` type. */
+    /** Creates an `unknown` schema. */
     public Unknown(options: CustomOptions = {}): TUnknown {
         return { ...options, kind: UnknownKind }
     }
 
-    /** Creates an `any` type. */
+    /** Creates an `any` schema. */
     public Any(options: CustomOptions = {}): TAny {
         return { ...options, kind: AnyKind }
     }
@@ -374,6 +395,30 @@ export class TypeBuilder {
     public Strict<T extends TSchema>(schema: T): T {
         return JSON.parse(JSON.stringify(schema)) as T
     }
+    
+    /** `UTILITY` Omits property keys from the given object schema. */
+    public Omit<T extends TObject<TProperties>, K extends Array<keyof T['properties']>>(schema: T, keys: [...K]): TOmit<T, K> {
+        throw Error('Not implemented')
+    }
+
+    /** `UTILITY` Picks property keys from the given object schema. */
+    public Pick<T extends TObject<TProperties>, K extends Array<keyof T['properties']>>(schema: T, keys: [...K]): TPick<T, K> {
+        throw Error('Not implemented')
+    }
+
+    /** `UTILITY` Make all properties in schema object required. */
+    public Required<T extends TObject<TProperties>>(schema: T): TRequired<T> {
+        throw Error('Not implemented')
+    }
+
+    /** `UTILITY`  Make all properties in schema object optional. */
+    public Partial<T extends TObject<TProperties>>(schema: T): TPartial<T> {
+        throw Error('Not implemented')
+    }
 }
 
 export const Type = new TypeBuilder()
+
+
+
+

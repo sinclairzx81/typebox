@@ -44,6 +44,7 @@ License MIT
 - [Example](#Example)
 - [Types](#Types)
 - [Modifiers](#Modifiers)
+- [Utility](#Utility)
 - [Options](#Options)
 - [Strict](#Strict)
 - [Functions](#Functions)
@@ -296,6 +297,29 @@ TypeBox provides modifiers that can be applied to an objects properties. This al
 │   	                         │                             │                             │
 └────────────────────────────────┴─────────────────────────────┴─────────────────────────────┘
 ```
+
+<a name="Utility"></a>
+
+### Utility
+
+TypeBox allows for a subset of TypeScript [Utility Types](https://www.typescriptlang.org/docs/handbook/utility-types.html). These can apply subtractive rules to existing object schemas. Note that these utilities only operate on schemas of type `Object`.
+
+```typescript
+const Vector3 = Type.Object({
+    x: Type.Number(),
+    y: Type.Number(),
+    z: Type.Number()
+})
+
+const Vector2 = Type.Pick(Vector3, ['x', 'y'])        // { x: number, y: number }
+
+const Vector2 = Type.Omit(Vector3, ['z'])             // { x: number, y: number }
+
+const PartialVector3 = Type.Partial(Vector3)          // { x?: number, y?: number, z?: number }
+
+const RequiredVector3 = Type.Required(PartialVector3) // { x: number, y: number, z: number }
+```
+
 <a name="Options"></a>
 
 ### Options
