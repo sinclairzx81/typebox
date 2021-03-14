@@ -235,7 +235,7 @@ export type Static<T> =
 
 
 // ------------------------------------------------------------------------
-// Reflect
+// Reflect | Clone
 // ------------------------------------------------------------------------
 
 function reflect(value: any): 'string' | 'number' | 'boolean' | 'unknown' {
@@ -244,6 +244,25 @@ function reflect(value: any): 'string' | 'number' | 'boolean' | 'unknown' {
         case 'number': return 'number'
         case 'boolean': return 'boolean'
         default: return 'unknown'
+    }
+}
+
+function clone<T>(object: any): T {
+    if(typeof object === 'object' && !Array.isArray(object)) {
+        return Object.keys(object).reduce((acc, key) => {
+            acc[key] = clone(object[key])
+            return acc
+        }, {} as {[key: string]: any}) as T
+    } else if(typeof object === 'object' && Array.isArray(object)) {
+        return object.map((item: any) => clone(item)) as unknown as T
+    } else if (
+       typeof object === 'number'  ||
+       typeof object === 'boolean' ||
+       typeof object === 'string'  ||
+       typeof object === 'symbol'  ||
+       typeof object === 'bigint'
+    ) { return object as unknown as T } else {
+        throw Error('Cannot clone object')
     }
 }
 
@@ -395,7 +414,7 @@ export class TypeBuilder {
     public Strict<T extends TSchema>(schema: T): T {
         return JSON.parse(JSON.stringify(schema)) as T
     }
-    
+
     /** `UTILITY` Omits property keys from the given object schema. */
     public Omit<T extends TObject<TProperties>, K extends Array<keyof T['properties']>>(schema: T, keys: [...K]): TOmit<T, K> {
         throw Error('Not implemented')
@@ -418,7 +437,3 @@ export class TypeBuilder {
 }
 
 export const Type = new TypeBuilder()
-
-
-
-
