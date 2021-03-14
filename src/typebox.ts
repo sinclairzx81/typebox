@@ -247,21 +247,21 @@ function reflect(value: any): 'string' | 'number' | 'boolean' | 'unknown' {
     }
 }
 
-function clone<T>(object: any): T {
+function clone(object: any): any {
     if(typeof object === 'object' && !Array.isArray(object)) {
         return Object.keys(object).reduce((acc, key) => {
             acc[key] = clone(object[key])
             return acc
-        }, {} as {[key: string]: any}) as T
+        }, {} as {[key: string]: any})
     } else if(typeof object === 'object' && Array.isArray(object)) {
-        return object.map((item: any) => clone(item)) as unknown as T
+        return object.map((item: any) => clone(item))
     } else if (
        typeof object === 'number'  ||
        typeof object === 'boolean' ||
        typeof object === 'string'  ||
        typeof object === 'symbol'  ||
        typeof object === 'bigint'
-    ) { return object as unknown as T } else {
+    ) { return object } else {
         throw Error('Cannot clone object')
     }
 }
@@ -427,12 +427,34 @@ export class TypeBuilder {
 
     /** `UTILITY` Make all properties in schema object required. */
     public Required<T extends TObject<TProperties>>(schema: T): TRequired<T> {
-        throw Error('Not implemented')
+        const next = clone(schema)
+        next.required = Object.keys(next.properties)
+        for(const key of Object.keys(next.properties)) {
+            const property = next.properties[key]
+            switch(property.modifier) {
+                case ReadonlyOptionalModifier: property.modifier = ReadonlyModifier; break;
+                case ReadonlyModifier:         property.modifier = ReadonlyModifier; break;
+                case OptionalModifier:         delete property.modifier;             break;
+                default:                       delete property.modifier;             break;
+            }
+        }
+        return next
     }
 
     /** `UTILITY`  Make all properties in schema object optional. */
     public Partial<T extends TObject<TProperties>>(schema: T): TPartial<T> {
-        throw Error('Not implemented')
+        const next = clone(schema)
+        delete next.required
+        for(const key of Object.keys(next.properties)) {
+            const property = next.properties[key]
+            switch(property.modifier) {
+                case ReadonlyOptionalModifier: property.modifier = ReadonlyOptionalModifier; break;
+                case ReadonlyModifier:         property.modifier = ReadonlyOptionalModifier; break;
+                case OptionalModifier:         property.modifier = OptionalModifier;         break;
+                default:                       property.modifier = OptionalModifier;         break;
+            }
+        }
+        return next
     }
 }
 
