@@ -1,8 +1,6 @@
 // Cleans this projects build artifacts.
 export async function clean() {
     await folder('target').delete().exec()
-    await file('index.js').delete().exec()
-    await file('spec.js').delete().exec()
 }
 
 // Runs the specs for this project.
