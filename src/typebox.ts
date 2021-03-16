@@ -269,32 +269,32 @@ function clone(object: any): any {
 
 export class TypeBuilder {
 
-    /** Modifies a schema object property to be `readonly` and `optional`. */
+    /** `STANDARD` Modifies a schema object property to be `readonly` and `optional`. */
     public ReadonlyOptional<T extends TSchema>(item: T): TReadonlyOptional<T> {
         return { ...item, modifier: ReadonlyOptionalModifier }
     }
 
-    /** Modifies a schema object property to be `readonly`. */
+    /** `STANDARD` Modifies a schema object property to be `readonly`. */
     public Readonly<T extends TSchema>(item: T): TReadonly<T> {
         return { ...item, modifier: ReadonlyModifier }
     }
 
-    /** Modifies a schema object property to be `optional`. */
+    /** `STANDARD` Modifies a schema object property to be `optional`. */
     public Optional<T extends TSchema>(item: T): TOptional<T> {
         return { ...item, modifier: OptionalModifier }
     }
 
-    /** Creates an Intersect schema. */
+    /** `STANDARD` Creates an Intersect schema. */
     public Intersect<T extends TSchema[]>(items: [...T], options: CustomOptions = {}): TIntersect<T> {
         return { ...options, kind: IntersectKind, allOf: items }
     }
 
-    /** Creates a Union schema. */
+    /** `STANDARD` Creates a Union schema. */
     public Union<T extends TSchema[]>(items: [...T], options: CustomOptions = {}): TUnion<T> {
         return { ...options, kind: UnionKind, anyOf: items }
     }
 
-    /** Creates a Tuple schema. */
+    /** `STANDARD` Creates a Tuple schema. */
     public Tuple<T extends TSchema[]>(items: [...T], options: CustomOptions = {}): TTuple<T> {
         const additionalItems = false
         const minItems = items.length
@@ -302,7 +302,7 @@ export class TypeBuilder {
         return { ...options, kind: TupleKind, type: 'array', items, additionalItems, minItems, maxItems }
     }
 
-    /** Creates a `object` schema with the given properties. */
+    /** `STANDARD` Creates a `object` schema with the given properties. */
     public Object<T extends TProperties>(properties: T, options: CustomOptions = {}): TObject<T> {
         const property_names = Object.keys(properties)
         const optional = property_names.filter(name => {
@@ -319,66 +319,66 @@ export class TypeBuilder {
             { ...options, kind: ObjectKind, type: 'object', properties }
     }
 
-    /** Creates a `{ [key: string]: T }` schema. */
+    /** `STANDARD` Creates a `{ [key: string]: T }` schema. */
     public Dict<T extends TSchema>(item: T, options: DictOptions = {}): TDict<T> {
         const additionalProperties = item
         return { ...options, kind: DictKind, type: 'object', additionalProperties }
     }
 
-    /** Creates an `Array<T>` schema. */
+    /** `STANDARD` Creates an `Array<T>` schema. */
     public Array<T extends TSchema>(items: T, options: ArrayOptions = {}): TArray<T> {
         return { ...options, kind: ArrayKind, type: 'array', items }
     }
 
-    /** Creates an `Enum<T>` schema from a TypeScript `enum` definition. */
+    /** `STANDARD` Creates an `Enum<T>` schema from a TypeScript `enum` definition. */
     public Enum<T extends TEnumType>(item: T, options: CustomOptions = {}): TEnum<T[keyof T]> {
         const values = Object.keys(item).filter(key => isNaN(key as any)).map(key => item[key]) as T[keyof T][]
         return { ...options, kind: EnumKind, enum: values }
     }
 
-    /** Creates a literal schema. Supports `string | number | boolean` values. */
+    /** `STANDARD` Creates a literal schema. Supports `string | number | boolean` values. */
     public Literal<T extends TValue>(value: T, options: CustomOptions = {}): TLiteral<T> {
         const type = reflect(value)
         if (type === 'unknown') { throw Error(`Invalid literal value '${value}'`) }
         return { ...options, kind: LiteralKind, type, enum: [value] }
     }
 
-    /** Creates a `string` schema. */
+    /** `STANDARD` Creates a `string` schema. */
     public String<TCustomFormatOption extends string>(options: StringOptions<StringFormatOption | TCustomFormatOption> = {}): TString {
         return { ...options, kind: StringKind, type: 'string' }
     }
 
-    /** Creates a `string` schema from a regular expression. */
+    /** `STANDARD` Creates a `string` schema from a regular expression. */
     public RegEx(regex: RegExp, options: CustomOptions = {}): TString {
         return this.String({ ...options, pattern: regex.source })
     }
 
-    /** Creates a `number` schema. */
+    /** `STANDARD` Creates a `number` schema. */
     public Number(options: NumberOptions = {}): TNumber {
         return { ...options, kind: NumberKind, type: 'number' }
     }
 
-    /** Creates a `integer` schema. */
+    /** `STANDARD` Creates a `integer` schema. */
     public Integer(options: NumberOptions = {}): TInteger {
         return { ...options, kind: IntegerKind, type: 'integer' }
     }
 
-    /** Creates a `boolean` schema. */
+    /** `STANDARD` Creates a `boolean` schema. */
     public Boolean(options: CustomOptions = {}): TBoolean {
         return { ...options, kind: BooleanKind, type: 'boolean' }
     }
 
-    /** Creates a `null` schema. */
+    /** `STANDARD` Creates a `null` schema. */
     public Null(options: CustomOptions = {}): TNull {
         return { ...options, kind: NullKind, type: 'null' }
     }
 
-    /** Creates an `unknown` schema. */
+    /** `STANDARD` Creates an `unknown` schema. */
     public Unknown(options: CustomOptions = {}): TUnknown {
         return { ...options, kind: UnknownKind }
     }
 
-    /** Creates an `any` schema. */
+    /** `STANDARD` Creates an `any` schema. */
     public Any(options: CustomOptions = {}): TAny {
         return { ...options, kind: AnyKind }
     }
