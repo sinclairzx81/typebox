@@ -166,37 +166,36 @@ export type TSchema =
 // Utility Types
 // ------------------------------------------------------------------------
 
-export type TPick<T extends TObject<TProperties>, K extends Array<keyof T['properties']>> = UnionToIntersect<K extends Array<infer U> ? U extends keyof T['properties'] ? TObject<Pick<T['properties'], U>> : never : never>
-export type TOmit<T extends TObject<TProperties>, K extends Array<keyof T['properties']>> = K extends Array<infer U> ? U extends keyof T['properties'] ? TObject<Omit<T['properties'], U>> : never : never   
-export type TRequired<T extends TObject<TProperties>> = TObject<{
-    [K in keyof T['properties']]: 
-        T['properties'][K] extends TReadonlyOptional<infer U> ? TReadonly<U> :  
-        T['properties'][K] extends TReadonly<infer U>         ? TReadonly<U> :
-        T['properties'][K] extends TOptional<infer U>         ? U :  
-        T['properties'][K]
-}>
-export type TPartial<T extends TObject<TProperties>> = TObject<{
-    [K in keyof T['properties']]: 
-        T['properties'][K] extends TReadonlyOptional<infer U> ? TReadonlyOptional<U> :  
-        T['properties'][K] extends TReadonly<infer U>         ? TReadonlyOptional<U> :
-        T['properties'][K] extends TOptional<infer U>         ? TOptional<U> :
-        TOptional<T['properties'][K]>
-}>
+export type TRequired<T extends TProperties> = {
+    [K in keyof T]: 
+        T[K] extends TReadonlyOptional<infer U> ? TReadonly<U> :  
+        T[K] extends TReadonly<infer U>         ? TReadonly<U> :
+        T[K] extends TOptional<infer U>         ? U :  
+        T[K]
+}
+export type TPartial<T extends TProperties> = {
+    [K in keyof T]:
+        T[K] extends TReadonlyOptional<infer U> ? TReadonlyOptional<U> :  
+        T[K] extends TReadonly<infer U>         ? TReadonlyOptional<U> :
+        T[K] extends TOptional<infer U>         ? TOptional<U> :
+        TOptional<T[K]>
+}
 
 // ------------------------------------------------------------------------
 // Static Inference
 // ------------------------------------------------------------------------
 
-export type UnionToIntersect<U>             = (U extends any ? (k: U) => void : never) extends ((k: infer I) => void) ? I : never
-export type ReadonlyOptionalPropertyKeys<T> = { [K in keyof T]: T[K] extends TReadonlyOptional<infer U> ? K : never }[keyof T]
-export type ReadonlyPropertyKeys<T>         = { [K in keyof T]: T[K] extends TReadonly<infer U> ? K : never }[keyof T]
-export type OptionalPropertyKeys<T>         = { [K in keyof T]: T[K] extends TOptional<infer U> ? K : never }[keyof T]
-export type PropertyKeys<T>                 = keyof Omit<T, ReadonlyOptionalPropertyKeys<T> | ReadonlyPropertyKeys<T> | OptionalPropertyKeys<T>>
-export type StaticProperties<T> =
+export type UnionToIntersect<U>                                  = (U extends any ? (k: U) => void : never) extends ((k: infer I) => void) ? I : never
+export type PropertyKeys                 <T extends TProperties> = keyof T
+export type ReadonlyOptionalPropertyKeys <T extends TProperties> = { [K in keyof T]: T[K] extends TReadonlyOptional<infer U> ? K : never }[keyof T]
+export type ReadonlyPropertyKeys         <T extends TProperties> = { [K in keyof T]: T[K] extends TReadonly<infer U> ? K : never }[keyof T]
+export type OptionalPropertyKeys         <T extends TProperties> = { [K in keyof T]: T[K] extends TOptional<infer U> ? K : never }[keyof T]
+export type RequiredPropertyKeys         <T extends TProperties> = keyof Omit<T, ReadonlyOptionalPropertyKeys<T> | ReadonlyPropertyKeys<T> | OptionalPropertyKeys<T>>
+export type StaticProperties<T extends TProperties> =
     { readonly [K in ReadonlyOptionalPropertyKeys<T>]?: Static<T[K]> } &
     { readonly [K in ReadonlyPropertyKeys<T>]: Static<T[K]>          } &
     {          [K in OptionalPropertyKeys<T>]?: Static<T[K]>         } &
-    {          [K in PropertyKeys<T>]: Static<T[K]>                  }
+    {          [K in RequiredPropertyKeys<T>]: Static<T[K]>                  }
 
 export type StaticIntersect   <T extends readonly TSchema[]> = UnionToIntersect<StaticUnion<T>>
 export type StaticUnion       <T extends readonly TSchema[]> = { [K in keyof T]: Static<T[K]> }[number]
@@ -235,7 +234,7 @@ export type Static<T> =
 
 
 // ------------------------------------------------------------------------
-// Reflect | Clone
+// Reflect
 // ------------------------------------------------------------------------
 
 function reflect(value: any): 'string' | 'number' | 'boolean' | 'unknown' {
@@ -247,22 +246,20 @@ function reflect(value: any): 'string' | 'number' | 'boolean' | 'unknown' {
     }
 }
 
+// ------------------------------------------------------------------------
+// Clone
+// ------------------------------------------------------------------------
+
 function clone(object: any): any {
     if(typeof object === 'object' && !Array.isArray(object)) {
         return Object.keys(object).reduce((acc, key) => {
             acc[key] = clone(object[key])
             return acc
-        }, {} as {[key: string]: any})
+        }, {} as any)
     } else if(typeof object === 'object' && Array.isArray(object)) {
         return object.map((item: any) => clone(item))
-    } else if (
-       typeof object === 'number'  ||
-       typeof object === 'boolean' ||
-       typeof object === 'string'  ||
-       typeof object === 'symbol'  ||
-       typeof object === 'bigint'
-    ) { return object } else {
-        throw Error('Cannot clone object')
+    } else {
+        return object
     }
 }
 
@@ -316,6 +313,7 @@ export class TypeBuilder {
         })
         const required_names = property_names.filter(name => !optional.includes(name))
         const required = (required_names.length > 0) ? required_names : undefined
+        const additionalProperties = false
         return (required) ? 
             { ...options, kind: ObjectKind, type: 'object', properties, required } : 
             { ...options, kind: ObjectKind, type: 'object', properties }
@@ -415,18 +413,8 @@ export class TypeBuilder {
         return JSON.parse(JSON.stringify(schema)) as T
     }
 
-    /** `UTILITY` Omits property keys from the given object schema. */
-    public Omit<T extends TObject<TProperties>, K extends Array<keyof T['properties']>>(schema: T, keys: [...K]): TOmit<T, K> {
-        throw Error('Not implemented')
-    }
-
-    /** `UTILITY` Picks property keys from the given object schema. */
-    public Pick<T extends TObject<TProperties>, K extends Array<keyof T['properties']>>(schema: T, keys: [...K]): TPick<T, K> {
-        throw Error('Not implemented')
-    }
-    
     /** `UTILITY` Make all properties in schema object required. */
-    public Required<T extends TObject<TProperties>>(schema: T): TRequired<T> {
+    public Required<T extends TObject<TProperties>>(schema: T): TObject<TRequired<T['properties']>> {
         const next = clone(schema)
         next.required = Object.keys(next.properties)
         for(const key of Object.keys(next.properties)) {
@@ -442,7 +430,7 @@ export class TypeBuilder {
     }
 
     /** `UTILITY`  Make all properties in schema object optional. */
-    public Partial<T extends TObject<TProperties>>(schema: T): TPartial<T> {
+    public Partial<T extends TObject<TProperties>>(schema: T): TObject<TPartial<T['properties']>> {
         const next = clone(schema)
         delete next.required
         for(const key of Object.keys(next.properties)) {
@@ -453,6 +441,26 @@ export class TypeBuilder {
                 case OptionalModifier:         property.modifier = OptionalModifier;         break;
                 default:                       property.modifier = OptionalModifier;         break;
             }
+        }
+        return next
+    }
+
+    /** `UTILITY` Picks property keys from the given object schema. */
+    public Pick<T extends TObject<TProperties>, K extends PropertyKeys<T['properties']>[]>(schema: T, keys: [...K]): TObject<Pick<T['properties'], K[number]>> {
+        const next = clone(schema)
+        next.required = next.required ? next.required.filter((key: string) => keys.includes(key)) : undefined
+        for(const key of Object.keys(next.properties)) {
+            if(!keys.includes(key)) delete next.properties[key]
+        }
+        return next
+    }
+    
+    /** `UTILITY` Omits property keys from the given object schema. */
+    public Omit<T extends TObject<TProperties>, K extends PropertyKeys<T['properties']>[]>(schema: T, keys: [...K]): TObject<Omit<T['properties'], K[number]>> {
+        const next = clone(schema)
+        next.required = next.required ? next.required.filter((key: string) => !keys.includes(key)) : undefined
+        for(const key of Object.keys(next.properties)) {
+            if(keys.includes(key)) delete next.properties[key]
         }
         return next
     }
