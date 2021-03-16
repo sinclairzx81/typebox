@@ -300,7 +300,7 @@ TypeBox provides modifiers that can be applied to an objects properties. This al
 
 ### Utility Types
 
-TypeBox supports a subset of TypeScripts built-in [Utility Types](https://www.typescriptlang.org/docs/handbook/utility-types.html). These types operate on schemas of `Type.Object({...})` only. The following table outlines the TypeBox mappings between TypeScript and JSON schema.
+TypeBox supports a subset of TypeScript's built-in [Utility Types](https://www.typescriptlang.org/docs/handbook/utility-types.html). These types operate on schemas of `Type.Object({...})` only. The following table outlines the TypeBox mappings between TypeScript and JSON schema.
 
 ```typescript
 ┌────────────────────────────────┬─────────────────────────────┬─────────────────────────────┐
