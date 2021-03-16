@@ -44,7 +44,7 @@ License MIT
 - [Example](#Example)
 - [Types](#Types)
 - [Modifiers](#Modifiers)
-- [Utility](#Utility)
+- [Utility Types](#Utility-Types)
 - [Options](#Options)
 - [Strict](#Strict)
 - [Functions](#Functions)
@@ -254,7 +254,6 @@ The following table outlines the TypeBox mappings between TypeScript and JSON sc
 │                                │                             │ }                           │
 └────────────────────────────────┴─────────────────────────────┴─────────────────────────────┘
 ```
-
 <a name="Modifiers"></a>
 
 ### Modifiers
@@ -297,27 +296,63 @@ TypeBox provides modifiers that can be applied to an objects properties. This al
 │   	                         │                             │                             │
 └────────────────────────────────┴─────────────────────────────┴─────────────────────────────┘
 ```
+<a name="Utility-Types"></a>
 
-<a name="Utility"></a>
+### Utility Types
 
-### Utility
-
-TypeBox allows for a subset of TypeScript [Utility Types](https://www.typescriptlang.org/docs/handbook/utility-types.html). These can apply subtractive rules to existing object schemas. Note that these utilities only operate on schemas of type `Object`.
+TypeBox supports supports a subset of TypeScript [Utility Types](https://www.typescriptlang.org/docs/handbook/utility-types.html). The following table outlines the TypeBox mappings between TypeScript and JSON schema.
 
 ```typescript
-const Vector3 = Type.Object({
-    x: Type.Number(),
-    y: Type.Number(),
-    z: Type.Number()
-})
-
-const Vector2 = Type.Pick(Vector3, ['x', 'y'])        // { x: number, y: number }
-
-const Vector2 = Type.Omit(Vector3, ['z'])             // { x: number, y: number }
-
-const PartialVector3 = Type.Partial(Vector3)          // { x?: number, y?: number, z?: number }
-
-const RequiredVector3 = Type.Required(PartialVector3) // { x: number, y: number, z: number }
+┌────────────────────────────────┬─────────────────────────────┬─────────────────────────────┐
+│ const T = Type.Partial(        │ type T = Partial<{          │ const T = {                 │
+│    Type.Object({               │    x: number,               │   type: 'object',           │
+│         x: Type.Number(),      │    y: number                │   properties: {             │
+│         y: Type.Number()       | }>                          │     x: {                    │
+│    })                          │                             │        type: 'number'       │
+│ )                              │                             │     },                      │
+│                                │                             │     y: {                    │
+│                                │                             │        type: 'number'       │
+│                                │                             │     }                       │
+│                                │                             │   }                         │
+│                                │                             │ }                           │
+├────────────────────────────────┼─────────────────────────────┼─────────────────────────────┤
+│ const T = Type.Required(       │ type T = Required<{         │ const T = {                 │
+│    Type.Object({               │    x?: number,              │   type: 'object',           │
+│       x: Type.Optional(        │    y?: number               │   properties: {             │
+│          Type.Number()         | }>                          │     x: {                    │
+│       ),                       │                             │        type: 'number'       │
+│       y: Type.Optional(        │                             │     },                      │
+│          Type.Number()         │                             │     y: {                    │
+│       )                        │                             │        type: 'number'       │
+│    })                          │                             │     }                       │
+│ )                              │                             │   }                         │
+│                                │                             │   required: ['x', 'y']      │
+│                                │                             │ }                           │
+├────────────────────────────────┼─────────────────────────────┼─────────────────────────────┤
+│ const T = Type.Pick(           │ type T = Pick<{             │ const T = {                 │
+│    Type.Object({               │    x: number,               │   type: 'object',           │
+│       x: Type.Optional(        │    y: number                │   properties: {             │
+│          Type.Number()         | }, 'x'>                     │     x: {                    │
+│       ),                       │                             │        type: 'number'       │
+│       y: Type.Optional(        │                             │     }                       │
+│          Type.Number()         │                             │   },                        │
+│       )                        │                             │   required: ['x']           │
+│    })                          │                             │ }                           │
+│ , ['x'])                       │                             │                             │
+│                                │                             │                             │
+├────────────────────────────────┼─────────────────────────────┼─────────────────────────────┤
+│ const T = Type.Omit(           │ type T = Omit<{             │ const T = {                 │
+│    Type.Object({               │    x: number,               │   type: 'object',           │
+│       x: Type.Optional(        │    y: number                │   properties: {             │
+│          Type.Number()         | }, 'y'>                     │     x: {                    │
+│       ),                       │                             │        type: 'number'       │
+│       y: Type.Optional(        │                             │     }                       │
+│          Type.Number()         │                             │   },                        │
+│       )                        │                             │   required: ['x']           │
+│    })                          │                             │ }                           │
+│ , ['y'])                       │                             │                             │
+│                                │                             │                             │
+└────────────────────────────────┴─────────────────────────────┴─────────────────────────────┘
 ```
 
 <a name="Options"></a>
