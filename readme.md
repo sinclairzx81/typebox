@@ -135,7 +135,7 @@ function receive(record: Record) { // ... as a type
 
 The following table outlines the TypeBox mappings between TypeScript and JSON schema.
 
-```typescript
+```javascript
 ┌────────────────────────────────┬─────────────────────────────┬─────────────────────────────┐
 │ TypeBox                        │ TypeScript                  │ JSON Schema                 │
 ├────────────────────────────────┼─────────────────────────────┼─────────────────────────────┤
@@ -260,7 +260,7 @@ The following table outlines the TypeBox mappings between TypeScript and JSON sc
 
 TypeBox provides modifiers that can be applied to an objects properties. This allows for `optional` and `readonly` to be applied to that property. The following table illustates how they map between TypeScript and JSON Schema.
 
-```typescript
+```javascript
 ┌────────────────────────────────┬─────────────────────────────┬─────────────────────────────┐
 │ TypeBox                        │ TypeScript                  │ JSON Schema                 │
 ├────────────────────────────────┼─────────────────────────────┼─────────────────────────────┤
@@ -302,7 +302,7 @@ TypeBox provides modifiers that can be applied to an objects properties. This al
 
 TypeBox supports a subset of TypeScript's built-in [Utility Types](https://www.typescriptlang.org/docs/handbook/utility-types.html). These types operate on schemas of `Type.Object({...})` only. The following table outlines the TypeBox mappings between TypeScript and JSON schema.
 
-```typescript
+```javascript
 ┌────────────────────────────────┬─────────────────────────────┬─────────────────────────────┐
 │ const T = Type.Partial(        │ type T = Partial<{          │ const T = {                 │
 │    Type.Object({               │    x: number,               │   type: 'object',           │
@@ -407,7 +407,7 @@ const U = Type.Strict(T)                // const U = {
 
 In addition to JSON schema types, TypeBox provides several extended types that allow for `function` and `constructor` types to be composed. These additional types are not valid JSON Schema and will not validate using typical JSON Schema validation. However, these types can be used to frame JSON schema and describe callable interfaces that may receive JSON validated data. These types are as follows.
 
-```typescript
+```javascript
 ┌────────────────────────────────┬─────────────────────────────┬─────────────────────────────┐
 │ TypeBox                        │ TypeScript                  │ Extended Schema             │
 ├────────────────────────────────┼─────────────────────────────┼─────────────────────────────┤
