@@ -1,0 +1,11 @@
+{
+    "compilerOptions": {
+        "strict": true,
+        "baseUrl": ".",
+        "paths": {
+            "@sinclair/typebox": ["../src/typebox"]
+        }
+    }, "files": [
+        "index.ts"
+    ]
+}

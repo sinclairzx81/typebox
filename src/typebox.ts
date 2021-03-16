@@ -424,7 +424,7 @@ export class TypeBuilder {
     public Pick<T extends TObject<TProperties>, K extends Array<keyof T['properties']>>(schema: T, keys: [...K]): TPick<T, K> {
         throw Error('Not implemented')
     }
-
+    
     /** `UTILITY` Make all properties in schema object required. */
     public Required<T extends TObject<TProperties>>(schema: T): TRequired<T> {
         const next = clone(schema)
