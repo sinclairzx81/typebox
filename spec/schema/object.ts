@@ -1,4 +1,4 @@
-import * as assert from 'assert'
+import { deepStrictEqual, strictEqual } from 'assert'
 import { Type } from '@sinclair/typebox'
 import { ok, fail } from './validate'
 
@@ -33,6 +33,7 @@ describe('Object', () => {
     fail(T, 123)
     fail(T, null)
   })
+
   it('Optional',  () => {
     const T = Type.Object({
       a: Type.Optional(Type.Number()),
@@ -65,6 +66,7 @@ describe('Object', () => {
     fail(T, 123)
     fail(T, null)
   })
+
   it('Readonly',  () => {
     const T = Type.Object({
       a: Type.Readonly(Type.Number()),
@@ -104,7 +106,7 @@ describe('Object', () => {
         c: Type.String(),
       });
 
-      assert.deepEqual(T.required, ['a', 'c']);
+      deepStrictEqual(T.required, ['a', 'c']);
     });
 
     it('Is omitted when no properties are required', () => {
@@ -114,8 +116,18 @@ describe('Object', () => {
         c: Type.Optional(Type.String()),
       });
 
-      assert.equal(T.required, undefined);
+      strictEqual(T.required, undefined);
     });
   });
-
+  
+  describe('Additional Properties', () => {
+    const T = Type.Object({
+      a: Type.String(),
+      b: Type.String(),
+      c: Type.String(),
+    });
+    ok(T, { a: '1', b: '2', c: '3' })
+    fail(T, { a: '1', b: '2' })
+    fail(T, { a: '1', b: '2', c: '3', d: '4' })
+  })
 })
