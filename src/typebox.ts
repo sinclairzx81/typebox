@@ -284,16 +284,6 @@ export class TypeBuilder {
         return { ...item, modifier: OptionalModifier }
     }
 
-    /** `STANDARD` Creates an Intersect schema. */
-    public Intersect<T extends TSchema[]>(items: [...T], options: CustomOptions = {}): TIntersect<T> {
-        return { ...options, kind: IntersectKind, allOf: items }
-    }
-
-    /** `STANDARD` Creates a Union schema. */
-    public Union<T extends TSchema[]>(items: [...T], options: CustomOptions = {}): TUnion<T> {
-        return { ...options, kind: UnionKind, anyOf: items }
-    }
-
     /** `STANDARD` Creates a Tuple schema. */
     public Tuple<T extends TSchema[]>(items: [...T], options: CustomOptions = {}): TTuple<T> {
         const additionalItems = false
@@ -315,8 +305,8 @@ export class TypeBuilder {
         const required = (required_names.length > 0) ? required_names : undefined
         const additionalProperties = false
         return (required) ? 
-            { ...options, kind: ObjectKind, type: 'object', properties, required } : 
-            { ...options, kind: ObjectKind, type: 'object', properties }
+            { ...options, kind: ObjectKind, type: 'object', properties, required, additionalProperties } : 
+            { ...options, kind: ObjectKind, type: 'object', properties, additionalProperties }
     }
 
     /** `STANDARD` Creates a `{ [key: string]: T }` schema. */
@@ -411,6 +401,21 @@ export class TypeBuilder {
     /** `EXPERIMENTAL` Omits the `kind` and `modifier` properties from the given schema. */
     public Strict<T extends TSchema>(schema: T): T {
         return JSON.parse(JSON.stringify(schema)) as T
+    }
+
+    /** `STANDARD` Creates an Intersect schema. */
+    public Intersect<T extends TObject<TProperties>[]>(items: [...T], options: CustomOptions = {}): TIntersect<T> {
+        const properties           = items.reduce((acc, object) => ({ ...acc, ...object['properties'] }), {} as TProperties)
+        const required             = items.reduce((acc, object) => object['required'] ? [ ...acc, ...object['required'] ] : acc, [] as string[])
+        const type                 = 'object'
+        const additionalProperties = false
+        return { ...options, type, properties, required, additionalProperties } as any as TIntersect<T>
+        // return { ...options, kind: IntersectKind, allOf: items }
+    }
+
+    /** `STANDARD` Creates a Union schema. */
+    public Union<T extends TSchema[]>(items: [...T], options: CustomOptions = {}): TUnion<T> {
+        return { ...options, kind: UnionKind, anyOf: items }
     }
 
     /** `UTILITY` Make all properties in schema object required. */
