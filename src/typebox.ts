@@ -372,31 +372,6 @@ export class TypeBuilder {
         return { ...options, kind: AnyKind }
     }
 
-    /** `EXTENDED` Creates a `constructor` schema. */
-    public Constructor<T extends TSchema[], U extends TSchema>(args: [...T], returns: U, options: CustomOptions = {}): TConstructor<T, U> {
-        return { ...options, kind: ConstructorKind, type: 'constructor', arguments: args, returns };
-    }
-
-    /** `EXTENDED` Creates a `function` schema. */
-    public Function<T extends TSchema[], U extends TSchema>(args: [...T], returns: U, options: CustomOptions = {}): TFunction<T, U> {
-        return { ...options, kind: FunctionKind, type: 'function', arguments: args, returns };
-    }
-
-    /** `EXTENDED` Creates a `Promise<T>` schema. */
-    public Promise<T extends TSchema>(item: T, options: CustomOptions = {}): TPromise<T> {
-        return { ...options, type: 'promise', kind: PromiseKind, item }
-    }
-
-    /** `EXTENDED` Creates a `undefined` schema. */
-    public Undefined(options: CustomOptions = {}): TUndefined {
-        return { ...options, type: 'undefined', kind: UndefinedKind }
-    }
-
-    /** `EXTENDED` Creates a `void` schema. */
-    public Void(options: CustomOptions = {}): TVoid {
-        return { ...options, type: 'void', kind: VoidKind }
-    }
-
     /** `STANDARD` Creates a Union schema. */
     public Union<T extends TSchema[]>(items: [...T], options: CustomOptions = {}): TUnion<T> {
         return { ...options, kind: UnionKind, anyOf: items }
@@ -463,9 +438,34 @@ export class TypeBuilder {
         return next
     }
 
-    /** `EXPERIMENTAL` Omits the `kind` and `modifier` properties from the given schema. */
+    /** `STANDARD` Omits the `kind` and `modifier` properties from the given schema. */
     public Strict<T extends TSchema>(schema: T): T {
         return JSON.parse(JSON.stringify(schema)) as T
+    }
+
+    /** `EXTENDED` Creates a `constructor` schema. */
+    public Constructor<T extends TSchema[], U extends TSchema>(args: [...T], returns: U, options: CustomOptions = {}): TConstructor<T, U> {
+        return { ...options, kind: ConstructorKind, type: 'constructor', arguments: args, returns };
+    }
+
+    /** `EXTENDED` Creates a `function` schema. */
+    public Function<T extends TSchema[], U extends TSchema>(args: [...T], returns: U, options: CustomOptions = {}): TFunction<T, U> {
+        return { ...options, kind: FunctionKind, type: 'function', arguments: args, returns };
+    }
+
+    /** `EXTENDED` Creates a `Promise<T>` schema. */
+    public Promise<T extends TSchema>(item: T, options: CustomOptions = {}): TPromise<T> {
+        return { ...options, type: 'promise', kind: PromiseKind, item }
+    }
+
+    /** `EXTENDED` Creates a `undefined` schema. */
+    public Undefined(options: CustomOptions = {}): TUndefined {
+        return { ...options, type: 'undefined', kind: UndefinedKind }
+    }
+
+    /** `EXTENDED` Creates a `void` schema. */
+    public Void(options: CustomOptions = {}): TVoid {
+        return { ...options, type: 'void', kind: VoidKind }
     }
 }
 
