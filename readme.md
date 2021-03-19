@@ -248,12 +248,12 @@ The following table outlines the TypeBox mappings between TypeScript and JSON sc
 │ const T = Type.Intersect([     │ type T = {                  │ const T = {                    │
 │    Type.Object({               │    a: string                │   type: 'object',              │
 │       a: Type.String()         │ } & {                       │   additionalProperties: false, │
-│    }),                         │    b: number                │   properties: {                │
+│    }),                         │    b: string                │   properties: {                │
 │    Type.Object({               │ }                           │     a: {                       │
-│       b: Type.Number()         │                             │        type: 'string'          │
+│       b: Type.String()         │                             │        type: 'string'          │
 │   })                           │                             │     },                         │
 │ })                             │                             │     b: {                       │
-│                                │                             │        type: 'number'          │
+│                                │                             │        type: 'string'          │
 │                                │                             │     }                          │
 │                                │                             │   },                           │
 │                                │                             │   required: ['a', 'b']         │
@@ -289,26 +289,24 @@ The following table outlines the TypeBox mappings between TypeScript and JSON sc
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Pick(           │ type T = Pick<{             │ const T = {                    │
 │    Type.Object({               │    x: number,               │   type: 'object',              │
-│       x: Type.Optional(        │    y: number                │   properties: {                │
-│          Type.Number()         | }, 'x'>                     │     x: {                       │
-│       ),                       │                             │        type: 'number'          │
-│       y: Type.Optional(        │                             │     }                          │
-│          Type.Number()         │                             │   },                           │
-│       )                        │                             │   required: ['x']              │
-│    })                          │                             │ }                              │
-│ , ['x'])                       │                             │                                │
+│       x: Type.Number(),        │    y: number                │   properties: {                │
+│       y: Type.Number(),        | }, 'x'>                     │     x: {                       │
+│     }), ['x']                  │                             │        type: 'number'          │
+│ )                              │                             │     }                          │
+│                                │                             │   },                           │
+│                                │                             │   required: ['x']              │
+│                                │                             │ }                              │
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Omit(           │ type T = Omit<{             │ const T = {                    │
 │    Type.Object({               │    x: number,               │   type: 'object',              │
-│       x: Type.Optional(        │    y: number,               │   properties: {                │
-│          Type.Number()         | }, 'y'>                     │     x: {                       │
-│       ),                       │                             │        type: 'number'          │
-│       y: Type.Optional(        │                             │     }                          │
-│          Type.Number()         │                             │   },                           │
-│       )                        │                             │   required: ['x']              │
-│    })                          │                             │ }                              │
-│ , ['y'])                       │                             │                                │
+│       x: Type.Number(),        │    y: number                │   properties: {                │
+│       y: Type.Number(),        | }, 'y'>                     │     x: {                       │
+│     }), ['y']                  │                             │        type: 'number'          │
+│ )                              │                             │     }                          │
+│                                │                             │   },                           │
+│                                │                             │   required: ['x']              │
+│                                │                             │ }                              │
 │                                │                             │                                │
 └────────────────────────────────┴─────────────────────────────┴────────────────────────────────┘
 ```
@@ -321,6 +319,7 @@ TypeBox provides modifiers that can be applied to an objects properties. This al
 ```typescript
 ┌────────────────────────────────┬─────────────────────────────┬────────────────────────────────┐
 │ TypeBox                        │ TypeScript                  │ JSON Schema                    │
+│   	                         │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Object({        │ type T = {                  │ const T = {                    │
 │   name: Type.Optional(         │    name?: string,           │   type: 'object',              │
@@ -410,6 +409,7 @@ In addition to JSON schema types, TypeBox provides several extended types that a
 ```typescript
 ┌────────────────────────────────┬─────────────────────────────┬────────────────────────────────┐
 │ TypeBox                        │ TypeScript                  │ Extended Schema                │
+│   	                         │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Constructor([   │ type T = new (              │ const T = {                    │
 |    Type.String(),              │  arg0: string,              │   type: 'constructor'          │
@@ -461,7 +461,7 @@ In addition to JSON schema types, TypeBox provides several extended types that a
 
 ### Interfaces
 
-It is possible to create interfaces from TypeBox types. Consider the following code that creates a `ControllerInterface` type that has a single function `createRecord(...)`. The following is how one would approach this in TypeScript.
+It is possible to create interfaces from TypeBox types. Consider the following code that creates a `ControllerInterface` type that has a single function `createRecord(...)`. The following is how one might approach this in TypeScript.
 
 ```typescript
 interface CreateRecordRequest {
@@ -568,27 +568,23 @@ import addFormats from 'ajv-formats'
 import Ajv from 'ajv'
 
 // Setup
-function setupAjv(): Ajv {
-    const ajv = new Ajv()
-    ajv.addKeyword('kind')
-    ajv.addKeyword('modifier')
-    return addFormats(ajv, [
-        'date-time', 
-        'time', 
-        'date', 
-        'email',  
-        'hostname', 
-        'ipv4', 
-        'ipv6', 
-        'uri', 
-        'uri-reference', 
-        'uuid',
-        'uri-template', 
-        'json-pointer', 
-        'relative-json-pointer', 
-        'regex'
-    ])
-}
+const ajv = addFormats(new Ajv(), [
+    'date-time', 
+    'time', 
+    'date', 
+    'email',  
+    'hostname', 
+    'ipv4', 
+    'ipv6', 
+    'uri', 
+    'uri-reference', 
+    'uuid',
+    'uri-template', 
+    'json-pointer', 
+    'relative-json-pointer', 
+    'regex'
+]).addKeyword('kind')
+  .addKeyword('modifier')
 
 // TypeBox
 const User = Type.Object({
@@ -597,7 +593,7 @@ const User = Type.Object({
 })
 
 // Validate
-const isValid = setupAjv().validate(User, { 
+const isValid = ajv.validate(User, { 
     name: 'dave', 
     email: 'dave@domain.com' 
 })
