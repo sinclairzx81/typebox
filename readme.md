@@ -301,11 +301,11 @@ The following table outlines the TypeBox mappings between TypeScript and JSON sc
 │ const T = Type.Omit(           │ type T = Omit<{             │ const T = {                    │
 │    Type.Object({               │    x: number,               │   type: 'object',              │
 │       x: Type.Number(),        │    y: number                │   properties: {                │
-│       y: Type.Number(),        | }, 'y'>                     │     x: {                       │
-│     }), ['y']                  │                             │        type: 'number'          │
+│       y: Type.Number(),        | }, 'x'>                     │     y: {                       │
+│     }), ['x']                  │                             │        type: 'number'          │
 │ )                              │                             │     }                          │
 │                                │                             │   },                           │
-│                                │                             │   required: ['x']              │
+│                                │                             │   required: ['y']              │
 │                                │                             │ }                              │
 │                                │                             │                                │
 └────────────────────────────────┴─────────────────────────────┴────────────────────────────────┘
