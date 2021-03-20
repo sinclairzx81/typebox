@@ -1,6 +1,6 @@
 {
   "name": "@sinclair/typebox",
-  "version": "0.15.0",
+  "version": "0.16.0",
   "description": "JSONSchema Type Builder with Static Type Resolution for TypeScript",
   "keywords": [
     "json-schema",
@@ -19,7 +19,7 @@
   "scripts": {
     "clean": "smoke-task clean",
     "build": "smoke-task build",
-    "example": "smoke-task example",
+    "start": "smoke-task example",
     "test": "smoke-task spec"
   },
   "devDependencies": {

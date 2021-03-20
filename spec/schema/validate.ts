@@ -1,30 +1,29 @@
-import Ajv        from 'ajv'
+import { TSchema } from '@sinclair/typebox'
 import addFormats from 'ajv-formats'
+import Ajv        from 'ajv'
 
-function setupAjv(): Ajv {
-  const ajv = new Ajv()
-  ajv.addKeyword('kind')
-  ajv.addKeyword('modifier')
-  return addFormats(ajv, [
-    'date-time', 
-    'time', 
-    'date', 
-    'email',  
-    'hostname', 
-    'ipv4', 
-    'ipv6', 
-    'uri', 
-    'uri-reference', 
-    'uuid',
-    'uri-template', 
-    'json-pointer', 
-    'relative-json-pointer', 
-    'regex'
-  ])
-}
+const ajv = addFormats(new Ajv(), [
+  'date-time', 
+  'time', 
+  'date', 
+  'email',  
+  'hostname', 
+  'ipv4', 
+  'ipv6', 
+  'uri', 
+  'uri-reference', 
+  'uuid',
+  'uri-template', 
+  'json-pointer', 
+  'relative-json-pointer', 
+  'regex'
+])
+.addKeyword('kind')
+.addKeyword('modifier')
 
-export function ok(type: any, data: any) {
-  const ajv = setupAjv()
+
+
+export function ok<T extends TSchema>(type: T, data: unknown) {
   const result = ajv.validate(type, data) as boolean
   if (result === false) {
     console.log('---------------------------')
@@ -43,8 +42,7 @@ export function ok(type: any, data: any) {
   }
 }
 
-export function fail(type: any, data: any) {
-  const ajv = setupAjv()
+export function fail<T extends TSchema>(type: T, data: unknown) {
   const result = ajv.validate(type, data) as boolean
   if (result === true) {
     console.log('---------------------------')
