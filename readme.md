@@ -201,14 +201,14 @@ The following table outlines the TypeBox mappings between TypeScript and JSON sc
 │   x: Type.Number(),            │    x: number,               │   type: 'object',              │
 │   y: Type.Number()             │    y: number                │   additionalProperties: false, │
 │ })                             │ }                           │   properties: {                │
-│                                │                             │      a: {                      │
+│                                │                             │      x: {                      │
 │   	                         │                             │        type: 'number'          │
 │   	                         │                             │      },                        │
-│   	                         │                             │      b: {                      │
+│   	                         │                             │      y: {                      │
 │                                │                             │        type: 'number'          │
 │   	                         │                             │      }                         │
 │   	                         │                             │   },                           │
-│                                │                             │   required: ['a', 'b']         │
+│                                │                             │   required: ['x', 'y']         │
 │   	                         │                             │ }                              │
 │   	                         │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
