@@ -2,7 +2,7 @@ import { TSchema } from '@sinclair/typebox'
 import addFormats from 'ajv-formats'
 import Ajv        from 'ajv'
 
-const ajv = addFormats(new Ajv(), [
+export const ajv = addFormats(new Ajv(), [
   'date-time', 
   'time', 
   'date', 

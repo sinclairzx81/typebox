@@ -212,6 +212,26 @@ The following table outlines the TypeBox mappings between TypeScript and JSON sc
 │   	                         │                             │ }                              │
 │   	                         │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
+│ const T = Type.Object({        │ type T = {                  │ const T = {                    │
+│   x: Type.Number(),            │    x: number,               │   type: 'object',              │
+│   y: Type.Number()             │    y: number                │   additionalProperties: false, │
+│ }, { $id: 'my-obj' })          │ }                           │   properties: {                │
+│                                │                             │      x: {                      │
+│ const R = Type.Ref(T)          │ type R = T                  │        type: 'number'          │
+│   	                         │                             │      },                        │
+│   	                         │                             │      y: {                      │
+│                                │                             │        type: 'number'          │
+│   	                         │                             │      }                         │
+│   	                         │                             │   },                           │
+│                                │                             │   required: ['x', 'y'],        │
+│                                │                             │   $id: 'my-obj'                │
+│   	                         │                             │ }                              │
+│   	                         │                             │                                │
+│   	                         │                             │ const R = {                    │
+│   	                         │                             │    $ref: 'my-obj#'             │
+│   	                         │                             │ }                              │
+│   	                         │                             │                                │
+├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Tuple([         │ type T = [number, number]   │ const T = {                    │
 │   Type.Number(),               │                             │    type: 'array',              │
 │   Type.Number()                │                             │    items: [                    │

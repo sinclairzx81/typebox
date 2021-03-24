@@ -47,6 +47,7 @@ export const KeyOfKind     = Symbol('KeyOfKind')
 export const UnionKind     = Symbol('UnionKind')
 export const TupleKind     = Symbol('TupleKind')
 export const ObjectKind    = Symbol('ObjectKind')
+export const RefKind       = Symbol('RefKind')
 export const DictKind      = Symbol('DictKind')
 export const ArrayKind     = Symbol('ArrayKind')
 export const EnumKind      = Symbol('EnumKind')
@@ -60,6 +61,7 @@ export const UnknownKind   = Symbol('UnknownKind')
 export const AnyKind       = Symbol('AnyKind')
 
 export interface CustomOptions {
+    $id?: string
     title?: string
     description?: string
     default?: any
@@ -108,6 +110,7 @@ export type TValue    = string | number | boolean
 export type TProperties                        = { [key: string]: TSchema }
 export type TTuple     <T extends TSchema[]>   = { kind: typeof TupleKind, type: 'array', items: [...T], additionalItems: false, minItems: number, maxItems: number } & CustomOptions
 export type TObject    <T extends TProperties> = { kind: typeof ObjectKind, type: 'object', additionalProperties: false, properties: T, required?: string[] } & CustomOptions
+export type TRef      <T extends TObject<any>> = { kind: typeof RefKind, $ref: string } & CustomOptions
 export type TUnion     <T extends TSchema[]>   = { kind: typeof UnionKind, anyOf: [...T] } & CustomOptions
 export type TKeyOf     <T extends TKey[]>      = { kind: typeof KeyOfKind, enum: [...T] }
 export type TDict      <T extends TSchema>     = { kind: typeof DictKind, type: 'object', additionalProperties: T } & DictOptions
@@ -142,6 +145,7 @@ export type TVoid           = { kind: typeof VoidKind, type: 'void' } & CustomOp
 // ------------------------------------------------------------------------
 
 export type TSchema =
+    | TRef<any>
     | TUnion<any>
     | TTuple<any>
     | TObject<any>
@@ -205,6 +209,7 @@ export type StaticKeyOf       <T extends TKey[]>               = T extends Array
 export type StaticUnion       <T extends readonly TSchema[]>   = { [K in keyof T]: Static<T[K]> }[number]
 export type StaticTuple       <T extends readonly TSchema[]>   = { [K in keyof T]: Static<T[K]> }
 export type StaticObject      <T extends TProperties>          = StaticProperties<T>
+export type StaticRef         <T> = T extends TObject<infer U> ? StaticProperties<U> : never
 export type StaticDict        <T extends TSchema>              = { [key: string]: Static<T> }
 export type StaticArray       <T extends TSchema>              = Array<Static<T>>
 export type StaticLiteral     <T extends TValue>               = T
@@ -214,6 +219,7 @@ export type StaticFunction    <T extends readonly TSchema[], U extends TSchema> 
 export type StaticPromise     <T extends TSchema>             = Promise<Static<T>>
 
 export type Static<T> =
+    T extends TRef<infer U>                  ? StaticRef<U>            :
     T extends TKeyOf<infer U>                ? StaticKeyOf<U>          :    
     T extends TUnion<infer U>                ? StaticUnion<U>          :
     T extends TTuple<infer U>                ? StaticTuple<U>          :
@@ -297,6 +303,14 @@ export class TypeBuilder {
         return (required) ? 
             { ...options, kind: ObjectKind, type: 'object', additionalProperties, properties, required } : 
             { ...options, kind: ObjectKind, type: 'object', additionalProperties, properties }
+    }
+
+    /** `STANDARD` Creates a `$ref` schema. */
+    public Ref<T extends TObject<any>>(ref: T, options: CustomOptions = {}): TRef<T> {
+        if (!ref.$id) {
+            throw new Error('Referenced schema $id is missing')
+        }
+        return { ...options, kind: RefKind, $ref: `${ref.$id}#` }
     }
 
     /** `STANDARD` Creates a `{ [key: string]: T }` schema. */
