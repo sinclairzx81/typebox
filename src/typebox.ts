@@ -241,12 +241,12 @@ export type Static<T> =
 // ------------------------------------------------------------------------
 
 function clone(object: any): any {
-    if(typeof object === 'object' && !Array.isArray(object)) {
+    if(typeof object === 'object' && object !== null && !Array.isArray(object)) {
         return Object.keys(object).reduce((acc, key) => {
             acc[key] = clone(object[key])
             return acc
         }, {} as any)
-    } else if(typeof object === 'object' && Array.isArray(object)) {
+    } else if(typeof object === 'object' && object !== null && Array.isArray(object)) {
         return object.map((item: any) => clone(item))
     } else {
         return object
