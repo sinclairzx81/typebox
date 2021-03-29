@@ -11,4 +11,14 @@ describe('Omit', () => {
       const Vector2 = Type.Omit(Vector3, ['z'])
       ok(Vector2, { x: 1, y: 1 })
     })
+  
+    it('User', () => {
+      const User = Type.Object({
+        id: Type.Readonly(Type.Integer()),
+        name: Type.String({ default: null }),
+        email: Type.String({ default: undefined }),
+      });
+      const PartialUser = Type.Omit(User, ['id'])
+      ok(PartialUser, { name: 'user', email: 'user@example.com' })
+    })
 })
