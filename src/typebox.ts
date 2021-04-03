@@ -106,21 +106,21 @@ export type TKey      = string | number | symbol
 export type TValue    = string | number | boolean
 
 export type TProperties                        = { [key: string]: TSchema }
-export type TTuple     <T extends TSchema[]>   = { kind: typeof TupleKind, type: 'array', items: [...T], additionalItems: false, minItems: number, maxItems: number } & CustomOptions
-export type TObject    <T extends TProperties> = { kind: typeof ObjectKind, type: 'object', additionalProperties: false, properties: T, required?: string[] } & CustomOptions
-export type TUnion     <T extends TSchema[]>   = { kind: typeof UnionKind, anyOf: [...T] } & CustomOptions
-export type TKeyOf     <T extends TKey[]>      = { kind: typeof KeyOfKind, enum: [...T] }
-export type TDict      <T extends TSchema>     = { kind: typeof DictKind, type: 'object', additionalProperties: T } & DictOptions
-export type TArray     <T extends TSchema>     = { kind: typeof ArrayKind, type: 'array', items: T } & ArrayOptions
-export type TLiteral   <T extends TValue>      = { kind: typeof LiteralKind, const: T } & CustomOptions
-export type TEnum      <T extends TKey>        = { kind: typeof EnumKind, enum: T[] } & CustomOptions
-export type TString                            = { kind: typeof StringKind, type: 'string' } & StringOptions<string>
-export type TNumber                            = { kind: typeof NumberKind, type: 'number' } & NumberOptions
-export type TInteger                           = { kind: typeof IntegerKind, type: 'integer' } & NumberOptions
-export type TBoolean                           = { kind: typeof BooleanKind, type: 'boolean' } & CustomOptions
-export type TNull                              = { kind: typeof NullKind, type: 'null' } & CustomOptions
-export type TUnknown                           = { kind: typeof UnknownKind } & CustomOptions
-export type TAny                               = { kind: typeof AnyKind } & CustomOptions
+export type TTuple     <T extends TSchema[]>   = { new (...args: any[]): never, kind: typeof TupleKind, type: 'array', items: [...T], additionalItems: false, minItems: number, maxItems: number } & CustomOptions
+export type TObject    <T extends TProperties> = { new (...args: any[]): never, kind: typeof ObjectKind, type: 'object', additionalProperties: false, properties: T, required?: string[] } & CustomOptions
+export type TUnion     <T extends TSchema[]>   = { new (...args: any[]): never, kind: typeof UnionKind, anyOf: [...T] } & CustomOptions
+export type TKeyOf     <T extends TKey[]>      = { new (...args: any[]): never, kind: typeof KeyOfKind, enum: [...T] }
+export type TDict      <T extends TSchema>     = { new (...args: any[]): never, kind: typeof DictKind, type: 'object', additionalProperties: T } & DictOptions
+export type TArray     <T extends TSchema>     = { new (...args: any[]): never, kind: typeof ArrayKind, type: 'array', items: T } & ArrayOptions
+export type TLiteral   <T extends TValue>      = { new (...args: any[]): never, kind: typeof LiteralKind, const: T } & CustomOptions
+export type TEnum      <T extends TKey>        = { new (...args: any[]): never, kind: typeof EnumKind, enum: T[] } & CustomOptions
+export type TString                            = { new (...args: any[]): never, kind: typeof StringKind, type: 'string' } & StringOptions<string>
+export type TNumber                            = { new (...args: any[]): never, kind: typeof NumberKind, type: 'number' } & NumberOptions
+export type TInteger                           = { new (...args: any[]): never, kind: typeof IntegerKind, type: 'integer' } & NumberOptions
+export type TBoolean                           = { new (...args: any[]): never, kind: typeof BooleanKind, type: 'boolean' } & CustomOptions
+export type TNull                              = { new (...args: any[]): never, kind: typeof NullKind, type: 'null' } & CustomOptions
+export type TUnknown                           = { new (...args: any[]): never, kind: typeof UnknownKind } & CustomOptions
+export type TAny                               = { new (...args: any[]): never, kind: typeof AnyKind } & CustomOptions
 
 // ------------------------------------------------------------------------
 // Schema Extended
@@ -131,11 +131,11 @@ export const FunctionKind    = Symbol('FunctionKind')
 export const PromiseKind     = Symbol('PromiseKind')
 export const UndefinedKind   = Symbol('UndefinedKind')
 export const VoidKind        = Symbol('VoidKind')
-export type TConstructor <T extends TSchema[], U extends TSchema> = { kind: typeof ConstructorKind, type: 'constructor', arguments: readonly [...T], returns: U } & CustomOptions
-export type TFunction    <T extends TSchema[], U extends TSchema> = { kind: typeof FunctionKind,    type: 'function', arguments: readonly [...T], returns: U } & CustomOptions
-export type TPromise     <T extends TSchema>                      = { kind: typeof PromiseKind,     type: 'promise', item: T } & CustomOptions
-export type TUndefined      = { kind: typeof UndefinedKind, type: 'undefined' } & CustomOptions
-export type TVoid           = { kind: typeof VoidKind, type: 'void' } & CustomOptions
+export type TConstructor <T extends TSchema[], U extends TSchema> = { new (...args: any[]): never, kind: typeof ConstructorKind, type: 'constructor', arguments: readonly [...T], returns: U } & CustomOptions
+export type TFunction    <T extends TSchema[], U extends TSchema> = { new (...args: any[]): never, kind: typeof FunctionKind,    type: 'function', arguments: readonly [...T], returns: U } & CustomOptions
+export type TPromise     <T extends TSchema>                      = { new (...args: any[]): never, kind: typeof PromiseKind,     type: 'promise', item: T } & CustomOptions
+export type TUndefined      = { new (...args: any[]): never, kind: typeof UndefinedKind, type: 'undefined' } & CustomOptions
+export type TVoid           = { new (...args: any[]): never, kind: typeof VoidKind, type: 'void' } & CustomOptions
 
 // ------------------------------------------------------------------------
 // Schema
@@ -257,6 +257,11 @@ function clone(object: any): any {
 // TypeBuilder
 // ------------------------------------------------------------------------
 
+function build<T>(schema: T): T & { new (...args: any[]): never } {
+    //Fake a "newable" so that typescript will treat the typebox JSON Schema as a type
+    return schema as any
+}
+
 export class TypeBuilder {
 
     /** `STANDARD` Modifies a schema object property to be `readonly` and `optional`. */
@@ -279,7 +284,7 @@ export class TypeBuilder {
         const additionalItems = false
         const minItems = items.length
         const maxItems = items.length
-        return { ...options, kind: TupleKind, type: 'array', items, additionalItems, minItems, maxItems }
+        return build({ ...options, kind: TupleKind, type: 'array', items, additionalItems, minItems, maxItems })
     }
 
     /** `STANDARD` Creates a `object` schema with the given properties. */
@@ -294,36 +299,37 @@ export class TypeBuilder {
         const required_names = property_names.filter(name => !optional.includes(name))
         const required = (required_names.length > 0) ? required_names : undefined
         const additionalProperties = false
-        return (required) ? 
-            { ...options, kind: ObjectKind, type: 'object', additionalProperties, properties, required } : 
-            { ...options, kind: ObjectKind, type: 'object', additionalProperties, properties }
+        return build(required
+            ? { ...options, kind: ObjectKind, type: 'object', additionalProperties, properties, required }
+            : { ...options, kind: ObjectKind, type: 'object', additionalProperties, properties }
+        )
     }
 
     /** `STANDARD` Creates a `{ [key: string]: T }` schema. */
     public Dict<T extends TSchema>(item: T, options: DictOptions = {}): TDict<T> {
         const additionalProperties = item
-        return { ...options, kind: DictKind, type: 'object', additionalProperties }
+        return build({ ...options, kind: DictKind, type: 'object', additionalProperties })
     }
 
     /** `STANDARD` Creates an `Array<T>` schema. */
     public Array<T extends TSchema>(items: T, options: ArrayOptions = {}): TArray<T> {
-        return { ...options, kind: ArrayKind, type: 'array', items }
+        return build({ ...options, kind: ArrayKind, type: 'array', items })
     }
 
     /** `STANDARD` Creates an `Enum<T>` schema from a TypeScript `enum` definition. */
     public Enum<T extends TEnumType>(item: T, options: CustomOptions = {}): TEnum<T[keyof T]> {
         const values = Object.keys(item).filter(key => isNaN(key as any)).map(key => item[key]) as T[keyof T][]
-        return { ...options, kind: EnumKind, enum: values }
+        return build({ ...options, kind: EnumKind, enum: values })
     }
 
     /** `STANDARD` Creates a literal schema. Supports `string | number | boolean` values. */
     public Literal<T extends TValue>(value: T, options: CustomOptions = {}): TLiteral<T> {
-        return { ...options, kind: LiteralKind, const: value }
+        return build({ ...options, kind: LiteralKind, const: value })
     }
 
     /** `STANDARD` Creates a `string` schema. */
     public String<TCustomFormatOption extends string>(options: StringOptions<StringFormatOption | TCustomFormatOption> = {}): TString {
-        return { ...options, kind: StringKind, type: 'string' }
+        return build({ ...options, kind: StringKind, type: 'string' })
     }
 
     /** `STANDARD` Creates a `string` schema from a regular expression. */
@@ -333,43 +339,43 @@ export class TypeBuilder {
 
     /** `STANDARD` Creates a `number` schema. */
     public Number(options: NumberOptions = {}): TNumber {
-        return { ...options, kind: NumberKind, type: 'number' }
+        return build({ ...options, kind: NumberKind, type: 'number' })
     }
 
     /** `STANDARD` Creates a `integer` schema. */
     public Integer(options: NumberOptions = {}): TInteger {
-        return { ...options, kind: IntegerKind, type: 'integer' }
+        return build({ ...options, kind: IntegerKind, type: 'integer' })
     }
 
     /** `STANDARD` Creates a `boolean` schema. */
     public Boolean(options: CustomOptions = {}): TBoolean {
-        return { ...options, kind: BooleanKind, type: 'boolean' }
+        return build({ ...options, kind: BooleanKind, type: 'boolean' })
     }
 
     /** `STANDARD` Creates a `null` schema. */
     public Null(options: CustomOptions = {}): TNull {
-        return { ...options, kind: NullKind, type: 'null' }
+        return build({ ...options, kind: NullKind, type: 'null' })
     }
 
     /** `STANDARD` Creates an `unknown` schema. */
     public Unknown(options: CustomOptions = {}): TUnknown {
-        return { ...options, kind: UnknownKind }
+        return build({ ...options, kind: UnknownKind })
     }
 
     /** `STANDARD` Creates an `any` schema. */
     public Any(options: CustomOptions = {}): TAny {
-        return { ...options, kind: AnyKind }
+        return build({ ...options, kind: AnyKind })
     }
 
     /** `STANDARD` Creates a Union schema. */
     public Union<T extends TSchema[]>(items: [...T], options: CustomOptions = {}): TUnion<T> {
-        return { ...options, kind: UnionKind, anyOf: items }
+        return build({ ...options, kind: UnionKind, anyOf: items })
     }
     
     /** `STANDARD` Creates a `keyof` schema. */
     public KeyOf<T extends TObject<TProperties>>(schema: T, options: CustomOptions = {}): TKeyOf<ObjectPropertyKeys<T>[]> {
         const keys = Object.keys(schema.properties) as ObjectPropertyKeys<T>[]
-        return {...options, kind: KeyOfKind, enum: keys }
+        return build({...options, kind: KeyOfKind, enum: keys })
     }
 
     /** `STANDARD` Creates an intersection schema of the given object schemas. */
@@ -378,7 +384,7 @@ export class TypeBuilder {
         const additionalProperties = false
         const properties           = items.reduce((acc, object) => ({ ...acc, ...object['properties'] }), {} as IntersectObjectArray<T>)
         const required             = items.reduce((acc, object) => object['required'] ? [ ...acc, ...object['required'] ] : acc, [] as string[])
-        return { ...options, type, kind: ObjectKind, additionalProperties, properties, required }
+        return build({ ...options, type, kind: ObjectKind, additionalProperties, properties, required })
     }
 
     /** `STANDARD` Make all properties in schema object required. */
@@ -440,27 +446,27 @@ export class TypeBuilder {
 
     /** `EXTENDED` Creates a `constructor` schema. */
     public Constructor<T extends TSchema[], U extends TSchema>(args: [...T], returns: U, options: CustomOptions = {}): TConstructor<T, U> {
-        return { ...options, kind: ConstructorKind, type: 'constructor', arguments: args, returns };
+        return build({ ...options, kind: ConstructorKind, type: 'constructor', arguments: args, returns })
     }
 
     /** `EXTENDED` Creates a `function` schema. */
     public Function<T extends TSchema[], U extends TSchema>(args: [...T], returns: U, options: CustomOptions = {}): TFunction<T, U> {
-        return { ...options, kind: FunctionKind, type: 'function', arguments: args, returns };
+        return build({ ...options, kind: FunctionKind, type: 'function', arguments: args, returns })
     }
 
     /** `EXTENDED` Creates a `Promise<T>` schema. */
     public Promise<T extends TSchema>(item: T, options: CustomOptions = {}): TPromise<T> {
-        return { ...options, type: 'promise', kind: PromiseKind, item }
+        return build({ ...options, type: 'promise', kind: PromiseKind, item })
     }
 
     /** `EXTENDED` Creates a `undefined` schema. */
     public Undefined(options: CustomOptions = {}): TUndefined {
-        return { ...options, type: 'undefined', kind: UndefinedKind }
+        return build({ ...options, type: 'undefined', kind: UndefinedKind })
     }
 
     /** `EXTENDED` Creates a `void` schema. */
     public Void(options: CustomOptions = {}): TVoid {
-        return { ...options, type: 'void', kind: VoidKind }
+        return build({ ...options, type: 'void', kind: VoidKind })
     }
 }
 
