@@ -1,14 +1,34 @@
-import { Type, Static, TObject, TProperties } from '@sinclair/typebox'
+import { Type, Static } from '@sinclair/typebox'
 
-// -----------------------------------------------
-// npm start to run example
-// -----------------------------------------------
+// ------------------------------------------------------
+// decorator
+// ------------------------------------------------------
 
-type Vector = Static<typeof Vector>
-const Vector = Type.Object({
-    x: Type.Number(),
-    y: Type.Number()
-})
+export const method = () => (...args: any) => {}
 
-console.log(Vector)
+// ------------------------------------------------------
+// contract
+// ------------------------------------------------------
 
+type Request = Static<typeof Request>
+const Request = Type.Object({ id: Type.String() })
+
+type Response = Static<typeof Response>
+const Response = Type.Object({ id: Type.String() })
+
+// ------------------------------------------------------
+// service
+// ------------------------------------------------------
+
+export class Service {
+    @method()
+    method(request: Request): Response {
+        return request
+    }
+}
+
+// ...
+
+const service = new Service()
+
+service.method({ id: '1' })

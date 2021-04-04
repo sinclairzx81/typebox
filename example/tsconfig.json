@@ -1,7 +1,11 @@
 {
     "compilerOptions": {
         "strict": true,
+        "target": "ESNext",
         "baseUrl": ".",
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "removeComments": true,
         "paths": {
             "@sinclair/typebox": ["../src/typebox"]
         }
