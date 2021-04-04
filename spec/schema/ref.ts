@@ -1,8 +1,8 @@
 import { Type } from '@sinclair/typebox'
-import {ajv, fail, ok} from "./validate";
+import { ajv, fail, ok } from "./validate";
 
 describe('Ref', () => {
-  it('Ref',  () => {
+  it('Object', () => {
     const T = Type.Object({
       a: Type.Number(),
       b: Type.String(),
@@ -30,6 +30,25 @@ describe('Ref', () => {
       }
     })
 
+    fail(R, {})
+    fail(R, [])
+    fail(R, 'hello')
+    fail(R, true)
+    fail(R, 123)
+    fail(R, null)
+  })
+
+  it('Tuple', () => {
+    const T = Type.Tuple([
+      Type.Number(), 
+      Type.Number()
+    ], { $id: 'Tuple' })
+    
+    ajv.addSchema(T)
+    
+    const R = Type.Ref(T)
+
+    ok(R, [0, 0])
     fail(R, {})
     fail(R, [])
     fail(R, 'hello')
