@@ -101,26 +101,46 @@ export type DictOptions = {
     maxProperties?: number
 } & CustomOptions
 
+/**
+ * This signature causes the type to be emitted by the typescript compiler
+ * when the --emitDecoratorMetadata is specified
+ */
+export type TEmit = {
+    /**
+     * @deprecated DO NOT USE
+     * Cannot call new on this object
+     */
+    new (...args: any[]): never
+}
+
+/**
+ * Fake a "newable" so that typescript will treat the TypeBox JSON Schema object as a type
+ */
+function build<T>(schema: T): T & TEmit {
+    return schema as any
+}
+
+
 export type TEnumType = Record<string, string | number>
 export type TKey      = string | number | symbol
 export type TValue    = string | number | boolean
 
 export type TProperties                        = { [key: string]: TSchema }
-export type TTuple     <T extends TSchema[]>   = { new (...args: any[]): never, kind: typeof TupleKind, type: 'array', items: [...T], additionalItems: false, minItems: number, maxItems: number } & CustomOptions
-export type TObject    <T extends TProperties> = { new (...args: any[]): never, kind: typeof ObjectKind, type: 'object', additionalProperties: false, properties: T, required?: string[] } & CustomOptions
-export type TUnion     <T extends TSchema[]>   = { new (...args: any[]): never, kind: typeof UnionKind, anyOf: [...T] } & CustomOptions
-export type TKeyOf     <T extends TKey[]>      = { new (...args: any[]): never, kind: typeof KeyOfKind, enum: [...T] }
-export type TDict      <T extends TSchema>     = { new (...args: any[]): never, kind: typeof DictKind, type: 'object', additionalProperties: T } & DictOptions
-export type TArray     <T extends TSchema>     = { new (...args: any[]): never, kind: typeof ArrayKind, type: 'array', items: T } & ArrayOptions
-export type TLiteral   <T extends TValue>      = { new (...args: any[]): never, kind: typeof LiteralKind, const: T } & CustomOptions
-export type TEnum      <T extends TKey>        = { new (...args: any[]): never, kind: typeof EnumKind, enum: T[] } & CustomOptions
-export type TString                            = { new (...args: any[]): never, kind: typeof StringKind, type: 'string' } & StringOptions<string>
-export type TNumber                            = { new (...args: any[]): never, kind: typeof NumberKind, type: 'number' } & NumberOptions
-export type TInteger                           = { new (...args: any[]): never, kind: typeof IntegerKind, type: 'integer' } & NumberOptions
-export type TBoolean                           = { new (...args: any[]): never, kind: typeof BooleanKind, type: 'boolean' } & CustomOptions
-export type TNull                              = { new (...args: any[]): never, kind: typeof NullKind, type: 'null' } & CustomOptions
-export type TUnknown                           = { new (...args: any[]): never, kind: typeof UnknownKind } & CustomOptions
-export type TAny                               = { new (...args: any[]): never, kind: typeof AnyKind } & CustomOptions
+export type TTuple     <T extends TSchema[]>   = TEmit & { kind: typeof TupleKind, type: 'array', items: [...T], additionalItems: false, minItems: number, maxItems: number } & CustomOptions
+export type TObject    <T extends TProperties> = TEmit & { kind: typeof ObjectKind, type: 'object', additionalProperties: false, properties: T, required?: string[] } & CustomOptions
+export type TUnion     <T extends TSchema[]>   = TEmit & { kind: typeof UnionKind, anyOf: [...T] } & CustomOptions
+export type TKeyOf     <T extends TKey[]>      = TEmit & { kind: typeof KeyOfKind, enum: [...T] }
+export type TDict      <T extends TSchema>     = TEmit & { kind: typeof DictKind, type: 'object', additionalProperties: T } & DictOptions
+export type TArray     <T extends TSchema>     = TEmit & { kind: typeof ArrayKind, type: 'array', items: T } & ArrayOptions
+export type TLiteral   <T extends TValue>      = TEmit & { kind: typeof LiteralKind, const: T } & CustomOptions
+export type TEnum      <T extends TKey>        = TEmit & { kind: typeof EnumKind, enum: T[] } & CustomOptions
+export type TString                            = TEmit & { kind: typeof StringKind, type: 'string' } & StringOptions<string>
+export type TNumber                            = TEmit & { kind: typeof NumberKind, type: 'number' } & NumberOptions
+export type TInteger                           = TEmit & { kind: typeof IntegerKind, type: 'integer' } & NumberOptions
+export type TBoolean                           = TEmit & { kind: typeof BooleanKind, type: 'boolean' } & CustomOptions
+export type TNull                              = TEmit & { kind: typeof NullKind, type: 'null' } & CustomOptions
+export type TUnknown                           = TEmit & { kind: typeof UnknownKind } & CustomOptions
+export type TAny                               = TEmit & { kind: typeof AnyKind } & CustomOptions
 
 // ------------------------------------------------------------------------
 // Schema Extended
@@ -131,11 +151,11 @@ export const FunctionKind    = Symbol('FunctionKind')
 export const PromiseKind     = Symbol('PromiseKind')
 export const UndefinedKind   = Symbol('UndefinedKind')
 export const VoidKind        = Symbol('VoidKind')
-export type TConstructor <T extends TSchema[], U extends TSchema> = { new (...args: any[]): never, kind: typeof ConstructorKind, type: 'constructor', arguments: readonly [...T], returns: U } & CustomOptions
-export type TFunction    <T extends TSchema[], U extends TSchema> = { new (...args: any[]): never, kind: typeof FunctionKind,    type: 'function', arguments: readonly [...T], returns: U } & CustomOptions
-export type TPromise     <T extends TSchema>                      = { new (...args: any[]): never, kind: typeof PromiseKind,     type: 'promise', item: T } & CustomOptions
-export type TUndefined      = { new (...args: any[]): never, kind: typeof UndefinedKind, type: 'undefined' } & CustomOptions
-export type TVoid           = { new (...args: any[]): never, kind: typeof VoidKind, type: 'void' } & CustomOptions
+export type TConstructor <T extends TSchema[], U extends TSchema> = TEmit & { kind: typeof ConstructorKind, type: 'constructor', arguments: readonly [...T], returns: U } & CustomOptions
+export type TFunction    <T extends TSchema[], U extends TSchema> = TEmit & { kind: typeof FunctionKind,    type: 'function', arguments: readonly [...T], returns: U } & CustomOptions
+export type TPromise     <T extends TSchema>                      = TEmit & { kind: typeof PromiseKind,     type: 'promise', item: T } & CustomOptions
+export type TUndefined      = TEmit & { kind: typeof UndefinedKind, type: 'undefined' } & CustomOptions
+export type TVoid           = TEmit & { kind: typeof VoidKind, type: 'void' } & CustomOptions
 
 // ------------------------------------------------------------------------
 // Schema
@@ -256,11 +276,6 @@ function clone(object: any): any {
 // ------------------------------------------------------------------------
 // TypeBuilder
 // ------------------------------------------------------------------------
-
-function build<T>(schema: T): T & { new (...args: any[]): never } {
-    //Fake a "newable" so that typescript will treat the typebox JSON Schema as a type
-    return schema as any
-}
 
 export class TypeBuilder {
 
