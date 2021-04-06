@@ -1,5 +1,6 @@
 import { Type } from '@sinclair/typebox'
 import { ok, fail } from './validate'
+import * as assert from 'assert'
 
 describe('Enum<T>', () => {
   it('number enum', () => {
@@ -12,6 +13,8 @@ describe('Enum<T>', () => {
     fail(T, 'Foo')
     ok(T, 0)
     ok(T, 1)
+      
+    assert.strictEqual(T.type, 'number')
   })
 
   it('string enum', () => {
@@ -24,6 +27,8 @@ describe('Enum<T>', () => {
     fail(T, 'Foo')
     ok(T, 'foo')
     ok(T, 'bar')
+      
+    assert.strictEqual(T.type, 'string')
   })
 
   it('mixed string|number enum', () => {
@@ -37,5 +42,13 @@ describe('Enum<T>', () => {
     fail(T, 1)
     ok(T, 0)
     ok(T, 'bar')
+      
+    assert.deepStrictEqual(T.type, ['string', 'number'])
+  })
+
+  it('empty enum', () => {
+    enum EmptyEnum {}
+    const T = Type.Enum(EmptyEnum)
+    assert.strictEqual(T.type, undefined)
   })
 })
