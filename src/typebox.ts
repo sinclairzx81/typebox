@@ -112,7 +112,7 @@ export type TUnion     <T extends TSchema[]>   = { kind: typeof UnionKind, anyOf
 export type TKeyOf     <T extends TKey[]>      = { kind: typeof KeyOfKind, type: 'string', enum: [...T] } & CustomOptions
 export type TDict      <T extends TSchema>     = { kind: typeof DictKind, type: 'object', additionalProperties: T } & DictOptions
 export type TArray     <T extends TSchema>     = { kind: typeof ArrayKind, type: 'array', items: T } & ArrayOptions
-export type TLiteral   <T extends TValue>      = { kind: typeof LiteralKind, const: T } & CustomOptions
+export type TLiteral   <T extends TValue>      = { kind: typeof LiteralKind, type: 'string' | 'number' | 'boolean', const: T } & CustomOptions
 export type TEnum      <T extends TKey>        = { kind: typeof EnumKind, enum: T[] } & CustomOptions
 export type TString                            = { kind: typeof StringKind, type: 'string' } & StringOptions<string>
 export type TNumber                            = { kind: typeof NumberKind, type: 'number' } & NumberOptions
@@ -318,7 +318,7 @@ export class TypeBuilder {
 
     /** `STANDARD` Creates a literal schema. Supports `string | number | boolean` values. */
     public Literal<T extends TValue>(value: T, options: CustomOptions = {}): TLiteral<T> {
-        return { ...options, kind: LiteralKind, const: value }
+        return { ...options, kind: LiteralKind, const: value, type: typeof value as 'string' | 'number' | 'boolean' }
     }
 
     /** `STANDARD` Creates a `string` schema. */

@@ -1,5 +1,6 @@
 import { Type } from '@sinclair/typebox'
 import { ok, fail } from './validate'
+import * as assert from 'assert'
 
 describe("Literal", () => {
   it('Number',  () => {
@@ -11,6 +12,8 @@ describe("Literal", () => {
     fail(T, 43)
     fail(T, 'world')
     fail(T, null)
+      
+    assert.strictEqual(T.type, 'number')
   })
   it('Boolean',  () => {
     const T = Type.Literal(true)
@@ -22,6 +25,8 @@ describe("Literal", () => {
     fail(T, 43)
     fail(T, 'world')
     fail(T, null)
+      
+    assert.strictEqual(T.type, 'boolean')
   })
   it('String',  () => {
     const T = Type.Literal('hello')
@@ -32,5 +37,7 @@ describe("Literal", () => {
     fail(T, 42)
     fail(T, 'world')
     fail(T, null)
+        
+    assert.strictEqual(T.type, 'string')
   })
 })
