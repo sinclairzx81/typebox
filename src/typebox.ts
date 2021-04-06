@@ -112,8 +112,8 @@ export type TUnion     <T extends TSchema[]>   = { kind: typeof UnionKind, anyOf
 export type TKeyOf     <T extends TKey[]>      = { kind: typeof KeyOfKind, type: 'string', enum: [...T] } & CustomOptions
 export type TDict      <T extends TSchema>     = { kind: typeof DictKind, type: 'object', additionalProperties: T } & DictOptions
 export type TArray     <T extends TSchema>     = { kind: typeof ArrayKind, type: 'array', items: T } & ArrayOptions
-export type TLiteral   <T extends TValue>      = { kind: typeof LiteralKind, type: 'string' | 'number' | 'boolean', const: T } & CustomOptions
-export type TEnum      <T extends TKey>        = { kind: typeof EnumKind, enum: T[] } & CustomOptions
+export type TLiteral   <T extends TValue>      = { kind: typeof LiteralKind, const: T } & CustomOptions
+export type TEnum      <T extends TKey>        = { kind: typeof EnumKind, type?: 'string' | 'number' | ['string', 'number'], enum: T[] } & CustomOptions
 export type TString                            = { kind: typeof StringKind, type: 'string' } & StringOptions<string>
 export type TNumber                            = { kind: typeof NumberKind, type: 'number' } & NumberOptions
 export type TInteger                           = { kind: typeof IntegerKind, type: 'integer' } & NumberOptions
@@ -313,7 +313,14 @@ export class TypeBuilder {
     /** `STANDARD` Creates an `Enum<T>` schema from a TypeScript `enum` definition. */
     public Enum<T extends TEnumType>(item: T, options: CustomOptions = {}): TEnum<T[keyof T]> {
         const values = Object.keys(item).filter(key => isNaN(key as any)).map(key => item[key]) as T[keyof T][]
-        return { ...options, kind: EnumKind, enum: values }
+        if (values.length === 0) {
+            return { ...options, kind: EnumKind, enum: values }
+        }
+        const type = typeof values[0] as 'string' | 'number'
+        if (values.some(value => typeof value !== type)) {
+            return { ...options, kind: EnumKind, type: ['string', 'number'], enum: values }
+        }
+        return { ...options, kind: EnumKind, type, enum: values }
     }
 
     /** `STANDARD` Creates a literal schema. Supports `string | number | boolean` values. */
