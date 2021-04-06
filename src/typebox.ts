@@ -109,7 +109,7 @@ export type TProperties                        = { [key: string]: TSchema }
 export type TTuple     <T extends TSchema[]>   = { kind: typeof TupleKind, type: 'array', items: [...T], additionalItems: false, minItems: number, maxItems: number } & CustomOptions
 export type TObject    <T extends TProperties> = { kind: typeof ObjectKind, type: 'object', additionalProperties: false, properties: T, required?: string[] } & CustomOptions
 export type TUnion     <T extends TSchema[]>   = { kind: typeof UnionKind, anyOf: [...T] } & CustomOptions
-export type TKeyOf     <T extends TKey[]>      = { kind: typeof KeyOfKind, enum: [...T] }
+export type TKeyOf     <T extends TKey[]>      = { kind: typeof KeyOfKind, type: 'string', enum: [...T] } & CustomOptions
 export type TDict      <T extends TSchema>     = { kind: typeof DictKind, type: 'object', additionalProperties: T } & DictOptions
 export type TArray     <T extends TSchema>     = { kind: typeof ArrayKind, type: 'array', items: T } & ArrayOptions
 export type TLiteral   <T extends TValue>      = { kind: typeof LiteralKind, const: T } & CustomOptions
@@ -325,7 +325,7 @@ export class TypeBuilder {
 
     /** `STANDARD` Creates a literal schema. Supports `string | number | boolean` values. */
     public Literal<T extends TValue>(value: T, options: CustomOptions = {}): TLiteral<T> {
-        return { ...options, kind: LiteralKind, const: value }
+        return { ...options, kind: LiteralKind, const: value, type: typeof value as 'string' | 'number' | 'boolean' }
     }
 
     /** `STANDARD` Creates a `string` schema. */
@@ -376,7 +376,7 @@ export class TypeBuilder {
     /** `STANDARD` Creates a `keyof` schema. */
     public KeyOf<T extends TObject<TProperties>>(schema: T, options: CustomOptions = {}): TKeyOf<ObjectPropertyKeys<T>[]> {
         const keys = Object.keys(schema.properties) as ObjectPropertyKeys<T>[]
-        return {...options, kind: KeyOfKind, enum: keys }
+        return {...options, kind: KeyOfKind, type: 'string', enum: keys }
     }
 
     /** `STANDARD` Creates an intersection schema of the given object schemas. */
