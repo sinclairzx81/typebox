@@ -245,9 +245,9 @@ The following table outlines the TypeBox mappings between TypeScript and JSON sc
 │   	                         │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.KeyOf(          │ type T = keyof {            │ const T = {                    │
-│   Type.Object({                │   x: number,                │    enum: ['x', 'y']            │
-│     x: Type.Number(),          │   y: number                 │ }                              │
-│     y: Type.Number()           │ }                           │                                │
+│   Type.Object({                │   x: number,                │    enum: ['x', 'y'],           │
+│     x: Type.Number(),          │   y: number                 │    type: 'string'              │
+│     y: Type.Number()           │ }                           │ }                              │
 │   })                           │                             │                                │
 │ )                              │                             │                                │
 │   	                         │                             │                                │
