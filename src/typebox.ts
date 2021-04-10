@@ -384,7 +384,8 @@ export class TypeBuilder {
         const type                 = 'object'
         const additionalProperties = false
         const properties           = items.reduce((acc, object) => ({ ...acc, ...object['properties'] }), {} as IntersectObjectArray<T>)
-        const required             = items.reduce((acc, object) => object['required'] ? [ ...acc, ...object['required'] ] : acc, [] as string[])
+        let   required             = items.reduce((acc, object) => object['required'] ? [ ...acc, ...object['required'] ] : acc, [] as string[])
+        required = [...new Set(required)]
         return { ...options, type, kind: ObjectKind, additionalProperties, properties, required }
     }
 
