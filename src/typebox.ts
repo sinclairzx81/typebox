@@ -384,9 +384,8 @@ export class TypeBuilder {
         const type                 = 'object'
         const additionalProperties = false
         const properties           = items.reduce((acc, object) => ({ ...acc, ...object['properties'] }), {} as IntersectObjectArray<T>)
-        let   required             = items.reduce((acc, object) => object['required'] ? [ ...acc, ...object['required'] ] : acc, [] as string[])
-        required = [...new Set(required)]
-        return { ...options, type, kind: ObjectKind, additionalProperties, properties, required }
+        const required             = items.reduce((acc, object) => object['required'] ? [ ...acc, ...object['required'] ] : acc, [] as string[])
+        return { ...options, type, kind: ObjectKind, additionalProperties, properties, required: [...new Set(required)] }
     }
 
     /** `STANDARD` Make all properties in schema object required. */
