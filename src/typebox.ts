@@ -237,20 +237,27 @@ export type Static<T> =
     never
 
 // ------------------------------------------------------------------------
-// Clone
+// Utility
 // ------------------------------------------------------------------------
 
+function isObject(object: any) {
+    return typeof object === 'object' && object !== null && !Array.isArray(object)
+}
+
+function isArray(object: any) {
+    return typeof object === 'object' && object !== null && Array.isArray(object)
+}
+
 function clone(object: any): any {
-    if(typeof object === 'object' && object !== null && !Array.isArray(object)) {
-        return Object.keys(object).reduce((acc, key) => {
-            acc[key] = clone(object[key])
-            return acc
-        }, {} as any)
-    } else if(typeof object === 'object' && object !== null && Array.isArray(object)) {
-        return object.map((item: any) => clone(item))
-    } else {
-        return object
-    }
+    if(isObject(object)) return Object.keys(object).reduce<any>((acc, key) => ({...acc, [key]: clone(object[key]) }), {})
+    if(isArray(object)) return object.map((item: any) => clone(item))
+    return object
+}
+
+function distinct(keys: string[]): string[] {
+    return Object.keys(keys.reduce((acc, key) => {
+        return { ...acc, [key]: null }
+    }, {}))
 }
 
 // ------------------------------------------------------------------------
@@ -297,6 +304,22 @@ export class TypeBuilder {
         return (required) ? 
             { ...options, kind: ObjectKind, type: 'object', additionalProperties, properties, required } : 
             { ...options, kind: ObjectKind, type: 'object', additionalProperties, properties }
+    }
+
+    /** `STANDARD` Creates an intersection schema of the given object schemas. */
+    public Intersect<T extends TObject<TProperties>[]>(items: [...T], options: CustomOptions = {}): TObject<IntersectObjectArray<T>> {
+        const type                 = 'object'
+        const properties           = items.reduce((acc, object) => ({ ...acc, ...object['properties'] }), {} as IntersectObjectArray<T>)
+        const required             = distinct(items.reduce((acc, object) => object['required'] ? [ ...acc, ...object['required'] ] : acc, [] as string[]))
+        const additionalProperties = false
+        return (required.length > 0)
+            ? { ...options, type, kind: ObjectKind, additionalProperties, properties, required }
+            : { ...options, type, kind: ObjectKind, additionalProperties, properties }
+    }
+    
+    /** `STANDARD` Creates a Union schema. */
+    public Union<T extends TSchema[]>(items: [...T], options: CustomOptions = {}): TUnion<T> {
+        return { ...options, kind: UnionKind, anyOf: items }
     }
 
     /** `STANDARD` Creates a `{ [key: string]: T }` schema. */
@@ -367,25 +390,11 @@ export class TypeBuilder {
     public Any(options: CustomOptions = {}): TAny {
         return { ...options, kind: AnyKind }
     }
-
-    /** `STANDARD` Creates a Union schema. */
-    public Union<T extends TSchema[]>(items: [...T], options: CustomOptions = {}): TUnion<T> {
-        return { ...options, kind: UnionKind, anyOf: items }
-    }
     
     /** `STANDARD` Creates a `keyof` schema. */
     public KeyOf<T extends TObject<TProperties>>(schema: T, options: CustomOptions = {}): TKeyOf<ObjectPropertyKeys<T>[]> {
         const keys = Object.keys(schema.properties) as ObjectPropertyKeys<T>[]
         return {...options, kind: KeyOfKind, type: 'string', enum: keys }
-    }
-
-    /** `STANDARD` Creates an intersection schema of the given object schemas. */
-    public Intersect<T extends TObject<TProperties>[]>(items: [...T], options: CustomOptions = {}): TObject<IntersectObjectArray<T>> {
-        const type                 = 'object'
-        const additionalProperties = false
-        const properties           = items.reduce((acc, object) => ({ ...acc, ...object['properties'] }), {} as IntersectObjectArray<T>)
-        const required             = items.reduce((acc, object) => object['required'] ? [ ...acc, ...object['required'] ] : acc, [] as string[])
-        return { ...options, type, kind: ObjectKind, additionalProperties, properties, required: [...new Set(required)] }
     }
 
     /** `STANDARD` Make all properties in schema object required. */
