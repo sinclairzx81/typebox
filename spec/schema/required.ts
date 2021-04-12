@@ -29,4 +29,15 @@ describe('Required', () => {
         strictEqual(U.properties.z.modifier, undefined)
         strictEqual(U.properties.w.modifier, undefined)
     })
+
+    it('Options', () => {
+        const Partial = Type.Object({
+            x: Type.Optional(Type.Number()),
+            y: Type.Optional(Type.Number()),
+            z: Type.Optional(Type.Number())
+        }, { title: 'Partial' })
+        const Required = Type.Required(Partial, { title: 'Required' })
+        strictEqual(Partial.title, 'Partial')
+        strictEqual(Required.title, 'Required')
+    })
 })

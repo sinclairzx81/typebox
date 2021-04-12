@@ -399,7 +399,7 @@ export class TypeBuilder {
 
     /** `STANDARD` Make all properties in schema object required. */
     public Required<T extends TObject<TProperties>>(schema: T, options: CustomOptions = {}): TObject<TRequired<T['properties']>> {
-        const next = { ...options, ...clone(schema) }
+        const next = { ...clone(schema), ...options }
         next.required = Object.keys(next.properties)
         for(const key of Object.keys(next.properties)) {
             const property = next.properties[key]
@@ -415,7 +415,7 @@ export class TypeBuilder {
 
     /** `STANDARD`  Make all properties in schema object optional. */
     public Partial<T extends TObject<TProperties>>(schema: T, options: CustomOptions = {}): TObject<TPartial<T['properties']>> {
-        const next = { ...options, ...clone(schema) }
+        const next = { ...clone(schema), ...options }
         delete next.required
         for(const key of Object.keys(next.properties)) {
             const property = next.properties[key]
@@ -431,7 +431,7 @@ export class TypeBuilder {
 
     /** `STANDARD` Picks property keys from the given object schema. */
     public Pick<T extends TObject<TProperties>, K extends PropertyKeys<T['properties']>[]>(schema: T, keys: [...K], options: CustomOptions = {}): TObject<Pick<T['properties'], K[number]>> {
-        const next = { ...options, ...clone(schema) }
+        const next = { ...clone(schema), ...options }
         next.required = next.required ? next.required.filter((key: string) => keys.includes(key)) : undefined
         for(const key of Object.keys(next.properties)) {
             if(!keys.includes(key)) delete next.properties[key]
@@ -441,7 +441,7 @@ export class TypeBuilder {
     
     /** `STANDARD` Omits property keys from the given object schema. */
     public Omit<T extends TObject<TProperties>, K extends PropertyKeys<T['properties']>[]>(schema: T, keys: [...K], options: CustomOptions = {}): TObject<Omit<T['properties'], K[number]>> {
-        const next = { ...options, ...clone(schema) }
+        const next = { ...clone(schema), ...options }
         next.required = next.required ? next.required.filter((key: string) => !keys.includes(key)) : undefined
         for(const key of Object.keys(next.properties)) {
             if(keys.includes(key)) delete next.properties[key]
