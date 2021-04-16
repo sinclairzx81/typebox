@@ -58,6 +58,7 @@ export const BooleanKind   = Symbol('BooleanKind')
 export const NullKind      = Symbol('NullKind')
 export const UnknownKind   = Symbol('UnknownKind')
 export const AnyKind       = Symbol('AnyKind')
+export const ConstKind     = Symbol('ConstKind')
 
 export interface CustomOptions {
     title?: string
@@ -121,6 +122,7 @@ export type TBoolean                           = { kind: typeof BooleanKind, typ
 export type TNull                              = { kind: typeof NullKind, type: 'null' } & CustomOptions
 export type TUnknown                           = { kind: typeof UnknownKind } & CustomOptions
 export type TAny                               = { kind: typeof AnyKind } & CustomOptions
+export type TConst     <T extends TValue>      = { kind: typeof ConstKind, 'const': T } & CustomOptions
 
 // ------------------------------------------------------------------------
 // Schema Extended
@@ -157,6 +159,7 @@ export type TSchema =
     | TNull
     | TUnknown
     | TAny
+    | TConst<any>
     | TConstructor<any[], any>
     | TFunction<any[], any>
     | TPromise<any>
@@ -229,6 +232,7 @@ export type Static<T> =
     T extends TNull                          ? null                    :
     T extends TUnknown                       ? unknown                 :
     T extends TAny                           ? any                     :
+    T extends TConst<infer C>                ? C                       :
     T extends TConstructor<infer U, infer R> ? StaticConstructor<U, R> :
     T extends TFunction<infer U, infer R>    ? StaticFunction<U, R>    :
     T extends TPromise<infer U>              ? StaticPromise<U>        :
@@ -389,6 +393,11 @@ export class TypeBuilder {
     /** `STANDARD` Creates an `any` schema. */
     public Any(options: CustomOptions = {}): TAny {
         return { ...options, kind: AnyKind }
+    }
+
+    /** `STANDARD` Creates a `const` schema. */
+    public Const<T extends TValue>(value: T, options: CustomOptions = {}): TConst<T> {
+        return { ...options, kind: ConstKind, 'const': value }
     }
     
     /** `STANDARD` Creates a `keyof` schema. */
