@@ -67,7 +67,7 @@ describe('Ref', () => {
     type Node = Static<typeof Node>;
     const Node: TNode = Type.Object({
       name: Type.String(),
-      children: Type.Array(Type.Ref<TNode>('node'))
+      children: Type.Array(Type.Ref(() => Node))
     }, {
       $id: 'node'
     })
@@ -125,7 +125,7 @@ describe('Ref', () => {
       operands: Type.Array(
         Type.Union([
           Operand,
-          Type.Ref<TCondition>('condition')
+          Type.Ref(() => Condition)
         ])
       )
     }, {

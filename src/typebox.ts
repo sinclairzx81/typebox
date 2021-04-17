@@ -307,10 +307,21 @@ export class TypeBuilder {
     }
 
     /** `STANDARD` Creates a `$ref` schema. */
-    public Ref<T extends TSchema>(ref: T | string, options: CustomOptions = {}): TRef<T> {
-        const id = typeof ref !== 'string' ? ref.$id : ref;
-        if (!id) throw new Error('Referenced schema $id is missing')
-        return { ...options, kind: RefKind, $ref: id }
+    public Ref<T extends TSchema>(ref: T | (() => T), options: CustomOptions = {}): TRef<T> {
+        if (typeof ref === 'function') {
+            return Object.defineProperty({ ...options, kind: RefKind }, '$ref', {
+                enumerable: true,
+                get() {
+                    const id = ref().$id
+                    if (!id) throw new Error('Referenced schema $id is missing')
+                    return id
+                }
+            })
+        } else {
+            const id = ref.$id;
+            if (!id) throw new Error('Referenced schema $id is missing')
+            return { ...options, kind: RefKind, $ref: id }
+        }
     }
 
     /** `STANDARD` Creates a `{ [key: string]: T }` schema. */
