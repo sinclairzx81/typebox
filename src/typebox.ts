@@ -125,6 +125,7 @@ export type TNull                               = { kind: typeof NullKind, type:
 export type TUnknown                            = { kind: typeof UnknownKind } & CustomOptions
 export type TAny                                = { kind: typeof AnyKind } & CustomOptions
 
+
 // ------------------------------------------------------------------------
 // Schema Extended
 // ------------------------------------------------------------------------
@@ -244,20 +245,27 @@ export type Static<T> =
     never
 
 // ------------------------------------------------------------------------
-// Clone
+// Utility
 // ------------------------------------------------------------------------
 
+function isObject(object: any) {
+    return typeof object === 'object' && object !== null && !Array.isArray(object)
+}
+
+function isArray(object: any) {
+    return typeof object === 'object' && object !== null && Array.isArray(object)
+}
+
 function clone(object: any): any {
-    if(typeof object === 'object' && !Array.isArray(object)) {
-        return Object.keys(object).reduce((acc, key) => {
-            acc[key] = clone(object[key])
-            return acc
-        }, {} as any)
-    } else if(typeof object === 'object' && Array.isArray(object)) {
-        return object.map((item: any) => clone(item))
-    } else {
-        return object
-    }
+    if(isObject(object)) return Object.keys(object).reduce<any>((acc, key) => ({...acc, [key]: clone(object[key]) }), {})
+    if(isArray(object)) return object.map((item: any) => clone(item))
+    return object
+}
+
+function distinct(keys: string[]): string[] {
+    return Object.keys(keys.reduce((acc, key) => {
+        return { ...acc, [key]: null }
+    }, {}))
 }
 
 // ------------------------------------------------------------------------
@@ -306,22 +314,20 @@ export class TypeBuilder {
             { ...options, kind: ObjectKind, type: 'object', additionalProperties, properties }
     }
 
-    /** `STANDARD` Creates a `$ref` schema. */
-    public Ref<T extends TSchema>(ref: T | (() => T), options: CustomOptions = {}): TRef<T> {
-        if (typeof ref === 'function') {
-            return Object.defineProperty({ ...options, kind: RefKind }, '$ref', {
-                enumerable: true,
-                get() {
-                    const id = ref().$id
-                    if (!id) throw new Error('Referenced schema $id is missing')
-                    return id
-                }
-            })
-        } else {
-            const id = ref.$id;
-            if (!id) throw new Error('Referenced schema $id is missing')
-            return { ...options, kind: RefKind, $ref: id }
-        }
+    /** `STANDARD` Creates an intersection schema of the given object schemas. */
+    public Intersect<T extends TObject<TProperties>[]>(items: [...T], options: CustomOptions = {}): TObject<IntersectObjectArray<T>> {
+        const type                 = 'object'
+        const properties           = items.reduce((acc, object) => ({ ...acc, ...object['properties'] }), {} as IntersectObjectArray<T>)
+        const required             = distinct(items.reduce((acc, object) => object['required'] ? [ ...acc, ...object['required'] ] : acc, [] as string[]))
+        const additionalProperties = false
+        return (required.length > 0)
+            ? { ...options, type, kind: ObjectKind, additionalProperties, properties, required }
+            : { ...options, type, kind: ObjectKind, additionalProperties, properties }
+    }
+    
+    /** `STANDARD` Creates a Union schema. */
+    public Union<T extends TSchema[]>(items: [...T], options: CustomOptions = {}): TUnion<T> {
+        return { ...options, kind: UnionKind, anyOf: items }
     }
 
     /** `STANDARD` Creates a `{ [key: string]: T }` schema. */
@@ -338,12 +344,19 @@ export class TypeBuilder {
     /** `STANDARD` Creates an `Enum<T>` schema from a TypeScript `enum` definition. */
     public Enum<T extends TEnumType>(item: T, options: CustomOptions = {}): TEnum<T[keyof T]> {
         const values = Object.keys(item).filter(key => isNaN(key as any)).map(key => item[key]) as T[keyof T][]
-        return { ...options, kind: EnumKind, enum: values }
+        if (values.length === 0) {
+            return { ...options, kind: EnumKind, enum: values }
+        }
+        const type = typeof values[0] as 'string' | 'number'
+        if (values.some(value => typeof value !== type)) {
+            return { ...options, kind: EnumKind, type: ['string', 'number'], enum: values }
+        }
+        return { ...options, kind: EnumKind, type, enum: values }
     }
 
     /** `STANDARD` Creates a literal schema. Supports `string | number | boolean` values. */
     public Literal<T extends TValue>(value: T, options: CustomOptions = {}): TLiteral<T> {
-        return { ...options, kind: LiteralKind, const: value }
+        return { ...options, kind: LiteralKind, const: value, type: typeof value as 'string' | 'number' | 'boolean' }
     }
 
     /** `STANDARD` Creates a `string` schema. */
@@ -385,30 +398,16 @@ export class TypeBuilder {
     public Any(options: CustomOptions = {}): TAny {
         return { ...options, kind: AnyKind }
     }
-
-    /** `STANDARD` Creates a Union schema. */
-    public Union<T extends TSchema[]>(items: [...T], options: CustomOptions = {}): TUnion<T> {
-        return { ...options, kind: UnionKind, anyOf: items }
-    }
     
     /** `STANDARD` Creates a `keyof` schema. */
     public KeyOf<T extends TObject<TProperties>>(schema: T, options: CustomOptions = {}): TKeyOf<ObjectPropertyKeys<T>[]> {
         const keys = Object.keys(schema.properties) as ObjectPropertyKeys<T>[]
-        return {...options, kind: KeyOfKind, enum: keys }
-    }
-
-    /** `STANDARD` Creates an intersection schema of the given object schemas. */
-    public Intersect<T extends TObject<TProperties>[]>(items: [...T], options: CustomOptions = {}): TObject<IntersectObjectArray<T>> {
-        const type                 = 'object'
-        const additionalProperties = false
-        const properties           = items.reduce((acc, object) => ({ ...acc, ...object['properties'] }), {} as IntersectObjectArray<T>)
-        const required             = items.reduce((acc, object) => object['required'] ? [ ...acc, ...object['required'] ] : acc, [] as string[])
-        return { ...options, type, kind: ObjectKind, additionalProperties, properties, required }
+        return {...options, kind: KeyOfKind, type: 'string', enum: keys }
     }
 
     /** `STANDARD` Make all properties in schema object required. */
     public Required<T extends TObject<TProperties>>(schema: T, options: CustomOptions = {}): TObject<TRequired<T['properties']>> {
-        const next = { ...options, ...clone(schema) }
+        const next = { ...clone(schema), ...options }
         next.required = Object.keys(next.properties)
         for(const key of Object.keys(next.properties)) {
             const property = next.properties[key]
@@ -424,7 +423,7 @@ export class TypeBuilder {
 
     /** `STANDARD`  Make all properties in schema object optional. */
     public Partial<T extends TObject<TProperties>>(schema: T, options: CustomOptions = {}): TObject<TPartial<T['properties']>> {
-        const next = { ...options, ...clone(schema) }
+        const next = { ...clone(schema), ...options }
         delete next.required
         for(const key of Object.keys(next.properties)) {
             const property = next.properties[key]
@@ -440,7 +439,7 @@ export class TypeBuilder {
 
     /** `STANDARD` Picks property keys from the given object schema. */
     public Pick<T extends TObject<TProperties>, K extends PropertyKeys<T['properties']>[]>(schema: T, keys: [...K], options: CustomOptions = {}): TObject<Pick<T['properties'], K[number]>> {
-        const next = { ...options, ...clone(schema) }
+        const next = { ...clone(schema), ...options }
         next.required = next.required ? next.required.filter((key: string) => keys.includes(key)) : undefined
         for(const key of Object.keys(next.properties)) {
             if(!keys.includes(key)) delete next.properties[key]
@@ -450,7 +449,7 @@ export class TypeBuilder {
     
     /** `STANDARD` Omits property keys from the given object schema. */
     public Omit<T extends TObject<TProperties>, K extends PropertyKeys<T['properties']>[]>(schema: T, keys: [...K], options: CustomOptions = {}): TObject<Omit<T['properties'], K[number]>> {
-        const next = { ...options, ...clone(schema) }
+        const next = { ...clone(schema), ...options }
         next.required = next.required ? next.required.filter((key: string) => !keys.includes(key)) : undefined
         for(const key of Object.keys(next.properties)) {
             if(keys.includes(key)) delete next.properties[key]
@@ -486,6 +485,24 @@ export class TypeBuilder {
     /** `EXTENDED` Creates a `void` schema. */
     public Void(options: CustomOptions = {}): TVoid {
         return { ...options, type: 'void', kind: VoidKind }
+    }
+
+    /** `EXPERIMENTAL` Creates a `$ref` schema. */
+    public Ref<T extends TSchema>(ref: T | (() => T), options: CustomOptions = {}): TRef<T> {
+        if (typeof ref === 'function') {
+            return Object.defineProperty({ ...options, kind: RefKind }, '$ref', {
+                enumerable: true,
+                get() {
+                    const id = ref().$id
+                    if (!id) throw new Error('Referenced schema $id is missing')
+                    return id
+                }
+            })
+        } else {
+            const id = ref.$id;
+            if (!id) throw new Error('Referenced schema $id is missing')
+            return { ...options, kind: RefKind, $ref: id }
+        }
     }
 }
 
