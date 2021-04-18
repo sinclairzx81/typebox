@@ -237,7 +237,7 @@ export type Static<T> =
     T extends TNull                          ? null                    :
     T extends TUnknown                       ? unknown                 :
     T extends TAny                           ? any                     :
-    T extends TConstructor<infer U, infer R> ? StaticConstructor<U, R> :
+    T extends TConstructor<infer U, infer R> ? StaticFunction<U, R> :
     T extends TFunction<infer U, infer R>    ? StaticFunction<U, R>    :
     T extends TPromise<infer U>              ? StaticPromise<U>        :
     T extends TUndefined                     ? undefined               :
