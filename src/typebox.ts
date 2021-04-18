@@ -215,9 +215,16 @@ export type StaticDict        <T extends TSchema>              = { [key: string]
 export type StaticArray       <T extends TSchema>              = Array<Static<T>>
 export type StaticLiteral     <T extends TValue>               = T
 export type StaticEnum        <T extends TKey>                 = T
-// @ts-ignore
-export type StaticConstructor <T extends readonly TSchema[], U extends TSchema> = new (...args: [...{ [K in keyof T]: Static<T[K]> }]) => Static<U>
-export type StaticFunction    <T extends readonly TSchema[], U extends TSchema> = (...args: [...{ [K in keyof T]: Static<T[K]> }]) => Static<U>
+export type StaticArgs        <T extends readonly TSchema[]> =
+    T extends [] ? [] :
+    T extends [infer A1] ? [ Static<A1> ] :
+    T extends [infer A1, infer A2] ? [ Static<A1>, Static<A2> ] :
+    T extends [infer A1, infer A2, infer A3] ? [ Static<A1>, Static<A2>, Static<A3> ] :
+    T extends [infer A1, infer A2, infer A3, infer A4] ? [ Static<A1>, Static<A2>, Static<A3>, Static<A4> ] :
+    T extends [infer A1, infer A2, infer A3, infer A4, infer A5] ? [ Static<A1>, Static<A2>, Static<A3>, Static<A4>, Static<A5> ] :
+    never
+export type StaticConstructor <T extends readonly TSchema[], U extends TSchema> = new (...args: StaticArgs<T>) => Static<U>
+export type StaticFunction    <T extends readonly TSchema[], U extends TSchema> = (...args: StaticArgs<T>) => Static<U>
 export type StaticPromise     <T extends TSchema>             = Promise<Static<T>>
 
 export type Static<T> =
@@ -237,7 +244,7 @@ export type Static<T> =
     T extends TNull                          ? null                    :
     T extends TUnknown                       ? unknown                 :
     T extends TAny                           ? any                     :
-    T extends TConstructor<infer U, infer R> ? StaticFunction<U, R> :
+    T extends TConstructor<infer U, infer R> ? StaticConstructor<U, R> :
     T extends TFunction<infer U, infer R>    ? StaticFunction<U, R>    :
     T extends TPromise<infer U>              ? StaticPromise<U>        :
     T extends TUndefined                     ? undefined               :
