@@ -189,14 +189,15 @@ export type TPartial<T extends TProperties> = {
 export type UnionToIntersect<U>     = (U extends any ? (k: U) => void : never) extends ((k: infer I) => void) ? I : never
 export type IntersectObjectArray<T> = T extends Array<TObject<infer U>> ? UnionToIntersect<U> : TProperties
 
-export type ReduceModifiers              <T extends object> = { [K in keyof T]: T[K] }
+
 export type ObjectPropertyKeys           <T> = T extends TObject<infer U> ? PropertyKeys<U> : never
 export type PropertyKeys                 <T extends TProperties> = keyof T
 export type ReadonlyOptionalPropertyKeys <T extends TProperties> = { [K in keyof T]: T[K] extends TReadonlyOptional<infer U> ? K : never }[keyof T]
 export type ReadonlyPropertyKeys         <T extends TProperties> = { [K in keyof T]: T[K] extends TReadonly<infer U> ? K : never }[keyof T]
 export type OptionalPropertyKeys         <T extends TProperties> = { [K in keyof T]: T[K] extends TOptional<infer U> ? K : never }[keyof T]
 export type RequiredPropertyKeys         <T extends TProperties> = keyof Omit<T, ReadonlyOptionalPropertyKeys<T> | ReadonlyPropertyKeys<T> | OptionalPropertyKeys<T>>
-export type StaticProperties<T extends TProperties> =
+export type ReduceModifiers              <T extends object> = { [K in keyof T]: T[K] }
+export type StaticModifiers<T extends TProperties> =
     { readonly [K in ReadonlyOptionalPropertyKeys<T>]?: Static<T[K]> } &
     { readonly [K in ReadonlyPropertyKeys<T>]:          Static<T[K]> } &
     {          [K in OptionalPropertyKeys<T>]?:         Static<T[K]> } &
@@ -205,7 +206,7 @@ export type StaticProperties<T extends TProperties> =
 export type StaticKeyOf       <T extends TKey[]>               = T extends Array<infer K> ? K : never 
 export type StaticUnion       <T extends readonly TSchema[]>   = { [K in keyof T]: Static<T[K]> }[number]
 export type StaticTuple       <T extends readonly TSchema[]>   = { [K in keyof T]: Static<T[K]> }
-export type StaticObject      <T extends TProperties>          = StaticProperties<T>
+export type StaticObject      <T extends TProperties>          = ReduceModifiers<StaticModifiers<T>>
 export type StaticDict        <T extends TSchema>              = { [key: string]: Static<T> }
 export type StaticArray       <T extends TSchema>              = Array<Static<T>>
 export type StaticLiteral     <T extends TValue>               = T
@@ -218,7 +219,7 @@ export type Static<T> =
     T extends TKeyOf<infer U>                ? StaticKeyOf<U>          :    
     T extends TUnion<infer U>                ? StaticUnion<U>          :
     T extends TTuple<infer U>                ? StaticTuple<U>          :
-    T extends TObject<infer U>               ? ReduceModifiers<StaticObject<U>> :
+    T extends TObject<infer U>               ? StaticObject<U>         :
     T extends TDict<infer U>                 ? StaticDict<U>           :
     T extends TArray<infer U>                ? StaticArray<U>          :
     T extends TEnum<infer U>                 ? StaticEnum<U>           :
@@ -482,3 +483,4 @@ export class TypeBuilder {
 }
 
 export const Type = new TypeBuilder()
+
