@@ -189,6 +189,7 @@ export type TPartial<T extends TProperties> = {
 export type UnionToIntersect<U>     = (U extends any ? (k: U) => void : never) extends ((k: infer I) => void) ? I : never
 export type IntersectObjectArray<T> = T extends Array<TObject<infer U>> ? UnionToIntersect<U> : TProperties
 
+export type ReduceModifiers              <T extends object> = { [K in keyof T]: T[K] }
 export type ObjectPropertyKeys           <T> = T extends TObject<infer U> ? PropertyKeys<U> : never
 export type PropertyKeys                 <T extends TProperties> = keyof T
 export type ReadonlyOptionalPropertyKeys <T extends TProperties> = { [K in keyof T]: T[K] extends TReadonlyOptional<infer U> ? K : never }[keyof T]
@@ -217,7 +218,7 @@ export type Static<T> =
     T extends TKeyOf<infer U>                ? StaticKeyOf<U>          :    
     T extends TUnion<infer U>                ? StaticUnion<U>          :
     T extends TTuple<infer U>                ? StaticTuple<U>          :
-    T extends TObject<infer U>               ? StaticObject<U>         :
+    T extends TObject<infer U>               ? ReduceModifiers<StaticObject<U>> :
     T extends TDict<infer U>                 ? StaticDict<U>           :
     T extends TArray<infer U>                ? StaticArray<U>          :
     T extends TEnum<infer U>                 ? StaticEnum<U>           :
