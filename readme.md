@@ -6,17 +6,11 @@
 
 [![npm version](https://badge.fury.io/js/%40sinclair%2Ftypebox.svg)](https://badge.fury.io/js/%40sinclair%2Ftypebox) [![GitHub CI](https://github.com/sinclairzx81/typebox/workflows/GitHub%20CI/badge.svg)](https://github.com/sinclairzx81/typebox/actions)
 
+<img src="./docs/render.png" />
+
 </div>
 
-## Example
 
-```typescript
-import { Static, Type } from '@sinclair/typebox'
-
-const T = Type.String() /* const T = { "type": "string" } */
-
-type T = Static<typeof T> /* type T = string */
-```
 
 <a name="Install"></a>
 
@@ -24,6 +18,16 @@ type T = Static<typeof T> /* type T = string */
 
 ```bash
 $ npm install @sinclair/typebox --save
+```
+
+## Usage
+
+```typescript
+import { Static, Type } from '@sinclair/typebox'
+
+const T = Type.String()   // const T = { "type": "string" }
+
+type T = Static<typeof T> // type T = string
 ```
 
 <a name="Overview"></a>
