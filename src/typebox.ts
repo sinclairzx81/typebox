@@ -101,13 +101,17 @@ export type DictOptions = {
     maxProperties?: number
 } & CustomOptions
 
+export type ObjectOptions = {
+    additionalProperties?: boolean
+} & CustomOptions
+
 export type TEnumType = Record<string, string | number>
 export type TKey      = string | number | symbol
 export type TValue    = string | number | boolean
 
 export type TProperties                        = { [key: string]: TSchema }
 export type TTuple     <T extends TSchema[]>   = { kind: typeof TupleKind, type: 'array', items: [...T], additionalItems: false, minItems: number, maxItems: number } & CustomOptions
-export type TObject    <T extends TProperties> = { kind: typeof ObjectKind, type: 'object', additionalProperties: false, properties: T, required?: string[] } & CustomOptions
+export type TObject    <T extends TProperties> = { kind: typeof ObjectKind, type: 'object',properties: T, required?: string[] } & ObjectOptions
 export type TUnion     <T extends TSchema[]>   = { kind: typeof UnionKind, anyOf: [...T] } & CustomOptions
 export type TKeyOf     <T extends TKey[]>      = { kind: typeof KeyOfKind, type: 'string', enum: [...T] } & CustomOptions
 export type TDict      <T extends TSchema>     = { kind: typeof DictKind, type: 'object', additionalProperties: T } & DictOptions
@@ -292,7 +296,7 @@ export class TypeBuilder {
     }
 
     /** `STANDARD` Creates a `object` schema with the given properties. */
-    public Object<T extends TProperties>(properties: T, options: CustomOptions = {}): TObject<T> {
+    public Object<T extends TProperties>(properties: T, options: ObjectOptions = {}): TObject<T> {
         const property_names = Object.keys(properties)
         const optional = property_names.filter(name => {
             const candidate = properties[name] as TModifier
@@ -302,21 +306,19 @@ export class TypeBuilder {
         })
         const required_names = property_names.filter(name => !optional.includes(name))
         const required = (required_names.length > 0) ? required_names : undefined
-        const additionalProperties = false
         return (required) ? 
-            { ...options, kind: ObjectKind, type: 'object', additionalProperties, properties, required } : 
-            { ...options, kind: ObjectKind, type: 'object', additionalProperties, properties }
+            { ...options, kind: ObjectKind, type: 'object', properties, required } : 
+            { ...options, kind: ObjectKind, type: 'object', properties }
     }
 
     /** `STANDARD` Creates an intersection schema of the given object schemas. */
-    public Intersect<T extends TObject<TProperties>[]>(items: [...T], options: CustomOptions = {}): TObject<IntersectObjectArray<T>> {
+    public Intersect<T extends TObject<TProperties>[]>(items: [...T], options: ObjectOptions = {}): TObject<IntersectObjectArray<T>> {
         const type                 = 'object'
         const properties           = items.reduce((acc, object) => ({ ...acc, ...object['properties'] }), {} as IntersectObjectArray<T>)
         const required             = distinct(items.reduce((acc, object) => object['required'] ? [ ...acc, ...object['required'] ] : acc, [] as string[]))
-        const additionalProperties = false
         return (required.length > 0)
-            ? { ...options, type, kind: ObjectKind, additionalProperties, properties, required }
-            : { ...options, type, kind: ObjectKind, additionalProperties, properties }
+            ? { ...options, type, kind: ObjectKind, properties, required }
+            : { ...options, type, kind: ObjectKind, properties }
     }
     
     /** `STANDARD` Creates a Union schema. */
