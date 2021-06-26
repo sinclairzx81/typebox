@@ -47,6 +47,7 @@ License MIT
 - [Types](#Types)
 - [Modifiers](#Modifiers)
 - [Options](#Options)
+- [Additional Properties](#AdditionalProperties)
 - [Strict](#Strict)
 - [Extended Types](#Extended-Types)
 - [Interfaces](#Interfaces)
@@ -202,17 +203,16 @@ The following table outlines the TypeBox mappings between TypeScript and JSON sc
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Object({        │ type T = {                  │ const T = {                    │
 │   x: Type.Number(),            │    x: number,               │   type: 'object',              │
-│   y: Type.Number()             │    y: number                │   additionalProperties: false, │
-│ })                             │ }                           │   properties: {                │
-│                                │                             │      x: {                      │
-│   	                         │                             │        type: 'number'          │
+│   y: Type.Number()             │    y: number                │   properties: {                │
+│ })                             │ }                           │      x: {                      │
+│                                │                             │        type: 'number'          │
 │   	                         │                             │      },                        │
 │   	                         │                             │      y: {                      │
-│                                │                             │        type: 'number'          │
-│   	                         │                             │      }                         │
+│   	                         │                             │        type: 'number'          │
+│                                │                             │      }                         │
 │   	                         │                             │   },                           │
-│                                │                             │   required: ['x', 'y']         │
-│   	                         │                             │ }                              │
+│   	                         │                             │   required: ['x', 'y']         │
+│                                │                             │ }                              │
 │   	                         │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Tuple([         │ type T = [number, number]   │ const T = {                    │
@@ -256,18 +256,18 @@ The following table outlines the TypeBox mappings between TypeScript and JSON sc
 │   	                         │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Intersect([     │ type T = {                  │ const T = {                    │
-│    Type.Object({               │    x: number                │   type: 'object',              │
-│       x: Type.Number()         │ } & {                       │   additionalProperties: false, │
-│    }),                         │    y: number                │   properties: {                │
-│    Type.Object({               │ }                           │     x: {                       │
-│       y: Type.Number()         │                             │        type: 'number'          │
-│   })                           │                             │     },                         │
-│ })                             │                             │     y: {                       │
-│                                │                             │        type: 'number'          │
-│                                │                             │     }                          │
-│                                │                             │   },                           │
-│                                │                             │   required: ['x', 'y']         │
+│    Type.Object({               │    x: number                │    type: 'object',             │
+│       x: Type.Number()         │ } & {                       │    properties: {               │
+│    }),                         │    y: number                │      x: {                      │
+│    Type.Object({               │ }                           │        type: 'number'          │
+│       y: Type.Number()         │                             │      },                        │
+│   })                           │                             │      y: {                      │
+│ })                             │                             │        type: 'number'          │
+│                                │                             │      }                         │
+│                                │                             │    },                          │
+│                                │                             │    required: ['x', 'y']        │
 │                                │                             │ }                              │
+│                                │                             │                                │
 │   	                         │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Partial(        │ type T = Partial<{          │ const T = {                    │
@@ -379,6 +379,40 @@ const T = Type.Number({ multipleOf: 2 })
 
 // array must have at least 5 integer values
 const T = Type.Array(Type.Integer(), { minItems: 5 })
+```
+
+<a name="AdditionalProperties"></a>
+
+### Additional Properties
+
+By default, schemas created with `Type.Object({...})` and `Type.Intersect([...])` are permissive of additional properties. This is inline with TypeScript's behaviour with respect to structural and polymorphic types as well as JSON schema rules around applying additive constraints (which aligns to a form of downstream polymorphism for the schema). This is quite a subtle concept, but consider the following where one might assume that the additional property `c` would raise a static assertion error.
+
+#### TypeScript
+
+```typescript
+type T = { a: number, b: number }
+
+function run(data: T) { }
+
+const data = { a: 10, b: 10, c: 20 } as const // 'c' is an additional property
+
+run(data) // this is fine
+```
+
+#### TypeBox
+
+```typescript
+const T = Type.Object({ a: Type.Number(), b: Type.Number() })
+
+function run(data: Static<typeof T>) { }
+
+const data = { a: 10, b: 10, c: 20 } as const // 'c' is an additional property
+
+run(data) // this is fine
+```
+TypeBox aligns with TypeScript and JSON Schema semantics in this regard, however this may be undesirable for data received over the wire. You can disallow additional properties by applying the standard `additionalProperties` property as an option to the schema.
+```typescript
+const T = Type.Object({ a: Type.Number(), b: Type.Number() }, { additionalProperties: false })
 ```
 
 <a name="Strict"></a>
