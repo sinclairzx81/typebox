@@ -409,10 +409,9 @@ const U = Type.Strict(T)                // const U = {
 
 ### Reference Types
 
-It's common to want to group related schemas together under a common shared namespace. This is usually handled via `$id` and `$ref` in JSON schema. TypeBox provides rudimentary support for this using the `Type.Box(...)` and `Type.Ref(...)` methods. The `Type.Box(...)` method allows one to register a collection of related schemas under a common `$id` or namespace, and `Type.Ref(...)` allows for referencing into the box.
+It's common to want to group related schemas together under a common shared namespace. This is typically handled via `$id` and `$ref` properties in JSON schema. TypeBox provides rudimentary support for this using the `Type.Box(...)` and `Type.Ref(...)` methods. The `Type.Box(...)` method allows one to register a collection of related schemas under a common `$id` or namespace, and `Type.Ref(...)` allows for referencing into the box. The following demonstrates the usage for a set of `Math3D` types.
 
 ```typescript
-
 const Vector2 = Type.Object({ x: Type.Number(), y: Type.Number() })
 const Vector3 = Type.Object({ x: Type.Number(), y: Type.Number(), z: Type.Number() })
 const Vector4 = Type.Object({ x: Type.Number(), y: Type.Number(), z: Type.Number(), w: Type.Number() })
@@ -460,7 +459,7 @@ const Math3D = {
   }
 }
 ```
-And the `Vertex` type is expressed as.
+And the `Vertex` is expressed as.
 ```typescript
 const Vertex = {
   type: "object",
