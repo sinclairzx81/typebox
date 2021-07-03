@@ -470,7 +470,7 @@ const Math3D = Type.Box('math3d', {           //  const Math3D = {
                                               //          x: { 'type': 'number' },
                                               //          y: { 'type': 'number' },
                                               //        },
-                                              //        required: ['x', 'y', 'z', 'w']
+                                              //        required: ['x', 'y']
                                               //      }
                                               //    }
                                               //  }
