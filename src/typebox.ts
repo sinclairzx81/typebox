@@ -208,7 +208,6 @@ export type StaticModifiers<T extends TProperties> =
     {          [K in OptionalPropertyKeys<T>]?:         Static<T[K]> } &
     {          [K in RequiredPropertyKeys<T>]:          Static<T[K]> }
 
-export type StaticRef         <T extends TSchema>              = Static<T>
 export type StaticKeyOf       <T extends TKey[]>               = T extends Array<infer K> ? K : never 
 export type StaticUnion       <T extends readonly TSchema[]>   = { [K in keyof T]: Static<T[K]> }[number]
 export type StaticTuple       <T extends readonly TSchema[]>   = { [K in keyof T]: Static<T[K]> }
@@ -315,9 +314,9 @@ export class TypeBuilder {
 
     /** `STANDARD` Creates an intersection schema of the given object schemas. */
     public Intersect<T extends TObject<TProperties>[]>(items: [...T], options: ObjectOptions = {}): TObject<IntersectObjectArray<T>> {
-        const type        = 'object'
-        const properties  = items.reduce((acc, object) => ({ ...acc, ...object['properties'] }), {} as IntersectObjectArray<T>)
-        const required    = distinct(items.reduce((acc, object) => object['required'] ? [ ...acc, ...object['required'] ] : acc, [] as string[]))
+        const type       = 'object'
+        const properties = items.reduce((acc, object) => ({ ...acc, ...object['properties'] }), {} as IntersectObjectArray<T>)
+        const required   = distinct(items.reduce((acc, object) => object['required'] ? [ ...acc, ...object['required'] ] : acc, [] as string[]))
         return (required.length > 0)
             ? { ...options, type, kind: ObjectKind, properties, required }
             : { ...options, type, kind: ObjectKind, properties }
@@ -485,12 +484,12 @@ export class TypeBuilder {
         return { ...options, type: 'void', kind: VoidKind }
     }
 
-    /** `EXPERIMENTAL` Creates a box of schema definitions. */
+    /** `EXPERIMENTAL` Creates a container for schema definitions. */
     public Box<T extends TDefinitions>($id: string, definitions: T): TBox<T> {
         return { kind: BoxKind, $id, definitions }
     }
     
-    /** `EXPERIMENTAL` References a type within a box of definitions. */
+    /** `EXPERIMENTAL` References a schema within a box. */
     public Ref<T extends TBox<TDefinitions>, K extends keyof T['definitions']>(box: T, key: K): T['definitions'][K] {
         return { $ref: `${box.$id}#/definitions/${key as string}` } as any // facade
     }
