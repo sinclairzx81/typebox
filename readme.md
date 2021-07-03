@@ -451,7 +451,7 @@ const Math3D = Type.Box('http://app.org/math3d', { //  const Math3D = {
   }),                                              //          x: { type: 'number' },
   Vector3: Type.Object({                           //          y: { type: 'number' },
     x: Type.Number(),                              //          z: { type: 'number' },
-	y: Type.Number(),                              //          w: { type: 'number' }
+    y: Type.Number(),                              //          w: { type: 'number' }
     z: Type.Number()                               //        },
   }),                                              //        required: ['x', 'y', 'z', 'w']
   Vector2: Type.Object({                           //      },
