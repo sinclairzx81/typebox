@@ -47,9 +47,9 @@ License MIT
 - [Types](#Types)
 - [Modifiers](#Modifiers)
 - [Options](#Options)
-- [Strict](#Strict)
-- [Reference Types](#Reference-Types)
 - [Extended Types](#Extended-Types)
+- [Reference Types](#Reference-Types)
+- [Strict](#Strict)
 - [Interfaces](#Interfaces)
 - [Validation](#Validation)
 
@@ -377,101 +377,6 @@ const T = Type.Number({ multipleOf: 2 })
 const T = Type.Array(Type.Integer(), { minItems: 5 })
 ```
 
-<a name="Strict"></a>
-
-### Strict
-
-TypeBox includes the properties `kind` and `modifier` on each underlying schema. These properties are used to help TypeBox statically resolve the schemas to the appropriate TypeScript type as well as apply the appropriate modifiers to an objects properties (such as optional). These properties are not strictly valid JSON schema so in some cases it may be desirable to omit them. TypeBox provides a `Type.Strict()` function that will omit these properties if nessasary.
-
-```typescript
-const T = Type.Object({                 // const T = {
-    name: Type.Optional(Type.String())  //   kind: Symbol(ObjectKind),
-})                                      //   type: 'object',
-                                        //   properties: {
-                                        //     name: {
-                                        //       kind: Symbol(StringKind),
-                                        //       type: 'string',
-                                        //       modifier: Symbol(OptionalModifier)
-                                        //     }
-                                        //   }
-                                        // }
-
-const U = Type.Strict(T)                // const U = {
-                                        //     type: 'object', 
-                                        //     properties: { 
-                                        //         name: { 
-                                        //             type: 'string' 
-                                        //         } 
-                                        //     } 
-                                        // }
-```
-<a name="Reference-Types"></a>
-
-### Reference Types
-
-It's common to want to group related schemas together under a common shared namespace. This is typically handled via `$id` and `$ref` properties in JSON schema. TypeBox provides rudimentary support for this using the `Type.Box(...)` and `Type.Ref(...)` methods. The `Type.Box(...)` method allows one to register a collection of related schemas under a common `$id` or namespace, and `Type.Ref(...)` allows for referencing into the box. The following demonstrates the usage for a set of `Math3D` types.
-
-```typescript
-const Vector2 = Type.Object({ x: Type.Number(), y: Type.Number() })
-const Vector3 = Type.Object({ x: Type.Number(), y: Type.Number(), z: Type.Number() })
-const Vector4 = Type.Object({ x: Type.Number(), y: Type.Number(), z: Type.Number(), w: Type.Number() })
-
-const Math3D  = Type.Box('math3d', { Vector2, Vector3, Vector4 })
-
-const Vertex = Type.Object({
-    position: Type.Ref(Math3D, 'Vector4'),
-    normal:   Type.Ref(Math3D, 'Vector3'),
-    uv:       Type.Ref(Math3D, 'Vector2'),
-})
-```
-Where `Math3D` is expressed as
-```typescript
-const Math3D = {
-  $id: "math3d",
-  definitions: {
-    Vector2: {
-      type: "object",
-      properties: {
-        x: { "type": "number" },
-        y: { "type": "number" }
-      },
-      required: ["x", "y" ]
-    },
-    Vector3: {
-      type: "object",
-      properties: {
-        x: { "type": "number" },
-        y: { "type": "number" },
-        z: { "type": "number" }
-      },
-      required: ["x", "y", "z"]
-    },
-    Vector4: {
-      type: "object",
-      properties: {
-        x: { "type": "number" },
-        y: { "type": "number" },
-        z: { "type": "number" },
-        w: { "type": "number" }
-      },
-      required: ["x", "y", "z", "w"]
-    }
-  }
-}
-```
-And the `Vertex` is expressed as.
-```typescript
-const Vertex = {
-  type: "object",
-  properties: {
-    position: { $ref: "math3d#/definitions/Vector4" },
-    normal: { $ref: "math3d#/definitions/Vector3" },
-    uv: { $ref: "math3d#/definitions/Vector2" }
-  },
-  required: ["position", "normal", "uv"]
-}
-```
-> Note, the methods `Type.Partial(...)`, `Type.Required(...)`, `Type.Pick(...)` and `Type.Omit(...)` are currently not supported for referenced types. This may change in future releases where the referenced schema is copied into the dependent schema with the appropriate schema modifications applied. This project is open to community feedback on advancing this feature in future releases.
 
 <a name="Extended-Types"></a>
 
@@ -528,6 +433,86 @@ In addition to JSON schema types, TypeBox provides several extended types that a
 |                                │                             │ }                              │
 │   	                         │                             │                                │
 └────────────────────────────────┴─────────────────────────────┴────────────────────────────────┘
+```
+
+<a name="Reference-Types"></a>
+
+### Reference Types
+
+Type referencing can be useful to help reduce schema duplication when composing complex schemas. TypeBox allows for type referencing with the `Type.Box(...)` and `Type.Ref(...)` functions. The `Type.Box(...)` function creates a container for set of common related types and the `Type.Ref(...)` function allows referencing into the box. The following shows a set of common math types contained within a box, and a vertex structure that references those types.
+
+```typescript
+const Math3D = Type.Box('http://app.org/math3d', { //  const Math3D = {
+  Vector4: Type.Object({                           //    $id: 'http://app.org/math3d',
+    x: Type.Number(),                              //    definitions: {
+    y: Type.Number(),                              //      Vector4: {
+    z: Type.Number(),                              //        type: 'object',
+    w: Type.Number()                               //        properties: {
+  }),                                              //          x: { type: 'number' },
+  Vector3: Type.Object({                           //          y: { type: 'number' },
+    x: Type.Number(),                              //          z: { type: 'number' },
+	y: Type.Number(),							   //          w: { type: 'number' }
+    z: Type.Number()                               //        },
+  }),                                              //        required: ['x', 'y', 'z', 'w']
+  Vector2: Type.Object({                           //      },
+    x: Type.Number(),                              //      Vector3: {
+    y: Type.Number()                               //        type: 'object',
+  })                                               //        properties: {
+})                                                 //          x: { 'type': 'number' },
+                                                   //          y: { 'type': 'number' },
+                                                   //          z: { 'type': 'number' }
+                                                   //        },
+	                                               //        required: ['x', 'y', 'z']
+                                                   //      },
+                                                   //      Vector2: {
+                                                   //        type: 'object',
+                                                   //        properties: {
+                                                   //          x: { 'type': 'number' },
+                                                   //          y: { 'type': 'number' },
+                                                   //        },
+                                                   //        required: ['x', 'y', 'z', 'w']
+                                                   //      }
+                                                   //    }
+                                                   //  }
+													 
+const Vertex = Type.Object({                       //  const Vertex = {
+    position: Type.Ref(Math3D, 'Vector4'),         //    type: 'object',
+    normal:   Type.Ref(Math3D, 'Vector3'),         //    properties: {
+    uv:       Type.Ref(Math3D, 'Vector2'),         //      position: { $ref: 'http://app.org/math3d#/definitions/Vector4' },
+})                                                 //      normal: { $ref: 'http://app.org/math3d#/definitions/Vector3' },
+                                                   //      uv: { $ref: 'http://app.org/math3d#/definitions/Vector2' }
+												   //    },
+												   //    required: ['position', 'normal', 'uv']
+												   //  }
+```
+
+<a name="Strict"></a>
+
+### Strict
+
+TypeBox includes the properties `kind` and `modifier` on each underlying schema. These properties are used to help TypeBox statically resolve the schemas to the appropriate TypeScript type as well as apply the appropriate modifiers to an objects properties (such as optional). These properties are not strictly valid JSON schema so in some cases it may be desirable to omit them. TypeBox provides a `Type.Strict()` function that will omit these properties if nessasary.
+
+```typescript
+const T = Type.Object({                           // const T = {
+    name: Type.Optional(Type.String())            //   kind: Symbol(ObjectKind),
+})                                                //   type: 'object',
+                                                  //   properties: {
+                                                  //     name: {
+                                                  //       kind: Symbol(StringKind),
+                                                  //       type: 'string',
+                                                  //       modifier: Symbol(OptionalModifier)
+                                                  //     }
+                                                  //   }
+                                                  // }
+
+const U = Type.Strict(T)                          // const U = {
+                                                  //     type: 'object', 
+                                                  //     properties: { 
+                                                  //         name: { 
+                                                  //             type: 'string' 
+                                                  //         } 
+                                                  //     } 
+                                                  // }
 ```
 
 <a name="Interfaces"></a>
