@@ -47,8 +47,8 @@ License MIT
 - [Types](#Types)
 - [Modifiers](#Modifiers)
 - [Options](#Options)
-- [Additional Properties](#AdditionalProperties)
 - [Strict](#Strict)
+- [Reference Types](#Reference-Types)
 - [Extended Types](#Extended-Types)
 - [Interfaces](#Interfaces)
 - [Validation](#Validation)
@@ -119,12 +119,8 @@ type Record = Static<typeof Record> // type Record = {
 //
 //--------------------------------------------------------------------------------------------
 
-function receive(record: Record) { // ... as a type
-    if(JSON.validate(Record, {     // ... as a schema
-        id: '42', 
-        name: 'dave', 
-        timestamp: Date.now() 
-    })) {
+function receive(record: Record) {      // ... as a type
+    if(JSON.validate(Record, record)) { // ... as a schema
         // ok...
     }
 }
@@ -381,40 +377,6 @@ const T = Type.Number({ multipleOf: 2 })
 const T = Type.Array(Type.Integer(), { minItems: 5 })
 ```
 
-<a name="AdditionalProperties"></a>
-
-### Additional Properties
-
-By default, schemas created with `Type.Object({...})` and `Type.Intersect([...])` are permissive of additional properties. This is inline with TypeScript's behaviour with respect to structural and polymorphic types as well as JSON schema rules around applying additive constraints (which aligns to a form of downstream polymorphism for the schema). This is quite a subtle concept, but consider the following where one might assume that the additional property `c` would raise a static assertion error.
-
-#### TypeScript
-
-```typescript
-type T = { a: number, b: number }
-
-function run(data: T) { }
-
-const data = { a: 10, b: 10, c: 20 } as const // 'c' is an additional property
-
-run(data) // this is fine
-```
-
-#### TypeBox
-
-```typescript
-const T = Type.Object({ a: Type.Number(), b: Type.Number() })
-
-function run(data: Static<typeof T>) { }
-
-const data = { a: 10, b: 10, c: 20 } as const // 'c' is an additional property
-
-run(data) // this is fine
-```
-TypeBox aligns with TypeScript and JSON Schema semantics in this regard, however this may be undesirable for data received over the wire. You can disallow additional properties by applying the standard `additionalProperties` property as an option to the schema.
-```typescript
-const T = Type.Object({ a: Type.Number(), b: Type.Number() }, { additionalProperties: false })
-```
-
 <a name="Strict"></a>
 
 ### Strict
@@ -443,6 +405,73 @@ const U = Type.Strict(T)                // const U = {
                                         //     } 
                                         // }
 ```
+<a name="Reference-Types"></a>
+
+### Reference Types
+
+It's common to want to group related schemas together under a common shared namespace. This is typically handled via `$id` and `$ref` properties in JSON schema. TypeBox provides rudimentary support for this using the `Type.Box(...)` and `Type.Ref(...)` methods. The `Type.Box(...)` method allows one to register a collection of related schemas under a common `$id` or namespace, and `Type.Ref(...)` allows for referencing into the box. The following demonstrates the usage for a set of `Math3D` types.
+
+```typescript
+const Vector2 = Type.Object({ x: Type.Number(), y: Type.Number() })
+const Vector3 = Type.Object({ x: Type.Number(), y: Type.Number(), z: Type.Number() })
+const Vector4 = Type.Object({ x: Type.Number(), y: Type.Number(), z: Type.Number(), w: Type.Number() })
+
+const Math3D  = Type.Box('math3d', { Vector2, Vector3, Vector4 })
+
+const Vertex = Type.Object({
+    position: Type.Ref(Math3D, 'Vector4'),
+    normal:   Type.Ref(Math3D, 'Vector3'),
+    uv:       Type.Ref(Math3D, 'Vector2'),
+})
+```
+Where `Math3D` is expressed as
+```typescript
+const Math3D = {
+  $id: "math3d",
+  definitions: {
+    Vector2: {
+      type: "object",
+      properties: {
+        x: { "type": "number" },
+        y: { "type": "number" }
+      },
+      required: ["x", "y" ]
+    },
+    Vector3: {
+      type: "object",
+      properties: {
+        x: { "type": "number" },
+        y: { "type": "number" },
+        z: { "type": "number" }
+      },
+      required: ["x", "y", "z"]
+    },
+    Vector4: {
+      type: "object",
+      properties: {
+        x: { "type": "number" },
+        y: { "type": "number" },
+        z: { "type": "number" },
+        w: { "type": "number" }
+      },
+      required: ["x", "y", "z", "w"]
+    }
+  }
+}
+```
+And the `Vertex` is expressed as.
+```typescript
+const Vertex = {
+  type: "object",
+  properties: {
+    position: { $ref: "math3d#/definitions/Vector4" },
+    normal: { $ref: "math3d#/definitions/Vector3" },
+    uv: { $ref: "math3d#/definitions/Vector2" }
+  },
+  required: ["position", "normal", "uv"]
+}
+```
+> Note, the methods `Type.Partial(...)`, `Type.Required(...)`, `Type.Pick(...)` and `Type.Omit(...)` are currently not supported for referenced types. This may change in future releases where the referenced schema is copied into the dependent schema with the appropriate schema modifications applied. This project is open to community feedback on advancing this feature in future releases.
 
 <a name="Extended-Types"></a>
 

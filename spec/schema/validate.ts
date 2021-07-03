@@ -57,3 +57,24 @@ export function fail<T extends TSchema>(type: T, data: unknown) {
     throw Error('expected fail')
   }
 }
+
+export function createValidator() {
+  return addFormats(new Ajv(), [
+    'date-time', 
+    'time', 
+    'date', 
+    'email',  
+    'hostname', 
+    'ipv4', 
+    'ipv6', 
+    'uri', 
+    'uri-reference', 
+    'uuid',
+    'uri-template', 
+    'json-pointer', 
+    'relative-json-pointer', 
+    'regex'
+  ])
+  .addKeyword('kind')
+  .addKeyword('modifier')
+}
