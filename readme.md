@@ -48,7 +48,7 @@ License MIT
 - [Modifiers](#Modifiers)
 - [Options](#Options)
 - [Strict](#Strict)
-- [Referencing](#Referencing)
+- [Reference Types](#Reference-Types)
 - [Extended Types](#Extended-Types)
 - [Interfaces](#Interfaces)
 - [Validation](#Validation)
@@ -405,27 +405,27 @@ const U = Type.Strict(T)                // const U = {
                                         //     } 
                                         // }
 ```
-<a name="Referencing"></a>
+<a name="Reference-Types"></a>
 
-### Referencing
+### Reference Types
 
-When working with JSON schema, its common to want to group related schemas together under a common namespace. This is usually handled via JSON schema `$id` and `$ref`. TypeBox provides rudimentary support for this with `Type.Box(...)` and `Type.Ref(...)` methods. The `Type.Box(...)` method allows one to register a collection of related schemas under a common `$id` or namespace, and `Type.Ref(...)` allows for referencing into the box.
+It's common to want to group related schemas together under a common shared namespace. This is usually handled via `$id` and `$ref` in JSON schema. TypeBox provides rudimentary support for this using the `Type.Box(...)` and `Type.Ref(...)` methods. The `Type.Box(...)` method allows one to register a collection of related schemas under a common `$id` or namespace, and `Type.Ref(...)` allows for referencing into the box.
 
 ```typescript
-// Related Math Types
+
 const Vector2 = Type.Object({ x: Type.Number(), y: Type.Number() })
 const Vector3 = Type.Object({ x: Type.Number(), y: Type.Number(), z: Type.Number() })
 const Vector4 = Type.Object({ x: Type.Number(), y: Type.Number(), z: Type.Number(), w: Type.Number() })
+
 const Math3D  = Type.Box('math3d', { Vector2, Vector3, Vector4 })
 
-// Dependent Type
 const Vertex = Type.Object({
     position: Type.Ref(Math3D, 'Vector4'),
     normal:   Type.Ref(Math3D, 'Vector3'),
     uv:       Type.Ref(Math3D, 'Vector2'),
 })
 ```
-Where the box `Math3D` is expressed with the following schema.
+Where `Math3D` is expressed as
 ```typescript
 const Math3D = {
   $id: "math3d",
@@ -472,7 +472,7 @@ const Vertex = {
   required: ["position", "normal", "uv"]
 }
 ```
-> Note the methods `Type.Partial(...)`, `Type.Required(...)`, `Type.Pick(...)` and `Type.Omit(...)` are currently not supported for referenced types. This may change in future releases where the boxed schema is copied into the dependent schema with the appropriate schema modifications applied.
+> Note, the methods `Type.Partial(...)`, `Type.Required(...)`, `Type.Pick(...)` and `Type.Omit(...)` are currently not supported for referenced types. This may change in future releases where the referenced schema is copied into the dependent schema with the appropriate schema modifications applied. This project is open to community feedback on advancing this feature in future releases.
 
 <a name="Extended-Types"></a>
 
