@@ -42,8 +42,8 @@ export type TReadonly<T extends TSchema>         = T & { modifier: typeof Readon
 // ------------------------------------------------------------------------
 // Schema Standard
 // ------------------------------------------------------------------------
+
 export const BoxKind       = Symbol('BoxKind')
-export const RefKind       = Symbol('RefKind')
 export const KeyOfKind     = Symbol('KeyOfKind')
 export const UnionKind     = Symbol('UnionKind')
 export const TupleKind     = Symbol('TupleKind')
@@ -112,10 +112,9 @@ export type TValue    = string | number | boolean
 
 export type TDefinitions                        = { [key: string]: TSchema }
 export type TProperties                         = { [key: string]: TSchema }
-export type TBox       <T extends TDefinitions> = { kind: typeof BoxKind, definitions: T }
-export type TRef       <T extends TSchema>      = { kind: typeof RefKind,  key: TKey, schema: T }
+export type TBox       <T extends TDefinitions> = { kind: typeof BoxKind, $id: string, definitions: T }
 export type TTuple     <T extends TSchema[]>    = { kind: typeof TupleKind, type: 'array', items: [...T], additionalItems: false, minItems: number, maxItems: number } & CustomOptions
-export type TObject    <T extends TProperties>  = { kind: typeof ObjectKind, type: 'object', properties: T, required?: string[], definitions: TDefinitions } & ObjectOptions
+export type TObject    <T extends TProperties>  = { kind: typeof ObjectKind, type: 'object', properties: T, required?: string[] } & ObjectOptions
 export type TUnion     <T extends TSchema[]>    = { kind: typeof UnionKind, anyOf: [...T] } & CustomOptions
 export type TKeyOf     <T extends TKey[]>       = { kind: typeof KeyOfKind, type: 'string', enum: [...T] } & CustomOptions
 export type TDict      <T extends TSchema>      = { kind: typeof DictKind, type: 'object', additionalProperties: T } & DictOptions
@@ -150,7 +149,6 @@ export type TVoid           = { kind: typeof VoidKind, type: 'void' } & CustomOp
 // ------------------------------------------------------------------------
 
 export type TSchema =
-    | TRef<any>
     | TUnion<any>
     | TTuple<any>
     | TObject<any>
@@ -197,8 +195,6 @@ export type TPartial<T extends TProperties> = {
 
 export type UnionToIntersect<U>     = (U extends any ? (k: U) => void : never) extends ((k: infer I) => void) ? I : never
 export type IntersectObjectArray<T> = T extends Array<TObject<infer U>> ? UnionToIntersect<U> : TProperties
-
-
 export type ObjectPropertyKeys           <T> = T extends TObject<infer U> ? PropertyKeys<U> : never
 export type PropertyKeys                 <T extends TProperties> = keyof T
 export type ReadonlyOptionalPropertyKeys <T extends TProperties> = { [K in keyof T]: T[K] extends TReadonlyOptional<infer U> ? K : never }[keyof T]
@@ -221,14 +217,11 @@ export type StaticDict        <T extends TSchema>              = { [key: string]
 export type StaticArray       <T extends TSchema>              = Array<Static<T>>
 export type StaticLiteral     <T extends TValue>               = T
 export type StaticEnum        <T extends TKey>                 = T
-// @ts-ignore - possibly infinite depth on the args
 export type StaticConstructor <T extends readonly TSchema[], U extends TSchema> = new (...args: [...{ [K in keyof T]: Static<T[K]> }]) => Static<U>
-// @ts-ignore - possibly infinite depth on the args
 export type StaticFunction    <T extends readonly TSchema[], U extends TSchema> = (...args: [...{ [K in keyof T]: Static<T[K]> }]) => Static<U>
 export type StaticPromise     <T extends TSchema>             = Promise<Static<T>>
 
 export type Static<T> =
-    T extends TRef<infer U>                  ? StaticRef<U>            :
     T extends TKeyOf<infer U>                ? StaticKeyOf<U>          :    
     T extends TUnion<infer U>                ? StaticUnion<U>          :
     T extends TTuple<infer U>                ? StaticTuple<U>          :
@@ -315,19 +308,9 @@ export class TypeBuilder {
         })
         const required_names = property_names.filter(name => !optional.includes(name))
         const required = (required_names.length > 0) ? required_names : undefined
-        const definitions = Object.values(properties).reduce((acc, value) => {
-            return value.kind === RefKind
-                ? ({ ...acc, [value.key]: value.schema })
-                : acc
-        }, {}) as TDefinitions
-        const dereferenced = Object.entries(properties).reduce((acc, [key, value]) => {
-            return value.kind === RefKind 
-                ? ({ ...acc, [key]: { $ref: `#/definitions/${value.key as string}` } })
-                : ({ ...acc, [key]: value })
-        }, {}) as T
-        return (required) ? 
-            { ...options, kind: ObjectKind, type: 'object', definitions, properties: dereferenced, required } : 
-            { ...options, kind: ObjectKind, type: 'object', definitions, properties: dereferenced }
+        return (required) ?
+            { ...options, kind: ObjectKind, type: 'object', properties, required } : 
+            { ...options, kind: ObjectKind, type: 'object', properties }
     }
 
     /** `STANDARD` Creates an intersection schema of the given object schemas. */
@@ -335,12 +318,9 @@ export class TypeBuilder {
         const type        = 'object'
         const properties  = items.reduce((acc, object) => ({ ...acc, ...object['properties'] }), {} as IntersectObjectArray<T>)
         const required    = distinct(items.reduce((acc, object) => object['required'] ? [ ...acc, ...object['required'] ] : acc, [] as string[]))
-        const definitions = items.reduce((acc, item) => {
-            return { ...acc, ...item.definitions }
-        }, {}) as TDefinitions
         return (required.length > 0)
-            ? { ...options, type, kind: ObjectKind, properties, definitions, required }
-            : { ...options, type, kind: ObjectKind, properties, definitions }
+            ? { ...options, type, kind: ObjectKind, properties, required }
+            : { ...options, type, kind: ObjectKind, properties }
     }
     
     /** `STANDARD` Creates a Union schema. */
@@ -505,20 +485,16 @@ export class TypeBuilder {
         return { ...options, type: 'void', kind: VoidKind }
     }
 
-    /** Creates a box of schema definitions. */
-    public Box<T extends TDefinitions>(definitions: T): TBox<T> {
-        return { kind: BoxKind, definitions }
+    /** `EXPERIMENTAL` Creates a box of schema definitions. */
+    public Box<T extends TDefinitions>($id: string, definitions: T): TBox<T> {
+        return { kind: BoxKind, $id, definitions }
     }
-
-    /** References a schema within a box */
-    public Ref<T extends TBox<TDefinitions>, K extends keyof T['definitions']>(box: T, key: K): TRef<T['definitions'][K]> {
-        // @ts-ignore
-        return { kind: RefKind, schema: box.definitions[key as string], key }
+    
+    /** `EXPERIMENTAL` References a type within a box of definitions. */
+    public Ref<T extends TBox<TDefinitions>, K extends keyof T['definitions']>(box: T, key: K): T['definitions'][K] {
+        return { $ref: `${box.$id}#/definitions/${key as string}` } as any // facade
     }
 }
-
-
-
 
 export const Type = new TypeBuilder()
 
