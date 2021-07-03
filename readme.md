@@ -1,19 +1,14 @@
 <div align='center'>
 
-<pre>
-  _____                 ____             
- |_   _|   _ _ __   ___| __ )  _____  __ 
-   | || | | | '_ \ / _ \  _ \ / _ \ \/ / 
-   | || |_| | |_) |  __/ |_) | (_) >  <  
-   |_| \__, | .__/ \___|____/ \___/_/\_\ 
-       |___/|_|                          
+<h1>TypeBox</h1>
 
-JSON Schema Type Builder with Static Type Resolution for TypeScript
-</pre>
+<p>JSON Schema Type Builder with Static Type Resolution for TypeScript</p>
 
 [![npm version](https://badge.fury.io/js/%40sinclair%2Ftypebox.svg)](https://badge.fury.io/js/%40sinclair%2Ftypebox) [![GitHub CI](https://github.com/sinclairzx81/typebox/workflows/GitHub%20CI/badge.svg)](https://github.com/sinclairzx81/typebox/actions)
 
 </div>
+
+
 
 <a name="Install"></a>
 
