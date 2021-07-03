@@ -451,7 +451,7 @@ const Math3D = Type.Box('http://app.org/math3d', { //  const Math3D = {
   }),                                              //          x: { type: 'number' },
   Vector3: Type.Object({                           //          y: { type: 'number' },
     x: Type.Number(),                              //          z: { type: 'number' },
-	y: Type.Number(),							   //          w: { type: 'number' }
+	y: Type.Number(),                              //          w: { type: 'number' }
     z: Type.Number()                               //        },
   }),                                              //        required: ['x', 'y', 'z', 'w']
   Vector2: Type.Object({                           //      },
@@ -462,7 +462,7 @@ const Math3D = Type.Box('http://app.org/math3d', { //  const Math3D = {
                                                    //          y: { 'type': 'number' },
                                                    //          z: { 'type': 'number' }
                                                    //        },
-	                                               //        required: ['x', 'y', 'z']
+                                                   //        required: ['x', 'y', 'z']
                                                    //      },
                                                    //      Vector2: {
                                                    //        type: 'object',
@@ -478,12 +478,12 @@ const Math3D = Type.Box('http://app.org/math3d', { //  const Math3D = {
 const Vertex = Type.Object({                       //  const Vertex = {
     position: Type.Ref(Math3D, 'Vector4'),         //    type: 'object',
     normal:   Type.Ref(Math3D, 'Vector3'),         //    properties: {
-    uv:       Type.Ref(Math3D, 'Vector2'),         //      position: { $ref: 'http://app.org/math3d#/definitions/Vector4' },
+    uv:       Type.Ref(Math3D, 'Vector2')          //      position: { $ref: 'http://app.org/math3d#/definitions/Vector4' },
 })                                                 //      normal: { $ref: 'http://app.org/math3d#/definitions/Vector3' },
                                                    //      uv: { $ref: 'http://app.org/math3d#/definitions/Vector2' }
-												   //    },
-												   //    required: ['position', 'normal', 'uv']
-												   //  }
+                                                   //    },
+                                                   //    required: ['position', 'normal', 'uv']
+                                                   //  }
 ```
 
 <a name="Strict"></a>
