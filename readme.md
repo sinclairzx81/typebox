@@ -506,17 +506,17 @@ const Node = Type.Rec(Self => Type.Object({   // const Node = {
                                               //            type: 'array',
                                               //            items: {
                                               //              $ref: '#/definitions/self'
-											  //            }
-											  //         }
-											  //      }
-											  //    },
-											  //    $ref: '#/definitions/self'
+                                              //            }
+                                              //         }
+                                              //      }
+                                              //    },
+                                              //    $ref: '#/definitions/self'
                                               // }
 											  
 type Node = Static<typeof Node>               // type Node = {
                                               //   id: string
-											  //   nodes: any[]
-											  //
+                                              //   nodes: any[]
+                                              //
 
 function walk(node: Node) {
     for(const inner of node.nodes) {
