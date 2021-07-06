@@ -4,7 +4,9 @@
 
 - Added `Type.Rec(...)` function.
 
-This update introduces the `Type.Rec()` function for enabling Recursive Types. This feature is enabled without support for static inference of the recursive type. This is due to current inference limitations around TypeScript recursive types. The `Self` argument passed on `Type.Rec(Self => ...)` is a `TAny` and will statically resolve to type `any`. Callers can optionally type assert if nessasary.
+This update introduces the `Type.Rec()` function for enabling Recursive Types. Please note that due to current inference limitations in TypeScript, TypeBox is unable to infer the type and resolves inner types to `any`. 
+
+This functionality enables for complex self referential schemas to be composed. The following creates a binary expression syntax node with the expression self referential for left and right oprands.
 
 ```typescript
 const Operator = Type.Union([
