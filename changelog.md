@@ -78,8 +78,7 @@ const Order = Type.Object({
     ])
 })
 ```
-
-Currently, `Type.Omit()`, `Type.Pick()`, `Type.Partial()`, `Type.Readonly()` and `Type.Intersect()` do not work with Reference Types. This may change in later revisions.
+> Note: As of this release, the `Type.Omit()`, `Type.Pick()`, `Type.Partial()`, `Type.Readonly()` and `Type.Intersect()` functions do not work with Reference Types. This may change in later revisions.
 
 For validation using `Ajv`, its possible to apply the `Box` directly as a schema.
 
