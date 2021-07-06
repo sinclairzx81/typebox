@@ -8,8 +8,6 @@
 
 </div>
 
-
-
 <a name="Install"></a>
 
 ## Install
@@ -47,9 +45,9 @@ License MIT
 - [Types](#Types)
 - [Modifiers](#Modifiers)
 - [Options](#Options)
-- [Extended Types](#Extended-Types)
 - [Reference Types](#Reference-Types)
 - [Recursive Types](#Recursive-Types)
+- [Extended Types](#Extended-Types)
 - [Strict](#Strict)
 - [Interfaces](#Interfaces)
 - [Validation](#Validation)
@@ -378,64 +376,6 @@ const T = Type.Number({ multipleOf: 2 })
 const T = Type.Array(Type.Integer(), { minItems: 5 })
 ```
 
-
-<a name="Extended-Types"></a>
-
-### Extended Types
-
-In addition to JSON schema types, TypeBox provides several extended types that allow for `function` and `constructor` types to be composed. These additional types are not valid JSON Schema and will not validate using typical JSON Schema validation. However, these types can be used to frame JSON schema and describe callable interfaces that may receive JSON validated data. These types are as follows.
-
-```typescript
-┌────────────────────────────────┬─────────────────────────────┬────────────────────────────────┐
-│ TypeBox                        │ TypeScript                  │ Extended Schema                │
-│   	                         │                             │                                │
-├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
-│ const T = Type.Constructor([   │ type T = new (              │ const T = {                    │
-|    Type.String(),              │  arg0: string,              │   type: 'constructor'          │
-│    Type.Number(),              │  arg1: number               │   arguments: [{                │
-│ ], Type.Boolean())             │ ) => boolean                │      type: 'string'            │
-│                                │                             │   }, {                         │
-│                                │                             │      type: 'number'            │
-│                                │                             │   }],                          │
-│                                │                             │   returns: {                   │
-│                                │                             │      type: 'boolean'           │
-│                                │                             │   }                            │
-│                                │                             │ }                              │
-│   	                         │                             │                                │
-├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
-│ const T = Type.Function([      │ type T = (                  │ const T = {                    │
-|    Type.String(),              │  arg0: string,              │   type : 'function',           │
-│    Type.Number(),              │  arg1: number               │   arguments: [{                │
-│ ], Type.Boolean())             │ ) => boolean                │      type: 'string'            │
-│                                │                             │   }, {                         │
-│                                │                             │      type: 'number'            │
-│                                │                             │   }],                          │
-│                                │                             │   returns: {                   │
-│                                │                             │      type: 'boolean'           │
-│                                │                             │   }                            │
-│                                │                             │ }                              │
-│   	                         │                             │                                │
-├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
-│ const T = Type.Promise(        │ type T = Promise<string>    │ const T = {                    │
-|    Type.String()               │                             │   type: 'promise',             │
-| )                              │                             │   item: {                      │
-│                                │                             │      type: 'string'            │
-│                                │                             │   }                            │
-│                                │                             │ }                              │
-│   	                         │                             │                                │
-├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
-│ const T = Type.Undefined()     │ type T = undefined          │ const T = {                    │
-|                                │                             │   type: 'undefined'            │
-|                                │                             │ }                              │
-│   	                         │                             │                                │
-├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
-│ const T = Type.Void()          │ type T = void               │ const T = {                    │
-|                                │                             │   type: 'void'                 │
-|                                │                             │ }                              │
-│   	                         │                             │                                │
-└────────────────────────────────┴─────────────────────────────┴────────────────────────────────┘
-```
-
 <a name="Reference-Types"></a>
 
 ### Reference Types
@@ -495,9 +435,11 @@ TypeBox provides rudimentary support for recursive types. This is handled via th
 
 ```typescript
 const Node = Type.Rec(Self => Type.Object({   // const Node = {
-    id:    Type.String(),                     //   definitions: {
-    nodes: Type.Array(Self),                  //     self: {
-}))                                           //       type: 'object',
+  id:    Type.String(),                       //   $id: 'Node',
+  nodes: Type.Array(Self),                    //   $ref: 'Node#/definitions/self',
+}), 'Node')                                   //   definitions: {
+                                              //     self: {
+                                              //       type: 'object',
                                               //       properties: {
                                               //         id: {
                                               //           type: 'string'
@@ -505,12 +447,11 @@ const Node = Type.Rec(Self => Type.Object({   // const Node = {
                                               //         nodes: {
                                               //            type: 'array',
                                               //            items: {
-                                              //              $ref: '#/definitions/self'
+                                              //              $ref: 'Node#/definitions/self'
                                               //            }
                                               //         }
                                               //      }
-                                              //    },
-                                              //    $ref: '#/definitions/self'
+                                              //    }
                                               // }
 											  
 type Node = Static<typeof Node>               // type Node = {
@@ -518,11 +459,68 @@ type Node = Static<typeof Node>               // type Node = {
                                               //   nodes: any[]
                                               //
 
-function walk(node: Node) {
+function visit(node: Node) {
     for(const inner of node.nodes) {
-        walk(inner as Node)                   // Assert inner as Node
+        visit(inner as Node)                   // Assert inner as Node
     }
 }
+```
+
+<a name="Extended-Types"></a>
+
+### Extended Types
+
+In addition to JSON schema types, TypeBox provides several extended types that allow for `function` and `constructor` types to be composed. These additional types are not valid JSON Schema and will not validate using typical JSON Schema validation. However, these types can be used to frame JSON schema and describe callable interfaces that may receive JSON validated data. These types are as follows.
+
+```typescript
+┌────────────────────────────────┬─────────────────────────────┬────────────────────────────────┐
+│ TypeBox                        │ TypeScript                  │ Extended Schema                │
+│   	                         │                             │                                │
+├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
+│ const T = Type.Constructor([   │ type T = new (              │ const T = {                    │
+|    Type.String(),              │  arg0: string,              │   type: 'constructor'          │
+│    Type.Number(),              │  arg1: number               │   arguments: [{                │
+│ ], Type.Boolean())             │ ) => boolean                │      type: 'string'            │
+│                                │                             │   }, {                         │
+│                                │                             │      type: 'number'            │
+│                                │                             │   }],                          │
+│                                │                             │   returns: {                   │
+│                                │                             │      type: 'boolean'           │
+│                                │                             │   }                            │
+│                                │                             │ }                              │
+│   	                         │                             │                                │
+├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
+│ const T = Type.Function([      │ type T = (                  │ const T = {                    │
+|    Type.String(),              │  arg0: string,              │   type : 'function',           │
+│    Type.Number(),              │  arg1: number               │   arguments: [{                │
+│ ], Type.Boolean())             │ ) => boolean                │      type: 'string'            │
+│                                │                             │   }, {                         │
+│                                │                             │      type: 'number'            │
+│                                │                             │   }],                          │
+│                                │                             │   returns: {                   │
+│                                │                             │      type: 'boolean'           │
+│                                │                             │   }                            │
+│                                │                             │ }                              │
+│   	                         │                             │                                │
+├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
+│ const T = Type.Promise(        │ type T = Promise<string>    │ const T = {                    │
+|    Type.String()               │                             │   type: 'promise',             │
+| )                              │                             │   item: {                      │
+│                                │                             │      type: 'string'            │
+│                                │                             │   }                            │
+│                                │                             │ }                              │
+│   	                         │                             │                                │
+├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
+│ const T = Type.Undefined()     │ type T = undefined          │ const T = {                    │
+|                                │                             │   type: 'undefined'            │
+|                                │                             │ }                              │
+│   	                         │                             │                                │
+├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
+│ const T = Type.Void()          │ type T = void               │ const T = {                    │
+|                                │                             │   type: 'void'                 │
+|                                │                             │ }                              │
+│   	                         │                             │                                │
+└────────────────────────────────┴─────────────────────────────┴────────────────────────────────┘
 ```
 
 <a name="Strict"></a>

@@ -1,4 +1,8 @@
 
+## [0.17.7](https://www.npmjs.com/package/@sinclair/typebox/v/0.17.7)
+
+- Added optional `$id` argument on `Type.Rec()`.
+- Documentation updates.
 
 ## [0.17.6](https://www.npmjs.com/package/@sinclair/typebox/v/0.17.6)
 

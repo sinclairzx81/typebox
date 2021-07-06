@@ -495,9 +495,9 @@ export class TypeBuilder {
     }
 
     /** `EXPERIMENTAL` Creates a recursive type. */
-    public Rec<T extends TSchema>(callback: (self: TAny) => T): T {
-        const self = callback({ $ref: '#/definitions/self' } as any)
-        return { definitions: { self }, $ref: "#/definitions/self" } as any as T
+    public Rec<T extends TSchema>(callback: (self: TAny) => T, $id: string = ''): T {
+        const self = callback({ $ref: `${$id}#/definitions/self` } as any)
+        return { $id,  $ref: `${$id}#/definitions/self`, definitions: { self } } as any as T
     }
 }
 
