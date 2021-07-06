@@ -493,7 +493,12 @@ export class TypeBuilder {
     public Ref<T extends TBox<TDefinitions>, K extends keyof T['definitions']>(box: T, key: K): T['definitions'][K] {
         return { $ref: `${box.$id}#/definitions/${key as string}` } as any // facade
     }
+
+    /** `EXPERIMENTAL` Creates a recursive type. */
+    public Rec<T extends TSchema>(callback: (self: TAny) => T): T {
+        const self = callback({ $ref: '#/definitions/self' } as any)
+        return { definitions: { self }, $ref: "#/definitions/self" } as any as T
+    }
 }
 
 export const Type = new TypeBuilder()
-

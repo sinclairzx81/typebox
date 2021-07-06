@@ -49,6 +49,7 @@ License MIT
 - [Options](#Options)
 - [Extended Types](#Extended-Types)
 - [Reference Types](#Reference-Types)
+- [Recursive Types](#Recursive-Types)
 - [Strict](#Strict)
 - [Interfaces](#Interfaces)
 - [Validation](#Validation)
@@ -484,6 +485,44 @@ const Vertex = Type.Object({                  //  const Vertex = {
                                               //    },
                                               //    required: ['position', 'normal', 'uv']
                                               //  }
+```
+
+<a name="Recursive-Types"></a>
+
+### Recursive Types
+
+TypeBox provides rudimentary support for recursive types. This is handled via the `Type.Rec(...)` method. The following creates a `Node` type that contains an array of inner `nodes`. Please note that due to current recursion limits on TypeScript inference, it's currently not possible for TypeBox to statically infer for recursive types. Instead TypeBox will resolve inner recursive types as `any`.
+
+```typescript
+const Node = Type.Rec(Self => Type.Object({   // const Node = {
+    id:    Type.String(),                     //   definitions: {
+    nodes: Type.Array(Self),                  //     self: {
+}))                                           //       type: 'object',
+                                              //       properties: {
+                                              //         id: {
+                                              //           type: 'string'
+                                              //         },
+                                              //         nodes: {
+                                              //            type: 'array',
+                                              //            items: {
+                                              //              $ref: '#/definitions/self'
+											  //            }
+											  //         }
+											  //      }
+											  //    },
+											  //    $ref: '#/definitions/self'
+                                              // }
+											  
+type Node = Static<typeof Node>               // type Node = {
+                                              //   id: string
+											  //   nodes: any[]
+											  //
+
+function walk(node: Node) {
+    for(const inner of node.nodes) {
+        walk(inner as Node)                   // Assert inner as Node
+    }
+}
 ```
 
 <a name="Strict"></a>
