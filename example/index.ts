@@ -1,14 +1,10 @@
 import { Type, Static } from '@sinclair/typebox'
 
-type Node = Static<typeof Node>
+const Box = Type.Box('foo', {
+    Foo: Type.String()
+})
 
-const Node = Type.Rec(Self => Type.Object({
-    id:    Type.String(),
-    nodes: Type.Array(Self)
-}))
+const Foo = Type.Ref(Box, 'Foo')
 
-function walk(node: Node) {
-    for(const inner of node.nodes) {
-        walk(inner as Node)
-    }
-}
+type Foo = Static<typeof Foo>
+
