@@ -81,6 +81,12 @@ const Order = Type.Object({
 
 Currently, `Type.Omit()`, `Type.Pick()`, `Type.Partial()`, `Type.Readonly()` and `Type.Intersect()` do not work with Reference Types. This may change in later revisions.
 
+For validation using `Ajv`, its possible to apply the `Box` directly as a schema.
+
+```typescript
+ajv.addSchema(Fruit) // makes all boxed types known to Ajv
+```
+
 This functionality is flagged as `EXPERIMENTAL` and awaits community feedback.
 
 ## [0.17.1](https://www.npmjs.com/package/@sinclair/typebox/v/0.17.1)
