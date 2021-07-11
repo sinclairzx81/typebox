@@ -33,13 +33,11 @@ THE SOFTWARE.
 export const ReadonlyOptionalModifier = Symbol('ReadonlyOptionalModifier')
 export const OptionalModifier         = Symbol('OptionalModifier')
 export const ReadonlyModifier         = Symbol('ReadonlyModifier')
-export const HiddenModifier           = Symbol('HiddenModifier')
-
 export type TModifier                            = TReadonlyOptional<TSchema> | TOptional<TSchema> | TReadonly<TSchema> | THidden<TSchema>
 export type TReadonlyOptional<T extends TSchema> = T & { modifier: typeof ReadonlyOptionalModifier }
 export type TOptional<T extends TSchema>         = T & { modifier: typeof OptionalModifier }
 export type TReadonly<T extends TSchema>         = T & { modifier: typeof ReadonlyModifier }
-export type THidden<T extends TSchema>           = T & { modifier: typeof HiddenModifier }
+export type THidden<T extends TSchema>           = T & { hidden: boolean }
 
 /**
  * Removes all properties that have a hidden-modifier.
@@ -50,9 +48,9 @@ export type THidden<T extends TSchema>           = T & { modifier: typeof Hidden
  */
 function removeHidden<T extends TProperties>(props: T) : T
 {
-    for(const [key, { modifier }] of Object.entries(props))
+    for(const [key, { hidden }] of Object.entries(props))
     {
-        if(modifier === HiddenModifier)
+        if(hidden)
         {
             delete props[key];
         }
@@ -68,9 +66,9 @@ function removeHidden<T extends TProperties>(props: T) : T
  * @param schema {TSchema}
  * @returns true
  */
-function preventHidden(schema: TSchema, parent: string)
+function preventHidden({ hidden }: TSchema, parent: string)
 {
-    if (schema.modifier === HiddenModifier)
+    if (hidden)
     {
         throw new Error(`Child of ${parent} must not be hidden.`);
     }
@@ -333,7 +331,7 @@ export class TypeBuilder {
      * @returns modified item
      */
     public Hidden<T extends TSchema>(item: T): THidden<T> {
-        return { ...item, modifier: HiddenModifier };
+        return this.Optional({ ...item, hidden: true });
     }
 
     /** `STANDARD` Creates a Tuple schema. */
@@ -355,9 +353,7 @@ export class TypeBuilder {
             return (candidate.modifier &&
                 (
                     candidate.modifier === OptionalModifier ||
-                    candidate.modifier === ReadonlyOptionalModifier ||
-                    // hidden properties must not show up in "required", so add them to "optional"
-                    candidate.modifier === HiddenModifier
+                    candidate.modifier === ReadonlyOptionalModifier
                 )
             )
         })
