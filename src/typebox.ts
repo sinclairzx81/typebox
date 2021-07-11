@@ -33,11 +33,50 @@ THE SOFTWARE.
 export const ReadonlyOptionalModifier = Symbol('ReadonlyOptionalModifier')
 export const OptionalModifier         = Symbol('OptionalModifier')
 export const ReadonlyModifier         = Symbol('ReadonlyModifier')
+export const HiddenModifier           = Symbol('HiddenModifier')
 
-export type TModifier                            = TReadonlyOptional<TSchema> | TOptional<TSchema> | TReadonly<TSchema>
+export type TModifier                            = TReadonlyOptional<TSchema> | TOptional<TSchema> | TReadonly<TSchema> | THidden<TSchema>
 export type TReadonlyOptional<T extends TSchema> = T & { modifier: typeof ReadonlyOptionalModifier }
 export type TOptional<T extends TSchema>         = T & { modifier: typeof OptionalModifier }
 export type TReadonly<T extends TSchema>         = T & { modifier: typeof ReadonlyModifier }
+export type THidden<T extends TSchema>           = T & { modifier: typeof HiddenModifier }
+
+/**
+ * Removes all properties that have a hidden-modifier.
+ * Important: Does not clone props beforehand and therefore modifies the original.
+ * 
+ * @param props {TProperties}
+ * @returns modified props
+ */
+function removeHidden<T extends TProperties>(props: T) : T
+{
+    for(const [key, { modifier }] of Object.entries(props))
+    {
+        if(modifier === HiddenModifier)
+        {
+            delete props[key];
+        }
+    }
+
+    return props;
+}
+
+/**
+ * TODO: There sure is a way to do this using just types.
+ * 
+ * @throws an error if the schema has the hidden-modifier.
+ * @param schema {TSchema}
+ * @returns true
+ */
+function preventHidden(schema: TSchema, parent: string)
+{
+    if (schema.modifier === HiddenModifier)
+    {
+        throw new Error(`Child of ${parent} must not be hidden.`);
+    }
+
+    return true;
+}
 
 // ------------------------------------------------------------------------
 // Schema Standard
@@ -288,8 +327,20 @@ export class TypeBuilder {
         return { ...item, modifier: OptionalModifier }
     }
 
+    /**
+     * `EXPERIMENTAL` Causes the item not to be included in the schema.
+     * @param item {TSchema}
+     * @returns modified item
+     */
+    public Hidden<T extends TSchema>(item: T): THidden<T> {
+        return { ...item, modifier: HiddenModifier };
+    }
+
     /** `STANDARD` Creates a Tuple schema. */
     public Tuple<T extends TSchema[]>(items: [...T], options: CustomOptions = {}): TTuple<T> {
+        
+        items.map((i) => preventHidden(i, 'tuple'));
+
         const additionalItems = false
         const minItems = items.length
         const maxItems = items.length
@@ -302,21 +353,35 @@ export class TypeBuilder {
         const optional = property_names.filter(name => {
             const candidate = properties[name] as TModifier
             return (candidate.modifier &&
-                (candidate.modifier === OptionalModifier ||
-                    candidate.modifier === ReadonlyOptionalModifier))
+                (
+                    candidate.modifier === OptionalModifier ||
+                    candidate.modifier === ReadonlyOptionalModifier ||
+                    // hidden properties must not show up in "required", so add them to "optional"
+                    candidate.modifier === HiddenModifier
+                )
+            )
         })
+
         const required_names = property_names.filter(name => !optional.includes(name))
         const required = (required_names.length > 0) ? required_names : undefined
         return (required) ?
-            { ...options, kind: ObjectKind, type: 'object', properties, required } : 
-            { ...options, kind: ObjectKind, type: 'object', properties }
+            { ...options, kind: ObjectKind, type: 'object', properties: removeHidden(properties), required } : 
+            { ...options, kind: ObjectKind, type: 'object', properties: removeHidden(properties) }
     }
 
     /** `STANDARD` Creates an intersection schema of the given object schemas. */
     public Intersect<T extends TObject<TProperties>[]>(items: [...T], options: ObjectOptions = {}): TObject<IntersectObjectArray<T>> {
         const type       = 'object'
         const properties = items.reduce((acc, object) => ({ ...acc, ...object['properties'] }), {} as IntersectObjectArray<T>)
-        const required   = distinct(items.reduce((acc, object) => object['required'] ? [ ...acc, ...object['required'] ] : acc, [] as string[]))
+
+        const required   = distinct(
+            items.reduce((acc, object) => 
+                (preventHidden(object, 'intersect') && object['required']) ?
+                    [ ...acc, ...object['required'] ] :
+                    acc, [] as string[]
+                )
+        )
+
         return (required.length > 0)
             ? { ...options, type, kind: ObjectKind, properties, required }
             : { ...options, type, kind: ObjectKind, properties }
@@ -329,12 +394,14 @@ export class TypeBuilder {
 
     /** `STANDARD` Creates a `{ [key: string]: T }` schema. */
     public Dict<T extends TSchema>(item: T, options: DictOptions = {}): TDict<T> {
+        item.modifier && preventHidden(item, 'dict');
         const additionalProperties = item
         return { ...options, kind: DictKind, type: 'object', additionalProperties }
     }
 
     /** `STANDARD` Creates an `Array<T>` schema. */
     public Array<T extends TSchema>(items: T, options: ArrayOptions = {}): TArray<T> {
+        items.modifier && preventHidden(items, 'array');
         return { ...options, kind: ArrayKind, type: 'array', items }
     }
 
