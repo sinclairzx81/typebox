@@ -380,7 +380,7 @@ const T = Type.Array(Type.Integer(), { minItems: 5 })
 
 ### Reference Types
 
-Type referencing can be useful to help reduce schema duplication when composing complex schemas. TypeBox allows for type referencing with the `Type.Box(...)` and `Type.Ref(...)` functions. The `Type.Box(...)` function creates a container for set of common related types and the `Type.Ref(...)` function allows referencing into the box. The following shows a set of common math types contained within a box, and a vertex structure that references those types.
+Type referencing can be useful to reduce schema duplication when composing large schemas. TypeBox allows for type referencing with the `Type.Box(...)` and `Type.Ref(...)` functions. The `Type.Box(...)` function will creates a container for set of common related types and the `Type.Ref(...)` function allows referencing into the container. The following shows a set of common math types contained within a box, and a vertex structure that references those types.
 
 ```typescript
 const Math3D = Type.Box('math3d', {           //  const Math3D = {
@@ -431,7 +431,7 @@ const Vertex = Type.Object({                  //  const Vertex = {
 
 ### Recursive Types
 
-TypeBox provides rudimentary support for recursive types. This is handled via the `Type.Rec(...)` method. The following creates a `Node` type that contains an array of inner `nodes`. Please note that due to current recursion limits on TypeScript inference, it's currently not possible for TypeBox to statically infer for recursive types. Instead TypeBox will resolve inner recursive types as `any`.
+TypeBox provides support for recursive types. This is handled via the `Type.Rec(...)` function. The following creates a `Node` type that contains an array of inner `nodes`. Please note that due to current recursion limits on TypeScript inference, it's currently not possible for TypeBox to statically infer for recursive types. Instead TypeBox will resolve inner recursive types as `any`.
 
 ```typescript
 const Node = Type.Rec(Self => Type.Object({   // const Node = {
