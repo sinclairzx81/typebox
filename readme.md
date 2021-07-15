@@ -12,8 +12,16 @@
 
 ## Install
 
+##### Node
+
 ```bash
 $ npm install @sinclair/typebox --save
+```
+
+##### Deno
+
+```typescript
+import { Type, Static } from 'https://deno.land/x/typebox/src/typebox.ts'
 ```
 
 ## Usage
