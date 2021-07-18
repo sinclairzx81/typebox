@@ -388,7 +388,7 @@ const T = Type.Array(Type.Integer(), { minItems: 5 })
 
 ### Reference Types
 
-Type referencing can be useful to reduce schema duplication when composing large schemas. TypeBox allows for type referencing with the `Type.Box(...)` and `Type.Ref(...)` functions. The `Type.Box(...)` function will creates a container for set of common related types and the `Type.Ref(...)` function allows referencing into the container. The following shows a set of common math types contained within a box, and a vertex structure that references those types.
+Type referencing can be useful to reduce schema duplication when composing large schemas. TypeBox allows for type referencing with the `Type.Box(...)` and `Type.Ref(...)` functions. The `Type.Box(...)` function is used to create a container for set of common related types and the `Type.Ref(...)` function allows for referencing into the container. The following shows a set of common math types contained within a box, and a vertex structure that references those types.
 
 ```typescript
 const Math3D = Type.Box('math3d', {           //  const Math3D = {
