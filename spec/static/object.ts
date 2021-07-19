@@ -9,7 +9,7 @@ const T0 = Type.Object({
     d: Type.Object({
         e: Type.Array(Type.String()),
     }),
-    e: Type.Dict(Type.String()),
+    e: Type.Record(Type.String()),
 })
 
 const F0 = (arg: Static<typeof T0>) => {}

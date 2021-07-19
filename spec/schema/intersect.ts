@@ -31,7 +31,7 @@ describe('Intersect', () => {
     const B = Type.Object({
       c: Type.String(),
     })
-    const T = Type.Intersect([A, B], { additionalProperties: false })
+    const T = Type.Intersect([A, B], { unevaluatedProperties: false })
     
     ok(T, { a: '1', b: '2', c: '3' })
     fail(T, { a: '1', b: '2' })

@@ -1,10 +1,12 @@
 import { Type, Static } from '@sinclair/typebox'
 
-const Box = Type.Box('foo', {
-    Foo: Type.String()
-})
+const A = Type.Object({ a: Type.Number() })
+const B = Type.Object({ b: Type.Number() })
+const C = Type.Record(Type.Boolean())
+const D = Type.Intersect([A, B, C])
 
-const Foo = Type.Ref(Box, 'Foo')
+type T = Static<typeof D>
 
-type Foo = Static<typeof Foo>
-
+function x(t: T) {
+    t.aa = true
+}
