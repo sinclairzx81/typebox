@@ -1,12 +1,55 @@
 
+## [0.18.0](https://www.npmjs.com/package/@sinclair/typebox/v/0.18.0)
+
+Changes:
+
+- Function `Type.Intersect(...)` now implemented via `allOf` and constrained with `unevaluatedProperties` (as per draft `2019-09`)
+- Rename `Type.Dict(...)` to `Type.Record(...)`
+
+Notes:
+
+This update changes the TypeBox JSON schema target to draft `2019-09`. This allows for `Type.Intersect(...)` types to be represented with `allOf`, but whose `additionalProperties` are constrained with `unevaluatedProperties`. Note that `unevaluatedProperties` is only available in the `2019-09` draft. All other schemas remain as they were, with this change only applicable to `Type.Intersect(...)` representation only. This update also reintroduces TypeBox's ability to intersect `Type.Object(...)` with `Type.Dict(...)`.
+
+```typescript
+const User = Type.Object({
+    name: Type.String(),
+    email: Type.String({ format: 'email' })
+})
+
+const UserExtended = Type.Intersect([
+    User,
+    Type.Record(Type.String())
+])
+
+// Analogous to
+
+type User = {
+    name: string,
+    email: string
+}
+
+type UserExtended = User & {
+    [key: string]: string
+}
+```
+
+In addition, this update also renames `Type.Dict(...)` to `Type.Record(...)` as per contributor feedback. The `Type.Record(...)` functions exactly as `Type.Dict(...)` but aligns closer to the TS utility type `Record<Keys, Type>` whose keys are all of type `string`. 
+
+
 ## [0.17.7](https://www.npmjs.com/package/@sinclair/typebox/v/0.17.7)
+
+Changes:
 
 - Added optional `$id` argument on `Type.Rec()`.
 - Documentation updates.
 
 ## [0.17.6](https://www.npmjs.com/package/@sinclair/typebox/v/0.17.6)
 
+Changes:
+
 - Added `Type.Rec(...)` function.
+
+Notes:
 
 This update introduces the `Type.Rec()` function for enabling Recursive Types. Please note that due to current inference limitations in TypeScript, TypeBox is unable to infer the type and resolves inner types to `any`. 
 
@@ -59,7 +102,11 @@ This functionality is flagged as `EXPERIMENTAL` and awaits community feedback.
 
 ## [0.17.4](https://www.npmjs.com/package/@sinclair/typebox/v/0.17.4)
 
+Changes:
+
 - Added `Type.Box()` and `Type.Ref()` functions.
+
+Notes:
 
 This update provides the `Type.Box()` function to enable common related schemas to grouped under a common namespace; typically expressed as a `URI`. This functionality is primarily geared towards allowing one to define a common set of domain objects that may be shared across application domains running over a network. The `Type.Box()` is intended to be an analog to `XML` `xmlns` namespacing.
 

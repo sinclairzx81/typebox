@@ -10,6 +10,5 @@ type T = Static<typeof D>
 console.log(D)
 
 function x(t: T) {
-    t.a = 10
     t.aa = true
 }
