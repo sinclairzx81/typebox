@@ -113,9 +113,10 @@ export type ObjectOptions = {
     additionalProperties?: boolean
 } & CustomOptions
 
-export type TEnumType = Record<string, string | number>
-export type TKey      = string | number | symbol
-export type TValue    = string | number | boolean
+export type TEnumType  = Record<string, string | number>
+export type TKey       = string | number | symbol
+export type TValue     = string | number | boolean
+export type TRecordKey = TString | TNumber | TUnion<TLiteral<TValue>[]>
 
 export type TDefinitions                                                = { [key: string]: TSchema }
 export type TProperties                                                 = { [key: string]: TSchema }
@@ -125,8 +126,7 @@ export type TObject    <T extends TProperties>                          = { kind
 export type TUnion     <T extends TSchema[]>                            = { kind: typeof UnionKind, anyOf: [...T] } & CustomOptions
 export type TIntersect <T extends TSchema[]>                            = { kind: typeof IntersectKind, allOf: [...T] } & IntersectOptions
 export type TKeyOf     <T extends TKey[]>                               = { kind: typeof KeyOfKind, type: 'string', enum: [...T] } & CustomOptions
-export type TRecord    <T extends TSchema, K extends readonly string[]> = { kind: typeof RecordKind, type: 'object', properties: { [keys in keyof K[number]]: T } } & ObjectOptions
-export type TRecordIndexed   <T extends TSchema>                              = { kind: typeof RecordIndexKind, type: 'object', additionalProperties: T } & IndexedOptions
+export type TRecord    <K extends TRecordKey, T extends TSchema>        = { kind: typeof RecordKind, type: 'object', patternProperties: { [pattern: string]: T } } & ObjectOptions
 export type TArray     <T extends TSchema>                              = { kind: typeof ArrayKind, type: 'array', items: T } & ArrayOptions
 export type TLiteral   <T extends TValue>                               = { kind: typeof LiteralKind, const: T } & CustomOptions
 export type TEnum      <T extends TKey>                                 = { kind: typeof EnumKind, type?: 'string' | 'number' | ['string', 'number'], enum: T[] } & CustomOptions
@@ -163,7 +163,6 @@ export type TSchema =
     | TTuple<any>
     | TObject<any>
     | TKeyOf<any>
-    | TRecordIndexed<any>
     | TRecord<any, any>
     | TArray<any>
     | TEnum<any>
@@ -223,8 +222,7 @@ export type StaticIntersect   <T extends readonly TSchema[]>                    
 export type StaticUnion       <T extends readonly TSchema[]>                    = { [K in keyof T]: Static<T[K]> }[number]
 export type StaticTuple       <T extends readonly TSchema[]>                    = { [K in keyof T]: Static<T[K]> }
 export type StaticObject      <T extends TProperties>                           = ReduceModifiers<StaticModifiers<T>>
-export type StaticRecord      <T extends TSchema, K extends readonly string[]>  = { [key in K[number]]: Static<T> }
-export type StaticRecordIndexed     <T extends TSchema>                               = { [key: string]: Static<T> }
+export type StaticRecord      <K extends TRecordKey, T extends TSchema>         = K extends TString ? { [key: string]: Static<T> } : K extends TNumber ? { [key: number]: Static<T> } : K extends TUnion<infer L> ? L extends TLiteral<any>[] ? {[K in StaticUnion<L>]: Static<T> } : never : never
 export type StaticArray       <T extends TSchema>                               = Array<Static<T>>
 export type StaticLiteral     <T extends TValue>                                = T
 export type StaticEnum        <T extends TKey>                                  = T
@@ -232,14 +230,18 @@ export type StaticConstructor <T extends readonly TSchema[], U extends TSchema> 
 export type StaticFunction    <T extends readonly TSchema[], U extends TSchema> = (...args: [...{ [K in keyof T]: Static<T[K]> }]) => Static<U>
 export type StaticPromise     <T extends TSchema>                               = Promise<Static<T>>
 
+
+
+
+
+
 export type Static<T> =
     T extends TKeyOf<infer U>                ? StaticKeyOf<U>          :
     T extends TIntersect<infer U>            ? StaticIntersect<U>      : 
     T extends TUnion<infer U>                ? StaticUnion<U>          :
     T extends TTuple<infer U>                ? StaticTuple<U>          :
     T extends TObject<infer U>               ? StaticObject<U>         :
-    T extends TRecordIndexed<infer U>        ? StaticRecordIndexed<U>  :
-    T extends TRecord<infer U, infer K>      ? StaticRecord<U, K>      :
+    T extends TRecord<infer K, infer U>      ? StaticRecord<K, U>      :
     T extends TArray<infer U>                ? StaticArray<U>          :
     T extends TEnum<infer U>                 ? StaticEnum<U>           :
     T extends TLiteral<infer U>              ? StaticLiteral<U>        :
@@ -398,23 +400,7 @@ export class TypeBuilder {
         const keys = Object.keys(schema.properties) as ObjectPropertyKeys<T>[]
         return {...options, kind: KeyOfKind, type: 'string', enum: keys }
     }
-    /** `STANDARD` Creates a record type with the given union keys. */
-    public Record<T extends TSchema, K extends readonly string[]>(keys: K, t: T): TRecord<T, K>
 
-    /** `STANDARD` Creates a record type as a string indexed signature type. */
-    public Record<T extends TSchema>(t: T): TRecordIndexed<T>
-
-    /** `STANDARD` Creates a record type. */
-    public Record(...args: any[]): any {
-        if(args.length === 2) {
-            const [keys, schema] = args as [string[], TSchema]
-            const properties = keys.reduce((acc, key) => ({...acc, [key]: schema }), {}) as TProperties
-            return { kind: RecordKind, type: 'object', properties }
-        } else {
-            const [schema] = args as [TSchema]
-            return { kind: RecordIndexKind, type: 'object', additionalProperties: schema }
-        }
-    }
 
     /** `STANDARD` Make all properties in schema object required. */
     public Required<T extends TObject<TProperties>>(schema: T, options: ObjectOptions = {}): TObject<TRequired<T['properties']>> {
@@ -514,6 +500,41 @@ export class TypeBuilder {
         const self = callback({ $ref: `${$id}#/definitions/self` } as any)
         return { $id,  $ref: `${$id}#/definitions/self`, definitions: { self } } as any as T
     }
+
+    /** `STANDARD` Creates a record type schema. */
+    public Record<K extends TRecordKey, T extends TSchema>(key: K, value: T, options: ObjectOptions = {}): TRecord<K, T> {
+        const pattern = key.kind === StringKind ? '[a-zA-Z0-9$_]+' : `[0-9]+`
+        return { ...options, kind: RecordKind, type: 'object', patternProperties: { [pattern]: value } }
+    }
 }
 
 export const Type = new TypeBuilder()
+
+type TDictKey = TString | TNumber | TUnion<TLiteral<TValue>[]>
+
+
+
+const N = {
+    'type': 'object',
+    'patternProperties': {
+        '[0-9]+': { 'type': 'string' },
+    }
+}
+
+const P = {
+    'type': 'object',
+    'patternProperties': {
+        '(?![0-9])[a-zA-Z0-9$_]+': { 'type': 'number' },
+    }
+}
+
+
+// export type TDict<K extends TDictKey, T extends TSchema> = { kind: typeof RecordIndexKind, type: 'object', properties: { T } & IndexedOptions
+
+// type TDict<K extends TRecordKey, V extends TSchema> = { 
+//     type: 'object', properties: { [K in K]: V }
+// }
+
+// function dict<K extends TRecordKey, V extends TSchema>(k: K, s: V) {
+
+// }

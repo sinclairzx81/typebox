@@ -1,17 +1,17 @@
 import { Type, Static } from '@sinclair/typebox'
+import { ok } from '../spec/schema/validate'
 
-const A = Type.Record(['a', 'b'], Type.String())
+const T = Type.Record(Type.Union([
+    Type.Literal('a'),
+    Type.Literal('b'),
+    Type.Literal('asd')
+]), Type.String())
 
-const B = Type.Object({ c: Type.Number() })
+console.log(T)
 
-const C = Type.Intersect([A, B])
+type T = Static<typeof T>
 
-console.log(C)
-
-type Z = Static<typeof C>
-
-function test(value: Z) {
-   value.a = ''
-   value.x = 'hello'
-}
-
+ok(T, { 
+    a: 'hello',
+    b: 'hello',
+})
