@@ -321,7 +321,7 @@ export class TypeBuilder {
             { ...options, kind: ObjectKind, type: 'object', properties }
     }
 
-    /** `STANDARD` Creates an intersection schema of the given object schemas. */
+    /** `STANDARD` Creates an intersection schema. Note this function requires draft `2019-09` to constrain with `unevaluatedProperties`. */
     public Intersect<T extends TSchema[]>(items: [...T], options: IntersectOptions = {}): TIntersect<T> {
         return { ...options, kind: IntersectKind, allOf: items }
     }
