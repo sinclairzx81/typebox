@@ -116,7 +116,7 @@ export type ObjectOptions = {
 export type TEnumType  = Record<string, string | number>
 export type TKey       = string | number | symbol
 export type TValue     = string | number | boolean
-export type TRecordKey = TString | TNumber | TUnion<TLiteral<TValue>[]>
+export type TRecordKey = TString | TNumber | TUnion<TLiteral<string | number>[]>
 
 export type TDefinitions                                                = { [key: string]: TSchema }
 export type TProperties                                                 = { [key: string]: TSchema }
@@ -503,38 +503,9 @@ export class TypeBuilder {
 
     /** `STANDARD` Creates a record type schema. */
     public Record<K extends TRecordKey, T extends TSchema>(key: K, value: T, options: ObjectOptions = {}): TRecord<K, T> {
-        const pattern = key.kind === StringKind ? '[a-zA-Z0-9$_]+' : `[0-9]+`
+        const pattern = key.kind === StringKind ? '.*' : `[1-9]?[0-9]+`
         return { ...options, kind: RecordKind, type: 'object', patternProperties: { [pattern]: value } }
     }
 }
 
 export const Type = new TypeBuilder()
-
-type TDictKey = TString | TNumber | TUnion<TLiteral<TValue>[]>
-
-
-
-const N = {
-    'type': 'object',
-    'patternProperties': {
-        '[0-9]+': { 'type': 'string' },
-    }
-}
-
-const P = {
-    'type': 'object',
-    'patternProperties': {
-        '(?![0-9])[a-zA-Z0-9$_]+': { 'type': 'number' },
-    }
-}
-
-
-// export type TDict<K extends TDictKey, T extends TSchema> = { kind: typeof RecordIndexKind, type: 'object', properties: { T } & IndexedOptions
-
-// type TDict<K extends TRecordKey, V extends TSchema> = { 
-//     type: 'object', properties: { [K in K]: V }
-// }
-
-// function dict<K extends TRecordKey, V extends TSchema>(k: K, s: V) {
-
-// }

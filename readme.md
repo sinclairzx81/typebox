@@ -29,16 +29,16 @@ import { Static, Type } from 'https://deno.land/x/typebox/src/typebox.ts'
 ```typescript
 import { Static, Type } from '@sinclair/typebox'
 
-const T = Type.String()   // const T = { "type": "string" }
+const T = Type.String()     // const T = { "type": "string" }
 
-type T = Static<typeof T> // type T = string
+type T = Static<typeof T>   // type T = string
 ```
 
 <a name="Overview"></a>
 
 ## Overview
 
-TypeBox is a JSON Schema Type Builder library that creates in-memory JSON Schema objects that can be statically resolved to TypeScript types. The schemas produced by this library are built to match the static type checking rules of the TypeScript compiler. TypeBox allows one to create a single unified type that can be both statically checked by the TypeScript compiler and runtime asserted using standard JSON schema validation.
+TypeBox is a JSON Schema Type Builder that creates in-memory JSON Schema objects that can be statically resolved to TypeScript types. The schemas produced by this library are built to match the static type checking rules of the TypeScript compiler. TypeBox allows one to create a single unified type that can be both statically checked by the TypeScript compiler and runtime asserted using standard JSON schema validation.
 
 TypeBox can be used as a simple tool to build up complex schemas or integrated into RPC or REST services to help validate JSON data received over the wire. TypeBox does not provide any JSON schema validation. Please use libraries such as [AJV](https://www.npmjs.com/package/ajv) to validate schemas built with this library.
 
@@ -197,14 +197,6 @@ The following table outlines the TypeBox mappings between TypeScript and JSON sc
 │                                │                             │ }                              │
 │   	                         │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
-│ const T = Type.Record(         │ type T = Record<            │ const T = {                    │
-│    Type.Number()               │    string,                  │    type: 'object'              │
-│ )                              │    number                   │    additionalProperties: {     │
-│   	                         │ >                           │      type: 'number'            │
-│   	                         │                             │    }                           │
-│   	                         │                             │ }                              │
-│   	                         │                             │                                │
-├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Object({        │ type T = {                  │ const T = {                    │
 │   x: Type.Number(),            │    x: number,               │   type: 'object',              │
 │   y: Type.Number()             │    y: number                │   properties: {                │
@@ -277,6 +269,16 @@ The following table outlines the TypeBox mappings between TypeScript and JSON sc
 │   	                         │                             │       },                       │
 │   	                         │                             │       required: ['b']          │
 │   	                         │                             │    }]                          │
+│   	                         │                             │ }                              │
+│   	                         │                             │                                │
+├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
+│ const T = Type.Record(         │ type T = Record<            │ const T = {                    │
+│    Type.String(),              │    string,                  │    type: 'object'              │
+│    Type.Number()               │    number                   │    patternProperties: {        │
+│ ) 	                         │ >                           │      '.*': {                   │
+│   	                         │                             │         type: 'number'         │
+│   	                         │                             │      }                         │
+│   	                         │                             │    }                           │
 │   	                         │                             │ }                              │
 │   	                         │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
