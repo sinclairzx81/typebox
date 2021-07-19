@@ -103,7 +103,7 @@ export type IntersectOptions = {
     unevaluatedProperties?: boolean
 } & CustomOptions
 
-export type DictOptions = {
+export type RecordOptions = {
     minProperties?: number
     maxProperties?: number
 } & CustomOptions
@@ -124,7 +124,7 @@ export type TObject    <T extends TProperties>  = { kind: typeof ObjectKind, typ
 export type TUnion     <T extends TSchema[]>    = { kind: typeof UnionKind, anyOf: [...T] } & CustomOptions
 export type TIntersect <T extends TSchema[]>    = { kind: typeof IntersectKind, allOf: [...T] } & IntersectOptions
 export type TKeyOf     <T extends TKey[]>       = { kind: typeof KeyOfKind, type: 'string', enum: [...T] } & CustomOptions
-export type TRecord    <T extends TSchema>      = { kind: typeof RecordKind, type: 'object', additionalProperties: T } & DictOptions
+export type TRecord    <T extends TSchema>      = { kind: typeof RecordKind, type: 'object', additionalProperties: T } & RecordOptions
 export type TArray     <T extends TSchema>      = { kind: typeof ArrayKind, type: 'array', items: T } & ArrayOptions
 export type TLiteral   <T extends TValue>       = { kind: typeof LiteralKind, const: T } & CustomOptions
 export type TEnum      <T extends TKey>         = { kind: typeof EnumKind, type?: 'string' | 'number' | ['string', 'number'], enum: T[] } & CustomOptions
@@ -332,7 +332,7 @@ export class TypeBuilder {
     }
 
     /** `STANDARD` Creates a `Record<string, T>` schema. */
-    public Record<T extends TSchema>(item: T, options: DictOptions = {}): TRecord<T> {
+    public Record<T extends TSchema>(item: T, options: RecordOptions = {}): TRecord<T> {
         const additionalProperties = item
         return { ...options, kind: RecordKind, type: 'object', additionalProperties }
     }
