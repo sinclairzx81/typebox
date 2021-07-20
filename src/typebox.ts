@@ -503,7 +503,8 @@ export class TypeBuilder {
 
     /** `STANDARD` Creates a record type schema. */
     public Record<K extends TRecordKey, T extends TSchema>(key: K, value: T, options: ObjectOptions = {}): TRecord<K, T> {
-        const pattern = key.kind === StringKind ? '.*' : `[1-9]?[0-9]+`
+        const pattern = key.kind === UnionKind  ? `^${key.anyOf.map(key => key.const).join('|')}$` :
+                        key.kind === NumberKind ? '^[1-9]?[0-9]+$' : '^.*$'
         return { ...options, kind: RecordKind, type: 'object', patternProperties: { [pattern]: value } }
     }
 }

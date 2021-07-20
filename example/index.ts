@@ -1,12 +1,11 @@
 import { Type, Static } from '@sinclair/typebox'
 import { ok } from '../spec/schema/validate'
 
-
-// const Vector = Type.Object({
-//     x: Type.Number(),
-//     y: Type.Number(),
-//     z: Type.Number()
-// })
+const Vector = Type.Object({
+    x: Type.Number(),
+    y: Type.Number(),
+    z: Type.Number()
+})
 
 // const Base = Type.Object({
 //     a: Type.Number(),
@@ -14,27 +13,25 @@ import { ok } from '../spec/schema/validate'
 //     c: Type.Number()
 // })
 
-// const T0 = Type.Record(Type.Union([
-//     Type.Literal('a'),
-//     Type.Literal('b'),
-//     Type.Literal('c')
-// ]), Vector)
+const T0 = Type.Record(Type.Number(), Type.Number())
 
-// const T1 = Type.Record(Type.Number(), Base, { additionalProperties: false })
+type T0 = Static<typeof T0>
 
-// const C = Type.Intersect([Vector, T0])
+const T = Type.Intersect([T0, Vector], { unevaluatedProperties: false })
+
+type T = Static<typeof T>
+console.log(JSON.stringify(T, null, 2))
+ok(T, {
+    a: 2,
+    b: 2,
+    c: 2,
+    x: 1,
+    y: 1,
+    z: 1,
+    // f: 'hello'
+})
 
 
-
-// console.log(C)
-
-// type T = Static<typeof C>
-
-// function test(value: T) {
-
-// }
-
-// ok(T1, { 
-//     '0': 'hello',
-//     '1': 'hello',
-// })
+function test(value: T) {
+    
+}
