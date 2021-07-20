@@ -10,9 +10,7 @@ describe('Partial', () => {
             y: Type.Number(),
             z: Type.Number()
         }, { additionalProperties: false })
-        const T = Type.Partial(A, {
-            additionalProperties: false
-        })
+        const T = Type.Partial(A)
         ok(T, { x: 1, y: 1, z: 1 })
         ok(T, { x: 1, y: 1 })
         ok(T, { x: 1 })
@@ -38,9 +36,9 @@ describe('Partial', () => {
             x: Type.Number(),
             y: Type.Number(),
             z: Type.Number()
-        }, { additionalPropeties: false })
+        }, { additionalProperties: false })
         const T = Type.Partial(A)
-        strictEqual(A.additionalPropeties, false)
-        strictEqual(T.additionalPropeties, false)
+        strictEqual(A.additionalProperties, false)
+        strictEqual(T.additionalProperties, false)
     })
 })

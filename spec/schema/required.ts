@@ -10,10 +10,7 @@ describe('Required', () => {
             y: Type.Optional(Type.Number()),
             z: Type.Optional(Type.Number())
         }, { additionalProperties: false })
-
-        const T = Type.Required(A, {
-            additionalProperties: false
-        })
+        const T = Type.Required(A)
         ok(T, { x: 1, y: 1, z: 1 })
         fail(T, { x: 1, y: 1 })
         fail(T, { x: 1 })
