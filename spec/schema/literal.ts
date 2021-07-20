@@ -3,41 +3,42 @@ import { ok, fail } from './validate'
 import * as assert from 'assert'
 
 describe("Literal", () => {
-    it('Number', () => {
+    it('Should validate literal number', () => {
         const T = Type.Literal(42)
         ok(T, 42)
-
-        fail(T, {})
-        fail(T, [])
-        fail(T, 43)
-        fail(T, 'world')
-        fail(T, null)
-
-        assert.strictEqual(T.type, 'number')
     })
-    it('Boolean', () => {
-        const T = Type.Literal(true)
-        ok(T, true)
-
-        fail(T, false)
-        fail(T, {})
-        fail(T, [])
-        fail(T, 43)
-        fail(T, 'world')
-        fail(T, null)
-
-        assert.strictEqual(T.type, 'boolean')
-    })
-    it('String', () => {
+    it('Should validate literal string', () => {
         const T = Type.Literal('hello')
         ok(T, 'hello')
+    })
 
-        fail(T, {})
-        fail(T, [])
-        fail(T, 42)
+    it('Should validate literal boolean', () => {
+        const T = Type.Literal(true)
+        ok(T, true)
+    })
+
+    it('Should not validate invalid literal number', () => {
+        const T = Type.Literal(42)
+        fail(T, 43)
+    })
+    it('Should not validate invalid literal string', () => {
+        const T = Type.Literal('hello')
         fail(T, 'world')
-        fail(T, null)
+    })
+    it('Should not validate invalid literal boolean', () => {
+        const T = Type.Literal(false)
+        fail(T, true)
+    })
 
-        assert.strictEqual(T.type, 'string')
+    it('Should validate literal union', () => {
+        const T = Type.Union([Type.Literal(42), Type.Literal('hello')])
+        ok(T, 42)
+        ok(T, 'hello')
+    })
+
+    it('Should not validate invalid literal union', () => {
+        const T = Type.Union([Type.Literal(42), Type.Literal('hello')])
+        fail(T, 43)
+        fail(T, 'world')
     })
 })

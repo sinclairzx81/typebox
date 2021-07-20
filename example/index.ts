@@ -1,6 +1,11 @@
 import { Type, Static } from '@sinclair/typebox'
 import { ok } from '../spec/schema/validate'
 
+const X = Type.Object({
+    type: Type.String()
+})
+
+console.log(Type.Strict(X))
 const Vector = Type.Object({
     x: Type.Number(),
     y: Type.Number(),
