@@ -22,6 +22,11 @@ describe("Array", () => {
         fail(T, [1, 'hello', 3, 'world', true])
     })
 
+    it('Should validate for an empty array', () => {
+        const T = Type.Array(Type.Union([Type.Number(), Type.String()]))
+        ok(T, [])
+    })
+
     it('Should validate for an array of intersection types', () => {
         const A = Type.Object({ a: Type.String() })
         const B = Type.Object({ b: Type.String() })
