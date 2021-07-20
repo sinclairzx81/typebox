@@ -3,22 +3,37 @@ import { ok, fail } from './validate'
 
 describe('Tuple', () => {
 
-    it('[A, B]', () => {
+    it('Should validate tuple of [string, number]', () => {
+        const A = Type.String()
+        const B = Type.Number()
+        const T = Type.Tuple([A, B])
+        ok(T, ['hello', 42])
+    })
+
+    it('Should not validate tuple of [string, number] when reversed', () => {
+        const A = Type.String()
+        const B = Type.Number()
+        const T = Type.Tuple([A, B])
+        fail(T, [42, 'hello'])
+    })
+
+    it('Should validate tuple of objects', () => {
         const A = Type.Object({ a: Type.String() })
         const B = Type.Object({ b: Type.Number() })
         const T = Type.Tuple([A, B])
-
-        ok(T, [{ a: 'hello' }, { b: 42 }])
-        fail(T, [{ b: 42 }, { a: 'hello' }])
+        ok(T, [
+            { a: 'hello' },
+            { b: 42 },
+        ])
     })
 
-    it('[A, B, C]', () => {
+    it('Should not validate tuple of objects when reversed', () => {
         const A = Type.Object({ a: Type.String() })
         const B = Type.Object({ b: Type.Number() })
-        const C = Type.Object({ c: Type.Boolean() })
-        const T = Type.Tuple([A, B, C])
-
-        ok(T, [{ a: 'hello' }, { b: 42 }, { c: true }])
-        fail(T, [{ c: true }, { a: 'hello' }, { b: 42 }])
+        const T = Type.Tuple([A, B])
+        fail(T, [
+            { b: 42 },
+            { a: 'hello' },
+        ])
     })
 })
