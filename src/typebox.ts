@@ -230,11 +230,6 @@ export type StaticConstructor <T extends readonly TSchema[], U extends TSchema> 
 export type StaticFunction    <T extends readonly TSchema[], U extends TSchema> = (...args: [...{ [K in keyof T]: Static<T[K]> }]) => Static<U>
 export type StaticPromise     <T extends TSchema>                               = Promise<Static<T>>
 
-
-
-
-
-
 export type Static<T> =
     T extends TKeyOf<infer U>                ? StaticKeyOf<U>          :
     T extends TIntersect<infer U>            ? StaticIntersect<U>      : 
@@ -401,6 +396,13 @@ export class TypeBuilder {
         return {...options, kind: KeyOfKind, type: 'string', enum: keys }
     }
 
+    /** `STANDARD` Creates a Record<K, V> schema. */
+    public Record<K extends TRecordKey, T extends TSchema>(key: K, value: T, options: ObjectOptions = {}): TRecord<K, T> {
+        const pattern = key.kind === UnionKind  ? `^${key.anyOf.map(key => key.const).join('|')}$` :
+                        key.kind === NumberKind ? '^[1-9]?[0-9]+$' : 
+                        key.pattern             ? key.pattern      :  '^.*$'
+        return { ...options, kind: RecordKind, type: 'object', patternProperties: { [pattern]: value } }
+    }
 
     /** `STANDARD` Make all properties in schema object required. */
     public Required<T extends TObject<TProperties>>(schema: T, options: ObjectOptions = {}): TObject<TRequired<T['properties']>> {
@@ -499,13 +501,6 @@ export class TypeBuilder {
     public Rec<T extends TSchema>(callback: (self: TAny) => T, $id: string = ''): T {
         const self = callback({ $ref: `${$id}#/definitions/self` } as any)
         return { $id,  $ref: `${$id}#/definitions/self`, definitions: { self } } as any as T
-    }
-
-    /** `STANDARD` Creates a record type schema. */
-    public Record<K extends TRecordKey, T extends TSchema>(key: K, value: T, options: ObjectOptions = {}): TRecord<K, T> {
-        const pattern = key.kind === UnionKind  ? `^${key.anyOf.map(key => key.const).join('|')}$` :
-                        key.kind === NumberKind ? '^[1-9]?[0-9]+$' : '^.*$'
-        return { ...options, kind: RecordKind, type: 'object', patternProperties: { [pattern]: value } }
     }
 }
 

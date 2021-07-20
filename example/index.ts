@@ -7,13 +7,13 @@ const Vector = Type.Object({
     z: Type.Number()
 })
 
-// const Base = Type.Object({
-//     a: Type.Number(),
-//     b: Type.Number(),
-//     c: Type.Number()
-// })
+const Properties = Type.Union([
+    Type.Literal('a'),
+    Type.Literal('b'),
+    Type.Literal('c'),
+])
 
-const T0 = Type.Record(Type.Number(), Type.Number())
+const T0 = Type.Record(Properties, Type.Number())
 
 type T0 = Static<typeof T0>
 
@@ -22,13 +22,13 @@ const T = Type.Intersect([T0, Vector], { unevaluatedProperties: false })
 type T = Static<typeof T>
 console.log(JSON.stringify(T, null, 2))
 ok(T, {
-    a: 2,
-    b: 2,
-    c: 2,
+    a: 1,
+    b: 1,
+    c: 1,
     x: 1,
     y: 1,
     z: 1,
-    // f: 'hello'
+    // f: 1,
 })
 
 
