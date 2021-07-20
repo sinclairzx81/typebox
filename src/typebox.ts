@@ -124,7 +124,7 @@ export type TBox       <T extends TDefinitions>                         = { kind
 export type TTuple     <T extends TSchema[]>                            = { kind: typeof TupleKind, type: 'array', items: [...T], additionalItems: false, minItems: number, maxItems: number } & CustomOptions
 export type TObject    <T extends TProperties>                          = { kind: typeof ObjectKind, type: 'object', properties: T, required?: string[] } & ObjectOptions
 export type TUnion     <T extends TSchema[]>                            = { kind: typeof UnionKind, anyOf: [...T] } & CustomOptions
-export type TIntersect <T extends TSchema[]>                            = { kind: typeof IntersectKind, allOf: [...T] } & IntersectOptions
+export type TIntersect <T extends TSchema[]>                            = { kind: typeof IntersectKind, type: 'object', allOf: [...T] } & IntersectOptions
 export type TKeyOf     <T extends TKey[]>                               = { kind: typeof KeyOfKind, type: 'string', enum: [...T] } & CustomOptions
 export type TRecord    <K extends TRecordKey, T extends TSchema>        = { kind: typeof RecordKind, type: 'object', patternProperties: { [pattern: string]: T } } & ObjectOptions
 export type TArray     <T extends TSchema>                              = { kind: typeof ArrayKind, type: 'array', items: T } & ArrayOptions
@@ -324,7 +324,7 @@ export class TypeBuilder {
 
     /** `STANDARD` Creates an intersection schema. Note this function requires draft `2019-09` to constrain with `unevaluatedProperties`. */
     public Intersect<T extends TSchema[]>(items: [...T], options: IntersectOptions = {}): TIntersect<T> {
-        return { ...options, kind: IntersectKind, allOf: items }
+        return { ...options, kind: IntersectKind, type: 'object', allOf: items }
     }
     
     /** `STANDARD` Creates a Union schema. */

@@ -2,62 +2,49 @@ import { Type } from '@sinclair/typebox'
 import { ok, fail } from './validate'
 
 describe('Record', () => {
+	it('Should validate when all property values are numbers', () => {
+		const T = Type.Record(Type.String(), Type.Number())
+		ok(T, { 'a': 1, 'b': 2, 'c': 3 })
+	})
 
-  it('Record<string, any>',  () => {
-    const T = Type.Record(Type.Any())
-    ok(T, { key: 32 })
-    ok(T, { key: 'hello' })
-    ok(T, { key: true })
-    ok(T, { key: {} })
-    ok(T, { key: [] })
-    ok(T, { key: null })
-  })
+	it('Should validate when all property keys are strings', () => {
+		const T = Type.Record(Type.String(), Type.Number())
+		ok(T, { 'a': 1, 'b': 2, 'c': 3, '0': 4 })
+	})
 
-  it('Record<string, A>',  () => {
-    const A = Type.String()
-    const T = Type.Record(A)
-    ok(T, { key: 'hello' })
-    fail(T, { key: 32 })
-    fail(T, { key: true })
-    fail(T, { key: {} })
-    fail(T, { key: [] })
-    fail(T, { key: null })
-  })
+	it('Should validate when all property keys are numbers', () => {
+		const T = Type.Record(Type.Number(), Type.Number())
+		ok(T, { '0': 1, '1': 2, '2': 3, '3': 4 })
+	})
 
-  it('Record<A | B>',  () => {
-    const A = Type.Number()
-    const B = Type.String()
-    const T = Type.Record(Type.Union([A, B]))
-    ok(T, { key: 'hello' })
-    ok(T, { key: 32 })
-    fail(T, { key: true })
-    fail(T, { key: {} })
-    fail(T, { key: [] })
-    fail(T, { key: null })
-  })
+	it('Should validate when all property keys are numbers, but one property is a string with varying type', () => {
+		const T = Type.Record(Type.Number(), Type.Number())
+		ok(T, { '0': 1, '1': 2, '2': 3, '3': 4, 'a': 'hello' })
+	})
 
-  it('Record<A & B>',  () => {
-    const A = Type.Object({ a: Type.String() })
-    const B = Type.Object({ b: Type.String() })
-    const T = Type.Record(Type.Intersect([A, B]))
-    ok(T, { key: {a: 'hello', b: 'world'} })
-    fail(T, { key: {b: 'world'} })
-    fail(T, { key: {a: 'hello'} })
-    fail(T, { key: true })
-    fail(T, { key: {} })
-    fail(T, { key: [] })
-    fail(T, { key: null })
-  })
+	it('Should not validate when all property keys are numbers, but one property is a string with varying type with additionalProperties false', () => {
+		const T = Type.Record(Type.Number(), Type.Number(), { additionalProperties: false })
+		fail(T, { '0': 1, '1': 2, '2': 3, '3': 4, 'a': 'hello' })
+	})
 
-  it('Record<[A, B]>',  () => {
-    const A = Type.String()
-    const B = Type.Number()
-    const T = Type.Record(Type.Tuple([A, B]))
-    ok(T, { key: ['hello', 42] })
-    fail(T, { key: [42, 'hello'] })
-    fail(T, { key: {a: 'hello'} })
-    fail(T, { key: {} })
-    fail(T, { key: [] })
-    fail(T, { key: [null] })
-  })
+	it('Should validate when specifying union literals for the known keys', () => {
+		const K = Type.Union([
+			Type.Literal('a'),
+			Type.Literal('b'),
+			Type.Literal('c'),
+		])
+		const T = Type.Record(K, Type.Number())
+		ok(T, { a: 1, b: 2, c: 3, d: 'hello' })
+	})
+
+	it('Should not validate when specifying union literals for the known keys and with additionalProperties: false', () => {
+		const K = Type.Union([
+			Type.Literal('a'),
+			Type.Literal('b'),
+			Type.Literal('c'),
+		])
+		const T = Type.Record(K, Type.Number(), { additionalProperties: false })
+		
+		fail(T, { a: 1, b: 2, c: 3, d: 'hello' })
+	})
 })

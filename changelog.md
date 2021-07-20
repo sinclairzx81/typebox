@@ -5,6 +5,7 @@ Changes:
 
 - Function `Type.Intersect(...)` now implemented via `allOf` and constrained with `unevaluatedProperties` (as per draft `2019-09`)
 - Deprecates `Type.Dict(...)` for `Type.Record(...)`.
+- Support for 
 
 Notes:
 
