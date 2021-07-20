@@ -272,10 +272,10 @@ The following table outlines the TypeBox mappings between TypeScript and JSON sc
 │   	                         │                             │ }                              │
 │   	                         │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
-│ const T = Type.Record(         │ type T = Record<            │ const T = {                    │
-│    Type.String(),              │    string,                  │    type: 'object'              │
-│    Type.Number()               │    number                   │    patternProperties: {        │
-│ ) 	                         │ >                           │      '.*': {                   │
+│ const T = Type.Record(         │ type T = {                  │ const T = {                    │
+│    Type.String(),              │    [key: string]: number    │    type: 'object'              │
+│    Type.Number()               │ }                           │    patternProperties: {        │
+│ ) 	                         │                             │      '.*': {                   │
 │   	                         │                             │         type: 'number'         │
 │   	                         │                             │      }                         │
 │   	                         │                             │    }                           │
