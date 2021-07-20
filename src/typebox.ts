@@ -394,7 +394,7 @@ export class TypeBuilder {
         const keys = Object.keys(schema.properties) as ObjectPropertyKeys<T>[]
         return {...options, kind: KeyOfKind, type: 'string', enum: keys }
     }
-
+    
     /** `STANDARD` Creates a Record<K, V> schema. */
     public Record<K extends TRecordKey, T extends TSchema>(key: K, value: T, options: ObjectOptions = {}): TRecord<K, T> {
         const pattern = key.kind === UnionKind  ? `^${key.anyOf.map(key => key.const).join('|')}$` :
