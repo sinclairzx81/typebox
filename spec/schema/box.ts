@@ -1,8 +1,8 @@
 import { Type } from '@sinclair/typebox'
 import { validator } from './validate'
 
-
 describe("Box", () => {
+
     it('Should should validate Vertex structure', () => {
         const Vector2 = Type.Object({ x: Type.Number(), y: Type.Number() })
         const Vector3 = Type.Object({ x: Type.Number(), y: Type.Number(), z: Type.Number() })
@@ -17,8 +17,8 @@ describe("Box", () => {
         const ajv = validator().addSchema(Math3D)
         const ok = ajv.validate(Vertex, {
             position: { x: 1, y: 1, z: 1, w: 1 },
-            normal: { x: 1, y: 1, z: 1 },
-            uv: { x: 1, y: 1 },
+            normal:   { x: 1, y: 1, z: 1 },
+            uv:       { x: 1, y: 1 },
         })
         if (ok === false) throw Error('Expected success')
     })
@@ -35,7 +35,7 @@ describe("Box", () => {
         const ajv = validator().addSchema(Math3D)
         const ok = ajv.validate(Vertex, {
             position: { x: 1, y: 1, z: 1, w: 1 },
-            normal: { x: 1, y: 1, z: 1 },
+            normal:   { x: 1, y: 1, z: 1 },
         })
         if (ok === true) throw Error('Expected fail')
     })
@@ -53,11 +53,12 @@ describe("Box", () => {
         const ajv = validator().addSchema(Math3D)
         const ok = ajv.validate(Vertex, {
             position: { x: 1, y: 1, z: 1, w: 1 },
-            normal: { x: 1, y: 1, z: 1 },
-            uv: { x: 1, y: 'not a number'},
+            normal:   { x: 1, y: 1, z: 1 },
+            uv:       { x: 1, y: 'not a number'},
         })
         if (ok === true) throw Error('Expected fail')
     })
+
     it('Should not validate when Box has not been registered with validator (AJV)', () => {
         const Vector2 = Type.Object({ x: Type.Number(), y: Type.Number() })
         const Vector3 = Type.Object({ x: Type.Number(), y: Type.Number(), z: Type.Number() })

@@ -1,23 +1,23 @@
 import { Type, ReadonlyModifier, ReadonlyOptionalModifier, OptionalModifier } from '@sinclair/typebox'
-import { ok, fail }    from './validate'
+import { ok, fail } from './validate'
 import { strictEqual } from 'assert'
 
 describe('Required', () => {
 
     it('Partial to Required', () => {
-        const Partial = Type.Object({ 
+        const Partial = Type.Object({
             x: Type.Optional(Type.Number()),
             y: Type.Optional(Type.Number()),
             z: Type.Optional(Type.Number())
         })
         const Required = Type.Required(Partial)
-        ok(Partial,    { })
-        ok(Required,   { x: 1, y: 1, z: 1 })
-        fail(Required, { })
+        ok(Partial, {})
+        ok(Required, { x: 1, y: 1, z: 1 })
+        fail(Required, {})
     })
 
     it('Modifiers', () => {
-        const T = Type.Object({ 
+        const T = Type.Object({
             x: Type.ReadonlyOptional(Type.Number()),
             y: Type.Readonly(Type.Number()),
             z: Type.Optional(Type.Number()),
