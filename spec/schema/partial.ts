@@ -4,42 +4,43 @@ import { strictEqual } from 'assert'
 
 describe('Partial', () => {
 
-    it('Required to Partial', () => {
-        const Required = Type.Object({
+    it('Should convert a required object into a partial.', () => {
+        const A = Type.Object({
             x: Type.Number(),
             y: Type.Number(),
             z: Type.Number()
+        }, { additionalProperties: false })
+        const T = Type.Partial(A, {
+            additionalProperties: false
         })
-        const Partial = Type.Partial(Required)
-        ok(Required, { x: 1, y: 1, z: 1 })
-        ok(Partial, {})
-        ok(Partial, { x: 1, y: 1, z: 1 })
-        ok(Partial, { x: 1, y: 1 })
-        ok(Partial, { x: 1 })
+        ok(T, { x: 1, y: 1, z: 1 })
+        ok(T, { x: 1, y: 1 })
+        ok(T, { x: 1 })
+        ok(T, {})
     })
 
-    it('Modifiers', () => {
-        const T = Type.Object({
+    it('Should update modifier types correctly when converting to partial', () => {
+        const A = Type.Object({
             x: Type.ReadonlyOptional(Type.Number()),
             y: Type.Readonly(Type.Number()),
             z: Type.Optional(Type.Number()),
             w: Type.Number()
-        })
-        const U = Type.Partial(T)
-        strictEqual(U.properties.x.modifier, ReadonlyOptionalModifier)
-        strictEqual(U.properties.y.modifier, ReadonlyOptionalModifier)
-        strictEqual(U.properties.z.modifier, OptionalModifier)
-        strictEqual(U.properties.w.modifier, OptionalModifier)
+        }, { additionalProperties: false })
+        const T = Type.Partial(A)
+        strictEqual(T.properties.x.modifier, ReadonlyOptionalModifier)
+        strictEqual(T.properties.y.modifier, ReadonlyOptionalModifier)
+        strictEqual(T.properties.z.modifier, OptionalModifier)
+        strictEqual(T.properties.w.modifier, OptionalModifier)
     })
 
-    it('Options', () => {
-        const Required = Type.Object({
+    it('Should inherit options from the source object', () => {
+        const A = Type.Object({
             x: Type.Number(),
             y: Type.Number(),
             z: Type.Number()
-        }, { title: 'Required' })
-        const Partial = Type.Partial(Required, { title: 'Partial' })
-        strictEqual(Required.title, 'Required')
-        strictEqual(Partial.title, 'Partial')
+        }, { additionalPropeties: false })
+        const T = Type.Partial(A)
+        strictEqual(A.additionalPropeties, false)
+        strictEqual(T.additionalPropeties, false)
     })
 })
