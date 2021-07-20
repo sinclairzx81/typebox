@@ -7,7 +7,7 @@ const T0 = Type.Object({
     b: Type.Optional(Type.Number())
 })
 
-const F0 = (arg: Static<typeof T0>) => {}
+const F0 = (arg: Static<typeof T0>) => { }
 
 F0({
     a: 1,

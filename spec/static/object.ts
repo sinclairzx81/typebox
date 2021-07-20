@@ -12,14 +12,14 @@ const T0 = Type.Object({
     e: Type.Record(Type.String(), Type.String()),
 })
 
-const F0 = (arg: Static<typeof T0>) => {}
+const F0 = (arg: Static<typeof T0>) => { }
 
 F0({
     a: 1,
     b: '',
     c: true,
-    d: { 
-        e: [''] 
+    d: {
+        e: ['']
     },
     e: { a: '' }
 })

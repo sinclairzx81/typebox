@@ -11,7 +11,7 @@ const U0 = Type.Object({
 
 const T0 = Type.KeyOf(U0)
 
-const F0 = (arg: Static<typeof T0>) => {}
+const F0 = (arg: Static<typeof T0>) => { }
 F0('a')
 F0('c')
 F0('c')
@@ -28,8 +28,8 @@ const T1 = Type.Object({
     k: Type.KeyOf(U1)
 })
 
-const F1 = (arg: Static<typeof T1>) => {}
-F1({ k: 'a'})
-F1({ k: 'b'})
-F1({ k: 'c'})
-F1({ k: 'd'})
+const F1 = (arg: Static<typeof T1>) => { }
+F1({ k: 'a' })
+F1({ k: 'b' })
+F1({ k: 'c' })
+F1({ k: 'd' })

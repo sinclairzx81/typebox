@@ -5,7 +5,7 @@ const T0 = Type.Object({
     b: Type.Readonly(Type.String()),
     c: Type.ReadonlyOptional(Type.Boolean())
 })
-const F0 = (arg: Static<typeof T0>) => {}
+const F0 = (arg: Static<typeof T0>) => { }
 
 F0({
     b: 'hello',

@@ -3,7 +3,7 @@ import { Type, Static } from '@sinclair/typebox'
 // --------------------------------------------
 
 const T0 = Type.Unknown()
-const F0 = (arg: Static<typeof T0>) => {}
+const F0 = (arg: Static<typeof T0>) => { }
 F0('string')
 F0(true)
 F0({})
