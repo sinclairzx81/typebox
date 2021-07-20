@@ -19,7 +19,7 @@ describe('Object', () => {
 			e: { x: 10, y: 20 }
 		})
 	})
-	it('Should not validate with correct property values', () => {
+	it('Should not validate with incorrect property values', () => {
 		const T = Type.Object({
 			a: Type.Number(),
 			b: Type.String(),
