@@ -1,5 +1,5 @@
 import { Type } from '@sinclair/typebox'
-import { createValidator } from './validate'
+import { validator } from './validate'
 
 
 describe("Box", () => {
@@ -14,8 +14,8 @@ describe("Box", () => {
             uv: Type.Ref(Math3D, 'Vector2'),
         })
 
-        const validator = createValidator().addSchema(Math3D)
-        const ok = validator.validate(Vertex, {
+        const ajv = validator().addSchema(Math3D)
+        const ok = ajv.validate(Vertex, {
             position: { x: 1, y: 1, z: 1, w: 1 },
             normal: { x: 1, y: 1, z: 1 },
             uv: { x: 1, y: 1 },
@@ -32,8 +32,8 @@ describe("Box", () => {
             normal: Type.Ref(Math3D, 'Vector3'),
             uv: Type.Ref(Math3D, 'Vector2'),
         })
-        const validator = createValidator().addSchema(Math3D)
-        const ok = validator.validate(Vertex, {
+        const ajv = validator().addSchema(Math3D)
+        const ok = ajv.validate(Vertex, {
             position: { x: 1, y: 1, z: 1, w: 1 },
             normal: { x: 1, y: 1, z: 1 },
         })
@@ -50,8 +50,8 @@ describe("Box", () => {
             normal:  Type.Ref(Math3D, 'Vector3'),
             uv:      Type.Ref(Math3D, 'Vector2'),
         })
-        const validator = createValidator().addSchema(Math3D)
-        const ok = validator.validate(Vertex, {
+        const ajv = validator().addSchema(Math3D)
+        const ok = ajv.validate(Vertex, {
             position: { x: 1, y: 1, z: 1, w: 1 },
             normal: { x: 1, y: 1, z: 1 },
             uv: { x: 1, y: 'not a number'},
@@ -68,13 +68,13 @@ describe("Box", () => {
             normal:   Type.Ref(Math3D, 'Vector3'),
             uv:       Type.Ref(Math3D, 'Vector2'),
         })
-        const validator = createValidator()
+        const ajv = validator()
         let did_throw = false
         try {
-            validator.validate(Vertex, {
+            ajv.validate(Vertex, {
                 position: { x: 1, y: 1, z: 1, w: 1 },
-                normal: { x: 1, y: 1, z: 1 },
-                uv: { x: 1, y: 1},
+                normal:   { x: 1, y: 1, z: 1 },
+                uv:       { x: 1, y: 1},
             })
         } catch {
             did_throw = true
