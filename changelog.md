@@ -3,17 +3,29 @@
 
 Changes:
 
-- Function `Type.Intersect(...)` now implemented via `allOf` and constrained with `unevaluatedProperties` (as per draft `2019-09`)
-- Deprecates `Type.Dict(...)` for `Type.Record(...)`.
-- Support for 
+- Function `Type.Intersect(...)` now implemented via `allOf` and constrained with `unevaluatedProperties` (draft `2019-09`)
+- Function `Type.Dict(...)` has been deprecated and replaced with `Type.Record(...)`.
+- Function `Type.Strict(...)` now includes the `$schema` property.
+
 
 Notes:
 
-This update changes the TypeBox JSON schema target to draft `2019-09`. This allows for `Type.Intersect(...)` types to be represented with `allOf`, but whose `additionalProperties` are constrained with `unevaluatedProperties`. Note that `unevaluatedProperties` is only available in the `2019-09` draft. All other schemas remain as they were, with this change only applicable to `Type.Intersect(...)` representation only. This update also reintroduces TypeBox's ability to intersect `Type.Object(...)` with `Type.Dict(...)`.
+### Type.Intersect(...)
+
+TypeBox now targets JSON schema draft `2019-09` for expressing `Type.Intersect(...)`. This is now expressed via `allOf` with additionalProperties constrained with `unevaluatedProperties`. Note that `unevaluatedProperties` is a feature of the `2019-09` specification.
+
+### Type.Record(K, V)
+
+TypeBox has deprecated `Type.Dict(...)` in favor of the more generic `Type.Record(...)`. Where as `Type.Dict(...)` was previously expressed with `additionalProperties: { ... }`, `Type.Record(...)` is expressed with `patternProperties` and supports both `string` and `number` indexing into the type. Additionally, `Type.Record(...)` supports string union arguments (analogous to TypeScript's) `Record<'a' | 'b' | 'c', T>`. This reintroduces the ability for TypeBox to intersect on `Type.Record(...)` where the keys are known up front.
+
+### Type.Strict()
+
+Inline with TypeBox borrowing features from the JSON schema `2019-09` draft specification, the `Type.Strict(...)` function now adds the `$schema: ''https://json-schema.org/draft/2019-09/schema''` property to all schemas passed to this function.
+
 
 ```typescript
 const User = Type.Object({
-    name: Type.String(),
+    name:  Type.String(),
     email: Type.String({ format: 'email' })
 })
 

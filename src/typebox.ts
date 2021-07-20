@@ -399,8 +399,8 @@ export class TypeBuilder {
     /** `STANDARD` Creates a Record<K, V> schema. */
     public Record<K extends TRecordKey, T extends TSchema>(key: K, value: T, options: ObjectOptions = {}): TRecord<K, T> {
         const pattern = key.kind === UnionKind  ? `^${key.anyOf.map(key => key.const).join('|')}$` :
-                        key.kind === NumberKind ? '^[1-9]?[0-9]+$' : 
-                        key.pattern             ? key.pattern      :  '^.*$'
+                        key.kind === NumberKind ? '^(0|[1-9][0-9]*)$' :
+                        key.pattern             ? key.pattern :  '^.*$'
         return { ...options, kind: RecordKind, type: 'object', patternProperties: { [pattern]: value } }
     }
 
@@ -494,13 +494,13 @@ export class TypeBuilder {
     
     /** `EXPERIMENTAL` References a schema within a box. */
     public Ref<T extends TBox<TDefinitions>, K extends keyof T['definitions']>(box: T, key: K): T['definitions'][K] {
-        return { $ref: `${box.$id}#/definitions/${key as string}` } as any // facade
+        return { $ref: `${box.$id}#/definitions/${key as string}` } as unknown as T['definitions'][K]
     }
 
     /** `EXPERIMENTAL` Creates a recursive type. */
     public Rec<T extends TSchema>(callback: (self: TAny) => T, $id: string = ''): T {
         const self = callback({ $ref: `${$id}#/definitions/self` } as any)
-        return { $id,  $ref: `${$id}#/definitions/self`, definitions: { self } } as any as T
+        return { $id,  $ref: `${$id}#/definitions/self`, definitions: { self } } as unknown as T
     }
 }
 
