@@ -20,7 +20,7 @@ describe('Omit', () => {
             z: Type.Number()
         }, { additionalProperties: false })
         const T = Type.Omit(A, ['z'])
-        strictEqual(T.required?.includes('z'), false)
+        strictEqual(T.required!.includes('z'), false)
     })
 
     it('Should inherit options from the source object', () => {
