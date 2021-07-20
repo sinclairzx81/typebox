@@ -4,10 +4,14 @@
     "target": "ESNext",
     "moduleResolution": "node",
     "removeComments": true,
-    "lib": ["ESNext"],
+    "lib": [
+      "ESNext"
+    ],
     "baseUrl": ".",
     "paths": {
-      "@sinclair/typebox": ["src/typebox.ts"]
+      "@sinclair/typebox": [
+        "src/typebox.ts"
+      ]
     }
   }
 }
