@@ -3,34 +3,34 @@ import { ok, fail } from './validate'
 import { strictEqual } from 'assert'
 
 describe('Omit', () => {
-    it('Vector3 to Vector2', () => {
-      const Vector3 = Type.Object({ 
-          x: Type.Number(),
-          y: Type.Number(),
-          z: Type.Number()
-      })
-      const Vector2 = Type.Omit(Vector3, ['z'])
-      ok(Vector2, { x: 1, y: 1 })
-    })
-  
-    it('User', () => {
-      const User = Type.Object({
-        id: Type.Readonly(Type.Integer()),
-        name: Type.String({ default: null }),
-        email: Type.String({ default: undefined }),
-      });
-      const PartialUser = Type.Omit(User, ['id'])
-      ok(PartialUser, { name: 'user', email: 'user@example.com' })
-    })
-
-    it('Options', () => {
-        const Vector3 = Type.Object({
+    it('Should omit properties on the source schema', () => {
+        const A = Type.Object({
             x: Type.Number(),
             y: Type.Number(),
             z: Type.Number()
-        }, { title: 'Vector3' })
-        const Vector2 = Type.Omit(Vector3, ['z'], { title: 'Vector2' })
-        strictEqual(Vector3.title, 'Vector3')
-        strictEqual(Vector2.title, 'Vector2')
+        }, { additionalProperties: false })
+        const T = Type.Omit(A, ['z'])
+        ok(T, { x: 1, y: 1 })
+    })
+
+    it('Should remove required properties on the target schema', () => {
+        const A = Type.Object({
+            x: Type.Number(),
+            y: Type.Number(),
+            z: Type.Number()
+        }, { additionalProperties: false })
+        const T = Type.Omit(A, ['z'])
+        strictEqual(T.required!.includes('z'), false)
+    })
+
+    it('Should inherit options from the source object', () => {
+        const A = Type.Object({
+            x: Type.Number(),
+            y: Type.Number(),
+            z: Type.Number()
+        }, { additionalProperties: false })
+        const T = Type.Omit(A, ['z'])
+        strictEqual(A.additionalProperties, false)
+        strictEqual(T.additionalProperties, false)
     })
 })

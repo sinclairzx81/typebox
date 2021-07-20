@@ -12,10 +12,11 @@ const U1 = Type.Object({
 })
 
 const T0 = Type.Intersect([U0, U1])
-const F0 = (arg: Static<typeof T0>) => {}
+const F0 = (arg: Static<typeof T0>) => { }
 F0({
     a: 'string',
     b: 1,
     c: true
 })
 
+// --------------------------------------------

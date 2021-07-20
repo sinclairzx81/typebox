@@ -1,10 +1,5 @@
 import { Type, Static } from '@sinclair/typebox'
 
-const Box = Type.Box('foo', {
-    Foo: Type.String()
-})
+const Record = Type.Record(Type.String(), Type.String())
 
-const Foo = Type.Ref(Box, 'Foo')
-
-type Foo = Static<typeof Foo>
-
+type Record = Static<typeof Record>

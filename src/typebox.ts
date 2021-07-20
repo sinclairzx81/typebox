@@ -30,9 +30,9 @@ THE SOFTWARE.
 // Modifiers
 // ------------------------------------------------------------------------
 
-export const ReadonlyOptionalModifier = Symbol('ReadonlyOptionalModifier')
-export const OptionalModifier         = Symbol('OptionalModifier')
-export const ReadonlyModifier         = Symbol('ReadonlyModifier')
+export const ReadonlyOptionalModifier            = Symbol('ReadonlyOptionalModifier')
+export const OptionalModifier                    = Symbol('OptionalModifier')
+export const ReadonlyModifier                    = Symbol('ReadonlyModifier')
 
 export type TModifier                            = TReadonlyOptional<TSchema> | TOptional<TSchema> | TReadonly<TSchema>
 export type TReadonlyOptional<T extends TSchema> = T & { modifier: typeof ReadonlyOptionalModifier }
@@ -43,22 +43,24 @@ export type TReadonly<T extends TSchema>         = T & { modifier: typeof Readon
 // Schema Standard
 // ------------------------------------------------------------------------
 
-export const BoxKind       = Symbol('BoxKind')
-export const KeyOfKind     = Symbol('KeyOfKind')
-export const UnionKind     = Symbol('UnionKind')
-export const TupleKind     = Symbol('TupleKind')
-export const ObjectKind    = Symbol('ObjectKind')
-export const DictKind      = Symbol('DictKind')
-export const ArrayKind     = Symbol('ArrayKind')
-export const EnumKind      = Symbol('EnumKind')
-export const LiteralKind   = Symbol('LiteralKind')
-export const StringKind    = Symbol('StringKind')
-export const NumberKind    = Symbol('NumberKind')
-export const IntegerKind   = Symbol('IntegerKind')
-export const BooleanKind   = Symbol('BooleanKind')
-export const NullKind      = Symbol('NullKind')
-export const UnknownKind   = Symbol('UnknownKind')
-export const AnyKind       = Symbol('AnyKind')
+export const BoxKind         = Symbol('BoxKind')
+export const KeyOfKind       = Symbol('KeyOfKind')
+export const IntersectKind   = Symbol('IntersectKind')
+export const UnionKind       = Symbol('UnionKind')
+export const TupleKind       = Symbol('TupleKind')
+export const ObjectKind      = Symbol('ObjectKind')
+export const RecordIndexKind = Symbol('RecordIndexed')
+export const RecordKind      = Symbol('RecordKind')
+export const ArrayKind       = Symbol('ArrayKind')
+export const EnumKind        = Symbol('EnumKind')
+export const LiteralKind     = Symbol('LiteralKind')
+export const StringKind      = Symbol('StringKind')
+export const NumberKind      = Symbol('NumberKind')
+export const IntegerKind     = Symbol('IntegerKind')
+export const BooleanKind     = Symbol('BooleanKind')
+export const NullKind        = Symbol('NullKind')
+export const UnknownKind     = Symbol('UnknownKind')
+export const AnyKind         = Symbol('AnyKind')
 
 export interface CustomOptions {
     title?: string
@@ -97,7 +99,11 @@ export type NumberOptions = {
     multipleOf?: number
 } & CustomOptions
 
-export type DictOptions = {
+export type IntersectOptions = {
+    unevaluatedProperties?: boolean
+} & CustomOptions
+
+export type IndexedOptions = {
     minProperties?: number
     maxProperties?: number
 } & CustomOptions
@@ -106,28 +112,30 @@ export type ObjectOptions = {
     additionalProperties?: boolean
 } & CustomOptions
 
-export type TEnumType = Record<string, string | number>
-export type TKey      = string | number | symbol
-export type TValue    = string | number | boolean
+export type TEnumType  = Record<string, string | number>
+export type TKey       = string | number | symbol
+export type TValue     = string | number | boolean
+export type TRecordKey = TString | TNumber | TUnion<TLiteral<string | number>[]>
 
-export type TDefinitions                        = { [key: string]: TSchema }
-export type TProperties                         = { [key: string]: TSchema }
-export type TBox       <T extends TDefinitions> = { kind: typeof BoxKind, $id: string, definitions: T }
-export type TTuple     <T extends TSchema[]>    = { kind: typeof TupleKind, type: 'array', items: [...T], additionalItems: false, minItems: number, maxItems: number } & CustomOptions
-export type TObject    <T extends TProperties>  = { kind: typeof ObjectKind, type: 'object', properties: T, required?: string[] } & ObjectOptions
-export type TUnion     <T extends TSchema[]>    = { kind: typeof UnionKind, anyOf: [...T] } & CustomOptions
-export type TKeyOf     <T extends TKey[]>       = { kind: typeof KeyOfKind, type: 'string', enum: [...T] } & CustomOptions
-export type TDict      <T extends TSchema>      = { kind: typeof DictKind, type: 'object', additionalProperties: T } & DictOptions
-export type TArray     <T extends TSchema>      = { kind: typeof ArrayKind, type: 'array', items: T } & ArrayOptions
-export type TLiteral   <T extends TValue>       = { kind: typeof LiteralKind, const: T } & CustomOptions
-export type TEnum      <T extends TKey>         = { kind: typeof EnumKind, type?: 'string' | 'number' | ['string', 'number'], enum: T[] } & CustomOptions
-export type TString                             = { kind: typeof StringKind, type: 'string' } & StringOptions<string>
-export type TNumber                             = { kind: typeof NumberKind, type: 'number' } & NumberOptions
-export type TInteger                            = { kind: typeof IntegerKind, type: 'integer' } & NumberOptions
-export type TBoolean                            = { kind: typeof BooleanKind, type: 'boolean' } & CustomOptions
-export type TNull                               = { kind: typeof NullKind, type: 'null' } & CustomOptions
-export type TUnknown                            = { kind: typeof UnknownKind } & CustomOptions
-export type TAny                                = { kind: typeof AnyKind } & CustomOptions
+export type TDefinitions                                         = { [key: string]: TSchema }
+export type TProperties                                          = { [key: string]: TSchema }
+export type TBox       <T extends TDefinitions>                  = { kind: typeof BoxKind, $id: string, definitions: T }
+export type TTuple     <T extends TSchema[]>                     = { kind: typeof TupleKind, type: 'array', items: [...T], additionalItems: false, minItems: number, maxItems: number } & CustomOptions
+export type TObject    <T extends TProperties>                   = { kind: typeof ObjectKind, type: 'object', properties: T, required?: string[] } & ObjectOptions
+export type TUnion     <T extends TSchema[]>                     = { kind: typeof UnionKind, anyOf: [...T] } & CustomOptions
+export type TIntersect <T extends TSchema[]>                     = { kind: typeof IntersectKind, type: 'object', allOf: [...T] } & IntersectOptions
+export type TKeyOf     <T extends TKey[]>                        = { kind: typeof KeyOfKind, type: 'string', enum: [...T] } & CustomOptions
+export type TRecord    <K extends TRecordKey, T extends TSchema> = { kind: typeof RecordKind, type: 'object', patternProperties: { [pattern: string]: T } } & ObjectOptions
+export type TArray     <T extends TSchema>                       = { kind: typeof ArrayKind, type: 'array', items: T } & ArrayOptions
+export type TLiteral   <T extends TValue>                        = { kind: typeof LiteralKind, const: T } & CustomOptions
+export type TEnum      <T extends TKey>                          = { kind: typeof EnumKind, type?: 'string' | 'number' | ['string', 'number'], enum: T[] } & CustomOptions
+export type TString                                              = { kind: typeof StringKind, type: 'string' } & StringOptions<string>
+export type TNumber                                              = { kind: typeof NumberKind, type: 'number' } & NumberOptions
+export type TInteger                                             = { kind: typeof IntegerKind, type: 'integer' } & NumberOptions
+export type TBoolean                                             = { kind: typeof BooleanKind, type: 'boolean' } & CustomOptions
+export type TNull                                                = { kind: typeof NullKind, type: 'null' } & CustomOptions
+export type TUnknown                                             = { kind: typeof UnknownKind } & CustomOptions
+export type TAny                                                 = { kind: typeof AnyKind } & CustomOptions
 
 // ------------------------------------------------------------------------
 // Schema Extended
@@ -141,19 +149,20 @@ export const VoidKind        = Symbol('VoidKind')
 export type TConstructor <T extends TSchema[], U extends TSchema> = { kind: typeof ConstructorKind, type: 'constructor', arguments: readonly [...T], returns: U } & CustomOptions
 export type TFunction    <T extends TSchema[], U extends TSchema> = { kind: typeof FunctionKind,    type: 'function', arguments: readonly [...T], returns: U } & CustomOptions
 export type TPromise     <T extends TSchema>                      = { kind: typeof PromiseKind,     type: 'promise', item: T } & CustomOptions
-export type TUndefined      = { kind: typeof UndefinedKind, type: 'undefined' } & CustomOptions
-export type TVoid           = { kind: typeof VoidKind, type: 'void' } & CustomOptions
+export type TUndefined       = { kind: typeof UndefinedKind, type: 'undefined' } & CustomOptions
+export type TVoid            = { kind: typeof VoidKind, type: 'void' } & CustomOptions
 
 // ------------------------------------------------------------------------
 // Schema
 // ------------------------------------------------------------------------
 
 export type TSchema =
+    | TIntersect<any>
     | TUnion<any>
     | TTuple<any>
     | TObject<any>
     | TKeyOf<any>
-    | TDict<any>
+    | TRecord<any, any>
     | TArray<any>
     | TEnum<any>
     | TLiteral<any>
@@ -193,9 +202,8 @@ export type TPartial<T extends TProperties> = {
 // Static Inference
 // ------------------------------------------------------------------------
 
-export type UnionToIntersect<U>     = (U extends any ? (k: U) => void : never) extends ((k: infer I) => void) ? I : never
-export type IntersectObjectArray<T> = T extends Array<TObject<infer U>> ? UnionToIntersect<U> : TProperties
-export type ObjectPropertyKeys           <T> = T extends TObject<infer U> ? PropertyKeys<U> : never
+export type UnionToIntersect<U>                                  = (U extends any ? (k: U) => void : never) extends ((k: infer I) => void) ? I : never
+export type ObjectPropertyKeys           <T>                     = T extends TObject<infer U> ? PropertyKeys<U> : never
 export type PropertyKeys                 <T extends TProperties> = keyof T
 export type ReadonlyOptionalPropertyKeys <T extends TProperties> = { [K in keyof T]: T[K] extends TReadonlyOptional<infer U> ? K : never }[keyof T]
 export type ReadonlyPropertyKeys         <T extends TProperties> = { [K in keyof T]: T[K] extends TReadonly<infer U> ? K : never }[keyof T]
@@ -208,24 +216,26 @@ export type StaticModifiers<T extends TProperties> =
     {          [K in OptionalPropertyKeys<T>]?:         Static<T[K]> } &
     {          [K in RequiredPropertyKeys<T>]:          Static<T[K]> }
 
-export type StaticKeyOf       <T extends TKey[]>               = T extends Array<infer K> ? K : never 
-export type StaticUnion       <T extends readonly TSchema[]>   = { [K in keyof T]: Static<T[K]> }[number]
-export type StaticTuple       <T extends readonly TSchema[]>   = { [K in keyof T]: Static<T[K]> }
-export type StaticObject      <T extends TProperties>          = ReduceModifiers<StaticModifiers<T>>
-export type StaticDict        <T extends TSchema>              = { [key: string]: Static<T> }
-export type StaticArray       <T extends TSchema>              = Array<Static<T>>
-export type StaticLiteral     <T extends TValue>               = T
-export type StaticEnum        <T extends TKey>                 = T
+export type StaticKeyOf       <T extends TKey[]>                                = T extends Array<infer K> ? K : never
+export type StaticIntersect   <T extends readonly TSchema[]>                    = UnionToIntersect<StaticUnion<T>>
+export type StaticUnion       <T extends readonly TSchema[]>                    = { [K in keyof T]: Static<T[K]> }[number]
+export type StaticTuple       <T extends readonly TSchema[]>                    = { [K in keyof T]: Static<T[K]> }
+export type StaticObject      <T extends TProperties>                           = ReduceModifiers<StaticModifiers<T>>
+export type StaticRecord      <K extends TRecordKey, T extends TSchema>         = K extends TString ? { [key: string]: Static<T> } : K extends TNumber ? { [key: number]: Static<T> } : K extends TUnion<infer L> ? L extends TLiteral<any>[] ? {[K in StaticUnion<L>]: Static<T> } : never : never
+export type StaticArray       <T extends TSchema>                               = Array<Static<T>>
+export type StaticLiteral     <T extends TValue>                                = T
+export type StaticEnum        <T extends TKey>                                  = T
 export type StaticConstructor <T extends readonly TSchema[], U extends TSchema> = new (...args: [...{ [K in keyof T]: Static<T[K]> }]) => Static<U>
 export type StaticFunction    <T extends readonly TSchema[], U extends TSchema> = (...args: [...{ [K in keyof T]: Static<T[K]> }]) => Static<U>
-export type StaticPromise     <T extends TSchema>             = Promise<Static<T>>
+export type StaticPromise     <T extends TSchema>                               = Promise<Static<T>>
 
 export type Static<T> =
-    T extends TKeyOf<infer U>                ? StaticKeyOf<U>          :    
+    T extends TKeyOf<infer U>                ? StaticKeyOf<U>          :
+    T extends TIntersect<infer U>            ? StaticIntersect<U>      : 
     T extends TUnion<infer U>                ? StaticUnion<U>          :
     T extends TTuple<infer U>                ? StaticTuple<U>          :
     T extends TObject<infer U>               ? StaticObject<U>         :
-    T extends TDict<infer U>                 ? StaticDict<U>           :
+    T extends TRecord<infer K, infer U>      ? StaticRecord<K, U>      :
     T extends TArray<infer U>                ? StaticArray<U>          :
     T extends TEnum<infer U>                 ? StaticEnum<U>           :
     T extends TLiteral<infer U>              ? StaticLiteral<U>        :
@@ -259,12 +269,6 @@ function clone(object: any): any {
     if(isObject(object)) return Object.keys(object).reduce<any>((acc, key) => ({...acc, [key]: clone(object[key]) }), {})
     if(isArray(object)) return object.map((item: any) => clone(item))
     return object
-}
-
-function distinct(keys: string[]): string[] {
-    return Object.keys(keys.reduce((acc, key) => {
-        return { ...acc, [key]: null }
-    }, {}))
 }
 
 // ------------------------------------------------------------------------
@@ -312,25 +316,14 @@ export class TypeBuilder {
             { ...options, kind: ObjectKind, type: 'object', properties }
     }
 
-    /** `STANDARD` Creates an intersection schema of the given object schemas. */
-    public Intersect<T extends TObject<TProperties>[]>(items: [...T], options: ObjectOptions = {}): TObject<IntersectObjectArray<T>> {
-        const type       = 'object'
-        const properties = items.reduce((acc, object) => ({ ...acc, ...object['properties'] }), {} as IntersectObjectArray<T>)
-        const required   = distinct(items.reduce((acc, object) => object['required'] ? [ ...acc, ...object['required'] ] : acc, [] as string[]))
-        return (required.length > 0)
-            ? { ...options, type, kind: ObjectKind, properties, required }
-            : { ...options, type, kind: ObjectKind, properties }
+    /** `STANDARD` Creates an intersection schema. Note this function requires draft `2019-09` to constrain with `unevaluatedProperties`. */
+    public Intersect<T extends TSchema[]>(items: [...T], options: IntersectOptions = {}): TIntersect<T> {
+        return { ...options, kind: IntersectKind, type: 'object', allOf: items }
     }
     
     /** `STANDARD` Creates a Union schema. */
     public Union<T extends TSchema[]>(items: [...T], options: CustomOptions = {}): TUnion<T> {
         return { ...options, kind: UnionKind, anyOf: items }
-    }
-
-    /** `STANDARD` Creates a `{ [key: string]: T }` schema. */
-    public Dict<T extends TSchema>(item: T, options: DictOptions = {}): TDict<T> {
-        const additionalProperties = item
-        return { ...options, kind: DictKind, type: 'object', additionalProperties }
     }
 
     /** `STANDARD` Creates an `Array<T>` schema. */
@@ -401,6 +394,14 @@ export class TypeBuilder {
         const keys = Object.keys(schema.properties) as ObjectPropertyKeys<T>[]
         return {...options, kind: KeyOfKind, type: 'string', enum: keys }
     }
+    
+    /** `STANDARD` Creates a Record<K, V> schema. */
+    public Record<K extends TRecordKey, T extends TSchema>(key: K, value: T, options: ObjectOptions = {}): TRecord<K, T> {
+        const pattern = key.kind === UnionKind  ? `^${key.anyOf.map(key => key.const).join('|')}$` :
+                        key.kind === NumberKind ? '^(0|[1-9][0-9]*)$' :
+                        key.pattern             ? key.pattern :  '^.*$'
+        return { ...options, kind: RecordKind, type: 'object', patternProperties: { [pattern]: value } }
+    }
 
     /** `STANDARD` Make all properties in schema object required. */
     public Required<T extends TObject<TProperties>>(schema: T, options: ObjectOptions = {}): TObject<TRequired<T['properties']>> {
@@ -456,7 +457,8 @@ export class TypeBuilder {
 
     /** `STANDARD` Omits the `kind` and `modifier` properties from the given schema. */
     public Strict<T extends TSchema>(schema: T): T {
-        return JSON.parse(JSON.stringify(schema)) as T
+        const $schema = 'https://json-schema.org/draft/2019-09/schema'
+        return JSON.parse(JSON.stringify({ $schema, ...schema })) as T
     }
 
     /** `EXTENDED` Creates a `constructor` schema. */
@@ -491,13 +493,13 @@ export class TypeBuilder {
     
     /** `EXPERIMENTAL` References a schema within a box. */
     public Ref<T extends TBox<TDefinitions>, K extends keyof T['definitions']>(box: T, key: K): T['definitions'][K] {
-        return { $ref: `${box.$id}#/definitions/${key as string}` } as any // facade
+        return { $ref: `${box.$id}#/definitions/${key as string}` } as unknown as T['definitions'][K]
     }
 
     /** `EXPERIMENTAL` Creates a recursive type. */
     public Rec<T extends TSchema>(callback: (self: TAny) => T, $id: string = ''): T {
         const self = callback({ $ref: `${$id}#/definitions/self` } as any)
-        return { $id,  $ref: `${$id}#/definitions/self`, definitions: { self } } as any as T
+        return { $id,  $ref: `${$id}#/definitions/self`, definitions: { self } } as unknown as T
     }
 }
 

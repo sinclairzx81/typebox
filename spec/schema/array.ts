@@ -2,49 +2,76 @@ import { Type } from '@sinclair/typebox'
 import { ok, fail } from './validate'
 
 describe("Array", () => {
-  it('Array <any>',  () => {
-    const T = Type.Array(Type.Any())
-    ok(T, [])
-    ok(T, [0, true, 'hello', {}])
-  })
+    it('Should validate an array of any', () => {
+        const T = Type.Array(Type.Any())
+        ok(T, [0, true, 'hello', {}])
+    })
 
-  it('Array <A>',  () => {
-    const A = Type.Number()
-    const T = Type.Array(A)
-    ok(T,   [])
-    ok(T,   [1, 2, 3, 4])
-    fail(T, [true])
-    fail(T, [null])
-  })
+    it('Should not validate varying array when item is number', () => {
+        const T = Type.Array(Type.Number())
+        fail(T, [1, 2, 3, 'hello'])
+    })
 
-  it('Array <A | B>',  () => {
-    const A = Type.Number()
-    const B = Type.String()
-    const T = Type.Array(Type.Union([A, B]))
-    ok(T,   [])
-    ok(T,   [1, 'hello', 3, 'world'])
-    fail(T, [1, 'hello', 3, 'world', null])
-    fail(T, [null])
-  })
+    it('Should validate for an array of unions', () => {
+        const T = Type.Array(Type.Union([Type.Number(), Type.String()]))
+        ok(T, [1, 'hello', 3, 'world'])
+    })
 
-  it('Array <A & B>',  () => {
-    const A = Type.Object({ a: Type.String() })
-    const B = Type.Object({ b: Type.String() })
-    const T = Type.Array(Type.Intersect([A, B]))
-    ok(T,   [])
-    ok(T,   [{a: 'hello', b: 'world'}])
-    fail(T, [{a: 'hello'}])
-    fail(T, [{b: 'world'}])
-    fail(T, [null])
-  })
+    it('Should not validate for an array of unions where item is not in union.', () => {
+        const T = Type.Array(Type.Union([Type.Number(), Type.String()]))
+        fail(T, [1, 'hello', 3, 'world', true])
+    })
 
-  it('Array <[A, B]>',  () => {
-    const A = Type.String()
-    const B = Type.Number()
-    const T = Type.Array(Type.Tuple([A, B]))
-    ok(T,   [])
-    ok(T,   [['hello', 42]])
-    fail(T, [[42, 'hello']])
-    fail(T, [null])
-  })
+    it('Should validate for an empty array', () => {
+        const T = Type.Array(Type.Union([Type.Number(), Type.String()]))
+        ok(T, [])
+    })
+
+    it('Should validate for an array of intersection types', () => {
+        const A = Type.Object({ a: Type.String() })
+        const B = Type.Object({ b: Type.String() })
+        const C = Type.Intersect([A, B], { unevaluatedProperties: false })
+        const T = Type.Array(C)
+        ok(T, [
+            { a: 'hello', b: 'hello' },
+            { a: 'hello', b: 'hello' },
+            { a: 'hello', b: 'hello' },
+        ])
+    })
+
+    it('Should not validate for an array of intersection types when passing unevaluated property', () => {
+        const A = Type.Object({ a: Type.String() })
+        const B = Type.Object({ b: Type.String() })
+        const C = Type.Intersect([A, B], { unevaluatedProperties: false })
+        const T = Type.Array(C)
+        fail(T, [
+            { a: 'hello', b: 'hello' },
+            { a: 'hello', b: 'hello' },
+            { a: 'hello', b: 'hello', c: 'additional' },
+        ])
+    })
+
+    it('Should validate an array of tuples', () => {
+        const A = Type.String()
+        const B = Type.Number()
+        const C = Type.Tuple([A, B])
+        const T = Type.Array(C)
+        ok(T, [
+            ['hello', 1],
+            ['hello', 1],
+            ['hello', 1],
+        ])
+    })
+
+    it('Should not validate an array of tuples when tuple values are incorrect', () => {
+        const A = Type.String()
+        const B = Type.Number()
+        const C = Type.Tuple([A, B])
+        const T = Type.Array(C)
+        fail(T, [
+            [1, 'hello'],
+            [1, 'hello'],
+            [1, 'hello'],
+        ])
+    })
 })

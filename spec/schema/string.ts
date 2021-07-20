@@ -2,39 +2,48 @@ import { Type } from '@sinclair/typebox'
 import { ok, fail } from './validate'
 
 describe("String", () => {
+    it('Should not validate number', () => {
+        const T = Type.String()
+        fail(T, 1)
+    })
+    it('Should validate string', () => {
+        const T = Type.String()
+        ok(T, 'hello')
+    })
+    it('Should not validate boolean', () => {
+        const T = Type.String()
+        fail(T, true)
+    })
+    it('Should not validate array', () => {
+        const T = Type.String()
+        fail(T, [1, 2, 3])
+    })
+    it('Should not validate object', () => {
+        const T = Type.String()
+        fail(T, { a: 1, b: 2 })
+    })
+    it('Should not validate null', () => {
+        const T = Type.String()
+        fail(T, null)
+    })
+    it('Should not validate undefined', () => {
+        const T = Type.String()
+        fail(T, undefined)
+    })
 
-  it('String',  () => {
-    const T = Type.String()
-    ok(T, 'hello')
-    fail(T, {})
-    fail(T, [])
-    fail(T, 1)
-    fail(T, true)
-    fail(T, null)
-  })
+    it('Should validate string format as email', () => {
+        const T = Type.String({ format: 'email' })
+        ok(T, 'name@domain.com')
+    })
 
-  it('DateTime', () => {
-    const T = Type.String({ format: 'date-time' })
-    ok(T, "2018-11-13T20:20:39+00:00")
-    fail(T, "2018-11-13")
-    fail(T, "20:20:39+00:00")
-    fail(T, "string")
-  })
+    it('Should validate string format as uuid', () => {
+        const T = Type.String({ format: 'uuid' })
+        ok(T, '4a7a17c9-2492-4a53-8e13-06ea2d3f3bbf')
+    })
 
-  it('Email', () => {
-      const T = Type.String({ format: 'email' })
-      ok(T, "dave@domain.com")
-      fail(T, "orange")
-  })
-
-  it('Uuid', () => {
-    const T = Type.String({ format: 'uuid' })
-    ok(T, 'f1b35107-5a79-4108-8ff8-470087865b9c')
-    ok(T, '67e147cf-c47b-472d-9cbe-b85177d791b6')
-    ok(T, 'db8cd64f-b297-4ef1-a0ba-298322965247')
-    ok(T, '30957e77-40c4-4b05-8d4d-64f63b83034d')
-    ok(T, 'abe8f990-370e-479a-b452-851ae15714dc')
-    ok(T, '4f08d994-cafe-4075-a9ca-bedc8a49427b')
-    fail(T, 'orange')
-  })
+    it('Should validate string format as iso8601 date', () => {
+        const T = Type.String({ format: 'date-time' })
+        ok(T, '2021-06-11T20:30:00-04:00')
+    })
 })
+

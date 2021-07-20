@@ -8,7 +8,7 @@ const T0 = Type.Partial(Type.Object({
     z: Type.Number()
 }))
 
-const F0 = (arg: Static<typeof T0>) => {}
+const F0 = (arg: Static<typeof T0>) => { }
 F0({ x: 1, y: 1, z: 1 })
 F0({ x: 1, y: 1 })
 F0({ x: 1 })

@@ -3,55 +3,55 @@ import { ok, fail } from './validate'
 
 describe('Union', () => {
 
-  it('number | string', () => {
-    const A = Type.String()
-    const B = Type.Number()
-    const T = Type.Union([A, B])
+    it('Should validate union of string, number and boolean', () => {
+        const A = Type.String()
+        const B = Type.Number()
+        const C = Type.Boolean()
+        const T = Type.Union([A, B, C])
+        ok(T, 'hello')
+        ok(T, true)
+        ok(T, 42)
+    })
 
-    fail(T, {})
-    ok(T, 'hello')
-    ok(T, 42)
-  })
+    it('Should validate union of objects', () => {
+        const A = Type.Object({ a: Type.String() }, { additionalProperties: false })
+        const B = Type.Object({ b: Type.String() }, { additionalProperties: false })
+        const T = Type.Union([A, B])
+        ok(T, { a: 'hello' })
+        ok(T, { b: 'world' })
+    })
 
-  it('A | (A & B)', () => {
-    const A = Type.Object({ a: Type.String() })
-    const B = Type.Object({ a: Type.String(), b: Type.Optional(Type.Number()) })
-    const T = Type.Union([A, B])
+    it('Should validate union of objects where properties overlap', () => {
+        const A = Type.Object({ a: Type.String() }, { additionalProperties: false })
+        const B = Type.Object({ a: Type.String(), b: Type.String() }, { additionalProperties: false })
+        const T = Type.Union([A, B])
+        ok(T, { a: 'hello' })             // A
+        ok(T, { a: 'hello', b: 'world' }) // B
+    })
+   
 
-    fail(T, {})
-    ok(T, { a: 'hello', b: 42 })
-    ok(T, { a: 'hello' })
-  })
+    it('Should validate union of overlapping property of varying type', () => {
+        const A = Type.Object({ a: Type.String(), b: Type.Number() }, { additionalProperties: false })
+        const B = Type.Object({ a: Type.String(), b: Type.String() }, { additionalProperties: false })
+        const T = Type.Union([A, B])
+        ok(T, { a: 'hello', b: 42 })      // A
+        ok(T, { a: 'hello', b: 'world' }) // B
+    })
 
-  it('A | B | C', () => {
-    const A = Type.Object({ a: Type.String() })
-    const B = Type.Object({ b: Type.Number() })
-    const C = Type.Object({ c: Type.Boolean() })
-    const T = Type.Union([A, B, C])
+    it('Should validate union of literal strings', () => {
+        const A = Type.Literal('hello')
+        const B = Type.Literal('world')
+        const T = Type.Union([A, B])
+        ok(T, 'hello') // A
+        ok(T, 'world') // B
+    })
 
-    fail(T, {})
-    ok(T, { a: 'hello' })
-    ok(T, { b: 42 })
-    ok(T, { c: true })
-  })
-
-  it('A | B (tagged union)', () => {
-    const T = Type.Union([
-      Type.Object({ 
-        kind: Type.Literal('string'),
-        value: Type.String()
-      }),
-      Type.Object({
-        kind: Type.Literal('number'),
-        value: Type.Number()
-      })
-    ])
-
-    ok  (T, { kind: 'string', value: 'hello' })
-    ok  (T, { kind: 'number', value: 1 })
-
-    fail(T, { kind: 'string', value: 1 })
-    fail(T, { kind: 'number', value: 'hello' })
-  })
+    it('Should not validate union of literal strings for unknown string', () => {
+        const A = Type.Literal('hello')
+        const B = Type.Literal('world')
+        const T = Type.Union([A, B])
+        fail(T, 'foo') // A
+        fail(T, 'bar') // B
+    })
 })
 

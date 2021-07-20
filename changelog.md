@@ -1,12 +1,34 @@
 
+## [0.18.0](https://www.npmjs.com/package/@sinclair/typebox/v/0.18.0)
+
+Changes:
+
+- Function `Type.Intersect(...)` is now implemented with `allOf` and constrained with `unevaluatedProperties` (draft `2019-09`)
+- Function `Type.Dict(...)` has been deprecated and replaced with `Type.Record(...)`.
+- Function `Type.Strict(...)` now includes the `$schema` property referencing the `2019-09` draft.
+
+### Type.Intersect(...)
+
+TypeBox now targets JSON schema draft `2019-09` for expressing `Type.Intersect(...)`. This is now expressed via `allOf` with additionalProperties constrained with `unevaluatedProperties`. Note that `unevaluatedProperties` is a feature of the `2019-09` specification.
+
+### Type.Record(K, V)
+
+TypeBox has deprecated `Type.Dict(...)` in favor of the more generic `Type.Record(...)`. Where as `Type.Dict(...)` was previously expressed with `additionalProperties: { ... }`, `Type.Record(...)` is expressed with `patternProperties` and supports both `string` and `number` indexer keys. Additionally, `Type.Record(...)` supports string union arguments. This is analogous to TypeScript's utility record type `Record<'a' | 'b' | 'c', T>`.
+
 ## [0.17.7](https://www.npmjs.com/package/@sinclair/typebox/v/0.17.7)
+
+Changes:
 
 - Added optional `$id` argument on `Type.Rec()`.
 - Documentation updates.
 
 ## [0.17.6](https://www.npmjs.com/package/@sinclair/typebox/v/0.17.6)
 
+Changes:
+
 - Added `Type.Rec(...)` function.
+
+Notes:
 
 This update introduces the `Type.Rec()` function for enabling Recursive Types. Please note that due to current inference limitations in TypeScript, TypeBox is unable to infer the type and resolves inner types to `any`. 
 
@@ -59,7 +81,11 @@ This functionality is flagged as `EXPERIMENTAL` and awaits community feedback.
 
 ## [0.17.4](https://www.npmjs.com/package/@sinclair/typebox/v/0.17.4)
 
+Changes:
+
 - Added `Type.Box()` and `Type.Ref()` functions.
+
+Notes:
 
 This update provides the `Type.Box()` function to enable common related schemas to grouped under a common namespace; typically expressed as a `URI`. This functionality is primarily geared towards allowing one to define a common set of domain objects that may be shared across application domains running over a network. The `Type.Box()` is intended to be an analog to `XML` `xmlns` namespacing.
 
