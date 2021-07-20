@@ -679,8 +679,9 @@ import { Type } from '@sinclair/typebox'
 import addFormats from 'ajv-formats'
 import Ajv from 'ajv/dist/2019'
 
-// Setup
-const ajv = addFormats(new Ajv(), [
+const ajv = addFormats(new Ajv({
+    allowUnionTypes: true
+}), [
     'date-time', 
     'time', 
     'date', 
