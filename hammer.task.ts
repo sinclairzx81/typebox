@@ -21,7 +21,7 @@ export async function build(target = 'target/build') {
     await folder(target).add('license')
     await shell(`cd ${target} && npm pack`)
 
-    // npm publish sinclair-typebox-0.x.x.tgz --access=public
-    // git tag <version>
-    // git push --tags <version>
+    // $ npm publish sinclair-typebox-0.x.x.tgz --access=public
+    // $ git tag <version>
+    // $ git push origin <version>
 }
