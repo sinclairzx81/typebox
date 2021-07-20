@@ -30,9 +30,9 @@ THE SOFTWARE.
 // Modifiers
 // ------------------------------------------------------------------------
 
-export const ReadonlyOptionalModifier = Symbol('ReadonlyOptionalModifier')
-export const OptionalModifier         = Symbol('OptionalModifier')
-export const ReadonlyModifier         = Symbol('ReadonlyModifier')
+export const ReadonlyOptionalModifier            = Symbol('ReadonlyOptionalModifier')
+export const OptionalModifier                    = Symbol('OptionalModifier')
+export const ReadonlyModifier                    = Symbol('ReadonlyModifier')
 
 export type TModifier                            = TReadonlyOptional<TSchema> | TOptional<TSchema> | TReadonly<TSchema>
 export type TReadonlyOptional<T extends TSchema> = T & { modifier: typeof ReadonlyOptionalModifier }
@@ -149,8 +149,8 @@ export const VoidKind        = Symbol('VoidKind')
 export type TConstructor <T extends TSchema[], U extends TSchema> = { kind: typeof ConstructorKind, type: 'constructor', arguments: readonly [...T], returns: U } & CustomOptions
 export type TFunction    <T extends TSchema[], U extends TSchema> = { kind: typeof FunctionKind,    type: 'function', arguments: readonly [...T], returns: U } & CustomOptions
 export type TPromise     <T extends TSchema>                      = { kind: typeof PromiseKind,     type: 'promise', item: T } & CustomOptions
-export type TUndefined      = { kind: typeof UndefinedKind, type: 'undefined' } & CustomOptions
-export type TVoid           = { kind: typeof VoidKind, type: 'void' } & CustomOptions
+export type TUndefined       = { kind: typeof UndefinedKind, type: 'undefined' } & CustomOptions
+export type TVoid            = { kind: typeof VoidKind, type: 'void' } & CustomOptions
 
 // ------------------------------------------------------------------------
 // Schema
