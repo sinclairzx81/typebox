@@ -1,4 +1,5 @@
 import { Type } from '@sinclair/typebox'
+import { isRegExp } from 'util'
 import { ok, fail } from './validate'
 
 describe('Tuple', () => {
@@ -34,6 +35,26 @@ describe('Tuple', () => {
         fail(T, [
             { b: 42 },
             { a: 'hello' },
+        ])
+    })
+
+    it('Should not validate tuple when array is less than tuple length', () => {
+        const A = Type.Object({ a: Type.String() })
+        const B = Type.Object({ b: Type.Number() })
+        const T = Type.Tuple([A, B])
+        fail(T, [
+            { a: 'hello' },
+        ])
+    })
+
+    it('Should not validate tuple when array is greater than tuple length', () => {
+        const A = Type.Object({ a: Type.String() })
+        const B = Type.Object({ b: Type.Number() })
+        const T = Type.Tuple([A, B])
+        fail(T, [
+            { a: 'hello' },
+            { b: 42 },
+            { b: 42 },
         ])
     })
 })
