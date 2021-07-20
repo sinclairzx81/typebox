@@ -3,12 +3,9 @@
 
 Changes:
 
-- Function `Type.Intersect(...)` now implemented via `allOf` and constrained with `unevaluatedProperties` (draft `2019-09`)
+- Function `Type.Intersect(...)` is now implemented with `allOf` and constrained with `unevaluatedProperties` (draft `2019-09`)
 - Function `Type.Dict(...)` has been deprecated and replaced with `Type.Record(...)`.
-- Function `Type.Strict(...)` now includes the `$schema` property.
-
-
-Notes:
+- Function `Type.Strict(...)` now includes the `$schema` property referencing the `2019-09` draft.
 
 ### Type.Intersect(...)
 
@@ -16,38 +13,7 @@ TypeBox now targets JSON schema draft `2019-09` for expressing `Type.Intersect(.
 
 ### Type.Record(K, V)
 
-TypeBox has deprecated `Type.Dict(...)` in favor of the more generic `Type.Record(...)`. Where as `Type.Dict(...)` was previously expressed with `additionalProperties: { ... }`, `Type.Record(...)` is expressed with `patternProperties` and supports both `string` and `number` indexing into the type. Additionally, `Type.Record(...)` supports string union arguments (analogous to TypeScript's) `Record<'a' | 'b' | 'c', T>`. This reintroduces the ability for TypeBox to intersect on `Type.Record(...)` where the keys are known up front.
-
-### Type.Strict()
-
-Inline with TypeBox borrowing features from the JSON schema `2019-09` draft specification, the `Type.Strict(...)` function now adds the `$schema: ''https://json-schema.org/draft/2019-09/schema''` property to all schemas passed to this function.
-
-
-```typescript
-const User = Type.Object({
-    name:  Type.String(),
-    email: Type.String({ format: 'email' })
-})
-
-const UserExtended = Type.Intersect([
-    User,
-    Type.Record(Type.String())
-])
-
-// Analogous to
-
-type User = {
-    name: string,
-    email: string
-}
-
-type UserExtended = User & {
-    [key: string]: string
-}
-```
-
-In addition, this update also renames `Type.Dict(...)` to `Type.Record(...)` as per contributor feedback. The `Type.Record(...)` functions exactly as `Type.Dict(...)` but aligns closer to the TS utility type `Record<Keys, Type>` whose keys are all of type `string`. 
-
+TypeBox has deprecated `Type.Dict(...)` in favor of the more generic `Type.Record(...)`. Where as `Type.Dict(...)` was previously expressed with `additionalProperties: { ... }`, `Type.Record(...)` is expressed with `patternProperties` and supports both `string` and `number` indexer keys. Additionally, `Type.Record(...)` supports string union arguments. This is analogous to TypeScript's utility record type `Record<'a' | 'b' | 'c', T>`.
 
 ## [0.17.7](https://www.npmjs.com/package/@sinclair/typebox/v/0.17.7)
 
