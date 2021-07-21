@@ -1,5 +1,10 @@
 import { Type, Static } from '@sinclair/typebox'
 
-const Record = Type.Record(Type.String(), Type.String())
+enum A {
+    A = 1,
+    B = "h"
+}
 
-type Record = Static<typeof Record>
+const T = Type.Enum(A)
+
+console.log(T)

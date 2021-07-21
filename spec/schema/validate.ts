@@ -4,9 +4,7 @@ import Ajv from 'ajv/dist/2019'
 
 
 export function validator() {
-    return addFormats(new Ajv({
-        allowUnionTypes: true
-    }), [
+    return addFormats(new Ajv({}), [
         'date-time',
         'time',
         'date',

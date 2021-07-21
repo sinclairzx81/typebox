@@ -49,7 +49,6 @@ export const IntersectKind   = Symbol('IntersectKind')
 export const UnionKind       = Symbol('UnionKind')
 export const TupleKind       = Symbol('TupleKind')
 export const ObjectKind      = Symbol('ObjectKind')
-export const RecordIndexKind = Symbol('RecordIndexed')
 export const RecordKind      = Symbol('RecordKind')
 export const ArrayKind       = Symbol('ArrayKind')
 export const EnumKind        = Symbol('EnumKind')
@@ -112,10 +111,11 @@ export type ObjectOptions = {
     additionalProperties?: boolean
 } & CustomOptions
 
-export type TEnumType  = Record<string, string | number>
-export type TKey       = string | number | symbol
-export type TValue     = string | number | boolean
-export type TRecordKey = TString | TNumber | TUnion<TLiteral<string | number>[]>
+export type TEnumType      = Record<string, string | number>
+export type TKey           = string | number
+export type TValue         = string | number | boolean
+export type TRecordKey     = TString | TNumber | TUnion<TLiteral<string | number>[]>
+export type TEnumKey      = { type: 'number', const: number } | { type: 'string', const: string }
 
 export type TDefinitions                                         = { [key: string]: TSchema }
 export type TProperties                                          = { [key: string]: TSchema }
@@ -128,7 +128,7 @@ export type TKeyOf     <T extends TKey[]>                        = { kind: typeo
 export type TRecord    <K extends TRecordKey, T extends TSchema> = { kind: typeof RecordKind, type: 'object', patternProperties: { [pattern: string]: T } } & ObjectOptions
 export type TArray     <T extends TSchema>                       = { kind: typeof ArrayKind, type: 'array', items: T } & ArrayOptions
 export type TLiteral   <T extends TValue>                        = { kind: typeof LiteralKind, const: T } & CustomOptions
-export type TEnum      <T extends TKey>                          = { kind: typeof EnumKind, type?: 'string' | 'number' | ['string', 'number'], enum: T[] } & CustomOptions
+export type TEnum      <T extends TKey>                          = { kind: typeof EnumKind, anyOf: TEnumKey[] } & CustomOptions
 export type TString                                              = { kind: typeof StringKind, type: 'string' } & StringOptions<string>
 export type TNumber                                              = { kind: typeof NumberKind, type: 'number' } & NumberOptions
 export type TInteger                                             = { kind: typeof IntegerKind, type: 'integer' } & NumberOptions
@@ -330,18 +330,15 @@ export class TypeBuilder {
     public Array<T extends TSchema>(items: T, options: ArrayOptions = {}): TArray<T> {
         return { ...options, kind: ArrayKind, type: 'array', items }
     }
-
+    
     /** `STANDARD` Creates an `Enum<T>` schema from a TypeScript `enum` definition. */
     public Enum<T extends TEnumType>(item: T, options: CustomOptions = {}): TEnum<T[keyof T]> {
-        const values = Object.keys(item).filter(key => isNaN(key as any)).map(key => item[key]) as T[keyof T][]
-        if (values.length === 0) {
-            return { ...options, kind: EnumKind, enum: values }
-        }
-        const type = typeof values[0] as 'string' | 'number'
-        if (values.some(value => typeof value !== type)) {
-            return { ...options, kind: EnumKind, type: ['string', 'number'], enum: values }
-        }
-        return { ...options, kind: EnumKind, type, enum: values }
+        const values = Object.keys(item).filter(key => isNaN(key as any)).map(key => item[key])
+        const anyOf  = values.map(value => 
+            typeof value === 'string' ?
+            { type: 'string' as const, const: value } : 
+            { type: 'number' as const, const: value })
+        return { ...options, kind: EnumKind, anyOf }
     }
 
     /** `STANDARD` Creates a literal schema. Supports `string | number | boolean` values. */
