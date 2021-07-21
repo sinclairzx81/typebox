@@ -111,11 +111,11 @@ export type ObjectOptions = {
     additionalProperties?: boolean
 } & CustomOptions
 
-export type TEnumType      = Record<string, string | number>
-export type TKey           = string | number
-export type TValue         = string | number | boolean
-export type TRecordKey     = TString | TNumber | TUnion<TLiteral<string | number>[]>
-export type TEnumKey<T>    = { type: 'number' | 'string', const: T }
+export type TEnumType          = Record<string, string | number>
+export type TKey               = string | number
+export type TValue             = string | number | boolean
+export type TRecordKey         = TString | TNumber | TUnion<TLiteral<string | number>[]>
+export type TEnumKey<T = TKey> = { type: 'number' | 'string', const: T }
 
 export type TDefinitions                                         = { [key: string]: TSchema }
 export type TProperties                                          = { [key: string]: TSchema }
@@ -128,7 +128,7 @@ export type TKeyOf     <T extends TKey[]>                        = { kind: typeo
 export type TRecord    <K extends TRecordKey, T extends TSchema> = { kind: typeof RecordKind, type: 'object', patternProperties: { [pattern: string]: T } } & ObjectOptions
 export type TArray     <T extends TSchema>                       = { kind: typeof ArrayKind, type: 'array', items: T } & ArrayOptions
 export type TLiteral   <T extends TValue>                        = { kind: typeof LiteralKind, const: T } & CustomOptions
-export type TEnum      <T extends TEnumKey<any>[]>               = { kind: typeof EnumKind, anyOf: T } & CustomOptions
+export type TEnum      <T extends TEnumKey[]>                    = { kind: typeof EnumKind, anyOf: T } & CustomOptions
 export type TString                                              = { kind: typeof StringKind, type: 'string' } & StringOptions<string>
 export type TNumber                                              = { kind: typeof NumberKind, type: 'number' } & NumberOptions
 export type TInteger                                             = { kind: typeof IntegerKind, type: 'integer' } & NumberOptions
