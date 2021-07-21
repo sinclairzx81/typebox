@@ -230,8 +230,8 @@ The following table outlines the TypeBox mappings between TypeScript and JSON sc
 │   B                            │   B                         │     type: 'number',            │
 │ }                              │ }                           │     const: 0                   │
 │                                │                             │   }, {                         │
-│ type T = Type.Enum(Foo)        │ type T = Foo                │      type: 'number',           │
-│                                │                             │      const: 1                  │
+│ type T = Type.Enum(Foo)        │ type T = Foo                │     type: 'number',            │
+│                                │                             │     const: 1                   │
 │                                │                             │   }]                           │
 │                                │                             │ }                              │
 │                                │                             │                                │
