@@ -226,11 +226,14 @@ The following table outlines the TypeBox mappings between TypeScript and JSON sc
 │   	                         │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ enum Foo {                     │ enum Foo {                  │ const T = {                    │
-│   A,                           │   A,                        │    enum: [0, 1],               │
-│   B                            │   B                         │    type: 'number'              │
-│ }                              │ }                           │ }                              │
-│                                │                             │                                │
-│ type T = Type.Enum(Foo)        │ type T = Foo                │                                │
+│   A,                           │   A,                        │   anyOf: [{                    │
+│   B                            │   B                         │     type: 'number',            │
+│ }                              │ }                           │     const: 0                   │
+│                                │                             │   }, {                         │
+│ type T = Type.Enum(Foo)        │ type T = Foo                │      type: 'number',           │
+│                                │                             │      const: 1                  │
+│                                │                             │   }]                           │
+│                                │                             │ }                              │
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Union([         │ type T = string | number    │ const T = {                    │

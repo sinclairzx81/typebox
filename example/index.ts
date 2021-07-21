@@ -1,10 +1,21 @@
 import { Type, Static } from '@sinclair/typebox'
 
 enum A {
-    A = 1,
-    B = "h"
+    A,
+    B,
 }
 
 const T = Type.Enum(A)
 
-console.log(T)
+console.log(JSON.stringify(T, null, 2))
+
+type T = Static<typeof T>
+
+function test(value: T) {
+
+}
+
+test(A.B)
+
+
+
