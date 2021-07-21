@@ -62,6 +62,7 @@ export const UnknownKind     = Symbol('UnknownKind')
 export const AnyKind         = Symbol('AnyKind')
 
 export interface CustomOptions {
+    $id?: string
     title?: string
     description?: string
     default?: any
@@ -491,9 +492,9 @@ export class TypeBuilder {
     }
 
     /** `EXPERIMENTAL` Creates a recursive type. */
-    public Rec<T extends TSchema>(callback: (self: TAny) => T, $id: string = ''): T {
-        const self = callback({ $ref: `${$id}#/definitions/self` } as any)
-        return { $id,  $ref: `${$id}#/definitions/self`, definitions: { self } } as unknown as T
+    public Rec<T extends TProperties>($id: string, callback: (self: TAny) => T, options: ObjectOptions = {}): TObject<T> {
+        const properties = callback({ $recursiveRef: `${$id}` } as any)
+        return { ...options, kind: ObjectKind, $id, $recursiveAnchor: true, type: 'object', properties }
     }
 }
 
