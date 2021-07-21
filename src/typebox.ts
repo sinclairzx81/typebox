@@ -115,7 +115,7 @@ export type TEnumType      = Record<string, string | number>
 export type TKey           = string | number
 export type TValue         = string | number | boolean
 export type TRecordKey     = TString | TNumber | TUnion<TLiteral<string | number>[]>
-export type TEnumKey      = { type: 'number', const: number } | { type: 'string', const: string }
+export type TEnumKey<T>    = { type: 'number' | 'string', const: T }
 
 export type TDefinitions                                         = { [key: string]: TSchema }
 export type TProperties                                          = { [key: string]: TSchema }
@@ -128,7 +128,7 @@ export type TKeyOf     <T extends TKey[]>                        = { kind: typeo
 export type TRecord    <K extends TRecordKey, T extends TSchema> = { kind: typeof RecordKind, type: 'object', patternProperties: { [pattern: string]: T } } & ObjectOptions
 export type TArray     <T extends TSchema>                       = { kind: typeof ArrayKind, type: 'array', items: T } & ArrayOptions
 export type TLiteral   <T extends TValue>                        = { kind: typeof LiteralKind, const: T } & CustomOptions
-export type TEnum      <T extends TKey>                          = { kind: typeof EnumKind, anyOf: TEnumKey[] } & CustomOptions
+export type TEnum      <T extends TEnumKey<any>[]>               = { kind: typeof EnumKind, anyOf: T } & CustomOptions
 export type TString                                              = { kind: typeof StringKind, type: 'string' } & StringOptions<string>
 export type TNumber                                              = { kind: typeof NumberKind, type: 'number' } & NumberOptions
 export type TInteger                                             = { kind: typeof IntegerKind, type: 'integer' } & NumberOptions
@@ -216,6 +216,7 @@ export type StaticModifiers<T extends TProperties> =
     {          [K in OptionalPropertyKeys<T>]?:         Static<T[K]> } &
     {          [K in RequiredPropertyKeys<T>]:          Static<T[K]> }
 
+export type StaticEnum        <T>                                               = T extends TEnumKey<infer U>[] ? U : never
 export type StaticKeyOf       <T extends TKey[]>                                = T extends Array<infer K> ? K : never
 export type StaticIntersect   <T extends readonly TSchema[]>                    = UnionToIntersect<StaticUnion<T>>
 export type StaticUnion       <T extends readonly TSchema[]>                    = { [K in keyof T]: Static<T[K]> }[number]
@@ -224,7 +225,6 @@ export type StaticObject      <T extends TProperties>                           
 export type StaticRecord      <K extends TRecordKey, T extends TSchema>         = K extends TString ? { [key: string]: Static<T> } : K extends TNumber ? { [key: number]: Static<T> } : K extends TUnion<infer L> ? L extends TLiteral<any>[] ? {[K in StaticUnion<L>]: Static<T> } : never : never
 export type StaticArray       <T extends TSchema>                               = Array<Static<T>>
 export type StaticLiteral     <T extends TValue>                                = T
-export type StaticEnum        <T extends TKey>                                  = T
 export type StaticConstructor <T extends readonly TSchema[], U extends TSchema> = new (...args: [...{ [K in keyof T]: Static<T[K]> }]) => Static<U>
 export type StaticFunction    <T extends readonly TSchema[], U extends TSchema> = (...args: [...{ [K in keyof T]: Static<T[K]> }]) => Static<U>
 export type StaticPromise     <T extends TSchema>                               = Promise<Static<T>>
@@ -332,13 +332,10 @@ export class TypeBuilder {
     }
     
     /** `STANDARD` Creates an `Enum<T>` schema from a TypeScript `enum` definition. */
-    public Enum<T extends TEnumType>(item: T, options: CustomOptions = {}): TEnum<T[keyof T]> {
-        const values = Object.keys(item).filter(key => isNaN(key as any)).map(key => item[key])
-        const anyOf  = values.map(value => 
-            typeof value === 'string' ?
-            { type: 'string' as const, const: value } : 
-            { type: 'number' as const, const: value })
-        return { ...options, kind: EnumKind, anyOf }
+    public Enum<T extends TEnumType>(item: T, options: CustomOptions = {}): TEnum<TEnumKey<T[keyof T]>[]> {
+        const values = Object.keys(item).filter(key => isNaN(key as any)).map(key => item[key]) as T[keyof T][]
+        const anyOf  = values.map(value => typeof value === 'string' ? { type: 'string' as const, const: value } : { type: 'number' as const, const: value })
+        return { ...options, kind: EnumKind, anyOf } 
     }
 
     /** `STANDARD` Creates a literal schema. Supports `string | number | boolean` values. */

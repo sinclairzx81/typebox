@@ -42,7 +42,7 @@ TypeBox is a type builder library that creates in-memory JSON Schema objects tha
 
 TypeBox can be used as a simple tool to build up complex schemas or integrated into RPC or REST services to help validate JSON data received over the wire. TypeBox does not provide any JSON schema validation. Please use libraries such as AJV to validate schemas built with this library.
 
-Targets JSON schema draft `2019-09`. Requires TypeScript 4.0.3 and above.
+Requires TypeScript 4.0.3 and above.
 
 License MIT
 
@@ -579,13 +579,19 @@ $ npm install ajv ajv-formats --save
 ```
 
 ```typescript
-import { Type } from '@sinclair/typebox'
-import addFormats from 'ajv-formats'
-import Ajv from 'ajv/dist/2019'
+//--------------------------------------------------------------------------------------------
+// Import the 2019 compliant validator from AJV
+//--------------------------------------------------------------------------------------------
 
-const ajv = addFormats(new Ajv({
-    allowUnionTypes: true
-}), [
+import { Type }   from '@sinclair/typebox'
+import addFormats from 'ajv-formats'
+import Ajv        from 'ajv/dist/2019'
+
+//--------------------------------------------------------------------------------------------
+// Setup validator with the following options and formats
+//--------------------------------------------------------------------------------------------
+
+const ajv = addFormats(new Ajv({}), [
     'date-time', 
     'time', 
     'date', 
@@ -603,20 +609,24 @@ const ajv = addFormats(new Ajv({
 ]).addKeyword('kind')
   .addKeyword('modifier')
 
-// TypeBox
+//--------------------------------------------------------------------------------------------
+// Create a TypeBox type
+//--------------------------------------------------------------------------------------------
+
 const User = Type.Object({
-    name: Type.String(),
-    email: Type.String({ format: 'email' })
-})
+    id:     Type.String({ format: 'uuid' }),
+    email:  Type.String({ format: 'email' }),
+    online: Type.Boolean(),
+}, { additionalProperties: false })
 
-// Validate
-const isValid = ajv.validate(User, { 
-    name: 'dave', 
-    email: 'dave@domain.com' 
-})
+//--------------------------------------------------------------------------------------------
+// Validate Data
+//--------------------------------------------------------------------------------------------
 
-//
-// isValid -> true
-//
+const ok = ajv.validate(User, { 
+    id:    '68b4b1d8-0db6-468d-b551-02069a692044', 
+    email: 'dave@domain.com',
+    online: true
+}) // -> ok
 ```
 
