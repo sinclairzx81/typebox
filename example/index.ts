@@ -11,15 +11,16 @@ interface Node {
     element: Element
 }
 
-const Element = Type.Rec('Element', Self => ({
+const Element = Type.Rec('Element', Self => Type.Object({
     elementId: Type.String(),
     elements: Type.Array(Self)
-}), { additionalProperties: false })
+}, { additionalProperties: false }))
 
-const Node = Type.Rec('Node', Self => ({
+const Node = Type.Rec('Node', Self => Type.Object({
     nodeId: Type.String(),
-    nodes: Type.Array(Self)
-}))
+    nodes: Type.Array(Self),
+    element: Element
+}, { additionalProperties: false }))
 
 console.log(JSON.stringify(Node, null, 2))
 

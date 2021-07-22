@@ -492,9 +492,15 @@ export class TypeBuilder {
     }
 
     /** `EXPERIMENTAL` Creates a recursive type. */
-    public Rec<T extends TProperties>($id: string, callback: (self: TAny) => T, options: ObjectOptions = {}): TObject<T> {
-        const properties = callback({ $recursiveRef: `${$id}` } as any)
-        return { ...options, kind: ObjectKind, $id, $recursiveAnchor: true, type: 'object', properties }
+    // public Rec<T extends TProperties>($id: string, callback: (self: TAny) => T, options: ObjectOptions = {}): TObject<T> {
+    //     const properties = callback({ $recursiveRef: `${$id}` } as any)
+    //     return { ...options, kind: ObjectKind, $id, $recursiveAnchor: true, type: 'object', properties }
+    // }
+    
+    /** `EXPERIMENTAL` Creates a recursive type. */
+    public Rec<T extends TSchema>($id: string, callback: (self: TAny) => T): T {
+        const self = callback({ $ref: `${$id}#/$defs/self` } as any)
+        return { $id,  $ref: `${$id}#/$defs/self`, $defs: { self } } as unknown as T
     }
 }
 
