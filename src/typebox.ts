@@ -390,7 +390,7 @@ export class TypeBuilder {
         return {...options, kind: KeyOfKind, type: 'string', enum: keys }
     }
     
-    /** `STANDARD` Creates a Record<K, V> schema. */
+    /** `STANDARD` Creates a `Record<Keys, Value>` schema. */
     public Record<K extends TRecordKey, T extends TSchema>(key: K, value: T, options: ObjectOptions = {}): TRecord<K, T> {
         const pattern = key.kind === UnionKind  ? `^${key.anyOf.map(key => key.const).join('|')}$` :
                         key.kind === NumberKind ? '^(0|[1-9][0-9]*)$' :
@@ -451,11 +451,10 @@ export class TypeBuilder {
     }
 
     /** `STANDARD` Omits the `kind` and `modifier` properties from the given schema. */
-    public Strict<T extends TSchema>(schema: T): T {
-        const $schema = 'https://json-schema.org/draft/2019-09/schema'
-        return JSON.parse(JSON.stringify({ $schema, ...schema })) as T
+    public Strict<T extends TSchema>(schema: T, options: CustomOptions = {}): T {
+        return JSON.parse(JSON.stringify({ ...options, ...schema })) as T
     }
-
+    
     /** `EXTENDED` Creates a `constructor` schema. */
     public Constructor<T extends TSchema[], U extends TSchema>(args: [...T], returns: U, options: CustomOptions = {}): TConstructor<T, U> {
         return { ...options, kind: ConstructorKind, type: 'constructor', arguments: args, returns };
@@ -490,18 +489,18 @@ export class TypeBuilder {
     public Ref<T extends TBox<TDefinitions>, K extends keyof T['definitions']>(box: T, key: K): T['definitions'][K] {
         return { $ref: `${box.$id}#/definitions/${key as string}` } as unknown as T['definitions'][K]
     }
-
+    
     /** `EXPERIMENTAL` Creates a recursive type. */
+    public Rec<T extends TSchema>($id: string, callback: (self: TAny) => T): T {
+        const self = callback({ $ref: `${$id}#/definitions/self` } as any)
+        return { $id,  $ref: `${$id}#/definitions/self`, definitions: { self } } as unknown as T
+    }
+
+    /** `EXPERIMENTAL` Creates a recursive type. Pending https://github.com/ajv-validator/ajv/issues/1709 */
     // public Rec<T extends TProperties>($id: string, callback: (self: TAny) => T, options: ObjectOptions = {}): TObject<T> {
     //     const properties = callback({ $recursiveRef: `${$id}` } as any)
     //     return { ...options, kind: ObjectKind, $id, $recursiveAnchor: true, type: 'object', properties }
     // }
-    
-    /** `EXPERIMENTAL` Creates a recursive type. */
-    public Rec<T extends TSchema>($id: string, callback: (self: TAny) => T): T {
-        const self = callback({ $ref: `${$id}#/$defs/self` } as any)
-        return { $id,  $ref: `${$id}#/$defs/self`, $defs: { self } } as unknown as T
-    }
 }
 
 export const Type = new TypeBuilder()

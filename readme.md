@@ -453,12 +453,12 @@ const Vertex = Type.Object({                  //  const Vertex = {
 TypeBox provides support for recursive types. This is handled via the `Type.Rec(...)` function. The following creates a `Node` type that contains an array of inner `nodes`. Please note that due to current recursion limits on TypeScript inference, it's currently not possible for TypeBox to statically infer for recursive types. Instead TypeBox will resolve inner recursive types as `any`.
 
 ```typescript
-const Node = Type.Rec(Self => Type.Object({   // const Node = {
-  id:    Type.String(),                       //   $id: 'Node',
-  nodes: Type.Array(Self),                    //   $ref: 'Node#/definitions/self',
-}), 'Node')                                   //   definitions: {
-                                              //     self: {
-                                              //       type: 'object',
+const Node = Type.Rec('Node', Self =>         // const Node = {
+  Type.Object({                               //   $id: 'Node',
+     id:    Type.String(),                    //   $ref: 'Node#/definitions/self',
+     nodes: Type.Array(Self),                 //   definitions: {
+  })                                          //     self: {
+)                                             //       type: 'object',
                                               //       properties: {
                                               //         id: {
                                               //           type: 'string'
@@ -472,7 +472,7 @@ const Node = Type.Rec(Self => Type.Object({   // const Node = {
                                               //      }
                                               //    }
                                               // }
-											  
+
 type Node = Static<typeof Node>               // type Node = {
                                               //   id: string
                                               //   nodes: any[]
