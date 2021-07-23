@@ -42,7 +42,7 @@ TypeBox is a type builder library that creates in-memory JSON Schema objects tha
 
 TypeBox can be used as a simple tool to build up complex schemas or integrated into RPC or REST services to help validate JSON data received over the wire. TypeBox does not provide any JSON schema validation. Please use libraries such as AJV to validate schemas built with this library.
 
-Targets JSON schema draft `2019-09`. Requires TypeScript 4.0.3 and above.
+Requires TypeScript 4.0.3 and above.
 
 License MIT
 
@@ -222,15 +222,18 @@ The following table outlines the TypeBox mappings between TypeScript and JSON sc
 │   	                         │                             │    additionalItems: false,     │
 │   	                         │                             │    minItems: 2,                │
 │   	                         │                             │    maxItems: 2,                │
-│   	                         │                             │ }                              |
+│   	                         │                             │ }                              │
 │   	                         │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ enum Foo {                     │ enum Foo {                  │ const T = {                    │
-│   A,                           │   A,                        │    enum: [0, 1],               │
-│   B                            │   B                         │    type: 'number'              │
-│ }                              │ }                           │ }                              │
-│                                │                             │                                │
-│ type T = Type.Enum(Foo)        │ type T = Foo                │                                │
+│   A,                           │   A,                        │   anyOf: [{                    │
+│   B                            │   B                         │     type: 'number',            │
+│ }                              │ }                           │     const: 0                   │
+│                                │                             │   }, {                         │
+│ type T = Type.Enum(Foo)        │ type T = Foo                │     type: 'number',            │
+│                                │                             │     const: 1                   │
+│                                │                             │   }]                           │
+│                                │                             │ }                              │
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Union([         │ type T = string | number    │ const T = {                    │
@@ -272,7 +275,7 @@ The following table outlines the TypeBox mappings between TypeScript and JSON sc
 │   	                         │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Record(         │ type T = {                  │ const T = {                    │
-│    Type.String(),              │    [key: string]: number    │    type: 'object'              │
+│    Type.String(),              │    [key: string]: number    │    type: 'object',             │
 │    Type.Number()               │ }                           │    patternProperties: {        │
 │ ) 	                         │                             │      '.*': {                   │
 │   	                         │                             │         type: 'number'         │
@@ -450,12 +453,12 @@ const Vertex = Type.Object({                  //  const Vertex = {
 TypeBox provides support for recursive types. This is handled via the `Type.Rec(...)` function. The following creates a `Node` type that contains an array of inner `nodes`. Please note that due to current recursion limits on TypeScript inference, it's currently not possible for TypeBox to statically infer for recursive types. Instead TypeBox will resolve inner recursive types as `any`.
 
 ```typescript
-const Node = Type.Rec(Self => Type.Object({   // const Node = {
-  id:    Type.String(),                       //   $id: 'Node',
-  nodes: Type.Array(Self),                    //   $ref: 'Node#/definitions/self',
-}), 'Node')                                   //   definitions: {
-                                              //     self: {
-                                              //       type: 'object',
+const Node = Type.Rec('Node', Self =>         // const Node = {
+  Type.Object({                               //   $id: 'Node',
+     id:    Type.String(),                    //   $ref: 'Node#/definitions/self',
+     nodes: Type.Array(Self),                 //   definitions: {
+  })                                          //     self: {
+)                                             //       type: 'object',
                                               //       properties: {
                                               //         id: {
                                               //           type: 'string'
@@ -469,7 +472,7 @@ const Node = Type.Rec(Self => Type.Object({   // const Node = {
                                               //      }
                                               //    }
                                               // }
-											  
+
 type Node = Static<typeof Node>               // type Node = {
                                               //   id: string
                                               //   nodes: any[]
@@ -494,7 +497,7 @@ In addition to JSON schema types, TypeBox provides several extended types that a
 │   	                         │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Constructor([   │ type T = new (              │ const T = {                    │
-|    Type.String(),              │  arg0: string,              │   type: 'constructor'          │
+│    Type.String(),              │  arg0: string,              │   type: 'constructor'          │
 │    Type.Number(),              │  arg1: number               │   arguments: [{                │
 │ ], Type.Boolean())             │ ) => boolean                │      type: 'string'            │
 │                                │                             │   }, {                         │
@@ -520,21 +523,21 @@ In addition to JSON schema types, TypeBox provides several extended types that a
 │   	                         │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Promise(        │ type T = Promise<string>    │ const T = {                    │
-|    Type.String()               │                             │   type: 'promise',             │
-| )                              │                             │   item: {                      │
+│    Type.String()               │                             │   type: 'promise',             │
+│ )                              │                             │   item: {                      │
 │                                │                             │      type: 'string'            │
 │                                │                             │   }                            │
 │                                │                             │ }                              │
 │   	                         │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Undefined()     │ type T = undefined          │ const T = {                    │
-|                                │                             │   type: 'undefined'            │
-|                                │                             │ }                              │
+│                                │                             │   type: 'undefined'            │
+│                                │                             │ }                              │
 │   	                         │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Void()          │ type T = void               │ const T = {                    │
-|                                │                             │   type: 'void'                 │
-|                                │                             │ }                              │
+│                                │                             │   type: 'void'                 │
+│                                │                             │ }                              │
 │   	                         │                             │                                │
 └────────────────────────────────┴─────────────────────────────┴────────────────────────────────┘
 ```
@@ -579,13 +582,23 @@ $ npm install ajv ajv-formats --save
 ```
 
 ```typescript
-import { Type } from '@sinclair/typebox'
-import addFormats from 'ajv-formats'
-import Ajv from 'ajv/dist/2019'
+//--------------------------------------------------------------------------------------------
+//
+// Import the 2019 compliant validator from AJV
+//
+//--------------------------------------------------------------------------------------------
 
-const ajv = addFormats(new Ajv({
-    allowUnionTypes: true
-}), [
+import { Type }   from '@sinclair/typebox'
+import addFormats from 'ajv-formats'
+import Ajv        from 'ajv/dist/2019'
+
+//--------------------------------------------------------------------------------------------
+//
+// Setup validator with the following options and formats
+//
+//--------------------------------------------------------------------------------------------
+
+const ajv = addFormats(new Ajv({}), [
     'date-time', 
     'time', 
     'date', 
@@ -603,20 +616,28 @@ const ajv = addFormats(new Ajv({
 ]).addKeyword('kind')
   .addKeyword('modifier')
 
-// TypeBox
+//--------------------------------------------------------------------------------------------
+//
+// Create a TypeBox type
+//
+//--------------------------------------------------------------------------------------------
+
 const User = Type.Object({
-    name: Type.String(),
-    email: Type.String({ format: 'email' })
-})
+    id:     Type.String({ format: 'uuid' }),
+    email:  Type.String({ format: 'email' }),
+    online: Type.Boolean(),
+}, { additionalProperties: false })
 
-// Validate
-const isValid = ajv.validate(User, { 
-    name: 'dave', 
-    email: 'dave@domain.com' 
-})
+//--------------------------------------------------------------------------------------------
+//
+// Validate Data
+//
+//--------------------------------------------------------------------------------------------
 
-//
-// isValid -> true
-//
+const ok = ajv.validate(User, { 
+    id:    '68b4b1d8-0db6-468d-b551-02069a692044', 
+    email: 'dave@domain.com',
+    online: true
+}) // -> ok
 ```
 

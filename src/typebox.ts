@@ -49,7 +49,6 @@ export const IntersectKind   = Symbol('IntersectKind')
 export const UnionKind       = Symbol('UnionKind')
 export const TupleKind       = Symbol('TupleKind')
 export const ObjectKind      = Symbol('ObjectKind')
-export const RecordIndexKind = Symbol('RecordIndexed')
 export const RecordKind      = Symbol('RecordKind')
 export const ArrayKind       = Symbol('ArrayKind')
 export const EnumKind        = Symbol('EnumKind')
@@ -63,6 +62,7 @@ export const UnknownKind     = Symbol('UnknownKind')
 export const AnyKind         = Symbol('AnyKind')
 
 export interface CustomOptions {
+    $id?: string
     title?: string
     description?: string
     default?: any
@@ -112,10 +112,11 @@ export type ObjectOptions = {
     additionalProperties?: boolean
 } & CustomOptions
 
-export type TEnumType  = Record<string, string | number>
-export type TKey       = string | number | symbol
-export type TValue     = string | number | boolean
-export type TRecordKey = TString | TNumber | TUnion<TLiteral<string | number>[]>
+export type TEnumType          = Record<string, string | number>
+export type TKey               = string | number
+export type TValue             = string | number | boolean
+export type TRecordKey         = TString | TNumber | TUnion<TLiteral<string | number>[]>
+export type TEnumKey<T = TKey> = { type: 'number' | 'string', const: T }
 
 export type TDefinitions                                         = { [key: string]: TSchema }
 export type TProperties                                          = { [key: string]: TSchema }
@@ -128,7 +129,7 @@ export type TKeyOf     <T extends TKey[]>                        = { kind: typeo
 export type TRecord    <K extends TRecordKey, T extends TSchema> = { kind: typeof RecordKind, type: 'object', patternProperties: { [pattern: string]: T } } & ObjectOptions
 export type TArray     <T extends TSchema>                       = { kind: typeof ArrayKind, type: 'array', items: T } & ArrayOptions
 export type TLiteral   <T extends TValue>                        = { kind: typeof LiteralKind, const: T } & CustomOptions
-export type TEnum      <T extends TKey>                          = { kind: typeof EnumKind, type?: 'string' | 'number' | ['string', 'number'], enum: T[] } & CustomOptions
+export type TEnum      <T extends TEnumKey[]>                    = { kind: typeof EnumKind, anyOf: T } & CustomOptions
 export type TString                                              = { kind: typeof StringKind, type: 'string' } & StringOptions<string>
 export type TNumber                                              = { kind: typeof NumberKind, type: 'number' } & NumberOptions
 export type TInteger                                             = { kind: typeof IntegerKind, type: 'integer' } & NumberOptions
@@ -216,6 +217,7 @@ export type StaticModifiers<T extends TProperties> =
     {          [K in OptionalPropertyKeys<T>]?:         Static<T[K]> } &
     {          [K in RequiredPropertyKeys<T>]:          Static<T[K]> }
 
+export type StaticEnum        <T>                                               = T extends TEnumKey<infer U>[] ? U : never
 export type StaticKeyOf       <T extends TKey[]>                                = T extends Array<infer K> ? K : never
 export type StaticIntersect   <T extends readonly TSchema[]>                    = UnionToIntersect<StaticUnion<T>>
 export type StaticUnion       <T extends readonly TSchema[]>                    = { [K in keyof T]: Static<T[K]> }[number]
@@ -224,7 +226,6 @@ export type StaticObject      <T extends TProperties>                           
 export type StaticRecord      <K extends TRecordKey, T extends TSchema>         = K extends TString ? { [key: string]: Static<T> } : K extends TNumber ? { [key: number]: Static<T> } : K extends TUnion<infer L> ? L extends TLiteral<any>[] ? {[K in StaticUnion<L>]: Static<T> } : never : never
 export type StaticArray       <T extends TSchema>                               = Array<Static<T>>
 export type StaticLiteral     <T extends TValue>                                = T
-export type StaticEnum        <T extends TKey>                                  = T
 export type StaticConstructor <T extends readonly TSchema[], U extends TSchema> = new (...args: [...{ [K in keyof T]: Static<T[K]> }]) => Static<U>
 export type StaticFunction    <T extends readonly TSchema[], U extends TSchema> = (...args: [...{ [K in keyof T]: Static<T[K]> }]) => Static<U>
 export type StaticPromise     <T extends TSchema>                               = Promise<Static<T>>
@@ -330,18 +331,12 @@ export class TypeBuilder {
     public Array<T extends TSchema>(items: T, options: ArrayOptions = {}): TArray<T> {
         return { ...options, kind: ArrayKind, type: 'array', items }
     }
-
+    
     /** `STANDARD` Creates an `Enum<T>` schema from a TypeScript `enum` definition. */
-    public Enum<T extends TEnumType>(item: T, options: CustomOptions = {}): TEnum<T[keyof T]> {
+    public Enum<T extends TEnumType>(item: T, options: CustomOptions = {}): TEnum<TEnumKey<T[keyof T]>[]> {
         const values = Object.keys(item).filter(key => isNaN(key as any)).map(key => item[key]) as T[keyof T][]
-        if (values.length === 0) {
-            return { ...options, kind: EnumKind, enum: values }
-        }
-        const type = typeof values[0] as 'string' | 'number'
-        if (values.some(value => typeof value !== type)) {
-            return { ...options, kind: EnumKind, type: ['string', 'number'], enum: values }
-        }
-        return { ...options, kind: EnumKind, type, enum: values }
+        const anyOf  = values.map(value => typeof value === 'string' ? { type: 'string' as const, const: value } : { type: 'number' as const, const: value })
+        return { ...options, kind: EnumKind, anyOf } 
     }
 
     /** `STANDARD` Creates a literal schema. Supports `string | number | boolean` values. */
@@ -395,7 +390,7 @@ export class TypeBuilder {
         return {...options, kind: KeyOfKind, type: 'string', enum: keys }
     }
     
-    /** `STANDARD` Creates a Record<K, V> schema. */
+    /** `STANDARD` Creates a `Record<Keys, Value>` schema. */
     public Record<K extends TRecordKey, T extends TSchema>(key: K, value: T, options: ObjectOptions = {}): TRecord<K, T> {
         const pattern = key.kind === UnionKind  ? `^${key.anyOf.map(key => key.const).join('|')}$` :
                         key.kind === NumberKind ? '^(0|[1-9][0-9]*)$' :
@@ -456,11 +451,10 @@ export class TypeBuilder {
     }
 
     /** `STANDARD` Omits the `kind` and `modifier` properties from the given schema. */
-    public Strict<T extends TSchema>(schema: T): T {
-        const $schema = 'https://json-schema.org/draft/2019-09/schema'
-        return JSON.parse(JSON.stringify({ $schema, ...schema })) as T
+    public Strict<T extends TSchema>(schema: T, options: CustomOptions = {}): T {
+        return JSON.parse(JSON.stringify({ ...options, ...schema })) as T
     }
-
+    
     /** `EXTENDED` Creates a `constructor` schema. */
     public Constructor<T extends TSchema[], U extends TSchema>(args: [...T], returns: U, options: CustomOptions = {}): TConstructor<T, U> {
         return { ...options, kind: ConstructorKind, type: 'constructor', arguments: args, returns };
@@ -495,12 +489,18 @@ export class TypeBuilder {
     public Ref<T extends TBox<TDefinitions>, K extends keyof T['definitions']>(box: T, key: K): T['definitions'][K] {
         return { $ref: `${box.$id}#/definitions/${key as string}` } as unknown as T['definitions'][K]
     }
-
+    
     /** `EXPERIMENTAL` Creates a recursive type. */
-    public Rec<T extends TSchema>(callback: (self: TAny) => T, $id: string = ''): T {
+    public Rec<T extends TSchema>($id: string, callback: (self: TAny) => T): T {
         const self = callback({ $ref: `${$id}#/definitions/self` } as any)
         return { $id,  $ref: `${$id}#/definitions/self`, definitions: { self } } as unknown as T
     }
+
+    /** `EXPERIMENTAL` Creates a recursive type. Pending https://github.com/ajv-validator/ajv/issues/1709 */
+    // public Rec<T extends TProperties>($id: string, callback: (self: TAny) => T, options: ObjectOptions = {}): TObject<T> {
+    //     const properties = callback({ $recursiveRef: `${$id}` } as any)
+    //     return { ...options, kind: ObjectKind, $id, $recursiveAnchor: true, type: 'object', properties }
+    // }
 }
 
 export const Type = new TypeBuilder()
