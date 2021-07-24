@@ -230,7 +230,7 @@ The following table outlines the TypeBox mappings between TypeScript and JSON sc
 │   B                            │   B                         │     type: 'number',            │
 │ }                              │ }                           │     const: 0                   │
 │                                │                             │   }, {                         │
-│ type T = Type.Enum(Foo)        │ type T = Foo                │     type: 'number',            │
+│ const T = Type.Enum(Foo)       │ type T = Foo                │     type: 'number',            │
 │                                │                             │     const: 1                   │
 │                                │                             │   }]                           │
 │                                │                             │ }                              │
@@ -399,7 +399,7 @@ const T = Type.Array(Type.Integer(), { minItems: 5 })
 
 ### Reference Types
 
-Type referencing can be useful to reduce schema duplication when composing large schemas. TypeBox allows for type referencing with the `Type.Box(...)` and `Type.Ref(...)` functions. The `Type.Box(...)` function is used to create a container for set of common related types and the `Type.Ref(...)` function allows for referencing into the container. The following shows a set of common math types contained within a box, and a vertex structure that references those types.
+Reference Types can be used to reduce duplication when composing large schemas. TypeBox provides support for referencing with the `Type.Box(...)` and `Type.Ref(...)` functions. The `Type.Box(...)` function is used to create a `namespace` for a set of common related types and the `Type.Ref(...)` function enables referencing types in the `namespace`. The following shows a set of common math types contained within a box, and a vertex structure that references those types.
 
 ```typescript
 const Math3D = Type.Box('math3d', {           //  const Math3D = {
@@ -450,7 +450,7 @@ const Vertex = Type.Object({                  //  const Vertex = {
 
 ### Recursive Types
 
-TypeBox provides support for recursive types. This is handled via the `Type.Rec(...)` function. The following creates a `Node` type that contains an array of inner `nodes`. Please note that due to current recursion limits on TypeScript inference, it's currently not possible for TypeBox to statically infer for recursive types. Instead TypeBox will resolve inner recursive types as `any`.
+TypeBox provides support for creating recursive schemas. This is handled with the `Type.Rec(...)` function. The following will create a `Node` type that contains an array of inner Nodes. Note that due to current restrictions on TypeScript recursive inference, it's currently not possible for TypeBox to statically infer for recursive types. Instead TypeBox will resolve inner recursive types as `any`.
 
 ```typescript
 const Node = Type.Rec('Node', Self =>         // const Node = {
@@ -594,7 +594,7 @@ import Ajv        from 'ajv/dist/2019'
 
 //--------------------------------------------------------------------------------------------
 //
-// Setup validator with the following options and formats
+// Setup AJV validator with the following options and formats
 //
 //--------------------------------------------------------------------------------------------
 
@@ -641,3 +641,53 @@ const ok = ajv.validate(User, {
 }) // -> ok
 ```
 
+Additionally, if using [Reference Types](#Reference-Types), you can use the `ajv.addSchema(...)` function to add dependent schemas to the AJV validator. The following moves the `id` and `email` types into a common box and registers it with the validator.
+
+```typescript
+//--------------------------------------------------------------------------------------------
+//
+// Common Types
+//
+//--------------------------------------------------------------------------------------------
+
+const Common = Type.Box('http://domain.com/common', {
+  UserId: Type.String({ format: 'uuid' }),
+  Email:  Type.String({ format: 'email' })
+})
+
+//--------------------------------------------------------------------------------------------
+//
+// Setup AJV validator with the following options and formats
+//
+//--------------------------------------------------------------------------------------------
+
+const ajv = addFormats(new Ajv({}), [...])
+  .addKeyword('kind')
+  .addKeyword('modifier')
+  .addSchema(Common)
+
+//--------------------------------------------------------------------------------------------
+//
+// Create a TypeBox type
+//
+//--------------------------------------------------------------------------------------------
+
+const User = Type.Object({
+  id:     Type.Ref(Common, 'UserId'),
+  email:  Type.Ref(Common, 'Email'),
+  online: Type.Boolean()
+}, { additionalProperties: false })
+
+//--------------------------------------------------------------------------------------------
+//
+// Validate Data
+//
+//--------------------------------------------------------------------------------------------
+
+const ok = ajv.validate(User, { 
+    id:    '68b4b1d8-0db6-468d-b551-02069a692044', 
+    email: 'dave@domain.com',
+    online: true
+}) // -> ok
+
+```
