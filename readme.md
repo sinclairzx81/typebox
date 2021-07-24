@@ -691,3 +691,5 @@ const ok = ajv.validate(User, {
 }) // -> ok
 
 ```
+
+For more information on AJV, refer to the website located [here](https://ajv.js.org/guide/getting-started.html).
