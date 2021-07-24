@@ -1,44 +1,25 @@
 import { Type, Static } from '@sinclair/typebox'
 
-interface Element {
-    elementId: string
-    elements: Element[]
-}
+const Vertex = Type.Object({
+    x: Type.Number(),
+    y: Type.Number(),
+    z: Type.Number()
+}, { $id: 'Vertex' })
 
-interface Node {
-    nodeId: string
-    nodes: Node[]
-    element: Element
-}
+const Box = Type.Box({ Vertex }, { $id: 'Box' })
 
-const Element = Type.Rec('Element', Self => Type.Object({
-    elementId: Type.String(),
-    elements: Type.Array(Self)
-}, { additionalProperties: false }))
+const R1 = Type.Ref(Vertex)
 
-const Node = Type.Rec('Node', Self => Type.Object({
-    nodeId: Type.String(),
-    nodes: Type.Array(Self),
-    element: Element
-}, { additionalProperties: false }))
+const R2 = Type.Ref(Box, 'Vertex')
 
-console.log(JSON.stringify(Node, null, 2))
+console.log(R1)
 
-// {
-//     "$id": "Node",
-//     "$recursiveAnchor": true,
-//     "type": "object",
-//     "properties": {
-//       "nodeId": {
-//         "type": "string"
-//       },
-//       "nodes": {
-//         "type": "array",
-//         "items": {
-//           "$recursiveRef": "Node"
-//         }
-//       }
-//     }
-//   }
+console.log(R2)
+
+
+
+
+
+
 
 
