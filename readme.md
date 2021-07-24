@@ -664,7 +664,7 @@ const Common = Type.Box('http://domain.com/common', {
 const ajv = addFormats(new Ajv({}), [...])
   .addKeyword('kind')
   .addKeyword('modifier')
-  .addSchema(Common)
+  .addSchema(Common) // <-- Register Common Types
 
 //--------------------------------------------------------------------------------------------
 //
