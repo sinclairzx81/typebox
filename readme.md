@@ -641,7 +641,9 @@ const ok = ajv.validate(User, {
 }) // -> ok
 ```
 
-If using [Reference Types](#Reference-Types), you can use the `ajv.addSchema(...)` function to add dependent schemas to the AJV validator. The following moves the `id` and `email` types into a common box and registers it with the validator.
+#### Reference Types
+
+[Reference Types](#Reference-Types) can be added to AJV with the `ajv.addSchema(...)` function. The following moves the `id` and `email` types above into a common box and registers it with the validator.
 
 ```typescript
 //--------------------------------------------------------------------------------------------
