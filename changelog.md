@@ -1,3 +1,24 @@
+## [0.19.0](https://www.npmjs.com/package/@sinclair/typebox/v/0.19.0)
+
+- Function `Type.Box(...)` now takes a `CustomOptions` parameter.
+- Function `Type.Ref(...)` is now overload to reference inside `Type.Box(...)` and `TSchema`.
+
+Notes:
+
+This update changes the signature of `Type.Box(...)` to pass an `CustomOptions`. This change is to align box to individual schema referencing where TypeBox mandates that a `$id` be passed any type being referenced.
+
+```typescript
+const T = Type.String({ $id: 'T' })
+
+const B = Type.Box({ T }, { $id: 'B' })
+
+const R1 = Type.Ref(T)                   // const R1 = { $ref: 'T' }
+
+const R2 = Type.Ref(B, 'T')              // const R2 = { $ref: 'B#/definitions/T' }
+```
+
+
+
 ## [0.18.1](https://www.npmjs.com/package/@sinclair/typebox/v/0.18.1)
 
 - Function `Type.Enum(...)` now expressed with `anyOf`. This to remove the `allowUnionTypes` configuration required to use `enum` with in AJV strict.
