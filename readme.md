@@ -399,7 +399,7 @@ const T = Type.Array(Type.Integer(), { minItems: 5 })
 
 ### Reference Types
 
-Reference Types can be used to reduce duplication when composing large schemas. TypeBox provides support for referencing with the `Type.Box(...)` and `Type.Ref(...)` functions. The `Type.Box(...)` function is used to create a `namespace` for a set of common related types and the `Type.Ref(...)` function enables referencing types in the `namespace`. The following shows a set of common math types contained within a box, and a vertex structure that references those types.
+Reference Types can be used to reduce duplication when composing large schemas. TypeBox provides support for referencing with the `Type.Box(...)` and `Type.Ref(...)` functions. The `Type.Box(...)` function is used to create a `namespace` for a set of common related types and the `Type.Ref(...)` function enables referencing types in the `namespace`. A box must specify an `$id` parameter to allow external types to reference it. The following shows a set of common math types contained within a box, and a vertex structure that references those types.
 
 ```typescript
 const Math3D = Type.Box({                     //  const Math3D = {
@@ -444,6 +444,18 @@ const Vertex = Type.Object({                  //  const Vertex = {
                                               //    },
                                               //    required: ['position', 'normal', 'uv']
                                               //  }
+```
+Types can also reference types outside a box. Similar to `Type.Box(...)`, the type being referenced must specify a `$id` parameter.
+
+```typescript
+const T = Type.String({ $id: 'T' })          // const T = {
+                                             //    $id: 'T',
+                                             //    type: 'string'
+                                             // }
+                                             
+const R = Type.Ref(T)                        // const R = {
+                                             //    $ref: 'T'
+                                             // }
 ```
 
 <a name="Recursive-Types"></a>
