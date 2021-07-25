@@ -665,10 +665,10 @@ const ok = ajv.validate(User, {
 //
 //--------------------------------------------------------------------------------------------
 
-const Common = Type.Box('http://domain.com/common', {
+const Common = Type.Box({
   UserId: Type.String({ format: 'uuid' }),
   Email:  Type.String({ format: 'email' })
-})
+}, { $id: 'Common' })
 
 //--------------------------------------------------------------------------------------------
 //
