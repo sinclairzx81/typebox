@@ -1,11 +1,13 @@
 ## [0.19.0](https://www.npmjs.com/package/@sinclair/typebox/v/0.19.0)
 
-- Function `Type.Box(...)` now takes a `CustomOptions` parameter.
-- Function `Type.Ref(...)` is now overload to reference inside `Type.Box(...)` and `TSchema`.
+Updates:
+
+- Function `Type.Box(...)` removes `$id` parameter as first argument.
+- Function `Type.Ref(...)` is now overloaded to support referencing `Type.Box(...)` and `TSchema`.
 
 Notes:
 
-This update changes the signature of `Type.Box(...)` to pass an `CustomOptions`. This change is to align box to individual schema referencing where TypeBox mandates that a `$id` be passed any type being referenced.
+This update changes the signature of `Type.Box(...)` and removes the explicit `$id` passing on the first parameter. The `$id` must be passed as an option if the caller wants to reference that type.
 
 ```typescript
 const T = Type.String({ $id: 'T' })
@@ -16,8 +18,6 @@ const R1 = Type.Ref(T)                   // const R1 = { $ref: 'T' }
 
 const R2 = Type.Ref(B, 'T')              // const R2 = { $ref: 'B#/definitions/T' }
 ```
-
-
 
 ## [0.18.1](https://www.npmjs.com/package/@sinclair/typebox/v/0.18.1)
 
