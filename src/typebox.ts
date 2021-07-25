@@ -120,7 +120,7 @@ export type TEnumKey<T = TKey> = { type: 'number' | 'string', const: T }
 
 export type TDefinitions                                         = { [key: string]: TSchema }
 export type TProperties                                          = { [key: string]: TSchema }
-export type TBox       <T extends TDefinitions>                  = { kind: typeof BoxKind, $id: string, definitions: T }
+export type TBox       <T extends TDefinitions>                  = { kind: typeof BoxKind, definitions: T } & CustomOptions
 export type TTuple     <T extends TSchema[]>                     = { kind: typeof TupleKind, type: 'array', items: [...T], additionalItems: false, minItems: number, maxItems: number } & CustomOptions
 export type TObject    <T extends TProperties>                   = { kind: typeof ObjectKind, type: 'object', properties: T, required?: string[] } & ObjectOptions
 export type TUnion     <T extends TSchema[]>                     = { kind: typeof UnionKind, anyOf: [...T] } & CustomOptions
@@ -479,16 +479,6 @@ export class TypeBuilder {
     public Void(options: CustomOptions = {}): TVoid {
         return { ...options, type: 'void', kind: VoidKind }
     }
-
-    /** `EXPERIMENTAL` Creates a container for schema definitions. */
-    public Box<T extends TDefinitions>($id: string, definitions: T): TBox<T> {
-        return { kind: BoxKind, $id, definitions }
-    }
-    
-    /** `EXPERIMENTAL` References a schema within a box. */
-    public Ref<T extends TBox<TDefinitions>, K extends keyof T['definitions']>(box: T, key: K): T['definitions'][K] {
-        return { $ref: `${box.$id}#/definitions/${key as string}` } as unknown as T['definitions'][K]
-    }
     
     /** `EXPERIMENTAL` Creates a recursive type. */
     public Rec<T extends TSchema>($id: string, callback: (self: TAny) => T): T {
@@ -501,6 +491,24 @@ export class TypeBuilder {
     //     const properties = callback({ $recursiveRef: `${$id}` } as any)
     //     return { ...options, kind: ObjectKind, $id, $recursiveAnchor: true, type: 'object', properties }
     // }
+
+    /** `EXPERIMENTAL` Creates a container for schema definitions. */
+    public Box<T extends TDefinitions>(definitions: T, options: CustomOptions = {}): TBox<T> {
+        return { ...options, kind: BoxKind, definitions }
+    }
+    
+    /** `EXPERIMENTAL` References a schema inside a box. The referenced box must specify an `$id`. */
+    public Ref<T extends TBox<TDefinitions>, K extends keyof T['definitions']>(box: T, key: K): T['definitions'][K] 
+    
+    /** `EXPERIMENTAL` References a schema. The referenced schema must specify an `$id`. */
+    public Ref<T extends TSchema>(schema: T): T
+    
+    /** `EXPERIMENTAL` References a schema. */
+    public Ref(...args: any[]): any {
+        const $id = args[0]['$id'] || '' as string 
+        const key = args[1]              as string
+        return (args.length === 2) ? { $ref: `${$id}#/definitions/${key}` } : { $ref: $id }
+    }
 }
 
 export const Type = new TypeBuilder()

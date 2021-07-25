@@ -399,11 +399,24 @@ const T = Type.Array(Type.Integer(), { minItems: 5 })
 
 ### Reference Types
 
-Reference Types can be used to reduce duplication when composing large schemas. TypeBox provides support for referencing with the `Type.Box(...)` and `Type.Ref(...)` functions. The `Type.Box(...)` function is used to create a `namespace` for a set of common related types and the `Type.Ref(...)` function enables referencing types in the `namespace`. The following shows a set of common math types contained within a box, and a vertex structure that references those types.
+Reference Types can be used to reduce schema duplication. TypeBox provides supports referencing with the `Type.Ref(...)` and `Type.Box(...)` functions. The `Type.Ref(...)` function references into an existing type and `Type.Box(...)` provides a container for multiple referenceable types. To reference a type, you must specify an `$id` on the target type being referenced. The following example shows referencing an existing `string` type.
 
 ```typescript
-const Math3D = Type.Box('math3d', {           //  const Math3D = {
-  Vector4: Type.Object({                      //    $id: 'math3d',
+const T = Type.String({ $id: 'T' })          // const T = {
+                                             //    $id: 'T',
+                                             //    type: 'string'
+                                             // }
+                                             
+const R = Type.Ref(T)                        // const R = {
+                                             //    $ref: 'T'
+                                             // }
+```
+        
+The `Type.Box(...)` function provides a way to group related types under a common namespace. The following example groups a set of related `Vector` types under the namespace `Math3D` which are later referenced in the `Vertex` structure below.
+
+```typescript
+const Math3D = Type.Box({                     //  const Math3D = {
+  Vector4: Type.Object({                      //    $id: 'Math3D',
     x: Type.Number(),                         //    definitions: {
     y: Type.Number(),                         //      Vector4: {
     z: Type.Number(),                         //        type: 'object',
@@ -418,7 +431,7 @@ const Math3D = Type.Box('math3d', {           //  const Math3D = {
     x: Type.Number(),                         //      Vector3: {
     y: Type.Number()                          //        type: 'object',
   })                                          //        properties: {
-})                                            //          x: { 'type': 'number' },
+}, { $id: 'Math3D' })                         //          x: { 'type': 'number' },
                                               //          y: { 'type': 'number' },
                                               //          z: { 'type': 'number' }
                                               //        },
@@ -438,9 +451,9 @@ const Math3D = Type.Box('math3d', {           //  const Math3D = {
 const Vertex = Type.Object({                  //  const Vertex = {
     position: Type.Ref(Math3D, 'Vector4'),    //    type: 'object',
     normal:   Type.Ref(Math3D, 'Vector3'),    //    properties: {
-    uv:       Type.Ref(Math3D, 'Vector2')     //      position: { $ref: 'math3d#/definitions/Vector4' },
-})                                            //      normal: { $ref: 'math3d#/definitions/Vector3' },
-                                              //      uv: { $ref: 'math3d#/definitions/Vector2' }
+    uv:       Type.Ref(Math3D, 'Vector2')     //      position: { $ref: 'Math3D#/definitions/Vector4' },
+})                                            //      normal: { $ref: 'Math3D#/definitions/Vector3' },
+                                              //      uv: { $ref: 'Math3D#/definitions/Vector2' }
                                               //    },
                                               //    required: ['position', 'normal', 'uv']
                                               //  }

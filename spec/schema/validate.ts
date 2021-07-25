@@ -1,9 +1,8 @@
 import { TSchema } from '@sinclair/typebox'
 import addFormats from 'ajv-formats'
-import Ajv from 'ajv/dist/2019'
+import Ajv, {AnySchema} from 'ajv/dist/2019'
 
-
-export function validator() {
+export function validator(additional: AnySchema[]) {
     return addFormats(new Ajv({}), [
         'date-time',
         'time',
@@ -22,13 +21,16 @@ export function validator() {
     ])
         .addKeyword('kind')
         .addKeyword('modifier')
+        .addSchema(additional)
 }
 
 
-export function ok<T extends TSchema>(type: T, data: unknown) {
-    const ajv = validator()
-    const result = ajv.validate(type, data) as boolean
-    if (result === false) {
+export function ok<T extends TSchema>(type: T, data: unknown, additional: AnySchema[] = []) {
+    const ajv = validator(additional)
+    function execute() { // required as ajv will throw if referenced schema is not found
+        try { return ajv.validate(type, data) as boolean } catch { return false }
+    }
+    if (execute() === false) {
         console.log('---------------------------')
         console.log('type')
         console.log('---------------------------')
@@ -45,10 +47,12 @@ export function ok<T extends TSchema>(type: T, data: unknown) {
     }
 }
 
-export function fail<T extends TSchema>(type: T, data: unknown) {
-    const ajv = validator()
-    const result = ajv.validate(type, data) as boolean
-    if (result === true) {
+export function fail<T extends TSchema>(type: T, data: unknown, additional: AnySchema[] = []) {
+    const ajv = validator(additional)
+    function execute() { // required as ajv will throw if referenced schema is not found
+        try { return ajv.validate(type, data) as boolean } catch { return false }
+    }
+    if (execute() === true) {
         console.log('---------------------------')
         console.log('type')
         console.log('---------------------------')
@@ -58,6 +62,9 @@ export function fail<T extends TSchema>(type: T, data: unknown) {
         console.log('---------------------------')
         console.log(JSON.stringify(data, null, 2))
         console.log('---------------------------')
-        throw Error('expected fail')
+        console.log('errors')
+        console.log('---------------------------')
+        console.log(ajv.errorsText(ajv.errors))
+        throw Error('expected ok')
     }
 }

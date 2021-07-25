@@ -1,3 +1,24 @@
+## [0.19.0](https://www.npmjs.com/package/@sinclair/typebox/v/0.19.0)
+
+Updates:
+
+- Function `Type.Box(...)` removes `$id` parameter as first argument.
+- Function `Type.Ref(...)` is now overloaded to support referencing `Type.Box(...)` and `TSchema`.
+
+Notes:
+
+This update changes the signature of `Type.Box(...)` and removes the explicit `$id` passing on the first parameter. The `$id` must be passed as an option if the caller wants to reference that type.
+
+```typescript
+const T = Type.String({ $id: 'T' })
+
+const B = Type.Box({ T }, { $id: 'B' })
+
+const R1 = Type.Ref(T)                   // const R1 = { $ref: 'T' }
+
+const R2 = Type.Ref(B, 'T')              // const R2 = { $ref: 'B#/definitions/T' }
+```
+
 ## [0.18.1](https://www.npmjs.com/package/@sinclair/typebox/v/0.18.1)
 
 - Function `Type.Enum(...)` now expressed with `anyOf`. This to remove the `allowUnionTypes` configuration required to use `enum` with in AJV strict.
