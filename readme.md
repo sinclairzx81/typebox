@@ -402,8 +402,8 @@ const T = Type.Array(Type.Integer(), { minItems: 5 })
 Reference Types can be used to reduce duplication when composing large schemas. TypeBox provides support for referencing with the `Type.Box(...)` and `Type.Ref(...)` functions. The `Type.Box(...)` function is used to create a `namespace` for a set of common related types and the `Type.Ref(...)` function enables referencing types in the `namespace`. The following shows a set of common math types contained within a box, and a vertex structure that references those types.
 
 ```typescript
-const Math3D = Type.Box('math3d', {           //  const Math3D = {
-  Vector4: Type.Object({                      //    $id: 'math3d',
+const Math3D = Type.Box({                     //  const Math3D = {
+  Vector4: Type.Object({                      //    $id: 'Math3D',
     x: Type.Number(),                         //    definitions: {
     y: Type.Number(),                         //      Vector4: {
     z: Type.Number(),                         //        type: 'object',
@@ -418,7 +418,7 @@ const Math3D = Type.Box('math3d', {           //  const Math3D = {
     x: Type.Number(),                         //      Vector3: {
     y: Type.Number()                          //        type: 'object',
   })                                          //        properties: {
-})                                            //          x: { 'type': 'number' },
+}, { $id: 'Math3D' })                         //          x: { 'type': 'number' },
                                               //          y: { 'type': 'number' },
                                               //          z: { 'type': 'number' }
                                               //        },
@@ -438,9 +438,9 @@ const Math3D = Type.Box('math3d', {           //  const Math3D = {
 const Vertex = Type.Object({                  //  const Vertex = {
     position: Type.Ref(Math3D, 'Vector4'),    //    type: 'object',
     normal:   Type.Ref(Math3D, 'Vector3'),    //    properties: {
-    uv:       Type.Ref(Math3D, 'Vector2')     //      position: { $ref: 'math3d#/definitions/Vector4' },
-})                                            //      normal: { $ref: 'math3d#/definitions/Vector3' },
-                                              //      uv: { $ref: 'math3d#/definitions/Vector2' }
+    uv:       Type.Ref(Math3D, 'Vector2')     //      position: { $ref: 'Math3D#/definitions/Vector4' },
+})                                            //      normal: { $ref: 'Math3D#/definitions/Vector3' },
+                                              //      uv: { $ref: 'Math3D#/definitions/Vector2' }
                                               //    },
                                               //    required: ['position', 'normal', 'uv']
                                               //  }
