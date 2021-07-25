@@ -399,7 +399,7 @@ const T = Type.Array(Type.Integer(), { minItems: 5 })
 
 ### Reference Types
 
-Reference Types can be used to reduce duplication when composing schemas. TypeBox provides supports referencing with the `Type.Ref(...)` and `Type.Box(...)` functions. The `Type.Ref(...)` function references into an existing type and `Type.Box(...)` provides a container for multiple referenceable types. To reference a type, you must specify an `$id` on the target type being referenced. The following example shows referencing an existing `string` type.
+Reference Types can be used to reduce schema duplication. TypeBox provides supports referencing with the `Type.Ref(...)` and `Type.Box(...)` functions. The `Type.Ref(...)` function references into an existing type and `Type.Box(...)` provides a container for multiple referenceable types. To reference a type, you must specify an `$id` on the target type being referenced. The following example shows referencing an existing `string` type.
 
 ```typescript
 const T = Type.String({ $id: 'T' })          // const T = {
@@ -412,7 +412,7 @@ const R = Type.Ref(T)                        // const R = {
                                              // }
 ```
         
-The `Type.Box(...)` function provides a way to group related types under a common namespace. The following example groups a set of math types under the namespace `Math3D` which are later referenced in the `Vertex` structure below.
+The `Type.Box(...)` function provides a way to group related types under a common namespace. The following example groups a set of related `Vector` types under the namespace `Math3D` which are later referenced in the `Vertex` structure below.
 
 ```typescript
 const Math3D = Type.Box({                     //  const Math3D = {
