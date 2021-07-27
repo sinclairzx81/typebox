@@ -1,3 +1,9 @@
+## [0.20.1](https://www.npmjs.com/package/@sinclair/typebox/v/0.20.1)
+
+Updates:
+
+- TypeBox mandates TypeScript compiler version `4.3.5` and above.
+
 ## [0.20.0](https://www.npmjs.com/package/@sinclair/typebox/v/0.20.0)
 
 Updates:
