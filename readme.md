@@ -399,7 +399,7 @@ const T = Type.Array(Type.Integer(), { minItems: 5 })
 
 ### Generic Types
 
-TypeBox supports generic types. The following creates a generic type `Nullable<T>`. Generic types must be constrained by `TSchema`. 
+TypeBox supports Generic Types. The following creates a generic type `Nullable<T>`.
 
 ```typescript
 import { Type, Static, TSchema } from '@sinclair/typebox'
