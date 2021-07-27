@@ -53,6 +53,7 @@ License MIT
 - [Types](#Types)
 - [Modifiers](#Modifiers)
 - [Options](#Options)
+- [Generic Types](#Generic-Types)
 - [Reference Types](#Reference-Types)
 - [Recursive Types](#Recursive-Types)
 - [Extended Types](#Extended-Types)
@@ -236,6 +237,14 @@ The following table outlines the TypeBox mappings between TypeScript and JSON sc
 │                                │                             │ }                              │
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
+│ const T = Type.KeyOf(          │ type T = keyof {            │ const T = {                    │
+│   Type.Object({                │   x: number,                │    enum: ['x', 'y'],           │
+│     x: Type.Number(),          │   y: number                 │    type: 'string'              │
+│     y: Type.Number()           │ }                           │ }                              │
+│   })                           │                             │                                │
+│ )                              │                             │                                │
+│   	                         │                             │                                │
+├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Union([         │ type T = string | number    │ const T = {                    │
 │   Type.String(),               │                             │    anyOf: [{                   │
 │   Type.Number()                │                             │       type: 'string'           │
@@ -243,14 +252,6 @@ The following table outlines the TypeBox mappings between TypeScript and JSON sc
 │                                │                             │       type: 'number'           │
 │                                │                             │    }]                          │
 │                                │                             │ }                              │
-│   	                         │                             │                                │
-├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
-│ const T = Type.KeyOf(          │ type T = keyof {            │ const T = {                    │
-│   Type.Object({                │   x: number,                │    enum: ['x', 'y'],           │
-│     x: Type.Number(),          │   y: number                 │    type: 'string'              │
-│     y: Type.Number()           │ }                           │ }                              │
-│   })                           │                             │                                │
-│ )                              │                             │                                │
 │   	                         │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Intersect([     │ type T = {                  │ const T = {                    │
@@ -277,7 +278,7 @@ The following table outlines the TypeBox mappings between TypeScript and JSON sc
 │ const T = Type.Record(         │ type T = {                  │ const T = {                    │
 │    Type.String(),              │    [key: string]: number    │    type: 'object',             │
 │    Type.Number()               │ }                           │    patternProperties: {        │
-│ ) 	                         │                             │      '.*': {                   │
+│ ) 	                         │                             │      '^.*$': {                 │
 │   	                         │                             │         type: 'number'         │
 │   	                         │                             │      }                         │
 │   	                         │                             │    }                           │
@@ -394,6 +395,40 @@ const T = Type.Number({ multipleOf: 2 })
 // array must have at least 5 integer values
 const T = Type.Array(Type.Integer(), { minItems: 5 })
 ```
+<a name="Generic-Types"></a>
+
+### Generic Types
+
+TypeBox supports generic types. The following creates a generic type `Nullable<T>`. Generic types must be constrained by `TSchema`. 
+
+```typescript
+import { Type, Static, TSchema } from '@sinclair/typebox'
+
+function Nullable<T extends TSchema>(t: T) {
+
+    return Type.Union([t, Type.Null()])
+}
+
+const T = Nullable(Type.String())            // const T = {
+                                             //   "anyOf": [{
+                                             //      type: 'string'
+                                             //   }, {
+                                             //      type: 'null'
+                                             //   }]
+                                             // }
+
+type T = Static<typeof T>                    // type T = string | null
+
+const U = Nullable(Type.Number())            // const U = {
+                                             //   "anyOf": [{
+                                             //      type: 'number'
+                                             //   }, {
+                                             //      type: 'null'
+                                             //   }]
+                                             // }
+
+type U = Static<typeof U>                    // type U = number | null
+```
 
 <a name="Reference-Types"></a>
 
@@ -466,12 +501,12 @@ const Vertex = Type.Object({                  //  const Vertex = {
 TypeBox provides support for creating recursive schemas. This is handled with the `Type.Rec(...)` function. The following will create a `Node` type that contains an array of inner Nodes. Note that due to current restrictions on TypeScript recursive inference, it's currently not possible for TypeBox to statically infer for recursive types. Instead TypeBox will resolve inner recursive types as `any`.
 
 ```typescript
-const Node = Type.Rec('Node', Self =>         // const Node = {
-  Type.Object({                               //   $id: 'Node',
-     id:    Type.String(),                    //   $ref: 'Node#/definitions/self',
-     nodes: Type.Array(Self),                 //   definitions: {
-  })                                          //     self: {
-)                                             //       type: 'object',
+const Node = Type.Rec(Self => Type.Object({   // const Node = {
+  id:    Type.String(),                       //   $id: 'Node',
+  nodes: Type.Array(Self),                    //   $ref: 'Node#/definitions/self',
+}), { $id: 'Node' })                          //   definitions: {
+                                              //     self: {
+                                              //       type: 'object',
                                               //       properties: {
                                               //         id: {
                                               //           type: 'string'

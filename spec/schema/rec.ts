@@ -4,7 +4,7 @@ import { ok, fail } from './validate'
 describe("Rec", () => {
 
     it('Should validate recursive Node type', () => {
-        const Node = Type.Rec('Node', Self => Type.Object({
+        const Node = Type.Rec(Self => Type.Object({
             nodeId: Type.String(),
             nodes: Type.Array(Self)
         }, { additionalProperties: false }))
@@ -19,9 +19,25 @@ describe("Rec", () => {
             ]
         })
     })
-
+    it('Should validate recursive Node type with an $id', () => {
+        const Node = Type.Rec(Self => Type.Object({
+            nodeId: Type.String(),
+            nodes: Type.Array(Self)
+        }, { additionalProperties: false }), 
+        { $id: 'Node' })
+        ok(Node, { nodeId: '1', nodes: [] })
+        ok(Node, {
+            nodeId: '1',
+            nodes: [
+                { nodeId: '2', nodes: [] },
+                { nodeId: '3', nodes: [] },
+                { nodeId: '4', nodes: [] },
+                { nodeId: '5', nodes: [] }
+            ]
+        })
+    })
     it('Should not validate recursive Node type with missing properties', () => {
-        const Node = Type.Rec('Node', Self => Type.Object({
+        const Node = Type.Rec(Self => Type.Object({
             nodeId: Type.String(),
             nodes: Type.Array(Self)
         }, { additionalProperties: false }))
@@ -36,7 +52,7 @@ describe("Rec", () => {
     })
 
     it('Should not validate recursive Node type with additionalProperties', () => {
-        const Node = Type.Rec('Node', Self => Type.Object({
+        const Node = Type.Rec(Self => Type.Object({
             nodeId: Type.String(),
             nodes: Type.Array(Self)
         }, { additionalProperties: false }))

@@ -2,7 +2,7 @@ import { Type, Static } from '@sinclair/typebox'
 
 // --------------------------------------------
 
-const T1 = Type.Rec('T1', Self => Type.Object({
+const T1 = Type.Rec(Self => Type.Object({
     id: Type.String(),
     nodes: Type.Array(Self)
 }))

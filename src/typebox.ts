@@ -481,9 +481,10 @@ export class TypeBuilder {
     }
     
     /** `EXPERIMENTAL` Creates a recursive type. */
-    public Rec<T extends TSchema>($id: string, callback: (self: TAny) => T): T {
+    public Rec<T extends TSchema>(callback: (self: TAny) => T, options: CustomOptions = {}): T {
+        const $id = options.$id || ''
         const self = callback({ $ref: `${$id}#/definitions/self` } as any)
-        return { $id,  $ref: `${$id}#/definitions/self`, definitions: { self } } as unknown as T
+        return { ...options, $ref: `${$id}#/definitions/self`, definitions: { self } } as unknown as T
     }
 
     /** `EXPERIMENTAL` Creates a recursive type. Pending https://github.com/ajv-validator/ajv/issues/1709 */
