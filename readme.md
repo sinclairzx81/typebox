@@ -42,7 +42,7 @@ TypeBox is a type builder library that creates in-memory JSON Schema objects tha
 
 TypeBox can be used as a simple tool to build up complex schemas or integrated into RPC or REST services to help validate JSON data received over the wire. TypeBox does not provide any JSON schema validation. Please use libraries such as AJV to validate schemas built with this library.
 
-Requires TypeScript 4.0.3 and above.
+Requires TypeScript 4.3.5 and above.
 
 License MIT
 
