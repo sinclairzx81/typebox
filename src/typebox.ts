@@ -392,7 +392,7 @@ export class TypeBuilder {
     
     /** `STANDARD` Creates a `Record<Keys, Value>` schema. */
     public Record<K extends TRecordKey, T extends TSchema>(key: K, value: T, options: ObjectOptions = {}): TRecord<K, T> {
-        const pattern = key.kind === UnionKind  ? `^${key.anyOf.map(key => key.const).join('|')}$` :
+        const pattern = key.kind === UnionKind  ? `^${key.anyOf.map((literal: TLiteral<TValue>) => literal.const).join('|')}$` :
                         key.kind === NumberKind ? '^(0|[1-9][0-9]*)$' :
                         key.pattern             ? key.pattern :  '^.*$'
         return { ...options, kind: RecordKind, type: 'object', patternProperties: { [pattern]: value } }
