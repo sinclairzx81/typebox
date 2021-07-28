@@ -497,7 +497,7 @@ const Vertex = Type.Object({                  //  const Vertex = {
 
 ### Recursive Types
 
-Recursive types can be created with the `Type.Rec(...)` function. The following creates a `Node` type that contains an array of inner Nodes. Note that due to current restrictions on TypeScript inference it is not possible for TypeBox to statically infer for recursive types. TypeBox will infer the inner recursive type as `any`.
+Recursive types can be created with the `Type.Rec(...)` function. The following creates a `Node` type that contains an array of inner Nodes. Note that due to current restrictions on TypeScript inference, it is not possible for TypeBox to statically infer for recursive types. TypeBox will infer the inner recursive type as `any`.
 
 ```typescript
 const Node = Type.Rec(Self => Type.Object({   // const Node = {
