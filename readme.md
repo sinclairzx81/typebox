@@ -399,7 +399,7 @@ const T = Type.Array(Type.Integer(), { minItems: 5 })
 
 ### Generic Types
 
-Generic types can be created using functions. All TypeBox types are a union of `TSchema` so generic type arguments should be contrained to this type. The following creates a generic `Nullable<T>` type. 
+Generic types can be created using functions. The following creates a generic `Nullable<T>` type. 
 
 ```typescript
 import { Type, Static, TSchema } from '@sinclair/typebox'
@@ -446,7 +446,7 @@ const R = Type.Ref(T)                        // const R = {
                                              // }
 ```
 
-TypeBox provides a `Type.Box(...)` function that creates a container for a set of related types. The following creates a `Math3D` box containing related types and a `Vertex` structure that references them with `Type.Ref(...)`.
+Using references, it can be helpful to organize shared types under a common namespace. The `Type.Box(...)` function can be used to create a shared definition container for related types. The following creates a `Math3D` container and a `Vertex` structure that references types in the container.
 
 ```typescript
 const Math3D = Type.Box({                     //  const Math3D = {
@@ -741,4 +741,4 @@ const ok = ajv.validate(User, {
 
 ```
 
-For more information on AJV, refer to the website located [here](https://ajv.js.org/guide/getting-started.html).
+Please refer the official AJV [documentation](https://ajv.js.org/guide/getting-started.html) for more information on using this validator.
