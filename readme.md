@@ -383,7 +383,7 @@ TypeBox provides modifiers that can be applied to an objects properties. This al
 
 ### Options
 
-You can pass additional JSON schema properties on the last argument of any given type. The following are some examples.
+You can pass additional JSON schema options on the last argument of any given type. The following are some examples.
 
 ```typescript
 // string must be an email
