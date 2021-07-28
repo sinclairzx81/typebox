@@ -433,7 +433,7 @@ type U = Static<typeof U>                    // type U = number | null
 
 ### Reference Types
 
-Types can be referenced with the `Type.Ref(...)` function. To reference a type, the target type must specify a `$id` as an option.
+Types can be referenced with the `Type.Ref(...)` function. To reference a type, the target type must specify an `$id`.
 
 ```typescript
 const T = Type.String({ $id: 'T' })          // const T = {
@@ -446,7 +446,7 @@ const R = Type.Ref(T)                        // const R = {
                                              // }
 ```
 
-TypeBox provides a `Type.Box(...)` function that creates a container for a set of related types. A box can only be referenced, and must specify an `$id`. The following shows the creation of a `Math3D` box containing common math types and a `Vertex` structure that referencing them with `Type.Ref(...)`.
+TypeBox provides a `Type.Box(...)` function that creates a container for a set of related types. The following creates a `Math3D` box containing related types and a `Vertex` structure that references them with `Type.Ref(...)`.
 
 ```typescript
 const Math3D = Type.Box({                     //  const Math3D = {
