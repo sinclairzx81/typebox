@@ -121,7 +121,7 @@ export type TEnumKey<T = TKey> = { type: 'number' | 'string', const: T }
 export type TDefinitions                                         = { [key: string]: TSchema }
 export type TProperties                                          = { [key: string]: TSchema }
 export type TBox       <T extends TDefinitions>                  = { kind: typeof BoxKind, definitions: T } & CustomOptions
-export type TTuple     <T extends TSchema[]>                     = { kind: typeof TupleKind, type: 'array', items: [...T], additionalItems: false, minItems: number, maxItems: number } & CustomOptions
+export type TTuple     <T extends TSchema[]>                     = { kind: typeof TupleKind, type: 'array', items?: [...T], additionalItems?: false, minItems: number, maxItems: number } & CustomOptions
 export type TObject    <T extends TProperties>                   = { kind: typeof ObjectKind, type: 'object', properties: T, required?: string[] } & ObjectOptions
 export type TUnion     <T extends TSchema[]>                     = { kind: typeof UnionKind, anyOf: [...T] } & CustomOptions
 export type TIntersect <T extends TSchema[]>                     = { kind: typeof IntersectKind, type: 'object', allOf: [...T] } & IntersectOptions
@@ -292,13 +292,15 @@ export class TypeBuilder {
     public Optional<T extends TSchema>(item: T): TOptional<T> {
         return { ...item, modifier: OptionalModifier }
     }
-
+    
     /** `STANDARD` Creates a Tuple schema. */
     public Tuple<T extends TSchema[]>(items: [...T], options: CustomOptions = {}): TTuple<T> {
         const additionalItems = false
         const minItems = items.length
         const maxItems = items.length
-        return { ...options, kind: TupleKind, type: 'array', items, additionalItems, minItems, maxItems }
+        return (items.length > 0)
+            ? { ...options, kind: TupleKind, type: 'array', items, additionalItems, minItems, maxItems }
+            : { ...options, kind: TupleKind, type: 'array', minItems, maxItems }
     }
 
     /** `STANDARD` Creates a `object` schema with the given properties. */

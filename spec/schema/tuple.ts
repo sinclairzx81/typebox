@@ -18,6 +18,16 @@ describe('Tuple', () => {
         fail(T, [42, 'hello'])
     })
 
+    it('Should validate empty tuple []', () => {
+        const T = Type.Tuple([])
+        ok(T, [])
+    })
+    
+    it('Should not validate empty tuple [] with one or more elements', () => {
+        const T = Type.Tuple([])
+        fail(T, [1])
+    })
+
     it('Should validate tuple of objects', () => {
         const A = Type.Object({ a: Type.String() })
         const B = Type.Object({ b: Type.Number() })
