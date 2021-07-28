@@ -433,7 +433,7 @@ type U = Static<typeof U>                    // type U = number | null
 
 ### Reference Types
 
-Types can be referenced with the `Type.Ref(...)` function. To reference a type, the target type must specify an `$id`.
+Types can be referenced with `Type.Ref(...)`. To reference a type, the target type must specify an `$id`.
 
 ```typescript
 const T = Type.String({ $id: 'T' })          // const T = {
@@ -446,7 +446,7 @@ const R = Type.Ref(T)                        // const R = {
                                              // }
 ```
 
-Using references, it can be helpful to organize shared types under a common namespace. The `Type.Box(...)` function can be used to create a shared definition container for related types. The following creates a `Math3D` container and a `Vertex` structure that references types in the container.
+It can be helpful to organize shared referenced types under a common namespace. The `Type.Box(...)` function can be used to create a shared definition container for related types. The following creates a `Math3D` container and a `Vertex` structure that references types in the container.
 
 ```typescript
 const Math3D = Type.Box({                     //  const Math3D = {
