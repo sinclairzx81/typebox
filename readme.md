@@ -497,7 +497,7 @@ const Vertex = Type.Object({                  //  const Vertex = {
 
 ### Recursive Types
 
-TypeBox provides support for creating recursive schemas. This is handled with the `Type.Rec(...)` function. The following will create a `Node` type that contains an array of inner Nodes. Note that due to current restrictions on TypeScript recursive inference, it's currently not possible for TypeBox to statically infer for recursive types. Instead TypeBox will resolve inner recursive types as `any`.
+Recursive types can be created with the `Type.Rec(...)` function. The following creates a `Node` type that contains an array of inner Nodes. Note that due to current restrictions on TypeScript inference it is currently not possible for TypeBox to statically infer for recursive types. TypeBox will infer the inner recursive type as `any`.
 
 ```typescript
 const Node = Type.Rec(Self => Type.Object({   // const Node = {
