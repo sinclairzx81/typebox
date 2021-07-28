@@ -670,7 +670,7 @@ const ajv = addFormats(new Ajv({}), [
 //--------------------------------------------------------------------------------------------
 
 const User = Type.Object({
-    id:     Type.String({ format: 'uuid' }),
+    userId: Type.String({ format: 'uuid' }),
     email:  Type.String({ format: 'email' }),
     online: Type.Boolean(),
 }, { additionalProperties: false })
@@ -682,15 +682,15 @@ const User = Type.Object({
 //--------------------------------------------------------------------------------------------
 
 const ok = ajv.validate(User, { 
-    id:    '68b4b1d8-0db6-468d-b551-02069a692044', 
-    email: 'dave@domain.com',
-    online: true
+    userId: '68b4b1d8-0db6-468d-b551-02069a692044', 
+    email:  'dave@domain.com',
+    online:  true
 }) // -> ok
 ```
 
 #### Reference Types
 
-Referenced types can be added to AJV with the `ajv.addSchema(...)` function. The following moves the `id` and `email` types above into a `Type.Box(...)` and registers it with the AJV validator.
+Referenced types can be added to AJV with the `ajv.addSchema(...)` function. The following moves the `userId` and `email` property types into a `Type.Box(...)` and registers it with the AJV validator.
 
 ```typescript
 //--------------------------------------------------------------------------------------------
@@ -722,7 +722,7 @@ const ajv = addFormats(new Ajv({}), [...])
 //--------------------------------------------------------------------------------------------
 
 const User = Type.Object({
-  id:     Type.Ref(Common, 'UserId'),
+  userId: Type.Ref(Common, 'UserId'),
   email:  Type.Ref(Common, 'Email'),
   online: Type.Boolean()
 }, { additionalProperties: false })
@@ -734,8 +734,8 @@ const User = Type.Object({
 //--------------------------------------------------------------------------------------------
 
 const ok = ajv.validate(User, { 
-    id:    '68b4b1d8-0db6-468d-b551-02069a692044', 
-    email: 'dave@domain.com',
+    userId: '68b4b1d8-0db6-468d-b551-02069a692044', 
+    email:  'dave@domain.com',
     online: true
 }) // -> ok
 
