@@ -399,15 +399,14 @@ const T = Type.Array(Type.Integer(), { minItems: 5 })
 
 ### Generic Types
 
-TypeBox supports Generic Types. The following creates a Generic Type `Nullable<T>`.
+Generic types can be created using functions. All TypeBox types are a union of `TSchema` so generic type arguments should be contrained to this type. The following creates a generic `Nullable<T>` type. 
 
 ```typescript
 import { Type, Static, TSchema } from '@sinclair/typebox'
 
-function Nullable<T extends TSchema>(t: T) {
+// type Nullable<T> = T | null
 
-    return Type.Union([t, Type.Null()])
-}
+const Nullable = <T extends TSchema>(type: T) => Type.Union([type, Type.Null()])
 
 const T = Nullable(Type.String())            // const T = {
                                              //   "anyOf": [{
@@ -434,7 +433,7 @@ type U = Static<typeof U>                    // type U = number | null
 
 ### Reference Types
 
-Reference Types can be used to reduce schema duplication. TypeBox provides support for referencing with the `Type.Ref(...)` and `Type.Box(...)` functions. The `Type.Ref(...)` function references into an existing type and `Type.Box(...)` provides a container for multiple referenceable types. To reference a type you must specify an `$id` on the target type being referenced. The following example shows referencing an existing `string` type.
+Types can be referenced with the `Type.Ref(...)` function. To reference a type, the target type must specify a `$id` as an option.
 
 ```typescript
 const T = Type.String({ $id: 'T' })          // const T = {
@@ -446,8 +445,8 @@ const R = Type.Ref(T)                        // const R = {
                                              //    $ref: 'T'
                                              // }
 ```
-        
-The `Type.Box(...)` function provides a way to group related types under a common namespace. The following example groups a set of related `Vector` types under the namespace `Math3D` which are later referenced in the `Vertex` structure below.
+
+TypeBox provides a `Type.Box(...)` function that creates a container for a set of related types. A box can only be referenced, and must specify an `$id`. The following shows the creation of a `Math3D` box containing common math types and a `Vertex` structure that referencing them with `Type.Ref(...)`.
 
 ```typescript
 const Math3D = Type.Box({                     //  const Math3D = {
