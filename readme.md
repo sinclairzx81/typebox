@@ -690,7 +690,7 @@ const ok = ajv.validate(User, {
 
 #### Reference Types
 
-Referenced types can be added to AJV with the `ajv.addSchema(...)` function. The following moves the `userId` and `email` property types into a `Type.Box(...)` and registers it with the AJV validator.
+Referenced types can be added to AJV with the `ajv.addSchema(...)` function. The following moves the `userId` and `email` property types into a `Type.Box(...)` and registers the box with AJV.
 
 ```typescript
 //--------------------------------------------------------------------------------------------
