@@ -622,7 +622,7 @@ const U = Type.Strict(T)                      // const U = {
 
 ### Validation
 
-TypeBox does not provide JSON schema validation out of the box and expects users to select an appropriate JSON schema validation library for their needs. TypeBox schemas should match JSON Schema draft `2019-09` so any library capable of draft `2019-09` should be fine. A good library to use for validation is [Ajv](https://www.npmjs.com/package/ajv). The following example shows setting up Ajv 7 to work with TypeBox.
+TypeBox does not provide any JSON schema validation and expects users to select an appropriate JSON Schema validation library for their needs. TypeBox schemas should match JSON Schema draft `2019-09` so any validator capable of draft `2019-09` should be fine. A good library to use for validation in JavaScript environments is [AJV](https://www.npmjs.com/package/ajv). The following example shows setting up AJV 7 to work with TypeBox.
 
 ```bash
 $ npm install ajv ajv-formats --save
@@ -690,7 +690,7 @@ const ok = ajv.validate(User, {
 
 #### Reference Types
 
-[Reference Types](#Reference-Types) can be added to AJV with the `ajv.addSchema(...)` function. The following moves the `id` and `email` types above into a common box and registers it with the validator.
+Referenced types can be added to AJV with the `ajv.addSchema(...)` function. The following moves the `id` and `email` types above into a `Type.Box(...)` and registers it with the AJV validator.
 
 ```typescript
 //--------------------------------------------------------------------------------------------
@@ -741,4 +741,4 @@ const ok = ajv.validate(User, {
 
 ```
 
-Please refer the official AJV [documentation](https://ajv.js.org/guide/getting-started.html) for more information on using this validator.
+Please refer to the official AJV [documentation](https://ajv.js.org/guide/getting-started.html) for more information on using this validator.
