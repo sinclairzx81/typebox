@@ -103,11 +103,6 @@ export type IntersectOptions = {
     unevaluatedProperties?: boolean
 } & CustomOptions
 
-export type IndexedOptions = {
-    minProperties?: number
-    maxProperties?: number
-} & CustomOptions
-
 export type ObjectOptions = {
     additionalProperties?: boolean
 } & CustomOptions
@@ -292,7 +287,7 @@ export class TypeBuilder {
     public Optional<T extends TSchema>(item: T): TOptional<T> {
         return { ...item, modifier: OptionalModifier }
     }
-    
+
     /** `STANDARD` Creates a Tuple schema. */
     public Tuple<T extends TSchema[]>(items: [...T], options: CustomOptions = {}): TTuple<T> {
         const additionalItems = false
