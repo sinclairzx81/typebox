@@ -1,8 +1,33 @@
-import { deepStrictEqual, strictEqual } from 'assert'
 import { Type } from '@sinclair/typebox'
 import { ok, fail } from './validate'
 
 describe('Object', () => {
+
+    it('Should not validate a number', () => {
+        const T = Type.Object({})
+        fail(T, 42)
+    })
+
+    it('Should not validate a string', () => {
+        const T = Type.Object({})
+        fail(T, 'hello')
+    })
+
+    it('Should not validate a boolean', () => {
+        const T = Type.Object({})
+        fail(T, true)
+    })
+    
+    it('Should not validate a null', () => {
+        const T = Type.Object({})
+        fail(T, null)
+    })
+
+    it('Should not validate an array', () => {
+        const T = Type.Object({})
+        fail(T, [1, 2])
+    })
+
     it('Should validate with correct property values', () => {
         const T = Type.Object({
             a: Type.Number(),
@@ -19,6 +44,7 @@ describe('Object', () => {
             e: { x: 10, y: 20 }
         })
     })
+
     it('Should not validate with incorrect property values', () => {
         const T = Type.Object({
             a: Type.Number(),
@@ -58,5 +84,11 @@ describe('Object', () => {
             b: 'hello',
             c: true
         })
+    })
+
+    it('Should not allow properties for an empty object when additionalProperties is false', () => {
+        const T = Type.Object({}, { additionalProperties: false })
+        ok(T, {})
+        fail(T, { a: 10 })
     })
 })
