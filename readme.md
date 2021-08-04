@@ -722,8 +722,8 @@ const ajv = addFormats(new Ajv({}), [...])
 //--------------------------------------------------------------------------------------------
 
 const User = Type.Object({
-  userId: Type.Ref(Common, 'UserId'),
-  email:  Type.Ref(Common, 'Email'),
+  userId: Type.Ref(Shared, 'UserId'),
+  email:  Type.Ref(Shared, 'Email'),
   online: Type.Boolean()
 }, { additionalProperties: false })
 
