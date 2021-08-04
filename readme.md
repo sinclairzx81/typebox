@@ -695,25 +695,25 @@ Referenced types can be added to AJV with the `ajv.addSchema(...)` function. The
 ```typescript
 //--------------------------------------------------------------------------------------------
 //
-// Common Types
+// Shared Types
 //
 //--------------------------------------------------------------------------------------------
 
-const Common = Type.Box({
+const Shared = Type.Box({
   UserId: Type.String({ format: 'uuid' }),
   Email:  Type.String({ format: 'email' })
-}, { $id: 'Common' })
+}, { $id: 'Shared' })
 
 //--------------------------------------------------------------------------------------------
 //
-// Setup AJV validator with the following options and formats
+// Setup Validator and Register Shared Types
 //
 //--------------------------------------------------------------------------------------------
 
 const ajv = addFormats(new Ajv({}), [...])
   .addKeyword('kind')
   .addKeyword('modifier')
-  .addSchema(Common) // <-- Register Common Types
+  .addSchema(Shared) // <-- Register Shared Types
 
 //--------------------------------------------------------------------------------------------
 //

@@ -84,4 +84,14 @@ describe('Intersect', () => {
             x: 1, y: 2, z: 3
         })
     })
+
+    describe('Should intersect with partial', () => {
+        const A = Type.Object({ a: Type.Number() })
+        const B = Type.Object({ b: Type.Number() })
+        const P = Type.Intersect([Type.Partial(A), Type.Partial(B)], { unevaluatedProperties: false })
+        ok(P, { a: 1, b: 2 })
+        ok(P, { a: 1 })
+        ok(P, { b: 1 })
+        fail(P, { c: 1 })
+    })
 })
