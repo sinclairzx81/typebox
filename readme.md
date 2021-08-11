@@ -394,6 +394,17 @@ const T = Type.Number({ multipleOf: 2 })
 
 // array must have at least 5 integer values
 const T = Type.Array(Type.Integer(), { minItems: 5 })
+
+// object is documented and annotated for openapi
+const T = Type.Object({
+  email: Type.String({ format: 'email' }),
+  address: Type.String({ description: 'US street address' })
+}, {
+  title: 'Customer', 
+  description: 'A customer record',
+  'x-custom-attribute': true,
+  nullable: true, // not reflected in TS; see https://github.com/sinclairzx81/typebox/issues/38#issuecomment-740310268
+ })
 ```
 <a name="Generic-Types"></a>
 
