@@ -201,15 +201,15 @@ export type TPartial<T extends TProperties> = {
 export type UnionToIntersect<U>                                  = (U extends any ? (k: U) => void : never) extends ((k: infer I) => void) ? I : never
 export type ObjectPropertyKeys           <T>                     = T extends TObject<infer U> ? PropertyKeys<U> : never
 export type PropertyKeys                 <T extends TProperties> = keyof T
-export type ReadonlyOptionalPropertyKeys <T extends TProperties> = { [K in keyof T]: T[K] extends TReadonlyOptional<infer U> ? K : never }[keyof T]
-export type ReadonlyPropertyKeys         <T extends TProperties> = { [K in keyof T]: T[K] extends TReadonly<infer U> ? K : never }[keyof T]
-export type OptionalPropertyKeys         <T extends TProperties> = { [K in keyof T]: T[K] extends TOptional<infer U> ? K : never }[keyof T]
+export type ReadonlyOptionalPropertyKeys <T extends TProperties> = { [K in keyof T]: T[K] extends TReadonlyOptional<TSchema> ? K : never }[keyof T]
+export type ReadonlyPropertyKeys         <T extends TProperties> = { [K in keyof T]: T[K] extends TReadonly<TSchema> ? K : never }[keyof T]
+export type OptionalPropertyKeys         <T extends TProperties> = { [K in keyof T]: T[K] extends TOptional<TSchema> ? K : never }[keyof T]
 export type RequiredPropertyKeys         <T extends TProperties> = keyof Omit<T, ReadonlyOptionalPropertyKeys<T> | ReadonlyPropertyKeys<T> | OptionalPropertyKeys<T>>
 export type ReduceModifiers              <T extends object> = { [K in keyof T]: T[K] }
 export type StaticModifiers<T extends TProperties> =
-    { readonly [K in ReadonlyOptionalPropertyKeys<T>]?: Static<T[K]> } &
-    { readonly [K in ReadonlyPropertyKeys<T>]:          Static<T[K]> } &
-    {          [K in OptionalPropertyKeys<T>]?:         Static<T[K]> } &
+    { readonly [K in ReadonlyOptionalPropertyKeys<T>]?: T[K] extends TReadonlyOptional<infer U> ? Static<U> : never } &
+    { readonly [K in ReadonlyPropertyKeys<T>]:          T[K] extends TReadonly<infer U>         ? Static<U> : never } &
+    {          [K in OptionalPropertyKeys<T>]?:         T[K] extends TOptional<infer U>         ? Static<U> : never } &
     {          [K in RequiredPropertyKeys<T>]:          Static<T[K]> }
 
 export type StaticEnum        <T>                                               = T extends TEnumKey<infer U>[] ? U : never
