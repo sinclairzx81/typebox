@@ -741,4 +741,4 @@ const ok = ajv.validate(User, {
 
 ```
 
-Please refer to the official AJV [documentation](https://ajv.js.org/guide/getting-started.html) for more information on using this validator.
+Please refer to the official AJV [documentation](https://ajv.js.org/guide/getting-started.html) for more information.
