@@ -755,7 +755,7 @@ const T = Type.String({ nullable: true })   // const T = {
                                             // }
 
 
-type T = Static<typeof T>                   // type T = string // incorrect!
+type T = Static<typeof T>                   // type T = string // incorrect
 ```
 
 To ensure TypeBox infers the correct static type in these scenarios, you can define a facade type by composing TypeBox's existing `TSchema` types. The following creates a specialized OpenAPI `Nullable<T>` type which uses the `nullable` keyword as above. We return a `TUnion<[T, TNull]>` as a facade as this is the closest approximation to the expected static type.
@@ -773,6 +773,6 @@ const T = Nullable(Type.String())           // const T = {
                                             // }
 
 
-type T = Static<typeof T>                   // type T = string | null // correct
+type T = Static<typeof T>                   // type T = string | null // ok
 ```
 
