@@ -775,6 +775,6 @@ const T = Nullable(Type.String())           // const T = {
                                             // }
 
 
-type T = Static<typeof T>                   // type T = string | null // ok
+type T = Static<typeof T>                   // type T = string | null
 ```
 
