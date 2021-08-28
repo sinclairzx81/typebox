@@ -59,6 +59,7 @@ License MIT
 - [Extended Types](#Extended-Types)
 - [Strict](#Strict)
 - [Validation](#Validation)
+- [OpenAPI](#OpenAPI)
 
 <a name="Example"></a>
 
@@ -742,3 +743,36 @@ const ok = ajv.validate(User, {
 ```
 
 Please refer to the official AJV [documentation](https://ajv.js.org/guide/getting-started.html) for more information.
+
+### OpenAPI
+
+TypeBox can be used to construct schemas for OpenAPI. However, when using TypeBox for OpenAPI schematics, users should be mindful of semantic differences between both variants of schema. For example, consider the following string type `T` specified with a `nullable` option. While TypeBox allows one to pass unknown JSON schema options to a schema (such as `nullable`), TypeBox does not understand that `nullable` should result in a `string | null` union when inferred.
+
+```typescript
+const T = Type.String({ nullable: true })   // const T = {
+                                            //   type: 'string'
+                                            //   nullable: true
+                                            // }
+
+
+type T = Static<typeof T>                   // type T = string // incorrect!
+```
+
+To ensure TypeBox infers the correct static type in these scenarios, you can define a facade type by composing TypeBox's existing `TSchema` types. The following creates a specialized OpenAPI `Nullable<T>` type which uses the `nullable` keyword as above. We return a `TUnion<[T, TNull]>` as a facade as this is the closest approximation to the expected static type.
+
+```typescript
+import { Type, Static, TSchema, TUnion, TNull } from '@sinclair/typebox'
+
+function Nullable<T extends TSchema>(schema: T):  TUnion<[T, TNull]> {
+    return { ...schema, nullable: true } as any // facade
+}
+
+const T = Nullable(Type.String())           // const T = {
+                                            //   type: 'string'
+                                            //   nullable: true
+                                            // }
+
+
+type T = Static<typeof T>                   // type T = string | null // correct
+```
+
