@@ -746,7 +746,7 @@ Please refer to the official AJV [documentation](https://ajv.js.org/guide/gettin
 
 ### OpenAPI
 
-TypeBox can be used to construct schemas for OpenAPI. However, when using TypeBox for OpenAPI, users should be mindful of semantic differences between both variants of schema. For example, consider the following string type `T` specified with a `nullable` option. Note that while TypeBox allows one to pass unknown JSON schema options to a schema (such as `nullable`), TypeBox does not understand that `nullable` should result in a `string | null` union when inferred.
+TypeBox can be used to construct schemas for OpenAPI. When using TypeBox for OpenAPI, users should be mindful of semantic differences between both variants of schema. For example, consider the following string type `T` specified with a `nullable` option. Note that while TypeBox allows one to pass unknown JSON schema options to a schema (such as `nullable`), TypeBox does not understand that `nullable` should result in a `string | null` union when inferred.
 
 ```typescript
 const T = Type.String({ nullable: true })   // const T = {
