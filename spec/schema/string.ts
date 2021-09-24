@@ -6,6 +6,12 @@ describe("String", () => {
         const T = Type.String()
         fail(T, 1)
     })
+
+    it('Should not validate Date', () => {
+        const T = Type.String()
+        fail(T, new Date())
+    })
+
     it('Should validate string', () => {
         const T = Type.String()
         ok(T, 'hello')

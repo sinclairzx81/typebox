@@ -60,6 +60,7 @@ export const BooleanKind     = Symbol('BooleanKind')
 export const NullKind        = Symbol('NullKind')
 export const UnknownKind     = Symbol('UnknownKind')
 export const AnyKind         = Symbol('AnyKind')
+export const DateKind        = Symbol('DateKind')
 
 export interface CustomOptions {
     $id?: string
@@ -132,6 +133,7 @@ export type TBoolean                                             = { kind: typeo
 export type TNull                                                = { kind: typeof NullKind, type: 'null' } & CustomOptions
 export type TUnknown                                             = { kind: typeof UnknownKind } & CustomOptions
 export type TAny                                                 = { kind: typeof AnyKind } & CustomOptions
+export type TDate                                                = { kind: typeof DateKind } & CustomOptions
 
 // ------------------------------------------------------------------------
 // Schema Extended
@@ -174,6 +176,7 @@ export type TSchema =
     | TPromise<any>
     | TUndefined
     | TVoid
+    | TDate
 
 // ------------------------------------------------------------------------
 // Utility Types
@@ -247,6 +250,7 @@ export type Static<T> =
     T extends TPromise<infer U>              ? StaticPromise<U>        :
     T extends TUndefined                     ? undefined               :
     T extends TVoid                          ? void                    :
+    T extends TDate                          ? Date                    :
     never
 
 // ------------------------------------------------------------------------
@@ -379,6 +383,10 @@ export class TypeBuilder {
     /** `STANDARD` Creates an `any` schema. */
     public Any(options: CustomOptions = {}): TAny {
         return { ...options, kind: AnyKind }
+    }
+
+    public Date(options: CustomOptions = {}): TDate {
+      return { ...options, kind: DateKind }
     }
     
     /** `STANDARD` Creates a `keyof` schema. */

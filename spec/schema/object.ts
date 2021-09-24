@@ -8,6 +8,11 @@ describe('Object', () => {
         fail(T, 42)
     })
 
+    it('Should validate Date', () => {
+        const T = Type.Object({})
+        ok(T, new Date())
+    })
+
     it('Should not validate a string', () => {
         const T = Type.Object({})
         fail(T, 'hello')

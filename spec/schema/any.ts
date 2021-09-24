@@ -6,6 +6,10 @@ describe("Any", () => {
         const T = Type.Any()
         ok(T, 1)
     })
+    it('Should validate Date', () => {
+        const T = Type.Any()
+        ok(T, new Date())
+    })
     it('Should validate string', () => {
         const T = Type.Any()
         ok(T, 'hello')

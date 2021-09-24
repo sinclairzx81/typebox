@@ -9,6 +9,11 @@ describe("Boolean", () => {
         ok(T, false)
     })
 
+    it('Should not validate Date', () => {
+        const T = Type.Boolean()
+        fail(T, new Date())
+    })
+
     it('Should not validate a number', () => {
         const T = Type.Boolean()
         fail(T, 1)

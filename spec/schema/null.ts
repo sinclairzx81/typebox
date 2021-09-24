@@ -7,6 +7,11 @@ describe("Null", () => {
         fail(T, 1)
     })
 
+    it('Should not validate Date', () => {
+        const T = Type.Null()
+        fail(T, new Date())
+    })
+
     it('Should not validate string', () => {
         const T = Type.Null()
         fail(T, 'hello')
