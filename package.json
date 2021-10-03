@@ -23,7 +23,7 @@
     "test": "hammer task spec"
   },
   "devDependencies": {
-    "@sinclair/hammer": "^0.12.1",
+    "@sinclair/hammer": "^0.15.7",
     "@types/chai": "^4.2.16",
     "@types/mocha": "^8.2.2",
     "@types/node": "^14.14.37",
