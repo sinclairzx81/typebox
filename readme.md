@@ -746,9 +746,7 @@ Please refer to the official AJV [documentation](https://ajv.js.org/guide/gettin
 
 ### OpenAPI
 
-TypeBox can be used to create schemas for OpenAPI. However users should be aware of the various differences between JSON Schema and OpenAPI schemas. Because TypeBox specifically focuses specifically on JSON Schema, users may need to construct specific OpenAPI schema types in instances where the OpenAPI specification diverges from the JSON schema specification.
-
-Two common scenarios where OpenAPI diverges from the JSON Schema specification is OpenAPI's handling of string `enum` and null `nullable` schemas. The following demonstrates how you can use TypeBox to construct these types.
+TypeBox can be used to create schemas for OpenAPI. However users should be aware of the various differences between JSON Schema and OpenAPI specifications. Two common instances where OpenAPI diverges from the JSON Schema specification is OpenAPI's handling of string `enum` and null `nullable` schemas. The following shows how you can use TypeBox to construct these types.
 
 ```typescript
 import { Type, Static, TNull, TLiteral, TUnion, TSchema } from '@sinclair/typebox'
