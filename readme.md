@@ -308,7 +308,7 @@ The following table outlines the TypeBox mappings between TypeScript and JSON sc
 │          Type.Number()         │                             │     y: {                       │
 │       )                        │                             │        type: 'number'          │
 │    })                          │                             │     }                          │
-│ )                              │                             │   }                            │
+│ )                              │                             │   },                           │
 │                                │                             │   required: ['x', 'y']         │
 │                                │                             │ }                              │
 │   	                         │                             │                                │
@@ -742,39 +742,47 @@ const ok = ajv.validate(User, {
 
 ```
 
-Please refer to the official AJV [documentation](https://ajv.js.org/guide/getting-started.html) for more information.
+Please refer to the official AJV [documentation](https://ajv.js.org/guide/getting-started.html) for additional information.
 
 ### OpenAPI
 
-TypeBox can be used to construct schemas for OpenAPI. However when using TypeBox for OpenAPI, users should be mindful of the semantic differences between JSON Schema and OpenAPI schematics. 
-
-For example, consider the following string type `T` specified with an additional `nullable` option. Note that while TypeBox allows one to pass unknown JSON schema options to a schema (such as `nullable`), TypeBox does not understand that `nullable` should result in a `string | null` union when statically inferred.
+TypeBox can be used to create schemas for OpenAPI, however users should be aware of the various differences between the JSON Schema and OpenAPI specifications. Two common instances where OpenAPI diverges from the JSON Schema specification is OpenAPI's handling of `string enum` and `nullable`. The following shows how you can use TypeBox to construct these types.
 
 ```typescript
-const T = Type.String({ nullable: true })   // const T = {
-                                            //   type: 'string'
-                                            //   nullable: true
-                                            // }
+import { Type, Static, TNull, TLiteral, TUnion, TSchema } from '@sinclair/typebox'
 
+//--------------------------------------------------------------------------------------------
+//
+// Nullable<T>
+//
+//--------------------------------------------------------------------------------------------
 
-type T = Static<typeof T>                   // type T = string // incorrect
-```
-
-To ensure TypeBox infers the correct static type in these scenarios, you can define a facade type by composing TypeBox's existing `TSchema` types. The following creates a specialized OpenAPI `Nullable<T>` type which uses the `nullable` keyword as above. We return a `TUnion<[T, TNull]>` as a facade as this is the closest approximation to the expected static type.
-
-```typescript
-import { Type, Static, TSchema, TUnion, TNull } from '@sinclair/typebox'
-
-function Nullable<T extends TSchema>(schema: T):  TUnion<[T, TNull]> {
-    return { ...schema, nullable: true } as any // facade
+function Nullable<T extends TSchema>(schema: T): TUnion<[T, TNull]> {
+    return { ...schema, nullable: true } as any
 }
 
-const T = Nullable(Type.String())           // const T = {
-                                            //   type: 'string'
-                                            //   nullable: true
-                                            // }
+const T = Nullable(Type.String())        // const T = {
+                                         //   type: 'string',
+                                         //   nullable: true
+                                         // }
 
+type T = Static<typeof T>                // type T = string | null
 
-type T = Static<typeof T>                   // type T = string | null
+//--------------------------------------------------------------------------------------------
+//
+// StringUnion<[...]>
+//
+//--------------------------------------------------------------------------------------------
+
+type IntoStringUnion<T> = {[K in keyof T]: T[K] extends string ? TLiteral<T[K]>: never }
+
+function StringUnion<T extends string[]>(values: [...T]): TUnion<IntoStringUnion<T>> {
+    return { enum: values } as any
+}
+
+const T = StringUnion(['A', 'B', 'C'])   // const T = {
+                                         //    enum: ['A', 'B', 'C']
+                                         // }
+
+type T = Static<typeof T>                // type T = 'A' | 'B' | 'C'
 ```
-

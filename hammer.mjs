@@ -1,5 +1,3 @@
-import { folder, shell } from '@sinclair/hammer'
-
 export async function clean() {
     await folder('target').delete()
 }
