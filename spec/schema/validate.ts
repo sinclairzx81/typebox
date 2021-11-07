@@ -21,6 +21,7 @@ export function validator(additional: AnySchema[]) {
     ])
         .addKeyword('kind')
         .addKeyword('modifier')
+        .addKeyword('discriminator')
         .addSchema(additional)
 }
 

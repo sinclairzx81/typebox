@@ -663,6 +663,7 @@ const ajv = addFormats(new Ajv({}), [
     'regex'
 ]).addKeyword('kind')
   .addKeyword('modifier')
+  .addKeyword('discriminator')
 
 //--------------------------------------------------------------------------------------------
 //
@@ -714,6 +715,7 @@ const Shared = Type.Box({
 const ajv = addFormats(new Ajv({}), [...])
   .addKeyword('kind')
   .addKeyword('modifier')
+  .addKeyword('discriminator')
   .addSchema(Shared) // <-- Register Shared Types
 
 //--------------------------------------------------------------------------------------------
