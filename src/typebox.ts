@@ -36,7 +36,7 @@ export const ReadonlyModifier                    = Symbol('ReadonlyModifier')
 
 export type TModifier                            = TReadonlyOptional<TSchema> | TOptional<TSchema> | TReadonly<TSchema>
 export type TReadonlyOptional<T extends TSchema> = T & { modifier: typeof ReadonlyOptionalModifier }
-export type TOptional<T extends TSchema>         = T & { modifier: typeof OptionalModifier }
+export type TOptional<T extends TSchema>         = T & { modifier: typeof OptionalModifier, nullable?: boolean }
 export type TReadonly<T extends TSchema>         = T & { modifier: typeof ReadonlyModifier }
 
 // ------------------------------------------------------------------------
@@ -285,7 +285,10 @@ export class TypeBuilder {
 
     /** `STANDARD` Modifies a schema object property to be `optional`. */
     public Optional<T extends TSchema>(item: T): TOptional<T> {
-        return { ...item, nullable: true, modifier: OptionalModifier }
+        if (item.type === 'string') {
+            return { ...item, nullable: true, modifier: OptionalModifier }
+        }
+        return { ...item, modifier: OptionalModifier }
     }
 
     /** `STANDARD` Creates a Tuple schema. */
