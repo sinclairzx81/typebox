@@ -285,7 +285,7 @@ export class TypeBuilder {
 
     /** `STANDARD` Modifies a schema object property to be `optional`. */
     public Optional<T extends TSchema>(item: T): TOptional<T> {
-        return { ...item, modifier: OptionalModifier }
+        return { ...item, nullable: true, modifier: OptionalModifier }
     }
 
     /** `STANDARD` Creates a Tuple schema. */
