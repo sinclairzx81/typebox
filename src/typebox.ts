@@ -221,8 +221,12 @@ export type StaticObject      <T extends TProperties>                           
 export type StaticRecord      <K extends TRecordKey, T extends TSchema>         = K extends TString ? { [key: string]: Static<T> } : K extends TNumber ? { [key: number]: Static<T> } : K extends TUnion<infer L> ? L extends TLiteral<any>[] ? {[K in StaticUnion<L>]: Static<T> } : never : never
 export type StaticArray       <T extends TSchema>                               = Array<Static<T>>
 export type StaticLiteral     <T extends TValue>                                = T
-export type StaticConstructor <T extends readonly TSchema[], U extends TSchema> = new (...args: [...{ [K in keyof T]: Static<T[K]> }]) => Static<U>
-export type StaticFunction    <T extends readonly TSchema[], U extends TSchema> = (...args: [...{ [K in keyof T]: Static<T[K]> }]) => Static<U>
+
+// Note: Disabled on TS 4.5 due to updated TS heuristics
+// export type StaticConstructor <T extends readonly TSchema[], U extends TSchema> = new (...args: [...{ [K in keyof T]: Static<T[K]> }]) => Static<U>
+// export type StaticFunction    <T extends readonly TSchema[], U extends TSchema> = (...args: [...{ [K in keyof T]: Static<T[K]> }]) => Static<U>
+export type StaticConstructor <T extends readonly TSchema[], U extends TSchema> = new (...args: unknown[]) => Static<U>
+export type StaticFunction    <T extends readonly TSchema[], U extends TSchema> = (...args: unknown[]) => Static<U>
 export type StaticPromise     <T extends TSchema>                               = Promise<Static<T>>
 
 export type Static<T> =
