@@ -447,10 +447,10 @@ const R = Type.Ref(T)                        // const R = {
                                              // }
 ```
 
-It can be helpful to organize shared referenced types under a common namespace. The `Type.Box(...)` function can be used to create a shared definition container for related types. The following creates a `Math3D` container and a `Vertex` structure that references types in the container.
+It can be helpful to organize shared referenced types under a common namespace. The `Type.Namespace(...)` function can be used to create a shared definition container for related types. The following creates a `Math3D` container and a `Vertex` structure that references types in the container.
 
 ```typescript
-const Math3D = Type.Box({                     //  const Math3D = {
+const Math3D = Type.Namespace({               //  const Math3D = {
   Vector4: Type.Object({                      //    $id: 'Math3D',
     x: Type.Number(),                         //    definitions: {
     y: Type.Number(),                         //      Vector4: {
@@ -691,7 +691,7 @@ const ok = ajv.validate(User, {
 
 #### Reference Types
 
-Referenced types can be added to AJV with the `ajv.addSchema(...)` function. The following moves the `userId` and `email` property types into a `Type.Box(...)` and registers the box with AJV.
+Referenced types can be added to AJV with the `ajv.addSchema(...)` function. The following moves the `userId` and `email` property types into a `Type.Namespace(...)` and registers the box with AJV.
 
 ```typescript
 //--------------------------------------------------------------------------------------------
@@ -700,7 +700,7 @@ Referenced types can be added to AJV with the `ajv.addSchema(...)` function. The
 //
 //--------------------------------------------------------------------------------------------
 
-const Shared = Type.Box({
+const Shared = Type.Namespace({
   UserId: Type.String({ format: 'uuid' }),
   Email:  Type.String({ format: 'email' })
 }, { $id: 'Shared' })

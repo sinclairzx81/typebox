@@ -4,7 +4,7 @@ import { Type, Static } from '@sinclair/typebox'
 
 const T0 = Type.Tuple([Type.Number(), Type.Number()])
 
-const B0 = Type.Box('ns', { T0 })
+const B0 = Type.Namespace({ T0 }, { $id: 'ns' })
 
 const R0 = Type.Ref(B0, 'T0')
 
