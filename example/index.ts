@@ -1,12 +1,11 @@
 
 import { Type, Static, TSchema } from '@sinclair/typebox';
 
-const Foo = Type.Object({
-    a: Type.Number(),
-    b: Type.Number()
-})
+const T = Type.Union([Type.String(), Type.Null()])
 
+const R = Type.Ref(T)
 
+type T = Static<typeof R>
 
 
 

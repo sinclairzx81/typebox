@@ -107,15 +107,23 @@ export type ObjectOptions = {
     additionalProperties?: boolean
 } & CustomOptions
 
-export type TEnumType          = Record<string, string | number>
-export type TKey               = string | number
-export type TValue             = string | number | boolean
-export type TRecordKey         = TString | TNumber | TKeyOf<any>
-export type TEnumKey<T = TKey> = { type: 'number' | 'string', const: T }
+// ------------------------------------------------------------------------
+// Namespacing
+// ------------------------------------------------------------------------
 
+export type TNamespace <T extends TDefinitions> = { kind: typeof BoxKind, definitions: T } & CustomOptions
 export type TDefinitions            = { [key: string]: TSchema }
+
+// ------------------------------------------------------------------------
+// Schema Types
+// ------------------------------------------------------------------------
+
+export type TEnumType               = Record<string, string | number>
+export type TKey                    = string | number
+export type TValue                  = string | number | boolean
+export type TRecordKey              = TString | TNumber | TKeyOf<any>
+export type TEnumKey<T = TKey>      = { type: 'number' | 'string', const: T }
 export type TProperties             = { [key: string]: TSchema }
-export type TBox       <I>          = { _infer: I, kind: typeof BoxKind, definitions: any } & CustomOptions
 export type TTuple     <I>          = { _infer: I, kind: typeof TupleKind, type: 'array', items?: TSchema[], additionalItems?: false, minItems: number, maxItems: number } & CustomOptions
 export type TObject    <I>          = { _infer: I, kind: typeof ObjectKind, type: 'object', properties: TProperties, required?: string[] } & ObjectOptions
 export type TUnion     <I>          = { _infer: I, kind: typeof UnionKind, anyOf: TSchema[] } & CustomOptions
@@ -191,24 +199,15 @@ export type StaticProperties<T extends TProperties> =
     { readonly [K in ReadonlyPropertyKeys<T>]:          Static<T[K]> } &
     {          [K in OptionalPropertyKeys<T>]?:         Static<T[K]> } &
     {          [K in RequiredPropertyKeys<T>]:          Static<T[K]> }
-
-export type StaticEnum        <T>                                               = T extends TEnumKey<infer U>[] ? U : never
-export type StaticKeyOf       <T extends TKey[]>                                = T extends Array<infer K> ? K : never
-export type StaticIntersect   <T extends readonly TSchema[]>                    = UnionToIntersect<StaticUnion<T>>
-export type StaticUnion       <T extends readonly TSchema[]>                    = { [K in keyof T]: Static<T[K]> }[number]
-export type StaticTuple       <T extends readonly TSchema[]>                    = { [K in keyof T]: Static<T[K]> }
-export type StaticObject      <T extends TProperties>                           = StaticProperties<StaticProperties<T>>
-
-
-export type StaticRecord      <K extends TRecordKey, T extends TSchema> = 
-    K extends TString ? Record<string, Static<T>> : 
-    K extends TNumber ? Record<number, Static<T>> : 
-    K extends TKeyOf<any> ? Record<K['_infer'], Static<T>> : never
-
-
+export type StaticEnum        <T>                                       = T extends TEnumKey<infer U>[] ? U : never
+export type StaticKeyOf       <T extends TKey[]>                        = T extends Array<infer K> ? K : never
+export type StaticIntersect   <T extends readonly TSchema[]>            = UnionToIntersect<StaticUnion<T>>
+export type StaticUnion       <T extends readonly TSchema[]>            = { [K in keyof T]: Static<T[K]> }[number]
+export type StaticTuple       <T extends readonly TSchema[]>            = { [K in keyof T]: Static<T[K]> }
+export type StaticObject      <T extends TProperties>                   = StaticProperties<StaticProperties<T>>
+export type StaticRecord      <K extends TRecordKey, T extends TSchema> = K extends TString ? Record<string, Static<T>> : K extends TNumber ? Record<number, Static<T>> : K extends TKeyOf<any> ? Record<K['_infer'], Static<T>> : never
 export type StaticArray       <T extends TSchema>                               = Array<Static<T>>
 export type StaticLiteral     <T extends TValue>                                = T
-
 export type StaticConstructor <T extends readonly TSchema[], U extends TSchema> = new (...args: [...{ [K in keyof T]: Static<T[K]> }]) => Static<U>
 export type StaticFunction    <T extends readonly TSchema[], U extends TSchema> = (...args: [...{ [K in keyof T]: Static<T[K]> }]) => Static<U>
 export type StaticPromise     <T extends TSchema>                               = Promise<Static<T>>
@@ -480,12 +479,12 @@ export class TypeBuilder {
     // }
 
     /** `EXPERIMENTAL` Creates a container for schema definitions. */
-    public Box<T extends TDefinitions>(definitions: T, options: CustomOptions = {}): TBox<T> {
+    public Namespace<T extends TDefinitions>(definitions: T, options: CustomOptions = {}): TNamespace<T> {
         return { ...options, kind: BoxKind, definitions } as any
     }
     
     /** `EXPERIMENTAL` References a schema inside a box. The referenced box must specify an `$id`. */
-    public Ref<T extends TBox<TDefinitions>, K extends keyof T['definitions']>(box: T, key: K): T['definitions'][K] 
+    public Ref<T extends TNamespace<TDefinitions>, K extends keyof T['definitions']>(box: T, key: K): T['definitions'][K] 
     
     /** `EXPERIMENTAL` References a schema. The referenced schema must specify an `$id`. */
     public Ref<T extends TSchema>(schema: T): T
