@@ -110,7 +110,7 @@ export type ObjectOptions = {
 export type TEnumType          = Record<string, string | number>
 export type TKey               = string | number
 export type TValue             = string | number | boolean
-export type TRecordKey         = TString | TNumber | TUnion<TLiteral<string | number>[]>
+export type TRecordKey         = TString | TNumber | TKeyOf<any>
 export type TEnumKey<T = TKey> = { type: 'number' | 'string', const: T }
 
 export type TDefinitions            = { [key: string]: TSchema }
@@ -176,25 +176,6 @@ export type TSchema =
     | TVoid
 
 // ------------------------------------------------------------------------
-// Utility Types
-// ------------------------------------------------------------------------
-
-export type TRequired<T extends TProperties> = {
-    [K in keyof T]: 
-        T[K] extends TReadonlyOptional<infer U> ? TReadonly<U> :  
-        T[K] extends TReadonly<infer U>         ? TReadonly<U> :
-        T[K] extends TOptional<infer U>         ? U :  
-        T[K]
-}
-export type TPartial<T extends TProperties> = {
-    [K in keyof T]:
-        T[K] extends TReadonlyOptional<infer U> ? TReadonlyOptional<U> :  
-        T[K] extends TReadonly<infer U>         ? TReadonlyOptional<U> :
-        T[K] extends TOptional<infer U>         ? TOptional<U> :
-        TOptional<T[K]>
-}
-
-// ------------------------------------------------------------------------
 // Static Inference
 // ------------------------------------------------------------------------
 
@@ -205,7 +186,6 @@ export type ReadonlyOptionalPropertyKeys <T extends TProperties> = { [K in keyof
 export type ReadonlyPropertyKeys         <T extends TProperties> = { [K in keyof T]: T[K] extends TReadonly<TSchema> ? K : never }[keyof T]
 export type OptionalPropertyKeys         <T extends TProperties> = { [K in keyof T]: T[K] extends TOptional<TSchema> ? K : never }[keyof T]
 export type RequiredPropertyKeys         <T extends TProperties> = keyof Omit<T, ReadonlyOptionalPropertyKeys<T> | ReadonlyPropertyKeys<T> | OptionalPropertyKeys<T>>
-
 export type StaticProperties<T extends TProperties> =
     { readonly [K in ReadonlyOptionalPropertyKeys<T>]?: Static<T[K]> } &
     { readonly [K in ReadonlyPropertyKeys<T>]:          Static<T[K]> } &
@@ -218,11 +198,17 @@ export type StaticIntersect   <T extends readonly TSchema[]>                    
 export type StaticUnion       <T extends readonly TSchema[]>                    = { [K in keyof T]: Static<T[K]> }[number]
 export type StaticTuple       <T extends readonly TSchema[]>                    = { [K in keyof T]: Static<T[K]> }
 export type StaticObject      <T extends TProperties>                           = StaticProperties<StaticProperties<T>>
-export type StaticRecord      <K extends TRecordKey, T extends TSchema>         = K extends TString ? { [key: string]: Static<T> } : K extends TNumber ? { [key: number]: Static<T> } : K extends TUnion<infer L> ? L extends TLiteral<any>[] ? {[K in StaticUnion<L>]: Static<T> } : never : never
+
+
+export type StaticRecord      <K extends TRecordKey, T extends TSchema> = 
+    K extends TString ? Record<string, Static<T>> : 
+    K extends TNumber ? Record<number, Static<T>> : 
+    K extends TKeyOf<any> ? Record<K['_infer'], Static<T>> : never
+
+
 export type StaticArray       <T extends TSchema>                               = Array<Static<T>>
 export type StaticLiteral     <T extends TValue>                                = T
 
-// Note: Disabled on TS 4.5 due to updated TS heuristics
 export type StaticConstructor <T extends readonly TSchema[], U extends TSchema> = new (...args: [...{ [K in keyof T]: Static<T[K]> }]) => Static<U>
 export type StaticFunction    <T extends readonly TSchema[], U extends TSchema> = (...args: [...{ [K in keyof T]: Static<T[K]> }]) => Static<U>
 export type StaticPromise     <T extends TSchema>                               = Promise<Static<T>>
@@ -399,7 +385,7 @@ export class TypeBuilder {
     }
 
     /** `STANDARD` Make all properties in schema object required. */
-    public Required<T extends TObject<TProperties>>(schema: T, options: ObjectOptions = {}): TObject<StaticProperties<TRequired<T['properties']>>> {
+    public Required<T extends TObject<any>>(schema: T, options: ObjectOptions = {}): TObject<Required<T['_infer']>> {
         const next = { ...clone(schema), ...options }
         next.required = Object.keys(next.properties)
         for(const key of Object.keys(next.properties)) {
@@ -415,7 +401,7 @@ export class TypeBuilder {
     }
     
     /** `STANDARD`  Make all properties in schema object optional. */
-    public Partial<T extends TObject<TProperties>>(schema: T, options: ObjectOptions = {}): TObject<StaticProperties<TPartial<T['properties']>>> {
+    public Partial<T extends TObject<any>>(schema: T, options: ObjectOptions = {}): TObject<Partial<T['_infer']>> {
         const next = { ...clone(schema), ...options }
         delete next.required
         for(const key of Object.keys(next.properties)) {
