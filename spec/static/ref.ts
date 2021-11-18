@@ -17,7 +17,7 @@ F1({
 
 // --------------------------------------------
 
-const T2 = Type.Box({
+const T2 = Type.Namespace({
     Vector: Type.Object({
         x: Type.Number(),
         y: Type.Number()

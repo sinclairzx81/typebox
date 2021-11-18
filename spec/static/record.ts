@@ -22,21 +22,22 @@ F1({
 
 // --------------------------------------------
 
-const K = Type.Union([
-    Type.Literal('a'),
-    Type.Literal('b'),
-    Type.Literal('c'),
-    Type.Literal(0),
-    Type.Literal(1),
-    Type.Literal(2),
-])
-const T2 = Type.Record(K, Type.Number())
+const K = Type.Object({
+    a: Type.Literal('a'),
+    b: Type.Literal('b'),
+    c: Type.Literal('c'),
+    d: Type.Literal(0),
+    e: Type.Literal(1),
+    f: Type.Literal(2),
+})
+
+const T2 = Type.Record(Type.KeyOf(K), Type.Number())
 const F2 = (arg: Static<typeof T2>) => { }
 F2({
     'a': 1,
     'b': 2,
     'c': 3,
-    0: 1,
-    1: 2,
-    2: 3
+    'd': 1,
+    'e': 2,
+    'f': 3
 })

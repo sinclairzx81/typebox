@@ -65,7 +65,7 @@ describe('Ref', () => {
             z: Type.Number()
         }, { $id: 'Vertex' })
         
-        const Box = Type.Box({ 
+        const Box = Type.Namespace({ 
             Vertex 
         }, { $id: 'Box' })
         

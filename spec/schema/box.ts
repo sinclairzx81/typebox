@@ -7,7 +7,7 @@ describe("Box", () => {
         const Vector2 = Type.Object({ x: Type.Number(), y: Type.Number() })
         const Vector3 = Type.Object({ x: Type.Number(), y: Type.Number(), z: Type.Number() })
         const Vector4 = Type.Object({ x: Type.Number(), y: Type.Number(), z: Type.Number(), w: Type.Number() })
-        const Math3D = Type.Box({ Vector2, Vector3, Vector4 }, { $id: 'Math3D' })
+        const Math3D = Type.Namespace({ Vector2, Vector3, Vector4 }, { $id: 'Math3D' })
         const Vertex = Type.Object({
             position: Type.Ref(Math3D, 'Vector4'),
             normal: Type.Ref(Math3D, 'Vector3'),
@@ -25,7 +25,7 @@ describe("Box", () => {
         const Vector2 = Type.Object({ x: Type.Number(), y: Type.Number() })
         const Vector3 = Type.Object({ x: Type.Number(), y: Type.Number(), z: Type.Number() })
         const Vector4 = Type.Object({ x: Type.Number(), y: Type.Number(), z: Type.Number(), w: Type.Number() })
-        const Math3D = Type.Box({ Vector2, Vector3, Vector4 }, { $id: 'Math3D' })
+        const Math3D = Type.Namespace({ Vector2, Vector3, Vector4 }, { $id: 'Math3D' })
         const Vertex = Type.Object({
             position: Type.Ref(Math3D, 'Vector4'),
             normal: Type.Ref(Math3D, 'Vector3'),
@@ -42,7 +42,7 @@ describe("Box", () => {
         const Vector2 = Type.Object({ x: Type.Number(), y: Type.Number() })
         const Vector3 = Type.Object({ x: Type.Number(), y: Type.Number(), z: Type.Number() })
         const Vector4 = Type.Object({ x: Type.Number(), y: Type.Number(), z: Type.Number(), w: Type.Number() })
-        const Math3D = Type.Box({ Vector2, Vector3, Vector4 }, { $id: 'Math3D' })
+        const Math3D = Type.Namespace({ Vector2, Vector3, Vector4 }, { $id: 'Math3D' })
         const Vertex = Type.Object({
             position: Type.Ref(Math3D, 'Vector4'),
             normal:  Type.Ref(Math3D, 'Vector3'),
@@ -59,7 +59,7 @@ describe("Box", () => {
         const Vector2 = Type.Object({ x: Type.Number(), y: Type.Number() })
         const Vector3 = Type.Object({ x: Type.Number(), y: Type.Number(), z: Type.Number() })
         const Vector4 = Type.Object({ x: Type.Number(), y: Type.Number(), z: Type.Number(), w: Type.Number() })
-        const Math3D = Type.Box({ Vector2, Vector3, Vector4 }, { $id: 'Math3D' })
+        const Math3D = Type.Namespace({ Vector2, Vector3, Vector4 }, { $id: 'Math3D' })
         const Vertex = Type.Object({
             position: Type.Ref(Math3D, 'Vector4'),
             normal:   Type.Ref(Math3D, 'Vector3'),

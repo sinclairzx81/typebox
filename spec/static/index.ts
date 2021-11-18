@@ -1,7 +1,7 @@
 import './any'
 import './array'
 import './boolean'
-import './box'
+import './namespace'
 import './enum'
 import './intersect'
 import './keyof'
