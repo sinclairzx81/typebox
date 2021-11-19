@@ -12,7 +12,7 @@ const B = Type.Object({ b: Type.String() })
 const C = Type.Object({ c: Type.String() })
 const T = Type.Intersect([A, Type.Union([B, C])])
 
-// type T = { a: string } | { b: string } | { c: string } 
+// type T = { a: string } & { b: string } & { c: string } 
 ```
 After
 
