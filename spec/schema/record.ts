@@ -48,6 +48,26 @@ describe('Record', () => {
         fail(T, { '0': 1, '1': 2, '2': 3, '3': 4, 'a': 'hello' })
     })
 
+    it('Should validate when specifying union literals for the known keys', () => {
+        const K = Type.Union([
+            Type.Literal('a'),
+            Type.Literal('b'),
+            Type.Literal('c'),
+        ])
+        const T = Type.Record(K, Type.Number())
+        ok(T, { a: 1, b: 2, c: 3, d: 'hello' })
+    })
+
+    it('Should not validate when specifying union literals for the known keys and with additionalProperties: false', () => {
+        const K = Type.Union([
+            Type.Literal('a'),
+            Type.Literal('b'),
+            Type.Literal('c'),
+        ])
+        const T = Type.Record(K, Type.Number(), { additionalProperties: false })
+        fail(T, { a: 1, b: 2, c: 3, d: 'hello' })
+    })
+
     it('Should validate for keyof records', () => {
         const T = Type.Object({
             a: Type.String(),

@@ -111,8 +111,8 @@ export type ObjectOptions = {
 // Namespacing
 // ------------------------------------------------------------------------
 
-export type TNamespace <T extends TDefinitions> = { kind: typeof BoxKind, definitions: T } & CustomOptions
-export type TDefinitions            = { [key: string]: TSchema }
+export type TDefinitions                       = { [key: string]: TSchema }
+export type TNamespace<T extends TDefinitions> = { kind: typeof BoxKind, definitions: T } & CustomOptions
 
 // ------------------------------------------------------------------------
 // Infer<T>
@@ -121,34 +121,34 @@ export type TDefinitions            = { [key: string]: TSchema }
 export type Infer<T> = { '_infer': T }
 
 // ------------------------------------------------------------------------
-// Schema Types
+// Standard Schema Types
 // ------------------------------------------------------------------------
 
-export type TEnumType           = Record<string, string | number>
-export type TKey                = string | number
-export type TValue              = string | number | boolean
-export type TRecordKey          = TString | TNumber | TKeyOf<any>
-export type TEnumKey<T = TKey>  = { type: 'number' | 'string', const: T }
-export type TProperties         = { [key: string]: TSchema }
-export type TTuple     <T>      = Infer<T> & { kind: typeof TupleKind, type: 'array', items?: TSchema[], additionalItems?: false, minItems: number, maxItems: number } & CustomOptions
-export type TObject    <T>      = Infer<T> & { kind: typeof ObjectKind, type: 'object', properties: TProperties, required?: string[] } & ObjectOptions
-export type TUnion     <T>      = Infer<T> & { kind: typeof UnionKind, anyOf: TSchema[] } & CustomOptions
-export type TIntersect <T>      = Infer<T> & { kind: typeof IntersectKind, type: 'object', allOf: TSchema[] } & IntersectOptions
-export type TKeyOf     <T>      = Infer<T> & { kind: typeof KeyOfKind, type: 'string', enum: string[] } & CustomOptions
-export type TRecord    <T>      = Infer<T> & { kind: typeof RecordKind, type: 'object', patternProperties: { [pattern: string]: TSchema } } & ObjectOptions
-export type TArray     <T>      = Infer<T> & { kind: typeof ArrayKind, type: 'array', items: any } & ArrayOptions
-export type TLiteral   <T>      = Infer<T> & { kind: typeof LiteralKind, const: TSchema } & CustomOptions
-export type TEnum      <T>      = Infer<T> & { kind: typeof EnumKind, anyOf: TSchema } & CustomOptions
-export type TString             = Infer<string>  & { kind: typeof StringKind, type: 'string' } & StringOptions<string>
-export type TNumber             = Infer<number>  & { kind: typeof NumberKind, type: 'number' } & NumberOptions
-export type TInteger            = Infer<number>  & { kind: typeof IntegerKind, type: 'integer' } & NumberOptions
-export type TBoolean            = Infer<boolean> & { kind: typeof BooleanKind, type: 'boolean' } & CustomOptions
-export type TNull               = Infer<null>    & { kind: typeof NullKind, type: 'null' } & CustomOptions
-export type TUnknown            = Infer<unknown> & { kind: typeof UnknownKind } & CustomOptions
-export type TAny                = Infer<any>     & { kind: typeof AnyKind } & CustomOptions
+export type TEnumType          = Record<string, string | number>
+export type TKey               = string | number
+export type TValue             = string | number | boolean
+export type TRecordKey         = TString | TNumber | TKeyOf<any> | TUnion<string | number>
+export type TEnumKey<T = TKey> = { type: 'number' | 'string', const: T }
+export type TProperties        = { [key: string]: TSchema }
+export type TTuple<I>          = Infer<I> & { kind: typeof TupleKind, type: 'array', items?: TSchema[], additionalItems?: false, minItems: number, maxItems: number } & CustomOptions
+export type TObject<I>         = Infer<I> & { kind: typeof ObjectKind, type: 'object', properties: TProperties, required?: string[] } & ObjectOptions
+export type TUnion<I>          = Infer<I> & { kind: typeof UnionKind, anyOf: TSchema[] } & CustomOptions
+export type TIntersect<I>      = Infer<I> & { kind: typeof IntersectKind, type: 'object', allOf: TSchema[] } & IntersectOptions
+export type TKeyOf<I>          = Infer<I> & { kind: typeof KeyOfKind, type: 'string', enum: string[] } & CustomOptions
+export type TRecord<I>         = Infer<I> & { kind: typeof RecordKind, type: 'object', patternProperties: { [pattern: string]: TSchema } } & ObjectOptions
+export type TArray<I>          = Infer<I> & { kind: typeof ArrayKind, type: 'array', items: any } & ArrayOptions
+export type TLiteral<I>        = Infer<I> & { kind: typeof LiteralKind, const: TValue } & CustomOptions
+export type TEnum<I>           = Infer<I> & { kind: typeof EnumKind, anyOf: TSchema } & CustomOptions
+export type TString            = Infer<string>  & { kind: typeof StringKind, type: 'string' } & StringOptions<string>
+export type TNumber            = Infer<number>  & { kind: typeof NumberKind, type: 'number' } & NumberOptions
+export type TInteger           = Infer<number>  & { kind: typeof IntegerKind, type: 'integer' } & NumberOptions
+export type TBoolean           = Infer<boolean> & { kind: typeof BooleanKind, type: 'boolean' } & CustomOptions
+export type TNull              = Infer<null>    & { kind: typeof NullKind, type: 'null' } & CustomOptions
+export type TUnknown           = Infer<unknown> & { kind: typeof UnknownKind } & CustomOptions
+export type TAny               = Infer<any>     & { kind: typeof AnyKind } & CustomOptions
 
 // ------------------------------------------------------------------------
-// Schema Extended
+// Extended Schema Types
 // ------------------------------------------------------------------------
 
 export const ConstructorKind = Symbol('ConstructorKind')
@@ -203,40 +203,45 @@ export type StaticProperties<T extends TProperties> =
     { readonly [K in ReadonlyPropertyKeys<T>]:          Static<T[K]> } &
     {          [K in OptionalPropertyKeys<T>]?:         Static<T[K]> } &
     {          [K in RequiredPropertyKeys<T>]:          Static<T[K]> }
-export type StaticEnum        <T>                                               = T extends TEnumKey<infer U>[] ? U : never
-export type StaticKeyOf       <T extends TKey[]>                                = T extends Array<infer K> ? K : never
-export type StaticIntersect   <T extends readonly TSchema[]>                    = UnionToIntersect<StaticUnion<T>>
-export type StaticUnion       <T extends readonly TSchema[]>                    = { [K in keyof T]: Static<T[K]> }[number]
-export type StaticTuple       <T extends readonly TSchema[]>                    = { [K in keyof T]: Static<T[K]> }
-export type StaticObject      <T extends TProperties>                           = StaticProperties<StaticProperties<T>>
-export type StaticRecord      <K extends TRecordKey, T extends TSchema>         = K extends TString ? Record<string, Static<T>> : K extends TNumber ? Record<number, Static<T>> : K extends TKeyOf<any> ? Record<K['_infer'], Static<T>> : never
+export type StaticEnum        <T>                                       = T extends TEnumKey<infer U>[] ? U : never
+export type StaticKeyOf       <T extends TKey[]>                        = T extends Array<infer K> ? K : never
+export type StaticIntersect   <T extends readonly TSchema[]>            = UnionToIntersect<StaticUnion<T>>
+export type StaticUnion       <T extends readonly TSchema[]>            = { [K in keyof T]: Static<T[K]> }[number]
+export type StaticTuple       <T extends readonly TSchema[]>            = { [K in keyof T]: Static<T[K]> }
+export type StaticObject      <T extends TProperties>                   = StaticProperties<StaticProperties<T>>
+export type StaticRecord      <K extends TRecordKey, T extends TSchema> = 
+    K extends TString     ? Record<string, Static<T>> : 
+    K extends TNumber     ? Record<number, Static<T>> : 
+    K extends TKeyOf<any> ? Record<K['_infer'], Static<T>> : 
+    K extends TUnion<any> ? Record<K['_infer'], Static<T>> :
+    never
 export type StaticArray       <T extends TSchema>                               = Array<Static<T>>
 export type StaticLiteral     <T extends TValue>                                = T
 export type StaticConstructor <T extends readonly TSchema[], U extends TSchema> = new (...args: [...{ [K in keyof T]: Static<T[K]> }]) => Static<U>
 export type StaticFunction    <T extends readonly TSchema[], U extends TSchema> = (...args: [...{ [K in keyof T]: Static<T[K]> }]) => Static<U>
 export type StaticPromise     <T extends TSchema>                               = Promise<Static<T>>
 export type Static<T> =
-    T extends TKeyOf<infer I>        ? I :
-    T extends TIntersect<infer I>    ? I : 
-    T extends TUnion<infer I>        ? I :
-    T extends TTuple<infer I>        ? I :
-    T extends TObject<infer I>       ? { [K in keyof I]: I[K] } :
-    T extends TRecord<infer I>       ? I :
-    T extends TArray<infer I>        ? I :
-    T extends TEnum<infer I>         ? I :
-    T extends TLiteral<infer I>      ? I :
-    T extends TString                ? T['_infer'] :
-    T extends TNumber                ? T['_infer'] :
-    T extends TInteger               ? T['_infer'] :
-    T extends TBoolean               ? T['_infer'] : 
-    T extends TNull                  ? T['_infer'] :
-    T extends TUnknown               ? T['_infer'] :
-    T extends TAny                   ? T['_infer'] :
-    T extends TConstructor<infer I>  ? I :
-    T extends TFunction<infer I>     ? I :
-    T extends TPromise<infer I>      ? I :
-    T extends TUndefined             ? T['_infer'] :
-    T extends TVoid                  ? T['_infer'] :
+    T extends TKeyOf<infer I>       ? I :
+    T extends TIntersect<infer I>   ? I : 
+    T extends TUnion<infer I>       ? I :
+    T extends TTuple<infer I>       ? I :
+    T extends TObject<infer I>      ? { [K in keyof I]: I[K] } : // Reduce Modifiers
+    T extends TRecord<infer I>      ? I :
+    T extends TArray<infer I>       ? I :
+    T extends TEnum<infer I>        ? I :
+    T extends TLiteral<infer I>     ? I :
+    T extends TString               ? T['_infer'] :
+    T extends TNumber               ? T['_infer'] :
+    T extends TInteger              ? T['_infer'] :
+    T extends TBoolean              ? T['_infer'] : 
+    T extends TNull                 ? T['_infer'] :
+    T extends TUnknown              ? T['_infer'] :
+    T extends TAny                  ? T['_infer'] :
+    T extends TConstructor<infer I> ? I :
+    T extends TFunction<infer I>    ? I :
+    T extends TPromise<infer I>     ? I :
+    T extends TUndefined            ? T['_infer'] :
+    T extends TVoid                 ? T['_infer'] :
     never
 
 // ------------------------------------------------------------------------
@@ -379,9 +384,15 @@ export class TypeBuilder {
     
     /** `standard` Creates a record type */
     public Record<K extends TRecordKey, T extends TSchema>(key: K, value: T, options: ObjectOptions = {}): TRecord<StaticRecord<K, T>> {
-        const pattern = key.kind === KeyOfKind  ? `^${key.enum.join('|')}$` :
-                        key.kind === NumberKind ? '^(0|[1-9][0-9]*)$' :
-                        key.pattern             ? key.pattern :  '^.*$'
+        const pattern = (() => {
+            switch(key.kind) {
+                case UnionKind:  return `^${key.anyOf.map(literal => literal.const as TValue).join('|')}$`
+                case KeyOfKind:  return `^${key.enum.join('|')}$`
+                case NumberKind: return '^(0|[1-9][0-9]*)$'
+                case StringKind: return key.pattern ? key.pattern : '^.*$'
+                default: throw Error('Invalid Record Key')
+            }
+        })()
         return { ...options, kind: RecordKind, type: 'object', patternProperties: { [pattern]: value } } as any
     }
 
