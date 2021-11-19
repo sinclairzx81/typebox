@@ -193,7 +193,9 @@ export type TSchema =
 // Static Inference
 // ------------------------------------------------------------------------
 
-export type UnionToIntersect<U>                                  = (U extends any ? (k: U) => void : never) extends ((k: infer I) => void) ? I : never
+export type UnionToIntersect<U>                             = (U extends any ? (k: U) => void : never) extends ((k: infer I) => void) ? I : never
+export type IntersectEvaluate<T extends readonly TSchema[]> = {[K in keyof T]: Static<T[K]> }
+export type IntersectReduce<I extends unknown, T extends readonly any[]> = T extends [infer A, ...infer B] ? IntersectReduce<I & A, B> : I
 export type ReadonlyOptionalPropertyKeys <T extends TProperties> = { [K in keyof T]: T[K] extends TReadonlyOptional<TSchema> ? K : never }[keyof T]
 export type ReadonlyPropertyKeys         <T extends TProperties> = { [K in keyof T]: T[K] extends TReadonly<TSchema> ? K : never }[keyof T]
 export type OptionalPropertyKeys         <T extends TProperties> = { [K in keyof T]: T[K] extends TOptional<TSchema> ? K : never }[keyof T]
@@ -203,18 +205,18 @@ export type StaticProperties<T extends TProperties> =
     { readonly [K in ReadonlyPropertyKeys<T>]:          Static<T[K]> } &
     {          [K in OptionalPropertyKeys<T>]?:         Static<T[K]> } &
     {          [K in RequiredPropertyKeys<T>]:          Static<T[K]> }
-export type StaticEnum        <T>                                       = T extends TEnumKey<infer U>[] ? U : never
-export type StaticKeyOf       <T extends TKey[]>                        = T extends Array<infer K> ? K : never
-export type StaticIntersect   <T extends readonly TSchema[]>            = UnionToIntersect<StaticUnion<T>>
-export type StaticUnion       <T extends readonly TSchema[]>            = { [K in keyof T]: Static<T[K]> }[number]
-export type StaticTuple       <T extends readonly TSchema[]>            = { [K in keyof T]: Static<T[K]> }
-export type StaticObject      <T extends TProperties>                   = StaticProperties<StaticProperties<T>>
 export type StaticRecord      <K extends TRecordKey, T extends TSchema> = 
     K extends TString     ? Record<string, Static<T>> : 
     K extends TNumber     ? Record<number, Static<T>> : 
     K extends TKeyOf<any> ? Record<K['_infer'], Static<T>> : 
     K extends TUnion<any> ? Record<K['_infer'], Static<T>> :
     never
+export type StaticEnum        <T>                                       = T extends TEnumKey<infer U>[] ? U : never
+export type StaticKeyOf       <T extends TKey[]>                        = T extends Array<infer K> ? K : never
+export type StaticIntersect   <T extends readonly TSchema[]>            = IntersectReduce<unknown, IntersectEvaluate<T>>
+export type StaticUnion       <T extends readonly TSchema[]>            = { [K in keyof T]: Static<T[K]> }[number]
+export type StaticTuple       <T extends readonly TSchema[]>            = { [K in keyof T]: Static<T[K]> }
+export type StaticObject      <T extends TProperties>                   = StaticProperties<StaticProperties<T>>
 export type StaticArray       <T extends TSchema>                               = Array<Static<T>>
 export type StaticLiteral     <T extends TValue>                                = T
 export type StaticConstructor <T extends readonly TSchema[], U extends TSchema> = new (...args: [...{ [K in keyof T]: Static<T[K]> }]) => Static<U>
