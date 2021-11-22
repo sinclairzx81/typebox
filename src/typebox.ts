@@ -115,10 +115,10 @@ export type TDefinitions                       = { [key: string]: TSchema }
 export type TNamespace<T extends TDefinitions> = { kind: typeof BoxKind, definitions: T } & CustomOptions
 
 // ------------------------------------------------------------------------
-// TSchema<T>
+// TSchema
 // ------------------------------------------------------------------------
 
-export interface TSchema { '#output': unknown }
+export interface TSchema { '#input': unknown, '#output': unknown }
 
 // ------------------------------------------------------------------------
 // Standard Schema Types
@@ -130,12 +130,12 @@ export type TValue             = string | number | boolean
 export type TRecordKey         = TString | TNumber | TKeyOf<any> | TUnion<any>
 export type TEnumKey<T = TKey> = { type: 'number' | 'string', const: T }
 export interface TProperties   { [key: string]: TSchema }
+export interface TRecord   <K extends TRecordKey, T extends TSchema> extends TSchema, ObjectOptions { '#output': StaticRecord<K, T>, kind: typeof RecordKind, type: 'object', patternProperties: { [pattern: string]: T } }
 export interface TTuple    <T extends TSchema[]>   extends TSchema, CustomOptions                   { '#output': StaticTuple<T>, kind: typeof TupleKind, type: 'array', items?: T, additionalItems?: false, minItems: number, maxItems: number }
 export interface TObject   <T extends TProperties> extends TSchema, ObjectOptions                   { '#output': StaticObject<T>, kind: typeof ObjectKind, type: 'object', properties: T, required?: string[] } 
 export interface TUnion    <T extends TSchema[]>   extends TSchema, CustomOptions                   { '#output': StaticUnion<T>, kind: typeof UnionKind, anyOf: T }
 export interface TIntersect<T extends TSchema[]>   extends TSchema, IntersectOptions                { '#output': StaticIntersect<T>, kind: typeof IntersectKind, type: 'object', allOf: T }
 export interface TKeyOf    <T extends TKey[]>      extends  TSchema, CustomOptions                  { '#output': StaticKeyOf<T>,kind: typeof KeyOfKind, type: 'string', enum: T }
-export interface TRecord   <K extends TRecordKey, T extends TSchema> extends TSchema, ObjectOptions { '#output': StaticRecord<K, T>, kind: typeof RecordKind, type: 'object', patternProperties: { [pattern: string]: T } }
 export interface TArray    <T extends TSchema>     extends TSchema, ArrayOptions                    { '#output': StaticArray<T>, kind: typeof ArrayKind, type: 'array', items: T } 
 export interface TLiteral  <T extends TValue>      extends TSchema, CustomOptions                   { '#output': StaticLiteral<T>, kind: typeof LiteralKind, const: T }
 export interface TEnum     <T extends TEnumKey[]>  extends TSchema, CustomOptions                   { '#output': StaticEnum<T>, kind: typeof EnumKind, anyOf: T }
