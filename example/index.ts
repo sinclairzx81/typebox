@@ -1,17 +1,15 @@
-import { Type, Static, TSchema } from '@sinclair/typebox';
+import { Type, Static } from '@sinclair/typebox';
 
-const T = Type.KeyOf(Type.Object({
-    A: Type.String(),
-    B: Type.String(),
-    C: Type.Readonly(Type.String())
-}))
+const A = Type.Object({ a: Type.String() })
+const B = Type.Object({ b: Type.String() })
+const C = Type.Object({ c: Type.String() })
+const T = Type.Intersect([A, Type.Union([B, C])])
 
-const K = Type.Union([Type.Literal('O'), Type.Literal('P')])
+const N = Type.Constructor([Type.String(), Type.String()], Type.Null())
 
-const R = Type.Record(T, Type.Number())
+type T = Static<typeof T>
 
-type T = Static<typeof R>
-
+console.log(N)
 
 
 
