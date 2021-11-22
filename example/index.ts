@@ -1,12 +1,24 @@
 import { Type, Static, TSchema } from '@sinclair/typebox';
 
+const T = Type.KeyOf(Type.Object({
+    A: Type.String(),
+    B: Type.String(),
+    C: Type.Readonly(Type.String())
+}))
 
-const A = Type.Object({ a: Type.String() })
-const B = Type.Object({ b: Type.String() })
-const C = Type.Object({ c: Type.String() })
-const E = Type.Object({ e: Type.String() })
-const F = Type.Object({ f: Type.String() })
-const T = Type.Intersect([A, Type.Union([Type.Intersect([B, C]), Type.Intersect([E, F])])])
+const I = Type.Intersect([Type.String(), Type.Number()], {
+    
+})
 
-console.log(JSON.stringify(T, null, 2))
+// const T = Type.Union([Type.Number(), Type.String()])
+
+// const A = Type.Object({ a: Type.String() })
+// const B = Type.Object({ b: Type.String() })
+// const C = Type.Object({ c: Type.String() })
+// const T = Type.Intersect([A, Type.Union([B, C])])
+
+type A = Static<typeof T>
+
+
+
 

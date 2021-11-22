@@ -4,3 +4,5 @@ export const infer = <T extends TSchema>(_: T): Static<T> => null as any as Stat
 
 export * from 'tsd'
 
+
+
