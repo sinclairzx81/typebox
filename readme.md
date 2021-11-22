@@ -774,7 +774,9 @@ type T = Static<typeof T>                // type T = string | null
 //
 //--------------------------------------------------------------------------------------------
 
-function StringUnion<T extends string[]>(values: [...T]): TUnion<{[K in keyof T]: T[K] }[number]> {
+type IntoStringUnion<T> = {[K in keyof T]: T[K] extends string ? TLiteral<T[K]>: never }
+
+function StringUnion<T extends string[]>(values: [...T]): TUnion<IntoStringUnion<T>> {
     return { enum: values } as any
 }
 

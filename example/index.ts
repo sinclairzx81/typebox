@@ -6,18 +6,14 @@ const T = Type.KeyOf(Type.Object({
     C: Type.Readonly(Type.String())
 }))
 
-const I = Type.Intersect([Type.String(), Type.Number()], {
-    
-})
+const K = Type.Union([Type.Literal('O'), Type.Literal('P')])
 
-// const T = Type.Union([Type.Number(), Type.String()])
+const R = Type.Record(T, Type.Number())
 
-// const A = Type.Object({ a: Type.String() })
-// const B = Type.Object({ b: Type.String() })
-// const C = Type.Object({ c: Type.String() })
-// const T = Type.Intersect([A, Type.Union([B, C])])
+type T = Static<typeof R>
 
-type A = Static<typeof T>
+
+
 
 
 
