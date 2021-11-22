@@ -1,3 +1,11 @@
+## [0.22.2](https://www.npmjs.com/package/@sinclair/typebox/v/0.22.2)
+
+Updates:
+
+- The type `TSchema` is now expressed as an HKT compatible interface. All types now extend the `TSchema` interface and are themselves also expressed as interfaces.
+- The phantom property `_infer` has been renamed to `typebox:output`. Callers should not interact with this property as it is always `undefined` and used exclusively to optimize type inference.
+- TypeBox re-adds the ability to deeply introspect schema properties. This feature was temporarily removed on the `0.21.0` update to resolve deep instantiation errors on TypeScript 4.5.
+
 ## [0.21.2](https://www.npmjs.com/package/@sinclair/typebox/v/0.21.2)
 
 Updates:
