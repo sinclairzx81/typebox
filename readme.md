@@ -452,7 +452,7 @@ It can be helpful to organize shared referenced types under a common namespace. 
 ```typescript
 const Math3D = Type.Namespace({               //  const Math3D = {
   Vector4: Type.Object({                      //    $id: 'Math3D',
-    x: Type.Number(),                         //    definitions: {
+    x: Type.Number(),                         //    $defs: {
     y: Type.Number(),                         //      Vector4: {
     z: Type.Number(),                         //        type: 'object',
     w: Type.Number()                          //        properties: {
@@ -486,9 +486,9 @@ const Math3D = Type.Namespace({               //  const Math3D = {
 const Vertex = Type.Object({                  //  const Vertex = {
     position: Type.Ref(Math3D, 'Vector4'),    //    type: 'object',
     normal:   Type.Ref(Math3D, 'Vector3'),    //    properties: {
-    uv:       Type.Ref(Math3D, 'Vector2')     //      position: { $ref: 'Math3D#/definitions/Vector4' },
-})                                            //      normal: { $ref: 'Math3D#/definitions/Vector3' },
-                                              //      uv: { $ref: 'Math3D#/definitions/Vector2' }
+    uv:       Type.Ref(Math3D, 'Vector2')     //      position: { $ref: 'Math3D#/$defs/Vector4' },
+})                                            //      normal: { $ref: 'Math3D#/$defs/Vector3' },
+                                              //      uv: { $ref: 'Math3D#/$defs/Vector2' }
                                               //    },
                                               //    required: ['position', 'normal', 'uv']
                                               //  }
@@ -503,8 +503,8 @@ Recursive types can be created with the `Type.Rec(...)` function. The following 
 ```typescript
 const Node = Type.Rec(Self => Type.Object({   // const Node = {
   id:    Type.String(),                       //   $id: 'Node',
-  nodes: Type.Array(Self),                    //   $ref: 'Node#/definitions/self',
-}), { $id: 'Node' })                          //   definitions: {
+  nodes: Type.Array(Self),                    //   $ref: 'Node#/$defs/self',
+}), { $id: 'Node' })                          //   $defs: {
                                               //     self: {
                                               //       type: 'object',
                                               //       properties: {
@@ -514,7 +514,7 @@ const Node = Type.Rec(Self => Type.Object({   // const Node = {
                                               //         nodes: {
                                               //            type: 'array',
                                               //            items: {
-                                              //              $ref: 'Node#/definitions/self'
+                                              //              $ref: 'Node#/$defs/self'
                                               //            }
                                               //         }
                                               //      }
