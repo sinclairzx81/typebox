@@ -37,6 +37,7 @@ export async function example(target = 'target/example') {
 // -------------------------------------------------------------------------------
 
 export async function build(target = 'target/build') {
+    await spec()
     await folder(target).delete()
     await shell(`tsc -p ./src/tsconfig.json --outDir ${target}`)
     await folder(target).add('package.json')

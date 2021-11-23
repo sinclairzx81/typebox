@@ -118,9 +118,7 @@ export type TNamespace<T extends TDefinitions> = { kind: typeof BoxKind, $defs: 
 // TSchema
 // --------------------------------------------------------------------------
 
-export interface TSchema {
-    'typebox:output': unknown 
-}
+export interface TSchema { $static: unknown }
 
 // --------------------------------------------------------------------------
 // Standard Schema Types
@@ -131,23 +129,24 @@ export type TKey               = string | number | symbol
 export type TValue             = string | number | boolean
 export type TRecordKey         = TString | TNumber | TKeyOf<any> | TUnion<any>
 export type TEnumKey<T = TKey> = { type: 'number' | 'string', const: T }
-export interface TProperties   { [key: string]: TSchema }
-export interface TRecord   <K extends TRecordKey, T extends TSchema> extends TSchema, ObjectOptions { 'typebox:output': StaticRecord<K, T>, kind: typeof RecordKind, type: 'object', patternProperties: { [pattern: string]: T } }
-export interface TTuple    <T extends TSchema[]>   extends TSchema, CustomOptions                   { 'typebox:output': StaticTuple<T>, kind: typeof TupleKind, type: 'array', items?: T, additionalItems?: false, minItems: number, maxItems: number }
-export interface TObject   <T extends TProperties> extends TSchema, ObjectOptions                   { 'typebox:output': StaticObject<T>, kind: typeof ObjectKind, type: 'object', properties: T, required?: string[] } 
-export interface TUnion    <T extends TSchema[]>   extends TSchema, CustomOptions                   { 'typebox:output': StaticUnion<T>, kind: typeof UnionKind, anyOf: T }
-export interface TIntersect<T extends TSchema[]>   extends TSchema, IntersectOptions                { 'typebox:output': StaticIntersect<T>, kind: typeof IntersectKind, type: 'object', allOf: T }
-export interface TKeyOf    <T extends TKey[]>      extends  TSchema, CustomOptions                  { 'typebox:output': StaticKeyOf<T>,kind: typeof KeyOfKind, type: 'string', enum: T }
-export interface TArray    <T extends TSchema>     extends TSchema, ArrayOptions                    { 'typebox:output': StaticArray<T>, kind: typeof ArrayKind, type: 'array', items: T } 
-export interface TLiteral  <T extends TValue>      extends TSchema, CustomOptions                   { 'typebox:output': StaticLiteral<T>, kind: typeof LiteralKind, const: T }
-export interface TEnum     <T extends TEnumKey[]>  extends TSchema, CustomOptions                   { 'typebox:output': StaticEnum<T>, kind: typeof EnumKind, anyOf: T }
-export interface TString   extends TSchema, StringOptions<string>                                   { 'typebox:output': string, kind: typeof StringKind, type: 'string' }
-export interface TNumber   extends TSchema, NumberOptions                                           { 'typebox:output': number, kind: typeof NumberKind, type: 'number' }
-export interface TInteger  extends TSchema, NumberOptions                                           { 'typebox:output': number, kind: typeof IntegerKind, type: 'integer' } 
-export interface TBoolean  extends TSchema, CustomOptions                                           { 'typebox:output': boolean, kind: typeof BooleanKind, type: 'boolean' } 
-export interface TNull     extends TSchema, CustomOptions                                           { 'typebox:output': null, kind: typeof NullKind, type: 'null' }
-export interface TUnknown  extends TSchema, CustomOptions                                           { 'typebox:output': unknown, kind: typeof UnknownKind }
-export interface TAny      extends TSchema, CustomOptions                                           { 'typebox:output': any, kind: typeof AnyKind }
+
+export interface TProperties { [key: string]: TSchema }
+export interface TRecord    <K extends TRecordKey, T extends TSchema> extends TSchema, ObjectOptions         { $static: StaticRecord<K, T>, kind: typeof RecordKind,    type: 'object', patternProperties: { [pattern: string]: T } }
+export interface TTuple     <T extends TSchema[]>                     extends TSchema, CustomOptions         { $static: StaticTuple<T>,     kind: typeof TupleKind,     type: 'array', items?: T, additionalItems?: false, minItems: number, maxItems: number }
+export interface TObject    <T extends TProperties>                   extends TSchema, ObjectOptions         { $static: StaticObject<T>,    kind: typeof ObjectKind,    type: 'object', properties: T, required?: string[] } 
+export interface TUnion     <T extends TSchema[]>                     extends TSchema, CustomOptions         { $static: StaticUnion<T>,     kind: typeof UnionKind,     anyOf: T }
+export interface TIntersect <T extends TSchema[]>                     extends TSchema, IntersectOptions      { $static: StaticIntersect<T>, kind: typeof IntersectKind, type: 'object', allOf: T }
+export interface TKeyOf     <T extends TKey[]>                        extends TSchema, CustomOptions         { $static: StaticKeyOf<T>,     kind: typeof KeyOfKind,     type: 'string', enum: T }
+export interface TArray     <T extends TSchema>                       extends TSchema, ArrayOptions          { $static: StaticArray<T>,     kind: typeof ArrayKind,     type: 'array', items: T } 
+export interface TLiteral   <T extends TValue>                        extends TSchema, CustomOptions         { $static: StaticLiteral<T>,   kind: typeof LiteralKind,   const: T }
+export interface TEnum      <T extends TEnumKey[]>                    extends TSchema, CustomOptions         { $static: StaticEnum<T>,      kind: typeof EnumKind,      anyOf: T }
+export interface TString                                              extends TSchema, StringOptions<string> { $static: string,             kind: typeof StringKind,    type: 'string' }
+export interface TNumber                                              extends TSchema, NumberOptions         { $static: number,             kind: typeof NumberKind,    type: 'number' }
+export interface TInteger                                             extends TSchema, NumberOptions         { $static: number,             kind: typeof IntegerKind,   type: 'integer' } 
+export interface TBoolean                                             extends TSchema, CustomOptions         { $static: boolean,            kind: typeof BooleanKind,   type: 'boolean' } 
+export interface TNull                                                extends TSchema, CustomOptions         { $static: null,               kind: typeof NullKind,      type: 'null' }
+export interface TUnknown                                             extends TSchema, CustomOptions         { $static: unknown,            kind: typeof UnknownKind }
+export interface TAny                                                 extends TSchema, CustomOptions         { $static: any,                kind: typeof AnyKind }
 
 // --------------------------------------------------------------------------
 // Extended Schema Types
@@ -158,23 +157,22 @@ export const FunctionKind    = Symbol('FunctionKind')
 export const PromiseKind     = Symbol('PromiseKind')
 export const UndefinedKind   = Symbol('UndefinedKind')
 export const VoidKind        = Symbol('VoidKind')
-export interface TConstructor<T extends TSchema[], U extends TSchema> extends TSchema, CustomOptions { 'typebox:output': StaticConstructor<T, U>, kind: typeof ConstructorKind, type: 'constructor', arguments: TSchema[], returns: TSchema }
-export interface TFunction   <T extends TSchema[], U extends TSchema> extends TSchema, CustomOptions { 'typebox:output': StaticFunction<T, U>, kind: typeof FunctionKind,    type: 'function', arguments: TSchema[], returns: TSchema }
-export interface TPromise    <T extends TSchema> extends TSchema, CustomOptions                      { 'typebox:output': StaticPromise<T>, kind: typeof PromiseKind,     type: 'promise', item: TSchema }
-export interface TUndefined extends TSchema, CustomOptions                                           { 'typebox:output': undefined, kind: typeof UndefinedKind, type: 'undefined' }
-export interface TVoid      extends TSchema, CustomOptions                                           { 'typebox:output': void, kind: typeof VoidKind, type: 'void' }
-
+export interface TConstructor <T extends TSchema[], U extends TSchema> extends TSchema, CustomOptions { $static: StaticConstructor<T, U>, kind: typeof ConstructorKind, type: 'constructor', arguments: TSchema[], returns: TSchema }
+export interface TFunction    <T extends TSchema[], U extends TSchema> extends TSchema, CustomOptions { $static: StaticFunction<T, U>, kind: typeof FunctionKind, type: 'function', arguments: TSchema[], returns: TSchema }
+export interface TPromise     <T extends TSchema>                      extends TSchema, CustomOptions { $static: StaticPromise<T>, kind: typeof PromiseKind, type: 'promise', item: TSchema }
+export interface TUndefined                                            extends TSchema, CustomOptions { $static: undefined, kind: typeof UndefinedKind, type: 'undefined' }
+export interface TVoid                                                 extends TSchema, CustomOptions { $static: void, kind: typeof VoidKind, type: 'void' }
 
 // --------------------------------------------------------------------------
 // Utility Types
 // --------------------------------------------------------------------------
 
-export type UnionToIntersect<U>                                         = (U extends any ? (k: U) => void : never) extends ((k: infer I) => void) ? I : never
-export type StaticReadonlyOptionalPropertyKeys <T extends TProperties>  = { [K in keyof T]: T[K] extends TReadonlyOptional<TSchema> ? K : never }[keyof T]
-export type StaticReadonlyPropertyKeys         <T extends TProperties>  = { [K in keyof T]: T[K] extends TReadonly<TSchema> ? K : never }[keyof T]
-export type StaticOptionalPropertyKeys         <T extends TProperties>  = { [K in keyof T]: T[K] extends TOptional<TSchema> ? K : never }[keyof T]
-export type StaticRequiredPropertyKeys         <T extends TProperties>  = keyof Omit<T, StaticReadonlyOptionalPropertyKeys<T> | StaticReadonlyPropertyKeys<T> | StaticOptionalPropertyKeys<T>>
-export type StaticIntersectEvaluate<T extends readonly TSchema[]> = {[K in keyof T]: Static<T[K]> }
+export type UnionToIntersect<U>                                                = (U extends any ? (k: U) => void : never) extends ((k: infer I) => void) ? I : never
+export type StaticReadonlyOptionalPropertyKeys <T extends TProperties>         = { [K in keyof T]: T[K] extends TReadonlyOptional<TSchema> ? K : never }[keyof T]
+export type StaticReadonlyPropertyKeys         <T extends TProperties>         = { [K in keyof T]: T[K] extends TReadonly<TSchema> ? K : never }[keyof T]
+export type StaticOptionalPropertyKeys         <T extends TProperties>         = { [K in keyof T]: T[K] extends TOptional<TSchema> ? K : never }[keyof T]
+export type StaticRequiredPropertyKeys         <T extends TProperties>         = keyof Omit<T, StaticReadonlyOptionalPropertyKeys<T> | StaticReadonlyPropertyKeys<T> | StaticOptionalPropertyKeys<T>>
+export type StaticIntersectEvaluate            <T extends readonly TSchema[]>  = {[K in keyof T]: T[K] extends TSchema ? Static<T[K]> : never }
 export type StaticIntersectReduce<I extends unknown, T extends readonly any[]> = T extends [infer A, ...infer B] ? StaticIntersectReduce<I & A, B> : I
 export type StaticRequired<T extends TProperties> = {
     [K in keyof T]: 
@@ -194,30 +192,31 @@ export type StaticPartial<T extends TProperties> = {
 // ------------------------------------------------------------------------
 // Static Schema
 // ------------------------------------------------------------------------
-export type StaticProperties<T extends TProperties> =
+
+export type StaticProperties <T extends TProperties> =
     { readonly [K in StaticReadonlyOptionalPropertyKeys<T>]?: Static<T[K]> } &
     { readonly [K in StaticReadonlyPropertyKeys<T>]:          Static<T[K]> } &
     {          [K in StaticOptionalPropertyKeys<T>]?:         Static<T[K]> } &
     {          [K in StaticRequiredPropertyKeys<T>]:          Static<T[K]> }
-export type StaticRecord      <K extends TRecordKey, T extends TSchema> = 
+export type StaticRecord <K extends TRecordKey, T extends TSchema> = 
     K extends TString           ? Record<string, Static<T>> : 
     K extends TNumber           ? Record<number, Static<T>> : 
-    K extends TKeyOf<TKey[]>    ? Record<K['typebox:output'], Static<T>> : 
-    K extends TUnion<TSchema[]> ? Record<K['typebox:output'], Static<T>> :
+    K extends TKeyOf<TKey[]>    ? Record<K['$static'], Static<T>> : 
+    K extends TUnion<TSchema[]> ? Record<K['$static'], Static<T>> :
     never
 export type StaticEnum        <T>                                               = T extends TEnumKey<infer U>[] ? U : never
 export type StaticKeyOf       <T extends TKey[]>                                = T extends Array<infer K> ? K : never
 export type StaticIntersect   <T extends readonly TSchema[]>                    = StaticIntersectReduce<unknown, StaticIntersectEvaluate<T>>
-export type StaticUnion       <T extends readonly TSchema[]>                    = { [K in keyof T]: Static<T[K]> }[number]
-export type StaticTuple       <T extends readonly TSchema[]>                    = { [K in keyof T]: Static<T[K]> }
+export type StaticUnion       <T extends readonly TSchema[]>                    = { [K in keyof T]: T[K] extends TSchema ? Static<T[K]> : never }[number]
+export type StaticTuple       <T extends readonly TSchema[]>                    = { [K in keyof T]: T[K] extends TSchema ? Static<T[K]> : never }
 export type StaticObject      <T extends TProperties>                           = StaticProperties<T> extends infer I ? {[K in keyof I]: I[K]}: never
 export type StaticArray       <T extends TSchema>                               = Array<Static<T>>
 export type StaticLiteral     <T extends TValue>                                = T
-export type StaticParameters  <T extends readonly TSchema[]> = {[K in keyof T]: Static<T[K]> }
+export type StaticParameters  <T extends readonly TSchema[]>                    = {[K in keyof T]: T[K] extends TSchema ? Static<T[K]>: never }
 export type StaticConstructor <T extends readonly TSchema[], U extends TSchema> = new (...args: [...StaticParameters<T>]) => Static<U>
 export type StaticFunction    <T extends readonly TSchema[], U extends TSchema> = (...args: [...StaticParameters<T>]) => Static<U>
 export type StaticPromise     <T extends TSchema>                               = Promise<Static<T>>
-export type Static<T>                                                           = T extends TSchema ? T['typebox:output'] : never
+export type Static            <T extends TSchema>                               = T['$static']
 
 // --------------------------------------------------------------------------
 // Utility
