@@ -1,3 +1,12 @@
+## [0.23.0](https://www.npmjs.com/package/@sinclair/typebox/v/0.23.0)
+
+Updates:
+
+- The types `Type.Namespace()` and `Type.Ref()` are no longer experimental types and are promoted to `Standard`.
+- TypeBox now provides a specialized type named `TRef<TSchema>` that is returned on `Type.Ref()`. Previously the `Type.Ref()` function would return the same Schema that was passed in, this is no longer the case. The `TRef` also includes the `RefKind` symbol for introspection of reference types.
+- TypeBox now maintains an internal dictionary of all schemas that contain an `$id` property. This dictionary is checked whenever a user attempts to reference a type; mandating that all reference types contain a valid id.
+- The types `Type.Partial()` and `Type.Required()` now support reference types.
+
 ## [0.22.0](https://www.npmjs.com/package/@sinclair/typebox/v/0.22.0)
 
 Updates:

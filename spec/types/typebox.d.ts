@@ -28,6 +28,7 @@ export declare const BooleanKind: unique symbol;
 export declare const NullKind: unique symbol;
 export declare const UnknownKind: unique symbol;
 export declare const AnyKind: unique symbol;
+export declare const RefKind: unique symbol;
 export interface CustomOptions {
     $id?: string;
     title?: string;
@@ -174,6 +175,11 @@ export interface TAny extends TSchema, CustomOptions {
     $static: any;
     kind: typeof AnyKind;
 }
+export interface TRef<T extends TSchema> extends TSchema, CustomOptions {
+    $static: Static<T>;
+    kind: typeof RefKind;
+    $ref: string;
+}
 export declare const ConstructorKind: unique symbol;
 export declare const FunctionKind: unique symbol;
 export declare const PromiseKind: unique symbol;
@@ -209,6 +215,9 @@ export interface TVoid extends TSchema, CustomOptions {
     kind: typeof VoidKind;
     type: 'void';
 }
+export declare type Pickable = TObject<TProperties> | TRef<TObject<TProperties>>;
+export declare type PickablePropertyKeys<T extends Pickable> = T extends TObject<infer U> ? keyof U : T extends TRef<TObject<infer U>> ? keyof U : never;
+export declare type PickableProperties<T extends Pickable> = T extends TObject<infer U> ? U : T extends TRef<TObject<infer U>> ? U : never;
 export declare type UnionToIntersect<U> = (U extends any ? (k: U) => void : never) extends ((k: infer I) => void) ? I : never;
 export declare type StaticReadonlyOptionalPropertyKeys<T extends TProperties> = {
     [K in keyof T]: T[K] extends TReadonlyOptional<TSchema> ? K : never;
@@ -262,6 +271,7 @@ export declare type StaticFunction<T extends readonly TSchema[], U extends TSche
 export declare type StaticPromise<T extends TSchema> = Promise<Static<T>>;
 export declare type Static<T extends TSchema> = T['$static'];
 export declare class TypeBuilder {
+    private readonly schemas;
     /** `Standard` Modifies an object property to be both readonly and optional */
     ReadonlyOptional<T extends TSchema>(item: T): TReadonlyOptional<T>;
     /** `Standard` Modifies an object property to be readonly */
@@ -299,17 +309,17 @@ export declare class TypeBuilder {
     /** `Standard` Creates an any type */
     Any(options?: CustomOptions): TAny;
     /** `Standard` Creates a keyof type from the given object */
-    KeyOf<T extends TObject<TProperties>>(schema: T, options?: CustomOptions): TKeyOf<(keyof T['properties'])[]>;
+    KeyOf<T extends TObject<TProperties>>(object: T, options?: CustomOptions): TKeyOf<(keyof T['properties'])[]>;
     /** `Standard` Creates a record type */
     Record<K extends TRecordKey, T extends TSchema>(key: K, value: T, options?: ObjectOptions): TRecord<K, T>;
     /** `Standard` Makes all properties in the given object type required */
-    Required<T extends TObject<any>>(schema: T, options?: ObjectOptions): TObject<StaticRequired<T['properties']>>;
+    Required<T extends TObject<TProperties> | TRef<TObject<TProperties>>>(object: T, options?: ObjectOptions): TObject<StaticRequired<T['properties']>>;
     /** `Standard` Makes all properties in the given object type optional */
-    Partial<T extends TObject<any>>(schema: T, options?: ObjectOptions): TObject<StaticPartial<T['properties']>>;
+    Partial<T extends TObject<TProperties> | TRef<TObject<TProperties>>>(object: T, options?: ObjectOptions): TObject<StaticPartial<T['properties']>>;
     /** `Standard` Picks property keys from the given object type */
-    Pick<T extends TObject<TProperties>, K extends (keyof T['properties'])[]>(schema: T, keys: [...K], options?: ObjectOptions): TObject<Pick<T['properties'], K[number]>>;
+    Pick<T extends TObject<TProperties> | TRef<TObject<TProperties>>, K extends PickablePropertyKeys<T>[]>(object: T, keys: [...K], options?: ObjectOptions): TObject<Pick<PickableProperties<T>, K[number]>>;
     /** `Standard` Omits property keys from the given object type */
-    Omit<T extends TObject<any>, K extends (keyof T['properties'])[]>(schema: T, keys: [...K], options?: ObjectOptions): TObject<Omit<T['properties'], K[number]>>;
+    Omit<T extends TObject<TProperties> | TRef<TObject<TProperties>>, K extends PickablePropertyKeys<T>[]>(object: T, keys: [...K], options?: ObjectOptions): TObject<Omit<PickableProperties<T>, K[number]>>;
     /** `Standard` Omits the `kind` and `modifier` properties from the underlying schema */
     Strict<T extends TSchema>(schema: T, options?: CustomOptions): T;
     /** `Extended` Creates a constructor type */
@@ -322,14 +332,17 @@ export declare class TypeBuilder {
     Undefined(options?: CustomOptions): TUndefined;
     /** `Extended` Creates a void type */
     Void(options?: CustomOptions): TVoid;
+    /** `Standard` Creates a namespace for a set of related types */
+    Namespace<T extends TDefinitions>($defs: T, options?: CustomOptions): TNamespace<T>;
+    /** `Standard` References a type within a namespace. The referenced namespace must specify an `$id` */
+    Ref<T extends TNamespace<TDefinitions>, K extends keyof T['$defs']>(box: T, key: K): TRef<T['$defs'][K]>;
+    /** `Standard` References type. The referenced type must specify an `$id` */
+    Ref<T extends TSchema>(schema: T): TRef<T>;
     /** `Experimental` Creates a recursive type */
     Rec<T extends TSchema>(callback: (self: TAny) => T, options?: CustomOptions): T;
-    /** `Experimental` Creates a recursive type. Pending https://github.com/ajv-validator/ajv/issues/1709 */
-    /** `Experimental` Creates a namespace for a set of related types */
-    Namespace<T extends TDefinitions>($defs: T, options?: CustomOptions): TNamespace<T>;
-    /** `Experimental` References a type within a namespace. The referenced namespace must specify an `$id` */
-    Ref<T extends TNamespace<TDefinitions>, K extends keyof T['$defs']>(box: T, key: K): T['$defs'][K];
-    /** `Experimental` References type. The referenced type must specify an `$id` */
-    Ref<T extends TSchema>(schema: T): T;
+    /** Stores this schema if it contains an $id. This function is used for later referencing. */
+    private Store;
+    /** Resolves a schema by $id. May resolve recursively if the target is a TRef. */
+    private Resolve;
 }
 export declare const Type: TypeBuilder;

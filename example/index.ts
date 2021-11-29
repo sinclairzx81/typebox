@@ -1,30 +1,15 @@
-import { TypeBuilder, TSchema, Static } from '@sinclair/typebox'
+import { Type, Static } from '@sinclair/typebox'
 
-// -----------------------------------------------------------
-// Open API Extended Types
-// -----------------------------------------------------------
+const T = Type.Object({
+    name:  Type.Optional(Type.String()),
+    order: Type.Number()
+}, { $id: 'T' })
 
-export type TNullable<T extends TSchema> = TSchema & {
-    ['$static']: Static<T> | null
-} & { nullable: true }
+const R = Type.Ref(T)
 
-export type TStringUnion<T extends string[]> = TSchema & {
-    ['$static']: {[K in keyof T]: T[K] }[number]
-    enum: T
-}
+const P = Type.Omit(T, ['name'])
 
-// -----------------------------------------------------------
-// Open API TypeBuilder
-// -----------------------------------------------------------
+console.log(P)
 
-export class OpenApiTypeBuilder extends TypeBuilder {
-    public Nullable<T extends TSchema>(schema: T): TNullable<T> {
-        return { ...schema, nullable: true } as any
-    }
+type T = Static<typeof P>
 
-    public StringUnion<T extends string[]>(values: [...T]): TStringUnion<T> {
-        return { enum: values } as any
-    }
-}
-
-const Type = new OpenApiTypeBuilder()

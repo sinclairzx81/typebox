@@ -30,18 +30,18 @@ describe('Ref', () => {
         }, [T])
     })
 
-    it('Should should not validate when not specifying an $id', () => {
-        const T = Type.Object({
-            x: Type.Number(),
-            y: Type.Number(),
-            z: Type.Number()
-        }, { })
-        const R = Type.Ref(T)
-        fail(R, { 
-            x: 1, 
-            y: 2, 
-            z: 3 
-        }, [T])
+    it('Should throw when not specifying an $id on target schema', () => {
+        try {
+            const T = Type.Object({
+                x: Type.Number(),
+                y: Type.Number(),
+                z: Type.Number()
+            }, { })
+            const R = Type.Ref(T)
+        } catch {
+            return
+        }
+        throw Error('Expected throw')
     })
 
     it('Should not validate when not adding additional schema', () => {
