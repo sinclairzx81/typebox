@@ -41,6 +41,7 @@ describe('Partial', () => {
         strictEqual(A.additionalProperties, false)
         strictEqual(T.additionalProperties, false)
     })
+
     it('Should construct new object when targetting reference', () => {
         const T = Type.Object({ a: Type.String(), b: Type.String() }, { $id: 'T' })
         const R = Type.Ref(T)
