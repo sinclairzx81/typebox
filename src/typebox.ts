@@ -30,9 +30,9 @@ THE SOFTWARE.
 // Modifiers
 // --------------------------------------------------------------------------
 
-export const ReadonlyOptionalModifier            = Symbol('ReadonlyOptionalModifier')
-export const OptionalModifier                    = Symbol('OptionalModifier')
-export const ReadonlyModifier                    = Symbol('ReadonlyModifier')
+export const ReadonlyOptionalModifier            = Symbol.for('typebox.ReadonlyOptionalModifier')
+export const OptionalModifier                    = Symbol.for('typebox.OptionalModifier')
+export const ReadonlyModifier                    = Symbol.for('typebox.ReadonlyModifier')
 
 export type TModifier                            = TReadonlyOptional<TSchema> | TOptional<TSchema> | TReadonly<TSchema>
 export type TReadonlyOptional<T extends TSchema> = T & { modifier: typeof ReadonlyOptionalModifier }
@@ -43,24 +43,24 @@ export type TReadonly<T extends TSchema>         = T & { modifier: typeof Readon
 // Schema Standard
 // --------------------------------------------------------------------------
 
-export const BoxKind       = Symbol('BoxKind')
-export const KeyOfKind     = Symbol('KeyOfKind')
-export const IntersectKind = Symbol('IntersectKind')
-export const UnionKind     = Symbol('UnionKind')
-export const TupleKind     = Symbol('TupleKind')
-export const ObjectKind    = Symbol('ObjectKind')
-export const RecordKind    = Symbol('RecordKind')
-export const ArrayKind     = Symbol('ArrayKind')
-export const EnumKind      = Symbol('EnumKind')
-export const LiteralKind   = Symbol('LiteralKind')
-export const StringKind    = Symbol('StringKind')
-export const NumberKind    = Symbol('NumberKind')
-export const IntegerKind   = Symbol('IntegerKind')
-export const BooleanKind   = Symbol('BooleanKind')
-export const NullKind      = Symbol('NullKind')
-export const UnknownKind   = Symbol('UnknownKind')
-export const AnyKind       = Symbol('AnyKind')
-export const RefKind       = Symbol('RefKind')
+export const BoxKind       = Symbol.for('typebox.BoxKind')
+export const KeyOfKind     = Symbol.for('typebox.KeyOfKind')
+export const IntersectKind = Symbol.for('typebox.IntersectKind')
+export const UnionKind     = Symbol.for('typebox.UnionKind')
+export const TupleKind     = Symbol.for('typebox.TupleKind')
+export const ObjectKind    = Symbol.for('typebox.ObjectKind')
+export const RecordKind    = Symbol.for('typebox.RecordKind')
+export const ArrayKind     = Symbol.for('typebox.ArrayKind')
+export const EnumKind      = Symbol.for('typebox.EnumKind')
+export const LiteralKind   = Symbol.for('typebox.LiteralKind')
+export const StringKind    = Symbol.for('typebox.StringKind')
+export const NumberKind    = Symbol.for('typebox.NumberKind')
+export const IntegerKind   = Symbol.for('typebox.IntegerKind')
+export const BooleanKind   = Symbol.for('typebox.BooleanKind')
+export const NullKind      = Symbol.for('typebox.NullKind')
+export const UnknownKind   = Symbol.for('typebox.UnknownKind')
+export const AnyKind       = Symbol.for('typebox.AnyKind')
+export const RefKind       = Symbol.for('typebox.RefKind')
 
 export interface CustomOptions {
     $id?: string
@@ -154,11 +154,11 @@ export interface TRef<T extends TSchema>                              extends TS
 // Extended Schema Types
 // --------------------------------------------------------------------------
 
-export const ConstructorKind = Symbol('ConstructorKind')
-export const FunctionKind    = Symbol('FunctionKind')
-export const PromiseKind     = Symbol('PromiseKind')
-export const UndefinedKind   = Symbol('UndefinedKind')
-export const VoidKind        = Symbol('VoidKind')
+export const ConstructorKind = Symbol.for('typebox.ConstructorKind')
+export const FunctionKind    = Symbol.for('typebox.FunctionKind')
+export const PromiseKind     = Symbol.for('typebox.PromiseKind')
+export const UndefinedKind   = Symbol.for('typebox.UndefinedKind')
+export const VoidKind        = Symbol.for('typebox.VoidKind')
 export interface TConstructor <T extends TSchema[], U extends TSchema> extends TSchema, CustomOptions { $static: StaticConstructor<T, U>, kind: typeof ConstructorKind, type: 'constructor', arguments: TSchema[], returns: TSchema }
 export interface TFunction    <T extends TSchema[], U extends TSchema> extends TSchema, CustomOptions { $static: StaticFunction<T, U>, kind: typeof FunctionKind, type: 'function', arguments: TSchema[], returns: TSchema }
 export interface TPromise     <T extends TSchema>                      extends TSchema, CustomOptions { $static: StaticPromise<T>, kind: typeof PromiseKind, type: 'promise', item: TSchema }
