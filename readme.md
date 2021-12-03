@@ -451,7 +451,7 @@ const R = Type.Ref(T)                          // const R = {
                                                // }
 ```
 
-It can be helpful to organize shared referenced types under a common namespace. The `Type.Namespace(...)` function can be used to create a shared definition container for related types. The following creates a `Math3D` container and a `Vertex` structure that references types in the container.
+It can sometimes be helpful to organize shared referenced types under a common namespace. The `Type.Namespace(...)` function can be used to create a shared definition container for related types. The following creates a `Math3D` container and a `Vertex` structure that references types in the container.
 
 ```typescript
 const Math3D = Type.Namespace({                 //  const Math3D = {
