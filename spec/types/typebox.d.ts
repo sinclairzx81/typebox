@@ -73,7 +73,6 @@ export declare type TNamespace<T extends TDefinitions> = {
 } & CustomOptions;
 export interface TSchema {
     $static: unknown;
-    $id?: string;
 }
 export declare type TEnumType = Record<string, string | number>;
 export declare type TKey = string | number | symbol;
@@ -272,7 +271,7 @@ export declare type StaticFunction<T extends readonly TSchema[], U extends TSche
 export declare type StaticPromise<T extends TSchema> = Promise<Static<T>>;
 export declare type Static<T extends TSchema> = T['$static'];
 export declare class TypeBuilder {
-    private readonly schemas;
+    protected readonly schemas: Map<string, TSchema>;
     /** `Standard` Modifies an object property to be both readonly and optional */
     ReadonlyOptional<T extends TSchema>(item: T): TReadonlyOptional<T>;
     /** `Standard` Modifies an object property to be readonly */
@@ -336,14 +335,14 @@ export declare class TypeBuilder {
     /** `Standard` Creates a namespace for a set of related types */
     Namespace<T extends TDefinitions>($defs: T, options?: CustomOptions): TNamespace<T>;
     /** `Standard` References a type within a namespace. The referenced namespace must specify an `$id` */
-    Ref<T extends TNamespace<TDefinitions>, K extends keyof T['$defs']>(box: T, key: K): TRef<T['$defs'][K]>;
+    Ref<T extends TNamespace<TDefinitions>, K extends keyof T['$defs']>(namespace: T, key: K): TRef<T['$defs'][K]>;
     /** `Standard` References type. The referenced type must specify an `$id` */
     Ref<T extends TSchema>(schema: T): TRef<T>;
     /** `Experimental` Creates a recursive type */
     Rec<T extends TSchema>(callback: (self: TAny) => T, options?: CustomOptions): T;
-    /** Stores this schema if it contains an $id. This function is used for later referencing. */
-    private Store;
-    /** Resolves a schema by $id. May resolve recursively if the target is a TRef. */
-    private Resolve;
+    /** Conditionally stores and schema if it contains an $id and returns.  */
+    protected Store(schema: any): any;
+    /** Conditionally dereferences a schema if RefKind. Otherwise return argument. */
+    protected Deref(schema: any): any;
 }
 export declare const Type: TypeBuilder;
