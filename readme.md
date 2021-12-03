@@ -349,38 +349,38 @@ TypeBox provides modifiers that can be applied to an objects properties. This al
 ```typescript
 ┌────────────────────────────────┬─────────────────────────────┬────────────────────────────────┐
 │ TypeBox                        │ TypeScript                  │ JSON Schema                    │
-│   	                           │                             │                                │
+│                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Object({        │ type T = {                  │ const T = {                    │
 │   name: Type.Optional(         │    name?: string,           │   type: 'object',              │
 │      Type.String(),            │ }                           │   properties: {                │
-│   )	                           │                             │      name: {                   │
+│   )                            │                             │      name: {                   │
 │ })  	                         │                             │        type: 'string'          │
-│   	                           │                             │      }                         │
-│   	                           │                             │   }                            │
-│   	                           │                             │ }                              │
-│   	                           │                             │                                │
+│                                │                             │      }                         │
+│                                │                             │   }                            │
+│                                │                             │ }                              │
+│                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Object({        │ type T = {                  │ const T = {                    │
 │   name: Type.Readonly(         │    readonly name: string,   │   type: 'object',              │
 │      Type.String(),            │ }                           │   properties: {                │
-│   )	                           │                             │      name: {                   │
+│   )                            │                             │      name: {                   │
 │ })  	                         │                             │        type: 'string'          │
-│   	                           │                             │      }                         │
-│   	                           │                             │   },                           │
+│                                │                             │      }                         │
+│                                │                             │   },                           │
 │                                │                             │   required: ['name']           │
-│   	                           │                             │ }                              │
-│   	                           │                             │                                │
+│                                │                             │ }                              │
+│                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Object({        │ type T = {                  │ const T = {                    │
 │   name: Type.ReadonlyOptional( │    readonly name?: string,  │   type: 'object',              │
 │      Type.String(),            │ }                           │   properties: {                │
-│   )	                           │                             │      name: {                   │
+│   )                            │                             │      name: {                   │
 │ })  	                         │                             │        type: 'string'          │
-│   	                           │                             │      }                         │
-│   	                           │                             │   }                            │
+│                                │                             │      }                         │
+│                                │                             │   }                            │
 │                                │                             │ }                              │
-│   	                           │                             │                                │
+│                                │                             │                                │
 └────────────────────────────────┴─────────────────────────────┴────────────────────────────────┘
 ```
 
