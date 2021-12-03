@@ -160,7 +160,7 @@ The following table outlines the TypeBox mappings between TypeScript and JSON sc
 │ const T = Type.String()        │ type T = string             │ const T = {                    │
 │                                │                             │    type: 'string'              │
 │                                │                             │ }                              │
-│   	                           │                             │                                │
+│                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Number()        │ type T = number             │ const T = {                    │
 │                                │                             │    type: 'number'              │
@@ -182,17 +182,17 @@ The following table outlines the TypeBox mappings between TypeScript and JSON sc
 │                                │                             │ }                              │
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
-│ const T = Type.RegEx(/foo/)	   │ type T = string             │ const T = {                    │
+│ const T = Type.RegEx(/foo/)    │ type T = string             │ const T = {                    │
 │                                │                             │    type: 'string',             │
 │                                │                             │    pattern: 'foo'              │
 │                                │                             │ }                              │
-│   	                           │                             │                                │
+│                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Literal(42)     │ type T = 42                 │ const T = {                    │
 │                                │                             │    const: 42                   │
 │                                │                             │    type: 'number'              │
 │                                │                             │ }                              │
-│   	                           │                             │                                │
+│                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Array(          │ type T = number[]           │ const T = {                    │
 │    Type.Number()               │                             │    type: 'array',              │
@@ -200,36 +200,36 @@ The following table outlines the TypeBox mappings between TypeScript and JSON sc
 │                                │                             │      type: 'number'            │
 │                                │                             │    }                           │
 │                                │                             │ }                              │
-│   	                           │                             │                                │
+│                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Object({        │ type T = {                  │ const T = {                    │
 │   x: Type.Number(),            │    x: number,               │   type: 'object',              │
 │   y: Type.Number()             │    y: number                │   properties: {                │
 │ })                             │ }                           │      x: {                      │
 │                                │                             │        type: 'number'          │
-│   	                           │                             │      },                        │
-│   	                           │                             │      y: {                      │
-│   	                           │                             │        type: 'number'          │
+│                                │                             │      },                        │
+│                                │                             │      y: {                      │
+│                                │                             │        type: 'number'          │
 │                                │                             │      }                         │
-│   	                           │                             │   },                           │
-│   	                           │                             │   required: ['x', 'y']         │
+│                                │                             │   },                           │
+│                                │                             │   required: ['x', 'y']         │
 │                                │                             │ }                              │
-│   	                           │                             │                                │
+│                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Tuple([         │ type T = [number, number]   │ const T = {                    │
 │   Type.Number(),               │                             │    type: 'array',              │
 │   Type.Number()                │                             │    items: [                    │
 │ ])                             │                             │       {                        │
-│   	                           │                             │         type: 'number'         │
-│   	                           │                             │       }, {                     │
-│   	                           │                             │         type: 'number'         │
-│   	                           │                             │       }                        │
-│   	                           │                             │    ],                          │
-│   	                           │                             │    additionalItems: false,     │
-│   	                           │                             │    minItems: 2,                │
-│   	                           │                             │    maxItems: 2,                │
-│   	                           │                             │ }                              │
-│   	                           │                             │                                │
+│                                │                             │         type: 'number'         │
+│                                │                             │       }, {                     │
+│                                │                             │         type: 'number'         │
+│                                │                             │       }                        │
+│                                │                             │    ],                          │
+│                                │                             │    additionalItems: false,     │
+│                                │                             │    minItems: 2,                │
+│                                │                             │    maxItems: 2,                │
+│                                │                             │ }                              │
+│                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ enum Foo {                     │ enum Foo {                  │ const T = {                    │
 │   A,                           │   A,                        │   anyOf: [{                    │
@@ -248,7 +248,7 @@ The following table outlines the TypeBox mappings between TypeScript and JSON sc
 │     y: Type.Number()           │ }                           │ }                              │
 │   })                           │                             │                                │
 │ )                              │                             │                                │
-│   	                           │                             │                                │
+│                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Union([         │ type T = string | number    │ const T = {                    │
 │   Type.String(),               │                             │    anyOf: [{                   │
@@ -257,14 +257,14 @@ The following table outlines the TypeBox mappings between TypeScript and JSON sc
 │                                │                             │       type: 'number'           │
 │                                │                             │    }]                          │
 │                                │                             │ }                              │
-│   	                           │                             │                                │
+│                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Intersect([     │ type T = {                  │ const T = {                    │
 │    Type.Object({               │    x: number                │    allOf: [{                   │
 │       x: Type.Number()         │ } & {                       │       type: 'object',          │
 │    }),                         │    y: number                │       properties: {            │
 │    Type.Object({               │ }                           │          a: {                  │
-│       y: Type.Number()         │                             │            type: 'number'      │    
+│       y: Type.Number()         │                             │            type: 'number'      │
 │   })                           │                             │          }                     │
 │ })                             │                             │       },                       │
 │                                │                             │       required: ['a']          │
@@ -272,23 +272,23 @@ The following table outlines the TypeBox mappings between TypeScript and JSON sc
 │                                │                             │       type: 'object',          │
 │                                │                             │       properties: {            │
 │                                │                             │          b: {                  │
-│   	                           │                             │            type: 'number'      │
-│   	                           │                             │          }                     │
-│   	                           │                             │       },                       │
-│   	                           │                             │       required: ['b']          │
-│   	                           │                             │    }]                          │
-│   	                           │                             │ }                              │
-│   	                           │                             │                                │
+│                                │                             │            type: 'number'      │
+│                                │                             │          }                     │
+│                                │                             │       },                       │
+│                                │                             │       required: ['b']          │
+│                                │                             │    }]                          │
+│                                │                             │ }                              │
+│                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Record(         │ type T = {                  │ const T = {                    │
 │    Type.String(),              │    [key: string]: number    │    type: 'object',             │
 │    Type.Number()               │ }                           │    patternProperties: {        │
-│ ) 	                           │                             │      '^.*$': {                 │
-│   	                           │                             │         type: 'number'         │
-│   	                           │                             │      }                         │
-│   	                           │                             │    }                           │
-│   	                           │                             │ }                              │
-│   	                           │                             │                                │
+│ )                              │                             │      '^.*$': {                 │
+│                                │                             │         type: 'number'         │
+│                                │                             │      }                         │
+│                                │                             │    }                           │
+│                                │                             │ }                              │
+│                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Partial(        │ type T = Partial<{          │ const T = {                    │
 │    Type.Object({               │    x: number,               │   type: 'object',              │
@@ -301,7 +301,7 @@ The following table outlines the TypeBox mappings between TypeScript and JSON sc
 │                                │                             │     }                          │
 │                                │                             │   }                            │
 │                                │                             │ }                              │
-│   	                           │                             │                                │
+│                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Required(       │ type T = Required<{         │ const T = {                    │
 │    Type.Object({               │    x?: number,              │   type: 'object',              │
@@ -315,7 +315,7 @@ The following table outlines the TypeBox mappings between TypeScript and JSON sc
 │ )                              │                             │   },                           │
 │                                │                             │   required: ['x', 'y']         │
 │                                │                             │ }                              │
-│   	                           │                             │                                │
+│                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Pick(           │ type T = Pick<{             │ const T = {                    │
 │    Type.Object({               │    x: number,               │   type: 'object',              │
