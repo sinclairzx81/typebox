@@ -155,7 +155,7 @@ The following table outlines the TypeBox mappings between TypeScript and JSON sc
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Unknown()       │ type T = unknown            │ const T = { }                  │
-│   	                           │                             │                                │
+│                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.String()        │ type T = string             │ const T = {                    │
 │                                │                             │    type: 'string'              │
@@ -165,22 +165,22 @@ The following table outlines the TypeBox mappings between TypeScript and JSON sc
 │ const T = Type.Number()        │ type T = number             │ const T = {                    │
 │                                │                             │    type: 'number'              │
 │                                │                             │ }                              │
-│   	                           │                             │                                │
+│                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Integer()       │ type T = number             │ const T = {                    │
 │                                │                             │    type: 'integer'             │
 │                                │                             │ }                              │
-│   	                           │                             │                                │
+│                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Boolean()       │ type T = boolean            │ const T = {                    │
 │                                │                             │    type: 'boolean'             │
 │                                │                             │ }                              │
-│   	                           │                             │                                │
+│                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Null()          │ type T = null               │ const T = {                    │
 │                                │                             │    type: 'null'                │
 │                                │                             │ }                              │
-│   	                           │                             │                                │
+│                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.RegEx(/foo/)	   │ type T = string             │ const T = {                    │
 │                                │                             │    type: 'string',             │
