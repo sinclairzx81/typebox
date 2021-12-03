@@ -42,7 +42,7 @@ type T = Static<typeof T>   // type T = string
 
 ## Overview
 
-TypeBox is a type builder that creates in-memory JSON Schema objects that can be statically resolved to TypeScript types. The schemas produced by this library are designed to match the static type checking rules of the TypeScript compiler. TypeBox allows one to create a unified type that can be statically checked by the TypeScript compiler and runtime asserted using standard JSON Schema validation.
+TypeBox is a type builder library that creates in-memory JSON Schema objects that can be statically inferred as TypeScript types. The schemas produced by this library are designed specifically to match the static type checking rules of the TypeScript compiler. TypeBox  allows one to create a unified type that can be both statically asserted by the TypeScript compiler and runtime asserted using industry standard JSON Schema validation.
 
 TypeBox can be used as a simple tool to build up complex schemas or integrated into RPC or REST services to help validate JSON data received over the wire. TypeBox does not provide any JSON schema validation. Please use libraries such as AJV to validate schemas built with this library.
 
@@ -598,7 +598,7 @@ In addition to JSON schema types, TypeBox provides several extended types that a
 
 ### Strict
 
-TypeBox includes the properties `kind` and `modifier` on each underlying schema. These properties are used to help TypeBox statically resolve the schemas to the appropriate TypeScript type as well as apply the appropriate modifiers to an objects properties (such as optional). These properties are not strictly valid JSON schema so in some cases it may be desirable to omit them. TypeBox provides a `Type.Strict()` function that will omit these properties if nessasary.
+TypeBox schemas contain the properties `kind` and `modifier`. These properties are provided to enable runtime type reflection on schemas, as well as helping TypeBox apply the appropriate static type inference rules. These properties are not strictly valid JSON schema so in some cases it may be desirable to omit them. TypeBox provides a `Type.Strict()` function that will omit these properties if nessasary.
 
 ```typescript
 const T = Type.Object({                       // const T = {
@@ -627,7 +627,7 @@ const U = Type.Strict(T)                      // const U = {
 
 ### Validation
 
-TypeBox does not provide JSON schema validation functionality, so users will need to select an appropriate JSON Schema validator for their language or framework. TypeBox targets JSON Schema draft `2019-09` so any validator capable of draft `2019-09` should be fine. A good library to use for validation in JavaScript environments is [AJV](https://www.npmjs.com/package/ajv). The following example shows setting up AJV 7 to work with TypeBox.
+TypeBox does not provide JSON schema validation so users will need to select an appropriate JSON Schema validator for their needs. TypeBox schemas target JSON Schema draft `2019-09` so any validator capable of draft `2019-09` should be fine. A good library to use for validation in JavaScript environments is [AJV](https://www.npmjs.com/package/ajv). The following example shows setting up AJV 7 to work with TypeBox.
 
 ```bash
 $ npm install ajv ajv-formats --save
@@ -693,64 +693,11 @@ const ok = ajv.validate(User, {
 }) // -> ok
 ```
 
-#### Reference Types
-
-Referenced types can be added to AJV with the `ajv.addSchema(...)` function. The following moves the `userId` and `email` property types into a `Type.Namespace(...)` and registers the box with AJV.
-
-```typescript
-//--------------------------------------------------------------------------------------------
-//
-// Shared Types
-//
-//--------------------------------------------------------------------------------------------
-
-const Shared = Type.Namespace({
-  UserId: Type.String({ format: 'uuid' }),
-  Email:  Type.String({ format: 'email' })
-}, { $id: 'Shared' })
-
-//--------------------------------------------------------------------------------------------
-//
-// Setup Validator and Register Shared Types
-//
-//--------------------------------------------------------------------------------------------
-
-const ajv = addFormats(new Ajv({}), [...])
-  .addKeyword('kind')
-  .addKeyword('modifier')
-  .addSchema(Shared) // <-- Register Shared Types
-
-//--------------------------------------------------------------------------------------------
-//
-// Create a TypeBox type
-//
-//--------------------------------------------------------------------------------------------
-
-const User = Type.Object({
-  userId: Type.Ref(Shared, 'UserId'),
-  email:  Type.Ref(Shared, 'Email'),
-  online: Type.Boolean()
-}, { additionalProperties: false })
-
-//--------------------------------------------------------------------------------------------
-//
-// Validate Data
-//
-//--------------------------------------------------------------------------------------------
-
-const ok = ajv.validate(User, { 
-    userId: '68b4b1d8-0db6-468d-b551-02069a692044', 
-    email:  'dave@domain.com',
-    online: true
-}) // -> ok
-
-```
-
-Please refer to the official AJV [documentation](https://ajv.js.org/guide/getting-started.html) for additional information.
+Please refer to the official AJV [documentation](https://ajv.js.org/guide/getting-started.html) for additional information on using AJV.
 
 ### OpenAPI
 
-TypeBox can be used to create schemas for OpenAPI, however users should be aware of the various differences between the JSON Schema and OpenAPI specifications. Two common instances where OpenAPI diverges from the JSON Schema specification is OpenAPI's handling of `string enum` and `nullable`. The following shows how you can use TypeBox to construct these types.
+TypeBox can be used to create schemas for OpenAPI, however users should be aware of the various disparities between the JSON Schema and OpenAPI schema specifications. Two common instances where OpenAPI diverges from the JSON Schema specification is OpenAPI's handling of string enums and nullable schemas. The following shows how you can use TypeBox to construct these types.
 
 ```typescript
 import { Type, Static, TNull, TLiteral, TUnion, TSchema } from '@sinclair/typebox'

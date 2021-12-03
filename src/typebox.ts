@@ -251,7 +251,7 @@ function clone(object: any): any {
 // --------------------------------------------------------------------------
 
 export class TypeBuilder {
-    
+
     protected readonly schemas = new Map<string, TSchema>()
 
     /** `Standard` Modifies an object property to be both readonly and optional */
@@ -476,7 +476,7 @@ export class TypeBuilder {
     }
     
     /** `Standard` References a type within a namespace. The referenced namespace must specify an `$id` */
-    public Ref<T extends TNamespace<TDefinitions>, K extends keyof T['$defs']>(box: T, key: K): TRef<T['$defs'][K]>
+    public Ref<T extends TNamespace<TDefinitions>, K extends keyof T['$defs']>(namespace: T, key: K): TRef<T['$defs'][K]>
     
     /** `Standard` References type. The referenced type must specify an `$id` */
     public Ref<T extends TSchema>(schema: T): TRef<T>
