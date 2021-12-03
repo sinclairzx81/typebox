@@ -546,7 +546,7 @@ In addition to JSON schema types, TypeBox provides several extended types that a
 ```typescript
 ┌────────────────────────────────┬─────────────────────────────┬────────────────────────────────┐
 │ TypeBox                        │ TypeScript                  │ Extended Schema                │
-│   	                           │                             │                                │
+│                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Constructor([   │ type T = new (              │ const T = {                    │
 │    Type.String(),              │  arg0: string,              │   type: 'constructor'          │
@@ -559,7 +559,7 @@ In addition to JSON schema types, TypeBox provides several extended types that a
 │                                │                             │      type: 'boolean'           │
 │                                │                             │   }                            │
 │                                │                             │ }                              │
-│   	                           │                             │                                │
+│                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Function([      │ type T = (                  │ const T = {                    │
 |    Type.String(),              │  arg0: string,              │   type : 'function',           │
@@ -572,7 +572,7 @@ In addition to JSON schema types, TypeBox provides several extended types that a
 │                                │                             │      type: 'boolean'           │
 │                                │                             │   }                            │
 │                                │                             │ }                              │
-│   	                           │                             │                                │
+│                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Promise(        │ type T = Promise<string>    │ const T = {                    │
 │    Type.String()               │                             │   type: 'promise',             │
@@ -580,17 +580,17 @@ In addition to JSON schema types, TypeBox provides several extended types that a
 │                                │                             │      type: 'string'            │
 │                                │                             │   }                            │
 │                                │                             │ }                              │
-│   	                           │                             │                                │
+│                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Undefined()     │ type T = undefined          │ const T = {                    │
 │                                │                             │   type: 'undefined'            │
 │                                │                             │ }                              │
-│   	                           │                             │                                │
+│                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Void()          │ type T = void               │ const T = {                    │
 │                                │                             │   type: 'void'                 │
 │                                │                             │ }                              │
-│   	                           │                             │                                │
+│                                │                             │                                │
 └────────────────────────────────┴─────────────────────────────┴────────────────────────────────┘
 ```
 
