@@ -2,7 +2,7 @@
 
 <h1>TypeBox</h1>
 
-<img src="typebox.png" />
+<img src="https://github.com/sinclairzx81/typebox/blob/master/typebox.png?raw=true" />
 
 <p>JSON Schema Type Builder with Static Type Resolution for TypeScript</p>
 
