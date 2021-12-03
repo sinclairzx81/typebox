@@ -149,10 +149,10 @@ The following table outlines the TypeBox mappings between TypeScript and JSON sc
 ```typescript
 ┌────────────────────────────────┬─────────────────────────────┬────────────────────────────────┐
 │ TypeBox                        │ TypeScript                  │ JSON Schema                    │
-│   	                           │                             │                                │
+│                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Any()           │ type T = any                │ const T = { }                  │
-│   	                           │                             │                                │
+│                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Unknown()       │ type T = unknown            │ const T = { }                  │
 │   	                           │                             │                                │
