@@ -1,8 +1,14 @@
+## [0.23.1](https://www.npmjs.com/package/@sinclair/typebox/v/0.23.1)
+
+Updates:
+
+- The `Type.KeyOf(...)` can now accept reference types of `Type.Ref(TObject)`
+
 ## [0.23.0](https://www.npmjs.com/package/@sinclair/typebox/v/0.23.0)
 
 Updates:
 
-- The types `Type.Namespace()` and `Type.Ref()` are promoted to `Standard`.
+- The types `Type.Namespace(...)` and `Type.Ref(...)` are promoted to `Standard`.
 - TypeBox adds a new type named `TRef<TSchema>` that is returned on calls to `Type.Ref(...)`. The `TRef` includes a `RefKind` symbol for introspection of the reference type.
 - TypeBox now maintains an internal dictionary of all schemas passed that contain an `$id` property. This dictionary is checked whenever a user attempts to reference a type and will throw if attempting to reference a target schema with no $id.
 - The types `Type.Partial(...)`, `Type.Required(...)`, `Type.Omit()` and `Type.Pick(...)` now support reference types. Note that when using these functions with references, TypeBox will replicate the source schema and apply the nessasary modifiers to the replication.
