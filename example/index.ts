@@ -1,15 +1,16 @@
 import { Type, Static } from '@sinclair/typebox'
 
 const T = Type.Object({
-    name:  Type.Optional(Type.String()),
-    order: Type.Number()
+    x: Type.String(),
+    y: Type.Number(),
+    z: Type.String()
 }, { $id: 'T' })
 
 const R = Type.Ref(T)
 
-const P = Type.Omit(T, ['name'])
+const K = Type.KeyOf(R)
 
-console.log(P)
+type T = Static<typeof K>
 
-type T = Static<typeof P>
+console.log(K)
 
