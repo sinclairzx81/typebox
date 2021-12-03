@@ -28,7 +28,7 @@ $ npm install @sinclair/typebox --save
 import { Static, Type } from 'https://deno.land/x/typebox/src/typebox.ts'
 ```
 
-## Usage
+## Example
 
 ```typescript
 import { Static, Type } from '@sinclair/typebox'
@@ -53,7 +53,7 @@ License MIT
 ## Contents
 - [Install](#Install)
 - [Overview](#Overview)
-- [Example](#Example)
+- [Usage](#Usage)
 - [Types](#Types)
 - [Modifiers](#Modifiers)
 - [Options](#Options)
@@ -67,7 +67,7 @@ License MIT
 
 <a name="Example"></a>
 
-## Example
+## Usage
 
 The following demonstrates TypeBox's general usage.
 
