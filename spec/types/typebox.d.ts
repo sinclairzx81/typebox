@@ -73,6 +73,7 @@ export declare type TNamespace<T extends TDefinitions> = {
 } & CustomOptions;
 export interface TSchema {
     $static: unknown;
+    $id?: string;
 }
 export declare type TEnumType = Record<string, string | number>;
 export declare type TKey = string | number | symbol;
@@ -142,6 +143,11 @@ export interface TEnum<T extends TEnumKey[]> extends TSchema, CustomOptions {
     kind: typeof EnumKind;
     anyOf: T;
 }
+export interface TRef<T extends TSchema> extends TSchema, CustomOptions {
+    $static: Static<T>;
+    kind: typeof RefKind;
+    $ref: string;
+}
 export interface TString extends TSchema, StringOptions<string> {
     $static: string;
     kind: typeof StringKind;
@@ -174,11 +180,6 @@ export interface TUnknown extends TSchema, CustomOptions {
 export interface TAny extends TSchema, CustomOptions {
     $static: any;
     kind: typeof AnyKind;
-}
-export interface TRef<T extends TSchema> extends TSchema, CustomOptions {
-    $static: Static<T>;
-    kind: typeof RefKind;
-    $ref: string;
 }
 export declare const ConstructorKind: unique symbol;
 export declare const FunctionKind: unique symbol;
@@ -215,9 +216,9 @@ export interface TVoid extends TSchema, CustomOptions {
     kind: typeof VoidKind;
     type: 'void';
 }
-export declare type Pickable = TObject<TProperties> | TRef<TObject<TProperties>>;
-export declare type PickablePropertyKeys<T extends Pickable> = T extends TObject<infer U> ? keyof U : T extends TRef<TObject<infer U>> ? keyof U : never;
-export declare type PickableProperties<T extends Pickable> = T extends TObject<infer U> ? U : T extends TRef<TObject<infer U>> ? U : never;
+export declare type Selectable = TObject<TProperties> | TRef<TObject<TProperties>>;
+export declare type SelectablePropertyKeys<T extends Selectable> = T extends TObject<infer U> ? keyof U : T extends TRef<TObject<infer U>> ? keyof U : never;
+export declare type SelectableProperties<T extends Selectable> = T extends TObject<infer U> ? U : T extends TRef<TObject<infer U>> ? U : never;
 export declare type UnionToIntersect<U> = (U extends any ? (k: U) => void : never) extends ((k: infer I) => void) ? I : never;
 export declare type StaticReadonlyOptionalPropertyKeys<T extends TProperties> = {
     [K in keyof T]: T[K] extends TReadonlyOptional<TSchema> ? K : never;
@@ -308,18 +309,18 @@ export declare class TypeBuilder {
     Unknown(options?: CustomOptions): TUnknown;
     /** `Standard` Creates an any type */
     Any(options?: CustomOptions): TAny;
-    /** `Standard` Creates a keyof type from the given object */
-    KeyOf<T extends TObject<TProperties>>(object: T, options?: CustomOptions): TKeyOf<(keyof T['properties'])[]>;
     /** `Standard` Creates a record type */
     Record<K extends TRecordKey, T extends TSchema>(key: K, value: T, options?: ObjectOptions): TRecord<K, T>;
+    /** `Standard` Creates a keyof type from the given object */
+    KeyOf<T extends TObject<TProperties> | TRef<TObject<TProperties>>>(object: T, options?: CustomOptions): TKeyOf<SelectablePropertyKeys<T>[]>;
     /** `Standard` Makes all properties in the given object type required */
     Required<T extends TObject<TProperties> | TRef<TObject<TProperties>>>(object: T, options?: ObjectOptions): TObject<StaticRequired<T['properties']>>;
     /** `Standard` Makes all properties in the given object type optional */
     Partial<T extends TObject<TProperties> | TRef<TObject<TProperties>>>(object: T, options?: ObjectOptions): TObject<StaticPartial<T['properties']>>;
     /** `Standard` Picks property keys from the given object type */
-    Pick<T extends TObject<TProperties> | TRef<TObject<TProperties>>, K extends PickablePropertyKeys<T>[]>(object: T, keys: [...K], options?: ObjectOptions): TObject<Pick<PickableProperties<T>, K[number]>>;
+    Pick<T extends TObject<TProperties> | TRef<TObject<TProperties>>, K extends SelectablePropertyKeys<T>[]>(object: T, keys: [...K], options?: ObjectOptions): TObject<Pick<SelectableProperties<T>, K[number]>>;
     /** `Standard` Omits property keys from the given object type */
-    Omit<T extends TObject<TProperties> | TRef<TObject<TProperties>>, K extends PickablePropertyKeys<T>[]>(object: T, keys: [...K], options?: ObjectOptions): TObject<Omit<PickableProperties<T>, K[number]>>;
+    Omit<T extends TObject<TProperties> | TRef<TObject<TProperties>>, K extends SelectablePropertyKeys<T>[]>(object: T, keys: [...K], options?: ObjectOptions): TObject<Omit<SelectableProperties<T>, K[number]>>;
     /** `Standard` Omits the `kind` and `modifier` properties from the underlying schema */
     Strict<T extends TSchema>(schema: T, options?: CustomOptions): T;
     /** `Extended` Creates a constructor type */

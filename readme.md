@@ -2,7 +2,11 @@
 
 <h1>TypeBox</h1>
 
+<img src="typebox.png" />
+
 <p>JSON Schema Type Builder with Static Type Resolution for TypeScript</p>
+
+
 
 [![npm version](https://badge.fury.io/js/%40sinclair%2Ftypebox.svg)](https://badge.fury.io/js/%40sinclair%2Ftypebox) [![GitHub CI](https://github.com/sinclairzx81/typebox/workflows/GitHub%20CI/badge.svg)](https://github.com/sinclairzx81/typebox/actions)
 
@@ -38,7 +42,7 @@ type T = Static<typeof T>   // type T = string
 
 ## Overview
 
-TypeBox is a library that builds in-memory JSON Schema objects that can be statically resolved to TypeScript types. The schemas produced by this library are designed to match the static type checking rules of the TypeScript compiler. TypeBox allows one to create a unified type that can be statically checked by the TypeScript compiler and runtime asserted using standard JSON Schema validation.
+TypeBox is a type builder that creates in-memory JSON Schema objects that can be statically resolved to TypeScript types. The schemas produced by this library are designed to match the static type checking rules of the TypeScript compiler. TypeBox allows one to create a unified type that can be statically checked by the TypeScript compiler and runtime asserted using standard JSON Schema validation.
 
 TypeBox can be used as a simple tool to build up complex schemas or integrated into RPC or REST services to help validate JSON data received over the wire. TypeBox does not provide any JSON schema validation. Please use libraries such as AJV to validate schemas built with this library.
 
