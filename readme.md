@@ -263,19 +263,19 @@ The following table outlines the TypeBox mappings between TypeScript and JSON sc
 │    Type.Object({               │    x: number                │    allOf: [{                   │
 │       x: Type.Number()         │ } & {                       │       type: 'object',          │
 │    }),                         │    y: number                │       properties: {            │
-│    Type.Object({               │ }                           │          a: {                  │
+│    Type.Object({               │ }                           │          x: {                  │
 │       y: Type.Number()         │                             │            type: 'number'      │
 │   })                           │                             │          }                     │
 │ })                             │                             │       },                       │
-│                                │                             │       required: ['a']          │
+│                                │                             │       required: ['x']          │
 │                                │                             │    }, {                        │
 │                                │                             │       type: 'object',          │
 │                                │                             │       properties: {            │
-│                                │                             │          b: {                  │
+│                                │                             │          y: {                  │
 │                                │                             │            type: 'number'      │
 │                                │                             │          }                     │
 │                                │                             │       },                       │
-│                                │                             │       required: ['b']          │
+│                                │                             │       required: ['y']          │
 │                                │                             │    }]                          │
 │                                │                             │ }                              │
 │                                │                             │                                │
