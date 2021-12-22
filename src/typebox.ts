@@ -506,17 +506,19 @@ export class TypeBuilder {
     }
 
     /** Conditionally stores and schema if it contains an $id and returns.  */
-    protected Store(schema: any): any {
-        if(!schema.$id) return schema
-        this.schemas.set(schema.$id, schema as any)
-        return schema
+    protected Store<T extends TSchema | TNamespace<TDefinitions>, S = Omit<T, '$static'>>(schema: S): T {
+        const $schema: any = schema
+        if(!$schema['$id']) return $schema
+        this.schemas.set($schema['$id'], $schema)
+        return $schema
     }
 
     /** Conditionally dereferences a schema if RefKind. Otherwise return argument. */
-    protected Deref(schema: any): any {
-        if(schema.kind !== RefKind) return schema
-        if(!this.schemas.has(schema.$ref)) throw Error(`Unable to locate schema with $id '${schema.$ref}'`)
-        return this.Deref(this.schemas.get(schema.$ref)!)
+    protected Deref<T extends TSchema>(schema: T): any {
+        const $schema: any = schema
+        if($schema['kind'] !== RefKind) return schema
+        if(!this.schemas.has($schema['$ref'])) throw Error(`Unable to locate schema with $id '${$schema['$ref']}'`)
+        return this.Deref(this.schemas.get($schema['$ref'])!)
     }
 }
 

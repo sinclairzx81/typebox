@@ -341,8 +341,8 @@ export declare class TypeBuilder {
     /** `Experimental` Creates a recursive type */
     Rec<T extends TSchema>(callback: (self: TAny) => T, options?: CustomOptions): T;
     /** Conditionally stores and schema if it contains an $id and returns.  */
-    protected Store(schema: any): any;
+    protected Store<T extends TSchema | TNamespace<TDefinitions>, S = Omit<T, '$static'>>(schema: S): T;
     /** Conditionally dereferences a schema if RefKind. Otherwise return argument. */
-    protected Deref(schema: any): any;
+    protected Deref<T extends TSchema>(schema: T): any;
 }
 export declare const Type: TypeBuilder;
