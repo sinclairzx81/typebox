@@ -1,3 +1,4 @@
+import { __BaseType, __Brand } from '@coderspirit/nominal-symbols';
 export declare const ReadonlyOptionalModifier: unique symbol;
 export declare const OptionalModifier: unique symbol;
 export declare const ReadonlyModifier: unique symbol;
@@ -11,6 +12,16 @@ export declare type TOptional<T extends TSchema> = T & {
 export declare type TReadonly<T extends TSchema> = T & {
     modifier: typeof ReadonlyModifier;
 };
+export declare type BrandType = string | symbol;
+export declare type Brand<BaseType, Brand extends BrandType> = BaseType & {
+    readonly [__BaseType]: BaseType;
+    readonly [__Brand]: Brand;
+};
+declare type Flavor<BaseType, Brand extends BrandType> = BaseType & {
+    readonly [__BaseType]?: BaseType | undefined;
+    readonly [__Brand]?: Brand | undefined;
+};
+declare type StringFlavor = Flavor<string, BrandType>;
 export declare const BoxKind: unique symbol;
 export declare const KeyOfKind: unique symbol;
 export declare const IntersectKind: unique symbol;
@@ -38,7 +49,7 @@ export interface CustomOptions {
     [prop: string]: any;
 }
 export declare type StringFormatOption = 'date-time' | 'time' | 'date' | 'email' | 'idn-email' | 'hostname' | 'idn-hostname' | 'ipv4' | 'ipv6' | 'uri' | 'uri-reference' | 'iri' | 'uuid' | 'iri-reference' | 'uri-template' | 'json-pointer' | 'relative-json-pointer' | 'regex';
-export declare type StringOptions<TFormat extends string> = {
+export declare type StringOptions<TFormat extends string | undefined = undefined> = {
     minLength?: number;
     maxLength?: number;
     pattern?: string;
@@ -147,8 +158,8 @@ export interface TRef<T extends TSchema> extends TSchema, CustomOptions {
     kind: typeof RefKind;
     $ref: string;
 }
-export interface TString extends TSchema, StringOptions<string> {
-    $static: string;
+export interface TString<TBrand extends StringFlavor = string> extends TSchema, StringOptions<string> {
+    $static: TBrand;
     kind: typeof StringKind;
     type: 'string';
 }
@@ -294,6 +305,8 @@ export declare class TypeBuilder {
     Literal<T extends TValue>(value: T, options?: CustomOptions): TLiteral<T>;
     /** `Standard` Creates a string type */
     String<TCustomFormatOption extends string>(options?: StringOptions<StringFormatOption | TCustomFormatOption>): TString;
+    /** Like string, but "branded". It enforces passing options */
+    BrandedString<TBrand extends StringFlavor, TCustomFormatOption extends string | undefined = undefined>(options: StringOptions<StringFormatOption | TCustomFormatOption>): TString<TBrand>;
     /** `Standard` Creates a string type from a regular expression */
     RegEx(regex: RegExp, options?: CustomOptions): TString;
     /** `Standard` Creates a number type */
@@ -346,3 +359,4 @@ export declare class TypeBuilder {
     protected Deref<T extends TSchema>(schema: T): any;
 }
 export declare const Type: TypeBuilder;
+export {};

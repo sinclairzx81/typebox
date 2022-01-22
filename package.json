@@ -25,6 +25,9 @@
     "spec:schemas": "hammer task spec_schemas",
     "test": "npm run spec"
   },
+  "dependencies": {
+    "@coderspirit/nominal-symbols": "^1.0.1"
+  },
   "devDependencies": {
     "@sinclair/hammer": "^0.15.8",
     "@types/chai": "^4.3.0",

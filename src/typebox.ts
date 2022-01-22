@@ -26,6 +26,8 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { __BaseType, __Brand } from '@coderspirit/nominal-symbols'
+
 // --------------------------------------------------------------------------
 // Modifiers
 // --------------------------------------------------------------------------
@@ -38,6 +40,20 @@ export type TModifier                            = TReadonlyOptional<TSchema> | 
 export type TReadonlyOptional<T extends TSchema> = T & { modifier: typeof ReadonlyOptionalModifier }
 export type TOptional<T extends TSchema>         = T & { modifier: typeof OptionalModifier }
 export type TReadonly<T extends TSchema>         = T & { modifier: typeof ReadonlyModifier }
+
+// --------------------------------------------------------------------------
+// Nominal Types
+// --------------------------------------------------------------------------
+export type BrandType                                 = string | symbol
+export type Brand<BaseType, Brand extends BrandType>  = BaseType & {
+  readonly [__BaseType]: BaseType
+  readonly [__Brand]: Brand
+}
+type Flavor<BaseType, Brand extends BrandType>        = BaseType & {
+  readonly [__BaseType]?: BaseType | undefined
+  readonly [__Brand]?: Brand | undefined
+}
+type StringFlavor                                     = Flavor<string, BrandType>
 
 // --------------------------------------------------------------------------
 // Schema Standard
@@ -81,7 +97,7 @@ export type StringFormatOption =
     | 'uuid'         | 'iri-reference' | 'uri-template' | 'json-pointer' | 'relative-json-pointer'
     | 'regex'
 
-export declare type StringOptions<TFormat extends string> = {
+export declare type StringOptions<TFormat extends string | undefined = undefined> = {
     minLength?: number
     maxLength?: number
     pattern?: string
@@ -146,7 +162,7 @@ export interface TArray     <T extends TSchema>                       extends TS
 export interface TLiteral   <T extends TValue>                        extends TSchema, CustomOptions         { $static: StaticLiteral<T>,   kind: typeof LiteralKind,   const: T }
 export interface TEnum      <T extends TEnumKey[]>                    extends TSchema, CustomOptions         { $static: StaticEnum<T>,      kind: typeof EnumKind,      anyOf: T }
 export interface TRef       <T extends TSchema>                       extends TSchema, CustomOptions         { $static: Static<T>,          kind: typeof RefKind,       $ref: string  }
-export interface TString                                              extends TSchema, StringOptions<string> { $static: string,             kind: typeof StringKind,    type: 'string' }
+export interface TString    <TBrand extends StringFlavor = string>    extends TSchema, StringOptions<string> { $static: TBrand,             kind: typeof StringKind,    type: 'string' }
 export interface TNumber                                              extends TSchema, NumberOptions         { $static: number,             kind: typeof NumberKind,    type: 'number' }
 export interface TInteger                                             extends TSchema, NumberOptions         { $static: number,             kind: typeof IntegerKind,   type: 'integer' } 
 export interface TBoolean                                             extends TSchema, CustomOptions         { $static: boolean,            kind: typeof BooleanKind,   type: 'boolean' } 
@@ -325,6 +341,11 @@ export class TypeBuilder {
 
     /** `Standard` Creates a string type */
     public String<TCustomFormatOption extends string>(options: StringOptions<StringFormatOption | TCustomFormatOption> = {}): TString {
+        return this.Store({ ...options, kind: StringKind, type: 'string' })
+    }
+
+    /** Like string, but "branded". It enforces passing options */
+    public BrandedString<TBrand extends StringFlavor, TCustomFormatOption extends string | undefined = undefined>(options: StringOptions<StringFormatOption | TCustomFormatOption>): TString<TBrand> {
         return this.Store({ ...options, kind: StringKind, type: 'string' })
     }
 
