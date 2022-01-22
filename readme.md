@@ -598,7 +598,7 @@ In addition to JSON schema types, TypeBox provides several extended types that a
 
 ### Strict
 
-TypeBox schemas contain the properties `kind` and `modifier`. These properties are provided to enable runtime type reflection on schemas, as well as helping TypeBox apply the appropriate static type inference rules. These properties are not strictly valid JSON schema so in some cases it may be desirable to omit them. TypeBox provides a `Type.Strict()` function that will omit these properties if nessasary.
+TypeBox schemas contain the properties `kind` and `modifier`. These properties are provided to enable runtime type reflection on schemas, as well as helping TypeBox apply the appropriate static type inference rules. These properties are not strictly valid JSON schema so in some cases it may be desirable to omit them. TypeBox provides a `Type.Strict()` function that will omit these properties if necessary.
 
 ```typescript
 const T = Type.Object({                       // const T = {
