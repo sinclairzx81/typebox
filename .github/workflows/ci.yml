@@ -3,24 +3,21 @@ name: GitHub CI
 on: [push, pull_request]
 
 jobs:
-  npm:
+  TypeBox:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        node-version: [14.x]
+        node: [14.x, 16.x, 18.x]
         os: [ubuntu-latest, windows-latest, macOS-latest]
     steps:
       - uses: actions/checkout@v2
-      - name: Use Node.js
+      - name: Install Node
         uses: actions/setup-node@v1
         with:
-          node-version: ${{ matrix.node-version }}
-      - name: Install with npm
-        run: |
-          npm install
-      - name: Build
-        run: |
-          npm run build
-      - name: Run tests
-        run: |
-          npm run test
+          node-version: ${{ matrix.node }}
+      - name: Install Packages
+        run: npm install
+      - name: Build Library
+        run: npm run build
+      - name: Test Library
+        run: npm run test

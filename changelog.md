@@ -1,3 +1,99 @@
+## [0.24.44](https://www.npmjs.com/package/@sinclair/typebox/v/0.24.44)
+
+Updates:
+- [189](https://github.com/sinclairzx81/typebox/pull/189) Both `Value.Error(T, value)` and `TypeCheck.Error(value)` now return an iterator for validation errors.
+- [191](https://github.com/sinclairzx81/typebox/pull/191) TypeBox now provides a `TypeGuard` API that can be used to check the structural validity of TypeBox type. The TypeGuard can be used in reflection / code generation scenarios to resolve the appropriate inner `TSchema` type while traversing a outer type.
+- [197](https://github.com/sinclairzx81/typebox/pull/197) TypeBox now implements conditional runtime type mapping. This functionality is offered as seperate import for the `0.24.0` release but may be provided as standard type in later releases. This API enables `type T = Foo extends Bar ? true : false` conditional checks to be implemented at runtime. This API also provides the `Exclude` and `Extract` utility types which are implemented through conditional types in TypeScript.
+- [199](https://github.com/sinclairzx81/typebox/pull/199) TypeBox now provides better support for varidiac function and constructor signatures. Currently Variadics are mapped through `Tuple` types.
+- [200](https://github.com/sinclairzx81/typebox/pull/200) The types `TPick` and `TOmit` now support types of `TUnion<TLiteral<string>[]>` to be used to select properties. Additionally, `KeyOf` now returns `TUnion<TLiteral<string>[]>`, allowing `KeyOf` schemas to be passed to `TPick` and `TOmit`.
+- [214](https://github.com/sinclairzx81/typebox/pull/214) TypeBox now provides better support for i18n. To achieve this, TypeBox includes fixed mappable error codes on the `ValueError` type. These codes can be used by external implementors to create localized error messages. TypeBox may include localized error codes as an optional import in future releases.
+- [288](https://github.com/sinclairzx81/typebox/pull/228) TypeBox now allows users to implement custom string validator formats. These formats are internally shared between the `Value` and `TypeCompiler` API's. TypeBox does not currently provide any built in formats, however the standard expected set (email, uuid, uri, etc) may be provided via optional import (inline with ajv-formats usage)
+- [229](https://github.com/sinclairzx81/typebox/pull/229) The `Value.Cast()` function now implements automatic coersion of string, number and boolean types.
+- [231](https://github.com/sinclairzx81/typebox/pull/231) TypeBox provides a new `Value.Diff<T>()` and `Value.Patch<T>()` utility API for JavaScript values. This API is intended to provide a basis for the efficient transmission of state updates across a network. This API can diff any JavaScript value (typed or untyped) but is recommended to be used in conjunction with a formal static type.
+- [236](https://github.com/sinclairzx81/typebox/pull/236) TypeBox now implements the `TNever` type. This type is analogous to TypeScript's `never` type and is used in instances a composition results in a non-reconcilable type. Currently this type is implemented for empty `TUnion<[]>` types only. Future releases may utilize this type for planned updates to `TIntersect` (for example `string & number` resolves to `never`)
+- [241](https://github.com/sinclairzx81/typebox/pull/241) [247](https://github.com/sinclairzx81/typebox/pull/247) TypeBox now exposes a ValuePointer API that can be used to mutate a value via an RFC6901 JSON Pointer. Previously this functionality was internally used by `Value.Diff()` and `Value.Patch()` functions but is now offered as an optional import for implementations that need to update values manually through pointer references.
+
+Additional:
+
+- This project now includes two reference code generation utilities that can be used in custom build tooling. The first is `TypeScriptCodeGen` which will remap TypeScript `interface` and `type` definitions to TypeBox types. The second is `TypeBoxCodeGen` which will map existing TypeBox types into TypeScript type definitions. These implementations are not expected to be part of the TypeBox package, but users are free to clone and enhance them in their existing tool chains. Reference implementations can be found https://github.com/sinclairzx81/typebox/tree/master/codegen
+
+
+
+## [0.24.15](https://www.npmjs.com/package/@sinclair/typebox/v/0.24.15)
+
+Added:
+- `Conditional.Extends(...)` This enables TypeBox to conditionally map types inline with TypeScripts structural equivelence checks. Tested against TypeScript 4.7.4.
+- `Conditional.Extract(...)` Which analogs TypeScripts `Extract<...>` utility type. Additional information [here](https://www.typescriptlang.org/docs/handbook/utility-types.html#extracttype-union) 
+- `Conditional.Exclude(...)` Which analogs TypeScripts `Exclude<...>` utility type. Additional information [here](https://www.typescriptlang.org/docs/handbook/utility-types.html#excludeuniontype-excludedmembers)
+- `Type.Parameters(...)` Returns the parameters of a `TFunction` as a `TTuple`
+- `Type.ReturnType(...)` Returns the return type schema of a `TFunction`
+- `Type.ConstructorParameters(...)` Returns the parameters of a `TConstructor` as a `TTuple`
+- `Type.InstanceType(...)` Returns the instance type schema of a `TConstructor`
+ 
+## [0.24.8](https://www.npmjs.com/package/@sinclair/typebox/v/0.24.8)
+
+Added:
+- `Value.Cast(T, value)` structurally casts a value into another form while retaining information within the original value.
+- `Value.Check(T, value)` provides slow dynamic type checking for values. For performance, one should consider the `TypeCompiler` or `Ajv` validator.
+- `Value.Errors(T, value)` returns an iterable iterator errors found in a given value.
+
+## [0.24.6](https://www.npmjs.com/package/@sinclair/typebox/v/0.24.6)
+
+Added:
+
+- TypeBox now offers a `TypeGuard` module for structurally checking TypeBox schematics. This module can be used in runtime type reflection scenarios where it's helpful to test a schema is of a particular form. This module can be imported under the `@sinclair/typebox/guard` import path.
+
+Example:
+
+```typescript
+import { TypeGuard } from '@sinclair/typebox/guard'
+
+const T: any = {}                                    // T is any
+
+const { type } = T                                   // unsafe: type is any
+
+if(TypeGuard.TString(T)) {
+    
+  const { type } = T                                 // safe: type is 'string'
+}
+
+```
+
+## [0.24.0](https://www.npmjs.com/package/@sinclair/typebox/v/0.24.0)
+
+Changes:
+
+- The `kind` and `modifier` keywords are now expressed as symbol keys. This change allows AJV to leverage TypeBox schemas directly without explicit configuration of `kind` and `modifier` in strict mode.
+- `Type.Intersect([...])` now returns a composite `TObject` instead of a `allOf` schema representation. This change allows intersected types to be leveraged in calls to `Omit`, `Pick`, `Partial`, `Required`.
+- `Type.Void(...)` now generates a `{ type: null }` schema representation. This is principally used for RPC implementations where a RPC target function needs to respond with a serializable value for `void` return.
+- `Type.Rec(...)` renamed to `Type.Recursive(...)` and now supports non-mutual recursive type inference.
+
+Added:
+
+- `Type.Unsafe<T>(...)`. This type enables custom schema representations whose static type is informed by generic type T.
+- `Type.Uint8Array(...)`. This is a non-standard schema that can be configured on AJV to enable binary buffer range validation.
+- Added optional extended `design` property on all schema options. This property can be used to specify design time metadata when rendering forms.
+
+Compiler:
+
+- TypeBox now provides an optional experimental type compiler that can be used to validate types without AJV. This compiler is not a standard JSON schema compiler and will only compile TypeBox's known schema representations. For full JSON schema validation, AJV should still be the preference. This compiler is a work in progress.
+
+Value:
+
+- TypeBox now provides a value generator that can generate default values from TypeBox types.
+
+Breaking Changes:
+
+- `Type.Intersect(...)` is constrained to accept types of `TObject` only.
+- `Type.Namespace(...)` has been removed.
+- The types `TUnion`, `TEnum`, `KeyOf` and `TLiteral<TString>[]` are all now expressed via `allOf`. For Open API users, Please consider `Type.Unsafe()` to express `enum` string union representations. Documentation on using `Type.Unsafe()` can be found [here](https://github.com/sinclairzx81/typebox#Unsafe-Types)
+
+## [0.23.3](https://www.npmjs.com/package/@sinclair/typebox/v/0.23.3)
+
+Updates:
+
+- Fix: Rename BoxKind to NamespaceKind
+
 ## [0.23.1](https://www.npmjs.com/package/@sinclair/typebox/v/0.23.1)
 
 Updates:

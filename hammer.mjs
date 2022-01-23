@@ -1,3 +1,7 @@
+import { compression, measurement } from './benchmark'
+import { readFileSync } from 'fs'
+
+
 // -------------------------------------------------------------------------------
 // Clean
 // -------------------------------------------------------------------------------
@@ -7,29 +11,46 @@ export async function clean() {
 }
 
 // -------------------------------------------------------------------------------
-// Specs
+// Format
 // -------------------------------------------------------------------------------
 
-export async function spec_types() {
-    await shell(`tsc -p ./src/tsconfig.json --outDir spec/types --emitDeclarationOnly`)
-    await shell(`tsd spec/types`)
-}
-
-export async function spec_schemas() {
-    await shell(`hammer build ./spec/schema/index.ts --dist target/spec/schema --platform node`)
-    await shell(`mocha target/spec/schema/index.js`)
-}
-
-export async function spec() {
-    await spec_types()
-    await spec_schemas()
+export async function format() {
+    await shell('prettier --no-semi --single-quote --print-width 240 --trailing-comma all --write src test benchmark codegen')
 }
 
 // -------------------------------------------------------------------------------
-// Example
+// Start
 // -------------------------------------------------------------------------------
-export async function example(target = 'target/example') {
-    await shell(`hammer run example/index.ts --dist ${target}`)
+
+export async function start(example = 'index') {
+    await shell(`hammer run example/${example}.ts --dist target/example/${example}`)
+}
+
+// -------------------------------------------------------------------------------
+// Benchmark
+// -------------------------------------------------------------------------------
+
+export async function benchmark() {
+    await compression()
+    await measurement()
+}
+
+// -------------------------------------------------------------------------------
+// Test
+// -------------------------------------------------------------------------------
+
+export async function test_static() {
+    await shell(`tsc -p test/static/tsconfig.json --noEmit --strict`)
+}
+
+export async function test_runtime(filter) {
+    await shell(`hammer build ./test/runtime/index.ts --dist target/test/runtime --platform node`)
+    await shell(`mocha target/test/runtime/index.js -g "${filter}"`)
+}
+
+export async function test(filter = '') {
+    await test_static()
+    await test_runtime(filter)
 }
 
 // -------------------------------------------------------------------------------
@@ -37,15 +58,23 @@ export async function example(target = 'target/example') {
 // -------------------------------------------------------------------------------
 
 export async function build(target = 'target/build') {
-    await spec()
+    await test()
     await folder(target).delete()
     await shell(`tsc -p ./src/tsconfig.json --outDir ${target}`)
     await folder(target).add('package.json')
     await folder(target).add('readme.md')
     await folder(target).add('license')
     await shell(`cd ${target} && npm pack`)
+}
 
-    // $ npm publish sinclair-typebox-0.x.x.tgz --access=public
-    // $ git tag <version>
-    // $ git push origin <version>
+
+// -------------------------------------------------------------
+// Publish
+// -------------------------------------------------------------
+
+export async function publish(otp, target = 'target/build') {
+    const { version } = JSON.parse(readFileSync('package.json', 'utf8'))
+    await shell(`cd ${target} && npm publish sinclair-typebox-${version}.tgz --access=public --otp ${otp}`)
+    await shell(`git tag ${version}`)
+    await shell(`git push origin ${version}`)
 }
