@@ -1,3 +1,9 @@
+## [0.23.3](https://www.npmjs.com/package/@sinclair/typebox/v/0.23.3)
+
+Updates:
+
+- Fix: Rename BoxKind to NamespaceKind
+
 ## [0.23.1](https://www.npmjs.com/package/@sinclair/typebox/v/0.23.1)
 
 Updates:

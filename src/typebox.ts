@@ -43,7 +43,7 @@ export type TReadonly<T extends TSchema>         = T & { modifier: typeof Readon
 // Schema Standard
 // --------------------------------------------------------------------------
 
-export const BoxKind       = Symbol('BoxKind')
+export const NamespaceKind = Symbol('NamespaceKind')
 export const KeyOfKind     = Symbol('KeyOfKind')
 export const IntersectKind = Symbol('IntersectKind')
 export const UnionKind     = Symbol('UnionKind')
@@ -117,7 +117,7 @@ export type ObjectOptions = {
 // --------------------------------------------------------------------------
 
 export type TDefinitions                       = { [key: string]: TSchema }
-export type TNamespace<T extends TDefinitions> = { kind: typeof BoxKind, $defs: T } & CustomOptions
+export type TNamespace<T extends TDefinitions> = { kind: typeof NamespaceKind, $defs: T } & CustomOptions
 
 // --------------------------------------------------------------------------
 // TSchema
@@ -472,7 +472,7 @@ export class TypeBuilder {
     
     /** `Standard` Creates a namespace for a set of related types */
     public Namespace<T extends TDefinitions>($defs: T, options: CustomOptions = {}): TNamespace<T> {
-        return this.Store({ ...options, kind: BoxKind, $defs })
+        return this.Store({ ...options, kind: NamespaceKind, $defs })
     }
     
     /** `Standard` References a type within a namespace. The referenced namespace must specify an `$id` */

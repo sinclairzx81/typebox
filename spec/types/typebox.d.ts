@@ -11,7 +11,7 @@ export declare type TOptional<T extends TSchema> = T & {
 export declare type TReadonly<T extends TSchema> = T & {
     modifier: typeof ReadonlyModifier;
 };
-export declare const BoxKind: unique symbol;
+export declare const NamespaceKind: unique symbol;
 export declare const KeyOfKind: unique symbol;
 export declare const IntersectKind: unique symbol;
 export declare const UnionKind: unique symbol;
@@ -68,7 +68,7 @@ export declare type TDefinitions = {
     [key: string]: TSchema;
 };
 export declare type TNamespace<T extends TDefinitions> = {
-    kind: typeof BoxKind;
+    kind: typeof NamespaceKind;
     $defs: T;
 } & CustomOptions;
 export interface TSchema {

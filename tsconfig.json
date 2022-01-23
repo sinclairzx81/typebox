@@ -4,7 +4,6 @@
     "target": "ESNext",
     "moduleResolution": "node",
     "removeComments": true,
-    "lib": ["ESNext"],
     "baseUrl": ".",
     "paths": {
       "@sinclair/typebox": [
