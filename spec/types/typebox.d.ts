@@ -63,6 +63,8 @@ export declare type IntersectOptions = {
 } & CustomOptions;
 export declare type ObjectOptions = {
     additionalProperties?: boolean;
+    minProperties?: number;
+    maxProperties?: number;
 } & CustomOptions;
 export declare type TDefinitions = {
     [key: string]: TSchema;
