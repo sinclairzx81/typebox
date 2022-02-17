@@ -74,6 +74,31 @@ describe('Object', () => {
         })
     })
 
+    it('Should not allow an empty object if minProperties is set to 1', () => {
+        const T = Type.Object({
+            a: Type.Optional(Type.Number()),
+            b: Type.Optional(Type.String())
+        }, { additionalProperties: false, minProperties: 1 })
+        ok(T, { a: 1 })
+        ok(T, { b: 'hello' })
+        fail(T, {})
+    })
+
+    it('Should not allow 3 properties if maxProperties is set to 2', () => {
+        const T = Type.Object({
+            a: Type.Optional(Type.Number()),
+            b: Type.Optional(Type.String()),
+            c: Type.Optional(Type.Boolean()),
+        }, { additionalProperties: false, maxProperties: 2 })
+        ok(T, { a: 1 })
+        ok(T, { a: 1, b: 'hello' })
+        fail(T, {
+            a: 1,
+            b: 'hello',
+            c: true
+        })
+    })
+
     it('Should not allow additionalProperties if additionalProperties is false', () => {
         const T = Type.Object({
             a: Type.Number(),

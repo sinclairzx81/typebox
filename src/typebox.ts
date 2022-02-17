@@ -110,6 +110,8 @@ export type IntersectOptions = {
 
 export type ObjectOptions = {
     additionalProperties?: boolean
+    minProperties?: number;
+    maxProperties?: number;
 } & CustomOptions
 
 // --------------------------------------------------------------------------
