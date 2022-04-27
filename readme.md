@@ -2,11 +2,12 @@
 
 <h1>TypeBox</h1>
 
+<p>JSON Schema Type Builder with Static Type Resolution for TypeScript</p>
+	
 <img src="https://github.com/sinclairzx81/typebox/blob/master/typebox.png?raw=true" />
 
-<p>JSON Schema Type Builder with Static Type Resolution for TypeScript</p>
-
-
+<br />
+<br />
 
 [![npm version](https://badge.fury.io/js/%40sinclair%2Ftypebox.svg)](https://badge.fury.io/js/%40sinclair%2Ftypebox) [![GitHub CI](https://github.com/sinclairzx81/typebox/workflows/GitHub%20CI/badge.svg)](https://github.com/sinclairzx81/typebox/actions)
 
