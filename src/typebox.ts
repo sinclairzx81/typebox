@@ -253,8 +253,10 @@ function clone(object: any): any {
 // --------------------------------------------------------------------------
 
 export class TypeBuilder {
-
-    protected readonly schemas = new Map<string, TSchema>()
+    protected readonly schemas: Map<string, TSchema>
+    constructor() {
+        this.schemas = new Map<string, TSchema>()
+    }
 
     /** `Standard` Modifies an object property to be both readonly and optional */
     public ReadonlyOptional<T extends TSchema>(item: T): TReadonlyOptional<T> {

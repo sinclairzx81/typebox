@@ -274,6 +274,7 @@ export declare type StaticPromise<T extends TSchema> = Promise<Static<T>>;
 export declare type Static<T extends TSchema> = T['$static'];
 export declare class TypeBuilder {
     protected readonly schemas: Map<string, TSchema>;
+    constructor();
     /** `Standard` Modifies an object property to be both readonly and optional */
     ReadonlyOptional<T extends TSchema>(item: T): TReadonlyOptional<T>;
     /** `Standard` Modifies an object property to be readonly */
