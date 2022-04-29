@@ -1,3 +1,72 @@
+## [0.24.15](https://www.npmjs.com/package/@sinclair/typebox/v/0.24.15)
+
+Added:
+- `Conditional.Extends(...)` This enables TypeBox to conditionally map types inline with TypeScripts structural equivelence checks. Tested against TypeScript 4.7.4.
+- `Conditional.Extract(...)` Which analogs TypeScripts `Extract<...>` utility type. Additional information [here](https://www.typescriptlang.org/docs/handbook/utility-types.html#extracttype-union) 
+- `Conditional.Exclude(...)` Which analogs TypeScripts `Exclude<...>` utility type. Additional information [here](https://www.typescriptlang.org/docs/handbook/utility-types.html#excludeuniontype-excludedmembers)
+- `Type.Parameters(...)` Returns the parameters of a `TFunction` as a `TTuple`
+- `Type.ReturnType(...)` Returns the return type schema of a `TFunction`
+- `Type.ConstructorParameters(...)` Returns the parameters of a `TConstructor` as a `TTuple`
+- `Type.InstanceType(...)` Returns the instance type schema of a `TConstructor`
+ 
+## [0.24.8](https://www.npmjs.com/package/@sinclair/typebox/v/0.24.8)
+
+Added:
+- `Value.Cast(T, value)` structurally casts a value into another form while retaining information within the original value.
+- `Value.Check(T, value)` provides slow dynamic type checking for values. For performance, one should consider the `TypeCompiler` or `Ajv` validator.
+- `Value.Errors(T, value)` returns an iterable iterator errors found in a given value.
+
+## [0.24.6](https://www.npmjs.com/package/@sinclair/typebox/v/0.24.6)
+
+Added:
+
+- TypeBox now offers a `TypeGuard` module for structurally checking TypeBox schematics. This module can be used in runtime type reflection scenarios where it's helpful to test a schema is of a particular form. This module can be imported under the `@sinclair/typebox/guard` import path.
+
+Example:
+
+```typescript
+import { TypeGuard } from '@sinclair/typebox/guard'
+
+const T: any = {}                                    // T is any
+
+const { type } = T                                   // unsafe: type is any
+
+if(TypeGuard.TString(T)) {
+    
+  const { type } = T                                 // safe: type is 'string'
+}
+
+```
+
+## [0.24.0](https://www.npmjs.com/package/@sinclair/typebox/v/0.24.0)
+
+Changes:
+
+- The `kind` and `modifier` keywords are now expressed as symbol keys. This change allows AJV to leverage TypeBox schemas directly without explicit configuration of `kind` and `modifier` in strict mode.
+- `Type.Intersect([...])` now returns a composite `TObject` instead of a `allOf` schema representation. This change allows intersected types to be leveraged in calls to `Omit`, `Pick`, `Partial`, `Required`.
+- `Type.Void(...)` now generates a `{ type: null }` schema representation. This is principally used for RPC implementations where a RPC target function needs to respond with a serializable value for `void` return.
+- `Type.Rec(...)` renamed to `Type.Recursive(...)` and now supports non-mutual recursive type inference.
+
+Added:
+
+- `Type.Unsafe<T>(...)`. This type enables custom schema representations whose static type is informed by generic type T.
+- `Type.Uint8Array(...)`. This is a non-standard schema that can be configured on AJV to enable binary buffer range validation.
+- Added optional extended `design` property on all schema options. This property can be used to specify design time metadata when rendering forms.
+
+Compiler:
+
+- TypeBox now provides an optional experimental type compiler that can be used to validate types without AJV. This compiler is not a standard JSON schema compiler and will only compile TypeBox's known schema representations. For full JSON schema validation, AJV should still be the preference. This compiler is a work in progress.
+
+Value:
+
+- TypeBox now provides a value generator that can generate default values from TypeBox types.
+
+Breaking Changes:
+
+- `Type.Intersect(...)` is constrained to accept types of `TObject` only.
+- `Type.Namespace(...)` has been removed.
+- The types `TUnion`, `TEnum`, `KeyOf` and `TLiteral<TString>[]` are all now expressed via `allOf`. For Open API users, Please consider `Type.Unsafe()` to express `enum` string union representations. Documentation on using `Type.Unsafe()` can be found [here](https://github.com/sinclairzx81/typebox#Unsafe-Types)
+
 ## [0.23.3](https://www.npmjs.com/package/@sinclair/typebox/v/0.23.3)
 
 Updates:

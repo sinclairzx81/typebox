@@ -1,14 +1,4 @@
 {
-  "compilerOptions": {
-    "strict": true,
-    "module": "CommonJS",
-    "target": "ESNext",
-    "moduleResolution": "node",
-    "lib": ["ESNext"],
-    "declaration": true,
-    "outDir": "../dist/",
-  },
-  "files": [
-    "typebox.ts"
-  ]
+  "extends": "../tsconfig.json",
+  "files": ["compiler/index.ts", "conditional/index.ts", "guard/index.ts", "value/index.ts", "typebox.ts"]
 }

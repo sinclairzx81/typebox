@@ -1,16 +1,15 @@
+import { TypeCompiler } from '@sinclair/typebox/compiler'
+import { Conditional } from '@sinclair/typebox/conditional'
+import { TypeGuard } from '@sinclair/typebox/guard'
+import { Value } from '@sinclair/typebox/value'
 import { Type, Static } from '@sinclair/typebox'
 
 const T = Type.Object({
-    x: Type.String(),
-    y: Type.Number(),
-    z: Type.String()
-}, { $id: 'T' })
+  x: Type.Number(),
+  y: Type.Number(),
+  z: Type.Number()
+})
 
-const R = Type.Ref(T)
+type T = Static<typeof T>
 
-const K = Type.KeyOf(R)
-
-type T = Static<typeof K>
-
-console.log(K)
-
+console.log(T)

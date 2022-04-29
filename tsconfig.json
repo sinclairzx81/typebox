@@ -1,14 +1,27 @@
 {
   "compilerOptions": {
     "strict": true,
-    "target": "ESNext",
+    "target": "ES2020",
+    "module": "CommonJS",
     "moduleResolution": "node",
-    "removeComments": true,
+    "declaration": true,
     "baseUrl": ".",
     "paths": {
+      "@sinclair/typebox/compiler": [
+        "src/compiler/index.ts"
+      ],
+      "@sinclair/typebox/conditional": [
+        "src/conditional/index.ts"
+      ],
+      "@sinclair/typebox/guard": [
+        "src/guard/index.ts"
+      ],
+      "@sinclair/typebox/value": [
+        "src/value/index.ts"
+      ],
       "@sinclair/typebox": [
         "src/typebox.ts"
-      ]
+      ],
     }
   }
 }
