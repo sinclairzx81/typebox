@@ -6,9 +6,18 @@
     "removeComments": true,
     "baseUrl": ".",
     "paths": {
+      "@sinclair/typebox/compiler": [
+        "src/compiler/index.ts"
+      ],
+      "@sinclair/typebox/guard": [
+        "src/guard/index.ts"
+      ],
+      "@sinclair/typebox/value": [
+        "src/value/index.ts"
+      ],
       "@sinclair/typebox": [
         "src/typebox.ts"
-      ]
+      ],
     }
   }
 }
