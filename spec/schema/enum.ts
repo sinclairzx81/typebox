@@ -3,7 +3,7 @@ import { ok, fail } from './validate'
 
 describe('Enum', () => {
 
-    it('Should validate when emum uses default numeric values', () => {
+    it('Should validate when enum uses default numeric values', () => {
         enum Kind {
             Foo, // = 0
             Bar  // = 1
@@ -22,7 +22,7 @@ describe('Enum', () => {
         fail(T, 'Bar')
     })
 
-    it('Should validate when emum has defined string values', () => {
+    it('Should validate when enum has defined string values', () => {
         enum Kind {
             Foo = 'foo',
             Bar = 'bar'
@@ -32,7 +32,7 @@ describe('Enum', () => {
         ok(T, 'bar')
     })
 
-    it('Should not validate when emum has defined string values and user passes numeric', () => {
+    it('Should not validate when enum has defined string values and user passes numeric', () => {
         enum Kind {
             Foo = 'foo',
             Bar = 'bar'

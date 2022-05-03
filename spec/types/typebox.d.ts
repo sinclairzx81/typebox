@@ -20,6 +20,7 @@ export declare const ObjectKind: unique symbol;
 export declare const RecordKind: unique symbol;
 export declare const ArrayKind: unique symbol;
 export declare const EnumKind: unique symbol;
+export declare const StringEnumKind: unique symbol;
 export declare const LiteralKind: unique symbol;
 export declare const StringKind: unique symbol;
 export declare const NumberKind: unique symbol;
@@ -77,6 +78,7 @@ export interface TSchema {
     $static: unknown;
 }
 export declare type TEnumType = Record<string, string | number>;
+export declare type TStringEnumType = Record<string, string>;
 export declare type TKey = string | number | symbol;
 export declare type TValue = string | number | boolean;
 export declare type TRecordKey = TString | TNumber | TKeyOf<any> | TUnion<any>;
@@ -143,6 +145,12 @@ export interface TEnum<T extends TEnumKey[]> extends TSchema, CustomOptions {
     $static: StaticEnum<T>;
     kind: typeof EnumKind;
     anyOf: T;
+}
+export interface TStringEnum<T extends string[]> extends TSchema, CustomOptions {
+    $static: StaticStringEnum<T>;
+    kind: typeof StringEnumKind;
+    type: 'string';
+    enum: T;
 }
 export interface TRef<T extends TSchema> extends TSchema, CustomOptions {
     $static: Static<T>;
@@ -252,6 +260,7 @@ export declare type StaticProperties<T extends TProperties> = {
 };
 export declare type StaticRecord<K extends TRecordKey, T extends TSchema> = K extends TString ? Record<string, Static<T>> : K extends TNumber ? Record<number, Static<T>> : K extends TKeyOf<TKey[]> ? Record<K['$static'], Static<T>> : K extends TUnion<TSchema[]> ? Record<K['$static'], Static<T>> : never;
 export declare type StaticEnum<T> = T extends TEnumKey<infer U>[] ? U : never;
+export declare type StaticStringEnum<T extends TKey[]> = T extends Array<infer K> ? K : never;
 export declare type StaticKeyOf<T extends TKey[]> = T extends Array<infer K> ? K : never;
 export declare type StaticIntersect<T extends readonly TSchema[]> = StaticIntersectReduce<unknown, StaticIntersectEvaluate<T>>;
 export declare type StaticUnion<T extends readonly TSchema[]> = {
@@ -293,6 +302,8 @@ export declare class TypeBuilder {
     Array<T extends TSchema>(items: T, options?: ArrayOptions): TArray<T>;
     /** `Standard` Creates an enum type from a TypeScript enum */
     Enum<T extends TEnumType>(item: T, options?: CustomOptions): TEnum<TEnumKey<T[keyof T]>[]>;
+    /** `Standard` Creates a string enum type from a TypeScript enum (string values only) */
+    StringEnum<T extends TStringEnumType>(item: T, options?: CustomOptions): TStringEnum<T[keyof T][]>;
     /** `Standard` Creates a literal type. Supports string, number and boolean values only */
     Literal<T extends TValue>(value: T, options?: CustomOptions): TLiteral<T>;
     /** `Standard` Creates a string type */
