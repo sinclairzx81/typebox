@@ -63,6 +63,19 @@ export const AnyKind       = Symbol('AnyKind')
 export const RefKind       = Symbol('RefKind')
 
 // --------------------------------------------------------------------------
+// Type Guards
+// --------------------------------------------------------------------------
+const ALL_SCHEMA_KINDS: ReadonlySet<symbol> = new Set([
+  NamespaceKind, KeyOfKind,   IntersectKind, UnionKind,   TupleKind,  ObjectKind,
+  RecordKind,    ArrayKind,   EnumKind,      LiteralKind, StringKind, NumberKind,
+  IntegerKind,   BooleanKind, NullKind,      UnknownKind, AnyKind,    RefKind
+])
+
+export function isTSchema(value: object): value is TSchema {
+  return 'kind' in value && ALL_SCHEMA_KINDS.has((value as any).kind)
+}
+
+// --------------------------------------------------------------------------
 // Options
 // --------------------------------------------------------------------------
 
