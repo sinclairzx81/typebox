@@ -9,6 +9,8 @@
     "outDir": "../dist/",
   },
   "files": [
-    "typebox.ts"
+    "compiler/index.ts",
+    "value/index.ts",
+    "typebox.ts",
   ]
 }

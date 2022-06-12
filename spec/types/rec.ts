@@ -1,14 +1,11 @@
 import * as Spec from './spec'
-import { Type } from './typebox'
+import { Type, Static } from './typebox'
 
 {
-    const T = Type.Rec(Self => Type.Object({
+    const T = Type.Recursive(Node => Type.Object({
         id:    Type.String(),
-        nodes: Type.Array(Self)
+        nodes: Type.Array(Node)
     }))
-
-    Spec.expectType<{
-        id: string,
-        nodes: { id: string, nodes: [] }[]
-    }>(Spec.infer(T))
+    type T = Static<typeof T>
+    Spec.expectType<T>(Spec.infer(T))
 }
