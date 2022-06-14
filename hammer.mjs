@@ -11,13 +11,13 @@ export async function clean() {
 // -------------------------------------------------------------------------------
 
 export async function spec_types() {
-    await shell(`tsc -p ./src/tsconfig.json --outDir spec/types --emitDeclarationOnly`)
-    await shell(`tsd spec/types`)
+    await shell(`tsc -p ./src/tsconfig.json --outDir spec/static --emitDeclarationOnly`)
+    await shell(`tsd spec/static`)
 }
 
 export async function spec_schemas() {
-    await shell(`hammer build ./spec/schema/index.ts --dist target/spec/schema --platform node`)
-    await shell(`mocha target/spec/schema/index.js`)
+    await shell(`hammer build ./spec/runtime/index.ts --dist target/spec/runtime --platform node`)
+    await shell(`mocha target/spec/runtime/index.js`)
 }
 
 export async function spec() {

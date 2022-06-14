@@ -32,21 +32,21 @@ import * as Types from '../typebox'
 // Compiler Function
 // -----------------------------------------------------
 
-export interface DebugAssertOk {
+export interface CheckOk {
   ok: true
 }
 
-export interface DebugAssertFail {
+export interface CheckFail {
   ok: false
   expr: string
   path: string
   kind: string
 }
 
-export type DebugAssertFunction = (value: unknown) => DebugAssertOk | DebugAssertFail
-export type ReleaseAssertFunction<T> = (value: unknown) => value is T
+export type CheckFunction = (value: unknown) => CheckOk | CheckFail
 
 export namespace TypeCompiler {
+
   // -------------------------------------------------------------------
   // Condition
   // -------------------------------------------------------------------
@@ -340,7 +340,7 @@ export namespace TypeCompiler {
   }
 
   /** Compiles a type into validation function */
-  export function Compile<T extends Types.TSchema>(schema: T, additional: Types.TSchema[] = []): DebugAssertFunction {
+  export function Compile<T extends Types.TSchema>(schema: T, additional: Types.TSchema[] = []): CheckFunction {
     const kernel = Kernel(schema, additional)
     const func = globalThis.Function(kernel)
     return func()
