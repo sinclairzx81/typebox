@@ -13,7 +13,7 @@
         "src/value/index.ts"
       ],
       "@sinclair/typebox": [
-        "src/typebox.ts"
+        "src/index.ts"
       ],
     }
   }

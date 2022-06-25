@@ -10,8 +10,8 @@
   ],
   "author": "sinclairzx81",
   "license": "MIT",
-  "main": "./typebox.js",
-  "types": "./typebox.d.ts",
+  "main": "./index.js",
+  "types": "./index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/sinclairzx81/typebox"

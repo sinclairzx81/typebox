@@ -12,5 +12,6 @@
     "compiler/index.ts",
     "value/index.ts",
     "typebox.ts",
+    "index.ts"
   ]
 }
