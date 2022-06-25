@@ -30,8 +30,8 @@ THE SOFTWARE.
 // Symbols
 // --------------------------------------------------------------------------
 
-export const Kind = Symbol.for('Kind')
-export const Modifier = Symbol.for('Modifier')
+export const Kind = Symbol.for('typebox.Kind')
+export const Modifier = Symbol.for('typebox.Modifier')
 
 // --------------------------------------------------------------------------
 // Modifiers
