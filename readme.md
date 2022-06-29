@@ -43,11 +43,11 @@ type T = Static<typeof T>   // type T = string
 
 ## Overview
 
-TypeBox is a library that creates in-memory JSON Schema objects that can be statically inferred as TypeScript types. The schemas produced by this library are designed to match the static type checking rules of the TypeScript compiler. TypeBox allows one to create a unified type that can be both statically asserted by the TypeScript compiler and runtime asserted using standard JSON Schema validation.
+TypeBox is a type builder library that creates in-memory JSON Schema objects that can be statically inferred as TypeScript types. The schemas produced by this library are designed to match the static type checking rules of the TypeScript compiler. TypeBox allows one to compose unified types that can be statically asserted by the TypeScript compiler as well as runtime asserted using standard JSON Schema validation.
 
-TypeBox can be used as a simple tool to build up complex schemas or integrated into RPC or REST services to help validate JSON data received over the wire. TypeBox does not provide any JSON schema validation. Please use libraries such as AJV to validate schemas built with this library.
+TypeBox can be used as a simple tool to build up complex schemas or integrated into RPC or REST services to help validate JSON data received over the wire.
 
-Requires TypeScript 4.3.5 and above.
+Requires TypeScript 4.1 and above.
 
 License MIT
 
