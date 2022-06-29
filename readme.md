@@ -59,10 +59,10 @@ License MIT
 - [Modifiers](#Modifiers)
 - [Options](#Options)
 - [Extended Types](#Extended-Types)
-- [Generic Types](#Generic-Types)
 - [Reference Types](#Reference-Types)
 - [Recursive Types](#Recursive-Types)
-- [Custom Types](#Custom-Types)
+- [Generic Types](#Generic-Types)
+- [Unsafe Types](#Unsafe-Types)
 - [Strict](#Strict)
 - [Validation](#Validation)
 - [OpenAPI](#OpenAPI)
@@ -459,38 +459,6 @@ In addition to JSON schema types, TypeBox provides several extended types that a
 └────────────────────────────────┴─────────────────────────────┴────────────────────────────────┘
 ```
 
-<a name="Generic-Types"></a>
-
-### Generic Types
-
-Generic types can be created using functions. The following creates a generic `Nullable<T>` type. 
-
-```typescript
-import { Type, Static, TSchema } from '@sinclair/typebox'
-
-const Nullable = <T extends TSchema>(type: T) => Type.Union([type, Type.Null()])
-
-const T = Nullable(Type.String())                    // const T = {
-                                                     //   "anyOf": [{
-                                                     //      type: 'string'
-                                                     //   }, {
-                                                     //      type: 'null'
-                                                     //   }]
-                                                     // }
-
-type T = Static<typeof T>                            // type T = string | null
-
-const U = Nullable(Type.Number())                    // const U = {
-                                                     //   "anyOf": [{
-                                                     //      type: 'number'
-                                                     //   }, {
-                                                     //      type: 'null'
-                                                     //   }]
-                                                     // }
-
-type U = Static<typeof U>                            // type U = number | null
-```
-
 <a name="Reference-Types"></a>
 
 ### Reference Types
@@ -546,26 +514,44 @@ function visit(node: Node) {
     }
 }
 ```
-### Reference Types
 
-Types can be referenced with `Type.Ref(...)`. To reference a type, the target type must specify an `$id`.
+<a name="Generic-Types"></a>
+
+### Generic Types
+
+Generic types can be created using functions. The following creates a generic `Nullable<T>` type. 
 
 ```typescript
-const T = Type.String({ $id: 'T' })                  // const T = {
-                                                     //    $id: 'T',
-                                                     //    type: 'string'
+import { Type, Static, TSchema } from '@sinclair/typebox'
+
+const Nullable = <T extends TSchema>(type: T) => Type.Union([type, Type.Null()])
+
+const T = Nullable(Type.String())                    // const T = {
+                                                     //   "anyOf": [{
+                                                     //      type: 'string'
+                                                     //   }, {
+                                                     //      type: 'null'
+                                                     //   }]
                                                      // }
-                                             
-const R = Type.Ref(T)                                // const R = {
-                                                     //    $ref: 'T'
+
+type T = Static<typeof T>                            // type T = string | null
+
+const U = Nullable(Type.Number())                    // const U = {
+                                                     //   "anyOf": [{
+                                                     //      type: 'number'
+                                                     //   }, {
+                                                     //      type: 'null'
+                                                     //   }]
                                                      // }
+
+type U = Static<typeof U>                            // type U = number | null
 ```
 
-<a name="Custom-Types"></a>
+<a name="Unsafe-Types"></a>
 
-### Custom Types
+### Unsafe Types
 
-Custom types can be created using the `Type.Unsafe(...)` function. You can use this function to custom types whose schema representations which may be different to the static type representation. Consider the following.
+In some cases, you may need schema representations that are not provided by TypeBox. In these scenarios, you may require a custom schema representation with custom type inference rules. The `Type.Unsafe(...)` function provides this functionality, allowing you to specify both schema representation and a static type to infer as. Unsafe types integrate with TypeBox's inference logic. Consider the following which defines a `number` schema, but will infer as a `string`.
 
 ```typescript
 const T = Type.Unsafe<string>({ type: 'number' })    // const T = {
@@ -575,7 +561,7 @@ const T = Type.Unsafe<string>({ type: 'number' })    // const T = {
 type T = Static<typeof T>                            // type T = string
 ```
 
-The `Type.Unsafe(...)` function can be used with function generics to create custom schema representations for validators with specific schema representation rules. An example of which would be OpenAPI's `nullable` and `string-enum` representations. The following implements these schemas using `Type.Unsafe(...)`.
+The `Type.Unsafe(...)` function can be used in combination with function generics to create custom schema representations for validators with specific schema representation rules. An example of which would be OpenAPI's `nullable` and `string-enum` representations which are not provided by TypeBox. The following implements these schemas using the `Type.Unsafe(...)` function.
 
 ```typescript
 import { Type, Static, TSchema } from '@sinclair/typebox'
@@ -612,15 +598,13 @@ const T = StringEnum(['A', 'B', 'C'])                // const T = {
                                                      // }
 
 type T = Static<typeof T>                            // type T = 'A' | 'B' | 'C'
-
 ```
-
 
 <a name="Strict"></a>
 
 ### Strict
 
-TypeBox schemas contain the `Kind` and `Modifier` symbol properties. These properties are provided to enable runtime type reflection on schemas, as well as helping TypeBox to internally compose types. These properties are not strictly valid JSON schema so in some cases it may be desirable to omit them. TypeBox provides a `Type.Strict()` function that will omit these properties if necessary.
+TypeBox schemas contain the `Kind` and `Modifier` symbol properties. These properties are provided to enable runtime type reflection on schemas, as well as helping TypeBox internally compose types. These properties are not strictly valid JSON schema; so in some cases it may be desirable to omit them. TypeBox provides a `Type.Strict()` function that will omit these properties if necessary.
 
 ```typescript
 const T = Type.Object({                              // const T = {
@@ -649,7 +633,7 @@ const U = Type.Strict(T)                             // const U = {
 
 ### Validation
 
-TypeBox does not provide JSON schema validation so users will need to select an appropriate JSON Schema validator for their needs. TypeBox schemas target JSON Schema draft 6 so any validator capable of draft 6 should be fine. A good library to use for validation in JavaScript environments is [AJV](https://www.npmjs.com/package/ajv). The following example shows setting up AJV 7 to work with TypeBox.
+TypeBox schemas target JSON Schema draft 6 so any validator capable of draft 6 should be fine. A good library to use for validation in JavaScript environments is [AJV](https://www.npmjs.com/package/ajv). The following example shows setting up AJV 7 to work with TypeBox.
 
 ```bash
 $ npm install ajv ajv-formats --save
