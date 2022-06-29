@@ -30,8 +30,8 @@ THE SOFTWARE.
 // Symbols
 // --------------------------------------------------------------------------
 
-export const Kind = Symbol.for('typebox.Kind')
-export const Modifier = Symbol.for('typebox.Modifier')
+export const Kind = Symbol.for('TypeBox.Kind')
+export const Modifier = Symbol.for('TypeBox.Modifier')
 
 // --------------------------------------------------------------------------
 // Modifiers
@@ -292,6 +292,8 @@ export type PropertiesReduce<T extends TProperties, P extends unknown[]> = { rea
 } & { [K in RequiredPropertyKeys<T>]: Static<T[K], P> } extends infer R
   ? { [K in keyof R]: R[K] }
   : never
+
+export type TRecordProperties<K extends TUnion<TLiteral[]>, T extends TSchema> = Static<K> extends string ? { [X in Static<K>]: T } : never
 
 export interface TProperties {
   [key: string]: TSchema
@@ -707,22 +709,32 @@ export class TypeBuilder {
     return this.Create({ ...options, [Kind]: 'Promise', type: 'promise', item })
   }
 
-  /** Creates a record type */
-  public Record<K extends TRecordKey, T extends TSchema>(key: K, value: T, options: ObjectOptions = {}): TRecord<K, T> {
-    const pattern = (() => {
-      switch (key[Kind]) {
-        case 'Union':
-          return `^${key.anyOf.map((literal: any) => literal.const as TLiteralValue).join('|')}$`
-        case 'Number':
-          return '^(0|[1-9][0-9]*)$'
-        case 'String':
-          return key.pattern ? key.pattern : '^.*$'
-        default:
-          throw Error('Invalid Record Key')
-      }
-    })()
+  /** Creates an object whose properties are derived from the given string literal union. */
+  public Record<K extends TUnion<TLiteral[]>, T extends TSchema>(key: K, schema: T, options?: ObjectOptions): TObject<TRecordProperties<K, T>>
 
-    return this.Create({ ...options, [Kind]: 'Record', type: 'object', patternProperties: { [pattern]: value }, additionalProperties: false })
+  /** Creates a record type */
+  public Record<K extends TString | TNumber, T extends TSchema>(key: K, schema: T, options?: ObjectOptions): TRecord<K, T>
+
+  /** Creates a record type */
+  public Record(key: any, value: any, options: ObjectOptions = {}) {
+    // If string literal union return TObject with properties extracted from union.
+    if (key[Kind] === 'Union') {
+      return this.Object(
+        key.anyOf.reduce((acc: any, literal: any) => {
+          return { ...acc, [literal.const]: value }
+        }, {}),
+        { ...options },
+      )
+    }
+    // otherwise return TRecord with patternProperties
+    const pattern = key[Kind] === 'Number' ? '^(0|[1-9][0-9]*)$' : key[Kind] === 'String' && key.pattern ? key.pattern : '^.*$'
+    return this.Create({
+      ...options,
+      [Kind]: 'Record',
+      type: 'object',
+      patternProperties: { [pattern]: value },
+      additionalProperties: false,
+    })
   }
 
   /** Creates a recursive object type */

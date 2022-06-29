@@ -19,6 +19,7 @@
   "scripts": {
     "clean": "hammer task clean",
     "build": "hammer task build",
+    "format": "hammer task format",
     "example": "hammer task example",
     "spec": "hammer task spec",
     "spec:types": "hammer task spec_types",
@@ -34,6 +35,7 @@
     "ajv-formats": "^2.1.1",
     "chai": "^4.3.5",
     "mocha": "^9.2.0",
+    "prettier": "^2.7.1",
     "tsd": "^0.19.1",
     "typescript": "^4.5.5"
   }

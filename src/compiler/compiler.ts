@@ -46,7 +46,6 @@ export interface CheckFail {
 export type CheckFunction = (value: unknown) => CheckOk | CheckFail
 
 export namespace TypeCompiler {
-
   // -------------------------------------------------------------------
   // Condition
   // -------------------------------------------------------------------
@@ -173,7 +172,7 @@ export namespace TypeCompiler {
     yield CreateCondition(schema, path, `(${func}(${path}).ok)`)
   }
 
-  function* Self(schema: Types.TSelf, path: string): Generator<Condition> { 
+  function* Self(schema: Types.TSelf, path: string): Generator<Condition> {
     const func = CreateFunctionName(schema.$ref)
     yield CreateCondition(schema, path, `(${func}(${path}).ok)`)
   }

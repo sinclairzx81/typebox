@@ -1,16 +1,12 @@
 import { Type, Static } from '@sinclair/typebox'
 
 const T = Type.Object({
-    x: Type.String(),
-    y: Type.Number(),
-    z: Type.String()
-}, { $id: 'T' })
+    x: Type.Number(),
+    y: Type.Number()
+})
 
-const R = Type.Ref(T)
+const K = Type.KeyOf(T)
 
-const K = Type.KeyOf(R)
+const R = Type.Record(K, Type.String())
 
-type T = Static<typeof K>
-
-console.log(K)
 

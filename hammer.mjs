@@ -6,28 +6,33 @@ export async function clean() {
     await folder('target').delete()
 }
 
+export async function format() {
+    await shell('prettier --no-semi --single-quote --print-width 240 --trailing-comma all --write src test')
+}
+
 // -------------------------------------------------------------------------------
 // Specs
 // -------------------------------------------------------------------------------
 
-export async function spec_types() {
-    await shell(`tsc -p ./src/tsconfig.json --outDir spec/static --emitDeclarationOnly`)
-    await shell(`tsd spec/static`)
+export async function test_types() {
+    await shell(`tsc -p ./src/tsconfig.json --outDir test/static --emitDeclarationOnly`)
+    await shell(`tsd test/static`)
 }
 
-export async function spec_schemas() {
-    await shell(`hammer build ./spec/runtime/index.ts --dist target/spec/runtime --platform node`)
-    await shell(`mocha target/spec/runtime/index.js`)
+export async function test_schemas() {
+    await shell(`hammer build ./test/runtime/index.ts --dist target/test/runtime --platform node`)
+    await shell(`mocha target/test/runtime/index.js`)
 }
 
 export async function spec() {
-    await spec_types()
-    await spec_schemas()
+    await test_types()
+    await test_schemas()
 }
 
 // -------------------------------------------------------------------------------
 // Example
 // -------------------------------------------------------------------------------
+
 export async function example(target = 'target/example') {
     await shell(`hammer run example/index.ts --dist ${target}`)
 }
