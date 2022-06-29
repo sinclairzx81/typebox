@@ -9,9 +9,7 @@ const T = Type.Object({
 
 const Check = TypeCompiler.Compile(T)
 
-const a: any = Value.Create(T)
-
-Check.Assert(a as Static<typeof T>)
+Check.Assert(Value.Create(T))
 
 
 

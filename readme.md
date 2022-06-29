@@ -65,7 +65,6 @@ License MIT
 - [Unsafe Types](#Unsafe-Types)
 - [Strict](#Strict)
 - [Validation](#Validation)
-- [OpenAPI](#OpenAPI)
 
 <a name="Example"></a>
 
