@@ -641,7 +641,7 @@ $ npm install ajv ajv-formats --save
 ```typescript
 //--------------------------------------------------------------------------------------------
 //
-// Import the 2019 compliant validator from AJV
+// Import TypeBox and AJV
 //
 //--------------------------------------------------------------------------------------------
 
@@ -678,10 +678,10 @@ const ajv = addFormats(new Ajv({}), [
 //
 //--------------------------------------------------------------------------------------------
 
-const User = Type.Object({
-    userId: Type.String({ format: 'uuid' }),
-    email:  Type.String({ format: 'email' }),
-    online: Type.Boolean(),
+const Vector = Type.Object({
+    x: Type.Number(),
+    y: Type.Number(),
+    z: Type.Number(),
 }, { additionalProperties: false })
 
 //--------------------------------------------------------------------------------------------
@@ -690,11 +690,11 @@ const User = Type.Object({
 //
 //--------------------------------------------------------------------------------------------
 
-const ok = ajv.validate(User, { 
-    userId: '68b4b1d8-0db6-468d-b551-02069a692044', 
-    email:  'dave@domain.com',
-    online:  true
-}) // -> ok
+const ok = ajv.validate(Vector, { 
+    x: 1,
+    y: 2,
+    z: 3
+}) // -> true
 ```
 
 Please refer to the official AJV [documentation](https://ajv.js.org/guide/getting-started.html) for additional information on using AJV.

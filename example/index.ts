@@ -9,7 +9,8 @@ const T = Type.Object({
 
 const Check = TypeCompiler.Compile(T)
 
-Check.Assert(Value.Create(T))
+
+
 
 
 
