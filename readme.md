@@ -65,6 +65,7 @@ License MIT
 - [Strict](#Strict)
 - [Validation](#Validation)
 - [Compiler](#Compiler)
+- [Contribute](#Contribute)
 
 <a name="Example"></a>
 
@@ -97,20 +98,20 @@ type T = {
 const T = Type.Object({                              // const T = {
   id: Type.String(),                                 //   type: 'object',
   name: Type.String(),                               //   properties: { 
-  timestamp: Type.Integer()                          //      id: { 
-})                                                   //         type: 'string' 
-                                                     //      },
-                                                     //      name: { 
-                                                     //         type: 'string' 
-                                                     //      },
-                                                     //      timestamp: { 
-                                                     //         type: 'integer' 
-                                                     //      }
+  timestamp: Type.Integer()                          //     id: { 
+})                                                   //       type: 'string' 
+                                                     //     },
+                                                     //     name: { 
+                                                     //       type: 'string' 
+                                                     //     },
+                                                     //     timestamp: { 
+                                                     //       type: 'integer' 
+                                                     //     }
                                                      //   }, 
                                                      //   required: [
-                                                     //      "id",
-                                                     //      "name",
-                                                     //      "timestamp"
+                                                     //     "id",
+                                                     //     "name",
+                                                     //     "timestamp"
                                                      //   ]
                                                      // } 
 
@@ -121,9 +122,9 @@ const T = Type.Object({                              // const T = {
 //--------------------------------------------------------------------------------------------
 
 type T = Static<typeof T>                            // type T = {
-                                                     //    id: string,
-                                                     //    name: string,
-                                                     //    timestamp: number
+                                                     //   id: string,
+                                                     //   name: string,
+                                                     //   timestamp: number
                                                      // }
 
 //--------------------------------------------------------------------------------------------
@@ -527,20 +528,20 @@ import { Type, Static, TSchema } from '@sinclair/typebox'
 const Nullable = <T extends TSchema>(type: T) => Type.Union([type, Type.Null()])
 
 const T = Nullable(Type.String())                    // const T = {
-                                                     //   "anyOf": [{
-                                                     //      type: 'string'
+                                                     //   anyOf: [{
+                                                     //     type: 'string'
                                                      //   }, {
-                                                     //      type: 'null'
+                                                     //     type: 'null'
                                                      //   }]
                                                      // }
 
 type T = Static<typeof T>                            // type T = string | null
 
 const U = Nullable(Type.Number())                    // const U = {
-                                                     //   "anyOf": [{
-                                                     //      type: 'number'
+                                                     //   anyOf: [{
+                                                     //     type: 'number'
                                                      //   }, {
-                                                     //      type: 'null'
+                                                     //     type: 'null'
                                                      //   }]
                                                      // }
 
@@ -594,7 +595,7 @@ function StringEnum<T extends string[]>(values: [...T]) {
 }
 
 const T = StringEnum(['A', 'B', 'C'])                // const T = {
-                                                     //    enum: ['A', 'B', 'C']
+                                                     //   enum: ['A', 'B', 'C']
                                                      // }
 
 type T = Static<typeof T>                            // type T = 'A' | 'B' | 'C'
@@ -713,7 +714,7 @@ const Vector = Type.Object({
 //
 //--------------------------------------------------------------------------------------------
 
-const ok = ajv.validate(Vector, { 
+const OK = ajv.validate(Vector, { 
     x: 1,
     y: 2,
     z: 3
@@ -726,19 +727,29 @@ Please refer to the official AJV [documentation](https://ajv.js.org/guide/gettin
 
 ### Compiler
 
-TypeBox provides an optimized type compiler that can be used as a runtime type checker in absense of a JSON Schema validator. Note that this compiler is not fully JSON Schema compliant and only permits compilation of TypeBox types where the schema representation is known.
+TypeBox provides an optional type compiler that can be used as a runtime type checker in absense of a JSON Schema validator. Please note that this compiler is not fully JSON Schema compliant and only permits compilation of TypeBox types only where the schema representation is known. The result of a `TypeCompile.Compile(T)` call is a `TypeCheck` object that can be used to test the validity of a value.
 
 ```typescript
 import { TypeCompiler } from '@sinclair/typebox/compiler'
 import { Type } from '@sinclair/typebox'
 
 const T = Type.Object({
-    x: Type.Number(),
-    y: Type.Number(),
-    z: Type.Number()
+  x: Type.Number(),
+  y: Type.Number(),
+  z: Type.Number()
 })
 
 const C = TypeCompiler.Compile(T)
 
-const OK = C.Check({ x: 1, y: 2, z: 3 }) // -> true
+const OK = C.Check({ 
+  x: 1, 
+  y: 2, 
+  z: 3 
+}) // -> true
 ```
+
+<a name="Contribute"></a>
+
+### Contribute
+
+TypeBox is open to community contribution, however please ensure you submit an open issue before submitting your pull request. The TypeBox project does preference open community discussion prior to accepting new features.
