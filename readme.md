@@ -61,8 +61,10 @@ License MIT
 - [Recursive Types](#Recursive-Types)
 - [Generic Types](#Generic-Types)
 - [Unsafe Types](#Unsafe-Types)
+- [Values](#Values)
 - [Strict](#Strict)
 - [Validation](#Validation)
+- [Compiler](#Compiler)
 
 <a name="Example"></a>
 
@@ -596,6 +598,28 @@ const T = StringEnum(['A', 'B', 'C'])                // const T = {
 
 type T = Static<typeof T>                            // type T = 'A' | 'B' | 'C'
 ```
+<a name="Values"></a>
+
+### Values
+
+TypeBox can construct default values for types. TypeBox will create reasonable defaults for each sub type, or generate a values based on the schemas if the `default` option is specified.
+
+```typescript
+import { Value } from '@sinclair/typebox/value'
+import { Type } from '@sinclair/typebox'
+
+const T = Type.Object({
+    x: Type.Number({ default: 1 }),
+    y: Type.Number({ default: 2 }),
+    z: Type.Number()
+})
+
+const V = Value.Create(T)                            // const V = {
+                                                     //   x: 1,
+                                                     //   y: 2,
+                                                     //   z: 0
+                                                     // }
+```
 
 <a name="Strict"></a>
 
@@ -696,3 +720,24 @@ const ok = ajv.validate(Vector, {
 ```
 
 Please refer to the official AJV [documentation](https://ajv.js.org/guide/getting-started.html) for additional information on using AJV.
+
+<a name="Compiler"></a>
+
+### Compiler
+
+TypeBox provides an optimized type compiler that can be used as a runtime type checker in absense of a JSON Schema validator. Note that this compiler is not fully JSON Schema compliant and only permits compilation of TypeBox types where the schema representation is known.
+
+```typescript
+import { TypeCompiler } from '@sinclair/typebox/compiler'
+import { Type } from '@sinclair/typebox'
+
+const T = Type.Object({
+    x: Type.Number(),
+    y: Type.Number(),
+    z: Type.Number()
+})
+
+const C = TypeCompiler.Compile(T)
+
+const OK = C.Check({ x: 1, y: 2, z: 3 }) // -> true
+```
