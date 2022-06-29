@@ -6,12 +6,24 @@ export async function clean() {
     await folder('target').delete()
 }
 
+// -------------------------------------------------------------------------------
+// Format
+// -------------------------------------------------------------------------------
+
 export async function format() {
     await shell('prettier --no-semi --single-quote --print-width 240 --trailing-comma all --write src test')
 }
 
 // -------------------------------------------------------------------------------
-// Specs
+// Start
+// -------------------------------------------------------------------------------
+
+export async function start(target = 'target/example') {
+    await shell(`hammer run example/index.ts --dist ${target}`)
+}
+
+// -------------------------------------------------------------------------------
+// Test
 // -------------------------------------------------------------------------------
 
 export async function test_types() {
@@ -27,14 +39,6 @@ export async function test_schemas() {
 export async function spec() {
     await test_types()
     await test_schemas()
-}
-
-// -------------------------------------------------------------------------------
-// Example
-// -------------------------------------------------------------------------------
-
-export async function example(target = 'target/example') {
-    await shell(`hammer run example/index.ts --dist ${target}`)
 }
 
 // -------------------------------------------------------------------------------

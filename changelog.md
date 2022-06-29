@@ -11,6 +11,7 @@ Added:
 
 - `Type.Unsafe<T>(...)`. This type enables custom schema representations whose static type is informed by generic type T.
 - `Type.Uint8Array(...)`. This is a non-standard schema that can be configured on AJV to able binary buffer range validation.
+- Added optional extended `design` property on all schema options. This property can be used to specify design time metadata when rendering forms.
 
 Compiler:
 

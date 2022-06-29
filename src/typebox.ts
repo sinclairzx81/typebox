@@ -49,14 +49,25 @@ export type TReadonlyOptional<T extends TSchema> = T & { [Modifier]: 'ReadonlyOp
 // Schema
 // --------------------------------------------------------------------------
 
+export interface DesignType {
+  type: string
+  [props: string]: any
+}
+
 export interface SchemaOptions {
   $schema?: string
+  /** Id for this schema */
   $id?: string
+  /** Title of this schema */
   title?: string
+  /** Description of this schema */
   description?: string
+  /** Default value hint for this schema */
   default?: any
+  /** Example values matching this schema. */
   examples?: any
-  design?: any
+  /** Design metadata for this schema */
+  design?: DesignType
   [prop: string]: any
 }
 
@@ -241,7 +252,9 @@ export interface TIntersect<T extends TObject[] = TObject[]> extends TObject {
 // --------------------------------------------------------------------------
 
 type UnionToIntersect<U> = (U extends unknown ? (arg: U) => 0 : never) extends (arg: infer I) => 0 ? I : never
+
 type UnionLast<U> = UnionToIntersect<U extends unknown ? (x: U) => 0 : never> extends (x: infer L) => 0 ? L : never
+
 type UnionToTuple<U, L = UnionLast<U>> = [U] extends [never] ? [] : [...UnionToTuple<Exclude<U, L>>, L]
 
 export type TKeyOf<T extends TObject> = { [K in ObjectPropertyKeys<T>]: TLiteral<K> } extends infer R ? UnionToTuple<R[keyof R]> : never
@@ -283,8 +296,11 @@ export interface TNumber extends TSchema, NumericOptions {
 // --------------------------------------------------------------------------
 
 export type ReadonlyOptionalPropertyKeys<T extends TProperties> = { [K in keyof T]: T[K] extends TReadonlyOptional<TSchema> ? K : never }[keyof T]
+
 export type ReadonlyPropertyKeys<T extends TProperties> = { [K in keyof T]: T[K] extends TReadonly<TSchema> ? K : never }[keyof T]
+
 export type OptionalPropertyKeys<T extends TProperties> = { [K in keyof T]: T[K] extends TOptional<TSchema> ? K : never }[keyof T]
+
 export type RequiredPropertyKeys<T extends TProperties> = keyof Omit<T, ReadonlyOptionalPropertyKeys<T> | ReadonlyPropertyKeys<T> | OptionalPropertyKeys<T>>
 
 export type PropertiesReduce<T extends TProperties, P extends unknown[]> = { readonly [K in ReadonlyOptionalPropertyKeys<T>]?: Static<T[K], P> } & { readonly [K in ReadonlyPropertyKeys<T>]: Static<T[K], P> } & {
@@ -300,6 +316,7 @@ export interface TProperties {
 }
 
 export type ObjectProperties<T> = T extends TObject<infer U> ? U : never
+
 export type ObjectPropertyKeys<T> = T extends TObject<infer U> ? keyof U : never
 
 export interface ObjectOptions extends SchemaOptions {
@@ -479,12 +496,12 @@ export interface TUnion<T extends TSchema[] = TSchema[]> extends TSchema {
 // Uint8Array
 // -------------------------------------------------------------------------
 
-export interface TypedArrayOptions extends SchemaOptions {
+export interface Uint8ArrayOptions extends SchemaOptions {
   maxByteLength?: number
   minByteLength?: number
 }
 
-export interface TUint8Array extends TSchema, TypedArrayOptions {
+export interface TUint8Array extends TSchema, Uint8ArrayOptions {
   [Kind]: 'Uint8Array'
   static: Uint8Array
   specialized: 'Uint8Array'
@@ -811,7 +828,7 @@ export class TypeBuilder {
   }
 
   /** Creates a Uint8Array type */
-  public Uint8Array(options: TypedArrayOptions = {}): TUint8Array {
+  public Uint8Array(options: Uint8ArrayOptions = {}): TUint8Array {
     return this.Create({ ...options, [Kind]: 'Uint8Array', type: 'object', specialized: 'Uint8Array' })
   }
 

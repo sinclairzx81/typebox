@@ -9,27 +9,12 @@ const K = Type.KeyOf(T)
 
 const R = Type.Record(K, Type.String())
 
+const C = Type.Constructor([], Type.String())
 
+type C = Static<typeof C>
 
+const U = Type.Uint8Array({ })
 
-const Node = Type.Recursive(Node => Type.Object({  // const Node = {
-    id:    Type.String(),                          //   $id: "Node",
-    nodes: Type.Array(Node),                       //   type: "object",
-}), { $id: 'Node' })                               //   properties: {
-                                                   //     id: {
-                                                   //       "type": "string"
-                                                   //     },
-                                                   //     nodes: {
-                                                   //       type: "array",
-                                                   //       items: {
-                                                   //         $ref: "Node"
-                                                   //       }
-                                                   //     }
-                                                   //   },
-                                                   //   required: [
-                                                   //     "id",
-                                                   //     "nodes"
-                                                   //   ]
-                                                   // }
+const A = Type.Pick(T, ['x'], {})
 
-console.log(JSON.stringify(Node, null, 2))
+console.log(C)
