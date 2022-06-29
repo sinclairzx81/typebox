@@ -1,6 +1,6 @@
 {
   "name": "@sinclair/typebox",
-  "version": "0.23.5",
+  "version": "0.24.0",
   "description": "JSONSchema Type Builder with Static Type Resolution for TypeScript",
   "keywords": [
     "json-schema",
@@ -19,7 +19,8 @@
   "scripts": {
     "clean": "hammer task clean",
     "build": "hammer task build",
-    "example": "hammer task example",
+    "format": "hammer task format",
+    "start": "hammer task start",
     "spec": "hammer task spec",
     "spec:types": "hammer task spec_types",
     "spec:schemas": "hammer task spec_schemas",
@@ -34,6 +35,7 @@
     "ajv-formats": "^2.1.1",
     "chai": "^4.3.5",
     "mocha": "^9.2.0",
+    "prettier": "^2.7.1",
     "tsd": "^0.19.1",
     "typescript": "^4.5.5"
   }
