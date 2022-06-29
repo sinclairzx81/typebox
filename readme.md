@@ -34,7 +34,7 @@ import { Static, Type } from 'https://deno.land/x/typebox/src/typebox.ts'
 ```typescript
 import { Static, Type } from '@sinclair/typebox'
 
-const T = Type.String()     // const T = { "type": "string" }
+const T = Type.String()     // const T = { type: 'string' }
 
 type T = Static<typeof T>   // type T = string
 ```
