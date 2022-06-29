@@ -485,8 +485,8 @@ Recursive types can be created with the `Type.Recursive(...)` function.
 
 ```typescript
 const Node = Type.Recursive(Node => Type.Object({    // const Node = {
-    id:    Type.String(),                            //   $id: "Node",
-    nodes: Type.Array(Node),                         //   type: "object",
+  id:    Type.String(),                              //   $id: "Node",
+  nodes: Type.Array(Node),                           //   type: "object",
 }), { $id: 'Node' })                                 //   properties: {
                                                      //     id: {
                                                      //       "type": "string"
@@ -510,9 +510,9 @@ type Node = Static<typeof Node>                      // type Node = {
                                                      // }
 
 function visit(node: Node) {
-    for(const inner of node.nodes) {
-        visit(inner) // inner is Node
-    }
+  for(const inner of node.nodes) {
+    visit(inner)
+  }
 }
 ```
 
@@ -552,7 +552,7 @@ type U = Static<typeof U>                            // type U = number | null
 
 ### Unsafe Types
 
-In some cases, you may need schema representations that are not provided by TypeBox. In these scenarios, you may require a custom schema representation with custom type inference rules. The `Type.Unsafe(...)` function provides this functionality, allowing you to specify both schema representation and a static type to infer as. Unsafe types integrate with TypeBox's inference logic. Consider the following which defines a `number` schema, but will infer as a `string`.
+In some cases, you may need schema definitions that are not provided by TypeBox. In these scenarios, it's common to want to define your own schema and static type inference rules. The `Type.Unsafe(...)` function provides this functionality, allowing you to specify both schema representation and a static type to infer. Consider the following which defines a `number` schema, but will infer as a `string`.
 
 ```typescript
 const T = Type.Unsafe<string>({ type: 'number' })    // const T = {
@@ -562,7 +562,7 @@ const T = Type.Unsafe<string>({ type: 'number' })    // const T = {
 type T = Static<typeof T>                            // type T = string
 ```
 
-The `Type.Unsafe(...)` function can be used in combination with function generics to create custom schema representations for validators with specific schema representation rules. An example of which would be OpenAPI's `nullable` and `string-enum` representations which are not provided by TypeBox. The following implements these schemas using the `Type.Unsafe(...)` function.
+The `Type.Unsafe(...)` function can be used with function generics to create custom schema representations for validators requiring specific schema representations. An example of which would be OpenAPI's `nullable` and `string-enum` representations which are not provided by TypeBox by default. The following demonstrates creating these schemas using the `Type.Unsafe(...)` function.
 
 ```typescript
 import { Type, Static, TSchema } from '@sinclair/typebox'
@@ -574,7 +574,7 @@ import { Type, Static, TSchema } from '@sinclair/typebox'
 //--------------------------------------------------------------------------------------------
 
 function Nullable<T extends TSchema>(schema: T) {
-    return Type.Unsafe<Static<T> | null>({ ...schema, nullable: true })
+  return Type.Unsafe<Static<T> | null>({ ...schema, nullable: true })
 }
 
 const T = Nullable(Type.String())                    // const T = {
@@ -591,7 +591,7 @@ type T = Static<typeof T>                            // type T = string | null
 //--------------------------------------------------------------------------------------------
 
 function StringEnum<T extends string[]>(values: [...T]) {
-    return Type.Unsafe<T[number]>({ enum: values })
+  return Type.Unsafe<T[number]>({ enum: values })
 }
 
 const T = StringEnum(['A', 'B', 'C'])                // const T = {
@@ -604,16 +604,16 @@ type T = Static<typeof T>                            // type T = 'A' | 'B' | 'C'
 
 ### Values
 
-TypeBox can construct default values for types. TypeBox will create reasonable defaults for each sub type, or generate a values based on the schemas if the `default` option is specified.
+TypeBox can construct default values for types. TypeBox will create reasonable defaults for any given type, or produce values based on the schemas the `default` value if specified.
 
 ```typescript
 import { Value } from '@sinclair/typebox/value'
-import { Type } from '@sinclair/typebox'
+import { Type }  from '@sinclair/typebox'
 
 const T = Type.Object({
-    x: Type.Number({ default: 1 }),
-    y: Type.Number({ default: 2 }),
-    z: Type.Number()
+  x: Type.Number({ default: 1 }),
+  y: Type.Number({ default: 2 }),
+  z: Type.Number()
 })
 
 const V = Value.Create(T)                            // const V = {
@@ -631,7 +631,7 @@ TypeBox schemas contain the `Kind` and `Modifier` symbol properties. These prope
 
 ```typescript
 const T = Type.Object({                              // const T = {
-    name: Type.Optional(Type.String())               //   [Kind]: 'Object',
+  name: Type.Optional(Type.String())                 //   [Kind]: 'Object',
 })                                                   //   type: 'object',
                                                      //   properties: {
                                                      //     name: {
@@ -680,20 +680,20 @@ import Ajv        from 'ajv'
 //--------------------------------------------------------------------------------------------
 
 const ajv = addFormats(new Ajv({}), [
-    'date-time', 
-    'time', 
-    'date', 
-    'email',  
-    'hostname', 
-    'ipv4', 
-    'ipv6', 
-    'uri', 
-    'uri-reference', 
-    'uuid',
-    'uri-template', 
-    'json-pointer', 
-    'relative-json-pointer', 
-    'regex'
+  'date-time', 
+  'time', 
+  'date', 
+  'email',  
+  'hostname', 
+  'ipv4', 
+  'ipv6', 
+  'uri', 
+  'uri-reference', 
+  'uuid',
+  'uri-template', 
+  'json-pointer', 
+  'relative-json-pointer', 
+  'regex'
 ])
 
 //--------------------------------------------------------------------------------------------
@@ -703,9 +703,9 @@ const ajv = addFormats(new Ajv({}), [
 //--------------------------------------------------------------------------------------------
 
 const Vector = Type.Object({
-    x: Type.Number(),
-    y: Type.Number(),
-    z: Type.Number(),
+  x: Type.Number(),
+  y: Type.Number(),
+  z: Type.Number(),
 }, { additionalProperties: false })
 
 //--------------------------------------------------------------------------------------------
@@ -715,9 +715,9 @@ const Vector = Type.Object({
 //--------------------------------------------------------------------------------------------
 
 const OK = ajv.validate(Vector, { 
-    x: 1,
-    y: 2,
-    z: 3
+  x: 1,
+  y: 2,
+  z: 3
 }) // -> true
 ```
 
