@@ -1,4 +1,4 @@
-## [0.24.0](https://www.npmjs.com/package/@sinclair/typebox/v/0.23.3)
+## [0.24.0](https://www.npmjs.com/package/@sinclair/typebox/v/0.24.0)
 
 Changes:
 
