@@ -1,3 +1,29 @@
+## [0.24.0](https://www.npmjs.com/package/@sinclair/typebox/v/0.23.3)
+
+Changes:
+
+- The `kind` and `modifier` keywords are now expressed as symbol keys. This change allows AJV to leverage TypeBox schemas directly without explicit configuration of `kind` and `modifier` in strict mode.
+- `Type.Intersect([...])` now returns a composite `TObject` instead of a `allOf` schema representation. This change allows intersected types to be leveraged in calls to `Omit`, `Pick`, `Partial`, `Required`.
+- `Type.Void(...)` now generates a `{ type: null }` schema representation. This is principally used for RPC implementations where a RPC target function needs to respond with a serializable value for `void` return.
+- `Type.Rec(...)` renamed to `Type.Recursive(...)` and now supports non-mutual recursive type inference.
+
+Added:
+
+- `Type.Unsafe<T>(...)`. This type enables custom schema representations whose static type is informed by generic type T.
+- `Type.Uint8Array(...)`. This is a non-standard schema that can be configured on AJV to able binary buffer range validation.
+
+Compiler:
+
+- TypeBox now provides an optional experimental type compiler that can be used to validate types without AJV. This compiler is not a standard JSON schema compiler and will only compile TypeBox's known schema representations. For full JSON schema validation, AJV should still be the preference. This compiler is a work in progress.
+
+Value:
+
+- TypeBox now provides a value generator that can generate default values from TypeBox types.
+
+Breaking Changes:
+
+- `Type.Intersect(...)` is constrained to accept types of `TObject` only.
+
 ## [0.23.3](https://www.npmjs.com/package/@sinclair/typebox/v/0.23.3)
 
 Updates:
