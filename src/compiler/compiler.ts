@@ -32,15 +32,7 @@ import * as Types from '../typebox'
 // CheckFunction
 // -----------------------------------------------------
 
-export type CheckFunction = (value: unknown) => CheckOk | CheckFail
-
-export interface CheckOk {
-  ok: true
-}
-
-export interface CheckFail {
-  ok: false
-}
+export type CheckFunction = (value: unknown) => boolean
 
 // -------------------------------------------------------------------
 // TypeCheck
@@ -61,8 +53,7 @@ export class TypeCheck<T extends Types.TSchema> {
 
   /** Returns true if the value is valid. */
   public Check(value: unknown): value is Types.Static<T> {
-    const result = this.checkFunc(value)
-    return result.ok
+    return this.checkFunc(value)
   }
 
   /** Asserts the given value and throws a TypeCheckAssertError if invalid. */
@@ -70,8 +61,7 @@ export class TypeCheck<T extends Types.TSchema> {
     // The return type for this function should be 'asserts value is Static<T>' but due
     // to a limitation in TypeScript, this currently isn't possible. See issue below.
     // https://github.com/microsoft/TypeScript/issues/36931
-    const result = this.checkFunc(value)
-    if (!result.ok) throw new TypeCheckAssertError(this.schema, value)
+    if (!this.checkFunc(value)) throw new TypeCheckAssertError(this.schema, value)
   }
 }
 
@@ -203,12 +193,12 @@ export namespace TypeCompiler {
       PushLocal(body)
     }
     const func = CreateFunctionName(schema.$ref)
-    yield CreateCondition(schema, path, `(${func}(${path}).ok)`)
+    yield CreateCondition(schema, path, `(${func}(${path}))`)
   }
 
   function* Self(schema: Types.TSelf, path: string): Generator<Condition> {
     const func = CreateFunctionName(schema.$ref)
-    yield CreateCondition(schema, path, `(${func}(${path}).ok)`)
+    yield CreateCondition(schema, path, `(${func}(${path}))`)
   }
 
   function* String(schema: Types.TString, path: string): Generator<Condition> {
@@ -262,7 +252,7 @@ export namespace TypeCompiler {
       const name = CreateFunctionName(schema.$id)
       const body = CreateFunction(name, conditions)
       PushLocal(body)
-      yield CreateCondition(schema, path, `(${name}(${path}).ok)`)
+      yield CreateCondition(schema, path, `(${name}(${path}))`)
       return
     }
 
@@ -355,8 +345,8 @@ export namespace TypeCompiler {
   }
 
   function CreateFunction(name: string, conditions: Condition[]) {
-    const statements = conditions.map((condition, index) => `  if(!${condition.expr}) { return { ok: false } }`)
-    return `function ${name}(value) {\n${statements.join('\n')}\n  return { ok: true }\n}`
+    const statements = conditions.map((condition, index) => `  if(!${condition.expr}) { return false }`)
+    return `function ${name}(value) {\n${statements.join('\n')}\n  return true\n}`
   }
 
   // -------------------------------------------------------------------

@@ -1,5 +1,4 @@
-import { Type, Static } from '@sinclair/typebox'
-import { Value } from '@sinclair/typebox/value'
+import { Type } from '@sinclair/typebox'
 import { TypeCompiler } from '@sinclair/typebox/compiler'
 
 const T = Type.Object({
@@ -7,7 +6,7 @@ const T = Type.Object({
     y: Type.Number(),
 })
 
-const Check = TypeCompiler.Compile(T)
+const C = TypeCompiler.Compile(T)
 
 
 

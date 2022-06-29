@@ -1,11 +1,5 @@
 import * as Types from '../typebox';
-export declare type CheckFunction = (value: unknown) => CheckOk | CheckFail;
-export interface CheckOk {
-    ok: true;
-}
-export interface CheckFail {
-    ok: false;
-}
+export declare type CheckFunction = (value: unknown) => boolean;
 export declare class TypeCheckAssertError extends Error {
     readonly schema: Types.TSchema;
     readonly value: unknown;

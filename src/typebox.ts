@@ -187,30 +187,6 @@ export interface TEnum<T extends Record<string, string | number> = Record<string
 }
 
 // --------------------------------------------------------------------------
-// Exclude
-// --------------------------------------------------------------------------
-
-export interface TExclude<T extends TUnion, U extends TUnion> extends TUnion {
-  [Kind]: 'Union'
-  static: Exclude<Static<T, this['params']>, Static<U, this['params']>>
-}
-
-// --------------------------------------------------------------------------
-// Extract
-// --------------------------------------------------------------------------
-
-export interface TExtract<T extends TSchema, U extends TUnion> extends TUnion {
-  [Kind]: 'Union'
-  static: Extract<Static<T, this['params']>, Static<U, this['params']>>
-}
-
-// --------------------------------------------------------------------------
-// Extends
-// --------------------------------------------------------------------------
-
-export type TExtends<T extends TSchema, U extends TSchema, X extends TSchema, Y extends TSchema> = T extends TAny ? (U extends TUnknown ? X : U extends TAny ? X : TUnion<[X, Y]>) : T extends U ? X : Y
-
-// --------------------------------------------------------------------------
 // Function
 // --------------------------------------------------------------------------
 
