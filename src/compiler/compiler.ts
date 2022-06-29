@@ -29,8 +29,10 @@ THE SOFTWARE.
 import * as Types from '../typebox'
 
 // -----------------------------------------------------
-// Compiler Function
+// CheckFunction
 // -----------------------------------------------------
+
+export type CheckFunction = (value: unknown) => CheckOk | CheckFail
 
 export interface CheckOk {
   ok: true
@@ -38,12 +40,45 @@ export interface CheckOk {
 
 export interface CheckFail {
   ok: false
-  expr: string
-  path: string
-  kind: string
 }
 
-export type CheckFunction = (value: unknown) => CheckOk | CheckFail
+// -------------------------------------------------------------------
+// TypeCheck
+// -------------------------------------------------------------------
+
+export class TypeCheckAssertError extends Error {
+  public readonly schema: Types.TSchema
+  public readonly value: unknown
+  constructor(schema: Types.TSchema, value: unknown) {
+    super(`TypeCheckAssertError`)
+    this.schema = Types.Type.Strict(schema)
+    this.value = value
+  }
+}
+
+export class TypeCheck<T extends Types.TSchema> {
+  constructor(private readonly schema: T, private readonly checkFunc: CheckFunction) {}
+
+  /** Returns true if the value is valid. */
+  public Check(value: unknown): value is Types.Static<T> {
+    const result = this.checkFunc(value)
+    return result.ok
+  }
+
+  /** Asserts the given value and throws a TypeCheckAssertError if invalid. */
+  public Assert(value: unknown): void {
+    // The return type for this function should be 'asserts value is Static<T>' but due
+    // to a limitation in TypeScript, this currently isn't possible. See issue below.
+    //
+    // https://github.com/microsoft/TypeScript/issues/36931
+    const result = this.checkFunc(value)
+    if (!result.ok) throw new TypeCheckAssertError(this.schema, value)
+  }
+}
+
+// -------------------------------------------------------------------
+// TypeCompiler
+// -------------------------------------------------------------------
 
 export namespace TypeCompiler {
   // -------------------------------------------------------------------
@@ -321,7 +356,7 @@ export namespace TypeCompiler {
   }
 
   function CreateFunction(name: string, conditions: Condition[]) {
-    const statements = conditions.map((condition, index) => `  if(!${condition.expr}) { return { ok: false, path: '${condition.path}', data: ${condition.path} } }`)
+    const statements = conditions.map((condition, index) => `  if(!${condition.expr}) { return { ok: false } }`)
     return `function ${name}(value) {\n${statements.join('\n')}\n  return { ok: true }\n}`
   }
 
@@ -329,8 +364,7 @@ export namespace TypeCompiler {
   // Compiler
   // -------------------------------------------------------------------
 
-  /** Returns the validation kernel as a string. This function is primarily used for debugging. */
-  export function Kernel<T extends Types.TSchema>(schema: T, additional: Types.TSchema[] = []): string {
+  function Build<T extends Types.TSchema>(schema: T, additional: Types.TSchema[] = []): string {
     ClearLocals()
     PushReferences(additional)
     const conditions = [...Visit(schema, 'value')] // locals populated during yield
@@ -339,9 +373,9 @@ export namespace TypeCompiler {
   }
 
   /** Compiles a type into validation function */
-  export function Compile<T extends Types.TSchema>(schema: T, additional: Types.TSchema[] = []): CheckFunction {
-    const kernel = Kernel(schema, additional)
-    const func = globalThis.Function(kernel)
-    return func()
+  export function Compile<T extends Types.TSchema>(schema: T, additional: Types.TSchema[] = []): TypeCheck<T> {
+    const code = Build(schema, additional)
+    const func = globalThis.Function(code)
+    return new TypeCheck(schema, func())
   }
 }

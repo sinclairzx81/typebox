@@ -2,13 +2,9 @@ import { TSchema } from '@sinclair/typebox'
 import { TypeCompiler } from '@sinclair/typebox/compiler'
 
 export function ok<T extends TSchema>(schema: T, data: unknown, additional: any[] = []) {
-  const validator = TypeCompiler.Compile(schema, additional)
-  const result = validator(data)
-  if (!result.ok) {
-    console.log('---------------------------')
-    console.log('kernel')
-    console.log('---------------------------')
-    console.log(TypeCompiler.Kernel(schema))
+  const C = TypeCompiler.Compile(schema, additional)
+  const result = C.Check(data)
+  if (!result) {
     console.log('---------------------------')
     console.log('type')
     console.log('---------------------------')
@@ -26,13 +22,9 @@ export function ok<T extends TSchema>(schema: T, data: unknown, additional: any[
 }
 
 export function fail<T extends TSchema>(schema: T, data: unknown, additional: any[] = []) {
-  const validator = TypeCompiler.Compile(schema, additional)
-  const result = validator(data)
-  if (result.ok) {
-    console.log('---------------------------')
-    console.log('kernel')
-    console.log('---------------------------')
-    console.log(TypeCompiler.Kernel(schema))
+  const C = TypeCompiler.Compile(schema, additional)
+  const result = C.Check(data)
+  if (result) {
     console.log('---------------------------')
     console.log('type')
     console.log('---------------------------')

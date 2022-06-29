@@ -765,7 +765,7 @@ export class TypeBuilder {
 
   /** Creates a reference schema */
   public Ref<T extends TSchema>(schema: T, options: SchemaOptions = {}): TRef<T> {
-    if (schema.$id === undefined) throw Error('Cannot reference schema as it has no Id')
+    if (schema.$id === undefined) throw Error('Cannot create reference schema as target schema as has no $id')
     return this.Create({ ...options, [Kind]: 'Ref', $ref: schema.$id! })
   }
 
