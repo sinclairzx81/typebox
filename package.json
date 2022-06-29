@@ -18,13 +18,11 @@
   },
   "scripts": {
     "clean": "hammer task clean",
-    "build": "hammer task build",
     "format": "hammer task format",
     "start": "hammer task start",
-    "spec": "hammer task spec",
-    "spec:types": "hammer task spec_types",
-    "spec:schemas": "hammer task spec_schemas",
-    "test": "npm run spec"
+    "test": "hammer task test",
+    "build": "hammer task build",
+    "publish": "hammer task publish"
   },
   "devDependencies": {
     "@sinclair/hammer": "^0.16.3",

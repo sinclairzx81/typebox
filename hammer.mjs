@@ -1,3 +1,5 @@
+import { readFileSync } from 'fs'
+
 // -------------------------------------------------------------------------------
 // Clean
 // -------------------------------------------------------------------------------
@@ -36,7 +38,7 @@ export async function test_schemas() {
     await shell(`mocha target/test/runtime/index.js`)
 }
 
-export async function spec() {
+export async function test() {
     await test_types()
     await test_schemas()
 }
@@ -46,15 +48,23 @@ export async function spec() {
 // -------------------------------------------------------------------------------
 
 export async function build(target = 'target/build') {
-    await spec()
+    await test()
     await folder(target).delete()
     await shell(`tsc -p ./src/tsconfig.json --outDir ${target}`)
     await folder(target).add('package.json')
     await folder(target).add('readme.md')
     await folder(target).add('license')
     await shell(`cd ${target} && npm pack`)
+}
 
-    // $ npm publish sinclair-typebox-0.x.x.tgz --access=public
-    // $ git tag <version>
-    // $ git push origin <version>
+
+// -------------------------------------------------------------
+// Publish
+// -------------------------------------------------------------
+
+export async function publish(otp, target = 'target/build') {
+    const { version } = JSON.parse(readFileSync('package.json', 'utf8'))
+    // await shell(`cd ${target} && npm publish sinclair-typebox-${version}.tgz --access=public --otp ${otp}`)
+    // await shell(`git tag ${version}`)
+    // await shell(`git push origin ${version}`)
 }
