@@ -69,7 +69,6 @@ export class TypeCheck<T extends Types.TSchema> {
   public Assert(value: unknown): void {
     // The return type for this function should be 'asserts value is Static<T>' but due
     // to a limitation in TypeScript, this currently isn't possible. See issue below.
-    //
     // https://github.com/microsoft/TypeScript/issues/36931
     const result = this.checkFunc(value)
     if (!result.ok) throw new TypeCheckAssertError(this.schema, value)
