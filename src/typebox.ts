@@ -540,6 +540,7 @@ export interface TVoid extends TSchema {
 // Static<T>
 // --------------------------------------------------------------------------
 
+/** Creates a static type from a TypeBox type */
 export type Static<T extends TSchema, P extends unknown[] = []> = (T & { params: P })['static']
 
 // --------------------------------------------------------------------------
