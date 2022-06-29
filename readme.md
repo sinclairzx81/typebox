@@ -727,7 +727,7 @@ Please refer to the official AJV [documentation](https://ajv.js.org/guide/gettin
 
 ### Compiler
 
-TypeBox provides an optional type compiler that can be used as a runtime type checker in absense of a JSON Schema validator. Please note that this compiler is not fully JSON Schema compliant and only permits compilation of TypeBox types only where the schema representation is known. The result of a `TypeCompile.Compile(T)` call is a `TypeCheck` object that can be used to test the validity of a value.
+TypeBox provides an optional type compiler that can be used as a runtime type checker in absense of a JSON Schema validator. Please note that this compiler is not fully JSON Schema compliant and only permits compilation of TypeBox types only (where the schema representation is known in advance). The `TypeCompiler` contains a `TypeCompiler.Compile(T)` method that returns a `TypeCheck<T>` object that can be used to test the validity of a value.
 
 ```typescript
 import { TypeCompiler } from '@sinclair/typebox/compiler'
