@@ -266,8 +266,11 @@ export interface TUnknown extends TSchema {
     [Kind]: 'Unknown';
     static: unknown;
 }
+export interface UnsafeOptions extends SchemaOptions {
+    [Kind]?: string;
+}
 export interface TUnsafe<T> extends TSchema {
-    [Kind]: 'Unknown';
+    [Kind]: string;
     static: T;
 }
 export interface TVoid extends TSchema {
@@ -347,7 +350,7 @@ export declare class TypeBuilder {
     /** Creates an unknown type */
     Unknown(options?: SchemaOptions): TUnknown;
     /** Creates a user defined schema that infers as type T  */
-    Unsafe<T>(options?: SchemaOptions): TUnsafe<T>;
+    Unsafe<T>(options?: UnsafeOptions): TUnsafe<T>;
     /** Creates a void type */
     Void(options?: SchemaOptions): TVoid;
     /** Use this function to return TSchema with static and params omitted */

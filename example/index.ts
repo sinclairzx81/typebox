@@ -1,13 +1,8 @@
-import { Type } from '@sinclair/typebox'
-import { TypeCompiler } from '@sinclair/typebox/compiler'
+import { Type, Kind } from '@sinclair/typebox'
 
-const T = Type.Object({
-    x: Type.Number(),
-    y: Type.Number(),
-})
+const T = Type.Unsafe<string>({ [Kind]: 'Custom' })
 
-const C = TypeCompiler.Compile(T)
-
+console.log(T)
 
 
 

@@ -497,8 +497,12 @@ export interface TUnknown extends TSchema {
 // Unsafe
 // --------------------------------------------------------------------------
 
+export interface UnsafeOptions extends SchemaOptions {
+  [Kind]?: string
+}
+
 export interface TUnsafe<T> extends TSchema {
-  [Kind]: 'Unknown'
+  [Kind]: string
   static: T
 }
 
@@ -815,8 +819,8 @@ export class TypeBuilder {
   }
 
   /** Creates a user defined schema that infers as type T  */
-  public Unsafe<T>(options: SchemaOptions = {}): TUnsafe<T> {
-    return this.Create({ ...options, [Kind]: 'Unknown' })
+  public Unsafe<T>(options: UnsafeOptions = {}): TUnsafe<T> {
+    return this.Create({ ...options, [Kind]: options[Kind] || 'Unsafe' })
   }
 
   /** Creates a void type */

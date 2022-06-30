@@ -13,7 +13,6 @@ describe('type/compiler/Intersect', () => {
     const A = Type.Partial(Type.Object({ a: Type.Number() }))
     const B = Type.Partial(Type.Object({ b: Type.Number() }))
     const P = Type.Intersect([A, B], { additionalProperties: false })
-    console.log(P)
     ok(P, { a: 1, b: 2 })
     // ok(P, { a: 1 })
     // ok(P, { b: 1 })
