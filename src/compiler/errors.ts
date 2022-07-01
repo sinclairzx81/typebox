@@ -133,11 +133,15 @@ export namespace TypeErrors {
     }
     const propertyKeys = globalThis.Object.keys(schema.properties)
     if (schema.additionalProperties === false) {
+      // optimization: If the property key length matches the required keys length
+      // then we only need check that the values property key length matches that
+      // of the property key length. This is because exhaustive testing for values
+      // will occur in subsequent property tests.
       if (schema.required && schema.required.length === propertyKeys.length && !(globalThis.Object.keys(value).length === propertyKeys.length)) {
-        yield { schema, path, value, message: 'Expected object is missing required properties' }
+        yield { schema, path, value, message: 'Expected object must not have additional properties' }
       } else {
         if (!globalThis.Object.keys(value).every((key) => propertyKeys.includes(key))) {
-          yield { schema, path, value, message: 'Expected object ambigious' }
+          yield { schema, path, value, message: 'Expected object must not have additional properties' }
         }
       }
     }
@@ -166,7 +170,8 @@ export namespace TypeErrors {
     const [keyPattern, valueSchema] = globalThis.Object.entries(schema.patternProperties)[0]
     const regex = new RegExp(keyPattern)
     if (!globalThis.Object.keys(value).every((key) => regex.test(key))) {
-      return yield { schema, path, value, message: `Expected property keys to match '${keyPattern}'` }
+      const message = keyPattern === '^(0|[1-9][0-9]*)$' ? 'Expected all object property keys to be numeric' : 'Expected all object property keys to be strings'
+      return yield { schema, path, value, message }
     }
     for (const [propKey, propValue] of globalThis.Object.entries(value)) {
       yield* Visit(valueSchema, `${path}/${propKey}`, propValue)
@@ -220,7 +225,7 @@ export namespace TypeErrors {
   }
 
   function* Undefined(schema: Types.TUndefined, path: string, value: any): Generator<TypeError> {
-    if (!value === undefined) {
+    if (!(value === undefined)) {
       yield { schema, path, value, message: `Expected undefined` }
     }
   }
