@@ -727,7 +727,7 @@ Please refer to the official AJV [documentation](https://ajv.js.org/guide/gettin
 
 ### Compiler
 
-TypeBox include a specialized type compiler that can be used as a runtime type checker in absense of a JSON Schema validator. This compiler is optimized for high throughput validation scenarios and generally performs better than AJV for most structural checks. Please note that this compiler is not fully JSON Schema compliant and is limited to TypeBox types only. The `TypeCompiler` contains a `Compile(T)` function that returns a `TypeCheck<T>` object that can be used to test the validity of a value as well as obtain errors.
+TypeBox includes a specialized type compiler that can be used as a runtime type checker in absense of a JSON Schema validator. This compiler is optimized for high throughput validation scenarios and generally performs better than AJV for most structural checks. Please note that this compiler is not fully JSON Schema compliant and is limited to TypeBox types only. The `TypeCompiler` contains a `Compile(T)` function that returns a `TypeCheck<T>` object that can be used to test the validity of a value as well as obtain errors.
 
 ```typescript
 import { TypeCompiler } from '@sinclair/typebox/compiler'
