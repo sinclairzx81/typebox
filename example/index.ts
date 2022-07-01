@@ -1,27 +1,27 @@
-import { TypeCompiler } from 'src/compiler/compiler'
-import { Type, Kind } from '@sinclair/typebox'
-
-const V = Type.Object({
-    a: Type.Number({ minimum: 1, maximum: 100 }),
-    b: Type.Number({ minimum: 1, maximum: 100 }),
-    c: Type.Number({ minimum: 1, maximum: 100 }),
-}, { $id: 'V' })
-
-const R = Type.Ref(V)
+import { TypeCompiler } from '@sinclair/typebox/compiler'
+import { Type } from '@sinclair/typebox'
 
 const T = Type.Object({
-    a: Type.Number({ minimum: 1, maximum: 100 }),
-    b: Type.Number({ minimum: 1, maximum: 100 }),
-    c: Type.Number({ minimum: 1, maximum: 100 }),
-    r: R,
-    node: Type.Recursive(Node => Type.Object({
-        rs: Type.Array(Node)
-    }), { $id: 'Node'})
+    x: Type.Number({ }),
+    y: Type.Number({ }),
+    z: Type.Number({ }),
 })
 
-const C = TypeCompiler.Compile(T, [V])
+const C = TypeCompiler.Compile(T)
 
-console.log(C.Code())
+const V = {
+    x: 1,
+    y: 1,
+    z: '1'
+}
+
+if (!C.Check(V)) {
+    for (const error of C.Errors(V)) {
+        console.log(error.path, error.message, error.schema)
+    }
+}
+
+
 
 
 

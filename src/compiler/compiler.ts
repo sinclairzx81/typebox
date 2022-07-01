@@ -26,6 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { TypeErrors, TypeError } from './errors'
 import * as Types from '../typebox'
 
 // -------------------------------------------------------------------
@@ -38,32 +39,22 @@ export type CheckFunction = (value: unknown) => boolean
 // TypeCheck
 // -------------------------------------------------------------------
 
-export class TypeCheckAssertError extends Error {
-  public readonly schema: Types.TSchema
-  public readonly value: unknown
-  constructor(schema: Types.TSchema, value: unknown) {
-    super(`TypeCheckAssertError`)
-    this.schema = Types.Type.Strict(schema)
-    this.value = value
-  }
-}
-
 export class TypeCheck<T extends Types.TSchema> {
-  constructor(private readonly schema: T, private readonly checkFunc: CheckFunction, private readonly code: string) {}
+  constructor(private readonly schema: T, private readonly additional: Types.TSchema[], private readonly checkFunc: CheckFunction, private readonly code: string) {}
 
-  /** Returns the compiled validation code used to check this type. */
+  /** Returns the generated validation code used to validate this type */
   public Code(): string {
     return this.code
   }
 
-  /** Returns true if the value is valid. */
-  public Check(value: unknown): value is Types.Static<T> {
-    return this.checkFunc(value)
+  /** Returns an iterator for each type error found in this value */
+  public Errors(value: unknown): Generator<TypeError> {
+    return TypeErrors.Errors(this.schema, this.additional, value)
   }
 
-  /** Asserts the given value and throws a TypeCheckAssertError if invalid. */
-  public Assert(value: unknown): void {
-    if (!this.checkFunc(value)) throw new TypeCheckAssertError(this.schema, value)
+  /** Returns true if the value matches the given type. */
+  public Check(value: unknown): value is Types.Static<T> {
+    return this.checkFunc(value)
   }
 }
 
@@ -100,7 +91,7 @@ export namespace TypeCompiler {
   function* Integer(schema: Types.TNumeric, path: string): Generator<string> {
     yield `(typeof ${path} === 'number' && Number.isInteger(${path}))`
     if (schema.multipleOf) yield `(${path} % ${schema.multipleOf} === 0)`
-    if (schema.exclusiveMinimum) yield `(${path} < ${schema.exclusiveMinimum})`
+    if (schema.exclusiveMinimum) yield `(${path} > ${schema.exclusiveMinimum})`
     if (schema.exclusiveMaximum) yield `(${path} < ${schema.exclusiveMaximum})`
     if (schema.minimum) yield `(${path} >= ${schema.minimum})`
     if (schema.maximum) yield `(${path} <= ${schema.maximum})`
@@ -121,7 +112,7 @@ export namespace TypeCompiler {
   function* Number(schema: Types.TNumeric, path: string): Generator<string> {
     yield `(typeof ${path} === 'number')`
     if (schema.multipleOf) yield `(${path} % ${schema.multipleOf} === 0)`
-    if (schema.exclusiveMinimum) yield `(${path} < ${schema.exclusiveMinimum})`
+    if (schema.exclusiveMinimum) yield `(${path} > ${schema.exclusiveMinimum})`
     if (schema.exclusiveMaximum) yield `(${path} < ${schema.exclusiveMaximum})`
     if (schema.minimum) yield `(${path} >= ${schema.minimum})`
     if (schema.maximum) yield `(${path} <= ${schema.maximum})`
@@ -296,7 +287,7 @@ export namespace TypeCompiler {
   // -------------------------------------------------------------------
   // Locals
   // -------------------------------------------------------------------
-  
+
   const referenceMap = new Map<string, Types.TSchema>()
   const functionLocals = new Set<string>()
   const functionNames = new Set<string>()
@@ -354,6 +345,6 @@ export namespace TypeCompiler {
   export function Compile<T extends Types.TSchema>(schema: T, additional: Types.TSchema[] = []): TypeCheck<T> {
     const code = Build(schema, additional)
     const func = globalThis.Function(code)
-    return new TypeCheck(schema, func(), code)
+    return new TypeCheck(schema, additional, func(), code)
   }
 }

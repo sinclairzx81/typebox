@@ -1,21 +1,18 @@
+import { TypeError } from './errors';
 import * as Types from '../typebox';
 export declare type CheckFunction = (value: unknown) => boolean;
-export declare class TypeCheckAssertError extends Error {
-    readonly schema: Types.TSchema;
-    readonly value: unknown;
-    constructor(schema: Types.TSchema, value: unknown);
-}
 export declare class TypeCheck<T extends Types.TSchema> {
     private readonly schema;
+    private readonly additional;
     private readonly checkFunc;
     private readonly code;
-    constructor(schema: T, checkFunc: CheckFunction, code: string);
-    /** Returns the compiled validation code used to check this type. */
+    constructor(schema: T, additional: Types.TSchema[], checkFunc: CheckFunction, code: string);
+    /** Returns the generated validation code used to validate this type */
     Code(): string;
-    /** Returns true if the value is valid. */
+    /** Returns an iterator for each type error found in this value */
+    Errors(value: unknown): Generator<TypeError>;
+    /** Returns true if the value matches the given type. */
     Check(value: unknown): value is Types.Static<T>;
-    /** Asserts the given value and throws a TypeCheckAssertError if invalid. */
-    Assert(value: unknown): void;
 }
 export declare namespace TypeCompiler {
     /** Compiles the given type for runtime type checking. This compiler only accepts known TypeBox types non-inclusive of unsafe types. */

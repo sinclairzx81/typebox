@@ -727,7 +727,7 @@ Please refer to the official AJV [documentation](https://ajv.js.org/guide/gettin
 
 ### Compiler
 
-TypeBox provides an optional type compiler that can be used as a runtime type checker in absense of a JSON Schema validator. Please note that this compiler is not fully JSON Schema compliant and only permits compilation of TypeBox types only (where the schema representation is known in advance). The `TypeCompiler` contains a `TypeCompiler.Compile(T)` method that returns a `TypeCheck<T>` object that can be used to test the validity of a value.
+TypeBox include a specialized type compiler that can be used as a runtime type checker in absense of a JSON Schema validator. This compiler is optimized for high throughput validation scenarios and generally performs better than AJV for most structural checks. Please note that this compiler is not fully JSON Schema compliant and is limited to TypeBox types only. The `TypeCompiler` contains a `Compile(T)` function that returns a `TypeCheck<T>` object that can be used to test the validity of a value as well as obtain errors.
 
 ```typescript
 import { TypeCompiler } from '@sinclair/typebox/compiler'
@@ -746,6 +746,37 @@ const OK = C.Check({
   y: 2, 
   z: 3 
 }) // -> true
+```
+Errors can be obtained by calling the `Errors(...)` function. This function returns an iterator that may contain zero or more errors for the given value. For performance, you should only call `Errors(V)` if the `Check(V)` function returns false. 
+```typescript
+const C = TypeCompiler.Compile(Type.Object({
+  x: Type.Number(),
+  y: Type.Number(),
+  z: Type.Number()
+}))
+
+const V = { } // invalid
+
+if(!C.Check(V)) {
+  for(const error of C.Errors(V)) {
+    console.log(error)
+  }
+}
+```
+To inspect the generated validation code created by the compiler. You can call the `Code()` function on the `TypeCheck<T>` object.
+
+```typescript
+const C = TypeCompiler.Compile(Type.String())
+
+console.log(C.Code())
+//
+// outputs:
+//
+// return function check(value) {
+//   return (
+//     (typeof value === 'string')
+//  )
+// }
 ```
 
 <a name="Contribute"></a>
