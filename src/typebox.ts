@@ -609,7 +609,6 @@ export class TypeBuilder {
     const properties = {} as Record<string, any>
     for (const object of objects) {
       for (const [key, schema] of Object.entries(object.properties)) {
-        delete schema[Modifier]
         properties[key] = properties[key] === undefined ? schema : { [Kind]: 'Union', anyOf: [properties[key], { ...schema }] }
       }
     }

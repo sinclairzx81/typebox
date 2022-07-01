@@ -1,4 +1,5 @@
 import { Type } from '@sinclair/typebox'
+import { Assert } from '../assert'
 import { ok, fail } from './validate'
 
 describe('type/schema/Intersect', () => {
@@ -79,5 +80,15 @@ describe('type/schema/Intersect', () => {
     ok(T, { x: { x: 1 } })
     ok(T, { x: { x: 'hello' } })
     fail(T, { x: { x: false } })
+  })
+
+  // todo: move to composition / type guard spec
+  it('Should intersect and produce the same schema', () => {
+    const T = Type.Object({
+      field: Type.Optional(Type.String()),
+    })
+    const A = Type.Intersect([T])
+    const B = Type.Intersect([T])
+    Assert.deepEqual(A, B)
   })
 })
