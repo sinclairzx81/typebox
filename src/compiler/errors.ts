@@ -28,14 +28,11 @@ THE SOFTWARE.
 
 import * as Types from '../typebox'
 
-// -------------------------------------------------------------------
-// TypeErrors
-// -------------------------------------------------------------------
-
 export interface TypeError {
   schema: Types.TSchema
   path: string
   value: unknown
+  message: string
 }
 
 export namespace TypeErrors {
@@ -43,7 +40,7 @@ export namespace TypeErrors {
 
   function* Array(schema: Types.TArray, path: string, value: any): Generator<TypeError> {
     if (!globalThis.Array.isArray(value)) {
-      return yield { schema, path, value }
+      return yield { schema, path, value, message: `Expected array` }
     }
     for (let i = 0; i < value.length; i++) {
       yield* Visit(schema.items, `${path}/${i}`, value[i])
@@ -52,7 +49,7 @@ export namespace TypeErrors {
 
   function* Boolean(schema: Types.TBoolean, path: string, value: any): Generator<TypeError> {
     if (!(typeof value === 'boolean')) {
-      return yield { schema, path, value }
+      return yield { schema, path, value, message: `Expected boolean` }
     }
   }
 
@@ -62,81 +59,85 @@ export namespace TypeErrors {
 
   function* Function(schema: Types.TFunction, path: string, value: any): Generator<TypeError> {
     if (!(typeof value === 'function')) {
-      return yield { schema, path, value }
+      return yield { schema, path, value, message: `Expected function` }
     }
   }
 
   function* Integer(schema: Types.TNumeric, path: string, value: any): Generator<TypeError> {
-    if (!(typeof value === 'number' && globalThis.Number.isInteger(value))) {
-      return yield { schema, path, value }
+    if (!(typeof value === 'number')) {
+      return yield { schema, path, value, message: `Expected number` }
+    }
+    if (!globalThis.Number.isInteger(value)) {
+      yield { schema, path, value, message: `Expected integer` }
     }
     if (schema.multipleOf && !(value % schema.multipleOf === 0)) {
-      yield { schema, path, value }
+      yield { schema, path, value, message: `Expected number to be a multiple of ${schema.multipleOf}` }
     }
     if (schema.exclusiveMinimum && !(value > schema.exclusiveMinimum)) {
-      yield { schema, path, value }
+      yield { schema, path, value, message: `Expected number to be greater than ${schema.exclusiveMinimum}` }
     }
     if (schema.exclusiveMaximum && !(value < schema.exclusiveMaximum)) {
-      yield { schema, path, value }
+      yield { schema, path, value, message: `Expected number to be less than ${schema.exclusiveMaximum}` }
     }
     if (schema.minimum && !(value >= schema.minimum)) {
-      yield { schema, path, value }
+      yield { schema, path, value, message: `Expected number to be greater or equal to ${schema.minimum}` }
     }
     if (schema.maximum && !(value <= schema.maximum)) {
-      yield { schema, path, value }
+      yield { schema, path, value, message: `Expected number to be less or equal to ${schema.maximum}` }
     }
   }
 
   function* Literal(schema: Types.TLiteral, path: string, value: any): Generator<TypeError> {
     if (!(value === schema.const)) {
-      return yield { schema, path, value }
+      const error = typeof schema.const === 'string' ? `'${schema.const}'` : schema.const
+      return yield { schema, path, value, message: `Expected ${error}` }
     }
   }
 
   function* Null(schema: Types.TNull, path: string, value: any): Generator<TypeError> {
     if (!(value === null)) {
-      return yield { schema, path, value }
+      return yield { schema, path, value, message: `Expected null` }
     }
   }
 
   function* Number(schema: Types.TNumeric, path: string, value: any): Generator<TypeError> {
     if (!(typeof value === 'number')) {
-      return yield { schema, path, value }
+      return yield { schema, path, value, message: `Expected number` }
     }
     if (schema.multipleOf && !(value % schema.multipleOf === 0)) {
-      yield { schema, path, value }
+      yield { schema, path, value, message: `Expected number to be a multiple of ${schema.multipleOf}` }
     }
     if (schema.exclusiveMinimum && !(value > schema.exclusiveMinimum)) {
-      yield { schema, path, value }
+      yield { schema, path, value, message: `Expected number to be greater than ${schema.exclusiveMinimum}` }
     }
     if (schema.exclusiveMaximum && !(value < schema.exclusiveMaximum)) {
-      yield { schema, path, value }
+      yield { schema, path, value, message: `Expected number to be less than ${schema.exclusiveMaximum}` }
     }
     if (schema.minimum && !(value >= schema.minimum)) {
-      yield { schema, path, value }
+      yield { schema, path, value, message: `Expected number to be greater or equal to ${schema.minimum}` }
     }
     if (schema.maximum && !(value <= schema.maximum)) {
-      yield { schema, path, value }
+      yield { schema, path, value, message: `Expected number to be less or equal to ${schema.maximum}` }
     }
   }
 
   function* Object(schema: Types.TObject, path: string, value: any): Generator<TypeError> {
     if (!(typeof value === 'object' && value !== null && !globalThis.Array.isArray(value))) {
-      return yield { schema, path, value }
+      return yield { schema, path, value, message: `Expected object` }
     }
     if (schema.minProperties !== undefined && !(globalThis.Object.keys(value).length >= schema.minProperties)) {
-      yield { schema, path, value }
+      yield { schema, path, value, message: `Expected object to have at least ${schema.minProperties} properties` }
     }
     if (schema.maxProperties !== undefined && !(globalThis.Object.keys(value).length <= schema.maxProperties)) {
-      yield { schema, path, value }
+      yield { schema, path, value, message: `Expected object to have less than ${schema.minProperties} properties` }
     }
     const propertyKeys = globalThis.Object.keys(schema.properties)
     if (schema.additionalProperties === false) {
       if (schema.required && schema.required.length === propertyKeys.length && !(globalThis.Object.keys(value).length === propertyKeys.length)) {
-        yield { schema, path, value }
+        yield { schema, path, value, message: 'Expected object is missing required properties' }
       } else {
         if (!globalThis.Object.keys(value).every((key) => propertyKeys.includes(key))) {
-          yield { schema, path, value }
+          yield { schema, path, value, message: 'Expected object ambigious' }
         }
       }
     }
@@ -154,18 +155,18 @@ export namespace TypeErrors {
 
   function* Promise(schema: Types.TPromise<any>, path: string, value: any): Generator<TypeError> {
     if (!(typeof value === 'object' && typeof value.then === 'function')) {
-      yield { schema, path, value }
+      yield { schema, path, value, message: `Expected Promise` }
     }
   }
 
   function* Record(schema: Types.TRecord<any, any>, path: string, value: any): Generator<TypeError> {
     if (!(typeof value === 'object' && value !== null && !globalThis.Array.isArray(value))) {
-      return yield { schema, path, value }
+      return yield { schema, path, value, message: `Expected object` }
     }
     const [keyPattern, valueSchema] = globalThis.Object.entries(schema.patternProperties)[0]
     const regex = new RegExp(keyPattern)
     if (!globalThis.Object.keys(value).every((key) => regex.test(key))) {
-      return yield { schema, path, value }
+      return yield { schema, path, value, message: `Expected property keys to match '${keyPattern}'` }
     }
     for (const [propKey, propValue] of globalThis.Object.entries(value)) {
       yield* Visit(valueSchema, `${path}/${propKey}`, propValue)
@@ -174,7 +175,7 @@ export namespace TypeErrors {
 
   function* Ref(schema: Types.TRef<any>, path: string, value: any): Generator<TypeError> {
     if (!referenceMap.has(schema.$ref)) {
-      throw Error(`TypeErrors: Ref() Cannot locate referenced schema for $id '${schema.$id}'`)
+      throw Error(`TypeErrors: Cannot locate referenced schema for $id '${schema.$id}'`)
     }
     const referencedSchema = referenceMap.get(schema.$ref)!
     yield* Visit(referencedSchema, path, value)
@@ -182,7 +183,7 @@ export namespace TypeErrors {
 
   function* Self(schema: Types.TSelf, path: string, value: any): Generator<TypeError> {
     if (!referenceMap.has(schema.$ref)) {
-      throw Error(`TypeErrors: Self() Cannot locate referenced schema for $id '${schema.$id}'`)
+      throw Error(`TypeErrors: Cannot locate referenced schema for $id '${schema.$id}'`)
     }
     const referencedSchema = referenceMap.get(schema.$ref)!
     yield* Visit(referencedSchema, path, value)
@@ -190,71 +191,73 @@ export namespace TypeErrors {
 
   function* String(schema: Types.TString, path: string, value: any): Generator<TypeError> {
     if (!(typeof value === 'string')) {
-      return yield { schema, path, value }
+      return yield { schema, path, value, message: 'Expected string' }
     }
     if (schema.pattern !== undefined) {
       const regex = new RegExp(schema.pattern)
       if (!regex.test(value)) {
-        yield { schema, path, value }
+        yield { schema, path, value, message: `Expected string to match pattern ${schema.pattern}` }
       }
     }
   }
 
   function* Tuple(schema: Types.TTuple<any[]>, path: string, value: any): Generator<TypeError> {
-    if(!global.Array.isArray(value)) {
-        return yield { schema, path, value }
+    if (!global.Array.isArray(value)) {
+      return yield { schema, path, value, message: 'Expected Array' }
     }
     if (schema.items === undefined && !(value.length === 0)) {
-        return yield { schema, path, value }
+      return yield { schema, path, value, message: 'Expected tuple to have 0 elements' }
     }
-    if(!(value.length === schema.maxItems)) {
-        yield { schema, path, value }
+    if (!(value.length === schema.maxItems)) {
+      yield { schema, path, value, message: `Expected tuple to have ${schema.maxItems} elements` }
     }
-    if(!schema.items) {
-        return
+    if (!schema.items) {
+      return
     }
     for (let i = 0; i < schema.items.length; i++) {
-        yield * Visit(schema.items[i], `${path}/${i}`, value[i])
+      yield* Visit(schema.items[i], `${path}/${i}`, value[i])
     }
   }
 
   function* Undefined(schema: Types.TUndefined, path: string, value: any): Generator<TypeError> {
-    if(!value === undefined) {
-        yield { schema, path, value }
+    if (!value === undefined) {
+      yield { schema, path, value, message: `Expected undefined` }
     }
   }
 
   function* Union(schema: Types.TUnion<any[]>, path: string, value: any): Generator<TypeError> {
     const errors: TypeError[] = []
-    for(const inner of schema.anyOf) {
-        const variantErrors = [...Visit(inner, path, value)]
-        if(variantErrors.length === 0) return
-        errors.push(...variantErrors)
+    for (const inner of schema.anyOf) {
+      const variantErrors = [...Visit(inner, path, value)]
+      if (variantErrors.length === 0) return
+      errors.push(...variantErrors)
     }
-    for(const error of errors) {
-        yield error
+    for (const error of errors) {
+      yield error
+    }
+    if (errors.length > 0) {
+      yield { schema, path, value, message: 'Expected value of union' }
     }
   }
 
   function* Uint8Array(schema: Types.TUint8Array, path: string, value: any): Generator<TypeError> {
-    if(!(value instanceof globalThis.Uint8Array)) {
-        return yield { schema, path, value }
+    if (!(value instanceof globalThis.Uint8Array)) {
+      return yield { schema, path, value, message: `Expected Uint8Array` }
     }
 
     if (schema.maxByteLength && !(value.length <= schema.maxByteLength)) {
-        yield { schema, path, value }
+      yield { schema, path, value, message: `Expected Uint8Array to have a byte length less or equal to ${schema.maxByteLength}` }
     }
     if (schema.minByteLength && !(value.length >= schema.minByteLength)) {
-        yield { schema, path, value }
+      yield { schema, path, value, message: `Expected Uint8Array to have a byte length greater or equal to ${schema.maxByteLength}` }
     }
   }
 
-  function* Unknown(schema: Types.TUnknown, path: string, value: any): Generator<TypeError> {
-  }
+  function* Unknown(schema: Types.TUnknown, path: string, value: any): Generator<TypeError> {}
 
   function* Void(schema: Types.TVoid, path: string, value: any): Generator<TypeError> {
-    if(!(value === null)) {
-        return yield { schema, path, value }
+    if (!(value === null)) {
+      return yield { schema, path, value, message: `Expected null` }
     }
   }
 
@@ -313,8 +316,7 @@ export namespace TypeErrors {
 
   const referenceMap = new Map<string, Types.TSchema>()
 
-  /** Resets the reference map */
-  function Update(additional: Types.TSchema[] = []) {
+  function SetAdditional(additional: Types.TSchema[] = []) {
     referenceMap.clear()
     for (const schema of additional) {
       if (!schema.$id) throw Error('TypeErrors: Referenced additional schemas must have an $id')
@@ -322,9 +324,8 @@ export namespace TypeErrors {
     }
   }
 
-  /** Compiles the given type for runtime type checking. This compiler only accepts known TypeBox types non-inclusive of unsafe types. */
   export function* Errors<T extends Types.TSchema>(schema: T, additional: Types.TSchema[], value: any): Generator<TypeError> {
-    Update(additional)
+    SetAdditional(additional)
     yield* Visit(schema, '', value)
   }
 }

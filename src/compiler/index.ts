@@ -27,3 +27,4 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 export * from './compiler'
+export * from './errors'
