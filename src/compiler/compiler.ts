@@ -27,6 +27,7 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import * as Types from '../typebox'
+import { TypeErrors, TypeError } from './errors'
 
 // -------------------------------------------------------------------
 // CheckFunction
@@ -49,7 +50,12 @@ export class TypeCheckAssertError extends Error {
 }
 
 export class TypeCheck<T extends Types.TSchema> {
-  constructor(private readonly schema: T, private readonly checkFunc: CheckFunction, private readonly code: string) {}
+  constructor(private readonly schema: T, private readonly additional: Types.TSchema[], private readonly checkFunc: CheckFunction, private readonly code: string) {}
+
+  /** Queries the given value for type errors */
+  public Errors(value: unknown): Generator<TypeError> {
+    return TypeErrors.Errors(this.schema, this.additional, value)
+  }
 
   /** Returns the compiled validation code used to check this type. */
   public Code(): string {
@@ -100,7 +106,7 @@ export namespace TypeCompiler {
   function* Integer(schema: Types.TNumeric, path: string): Generator<string> {
     yield `(typeof ${path} === 'number' && Number.isInteger(${path}))`
     if (schema.multipleOf) yield `(${path} % ${schema.multipleOf} === 0)`
-    if (schema.exclusiveMinimum) yield `(${path} < ${schema.exclusiveMinimum})`
+    if (schema.exclusiveMinimum) yield `(${path} > ${schema.exclusiveMinimum})`
     if (schema.exclusiveMaximum) yield `(${path} < ${schema.exclusiveMaximum})`
     if (schema.minimum) yield `(${path} >= ${schema.minimum})`
     if (schema.maximum) yield `(${path} <= ${schema.maximum})`
@@ -121,7 +127,7 @@ export namespace TypeCompiler {
   function* Number(schema: Types.TNumeric, path: string): Generator<string> {
     yield `(typeof ${path} === 'number')`
     if (schema.multipleOf) yield `(${path} % ${schema.multipleOf} === 0)`
-    if (schema.exclusiveMinimum) yield `(${path} < ${schema.exclusiveMinimum})`
+    if (schema.exclusiveMinimum) yield `(${path} > ${schema.exclusiveMinimum})`
     if (schema.exclusiveMaximum) yield `(${path} < ${schema.exclusiveMaximum})`
     if (schema.minimum) yield `(${path} >= ${schema.minimum})`
     if (schema.maximum) yield `(${path} <= ${schema.maximum})`
@@ -296,7 +302,7 @@ export namespace TypeCompiler {
   // -------------------------------------------------------------------
   // Locals
   // -------------------------------------------------------------------
-  
+
   const referenceMap = new Map<string, Types.TSchema>()
   const functionLocals = new Set<string>()
   const functionNames = new Set<string>()
@@ -354,6 +360,6 @@ export namespace TypeCompiler {
   export function Compile<T extends Types.TSchema>(schema: T, additional: Types.TSchema[] = []): TypeCheck<T> {
     const code = Build(schema, additional)
     const func = globalThis.Function(code)
-    return new TypeCheck(schema, func(), code)
+    return new TypeCheck(schema, additional, func(), code)
   }
 }
