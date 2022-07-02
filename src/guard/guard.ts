@@ -132,7 +132,7 @@ export namespace TypeGuard {
   }
 
   /** Returns true if the given schema is TRef */
-  export function TRef(schema: any): schema is Types.TSelf {
+  export function TRef(schema: any): schema is Types.TRef {
     return IsObject(schema) && schema[Types.Kind] === 'Ref' && typeof schema.$ref === 'string'
   }
 
