@@ -1,2 +1,2 @@
-export * from './compiler'
-export * from './errors'
+export * from './compiler';
+export * from './errors';
