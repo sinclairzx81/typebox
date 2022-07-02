@@ -1,3 +1,23 @@
+## [0.24.6](https://www.npmjs.com/package/@sinclair/typebox/v/0.24.6)
+
+Added:
+
+- TypeBox now offers a `TypeGuard` module for structurally checking TypeBox schematics. This module can be used in runtime type reflection scenarios where it's helpful to test a schema is of a particular form. This module can be imported under the `@sinclair/typebox/guard` import path.
+
+```typescript
+import { TypeGuard } from '@sinclair/typebox/guard'
+
+const T: any = {}                                    // T is any
+
+const { type } = T                                   // unsafe: type is any
+
+if(TypeGuard.TString(T)) {
+    
+  const { type } = T                                 // safe: type is 'string'
+}
+
+```
+
 ## [0.24.0](https://www.npmjs.com/package/@sinclair/typebox/v/0.24.0)
 
 Changes:
