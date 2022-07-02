@@ -62,6 +62,7 @@ License MIT
 - [Generic Types](#Generic-Types)
 - [Unsafe Types](#Unsafe-Types)
 - [Values](#Values)
+- [Guards](#Guards)
 - [Strict](#Strict)
 - [Validation](#Validation)
 - [Compiler](#Compiler)
@@ -435,7 +436,7 @@ In addition to JSON schema types, TypeBox provides several extended types that a
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Uint8Array()    │ type T = Uint8Array         │ const T = {                    │
-│                                │                             │   type: 'Uint8Array',          │
+│                                │                             │   type: 'object',              │
 │                                │                             │   specialized: 'Uint8Array'    │
 │                                │                             │ }                              │
 │                                │                             │                                │
@@ -600,6 +601,7 @@ const T = StringEnum(['A', 'B', 'C'])                // const T = {
 
 type T = Static<typeof T>                            // type T = 'A' | 'B' | 'C'
 ```
+
 <a name="Values"></a>
 
 ### Values
@@ -622,6 +624,29 @@ const V = Value.Create(T)                            // const V = {
                                                      //   z: 0
                                                      // }
 ```
+
+<a name="Guards"></a>
+
+### Guards
+
+In some scenarios it may be helpful to test if an object is a valid TypeBox type. You can use the TypeGuard module to check an object conforms to a valid TypeBox schema representation. Consider the following.
+
+```typescript
+import { TypeGuard } from '@sinclair/typebox/guard'
+import { Type }  from '@sinclair/typebox'
+
+const T: any = Type.String()                         // T is any
+
+const { type } = T                                   // unsafe: type is any
+
+if(TypeGuard.TString(T)) {
+    
+  const { type } = T                                 // safe: type is 'string'
+}
+
+```
+
+
 
 <a name="Strict"></a>
 

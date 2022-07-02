@@ -1,17 +1,18 @@
 import { TypeCompiler } from '@sinclair/typebox/compiler'
+import { TypeGuard } from '@sinclair/typebox/guard'
 import { Type } from '@sinclair/typebox'
 
-const A = Type.Object({
-    x: Type.Number()
-})
+const T: any = Type.String()                         // T is any
 
-const B = Type.Object({
-    y: Type.Number()
-})
+const { type } = T                                   // type is any
 
-const I = Type.Intersect([A, B])
+if(TypeGuard.TString(T)) {
+    
+  const { type } = T                                 // type is 'string'
+}
 
-console.log(I)
+
+
 
 
 

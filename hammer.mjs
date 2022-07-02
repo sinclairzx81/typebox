@@ -28,19 +28,19 @@ export async function start(target = 'target/example') {
 // Test
 // -------------------------------------------------------------------------------
 
-export async function test_types() {
+export async function test_static() {
     await shell(`tsc -p ./src/tsconfig.json --outDir test/static --emitDeclarationOnly`)
     await shell(`tsd test/static`)
 }
 
-export async function test_schemas() {
+export async function test_runtime(filter) {
     await shell(`hammer build ./test/runtime/index.ts --dist target/test/runtime --platform node`)
-    await shell(`mocha target/test/runtime/index.js`)
+    await shell(`mocha target/test/runtime/index.js -g "${filter}"`)
 }
 
-export async function test() {
-    await test_types()
-    await test_schemas()
+export async function test(filter = '') {
+    await test_static()
+    await test_runtime(filter)
 }
 
 // -------------------------------------------------------------------------------
