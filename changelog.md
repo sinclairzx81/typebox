@@ -4,6 +4,8 @@ Added:
 
 - TypeBox now offers a `TypeGuard` module for structurally checking TypeBox schematics. This module can be used in runtime type reflection scenarios where it's helpful to test a schema is of a particular form. This module can be imported under the `@sinclair/typebox/guard` import path.
 
+Example:
+
 ```typescript
 import { TypeGuard } from '@sinclair/typebox/guard'
 
