@@ -20,8 +20,8 @@ export async function format() {
 // Start
 // -------------------------------------------------------------------------------
 
-export async function start(target = 'target/example') {
-    await shell(`hammer run example/index.ts --dist ${target}`)
+export async function start(example = 'index') {
+    await shell(`hammer run example/${example}.ts --dist target/example/${example}`)
 }
 
 // -------------------------------------------------------------------------------
