@@ -5,7 +5,7 @@ import { Value } from '@sinclair/typebox/value'
 
 const T = Type.Array(Type.Object({ x: Type.Number() }))
 const value = [{ x: 1 }, { x: 1 }, { x: 1 }]
-const result = Value.Check(T, value)
+const result = Value.Cast(T, 1)
 console.log(result)
 
 

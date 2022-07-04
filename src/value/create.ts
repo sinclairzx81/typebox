@@ -127,14 +127,6 @@ export namespace CreateValue {
     if (schema.default !== undefined) {
       return schema.default
     } else {
-      // StackOverflow Prevention
-      if (schema['$dynamicAnchor'] !== undefined) {
-        for (const [key, value] of globalThis.Object.entries(schema.properties)) {
-          if (value['$dynamicRef'] !== undefined && schema.required && schema.required.includes(key)) {
-            throw Error(`Cannot create recursive object with immediate recursive property`)
-          }
-        }
-      }
       const required = new Set(schema.required)
       return (
         schema.default ||

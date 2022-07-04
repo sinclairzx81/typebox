@@ -54,10 +54,10 @@ export namespace Value {
   }
 
   /** Casts the given value to match the given schema and associated references. The result will be a value that retains as much information from the original value as possible. */
-  export function Cast<T extends Types.TSchema, R extends Types.TSchema[]>(schema: T, references: [...R], value: any): value is Types.Static<T>
+  export function Cast<T extends Types.TSchema, R extends Types.TSchema[]>(schema: T, references: [...R], value: any): Types.Static<T>
 
   /** Casts the given value to match the given schema. The result will be a value that retains as much information from the original value as possible. */
-  export function Cast<T extends Types.TSchema>(schema: T, value: any): value is Types.Static<T>
+  export function Cast<T extends Types.TSchema>(schema: T, value: any): Types.Static<T>
 
   /** Casts the given value to match the given schema. The result will be a value that retains as much information from the original value as possible. */
   export function Cast<T extends Types.TSchema>(...args: any[]): Types.Static<T> {
