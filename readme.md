@@ -607,7 +607,7 @@ type T = Static<typeof T>                            // type T = 'A' | 'B' | 'C'
 
 ### Values
 
-TypeBox can create values from types. It will create reasonable defaults for each value, but you can override this by specifying a `default` value via options.
+TypeBox can create values from types. It creates reasonable defaults for each value which can overrided by specifying a `default` value.
 
 ```typescript
 import { Value } from '@sinclair/typebox/value'
@@ -623,7 +623,7 @@ const V = Value.Create(T)                            // const V = {
                                                      //   y: 0,
                                                      // }
 ```
-TypeBox also offers a form of casting where a value can be upgraded to meet the schematics of a given type. Casts retain as much information from the original value as possible and can be used to upgrade existing values in scenarios where a type may have changed. Casts are immutable operations.
+TypeBox also provides a type of cast where values can be upgraded to meet the schematics of a given type. Casts retain as much information from the original value as possible and can be used to upgrade existing values in scenarios where a type may have changed. Casts are immutable operations.
 
 ```typescript
 import { Value } from '@sinclair/typebox/value'
