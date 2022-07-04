@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 import * as Types from '../typebox'
 
-export namespace CheckValue {
+export namespace ValueCheck {
   function Any(schema: Types.TAny, references: Types.TSchema[], value: any): boolean {
     return true
   }

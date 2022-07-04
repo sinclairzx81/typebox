@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 import * as Types from '../typebox'
 
-export namespace CreateValue {
+export namespace ValueCreate {
   function Any(schema: Types.TAny, references: Types.TSchema[]): any {
     if (schema.default !== undefined) {
       return schema.default
@@ -42,7 +42,7 @@ export namespace CreateValue {
       return schema.default
     } else if (schema.minItems !== undefined) {
       return globalThis.Array.from({ length: schema.minItems }).map((item) => {
-        return CreateValue.Create(schema.items, references)
+        return ValueCreate.Create(schema.items, references)
       })
     } else {
       return []
@@ -61,7 +61,7 @@ export namespace CreateValue {
     if (schema.default !== undefined) {
       return schema.default
     } else {
-      const value = CreateValue.Create(schema.returns, references) as any
+      const value = ValueCreate.Create(schema.returns, references) as any
       if (typeof value === 'object' && !globalThis.Array.isArray(value)) {
         return class {
           constructor() {
@@ -91,7 +91,7 @@ export namespace CreateValue {
     if (schema.default !== undefined) {
       return schema.default
     } else {
-      return () => CreateValue.Create(schema.returns, references)
+      return () => ValueCreate.Create(schema.returns, references)
     }
   }
 
@@ -131,7 +131,7 @@ export namespace CreateValue {
       return (
         schema.default ||
         globalThis.Object.entries(schema.properties).reduce((acc, [key, schema]) => {
-          return required.has(key) ? { ...acc, [key]: CreateValue.Create(schema, references) } : { ...acc }
+          return required.has(key) ? { ...acc, [key]: ValueCreate.Create(schema, references) } : { ...acc }
         }, {})
       )
     }
@@ -141,7 +141,7 @@ export namespace CreateValue {
     if (schema.default !== undefined) {
       return schema.default
     } else {
-      return globalThis.Promise.resolve(CreateValue.Create(schema.item, references))
+      return globalThis.Promise.resolve(ValueCreate.Create(schema.item, references))
     }
   }
 
@@ -208,7 +208,7 @@ export namespace CreateValue {
     if (schema.items === undefined) {
       return []
     } else {
-      return globalThis.Array.from({ length: schema.minItems }).map((_, index) => CreateValue.Create((schema.items as any[])[index], references))
+      return globalThis.Array.from({ length: schema.minItems }).map((_, index) => ValueCreate.Create((schema.items as any[])[index], references))
     }
   }
 
@@ -222,7 +222,7 @@ export namespace CreateValue {
     } else if (schema.anyOf.length === 0) {
       throw Error('Cannot generate Union with empty set')
     } else {
-      return CreateValue.Create(schema.anyOf[0], references)
+      return ValueCreate.Create(schema.anyOf[0], references)
     }
   }
   function Uint8Array(schema: Types.TUint8Array, references: Types.TSchema[]): any {

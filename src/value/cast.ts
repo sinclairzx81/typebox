@@ -27,8 +27,8 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import * as Types from '../typebox'
-import { CreateValue } from './create'
-import { CheckValue } from './check'
+import { ValueCreate } from './create'
+import { ValueCheck } from './check'
 
 // --------------------------------------------------------------------------
 // Specialized Union Patch. Because a value can be one of many different
@@ -42,13 +42,13 @@ import { CheckValue } from './check'
 // union if other properties overlap and match.
 // --------------------------------------------------------------------------
 
-namespace CastUnionValue {
+namespace UnionValueCast {
   function Score(schema: Types.TSchema, references: Types.TSchema[], value: any): number {
     let score = 0
     if (schema[Types.Kind] === 'Object' && typeof value === 'object' && value !== null) {
       const objectSchema: Types.TObject = schema as any
       const entries = globalThis.Object.entries(objectSchema.properties)
-      score += entries.reduce((acc, [key, schema]) => acc + (CheckValue.Check(schema, references, value[key]) ? 1 : 0), 0)
+      score += entries.reduce((acc, [key, schema]) => acc + (ValueCheck.Check(schema, references, value[key]) ? 1 : 0), 0)
     }
     return score
   }
@@ -65,29 +65,29 @@ namespace CastUnionValue {
     return select
   }
   export function Create(schema: Types.TUnion, references: Types.TSchema[], value: any) {
-    return CheckValue.Check(schema, references, value) ? value : CastValue.Cast(Select(schema, references, value), references, value)
+    return ValueCheck.Check(schema, references, value) ? value : ValueCast.Cast(Select(schema, references, value), references, value)
   }
 }
 
-export namespace CastValue {
+export namespace ValueCast {
   const ids = new Map<string, Types.TObject>()
 
   function Any(schema: Types.TAny, references: Types.TSchema[], value: any): any {
-    return CheckValue.Check(schema, references, value) ? value : CreateValue.Create(schema, references)
+    return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
   }
 
   function Array(schema: Types.TArray, references: Types.TSchema[], value: any): any {
-    if (CheckValue.Check(schema, references, value)) return value
-    if (!globalThis.Array.isArray(value)) return CreateValue.Create(schema, references)
+    if (ValueCheck.Check(schema, references, value)) return value
+    if (!globalThis.Array.isArray(value)) return ValueCreate.Create(schema, references)
     return value.map((val: any) => Visit(schema.items, references, val))
   }
 
   function Boolean(schema: Types.TBoolean, references: Types.TSchema[], value: any): any {
-    return CheckValue.Check(schema, references, value) ? value : CreateValue.Create(schema, references)
+    return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
   }
 
   function Constructor(schema: Types.TConstructor, references: Types.TSchema[], value: any): any {
-    if (CheckValue.Check(schema, references, value)) return CreateValue.Create(schema, references)
+    if (ValueCheck.Check(schema, references, value)) return ValueCreate.Create(schema, references)
     const required = new Set(schema.returns.required || [])
     const result = function () {}
     for (const [key, property] of globalThis.Object.entries(schema.returns.properties)) {
@@ -98,32 +98,32 @@ export namespace CastValue {
   }
 
   function Enum(schema: Types.TEnum<any>, references: Types.TSchema[], value: any): any {
-    return CheckValue.Check(schema, references, value) ? value : CreateValue.Create(schema, references)
+    return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
   }
 
   function Function(schema: Types.TFunction, references: Types.TSchema[], value: any): any {
-    return CheckValue.Check(schema, references, value) ? value : CreateValue.Create(schema, references)
+    return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
   }
 
   function Integer(schema: Types.TInteger, references: Types.TSchema[], value: any): any {
-    return CheckValue.Check(schema, references, value) ? value : CreateValue.Create(schema, references)
+    return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
   }
 
   function Literal(schema: Types.TLiteral, references: Types.TSchema[], value: any): any {
-    return CheckValue.Check(schema, references, value) ? value : CreateValue.Create(schema, references)
+    return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
   }
 
   function Null(schema: Types.TNull, references: Types.TSchema[], value: any): any {
-    return CheckValue.Check(schema, references, value) ? value : CreateValue.Create(schema, references)
+    return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
   }
 
   function Number(schema: Types.TNumber, references: Types.TSchema[], value: any): any {
-    return CheckValue.Check(schema, references, value) ? value : CreateValue.Create(schema, references)
+    return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
   }
 
   function Object(schema: Types.TObject, references: Types.TSchema[], value: any): any {
-    if (CheckValue.Check(schema, references, value)) return value
-    if (value === null || typeof value !== 'object') return CreateValue.Create(schema, references)
+    if (ValueCheck.Check(schema, references, value)) return value
+    if (value === null || typeof value !== 'object') return ValueCreate.Create(schema, references)
     ids.set(schema.$id!, schema)
     const required = new Set(schema.required || [])
     const result = {} as Record<string, any>
@@ -135,12 +135,12 @@ export namespace CastValue {
   }
 
   function Promise(schema: Types.TSchema, references: Types.TSchema[], value: any): any {
-    return CheckValue.Check(schema, references, value) ? value : CreateValue.Create(schema, references)
+    return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
   }
 
   function Record(schema: Types.TRecord<any, any>, references: Types.TSchema[], value: any): any {
-    if (CheckValue.Check(schema, references, value)) return value
-    if (value === null || typeof value !== 'object' || globalThis.Array.isArray(value)) return CreateValue.Create(schema, references)
+    if (ValueCheck.Check(schema, references, value)) return value
+    if (value === null || typeof value !== 'object' || globalThis.Array.isArray(value)) return ValueCreate.Create(schema, references)
     const subschemaKey = globalThis.Object.keys(schema.patternProperties)[0]
     const subschema = schema.patternProperties[subschemaKey]
     const result = {} as Record<string, any>
@@ -167,34 +167,34 @@ export namespace CastValue {
   }
 
   function String(schema: Types.TString, references: Types.TSchema[], value: any): any {
-    return CheckValue.Check(schema, references, value) ? value : CreateValue.Create(schema, references)
+    return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
   }
 
   function Tuple(schema: Types.TTuple<any[]>, references: Types.TSchema[], value: any): any {
-    if (CheckValue.Check(schema, references, value)) return value
-    if (!globalThis.Array.isArray(value)) return CreateValue.Create(schema, references)
+    if (ValueCheck.Check(schema, references, value)) return value
+    if (!globalThis.Array.isArray(value)) return ValueCreate.Create(schema, references)
     if (schema.items === undefined) return []
     return schema.items.map((schema, index) => Visit(schema, references, value[index]))
   }
 
   function Undefined(schema: Types.TUndefined, references: Types.TSchema[], value: any): any {
-    return CheckValue.Check(schema, references, value) ? value : CreateValue.Create(schema, references)
+    return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
   }
 
   function Union(schema: Types.TUnion, references: Types.TSchema[], value: any): any {
-    return CastUnionValue.Create(schema, references, value)
+    return UnionValueCast.Create(schema, references, value)
   }
 
   function Uint8Array(schema: Types.TUint8Array, references: Types.TSchema[], value: any): any {
-    return CheckValue.Check(schema, references, value) ? value : CreateValue.Create(schema, references)
+    return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
   }
 
   function Unknown(schema: Types.TUnknown, references: Types.TSchema[], value: any): any {
-    return CheckValue.Check(schema, references, value) ? value : CreateValue.Create(schema, references)
+    return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
   }
 
   function Void(schema: Types.TVoid, references: Types.TSchema[], value: any): any {
-    return CheckValue.Check(schema, references, value) ? value : CreateValue.Create(schema, references)
+    return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
   }
 
   export function Visit(schema: Types.TSchema, references: Types.TSchema[], value: any): any {

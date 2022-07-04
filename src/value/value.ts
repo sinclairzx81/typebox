@@ -27,9 +27,10 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import * as Types from '../typebox'
-import { CastValue } from './cast'
-import { CreateValue } from './create'
-import { CheckValue } from './check'
+import { ValueErrors, ValueError } from './errors'
+import { ValueCast } from './cast'
+import { ValueCreate } from './create'
+import { ValueCheck } from './check'
 
 /** Values from TypeBox Types */
 export namespace Value {
@@ -40,7 +41,7 @@ export namespace Value {
   /** Creates a value from the given schema */
   export function Create(...args: any[]) {
     const [schema, references] = args.length === 2 ? [args[0], args[1]] : [args[0], []]
-    return CreateValue.Create(schema, references)
+    return ValueCreate.Create(schema, references)
   }
 
   /** Checks if the given value matches the given schema with associated references */
@@ -50,18 +51,26 @@ export namespace Value {
   /** Checks if the given value matches the given schema */
   export function Check(...args: any[]) {
     const [schema, references, value] = args.length === 3 ? [args[0], args[1], args[2]] : [args[0], [], args[1]]
-    return CheckValue.Check(schema, references, value)
+    return ValueCheck.Check(schema, references, value)
   }
 
   /** Casts the given value to match the given schema and associated references. The result will be a value that retains as much information from the original value as possible. */
   export function Cast<T extends Types.TSchema, R extends Types.TSchema[]>(schema: T, references: [...R], value: any): Types.Static<T>
-
   /** Casts the given value to match the given schema. The result will be a value that retains as much information from the original value as possible. */
   export function Cast<T extends Types.TSchema>(schema: T, value: any): Types.Static<T>
-
   /** Casts the given value to match the given schema. The result will be a value that retains as much information from the original value as possible. */
-  export function Cast<T extends Types.TSchema>(...args: any[]): Types.Static<T> {
+  export function Cast(...args: any[]) {
     const [schema, references, value] = args.length === 3 ? [args[0], args[1], args[2]] : [args[0], [], args[1]]
-    return CastValue.Cast(schema, references, value)
+    return ValueCast.Cast(schema, references, value)
+  }
+
+  /** Casts the given value to match the given schema and associated references. The result will be a value that retains as much information from the original value as possible. */
+  export function Errors<T extends Types.TSchema, R extends Types.TSchema[]>(schema: T, references: [...R], value: any): Generator<ValueError>
+  /** Casts the given value to match the given schema. The result will be a value that retains as much information from the original value as possible. */
+  export function Errors<T extends Types.TSchema>(schema: T, value: any): Generator<ValueError>
+  /** Casts the given value to match the given schema. The result will be a value that retains as much information from the original value as possible. */
+  export function* Errors(...args: any[]): Generator<ValueError> {
+    const [schema, references, value] = args.length === 3 ? [args[0], args[1], args[2]] : [args[0], [], args[1]]
+    yield * ValueErrors.Errors(schema, references, value)
   }
 }

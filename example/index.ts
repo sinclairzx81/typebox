@@ -1,11 +1,14 @@
-import { TypeCompiler } from '@sinclair/typebox/compiler'
-import { TypeGuard } from '@sinclair/typebox/guard'
 import { Type } from '@sinclair/typebox'
 import { Value } from '@sinclair/typebox/value'
 
-const T = Type.Array(Type.Object({ x: Type.Number() }))
-const value = [{ x: 1 }, { x: 1 }, { x: 1 }]
-const result = Value.Cast(T, 1)
-console.log(result)
+const T = Type.Object({
+  x: Type.Number(),
+  y: Type.Number(),
+  z: Type.Number()
+})
+
+for(const error of Value.Errors(T, {})) {
+  console.log(error)
+}
 
 

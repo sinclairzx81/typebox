@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { TypeErrors, TypeError } from './errors'
+import { ValueErrors, ValueError } from '../value/errors'
 import * as Types from '../typebox'
 
 // -------------------------------------------------------------------
@@ -48,8 +48,8 @@ export class TypeCheck<T extends Types.TSchema> {
   }
 
   /** Returns an iterator for each type error found in this value */
-  public Errors(value: unknown): Generator<TypeError> {
-    return TypeErrors.Errors(this.schema, this.additional, value)
+  public Errors(value: unknown): Generator<ValueError> {
+    return ValueErrors.Errors(this.schema, this.additional, value)
   }
 
   /** Returns true if the value matches the given type. */
