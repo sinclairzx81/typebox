@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------------
 
-@sinclair/typebox/compiler
+@sinclair/typebox/value
 
 The MIT License (MIT)
 
@@ -36,9 +36,9 @@ export interface ValueError {
 }
 
 export namespace ValueErrors {
-  function* Any(schema: Types.TAny, references: Types.TSchema[], path: string, value: any): Generator<ValueError> {}
+  function* Any(schema: Types.TAny, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {}
 
-  function* Array(schema: Types.TArray, references: Types.TSchema[], path: string, value: any): Generator<ValueError> {
+  function* Array(schema: Types.TArray, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     if (!globalThis.Array.isArray(value)) {
       return yield { schema, path, value, message: `Expected array` }
     }
@@ -47,23 +47,23 @@ export namespace ValueErrors {
     }
   }
 
-  function* Boolean(schema: Types.TBoolean, references: Types.TSchema[], path: string, value: any): Generator<ValueError> {
+  function* Boolean(schema: Types.TBoolean, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     if (!(typeof value === 'boolean')) {
       return yield { schema, path, value, message: `Expected boolean` }
     }
   }
 
-  function* Constructor(schema: Types.TConstructor, references: Types.TSchema[], path: string, value: any): Generator<ValueError> {
+  function* Constructor(schema: Types.TConstructor, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     yield* Visit(schema.returns, references, path, value)
   }
 
-  function* Function(schema: Types.TFunction, references: Types.TSchema[], path: string, value: any): Generator<ValueError> {
+  function* Function(schema: Types.TFunction, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     if (!(typeof value === 'function')) {
       return yield { schema, path, value, message: `Expected function` }
     }
   }
 
-  function* Integer(schema: Types.TNumeric, references: Types.TSchema[], path: string, value: any): Generator<ValueError> {
+  function* Integer(schema: Types.TNumeric, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     if (!(typeof value === 'number')) {
       return yield { schema, path, value, message: `Expected number` }
     }
@@ -87,20 +87,20 @@ export namespace ValueErrors {
     }
   }
 
-  function* Literal(schema: Types.TLiteral, references: Types.TSchema[], path: string, value: any): Generator<ValueError> {
+  function* Literal(schema: Types.TLiteral, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     if (!(value === schema.const)) {
       const error = typeof schema.const === 'string' ? `'${schema.const}'` : schema.const
       return yield { schema, path, value, message: `Expected ${error}` }
     }
   }
 
-  function* Null(schema: Types.TNull, references: Types.TSchema[], path: string, value: any): Generator<ValueError> {
+  function* Null(schema: Types.TNull, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     if (!(value === null)) {
       return yield { schema, path, value, message: `Expected null` }
     }
   }
 
-  function* Number(schema: Types.TNumeric, references: Types.TSchema[], path: string, value: any): Generator<ValueError> {
+  function* Number(schema: Types.TNumeric, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     if (!(typeof value === 'number')) {
       return yield { schema, path, value, message: `Expected number` }
     }
@@ -121,7 +121,7 @@ export namespace ValueErrors {
     }
   }
 
-  function* Object(schema: Types.TObject, references: Types.TSchema[], path: string, value: any): Generator<ValueError> {
+  function* Object(schema: Types.TObject, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     if (!(typeof value === 'object' && value !== null && !globalThis.Array.isArray(value))) {
       return yield { schema, path, value, message: `Expected object` }
     }
@@ -157,13 +157,13 @@ export namespace ValueErrors {
     }
   }
 
-  function* Promise(schema: Types.TPromise, references: Types.TSchema[], path: string, value: any): Generator<ValueError> {
+  function* Promise(schema: Types.TPromise, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     if (!(typeof value === 'object' && typeof value.then === 'function')) {
       yield { schema, path, value, message: `Expected Promise` }
     }
   }
 
-  function* Record(schema: Types.TRecord, references: Types.TSchema[], path: string, value: any): Generator<ValueError> {
+  function* Record(schema: Types.TRecord, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     if (!(typeof value === 'object' && value !== null && !globalThis.Array.isArray(value))) {
       return yield { schema, path, value, message: `Expected object` }
     }
@@ -178,19 +178,19 @@ export namespace ValueErrors {
     }
   }
 
-  function* Ref(schema: Types.TRef<any>, references: Types.TSchema[], path: string, value: any): Generator<ValueError> {
+  function* Ref(schema: Types.TRef<any>, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     const reference = references.find((reference) => reference.$id === schema.$ref)
     if (reference === undefined) throw new Error(`CheckValue.Ref: Cannot find schema with $id '${schema.$ref}'.`)
     yield* Visit(reference, references, path, value)
   }
 
-  function* Self(schema: Types.TSelf, references: Types.TSchema[], path: string, value: any): Generator<ValueError> {
+  function* Self(schema: Types.TSelf, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     const reference = references.find((reference) => reference.$id === schema.$ref)
     if (reference === undefined) throw new Error(`CheckValue.Ref: Cannot find schema with $id '${schema.$ref}'.`)
     yield* Visit(reference, references, path, value)
   }
 
-  function* String(schema: Types.TString, references: Types.TSchema[], path: string, value: any): Generator<ValueError> {
+  function* String(schema: Types.TString, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     if (!(typeof value === 'string')) {
       return yield { schema, path, value, message: 'Expected string' }
     }
@@ -202,7 +202,7 @@ export namespace ValueErrors {
     }
   }
 
-  function* Tuple(schema: Types.TTuple<any[]>, references: Types.TSchema[], path: string, value: any): Generator<ValueError> {
+  function* Tuple(schema: Types.TTuple<any[]>, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     if (!global.Array.isArray(value)) {
       return yield { schema, path, value, message: 'Expected Array' }
     }
@@ -220,13 +220,13 @@ export namespace ValueErrors {
     }
   }
 
-  function* Undefined(schema: Types.TUndefined, references: Types.TSchema[], path: string, value: any): Generator<ValueError> {
+  function* Undefined(schema: Types.TUndefined, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     if (!(value === undefined)) {
       yield { schema, path, value, message: `Expected undefined` }
     }
   }
 
-  function* Union(schema: Types.TUnion, references: Types.TSchema[], path: string, value: any): Generator<ValueError> {
+  function* Union(schema: Types.TUnion, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     const errors: ValueError[] = []
     for (const inner of schema.anyOf) {
       const variantErrors = [...Visit(inner, references, path, value)]
@@ -241,7 +241,7 @@ export namespace ValueErrors {
     }
   }
 
-  function* Uint8Array(schema: Types.TUint8Array, references: Types.TSchema[], path: string, value: any): Generator<ValueError> {
+  function* Uint8Array(schema: Types.TUint8Array, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     if (!(value instanceof globalThis.Uint8Array)) {
       return yield { schema, path, value, message: `Expected Uint8Array` }
     }
@@ -254,15 +254,15 @@ export namespace ValueErrors {
     }
   }
 
-  function* Unknown(schema: Types.TUnknown, references: Types.TSchema[], path: string, value: any): Generator<ValueError> {}
+  function* Unknown(schema: Types.TUnknown, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {}
 
-  function* Void(schema: Types.TVoid, references: Types.TSchema[], path: string, value: any): Generator<ValueError> {
+  function* Void(schema: Types.TVoid, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     if (!(value === null)) {
       return yield { schema, path, value, message: `Expected null` }
     }
   }
 
-  function* Visit<T extends Types.TSchema>(schema: T, references: Types.TSchema[], path: string, value: any): Generator<ValueError> {
+  function* Visit<T extends Types.TSchema>(schema: T, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     const anyReferences = schema.$id === undefined ? references : [schema, ...references]
     const anySchema = schema as any
 
@@ -314,7 +314,7 @@ export namespace ValueErrors {
     }
   }
 
-  export function* Errors<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: any): Generator<ValueError> {
+  export function* Errors<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: any): IterableIterator<ValueError> {
     yield* Visit(schema, references, '', value)
   }
 }

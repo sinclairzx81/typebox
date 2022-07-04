@@ -5,10 +5,14 @@ const T = Type.Object({
   x: Type.Number(),
   y: Type.Number(),
   z: Type.Number()
-})
+}, { additionalProperties: false })
 
-for(const error of Value.Errors(T, {})) {
-  console.log(error)
+
+const E = Value.Errors(T, [])
+
+for(const value of E) {
+  console.log(value)
 }
+
 
 

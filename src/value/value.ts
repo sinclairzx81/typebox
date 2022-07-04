@@ -64,13 +64,13 @@ export namespace Value {
     return ValueCast.Cast(schema, references, value)
   }
 
-  /** Casts the given value to match the given schema and associated references. The result will be a value that retains as much information from the original value as possible. */
-  export function Errors<T extends Types.TSchema, R extends Types.TSchema[]>(schema: T, references: [...R], value: any): Generator<ValueError>
-  /** Casts the given value to match the given schema. The result will be a value that retains as much information from the original value as possible. */
-  export function Errors<T extends Types.TSchema>(schema: T, value: any): Generator<ValueError>
-  /** Casts the given value to match the given schema. The result will be a value that retains as much information from the original value as possible. */
-  export function* Errors(...args: any[]): Generator<ValueError> {
+  /** Returns an iterator to each error in this value. */
+  export function Errors<T extends Types.TSchema, R extends Types.TSchema[]>(schema: T, references: [...R], value: any): IterableIterator<ValueError>
+  /** Returns an iterator to each error in this value. */
+  export function Errors<T extends Types.TSchema>(schema: T, value: any): IterableIterator<ValueError>
+  /** Returns an iterator to each error in this value. */
+  export function* Errors(...args: any[]) {
     const [schema, references, value] = args.length === 3 ? [args[0], args[1], args[2]] : [args[0], [], args[1]]
-    yield * ValueErrors.Errors(schema, references, value)
+    yield* ValueErrors.Errors(schema, references, value)
   }
 }

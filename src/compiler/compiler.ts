@@ -48,7 +48,7 @@ export class TypeCheck<T extends Types.TSchema> {
   }
 
   /** Returns an iterator for each type error found in this value */
-  public Errors(value: unknown): Generator<ValueError> {
+  public Errors(value: unknown): IterableIterator<ValueError> {
     return ValueErrors.Errors(this.schema, this.additional, value)
   }
 
