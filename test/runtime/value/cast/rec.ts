@@ -2,7 +2,7 @@ import { Value } from '@sinclair/typebox/value'
 import { Type } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
-describe('value/upcast/Recursive', () => {
+describe('value/cast/Recursive', () => {
   const T = Type.Recursive((Self) =>
     Type.Object({
       id: Type.String(),
@@ -14,41 +14,41 @@ describe('value/upcast/Recursive', () => {
 
   it('Should upcast from string', () => {
     const value = 'hello'
-    const result = Value.Upcast(T, value)
+    const result = Value.Cast(T, value)
     Assert.deepEqual(result, E)
   })
   it('Should upcast from number', () => {
     const value = E
-    const result = Value.Upcast(T, value)
+    const result = Value.Cast(T, value)
     Assert.deepEqual(result, E)
   })
   it('Should upcast from boolean', () => {
     const value = true
-    const result = Value.Upcast(T, value)
+    const result = Value.Cast(T, value)
     Assert.deepEqual(result, E)
   })
 
   it('Should upcast from object', () => {
     const value = {}
-    const result = Value.Upcast(T, value)
+    const result = Value.Cast(T, value)
     Assert.deepEqual(result, E)
   })
 
   it('Should upcast from array', () => {
     const value = [1]
-    const result = Value.Upcast(T, value)
+    const result = Value.Cast(T, value)
     Assert.deepEqual(result, E)
   })
 
   it('Should upcast from undefined', () => {
     const value = undefined
-    const result = Value.Upcast(T, value)
+    const result = Value.Cast(T, value)
     Assert.deepEqual(result, E)
   })
 
   it('Should upcast from null', () => {
     const value = null
-    const result = Value.Upcast(T, value)
+    const result = Value.Cast(T, value)
     Assert.deepEqual(result, E)
   })
 
@@ -61,7 +61,7 @@ describe('value/upcast/Recursive', () => {
         { id: 'D', nodes: [] },
       ],
     }
-    const result = Value.Upcast(T, value)
+    const result = Value.Cast(T, value)
     Assert.deepEqual(result, value)
   })
 
@@ -89,7 +89,7 @@ describe('value/upcast/Recursive', () => {
         { id: 'D', nodes: [] },
       ],
     }
-    const ValueB = Value.Upcast(TypeB, ValueA)
+    const ValueB = Value.Cast(TypeB, ValueA)
 
     Assert.deepEqual(ValueB, {
       id: 'A',

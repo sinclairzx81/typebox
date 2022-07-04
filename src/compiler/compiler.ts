@@ -199,7 +199,7 @@ export namespace TypeCompiler {
   }
 
   function* Undefined(schema: Types.TUndefined, path: string): Generator<string> {
-    yield `${path} === undefined`
+    yield `(${path} === undefined)`
   }
 
   function* Union(schema: Types.TUnion<any[]>, path: string): Generator<string> {

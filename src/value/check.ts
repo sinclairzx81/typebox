@@ -28,291 +28,273 @@ THE SOFTWARE.
 
 import * as Types from '../typebox'
 
-/** Internal: Checks the validity of a value. This function uses dynamic lookup. */
 export namespace CheckValue {
-    function Any(schema: Types.TAny, value: any): boolean {
-        return true
-    }
+  function Any(schema: Types.TAny, references: Types.TSchema[], value: any): boolean {
+    return true
+  }
 
-    function Array(schema: Types.TArray, value: any): boolean {
-        if (!globalThis.Array.isArray(value)) {
-            return false
-        }
-        for (let i = 0; i < value.length; i++) {
-            if (!Visit(schema.items, value[i])) {
-                return false
-            }
-        }
-        return true
+  function Array(schema: Types.TArray, references: Types.TSchema[], value: any): boolean {
+    if (!globalThis.Array.isArray(value)) {
+      return false
     }
+    return value.every((val) => Visit(schema.items, references, val))
+  }
 
-    function Boolean(schema: Types.TBoolean, value: any): boolean {
-        return typeof value === 'boolean'
+  function Boolean(schema: Types.TBoolean, references: Types.TSchema[], value: any): boolean {
+    return typeof value === 'boolean'
+  }
+
+  function Constructor(schema: Types.TConstructor, references: Types.TSchema[], value: any): boolean {
+    return Visit(schema.returns, references, value)
+  }
+
+  function Function(schema: Types.TFunction, references: Types.TSchema[], value: any): boolean {
+    return typeof value === 'function'
+  }
+
+  function Integer(schema: Types.TNumeric, references: Types.TSchema[], value: any): boolean {
+    if (!(typeof value === 'number')) {
+      return false
     }
-
-    function Constructor(schema: Types.TConstructor, value: any): boolean {
-        return Visit(schema.returns, value)
+    if (!globalThis.Number.isInteger(value)) {
+      return false
     }
-
-    function Function(schema: Types.TFunction, value: any): boolean {
-        return typeof value === 'function'
+    if (schema.multipleOf && !(value % schema.multipleOf === 0)) {
+      return false
     }
-
-    function Integer(schema: Types.TNumeric, value: any): boolean {
-        if (!(typeof value === 'number')) {
-            return false
-        }
-        if (!globalThis.Number.isInteger(value)) {
-            return false
-        }
-        if (schema.multipleOf && !(value % schema.multipleOf === 0)) {
-            return false
-        }
-        if (schema.exclusiveMinimum && !(value > schema.exclusiveMinimum)) {
-            return false
-        }
-        if (schema.exclusiveMaximum && !(value < schema.exclusiveMaximum)) {
-            return false
-        }
-        if (schema.minimum && !(value >= schema.minimum)) {
-            return false
-        }
-        if (schema.maximum && !(value <= schema.maximum)) {
-            return false
-        }
-        return true
+    if (schema.exclusiveMinimum && !(value > schema.exclusiveMinimum)) {
+      return false
     }
-
-    function Literal(schema: Types.TLiteral, value: any): boolean {
-        return value === schema.const
+    if (schema.exclusiveMaximum && !(value < schema.exclusiveMaximum)) {
+      return false
     }
-
-    function Null(schema: Types.TNull, value: any): boolean {
-        return value === null
+    if (schema.minimum && !(value >= schema.minimum)) {
+      return false
     }
-
-    function Number(schema: Types.TNumeric, value: any): boolean {
-        if (!(typeof value === 'number')) {
-            return false
-        }
-        if (schema.multipleOf && !(value % schema.multipleOf === 0)) {
-            return false
-        }
-        if (schema.exclusiveMinimum && !(value > schema.exclusiveMinimum)) {
-            return false
-        }
-        if (schema.exclusiveMaximum && !(value < schema.exclusiveMaximum)) {
-            return false
-        }
-        if (schema.minimum && !(value >= schema.minimum)) {
-            return false
-        }
-        if (schema.maximum && !(value <= schema.maximum)) {
-            return false
-        }
-        return true
+    if (schema.maximum && !(value <= schema.maximum)) {
+      return false
     }
+    return true
+  }
 
-    function Object(schema: Types.TObject, value: any): boolean {
-        if (!(typeof value === 'object' && value !== null && !globalThis.Array.isArray(value))) {
-            return false
-        }
-        if (schema.minProperties !== undefined && !(globalThis.Object.keys(value).length >= schema.minProperties)) {
-            return false
-        }
-        if (schema.maxProperties !== undefined && !(globalThis.Object.keys(value).length <= schema.maxProperties)) {
-            return false
-        }
-        const propertyKeys = globalThis.Object.keys(schema.properties)
-        if (schema.additionalProperties === false) {
-            // optimization: If the property key length matches the required keys length
-            // then we only need check that the values property key length matches that
-            // of the property key length. This is because exhaustive testing for values
-            // will occur in subsequent property tests.
-            if (schema.required && schema.required.length === propertyKeys.length && !(globalThis.Object.keys(value).length === propertyKeys.length)) {
-                return false
-            } else {
-                if (!globalThis.Object.keys(value).every((key) => propertyKeys.includes(key))) {
-                    return false
-                }
-            }
-        }
-        for (const propertyKey of propertyKeys) {
-            const propertySchema = schema.properties[propertyKey]
-            if (schema.required && schema.required.includes(propertyKey)) {
-                if (!Visit(propertySchema, value[propertyKey])) return false
-            } else {
-                if (value[propertyKey] !== undefined) {
-                    if (!Visit(propertySchema, value[propertyKey])) return false
-                }
-            }
-        }
+  function Literal(schema: Types.TLiteral, references: Types.TSchema[], value: any): boolean {
+    return value === schema.const
+  }
+
+  function Null(schema: Types.TNull, references: Types.TSchema[], value: any): boolean {
+    return value === null
+  }
+
+  function Number(schema: Types.TNumeric, references: Types.TSchema[], value: any): boolean {
+    if (!(typeof value === 'number')) {
+      return false
+    }
+    if (schema.multipleOf && !(value % schema.multipleOf === 0)) {
+      return false
+    }
+    if (schema.exclusiveMinimum && !(value > schema.exclusiveMinimum)) {
+      return false
+    }
+    if (schema.exclusiveMaximum && !(value < schema.exclusiveMaximum)) {
+      return false
+    }
+    if (schema.minimum && !(value >= schema.minimum)) {
+      return false
+    }
+    if (schema.maximum && !(value <= schema.maximum)) {
+      return false
+    }
+    return true
+  }
+
+  function Object(schema: Types.TObject, references: Types.TSchema[], value: any): boolean {
+    if (!(typeof value === 'object' && value !== null && !globalThis.Array.isArray(value))) {
+      return false
+    }
+    if (schema.minProperties !== undefined && !(globalThis.Object.keys(value).length >= schema.minProperties)) {
+      return false
+    }
+    if (schema.maxProperties !== undefined && !(globalThis.Object.keys(value).length <= schema.maxProperties)) {
+      return false
+    }
+    const propertyKeys = globalThis.Object.keys(schema.properties)
+    if (schema.additionalProperties === false) {
+      // optimization: If the property key length matches the required keys length
+      // then we only need check that the values property key length matches that
+      // of the property key length. This is because exhaustive testing for values
+      // will occur in subsequent property tests.
+      if (schema.required && schema.required.length === propertyKeys.length && !(globalThis.Object.keys(value).length === propertyKeys.length)) {
         return false
+      } else {
+        if (!globalThis.Object.keys(value).every((key) => propertyKeys.includes(key))) {
+          return false
+        }
+      }
     }
-
-    function Promise(schema: Types.TPromise<any>, value: any): boolean {
-        return (typeof value === 'object' && typeof value.then === 'function')
-    }
-
-    function Record(schema: Types.TRecord<any, any>, value: any): boolean {
-        if (!(typeof value === 'object' && value !== null && !globalThis.Array.isArray(value))) {
+    for (const propertyKey of propertyKeys) {
+      const propertySchema = schema.properties[propertyKey]
+      if (schema.required && schema.required.includes(propertyKey)) {
+        if (!Visit(propertySchema, references, value[propertyKey])) {
+          return false
+        }
+      } else {
+        if (value[propertyKey] !== undefined) {
+          if (!Visit(propertySchema, references, value[propertyKey])) {
             return false
+          }
         }
-        const [keyPattern, valueSchema] = globalThis.Object.entries(schema.patternProperties)[0]
-        const regex = new RegExp(keyPattern)
-        if (!globalThis.Object.keys(value).every((key) => regex.test(key))) {
-            return false
-        }
-        for (const propValue of globalThis.Object.values(value)) {
-            if (!Visit(valueSchema, propValue)) return false
-        }
-        return true
+      }
     }
+    return true
+  }
 
-    function Ref(schema: Types.TRef<any>, value: any): boolean {
-        if (!referenceMap.has(schema.$ref)) {
-            throw Error(`ValueCheck: Cannot locate referenced schema with $id '${schema.$id}'`)
-        }
-        const referencedSchema = referenceMap.get(schema.$ref)!
-        return Visit(referencedSchema, value)
+  function Promise(schema: Types.TPromise<any>, references: Types.TSchema[], value: any): boolean {
+    return typeof value === 'object' && typeof value.then === 'function'
+  }
+
+  function Record(schema: Types.TRecord<any, any>, references: Types.TSchema[], value: any): boolean {
+    if (!(typeof value === 'object' && value !== null && !globalThis.Array.isArray(value))) {
+      return false
     }
-
-    function Self(schema: Types.TSelf, value: any): boolean {
-        if (!referenceMap.has(schema.$ref)) {
-            throw Error(`ValueCheck: Cannot locate referenced schema with $id '${schema.$id}'`)
-        }
-        const referencedSchema = referenceMap.get(schema.$ref)!
-        return Visit(referencedSchema, value)
+    const [keyPattern, valueSchema] = globalThis.Object.entries(schema.patternProperties)[0]
+    const regex = new RegExp(keyPattern)
+    if (!globalThis.Object.keys(value).every((key) => regex.test(key))) {
+      return false
     }
-
-    function String(schema: Types.TString, value: any): boolean {
-        if (!(typeof value === 'string')) {
-            return false
-        }
-        if (schema.pattern !== undefined) {
-            const regex = new RegExp(schema.pattern)
-            if (!regex.test(value)) return false
-        }
-        return true
+    for (const propValue of globalThis.Object.values(value)) {
+      if (!Visit(valueSchema, references, propValue)) return false
     }
+    return true
+  }
 
-    function Tuple(schema: Types.TTuple<any[]>, value: any): boolean {
-        if (!global.Array.isArray(value)) {
-            return false
-        }
-        if (schema.items === undefined && !(value.length === 0)) {
-            return false
-        }
-        if (!(value.length === schema.maxItems)) {
-            return false
-        }
-        if (!schema.items) {
-            return true
-        }
-        for (let i = 0; i < schema.items.length; i++) {
-            if(!Visit(schema.items[i], value[i])) return false
-        }
-        return true
+  function Ref(schema: Types.TRef<any>, references: Types.TSchema[], value: any): boolean {
+    const reference = references.find((reference) => reference.$id === schema.$ref)
+    if (reference === undefined) throw new Error(`CheckValue.Ref: Cannot find schema with $id '${schema.$ref}'.`)
+    return Visit(reference, references, value)
+  }
+
+  function Self(schema: Types.TSelf, references: Types.TSchema[], value: any): boolean {
+    const reference = references.find((reference) => reference.$id === schema.$ref)
+    if (reference === undefined) throw new Error(`CheckValue.Self: Cannot find schema with $id '${schema.$ref}'.`)
+    return Visit(reference, references, value)
+  }
+
+  function String(schema: Types.TString, references: Types.TSchema[], value: any): boolean {
+    if (!(typeof value === 'string')) {
+      return false
     }
-
-    function Undefined(schema: Types.TUndefined, value: any): boolean {
-        return value === undefined
+    if (schema.pattern !== undefined) {
+      const regex = new RegExp(schema.pattern)
+      if (!regex.test(value)) return false
     }
+    return true
+  }
 
-    function Union(schema: Types.TUnion<any[]>, value: any): boolean {
-        return schema.anyOf.some(inner => Visit(inner, value))
+  function Tuple(schema: Types.TTuple<any[]>, references: Types.TSchema[], value: any): boolean {
+    if (!global.Array.isArray(value)) {
+      return false
     }
-
-    function Uint8Array(schema: Types.TUint8Array, value: any): boolean {
-        if (!(value instanceof globalThis.Uint8Array)) {
-            return false
-        }
-        if (schema.maxByteLength && !(value.length <= schema.maxByteLength)) {
-            return false
-        }
-        if (schema.minByteLength && !(value.length >= schema.minByteLength)) {
-            return false
-        }
-        return true
+    if (schema.items === undefined && !(value.length === 0)) {
+      return false
     }
-
-    function Unknown(schema: Types.TUnknown, value: any): boolean {
-        return true
+    if (!(value.length === schema.maxItems)) {
+      return false
     }
-
-    function Void(schema: Types.TVoid, value: any): boolean {
-        return value === null
+    if (!schema.items) {
+      return true
     }
-
-    function Visit<T extends Types.TSchema>(schema: T, value: any): boolean {
-        if (schema.$id !== undefined) {
-            referenceMap.set(schema.$id, schema)
-        }
-        const anySchema = schema as any
-        switch (anySchema[Types.Kind]) {
-            case 'Any':
-                return Any(anySchema, value)
-            case 'Array':
-                return Array(anySchema, value)
-            case 'Boolean':
-                return Boolean(anySchema, value)
-            case 'Constructor':
-                return Constructor(anySchema, value)
-            case 'Function':
-                return Function(anySchema, value)
-            case 'Integer':
-                return Integer(anySchema, value)
-            case 'Literal':
-                return Literal(anySchema, value)
-            case 'Null':
-                return Null(anySchema, value)
-            case 'Number':
-                return Number(anySchema, value)
-            case 'Object':
-                return Object(anySchema, value)
-            case 'Promise':
-                return Promise(anySchema, value)
-            case 'Record':
-                return Record(anySchema, value)
-            case 'Ref':
-                return Ref(anySchema, value)
-            case 'Self':
-                return Self(anySchema, value)
-            case 'String':
-                return String(anySchema, value)
-            case 'Tuple':
-                return Tuple(anySchema, value)
-            case 'Undefined':
-                return Undefined(anySchema, value)
-            case 'Union':
-                return Union(anySchema, value)
-            case 'Uint8Array':
-                return Uint8Array(anySchema, value)
-            case 'Unknown':
-                return Unknown(anySchema, value)
-            case 'Void':
-                return Void(anySchema, value)
-            default:
-                throw Error(`Unknown schema kind '${schema[Types.Kind]}'`)
-        }
+    for (let i = 0; i < schema.items.length; i++) {
+      if (!Visit(schema.items[i], references, value[i])) return false
     }
+    return true
+  }
 
-    // -------------------------------------------------------------------------
-    // Check
-    // -------------------------------------------------------------------------
-    
-    const referenceMap = new Map<string, Types.TSchema>()
+  function Undefined(schema: Types.TUndefined, references: Types.TSchema[], value: any): boolean {
+    return value === undefined
+  }
 
-    function SetReferences(additional: Types.TSchema[] = []) {
-        referenceMap.clear()
-        for (const schema of additional) {
-            if (!schema.$id) throw Error('TypeErrors: Referenced additional schemas must have an $id')
-            referenceMap.set(schema.$id, schema)
-        }
+  function Union(schema: Types.TUnion<any[]>, references: Types.TSchema[], value: any): boolean {
+    return schema.anyOf.some((inner) => Visit(inner, references, value))
+  }
+
+  function Uint8Array(schema: Types.TUint8Array, references: Types.TSchema[], value: any): boolean {
+    if (!(value instanceof globalThis.Uint8Array)) {
+      return false
     }
-
-    export function Check<T extends Types.TSchema, R extends Types.TSchema[]>(schema: T, references: [...R], value: any): boolean {
-        SetReferences(references)
-        return Visit(schema, value)
+    if (schema.maxByteLength && !(value.length <= schema.maxByteLength)) {
+      return false
     }
+    if (schema.minByteLength && !(value.length >= schema.minByteLength)) {
+      return false
+    }
+    return true
+  }
+
+  function Unknown(schema: Types.TUnknown, references: Types.TSchema[], value: any): boolean {
+    return true
+  }
+
+  function Void(schema: Types.TVoid, references: Types.TSchema[], value: any): boolean {
+    return value === null
+  }
+
+  function Visit<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: any): boolean {
+    const anyReferences = schema.$id === undefined ? references : [schema, ...references]
+    const anySchema = schema as any
+
+    switch (anySchema[Types.Kind]) {
+      case 'Any':
+        return Any(anySchema, anyReferences, value)
+      case 'Array':
+        return Array(anySchema, anyReferences, value)
+      case 'Boolean':
+        return Boolean(anySchema, anyReferences, value)
+      case 'Constructor':
+        return Constructor(anySchema, anyReferences, value)
+      case 'Function':
+        return Function(anySchema, anyReferences, value)
+      case 'Integer':
+        return Integer(anySchema, anyReferences, value)
+      case 'Literal':
+        return Literal(anySchema, anyReferences, value)
+      case 'Null':
+        return Null(anySchema, anyReferences, value)
+      case 'Number':
+        return Number(anySchema, anyReferences, value)
+      case 'Object':
+        return Object(anySchema, anyReferences, value)
+      case 'Promise':
+        return Promise(anySchema, anyReferences, value)
+      case 'Record':
+        return Record(anySchema, anyReferences, value)
+      case 'Ref':
+        return Ref(anySchema, anyReferences, value)
+      case 'Self':
+        return Self(anySchema, anyReferences, value)
+      case 'String':
+        return String(anySchema, anyReferences, value)
+      case 'Tuple':
+        return Tuple(anySchema, anyReferences, value)
+      case 'Undefined':
+        return Undefined(anySchema, anyReferences, value)
+      case 'Union':
+        return Union(anySchema, anyReferences, value)
+      case 'Uint8Array':
+        return Uint8Array(anySchema, anyReferences, value)
+      case 'Unknown':
+        return Unknown(anySchema, anyReferences, value)
+      case 'Void':
+        return Void(anySchema, anyReferences, value)
+      default:
+        throw Error(`Unknown schema kind '${schema[Types.Kind]}'`)
+    }
+  }
+
+  // -------------------------------------------------------------------------
+  // Check
+  // -------------------------------------------------------------------------
+
+  export function Check<T extends Types.TSchema, R extends Types.TSchema[]>(schema: T, references: [...R], value: any): boolean {
+    return schema.$id === undefined ? Visit(schema, references, value) : Visit(schema, [schema, ...references], value)
+  }
 }

@@ -2,7 +2,7 @@ import { Value } from '@sinclair/typebox/value'
 import { Type } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
-describe('value/upcast/Record', () => {
+describe('value/cast/Record', () => {
   const T = Type.Record(
     Type.String(),
     Type.Object({
@@ -15,41 +15,41 @@ describe('value/upcast/Record', () => {
 
   it('Should upcast from string', () => {
     const value = 'hello'
-    const result = Value.Upcast(T, value)
+    const result = Value.Cast(T, value)
     Assert.deepEqual(result, E)
   })
   it('Should upcast from number', () => {
     const value = E
-    const result = Value.Upcast(T, value)
+    const result = Value.Cast(T, value)
     Assert.deepEqual(result, E)
   })
   it('Should upcast from boolean', () => {
     const value = true
-    const result = Value.Upcast(T, value)
+    const result = Value.Cast(T, value)
     Assert.deepEqual(result, E)
   })
 
   it('Should upcast from object', () => {
     const value = {}
-    const result = Value.Upcast(T, value)
+    const result = Value.Cast(T, value)
     Assert.deepEqual(result, E)
   })
 
   it('Should upcast from array', () => {
     const value = [1]
-    const result = Value.Upcast(T, value)
+    const result = Value.Cast(T, value)
     Assert.deepEqual(result, E)
   })
 
   it('Should upcast from undefined', () => {
     const value = undefined
-    const result = Value.Upcast(T, value)
+    const result = Value.Cast(T, value)
     Assert.deepEqual(result, E)
   })
 
   it('Should upcast from null', () => {
     const value = null
-    const result = Value.Upcast(T, value)
+    const result = Value.Cast(T, value)
     Assert.deepEqual(result, E)
   })
 
@@ -58,7 +58,7 @@ describe('value/upcast/Record', () => {
       a: { x: 1, y: 2, z: 3 },
       b: { x: 4, y: 5, z: 6 },
     }
-    const result = Value.Upcast(T, value)
+    const result = Value.Cast(T, value)
     Assert.deepEqual(result, value)
   })
   it('Should preserve and patch invalid records', () => {
@@ -69,7 +69,7 @@ describe('value/upcast/Record', () => {
       d: 1,
       e: { x: 1, y: 2, w: 9000 },
     }
-    const result = Value.Upcast(T, value)
+    const result = Value.Cast(T, value)
     Assert.deepEqual(result, {
       a: { x: 1, y: 2, z: 3 },
       b: { x: 4, y: 5, z: 0 },

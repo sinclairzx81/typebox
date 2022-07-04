@@ -29,9 +29,6 @@ THE SOFTWARE.
 import * as Types from '../typebox'
 
 export namespace CreateValue {
-  const referenceMap = new Map<string, Types.TSchema>()
-  let recursionDepth = 0
-
   function Any(schema: Types.TAny, references: Types.TSchema[]): any {
     if (schema.default !== undefined) {
       return schema.default
@@ -75,7 +72,7 @@ export namespace CreateValue {
           }
         }
       } else {
-        return class { }
+        return class {}
       }
     }
   }
@@ -105,19 +102,6 @@ export namespace CreateValue {
       return schema.minimum
     } else {
       return 0
-    }
-  }
-
-  function Intersect(schema: Types.TIntersect, references: Types.TSchema[]): any {
-    if (schema.default !== undefined) {
-      return schema.default
-    } else {
-      return (
-        schema.default ||
-        globalThis.Object.entries(schema.properties).reduce((acc, [key, schema]) => {
-          return { ...acc, [key]: CreateValue.Create(schema as Types.TSchema, references) }
-        }, {})
-      )
     }
   }
 
@@ -195,7 +179,7 @@ export namespace CreateValue {
     if (schema.default !== undefined) {
       return schema.default
     } else {
-      const reference = references.find(reference => reference.$id === schema.$ref)
+      const reference = references.find((reference) => reference.$id === schema.$ref)
       if (reference === undefined) throw new Error(`ValueCreate.Ref: Cannot find schema with $id '${schema.$ref}'.`)
       return Visit(reference, references)
     }
@@ -204,7 +188,7 @@ export namespace CreateValue {
     if (schema.default !== undefined) {
       return schema.default
     } else {
-      const reference = references.find(reference => reference.$id === schema.$ref)
+      const reference = references.find((reference) => reference.$id === schema.$ref)
       if (reference === undefined) throw new Error(`ValueCreate.Self: Cannot locate schema with $id '${schema.$ref}'`)
       return Visit(reference, references)
     }
@@ -232,9 +216,7 @@ export namespace CreateValue {
     if (schema.items === undefined) {
       return []
     } else {
-      return globalThis.Array.from({ length: schema.minItems }).map(
-        (_, index) => CreateValue.Create((schema.items as any[])[index], references)
-      )
+      return globalThis.Array.from({ length: schema.minItems }).map((_, index) => CreateValue.Create((schema.items as any[])[index], references))
     }
   }
 
@@ -275,71 +257,62 @@ export namespace CreateValue {
 
   /** Creates a value from the given schema. If the schema specifies a default value, then that value is returned. */
   export function Visit<T extends Types.TSchema>(schema: T, references: Types.TSchema[]): Types.Static<T> {
-    recursionDepth += 1
-    if (recursionDepth >= 1000) throw new Error('Cannot create value as schema contains a infinite expansion')
+    const anyReferences = schema.$id === undefined ? references : [schema, ...references]
     const anySchema = schema as any
-    if (anySchema.$id !== undefined) referenceMap.set(anySchema.$id, anySchema)
+
     switch (anySchema[Types.Kind]) {
       case 'Any':
-        return Any(anySchema, references)
+        return Any(anySchema, anyReferences)
       case 'Array':
-        return Array(anySchema, references)
+        return Array(anySchema, anyReferences)
       case 'Boolean':
-        return Boolean(anySchema, references)
+        return Boolean(anySchema, anyReferences)
       case 'Constructor':
-        return Constructor(anySchema, references)
+        return Constructor(anySchema, anyReferences)
       case 'Enum':
-        return Enum(anySchema, references)
+        return Enum(anySchema, anyReferences)
       case 'Function':
-        return Function(anySchema, references)
+        return Function(anySchema, anyReferences)
       case 'Integer':
-        return Integer(anySchema, references)
-      case 'Intersect':
-        return Intersect(anySchema, references)
+        return Integer(anySchema, anyReferences)
       case 'Literal':
-        return Literal(anySchema, references)
+        return Literal(anySchema, anyReferences)
       case 'Null':
-        return Null(anySchema, references)
+        return Null(anySchema, anyReferences)
       case 'Number':
-        return Number(anySchema, references)
+        return Number(anySchema, anyReferences)
       case 'Object':
-        return Object(anySchema, references)
+        return Object(anySchema, anyReferences)
       case 'Promise':
-        return Promise(anySchema, references)
+        return Promise(anySchema, anyReferences)
       case 'Record':
-        return Record(anySchema, references)
+        return Record(anySchema, anyReferences)
       case 'Rec':
-        return Recursive(anySchema, references)
+        return Recursive(anySchema, anyReferences)
       case 'Ref':
-        return Ref(anySchema, references)
+        return Ref(anySchema, anyReferences)
       case 'Self':
-        return Self(anySchema, references)
+        return Self(anySchema, anyReferences)
       case 'String':
-        return String(anySchema, references)
+        return String(anySchema, anyReferences)
       case 'Tuple':
-        return Tuple(anySchema, references)
+        return Tuple(anySchema, anyReferences)
       case 'Undefined':
-        return Undefined(anySchema, references)
+        return Undefined(anySchema, anyReferences)
       case 'Union':
-        return Union(anySchema, references)
+        return Union(anySchema, anyReferences)
       case 'Uint8Array':
-        return Uint8Array(anySchema, references)
+        return Uint8Array(anySchema, anyReferences)
       case 'Unknown':
-        return Unknown(anySchema, references)
+        return Unknown(anySchema, anyReferences)
       case 'Void':
-        return Void(anySchema, references)
-
+        return Void(anySchema, anyReferences)
       default:
         throw Error(`Unknown schema kind '${schema[Types.Kind]}'`)
     }
   }
 
-  /** Creates a value from the given schema. If the schema specifies a default value, then that value is returned. */
   export function Create<T extends Types.TSchema, R extends Types.TSchema[]>(schema: T, references: [...R]): Types.Static<T> {
-    recursionDepth = 0
-    if (schema.$id !== undefined) {
-      references.push(schema)
-    }
     return Visit(schema, references)
   }
 }

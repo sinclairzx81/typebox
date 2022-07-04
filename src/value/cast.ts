@@ -109,7 +109,6 @@ export namespace CastValue {
     return CheckValue.Check(schema, references, value) ? value : CreateValue.Create(schema, references)
   }
 
-
   function Literal(schema: Types.TLiteral, references: Types.TSchema[], value: any): any {
     return CheckValue.Check(schema, references, value) ? value : CreateValue.Create(schema, references)
   }
@@ -156,13 +155,13 @@ export namespace CastValue {
   }
 
   function Ref(schema: Types.TRef<any>, references: Types.TSchema[], value: any): any {
-    const reference = references.find(reference => reference.$id === schema.$ref)
+    const reference = references.find((reference) => reference.$id === schema.$ref)
     if (reference === undefined) throw new Error(`CastValue.Ref: Cannot find schema with $id '${schema.$ref}'.`)
     return Visit(reference, references, value)
   }
 
   function Self(schema: Types.TSelf, references: Types.TSchema[], value: any): any {
-    const reference = references.find(reference => reference.$id === schema.$ref)
+    const reference = references.find((reference) => reference.$id === schema.$ref)
     if (reference === undefined) throw new Error(`CastValue.Self: Cannot find schema with $id '${schema.$ref}'.`)
     return Visit(reference, references, value)
   }
@@ -199,54 +198,56 @@ export namespace CastValue {
   }
 
   export function Visit(schema: Types.TSchema, references: Types.TSchema[], value: any): any {
+    const anyReferences = schema.$id === undefined ? references : [schema, ...references]
     const anySchema = schema as any
+
     switch (schema[Types.Kind]) {
       case 'Any':
-        return Any(anySchema, references, value)
+        return Any(anySchema, anyReferences, value)
       case 'Array':
-        return Array(anySchema, references, value)
+        return Array(anySchema, anyReferences, value)
       case 'Boolean':
-        return Boolean(anySchema, references, value)
+        return Boolean(anySchema, anyReferences, value)
       case 'Constructor':
-        return Constructor(anySchema, references, value)
+        return Constructor(anySchema, anyReferences, value)
       case 'Enum':
-        return Enum(anySchema, references, value)
+        return Enum(anySchema, anyReferences, value)
       case 'Function':
-        return Function(anySchema, references, value)
+        return Function(anySchema, anyReferences, value)
       case 'Integer':
-        return Integer(anySchema, references, value)
+        return Integer(anySchema, anyReferences, value)
       case 'Literal':
-        return Literal(anySchema, references, value)
+        return Literal(anySchema, anyReferences, value)
       case 'Null':
-        return Null(anySchema, references, value)
+        return Null(anySchema, anyReferences, value)
       case 'Number':
-        return Number(anySchema, references, value)
+        return Number(anySchema, anyReferences, value)
       case 'Object':
-        return Object(anySchema, references, value)
+        return Object(anySchema, anyReferences, value)
       case 'Promise':
-        return Promise(anySchema, references, value)
+        return Promise(anySchema, anyReferences, value)
       case 'Record':
-        return Record(anySchema, references, value)
+        return Record(anySchema, anyReferences, value)
       case 'Rec':
-        return Recursive(anySchema, references, value)
+        return Recursive(anySchema, anyReferences, value)
       case 'Ref':
-        return Ref(anySchema, references, value)
+        return Ref(anySchema, anyReferences, value)
       case 'Self':
-        return Self(anySchema, references, value)
+        return Self(anySchema, anyReferences, value)
       case 'String':
-        return String(anySchema, references, value)
+        return String(anySchema, anyReferences, value)
       case 'Tuple':
-        return Tuple(anySchema, references, value)
+        return Tuple(anySchema, anyReferences, value)
       case 'Undefined':
-        return Undefined(anySchema, references, value)
+        return Undefined(anySchema, anyReferences, value)
       case 'Union':
-        return Union(anySchema, references, value)
+        return Union(anySchema, anyReferences, value)
       case 'Uint8Array':
-        return Uint8Array(anySchema, references, value)
+        return Uint8Array(anySchema, anyReferences, value)
       case 'Unknown':
-        return Unknown(anySchema, references, value)
+        return Unknown(anySchema, anyReferences, value)
       case 'Void':
-        return Void(anySchema, references, value)
+        return Void(anySchema, anyReferences, value)
       default:
         throw Error(`Unknown schema kind '${schema[Types.Kind]}'`)
     }
