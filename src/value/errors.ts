@@ -133,15 +133,9 @@ export namespace ValueErrors {
     }
     const propertyKeys = globalThis.Object.keys(schema.properties)
     if (schema.additionalProperties === false) {
-      // optimization: If the property key length matches the required keys length
-      // then we only need check that the values property key length matches that
-      // of the property key length. This is because exhaustive testing for values
-      // will occur in subsequent property tests.
-      if (schema.required && schema.required.length === propertyKeys.length && !(globalThis.Object.keys(value).length === propertyKeys.length)) {
-        yield { schema, path, value, message: 'Expected object must not have additional properties' }
-      } else {
-        if (!globalThis.Object.keys(value).every((key) => propertyKeys.includes(key))) {
-          yield { schema, path, value, message: 'Expected object must not have additional properties' }
+      for (const propKey of globalThis.Object.keys(value)) {
+        if (!propertyKeys.includes(propKey)) {
+          yield { schema, path: `${path}/${propKey}`, value: value[propKey], message: 'Unexpected property' }
         }
       }
     }

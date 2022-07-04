@@ -42,12 +42,12 @@ export type CheckFunction = (value: unknown) => boolean
 export class TypeCheck<T extends Types.TSchema> {
   constructor(private readonly schema: T, private readonly additional: Types.TSchema[], private readonly checkFunc: CheckFunction, private readonly code: string) {}
 
-  /** Returns the generated validation code used to validate this type */
+  /** Returns the generated validation code used to validate this type. */
   public Code(): string {
     return this.code
   }
 
-  /** Returns an iterator for each type error found in this value */
+  /** Returns an iterator for each error in this value. */
   public Errors(value: unknown): IterableIterator<ValueError> {
     return ValueErrors.Errors(this.schema, this.additional, value)
   }

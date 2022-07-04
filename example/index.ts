@@ -1,18 +1,11 @@
-import { Type } from '@sinclair/typebox'
+import { TypeCompiler } from '@sinclair/typebox/compiler'
 import { Value } from '@sinclair/typebox/value'
+import { Type } from '@sinclair/typebox'
 
 const T = Type.Object({
-  x: Type.Number(),
-  y: Type.Number(),
-  z: Type.Number()
-}, { additionalProperties: false })
+  x: Type.String(),
+  y: Type.String(),
+  z: Type.String()
+})
 
-
-const E = Value.Errors(T, [])
-
-for(const value of E) {
-  console.log(value)
-}
-
-
-
+console.log(T)
