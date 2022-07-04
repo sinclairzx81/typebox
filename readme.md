@@ -607,66 +607,51 @@ type T = Static<typeof T>                            // type T = 'A' | 'B' | 'C'
 
 ### Values
 
-TypeBox can construct default values for types. TypeBox will create reasonable defaults for any given type, or produce values based on the schemas the `default` value if specified.
+TypeBox can create values from types. It will create reasonable defaults for each value, but you can override this by specifying a `default` value via options.
 
 ```typescript
 import { Value } from '@sinclair/typebox/value'
-import { Type }  from '@sinclair/typebox'
+import { Type } from '@sinclair/typebox'
 
 const T = Type.Object({
   x: Type.Number({ default: 1 }),
-  y: Type.Number({ default: 2 }),
-  z: Type.Number()
+  y: Type.Number(),
 })
 
 const V = Value.Create(T)                            // const V = {
                                                      //   x: 1,
-                                                     //   y: 2,
-                                                     //   z: 0
+                                                     //   y: 0,
                                                      // }
 ```
-Values can be type checked using the `Value.Check(T, V)` function. Note this function is not as performant as compilation.
+TypeBox also offers a form of casting where a value can be upgraded to meet the schematics of a given type. Casts retain as much information from the original value as possible and can be used to upgrade existing values in scenarios where a type may have changed. Casts are immutable operations.
 
 ```typescript
 import { Value } from '@sinclair/typebox/value'
 import { Type } from '@sinclair/typebox'
 
-const R = Value.Check(Type.String(), 'hello world') // true
-```
-Values can also be cast from one type to another using the `Value.Cast(T, value)` function. This function is useful in scenarios where you have existing data, but need to update the schema. The `Value.Cast(T, value)` function will retain as much information in the original value as possible, producing a new value whose properties are retained from the previous value, and whose new values are set with using reasonable defaults.
-```typescript
-import { Value } from '@sinclair/typebox/value'
-import { Type } from '@sinclair/typebox'
-
-const Vec2 = Type.Object({
+const T = Type.Object({
   x: Type.Number(),
   y: Type.Number()
 })
 
-const Vec3 = Type.Object({
-  x: Type.Number(),
-  y: Type.Number(),
-  z: Type.Number({ default: -1 })
-})
+const A = Value.Cast(T, null)                          // const A = { x: 0, y: 0 }
 
-const V2 = Value.Create(Vec2)                        // const V2 = { x: 0, y: 0 }
+const B = Value.Cast(T, { x: 1 })                      // const B = { x: 1, y: 0 }
 
-const V3 = Value.Cast(Vec3, V2)                      // const V3 = { x: 0, y: 0, z: -1 }
-
-const V4 = Value.Cast(Vec2, V3)                      // const V2 = { x: 0, y: 0 }
+const C = Value.Cast(T, { x: 1, y: 2, z: 3 })          // const C = { x: 1, y: 2 }
 ```
 
 <a name="Guards"></a>
 
 ### Guards
 
-In some scenarios it may be helpful to test if an object is a valid TypeBox type. You can use the TypeGuard module to check an object conforms to a valid TypeBox schema representation. Consider the following.
+If reflecting on TypeBox types, it can be helpful to test if a value matches a TypeBox schematic. This can be achieved using the TypeGuard namespace. The TypeGuard namespace offers exhaustive checks for each known TypeBox type.
 
 ```typescript
 import { TypeGuard } from '@sinclair/typebox/guard'
 import { Type }  from '@sinclair/typebox'
 
-const T: any = Type.String()                         // T is any
+const T: any = {}                                    // T is any
 
 const { type } = T                                   // unsafe: type is any
 
@@ -676,8 +661,6 @@ if(TypeGuard.TString(T)) {
 }
 
 ```
-
-
 
 <a name="Strict"></a>
 
@@ -758,7 +741,7 @@ const ajv = addFormats(new Ajv({}), [
 //
 //--------------------------------------------------------------------------------------------
 
-const Vector = Type.Object({
+const T = Type.Object({
   x: Type.Number(),
   y: Type.Number(),
   z: Type.Number(),
@@ -770,7 +753,7 @@ const Vector = Type.Object({
 //
 //--------------------------------------------------------------------------------------------
 
-const OK = ajv.validate(Vector, { 
+const OK = ajv.validate(T, { 
   x: 1,
   y: 2,
   z: 3
@@ -783,7 +766,7 @@ Please refer to the official AJV [documentation](https://ajv.js.org/guide/gettin
 
 ### Compiler
 
-TypeBox includes a specialized type compiler that can be used as a runtime type checker in absense of a JSON Schema validator. This compiler is optimized for high throughput validation scenarios and generally performs better than AJV for most structural checks. Please note that this compiler is not fully JSON Schema compliant and is limited to TypeBox types only. The `TypeCompiler` contains a `Compile(T)` function that returns a `TypeCheck<T>` object that can be used to test the validity of a value as well as obtain errors.
+TypeBox includes a specialized type compiler that can be used as a runtime type checker in absense of a JSON Schema validator. This compiler is optimized for high throughput Web Socket messaging and can performs better than AJV for some structural checks. Please note that this compiler is not fully JSON Schema compliant and is limited to TypeBox types only. The `TypeCompiler` contains a `Compile(T)` function that returns a `TypeCheck<T>` object that can be used to test the validity of a value as well as obtain errors.
 
 ```typescript
 import { TypeCompiler } from '@sinclair/typebox/compiler'
