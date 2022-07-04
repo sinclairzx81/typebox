@@ -297,9 +297,13 @@ export namespace CheckValue {
         }
     }
 
+    // -------------------------------------------------------------------------
+    // Check
+    // -------------------------------------------------------------------------
+    
     const referenceMap = new Map<string, Types.TSchema>()
 
-    function SetAdditional(additional: Types.TSchema[] = []) {
+    function SetReferences(additional: Types.TSchema[] = []) {
         referenceMap.clear()
         for (const schema of additional) {
             if (!schema.$id) throw Error('TypeErrors: Referenced additional schemas must have an $id')
@@ -307,8 +311,8 @@ export namespace CheckValue {
         }
     }
 
-    export function Check<T extends Types.TSchema>(schema: T, additional: Types.TSchema[], value: any): boolean {
-        SetAdditional(additional)
+    export function Check<T extends Types.TSchema, R extends Types.TSchema[]>(schema: T, references: [...R], value: any): boolean {
+        SetReferences(references)
         return Visit(schema, value)
     }
 }

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------------
 
-@sinclair/typebox
+@sinclair/typebox/value
 
 The MIT License (MIT)
 
@@ -27,19 +27,42 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import * as Types from '../typebox'
+import { CastValue } from './cast'
 import { CreateValue } from './create'
-import { UpcastValue } from './upcast'
+import { CheckValue } from './check'
 
-/** Value builder from TypeBox types. */
+/** Values from TypeBox Types */
 export namespace Value {
 
-  /** Creates a value from the given schema type */
-  export function Create<T extends Types.TSchema>(schema: T): Types.Static<T> {
-    return CreateValue.Create(schema)
+  /** Creates a value from the given schema and associated referenced schemas */
+  export function Create<T extends Types.TSchema, R extends Types.TSchema[]>(schema: T, references: [...R]): Types.Static<T>
+  /** Creates a value from the given schema */
+  export function Create<T extends Types.TSchema>(schema: T): Types.Static<T> 
+  /** Creates a value from the given schema */
+  export function Create(...args: any[]) {
+    const [schema, references] = (args.length === 2) ? [args[0], args[1]] : [args[0], []]
+    return CreateValue.Create(schema, references)
   }
 
-  /** Upcasts a value to match a schema while preserving as much information from the original value as possible. */
-  export function Upcast<T extends Types.TSchema>(schema: T, value: any): Types.Static<T> {
-    return UpcastValue.Create(schema, value)
+  /** Checks if the given value matches the given schema with associated references */
+  export function Check<T extends Types.TSchema, R extends Types.TSchema[]>(schema: T, references: [...R], value: any): value is Types.Static<T>
+  /** Checks if the given value matches the given schema */
+  export function Check<T extends Types.TSchema>(schema: T, value: any): value is Types.Static<T> 
+  /** Checks if the given value matches the given schema */
+  export function Check(...args: any[]) {
+    const [schema, references, value] = (args.length === 3) ? [args[0], args[1], args[2]] : [args[0], [], args[1]]
+    return CheckValue.Check(schema, references, value)
+  }
+
+  /** Casts the given value to match the given schema and associated references. The result will be a value that retains as much information from the original value as possible. */
+  export function Cast<T extends Types.TSchema, R extends Types.TSchema[]>(schema: T, references: [...R], value: any): value is Types.Static<T>
+  
+  /** Casts the given value to match the given schema. The result will be a value that retains as much information from the original value as possible. */
+  export function Cast<T extends Types.TSchema>(schema: T, value: any): value is Types.Static<T> 
+  
+  /** Casts the given value to match the given schema. The result will be a value that retains as much information from the original value as possible. */
+  export function Cast<T extends Types.TSchema>(...args: any[]): Types.Static<T> {
+    const [schema, references, value] = (args.length === 3) ? [args[0], args[1], args[2]] : [args[0], [], args[1]]
+    return CastValue.Cast(schema, references, value)
   }
 }

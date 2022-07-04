@@ -625,6 +625,36 @@ const V = Value.Create(T)                            // const V = {
                                                      //   z: 0
                                                      // }
 ```
+Values can be type checked using the `Value.Check(T, V)` function. Note this function is not as performant as compilation.
+
+```typescript
+import { Value } from '@sinclair/typebox/value'
+import { Type } from '@sinclair/typebox'
+
+const R = Value.Check(Type.String(), 'hello world') // true
+```
+Values can also be cast from one type to another using the `Value.Cast(T, value)` function. This function is useful in scenarios where you have existing data, but need to update the schema. The `Value.Cast(T, value)` function will retain as much information in the original value as possible, producing a new value whose properties are retained from the previous value, and whose new values are set with using reasonable defaults.
+```typescript
+import { Value } from '@sinclair/typebox/value'
+import { Type } from '@sinclair/typebox'
+
+const Vec2 = Type.Object({
+  x: Type.Number(),
+  y: Type.Number()
+})
+
+const Vec3 = Type.Object({
+  x: Type.Number(),
+  y: Type.Number(),
+  z: Type.Number({ default: -1 })
+})
+
+const V2 = Value.Create(Vec2)                        // const V2 = { x: 0, y: 0 }
+
+const V3 = Value.Cast(Vec3, V2)                      // const V3 = { x: 0, y: 0, z: -1 }
+
+const V4 = Value.Cast(Vec2, V3)                      // const V2 = { x: 0, y: 0 }
+```
 
 <a name="Guards"></a>
 
