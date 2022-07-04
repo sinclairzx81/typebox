@@ -280,7 +280,7 @@ export namespace TypeCompiler {
       case 'Void':
         return yield* Void(anySchema, value)
       default:
-        throw Error(`Unknown schema kind '${schema[Types.Kind]}'`)
+        throw new Error(`TypeCompiler: Unknown schema kind '${schema[Types.Kind]}'`)
     }
   }
 
@@ -300,8 +300,8 @@ export namespace TypeCompiler {
 
   function PushReferences(schemas: Types.TSchema[] = []) {
     for (const schema of schemas) {
-      if (!schema.$id) throw Error(`Referenced schemas must specify an $id. Failed for '${JSON.stringify(schema)}'`)
-      if (referenceMap.has(schema.$id)) throw Error(`Duplicate schema $id detected for '${schema.$id}'`)
+      if (!schema.$id) throw new Error(`TypeCompiler: Referenced schemas must specify an $id.`)
+      if (referenceMap.has(schema.$id)) throw new Error(`TypeCompiler: Duplicate schema $id found for '${schema.$id}'`)
       referenceMap.set(schema.$id, schema)
     }
   }

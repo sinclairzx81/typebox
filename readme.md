@@ -554,7 +554,7 @@ type U = Static<typeof U>                            // type U = number | null
 
 ### Unsafe Types
 
-In some cases, you may need schema definitions that are not provided by TypeBox. In these scenarios, it's common to want to define your own schema and static type inference rules. The `Type.Unsafe(...)` function provides this functionality, allowing you to specify both schema representation and a static type to infer. Consider the following which defines a `number` schema, but will infer as a `string`.
+In some scenarios, you may need specific schemas not provided by TypeBox. In these cases, it's common to want to define a custom schema with custom static inference rules. The `Type.Unsafe(...)` function provides this functionality. This function enables one to specify both schema representation and a static type to infer. Consider the following which defines a `number` schema but infers as `string`.
 
 ```typescript
 const T = Type.Unsafe<string>({ type: 'number' })    // const T = {
@@ -564,7 +564,7 @@ const T = Type.Unsafe<string>({ type: 'number' })    // const T = {
 type T = Static<typeof T>                            // type T = string
 ```
 
-The `Type.Unsafe(...)` function can be used with function generics to create custom schema representations for validators requiring specific schema representations. An example of which would be OpenAPI's `nullable` and `string-enum` representations which are not provided by TypeBox by default. The following demonstrates creating these schemas using the `Type.Unsafe(...)` function.
+The `Type.Unsafe(...)` function can be combined with function generics to create user defined schemas for validators that need specific schema representations. An example of this might be the OpenAPI `nullable` and `string-enum` schema representations which are not provided by TypeBox. The following demonstrates creating these schemas using the `Type.Unsafe(...)` function.
 
 ```typescript
 import { Type, Static, TSchema } from '@sinclair/typebox'

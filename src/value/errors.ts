@@ -174,13 +174,13 @@ export namespace ValueErrors {
 
   function* Ref(schema: Types.TRef<any>, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     const reference = references.find((reference) => reference.$id === schema.$ref)
-    if (reference === undefined) throw new Error(`CheckValue.Ref: Cannot find schema with $id '${schema.$ref}'.`)
+    if (reference === undefined) throw new Error(`ValueErrors.Ref: Cannot find schema with $id '${schema.$ref}'.`)
     yield* Visit(reference, references, path, value)
   }
 
   function* Self(schema: Types.TSelf, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     const reference = references.find((reference) => reference.$id === schema.$ref)
-    if (reference === undefined) throw new Error(`CheckValue.Ref: Cannot find schema with $id '${schema.$ref}'.`)
+    if (reference === undefined) throw new Error(`ValueErrors.Self: Cannot find schema with $id '${schema.$ref}'.`)
     yield* Visit(reference, references, path, value)
   }
 
@@ -304,7 +304,7 @@ export namespace ValueErrors {
       case 'Void':
         return yield* Void(anySchema, anyReferences, path, value)
       default:
-        throw Error(`Unknown schema kind '${schema[Types.Kind]}'`)
+        throw new Error(`ValueErrors: Unknown schema kind '${schema[Types.Kind]}'`)
     }
   }
 

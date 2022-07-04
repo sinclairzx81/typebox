@@ -286,7 +286,7 @@ export namespace ValueCheck {
       case 'Void':
         return Void(anySchema, anyReferences, value)
       default:
-        throw Error(`Unknown schema kind '${schema[Types.Kind]}'`)
+        throw new Error(`CheckValue: Unknown schema kind '${schema[Types.Kind]}'`)
     }
   }
 

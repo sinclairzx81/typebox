@@ -70,8 +70,6 @@ namespace UnionValueCast {
 }
 
 export namespace ValueCast {
-  const ids = new Map<string, Types.TObject>()
-
   function Any(schema: Types.TAny, references: Types.TSchema[], value: any): any {
     return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
   }
@@ -124,7 +122,6 @@ export namespace ValueCast {
   function Object(schema: Types.TObject, references: Types.TSchema[], value: any): any {
     if (ValueCheck.Check(schema, references, value)) return value
     if (value === null || typeof value !== 'object') return ValueCreate.Create(schema, references)
-    ids.set(schema.$id!, schema)
     const required = new Set(schema.required || [])
     const result = {} as Record<string, any>
     for (const [key, property] of globalThis.Object.entries(schema.properties)) {
@@ -151,7 +148,7 @@ export namespace ValueCast {
   }
 
   function Recursive(schema: Types.TRecursive<any>, references: Types.TSchema[], value: any): any {
-    throw Error('Cannot patch recursive schemas')
+    throw new Error('CastValue.Recursive: Cannot cast recursive schemas')
   }
 
   function Ref(schema: Types.TRef<any>, references: Types.TSchema[], value: any): any {

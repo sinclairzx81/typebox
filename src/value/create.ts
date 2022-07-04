@@ -66,8 +66,8 @@ export namespace ValueCreate {
         return class {
           constructor() {
             for (const [key, val] of globalThis.Object.entries(value)) {
-              const facade: any = this
-              facade[key] = val
+              const self = this as any
+              self[key] = val
             }
           }
         }
@@ -163,7 +163,7 @@ export namespace ValueCreate {
     if (schema.default !== undefined) {
       return schema.default
     } else {
-      throw new Error('Rec types require a default value')
+      throw new Error('ValueCreate.Recursive: Recursive types require a default value')
     }
   }
 
@@ -188,7 +188,7 @@ export namespace ValueCreate {
   function String(schema: Types.TString, references: Types.TSchema[]): any {
     if (schema.pattern !== undefined) {
       if (schema.default === undefined) {
-        throw Error('String types with patterns must specify a default value')
+        throw new Error('ValueCreate.String: String types with patterns must specify a default value')
       } else {
         return schema.default
       }
@@ -220,7 +220,7 @@ export namespace ValueCreate {
     if (schema.default !== undefined) {
       return schema.default
     } else if (schema.anyOf.length === 0) {
-      throw Error('Cannot generate Union with empty set')
+      throw new Error('ValueCreate: Cannot create Union with zero variants')
     } else {
       return ValueCreate.Create(schema.anyOf[0], references)
     }
@@ -300,7 +300,7 @@ export namespace ValueCreate {
       case 'Void':
         return Void(anySchema, anyReferences)
       default:
-        throw Error(`Unknown schema kind '${schema[Types.Kind]}'`)
+        throw new Error(`ValueCreate: Unknown schema kind '${schema[Types.Kind]}'`)
     }
   }
 
