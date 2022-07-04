@@ -1,3 +1,10 @@
+## [0.24.8](https://www.npmjs.com/package/@sinclair/typebox/v/0.24.8)
+
+Added:
+- `Value.Cast(T, value)` structurally casts a value into another form while retaining information within the original value.
+- `Value.Check(T, value)` provides slow dynamic type checking for values. For performance, one should consider the `TypeCompiler` or `Ajv` validator.
+- `Value.Errors(T, value)` returns an iterable iterator errors found in a given value.
+
 ## [0.24.6](https://www.npmjs.com/package/@sinclair/typebox/v/0.24.6)
 
 Added:
