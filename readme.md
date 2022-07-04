@@ -786,7 +786,7 @@ const OK = C.Check({
   z: 3 
 }) // -> true
 ```
-Errors can be obtained by calling the `Errors(...)` function. This function returns an iterator that may contain zero or more errors for the given value. For performance, you should only call `Errors(V)` if the `Check(V)` function returns false. 
+Errors can be obtained by calling the `Errors(...)` function. This function returns an iterator that may contain zero or more errors for the given value. For performance, you should only call `Errors(V)` if the `Check(V)` function returns `false`. 
 ```typescript
 const C = TypeCompiler.Compile(Type.Object({
   x: Type.Number(),
@@ -802,7 +802,8 @@ if(!C.Check(V)) {
   }
 }
 ```
-The TypeCompiler generates validation routines for types. You can inspect the generated code by using the `Code()` function of the `TypeCheck<T>` object.
+The TypeCompiler generates JavaScript validation routines types that are evaluated at runtime. You can inspect the generated code by calling the `Code()` function of the `TypeCheck<T>` object.
+
 ```typescript
 const C = TypeCompiler.Compile(Type.String())
 
@@ -821,4 +822,4 @@ console.log(C.Code())
 
 ### Contribute
 
-TypeBox is open to community contribution, however please ensure you submit an open issue before submitting your pull request. The TypeBox project does preference open community discussion prior to accepting new features.
+TypeBox is open to community contribution. Please ensure you submit an open issue before submitting your pull request. The TypeBox project preferences open community discussion prior to accepting new features.
