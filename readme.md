@@ -766,7 +766,7 @@ Please refer to the official AJV [documentation](https://ajv.js.org/guide/gettin
 
 ### Compiler
 
-TypeBox includes a specialized type compiler that can be used as a runtime type checker in absense of a JSON Schema validator. This compiler is optimized for high throughput Web Socket messaging and can performs better than AJV for some structural checks. Please note that this compiler is not fully JSON Schema compliant and is limited to TypeBox types only. The `TypeCompiler` contains a `Compile(T)` function that returns a `TypeCheck<T>` object that can be used to test the validity of a value as well as obtain errors.
+TypeBox includes a specialized `TypeCompiler` that can be used as a runtime type checker in lieu of a JSON Schema validator. This compiler is optimized for high throughput Web Socket messaging and can perform better than AJV for some structural checks. Please note that this compiler is not fully JSON Schema compliant and is limited to known TypeBox types only. The `TypeCompiler` contains a `Compile(T)` function that returns a `TypeCheck<T>` object that can be used to test the validity of a value as well as obtain errors.
 
 ```typescript
 import { TypeCompiler } from '@sinclair/typebox/compiler'
@@ -802,8 +802,7 @@ if(!C.Check(V)) {
   }
 }
 ```
-To inspect the generated validation code created by the compiler. You can call the `Code()` function on the `TypeCheck<T>` object.
-
+The TypeCompiler generates validation routines for types. You can inspect the generated code by using the `Code()` function of the `TypeCheck<T>` object.
 ```typescript
 const C = TypeCompiler.Compile(Type.String())
 
