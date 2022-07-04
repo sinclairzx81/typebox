@@ -623,7 +623,7 @@ const V = Value.Create(T)                            // const V = {
                                                      //   y: 0,
                                                      // }
 ```
-TypeBox also provides a type of cast where values can be upgraded to meet the schematics of a given type. Casts retain as much information from the original value as possible and can be used to upgrade existing values in scenarios where a type may have changed. Casts are immutable operations.
+TypeBox also allows values to be upgraded to match the schematics of a given type. The `Value.Cast(...)` function can be used to upgrade a value into a target type while retaining as much information of the original value as possible. Casts are immutable operations.
 
 ```typescript
 import { Value } from '@sinclair/typebox/value'
