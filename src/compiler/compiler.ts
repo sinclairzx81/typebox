@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { TypeErrors, TypeError } from './errors'
+import { ValueErrors, ValueError } from '../value/errors'
 import * as Types from '../typebox'
 
 // -------------------------------------------------------------------
@@ -42,14 +42,14 @@ export type CheckFunction = (value: unknown) => boolean
 export class TypeCheck<T extends Types.TSchema> {
   constructor(private readonly schema: T, private readonly additional: Types.TSchema[], private readonly checkFunc: CheckFunction, private readonly code: string) {}
 
-  /** Returns the generated validation code used to validate this type */
+  /** Returns the generated validation code used to validate this type. */
   public Code(): string {
     return this.code
   }
 
-  /** Returns an iterator for each type error found in this value */
-  public Errors(value: unknown): Generator<TypeError> {
-    return TypeErrors.Errors(this.schema, this.additional, value)
+  /** Returns an iterator for each error in this value. */
+  public Errors(value: unknown): IterableIterator<ValueError> {
+    return ValueErrors.Errors(this.schema, this.additional, value)
   }
 
   /** Returns true if the value matches the given type. */
@@ -67,61 +67,61 @@ export namespace TypeCompiler {
   // Schemas
   // -------------------------------------------------------------------
 
-  function* Any(schema: Types.TAny, path: string): Generator<string> {
+  function* Any(schema: Types.TAny, value: string): Generator<string> {
     yield '(true)'
   }
 
-  function* Array(schema: Types.TArray, path: string): Generator<string> {
+  function* Array(schema: Types.TArray, value: string): Generator<string> {
     const expr = [...Visit(schema.items, `value`)].map((condition) => condition).join(' && ')
-    yield `(Array.isArray(${path}) && ${path}.every(value => ${expr}))`
+    yield `(Array.isArray(${value}) && ${value}.every(value => ${expr}))`
   }
 
-  function* Boolean(schema: Types.TBoolean, path: string): Generator<string> {
-    yield `(typeof ${path} === 'boolean')`
+  function* Boolean(schema: Types.TBoolean, value: string): Generator<string> {
+    yield `(typeof ${value} === 'boolean')`
   }
 
-  function* Constructor(schema: Types.TConstructor, path: string): Generator<string> {
-    yield* Visit(schema.yields, path)
+  function* Constructor(schema: Types.TConstructor, value: string): Generator<string> {
+    yield* Visit(schema.returns, value)
   }
 
-  function* Function(schema: Types.TFunction, path: string): Generator<string> {
-    yield `(typeof ${path} === 'function')`
+  function* Function(schema: Types.TFunction, value: string): Generator<string> {
+    yield `(typeof ${value} === 'function')`
   }
 
-  function* Integer(schema: Types.TNumeric, path: string): Generator<string> {
-    yield `(typeof ${path} === 'number' && Number.isInteger(${path}))`
-    if (schema.multipleOf) yield `(${path} % ${schema.multipleOf} === 0)`
-    if (schema.exclusiveMinimum) yield `(${path} > ${schema.exclusiveMinimum})`
-    if (schema.exclusiveMaximum) yield `(${path} < ${schema.exclusiveMaximum})`
-    if (schema.minimum) yield `(${path} >= ${schema.minimum})`
-    if (schema.maximum) yield `(${path} <= ${schema.maximum})`
+  function* Integer(schema: Types.TNumeric, value: string): Generator<string> {
+    yield `(typeof ${value} === 'number' && Number.isInteger(${value}))`
+    if (schema.multipleOf) yield `(${value} % ${schema.multipleOf} === 0)`
+    if (schema.exclusiveMinimum) yield `(${value} > ${schema.exclusiveMinimum})`
+    if (schema.exclusiveMaximum) yield `(${value} < ${schema.exclusiveMaximum})`
+    if (schema.minimum) yield `(${value} >= ${schema.minimum})`
+    if (schema.maximum) yield `(${value} <= ${schema.maximum})`
   }
 
-  function* Literal(schema: Types.TLiteral, path: string): Generator<string> {
+  function* Literal(schema: Types.TLiteral, value: string): Generator<string> {
     if (typeof schema.const === 'string') {
-      yield `(${path} === '${schema.const}')`
+      yield `(${value} === '${schema.const}')`
     } else {
-      yield `(${path} === ${schema.const})`
+      yield `(${value} === ${schema.const})`
     }
   }
 
-  function* Null(schema: Types.TNull, path: string): Generator<string> {
-    yield `(${path} === null)`
+  function* Null(schema: Types.TNull, value: string): Generator<string> {
+    yield `(${value} === null)`
   }
 
-  function* Number(schema: Types.TNumeric, path: string): Generator<string> {
-    yield `(typeof ${path} === 'number')`
-    if (schema.multipleOf) yield `(${path} % ${schema.multipleOf} === 0)`
-    if (schema.exclusiveMinimum) yield `(${path} > ${schema.exclusiveMinimum})`
-    if (schema.exclusiveMaximum) yield `(${path} < ${schema.exclusiveMaximum})`
-    if (schema.minimum) yield `(${path} >= ${schema.minimum})`
-    if (schema.maximum) yield `(${path} <= ${schema.maximum})`
+  function* Number(schema: Types.TNumeric, value: string): Generator<string> {
+    yield `(typeof ${value} === 'number')`
+    if (schema.multipleOf) yield `(${value} % ${schema.multipleOf} === 0)`
+    if (schema.exclusiveMinimum) yield `(${value} > ${schema.exclusiveMinimum})`
+    if (schema.exclusiveMaximum) yield `(${value} < ${schema.exclusiveMaximum})`
+    if (schema.minimum) yield `(${value} >= ${schema.minimum})`
+    if (schema.maximum) yield `(${value} <= ${schema.maximum})`
   }
 
-  function* Object(schema: Types.TObject, path: string): Generator<string> {
-    yield `(typeof ${path} === 'object' && ${path} !== null && !Array.isArray(${path}))`
-    if (schema.minProperties !== undefined) yield `(Object.keys(${path}).length >= ${schema.minProperties})`
-    if (schema.maxProperties !== undefined) yield `(Object.keys(${path}).length <= ${schema.maxProperties})`
+  function* Object(schema: Types.TObject, value: string): Generator<string> {
+    yield `(typeof ${value} === 'object' && ${value} !== null && !Array.isArray(${value}))`
+    if (schema.minProperties !== undefined) yield `(Object.keys(${value}).length >= ${schema.minProperties})`
+    if (schema.maxProperties !== undefined) yield `(Object.keys(${value}).length <= ${schema.maxProperties})`
     const propertyKeys = globalThis.Object.keys(schema.properties)
     if (schema.additionalProperties === false) {
       // optimization: If the property key length matches the required keys length
@@ -129,37 +129,37 @@ export namespace TypeCompiler {
       // of the property key length. This is because exhaustive testing for values
       // will occur in subsequent property tests.
       if (schema.required && schema.required.length === propertyKeys.length) {
-        yield `(Object.keys(${path}).length === ${propertyKeys.length})`
+        yield `(Object.keys(${value}).length === ${propertyKeys.length})`
       } else {
         const keys = `[${propertyKeys.map((key) => `'${key}'`).join(', ')}]`
-        yield `(Object.keys(${path}).every(key => ${keys}.includes(key)))`
+        yield `(Object.keys(${value}).every(key => ${keys}.includes(key)))`
       }
     }
     for (const propertyKey of propertyKeys) {
       const propertySchema = schema.properties[propertyKey]
       if (schema.required && schema.required.includes(propertyKey)) {
-        yield* Visit(propertySchema, `${path}.${propertyKey}`)
+        yield* Visit(propertySchema, `${value}.${propertyKey}`)
       } else {
-        const expr = [...Visit(propertySchema, `${path}.${propertyKey}`)].map((condition) => condition).join(' && ')
-        yield `(${path}.${propertyKey} === undefined ? true : (${expr}))`
+        const expr = [...Visit(propertySchema, `${value}.${propertyKey}`)].map((condition) => condition).join(' && ')
+        yield `(${value}.${propertyKey} === undefined ? true : (${expr}))`
       }
     }
   }
 
-  function* Promise(schema: Types.TPromise<any>, path: string): Generator<string> {
-    yield `(typeof value === 'object' && typeof ${path}.then === 'function')`
+  function* Promise(schema: Types.TPromise<any>, value: string): Generator<string> {
+    yield `(typeof value === 'object' && typeof ${value}.then === 'function')`
   }
 
-  function* Record(schema: Types.TRecord<any, any>, path: string): Generator<string> {
-    yield `(typeof ${path} === 'object' && ${path} !== null && !Array.isArray(${path}))`
+  function* Record(schema: Types.TRecord<any, any>, value: string): Generator<string> {
+    yield `(typeof ${value} === 'object' && ${value} !== null && !Array.isArray(${value}))`
     const [keyPattern, valueSchema] = globalThis.Object.entries(schema.patternProperties)[0]
     const local = PushLocal(`const local = new RegExp(/${keyPattern}/)`)
-    yield `(Object.keys(${path}).every(key => ${local}.test(key)))`
+    yield `(Object.keys(${value}).every(key => ${local}.test(key)))`
     const expr = [...Visit(valueSchema, 'value')].map((condition) => condition).join(' && ')
-    yield `(Object.values(${path}).every(value => ${expr}))`
+    yield `(Object.values(${value}).every(value => ${expr}))`
   }
 
-  function* Ref(schema: Types.TRef<any>, path: string): Generator<string> {
+  function* Ref(schema: Types.TRef<any>, value: string): Generator<string> {
     // reference: referenced schemas can originate from either additional
     // schemas or inline in the schema itself. Ideally the recursive
     // path should align to reference path. Consider for review.
@@ -172,56 +172,56 @@ export namespace TypeCompiler {
       PushLocal(body)
     }
     const func = CreateFunctionName(schema.$ref)
-    yield `(${func}(${path}))`
+    yield `(${func}(${value}))`
   }
 
-  function* Self(schema: Types.TSelf, path: string): Generator<string> {
+  function* Self(schema: Types.TSelf, value: string): Generator<string> {
     const func = CreateFunctionName(schema.$ref)
-    yield `(${func}(${path}))`
+    yield `(${func}(${value}))`
   }
 
-  function* String(schema: Types.TString, path: string): Generator<string> {
-    yield `(typeof ${path} === 'string')`
+  function* String(schema: Types.TString, value: string): Generator<string> {
+    yield `(typeof ${value} === 'string')`
     if (schema.pattern !== undefined) {
       const local = PushLocal(`const local = new RegExp('${schema.pattern}');`)
-      yield `(${local}.test(${path}))`
+      yield `(${local}.test(${value}))`
     }
   }
 
-  function* Tuple(schema: Types.TTuple<any[]>, path: string): Generator<string> {
-    yield `(Array.isArray(${path}))`
-    if (schema.items === undefined) return yield `(${path}.length === 0)`
-    yield `(${path}.length === ${schema.maxItems})`
+  function* Tuple(schema: Types.TTuple<any[]>, value: string): Generator<string> {
+    yield `(Array.isArray(${value}))`
+    if (schema.items === undefined) return yield `(${value}.length === 0)`
+    yield `(${value}.length === ${schema.maxItems})`
     for (let i = 0; i < schema.items.length; i++) {
-      const expr = [...Visit(schema.items[i], `${path}[${i}]`)].map((condition) => condition).join(' && ')
+      const expr = [...Visit(schema.items[i], `${value}[${i}]`)].map((condition) => condition).join(' && ')
       yield `(${expr})`
     }
   }
 
-  function* Undefined(schema: Types.TUndefined, path: string): Generator<string> {
-    yield `${path} === undefined`
+  function* Undefined(schema: Types.TUndefined, value: string): Generator<string> {
+    yield `(${value} === undefined)`
   }
 
-  function* Union(schema: Types.TUnion<any[]>, path: string): Generator<string> {
-    const exprs = schema.anyOf.map((schema: Types.TSchema) => [...Visit(schema, path)].map((condition) => condition).join(' && '))
+  function* Union(schema: Types.TUnion<any[]>, value: string): Generator<string> {
+    const exprs = schema.anyOf.map((schema: Types.TSchema) => [...Visit(schema, value)].map((condition) => condition).join(' && '))
     yield `(${exprs.join(' || ')})`
   }
 
-  function* Uint8Array(schema: Types.TUint8Array, path: string): Generator<string> {
-    yield `(${path} instanceof Uint8Array)`
-    if (schema.maxByteLength) yield `(${path}.length <= ${schema.maxByteLength})`
-    if (schema.minByteLength) yield `(${path}.length >= ${schema.minByteLength})`
+  function* Uint8Array(schema: Types.TUint8Array, value: string): Generator<string> {
+    yield `(${value} instanceof Uint8Array)`
+    if (schema.maxByteLength) yield `(${value}.length <= ${schema.maxByteLength})`
+    if (schema.minByteLength) yield `(${value}.length >= ${schema.minByteLength})`
   }
 
-  function* Unknown(schema: Types.TUnknown, path: string): Generator<string> {
+  function* Unknown(schema: Types.TUnknown, value: string): Generator<string> {
     yield '(true)'
   }
 
-  function* Void(schema: Types.TVoid, path: string): Generator<string> {
-    yield `(${path} === null)`
+  function* Void(schema: Types.TVoid, value: string): Generator<string> {
+    yield `(${value} === null)`
   }
 
-  function* Visit<T extends Types.TSchema>(schema: T, path: string): Generator<string> {
+  function* Visit<T extends Types.TSchema>(schema: T, value: string): Generator<string> {
     // reference: referenced schemas can originate from either additional
     // schemas or inline in the schema itself. Ideally the recursive
     // path should align to reference path. Consider for review.
@@ -231,54 +231,54 @@ export namespace TypeCompiler {
       const name = CreateFunctionName(schema.$id)
       const body = CreateFunction(name, conditions)
       PushLocal(body)
-      yield `(${name}(${path}))`
+      yield `(${name}(${value}))`
       return
     }
 
     const anySchema = schema as any
     switch (anySchema[Types.Kind]) {
       case 'Any':
-        return yield* Any(anySchema, path)
+        return yield* Any(anySchema, value)
       case 'Array':
-        return yield* Array(anySchema, path)
+        return yield* Array(anySchema, value)
       case 'Boolean':
-        return yield* Boolean(anySchema, path)
+        return yield* Boolean(anySchema, value)
       case 'Constructor':
-        return yield* Constructor(anySchema, path)
+        return yield* Constructor(anySchema, value)
       case 'Function':
-        return yield* Function(anySchema, path)
+        return yield* Function(anySchema, value)
       case 'Integer':
-        return yield* Integer(anySchema, path)
+        return yield* Integer(anySchema, value)
       case 'Literal':
-        return yield* Literal(anySchema, path)
+        return yield* Literal(anySchema, value)
       case 'Null':
-        return yield* Null(anySchema, path)
+        return yield* Null(anySchema, value)
       case 'Number':
-        return yield* Number(anySchema, path)
+        return yield* Number(anySchema, value)
       case 'Object':
-        return yield* Object(anySchema, path)
+        return yield* Object(anySchema, value)
       case 'Promise':
-        return yield* Promise(anySchema, path)
+        return yield* Promise(anySchema, value)
       case 'Record':
-        return yield* Record(anySchema, path)
+        return yield* Record(anySchema, value)
       case 'Ref':
-        return yield* Ref(anySchema, path)
+        return yield* Ref(anySchema, value)
       case 'Self':
-        return yield* Self(anySchema, path)
+        return yield* Self(anySchema, value)
       case 'String':
-        return yield* String(anySchema, path)
+        return yield* String(anySchema, value)
       case 'Tuple':
-        return yield* Tuple(anySchema, path)
+        return yield* Tuple(anySchema, value)
       case 'Undefined':
-        return yield* Undefined(anySchema, path)
+        return yield* Undefined(anySchema, value)
       case 'Union':
-        return yield* Union(anySchema, path)
+        return yield* Union(anySchema, value)
       case 'Uint8Array':
-        return yield* Uint8Array(anySchema, path)
+        return yield* Uint8Array(anySchema, value)
       case 'Unknown':
-        return yield* Unknown(anySchema, path)
+        return yield* Unknown(anySchema, value)
       case 'Void':
-        return yield* Void(anySchema, path)
+        return yield* Void(anySchema, value)
       default:
         throw Error(`Unknown schema kind '${schema[Types.Kind]}'`)
     }
@@ -333,18 +333,18 @@ export namespace TypeCompiler {
   // Compile
   // -------------------------------------------------------------------
 
-  function Build<T extends Types.TSchema>(schema: T, additional: Types.TSchema[] = []): string {
+  function Build<T extends Types.TSchema>(schema: T, references: Types.TSchema[] = []): string {
     ClearLocals()
-    PushReferences(additional)
+    PushReferences(references)
     const conditions = [...Visit(schema, 'value')] // locals populated during yield
     const locals = GetLocals()
     return `${locals.join('\n')}\nreturn ${CreateFunction('check', conditions)}`
   }
 
   /** Compiles the given type for runtime type checking. This compiler only accepts known TypeBox types non-inclusive of unsafe types. */
-  export function Compile<T extends Types.TSchema>(schema: T, additional: Types.TSchema[] = []): TypeCheck<T> {
-    const code = Build(schema, additional)
+  export function Compile<T extends Types.TSchema>(schema: T, references: Types.TSchema[] = []): TypeCheck<T> {
+    const code = Build(schema, references)
     const func = globalThis.Function(code)
-    return new TypeCheck(schema, additional, func(), code)
+    return new TypeCheck(schema, references, func(), code)
   }
 }

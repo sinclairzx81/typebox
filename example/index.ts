@@ -1,20 +1,11 @@
 import { TypeCompiler } from '@sinclair/typebox/compiler'
-import { TypeGuard } from '@sinclair/typebox/guard'
+import { Value } from '@sinclair/typebox/value'
 import { Type } from '@sinclair/typebox'
 
-const T: any = Type.String()                         // T is any
+const T = Type.Object({
+  x: Type.String(),
+  y: Type.String(),
+  z: Type.String()
+})
 
-const { type } = T                                   // type is any
-
-if(TypeGuard.TString(T)) {
-    
-  const { type } = T                                 // type is 'string'
-}
-
-
-
-
-
-
-
-
+console.log(T)

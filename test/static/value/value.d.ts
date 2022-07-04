@@ -1,17 +1,21 @@
 import * as Types from '../typebox';
-import { Edit } from './delta';
-export { Edit, EditType } from './delta';
+import { ValueError } from './errors';
+/** Creates Values from TypeBox Types */
 export declare namespace Value {
-    /** Returns true if the value conforms to the given schema */
-    function Check<T extends Types.TSchema>(schema: T, value: any): value is Types.Static<T>;
-    /** Returns a deep clone of the given value */
-    function Clone<T>(value: T): T;
-    /** Creates a value from the given schema type */
+    /** Creates a value from the given type */
+    function Create<T extends Types.TSchema, R extends Types.TSchema[]>(schema: T, references: [...R]): Types.Static<T>;
+    /** Creates a value from the given type */
     function Create<T extends Types.TSchema>(schema: T): Types.Static<T>;
-    /** Diffs the value and produces edits to transform the value into the next value */
-    function Diff(value: any, next: any): Edit[];
-    /** Patches a value by applying a series of edits */
-    function Patch(value: any, edits: Edit[]): any;
-    /** Upcasts a value to match a schema while preserving as much information from the original value as possible. */
-    function Upcast<T extends Types.TSchema>(schema: T, value: any): Types.Static<T>;
+    /** Checks a value matches the given type */
+    function Check<T extends Types.TSchema, R extends Types.TSchema[]>(schema: T, references: [...R], value: unknown): value is Types.Static<T>;
+    /** Checks a value matches the given type */
+    function Check<T extends Types.TSchema>(schema: T, value: unknown): value is Types.Static<T>;
+    /** Casts a value into a structure matching the given type. The result will be a new value that retains as much information of the original value as possible. */
+    function Cast<T extends Types.TSchema, R extends Types.TSchema[]>(schema: T, references: [...R], value: unknown): Types.Static<T>;
+    /** Casts a value into a structure matching the given type. The result will be a new value that retains as much information of the original value as possible. */
+    function Cast<T extends Types.TSchema>(schema: T, value: unknown): Types.Static<T>;
+    /** Returns an iterator for each error in this value. */
+    function Errors<T extends Types.TSchema, R extends Types.TSchema[]>(schema: T, references: [...R], value: unknown): IterableIterator<ValueError>;
+    /** Returns an iterator for each error in this value. */
+    function Errors<T extends Types.TSchema>(schema: T, value: unknown): IterableIterator<ValueError>;
 }

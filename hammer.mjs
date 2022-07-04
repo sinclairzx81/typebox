@@ -5,6 +5,9 @@ import { readFileSync } from 'fs'
 // -------------------------------------------------------------------------------
 
 export async function clean() {
+    await folder('test/static/compiler').delete()
+    await folder('test/static/guard').delete()
+    await folder('test/static/value').delete()
     await folder('target').delete()
 }
 
@@ -20,8 +23,8 @@ export async function format() {
 // Start
 // -------------------------------------------------------------------------------
 
-export async function start(target = 'target/example') {
-    await shell(`hammer run example/index.ts --dist ${target}`)
+export async function start(example = 'index') {
+    await shell(`hammer run example/${example}.ts --dist target/example/${example}`)
 }
 
 // -------------------------------------------------------------------------------

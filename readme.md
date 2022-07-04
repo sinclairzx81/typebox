@@ -607,36 +607,51 @@ type T = Static<typeof T>                            // type T = 'A' | 'B' | 'C'
 
 ### Values
 
-TypeBox can construct default values for types. TypeBox will create reasonable defaults for any given type, or produce values based on the schemas the `default` value if specified.
+TypeBox can create values from types. It creates reasonable defaults for each value which can overrided by specifying a `default` value.
 
 ```typescript
 import { Value } from '@sinclair/typebox/value'
-import { Type }  from '@sinclair/typebox'
+import { Type } from '@sinclair/typebox'
 
 const T = Type.Object({
   x: Type.Number({ default: 1 }),
-  y: Type.Number({ default: 2 }),
-  z: Type.Number()
+  y: Type.Number(),
 })
 
 const V = Value.Create(T)                            // const V = {
                                                      //   x: 1,
-                                                     //   y: 2,
-                                                     //   z: 0
+                                                     //   y: 0,
                                                      // }
+```
+TypeBox also allows values to be upgraded to match the schematics of a given type. The `Value.Cast(...)` function can be used to upgrade a value into a target type while retaining as much information of the original value as possible. Casts are immutable operations.
+
+```typescript
+import { Value } from '@sinclair/typebox/value'
+import { Type } from '@sinclair/typebox'
+
+const T = Type.Object({
+  x: Type.Number(),
+  y: Type.Number()
+})
+
+const A = Value.Cast(T, null)                          // const A = { x: 0, y: 0 }
+
+const B = Value.Cast(T, { x: 1 })                      // const B = { x: 1, y: 0 }
+
+const C = Value.Cast(T, { x: 1, y: 2, z: 3 })          // const C = { x: 1, y: 2 }
 ```
 
 <a name="Guards"></a>
 
 ### Guards
 
-In some scenarios it may be helpful to test if an object is a valid TypeBox type. You can use the TypeGuard module to check an object conforms to a valid TypeBox schema representation. Consider the following.
+If reflecting on TypeBox types, it can be helpful to test if a value matches a TypeBox schematic. This can be achieved using the TypeGuard namespace. The TypeGuard namespace offers exhaustive checks for each known TypeBox type.
 
 ```typescript
 import { TypeGuard } from '@sinclair/typebox/guard'
 import { Type }  from '@sinclair/typebox'
 
-const T: any = Type.String()                         // T is any
+const T: any = {}                                    // T is any
 
 const { type } = T                                   // unsafe: type is any
 
@@ -646,8 +661,6 @@ if(TypeGuard.TString(T)) {
 }
 
 ```
-
-
 
 <a name="Strict"></a>
 
@@ -728,7 +741,7 @@ const ajv = addFormats(new Ajv({}), [
 //
 //--------------------------------------------------------------------------------------------
 
-const Vector = Type.Object({
+const T = Type.Object({
   x: Type.Number(),
   y: Type.Number(),
   z: Type.Number(),
@@ -740,7 +753,7 @@ const Vector = Type.Object({
 //
 //--------------------------------------------------------------------------------------------
 
-const OK = ajv.validate(Vector, { 
+const OK = ajv.validate(T, { 
   x: 1,
   y: 2,
   z: 3
@@ -753,7 +766,7 @@ Please refer to the official AJV [documentation](https://ajv.js.org/guide/gettin
 
 ### Compiler
 
-TypeBox includes a specialized type compiler that can be used as a runtime type checker in absense of a JSON Schema validator. This compiler is optimized for high throughput validation scenarios and generally performs better than AJV for most structural checks. Please note that this compiler is not fully JSON Schema compliant and is limited to TypeBox types only. The `TypeCompiler` contains a `Compile(T)` function that returns a `TypeCheck<T>` object that can be used to test the validity of a value as well as obtain errors.
+TypeBox includes a specialized `TypeCompiler` that can be used as a runtime type checker in lieu of a JSON Schema validator. This compiler is optimized for high throughput Web Socket messaging and can perform better than AJV for some structural checks. Please note that this compiler is not fully JSON Schema compliant and is limited to known TypeBox types only. The `TypeCompiler` contains a `Compile(T)` function that returns a `TypeCheck<T>` object that can be used to test the validity of a value as well as obtain errors.
 
 ```typescript
 import { TypeCompiler } from '@sinclair/typebox/compiler'
@@ -773,7 +786,7 @@ const OK = C.Check({
   z: 3 
 }) // -> true
 ```
-Errors can be obtained by calling the `Errors(...)` function. This function returns an iterator that may contain zero or more errors for the given value. For performance, you should only call `Errors(V)` if the `Check(V)` function returns false. 
+Errors can be obtained by calling the `Errors(...)` function. This function returns an iterator that may contain zero or more errors for the given value. For performance, you should only call `Errors(V)` if the `Check(V)` function returns `false`. 
 ```typescript
 const C = TypeCompiler.Compile(Type.Object({
   x: Type.Number(),
@@ -789,7 +802,7 @@ if(!C.Check(V)) {
   }
 }
 ```
-To inspect the generated validation code created by the compiler. You can call the `Code()` function on the `TypeCheck<T>` object.
+The TypeCompiler generates JavaScript validation routines types that are evaluated at runtime. You can inspect the generated code by calling the `Code()` function of the `TypeCheck<T>` object.
 
 ```typescript
 const C = TypeCompiler.Compile(Type.String())
@@ -809,4 +822,4 @@ console.log(C.Code())
 
 ### Contribute
 
-TypeBox is open to community contribution, however please ensure you submit an open issue before submitting your pull request. The TypeBox project does preference open community discussion prior to accepting new features.
+TypeBox is open to community contribution. Please ensure you submit an open issue before submitting your pull request. The TypeBox project preferences open community discussion prior to accepting new features.

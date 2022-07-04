@@ -22,12 +22,10 @@ export interface SchemaOptions {
     title?: string;
     /** Description of this schema */
     description?: string;
-    /** Default value hint for this schema */
+    /** Default value for this schema */
     default?: any;
     /** Example values matching this schema. */
     examples?: any;
-    /** Design metadata for this schema */
-    design?: DesignType;
     [prop: string]: any;
 }
 export interface TSchema extends SchemaOptions {

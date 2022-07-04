@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------------
 
-@sinclair/typebox
+@sinclair/typebox/value
 
 The MIT License (MIT)
 
@@ -27,42 +27,46 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import * as Types from '../typebox'
-import { CreateValue } from './create'
-import { CheckValue } from './check'
-import { CloneValue } from './clone'
-import { DeltaValue, Edit } from './delta'
-import { UpcastValue } from './upcast'
+import { ValueErrors, ValueError } from './errors'
+import { ValueCast } from './cast'
+import { ValueCreate } from './create'
+import { ValueCheck } from './check'
 
-export { Edit, EditType } from './delta'
-
+/** Creates Values from TypeBox Types */
 export namespace Value {
-  /** Returns true if the value conforms to the given schema */
-  export function Check<T extends Types.TSchema>(schema: T, value: any): value is Types.Static<T> {
-    return CheckValue.Check(schema, value)
+  /** Creates a value from the given type */
+  export function Create<T extends Types.TSchema, R extends Types.TSchema[]>(schema: T, references: [...R]): Types.Static<T>
+  /** Creates a value from the given type */
+  export function Create<T extends Types.TSchema>(schema: T): Types.Static<T>
+  export function Create(...args: any[]) {
+    const [schema, references] = args.length === 2 ? [args[0], args[1]] : [args[0], []]
+    return ValueCreate.Create(schema, references)
   }
 
-  /** Returns a deep clone of the given value */
-  export function Clone<T>(value: T): T {
-    return CloneValue.Create(value)
+  /** Checks a value matches the given type */
+  export function Check<T extends Types.TSchema, R extends Types.TSchema[]>(schema: T, references: [...R], value: unknown): value is Types.Static<T>
+  /** Checks a value matches the given type */
+  export function Check<T extends Types.TSchema>(schema: T, value: unknown): value is Types.Static<T>
+  export function Check(...args: any[]) {
+    const [schema, references, value] = args.length === 3 ? [args[0], args[1], args[2]] : [args[0], [], args[1]]
+    return ValueCheck.Check(schema, references, value)
   }
 
-  /** Creates a value from the given schema type */
-  export function Create<T extends Types.TSchema>(schema: T): Types.Static<T> {
-    return CreateValue.Create(schema)
+  /** Casts a value into a structure matching the given type. The result will be a new value that retains as much information of the original value as possible. */
+  export function Cast<T extends Types.TSchema, R extends Types.TSchema[]>(schema: T, references: [...R], value: unknown): Types.Static<T>
+  /** Casts a value into a structure matching the given type. The result will be a new value that retains as much information of the original value as possible. */
+  export function Cast<T extends Types.TSchema>(schema: T, value: unknown): Types.Static<T>
+  export function Cast(...args: any[]) {
+    const [schema, references, value] = args.length === 3 ? [args[0], args[1], args[2]] : [args[0], [], args[1]]
+    return ValueCast.Cast(schema, references, value)
   }
 
-  /** Diffs the value and produces edits to transform the value into the next value */
-  export function Diff(value: any, next: any): Edit[] {
-    return DeltaValue.Diff(value, next)
-  }
-
-  /** Patches a value by applying a series of edits */
-  export function Patch(value: any, edits: Edit[]): any {
-    return DeltaValue.Edit(value, edits)
-  }
-
-  /** Upcasts a value to match a schema while preserving as much information from the original value as possible. */
-  export function Upcast<T extends Types.TSchema>(schema: T, value: any): Types.Static<T> {
-    return UpcastValue.Create(schema, value)
+  /** Returns an iterator for each error in this value. */
+  export function Errors<T extends Types.TSchema, R extends Types.TSchema[]>(schema: T, references: [...R], value: unknown): IterableIterator<ValueError>
+  /** Returns an iterator for each error in this value. */
+  export function Errors<T extends Types.TSchema>(schema: T, value: unknown): IterableIterator<ValueError>
+  export function* Errors(...args: any[]) {
+    const [schema, references, value] = args.length === 3 ? [args[0], args[1], args[2]] : [args[0], [], args[1]]
+    yield* ValueErrors.Errors(schema, references, value)
   }
 }
