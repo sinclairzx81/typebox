@@ -8,8 +8,4 @@ const T = Type.Object({
   z: Type.String()
 }, { $id: 'T' })
 
-const R = Type.Ref(T)
-
 console.log(T)
-
-console.log(R)

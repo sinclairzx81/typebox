@@ -14,6 +14,7 @@ export declare class TypeCheck<T extends Types.TSchema> {
   /** Returns true if the value matches the given type. */
   Check(value: unknown): value is Types.Static<T>
 }
+/** Compiles TypeBox Types for Runtime Type Checking */
 export declare namespace TypeCompiler {
   /** Compiles the given type for runtime type checking. This compiler only accepts known TypeBox types non-inclusive of unsafe types. */
   function Compile<T extends Types.TSchema>(schema: T, references?: Types.TSchema[]): TypeCheck<T>
