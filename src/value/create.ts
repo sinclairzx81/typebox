@@ -195,6 +195,10 @@ export namespace ValueCreate {
     } else {
       if (schema.default !== undefined) {
         return schema.default
+      } else if (schema.minLength !== undefined) {
+        return globalThis.Array.from({ length: schema.minLength })
+          .map(() => '.')
+          .join('')
       } else {
         return ''
       }
@@ -228,7 +232,7 @@ export namespace ValueCreate {
   function Uint8Array(schema: Types.TUint8Array, references: Types.TSchema[]): any {
     if (schema.default !== undefined) {
       return schema.default
-    } else if (schema.minByteLength) {
+    } else if (schema.minByteLength !== undefined) {
       return new globalThis.Uint8Array(schema.minByteLength)
     } else {
       return new globalThis.Uint8Array(0)

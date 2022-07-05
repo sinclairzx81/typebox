@@ -45,4 +45,16 @@ describe('type/compiler/String', () => {
     const T = Type.String({ format: 'date-time' })
     ok(T, '2021-06-11T20:30:00-04:00')
   })
+
+  it('Should validate minLength', () => {
+    const T = Type.String({ minLength: 4 })
+    ok(T, '....')
+    fail(T, '...')
+  })
+
+  it('Should validate maxLength', () => {
+    const T = Type.String({ maxLength: 4 })
+    ok(T, '....')
+    fail(T, '.....')
+  })
 })

@@ -183,6 +183,12 @@ export namespace ValueCheck {
     if (!(typeof value === 'string')) {
       return false
     }
+    if (schema.minLength !== undefined) {
+      if (!(value.length >= schema.minLength)) return false
+    }
+    if (schema.maxLength !== undefined) {
+      if (!(value.length <= schema.maxLength)) return false
+    }
     if (schema.pattern !== undefined) {
       const regex = new RegExp(schema.pattern)
       if (!regex.test(value)) return false

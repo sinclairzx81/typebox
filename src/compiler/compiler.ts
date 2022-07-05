@@ -183,6 +183,12 @@ export namespace TypeCompiler {
 
   function* String(schema: Types.TString, value: string): Generator<string> {
     yield `(typeof ${value} === 'string')`
+    if (schema.minLength !== undefined) {
+      yield `(${value}.length >= ${schema.minLength})`
+    }
+    if (schema.maxLength !== undefined) {
+      yield `(${value}.length <= ${schema.maxLength})`
+    }
     if (schema.pattern !== undefined) {
       const local = PushLocal(`const local = new RegExp('${schema.pattern}');`)
       yield `(${local}.test(${value}))`

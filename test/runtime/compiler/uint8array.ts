@@ -42,11 +42,15 @@ describe('type/compiler/Uint8Array', () => {
     ok(T, new Uint8Array(100))
   })
 
-  it('Should validate Uint8Array with constraint', () => {
-    const T = Type.Uint8Array({ minByteLength: 32, maxByteLength: 64 })
-    ok(T, new Uint8Array(32))
-    ok(T, new Uint8Array(64))
-    fail(T, new Uint8Array(31))
-    fail(T, new Uint8Array(65))
+  it('Should validate minByteLength', () => {
+    const T = Type.Uint8Array({ minByteLength: 4 })
+    ok(T, new Uint8Array(4))
+    fail(T, new Uint8Array(3))
+  })
+
+  it('Should validate maxByteLength', () => {
+    const T = Type.Uint8Array({ maxByteLength: 4 })
+    ok(T, new Uint8Array(4))
+    fail(T, new Uint8Array(5))
   })
 })

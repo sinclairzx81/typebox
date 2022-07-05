@@ -188,6 +188,12 @@ export namespace ValueErrors {
     if (!(typeof value === 'string')) {
       return yield { schema, path, value, message: 'Expected string' }
     }
+    if (schema.minLength !== undefined && !(value.length >= schema.minLength)) {
+      yield { schema, path, value, message: `Expected string length greater or equal to ${schema.minLength}` }
+    }
+    if (schema.maxLength !== undefined && !(value.length <= schema.maxLength)) {
+      yield { schema, path, value, message: `Expected string length less or equal to ${schema.maxLength}` }
+    }
     if (schema.pattern !== undefined) {
       const regex = new RegExp(schema.pattern)
       if (!regex.test(value)) {
