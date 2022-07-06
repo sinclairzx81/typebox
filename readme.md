@@ -610,7 +610,7 @@ type T = Static<typeof T>                            // type T = 'A' | 'B' | 'C'
 
 ### Values
 
-TypeBox can create values from types. It creates reasonable defaults for each value which can overrided by specifying a `default` value.
+Use `Value.Create(...)` to generate values from types.
 
 ```typescript
 import { Value } from '@sinclair/typebox/value'
@@ -626,8 +626,7 @@ const V = Value.Create(T)                            // const V = {
                                                      //   y: 0,
                                                      // }
 ```
-TypeBox also allows values to be upgraded to match the schematics of a given type. The `Value.Cast(...)` function can be used to upgrade a value into a target type while retaining as much information of the original value as possible. Casts are immutable operations.
-
+Use `Value.Cast(...)` to cast a value into a given type. This functionality can be helpful in data migrations. TypeBox casts are immutable.
 ```typescript
 import { Value } from '@sinclair/typebox/value'
 import { Type } from '@sinclair/typebox'
@@ -648,19 +647,17 @@ const C = Value.Cast(T, { x: 1, y: 2, z: 3 })          // const C = { x: 1, y: 2
 
 ### Guards
 
-If reflecting on TypeBox types, it can be helpful to test if a value matches a TypeBox schematic. This can be achieved using the TypeGuard namespace. The TypeGuard namespace offers exhaustive checks for each known TypeBox type.
+Use `TypeGuard.TSchema(...)` to check if a type is a valid TypeBox type. This functionality can be useful when reflecting types.
 
 ```typescript
 import { TypeGuard } from '@sinclair/typebox/guard'
 import { Type }  from '@sinclair/typebox'
 
-const T: any = {}                                    // T is any
-
-const { type } = T                                   // unsafe: type is any
+const T = Type.String()
 
 if(TypeGuard.TString(T)) {
     
-  const { type } = T                                 // safe: type is 'string'
+  // T is TString
 }
 
 ```
