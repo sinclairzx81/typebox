@@ -341,7 +341,7 @@ The following table outlines the TypeBox mappings between TypeScript and JSON sc
 ```
 <a name="Modifiers"></a>
 
-### Modifiers
+## Modifiers
 
 TypeBox provides modifiers that can be applied to an objects properties. This allows for `optional` and `readonly` to be applied to that property. The following table illustates how they map between TypeScript and JSON Schema.
 
@@ -385,7 +385,7 @@ TypeBox provides modifiers that can be applied to an objects properties. This al
 
 <a name="Options"></a>
 
-### Options
+## Options
 
 You can pass additional JSON schema options on the last argument of any given type. The following are some examples.
 
@@ -402,7 +402,7 @@ const T = Type.Array(Type.Integer(), { minItems: 5 })
 
 <a name="Extended-Types"></a>
 
-### Extended Types
+## Extended Types
 
 In addition to JSON schema types, TypeBox provides several extended types that allow for `function` and `constructor` types to be composed. These additional types are not valid JSON Schema and will not validate using typical JSON Schema validation. However, these types can be used to frame JSON schema and describe callable interfaces that may receive JSON validated data. These types are as follows.
 
@@ -466,7 +466,7 @@ In addition to JSON schema types, TypeBox provides several extended types that a
 
 <a name="Reference-Types"></a>
 
-### Reference Types
+## Reference Types
 
 Use `Type.Ref(...)` to create referenced types. The target type must specify an `$id`.
 
@@ -483,7 +483,7 @@ const R = Type.Ref(T)                                // const R = {
 
 <a name="Recursive-Types"></a>
 
-### Recursive Types
+## Recursive Types
 
 Use `Type.Recursive(...)` to create recursive types.
 
@@ -523,7 +523,7 @@ function test(node: Node) {
 
 <a name="Generic-Types"></a>
 
-### Generic Types
+## Generic Types
 
 Generic types can be created using functions. The following creates a generic `Nullable<T>` type. 
 
@@ -555,7 +555,7 @@ type U = Static<typeof U>                            // type U = number | null
 
 <a name="Unsafe-Types"></a>
 
-### Unsafe Types
+## Unsafe Types
 
 Use `Type.Unsafe(...)` to create custom schemas with user defined inference rules.
 
@@ -608,7 +608,7 @@ type T = Static<typeof T>                            // type T = 'A' | 'B' | 'C'
 
 <a name="Values"></a>
 
-### Values
+## Values
 
 Use `Value.Create(...)` to generate values from types.
 
@@ -645,7 +645,7 @@ const C = Value.Cast(T, { x: 1, y: 2, z: 3 })          // const C = { x: 1, y: 2
 
 <a name="Guards"></a>
 
-### Guards
+## Guards
 
 Use `TypeGuard.TSchema(...)` to check if a type is a valid TypeBox type. This functionality can be useful when reflecting types.
 
@@ -664,7 +664,7 @@ if(TypeGuard.TString(T)) {
 
 <a name="Strict"></a>
 
-### Strict
+## Strict
 
 TypeBox schemas contain the `Kind` and `Modifier` symbol properties. These properties are provided to enable runtime type reflection on schemas, as well as helping TypeBox internally compose types. These properties are not strictly valid JSON schema; so in some cases it may be desirable to omit them. TypeBox provides a `Type.Strict()` function that will omit these properties if necessary.
 
@@ -693,7 +693,7 @@ const U = Type.Strict(T)                             // const U = {
 
 <a name="Validation"></a>
 
-### Validation
+## Validation
 
 TypeBox schemas target JSON Schema draft 6 so any validator capable of draft 6 should be fine. A good library to use for validation in JavaScript environments is [AJV](https://www.npmjs.com/package/ajv). The following example shows setting up AJV 7 to work with TypeBox.
 
