@@ -814,32 +814,32 @@ console.log(C.Code())                                // return function check(va
 The following table shows comparative benchmarks between TypeBox and Ajv. These benchmarks can be run locally by cloning this repository and running `npm run benchmark`.
 
 ```typescript
-┌──────────────────┬────────────┬───────────────┬───────────────────┬───────────────┐
-│     (index)      │ Iterations │ Ajv Completed │ TypeBox Completed │  Performance  │
-├──────────────────┼────────────┼───────────────┼───────────────────┼───────────────┤
-│       Any        │  16000000  │    '245ms'    │      '148ms'      │ '65% faster'  │
-│     Boolean      │  16000000  │    '247ms'    │      '151ms'      │ '63% faster'  │
-│     Integer      │  16000000  │    '251ms'    │      '154ms'      │ '62% faster'  │
-│       Null       │  16000000  │    '256ms'    │      '149ms'      │ '71% faster'  │
-│      Number      │  16000000  │    '246ms'    │      '145ms'      │ '69% faster'  │
-│      String      │  16000000  │    '248ms'    │      '150ms'      │ '65% faster'  │
-│     Unknown      │  16000000  │    '240ms'    │      '147ms'      │ '63% faster'  │
-│      RegEx       │  16000000  │    '645ms'    │      '558ms'      │ '15% faster'  │
-│     ObjectA      │  16000000  │    '435ms'    │      '280ms'      │ '55% faster'  │
-│     ObjectB      │  16000000  │    '678ms'    │      '450ms'      │ '50% faster'  │
-│      Tuple       │  16000000  │    '284ms'    │      '169ms'      │ '68% faster'  │
-│      Union       │  16000000  │    '306ms'    │      '209ms'      │ '46% faster'  │
-│    Recursive     │  16000000  │   '5209ms'    │     '1615ms'      │ '222% faster' │
-│ Literal<String>  │  16000000  │    '244ms'    │      '151ms'      │ '61% faster'  │
-│ Literal<Number>  │  16000000  │    '234ms'    │      '150ms'      │ '56% faster'  │
-│ Literal<Boolean> │  16000000  │    '250ms'    │      '156ms'      │ '60% faster'  │
-│  Array<Number>   │  16000000  │    '429ms'    │      '226ms'      │ '89% faster'  │
-│  Array<String>   │  16000000  │    '419ms'    │      '296ms'      │ '41% faster'  │
-│  Array<Boolean>  │  16000000  │    '484ms'    │      '344ms'      │ '40% faster'  │
-│  Array<ObjectA>  │  16000000  │   '3580ms'    │     '2055ms'      │ '74% faster'  │
-│  Array<ObjectB>  │  16000000  │   '6426ms'    │     '4597ms'      │ '39% faster'  │
-│   Array<Tuple>   │  16000000  │   '1275ms'    │      '701ms'      │ '81% faster'  │
-└──────────────────┴────────────┴───────────────┴───────────────────┴───────────────┘
+┌──────────────────┬────────────┬───────────────┬───────────────────┬─────────────┐
+│     (index)      │ Iterations │ Ajv Completed │ TypeBox Completed │ Performance │
+├──────────────────┼────────────┼───────────────┼───────────────────┼─────────────┤
+│       Any        │  16000000  │    '244ms'    │      '149ms'      │   '+63%'    │
+│     Boolean      │  16000000  │    '247ms'    │      '152ms'      │   '+62%'    │
+│     Integer      │  16000000  │    '251ms'    │      '154ms'      │   '+62%'    │
+│       Null       │  16000000  │    '242ms'    │      '148ms'      │   '+63%'    │
+│      Number      │  16000000  │    '245ms'    │      '145ms'      │   '+68%'    │
+│      String      │  16000000  │    '256ms'    │      '150ms'      │   '+70%'    │
+│     Unknown      │  16000000  │    '239ms'    │      '147ms'      │   '+62%'    │
+│      RegEx       │  16000000  │    '644ms'    │      '523ms'      │   '+23%'    │
+│     ObjectA      │  16000000  │    '434ms'    │      '288ms'      │   '+50%'    │
+│     ObjectB      │  16000000  │    '674ms'    │      '448ms'      │   '+50%'    │
+│      Tuple       │  16000000  │    '288ms'    │      '166ms'      │   '+73%'    │
+│      Union       │  16000000  │    '305ms'    │      '213ms'      │   '+43%'    │
+│    Recursive     │  16000000  │   '5308ms'    │     '1784ms'      │   '+197%'   │
+│ Literal<String>  │  16000000  │    '246ms'    │      '151ms'      │   '+62%'    │
+│ Literal<Number>  │  16000000  │    '247ms'    │      '148ms'      │   '+66%'    │
+│ Literal<Boolean> │  16000000  │    '239ms'    │      '146ms'      │   '+63%'    │
+│  Array<Number>   │  16000000  │    '442ms'    │      '223ms'      │   '+98%'    │
+│  Array<String>   │  16000000  │    '431ms'    │      '299ms'      │   '+44%'    │
+│  Array<Boolean>  │  16000000  │    '486ms'    │      '346ms'      │   '+40%'    │
+│  Array<ObjectA>  │  16000000  │   '3548ms'    │     '2017ms'      │   '+75%'    │
+│  Array<ObjectB>  │  16000000  │   '6327ms'    │     '4471ms'      │   '+41%'    │
+│   Array<Tuple>   │  16000000  │   '1250ms'    │      '691ms'      │   '+80%'    │
+└──────────────────┴────────────┴───────────────┴───────────────────┴─────────────┘
 ```
 
 <a name="Contribute"></a>

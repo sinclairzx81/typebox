@@ -134,7 +134,7 @@ for (const measurement of Benchmark.Run()) {
     Iterations: measurement.typebox.iterations,
     'Ajv Completed': `${measurement.ajv.completed}ms`,
     'TypeBox Completed': `${measurement.typebox.completed}ms`,
-    Performance: `${Math.floor(percent)}% faster`,
+    Performance: `+${Math.floor(percent)}%`,
   }
 }
 console.table(report)
