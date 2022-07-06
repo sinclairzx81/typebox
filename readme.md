@@ -844,6 +844,6 @@ The following table shows comparative benchmarks between TypeBox and Ajv. These 
 
 <a name="Contribute"></a>
 
-### Contribute
+## Contribute
 
 TypeBox is open to community contribution. Please ensure you submit an open issue before submitting your pull request. The TypeBox project preferences open community discussion prior to accepting new features.
