@@ -24,7 +24,7 @@ export namespace Benchmark {
   const ObjectB = Type.Object(ObjectA.properties, {
     additionalProperties: false,
   })
-  const Tuple = Type.Tuple([Type.Number(), Type.Number(), Type.Number()])
+  const Tuple = Type.Tuple([Type.String(), Type.Number(), Type.Boolean()])
   const Union = Type.Union([Type.Object({ x: Type.Number(), y: Type.Number() }), Type.Object({ a: Type.String(), b: Type.String() })], { default: { a: 'a', b: 'b' } })
   const Recursive = Type.Recursive(
     (Recursive) =>
@@ -64,6 +64,20 @@ export namespace Benchmark {
       },
     },
   )
+  const Vector4 = Type.Tuple([
+    Type.Number(),
+    Type.Number(),
+    Type.Number(),
+    Type.Number(),
+  ])
+  const Matrix4 = Type.Array(Type.Array(Type.Number()), {
+    default: [
+      [1, 0, 0, 0],
+      [0, 1, 0, 0],
+      [0, 0, 1, 0],
+      [0, 0, 0, 1]
+    ]
+  })
 
   // ------------------------------------------------------------------
   // Measurements
@@ -104,6 +118,8 @@ export namespace Benchmark {
     yield TypeCheck('Tuple', Tuple)
     yield TypeCheck('Union', Union)
     yield TypeCheck('Recursive', Recursive)
+    yield TypeCheck('Vector4', Vector4)
+    yield TypeCheck('Matrix4', Matrix4)
     yield TypeCheck('Literal<String>', Type.Literal('foo'))
     yield TypeCheck('Literal<Number>', Type.Literal(1))
     yield TypeCheck('Literal<Boolean>', Type.Literal(true))
@@ -113,6 +129,9 @@ export namespace Benchmark {
     yield TypeCheck('Array<ObjectA>', Type.Array(ObjectA, { minItems: 16 }))
     yield TypeCheck('Array<ObjectB>', Type.Array(ObjectB, { minItems: 16 }))
     yield TypeCheck('Array<Tuple>', Type.Array(Tuple, { minItems: 16 }))
+    yield TypeCheck('Array<Vector4>', Type.Array(Vector4, { minItems: 16 }))
+    yield TypeCheck('Array<Matrix4>', Type.Array(Matrix4, { minItems: 16 }))
+
   }
 }
 
