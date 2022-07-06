@@ -485,7 +485,7 @@ const R = Type.Ref(T)                                // const R = {
 
 ### Recursive Types
 
-Use `Type.Recursive(...)` to create recursive types. TypeBox supports recursive type inference.
+Use `Type.Recursive(...)` to create recursive types.
 
 ```typescript
 const Node = Type.Recursive(Node => Type.Object({    // const Node = {
