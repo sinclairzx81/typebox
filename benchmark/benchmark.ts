@@ -5,7 +5,6 @@ import Ajv from 'ajv'
 
 export namespace Benchmark {
   const ajv = new Ajv()
-
   const ObjectA = Type.Object({
     p0: Type.String(),
     p1: Type.Number(),
@@ -22,15 +21,11 @@ export namespace Benchmark {
       c: Type.String(),
     }),
   })
-
   const ObjectB = Type.Object(ObjectA.properties, {
     additionalProperties: false,
   })
-
   const Tuple = Type.Tuple([Type.Number(), Type.Number(), Type.Number()])
-
   const Union = Type.Union([Type.Object({ x: Type.Number(), y: Type.Number() }), Type.Object({ a: Type.String(), b: Type.String() })], { default: { a: 'a', b: 'b' } })
-
   const Recursive = Type.Recursive(
     (Recursive) =>
       Type.Object({
@@ -96,7 +91,6 @@ export namespace Benchmark {
 
   export function* Run() {
     TypeCheck('WarmUp', Type.Null(), 128)
-
     yield TypeCheck('Any', Type.Any())
     yield TypeCheck('Boolean', Type.Boolean())
     yield TypeCheck('Integer', Type.Integer())
