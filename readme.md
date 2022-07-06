@@ -766,7 +766,7 @@ Please refer to the official AJV [documentation](https://ajv.js.org/guide/gettin
 
 TypeBox provides a high performance runtime type checker that can be used in applications that need extremely fast message validation. This type checker is optimized for TypeBox types whose schematics are known in advance. If defining custom schemas with `Type.Unsafe<T>`; please consider Ajv.
 
-The following demonstrates its usage.
+The following demonstrates its use.
 
 ```typescript
 import { TypeCompiler } from '@sinclair/typebox/compiler'
