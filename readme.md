@@ -557,7 +557,7 @@ type U = Static<typeof U>                            // type U = number | null
 
 ### Unsafe Types
 
-Use `Type.Unsafe(...)` to create user defined schemas with user defined inference rules. The following creates a `number` schema that infers as type `string`.
+Use `Type.Unsafe(...)` to create custom schemas with user defined inference rules.
 
 ```typescript
 const T = Type.Unsafe<string>({ type: 'number' })    // const T = {
