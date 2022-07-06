@@ -468,7 +468,7 @@ In addition to JSON schema types, TypeBox provides several extended types that a
 
 ### Reference Types
 
-Use `Type.Ref(...)` to create a referenced type. The target type must specify an `$id`.
+Use `Type.Ref(...)` to create referenced types. The target type must specify an `$id`.
 
 ```typescript
 const T = Type.String({ $id: 'T' })                  // const T = {
