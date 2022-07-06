@@ -485,11 +485,11 @@ const R = Type.Ref(T)                                // const R = {
 
 ### Recursive Types
 
-Recursive types can be created with the `Type.Recursive(...)` function.
+Recursive types can be created with the `Type.Recursive(...)` function. TypeBox also supports singular recursive type inference.
 
 ```typescript
 const Node = Type.Recursive(Node => Type.Object({    // const Node = {
-  id:    Type.String(),                              //   $id: "Node",
+  id: Type.String(),                                 //   $id: "Node",
   nodes: Type.Array(Node),                           //   type: "object",
 }), { $id: 'Node' })                                 //   properties: {
                                                      //     id: {
@@ -510,7 +510,7 @@ const Node = Type.Recursive(Node => Type.Object({    // const Node = {
 
 type Node = Static<typeof Node>                      // type Node = {
                                                      //   id: string
-                                                     //   nodes: ...
+                                                     //   nodes: ...[]
                                                      // }
 
 function visit(node: Node) {
