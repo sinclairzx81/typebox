@@ -16,7 +16,7 @@ export async function clean() {
 // -------------------------------------------------------------------------------
 
 export async function format() {
-    await shell('prettier --no-semi --single-quote --print-width 240 --trailing-comma all --write src test')
+    await shell('prettier --no-semi --single-quote --print-width 240 --trailing-comma all --write src test benchmark')
 }
 
 // -------------------------------------------------------------------------------
@@ -25,6 +25,14 @@ export async function format() {
 
 export async function start(example = 'index') {
     await shell(`hammer run example/${example}.ts --dist target/example/${example}`)
+}
+
+// -------------------------------------------------------------------------------
+// Benchmark
+// -------------------------------------------------------------------------------
+
+export async function benchmark() {
+    await shell(`hammer run benchmark/benchmark.ts --dist target/benchmark`)
 }
 
 // -------------------------------------------------------------------------------

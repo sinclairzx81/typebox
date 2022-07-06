@@ -747,7 +747,7 @@ const T = Type.Object({
   x: Type.Number(),
   y: Type.Number(),
   z: Type.Number(),
-}, { additionalProperties: false })
+})
 
 //--------------------------------------------------------------------------------------------
 //
@@ -755,11 +755,7 @@ const T = Type.Object({
 //
 //--------------------------------------------------------------------------------------------
 
-const OK = ajv.validate(T, { 
-  x: 1,
-  y: 2,
-  z: 3
-}) // -> true
+const R = ajv.validate(T, { x: 1, y: 2, z: 3 })      // const R = true
 ```
 
 Please refer to the official AJV [documentation](https://ajv.js.org/guide/getting-started.html) for additional information on using AJV.
@@ -768,27 +764,23 @@ Please refer to the official AJV [documentation](https://ajv.js.org/guide/gettin
 
 ### Compiler
 
-TypeBox includes a specialized `TypeCompiler` that can be used as a runtime type checker in lieu of a JSON Schema validator. This compiler is optimized for high throughput Web Socket messaging and can perform better than AJV for some structural checks. Please note that this compiler is not fully JSON Schema compliant and is limited to known TypeBox types only. The `TypeCompiler` contains a `Compile(T)` function that returns a `TypeCheck<T>` object that can be used to test the validity of a value as well as obtain errors.
+TypeBox provides a specialized high performance runtime type checker. Please note this type checker is not JSON schema compilant and will only compile for known TypeBox types; excluding types created with `Type.Unsafe<T>(...)`.
 
 ```typescript
 import { TypeCompiler } from '@sinclair/typebox/compiler'
 import { Type } from '@sinclair/typebox'
 
-const T = Type.Object({
-  x: Type.Number(),
-  y: Type.Number(),
-  z: Type.Number()
-})
+const C = TypeCompiler.Compile(Type.Object({         // const C: TypeCheck<TObject<{
+  x: Type.Number(),                                  //     x: TNumber;
+  y: Type.Number(),                                  //     y: TNumber;
+  z: Type.Number()                                   //     z: TNumber;
+}))                                                  // }>>
 
-const C = TypeCompiler.Compile(T)
-
-const OK = C.Check({ 
-  x: 1, 
-  y: 2, 
-  z: 3 
-}) // -> true
+const R = C.Check({ x: 1, y: 2, z: 3 })              // const R = true 
 ```
-Errors can be obtained by calling the `Errors(...)` function. This function returns an iterator that may contain zero or more errors for the given value. For performance, you should only call `Errors(V)` if the `Check(V)` function returns `false`. 
+
+Validation errors can be read with the `Errors(...)` function.
+
 ```typescript
 const C = TypeCompiler.Compile(Type.Object({
   x: Type.Number(),
@@ -796,28 +788,58 @@ const C = TypeCompiler.Compile(Type.Object({
   z: Type.Number()
 }))
 
-const V = { } // invalid
+const value = { ... }
 
-if(!C.Check(V)) {
-  for(const error of C.Errors(V)) {
-    console.log(error)
+if(!C.Check(value)) {
+  for(const { message } of C.Errors(value)) {
+    console.log(message)
   }
 }
 ```
-The TypeCompiler generates JavaScript validation routines types that are evaluated at runtime. You can inspect the generated code by calling the `Code()` function of the `TypeCheck<T>` object.
+
+Compiled routines can be inspected with the `.Code()` function.
 
 ```typescript
-const C = TypeCompiler.Compile(Type.String())
+const C = TypeCompiler.Compile(Type.String())        // const C: TypeCheck<TString>
 
-console.log(C.Code())
-//
-// outputs:
-//
-// return function check(value) {
-//   return (
-//     (typeof value === 'string')
-//  )
-// }
+console.log(C.Code())                                // return function check(value) {
+                                                     //   return (
+                                                     //     (typeof value === 'string')
+                                                     //   )
+                                                     // }
+```
+
+### Benchmarks
+
+The following table shows comparative benchmarks between TypeBox and Ajv. These benchmarks can be run locally by cloning this repository and running `npm run benchmark`.
+
+```typescript
+┌──────────────────┬────────────┬───────────────┬───────────────────┬───────────────┐
+│     (index)      │ Iterations │ Ajv Completed │ TypeBox Completed │  Performance  │
+├──────────────────┼────────────┼───────────────┼───────────────────┼───────────────┤
+│       Any        │  16000000  │    '245ms'    │      '148ms'      │ '65% faster'  │
+│     Boolean      │  16000000  │    '247ms'    │      '151ms'      │ '63% faster'  │
+│     Integer      │  16000000  │    '251ms'    │      '154ms'      │ '62% faster'  │
+│       Null       │  16000000  │    '256ms'    │      '149ms'      │ '71% faster'  │
+│      Number      │  16000000  │    '246ms'    │      '145ms'      │ '69% faster'  │
+│      String      │  16000000  │    '248ms'    │      '150ms'      │ '65% faster'  │
+│     Unknown      │  16000000  │    '240ms'    │      '147ms'      │ '63% faster'  │
+│      RegEx       │  16000000  │    '645ms'    │      '558ms'      │ '15% faster'  │
+│     ObjectA      │  16000000  │    '435ms'    │      '280ms'      │ '55% faster'  │
+│     ObjectB      │  16000000  │    '678ms'    │      '450ms'      │ '50% faster'  │
+│      Tuple       │  16000000  │    '284ms'    │      '169ms'      │ '68% faster'  │
+│      Union       │  16000000  │    '306ms'    │      '209ms'      │ '46% faster'  │
+│    Recursive     │  16000000  │   '5209ms'    │     '1615ms'      │ '222% faster' │
+│ Literal<String>  │  16000000  │    '244ms'    │      '151ms'      │ '61% faster'  │
+│ Literal<Number>  │  16000000  │    '234ms'    │      '150ms'      │ '56% faster'  │
+│ Literal<Boolean> │  16000000  │    '250ms'    │      '156ms'      │ '60% faster'  │
+│  Array<Number>   │  16000000  │    '429ms'    │      '226ms'      │ '89% faster'  │
+│  Array<String>   │  16000000  │    '419ms'    │      '296ms'      │ '41% faster'  │
+│  Array<Boolean>  │  16000000  │    '484ms'    │      '344ms'      │ '40% faster'  │
+│  Array<ObjectA>  │  16000000  │   '3580ms'    │     '2055ms'      │ '74% faster'  │
+│  Array<ObjectB>  │  16000000  │   '6426ms'    │     '4597ms'      │ '39% faster'  │
+│   Array<Tuple>   │  16000000  │   '1275ms'    │      '701ms'      │ '81% faster'  │
+└──────────────────┴────────────┴───────────────┴───────────────────┴───────────────┘
 ```
 
 <a name="Contribute"></a>

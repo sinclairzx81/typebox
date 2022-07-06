@@ -21,6 +21,7 @@
     "format": "hammer task format",
     "start": "hammer task start",
     "test": "hammer task test",
+    "benchmark": "hammer task benchmark",
     "build": "hammer task build",
     "publish": "hammer task publish"
   },
