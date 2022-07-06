@@ -762,7 +762,7 @@ Please refer to the official AJV [documentation](https://ajv.js.org/guide/gettin
 
 <a name="Compiler"></a>
 
-### Compiler
+## Compiler
 
 TypeBox provides a high performance runtime type checker. Note this type checker is not fully JSON schema compilant and will only compile known TypeBox types; except for types created with `Type.Unsafe<T>`.
 
