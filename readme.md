@@ -485,7 +485,7 @@ const R = Type.Ref(T)                                // const R = {
 
 ### Recursive Types
 
-Use `Type.Recursive(...)` to create recursive types. Recursive static type inference is supported.
+Use `Type.Recursive(...)` to create recursive types. Recursive type inference is supported.
 
 ```typescript
 const Node = Type.Recursive(Node => Type.Object({    // const Node = {
