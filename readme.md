@@ -626,7 +626,7 @@ const V = Value.Create(T)                            // const V = {
                                                      //   y: 0,
                                                      // }
 ```
-Use `Value.Cast(...)` to cast a value into a given type. This functionality can be helpful in data migrations. TypeBox casts are immutable.
+Use `Value.Cast(...)` to cast a value into a given type. This functionality can be helpful in data migrations.
 ```typescript
 import { Value } from '@sinclair/typebox/value'
 import { Type } from '@sinclair/typebox'
