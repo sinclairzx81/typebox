@@ -764,7 +764,7 @@ Please refer to the official AJV [documentation](https://ajv.js.org/guide/gettin
 
 ### Compiler
 
-TypeBox provides a specialized high performance runtime type checker. Please note this type checker is not JSON schema compilant and will only compile for known TypeBox types; excluding types created with `Type.Unsafe<T>(...)`.
+TypeBox provides a high performance runtime type checker. Note this type checker is not fully JSON schema compilant and will only compile known TypeBox types; except for types created with `Type.Unsafe<T>`.
 
 ```typescript
 import { TypeCompiler } from '@sinclair/typebox/compiler'
@@ -782,11 +782,11 @@ const R = C.Check({ x: 1, y: 2, z: 3 })              // const R = true
 Validation errors can be read with the `Errors(...)` function.
 
 ```typescript
-const C = TypeCompiler.Compile(Type.Object({
-  x: Type.Number(),
-  y: Type.Number(),
-  z: Type.Number()
-}))
+const C = TypeCompiler.Compile(Type.Object({         // const C: TypeCheck<TObject<{
+  x: Type.Number(),                                  //     x: TNumber;
+  y: Type.Number(),                                  //     y: TNumber;
+  z: Type.Number()                                   //     z: TNumber;
+}))                                                  // }>>
 
 const value = { ... }
 
