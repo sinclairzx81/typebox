@@ -32,7 +32,7 @@ export async function start(example = 'index') {
 // -------------------------------------------------------------------------------
 
 export async function benchmark() {
-    await shell(`hammer run benchmark/benchmark.ts --dist target/benchmark`)
+    await shell(`hammer run benchmark/index.ts --dist target/benchmark`)
 }
 
 // -------------------------------------------------------------------------------
