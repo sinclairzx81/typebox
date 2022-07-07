@@ -85,7 +85,7 @@ export namespace Benchmark {
   }
 
   export function MeasureType<T extends TSchema>(type: string, schema: T, iterations: number = 16_000_000) {
-    console.log('TypeCheck:', type)
+    console.log('MeasureType:', type)
     const V = Value.Create(schema)
     const AC = ajv.compile(schema)
     const TC = TypeCompiler.Compile(schema)

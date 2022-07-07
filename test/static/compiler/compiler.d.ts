@@ -3,10 +3,10 @@ import * as Types from '../typebox'
 export declare type CheckFunction = (value: unknown) => boolean
 export declare class TypeCheck<T extends Types.TSchema> {
   private readonly schema
-  private readonly additional
+  private readonly references
   private readonly checkFunc
   private readonly code
-  constructor(schema: T, additional: Types.TSchema[], checkFunc: CheckFunction, code: string)
+  constructor(schema: T, references: Types.TSchema[], checkFunc: CheckFunction, code: string)
   /** Returns the generated validation code used to validate this type. */
   Code(): string
   /** Returns an iterator for each error in this value. */
