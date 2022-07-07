@@ -80,19 +80,19 @@ export namespace ValueErrors {
       yield { schema, path, value, message: `Expected integer` }
     }
     if (schema.multipleOf && !(value % schema.multipleOf === 0)) {
-      yield { schema, path, value, message: `Expected number to be a multiple of ${schema.multipleOf}` }
+      yield { schema, path, value, message: `Expected integer to be a multiple of ${schema.multipleOf}` }
     }
     if (schema.exclusiveMinimum && !(value > schema.exclusiveMinimum)) {
-      yield { schema, path, value, message: `Expected number to be greater than ${schema.exclusiveMinimum}` }
+      yield { schema, path, value, message: `Expected integer to be greater than ${schema.exclusiveMinimum}` }
     }
     if (schema.exclusiveMaximum && !(value < schema.exclusiveMaximum)) {
-      yield { schema, path, value, message: `Expected number to be less than ${schema.exclusiveMaximum}` }
+      yield { schema, path, value, message: `Expected integer to be less than ${schema.exclusiveMaximum}` }
     }
     if (schema.minimum && !(value >= schema.minimum)) {
-      yield { schema, path, value, message: `Expected number to be greater or equal to ${schema.minimum}` }
+      yield { schema, path, value, message: `Expected integer to be greater or equal to ${schema.minimum}` }
     }
     if (schema.maximum && !(value <= schema.maximum)) {
-      yield { schema, path, value, message: `Expected number to be less or equal to ${schema.maximum}` }
+      yield { schema, path, value, message: `Expected integer to be less or equal to ${schema.maximum}` }
     }
   }
 
