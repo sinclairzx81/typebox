@@ -1,9 +1,13 @@
-import { TSchema } from '@sinclair/typebox'
 import { TypeCompiler } from '@sinclair/typebox/compiler'
+import { Value } from '@sinclair/typebox/value'
+import { TSchema } from '@sinclair/typebox'
 
-export function ok<T extends TSchema>(schema: T, data: unknown, additional: any[] = []) {
-  const C = TypeCompiler.Compile(schema, additional)
+export function ok<T extends TSchema>(schema: T, data: unknown, references: any[] = []) {
+  const C = TypeCompiler.Compile(schema, references)
   const result = C.Check(data)
+  if (result !== Value.Check(schema, references, data)) {
+    throw Error('Compiler and Value Check disparity')
+  }
   if (!result) {
     console.log('---------------------------')
     console.log('type')

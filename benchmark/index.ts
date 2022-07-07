@@ -64,19 +64,14 @@ export namespace Benchmark {
       },
     },
   )
-  const Vector4 = Type.Tuple([
-    Type.Number(),
-    Type.Number(),
-    Type.Number(),
-    Type.Number(),
-  ])
+  const Vector4 = Type.Tuple([Type.Number(), Type.Number(), Type.Number(), Type.Number()])
   const Matrix4 = Type.Array(Type.Array(Type.Number()), {
     default: [
       [1, 0, 0, 0],
       [0, 1, 0, 0],
       [0, 0, 1, 0],
-      [0, 0, 0, 1]
-    ]
+      [0, 0, 0, 1],
+    ],
   })
 
   // ------------------------------------------------------------------
@@ -89,65 +84,67 @@ export namespace Benchmark {
     return { iterations, completed: Date.now() - start }
   }
 
-  export function TypeCheck<T extends TSchema>(type: string, schema: T, iterations: number = 16_000_000) {
+  export function MeasureType<T extends TSchema>(type: string, schema: T, iterations: number = 16_000_000) {
     console.log('TypeCheck:', type)
     const V = Value.Create(schema)
-    const C0 = ajv.compile(schema)
-    const C1 = TypeCompiler.Compile(schema)
-    const R0 = Benchmark.Measure(() => {
-      if (!C0(V)) throw Error()
+    const AC = ajv.compile(schema)
+    const TC = TypeCompiler.Compile(schema)
+    const A = Benchmark.Measure(() => {
+      if (!AC(V)) throw Error()
     }, iterations)
-    const R1 = Benchmark.Measure(() => {
-      if (!C1.Check(V)) throw Error()
+    const T = Benchmark.Measure(() => {
+      if (!TC.Check(V)) throw Error()
     }, iterations)
-    return { type, ajv: R0, typebox: R1 }
+    return { type, ajv: A, typebox: T }
   }
 
-  export function* Run() {
-    TypeCheck('WarmUp', Type.Null(), 128)
-    yield TypeCheck('Any', Type.Any())
-    yield TypeCheck('Boolean', Type.Boolean())
-    yield TypeCheck('Integer', Type.Integer())
-    yield TypeCheck('Null', Type.Null())
-    yield TypeCheck('Number', Type.Number())
-    yield TypeCheck('String', Type.String())
-    yield TypeCheck('Unknown', Type.Unknown())
-    yield TypeCheck('RegEx', Type.RegEx(/foo/, { default: 'foo' }))
-    yield TypeCheck('ObjectA', ObjectA)
-    yield TypeCheck('ObjectB', ObjectB)
-    yield TypeCheck('Tuple', Tuple)
-    yield TypeCheck('Union', Union)
-    yield TypeCheck('Recursive', Recursive)
-    yield TypeCheck('Vector4', Vector4)
-    yield TypeCheck('Matrix4', Matrix4)
-    yield TypeCheck('Literal<String>', Type.Literal('foo'))
-    yield TypeCheck('Literal<Number>', Type.Literal(1))
-    yield TypeCheck('Literal<Boolean>', Type.Literal(true))
-    yield TypeCheck('Array<Number>', Type.Array(Type.Number(), { minItems: 16 }))
-    yield TypeCheck('Array<String>', Type.Array(Type.String(), { minItems: 16 }))
-    yield TypeCheck('Array<Boolean>', Type.Array(Type.Boolean(), { minItems: 16 }))
-    yield TypeCheck('Array<ObjectA>', Type.Array(ObjectA, { minItems: 16 }))
-    yield TypeCheck('Array<ObjectB>', Type.Array(ObjectB, { minItems: 16 }))
-    yield TypeCheck('Array<Tuple>', Type.Array(Tuple, { minItems: 16 }))
-    yield TypeCheck('Array<Vector4>', Type.Array(Vector4, { minItems: 16 }))
-    yield TypeCheck('Array<Matrix4>', Type.Array(Matrix4, { minItems: 16 }))
-
+  export function* Execute() {
+    MeasureType('WarmUp', Type.Null(), 128)
+    yield MeasureType('RegEx', Type.RegEx(/foo/, { default: 'foo' }))
+    yield MeasureType('ObjectA', ObjectA)
+    yield MeasureType('ObjectB', ObjectB)
+    yield MeasureType('Tuple', Tuple)
+    yield MeasureType('Union', Union)
+    yield MeasureType('Recursive', Recursive)
+    yield MeasureType('Vector4', Vector4)
+    yield MeasureType('Matrix4', Matrix4)
+    yield MeasureType('Literal<String>', Type.Literal('foo'))
+    yield MeasureType('Literal<Number>', Type.Literal(1))
+    yield MeasureType('Literal<Boolean>', Type.Literal(true))
+    yield MeasureType('Array<Number>', Type.Array(Type.Number(), { minItems: 16 }))
+    yield MeasureType('Array<String>', Type.Array(Type.String(), { minItems: 16 }))
+    yield MeasureType('Array<Boolean>', Type.Array(Type.Boolean(), { minItems: 16 }))
+    yield MeasureType('Array<ObjectA>', Type.Array(ObjectA, { minItems: 16 }))
+    yield MeasureType('Array<ObjectB>', Type.Array(ObjectB, { minItems: 16 }))
+    yield MeasureType('Array<Tuple>', Type.Array(Tuple, { minItems: 16 }))
+    yield MeasureType('Array<Vector4>', Type.Array(Vector4, { minItems: 16 }))
+    yield MeasureType('Array<Matrix4>', Type.Array(Matrix4, { minItems: 16 }))
+    yield MeasureType('Any', Type.Any())
+    yield MeasureType('Boolean', Type.Boolean())
+    yield MeasureType('Integer', Type.Integer())
+    yield MeasureType('Null', Type.Null())
+    yield MeasureType('Number', Type.Number())
+    yield MeasureType('String', Type.String())
+    yield MeasureType('Unknown', Type.Unknown())
   }
 }
 
 // ------------------------------------------------------------------
-// Reporting
+// Results
 // ------------------------------------------------------------------
 
-const report: Record<string, any> = {}
-for (const measurement of Benchmark.Run()) {
-  const delta = measurement.ajv.completed / measurement.typebox.completed
+const results = [...Benchmark.Execute()].reduce((acc, result) => {
+  const delta = result.ajv.completed / result.typebox.completed
   const percent = (delta - 1.0) * 100
-  report[measurement.type] = {
-    Iterations: measurement.typebox.iterations,
-    'Ajv Completed': `${measurement.ajv.completed}ms`,
-    'TypeBox Completed': `${measurement.typebox.completed}ms`,
-    Performance: `+${Math.floor(percent)}%`,
+  return {
+    ...acc,
+    [result.type]: {
+      Iterations: result.typebox.iterations,
+      Ajv: `${result.ajv.completed}ms`,
+      TypeBox: `${result.typebox.completed}ms`,
+      Performance: `+${Math.floor(percent)}%`,
+    },
   }
-}
-console.table(report)
+}, {})
+
+console.table(results)

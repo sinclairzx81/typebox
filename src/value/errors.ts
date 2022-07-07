@@ -42,6 +42,15 @@ export namespace ValueErrors {
     if (!globalThis.Array.isArray(value)) {
       return yield { schema, path, value, message: `Expected array` }
     }
+    if (schema.minItems !== undefined && !(value.length >= schema.minItems)) {
+      yield { schema, path, value, message: `Expected array length to be greater or equal to ${schema.minItems}` }
+    }
+    if (schema.maxItems !== undefined && !(value.length <= schema.maxItems)) {
+      yield { schema, path, value, message: `Expected array length to be less or equal to ${schema.maxItems}` }
+    }
+    if (schema.uniqueItems === true && !(new Set(value).size === value.length)) {
+      yield { schema, path, value, message: `Expected array elements to be unique` }
+    }
     for (let i = 0; i < value.length; i++) {
       yield* Visit(schema.items, references, `${path}/${i}`, value[i])
     }

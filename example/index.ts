@@ -2,10 +2,14 @@ import { TypeCompiler } from '@sinclair/typebox/compiler'
 import { Value } from '@sinclair/typebox/value'
 import { Type } from '@sinclair/typebox'
 
-const T = Type.Object({
-  x: Type.String(),
-  y: Type.String(),
-  z: Type.String()
-}, { $id: 'T' })
+const T = Type.Array(Type.Number(), { uniqueItems: true, minItems: 50 })
 
-console.log(T)
+const V = [0, 1, 2, 2]
+
+const C = TypeCompiler.Compile(T)
+console.log(C.Code())
+console.log(C.Check([1, 1]))
+
+for(const error of Value.Errors(T, V)) {
+  console.log(error)
+}

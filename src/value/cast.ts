@@ -246,7 +246,7 @@ export namespace ValueCast {
       case 'Void':
         return Void(anySchema, anyReferences, value)
       default:
-        throw Error(`Unknown schema kind '${schema[Types.Kind]}'`)
+        throw Error(`ValueCast.Visit: Unknown schema kind '${schema[Types.Kind]}'`)
     }
   }
 

@@ -32,9 +32,17 @@ export namespace ValueCheck {
   function Any(schema: Types.TAny, references: Types.TSchema[], value: any): boolean {
     return true
   }
-
   function Array(schema: Types.TArray, references: Types.TSchema[], value: any): boolean {
     if (!globalThis.Array.isArray(value)) {
+      return false
+    }
+    if (schema.minItems !== undefined && !(value.length >= schema.minItems)) {
+      return false
+    }
+    if (schema.maxItems !== undefined && !(value.length <= schema.maxItems)) {
+      return false
+    }
+    if (schema.uniqueItems === true && !(new Set(value).size === value.length)) {
       return false
     }
     return value.every((val) => Visit(schema.items, references, val))
@@ -59,19 +67,19 @@ export namespace ValueCheck {
     if (!globalThis.Number.isInteger(value)) {
       return false
     }
-    if (schema.multipleOf && !(value % schema.multipleOf === 0)) {
+    if (schema.multipleOf !== undefined && !(value % schema.multipleOf === 0)) {
       return false
     }
-    if (schema.exclusiveMinimum && !(value > schema.exclusiveMinimum)) {
+    if (schema.exclusiveMinimum !== undefined && !(value > schema.exclusiveMinimum)) {
       return false
     }
-    if (schema.exclusiveMaximum && !(value < schema.exclusiveMaximum)) {
+    if (schema.exclusiveMaximum !== undefined && !(value < schema.exclusiveMaximum)) {
       return false
     }
-    if (schema.minimum && !(value >= schema.minimum)) {
+    if (schema.minimum !== undefined && !(value >= schema.minimum)) {
       return false
     }
-    if (schema.maximum && !(value <= schema.maximum)) {
+    if (schema.maximum !== undefined && !(value <= schema.maximum)) {
       return false
     }
     return true

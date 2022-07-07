@@ -38,7 +38,9 @@ export namespace ValueCreate {
   }
 
   function Array(schema: Types.TArray, references: Types.TSchema[]): any {
-    if (schema.default !== undefined) {
+    if (schema.uniqueItems === true && schema.default === undefined) {
+      throw new Error('ValueCreate.Array: Arrays with uniqueItems require a default value')
+    } else if (schema.default !== undefined) {
       return schema.default
     } else if (schema.minItems !== undefined) {
       return globalThis.Array.from({ length: schema.minItems }).map((item) => {
@@ -81,7 +83,7 @@ export namespace ValueCreate {
     if (schema.default !== undefined) {
       return schema.default
     } else if (schema.anyOf.length === 0) {
-      throw new Error('Cannot create default enum value as this enum has no items')
+      throw new Error('ValueCreate.Enum: Cannot create default enum value as this enum has no items')
     } else {
       return schema.anyOf[0].const
     }
@@ -224,7 +226,7 @@ export namespace ValueCreate {
     if (schema.default !== undefined) {
       return schema.default
     } else if (schema.anyOf.length === 0) {
-      throw new Error('ValueCreate: Cannot create Union with zero variants')
+      throw new Error('ValueCreate.Union: Cannot create Union with zero variants')
     } else {
       return ValueCreate.Create(schema.anyOf[0], references)
     }
@@ -304,7 +306,7 @@ export namespace ValueCreate {
       case 'Void':
         return Void(anySchema, anyReferences)
       default:
-        throw new Error(`ValueCreate: Unknown schema kind '${schema[Types.Kind]}'`)
+        throw new Error(`ValueCreate.Visit: Unknown schema kind '${schema[Types.Kind]}'`)
     }
   }
 

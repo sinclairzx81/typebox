@@ -74,4 +74,23 @@ describe('type/schema/Array', () => {
       [1, 'hello'],
     ])
   })
+  it('Should not validate array with failed minItems', () => {
+    const T = Type.Array(Type.Number(), { minItems: 3 })
+    fail(T, [0, 1])
+  })
+  it('Should not validate array with failed maxItems', () => {
+    const T = Type.Array(Type.Number(), { maxItems: 3 })
+    fail(T, [0, 1, 2, 3])
+  })
+  it('Should validate array with uniqueItems when items are references', () => {
+    const T = Type.Array(Type.Object({ x: Type.Number(), y: Type.Number() }), { uniqueItems: true })
+    ok(T, [
+      { x: 0, y: 1 },
+      { x: 1, y: 0 },
+    ]) // references distinct
+  })
+  it('Should not validate array with non uniqueItems', () => {
+    const T = Type.Array(Type.Number(), { uniqueItems: true })
+    fail(T, [0, 0])
+  })
 })

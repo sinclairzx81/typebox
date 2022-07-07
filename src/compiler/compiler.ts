@@ -40,7 +40,7 @@ export type CheckFunction = (value: unknown) => boolean
 // -------------------------------------------------------------------
 
 export class TypeCheck<T extends Types.TSchema> {
-  constructor(private readonly schema: T, private readonly additional: Types.TSchema[], private readonly checkFunc: CheckFunction, private readonly code: string) {}
+  constructor(private readonly schema: T, private readonly references: Types.TSchema[], private readonly checkFunc: CheckFunction, private readonly code: string) {}
 
   /** Returns the generated validation code used to validate this type. */
   public Code(): string {
@@ -49,7 +49,7 @@ export class TypeCheck<T extends Types.TSchema> {
 
   /** Returns an iterator for each error in this value. */
   public Errors(value: unknown): IterableIterator<ValueError> {
-    return ValueErrors.Errors(this.schema, this.additional, value)
+    return ValueErrors.Errors(this.schema, this.references, value)
   }
 
   /** Returns true if the value matches the given type. */
@@ -73,8 +73,11 @@ export namespace TypeCompiler {
   }
 
   function* Array(schema: Types.TArray, value: string): Generator<string> {
-    const expr = [...Visit(schema.items, `value`)].map((condition) => condition).join(' && ')
-    yield `(Array.isArray(${value}) && ${value}.every(value => ${expr}))`
+    const expression = [...Visit(schema.items, `value`)].map((condition) => condition).join(' && ')
+    if (schema.minItems !== undefined) yield `(${value}.length >= ${schema.minItems})`
+    if (schema.maxItems !== undefined) yield `(${value}.length <= ${schema.maxItems})`
+    if (schema.uniqueItems !== undefined) yield `(new Set(${value}).size === ${value}.length)`
+    yield `(Array.isArray(${value}) && ${value}.every(value => ${expression}))`
   }
 
   function* Boolean(schema: Types.TBoolean, value: string): Generator<string> {
@@ -91,11 +94,11 @@ export namespace TypeCompiler {
 
   function* Integer(schema: Types.TNumeric, value: string): Generator<string> {
     yield `(typeof ${value} === 'number' && Number.isInteger(${value}))`
-    if (schema.multipleOf) yield `(${value} % ${schema.multipleOf} === 0)`
-    if (schema.exclusiveMinimum) yield `(${value} > ${schema.exclusiveMinimum})`
-    if (schema.exclusiveMaximum) yield `(${value} < ${schema.exclusiveMaximum})`
-    if (schema.minimum) yield `(${value} >= ${schema.minimum})`
-    if (schema.maximum) yield `(${value} <= ${schema.maximum})`
+    if (schema.multipleOf !== undefined) yield `(${value} % ${schema.multipleOf} === 0)`
+    if (schema.exclusiveMinimum !== undefined) yield `(${value} > ${schema.exclusiveMinimum})`
+    if (schema.exclusiveMaximum !== undefined) yield `(${value} < ${schema.exclusiveMaximum})`
+    if (schema.minimum !== undefined) yield `(${value} >= ${schema.minimum})`
+    if (schema.maximum !== undefined) yield `(${value} <= ${schema.maximum})`
   }
 
   function* Literal(schema: Types.TLiteral, value: string): Generator<string> {
@@ -112,11 +115,11 @@ export namespace TypeCompiler {
 
   function* Number(schema: Types.TNumeric, value: string): Generator<string> {
     yield `(typeof ${value} === 'number')`
-    if (schema.multipleOf) yield `(${value} % ${schema.multipleOf} === 0)`
-    if (schema.exclusiveMinimum) yield `(${value} > ${schema.exclusiveMinimum})`
-    if (schema.exclusiveMaximum) yield `(${value} < ${schema.exclusiveMaximum})`
-    if (schema.minimum) yield `(${value} >= ${schema.minimum})`
-    if (schema.maximum) yield `(${value} <= ${schema.maximum})`
+    if (schema.multipleOf !== undefined) yield `(${value} % ${schema.multipleOf} === 0)`
+    if (schema.exclusiveMinimum !== undefined) yield `(${value} > ${schema.exclusiveMinimum})`
+    if (schema.exclusiveMaximum !== undefined) yield `(${value} < ${schema.exclusiveMaximum})`
+    if (schema.minimum !== undefined) yield `(${value} >= ${schema.minimum})`
+    if (schema.maximum !== undefined) yield `(${value} <= ${schema.maximum})`
   }
 
   function* Object(schema: Types.TObject, value: string): Generator<string> {
