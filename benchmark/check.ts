@@ -8,18 +8,6 @@ import Ajv from 'ajv'
 
 const ajv = new Ajv() // ensure single instance
 
-export type Result = {
-  type: string
-  ajv: {
-    iterations: number
-    completed: number
-  }
-  typebox: {
-    iterations: number
-    completed: number
-  }
-}
-
 export namespace CheckBenchmark {
   function Measure<T extends TSchema>(type: string, schema: T) {
     console.log('CheckBenchmark.Measure(', type, ')')
