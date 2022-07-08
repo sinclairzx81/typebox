@@ -811,7 +811,7 @@ console.log(C.Code())                                // return function check(va
 
 ### Benchmarks
 
-The project maintains benchmarks that measure TypeBox and AJV compile and validate performance. These benchmarks can be run locally by cloning this repository and running `npm run benchmark`. Results show for AJV version 8.11.0.
+This project maintains benchmarks that measure TypeBox and AJV compile and validate performance. These benchmarks can be run locally by cloning this repository and running `npm run benchmark`. Results show for AJV version 8.11.0.
 
 #### Validate
 
@@ -849,7 +849,7 @@ This benchmark measures overall validate performance. You can review this benchm
 
 #### Compile
 
-The benchmark measures schema compilation time. You can review this benchmark [here](https://github.com/sinclairzx81/typebox/blob/master/benchmark/compile.ts).
+This benchmark measures schema compilation time. You can review this benchmark [here](https://github.com/sinclairzx81/typebox/blob/master/benchmark/compile.ts).
 
 ```typescript
 ┌──────────────────┬────────────┬────────────┬────────────┬────────────────────────┐
