@@ -647,7 +647,7 @@ const C = Value.Cast(T, { x: 1, y: 2, z: 3 })          // const C = { x: 1, y: 2
 
 ## Guards
 
-Use `TypeGuard.TSchema(...)` to check if a type is a valid TypeBox type. This functionality can be useful when reflecting types.
+Use a `TypeGuard` to check if a value meets a TypeBox type specification. Guards can be helpful when reflecting TypeBox types.
 
 ```typescript
 import { TypeGuard } from '@sinclair/typebox/guard'
