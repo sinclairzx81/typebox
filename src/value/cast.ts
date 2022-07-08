@@ -148,18 +148,18 @@ export namespace ValueCast {
   }
 
   function Recursive(schema: Types.TRecursive<any>, references: Types.TSchema[], value: any): any {
-    throw new Error('CastValue.Recursive: Cannot cast recursive schemas')
+    throw new Error('ValueCast.Recursive: Cannot cast recursive schemas')
   }
 
   function Ref(schema: Types.TRef<any>, references: Types.TSchema[], value: any): any {
     const reference = references.find((reference) => reference.$id === schema.$ref)
-    if (reference === undefined) throw new Error(`CastValue.Ref: Cannot find schema with $id '${schema.$ref}'.`)
+    if (reference === undefined) throw new Error(`ValueCast.Ref: Cannot find schema with $id '${schema.$ref}'.`)
     return Visit(reference, references, value)
   }
 
   function Self(schema: Types.TSelf, references: Types.TSchema[], value: any): any {
     const reference = references.find((reference) => reference.$id === schema.$ref)
-    if (reference === undefined) throw new Error(`CastValue.Self: Cannot find schema with $id '${schema.$ref}'.`)
+    if (reference === undefined) throw new Error(`ValueCast.Self: Cannot find schema with $id '${schema.$ref}'.`)
     return Visit(reference, references, value)
   }
 

@@ -177,13 +177,13 @@ export namespace ValueCheck {
 
   function Ref(schema: Types.TRef<any>, references: Types.TSchema[], value: any): boolean {
     const reference = references.find((reference) => reference.$id === schema.$ref)
-    if (reference === undefined) throw new Error(`CheckValue.Ref: Cannot find schema with $id '${schema.$ref}'.`)
+    if (reference === undefined) throw new Error(`ValueCheck.Ref: Cannot find schema with $id '${schema.$ref}'.`)
     return Visit(reference, references, value)
   }
 
   function Self(schema: Types.TSelf, references: Types.TSchema[], value: any): boolean {
     const reference = references.find((reference) => reference.$id === schema.$ref)
-    if (reference === undefined) throw new Error(`CheckValue.Self: Cannot find schema with $id '${schema.$ref}'.`)
+    if (reference === undefined) throw new Error(`ValueCheck.Self: Cannot find schema with $id '${schema.$ref}'.`)
     return Visit(reference, references, value)
   }
 
@@ -300,7 +300,7 @@ export namespace ValueCheck {
       case 'Void':
         return Void(anySchema, anyReferences, value)
       default:
-        throw new Error(`CheckValue: Unknown schema kind '${schema[Types.Kind]}'`)
+        throw new Error(`ValueCheck: Unknown schema kind '${schema[Types.Kind]}'`)
     }
   }
 
