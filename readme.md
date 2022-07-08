@@ -762,7 +762,7 @@ Please refer to the official AJV [documentation](https://ajv.js.org/guide/gettin
 
 ## Compiler
 
-TypeBox provides a high performance runtime type checker that can be used in applications that need extremely fast validation. This type checker is optimized for TypeBox types whose schematics are known in advance. If defining custom schemas with `Type.Unsafe<T>` please consider AJV.
+TypeBox provides an optional high performance runtime type checker that can be used in applications that require extremely fast validation. This type checker is optimized for TypeBox types only whose schematics are known in advance. If defining custom schemas with `Type.Unsafe<T>` please consider AJV.
 
 The following demonstrates its use.
 
