@@ -1,7 +1,7 @@
 import { Cases } from './cases'
 import { Benchmark } from './benchmark'
 import { TypeCompiler } from '@sinclair/typebox/compiler'
-import { TypeGuard } from 'src/guard/guard'
+import { TypeGuard } from '@sinclair/typebox/guard'
 import { TSchema } from '@sinclair/typebox'
 import Ajv from 'ajv'
 

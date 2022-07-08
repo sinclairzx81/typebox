@@ -1,9 +1,10 @@
 import { Cases } from './cases'
 import { Benchmark } from './benchmark'
 import { TypeCompiler } from '@sinclair/typebox/compiler'
-import { TypeGuard } from 'src/guard/guard'
-import { Value } from '@sinclair/typebox/value'
+import { TypeGuard } from '@sinclair/typebox/guard'
 import { TSchema } from '@sinclair/typebox'
+import { Value } from '@sinclair/typebox/value'
+
 import Ajv from 'ajv'
 
 const ajv = new Ajv() // ensure single instance
