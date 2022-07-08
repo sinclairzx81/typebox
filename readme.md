@@ -788,13 +788,24 @@ const C = TypeCompiler.Compile(Type.Object({         // const C: TypeCheck<TObje
   z: Type.Number()                                   //     z: TNumber;
 }))                                                  // }>>
 
-const value = { ... }
+const value = { }
 
-if(!C.Check(value)) {
-  for(const { message } of C.Errors(value)) {
-    console.log(message)
-  }
-}
+const errors = [...C.Errors(value)]                  // const errors = [{
+                                                     //   schema: { type: 'number' },
+                                                     //   path: '/x',
+                                                     //   value: undefined,
+                                                     //   message: 'Expected number'
+                                                     // }, {
+                                                     //   schema: { type: 'number' },
+                                                     //   path: '/y',
+                                                     //   value: undefined,
+                                                     //   message: 'Expected number'
+                                                     // }, {
+                                                     //   schema: { type: 'number' },
+                                                     //   path: '/z',
+                                                     //   value: undefined,
+                                                     //   message: 'Expected number'
+                                                     // }]
 ```
 
 Compiled routines can be inspected with the `.Code()` function.
