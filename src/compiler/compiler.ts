@@ -193,7 +193,7 @@ export namespace TypeCompiler {
       yield `(${value}.length <= ${schema.maxLength})`
     }
     if (schema.pattern !== undefined) {
-      const local = PushLocal(`const local = new RegExp('${schema.pattern}');`)
+      const local = PushLocal(`const local = new RegExp(/${schema.pattern}/);`)
       yield `(${local}.test(${value}))`
     }
   }

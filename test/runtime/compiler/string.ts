@@ -57,4 +57,9 @@ describe('type/compiler/String', () => {
     ok(T, '....')
     fail(T, '.....')
   })
+
+  it('Should pass numeric 5 digit test', () => {
+    const T = Type.String({ pattern: '[\\d]{5}' })
+    ok(T, '12345')
+  })
 })

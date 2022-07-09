@@ -832,29 +832,29 @@ This benchmark measures overall validate performance. You can review this benchm
 ┌──────────────────┬────────────┬────────────┬────────────┬────────────────────────┐
 │     (index)      │ Iterations │    Ajv     │  TypeBox   │        Measured        │
 ├──────────────────┼────────────┼────────────┼────────────┼────────────────────────┤
-│           Number │  16000000  │ '74ms    ' │ '66ms    ' │ '1.12 x faster       ' │
-│           String │  16000000  │ '277ms   ' │ '154ms   ' │ '1.80 x faster       ' │
-│          Boolean │  16000000  │ '263ms   ' │ '152ms   ' │ '1.73 x faster       ' │
-│             Null │  16000000  │ '275ms   ' │ '153ms   ' │ '1.80 x faster       ' │
-│            RegEx │  16000000  │ '658ms   ' │ '548ms   ' │ '1.20 x faster       ' │
-│          ObjectA │  16000000  │ '453ms   ' │ '319ms   ' │ '1.42 x faster       ' │
-│          ObjectB │  16000000  │ '676ms   ' │ '514ms   ' │ '1.32 x faster       ' │
-│            Tuple │  16000000  │ '320ms   ' │ '193ms   ' │ '1.66 x faster       ' │
-│            Union │  16000000  │ '331ms   ' │ '211ms   ' │ '1.57 x faster       ' │
-│        Recursive │  16000000  │ '6010ms  ' │ '2368ms  ' │ '2.54 x faster       ' │
-│          Vector4 │  16000000  │ '313ms   ' │ '168ms   ' │ '1.86 x faster       ' │
-│          Matrix4 │  16000000  │ '604ms   ' │ '419ms   ' │ '1.44 x faster       ' │
-│   Literal_String │  16000000  │ '281ms   ' │ '154ms   ' │ '1.82 x faster       ' │
-│   Literal_Number │  16000000  │ '268ms   ' │ '150ms   ' │ '1.79 x faster       ' │
-│  Literal_Boolean │  16000000  │ '273ms   ' │ '149ms   ' │ '1.83 x faster       ' │
-│     Array_Number │  16000000  │ '470ms   ' │ '235ms   ' │ '2.00 x faster       ' │
-│     Array_String │  16000000  │ '462ms   ' │ '303ms   ' │ '1.52 x faster       ' │
-│    Array_Boolean │  16000000  │ '527ms   ' │ '352ms   ' │ '1.50 x faster       ' │
-│    Array_ObjectA │  16000000  │ '43852ms ' │ '28042ms ' │ '1.56 x faster       ' │
-│    Array_ObjectB │  16000000  │ '48025ms ' │ '33205ms ' │ '1.45 x faster       ' │
-│      Array_Tuple │  16000000  │ '1424ms  ' │ '1095ms  ' │ '1.30 x faster       ' │
-│    Array_Vector4 │  16000000  │ '1495ms  ' │ '808ms   ' │ '1.85 x faster       ' │
-│    Array_Matrix4 │  16000000  │ '6129ms  ' │ '4969ms  ' │ '1.23 x faster       ' │
+│           Number │  16000000  │ '76ms    ' │ '65ms    ' │ '1.17 x faster       ' │
+│           String │  16000000  │ '272ms   ' │ '151ms   ' │ '1.80 x faster       ' │
+│          Boolean │  16000000  │ '276ms   ' │ '149ms   ' │ '1.85 x faster       ' │
+│             Null │  16000000  │ '272ms   ' │ '151ms   ' │ '1.80 x faster       ' │
+│            RegEx │  16000000  │ '651ms   ' │ '555ms   ' │ '1.17 x faster       ' │
+│          ObjectA │  16000000  │ '496ms   ' │ '322ms   ' │ '1.54 x faster       ' │
+│          ObjectB │  16000000  │ '721ms   ' │ '529ms   ' │ '1.36 x faster       ' │
+│            Tuple │  16000000  │ '332ms   ' │ '192ms   ' │ '1.73 x faster       ' │
+│            Union │  16000000  │ '333ms   ' │ '208ms   ' │ '1.60 x faster       ' │
+│        Recursive │  16000000  │ '5958ms  ' │ '2366ms  ' │ '2.52 x faster       ' │
+│          Vector4 │  16000000  │ '335ms   ' │ '171ms   ' │ '1.96 x faster       ' │
+│          Matrix4 │  16000000  │ '596ms   ' │ '410ms   ' │ '1.45 x faster       ' │
+│   Literal_String │  16000000  │ '273ms   ' │ '151ms   ' │ '1.81 x faster       ' │
+│   Literal_Number │  16000000  │ '261ms   ' │ '150ms   ' │ '1.74 x faster       ' │
+│  Literal_Boolean │  16000000  │ '312ms   ' │ '154ms   ' │ '2.03 x faster       ' │
+│     Array_Number │  16000000  │ '474ms   ' │ '237ms   ' │ '2.00 x faster       ' │
+│     Array_String │  16000000  │ '457ms   ' │ '297ms   ' │ '1.54 x faster       ' │
+│    Array_Boolean │  16000000  │ '512ms   ' │ '354ms   ' │ '1.45 x faster       ' │
+│    Array_ObjectA │  16000000  │ '41610ms ' │ '26812ms ' │ '1.55 x faster       ' │
+│    Array_ObjectB │  16000000  │ '46321ms ' │ '33115ms ' │ '1.40 x faster       ' │
+│      Array_Tuple │  16000000  │ '1903ms  ' │ '1149ms  ' │ '1.66 x faster       ' │
+│    Array_Vector4 │  16000000  │ '1506ms  ' │ '808ms   ' │ '1.86 x faster       ' │
+│    Array_Matrix4 │  16000000  │ '6263ms  ' │ '5072ms  ' │ '1.23 x faster       ' │
 └──────────────────┴────────────┴────────────┴────────────┴────────────────────────┘
 ```
 
@@ -866,28 +866,28 @@ This benchmark measures schema compilation time. You can review this benchmark [
 ┌──────────────────┬────────────┬────────────┬────────────┬────────────────────────┐
 │     (index)      │ Iterations │    Ajv     │  TypeBox   │        Measured        │
 ├──────────────────┼────────────┼────────────┼────────────┼────────────────────────┤
-│           Number │    2000    │ '400ms   ' │ '8ms     ' │ '50.00 x faster      ' │
-│           String │    2000    │ '324ms   ' │ '7ms     ' │ '46.29 x faster      ' │
-│          Boolean │    2000    │ '325ms   ' │ '10ms    ' │ '32.50 x faster      ' │
-│             Null │    2000    │ '271ms   ' │ '4ms     ' │ '67.75 x faster      ' │
-│            RegEx │    2000    │ '493ms   ' │ '11ms    ' │ '44.82 x faster      ' │
-│          ObjectA │    2000    │ '2998ms  ' │ '27ms    ' │ '111.04 x faster     ' │
-│          ObjectB │    2000    │ '3058ms  ' │ '28ms    ' │ '109.21 x faster     ' │
-│            Tuple │    2000    │ '1306ms  ' │ '19ms    ' │ '68.74 x faster      ' │
-│            Union │    2000    │ '1450ms  ' │ '18ms    ' │ '80.56 x faster      ' │
-│          Vector4 │    2000    │ '1633ms  ' │ '12ms    ' │ '136.08 x faster     ' │
-│          Matrix4 │    2000    │ '984ms   ' │ '10ms    ' │ '98.40 x faster      ' │
-│   Literal_String │    2000    │ '376ms   ' │ '5ms     ' │ '75.20 x faster      ' │
-│   Literal_Number │    2000    │ '396ms   ' │ '7ms     ' │ '56.57 x faster      ' │
-│  Literal_Boolean │    2000    │ '383ms   ' │ '3ms     ' │ '127.67 x faster     ' │
-│     Array_Number │    2000    │ '748ms   ' │ '6ms     ' │ '124.67 x faster     ' │
-│     Array_String │    2000    │ '774ms   ' │ '5ms     ' │ '154.80 x faster     ' │
-│    Array_Boolean │    2000    │ '814ms   ' │ '8ms     ' │ '101.75 x faster     ' │
-│    Array_ObjectA │    2000    │ '3675ms  ' │ '24ms    ' │ '153.13 x faster     ' │
-│    Array_ObjectB │    2000    │ '4364ms  ' │ '30ms    ' │ '145.47 x faster     ' │
-│      Array_Tuple │    2000    │ '2236ms  ' │ '13ms    ' │ '172.00 x faster     ' │
-│    Array_Vector4 │    2000    │ '1772ms  ' │ '15ms    ' │ '118.13 x faster     ' │
-│    Array_Matrix4 │    2000    │ '1612ms  ' │ '10ms    ' │ '161.20 x faster     ' │
+│           Number │    2000    │ '386ms   ' │ '7ms     ' │ '55.14 x faster      ' │
+│           String │    2000    │ '308ms   ' │ '7ms     ' │ '44.00 x faster      ' │
+│          Boolean │    2000    │ '313ms   ' │ '6ms     ' │ '52.17 x faster      ' │
+│             Null │    2000    │ '265ms   ' │ '4ms     ' │ '66.25 x faster      ' │
+│            RegEx │    2000    │ '481ms   ' │ '7ms     ' │ '68.71 x faster      ' │
+│          ObjectA │    2000    │ '2788ms  ' │ '26ms    ' │ '107.23 x faster     ' │
+│          ObjectB │    2000    │ '2950ms  ' │ '22ms    ' │ '134.09 x faster     ' │
+│            Tuple │    2000    │ '1255ms  ' │ '17ms    ' │ '73.82 x faster      ' │
+│            Union │    2000    │ '1308ms  ' │ '16ms    ' │ '81.75 x faster      ' │
+│          Vector4 │    2000    │ '1584ms  ' │ '12ms    ' │ '132.00 x faster     ' │
+│          Matrix4 │    2000    │ '931ms   ' │ '9ms     ' │ '103.44 x faster     ' │
+│   Literal_String │    2000    │ '347ms   ' │ '7ms     ' │ '49.57 x faster      ' │
+│   Literal_Number │    2000    │ '380ms   ' │ '7ms     ' │ '54.29 x faster      ' │
+│  Literal_Boolean │    2000    │ '374ms   ' │ '4ms     ' │ '93.50 x faster      ' │
+│     Array_Number │    2000    │ '741ms   ' │ '5ms     ' │ '148.20 x faster     ' │
+│     Array_String │    2000    │ '764ms   ' │ '9ms     ' │ '84.89 x faster      ' │
+│    Array_Boolean │    2000    │ '788ms   ' │ '8ms     ' │ '98.50 x faster      ' │
+│    Array_ObjectA │    2000    │ '3545ms  ' │ '25ms    ' │ '141.80 x faster     ' │
+│    Array_ObjectB │    2000    │ '3685ms  ' │ '27ms    ' │ '136.48 x faster     ' │
+│      Array_Tuple │    2000    │ '2242ms  ' │ '13ms    ' │ '172.46 x faster     ' │
+│    Array_Vector4 │    2000    │ '1784ms  ' │ '14ms    ' │ '127.43 x faster     ' │
+│    Array_Matrix4 │    2000    │ '1622ms  ' │ '10ms    ' │ '162.20 x faster     ' │
 └──────────────────┴────────────┴────────────┴────────────┴────────────────────────┘
 ```
 

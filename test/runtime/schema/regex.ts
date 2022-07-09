@@ -27,4 +27,9 @@ describe('type/schema/RegEx', () => {
     const T = Type.RegEx(/true|false/)
     fail(T, 'unknown')
   })
+
+  it('Should pass numeric 5 digit test', () => {
+    const T = Type.RegEx(/[\d]{5}/)
+    ok(T, '12345')
+  })
 })
