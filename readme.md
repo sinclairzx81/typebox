@@ -63,6 +63,7 @@ License MIT
 - [Recursive Types](#Recursive-Types)
 - [Generic Types](#Generic-Types)
 - [Unsafe Types](#Unsafe-Types)
+- [Conditional Types](#Conditional-Types)
 - [Values](#Values)
 - [Guards](#Guards)
 - [Strict](#Strict)
@@ -604,6 +605,57 @@ const T = StringEnum(['A', 'B', 'C'])                // const T = {
                                                      // }
 
 type T = Static<typeof T>                            // type T = 'A' | 'B' | 'C'
+```
+
+<a name="Conditional-Types"></a>
+
+## Conditional Types
+
+Use `Conditional.Extends(...)` to express [Conditional Types](https://www.typescriptlang.org/docs/handbook/2/conditional-types.html). This functionality is provided as optional import and enables support for TypeScript `Exclude<UnionType, ExcludedMembers>` and `Extract<Type, Union>` utility types.
+
+```typescript
+import { Conditional } from '@sinclair/typebox/extends'
+```
+The following table outlines the TypeBox mappings between TypeScript and JSON schema.
+
+```typescript
+┌────────────────────────────────┬─────────────────────────────┬────────────────────────────────┐
+│ TypeBox                        │ TypeScript                  │ Extended Schema                │
+│                                │                             │                                │
+├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
+│ const T = Conditional.Extends( │ type T =                    │ const T = {                    │
+│   Type.Number(),               │  string extends number      │   const: false                 │
+│   Type.String(),               │  true : false               │   type: 'boolean'              │
+│   Type.Literal(true)           │                             │ }                              │
+│   Type.Literal(false)          │                             │                                │
+│ )                              │                             │                                │
+│                                │                             │                                │
+├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
+│ const T = Conditional.Exclude( │ type T = Exclude<           │ const T = {                    │
+│   Type.Union([                 │   'a' | 'b' | 'c',          │   anyOf: [{                    │
+│     Type.Literal('a')          │   'a'                       │     const: 'b'                 │
+│     Type.Literal('b')          │ >                           │     type: 'string'             │
+│     Type.Literal('c')          │                             │   }, {                         │
+│   ]),                          │                             │     const: 'c'                 │
+│   Type.Union([                 │                             │     type: 'string'             │
+│     Type.Literal('a')          │                             │   }]                           │
+│   ])                           │                             │ }                              │
+│ )                              │                             │                                │
+│                                │                             │                                │
+└────────────────────────────────┴─────────────────────────────┴────────────────────────────────┘
+│ const T = Conditional.Extract( │ type T = Extract<           │ const T = {                    │
+│   Type.Union([                 │   'a' | 'b' | 'c',          │   anyOf: [{                    │
+│     Type.Literal('a')          │   'a' | 'f'                 │     const: 'a'                 │
+│     Type.Literal('b')          │ >                           │     type: 'string'             │
+│     Type.Literal('c')          │                             │   }]                           │
+│   ]),                          │                             │ }                              │
+│   Type.Union([                 │                             │                                │
+│     Type.Literal('a')          │                             │                                │
+│     Type.Literal('f')          │                             │                                │
+│   ])                           │                             │                                │
+│ )                              │                             │                                │
+│                                │                             │                                │
+└────────────────────────────────┴─────────────────────────────┴────────────────────────────────┘
 ```
 
 <a name="Values"></a>

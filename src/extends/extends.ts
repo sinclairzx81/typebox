@@ -81,12 +81,12 @@ export namespace Structural {
     return pattern === '^.*$' || pattern === '^(0|[1-9][0-9]*)$'
   }
 
-  export function RecordValue(schema: Types.TRecord) {
+  function RecordValue(schema: Types.TRecord) {
     const pattern = RecordPattern(schema)
     return schema.patternProperties[pattern]
   }
 
-  export function RecordKey(schema: Types.TRecord) {
+  function RecordKey(schema: Types.TRecord) {
     const pattern = RecordPattern(schema)
     if (pattern === '^.*$') {
       return Types.Type.String()
@@ -557,15 +557,8 @@ export interface TExtract<T extends Types.TSchema, U extends Types.TUnion> exten
 // Extends
 // --------------------------------------------------------------------------
 
-export type TExtends<T extends Types.TSchema, U extends Types.TSchema, X extends Types.TSchema, Y extends Types.TSchema> = T extends Types.TAny
-  ? U extends Types.TUnknown
-    ? X
-    : U extends Types.TAny
-    ? X
-    : Types.TUnion<[X, Y]>
-  : T extends U
-  ? X
-  : Y
+export type TExtends<L extends Types.TSchema, R extends Types.TSchema, T extends Types.TSchema, F extends Types.TSchema> = 
+  Types.Static<L> extends Types.Static<R> ? T : F
 
 /** Provides conditional mapping support for TypeBox types. */
 export namespace Conditional {
@@ -587,11 +580,11 @@ export namespace Conditional {
   }
 
   /** If left extends right, return True otherwise False */
-  export function Extends<Left extends Types.TSchema, Right extends Types.TSchema, True extends Types.TSchema, False extends Types.TSchema>(left: Left, right: Types.TSchema, x: True, y: False): TExtends<Left, Right, True, False> {
+  export function Extends<L extends Types.TSchema, R extends Types.TSchema, T extends Types.TSchema, F extends Types.TSchema>(left: L, right: R, x: T, y: F): TExtends<L, R, T, F> {
     const result = Structural.Check(left, right)
     switch (result) {
       case StructuralResult.Union:
-        return Types.Type.Union([Clone(x), Clone(y)]) as any as TExtends<Left, Right, True, False>
+        return Types.Type.Union([Clone(x), Clone(y)]) as any as TExtends<L, R, T, F>
       case StructuralResult.True:
         return Clone(x)
       case StructuralResult.False:
