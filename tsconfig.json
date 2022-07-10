@@ -2,6 +2,7 @@
   "compilerOptions": {
     "strict": true,
     "target": "ESNext",
+    "alwaysStrict": true,
     "moduleResolution": "node",
     "removeComments": true,
     "baseUrl": ".",

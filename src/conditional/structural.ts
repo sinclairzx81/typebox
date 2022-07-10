@@ -340,11 +340,7 @@ export namespace Structural {
       if (!RecordNumberOrStringKey(left as Types.TRecord)) {
         return Properties(PropertyMap(left), PropertyMap(right))
       } else if (RecordPattern(left) === '^.*$') {
-        if (right[Types.Hint] === 'Record') {
-          return StructuralResult.True
-        } else {
-          return StructuralResult.False
-        }
+        return StructuralResult.False
       } else {
         return globalThis.Object.keys(right.properties).length === 0 ? StructuralResult.True : StructuralResult.False
       }

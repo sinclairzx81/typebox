@@ -68,11 +68,11 @@ describe('conditional/structural/Record', () => {
   it('Should extend Record 7', () => {
     type A = Record<string, number>
     type B = Record<'a' | 'b', number>
-    type T = A extends B ? 1 : 2
+    type T = A extends B ? true : false
     const A = Type.Record(Type.String(), Type.Number())
     const B = Type.Record(Type.Union([Type.Literal('a'), Type.Literal('b')]), Type.Number())
     const R = Structural.Check(A, B)
-    Assert.deepEqual(R, StructuralResult.True)
+    Assert.deepEqual(R, StructuralResult.False)
   })
 
   it('Should extend Record 8', () => {

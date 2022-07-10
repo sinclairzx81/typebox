@@ -86,14 +86,16 @@ export interface TBoolean extends TSchema {
   static: boolean
   type: 'boolean'
 }
-export declare type TContructorParameters<T extends readonly TSchema[], P extends unknown[]> = [
+export declare type TConstructorParameters<T extends TConstructor<TSchema[], TSchema>> = TTuple<T['parameters']>
+export declare type TInstanceType<T extends TConstructor<TSchema[], TSchema>> = T['returns']
+export declare type StaticContructorParameters<T extends readonly TSchema[], P extends unknown[]> = [
   ...{
     [K in keyof T]: T[K] extends TSchema ? Static<T[K], P> : never
   },
 ]
 export interface TConstructor<T extends TSchema[] = TSchema[], U extends TSchema = TSchema> extends TSchema {
   [Kind]: 'Constructor'
-  static: new (...param: TContructorParameters<T, this['params']>) => Static<U, this['params']>
+  static: new (...param: StaticContructorParameters<T, this['params']>) => Static<U, this['params']>
   type: 'constructor'
   parameters: T
   returns: U
@@ -107,14 +109,16 @@ export interface TEnum<T extends Record<string, string | number> = Record<string
   static: T[keyof T]
   anyOf: TLiteral<string | number>[]
 }
-export declare type TFunctionParameters<T extends readonly TSchema[], P extends unknown[]> = [
+export declare type TParameters<T extends TFunction> = TTuple<T['parameters']>
+export declare type TReturnType<T extends TFunction> = T['returns']
+export declare type StaticFunctionParameters<T extends readonly TSchema[], P extends unknown[]> = [
   ...{
     [K in keyof T]: T[K] extends TSchema ? Static<T[K], P> : never
   },
 ]
 export interface TFunction<T extends readonly TSchema[] = TSchema[], U extends TSchema = TSchema> extends TSchema {
   [Kind]: 'Function'
-  static: (...param: TFunctionParameters<T, this['params']>) => Static<U, this['params']>
+  static: (...param: StaticFunctionParameters<T, this['params']>) => Static<U, this['params']>
   type: 'function'
   parameters: T
   returns: U
@@ -344,12 +348,16 @@ export declare class TypeBuilder {
   Array<T extends TSchema>(items: T, options?: ArrayOptions): TArray<T>
   /** Creates a boolean type */
   Boolean(options?: SchemaOptions): TBoolean
+  /** Creates a tuple type from this constructors parameters */
+  ConstructorParameters<T extends TConstructor<any[], any>>(schema: T, options?: SchemaOptions): TConstructorParameters<T>
   /** Creates a constructor type */
   Constructor<T extends TSchema[], U extends TSchema>(parameters: [...T], returns: U, options?: SchemaOptions): TConstructor<T, U>
   /** Creates a enum type */
   Enum<T extends Record<string, string | number>>(item: T, options?: SchemaOptions): TEnum<T>
   /** Creates a function type */
   Function<T extends readonly TSchema[], U extends TSchema>(parameters: [...T], returns: U, options?: SchemaOptions): TFunction<T, U>
+  /** Creates a type from this constructors instance type */
+  InstanceType<T extends TConstructor<any[], any>>(schema: T, options?: SchemaOptions): TInstanceType<T>
   /** Creates a integer type */
   Integer(options?: NumericOptions): TInteger
   /** Creates a intersect type. */
@@ -366,6 +374,8 @@ export declare class TypeBuilder {
   Object<T extends TProperties>(properties: T, options?: ObjectOptions): TObject<T>
   /** Creates a new object whose properties are omitted from the given object */
   Omit<T extends TObject, Properties extends Array<ObjectPropertyKeys<T>>>(schema: T, keys: [...Properties], options?: ObjectOptions): TOmit<T, Properties>
+  /** Creates a tuple type from this functions parameters */
+  Parameters<T extends TFunction<any[], any>>(schema: T, options?: SchemaOptions): TParameters<T>
   /** Creates an object type whose properties are all optional */
   Partial<T extends TObject>(schema: T, options?: ObjectOptions): TPartial<T>
   /** Creates a new object whose properties are picked from the given object */
@@ -384,6 +394,8 @@ export declare class TypeBuilder {
   RegEx(regex: RegExp, options?: SchemaOptions): TString
   /** Creates an object type whose properties are all required */
   Required<T extends TObject>(schema: T, options?: SchemaOptions): TRequired<T>
+  /** Creates a type from this functions return type */
+  ReturnType<T extends TFunction<any[], any>>(schema: T, options?: SchemaOptions): TReturnType<T>
   /** Removes Kind and Modifier symbol property keys from this schema */
   Strict<T extends TSchema>(schema: T): T
   /** Creates a string type */

@@ -9,5 +9,4 @@ const T = Type.Object({
   z: Type.Number()
 })
 
-
 type T = Static<typeof T>
