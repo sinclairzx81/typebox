@@ -1,3 +1,15 @@
+## [0.24.15](https://www.npmjs.com/package/@sinclair/typebox/v/0.24.15)
+
+Added:
+- `Conditional.Extends(...)` which enables TypeBox to conditionally map types inline with TypeScripts structural equivelence checks. Tested against TypeScript 4.7.3.
+- `Conditional.Extract(...)` Which analogs TypeScripts `Extract<...>` utility type. Additional information [here](https://www.typescriptlang.org/docs/handbook/utility-types.html#extracttype-union) 
+- `Conditional.Exclude(...)` Which analogs TypeScripts `Exclude<...>` utility type. Additional information [here](https://www.typescriptlang.org/docs/handbook/utility-types.html#excludeuniontype-excludedmembers)
+- `Type.Parameters(...)` Returns the parameters of a `TFunction` as a `TTuple`
+- `Type.ReturnType(...)` Returns the return type schema of a `TFunction`
+- `Type.ConstructorParameters(...)` Returns the parameters of a `TConstructor` as a `TTuple`
+- `Type.InstanceType(...)` Returns the instance type schema of a `TConstructor`
+- `Symbol[TypeBox.Hint]` Used to resolve ambiguous object equivelence. Currently used for `TRecord` conditional types only.
+ 
 ## [0.24.8](https://www.npmjs.com/package/@sinclair/typebox/v/0.24.8)
 
 Added:
