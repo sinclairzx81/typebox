@@ -2,7 +2,7 @@ import { Structural, StructuralResult } from '@sinclair/typebox/conditional'
 import { Type } from '@sinclair/typebox'
 import { Assert } from '../assert/index'
 
-describe('extends/structural/Array', () => {
+describe('conditional/structural/Array', () => {
   // ----------------------------------------------
   // Generic Varying
   // ----------------------------------------------
@@ -299,6 +299,12 @@ describe('extends/structural/Array', () => {
   it('Should extend constrained Undefined', () => {
     type T = Array<string> extends undefined ? 1 : 2
     const R = Structural.Check(Type.Array(Type.String()), Type.Undefined())
+    Assert.deepEqual(R, StructuralResult.False)
+  })
+
+  it('Should extend constrained Void', () => {
+    type T = Array<string> extends void ? 1 : 2
+    const R = Structural.Check(Type.Array(Type.String()), Type.Void())
     Assert.deepEqual(R, StructuralResult.False)
   })
 })

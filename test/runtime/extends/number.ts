@@ -2,7 +2,7 @@ import { Structural, StructuralResult } from '@sinclair/typebox/conditional'
 import { Type } from '@sinclair/typebox'
 import { Assert } from '../assert/index'
 
-describe('extends/structural/Number', () => {
+describe('conditional/structural/Number', () => {
   it('Should extend Any', () => {
     type T = number extends any ? 1 : 2
     const R = Structural.Check(Type.Number(), Type.Any())
@@ -100,6 +100,12 @@ describe('extends/structural/Number', () => {
   it('Should extend Undefined', () => {
     type T = number extends undefined ? 1 : 2
     const R = Structural.Check(Type.Number(), Type.Undefined())
+    Assert.deepEqual(R, StructuralResult.False)
+  })
+
+  it('Should extend Void', () => {
+    type T = number extends void ? 1 : 2
+    const R = Structural.Check(Type.Number(), Type.Void())
     Assert.deepEqual(R, StructuralResult.False)
   })
 })

@@ -14,7 +14,7 @@ import { Assert } from '../assert/index'
 // type B = Record<'a' | 'b', number>
 // type T = A extends B ? true : false // true
 
-describe('extends/structural/Record', () => {
+describe('conditional/structural/Record', () => {
   it('Should extend Record 1', () => {
     type T = Record<'a' | 'b', number> extends { a: number; b: number } ? 1 : 2
     const A = Type.Record(Type.Union([Type.Literal('a'), Type.Literal('b')]), Type.Number())
@@ -194,6 +194,12 @@ describe('extends/structural/Record', () => {
   it('Should extend Undefined', () => {
     type T = Record<number, number> extends undefined ? 1 : 2
     const R = Structural.Check(Type.Record(Type.Number(), Type.Number()), Type.Undefined())
+    Assert.deepEqual(R, StructuralResult.False)
+  })
+
+  it('Should extend Void', () => {
+    type T = Record<number, number> extends void ? 1 : 2
+    const R = Structural.Check(Type.Record(Type.Number(), Type.Number()), Type.Void())
     Assert.deepEqual(R, StructuralResult.False)
   })
 })

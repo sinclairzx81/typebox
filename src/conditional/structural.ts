@@ -26,8 +26,8 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { TypeGuard } from '../guard'
 import * as Types from '../typebox'
+import { TypeGuard } from '../guard'
 
 // --------------------------------------------------------------------------
 // StructuralResult
@@ -448,6 +448,8 @@ export namespace Structural {
       return StructuralResult.True
     } else if (TypeGuard.TUndefined(right)) {
       return StructuralResult.True
+    } else if (TypeGuard.TVoid(right)) {
+      return StructuralResult.True
     } else if (TypeGuard.TUnion(right)) {
       return UnionRightRule(left, right)
     } else {
@@ -474,6 +476,21 @@ export namespace Structural {
     } else if (TypeGuard.TAny(right)) {
       return StructuralResult.True
     } else if (TypeGuard.TUnknown(right)) {
+      return StructuralResult.True
+    } else {
+      return StructuralResult.False
+    }
+  }
+
+  function Void(left: Types.TVoid, right: Types.TSchema): StructuralResult {
+    if (TypeGuard.TUnion(right)) {
+      const result = right.anyOf.some((right: Types.TSchema) => TypeGuard.TAny(right) || TypeGuard.TUnknown(right))
+      return result ? StructuralResult.True : StructuralResult.False
+    } else if (TypeGuard.TAny(right)) {
+      return StructuralResult.True
+    } else if (TypeGuard.TUnknown(right)) {
+      return StructuralResult.True
+    } else if (TypeGuard.TVoid(right)) {
       return StructuralResult.True
     } else {
       return StructuralResult.False
@@ -527,6 +544,8 @@ export namespace Structural {
       return Union(left, resolvedRight)
     } else if (TypeGuard.TUnknown(left)) {
       return Unknown(left, resolvedRight)
+    } else if (TypeGuard.TVoid(left)) {
+      return Void(left, resolvedRight)
     } else {
       throw Error(`Structural: Unknown left operand '${left[Types.Kind]}'`)
     }
