@@ -54,6 +54,7 @@ Breaking Changes:
 
 - `Type.Intersect(...)` is constrained to accept types of `TObject` only.
 - `Type.Namespace(...)` has been removed.
+- The types `TUnion`, `TEnum`, `KeyOf` and `TLiteral<TString>[]` are all now expressed via `allOf`. For Open API users, Please consider `Type.Unsafe()` to express `enum` string union representations. Documentation on using `Type.Unsafe()` can be found [here](https://github.com/sinclairzx81/typebox#Unsafe-Types)
 
 ## [0.23.3](https://www.npmjs.com/package/@sinclair/typebox/v/0.23.3)
 

@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 import * as Types from '../typebox'
 
-/** Structural checks for TypeBox types */
+/** TypeGuard tests that values conform to a known TypeBox type specification */
 export namespace TypeGuard {
   function IsObject(schema: any): schema is Record<string | symbol, any> {
     return typeof schema === 'object' && schema !== null && !Array.isArray(schema)

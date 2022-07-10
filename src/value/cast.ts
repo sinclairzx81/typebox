@@ -31,9 +31,10 @@ import { ValueCreate } from './create'
 import { ValueCheck } from './check'
 
 // --------------------------------------------------------------------------
-// Specialized Union Patch. Because a value can be one of many different
-// unions with properties potentially overlapping, we need a strategy
-// in which to resolve the appropriate schema to patch from.
+// Specialized Union Cast. Because a union can be one of many varying types
+// with properties potentially overlapping, we need a strategy to determine 
+// which of those types we should cast into. This strategy needs to factor 
+// the value provided by the user to make this decision.
 //
 // The following will score each union type found within the types anyOf
 // array. Typically this is executed for objects only, so the score is a
