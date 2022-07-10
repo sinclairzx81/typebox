@@ -9,6 +9,9 @@
       "@sinclair/typebox/compiler": [
         "src/compiler/index.ts"
       ],
+      "@sinclair/typebox/extends": [
+        "src/extends/index.ts"
+      ],
       "@sinclair/typebox/guard": [
         "src/guard/index.ts"
       ],
