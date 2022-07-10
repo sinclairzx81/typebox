@@ -614,7 +614,7 @@ type T = Static<typeof T>                            // type T = 'A' | 'B' | 'C'
 Use `Conditional.Extends(...)` to create conditional mapped types.
 
 ```typescript
-import { Conditional } from '@sinclair/typebox/extends'
+import { Conditional } from '@sinclair/typebox/conditional'
 ```
 The following table outlines the TypeBox mappings between TypeScript and JSON schema.
 

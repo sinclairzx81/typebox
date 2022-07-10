@@ -1,4 +1,4 @@
-import { Structural, StructuralResult } from '@sinclair/typebox/extends'
+import { Structural, StructuralResult } from '@sinclair/typebox/conditional'
 import { Type } from '@sinclair/typebox'
 import { Assert } from '../assert/index'
 

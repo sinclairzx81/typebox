@@ -1,5 +1,5 @@
 import { TypeCompiler } from '@sinclair/typebox/compiler'
-import { Conditional } from '@sinclair/typebox/extends'
+import { Conditional } from '@sinclair/typebox/conditional'
 import { Value } from '@sinclair/typebox/value'
 import { Type, Static } from '@sinclair/typebox'
 

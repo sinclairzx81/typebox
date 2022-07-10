@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------------
 
-@sinclair/typebox/extends
+@sinclair/typebox/conditional
 
 The MIT License (MIT)
 
@@ -29,23 +29,27 @@ THE SOFTWARE.
 import { TypeGuard } from '../guard'
 import * as Types from '../typebox'
 
-// ----------------------------------------------------------------------
-// Structural
-// ----------------------------------------------------------------------
+// --------------------------------------------------------------------------
+// StructuralResult
+// --------------------------------------------------------------------------
 
 export enum StructuralResult {
   Union,
   True,
-  False,
+  False
 }
 
-/** Experimental: Does effort structural check on TypeBox types. */
+// --------------------------------------------------------------------------
+// Structural
+// --------------------------------------------------------------------------
+
+/** Performs structural equivalence checks against TypeBox types. */
 export namespace Structural {
   const referenceMap = new Map<string, Types.TAnySchema>()
 
-  // ----------------------------------------------------------------------
+  // ------------------------------------------------------------------------
   // Rules
-  // ----------------------------------------------------------------------
+  // ------------------------------------------------------------------------
 
   function AnyOrUnknownRule(right: Types.TSchema) {
     // https://github.com/microsoft/TypeScript/issues/40049
@@ -68,9 +72,9 @@ export namespace Structural {
     return result ? StructuralResult.True : StructuralResult.False
   }
 
-  // ----------------------------------------------------------------------
+  // ------------------------------------------------------------------------
   // Records
-  // ----------------------------------------------------------------------
+  // ------------------------------------------------------------------------
 
   function RecordPattern(schema: Types.TRecord) {
     return globalThis.Object.keys(schema.patternProperties)[0] as string
@@ -117,9 +121,9 @@ export namespace Structural {
     return comparable
   }
 
-  // ----------------------------------------------------------------------
+  // ------------------------------------------------------------------------
   // Indexable
-  // ----------------------------------------------------------------------
+  // ------------------------------------------------------------------------
 
   function Indexable<Left extends Types.TAnySchema, Right extends Types.TAnySchema>(left: Left, right: Types.TSchema): StructuralResult {
     if (TypeGuard.TUnion(right)) {
@@ -129,9 +133,9 @@ export namespace Structural {
     }
   }
 
-  // ----------------------------------------------------------------------
+  // ------------------------------------------------------------------------
   // Checks
-  // ----------------------------------------------------------------------
+  // ------------------------------------------------------------------------
 
   function Any(left: Types.TAny, right: Types.TSchema): StructuralResult {
     return AnyOrUnknownRule(right) ? StructuralResult.True : StructuralResult.Union
@@ -537,28 +541,27 @@ export namespace Structural {
   }
 }
 
-// --------------------------------------------------------------------------
-// Exclude<
-// --------------------------------------------------------------------------
+// ------------------------------------------------------------------------
+// Exclude
+// ------------------------------------------------------------------------
 
 export interface TExclude<T extends Types.TUnion, U extends Types.TUnion> extends Types.TUnion {
   static: Exclude<Types.Static<T, this['params']>, Types.Static<U, this['params']>>
 }
 
-// --------------------------------------------------------------------------
+// ------------------------------------------------------------------------
 // Extract
-// --------------------------------------------------------------------------
+// ------------------------------------------------------------------------
 
 export interface TExtract<T extends Types.TSchema, U extends Types.TUnion> extends Types.TUnion {
   static: Extract<Types.Static<T, this['params']>, Types.Static<U, this['params']>>
 }
 
-// --------------------------------------------------------------------------
+// ------------------------------------------------------------------------
 // Extends
-// --------------------------------------------------------------------------
+// ------------------------------------------------------------------------
 
-export type TExtends<L extends Types.TSchema, R extends Types.TSchema, T extends Types.TSchema, F extends Types.TSchema> = 
-  Types.Static<L> extends Types.Static<R> ? T : F
+export type TExtends<L extends Types.TSchema, R extends Types.TSchema, T extends Types.TSchema, U extends Types.TSchema> = Types.Static<L> extends Types.Static<R> ? T : U
 
 /** Provides conditional mapping support for TypeBox types. */
 export namespace Conditional {
