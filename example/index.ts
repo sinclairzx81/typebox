@@ -3,18 +3,17 @@ import { Conditional } from '@sinclair/typebox/conditional'
 import { Value } from '@sinclair/typebox/value'
 import { Type, Static } from '@sinclair/typebox'
 
-
-const T = Conditional.Extends(
-  Type.Number(), 
-  Type.Number(), 
-  Type.Literal('true'), 
-  Type.Literal('false')
-)
+const T = Type.Object({
+  x: Type.Number(),
+  y: Type.Number(),
+  z: Type.Number()
+})
 
 type T = Static<typeof T>
 
 
-console.log(T)
+
+
 
 
 

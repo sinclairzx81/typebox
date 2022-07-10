@@ -54,7 +54,7 @@ export interface TExtract<T extends Types.TSchema, U extends Types.TUnion> exten
 
 /** Provides Conditional Types */
 export namespace Conditional {
-  /** (Experimental) Creates a conditional type expression */
+  /** (Experimental) Creates a conditional expression type */
   export function Extends<L extends Types.TSchema, R extends Types.TSchema, T extends Types.TSchema, U extends Types.TSchema>(left: L, right: R, ok: T, fail: U): TExtends<L, R, T, U> {
     switch (Structural.Check(left, right)) {
       case StructuralResult.Union:

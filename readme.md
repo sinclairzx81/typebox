@@ -414,12 +414,12 @@ In addition to JSON schema types, TypeBox provides several extended types that a
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Constructor([   │ type T = new (              │ const T = {                    │
 │   Type.String(),               │  arg0: string,              │   type: 'constructor'          │
-│   Type.Number()                │  arg1: number               │   arguments: [{                │
+│   Type.Number()                │  arg1: number               │   parameters: [{               │
 │ ], Type.Boolean())             │ ) => boolean                │     type: 'string'             │
 │                                │                             │   }, {                         │
 │                                │                             │     type: 'number'             │
 │                                │                             │   }],                          │
-│                                │                             │   returns: {                   │
+│                                │                             │   return: {                    │
 │                                │                             │     type: 'boolean'            │
 │                                │                             │   }                            │
 │                                │                             │ }                              │
@@ -427,12 +427,12 @@ In addition to JSON schema types, TypeBox provides several extended types that a
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Function([      │ type T = (                  │ const T = {                    │
 |   Type.String(),               │  arg0: string,              │   type : 'function',           │
-│   Type.Number()                │  arg1: number               │   arguments: [{                │
+│   Type.Number()                │  arg1: number               │   parameters: [{               │
 │ ], Type.Boolean())             │ ) => boolean                │     type: 'string'             │
 │                                │                             │   }, {                         │
 │                                │                             │     type: 'number'             │
 │                                │                             │   }],                          │
-│                                │                             │   returns: {                   │
+│                                │                             │   return: {                    │
 │                                │                             │     type: 'boolean'            │
 │                                │                             │   }                            │
 │                                │                             │ }                              │
