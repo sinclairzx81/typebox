@@ -533,99 +533,10 @@ export namespace Structural {
     }
   }
 
-  /** Returns StructuralResult.True if the left schema structurally extends the right schema. */
-  export function Check<Left extends Types.TAnySchema, Right extends Types.TAnySchema>(left: Left, right: Types.TSchema): StructuralResult {
+  /** Structurally tests if the left schema extends the right. */
+  export function Check(left: Types.TSchema, right: Types.TSchema): StructuralResult {
     referenceMap.clear()
     recursionDepth = 0
     return Visit(left, right)
-  }
-}
-
-// ------------------------------------------------------------------------
-// Exclude
-// ------------------------------------------------------------------------
-
-export interface TExclude<T extends Types.TUnion, U extends Types.TUnion> extends Types.TUnion {
-  static: Exclude<Types.Static<T, this['params']>, Types.Static<U, this['params']>>
-}
-
-// ------------------------------------------------------------------------
-// Extract
-// ------------------------------------------------------------------------
-
-export interface TExtract<T extends Types.TSchema, U extends Types.TUnion> extends Types.TUnion {
-  static: Extract<Types.Static<T, this['params']>, Types.Static<U, this['params']>>
-}
-
-// ------------------------------------------------------------------------
-// Extends
-// ------------------------------------------------------------------------
-
-export type TExtends<L extends Types.TSchema, R extends Types.TSchema, T extends Types.TSchema, U extends Types.TSchema> = Types.Static<L> extends Types.Static<R> ? T : U
-
-/** Provides conditional mapping support for TypeBox types. */
-export namespace Conditional {
-
-  /** (Experimental) Constructs a type by excluding from UnionType all union members that are assignable to ExcludedMembers. */
-  export function Exclude<T extends Types.TUnion, U extends Types.TUnion>(unionType: T, excludedMembers: U, options: Types.SchemaOptions = {}): TExclude<T, U> {
-    const anyOf = unionType.anyOf.filter((schema) => {
-      const check = Structural.Check(schema, excludedMembers)
-      return !(check === StructuralResult.True || check === StructuralResult.Union)
-   }).map((schema) => Clone(schema))
-    return { ...options, [Types.Kind]: 'Union', anyOf } as any
-  }
-
-  /** (Experimental) Constructs a type by extracting from Type all union members that are assignable to Union. */
-  export function Extract<T extends Types.TSchema, U extends Types.TUnion>(type: T, union: U, options: Types.SchemaOptions = {}): TExtract<T, U> {
-    if (TypeGuard.TUnion(type)) {
-      const anyOf = type.anyOf.filter((schema: Types.TSchema) => Structural.Check(schema, union) === StructuralResult.True).map((schema: Types.TSchema) => Clone(schema))
-      return { ...options, [Types.Kind]: 'Union', anyOf } as any
-    } else {
-      const anyOf = union.anyOf.filter((schema) => Structural.Check(type, schema) === StructuralResult.True).map((schema) => Clone(schema))
-      return { ...options, [Types.Kind]: 'Union', anyOf } as any
-    }
-  }
-
-  /** 
-   * (Experimental) Creates a conditional type expression
-   * 
-   * ```typescript
-   * const T = left extends right ? ok : fail
-   * ```
-   */
-  export function Extends<L extends Types.TSchema, R extends Types.TSchema, T extends Types.TSchema, U extends Types.TSchema>(left: L, right: R, ok: T, fail: U): TExtends<L, R, T, U> {
-    const result = Structural.Check(left, right)
-    switch (result) {
-      case StructuralResult.Union:
-        return Types.Type.Union([Clone(ok), Clone(fail)]) as any as TExtends<L, R, T, U>
-      case StructuralResult.True:
-        return Clone(ok)
-      case StructuralResult.False:
-        return Clone(fail)
-    }
-  }
-
-  function Clone(value: any): any {
-    const isObject = (object: any): object is Record<string | symbol, any> => typeof object === 'object' && object !== null && !Array.isArray(object)
-    const isArray = (object: any): object is any[] => typeof object === 'object' && object !== null && Array.isArray(object)
-    if (isObject(value)) {
-      return Object.keys(value).reduce(
-        (acc, key) => ({
-          ...acc,
-          [key]: Clone(value[key]),
-        }),
-        Object.getOwnPropertySymbols(value).reduce(
-          (acc, key) => ({
-            ...acc,
-            [key]: Clone(value[key]),
-          }),
-          {},
-        ),
-      )
-    } else if (isArray(value)) {
-      return value.map((item: any) => Clone(item))
-    } else {
-      return value
-    }
   }
 }
