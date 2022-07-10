@@ -8,5 +8,5 @@
     "declaration": true,
     "outDir": "../dist/"
   },
-  "files": ["compiler/index.ts", "guard/index.ts", "value/index.ts", "typebox.ts"]
+  "files": ["compiler/index.ts", "conditional/index.ts", "guard/index.ts", "value/index.ts", "typebox.ts"]
 }

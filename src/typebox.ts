@@ -159,11 +159,15 @@ export interface TBoolean extends TSchema {
 // Constructor
 // --------------------------------------------------------------------------
 
-export type TContructorParameters<T extends readonly TSchema[], P extends unknown[]> = [...{ [K in keyof T]: T[K] extends TSchema ? Static<T[K], P> : never }]
+export type TConstructorParameters<T extends TConstructor<TSchema[], TSchema>> = TTuple<T['parameters']>
+
+export type TInstanceType<T extends TConstructor<TSchema[], TSchema>> = T['returns']
+
+export type StaticContructorParameters<T extends readonly TSchema[], P extends unknown[]> = [...{ [K in keyof T]: T[K] extends TSchema ? Static<T[K], P> : never }]
 
 export interface TConstructor<T extends TSchema[] = TSchema[], U extends TSchema = TSchema> extends TSchema {
   [Kind]: 'Constructor'
-  static: new (...param: TContructorParameters<T, this['params']>) => Static<U, this['params']>
+  static: new (...param: StaticContructorParameters<T, this['params']>) => Static<U, this['params']>
   type: 'constructor'
   parameters: T
   returns: U
@@ -188,11 +192,15 @@ export interface TEnum<T extends Record<string, string | number> = Record<string
 // Function
 // --------------------------------------------------------------------------
 
-export type TFunctionParameters<T extends readonly TSchema[], P extends unknown[]> = [...{ [K in keyof T]: T[K] extends TSchema ? Static<T[K], P> : never }]
+export type TParameters<T extends TFunction> = TTuple<T['parameters']>
+
+export type TReturnType<T extends TFunction> = T['returns']
+
+export type StaticFunctionParameters<T extends readonly TSchema[], P extends unknown[]> = [...{ [K in keyof T]: T[K] extends TSchema ? Static<T[K], P> : never }]
 
 export interface TFunction<T extends readonly TSchema[] = TSchema[], U extends TSchema = TSchema> extends TSchema {
   [Kind]: 'Function'
-  static: (...param: TFunctionParameters<T, this['params']>) => Static<U, this['params']>
+  static: (...param: StaticFunctionParameters<T, this['params']>) => Static<U, this['params']>
   type: 'function'
   parameters: T
   returns: U
@@ -566,6 +574,11 @@ export class TypeBuilder {
     return this.Create({ ...options, [Kind]: 'Boolean', type: 'boolean' })
   }
 
+  /** Creates a tuple type from this constructors parameters */
+  public ConstructorParameters<T extends TConstructor<any[], any>>(schema: T, options: SchemaOptions = {}): TConstructorParameters<T> {
+    return this.Tuple([...schema.parameters], { ...options })
+  }
+
   /** Creates a constructor type */
   public Constructor<T extends TSchema[], U extends TSchema>(parameters: [...T], returns: U, options: SchemaOptions = {}): TConstructor<T, U> {
     return this.Create({ ...options, [Kind]: 'Constructor', type: 'constructor', parameters, returns })
@@ -583,6 +596,11 @@ export class TypeBuilder {
   /** Creates a function type */
   public Function<T extends readonly TSchema[], U extends TSchema>(parameters: [...T], returns: U, options: SchemaOptions = {}): TFunction<T, U> {
     return this.Create({ ...options, [Kind]: 'Function', type: 'function', parameters, returns })
+  }
+
+  /** Creates a type from this constructors instance type */
+  public InstanceType<T extends TConstructor<any[], any>>(schema: T, options: SchemaOptions = {}): TInstanceType<T> {
+    return { ...options, ...this.Clone(schema.returns) }
   }
 
   /** Creates a integer type */
@@ -662,6 +680,11 @@ export class TypeBuilder {
       if (keys.includes(key as any)) delete next.properties[key]
     }
     return this.Create(next)
+  }
+
+  /** Creates a tuple type from this functions parameters */
+  public Parameters<T extends TFunction<any[], any>>(schema: T, options: SchemaOptions = {}): TParameters<T> {
+    return Type.Tuple(schema.parameters, { ...options })
   }
 
   /** Creates an object type whose properties are all optional */
@@ -774,6 +797,11 @@ export class TypeBuilder {
       }
     }
     return this.Create(next)
+  }
+
+  /** Creates a type from this functions return type */
+  public ReturnType<T extends TFunction<any[], any>>(schema: T, options: SchemaOptions = {}): TReturnType<T> {
+    return { ...options, ...this.Clone(schema.returns) }
   }
 
   /** Removes Kind and Modifier symbol property keys from this schema */

@@ -2,12 +2,16 @@
   "compilerOptions": {
     "strict": true,
     "target": "ESNext",
+    "alwaysStrict": true,
     "moduleResolution": "node",
     "removeComments": true,
     "baseUrl": ".",
     "paths": {
       "@sinclair/typebox/compiler": [
         "src/compiler/index.ts"
+      ],
+      "@sinclair/typebox/conditional": [
+        "src/conditional/index.ts"
       ],
       "@sinclair/typebox/guard": [
         "src/guard/index.ts"
