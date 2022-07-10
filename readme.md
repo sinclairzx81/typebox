@@ -616,7 +616,7 @@ Use `Conditional.Extends(...)` to create conditional mapped types.
 ```typescript
 import { Conditional } from '@sinclair/typebox/conditional'
 ```
-The following table outlines the TypeBox mappings between TypeScript and JSON schema.
+The following table shows the TypeBox mappings between TypeScript and JSON schema.
 
 ```typescript
 ┌────────────────────────────────┬─────────────────────────────┬────────────────────────────────┐
