@@ -611,7 +611,7 @@ type T = Static<typeof T>                            // type T = 'A' | 'B' | 'C'
 
 ## Conditional Types
 
-Use `Conditional.Extends(...)` to create mapped types.
+Use `Conditional.Extends(...)` to create conditional mapped types.
 
 ```typescript
 import { Conditional } from '@sinclair/typebox/extends'
