@@ -624,8 +624,8 @@ The following table outlines the TypeBox mappings between TypeScript and JSON sc
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Conditional.Extends( │ type T =                    │ const T = {                    │
-│   Type.Number(),               │  string extends number      │   const: false                 │
-│   Type.String(),               │  true : false               │   type: 'boolean'              │
+│   Type.String(),               │  string extends number      │   const: false                 │
+│   Type.Number(),               │  true : false               │   type: 'boolean'              │
 │   Type.Literal(true)           │                             │ }                              │
 │   Type.Literal(false)          │                             │                                │
 │ )                              │                             │                                │
