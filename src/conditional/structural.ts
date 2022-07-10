@@ -36,7 +36,7 @@ import * as Types from '../typebox'
 export enum StructuralResult {
   Union,
   True,
-  False
+  False,
 }
 
 // --------------------------------------------------------------------------
@@ -340,7 +340,7 @@ export namespace Structural {
       if (!RecordNumberOrStringKey(left as Types.TRecord)) {
         return Properties(PropertyMap(left), PropertyMap(right))
       } else if (RecordPattern(left) === '^.*$') {
-        if (right[Types.Facade] === 'Record') {
+        if (right[Types.Hint] === 'Record') {
           return StructuralResult.True
         } else {
           return StructuralResult.False
@@ -425,7 +425,6 @@ export namespace Structural {
       if (Visit(left.items![i], right.items![i]) === StructuralResult.False) return StructuralResult.False
     }
     return StructuralResult.True
-    
   }
 
   function Uint8Array(left: Types.TUint8Array, right: Types.TSchema): StructuralResult {

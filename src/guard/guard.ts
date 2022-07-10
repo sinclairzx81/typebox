@@ -143,9 +143,7 @@ export namespace TypeGuard {
 
   /** Returns true if the given schema is TTuple */
   export function TTuple(schema: any): schema is Types.TTuple {
-    if (
-      !(IsObject(schema) && schema[Types.Kind] === 'Tuple' && schema.type === 'array' && typeof schema.minItems === 'number' && typeof schema.maxItems === 'number' && schema.minItems === schema.maxItems)
-    ) {
+    if (!(IsObject(schema) && schema[Types.Kind] === 'Tuple' && schema.type === 'array' && typeof schema.minItems === 'number' && typeof schema.maxItems === 'number' && schema.minItems === schema.maxItems)) {
       return false
     }
     if (schema.items === undefined && schema.additionalItems === undefined && schema.minItems === 0) {

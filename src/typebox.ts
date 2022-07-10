@@ -31,8 +31,8 @@ THE SOFTWARE.
 // --------------------------------------------------------------------------
 
 export const Kind = Symbol.for('TypeBox.Kind')
+export const Hint = Symbol.for('TypeBox.Hint')
 export const Modifier = Symbol.for('TypeBox.Modifier')
-export const Facade = Symbol.for('TypeBox.Facade')
 
 // --------------------------------------------------------------------------
 // Modifiers
@@ -302,7 +302,7 @@ export interface ObjectOptions extends SchemaOptions {
 
 export interface TObject<T extends TProperties = TProperties> extends TSchema, ObjectOptions {
   [Kind]: 'Object'
-  [Facade]?: string
+  [Hint]?: string
   static: PropertiesReduce<T, this['params']>
   type: 'object'
   properties: T
@@ -720,7 +720,7 @@ export class TypeBuilder {
         key.anyOf.reduce((acc: any, literal: any) => {
           return { ...acc, [literal.const]: value }
         }, {}),
-        { ...options, [Facade]: 'Record' },
+        { ...options, [Hint]: 'Record' },
       )
     }
     // otherwise return TRecord with patternProperties

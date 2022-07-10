@@ -31,6 +31,12 @@ import { TypeGuard } from '../guard'
 import * as Types from '../typebox'
 
 // ------------------------------------------------------------------------
+// Extends
+// ------------------------------------------------------------------------
+
+export type TExtends<L extends Types.TSchema, R extends Types.TSchema, T extends Types.TSchema, U extends Types.TSchema> = Types.Static<L> extends Types.Static<R> ? T : U
+
+// ------------------------------------------------------------------------
 // Exclude
 // ------------------------------------------------------------------------
 
@@ -46,21 +52,28 @@ export interface TExtract<T extends Types.TSchema, U extends Types.TUnion> exten
   static: Extract<Types.Static<T, this['params']>, Types.Static<U, this['params']>>
 }
 
-// ------------------------------------------------------------------------
-// Extends
-// ------------------------------------------------------------------------
-
-export type TExtends<L extends Types.TSchema, R extends Types.TSchema, T extends Types.TSchema, U extends Types.TSchema> = Types.Static<L> extends Types.Static<R> ? T : U
-
-/** Provides conditional mapping support for TypeBox types. */
+/** Provides Conditional Types */
 export namespace Conditional {
+  /** (Experimental) Creates a conditional type expression */
+  export function Extends<L extends Types.TSchema, R extends Types.TSchema, T extends Types.TSchema, U extends Types.TSchema>(left: L, right: R, ok: T, fail: U): TExtends<L, R, T, U> {
+    switch (Structural.Check(left, right)) {
+      case StructuralResult.Union:
+        return Types.Type.Union([Clone(ok), Clone(fail)]) as any as TExtends<L, R, T, U>
+      case StructuralResult.True:
+        return Clone(ok)
+      case StructuralResult.False:
+        return Clone(fail)
+    }
+  }
 
   /** (Experimental) Constructs a type by excluding from UnionType all union members that are assignable to ExcludedMembers. */
   export function Exclude<T extends Types.TUnion, U extends Types.TUnion>(unionType: T, excludedMembers: U, options: Types.SchemaOptions = {}): TExclude<T, U> {
-    const anyOf = unionType.anyOf.filter((schema) => {
-      const check = Structural.Check(schema, excludedMembers)
-      return !(check === StructuralResult.True || check === StructuralResult.Union)
-   }).map((schema) => Clone(schema))
+    const anyOf = unionType.anyOf
+      .filter((schema) => {
+        const check = Structural.Check(schema, excludedMembers)
+        return !(check === StructuralResult.True || check === StructuralResult.Union)
+      })
+      .map((schema) => Clone(schema))
     return { ...options, [Types.Kind]: 'Union', anyOf } as any
   }
 
@@ -72,25 +85,6 @@ export namespace Conditional {
     } else {
       const anyOf = union.anyOf.filter((schema) => Structural.Check(type, schema) === StructuralResult.True).map((schema) => Clone(schema))
       return { ...options, [Types.Kind]: 'Union', anyOf } as any
-    }
-  }
-
-  /** 
-   * (Experimental) Creates a conditional type expression
-   * 
-   * ```typescript
-   * const T = left extends right ? ok : fail
-   * ```
-   */
-  export function Extends<L extends Types.TSchema, R extends Types.TSchema, T extends Types.TSchema, U extends Types.TSchema>(left: L, right: R, ok: T, fail: U): TExtends<L, R, T, U> {
-    const result = Structural.Check(left, right)
-    switch (result) {
-      case StructuralResult.Union:
-        return Types.Type.Union([Clone(ok), Clone(fail)]) as any as TExtends<L, R, T, U>
-      case StructuralResult.True:
-        return Clone(ok)
-      case StructuralResult.False:
-        return Clone(fail)
     }
   }
 
