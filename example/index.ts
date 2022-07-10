@@ -10,3 +10,4 @@ const T = Type.Object({
 })
 
 type T = Static<typeof T>
+

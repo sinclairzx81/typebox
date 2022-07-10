@@ -40,7 +40,7 @@ export type TExtends<L extends Types.TSchema, R extends Types.TSchema, T extends
 // Exclude
 // ------------------------------------------------------------------------
 
-export interface TExclude<T extends Types.TUnion, U extends Types.TUnion> extends Types.TUnion {
+export interface TExclude<T extends Types.TUnion, U extends Types.TUnion> extends Types.TUnion<any[]> {
   static: Exclude<Types.Static<T, this['params']>, Types.Static<U, this['params']>>
 }
 
@@ -48,7 +48,7 @@ export interface TExclude<T extends Types.TUnion, U extends Types.TUnion> extend
 // Extract
 // ------------------------------------------------------------------------
 
-export interface TExtract<T extends Types.TSchema, U extends Types.TUnion> extends Types.TUnion {
+export interface TExtract<T extends Types.TSchema, U extends Types.TUnion> extends Types.TUnion<any[]> {
   static: Extract<Types.Static<T, this['params']>, Types.Static<U, this['params']>>
 }
 
