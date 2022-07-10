@@ -32,8 +32,8 @@ import { ValueCheck } from './check'
 
 // --------------------------------------------------------------------------
 // Specialized Union Cast. Because a union can be one of many varying types
-// with properties potentially overlapping, we need a strategy to determine 
-// which of those types we should cast into. This strategy needs to factor 
+// with properties potentially overlapping, we need a strategy to determine
+// which of those types we should cast into. This strategy needs to factor
 // the value provided by the user to make this decision.
 //
 // The following will score each union type found within the types anyOf
