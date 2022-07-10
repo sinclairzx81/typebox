@@ -611,11 +611,10 @@ type T = Static<typeof T>                            // type T = 'A' | 'B' | 'C'
 
 ## Conditional Types
 
-TypeBox provides experimental support to express TypeScript [Conditional Types](https://www.typescriptlang.org/docs/handbook/2/conditional-types.html) which allow for Exclude and Extend utility types. This available via optional import.
+Use `Conditional.Extends(...)` to express conditional types. This functionality is experimental and only available via additional import.
 
 ```typescript
 import { Conditional } from '@sinclair/typebox/extends'
-import { Type } from '@sinclair/typebox'
 ```
 The following table outlines the TypeBox mappings between TypeScript and JSON schema.
 
