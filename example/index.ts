@@ -3,11 +3,15 @@ import { Conditional } from '@sinclair/typebox/conditional'
 import { Value } from '@sinclair/typebox/value'
 import { Type, Static } from '@sinclair/typebox'
 
-const T = Type.Object({
-  x: Type.Number(),
-  y: Type.Number(),
-  z: Type.Number()
-})
+const A = Conditional.Exclude(Type.Union([
+  Type.Literal('a'),
+  Type.Literal('b'),
+  Type.Literal('c'),
+]), Type.Union([
+  Type.Literal('c'),
+])
+)
+console.log(A)
 
-type T = Static<typeof T>
+type T = Static<typeof A>
 
