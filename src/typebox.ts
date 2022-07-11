@@ -31,6 +31,7 @@ THE SOFTWARE.
 // --------------------------------------------------------------------------
 
 export const Kind = Symbol.for('TypeBox.Kind')
+export const Hint = Symbol.for('TypeBox.Hint')
 export const Modifier = Symbol.for('TypeBox.Modifier')
 
 // --------------------------------------------------------------------------
@@ -71,6 +72,7 @@ export interface SchemaOptions {
 
 export interface TSchema extends SchemaOptions {
   [Kind]: string
+  [Hint]?: string
   [Modifier]?: string
   params: unknown[]
   static: unknown
@@ -590,7 +592,7 @@ export class TypeBuilder {
       .filter((key) => isNaN(key as any))
       .map((key) => item[key]) as T[keyof T][]
     const anyOf = values.map((value) => (typeof value === 'string' ? { [Kind]: 'Literal', type: 'string' as const, const: value } : { [Kind]: 'Literal', type: 'number' as const, const: value }))
-    return this.Create({ ...options, [Kind]: 'Union', anyOf })
+    return this.Create({ ...options, [Kind]: 'Union', [Hint]: 'Enum', anyOf })
   }
 
   /** Creates a function type */
@@ -638,7 +640,7 @@ export class TypeBuilder {
   /** Creates a keyof type */
   public KeyOf<T extends TObject>(object: T, options: SchemaOptions = {}): TUnion<TKeyOf<T>> {
     const items = Object.keys(object.properties).map((key) => this.Create({ ...options, [Kind]: 'Literal', type: 'string', const: key }))
-    return this.Create({ ...options, [Kind]: 'Union', anyOf: items })
+    return this.Create({ ...options, [Kind]: 'Union', [Hint]: 'KeyOf', anyOf: items })
   }
 
   /** Creates a literal type. */
@@ -741,7 +743,7 @@ export class TypeBuilder {
         key.anyOf.reduce((acc: any, literal: any) => {
           return { ...acc, [literal.const]: value }
         }, {}),
-        { ...options },
+        { ...options, [Hint]: 'Record' },
       )
     }
     // otherwise return TRecord with patternProperties

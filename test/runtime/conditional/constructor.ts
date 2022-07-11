@@ -172,13 +172,13 @@ describe('conditional/structural/Constructor', () => {
   it('Should extend Object 1', () => {
     type T = (new () => number) extends object ? 1 : 2
     const R = Structural.Check(Type.Constructor([], Type.Number()), Type.Object({}))
-    Assert.deepEqual(R, StructuralResult.False)
+    Assert.deepEqual(R, StructuralResult.True)
   })
 
   it('Should extend Object 2', () => {
     type T = (new () => number) extends {} ? 1 : 2
     const R = Structural.Check(Type.Constructor([], Type.Number()), Type.Object({}))
-    Assert.deepEqual(R, StructuralResult.False)
+    Assert.deepEqual(R, StructuralResult.True)
   })
 
   it('Should extend Object 3', () => {
@@ -190,12 +190,6 @@ describe('conditional/structural/Constructor', () => {
   it('Should extend Object 4', () => {
     type T = (new () => number) extends { length: '1' } ? 1 : 2
     const R = Structural.Check(Type.Constructor([], Type.Number()), Type.Object({ length: Type.Literal('1') }))
-    Assert.deepEqual(R, StructuralResult.False)
-  })
-
-  it('Should extend Object 5', () => {
-    type T = (new () => number) extends { length: number } ? 1 : 2
-    const R = Structural.Check(Type.Constructor([], Type.Number()), Type.Object({ length: Type.Number() }))
     Assert.deepEqual(R, StructuralResult.False)
   })
 

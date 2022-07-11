@@ -1,9 +1,9 @@
 import * as Types from '../typebox'
 export declare type TExtends<L extends Types.TSchema, R extends Types.TSchema, T extends Types.TSchema, U extends Types.TSchema> = Types.Static<L> extends Types.Static<R> ? T : U
-export interface TExclude<T extends Types.TUnion, U extends Types.TUnion> extends Types.TUnion {
+export interface TExclude<T extends Types.TUnion, U extends Types.TUnion> extends Types.TUnion<any[]> {
   static: Exclude<Types.Static<T, this['params']>, Types.Static<U, this['params']>>
 }
-export interface TExtract<T extends Types.TSchema, U extends Types.TUnion> extends Types.TUnion {
+export interface TExtract<T extends Types.TSchema, U extends Types.TUnion> extends Types.TUnion<any[]> {
   static: Extract<Types.Static<T, this['params']>, Types.Static<U, this['params']>>
 }
 /** Provides Conditional Types */

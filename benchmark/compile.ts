@@ -28,7 +28,7 @@ export namespace CompileBenchmark {
       // track duplicate $id (resulting in compile error). It is not possible to ammend
       // recursive $id's without potentially biasing results, so we omit on this case.
       // -------------------------------------------------------------------------------
-      if (type === 'Recursive') continue
+      if (type === 'Recursive' || type === 'Array_Recursive') continue
 
       yield Measure(type, schema)
     }

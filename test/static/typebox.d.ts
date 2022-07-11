@@ -1,4 +1,5 @@
 export declare const Kind: unique symbol
+export declare const Hint: unique symbol
 export declare const Modifier: unique symbol
 export declare type TModifier = TReadonlyOptional<TSchema> | TOptional<TSchema> | TReadonly<TSchema>
 export declare type TReadonly<T extends TSchema> = T & {
@@ -30,6 +31,7 @@ export interface SchemaOptions {
 }
 export interface TSchema extends SchemaOptions {
   [Kind]: string
+  [Hint]?: string
   [Modifier]?: string
   params: unknown[]
   static: unknown

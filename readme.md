@@ -45,9 +45,9 @@ type T = Static<typeof T>   // type T = string
 
 ## Overview
 
-TypeBox is a type builder library that creates in-memory JSON Schema objects that can be statically inferred as TypeScript types. The schemas produced by this library are designed to match the static type checking rules of the TypeScript compiler. TypeBox allows one to compose unified types that can be statically asserted by the TypeScript compiler as well as runtime asserted using standard JSON Schema validation.
+TypeBox is a type builder library that creates in-memory JSON Schema objects that can be statically inferred as TypeScript types. The schemas produced by this library are designed to match the static type checking rules of the TypeScript compiler. TypeBox enables one to create unified types that can be statically checked by TypeScript and runtime asserted using standard JSON Schema validation.
 
-TypeBox can be used as a simple tool to build up complex schemas or integrated into RPC or REST services to help validate JSON data received over the wire. It can be used in both TypeScript and JavaScript environments.
+TypeBox can be used as a simple tool to build up complex schemas or integrated into RPC or REST services to help validate data received over the wire. It offers a type system aligned to the capabilities of TypeScript and can be used equally well in JavaScript environments.
 
 License MIT
 
@@ -69,6 +69,7 @@ License MIT
 - [Strict](#Strict)
 - [Validation](#Validation)
 - [Compiler](#Compiler)
+- [Benchmark](#Benchmark)
 - [Contribute](#Contribute)
 
 <a name="Example"></a>
@@ -230,7 +231,7 @@ The following table outlines the TypeBox mappings between TypeScript and JSON sc
 │                                │                             │    }],                         │
 │                                │                             │    additionalItems: false,     │
 │                                │                             │    minItems: 2,                │
-│                                │                             │    maxItems: 2,                │
+│                                │                             │    maxItems: 2                 │
 │                                │                             │ }                              │
 │                                │                             │                                │
 │                                │                             │                                │
@@ -252,7 +253,7 @@ The following table outlines the TypeBox mappings between TypeScript and JSON sc
 │     y: Type.Number()           │ }                           │     const: 'x'                 │
 │   })                           │                             │   }, {                         │
 │ )                              │                             │     type: 'string',            │
-│                                │                             │     const: 'y',                │
+│                                │                             │     const: 'y'                 │
 │                                │                             │   }]                           │
 │                                │                             │ }                              │
 │                                │                             │                                │
@@ -320,7 +321,7 @@ The following table outlines the TypeBox mappings between TypeScript and JSON sc
 │ const T = Type.Pick(           │ type T = Pick<{             │ const T = {                    │
 │   Type.Object({                │   x: number,                │   type: 'object',              │
 │     x: Type.Number(),          │   y: number                 │   properties: {                │
-│     y: Type.Number(),          | }, 'x'>                     │     x: {                       │
+│     y: Type.Number()           | }, 'x'>                     │     x: {                       │
 │   }), ['x']                    │                             │       type: 'number'           │
 │ )                              │                             │     }                          │
 │                                │                             │   },                           │
@@ -331,7 +332,7 @@ The following table outlines the TypeBox mappings between TypeScript and JSON sc
 │ const T = Type.Omit(           │ type T = Omit<{             │ const T = {                    │
 │   Type.Object({                │   x: number,                │   type: 'object',              │
 │     x: Type.Number(),          │   y: number                 │   properties: {                │
-│     y: Type.Number(),          | }, 'x'>                     │     y: {                       │
+│     y: Type.Number()           | }, 'x'>                     │     y: {                       │
 │   }), ['x']                    │                             │       type: 'number'           │
 │ )                              │                             │     }                          │
 │                                │                             │   },                           │
@@ -352,8 +353,8 @@ TypeBox provides modifiers that can be applied to an objects properties. This al
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Object({        │ type T = {                  │ const T = {                    │
-│   name: Type.Optional(         │   name?: string,            │   type: 'object',              │
-│     Type.String(),             │ }                           │   properties: {                │
+│   name: Type.Optional(         │   name?: string             │   type: 'object',              │
+│     Type.String()              │ }                           │   properties: {                │
 │   )                            │                             │      name: {                   │
 │ })  	                         │                             │        type: 'string'          │
 │                                │                             │      }                         │
@@ -362,8 +363,8 @@ TypeBox provides modifiers that can be applied to an objects properties. This al
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Object({        │ type T = {                  │ const T = {                    │
-│   name: Type.Readonly(         │   readonly name: string,    │   type: 'object',              │
-│     Type.String(),             │ }                           │   properties: {                │
+│   name: Type.Readonly(         │   readonly name: string     │   type: 'object',              │
+│     Type.String()              │ }                           │   properties: {                │
 │   )                            │                             │     name: {                    │
 │ })  	                         │                             │       type: 'string'           │
 │                                │                             │     }                          │
@@ -374,7 +375,7 @@ TypeBox provides modifiers that can be applied to an objects properties. This al
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Object({        │ type T = {                  │ const T = {                    │
 │   name: Type.ReadonlyOptional( │   readonly name?: string    │   type: 'object',              │
-│     Type.String(),             │ }                           │   properties: {                │
+│     Type.String()              │ }                           │   properties: {                │
 │   )                            │                             │     name: {                    │
 │ })  	                         │                             │       type: 'string'           │
 │                                │                             │     }                          │
@@ -491,7 +492,7 @@ Use `Type.Recursive(...)` to create recursive types.
 ```typescript
 const Node = Type.Recursive(Node => Type.Object({    // const Node = {
   id: Type.String(),                                 //   $id: "Node",
-  nodes: Type.Array(Node),                           //   type: "object",
+  nodes: Type.Array(Node)                            //   type: "object",
 }), { $id: 'Node' })                                 //   properties: {
                                                      //     id: {
                                                      //       "type": "string"
@@ -620,29 +621,17 @@ The following table shows the TypeBox mappings between TypeScript and JSON schem
 
 ```typescript
 ┌────────────────────────────────┬─────────────────────────────┬────────────────────────────────┐
-│ TypeBox                        │ TypeScript                  │ Extended Schema                │
+│ TypeBox                        │ TypeScript                  │ JSON Schema                    │
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Conditional.Extends( │ type T =                    │ const T = {                    │
-│   Type.String(),               │  string extends number      │   const: false                 │
+│   Type.String(),               │  string extends number      │   const: false,                │
 │   Type.Number(),               │  true : false               │   type: 'boolean'              │
-│   Type.Literal(true)           │                             │ }                              │
+│   Type.Literal(true),          │                             │ }                              │
 │   Type.Literal(false)          │                             │                                │
 │ )                              │                             │                                │
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
-│ const T = Conditional.Exclude( │ type T = Exclude<           │ const T = {                    │
-│   Type.Union([                 │   'a' | 'b' | 'c',          │   anyOf: [{                    │
-│     Type.Literal('a')          │   'a'                       │     const: 'b'                 │
-│     Type.Literal('b')          │ >                           │     type: 'string'             │
-│     Type.Literal('c')          │                             │   }, {                         │
-│   ]),                          │                             │     const: 'c'                 │
-│   Type.Union([                 │                             │     type: 'string'             │
-│     Type.Literal('a')          │                             │   }]                           │
-│   ])                           │                             │ }                              │
-│ )                              │                             │                                │
-│                                │                             │                                │
-└────────────────────────────────┴─────────────────────────────┴────────────────────────────────┘
 │ const T = Conditional.Extract( │ type T = Extract<           │ const T = {                    │
 │   Type.Union([                 │   'a' | 'b' | 'c',          │   anyOf: [{                    │
 │     Type.Literal('a')          │   'a' | 'f'                 │     const: 'a'                 │
@@ -653,6 +642,18 @@ The following table shows the TypeBox mappings between TypeScript and JSON schem
 │     Type.Literal('a')          │                             │                                │
 │     Type.Literal('f')          │                             │                                │
 │   ])                           │                             │                                │
+│ )                              │                             │                                │
+│                                │                             │                                │
+├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
+│ const T = Conditional.Exclude( │ type T = Exclude<           │ const T = {                    │
+│   Type.Union([                 │   'a' | 'b' | 'c',          │   anyOf: [{                    │
+│     Type.Literal('a'),         │   'a'                       │     const: 'b',                │
+│     Type.Literal('b'),         │ >                           │     type: 'string'             │
+│     Type.Literal('c'),         │                             │   }, {                         │
+│   ]),                          │                             │     const: 'c',                │
+│   Type.Union([                 │                             │     type: 'string'             │
+│     Type.Literal('a')          │                             │   }]                           │
+│   ])                           │                             │ }                              │
 │ )                              │                             │                                │
 │                                │                             │                                │
 └────────────────────────────────┴─────────────────────────────┴────────────────────────────────┘
@@ -670,12 +671,12 @@ import { Type } from '@sinclair/typebox'
 
 const T = Type.Object({
   x: Type.Number({ default: 1 }),
-  y: Type.Number(),
+  y: Type.Number()
 })
 
 const V = Value.Create(T)                            // const V = {
                                                      //   x: 1,
-                                                     //   y: 0,
+                                                     //   y: 0
                                                      // }
 ```
 Use `Value.Cast(...)` to cast a value into a given type.
@@ -747,7 +748,7 @@ const U = Type.Strict(T)                             // const U = {
 
 ## Validation
 
-TypeBox schemas target JSON Schema draft 6 so any validator capable of draft 6 should be fine. A good library to use for validation in JavaScript environments is [AJV](https://www.npmjs.com/package/ajv). The following example shows setting up AJV 7 to work with TypeBox.
+TypeBox schemas target JSON Schema draft 6 so any validator capable of draft 6 should be fine. A good library to use for validation in JavaScript environments is [Ajv](https://www.npmjs.com/package/ajv). The following example shows setting up Ajv to work with TypeBox.
 
 ```bash
 $ npm install ajv ajv-formats --save
@@ -756,7 +757,7 @@ $ npm install ajv ajv-formats --save
 ```typescript
 //--------------------------------------------------------------------------------------------
 //
-// Import TypeBox and AJV
+// Import TypeBox and Ajv
 //
 //--------------------------------------------------------------------------------------------
 
@@ -766,7 +767,7 @@ import Ajv        from 'ajv'
 
 //--------------------------------------------------------------------------------------------
 //
-// Setup AJV validator with the following options and formats
+// Setup Ajv validator with the following options and formats
 //
 //--------------------------------------------------------------------------------------------
 
@@ -796,7 +797,7 @@ const ajv = addFormats(new Ajv({}), [
 const T = Type.Object({
   x: Type.Number(),
   y: Type.Number(),
-  z: Type.Number(),
+  z: Type.Number()
 })
 
 //--------------------------------------------------------------------------------------------
@@ -808,13 +809,13 @@ const T = Type.Object({
 const R = ajv.validate(T, { x: 1, y: 2, z: 3 })      // const R = true
 ```
 
-Please refer to the official AJV [documentation](https://ajv.js.org/guide/getting-started.html) for additional information on using AJV.
+Please refer to the official Ajv [documentation](https://ajv.js.org/guide/getting-started.html) for additional information on using Ajv.
 
 <a name="Compiler"></a>
 
 ## Compiler
 
-TypeBox provides an optional high performance runtime type checker that can be used in applications that require extremely fast validation. This type checker is optimized for TypeBox types only whose schematics are known in advance. If defining custom schemas with `Type.Unsafe<T>` please consider AJV.
+TypeBox provides an optional high performance runtime type checker that can be used in applications that require extremely fast validation. This type checker is optimized for TypeBox types only whose schematics are known in advance. If defining custom schemas with `Type.Unsafe<T>` please consider Ajv.
 
 The following demonstrates its use.
 
@@ -872,75 +873,78 @@ console.log(C.Code())                                // return function check(va
                                                      // }
 ```
 
-### Benchmarks
+## Benchmark
 
-This project maintains benchmarks that measure TypeBox and AJV compile and validate performance. These benchmarks can be run locally by cloning this repository and running `npm run benchmark`. Results show for AJV version 8.11.0.
+This project maintains benchmarks that measure Ajv and TypeCompiler validation and compilation performance. These benchmarks can be run locally by cloning this repository and running `npm run benchmark`. Results show against Ajv version 8.11.0.
 
-#### Validate
+### Validate
 
-This benchmark measures overall validate performance. You can review this benchmark [here](https://github.com/sinclairzx81/typebox/blob/master/benchmark/check.ts).
+This benchmark measures validation performance for varying types. You can review this benchmark [here](https://github.com/sinclairzx81/typebox/blob/master/benchmark/check.ts).
 
 ```typescript
-┌──────────────────┬────────────┬────────────┬────────────┬────────────────────────┐
-│     (index)      │ Iterations │    Ajv     │  TypeBox   │        Measured        │
-├──────────────────┼────────────┼────────────┼────────────┼────────────────────────┤
-│           Number │  16000000  │ '76ms    ' │ '65ms    ' │ '1.17 x faster       ' │
-│           String │  16000000  │ '272ms   ' │ '151ms   ' │ '1.80 x faster       ' │
-│          Boolean │  16000000  │ '276ms   ' │ '149ms   ' │ '1.85 x faster       ' │
-│             Null │  16000000  │ '272ms   ' │ '151ms   ' │ '1.80 x faster       ' │
-│            RegEx │  16000000  │ '651ms   ' │ '555ms   ' │ '1.17 x faster       ' │
-│          ObjectA │  16000000  │ '496ms   ' │ '322ms   ' │ '1.54 x faster       ' │
-│          ObjectB │  16000000  │ '721ms   ' │ '529ms   ' │ '1.36 x faster       ' │
-│            Tuple │  16000000  │ '332ms   ' │ '192ms   ' │ '1.73 x faster       ' │
-│            Union │  16000000  │ '333ms   ' │ '208ms   ' │ '1.60 x faster       ' │
-│        Recursive │  16000000  │ '5958ms  ' │ '2366ms  ' │ '2.52 x faster       ' │
-│          Vector4 │  16000000  │ '335ms   ' │ '171ms   ' │ '1.96 x faster       ' │
-│          Matrix4 │  16000000  │ '596ms   ' │ '410ms   ' │ '1.45 x faster       ' │
-│   Literal_String │  16000000  │ '273ms   ' │ '151ms   ' │ '1.81 x faster       ' │
-│   Literal_Number │  16000000  │ '261ms   ' │ '150ms   ' │ '1.74 x faster       ' │
-│  Literal_Boolean │  16000000  │ '312ms   ' │ '154ms   ' │ '2.03 x faster       ' │
-│     Array_Number │  16000000  │ '474ms   ' │ '237ms   ' │ '2.00 x faster       ' │
-│     Array_String │  16000000  │ '457ms   ' │ '297ms   ' │ '1.54 x faster       ' │
-│    Array_Boolean │  16000000  │ '512ms   ' │ '354ms   ' │ '1.45 x faster       ' │
-│    Array_ObjectA │  16000000  │ '41610ms ' │ '26812ms ' │ '1.55 x faster       ' │
-│    Array_ObjectB │  16000000  │ '46321ms ' │ '33115ms ' │ '1.40 x faster       ' │
-│      Array_Tuple │  16000000  │ '1903ms  ' │ '1149ms  ' │ '1.66 x faster       ' │
-│    Array_Vector4 │  16000000  │ '1506ms  ' │ '808ms   ' │ '1.86 x faster       ' │
-│    Array_Matrix4 │  16000000  │ '6263ms  ' │ '5072ms  ' │ '1.23 x faster       ' │
-└──────────────────┴────────────┴────────────┴────────────┴────────────────────────┘
+┌──────────────────┬────────────┬──────────────┬──────────────┬──────────────┐
+│     (index)      │ Iterations │     Ajv      │ TypeCompiler │ Performance  │
+├──────────────────┼────────────┼──────────────┼──────────────┼──────────────┤
+│           Number │  16000000  │ '     73 ms' │ '     65 ms' │ '    1.12 x' │
+│           String │  16000000  │ '    281 ms' │ '    161 ms' │ '    1.75 x' │
+│          Boolean │  16000000  │ '    302 ms' │ '    151 ms' │ '    2.00 x' │
+│             Null │  16000000  │ '    281 ms' │ '    149 ms' │ '    1.89 x' │
+│            RegEx │  16000000  │ '    689 ms' │ '    550 ms' │ '    1.25 x' │
+│          ObjectA │  16000000  │ '    470 ms' │ '    311 ms' │ '    1.51 x' │
+│          ObjectB │  16000000  │ '    667 ms' │ '    556 ms' │ '    1.20 x' │
+│            Tuple │  16000000  │ '    362 ms' │ '    190 ms' │ '    1.91 x' │
+│            Union │  16000000  │ '    387 ms' │ '    209 ms' │ '    1.85 x' │
+│        Recursive │  16000000  │ '   6327 ms' │ '   2773 ms' │ '    2.28 x' │
+│          Vector4 │  16000000  │ '    362 ms' │ '    172 ms' │ '    2.10 x' │
+│          Matrix4 │  16000000  │ '    607 ms' │ '    418 ms' │ '    1.45 x' │
+│   Literal_String │  16000000  │ '    314 ms' │ '    151 ms' │ '    2.08 x' │
+│   Literal_Number │  16000000  │ '    281 ms' │ '    147 ms' │ '    1.91 x' │
+│  Literal_Boolean │  16000000  │ '    289 ms' │ '    148 ms' │ '    1.95 x' │
+│     Array_Number │  16000000  │ '    475 ms' │ '    230 ms' │ '    2.07 x' │
+│     Array_String │  16000000  │ '    463 ms' │ '    297 ms' │ '    1.56 x' │
+│    Array_Boolean │  16000000  │ '    521 ms' │ '    348 ms' │ '    1.50 x' │
+│    Array_ObjectA │  16000000  │ '  43842 ms' │ '  28375 ms' │ '    1.55 x' │
+│    Array_ObjectB │  16000000  │ '  45055 ms' │ '  32882 ms' │ '    1.37 x' │
+│      Array_Tuple │  16000000  │ '   1424 ms' │ '   1105 ms' │ '    1.29 x' │
+│      Array_Union │  16000000  │ '   3505 ms' │ '   1350 ms' │ '    2.60 x' │
+│  Array_Recursive │  16000000  │ ' 117087 ms' │ '  42982 ms' │ '    2.72 x' │
+│    Array_Vector4 │  16000000  │ '   1500 ms' │ '    817 ms' │ '    1.84 x' │
+│    Array_Matrix4 │  16000000  │ '   6126 ms' │ '   4965 ms' │ '    1.23 x' │
+└──────────────────┴────────────┴──────────────┴──────────────┴──────────────┘
 ```
 
-#### Compile
+### Compile
 
-This benchmark measures schema compilation time. You can review this benchmark [here](https://github.com/sinclairzx81/typebox/blob/master/benchmark/compile.ts).
+This benchmark measures compilation performance for varying types. You can review this benchmark [here](https://github.com/sinclairzx81/typebox/blob/master/benchmark/compile.ts).
 
 ```typescript
-┌──────────────────┬────────────┬────────────┬────────────┬────────────────────────┐
-│     (index)      │ Iterations │    Ajv     │  TypeBox   │        Measured        │
-├──────────────────┼────────────┼────────────┼────────────┼────────────────────────┤
-│           Number │    2000    │ '386ms   ' │ '7ms     ' │ '55.14 x faster      ' │
-│           String │    2000    │ '308ms   ' │ '7ms     ' │ '44.00 x faster      ' │
-│          Boolean │    2000    │ '313ms   ' │ '6ms     ' │ '52.17 x faster      ' │
-│             Null │    2000    │ '265ms   ' │ '4ms     ' │ '66.25 x faster      ' │
-│            RegEx │    2000    │ '481ms   ' │ '7ms     ' │ '68.71 x faster      ' │
-│          ObjectA │    2000    │ '2788ms  ' │ '26ms    ' │ '107.23 x faster     ' │
-│          ObjectB │    2000    │ '2950ms  ' │ '22ms    ' │ '134.09 x faster     ' │
-│            Tuple │    2000    │ '1255ms  ' │ '17ms    ' │ '73.82 x faster      ' │
-│            Union │    2000    │ '1308ms  ' │ '16ms    ' │ '81.75 x faster      ' │
-│          Vector4 │    2000    │ '1584ms  ' │ '12ms    ' │ '132.00 x faster     ' │
-│          Matrix4 │    2000    │ '931ms   ' │ '9ms     ' │ '103.44 x faster     ' │
-│   Literal_String │    2000    │ '347ms   ' │ '7ms     ' │ '49.57 x faster      ' │
-│   Literal_Number │    2000    │ '380ms   ' │ '7ms     ' │ '54.29 x faster      ' │
-│  Literal_Boolean │    2000    │ '374ms   ' │ '4ms     ' │ '93.50 x faster      ' │
-│     Array_Number │    2000    │ '741ms   ' │ '5ms     ' │ '148.20 x faster     ' │
-│     Array_String │    2000    │ '764ms   ' │ '9ms     ' │ '84.89 x faster      ' │
-│    Array_Boolean │    2000    │ '788ms   ' │ '8ms     ' │ '98.50 x faster      ' │
-│    Array_ObjectA │    2000    │ '3545ms  ' │ '25ms    ' │ '141.80 x faster     ' │
-│    Array_ObjectB │    2000    │ '3685ms  ' │ '27ms    ' │ '136.48 x faster     ' │
-│      Array_Tuple │    2000    │ '2242ms  ' │ '13ms    ' │ '172.46 x faster     ' │
-│    Array_Vector4 │    2000    │ '1784ms  ' │ '14ms    ' │ '127.43 x faster     ' │
-│    Array_Matrix4 │    2000    │ '1622ms  ' │ '10ms    ' │ '162.20 x faster     ' │
-└──────────────────┴────────────┴────────────┴────────────┴────────────────────────┘
+┌──────────────────┬────────────┬──────────────┬──────────────┬──────────────┐
+│     (index)      │ Iterations │     Ajv      │ TypeCompiler │ Performance  │
+├──────────────────┼────────────┼──────────────┼──────────────┼──────────────┤
+│           Number │    2000    │ '    387 ms' │ '      7 ms' │ '   55.29 x' │
+│           String │    2000    │ '    340 ms' │ '      6 ms' │ '   56.67 x' │
+│          Boolean │    2000    │ '    314 ms' │ '      5 ms' │ '   62.80 x' │
+│             Null │    2000    │ '    259 ms' │ '      5 ms' │ '   51.80 x' │
+│            RegEx │    2000    │ '    491 ms' │ '      7 ms' │ '   70.14 x' │
+│          ObjectA │    2000    │ '   2850 ms' │ '     26 ms' │ '  109.62 x' │
+│          ObjectB │    2000    │ '   2989 ms' │ '     22 ms' │ '  135.86 x' │
+│            Tuple │    2000    │ '   1283 ms' │ '     17 ms' │ '   75.47 x' │
+│            Union │    2000    │ '   1292 ms' │ '     16 ms' │ '   80.75 x' │
+│          Vector4 │    2000    │ '   1588 ms' │ '     12 ms' │ '  132.33 x' │
+│          Matrix4 │    2000    │ '    934 ms' │ '      7 ms' │ '  133.43 x' │
+│   Literal_String │    2000    │ '    340 ms' │ '      5 ms' │ '   68.00 x' │
+│   Literal_Number │    2000    │ '    402 ms' │ '      4 ms' │ '  100.50 x' │
+│  Literal_Boolean │    2000    │ '    381 ms' │ '      6 ms' │ '   63.50 x' │
+│     Array_Number │    2000    │ '    750 ms' │ '      8 ms' │ '   93.75 x' │
+│     Array_String │    2000    │ '    760 ms' │ '      6 ms' │ '  126.67 x' │
+│    Array_Boolean │    2000    │ '    796 ms' │ '      7 ms' │ '  113.71 x' │
+│    Array_ObjectA │    2000    │ '   3617 ms' │ '     26 ms' │ '  139.12 x' │
+│    Array_ObjectB │    2000    │ '   3823 ms' │ '     26 ms' │ '  147.04 x' │
+│      Array_Tuple │    2000    │ '   2263 ms' │ '     13 ms' │ '  174.08 x' │
+│      Array_Union │    2000    │ '   1725 ms' │ '     16 ms' │ '  107.81 x' │
+│    Array_Vector4 │    2000    │ '   2445 ms' │ '     14 ms' │ '  174.64 x' │
+│    Array_Matrix4 │    2000    │ '   1638 ms' │ '     11 ms' │ '  148.91 x' │
+└──────────────────┴────────────┴──────────────┴──────────────┴──────────────┘
 ```
 
 <a name="Contribute"></a>

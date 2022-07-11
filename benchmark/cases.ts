@@ -104,6 +104,10 @@ export namespace Cases {
 
   export const Array_Tuple = Type.Array(Tuple, { minItems: 16 })
 
+  export const Array_Union = Type.Array(Union, { minItems: 16 })
+
+  export const Array_Recursive = Type.Array(Recursive, { minItems: 16 })
+
   export const Array_Vector4 = Type.Array(Vector4, { minItems: 16 })
 
   export const Array_Matrix4 = Type.Array(Matrix4, { minItems: 16 })
