@@ -11,7 +11,7 @@ export function Report(results: Result[]) {
         [result.type.padStart(16, ' ')]: {
           Iterations: result.typebox.iterations,
           Ajv: `${result.ajv.completed} ms`.padStart(10),
-          TypeBox: `${result.typebox.completed} ms`.padStart(10),
+          TypeCompiler: `${result.typebox.completed} ms`.padStart(10),
           Performance: `${ratio.toFixed(2)} x`.padStart(10, ' '),
         },
       }
