@@ -72,6 +72,7 @@ export interface SchemaOptions {
 
 export interface TSchema extends SchemaOptions {
   [Kind]: string
+  [Hint]?: string
   [Modifier]?: string
   params: unknown[]
   static: unknown
@@ -310,7 +311,6 @@ export interface ObjectOptions extends SchemaOptions {
 
 export interface TObject<T extends TProperties = TProperties> extends TSchema, ObjectOptions {
   [Kind]: 'Object'
-  [Hint]?: string
   static: PropertiesReduce<T, this['params']>
   type: 'object'
   properties: T
@@ -592,7 +592,7 @@ export class TypeBuilder {
       .filter((key) => isNaN(key as any))
       .map((key) => item[key]) as T[keyof T][]
     const anyOf = values.map((value) => (typeof value === 'string' ? { [Kind]: 'Literal', type: 'string' as const, const: value } : { [Kind]: 'Literal', type: 'number' as const, const: value }))
-    return this.Create({ ...options, [Kind]: 'Union', anyOf })
+    return this.Create({ ...options, [Kind]: 'Union', [Hint]: 'Enum', anyOf })
   }
 
   /** Creates a function type */
@@ -640,7 +640,7 @@ export class TypeBuilder {
   /** Creates a keyof type */
   public KeyOf<T extends TObject>(object: T, options: SchemaOptions = {}): TUnion<TKeyOf<T>> {
     const items = Object.keys(object.properties).map((key) => this.Create({ ...options, [Kind]: 'Literal', type: 'string', const: key }))
-    return this.Create({ ...options, [Kind]: 'Union', anyOf: items })
+    return this.Create({ ...options, [Kind]: 'Union', [Hint]: 'KeyOf', anyOf: items })
   }
 
   /** Creates a literal type. */
