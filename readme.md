@@ -141,7 +141,8 @@ type T = Static<typeof T>                            // type T = {
 function receive(value: T) {                         // ... as a Type
 
   if(JSON.validate(T, value)) {                      // ... as a Schema
-        // ok...
+  
+    // ok...
   }
 }
 ```
