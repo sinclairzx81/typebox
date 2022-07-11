@@ -179,6 +179,8 @@ export namespace Structural {
   function Constructor(left: Types.TConstructor, right: Types.TSchema): StructuralResult {
     if (AnyOrUnknownRule(right)) {
       return StructuralResult.True
+    } else if (TypeGuard.TObject(right) && (globalThis.Object.keys(right.properties).length === 0)) {
+      return StructuralResult.True
     } else if (!TypeGuard.TConstructor(right)) {
       return StructuralResult.False
     } else if (right.parameters.length < left.parameters.length) {

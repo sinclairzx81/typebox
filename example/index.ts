@@ -1,17 +1,13 @@
-import { TypeCompiler } from '@sinclair/typebox/compiler'
-import { Conditional } from '@sinclair/typebox/conditional'
-import { Value } from '@sinclair/typebox/value'
-import { Type, Static } from '@sinclair/typebox'
+{
+  'Should extend Object 1'
 
-const A = Conditional.Exclude(Type.Union([
-  Type.Literal('a'),
-  Type.Literal('b'),
-  Type.Literal('c'),
-]), Type.Union([
-  Type.Literal('c'),
-])
-)
-console.log(A)
+  type T = (new () => number) extends object ? 1 : 2
 
-type T = Static<typeof A>
+}
+{
+  type T = (new () => number) extends {} ? 1 : 2
+}
 
+type T = (new () => number) extends { length: number } ? 1 : 2
+
+class X {}
