@@ -50,7 +50,7 @@ export async function test_runtime(filter) {
 }
 
 export async function test(filter = '') {
-    await test_static()
+    // await test_static()
     await test_runtime(filter)
 }
 

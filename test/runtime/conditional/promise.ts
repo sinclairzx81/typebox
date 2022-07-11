@@ -40,11 +40,13 @@ describe('conditional/structural/Promise', () => {
     const R = Structural.Check(Type.Promise(Type.Any()), Type.Any())
     Assert.deepEqual(R, StructuralResult.True)
   })
+
   it('Should extend Unknown', () => {
     type T = Promise<any> extends unknown ? 1 : 2
     const R = Structural.Check(Type.Promise(Type.Any()), Type.Unknown())
     Assert.deepEqual(R, StructuralResult.True)
   })
+
   it('Should extend String', () => {
     type T = Promise<any> extends string ? 1 : 2
     const R = Structural.Check(Type.Promise(Type.Any()), Type.String())
@@ -74,6 +76,7 @@ describe('conditional/structural/Promise', () => {
     const R = Structural.Check(Type.Promise(Type.Any()), Type.Array(Type.Any()))
     Assert.deepEqual(R, StructuralResult.False)
   })
+
   it('Should extend Tuple', () => {
     type T = Promise<any> extends [number, number] ? 1 : 2
     const R = Structural.Check(Type.Promise(Type.Any()), Type.Tuple([Type.Number(), Type.Number()]))
@@ -143,6 +146,7 @@ describe('conditional/structural/Promise', () => {
     const R = Structural.Check(Type.Promise(Type.Number()), Type.Any())
     Assert.deepEqual(R, StructuralResult.True)
   })
+
   it('Should extend constrained Unknown', () => {
     type T = Promise<number> extends unknown ? 1 : 2
     const R = Structural.Check(Type.Promise(Type.Number()), Type.Unknown())
@@ -178,11 +182,13 @@ describe('conditional/structural/Promise', () => {
     const R = Structural.Check(Type.Promise(Type.Number()), Type.Array(Type.Any()))
     Assert.deepEqual(R, StructuralResult.False)
   })
+
   it('Should extend constrained Tuple', () => {
     type T = Promise<number> extends [number, number] ? 1 : 2
     const R = Structural.Check(Type.Promise(Type.Number()), Type.Tuple([Type.Number(), Type.Number()]))
     Assert.deepEqual(R, StructuralResult.False)
   })
+
   it('Should extend constrained Object 1', () => {
     type T = Promise<number> extends {} ? 1 : 2
     const R = Structural.Check(Type.Promise(Type.Number()), Type.Object({}, { additionalProperties: false }))
