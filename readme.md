@@ -69,7 +69,7 @@ License MIT
 - [Strict](#Strict)
 - [Validation](#Validation)
 - [Compiler](#Compiler)
-- [Benchmarks](#Benchmarks)
+- [Benchmark](#Benchmark)
 - [Contribute](#Contribute)
 
 <a name="Example"></a>
@@ -873,7 +873,7 @@ console.log(C.Code())                                // return function check(va
                                                      // }
 ```
 
-## Benchmarks
+## Benchmark
 
 This project maintains benchmarks that measure Ajv and TypeCompiler validation and compilation performance. These benchmarks can be run locally by cloning this repository and running `npm run benchmark`. Results show against Ajv version 8.11.0.
 
