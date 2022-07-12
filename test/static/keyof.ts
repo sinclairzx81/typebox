@@ -1,5 +1,5 @@
-import * as Spec from './spec'
-import { Type } from './typebox'
+import { Expect } from './assert'
+import { Type } from '@sinclair/typebox'
 
 {
   const K = Type.KeyOf(
@@ -9,12 +9,11 @@ import { Type } from './typebox'
       C: Type.Null(),
     }),
   )
-
-  Spec.expectType<'A' | 'B' | 'C'>(Spec.infer(K))
+  Expect(K).ToBe<'A' | 'B' | 'C'>()
 }
 
 {
-  const Q = Type.Pick(
+  const T = Type.Pick(
     Type.Object({
       A: Type.Null(),
       B: Type.Null(),
@@ -23,22 +22,28 @@ import { Type } from './typebox'
     ['A', 'B'],
   )
 
-  const K = Type.KeyOf(
-    Type.Pick(
-      Type.Object({
-        A: Type.Null(),
-        B: Type.Null(),
-        C: Type.Null(),
-      }),
-      ['A', 'B'],
-    ),
-  )
+  const K = Type.KeyOf(T)
 
-  Spec.expectType<'A' | 'B'>(Spec.infer(K))
+  Expect(K).ToBe<'A' | 'B'>()
 }
 
 {
-  const K = Type.KeyOf(
+  const T = Type.Omit(
+    Type.Object({
+      A: Type.Null(),
+      B: Type.Null(),
+      C: Type.Null(),
+    }),
+    ['A', 'B'],
+  )
+
+  const K = Type.KeyOf(T)
+
+  Expect(K).ToBe<'C'>()
+}
+
+{
+  const T = Type.KeyOf(
     Type.Omit(
       Type.Object({
         A: Type.Null(),
@@ -48,5 +53,5 @@ import { Type } from './typebox'
       ['A', 'B'],
     ),
   )
-  Spec.expectType<'C'>(Spec.infer(K))
+  Expect(T).ToBe<'C'>()
 }

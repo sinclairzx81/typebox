@@ -40,8 +40,8 @@ export async function benchmark() {
 // -------------------------------------------------------------------------------
 
 export async function test_static() {
-    await shell(`tsc -p ./src/tsconfig.json --outDir test/static --emitDeclarationOnly`)
-    await shell(`tsd test/static`)
+    await shell(`tsc -p test/static/tsconfig.json --noEmit --strict`)
+    
 }
 
 export async function test_runtime(filter) {

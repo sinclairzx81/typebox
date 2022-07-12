@@ -338,10 +338,14 @@ export interface TPartial<T extends TObject> extends TObject {
 // Pick
 // --------------------------------------------------------------------------
 
-export interface TPick<T extends TObject, Properties extends ObjectPropertyKeys<T>[]> extends TObject, ObjectOptions {
-  static: Pick<Static<T, this['params']>, Properties[number]>
-  properties: ObjectProperties<T>
-}
+// export interface TPick<T extends TObject, Properties extends ObjectPropertyKeys<T>[]> extends TObject, ObjectOptions {
+//   static: Pick<Static<T, this['params']>, Properties[number]>
+//   properties: ObjectProperties<T>
+// }
+
+export type TPick<T extends TObject, Properties extends ObjectPropertyKeys<T>[]> = TObject<{
+  [K in Properties[number]]: T['properties'][K]
+}>
 
 // --------------------------------------------------------------------------
 // Promise
@@ -444,6 +448,8 @@ export interface TString extends TSchema, StringOptions<string> {
 // --------------------------------------------------------------------------
 // Tuple
 // --------------------------------------------------------------------------
+
+export type TupleToArray<T extends TTuple<TSchema[]>> = T extends TTuple<infer R> ? R : never // how to get at inner generic parameter
 
 export interface TTuple<T extends TSchema[] = TSchema[]> extends TSchema {
   [Kind]: 'Tuple'
@@ -582,8 +588,21 @@ export class TypeBuilder {
   }
 
   /** Creates a constructor type */
-  public Constructor<T extends TSchema[], U extends TSchema>(parameters: [...T], returns: U, options: SchemaOptions = {}): TConstructor<T, U> {
-    return this.Create({ ...options, [Kind]: 'Constructor', type: 'constructor', parameters, returns })
+  public Constructor<T extends TTuple<TSchema[]>, U extends TSchema>(parameters: T, returns: U, options?: SchemaOptions): TConstructor<TupleToArray<T>, U>
+
+  /** Creates a constructor type */
+  public Constructor<T extends TSchema[], U extends TSchema>(parameters: [...T], returns: U, options?: SchemaOptions): TConstructor<T, U>
+
+  /** Creates a constructor type */
+  public Constructor(parameters: any, returns: any, options: SchemaOptions = {}) {
+    if (parameters[Kind] === 'Tuple') {
+      const inner = parameters.items === undefined ? [] : parameters.items
+      return this.Create({ ...options, [Kind]: 'Constructor', type: 'constructor', parameters: inner, returns })
+    } else if (globalThis.Array.isArray(parameters)) {
+      return this.Create({ ...options, [Kind]: 'Constructor', type: 'constructor', parameters, returns })
+    } else {
+      throw new Error('TypeBuilder.Constructor: Invalid parameters')
+    }
   }
 
   /** Creates a enum type */
@@ -596,8 +615,21 @@ export class TypeBuilder {
   }
 
   /** Creates a function type */
-  public Function<T extends readonly TSchema[], U extends TSchema>(parameters: [...T], returns: U, options: SchemaOptions = {}): TFunction<T, U> {
-    return this.Create({ ...options, [Kind]: 'Function', type: 'function', parameters, returns })
+  public Function<T extends TTuple<TSchema[]>, U extends TSchema>(parameters: T, returns: U, options?: SchemaOptions): TFunction<TupleToArray<T>, U>
+
+  /** Creates a function type */
+  public Function<T extends TSchema[], U extends TSchema>(parameters: [...T], returns: U, options?: SchemaOptions): TFunction<T, U>
+
+  /** Creates a function type */
+  public Function(parameters: any, returns: any, options: SchemaOptions = {}) {
+    if (parameters[Kind] === 'Tuple') {
+      const inner = parameters.items === undefined ? [] : parameters.items
+      return this.Create({ ...options, [Kind]: 'Function', type: 'function', parameters: inner, returns })
+    } else if (globalThis.Array.isArray(parameters)) {
+      return this.Create({ ...options, [Kind]: 'Function', type: 'function', parameters, returns })
+    } else {
+      throw new Error('TypeBuilder.Function: Invalid parameters')
+    }
   }
 
   /** Creates a type from this constructors instance type */

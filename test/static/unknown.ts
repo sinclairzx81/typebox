@@ -1,4 +1,4 @@
-import * as Spec from './spec'
-import { Type } from './typebox'
+import { Expect } from './assert'
+import { Type } from '@sinclair/typebox'
 
-Spec.expectType<unknown>(Spec.infer(Type.Unknown()))
+Expect(Type.Unknown()).ToBe<unknown>()

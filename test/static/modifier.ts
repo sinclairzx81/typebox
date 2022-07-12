@@ -1,5 +1,5 @@
-import * as Spec from './spec'
-import { Type } from './typebox'
+import { Expect } from './assert'
+import { Type } from '@sinclair/typebox'
 
 // Asserts combinatory modifiers
 {
@@ -9,10 +9,10 @@ import { Type } from './typebox'
     C: Type.Optional(Type.String()),
     D: Type.String(),
   })
-  Spec.expectType<{
+  Expect(T).ToBe<{
     readonly A?: string
     readonly B: string
     C?: string
     D: string
-  }>(Spec.infer(T))
+  }>()
 }

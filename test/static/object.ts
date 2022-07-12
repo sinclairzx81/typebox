@@ -1,5 +1,5 @@
-import * as Spec from './spec'
-import { Type } from './typebox'
+import { Expect } from './assert'
+import { Type } from '@sinclair/typebox'
 
 {
   const T = Type.Object({
@@ -8,11 +8,11 @@ import { Type } from './typebox'
     C: Type.String(),
   })
 
-  Spec.expectType<{
+  Expect(T).ToBe<{
     A: string
     B: string
     C: string
-  }>(Spec.infer(T))
+  }>
 }
 {
   const T = Type.Object({
@@ -32,7 +32,7 @@ import { Type } from './typebox'
       C: Type.String(),
     }),
   })
-  Spec.expectType<{
+  Expect(T).ToBe<{
     A: {
       A: string
       B: string
@@ -48,5 +48,5 @@ import { Type } from './typebox'
       B: string
       C: string
     }
-  }>(Spec.infer(T))
+  }>
 }

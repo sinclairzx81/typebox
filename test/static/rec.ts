@@ -1,5 +1,5 @@
-import * as Spec from './spec'
-import { Type, Static } from './typebox'
+import { Expect } from './assert'
+import { Type, Static } from '@sinclair/typebox'
 
 {
   const T = Type.Recursive((Node) =>
@@ -8,6 +8,8 @@ import { Type, Static } from './typebox'
       nodes: Type.Array(Node),
     }),
   )
+
   type T = Static<typeof T>
-  Spec.expectType<T>(Spec.infer(T))
+
+  Expect(T).ToBe<T>() // ? how to test....
 }

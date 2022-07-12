@@ -1,5 +1,5 @@
-import * as Spec from './spec'
-import { Type } from './typebox'
+import { Expect } from './assert'
+import { Type, Static } from '@sinclair/typebox'
 
 {
   const T = Type.Pick(
@@ -8,11 +8,12 @@ import { Type } from './typebox'
       B: Type.String(),
       C: Type.String(),
     }),
-    ['A', 'B'],
+    ['C'],
   )
 
-  Spec.expectType<{
-    A: string
-    B: string
-  }>(Spec.infer(T))
+  type T = Static<typeof T>
+
+  Expect(T).ToBe<{
+    C: string
+  }>()
 }

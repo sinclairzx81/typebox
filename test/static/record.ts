@@ -1,30 +1,34 @@
-import * as Spec from './spec'
-import { Type } from './typebox'
+import { Expect } from './assert'
+import { Type, Static } from '@sinclair/typebox'
 {
   // type K = string
   const K = Type.String()
+  const T = Type.Record(K, Type.Number())
+  type T = Static<typeof T>
 
-  Spec.expectType<Record<string, number>>(Spec.infer(Type.Record(K, Type.Number())))
+  Expect(T).ToBe<Record<string, number>>()
 }
 {
   // type K = string
   const K = Type.RegEx(/foo|bar/)
-
-  Spec.expectType<Record<string, number>>(Spec.infer(Type.Record(K, Type.Number())))
+  const T = Type.Record(K, Type.Number())
+  type T = Static<typeof T>
+  Expect(T).ToBe<Record<string, number>>()
 }
 {
   // type K = number
   const K = Type.Number()
-
-  Spec.expectType<Record<string, number>>(Spec.infer(Type.Record(K, Type.Number())))
-
-  Spec.expectType<Record<number, number>>(Spec.infer(Type.Record(K, Type.Number())))
+  const T = Type.Record(K, Type.Number())
+  type T = Static<typeof T>
+  Expect(T).ToBe<Record<string, number>>()
+  Expect(T).ToBe<Record<number, number>>()
 }
 {
   // type K = 'A' | 'B' | 'C'
   const K = Type.Union([Type.Literal('A'), Type.Literal('B'), Type.Literal('C')])
-
-  Spec.expectType<Record<'A' | 'B' | 'C', number>>(Spec.infer(Type.Record(K, Type.Number())))
+  const T = Type.Record(K, Type.Number())
+  type T = Static<typeof T>
+  Expect(T).ToBe<Record<'A' | 'B' | 'C', number>>()
 }
 {
   // type K = keyof { A: number, B: number, C: number }
@@ -35,7 +39,9 @@ import { Type } from './typebox'
       C: Type.Number(),
     }),
   )
-  Spec.expectType<Record<'A' | 'B' | 'C', number>>(Spec.infer(Type.Record(K, Type.Number())))
+  const T = Type.Record(K, Type.Number())
+  type T = Static<typeof T>
+  Expect(T).ToBe<Record<'A' | 'B' | 'C', number>>()
 }
 {
   // type K = keyof Omit<{ A: number, B: number, C: number }, 'C'>
@@ -49,5 +55,7 @@ import { Type } from './typebox'
       ['C'],
     ),
   )
-  Spec.expectType<Record<'A' | 'B', number>>(Spec.infer(Type.Record(K, Type.Number())))
+  const T = Type.Record(K, Type.Number())
+  type T = Static<typeof T>
+  Expect(T).ToBe<Record<'A' | 'B', number>>()
 }

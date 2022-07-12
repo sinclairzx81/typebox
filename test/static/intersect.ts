@@ -1,5 +1,5 @@
-import * as Spec from './spec'
-import { Type, Static } from './typebox'
+import { Expect } from './assert'
+import { Type } from '@sinclair/typebox'
 
 {
   const A = Type.Object({
@@ -11,7 +11,8 @@ import { Type, Static } from './typebox'
     Y: Type.Number(),
   })
   const T = Type.Intersect([A, B])
-  Spec.expectType<
+
+  Expect(T).ToBe<
     {
       A: string
       B: string
@@ -19,10 +20,12 @@ import { Type, Static } from './typebox'
       X: number
       Y: number
     }
-  >(Spec.infer(T))
+  >()
 }
 
-// { // https://github.com/sinclairzx81/typebox/issues/113
+// https://github.com/sinclairzx81/typebox/issues/113
+// https://github.com/sinclairzx81/typebox/issues/187
+// {
 //     const A = Type.Object({ A: Type.String() })
 //     const B = Type.Object({ B: Type.String() })
 //     const C = Type.Object({ C: Type.String() })
@@ -31,5 +34,5 @@ import { Type, Static } from './typebox'
 //     const _0: T = { A: '', B: '' }
 //     const _1: T = { A: '', C: '' }
 //     const _3: T = { A: '', B: '', C: '' }
-//     Spec.expectType<{ A: string } & ({ B: string, } | { C: string })>(Spec.infer(T))
+//     Expect(T).ToBe<{ A: string } & ({ B: string, } | { C: string })>()
 // }

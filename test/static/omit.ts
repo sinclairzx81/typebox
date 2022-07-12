@@ -1,5 +1,5 @@
-import * as Spec from './spec'
-import { Type } from './typebox'
+import { Expect } from './assert'
+import { Type, Static } from '@sinclair/typebox'
 
 {
   const T = Type.Omit(
@@ -11,8 +11,10 @@ import { Type } from './typebox'
     ['C'],
   )
 
-  Spec.expectType<{
+  type T = Static<typeof T>
+
+  Expect(T).ToBe<{
     A: string
     B: string
-  }>(Spec.infer(T))
+  }>()
 }

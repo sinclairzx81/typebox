@@ -1,8 +1,10 @@
-import * as Spec from './spec'
-import { Type } from './typebox'
+import { Expect } from './assert'
+import { Type, Static } from '@sinclair/typebox'
 
 {
   const T = Type.Tuple([Type.Number(), Type.String(), Type.Boolean()])
 
-  Spec.expectType<[number, string, boolean]>(Spec.infer(T))
+  type T = Static<typeof T>
+
+  Expect(T).ToBe<[number, string, boolean]>()
 }

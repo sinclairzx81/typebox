@@ -1,11 +1,11 @@
-import * as Spec from './spec'
-import { Type } from './typebox'
+import { Expect } from './assert'
+import { Type, Static } from '@sinclair/typebox'
 
 {
   const T = Type.Object({
     A: Type.ReadonlyOptional(Type.String()),
   })
-  Spec.expectType<{
+  Expect(T).ToBe<{
     readonly A?: string
-  }>(Spec.infer(T))
+  }>
 }

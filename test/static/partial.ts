@@ -1,5 +1,5 @@
-import * as Spec from './spec'
-import { Type } from './typebox'
+import { Expect } from './assert'
+import { Type, Static } from '@sinclair/typebox'
 
 {
   const T = Type.Partial(
@@ -9,10 +9,11 @@ import { Type } from './typebox'
       C: Type.String(),
     }),
   )
+  type T = Static<typeof T>
 
-  Spec.expectType<{
+  Expect(T).ToBe<{
     A?: string
     B?: string
     C?: string
-  }>(Spec.infer(T))
+  }>()
 }

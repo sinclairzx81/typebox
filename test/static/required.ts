@@ -1,5 +1,7 @@
-import * as Spec from './spec'
-import { Type, Static } from './typebox'
+import { Expect } from './assert'
+import { Type, Static } from '@sinclair/typebox'
+
+Expect(Type.RegEx(/foo/)).ToBe<string>()
 
 {
   const T = Type.Required(
@@ -10,9 +12,11 @@ import { Type, Static } from './typebox'
     }),
   )
 
-  Spec.expectType<{
+  type T = Static<typeof T>
+
+  Expect(T).ToBe<{
     A: string
     B: string
     C: string
-  }>(Spec.infer(T))
+  }>()
 }

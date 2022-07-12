@@ -1,4 +1,4 @@
-import * as Spec from './spec'
-import { Type } from './typebox'
+import { Expect } from './assert'
+import { Type } from '@sinclair/typebox'
 
-Spec.expectType<null>(Spec.infer(Type.Null()))
+Expect(Type.Null()).ToBe<null>()
