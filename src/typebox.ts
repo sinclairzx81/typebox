@@ -39,21 +39,13 @@ export const Modifier = Symbol.for('TypeBox.Modifier')
 // --------------------------------------------------------------------------
 
 export type TModifier = TReadonlyOptional<TSchema> | TOptional<TSchema> | TReadonly<TSchema>
-
 export type TReadonly<T extends TSchema> = T & { [Modifier]: 'Readonly' }
-
 export type TOptional<T extends TSchema> = T & { [Modifier]: 'Optional' }
-
 export type TReadonlyOptional<T extends TSchema> = T & { [Modifier]: 'ReadonlyOptional' }
 
 // --------------------------------------------------------------------------
 // Schema
 // --------------------------------------------------------------------------
-
-export interface DesignType {
-  type: string
-  [props: string]: any
-}
 
 export interface SchemaOptions {
   $schema?: string
