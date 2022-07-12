@@ -3,19 +3,12 @@ import { Conditional } from '@sinclair/typebox/conditional'
 import { Value } from '@sinclair/typebox/value'
 import { Type, Static } from '@sinclair/typebox'
 
-const T = Type.Recursive(Node => Type.Object({
-    id: Type.String(),
-    nodes: Type.Array(Node)
-}))
-
-const S = Type.Object({
-    a: Type.String(),
-    node: T
+const T = Type.Object({
+  x: Type.Number(),
+  y: Type.Number(),
+  z: Type.Number()
 })
 
-type S = Static<typeof S>
+type T = Static<typeof T>
 
-const P = Type.Pick(S, ['node'])
-
-type P = Static<typeof P>
-
+console.log(T)
