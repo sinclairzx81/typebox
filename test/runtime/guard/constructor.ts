@@ -19,4 +19,12 @@ describe('type/guard/TConstructor', () => {
     const R = TypeGuard.TConstructor(Type.Constructor([], {} as any))
     Assert.equal(R, false)
   })
+  it('should guard for TConstructor with empty TTuple', () => {
+    const R = TypeGuard.TConstructor(Type.Constructor(Type.Tuple([]), Type.Number()))
+    Assert.equal(R, true)
+  })
+  it('should guard for TConstructor with array TTuple', () => {
+    const R = TypeGuard.TConstructor(Type.Constructor(Type.Tuple([Type.Number(), Type.String()]), Type.Number()))
+    Assert.equal(R, true)
+  })
 })

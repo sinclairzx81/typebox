@@ -1,11 +1,14 @@
-import * as Spec from './spec'
-import { Type } from './typebox'
+import { Expect } from './assert'
+import { Type, Static } from '@sinclair/typebox'
 
 {
   const A = Type.String()
   const B = Type.Number()
   const T = Type.Union([A, B])
-  Spec.expectType<string | number>(Spec.infer(T))
+
+  type T = Static<typeof T>
+
+  Expect(T).ToBe<string | number>()
 }
 {
   const A = Type.Object({
@@ -17,7 +20,10 @@ import { Type } from './typebox'
     Y: Type.Number(),
   })
   const T = Type.Union([A, B])
-  Spec.expectType<
+
+  type T = Static<typeof T>
+
+  Expect(T).ToBe<
     | {
         A: string
         B: string
@@ -26,5 +32,37 @@ import { Type } from './typebox'
         X: number
         Y: number
       }
-  >(Spec.infer(T))
+  >()
+}
+
+{
+  const A = Type.Object({
+    A: Type.String(),
+    B: Type.String(),
+  })
+  const B = Type.Object({
+    X: Type.Number(),
+    Y: Type.Number(),
+  })
+  const T = Type.Union([A, B, Type.Intersect([A, B])])
+
+  type T = Static<typeof T>
+
+  Expect(T).ToBe<
+    | {
+        A: string
+        B: string
+      }
+    | {
+        X: number
+        Y: number
+      }
+    | ({
+        A: string
+        B: string
+      } & {
+        X: number
+        Y: number
+      })
+  >()
 }

@@ -635,12 +635,12 @@ The following table shows the TypeBox mappings between TypeScript and JSON schem
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Conditional.Extract( │ type T = Extract<           │ const T = {                    │
 │   Type.Union([                 │   'a' | 'b' | 'c',          │   anyOf: [{                    │
-│     Type.Literal('a')          │   'a' | 'f'                 │     const: 'a'                 │
-│     Type.Literal('b')          │ >                           │     type: 'string'             │
+│     Type.Literal('a'),         │   'a' | 'f'                 │     const: 'a'                 │
+│     Type.Literal('b'),         │ >                           │     type: 'string'             │
 │     Type.Literal('c')          │                             │   }]                           │
 │   ]),                          │                             │ }                              │
 │   Type.Union([                 │                             │                                │
-│     Type.Literal('a')          │                             │                                │
+│     Type.Literal('a'),         │                             │                                │
 │     Type.Literal('f')          │                             │                                │
 │   ])                           │                             │                                │
 │ )                              │                             │                                │

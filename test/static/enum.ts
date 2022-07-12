@@ -1,5 +1,5 @@
-import * as Spec from './spec'
-import { Type } from './typebox'
+import { Expect } from './assert'
+import { Type, Static } from '@sinclair/typebox'
 
 enum E {
   A,
@@ -9,4 +9,4 @@ enum E {
 
 const T = Type.Enum(E)
 
-Spec.expectType<E>(Spec.infer(T))
+Expect(T).ToBe<Static<typeof T>>() // ?

@@ -62,7 +62,7 @@ export class TypeCheck<T extends Types.TSchema> {
 // TypeCompiler
 // -------------------------------------------------------------------
 
-/** Compiles TypeBox Types for Runtime Type Checking */
+/** Compiles Types for Runtime Type Checking */
 export namespace TypeCompiler {
   // -------------------------------------------------------------------
   // Schemas

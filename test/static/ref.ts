@@ -1,10 +1,13 @@
-import * as Spec from './spec'
-import { Type } from './typebox'
+import { Expect } from './assert'
+import { Type, Static } from '@sinclair/typebox'
 
 {
   const T = Type.String({ $id: 'T' })
-
   const R = Type.Ref(T)
 
-  Spec.expectType<string>(Spec.infer(R))
+  type T = Static<typeof T>
+  type R = Static<typeof R>
+
+  Expect(T).ToBe<string>()
+  Expect(R).ToBe<string>()
 }

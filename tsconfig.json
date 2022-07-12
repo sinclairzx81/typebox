@@ -1,10 +1,10 @@
 {
   "compilerOptions": {
     "strict": true,
-    "target": "ESNext",
-    "alwaysStrict": true,
+    "target": "ES2020",
+    "module": "CommonJS",
     "moduleResolution": "node",
-    "removeComments": true,
+    "declaration": true,
     "baseUrl": ".",
     "paths": {
       "@sinclair/typebox/compiler": [

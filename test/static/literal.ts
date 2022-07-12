@@ -1,8 +1,8 @@
-import * as Spec from './spec'
-import { Type } from './typebox'
+import { Expect } from './assert'
+import { Type } from '@sinclair/typebox'
 
-Spec.expectType<'hello'>(Spec.infer(Type.Literal('hello')))
+Expect(Type.Literal('hello')).ToBe<'hello'>()
 
-Spec.expectType<true>(Spec.infer(Type.Literal(true)))
+Expect(Type.Literal(true)).ToBe<true>()
 
-Spec.expectType<42>(Spec.infer(Type.Literal(42)))
+Expect(Type.Literal(42)).ToBe<42>()

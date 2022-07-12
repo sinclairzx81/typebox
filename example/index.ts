@@ -11,3 +11,4 @@ const T = Type.Object({
 
 type T = Static<typeof T>
 
+console.log(T)
