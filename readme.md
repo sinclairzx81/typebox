@@ -650,7 +650,7 @@ The following table shows the TypeBox mappings between TypeScript and JSON schem
 │   Type.Union([                 │   'a' | 'b' | 'c',          │   anyOf: [{                    │
 │     Type.Literal('a'),         │   'a'                       │     const: 'b',                │
 │     Type.Literal('b'),         │ >                           │     type: 'string'             │
-│     Type.Literal('c'),         │                             │   }, {                         │
+│     Type.Literal('c')          │                             │   }, {                         │
 │   ]),                          │                             │     const: 'c',                │
 │   Type.Union([                 │                             │     type: 'string'             │
 │     Type.Literal('a')          │                             │   }]                           │
