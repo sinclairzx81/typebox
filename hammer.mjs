@@ -5,9 +5,6 @@ import { readFileSync } from 'fs'
 // -------------------------------------------------------------------------------
 
 export async function clean() {
-    await folder('test/static/compiler').delete()
-    await folder('test/static/guard').delete()
-    await folder('test/static/value').delete()
     await folder('target').delete()
 }
 
