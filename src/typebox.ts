@@ -227,14 +227,13 @@ export interface TIntersect<T extends TObject[] = TObject[]> extends TObject {
 // KeyOf: Implemented by way of Union<TLiteral<string>>
 // --------------------------------------------------------------------------
 
-
 export type UnionToIntersect<U> = (U extends unknown ? (arg: U) => 0 : never) extends (arg: infer I) => 0 ? I : never
 
 export type UnionLast<U> = UnionToIntersect<U extends unknown ? (x: U) => 0 : never> extends (x: infer L) => 0 ? L : never
 
 export type UnionToTuple<U, L = UnionLast<U>> = [U] extends [never] ? [] : [...UnionToTuple<Exclude<U, L>>, L]
 
-export type UnionStringLiteralToTuple<T> = T extends TUnion<infer L> ? ({[I in keyof L]: L[I] extends TLiteral<infer C> ? C : never }) : never
+export type UnionStringLiteralToTuple<T> = T extends TUnion<infer L> ? { [I in keyof L]: L[I] extends TLiteral<infer C> ? C : never } : never
 
 export type TKeyOf<T extends TObject> = { [K in ObjectPropertyKeys<T>]: TLiteral<K> } extends infer R ? UnionToTuple<R[keyof R]> : never
 
@@ -703,7 +702,7 @@ export class TypeBuilder {
 
   /** Creates a new object whose properties are omitted from the given object */
   public Omit<T extends TObject, K extends TUnion<TLiteral<string>[]>>(schema: T, keys: K, options?: ObjectOptions): TOmit<T, UnionStringLiteralToTuple<K>>
-  
+
   /** Creates a new object whose properties are omitted from the given object */
   public Omit<T extends TObject, K extends ObjectPropertyKeys<T>[]>(schema: T, keys: [...K], options?: ObjectOptions): TOmit<T, K>
 
@@ -750,7 +749,7 @@ export class TypeBuilder {
 
   /** Creates a object whose properties are picked from the given object */
   public Pick<T extends TObject, K extends TUnion<TLiteral<string>[]>>(schema: T, keys: K, options?: ObjectOptions): TPick<T, UnionStringLiteralToTuple<K>>
-  
+
   /** Creates a object whose properties are picked from the given object */
   public Pick<T extends TObject, K extends ObjectPropertyKeys<T>[]>(schema: T, keys: [...K], options?: ObjectOptions): TPick<T, K>
 
