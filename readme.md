@@ -513,7 +513,7 @@ const Node = Type.Recursive(Node => Type.Object({    // const Node = {
 
 type Node = Static<typeof Node>                      // type Node = {
                                                      //   id: string
-                                                     //   nodes: ...[]
+                                                     //   nodes: Node[]
                                                      // }
 
 function test(node: Node) {
