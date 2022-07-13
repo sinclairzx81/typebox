@@ -42,4 +42,19 @@ describe('type/compiler/Pick', () => {
     strictEqual(A.additionalProperties, false)
     strictEqual(T.additionalProperties, false)
   })
+
+  it('Should pick with keyof object', () => {
+    const A = Type.Object({
+      x: Type.Number(),
+      y: Type.Number(),
+      z: Type.Number(),
+    })
+    const B = Type.Object({
+      x: Type.Number(),
+      y: Type.Number(),
+    })
+    const T = Type.Pick(A, Type.KeyOf(B), { additionalProperties: false })
+    ok(T, { x: 0, y: 0 })
+    fail(T, { x: 0, y: 0, z: 0 })
+  })
 })
