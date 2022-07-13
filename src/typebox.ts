@@ -227,11 +227,13 @@ export interface TIntersect<T extends TObject[] = TObject[]> extends TObject {
 // KeyOf: Implemented by way of Union<TLiteral<string>>
 // --------------------------------------------------------------------------
 
-type UnionToIntersect<U> = (U extends unknown ? (arg: U) => 0 : never) extends (arg: infer I) => 0 ? I : never
+export type UnionToIntersect<U> = (U extends unknown ? (arg: U) => 0 : never) extends (arg: infer I) => 0 ? I : never
 
-type UnionLast<U> = UnionToIntersect<U extends unknown ? (x: U) => 0 : never> extends (x: infer L) => 0 ? L : never
+export type UnionLast<U> = UnionToIntersect<U extends unknown ? (x: U) => 0 : never> extends (x: infer L) => 0 ? L : never
 
-type UnionToTuple<U, L = UnionLast<U>> = [U] extends [never] ? [] : [...UnionToTuple<Exclude<U, L>>, L]
+export type UnionToTuple<U, L = UnionLast<U>> = [U] extends [never] ? [] : [...UnionToTuple<Exclude<U, L>>, L]
+
+export type UnionStringLiteralToTuple<T> = T extends TUnion<infer L> ? { [I in keyof L]: L[I] extends TLiteral<infer C> ? C : never } : never
 
 export type TKeyOf<T extends TObject> = { [K in ObjectPropertyKeys<T>]: TLiteral<K> } extends infer R ? UnionToTuple<R[keyof R]> : never
 
@@ -441,7 +443,7 @@ export interface TString extends TSchema, StringOptions<string> {
 // Tuple
 // --------------------------------------------------------------------------
 
-export type TupleToArray<T extends TTuple<TSchema[]>> = T extends TTuple<infer R> ? R : never // how to get at inner generic parameter
+export type TupleToArray<T extends TTuple<TSchema[]>> = T extends TTuple<infer R> ? R : never
 
 export interface TTuple<T extends TSchema[] = TSchema[]> extends TSchema {
   [Kind]: 'Tuple'
@@ -699,11 +701,18 @@ export class TypeBuilder {
   }
 
   /** Creates a new object whose properties are omitted from the given object */
-  public Omit<T extends TObject, Properties extends Array<ObjectPropertyKeys<T>>>(schema: T, keys: [...Properties], options: ObjectOptions = {}): TOmit<T, Properties> {
+  public Omit<T extends TObject, K extends TUnion<TLiteral<string>[]>>(schema: T, keys: K, options?: ObjectOptions): TOmit<T, UnionStringLiteralToTuple<K>>
+
+  /** Creates a new object whose properties are omitted from the given object */
+  public Omit<T extends TObject, K extends ObjectPropertyKeys<T>[]>(schema: T, keys: [...K], options?: ObjectOptions): TOmit<T, K>
+
+  /** Creates a new object whose properties are omitted from the given object */
+  public Omit(schema: any, keys: any, options: ObjectOptions = {}) {
+    const select: string[] = keys[Kind] === 'Union' ? keys.anyOf.map((schema: TLiteral) => schema.const) : keys
     const next = { ...this.Clone(schema), ...options, [Hint]: 'Omit' }
-    next.required = next.required ? next.required.filter((key: string) => !keys.includes(key as any)) : undefined
+    next.required = next.required ? next.required.filter((key: string) => !select.includes(key as any)) : undefined
     for (const key of Object.keys(next.properties)) {
-      if (keys.includes(key as any)) delete next.properties[key]
+      if (select.includes(key as any)) delete next.properties[key]
     }
     return this.Create(next)
   }
@@ -738,12 +747,19 @@ export class TypeBuilder {
     return this.Create(next)
   }
 
-  /** Creates a new object whose properties are picked from the given object */
-  public Pick<T extends TObject, Properties extends Array<ObjectPropertyKeys<T>>>(schema: T, keys: [...Properties], options: ObjectOptions = {}): TPick<T, Properties> {
+  /** Creates a object whose properties are picked from the given object */
+  public Pick<T extends TObject, K extends TUnion<TLiteral<string>[]>>(schema: T, keys: K, options?: ObjectOptions): TPick<T, UnionStringLiteralToTuple<K>>
+
+  /** Creates a object whose properties are picked from the given object */
+  public Pick<T extends TObject, K extends ObjectPropertyKeys<T>[]>(schema: T, keys: [...K], options?: ObjectOptions): TPick<T, K>
+
+  /** Creates a object whose properties are picked from the given object */
+  public Pick<T extends TObject, K extends ObjectPropertyKeys<T>[]>(schema: any, keys: any, options: ObjectOptions = {}) {
+    const select: string[] = keys[Kind] === 'Union' ? keys.anyOf.map((schema: TLiteral) => schema.const) : keys
     const next = { ...this.Clone(schema), ...options, [Hint]: 'Pick' }
-    next.required = next.required ? next.required.filter((key: any) => keys.includes(key)) : undefined
+    next.required = next.required ? next.required.filter((key: any) => select.includes(key)) : undefined
     for (const key of Object.keys(next.properties)) {
-      if (!keys.includes(key as any)) delete next.properties[key]
+      if (!select.includes(key as any)) delete next.properties[key]
     }
     return this.Create(next)
   }
