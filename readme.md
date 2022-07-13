@@ -114,9 +114,9 @@ const T = Type.Object({                              // const T = {
                                                      //     }
                                                      //   }, 
                                                      //   required: [
-                                                     //     "id",
-                                                     //     "name",
-                                                     //     "timestamp"
+                                                     //     'id',
+                                                     //     'name',
+                                                     //     'timestamp'
                                                      //   ]
                                                      // } 
 
@@ -876,7 +876,7 @@ console.log(C.Code())                                // return function check(va
 
 ## Benchmark
 
-This project maintains benchmarks that measure Ajv and TypeCompiler validation and compilation performance. These benchmarks can be run locally by cloning this repository and running `npm run benchmark`. Results show against Ajv version 8.11.0.
+This project maintains benchmarks that measure Ajv and TypeCompiler validate and compile performance. These benchmarks can be run locally by cloning this repository and running `npm run benchmark`. Results show against Ajv version 8.11.0.
 
 ### Validate
 
