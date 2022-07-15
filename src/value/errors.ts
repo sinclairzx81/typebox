@@ -212,7 +212,7 @@ export namespace ValueErrors {
   }
 
   function* Tuple(schema: Types.TTuple<any[]>, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
-    if (!global.Array.isArray(value)) {
+    if (!globalThis.Array.isArray(value)) {
       return yield { schema, path, value, message: 'Expected Array' }
     }
     if (schema.items === undefined && !(value.length === 0)) {

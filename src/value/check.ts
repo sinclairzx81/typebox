@@ -205,7 +205,7 @@ export namespace ValueCheck {
   }
 
   function Tuple(schema: Types.TTuple<any[]>, references: Types.TSchema[], value: any): boolean {
-    if (!global.Array.isArray(value)) {
+    if (!globalThis.Array.isArray(value)) {
       return false
     }
     if (schema.items === undefined && !(value.length === 0)) {
