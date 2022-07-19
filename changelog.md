@@ -1,7 +1,7 @@
 ## [0.24.15](https://www.npmjs.com/package/@sinclair/typebox/v/0.24.15)
 
 Added:
-- `Conditional.Extends(...)` Thich enables TypeBox to conditionally map types inline with TypeScripts structural equivelence checks. Tested against TypeScript 4.7.4.
+- `Conditional.Extends(...)` This enables TypeBox to conditionally map types inline with TypeScripts structural equivelence checks. Tested against TypeScript 4.7.4.
 - `Conditional.Extract(...)` Which analogs TypeScripts `Extract<...>` utility type. Additional information [here](https://www.typescriptlang.org/docs/handbook/utility-types.html#extracttype-union) 
 - `Conditional.Exclude(...)` Which analogs TypeScripts `Exclude<...>` utility type. Additional information [here](https://www.typescriptlang.org/docs/handbook/utility-types.html#excludeuniontype-excludedmembers)
 - `Type.Parameters(...)` Returns the parameters of a `TFunction` as a `TTuple`
