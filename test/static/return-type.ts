@@ -10,9 +10,9 @@ import { Type, Static } from '@sinclair/typebox'
 }
 
 {
-    const T = Type.ReturnType(Type.Function([Type.Number()], Type.Number()))
-  
-    type T = Static<typeof T>
-  
-    Expect(T).ToBe<number>()
-  }
+  const T = Type.ReturnType(Type.Function([Type.Number()], Type.Number()))
+
+  type T = Static<typeof T>
+
+  Expect(T).ToBe<number>()
+}

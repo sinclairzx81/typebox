@@ -7,5 +7,5 @@ import { Type, Static } from '@sinclair/typebox'
   })
   Expect(T).ToBe<{
     readonly A?: string
-  }>
+  }>()
 }

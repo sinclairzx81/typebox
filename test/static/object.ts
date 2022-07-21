@@ -12,7 +12,7 @@ import { Type } from '@sinclair/typebox'
     A: string
     B: string
     C: string
-  }>
+  }>()
 }
 {
   const T = Type.Object({
@@ -48,5 +48,5 @@ import { Type } from '@sinclair/typebox'
       B: string
       C: string
     }
-  }>
+  }>()
 }
