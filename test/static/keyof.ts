@@ -27,6 +27,7 @@ import { Type } from '@sinclair/typebox'
   Expect(K).ToBe<'A' | 'B'>()
 }
 
+
 {
   const T = Type.Omit(
     Type.Object({
