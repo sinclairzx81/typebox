@@ -43,4 +43,27 @@ describe('type/schema/Ref', () => {
       [T],
     )
   })
+  it('Should de-reference object property schema', () => {
+    const R = Type.Object(
+      {
+        name: Type.String(),
+      },
+      { $id: 'R' },
+    )
+
+    const T = Type.Object(
+      {
+        x: Type.Number(),
+        y: Type.Number(),
+        z: Type.Number(),
+        r: Type.Optional(Type.Ref(R)),
+      },
+      { $id: 'T' },
+    )
+
+    ok(T, { x: 1, y: 2, z: 3 }, [R])
+    ok(T, { x: 1, y: 2, z: 3, r: { name: 'hello' } }, [R])
+    fail(T, { x: 1, y: 2, z: 3, r: { name: 1 } }, [R])
+    fail(T, { x: 1, y: 2, z: 3, r: {} }, [R])
+  })
 })

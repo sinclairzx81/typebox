@@ -65,7 +65,7 @@ export class TypeCheck<T extends Types.TSchema> {
 /** Compiles Types for Runtime Type Checking */
 export namespace TypeCompiler {
   // -------------------------------------------------------------------
-  // Schemas
+  // Types
   // -------------------------------------------------------------------
 
   function* Any(schema: Types.TAny, value: string): Generator<string> {
@@ -73,7 +73,7 @@ export namespace TypeCompiler {
   }
 
   function* Array(schema: Types.TArray, value: string): Generator<string> {
-    const expression = [...Visit(schema.items, `value`)].map((condition) => condition).join(' && ')
+    const expression = CreateExpression(schema.items, 'value')
     if (schema.minItems !== undefined) yield `(${value}.length >= ${schema.minItems})`
     if (schema.maxItems !== undefined) yield `(${value}.length <= ${schema.maxItems})`
     if (schema.uniqueItems !== undefined) yield `(new Set(${value}).size === ${value}.length)`
@@ -144,8 +144,8 @@ export namespace TypeCompiler {
       if (schema.required && schema.required.includes(propertyKey)) {
         yield* Visit(propertySchema, `${value}.${propertyKey}`)
       } else {
-        const expr = [...Visit(propertySchema, `${value}.${propertyKey}`)].map((condition) => condition).join(' && ')
-        yield `(${value}.${propertyKey} === undefined ? true : (${expr}))`
+        const expression = CreateExpression(propertySchema, `${value}.${propertyKey}`)
+        yield `(${value}.${propertyKey} === undefined ? true : (${expression}))`
       }
     }
   }
@@ -157,26 +157,16 @@ export namespace TypeCompiler {
   function* Record(schema: Types.TRecord<any, any>, value: string): Generator<string> {
     yield `(typeof ${value} === 'object' && ${value} !== null && !Array.isArray(${value}))`
     const [keyPattern, valueSchema] = globalThis.Object.entries(schema.patternProperties)[0]
-    const local = PushLocal(`const local = new RegExp(/${keyPattern}/)`)
+    const local = PushLocal(`new RegExp(/${keyPattern}/)`)
     yield `(Object.keys(${value}).every(key => ${local}.test(key)))`
-    const expr = [...Visit(valueSchema, 'value')].map((condition) => condition).join(' && ')
-    yield `(Object.values(${value}).every(value => ${expr}))`
+    const expression = CreateExpression(valueSchema, 'value')
+    yield `(Object.values(${value}).every(value => ${expression}))`
   }
 
   function* Ref(schema: Types.TRef<any>, value: string): Generator<string> {
-    // reference: referenced schemas can originate from either additional
-    // schemas or inline in the schema itself. Ideally the recursive
-    // path should align to reference path. Consider for review.
-    if (!functionNames.has(schema.$ref)) {
-      const reference = referenceMap.get(schema.$ref)!
-      functionNames.add(schema.$ref)
-      const conditions = [...Visit(reference, 'value')]
-      const name = CreateFunctionName(schema.$ref)
-      const body = CreateFunction(name, conditions)
-      PushLocal(body)
-    }
-    const func = CreateFunctionName(schema.$ref)
-    yield `(${func}(${value}))`
+    if (!referenceMap.has(schema.$ref)) throw Error(`TypeCompiler.Ref: Cannot de-reference schema with $id '${schema.$ref}'`)
+    const reference = referenceMap.get(schema.$ref)!
+    yield* Visit(reference, value)
   }
 
   function* Self(schema: Types.TSelf, value: string): Generator<string> {
@@ -193,7 +183,7 @@ export namespace TypeCompiler {
       yield `(${value}.length <= ${schema.maxLength})`
     }
     if (schema.pattern !== undefined) {
-      const local = PushLocal(`const local = new RegExp(/${schema.pattern}/);`)
+      const local = PushLocal(`new RegExp(/${schema.pattern}/);`)
       yield `(${local}.test(${value}))`
     }
   }
@@ -203,8 +193,8 @@ export namespace TypeCompiler {
     if (schema.items === undefined) return yield `(${value}.length === 0)`
     yield `(${value}.length === ${schema.maxItems})`
     for (let i = 0; i < schema.items.length; i++) {
-      const expr = [...Visit(schema.items[i], `${value}[${i}]`)].map((condition) => condition).join(' && ')
-      yield `(${expr})`
+      const expression = CreateExpression(schema.items[i], `${value}[${i}]`)
+      yield `(${expression})`
     }
   }
 
@@ -213,8 +203,8 @@ export namespace TypeCompiler {
   }
 
   function* Union(schema: Types.TUnion<any[]>, value: string): Generator<string> {
-    const exprs = schema.anyOf.map((schema: Types.TSchema) => [...Visit(schema, value)].map((condition) => condition).join(' && '))
-    yield `(${exprs.join(' || ')})`
+    const expressions = schema.anyOf.map((schema: Types.TSchema) => CreateExpression(schema, value))
+    yield `(${expressions.join(' || ')})`
   }
 
   function* Uint8Array(schema: Types.TUint8Array, value: string): Generator<string> {
@@ -235,12 +225,11 @@ export namespace TypeCompiler {
     // reference: referenced schemas can originate from either additional
     // schemas or inline in the schema itself. Ideally the recursive
     // path should align to reference path. Consider for review.
-    if (schema.$id && !functionNames.has(schema.$id)) {
-      functionNames.add(schema.$id)
-      const conditions = [...Visit(schema, 'value')]
+    if (schema.$id && !names.has(schema.$id)) {
+      names.add(schema.$id)
       const name = CreateFunctionName(schema.$id)
-      const body = CreateFunction(name, conditions)
-      PushLocal(body)
+      const body = CreateFunction(name, schema, 'value')
+      PushFunction(body)
       yield `(${name}(${value}))`
       return
     }
@@ -295,20 +284,20 @@ export namespace TypeCompiler {
   }
 
   // -------------------------------------------------------------------
-  // Locals
+  // Compile State
   // -------------------------------------------------------------------
 
   const referenceMap = new Map<string, Types.TSchema>()
-  const functionLocals = new Set<string>()
-  const functionNames = new Set<string>()
+  const locals = new Set<string>() // local variables and functions
+  const names = new Set<string>() // cache of local functions
 
-  function ClearLocals() {
-    functionLocals.clear()
-    functionNames.clear()
+  function ResetCompiler() {
     referenceMap.clear()
+    locals.clear()
+    names.clear()
   }
 
-  function PushReferences(schemas: Types.TSchema[] = []) {
+  function AddReferences(schemas: Types.TSchema[] = []) {
     for (const schema of schemas) {
       if (!schema.$id) throw new Error(`TypeCompiler: Referenced schemas must specify an $id.`)
       if (referenceMap.has(schema.$id)) throw new Error(`TypeCompiler: Duplicate schema $id found for '${schema.$id}'`)
@@ -316,27 +305,31 @@ export namespace TypeCompiler {
     }
   }
 
-  function PushLocal(code: string) {
-    const name = `local${functionLocals.size}`
-    functionLocals.add(code.replace('local', name))
-    return name
+  function CreateExpression(schema: Types.TSchema, value: string): string {
+    return [...Visit(schema, value)].join(' && ')
   }
-
-  function GetLocals() {
-    return [...functionLocals.values()]
-  }
-
-  // -------------------------------------------------------------------
-  // Functions
-  // -------------------------------------------------------------------
 
   function CreateFunctionName($id: string) {
     return `check_${$id.replace(/-/g, '_')}`
   }
 
-  function CreateFunction(name: string, conditions: string[]) {
-    const expression = conditions.map((condition) => `    ${condition}`).join(' &&\n')
+  function CreateFunction(name: string, schema: Types.TSchema, value: string): string {
+    const expression = [...Visit(schema, value)].map((condition) => `    ${condition}`).join(' &&\n')
     return `function ${name}(value) {\n  return (\n${expression}\n )\n}`
+  }
+
+  function PushFunction(functionBody: string) {
+    locals.add(functionBody)
+  }
+
+  function PushLocal(expression: string) {
+    const local = `local_${locals.size}`
+    locals.add(`const ${local} = ${expression}`)
+    return local
+  }
+
+  function GetLocals() {
+    return [...locals.values()]
   }
 
   // -------------------------------------------------------------------
@@ -344,11 +337,11 @@ export namespace TypeCompiler {
   // -------------------------------------------------------------------
 
   function Build<T extends Types.TSchema>(schema: T, references: Types.TSchema[] = []): string {
-    ClearLocals()
-    PushReferences(references)
-    const conditions = [...Visit(schema, 'value')] // locals populated during yield
+    ResetCompiler()
+    AddReferences(references)
+    const check = CreateFunction('check', schema, 'value')
     const locals = GetLocals()
-    return `${locals.join('\n')}\nreturn ${CreateFunction('check', conditions)}`
+    return `${locals.join('\n')}\nreturn ${check}`
   }
 
   /** Compiles the given type for runtime type checking. This compiler only accepts known TypeBox types non-inclusive of unsafe types. */
