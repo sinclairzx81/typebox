@@ -27,6 +27,7 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import { ValueErrors, ValueError } from '../value/errors'
+import { Property } from './property'
 import * as Types from '../typebox'
 
 // -------------------------------------------------------------------
@@ -140,12 +141,13 @@ export namespace TypeCompiler {
       }
     }
     for (const propertyKey of propertyKeys) {
+      const memberExpression = Property.Check(propertyKey) ? `${value}.${propertyKey}` : `${value}['${propertyKey}']`
       const propertySchema = schema.properties[propertyKey]
       if (schema.required && schema.required.includes(propertyKey)) {
-        yield* Visit(propertySchema, `${value}.${propertyKey}`)
+        yield* Visit(propertySchema, memberExpression)
       } else {
-        const expression = CreateExpression(propertySchema, `${value}.${propertyKey}`)
-        yield `(${value}.${propertyKey} === undefined ? true : (${expression}))`
+        const expression = CreateExpression(propertySchema, memberExpression)
+        yield `(${memberExpression} === undefined ? true : (${expression}))`
       }
     }
   }

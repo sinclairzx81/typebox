@@ -124,4 +124,19 @@ describe('type/compiler/Object', () => {
     ok(T, {})
     fail(T, { a: 10 })
   })
+
+  it('Should validate with non-syntax property keys', () => {
+    const T = Type.Object({
+      'with-hyphen': Type.Literal(1),
+      '0-leading': Type.Literal(2),
+      '$-leading': Type.Literal(3),
+      '!@#$%^&*(': Type.Literal(4),
+    })
+    ok(T, {
+      'with-hyphen': 1,
+      '0-leading': 2,
+      '$-leading': 3,
+      '!@#$%^&*(': 4,
+    })
+  })
 })

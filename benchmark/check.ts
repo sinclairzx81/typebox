@@ -13,7 +13,7 @@ export namespace CheckBenchmark {
   function Measure<T extends TSchema>(type: string, schema: T) {
     console.log('CheckBenchmark.Measure(', type, ')')
 
-    const iterations = 16_000_000
+    const iterations = 4_000_000
     const V = Value.Create(schema)
 
     const AC = ajv.compile(schema)
