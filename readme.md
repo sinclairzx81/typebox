@@ -47,30 +47,30 @@ type T = Static<typeof T>   // type T = string
 
 TypeBox is a type builder library that creates in-memory JSON Schema objects that can be statically inferred as TypeScript types. The schemas produced by this library are designed to match the static type checking rules of the TypeScript compiler. TypeBox enables one to create unified types that can be statically checked by TypeScript and runtime asserted using standard JSON Schema validation.
 
-TypeBox can be used as a simple tool to build up complex schemas or integrated into RPC or REST services to help validate data received over the wire. It offers a type system aligned to the capabilities of TypeScript and can be used equally well in JavaScript environments.
+TypeBox offers a type system aligned to the capabilities of TypeScript with each type conforming to the semantics of JSON schema. TypeBox can be used as a simple tool to build up complex schemas or integrated into RPC or REST services to help validate data received over the wire.
 
 License MIT
 
 ## Contents
-- [Install](#Install)
-- [Overview](#Overview)
-- [Usage](#Usage)
-- [Types](#Types)
-- [Modifiers](#Modifiers)
-- [Options](#Options)
-- [Extended Types](#Extended-Types)
-- [Reference Types](#Reference-Types)
-- [Recursive Types](#Recursive-Types)
-- [Generic Types](#Generic-Types)
-- [Unsafe Types](#Unsafe-Types)
-- [Conditional Types](#Conditional-Types)
-- [Values](#Values)
-- [Guards](#Guards)
-- [Strict](#Strict)
-- [Validation](#Validation)
-- [Compiler](#Compiler)
-- [Benchmark](#Benchmark)
-- [Contribute](#Contribute)
+- [Install](#install)
+- [Overview](#overview)
+- [Usage](#usage)
+- [Types](#types)
+- [Modifiers](#modifiers)
+- [Options](#options)
+- [Extended Types](#extended-types)
+- [Reference Types](#reference-types)
+- [Recursive Types](#recursive-types)
+- [Generic Types](#generic-types)
+- [Unsafe Types](#unsafe-types)
+- [Conditional Types](#conditional-types)
+- [Values](#values)
+- [Guards](#guards)
+- [Strict](#strict)
+- [Validation](#validation)
+- [Compiler](#compiler)
+- [Benchmark](#benchmark)
+- [Contribute](#contribute)
 
 <a name="Example"></a>
 
@@ -146,8 +146,6 @@ function receive(value: T) {                         // ... as a Type
   }
 }
 ```
-
-<a name="Types"></a>
 
 ## Types
 
@@ -342,7 +340,6 @@ The following table outlines the TypeBox mappings between TypeScript and JSON sc
 │                                │                             │                                │
 └────────────────────────────────┴─────────────────────────────┴────────────────────────────────┘
 ```
-<a name="Modifiers"></a>
 
 ## Modifiers
 
@@ -386,8 +383,6 @@ TypeBox provides modifiers that can be applied to an objects properties. This al
 └────────────────────────────────┴─────────────────────────────┴────────────────────────────────┘
 ```
 
-<a name="Options"></a>
-
 ## Options
 
 You can pass additional JSON schema options on the last argument of any given type. The following are some examples.
@@ -402,8 +397,6 @@ const T = Type.Number({ multipleOf: 2 })
 // array must have at least 5 integer values
 const T = Type.Array(Type.Integer(), { minItems: 5 })
 ```
-
-<a name="Extended-Types"></a>
 
 ## Extended Types
 
@@ -467,8 +460,6 @@ In addition to JSON schema types, TypeBox provides several extended types that a
 └────────────────────────────────┴─────────────────────────────┴────────────────────────────────┘
 ```
 
-<a name="Reference-Types"></a>
-
 ## Reference Types
 
 Use `Type.Ref(...)` to create referenced types. The target type must specify an `$id`.
@@ -483,8 +474,6 @@ const R = Type.Ref(T)                                // const R = {
                                                      //    $ref: 'T'
                                                      // }
 ```
-
-<a name="Recursive-Types"></a>
 
 ## Recursive Types
 
@@ -524,8 +513,6 @@ function test(node: Node) {
 }
 ```
 
-<a name="Generic-Types"></a>
-
 ## Generic Types
 
 Use functions to create generic types. The following creates a generic `Nullable<T>` type. 
@@ -555,8 +542,6 @@ const U = Nullable(Type.Number())                    // const U = {
 
 type U = Static<typeof U>                            // type U = number | null
 ```
-
-<a name="Unsafe-Types"></a>
 
 ## Unsafe Types
 
@@ -609,8 +594,6 @@ const T = StringEnum(['A', 'B', 'C'])                // const T = {
 type T = Static<typeof T>                            // type T = 'A' | 'B' | 'C'
 ```
 
-<a name="Conditional-Types"></a>
-
 ## Conditional Types
 
 Use `Conditional.Extends(...)` to create conditional mapped types.
@@ -660,8 +643,6 @@ The following table shows the TypeBox mappings between TypeScript and JSON schem
 └────────────────────────────────┴─────────────────────────────┴────────────────────────────────┘
 ```
 
-<a name="Values"></a>
-
 ## Values
 
 Use `Value.Create(...)` to generate values from types.
@@ -697,8 +678,6 @@ const B = Value.Cast(T, { x: 1 })                      // const B = { x: 1, y: 0
 const C = Value.Cast(T, { x: 1, y: 2, z: 3 })          // const C = { x: 1, y: 2 }
 ```
 
-<a name="Guards"></a>
-
 ## Guards
 
 Use a `TypeGuard` to test if a value meets a TypeBox type specification. Guards can be helpful when reflecting types.
@@ -715,8 +694,6 @@ if(TypeGuard.TString(T)) {
 }
 
 ```
-
-<a name="Strict"></a>
 
 ## Strict
 
@@ -744,8 +721,6 @@ const U = Type.Strict(T)                             // const U = {
                                                      //   } 
                                                      // }
 ```
-
-<a name="Validation"></a>
 
 ## Validation
 
@@ -812,8 +787,6 @@ const R = ajv.validate(T, { x: 1, y: 2, z: 3 })      // const R = true
 
 Please refer to the official Ajv [documentation](https://ajv.js.org/guide/getting-started.html) for additional information on using Ajv.
 
-<a name="Compiler"></a>
-
 ## Compiler
 
 TypeBox provides an optional high performance runtime type checker that can be used in applications that require extremely fast validation. This type checker is optimized for TypeBox types only whose schematics are known in advance. If defining custom schemas with `Type.Unsafe<T>` please consider Ajv.
@@ -876,7 +849,7 @@ console.log(C.Code())                                // return function check(va
 
 ## Benchmark
 
-This project maintains benchmarks that measure Ajv and TypeCompiler validate and compile performance. These benchmarks can be run locally by cloning this repository and running `npm run benchmark`. Results show against Ajv version 8.11.0.
+This project maintains a set of benchmarks that measure Ajv and TypeCompiler compilation and validation performance. These benchmarks can be run locally by cloning this repository and running `npm run benchmark`. The results below show for Ajv version 8.11.0. For additional comparative benchmarks, please refer to [typescript-runtime-type-benchmarks](https://moltar.github.io/typescript-runtime-type-benchmarks/).
 
 ### Validate
 
@@ -947,8 +920,6 @@ This benchmark measures compilation performance for varying types. You can revie
 │    Array_Matrix4 │    2000    │ '   1608 ms' │ '     11 ms' │ '  146.18 x' │
 └──────────────────┴────────────┴──────────────┴──────────────┴──────────────┘
 ```
-
-<a name="Contribute"></a>
 
 ## Contribute
 
