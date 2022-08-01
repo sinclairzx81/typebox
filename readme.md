@@ -845,12 +845,17 @@ import { ValueErrorType } from '@sinclair/typebox/error'
 
 const errors = [...C.Errors({...})].map(error => {
   switch(error.type) {
-    case ValueErrorType.ArrayMinItems: return { ...error, message: `Attendu au moins ${error.schema.minItems} éléments`}
-    case ValueErrorType.Boolean: return { ...error, message: 'Booléen attendu' }
-    case ValueErrorType.String: return { ...error, message: 'Chaîne attendue' }
-    case ValueErrorType.Number: return { ...error, message: 'Nombre attendu' }
+    case ValueErrorType.ArrayMinItems: 
+      return { ...error, message: `Attendu au moins ${error.schema.minItems} éléments`}
+    case ValueErrorType.Boolean: 
+      return { ...error, message: 'Booléen attendu' }
+    case ValueErrorType.String: 
+      return { ...error, message: 'Chaîne attendue' }
+    case ValueErrorType.Number: 
+      return { ...error, message: 'Nombre attendu' }
     // ... 
-    default: return { ...error, message: 'Unknown error' }
+    default: 
+      return error
 })
 ```
 
