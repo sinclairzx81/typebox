@@ -838,13 +838,12 @@ const errors = [...C.Errors(value)]                  // const errors = [{
                                                      // }]
 ```
 
-Errors messages can be localized by inspecting the error `type` property.
+Errors messages can be remapped by inspecting an error `type` property.
 
 ```typescript
 import { ValueErrorType } from '@sinclair/typebox/error'
 
 const errors = [...C.Errors({...})].map(error => {
-  if(error.schema.errorMessage) return { ...error, message: error.schema.errorMessage } // optional override
   switch(error.type) {
     case ValueErrorType.Array: return { ...error, message: 'Expected Array' }
     case ValueErrorType.Object: return { ...error, message: 'Expected Object' }
@@ -852,6 +851,7 @@ const errors = [...C.Errors({...})].map(error => {
     case ValueErrorType.String: return { ...error, message: 'Expected String' }
     case ValueErrorType.Boolean: return { ...error, message: 'Expected Boolean' }
     ... 
+    default: return { ...error, message: 'Unknown error' }
 })
 ```
 
