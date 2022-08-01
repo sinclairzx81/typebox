@@ -818,21 +818,48 @@ const C = TypeCompiler.Compile(Type.Object({         // const C: TypeCheck<TObje
 const value = { }
 
 const errors = [...C.Errors(value)]                  // const errors = [{
+                                                     //   type: 14,
                                                      //   schema: { type: 'number' },
                                                      //   path: '/x',
                                                      //   value: undefined,
                                                      //   message: 'Expected number'
                                                      // }, {
+                                                     //   type: 14,
                                                      //   schema: { type: 'number' },
                                                      //   path: '/y',
                                                      //   value: undefined,
                                                      //   message: 'Expected number'
                                                      // }, {
+                                                     //   type: 14,
                                                      //   schema: { type: 'number' },
                                                      //   path: '/z',
                                                      //   value: undefined,
                                                      //   message: 'Expected number'
                                                      // }]
+```
+
+Errors can be localized by inspecting the error `type` property.
+
+```typescript
+import { ValueError, ValueErrorType } from '@sinclair/typebox/error'
+
+function English(error: ValueError): ValueError {
+  if(error.schema.errorMessage) return { ...error, message: error.schema.errorMessage } // optional override
+  switch(error.type) {
+    case ValueErrorType.Array: 
+      return { ...error, message: 'Expected Array' }
+    case ValueErrorType.ArrayMinItems: 
+      return { ...error, message: `Expected Array to have have length greater or equal to ${error.schema.minItems}` }
+    case ValueErrorType.ArrayMaxItems: 
+      return { ...error, message: `Expected Array to have have length less or equal to ${error.schema.maxItems}` }
+    case ValueErrorType.Boolean: 
+      return { ...error, message: 'Expected Boolean' }
+    ... 
+}
+
+const C = TypeCompiler.Compile(Type.String())
+
+const errors = [...C.Errors({...})].map(error => English(error))
 ```
 
 Compiled routines can be inspected with the `.Code()` function.
@@ -846,6 +873,10 @@ console.log(C.Code())                                // return function check(va
                                                      //   )
                                                      // }
 ```
+
+
+
+
 
 ## Benchmark
 
