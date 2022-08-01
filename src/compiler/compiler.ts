@@ -41,7 +41,7 @@ export type CheckFunction = (value: unknown) => boolean
 // -------------------------------------------------------------------
 
 export class TypeCheck<T extends Types.TSchema> {
-  constructor(private readonly schema: T, private readonly references: Types.TSchema[], private readonly checkFunc: CheckFunction, private readonly code: string) {}
+  constructor(private readonly schema: T, private readonly references: Types.TSchema[], private readonly checkFunc: CheckFunction, private readonly code: string) { }
 
   /** Returns the generated validation code used to validate this type. */
   public Code(): string {
@@ -64,20 +64,32 @@ export class TypeCheck<T extends Types.TSchema> {
 // -------------------------------------------------------------------
 
 export namespace Property {
-  function DollarSign(char: number) {
-    return char === 36
+
+  function DollarSign(code: number) {
+    return code === 36
   }
-  function Underscore(char: number) {
-    return char === 95
+  function Underscore(code: number) {
+    return code === 95
   }
-  function Numeric(char: number) {
-    return char >= 48 && char <= 57
+  function Numeric(code: number) {
+    return code >= 48 && code <= 57
   }
-  function Alpha(char: number) {
-    return (char >= 65 && char <= 90) || (char >= 97 && char <= 122)
+  function Alpha(code: number) {
+    return (code >= 65 && code <= 90) || (code >= 97 && code <= 122)
   }
-  /** Tests if this property name can be used in a member expression */
+
+  function AssertEscapeCharacters(propertyName: string) {
+    for (let i = 0; i < propertyName.length; i++) {
+      const code = propertyName.charCodeAt(i)
+      if ((code >= 7 && code <= 13) || code === 27 || code === 127) {
+        throw Error('Property: Invalid escape character found in property key')
+      }
+    }
+  }
+
   export function Check(propertyName: string) {
+    AssertEscapeCharacters(propertyName)
+
     if (propertyName.length === 0) return false
     {
       const code = propertyName.charCodeAt(0)
