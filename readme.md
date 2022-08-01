@@ -845,11 +845,9 @@ import { ValueErrorType } from '@sinclair/typebox/error'
 
 const errors = [...C.Errors({...})].map(error => {
   switch(error.type) {
-    case ValueErrorType.Array: return { ...error, message: 'Expected Array' }
-    case ValueErrorType.Object: return { ...error, message: 'Expected Object' }
-    case ValueErrorType.Number: return { ...error, message: 'Expected Number' }
-    case ValueErrorType.String: return { ...error, message: 'Expected String' }
     case ValueErrorType.Boolean: return { ...error, message: 'Expected Boolean' }
+    case ValueErrorType.String: return { ...error, message: 'Expected String' }
+    case ValueErrorType.Number: return { ...error, message: 'Expected Number' }
     ... 
     default: return { ...error, message: 'Unknown error' }
 })
