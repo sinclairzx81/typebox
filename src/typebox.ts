@@ -281,7 +281,9 @@ export type OptionalPropertyKeys<T extends TProperties> = { [K in keyof T]: T[K]
 
 export type RequiredPropertyKeys<T extends TProperties> = keyof Omit<T, ReadonlyOptionalPropertyKeys<T> | ReadonlyPropertyKeys<T> | OptionalPropertyKeys<T>>
 
-export type PropertiesReduce<T extends TProperties, P extends unknown[]> = { readonly [K in ReadonlyOptionalPropertyKeys<T>]?: Static<T[K], P> } & { readonly [K in ReadonlyPropertyKeys<T>]: Static<T[K], P> } & {
+export type PropertiesReduce<T extends TProperties, P extends unknown[]> = { readonly [K in ReadonlyOptionalPropertyKeys<T>]?: Static<T[K], P> } & {
+  readonly [K in ReadonlyPropertyKeys<T>]: Static<T[K], P>
+} & {
   [K in OptionalPropertyKeys<T>]?: Static<T[K], P>
 } & { [K in RequiredPropertyKeys<T>]: Static<T[K], P> } extends infer R
   ? { [K in keyof R]: R[K] }
@@ -604,7 +606,9 @@ export class TypeBuilder {
     const values = Object.keys(item)
       .filter((key) => isNaN(key as any))
       .map((key) => item[key]) as T[keyof T][]
-    const anyOf = values.map((value) => (typeof value === 'string' ? { [Kind]: 'Literal', type: 'string' as const, const: value } : { [Kind]: 'Literal', type: 'number' as const, const: value }))
+    const anyOf = values.map((value) =>
+      typeof value === 'string' ? { [Kind]: 'Literal', type: 'string' as const, const: value } : { [Kind]: 'Literal', type: 'number' as const, const: value },
+    )
     return this.Create({ ...options, [Kind]: 'Union', [Hint]: 'Enum', anyOf })
   }
 
@@ -861,7 +865,11 @@ export class TypeBuilder {
     const additionalItems = false
     const minItems = items.length
     const maxItems = items.length
-    const schema = (items.length > 0 ? { ...options, [Kind]: 'Tuple', type: 'array', items, additionalItems, minItems, maxItems } : { ...options, [Kind]: 'Tuple', type: 'array', minItems, maxItems }) as any
+    const schema = (
+      items.length > 0
+        ? { ...options, [Kind]: 'Tuple', type: 'array', items, additionalItems, minItems, maxItems }
+        : { ...options, [Kind]: 'Tuple', type: 'array', minItems, maxItems }
+    ) as any
     return this.Create(schema)
   }
 

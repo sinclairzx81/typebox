@@ -26,8 +26,8 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { ValueErrors, ValueError } from '../error/errors'
-import { Property } from './property'
+import { ValueErrors, ValueError } from '../errors/index'
+import { TypeGuard } from '../guard/index'
 import * as Types from '../typebox'
 
 // -------------------------------------------------------------------
@@ -60,8 +60,61 @@ export class TypeCheck<T extends Types.TSchema> {
 }
 
 // -------------------------------------------------------------------
+// Property
+// -------------------------------------------------------------------
+
+export namespace Property {
+  function DollarSign(code: number) {
+    return code === 36
+  }
+  function Underscore(code: number) {
+    return code === 95
+  }
+  function Numeric(code: number) {
+    return code >= 48 && code <= 57
+  }
+  function Alpha(code: number) {
+    return (code >= 65 && code <= 90) || (code >= 97 && code <= 122)
+  }
+
+  function AssertEscapeCharacters(propertyName: string) {
+    for (let i = 0; i < propertyName.length; i++) {
+      const code = propertyName.charCodeAt(i)
+      if ((code >= 7 && code <= 13) || code === 27 || code === 127) {
+        throw Error('Property: Invalid escape character found in property key')
+      }
+    }
+  }
+
+  export function Check(propertyName: string) {
+    AssertEscapeCharacters(propertyName)
+
+    if (propertyName.length === 0) return false
+    {
+      const code = propertyName.charCodeAt(0)
+      if (!(DollarSign(code) || Underscore(code) || Alpha(code))) {
+        return false
+      }
+    }
+    for (let i = 1; i < propertyName.length; i++) {
+      const code = propertyName.charCodeAt(i)
+      if (!(DollarSign(code) || Underscore(code) || Alpha(code) || Numeric(code))) {
+        return false
+      }
+    }
+    return true
+  }
+}
+
+// -------------------------------------------------------------------
 // TypeCompiler
 // -------------------------------------------------------------------
+
+export class TypeCompilerInvalidTypeError extends Error {
+  constructor(public readonly schema: Types.TSchema) {
+    super('TypeCompiler: Invalid type')
+  }
+}
 
 /** Compiles Types for Runtime Type Checking */
 export namespace TypeCompiler {
@@ -69,11 +122,11 @@ export namespace TypeCompiler {
   // Types
   // -------------------------------------------------------------------
 
-  function* Any(schema: Types.TAny, value: string): Generator<string> {
+  function* Any(schema: Types.TAny, value: string): IterableIterator<string> {
     yield '(true)'
   }
 
-  function* Array(schema: Types.TArray, value: string): Generator<string> {
+  function* Array(schema: Types.TArray, value: string): IterableIterator<string> {
     const expression = CreateExpression(schema.items, 'value')
     if (schema.minItems !== undefined) yield `(${value}.length >= ${schema.minItems})`
     if (schema.maxItems !== undefined) yield `(${value}.length <= ${schema.maxItems})`
@@ -81,19 +134,19 @@ export namespace TypeCompiler {
     yield `(Array.isArray(${value}) && ${value}.every(value => ${expression}))`
   }
 
-  function* Boolean(schema: Types.TBoolean, value: string): Generator<string> {
+  function* Boolean(schema: Types.TBoolean, value: string): IterableIterator<string> {
     yield `(typeof ${value} === 'boolean')`
   }
 
-  function* Constructor(schema: Types.TConstructor, value: string): Generator<string> {
+  function* Constructor(schema: Types.TConstructor, value: string): IterableIterator<string> {
     yield* Visit(schema.returns, value)
   }
 
-  function* Function(schema: Types.TFunction, value: string): Generator<string> {
+  function* Function(schema: Types.TFunction, value: string): IterableIterator<string> {
     yield `(typeof ${value} === 'function')`
   }
 
-  function* Integer(schema: Types.TNumeric, value: string): Generator<string> {
+  function* Integer(schema: Types.TNumeric, value: string): IterableIterator<string> {
     yield `(typeof ${value} === 'number' && Number.isInteger(${value}))`
     if (schema.multipleOf !== undefined) yield `(${value} % ${schema.multipleOf} === 0)`
     if (schema.exclusiveMinimum !== undefined) yield `(${value} > ${schema.exclusiveMinimum})`
@@ -102,19 +155,21 @@ export namespace TypeCompiler {
     if (schema.maximum !== undefined) yield `(${value} <= ${schema.maximum})`
   }
 
-  function* Literal(schema: Types.TLiteral, value: string): Generator<string> {
-    if (typeof schema.const === 'string') {
+  function* Literal(schema: Types.TLiteral, value: string): IterableIterator<string> {
+    if (typeof schema.const === 'number' || typeof schema.const === 'boolean') {
+      yield `(${value} === ${schema.const})`
+    } else if (typeof schema.const === 'string') {
       yield `(${value} === '${schema.const}')`
     } else {
-      yield `(${value} === ${schema.const})`
+      throw Error('TypeCompiler: Literal value should be string, number or boolean')
     }
   }
 
-  function* Null(schema: Types.TNull, value: string): Generator<string> {
+  function* Null(schema: Types.TNull, value: string): IterableIterator<string> {
     yield `(${value} === null)`
   }
 
-  function* Number(schema: Types.TNumeric, value: string): Generator<string> {
+  function* Number(schema: Types.TNumeric, value: string): IterableIterator<string> {
     yield `(typeof ${value} === 'number')`
     if (schema.multipleOf !== undefined) yield `(${value} % ${schema.multipleOf} === 0)`
     if (schema.exclusiveMinimum !== undefined) yield `(${value} > ${schema.exclusiveMinimum})`
@@ -123,7 +178,7 @@ export namespace TypeCompiler {
     if (schema.maximum !== undefined) yield `(${value} <= ${schema.maximum})`
   }
 
-  function* Object(schema: Types.TObject, value: string): Generator<string> {
+  function* Object(schema: Types.TObject, value: string): IterableIterator<string> {
     yield `(typeof ${value} === 'object' && ${value} !== null && !Array.isArray(${value}))`
     if (schema.minProperties !== undefined) yield `(Object.keys(${value}).length >= ${schema.minProperties})`
     if (schema.maxProperties !== undefined) yield `(Object.keys(${value}).length <= ${schema.maxProperties})`
@@ -152,11 +207,11 @@ export namespace TypeCompiler {
     }
   }
 
-  function* Promise(schema: Types.TPromise<any>, value: string): Generator<string> {
+  function* Promise(schema: Types.TPromise<any>, value: string): IterableIterator<string> {
     yield `(typeof value === 'object' && typeof ${value}.then === 'function')`
   }
 
-  function* Record(schema: Types.TRecord<any, any>, value: string): Generator<string> {
+  function* Record(schema: Types.TRecord<any, any>, value: string): IterableIterator<string> {
     yield `(typeof ${value} === 'object' && ${value} !== null && !Array.isArray(${value}))`
     const [keyPattern, valueSchema] = globalThis.Object.entries(schema.patternProperties)[0]
     const local = PushLocal(`new RegExp(/${keyPattern}/)`)
@@ -165,18 +220,18 @@ export namespace TypeCompiler {
     yield `(Object.values(${value}).every(value => ${expression}))`
   }
 
-  function* Ref(schema: Types.TRef<any>, value: string): Generator<string> {
+  function* Ref(schema: Types.TRef<any>, value: string): IterableIterator<string> {
     if (!referenceMap.has(schema.$ref)) throw Error(`TypeCompiler.Ref: Cannot de-reference schema with $id '${schema.$ref}'`)
     const reference = referenceMap.get(schema.$ref)!
     yield* Visit(reference, value)
   }
 
-  function* Self(schema: Types.TSelf, value: string): Generator<string> {
+  function* Self(schema: Types.TSelf, value: string): IterableIterator<string> {
     const func = CreateFunctionName(schema.$ref)
     yield `(${func}(${value}))`
   }
 
-  function* String(schema: Types.TString, value: string): Generator<string> {
+  function* String(schema: Types.TString, value: string): IterableIterator<string> {
     yield `(typeof ${value} === 'string')`
     if (schema.minLength !== undefined) {
       yield `(${value}.length >= ${schema.minLength})`
@@ -190,7 +245,7 @@ export namespace TypeCompiler {
     }
   }
 
-  function* Tuple(schema: Types.TTuple<any[]>, value: string): Generator<string> {
+  function* Tuple(schema: Types.TTuple<any[]>, value: string): IterableIterator<string> {
     yield `(Array.isArray(${value}))`
     if (schema.items === undefined) return yield `(${value}.length === 0)`
     yield `(${value}.length === ${schema.maxItems})`
@@ -200,30 +255,30 @@ export namespace TypeCompiler {
     }
   }
 
-  function* Undefined(schema: Types.TUndefined, value: string): Generator<string> {
+  function* Undefined(schema: Types.TUndefined, value: string): IterableIterator<string> {
     yield `(${value} === undefined)`
   }
 
-  function* Union(schema: Types.TUnion<any[]>, value: string): Generator<string> {
+  function* Union(schema: Types.TUnion<any[]>, value: string): IterableIterator<string> {
     const expressions = schema.anyOf.map((schema: Types.TSchema) => CreateExpression(schema, value))
     yield `(${expressions.join(' || ')})`
   }
 
-  function* Uint8Array(schema: Types.TUint8Array, value: string): Generator<string> {
+  function* Uint8Array(schema: Types.TUint8Array, value: string): IterableIterator<string> {
     yield `(${value} instanceof Uint8Array)`
     if (schema.maxByteLength) yield `(${value}.length <= ${schema.maxByteLength})`
     if (schema.minByteLength) yield `(${value}.length >= ${schema.minByteLength})`
   }
 
-  function* Unknown(schema: Types.TUnknown, value: string): Generator<string> {
+  function* Unknown(schema: Types.TUnknown, value: string): IterableIterator<string> {
     yield '(true)'
   }
 
-  function* Void(schema: Types.TVoid, value: string): Generator<string> {
+  function* Void(schema: Types.TVoid, value: string): IterableIterator<string> {
     yield `(${value} === null)`
   }
 
-  function* Visit<T extends Types.TSchema>(schema: T, value: string): Generator<string> {
+  function* Visit<T extends Types.TSchema>(schema: T, value: string): IterableIterator<string> {
     // reference: referenced schemas can originate from either additional
     // schemas or inline in the schema itself. Ideally the recursive
     // path should align to reference path. Consider for review.
@@ -235,53 +290,50 @@ export namespace TypeCompiler {
       yield `(${name}(${value}))`
       return
     }
-
-    const anySchema = schema as any
-    switch (anySchema[Types.Kind]) {
-      case 'Any':
-        return yield* Any(anySchema, value)
-      case 'Array':
-        return yield* Array(anySchema, value)
-      case 'Boolean':
-        return yield* Boolean(anySchema, value)
-      case 'Constructor':
-        return yield* Constructor(anySchema, value)
-      case 'Function':
-        return yield* Function(anySchema, value)
-      case 'Integer':
-        return yield* Integer(anySchema, value)
-      case 'Literal':
-        return yield* Literal(anySchema, value)
-      case 'Null':
-        return yield* Null(anySchema, value)
-      case 'Number':
-        return yield* Number(anySchema, value)
-      case 'Object':
-        return yield* Object(anySchema, value)
-      case 'Promise':
-        return yield* Promise(anySchema, value)
-      case 'Record':
-        return yield* Record(anySchema, value)
-      case 'Ref':
-        return yield* Ref(anySchema, value)
-      case 'Self':
-        return yield* Self(anySchema, value)
-      case 'String':
-        return yield* String(anySchema, value)
-      case 'Tuple':
-        return yield* Tuple(anySchema, value)
-      case 'Undefined':
-        return yield* Undefined(anySchema, value)
-      case 'Union':
-        return yield* Union(anySchema, value)
-      case 'Uint8Array':
-        return yield* Uint8Array(anySchema, value)
-      case 'Unknown':
-        return yield* Unknown(anySchema, value)
-      case 'Void':
-        return yield* Void(anySchema, value)
-      default:
-        throw new Error(`TypeCompiler: Unknown schema kind '${schema[Types.Kind]}'`)
+    if (TypeGuard.TAny(schema)) {
+      return yield* Any(schema, value)
+    } else if (TypeGuard.TArray(schema)) {
+      return yield* Array(schema, value)
+    } else if (TypeGuard.TBoolean(schema)) {
+      return yield* Boolean(schema, value)
+    } else if (TypeGuard.TConstructor(schema)) {
+      return yield* Constructor(schema, value)
+    } else if (TypeGuard.TFunction(schema)) {
+      return yield* Function(schema, value)
+    } else if (TypeGuard.TInteger(schema)) {
+      return yield* Integer(schema, value)
+    } else if (TypeGuard.TLiteral(schema)) {
+      return yield* Literal(schema, value)
+    } else if (TypeGuard.TNull(schema)) {
+      return yield* Null(schema, value)
+    } else if (TypeGuard.TNumber(schema)) {
+      return yield* Number(schema, value)
+    } else if (TypeGuard.TObject(schema)) {
+      return yield* Object(schema, value)
+    } else if (TypeGuard.TPromise(schema)) {
+      return yield* Promise(schema, value)
+    } else if (TypeGuard.TRecord(schema)) {
+      return yield* Record(schema, value)
+    } else if (TypeGuard.TRef(schema)) {
+      return yield* Ref(schema, value)
+    } else if (TypeGuard.TSelf(schema)) {
+      return yield* Self(schema, value)
+    } else if (TypeGuard.TString(schema)) {
+      return yield* String(schema, value)
+    } else if (TypeGuard.TTuple(schema)) {
+      return yield* Tuple(schema, value)
+    } else if (TypeGuard.TUndefined(schema)) {
+      return yield* Undefined(schema, value)
+    } else if (TypeGuard.TUnion(schema)) {
+      return yield* Union(schema, value)
+    } else if (TypeGuard.TUint8Array(schema)) {
+      return yield* Uint8Array(schema, value)
+    } else if (TypeGuard.TUnknown(schema)) {
+      return yield* Unknown(schema, value)
+    } else if (TypeGuard.TVoid(schema)) {
+      return yield* Void(schema, value)
+    } else {
+      throw new TypeCompilerInvalidTypeError(schema)
     }
   }
 

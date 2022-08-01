@@ -13,7 +13,7 @@ export async function clean() {
 // -------------------------------------------------------------------------------
 
 export async function format() {
-    await shell('prettier --no-semi --single-quote --print-width 240 --trailing-comma all --write src test benchmark')
+    await shell('prettier --no-semi --single-quote --print-width 180 --trailing-comma all --write src test benchmark')
 }
 
 // -------------------------------------------------------------------------------

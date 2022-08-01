@@ -27,6 +27,7 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import * as Types from '../typebox'
+import { TypeGuard } from '../guard/index'
 import { ValueCreate } from './create'
 import { ValueCheck } from './check'
 
@@ -67,6 +68,12 @@ namespace UnionValueCast {
   }
   export function Create(schema: Types.TUnion, references: Types.TSchema[], value: any) {
     return ValueCheck.Check(schema, references, value) ? value : ValueCast.Cast(Select(schema, references, value), references, value)
+  }
+}
+
+export class ValueCastInvalidTypeError extends Error {
+  constructor(public readonly schema: Types.TSchema) {
+    super('ValueCast: Invalid type')
   }
 }
 
@@ -196,58 +203,51 @@ export namespace ValueCast {
   }
 
   export function Visit(schema: Types.TSchema, references: Types.TSchema[], value: any): any {
-    const anyReferences = schema.$id === undefined ? references : [schema, ...references]
-    const anySchema = schema as any
-
-    switch (schema[Types.Kind]) {
-      case 'Any':
-        return Any(anySchema, anyReferences, value)
-      case 'Array':
-        return Array(anySchema, anyReferences, value)
-      case 'Boolean':
-        return Boolean(anySchema, anyReferences, value)
-      case 'Constructor':
-        return Constructor(anySchema, anyReferences, value)
-      case 'Enum':
-        return Enum(anySchema, anyReferences, value)
-      case 'Function':
-        return Function(anySchema, anyReferences, value)
-      case 'Integer':
-        return Integer(anySchema, anyReferences, value)
-      case 'Literal':
-        return Literal(anySchema, anyReferences, value)
-      case 'Null':
-        return Null(anySchema, anyReferences, value)
-      case 'Number':
-        return Number(anySchema, anyReferences, value)
-      case 'Object':
-        return Object(anySchema, anyReferences, value)
-      case 'Promise':
-        return Promise(anySchema, anyReferences, value)
-      case 'Record':
-        return Record(anySchema, anyReferences, value)
-      case 'Rec':
-        return Recursive(anySchema, anyReferences, value)
-      case 'Ref':
-        return Ref(anySchema, anyReferences, value)
-      case 'Self':
-        return Self(anySchema, anyReferences, value)
-      case 'String':
-        return String(anySchema, anyReferences, value)
-      case 'Tuple':
-        return Tuple(anySchema, anyReferences, value)
-      case 'Undefined':
-        return Undefined(anySchema, anyReferences, value)
-      case 'Union':
-        return Union(anySchema, anyReferences, value)
-      case 'Uint8Array':
-        return Uint8Array(anySchema, anyReferences, value)
-      case 'Unknown':
-        return Unknown(anySchema, anyReferences, value)
-      case 'Void':
-        return Void(anySchema, anyReferences, value)
-      default:
-        throw Error(`ValueCast.Visit: Unknown schema kind '${schema[Types.Kind]}'`)
+    const refs = schema.$id === undefined ? references : [schema, ...references]
+    if (TypeGuard.TAny(schema)) {
+      return Any(schema, refs, value)
+    } else if (TypeGuard.TArray(schema)) {
+      return Array(schema, refs, value)
+    } else if (TypeGuard.TBoolean(schema)) {
+      return Boolean(schema, refs, value)
+    } else if (TypeGuard.TConstructor(schema)) {
+      return Constructor(schema, refs, value)
+    } else if (TypeGuard.TFunction(schema)) {
+      return Function(schema, refs, value)
+    } else if (TypeGuard.TInteger(schema)) {
+      return Integer(schema, refs, value)
+    } else if (TypeGuard.TLiteral(schema)) {
+      return Literal(schema, refs, value)
+    } else if (TypeGuard.TNull(schema)) {
+      return Null(schema, refs, value)
+    } else if (TypeGuard.TNumber(schema)) {
+      return Number(schema, refs, value)
+    } else if (TypeGuard.TObject(schema)) {
+      return Object(schema, refs, value)
+    } else if (TypeGuard.TPromise(schema)) {
+      return Promise(schema, refs, value)
+    } else if (TypeGuard.TRecord(schema)) {
+      return Record(schema, refs, value)
+    } else if (TypeGuard.TRef(schema)) {
+      return Ref(schema, refs, value)
+    } else if (TypeGuard.TSelf(schema)) {
+      return Self(schema, refs, value)
+    } else if (TypeGuard.TString(schema)) {
+      return String(schema, refs, value)
+    } else if (TypeGuard.TTuple(schema)) {
+      return Tuple(schema, refs, value)
+    } else if (TypeGuard.TUndefined(schema)) {
+      return Undefined(schema, refs, value)
+    } else if (TypeGuard.TUnion(schema)) {
+      return Union(schema, refs, value)
+    } else if (TypeGuard.TUint8Array(schema)) {
+      return Uint8Array(schema, refs, value)
+    } else if (TypeGuard.TUnknown(schema)) {
+      return Unknown(schema, refs, value)
+    } else if (TypeGuard.TVoid(schema)) {
+      return Void(schema, refs, value)
+    } else {
+      throw new ValueCastInvalidTypeError(schema)
     }
   }
 
