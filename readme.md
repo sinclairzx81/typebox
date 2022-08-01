@@ -838,24 +838,21 @@ const errors = [...C.Errors(value)]                  // const errors = [{
                                                      // }]
 ```
 
-Errors can be localized by inspecting the error `type` property.
+Errors messages can be localized by inspecting the error `type` property.
 
 ```typescript
-import { ValueError, ValueErrorType } from '@sinclair/typebox/error'
+import { ValueErrorType } from '@sinclair/typebox/error'
 
-function English(error: ValueError): ValueError {
+const errors = [...C.Errors({...})].map(error => {
   if(error.schema.errorMessage) return { ...error, message: error.schema.errorMessage } // optional override
   switch(error.type) {
     case ValueErrorType.Array: return { ...error, message: 'Expected Array' }
-    case ValueErrorType.ArrayMinItems: return { ...error, message: `Expected Array to have have length greater or equal to ${error.schema.minItems}` }
-    case ValueErrorType.ArrayMaxItems: return { ...error, message: `Expected Array to have have length less or equal to ${error.schema.maxItems}` }
+    case ValueErrorType.Object: return { ...error, message: 'Expected Object' }
+    case ValueErrorType.Number: return { ...error, message: 'Expected Number' }
+    case ValueErrorType.String: return { ...error, message: 'Expected String' }
     case ValueErrorType.Boolean: return { ...error, message: 'Expected Boolean' }
     ... 
-}
-
-const C = TypeCompiler.Compile(Type.String())
-
-const errors = [...C.Errors({...})].map(error => English(error))
+})
 ```
 
 Compiled routines can be inspected with the `.Code()` function.
