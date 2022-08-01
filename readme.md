@@ -818,45 +818,24 @@ const C = TypeCompiler.Compile(Type.Object({         // const C: TypeCheck<TObje
 const value = { }
 
 const errors = [...C.Errors(value)]                  // const errors = [{
-                                                     //   type: 14,
+                                                     //   type: ValueErrorType.Number,
                                                      //   schema: { type: 'number' },
                                                      //   path: '/x',
                                                      //   value: undefined,
                                                      //   message: 'Expected number'
                                                      // }, {
-                                                     //   type: 14,
+                                                     //   type: ValueErrorType.Number,
                                                      //   schema: { type: 'number' },
                                                      //   path: '/y',
                                                      //   value: undefined,
                                                      //   message: 'Expected number'
                                                      // }, {
-                                                     //   type: 14,
+                                                     //   type: ValueErrorType.Number,
                                                      //   schema: { type: 'number' },
                                                      //   path: '/z',
                                                      //   value: undefined,
                                                      //   message: 'Expected number'
                                                      // }]
-```
-
-Use the `type` property to remap error messages to specific locales. The following maps error messages to French.
-
-```typescript
-import { ValueErrorType } from '@sinclair/typebox/error'
-
-const errors = [...C.Errors({...})].map(error => {
-  switch(error.type) {
-    case ValueErrorType.ArrayMinItems: 
-      return { ...error, message: `Attendu au moins ${error.schema.minItems} éléments`}
-    case ValueErrorType.Boolean: 
-      return { ...error, message: 'Booléen attendu' }
-    case ValueErrorType.String: 
-      return { ...error, message: 'Chaîne attendue' }
-    case ValueErrorType.Number: 
-      return { ...error, message: 'Nombre attendu' }
-    // ... 
-    default: 
-      return error
-})
 ```
 
 Compiled routines can be inspected with the `.Code()` function.
