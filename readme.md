@@ -846,14 +846,10 @@ import { ValueError, ValueErrorType } from '@sinclair/typebox/error'
 function English(error: ValueError): ValueError {
   if(error.schema.errorMessage) return { ...error, message: error.schema.errorMessage } // optional override
   switch(error.type) {
-    case ValueErrorType.Array: 
-      return { ...error, message: 'Expected Array' }
-    case ValueErrorType.ArrayMinItems: 
-      return { ...error, message: `Expected Array to have have length greater or equal to ${error.schema.minItems}` }
-    case ValueErrorType.ArrayMaxItems: 
-      return { ...error, message: `Expected Array to have have length less or equal to ${error.schema.maxItems}` }
-    case ValueErrorType.Boolean: 
-      return { ...error, message: 'Expected Boolean' }
+    case ValueErrorType.Array: return { ...error, message: 'Expected Array' }
+    case ValueErrorType.ArrayMinItems: return { ...error, message: `Expected Array to have have length greater or equal to ${error.schema.minItems}` }
+    case ValueErrorType.ArrayMaxItems: return { ...error, message: `Expected Array to have have length less or equal to ${error.schema.maxItems}` }
+    case ValueErrorType.Boolean: return { ...error, message: 'Expected Boolean' }
     ... 
 }
 
