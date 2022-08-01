@@ -28,7 +28,6 @@ THE SOFTWARE.
 
 import { ValueErrors, ValueError } from '../error/errors'
 import { TypeGuard } from '../guard/index'
-import { Property } from './property'
 import * as Types from '../typebox'
 
 // -------------------------------------------------------------------
@@ -57,6 +56,42 @@ export class TypeCheck<T extends Types.TSchema> {
   /** Returns true if the value matches the given type. */
   public Check(value: unknown): value is Types.Static<T> {
     return this.checkFunc(value)
+  }
+}
+
+// -------------------------------------------------------------------
+// Property
+// -------------------------------------------------------------------
+
+export namespace Property {
+  function DollarSign(char: number) {
+    return char === 36
+  }
+  function Underscore(char: number) {
+    return char === 95
+  }
+  function Numeric(char: number) {
+    return char >= 48 && char <= 57
+  }
+  function Alpha(char: number) {
+    return (char >= 65 && char <= 90) || (char >= 97 && char <= 122)
+  }
+  /** Tests if this property name can be used in a member expression */
+  export function Check(propertyName: string) {
+    if (propertyName.length === 0) return false
+    {
+      const code = propertyName.charCodeAt(0)
+      if (!(DollarSign(code) || Underscore(code) || Alpha(code))) {
+        return false
+      }
+    }
+    for (let i = 1; i < propertyName.length; i++) {
+      const code = propertyName.charCodeAt(i)
+      if (!(DollarSign(code) || Underscore(code) || Alpha(code) || Numeric(code))) {
+        return false
+      }
+    }
+    return true
   }
 }
 
@@ -180,7 +215,7 @@ export namespace TypeCompiler {
   function* Record(schema: Types.TRecord<any, any>, value: string): Generator<string> {
     yield `(typeof ${value} === 'object' && ${value} !== null && !Array.isArray(${value}))`
     const [keyPattern, valueSchema] = globalThis.Object.entries(schema.patternProperties)[0]
-    const local = PushLocal(`new RegExp(/${keyPattern}/)`)
+    const local = PushLocal(`new RegExp(/${AssertPattern(keyPattern)}/)`)
     yield `(Object.keys(${value}).every(key => ${local}.test(key)))`
     const expression = CreateExpression(valueSchema, 'value')
     yield `(Object.values(${value}).every(value => ${expression}))`
