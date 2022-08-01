@@ -26,5 +26,5 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export type { ValueError } from '../value/errors'
+export { ValueError, ValueErrorType } from '../error/errors'
 export * from './compiler'

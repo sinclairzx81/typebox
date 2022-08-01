@@ -27,7 +27,7 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import * as Types from '../typebox'
-import { ValueErrors, ValueError } from './errors'
+import { ValueErrors, ValueError } from '../error/errors'
 import { ValueCast } from './cast'
 import { ValueCreate } from './create'
 import { ValueCheck } from './check'
