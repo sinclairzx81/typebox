@@ -338,47 +338,47 @@ export namespace ValueErrors {
   function* Visit<T extends Types.TSchema>(schema: T, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     const refs = schema.$id === undefined ? references : [schema, ...references]
     if (TypeGuard.TAny(schema)) {
-      return Any(schema, refs, path, value)
+      return yield* Any(schema, refs, path, value)
     } else if (TypeGuard.TArray(schema)) {
-      return Array(schema, refs, path, value)
+      return yield* Array(schema, refs, path, value)
     } else if (TypeGuard.TBoolean(schema)) {
-      return Boolean(schema, refs, path, value)
+      return yield* Boolean(schema, refs, path, value)
     } else if (TypeGuard.TConstructor(schema)) {
-      return Constructor(schema, refs, path, value)
+      return yield* Constructor(schema, refs, path, value)
     } else if (TypeGuard.TFunction(schema)) {
-      return Function(schema, refs, path, value)
+      return yield* Function(schema, refs, path, value)
     } else if (TypeGuard.TInteger(schema)) {
-      return Integer(schema, refs, path, value)
+      return yield* Integer(schema, refs, path, value)
     } else if (TypeGuard.TLiteral(schema)) {
-      return Literal(schema, refs, path, value)
+      return yield* Literal(schema, refs, path, value)
     } else if (TypeGuard.TNull(schema)) {
-      return Null(schema, refs, path, value)
+      return yield* Null(schema, refs, path, value)
     } else if (TypeGuard.TNumber(schema)) {
-      return Number(schema, refs, path, value)
+      return yield* Number(schema, refs, path, value)
     } else if (TypeGuard.TObject(schema)) {
-      return Object(schema, refs, path, value)
+      return yield* Object(schema, refs, path, value)
     } else if (TypeGuard.TPromise(schema)) {
-      return Promise(schema, refs, path, value)
+      return yield* Promise(schema, refs, path, value)
     } else if (TypeGuard.TRecord(schema)) {
-      return Record(schema, refs, path, value)
+      return yield* Record(schema, refs, path, value)
     } else if (TypeGuard.TRef(schema)) {
-      return Ref(schema, refs, path, value)
+      return yield* Ref(schema, refs, path, value)
     } else if (TypeGuard.TSelf(schema)) {
-      return Self(schema, refs, path, value)
+      return yield* Self(schema, refs, path, value)
     } else if (TypeGuard.TString(schema)) {
-      return String(schema, refs, path, value)
+      return yield* String(schema, refs, path, value)
     } else if (TypeGuard.TTuple(schema)) {
-      return Tuple(schema, refs, path, value)
+      return yield* Tuple(schema, refs, path, value)
     } else if (TypeGuard.TUndefined(schema)) {
-      return Undefined(schema, refs, path, value)
+      return yield* Undefined(schema, refs, path, value)
     } else if (TypeGuard.TUnion(schema)) {
-      return Union(schema, refs, path, value)
+      return yield* Union(schema, refs, path, value)
     } else if (TypeGuard.TUint8Array(schema)) {
-      return Uint8Array(schema, refs, path, value)
+      return yield* Uint8Array(schema, refs, path, value)
     } else if (TypeGuard.TUnknown(schema)) {
-      return Unknown(schema, refs, path, value)
+      return yield* Unknown(schema, refs, path, value)
     } else if (TypeGuard.TVoid(schema)) {
-      return Void(schema, refs, path, value)
+      return yield* Void(schema, refs, path, value)
     } else {
       throw new ValueErrorsInvalidTypeError(schema)
     }
