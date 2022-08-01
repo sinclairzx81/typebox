@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { ValueErrors, ValueError } from '../value/errors'
+import { ValueErrors, ValueError } from '../error/errors'
 import { Property } from './property'
 import * as Types from '../typebox'
 

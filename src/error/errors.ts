@@ -28,28 +28,83 @@ THE SOFTWARE.
 
 import * as Types from '../typebox'
 
+// -------------------------------------------------------------------
+// ValueErrorType
+// -------------------------------------------------------------------
+
+export enum ValueErrorType {
+  Array,
+  ArrayMinItems,
+  ArrayMaxItems,
+  ArrayUniqueItems,
+  Boolean,
+  Function,
+  Integer,
+  IntegerMultipleOf,
+  IntegerExclusiveMinimum,
+  IntegerExclusiveMaximum,
+  IntegerMinimum,
+  IntegerMaximum,
+  Literal,
+  Null,
+  Number,
+  NumberMultipleOf,
+  NumberExclusiveMinimum,
+  NumberExclusiveMaximum,
+  NumberMinumum,
+  NumberMaximum,
+  Object,
+  ObjectMinProperties,
+  ObjectMaxProperties,
+  ObjectAdditionalProperties,
+  Promise,
+  RecordKeyNumeric,
+  RecordKeyString,
+  String,
+  StringMinLength,
+  StringMaxLength,
+  StringPattern,
+  TupleZeroLength,
+  TupleLength,
+  Undefined,
+  Union,
+  Uint8Array,
+  Uint8ArrayMinByteLength,
+  Uint8ArrayMaxByteLength,
+  Void,
+}
+
+// -------------------------------------------------------------------
+// ValueError
+// -------------------------------------------------------------------
+
 export interface ValueError {
+  type: ValueErrorType
   schema: Types.TSchema
   path: string
   value: unknown
   message: string
 }
 
+// -------------------------------------------------------------------
+// ValueErrors
+// -------------------------------------------------------------------
+
 export namespace ValueErrors {
   function* Any(schema: Types.TAny, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {}
 
   function* Array(schema: Types.TArray, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     if (!globalThis.Array.isArray(value)) {
-      return yield { schema, path, value, message: `Expected array` }
+      return yield { type: ValueErrorType.Array, schema, path, value, message: `Expected array` }
     }
     if (schema.minItems !== undefined && !(value.length >= schema.minItems)) {
-      yield { schema, path, value, message: `Expected array length to be greater or equal to ${schema.minItems}` }
+      yield { type: ValueErrorType.ArrayMinItems, schema, path, value, message: `Expected array length to be greater or equal to ${schema.minItems}` }
     }
     if (schema.maxItems !== undefined && !(value.length <= schema.maxItems)) {
-      yield { schema, path, value, message: `Expected array length to be less or equal to ${schema.maxItems}` }
+      yield { type: ValueErrorType.ArrayMinItems, schema, path, value, message: `Expected array length to be less or equal to ${schema.maxItems}` }
     }
     if (schema.uniqueItems === true && !(new Set(value).size === value.length)) {
-      yield { schema, path, value, message: `Expected array elements to be unique` }
+      yield { type: ValueErrorType.ArrayUniqueItems, schema, path, value, message: `Expected array elements to be unique` }
     }
     for (let i = 0; i < value.length; i++) {
       yield* Visit(schema.items, references, `${path}/${i}`, value[i])
@@ -58,7 +113,7 @@ export namespace ValueErrors {
 
   function* Boolean(schema: Types.TBoolean, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     if (!(typeof value === 'boolean')) {
-      return yield { schema, path, value, message: `Expected boolean` }
+      return yield { type: ValueErrorType.Boolean, schema, path, value, message: `Expected boolean` }
     }
   }
 
@@ -68,83 +123,83 @@ export namespace ValueErrors {
 
   function* Function(schema: Types.TFunction, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     if (!(typeof value === 'function')) {
-      return yield { schema, path, value, message: `Expected function` }
+      return yield { type: ValueErrorType.Function, schema, path, value, message: `Expected function` }
     }
   }
 
   function* Integer(schema: Types.TNumeric, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     if (!(typeof value === 'number')) {
-      return yield { schema, path, value, message: `Expected number` }
+      return yield { type: ValueErrorType.Number, schema, path, value, message: `Expected number` }
     }
     if (!globalThis.Number.isInteger(value)) {
-      yield { schema, path, value, message: `Expected integer` }
+      yield { type: ValueErrorType.Integer, schema, path, value, message: `Expected integer` }
     }
     if (schema.multipleOf && !(value % schema.multipleOf === 0)) {
-      yield { schema, path, value, message: `Expected integer to be a multiple of ${schema.multipleOf}` }
+      yield { type: ValueErrorType.IntegerMultipleOf, schema, path, value, message: `Expected integer to be a multiple of ${schema.multipleOf}` }
     }
     if (schema.exclusiveMinimum && !(value > schema.exclusiveMinimum)) {
-      yield { schema, path, value, message: `Expected integer to be greater than ${schema.exclusiveMinimum}` }
+      yield { type: ValueErrorType.IntegerExclusiveMinimum, schema, path, value, message: `Expected integer to be greater than ${schema.exclusiveMinimum}` }
     }
     if (schema.exclusiveMaximum && !(value < schema.exclusiveMaximum)) {
-      yield { schema, path, value, message: `Expected integer to be less than ${schema.exclusiveMaximum}` }
+      yield { type: ValueErrorType.IntegerExclusiveMaximum, schema, path, value, message: `Expected integer to be less than ${schema.exclusiveMaximum}` }
     }
     if (schema.minimum && !(value >= schema.minimum)) {
-      yield { schema, path, value, message: `Expected integer to be greater or equal to ${schema.minimum}` }
+      yield { type: ValueErrorType.IntegerMinimum, schema, path, value, message: `Expected integer to be greater or equal to ${schema.minimum}` }
     }
     if (schema.maximum && !(value <= schema.maximum)) {
-      yield { schema, path, value, message: `Expected integer to be less or equal to ${schema.maximum}` }
+      yield { type: ValueErrorType.IntegerMaximum, schema, path, value, message: `Expected integer to be less or equal to ${schema.maximum}` }
     }
   }
 
   function* Literal(schema: Types.TLiteral, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     if (!(value === schema.const)) {
       const error = typeof schema.const === 'string' ? `'${schema.const}'` : schema.const
-      return yield { schema, path, value, message: `Expected ${error}` }
+      return yield { type: ValueErrorType.Literal, schema, path, value, message: `Expected ${error}` }
     }
   }
 
   function* Null(schema: Types.TNull, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     if (!(value === null)) {
-      return yield { schema, path, value, message: `Expected null` }
+      return yield { type: ValueErrorType.Null, schema, path, value, message: `Expected null` }
     }
   }
 
   function* Number(schema: Types.TNumeric, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     if (!(typeof value === 'number')) {
-      return yield { schema, path, value, message: `Expected number` }
+      return yield { type: ValueErrorType.Number, schema, path, value, message: `Expected number` }
     }
     if (schema.multipleOf && !(value % schema.multipleOf === 0)) {
-      yield { schema, path, value, message: `Expected number to be a multiple of ${schema.multipleOf}` }
+      yield { type: ValueErrorType.NumberMultipleOf, schema, path, value, message: `Expected number to be a multiple of ${schema.multipleOf}` }
     }
     if (schema.exclusiveMinimum && !(value > schema.exclusiveMinimum)) {
-      yield { schema, path, value, message: `Expected number to be greater than ${schema.exclusiveMinimum}` }
+      yield { type: ValueErrorType.NumberExclusiveMinimum, schema, path, value, message: `Expected number to be greater than ${schema.exclusiveMinimum}` }
     }
     if (schema.exclusiveMaximum && !(value < schema.exclusiveMaximum)) {
-      yield { schema, path, value, message: `Expected number to be less than ${schema.exclusiveMaximum}` }
+      yield { type: ValueErrorType.NumberExclusiveMaximum, schema, path, value, message: `Expected number to be less than ${schema.exclusiveMaximum}` }
     }
     if (schema.minimum && !(value >= schema.minimum)) {
-      yield { schema, path, value, message: `Expected number to be greater or equal to ${schema.minimum}` }
+      yield { type: ValueErrorType.NumberMaximum, schema, path, value, message: `Expected number to be greater or equal to ${schema.minimum}` }
     }
     if (schema.maximum && !(value <= schema.maximum)) {
-      yield { schema, path, value, message: `Expected number to be less or equal to ${schema.maximum}` }
+      yield { type: ValueErrorType.NumberMinumum, schema, path, value, message: `Expected number to be less or equal to ${schema.maximum}` }
     }
   }
 
   function* Object(schema: Types.TObject, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     if (!(typeof value === 'object' && value !== null && !globalThis.Array.isArray(value))) {
-      return yield { schema, path, value, message: `Expected object` }
+      return yield { type: ValueErrorType.Object, schema, path, value, message: `Expected object` }
     }
     if (schema.minProperties !== undefined && !(globalThis.Object.keys(value).length >= schema.minProperties)) {
-      yield { schema, path, value, message: `Expected object to have at least ${schema.minProperties} properties` }
+      yield { type: ValueErrorType.ObjectMinProperties, schema, path, value, message: `Expected object to have at least ${schema.minProperties} properties` }
     }
     if (schema.maxProperties !== undefined && !(globalThis.Object.keys(value).length <= schema.maxProperties)) {
-      yield { schema, path, value, message: `Expected object to have less than ${schema.minProperties} properties` }
+      yield { type: ValueErrorType.ObjectMaxProperties, schema, path, value, message: `Expected object to have less than ${schema.minProperties} properties` }
     }
     const propertyKeys = globalThis.Object.keys(schema.properties)
     if (schema.additionalProperties === false) {
       for (const propKey of globalThis.Object.keys(value)) {
         if (!propertyKeys.includes(propKey)) {
-          yield { schema, path: `${path}/${propKey}`, value: value[propKey], message: 'Unexpected property' }
+          yield { type: ValueErrorType.ObjectAdditionalProperties, schema, path: `${path}/${propKey}`, value: value[propKey], message: 'Unexpected property' }
         }
       }
     }
@@ -162,19 +217,21 @@ export namespace ValueErrors {
 
   function* Promise(schema: Types.TPromise, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     if (!(typeof value === 'object' && typeof value.then === 'function')) {
-      yield { schema, path, value, message: `Expected Promise` }
+      yield { type: ValueErrorType.Promise, schema, path, value, message: `Expected Promise` }
     }
   }
 
   function* Record(schema: Types.TRecord, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     if (!(typeof value === 'object' && value !== null && !globalThis.Array.isArray(value))) {
-      return yield { schema, path, value, message: `Expected object` }
+      return yield { type: ValueErrorType.Object, schema, path, value, message: `Expected object` }
     }
     const [keyPattern, valueSchema] = globalThis.Object.entries(schema.patternProperties)[0]
     const regex = new RegExp(keyPattern)
     if (!globalThis.Object.keys(value).every((key) => regex.test(key))) {
-      const message = keyPattern === '^(0|[1-9][0-9]*)$' ? 'Expected all object property keys to be numeric' : 'Expected all object property keys to be strings'
-      return yield { schema, path, value, message }
+      const numeric = keyPattern === '^(0|[1-9][0-9]*)$'
+      const type = numeric ? ValueErrorType.RecordKeyNumeric : ValueErrorType.RecordKeyString
+      const message = numeric ? 'Expected all object property keys to be numeric' : 'Expected all object property keys to be strings'
+      return yield { type, schema, path, value, message }
     }
     for (const [propKey, propValue] of globalThis.Object.entries(value)) {
       yield* Visit(valueSchema, references, `${path}/${propKey}`, propValue)
@@ -195,31 +252,31 @@ export namespace ValueErrors {
 
   function* String(schema: Types.TString, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     if (!(typeof value === 'string')) {
-      return yield { schema, path, value, message: 'Expected string' }
+      return yield { type: ValueErrorType.String, schema, path, value, message: 'Expected string' }
     }
     if (schema.minLength !== undefined && !(value.length >= schema.minLength)) {
-      yield { schema, path, value, message: `Expected string length greater or equal to ${schema.minLength}` }
+      yield { type: ValueErrorType.StringMinLength, schema, path, value, message: `Expected string length greater or equal to ${schema.minLength}` }
     }
     if (schema.maxLength !== undefined && !(value.length <= schema.maxLength)) {
-      yield { schema, path, value, message: `Expected string length less or equal to ${schema.maxLength}` }
+      yield { type: ValueErrorType.StringMaxLength, schema, path, value, message: `Expected string length less or equal to ${schema.maxLength}` }
     }
     if (schema.pattern !== undefined) {
       const regex = new RegExp(schema.pattern)
       if (!regex.test(value)) {
-        yield { schema, path, value, message: `Expected string to match pattern ${schema.pattern}` }
+        yield { type: ValueErrorType.StringPattern, schema, path, value, message: `Expected string to match pattern ${schema.pattern}` }
       }
     }
   }
 
   function* Tuple(schema: Types.TTuple<any[]>, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     if (!globalThis.Array.isArray(value)) {
-      return yield { schema, path, value, message: 'Expected Array' }
+      return yield { type: ValueErrorType.Array, schema, path, value, message: 'Expected Array' }
     }
     if (schema.items === undefined && !(value.length === 0)) {
-      return yield { schema, path, value, message: 'Expected tuple to have 0 elements' }
+      return yield { type: ValueErrorType.TupleZeroLength, schema, path, value, message: 'Expected tuple to have 0 elements' }
     }
     if (!(value.length === schema.maxItems)) {
-      yield { schema, path, value, message: `Expected tuple to have ${schema.maxItems} elements` }
+      yield { type: ValueErrorType.TupleLength, schema, path, value, message: `Expected tuple to have ${schema.maxItems} elements` }
     }
     if (!schema.items) {
       return
@@ -231,7 +288,7 @@ export namespace ValueErrors {
 
   function* Undefined(schema: Types.TUndefined, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     if (!(value === undefined)) {
-      yield { schema, path, value, message: `Expected undefined` }
+      yield { type: ValueErrorType.Undefined, schema, path, value, message: `Expected undefined` }
     }
   }
 
@@ -246,20 +303,20 @@ export namespace ValueErrors {
       yield error
     }
     if (errors.length > 0) {
-      yield { schema, path, value, message: 'Expected value of union' }
+      yield { type: ValueErrorType.Union, schema, path, value, message: 'Expected value of union' }
     }
   }
 
   function* Uint8Array(schema: Types.TUint8Array, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     if (!(value instanceof globalThis.Uint8Array)) {
-      return yield { schema, path, value, message: `Expected Uint8Array` }
+      return yield { type: ValueErrorType.Uint8Array, schema, path, value, message: `Expected Uint8Array` }
     }
 
     if (schema.maxByteLength && !(value.length <= schema.maxByteLength)) {
-      yield { schema, path, value, message: `Expected Uint8Array to have a byte length less or equal to ${schema.maxByteLength}` }
+      yield { type: ValueErrorType.Uint8ArrayMaxByteLength, schema, path, value, message: `Expected Uint8Array to have a byte length less or equal to ${schema.maxByteLength}` }
     }
     if (schema.minByteLength && !(value.length >= schema.minByteLength)) {
-      yield { schema, path, value, message: `Expected Uint8Array to have a byte length greater or equal to ${schema.maxByteLength}` }
+      yield { type: ValueErrorType.Uint8ArrayMinByteLength, schema, path, value, message: `Expected Uint8Array to have a byte length greater or equal to ${schema.maxByteLength}` }
     }
   }
 
@@ -267,7 +324,7 @@ export namespace ValueErrors {
 
   function* Void(schema: Types.TVoid, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     if (!(value === null)) {
-      return yield { schema, path, value, message: `Expected null` }
+      return yield { type: ValueErrorType.Void, schema, path, value, message: `Expected null` }
     }
   }
 

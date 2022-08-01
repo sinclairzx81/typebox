@@ -818,16 +818,19 @@ const C = TypeCompiler.Compile(Type.Object({         // const C: TypeCheck<TObje
 const value = { }
 
 const errors = [...C.Errors(value)]                  // const errors = [{
+                                                     //   type: ValueErrorType.Number,
                                                      //   schema: { type: 'number' },
                                                      //   path: '/x',
                                                      //   value: undefined,
                                                      //   message: 'Expected number'
                                                      // }, {
+                                                     //   type: ValueErrorType.Number,
                                                      //   schema: { type: 'number' },
                                                      //   path: '/y',
                                                      //   value: undefined,
                                                      //   message: 'Expected number'
                                                      // }, {
+                                                     //   type: ValueErrorType.Number,
                                                      //   schema: { type: 'number' },
                                                      //   path: '/z',
                                                      //   value: undefined,
@@ -846,6 +849,8 @@ console.log(C.Code())                                // return function check(va
                                                      //   )
                                                      // }
 ```
+
+
 
 ## Benchmark
 
