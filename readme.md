@@ -69,7 +69,6 @@ License MIT
 - [Strict](#strict)
 - [Validation](#validation)
 - [Compiler](#compiler)
-- [Localization](#localization)
 - [Benchmark](#benchmark)
 - [Contribute](#contribute)
 
