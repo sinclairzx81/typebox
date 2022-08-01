@@ -69,6 +69,7 @@ License MIT
 - [Strict](#strict)
 - [Validation](#validation)
 - [Compiler](#compiler)
+- [Localization](#localization)
 - [Benchmark](#benchmark)
 - [Contribute](#contribute)
 
@@ -838,17 +839,18 @@ const errors = [...C.Errors(value)]                  // const errors = [{
                                                      // }]
 ```
 
-Errors messages can be remapped by inspecting an error `type` property.
+Use the `type` property to remap error messages to specific locales. The following maps error messages to French.
 
 ```typescript
 import { ValueErrorType } from '@sinclair/typebox/error'
 
 const errors = [...C.Errors({...})].map(error => {
   switch(error.type) {
-    case ValueErrorType.Boolean: return { ...error, message: 'Expected Boolean' }
-    case ValueErrorType.String: return { ...error, message: 'Expected String' }
-    case ValueErrorType.Number: return { ...error, message: 'Expected Number' }
-    ... 
+    case ValueErrorType.ArrayMinItems: return { ...error, message: `Attendu au moins ${error.schema.minItems} éléments`}
+    case ValueErrorType.Boolean: return { ...error, message: 'Booléen attendu' }
+    case ValueErrorType.String: return { ...error, message: 'Chaîne attendue' }
+    case ValueErrorType.Number: return { ...error, message: 'Nombre attendu' }
+    // ... 
     default: return { ...error, message: 'Unknown error' }
 })
 ```
@@ -864,8 +866,6 @@ console.log(C.Code())                                // return function check(va
                                                      //   )
                                                      // }
 ```
-
-
 
 
 
