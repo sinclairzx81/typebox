@@ -26,6 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { TypeGuard } from '../guard/index'
 import * as Types from '../typebox'
 
 // -------------------------------------------------------------------
@@ -89,6 +90,12 @@ export interface ValueError {
 // -------------------------------------------------------------------
 // ValueErrors
 // -------------------------------------------------------------------
+
+export class ValueErrorsInvalidTypeError extends Error {
+  constructor(public readonly schema: Types.TSchema) {
+    super('ValueErrors: Invalid type')
+  }
+}
 
 export namespace ValueErrors {
   function* Any(schema: Types.TAny, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {}
@@ -329,54 +336,51 @@ export namespace ValueErrors {
   }
 
   function* Visit<T extends Types.TSchema>(schema: T, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
-    const anyReferences = schema.$id === undefined ? references : [schema, ...references]
-    const anySchema = schema as any
-
-    switch (anySchema[Types.Kind]) {
-      case 'Any':
-        return yield* Any(anySchema, anyReferences, path, value)
-      case 'Array':
-        return yield* Array(anySchema, anyReferences, path, value)
-      case 'Boolean':
-        return yield* Boolean(anySchema, anyReferences, path, value)
-      case 'Constructor':
-        return yield* Constructor(anySchema, anyReferences, path, value)
-      case 'Function':
-        return yield* Function(anySchema, anyReferences, path, value)
-      case 'Integer':
-        return yield* Integer(anySchema, anyReferences, path, value)
-      case 'Literal':
-        return yield* Literal(anySchema, anyReferences, path, value)
-      case 'Null':
-        return yield* Null(anySchema, anyReferences, path, value)
-      case 'Number':
-        return yield* Number(anySchema, anyReferences, path, value)
-      case 'Object':
-        return yield* Object(anySchema, anyReferences, path, value)
-      case 'Promise':
-        return yield* Promise(anySchema, anyReferences, path, value)
-      case 'Record':
-        return yield* Record(anySchema, anyReferences, path, value)
-      case 'Ref':
-        return yield* Ref(anySchema, anyReferences, path, value)
-      case 'Self':
-        return yield* Self(anySchema, anyReferences, path, value)
-      case 'String':
-        return yield* String(anySchema, anyReferences, path, value)
-      case 'Tuple':
-        return yield* Tuple(anySchema, anyReferences, path, value)
-      case 'Undefined':
-        return yield* Undefined(anySchema, anyReferences, path, value)
-      case 'Union':
-        return yield* Union(anySchema, anyReferences, path, value)
-      case 'Uint8Array':
-        return yield* Uint8Array(anySchema, anyReferences, path, value)
-      case 'Unknown':
-        return yield* Unknown(anySchema, anyReferences, path, value)
-      case 'Void':
-        return yield* Void(anySchema, anyReferences, path, value)
-      default:
-        throw new Error(`ValueErrors: Unknown schema kind '${schema[Types.Kind]}'`)
+    const refs = schema.$id === undefined ? references : [schema, ...references]
+    if (TypeGuard.TAny(schema)) {
+      return Any(schema, refs, path, value)
+    } else if (TypeGuard.TArray(schema)) {
+      return Array(schema, refs, path, value)
+    } else if (TypeGuard.TBoolean(schema)) {
+      return Boolean(schema, refs, path, value)
+    } else if (TypeGuard.TConstructor(schema)) {
+      return Constructor(schema, refs, path, value)
+    } else if (TypeGuard.TFunction(schema)) {
+      return Function(schema, refs, path, value)
+    } else if (TypeGuard.TInteger(schema)) {
+      return Integer(schema, refs, path, value)
+    } else if (TypeGuard.TLiteral(schema)) {
+      return Literal(schema, refs, path, value)
+    } else if (TypeGuard.TNull(schema)) {
+      return Null(schema, refs, path, value)
+    } else if (TypeGuard.TNumber(schema)) {
+      return Number(schema, refs, path, value)
+    } else if (TypeGuard.TObject(schema)) {
+      return Object(schema, refs, path, value)
+    } else if (TypeGuard.TPromise(schema)) {
+      return Promise(schema, refs, path, value)
+    } else if (TypeGuard.TRecord(schema)) {
+      return Record(schema, refs, path, value)
+    } else if (TypeGuard.TRef(schema)) {
+      return Ref(schema, refs, path, value)
+    } else if (TypeGuard.TSelf(schema)) {
+      return Self(schema, refs, path, value)
+    } else if (TypeGuard.TString(schema)) {
+      return String(schema, refs, path, value)
+    } else if (TypeGuard.TTuple(schema)) {
+      return Tuple(schema, refs, path, value)
+    } else if (TypeGuard.TUndefined(schema)) {
+      return Undefined(schema, refs, path, value)
+    } else if (TypeGuard.TUnion(schema)) {
+      return Union(schema, refs, path, value)
+    } else if (TypeGuard.TUint8Array(schema)) {
+      return Uint8Array(schema, refs, path, value)
+    } else if (TypeGuard.TUnknown(schema)) {
+      return Unknown(schema, refs, path, value)
+    } else if (TypeGuard.TVoid(schema)) {
+      return Void(schema, refs, path, value)
+    } else {
+      throw new ValueErrorsInvalidTypeError(schema)
     }
   }
 
