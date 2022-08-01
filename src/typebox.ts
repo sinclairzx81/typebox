@@ -606,9 +606,7 @@ export class TypeBuilder {
     const values = Object.keys(item)
       .filter((key) => isNaN(key as any))
       .map((key) => item[key]) as T[keyof T][]
-    const anyOf = values.map((value) =>
-      typeof value === 'string' ? { [Kind]: 'Literal', type: 'string' as const, const: value } : { [Kind]: 'Literal', type: 'number' as const, const: value },
-    )
+    const anyOf = values.map((value) => (typeof value === 'string' ? { [Kind]: 'Literal', type: 'string' as const, const: value } : { [Kind]: 'Literal', type: 'number' as const, const: value }))
     return this.Create({ ...options, [Kind]: 'Union', [Hint]: 'Enum', anyOf })
   }
 
@@ -865,11 +863,7 @@ export class TypeBuilder {
     const additionalItems = false
     const minItems = items.length
     const maxItems = items.length
-    const schema = (
-      items.length > 0
-        ? { ...options, [Kind]: 'Tuple', type: 'array', items, additionalItems, minItems, maxItems }
-        : { ...options, [Kind]: 'Tuple', type: 'array', minItems, maxItems }
-    ) as any
+    const schema = (items.length > 0 ? { ...options, [Kind]: 'Tuple', type: 'array', items, additionalItems, minItems, maxItems } : { ...options, [Kind]: 'Tuple', type: 'array', minItems, maxItems }) as any
     return this.Create(schema)
   }
 

@@ -82,14 +82,7 @@ export namespace TypeGuard {
 
   /** Returns true if the given schema is TArray */
   export function TArray(schema: any): schema is Types.TArray {
-    return (
-      IsObject(schema) &&
-      schema[Types.Kind] === 'Array' &&
-      schema.type === 'array' &&
-      TSchema(schema.items) &&
-      IsOptionalNumber(schema.minItems) &&
-      IsOptionalNumber(schema.maxItems)
-    )
+    return IsObject(schema) && schema[Types.Kind] === 'Array' && schema.type === 'array' && TSchema(schema.items) && IsOptionalNumber(schema.minItems) && IsOptionalNumber(schema.maxItems)
   }
 
   /** Returns true if the given schema is TBoolean */
@@ -159,7 +152,17 @@ export namespace TypeGuard {
 
   /** Returns true if the given schema is TObject */
   export function TObject(schema: any): schema is Types.TObject {
-    if (!(IsObject(schema) && schema[Types.Kind] === 'Object' && schema.type === 'object' && IsObject(schema.properties) && IsOptionalBoolean(schema.additionalProperties))) {
+    if (
+      !(
+        IsObject(schema) &&
+        schema[Types.Kind] === 'Object' &&
+        schema.type === 'object' &&
+        IsObject(schema.properties) &&
+        IsOptionalBoolean(schema.additionalProperties) &&
+        IsOptionalNumber(schema.minProperties) &&
+        IsOptionalNumber(schema.maxProperties)
+      )
+    ) {
       return false
     }
     for (const property of Object.values(schema.properties)) {
@@ -203,29 +206,12 @@ export namespace TypeGuard {
 
   /** Returns true if the given schema is TString */
   export function TString(schema: any): schema is Types.TString {
-    return (
-      IsObject(schema) &&
-      schema[Types.Kind] === 'String' &&
-      schema.type === 'string' &&
-      IsOptionalNumber(schema.minLength) &&
-      IsOptionalNumber(schema.maxLength) &&
-      IsOptionalPattern(schema.pattern) &&
-      IsOptionalString(schema.format)
-    )
+    return IsObject(schema) && schema[Types.Kind] === 'String' && schema.type === 'string' && IsOptionalNumber(schema.minLength) && IsOptionalNumber(schema.maxLength) && IsOptionalPattern(schema.pattern) && IsOptionalString(schema.format)
   }
 
   /** Returns true if the given schema is TTuple */
   export function TTuple(schema: any): schema is Types.TTuple {
-    if (
-      !(
-        IsObject(schema) &&
-        schema[Types.Kind] === 'Tuple' &&
-        schema.type === 'array' &&
-        IsNumber(schema.minItems) &&
-        IsNumber(schema.maxItems) &&
-        schema.minItems === schema.maxItems
-      )
-    ) {
+    if (!(IsObject(schema) && schema[Types.Kind] === 'Tuple' && schema.type === 'array' && IsNumber(schema.minItems) && IsNumber(schema.maxItems) && schema.minItems === schema.maxItems)) {
       return false
     }
     if (schema.items === undefined && schema.additionalItems === undefined && schema.minItems === 0) {
@@ -258,14 +244,7 @@ export namespace TypeGuard {
 
   /** Returns true if the given schema is TUint8Array */
   export function TUint8Array(schema: any): schema is Types.TUint8Array {
-    return (
-      IsObject(schema) &&
-      schema[Types.Kind] === 'Uint8Array' &&
-      schema.type === 'object' &&
-      schema.specialized === 'Uint8Array' &&
-      IsOptionalNumber(schema.minByteLength) &&
-      IsOptionalNumber(schema.maxByteLength)
-    )
+    return IsObject(schema) && schema[Types.Kind] === 'Uint8Array' && schema.type === 'object' && schema.specialized === 'Uint8Array' && IsOptionalNumber(schema.minByteLength) && IsOptionalNumber(schema.maxByteLength)
   }
 
   /** Returns true if the given schema is TUnknown */

@@ -3,22 +3,7 @@ import addFormats from 'ajv-formats'
 import Ajv, { AnySchema } from 'ajv/dist/2019'
 
 export function validator(additional: AnySchema[]) {
-  return addFormats(new Ajv({}), [
-    'date-time',
-    'time',
-    'date',
-    'email',
-    'hostname',
-    'ipv4',
-    'ipv6',
-    'uri',
-    'uri-reference',
-    'uuid',
-    'uri-template',
-    'json-pointer',
-    'relative-json-pointer',
-    'regex',
-  ])
+  return addFormats(new Ajv({}), ['date-time', 'time', 'date', 'email', 'hostname', 'ipv4', 'ipv6', 'uri', 'uri-reference', 'uuid', 'uri-template', 'json-pointer', 'relative-json-pointer', 'regex'])
     .addKeyword('kind')
     .addKeyword('modifier')
     .addSchema(additional)
