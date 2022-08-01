@@ -71,7 +71,7 @@ export enum ValueErrorType {
   Uint8Array,
   Uint8ArrayMinByteLength,
   Uint8ArrayMaxByteLength,
-  Void
+  Void,
 }
 
 // -------------------------------------------------------------------
@@ -91,7 +91,7 @@ export interface ValueError {
 // -------------------------------------------------------------------
 
 export namespace ValueErrors {
-  function* Any(schema: Types.TAny, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> { }
+  function* Any(schema: Types.TAny, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {}
 
   function* Array(schema: Types.TArray, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     if (!globalThis.Array.isArray(value)) {
@@ -320,7 +320,7 @@ export namespace ValueErrors {
     }
   }
 
-  function* Unknown(schema: Types.TUnknown, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> { }
+  function* Unknown(schema: Types.TUnknown, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {}
 
   function* Void(schema: Types.TVoid, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     if (!(value === null)) {
