@@ -11,27 +11,27 @@ describe('type/guard/TInteger', () => {
     const R = TypeGuard.TInteger(null)
     Assert.equal(R, false)
   })
-  it('should not guard for invalid multipleOf', () => {
+  it('should not guard for TInteger with invalid multipleOf', () => {
     // @ts-ignore
     const R = TypeGuard.TInteger(Type.Integer({ multipleOf: '1' }))
     Assert.equal(R, false)
   })
-  it('should not guard for invalid minimum', () => {
+  it('should not guard for TInteger with invalid minimum', () => {
     // @ts-ignore
     const R = TypeGuard.TInteger(Type.Integer({ minimum: '1' }))
     Assert.equal(R, false)
   })
-  it('should not guard for invalid maximum', () => {
+  it('should not guard for TInteger with invalid maximum', () => {
     // @ts-ignore
     const R = TypeGuard.TInteger(Type.Integer({ maximum: '1' }))
     Assert.equal(R, false)
   })
-  it('should not guard for invalid exclusiveMinimum', () => {
+  it('should not guard for TInteger with invalid exclusiveMinimum', () => {
     // @ts-ignore
     const R = TypeGuard.TInteger(Type.Integer({ exclusiveMinimum: '1' }))
     Assert.equal(R, false)
   })
-  it('should not guard for invalid exclusiveMaximum', () => {
+  it('should not guard for TInteger with invalid exclusiveMaximum', () => {
     // @ts-ignore
     const R = TypeGuard.TInteger(Type.Integer({ exclusiveMaximum: '1' }))
     Assert.equal(R, false)

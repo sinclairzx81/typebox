@@ -27,7 +27,7 @@ describe('type/guard/TObject', () => {
     Assert.equal(R, false)
   })
 
-  it('should not guard for TObject (invalid properties)', () => {
+  it('should not guard for TObject with invalid property values', () => {
     const R = TypeGuard.TObject(
       Type.Object({
         x: Type.Number(),
@@ -36,7 +36,7 @@ describe('type/guard/TObject', () => {
     )
     Assert.equal(R, false)
   })
-  it('should not guard for invalid additionalProperties', () => {
+  it('should not guard for TObject with invalid additionalProperties', () => {
     const R = TypeGuard.TObject(
       Type.Object(
         {
@@ -51,7 +51,7 @@ describe('type/guard/TObject', () => {
     Assert.equal(R, false)
   })
 
-  it('should not guard for invalid minProperties', () => {
+  it('should not guard for TObject with invalid minProperties', () => {
     const R = TypeGuard.TObject(
       Type.Object(
         {
@@ -66,7 +66,7 @@ describe('type/guard/TObject', () => {
     Assert.equal(R, false)
   })
 
-  it('should not guard for invalid maxProperties', () => {
+  it('should not guard for TObject with invalid maxProperties', () => {
     const R = TypeGuard.TObject(
       Type.Object(
         {
