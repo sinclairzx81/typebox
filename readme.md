@@ -860,7 +860,7 @@ For additional comparative benchmarks, please refer to [typescript-runtime-type-
 
 ### Compile
 
-This benchmark measures compilation performance for varying types. You can review this benchmark [here](https://github.com/sinclairzx81/typebox/blob/master/benchmark/measurement/compile.ts).
+This benchmark measures compilation performance for varying types. You can review this benchmark [here](https://github.com/sinclairzx81/typebox/blob/master/benchmark/measurement/module/compile.ts).
 
 ```typescript
 ┌──────────────────┬────────────┬──────────────┬──────────────┬──────────────┐
@@ -894,7 +894,7 @@ This benchmark measures compilation performance for varying types. You can revie
 
 ### Validate
 
-This benchmark measures validation performance for varying types. You can review this benchmark [here](https://github.com/sinclairzx81/typebox/blob/master/benchmark/measurement/check.ts).
+This benchmark measures validation performance for varying types. You can review this benchmark [here](https://github.com/sinclairzx81/typebox/blob/master/benchmark/measurement/module/check.ts).
 
 ```typescript
 ┌──────────────────┬────────────┬──────────────┬──────────────┬──────────────┐
