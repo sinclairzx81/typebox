@@ -77,18 +77,7 @@ export namespace Property {
     return (code >= 65 && code <= 90) || (code >= 97 && code <= 122)
   }
 
-  function AssertEscapeCharacters(propertyName: string) {
-    for (let i = 0; i < propertyName.length; i++) {
-      const code = propertyName.charCodeAt(i)
-      if ((code >= 7 && code <= 13) || code === 27 || code === 127) {
-        throw Error('Property: Invalid escape character found in property key')
-      }
-    }
-  }
-
   export function Check(propertyName: string) {
-    AssertEscapeCharacters(propertyName)
-
     if (propertyName.length === 0) return false
     {
       const code = propertyName.charCodeAt(0)
@@ -139,7 +128,7 @@ export namespace TypeCompiler {
   }
 
   function* Constructor(schema: Types.TConstructor, value: string): IterableIterator<string> {
-    yield* Visit(schema.returns, value)
+    yield* Visit(schema.returns, `${value}.prototype`)
   }
 
   function* Function(schema: Types.TFunction, value: string): IterableIterator<string> {

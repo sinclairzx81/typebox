@@ -33,4 +33,20 @@ describe('type/guard/TArray', () => {
     )
     Assert.equal(R, false)
   })
+
+  it('should not guard for invalid minItems', () => {
+    // @ts-ignore
+    const R = TypeGuard.TArray(Type.Array(Type.String(), { minItems: '1' }))
+    Assert.equal(R, false)
+  })
+  it('should not guard for invalid maxItems', () => {
+    // @ts-ignore
+    const R = TypeGuard.TArray(Type.Array(Type.String(), { maxItems: '1' }))
+    Assert.equal(R, false)
+  })
+  it('should not guard for invalid uniqueItems', () => {
+    // @ts-ignore
+    const R = TypeGuard.TArray(Type.Array(Type.String(), { uniqueItems: '1' }))
+    Assert.equal(R, false)
+  })
 })

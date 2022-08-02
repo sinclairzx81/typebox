@@ -38,4 +38,10 @@ describe('type/guard/TRecord', () => {
     )
     Assert.equal(R, false)
   })
+
+  it('should not guard for TRecord with invalid literal key', () => {
+    const K = Type.Union([Type.Literal('hello\nworld')])
+    const R = TypeGuard.TRecord(Type.Record(K, Type.Number()))
+    Assert.equal(R, false)
+  })
 })

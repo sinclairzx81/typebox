@@ -15,8 +15,9 @@ describe('type/guard/TLiteral', () => {
     const R = TypeGuard.TLiteral(Type.Literal(true))
     Assert.equal(R, true)
   })
-  it('should not guard for TLiteral of Object', () => {
-    const R = TypeGuard.TLiteral(Type.Literal({} as any))
+  it('should not guard for TLiteral of Null', () => {
+    // @ts-ignore
+    const R = TypeGuard.TLiteral(Type.Literal(null))
     Assert.equal(R, false)
   })
   it('should not guard for TLiteral', () => {

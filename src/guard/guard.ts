@@ -47,6 +47,17 @@ export namespace TypeGuard {
     }
   }
 
+  function IsValidPropertyKey(value: any): value is string {
+    if (typeof value !== 'string') return false
+    for (let i = 0; i < value.length; i++) {
+      const code = value.charCodeAt(i)
+      if ((code >= 7 && code <= 13) || code === 27 || code === 127) {
+        return false
+      }
+    }
+    return true
+  }
+
   function IsString(value: any): value is number {
     return typeof value === 'string'
   }
@@ -72,7 +83,7 @@ export namespace TypeGuard {
   }
 
   function IsOptionalPattern(value: any): value is string | undefined {
-    return value === undefined || (value !== undefined && IsPattern(value))
+    return value === undefined || (value !== undefined && IsString(value) && IsPattern(value))
   }
 
   /** Returns true if the given schema is TAny */
@@ -82,7 +93,7 @@ export namespace TypeGuard {
 
   /** Returns true if the given schema is TArray */
   export function TArray(schema: any): schema is Types.TArray {
-    return IsObject(schema) && schema[Types.Kind] === 'Array' && schema.type === 'array' && TSchema(schema.items) && IsOptionalNumber(schema.minItems) && IsOptionalNumber(schema.maxItems)
+    return IsObject(schema) && schema[Types.Kind] === 'Array' && schema.type === 'array' && TSchema(schema.items) && IsOptionalNumber(schema.minItems) && IsOptionalNumber(schema.maxItems) && IsOptionalBoolean(schema.uniqueItems)
   }
 
   /** Returns true if the given schema is TBoolean */
@@ -165,8 +176,9 @@ export namespace TypeGuard {
     ) {
       return false
     }
-    for (const property of Object.values(schema.properties)) {
-      if (!TSchema(property)) return false
+    for (const [key, value] of Object.entries(schema.properties)) {
+      if (!IsValidPropertyKey(key)) return false
+      if (!TSchema(value)) return false
     }
     return true
   }
@@ -178,7 +190,7 @@ export namespace TypeGuard {
 
   /** Returns true if the given schema is TRecord */
   export function TRecord(schema: any): schema is Types.TRecord {
-    if (!(IsObject(schema) && schema[Types.Kind] === 'Record' && schema.type === 'object' && IsObject(schema.patternProperties))) {
+    if (!(IsObject(schema) && schema[Types.Kind] === 'Record' && schema.type === 'object' && schema.additionalProperties === false && IsObject(schema.patternProperties))) {
       return false
     }
     const keys = Object.keys(schema.patternProperties)

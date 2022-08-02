@@ -18,12 +18,65 @@ describe('type/guard/TObject', () => {
     Assert.equal(R, false)
   })
 
+  it('should not guard for TObject with escape characters in property key', () => {
+    const R = TypeGuard.TObject(
+      Type.Object({
+        'hello\nworld': Type.Number(),
+      }),
+    )
+    Assert.equal(R, false)
+  })
+
   it('should not guard for TObject (invalid properties)', () => {
     const R = TypeGuard.TObject(
       Type.Object({
         x: Type.Number(),
         y: {} as any,
       }),
+    )
+    Assert.equal(R, false)
+  })
+  it('should not guard for invalid additionalProperties', () => {
+    const R = TypeGuard.TObject(
+      Type.Object(
+        {
+          x: Type.Number(),
+        },
+        {
+          // @ts-ignore
+          additionalProperties: 'true',
+        },
+      ),
+    )
+    Assert.equal(R, false)
+  })
+
+  it('should not guard for invalid minProperties', () => {
+    const R = TypeGuard.TObject(
+      Type.Object(
+        {
+          x: Type.Number(),
+        },
+        {
+          // @ts-ignore
+          minProperties: '1',
+        },
+      ),
+    )
+    Assert.equal(R, false)
+  })
+
+  it('should not guard for invalid maxProperties', () => {
+    const R = TypeGuard.TObject(
+      Type.Object(
+        {
+          x: Type.Number(),
+        },
+        {
+          // @ts-ignore
+          maxProperties: '1',
+        },
+      ),
     )
     Assert.equal(R, false)
   })

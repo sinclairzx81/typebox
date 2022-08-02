@@ -125,7 +125,7 @@ export namespace ValueErrors {
   }
 
   function* Constructor(schema: Types.TConstructor, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
-    yield* Visit(schema.returns, references, path, value)
+    yield* Visit(schema.returns, references, path, value.prototype)
   }
 
   function* Function(schema: Types.TFunction, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
