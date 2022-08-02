@@ -860,7 +860,7 @@ For additional comparative benchmarks, please refer to [typescript-runtime-type-
 
 ### Compile
 
-This benchmark measures compilation performance for varying types. You can review this benchmark [here](https://github.com/sinclairzx81/typebox/blob/master/benchmark/compile.ts).
+This benchmark measures compilation performance for varying types. You can review this benchmark [here](https://github.com/sinclairzx81/typebox/blob/master/benchmark/measurement/compile.ts).
 
 ```typescript
 ┌──────────────────┬────────────┬──────────────┬──────────────┬──────────────┐
@@ -894,7 +894,7 @@ This benchmark measures compilation performance for varying types. You can revie
 
 ### Validate
 
-This benchmark measures validation performance for varying types. You can review this benchmark [here](https://github.com/sinclairzx81/typebox/blob/master/benchmark/check.ts).
+This benchmark measures validation performance for varying types. You can review this benchmark [here](https://github.com/sinclairzx81/typebox/blob/master/benchmark/measurement/check.ts).
 
 ```typescript
 ┌──────────────────┬────────────┬──────────────┬──────────────┬──────────────┐
@@ -928,7 +928,21 @@ This benchmark measures validation performance for varying types. You can review
 └──────────────────┴────────────┴──────────────┴──────────────┴──────────────┘
 ```
 
+### Compression
 
+The following table lists esbuild compiled and minified sizes for each TypeBox import.
+
+```typescript
+┌──────────────────────┬────────────┬────────────┬─────────────┐
+│       (index)        │  compiled  │  minified  │ compression │
+├──────────────────────┼────────────┼────────────┼─────────────┤
+│ typebox/compiler     │ '   46 kb' │ '   23 kb' │  '1.98 x'   │
+│ typebox/conditional  │ '   40 kb' │ '   16 kb' │  '2.45 x'   │
+│ typebox/guard        │ '   19 kb' │ '    9 kb' │  '2.03 x'   │
+│ typebox/value        │ '   63 kb' │ '   29 kb' │  '2.16 x'   │
+│ typebox              │ '   11 kb' │ '    5 kb' │  '1.89 x'   │
+└──────────────────────┴────────────┴────────────┴─────────────┘
+```
 
 ## Contribute
 

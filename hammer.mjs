@@ -1,4 +1,6 @@
+import { compression, measurement } from './benchmark'
 import { readFileSync } from 'fs'
+
 
 // -------------------------------------------------------------------------------
 // Clean
@@ -29,7 +31,8 @@ export async function start(example = 'index') {
 // -------------------------------------------------------------------------------
 
 export async function benchmark() {
-    await shell(`hammer run benchmark/index.ts --dist target/benchmark`)
+    await compression()
+    await measurement()
 }
 
 // -------------------------------------------------------------------------------
@@ -38,7 +41,6 @@ export async function benchmark() {
 
 export async function test_static() {
     await shell(`tsc -p test/static/tsconfig.json --noEmit --strict`)
-    
 }
 
 export async function test_runtime(filter) {
