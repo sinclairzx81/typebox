@@ -934,7 +934,7 @@ The following table lists esbuild compiled and minified sizes for each TypeBox i
 
 ```typescript
 ┌──────────────────────┬────────────┬────────────┬─────────────┐
-│       (index)        │  compiled  │  minified  │ compression │
+│       (index)        │  Compiled  │  Minified  │ Compression │
 ├──────────────────────┼────────────┼────────────┼─────────────┤
 │ typebox/compiler     │ '   46 kb' │ '   23 kb' │  '1.98 x'   │
 │ typebox/conditional  │ '   40 kb' │ '   16 kb' │  '2.45 x'   │

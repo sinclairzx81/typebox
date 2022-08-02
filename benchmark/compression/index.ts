@@ -19,7 +19,7 @@ export async function compression() {
   const tests = readdirSync('benchmark/compression/module').map((name) => basename(name, extname(name)))
   const results = await Promise.all(tests.map((test) => measure(test)))
   const present = results.reduce((acc, c) => {
-    return { ...acc, [c.test.replace('-', '/')]: { compiled: c.compiled, minified: c.minified, compression: `${c.ratio.toFixed(2)} x` } }
+    return { ...acc, [c.test.replace('-', '/')]: { Compiled: c.compiled, Minified: c.minified, Compression: `${c.ratio.toFixed(2)} x` } }
   }, {})
   console.table(present)
 }
