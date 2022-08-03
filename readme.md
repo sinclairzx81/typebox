@@ -194,7 +194,7 @@ The following table outlines the TypeBox mappings between TypeScript and JSON sc
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Literal(42)     │ type T = 42                 │ const T = {                    │
-│                                │                             │    const: 42                   │
+│                                │                             │    const: 42,                  │
 │                                │                             │    type: 'number'              │
 │                                │                             │ }                              │
 │                                │                             │                                │
