@@ -331,7 +331,7 @@ export namespace TypeGuard {
     )
   }
 
-  /** Asserts if this schema and associated references are valid types. */
+  /** Asserts if this schema and associated references are valid. */
   export function Assert<T extends Types.TSchema>(schema: T, references: Types.TSchema[] = []) {
     if (!TSchema(schema)) throw new TypeGuardInvalidTypeError(schema)
     for (const schema of references) {
