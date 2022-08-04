@@ -801,12 +801,13 @@ Please refer to the official Ajv [documentation](https://ajv.js.org/guide/gettin
 
 TypeBox provides an optional high performance runtime type checker that can be used in applications that require extremely fast validation. This type checker is optimized for TypeBox types only whose schematics are known in advance. If defining custom schemas with `Type.Unsafe<T>` please consider Ajv.
 
-The following demonstrates its use.
-
 ```typescript
 import { TypeCompiler } from '@sinclair/typebox/compiler'
-import { Type } from '@sinclair/typebox'
+```
 
+Use the Compile function to compile a type into a TypeCheck object.
+
+```typescript
 const C = TypeCompiler.Compile(Type.Object({         // const C: TypeCheck<TObject<{
   x: Type.Number(),                                  //     x: TNumber;
   y: Type.Number(),                                  //     y: TNumber;
