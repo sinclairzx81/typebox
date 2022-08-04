@@ -642,31 +642,39 @@ The following table shows the TypeBox mappings between TypeScript and JSON schem
 
 ## Values
 
-Use the `Value` module to perform common operations on JavaScript values.
+Use the `Value` module to perform type operations on JavaScript values.
 
 ```typescript
 import { Value } from '@sinclair/typebox/value'
 
 //--------------------------------------------------------------------------------------------
-// For the given type ...
+//
+// For the given type T ...
+//
 //--------------------------------------------------------------------------------------------
 
 const T = Type.Object({ x: Type.Number(), y: Type.Number() })
 
 //--------------------------------------------------------------------------------------------
-// Use Value.Create(T) to create a value from a type.
+//
+// Use Value.Create(T) to create a value from T.
+//
 //--------------------------------------------------------------------------------------------
 
 const V = Value.Create(T)                            // const V = { x: 0, y: 0 }
 
 //--------------------------------------------------------------------------------------------
-// Use Value.Check(T, ...) to check if a value is of a given type.
+//
+// Use Value.Check(T, ...) to check if a value is of type T.
+//
 //--------------------------------------------------------------------------------------------
 
 const R = Value.Check({ x: 1, y: 2 }, 'hello')        // const R = true
 
 //--------------------------------------------------------------------------------------------
-// Use Value.Cast(T, ...) to immutable cast a value into a given type.
+//
+// Use Value.Cast(T, ...) to immutable cast a value into T.
+//
 //--------------------------------------------------------------------------------------------
 
 const A = Value.Cast(T, null)                        // const A = { x: 0, y: 0 }
