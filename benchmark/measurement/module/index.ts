@@ -6,7 +6,7 @@ export function present(results: Result[]) {
   console.table(
     results.reduce((acc, result) => {
       const ratio = result.ajv.completed / result.compiler.completed
-      if(result.value) {
+      if (result.value) {
         return {
           ...acc,
           [result.type.padStart(16, ' ')]: {
@@ -28,7 +28,6 @@ export function present(results: Result[]) {
           },
         }
       }
-
     }, {}),
   )
 }
