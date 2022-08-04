@@ -11,4 +11,9 @@ describe('type/guard/TUndefined', () => {
     const R = TypeGuard.TUndefined(null)
     Assert.equal(R, false)
   })
+  it('should not guard for TUndefined with invalid $id', () => {
+    // @ts-ignore
+    const R = TypeGuard.TUndefined(Type.Undefined({ $id: 1 }))
+    Assert.equal(R, false)
+  })
 })

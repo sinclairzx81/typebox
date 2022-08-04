@@ -13,7 +13,7 @@ export namespace CheckBenchmark {
   function Measure<T extends TSchema>(type: string, schema: T) {
     console.log('CheckBenchmark.Measure(', type, ')')
 
-    const iterations = 4_000_000
+    const iterations = 1_000_000
     const V = Value.Create(schema)
 
     const AC = ajv.compile(schema)
@@ -21,11 +21,16 @@ export namespace CheckBenchmark {
       if (!AC(V)) throw Error()
     }, iterations)
 
-    const TC = TypeCompiler.Compile(schema)
+    const CC = TypeCompiler.Compile(schema)
     const T = Benchmark.Measure(() => {
-      if (!TC.Check(V)) throw Error()
+      if (!CC.Check(V)) throw Error()
     }, iterations)
-    return { type, ajv: A, typebox: T }
+
+    const VC = Benchmark.Measure(() => {
+      if (!Value.Check(schema, V)) throw Error()
+    }, iterations)
+
+    return { type, ajv: A, compiler: T, value: VC }
   }
 
   export function* Execute() {

@@ -11,4 +11,9 @@ describe('type/guard/TBoolean', () => {
     const R = TypeGuard.TBoolean(null)
     Assert.equal(R, false)
   })
+  it('should not guard for TBoolean with invalid $id', () => {
+    // @ts-ignore
+    const R = TypeGuard.TBoolean(Type.Boolean({ $id: 1 }))
+    Assert.equal(R, false)
+  })
 })

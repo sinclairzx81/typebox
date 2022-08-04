@@ -24,4 +24,9 @@ describe('type/guard/TLiteral', () => {
     const R = TypeGuard.TLiteral(null)
     Assert.equal(R, false)
   })
+  it('should not guard for TLiteral with invalid $id', () => {
+    // @ts-ignore
+    const R = TypeGuard.TLiteral(Type.Literal(42, { $id: 1 }))
+    Assert.equal(R, false)
+  })
 })

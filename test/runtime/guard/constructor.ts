@@ -11,6 +11,11 @@ describe('type/guard/TConstructor', () => {
     const R = TypeGuard.TConstructor(null)
     Assert.equal(R, false)
   })
+  it('should not guard for TConstructor with invalid $id', () => {
+    // @ts-ignore
+    const R = TypeGuard.TConstructor(Type.Constructor([], Type.Number(), { $id: 1 }))
+    Assert.equal(R, false)
+  })
   it('should not guard for TConstructor with invalid Params', () => {
     const R = TypeGuard.TConstructor(Type.Constructor([{} as any, {} as any], Type.Number()))
     Assert.equal(R, false)

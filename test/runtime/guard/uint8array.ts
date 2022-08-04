@@ -13,6 +13,12 @@ describe('type/guard/TUint8Array', () => {
     Assert.equal(R, false)
   })
 
+  it('should not guard for TUint8Array with invalid $id', () => {
+    // @ts-ignore
+    const R = TypeGuard.TUint8Array(Type.Uint8Array({ $id: 1 }))
+    Assert.equal(R, false)
+  })
+
   it('should not guard for TUint8Array with invalid minByteLength', () => {
     // @ts-ignore
     const R = TypeGuard.TUint8Array(Type.Uint8Array({ minByteLength: '1' }))

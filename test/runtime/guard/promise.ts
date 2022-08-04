@@ -7,10 +7,18 @@ describe('type/guard/TPromise', () => {
     const R = TypeGuard.TPromise(Type.Promise(Type.Number()))
     Assert.equal(R, true)
   })
+
   it('should not guard for TPromise', () => {
     const R = TypeGuard.TPromise(null)
     Assert.equal(R, false)
   })
+
+  it('should not guard for TPromise with invalid $id', () => {
+    // @ts-ignore
+    const R = TypeGuard.TPromise(Type.Promise(Type.Number(), { $id: 1 }))
+    Assert.equal(R, false)
+  })
+
   it('should guard for TPromise with nested TObject', () => {
     const R = TypeGuard.TPromise(
       Type.Promise(

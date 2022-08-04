@@ -13,6 +13,12 @@ describe('type/guard/TString', () => {
     Assert.equal(R, false)
   })
 
+  it('should not guard for TString with invalid $id', () => {
+    // @ts-ignore
+    const R = TypeGuard.TString(Type.String({ $id: 1 }))
+    Assert.equal(R, false)
+  })
+
   it('should not guard for TString with invalid minLength', () => {
     // @ts-ignore
     const R = TypeGuard.TString(Type.String({ minLength: '1' }))

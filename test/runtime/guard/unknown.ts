@@ -11,4 +11,9 @@ describe('type/guard/TUnknown', () => {
     const R = TypeGuard.TUnknown(null)
     Assert.equal(R, false)
   })
+  it('should not guard for TUnknown with invalid $id', () => {
+    // @ts-ignore
+    const R = TypeGuard.TUnknown(Type.Unknown({ $id: 1 }))
+    Assert.equal(R, false)
+  })
 })

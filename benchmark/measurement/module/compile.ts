@@ -15,9 +15,9 @@ export namespace CompileBenchmark {
     // Note: Ajv caches schemas by reference. To ensure we measure actual
     // compilation times, we must pass a new reference via { ...schema }
     // -------------------------------------------------------------------------------
-    const A = Benchmark.Measure(() => ajv.compile({ ...schema }), iterations)
-    const T = Benchmark.Measure(() => TypeCompiler.Compile({ ...schema }), iterations)
-    return { type, ajv: A, typebox: T }
+    const AC = Benchmark.Measure(() => ajv.compile({ ...schema }), iterations)
+    const CC = Benchmark.Measure(() => TypeCompiler.Compile({ ...schema }), iterations)
+    return { type, ajv: AC, compiler: CC }
   }
 
   export function* Execute() {

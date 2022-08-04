@@ -4,10 +4,19 @@ import { Assert } from '../assert/index'
 
 describe('type/guard/TSelf', () => {
   it('should guard for TSelf', () => {
-    Type.Recursive((T) => {
-      const R = TypeGuard.TSelf(T)
+    Type.Recursive((Node) => {
+      const R = TypeGuard.TSelf(Node)
       Assert.equal(R, true)
-      return Type.Object({ t: Type.Array(T) })
+      return Type.Object({ nodes: Type.Array(Node) })
+    })
+  })
+  it('should guard for TSelf with invalid $ref', () => {
+    Type.Recursive((Node) => {
+      // @ts-ignore
+      Node.$ref = 1
+      const R = TypeGuard.TSelf(Node)
+      Assert.equal(R, false)
+      return Type.Object({ nodes: Type.Array(Node) })
     })
   })
 })

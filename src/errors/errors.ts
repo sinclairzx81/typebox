@@ -26,7 +26,6 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { TypeGuard } from '../guard/index'
 import * as Types from '../typebox'
 
 // -------------------------------------------------------------------
@@ -91,9 +90,9 @@ export interface ValueError {
 // ValueErrors
 // -------------------------------------------------------------------
 
-export class ValueErrorsInvalidTypeError extends Error {
+export class ValueErrorsUnknownTypeError extends Error {
   constructor(public readonly schema: Types.TSchema) {
-    super('ValueErrors: Invalid type')
+    super('ValueErrors: Unknown type')
   }
 }
 
@@ -336,51 +335,53 @@ export namespace ValueErrors {
   }
 
   function* Visit<T extends Types.TSchema>(schema: T, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
-    const refs = schema.$id === undefined ? references : [schema, ...references]
-    if (TypeGuard.TAny(schema)) {
-      return yield* Any(schema, refs, path, value)
-    } else if (TypeGuard.TArray(schema)) {
-      return yield* Array(schema, refs, path, value)
-    } else if (TypeGuard.TBoolean(schema)) {
-      return yield* Boolean(schema, refs, path, value)
-    } else if (TypeGuard.TConstructor(schema)) {
-      return yield* Constructor(schema, refs, path, value)
-    } else if (TypeGuard.TFunction(schema)) {
-      return yield* Function(schema, refs, path, value)
-    } else if (TypeGuard.TInteger(schema)) {
-      return yield* Integer(schema, refs, path, value)
-    } else if (TypeGuard.TLiteral(schema)) {
-      return yield* Literal(schema, refs, path, value)
-    } else if (TypeGuard.TNull(schema)) {
-      return yield* Null(schema, refs, path, value)
-    } else if (TypeGuard.TNumber(schema)) {
-      return yield* Number(schema, refs, path, value)
-    } else if (TypeGuard.TObject(schema)) {
-      return yield* Object(schema, refs, path, value)
-    } else if (TypeGuard.TPromise(schema)) {
-      return yield* Promise(schema, refs, path, value)
-    } else if (TypeGuard.TRecord(schema)) {
-      return yield* Record(schema, refs, path, value)
-    } else if (TypeGuard.TRef(schema)) {
-      return yield* Ref(schema, refs, path, value)
-    } else if (TypeGuard.TSelf(schema)) {
-      return yield* Self(schema, refs, path, value)
-    } else if (TypeGuard.TString(schema)) {
-      return yield* String(schema, refs, path, value)
-    } else if (TypeGuard.TTuple(schema)) {
-      return yield* Tuple(schema, refs, path, value)
-    } else if (TypeGuard.TUndefined(schema)) {
-      return yield* Undefined(schema, refs, path, value)
-    } else if (TypeGuard.TUnion(schema)) {
-      return yield* Union(schema, refs, path, value)
-    } else if (TypeGuard.TUint8Array(schema)) {
-      return yield* Uint8Array(schema, refs, path, value)
-    } else if (TypeGuard.TUnknown(schema)) {
-      return yield* Unknown(schema, refs, path, value)
-    } else if (TypeGuard.TVoid(schema)) {
-      return yield* Void(schema, refs, path, value)
-    } else {
-      throw new ValueErrorsInvalidTypeError(schema)
+    const anyReferences = schema.$id === undefined ? references : [schema, ...references]
+    const anySchema = schema as any
+    switch (anySchema[Types.Kind]) {
+      case 'Any':
+        return yield* Any(anySchema, anyReferences, path, value)
+      case 'Array':
+        return yield* Array(anySchema, anyReferences, path, value)
+      case 'Boolean':
+        return yield* Boolean(anySchema, anyReferences, path, value)
+      case 'Constructor':
+        return yield* Constructor(anySchema, anyReferences, path, value)
+      case 'Function':
+        return yield* Function(anySchema, anyReferences, path, value)
+      case 'Integer':
+        return yield* Integer(anySchema, anyReferences, path, value)
+      case 'Literal':
+        return yield* Literal(anySchema, anyReferences, path, value)
+      case 'Null':
+        return yield* Null(anySchema, anyReferences, path, value)
+      case 'Number':
+        return yield* Number(anySchema, anyReferences, path, value)
+      case 'Object':
+        return yield* Object(anySchema, anyReferences, path, value)
+      case 'Promise':
+        return yield* Promise(anySchema, anyReferences, path, value)
+      case 'Record':
+        return yield* Record(anySchema, anyReferences, path, value)
+      case 'Ref':
+        return yield* Ref(anySchema, anyReferences, path, value)
+      case 'Self':
+        return yield* Self(anySchema, anyReferences, path, value)
+      case 'String':
+        return yield* String(anySchema, anyReferences, path, value)
+      case 'Tuple':
+        return yield* Tuple(anySchema, anyReferences, path, value)
+      case 'Undefined':
+        return yield* Undefined(anySchema, anyReferences, path, value)
+      case 'Union':
+        return yield* Union(anySchema, anyReferences, path, value)
+      case 'Uint8Array':
+        return yield* Uint8Array(anySchema, anyReferences, path, value)
+      case 'Unknown':
+        return yield* Unknown(anySchema, anyReferences, path, value)
+      case 'Void':
+        return yield* Void(anySchema, anyReferences, path, value)
+      default:
+        throw new ValueErrorsUnknownTypeError(schema)
     }
   }
 

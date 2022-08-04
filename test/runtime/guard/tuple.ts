@@ -11,6 +11,11 @@ describe('type/guard/TTuple', () => {
     const R = TypeGuard.TTuple(null)
     Assert.equal(R, false)
   })
+  it('should not guard for TTuple with invalid $id', () => {
+    // @ts-ignore
+    const R = TypeGuard.TTuple(Type.Tuple([Type.Number(), Type.Number()], { $id: 1 }))
+    Assert.equal(R, false)
+  })
   it('should not guard for TTuple with invalid Items', () => {
     const R = TypeGuard.TTuple(Type.Tuple([Type.Number(), {} as any]))
     Assert.equal(R, false)
