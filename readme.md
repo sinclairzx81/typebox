@@ -561,9 +561,7 @@ The `Type.Unsafe(...)` function can be used to create schemas for validators tha
 import { Type, Static, TSchema } from '@sinclair/typebox'
 
 //--------------------------------------------------------------------------------------------
-//
 // Nullable<T>
-//
 //--------------------------------------------------------------------------------------------
 
 function Nullable<T extends TSchema>(schema: T) {
@@ -577,10 +575,10 @@ const T = Nullable(Type.String())                    // const T = {
 
 type T = Static<typeof T>                            // type T = string | null
 
+
+
 //--------------------------------------------------------------------------------------------
-//
 // StringEnum<string[]>
-//
 //--------------------------------------------------------------------------------------------
 
 function StringEnum<T extends string[]>(values: [...T]) {
@@ -645,28 +643,34 @@ The following table shows the TypeBox mappings between TypeScript and JSON schem
 
 ## Values
 
+Use the `Value` module to perform common operations on JavaScript values.
+
 ```typescript
 import { Value } from '@sinclair/typebox/value'
-```
 
-Use `Value.Check(...)` to check if a value matches a given type.
+//--------------------------------------------------------------------------------------------
+// Use Value.Check(...) to check if a value is of a given type.
+//--------------------------------------------------------------------------------------------
 
-```typescript
 const R = Value.Check(Type.String(), 'hello')        // const R = true
-```
 
-Use `Value.Create(...)` to create a value from a type.
 
-```typescript
-const V = Value.Create(Type.Object({                 // const V = {
-  x: Type.Number({ default: 1 }),                    //   x: 1,
-  y: Type.Number()                                   //   y: 0
-}))                                                  // }                                                  
-```
 
-Use `Value.Cast(...)` to cast a value into a given type.
+//--------------------------------------------------------------------------------------------
+// Use Value.Create(...) to create a value from a type.
+//--------------------------------------------------------------------------------------------
 
-```typescript
+const V = Value.Create(Type.Object({                 // const V = { x: 1, y: 0 }
+  x: Type.Number({ default: 1 }),
+  y: Type.Number()
+}))
+
+
+
+//--------------------------------------------------------------------------------------------
+// Use Value.Cast(...) to cast a value into a given type.
+//--------------------------------------------------------------------------------------------
+
 const T = Type.Object({
   x: Type.Number(),
   y: Type.Number()
@@ -681,11 +685,11 @@ const C = Value.Cast(T, { x: 1, y: 2, z: 3 })        // const C = { x: 1, y: 2 }
 
 ## Guards
 
+Use the `TypeGuard` module to test if values are valid TypeBox types.
+
 ```typescript
 import { TypeGuard } from '@sinclair/typebox/guard'
-```
-Use `TypeGuard.TSchema(...)` to test if values are TypeBox types.
-```typescript
+
 const T = Type.String()
 
 if(TypeGuard.TString(T)) {
