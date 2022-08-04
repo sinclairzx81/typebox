@@ -645,8 +645,6 @@ The following table shows the TypeBox mappings between TypeScript and JSON schem
 
 ## Values
 
-Use the `Value.*` module to perform common operations on JavaScript values.
-
 ```typescript
 import { Value } from '@sinclair/typebox/value'
 ```
@@ -683,12 +681,10 @@ const C = Value.Cast(T, { x: 1, y: 2, z: 3 })        // const C = { x: 1, y: 2 }
 
 ## Guards
 
-Use the `TypeGuard.*` module to test if values are valid TypeBox types.
-
 ```typescript
 import { TypeGuard } from '@sinclair/typebox/guard'
 ```
-The following checks the value `T` is of type `TString`.
+Use `TypeGuard.TSchema(...)` to test if values are TypeBox types.
 ```typescript
 const T = Type.String()
 
