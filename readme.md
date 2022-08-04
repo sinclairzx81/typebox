@@ -593,7 +593,7 @@ type T = Static<typeof T>                            // type T = 'A' | 'B' | 'C'
 
 ## Conditional Types
 
-Use the `Conditional` module to create conditional mapped types.
+Use the `Conditional` module to create conditionally mapped types.
 
 ```typescript
 import { Conditional } from '@sinclair/typebox/conditional'
