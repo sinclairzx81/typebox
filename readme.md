@@ -651,10 +651,7 @@ import { Value } from '@sinclair/typebox/value'
 // For the given type ...
 //--------------------------------------------------------------------------------------------
 
-const T = Type.Object({
-  x: Type.Number(),
-  y: Type.Number()
-})
+const T = Type.Object({ x: Type.Number(), y: Type.Number() })
 
 //--------------------------------------------------------------------------------------------
 // Use Value.Create(T) to create a value from a type.
