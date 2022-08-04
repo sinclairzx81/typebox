@@ -648,28 +648,29 @@ Use the `Value` module to perform common operations on JavaScript values.
 import { Value } from '@sinclair/typebox/value'
 
 //--------------------------------------------------------------------------------------------
-// Use Value.Check(T, ...) to check if a value is of a given type.
-//--------------------------------------------------------------------------------------------
-
-const R = Value.Check(Type.String(), 'hello')        // const R = true
-
-//--------------------------------------------------------------------------------------------
-// Use Value.Create(T) to create a value from a type.
-//--------------------------------------------------------------------------------------------
-
-const V = Value.Create(Type.Object({                 // const V = { x: 1, y: 0 }
-  x: Type.Number({ default: 1 }),
-  y: Type.Number()
-}))
-
-//--------------------------------------------------------------------------------------------
-// Use Value.Cast(T, ...) to cast a value into a given type.
+// For the given type ...
 //--------------------------------------------------------------------------------------------
 
 const T = Type.Object({
   x: Type.Number(),
   y: Type.Number()
 })
+
+//--------------------------------------------------------------------------------------------
+// Use Value.Create(T) to create a value from a type.
+//--------------------------------------------------------------------------------------------
+
+const V = Value.Create(T)                            // const V = { x: 0, y: 0 }
+
+//--------------------------------------------------------------------------------------------
+// Use Value.Check(T, ...) to check if a value is of a given type.
+//--------------------------------------------------------------------------------------------
+
+const R = Value.Check({ x: 1, y: 2 }, 'hello')        // const R = true
+
+//--------------------------------------------------------------------------------------------
+// Use Value.Cast(T, ...) to immutable cast a value into a given type.
+//--------------------------------------------------------------------------------------------
 
 const A = Value.Cast(T, null)                        // const A = { x: 0, y: 0 }
 
