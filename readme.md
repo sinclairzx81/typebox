@@ -670,7 +670,7 @@ const R = Value.Check(T, { x: 1 })                   // const R = false
 
 //--------------------------------------------------------------------------------------------
 //
-// Use Value.Cast(T, ...) to immutably cast a value as T.
+// Use Value.Cast(T, ...) to immutably cast a value into T.
 //
 //--------------------------------------------------------------------------------------------
 
