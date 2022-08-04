@@ -593,7 +593,7 @@ type T = Static<typeof T>                            // type T = 'A' | 'B' | 'C'
 
 ## Conditional Types
 
-Use `Conditional.*` module to create conditional mapped types.
+Use the `Conditional` module to create conditional mapped types.
 
 ```typescript
 import { Conditional } from '@sinclair/typebox/conditional'
@@ -673,7 +673,7 @@ const R = Value.Check({ x: 1, y: 2 }, 'hello')        // const R = true
 
 //--------------------------------------------------------------------------------------------
 //
-// Use Value.Cast(T, ...) to immutable cast a value into T.
+// Use Value.Cast(T, ...) to immutably cast a value into T.
 //
 //--------------------------------------------------------------------------------------------
 
