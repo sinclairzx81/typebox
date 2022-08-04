@@ -11,7 +11,7 @@ export function present(results: Result[]) {
           ...acc,
           [result.type.padStart(16, ' ')]: {
             Iterations: result.compiler.iterations,
-            Value: `${result.value.completed} ms`.padStart(10),
+            ValueCheck: `${result.value.completed} ms`.padStart(10),
             Ajv: `${result.ajv.completed} ms`.padStart(10),
             TypeCompiler: `${result.compiler.completed} ms`.padStart(10),
             Performance: `${ratio.toFixed(2)} x`.padStart(10, ' '),
@@ -32,5 +32,5 @@ export function present(results: Result[]) {
   )
 }
 
-// present([...CompileBenchmark.Execute()])
+present([...CompileBenchmark.Execute()])
 present([...CheckBenchmark.Execute()])
