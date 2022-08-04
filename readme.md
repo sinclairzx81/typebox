@@ -561,7 +561,9 @@ The `Type.Unsafe(...)` function can be used to create schemas for validators tha
 import { Type, Static, TSchema } from '@sinclair/typebox'
 
 //--------------------------------------------------------------------------------------------
+//
 // Nullable<T>
+//
 //--------------------------------------------------------------------------------------------
 
 function Nullable<T extends TSchema>(schema: T) {
@@ -577,7 +579,9 @@ type T = Static<typeof T>                            // type T = string | null
 
 
 //--------------------------------------------------------------------------------------------
+//
 // StringEnum<string[]>
+//
 //--------------------------------------------------------------------------------------------
 
 function StringEnum<T extends string[]>(values: [...T]) {
