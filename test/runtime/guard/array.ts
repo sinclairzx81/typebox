@@ -33,7 +33,11 @@ describe('type/guard/TArray', () => {
     )
     Assert.equal(R, false)
   })
-
+  it('should not guard for TArray with invalid $id', () => {
+    // @ts-ignore
+    const R = TypeGuard.TArray(Type.Array(Type.Number(), { $id: 1 }))
+    Assert.equal(R, false)
+  })
   it('should not guard for TArray with invalid minItems', () => {
     // @ts-ignore
     const R = TypeGuard.TArray(Type.Array(Type.String(), { minItems: '1' }))

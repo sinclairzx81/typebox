@@ -11,6 +11,11 @@ describe('type/guard/TNumber', () => {
     const R = TypeGuard.TNumber(null)
     Assert.equal(R, false)
   })
+  it('should not guard for TNumber with invalid $id', () => {
+    // @ts-ignore
+    const R = TypeGuard.TNumber(Type.Number({ $id: 1 }))
+    Assert.equal(R, false)
+  })
   it('should not guard for TNumber with invalid multipleOf', () => {
     // @ts-ignore
     const R = TypeGuard.TNumber(Type.Number({ multipleOf: '1' }))

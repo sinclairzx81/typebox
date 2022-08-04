@@ -11,6 +11,11 @@ describe('type/guard/TInteger', () => {
     const R = TypeGuard.TInteger(null)
     Assert.equal(R, false)
   })
+  it('should not guard for TInteger with invalid $id', () => {
+    // @ts-ignore
+    const R = TypeGuard.TInteger(Type.Integer({ $id: 1 }))
+    Assert.equal(R, false)
+  })
   it('should not guard for TInteger with invalid multipleOf', () => {
     // @ts-ignore
     const R = TypeGuard.TInteger(Type.Integer({ multipleOf: '1' }))

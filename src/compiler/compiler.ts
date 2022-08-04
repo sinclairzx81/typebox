@@ -147,10 +147,8 @@ export namespace TypeCompiler {
   function* Literal(schema: Types.TLiteral, value: string): IterableIterator<string> {
     if (typeof schema.const === 'number' || typeof schema.const === 'boolean') {
       yield `(${value} === ${schema.const})`
-    } else if (typeof schema.const === 'string') {
-      yield `(${value} === '${schema.const}')`
     } else {
-      throw Error('TypeCompiler: Literal value should be string, number or boolean')
+      yield `(${value} === '${schema.const}')`
     }
   }
 
@@ -279,50 +277,52 @@ export namespace TypeCompiler {
       yield `(${name}(${value}))`
       return
     }
-    if (TypeGuard.TAny(schema)) {
-      return yield* Any(schema, value)
-    } else if (TypeGuard.TArray(schema)) {
-      return yield* Array(schema, value)
-    } else if (TypeGuard.TBoolean(schema)) {
-      return yield* Boolean(schema, value)
-    } else if (TypeGuard.TConstructor(schema)) {
-      return yield* Constructor(schema, value)
-    } else if (TypeGuard.TFunction(schema)) {
-      return yield* Function(schema, value)
-    } else if (TypeGuard.TInteger(schema)) {
-      return yield* Integer(schema, value)
-    } else if (TypeGuard.TLiteral(schema)) {
-      return yield* Literal(schema, value)
-    } else if (TypeGuard.TNull(schema)) {
-      return yield* Null(schema, value)
-    } else if (TypeGuard.TNumber(schema)) {
-      return yield* Number(schema, value)
-    } else if (TypeGuard.TObject(schema)) {
-      return yield* Object(schema, value)
-    } else if (TypeGuard.TPromise(schema)) {
-      return yield* Promise(schema, value)
-    } else if (TypeGuard.TRecord(schema)) {
-      return yield* Record(schema, value)
-    } else if (TypeGuard.TRef(schema)) {
-      return yield* Ref(schema, value)
-    } else if (TypeGuard.TSelf(schema)) {
-      return yield* Self(schema, value)
-    } else if (TypeGuard.TString(schema)) {
-      return yield* String(schema, value)
-    } else if (TypeGuard.TTuple(schema)) {
-      return yield* Tuple(schema, value)
-    } else if (TypeGuard.TUndefined(schema)) {
-      return yield* Undefined(schema, value)
-    } else if (TypeGuard.TUnion(schema)) {
-      return yield* Union(schema, value)
-    } else if (TypeGuard.TUint8Array(schema)) {
-      return yield* Uint8Array(schema, value)
-    } else if (TypeGuard.TUnknown(schema)) {
-      return yield* Unknown(schema, value)
-    } else if (TypeGuard.TVoid(schema)) {
-      return yield* Void(schema, value)
-    } else {
-      throw new TypeCompilerInvalidTypeError(schema)
+    const anySchema = schema as any
+    switch (anySchema[Types.Kind]) {
+      case 'Any':
+        return yield* Any(anySchema, value)
+      case 'Array':
+        return yield* Array(anySchema, value)
+      case 'Boolean':
+        return yield* Boolean(anySchema, value)
+      case 'Constructor':
+        return yield* Constructor(anySchema, value)
+      case 'Function':
+        return yield* Function(anySchema, value)
+      case 'Integer':
+        return yield* Integer(anySchema, value)
+      case 'Literal':
+        return yield* Literal(anySchema, value)
+      case 'Null':
+        return yield* Null(anySchema, value)
+      case 'Number':
+        return yield* Number(anySchema, value)
+      case 'Object':
+        return yield* Object(anySchema, value)
+      case 'Promise':
+        return yield* Promise(anySchema, value)
+      case 'Record':
+        return yield* Record(anySchema, value)
+      case 'Ref':
+        return yield* Ref(anySchema, value)
+      case 'Self':
+        return yield* Self(anySchema, value)
+      case 'String':
+        return yield* String(anySchema, value)
+      case 'Tuple':
+        return yield* Tuple(anySchema, value)
+      case 'Undefined':
+        return yield* Undefined(anySchema, value)
+      case 'Union':
+        return yield* Union(anySchema, value)
+      case 'Uint8Array':
+        return yield* Uint8Array(anySchema, value)
+      case 'Unknown':
+        return yield* Unknown(anySchema, value)
+      case 'Void':
+        return yield* Void(anySchema, value)
+      default:
+        throw new Error(`TypeCompiler: Unknown schema kind '${schema[Types.Kind]}'`)
     }
   }
 
@@ -389,6 +389,7 @@ export namespace TypeCompiler {
 
   /** Compiles the given type for runtime type checking. This compiler only accepts known TypeBox types non-inclusive of unsafe types. */
   export function Compile<T extends Types.TSchema>(schema: T, references: Types.TSchema[] = []): TypeCheck<T> {
+    TypeGuard.Assert(schema, references)
     const code = Build(schema, references)
     const func = globalThis.Function(code)
     return new TypeCheck(schema, references, func(), code)

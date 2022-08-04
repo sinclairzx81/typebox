@@ -26,12 +26,11 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { TypeGuard } from '../guard/index'
 import * as Types from '../typebox'
 
-export class ValueCreateInvalidTypeError extends Error {
+export class ValueCreateUnknownTypeError extends Error {
   constructor(public readonly schema: Types.TSchema) {
-    super('ValueCreate: Invalid type')
+    super('ValueCreate: Unknown type')
   }
 }
 
@@ -185,6 +184,7 @@ export namespace ValueCreate {
       return Visit(reference, references)
     }
   }
+
   function Self(schema: Types.TSelf, references: Types.TSchema[]): any {
     if (schema.default !== undefined) {
       return schema.default
@@ -194,6 +194,7 @@ export namespace ValueCreate {
       return Visit(reference, references)
     }
   }
+
   function String(schema: Types.TString, references: Types.TSchema[]): any {
     if (schema.pattern !== undefined) {
       if (schema.default === undefined) {
@@ -262,51 +263,58 @@ export namespace ValueCreate {
 
   /** Creates a value from the given schema. If the schema specifies a default value, then that value is returned. */
   export function Visit<T extends Types.TSchema>(schema: T, references: Types.TSchema[]): Types.Static<T> {
-    const refs = schema.$id === undefined ? references : [schema, ...references]
-    if (TypeGuard.TAny(schema)) {
-      return Any(schema, refs)
-    } else if (TypeGuard.TArray(schema)) {
-      return Array(schema, refs)
-    } else if (TypeGuard.TBoolean(schema)) {
-      return Boolean(schema, refs)
-    } else if (TypeGuard.TConstructor(schema)) {
-      return Constructor(schema, refs)
-    } else if (TypeGuard.TFunction(schema)) {
-      return Function(schema, refs)
-    } else if (TypeGuard.TInteger(schema)) {
-      return Integer(schema, refs)
-    } else if (TypeGuard.TLiteral(schema)) {
-      return Literal(schema, refs)
-    } else if (TypeGuard.TNull(schema)) {
-      return Null(schema, refs)
-    } else if (TypeGuard.TNumber(schema)) {
-      return Number(schema, refs)
-    } else if (TypeGuard.TObject(schema)) {
-      return Object(schema, refs)
-    } else if (TypeGuard.TPromise(schema)) {
-      return Promise(schema, refs)
-    } else if (TypeGuard.TRecord(schema)) {
-      return Record(schema, refs)
-    } else if (TypeGuard.TRef(schema)) {
-      return Ref(schema, refs)
-    } else if (TypeGuard.TSelf(schema)) {
-      return Self(schema, refs)
-    } else if (TypeGuard.TString(schema)) {
-      return String(schema, refs)
-    } else if (TypeGuard.TTuple(schema)) {
-      return Tuple(schema, refs)
-    } else if (TypeGuard.TUndefined(schema)) {
-      return Undefined(schema, refs)
-    } else if (TypeGuard.TUnion(schema)) {
-      return Union(schema, refs)
-    } else if (TypeGuard.TUint8Array(schema)) {
-      return Uint8Array(schema, refs)
-    } else if (TypeGuard.TUnknown(schema)) {
-      return Unknown(schema, refs)
-    } else if (TypeGuard.TVoid(schema)) {
-      return Void(schema, refs)
-    } else {
-      throw new ValueCreateInvalidTypeError(schema)
+    const anyReferences = schema.$id === undefined ? references : [schema, ...references]
+    const anySchema = schema as any
+
+    switch (anySchema[Types.Kind]) {
+      case 'Any':
+        return Any(anySchema, anyReferences)
+      case 'Array':
+        return Array(anySchema, anyReferences)
+      case 'Boolean':
+        return Boolean(anySchema, anyReferences)
+      case 'Constructor':
+        return Constructor(anySchema, anyReferences)
+      case 'Enum':
+        return Enum(anySchema, anyReferences)
+      case 'Function':
+        return Function(anySchema, anyReferences)
+      case 'Integer':
+        return Integer(anySchema, anyReferences)
+      case 'Literal':
+        return Literal(anySchema, anyReferences)
+      case 'Null':
+        return Null(anySchema, anyReferences)
+      case 'Number':
+        return Number(anySchema, anyReferences)
+      case 'Object':
+        return Object(anySchema, anyReferences)
+      case 'Promise':
+        return Promise(anySchema, anyReferences)
+      case 'Record':
+        return Record(anySchema, anyReferences)
+      case 'Rec':
+        return Recursive(anySchema, anyReferences)
+      case 'Ref':
+        return Ref(anySchema, anyReferences)
+      case 'Self':
+        return Self(anySchema, anyReferences)
+      case 'String':
+        return String(anySchema, anyReferences)
+      case 'Tuple':
+        return Tuple(anySchema, anyReferences)
+      case 'Undefined':
+        return Undefined(anySchema, anyReferences)
+      case 'Union':
+        return Union(anySchema, anyReferences)
+      case 'Uint8Array':
+        return Uint8Array(anySchema, anyReferences)
+      case 'Unknown':
+        return Unknown(anySchema, anyReferences)
+      case 'Void':
+        return Void(anySchema, anyReferences)
+      default:
+        throw new ValueCreateUnknownTypeError(anySchema)
     }
   }
 

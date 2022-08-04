@@ -11,4 +11,9 @@ describe('type/guard/TVoid', () => {
     const R = TypeGuard.TVoid(null)
     Assert.equal(R, false)
   })
+  it('should not guard for TVoid with invalid $id', () => {
+    // @ts-ignore
+    const R = TypeGuard.TVoid(Type.Void({ $id: 1 }))
+    Assert.equal(R, false)
+  })
 })

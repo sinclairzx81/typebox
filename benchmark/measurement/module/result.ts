@@ -4,7 +4,11 @@ export type Result = {
     iterations: number
     completed: number
   }
-  typebox: {
+  compiler: {
+    iterations: number
+    completed: number
+  }
+  value?: {
     iterations: number
     completed: number
   }

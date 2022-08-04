@@ -28,26 +28,32 @@ THE SOFTWARE.
 
 import * as Types from '../typebox'
 
+export class TypeGuardInvalidTypeError extends Error {
+  constructor(public readonly schema: unknown) {
+    super('TypeGuard: Invalid type')
+  }
+}
+
 /** TypeGuard tests that values conform to a known TypeBox type specification */
 export namespace TypeGuard {
-  function IsObject(value: any): value is Record<string | symbol, any> {
+  function IsObject(value: unknown): value is Record<string | symbol, any> {
     return typeof value === 'object' && value !== null && !Array.isArray(value)
   }
 
-  function IsArray(value: any): value is any[] {
+  function IsArray(value: unknown): value is any[] {
     return typeof value === 'object' && value !== null && Array.isArray(value)
   }
 
-  function IsPattern(value: any): value is string {
+  function IsPattern(value: unknown): value is string {
     try {
-      new RegExp(value)
+      new RegExp(value as string)
       return true
     } catch {
       return false
     }
   }
 
-  function IsValidPropertyKey(value: any): value is string {
+  function IsValidPropertyKey(value: unknown): value is string {
     if (typeof value !== 'string') return false
     for (let i = 0; i < value.length; i++) {
       const code = value.charCodeAt(i)
@@ -58,52 +64,61 @@ export namespace TypeGuard {
     return true
   }
 
-  function IsString(value: any): value is number {
+  function IsString(value: unknown): value is number {
     return typeof value === 'string'
   }
 
-  function IsNumber(value: any): value is number {
+  function IsNumber(value: unknown): value is number {
     return typeof value === 'number'
   }
 
-  function IsBoolean(value: any): value is number {
+  function IsBoolean(value: unknown): value is number {
     return typeof value === 'boolean'
   }
 
-  function IsOptionalNumber(value: any): value is number | undefined {
+  function IsOptionalNumber(value: unknown): value is number | undefined {
     return value === undefined || (value !== undefined && IsNumber(value))
   }
 
-  function IsOptionalBoolean(value: any): value is boolean | undefined {
+  function IsOptionalBoolean(value: unknown): value is boolean | undefined {
     return value === undefined || (value !== undefined && IsBoolean(value))
   }
 
-  function IsOptionalString(value: any): value is string | undefined {
+  function IsOptionalString(value: unknown): value is string | undefined {
     return value === undefined || (value !== undefined && IsString(value))
   }
 
-  function IsOptionalPattern(value: any): value is string | undefined {
+  function IsOptionalPattern(value: unknown): value is string | undefined {
     return value === undefined || (value !== undefined && IsString(value) && IsPattern(value))
   }
 
   /** Returns true if the given schema is TAny */
-  export function TAny(schema: any): schema is Types.TAny {
-    return IsObject(schema) && schema[Types.Kind] === 'Any'
+  export function TAny(schema: unknown): schema is Types.TAny {
+    return IsObject(schema) && schema[Types.Kind] === 'Any' && IsOptionalString(schema.$id)
   }
 
   /** Returns true if the given schema is TArray */
-  export function TArray(schema: any): schema is Types.TArray {
-    return IsObject(schema) && schema[Types.Kind] === 'Array' && schema.type === 'array' && TSchema(schema.items) && IsOptionalNumber(schema.minItems) && IsOptionalNumber(schema.maxItems) && IsOptionalBoolean(schema.uniqueItems)
+  export function TArray(schema: unknown): schema is Types.TArray {
+    return (
+      IsObject(schema) &&
+      schema[Types.Kind] === 'Array' &&
+      schema.type === 'array' &&
+      IsOptionalString(schema.$id) &&
+      TSchema(schema.items) &&
+      IsOptionalNumber(schema.minItems) &&
+      IsOptionalNumber(schema.maxItems) &&
+      IsOptionalBoolean(schema.uniqueItems)
+    )
   }
 
   /** Returns true if the given schema is TBoolean */
-  export function TBoolean(schema: any): schema is Types.TBoolean {
-    return IsObject(schema) && schema[Types.Kind] === 'Boolean' && schema.type === 'boolean'
+  export function TBoolean(schema: unknown): schema is Types.TBoolean {
+    return IsObject(schema) && schema[Types.Kind] === 'Boolean' && schema.type === 'boolean' && IsOptionalString(schema.$id)
   }
 
   /** Returns true if the given schema is TConstructor */
-  export function TConstructor(schema: any): schema is Types.TConstructor {
-    if (!(IsObject(schema) && schema[Types.Kind] === 'Constructor' && schema.type === 'constructor' && IsArray(schema.parameters) && TSchema(schema.returns))) {
+  export function TConstructor(schema: unknown): schema is Types.TConstructor {
+    if (!(IsObject(schema) && schema[Types.Kind] === 'Constructor' && schema.type === 'constructor' && IsOptionalString(schema.$id) && IsArray(schema.parameters) && TSchema(schema.returns))) {
       return false
     }
     for (const parameter of schema.parameters) {
@@ -113,8 +128,8 @@ export namespace TypeGuard {
   }
 
   /** Returns true if the given schema is TFunction */
-  export function TFunction(schema: any): schema is Types.TFunction {
-    if (!(IsObject(schema) && schema[Types.Kind] === 'Function' && schema.type === 'function' && IsArray(schema.parameters) && TSchema(schema.returns))) {
+  export function TFunction(schema: unknown): schema is Types.TFunction {
+    if (!(IsObject(schema) && schema[Types.Kind] === 'Function' && schema.type === 'function' && IsOptionalString(schema.$id) && IsArray(schema.parameters) && TSchema(schema.returns))) {
       return false
     }
     for (const parameter of schema.parameters) {
@@ -124,11 +139,12 @@ export namespace TypeGuard {
   }
 
   /** Returns true if the given schema is TInteger */
-  export function TInteger(schema: any): schema is Types.TInteger {
+  export function TInteger(schema: unknown): schema is Types.TInteger {
     return (
       IsObject(schema) &&
       schema[Types.Kind] === 'Integer' &&
       schema.type === 'integer' &&
+      IsOptionalString(schema.$id) &&
       IsOptionalNumber(schema.multipleOf) &&
       IsOptionalNumber(schema.minimum) &&
       IsOptionalNumber(schema.maximum) &&
@@ -138,21 +154,22 @@ export namespace TypeGuard {
   }
 
   /** Returns true if the given schema is TLiteral */
-  export function TLiteral(schema: any): schema is Types.TLiteral {
-    return IsObject(schema) && schema[Types.Kind] === 'Literal' && (IsString(schema.const) || IsNumber(schema.const) || IsBoolean(schema.const))
+  export function TLiteral(schema: unknown): schema is Types.TLiteral {
+    return IsObject(schema) && schema[Types.Kind] === 'Literal' && IsOptionalString(schema.$id) && (IsString(schema.const) || IsNumber(schema.const) || IsBoolean(schema.const))
   }
 
   /** Returns true if the given schema is TNull */
-  export function TNull(schema: any): schema is Types.TNull {
-    return IsObject(schema) && schema[Types.Kind] === 'Null' && schema.type === 'null'
+  export function TNull(schema: unknown): schema is Types.TNull {
+    return IsObject(schema) && schema[Types.Kind] === 'Null' && schema.type === 'null' && IsOptionalString(schema.$id)
   }
 
   /** Returns true if the given schema is TNumber */
-  export function TNumber(schema: any): schema is Types.TNumber {
+  export function TNumber(schema: unknown): schema is Types.TNumber {
     return (
       IsObject(schema) &&
       schema[Types.Kind] === 'Number' &&
       schema.type === 'number' &&
+      IsOptionalString(schema.$id) &&
       IsOptionalNumber(schema.multipleOf) &&
       IsOptionalNumber(schema.minimum) &&
       IsOptionalNumber(schema.maximum) &&
@@ -162,12 +179,13 @@ export namespace TypeGuard {
   }
 
   /** Returns true if the given schema is TObject */
-  export function TObject(schema: any): schema is Types.TObject {
+  export function TObject(schema: unknown): schema is Types.TObject {
     if (
       !(
         IsObject(schema) &&
         schema[Types.Kind] === 'Object' &&
         schema.type === 'object' &&
+        IsOptionalString(schema.$id) &&
         IsObject(schema.properties) &&
         IsOptionalBoolean(schema.additionalProperties) &&
         IsOptionalNumber(schema.minProperties) &&
@@ -184,13 +202,13 @@ export namespace TypeGuard {
   }
 
   /** Returns true if the given schema is TPromise */
-  export function TPromise(schema: any): schema is Types.TPromise {
-    return IsObject(schema) && schema[Types.Kind] === 'Promise' && schema.type === 'promise' && TSchema(schema.item)
+  export function TPromise(schema: unknown): schema is Types.TPromise {
+    return IsObject(schema) && schema[Types.Kind] === 'Promise' && schema.type === 'promise' && IsOptionalString(schema.$id) && TSchema(schema.item)
   }
 
   /** Returns true if the given schema is TRecord */
-  export function TRecord(schema: any): schema is Types.TRecord {
-    if (!(IsObject(schema) && schema[Types.Kind] === 'Record' && schema.type === 'object' && schema.additionalProperties === false && IsObject(schema.patternProperties))) {
+  export function TRecord(schema: unknown): schema is Types.TRecord {
+    if (!(IsObject(schema) && schema[Types.Kind] === 'Record' && schema.type === 'object' && IsOptionalString(schema.$id) && schema.additionalProperties === false && IsObject(schema.patternProperties))) {
       return false
     }
     const keys = Object.keys(schema.patternProperties)
@@ -207,23 +225,32 @@ export namespace TypeGuard {
   }
 
   /** Returns true if the given schema is TSelf */
-  export function TSelf(schema: any): schema is Types.TSelf {
-    return IsObject(schema) && schema[Types.Kind] === 'Self' && IsString(schema.$ref)
+  export function TSelf(schema: unknown): schema is Types.TSelf {
+    return IsObject(schema) && schema[Types.Kind] === 'Self' && IsOptionalString(schema.$id) && IsString(schema.$ref)
   }
 
   /** Returns true if the given schema is TRef */
-  export function TRef(schema: any): schema is Types.TRef {
-    return IsObject(schema) && schema[Types.Kind] === 'Ref' && IsString(schema.$ref)
+  export function TRef(schema: unknown): schema is Types.TRef {
+    return IsObject(schema) && schema[Types.Kind] === 'Ref' && IsOptionalString(schema.$id) && IsString(schema.$ref)
   }
 
   /** Returns true if the given schema is TString */
-  export function TString(schema: any): schema is Types.TString {
-    return IsObject(schema) && schema[Types.Kind] === 'String' && schema.type === 'string' && IsOptionalNumber(schema.minLength) && IsOptionalNumber(schema.maxLength) && IsOptionalPattern(schema.pattern) && IsOptionalString(schema.format)
+  export function TString(schema: unknown): schema is Types.TString {
+    return (
+      IsObject(schema) &&
+      schema[Types.Kind] === 'String' &&
+      schema.type === 'string' &&
+      IsOptionalString(schema.$id) &&
+      IsOptionalNumber(schema.minLength) &&
+      IsOptionalNumber(schema.maxLength) &&
+      IsOptionalPattern(schema.pattern) &&
+      IsOptionalString(schema.format)
+    )
   }
 
   /** Returns true if the given schema is TTuple */
-  export function TTuple(schema: any): schema is Types.TTuple {
-    if (!(IsObject(schema) && schema[Types.Kind] === 'Tuple' && schema.type === 'array' && IsNumber(schema.minItems) && IsNumber(schema.maxItems) && schema.minItems === schema.maxItems)) {
+  export function TTuple(schema: unknown): schema is Types.TTuple {
+    if (!(IsObject(schema) && schema[Types.Kind] === 'Tuple' && schema.type === 'array' && IsOptionalString(schema.$id) && IsNumber(schema.minItems) && IsNumber(schema.maxItems) && schema.minItems === schema.maxItems)) {
       return false
     }
     if (schema.items === undefined && schema.additionalItems === undefined && schema.minItems === 0) {
@@ -239,13 +266,13 @@ export namespace TypeGuard {
   }
 
   /** Returns true if the given schema is TUndefined */
-  export function TUndefined(schema: any): schema is Types.TUndefined {
-    return IsObject(schema) && schema[Types.Kind] === 'Undefined' && schema.type === 'object' && schema.specialized === 'Undefined'
+  export function TUndefined(schema: unknown): schema is Types.TUndefined {
+    return IsObject(schema) && schema[Types.Kind] === 'Undefined' && schema.type === 'object' && IsOptionalString(schema.$id) && schema.specialized === 'Undefined'
   }
 
   /** Returns true if the given schema is TUnion */
-  export function TUnion(schema: any): schema is Types.TUnion {
-    if (!(IsObject(schema) && schema[Types.Kind] === 'Union' && IsArray(schema.anyOf))) {
+  export function TUnion(schema: unknown): schema is Types.TUnion {
+    if (!(IsObject(schema) && schema[Types.Kind] === 'Union' && IsArray(schema.anyOf) && IsOptionalString(schema.$id))) {
       return false
     }
     for (const inner of schema.anyOf) {
@@ -255,22 +282,30 @@ export namespace TypeGuard {
   }
 
   /** Returns true if the given schema is TUint8Array */
-  export function TUint8Array(schema: any): schema is Types.TUint8Array {
-    return IsObject(schema) && schema[Types.Kind] === 'Uint8Array' && schema.type === 'object' && schema.specialized === 'Uint8Array' && IsOptionalNumber(schema.minByteLength) && IsOptionalNumber(schema.maxByteLength)
+  export function TUint8Array(schema: unknown): schema is Types.TUint8Array {
+    return (
+      IsObject(schema) &&
+      schema[Types.Kind] === 'Uint8Array' &&
+      schema.type === 'object' &&
+      IsOptionalString(schema.$id) &&
+      schema.specialized === 'Uint8Array' &&
+      IsOptionalNumber(schema.minByteLength) &&
+      IsOptionalNumber(schema.maxByteLength)
+    )
   }
 
   /** Returns true if the given schema is TUnknown */
-  export function TUnknown(schema: any): schema is Types.TUnknown {
-    return IsObject(schema) && schema[Types.Kind] === 'Unknown'
+  export function TUnknown(schema: unknown): schema is Types.TUnknown {
+    return IsObject(schema) && schema[Types.Kind] === 'Unknown' && IsOptionalString(schema.$id)
   }
 
   /** Returns true if the given schema is TVoid */
-  export function TVoid(schema: any): schema is Types.TVoid {
-    return IsObject(schema) && schema[Types.Kind] === 'Void' && schema.type === 'null'
+  export function TVoid(schema: unknown): schema is Types.TVoid {
+    return IsObject(schema) && schema[Types.Kind] === 'Void' && schema.type === 'null' && IsOptionalString(schema.$id)
   }
 
   /** Returns true if the given schema is TSchema */
-  export function TSchema(schema: any): schema is Types.TSchema {
+  export function TSchema(schema: unknown): schema is Types.TSchema {
     return (
       TAny(schema) ||
       TArray(schema) ||
@@ -294,5 +329,13 @@ export namespace TypeGuard {
       TUnknown(schema) ||
       TVoid(schema)
     )
+  }
+
+  /** Asserts if this schema and associated references are valid types. */
+  export function Assert<T extends Types.TSchema>(schema: T, references: Types.TSchema[] = []) {
+    if (!TSchema(schema)) throw new TypeGuardInvalidTypeError(schema)
+    for (const schema of references) {
+      if (!TSchema(schema)) throw new TypeGuardInvalidTypeError(schema)
+    }
   }
 }

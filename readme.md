@@ -596,7 +596,7 @@ type T = Static<typeof T>                            // type T = 'A' | 'B' | 'C'
 
 ## Conditional Types
 
-Use `Conditional.Extends(...)` to create conditional mapped types.
+Use `Conditional.*` module to create conditional mapped types.
 
 ```typescript
 import { Conditional } from '@sinclair/typebox/conditional'
@@ -645,54 +645,57 @@ The following table shows the TypeBox mappings between TypeScript and JSON schem
 
 ## Values
 
-Use `Value.Create(...)` to generate values from types.
+Use the `Value.*` module to perform common operations on JavaScript values.
 
 ```typescript
 import { Value } from '@sinclair/typebox/value'
-import { Type } from '@sinclair/typebox'
-
-const T = Type.Object({
-  x: Type.Number({ default: 1 }),
-  y: Type.Number()
-})
-
-const V = Value.Create(T)                            // const V = {
-                                                     //   x: 1,
-                                                     //   y: 0
-                                                     // }
 ```
-Use `Value.Cast(...)` to cast a value into a given type.
-```typescript
-import { Value } from '@sinclair/typebox/value'
-import { Type } from '@sinclair/typebox'
 
+Use `Value.Check(...)` to check if a value matches a given type.
+
+```typescript
+const R = Value.Check(Type.String(), 'hello')        // const R = true
+```
+
+Use `Value.Create(...)` to create a value from a type.
+
+```typescript
+const V = Value.Create(Type.Object({                 // const V = {
+  x: Type.Number({ default: 1 }),                    //   x: 1,
+  y: Type.Number()                                   //   y: 0
+}))                                                  // }                                                  
+```
+
+Use `Value.Cast(...)` to cast a value into a given type.
+
+```typescript
 const T = Type.Object({
   x: Type.Number(),
   y: Type.Number()
 })
 
-const A = Value.Cast(T, null)                          // const A = { x: 0, y: 0 }
+const A = Value.Cast(T, null)                        // const A = { x: 0, y: 0 }
 
-const B = Value.Cast(T, { x: 1 })                      // const B = { x: 1, y: 0 }
+const B = Value.Cast(T, { x: 1 })                    // const B = { x: 1, y: 0 }
 
-const C = Value.Cast(T, { x: 1, y: 2, z: 3 })          // const C = { x: 1, y: 2 }
+const C = Value.Cast(T, { x: 1, y: 2, z: 3 })        // const C = { x: 1, y: 2 }
 ```
 
 ## Guards
 
-Use a `TypeGuard` to test if a value meets a TypeBox type specification. Guards can be helpful when reflecting types.
+Use the `TypeGuard.*` module to test if values are valid TypeBox types.
 
 ```typescript
 import { TypeGuard } from '@sinclair/typebox/guard'
-import { Type }  from '@sinclair/typebox'
-
+```
+The following checks the value `T` is of type `TString`.
+```typescript
 const T = Type.String()
 
 if(TypeGuard.TString(T)) {
     
   // T is TString
 }
-
 ```
 
 ## Strict
@@ -897,35 +900,35 @@ This benchmark measures compilation performance for varying types. You can revie
 This benchmark measures validation performance for varying types. You can review this benchmark [here](https://github.com/sinclairzx81/typebox/blob/master/benchmark/measurement/module/check.ts).
 
 ```typescript
-┌──────────────────┬────────────┬──────────────┬──────────────┬──────────────┐
-│     (index)      │ Iterations │     Ajv      │ TypeCompiler │ Performance  │
-├──────────────────┼────────────┼──────────────┼──────────────┼──────────────┤
-│           Number │  4000000   │ '     18 ms' │ '     16 ms' │ '    1.13 x' │
-│           String │  4000000   │ '     74 ms' │ '     43 ms' │ '    1.72 x' │
-│          Boolean │  4000000   │ '     71 ms' │ '     37 ms' │ '    1.92 x' │
-│             Null │  4000000   │ '     70 ms' │ '     37 ms' │ '    1.89 x' │
-│            RegEx │  4000000   │ '    175 ms' │ '    153 ms' │ '    1.14 x' │
-│          ObjectA │  4000000   │ '    124 ms' │ '     87 ms' │ '    1.43 x' │
-│          ObjectB │  4000000   │ '    215 ms' │ '    143 ms' │ '    1.50 x' │
-│            Tuple │  4000000   │ '    101 ms' │ '     51 ms' │ '    1.98 x' │
-│            Union │  4000000   │ '    108 ms' │ '     51 ms' │ '    2.12 x' │
-│        Recursive │  4000000   │ '   1647 ms' │ '    626 ms' │ '    2.63 x' │
-│          Vector4 │  4000000   │ '     83 ms' │ '     41 ms' │ '    2.02 x' │
-│          Matrix4 │  4000000   │ '    154 ms' │ '    105 ms' │ '    1.47 x' │
-│   Literal_String │  4000000   │ '    101 ms' │ '     37 ms' │ '    2.73 x' │
-│   Literal_Number │  4000000   │ '     69 ms' │ '     35 ms' │ '    1.97 x' │
-│  Literal_Boolean │  4000000   │ '     71 ms' │ '     35 ms' │ '    2.03 x' │
-│     Array_Number │  4000000   │ '    117 ms' │ '     61 ms' │ '    1.92 x' │
-│     Array_String │  4000000   │ '    116 ms' │ '     73 ms' │ '    1.59 x' │
-│    Array_Boolean │  4000000   │ '    129 ms' │ '     89 ms' │ '    1.45 x' │
-│    Array_ObjectA │  4000000   │ '  10582 ms' │ '   6854 ms' │ '    1.54 x' │
-│    Array_ObjectB │  4000000   │ '  11539 ms' │ '   8224 ms' │ '    1.40 x' │
-│      Array_Tuple │  4000000   │ '    362 ms' │ '    282 ms' │ '    1.28 x' │
-│      Array_Union │  4000000   │ '    950 ms' │ '    355 ms' │ '    2.68 x' │
-│  Array_Recursive │  4000000   │ '  28047 ms' │ '   9567 ms' │ '    2.93 x' │
-│    Array_Vector4 │  4000000   │ '    372 ms' │ '    200 ms' │ '    1.86 x' │
-│    Array_Matrix4 │  4000000   │ '   1521 ms' │ '   1244 ms' │ '    1.22 x' │
-└──────────────────┴────────────┴──────────────┴──────────────┴──────────────┘
+┌──────────────────┬────────────┬──────────────┬──────────────┬──────────────┬──────────────┐
+│     (index)      │ Iterations │    Value     │     Ajv      │ TypeCompiler │ Performance  │
+├──────────────────┼────────────┼──────────────┼──────────────┼──────────────┼──────────────┤
+│           Number │  1000000   │ '     23 ms' │ '      6 ms' │ '      6 ms' │ '    1.00 x' │
+│           String │  1000000   │ '     19 ms' │ '     17 ms' │ '     10 ms' │ '    1.70 x' │
+│          Boolean │  1000000   │ '     23 ms' │ '     17 ms' │ '     10 ms' │ '    1.70 x' │
+│             Null │  1000000   │ '     20 ms' │ '     17 ms' │ '     10 ms' │ '    1.70 x' │
+│            RegEx │  1000000   │ '    159 ms' │ '     49 ms' │ '     36 ms' │ '    1.36 x' │
+│          ObjectA │  1000000   │ '    512 ms' │ '     33 ms' │ '     22 ms' │ '    1.50 x' │
+│          ObjectB │  1000000   │ '    929 ms' │ '     56 ms' │ '     32 ms' │ '    1.75 x' │
+│            Tuple │  1000000   │ '    111 ms' │ '     21 ms' │ '     14 ms' │ '    1.50 x' │
+│            Union │  1000000   │ '    282 ms' │ '     22 ms' │ '     15 ms' │ '    1.47 x' │
+│        Recursive │  1000000   │ '   2904 ms' │ '    334 ms' │ '    133 ms' │ '    2.51 x' │
+│          Vector4 │  1000000   │ '    141 ms' │ '     21 ms' │ '     13 ms' │ '    1.62 x' │
+│          Matrix4 │  1000000   │ '    581 ms' │ '     39 ms' │ '     31 ms' │ '    1.26 x' │
+│   Literal_String │  1000000   │ '     44 ms' │ '     15 ms' │ '      9 ms' │ '    1.67 x' │
+│   Literal_Number │  1000000   │ '     43 ms' │ '     15 ms' │ '     10 ms' │ '    1.50 x' │
+│  Literal_Boolean │  1000000   │ '     46 ms' │ '     15 ms' │ '     10 ms' │ '    1.50 x' │
+│     Array_Number │  1000000   │ '    455 ms' │ '     29 ms' │ '     17 ms' │ '    1.71 x' │
+│     Array_String │  1000000   │ '    473 ms' │ '     29 ms' │ '     21 ms' │ '    1.38 x' │
+│    Array_Boolean │  1000000   │ '    448 ms' │ '     33 ms' │ '     24 ms' │ '    1.38 x' │
+│    Array_ObjectA │  1000000   │ '  13448 ms' │ '    230 ms' │ '    139 ms' │ '    1.65 x' │
+│    Array_ObjectB │  1000000   │ '  15329 ms' │ '    401 ms' │ '    284 ms' │ '    1.41 x' │
+│      Array_Tuple │  1000000   │ '   1811 ms' │ '     94 ms' │ '     73 ms' │ '    1.29 x' │
+│      Array_Union │  1000000   │ '   4417 ms' │ '    205 ms' │ '     88 ms' │ '    2.33 x' │
+│  Array_Recursive │  1000000   │ '  48412 ms' │ '   5799 ms' │ '   1640 ms' │ '    3.54 x' │
+│    Array_Vector4 │  1000000   │ '   2208 ms' │ '     92 ms' │ '     50 ms' │ '    1.84 x' │
+│    Array_Matrix4 │  1000000   │ '  10761 ms' │ '    400 ms' │ '    272 ms' │ '    1.47 x' │
+└──────────────────┴────────────┴──────────────┴──────────────┴──────────────┴──────────────┘
 ```
 
 ### Compression
