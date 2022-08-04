@@ -682,6 +682,7 @@ const A = Value.Cast(T, null)                        // const A = { x: 0, y: 0 }
 const B = Value.Cast(T, { x: 1 })                    // const B = { x: 1, y: 0 }
 
 const C = Value.Cast(T, { x: 1, y: 2, z: 3 })        // const C = { x: 1, y: 2 }
+
 ```
 
 ## Guards
