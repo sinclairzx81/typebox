@@ -506,7 +506,9 @@ type Node = Static<typeof Node>                      // type Node = {
                                                      // }
 
 function test(node: Node) {
-  const id = node.nodes[0].nodes[0].nodes[0].id      // id is string
+  const id = node.nodes[0].nodes[0]                  // id is string
+                 .nodes[0].nodes[0]
+                 .id
 }
 ```
 
