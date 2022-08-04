@@ -12,8 +12,4 @@ const T = Type.Object({
 
 type T = Static<typeof T>
 
-const C = TypeCompiler.Compile(Type.Object({
-  name: Type.String({ pattern: '' })
-}))
-
 console.log(T)
