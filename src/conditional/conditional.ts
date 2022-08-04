@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 import * as Types from '../typebox'
 import { Structural, StructuralResult } from './structural'
-import { TypeGuard } from '../guard'
+import { TypeGuard } from '../guard/index'
 
 // ------------------------------------------------------------------------
 // Extends

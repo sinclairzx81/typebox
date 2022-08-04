@@ -99,9 +99,9 @@ export namespace Property {
 // TypeCompiler
 // -------------------------------------------------------------------
 
-export class TypeCompilerInvalidTypeError extends Error {
+export class TypeCompilerUnknownTypeError extends Error {
   constructor(public readonly schema: Types.TSchema) {
-    super('TypeCompiler: Invalid type')
+    super('TypeCompiler: Unknown type')
   }
 }
 
@@ -322,7 +322,7 @@ export namespace TypeCompiler {
       case 'Void':
         return yield* Void(anySchema, value)
       default:
-        throw new Error(`TypeCompiler: Unknown schema kind '${schema[Types.Kind]}'`)
+        throw new TypeCompilerUnknownTypeError(schema)
     }
   }
 
