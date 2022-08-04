@@ -798,7 +798,7 @@ Please refer to the official Ajv [documentation](https://ajv.js.org/guide/gettin
 
 ## Compiler
 
-TypeBox provides an optional high performance runtime JIT compiler that can be used in applications that require extremely fast validation. This compiler is optimized for TypeBox types only whose schematics are known in advance. If defining custom schemas with `Type.Unsafe<T>` please consider Ajv.
+TypeBox provides an optional high performance runtime compiler and type checker that can be used in applications that require extremely fast validation. This compiler is optimized for TypeBox types whose schematics are known in advance. If defining custom types with `Type.Unsafe<T>` please consider Ajv.
 
 ```typescript
 import { TypeCompiler } from '@sinclair/typebox/compiler'
@@ -828,19 +828,16 @@ const C = TypeCompiler.Compile(Type.Object({         // const C: TypeCheck<TObje
 const value = { }
 
 const errors = [...C.Errors(value)]                  // const errors = [{
-                                                     //   type: 14,
                                                      //   schema: { type: 'number' },
                                                      //   path: '/x',
                                                      //   value: undefined,
                                                      //   message: 'Expected number'
                                                      // }, {
-                                                     //   type: 14,
                                                      //   schema: { type: 'number' },
                                                      //   path: '/y',
                                                      //   value: undefined,
                                                      //   message: 'Expected number'
                                                      // }, {
-                                                     //   type: 14,
                                                      //   schema: { type: 'number' },
                                                      //   path: '/z',
                                                      //   value: undefined,
