@@ -792,7 +792,7 @@ Please refer to the official Ajv [documentation](https://ajv.js.org/guide/gettin
 
 ## Compiler
 
-TypeBox provides an optional high performance runtime compiler and type checker that can be used in applications that require extremely fast validation. This compiler is optimized for TypeBox types whose schematics are known in advance. If defining custom types with `Type.Unsafe<T>` please consider Ajv.
+TypeBox provides an optional high performance just-in-time (JIT) compiler and runtime type checker that can be used in applications that require extremely fast validation. This compiler is optimized for TypeBox types only whose schematics are known in advance. If defining custom types with `Type.Unsafe<T>` please consider Ajv.
 
 ```typescript
 import { TypeCompiler } from '@sinclair/typebox/compiler'
