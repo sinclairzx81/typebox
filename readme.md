@@ -941,7 +941,7 @@ This benchmark measures validation performance for varying types. You can review
 
 ### Compression
 
-The following table lists esbuild compiled and minified sizes for each TypeBox import.
+The following table lists esbuild compiled and minified sizes for each TypeBox module.
 
 ```typescript
 ┌──────────────────────┬────────────┬────────────┬─────────────┐
