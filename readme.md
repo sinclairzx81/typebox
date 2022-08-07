@@ -554,7 +554,9 @@ const T = Type.Unsafe<string>({ type: 'number' })    // const T = {
 type T = Static<typeof T>                            // type T = string
 ```
 
-The `Type.Unsafe(...)` function can be used to create schemas for validators that require specific schema representations. An example of this would be OpenAPI's `nullable` and `enum` schemas which are not provided by TypeBox. The following demonstrates using `Type.Unsafe(...)` to create these types.
+This function can be used to create schemas for validators that require specific schema representations. An example of this might be OpenAPI's `nullable` and `enum` schemas which are not provided by TypeBox. 
+
+The following demonstrates using `Type.Unsafe(...)` to create these types.
 
 ```typescript
 import { Type, Static, TSchema } from '@sinclair/typebox'
