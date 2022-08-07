@@ -596,7 +596,7 @@ type T = Static<typeof T>                            // type T = 'A' | 'B' | 'C'
 
 ## Conditional Types
 
-Use the `Conditional` module to create [Conditional Mapped Types](https://www.typescriptlang.org/docs/handbook/2/conditional-types.html). This module implements TypeScript type equivalence checks for TypeBox types to enable them to be mapped in a similar way to TypeScript's `extends` syntax. This module also provides the additional [Extract](https://www.typescriptlang.org/docs/handbook/utility-types.html#extracttype-union) and [Exclude](https://www.typescriptlang.org/docs/handbook/utility-types.html#excludeuniontype-excludedmembers) which are expressed as conditional types in TypeScript. The `Conditional` module is provided as an optional import.
+Use the `Conditional` module to create [Conditional Mapped Types](https://www.typescriptlang.org/docs/handbook/2/conditional-types.html). This module implements TypeScript type equivalence checks for TypeBox types to enable them to be mapped in a similar way to TypeScript's `extends` syntax. This module also provides the [Extract](https://www.typescriptlang.org/docs/handbook/utility-types.html#extracttype-union) and [Exclude](https://www.typescriptlang.org/docs/handbook/utility-types.html#excludeuniontype-excludedmembers) utility types. The `Conditional` module is provided as an optional import.
 
 ```typescript
 import { Conditional } from '@sinclair/typebox/conditional'
