@@ -693,7 +693,7 @@ const C = Value.Cast(T, { x: 1, y: 2, z: 3 })        // const C = { x: 1, y: 2 }
 
 ## Guards
 
-Use the `TypeGuard` module to test if values are valid TypeBox types.
+Use the guard module to test if values are valid TypeBox types.
 
 ```typescript
 import { TypeGuard } from '@sinclair/typebox/guard'
