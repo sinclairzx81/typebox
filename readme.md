@@ -596,9 +596,9 @@ type T = Static<typeof T>                            // type T = 'A' | 'B' | 'C'
 
 ## Conditional Types
 
-Use the Conditional module to create [Conditional Types](https://www.typescriptlang.org/docs/handbook/2/conditional-types.html). This module implements TypeScript's structural equivalence checks to enable TypeBox types to be conditionally mapped at runtime. This module also provides the [Extract](https://www.typescriptlang.org/docs/handbook/utility-types.html#extracttype-union) and [Exclude](https://www.typescriptlang.org/docs/handbook/utility-types.html#excludeuniontype-excludedmembers) utility types which are expressed as conditional types in TypeScript. 
+Use the conditional module to create [Conditional Types](https://www.typescriptlang.org/docs/handbook/2/conditional-types.html). This module implements TypeScript's structural equivalence checks to enable TypeBox types to be conditionally mapped at runtime. This module also provides the [Extract](https://www.typescriptlang.org/docs/handbook/utility-types.html#extracttype-union) and [Exclude](https://www.typescriptlang.org/docs/handbook/utility-types.html#excludeuniontype-excludedmembers) utility types which are expressed as conditional types in TypeScript. 
 
-The Conditional module is provided as an optional import.
+The conditional module is provided as an optional import.
 
 ```typescript
 import { Conditional } from '@sinclair/typebox/conditional'
@@ -647,9 +647,9 @@ The following table shows the TypeBox mappings between TypeScript and JSON schem
 
 ## Values
 
-Use the Value module to perform common type operations on values. This module provides functionality to create, check and cast values into a given type. Note that this module internally uses dynamic type checking to perform these operations. For faster type checking performance, consider using either Ajv or the TypeBox [TypeCompiler](#compiler).
+Use the value module to perform common type operations on values. This module provides functionality to create, check and cast values into a given type. Note that this module internally uses dynamic type checking to perform these operations. For faster type checking performance, consider using either Ajv or the TypeBox [TypeCompiler](#compiler).
 
- The Value module is provided as an optional import.
+ The value module is provided as an optional import.
 
 ```typescript
 import { Value } from '@sinclair/typebox/value'
