@@ -647,7 +647,7 @@ The following table shows the TypeBox mappings between TypeScript and JSON schem
 
 ## Values
 
-Use the `Value` module to perform common type operations on values. This module provides functionality to create, check and cast values into a given type. This module uses dynamic type checking to perform these operations which may not be suitable for some applications. For fast type checking performance, consider using either Ajv the TypeBox [TypeCompiler](#compiler).
+Use the `Value` module to perform common type operations on values. This module provides functionality to create, check and cast values into a given type. This module uses dynamic type checking to perform these operations in which performance may not be suitable for some applications types. For fast type checking performance, consider using either Ajv the TypeBox [TypeCompiler](#compiler).
 
  The `Value` module is provided as an optional import.
 
