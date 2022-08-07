@@ -650,7 +650,10 @@ Use the `Value` module to perform type operations on values.
 ```typescript
 import { Value } from '@sinclair/typebox/value'
 
-const T = Type.Object({ x: Type.Number(), y: Type.Number() })
+const T = Type.Object({ 
+  x: Type.Number(), 
+  y: Type.Number() 
+}, { additionalProperties: false })
 
 //--------------------------------------------------------------------------------------------
 //
