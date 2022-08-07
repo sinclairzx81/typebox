@@ -596,7 +596,7 @@ type T = Static<typeof T>                            // type T = 'A' | 'B' | 'C'
 
 ## Conditional Types
 
-Use the `Conditional` module to create conditionally mapped types.
+Use the `Conditional` module to create [Conditional Mapped Types](https://www.typescriptlang.org/docs/handbook/2/conditional-types.html). This module implements TypeScript's structural equivalence checks for TypeBox types to enable them to be composed similar way to TypeScript's `extends` syntax. This module also provides the additional `Extract<...>` and `Exclude<...>` utility types which are implemented via conditional mapping in TypeScript. The `Conditional` module is provided as an optional import.
 
 ```typescript
 import { Conditional } from '@sinclair/typebox/conditional'
@@ -645,7 +645,7 @@ The following table shows the TypeBox mappings between TypeScript and JSON schem
 
 ## Values
 
-Use the `Value` module to perform type operations on values.
+Use the `Value` module to perform common type operations on values. This module provides functionality to create, check and cast values into a type. Note that type checking in this module is non-optimized. For faster type checking performance, consider using either either Ajv the TypeBox [TypeCompiler](#compiler). The `Value` module is provided as an optional import.
 
 ```typescript
 import { Value } from '@sinclair/typebox/value'
