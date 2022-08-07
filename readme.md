@@ -647,10 +647,16 @@ The following table shows the TypeBox mappings between TypeScript and JSON schem
 
 ## Values
 
-Use the `Value` module to perform common type operations on values. This module provides functionality to create, check and cast values into a type. Note that type checking in this module is non-optimized. For faster type checking performance, consider using either either Ajv the TypeBox [TypeCompiler](#compiler). The `Value` module is provided as an optional import.
+Use the `Value` module to perform common type operations on values. This module provides functionality to create, check and cast values into a given type. This module internally uses dynamic type checking. For faster type checking performance, consider using either Ajv the TypeBox [TypeCompiler](#compiler).
+
+ The `Value` module is provided as an optional import.
 
 ```typescript
 import { Value } from '@sinclair/typebox/value'
+```
+The following demonstrates its use.
+```typescript
+
 
 const T = Type.Object({ x: Type.Number(), y: Type.Number() }, { additionalProperties: false })
 
