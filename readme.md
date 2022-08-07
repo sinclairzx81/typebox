@@ -596,7 +596,7 @@ type T = Static<typeof T>                            // type T = 'A' | 'B' | 'C'
 
 ## Conditional Types
 
-Use the `Conditional` module to create [Conditional Types](https://www.typescriptlang.org/docs/handbook/2/conditional-types.html). This module implements a runtime version of TypeScript's type equivalence checks to enable runtime types to be conditionally mapped. This module also provides the [Extract](https://www.typescriptlang.org/docs/handbook/utility-types.html#extracttype-union) and [Exclude](https://www.typescriptlang.org/docs/handbook/utility-types.html#excludeuniontype-excludedmembers) utility types. The `Conditional` module is provided as an optional import.
+Use the `Conditional` module to create [Conditional Types](https://www.typescriptlang.org/docs/handbook/2/conditional-types.html). This module provides runtime structural type equivalence checks to enable types to be conditionally mapped at runtime. This module also provides the [Extract](https://www.typescriptlang.org/docs/handbook/utility-types.html#extracttype-union) and [Exclude](https://www.typescriptlang.org/docs/handbook/utility-types.html#excludeuniontype-excludedmembers) utility types which are expressed as conditional types in TypeScript. The `Conditional` module is provided as an optional import.
 
 ```typescript
 import { Conditional } from '@sinclair/typebox/conditional'
