@@ -171,7 +171,7 @@ export namespace TypeCompiler {
     if (schema.maxProperties !== undefined) yield `(Object.keys(${value}).length <= ${schema.maxProperties})`
     const propertyKeys = globalThis.Object.keys(schema.properties)
     if (schema.additionalProperties === false) {
-      // optimization: If the property key length matches the required keys length
+      // Optimization: If the property key length matches the required keys length
       // then we only need check that the values property key length matches that
       // of the property key length. This is because exhaustive testing for values
       // will occur in subsequent property tests.
