@@ -208,6 +208,10 @@ export namespace TypeCompiler {
   }
 
   function* Ref(schema: Types.TRef<any>, value: string): IterableIterator<string> {
+    // Reference: If we have seen this reference before we can just yield and return
+    // the function call. If this isn't the case we defer to visit to generate and
+    // set the function for subsequent passes. Consider for refactor.
+    if (names.has(schema.$ref)) return yield `(${CreateFunctionName(schema.$ref)}(${value}))`
     if (!referenceMap.has(schema.$ref)) throw Error(`TypeCompiler.Ref: Cannot de-reference schema with $id '${schema.$ref}'`)
     const reference = referenceMap.get(schema.$ref)!
     yield* Visit(reference, value)
@@ -266,9 +270,9 @@ export namespace TypeCompiler {
   }
 
   function* Visit<T extends Types.TSchema>(schema: T, value: string): IterableIterator<string> {
-    // reference: referenced schemas can originate from either additional
-    // schemas or inline in the schema itself. Ideally the recursive
-    // path should align to reference path. Consider for review.
+    // Reference: Referenced schemas can originate from either additional schemas
+    // or inline in the schema itself. Ideally the recursive path should align to
+    // reference path. Consider for refactor.
     if (schema.$id && !names.has(schema.$id)) {
       names.add(schema.$id)
       const name = CreateFunctionName(schema.$id)
