@@ -202,6 +202,12 @@ export namespace ValueCreate {
       } else {
         return schema.default
       }
+    } else if (schema.format !== undefined) {
+      if (schema.default === undefined) {
+        throw new Error('ValueCreate.String: String types with formats must specify a default value')
+      } else {
+        return schema.default
+      }
     } else {
       if (schema.default !== undefined) {
         return schema.default
