@@ -28,26 +28,26 @@ THE SOFTWARE.
 
 export type FormatValidationFunction = (value: string) => boolean
 
-/** String format validators used by the TypeCompiler and Value namespaces */
+/** Shared string formats used by the TypeCompiler and Value modules */
 export namespace Format {
   const formats = new Map<string, FormatValidationFunction>()
 
-  /** Clears all string validators */
+  /** Clears all formats */
   export function Clear(format: string) {
     return formats.clear()
   }
 
-  /** Returns true if the string format validator exists */
+  /** Returns true if the string format exists */
   export function Has(format: string) {
     return formats.has(format)
   }
 
-  /** Sets a string format validator */
+  /** Sets a string format validation function */
   export function Set(format: string, func: FormatValidationFunction) {
     formats.set(format, func)
   }
 
-  /** Gets a string format validator */
+  /** Gets a string format validation function */
   export function Get(format: string) {
     return formats.get(format)
   }

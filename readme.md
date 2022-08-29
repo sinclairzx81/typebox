@@ -883,7 +883,7 @@ Format.Set('ObjectId', value => /^[0-9a-fA-F]{24}$/.test(value))
 
 //--------------------------------------------------------------------------------------------
 //
-// The format is now available to TypeComplier and Value modules
+// The format is now available to TypeCompiler and Value modules
 //
 //--------------------------------------------------------------------------------------------
 
