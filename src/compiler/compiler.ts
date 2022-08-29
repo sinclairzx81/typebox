@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 import { ValueErrors, ValueError } from '../errors/index'
 import { TypeGuard } from '../guard/index'
-import { Formats } from '../formats/index'
+import { Format } from '../format/index'
 import * as Types from '../typebox'
 
 // -------------------------------------------------------------------
@@ -401,8 +401,8 @@ export namespace TypeCompiler {
     const code = Build(schema, references)
     const func1 = globalThis.Function('format', code)
     const func2 = func1((format: string, value: string) => {
-      if (!Formats.Has(format)) return false
-      const func = Formats.Get(format)!
+      if (!Format.Has(format)) return false
+      const func = Format.Get(format)!
       return func(value)
     })
     return new TypeCheck(schema, references, func2, code)

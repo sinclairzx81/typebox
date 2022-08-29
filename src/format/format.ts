@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------------
 
-@sinclair/typebox/compiler
+@sinclair/typebox/format
 
 The MIT License (MIT)
 
@@ -26,4 +26,29 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export * from './formats'
+export type FormatValidationFunction = (value: string) => boolean
+
+/** String format validators used by the TypeCompiler and Value namespaces */
+export namespace Format {
+  const formats = new Map<string, FormatValidationFunction>()
+
+  /** Clears all string validators */
+  export function Clear(format: string) {
+    return formats.clear()
+  }
+
+  /** Returns true if the string format validator exists */
+  export function Has(format: string) {
+    return formats.has(format)
+  }
+
+  /** Sets a string format validator */
+  export function Set(format: string, func: FormatValidationFunction) {
+    formats.set(format, func)
+  }
+
+  /** Gets a string format validator */
+  export function Get(format: string) {
+    return formats.get(format)
+  }
+}
