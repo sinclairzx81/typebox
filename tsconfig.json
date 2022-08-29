@@ -13,6 +13,9 @@
       "@sinclair/typebox/conditional": [
         "src/conditional/index.ts"
       ],
+      "@sinclair/typebox/format": [
+        "src/format/index.ts"
+      ],
       "@sinclair/typebox/guard": [
         "src/guard/index.ts"
       ],

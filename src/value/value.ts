@@ -43,9 +43,9 @@ export namespace Value {
     return ValueCreate.Create(schema, references)
   }
 
-  /** Checks a value matches the given type */
+  /** Returns true if the value matches the given type. */
   export function Check<T extends Types.TSchema, R extends Types.TSchema[]>(schema: T, references: [...R], value: unknown): value is Types.Static<T>
-  /** Checks a value matches the given type */
+  /** Returns true if the value matches the given type. */
   export function Check<T extends Types.TSchema>(schema: T, value: unknown): value is Types.Static<T>
   export function Check(...args: any[]) {
     const [schema, references, value] = args.length === 3 ? [args[0], args[1], args[2]] : [args[0], [], args[1]]

@@ -69,6 +69,7 @@ License MIT
 - [Strict](#strict)
 - [Validation](#validation)
 - [Compiler](#compiler)
+- [Formats](#formats)
 - [Benchmark](#benchmark)
 - [Contribute](#contribute)
 
@@ -861,7 +862,37 @@ console.log(C.Code())                                // return function check(va
                                                      // }
 ```
 
+## Formats
 
+Use the `Format` module to define custom string formats.
+
+```typescript
+import { Format } from '@sinclair/typebox/format'
+```
+
+Formats are shared between `Value` and the `TypeCompiler` modules.
+
+```typescript
+//--------------------------------------------------------------------------------------------
+//
+// Use Format.Set(...) to define a format
+//
+//--------------------------------------------------------------------------------------------
+
+Format.Set('ObjectId', value => /^[0-9a-fA-F]{24}$/.test(value))
+
+//--------------------------------------------------------------------------------------------
+//
+// The format is now available to TypeCompiler and Value modules
+//
+//--------------------------------------------------------------------------------------------
+
+const T = Type.String({ format: 'ObjectId' })
+
+const R1 = TypeCompiler.Compile(T).Check('507f1f77bcf86cd799439011')
+
+const R2 = Value.Check(T, '507f1f77bcf86cd799439011')                
+```
 
 ## Benchmark
 

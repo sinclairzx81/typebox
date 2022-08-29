@@ -53,7 +53,7 @@ export namespace TypeGuard {
     }
   }
 
-  function IsValidPropertyKey(value: unknown): value is string {
+  function IsControlCharacterFree(value: unknown): value is string {
     if (typeof value !== 'string') return false
     for (let i = 0; i < value.length; i++) {
       const code = value.charCodeAt(i)
@@ -89,9 +89,11 @@ export namespace TypeGuard {
   }
 
   function IsOptionalPattern(value: unknown): value is string | undefined {
-    return value === undefined || (value !== undefined && IsString(value) && IsPattern(value))
+    return value === undefined || (value !== undefined && IsString(value) && IsControlCharacterFree(value) && IsPattern(value))
   }
-
+  function IsOptionalFormat(value: unknown): value is string | undefined {
+    return value === undefined || (value !== undefined && IsString(value) && IsControlCharacterFree(value))
+  }
   /** Returns true if the given schema is TAny */
   export function TAny(schema: unknown): schema is Types.TAny {
     return IsObject(schema) && schema[Types.Kind] === 'Any' && IsOptionalString(schema.$id)
@@ -195,7 +197,7 @@ export namespace TypeGuard {
       return false
     }
     for (const [key, value] of Object.entries(schema.properties)) {
-      if (!IsValidPropertyKey(key)) return false
+      if (!IsControlCharacterFree(key)) return false
       if (!TSchema(value)) return false
     }
     return true
@@ -244,7 +246,7 @@ export namespace TypeGuard {
       IsOptionalNumber(schema.minLength) &&
       IsOptionalNumber(schema.maxLength) &&
       IsOptionalPattern(schema.pattern) &&
-      IsOptionalString(schema.format)
+      IsOptionalFormat(schema.format)
     )
   }
 

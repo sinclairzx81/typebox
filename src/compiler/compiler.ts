@@ -28,6 +28,7 @@ THE SOFTWARE.
 
 import { ValueErrors, ValueError } from '../errors/index'
 import { TypeGuard } from '../guard/index'
+import { Format } from '../format/index'
 import * as Types from '../typebox'
 
 // -------------------------------------------------------------------
@@ -234,6 +235,9 @@ export namespace TypeCompiler {
       const local = PushLocal(`new RegExp(/${schema.pattern}/);`)
       yield `(${local}.test(${value}))`
     }
+    if (schema.format !== undefined) {
+      yield `(format('${schema.format}', ${value}))`
+    }
   }
 
   function* Tuple(schema: Types.TTuple<any[]>, value: string): IterableIterator<string> {
@@ -395,7 +399,12 @@ export namespace TypeCompiler {
   export function Compile<T extends Types.TSchema>(schema: T, references: Types.TSchema[] = []): TypeCheck<T> {
     TypeGuard.Assert(schema, references)
     const code = Build(schema, references)
-    const func = globalThis.Function(code)
-    return new TypeCheck(schema, references, func(), code)
+    const func1 = globalThis.Function('format', code)
+    const func2 = func1((format: string, value: string) => {
+      if (!Format.Has(format)) return false
+      const func = Format.Get(format)!
+      return func(value)
+    })
+    return new TypeCheck(schema, references, func2, code)
   }
 }
