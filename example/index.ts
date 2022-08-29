@@ -8,9 +8,10 @@ import { Type, Static } from '@sinclair/typebox'
 const T = Type.Object({
   x: Type.Number(),
   y: Type.Number(),
-  z: Type.Number()
+  z: Type.Number(),
+  w: Type.String()
 })
 
-type T = Static<typeof T>
+const C = TypeCompiler.Compile(T)
+console.log(C.Code())
 
-console.log(T)
