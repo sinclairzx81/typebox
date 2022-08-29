@@ -3,13 +3,21 @@ import { Conditional } from '@sinclair/typebox/conditional'
 import { TypeGuard } from '@sinclair/typebox/guard'
 import { Value } from '@sinclair/typebox/value'
 import { Type, Static } from '@sinclair/typebox'
+import { Formats } from '@sinclair/typebox/formats'
 
-const T = Type.Object({
-  x: Type.Number(),
-  y: Type.Number(),
-  z: Type.Number()
+
+Formats.Set('atom', (value) => {
+  
+  return true
 })
 
-type T = Static<typeof T>
+const T = Type.String({ format: 'atom' })
 
-console.log(T)
+const C = TypeCompiler.Compile(T, [])
+
+console.log(C.Check('hello'))
+
+console.log(C.Code())
+
+
+

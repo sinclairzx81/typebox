@@ -27,6 +27,7 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import * as Types from '../typebox'
+import { Formats } from '../formats'
 
 export class ValueCheckUnknownTypeError extends Error {
   constructor(public readonly schema: Types.TSchema) {
@@ -206,6 +207,11 @@ export namespace ValueCheck {
     if (schema.pattern !== undefined) {
       const regex = new RegExp(schema.pattern)
       if (!regex.test(value)) return false
+    }
+    if (schema.format !== undefined) {
+      if (!Formats.Has(schema.format)) return false
+      const func = Formats.Get(schema.format)!
+      return func(value)
     }
     return true
   }
