@@ -76,7 +76,63 @@ export class ValueCastUnknownTypeError extends Error {
   }
 }
 
+export interface ValueCastOptions {
+  convert: boolean
+}
+
 export namespace ValueCast {
+  // -----------------------------------------------------------
+  // Conversion
+  // -----------------------------------------------------------
+
+  function IsString(value: unknown): value is string {
+    return typeof value === 'string'
+  }
+
+  function IsBoolean(value: unknown): value is boolean {
+    return typeof value === 'boolean'
+  }
+
+  function IsNumber(value: unknown): value is number {
+    return typeof value === 'number'
+  }
+
+  function IsBigInt(value: unknown): value is bigint {
+    return typeof value === 'bigint'
+  }
+
+  function IsStringNumeric(value: unknown): value is string {
+    return IsString(value) && !isNaN(value as any) && !isNaN(parseFloat(value))
+  }
+
+  function IsValueToString(value: unknown): value is { toString: () => string } {
+    return IsBigInt(value) || IsBoolean(value) || IsNumber(value)
+  }
+
+  function IsValueTrue(value: unknown): value is true {
+    return (IsNumber(value) && value === 1) || (IsString(value) && ['true', 'TRUE', 'True'].includes(value))
+  }
+
+  function TryConvertString(value: unknown) {
+    return IsValueToString(value) ? value.toString() : value
+  }
+
+  function TryConvertNumber(value: unknown) {
+    return IsStringNumeric(value) ? parseFloat(value) : value
+  }
+
+  function TryConvertInteger(value: unknown) {
+    return IsStringNumeric(value) ? parseInt(value) : value
+  }
+
+  function TryConvertBoolean(value: unknown) {
+    return IsValueTrue(value) ? true : value
+  }
+
+  // -----------------------------------------------------------
+  // Casts
+  // -----------------------------------------------------------
+
   function Any(schema: Types.TAny, references: Types.TSchema[], value: any): any {
     return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
   }
@@ -88,7 +144,8 @@ export namespace ValueCast {
   }
 
   function Boolean(schema: Types.TBoolean, references: Types.TSchema[], value: any): any {
-    return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
+    const conversion = TryConvertBoolean(value)
+    return ValueCheck.Check(schema, references, conversion) ? conversion : ValueCreate.Create(schema, references)
   }
 
   function Constructor(schema: Types.TConstructor, references: Types.TSchema[], value: any): any {
@@ -111,7 +168,8 @@ export namespace ValueCast {
   }
 
   function Integer(schema: Types.TInteger, references: Types.TSchema[], value: any): any {
-    return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
+    const conversion = TryConvertInteger(value)
+    return ValueCheck.Check(schema, references, conversion) ? conversion : ValueCreate.Create(schema, references)
   }
 
   function Literal(schema: Types.TLiteral, references: Types.TSchema[], value: any): any {
@@ -123,7 +181,8 @@ export namespace ValueCast {
   }
 
   function Number(schema: Types.TNumber, references: Types.TSchema[], value: any): any {
-    return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
+    const conversion = TryConvertNumber(value)
+    return ValueCheck.Check(schema, references, conversion) ? conversion : ValueCreate.Create(schema, references)
   }
 
   function Object(schema: Types.TObject, references: Types.TSchema[], value: any): any {
@@ -171,7 +230,8 @@ export namespace ValueCast {
   }
 
   function String(schema: Types.TString, references: Types.TSchema[], value: any): any {
-    return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
+    const conversion = TryConvertString(value)
+    return ValueCheck.Check(schema, references, conversion) ? conversion : ValueCreate.Create(schema, references)
   }
 
   function Tuple(schema: Types.TTuple<any[]>, references: Types.TSchema[], value: any): any {

@@ -5,12 +5,10 @@ import { Format } from '@sinclair/typebox/format'
 import { Value } from '@sinclair/typebox/value'
 import { Type, Static } from '@sinclair/typebox'
 
-const T = Type.Object({
-  x: Type.Number(),
-  y: Type.Number(),
-  z: Type.Number()
-})
 
-type T = Static<typeof T>
+const T = Type.RegEx(/foo/, { default: 'foo' })
 
-console.log(T)
+
+const A = Value.Cast(T, 1)
+
+console.log(A)

@@ -13,7 +13,7 @@ describe('value/cast/Boolean', () => {
   })
 
   it('Should upcast from number', () => {
-    const value = 1
+    const value = 0
     const result = Value.Cast(T, value)
     Assert.deepEqual(result, E)
   })
@@ -49,5 +49,81 @@ describe('value/cast/Boolean', () => {
     const value = true
     const result = Value.Cast(T, value)
     Assert.deepEqual(result, true)
+  })
+
+  // ------------------------------------------------------
+  // Conversion
+  // ------------------------------------------------------
+
+  it('Should convert string', () => {
+    const T = Type.Boolean()
+    {
+      const result = Value.Cast(T, 'true')
+      Assert.deepEqual(result, true)
+    }
+    {
+      const result = Value.Cast(T, 'TRUE')
+      Assert.deepEqual(result, true)
+    }
+    {
+      const result = Value.Cast(T, 'True')
+      Assert.deepEqual(result, true)
+    }
+    {
+      const result = Value.Cast(T, 'Foo')
+      Assert.deepEqual(result, false)
+    }
+  })
+
+  it('Should convert number', () => {
+    const T = Type.Boolean()
+    {
+      const result = Value.Cast(T, 1)
+      Assert.deepEqual(result, true)
+    }
+    {
+      const result = Value.Cast(T, 0)
+      Assert.deepEqual(result, false)
+    }
+    {
+      const result = Value.Cast(T, 2)
+      Assert.deepEqual(result, false)
+    }
+  })
+
+  it('Should convert boolean', () => {
+    const T = Type.Boolean()
+    {
+      const result = Value.Cast(T, true)
+      Assert.deepEqual(result, true)
+    }
+    {
+      const result = Value.Cast(T, false)
+      Assert.deepEqual(result, false)
+    }
+  })
+
+  it('Should convert null', () => {
+    const T = Type.Boolean()
+    const result = Value.Cast(T, null)
+    Assert.deepEqual(result, false)
+  })
+
+  it('Should convert undefined', () => {
+    const T = Type.Boolean()
+    const result = Value.Cast(T, null)
+    Assert.deepEqual(result, false)
+  })
+
+  it('Should convert object', () => {
+    const T = Type.Boolean()
+    const result = Value.Cast(T, {})
+    Assert.deepEqual(result, false)
+  })
+
+  it('Should convert array', () => {
+    const T = Type.Boolean()
+    const result = Value.Cast(T, [])
+    Assert.deepEqual(result, false)
   })
 })
