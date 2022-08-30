@@ -88,7 +88,7 @@ describe('value/cast/Union', () => {
   })
 
   it('Should infer A into B through heuristics and fix property', () => {
-    const value = { type: 'A', a: 'a', b: 'b', c: true }
+    const value = { type: 'A', a: 'a', b: 'b', c: null }
     const result = Value.Cast(T, value)
     Assert.deepEqual(result, { type: 'B', a: 'a', b: 'b', c: '' })
   })
