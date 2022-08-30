@@ -872,7 +872,7 @@ The Format module is an optional import.
 import { Format } from '@sinclair/typebox/format'
 ```
 
-The following creates a format to validate Mongo ObjectId strings
+The following creates a custom format to validate Mongo `ObjectId` strings
 
 ```typescript
 //--------------------------------------------------------------------------------------------
