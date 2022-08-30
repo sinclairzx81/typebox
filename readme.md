@@ -39,6 +39,8 @@ import { Static, Type } from '@sinclair/typebox'
 const T = Type.String()     // const T = { type: 'string' }
 
 type T = Static<typeof T>   // type T = string
+
+
 ```
 
 <a name="Overview"></a>
@@ -146,6 +148,8 @@ function receive(value: T) {                         // ... as a Type
     // ok...
   }
 }
+
+
 ```
 
 ## Types
@@ -340,6 +344,8 @@ The following table outlines the TypeBox mappings between TypeScript and JSON sc
 │                                │                             │ }                              │
 │                                │                             │                                │
 └────────────────────────────────┴─────────────────────────────┴────────────────────────────────┘
+
+
 ```
 
 ## Modifiers
@@ -382,6 +388,8 @@ TypeBox provides modifiers that can be applied to an objects properties. This al
 │                                │                             │ }                              │
 │                                │                             │                                │
 └────────────────────────────────┴─────────────────────────────┴────────────────────────────────┘
+
+
 ```
 
 ## Options
@@ -397,6 +405,8 @@ const T = Type.Number({ multipleOf: 2 })
 
 // array must have at least 5 integer values
 const T = Type.Array(Type.Integer(), { minItems: 5 })
+
+
 ```
 
 ## Extended Types
@@ -459,6 +469,8 @@ In addition to JSON schema types, TypeBox provides several extended types that a
 │                                │                             │ }                              │
 │                                │                             │                                │
 └────────────────────────────────┴─────────────────────────────┴────────────────────────────────┘
+
+
 ```
 
 ## Reference Types
@@ -474,6 +486,8 @@ const T = Type.String({ $id: 'T' })                  // const T = {
 const R = Type.Ref(T)                                // const R = {
                                                      //    $ref: 'T'
                                                      // }
+
+
 ```
 
 ## Recursive Types
@@ -511,6 +525,8 @@ function test(node: Node) {
                  .nodes[0].nodes[0]
                  .id
 }
+
+
 ```
 
 ## Generic Types
@@ -541,6 +557,8 @@ const U = Nullable(Type.Number())                    // const U = {
                                                      // }
 
 type U = Static<typeof U>                            // type U = number | null
+
+
 ```
 
 ## Unsafe Types
@@ -553,6 +571,8 @@ const T = Type.Unsafe<string>({ type: 'number' })    // const T = {
                                                      // }
 
 type T = Static<typeof T>                            // type T = string
+
+
 ```
 
 This function can be used to create custom schemas for validators that require specific schema representations. An example of this might be OpenAPI's `nullable` and `enum` schemas which are not provided by TypeBox. The following demonstrates using `Type.Unsafe(...)` to create these types.
@@ -593,6 +613,8 @@ const T = StringEnum(['A', 'B', 'C'])                // const T = {
                                                      // }
 
 type T = Static<typeof T>                            // type T = 'A' | 'B' | 'C'
+
+
 ```
 
 ## Conditional Types
@@ -644,6 +666,8 @@ The following table shows the TypeBox mappings between TypeScript and JSON schem
 │ )                              │                             │                                │
 │                                │                             │                                │
 └────────────────────────────────┴─────────────────────────────┴────────────────────────────────┘
+
+
 ```
 
 ## Values
@@ -705,6 +729,8 @@ if(TypeGuard.TString(T)) {
     
   // T is TString
 }
+
+
 ```
 
 ## Strict
@@ -732,6 +758,8 @@ const U = Type.Strict(T)                             // const U = {
                                                      //     } 
                                                      //   } 
                                                      // }
+
+
 ```
 
 ## Validation
@@ -795,6 +823,8 @@ const T = Type.Object({
 //--------------------------------------------------------------------------------------------
 
 const R = ajv.validate(T, { x: 1, y: 2, z: 3 })      // const R = true
+
+
 ```
 
 Please refer to the official Ajv [documentation](https://ajv.js.org/guide/getting-started.html) for additional information on using Ajv.
@@ -819,6 +849,8 @@ const C = TypeCompiler.Compile(Type.Object({         // const C: TypeCheck<TObje
 }))                                                  // }>>
 
 const R = C.Check({ x: 1, y: 2, z: 3 })              // const R = true 
+
+
 ```
 
 Validation errors can be read with the `Errors(...)` function.
@@ -860,6 +892,8 @@ console.log(C.Code())                                // return function check(va
                                                      //     (typeof value === 'string')
                                                      //   )
                                                      // }
+
+
 ```
 
 ## Formats
