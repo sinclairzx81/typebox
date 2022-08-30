@@ -864,7 +864,7 @@ console.log(C.Code())                                // return function check(va
 
 ## Formats
 
-Use the `Format` module to define custom string formats. Formats offer greater flexibility over [string patterns](https://json-schema.org/understanding-json-schema/reference/regular_expressions.html) to validate complex string encodings. This module is shared between the TypeCompiler and Value modules and may be accessed when calling `Check(...)` functions. TypeBox does not provide any built in formats by default.
+Use the `Format` module to define custom string formats. Formats offer greater flexibility over [string patterns](https://json-schema.org/understanding-json-schema/reference/regular_expressions.html) to validate complex string encodings. This module is shared between the TypeCompiler and Value modules and may be accessed when calling respective `Check(...)` functions. TypeBox does not provide any built in formats by default.
 
 The Format module is an optional import.
 
