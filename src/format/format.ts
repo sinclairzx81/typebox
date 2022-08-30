@@ -33,7 +33,7 @@ export namespace Format {
   const formats = new Map<string, FormatValidationFunction>()
 
   /** Clears all formats */
-  export function Clear(format: string) {
+  export function Clear() {
     return formats.clear()
   }
 

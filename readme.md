@@ -864,18 +864,20 @@ console.log(C.Code())                                // return function check(va
 
 ## Formats
 
-Use the `Format` module to define custom string formats.
+Use the `Format` module to define custom string formats. Formats offer greater flexibility over [string patterns](https://json-schema.org/understanding-json-schema/reference/regular_expressions.html), but may come at the cost of schema portability. The Format module is a shared registry that is accessed by the `TypeCompiler` and `Value` modules when runtime type checking. TypeBox does not provide any built in formats by default.
+
+The Format module is an optional import.
 
 ```typescript
 import { Format } from '@sinclair/typebox/format'
 ```
 
-Formats are shared between `Value` and the `TypeCompiler` modules.
+The following creates a format to validate Mongo ObjectId strings
 
 ```typescript
 //--------------------------------------------------------------------------------------------
 //
-// Use Format.Set(...) to define a format
+// Register format with Format.Set(...)
 //
 //--------------------------------------------------------------------------------------------
 
@@ -883,15 +885,19 @@ Format.Set('ObjectId', value => /^[0-9a-fA-F]{24}$/.test(value))
 
 //--------------------------------------------------------------------------------------------
 //
-// The format is now available to TypeCompiler and Value modules
+// The format can be used by TypeCompiler and Value modules
 //
 //--------------------------------------------------------------------------------------------
 
 const T = Type.String({ format: 'ObjectId' })
 
-const R1 = TypeCompiler.Compile(T).Check('507f1f77bcf86cd799439011')
+const V = '507f1f77bcf86cd799439011'
 
-const R2 = Value.Check(T, '507f1f77bcf86cd799439011')                
+const R1 = TypeCompiler.Compile(T).Check(V)          // R1 = true
+
+const R2 = Value.Check(T, V)                         // R2 = true
+
+
 ```
 
 ## Benchmark
