@@ -76,10 +76,6 @@ export class ValueCastUnknownTypeError extends Error {
   }
 }
 
-export interface ValueCastOptions {
-  convert: boolean
-}
-
 export namespace ValueCast {
   // -----------------------------------------------------------
   // Conversion
@@ -93,12 +89,12 @@ export namespace ValueCast {
     return typeof value === 'boolean'
   }
 
-  function IsNumber(value: unknown): value is number {
-    return typeof value === 'number'
-  }
-
   function IsBigInt(value: unknown): value is bigint {
     return typeof value === 'bigint'
+  }
+
+  function IsNumber(value: unknown): value is number {
+    return typeof value === 'number'
   }
 
   function IsStringNumeric(value: unknown): value is string {
@@ -110,7 +106,7 @@ export namespace ValueCast {
   }
 
   function IsValueTrue(value: unknown): value is true {
-    return (IsNumber(value) && value === 1) || (IsString(value) && ['true', 'TRUE', 'True'].includes(value))
+    return value === true || (IsNumber(value) && value === 1) || (IsBigInt(value) && value === 1n) || (IsString(value) && (value.toLowerCase() === 'true' || value === '1'))
   }
 
   function TryConvertString(value: unknown) {
@@ -118,11 +114,11 @@ export namespace ValueCast {
   }
 
   function TryConvertNumber(value: unknown) {
-    return IsStringNumeric(value) ? parseFloat(value) : value
+    return IsStringNumeric(value) ? parseFloat(value) : IsValueTrue(value) ? 1 : value
   }
 
   function TryConvertInteger(value: unknown) {
-    return IsStringNumeric(value) ? parseInt(value) : value
+    return IsStringNumeric(value) ? parseInt(value) : IsValueTrue(value) ? 1 : value
   }
 
   function TryConvertBoolean(value: unknown) {

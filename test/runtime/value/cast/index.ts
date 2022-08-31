@@ -1,6 +1,7 @@
 import './any'
 import './array'
 import './boolean'
+import './convert'
 import './enum'
 import './integer'
 import './intersect'

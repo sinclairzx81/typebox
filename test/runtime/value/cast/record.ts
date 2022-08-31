@@ -64,7 +64,7 @@ describe('value/cast/Record', () => {
   it('Should preserve and patch invalid records', () => {
     const value = {
       a: { x: 1, y: 2, z: 3 },
-      b: { x: 4, y: 5, z: true },
+      b: { x: 4, y: 5, z: {} },
       c: [1, 2, 3],
       d: 1,
       e: { x: 1, y: 2, w: 9000 },

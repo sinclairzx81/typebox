@@ -17,9 +17,9 @@ describe('value/cast/Number', () => {
     Assert.deepEqual(result, 1)
   })
   it('Should upcast from boolean', () => {
-    const value = true
+    const value = true // convert
     const result = Value.Cast(T, value)
-    Assert.deepEqual(result, E)
+    Assert.deepEqual(result, 1)
   })
   it('Should upcast from object', () => {
     const value = {}
@@ -49,81 +49,5 @@ describe('value/cast/Number', () => {
     const value = 123
     const result = Value.Cast(T, value)
     Assert.deepEqual(result, 123)
-  })
-
-  // ------------------------------------------------------
-  // Conversion
-  // ------------------------------------------------------
-
-  it('Should convert string', () => {
-    const T = Type.Number()
-    {
-      const result = Value.Cast(T, '1')
-      Assert.deepEqual(result, 1)
-    }
-    {
-      const result = Value.Cast(T, '3.14')
-      Assert.deepEqual(result, 3.14)
-    }
-    {
-      const result = Value.Cast(T, 'Foo')
-      Assert.deepEqual(result, 0)
-    }
-    {
-      const result = Value.Cast(T, '-100')
-      Assert.deepEqual(result, '-100')
-    }
-  })
-
-  it('Should convert number', () => {
-    const T = Type.Number()
-    {
-      const result = Value.Cast(T, 0)
-      Assert.deepEqual(result, 0)
-    }
-    {
-      const result = Value.Cast(T, 1)
-      Assert.deepEqual(result, 1)
-    }
-    {
-      const result = Value.Cast(T, 2)
-      Assert.deepEqual(result, 2)
-    }
-  })
-
-  it('Should convert boolean', () => {
-    const T = Type.Number()
-    {
-      const result = Value.Cast(T, true)
-      Assert.deepEqual(result, 0)
-    }
-    {
-      const result = Value.Cast(T, false)
-      Assert.deepEqual(result, 0)
-    }
-  })
-
-  it('Should convert null', () => {
-    const T = Type.Number()
-    const result = Value.Cast(T, null)
-    Assert.deepEqual(result, 0)
-  })
-
-  it('Should convert undefined', () => {
-    const T = Type.Number()
-    const result = Value.Cast(T, null)
-    Assert.deepEqual(result, 0)
-  })
-
-  it('Should convert object', () => {
-    const T = Type.Number()
-    const result = Value.Cast(T, {})
-    Assert.deepEqual(result, 0)
-  })
-
-  it('Should convert array', () => {
-    const T = Type.Number()
-    const result = Value.Cast(T, [])
-    Assert.deepEqual(result, 0)
   })
 })
