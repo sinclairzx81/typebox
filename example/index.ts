@@ -7,10 +7,8 @@ import { Type, Static } from '@sinclair/typebox'
 
 const T = Type.Object({
   x: Type.Number(),
-  y: Type.String(),
-  z: Type.Boolean()
+  y: Type.Number(),
+  z: Type.Number()
 })
 
 type T = Static<typeof T>
-
-console.log(Value.Cast(T, { x: true, y: true, z: '1' }))
