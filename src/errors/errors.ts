@@ -27,6 +27,7 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import * as Types from '../typebox'
+import { Format } from '../format/index'
 
 // -------------------------------------------------------------------
 // ValueErrorType
@@ -64,6 +65,8 @@ export enum ValueErrorType {
   StringMinLength,
   StringMaxLength,
   StringPattern,
+  StringFormatUnknown,
+  StringFormat,
   TupleZeroLength,
   TupleLength,
   Undefined,
@@ -270,6 +273,16 @@ export namespace ValueErrors {
       const regex = new RegExp(schema.pattern)
       if (!regex.test(value)) {
         yield { type: ValueErrorType.StringPattern, schema, path, value, message: `Expected string to match pattern ${schema.pattern}` }
+      }
+    }
+    if (schema.format !== undefined) {
+      if (!Format.Has(schema.format)) {
+        yield { type: ValueErrorType.StringFormatUnknown, schema, path, value, message: `Unknown string format '${schema.format}'` }
+      } else {
+        const format = Format.Get(schema.format)!
+        if (!format(value)) {
+          yield { type: ValueErrorType.StringFormat, schema, path, value, message: `Expected string to match format '${schema.format}'` }
+        }
       }
     }
   }
