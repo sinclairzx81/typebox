@@ -5,10 +5,12 @@ import { Format } from '@sinclair/typebox/format'
 import { Value } from '@sinclair/typebox/value'
 import { Type, Static } from '@sinclair/typebox'
 
-const T = Value.Cast(Type.Object({
+const T = Type.Object({
   x: Type.Number(),
   y: Type.Number(),
-  z: Type.Boolean({ default: true })
-}), {x: '123', y: true, z: 0 })
+  z: Type.Number()
+})
+
+type T = Static<typeof T>
 
 console.log(T)
