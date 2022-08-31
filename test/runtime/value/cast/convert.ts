@@ -195,6 +195,24 @@ describe('value/convert/Boolean', () => {
     Assert.deepEqual(result, true)
   })
 
+  it('Should convert string #7', () => {
+    const value = '0'
+    const result = Value.Cast(Type.Boolean({ default: true }), value)
+    Assert.deepEqual(result, false)
+  })
+
+  it('Should convert string #8', () => {
+    const value = '1'
+    const result = Value.Cast(Type.Boolean({ default: false }), value)
+    Assert.deepEqual(result, true)
+  })
+
+  it('Should convert string #8', () => {
+    const value = '2'
+    const result = Value.Cast(Type.Boolean({ default: true }), value)
+    Assert.deepEqual(result, true)
+  })
+
   it('Should convert number #1', () => {
     const value = 0
     const result = Value.Cast(Type.Boolean(), value)
@@ -217,6 +235,24 @@ describe('value/convert/Boolean', () => {
     const value = 2
     const result = Value.Cast(Type.Boolean(), value)
     Assert.deepEqual(result, false)
+  })
+
+  it('Should convert number #5', () => {
+    const value = 0
+    const result = Value.Cast(Type.Boolean({ default: true }), value)
+    Assert.deepEqual(result, false)
+  })
+
+  it('Should convert number #6', () => {
+    const value = 1
+    const result = Value.Cast(Type.Boolean({ default: false }), value)
+    Assert.deepEqual(result, true)
+  })
+
+  it('Should convert number #7', () => {
+    const value = 2
+    const result = Value.Cast(Type.Boolean({ default: true }), value)
+    Assert.deepEqual(result, true)
   })
 
   it('Should convert true', () => {

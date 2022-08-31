@@ -78,7 +78,7 @@ export class ValueCastUnknownTypeError extends Error {
 
 export namespace ValueCast {
   // -----------------------------------------------------------
-  // Conversion
+  // Convert
   // -----------------------------------------------------------
 
   function IsString(value: unknown): value is string {
@@ -109,6 +109,10 @@ export namespace ValueCast {
     return value === true || (IsNumber(value) && value === 1) || (IsBigInt(value) && value === 1n) || (IsString(value) && (value.toLowerCase() === 'true' || value === '1'))
   }
 
+  function IsValueFalse(value: unknown): value is true {
+    return value === false || (IsNumber(value) && value === 0) || (IsBigInt(value) && value === 0n) || (IsString(value) && (value.toLowerCase() === 'false' || value === '0'))
+  }
+
   function TryConvertString(value: unknown) {
     return IsValueToString(value) ? value.toString() : value
   }
@@ -122,11 +126,11 @@ export namespace ValueCast {
   }
 
   function TryConvertBoolean(value: unknown) {
-    return IsValueTrue(value) ? true : value
+    return IsValueTrue(value) ? true : IsValueFalse(value) ? false : value
   }
 
   // -----------------------------------------------------------
-  // Casts
+  // Cast
   // -----------------------------------------------------------
 
   function Any(schema: Types.TAny, references: Types.TSchema[], value: any): any {
