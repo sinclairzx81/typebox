@@ -343,6 +343,7 @@ export namespace TypeBoxCodegen {
 
   /** Generates TypeBox types from TypeScript interface and type definitions */
   export function Generate(typescriptCode: string) {
+    useImports = false
     useConditional = false
     useGenerics = false
 
