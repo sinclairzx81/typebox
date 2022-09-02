@@ -14,12 +14,5 @@ const T = Type.Object({
 
 type T = Static<typeof T>
 
-console.log(TypeBoxCodegen.Generate(`
-
-  interface Foo<T> {
-    x: 1
-    y: 2
-  }
-
-`))
+console.log(T)
 
