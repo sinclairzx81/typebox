@@ -7,6 +7,9 @@
     "declaration": true,
     "baseUrl": ".",
     "paths": {
+      "@sinclair/typebox/codegen": [
+        "codegen/index.ts"
+      ],
       "@sinclair/typebox/compiler": [
         "src/compiler/index.ts"
       ],

@@ -1,3 +1,4 @@
+import { TypeBoxCodegen } from '@sinclair/typebox/codegen'
 import { TypeCompiler } from '@sinclair/typebox/compiler'
 import { Conditional } from '@sinclair/typebox/conditional'
 import { TypeGuard } from '@sinclair/typebox/guard'
@@ -13,4 +14,12 @@ const T = Type.Object({
 
 type T = Static<typeof T>
 
-console.log(T)
+console.log(TypeBoxCodegen.Generate(`
+
+  interface Foo<T> {
+    x: 1
+    y: 2
+  }
+
+`))
+
