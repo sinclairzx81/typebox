@@ -359,7 +359,7 @@ The following table lists the standard TypeBox types.
 └────────────────────────────────┴─────────────────────────────┴────────────────────────────────┘
 ```
 
-<a name='types-modifier'></a>
+<a name='types-modifiers'></a>
 
 ### Modifiers
 
@@ -836,7 +836,7 @@ const C = Value.Patch<any>(A, E)                     // const C = { x: 3 }
 
 ## TypeCheck
 
-TypeBox is designed to target JSON Schema Draft 6 and can be used with any JSON Schema compliant validator that supports this specification. TypeBox is tested against the Ajv and can be used with this validator. Additionally, TypeBox provides an optional type compiler that can offer improved compilation and validation performance over Ajv. 
+TypeBox is written to target JSON Schema Draft 6 and can be used with any Draft 6 compliant validator. TypeBox is developed and tested against Ajv and can be used in any application already making use of this validator. Additionally, TypeBox also provides an optional type compiler that can be used to attain improved compilation and validation performance for certain application types.
 
 <a name='typecheck-ajv'></a>
 
