@@ -75,12 +75,12 @@ License MIT
   - [Equals](#Equals)
   - [Diff](#Diff)
   - [Patch](#Patch)
-- [Validation](#validation)
+- [Checks](#validation)
   - [Ajv](#validation)
   - [Compiler](#compiler)
   - [Formats](#formats)
-  - [Benchmark](#benchmark)
-  - [Contribute](#contribute)
+- [Benchmark](#benchmark)
+- [Contribute](#contribute)
 
 <a name="Example"></a>
 
