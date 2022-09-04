@@ -43,7 +43,7 @@ export namespace ValueEquals {
   }
 
   function TypedArray(left: TypedArrayType, right: unknown): any {
-    if (!Is.TypedArray(right) || left.length !== right.length) return false
+    if (!Is.TypedArray(right) || left.length !== right.length || globalThis.Object.getPrototypeOf(left).constructor.name !== globalThis.Object.getPrototypeOf(right).constructor.name) return false
     return left.every((value, index) => Equals(value, right[index]))
   }
 
