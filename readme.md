@@ -1001,28 +1001,21 @@ The format module is an optional import.
 import { Format } from '@sinclair/typebox/format'
 ```
 
-The following demonstrates its use.
+The following creates a `palindrome` string format.
 
 ```typescript
-//--------------------------------------------------------------------------------------------
-//
-// Use Format.Set(format, func) to define custom format
-//
-//--------------------------------------------------------------------------------------------
-
 Format.Set('palindrome', value => value === value.split('').reverse().join(''))
+```
 
-//--------------------------------------------------------------------------------------------
-//
-// Use the format property on string types
-//
-//--------------------------------------------------------------------------------------------
+Once set, this format can then be used by the TypeCompiler and Value modules.
+
+```typescript
 
 const T = Type.String({ format: 'palindrome' })
 
-Value.Check(T, 'kayak')                              // true
+const A = Value.Check(T, 'kayak')                    // const A = true
 
-Value.Check(T, 'engine')                             // false
+const B = Value.Check(T, 'engine')                   // const B = false
 ```
 
 <a name='benchmark'></a>
