@@ -69,12 +69,13 @@ License MIT
   - [Strict](#types-strict)
 - [Values](#values)
   - [Create](#values-create)
+  - [Clone](#values-clone)
   - [Check](#values-check)
   - [Cast](#values-cast)
-  - [Clone](#values-clone)
   - [Equals](#values-equals)
   - [Diff](#values-diff)
   - [Patch](#values-patch)
+  - [Errors](#values-errors)
 - [TypeCheck](#typecheck)
   - [Ajv](#typecheck-ajv)
   - [Compiler](#typecheck-compiler)
@@ -732,7 +733,7 @@ const U = Type.Strict(T)                             // const U = {
 
 ## Values
 
-TypeBox includes an optional values module that can be used to perform common operations on JavaScript values. It enables one to create, check and cast values from types. It also provides functions to check equality, clone and diff and patch JavaScript values. The value module is provided as an optional import.
+TypeBox includes an optional values module that can be used to perform common operations on JavaScript values. This module enables one to create, check and cast values from types. It also provides functionality to check equality, clone and diff and patch JavaScript values. The value module is provided as an optional import.
 
 ```typescript
 import { Value } from '@sinclair/typebox/value'
@@ -758,19 +759,6 @@ Use the Clone function to deeply clone a value
 
 ```typescript
 const A = Value.Clone({ x: 1, y: 2, z: 3 })          // const A = { x: 1, y: 2, z: 3 }
-```
-
-<a name='values-equals'></a>
-
-### Equals
-
-Use the Equals function to deeply check for value for equality.
-
-```typescript
-const R = Value.Equals(                              // const R = true
-  { x: 1, y: 2, z: 3 },
-  { x: 1, y: 2, z: 3 }
-)
 ```
 
 <a name='values-check'></a>
@@ -799,6 +787,19 @@ const X = Value.Cast(T, null)                        // const X = { x: 0, y: 0 }
 const Y = Value.Cast(T, { x: 1 })                    // const Y = { x: 1, y: 0 }
 
 const Z = Value.Cast(T, { x: 1, y: 2, z: 3 })        // const Z = { x: 1, y: 2 }
+```
+
+<a name='values-equals'></a>
+
+### Equals
+
+Use the Equals function to deeply check for value for equality.
+
+```typescript
+const R = Value.Equals(                              // const R = true
+  { x: 1, y: 2, z: 3 },
+  { x: 1, y: 2, z: 3 }
+)
 ```
 
 <a name='values-diff'></a>
@@ -833,6 +834,29 @@ const E = Value.Diff<any>(A, B)                      // const E = [
                                                      // ]
 
 const C = Value.Patch<any>(A, E)                     // const C = { x: 3 }
+```
+
+
+<a name='values-errors'></a>
+
+### Errors
+
+Use the Errors function get validation errors.
+
+```typescript
+const T = Type.Object({ x: Type.Number(), y: Type.Number() })
+
+const R = [...Value.Errors(T, { x: '42' })]          // const R = [{
+                                                     //   schema: { type: 'number' },
+                                                     //   path: '/x',
+                                                     //   value: '42',
+                                                     //   message: 'Expected number'
+                                                     // }, {
+                                                     //   schema: { type: 'number' },
+                                                     //   path: '/y',
+                                                     //   value: undefined,
+                                                     //   message: 'Expected number'
+                                                     // }]
 ```
 
 <a name='typecheck'></a>
