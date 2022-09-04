@@ -26,13 +26,12 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { ObjectType, ArrayType, TypedArrayType, ValueType, Is } from './is'
+import { Is, ObjectType, ArrayType, TypedArrayType, ValueType } from './is'
 
 export namespace ValueClone {
   function Object(value: ObjectType): any {
-    return globalThis.Object.entries(value).reduce((acc, [key, value]) => {
-      return { ...acc, [key]: Clone(value) }
-    }, {})
+    const keys = [...globalThis.Object.keys(value), ...globalThis.Object.getOwnPropertySymbols(value)]
+    return keys.reduce((acc, key) => ({ ...acc, [key]: Clone(value[key]) }), {})
   }
 
   function Array(value: ArrayType): any {

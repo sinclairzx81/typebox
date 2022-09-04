@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { ObjectType, ArrayType, TypedArrayType, ValueType, Is } from './is'
+import { Is, ObjectType, ArrayType, TypedArrayType, ValueType } from './is'
 import { ValueClone } from './clone'
 import { ValuePointer } from './pointer'
 
@@ -75,20 +75,24 @@ export namespace ValueDelta {
 
   function* Object(path: string, current: ObjectType, next: unknown): IterableIterator<Edit<any>> {
     if (!Is.Object(next)) return yield Update(path, next)
-    const currentKeys = globalThis.Object.keys(current)
-    const nextKeys = globalThis.Object.keys(next)
+    const currentKeys = [...globalThis.Object.keys(current), ...globalThis.Object.getOwnPropertySymbols(current)]
+    const nextKeys = [...globalThis.Object.keys(next), ...globalThis.Object.getOwnPropertySymbols(next)]
     for (const key of currentKeys) {
-      if (next[key] === undefined && nextKeys.includes(key)) yield Update(`${path}/${key}`, undefined)
+      if (typeof key === 'symbol') throw Error('ValueDelta: Cannot produce diff symbol keys')
+      if (next[key] === undefined && nextKeys.includes(key)) yield Update(`${path}/${String(key)}`, undefined)
     }
     for (const key of nextKeys) {
       if (current[key] === undefined || next[key] === undefined) continue
-      yield* Visit(`${path}/${key}`, current[key], next[key])
+      if (typeof key === 'symbol') throw Error('ValueDelta: Cannot produce diff symbol keys')
+      yield* Visit(`${path}/${String(key)}`, current[key], next[key])
     }
     for (const key of nextKeys) {
-      if (current[key] === undefined) yield Insert(`${path}/${key}`, next[key])
+      if (typeof key === 'symbol') throw Error('ValueDelta: Cannot produce diff symbol keys')
+      if (current[key] === undefined) yield Insert(`${path}/${String(key)}`, next[key])
     }
     for (const key of currentKeys.reverse()) {
-      if (next[key] === undefined && !nextKeys.includes(key)) yield Delete(`${path}/${key}`)
+      if (typeof key === 'symbol') throw Error('ValueDelta: Cannot produce diff symbol keys')
+      if (next[key] === undefined && !nextKeys.includes(key)) yield Delete(`${path}/${String(key)}`)
     }
   }
 

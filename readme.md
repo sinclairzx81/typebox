@@ -1021,7 +1021,7 @@ The following table lists esbuild compiled and minified sizes for each TypeBox m
 │ typebox/conditional  │ '   41 kb' │ '   16 kb' │  '2.47 x'   │
 │ typebox/format       │ '    0 kb' │ '    0 kb' │  '2.66 x'   │
 │ typebox/guard        │ '   20 kb' │ '    9 kb' │  '2.08 x'   │
-│ typebox/value        │ '   66 kb' │ '   30 kb' │  '2.18 x'   │
+│ typebox/value        │ '   68 kb' │ '   31 kb' │  '2.15 x'   │
 │ typebox              │ '   11 kb' │ '    5 kb' │  '1.91 x'   │
 └──────────────────────┴────────────┴────────────┴─────────────┘
 ```
