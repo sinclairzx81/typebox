@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 import * as Types from '../typebox'
 import { ValueErrors, ValueError } from '../errors/index'
-import { ValueEquals } from './equals'
+import { ValueEqual } from './equal'
 import { ValueCast } from './cast'
 import { ValueClone } from './clone'
 import { ValueCreate } from './create'
@@ -75,22 +75,22 @@ export namespace Value {
     yield* ValueErrors.Errors(schema, references, value)
   }
 
-  /** Performs a deep equality check on left and right values */
-  export function Equals<T>(left: T, right: unknown): right is T {
-    return ValueEquals.Equals(left, right)
+  /** Returns true if left and right values are structurally equal */
+  export function Equal<T>(left: T, right: unknown): right is T {
+    return ValueEqual.Equal(left, right)
   }
 
-  /** Clones the given value */
+  /** Returns a structural clone of the given value */
   export function Clone<T>(value: T): T {
     return ValueClone.Clone(value)
   }
 
-  /** Produces a edits to transform the current value into the next value */
+  /** Returns edits to transform the current value into the next value */
   export function Diff<T>(current: T, next: T): Edit<T>[] {
     return ValueDelta.Diff(current, next)
   }
 
-  /** Applies edits to a value */
+  /** Returns a new value with edits applied to the given value */
   export function Patch<T>(current: T, edits: Edit<T>[]): T {
     return ValueDelta.Patch(current, edits) as T
   }

@@ -28,30 +28,30 @@ THE SOFTWARE.
 
 import { Is, ObjectType, ArrayType, TypedArrayType, ValueType } from './is'
 
-export namespace ValueEquals {
+export namespace ValueEqual {
   function Object(left: ObjectType, right: unknown): boolean {
     if (!Is.Object(right)) return false
     const leftKeys = [...globalThis.Object.keys(left), ...globalThis.Object.getOwnPropertySymbols(left)]
     const rightKeys = [...globalThis.Object.keys(right), ...globalThis.Object.getOwnPropertySymbols(right)]
     if (leftKeys.length !== rightKeys.length) return false
-    return leftKeys.every((key) => Equals(left[key], right[key]))
+    return leftKeys.every((key) => Equal(left[key], right[key]))
   }
 
   function Array(left: ArrayType, right: unknown): any {
     if (!Is.Array(right) || left.length !== right.length) return false
-    return left.every((value, index) => Equals(value, right[index]))
+    return left.every((value, index) => Equal(value, right[index]))
   }
 
   function TypedArray(left: TypedArrayType, right: unknown): any {
     if (!Is.TypedArray(right) || left.length !== right.length || globalThis.Object.getPrototypeOf(left).constructor.name !== globalThis.Object.getPrototypeOf(right).constructor.name) return false
-    return left.every((value, index) => Equals(value, right[index]))
+    return left.every((value, index) => Equal(value, right[index]))
   }
 
   function Value(left: ValueType, right: unknown): any {
     return left === right
   }
 
-  export function Equals<T>(left: T, right: unknown): right is T {
+  export function Equal<T>(left: T, right: unknown): right is T {
     if (Is.Object(left)) {
       return Object(left, right)
     } else if (Is.TypedArray(left)) {

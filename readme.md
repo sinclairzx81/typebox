@@ -72,7 +72,7 @@ License MIT
   - [Clone](#values-clone)
   - [Check](#values-check)
   - [Cast](#values-cast)
-  - [Equals](#values-equals)
+  - [Equal](#values-equal)
   - [Diff](#values-diff)
   - [Patch](#values-patch)
   - [Errors](#values-errors)
@@ -789,14 +789,14 @@ const Y = Value.Cast(T, { x: 1 })                    // const Y = { x: 1, y: 0 }
 const Z = Value.Cast(T, { x: 1, y: 2, z: 3 })        // const Z = { x: 1, y: 2 }
 ```
 
-<a name='values-equals'></a>
+<a name='values-equal'></a>
 
-### Equals
+### Equal
 
-Use the Equals function to deeply check for value equality.
+Use the Equal function to deeply check for value equality.
 
 ```typescript
-const R = Value.Equals(                              // const R = true
+const R = Value.Equal(                               // const R = true
   { x: 1, y: 2, z: 3 },
   { x: 1, y: 2, z: 3 }
 )
