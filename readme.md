@@ -574,7 +574,7 @@ type U = Static<typeof U>                            // type U = number | null
 
 <a name='types-conditional'></a>
 
-### Conditional Types
+### Conditional
 
 Use the conditional module to create [Conditional Types](https://www.typescriptlang.org/docs/handbook/2/conditional-types.html). This module implements TypeScript's structural equivalence checks to enable TypeBox types to be conditionally inferred at runtime. This module also provides the [Extract](https://www.typescriptlang.org/docs/handbook/utility-types.html#extracttype-union) and [Exclude](https://www.typescriptlang.org/docs/handbook/utility-types.html#excludeuniontype-excludedmembers) utility types which are expressed as conditional types in TypeScript. 
 
@@ -725,6 +725,8 @@ const U = Type.Strict(T)                             // const U = {
                                                      // }
 ```
 
+<a name='values'></a>
+
 ## Values
 
 TypeBox includes an optional values module that can be used to perform common operations on JavaScript values. It enables one to create, check and cast values from types. It also provides functions to check equality, clone and diff and patch JavaScript values. The value module is provided as an optional import.
@@ -732,6 +734,8 @@ TypeBox includes an optional values module that can be used to perform common op
 ```typescript
 import { Value } from '@sinclair/typebox/value'
 ```
+
+<a name='values-create'></a>
 
 ### Create
 
@@ -743,16 +747,21 @@ const T = Type.Object({ x: Type.Number(), y: Type.Number({ default: 42 }) })
 const A = Value.Create(T)                            // const A = { x: 0, y: 42 }
 ```
 
+<a name='values-clone'></a>
+
 ### Clone
 
-Use the Clone function to clone a value
+Use the Clone function to deeply clone a value
+
 ```typescript
 const A = Value.Clone({ x: 1, y: 2, z: 3 })          // const A = { x: 1, y: 2, z: 3 }
 ```
 
+<a name='values-equals'></a>
+
 ### Equals
 
-Use the Equals function to deep check values for equality.
+Use the Equals function to deeply check for value for equality.
 
 ```typescript
 const R = Value.Equals(                              // const R = true
@@ -760,6 +769,8 @@ const R = Value.Equals(                              // const R = true
   { x: 1, y: 2, z: 3 }
 )
 ```
+
+<a name='values-check'></a>
 
 ### Check
 
@@ -771,9 +782,11 @@ const T = Type.Object({ x: Type.Number() })
 const R = Value.Check(T, { x: 1 })                   // const R = true
 ```
 
+<a name='values-cast'></a>
+
 ### Cast
 
-Use the cast function to cast a value into a type. This function will retain as much information as possible from the value being cast.
+Use the Cast function to cast a value into a type. This function will retain as much information as possible from the value being cast.
 
 ```typescript
 const T = Type.Object({ x: Type.Number(), y: Type.Number() }, { additionalProperties: false })
@@ -785,6 +798,8 @@ const Y = Value.Cast(T, { x: 1 })                    // const Y = { x: 1, y: 0 }
 const Z = Value.Cast(T, { x: 1, y: 2, z: 3 })        // const Z = { x: 1, y: 2 }
 ```
 
+<a name='values-diff'></a>
+
 ### Diff
 
 Use the Diff function to produce a series of edits to transform one value into another.
@@ -794,72 +809,46 @@ const E = Value.Diff<any>(                          // const E = [
   { x: 1, y: 2, z: 3 },                             //   { type: 'update', path: '/y', value: 4 },
   { y: 4, z: 5, w: 6 }                              //   { type: 'update', path: '/z', value: 5 },
 )                                                   //   { type: 'insert', path: '/w', value: 6 },
+                                                    //   { type: 'delete', path: '/x' }
                                                     // ]
 ```
+
+<a name='values-patch'></a>
+
 ### Patch
 
-Use the Patch function to apply edits
+Use the Patch function to apply Diff edits
 
 ```typescript
 const A = { x: 1, y: 2 }
 
 const B = { x: 3 }
 
-const E = Value.Diff<any>(A, B)
+const E = Value.Diff<any>(A, B)                      // const E = [
+                                                     //   { type: 'update', path: '/x', value: 3 },
+                                                     //   { type: 'delete', path: '/y' }
+                                                     // ]
 
-const C = Value.Patch<any>(A, E)                    // const C = { x: 3 }
+const C = Value.Patch<any>(A, E)                     // const C = { x: 3 }
 ```
 
-## Formats
+<a name='typecheck'></a>
 
-Use the format module to create user defined string formats. This module enables programmatic validation of strings that cannot be easily validated with [pattern](https://json-schema.org/understanding-json-schema/reference/regular_expressions.html) expressions. The format module is used by the Value and TypeCompiler modules only. If using Ajv, please refer to the official Ajv format documentation located [here](https://ajv.js.org/guide/formats.html).
+## TypeCheck
 
-The format module is an optional import.
+TypeBox is designed to target JSON Schema Draft 6 and can be used with any JSON Schema compliant validator that supports this specification. TypeBox is tested against the Ajv and can be used with this validator. Additionally, TypeBox provides an optional type compiler that can offer improved compilation and validation performance over Ajv. 
 
-```typescript
-import { Format } from '@sinclair/typebox/format'
-```
+<a name='typecheck-ajv'></a>
 
-The following demonstrates its use.
+### Ajv
 
-```typescript
-//--------------------------------------------------------------------------------------------
-//
-// Use Format.Set(format, func) to define custom format
-//
-//--------------------------------------------------------------------------------------------
-
-Format.Set('palindrome', value => value === value.split('').reverse().join(''))
-
-//--------------------------------------------------------------------------------------------
-//
-// Use the format property on string types
-//
-//--------------------------------------------------------------------------------------------
-
-const T = Type.String({ format: 'palindrome' })
-
-Value.Check(T, 'kayak')                              // true
-
-Value.Check(T, 'engine')                             // false
-```
-
-
-## Validation
-
-TypeBox schemas target JSON Schema draft 6 so any validator capable of draft 6 should be fine. A good library to use for validation in JavaScript environments is [Ajv](https://www.npmjs.com/package/ajv). The following example shows setting up Ajv to work with TypeBox.
+The following example shows setting up Ajv to work with TypeBox. 
 
 ```bash
 $ npm install ajv ajv-formats --save
 ```
 
 ```typescript
-//--------------------------------------------------------------------------------------------
-//
-// Import TypeBox and Ajv
-//
-//--------------------------------------------------------------------------------------------
-
 import { Type }   from '@sinclair/typebox'
 import addFormats from 'ajv-formats'
 import Ajv        from 'ajv'
@@ -908,9 +897,9 @@ const T = Type.Object({
 const R = ajv.validate(T, { x: 1, y: 2, z: 3 })      // const R = true
 ```
 
-Please refer to the official Ajv [documentation](https://ajv.js.org/guide/getting-started.html) for additional information on using Ajv.
+<a name='typecheck-compiler'></a>
 
-## Compiler
+### Compiler
 
 TypeBox provides an optional high performance just-in-time (JIT) compiler and type checker that can be used in applications that require extremely fast validation. Note that this compiler is optimized for TypeBox types only where the schematics are known in advance. If defining custom types with `Type.Unsafe<T>` please consider Ajv.
 
@@ -971,6 +960,42 @@ console.log(C.Code())                                // return function check(va
                                                      //     (typeof value === 'string')
                                                      //   )
                                                      // }
+```
+
+<a name='typecheck-formats'></a>
+
+### Formats
+
+Use the format module to create user defined string formats. The format module is used by the Value and TypeCompiler modules only. If using Ajv, please refer to the official Ajv format documentation located [here](https://ajv.js.org/guide/formats.html).
+
+The format module is an optional import.
+
+```typescript
+import { Format } from '@sinclair/typebox/format'
+```
+
+The following demonstrates its use.
+
+```typescript
+//--------------------------------------------------------------------------------------------
+//
+// Use Format.Set(format, func) to define custom format
+//
+//--------------------------------------------------------------------------------------------
+
+Format.Set('palindrome', value => value === value.split('').reverse().join(''))
+
+//--------------------------------------------------------------------------------------------
+//
+// Use the format property on string types
+//
+//--------------------------------------------------------------------------------------------
+
+const T = Type.String({ format: 'palindrome' })
+
+Value.Check(T, 'kayak')                              // true
+
+Value.Check(T, 'engine')                             // false
 ```
 
 ## Benchmark
