@@ -648,17 +648,17 @@ The following table shows the TypeBox mappings between TypeScript and JSON schem
 
 ## Values
 
-Use the value module to perform common type operations on values. This module provides functionality to create, check and cast values into a given type. Note that this module internally uses dynamic type checking to perform these operations. For faster type checking performance, consider using either Ajv or the TypeBox [TypeCompiler](#compiler).
+Use the value module to perform common operations on values. If using the `.Check()` function for frequent type checking, consider using Ajv or the [TypeCompiler](#compiler) for additional performance.
 
  The value module is provided as an optional import.
 
 ```typescript
 import { Value } from '@sinclair/typebox/value'
 ```
+
 The following demonstrates its use.
+
 ```typescript
-
-
 const T = Type.Object({ x: Type.Number(), y: Type.Number() }, { additionalProperties: false })
 
 //--------------------------------------------------------------------------------------------
@@ -671,19 +671,19 @@ const V = Value.Create(T)                            // const V = { x: 0, y: 0 }
 
 //--------------------------------------------------------------------------------------------
 //
-// Use Value.Check(T, ...) to check if a value is of type T.
-//
-//--------------------------------------------------------------------------------------------
-
-const R = Value.Check(T, { x: 1 })                   // const R = false
-
-//--------------------------------------------------------------------------------------------
-//
 // Use Value.Clone(...) to deeply clone a value
 //
 //--------------------------------------------------------------------------------------------
 
 const C = Value.Clone({ x: 1, y: 2, z: 3 })          // const C = { x: 1, y: 2, z: 3 }
+
+//--------------------------------------------------------------------------------------------
+//
+// Use Value.Check(T, ...) to check if a value is of type T.
+//
+//--------------------------------------------------------------------------------------------
+
+const R = Value.Check(T, { x: 1 })                   // const R = false
 
 //--------------------------------------------------------------------------------------------
 //
