@@ -30,7 +30,7 @@ import { ObjectType, ArrayType, ValueType, Is } from './is'
 import { ValueClone } from './clone'
 import { ValuePointer } from './pointer'
 
-export type Edit<T> = Insert<T> | Update<T> | Delete<T>
+export type Edit<T = unknown> = Insert<T> | Update<T> | Delete<T>
 
 export interface Insert<T> {
   brand: T
@@ -87,7 +87,7 @@ export namespace ValueDelta {
     for (const key of nextKeys) {
       if (current[key] === undefined) yield Insert(`${path}/${key}`, next[key])
     }
-    for (const key of currentKeys) {
+    for (const key of currentKeys.reverse()) {
       if (next[key] === undefined && !nextKeys.includes(key)) yield Delete(`${path}/${key}`)
     }
   }
@@ -97,13 +97,13 @@ export namespace ValueDelta {
     for (let i = 0; i < Math.min(current.length, next.length); i++) {
       yield* Visit(`${path}/${i}`, current[i], next[i])
     }
-    for (let i = current.length - 1; i >= 0; i--) {
-      if (i < next.length) continue
-      yield Delete(`${path}/${i}`)
-    }
     for (let i = 0; i < next.length; i++) {
       if (i < current.length) continue
       yield Insert(`${path}/${i}`, next[i])
+    }
+    for (let i = current.length - 1; i >= 0; i--) {
+      if (i < next.length) continue
+      yield Delete(`${path}/${i}`)
     }
   }
 

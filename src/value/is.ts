@@ -34,7 +34,7 @@ export namespace Is {
   export function Object(value: unknown): value is ObjectType {
     return value !== null && typeof value === 'object' && !globalThis.Array.isArray(value)
   }
-  
+
   export function Array(value: unknown): value is ArrayType {
     return typeof value === 'object' && globalThis.Array.isArray(value)
   }

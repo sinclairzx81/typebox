@@ -35,6 +35,8 @@ import { ValueCreate } from './create'
 import { ValueCheck } from './check'
 import { ValueDelta, Edit } from './delta'
 
+export type { Edit } from './delta'
+
 /** The Value namespace provides type operations on values */
 export namespace Value {
   /** Casts a value into a given type. The return value will retain as much information of the original value as possible. Cast will convert string, number and boolean values if a reasonable conversion is possible. */
@@ -73,7 +75,7 @@ export namespace Value {
     yield* ValueErrors.Errors(schema, references, value)
   }
 
-  /** Performs an equality check on left and right values */
+  /** Performs a deep equality check on left and right values */
   export function Equals<T>(left: T, right: unknown): right is T {
     return ValueEquals.Equals(left, right)
   }
@@ -83,12 +85,12 @@ export namespace Value {
     return ValueClone.Clone(value)
   }
 
-  /** Produces a series of edits to transform the current value into the next value */
+  /** Produces a edits to transform the current value into the next value */
   export function Diff<T>(current: T, next: T): Edit<T>[] {
     return ValueDelta.Diff(current, next)
   }
 
-  /** Patches a value with the series of edits */
+  /** Applies edits to a value */
   export function Patch<T>(current: T, edits: Edit<T>[]): T {
     return ValueDelta.Patch(current, edits) as T
   }
