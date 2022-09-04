@@ -165,7 +165,7 @@ function receive(value: T) {                         // ... as a Type
 
 ## Types
 
-TypeBox provides functions that allow you to compose JSON Schema in the same way you would compose types with TypeScript. Each function produces a small JSON schema which aligns to the semantics of the intended type. Each schema produced by TypeBox can be passed directly to JSON Schema validator, or used to reflect metadata about the type at runtime.
+TypeBox provides a set of functions that allow you to compose JSON Schema similar to how you would compose static types with TypeScript. Each function creates a JSON schema fragment which can compose into more complex types. The schemas produced by TypeBox can be passed directly to any JSON Schema compliant validator, or used to reflect runtime metadata for a type.
 
 <a name='types-standard'></a>
 
