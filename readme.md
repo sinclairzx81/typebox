@@ -56,29 +56,29 @@ License MIT
 - [Overview](#overview)
 - [Usage](#usage)
 - [Types](#types)
-  - [Standard](#types)
-  - [Modifiers](#modifiers)
-  - [Options](#options)
-  - [Extended](#extended-types)
-  - [Reference](#reference-types)
-  - [Recursive](#recursive-types)
-  - [Generic](#generic-types)
-  - [Unsafe](#unsafe-types)
-  - [Conditional](#conditional-types)
-  - [Guards](#guards)
-  - [Strict](#strict)
+  - [Standard](#types-standard)
+  - [Modifiers](#types-modifiers)
+  - [Options](#types-options)
+  - [Extended](#types-extended)
+  - [Reference](#types-reference)
+  - [Recursive](#types-recursive)
+  - [Generic](#types-generic)
+  - [Conditional](#types-conditional)
+  - [Unsafe](#types-unsafe)
+  - [Guards](#types-guards)
+  - [Strict](#types-strict)
 - [Values](#values)
-  - [Create](#Create)
-  - [Cast](#Cast)
-  - [Clone](#Clone)
-  - [Check](#Check)
-  - [Equals](#Equals)
-  - [Diff](#Diff)
-  - [Patch](#Patch)
-- [Checks](#validation)
-  - [Ajv](#validation)
-  - [Compiler](#compiler)
-  - [Formats](#formats)
+  - [Create](#values-create)
+  - [Check](#values-check)
+  - [Cast](#values-cast)
+  - [Clone](#values-clone)
+  - [Equals](#values-equals)
+  - [Diff](#values-diff)
+  - [Patch](#values-patch)
+- [TypeCheck](#typecheck)
+  - [Ajv](#typecheck-ajv)
+  - [Compiler](#typecheck-compiler)
+  - [Formats](#typecheck-formats)
 - [Benchmark](#benchmark)
 - [Contribute](#contribute)
 
@@ -157,9 +157,17 @@ function receive(value: T) {                         // ... as a Type
 }
 ```
 
+<a name='types'></a>
+
 ## Types
 
-The following table outlines the TypeBox mappings between TypeScript and JSON schema.
+TypeBox provides functions that allow you to compose JSON Schema in the same way you would compose types with TypeScript. Each function produces a small JSON schema which aligns to the semantics of the intended type. Each schema produced by TypeBox can be passed directly to JSON Schema validator, or used to reflect metadata about the type at runtime.
+
+<a name='types-standard'></a>
+
+### Standard
+
+The following table lists the standard TypeBox types.
 
 ```typescript
 ┌────────────────────────────────┬─────────────────────────────┬────────────────────────────────┐
@@ -351,7 +359,9 @@ The following table outlines the TypeBox mappings between TypeScript and JSON sc
 └────────────────────────────────┴─────────────────────────────┴────────────────────────────────┘
 ```
 
-## Modifiers
+<a name='types-modifier'></a>
+
+### Modifiers
 
 TypeBox provides modifiers that can be applied to an objects properties. This allows for `optional` and `readonly` to be applied to that property. The following table illustates how they map between TypeScript and JSON Schema.
 
@@ -393,7 +403,9 @@ TypeBox provides modifiers that can be applied to an objects properties. This al
 └────────────────────────────────┴─────────────────────────────┴────────────────────────────────┘
 ```
 
-## Options
+<a name='types-options'></a>
+
+### Options
 
 You can pass additional JSON schema options on the last argument of any given type. The following are some examples.
 
@@ -408,7 +420,9 @@ const T = Type.Number({ multipleOf: 2 })
 const T = Type.Array(Type.Integer(), { minItems: 5 })
 ```
 
-## Extended Types
+<a name='types-extended'></a>
+
+### Extended
 
 In addition to JSON schema types, TypeBox provides several extended types that allow for `function` and `constructor` types to be composed. These additional types are not valid JSON Schema and will not validate using typical JSON Schema validation. However, these types can be used to frame JSON schema and describe callable interfaces that may receive JSON validated data. These types are as follows.
 
@@ -470,7 +484,9 @@ In addition to JSON schema types, TypeBox provides several extended types that a
 └────────────────────────────────┴─────────────────────────────┴────────────────────────────────┘
 ```
 
-## Reference Types
+<a name='types-reference'></a>
+
+### Reference
 
 Use `Type.Ref(...)` to create referenced types. The target type must specify an `$id`.
 
@@ -485,7 +501,9 @@ const R = Type.Ref(T)                                // const R = {
                                                      // }
 ```
 
-## Recursive Types
+<a name='types-recursive'></a>
+
+### Recursive
 
 Use `Type.Recursive(...)` to create recursive types.
 
@@ -522,7 +540,9 @@ function test(node: Node) {
 }
 ```
 
-## Generic Types
+<a name='types-generic'></a>
+
+### Generic
 
 Use functions to create generic types. The following creates a generic `Nullable<T>` type. 
 
@@ -552,7 +572,62 @@ const U = Nullable(Type.Number())                    // const U = {
 type U = Static<typeof U>                            // type U = number | null
 ```
 
-## Unsafe Types
+<a name='types-conditional'></a>
+
+### Conditional Types
+
+Use the conditional module to create [Conditional Types](https://www.typescriptlang.org/docs/handbook/2/conditional-types.html). This module implements TypeScript's structural equivalence checks to enable TypeBox types to be conditionally inferred at runtime. This module also provides the [Extract](https://www.typescriptlang.org/docs/handbook/utility-types.html#extracttype-union) and [Exclude](https://www.typescriptlang.org/docs/handbook/utility-types.html#excludeuniontype-excludedmembers) utility types which are expressed as conditional types in TypeScript. 
+
+The conditional module is provided as an optional import.
+
+```typescript
+import { Conditional } from '@sinclair/typebox/conditional'
+```
+The following table shows the TypeBox mappings between TypeScript and JSON schema.
+
+```typescript
+┌────────────────────────────────┬─────────────────────────────┬────────────────────────────────┐
+│ TypeBox                        │ TypeScript                  │ JSON Schema                    │
+│                                │                             │                                │
+├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
+│ const T = Conditional.Extends( │ type T =                    │ const T = {                    │
+│   Type.String(),               │  string extends number      │   const: false,                │
+│   Type.Number(),               │  true : false               │   type: 'boolean'              │
+│   Type.Literal(true),          │                             │ }                              │
+│   Type.Literal(false)          │                             │                                │
+│ )                              │                             │                                │
+│                                │                             │                                │
+├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
+│ const T = Conditional.Extract( │ type T = Extract<           │ const T = {                    │
+│   Type.Union([                 │   'a' | 'b' | 'c',          │   anyOf: [{                    │
+│     Type.Literal('a'),         │   'a' | 'f'                 │     const: 'a'                 │
+│     Type.Literal('b'),         │ >                           │     type: 'string'             │
+│     Type.Literal('c')          │                             │   }]                           │
+│   ]),                          │                             │ }                              │
+│   Type.Union([                 │                             │                                │
+│     Type.Literal('a'),         │                             │                                │
+│     Type.Literal('f')          │                             │                                │
+│   ])                           │                             │                                │
+│ )                              │                             │                                │
+│                                │                             │                                │
+├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
+│ const T = Conditional.Exclude( │ type T = Exclude<           │ const T = {                    │
+│   Type.Union([                 │   'a' | 'b' | 'c',          │   anyOf: [{                    │
+│     Type.Literal('a'),         │   'a'                       │     const: 'b',                │
+│     Type.Literal('b'),         │ >                           │     type: 'string'             │
+│     Type.Literal('c')          │                             │   }, {                         │
+│   ]),                          │                             │     const: 'c',                │
+│   Type.Union([                 │                             │     type: 'string'             │
+│     Type.Literal('a')          │                             │   }]                           │
+│   ])                           │                             │ }                              │
+│ )                              │                             │                                │
+│                                │                             │                                │
+└────────────────────────────────┴─────────────────────────────┴────────────────────────────────┘
+```
+
+<a name='types-unsafe'></a>
+
+### Unsafe
 
 Use `Type.Unsafe(...)` to create custom schemas with user defined inference rules.
 
@@ -604,138 +679,135 @@ const T = StringEnum(['A', 'B', 'C'])                // const T = {
 type T = Static<typeof T>                            // type T = 'A' | 'B' | 'C'
 ```
 
-## Conditional Types
+<a name='types-guards'></a>
 
-Use the conditional module to create [Conditional Types](https://www.typescriptlang.org/docs/handbook/2/conditional-types.html). This module implements TypeScript's structural equivalence checks to enable TypeBox types to be conditionally inferred at runtime. This module also provides the [Extract](https://www.typescriptlang.org/docs/handbook/utility-types.html#extracttype-union) and [Exclude](https://www.typescriptlang.org/docs/handbook/utility-types.html#excludeuniontype-excludedmembers) utility types which are expressed as conditional types in TypeScript. 
+### Guards
 
-The conditional module is provided as an optional import.
+Use the guard module to test if values are TypeBox types.
 
 ```typescript
-import { Conditional } from '@sinclair/typebox/conditional'
+import { TypeGuard } from '@sinclair/typebox/guard'
+
+const T = Type.String()
+
+if(TypeGuard.TString(T)) {
+    
+  // T is TString
+}
 ```
-The following table shows the TypeBox mappings between TypeScript and JSON schema.
+
+<a name='types-strict'></a>
+
+### Strict
+
+TypeBox schemas contain the `Kind` and `Modifier` symbol properties. These properties are provided to enable runtime type reflection on schemas, as well as helping TypeBox internally compose types. These properties are not strictly valid JSON schema; so in some cases it may be desirable to omit them. TypeBox provides a `Type.Strict()` function that will omit these properties if necessary.
 
 ```typescript
-┌────────────────────────────────┬─────────────────────────────┬────────────────────────────────┐
-│ TypeBox                        │ TypeScript                  │ JSON Schema                    │
-│                                │                             │                                │
-├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
-│ const T = Conditional.Extends( │ type T =                    │ const T = {                    │
-│   Type.String(),               │  string extends number      │   const: false,                │
-│   Type.Number(),               │  true : false               │   type: 'boolean'              │
-│   Type.Literal(true),          │                             │ }                              │
-│   Type.Literal(false)          │                             │                                │
-│ )                              │                             │                                │
-│                                │                             │                                │
-├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
-│ const T = Conditional.Extract( │ type T = Extract<           │ const T = {                    │
-│   Type.Union([                 │   'a' | 'b' | 'c',          │   anyOf: [{                    │
-│     Type.Literal('a'),         │   'a' | 'f'                 │     const: 'a'                 │
-│     Type.Literal('b'),         │ >                           │     type: 'string'             │
-│     Type.Literal('c')          │                             │   }]                           │
-│   ]),                          │                             │ }                              │
-│   Type.Union([                 │                             │                                │
-│     Type.Literal('a'),         │                             │                                │
-│     Type.Literal('f')          │                             │                                │
-│   ])                           │                             │                                │
-│ )                              │                             │                                │
-│                                │                             │                                │
-├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
-│ const T = Conditional.Exclude( │ type T = Exclude<           │ const T = {                    │
-│   Type.Union([                 │   'a' | 'b' | 'c',          │   anyOf: [{                    │
-│     Type.Literal('a'),         │   'a'                       │     const: 'b',                │
-│     Type.Literal('b'),         │ >                           │     type: 'string'             │
-│     Type.Literal('c')          │                             │   }, {                         │
-│   ]),                          │                             │     const: 'c',                │
-│   Type.Union([                 │                             │     type: 'string'             │
-│     Type.Literal('a')          │                             │   }]                           │
-│   ])                           │                             │ }                              │
-│ )                              │                             │                                │
-│                                │                             │                                │
-└────────────────────────────────┴─────────────────────────────┴────────────────────────────────┘
+const T = Type.Object({                              // const T = {
+  name: Type.Optional(Type.String())                 //   [Kind]: 'Object',
+})                                                   //   type: 'object',
+                                                     //   properties: {
+                                                     //     name: {
+                                                     //       [Kind]: 'String',
+                                                     //       type: 'string',
+                                                     //       [Modifier]: 'Optional'
+                                                     //     }
+                                                     //   }
+                                                     // }
+
+const U = Type.Strict(T)                             // const U = {
+                                                     //   type: 'object', 
+                                                     //   properties: { 
+                                                     //     name: { 
+                                                     //       type: 'string' 
+                                                     //     } 
+                                                     //   } 
+                                                     // }
 ```
 
 ## Values
 
-Use the value module to perform common operations on values. If using the `.Check()` function for frequent type checking, consider using Ajv or the [TypeCompiler](#compiler) for additional performance.
-
- The value module is provided as an optional import.
+TypeBox includes an optional values module that can be used to perform common operations on JavaScript values. It enables one to create, check and cast values from types. It also provides functions to check equality, clone and diff and patch JavaScript values. The value module is provided as an optional import.
 
 ```typescript
 import { Value } from '@sinclair/typebox/value'
 ```
 
-The following demonstrates its use.
+### Create
+
+Use the Create function to create a value from a TypeBox type. TypeBox will use default values if specified.
 
 ```typescript
-const T = Type.Object({ x: Type.Number(), y: Type.Number() }, { additionalProperties: false })
+const T = Type.Object({ x: Type.Number(), y: Type.Number({ default: 42 }) })
 
-//--------------------------------------------------------------------------------------------
-//
-// Use Value.Create(T) to create a value from T.
-//
-//--------------------------------------------------------------------------------------------
+const A = Value.Create(T)                            // const A = { x: 0, y: 42 }
+```
 
-const V = Value.Create(T)                            // const V = { x: 0, y: 0 }
+### Clone
 
-//--------------------------------------------------------------------------------------------
-//
-// Use Value.Clone(...) to deeply clone a value
-//
-//--------------------------------------------------------------------------------------------
+Use the Clone function to clone a value
+```typescript
+const A = Value.Clone({ x: 1, y: 2, z: 3 })          // const A = { x: 1, y: 2, z: 3 }
+```
 
-const C = Value.Clone({ x: 1, y: 2, z: 3 })          // const C = { x: 1, y: 2, z: 3 }
+### Equals
 
-//--------------------------------------------------------------------------------------------
-//
-// Use Value.Check(T, ...) to check if a value is of type T.
-//
-//--------------------------------------------------------------------------------------------
+Use the Equals function to deep check values for equality.
 
-const R = Value.Check(T, { x: 1 })                   // const R = false
-
-//--------------------------------------------------------------------------------------------
-//
-// Use Value.Equals(...) to perform a deep equality check
-//
-//--------------------------------------------------------------------------------------------
-
-const E = Value.Equals(                              // const E = true
+```typescript
+const R = Value.Equals(                              // const R = true
   { x: 1, y: 2, z: 3 },
   { x: 1, y: 2, z: 3 }
 )
+```
 
-//--------------------------------------------------------------------------------------------
-//
-// Use Value.Cast(T, ...) to cast a value into T.
-//
-//--------------------------------------------------------------------------------------------
+### Check
+
+Use the Check function to test if a value is of a given type.
+
+```typescript
+const T = Type.Object({ x: Type.Number() })
+
+const R = Value.Check(T, { x: 1 })                   // const R = true
+```
+
+### Cast
+
+Use the cast function to cast a value into a type. This function will retain as much information as possible from the value being cast.
+
+```typescript
+const T = Type.Object({ x: Type.Number(), y: Type.Number() }, { additionalProperties: false })
 
 const X = Value.Cast(T, null)                        // const X = { x: 0, y: 0 }
 
 const Y = Value.Cast(T, { x: 1 })                    // const Y = { x: 1, y: 0 }
 
 const Z = Value.Cast(T, { x: 1, y: 2, z: 3 })        // const Z = { x: 1, y: 2 }
+```
 
-//--------------------------------------------------------------------------------------------
-//
-// Use Value.Diff(...) to produce edits on a value.
-//
-//--------------------------------------------------------------------------------------------
+### Diff
 
-const D = Value.Diff<any>(                          // const D = [
+Use the Diff function to produce a series of edits to transform one value into another.
+
+```typescript
+const E = Value.Diff<any>(                          // const E = [
   { x: 1, y: 2, z: 3 },                             //   { type: 'update', path: '/y', value: 4 },
   { y: 4, z: 5, w: 6 }                              //   { type: 'update', path: '/z', value: 5 },
 )                                                   //   { type: 'insert', path: '/w', value: 6 },
                                                     // ]
+```
+### Patch
 
-//--------------------------------------------------------------------------------------------
-//
-// Use Value.Patch(...) to apply edits
-//
-//--------------------------------------------------------------------------------------------
+Use the Patch function to apply edits
 
-const P = Value.Patch<any>({ x: 1, y: 2, z: 3 }, D)  // const P = { x: 4, z: 5, w: 6 }
+```typescript
+const A = { x: 1, y: 2 }
+
+const B = { x: 3 }
+
+const E = Value.Diff<any>(A, B)
+
+const C = Value.Patch<any>(A, E)                    // const C = { x: 3 }
 ```
 
 ## Formats
@@ -772,47 +844,6 @@ Value.Check(T, 'kayak')                              // true
 Value.Check(T, 'engine')                             // false
 ```
 
-## Guards
-
-Use the guard module to test if values are TypeBox types.
-
-```typescript
-import { TypeGuard } from '@sinclair/typebox/guard'
-
-const T = Type.String()
-
-if(TypeGuard.TString(T)) {
-    
-  // T is TString
-}
-```
-
-## Strict
-
-TypeBox schemas contain the `Kind` and `Modifier` symbol properties. These properties are provided to enable runtime type reflection on schemas, as well as helping TypeBox internally compose types. These properties are not strictly valid JSON schema; so in some cases it may be desirable to omit them. TypeBox provides a `Type.Strict()` function that will omit these properties if necessary.
-
-```typescript
-const T = Type.Object({                              // const T = {
-  name: Type.Optional(Type.String())                 //   [Kind]: 'Object',
-})                                                   //   type: 'object',
-                                                     //   properties: {
-                                                     //     name: {
-                                                     //       [Kind]: 'String',
-                                                     //       type: 'string',
-                                                     //       [Modifier]: 'Optional'
-                                                     //     }
-                                                     //   }
-                                                     // }
-
-const U = Type.Strict(T)                             // const U = {
-                                                     //   type: 'object', 
-                                                     //   properties: { 
-                                                     //     name: { 
-                                                     //       type: 'string' 
-                                                     //     } 
-                                                     //   } 
-                                                     // }
-```
 
 ## Validation
 
