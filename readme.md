@@ -1010,7 +1010,6 @@ Format.Set('palindrome', value => value === value.split('').reverse().join(''))
 Once set, this format can then be used by the TypeCompiler and Value modules.
 
 ```typescript
-
 const T = Type.String({ format: 'palindrome' })
 
 const A = TypeCompiler.Compile(T).Check('engine')    // const A = false
