@@ -80,6 +80,9 @@ License MIT
   - [Compiler](#typecheck-compiler)
   - [Formats](#typecheck-formats)
 - [Benchmark](#benchmark)
+  - [Compile](#benchmark-compile)
+  - [Validate](#benchmark-validate)
+  - [Compression](#benchmark-compression)
 - [Contribute](#contribute)
 
 <a name="Example"></a>
@@ -998,11 +1001,15 @@ Value.Check(T, 'kayak')                              // true
 Value.Check(T, 'engine')                             // false
 ```
 
+<a name='benchmark'></a>
+
 ## Benchmark
 
 This project maintains a set of benchmarks that measure Ajv, Value and TypeCompiler compilation and validation performance. These benchmarks can be run locally by cloning this repository and running `npm run benchmark`. The results below show for Ajv version 8.11.0. 
 
 For additional comparative benchmarks, please refer to [typescript-runtime-type-benchmarks](https://moltar.github.io/typescript-runtime-type-benchmarks/).
+
+<a name='benchmark-compile'></a>
 
 ### Compile
 
@@ -1037,6 +1044,8 @@ This benchmark measures compilation performance for varying types. You can revie
 │    Array_Matrix4 │    2000    │ '   1575 ms' │ '     12 ms' │ '  131.25 x' │
 └──────────────────┴────────────┴──────────────┴──────────────┴──────────────┘
 ```
+
+<a name='benchmark-validate'></a>
 
 ### Validate
 
@@ -1073,6 +1082,8 @@ This benchmark measures validation performance for varying types. You can review
 │    Array_Matrix4 │  1000000   │ '  11596 ms' │ '    381 ms' │ '    327 ms' │ '    1.17 x' │
 └──────────────────┴────────────┴──────────────┴──────────────┴──────────────┴──────────────┘
 ```
+
+<a name='benchmark-compression'></a>
 
 ### Compression
 
