@@ -34,7 +34,7 @@ import { ValueCreate } from './create'
 import { ValueCheck } from './check'
 import { ValueDelta, Edit } from './delta'
 
-/** Creates Values from TypeBox Types */
+/** The Value namespace provides type operations on values */
 export namespace Value {
   /** Casts a value into a given type. The return value will retain as much information of the original value as possible. Cast will convert string, number and boolean values if a reasonable conversion is possible. */
   export function Cast<T extends Types.TSchema, R extends Types.TSchema[]>(schema: T, references: [...R], value: unknown): Types.Static<T>
@@ -83,7 +83,7 @@ export namespace Value {
   }
 
   /** Patches a value with the series of edits */
-  export function Patch<T, E extends Edit<T>>(current: T, edits: E[]): T {
+  export function Patch<T>(current: T, edits: Edit<T>[]): T {
     return ValueDelta.Patch(current, edits) as T
   }
 }

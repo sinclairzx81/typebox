@@ -679,15 +679,48 @@ const R = Value.Check(T, { x: 1 })                   // const R = false
 
 //--------------------------------------------------------------------------------------------
 //
+// Use Value.Clone(...) to deeply clone a value
+//
+//--------------------------------------------------------------------------------------------
+
+const C = Value.Clone({ x: 1, y: 2, z: 3 })          // const C = { x: 1, y: 2, z: 3 }
+
+//--------------------------------------------------------------------------------------------
+//
+// Use Value.Equals(...) to perform a deep equality check
+//
+//--------------------------------------------------------------------------------------------
+
+const E = Value.Equal(                               // const E = true
+  { x: 1, y: 2, z: 3 },
+  { x: 1, y: 2, z: 3 }
+)
+
+//--------------------------------------------------------------------------------------------
+//
 // Use Value.Cast(T, ...) to immutably cast a value into T.
 //
 //--------------------------------------------------------------------------------------------
 
-const A = Value.Cast(T, null)                        // const A = { x: 0, y: 0 }
+const X = Value.Cast(T, null)                        // const X = { x: 0, y: 0 }
 
-const B = Value.Cast(T, { x: 1 })                    // const B = { x: 1, y: 0 }
+const Y = Value.Cast(T, { x: 1 })                    // const Y = { x: 1, y: 0 }
 
-const C = Value.Cast(T, { x: 1, y: 2, z: 3 })        // const C = { x: 1, y: 2 }
+const Z = Value.Cast(T, { x: 1, y: 2, z: 3 })        // const Z = { x: 1, y: 2 }
+
+//--------------------------------------------------------------------------------------------
+//
+// Use Value.Diff(...) and Value.Patch(...) to create edit deltas
+//
+//--------------------------------------------------------------------------------------------
+
+const D = Value.Diff<any>(                          // const D = [
+  { x: 1, y: 2, z: 3 },                             //   { type: 'update', path: '/y', value: 4 },
+  { y: 4, z: 5, w: 6 }                              //   { type: 'update', path: '/z', value: 5 },
+)                                                   //   { type: 'insert', path: '/w', value: 6 },
+                                                    // ]
+
+const P = Value.Patch({ x: 1, y: 2, z: 3 }, D)      // const P = { x: 4, z: 5, w: 6 }
 ```
 
 ## Formats
