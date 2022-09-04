@@ -108,4 +108,70 @@ describe('value/clone/Clone', () => {
     const R = Value.Clone(V)
     Assert.deepEqual(R, V)
   })
+
+  it('Should clone Int8Array', () => {
+    const V = new Int8Array([1, 2, 3, 4])
+    const R = Value.Clone(V)
+    Assert.deepEqual(R, V)
+  })
+
+  it('Should clone Uint8Array', () => {
+    const V = new Uint8Array([1, 2, 3, 4])
+    const R = Value.Clone(V)
+    Assert.deepEqual(R, V)
+  })
+
+  it('Should clone Uint8ClampedArray', () => {
+    const V = new Uint8ClampedArray([1, 2, 3, 4])
+    const R = Value.Clone(V)
+    Assert.deepEqual(R, V)
+  })
+
+  it('Should clone Int16Array', () => {
+    const V = new Int16Array([1, 2, 3, 4])
+    const R = Value.Clone(V)
+    Assert.deepEqual(R, V)
+  })
+
+  it('Should clone Uint16Array', () => {
+    const V = new Uint16Array([1, 2, 3, 4])
+    const R = Value.Clone(V)
+    Assert.deepEqual(R, V)
+  })
+
+  it('Should clone Int32Array', () => {
+    const V = new Int32Array([1, 2, 3, 4])
+    const R = Value.Clone(V)
+    Assert.deepEqual(R, V)
+  })
+
+  it('Should clone Uint32Array', () => {
+    const V = new Int32Array([1, 2, 3, 4])
+    const R = Value.Clone(V)
+    Assert.deepEqual(R, V)
+  })
+
+  it('Should clone Float32Array', () => {
+    const V = new Float32Array([1, 2, 3, 4])
+    const R = Value.Clone(V)
+    Assert.deepEqual(R, V)
+  })
+
+  it('Should clone Float64Array', () => {
+    const V = new Float64Array([1, 2, 3, 4])
+    const R = Value.Clone(V)
+    Assert.deepEqual(R, V)
+  })
+
+  it('Should clone BigInt64Array', () => {
+    const V = new BigInt64Array([1n, 2n, 3n, 4n])
+    const R = Value.Clone(V)
+    Assert.deepEqual(R, V)
+  })
+
+  it('Should clone BigUint64Array', () => {
+    const V = new BigUint64Array([1n, 2n, 3n, 4n])
+    const R = Value.Clone(V)
+    Assert.deepEqual(R, V)
+  })
 })

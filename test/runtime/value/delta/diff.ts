@@ -385,4 +385,40 @@ describe('value/delta/Diff', () => {
     const E = [Update('/0/v/x', B[0].v.x), Insert('/0/v/w', B[0].v.w), Delete('/0/v/y')]
     Assert.deepEqual(D, E)
   })
+
+  it('Should throw if attempting to diff a current value with symbol key', () => {
+    const A = [{ [Symbol('A')]: 1, v: { x: 1, y: 1 } }]
+    const B = [{ v: { x: 2, w: 2 } }]
+    Assert.throws(() => Value.Diff<any>(A, B))
+  })
+
+  it('Should throw if attempting to diff a next value with symbol key', () => {
+    const A = [{ v: { x: 1, y: 1 } }]
+    const B = [{ [Symbol('A')]: 1, v: { x: 2, w: 2 } }]
+    Assert.throws(() => Value.Diff<any>(A, B))
+  })
+
+  it('Should diff a Uint8Array (same size)', () => {
+    const A = new Uint8Array([0, 1, 2, 3])
+    const B = new Uint8Array([0, 9, 2, 9])
+    const D = Value.Diff(A, B)
+    const E = [Update('/1', 9), Update('/3', 9)]
+    Assert.deepEqual(D, E)
+  })
+
+  it('Should diff a Uint8Array (less than requires full update)', () => {
+    const A = new Uint8Array([0, 1, 2, 3])
+    const B = new Uint8Array([0, 9, 2])
+    const D = Value.Diff(A, B)
+    const E = [Update('', new Uint8Array([0, 9, 2]))]
+    Assert.deepEqual(D, E)
+  })
+
+  it('Should diff a Uint8Array (greater than requires full update)', () => {
+    const A = new Uint8Array([0, 1, 2, 3])
+    const B = new Uint8Array([0, 9, 2, 3, 4])
+    const D = Value.Diff(A, B)
+    const E = [Update('', new Uint8Array([0, 9, 2, 3, 4]))]
+    Assert.deepEqual(D, E)
+  })
 })
