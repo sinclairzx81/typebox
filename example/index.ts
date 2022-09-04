@@ -9,10 +9,19 @@ import { Type, Static } from '@sinclair/typebox'
 const T = Type.Object({
   x: Type.Number(),
   y: Type.Number(),
-  z: Type.Number()
+  z: Type.Optional(Type.Number())
 })
 
-type T = Static<typeof T>
+const A = Value.Create(T)
+const B = Value.Create(T)
+B.x = 123
+B.z = 2
 
-console.log(T)
+const edits = Value.Diff(A, B)
+
+console.log(edits)
+
+const patch = Value.Patch(B, edits)
+console.log(patch)
+
 
