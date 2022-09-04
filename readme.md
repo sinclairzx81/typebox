@@ -1013,9 +1013,9 @@ Once set, this format can then be used by the TypeCompiler and Value modules.
 
 const T = Type.String({ format: 'palindrome' })
 
-const A = Value.Check(T, 'kayak')                    // const A = true
+const A = TypeCompiler.Compile(T).Check('engine')    // const A = false
 
-const B = Value.Check(T, 'engine')                   // const B = false
+const B = Value.Check(T, 'kayak')                    // const B = true
 ```
 
 <a name='benchmark'></a>
