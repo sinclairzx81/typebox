@@ -28,6 +28,7 @@ THE SOFTWARE.
 
 import * as Types from '../typebox'
 import { ValueErrors, ValueError } from '../errors/index'
+import { ValueEquals } from './equals'
 import { ValueCast } from './cast'
 import { ValueClone } from './clone'
 import { ValueCreate } from './create'
@@ -70,6 +71,11 @@ export namespace Value {
   export function* Errors(...args: any[]) {
     const [schema, references, value] = args.length === 3 ? [args[0], args[1], args[2]] : [args[0], [], args[1]]
     yield* ValueErrors.Errors(schema, references, value)
+  }
+
+  /** Performs an equality check on left and right values */
+  export function Equals<T>(left: T, right: unknown): right is T {
+    return ValueEquals.Equals(left, right)
   }
 
   /** Clones the given value */

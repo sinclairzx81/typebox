@@ -26,7 +26,8 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { ValueClone, Is, ValueType } from './clone'
+import { ObjectType, ArrayType, ValueType, Is } from './is'
+import { ValueClone } from './clone'
 import { ValuePointer } from './pointer'
 
 export type Edit<T> = Insert<T> | Update<T> | Delete<T>
@@ -72,7 +73,7 @@ export namespace ValueDelta {
   // Diff
   // ---------------------------------------------------------------------
 
-  function* Object(path: string, current: Record<string, unknown>, next: unknown): IterableIterator<Edit<any>> {
+  function* Object(path: string, current: ObjectType, next: unknown): IterableIterator<Edit<any>> {
     if (!Is.Object(next)) return yield Update(path, next)
     const currentKeys = globalThis.Object.keys(current)
     const nextKeys = globalThis.Object.keys(next)
@@ -91,7 +92,7 @@ export namespace ValueDelta {
     }
   }
 
-  function* Array(path: string, current: unknown[], next: unknown): IterableIterator<Edit<any>> {
+  function* Array(path: string, current: ArrayType, next: unknown): IterableIterator<Edit<any>> {
     if (!Is.Array(next)) return yield Update(path, next)
     for (let i = 0; i < Math.min(current.length, next.length); i++) {
       yield* Visit(`${path}/${i}`, current[i], next[i])
@@ -119,7 +120,7 @@ export namespace ValueDelta {
     } else if (Is.Value(current)) {
       return yield* Value(path, current, next)
     } else {
-      throw new Error('ValueDelta: Cannot create edits for value')
+      throw new Error('ValueDelta: Cannot produce edits for value')
     }
   }
 

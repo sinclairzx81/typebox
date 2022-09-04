@@ -26,32 +26,20 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { ObjectType, ArrayType, ValueType, Is } from './is'
+export type ValueType = null | undefined | Function | symbol | bigint | number | boolean | string
+export type ObjectType = Record<string | number | symbol, unknown>
+export type ArrayType = unknown[]
 
-export namespace ValueClone {
-  function Object(value: ObjectType): any {
-    return globalThis.Object.entries(value).reduce((acc, [key, value]) => {
-      return { ...acc, [key]: Clone(value) }
-    }, {})
+export namespace Is {
+  export function Object(value: unknown): value is ObjectType {
+    return value !== null && typeof value === 'object' && !globalThis.Array.isArray(value)
+  }
+  
+  export function Array(value: unknown): value is ArrayType {
+    return typeof value === 'object' && globalThis.Array.isArray(value)
   }
 
-  function Array(value: ArrayType): any {
-    return value.map((element: any) => Clone(element))
-  }
-
-  function Value(value: ValueType): any {
-    return value
-  }
-
-  export function Clone<T extends unknown>(value: T): T {
-    if (Is.Object(value)) {
-      return Object(value)
-    } else if (Is.Array(value)) {
-      return Array(value)
-    } else if (Is.Value(value)) {
-      return Value(value)
-    } else {
-      throw new Error('ValueClone: Unable to clone value')
-    }
+  export function Value(value: unknown): value is ValueType {
+    return value === null || value === undefined || typeof value === 'function' || typeof value === 'symbol' || typeof value === 'bigint' || typeof value === 'number' || typeof value === 'boolean' || typeof value === 'string'
   }
 }

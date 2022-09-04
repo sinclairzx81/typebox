@@ -28,15 +28,14 @@ THE SOFTWARE.
 
 /** RFC6901 JsonPointer */
 export namespace ValuePointer {
-  export function Format(pointer: string) {
+  function Format(pointer: string) {
     if (pointer === '/') return ['']
-    return pointer
-      .split(`/`)
-      .filter((part) => part.length > 0)
-      .map((part) => part.replace(/~0/g, `~`).replace(/~1/g, `/`))
+    const split = pointer.split('/')
+    const filter = split.filter((part) => part.length > 0)
+    return filter.map((part) => part.replace(/~0/g, `~`).replace(/~1/g, `/`))
   }
 
-  /** Sets the value at the given pointer. If the pointer does not exist it is created. */
+  /** Sets the value at the given pointer. If the value at the pointer does not exist it is created. */
   export function Set(value: any, pointer: string, update: any) {
     if (pointer === '') throw Error('Cannot set root value')
     const path = Format(pointer)
