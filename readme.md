@@ -765,7 +765,7 @@ const A = Value.Clone({ x: 1, y: 2, z: 3 })          // const A = { x: 1, y: 2, 
 
 ### Check
 
-Use the Check function to test if a value is of a given type.
+Use the Check function to type check a value
 
 ```typescript
 const T = Type.Object({ x: Type.Number() })
@@ -777,7 +777,7 @@ const R = Value.Check(T, { x: 1 })                   // const R = true
 
 ### Cast
 
-Use the Cast function to cast a value into a type. This function will retain as much information as possible from the value being cast.
+Use the Cast function to cast a value into a type. The cast function will retain as much information as possible from the original value.
 
 ```typescript
 const T = Type.Object({ x: Type.Number(), y: Type.Number() }, { additionalProperties: false })
@@ -793,7 +793,7 @@ const Z = Value.Cast(T, { x: 1, y: 2, z: 3 })        // const Z = { x: 1, y: 2 }
 
 ### Equals
 
-Use the Equals function to deeply check for value for equality.
+Use the Equals function to deeply check for value equality.
 
 ```typescript
 const R = Value.Equals(                              // const R = true
@@ -806,7 +806,7 @@ const R = Value.Equals(                              // const R = true
 
 ### Diff
 
-Use the Diff function to produce a series of edits to transform one value into another.
+Use the Diff function to produce a sequence of edits to transform one value into another.
 
 ```typescript
 const E = Value.Diff<any>(                          // const E = [
@@ -821,7 +821,7 @@ const E = Value.Diff<any>(                          // const E = [
 
 ### Patch
 
-Use the Patch function to apply Diff edits
+Use the Patch function to apply edits
 
 ```typescript
 const A = { x: 1, y: 2 }
@@ -841,7 +841,7 @@ const C = Value.Patch<any>(A, E)                     // const C = { x: 3 }
 
 ### Errors
 
-Use the Errors function get validation errors.
+Use the Errors function enumerate validation errors.
 
 ```typescript
 const T = Type.Object({ x: Type.Number(), y: Type.Number() })
