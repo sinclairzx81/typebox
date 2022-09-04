@@ -28,18 +28,23 @@ THE SOFTWARE.
 
 export type ValueType = null | undefined | Function | symbol | bigint | number | boolean | string
 export type ObjectType = Record<string | number | symbol, unknown>
+export type TypedArrayType = Int8Array | Uint8Array | Uint8ClampedArray | Int16Array | Uint16Array | Int32Array | Uint32Array | Float32Array | Float64Array | BigInt64Array | BigUint64Array
 export type ArrayType = unknown[]
 
 export namespace Is {
   export function Object(value: unknown): value is ObjectType {
-    return value !== null && typeof value === 'object' && !globalThis.Array.isArray(value)
+    return value !== null && typeof value === 'object' && !globalThis.Array.isArray(value) && !ArrayBuffer.isView(value)
   }
 
   export function Array(value: unknown): value is ArrayType {
-    return typeof value === 'object' && globalThis.Array.isArray(value)
+    return globalThis.Array.isArray(value) && !ArrayBuffer.isView(value)
   }
 
   export function Value(value: unknown): value is ValueType {
     return value === null || value === undefined || typeof value === 'function' || typeof value === 'symbol' || typeof value === 'bigint' || typeof value === 'number' || typeof value === 'boolean' || typeof value === 'string'
+  }
+
+  export function TypedArray(value: unknown): value is TypedArrayType {
+    return ArrayBuffer.isView(value)
   }
 }

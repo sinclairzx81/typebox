@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { ObjectType, ArrayType, ValueType, Is } from './is'
+import { ObjectType, ArrayType, TypedArrayType, ValueType, Is } from './is'
 
 export namespace ValueClone {
   function Object(value: ObjectType): any {
@@ -39,6 +39,10 @@ export namespace ValueClone {
     return value.map((element: any) => Clone(element))
   }
 
+  function TypedArray(value: TypedArrayType): any {
+    return value.slice()
+  }
+
   function Value(value: ValueType): any {
     return value
   }
@@ -48,6 +52,8 @@ export namespace ValueClone {
       return Object(value)
     } else if (Is.Array(value)) {
       return Array(value)
+    } else if (Is.TypedArray(value)) {
+      return TypedArray(value)
     } else if (Is.Value(value)) {
       return Value(value)
     } else {

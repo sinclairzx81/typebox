@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { ObjectType, ArrayType, ValueType, Is } from './is'
+import { ObjectType, ArrayType, TypedArrayType, ValueType, Is } from './is'
 import { ValueClone } from './clone'
 import { ValuePointer } from './pointer'
 
@@ -107,6 +107,13 @@ export namespace ValueDelta {
     }
   }
 
+  function* TypedArray(path: string, current: TypedArrayType, next: unknown): IterableIterator<Edit<any>> {
+    if (!Is.TypedArray(next) || current.length !== next.length || globalThis.Object.getPrototypeOf(current).constructor.name !== globalThis.Object.getPrototypeOf(next).constructor.name) return yield Update(path, next)
+    for (let i = 0; i < Math.min(current.length, next.length); i++) {
+      yield* Visit(`${path}/${i}`, current[i], next[i])
+    }
+  }
+
   function* Value(path: string, current: ValueType, next: unknown): IterableIterator<Edit<any>> {
     if (current === next) return
     yield Update(path, next)
@@ -117,9 +124,12 @@ export namespace ValueDelta {
       return yield* Object(path, current, next)
     } else if (Is.Array(current)) {
       return yield* Array(path, current, next)
+    } else if (Is.TypedArray(current)) {
+      return yield* TypedArray(path, current, next)
     } else if (Is.Value(current)) {
       return yield* Value(path, current, next)
     } else {
+      console.log('left', current)
       throw new Error('ValueDelta: Cannot produce edits for value')
     }
   }
