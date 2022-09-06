@@ -8,7 +8,7 @@ import { Type } from '@sinclair/typebox'
     C: Type.String(),
   })
 
-  Expect(T).ToBe<{
+  Expect(T).ToInfer<{
     A: string
     B: string
     C: string
@@ -32,7 +32,7 @@ import { Type } from '@sinclair/typebox'
       C: Type.String(),
     }),
   })
-  Expect(T).ToBe<{
+  Expect(T).ToInfer<{
     A: {
       A: string
       B: string

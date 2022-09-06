@@ -9,7 +9,7 @@ import { Type } from '@sinclair/typebox'
       C: Type.Null(),
     }),
   )
-  Expect(K).ToBe<'A' | 'B' | 'C'>()
+  Expect(K).ToInfer<'A' | 'B' | 'C'>()
 }
 
 {
@@ -24,7 +24,7 @@ import { Type } from '@sinclair/typebox'
 
   const K = Type.KeyOf(T)
 
-  Expect(K).ToBe<'A' | 'B'>()
+  Expect(K).ToInfer<'A' | 'B'>()
 }
 
 {
@@ -39,7 +39,7 @@ import { Type } from '@sinclair/typebox'
 
   const K = Type.KeyOf(T)
 
-  Expect(K).ToBe<'C'>()
+  Expect(K).ToInfer<'C'>()
 }
 
 {
@@ -53,5 +53,5 @@ import { Type } from '@sinclair/typebox'
       ['A', 'B'],
     ),
   )
-  Expect(T).ToBe<'C'>()
+  Expect(T).ToInfer<'C'>()
 }

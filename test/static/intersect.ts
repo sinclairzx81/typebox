@@ -1,5 +1,5 @@
 import { Expect } from './assert'
-import { Type } from '@sinclair/typebox'
+import { Type, TOptional, TString } from '@sinclair/typebox'
 
 {
   const A = Type.Object({
@@ -12,7 +12,7 @@ import { Type } from '@sinclair/typebox'
   })
   const T = Type.Intersect([A, B])
 
-  Expect(T).ToBe<
+  Expect(T).ToInfer<
     {
       A: string
       B: string
@@ -21,6 +21,19 @@ import { Type } from '@sinclair/typebox'
       Y: number
     }
   >()
+}
+
+{
+  const A = Type.Object({
+    A: Type.Optional(Type.String()),
+  })
+  const B = Type.Object({
+    B: Type.String(),
+  })
+  const T = Type.Intersect([A, B])
+
+  Expect(T.properties.A).ToBe<TOptional<TString>>()
+  Expect(T.properties.B).ToBe<TString>()
 }
 
 // https://github.com/sinclairzx81/typebox/issues/113

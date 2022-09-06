@@ -8,7 +8,7 @@ import { Type, Static } from '@sinclair/typebox'
 
   type T = Static<typeof T>
 
-  Expect(T).ToBe<string | number>()
+  Expect(T).ToInfer<string | number>()
 }
 {
   const A = Type.Object({
@@ -23,7 +23,7 @@ import { Type, Static } from '@sinclair/typebox'
 
   type T = Static<typeof T>
 
-  Expect(T).ToBe<
+  Expect(T).ToInfer<
     | {
         A: string
         B: string
@@ -48,7 +48,7 @@ import { Type, Static } from '@sinclair/typebox'
 
   type T = Static<typeof T>
 
-  Expect(T).ToBe<
+  Expect(T).ToInfer<
     | {
         A: string
         B: string

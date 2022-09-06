@@ -6,5 +6,5 @@ import { Type, Static } from '@sinclair/typebox'
 
   type T = Static<typeof T>
 
-  Expect(T).ToBe<[number, string, boolean]>()
+  Expect(T).ToInfer<[number, string, boolean]>()
 }

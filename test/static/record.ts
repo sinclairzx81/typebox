@@ -6,29 +6,29 @@ import { Type, Static } from '@sinclair/typebox'
   const T = Type.Record(K, Type.Number())
   type T = Static<typeof T>
 
-  Expect(T).ToBe<Record<string, number>>()
+  Expect(T).ToInfer<Record<string, number>>()
 }
 {
   // type K = string
   const K = Type.RegEx(/foo|bar/)
   const T = Type.Record(K, Type.Number())
   type T = Static<typeof T>
-  Expect(T).ToBe<Record<string, number>>()
+  Expect(T).ToInfer<Record<string, number>>()
 }
 {
   // type K = number
   const K = Type.Number()
   const T = Type.Record(K, Type.Number())
   type T = Static<typeof T>
-  Expect(T).ToBe<Record<string, number>>()
-  Expect(T).ToBe<Record<number, number>>()
+  Expect(T).ToInfer<Record<string, number>>()
+  Expect(T).ToInfer<Record<number, number>>()
 }
 {
   // type K = 'A' | 'B' | 'C'
   const K = Type.Union([Type.Literal('A'), Type.Literal('B'), Type.Literal('C')])
   const T = Type.Record(K, Type.Number())
   type T = Static<typeof T>
-  Expect(T).ToBe<Record<'A' | 'B' | 'C', number>>()
+  Expect(T).ToInfer<Record<'A' | 'B' | 'C', number>>()
 }
 {
   // type K = keyof { A: number, B: number, C: number }
@@ -41,7 +41,7 @@ import { Type, Static } from '@sinclair/typebox'
   )
   const T = Type.Record(K, Type.Number())
   type T = Static<typeof T>
-  Expect(T).ToBe<Record<'A' | 'B' | 'C', number>>()
+  Expect(T).ToInfer<Record<'A' | 'B' | 'C', number>>()
 }
 {
   // type K = keyof Omit<{ A: number, B: number, C: number }, 'C'>
@@ -57,5 +57,5 @@ import { Type, Static } from '@sinclair/typebox'
   )
   const T = Type.Record(K, Type.Number())
   type T = Static<typeof T>
-  Expect(T).ToBe<Record<'A' | 'B', number>>()
+  Expect(T).ToInfer<Record<'A' | 'B', number>>()
 }

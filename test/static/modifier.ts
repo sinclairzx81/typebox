@@ -9,7 +9,7 @@ import { Type } from '@sinclair/typebox'
     C: Type.Optional(Type.String()),
     D: Type.String(),
   })
-  Expect(T).ToBe<{
+  Expect(T).ToInfer<{
     readonly A?: string
     readonly B: string
     C?: string

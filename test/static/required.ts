@@ -1,7 +1,7 @@
 import { Expect } from './assert'
 import { Type, Static } from '@sinclair/typebox'
 
-Expect(Type.RegEx(/foo/)).ToBe<string>()
+Expect(Type.RegEx(/foo/)).ToInfer<string>()
 
 {
   const T = Type.Required(
@@ -14,7 +14,7 @@ Expect(Type.RegEx(/foo/)).ToBe<string>()
 
   type T = Static<typeof T>
 
-  Expect(T).ToBe<{
+  Expect(T).ToInfer<{
     A: string
     B: string
     C: string

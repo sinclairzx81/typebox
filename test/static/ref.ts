@@ -8,6 +8,6 @@ import { Type, Static } from '@sinclair/typebox'
   type T = Static<typeof T>
   type R = Static<typeof R>
 
-  Expect(T).ToBe<string>()
-  Expect(R).ToBe<string>()
+  Expect(T).ToInfer<string>()
+  Expect(R).ToInfer<string>()
 }

@@ -218,9 +218,11 @@ export type IntersectEvaluate<T extends readonly TSchema[], P extends unknown[]>
 
 export type IntersectReduce<I extends unknown, T extends readonly any[]> = T extends [infer A, ...infer B] ? IntersectReduce<I & A, B> : I extends object ? I : {}
 
+export type IntersectProperties<T extends TObject[]> = UnionToIntersect<{ [I in keyof T]: T[I]['properties'] }[number]> extends infer P ? (P extends TProperties ? P : TProperties) : never
+
 export interface TIntersect<T extends TObject[] = TObject[]> extends TObject {
   static: IntersectReduce<unknown, IntersectEvaluate<T, this['params']>>
-  properties: Record<keyof IntersectReduce<unknown, IntersectEvaluate<T, this['params']>>, TSchema>
+  properties: IntersectProperties<T>
 }
 
 // --------------------------------------------------------------------------

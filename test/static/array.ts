@@ -1,7 +1,7 @@
 import { Expect } from './assert'
 import { Type } from '@sinclair/typebox'
 
-Expect(Type.Array(Type.String())).ToBe<string[]>()
+Expect(Type.Array(Type.String())).ToInfer<string[]>()
 
 Expect(
   Type.Array(
@@ -11,7 +11,7 @@ Expect(
       z: Type.String(),
     }),
   ),
-).ToBe<
+).ToInfer<
   {
     x: number
     y: boolean
@@ -19,6 +19,6 @@ Expect(
   }[]
 >()
 
-Expect(Type.Array(Type.Array(Type.String()))).ToBe<string[][]>()
+Expect(Type.Array(Type.Array(Type.String()))).ToInfer<string[][]>()
 
-Expect(Type.Array(Type.Tuple([Type.String(), Type.Number()]))).ToBe<[string, number][]>()
+Expect(Type.Array(Type.Tuple([Type.String(), Type.Number()]))).ToInfer<[string, number][]>()
