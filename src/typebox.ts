@@ -214,15 +214,16 @@ export interface TInteger extends TSchema, NumericOptions {
 // Intersect
 // --------------------------------------------------------------------------
 
-export type IntersectEvaluate<T extends readonly TSchema[], P extends unknown[]> = { [K in keyof T]: T[K] extends TSchema ? Static<T[K], P> : never }
-
 export type IntersectReduce<I extends unknown, T extends readonly any[]> = T extends [infer A, ...infer B] ? IntersectReduce<I & A, B> : I extends object ? I : {}
 
-export type IntersectProperties<T extends TObject[]> = UnionToIntersect<{ [I in keyof T]: T[I]['properties'] }[number]> extends infer P ? (P extends TProperties ? P : TProperties) : never
+// note: rename to IntersectStatic<T, P> in next minor release
+export type IntersectEvaluate<T extends readonly TSchema[], P extends unknown[]> = { [K in keyof T]: T[K] extends TSchema ? Static<T[K], P> : never }
+
+export type IntersectProperties<T extends readonly TObject[]> = { [K in keyof T]: T[K]['properties'] }
 
 export interface TIntersect<T extends TObject[] = TObject[]> extends TObject {
   static: IntersectReduce<unknown, IntersectEvaluate<T, this['params']>>
-  properties: IntersectProperties<T>
+  properties: IntersectReduce<unknown, IntersectProperties<T>>
 }
 
 // --------------------------------------------------------------------------
