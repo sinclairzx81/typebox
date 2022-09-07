@@ -219,7 +219,9 @@ export type IntersectReduce<I extends unknown, T extends readonly any[]> = T ext
 // note: rename to IntersectStatic<T, P> in next minor release
 export type IntersectEvaluate<T extends readonly TSchema[], P extends unknown[]> = { [K in keyof T]: T[K] extends TSchema ? Static<T[K], P> : never }
 
-export type IntersectProperties<T extends readonly TObject[]> = { [K in keyof T]: T[K]['properties'] }
+export type IntersectProperties<T extends readonly TObject[]> = { 
+  [K in keyof T]: T[K] extends TObject<infer P> ? P : {}
+}
 
 export interface TIntersect<T extends TObject[] = TObject[]> extends TObject {
   static: IntersectReduce<unknown, IntersectEvaluate<T, this['params']>>
