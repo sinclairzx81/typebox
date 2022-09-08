@@ -96,6 +96,10 @@ export namespace ValueCheck {
     return value === schema.const
   }
 
+  function Never(schema: Types.TNever, references: Types.TSchema[], value: any): boolean {
+    return false
+  }
+
   function Null(schema: Types.TNull, references: Types.TSchema[], value: any): boolean {
     return value === null
   }
@@ -282,6 +286,8 @@ export namespace ValueCheck {
         return Integer(anySchema, anyReferences, value)
       case 'Literal':
         return Literal(anySchema, anyReferences, value)
+      case 'Never':
+        return Never(anySchema, anyReferences, value)
       case 'Null':
         return Null(anySchema, anyReferences, value)
       case 'Number':

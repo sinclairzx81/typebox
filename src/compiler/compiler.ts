@@ -153,6 +153,10 @@ export namespace TypeCompiler {
     }
   }
 
+  function* Never(schema: Types.TNull, value: string): IterableIterator<string> {
+    yield `(false)`
+  }
+
   function* Null(schema: Types.TNull, value: string): IterableIterator<string> {
     yield `(${value} === null)`
   }
@@ -301,6 +305,8 @@ export namespace TypeCompiler {
         return yield* Integer(anySchema, value)
       case 'Literal':
         return yield* Literal(anySchema, value)
+      case 'Never':
+        return yield* Never(anySchema, value)
       case 'Null':
         return yield* Null(anySchema, value)
       case 'Number':

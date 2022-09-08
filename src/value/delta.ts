@@ -133,7 +133,6 @@ export namespace ValueDelta {
     } else if (Is.Value(current)) {
       return yield* Value(path, current, next)
     } else {
-      console.log('left', current)
       throw new Error('ValueDelta: Cannot produce edits for value')
     }
   }

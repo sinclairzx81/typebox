@@ -302,6 +302,17 @@ The following table lists the standard TypeBox types.
 │                                │                             │ }                              │
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
+│ const T = Type.Never()         │ type T = never              │ const T = {                    │
+│                                │                             │   allOf: [{                    │
+│                                │                             │     type: 'number'             │
+│                                │                             │     const: 0                   │
+│                                │                             │   }, {                         │
+│                                │                             │     type: 'number'             │
+│                                │                             │     const: 1                   │
+│                                │                             │   }]                           │
+│                                │                             │ }                              │
+│                                │                             │                                │
+├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Record(         │ type T = Record<            │ const T = {                    │
 │   Type.String(),               │   string,                   │   type: 'object',              │
 │   Type.Number()                │   number,                   │   patternProperties: {         │
@@ -428,7 +439,7 @@ const T = Type.Array(Type.Integer(), { minItems: 5 })
 
 ### Extended
 
-In addition to JSON schema types, TypeBox provides several extended types that allow for `function` and `constructor` types to be composed. These additional types are not valid JSON Schema and will not validate using typical JSON Schema validation. However, these types can be used to frame JSON schema and describe callable interfaces that may receive JSON validated data. These types are as follows.
+In addition to JSON schema types, TypeBox provides several extended types that allow for the composition of `function` and `constructor` types. These additional types are not valid JSON Schema and will not validate using typical JSON Schema validation. However, these types can be used to frame JSON schema and describe callable interfaces that may receive JSON validated data. These types are as follows.
 
 ```typescript
 ┌────────────────────────────────┬─────────────────────────────┬────────────────────────────────┐

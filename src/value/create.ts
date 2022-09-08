@@ -34,6 +34,12 @@ export class ValueCreateUnknownTypeError extends Error {
   }
 }
 
+export class ValueCreateNeverTypeError extends Error {
+  constructor(public readonly schema: Types.TSchema) {
+    super('ValueCreate: Never types cannot be created')
+  }
+}
+
 export namespace ValueCreate {
   function Any(schema: Types.TAny, references: Types.TSchema[]): any {
     if (schema.default !== undefined) {
@@ -115,6 +121,10 @@ export namespace ValueCreate {
 
   function Literal(schema: Types.TLiteral, references: Types.TSchema[]): any {
     return schema.const
+  }
+
+  function Never(schema: Types.TNever, references: Types.TSchema[]): any {
+    throw new ValueCreateNeverTypeError(schema)
   }
 
   function Null(schema: Types.TNull, references: Types.TSchema[]): any {
@@ -289,6 +299,8 @@ export namespace ValueCreate {
         return Integer(anySchema, anyReferences)
       case 'Literal':
         return Literal(anySchema, anyReferences)
+      case 'Never':
+        return Never(anySchema, anyReferences)
       case 'Null':
         return Null(anySchema, anyReferences)
       case 'Number':

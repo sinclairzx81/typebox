@@ -219,7 +219,7 @@ export type IntersectReduce<I extends unknown, T extends readonly any[]> = T ext
 // note: rename to IntersectStatic<T, P> in next minor release
 export type IntersectEvaluate<T extends readonly TSchema[], P extends unknown[]> = { [K in keyof T]: T[K] extends TSchema ? Static<T[K], P> : never }
 
-export type IntersectProperties<T extends readonly TObject[]> = { 
+export type IntersectProperties<T extends readonly TObject[]> = {
   [K in keyof T]: T[K] extends TObject<infer P> ? P : {}
 }
 
@@ -252,6 +252,16 @@ export interface TLiteral<T extends TLiteralValue = TLiteralValue> extends TSche
   [Kind]: 'Literal'
   static: T
   const: T
+}
+
+// --------------------------------------------------------------------------
+// Never
+// --------------------------------------------------------------------------
+
+export interface TNever extends TSchema {
+  [Kind]: 'Never'
+  static: never
+  allOf: [{ const: 0 }, { const: 1 }]
 }
 
 // --------------------------------------------------------------------------
@@ -681,6 +691,18 @@ export class TypeBuilder {
     return this.Create({ ...options, [Kind]: 'Literal', const: value, type: typeof value as 'string' | 'number' | 'boolean' })
   }
 
+  /** Creates a never type */
+  public Never(options: SchemaOptions = {}): TNever {
+    return this.Create({
+      ...options,
+      [Kind]: 'Never',
+      allOf: [
+        { type: 'number', const: 0 },
+        { type: 'number', const: 1 },
+      ],
+    })
+  }
+
   /** Creates a null type */
   public Null(options: SchemaOptions = {}): TNull {
     return this.Create({ ...options, [Kind]: 'Null', type: 'null' })
@@ -878,8 +900,11 @@ export class TypeBuilder {
   }
 
   /** Creates a union type */
-  public Union<T extends TSchema[]>(items: [...T], options: SchemaOptions = {}): TUnion<T> {
-    return this.Create({ ...options, [Kind]: 'Union', anyOf: items })
+
+  public Union(items: [], options?: SchemaOptions): TNever
+  public Union<T extends TSchema[]>(items: [...T], options?: SchemaOptions): TUnion<T>
+  public Union<T extends TSchema[]>(items: [...T], options: SchemaOptions = {}) {
+    return items.length === 0 ? Type.Never({ ...options }) : this.Create({ ...options, [Kind]: 'Union', anyOf: items })
   }
 
   /** Creates a Uint8Array type */

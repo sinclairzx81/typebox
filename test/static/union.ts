@@ -66,3 +66,8 @@ import { Type, Static } from '@sinclair/typebox'
       })
   >()
 }
+
+{
+  const T = Type.Union([])
+  Expect(T).ToInfer<never>()
+}
