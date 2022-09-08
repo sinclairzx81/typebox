@@ -47,6 +47,7 @@ export enum ValueErrorType {
   IntegerMinimum,
   IntegerMaximum,
   Literal,
+  Never,
   Null,
   Number,
   NumberMultipleOf,
@@ -165,6 +166,10 @@ export namespace ValueErrors {
       const error = typeof schema.const === 'string' ? `'${schema.const}'` : schema.const
       return yield { type: ValueErrorType.Literal, schema, path, value, message: `Expected ${error}` }
     }
+  }
+
+  function* Never(schema: Types.TNever, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
+    yield { type: ValueErrorType.Never, schema, path, value, message: `Value cannot be validated` }
   }
 
   function* Null(schema: Types.TNull, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
@@ -365,6 +370,8 @@ export namespace ValueErrors {
         return yield* Integer(anySchema, anyReferences, path, value)
       case 'Literal':
         return yield* Literal(anySchema, anyReferences, path, value)
+      case 'Never':
+        return yield* Never(anySchema, anyReferences, path, value)
       case 'Null':
         return yield* Null(anySchema, anyReferences, path, value)
       case 'Number':

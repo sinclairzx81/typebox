@@ -73,19 +73,19 @@ namespace UnionValueCast {
   // --------------------------------------------------------------------------
 
   function GetObjectDiscriminatorKeys(schema: Types.TSchema): string[] {
-    if(!TypeGuard.TObject(schema)) return []
+    if (!TypeGuard.TObject(schema)) return []
     return Object.entries(schema.properties)
       .filter(([_, schema]) => TypeGuard.TLiteral(schema) && typeof schema.const === 'string')
       .map(([key]) => key)
   }
-  
+
   export function IsObjectDiscriminable(schema: Types.TSchema, references: Types.TSchema[]): schema is Types.TObject {
-    return TypeGuard.TObject(schema) && Object.values(schema.properties).some(schema => TypeGuard.TLiteral(schema) && typeof schema.const === 'string')
+    return TypeGuard.TObject(schema) && Object.values(schema.properties).some((schema) => TypeGuard.TLiteral(schema) && typeof schema.const === 'string')
   }
 
   export function IsUnionOfDiscriminatedObjects(schema: Types.TUnion, references: Types.TSchema[]) {
-    if(schema.anyOf.length === 0 || !schema.anyOf.every(schema => IsObjectDiscriminable(schema, references))) return false
-    const [initial, ...rest] = schema.anyOf.map(schema => GetObjectDiscriminatorKeys(schema))
+    if (schema.anyOf.length === 0 || !schema.anyOf.every((schema) => IsObjectDiscriminable(schema, references))) return false
+    const [initial, ...rest] = schema.anyOf.map((schema) => GetObjectDiscriminatorKeys(schema))
     return initial.every((initialKey) => rest.every((restKey) => restKey.includes(initialKey)))
   }
 
@@ -98,6 +98,12 @@ namespace UnionValueCast {
 export class ValueCastUnknownTypeError extends Error {
   constructor(public readonly schema: Types.TSchema) {
     super('ValueCast: Unknown type')
+  }
+}
+
+export class ValueCastNeverTypeError extends Error {
+  constructor(public readonly schema: Types.TSchema) {
+    super('ValueCast: Never types cannot be cast')
   }
 }
 
@@ -199,6 +205,10 @@ export namespace ValueCast {
 
   function Literal(schema: Types.TLiteral, references: Types.TSchema[], value: any): any {
     return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
+  }
+
+  function Never(schema: Types.TNever, references: Types.TSchema[], value: any): any {
+    throw new ValueCastNeverTypeError(schema)
   }
 
   function Null(schema: Types.TNull, references: Types.TSchema[], value: any): any {
@@ -306,6 +316,8 @@ export namespace ValueCast {
         return Integer(anySchema, anyReferences, value)
       case 'Literal':
         return Literal(anySchema, anyReferences, value)
+      case 'Never':
+        return Never(anySchema, anyReferences, value)
       case 'Null':
         return Null(anySchema, anyReferences, value)
       case 'Number':

@@ -302,6 +302,15 @@ The following table lists the standard TypeBox types.
 │                                │                             │ }                              │
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
+│ const T = Type.Never()         │ type T = never              │ const T = {                    │
+│                                │                             │   allOf: [{                    │
+│                                │                             │     type: 'boolean'            │
+│                                │                             │   }, {                         │
+│                                │                             │     type: 'null'               │
+│                                │                             │   }]                           │
+│                                │                             │ }                              │
+│                                │                             │                                │
+├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Record(         │ type T = Record<            │ const T = {                    │
 │   Type.String(),               │   string,                   │   type: 'object',              │
 │   Type.Number()                │   number,                   │   patternProperties: {         │
@@ -458,11 +467,6 @@ In addition to JSON schema types, TypeBox provides several extended types that a
 │                                │                             │   return: {                    │
 │                                │                             │     type: 'boolean'            │
 │                                │                             │   }                            │
-│                                │                             │ }                              │
-│                                │                             │                                │
-├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
-│ const T = Type.Never()         │ type T = never              │ const T = {                    │
-│                                │                             │   type: 'never',               │
 │                                │                             │ }                              │
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤

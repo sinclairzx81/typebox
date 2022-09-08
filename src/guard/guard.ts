@@ -64,7 +64,7 @@ export namespace TypeGuard {
     return true
   }
 
-  function IsString(value: unknown): value is number {
+  function IsString(value: unknown): value is string {
     return typeof value === 'string'
   }
 
@@ -72,7 +72,7 @@ export namespace TypeGuard {
     return typeof value === 'number'
   }
 
-  function IsBoolean(value: unknown): value is number {
+  function IsBoolean(value: unknown): value is boolean {
     return typeof value === 'boolean'
   }
 
@@ -158,6 +158,22 @@ export namespace TypeGuard {
   /** Returns true if the given schema is TLiteral */
   export function TLiteral(schema: unknown): schema is Types.TLiteral {
     return IsObject(schema) && schema[Types.Kind] === 'Literal' && IsOptionalString(schema.$id) && (IsString(schema.const) || IsNumber(schema.const) || IsBoolean(schema.const))
+  }
+
+  /** Returns true if the given schema is TNever */
+  export function TNever(schema: unknown): schema is Types.TNever {
+    return (
+      IsObject(schema) &&
+      schema[Types.Kind] === 'Never' &&
+      IsArray(schema.allOf) &&
+      schema.allOf.length === 2 &&
+      IsObject(schema.allOf[0]) &&
+      IsString(schema.allOf[0].type) &&
+      schema.allOf[0].type === 'boolean' &&
+      IsObject(schema.allOf[1]) &&
+      IsString(schema.allOf[1].type) &&
+      schema.allOf[1].type === 'null'
+    )
   }
 
   /** Returns true if the given schema is TNull */
@@ -316,6 +332,7 @@ export namespace TypeGuard {
       TFunction(schema) ||
       TInteger(schema) ||
       TLiteral(schema) ||
+      TNever(schema) ||
       TNull(schema) ||
       TNumber(schema) ||
       TObject(schema) ||

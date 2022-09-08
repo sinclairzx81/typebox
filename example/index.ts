@@ -19,6 +19,10 @@ const T2 = Type.Object({
 })
 
 const T = Type.Union([])
+console.log(TypeGuard.TNever(T))
+console.log(T)
+
+type T = Static<typeof T>
 
 const A = Value.Create(T1)
 
