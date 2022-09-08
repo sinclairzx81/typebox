@@ -300,6 +300,8 @@ export namespace TypeBoxCodegen {
       return yield `Type.Unknown()`
     } else if (node.kind === ts.SyntaxKind.AnyKeyword) {
       return yield `Type.Any()`
+    } else if (node.kind === ts.SyntaxKind.NeverKeyword) {
+      return yield `Type.Never()`
     } else if (node.kind === ts.SyntaxKind.NullKeyword) {
       return yield `Type.Null()`
     } else if (node.kind === ts.SyntaxKind.VoidKeyword) {
