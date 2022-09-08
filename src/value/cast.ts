@@ -27,71 +27,46 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import * as Types from '../typebox'
-import { TypeGuard } from '../guard/index'
 import { ValueCreate } from './create'
 import { ValueCheck } from './check'
 
-// --------------------------------------------------------------------------
-// Specialized Union Cast. Because a union can be one of many varying types
-// with properties potentially overlapping, we need a strategy to determine
-// which of those types we should cast into. This strategy needs to factor
-// the value provided by the user to make this decision.
-//
-// The following will score each union type found within the types anyOf
-// array. Typically this is executed for objects only, so the score is a
-// essentially a tally of how many properties are valid. The reasoning
-// here is the discriminator field would tip the scales in favor of that
-// union if other properties overlap and match.
-// --------------------------------------------------------------------------
-
 namespace UnionValueCast {
+  // ----------------------------------------------------------------------------------------------
+  // The following will score a schema against a value. For objects, the score is the tally of
+  // points awarded for each property of the value. Property points are (1.0 / propertyCount)
+  // to prevent large property counts biasing results. Properties that match literal values are
+  // maximally awarded as literals are typically used as union discriminator fields.
+  // ----------------------------------------------------------------------------------------------
   function Score(schema: Types.TSchema, references: Types.TSchema[], value: any): number {
-    let score = 0
     if (schema[Types.Kind] === 'Object' && typeof value === 'object' && value !== null) {
-      const objectSchema: Types.TObject = schema as any
-      const entries = globalThis.Object.entries(objectSchema.properties)
-      score += entries.reduce((acc, [key, schema]) => acc + (ValueCheck.Check(schema, references, value[key]) ? 1 : 0), 0)
+      const object = schema as Types.TObject
+      const keys = Object.keys(value)
+      const entries = globalThis.Object.entries(object.properties)
+      const [point, max] = [1 / entries.length, entries.length]
+      return entries.reduce((acc, [key, schema]) => {
+        const literal = schema[Types.Kind] === 'Literal' && schema.const === value[key] ? max : 0
+        const checks = ValueCheck.Check(schema, references, value[key]) ? point : 0
+        const exists = keys.includes(key) ? point : 0
+        return acc + (literal + checks + exists)
+      }, 0)
+    } else {
+      return ValueCheck.Check(schema, references, value) ? 1 : 0
     }
-    return score
   }
-
-  function Select(schema: Types.TUnion, references: Types.TSchema[], value: any): Types.TSchema {
-    let select = schema.anyOf[0]
-    let best = 0
-    for (const subschema of schema.anyOf) {
-      const score = Score(subschema, references, value)
+  function Select(union: Types.TUnion, references: Types.TSchema[], value: any): Types.TSchema {
+    let [select, best] = [union.anyOf[0], 0]
+    for (const schema of union.anyOf) {
+      const score = Score(schema, references, value)
       if (score > best) {
-        select = subschema
+        select = schema
         best = score
       }
     }
     return select
   }
 
-  // --------------------------------------------------------------------------
-  // Descriminated Union of Objects Path
-  // --------------------------------------------------------------------------
-
-  function GetObjectDiscriminatorKeys(schema: Types.TSchema): string[] {
-    if (!TypeGuard.TObject(schema)) return []
-    return Object.entries(schema.properties)
-      .filter(([_, schema]) => TypeGuard.TLiteral(schema) && typeof schema.const === 'string')
-      .map(([key]) => key)
-  }
-
-  export function IsObjectDiscriminable(schema: Types.TSchema, references: Types.TSchema[]): schema is Types.TObject {
-    return TypeGuard.TObject(schema) && Object.values(schema.properties).some((schema) => TypeGuard.TLiteral(schema) && typeof schema.const === 'string')
-  }
-
-  export function IsUnionOfDiscriminatedObjects(schema: Types.TUnion, references: Types.TSchema[]) {
-    if (schema.anyOf.length === 0 || !schema.anyOf.every((schema) => IsObjectDiscriminable(schema, references))) return false
-    const [initial, ...rest] = schema.anyOf.map((schema) => GetObjectDiscriminatorKeys(schema))
-    return initial.every((initialKey) => rest.every((restKey) => restKey.includes(initialKey)))
-  }
-
-  export function Create(schema: Types.TUnion, references: Types.TSchema[], value: any) {
-    console.log(IsUnionOfDiscriminatedObjects(schema, references))
-    return ValueCheck.Check(schema, references, value) ? value : ValueCast.Cast(Select(schema, references, value), references, value)
+  export function Create(union: Types.TUnion, references: Types.TSchema[], value: any) {
+    return ValueCheck.Check(union, references, value) ? value : ValueCast.Cast(Select(union, references, value), references, value)
   }
 }
 

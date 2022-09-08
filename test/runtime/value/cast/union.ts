@@ -3,18 +3,24 @@ import { Type } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
 describe('value/cast/Union', () => {
-  const A = Type.Object({
-    type: Type.Literal('A'),
-    x: Type.Number(),
-    y: Type.Number(),
-    z: Type.Number(),
-  })
-  const B = Type.Object({
-    type: Type.Literal('B'),
-    a: Type.String(),
-    b: Type.String(),
-    c: Type.String(),
-  })
+  const A = Type.Object(
+    {
+      type: Type.Literal('A'),
+      x: Type.Number(),
+      y: Type.Number(),
+      z: Type.Number(),
+    },
+    { additionalProperties: false },
+  )
+  const B = Type.Object(
+    {
+      type: Type.Literal('B'),
+      a: Type.String(),
+      b: Type.String(),
+      c: Type.String(),
+    },
+    { additionalProperties: false },
+  )
   const T = Type.Union([A, B])
 
   const E = {
@@ -75,27 +81,45 @@ describe('value/cast/Union', () => {
     Assert.deepEqual(result, value)
   })
 
-  it('Should infer A into B through heuristics', () => {
+  it('Should infer through heuristics #1', () => {
     const value = { type: 'A', a: 'a', b: 'b', c: 'c' }
     const result = Value.Cast(T, value)
-    Assert.deepEqual(result, { type: 'B', a: 'a', b: 'b', c: 'c' })
+    Assert.deepEqual(result, { type: 'A', x: 0, y: 0, z: 0 })
   })
 
-  it('Should infer B into A through heuristics', () => {
+  it('Should infer through heuristics #2', () => {
     const value = { type: 'B', x: 1, y: 2, z: 3 }
     const result = Value.Cast(T, value)
-    Assert.deepEqual(result, { type: 'A', x: 1, y: 2, z: 3 })
+    Assert.deepEqual(result, { type: 'B', a: '', b: '', c: '' })
   })
 
-  it('Should infer A into B through heuristics and fix property', () => {
+  it('Should infer through heuristics #3', () => {
     const value = { type: 'A', a: 'a', b: 'b', c: null }
     const result = Value.Cast(T, value)
-    Assert.deepEqual(result, { type: 'B', a: 'a', b: 'b', c: '' })
+    Assert.deepEqual(result, { type: 'A', x: 0, y: 0, z: 0 })
   })
 
-  it('Should infer B into A through heuristics and fix property', () => {
+  it('Should infer through heuristics #4', () => {
     const value = { type: 'B', x: 1, y: 2, z: {} }
     const result = Value.Cast(T, value)
-    Assert.deepEqual(result, { type: 'A', x: 1, y: 2, z: 0 })
+    Assert.deepEqual(result, { type: 'B', a: '', b: '', c: '' })
+  })
+
+  it('Should infer through heuristics #5', () => {
+    const value = { type: 'B', x: 1, y: 2, z: null }
+    const result = Value.Cast(T, value)
+    Assert.deepEqual(result, { type: 'B', a: '', b: '', c: '' })
+  })
+
+  it('Should infer through heuristics #6', () => {
+    const value = { x: 1 }
+    const result = Value.Cast(T, value)
+    Assert.deepEqual(result, { type: 'A', x: 1, y: 0, z: 0 })
+  })
+
+  it('Should infer through heuristics #7', () => {
+    const value = { a: null } // property existing should contribute
+    const result = Value.Cast(T, value)
+    Assert.deepEqual(result, { type: 'B', a: '', b: '', c: '' })
   })
 })

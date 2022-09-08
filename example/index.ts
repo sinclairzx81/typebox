@@ -6,27 +6,12 @@ import { Format } from '@sinclair/typebox/format'
 import { Value } from '@sinclair/typebox/value'
 import { Type, Static } from '@sinclair/typebox'
 
-import { Node, PerspectiveCamera, Mesh } from './three'
-
-const T1 = Type.Object({
-  type: Type.Literal('A'),
-  value: Type.String()
+const T = Type.Object({
+  x: Type.Number(),
+  y: Type.Number(),
+  z: Type.Number()
 })
-
-const T2 = Type.Object({
-  type: Type.Literal('B'),
-  value: Type.String()
-})
-
-const T = Type.Union([])
-console.log(TypeGuard.TNever(T))
-console.log(T)
 
 type T = Static<typeof T>
 
-const A = Value.Create(T1)
-
-
-const X = Value.Cast(T, '')
-
-
+console.log(T)
