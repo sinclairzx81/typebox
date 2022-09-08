@@ -169,10 +169,12 @@ export namespace TypeGuard {
       schema.allOf.length === 2 &&
       IsObject(schema.allOf[0]) &&
       IsString(schema.allOf[0].type) &&
-      schema.allOf[0].type === 'boolean' &&
+      schema.allOf[0].type === 'number' &&
+      schema.allOf[0].const === 0 &&
       IsObject(schema.allOf[1]) &&
       IsString(schema.allOf[1].type) &&
-      schema.allOf[1].type === 'null'
+      schema.allOf[1].type === 'number' &&
+      schema.allOf[1].const === 1
     )
   }
 

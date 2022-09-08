@@ -261,7 +261,7 @@ export interface TLiteral<T extends TLiteralValue = TLiteralValue> extends TSche
 export interface TNever extends TSchema {
   [Kind]: 'Never'
   static: never
-  allOf: [{ type: 'boolean' }, { type: 'null' }]
+  allOf: [{ const: 0 }, { const: 1 }]
 }
 
 // --------------------------------------------------------------------------
@@ -693,7 +693,14 @@ export class TypeBuilder {
 
   /** Creates a never type */
   public Never(options: SchemaOptions = {}): TNever {
-    return this.Create({ ...options, [Kind]: 'Never', allOf: [{ type: 'boolean' }, { type: 'null' }] })
+    return this.Create({
+      ...options,
+      [Kind]: 'Never',
+      allOf: [
+        { type: 'number', const: 0 },
+        { type: 'number', const: 1 },
+      ],
+    })
   }
 
   /** Creates a null type */
@@ -897,7 +904,7 @@ export class TypeBuilder {
   public Union(items: [], options?: SchemaOptions): TNever
   public Union<T extends TSchema[]>(items: [...T], options?: SchemaOptions): TUnion<T>
   public Union<T extends TSchema[]>(items: [...T], options: SchemaOptions = {}) {
-    return items.length === 0 ? Type.Never() : this.Create({ ...options, [Kind]: 'Union', anyOf: items })
+    return items.length === 0 ? Type.Never({ ...options }) : this.Create({ ...options, [Kind]: 'Union', anyOf: items })
   }
 
   /** Creates a Uint8Array type */

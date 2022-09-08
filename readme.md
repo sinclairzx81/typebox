@@ -304,9 +304,11 @@ The following table lists the standard TypeBox types.
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Never()         │ type T = never              │ const T = {                    │
 │                                │                             │   allOf: [{                    │
-│                                │                             │     type: 'boolean'            │
+│                                │                             │     type: 'number'             │
+│                                │                             │     const: 0                   │
 │                                │                             │   }, {                         │
-│                                │                             │     type: 'null'               │
+│                                │                             │     type: 'number'             │
+│                                │                             │     const: 1                   │
 │                                │                             │   }]                           │
 │                                │                             │ }                              │
 │                                │                             │                                │
