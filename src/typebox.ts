@@ -255,6 +255,16 @@ export interface TLiteral<T extends TLiteralValue = TLiteralValue> extends TSche
 }
 
 // --------------------------------------------------------------------------
+// Never
+// --------------------------------------------------------------------------
+
+export interface TNever extends TSchema {
+  [Kind]: 'Never'
+  static: never
+  type: 'never'
+}
+
+// --------------------------------------------------------------------------
 // Null
 // --------------------------------------------------------------------------
 
@@ -679,6 +689,11 @@ export class TypeBuilder {
   /** Creates a literal type. */
   public Literal<T extends TLiteralValue>(value: T, options: SchemaOptions = {}): TLiteral<T> {
     return this.Create({ ...options, [Kind]: 'Literal', const: value, type: typeof value as 'string' | 'number' | 'boolean' })
+  }
+
+  /** Creates a never type */
+  public Never(options: SchemaOptions = {}): TNever {
+    return this.Create({ ...options, [Kind]: 'Never', type: 'never' })
   }
 
   /** Creates a null type */
