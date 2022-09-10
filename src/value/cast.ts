@@ -163,7 +163,7 @@ export namespace ValueCast {
     const minimum = IsNumber(schema.minItems) && created.length < schema.minItems ? [...created, ...globalThis.Array.from({ length: schema.minItems - created.length }, () => null)] : created
     const maximum = IsNumber(schema.maxItems) && minimum.length > schema.maxItems ? minimum.slice(0, schema.maxItems) : minimum
     const casted = maximum.map((value: unknown) => Visit(schema.items, references, value))
-    if(schema.uniqueItems !== true) return casted
+    if (schema.uniqueItems !== true) return casted
     const unique = [...new Set(casted)]
     if (!ValueCheck.Check(schema, references, unique)) throw new ValueCastValueTypeError(schema, unique)
     return unique
