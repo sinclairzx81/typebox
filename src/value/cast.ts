@@ -70,9 +70,19 @@ namespace UnionValueCast {
   }
 }
 
-export class ValueCastValueTypeError extends Error {
+// -----------------------------------------------------------
+// Errors
+// -----------------------------------------------------------
+
+export class ValueCastReferenceTypeError extends Error {
+  constructor(public readonly schema: Types.TRef | Types.TSelf) {
+    super(`ValueCast: Cannot locate referenced schema with $id '${schema.$ref}'`)
+  }
+}
+
+export class ValueCastArrayUniqueItemsTypeError extends Error {
   constructor(public readonly schema: Types.TSchema, public readonly value: unknown) {
-    super('ValueCast: Casted value does not match target schema')
+    super('ValueCast: Array cast produced invalid data due to uniqueItems constraint')
   }
 }
 
@@ -82,6 +92,11 @@ export class ValueCastNeverTypeError extends Error {
   }
 }
 
+export class ValueCastRecursiveTypeError extends Error {
+  constructor(public readonly schema: Types.TSchema) {
+    super('ValueCast.Recursive: Cannot cast recursive schemas')
+  }
+}
 export class ValueCastUnknownTypeError extends Error {
   constructor(public readonly schema: Types.TSchema) {
     super('ValueCast: Unknown type')
@@ -165,7 +180,7 @@ export namespace ValueCast {
     const casted = maximum.map((value: unknown) => Visit(schema.items, references, value))
     if (schema.uniqueItems !== true) return casted
     const unique = [...new Set(casted)]
-    if (!ValueCheck.Check(schema, references, unique)) throw new ValueCastValueTypeError(schema, unique)
+    if (!ValueCheck.Check(schema, references, unique)) throw new ValueCastArrayUniqueItemsTypeError(schema, unique)
     return unique
   }
 
@@ -244,18 +259,18 @@ export namespace ValueCast {
   }
 
   function Recursive(schema: Types.TRecursive<any>, references: Types.TSchema[], value: any): any {
-    throw new Error('ValueCast.Recursive: Cannot cast recursive schemas')
+    throw new ValueCastRecursiveTypeError(schema)
   }
 
   function Ref(schema: Types.TRef<any>, references: Types.TSchema[], value: any): any {
     const reference = references.find((reference) => reference.$id === schema.$ref)
-    if (reference === undefined) throw new Error(`ValueCast.Ref: Cannot find schema with $id '${schema.$ref}'.`)
+    if (reference === undefined) throw new ValueCastReferenceTypeError(schema)
     return Visit(reference, references, value)
   }
 
   function Self(schema: Types.TSelf, references: Types.TSchema[], value: any): any {
     const reference = references.find((reference) => reference.$id === schema.$ref)
-    if (reference === undefined) throw new Error(`ValueCast.Self: Cannot find schema with $id '${schema.$ref}'.`)
+    if (reference === undefined) throw new ValueCastReferenceTypeError(schema)
     return Visit(reference, references, value)
   }
 

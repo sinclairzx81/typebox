@@ -11,8 +11,6 @@ const T = Type.Array(Type.Number(), {
   uniqueItems: true
 })
 
-
-
 const C = Value.Cast(T, [0, 0, 0])
 
 console.log(C)
