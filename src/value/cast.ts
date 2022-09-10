@@ -70,9 +70,15 @@ namespace UnionValueCast {
   }
 }
 
-export class ValueCastUnknownTypeError extends Error {
+export class ValueCastArrayUniqueTypeError extends Error {
   constructor(public readonly schema: Types.TSchema) {
-    super('ValueCast: Unknown type')
+    super('ValueCast: Arrays with uniqueItems cannot be cast')
+  }
+}
+
+export class ValueCastArrayLengthConstraintTypeError extends Error {
+  constructor(public readonly schema: Types.TSchema) {
+    super('ValueCast: Array constraint minItems is greater than maxItems')
   }
 }
 
@@ -82,10 +88,20 @@ export class ValueCastNeverTypeError extends Error {
   }
 }
 
+export class ValueCastUnknownTypeError extends Error {
+  constructor(public readonly schema: Types.TSchema) {
+    super('ValueCast: Unknown type')
+  }
+}
+
 export namespace ValueCast {
   // -----------------------------------------------------------
-  // Convert
+  // Guards
   // -----------------------------------------------------------
+
+  function IsArray(value: unknown): value is unknown[] {
+    return typeof value === 'object' && globalThis.Array.isArray(value)
+  }
 
   function IsString(value: unknown): value is string {
     return typeof value === 'string'
@@ -119,6 +135,10 @@ export namespace ValueCast {
     return value === false || (IsNumber(value) && value === 0) || (IsBigInt(value) && value === 0n) || (IsString(value) && (value.toLowerCase() === 'false' || value === '0'))
   }
 
+  // -----------------------------------------------------------
+  // Convert
+  // -----------------------------------------------------------
+
   function TryConvertString(value: unknown) {
     return IsValueToString(value) ? value.toString() : value
   }
@@ -145,8 +165,11 @@ export namespace ValueCast {
 
   function Array(schema: Types.TArray, references: Types.TSchema[], value: any): any {
     if (ValueCheck.Check(schema, references, value)) return value
-    if (!globalThis.Array.isArray(value)) return ValueCreate.Create(schema, references)
-    return value.map((val: any) => Visit(schema.items, references, val))
+    if (!IsArray(value)) return ValueCreate.Create(schema, references)
+    if(schema.uniqueItems) throw new ValueCastArrayUniqueTypeError(schema)
+    const minimum = (IsNumber(schema.minItems) && value.length < schema.minItems) ? [...value, ...globalThis.Array.from({ length: schema.minItems - value.length }, () => null)]: value
+    const maximum = (IsNumber(schema.maxItems) && value.length > schema.maxItems) ? value.slice(0, schema.maxItems) : minimum
+    return maximum.map((value: unknown) => Visit(schema.items, references, value))
   }
 
   function Boolean(schema: Types.TBoolean, references: Types.TSchema[], value: any): any {

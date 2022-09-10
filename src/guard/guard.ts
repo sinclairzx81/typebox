@@ -109,7 +109,11 @@ export namespace TypeGuard {
       TSchema(schema.items) &&
       IsOptionalNumber(schema.minItems) &&
       IsOptionalNumber(schema.maxItems) &&
-      IsOptionalBoolean(schema.uniqueItems)
+      IsOptionalBoolean(schema.uniqueItems) &&
+      (IsNumber(schema.minItems) ? schema.minItems >= 0 : true) &&
+      (IsNumber(schema.maxItems) ? schema.maxItems >= 0 : true) &&
+      (IsNumber(schema.minItems) && IsNumber(schema.maxItems) ? schema.minItems <= schema.maxItems : true)
+
     )
   }
 
