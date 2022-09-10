@@ -7,10 +7,12 @@ describe('type/guard/TArray', () => {
     const R = TypeGuard.TArray(Type.Array(Type.Number()))
     Assert.equal(R, true)
   })
+
   it('should not guard for TArray', () => {
     const R = TypeGuard.TArray(null)
     Assert.equal(R, false)
   })
+
   it('should guard for nested object TArray', () => {
     const R = TypeGuard.TArray(
       Type.Array(
@@ -22,6 +24,7 @@ describe('type/guard/TArray', () => {
     )
     Assert.equal(R, true)
   })
+
   it('should not guard for nested object TArray', () => {
     const R = TypeGuard.TArray(
       Type.Array(
@@ -75,6 +78,4 @@ describe('type/guard/TArray', () => {
     const R = TypeGuard.TArray(Type.Array(Type.String(), { uniqueItems: '1' }))
     Assert.equal(R, false)
   })
-
-
 })

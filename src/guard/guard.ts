@@ -113,7 +113,6 @@ export namespace TypeGuard {
       (IsNumber(schema.minItems) ? schema.minItems >= 0 : true) &&
       (IsNumber(schema.maxItems) ? schema.maxItems >= 0 : true) &&
       (IsNumber(schema.minItems) && IsNumber(schema.maxItems) ? schema.minItems <= schema.maxItems : true)
-
     )
   }
 
@@ -213,7 +212,10 @@ export namespace TypeGuard {
         IsObject(schema.properties) &&
         IsOptionalBoolean(schema.additionalProperties) &&
         IsOptionalNumber(schema.minProperties) &&
-        IsOptionalNumber(schema.maxProperties)
+        IsOptionalNumber(schema.maxProperties) &&
+        (IsNumber(schema.minProperties) ? schema.minProperties >= 0 : true) &&
+        (IsNumber(schema.maxProperties) ? schema.maxProperties >= 0 : true) &&
+        (IsNumber(schema.minProperties) && IsNumber(schema.maxProperties) ? schema.minProperties <= schema.maxProperties : true)
       )
     ) {
       return false

@@ -36,6 +36,7 @@ describe('type/guard/TObject', () => {
     )
     Assert.equal(R, false)
   })
+
   it('should not guard for TObject with invalid additionalProperties', () => {
     const R = TypeGuard.TObject(
       Type.Object(
@@ -50,6 +51,7 @@ describe('type/guard/TObject', () => {
     )
     Assert.equal(R, false)
   })
+
   it('should not guard for TObject with invalid $id', () => {
     const R = TypeGuard.TObject(
       Type.Object(
@@ -64,6 +66,7 @@ describe('type/guard/TObject', () => {
     )
     Assert.equal(R, false)
   })
+
   it('should not guard for TObject with invalid minProperties', () => {
     const R = TypeGuard.TObject(
       Type.Object(

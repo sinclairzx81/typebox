@@ -166,9 +166,9 @@ export namespace ValueCast {
   function Array(schema: Types.TArray, references: Types.TSchema[], value: any): any {
     if (ValueCheck.Check(schema, references, value)) return value
     if (!IsArray(value)) return ValueCreate.Create(schema, references)
-    if(schema.uniqueItems) throw new ValueCastArrayUniqueTypeError(schema)
-    const minimum = (IsNumber(schema.minItems) && value.length < schema.minItems) ? [...value, ...globalThis.Array.from({ length: schema.minItems - value.length }, () => null)]: value
-    const maximum = (IsNumber(schema.maxItems) && value.length > schema.maxItems) ? value.slice(0, schema.maxItems) : minimum
+    if (schema.uniqueItems) throw new ValueCastArrayUniqueTypeError(schema)
+    const minimum = IsNumber(schema.minItems) && value.length < schema.minItems ? [...value, ...globalThis.Array.from({ length: schema.minItems - value.length }, () => null)] : value
+    const maximum = IsNumber(schema.maxItems) && value.length > schema.maxItems ? value.slice(0, schema.maxItems) : minimum
     return maximum.map((value: unknown) => Visit(schema.items, references, value))
   }
 
