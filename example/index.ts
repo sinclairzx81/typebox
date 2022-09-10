@@ -6,17 +6,13 @@ import { Format } from '@sinclair/typebox/format'
 import { Value } from '@sinclair/typebox/value'
 import { Type, Static } from '@sinclair/typebox'
 
-const T = Type.Array(Type.Number({ default: 77 }), {
-  minItems: 1,
-  maxItems: 1
+const T = Type.Array(Type.Number(), {
+  minItems: 5,
+  uniqueItems: true
 })
 
-TypeGuard.Assert(T)
 
 
-// // const C = Value.Cast(T, 1)
-// const C = Value.Cast(T, [0, 1])
+const C = Value.Cast(T, [0, 0, 0])
 
-// console.log(C)
-
-// type T = Static<typeof T>
+console.log(C)

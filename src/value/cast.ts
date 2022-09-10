@@ -70,15 +70,9 @@ namespace UnionValueCast {
   }
 }
 
-export class ValueCastArrayUniqueTypeError extends Error {
-  constructor(public readonly schema: Types.TSchema) {
-    super('ValueCast: Arrays with uniqueItems cannot be cast')
-  }
-}
-
-export class ValueCastArrayLengthConstraintTypeError extends Error {
-  constructor(public readonly schema: Types.TSchema) {
-    super('ValueCast: Array constraint minItems is greater than maxItems')
+export class ValueCastValueTypeError extends Error {
+  constructor(public readonly schema: Types.TSchema, public readonly value: unknown) {
+    super('ValueCast: Casted value does not match target schema')
   }
 }
 
@@ -165,11 +159,14 @@ export namespace ValueCast {
 
   function Array(schema: Types.TArray, references: Types.TSchema[], value: any): any {
     if (ValueCheck.Check(schema, references, value)) return value
-    if (!IsArray(value)) return ValueCreate.Create(schema, references)
-    if (schema.uniqueItems) throw new ValueCastArrayUniqueTypeError(schema)
-    const minimum = IsNumber(schema.minItems) && value.length < schema.minItems ? [...value, ...globalThis.Array.from({ length: schema.minItems - value.length }, () => null)] : value
-    const maximum = IsNumber(schema.maxItems) && value.length > schema.maxItems ? value.slice(0, schema.maxItems) : minimum
-    return maximum.map((value: unknown) => Visit(schema.items, references, value))
+    const created = IsArray(value) ? value : ValueCreate.Create(schema, references)
+    const minimum = IsNumber(schema.minItems) && created.length < schema.minItems ? [...created, ...globalThis.Array.from({ length: schema.minItems - created.length }, () => null)] : created
+    const maximum = IsNumber(schema.maxItems) && minimum.length > schema.maxItems ? minimum.slice(0, schema.maxItems) : minimum
+    const casted = maximum.map((value: unknown) => Visit(schema.items, references, value))
+    if(schema.uniqueItems !== true) return casted
+    const unique = [...new Set(casted)]
+    if (!ValueCheck.Check(schema, references, unique)) throw new ValueCastValueTypeError(schema, unique)
+    return unique
   }
 
   function Boolean(schema: Types.TBoolean, references: Types.TSchema[], value: any): any {
