@@ -29,6 +29,7 @@ THE SOFTWARE.
 import * as Types from '../typebox'
 import { ValueCreate } from './create'
 import { ValueCheck } from './check'
+import { ValueClone } from './clone'
 
 namespace UnionValueCast {
   // ----------------------------------------------------------------------------------------------
@@ -66,7 +67,7 @@ namespace UnionValueCast {
   }
 
   export function Create(union: Types.TUnion, references: Types.TSchema[], value: any) {
-    return ValueCheck.Check(union, references, value) ? value : ValueCast.Cast(Select(union, references, value), references, value)
+    return ValueCheck.Check(union, references, value) ? ValueClone.Clone(value) : ValueCast.Cast(Select(union, references, value), references, value)
   }
 }
 
@@ -173,8 +174,8 @@ export namespace ValueCast {
   }
 
   function Array(schema: Types.TArray, references: Types.TSchema[], value: any): any {
-    if (ValueCheck.Check(schema, references, value)) return value
-    const created = IsArray(value) ? value : ValueCreate.Create(schema, references)
+    if (ValueCheck.Check(schema, references, value)) return ValueClone.Clone(value)
+    const created = IsArray(value) ? ValueClone.Clone(value) : ValueCreate.Create(schema, references)
     const minimum = IsNumber(schema.minItems) && created.length < schema.minItems ? [...created, ...globalThis.Array.from({ length: schema.minItems - created.length }, () => null)] : created
     const maximum = IsNumber(schema.maxItems) && minimum.length > schema.maxItems ? minimum.slice(0, schema.maxItems) : minimum
     const casted = maximum.map((value: unknown) => Visit(schema.items, references, value))
@@ -231,7 +232,7 @@ export namespace ValueCast {
   }
 
   function Object(schema: Types.TObject, references: Types.TSchema[], value: any): any {
-    if (ValueCheck.Check(schema, references, value)) return value
+    if (ValueCheck.Check(schema, references, value)) return ValueClone.Clone(value)
     if (value === null || typeof value !== 'object') return ValueCreate.Create(schema, references)
     const required = new Set(schema.required || [])
     const result = {} as Record<string, any>
@@ -247,7 +248,7 @@ export namespace ValueCast {
   }
 
   function Record(schema: Types.TRecord<any, any>, references: Types.TSchema[], value: any): any {
-    if (ValueCheck.Check(schema, references, value)) return value
+    if (ValueCheck.Check(schema, references, value)) return ValueClone.Clone(value)
     if (value === null || typeof value !== 'object' || globalThis.Array.isArray(value)) return ValueCreate.Create(schema, references)
     const subschemaKey = globalThis.Object.keys(schema.patternProperties)[0]
     const subschema = schema.patternProperties[subschemaKey]
@@ -280,7 +281,7 @@ export namespace ValueCast {
   }
 
   function Tuple(schema: Types.TTuple<any[]>, references: Types.TSchema[], value: any): any {
-    if (ValueCheck.Check(schema, references, value)) return value
+    if (ValueCheck.Check(schema, references, value)) return ValueClone.Clone(value)
     if (!globalThis.Array.isArray(value)) return ValueCreate.Create(schema, references)
     if (schema.items === undefined) return []
     return schema.items.map((schema, index) => Visit(schema, references, value[index]))

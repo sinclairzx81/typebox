@@ -7,10 +7,16 @@ import { Value } from '@sinclair/typebox/value'
 import { Type, Static } from '@sinclair/typebox'
 
 const T = Type.Object({
-  x: Type.Number(),
+  1: Type.Number(),
   y: Type.Number(),
-  z: Type.Number()
+  3: Type.Number()
 })
+
+const K = Type.KeyOf(T)
+
+type K = Static<typeof K>
+
+console.log(K)
 
 type T = Static<typeof T>
 
