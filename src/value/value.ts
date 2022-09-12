@@ -37,7 +37,7 @@ import { ValueDelta, Edit } from './delta'
 
 export type { Edit } from './delta'
 
-/** The Value namespace provides type operations on values */
+/** Value performs immutable operations on values */
 export namespace Value {
   /** Casts a value into a given type. The return value will retain as much information of the original value as possible. Cast will convert string, number and boolean values if a reasonable conversion is possible. */
   export function Cast<T extends Types.TSchema, R extends Types.TSchema[]>(schema: T, references: [...R], value: unknown): Types.Static<T>

@@ -240,7 +240,11 @@ export type UnionToTuple<U, L = UnionLast<U>> = [U] extends [never] ? [] : [...U
 
 export type UnionStringLiteralToTuple<T> = T extends TUnion<infer L> ? { [I in keyof L]: L[I] extends TLiteral<infer C> ? C : never } : never
 
-export type TKeyOf<T extends TObject> = { [K in ObjectPropertyKeys<T>]: TLiteral<K> } extends infer R ? UnionToTuple<R[keyof R]> : never
+export type UnionLiteralsFromObject<T extends TObject> = { [K in ObjectPropertyKeys<T>]: TLiteral<K> } extends infer R ? UnionToTuple<R[keyof R]> : never
+
+// export type TKeyOf<T extends TObject> = { [K in ObjectPropertyKeys<T>]: TLiteral<K> } extends infer R ? UnionToTuple<R[keyof R]> : never
+
+export interface TKeyOf<T extends TObject> extends TUnion<UnionLiteralsFromObject<T>> {}
 
 // --------------------------------------------------------------------------
 // Literal
@@ -681,7 +685,7 @@ export class TypeBuilder {
   }
 
   /** Creates a keyof type */
-  public KeyOf<T extends TObject>(object: T, options: SchemaOptions = {}): TUnion<TKeyOf<T>> {
+  public KeyOf<T extends TObject>(object: T, options: SchemaOptions = {}): TKeyOf<T> {
     const items = Object.keys(object.properties).map((key) => this.Create({ ...options, [Kind]: 'Literal', type: 'string', const: key }))
     return this.Create({ ...options, [Kind]: 'Union', [Hint]: 'KeyOf', anyOf: items })
   }
