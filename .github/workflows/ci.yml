@@ -9,7 +9,6 @@ jobs:
       matrix:
         node: [14.x, 16.x, 18.x]
         os: [ubuntu-latest, windows-latest, macOS-latest]
-        typescript: [4.1.5, latest]
     steps:
       - uses: actions/checkout@v2
       - name: Install Node
@@ -18,8 +17,6 @@ jobs:
           node-version: ${{ matrix.node }}
       - name: Install Packages
         run: npm install
-      - name: Install TypeScript Version
-        run: npm install typescript@${{ matrix.typescript }}
       - name: Build Library
         run: npm run build
       - name: Test Library
