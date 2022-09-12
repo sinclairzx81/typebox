@@ -244,9 +244,7 @@ export type UnionLiteralsFromObject<T extends TObject> = { [K in ObjectPropertyK
 
 // export type TKeyOf<T extends TObject> = { [K in ObjectPropertyKeys<T>]: TLiteral<K> } extends infer R ? UnionToTuple<R[keyof R]> : never
 
-export interface TKeyOf<T extends TObject> extends TUnion<UnionLiteralsFromObject<T>> {
-
-}
+export interface TKeyOf<T extends TObject> extends TUnion<UnionLiteralsFromObject<T>> {}
 
 // --------------------------------------------------------------------------
 // Literal

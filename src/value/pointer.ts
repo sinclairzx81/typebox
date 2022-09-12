@@ -26,70 +26,101 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-/** RFC6901 JsonPointer */
+export class ValuePointerRootSetError extends Error {
+  constructor(public readonly value: unknown, public readonly path: string, public readonly update: unknown) {
+    super('ValuePointer: Cannot set root value')
+  }
+}
+
+export class ValuePointerRootDeleteError extends Error {
+  constructor(public readonly value: unknown, public readonly path: string) {
+    super('ValuePointer: Cannot delete root value')
+  }
+}
+/** ValuePointer performs mutable operations on values using RFC6901 Json Pointers */
 export namespace ValuePointer {
-  function Format(pointer: string) {
-    if (pointer === '/') return ['']
-    const split = pointer.split('/')
-    const filter = split.filter((part) => part.length > 0)
-    return filter.map((part) => part.replace(/~0/g, `~`).replace(/~1/g, `/`))
+  /** Formats the path into navigable components */
+  function* Format(path: string): IterableIterator<string> {
+    function clear(chars: string[]) {
+      while (chars.length > 0) chars.shift()
+    }
+    const chars: string[] = []
+    for (let i = 0; i < path.length; i++) {
+      const char = path.charAt(i)
+      if (char === '/') {
+        if (i !== 0) {
+          yield chars.join('')
+          clear(chars)
+        }
+      } else if (char === '~' && path.charAt(i + 1) === '0' && (path.charAt(i + 2) === '/' || i !== path.length - 1)) {
+        chars.push('~')
+        i += 1
+      } else if (char === '~' && path.charAt(i + 1) === '1' && (path.charAt(i + 2) === '/' || i !== path.length - 1)) {
+        chars.push('/')
+        i += 1
+      } else {
+        chars.push(char)
+      }
+    }
+    yield chars.join('')
+    clear(chars)
   }
 
   /** Sets the value at the given pointer. If the value at the pointer does not exist it is created. */
-  export function Set(value: any, pointer: string, update: any) {
-    if (pointer === '') throw Error('Cannot set root value')
-    const path = Format(pointer)
+  export function Set(value: unknown, path: string, update: unknown) {
+    if (path === '') throw new ValuePointerRootSetError(value, path, update)
+    const pointer = [...Format(path)]
     let current: any = value
-    while (path.length > 1) {
-      const next = path.shift()!
+    while (pointer.length > 1) {
+      const next = pointer.shift()!
       if (current[next] === undefined) current[next] = {}
       current = current[next]
     }
-    current[path.shift()!] = update
+    current[pointer.shift()!] = update
   }
 
-  /** Deletes a value at the given pointer. */
-  export function Delete(value: any, pointer: string) {
-    if (pointer === '') throw Error('Cannot delete root value')
+  /** Deletes a value at the given path. */
+  export function Delete(value: any, path: string) {
+    if (path === '') throw new ValuePointerRootDeleteError(value, path)
     let current: any = value
-    const path = Format(pointer)
-    while (path.length > 1) {
-      const next = path.shift()!
+    const pointer = [...Format(path)]
+    while (pointer.length > 1) {
+      const next = pointer.shift()!
       if (current[next] === undefined) return
       current = current[next]
     }
-    if (Array.isArray(current)) {
-      const index = parseInt(path.shift()!)
+    if (globalThis.Array.isArray(current)) {
+      const index = parseInt(pointer.shift()!)
       return current.splice(index, 1)
     } else {
-      const key = path.shift()!
+      const key = pointer.shift()!
       delete current[key]
     }
   }
 
-  /** True if a value exists at the given pointer */
-  export function Has(value: any, pointer: string) {
-    if (pointer === '') return true
+  /** True if a value exists at the given path */
+  export function Has(value: any, path: string) {
+    if (path === '') return true
     let current = value
-    const path = Format(pointer)
-    while (path.length > 1) {
-      const next = path.shift()!
+    const pointer = [...Format(path)]
+    while (pointer.length > 1) {
+      const next = pointer.shift()!
       if (current[next] === undefined) return false
       current = current[next]
     }
-    return current[path.shift()!] !== undefined
+    return current[pointer.shift()!] !== undefined
   }
 
-  /** Gets the value at the given pointer */
-  export function Get(value: any, pointer: string) {
-    if (pointer === '') return value
+  /** Gets the value at the given path */
+  export function Get(value: any, path: string) {
+    if (path === '') return value
     let current: any = value
-    const path = Format(pointer)
-    while (path.length > 1) {
-      const next = path.shift()!
+    const pointer = [...Format(path)]
+    while (pointer.length > 1) {
+      const next = pointer.shift()!
       if (current[next] === undefined) return undefined
       current = current[next]
     }
-    return current[path.shift()!]
+    return current[pointer.shift()!]
   }
 }
