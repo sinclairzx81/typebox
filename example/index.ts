@@ -3,16 +3,15 @@ import { TypeCompiler } from '@sinclair/typebox/compiler'
 import { Conditional } from '@sinclair/typebox/conditional'
 import { TypeGuard } from '@sinclair/typebox/guard'
 import { Format } from '@sinclair/typebox/format'
-import { Value, ValuePointer } from '@sinclair/typebox/value'
+import { Value } from '@sinclair/typebox/value'
 import { Type, Static } from '@sinclair/typebox'
 
-const V = {
-  x: { 
-    y: 1,
-    '/': { x: 1 } 
-  },
-}
+const T = Type.Object({
+  x: Type.Number(),
+  y: Type.Number(),
+  z: Type.Number()
+})
 
-console.log(ValuePointer.Get(V, '/x/~1'))
-console.log(ValuePointer.Get(V, '/x/y/'))
-console.log(ValuePointer.Get(V, '/x/y')) 
+type T = Static<typeof T>
+
+console.log(T)
