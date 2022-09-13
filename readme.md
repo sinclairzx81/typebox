@@ -76,6 +76,7 @@ License MIT
   - [Diff](#values-diff)
   - [Patch](#values-patch)
   - [Errors](#values-errors)
+  - [Pointer](#values-pointer)
 - [TypeCheck](#typecheck)
   - [Ajv](#typecheck-ajv)
   - [Compiler](#typecheck-compiler)
@@ -870,6 +871,21 @@ const R = [...Value.Errors(T, { x: '42' })]          // const R = [{
                                                      // }]
 ```
 
+<a name='values-pointer'></a>
+
+### Pointer
+
+Use ValuePointer to perform mutable updates on existing values using [RFC6901](https://www.rfc-editor.org/rfc/rfc6901) Json Pointers.
+
+```typescript
+import { ValuePointer } from '@sinclair/typebox/value'
+
+const A = { x: 0, y: 0, z: 0 }
+
+ValuePointer.Set(A, '/x', 1)                         // const A = { x: 1, y: 0, z: 0 }
+ValuePointer.Set(A, '/y', 1)                         // const A = { x: 1, y: 1, z: 0 }
+ValuePointer.Set(A, '/z', 1)                         // const A = { x: 1, y: 1, z: 1 }
+```
 <a name='typecheck'></a>
 
 ## TypeCheck
