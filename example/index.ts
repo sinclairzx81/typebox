@@ -4,13 +4,14 @@ import { Conditional } from '@sinclair/typebox/conditional'
 import { TypeGuard } from '@sinclair/typebox/guard'
 import { Format } from '@sinclair/typebox/format'
 import { Value, ValuePointer } from '@sinclair/typebox/value'
-import { Type, Static, TString } from '@sinclair/typebox'
+import { Type, Static } from '@sinclair/typebox'
 
-const T = Type.String()
+const T = Type.Object({
+  x: Type.Number(),
+  y: Type.Number(),
+  z: Type.Number()
+})
 
-const R = [...ValuePointer.Format('/x/a~1b')]
+type T = Static<typeof T>
 
-console.log(R)
-
-
-
+console.log(T)
