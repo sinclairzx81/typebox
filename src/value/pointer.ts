@@ -37,90 +37,86 @@ export class ValuePointerRootDeleteError extends Error {
     super('ValuePointer: Cannot delete root value')
   }
 }
+
 /** ValuePointer performs mutable operations on values using RFC6901 Json Pointers */
 export namespace ValuePointer {
-  /** Formats the path into navigable components */
-  function* Format(path: string): IterableIterator<string> {
-    function clear(chars: string[]) {
-      while (chars.length > 0) chars.shift()
-    }
-    const chars: string[] = []
-    for (let i = 0; i < path.length; i++) {
-      const char = path.charAt(i)
+  function Escape(component: string) {
+    return component.indexOf('~') === -1 ? component : component.replace(/~1/g, '/').replace(/~0/g, '~')
+  }
+
+  /** Formats the given pointer into navigable key components */
+  export function* Format(pointer: string): IterableIterator<string> {
+    if (pointer === '') return
+    let [start, end] = [0, 0]
+    for (let i = 0; i < pointer.length; i++) {
+      const char = pointer.charAt(i)
       if (char === '/') {
-        if (i !== 0) {
-          yield chars.join('')
-          clear(chars)
+        if (i === 0) {
+          start = i + 1
+        } else {
+          end = i
+          yield Escape(pointer.slice(start, end))
+          start = i + 1
         }
-      } else if (char === '~' && path.charAt(i + 1) === '0' && (path.charAt(i + 2) === '/' || i !== path.length - 1)) {
-        chars.push('~')
-        i += 1
-      } else if (char === '~' && path.charAt(i + 1) === '1' && (path.charAt(i + 2) === '/' || i !== path.length - 1)) {
-        chars.push('/')
-        i += 1
       } else {
-        chars.push(char)
+        end = i
       }
     }
-    yield chars.join('')
-    clear(chars)
+    yield Escape(pointer.slice(start))
   }
 
-  /** Sets the value at the given pointer. If the value at the pointer does not exist it is created. */
-  export function Set(value: unknown, path: string, update: unknown) {
-    if (path === '') throw new ValuePointerRootSetError(value, path, update)
-    const pointer = [...Format(path)]
-    let current: any = value
-    while (pointer.length > 1) {
-      const next = pointer.shift()!
-      if (current[next] === undefined) current[next] = {}
-      current = current[next]
+  /** Sets the value at the given pointer. If the value at the pointer does not exist it is created */
+  export function Set(value: any, pointer: string, update: unknown): void {
+    if (pointer === '') throw new ValuePointerRootSetError(value, pointer, update)
+    let [owner, next, key] = [null as any, value, '']
+    for (const component of Format(pointer)) {
+      if (next[component] === undefined) next[component] = {}
+      owner = next
+      next = next[component]
+      key = component
     }
-    current[pointer.shift()!] = update
+    owner[key] = update
   }
 
-  /** Deletes a value at the given path. */
-  export function Delete(value: any, path: string) {
-    if (path === '') throw new ValuePointerRootDeleteError(value, path)
-    let current: any = value
-    const pointer = [...Format(path)]
-    while (pointer.length > 1) {
-      const next = pointer.shift()!
-      if (current[next] === undefined) return
-      current = current[next]
+  /** Deletes a value at the given pointer */
+  export function Delete(value: any, pointer: string): void {
+    if (pointer === '') throw new ValuePointerRootDeleteError(value, pointer)
+    let [owner, next, key] = [null as any, value as any, '']
+    for (const component of Format(pointer)) {
+      if (next[component] === undefined || next[component] === null) return
+      owner = next
+      next = next[component]
+      key = component
     }
-    if (globalThis.Array.isArray(current)) {
-      const index = parseInt(pointer.shift()!)
-      return current.splice(index, 1)
+    if (globalThis.Array.isArray(owner)) {
+      const index = parseInt(key)
+      owner.splice(index, 1)
     } else {
-      const key = pointer.shift()!
-      delete current[key]
+      delete owner[key]
     }
   }
 
-  /** True if a value exists at the given path */
-  export function Has(value: any, path: string) {
-    if (path === '') return true
+  /** Returns true if a value exists at the given pointer */
+  export function Has(value: any, pointer: string): boolean {
+    if (pointer === '') return true
+    let [owner, next, key] = [null as any, value as any, '']
+    for (const component of Format(pointer)) {
+      if (next[component] === undefined) return false
+      owner = next
+      next = next[component]
+      key = component
+    }
+    return globalThis.Object.getOwnPropertyNames(owner).includes(key)
+  }
+
+  /** Gets the value at the given pointer */
+  export function Get(value: any, pointer: string): any {
+    if (pointer === '') return value
     let current = value
-    const pointer = [...Format(path)]
-    while (pointer.length > 1) {
-      const next = pointer.shift()!
-      if (current[next] === undefined) return false
-      current = current[next]
+    for (const component of Format(pointer)) {
+      if (current[component] === undefined) return undefined
+      current = current[component]
     }
-    return current[pointer.shift()!] !== undefined
-  }
-
-  /** Gets the value at the given path */
-  export function Get(value: any, path: string) {
-    if (path === '') return value
-    let current: any = value
-    const pointer = [...Format(path)]
-    while (pointer.length > 1) {
-      const next = pointer.shift()!
-      if (current[next] === undefined) return undefined
-      current = current[next]
-    }
-    return current[pointer.shift()!]
+    return current
   }
 }

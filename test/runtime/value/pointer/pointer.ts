@@ -3,8 +3,113 @@ import { Assert } from '../../assert/index'
 
 describe('value/pointer/Pointer', () => {
   //-----------------------------------------------
+  // Format
+  //-----------------------------------------------
+
+  it('Should produce correct format #1', () => {
+    const R = [...ValuePointer.Format('')]
+    Assert.deepEqual(R, [])
+  })
+
+  it('Should produce correct format #2', () => {
+    const R = [...ValuePointer.Format('a')]
+    Assert.deepEqual(R, ['a'])
+  })
+
+  it('Should produce correct format #3', () => {
+    const R = [...ValuePointer.Format('/')]
+    Assert.deepEqual(R, [''])
+  })
+
+  it('Should produce correct format #4', () => {
+    const R = [...ValuePointer.Format('/x')]
+    Assert.deepEqual(R, ['x'])
+  })
+
+  it('Should produce correct format #5', () => {
+    const R = [...ValuePointer.Format('/x/')]
+    Assert.deepEqual(R, ['x', ''])
+  })
+
+  it('Should produce correct format #6', () => {
+    const R = [...ValuePointer.Format('/x//')]
+    Assert.deepEqual(R, ['x', '', ''])
+  })
+
+  it('Should produce correct format #7', () => {
+    const R = [...ValuePointer.Format('/x//y')]
+    Assert.deepEqual(R, ['x', '', 'y'])
+  })
+
+  it('Should produce correct format #8', () => {
+    const R = [...ValuePointer.Format('/x//y/')]
+    Assert.deepEqual(R, ['x', '', 'y', ''])
+  })
+
+  it('Should produce correct format #9', () => {
+    const R = [...ValuePointer.Format('/x/~0')]
+    Assert.deepEqual(R, ['x', '~'])
+  })
+
+  it('Should produce correct format #10', () => {
+    const R = [...ValuePointer.Format('/x/~1')]
+    Assert.deepEqual(R, ['x', '/'])
+  })
+
+  it('Should produce correct format #11', () => {
+    const R = [...ValuePointer.Format('/x/~0/')]
+    Assert.deepEqual(R, ['x', '~', ''])
+  })
+
+  it('Should produce correct format #12', () => {
+    const R = [...ValuePointer.Format('/x/~1/')]
+    Assert.deepEqual(R, ['x', '/', ''])
+  })
+
+  it('Should produce correct format #13', () => {
+    const R = [...ValuePointer.Format('/x/a~0b')]
+    Assert.deepEqual(R, ['x', 'a~b'])
+  })
+
+  it('Should produce correct format #14', () => {
+    const R = [...ValuePointer.Format('/x/a~1b')]
+    Assert.deepEqual(R, ['x', 'a/b'])
+  })
+
+  it('Should produce correct format #15', () => {
+    const R = [...ValuePointer.Format('/x/a~0b/')]
+    Assert.deepEqual(R, ['x', 'a~b', ''])
+  })
+
+  it('Should produce correct format #16', () => {
+    const R = [...ValuePointer.Format('/x/a~1b/')]
+    Assert.deepEqual(R, ['x', 'a/b', ''])
+  })
+
+  it('Should produce correct format #17', () => {
+    const R = [...ValuePointer.Format('/x/a~0b///y')]
+    Assert.deepEqual(R, ['x', 'a~b', '', '', 'y'])
+  })
+
+  it('Should produce correct format #18', () => {
+    const R = [...ValuePointer.Format('/x/a~1b///y')]
+    Assert.deepEqual(R, ['x', 'a/b', '', '', 'y'])
+  })
+
+  it('Should produce correct format #19', () => {
+    const R = [...ValuePointer.Format('/x/a~0b///')]
+    Assert.deepEqual(R, ['x', 'a~b', '', '', ''])
+  })
+
+  it('Should produce correct format #20', () => {
+    const R = [...ValuePointer.Format('/x/a~1b///')]
+    Assert.deepEqual(R, ['x', 'a/b', '', '', ''])
+  })
+
+  //-----------------------------------------------
   // Get
   //-----------------------------------------------
+
   it('Should get array #1', () => {
     const V = [0, 1, 2, 3]
     Assert.deepEqual(ValuePointer.Get(V, ''), [0, 1, 2, 3])
@@ -214,10 +319,28 @@ describe('value/pointer/Pointer', () => {
     })
   })
 
+  it('Should not delete owner', () => {
+    const V = { x: { y: { z: 1 } } }
+    ValuePointer.Delete(V, '/x/y/z')
+    Assert.deepEqual(V, { x: { y: {} } })
+  })
+
+  it('Should delete owner', () => {
+    const V = { x: { y: { z: 1 } } }
+    ValuePointer.Delete(V, '/x/y')
+    Assert.deepEqual(V, { x: {} })
+  })
+
+  it('Should not throw if deleting null property', () => {
+    const V = { x: { y: null } }
+    ValuePointer.Delete(V, '/x/y/z')
+    Assert.deepEqual(V, { x: { y: null } })
+  })
+
   //-----------------------------------------------
   // Escapes
   //-----------------------------------------------
-  
+
   it('Should support get ~0 pointer escape', () => {
     const V = {
       x: { '~': { x: 1 } },
