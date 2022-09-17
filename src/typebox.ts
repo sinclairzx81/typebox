@@ -445,16 +445,16 @@ export type StringFormatOption =
   | 'relative-json-pointer'
   | 'regex'
 
-export interface StringOptions<TFormat extends string> extends SchemaOptions {
+export interface StringOptions<Format extends string> extends SchemaOptions {
   minLength?: number
   maxLength?: number
   pattern?: string
-  format?: TFormat
+  format?: Format
   contentEncoding?: '7bit' | '8bit' | 'binary' | 'quoted-printable' | 'base64'
   contentMediaType?: string
 }
 
-export interface TString extends TSchema, StringOptions<string> {
+export interface TString<Format extends string = string> extends TSchema, StringOptions<Format> {
   [Kind]: 'String'
   static: string
   type: 'string'
@@ -885,7 +885,7 @@ export class TypeBuilder {
   }
 
   /** Creates a string type */
-  public String<TCustomFormatOption extends string>(options: StringOptions<StringFormatOption | TCustomFormatOption> = {}): TString {
+  public String<Format extends string>(options: StringOptions<StringFormatOption | Format> = {}): TString<Format> {
     return this.Create({ ...options, [Kind]: 'String', type: 'string' })
   }
 
