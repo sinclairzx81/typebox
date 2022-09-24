@@ -29,6 +29,19 @@ describe('type/schema/Omit', () => {
     strictEqual(T.required!.includes('z'), false)
   })
 
+  it('Should delete the required property if no required properties remain', () => {
+    const A = Type.Object(
+      {
+        x: Type.Optional(Type.Number()),
+        y: Type.ReadonlyOptional(Type.Number()),
+        z: Type.Number(),
+      },
+      { additionalProperties: false },
+    )
+    const T = Type.Omit(A, ['z'])
+    strictEqual(T.required, undefined)
+  })
+
   it('Should inherit options from the source object', () => {
     const A = Type.Object(
       {

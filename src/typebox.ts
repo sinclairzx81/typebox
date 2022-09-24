@@ -743,7 +743,10 @@ export class TypeBuilder {
   public Omit(schema: any, keys: any, options: ObjectOptions = {}) {
     const select: string[] = keys[Kind] === 'Union' ? keys.anyOf.map((schema: TLiteral) => schema.const) : keys
     const next = { ...this.Clone(schema), ...options, [Hint]: 'Omit' }
-    next.required = next.required ? next.required.filter((key: string) => !select.includes(key as any)) : undefined
+    if (next.required) {
+      next.required = next.required.filter((key: string) => !select.includes(key as any))
+      if (next.required.length === 0) delete next.required
+    }
     for (const key of Object.keys(next.properties)) {
       if (select.includes(key as any)) delete next.properties[key]
     }
@@ -790,7 +793,10 @@ export class TypeBuilder {
   public Pick<T extends TObject, K extends ObjectPropertyKeys<T>[]>(schema: any, keys: any, options: ObjectOptions = {}) {
     const select: string[] = keys[Kind] === 'Union' ? keys.anyOf.map((schema: TLiteral) => schema.const) : keys
     const next = { ...this.Clone(schema), ...options, [Hint]: 'Pick' }
-    next.required = next.required ? next.required.filter((key: any) => select.includes(key)) : undefined
+    if (next.required) {
+      next.required = next.required.filter((key: any) => select.includes(key))
+      if (next.required.length === 0) delete next.required
+    }
     for (const key of Object.keys(next.properties)) {
       if (!select.includes(key as any)) delete next.properties[key]
     }
