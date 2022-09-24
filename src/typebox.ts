@@ -265,7 +265,7 @@ export interface TLiteral<T extends TLiteralValue = TLiteralValue> extends TSche
 export interface TNever extends TSchema {
   [Kind]: 'Never'
   static: never
-  allOf: [{ const: 0 }, { const: 1 }]
+  allOf: [{ type: 'boolean'; const: false }, { type: 'boolean'; const: true }]
 }
 
 // --------------------------------------------------------------------------
@@ -701,8 +701,8 @@ export class TypeBuilder {
       ...options,
       [Kind]: 'Never',
       allOf: [
-        { type: 'number', const: 0 },
-        { type: 'number', const: 1 },
+        { type: 'boolean', const: false },
+        { type: 'boolean', const: true },
       ],
     })
   }
