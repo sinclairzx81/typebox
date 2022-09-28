@@ -26,4 +26,18 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export * from './codegen'
+import { TSchema } from '@sinclair/typebox'
+import { TypeBoxCodegen } from './typebox'
+import { TypeScriptCodeGen } from './typescript'
+
+export namespace CodeGen {
+  /** Generates TypeScript type definitions from TypeBox types */
+  export function TypeScript(schema: TSchema, references: TSchema[] = []): string {
+    return TypeScriptCodeGen.Generate(schema, references)
+  }
+
+  /** Generates TypeBox type definitions from TypeScript code */
+  export function TypeBox(code: string): string {
+    return TypeBoxCodegen.Generate(code)
+  }
+}
