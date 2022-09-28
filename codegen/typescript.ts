@@ -113,6 +113,10 @@ export namespace TypeScriptCodeGen {
     return schema.$ref
   }
 
+  function Self(schema: Types.TSelf) {
+    return schema.$ref
+  }
+
   function Tuple(schema: Types.TTuple) {
     if (schema.items === undefined) return `[]`
     const items = schema.items.map((schema) => Visit(schema)).join(', ')
@@ -168,6 +172,8 @@ export namespace TypeScriptCodeGen {
       return Record(schema)
     } else if (TypeGuard.TRef(schema)) {
       return Ref(schema)
+    } else if (TypeGuard.TSelf(schema)) {
+      return Self(schema)
     } else if (TypeGuard.TString(schema)) {
       return String(schema)
     } else if (TypeGuard.TTuple(schema)) {

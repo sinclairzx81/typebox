@@ -838,7 +838,7 @@ export class TypeBuilder {
 
   /** Creates a recursive object type */
   public Recursive<T extends TSchema>(callback: (self: TSelf) => T, options: SchemaOptions = {}): TRecursive<T> {
-    if (options.$id === undefined) options.$id = `type-${TypeOrdinal++}`
+    if (options.$id === undefined) options.$id = `T${TypeOrdinal++}`
     const self = callback({ [Kind]: 'Self', $ref: `${options.$id}` } as any)
     self.$id = options.$id
     return this.Create({ ...options, ...self } as any)
