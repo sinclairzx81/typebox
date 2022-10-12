@@ -229,17 +229,13 @@ export interface TIntersect<T extends TObject[] = TObject[]> extends TObject {
 }
 
 // --------------------------------------------------------------------------
-// KeyOf: Implemented by way of Union<TLiteral<string>>
+// KeyOf
 // --------------------------------------------------------------------------
 
 export type UnionToIntersect<U> = (U extends unknown ? (arg: U) => 0 : never) extends (arg: infer I) => 0 ? I : never
-
 export type UnionLast<U> = UnionToIntersect<U extends unknown ? (x: U) => 0 : never> extends (x: infer L) => 0 ? L : never
-
 export type UnionToTuple<U, L = UnionLast<U>> = [U] extends [never] ? [] : [...UnionToTuple<Exclude<U, L>>, L]
-
 export type UnionStringLiteralToTuple<T> = T extends TUnion<infer L> ? { [I in keyof L]: L[I] extends TLiteral<infer C> ? C : never } : never
-
 export type UnionLiteralsFromObject<T extends TObject> = { [K in ObjectPropertyKeys<T>]: TLiteral<K> } extends infer R ? UnionToTuple<R[keyof R]> : never
 
 // export type TKeyOf<T extends TObject> = { [K in ObjectPropertyKeys<T>]: TLiteral<K> } extends infer R ? UnionToTuple<R[keyof R]> : never
@@ -293,20 +289,16 @@ export interface TNumber extends TSchema, NumericOptions {
 // --------------------------------------------------------------------------
 
 export type ReadonlyOptionalPropertyKeys<T extends TProperties> = { [K in keyof T]: T[K] extends TReadonlyOptional<TSchema> ? K : never }[keyof T]
-
 export type ReadonlyPropertyKeys<T extends TProperties> = { [K in keyof T]: T[K] extends TReadonly<TSchema> ? K : never }[keyof T]
-
 export type OptionalPropertyKeys<T extends TProperties> = { [K in keyof T]: T[K] extends TOptional<TSchema> ? K : never }[keyof T]
-
 export type RequiredPropertyKeys<T extends TProperties> = keyof Omit<T, ReadonlyOptionalPropertyKeys<T> | ReadonlyPropertyKeys<T> | OptionalPropertyKeys<T>>
 
-export type PropertiesReduce<T extends TProperties, P extends unknown[]> = { readonly [K in ReadonlyOptionalPropertyKeys<T>]?: Static<T[K], P> } & {
-  readonly [K in ReadonlyPropertyKeys<T>]: Static<T[K], P>
-} & {
-  [K in OptionalPropertyKeys<T>]?: Static<T[K], P>
-} & { [K in RequiredPropertyKeys<T>]: Static<T[K], P> } extends infer R
-  ? { [K in keyof R]: R[K] }
-  : never
+// prettier-ignore
+export type PropertiesReduce<T extends TProperties, P extends unknown[]> = 
+  { readonly [K in ReadonlyOptionalPropertyKeys<T>]?: Static<T[K], P> } & 
+  { readonly [K in ReadonlyPropertyKeys<T>]:          Static<T[K], P> } & 
+  {          [K in OptionalPropertyKeys<T>]?:         Static<T[K], P> } & 
+  {          [K in RequiredPropertyKeys<T>]:          Static<T[K], P> } extends infer R ? { [K in keyof R]: R[K] } : never
 
 export type TRecordProperties<K extends TUnion<TLiteral[]>, T extends TSchema> = Static<K> extends string ? { [X in Static<K>]: T } : never
 
@@ -347,7 +339,14 @@ export interface TOmit<T extends TObject, Properties extends ObjectPropertyKeys<
 
 export interface TPartial<T extends TObject> extends TObject {
   static: Partial<Static<T, this['params']>>
-  properties: T['properties']
+  properties: {
+    // prettier-ignore
+    [K in keyof T['properties']]: 
+      T['properties'][K] extends TReadonlyOptional<infer U> ? TReadonlyOptional<U> : 
+      T['properties'][K] extends TReadonly<infer U>         ? TReadonlyOptional<U> : 
+      T['properties'][K] extends TOptional<infer U>         ? TOptional<U> : 
+      TOptional<T['properties'][K]>
+  }
 }
 
 // --------------------------------------------------------------------------
@@ -420,7 +419,14 @@ export interface TRef<T extends TSchema = TSchema> extends TSchema {
 
 export interface TRequired<T extends TObject | TRef<TObject>> extends TObject {
   static: Required<Static<T, this['params']>>
-  properties: T['properties']
+  properties: {
+    // prettier-ignore
+    [K in keyof T['properties']]: 
+      T['properties'][K] extends TReadonlyOptional<infer U> ? TReadonly<U> :  
+      T['properties'][K] extends TReadonly<infer U>         ? TReadonly<U> :
+      T['properties'][K] extends TOptional<infer U>         ? U :  
+      T['properties'][K]
+  }
 }
 
 // --------------------------------------------------------------------------
@@ -955,7 +961,7 @@ export class TypeBuilder {
           [key]: this.Clone(value[key]),
         }),
         Object.getOwnPropertySymbols(value).reduce(
-          (acc, key) => ({
+          (acc, key: any) => ({
             ...acc,
             [key]: this.Clone(value[key]),
           }),
