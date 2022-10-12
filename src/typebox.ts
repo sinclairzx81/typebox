@@ -347,6 +347,7 @@ export interface TOmit<T extends TObject, Properties extends ObjectPropertyKeys<
 
 export interface TPartial<T extends TObject> extends TObject {
   static: Partial<Static<T, this['params']>>
+  properties: T['properties']
 }
 
 // --------------------------------------------------------------------------
@@ -419,6 +420,7 @@ export interface TRef<T extends TSchema = TSchema> extends TSchema {
 
 export interface TRequired<T extends TObject | TRef<TObject>> extends TObject {
   static: Required<Static<T, this['params']>>
+  properties: T['properties']
 }
 
 // --------------------------------------------------------------------------
