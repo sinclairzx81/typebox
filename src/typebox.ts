@@ -109,6 +109,7 @@ export interface NumericOptions extends SchemaOptions {
   maximum?: number
   minimum?: number
   multipleOf?: number
+  acceptNaN?: boolean
 }
 
 export type TNumeric = TInteger | TNumber

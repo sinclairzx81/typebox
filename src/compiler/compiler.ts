@@ -138,6 +138,7 @@ export namespace TypeCompiler {
 
   function* Integer(schema: Types.TNumeric, value: string): IterableIterator<string> {
     yield `(typeof ${value} === 'number' && Number.isInteger(${value}))`
+    if (schema.acceptNaN === false) yield `(typeof ${value} === 'number' && !Number.isNaN(${value}))`
     if (schema.multipleOf !== undefined) yield `(${value} % ${schema.multipleOf} === 0)`
     if (schema.exclusiveMinimum !== undefined) yield `(${value} > ${schema.exclusiveMinimum})`
     if (schema.exclusiveMaximum !== undefined) yield `(${value} < ${schema.exclusiveMaximum})`

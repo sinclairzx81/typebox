@@ -30,4 +30,14 @@ describe('type/compiler/Number', () => {
     const T = Type.Number()
     fail(T, undefined)
   })
+
+  it('Should accept NaN', () => {
+    const T = Type.Number({ acceptNaN: true })
+    ok(T, NaN)
+  })
+
+  it('Should not accept NaN', () => {
+    const T = Type.Number({ acceptNaN: false })
+    fail(T, NaN)
+  })
 })
