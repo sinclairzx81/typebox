@@ -745,11 +745,11 @@ export class TypeBuilder {
   public Omit<T extends TObject, K extends TUnion<TLiteral<string>[]>>(schema: T, keys: K, options?: ObjectOptions): TOmit<T, UnionStringLiteralToTuple<K>>
 
   /** Creates a new object whose properties are omitted from the given object */
-  public Omit<T extends TObject, K extends ObjectPropertyKeys<T>[]>(schema: T, keys: [...K], options?: ObjectOptions): TOmit<T, K>
+  public Omit<T extends TObject, K extends ObjectPropertyKeys<T>[]>(schema: T, keys: readonly [...K], options?: ObjectOptions): TOmit<T, K>
 
   /** Creates a new object whose properties are omitted from the given object */
   public Omit(schema: any, keys: any, options: ObjectOptions = {}) {
-    const select: string[] = keys[Kind] === 'Union' ? keys.anyOf.map((schema: TLiteral) => schema.const) : keys
+    const select: readonly string[] = keys[Kind] === 'Union' ? keys.anyOf.map((schema: TLiteral) => schema.const) : keys
     const next = { ...this.Clone(schema), ...options, [Hint]: 'Omit' }
     if (next.required) {
       next.required = next.required.filter((key: string) => !select.includes(key as any))
@@ -795,11 +795,11 @@ export class TypeBuilder {
   public Pick<T extends TObject, K extends TUnion<TLiteral<string>[]>>(schema: T, keys: K, options?: ObjectOptions): TPick<T, UnionStringLiteralToTuple<K>>
 
   /** Creates a object whose properties are picked from the given object */
-  public Pick<T extends TObject, K extends ObjectPropertyKeys<T>[]>(schema: T, keys: [...K], options?: ObjectOptions): TPick<T, K>
+  public Pick<T extends TObject, K extends ObjectPropertyKeys<T>[]>(schema: T, keys: readonly [...K], options?: ObjectOptions): TPick<T, K>
 
   /** Creates a object whose properties are picked from the given object */
   public Pick<T extends TObject, K extends ObjectPropertyKeys<T>[]>(schema: any, keys: any, options: ObjectOptions = {}) {
-    const select: string[] = keys[Kind] === 'Union' ? keys.anyOf.map((schema: TLiteral) => schema.const) : keys
+    const select: readonly string[] = keys[Kind] === 'Union' ? keys.anyOf.map((schema: TLiteral) => schema.const) : keys
     const next = { ...this.Clone(schema), ...options, [Hint]: 'Pick' }
     if (next.required) {
       next.required = next.required.filter((key: any) => select.includes(key))
