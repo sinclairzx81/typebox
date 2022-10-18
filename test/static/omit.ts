@@ -16,6 +16,25 @@ import { Type, Static } from '@sinclair/typebox'
     C: string
   }>()
 }
+
+{
+  const A = Type.Object({
+    A: Type.String(),
+    B: Type.String(),
+    C: Type.String(),
+  })
+
+  const keys = ['A', 'B'] as const;
+
+  const T = Type.Omit(A, keys)
+
+  type T = Static<typeof T>
+
+  Expect(T).ToInfer<{
+    C: string
+  }>()
+}
+
 {
   const A = Type.Object({
     A: Type.String(),
