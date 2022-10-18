@@ -24,6 +24,25 @@ import { Type, Static } from '@sinclair/typebox'
     B: Type.String(),
     C: Type.String(),
   })
+
+  const keys = ['A', 'B'] as const
+
+  const T = Type.Pick(A, keys)
+
+  type T = Static<typeof T>
+
+  Expect(T).ToInfer<{
+    A: string
+    B: string
+  }>()
+}
+
+{
+  const A = Type.Object({
+    A: Type.String(),
+    B: Type.String(),
+    C: Type.String(),
+  })
   const B = Type.Object({
     A: Type.String(),
     B: Type.String(),
