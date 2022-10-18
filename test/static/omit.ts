@@ -24,7 +24,7 @@ import { Type, Static } from '@sinclair/typebox'
     C: Type.String(),
   })
 
-  const keys = ['A', 'B'] as const;
+  const keys = ['A', 'B'] as const
 
   const T = Type.Omit(A, keys)
 
