@@ -59,6 +59,7 @@ export enum ValueErrorType {
   ObjectMinProperties,
   ObjectMaxProperties,
   ObjectAdditionalProperties,
+  ObjectRequiredProperties,
   Promise,
   RecordKeyNumeric,
   RecordKeyString,
@@ -211,12 +212,21 @@ export namespace ValueErrors {
     }
     const propertyKeys = globalThis.Object.keys(schema.properties)
     if (schema.additionalProperties === false) {
-      for (const propKey of globalThis.Object.keys(value)) {
-        if (!propertyKeys.includes(propKey)) {
-          yield { type: ValueErrorType.ObjectAdditionalProperties, schema, path: `${path}/${propKey}`, value: value[propKey], message: 'Unexpected property' }
+      for (const objectKey of globalThis.Object.keys(value)) {
+        if (!propertyKeys.includes(objectKey)) {
+          yield { type: ValueErrorType.ObjectAdditionalProperties, schema, path: `${path}/${objectKey}`, value: value[objectKey], message: `Unexpected property` }
         }
       }
     }
+
+    if (schema.required && schema.required.length > 0) {
+      const objectKeys = globalThis.Object.keys(value)
+      for (const requiredKey of schema.required) {
+        if (objectKeys.includes(requiredKey)) continue
+        yield { type: ValueErrorType.ObjectRequiredProperties, schema: schema.properties[requiredKey], path: `${path}/${requiredKey}`, value: undefined, message: `Expected required property` }
+      }
+    }
+
     for (const propertyKey of propertyKeys) {
       const propertySchema = schema.properties[propertyKey]
       if (schema.required && schema.required.includes(propertyKey)) {

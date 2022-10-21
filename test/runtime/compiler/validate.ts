@@ -69,6 +69,10 @@ export function ok<T extends TSchema>(schema: T, data: unknown, references: any[
   if (result !== Value.Check(schema, references, data)) {
     throw Error('Compiler and Value Check disparity')
   }
+  if (result === false) {
+    const errors = [...Value.Errors(schema, references, data)]
+    if (errors.length === 0) throw Error('expected at least 1 error')
+  }
   if (!result) {
     console.log('---------------------------')
     console.log('type')
@@ -86,9 +90,13 @@ export function ok<T extends TSchema>(schema: T, data: unknown, references: any[
   }
 }
 
-export function fail<T extends TSchema>(schema: T, data: unknown, additional: any[] = []) {
-  const C = TypeCompiler.Compile(schema, additional)
+export function fail<T extends TSchema>(schema: T, data: unknown, references: any[] = []) {
+  const C = TypeCompiler.Compile(schema, references)
   const result = C.Check(data)
+  if (result === false) {
+    const errors = [...Value.Errors(schema, references, data)]
+    if (errors.length === 0) throw Error('expected at least 1 error')
+  }
   if (result) {
     console.log('---------------------------')
     console.log('type')
