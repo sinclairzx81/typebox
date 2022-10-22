@@ -96,7 +96,12 @@ export namespace JsonSchemaCodeGen {
   }
 
   function* IntersectionTypeNode(node: ts.IntersectionTypeNode): IterableIterator<string> {
-    throw new NonExpressable('IntersectionTypeNode')
+    const types = node.types.map((type) => Collect(type)).join(',\n')
+    yield `{
+      allOf: [
+        ${types}
+      ]
+    }`
   }
 
   function* TypeOperatorNode(node: ts.TypeOperatorNode): IterableIterator<string> {
