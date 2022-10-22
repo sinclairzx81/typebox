@@ -29,6 +29,7 @@ THE SOFTWARE.
 import { TSchema } from '@sinclair/typebox'
 import { TypeBoxCodegen } from './typebox'
 import { TypeScriptCodeGen } from './typescript'
+import { JsonSchemaCodeGen } from './jsonschema'
 
 export namespace CodeGen {
   /** Generates TypeScript type definitions from TypeBox types */
@@ -39,5 +40,10 @@ export namespace CodeGen {
   /** Generates TypeBox type definitions from TypeScript code */
   export function TypeBox(code: string): string {
     return TypeBoxCodegen.Generate(code)
+  }
+
+  /** Generates JsonSchema definitions from TypeScript code */
+  export function JsonSchema(code: string): string {
+    return JsonSchemaCodeGen.Generate(code)
   }
 }
