@@ -1,5 +1,5 @@
 import { Expect } from './assert'
-import { Type, Static } from '@sinclair/typebox'
+import { Type } from '@sinclair/typebox'
 
 {
   const T = Type.Object({
@@ -61,12 +61,10 @@ import { Type, Static } from '@sinclair/typebox'
       additionalProperties: Type.Boolean(),
     },
   )
-  // note: the inferenced additionalProperty type does break usual structural
-  // equivelence and assignment checks, but does allow for the following usage.
-  function test(value: Static<typeof T>) {
-    value.A = 10
-    value.B = 20
-    value.C = 30
-    value.D = true // ok
-  }
+  // note: Pending TypeScript support for negated types. 
+  Expect(T).ToInfer<{
+    A: number
+    B: number
+    C: number
+  }>()
 }
