@@ -139,4 +139,70 @@ describe('type/compiler/Object', () => {
       '!@#$%^&*(': 4,
     })
   })
+
+  it('Should validate schema additional properties of string', () => {
+    const T = Type.Object(
+      {
+        x: Type.Number(),
+        y: Type.Number(),
+      },
+      {
+        additionalProperties: Type.String(),
+      },
+    )
+    ok(T, {
+      x: 1,
+      y: 2,
+      z: 'hello',
+    })
+    fail(T, {
+      x: 1,
+      y: 2,
+      z: 3,
+    })
+  })
+  it('Should validate schema additional properties of array', () => {
+    const T = Type.Object(
+      {
+        x: Type.Number(),
+        y: Type.Number(),
+      },
+      {
+        additionalProperties: Type.Array(Type.Number()),
+      },
+    )
+    ok(T, {
+      x: 1,
+      y: 2,
+      z: [0, 1, 2],
+    })
+    fail(T, {
+      x: 1,
+      y: 2,
+      z: 3,
+    })
+  })
+  it('Should validate schema additional properties of object', () => {
+    const T = Type.Object(
+      {
+        x: Type.Number(),
+        y: Type.Number(),
+      },
+      {
+        additionalProperties: Type.Object({
+          z: Type.Number(),
+        }),
+      },
+    )
+    ok(T, {
+      x: 1,
+      y: 2,
+      z: { z: 1 },
+    })
+    fail(T, {
+      x: 1,
+      y: 2,
+      z: 3,
+    })
+  })
 })

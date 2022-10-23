@@ -83,16 +83,17 @@ export namespace TypeGuard {
   function IsOptionalBoolean(value: unknown): value is boolean | undefined {
     return value === undefined || (value !== undefined && IsBoolean(value))
   }
-
   function IsOptionalString(value: unknown): value is string | undefined {
     return value === undefined || (value !== undefined && IsString(value))
   }
-
   function IsOptionalPattern(value: unknown): value is string | undefined {
     return value === undefined || (value !== undefined && IsString(value) && IsControlCharacterFree(value) && IsPattern(value))
   }
   function IsOptionalFormat(value: unknown): value is string | undefined {
     return value === undefined || (value !== undefined && IsString(value) && IsControlCharacterFree(value))
+  }
+  function IsOptionalSchema(value: unknown): value is boolean | undefined {
+    return value === undefined || TSchema(value)
   }
   /** Returns true if the given schema is TAny */
   export function TAny(schema: unknown): schema is Types.TAny {
@@ -207,7 +208,7 @@ export namespace TypeGuard {
         schema.type === 'object' &&
         IsOptionalString(schema.$id) &&
         IsObject(schema.properties) &&
-        IsOptionalBoolean(schema.additionalProperties) &&
+        (IsOptionalBoolean(schema.additionalProperties) || IsOptionalSchema(schema.additionalProperties)) &&
         IsOptionalNumber(schema.minProperties) &&
         IsOptionalNumber(schema.maxProperties)
       )

@@ -310,15 +310,18 @@ export type ObjectProperties<T> = T extends TObject<infer U> ? U : never
 
 export type ObjectPropertyKeys<T> = T extends TObject<infer U> ? keyof U : never
 
-export interface ObjectOptions extends SchemaOptions {
-  additionalProperties?: boolean
+export type TAdditionalProperties = undefined | TSchema | boolean
+
+export interface ObjectOptions<A extends TAdditionalProperties = undefined> extends SchemaOptions {
+  additionalProperties?: A
   minProperties?: number
   maxProperties?: number
 }
 
-export interface TObject<T extends TProperties = TProperties> extends TSchema, ObjectOptions {
+export interface TObject<T extends TProperties = TProperties, A extends TAdditionalProperties = undefined> extends TSchema, ObjectOptions<A> {
   [Kind]: 'Object'
-  static: PropertiesReduce<T, this['params']>
+  static: A extends TSchema ? PropertiesReduce<T, this['params']> & Record<string, Static<A, ['params']>> : PropertiesReduce<T, this['params']>
+  additionalProperties?: A
   type: 'object'
   properties: T
   required?: string[]
@@ -726,7 +729,7 @@ export class TypeBuilder {
   }
 
   /** Creates an object type with the given properties */
-  public Object<T extends TProperties>(properties: T, options: ObjectOptions = {}): TObject<T> {
+  public Object<T extends TProperties, A extends TAdditionalProperties = undefined>(properties: T, options: ObjectOptions<A> = {}): TObject<T, A> {
     const property_names = Object.keys(properties)
     const optional = property_names.filter((name) => {
       const property = properties[name] as TModifier

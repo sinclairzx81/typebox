@@ -1,5 +1,5 @@
 import { Expect } from './assert'
-import { Type } from '@sinclair/typebox'
+import { Type, Static } from '@sinclair/typebox'
 
 {
   const T = Type.Object({
@@ -49,4 +49,24 @@ import { Type } from '@sinclair/typebox'
       C: string
     }
   }>()
+}
+{
+  const T = Type.Object(
+    {
+      A: Type.Number(),
+      B: Type.Number(),
+      C: Type.Number(),
+    },
+    {
+      additionalProperties: Type.Boolean(),
+    },
+  )
+  // note: the inferenced additionalProperty type does break usual structural
+  // equivelence and assignment checks, but does allow for the following usage.
+  function test(value: Static<typeof T>) {
+    value.A = 10
+    value.B = 20
+    value.C = 30
+    value.D = true // ok
+  }
 }

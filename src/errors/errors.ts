@@ -226,7 +226,12 @@ export namespace ValueErrors {
         yield { type: ValueErrorType.ObjectRequiredProperties, schema: schema.properties[requiredKey], path: `${path}/${requiredKey}`, value: undefined, message: `Expected required property` }
       }
     }
-
+    if (typeof schema.additionalProperties === 'object') {
+      for (const objectKey of globalThis.Object.keys(value)) {
+        if (propertyKeys.includes(objectKey)) continue
+        yield* Visit(schema.additionalProperties as Types.TSchema, references, `${path}/${objectKey}`, value[objectKey])
+      }
+    }
     for (const propertyKey of propertyKeys) {
       const propertySchema = schema.properties[propertyKey]
       if (schema.required && schema.required.includes(propertyKey)) {
