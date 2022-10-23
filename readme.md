@@ -1062,29 +1062,29 @@ This benchmark measures compilation performance for varying types. You can revie
 ┌──────────────────┬────────────┬──────────────┬──────────────┬──────────────┐
 │     (index)      │ Iterations │     Ajv      │ TypeCompiler │ Performance  │
 ├──────────────────┼────────────┼──────────────┼──────────────┼──────────────┤
-│           Number │    2000    │ '    384 ms' │ '      9 ms' │ '   42.67 x' │
-│           String │    2000    │ '    322 ms' │ '      8 ms' │ '   40.25 x' │
-│          Boolean │    2000    │ '    310 ms' │ '      6 ms' │ '   51.67 x' │
-│             Null │    2000    │ '    271 ms' │ '      6 ms' │ '   45.17 x' │
-│            RegEx │    2000    │ '    491 ms' │ '     12 ms' │ '   40.92 x' │
-│          ObjectA │    2000    │ '   2935 ms' │ '     44 ms' │ '   66.70 x' │
-│          ObjectB │    2000    │ '   3076 ms' │ '     30 ms' │ '  102.53 x' │
-│            Tuple │    2000    │ '   1274 ms' │ '     22 ms' │ '   57.91 x' │
-│            Union │    2000    │ '   1281 ms' │ '     22 ms' │ '   58.23 x' │
-│          Vector4 │    2000    │ '   1602 ms' │ '     17 ms' │ '   94.24 x' │
-│          Matrix4 │    2000    │ '    959 ms' │ '     10 ms' │ '   95.90 x' │
-│   Literal_String │    2000    │ '    337 ms' │ '      6 ms' │ '   56.17 x' │
-│   Literal_Number │    2000    │ '    376 ms' │ '      5 ms' │ '   75.20 x' │
-│  Literal_Boolean │    2000    │ '    370 ms' │ '      5 ms' │ '   74.00 x' │
-│     Array_Number │    2000    │ '    733 ms' │ '      9 ms' │ '   81.44 x' │
-│     Array_String │    2000    │ '    764 ms' │ '     10 ms' │ '   76.40 x' │
-│    Array_Boolean │    2000    │ '    818 ms' │ '      6 ms' │ '  136.33 x' │
-│    Array_ObjectA │    2000    │ '   3744 ms' │ '     35 ms' │ '  106.97 x' │
-│    Array_ObjectB │    2000    │ '   3893 ms' │ '     34 ms' │ '  114.50 x' │
-│      Array_Tuple │    2000    │ '   2229 ms' │ '     16 ms' │ '  139.31 x' │
-│      Array_Union │    2000    │ '   1705 ms' │ '     18 ms' │ '   94.72 x' │
-│    Array_Vector4 │    2000    │ '   2261 ms' │ '     17 ms' │ '  133.00 x' │
-│    Array_Matrix4 │    2000    │ '   1574 ms' │ '     14 ms' │ '  112.43 x' │
+│           Number │    2000    │ '    428 ms' │ '     12 ms' │ '   35.67 x' │
+│           String │    2000    │ '    337 ms' │ '     12 ms' │ '   28.08 x' │
+│          Boolean │    2000    │ '    317 ms' │ '     11 ms' │ '   28.82 x' │
+│             Null │    2000    │ '    274 ms' │ '     10 ms' │ '   27.40 x' │
+│            RegEx │    2000    │ '    500 ms' │ '     18 ms' │ '   27.78 x' │
+│          ObjectA │    2000    │ '   2717 ms' │ '     49 ms' │ '   55.45 x' │
+│          ObjectB │    2000    │ '   2854 ms' │ '     37 ms' │ '   77.14 x' │
+│            Tuple │    2000    │ '   1224 ms' │ '     21 ms' │ '   58.29 x' │
+│            Union │    2000    │ '   1266 ms' │ '     23 ms' │ '   55.04 x' │
+│          Vector4 │    2000    │ '   1513 ms' │ '     19 ms' │ '   79.63 x' │
+│          Matrix4 │    2000    │ '    841 ms' │ '     12 ms' │ '   70.08 x' │
+│   Literal_String │    2000    │ '    327 ms' │ '      8 ms' │ '   40.88 x' │
+│   Literal_Number │    2000    │ '    358 ms' │ '      6 ms' │ '   59.67 x' │
+│  Literal_Boolean │    2000    │ '    355 ms' │ '      5 ms' │ '   71.00 x' │
+│     Array_Number │    2000    │ '    685 ms' │ '      7 ms' │ '   97.86 x' │
+│     Array_String │    2000    │ '    716 ms' │ '     11 ms' │ '   65.09 x' │
+│    Array_Boolean │    2000    │ '    732 ms' │ '      6 ms' │ '  122.00 x' │
+│    Array_ObjectA │    2000    │ '   3503 ms' │ '     34 ms' │ '  103.03 x' │
+│    Array_ObjectB │    2000    │ '   3626 ms' │ '     38 ms' │ '   95.42 x' │
+│      Array_Tuple │    2000    │ '   2095 ms' │ '     21 ms' │ '   99.76 x' │
+│      Array_Union │    2000    │ '   1577 ms' │ '     22 ms' │ '   71.68 x' │
+│    Array_Vector4 │    2000    │ '   2172 ms' │ '     17 ms' │ '  127.76 x' │
+│    Array_Matrix4 │    2000    │ '   1468 ms' │ '     19 ms' │ '   77.26 x' │
 └──────────────────┴────────────┴──────────────┴──────────────┴──────────────┘
 ```
 
@@ -1098,31 +1098,31 @@ This benchmark measures validation performance for varying types. You can review
 ┌──────────────────┬────────────┬──────────────┬──────────────┬──────────────┬──────────────┐
 │     (index)      │ Iterations │  ValueCheck  │     Ajv      │ TypeCompiler │ Performance  │
 ├──────────────────┼────────────┼──────────────┼──────────────┼──────────────┼──────────────┤
-│           Number │  1000000   │ '     37 ms' │ '      5 ms' │ '      5 ms' │ '    1.00 x' │
-│           String │  1000000   │ '     31 ms' │ '     24 ms' │ '     13 ms' │ '    1.85 x' │
-│          Boolean │  1000000   │ '     25 ms' │ '     25 ms' │ '     11 ms' │ '    2.27 x' │
-│             Null │  1000000   │ '     32 ms' │ '     26 ms' │ '     10 ms' │ '    2.60 x' │
-│            RegEx │  1000000   │ '    170 ms' │ '     48 ms' │ '     35 ms' │ '    1.37 x' │
-│          ObjectA │  1000000   │ '    564 ms' │ '     36 ms' │ '     23 ms' │ '    1.57 x' │
-│          ObjectB │  1000000   │ '   1000 ms' │ '     56 ms' │ '     40 ms' │ '    1.40 x' │
-│            Tuple │  1000000   │ '    125 ms' │ '     27 ms' │ '     13 ms' │ '    2.08 x' │
-│            Union │  1000000   │ '    316 ms' │ '     27 ms' │ '     14 ms' │ '    1.93 x' │
-│        Recursive │  1000000   │ '   3308 ms' │ '    415 ms' │ '    183 ms' │ '    2.27 x' │
-│          Vector4 │  1000000   │ '    135 ms' │ '     27 ms' │ '     12 ms' │ '    2.25 x' │
-│          Matrix4 │  1000000   │ '    658 ms' │ '     44 ms' │ '     30 ms' │ '    1.47 x' │
-│   Literal_String │  1000000   │ '     48 ms' │ '     26 ms' │ '     10 ms' │ '    2.60 x' │
-│   Literal_Number │  1000000   │ '     49 ms' │ '     31 ms' │ '      9 ms' │ '    3.44 x' │
-│  Literal_Boolean │  1000000   │ '     47 ms' │ '     28 ms' │ '     10 ms' │ '    2.80 x' │
-│     Array_Number │  1000000   │ '    418 ms' │ '     38 ms' │ '     17 ms' │ '    2.24 x' │
-│     Array_String │  1000000   │ '    466 ms' │ '     35 ms' │ '     22 ms' │ '    1.59 x' │
-│    Array_Boolean │  1000000   │ '    403 ms' │ '     41 ms' │ '     24 ms' │ '    1.71 x' │
-│    Array_ObjectA │  1000000   │ '  13596 ms' │ '   2861 ms' │ '   1759 ms' │ '    1.63 x' │
-│    Array_ObjectB │  1000000   │ '  15767 ms' │ '   2798 ms' │ '   1991 ms' │ '    1.41 x' │
-│      Array_Tuple │  1000000   │ '   1666 ms' │ '    103 ms' │ '     73 ms' │ '    1.41 x' │
-│      Array_Union │  1000000   │ '   4738 ms' │ '    229 ms' │ '     87 ms' │ '    2.63 x' │
-│  Array_Recursive │  1000000   │ '  56371 ms' │ '   7315 ms' │ '   2813 ms' │ '    2.60 x' │
-│    Array_Vector4 │  1000000   │ '   2180 ms' │ '    106 ms' │ '     53 ms' │ '    2.00 x' │
-│    Array_Matrix4 │  1000000   │ '  11795 ms' │ '    384 ms' │ '    313 ms' │ '    1.23 x' │
+│           Number │  1000000   │ '     24 ms' │ '      9 ms' │ '      6 ms' │ '    1.50 x' │
+│           String │  1000000   │ '     23 ms' │ '     19 ms' │ '     12 ms' │ '    1.58 x' │
+│          Boolean │  1000000   │ '     24 ms' │ '     19 ms' │ '     10 ms' │ '    1.90 x' │
+│             Null │  1000000   │ '     23 ms' │ '     18 ms' │ '      9 ms' │ '    2.00 x' │
+│            RegEx │  1000000   │ '    164 ms' │ '     46 ms' │ '     38 ms' │ '    1.21 x' │
+│          ObjectA │  1000000   │ '    548 ms' │ '     36 ms' │ '     22 ms' │ '    1.64 x' │
+│          ObjectB │  1000000   │ '   1118 ms' │ '     51 ms' │ '     38 ms' │ '    1.34 x' │
+│            Tuple │  1000000   │ '    136 ms' │ '     25 ms' │ '     14 ms' │ '    1.79 x' │
+│            Union │  1000000   │ '    338 ms' │ '     27 ms' │ '     16 ms' │ '    1.69 x' │
+│        Recursive │  1000000   │ '   3251 ms' │ '    416 ms' │ '     98 ms' │ '    4.24 x' │
+│          Vector4 │  1000000   │ '    146 ms' │ '     23 ms' │ '     12 ms' │ '    1.92 x' │
+│          Matrix4 │  1000000   │ '    584 ms' │ '     40 ms' │ '     25 ms' │ '    1.60 x' │
+│   Literal_String │  1000000   │ '     46 ms' │ '     19 ms' │ '     10 ms' │ '    1.90 x' │
+│   Literal_Number │  1000000   │ '     46 ms' │ '     20 ms' │ '     10 ms' │ '    2.00 x' │
+│  Literal_Boolean │  1000000   │ '     47 ms' │ '     21 ms' │ '     10 ms' │ '    2.10 x' │
+│     Array_Number │  1000000   │ '    456 ms' │ '     31 ms' │ '     19 ms' │ '    1.63 x' │
+│     Array_String │  1000000   │ '    489 ms' │ '     40 ms' │ '     25 ms' │ '    1.60 x' │
+│    Array_Boolean │  1000000   │ '    458 ms' │ '     35 ms' │ '     27 ms' │ '    1.30 x' │
+│    Array_ObjectA │  1000000   │ '  13559 ms' │ '   2568 ms' │ '   1564 ms' │ '    1.64 x' │
+│    Array_ObjectB │  1000000   │ '  15863 ms' │ '   2744 ms' │ '   2060 ms' │ '    1.33 x' │
+│      Array_Tuple │  1000000   │ '   1694 ms' │ '     96 ms' │ '     63 ms' │ '    1.52 x' │
+│      Array_Union │  1000000   │ '   4736 ms' │ '    229 ms' │ '     86 ms' │ '    2.66 x' │
+│  Array_Recursive │  1000000   │ '  53804 ms' │ '   6744 ms' │ '   1167 ms' │ '    5.78 x' │
+│    Array_Vector4 │  1000000   │ '   2244 ms' │ '     99 ms' │ '     46 ms' │ '    2.15 x' │
+│    Array_Matrix4 │  1000000   │ '  11966 ms' │ '    378 ms' │ '    229 ms' │ '    1.65 x' │
 └──────────────────┴────────────┴──────────────┴──────────────┴──────────────┴──────────────┘
 ```
 
@@ -1136,11 +1136,11 @@ The following table lists esbuild compiled and minified sizes for each TypeBox m
 ┌──────────────────────┬────────────┬────────────┬─────────────┐
 │       (index)        │  Compiled  │  Minified  │ Compression │
 ├──────────────────────┼────────────┼────────────┼─────────────┤
-│ typebox/compiler     │ '   49 kb' │ '   24 kb' │  '2.00 x'   │
+│ typebox/compiler     │ '   51 kb' │ '   25 kb' │  '2.00 x'   │
 │ typebox/conditional  │ '   42 kb' │ '   17 kb' │  '2.46 x'   │
 │ typebox/format       │ '    0 kb' │ '    0 kb' │  '2.66 x'   │
-│ typebox/guard        │ '   21 kb' │ '   10 kb' │  '2.07 x'   │
-│ typebox/value        │ '   72 kb' │ '   33 kb' │  '2.16 x'   │
+│ typebox/guard        │ '   21 kb' │ '   10 kb' │  '2.08 x'   │
+│ typebox/value        │ '   74 kb' │ '   34 kb' │  '2.16 x'   │
 │ typebox              │ '   11 kb' │ '    6 kb' │  '1.91 x'   │
 └──────────────────────┴────────────┴────────────┴─────────────┘
 ```

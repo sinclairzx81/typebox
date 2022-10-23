@@ -240,6 +240,14 @@ export namespace ValueCast {
       if (!required.has(key) && value[key] === undefined) continue
       result[key] = Visit(property, references, value[key])
     }
+    // additional schema properties
+    if (typeof schema.additionalProperties === 'object') {
+      const propertyKeys = globalThis.Object.keys(schema.properties)
+      for (const objectKey of globalThis.Object.keys(value)) {
+        if (propertyKeys.includes(objectKey)) continue
+        result[objectKey] = Visit(schema.additionalProperties, references, value[objectKey])
+      }
+    }
     return result
   }
 

@@ -96,4 +96,35 @@ describe('type/guard/TObject', () => {
     )
     Assert.equal(R, false)
   })
+
+  it('should guard for TObject with invalid additional properties', () => {
+    const R = TypeGuard.TObject(
+      Type.Object(
+        {
+          x: Type.Number(),
+          y: Type.Number(),
+        },
+        {
+          // @ts-ignore
+          additionalProperties: 1,
+        },
+      ),
+    )
+    Assert.equal(R, false)
+  })
+
+  it('should not guard for TObject with valid additional properties schema', () => {
+    const R = TypeGuard.TObject(
+      Type.Object(
+        {
+          x: Type.Number(),
+          y: Type.Number(),
+        },
+        {
+          additionalProperties: Type.String(),
+        },
+      ),
+    )
+    Assert.equal(R, true)
+  })
 })

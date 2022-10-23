@@ -109,4 +109,58 @@ describe('value/cast/Object', () => {
       c: 'c',
     })
   })
+
+  it('Should upcast and create invalid additional properties', () => {
+    const result = Value.Cast(
+      Type.Object(
+        {
+          x: Type.Number(),
+          y: Type.Number(),
+        },
+        {
+          additionalProperties: Type.Object({
+            a: Type.Number(),
+            b: Type.Number(),
+          }),
+        },
+      ),
+      {
+        x: 1,
+        y: 2,
+        z: true,
+      },
+    )
+    Assert.deepEqual(result, {
+      x: 1,
+      y: 2,
+      z: { a: 0, b: 0 },
+    })
+  })
+
+  it('Should upcast and preserve additional properties', () => {
+    const result = Value.Cast(
+      Type.Object(
+        {
+          x: Type.Number(),
+          y: Type.Number(),
+        },
+        {
+          additionalProperties: Type.Object({
+            a: Type.Number(),
+            b: Type.Number(),
+          }),
+        },
+      ),
+      {
+        x: 1,
+        y: 2,
+        z: { b: 1 },
+      },
+    )
+    Assert.deepEqual(result, {
+      x: 1,
+      y: 2,
+      z: { a: 0, b: 1 },
+    })
+  })
 })

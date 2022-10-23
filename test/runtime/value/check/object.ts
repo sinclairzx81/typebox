@@ -98,4 +98,96 @@ describe('value/check/Object', () => {
     const result = Value.Check(T, value)
     Assert.equal(result, false)
   })
+
+  it('Should validate schema additional properties of string', () => {
+    const T = Type.Object(
+      {
+        x: Type.Number(),
+        y: Type.Number(),
+      },
+      {
+        additionalProperties: Type.String(),
+      },
+    )
+
+    Assert.equal(
+      Value.Check(T, {
+        x: 1,
+        y: 2,
+        z: 'hello',
+      }),
+      true,
+    )
+
+    Assert.equal(
+      Value.Check(T, {
+        x: 1,
+        y: 2,
+        z: 3,
+      }),
+      false,
+    )
+  })
+
+  it('Should validate schema additional properties of array', () => {
+    const T = Type.Object(
+      {
+        x: Type.Number(),
+        y: Type.Number(),
+      },
+      {
+        additionalProperties: Type.Array(Type.Number()),
+      },
+    )
+
+    Assert.equal(
+      Value.Check(T, {
+        x: 1,
+        y: 2,
+        z: [0, 1, 2],
+      }),
+      true,
+    )
+
+    Assert.equal(
+      Value.Check(T, {
+        x: 1,
+        y: 2,
+        z: 3,
+      }),
+      false,
+    )
+  })
+
+  it('Should validate schema additional properties of object', () => {
+    const T = Type.Object(
+      {
+        x: Type.Number(),
+        y: Type.Number(),
+      },
+      {
+        additionalProperties: Type.Object({
+          z: Type.Number(),
+        }),
+      },
+    )
+
+    Assert.equal(
+      Value.Check(T, {
+        x: 1,
+        y: 2,
+        z: { z: 1 },
+      }),
+      true,
+    )
+
+    Assert.equal(
+      Value.Check(T, {
+        x: 1,
+        y: 2,
+        z: 3,
+      }),
+      false,
+    )
+  })
 })

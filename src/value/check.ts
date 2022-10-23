@@ -150,6 +150,14 @@ export namespace ValueCheck {
         }
       }
     }
+    if (typeof schema.additionalProperties === 'object') {
+      for (const objectKey of globalThis.Object.keys(value)) {
+        if (propertyKeys.includes(objectKey)) continue
+        if (!Visit(schema.additionalProperties as Types.TSchema, references, value[objectKey])) {
+          return false
+        }
+      }
+    }
     for (const propertyKey of propertyKeys) {
       const propertySchema = schema.properties[propertyKey]
       if (schema.required && schema.required.includes(propertyKey)) {
