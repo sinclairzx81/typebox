@@ -51,13 +51,16 @@ import { Type, Static } from '@sinclair/typebox'
   }>()
 }
 {
-  const T = Type.Object({
-    A: Type.Number(),
-    B: Type.Number(),
-    C: Type.Number(),
-  }, {
-    additionalProperties: Type.Boolean()
-  })
+  const T = Type.Object(
+    {
+      A: Type.Number(),
+      B: Type.Number(),
+      C: Type.Number(),
+    },
+    {
+      additionalProperties: Type.Boolean(),
+    },
+  )
   // note: the inferenced additionalProperty type does break usual structural
   // equivelence and assignment checks, but does allow for the following usage.
   function test(value: Static<typeof T>) {

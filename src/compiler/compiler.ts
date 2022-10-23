@@ -189,8 +189,8 @@ export namespace TypeCompiler {
     }
     if (TypeGuard.TSchema(schema.additionalProperties)) {
       const expression = CreateExpression(schema.additionalProperties, 'value[key]')
-      const keys = `${propertyKeys.map((key) => `'${key}'`).join(', ')}`
-      yield `(Object.keys(${value}).every(key => [${keys}].includes(key) || ${expression}))`
+      const keys = `[${propertyKeys.map((key) => `'${key}'`).join(', ')}]`
+      yield `(Object.keys(${value}).every(key => ${keys}.includes(key) || ${expression}))`
     }
     for (const propertyKey of propertyKeys) {
       const memberExpression = Property.Check(propertyKey) ? `${value}.${propertyKey}` : `${value}['${propertyKey}']`
