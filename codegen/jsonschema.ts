@@ -209,11 +209,7 @@ export namespace JsonSchemaCodeGen {
   }
 
   function* ConditionalTypeNode(node: ts.ConditionalTypeNode): IterableIterator<string> {
-    const checkType = Collect(node.checkType)
-    const extendsType = Collect(node.extendsType)
-    const trueType = Collect(node.trueType)
-    const falseType = Collect(node.falseType)
-    yield `${checkType} ${extendsType}, ${trueType}, ${falseType})`
+    throw new NonExpressable('ConditionalTypeNode')
   }
 
   function* TypeReferenceNode(node: ts.TypeReferenceNode): IterableIterator<string> {
@@ -348,7 +344,7 @@ export namespace JsonSchemaCodeGen {
     } else if (ts.isConditionalTypeNode(node)) {
       return yield* ConditionalTypeNode(node)
     } else if (node.kind === ts.SyntaxKind.KeyOfKeyword) {
-      throw Error('JsonSchemaCodeGen: keyof cannot be expressed as json schema')
+      throw new NonExpressable('KeyOfKeyword')
     } else if (node.kind === ts.SyntaxKind.NumberKeyword) {
       return yield `{ 
         type: 'number' 
@@ -362,7 +358,7 @@ export namespace JsonSchemaCodeGen {
         type: 'boolean' 
       }`
     } else if (node.kind === ts.SyntaxKind.UndefinedKeyword) {
-      throw Error('JsonSchemaCodeGen: undefined cannot be expressed as json schema')
+      throw new NonExpressable('UndefinedKeyword')
     } else if (node.kind === ts.SyntaxKind.UnknownKeyword) {
       return yield `{
 
@@ -389,7 +385,7 @@ export namespace JsonSchemaCodeGen {
         type: 'null' 
       }`
     } else if (node.kind === ts.SyntaxKind.VoidKeyword) {
-      throw Error('JsonSchemaCodeGen: void cannot be expressed as json schema')
+      throw new NonExpressable('KeyOfKeyword')
     } else if (node.kind === ts.SyntaxKind.EndOfFileToken) {
       return
     } else if (node.kind === ts.SyntaxKind.SyntaxList) {

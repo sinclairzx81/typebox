@@ -3,6 +3,10 @@
 Updates:
 - [264](https://github.com/sinclairzx81/typebox/pull/264) TypeBox now provides preliminary support for non-boolean `additionalProperties`. This allows existing `TObject` schemas to be augmented with additional properties of a known type.
 
+Additional:
+
+- TypeBox provides an additional reference `codegen` module for generating raw JSON Schema from TypeScript types via the TS compiler API. This generator may be used in future tooling.
+
 ## [0.24.44](https://www.npmjs.com/package/@sinclair/typebox/v/0.24.44)
 
 Updates:
