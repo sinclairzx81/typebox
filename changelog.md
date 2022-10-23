@@ -1,3 +1,8 @@
+## [0.24.49](https://www.npmjs.com/package/@sinclair/typebox/v/0.24.49)
+
+Updates:
+- [264](https://github.com/sinclairzx81/typebox/pull/264) TypeBox now provides preliminary support for non-boolean `additionalProperties`. This allows existing `TObject` schemas to be augmented with additional properties of a known type.
+
 ## [0.24.44](https://www.npmjs.com/package/@sinclair/typebox/v/0.24.44)
 
 Updates:
