@@ -54,7 +54,7 @@ export class TypeCheck<T extends Types.TSchema> {
     return ValueErrors.Errors(this.schema, this.references, value)
   }
 
-  /** Returns true if the value matches the given type. */
+  /** Returns true if the value matches the compiled type. */
   public Check(value: unknown): value is Types.Static<T> {
     return this.checkFunc(value)
   }
