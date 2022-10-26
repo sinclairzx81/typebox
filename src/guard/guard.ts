@@ -144,6 +144,7 @@ export namespace TypeGuard {
       IsOptionalNumber(schema.exclusiveMaximum)
     )
   }
+  
   /** Returns true if the given schema is TFunction */
   export function TFunction(schema: unknown): schema is Types.TFunction {
     if (!(IsObject(schema) && schema[Types.Kind] === 'Function' && schema.type === 'function' && IsOptionalString(schema.$id) && IsArray(schema.parameters) && TSchema(schema.returns))) {
