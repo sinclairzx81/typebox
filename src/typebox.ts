@@ -380,7 +380,7 @@ export interface TPromise<T extends TSchema = TSchema> extends TSchema {
 // Record
 // --------------------------------------------------------------------------
 
-export type TRecordKey = TString | TInteger | TNumber | TUnion<TLiteral<any>[]>
+export type TRecordKey = TString | TNumeric | TUnion<TLiteral<any>[]>
 
 export interface TRecord<K extends TRecordKey = TRecordKey, T extends TSchema = TSchema> extends TSchema {
   [Kind]: 'Record'
@@ -823,7 +823,7 @@ export class TypeBuilder {
   public Record<K extends TUnion<TLiteral[]>, T extends TSchema>(key: K, schema: T, options?: ObjectOptions): TObject<TRecordProperties<K, T>>
 
   /** Creates a record type */
-  public Record<K extends TString | TInteger | TNumber, T extends TSchema>(key: K, schema: T, options?: ObjectOptions): TRecord<K, T>
+  public Record<K extends TString | TNumeric, T extends TSchema>(key: K, schema: T, options?: ObjectOptions): TRecord<K, T>
 
   /** Creates a record type */
   public Record(key: any, value: any, options: ObjectOptions = {}) {

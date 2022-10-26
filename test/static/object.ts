@@ -61,7 +61,7 @@ import { Type } from '@sinclair/typebox'
       additionalProperties: Type.Boolean(),
     },
   )
-  // note: Pending TypeScript support for negated types. 
+  // note: Pending TypeScript support for negated types.
   Expect(T).ToInfer<{
     A: number
     B: number

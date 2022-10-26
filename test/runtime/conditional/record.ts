@@ -87,6 +87,38 @@ describe('conditional/structural/Record', () => {
     Assert.deepEqual(R, StructuralResult.True)
   })
 
+  // -----
+
+  it('Should extend Record 12', () => {
+    type T = Record<string, number> extends Record<number, number> ? 1 : 2
+    const A = Type.Record(Type.String(), Type.Number())
+    const B = Type.Record(Type.Integer(), Type.Number())
+    const R = Structural.Check(A, B)
+    Assert.deepEqual(R, StructuralResult.True)
+  })
+  it('Should extend Record 13', () => {
+    type T = Record<number, number> extends Record<'a' | 'b', number> ? 1 : 2
+    const A = Type.Record(Type.Integer(), Type.Number())
+    const B = Type.Record(Type.Union([Type.Literal('a'), Type.Literal('b')]), Type.Number())
+    const R = Structural.Check(A, B)
+    Assert.deepEqual(R, StructuralResult.False)
+  })
+  it('Should extend Record 14', () => {
+    type T = Record<number, number> extends Record<string, number> ? 1 : 2
+    const A = Type.Record(Type.Integer(), Type.Number())
+    const B = Type.Record(Type.String(), Type.Number())
+    const R = Structural.Check(A, B)
+    Assert.deepEqual(R, StructuralResult.True)
+  })
+
+  it('Should extend Record 15', () => {
+    type T = Record<number, number> extends Record<number, number> ? 1 : 2
+    const A = Type.Record(Type.Integer(), Type.Number())
+    const B = Type.Record(Type.Integer(), Type.Number())
+    const R = Structural.Check(A, B)
+    Assert.deepEqual(R, StructuralResult.True)
+  })
+
   // -------------------------------------------------------------------
   // Standard
   // -------------------------------------------------------------------

@@ -59,3 +59,14 @@ import { Type, Static } from '@sinclair/typebox'
   type T = Static<typeof T>
   Expect(T).ToInfer<Record<'A' | 'B', number>>()
 }
+
+{
+  const T = Type.Record(Type.Number(), Type.String())
+
+  Expect(T).ToInfer<Record<number, string>>()
+}
+{
+  const T = Type.Record(Type.Integer(), Type.String())
+
+  Expect(T).ToInfer<Record<number, string>>()
+}

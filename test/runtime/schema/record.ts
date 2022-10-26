@@ -12,41 +12,6 @@ describe('type/schema/Record', () => {
     ok(T, { a: 1, b: 2, c: 3, '0': 4 })
   })
 
-  it('Should validate when all property keys are numbers', () => {
-    const T = Type.Record(Type.Number(), Type.Number())
-    ok(T, { '0': 1, '1': 2, '2': 3, '3': 4 })
-  })
-
-  it('Should validate when all property keys are numbers, but one property is a string with varying type', () => {
-    const T = Type.Record(Type.Number(), Type.Number())
-    fail(T, { '0': 1, '1': 2, '2': 3, '3': 4, a: 'hello' })
-  })
-
-  it('Should not validate if passing a leading zeros for numeric keys', () => {
-    const T = Type.Record(Type.Number(), Type.Number())
-    fail(T, {
-      '00': 1,
-      '01': 2,
-      '02': 3,
-      '03': 4,
-    })
-  })
-
-  it('Should not validate if passing a signed numeric keys', () => {
-    const T = Type.Record(Type.Number(), Type.Number())
-    fail(T, {
-      '-0': 1,
-      '-1': 2,
-      '-2': 3,
-      '-3': 4,
-    })
-  })
-
-  it('Should not validate when all property keys are numbers, but one property is a string with varying type', () => {
-    const T = Type.Record(Type.Number(), Type.Number())
-    fail(T, { '0': 1, '1': 2, '2': 3, '3': 4, a: 'hello' })
-  })
-
   it('Should validate when specifying string union literals when additionalProperties is true', () => {
     const K = Type.Union([Type.Literal('a'), Type.Literal('b'), Type.Literal('c')])
     const T = Type.Record(K, Type.Number())
@@ -97,5 +62,78 @@ describe('type/schema/Record', () => {
       op_b: 2,
       aop_c: 3,
     })
+  })
+
+  // ------------------------------------------------------------
+  // Integer Keys
+  // ------------------------------------------------------------
+
+  it('Should validate when all property keys are integers', () => {
+    const T = Type.Record(Type.Integer(), Type.Number())
+    ok(T, { '0': 1, '1': 2, '2': 3, '3': 4 })
+  })
+
+  it('Should validate when all property keys are integers, but one property is a string with varying type', () => {
+    const T = Type.Record(Type.Integer(), Type.Number())
+    fail(T, { '0': 1, '1': 2, '2': 3, '3': 4, a: 'hello' })
+  })
+
+  it('Should not validate if passing a leading zeros for integers keys', () => {
+    const T = Type.Record(Type.Integer(), Type.Number())
+    fail(T, {
+      '00': 1,
+      '01': 2,
+      '02': 3,
+      '03': 4,
+    })
+  })
+
+  it('Should not validate if passing a signed integers keys', () => {
+    const T = Type.Record(Type.Integer(), Type.Number())
+    fail(T, {
+      '-0': 1,
+      '-1': 2,
+      '-2': 3,
+      '-3': 4,
+    })
+  })
+
+  // ------------------------------------------------------------
+  // Number Keys
+  // ------------------------------------------------------------
+
+  it('Should validate when all property keys are numbers', () => {
+    const T = Type.Record(Type.Number(), Type.Number())
+    ok(T, { '0': 1, '1': 2, '2': 3, '3': 4 })
+  })
+
+  it('Should validate when all property keys are numbers, but one property is a string with varying type', () => {
+    const T = Type.Record(Type.Number(), Type.Number())
+    fail(T, { '0': 1, '1': 2, '2': 3, '3': 4, a: 'hello' })
+  })
+
+  it('Should not validate if passing a leading zeros for numeric keys', () => {
+    const T = Type.Record(Type.Number(), Type.Number())
+    fail(T, {
+      '00': 1,
+      '01': 2,
+      '02': 3,
+      '03': 4,
+    })
+  })
+
+  it('Should not validate if passing a signed numeric keys', () => {
+    const T = Type.Record(Type.Number(), Type.Number())
+    fail(T, {
+      '-0': 1,
+      '-1': 2,
+      '-2': 3,
+      '-3': 4,
+    })
+  })
+
+  it('Should not validate when all property keys are numbers, but one property is a string with varying type', () => {
+    const T = Type.Record(Type.Number(), Type.Number())
+    fail(T, { '0': 1, '1': 2, '2': 3, '3': 4, a: 'hello' })
   })
 })
