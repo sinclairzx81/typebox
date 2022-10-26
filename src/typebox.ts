@@ -80,6 +80,7 @@ export type TAnySchema =
   | TArray
   | TBoolean
   | TConstructor
+  | TDate
   | TEnum
   | TFunction
   | TInteger
@@ -165,6 +166,24 @@ export interface TConstructor<T extends TSchema[] = TSchema[], U extends TSchema
   type: 'constructor'
   parameters: T
   returns: U
+}
+
+// --------------------------------------------------------------------------
+// Date
+// --------------------------------------------------------------------------
+
+export interface DateOptions extends SchemaOptions {
+  exclusiveMaximum?: number
+  exclusiveMinimum?: number
+  maximum?: number
+  minimum?: number
+}
+
+export interface TDate extends TSchema, DateOptions {
+  type: 'object'
+  typeAs: 'Date'
+  [Kind]: 'Date'
+  static: Date
 }
 
 // --------------------------------------------------------------------------
@@ -493,7 +512,7 @@ export interface TTuple<T extends TSchema[] = TSchema[]> extends TSchema {
 
 export interface TUndefined extends TSchema {
   [Kind]: 'Undefined'
-  specialized: 'Undefined'
+  typeAs: 'Undefined'
   static: undefined
   type: 'object'
 }
@@ -520,7 +539,7 @@ export interface Uint8ArrayOptions extends SchemaOptions {
 export interface TUint8Array extends TSchema, Uint8ArrayOptions {
   [Kind]: 'Uint8Array'
   static: Uint8Array
-  specialized: 'Uint8Array'
+  typeAs: 'Uint8Array'
   type: 'object'
 }
 
@@ -638,6 +657,11 @@ export class TypeBuilder {
       .map((key) => item[key]) as T[keyof T][]
     const anyOf = values.map((value) => (typeof value === 'string' ? { [Kind]: 'Literal', type: 'string' as const, const: value } : { [Kind]: 'Literal', type: 'number' as const, const: value }))
     return this.Create({ ...options, [Kind]: 'Union', [Hint]: 'Enum', anyOf })
+  }
+
+  /** Creates a Date type */
+  public Date(options: DateOptions = {}): TDate {
+    return this.Create({ ...options, [Kind]: 'Date', type: 'object', typeAs: 'Date' })
   }
 
   /** Creates a function type */
@@ -917,7 +941,7 @@ export class TypeBuilder {
 
   /** Creates a undefined type */
   public Undefined(options: SchemaOptions = {}): TUndefined {
-    return this.Create({ ...options, [Kind]: 'Undefined', type: 'object', specialized: 'Undefined' })
+    return this.Create({ ...options, [Kind]: 'Undefined', type: 'object', typeAs: 'Undefined' })
   }
 
   /** Creates a union type */
@@ -930,7 +954,7 @@ export class TypeBuilder {
 
   /** Creates a Uint8Array type */
   public Uint8Array(options: Uint8ArrayOptions = {}): TUint8Array {
-    return this.Create({ ...options, [Kind]: 'Uint8Array', type: 'object', specialized: 'Uint8Array' })
+    return this.Create({ ...options, [Kind]: 'Uint8Array', type: 'object', typeAs: 'Uint8Array' })
   }
 
   /** Creates an unknown type */

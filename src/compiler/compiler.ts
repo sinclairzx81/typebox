@@ -132,6 +132,14 @@ export namespace TypeCompiler {
     yield* Visit(schema.returns, `${value}.prototype`)
   }
 
+  function* Date(schema: Types.TDate, value: string): IterableIterator<string> {
+    yield `(${value} instanceof Date)`
+    if (schema.exclusiveMinimum !== undefined) yield `(${value}.getTime() > ${schema.exclusiveMinimum})`
+    if (schema.exclusiveMaximum !== undefined) yield `(${value}.getTime() < ${schema.exclusiveMaximum})`
+    if (schema.minimum !== undefined) yield `(${value}.getTime() >= ${schema.minimum})`
+    if (schema.maximum !== undefined) yield `(${value}.getTime() <= ${schema.maximum})`
+  }
+
   function* Function(schema: Types.TFunction, value: string): IterableIterator<string> {
     yield `(typeof ${value} === 'function')`
   }
@@ -304,6 +312,8 @@ export namespace TypeCompiler {
         return yield* Boolean(anySchema, value)
       case 'Constructor':
         return yield* Constructor(anySchema, value)
+      case 'Date':
+        return yield* Date(anySchema, value)
       case 'Function':
         return yield* Function(anySchema, value)
       case 'Integer':

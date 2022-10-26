@@ -62,7 +62,25 @@ export namespace ValueCheck {
   function Constructor(schema: Types.TConstructor, references: Types.TSchema[], value: any): boolean {
     return Visit(schema.returns, references, value.prototype)
   }
+  function Date(schema: Types.TDate, references: Types.TSchema[], value: any): boolean {
+    if (!(value instanceof globalThis.Date)) {
+      return false
+    }
 
+    if (schema.exclusiveMinimum && !(value.getTime() > schema.exclusiveMinimum)) {
+      return false
+    }
+    if (schema.exclusiveMaximum && !(value.getTime() < schema.exclusiveMaximum)) {
+      return false
+    }
+    if (schema.minimum && !(value.getTime() >= schema.minimum)) {
+      return false
+    }
+    if (schema.maximum && !(value.getTime() <= schema.maximum)) {
+      return false
+    }
+    return true
+  }
   function Function(schema: Types.TFunction, references: Types.TSchema[], value: any): boolean {
     return typeof value === 'function'
   }
@@ -288,6 +306,8 @@ export namespace ValueCheck {
         return Boolean(anySchema, anyReferences, value)
       case 'Constructor':
         return Constructor(anySchema, anyReferences, value)
+      case 'Date':
+        return Date(anySchema, anyReferences, value)
       case 'Function':
         return Function(anySchema, anyReferences, value)
       case 'Integer':

@@ -130,6 +130,20 @@ export namespace TypeGuard {
     return true
   }
 
+  /** Returns true if the given schema is TConstructor */
+  export function TDate(schema: unknown): schema is Types.TDate {
+    return (
+      IsObject(schema) &&
+      schema[Types.Kind] === 'Date' &&
+      schema.type === 'object' &&
+      schema.typeAs === 'Date' &&
+      IsOptionalString(schema.$id) &&
+      IsOptionalNumber(schema.minimum) &&
+      IsOptionalNumber(schema.maximum) &&
+      IsOptionalNumber(schema.exclusiveMinimum) &&
+      IsOptionalNumber(schema.exclusiveMaximum)
+    )
+  }
   /** Returns true if the given schema is TFunction */
   export function TFunction(schema: unknown): schema is Types.TFunction {
     if (!(IsObject(schema) && schema[Types.Kind] === 'Function' && schema.type === 'function' && IsOptionalString(schema.$id) && IsArray(schema.parameters) && TSchema(schema.returns))) {
@@ -288,7 +302,7 @@ export namespace TypeGuard {
 
   /** Returns true if the given schema is TUndefined */
   export function TUndefined(schema: unknown): schema is Types.TUndefined {
-    return IsObject(schema) && schema[Types.Kind] === 'Undefined' && schema.type === 'object' && IsOptionalString(schema.$id) && schema.specialized === 'Undefined'
+    return IsObject(schema) && schema[Types.Kind] === 'Undefined' && schema.type === 'object' && IsOptionalString(schema.$id) && schema.typeAs === 'Undefined'
   }
 
   /** Returns true if the given schema is TUnion */
@@ -305,13 +319,7 @@ export namespace TypeGuard {
   /** Returns true if the given schema is TUint8Array */
   export function TUint8Array(schema: unknown): schema is Types.TUint8Array {
     return (
-      IsObject(schema) &&
-      schema[Types.Kind] === 'Uint8Array' &&
-      schema.type === 'object' &&
-      IsOptionalString(schema.$id) &&
-      schema.specialized === 'Uint8Array' &&
-      IsOptionalNumber(schema.minByteLength) &&
-      IsOptionalNumber(schema.maxByteLength)
+      IsObject(schema) && schema[Types.Kind] === 'Uint8Array' && schema.type === 'object' && IsOptionalString(schema.$id) && schema.typeAs === 'Uint8Array' && IsOptionalNumber(schema.minByteLength) && IsOptionalNumber(schema.maxByteLength)
     )
   }
 
@@ -332,6 +340,7 @@ export namespace TypeGuard {
       TArray(schema) ||
       TBoolean(schema) ||
       TConstructor(schema) ||
+      TDate(schema) ||
       TFunction(schema) ||
       TInteger(schema) ||
       TLiteral(schema) ||
