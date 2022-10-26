@@ -380,7 +380,7 @@ export interface TPromise<T extends TSchema = TSchema> extends TSchema {
 // Record
 // --------------------------------------------------------------------------
 
-export type TRecordKey = TString | TNumber | TUnion<TLiteral<any>[]>
+export type TRecordKey = TString | TInteger | TNumber | TUnion<TLiteral<any>[]>
 
 export interface TRecord<K extends TRecordKey = TRecordKey, T extends TSchema = TSchema> extends TSchema {
   [Kind]: 'Record'
@@ -823,7 +823,7 @@ export class TypeBuilder {
   public Record<K extends TUnion<TLiteral[]>, T extends TSchema>(key: K, schema: T, options?: ObjectOptions): TObject<TRecordProperties<K, T>>
 
   /** Creates a record type */
-  public Record<K extends TString | TNumber, T extends TSchema>(key: K, schema: T, options?: ObjectOptions): TRecord<K, T>
+  public Record<K extends TString | TInteger | TNumber, T extends TSchema>(key: K, schema: T, options?: ObjectOptions): TRecord<K, T>
 
   /** Creates a record type */
   public Record(key: any, value: any, options: ObjectOptions = {}) {
@@ -837,7 +837,7 @@ export class TypeBuilder {
       )
     }
     // otherwise return TRecord with patternProperties
-    const pattern = key[Kind] === 'Number' ? '^(0|[1-9][0-9]*)$' : key[Kind] === 'String' && key.pattern ? key.pattern : '^.*$'
+    const pattern = ['Integer', 'Number'].includes(key[Kind]) ? '^(0|[1-9][0-9]*)$' : key[Kind] === 'String' && key.pattern ? key.pattern : '^.*$'
     return this.Create({
       ...options,
       [Kind]: 'Record',
