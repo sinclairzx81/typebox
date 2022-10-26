@@ -130,7 +130,7 @@ export namespace TypeGuard {
     return true
   }
 
-  /** Returns true if the given schema is TConstructor */
+  /** Returns true if the given schema is TDate */
   export function TDate(schema: unknown): schema is Types.TDate {
     return (
       IsObject(schema) &&
