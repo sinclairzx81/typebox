@@ -144,7 +144,7 @@ export namespace TypeCompiler {
     yield `(typeof ${value} === 'function')`
   }
 
-  function* Integer(schema: Types.TNumeric, value: string): IterableIterator<string> {
+  function* Integer(schema: Types.TInteger, value: string): IterableIterator<string> {
     yield `(typeof ${value} === 'number' && Number.isInteger(${value}))`
     if (schema.multipleOf !== undefined) yield `(${value} % ${schema.multipleOf} === 0)`
     if (schema.exclusiveMinimum !== undefined) yield `(${value} > ${schema.exclusiveMinimum})`
@@ -169,7 +169,7 @@ export namespace TypeCompiler {
     yield `(${value} === null)`
   }
 
-  function* Number(schema: Types.TNumeric, value: string): IterableIterator<string> {
+  function* Number(schema: Types.TNumber, value: string): IterableIterator<string> {
     yield `(typeof ${value} === 'number')`
     if (schema.multipleOf !== undefined) yield `(${value} % ${schema.multipleOf} === 0)`
     if (schema.exclusiveMinimum !== undefined) yield `(${value} > ${schema.exclusiveMinimum})`

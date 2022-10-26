@@ -85,7 +85,7 @@ export namespace ValueCheck {
     return typeof value === 'function'
   }
 
-  function Integer(schema: Types.TNumeric, references: Types.TSchema[], value: any): boolean {
+  function Integer(schema: Types.TInteger, references: Types.TSchema[], value: any): boolean {
     if (!(typeof value === 'number')) {
       return false
     }
@@ -122,7 +122,7 @@ export namespace ValueCheck {
     return value === null
   }
 
-  function Number(schema: Types.TNumeric, references: Types.TSchema[], value: any): boolean {
+  function Number(schema: Types.TNumber, references: Types.TSchema[], value: any): boolean {
     if (!(typeof value === 'number')) {
       return false
     }
