@@ -26,4 +26,9 @@ describe('value/check/Enum', () => {
     const result = Value.Check(T, value)
     Assert.equal(result, false)
   })
+  it('Should fail Date', () => {
+    const value = new Date()
+    const result = Value.Check(T, value)
+    Assert.equal(result, false)
+  })
 })

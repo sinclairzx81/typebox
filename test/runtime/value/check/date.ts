@@ -2,8 +2,8 @@ import { Value } from '@sinclair/typebox/value'
 import { Type } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
-describe('value/check/Null', () => {
-  const T = Type.Null()
+describe('value/check/Date', () => {
+  const T = Type.Date()
   it('Should fail string', () => {
     const value = 'hello'
     const result = Value.Check(T, value)
@@ -19,10 +19,10 @@ describe('value/check/Null', () => {
     const result = Value.Check(T, value)
     Assert.equal(result, false)
   })
-  it('Should pass null', () => {
+  it('Should fail null', () => {
     const value = null
     const result = Value.Check(T, value)
-    Assert.equal(result, true)
+    Assert.equal(result, false)
   })
   it('Should fail undefined', () => {
     const value = undefined
@@ -39,9 +39,9 @@ describe('value/check/Null', () => {
     const result = Value.Check(T, value)
     Assert.equal(result, false)
   })
-  it('Should fail Date', () => {
+  it('Should pass Date', () => {
     const value = new Date()
     const result = Value.Check(T, value)
-    Assert.equal(result, false)
+    Assert.equal(result, true)
   })
 })
