@@ -440,7 +440,7 @@ const T = Type.Array(Type.Integer(), { minItems: 5 })
 
 ### Extended
 
-In addition to JSON schema types, TypeBox provides several extended types that allow for the composition of `function` and `constructor` types. These additional types are not valid JSON Schema and will not validate using typical JSON Schema validation. However, these types can be used to frame JSON schema and describe callable interfaces that may receive JSON validated data. These types are as follows.
+TypeBox provides several extended types that describe core JavaScript primitives. Extended types are not valid JSON Schema and will not validate using standard JSON Schema validation. However, extended types can be used to frame JSON schema and describe callable interfaces that may receive JSON validated data. These types are as follows.
 
 ```typescript
 ┌────────────────────────────────┬─────────────────────────────┬────────────────────────────────┐
@@ -448,9 +448,10 @@ In addition to JSON schema types, TypeBox provides several extended types that a
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Constructor([   │ type T = new (              │ const T = {                    │
-│   Type.String(),               │  arg0: string,              │   type: 'constructor'          │
-│   Type.Number()                │  arg1: number               │   parameters: [{               │
-│ ], Type.Boolean())             │ ) => boolean                │     type: 'string'             │
+│   Type.String(),               │  arg0: string,              │   type: 'constructor',         │
+│   Type.Number()                │  arg1: number               │   typeOf: 'Constructor',       │
+│ ], Type.Boolean())             │ ) => boolean                │   parameters: [{               │
+│                                │                             │     type: 'string'             │
 │                                │                             │   }, {                         │
 │                                │                             │     type: 'number'             │
 │                                │                             │   }],                          │
@@ -462,8 +463,9 @@ In addition to JSON schema types, TypeBox provides several extended types that a
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Function([      │ type T = (                  │ const T = {                    │
 |   Type.String(),               │  arg0: string,              │   type : 'function',           │
-│   Type.Number()                │  arg1: number               │   parameters: [{               │
-│ ], Type.Boolean())             │ ) => boolean                │     type: 'string'             │
+│   Type.Number()                │  arg1: number               │   typeOf: 'Function',          │
+│ ], Type.Boolean())             │ ) => boolean                │   parameters: [{               │
+│                                │                             │     type: 'string'             │
 │                                │                             │   }, {                         │
 │                                │                             │     type: 'number'             │
 │                                │                             │   }],                          │
@@ -475,26 +477,29 @@ In addition to JSON schema types, TypeBox provides several extended types that a
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Uint8Array()    │ type T = Uint8Array         │ const T = {                    │
 │                                │                             │   type: 'object',              │
-│                                │                             │   specialized: 'Uint8Array'    │
+│                                │                             │   typeOf: 'Uint8Array'         │
 │                                │                             │ }                              │
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Promise(        │ type T = Promise<string>    │ const T = {                    │
 │   Type.String()                │                             │   type: 'promise',             │
-│ )                              │                             │   item: {                      │
+│ )                              │                             │   typeOf: 'Promise',           │
+│                                │                             │   item: {                      │
 │                                │                             │     type: 'string'             │
 │                                │                             │   }                            │
 │                                │                             │ }                              │
 │                                │                             │                                │
+│                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Undefined()     │ type T = undefined          │ const T = {                    │
 │                                │                             │   type: 'object',              │
-│                                │                             │   specialized: 'Undefined'     │
+│                                │                             │   typeOf: 'Undefined'          │
 │                                │                             │ }                              │
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Void()          │ type T = void               │ const T = {                    │
 │                                │                             │   type: 'null'                 │
+│                                │                             │   typeOf: 'Null'               │
 │                                │                             │ }                              │
 │                                │                             │                                │
 └────────────────────────────────┴─────────────────────────────┴────────────────────────────────┘

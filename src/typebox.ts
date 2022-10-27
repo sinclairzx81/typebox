@@ -181,7 +181,7 @@ export interface DateOptions extends SchemaOptions {
 
 export interface TDate extends TSchema, DateOptions {
   type: 'object'
-  typeAs: 'Date'
+  typeOf: 'Date'
   [Kind]: 'Date'
   static: Date
 }
@@ -512,7 +512,7 @@ export interface TTuple<T extends TSchema[] = TSchema[]> extends TSchema {
 
 export interface TUndefined extends TSchema {
   [Kind]: 'Undefined'
-  typeAs: 'Undefined'
+  typeOf: 'Undefined'
   static: undefined
   type: 'object'
 }
@@ -539,7 +539,7 @@ export interface Uint8ArrayOptions extends SchemaOptions {
 export interface TUint8Array extends TSchema, Uint8ArrayOptions {
   [Kind]: 'Uint8Array'
   static: Uint8Array
-  typeAs: 'Uint8Array'
+  typeOf: 'Uint8Array'
   type: 'object'
 }
 
@@ -572,7 +572,7 @@ export interface TUnsafe<T> extends TSchema {
 export interface TVoid extends TSchema {
   [Kind]: 'Void'
   static: void
-  type: 'null'
+  type: 'number'
 }
 
 // --------------------------------------------------------------------------
@@ -661,7 +661,7 @@ export class TypeBuilder {
 
   /** Creates a Date type */
   public Date(options: DateOptions = {}): TDate {
-    return this.Create({ ...options, [Kind]: 'Date', type: 'object', typeAs: 'Date' })
+    return this.Create({ ...options, [Kind]: 'Date', type: 'object', typeOf: 'Date' })
   }
 
   /** Creates a function type */
@@ -941,7 +941,7 @@ export class TypeBuilder {
 
   /** Creates a undefined type */
   public Undefined(options: SchemaOptions = {}): TUndefined {
-    return this.Create({ ...options, [Kind]: 'Undefined', type: 'object', typeAs: 'Undefined' })
+    return this.Create({ ...options, [Kind]: 'Undefined', type: 'object', typeOf: 'Undefined' })
   }
 
   /** Creates a union type */
@@ -954,7 +954,7 @@ export class TypeBuilder {
 
   /** Creates a Uint8Array type */
   public Uint8Array(options: Uint8ArrayOptions = {}): TUint8Array {
-    return this.Create({ ...options, [Kind]: 'Uint8Array', type: 'object', typeAs: 'Uint8Array' })
+    return this.Create({ ...options, [Kind]: 'Uint8Array', type: 'object', typeOf: 'Uint8Array' })
   }
 
   /** Creates an unknown type */
@@ -969,7 +969,7 @@ export class TypeBuilder {
 
   /** Creates a void type */
   public Void(options: SchemaOptions = {}): TVoid {
-    return this.Create({ ...options, [Kind]: 'Void', type: 'null' })
+    return this.Create({ ...options, [Kind]: 'Void', type: 'null', typeOf: 'Void' })
   }
 
   /** Use this function to return TSchema with static and params omitted */

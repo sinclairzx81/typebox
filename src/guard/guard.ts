@@ -136,7 +136,7 @@ export namespace TypeGuard {
       IsObject(schema) &&
       schema[Types.Kind] === 'Date' &&
       schema.type === 'object' &&
-      schema.typeAs === 'Date' &&
+      schema.typeOf === 'Date' &&
       IsOptionalString(schema.$id) &&
       IsOptionalNumber(schema.minimum) &&
       IsOptionalNumber(schema.maximum) &&
@@ -303,7 +303,7 @@ export namespace TypeGuard {
 
   /** Returns true if the given schema is TUndefined */
   export function TUndefined(schema: unknown): schema is Types.TUndefined {
-    return IsObject(schema) && schema[Types.Kind] === 'Undefined' && schema.type === 'object' && IsOptionalString(schema.$id) && schema.typeAs === 'Undefined'
+    return IsObject(schema) && schema[Types.Kind] === 'Undefined' && schema.type === 'object' && IsOptionalString(schema.$id) && schema.typeOf === 'Undefined'
   }
 
   /** Returns true if the given schema is TUnion */
@@ -320,7 +320,7 @@ export namespace TypeGuard {
   /** Returns true if the given schema is TUint8Array */
   export function TUint8Array(schema: unknown): schema is Types.TUint8Array {
     return (
-      IsObject(schema) && schema[Types.Kind] === 'Uint8Array' && schema.type === 'object' && IsOptionalString(schema.$id) && schema.typeAs === 'Uint8Array' && IsOptionalNumber(schema.minByteLength) && IsOptionalNumber(schema.maxByteLength)
+      IsObject(schema) && schema[Types.Kind] === 'Uint8Array' && schema.type === 'object' && IsOptionalString(schema.$id) && schema.typeOf === 'Uint8Array' && IsOptionalNumber(schema.minByteLength) && IsOptionalNumber(schema.maxByteLength)
     )
   }
 
@@ -331,7 +331,14 @@ export namespace TypeGuard {
 
   /** Returns true if the given schema is TVoid */
   export function TVoid(schema: unknown): schema is Types.TVoid {
-    return IsObject(schema) && schema[Types.Kind] === 'Void' && schema.type === 'null' && IsOptionalString(schema.$id)
+    // prettier-ignore
+    return (
+      IsObject(schema) && 
+      schema[Types.Kind] === 'Void' && 
+      schema.type === 'null' && 
+      schema.typeOf === 'Void' && 
+      IsOptionalString(schema.$id)
+    )
   }
 
   /** Returns true if the given schema is TSchema */
