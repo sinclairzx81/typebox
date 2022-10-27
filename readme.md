@@ -440,7 +440,7 @@ const T = Type.Array(Type.Integer(), { minItems: 5 })
 
 ### Extended
 
-TypeBox provides several extended types that can be used to express schematics for core JavaScript primitives that cannot be expressed by the JSON Schema specification. Extended types are not valid JSON Schema so usage with with standards compliant JSON Schema validators may vary. These are intended to be used to frame standard JSON schema and describe callable interfaces that may receive JSON validated data.
+TypeBox provides several extended types that can be used to express schematics for core JavaScript primitives that cannot be expressed by the JSON Schema specification. Extended types are not valid JSON Schema so usage with with standards compliant JSON Schema validators may vary. These types are intended to be used to frame standard JSON schema and describe callable interfaces that may receive JSON validated data.
 
 ```typescript
 ┌────────────────────────────────┬─────────────────────────────┬────────────────────────────────┐
@@ -448,7 +448,7 @@ TypeBox provides several extended types that can be used to express schematics f
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Constructor([   │ type T = new (              │ const T = {                    │
-│   Type.String(),               │  arg0: string,              │   type: 'constructor',         │
+│   Type.String(),               │  arg0: string,              │   type: 'object',              │
 │   Type.Number()                │  arg1: number               │   instanceOf: 'Constructor',   │
 │ ], Type.Boolean())             │ ) => boolean                │   parameters: [{               │
 │                                │                             │     type: 'string'             │
@@ -462,7 +462,7 @@ TypeBox provides several extended types that can be used to express schematics f
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Function([      │ type T = (                  │ const T = {                    │
-|   Type.String(),               │  arg0: string,              │   type : 'function',           │
+|   Type.String(),               │  arg0: string,              │   type : 'object',             │
 │   Type.Number()                │  arg1: number               │   instanceOf: 'Function',      │
 │ ], Type.Boolean())             │ ) => boolean                │   parameters: [{               │
 │                                │                             │     type: 'string'             │
@@ -488,7 +488,7 @@ TypeBox provides several extended types that can be used to express schematics f
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Promise(        │ type T = Promise<string>    │ const T = {                    │
-│   Type.String()                │                             │   type: 'promise',             │
+│   Type.String()                │                             │   type: 'object',              │
 │ )                              │                             │   instanceOf: 'Promise',       │
 │                                │                             │   item: {                      │
 │                                │                             │     type: 'string'             │
@@ -510,7 +510,7 @@ TypeBox provides several extended types that can be used to express schematics f
 │                                │                             │                                │
 └────────────────────────────────┴─────────────────────────────┴────────────────────────────────┘
 ```
-Extended types provide the additional `instanceOf` and `typeOf` properties to serve as hooks for validators that support custom schema configuration. See the section on [AJV](#ajv) for details on configuring a subset of these types.
+Extended types include the additional `instanceOf` and `typeOf` properties to serve as hooks for validators that support custom schema configuration. See the section on [AJV](#ajv) for details on configuring a subset of these types.
 
 <a name='types-reference'></a>
 

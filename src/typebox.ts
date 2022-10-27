@@ -642,9 +642,9 @@ export class TypeBuilder {
   public Constructor(parameters: any, returns: any, options: SchemaOptions = {}) {
     if (parameters[Kind] === 'Tuple') {
       const inner = parameters.items === undefined ? [] : parameters.items
-      return this.Create({ ...options, [Kind]: 'Constructor', type: 'constructor', parameters: inner, returns })
+      return this.Create({ ...options, [Kind]: 'Constructor', type: 'object', instanceOf: 'Constructor', parameters: inner, returns })
     } else if (globalThis.Array.isArray(parameters)) {
-      return this.Create({ ...options, [Kind]: 'Constructor', type: 'constructor', parameters, returns })
+      return this.Create({ ...options, [Kind]: 'Constructor', type: 'object', instanceOf: 'Constructor', parameters, returns })
     } else {
       throw new Error('TypeBuilder.Constructor: Invalid parameters')
     }
@@ -674,9 +674,9 @@ export class TypeBuilder {
   public Function(parameters: any, returns: any, options: SchemaOptions = {}) {
     if (parameters[Kind] === 'Tuple') {
       const inner = parameters.items === undefined ? [] : parameters.items
-      return this.Create({ ...options, [Kind]: 'Function', type: 'function', parameters: inner, returns })
+      return this.Create({ ...options, [Kind]: 'Function', type: 'object', instanceOf: 'Function', parameters: inner, returns })
     } else if (globalThis.Array.isArray(parameters)) {
-      return this.Create({ ...options, [Kind]: 'Function', type: 'function', parameters, returns })
+      return this.Create({ ...options, [Kind]: 'Function', type: 'object', instanceOf: 'Function', parameters, returns })
     } else {
       throw new Error('TypeBuilder.Function: Invalid parameters')
     }
@@ -840,7 +840,7 @@ export class TypeBuilder {
 
   /** Creates a promise type. This type cannot be represented in schema. */
   public Promise<T extends TSchema>(item: T, options: SchemaOptions = {}): TPromise<T> {
-    return this.Create({ ...options, [Kind]: 'Promise', type: 'promise', item })
+    return this.Create({ ...options, [Kind]: 'Promise', type: 'object', instanceOf: 'Promise', item })
   }
 
   /** Creates an object whose properties are derived from the given string literal union. */

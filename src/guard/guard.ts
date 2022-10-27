@@ -83,18 +83,23 @@ export namespace TypeGuard {
   function IsOptionalBoolean(value: unknown): value is boolean | undefined {
     return value === undefined || (value !== undefined && IsBoolean(value))
   }
+
   function IsOptionalString(value: unknown): value is string | undefined {
     return value === undefined || (value !== undefined && IsString(value))
   }
+
   function IsOptionalPattern(value: unknown): value is string | undefined {
     return value === undefined || (value !== undefined && IsString(value) && IsControlCharacterFree(value) && IsPattern(value))
   }
+
   function IsOptionalFormat(value: unknown): value is string | undefined {
     return value === undefined || (value !== undefined && IsString(value) && IsControlCharacterFree(value))
   }
+
   function IsOptionalSchema(value: unknown): value is boolean | undefined {
     return value === undefined || TSchema(value)
   }
+
   /** Returns true if the given schema is TAny */
   export function TAny(schema: unknown): schema is Types.TAny {
     return IsObject(schema) && schema[Types.Kind] === 'Any' && IsOptionalString(schema.$id)
@@ -116,12 +121,27 @@ export namespace TypeGuard {
 
   /** Returns true if the given schema is TBoolean */
   export function TBoolean(schema: unknown): schema is Types.TBoolean {
-    return IsObject(schema) && schema[Types.Kind] === 'Boolean' && schema.type === 'boolean' && IsOptionalString(schema.$id)
+    // prettier-ignore
+    return (
+      IsObject(schema) && 
+      schema[Types.Kind] === 'Boolean' && 
+      schema.type === 'boolean' && 
+      IsOptionalString(schema.$id)
+    )
   }
 
   /** Returns true if the given schema is TConstructor */
   export function TConstructor(schema: unknown): schema is Types.TConstructor {
-    if (!(IsObject(schema) && schema[Types.Kind] === 'Constructor' && schema.type === 'constructor' && IsOptionalString(schema.$id) && IsArray(schema.parameters) && TSchema(schema.returns))) {
+    // prettier-ignore
+    if (!(
+      IsObject(schema) && 
+      schema[Types.Kind] === 'Constructor' && 
+      schema.type === 'object' && 
+      schema.instanceOf === 'Constructor' && 
+      IsOptionalString(schema.$id) && 
+      IsArray(schema.parameters) && 
+      TSchema(schema.returns))
+    ) {
       return false
     }
     for (const parameter of schema.parameters) {
@@ -147,7 +167,16 @@ export namespace TypeGuard {
 
   /** Returns true if the given schema is TFunction */
   export function TFunction(schema: unknown): schema is Types.TFunction {
-    if (!(IsObject(schema) && schema[Types.Kind] === 'Function' && schema.type === 'function' && IsOptionalString(schema.$id) && IsArray(schema.parameters) && TSchema(schema.returns))) {
+    // prettier-ignore
+    if (!(
+      IsObject(schema) && 
+      schema[Types.Kind] === 'Function' && 
+      schema.type === 'object' &&
+      schema.instanceOf === 'Function' &&
+      IsOptionalString(schema.$id) && 
+      IsArray(schema.parameters) && 
+      TSchema(schema.returns))
+    ) {
       return false
     }
     for (const parameter of schema.parameters) {
@@ -173,7 +202,17 @@ export namespace TypeGuard {
 
   /** Returns true if the given schema is TLiteral */
   export function TLiteral(schema: unknown): schema is Types.TLiteral {
-    return IsObject(schema) && schema[Types.Kind] === 'Literal' && IsOptionalString(schema.$id) && (IsString(schema.const) || IsNumber(schema.const) || IsBoolean(schema.const))
+    // prettier-ignore
+    return (
+      IsObject(schema) && 
+      schema[Types.Kind] === 'Literal' && 
+      IsOptionalString(schema.$id) && 
+      (
+        IsString(schema.const) || 
+        IsNumber(schema.const) || 
+        IsBoolean(schema.const)
+      )
+    )
   }
 
   /** Returns true if the given schema is TNever */
@@ -239,12 +278,28 @@ export namespace TypeGuard {
 
   /** Returns true if the given schema is TPromise */
   export function TPromise(schema: unknown): schema is Types.TPromise {
-    return IsObject(schema) && schema[Types.Kind] === 'Promise' && schema.type === 'promise' && IsOptionalString(schema.$id) && TSchema(schema.item)
+    // prettier-ignore
+    return (
+      IsObject(schema) && 
+      schema[Types.Kind] === 'Promise' && 
+      schema.type === 'object' && 
+      schema.instanceOf === 'Promise' &&
+      IsOptionalString(schema.$id) && 
+      TSchema(schema.item)
+    )
   }
 
   /** Returns true if the given schema is TRecord */
   export function TRecord(schema: unknown): schema is Types.TRecord {
-    if (!(IsObject(schema) && schema[Types.Kind] === 'Record' && schema.type === 'object' && IsOptionalString(schema.$id) && schema.additionalProperties === false && IsObject(schema.patternProperties))) {
+    // prettier-ignore
+    if (!(
+      IsObject(schema) && 
+      schema[Types.Kind] === 'Record' && 
+      schema.type === 'object' && 
+      IsOptionalString(schema.$id) && 
+      schema.additionalProperties === false && 
+      IsObject(schema.patternProperties))
+    ) {
       return false
     }
     const keys = Object.keys(schema.patternProperties)
@@ -262,12 +317,24 @@ export namespace TypeGuard {
 
   /** Returns true if the given schema is TSelf */
   export function TSelf(schema: unknown): schema is Types.TSelf {
-    return IsObject(schema) && schema[Types.Kind] === 'Self' && IsOptionalString(schema.$id) && IsString(schema.$ref)
+    // prettier-ignore
+    return (
+      IsObject(schema) && 
+      schema[Types.Kind] === 'Self' && 
+      IsOptionalString(schema.$id) && 
+      IsString(schema.$ref)
+    )
   }
 
   /** Returns true if the given schema is TRef */
   export function TRef(schema: unknown): schema is Types.TRef {
-    return IsObject(schema) && schema[Types.Kind] === 'Ref' && IsOptionalString(schema.$id) && IsString(schema.$ref)
+    // prettier-ignore
+    return (
+      IsObject(schema) && 
+      schema[Types.Kind] === 'Ref' && 
+      IsOptionalString(schema.$id) && 
+      IsString(schema.$ref)
+    )
   }
 
   /** Returns true if the given schema is TString */
@@ -286,7 +353,16 @@ export namespace TypeGuard {
 
   /** Returns true if the given schema is TTuple */
   export function TTuple(schema: unknown): schema is Types.TTuple {
-    if (!(IsObject(schema) && schema[Types.Kind] === 'Tuple' && schema.type === 'array' && IsOptionalString(schema.$id) && IsNumber(schema.minItems) && IsNumber(schema.maxItems) && schema.minItems === schema.maxItems)) {
+    // prettier-ignore
+    if (!(
+      IsObject(schema) && 
+      schema[Types.Kind] === 'Tuple' && 
+      schema.type === 'array' && 
+      IsOptionalString(schema.$id) && 
+      IsNumber(schema.minItems) && 
+      IsNumber(schema.maxItems) && 
+      schema.minItems === schema.maxItems)
+    ) {
       return false
     }
     if (schema.items === undefined && schema.additionalItems === undefined && schema.minItems === 0) {
@@ -303,12 +379,25 @@ export namespace TypeGuard {
 
   /** Returns true if the given schema is TUndefined */
   export function TUndefined(schema: unknown): schema is Types.TUndefined {
-    return IsObject(schema) && schema[Types.Kind] === 'Undefined' && schema.type === 'null' && schema.typeOf === 'Undefined' && IsOptionalString(schema.$id)
+    // prettier-ignore
+    return (
+      IsObject(schema) && 
+      schema[Types.Kind] === 'Undefined' && 
+      schema.type === 'null' && 
+      schema.typeOf === 'Undefined' && 
+      IsOptionalString(schema.$id)
+    )
   }
 
   /** Returns true if the given schema is TUnion */
   export function TUnion(schema: unknown): schema is Types.TUnion {
-    if (!(IsObject(schema) && schema[Types.Kind] === 'Union' && IsArray(schema.anyOf) && IsOptionalString(schema.$id))) {
+    // prettier-ignore
+    if (!(
+      IsObject(schema) && 
+      schema[Types.Kind] === 'Union' && 
+      IsArray(schema.anyOf) && 
+      IsOptionalString(schema.$id))
+    ) {
       return false
     }
     for (const inner of schema.anyOf) {
@@ -332,7 +421,12 @@ export namespace TypeGuard {
 
   /** Returns true if the given schema is TUnknown */
   export function TUnknown(schema: unknown): schema is Types.TUnknown {
-    return IsObject(schema) && schema[Types.Kind] === 'Unknown' && IsOptionalString(schema.$id)
+    // prettier-ignore
+    return (
+      IsObject(schema) && 
+      schema[Types.Kind] === 'Unknown' && 
+      IsOptionalString(schema.$id)
+    )
   }
 
   /** Returns true if the given schema is TVoid */
