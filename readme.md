@@ -440,7 +440,7 @@ const T = Type.Array(Type.Integer(), { minItems: 5 })
 
 ### Extended
 
-TypeBox provides several extended types that describe core JavaScript primitives. Extended types are not valid JSON Schema and will not validate using standard JSON Schema validation. However, extended types can be used to frame JSON schema and describe callable interfaces that may receive JSON validated data. These types are as follows.
+TypeBox provides several extended types that can be used to express schematics for core JavaScript primitives that cannot be expressed by the JSON Schema specification. Extended types are not valid JSON Schema so usage with with standards compliant JSON Schema validators may vary. These are intended to be used to frame standard JSON schema and describe callable interfaces that may receive JSON validated data.
 
 ```typescript
 ┌────────────────────────────────┬─────────────────────────────┬────────────────────────────────┐
@@ -449,7 +449,7 @@ TypeBox provides several extended types that describe core JavaScript primitives
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Constructor([   │ type T = new (              │ const T = {                    │
 │   Type.String(),               │  arg0: string,              │   type: 'constructor',         │
-│   Type.Number()                │  arg1: number               │   typeOf: 'Constructor',       │
+│   Type.Number()                │  arg1: number               │   instanceOf: 'Constructor',   │
 │ ], Type.Boolean())             │ ) => boolean                │   parameters: [{               │
 │                                │                             │     type: 'string'             │
 │                                │                             │   }, {                         │
@@ -463,7 +463,7 @@ TypeBox provides several extended types that describe core JavaScript primitives
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Function([      │ type T = (                  │ const T = {                    │
 |   Type.String(),               │  arg0: string,              │   type : 'function',           │
-│   Type.Number()                │  arg1: number               │   typeOf: 'Function',          │
+│   Type.Number()                │  arg1: number               │   instanceOf: 'Function',      │
 │ ], Type.Boolean())             │ ) => boolean                │   parameters: [{               │
 │                                │                             │     type: 'string'             │
 │                                │                             │   }, {                         │
@@ -477,13 +477,19 @@ TypeBox provides several extended types that describe core JavaScript primitives
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Uint8Array()    │ type T = Uint8Array         │ const T = {                    │
 │                                │                             │   type: 'object',              │
-│                                │                             │   typeOf: 'Uint8Array'         │
+│                                │                             │   instanceOf: 'Uint8Array'     │
+│                                │                             │ }                              │
+│                                │                             │                                │
+├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
+│ const T = Type.Date()          │ type T = Date               │ const T = {                    │
+│                                │                             │   type: 'object',              │
+│                                │                             │   instanceOf: 'Date'           │
 │                                │                             │ }                              │
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Promise(        │ type T = Promise<string>    │ const T = {                    │
 │   Type.String()                │                             │   type: 'promise',             │
-│ )                              │                             │   typeOf: 'Promise',           │
+│ )                              │                             │   instanceOf: 'Promise',       │
 │                                │                             │   item: {                      │
 │                                │                             │     type: 'string'             │
 │                                │                             │   }                            │
@@ -492,7 +498,7 @@ TypeBox provides several extended types that describe core JavaScript primitives
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Undefined()     │ type T = undefined          │ const T = {                    │
-│                                │                             │   type: 'object',              │
+│                                │                             │   type: 'null',                │
 │                                │                             │   typeOf: 'Undefined'          │
 │                                │                             │ }                              │
 │                                │                             │                                │
@@ -504,6 +510,7 @@ TypeBox provides several extended types that describe core JavaScript primitives
 │                                │                             │                                │
 └────────────────────────────────┴─────────────────────────────┴────────────────────────────────┘
 ```
+Extended types provide the additional `instanceOf` and `typeOf` properties to serve as hooks for validators that support custom schema configuration. See the section on [AJV](#ajv) for details on configuring a subset of these types.
 
 <a name='types-reference'></a>
 
