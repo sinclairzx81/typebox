@@ -163,7 +163,8 @@ export type StaticContructorParameters<T extends readonly TSchema[], P extends u
 export interface TConstructor<T extends TSchema[] = TSchema[], U extends TSchema = TSchema> extends TSchema {
   [Kind]: 'Constructor'
   static: new (...param: StaticContructorParameters<T, this['params']>) => Static<U, this['params']>
-  type: 'constructor'
+  type: 'object'
+  instanceOf: 'Constructor'
   parameters: T
   returns: U
 }
@@ -180,10 +181,10 @@ export interface DateOptions extends SchemaOptions {
 }
 
 export interface TDate extends TSchema, DateOptions {
-  type: 'object'
-  instanceOf: 'Date'
   [Kind]: 'Date'
   static: Date
+  type: 'object'
+  instanceOf: 'Date'
 }
 
 // --------------------------------------------------------------------------
@@ -214,7 +215,8 @@ export type StaticFunctionParameters<T extends readonly TSchema[], P extends unk
 export interface TFunction<T extends readonly TSchema[] = TSchema[], U extends TSchema = TSchema> extends TSchema {
   [Kind]: 'Function'
   static: (...param: StaticFunctionParameters<T, this['params']>) => Static<U, this['params']>
-  type: 'function'
+  type: 'object'
+  instanceOf: 'Function'
   parameters: T
   returns: U
 }
@@ -391,7 +393,8 @@ export type TPick<T extends TObject, Properties extends ObjectPropertyKeys<T>[]>
 export interface TPromise<T extends TSchema = TSchema> extends TSchema {
   [Kind]: 'Promise'
   static: Promise<Static<T, this['params']>>
-  type: 'promise'
+  type: 'object'
+  instanceOf: 'Promise'
   item: TSchema
 }
 
@@ -512,9 +515,9 @@ export interface TTuple<T extends TSchema[] = TSchema[]> extends TSchema {
 
 export interface TUndefined extends TSchema {
   [Kind]: 'Undefined'
-  instanceOf: 'Undefined'
   static: undefined
-  type: 'object'
+  type: 'null'
+  typeOf: 'Undefined'
 }
 
 // --------------------------------------------------------------------------
@@ -572,7 +575,8 @@ export interface TUnsafe<T> extends TSchema {
 export interface TVoid extends TSchema {
   [Kind]: 'Void'
   static: void
-  type: 'number'
+  type: 'null'
+  typeOf: 'Void'
 }
 
 // --------------------------------------------------------------------------
