@@ -6,5 +6,13 @@ import { Format } from '@sinclair/typebox/format'
 import { Value, ValuePointer } from '@sinclair/typebox/value'
 import { Type, Static } from '@sinclair/typebox'
 
-const T = Type.Date()
+const T = Type.Object({
+    date: Type.Date({ minimum: 0 })
+})
+
+const C = TypeCompiler.Compile(T)
+
+console.log(C.Code())
+
+
 

@@ -3,7 +3,7 @@ import { Type } from '@sinclair/typebox'
 import { Assert } from '../assert/index'
 
 describe('type/guard/TUnion', () => {
-  it('should guard for TUnion', () => {
+  it('Should guard for TUnion', () => {
     const R = TypeGuard.TUnion(
       Type.Union([
         Type.Object({
@@ -16,11 +16,11 @@ describe('type/guard/TUnion', () => {
     )
     Assert.equal(R, true)
   })
-  it('should not guard for TUnion', () => {
+  it('Should not guard for TUnion', () => {
     const R = TypeGuard.TUnion(null)
     Assert.equal(R, false)
   })
-  it('should guard for TUnion with invalid $id', () => {
+  it('Should guard for TUnion with invalid $id', () => {
     const R = TypeGuard.TUnion(
       Type.Union(
         [
@@ -39,7 +39,7 @@ describe('type/guard/TUnion', () => {
     )
     Assert.equal(R, false)
   })
-  it('should not guard for TUnion with invalid variant', () => {
+  it('Should not guard for TUnion with invalid variant', () => {
     const R = TypeGuard.TUnion(
       Type.Union([
         Type.Object({
@@ -50,7 +50,7 @@ describe('type/guard/TUnion', () => {
     )
     Assert.equal(R, false)
   })
-  it('should not guard for TUnion with invalid object variant', () => {
+  it('Should not guard for TUnion with invalid object variant', () => {
     const R = TypeGuard.TUnion(
       Type.Union([
         Type.Object({
