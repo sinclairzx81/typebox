@@ -7,6 +7,18 @@ import { Value, ValuePointer } from '@sinclair/typebox/value'
 import { Type, Static, TSchema } from '@sinclair/typebox'
 import Ajv from 'ajv'
 
+
+type AA = {} extends Date ? 1: 2
+
+const CC = Conditional.Extends(Type.Date(), Type.Object({}), Type.Literal('true'), Type.Literal('false'))
+
+console.log(CC)
+
+// --------------------------------------------------------------
+// Reference Ajv Configuration
+//
+// Include in documentation
+// --------------------------------------------------------------
 function TypeOf(of: string, value: unknown, schema: unknown) {
     switch (of) {
         case 'Constructor': return TypeGuard.TConstructor(schema) && Value.Check(schema, value)
@@ -27,7 +39,6 @@ const ajv = new Ajv()
 const T = Type.Object({
     date: Type.Date(),
     buf: Type.Uint8Array(),
-    //und: Type.Undefined(),
     void: Type.Void()
 })
 

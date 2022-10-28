@@ -197,6 +197,22 @@ export namespace Structural {
     }
   }
 
+  function Date(left: Types.TDate, right: Types.TSchema): StructuralResult {
+    if (AnyOrUnknownRule(right)) {
+      return StructuralResult.True
+    } else if (TypeGuard.TObject(right) && ObjectRightRule(left, right)) {
+      return StructuralResult.True
+    } else if (TypeGuard.TRecord(right)) {
+      return Indexable(left, RecordValue(right as Types.TRecord))
+    } else if (TypeGuard.TDate(right)) {
+      return StructuralResult.True
+    } else if (TypeGuard.TUnion(right)) {
+      return UnionRightRule(left, right)
+    } else {
+      return StructuralResult.False
+    }
+  }
+
   function Function(left: Types.TFunction, right: Types.TSchema): StructuralResult {
     if (AnyOrUnknownRule(right)) {
       return StructuralResult.True
@@ -510,6 +526,8 @@ export namespace Structural {
       return Boolean(left, resolvedRight)
     } else if (TypeGuard.TConstructor(left)) {
       return Constructor(left, resolvedRight)
+    } else if (TypeGuard.TDate(left)) {
+      return Date(left, resolvedRight)
     } else if (TypeGuard.TFunction(left)) {
       return Function(left, resolvedRight)
     } else if (TypeGuard.TInteger(left)) {
