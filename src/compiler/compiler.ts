@@ -134,10 +134,10 @@ export namespace TypeCompiler {
 
   function* Date(schema: Types.TDate, value: string): IterableIterator<string> {
     yield `(${value} instanceof Date)`
-    if (schema.exclusiveMinimum !== undefined) yield `(${value}.getTime() > ${schema.exclusiveMinimum})`
-    if (schema.exclusiveMaximum !== undefined) yield `(${value}.getTime() < ${schema.exclusiveMaximum})`
-    if (schema.minimum !== undefined) yield `(${value}.getTime() >= ${schema.minimum})`
-    if (schema.maximum !== undefined) yield `(${value}.getTime() <= ${schema.maximum})`
+    if (schema.exclusiveMinimumTimestamp !== undefined) yield `(${value}.getTime() > ${schema.exclusiveMinimumTimestamp})`
+    if (schema.exclusiveMaximumTimestamp !== undefined) yield `(${value}.getTime() < ${schema.exclusiveMaximumTimestamp})`
+    if (schema.minimumTimestamp !== undefined) yield `(${value}.getTime() >= ${schema.minimumTimestamp})`
+    if (schema.maximumTimestamp !== undefined) yield `(${value}.getTime() <= ${schema.maximumTimestamp})`
   }
 
   function* Function(schema: Types.TFunction, value: string): IterableIterator<string> {

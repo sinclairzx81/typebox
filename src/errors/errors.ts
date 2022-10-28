@@ -141,16 +141,16 @@ export namespace ValueErrors {
     if (!(value instanceof globalThis.Date)) {
       return yield { type: ValueErrorType.Date, schema, path, value, message: `Expected Date object` }
     }
-    if (schema.exclusiveMinimum && !(value.getTime() > schema.exclusiveMinimum)) {
+    if (schema.exclusiveMinimumTimestamp && !(value.getTime() > schema.exclusiveMinimumTimestamp)) {
       yield { type: ValueErrorType.DateExclusiveMinimum, schema, path, value, message: `Expected Date timestamp to be greater than ${schema.exclusiveMinimum}` }
     }
-    if (schema.exclusiveMaximum && !(value.getTime() < schema.exclusiveMaximum)) {
+    if (schema.exclusiveMaximumTimestamp && !(value.getTime() < schema.exclusiveMaximumTimestamp)) {
       yield { type: ValueErrorType.DateExclusiveMaximum, schema, path, value, message: `Expected Date timestamp to be less than ${schema.exclusiveMaximum}` }
     }
-    if (schema.minimum && !(value.getTime() >= schema.minimum)) {
+    if (schema.minimumTimestamp && !(value.getTime() >= schema.minimumTimestamp)) {
       yield { type: ValueErrorType.DateMinimum, schema, path, value, message: `Expected Date timestamp to be greater or equal to ${schema.minimum}` }
     }
-    if (schema.maximum && !(value.getTime() <= schema.maximum)) {
+    if (schema.maximumTimestamp && !(value.getTime() <= schema.maximumTimestamp)) {
       yield { type: ValueErrorType.DateMaximum, schema, path, value, message: `Expected Date timestamp to be less or equal to ${schema.maximum}` }
     }
   }

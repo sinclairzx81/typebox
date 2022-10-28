@@ -174,10 +174,10 @@ export interface TConstructor<T extends TSchema[] = TSchema[], U extends TSchema
 // --------------------------------------------------------------------------
 
 export interface DateOptions extends SchemaOptions {
-  exclusiveMaximum?: number
-  exclusiveMinimum?: number
-  maximum?: number
-  minimum?: number
+  exclusiveMaximumTimestamp?: number
+  exclusiveMinimumTimestamp?: number
+  maximumTimestamp?: number
+  minimumTimestamp?: number
 }
 
 export interface TDate extends TSchema, DateOptions {
@@ -654,6 +654,11 @@ export class TypeBuilder {
     }
   }
 
+  /** Creates a Date type */
+  public Date(options: DateOptions = {}): TDate {
+    return this.Create({ ...options, [Kind]: 'Date', type: 'object', instanceOf: 'Date' })
+  }
+
   /** Creates a enum type */
   public Enum<T extends Record<string, string | number>>(item: T, options: SchemaOptions = {}): TEnum<T> {
     const values = Object.keys(item)
@@ -661,11 +666,6 @@ export class TypeBuilder {
       .map((key) => item[key]) as T[keyof T][]
     const anyOf = values.map((value) => (typeof value === 'string' ? { [Kind]: 'Literal', type: 'string' as const, const: value } : { [Kind]: 'Literal', type: 'number' as const, const: value }))
     return this.Create({ ...options, [Kind]: 'Union', [Hint]: 'Enum', anyOf })
-  }
-
-  /** Creates a Date type */
-  public Date(options: DateOptions = {}): TDate {
-    return this.Create({ ...options, [Kind]: 'Date', type: 'object', instanceOf: 'Date' })
   }
 
   /** Creates a function type */

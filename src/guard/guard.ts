@@ -158,10 +158,10 @@ export namespace TypeGuard {
       schema.type === 'object' &&
       schema.instanceOf === 'Date' &&
       IsOptionalString(schema.$id) &&
-      IsOptionalNumber(schema.minimum) &&
-      IsOptionalNumber(schema.maximum) &&
-      IsOptionalNumber(schema.exclusiveMinimum) &&
-      IsOptionalNumber(schema.exclusiveMaximum)
+      IsOptionalNumber(schema.minimumTimestamp) &&
+      IsOptionalNumber(schema.maximumTimestamp) &&
+      IsOptionalNumber(schema.exclusiveMinimumTimestamp) &&
+      IsOptionalNumber(schema.exclusiveMaximumTimestamp)
     )
   }
 

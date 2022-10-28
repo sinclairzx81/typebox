@@ -94,8 +94,8 @@ export namespace ValueCreate {
   function Date(schema: Types.TDate, references: Types.TSchema[]): any {
     if (schema.default !== undefined) {
       return schema.default
-    } else if (schema.minimum !== undefined) {
-      return new globalThis.Date(schema.minimum)
+    } else if (schema.minimumTimestamp !== undefined) {
+      return new globalThis.Date(schema.minimumTimestamp)
     } else {
       return new globalThis.Date(0)
     }

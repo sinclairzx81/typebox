@@ -66,17 +66,16 @@ export namespace ValueCheck {
     if (!(value instanceof globalThis.Date)) {
       return false
     }
-
-    if (schema.exclusiveMinimum && !(value.getTime() > schema.exclusiveMinimum)) {
+    if (schema.exclusiveMinimumTimestamp && !(value.getTime() > schema.exclusiveMinimumTimestamp)) {
       return false
     }
-    if (schema.exclusiveMaximum && !(value.getTime() < schema.exclusiveMaximum)) {
+    if (schema.exclusiveMaximumTimestamp && !(value.getTime() < schema.exclusiveMaximumTimestamp)) {
       return false
     }
-    if (schema.minimum && !(value.getTime() >= schema.minimum)) {
+    if (schema.minimumTimestamp && !(value.getTime() >= schema.minimumTimestamp)) {
       return false
     }
-    if (schema.maximum && !(value.getTime() <= schema.maximum)) {
+    if (schema.maximumTimestamp && !(value.getTime() <= schema.maximumTimestamp)) {
       return false
     }
     return true
