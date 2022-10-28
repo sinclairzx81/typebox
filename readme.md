@@ -56,10 +56,10 @@ License MIT
 - [Overview](#overview)
 - [Usage](#usage)
 - [Types](#types)
-  - [Standard](#types-standard)
+  - [Standard Types](#types-standard)
+  - [Extended Types](#types-extended)
   - [Modifiers](#types-modifiers)
   - [Options](#types-options)
-  - [Extended](#types-extended)
   - [Reference](#types-reference)
   - [Recursive](#types-recursive)
   - [Generic](#types-generic)
@@ -170,7 +170,7 @@ TypeBox provides a set of functions that allow you to compose JSON Schema simila
 
 <a name='types-standard'></a>
 
-### Standard
+### Standard Types
 
 The following table lists the standard TypeBox types.
 
@@ -375,70 +375,9 @@ The following table lists the standard TypeBox types.
 └────────────────────────────────┴─────────────────────────────┴────────────────────────────────┘
 ```
 
-<a name='types-modifiers'></a>
-
-### Modifiers
-
-TypeBox provides modifiers that can be applied to an objects properties. This allows for `optional` and `readonly` to be applied to that property. The following table illustates how they map between TypeScript and JSON Schema.
-
-```typescript
-┌────────────────────────────────┬─────────────────────────────┬────────────────────────────────┐
-│ TypeBox                        │ TypeScript                  │ JSON Schema                    │
-│                                │                             │                                │
-├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
-│ const T = Type.Object({        │ type T = {                  │ const T = {                    │
-│   name: Type.Optional(         │   name?: string             │   type: 'object',              │
-│     Type.String()              │ }                           │   properties: {                │
-│   )                            │                             │      name: {                   │
-│ })  	                         │                             │        type: 'string'          │
-│                                │                             │      }                         │
-│                                │                             │   }                            │
-│                                │                             │ }                              │
-│                                │                             │                                │
-├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
-│ const T = Type.Object({        │ type T = {                  │ const T = {                    │
-│   name: Type.Readonly(         │   readonly name: string     │   type: 'object',              │
-│     Type.String()              │ }                           │   properties: {                │
-│   )                            │                             │     name: {                    │
-│ })  	                         │                             │       type: 'string'           │
-│                                │                             │     }                          │
-│                                │                             │   },                           │
-│                                │                             │   required: ['name']           │
-│                                │                             │ }                              │
-│                                │                             │                                │
-├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
-│ const T = Type.Object({        │ type T = {                  │ const T = {                    │
-│   name: Type.ReadonlyOptional( │   readonly name?: string    │   type: 'object',              │
-│     Type.String()              │ }                           │   properties: {                │
-│   )                            │                             │     name: {                    │
-│ })  	                         │                             │       type: 'string'           │
-│                                │                             │     }                          │
-│                                │                             │   }                            │
-│                                │                             │ }                              │
-│                                │                             │                                │
-└────────────────────────────────┴─────────────────────────────┴────────────────────────────────┘
-```
-
-<a name='types-options'></a>
-
-### Options
-
-You can pass additional JSON schema options on the last argument of any given type. The following are some examples.
-
-```typescript
-// string must be an email
-const T = Type.String({ format: 'email' })
-
-// number must be a multiple of 2
-const T = Type.Number({ multipleOf: 2 })
-
-// array must have at least 5 integer values
-const T = Type.Array(Type.Integer(), { minItems: 5 })
-```
-
 <a name='types-extended'></a>
 
-### Extended
+### Extended Types
 
 TypeBox provides an extended type set that can be used to express schematics for core JavaScript constructs and primitives. Extended types are not valid JSON Schema and will not validate using typical validation. These types however can be used to frame JSON schema and describe callable RPC interfaces that may receive JSON validated data.
 
@@ -511,6 +450,67 @@ TypeBox provides an extended type set that can be used to express schematics for
 └────────────────────────────────┴─────────────────────────────┴────────────────────────────────┘
 ```
 Extended types include the `instanceOf` and `typeOf` properties to serve as hooks for validators that support user defined schemas. See the section on [Ajv](#ajv) for details on configuring extended types for this validator.
+
+<a name='types-modifiers'></a>
+
+### Modifiers
+
+TypeBox provides modifiers that can be applied to an objects properties. This allows for `optional` and `readonly` to be applied to that property. The following table illustates how they map between TypeScript and JSON Schema.
+
+```typescript
+┌────────────────────────────────┬─────────────────────────────┬────────────────────────────────┐
+│ TypeBox                        │ TypeScript                  │ JSON Schema                    │
+│                                │                             │                                │
+├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
+│ const T = Type.Object({        │ type T = {                  │ const T = {                    │
+│   name: Type.Optional(         │   name?: string             │   type: 'object',              │
+│     Type.String()              │ }                           │   properties: {                │
+│   )                            │                             │      name: {                   │
+│ })  	                         │                             │        type: 'string'          │
+│                                │                             │      }                         │
+│                                │                             │   }                            │
+│                                │                             │ }                              │
+│                                │                             │                                │
+├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
+│ const T = Type.Object({        │ type T = {                  │ const T = {                    │
+│   name: Type.Readonly(         │   readonly name: string     │   type: 'object',              │
+│     Type.String()              │ }                           │   properties: {                │
+│   )                            │                             │     name: {                    │
+│ })  	                         │                             │       type: 'string'           │
+│                                │                             │     }                          │
+│                                │                             │   },                           │
+│                                │                             │   required: ['name']           │
+│                                │                             │ }                              │
+│                                │                             │                                │
+├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
+│ const T = Type.Object({        │ type T = {                  │ const T = {                    │
+│   name: Type.ReadonlyOptional( │   readonly name?: string    │   type: 'object',              │
+│     Type.String()              │ }                           │   properties: {                │
+│   )                            │                             │     name: {                    │
+│ })  	                         │                             │       type: 'string'           │
+│                                │                             │     }                          │
+│                                │                             │   }                            │
+│                                │                             │ }                              │
+│                                │                             │                                │
+└────────────────────────────────┴─────────────────────────────┴────────────────────────────────┘
+```
+
+<a name='types-options'></a>
+
+### Options
+
+You can pass additional JSON schema options on the last argument of any given type. The following are some examples.
+
+```typescript
+// string must be an email
+const T = Type.String({ format: 'email' })
+
+// number must be a multiple of 2
+const T = Type.Number({ multipleOf: 2 })
+
+// array must have at least 5 integer values
+const T = Type.Array(Type.Integer(), { minItems: 5 })
+```
 
 <a name='types-reference'></a>
 
