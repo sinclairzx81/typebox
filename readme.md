@@ -475,6 +475,16 @@ TypeBox provides several extended types that can be used to express schematics f
 │                                │                             │ }                              │
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
+│ const T = Type.Promise(        │ type T = Promise<string>    │ const T = {                    │
+│   Type.String()                │                             │   type: 'object',              │
+│ )                              │                             │   instanceOf: 'Promise',       │
+│                                │                             │   item: {                      │
+│                                │                             │     type: 'string'             │
+│                                │                             │   }                            │
+│                                │                             │ }                              │
+│                                │                             │                                │
+│                                │                             │                                │
+├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Uint8Array()    │ type T = Uint8Array         │ const T = {                    │
 │                                │                             │   type: 'object',              │
 │                                │                             │   instanceOf: 'Uint8Array'     │
@@ -487,16 +497,6 @@ TypeBox provides several extended types that can be used to express schematics f
 │                                │                             │ }                              │
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
-│ const T = Type.Promise(        │ type T = Promise<string>    │ const T = {                    │
-│   Type.String()                │                             │   type: 'object',              │
-│ )                              │                             │   instanceOf: 'Promise',       │
-│                                │                             │   item: {                      │
-│                                │                             │     type: 'string'             │
-│                                │                             │   }                            │
-│                                │                             │ }                              │
-│                                │                             │                                │
-│                                │                             │                                │
-├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Undefined()     │ type T = undefined          │ const T = {                    │
 │                                │                             │   type: 'null',                │
 │                                │                             │   typeOf: 'Undefined'          │
@@ -505,7 +505,7 @@ TypeBox provides several extended types that can be used to express schematics f
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Void()          │ type T = void               │ const T = {                    │
 │                                │                             │   type: 'null'                 │
-│                                │                             │   typeOf: 'Null'               │
+│                                │                             │   typeOf: 'Void'               │
 │                                │                             │ }                              │
 │                                │                             │                                │
 └────────────────────────────────┴─────────────────────────────┴────────────────────────────────┘
