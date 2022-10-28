@@ -34,21 +34,25 @@ describe('type/compiler/Date', () => {
     const T = Type.Date()
     ok(T, new Date())
   })
+
   it('Should validate Date minimumTimestamp', () => {
     const T = Type.Date({ minimumTimestamp: 10 })
     fail(T, new Date(9))
     ok(T, new Date(10))
   })
+
   it('Should validate Date maximumTimestamp', () => {
     const T = Type.Date({ maximumTimestamp: 10 })
     ok(T, new Date(10))
     fail(T, new Date(11))
   })
+
   it('Should validate Date exclusiveMinimumTimestamp', () => {
     const T = Type.Date({ exclusiveMinimumTimestamp: 10 })
     fail(T, new Date(10))
     ok(T, new Date(11))
   })
+
   it('Should validate Date exclusiveMaximumTimestamp', () => {
     const T = Type.Date({ exclusiveMaximumTimestamp: 10 })
     ok(T, new Date(9))
