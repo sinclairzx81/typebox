@@ -413,7 +413,7 @@ export interface TRecord<K extends TRecordKey = TRecordKey, T extends TSchema = 
 }
 
 // --------------------------------------------------------------------------
-// Rec
+// Recursive
 // --------------------------------------------------------------------------
 
 export interface TSelf extends TSchema {
