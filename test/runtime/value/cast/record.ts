@@ -67,6 +67,7 @@ describe('value/cast/Record', () => {
     const result = Value.Cast(T, value)
     Assert.deepEqual(result, value)
   })
+
   it('Should preserve and patch invalid records', () => {
     const value = {
       a: { x: 1, y: 2, z: 3 },

@@ -96,6 +96,11 @@ export namespace ValueDelta {
     }
   }
 
+  function* Date(path: string, current: Date, next: unknown): IterableIterator<Edit<any>> {
+    if (Is.Date(next) && current.getTime() === next.getTime()) return
+    yield Update(path, next)
+  }
+
   function* Array(path: string, current: ArrayType, next: unknown): IterableIterator<Edit<any>> {
     if (!Is.Array(next)) return yield Update(path, next)
     for (let i = 0; i < Math.min(current.length, next.length); i++) {
@@ -126,6 +131,8 @@ export namespace ValueDelta {
   function* Visit(path: string, current: unknown, next: unknown): IterableIterator<Edit<any>> {
     if (Is.Object(current)) {
       return yield* Object(path, current, next)
+    } else if (Is.Date(current)) {
+      return yield* Date(path, current, next)
     } else if (Is.Array(current)) {
       return yield* Array(path, current, next)
     } else if (Is.TypedArray(current)) {

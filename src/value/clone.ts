@@ -29,13 +29,17 @@ THE SOFTWARE.
 import { Is, ObjectType, ArrayType, TypedArrayType, ValueType } from './is'
 
 export namespace ValueClone {
+  function Array(value: ArrayType): any {
+    return value.map((element: any) => Clone(element))
+  }
+
+  function Date(value: Date): any {
+    return new globalThis.Date(value.toISOString())
+  }
+
   function Object(value: ObjectType): any {
     const keys = [...globalThis.Object.keys(value), ...globalThis.Object.getOwnPropertySymbols(value)]
     return keys.reduce((acc, key) => ({ ...acc, [key]: Clone(value[key]) }), {})
-  }
-
-  function Array(value: ArrayType): any {
-    return value.map((element: any) => Clone(element))
   }
 
   function TypedArray(value: TypedArrayType): any {
@@ -47,7 +51,9 @@ export namespace ValueClone {
   }
 
   export function Clone<T extends unknown>(value: T): T {
-    if (Is.Object(value)) {
+    if (Is.Date(value)) {
+      return Date(value)
+    } else if (Is.Object(value)) {
       return Object(value)
     } else if (Is.Array(value)) {
       return Array(value)

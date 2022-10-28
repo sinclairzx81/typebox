@@ -217,7 +217,7 @@ export namespace TypeCompiler {
   }
 
   function* Record(schema: Types.TRecord<any, any>, value: string): IterableIterator<string> {
-    yield `(typeof ${value} === 'object' && ${value} !== null && !Array.isArray(${value}))`
+    yield `(typeof ${value} === 'object' && ${value} !== null && !Array.isArray(${value}) && !(${value} instanceof Date))`
     const [keyPattern, valueSchema] = globalThis.Object.entries(schema.patternProperties)[0]
     const local = PushLocal(`new RegExp(/${keyPattern}/)`)
     yield `(Object.keys(${value}).every(key => ${local}.test(key)))`

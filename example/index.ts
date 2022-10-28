@@ -7,56 +7,8 @@ import { Value, ValuePointer } from '@sinclair/typebox/value'
 import { Type, Static, TSchema } from '@sinclair/typebox'
 import Ajv from 'ajv'
 
-const CC = Conditional.Extends(
-    Type.Date(), 
-    Type.Object({}), 
-    Type.Literal('true'), 
-    Type.Literal('false')
-)
+const A = Value.Clone(new Date())
+const B = Value.Clone(A)
 
-console.log(CC)
-
-// --------------------------------------------------------------
-// Reference Ajv Configuration
-//
-// Include in documentation
-// --------------------------------------------------------------
-
-function TypeOf(of: string, value: unknown, schema: unknown) {
-    switch (of) {
-        case 'Constructor': return TypeGuard.TConstructor(schema) && Value.Check(schema, value)
-        case 'Function': return TypeGuard.TFunction(schema) && Value.Check(schema, value)
-        case 'Date': return TypeGuard.TDate(schema) && Value.Check(schema, value)
-        case 'Promise': return TypeGuard.TPromise(schema) && Value.Check(schema, value)
-        case 'Uint8Array': return TypeGuard.TUint8Array(schema) && Value.Check(schema, value)
-        case 'Undefined': return TypeGuard.TUndefined(schema) && Value.Check(schema, value)
-        case 'Void': return TypeGuard.TVoid(schema) && Value.Check(schema, value)
-        default: return false
-    }
-}
-const ajv = new Ajv()
-     .addKeyword({ type: 'object', keyword: 'instanceOf', validate: TypeOf })
-     .addKeyword({ type: 'null', keyword: 'typeOf', validate: TypeOf })
-     .addKeyword('minimum')
-
-const T = Type.Object({
-    date: Type.Date(),
-    buf: Type.Uint8Array(),
-    void: Type.Void()
-})
-
-console.log('undefined', TypeGuard.TUndefined(Type.Undefined()))
-console.log('void', TypeGuard.TVoid(Type.Void()))
-const AA = Type.Date({
-
-})
-const check = ajv.compile(T)
-console.log('result', check({
-    date: new Date(),
-    buf: new Uint8Array(),
-    // asd: undefined,
-    void: null
-}))
-
-
-console.log(Type.Void())
+console.log(A)
+console.log(B)

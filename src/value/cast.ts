@@ -202,7 +202,7 @@ export namespace ValueCast {
   }
 
   function Date(schema: Types.TDate, references: Types.TSchema[], value: any): any {
-    return ValueCheck.Check(schema, references, value) ? new globalThis.Date(value.getTime()) : ValueCreate.Create(schema, references)
+    return ValueCheck.Check(schema, references, value) ? ValueClone.Clone(value) : ValueCreate.Create(schema, references)
   }
 
   function Enum(schema: Types.TEnum<any>, references: Types.TSchema[], value: any): any {
@@ -261,7 +261,7 @@ export namespace ValueCast {
 
   function Record(schema: Types.TRecord<any, any>, references: Types.TSchema[], value: any): any {
     if (ValueCheck.Check(schema, references, value)) return ValueClone.Clone(value)
-    if (value === null || typeof value !== 'object' || globalThis.Array.isArray(value)) return ValueCreate.Create(schema, references)
+    if (value === null || typeof value !== 'object' || globalThis.Array.isArray(value) || value instanceof globalThis.Date) return ValueCreate.Create(schema, references)
     const subschemaKey = globalThis.Object.keys(schema.patternProperties)[0]
     const subschema = schema.patternProperties[subschemaKey]
     const result = {} as Record<string, any>

@@ -197,7 +197,7 @@ export namespace ValueCheck {
   }
 
   function Record(schema: Types.TRecord<any, any>, references: Types.TSchema[], value: any): boolean {
-    if (!(typeof value === 'object' && value !== null && !globalThis.Array.isArray(value))) {
+    if (!(typeof value === 'object' && value !== null && !globalThis.Array.isArray(value) && !(value instanceof globalThis.Date))) {
       return false
     }
     const [keyPattern, valueSchema] = globalThis.Object.entries(schema.patternProperties)[0]
