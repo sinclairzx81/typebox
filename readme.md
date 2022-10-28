@@ -902,7 +902,7 @@ ValuePointer.Set(A, '/z', 1)                         // const A = { x: 1, y: 1, 
 
 ## TypeCheck
 
-TypeBox schemas target JSON Schema Draft 6 and can be used with any Draft 6 compliant validator. TypeBox is built and tested against Ajv and can be used directly in any application already making use of this validator. TypeBox also provides an optional built in TypeCompiler that can be used to attain improved compilation and validation performance for certain application types. 
+TypeBox targets JSON Schema Draft 6 and is built and tested against the Ajv JSON Schema validator for standards compliance. TypeBox also includes an optional built-in TypeCompiler that can offer improved compilation and validation performance specifically for TypeBox types only.
 
 The following sections detail using these validators.
 
@@ -910,7 +910,7 @@ The following sections detail using these validators.
 
 ### Ajv
 
-TypeBox is is designed to intergrate with Ajv version 7+ onwards. You can configure Ajv exclusively for the [Standard](#standard) type set or [Extended](#extended) type set if additional non-standard validation is required.
+The following are the recommended configurations to support both the [Standard](#standard) and [Extended](#extended) type sets provided by TypeBox. For schema portability and publishing to remote systems, it is recommended to use the Standard type set only.
 
 ```bash
 $ npm install ajv ajv-formats --save
@@ -920,7 +920,7 @@ $ npm install ajv ajv-formats --save
 
 <summary>
 <strong>Standard Ajv Configuration</strong>
-<p>The following configures Ajv to validate for the Standard TypeBox type set.</p>
+<p>The following configures Ajv for the Standard TypeBox type set.</p>
 </summary>
 
 ```typescript
@@ -928,22 +928,26 @@ import { Type }   from '@sinclair/typebox'
 import addFormats from 'ajv-formats'
 import Ajv        from 'ajv'
 
-const ajv = addFormats(new Ajv({}), [
-  'date-time', 
-  'time', 
-  'date', 
-  'email',  
-  'hostname', 
-  'ipv4', 
-  'ipv6', 
-  'uri', 
-  'uri-reference', 
-  'uuid',
-  'uri-template', 
-  'json-pointer', 
-  'relative-json-pointer', 
-  'regex'
-])
+export function createAjv() {
+  return addFormats(new Ajv({}), [
+    'date-time', 
+    'time', 
+    'date', 
+    'email',  
+    'hostname', 
+    'ipv4', 
+    'ipv6', 
+    'uri', 
+    'uri-reference', 
+    'uuid',
+    'uri-template', 
+    'json-pointer', 
+    'relative-json-pointer', 
+    'regex'
+  ])
+}
+
+const ajv = createAjv()
 
 const R = ajv.validate(Type.Object({                 // const R = true
   x: Type.Number(),
@@ -958,7 +962,7 @@ const R = ajv.validate(Type.Object({                 // const R = true
 
 <summary>
 <strong>Extended Ajv Configuration</strong>
-<p>The following configures Ajv to validate for the [Extended](#extended) TypeBox type set.</p>
+<p>The following configures Ajv for the Extended TypeBox type set.</p>
 </summary>
 
 ```typescript
@@ -990,8 +994,7 @@ function schemaOf(schemaOf: string, value: unknown, schema: unknown) {
 }
 
 export function createAjv() {
-  return 
-    addFormats(new Ajv({}), [
+  return addFormats(new Ajv({}), [
     'date-time', 
     'time', 
     'date', 
