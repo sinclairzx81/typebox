@@ -1,6 +1,15 @@
+## [0.25.0](https://www.npmjs.com/package/@sinclair/typebox/v/0.25.0)
+
+Updates:
+
+- [271](https://github.com/sinclairzx81/typebox/pull/271) Adds a new non-standard `Type.Date()` type. This type joins the existing `Type.UInt8Array()` as a promoted extended type used to represent core JavaScript primitives. It's inclusion was prompted by end user requirements to validate Date objects prior to writing them to Date supported API's and where serialization of the Date object is handled internally by the API. 
+
+- [271](https://github.com/sinclairzx81/typebox/pull/271) Redesign of Extended Type representations. Extended types been updated to provide external validators (such as Ajv) additional standard proporties to use when defining the custom schema. These properties are `instanceOf` (used for validating a class `object` instances), and `typeOf` (when validating `value` types). Information on configuring Ajv for these properties can be found in the Ajv section of the TypeBox readme.
+
 ## [0.24.49](https://www.npmjs.com/package/@sinclair/typebox/v/0.24.49)
 
 Updates:
+
 - [264](https://github.com/sinclairzx81/typebox/pull/264) TypeBox now provides preliminary support for non-boolean `additionalProperties`. This allows existing `TObject` schemas to be augmented with additional properties of a known type.
 
 Additional:

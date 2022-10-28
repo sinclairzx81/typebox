@@ -53,6 +53,12 @@ describe('value/cast/Record', () => {
     Assert.deepEqual(result, E)
   })
 
+  it('Should upcast from date', () => {
+    const value = new Date(100)
+    const result = Value.Cast(T, value)
+    Assert.deepEqual(result, E)
+  })
+
   it('Should preserve', () => {
     const value = {
       a: { x: 1, y: 2, z: 3 },
@@ -61,6 +67,7 @@ describe('value/cast/Record', () => {
     const result = Value.Cast(T, value)
     Assert.deepEqual(result, value)
   })
+
   it('Should preserve and patch invalid records', () => {
     const value = {
       a: { x: 1, y: 2, z: 3 },

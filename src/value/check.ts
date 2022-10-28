@@ -62,12 +62,29 @@ export namespace ValueCheck {
   function Constructor(schema: Types.TConstructor, references: Types.TSchema[], value: any): boolean {
     return Visit(schema.returns, references, value.prototype)
   }
-
+  function Date(schema: Types.TDate, references: Types.TSchema[], value: any): boolean {
+    if (!(value instanceof globalThis.Date)) {
+      return false
+    }
+    if (schema.exclusiveMinimumTimestamp && !(value.getTime() > schema.exclusiveMinimumTimestamp)) {
+      return false
+    }
+    if (schema.exclusiveMaximumTimestamp && !(value.getTime() < schema.exclusiveMaximumTimestamp)) {
+      return false
+    }
+    if (schema.minimumTimestamp && !(value.getTime() >= schema.minimumTimestamp)) {
+      return false
+    }
+    if (schema.maximumTimestamp && !(value.getTime() <= schema.maximumTimestamp)) {
+      return false
+    }
+    return true
+  }
   function Function(schema: Types.TFunction, references: Types.TSchema[], value: any): boolean {
     return typeof value === 'function'
   }
 
-  function Integer(schema: Types.TNumeric, references: Types.TSchema[], value: any): boolean {
+  function Integer(schema: Types.TInteger, references: Types.TSchema[], value: any): boolean {
     if (!(typeof value === 'number')) {
       return false
     }
@@ -104,7 +121,7 @@ export namespace ValueCheck {
     return value === null
   }
 
-  function Number(schema: Types.TNumeric, references: Types.TSchema[], value: any): boolean {
+  function Number(schema: Types.TNumber, references: Types.TSchema[], value: any): boolean {
     if (!(typeof value === 'number')) {
       return false
     }
@@ -180,7 +197,7 @@ export namespace ValueCheck {
   }
 
   function Record(schema: Types.TRecord<any, any>, references: Types.TSchema[], value: any): boolean {
-    if (!(typeof value === 'object' && value !== null && !globalThis.Array.isArray(value))) {
+    if (!(typeof value === 'object' && value !== null && !globalThis.Array.isArray(value) && !(value instanceof globalThis.Date))) {
       return false
     }
     const [keyPattern, valueSchema] = globalThis.Object.entries(schema.patternProperties)[0]
@@ -288,6 +305,8 @@ export namespace ValueCheck {
         return Boolean(anySchema, anyReferences, value)
       case 'Constructor':
         return Constructor(anySchema, anyReferences, value)
+      case 'Date':
+        return Date(anySchema, anyReferences, value)
       case 'Function':
         return Function(anySchema, anyReferences, value)
       case 'Integer':

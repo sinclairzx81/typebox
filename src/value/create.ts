@@ -91,6 +91,16 @@ export namespace ValueCreate {
     }
   }
 
+  function Date(schema: Types.TDate, references: Types.TSchema[]): any {
+    if (schema.default !== undefined) {
+      return schema.default
+    } else if (schema.minimumTimestamp !== undefined) {
+      return new globalThis.Date(schema.minimumTimestamp)
+    } else {
+      return new globalThis.Date(0)
+    }
+  }
+
   function Enum(schema: Types.TEnum<any>, references: Types.TSchema[]): any {
     if (schema.default !== undefined) {
       return schema.default
@@ -291,6 +301,8 @@ export namespace ValueCreate {
         return Boolean(anySchema, anyReferences)
       case 'Constructor':
         return Constructor(anySchema, anyReferences)
+      case 'Date':
+        return Date(anySchema, anyReferences)
       case 'Enum':
         return Enum(anySchema, anyReferences)
       case 'Function':

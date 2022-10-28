@@ -50,6 +50,7 @@ describe('conditional/structural/Tuple', () => {
     const R = Structural.Check(Type.Tuple([Type.String(), Type.Number()]), Type.Array(Type.Union([Type.String(), Type.Number()])))
     Assert.deepEqual(R, StructuralResult.True)
   })
+
   it('Should extend Array 4', () => {
     type T = [string, number] extends Array<string | number | boolean> ? 1 : 2 // 1
     const R = Structural.Check(Type.Tuple([Type.String(), Type.Number()]), Type.Array(Type.Union([Type.String(), Type.Number(), Type.Boolean()])))
@@ -191,6 +192,12 @@ describe('conditional/structural/Tuple', () => {
   it('Should extend Void', () => {
     type T = [string, number] extends void ? 1 : 2
     const R = Structural.Check(Type.Tuple([Type.String(), Type.Number()]), Type.Void())
+    Assert.deepEqual(R, StructuralResult.False)
+  })
+
+  it('Should extend Date', () => {
+    type T = [string, number] extends Date ? 1 : 2
+    const R = Structural.Check(Type.Tuple([Type.String(), Type.Number()]), Type.Date())
     Assert.deepEqual(R, StructuralResult.False)
   })
 })

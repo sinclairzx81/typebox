@@ -307,4 +307,10 @@ describe('conditional/structural/Array', () => {
     const R = Structural.Check(Type.Array(Type.String()), Type.Void())
     Assert.deepEqual(R, StructuralResult.False)
   })
+
+  it('Should extend Date', () => {
+    type T = Array<string> extends Date ? 1 : 2
+    const R = Structural.Check(Type.Array(Type.String()), Type.Date())
+    Assert.deepEqual(R, StructuralResult.False)
+  })
 })

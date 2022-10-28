@@ -139,4 +139,16 @@ describe('conditional/structural/Union', () => {
     const R = Structural.Check(Type.Union([Type.Number(), Type.String()]), Type.Void())
     Assert.deepEqual(R, StructuralResult.False)
   })
+
+  it('Should extend Date', () => {
+    type T = number | string | void extends Date ? 1 : 2
+    const R = Structural.Check(Type.Union([Type.Number(), Type.String()]), Type.Date())
+    Assert.deepEqual(R, StructuralResult.False)
+  })
+
+  it('Should extend Date 2', () => {
+    type T = Date | number | string | void extends Date ? 1 : 2
+    const R = Structural.Check(Type.Union([Type.Date(), Type.Number(), Type.String()]), Type.Date())
+    Assert.deepEqual(R, StructuralResult.False)
+  })
 })

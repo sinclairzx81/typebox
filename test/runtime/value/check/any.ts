@@ -39,4 +39,9 @@ describe('value/check/Any', () => {
     const result = Value.Check(T, value)
     Assert.equal(result, true)
   })
+  it('Should pass Date', () => {
+    const value = new Date()
+    const result = Value.Check(T, value)
+    Assert.equal(result, true)
+  })
 })

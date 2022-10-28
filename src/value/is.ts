@@ -33,7 +33,11 @@ export type ArrayType = unknown[]
 
 export namespace Is {
   export function Object(value: unknown): value is ObjectType {
-    return value !== null && typeof value === 'object' && !globalThis.Array.isArray(value) && !ArrayBuffer.isView(value)
+    return value !== null && typeof value === 'object' && !globalThis.Array.isArray(value) && !ArrayBuffer.isView(value) && !(value instanceof globalThis.Date)
+  }
+
+  export function Date(value: unknown): value is Date {
+    return value instanceof globalThis.Date
   }
 
   export function Array(value: unknown): value is ArrayType {

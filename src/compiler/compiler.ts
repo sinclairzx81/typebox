@@ -54,7 +54,7 @@ export class TypeCheck<T extends Types.TSchema> {
     return ValueErrors.Errors(this.schema, this.references, value)
   }
 
-  /** Returns true if the value matches the given type. */
+  /** Returns true if the value matches the compiled type. */
   public Check(value: unknown): value is Types.Static<T> {
     return this.checkFunc(value)
   }
@@ -132,11 +132,19 @@ export namespace TypeCompiler {
     yield* Visit(schema.returns, `${value}.prototype`)
   }
 
+  function* Date(schema: Types.TDate, value: string): IterableIterator<string> {
+    yield `(${value} instanceof Date)`
+    if (schema.exclusiveMinimumTimestamp !== undefined) yield `(${value}.getTime() > ${schema.exclusiveMinimumTimestamp})`
+    if (schema.exclusiveMaximumTimestamp !== undefined) yield `(${value}.getTime() < ${schema.exclusiveMaximumTimestamp})`
+    if (schema.minimumTimestamp !== undefined) yield `(${value}.getTime() >= ${schema.minimumTimestamp})`
+    if (schema.maximumTimestamp !== undefined) yield `(${value}.getTime() <= ${schema.maximumTimestamp})`
+  }
+
   function* Function(schema: Types.TFunction, value: string): IterableIterator<string> {
     yield `(typeof ${value} === 'function')`
   }
 
-  function* Integer(schema: Types.TNumeric, value: string): IterableIterator<string> {
+  function* Integer(schema: Types.TInteger, value: string): IterableIterator<string> {
     yield `(typeof ${value} === 'number' && Number.isInteger(${value}))`
     if (schema.multipleOf !== undefined) yield `(${value} % ${schema.multipleOf} === 0)`
     if (schema.exclusiveMinimum !== undefined) yield `(${value} > ${schema.exclusiveMinimum})`
@@ -161,7 +169,7 @@ export namespace TypeCompiler {
     yield `(${value} === null)`
   }
 
-  function* Number(schema: Types.TNumeric, value: string): IterableIterator<string> {
+  function* Number(schema: Types.TNumber, value: string): IterableIterator<string> {
     yield `(typeof ${value} === 'number')`
     if (schema.multipleOf !== undefined) yield `(${value} % ${schema.multipleOf} === 0)`
     if (schema.exclusiveMinimum !== undefined) yield `(${value} > ${schema.exclusiveMinimum})`
@@ -209,7 +217,7 @@ export namespace TypeCompiler {
   }
 
   function* Record(schema: Types.TRecord<any, any>, value: string): IterableIterator<string> {
-    yield `(typeof ${value} === 'object' && ${value} !== null && !Array.isArray(${value}))`
+    yield `(typeof ${value} === 'object' && ${value} !== null && !Array.isArray(${value}) && !(${value} instanceof Date))`
     const [keyPattern, valueSchema] = globalThis.Object.entries(schema.patternProperties)[0]
     const local = PushLocal(`new RegExp(/${keyPattern}/)`)
     yield `(Object.keys(${value}).every(key => ${local}.test(key)))`
@@ -304,6 +312,8 @@ export namespace TypeCompiler {
         return yield* Boolean(anySchema, value)
       case 'Constructor':
         return yield* Constructor(anySchema, value)
+      case 'Date':
+        return yield* Date(anySchema, value)
       case 'Function':
         return yield* Function(anySchema, value)
       case 'Integer':

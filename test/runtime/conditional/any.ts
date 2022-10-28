@@ -89,4 +89,10 @@ describe('conditional/structural/Any', () => {
     const R = Structural.Check(Type.Any(), Type.Void())
     Assert.deepEqual(R, StructuralResult.Union)
   })
+
+  it('Should extend Date', () => {
+    type T = any extends Date ? 1 : 2
+    const R = Structural.Check(Type.Any(), Type.Date())
+    Assert.deepEqual(R, StructuralResult.Union)
+  })
 })

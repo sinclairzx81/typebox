@@ -34,11 +34,19 @@ describe('value/cast/Any', () => {
     const result = Value.Cast(T, value)
     Assert.deepEqual(result, value)
   })
+
   it('Should upcast from null', () => {
     const value = null
     const result = Value.Cast(T, value)
     Assert.deepEqual(result, value)
   })
+
+  it('Should upcast from date', () => {
+    const value = new Date(100)
+    const result = Value.Cast(T, value)
+    Assert.deepEqual(result.getTime(100), 100)
+  })
+
   it('Should preserve', () => {
     const value = { a: 1, b: 2 }
     const result = Value.Cast(T, value)

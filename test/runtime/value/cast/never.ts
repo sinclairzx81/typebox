@@ -32,4 +32,8 @@ describe('value/cast/Never', () => {
     const value = null
     Assert.throws(() => Value.Cast(T, value))
   })
+  it('Should upcast from date', () => {
+    const value = null
+    Assert.throws(() => Value.Cast(T, value))
+  })
 })

@@ -37,6 +37,10 @@ export namespace ValueEqual {
     return leftKeys.every((key) => Equal(left[key], right[key]))
   }
 
+  function Date(left: Date, right: unknown): any {
+    return Is.Date(right) && left.getTime() === right.getTime()
+  }
+
   function Array(left: ArrayType, right: unknown): any {
     if (!Is.Array(right) || left.length !== right.length) return false
     return left.every((value, index) => Equal(value, right[index]))
@@ -54,6 +58,8 @@ export namespace ValueEqual {
   export function Equal<T>(left: T, right: unknown): right is T {
     if (Is.Object(left)) {
       return Object(left, right)
+    } else if (Is.Date(left)) {
+      return Date(left, right)
     } else if (Is.TypedArray(left)) {
       return TypedArray(left, right)
     } else if (Is.Array(left)) {

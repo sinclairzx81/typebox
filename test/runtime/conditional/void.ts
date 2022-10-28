@@ -116,4 +116,10 @@ describe('conditional/structural/Void', () => {
     const R = Structural.Check(Type.Void(), Type.Void())
     Assert.deepEqual(R, StructuralResult.True)
   })
+
+  it('Should extend Date', () => {
+    type T = void extends Date ? 1 : 2
+    const R = Structural.Check(Type.Void(), Type.Date())
+    Assert.deepEqual(R, StructuralResult.False)
+  })
 })

@@ -1,6 +1,7 @@
 import './any'
 import './array'
 import './boolean'
+import './date'
 import './constructor-parameters'
 import './constructor'
 import './emum'

@@ -44,6 +44,7 @@ describe('conditional/structural/Uint8Array', () => {
     const R = Structural.Check(Type.Uint8Array(), Type.Array(Type.Any()))
     Assert.deepEqual(R, StructuralResult.False)
   })
+
   it('Should extend Tuple', () => {
     type T = Uint8Array extends [number, number] ? 1 : 2
     const R = Structural.Check(Type.Uint8Array(), Type.Tuple([Type.Number(), Type.Number()]))
@@ -107,6 +108,12 @@ describe('conditional/structural/Uint8Array', () => {
   it('Should extend Void', () => {
     type T = Uint8Array extends void ? 1 : 2
     const R = Structural.Check(Type.Uint8Array(), Type.Void())
+    Assert.deepEqual(R, StructuralResult.False)
+  })
+
+  it('Should extend Date', () => {
+    type T = Uint8Array extends Date ? 1 : 2
+    const R = Structural.Check(Type.Uint8Array(), Type.Date())
     Assert.deepEqual(R, StructuralResult.False)
   })
 })

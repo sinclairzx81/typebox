@@ -8,11 +8,13 @@ describe('conditional/structural/Number', () => {
     const R = Structural.Check(Type.Number(), Type.Any())
     Assert.deepEqual(R, StructuralResult.True)
   })
+
   it('Should extend Unknown', () => {
     type T = number extends unknown ? 1 : 2
     const R = Structural.Check(Type.Number(), Type.Unknown())
     Assert.deepEqual(R, StructuralResult.True)
   })
+
   it('Should extend String', () => {
     type T = number extends string ? 1 : 2
     const R = Structural.Check(Type.Number(), Type.String())
@@ -106,6 +108,12 @@ describe('conditional/structural/Number', () => {
   it('Should extend Void', () => {
     type T = number extends void ? 1 : 2
     const R = Structural.Check(Type.Number(), Type.Void())
+    Assert.deepEqual(R, StructuralResult.False)
+  })
+
+  it('Should extend Date', () => {
+    type T = number extends Date ? 1 : 2
+    const R = Structural.Check(Type.Number(), Type.Date())
     Assert.deepEqual(R, StructuralResult.False)
   })
 })
