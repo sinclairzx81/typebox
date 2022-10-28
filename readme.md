@@ -902,7 +902,7 @@ ValuePointer.Set(A, '/z', 1)                         // const A = { x: 1, y: 1, 
 
 ## TypeCheck
 
-TypeBox targets JSON Schema Draft 6 and is built and tested against the Ajv JSON Schema validator for standards compliance. TypeBox also includes an optional built-in TypeCompiler that can offer improved compilation and validation performance specifically for TypeBox types only.
+TypeBox targets JSON Schema Draft 6 and is built and tested against the Ajv JSON Schema validator for standards compliance. TypeBox also includes an optional built-in TypeCompiler that can provide improved compilation and validation performance specifically for TypeBox types only.
 
 The following sections detail using these validators.
 
@@ -920,7 +920,7 @@ $ npm install ajv ajv-formats --save
 
 <summary>
 <strong>Standard Ajv Configuration</strong>
-<p>The following configures Ajv for the Standard TypeBox type set.</p>
+<p>Expand for Standard Type Set Configuration</p>
 </summary>
 
 ```typescript
@@ -962,7 +962,7 @@ const R = ajv.validate(Type.Object({                 // const R = true
 
 <summary>
 <strong>Extended Ajv Configuration</strong>
-<p>The following configures Ajv for the Extended TypeBox type set.</p>
+<p>Expand for Extended Type Set Configuration</p>
 </summary>
 
 ```typescript
