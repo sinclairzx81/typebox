@@ -242,4 +242,10 @@ describe('conditional/structural/Function', () => {
     const R = Structural.Check(Type.Function([], Type.Number()), Type.Void())
     Assert.deepEqual(R, StructuralResult.False)
   })
+
+  it('Should extend Date', () => {
+    type T = (() => number) extends Date ? 1 : 2
+    const R = Structural.Check(Type.Constructor([], Type.Number()), Type.Date())
+    Assert.deepEqual(R, StructuralResult.False)
+  })
 })

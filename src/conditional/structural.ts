@@ -203,7 +203,7 @@ export namespace Structural {
     } else if (TypeGuard.TObject(right) && ObjectRightRule(left, right)) {
       return StructuralResult.True
     } else if (TypeGuard.TRecord(right)) {
-      return Indexable(left, RecordValue(right as Types.TRecord))
+      return StructuralResult.False
     } else if (TypeGuard.TDate(right)) {
       return StructuralResult.True
     } else if (TypeGuard.TUnion(right)) {

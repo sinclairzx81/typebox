@@ -116,4 +116,10 @@ describe('conditional/structural/Unknown', () => {
     const R = Structural.Check(Type.Unknown(), Type.Void())
     Assert.deepEqual(R, StructuralResult.False)
   })
+
+  it('Should extend Date', () => {
+    type T = unknown extends Date ? 1 : 2
+    const R = Structural.Check(Type.Unknown(), Type.Date())
+    Assert.deepEqual(R, StructuralResult.False)
+  })
 })

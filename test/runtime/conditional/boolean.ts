@@ -104,4 +104,10 @@ describe('conditional/structural/Boolean', () => {
     const R = Structural.Check(Type.Boolean(), Type.Void())
     Assert.deepEqual(R, StructuralResult.False)
   })
+
+  it('Should extend Date', () => {
+    type T = boolean extends Date ? 1 : 2
+    const R = Structural.Check(Type.Boolean(), Type.Date())
+    Assert.deepEqual(R, StructuralResult.False)
+  })
 })

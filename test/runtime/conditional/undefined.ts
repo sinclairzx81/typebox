@@ -92,9 +92,16 @@ describe('conditional/structural/Undefined', () => {
     const R = Structural.Check(Type.Undefined(), Type.Undefined())
     Assert.deepEqual(R, StructuralResult.True)
   })
+
   it('Should extend Void', () => {
     type T = undefined extends void ? 1 : 2
     const R = Structural.Check(Type.Undefined(), Type.Void())
     Assert.deepEqual(R, StructuralResult.True)
+  })
+
+  it('Should extend Date', () => {
+    type T = undefined extends Date ? 1 : 2
+    const R = Structural.Check(Type.Undefined(), Type.Date())
+    Assert.deepEqual(R, StructuralResult.False)
   })
 })

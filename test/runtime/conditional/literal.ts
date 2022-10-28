@@ -321,4 +321,10 @@ describe('conditional/structural/Literal', () => {
     const R = Structural.Check(Type.Literal(true), Type.Void())
     Assert.deepEqual(R, StructuralResult.False)
   })
+
+  it('Should extend Date', () => {
+    type T = true extends Date ? 1 : 2
+    const R = Structural.Check(Type.Literal(true), Type.Date())
+    Assert.deepEqual(R, StructuralResult.False)
+  })
 })

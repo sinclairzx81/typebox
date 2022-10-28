@@ -110,4 +110,10 @@ describe('conditional/structural/Null', () => {
     const R = Structural.Check(Type.Null(), Type.Void())
     Assert.deepEqual(R, StructuralResult.False)
   })
+
+  it('Should extend Date', () => {
+    type T = null extends Date ? 1 : 2
+    const R = Structural.Check(Type.Null(), Type.Date())
+    Assert.deepEqual(R, StructuralResult.False)
+  })
 })

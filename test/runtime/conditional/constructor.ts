@@ -8,6 +8,7 @@ describe('conditional/structural/Constructor', () => {
     const R = Structural.Check(Type.Constructor([], Type.Number()), Type.Function([], Type.Number()))
     Assert.deepEqual(R, StructuralResult.False)
   })
+
   it('Should extend Constructor 1', () => {
     type T = (new () => number) extends new () => number ? 1 : 2
     const R = Structural.Check(Type.Constructor([], Type.Number()), Type.Constructor([], Type.Number()))
@@ -238,6 +239,12 @@ describe('conditional/structural/Constructor', () => {
   it('Should extend Void', () => {
     type T = (new () => number) extends void ? 1 : 2
     const R = Structural.Check(Type.Constructor([], Type.Number()), Type.Void())
+    Assert.deepEqual(R, StructuralResult.False)
+  })
+
+  it('Should extend Date', () => {
+    type T = (new () => number) extends Date ? 1 : 2
+    const R = Structural.Check(Type.Constructor([], Type.Number()), Type.Date())
     Assert.deepEqual(R, StructuralResult.False)
   })
 })
