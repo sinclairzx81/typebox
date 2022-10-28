@@ -59,6 +59,13 @@ describe('value/cast/Object', () => {
     const result = Value.Cast(T, value)
     Assert.deepEqual(result, E)
   })
+
+  it('Should upcast from date', () => {
+    const value = new Date(100)
+    const result = Value.Cast(T, value)
+    Assert.deepEqual(result, E)
+  })
+
   it('Should preserve', () => {
     const value = { x: 7, y: 8, z: 9, a: 10, b: 11, c: 12 }
     const result = Value.Cast(T, value)

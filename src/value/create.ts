@@ -97,7 +97,7 @@ export namespace ValueCreate {
     } else if (schema.minimum !== undefined) {
       return new globalThis.Date(schema.minimum)
     } else {
-      return new globalThis.Date()
+      return new globalThis.Date(0)
     }
   }
 

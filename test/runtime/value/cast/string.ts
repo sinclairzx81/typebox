@@ -29,6 +29,7 @@ describe('value/cast/String', () => {
     const result = Value.Cast(T, value)
     Assert.deepEqual(result, E)
   })
+
   it('Should upcast from array', () => {
     const value = [1]
     const result = Value.Cast(T, value)
@@ -43,6 +44,12 @@ describe('value/cast/String', () => {
 
   it('Should upcast from null', () => {
     const value = null
+    const result = Value.Cast(T, value)
+    Assert.deepEqual(result, E)
+  })
+
+  it('Should upcast from date', () => {
+    const value = new Date(100)
     const result = Value.Cast(T, value)
     Assert.deepEqual(result, E)
   })

@@ -17,16 +17,19 @@ describe('value/cast/Uint8Array', () => {
     const result = Value.Cast(T, value)
     Assert.deepEqual(result, E)
   })
+
   it('Should upcast from boolean', () => {
     const value = true
     const result = Value.Cast(T, value)
     Assert.deepEqual(result, E)
   })
+
   it('Should upcast from object', () => {
     const value = {}
     const result = Value.Cast(T, value)
     Assert.deepEqual(result, E)
   })
+
   it('Should upcast from array', () => {
     const value = [1]
     const result = Value.Cast(T, value)
@@ -41,6 +44,12 @@ describe('value/cast/Uint8Array', () => {
 
   it('Should upcast from null', () => {
     const value = null
+    const result = Value.Cast(T, value)
+    Assert.deepEqual(result, E)
+  })
+
+  it('Should upcast from date', () => {
+    const value = new Date(100)
     const result = Value.Cast(T, value)
     Assert.deepEqual(result, E)
   })

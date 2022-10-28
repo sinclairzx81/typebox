@@ -17,11 +17,13 @@ describe('value/cast/Recursive', () => {
     const result = Value.Cast(T, value)
     Assert.deepEqual(result, E)
   })
+
   it('Should upcast from number', () => {
     const value = E
     const result = Value.Cast(T, value)
     Assert.deepEqual(result, E)
   })
+
   it('Should upcast from boolean', () => {
     const value = true
     const result = Value.Cast(T, value)
@@ -48,6 +50,12 @@ describe('value/cast/Recursive', () => {
 
   it('Should upcast from null', () => {
     const value = null
+    const result = Value.Cast(T, value)
+    Assert.deepEqual(result, E)
+  })
+
+  it('Should upcast from date', () => {
+    const value = new Date(100)
     const result = Value.Cast(T, value)
     Assert.deepEqual(result, E)
   })

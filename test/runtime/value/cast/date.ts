@@ -2,9 +2,9 @@ import { Value } from '@sinclair/typebox/value'
 import { Type } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
-describe('value/cast/Null', () => {
-  const T = Type.Null()
-  const E = null
+describe('value/cast/Date', () => {
+  const T = Type.Date()
+  const E = new Date(0)
 
   it('Should upcast from string', () => {
     const value = 'world'
@@ -48,15 +48,9 @@ describe('value/cast/Null', () => {
     Assert.deepEqual(result, E)
   })
 
-  it('Should upcast from date', () => {
+  it('Should preseve', () => {
     const value = new Date(100)
     const result = Value.Cast(T, value)
-    Assert.deepEqual(result, E)
-  })
-
-  it('Should preseve', () => {
-    const value = null
-    const result = Value.Cast(T, value)
-    Assert.deepEqual(result, null)
+    Assert.deepEqual(result.getTime(), 100)
   })
 })
