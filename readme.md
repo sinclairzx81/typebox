@@ -172,7 +172,7 @@ TypeBox provides a set of functions that allow you to compose JSON Schema simila
 
 ### Standard Types
 
-The following table lists the standard TypeBox types.
+The following table lists the Standard TypeBox types.
 
 ```typescript
 ┌────────────────────────────────┬─────────────────────────────┬────────────────────────────────┐
@@ -449,7 +449,6 @@ TypeBox provides an extended type set that can be used to express schematics for
 │                                │                             │                                │
 └────────────────────────────────┴─────────────────────────────┴────────────────────────────────┘
 ```
-Extended types include the `instanceOf` and `typeOf` properties to serve as hooks for validators that support user defined schemas. See the section on [Ajv](#ajv) for details on configuring extended types for this validator.
 
 <a name='types-modifiers'></a>
 
