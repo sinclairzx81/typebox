@@ -440,7 +440,7 @@ const T = Type.Array(Type.Integer(), { minItems: 5 })
 
 ### Extended
 
-TypeBox provides several extended types that can be used to express schematics for core JavaScript primitives that cannot be expressed by the JSON Schema specification. Extended types are not valid JSON Schema so usage with with standards compliant JSON Schema validators may vary. These types are intended to be used to frame standard JSON schema and describe callable interfaces that may receive JSON validated data.
+TypeBox provides an extended type set that can be used to express schematics for core JavaScript constructs and primitives. Extended types are not valid JSON Schema and will not validate using typical validation. These types however can be used to frame JSON schema and describe callable RPC interfaces that may receive JSON validated data.
 
 ```typescript
 ┌────────────────────────────────┬─────────────────────────────┬────────────────────────────────┐
@@ -510,7 +510,7 @@ TypeBox provides several extended types that can be used to express schematics f
 │                                │                             │                                │
 └────────────────────────────────┴─────────────────────────────┴────────────────────────────────┘
 ```
-Extended types include the additional `instanceOf` and `typeOf` properties to serve as hooks for validators that support custom schema configuration. See the section on [AJV](#ajv) for details on configuring a subset of these types.
+Extended types include the `instanceOf` and `typeOf` properties to serve as hooks for validators that support user defined schemas. See the section on [Ajv](#ajv) for details on configuring extended types for this validator.
 
 <a name='types-reference'></a>
 
