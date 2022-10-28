@@ -79,7 +79,7 @@ License MIT
   - [Pointer](#values-pointer)
 - [TypeCheck](#typecheck)
   - [Ajv](#typecheck-ajv)
-  - [Compiler](#typecheck-compiler)
+  - [TypeCompiler](#typecheck-typecompiler)
   - [Formats](#typecheck-formats)
 - [Benchmark](#benchmark)
   - [Compile](#benchmark-compile)
@@ -902,23 +902,26 @@ ValuePointer.Set(A, '/z', 1)                         // const A = { x: 1, y: 1, 
 
 ## TypeCheck
 
-TypeBox is written to target JSON Schema Draft 6 and can be used with any Draft 6 compliant validator. TypeBox is developed and tested against Ajv and can be used in any application already making use of this validator. Additionally, TypeBox also provides an optional type compiler that can be used to attain improved compilation and validation performance for certain application types.
+TypeBox schemas target JSON Schema Draft 6 and can be used with any Draft 6 compliant validator. TypeBox is built and tested against Ajv and can be used directly in any application already making use of this validator. TypeBox also provides an optional built in TypeCompiler that can be used to attain improved compilation and validation performance for certain application types. 
+
+The following sections detail using these validators.
 
 <a name='typecheck-ajv'></a>
 
 ### Ajv
 
-The following are the recommened Ajv configurations for TypeBox. 
+TypeBox is is designed to intergrate with Ajv version 7+ onwards. You can configure Ajv exclusively for the [Standard](#standard) type set or [Extended](#extended) type set if additional non-standard validation is required.
 
 ```bash
 $ npm install ajv ajv-formats --save
 ```
 
-The following configures Ajv to validate for the [Standard](#standard) TypeBox type set.
-
 <details>
 
-<summary>Standard Ajv Configuration</summary>
+<summary>
+<strong>Standard Ajv Configuration</strong>
+<p>The following configures Ajv to validate for the Standard TypeBox type set.</p>
+</summary>
 
 ```typescript
 import { Type }   from '@sinclair/typebox'
@@ -951,11 +954,12 @@ const R = ajv.validate(Type.Object({                 // const R = true
 
 </details>
 
-The following configures Ajv to validate for the [Extended](#extended) TypeBox type set.
-
 <details>
 
-<summary>Extended Ajv Configuration</summary>
+<summary>
+<strong>Extended Ajv Configuration</strong>
+<p>The following configures Ajv to validate for the [Extended](#extended) TypeBox type set.</p>
+</summary>
 
 ```typescript
 import { TypeGuard } from '@sinclair/typebox/guard'
@@ -1028,9 +1032,10 @@ const R = ajv.validate(Type.Object({                 // const R = true
 
 </details>
 
-<a name='typecheck-compiler'></a>
 
-### Compiler
+<a name='typecheck-typecompiler'></a>
+
+### TypeCompiler
 
 TypeBox provides an optional high performance just-in-time (JIT) compiler and type checker that can be used in applications that require extremely fast validation. Note that this compiler is optimized for TypeBox types only where the schematics are known in advance. If defining custom types with `Type.Unsafe<T>` please consider Ajv.
 
