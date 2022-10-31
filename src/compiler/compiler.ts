@@ -378,7 +378,7 @@ export namespace TypeCompiler {
   }
 
   function CreateExpression(schema: Types.TSchema, value: string): string {
-    return [...Visit(schema, value)].join(' && ')
+    return `(${[...Visit(schema, value)].join(' && ')})`
   }
 
   function CreateFunctionName($id: string) {
