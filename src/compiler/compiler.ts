@@ -161,7 +161,7 @@ export namespace TypeCompiler {
     }
   }
 
-  function* Never(schema: Types.TNull, value: string): IterableIterator<string> {
+  function* Never(schema: Types.TNever, value: string): IterableIterator<string> {
     yield `(false)`
   }
 
