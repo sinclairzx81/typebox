@@ -131,4 +131,38 @@ describe('value/cast/Union', () => {
     const result = Value.Cast(T, value)
     Assert.deepEqual(result, { type: 'B', a: '', b: '', c: '' })
   })
+
+  it('Should cast with default value (create)', () => {
+    const result = Value.Cast(
+      Type.Object({
+        id: Type.Number(),
+        value: Type.Union([Type.Literal('A'), Type.Literal('B'), Type.Literal('C')], { default: 'C' }),
+      }),
+      {
+        id: 42,
+        value: 'D',
+      },
+    )
+    Assert.deepEqual(result, {
+      id: 42,
+      value: 'C',
+    })
+  })
+
+  it('Should cast with default value (preserve)', () => {
+    const result = Value.Cast(
+      Type.Object({
+        id: Type.Number(),
+        value: Type.Union([Type.Literal('A'), Type.Literal('B'), Type.Literal('C')], { default: 'C' }),
+      }),
+      {
+        id: 42,
+        value: 'B',
+      },
+    )
+    Assert.deepEqual(result, {
+      id: 42,
+      value: 'B',
+    })
+  })
 })
