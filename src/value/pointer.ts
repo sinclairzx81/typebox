@@ -38,7 +38,7 @@ export class ValuePointerRootDeleteError extends Error {
   }
 }
 
-/** ValuePointer performs mutable operations on values using RFC6901 Json Pointers */
+/** Provides functionality to update values through RFC6901 string pointers */
 export namespace ValuePointer {
   function Escape(component: string) {
     return component.indexOf('~') === -1 ? component : component.replace(/~1/g, '/').replace(/~0/g, '~')

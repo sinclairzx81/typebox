@@ -106,6 +106,7 @@ export class ValueErrorsUnknownTypeError extends Error {
   }
 }
 
+/** Provides functionality to generate a sequence of errors against a TypeBox type.  */
 export namespace ValueErrors {
   function* Any(schema: Types.TAny, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {}
 

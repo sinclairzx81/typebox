@@ -34,7 +34,7 @@ export class TypeGuardInvalidTypeError extends Error {
   }
 }
 
-/** TypeGuard tests that values conform to a known TypeBox type specification */
+/** Provides functionality to test if values are TypeBox types */
 export namespace TypeGuard {
   function IsObject(value: unknown): value is Record<string | symbol, any> {
     return typeof value === 'object' && value !== null && !Array.isArray(value)

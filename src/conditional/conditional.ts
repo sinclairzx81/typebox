@@ -52,7 +52,7 @@ export interface TExtract<T extends Types.TSchema, U extends Types.TUnion> exten
   static: Extract<Types.Static<T, this['params']>, Types.Static<U, this['params']>>
 }
 
-/** Conditional Types */
+/** Conditional type mapping for TypeBox types */
 export namespace Conditional {
   /** (Experimental) Creates a conditional expression type */
   export function Extends<L extends Types.TSchema, R extends Types.TSchema, T extends Types.TSchema, U extends Types.TSchema>(left: L, right: R, ok: T, fail: U): TExtends<L, R, T, U> {

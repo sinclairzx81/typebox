@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 export type FormatValidationFunction = (value: string) => boolean
 
-/** Shared string formats used by the TypeCompiler and Value modules */
+/** Provides functions to create custom string formats */
 export namespace Format {
   const formats = new Map<string, FormatValidationFunction>()
 
