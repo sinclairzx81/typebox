@@ -832,7 +832,7 @@ const R = Value.Equal(                               // const R = true
 Use the Diff function to produce a sequence of edits to transform one value into another.
 
 ```typescript
-const E = Value.Diff<any>(                          // const E = [
+const E = Value.Diff(                               // const E = [
   { x: 1, y: 2, z: 3 },                             //   { type: 'update', path: '/y', value: 4 },
   { y: 4, z: 5, w: 6 }                              //   { type: 'update', path: '/z', value: 5 },
 )                                                   //   { type: 'insert', path: '/w', value: 6 },
@@ -851,12 +851,12 @@ const A = { x: 1, y: 2 }
 
 const B = { x: 3 }
 
-const E = Value.Diff<any>(A, B)                      // const E = [
+const E = Value.Diff(A, B)                           // const E = [
                                                      //   { type: 'update', path: '/x', value: 3 },
                                                      //   { type: 'delete', path: '/y' }
                                                      // ]
 
-const C = Value.Patch<any>(A, E)                     // const C = { x: 3 }
+const C = Value.Patch<typeof B>(A, E)                // const C = { x: 3 }
 ```
 
 

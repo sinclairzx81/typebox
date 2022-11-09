@@ -86,12 +86,12 @@ export namespace Value {
   }
 
   /** Returns edits to transform the current value into the next value */
-  export function Diff<T>(current: T, next: T): Edit<T>[] {
+  export function Diff(current: unknown, next: unknown): Edit[] {
     return ValueDelta.Diff(current, next)
   }
 
   /** Returns a new value with edits applied to the given value */
-  export function Patch<T>(current: T, edits: Edit<T>[]): T {
+  export function Patch<T = any>(current: unknown, edits: Edit[]): T {
     return ValueDelta.Patch(current, edits) as T
   }
 }

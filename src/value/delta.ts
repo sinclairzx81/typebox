@@ -26,46 +26,71 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { Type, Static } from '../typebox'
 import { Is, ObjectType, ArrayType, TypedArrayType, ValueType } from './is'
 import { ValueClone } from './clone'
 import { ValuePointer } from './pointer'
 
-export type Edit<T = unknown> = Insert<T> | Update<T> | Delete<T>
+// ---------------------------------------------------------------------
+// Operations
+// ---------------------------------------------------------------------
 
-export interface Insert<T> {
-  brand: T
-  type: 'insert'
-  path: string
-  value: any
+export type Insert = Static<typeof Insert>
+export const Insert = Type.Object({
+  type: Type.Literal('insert'),
+  path: Type.String(),
+  value: Type.Unknown(),
+})
+
+export type Update = Static<typeof Update>
+export const Update = Type.Object({
+  type: Type.Literal('update'),
+  path: Type.String(),
+  value: Type.Unknown(),
+})
+
+export type Delete = Static<typeof Delete>
+export const Delete = Type.Object({
+  type: Type.Literal('delete'),
+  path: Type.String(),
+})
+
+export type Edit = Static<typeof Edit>
+export const Edit = Type.Union([Insert, Update, Delete])
+
+// ---------------------------------------------------------------------
+// Errors
+// ---------------------------------------------------------------------
+
+export class ValueDeltaObjectWithSymbolKeyError extends Error {
+  constructor(public readonly key: unknown) {
+    super('ValueDelta: Cannot diff objects with symbol keys')
+  }
+}
+export class ValueDeltaUnableToDiffUnknownValue extends Error {
+  constructor(public readonly value: unknown) {
+    super('ValueDelta: Unable to create diff edits for unknown value')
+  }
 }
 
-export interface Update<T> {
-  brand: T
-  type: 'update'
-  path: string
-  value: any
-}
-
-export interface Delete<T> {
-  brand: T
-  type: 'delete'
-  path: string
-}
+// ---------------------------------------------------------------------
+// ValueDelta
+// ---------------------------------------------------------------------
 
 export namespace ValueDelta {
   // ---------------------------------------------------------------------
   // Edits
   // ---------------------------------------------------------------------
 
-  function Update(path: string, value: unknown): Edit<any> {
+  function Update(path: string, value: unknown): Edit {
     return { type: 'update', path, value } as any
   }
 
-  function Insert(path: string, value: unknown): Edit<any> {
+  function Insert(path: string, value: unknown): Edit {
     return { type: 'insert', path, value } as any
   }
 
-  function Delete(path: string): Edit<any> {
+  function Delete(path: string): Edit {
     return { type: 'delete', path } as any
   }
 
@@ -73,35 +98,30 @@ export namespace ValueDelta {
   // Diff
   // ---------------------------------------------------------------------
 
-  function* Object(path: string, current: ObjectType, next: unknown): IterableIterator<Edit<any>> {
+  function* Object(path: string, current: ObjectType, next: unknown): IterableIterator<Edit> {
     if (!Is.Object(next)) return yield Update(path, next)
     const currentKeys = [...globalThis.Object.keys(current), ...globalThis.Object.getOwnPropertySymbols(current)]
     const nextKeys = [...globalThis.Object.keys(next), ...globalThis.Object.getOwnPropertySymbols(next)]
     for (const key of currentKeys) {
-      if (typeof key === 'symbol') throw Error('ValueDelta: Cannot produce diff symbol keys')
+      if (typeof key === 'symbol') throw new ValueDeltaObjectWithSymbolKeyError(key)
       if (next[key] === undefined && nextKeys.includes(key)) yield Update(`${path}/${String(key)}`, undefined)
     }
     for (const key of nextKeys) {
       if (current[key] === undefined || next[key] === undefined) continue
-      if (typeof key === 'symbol') throw Error('ValueDelta: Cannot produce diff symbol keys')
+      if (typeof key === 'symbol') throw new ValueDeltaObjectWithSymbolKeyError(key)
       yield* Visit(`${path}/${String(key)}`, current[key], next[key])
     }
     for (const key of nextKeys) {
-      if (typeof key === 'symbol') throw Error('ValueDelta: Cannot produce diff symbol keys')
+      if (typeof key === 'symbol') throw new ValueDeltaObjectWithSymbolKeyError(key)
       if (current[key] === undefined) yield Insert(`${path}/${String(key)}`, next[key])
     }
     for (const key of currentKeys.reverse()) {
-      if (typeof key === 'symbol') throw Error('ValueDelta: Cannot produce diff symbol keys')
+      if (typeof key === 'symbol') throw new ValueDeltaObjectWithSymbolKeyError(key)
       if (next[key] === undefined && !nextKeys.includes(key)) yield Delete(`${path}/${String(key)}`)
     }
   }
 
-  function* Date(path: string, current: Date, next: unknown): IterableIterator<Edit<any>> {
-    if (Is.Date(next) && current.getTime() === next.getTime()) return
-    yield Update(path, next)
-  }
-
-  function* Array(path: string, current: ArrayType, next: unknown): IterableIterator<Edit<any>> {
+  function* Array(path: string, current: ArrayType, next: unknown): IterableIterator<Edit> {
     if (!Is.Array(next)) return yield Update(path, next)
     for (let i = 0; i < Math.min(current.length, next.length); i++) {
       yield* Visit(`${path}/${i}`, current[i], next[i])
@@ -116,23 +136,21 @@ export namespace ValueDelta {
     }
   }
 
-  function* TypedArray(path: string, current: TypedArrayType, next: unknown): IterableIterator<Edit<any>> {
+  function* TypedArray(path: string, current: TypedArrayType, next: unknown): IterableIterator<Edit> {
     if (!Is.TypedArray(next) || current.length !== next.length || globalThis.Object.getPrototypeOf(current).constructor.name !== globalThis.Object.getPrototypeOf(next).constructor.name) return yield Update(path, next)
     for (let i = 0; i < Math.min(current.length, next.length); i++) {
       yield* Visit(`${path}/${i}`, current[i], next[i])
     }
   }
 
-  function* Value(path: string, current: ValueType, next: unknown): IterableIterator<Edit<any>> {
+  function* Value(path: string, current: ValueType, next: unknown): IterableIterator<Edit> {
     if (current === next) return
     yield Update(path, next)
   }
 
-  function* Visit(path: string, current: unknown, next: unknown): IterableIterator<Edit<any>> {
+  function* Visit(path: string, current: unknown, next: unknown): IterableIterator<Edit> {
     if (Is.Object(current)) {
       return yield* Object(path, current, next)
-    } else if (Is.Date(current)) {
-      return yield* Date(path, current, next)
     } else if (Is.Array(current)) {
       return yield* Array(path, current, next)
     } else if (Is.TypedArray(current)) {
@@ -140,11 +158,11 @@ export namespace ValueDelta {
     } else if (Is.Value(current)) {
       return yield* Value(path, current, next)
     } else {
-      throw new Error('ValueDelta: Cannot produce edits for value')
+      throw new ValueDeltaUnableToDiffUnknownValue(current)
     }
   }
 
-  export function Diff<T>(current: T, next: T): Edit<T>[] {
+  export function Diff(current: unknown, next: unknown): Edit[] {
     return [...Visit('', current, next)]
   }
 
@@ -152,20 +170,20 @@ export namespace ValueDelta {
   // Patch
   // ---------------------------------------------------------------------
 
-  function IsRootUpdate<T>(edits: Edit<T>[]): edits is [Update<T>] {
+  function IsRootUpdate(edits: Edit[]): edits is [Update] {
     return edits.length > 0 && edits[0].path === '' && edits[0].type === 'update'
   }
 
-  function IsIdentity<T>(edits: Edit<T>[]) {
+  function IsIdentity(edits: Edit[]) {
     return edits.length === 0
   }
 
-  export function Patch<T>(current: T, edits: Edit<T>[]): T {
+  export function Patch<T = any>(current: unknown, edits: Edit[]): T {
     if (IsRootUpdate(edits)) {
-      return ValueClone.Clone(edits[0].value)
+      return ValueClone.Clone(edits[0].value) as T
     }
     if (IsIdentity(edits)) {
-      return ValueClone.Clone(current)
+      return ValueClone.Clone(current) as T
     }
     const clone = ValueClone.Clone(current)
     for (const edit of edits) {
@@ -184,6 +202,6 @@ export namespace ValueDelta {
         }
       }
     }
-    return clone
+    return clone as T
   }
 }
