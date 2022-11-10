@@ -36,6 +36,10 @@ export class ValueCheckUnknownTypeError extends Error {
 }
 
 export namespace ValueCheck {
+  function IsNumber(value: unknown): value is number {
+    return typeof value === 'number'
+  }
+
   function Any(schema: Types.TAny, references: Types.TSchema[], value: any): boolean {
     return true
   }
@@ -43,10 +47,10 @@ export namespace ValueCheck {
     if (!globalThis.Array.isArray(value)) {
       return false
     }
-    if (schema.minItems !== undefined && !(value.length >= schema.minItems)) {
+    if (IsNumber(schema.minItems) && !(value.length >= schema.minItems)) {
       return false
     }
-    if (schema.maxItems !== undefined && !(value.length <= schema.maxItems)) {
+    if (IsNumber(schema.maxItems) && !(value.length <= schema.maxItems)) {
       return false
     }
     if (schema.uniqueItems === true && !(new Set(value).size === value.length)) {
@@ -66,16 +70,16 @@ export namespace ValueCheck {
     if (!(value instanceof globalThis.Date)) {
       return false
     }
-    if (schema.exclusiveMinimumTimestamp && !(value.getTime() > schema.exclusiveMinimumTimestamp)) {
+    if (IsNumber(schema.exclusiveMinimumTimestamp) && !(value.getTime() > schema.exclusiveMinimumTimestamp)) {
       return false
     }
-    if (schema.exclusiveMaximumTimestamp && !(value.getTime() < schema.exclusiveMaximumTimestamp)) {
+    if (IsNumber(schema.exclusiveMaximumTimestamp) && !(value.getTime() < schema.exclusiveMaximumTimestamp)) {
       return false
     }
-    if (schema.minimumTimestamp && !(value.getTime() >= schema.minimumTimestamp)) {
+    if (IsNumber(schema.minimumTimestamp) && !(value.getTime() >= schema.minimumTimestamp)) {
       return false
     }
-    if (schema.maximumTimestamp && !(value.getTime() <= schema.maximumTimestamp)) {
+    if (IsNumber(schema.maximumTimestamp) && !(value.getTime() <= schema.maximumTimestamp)) {
       return false
     }
     return true
@@ -91,19 +95,19 @@ export namespace ValueCheck {
     if (!globalThis.Number.isInteger(value)) {
       return false
     }
-    if (schema.multipleOf !== undefined && !(value % schema.multipleOf === 0)) {
+    if (IsNumber(schema.multipleOf) && !(value % schema.multipleOf === 0)) {
       return false
     }
-    if (schema.exclusiveMinimum !== undefined && !(value > schema.exclusiveMinimum)) {
+    if (IsNumber(schema.exclusiveMinimum) && !(value > schema.exclusiveMinimum)) {
       return false
     }
-    if (schema.exclusiveMaximum !== undefined && !(value < schema.exclusiveMaximum)) {
+    if (IsNumber(schema.exclusiveMaximum) && !(value < schema.exclusiveMaximum)) {
       return false
     }
-    if (schema.minimum !== undefined && !(value >= schema.minimum)) {
+    if (IsNumber(schema.minimum) && !(value >= schema.minimum)) {
       return false
     }
-    if (schema.maximum !== undefined && !(value <= schema.maximum)) {
+    if (IsNumber(schema.maximum) && !(value <= schema.maximum)) {
       return false
     }
     return true
@@ -125,19 +129,19 @@ export namespace ValueCheck {
     if (!(typeof value === 'number')) {
       return false
     }
-    if (schema.multipleOf && !(value % schema.multipleOf === 0)) {
+    if (IsNumber(schema.multipleOf) && !(value % schema.multipleOf === 0)) {
       return false
     }
-    if (schema.exclusiveMinimum && !(value > schema.exclusiveMinimum)) {
+    if (IsNumber(schema.exclusiveMinimum) && !(value > schema.exclusiveMinimum)) {
       return false
     }
-    if (schema.exclusiveMaximum && !(value < schema.exclusiveMaximum)) {
+    if (IsNumber(schema.exclusiveMaximum) && !(value < schema.exclusiveMaximum)) {
       return false
     }
-    if (schema.minimum && !(value >= schema.minimum)) {
+    if (IsNumber(schema.minimum) && !(value >= schema.minimum)) {
       return false
     }
-    if (schema.maximum && !(value <= schema.maximum)) {
+    if (IsNumber(schema.maximum) && !(value <= schema.maximum)) {
       return false
     }
     return true
@@ -147,10 +151,10 @@ export namespace ValueCheck {
     if (!(typeof value === 'object' && value !== null && !globalThis.Array.isArray(value))) {
       return false
     }
-    if (schema.minProperties !== undefined && !(globalThis.Object.keys(value).length >= schema.minProperties)) {
+    if (IsNumber(schema.minProperties) && !(globalThis.Object.keys(value).length >= schema.minProperties)) {
       return false
     }
-    if (schema.maxProperties !== undefined && !(globalThis.Object.keys(value).length <= schema.maxProperties)) {
+    if (IsNumber(schema.maxProperties) && !(globalThis.Object.keys(value).length <= schema.maxProperties)) {
       return false
     }
     const propertyKeys = globalThis.Object.keys(schema.properties)
@@ -227,10 +231,10 @@ export namespace ValueCheck {
     if (!(typeof value === 'string')) {
       return false
     }
-    if (schema.minLength !== undefined) {
+    if (IsNumber(schema.minLength)) {
       if (!(value.length >= schema.minLength)) return false
     }
-    if (schema.maxLength !== undefined) {
+    if (IsNumber(schema.maxLength)) {
       if (!(value.length <= schema.maxLength)) return false
     }
     if (schema.pattern !== undefined) {
@@ -276,10 +280,10 @@ export namespace ValueCheck {
     if (!(value instanceof globalThis.Uint8Array)) {
       return false
     }
-    if (schema.maxByteLength && !(value.length <= schema.maxByteLength)) {
+    if (IsNumber(schema.maxByteLength) && !(value.length <= schema.maxByteLength)) {
       return false
     }
-    if (schema.minByteLength && !(value.length >= schema.minByteLength)) {
+    if (IsNumber(schema.minByteLength) && !(value.length >= schema.minByteLength)) {
       return false
     }
     return true

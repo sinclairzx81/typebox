@@ -108,6 +108,9 @@ export class TypeCompilerUnknownTypeError extends Error {
 
 /** Compiles Types for Runtime Type Checking */
 export namespace TypeCompiler {
+  function IsNumber(value: unknown): value is number {
+    return typeof value === 'number'
+  }
   // -------------------------------------------------------------------
   // Types
   // -------------------------------------------------------------------
@@ -118,9 +121,9 @@ export namespace TypeCompiler {
 
   function* Array(schema: Types.TArray, value: string): IterableIterator<string> {
     const expression = CreateExpression(schema.items, 'value')
-    if (schema.minItems !== undefined) yield `(${value}.length >= ${schema.minItems})`
-    if (schema.maxItems !== undefined) yield `(${value}.length <= ${schema.maxItems})`
-    if (schema.uniqueItems !== undefined) yield `(new Set(${value}).size === ${value}.length)`
+    if (IsNumber(schema.minItems)) yield `(${value}.length >= ${schema.minItems})`
+    if (IsNumber(schema.maxItems)) yield `(${value}.length <= ${schema.maxItems})`
+    if (schema.uniqueItems === true) yield `(new Set(${value}).size === ${value}.length)`
     yield `(Array.isArray(${value}) && ${value}.every(value => ${expression}))`
   }
 
@@ -134,10 +137,10 @@ export namespace TypeCompiler {
 
   function* Date(schema: Types.TDate, value: string): IterableIterator<string> {
     yield `(${value} instanceof Date)`
-    if (schema.exclusiveMinimumTimestamp !== undefined) yield `(${value}.getTime() > ${schema.exclusiveMinimumTimestamp})`
-    if (schema.exclusiveMaximumTimestamp !== undefined) yield `(${value}.getTime() < ${schema.exclusiveMaximumTimestamp})`
-    if (schema.minimumTimestamp !== undefined) yield `(${value}.getTime() >= ${schema.minimumTimestamp})`
-    if (schema.maximumTimestamp !== undefined) yield `(${value}.getTime() <= ${schema.maximumTimestamp})`
+    if (IsNumber(schema.exclusiveMinimumTimestamp)) yield `(${value}.getTime() > ${schema.exclusiveMinimumTimestamp})`
+    if (IsNumber(schema.exclusiveMaximumTimestamp)) yield `(${value}.getTime() < ${schema.exclusiveMaximumTimestamp})`
+    if (IsNumber(schema.minimumTimestamp)) yield `(${value}.getTime() >= ${schema.minimumTimestamp})`
+    if (IsNumber(schema.maximumTimestamp)) yield `(${value}.getTime() <= ${schema.maximumTimestamp})`
   }
 
   function* Function(schema: Types.TFunction, value: string): IterableIterator<string> {
@@ -146,11 +149,11 @@ export namespace TypeCompiler {
 
   function* Integer(schema: Types.TInteger, value: string): IterableIterator<string> {
     yield `(typeof ${value} === 'number' && Number.isInteger(${value}))`
-    if (schema.multipleOf !== undefined) yield `(${value} % ${schema.multipleOf} === 0)`
-    if (schema.exclusiveMinimum !== undefined) yield `(${value} > ${schema.exclusiveMinimum})`
-    if (schema.exclusiveMaximum !== undefined) yield `(${value} < ${schema.exclusiveMaximum})`
-    if (schema.minimum !== undefined) yield `(${value} >= ${schema.minimum})`
-    if (schema.maximum !== undefined) yield `(${value} <= ${schema.maximum})`
+    if (IsNumber(schema.multipleOf)) yield `(${value} % ${schema.multipleOf} === 0)`
+    if (IsNumber(schema.exclusiveMinimum)) yield `(${value} > ${schema.exclusiveMinimum})`
+    if (IsNumber(schema.exclusiveMaximum)) yield `(${value} < ${schema.exclusiveMaximum})`
+    if (IsNumber(schema.minimum)) yield `(${value} >= ${schema.minimum})`
+    if (IsNumber(schema.maximum)) yield `(${value} <= ${schema.maximum})`
   }
 
   function* Literal(schema: Types.TLiteral, value: string): IterableIterator<string> {
@@ -171,17 +174,17 @@ export namespace TypeCompiler {
 
   function* Number(schema: Types.TNumber, value: string): IterableIterator<string> {
     yield `(typeof ${value} === 'number')`
-    if (schema.multipleOf !== undefined) yield `(${value} % ${schema.multipleOf} === 0)`
-    if (schema.exclusiveMinimum !== undefined) yield `(${value} > ${schema.exclusiveMinimum})`
-    if (schema.exclusiveMaximum !== undefined) yield `(${value} < ${schema.exclusiveMaximum})`
-    if (schema.minimum !== undefined) yield `(${value} >= ${schema.minimum})`
-    if (schema.maximum !== undefined) yield `(${value} <= ${schema.maximum})`
+    if (IsNumber(schema.multipleOf)) yield `(${value} % ${schema.multipleOf} === 0)`
+    if (IsNumber(schema.exclusiveMinimum)) yield `(${value} > ${schema.exclusiveMinimum})`
+    if (IsNumber(schema.exclusiveMaximum)) yield `(${value} < ${schema.exclusiveMaximum})`
+    if (IsNumber(schema.minimum)) yield `(${value} >= ${schema.minimum})`
+    if (IsNumber(schema.maximum)) yield `(${value} <= ${schema.maximum})`
   }
 
   function* Object(schema: Types.TObject, value: string): IterableIterator<string> {
     yield `(typeof ${value} === 'object' && ${value} !== null && !Array.isArray(${value}))`
-    if (schema.minProperties !== undefined) yield `(Object.keys(${value}).length >= ${schema.minProperties})`
-    if (schema.maxProperties !== undefined) yield `(Object.keys(${value}).length <= ${schema.maxProperties})`
+    if (IsNumber(schema.minProperties)) yield `(Object.keys(${value}).length >= ${schema.minProperties})`
+    if (IsNumber(schema.maxProperties)) yield `(Object.keys(${value}).length <= ${schema.maxProperties})`
     const propertyKeys = globalThis.Object.keys(schema.properties)
     if (schema.additionalProperties === false) {
       // Optimization: If the property key length matches the required keys length
@@ -242,12 +245,8 @@ export namespace TypeCompiler {
 
   function* String(schema: Types.TString, value: string): IterableIterator<string> {
     yield `(typeof ${value} === 'string')`
-    if (schema.minLength !== undefined) {
-      yield `(${value}.length >= ${schema.minLength})`
-    }
-    if (schema.maxLength !== undefined) {
-      yield `(${value}.length <= ${schema.maxLength})`
-    }
+    if (IsNumber(schema.minLength)) yield `(${value}.length >= ${schema.minLength})`
+    if (IsNumber(schema.maxLength)) yield `(${value}.length <= ${schema.maxLength})`
     if (schema.pattern !== undefined) {
       const local = PushLocal(`new RegExp(/${schema.pattern}/);`)
       yield `(${local}.test(${value}))`
@@ -278,8 +277,8 @@ export namespace TypeCompiler {
 
   function* Uint8Array(schema: Types.TUint8Array, value: string): IterableIterator<string> {
     yield `(${value} instanceof Uint8Array)`
-    if (schema.maxByteLength) yield `(${value}.length <= ${schema.maxByteLength})`
-    if (schema.minByteLength) yield `(${value}.length >= ${schema.minByteLength})`
+    if (IsNumber(schema.maxByteLength)) yield `(${value}.length <= ${schema.maxByteLength})`
+    if (IsNumber(schema.minByteLength)) yield `(${value}.length >= ${schema.minByteLength})`
   }
 
   function* Unknown(schema: Types.TUnknown, value: string): IterableIterator<string> {

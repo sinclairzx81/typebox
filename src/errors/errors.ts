@@ -108,7 +108,7 @@ export class ValueErrorsUnknownTypeError extends Error {
 
 /** Provides functionality to generate a sequence of errors against a TypeBox type.  */
 export namespace ValueErrors {
-  function IsNumber(value: number | undefined): value is number {
+  function IsNumber(value: unknown): value is number {
     return typeof value === 'number'
   }
 
