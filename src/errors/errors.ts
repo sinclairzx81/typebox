@@ -108,16 +108,20 @@ export class ValueErrorsUnknownTypeError extends Error {
 
 /** Provides functionality to generate a sequence of errors against a TypeBox type.  */
 export namespace ValueErrors {
+  function IsNumber(value: number | undefined): value is number {
+    return typeof value === 'number'
+  }
+
   function* Any(schema: Types.TAny, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {}
 
   function* Array(schema: Types.TArray, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     if (!globalThis.Array.isArray(value)) {
       return yield { type: ValueErrorType.Array, schema, path, value, message: `Expected array` }
     }
-    if (schema.minItems !== undefined && !(value.length >= schema.minItems)) {
+    if (IsNumber(schema.minItems) && !(value.length >= schema.minItems)) {
       yield { type: ValueErrorType.ArrayMinItems, schema, path, value, message: `Expected array length to be greater or equal to ${schema.minItems}` }
     }
-    if (schema.maxItems !== undefined && !(value.length <= schema.maxItems)) {
+    if (IsNumber(schema.maxItems) && !(value.length <= schema.maxItems)) {
       yield { type: ValueErrorType.ArrayMinItems, schema, path, value, message: `Expected array length to be less or equal to ${schema.maxItems}` }
     }
     if (schema.uniqueItems === true && !(new Set(value).size === value.length)) {
@@ -142,16 +146,16 @@ export namespace ValueErrors {
     if (!(value instanceof globalThis.Date)) {
       return yield { type: ValueErrorType.Date, schema, path, value, message: `Expected Date object` }
     }
-    if (schema.exclusiveMinimumTimestamp && !(value.getTime() > schema.exclusiveMinimumTimestamp)) {
+    if (IsNumber(schema.exclusiveMinimumTimestamp) && !(value.getTime() > schema.exclusiveMinimumTimestamp)) {
       yield { type: ValueErrorType.DateExclusiveMinimumTimestamp, schema, path, value, message: `Expected Date timestamp to be greater than ${schema.exclusiveMinimum}` }
     }
-    if (schema.exclusiveMaximumTimestamp && !(value.getTime() < schema.exclusiveMaximumTimestamp)) {
+    if (IsNumber(schema.exclusiveMaximumTimestamp) && !(value.getTime() < schema.exclusiveMaximumTimestamp)) {
       yield { type: ValueErrorType.DateExclusiveMaximumTimestamp, schema, path, value, message: `Expected Date timestamp to be less than ${schema.exclusiveMaximum}` }
     }
-    if (schema.minimumTimestamp && !(value.getTime() >= schema.minimumTimestamp)) {
+    if (IsNumber(schema.minimumTimestamp) && !(value.getTime() >= schema.minimumTimestamp)) {
       yield { type: ValueErrorType.DateMinimumTimestamp, schema, path, value, message: `Expected Date timestamp to be greater or equal to ${schema.minimum}` }
     }
-    if (schema.maximumTimestamp && !(value.getTime() <= schema.maximumTimestamp)) {
+    if (IsNumber(schema.maximumTimestamp) && !(value.getTime() <= schema.maximumTimestamp)) {
       yield { type: ValueErrorType.DateMaximumTimestamp, schema, path, value, message: `Expected Date timestamp to be less or equal to ${schema.maximum}` }
     }
   }
@@ -169,19 +173,19 @@ export namespace ValueErrors {
     if (!globalThis.Number.isInteger(value)) {
       yield { type: ValueErrorType.Integer, schema, path, value, message: `Expected integer` }
     }
-    if (schema.multipleOf && !(value % schema.multipleOf === 0)) {
+    if (IsNumber(schema.multipleOf) && !(value % schema.multipleOf === 0)) {
       yield { type: ValueErrorType.IntegerMultipleOf, schema, path, value, message: `Expected integer to be a multiple of ${schema.multipleOf}` }
     }
-    if (schema.exclusiveMinimum && !(value > schema.exclusiveMinimum)) {
+    if (IsNumber(schema.exclusiveMinimum) && !(value > schema.exclusiveMinimum)) {
       yield { type: ValueErrorType.IntegerExclusiveMinimum, schema, path, value, message: `Expected integer to be greater than ${schema.exclusiveMinimum}` }
     }
-    if (schema.exclusiveMaximum && !(value < schema.exclusiveMaximum)) {
+    if (IsNumber(schema.exclusiveMaximum) && !(value < schema.exclusiveMaximum)) {
       yield { type: ValueErrorType.IntegerExclusiveMaximum, schema, path, value, message: `Expected integer to be less than ${schema.exclusiveMaximum}` }
     }
-    if (schema.minimum && !(value >= schema.minimum)) {
+    if (IsNumber(schema.minimum) && !(value >= schema.minimum)) {
       yield { type: ValueErrorType.IntegerMinimum, schema, path, value, message: `Expected integer to be greater or equal to ${schema.minimum}` }
     }
-    if (schema.maximum && !(value <= schema.maximum)) {
+    if (IsNumber(schema.maximum) && !(value <= schema.maximum)) {
       yield { type: ValueErrorType.IntegerMaximum, schema, path, value, message: `Expected integer to be less or equal to ${schema.maximum}` }
     }
   }
@@ -207,19 +211,19 @@ export namespace ValueErrors {
     if (!(typeof value === 'number')) {
       return yield { type: ValueErrorType.Number, schema, path, value, message: `Expected number` }
     }
-    if (schema.multipleOf && !(value % schema.multipleOf === 0)) {
+    if (IsNumber(schema.multipleOf) && !(value % schema.multipleOf === 0)) {
       yield { type: ValueErrorType.NumberMultipleOf, schema, path, value, message: `Expected number to be a multiple of ${schema.multipleOf}` }
     }
-    if (schema.exclusiveMinimum && !(value > schema.exclusiveMinimum)) {
+    if (IsNumber(schema.exclusiveMinimum) && !(value > schema.exclusiveMinimum)) {
       yield { type: ValueErrorType.NumberExclusiveMinimum, schema, path, value, message: `Expected number to be greater than ${schema.exclusiveMinimum}` }
     }
-    if (schema.exclusiveMaximum && !(value < schema.exclusiveMaximum)) {
+    if (IsNumber(schema.exclusiveMaximum) && !(value < schema.exclusiveMaximum)) {
       yield { type: ValueErrorType.NumberExclusiveMaximum, schema, path, value, message: `Expected number to be less than ${schema.exclusiveMaximum}` }
     }
-    if (schema.minimum && !(value >= schema.minimum)) {
+    if (IsNumber(schema.minimum) && !(value >= schema.minimum)) {
       yield { type: ValueErrorType.NumberMaximum, schema, path, value, message: `Expected number to be greater or equal to ${schema.minimum}` }
     }
-    if (schema.maximum && !(value <= schema.maximum)) {
+    if (IsNumber(schema.maximum) && !(value <= schema.maximum)) {
       yield { type: ValueErrorType.NumberMinumum, schema, path, value, message: `Expected number to be less or equal to ${schema.maximum}` }
     }
   }
@@ -228,10 +232,10 @@ export namespace ValueErrors {
     if (!(typeof value === 'object' && value !== null && !globalThis.Array.isArray(value))) {
       return yield { type: ValueErrorType.Object, schema, path, value, message: `Expected object` }
     }
-    if (schema.minProperties !== undefined && !(globalThis.Object.keys(value).length >= schema.minProperties)) {
+    if (IsNumber(schema.minProperties) && !(globalThis.Object.keys(value).length >= schema.minProperties)) {
       yield { type: ValueErrorType.ObjectMinProperties, schema, path, value, message: `Expected object to have at least ${schema.minProperties} properties` }
     }
-    if (schema.maxProperties !== undefined && !(globalThis.Object.keys(value).length <= schema.maxProperties)) {
+    if (IsNumber(schema.maxProperties) && !(globalThis.Object.keys(value).length <= schema.maxProperties)) {
       yield { type: ValueErrorType.ObjectMaxProperties, schema, path, value, message: `Expected object to have less than ${schema.minProperties} properties` }
     }
     const propertyKeys = globalThis.Object.keys(schema.properties)
@@ -307,10 +311,10 @@ export namespace ValueErrors {
     if (!(typeof value === 'string')) {
       return yield { type: ValueErrorType.String, schema, path, value, message: 'Expected string' }
     }
-    if (schema.minLength !== undefined && !(value.length >= schema.minLength)) {
+    if (IsNumber(schema.minLength) && !(value.length >= schema.minLength)) {
       yield { type: ValueErrorType.StringMinLength, schema, path, value, message: `Expected string length greater or equal to ${schema.minLength}` }
     }
-    if (schema.maxLength !== undefined && !(value.length <= schema.maxLength)) {
+    if (IsNumber(schema.maxLength) && !(value.length <= schema.maxLength)) {
       yield { type: ValueErrorType.StringMaxLength, schema, path, value, message: `Expected string length less or equal to ${schema.maxLength}` }
     }
     if (schema.pattern !== undefined) {
@@ -375,10 +379,10 @@ export namespace ValueErrors {
       return yield { type: ValueErrorType.Uint8Array, schema, path, value, message: `Expected Uint8Array` }
     }
 
-    if (schema.maxByteLength && !(value.length <= schema.maxByteLength)) {
+    if (IsNumber(schema.maxByteLength) && !(value.length <= schema.maxByteLength)) {
       yield { type: ValueErrorType.Uint8ArrayMaxByteLength, schema, path, value, message: `Expected Uint8Array to have a byte length less or equal to ${schema.maxByteLength}` }
     }
-    if (schema.minByteLength && !(value.length >= schema.minByteLength)) {
+    if (IsNumber(schema.minByteLength) && !(value.length >= schema.minByteLength)) {
       yield { type: ValueErrorType.Uint8ArrayMinByteLength, schema, path, value, message: `Expected Uint8Array to have a byte length greater or equal to ${schema.maxByteLength}` }
     }
   }
