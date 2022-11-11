@@ -1,6 +1,6 @@
 {
   "name": "@sinclair/typebox",
-  "version": "0.25.7",
+  "version": "0.25.8",
   "description": "JSONSchema Type Builder with Static Type Resolution for TypeScript",
   "keywords": [
     "typescript",
@@ -12,6 +12,15 @@
   "license": "MIT",
   "main": "./typebox.js",
   "types": "./typebox.d.ts",
+  "exports": {
+    "./compiler": "./compiler/index.js",
+    "./conditional": "./conditional/index.js",
+    "./errors": "./errors/index.js",
+    "./format": "./format/index.js",
+    "./guard": "./guard/index.js",
+    "./value": "./value/index.js",
+    ".": "./typebox.js"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/sinclairzx81/typebox"
