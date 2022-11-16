@@ -19,27 +19,44 @@
 
 ## Install
 
-Node
-
+### npm
 ```bash
 $ npm install @sinclair/typebox --save
 ```
 
-Deno and ESM
+### deno
+```typescript
+import { Static, Type } from 'npm:@sinclair/typebox'
+```
+
+### esm
 
 ```typescript
 import { Static, Type } from 'https://esm.sh/@sinclair/typebox'
 ```
 
-## Example
+## Usage
 
 ```typescript
 import { Static, Type } from '@sinclair/typebox'
 
-const T = Type.String()     // const T = { type: 'string' }
+const T = Type.Object({                              // const T = {
+  x: Type.Number(),                                  //   type: 'object',
+  y: Type.Number(),                                  //   required: ['x', 'y', 'z'],
+  z: Type.Number()                                   //   properties: {
+})                                                   //     x: { type: 'number' },
+                                                     //     y: { type: 'number' },
+                                                     //     z: { type: 'number' }
+                                                     //   }
+                                                     // }
 
-type T = Static<typeof T>   // type T = string
+type T = Static<typeof T>                            // type T = {
+                                                     //   x: number,
+                                                     //   y: number,
+                                                     //   z: number
+                                                     // }
 ```
+
 
 <a name="Overview"></a>
 
@@ -54,7 +71,7 @@ License MIT
 ## Contents
 - [Install](#install)
 - [Overview](#overview)
-- [Usage](#usage)
+- [Example](#Example)
 - [Types](#types)
   - [Standard Types](#types-standard)
   - [Extended Types](#types-extended)
@@ -89,7 +106,7 @@ License MIT
 
 <a name="Example"></a>
 
-## Usage
+## Example
 
 The following demonstrates TypeBox's general usage.
 
