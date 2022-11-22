@@ -1,5 +1,6 @@
 import './compiler/index'
 import './conditional/index'
+import './errors/index'
 import './format/index'
 import './guard/index'
 import './schema/index'
