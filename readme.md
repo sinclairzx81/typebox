@@ -97,6 +97,7 @@ License MIT
 - [TypeCheck](#typecheck)
   - [Ajv](#typecheck-ajv)
   - [TypeCompiler](#typecheck-typecompiler)
+  - [Custom](#types-custom)
   - [Formats](#typecheck-formats)
 - [Benchmark](#benchmark)
   - [Compile](#benchmark-compile)
@@ -1115,6 +1116,24 @@ console.log(C.Code())                                // return function check(va
                                                      //     (typeof value === 'string')
                                                      //   )
                                                      // }
+```
+
+<a name='typecheck-custom'></a>
+
+### Custom
+
+Use the `Custom` module to register a custom type. Custom types are utilized by the TypeCompiler and Value modules but cannot be used with standard JSON schema validation. The following registers a `BigInt` type. 
+
+```typescript
+import { Type, Kind } from '@sinclair/typebox'
+import { Custom } from '@sinclair/typebox/custom'
+import { Value } from '@sinclair/typebox/value'
+
+Custom.Set('BigInt', value => typeof value === 'bigint')
+
+const BigInt = Type.Unsafe({ [Kind]: 'BigInt' })
+
+const R = Value.Check(BigInt, 9007199254740991n)     // const R = true
 ```
 
 <a name='typecheck-formats'></a>

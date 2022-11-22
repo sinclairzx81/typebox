@@ -27,7 +27,8 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import * as Types from '../typebox'
-import { Format } from '../format'
+import { Format } from '../format/index'
+import { Custom } from '../custom/index'
 
 export class ValueCheckUnknownTypeError extends Error {
   constructor(public readonly schema: Types.TSchema) {
@@ -297,6 +298,12 @@ export namespace ValueCheck {
     return value === null
   }
 
+  function Kind(schema: Types.TSchema, references: Types.TSchema[], value: unknown): boolean {
+    if (!Custom.Has(schema[Types.Kind])) return false
+    const func = Custom.Get(schema[Types.Kind])!
+    return func(value)
+  }
+
   function Visit<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: any): boolean {
     const anyReferences = schema.$id === undefined ? references : [schema, ...references]
     const anySchema = schema as any
@@ -348,7 +355,8 @@ export namespace ValueCheck {
       case 'Void':
         return Void(anySchema, anyReferences, value)
       default:
-        throw new ValueCheckUnknownTypeError(anySchema)
+        if (!Custom.Has(anySchema[Types.Kind])) throw new ValueCheckUnknownTypeError(anySchema)
+        return Kind(anySchema, anyReferences, value)
     }
   }
 

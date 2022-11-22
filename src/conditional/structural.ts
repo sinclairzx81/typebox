@@ -51,11 +51,12 @@ export namespace Structural {
   // Rules
   // ------------------------------------------------------------------------
 
-  function AnyOrUnknownRule(right: Types.TSchema) {
+  function AnyUnknownOrCustomRule(right: Types.TSchema) {
     // https://github.com/microsoft/TypeScript/issues/40049
-    if (right[Types.Kind] === 'Union' && right.anyOf.some((schema: Types.TSchema) => schema[Types.Kind] === 'Any' || schema[Types.Kind] === 'Unknown')) return true
-    if (right[Types.Kind] === 'Unknown') return true
-    if (right[Types.Kind] === 'Any') return true
+    if (TypeGuard.TUnion(right) && right.anyOf.some((schema: Types.TSchema) => schema[Types.Kind] === 'Any' || schema[Types.Kind] === 'Unknown')) return true
+    if (TypeGuard.TUnknown(right)) return true
+    if (TypeGuard.TAny(right)) return true
+    if (TypeGuard.TCustom(right)) throw Error(`Structural: Cannot structurally compare custom type '${right[Types.Kind]}'`)
     return false
   }
 
@@ -138,11 +139,11 @@ export namespace Structural {
   // ------------------------------------------------------------------------
 
   function Any(left: Types.TAny, right: Types.TSchema): StructuralResult {
-    return AnyOrUnknownRule(right) ? StructuralResult.True : StructuralResult.Union
+    return AnyUnknownOrCustomRule(right) ? StructuralResult.True : StructuralResult.Union
   }
 
   function Array(left: Types.TArray, right: Types.TSchema): StructuralResult {
-    if (AnyOrUnknownRule(right)) {
+    if (AnyUnknownOrCustomRule(right)) {
       return StructuralResult.True
     } else if (TypeGuard.TObject(right)) {
       if (right.properties['length'] !== undefined && right.properties['length'][Types.Kind] === 'Number') return StructuralResult.True
@@ -163,7 +164,7 @@ export namespace Structural {
   }
 
   function Boolean(left: Types.TBoolean, right: Types.TSchema): StructuralResult {
-    if (AnyOrUnknownRule(right)) {
+    if (AnyUnknownOrCustomRule(right)) {
       return StructuralResult.True
     } else if (TypeGuard.TObject(right) && ObjectRightRule(left, right)) {
       return StructuralResult.True
@@ -177,7 +178,7 @@ export namespace Structural {
   }
 
   function Constructor(left: Types.TConstructor, right: Types.TSchema): StructuralResult {
-    if (AnyOrUnknownRule(right)) {
+    if (AnyUnknownOrCustomRule(right)) {
       return StructuralResult.True
     } else if (TypeGuard.TObject(right) && globalThis.Object.keys(right.properties).length === 0) {
       return StructuralResult.True
@@ -198,7 +199,7 @@ export namespace Structural {
   }
 
   function Date(left: Types.TDate, right: Types.TSchema): StructuralResult {
-    if (AnyOrUnknownRule(right)) {
+    if (AnyUnknownOrCustomRule(right)) {
       return StructuralResult.True
     } else if (TypeGuard.TObject(right) && ObjectRightRule(left, right)) {
       return StructuralResult.True
@@ -214,7 +215,7 @@ export namespace Structural {
   }
 
   function Function(left: Types.TFunction, right: Types.TSchema): StructuralResult {
-    if (AnyOrUnknownRule(right)) {
+    if (AnyUnknownOrCustomRule(right)) {
       return StructuralResult.True
     } else if (TypeGuard.TObject(right)) {
       if (right.properties['length'] !== undefined && right.properties['length'][Types.Kind] === 'Number') return StructuralResult.True
@@ -236,7 +237,7 @@ export namespace Structural {
   }
 
   function Integer(left: Types.TInteger, right: Types.TSchema): StructuralResult {
-    if (AnyOrUnknownRule(right)) {
+    if (AnyUnknownOrCustomRule(right)) {
       return StructuralResult.True
     } else if (TypeGuard.TObject(right) && ObjectRightRule(left, right)) {
       return StructuralResult.True
@@ -250,7 +251,7 @@ export namespace Structural {
   }
 
   function Literal(left: Types.TLiteral, right: Types.TSchema): StructuralResult {
-    if (AnyOrUnknownRule(right)) {
+    if (AnyUnknownOrCustomRule(right)) {
       return StructuralResult.True
     } else if (TypeGuard.TObject(right) && ObjectRightRule(left, right)) {
       return StructuralResult.True
@@ -278,7 +279,7 @@ export namespace Structural {
   }
 
   function Number(left: Types.TNumber, right: Types.TSchema): StructuralResult {
-    if (AnyOrUnknownRule(right)) {
+    if (AnyUnknownOrCustomRule(right)) {
       return StructuralResult.True
     } else if (TypeGuard.TObject(right) && ObjectRightRule(left, right)) {
       return StructuralResult.True
@@ -294,7 +295,7 @@ export namespace Structural {
   }
 
   function Null(left: Types.TNull, right: Types.TSchema): StructuralResult {
-    if (AnyOrUnknownRule(right)) {
+    if (AnyUnknownOrCustomRule(right)) {
       return StructuralResult.True
     } else if (TypeGuard.TNull(right)) {
       return StructuralResult.True
@@ -319,7 +320,7 @@ export namespace Structural {
   }
 
   function Object(left: Types.TObject, right: Types.TAnySchema): StructuralResult {
-    if (AnyOrUnknownRule(right)) {
+    if (AnyUnknownOrCustomRule(right)) {
       return StructuralResult.True
     } else if (TypeGuard.TObject(right)) {
       return Properties(PropertyMap(left), PropertyMap(right))
@@ -335,7 +336,7 @@ export namespace Structural {
   }
 
   function Promise(left: Types.TPromise, right: Types.TSchema): StructuralResult {
-    if (AnyOrUnknownRule(right)) {
+    if (AnyUnknownOrCustomRule(right)) {
       return StructuralResult.True
     } else if (TypeGuard.TObject(right)) {
       if (ObjectRightRule(left, right) || globalThis.Object.keys(right.properties).length === 0) {
@@ -352,7 +353,7 @@ export namespace Structural {
   }
 
   function Record(left: Types.TRecord, right: Types.TSchema): StructuralResult {
-    if (AnyOrUnknownRule(right)) {
+    if (AnyUnknownOrCustomRule(right)) {
       return StructuralResult.True
     } else if (TypeGuard.TObject(right)) {
       if (RecordPattern(left) === '^.*$' && right[Types.Hint] === 'Record') {
@@ -394,7 +395,7 @@ export namespace Structural {
   }
 
   function String(left: Types.TString, right: Types.TSchema): StructuralResult {
-    if (AnyOrUnknownRule(right)) {
+    if (AnyUnknownOrCustomRule(right)) {
       return StructuralResult.True
     } else if (TypeGuard.TObject(right) && ObjectRightRule(left, right)) {
       return StructuralResult.True
@@ -410,7 +411,7 @@ export namespace Structural {
   }
 
   function Tuple(left: Types.TTuple, right: Types.TSchema): StructuralResult {
-    if (AnyOrUnknownRule(right)) {
+    if (AnyUnknownOrCustomRule(right)) {
       return StructuralResult.True
     } else if (TypeGuard.TObject(right)) {
       const result = ObjectRightRule(left, right) || globalThis.Object.keys(right.properties).length === 0
@@ -442,7 +443,7 @@ export namespace Structural {
   }
 
   function Uint8Array(left: Types.TUint8Array, right: Types.TSchema): StructuralResult {
-    if (AnyOrUnknownRule(right)) {
+    if (AnyUnknownOrCustomRule(right)) {
       return StructuralResult.True
     } else if (TypeGuard.TObject(right) && ObjectRightRule(left, right)) {
       return StructuralResult.True
@@ -458,7 +459,7 @@ export namespace Structural {
   }
 
   function Undefined(left: Types.TUndefined, right: Types.TSchema): StructuralResult {
-    if (AnyOrUnknownRule(right)) {
+    if (AnyUnknownOrCustomRule(right)) {
       return StructuralResult.True
     } else if (TypeGuard.TUndefined(right)) {
       return StructuralResult.True
@@ -562,6 +563,8 @@ export namespace Structural {
       return Unknown(left, resolvedRight)
     } else if (TypeGuard.TVoid(left)) {
       return Void(left, resolvedRight)
+    } else if (TypeGuard.TCustom(left)) {
+      throw Error(`Structural: Cannot structurally compare custom type '${left[Types.Kind]}'`)
     } else {
       throw Error(`Structural: Unknown left operand '${left[Types.Kind]}'`)
     }

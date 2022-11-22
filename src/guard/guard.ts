@@ -26,11 +26,12 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { Custom } from '../custom/index'
 import * as Types from '../typebox'
 
-export class TypeGuardInvalidTypeError extends Error {
+export class TypeGuardUnknownTypeError extends Error {
   constructor(public readonly schema: unknown) {
-    super('TypeGuard: Invalid type')
+    super('TypeGuard: Unknown type')
   }
 }
 
@@ -441,6 +442,11 @@ export namespace TypeGuard {
     )
   }
 
+  /** Returns true if the given schema is a registered custom type */
+  export function TCustom(schema: unknown): schema is Types.TSchema {
+    return IsObject(schema) && IsString(schema[Types.Kind]) && Custom.Has(schema[Types.Kind])
+  }
+
   /** Returns true if the given schema is TSchema */
   export function TSchema(schema: unknown): schema is Types.TSchema {
     return (
@@ -466,15 +472,16 @@ export namespace TypeGuard {
       TUnion(schema) ||
       TUint8Array(schema) ||
       TUnknown(schema) ||
-      TVoid(schema)
+      TVoid(schema) ||
+      TCustom(schema)
     )
   }
 
   /** Asserts if this schema and associated references are valid. */
   export function Assert<T extends Types.TSchema>(schema: T, references: Types.TSchema[] = []) {
-    if (!TSchema(schema)) throw new TypeGuardInvalidTypeError(schema)
+    if (!TSchema(schema)) throw new TypeGuardUnknownTypeError(schema)
     for (const schema of references) {
-      if (!TSchema(schema)) throw new TypeGuardInvalidTypeError(schema)
+      if (!TSchema(schema)) throw new TypeGuardUnknownTypeError(schema)
     }
   }
 }

@@ -28,6 +28,7 @@ THE SOFTWARE.
 
 import * as Types from '../typebox'
 import { Format } from '../format/index'
+import { Custom } from '../custom/index'
 
 // -------------------------------------------------------------------
 // ValueErrorType
@@ -82,6 +83,7 @@ export enum ValueErrorType {
   Uint8ArrayMinByteLength,
   Uint8ArrayMaxByteLength,
   Void,
+  Custom,
 }
 
 // -------------------------------------------------------------------
@@ -378,7 +380,6 @@ export namespace ValueErrors {
     if (!(value instanceof globalThis.Uint8Array)) {
       return yield { type: ValueErrorType.Uint8Array, schema, path, value, message: `Expected Uint8Array` }
     }
-
     if (IsNumber(schema.maxByteLength) && !(value.length <= schema.maxByteLength)) {
       yield { type: ValueErrorType.Uint8ArrayMaxByteLength, schema, path, value, message: `Expected Uint8Array to have a byte length less or equal to ${schema.maxByteLength}` }
     }
@@ -392,6 +393,13 @@ export namespace ValueErrors {
   function* Void(schema: Types.TVoid, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     if (!(value === null)) {
       return yield { type: ValueErrorType.Void, schema, path, value, message: `Expected null` }
+    }
+  }
+
+  function* CustomType(schema: Types.TSchema, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
+    const func = Custom.Get(schema[Types.Kind])!
+    if (!func(value)) {
+      return yield { type: ValueErrorType.Custom, schema, path, value, message: `Expected kind ${schema[Types.Kind]}` }
     }
   }
 
@@ -446,7 +454,8 @@ export namespace ValueErrors {
       case 'Void':
         return yield* Void(anySchema, anyReferences, path, value)
       default:
-        throw new ValueErrorsUnknownTypeError(schema)
+        if (!Custom.Has(anySchema[Types.Kind])) throw new ValueErrorsUnknownTypeError(schema)
+        return yield* CustomType(anySchema, anyReferences, path, value)
     }
   }
 
