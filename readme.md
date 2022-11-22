@@ -97,7 +97,7 @@ License MIT
 - [TypeCheck](#typecheck)
   - [Ajv](#typecheck-ajv)
   - [TypeCompiler](#typecheck-typecompiler)
-  - [Custom](#types-custom)
+  - [Custom](#typecheck-custom)
   - [Formats](#typecheck-formats)
 - [Benchmark](#benchmark)
   - [Compile](#benchmark-compile)
