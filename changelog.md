@@ -2,7 +2,7 @@
 
 Updates:
 
-- [282](https://github.com/sinclairzx81/typebox/pull/282) TypeBox now supports custom types. These types require the user to specify a custom `[Kind]` string on the type. Custom types can be registered via `Custom.Set('<Kind>', (value) => { ... })`.
+- [282](https://github.com/sinclairzx81/typebox/pull/282) TypeBox now supports custom types. These types require the user to specify a custom `[Kind]` string on the type. Custom types can be registered via `Custom.Set('<Kind>', (value) => { ... })` which allow the TypeCompiler and Value API's to make use of user defined validation logic.
 
 ## [0.25.0](https://www.npmjs.com/package/@sinclair/typebox/v/0.25.0)
 
