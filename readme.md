@@ -1122,7 +1122,7 @@ console.log(C.Code())                                // return function check(va
 
 ### Custom
 
-Use `Custom.Set(...)` to create a custom types. When creating a custom type you must specify the `Kind` symbol property. The value of this property name of the custom type and it should be unique.Custom types are used by the Value and TypeCompiler modules only.
+Use custom module to create a custom types. When creating a custom type you must specify the `Kind` symbol property. The value of this property name of the custom type and it should be unique.Custom types are used by the Value and TypeCompiler modules only.
 
 The custom module is an optional import.
 
