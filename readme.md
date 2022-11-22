@@ -1122,16 +1122,22 @@ console.log(C.Code())                                // return function check(va
 
 ### Custom
 
-Use the `Custom` module to register a custom type. The following registers a `BigInt` type by calling `Custom.Set('BigInt', ...)` where the `BigInt` string value must be set on the types `[Kind]` property.
+Use `Custom.Set(...)` to create a custom types. When creating a custom type you must specify the `Kind` symbol property. The value of this property name of the custom type and it should be unique.Custom types are used by the Value and TypeCompiler modules only.
+
+The custom module is an optional import.
 
 ```typescript
 import { Custom } from '@sinclair/typebox/custom'
+```
 
+The following creates a BigInt custom type.
+
+```typescript
 Custom.Set('BigInt', value => typeof value === 'bigint')
 
-const BigInt = Type.Unsafe({ [Kind]: 'BigInt' })
+const T = Type.Unsafe({ [Kind]: 'BigInt' })          // const T = { [Kind]: 'BigInt' }
 
-const R = Value.Check(BigInt, 9007199254740991n)     // const R = true
+const R = Value.Check(T, 65536n)                     // const R = true
 ```
 
 <a name='typecheck-formats'></a>
