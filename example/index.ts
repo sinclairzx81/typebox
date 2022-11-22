@@ -5,21 +5,14 @@ import { TypeGuard } from '@sinclair/typebox/guard'
 import { Format } from '@sinclair/typebox/format'
 import { Custom } from '@sinclair/typebox/custom'
 import { Value, ValuePointer } from '@sinclair/typebox/value'
-import { Type, Static, TSchema, Kind } from '@sinclair/typebox'
+import { Type, Static, TSchema } from '@sinclair/typebox'
 
-Custom.Set('BigInt', (value: unknown) => typeof value === 'bigint')
-
-export const BigInt = Type.Unsafe({ [Kind]: 'BigInt', default: 100n })
-
-export const T = Type.Object({
-  num: BigInt
+const T = Type.Object({
+  x: Type.Number(),
+  y: Type.Number(),
+  z: Type.Number()
 })
 
-const value = Value.Cast(T, { num: 'hello' })
-console.log(value)
+type T = Static<typeof T>
 
-const C = TypeCompiler.Compile(T)
-console.log(C.Code())
-console.log(C.Check(1000n))
-console.log(Value.Check(T, { num: 100n }))
-console.log([...Value.Errors(T, { num: 100n })])
+console.log(T)

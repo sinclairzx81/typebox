@@ -1133,9 +1133,11 @@ import { Custom } from '@sinclair/typebox/custom'
 The following registers a BigInt custom type.
 
 ```typescript
+import { Type, Kind } from '@sinclair/typebox'
+
 Custom.Set('BigInt', value => typeof value === 'bigint')
 
-const T = Type.Unsafe({ [Kind]: 'BigInt' })          // const T = { [Kind]: 'BigInt' }
+const T = Type.Unsafe<bigint>({ [Kind]: 'BigInt' })  // const T = { [Kind]: 'BigInt' }
 
 const R = Value.Check(T, 65536n)                     // const R = true
 ```
