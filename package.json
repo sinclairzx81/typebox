@@ -1,6 +1,6 @@
 {
   "name": "@sinclair/typebox",
-  "version": "0.25.8",
+  "version": "0.25.9",
   "description": "JSONSchema Type Builder with Static Type Resolution for TypeScript",
   "keywords": [
     "typescript",
@@ -15,6 +15,7 @@
   "exports": {
     "./compiler": "./compiler/index.js",
     "./conditional": "./conditional/index.js",
+    "./custom": "./custom/index.js",
     "./errors": "./errors/index.js",
     "./format": "./format/index.js",
     "./guard": "./guard/index.js",

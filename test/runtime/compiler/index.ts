@@ -1,6 +1,7 @@
 import './any'
 import './array'
 import './boolean'
+import './custom'
 import './date'
 import './enum'
 import './integer'

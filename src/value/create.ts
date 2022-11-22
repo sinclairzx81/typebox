@@ -27,6 +27,7 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import * as Types from '../typebox'
+import { Custom } from '../custom/index'
 
 export class ValueCreateUnknownTypeError extends Error {
   constructor(public readonly schema: Types.TSchema) {
@@ -277,6 +278,14 @@ export namespace ValueCreate {
     return null
   }
 
+  function Kind(schema: Types.TSchema, references: Types.TSchema[]): any {
+    if (schema.default !== undefined) {
+      return schema.default
+    } else {
+      throw new Error('ValueCreate.Kind: Custom types must specify a default value')
+    }
+  }
+
   /** Creates a value from the given schema. If the schema specifies a default value, then that value is returned. */
   export function Visit<T extends Types.TSchema>(schema: T, references: Types.TSchema[]): Types.Static<T> {
     const anyReferences = schema.$id === undefined ? references : [schema, ...references]
@@ -332,7 +341,8 @@ export namespace ValueCreate {
       case 'Void':
         return Void(anySchema, anyReferences)
       default:
-        throw new ValueCreateUnknownTypeError(anySchema)
+        if (!Custom.Has(anySchema[Types.Kind])) throw new ValueCreateUnknownTypeError(anySchema)
+        return Kind(anySchema, anyReferences)
     }
   }
 

@@ -1,3 +1,9 @@
+## [0.25.9](https://www.npmjs.com/package/@sinclair/typebox/v/0.25.9)
+
+Updates:
+
+- TypeBox now supports custom types. These types require the user to specify a custom `[Kind]` string on the type. Custom types can be registered via `Custom.Set('<Kind>', (value) => { ... })`.
+
 ## [0.25.0](https://www.npmjs.com/package/@sinclair/typebox/v/0.25.0)
 
 Updates:

@@ -30,6 +30,7 @@ import * as Types from '../typebox'
 import { ValueCreate } from './create'
 import { ValueCheck } from './check'
 import { ValueClone } from './clone'
+import { Custom } from '../custom/index'
 
 // ----------------------------------------------------------------------------------------------
 // Errors
@@ -322,6 +323,10 @@ export namespace ValueCast {
     return ValueCheck.Check(schema, references, value) ? ValueClone.Clone(value) : ValueCreate.Create(schema, references)
   }
 
+  function Kind(schema: Types.TSchema, references: Types.TSchema[], value: any): any {
+    return ValueCheck.Check(schema, references, value) ? ValueClone.Clone(value) : ValueCreate.Create(schema, references)
+  }
+
   export function Visit(schema: Types.TSchema, references: Types.TSchema[], value: any): any {
     const anyReferences = schema.$id === undefined ? references : [schema, ...references]
     const anySchema = schema as any
@@ -375,7 +380,8 @@ export namespace ValueCast {
       case 'Void':
         return Void(anySchema, anyReferences, value)
       default:
-        throw new ValueCastUnknownTypeError(anySchema)
+        if (!Custom.Has(anySchema[Types.Kind])) throw new ValueCastUnknownTypeError(anySchema)
+        return Kind(anySchema, anyReferences, value)
     }
   }
 

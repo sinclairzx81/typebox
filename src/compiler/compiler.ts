@@ -29,6 +29,7 @@ THE SOFTWARE.
 import { ValueErrors, ValueError } from '../errors/index'
 import { TypeGuard } from '../guard/index'
 import { Format } from '../format/index'
+import { Custom } from '../custom/index'
 import * as Types from '../typebox'
 
 // -------------------------------------------------------------------
@@ -289,6 +290,10 @@ export namespace TypeCompiler {
     yield `(${value} === null)`
   }
 
+  function* Kind(schema: Types.TSchema, value: string): IterableIterator<string> {
+    yield `(custom('${schema[Types.Kind]}', ${value}))`
+  }
+
   function* Visit<T extends Types.TSchema>(schema: T, value: string): IterableIterator<string> {
     // Reference: Referenced schemas can originate from either additional schemas
     // or inline in the schema itself. Ideally the recursive path should align to
@@ -350,7 +355,8 @@ export namespace TypeCompiler {
       case 'Void':
         return yield* Void(anySchema, value)
       default:
-        throw new TypeCompilerUnknownTypeError(schema)
+        if (!Custom.Has(anySchema[Types.Kind])) throw new TypeCompilerUnknownTypeError(schema)
+        return yield* Kind(anySchema, value)
     }
   }
 
@@ -419,12 +425,19 @@ export namespace TypeCompiler {
   export function Compile<T extends Types.TSchema>(schema: T, references: Types.TSchema[] = []): TypeCheck<T> {
     TypeGuard.Assert(schema, references)
     const code = Build(schema, references)
-    const func1 = globalThis.Function('format', code)
-    const func2 = func1((format: string, value: string) => {
-      if (!Format.Has(format)) return false
-      const func = Format.Get(format)!
-      return func(value)
-    })
-    return new TypeCheck(schema, references, func2, code)
+    const compiledFunction = globalThis.Function('custom', 'format', code)
+    const checkFunction = compiledFunction(
+      (kind: string, value: unknown) => {
+        if (!Custom.Has(kind)) return false
+        const func = Custom.Get(kind)!
+        return func(value)
+      },
+      (format: string, value: string) => {
+        if (!Format.Has(format)) return false
+        const func = Format.Get(format)!
+        return func(value)
+      },
+    )
+    return new TypeCheck(schema, references, checkFunction, code)
   }
 }
