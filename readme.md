@@ -1122,9 +1122,9 @@ console.log(C.Code())                                // return function check(va
 
 ### Custom Types
 
-Use the custom module to create user defined types. When creating a user defined type you must specify a `[Kind]` symbol on the type at a minimum. The `[Kind]` symbol property is used to match a registered type. Custom types are used by the Value and TypeCompiler modules only.
+Use the custom module to create user defined types. User defined types require a `[Kind]` symbol property which is used to match the schema against a registered type. Custom types are specific to TypeBox and can only be used with the TypeCompiler and Value modules.
 
-The custom module is provided as an optional import.
+The format module is an optional import.
 
 ```typescript
 import { Custom } from '@sinclair/typebox/custom'
@@ -1150,7 +1150,7 @@ const B = Value.Check(T, 65536n)                     // const B = true
 
 ### Custom Formats
 
-Use the format module to create user defined string formats. The format module is used by the Value and TypeCompiler modules only. If using Ajv, please refer to the official Ajv format documentation located [here](https://ajv.js.org/guide/formats.html).
+Use the format module to create user defined string formats. If using Ajv, please refer to the official Ajv format documentation located [here](https://ajv.js.org/guide/formats.html). The format module is specific to TypeBox can only be used with the TypeCompiler and Value modules.
 
 The format module is an optional import.
 
