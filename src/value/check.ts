@@ -301,7 +301,7 @@ export namespace ValueCheck {
   function Kind(schema: Types.TSchema, references: Types.TSchema[], value: unknown): boolean {
     if (!Custom.Has(schema[Types.Kind])) return false
     const func = Custom.Get(schema[Types.Kind])!
-    return func(value)
+    return func(schema, value)
   }
 
   function Visit<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: any): boolean {

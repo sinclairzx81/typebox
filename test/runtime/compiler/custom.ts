@@ -3,7 +3,7 @@ import { Type, Kind } from '@sinclair/typebox'
 import { ok, fail } from './validate'
 
 describe('type/compiler/Custom', () => {
-  Custom.Set('BigInt', (value) => typeof value === 'bigint')
+  Custom.Set('BigInt', (schema, value) => typeof value === 'bigint')
 
   it('Should validate bigint', () => {
     const T = Type.Unsafe({ [Kind]: 'BigInt' })

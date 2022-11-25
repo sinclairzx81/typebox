@@ -398,7 +398,7 @@ export namespace ValueErrors {
 
   function* CustomType(schema: Types.TSchema, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     const func = Custom.Get(schema[Types.Kind])!
-    if (!func(value)) {
+    if (!func(schema, value)) {
       return yield { type: ValueErrorType.Custom, schema, path, value, message: `Expected kind ${schema[Types.Kind]}` }
     }
   }

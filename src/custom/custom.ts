@@ -26,11 +26,11 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export type CustomValidationFunction = (value: unknown) => boolean
+export type CustomValidationFunction<TSchema> = (schema: TSchema, value: unknown) => boolean
 
 /** Provides functions to create custom types */
 export namespace Custom {
-  const customs = new Map<string, CustomValidationFunction>()
+  const customs = new Map<string, CustomValidationFunction<any>>()
 
   /** Clears all custom types */
   export function Clear() {
@@ -43,7 +43,7 @@ export namespace Custom {
   }
 
   /** Sets a validation function for a custom kind */
-  export function Set(kind: string, func: CustomValidationFunction) {
+  export function Set<TSchema = unknown>(kind: string, func: CustomValidationFunction<TSchema>) {
     customs.set(kind, func)
   }
 
