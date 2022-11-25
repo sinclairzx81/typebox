@@ -32,7 +32,7 @@ import { Custom } from '../custom/index'
 
 export class ValueCheckUnknownTypeError extends Error {
   constructor(public readonly schema: Types.TSchema) {
-    super('ValueCheck: Unknown type')
+    super(`ValueCheck: ${schema[Types.Kind] ? `Unknown type '${schema[Types.Kind]}'` : 'Unknown type'}`)
   }
 }
 

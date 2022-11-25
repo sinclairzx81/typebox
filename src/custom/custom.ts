@@ -28,26 +28,26 @@ THE SOFTWARE.
 
 export type CustomValidationFunction<TSchema> = (schema: TSchema, value: unknown) => boolean
 
-/** Provides functions to create custom types */
+/** Provides functions to create user defined types */
 export namespace Custom {
   const customs = new Map<string, CustomValidationFunction<any>>()
 
-  /** Clears all custom types */
+  /** Clears all user defined types */
   export function Clear() {
     return customs.clear()
   }
 
-  /** Returns true if this kind exists */
+  /** Returns true if this user defined type exists */
   export function Has(kind: string) {
     return customs.has(kind)
   }
 
-  /** Sets a validation function for a custom kind */
+  /** Sets a validation function for a user defined type */
   export function Set<TSchema = unknown>(kind: string, func: CustomValidationFunction<TSchema>) {
     customs.set(kind, func)
   }
 
-  /** Gets a custom validation function */
+  /** Gets a custom validation function for a user defined type */
   export function Get(kind: string) {
     return customs.get(kind)
   }
