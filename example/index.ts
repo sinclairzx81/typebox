@@ -5,33 +5,14 @@ import { TypeGuard } from '@sinclair/typebox/guard'
 import { Format } from '@sinclair/typebox/format'
 import { Custom } from '@sinclair/typebox/custom'
 import { Value, ValuePointer } from '@sinclair/typebox/value'
-import { Type, Static, Kind, TSchema } from '@sinclair/typebox'
+import { Type, Kind, Static, TSchema } from '@sinclair/typebox'
 
+Custom.Set('BigInt', (schema, value) => typeof value === 'bigint')
+//            │                               
+//            └───────────────────┐                  The [Kind] is used to match custom type
+//                                │
+const T = Type.Unsafe<bigint>({ [Kind]: 'BigInt' })  // const T = { [Kind]: 'BigInt' }
 
+const A = TypeCompiler.Compile(T).Check(65536)       // const A = false
 
-export interface BigIntOptions {
-  min?: bigint
-  max?: bigint
-}
-export interface TBigInt extends TSchema, BigIntOptions {
-  [Kind]: 'BigInt'
-  static: bigint
-}
-
-Custom.Set<TBigInt>('BigInt', (schema, value) => {
-  return true
-})
-
-export function BigInt(options?: BigIntOptions): TBigInt {
-    return { [Kind]: 'BigInt', ...options } as any
-}
-
-const T = Type.Object({
-  x: BigInt(),
-  y: BigInt(),
-  z: BigInt(),
-})
-
-const C = TypeCompiler.Compile(T)
-
-console.log(C.Code())
+const B = Value.Check(T, 65536n)                     // const B = true

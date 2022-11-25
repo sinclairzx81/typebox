@@ -1122,21 +1122,21 @@ console.log(C.Code())                                // return function check(va
 
 ### Custom Types
 
-Use custom module to create a custom types. When creating a custom type you must specify a `Kind` symbol property on the types schema. The `Kind` symbol property should match the name used to register the type. Custom types are used by the Value and TypeCompiler modules only.
+Use the custom module to create user defined types. When creating a user defined type you must specify a `[Kind]` symbol on the type at a minimum. The `[Kind]` symbol property is used to match a registered type. Custom types are used by the Value and TypeCompiler modules only.
 
-The custom module is an optional import.
+The custom module is provided as an optional import.
 
 ```typescript
 import { Custom } from '@sinclair/typebox/custom'
 ```
 
-The following registers a `BigInt` custom type. The registration takes a callback that is passed both schema and value on type check.
+The following creates a `BigInt` type.
 
 ```typescript
 import { Type, Kind } from '@sinclair/typebox'
 
 Custom.Set('BigInt', (schema, value) => typeof value === 'bigint')
-//            │                               
+//            │
 //            └───────────────────┐                  The [Kind] is used to match custom type
 //                                │
 const T = Type.Unsafe<bigint>({ [Kind]: 'BigInt' })  // const T = { [Kind]: 'BigInt' }

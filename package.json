@@ -39,7 +39,7 @@
     "@sinclair/hammer": "^0.17.1",
     "@types/chai": "^4.3.3",
     "@types/mocha": "^9.1.1",
-    "@types/node": "^18.7.13",
+    "@types/node": "^18.11.9",
     "ajv": "^8.11.0",
     "ajv-formats": "^2.1.1",
     "chai": "^4.3.6",
