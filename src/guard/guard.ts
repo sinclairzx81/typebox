@@ -442,8 +442,8 @@ export namespace TypeGuard {
     )
   }
 
-  /** Returns true if the given schema is a registered custom type */
-  export function TCustom(schema: unknown): schema is Types.TSchema {
+  /** Returns true if the given schema is a registered user defined type */
+  export function TUserDefined(schema: unknown): schema is Types.TSchema {
     return IsObject(schema) && IsString(schema[Types.Kind]) && Custom.Has(schema[Types.Kind])
   }
 
@@ -473,7 +473,7 @@ export namespace TypeGuard {
       TUint8Array(schema) ||
       TUnknown(schema) ||
       TVoid(schema) ||
-      TCustom(schema)
+      TUserDefined(schema)
     )
   }
 

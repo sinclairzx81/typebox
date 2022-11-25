@@ -290,7 +290,7 @@ export namespace TypeCompiler {
     yield `(${value} === null)`
   }
 
-  function* Kind(schema: Types.TSchema, value: string): IterableIterator<string> {
+  function* UserDefined(schema: Types.TSchema, value: string): IterableIterator<string> {
     const schema_key = `schema_key_${state_remote_custom_types.size}`
     state_remote_custom_types.set(schema_key, schema)
     yield `(custom('${schema[Types.Kind]}', '${schema_key}', ${value}))`
@@ -358,7 +358,7 @@ export namespace TypeCompiler {
         return yield* Void(anySchema, value)
       default:
         if (!Custom.Has(anySchema[Types.Kind])) throw new TypeCompilerUnknownTypeError(schema)
-        return yield* Kind(anySchema, value)
+        return yield* UserDefined(anySchema, value)
     }
   }
 

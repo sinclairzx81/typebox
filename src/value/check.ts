@@ -298,7 +298,7 @@ export namespace ValueCheck {
     return value === null
   }
 
-  function Kind(schema: Types.TSchema, references: Types.TSchema[], value: unknown): boolean {
+  function UserDefined(schema: Types.TSchema, references: Types.TSchema[], value: unknown): boolean {
     if (!Custom.Has(schema[Types.Kind])) return false
     const func = Custom.Get(schema[Types.Kind])!
     return func(schema, value)
@@ -356,7 +356,7 @@ export namespace ValueCheck {
         return Void(anySchema, anyReferences, value)
       default:
         if (!Custom.Has(anySchema[Types.Kind])) throw new ValueCheckUnknownTypeError(anySchema)
-        return Kind(anySchema, anyReferences, value)
+        return UserDefined(anySchema, anyReferences, value)
     }
   }
 
