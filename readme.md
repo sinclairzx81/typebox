@@ -1124,7 +1124,7 @@ console.log(C.Code())                                // return function check(va
 
 Use the custom module to create user defined types. User defined types require a `[Kind]` symbol property which is used to match the schema against a registered type. Custom types are specific to TypeBox and can only be used with the TypeCompiler and Value modules.
 
-The format module is an optional import.
+The custom module is an optional import.
 
 ```typescript
 import { Custom } from '@sinclair/typebox/custom'
