@@ -1,3 +1,9 @@
+## [0.25.10](https://www.npmjs.com/package/@sinclair/typebox/v/0.25.10)
+
+Updates:
+
+- [283](https://github.com/sinclairzx81/typebox/pull/283) Updates the custom type validator callback signature to accept a schema instance which may include additional constraints (such as options) that may be used in the validation process. `Custom.Set('<Kind>', (schema, value) => { ... })`.
+
 ## [0.25.9](https://www.npmjs.com/package/@sinclair/typebox/v/0.25.9)
 
 Updates:
