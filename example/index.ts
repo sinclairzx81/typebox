@@ -7,12 +7,12 @@ import { Custom } from '@sinclair/typebox/custom'
 import { Value, ValuePointer } from '@sinclair/typebox/value'
 import { Type, Kind, Static, TSchema } from '@sinclair/typebox'
 
-Custom.Set('BigInt', (schema, value) => typeof value === 'bigint')
-//            │                               
-//            └───────────────────┐                  The [Kind] is used to match custom type
-//                                │
-const T = Type.Unsafe<bigint>({ [Kind]: 'BigInt' })  // const T = { [Kind]: 'BigInt' }
+const T = Type.Object({
+  x: Type.Number(),
+  y: Type.Number(),
+  z: Type.Number()
+})
 
-const A = TypeCompiler.Compile(T).Check(65536)       // const A = false
+type T = Static<typeof T>
 
-const B = Value.Check(T, 65536n)                     // const B = true
+console.log(T)
