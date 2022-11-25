@@ -1137,8 +1137,8 @@ import { Type, Kind } from '@sinclair/typebox'
 
 Custom.Set('BigInt', (schema, value) => typeof value === 'bigint')
 //            │
-//            └───────────────────┐                  The [Kind] is used to match registered type
-//                                │
+//            └────────────────────────────┐         The [Kind] is used to match registered type
+//                                         │
 const T = Type.Unsafe<bigint>({ [Kind]: 'BigInt' })  // const T = { [Kind]: 'BigInt' }
 
 const A = TypeCompiler.Compile(T).Check(65536)       // const A = false
