@@ -4,7 +4,7 @@ import { Type, Kind } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
 describe('value/cast/Custom', () => {
-  Custom.Set('CustomCast', (value) => value === 'hello' || value === 'world')
+  Custom.Set('CustomCast', (schema, value) => value === 'hello' || value === 'world')
   const T = Type.Unsafe({ [Kind]: 'CustomCast', default: 'hello' })
   const E = 'hello'
 

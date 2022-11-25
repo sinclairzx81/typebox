@@ -56,7 +56,7 @@ export namespace Structural {
     if (TypeGuard.TUnion(right) && right.anyOf.some((schema: Types.TSchema) => schema[Types.Kind] === 'Any' || schema[Types.Kind] === 'Unknown')) return true
     if (TypeGuard.TUnknown(right)) return true
     if (TypeGuard.TAny(right)) return true
-    if (TypeGuard.TCustom(right)) throw Error(`Structural: Cannot structurally compare custom type '${right[Types.Kind]}'`)
+    if (TypeGuard.TUserDefined(right)) throw Error(`Structural: Cannot structurally compare custom type '${right[Types.Kind]}'`)
     return false
   }
 
@@ -563,7 +563,7 @@ export namespace Structural {
       return Unknown(left, resolvedRight)
     } else if (TypeGuard.TVoid(left)) {
       return Void(left, resolvedRight)
-    } else if (TypeGuard.TCustom(left)) {
+    } else if (TypeGuard.TUserDefined(left)) {
       throw Error(`Structural: Cannot structurally compare custom type '${left[Types.Kind]}'`)
     } else {
       throw Error(`Structural: Unknown left operand '${left[Types.Kind]}'`)

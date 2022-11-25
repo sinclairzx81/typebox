@@ -278,11 +278,11 @@ export namespace ValueCreate {
     return null
   }
 
-  function Kind(schema: Types.TSchema, references: Types.TSchema[]): any {
+  function UserDefined(schema: Types.TSchema, references: Types.TSchema[]): any {
     if (schema.default !== undefined) {
       return schema.default
     } else {
-      throw new Error('ValueCreate.Kind: Custom types must specify a default value')
+      throw new Error('ValueCreate.UserDefined: User defined types must specify a default value')
     }
   }
 
@@ -342,7 +342,7 @@ export namespace ValueCreate {
         return Void(anySchema, anyReferences)
       default:
         if (!Custom.Has(anySchema[Types.Kind])) throw new ValueCreateUnknownTypeError(anySchema)
-        return Kind(anySchema, anyReferences)
+        return UserDefined(anySchema, anyReferences)
     }
   }
 

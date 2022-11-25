@@ -323,7 +323,7 @@ export namespace ValueCast {
     return ValueCheck.Check(schema, references, value) ? ValueClone.Clone(value) : ValueCreate.Create(schema, references)
   }
 
-  function Kind(schema: Types.TSchema, references: Types.TSchema[], value: any): any {
+  function UserDefined(schema: Types.TSchema, references: Types.TSchema[], value: any): any {
     return ValueCheck.Check(schema, references, value) ? ValueClone.Clone(value) : ValueCreate.Create(schema, references)
   }
 
@@ -381,7 +381,7 @@ export namespace ValueCast {
         return Void(anySchema, anyReferences, value)
       default:
         if (!Custom.Has(anySchema[Types.Kind])) throw new ValueCastUnknownTypeError(anySchema)
-        return Kind(anySchema, anyReferences, value)
+        return UserDefined(anySchema, anyReferences, value)
     }
   }
 

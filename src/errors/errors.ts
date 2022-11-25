@@ -396,9 +396,9 @@ export namespace ValueErrors {
     }
   }
 
-  function* CustomType(schema: Types.TSchema, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
+  function* UserDefined(schema: Types.TSchema, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     const func = Custom.Get(schema[Types.Kind])!
-    if (!func(value)) {
+    if (!func(schema, value)) {
       return yield { type: ValueErrorType.Custom, schema, path, value, message: `Expected kind ${schema[Types.Kind]}` }
     }
   }
@@ -455,7 +455,7 @@ export namespace ValueErrors {
         return yield* Void(anySchema, anyReferences, path, value)
       default:
         if (!Custom.Has(anySchema[Types.Kind])) throw new ValueErrorsUnknownTypeError(schema)
-        return yield* CustomType(anySchema, anyReferences, path, value)
+        return yield* UserDefined(anySchema, anyReferences, path, value)
     }
   }
 

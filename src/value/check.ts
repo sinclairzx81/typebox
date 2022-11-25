@@ -32,7 +32,7 @@ import { Custom } from '../custom/index'
 
 export class ValueCheckUnknownTypeError extends Error {
   constructor(public readonly schema: Types.TSchema) {
-    super('ValueCheck: Unknown type')
+    super(`ValueCheck: ${schema[Types.Kind] ? `Unknown type '${schema[Types.Kind]}'` : 'Unknown type'}`)
   }
 }
 
@@ -298,10 +298,10 @@ export namespace ValueCheck {
     return value === null
   }
 
-  function Kind(schema: Types.TSchema, references: Types.TSchema[], value: unknown): boolean {
+  function UserDefined(schema: Types.TSchema, references: Types.TSchema[], value: unknown): boolean {
     if (!Custom.Has(schema[Types.Kind])) return false
     const func = Custom.Get(schema[Types.Kind])!
-    return func(value)
+    return func(schema, value)
   }
 
   function Visit<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: any): boolean {
@@ -356,7 +356,7 @@ export namespace ValueCheck {
         return Void(anySchema, anyReferences, value)
       default:
         if (!Custom.Has(anySchema[Types.Kind])) throw new ValueCheckUnknownTypeError(anySchema)
-        return Kind(anySchema, anyReferences, value)
+        return UserDefined(anySchema, anyReferences, value)
     }
   }
 

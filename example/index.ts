@@ -5,7 +5,7 @@ import { TypeGuard } from '@sinclair/typebox/guard'
 import { Format } from '@sinclair/typebox/format'
 import { Custom } from '@sinclair/typebox/custom'
 import { Value, ValuePointer } from '@sinclair/typebox/value'
-import { Type, Static, TSchema } from '@sinclair/typebox'
+import { Type, Kind, Static, TSchema } from '@sinclair/typebox'
 
 const T = Type.Object({
   x: Type.Number(),
