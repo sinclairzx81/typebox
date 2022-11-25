@@ -97,8 +97,8 @@ License MIT
 - [TypeCheck](#typecheck)
   - [Ajv](#typecheck-ajv)
   - [TypeCompiler](#typecheck-typecompiler)
-  - [Custom](#typecheck-custom)
-  - [Formats](#typecheck-formats)
+  - [Custom Types](#typecheck-custom-types)
+  - [Custom Formats](#typecheck-custom-formats)
 - [Benchmark](#benchmark)
   - [Compile](#benchmark-compile)
   - [Validate](#benchmark-validate)
@@ -1118,9 +1118,9 @@ console.log(C.Code())                                // return function check(va
                                                      // }
 ```
 
-<a name='typecheck-custom'></a>
+<a name='typecheck-custom-types'></a>
 
-### Custom
+### Custom Types
 
 Use custom module to create a custom types. When creating a custom type you must specify a `Kind` symbol property on the types schema. The `Kind` symbol property should match the name used to register the type. Custom types are used by the Value and TypeCompiler modules only.
 
@@ -1130,21 +1130,25 @@ The custom module is an optional import.
 import { Custom } from '@sinclair/typebox/custom'
 ```
 
-The following registers a BigInt custom type.
+The following registers a `BigInt` custom type. The registration takes a callback that is passed both schema and value on type check.
 
 ```typescript
 import { Type, Kind } from '@sinclair/typebox'
 
-Custom.Set('BigInt', value => typeof value === 'bigint')
-
+Custom.Set('BigInt', (schema, value) => typeof value === 'bigint')
+//            │                               
+//            └───────────────────┐                  The [Kind] is used to match custom type
+//                                │
 const T = Type.Unsafe<bigint>({ [Kind]: 'BigInt' })  // const T = { [Kind]: 'BigInt' }
 
-const R = Value.Check(T, 65536n)                     // const R = true
+const A = TypeCompiler.Compile(T).Check(65536)       // const A = false
+
+const B = Value.Check(T, 65536n)                     // const B = true
 ```
 
-<a name='typecheck-formats'></a>
+<a name='typecheck-custom-formats'></a>
 
-### Formats
+### Custom Formats
 
 Use the format module to create user defined string formats. The format module is used by the Value and TypeCompiler modules only. If using Ajv, please refer to the official Ajv format documentation located [here](https://ajv.js.org/guide/formats.html).
 

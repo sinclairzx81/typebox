@@ -5,14 +5,33 @@ import { TypeGuard } from '@sinclair/typebox/guard'
 import { Format } from '@sinclair/typebox/format'
 import { Custom } from '@sinclair/typebox/custom'
 import { Value, ValuePointer } from '@sinclair/typebox/value'
-import { Type, Static, TSchema } from '@sinclair/typebox'
+import { Type, Static, Kind, TSchema } from '@sinclair/typebox'
 
-const T = Type.Object({
-  x: Type.Number(),
-  y: Type.Number(),
-  z: Type.Number()
+
+
+export interface BigIntOptions {
+  min?: bigint
+  max?: bigint
+}
+export interface TBigInt extends TSchema, BigIntOptions {
+  [Kind]: 'BigInt'
+  static: bigint
+}
+
+Custom.Set<TBigInt>('BigInt', (schema, value) => {
+  return true
 })
 
-type T = Static<typeof T>
+export function BigInt(options?: BigIntOptions): TBigInt {
+    return { [Kind]: 'BigInt', ...options } as any
+}
 
-console.log(T)
+const T = Type.Object({
+  x: BigInt(),
+  y: BigInt(),
+  z: BigInt(),
+})
+
+const C = TypeCompiler.Compile(T)
+
+console.log(C.Code())

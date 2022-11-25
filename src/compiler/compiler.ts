@@ -291,9 +291,9 @@ export namespace TypeCompiler {
   }
 
   function* Kind(schema: Types.TSchema, value: string): IterableIterator<string> {
-    const custom_id = `custom_${state_remote_custom_types.size}`
-    state_remote_custom_types.set(custom_id, schema)
-    yield `(custom('${schema[Types.Kind]}', '${custom_id}', ${value}))`
+    const schema_key = `schema_key_${state_remote_custom_types.size}`
+    state_remote_custom_types.set(schema_key, schema)
+    yield `(custom('${schema[Types.Kind]}', '${schema_key}', ${value}))`
   }
 
   function* Visit<T extends Types.TSchema>(schema: T, value: string): IterableIterator<string> {
@@ -429,13 +429,14 @@ export namespace TypeCompiler {
   export function Compile<T extends Types.TSchema>(schema: T, references: Types.TSchema[] = []): TypeCheck<T> {
     TypeGuard.Assert(schema, references)
     const code = Build(schema, references)
-    const custom_types = new Map(state_remote_custom_types)
+    const custom_schemas = new Map(state_remote_custom_types)
     const compiledFunction = globalThis.Function('custom', 'format', code)
     const checkFunction = compiledFunction(
-      (kind: string, instance: string, value: unknown) => {
-        if (!Custom.Has(kind)) return false
+      (kind: string, schema_key: string, value: unknown) => {
+        if (!Custom.Has(kind) || !custom_schemas.has(schema_key)) return false
+        const schema = custom_schemas.get(schema_key)!
         const func = Custom.Get(kind)!
-        return func(custom_types.get(instance)!, value)
+        return func(schema, value)
       },
       (format: string, value: string) => {
         if (!Format.Has(format)) return false
