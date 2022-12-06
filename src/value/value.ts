@@ -92,7 +92,7 @@ export namespace Value {
 
   /** Returns a FNV1A-64 non cryptographic hash of the given value */
   export function Hash(value: unknown): bigint {
-    return ValueHash.Hash(value)
+    return ValueHash.Create(value)
   }
 
   /** Returns a new value with edits applied to the given value */

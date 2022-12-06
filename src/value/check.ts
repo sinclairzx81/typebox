@@ -57,7 +57,7 @@ export namespace ValueCheck {
       return false
     }
     // prettier-ignore
-    if (schema.uniqueItems === true && !((function() { const set = new Set(); for(const element of value) { const hashed = ValueHash.Hash(element); if(set.has(hashed)) { return false } else { set.add(hashed) } } return true })())) {
+    if (schema.uniqueItems === true && !((function() { const set = new Set(); for(const element of value) { const hashed = ValueHash.Create(element); if(set.has(hashed)) { return false } else { set.add(hashed) } } return true })())) {
       return false
     }
     return value.every((val) => Visit(schema.items, references, val))

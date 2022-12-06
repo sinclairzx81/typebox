@@ -132,7 +132,7 @@ export namespace ValueErrors {
       !(function () {
         const set = new Set()
         for (const element of value) {
-          const hashed = ValueHash.Hash(element)
+          const hashed = ValueHash.Create(element)
           if (set.has(hashed)) {
             return false
           } else {

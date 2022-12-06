@@ -33,7 +33,6 @@ export class ValueHashError extends Error {
 }
 
 export namespace ValueHash {
-  type Byte = number
   enum ByteMarker {
     Undefined,
     Null,
@@ -47,9 +46,10 @@ export namespace ValueHash {
   }
 
   // ----------------------------------------------------
-  // Buffers
+  // State
   // ----------------------------------------------------
 
+  let Hash = 14695981039346656037n
   const [Prime, Size] = [1099511628211n, 2n ** 64n]
   const Bytes = globalThis.Array.from({ length: 256 }).map((_, i) => globalThis.BigInt(i))
   const F64 = new globalThis.Float64Array(1)
@@ -100,90 +100,94 @@ export namespace ValueHash {
   // Encoding
   // ----------------------------------------------------
 
-  function* Array(value: Array<unknown>): IterableIterator<Byte> {
-    yield ByteMarker.Array
+  function Array(value: Array<unknown>) {
+    Fnv1A64(ByteMarker.Array)
     for (const item of value) {
-      yield* Visit(item)
+      Visit(item)
     }
   }
 
-  function* Boolean(value: boolean): IterableIterator<Byte> {
-    yield ByteMarker.Boolean
-    yield value ? 1 : 0
+  function Boolean(value: boolean) {
+    Fnv1A64(ByteMarker.Boolean)
+    Fnv1A64(value ? 1 : 0)
   }
 
-  function* Date(value: Date): IterableIterator<Byte> {
-    yield ByteMarker.Date
-    yield* Visit(value.getTime())
+  function Date(value: Date) {
+    Fnv1A64(ByteMarker.Date)
+    Visit(value.getTime())
   }
 
-  function* Null(value: null): IterableIterator<Byte> {
-    yield ByteMarker.Null
+  function Null(value: null) {
+    Fnv1A64(ByteMarker.Null)
   }
 
-  function* Number(value: number): IterableIterator<Byte> {
-    yield ByteMarker.Number
+  function Number(value: number) {
+    Fnv1A64(ByteMarker.Number)
     F64In.setFloat64(0, value)
-    yield* F64Out
+    for (const byte of F64Out) {
+      Fnv1A64(byte)
+    }
   }
 
-  function* Object(value: Record<string, unknown>): IterableIterator<Byte> {
-    yield ByteMarker.Object
+  function Object(value: Record<string, unknown>) {
+    Fnv1A64(ByteMarker.Object)
     for (const key of globalThis.Object.keys(value).sort()) {
-      yield* Visit(key)
-      yield* Visit(value[key])
+      Visit(key)
+      Visit(value[key])
     }
   }
 
-  function* String(value: string): IterableIterator<Byte> {
-    yield ByteMarker.String
+  function String(value: string) {
+    Fnv1A64(ByteMarker.String)
     for (let i = 0; i < value.length; i++) {
-      yield value.charCodeAt(i)
+      Fnv1A64(value.charCodeAt(i))
     }
   }
 
-  function* Uint8Array(value: Uint8Array): IterableIterator<Byte> {
-    yield ByteMarker.Uint8Array
+  function Uint8Array(value: Uint8Array) {
+    Fnv1A64(ByteMarker.Uint8Array)
     for (let i = 0; i < value.length; i++) {
-      yield value[i]
+      Fnv1A64(value[i])
     }
   }
 
-  function* Undefined(value: undefined): IterableIterator<Byte> {
-    yield ByteMarker.Undefined
+  function Undefined(value: undefined) {
+    return Fnv1A64(ByteMarker.Undefined)
   }
 
-  function* Visit(value: any): IterableIterator<Byte> {
+  function Visit(value: any) {
     if (IsArray(value)) {
-      yield* Array(value)
+      Array(value)
     } else if (IsBoolean(value)) {
-      yield* Boolean(value)
+      Boolean(value)
     } else if (IsDate(value)) {
-      yield* Date(value)
+      Date(value)
     } else if (IsNull(value)) {
-      yield* Null(value)
+      Null(value)
     } else if (IsNumber(value)) {
-      yield* Number(value)
+      Number(value)
     } else if (IsObject(value)) {
-      yield* Object(value)
+      Object(value)
     } else if (IsString(value)) {
-      yield* String(value)
+      String(value)
     } else if (IsUint8Array(value)) {
-      yield* Uint8Array(value)
+      Uint8Array(value)
     } else if (IsUndefined(value)) {
-      yield* Undefined(value)
+      Undefined(value)
     } else {
       throw new ValueHashError(value)
     }
   }
 
+  function Fnv1A64(byte: number) {
+    Hash = Hash ^ Bytes[byte]
+    Hash = (Hash * Prime) % Size
+  }
+
   /** Creates a FNV1A-64 non cryptographic hash of the given value */
-  export function Hash(value: unknown): bigint {
-    let hash = 14695981039346656037n
-    for (const byte of Visit(value)) {
-      hash = hash ^ Bytes[byte]
-      hash = (hash * Prime) % Size
-    }
-    return hash
+  export function Create(value: unknown) {
+    Hash = 14695981039346656037n
+    Visit(value)
+    return Hash
   }
 }

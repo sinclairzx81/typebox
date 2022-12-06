@@ -445,7 +445,7 @@ export namespace TypeCompiler {
         return func(value)
       },
       (value: unknown) => {
-        return ValueHash.Hash(value)
+        return ValueHash.Create(value)
       },
     )
     return new TypeCheck(schema, references, checkFunction, code)
