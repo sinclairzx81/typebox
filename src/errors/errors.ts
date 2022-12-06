@@ -29,6 +29,7 @@ THE SOFTWARE.
 import * as Types from '../typebox'
 import { Format } from '../format/index'
 import { Custom } from '../custom/index'
+import { ValueHash } from '../hash/index'
 
 // -------------------------------------------------------------------
 // ValueErrorType
@@ -126,7 +127,21 @@ export namespace ValueErrors {
     if (IsNumber(schema.maxItems) && !(value.length <= schema.maxItems)) {
       yield { type: ValueErrorType.ArrayMinItems, schema, path, value, message: `Expected array length to be less or equal to ${schema.maxItems}` }
     }
-    if (schema.uniqueItems === true && !(new Set(value).size === value.length)) {
+    if (
+      schema.uniqueItems === true &&
+      !(function () {
+        const set = new Set()
+        for (const element of value) {
+          const hashed = ValueHash.Hash(element)
+          if (set.has(hashed)) {
+            return false
+          } else {
+            set.add(hashed)
+          }
+        }
+        return true
+      })()
+    ) {
       yield { type: ValueErrorType.ArrayUniqueItems, schema, path, value, message: `Expected array elements to be unique` }
     }
     for (let i = 0; i < value.length; i++) {

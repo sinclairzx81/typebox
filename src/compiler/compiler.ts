@@ -30,7 +30,7 @@ import { ValueErrors, ValueError } from '../errors/index'
 import { TypeGuard } from '../guard/index'
 import { Format } from '../format/index'
 import { Custom } from '../custom/index'
-import { Hash } from '../hash/index'
+import { ValueHash } from '../hash/index'
 import * as Types from '../typebox'
 
 // -------------------------------------------------------------------
@@ -123,10 +123,10 @@ export namespace TypeCompiler {
 
   function* Array(schema: Types.TArray, value: string): IterableIterator<string> {
     const expression = CreateExpression(schema.items, 'value')
+    yield `(Array.isArray(${value}) && ${value}.every(value => ${expression}))`
     if (IsNumber(schema.minItems)) yield `(${value}.length >= ${schema.minItems})`
     if (IsNumber(schema.maxItems)) yield `(${value}.length <= ${schema.maxItems})`
-    if (schema.uniqueItems === true) yield `(new Set(${value}.map(element => hash(element))).size === ${value}.length)`
-    yield `(Array.isArray(${value}) && ${value}.every(value => ${expression}))`
+    if (schema.uniqueItems === true) yield `((function() { const set = new Set(); for(const element of ${value}) { const hashed = hash(element); if(set.has(hashed)) { return false } else { set.add(hashed) } } return true })())`
   }
 
   function* Boolean(schema: Types.TBoolean, value: string): IterableIterator<string> {
@@ -445,8 +445,8 @@ export namespace TypeCompiler {
         return func(value)
       },
       (value: unknown) => {
-        return Hash.Create(value)
-      }
+        return ValueHash.Hash(value)
+      },
     )
     return new TypeCheck(schema, references, checkFunction, code)
   }

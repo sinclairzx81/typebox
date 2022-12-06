@@ -26,36 +26,47 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export class HashError extends Error {
+export class ValueHashError extends Error {
   constructor(public readonly value: unknown) {
     super(`Hash: Unable to hash value`)
   }
 }
 
-export namespace Hash {
+export namespace ValueHash {
   type Byte = number
   enum ByteMarker {
-    Undefined = 0,
-    Null = 1,
-    Boolean = 2,
-    Number = 3,
-    Object = 4,
-    Array = 5,
+    Undefined,
+    Null,
+    Boolean,
+    Number,
+    String,
+    Object,
+    Array,
+    Date,
+    Uint8Array,
   }
 
   // ----------------------------------------------------
   // Buffers
   // ----------------------------------------------------
 
-  const [prime, size] = [1099511628211n, 2n ** 64n]
-  const bytes = globalThis.Array.from({ length: 256 }).map((_, i) => BigInt(i))
-  const f64 = new Float64Array(1)
-  const f64In = new DataView(f64.buffer)
-  const f64Out = new Uint8Array(f64.buffer)
+  const [Prime, Size] = [1099511628211n, 2n ** 64n]
+  const Bytes = globalThis.Array.from({ length: 256 }).map((_, i) => globalThis.BigInt(i))
+  const F64 = new globalThis.Float64Array(1)
+  const F64In = new globalThis.DataView(F64.buffer)
+  const F64Out = new globalThis.Uint8Array(F64.buffer)
 
   // ----------------------------------------------------
   // Guards
   // ----------------------------------------------------
+
+  function IsDate(value: unknown): value is Date {
+    return value instanceof globalThis.Date
+  }
+
+  function IsUint8Array(value: unknown): value is Uint8Array {
+    return value instanceof globalThis.Uint8Array
+  }
 
   function IsArray(value: unknown): value is Array<unknown> {
     return globalThis.Array.isArray(value)
@@ -74,7 +85,7 @@ export namespace Hash {
   }
 
   function IsObject(value: unknown): value is Record<string, unknown> {
-    return typeof value === 'object' && value !== null
+    return typeof value === 'object' && value !== null && !IsArray(value) && !IsDate(value) && !IsUint8Array(value)
   }
 
   function IsString(value: unknown): value is string {
@@ -101,10 +112,19 @@ export namespace Hash {
     yield value ? 1 : 0
   }
 
+  function* Date(value: Date): IterableIterator<Byte> {
+    yield ByteMarker.Date
+    yield* Visit(value.getTime())
+  }
+
+  function* Null(value: null): IterableIterator<Byte> {
+    yield ByteMarker.Null
+  }
+
   function* Number(value: number): IterableIterator<Byte> {
     yield ByteMarker.Number
-    f64In.setFloat64(0, value)
-    yield* f64Out
+    F64In.setFloat64(0, value)
+    yield* F64Out
   }
 
   function* Object(value: Record<string, unknown>): IterableIterator<Byte> {
@@ -116,8 +136,16 @@ export namespace Hash {
   }
 
   function* String(value: string): IterableIterator<Byte> {
+    yield ByteMarker.String
     for (let i = 0; i < value.length; i++) {
       yield value.charCodeAt(i)
+    }
+  }
+
+  function* Uint8Array(value: Uint8Array): IterableIterator<Byte> {
+    yield ByteMarker.Uint8Array
+    for (let i = 0; i < value.length; i++) {
+      yield value[i]
     }
   }
 
@@ -125,36 +153,36 @@ export namespace Hash {
     yield ByteMarker.Undefined
   }
 
-  function* Null(value: null): IterableIterator<Byte> {
-    yield ByteMarker.Null
-  }
-
   function* Visit(value: any): IterableIterator<Byte> {
-    if (IsObject(value)) {
-      yield* Object(value)
-    } else if (IsArray(value)) {
+    if (IsArray(value)) {
       yield* Array(value)
     } else if (IsBoolean(value)) {
       yield* Boolean(value)
-    } else if (IsNumber(value)) {
-      yield* Number(value)
-    } else if (IsString(value)) {
-      yield* String(value)
-    } else if (IsUndefined(value)) {
-      yield* Undefined(value)
+    } else if (IsDate(value)) {
+      yield* Date(value)
     } else if (IsNull(value)) {
       yield* Null(value)
+    } else if (IsNumber(value)) {
+      yield* Number(value)
+    } else if (IsObject(value)) {
+      yield* Object(value)
+    } else if (IsString(value)) {
+      yield* String(value)
+    } else if (IsUint8Array(value)) {
+      yield* Uint8Array(value)
+    } else if (IsUndefined(value)) {
+      yield* Undefined(value)
     } else {
-      throw new HashError(value)
+      throw new ValueHashError(value)
     }
   }
 
-  /** Returns a FVN1A64 non cryptographic hash of the given value */
-  export function Create(value: unknown): bigint {
+  /** Creates a FNV1A-64 non cryptographic hash of the given value */
+  export function Hash(value: unknown): bigint {
     let hash = 14695981039346656037n
     for (const byte of Visit(value)) {
-      hash = hash ^ bytes[byte]
-      hash = (hash * prime) % size
+      hash = hash ^ Bytes[byte]
+      hash = (hash * Prime) % Size
     }
     return hash
   }

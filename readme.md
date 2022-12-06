@@ -90,6 +90,7 @@ License MIT
   - [Check](#values-check)
   - [Cast](#values-cast)
   - [Equal](#values-equal)
+  - [Hash](#values-hash)
   - [Diff](#values-diff)
   - [Patch](#values-patch)
   - [Errors](#values-errors)
@@ -841,6 +842,18 @@ const R = Value.Equal(                               // const R = true
   { x: 1, y: 2, z: 3 },
   { x: 1, y: 2, z: 3 }
 )
+```
+
+<a name='values-hash'></a>
+
+### Hash
+
+Use the Hash function to create a [FNV1A-64](https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function) non cryptographic hash of a value.
+
+```typescript
+const A = Value.Hash({ x: 1, y: 2, z: 3 })          // const A = 2910466848807138541n
+
+const B = Value.Hash({ x: 1, y: 4, z: 3 })          // const B = 1418369778807423581n
 ```
 
 <a name='values-diff'></a>

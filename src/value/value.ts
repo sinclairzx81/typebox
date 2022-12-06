@@ -28,6 +28,7 @@ THE SOFTWARE.
 
 import * as Types from '../typebox'
 import { ValueErrors, ValueError } from '../errors/index'
+import { ValueHash } from '../hash/index'
 import { ValueEqual } from './equal'
 import { ValueCast } from './cast'
 import { ValueClone } from './clone'
@@ -87,6 +88,11 @@ export namespace Value {
   /** Returns edits to transform the current value into the next value */
   export function Diff(current: unknown, next: unknown): Edit[] {
     return ValueDelta.Diff(current, next)
+  }
+
+  /** Returns a FNV1A-64 non cryptographic hash of the given value */
+  export function Hash(value: unknown): bigint {
+    return ValueHash.Hash(value)
   }
 
   /** Returns a new value with edits applied to the given value */
