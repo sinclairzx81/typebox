@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------------
 
-@sinclair/typebox/value
+@sinclair/typebox/hash
 
 The MIT License (MIT)
 
@@ -26,7 +26,4 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export { ValueError, ValueErrorType } from '../errors/index'
-export { Edit, Insert, Update, Delete } from './delta'
-export * from './pointer'
-export * from './value'
+export * from './hash'

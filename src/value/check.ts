@@ -29,6 +29,7 @@ THE SOFTWARE.
 import * as Types from '../typebox'
 import { Format } from '../format/index'
 import { Custom } from '../custom/index'
+import { ValueHash } from '../hash/index'
 
 export class ValueCheckUnknownTypeError extends Error {
   constructor(public readonly schema: Types.TSchema) {
@@ -44,6 +45,7 @@ export namespace ValueCheck {
   function Any(schema: Types.TAny, references: Types.TSchema[], value: any): boolean {
     return true
   }
+
   function Array(schema: Types.TArray, references: Types.TSchema[], value: any): boolean {
     if (!globalThis.Array.isArray(value)) {
       return false
@@ -54,7 +56,8 @@ export namespace ValueCheck {
     if (IsNumber(schema.maxItems) && !(value.length <= schema.maxItems)) {
       return false
     }
-    if (schema.uniqueItems === true && !(new Set(value).size === value.length)) {
+    // prettier-ignore
+    if (schema.uniqueItems === true && !((function() { const set = new Set(); for(const element of value) { const hashed = ValueHash.Create(element); if(set.has(hashed)) { return false } else { set.add(hashed) } } return true })())) {
       return false
     }
     return value.every((val) => Visit(schema.items, references, val))

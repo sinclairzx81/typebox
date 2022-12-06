@@ -25,6 +25,9 @@
       "@sinclair/typebox/guard": [
         "src/guard/index.ts"
       ],
+      "@sinclair/typebox/hash": [
+        "src/hash/index.ts"
+      ],
       "@sinclair/typebox/value": [
         "src/value/index.ts"
       ],
