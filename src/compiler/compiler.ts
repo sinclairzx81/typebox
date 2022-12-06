@@ -30,6 +30,7 @@ import { ValueErrors, ValueError } from '../errors/index'
 import { TypeGuard } from '../guard/index'
 import { Format } from '../format/index'
 import { Custom } from '../custom/index'
+import { Hash } from '../hash/index'
 import * as Types from '../typebox'
 
 // -------------------------------------------------------------------
@@ -124,7 +125,7 @@ export namespace TypeCompiler {
     const expression = CreateExpression(schema.items, 'value')
     if (IsNumber(schema.minItems)) yield `(${value}.length >= ${schema.minItems})`
     if (IsNumber(schema.maxItems)) yield `(${value}.length <= ${schema.maxItems})`
-    if (schema.uniqueItems === true) yield `(new Set(${value}).size === ${value}.length)`
+    if (schema.uniqueItems === true) yield `(new Set(${value}.map(element => hash(element))).size === ${value}.length)`
     yield `(Array.isArray(${value}) && ${value}.every(value => ${expression}))`
   }
 
@@ -430,7 +431,7 @@ export namespace TypeCompiler {
     TypeGuard.Assert(schema, references)
     const code = Build(schema, references)
     const custom_schemas = new Map(state_remote_custom_types)
-    const compiledFunction = globalThis.Function('custom', 'format', code)
+    const compiledFunction = globalThis.Function('custom', 'format', 'hash', code)
     const checkFunction = compiledFunction(
       (kind: string, schema_key: string, value: unknown) => {
         if (!Custom.Has(kind) || !custom_schemas.has(schema_key)) return false
@@ -443,6 +444,9 @@ export namespace TypeCompiler {
         const func = Format.Get(format)!
         return func(value)
       },
+      (value: unknown) => {
+        return Hash.Create(value)
+      }
     )
     return new TypeCheck(schema, references, checkFunction, code)
   }

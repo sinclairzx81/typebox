@@ -29,6 +29,7 @@ THE SOFTWARE.
 import * as Types from '../typebox'
 import { Format } from '../format/index'
 import { Custom } from '../custom/index'
+import { Hash } from '../hash/index'
 
 export class ValueCheckUnknownTypeError extends Error {
   constructor(public readonly schema: Types.TSchema) {
@@ -54,7 +55,7 @@ export namespace ValueCheck {
     if (IsNumber(schema.maxItems) && !(value.length <= schema.maxItems)) {
       return false
     }
-    if (schema.uniqueItems === true && !(new Set(value).size === value.length)) {
+    if (schema.uniqueItems === true && !(new Set(value.map(element => Hash.Create(element))).size === value.length)) {
       return false
     }
     return value.every((val) => Visit(schema.items, references, val))

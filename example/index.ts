@@ -6,13 +6,27 @@ import { Format } from '@sinclair/typebox/format'
 import { Custom } from '@sinclair/typebox/custom'
 import { Value, ValuePointer } from '@sinclair/typebox/value'
 import { Type, Kind, Static, TSchema } from '@sinclair/typebox'
+import { ok } from '../test/runtime/schema/validate'
 
 const T = Type.Object({
   x: Type.Number(),
-  y: Type.Number(),
-  z: Type.Number()
+  y: Type.Number()
 })
 
-type T = Static<typeof T>
+const A = Type.Array(T, { uniqueItems: true })
 
-console.log(T)
+const R = Value.Check(A, [
+  { x: 1, y: 2, z: 3 },
+  { x: 1, y: 2, z: 3 },
+  { x: 1, y: 2, z: 3 },
+])
+
+console.log(R)
+
+ok(A, [
+  { x: 1, y: 2, z: 3 },
+  { x: 2, y: 2, z: 3 },
+  { x: 3, y: 2, z: 3 }
+])
+
+

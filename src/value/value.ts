@@ -34,7 +34,6 @@ import { ValueClone } from './clone'
 import { ValueCreate } from './create'
 import { ValueCheck } from './check'
 import { ValueDelta, Edit } from './delta'
-
 export { Edit, Insert, Update, Delete } from './delta'
 
 /** Provides functions to perform structural updates to JavaScript values */
@@ -66,6 +65,11 @@ export namespace Value {
     return ValueCheck.Check(schema, references, value)
   }
 
+  /** Returns a structural clone of the given value */
+  export function Clone<T>(value: T): T {
+    return ValueClone.Clone(value)
+  }
+
   /** Returns an iterator for each error in this value. */
   export function Errors<T extends Types.TSchema, R extends Types.TSchema[]>(schema: T, references: [...R], value: unknown): IterableIterator<ValueError>
   /** Returns an iterator for each error in this value. */
@@ -78,11 +82,6 @@ export namespace Value {
   /** Returns true if left and right values are structurally equal */
   export function Equal<T>(left: T, right: unknown): right is T {
     return ValueEqual.Equal(left, right)
-  }
-
-  /** Returns a structural clone of the given value */
-  export function Clone<T>(value: T): T {
-    return ValueClone.Clone(value)
   }
 
   /** Returns edits to transform the current value into the next value */
