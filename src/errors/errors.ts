@@ -127,21 +127,8 @@ export namespace ValueErrors {
     if (IsNumber(schema.maxItems) && !(value.length <= schema.maxItems)) {
       yield { type: ValueErrorType.ArrayMinItems, schema, path, value, message: `Expected array length to be less or equal to ${schema.maxItems}` }
     }
-    if (
-      schema.uniqueItems === true &&
-      !(function () {
-        const set = new Set()
-        for (const element of value) {
-          const hashed = ValueHash.Create(element)
-          if (set.has(hashed)) {
-            return false
-          } else {
-            set.add(hashed)
-          }
-        }
-        return true
-      })()
-    ) {
+    // prettier-ignore
+    if (schema.uniqueItems === true && !((function() { const set = new Set(); for(const element of value) { const hashed = ValueHash.Create(element); if(set.has(hashed)) { return false } else { set.add(hashed) } } return true })())) {
       yield { type: ValueErrorType.ArrayUniqueItems, schema, path, value, message: `Expected array elements to be unique` }
     }
     for (let i = 0; i < value.length; i++) {

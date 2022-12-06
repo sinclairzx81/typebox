@@ -35,7 +35,6 @@ import { ValueClone } from './clone'
 import { ValueCreate } from './create'
 import { ValueCheck } from './check'
 import { ValueDelta, Edit } from './delta'
-export { Edit, Insert, Update, Delete } from './delta'
 
 /** Provides functions to perform structural updates to JavaScript values */
 export namespace Value {
