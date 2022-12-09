@@ -49,8 +49,8 @@ export namespace ValueHash {
   // State
   // ----------------------------------------------------
 
-  let Hash = BigInt('14695981039346656037')
-  const [Prime, Size] = [BigInt(1099511628211), BigInt(2) ** BigInt(64)]
+  let Hash = globalThis.BigInt('14695981039346656037')
+  const [Prime, Size] = [globalThis.BigInt('1099511628211'), globalThis.BigInt('2') ** globalThis.BigInt('64')]
   const Bytes = globalThis.Array.from({ length: 256 }).map((_, i) => globalThis.BigInt(i))
   const F64 = new globalThis.Float64Array(1)
   const F64In = new globalThis.DataView(F64.buffer)
@@ -186,7 +186,7 @@ export namespace ValueHash {
 
   /** Creates a FNV1A-64 non cryptographic hash of the given value */
   export function Create(value: unknown) {
-    Hash = BigInt('14695981039346656037')
+    Hash = globalThis.BigInt('14695981039346656037')
     Visit(value)
     return Hash
   }
