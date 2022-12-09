@@ -146,11 +146,11 @@ export namespace ValueCast {
   }
 
   function IsValueTrue(value: unknown): value is true {
-    return value === true || (IsNumber(value) && value === 1) || (IsBigInt(value) && value === 1n) || (IsString(value) && (value.toLowerCase() === 'true' || value === '1'))
+    return value === true || (IsNumber(value) && value === 1) || (IsBigInt(value) && value === BigInt(1)) || (IsString(value) && (value.toLowerCase() === 'true' || value === '1'))
   }
 
   function IsValueFalse(value: unknown): value is true {
-    return value === false || (IsNumber(value) && value === 0) || (IsBigInt(value) && value === 0n) || (IsString(value) && (value.toLowerCase() === 'false' || value === '0'))
+    return value === false || (IsNumber(value) && value === 0) || (IsBigInt(value) && value === BigInt(0)) || (IsString(value) && (value.toLowerCase() === 'false' || value === '0'))
   }
 
   // ----------------------------------------------------------------------------------------------
