@@ -73,8 +73,8 @@ License MIT
 - [Overview](#overview)
 - [Example](#Example)
 - [Types](#types)
-  - [Standard Types](#types-standard)
-  - [Extended Types](#types-extended)
+  - [Standard](#types-standard)
+  - [Extended](#types-extended)
   - [Modifiers](#types-modifiers)
   - [Options](#types-options)
   - [Reference](#types-reference)
@@ -189,7 +189,7 @@ TypeBox provides a set of functions that allow you to compose JSON Schema simila
 
 <a name='types-standard'></a>
 
-### Standard Types
+### Standard
 
 The following table lists the Standard TypeBox types.
 
@@ -396,7 +396,7 @@ The following table lists the Standard TypeBox types.
 
 <a name='types-extended'></a>
 
-### Extended Types
+### Extended
 
 TypeBox provides a set of extended types that can be used to express schematics for core JavaScript constructs and primitives. Extended types are not valid JSON Schema and will not validate using typical validation. These types however can be used to frame JSON schema and describe callable RPC interfaces that may receive JSON validated data.
 
