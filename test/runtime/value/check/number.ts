@@ -44,4 +44,9 @@ describe('value/check/Number', () => {
     const result = Value.Check(T, value)
     Assert.equal(result, false)
   })
+
+  it('Should fail NaN', () => {
+    const result = Value.Check(Type.Number(), NaN)
+    Assert.equal(result, false)
+  })
 })
