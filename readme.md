@@ -1148,22 +1148,23 @@ The following creates a `BigInt` type.
 ```typescript
 import { Type, Kind } from '@sinclair/typebox'
 
-Custom.Set('BigInt', (schema, value) => typeof value === 'bigint')
+Custom.Set('bigint', (schema, value) => typeof value === 'bigint')
+//            ▲
 //            │
-//            └────────────────────────────┐         The [Kind] is used to match registered type
+//            └────────────────────────────┐
 //                                         │
-const T = Type.Unsafe<bigint>({ [Kind]: 'BigInt' })  // const T = { [Kind]: 'BigInt' }
+const T = Type.Unsafe<bigint>({ [Kind]: 'bigint' })  // const T = { [Kind]: 'BigInt' }
 
-const A = TypeCompiler.Compile(T).Check(65536)       // const A = false
+const A = TypeCompiler.Compile(T).Check(1n)          // const A = true
 
-const B = Value.Check(T, 65536n)                     // const B = true
+const B = Value.Check(T, 1)                          // const B = false
 ```
 
 <a name='typecheck-custom-formats'></a>
 
 ### Custom Formats
 
-Use the format module to create user defined string formats. If using Ajv, please refer to the official Ajv format documentation located [here](https://ajv.js.org/guide/formats.html). The format module is specific to TypeBox can only be used with the TypeCompiler and Value modules.
+Use the format module to create user defined string formats. The format module is specific to TypeBox can only be used with the TypeCompiler and Value modules. If using Ajv, please refer to the official Ajv format documentation located [here](https://ajv.js.org/guide/formats.html).
 
 The format module is an optional import.
 
@@ -1171,20 +1172,19 @@ The format module is an optional import.
 import { Format } from '@sinclair/typebox/format'
 ```
 
-The following creates a palindrome string format.
+The following creates a custom string format that checks for lowercase.
 
 ```typescript
-Format.Set('palindrome', value => value === value.split('').reverse().join(''))
-```
+Format.Set('lowercase', value => value === value.toLowerCase())
+//            ▲
+//            │
+//            └────────────────────┐         
+//                                 │
+const T = Type.String({ format: 'lowercase' })
 
-Once set, this format can then be used by the TypeCompiler and Value modules.
+const A = TypeCompiler.Compile(T).Check('action')    // const A = true
 
-```typescript
-const T = Type.String({ format: 'palindrome' })
-
-const A = TypeCompiler.Compile(T).Check('engine')    // const A = false
-
-const B = Value.Check(T, 'kayak')                    // const B = true
+const B = Value.Check(T, 'Action')                   // const B = false
 ```
 
 <a name='benchmark'></a>
