@@ -10,9 +10,19 @@ import { Type, Kind, Static, TSchema } from '@sinclair/typebox'
 const T = Type.Object({
   x: Type.Number(),
   y: Type.Number(),
-  z: Type.Number()
+  z: Type.Integer()
 })
+
+const R = Value.Check(T, {
+  x: 1,
+  y: 1,
+  z: NaN
+})
+
+
+console.log(R)
 
 type T = Static<typeof T>
 
 console.log(T)
+

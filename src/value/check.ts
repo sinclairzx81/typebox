@@ -39,7 +39,7 @@ export class ValueCheckUnknownTypeError extends Error {
 
 export namespace ValueCheck {
   function IsNumber(value: unknown): value is number {
-    return typeof value === 'number'
+    return typeof value === 'number' && !isNaN(value)
   }
 
   function Any(schema: Types.TAny, references: Types.TSchema[], value: any): boolean {
@@ -88,12 +88,13 @@ export namespace ValueCheck {
     }
     return true
   }
+
   function Function(schema: Types.TFunction, references: Types.TSchema[], value: any): boolean {
     return typeof value === 'function'
   }
 
   function Integer(schema: Types.TInteger, references: Types.TSchema[], value: any): boolean {
-    if (!(typeof value === 'number')) {
+    if (!(typeof value === 'number' && globalThis.Number.isInteger(value))) {
       return false
     }
     if (!globalThis.Number.isInteger(value)) {
@@ -130,7 +131,7 @@ export namespace ValueCheck {
   }
 
   function Number(schema: Types.TNumber, references: Types.TSchema[], value: any): boolean {
-    if (!(typeof value === 'number')) {
+    if (!(typeof value === 'number' && !isNaN(value))) {
       return false
     }
     if (IsNumber(schema.multipleOf) && !(value % schema.multipleOf === 0)) {

@@ -111,8 +111,9 @@ export class TypeCompilerUnknownTypeError extends Error {
 /** Compiles Types for Runtime Type Checking */
 export namespace TypeCompiler {
   function IsNumber(value: unknown): value is number {
-    return typeof value === 'number'
+    return typeof value === 'number' && !globalThis.isNaN(value)
   }
+
   // -------------------------------------------------------------------
   // Types
   // -------------------------------------------------------------------
@@ -175,7 +176,7 @@ export namespace TypeCompiler {
   }
 
   function* Number(schema: Types.TNumber, value: string): IterableIterator<string> {
-    yield `(typeof ${value} === 'number')`
+    yield `(typeof ${value} === 'number' && !isNaN(${value}))`
     if (IsNumber(schema.multipleOf)) yield `(${value} % ${schema.multipleOf} === 0)`
     if (IsNumber(schema.exclusiveMinimum)) yield `(${value} > ${schema.exclusiveMinimum})`
     if (IsNumber(schema.exclusiveMaximum)) yield `(${value} < ${schema.exclusiveMaximum})`
