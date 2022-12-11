@@ -134,7 +134,7 @@ export namespace ValueCast {
   }
 
   function IsNumber(value: unknown): value is number {
-    return typeof value === 'number'
+    return typeof value === 'number' && !isNaN(value)
   }
 
   function IsStringNumeric(value: unknown): value is string {

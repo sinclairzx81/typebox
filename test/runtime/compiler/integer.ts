@@ -64,4 +64,8 @@ describe('type/compiler/Integer', () => {
     ok(T, 9)
     fail(T, 10)
   })
+
+  it('Should not validate NaN', () => {
+    fail(Type.Integer(), NaN)
+  })
 })

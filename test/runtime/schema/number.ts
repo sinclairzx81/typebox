@@ -60,4 +60,8 @@ describe('type/schema/Number', () => {
     ok(T, 9)
     fail(T, 10)
   })
+
+  it('Should not validate NaN', () => {
+    fail(Type.Number(), NaN)
+  })
 })

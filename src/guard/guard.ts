@@ -70,7 +70,7 @@ export namespace TypeGuard {
   }
 
   function IsNumber(value: unknown): value is number {
-    return typeof value === 'number'
+    return typeof value === 'number' && !isNaN(value)
   }
 
   function IsBoolean(value: unknown): value is boolean {

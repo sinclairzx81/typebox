@@ -112,7 +112,7 @@ export class ValueErrorsUnknownTypeError extends Error {
 /** Provides functionality to generate a sequence of errors against a TypeBox type.  */
 export namespace ValueErrors {
   function IsNumber(value: unknown): value is number {
-    return typeof value === 'number'
+    return typeof value === 'number' && !isNaN(value)
   }
 
   function* Any(schema: Types.TAny, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {}
@@ -171,7 +171,7 @@ export namespace ValueErrors {
   }
 
   function* Integer(schema: Types.TNumeric, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
-    if (!(typeof value === 'number')) {
+    if (!(typeof value === 'number' && globalThis.Number.isInteger(value))) {
       return yield { type: ValueErrorType.Number, schema, path, value, message: `Expected number` }
     }
     if (!globalThis.Number.isInteger(value)) {
@@ -212,7 +212,7 @@ export namespace ValueErrors {
   }
 
   function* Number(schema: Types.TNumeric, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
-    if (!(typeof value === 'number')) {
+    if (!(typeof value === 'number' && !isNaN(value))) {
       return yield { type: ValueErrorType.Number, schema, path, value, message: `Expected number` }
     }
     if (IsNumber(schema.multipleOf) && !(value % schema.multipleOf === 0)) {
