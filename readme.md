@@ -1143,7 +1143,7 @@ The custom module is an optional import.
 import { Custom } from '@sinclair/typebox/custom'
 ```
 
-The following creates a `BigInt` type.
+The following creates a `bigint` type.
 
 ```typescript
 import { Type, Kind } from '@sinclair/typebox'
