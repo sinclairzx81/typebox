@@ -233,8 +233,14 @@ export namespace ValueErrors {
   }
 
   function* Object(schema: Types.TObject, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
-    if (!(typeof value === 'object' && value !== null && !globalThis.Array.isArray(value))) {
-      return yield { type: ValueErrorType.Object, schema, path, value, message: `Expected object` }
+    if (schema.required === undefined || schema.required.length === 0) {
+      if (!(typeof value === 'object' && value !== null && !globalThis.Array.isArray(value))) {
+        return yield { type: ValueErrorType.Object, schema, path, value, message: `Expected object` }
+      }
+    } else {
+      if (!(typeof value === 'object' && value !== null)) {
+        return yield { type: ValueErrorType.Object, schema, path, value, message: `Expected object` }
+      }
     }
     if (IsNumber(schema.minProperties) && !(globalThis.Object.keys(value).length >= schema.minProperties)) {
       yield { type: ValueErrorType.ObjectMinProperties, schema, path, value, message: `Expected object to have at least ${schema.minProperties} properties` }

@@ -205,4 +205,13 @@ describe('type/compiler/Object', () => {
       z: 3,
     })
   })
+
+  // ----------------------------------------------------------------
+  // TypeComplier Variance
+  // ----------------------------------------------------------------
+
+  it('Should validate an Array if it only contains a length property', () => {
+    const T = Type.Object({ length: Type.Number() })
+    ok(T, [1, 2])
+  })
 })
