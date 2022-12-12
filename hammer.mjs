@@ -15,7 +15,7 @@ export async function clean() {
 // -------------------------------------------------------------------------------
 
 export async function format() {
-    await shell('prettier --no-semi --single-quote --print-width 240 --trailing-comma all --write src test benchmark codegen')
+    await shell('prettier --no-semi --single-quote --print-width 240 --trailing-comma all --write src test example benchmark codegen')
 }
 
 // -------------------------------------------------------------------------------

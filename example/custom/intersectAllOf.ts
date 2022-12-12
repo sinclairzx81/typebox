@@ -7,15 +7,16 @@ export interface IntersectAllOfOptions extends SchemaOptions {
 }
 
 export interface IntersectAllOf<T extends TSchema[]> extends TSchema, IntersectAllOfOptions {
-  [Kind]: 'IntersectAllOf',
+  [Kind]: 'IntersectAllOf'
   static: IntersectReduce<unknown, IntersectEvaluate<T, []>>
   allOf: T
 }
 
 /** Creates a Intersect type with a allOf  schema representation */
 export function IntersectAllOf<T extends TSchema[]>(allOf: [...T], options: IntersectAllOfOptions = {}) {
-  if(!Custom.Has('IntersectAllOf')) Custom.Set('IntersectAllOf', (schema: { allOf: TSchema[] }, value) => {
-    return schema.allOf.every(schema => Value.Check(schema, value))
-  })
+  if (!Custom.Has('IntersectAllOf'))
+    Custom.Set('IntersectAllOf', (schema: { allOf: TSchema[] }, value) => {
+      return schema.allOf.every((schema) => Value.Check(schema, value))
+    })
   return { ...options, [Kind]: 'IntersectAllOf', allOf } as IntersectAllOf<T>
 }

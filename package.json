@@ -13,6 +13,7 @@
   "main": "./typebox.js",
   "types": "./typebox.d.ts",
   "exports": {
+    "./collections": "./collections/index.js",
     "./compiler": "./compiler/index.js",
     "./conditional": "./conditional/index.js",
     "./custom": "./custom/index.js",

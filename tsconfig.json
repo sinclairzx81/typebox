@@ -10,6 +10,9 @@
       "@sinclair/typebox/codegen": [
         "codegen/index.ts"
       ],
+      "@sinclair/typebox/collections": [
+        "src/collections/index.ts"
+      ],
       "@sinclair/typebox/compiler": [
         "src/compiler/index.ts"
       ],

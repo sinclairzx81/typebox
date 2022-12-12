@@ -5,14 +5,29 @@ import { TypeGuard } from '@sinclair/typebox/guard'
 import { Format } from '@sinclair/typebox/format'
 import { Custom } from '@sinclair/typebox/custom'
 import { Value, ValuePointer } from '@sinclair/typebox/value'
-import { Type, Kind, Static, TSchema } from '@sinclair/typebox'
+import { TypeArray, TypeMap, TypeSet } from '@sinclair/typebox/collections'
+import { Static, Type } from '@sinclair/typebox'
 
-const T = Type.Object({
-  x: Type.Number(),
-  y: Type.Number(),
-  z: Type.Number()
-})
+const K = Type.Object({ x: Type.Number(), y: Type.Number() })
+const V = Type.String()
 
-type T = Static<typeof T>
+const map = new TypeMap(K, V)
+map.set({ x: 0, y: 0 }, '')
+map.set({ x: 1, y: 0 }, '')
+map.set({ x: 1, y: 1 }, '')
+map.set({ x: 0, y: 1 }, '')
 
-console.log(T)
+const set = new TypeSet(
+  Type.Object({
+    x: Type.Number(),
+    y: Type.Number(),
+  }),
+)
+
+for (let i = 0; i < 233; i++) {
+  set.add({ x: 1, y: 2 })
+}
+
+for (const [key, value] of map) {
+  console.log(key, value)
+}

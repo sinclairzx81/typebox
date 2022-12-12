@@ -1,4 +1,4 @@
 {
   "extends": "../tsconfig.json",
-  "files": ["compiler/index.ts", "conditional/index.ts", "custom/index.ts", "format/index.ts", "guard/index.ts", "hash/index.ts", "value/index.ts", "typebox.ts"]
+  "files": ["collections/index.ts", "compiler/index.ts", "conditional/index.ts", "custom/index.ts", "format/index.ts", "guard/index.ts", "hash/index.ts", "value/index.ts", "typebox.ts"]
 }
