@@ -978,7 +978,7 @@ map.set({ x: 1, y: 0 }, 'world')
 Use the TypeSet collection for strictly checked Sets of a given type. This collection supports object values.
 
 ```typescript
-import { TypeMap } from '@sinclair/typebox/collections'
+import { TypeSet } from '@sinclair/typebox/collections'
 
 const T = Type.Object({ 
   x: Type.Number(),
