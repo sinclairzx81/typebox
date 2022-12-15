@@ -39,16 +39,22 @@ export class TypeArrayError extends Error {
     super(`${message}`)
   }
 }
+export class TypeArrayLengthError extends Error {
+  constructor() {
+    super('arrayLength not a number')
+  }
+}
 
 // ----------------------------------------------------------------
 // TypeArray<T>
 // ----------------------------------------------------------------
 
-export class TypeArray<T extends TSchema> {
+export class TypeArray<T extends TSchema> implements Iterable<Static<T>> {
   readonly #typeCheck: TypeCheck<T>
   readonly #values: Static<T>[]
 
   constructor(schema: T, arrayLength: number = 0) {
+    if (typeof arrayLength !== 'number') throw new TypeArrayLengthError()
     this.#typeCheck = TypeCompiler.Compile(schema)
     this.#values = new Array(arrayLength)
     for (let i = 0; i < arrayLength; i++) {

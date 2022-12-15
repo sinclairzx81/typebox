@@ -36,7 +36,7 @@ import { Value } from '@sinclair/typebox/value'
 
 export class TypeMapKeyError extends Error {
   constructor(message: string) {
-    super(`${message}`)
+    super(`${message} for key`)
   }
 }
 
@@ -54,8 +54,12 @@ export class TypeMapValueError extends Error {
 // TypeMap<K, V>
 // ----------------------------------------------------------------
 
-type TypeMapEntries<K extends TSchema, V extends TSchema> = IterableIterator<[Static<K>, Static<V>]> | Array<[Static<K>, Static<V>]> | Map<Static<K>, Static<V>>
+// prettier-ignore
+type TypeMapEntries<K extends TSchema, V extends TSchema> =
+  | Iterable<[Static<K>, Static<V>]> 
+  | Array<[Static<K>, Static<V>]>
 
+/** Runtime type checked Map collection */
 export class TypeMap<K extends TSchema, V extends TSchema> {
   readonly #keycheck: TypeCheck<K>
   readonly #valuecheck: TypeCheck<V>

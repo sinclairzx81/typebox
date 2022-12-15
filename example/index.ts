@@ -5,20 +5,14 @@ import { TypeGuard } from '@sinclair/typebox/guard'
 import { Format } from '@sinclair/typebox/format'
 import { Custom } from '@sinclair/typebox/custom'
 import { Value, ValuePointer } from '@sinclair/typebox/value'
-import { Static, Type } from '@sinclair/typebox'
-import { TypeArray, TypeMap } from './collections'
+import { Type, Kind, Static, TSchema } from '@sinclair/typebox'
 
-const map = new Map([
-  [{ x: 1, y: 2 }, 1],
-  [{ x: 2, y: 3 }, 1],
-  [{ x: 4, y: 5 }, 1],
-])
+const T = Type.Object({
+  x: Type.Number(),
+  y: Type.Number(),
+  z: Type.Number(),
+})
 
-const typemap = new TypeMap(
-  Type.Object({
-    x: Type.Number(),
-    y: Type.Number(),
-  }),
-  Type.Number(),
-  map,
-)
+type T = Static<typeof T>
+
+console.log(T)

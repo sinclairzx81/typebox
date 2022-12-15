@@ -44,10 +44,11 @@ export class TypeSetError extends Error {
 // TypeSet
 // ----------------------------------------------------------------
 
+/** Runtime type checked Set collection */
 export class TypeSet<T extends TSchema> {
   readonly #valuecheck: TypeCheck<T>
   readonly values: Map<bigint, Static<T>>
-  constructor(schema: T, iterable: Array<T> | IterableIterator<T> = []) {
+  constructor(schema: T, iterable: Array<T> | Iterable<T> = []) {
     this.#valuecheck = TypeCompiler.Compile(schema)
     this.values = new Map<bigint, Static<T>>()
     for (const value of iterable) {

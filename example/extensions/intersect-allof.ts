@@ -53,7 +53,7 @@ export interface IntersectAllOf<T extends TSchema[]> extends TSchema, IntersectA
   allOf: T
 }
 
-/** Creates a Intersect type with a allOf schema representation */
+/** Creates a Intersect type with a `allOf` schema representation */
 export function IntersectAllOf<T extends TSchema[]>(allOf: [...T], options: IntersectAllOfOptions = {}) {
   if (!Custom.Has('IntersectAllOf')) Custom.Set('IntersectAllOf', IntersectAllOfCheck)
   return { ...options, [Kind]: 'IntersectAllOf', allOf } as IntersectAllOf<T>

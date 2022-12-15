@@ -39,7 +39,7 @@ export interface TUnionEnum<T extends (string | number)[]> extends TSchema {
   enum: T
 }
 
-/** Creates a Union type with a enum schema representation  */
+/** Creates a Union type with a `enum` schema representation  */
 export function UnionEnum<T extends (string | number)[]>(values: [...T], options: SchemaOptions = {}) {
   if (!Custom.Has('UnionEnum')) Custom.Set('UnionEnum', UnionEnumCheck)
   return { ...options, [Kind]: 'UnionEnum', enum: values } as TUnionEnum<T>

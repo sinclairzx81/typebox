@@ -40,7 +40,7 @@ export interface UnionOneOf<T extends TSchema[]> extends TSchema {
   oneOf: T
 }
 
-/** Creates a Union type with a oneOf schema representation */
+/** Creates a Union type with a `oneOf` schema representation */
 export function UnionOneOf<T extends TSchema[]>(oneOf: [...T], options: SchemaOptions = {}) {
   if (!Custom.Has('UnionOneOf')) Custom.Set('UnionOneOf', UnionOneOfCheck)
   return { ...options, [Kind]: 'UnionOneOf', oneOf } as UnionOneOf<T>
