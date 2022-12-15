@@ -36,12 +36,12 @@ import { Value } from '@sinclair/typebox/value'
 
 export class TypeArrayError extends Error {
   constructor(message: string) {
-    super(`TypeArrayError: ${message}`)
+    super(`${message}`)
   }
 }
 
 // ----------------------------------------------------------------
-// TypeArray<K, V>
+// TypeArray<T>
 // ----------------------------------------------------------------
 
 export class TypeArray<T extends TSchema> {
@@ -355,5 +355,21 @@ export class TypeArray<T extends TSchema> {
     for (let i = 0; i < items.length; i++) {
       this.#assertItem(i, items[i])
     }
+  }
+
+  /** Creates a typed array from an existing array */
+  public static from<T extends TSchema>(schema: T, iterable: IterableIterator<Static<T>> | Array<Static<T>>): TypeArray<T> {
+    if (globalThis.Array.isArray(iterable)) {
+      const array = new TypeArray(schema, iterable.length)
+      for (let i = 0; i < iterable.length; i++) {
+        array.set(i, iterable[i])
+      }
+      return array
+    }
+    const array = new TypeArray(schema)
+    for (const value of iterable) {
+      array.push(value)
+    }
+    return array
   }
 }

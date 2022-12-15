@@ -36,7 +36,7 @@ import { Value } from '@sinclair/typebox/value'
 
 export class TypeSetError extends Error {
   constructor(message: string) {
-    super(`TypeArrayError: ${message}`)
+    super(`${message}`)
   }
 }
 
@@ -47,9 +47,12 @@ export class TypeSetError extends Error {
 export class TypeSet<T extends TSchema> {
   readonly #valuecheck: TypeCheck<T>
   readonly values: Map<bigint, Static<T>>
-  constructor(schema: T) {
+  constructor(schema: T, iterable: Array<T> | IterableIterator<T> = []) {
     this.#valuecheck = TypeCompiler.Compile(schema)
     this.values = new Map<bigint, Static<T>>()
+    for (const value of iterable) {
+      this.add(value)
+    }
   }
 
   /** Adds a value to this set */
@@ -103,9 +106,12 @@ export class TypeSet<T extends TSchema> {
   // Assertions
   // ---------------------------------------------------
 
-  /** Formats errors  */
+  /** Formats errors */
   #formatError(errors: ValueError[]) {
-    return errors.map((error) => `${error.message} ${error.path}`).join('. ')
+    return errors
+      .map((error) => `${error.message} ${error.path}`)
+      .join('. ')
+      .trim()
   }
 
   /** Asserts the key matches the value schema  */

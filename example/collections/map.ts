@@ -36,7 +36,7 @@ import { Value } from '@sinclair/typebox/value'
 
 export class TypeMapKeyError extends Error {
   constructor(message: string) {
-    super(`TypeMapKeyError: ${message}`)
+    super(`${message}`)
   }
 }
 
@@ -45,14 +45,16 @@ export class TypeMapKeyError extends Error {
 // ----------------------------------------------------------------
 
 export class TypeMapValueError extends Error {
-  constructor(message: string) {
-    super(`TypeMapKeyError: ${message}`)
+  constructor(key: unknown, message: string) {
+    super(`${message} for key ${JSON.stringify(key)}`)
   }
 }
 
 // ----------------------------------------------------------------
 // TypeMap<K, V>
 // ----------------------------------------------------------------
+
+type TypeMapEntries<K extends TSchema, V extends TSchema> = IterableIterator<[Static<K>, Static<V>]> | Array<[Static<K>, Static<V>]> | Map<Static<K>, Static<V>>
 
 export class TypeMap<K extends TSchema, V extends TSchema> {
   readonly #keycheck: TypeCheck<K>
@@ -61,11 +63,14 @@ export class TypeMap<K extends TSchema, V extends TSchema> {
   readonly #values: Map<bigint, Static<V>>
 
   /** Constructs a new HashMap of the given key and value types. */
-  constructor(key: K, value: V) {
+  constructor(key: K, value: V, entries: TypeMapEntries<K, V> = []) {
     this.#keycheck = TypeCompiler.Compile(key)
     this.#valuecheck = TypeCompiler.Compile(value)
     this.#keys = new Map<bigint, Static<K>>()
     this.#values = new Map<bigint, Static<V>>()
+    for (const [key, value] of entries) {
+      this.set(key, value)
+    }
   }
 
   /** Iterator for this TypeMap */
@@ -123,7 +128,7 @@ export class TypeMap<K extends TSchema, V extends TSchema> {
    */
   public set(key: Static<K>, value: Static<V>) {
     this.#assertKey(key)
-    this.#assertValue(value)
+    this.#assertValue(key, value)
     const encodedKey = this.#encodeKey(key)
     this.#keys.set(encodedKey, key)
     this.#values.set(encodedKey, value)
@@ -153,7 +158,10 @@ export class TypeMap<K extends TSchema, V extends TSchema> {
   // ---------------------------------------------------
 
   #formatError(errors: ValueError[]) {
-    return errors.map((error) => `${error.message} ${error.path}`).join('. ')
+    return errors
+      .map((error) => `${error.message} ${error.path}`)
+      .join('. ')
+      .trim()
   }
 
   /** Asserts the key matches the key schema  */
@@ -163,8 +171,8 @@ export class TypeMap<K extends TSchema, V extends TSchema> {
   }
 
   /** Asserts the key matches the value schema  */
-  #assertValue(value: unknown): asserts value is Static<V> {
+  #assertValue(key: Static<K>, value: unknown): asserts value is Static<V> {
     if (this.#valuecheck.Check(value)) return
-    throw new TypeMapKeyError(this.#formatError([...this.#keycheck.Errors(value)]))
+    throw new TypeMapValueError(key, this.#formatError([...this.#valuecheck.Errors(value)]))
   }
 }

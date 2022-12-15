@@ -95,10 +95,6 @@ License MIT
   - [Patch](#values-patch)
   - [Errors](#values-errors)
   - [Pointer](#values-pointer)
-- [Collections](#collections)
-  - [TypeArray](#collections-array)
-  - [TypeMap](#collections-map)
-  - [TypeSet](#collections-set)
 - [TypeCheck](#typecheck)
   - [Ajv](#typecheck-ajv)
   - [TypeCompiler](#typecheck-typecompiler)
@@ -932,64 +928,6 @@ ValuePointer.Set(A, '/x', 1)                         // const A = { x: 1, y: 0, 
 ValuePointer.Set(A, '/y', 1)                         // const A = { x: 1, y: 1, z: 0 }
 ValuePointer.Set(A, '/z', 1)                         // const A = { x: 1, y: 1, z: 1 }
 ```
-
-<a name='collections'></a>
-
-## Collections
-
-TypeBox includes an optional collections module that provides type checked versions of JavaScript's `Array`, `Map` and `Set` types. TypeBox collections can be used to ensure values stored within these collections are of the correct type at runtime.
-
-<a name='collections-array'></a>
-
-### TypeArray
-
-Use the TypeArray collection to store values of a given type. This collection implements type checking for values written to the collection, as well as index bound checking.
-
-```typescript
-import { TypeArray } from '@sinclair/typebox/collections'
-
-const array = new TypeArray(Type.Number())
-
-array.push(0)
-
-array.set(0, 42)
-```
-
-### TypeMap
-
-Use the TypeMap collection for strictly checked Maps with a given Key and Value type. This collection supports object keys and validates both Key and Value.
-
-```typescript
-import { TypeMap } from '@sinclair/typebox/collections'
-
-const K = Type.Object({ 
-  x: Type.Number(),
-  y: Type.Number()
-})
-const V = Type.String()
-
-const map = new TypeMap(K, V)
-map.set({ x: 0, y: 0 }, 'hello')
-map.set({ x: 1, y: 0 }, 'world')
-```
-
-### TypeSet
-
-Use the TypeSet collection for strictly checked Sets of a given type. This collection supports object values.
-
-```typescript
-import { TypeSet } from '@sinclair/typebox/collections'
-
-const T = Type.Object({ 
-  x: Type.Number(),
-  y: Type.Number()
-})
-
-const set = new TypeSet(T)
-set.add({ x: 0, y: 0 })
-set.add({ x: 0, y: 1 })
-```
-
 <a name='typecheck'></a>
 
 ## TypeCheck
