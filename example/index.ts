@@ -10,7 +10,7 @@ import { Type, Kind, Static, TSchema } from '@sinclair/typebox'
 const T = Type.Object({
   x: Type.Number(),
   y: Type.Number(),
-  z: Type.Number(),
+  z: Type.Number()
 })
 
 type T = Static<typeof T>
