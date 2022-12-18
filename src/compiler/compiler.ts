@@ -187,7 +187,7 @@ export namespace TypeCompiler {
   function* Object(schema: Types.TObject, value: string): IterableIterator<string> {
     // Optimization: We can optimize here by only running the array check if the
     // schema is fully partial. This has implication for arrays as passing the
-    // type { length: number } will allow this check to succeed. For consideration.
+    // type { length: number } will allow this check to succeed.
     if (schema.required === undefined || schema.required.length === 0) {
       yield `(typeof ${value} === 'object' && ${value} !== null && !Array.isArray(${value}))`
     } else {
