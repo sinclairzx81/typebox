@@ -153,8 +153,17 @@ export namespace ValueCheck {
   }
 
   function Object(schema: Types.TObject, references: Types.TSchema[], value: any): boolean {
-    if (!(typeof value === 'object' && value !== null && !globalThis.Array.isArray(value))) {
-      return false
+    // Optimization: We can optimize here by only running the array check if the
+    // schema is fully partial. This has implication for arrays as passing the
+    // type { length: number } will allow this check to succeed.
+    if (schema.required === undefined || schema.required.length === 0) {
+      if (!(typeof value === 'object' && value !== null && !globalThis.Array.isArray(value))) {
+        return false
+      }
+    } else {
+      if (!(typeof value === 'object' && value !== null)) {
+        return false
+      }
     }
     if (IsNumber(schema.minProperties) && !(globalThis.Object.keys(value).length >= schema.minProperties)) {
       return false
