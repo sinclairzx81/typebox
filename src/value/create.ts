@@ -121,7 +121,11 @@ export namespace ValueCreate {
   }
 
   function Literal(schema: Types.TLiteral, references: Types.TSchema[]): any {
-    return schema.const
+    if (schema.default !== undefined) {
+      return schema.default
+    } else {
+      return schema.const
+    }
   }
 
   function Never(schema: Types.TNever, references: Types.TSchema[]): any {
@@ -129,7 +133,11 @@ export namespace ValueCreate {
   }
 
   function Null(schema: Types.TNull, references: Types.TSchema[]): any {
-    return null
+    if (schema.default !== undefined) {
+      return schema.default
+    } else {
+      return null
+    }
   }
 
   function Number(schema: Types.TNumber, references: Types.TSchema[]): any {
@@ -244,7 +252,11 @@ export namespace ValueCreate {
   }
 
   function Undefined(schema: Types.TUndefined, references: Types.TSchema[]): any {
-    return undefined
+    if (schema.default !== undefined) {
+      return schema.default
+    } else {
+      return undefined
+    }
   }
 
   function Union(schema: Types.TUnion<any[]>, references: Types.TSchema[]): any {
@@ -275,7 +287,11 @@ export namespace ValueCreate {
   }
 
   function Void(schema: Types.TVoid, references: Types.TSchema[]): any {
-    return null
+    if (schema.default !== undefined) {
+      return schema.default
+    } else {
+      return null
+    }
   }
 
   function UserDefined(schema: Types.TSchema, references: Types.TSchema[]): any {

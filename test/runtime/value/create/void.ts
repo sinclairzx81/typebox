@@ -7,4 +7,9 @@ describe('value/create/Void', () => {
     const T = Type.Void()
     Assert.deepEqual(Value.Create(T), null)
   })
+
+  it('Should create value from default value', () => {
+    const T = Type.Void({ default: 'hello' })
+    Assert.deepEqual(Value.Create(T), 'hello')
+  })
 })

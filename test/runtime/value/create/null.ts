@@ -7,4 +7,8 @@ describe('value/create/Null', () => {
     const T = Type.Null()
     Assert.deepEqual(Value.Create(T), null)
   })
+  it('Should create null from default value', () => {
+    const T = Type.Null({ default: 'hello' })
+    Assert.deepEqual(Value.Create(T), 'hello')
+  })
 })

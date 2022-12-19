@@ -7,4 +7,8 @@ describe('value/create/Undefined', () => {
     const T = Type.Undefined()
     Assert.deepEqual(Value.Create(T), undefined)
   })
+  it('Should create value from default value', () => {
+    const T = Type.Undefined({ default: 'hello' })
+    Assert.deepEqual(Value.Create(T), 'hello')
+  })
 })
