@@ -2,7 +2,7 @@ import { Value } from '@sinclair/typebox/value'
 import { Type } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
-describe('value/create/KeyOf', () => {
+describe('value/create/Literal', () => {
   it('Should create literal string', () => {
     const T = Type.Literal('hello')
     Assert.deepEqual(Value.Create(T), 'hello')
@@ -14,5 +14,9 @@ describe('value/create/KeyOf', () => {
   it('Should create literal boolean', () => {
     const T = Type.Literal(true)
     Assert.deepEqual(Value.Create(T), true)
+  })
+  it('Should create literal from default value', () => {
+    const T = Type.Literal(true, { default: 'hello' })
+    Assert.deepEqual(Value.Create(T), 'hello')
   })
 })
