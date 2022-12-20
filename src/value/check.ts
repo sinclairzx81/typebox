@@ -71,6 +71,7 @@ export namespace ValueCheck {
   function Constructor(schema: Types.TConstructor, references: Types.TSchema[], value: any): boolean {
     return Visit(schema.returns, references, value.prototype)
   }
+
   function Date(schema: Types.TDate, references: Types.TSchema[], value: any): boolean {
     if (!(value instanceof globalThis.Date)) {
       return false

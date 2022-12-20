@@ -290,11 +290,11 @@ export namespace ValueErrors {
 
   function* Record(schema: Types.TRecord, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     if (Settings.TypeSystem === 'json-schema') {
-      if (!(typeof value === 'object' && value !== null && !globalThis.Array.isArray(value))) {
+      if (!(typeof value === 'object' && value !== null && !globalThis.Array.isArray(value) && !(value instanceof globalThis.Date))) {
         return yield { type: ValueErrorType.Object, schema, path, value, message: `Expected object` }
       }
     } else if (Settings.TypeSystem === 'structural') {
-      if (!(typeof value === 'object' && value !== null)) {
+      if (!(typeof value === 'object' && value !== null && !(value instanceof globalThis.Date))) {
         return yield { type: ValueErrorType.Object, schema, path, value, message: `Expected object` }
       }
     }
