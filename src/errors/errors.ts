@@ -27,9 +27,9 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import * as Types from '../typebox'
+import { TypeSystem } from '../system/index'
 import { Format } from '../format/index'
 import { Custom } from '../custom/index'
-import { Settings } from '../settings/index'
 import { ValueHash } from '../hash/index'
 
 // -------------------------------------------------------------------
@@ -234,11 +234,11 @@ export namespace ValueErrors {
   }
 
   function* Object(schema: Types.TObject, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
-    if (Settings.TypeSystem === 'json-schema') {
+    if (TypeSystem.Kind === 'json-schema') {
       if (!(typeof value === 'object' && value !== null && !globalThis.Array.isArray(value))) {
         return yield { type: ValueErrorType.Object, schema, path, value, message: `Expected object` }
       }
-    } else if (Settings.TypeSystem === 'structural') {
+    } else if (TypeSystem.Kind === 'structural') {
       if (!(typeof value === 'object' && value !== null)) {
         return yield { type: ValueErrorType.Object, schema, path, value, message: `Expected object` }
       }
@@ -289,11 +289,11 @@ export namespace ValueErrors {
   }
 
   function* Record(schema: Types.TRecord, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
-    if (Settings.TypeSystem === 'json-schema') {
+    if (TypeSystem.Kind === 'json-schema') {
       if (!(typeof value === 'object' && value !== null && !globalThis.Array.isArray(value) && !(value instanceof globalThis.Date))) {
         return yield { type: ValueErrorType.Object, schema, path, value, message: `Expected object` }
       }
-    } else if (Settings.TypeSystem === 'structural') {
+    } else if (TypeSystem.Kind === 'structural') {
       if (!(typeof value === 'object' && value !== null && !(value instanceof globalThis.Date))) {
         return yield { type: ValueErrorType.Object, schema, path, value, message: `Expected object` }
       }

@@ -27,10 +27,10 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import { ValueErrors, ValueError } from '../errors/index'
+import { TypeSystem } from '../system/index'
 import { TypeGuard } from '../guard/index'
 import { Format } from '../format/index'
 import { Custom } from '../custom/index'
-import { Settings } from '../settings/index'
 import { ValueHash } from '../hash/index'
 import * as Types from '../typebox'
 
@@ -186,9 +186,9 @@ export namespace TypeCompiler {
   }
 
   function* Object(schema: Types.TObject, value: string): IterableIterator<string> {
-    if (Settings.TypeSystem === 'json-schema') {
+    if (TypeSystem.Kind === 'json-schema') {
       yield `(typeof ${value} === 'object' && ${value} !== null && !Array.isArray(${value}))`
-    } else if (Settings.TypeSystem === 'structural') {
+    } else if (TypeSystem.Kind === 'structural') {
       yield `(typeof ${value} === 'object' && ${value} !== null)`
     }
     if (IsNumber(schema.minProperties)) yield `(Object.getOwnPropertyNames(${value}).length >= ${schema.minProperties})`
@@ -228,9 +228,9 @@ export namespace TypeCompiler {
   }
 
   function* Record(schema: Types.TRecord<any, any>, value: string): IterableIterator<string> {
-    if (Settings.TypeSystem === 'json-schema') {
+    if (TypeSystem.Kind === 'json-schema') {
       yield `(typeof ${value} === 'object' && ${value} !== null && !Array.isArray(${value}) && !(${value} instanceof Date))`
-    } else if (Settings.TypeSystem === 'structural') {
+    } else if (TypeSystem.Kind === 'structural') {
       yield `(typeof ${value} === 'object' && ${value} !== null && !(${value} instanceof Date))`
     }
     const [keyPattern, valueSchema] = globalThis.Object.entries(schema.patternProperties)[0]

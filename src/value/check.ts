@@ -27,10 +27,10 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import * as Types from '../typebox'
+import { TypeSystem } from '../system/index'
 import { Format } from '../format/index'
 import { Custom } from '../custom/index'
 import { ValueHash } from '../hash/index'
-import { Settings } from '../settings/index'
 
 export class ValueCheckUnknownTypeError extends Error {
   constructor(public readonly schema: Types.TSchema) {
@@ -155,11 +155,11 @@ export namespace ValueCheck {
   }
 
   function Object(schema: Types.TObject, references: Types.TSchema[], value: any): boolean {
-    if (Settings.TypeSystem === 'json-schema') {
+    if (TypeSystem.Kind === 'json-schema') {
       if (!(typeof value === 'object' && value !== null && !globalThis.Array.isArray(value))) {
         return false
       }
-    } else if (Settings.TypeSystem === 'structural') {
+    } else if (TypeSystem.Kind === 'structural') {
       if (!(typeof value === 'object' && value !== null)) {
         return false
       }
@@ -214,11 +214,11 @@ export namespace ValueCheck {
   }
 
   function Record(schema: Types.TRecord<any, any>, references: Types.TSchema[], value: any): boolean {
-    if (Settings.TypeSystem === 'json-schema') {
+    if (TypeSystem.Kind === 'json-schema') {
       if (!(typeof value === 'object' && value !== null && !globalThis.Array.isArray(value) && !(value instanceof globalThis.Date))) {
         return false
       }
-    } else if (Settings.TypeSystem === 'structural') {
+    } else if (TypeSystem.Kind === 'structural') {
       if (!(typeof value === 'object' && value !== null && !(value instanceof globalThis.Date))) {
         return false
       }

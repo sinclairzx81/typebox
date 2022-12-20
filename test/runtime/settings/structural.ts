@@ -1,13 +1,13 @@
 import { Ok, Fail } from '../compiler/validate'
-import { Settings } from '@sinclair/typebox/settings'
+import { TypeSystem } from '@sinclair/typebox/system'
 import { Type } from '@sinclair/typebox'
 
 describe('Settings/Structural', () => {
   before(() => {
-    Settings.TypeSystem = 'structural'
+    TypeSystem.Kind = 'structural'
   })
   after(() => {
-    Settings.TypeSystem = 'json-schema'
+    TypeSystem.Kind = 'json-schema'
   })
 
   // ---------------------------------------------------------------

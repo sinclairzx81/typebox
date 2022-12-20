@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------------
 
-@sinclair/typebox/settings
+@sinclair/typebox/system
 
 The MIT License (MIT)
 
@@ -26,31 +26,4 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export type TypeSystem = 'json-schema' | 'structural'
-
-export class SettingsUnknownTypeSystemError extends Error {
-  constructor(typeSystem: string) {
-    super(`TypeSystemSettings: Unknown TypeSystem '${typeSystem}'`)
-  }
-}
-
-class TypeSystemSettings {
-  private typesystem: TypeSystem
-  constructor() {
-    this.typesystem = 'json-schema'
-  }
-
-  public get TypeSystem(): TypeSystem {
-    return this.typesystem
-  }
-
-  public set TypeSystem(value: TypeSystem) {
-    if (!(value === 'json-schema' || value === 'structural')) {
-      throw new SettingsUnknownTypeSystemError(value)
-    }
-    this.typesystem = value
-  }
-}
-
-/** Settings that control type checking semantics */
-export const Settings = new TypeSystemSettings()
+export * from './system'

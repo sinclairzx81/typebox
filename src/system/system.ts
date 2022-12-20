@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------------
 
-@sinclair/typebox/settings
+@sinclair/typebox/system
 
 The MIT License (MIT)
 
@@ -26,4 +26,34 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export * from './settings'
+export class InvalidTypeSystemError extends Error {
+  constructor(typeSystem: string) {
+    super(`TypeSystemSettings: Unknown TypeSystem '${typeSystem}'`)
+  }
+}
+
+export type TypeSystemKind = 'json-schema' | 'structural'
+
+class TypeSystemSettings {
+  private kind: TypeSystemKind
+  constructor() {
+    this.kind = 'json-schema'
+  }
+  /**
+   * `Experimental` Sets the type system kind used by TypeBox. By default TypeBox uses `json-schema` assertion
+   * rules to verify JavaScript values. If setting the type system to `structural`, TypeBox will use TypeScript
+   * structural checking rules enabling Arrays to be validated as Objects.
+   */
+  public get Kind(): TypeSystemKind {
+    return this.kind
+  }
+  public set Kind(value: TypeSystemKind) {
+    if (!(value === 'json-schema' || value === 'structural')) {
+      throw new InvalidTypeSystemError(value)
+    }
+    this.kind = value
+  }
+}
+
+/** TypeBox TypeSystem Settings */
+export const TypeSystem = new TypeSystemSettings()
