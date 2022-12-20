@@ -29,6 +29,7 @@ THE SOFTWARE.
 import * as Types from '../typebox'
 import { Format } from '../format/index'
 import { Custom } from '../custom/index'
+import { Settings } from '../settings/index'
 import { ValueHash } from '../hash/index'
 
 // -------------------------------------------------------------------
@@ -128,7 +129,7 @@ export namespace ValueErrors {
       yield { type: ValueErrorType.ArrayMinItems, schema, path, value, message: `Expected array length to be less or equal to ${schema.maxItems}` }
     }
     // prettier-ignore
-    if (schema.uniqueItems === true && !((function() { const set = new Set(); for(const element of value) { const hashed = ValueHash.Create(element); if(set.has(hashed)) { return false } else { set.add(hashed) } } return true })())) {
+    if (schema.uniqueItems === true && !((function () { const set = new Set(); for (const element of value) { const hashed = ValueHash.Create(element); if (set.has(hashed)) { return false } else { set.add(hashed) } } return true })())) {
       yield { type: ValueErrorType.ArrayUniqueItems, schema, path, value, message: `Expected array elements to be unique` }
     }
     for (let i = 0; i < value.length; i++) {
@@ -233,38 +234,43 @@ export namespace ValueErrors {
   }
 
   function* Object(schema: Types.TObject, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
-    if (!(typeof value === 'object' && value !== null && !globalThis.Array.isArray(value))) {
-      return yield { type: ValueErrorType.Object, schema, path, value, message: `Expected object` }
+    if (Settings.TypeSystem === 'json-schema') {
+      if (!(typeof value === 'object' && value !== null && !globalThis.Array.isArray(value))) {
+        return yield { type: ValueErrorType.Object, schema, path, value, message: `Expected object` }
+      }
+    } else if (Settings.TypeSystem === 'structural') {
+      if (!(typeof value === 'object' && value !== null)) {
+        return yield { type: ValueErrorType.Object, schema, path, value, message: `Expected object` }
+      }
     }
-    if (IsNumber(schema.minProperties) && !(globalThis.Object.keys(value).length >= schema.minProperties)) {
+    if (IsNumber(schema.minProperties) && !(globalThis.Object.getOwnPropertyNames(value).length >= schema.minProperties)) {
       yield { type: ValueErrorType.ObjectMinProperties, schema, path, value, message: `Expected object to have at least ${schema.minProperties} properties` }
     }
-    if (IsNumber(schema.maxProperties) && !(globalThis.Object.keys(value).length <= schema.maxProperties)) {
+    if (IsNumber(schema.maxProperties) && !(globalThis.Object.getOwnPropertyNames(value).length <= schema.maxProperties)) {
       yield { type: ValueErrorType.ObjectMaxProperties, schema, path, value, message: `Expected object to have less than ${schema.minProperties} properties` }
     }
-    const propertyKeys = globalThis.Object.keys(schema.properties)
+    const propertyNames = globalThis.Object.getOwnPropertyNames(schema.properties)
     if (schema.additionalProperties === false) {
-      for (const objectKey of globalThis.Object.keys(value)) {
-        if (!propertyKeys.includes(objectKey)) {
-          yield { type: ValueErrorType.ObjectAdditionalProperties, schema, path: `${path}/${objectKey}`, value: value[objectKey], message: `Unexpected property` }
+      for (const propertyName of globalThis.Object.getOwnPropertyNames(value)) {
+        if (!propertyNames.includes(propertyName)) {
+          yield { type: ValueErrorType.ObjectAdditionalProperties, schema, path: `${path}/${propertyName}`, value: value[propertyName], message: `Unexpected property` }
         }
       }
     }
-
     if (schema.required && schema.required.length > 0) {
-      const objectKeys = globalThis.Object.keys(value)
+      const propertyNames = globalThis.Object.getOwnPropertyNames(value)
       for (const requiredKey of schema.required) {
-        if (objectKeys.includes(requiredKey)) continue
+        if (propertyNames.includes(requiredKey)) continue
         yield { type: ValueErrorType.ObjectRequiredProperties, schema: schema.properties[requiredKey], path: `${path}/${requiredKey}`, value: undefined, message: `Expected required property` }
       }
     }
     if (typeof schema.additionalProperties === 'object') {
-      for (const objectKey of globalThis.Object.keys(value)) {
-        if (propertyKeys.includes(objectKey)) continue
-        yield* Visit(schema.additionalProperties as Types.TSchema, references, `${path}/${objectKey}`, value[objectKey])
+      for (const propertyName of globalThis.Object.getOwnPropertyNames(value)) {
+        if (propertyNames.includes(propertyName)) continue
+        yield* Visit(schema.additionalProperties as Types.TSchema, references, `${path}/${propertyName}`, value[propertyName])
       }
     }
-    for (const propertyKey of propertyKeys) {
+    for (const propertyKey of propertyNames) {
       const propertySchema = schema.properties[propertyKey]
       if (schema.required && schema.required.includes(propertyKey)) {
         yield* Visit(propertySchema, references, `${path}/${propertyKey}`, value[propertyKey])
@@ -283,12 +289,18 @@ export namespace ValueErrors {
   }
 
   function* Record(schema: Types.TRecord, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
-    if (!(typeof value === 'object' && value !== null && !globalThis.Array.isArray(value))) {
-      return yield { type: ValueErrorType.Object, schema, path, value, message: `Expected object` }
+    if (Settings.TypeSystem === 'json-schema') {
+      if (!(typeof value === 'object' && value !== null && !globalThis.Array.isArray(value))) {
+        return yield { type: ValueErrorType.Object, schema, path, value, message: `Expected object` }
+      }
+    } else if (Settings.TypeSystem === 'structural') {
+      if (!(typeof value === 'object' && value !== null)) {
+        return yield { type: ValueErrorType.Object, schema, path, value, message: `Expected object` }
+      }
     }
     const [keyPattern, valueSchema] = globalThis.Object.entries(schema.patternProperties)[0]
     const regex = new RegExp(keyPattern)
-    if (!globalThis.Object.keys(value).every((key) => regex.test(key))) {
+    if (!globalThis.Object.getOwnPropertyNames(value).every((key) => regex.test(key))) {
       const numeric = keyPattern === '^(0|[1-9][0-9]*)$'
       const type = numeric ? ValueErrorType.RecordKeyNumeric : ValueErrorType.RecordKeyString
       const message = numeric ? 'Expected all object property keys to be numeric' : 'Expected all object property keys to be strings'

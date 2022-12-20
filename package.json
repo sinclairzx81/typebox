@@ -20,6 +20,7 @@
     "./format": "./format/index.js",
     "./guard": "./guard/index.js",
     "./hash": "./hash/index.js",
+    "./settings": "./settings/index.js",
     "./value": "./value/index.js",
     ".": "./typebox.js"
   },

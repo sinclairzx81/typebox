@@ -1,5 +1,5 @@
 import { Type } from '@sinclair/typebox'
-import { ok, fail } from './validate'
+import { Ok, Fail } from './validate'
 import { strictEqual } from 'assert'
 
 describe('type/schema/Omit', () => {
@@ -13,7 +13,7 @@ describe('type/schema/Omit', () => {
       { additionalProperties: false },
     )
     const T = Type.Omit(A, ['z'])
-    ok(T, { x: 1, y: 1 })
+    Ok(T, { x: 1, y: 1 })
   })
 
   it('Should remove required properties on the target schema', () => {
@@ -67,7 +67,7 @@ describe('type/schema/Omit', () => {
       y: Type.Number(),
     })
     const T = Type.Omit(A, Type.KeyOf(B), { additionalProperties: false })
-    ok(T, { z: 0 })
-    fail(T, { x: 0, y: 0, z: 0 })
+    Ok(T, { z: 0 })
+    Fail(T, { x: 0, y: 0, z: 0 })
   })
 })

@@ -1,33 +1,33 @@
 import { Type } from '@sinclair/typebox'
-import { ok, fail } from './validate'
+import { Ok, Fail } from './validate'
 
 describe('type/schema/Unknown', () => {
   it('Should validate number', () => {
     const T = Type.Any()
-    ok(T, 1)
+    Ok(T, 1)
   })
   it('Should validate string', () => {
     const T = Type.Any()
-    ok(T, 'hello')
+    Ok(T, 'hello')
   })
   it('Should validate boolean', () => {
     const T = Type.Any()
-    ok(T, true)
+    Ok(T, true)
   })
   it('Should validate array', () => {
     const T = Type.Any()
-    ok(T, [1, 2, 3])
+    Ok(T, [1, 2, 3])
   })
   it('Should validate object', () => {
     const T = Type.Any()
-    ok(T, { a: 1, b: 2 })
+    Ok(T, { a: 1, b: 2 })
   })
   it('Should validate null', () => {
     const T = Type.Any()
-    ok(T, null)
+    Ok(T, null)
   })
   it('Should validate undefined', () => {
     const T = Type.Any()
-    ok(T, undefined)
+    Ok(T, undefined)
   })
 })

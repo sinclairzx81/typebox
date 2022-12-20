@@ -1,5 +1,5 @@
 import { Type, Modifier } from '@sinclair/typebox'
-import { ok, fail } from './validate'
+import { Ok, Fail } from './validate'
 import { strictEqual } from 'assert'
 
 describe('type/compiler/compiler/Required', () => {
@@ -13,10 +13,10 @@ describe('type/compiler/compiler/Required', () => {
       { additionalProperties: false },
     )
     const T = Type.Required(A)
-    ok(T, { x: 1, y: 1, z: 1 })
-    fail(T, { x: 1, y: 1 })
-    fail(T, { x: 1 })
-    fail(T, {})
+    Ok(T, { x: 1, y: 1, z: 1 })
+    Fail(T, { x: 1, y: 1 })
+    Fail(T, { x: 1 })
+    Fail(T, {})
   })
 
   it('Should update modifier types correctly when converting to required', () => {

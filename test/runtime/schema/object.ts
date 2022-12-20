@@ -1,30 +1,30 @@
 import { Type } from '@sinclair/typebox'
-import { ok, fail } from './validate'
+import { Ok, Fail } from './validate'
 
 describe('type/schema/Object', () => {
   it('Should not validate a number', () => {
     const T = Type.Object({})
-    fail(T, 42)
+    Fail(T, 42)
   })
 
   it('Should not validate a string', () => {
     const T = Type.Object({})
-    fail(T, 'hello')
+    Fail(T, 'hello')
   })
 
   it('Should not validate a boolean', () => {
     const T = Type.Object({})
-    fail(T, true)
+    Fail(T, true)
   })
 
   it('Should not validate a null', () => {
     const T = Type.Object({})
-    fail(T, null)
+    Fail(T, null)
   })
 
   it('Should not validate an array', () => {
     const T = Type.Object({})
-    fail(T, [1, 2])
+    Fail(T, [1, 2])
   })
 
   it('Should validate with correct property values', () => {
@@ -35,7 +35,7 @@ describe('type/schema/Object', () => {
       d: Type.Array(Type.Number()),
       e: Type.Object({ x: Type.Number(), y: Type.Number() }),
     })
-    ok(T, {
+    Ok(T, {
       a: 10,
       b: 'hello',
       c: true,
@@ -52,7 +52,7 @@ describe('type/schema/Object', () => {
       d: Type.Array(Type.Number()),
       e: Type.Object({ x: Type.Number(), y: Type.Number() }),
     })
-    fail(T, {
+    Fail(T, {
       a: 'not a number', // error
       b: 'hello',
       c: true,
@@ -66,7 +66,7 @@ describe('type/schema/Object', () => {
       a: Type.Number(),
       b: Type.String(),
     })
-    ok(T, {
+    Ok(T, {
       a: 1,
       b: 'hello',
       c: true,
@@ -81,9 +81,9 @@ describe('type/schema/Object', () => {
       },
       { additionalProperties: false, minProperties: 1 },
     )
-    ok(T, { a: 1 })
-    ok(T, { b: 'hello' })
-    fail(T, {})
+    Ok(T, { a: 1 })
+    Ok(T, { b: 'hello' })
+    Fail(T, {})
   })
 
   it('Should not allow 3 properties if maxProperties is set to 2', () => {
@@ -95,9 +95,9 @@ describe('type/schema/Object', () => {
       },
       { additionalProperties: false, maxProperties: 2 },
     )
-    ok(T, { a: 1 })
-    ok(T, { a: 1, b: 'hello' })
-    fail(T, {
+    Ok(T, { a: 1 })
+    Ok(T, { a: 1, b: 'hello' })
+    Fail(T, {
       a: 1,
       b: 'hello',
       c: true,
@@ -112,7 +112,7 @@ describe('type/schema/Object', () => {
       },
       { additionalProperties: false },
     )
-    fail(T, {
+    Fail(T, {
       a: 1,
       b: 'hello',
       c: true,
@@ -121,8 +121,8 @@ describe('type/schema/Object', () => {
 
   it('Should not allow properties for an empty object when additionalProperties is false', () => {
     const T = Type.Object({}, { additionalProperties: false })
-    ok(T, {})
-    fail(T, { a: 10 })
+    Ok(T, {})
+    Fail(T, { a: 10 })
   })
 
   it('Should validate with non-syntax property keys', () => {
@@ -132,7 +132,7 @@ describe('type/schema/Object', () => {
       '$-leading': Type.Literal(3),
       '!@#$%^&*(': Type.Literal(4),
     })
-    ok(T, {
+    Ok(T, {
       'with-hyphen': 1,
       '0-leading': 2,
       '$-leading': 3,
@@ -150,12 +150,12 @@ describe('type/schema/Object', () => {
         additionalProperties: Type.String(),
       },
     )
-    ok(T, {
+    Ok(T, {
       x: 1,
       y: 2,
       z: 'hello',
     })
-    fail(T, {
+    Fail(T, {
       x: 1,
       y: 2,
       z: 3,
@@ -172,12 +172,12 @@ describe('type/schema/Object', () => {
         additionalProperties: Type.Array(Type.Number()),
       },
     )
-    ok(T, {
+    Ok(T, {
       x: 1,
       y: 2,
       z: [0, 1, 2],
     })
-    fail(T, {
+    Fail(T, {
       x: 1,
       y: 2,
       z: 3,
@@ -196,12 +196,12 @@ describe('type/schema/Object', () => {
         }),
       },
     )
-    ok(T, {
+    Ok(T, {
       x: 1,
       y: 2,
       z: { z: 1 },
     })
-    fail(T, {
+    Fail(T, {
       x: 1,
       y: 2,
       z: 3,

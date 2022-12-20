@@ -1,5 +1,5 @@
 import { Type } from '@sinclair/typebox'
-import { ok, fail } from './validate'
+import { Ok, Fail } from './validate'
 import { Assert } from '../assert/index'
 
 describe('type/schema/Ref', () => {
@@ -13,7 +13,7 @@ describe('type/schema/Ref', () => {
       { $id: 'T' },
     )
     const R = Type.Ref(T)
-    ok(
+    Ok(
       R,
       {
         x: 1,
@@ -34,7 +34,7 @@ describe('type/schema/Ref', () => {
       { $id: 'T' },
     )
     const R = Type.Ref(T)
-    fail(
+    Fail(
       R,
       {
         x: 1,
@@ -61,9 +61,9 @@ describe('type/schema/Ref', () => {
       { $id: 'T' },
     )
 
-    ok(T, { x: 1, y: 2, z: 3 }, [R])
-    ok(T, { x: 1, y: 2, z: 3, r: { name: 'hello' } }, [R])
-    fail(T, { x: 1, y: 2, z: 3, r: { name: 1 } }, [R])
-    fail(T, { x: 1, y: 2, z: 3, r: {} }, [R])
+    Ok(T, { x: 1, y: 2, z: 3 }, [R])
+    Ok(T, { x: 1, y: 2, z: 3, r: { name: 'hello' } }, [R])
+    Fail(T, { x: 1, y: 2, z: 3, r: { name: 1 } }, [R])
+    Fail(T, { x: 1, y: 2, z: 3, r: {} }, [R])
   })
 })
