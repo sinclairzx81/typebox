@@ -1,6 +1,6 @@
 import { Type } from '@sinclair/typebox'
 import { Assert } from '../assert/index'
-import { ok, fail } from './validate'
+import { Ok, Fail } from './validate'
 
 describe('type/compiler/Recursive', () => {
   it('Should generate default ordinal $id if not specified', () => {
@@ -32,7 +32,7 @@ describe('type/compiler/Recursive', () => {
         nodes: Type.Array(Self),
       }),
     )
-    ok(Node, {
+    Ok(Node, {
       id: 'A',
       nodes: [
         { id: 'B', nodes: [] },
@@ -50,7 +50,7 @@ describe('type/compiler/Recursive', () => {
         }),
       ),
     ])
-    ok(Node, [
+    Ok(Node, [
       {
         id: 'A',
         nodes: [
@@ -70,7 +70,7 @@ describe('type/compiler/Recursive', () => {
         }),
       ),
     ])
-    fail(Node, [
+    Fail(Node, [
       {
         id: 'A',
         nodes: [

@@ -1,5 +1,5 @@
 import { Type } from '@sinclair/typebox'
-import { ok, fail } from './validate'
+import { Ok, Fail } from './validate'
 import { strictEqual } from 'assert'
 
 describe('type/compiler/Pick', () => {
@@ -13,7 +13,7 @@ describe('type/compiler/Pick', () => {
       { additionalProperties: false },
     )
     const T = Type.Pick(Vector3, ['x', 'y'])
-    ok(T, { x: 1, y: 1 })
+    Ok(T, { x: 1, y: 1 })
   })
 
   it('Should remove required properties on the target schema', () => {
@@ -54,7 +54,7 @@ describe('type/compiler/Pick', () => {
       y: Type.Number(),
     })
     const T = Type.Pick(A, Type.KeyOf(B), { additionalProperties: false })
-    ok(T, { x: 0, y: 0 })
-    fail(T, { x: 0, y: 0, z: 0 })
+    Ok(T, { x: 0, y: 0 })
+    Fail(T, { x: 0, y: 0, z: 0 })
   })
 })

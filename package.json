@@ -1,6 +1,6 @@
 {
   "name": "@sinclair/typebox",
-  "version": "0.25.14",
+  "version": "0.25.15",
   "description": "JSONSchema Type Builder with Static Type Resolution for TypeScript",
   "keywords": [
     "typescript",
@@ -20,6 +20,7 @@
     "./format": "./format/index.js",
     "./guard": "./guard/index.js",
     "./hash": "./hash/index.js",
+    "./system": "./system/index.js",
     "./value": "./value/index.js",
     ".": "./typebox.js"
   },

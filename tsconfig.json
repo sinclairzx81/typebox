@@ -28,6 +28,9 @@
       "@sinclair/typebox/hash": [
         "src/hash/index.ts"
       ],
+      "@sinclair/typebox/system": [
+        "src/system/index.ts"
+      ],
       "@sinclair/typebox/value": [
         "src/value/index.ts"
       ],

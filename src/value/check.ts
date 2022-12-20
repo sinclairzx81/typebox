@@ -27,6 +27,7 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import * as Types from '../typebox'
+import { TypeSystem } from '../system/index'
 import { Format } from '../format/index'
 import { Custom } from '../custom/index'
 import { ValueHash } from '../hash/index'
@@ -70,6 +71,7 @@ export namespace ValueCheck {
   function Constructor(schema: Types.TConstructor, references: Types.TSchema[], value: any): boolean {
     return Visit(schema.returns, references, value.prototype)
   }
+
   function Date(schema: Types.TDate, references: Types.TSchema[], value: any): boolean {
     if (!(value instanceof globalThis.Date)) {
       return false
@@ -153,31 +155,37 @@ export namespace ValueCheck {
   }
 
   function Object(schema: Types.TObject, references: Types.TSchema[], value: any): boolean {
-    if (!(typeof value === 'object' && value !== null && !globalThis.Array.isArray(value))) {
+    if (TypeSystem.Kind === 'json-schema') {
+      if (!(typeof value === 'object' && value !== null && !globalThis.Array.isArray(value))) {
+        return false
+      }
+    } else if (TypeSystem.Kind === 'structural') {
+      if (!(typeof value === 'object' && value !== null)) {
+        return false
+      }
+    }
+    if (IsNumber(schema.minProperties) && !(globalThis.Object.getOwnPropertyNames(value).length >= schema.minProperties)) {
       return false
     }
-    if (IsNumber(schema.minProperties) && !(globalThis.Object.keys(value).length >= schema.minProperties)) {
+    if (IsNumber(schema.maxProperties) && !(globalThis.Object.getOwnPropertyNames(value).length <= schema.maxProperties)) {
       return false
     }
-    if (IsNumber(schema.maxProperties) && !(globalThis.Object.keys(value).length <= schema.maxProperties)) {
-      return false
-    }
-    const propertyKeys = globalThis.Object.keys(schema.properties)
+    const propertyKeys = globalThis.Object.getOwnPropertyNames(schema.properties)
     if (schema.additionalProperties === false) {
       // optimization: If the property key length matches the required keys length
       // then we only need check that the values property key length matches that
       // of the property key length. This is because exhaustive testing for values
       // will occur in subsequent property tests.
-      if (schema.required && schema.required.length === propertyKeys.length && !(globalThis.Object.keys(value).length === propertyKeys.length)) {
+      if (schema.required && schema.required.length === propertyKeys.length && !(globalThis.Object.getOwnPropertyNames(value).length === propertyKeys.length)) {
         return false
       } else {
-        if (!globalThis.Object.keys(value).every((key) => propertyKeys.includes(key))) {
+        if (!globalThis.Object.getOwnPropertyNames(value).every((key) => propertyKeys.includes(key))) {
           return false
         }
       }
     }
     if (typeof schema.additionalProperties === 'object') {
-      for (const objectKey of globalThis.Object.keys(value)) {
+      for (const objectKey of globalThis.Object.getOwnPropertyNames(value)) {
         if (propertyKeys.includes(objectKey)) continue
         if (!Visit(schema.additionalProperties as Types.TSchema, references, value[objectKey])) {
           return false
@@ -206,12 +214,18 @@ export namespace ValueCheck {
   }
 
   function Record(schema: Types.TRecord<any, any>, references: Types.TSchema[], value: any): boolean {
-    if (!(typeof value === 'object' && value !== null && !globalThis.Array.isArray(value) && !(value instanceof globalThis.Date))) {
-      return false
+    if (TypeSystem.Kind === 'json-schema') {
+      if (!(typeof value === 'object' && value !== null && !globalThis.Array.isArray(value) && !(value instanceof globalThis.Date))) {
+        return false
+      }
+    } else if (TypeSystem.Kind === 'structural') {
+      if (!(typeof value === 'object' && value !== null && !(value instanceof globalThis.Date))) {
+        return false
+      }
     }
     const [keyPattern, valueSchema] = globalThis.Object.entries(schema.patternProperties)[0]
     const regex = new RegExp(keyPattern)
-    if (!globalThis.Object.keys(value).every((key) => regex.test(key))) {
+    if (!globalThis.Object.getOwnPropertyNames(value).every((key) => regex.test(key))) {
       return false
     }
     for (const propValue of globalThis.Object.values(value)) {

@@ -1,35 +1,35 @@
 import { Type } from '@sinclair/typebox'
-import { ok, fail } from './validate'
+import { Ok, Fail } from './validate'
 
 describe('type/schema/RegEx', () => {
   it('Should validate numeric value', () => {
     const T = Type.RegEx(/[012345]/)
-    ok(T, '0')
-    ok(T, '1')
-    ok(T, '2')
-    ok(T, '3')
-    ok(T, '4')
-    ok(T, '5')
+    Ok(T, '0')
+    Ok(T, '1')
+    Ok(T, '2')
+    Ok(T, '3')
+    Ok(T, '4')
+    Ok(T, '5')
   })
 
   it('Should validate true or false string value', () => {
     const T = Type.RegEx(/true|false/)
-    ok(T, 'true')
-    ok(T, 'true')
-    ok(T, 'true')
-    ok(T, 'false')
-    ok(T, 'false')
-    ok(T, 'false')
-    fail(T, '6')
+    Ok(T, 'true')
+    Ok(T, 'true')
+    Ok(T, 'true')
+    Ok(T, 'false')
+    Ok(T, 'false')
+    Ok(T, 'false')
+    Fail(T, '6')
   })
 
   it('Should not validate failed regex test', () => {
     const T = Type.RegEx(/true|false/)
-    fail(T, 'unknown')
+    Fail(T, 'unknown')
   })
 
   it('Should pass numeric 5 digit test', () => {
     const T = Type.RegEx(/[\d]{5}/)
-    ok(T, '12345')
+    Ok(T, '12345')
   })
 })

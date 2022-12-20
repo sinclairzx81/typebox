@@ -1,6 +1,6 @@
 import { deepStrictEqual, strictEqual } from 'assert'
 import { Type } from '@sinclair/typebox'
-import { ok, fail } from './validate'
+import { Ok, Fail } from './validate'
 
 describe('type/compiler/Readonly', () => {
   it('Should validate object with readonly', () => {
@@ -11,7 +11,7 @@ describe('type/compiler/Readonly', () => {
       },
       { additionalProperties: false },
     )
-    ok(T, { a: 'hello', b: 'world' })
+    Ok(T, { a: 'hello', b: 'world' })
   })
 
   it('Should retain required array on object', () => {

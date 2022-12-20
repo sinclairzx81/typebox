@@ -1,39 +1,39 @@
 import { Type } from '@sinclair/typebox'
-import { ok, fail } from './validate'
+import { Ok, Fail } from './validate'
 
 describe('type/schema/Void', () => {
   it('Should not validate number', () => {
     const T = Type.Void()
-    fail(T, 1)
+    Fail(T, 1)
   })
 
   it('Should not validate string', () => {
     const T = Type.Void()
-    fail(T, 'hello')
+    Fail(T, 'hello')
   })
 
   it('Should not validate boolean', () => {
     const T = Type.Void()
-    fail(T, true)
+    Fail(T, true)
   })
 
   it('Should not validate array', () => {
     const T = Type.Void()
-    fail(T, [1, 2, 3])
+    Fail(T, [1, 2, 3])
   })
 
   it('Should not validate object', () => {
     const T = Type.Void()
-    fail(T, { a: 1, b: 2 })
+    Fail(T, { a: 1, b: 2 })
   })
 
   it('Should validate null', () => {
     const T = Type.Null()
-    ok(T, null)
+    Ok(T, null)
   })
 
   it('Should not validate undefined', () => {
     const T = Type.Void()
-    fail(T, undefined)
+    Fail(T, undefined)
   })
 })

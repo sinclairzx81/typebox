@@ -63,7 +63,7 @@ Format.Set('email', (value) => EMAIL.test(value))
 Format.Set('uuid', (value) => UUID.test(value))
 Format.Set('date-time', (value) => isDateTime(value, true))
 
-export function ok<T extends TSchema>(schema: T, data: unknown, references: any[] = []) {
+export function Ok<T extends TSchema>(schema: T, data: unknown, references: any[] = []) {
   const C = TypeCompiler.Compile(schema, references)
   const result = C.Check(data)
   if (result !== Value.Check(schema, references, data)) {
@@ -72,6 +72,10 @@ export function ok<T extends TSchema>(schema: T, data: unknown, references: any[
   if (result === false) {
     const errors = [...Value.Errors(schema, references, data)]
     if (errors.length === 0) throw Error('expected at least 1 error')
+  }
+  if (result === true) {
+    const errors = [...Value.Errors(schema, references, data)]
+    if (errors.length > 0) throw Error('expected no errors')
   }
   if (!result) {
     console.log('---------------------------')
@@ -90,12 +94,16 @@ export function ok<T extends TSchema>(schema: T, data: unknown, references: any[
   }
 }
 
-export function fail<T extends TSchema>(schema: T, data: unknown, references: any[] = []) {
+export function Fail<T extends TSchema>(schema: T, data: unknown, references: any[] = []) {
   const C = TypeCompiler.Compile(schema, references)
   const result = C.Check(data)
   if (result === false) {
     const errors = [...Value.Errors(schema, references, data)]
     if (errors.length === 0) throw Error('expected at least 1 error')
+  }
+  if (result === true) {
+    const errors = [...Value.Errors(schema, references, data)]
+    if (errors.length > 0) throw Error('expected no errors')
   }
   if (result) {
     console.log('---------------------------')

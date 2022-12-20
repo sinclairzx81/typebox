@@ -39,7 +39,7 @@ export function createAjv(references: AnySchema[]) {
     .addSchema(references)
 }
 
-export function ok<T extends TSchema>(type: T, data: unknown, additional: AnySchema[] = []) {
+export function Ok<T extends TSchema>(type: T, data: unknown, additional: AnySchema[] = []) {
   const ajv = createAjv(additional)
   function execute() {
     // required as ajv will throw if referenced schema is not found
@@ -66,7 +66,7 @@ export function ok<T extends TSchema>(type: T, data: unknown, additional: AnySch
   }
 }
 
-export function fail<T extends TSchema>(type: T, data: unknown, additional: AnySchema[] = []) {
+export function Fail<T extends TSchema>(type: T, data: unknown, additional: AnySchema[] = []) {
   const ajv = createAjv(additional)
   function execute() {
     // required as ajv will throw if referenced schema is not found

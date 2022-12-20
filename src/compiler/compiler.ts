@@ -27,6 +27,7 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import { ValueErrors, ValueError } from '../errors/index'
+import { TypeSystem } from '../system/index'
 import { TypeGuard } from '../guard/index'
 import { Format } from '../format/index'
 import { Custom } from '../custom/index'
@@ -185,26 +186,30 @@ export namespace TypeCompiler {
   }
 
   function* Object(schema: Types.TObject, value: string): IterableIterator<string> {
-    yield `(typeof ${value} === 'object' && ${value} !== null && !Array.isArray(${value}))`
-    if (IsNumber(schema.minProperties)) yield `(Object.keys(${value}).length >= ${schema.minProperties})`
-    if (IsNumber(schema.maxProperties)) yield `(Object.keys(${value}).length <= ${schema.maxProperties})`
-    const propertyKeys = globalThis.Object.keys(schema.properties)
+    if (TypeSystem.Kind === 'json-schema') {
+      yield `(typeof ${value} === 'object' && ${value} !== null && !Array.isArray(${value}))`
+    } else if (TypeSystem.Kind === 'structural') {
+      yield `(typeof ${value} === 'object' && ${value} !== null)`
+    }
+    if (IsNumber(schema.minProperties)) yield `(Object.getOwnPropertyNames(${value}).length >= ${schema.minProperties})`
+    if (IsNumber(schema.maxProperties)) yield `(Object.getOwnPropertyNames(${value}).length <= ${schema.maxProperties})`
+    const propertyKeys = globalThis.Object.getOwnPropertyNames(schema.properties)
     if (schema.additionalProperties === false) {
       // Optimization: If the property key length matches the required keys length
       // then we only need check that the values property key length matches that
       // of the property key length. This is because exhaustive testing for values
       // will occur in subsequent property tests.
       if (schema.required && schema.required.length === propertyKeys.length) {
-        yield `(Object.keys(${value}).length === ${propertyKeys.length})`
+        yield `(Object.getOwnPropertyNames(${value}).length === ${propertyKeys.length})`
       } else {
         const keys = `[${propertyKeys.map((key) => `'${key}'`).join(', ')}]`
-        yield `(Object.keys(${value}).every(key => ${keys}.includes(key)))`
+        yield `(Object.getOwnPropertyNames(${value}).every(key => ${keys}.includes(key)))`
       }
     }
     if (TypeGuard.TSchema(schema.additionalProperties)) {
       const expression = CreateExpression(schema.additionalProperties, 'value[key]')
       const keys = `[${propertyKeys.map((key) => `'${key}'`).join(', ')}]`
-      yield `(Object.keys(${value}).every(key => ${keys}.includes(key) || ${expression}))`
+      yield `(Object.getOwnPropertyNames(${value}).every(key => ${keys}.includes(key) || ${expression}))`
     }
     for (const propertyKey of propertyKeys) {
       const memberExpression = Property.Check(propertyKey) ? `${value}.${propertyKey}` : `${value}['${propertyKey}']`
@@ -223,10 +228,14 @@ export namespace TypeCompiler {
   }
 
   function* Record(schema: Types.TRecord<any, any>, value: string): IterableIterator<string> {
-    yield `(typeof ${value} === 'object' && ${value} !== null && !Array.isArray(${value}) && !(${value} instanceof Date))`
+    if (TypeSystem.Kind === 'json-schema') {
+      yield `(typeof ${value} === 'object' && ${value} !== null && !Array.isArray(${value}) && !(${value} instanceof Date))`
+    } else if (TypeSystem.Kind === 'structural') {
+      yield `(typeof ${value} === 'object' && ${value} !== null && !(${value} instanceof Date))`
+    }
     const [keyPattern, valueSchema] = globalThis.Object.entries(schema.patternProperties)[0]
     const local = PushLocal(`new RegExp(/${keyPattern}/)`)
-    yield `(Object.keys(${value}).every(key => ${local}.test(key)))`
+    yield `(Object.getOwnPropertyNames(${value}).every(key => ${local}.test(key)))`
     const expression = CreateExpression(valueSchema, 'value')
     yield `(Object.values(${value}).every(value => ${expression}))`
   }

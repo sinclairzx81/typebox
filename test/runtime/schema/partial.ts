@@ -1,5 +1,5 @@
 import { Type, Modifier } from '@sinclair/typebox'
-import { ok, fail } from './validate'
+import { Ok, Fail } from './validate'
 import { strictEqual } from 'assert'
 
 describe('type/schema/Partial', () => {
@@ -13,10 +13,10 @@ describe('type/schema/Partial', () => {
       { additionalProperties: false },
     )
     const T = Type.Partial(A)
-    ok(T, { x: 1, y: 1, z: 1 })
-    ok(T, { x: 1, y: 1 })
-    ok(T, { x: 1 })
-    ok(T, {})
+    Ok(T, { x: 1, y: 1, z: 1 })
+    Ok(T, { x: 1, y: 1 })
+    Ok(T, { x: 1 })
+    Ok(T, {})
   })
 
   it('Should update modifier types correctly when converting to partial', () => {

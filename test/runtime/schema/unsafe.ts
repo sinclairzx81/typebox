@@ -1,5 +1,5 @@
 import { Type } from '@sinclair/typebox'
-import { ok, fail } from './validate'
+import { Ok, Fail } from './validate'
 
 describe('type/schema/Unsafe', () => {
   it('Should validate an unsafe type', () => {
@@ -12,7 +12,7 @@ describe('type/schema/Unsafe', () => {
       },
       additionalProperties: false,
     })
-    ok(T, { x: 1, y: 2, z: 3 })
-    fail(T, { x: 1, y: 2, z: 3, w: 4 })
+    Ok(T, { x: 1, y: 2, z: 3 })
+    Fail(T, { x: 1, y: 2, z: 3, w: 4 })
   })
 })

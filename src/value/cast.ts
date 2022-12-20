@@ -250,10 +250,10 @@ export namespace ValueCast {
     }
     // additional schema properties
     if (typeof schema.additionalProperties === 'object') {
-      const propertyKeys = globalThis.Object.keys(schema.properties)
-      for (const objectKey of globalThis.Object.keys(value)) {
-        if (propertyKeys.includes(objectKey)) continue
-        result[objectKey] = Visit(schema.additionalProperties, references, value[objectKey])
+      const propertyNames = globalThis.Object.getOwnPropertyNames(schema.properties)
+      for (const propertyName of globalThis.Object.getOwnPropertyNames(value)) {
+        if (propertyNames.includes(propertyName)) continue
+        result[propertyName] = Visit(schema.additionalProperties, references, value[propertyName])
       }
     }
     return result
@@ -266,8 +266,8 @@ export namespace ValueCast {
   function Record(schema: Types.TRecord<any, any>, references: Types.TSchema[], value: any): any {
     if (ValueCheck.Check(schema, references, value)) return ValueClone.Clone(value)
     if (value === null || typeof value !== 'object' || globalThis.Array.isArray(value) || value instanceof globalThis.Date) return ValueCreate.Create(schema, references)
-    const subschemaKey = globalThis.Object.keys(schema.patternProperties)[0]
-    const subschema = schema.patternProperties[subschemaKey]
+    const subschemaPropertyName = globalThis.Object.getOwnPropertyNames(schema.patternProperties)[0]
+    const subschema = schema.patternProperties[subschemaPropertyName]
     const result = {} as Record<string, any>
     for (const [propKey, propValue] of globalThis.Object.entries(value)) {
       result[propKey] = Visit(subschema, references, propValue)

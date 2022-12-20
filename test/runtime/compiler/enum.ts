@@ -1,5 +1,5 @@
 import { Type } from '@sinclair/typebox'
-import { ok, fail } from './validate'
+import { Ok, Fail } from './validate'
 
 describe('type/compiler/Enum', () => {
   it('Should validate when emum uses default numeric values', () => {
@@ -8,8 +8,8 @@ describe('type/compiler/Enum', () => {
       Bar, // = 1
     }
     const T = Type.Enum(Kind)
-    ok(T, 0)
-    ok(T, 1)
+    Ok(T, 0)
+    Ok(T, 1)
   })
   it('Should not validate when given enum values are not numeric', () => {
     enum Kind {
@@ -17,8 +17,8 @@ describe('type/compiler/Enum', () => {
       Bar, // = 1
     }
     const T = Type.Enum(Kind)
-    fail(T, 'Foo')
-    fail(T, 'Bar')
+    Fail(T, 'Foo')
+    Fail(T, 'Bar')
   })
 
   it('Should validate when emum has defined string values', () => {
@@ -27,8 +27,8 @@ describe('type/compiler/Enum', () => {
       Bar = 'bar',
     }
     const T = Type.Enum(Kind)
-    ok(T, 'foo')
-    ok(T, 'bar')
+    Ok(T, 'foo')
+    Ok(T, 'bar')
   })
 
   it('Should not validate when emum has defined string values and user passes numeric', () => {
@@ -37,8 +37,8 @@ describe('type/compiler/Enum', () => {
       Bar = 'bar',
     }
     const T = Type.Enum(Kind)
-    fail(T, 0)
-    fail(T, 1)
+    Fail(T, 0)
+    Fail(T, 1)
   })
 
   it('Should validate when enum has one or more string values', () => {
@@ -47,10 +47,10 @@ describe('type/compiler/Enum', () => {
       Bar = 'bar',
     }
     const T = Type.Enum(Kind)
-    ok(T, 0)
-    ok(T, 'bar')
-    fail(T, 'baz')
-    fail(T, 'Foo')
-    fail(T, 1)
+    Ok(T, 0)
+    Ok(T, 'bar')
+    Fail(T, 'baz')
+    Fail(T, 'Foo')
+    Fail(T, 1)
   })
 })

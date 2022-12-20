@@ -1,5 +1,5 @@
 import { Type } from '@sinclair/typebox'
-import { ok, fail } from './validate'
+import { Ok, Fail } from './validate'
 import { strictEqual } from 'assert'
 
 describe('type/schema/KeyOf', () => {
@@ -11,10 +11,10 @@ describe('type/schema/KeyOf', () => {
         z: Type.Number(),
       }),
     )
-    ok(T, 'x')
-    ok(T, 'y')
-    ok(T, 'z')
-    fail(T, 'w')
+    Ok(T, 'x')
+    Ok(T, 'y')
+    Ok(T, 'z')
+    Fail(T, 'w')
   })
 
   it('Should validate when using pick', () => {
@@ -28,9 +28,9 @@ describe('type/schema/KeyOf', () => {
         ['x', 'y'],
       ),
     )
-    ok(T, 'x')
-    ok(T, 'y')
-    fail(T, 'z')
+    Ok(T, 'x')
+    Ok(T, 'y')
+    Fail(T, 'z')
   })
 
   it('Should validate when using omit', () => {
@@ -45,8 +45,8 @@ describe('type/schema/KeyOf', () => {
       ),
     )
 
-    fail(T, 'x')
-    fail(T, 'y')
-    ok(T, 'z')
+    Fail(T, 'x')
+    Fail(T, 'y')
+    Ok(T, 'z')
   })
 })
