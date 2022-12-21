@@ -99,9 +99,6 @@ export namespace ValueCheck {
     if (!(typeof value === 'number' && globalThis.Number.isInteger(value))) {
       return false
     }
-    if (!globalThis.Number.isInteger(value)) {
-      return false
-    }
     if (IsNumber(schema.multipleOf) && !(value % schema.multipleOf === 0)) {
       return false
     }
@@ -133,8 +130,14 @@ export namespace ValueCheck {
   }
 
   function Number(schema: Types.TNumber, references: Types.TSchema[], value: any): boolean {
-    if (!(typeof value === 'number' && !isNaN(value))) {
-      return false
+    if (TypeSystem.AllowNaN) {
+      if (!(typeof value === 'number')) {
+        return false
+      }
+    } else {
+      if (!(typeof value === 'number' && !isNaN(value))) {
+        return false
+      }
     }
     if (IsNumber(schema.multipleOf) && !(value % schema.multipleOf === 0)) {
       return false
@@ -155,12 +158,12 @@ export namespace ValueCheck {
   }
 
   function Object(schema: Types.TObject, references: Types.TSchema[], value: any): boolean {
-    if (TypeSystem.Kind === 'json-schema') {
-      if (!(typeof value === 'object' && value !== null && !globalThis.Array.isArray(value))) {
+    if (TypeSystem.AllowArrayObjects) {
+      if (!(typeof value === 'object' && value !== null)) {
         return false
       }
-    } else if (TypeSystem.Kind === 'structural') {
-      if (!(typeof value === 'object' && value !== null)) {
+    } else {
+      if (!(typeof value === 'object' && value !== null && !globalThis.Array.isArray(value))) {
         return false
       }
     }
@@ -214,12 +217,12 @@ export namespace ValueCheck {
   }
 
   function Record(schema: Types.TRecord<any, any>, references: Types.TSchema[], value: any): boolean {
-    if (TypeSystem.Kind === 'json-schema') {
-      if (!(typeof value === 'object' && value !== null && !globalThis.Array.isArray(value) && !(value instanceof globalThis.Date))) {
+    if (TypeSystem.AllowArrayObjects) {
+      if (!(typeof value === 'object' && value !== null && !(value instanceof globalThis.Date))) {
         return false
       }
-    } else if (TypeSystem.Kind === 'structural') {
-      if (!(typeof value === 'object' && value !== null && !(value instanceof globalThis.Date))) {
+    } else {
+      if (!(typeof value === 'object' && value !== null && !(value instanceof globalThis.Date) && !globalThis.Array.isArray(value))) {
         return false
       }
     }

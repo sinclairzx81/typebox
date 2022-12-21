@@ -2,14 +2,13 @@ import { Ok, Fail } from '../compiler/validate'
 import { TypeSystem } from '@sinclair/typebox/system'
 import { Type } from '@sinclair/typebox'
 
-describe('Settings/Structural', () => {
+describe('TypeSystem/AllowArrayObjects', () => {
   before(() => {
-    TypeSystem.Kind = 'structural'
+    TypeSystem.AllowArrayObjects = true
   })
   after(() => {
-    TypeSystem.Kind = 'json-schema'
+    TypeSystem.AllowArrayObjects = false
   })
-
   // ---------------------------------------------------------------
   // Object
   // ---------------------------------------------------------------

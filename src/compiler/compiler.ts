@@ -177,7 +177,11 @@ export namespace TypeCompiler {
   }
 
   function* Number(schema: Types.TNumber, value: string): IterableIterator<string> {
-    yield `(typeof ${value} === 'number' && !isNaN(${value}))`
+    if (TypeSystem.AllowNaN) {
+      yield `(typeof ${value} === 'number')`
+    } else {
+      yield `(typeof ${value} === 'number' && !isNaN(${value}))`
+    }
     if (IsNumber(schema.multipleOf)) yield `(${value} % ${schema.multipleOf} === 0)`
     if (IsNumber(schema.exclusiveMinimum)) yield `(${value} > ${schema.exclusiveMinimum})`
     if (IsNumber(schema.exclusiveMaximum)) yield `(${value} < ${schema.exclusiveMaximum})`
@@ -186,10 +190,10 @@ export namespace TypeCompiler {
   }
 
   function* Object(schema: Types.TObject, value: string): IterableIterator<string> {
-    if (TypeSystem.Kind === 'json-schema') {
-      yield `(typeof ${value} === 'object' && ${value} !== null && !Array.isArray(${value}))`
-    } else if (TypeSystem.Kind === 'structural') {
+    if (TypeSystem.AllowArrayObjects) {
       yield `(typeof ${value} === 'object' && ${value} !== null)`
+    } else {
+      yield `(typeof ${value} === 'object' && ${value} !== null && !Array.isArray(${value}))`
     }
     if (IsNumber(schema.minProperties)) yield `(Object.getOwnPropertyNames(${value}).length >= ${schema.minProperties})`
     if (IsNumber(schema.maxProperties)) yield `(Object.getOwnPropertyNames(${value}).length <= ${schema.maxProperties})`
@@ -228,10 +232,10 @@ export namespace TypeCompiler {
   }
 
   function* Record(schema: Types.TRecord<any, any>, value: string): IterableIterator<string> {
-    if (TypeSystem.Kind === 'json-schema') {
-      yield `(typeof ${value} === 'object' && ${value} !== null && !Array.isArray(${value}) && !(${value} instanceof Date))`
-    } else if (TypeSystem.Kind === 'structural') {
+    if (TypeSystem.AllowArrayObjects) {
       yield `(typeof ${value} === 'object' && ${value} !== null && !(${value} instanceof Date))`
+    } else {
+      yield `(typeof ${value} === 'object' && ${value} !== null && !(${value} instanceof Date) && !Array.isArray(${value}))`
     }
     const [keyPattern, valueSchema] = globalThis.Object.entries(schema.patternProperties)[0]
     const local = PushLocal(`new RegExp(/${keyPattern}/)`)
