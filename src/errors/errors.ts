@@ -173,10 +173,7 @@ export namespace ValueErrors {
 
   function* Integer(schema: Types.TNumeric, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     if (!(typeof value === 'number' && globalThis.Number.isInteger(value))) {
-      return yield { type: ValueErrorType.Number, schema, path, value, message: `Expected number` }
-    }
-    if (!globalThis.Number.isInteger(value)) {
-      yield { type: ValueErrorType.Integer, schema, path, value, message: `Expected integer` }
+      return yield { type: ValueErrorType.Integer, schema, path, value, message: `Expected integer` }
     }
     if (IsNumber(schema.multipleOf) && !(value % schema.multipleOf === 0)) {
       yield { type: ValueErrorType.IntegerMultipleOf, schema, path, value, message: `Expected integer to be a multiple of ${schema.multipleOf}` }
@@ -213,8 +210,14 @@ export namespace ValueErrors {
   }
 
   function* Number(schema: Types.TNumeric, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
-    if (!(typeof value === 'number' && !isNaN(value))) {
-      return yield { type: ValueErrorType.Number, schema, path, value, message: `Expected number` }
+    if (TypeSystem.AllowNaN) {
+      if (!(typeof value === 'number')) {
+        return yield { type: ValueErrorType.Number, schema, path, value, message: `Expected number` }
+      }
+    } else {
+      if (!(typeof value === 'number' && !isNaN(value))) {
+        return yield { type: ValueErrorType.Number, schema, path, value, message: `Expected number` }
+      }
     }
     if (IsNumber(schema.multipleOf) && !(value % schema.multipleOf === 0)) {
       yield { type: ValueErrorType.NumberMultipleOf, schema, path, value, message: `Expected number to be a multiple of ${schema.multipleOf}` }
@@ -234,12 +237,12 @@ export namespace ValueErrors {
   }
 
   function* Object(schema: Types.TObject, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
-    if (TypeSystem.Kind === 'json-schema') {
-      if (!(typeof value === 'object' && value !== null && !globalThis.Array.isArray(value))) {
+    if (TypeSystem.AllowArrayObjects) {
+      if (!(typeof value === 'object' && value !== null)) {
         return yield { type: ValueErrorType.Object, schema, path, value, message: `Expected object` }
       }
-    } else if (TypeSystem.Kind === 'structural') {
-      if (!(typeof value === 'object' && value !== null)) {
+    } else {
+      if (!(typeof value === 'object' && value !== null && !globalThis.Array.isArray(value))) {
         return yield { type: ValueErrorType.Object, schema, path, value, message: `Expected object` }
       }
     }
@@ -289,12 +292,12 @@ export namespace ValueErrors {
   }
 
   function* Record(schema: Types.TRecord, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
-    if (TypeSystem.Kind === 'json-schema') {
-      if (!(typeof value === 'object' && value !== null && !globalThis.Array.isArray(value) && !(value instanceof globalThis.Date))) {
+    if (TypeSystem.AllowArrayObjects) {
+      if (!(typeof value === 'object' && value !== null && !(value instanceof globalThis.Date))) {
         return yield { type: ValueErrorType.Object, schema, path, value, message: `Expected object` }
       }
-    } else if (TypeSystem.Kind === 'structural') {
-      if (!(typeof value === 'object' && value !== null && !(value instanceof globalThis.Date))) {
+    } else {
+      if (!(typeof value === 'object' && value !== null && !globalThis.Array.isArray(value) && !(value instanceof globalThis.Date))) {
         return yield { type: ValueErrorType.Object, schema, path, value, message: `Expected object` }
       }
     }

@@ -26,34 +26,13 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export class InvalidTypeSystemError extends Error {
-  constructor(typeSystem: string) {
-    super(`TypeSystemSettings: Unknown TypeSystem '${typeSystem}'`)
-  }
-}
-
-export type TypeSystemKind = 'json-schema' | 'structural'
-
-class TypeSystemSettings {
-  private kind: TypeSystemKind
-  constructor() {
-    this.kind = 'json-schema'
-  }
+export namespace TypeSystem {
   /**
-   * `Experimental` Sets the type system kind used by TypeBox. By default TypeBox uses `json-schema` assertion
-   * rules to verify JavaScript values. If setting the type system to `structural`, TypeBox will use TypeScript
-   * structural checking rules enabling Arrays to be validated as Objects.
+   * Sets whether arrays should be treated as kinds of objects.
    */
-  public get Kind(): TypeSystemKind {
-    return this.kind
-  }
-  public set Kind(value: TypeSystemKind) {
-    if (!(value === 'json-schema' || value === 'structural')) {
-      throw new InvalidTypeSystemError(value)
-    }
-    this.kind = value
-  }
+  export let AllowArrayObjects: boolean = false
+  /**
+   * Sets whether numeric checks should consider NaN a valid number type.
+   */
+  export let AllowNaN: boolean = false
 }
-
-/** TypeBox TypeSystem Settings */
-export const TypeSystem = new TypeSystemSettings()
