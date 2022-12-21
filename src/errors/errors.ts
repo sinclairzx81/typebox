@@ -297,7 +297,7 @@ export namespace ValueErrors {
         return yield { type: ValueErrorType.Object, schema, path, value, message: `Expected object` }
       }
     } else {
-      if (!(typeof value === 'object' && value !== null && !globalThis.Array.isArray(value) && !(value instanceof globalThis.Date))) {
+      if (!(typeof value === 'object' && value !== null && !(value instanceof globalThis.Date) && !globalThis.Array.isArray(value))) {
         return yield { type: ValueErrorType.Object, schema, path, value, message: `Expected object` }
       }
     }
