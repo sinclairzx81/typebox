@@ -28,11 +28,11 @@ THE SOFTWARE.
 
 export namespace TypeSystem {
   /**
-   * Sets whether arrays should be treated as kinds of objects.
+   * Sets whether arrays should be treated as kinds of objects. The default is `false`
    */
   export let AllowArrayObjects: boolean = false
   /**
-   * Sets whether numeric checks should consider NaN a valid number type.
+   * Sets whether numeric checks should consider NaN a valid number type. The default is `false`
    */
   export let AllowNaN: boolean = false
 }
