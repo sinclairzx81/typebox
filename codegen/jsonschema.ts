@@ -26,6 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { Formatter } from './formatter'
 import * as ts from 'typescript'
 
 export class NonExpressable extends Error {
@@ -35,7 +36,7 @@ export class NonExpressable extends Error {
 }
 
 /** Generates JsonSchema from TypeScript interface and type definitions */
-export namespace JsonSchemaCodeGen {
+export namespace JsonSchemaCodegen {
   function isReadonlyProperty(node: ts.PropertySignature): boolean {
     return node.modifiers !== undefined && node.modifiers.find((modifier) => modifier.getText() === 'readonly') !== undefined
   }
@@ -399,31 +400,11 @@ export namespace JsonSchemaCodeGen {
     }
   }
 
-  function Format(input: string): string {
-    function count(line: string, opens: string[]) {
-      const codes = opens.map((open) => open.charCodeAt(0))
-      return line
-        .split('')
-        .map((char) => char.charCodeAt(0))
-        .reduce((acc, current) => {
-          return codes.includes(current) ? acc + 1 : acc
-        }, 0)
-    }
-    let indent = 0
-    const output: string[] = []
-    for (const line of input.split('\n').map((n) => n.trim())) {
-      indent -= count(line, ['}', ']'])
-      output.push(`${''.padStart(indent * 2, ' ')}${line}`)
-      indent += count(line, ['{', '['])
-    }
-    return output.join('\n')
-  }
-
   /** Generates TypeBox types from TypeScript interface and type definitions */
   export function Generate(typescriptCode: string) {
     const source = ts.createSourceFile('code.ts', typescriptCode, ts.ScriptTarget.ESNext, true)
     const declarations = CollectNewLine(source)
-    const types = Format(declarations)
+    const types = Formatter.Format(declarations)
     return [types].join('\n')
   }
 }

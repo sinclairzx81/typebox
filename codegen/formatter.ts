@@ -26,28 +26,21 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { TSchema } from '@sinclair/typebox'
-import { TypeBoxCodegen } from './typebox'
-import { TypeScriptCodegen } from './typescript'
-import { JsonSchemaCodegen } from './jsonschema'
-import { ZodCodegen, ZodCodegenOptions } from './zod'
-
-export namespace Codegen {
-  /** Generates TypeScript type definitions from TypeBox types */
-  export function TypeScript(schema: TSchema, references: TSchema[] = []): string {
-    return TypeScriptCodegen.Generate(schema, references)
-  }
-  /** Generates Zod type definitions from TypeBox types */
-  export function Zod(schema: TSchema, references: TSchema[] = [], options: ZodCodegenOptions = { imports: true, exports: false }): string {
-    return ZodCodegen.Generate(schema, references, options)
-  }
-  /** Generates TypeBox type definitions from TypeScript code */
-  export function TypeBox(code: string): string {
-    return TypeBoxCodegen.Generate(code)
-  }
-
-  /** Generates JsonSchema definitions from TypeScript code */
-  export function JsonSchema(code: string): string {
-    return JsonSchemaCodegen.Generate(code)
+export namespace Formatter {
+  // Code formatter
+  export function Format(input: string): string {
+    function count(line: string, opens: string[]) {
+      const codes = opens.map((open) => open.charCodeAt(0))
+      // prettier-ignore
+      return line.split('').map((char) => char.charCodeAt(0)).reduce((acc, current) => codes.includes(current) ? acc + 1 : acc, 0)
+    }
+    let indent = 0
+    const output: string[] = []
+    for (const line of input.split('\n').map((n) => n.trim())) {
+      indent -= count(line, ['}'])
+      output.push(`${''.padStart(indent * 2, ' ')}${line}`)
+      indent += count(line, ['{'])
+    }
+    return output.join('\n')
   }
 }

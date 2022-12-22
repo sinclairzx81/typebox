@@ -26,6 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { Formatter } from './formatter'
 import * as ts from 'typescript'
 
 /** Generates TypeBox types from TypeScript interface and type definitions */
@@ -319,26 +320,6 @@ export namespace TypeBoxCodegen {
     }
   }
 
-  function Format(input: string): string {
-    function count(line: string, opens: string[]) {
-      const codes = opens.map((open) => open.charCodeAt(0))
-      return line
-        .split('')
-        .map((char) => char.charCodeAt(0))
-        .reduce((acc, current) => {
-          return codes.includes(current) ? acc + 1 : acc
-        }, 0)
-    }
-    let indent = 0
-    const output: string[] = []
-    for (const line of input.split('\n').map((n) => n.trim())) {
-      indent -= count(line, ['}', ']'])
-      output.push(`${''.padStart(indent * 2, ' ')}${line}`)
-      indent += count(line, ['{', '['])
-    }
-    return output.join('\n')
-  }
-
   let useImports = false
   let useConditional = false
   let useGenerics = false
@@ -358,7 +339,7 @@ export namespace TypeBoxCodegen {
       if (!useGenerics) importStatments.push(`import { Type, Static } from '@sinclair/typebox'`)
     }
     const imports = importStatments.join('\n')
-    const types = Format(typeDeclarations)
+    const types = Formatter.Format(typeDeclarations)
     return [imports, '', types].join('\n')
   }
 }

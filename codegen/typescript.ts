@@ -26,10 +26,11 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { Formatter } from './formatter'
 import { TypeGuard } from '@sinclair/typebox/guard'
 import * as Types from '@sinclair/typebox'
 
-export namespace TypeScriptCodeGen {
+export namespace TypeScriptCodegen {
   function Any(schema: Types.TAny) {
     return 'any'
   }
@@ -193,33 +194,13 @@ export namespace TypeScriptCodeGen {
     }
   }
 
-  function Format(input: string): string {
-    function count(line: string, opens: string[]) {
-      const codes = opens.map((open) => open.charCodeAt(0))
-      return line
-        .split('')
-        .map((char) => char.charCodeAt(0))
-        .reduce((acc, current) => {
-          return codes.includes(current) ? acc + 1 : acc
-        }, 0)
-    }
-    let indent = 0
-    const output: string[] = []
-    for (const line of input.split('\n').map((n) => n.trim())) {
-      indent -= count(line, ['}'])
-      output.push(`${''.padStart(indent * 2, ' ')}${line}`)
-      indent += count(line, ['{'])
-    }
-    return output.join('\n')
-  }
-
   /** Generates TypeScript code from TypeBox types */
   export function Generate(schema: Types.TSchema, references: Types.TSchema[] = []) {
     const result: string[] = []
     for (const reference of references) {
-      result.push(`type ${reference.$id} = ${Format([...Visit(reference)].join(''))}`)
+      result.push(`type ${reference.$id} = ${[...Visit(reference)].join('')}`)
     }
-    result.push(`type ${schema.$id || 'T'} = ${Format([...Visit(schema)].join(''))}`)
-    return result.join('\n\n')
+    result.push(`type ${schema.$id || 'T'} = ${[...Visit(schema)].join('')}`)
+    return Formatter.Format(result.join('\n\n'))
   }
 }
