@@ -62,4 +62,9 @@ describe('type/compiler/String', () => {
     const T = Type.String({ pattern: '[\\d]{5}' })
     Ok(T, '12345')
   })
+
+  it('Should should escape characters in the pattern', () => {
+    const T = Type.String({ pattern: '/a/' })
+    Ok(T, '/a/')
+  })
 })
