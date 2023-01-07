@@ -264,7 +264,7 @@ export namespace TypeCompiler {
     if (IsNumber(schema.minLength)) yield `(${value}.length >= ${schema.minLength})`
     if (IsNumber(schema.maxLength)) yield `(${value}.length <= ${schema.maxLength})`
     if (schema.pattern !== undefined) {
-      const local = PushLocal(`new RegExp(/${schema.pattern}/);`)
+      const local = PushLocal(`${new RegExp(schema.pattern)};`)
       yield `(${local}.test(${value}))`
     }
     if (schema.format !== undefined) {
