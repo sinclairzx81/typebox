@@ -284,4 +284,8 @@ describe('value/convert/Date', () => {
     const result = Value.Cast(Type.Date(), '1980-02-03')
     Assert.deepEqual(result.toISOString(), '1980-02-03T00:00:00.000Z')
   })
+  it('Should convert invalid strings to unix epoch 0', () => {
+    const result = Value.Cast(Type.Date(), 'invalid-date')
+    Assert.deepEqual(result.toISOString(), '1970-01-01T00:00:00.000Z')
+  })
 })
