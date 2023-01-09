@@ -98,8 +98,9 @@ License MIT
 - [TypeCheck](#typecheck)
   - [Ajv](#typecheck-ajv)
   - [TypeCompiler](#typecheck-typecompiler)
-  - [Custom Types](#typecheck-custom-types)
-  - [Custom Formats](#typecheck-custom-formats)
+- [TypeSystem](#typecheck)
+  - [Create Types](#typesystem-create-types)
+  - [Create Formats](#typesystem-create-formats)
 - [Benchmark](#benchmark)
   - [Compile](#benchmark-compile)
   - [Validate](#benchmark-validate)
@@ -1130,61 +1131,94 @@ console.log(C.Code())                                // return function check(va
                                                      //   )
                                                      // }
 ```
+<a name='typesystem'></a>
 
-<a name='typecheck-custom-types'></a>
+## TypeSystem
 
-### Custom Types
+TypeBox can support types above and beyond the ones types provided by default. User defined types are created through the TypeSystem module. This module enables the ability to create user defined types as well as custom string formats which are utiltized by the Value and TypeCompiler modules when checking values.
 
-Use the custom module to create user defined types. User defined types require a `[Kind]` symbol property which is used to match the schema against a registered type. Custom types are specific to TypeBox and can only be used with the TypeCompiler and Value modules.
-
-The custom module is an optional import.
-
-```typescript
-import { Custom } from '@sinclair/typebox/custom'
-```
-
-The following creates a `bigint` type.
+The TypeSystem module is an optional import.
 
 ```typescript
-import { Type, Kind } from '@sinclair/typebox'
-
-Custom.Set('bigint', (schema, value) => typeof value === 'bigint')
-//            ▲
-//            │
-//            └────────────────────────────┐
-//                                         │
-const T = Type.Unsafe<bigint>({ [Kind]: 'bigint' })  // const T = { [Kind]: 'BigInt' }
-
-const A = TypeCompiler.Compile(T).Check(1n)          // const A = true
-
-const B = Value.Check(T, 1)                          // const B = false
+import { TypeSystem } from '@sinclair/typebox/system'
 ```
 
-<a name='typecheck-custom-formats'></a>
+<a name='typesystem-create-types'></a>
 
-### Custom Formats
+### Create Types
 
-Use the format module to create user defined string formats. The format module is specific to TypeBox can only be used with the TypeCompiler and Value modules. If using Ajv, please refer to the official Ajv format documentation located [here](https://ajv.js.org/guide/formats.html).
+To create a user defined type, you need to call the `TypeSystem.CreateType(...)` function with the following information.
 
-The format module is an optional import.
+- The static `type` that the custom type should infer as with `Static<...>`
+- The `options` which may be used during the validation process.
+- The `kind` string which is used to register the type.
+- The validation function.
+
+The `TypeSystem.CreateType(...)` function returns a type factory function that can be used to construct the type. The following creates and registers a `BigNumber` type which will statically infer as `bigint`.
 
 ```typescript
-import { Format } from '@sinclair/typebox/format'
+//--------------------------------------------------------------------------------------------
+//
+// Use TypeSystem.CreateType(...) to define and return a type factory function
+//
+//--------------------------------------------------------------------------------------------
+
+export type BigNumberOptions = { minimum: bigint; maximum: bigint }
+
+export const BigNumber = TypeSystem.CreateType<bigint, BigNumberOptions>('BigNumber', (options, value) => {
+  if (typeof value !== 'bigint') return false
+  if (options.maximum !== undefined && value > options.maximum) return false
+  if (options.minimum !== undefined && value < options.minimum) return false
+  return true
+})
+
+//--------------------------------------------------------------------------------------------
+//
+// Use the custom type like any other type
+//
+//--------------------------------------------------------------------------------------------
+
+const T = BigNumber({ minimum: 10n, maximum: 20n })  // const T = { 
+                                                     //    minimum: 10n, 
+                                                     //    maximum: 20n, 
+                                                     //    [Symbol(TypeBox.Kind)]: 'BigNumber' 
+                                                     //  }
+
+const C = TypeCompiler.Compile(T)
+const X = C.Check(15n)                               // const X = true
+const Y = C.Check(5n)                                // const Y = false
+const Z = C.Check(25n)                               // const Z = false
 ```
+
+<a name='typesystem-create-formats'></a>
+
+### Create Formats
+
+You can use the `TypeSystem.CreateFormat(...)` function to create user defined string formats.
+
 
 The following creates a custom string format that checks for lowercase.
 
 ```typescript
-Format.Set('lowercase', value => value === value.toLowerCase())
-//            ▲
-//            │
-//            └────────────────────┐         
-//                                 │
+//--------------------------------------------------------------------------------------------
+//
+// Use TypeSystem.CreateFormat(...) to define a custom string format
+//
+//--------------------------------------------------------------------------------------------
+
+TypeSystem.CreateFormat('lowercase', value => value === value.toLowerCase())
+
+//--------------------------------------------------------------------------------------------
+//
+// Use the format by creating string types with the 'format' option
+//
+//--------------------------------------------------------------------------------------------
+
 const T = Type.String({ format: 'lowercase' })
 
-const A = TypeCompiler.Compile(T).Check('action')    // const A = true
+const A = Value.Check(T, 'action')                   // const A = true
 
-const B = Value.Check(T, 'Action')                   // const B = false
+const B = Value.Check(T, 'ACTION')                   // const B = false
 ```
 
 <a name='benchmark'></a>

@@ -26,13 +26,38 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { Kind, Type } from '@sinclair/typebox'
+import { Custom } from '../custom/index'
+import { Format } from '../format/index'
+
+export class TypeSystemDuplicateTypeKind extends Error {
+  constructor(kind: string) {
+    super(`Duplicate kind '${kind}' detected`)
+  }
+}
+export class TypeSystemDuplicateFormat extends Error {
+  constructor(kind: string) {
+    super(`Duplicate format '${kind}' detected`)
+  }
+}
+
 export namespace TypeSystem {
-  /**
-   * Sets whether arrays should be treated as kinds of objects. The default is `false`
-   */
+  /** Sets whether arrays should be treated as kinds of objects. The default is `false` */
   export let AllowArrayObjects: boolean = false
-  /**
-   * Sets whether numeric checks should consider NaN a valid number type. The default is `false`
-   */
+  /** Sets whether numeric checks should consider NaN a valid number type. The default is `false` */
   export let AllowNaN: boolean = false
+  /** Creates a custom Type */
+  export function CreateType<Type, Options = object>(kind: string, callback: (options: Options, value: unknown) => boolean) {
+    if (Custom.Has(kind)) throw new TypeSystemDuplicateTypeKind(kind)
+    Custom.Set(kind, callback)
+    return (options: Partial<Options> = {}) => {
+      return Type.Unsafe<Type>({ ...options, [Kind]: kind })
+    }
+  }
+  /** Creates a custom string format */
+  export function CreateFormat<Type, Options = object>(format: string, callback: (value: string) => boolean) {
+    if (Format.Has(format)) throw new TypeSystemDuplicateFormat(format)
+    Format.Set(format, callback)
+    return callback
+  }
 }
