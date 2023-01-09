@@ -1147,7 +1147,7 @@ import { TypeSystem } from '@sinclair/typebox/system'
 
 ### Types
 
-Use the `CreateType(...)` function to define and return a custom type. This function will return a type factory function that can be used to construct the type. The following creates and registers a BigNumber type which will statically infer as `bigint`.
+Use the `CreateType(...)` function to specify and return a custom type. This function will return a type factory function that can be used to construct the type. The following creates and registers a BigNumber type which will statically infer as `bigint`.
 
 ```typescript
 //--------------------------------------------------------------------------------------------
@@ -1156,7 +1156,7 @@ Use the `CreateType(...)` function to define and return a custom type. This func
 //
 //--------------------------------------------------------------------------------------------
 
-type BigNumberOptions = { minimum: bigint; maximum: bigint }
+type BigNumberOptions = { minimum?: bigint; maximum?: bigint }
 
 const BigNumber = TypeSystem.CreateType<bigint, BigNumberOptions>(
   'BigNumber', 
