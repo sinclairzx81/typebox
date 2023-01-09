@@ -76,6 +76,9 @@ export namespace ValueCheck {
     if (!(value instanceof globalThis.Date)) {
       return false
     }
+    if (isNaN(value.getTime())) {
+      return false
+    }
     if (IsNumber(schema.exclusiveMinimumTimestamp) && !(value.getTime() > schema.exclusiveMinimumTimestamp)) {
       return false
     }

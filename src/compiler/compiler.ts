@@ -140,7 +140,7 @@ export namespace TypeCompiler {
   }
 
   function* Date(schema: Types.TDate, value: string): IterableIterator<string> {
-    yield `(${value} instanceof Date)`
+    yield `(${value} instanceof Date) && !isNaN(${value}.getTime())`
     if (IsNumber(schema.exclusiveMinimumTimestamp)) yield `(${value}.getTime() > ${schema.exclusiveMinimumTimestamp})`
     if (IsNumber(schema.exclusiveMaximumTimestamp)) yield `(${value}.getTime() < ${schema.exclusiveMaximumTimestamp})`
     if (IsNumber(schema.minimumTimestamp)) yield `(${value}.getTime() >= ${schema.minimumTimestamp})`

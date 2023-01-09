@@ -151,6 +151,9 @@ export namespace ValueErrors {
     if (!(value instanceof globalThis.Date)) {
       return yield { type: ValueErrorType.Date, schema, path, value, message: `Expected Date object` }
     }
+    if (isNaN(value.getTime())) {
+      return yield { type: ValueErrorType.Date, schema, path, value, message: `Invalid Date` }
+    }
     if (IsNumber(schema.exclusiveMinimumTimestamp) && !(value.getTime() > schema.exclusiveMinimumTimestamp)) {
       yield { type: ValueErrorType.DateExclusiveMinimumTimestamp, schema, path, value, message: `Expected Date timestamp to be greater than ${schema.exclusiveMinimum}` }
     }

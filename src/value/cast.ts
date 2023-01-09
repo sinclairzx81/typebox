@@ -143,13 +143,13 @@ export namespace ValueCast {
     return IsString(value) && /^(?:[0-2]\d:[0-5]\d:[0-5]\d|23:59:60)(?:\.\d+)?(?:z|[+-]\d\d(?::?\d\d)?)$/i.test(value)
   }
   function IsTimeStringWithoutTimeZone(value: unknown): value is string {
-    return IsString(value) && /^(?:[0-2]\d:[0-5]\d:[0-5]\d|23:59:60)(?:\.\d+)?$/i.test(value)
+    return IsString(value) && /^(?:[0-2]\d:[0-5]\d:[0-5]\d|23:59:60)?$/i.test(value)
   }
   function IsDateTimeStringWithTimeZone(value: unknown): value is string {
     return IsString(value) && /^\d\d\d\d-[0-1]\d-[0-3]\dt(?:[0-2]\d:[0-5]\d:[0-5]\d|23:59:60)(?:\.\d+)?(?:z|[+-]\d\d(?::?\d\d)?)$/i.test(value)
   }
   function IsDateTimeStringWithoutTimeZone(value: unknown): value is string {
-    return IsString(value) && /^\d\d\d\d-[0-1]\d-[0-3]\dt(?:[0-2]\d:[0-5]\d:[0-5]\d|23:59:60)(?:\.\d+)?$/i.test(value)
+    return IsString(value) && /^\d\d\d\d-[0-1]\d-[0-3]\dt(?:[0-2]\d:[0-5]\d:[0-5]\d|23:59:60)?$/i.test(value)
   }
   function IsDateString(value: unknown): value is string {
     return IsString(value) && /^\d\d\d\d-[0-1]\d-[0-3]\d$/i.test(value)

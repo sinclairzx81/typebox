@@ -44,4 +44,9 @@ describe('value/check/Date', () => {
     const result = Value.Check(T, value)
     Assert.equal(result, true)
   })
+  it('Should not validate Date if is invalid', () => {
+    const value = new Date('not-a-valid-date')
+    const result = Value.Check(T, value)
+    Assert.equal(result, false)
+  })
 })
