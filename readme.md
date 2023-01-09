@@ -1135,9 +1135,9 @@ console.log(C.Code())                                // return function check(va
 
 ## TypeSystem
 
-TypeBox can support types above and beyond the ones types provided by default. User defined types are created through the TypeSystem module. This module enables the ability to create user defined types as well as custom string formats which are utiltized by the Value and TypeCompiler modules when checking values.
+TypeBox provides an extensible TypeSystem module that enables developers to register additional types above and beyond the standard or extended type set. This module also allows developers to define custom string formats as well as override certain type checking behaviours.
 
-The TypeSystem module is an optional import.
+The TypeSystem module is provided as an optional import.
 
 ```typescript
 import { TypeSystem } from '@sinclair/typebox/system'
