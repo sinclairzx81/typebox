@@ -96,8 +96,8 @@ License MIT
   - [Errors](#values-errors)
   - [Pointer](#values-pointer)
 - [TypeCheck](#typecheck)
-  - [Ajv](#typecheck-ajv)
   - [TypeCompiler](#typecheck-typecompiler)
+  - [Ajv](#typecheck-ajv)
 - [TypeSystem](#typecheck)
   - [Types](#typesystem-types)
   - [Formats](#typesystem-formats)
@@ -937,6 +937,71 @@ TypeBox targets JSON Schema Draft 6 and is built and tested against the Ajv JSON
 
 The following sections detail using these validators.
 
+<a name='typecheck-typecompiler'></a>
+
+### TypeCompiler
+
+TypeBox provides an optional high performance just-in-time (JIT) compiler and type checker that can be used in applications that require extremely fast validation. Note that this compiler is optimized for TypeBox types only where the schematics are known in advance. If defining custom types with `Type.Unsafe<T>` please consider Ajv.
+
+The compiler module is provided as an optional import.
+
+```typescript
+import { TypeCompiler } from '@sinclair/typebox/compiler'
+```
+
+Use the `Compile(...)` function to compile a type.
+
+```typescript
+const C = TypeCompiler.Compile(Type.Object({         // const C: TypeCheck<TObject<{
+  x: Type.Number(),                                  //     x: TNumber;
+  y: Type.Number(),                                  //     y: TNumber;
+  z: Type.Number()                                   //     z: TNumber;
+}))                                                  // }>>
+
+const R = C.Check({ x: 1, y: 2, z: 3 })              // const R = true
+```
+
+Validation errors can be read with the `Errors(...)` function.
+
+```typescript
+const C = TypeCompiler.Compile(Type.Object({         // const C: TypeCheck<TObject<{
+  x: Type.Number(),                                  //     x: TNumber;
+  y: Type.Number(),                                  //     y: TNumber;
+  z: Type.Number()                                   //     z: TNumber;
+}))                                                  // }>>
+
+const value = { }
+
+const errors = [...C.Errors(value)]                  // const errors = [{
+                                                     //   schema: { type: 'number' },
+                                                     //   path: '/x',
+                                                     //   value: undefined,
+                                                     //   message: 'Expected number'
+                                                     // }, {
+                                                     //   schema: { type: 'number' },
+                                                     //   path: '/y',
+                                                     //   value: undefined,
+                                                     //   message: 'Expected number'
+                                                     // }, {
+                                                     //   schema: { type: 'number' },
+                                                     //   path: '/z',
+                                                     //   value: undefined,
+                                                     //   message: 'Expected number'
+                                                     // }]
+```
+
+Compiled routines can be inspected with the `.Code()` function.
+
+```typescript
+const C = TypeCompiler.Compile(Type.String())        // const C: TypeCheck<TString>
+
+console.log(C.Code())                                // return function check(value) {
+                                                     //   return (
+                                                     //     (typeof value === 'string')
+                                                     //   )
+                                                     // }
+```
+
 <a name='typecheck-ajv'></a>
 
 ### Ajv
@@ -1067,70 +1132,6 @@ const R = ajv.validate(Type.Object({                 // const R = true
 </details>
 
 
-<a name='typecheck-typecompiler'></a>
-
-### TypeCompiler
-
-TypeBox provides an optional high performance just-in-time (JIT) compiler and type checker that can be used in applications that require extremely fast validation. Note that this compiler is optimized for TypeBox types only where the schematics are known in advance. If defining custom types with `Type.Unsafe<T>` please consider Ajv.
-
-The compiler module is provided as an optional import.
-
-```typescript
-import { TypeCompiler } from '@sinclair/typebox/compiler'
-```
-
-Use the `Compile(...)` function to compile a type.
-
-```typescript
-const C = TypeCompiler.Compile(Type.Object({         // const C: TypeCheck<TObject<{
-  x: Type.Number(),                                  //     x: TNumber;
-  y: Type.Number(),                                  //     y: TNumber;
-  z: Type.Number()                                   //     z: TNumber;
-}))                                                  // }>>
-
-const R = C.Check({ x: 1, y: 2, z: 3 })              // const R = true
-```
-
-Validation errors can be read with the `Errors(...)` function.
-
-```typescript
-const C = TypeCompiler.Compile(Type.Object({         // const C: TypeCheck<TObject<{
-  x: Type.Number(),                                  //     x: TNumber;
-  y: Type.Number(),                                  //     y: TNumber;
-  z: Type.Number()                                   //     z: TNumber;
-}))                                                  // }>>
-
-const value = { }
-
-const errors = [...C.Errors(value)]                  // const errors = [{
-                                                     //   schema: { type: 'number' },
-                                                     //   path: '/x',
-                                                     //   value: undefined,
-                                                     //   message: 'Expected number'
-                                                     // }, {
-                                                     //   schema: { type: 'number' },
-                                                     //   path: '/y',
-                                                     //   value: undefined,
-                                                     //   message: 'Expected number'
-                                                     // }, {
-                                                     //   schema: { type: 'number' },
-                                                     //   path: '/z',
-                                                     //   value: undefined,
-                                                     //   message: 'Expected number'
-                                                     // }]
-```
-
-Compiled routines can be inspected with the `.Code()` function.
-
-```typescript
-const C = TypeCompiler.Compile(Type.String())        // const C: TypeCheck<TString>
-
-console.log(C.Code())                                // return function check(value) {
-                                                     //   return (
-                                                     //     (typeof value === 'string')
-                                                     //   )
-                                                     // }
-```
 <a name='typesystem'></a>
 
 ## TypeSystem
