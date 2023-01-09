@@ -1187,10 +1187,7 @@ const Z = C.Check(25n)                               // const Z = false
 
 ### Formats
 
-You can use the `TypeSystem.CreateFormat(...)` function to create user defined string formats.
-
-
-The following creates a custom string format that checks for lowercase.
+You can use the `CreateFormat(...)` function to create user defined string formats. The following creates a custom string format that checks for lowercase.
 
 ```typescript
 //--------------------------------------------------------------------------------------------
