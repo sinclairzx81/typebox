@@ -3,7 +3,7 @@ import { Assert } from '../assert/index'
 import { TypeSystem } from '@sinclair/typebox/system'
 import { Type } from '@sinclair/typebox'
 
-describe('TypeSystem/CreateFormat', () => {
+describe('system/TypeSystem/CreateFormat', () => {
   it('Should create and validate a format', () => {
     TypeSystem.CreateFormat('CreateFormat0', (value) => value === value.toLowerCase())
     const T = Type.String({ format: 'CreateFormat0' })
