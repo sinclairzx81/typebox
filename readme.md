@@ -99,8 +99,8 @@ License MIT
   - [Ajv](#typecheck-ajv)
   - [TypeCompiler](#typecheck-typecompiler)
 - [TypeSystem](#typecheck)
-  - [Create Types](#typesystem-create-types)
-  - [Create Formats](#typesystem-create-formats)
+  - [Types](#typesystem-types)
+  - [Formats](#typesystem-formats)
 - [Benchmark](#benchmark)
   - [Compile](#benchmark-compile)
   - [Validate](#benchmark-validate)
@@ -1143,18 +1143,11 @@ The TypeSystem module is an optional import.
 import { TypeSystem } from '@sinclair/typebox/system'
 ```
 
-<a name='typesystem-create-types'></a>
+<a name='typesystem-types'></a>
 
-### Create Types
+### Types
 
-To create a user defined type, you need to call the `TypeSystem.CreateType(...)` function with the following information.
-
-- The static `type` that the custom type should infer as with `Static<...>`
-- The `options` which may be used during the validation process.
-- The `kind` string which is used to register the type.
-- The validation function.
-
-The `TypeSystem.CreateType(...)` function returns a type factory function that can be used to construct the type. The following creates and registers a `BigNumber` type which will statically infer as `bigint`.
+Use the `CreateType(...)` function to define and return a custom type. This function will return a type factory function that can be used to construct the type. The following creates and registers a `BigNumber` type which will statically infer as `bigint`.
 
 ```typescript
 //--------------------------------------------------------------------------------------------
@@ -1190,9 +1183,9 @@ const Y = C.Check(5n)                                // const Y = false
 const Z = C.Check(25n)                               // const Z = false
 ```
 
-<a name='typesystem-create-formats'></a>
+<a name='typesystem-formats'></a>
 
-### Create Formats
+### Formats
 
 You can use the `TypeSystem.CreateFormat(...)` function to create user defined string formats.
 
