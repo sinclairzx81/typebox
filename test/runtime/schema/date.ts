@@ -39,6 +39,10 @@ describe('type/schema/Date', () => {
     const T = Type.Date()
     Ok(T, new Date())
   })
+  it('Should not validate Date if is invalid', () => {
+    const T = Type.Date()
+    Fail(T, new Date('not-a-valid-date'))
+  })
   it('Should validate Date minimumTimestamp', () => {
     const T = Type.Date({ minimumTimestamp: 10 })
     Fail(T, new Date(9))

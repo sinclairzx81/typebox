@@ -1,4 +1,4 @@
-import { CodeGen } from '@sinclair/typebox/codegen'
+import { Codegen } from '@sinclair/typebox/codegen'
 import { TypeSystem } from '@sinclair/typebox/system'
 import { TypeCompiler } from '@sinclair/typebox/compiler'
 import { TypeGuard } from '@sinclair/typebox/guard'

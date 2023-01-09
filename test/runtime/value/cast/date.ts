@@ -15,13 +15,13 @@ describe('value/cast/Date', () => {
   it('Should upcast from number', () => {
     const value = 1
     const result = Value.Cast(T, value)
-    Assert.deepEqual(result, E)
+    Assert.deepEqual(result.getTime(), 1) // convert
   })
 
   it('Should upcast from boolean', () => {
     const value = true
     const result = Value.Cast(T, value)
-    Assert.deepEqual(result, E)
+    Assert.deepEqual(result.getTime(), 1) // convert
   })
 
   it('Should upcast from object', () => {
