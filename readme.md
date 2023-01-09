@@ -1158,12 +1158,15 @@ Use the `CreateType(...)` function to define and return a custom type. This func
 
 export type BigNumberOptions = { minimum: bigint; maximum: bigint }
 
-export const BigNumber = TypeSystem.CreateType<bigint, BigNumberOptions>('BigNumber', (options, value) => {
-  if (typeof value !== 'bigint') return false
-  if (options.maximum !== undefined && value > options.maximum) return false
-  if (options.minimum !== undefined && value < options.minimum) return false
-  return true
-})
+export const BigNumber = TypeSystem.CreateType<bigint, BigNumberOptions>(
+  'BigNumber', 
+  (options, value) => {
+    if (typeof value !== 'bigint') return false
+    if (options.maximum !== undefined && value > options.maximum) return false
+    if (options.minimum !== undefined && value < options.minimum) return false
+    return true
+  }
+)
 
 //--------------------------------------------------------------------------------------------
 //
