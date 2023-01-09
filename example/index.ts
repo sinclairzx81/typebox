@@ -12,8 +12,8 @@ const T = Type.Object({
   x: Type.Number(),
   y: Type.Number(),
   z: Type.Number(),
-  w: Type.Date(),
 })
-const V = Value.Cast(T, { x: 1, y: 2, z: 3, w: '2020-01-01' })
 
-console.log(V)
+type T = Static<typeof T>
+
+console.log(T)

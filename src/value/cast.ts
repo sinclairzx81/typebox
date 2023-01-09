@@ -171,6 +171,10 @@ export namespace ValueCast {
     return IsValueTrue(value) ? true : IsValueFalse(value) ? false : value
   }
   function TryConvertDate(value: unknown) {
+    // note: this function may return an invalid dates for the regex tests
+    // above. Invalid dates will however be checked during the casting
+    // function and will return a epoch date if invalid. Consider better
+    // string parsing for the iso dates in future revisions.
     return IsDate(value)
       ? value
       : IsNumber(value)
