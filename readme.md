@@ -941,7 +941,7 @@ The following sections detail using these validators.
 
 ### TypeCompiler
 
-TypeBox provides an optional high performance just-in-time (JIT) compiler and type checker that can be used in applications that require extremely fast validation. Note that this compiler is optimized for TypeBox types only where the schematics are known in advance. If defining custom types with `Type.Unsafe<T>` please consider Ajv.
+TypeBox includes an high performance just-in-time (JIT) compiler and type checker that can be used in applications that require extremely fast validation. Note that this compiler is optimized for TypeBox types only where the schematics are known in advance.
 
 The compiler module is provided as an optional import.
 
