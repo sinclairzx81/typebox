@@ -8,6 +8,12 @@ import { Custom } from '@sinclair/typebox/custom'
 import { Value, ValuePointer } from '@sinclair/typebox/value'
 import { Type, Kind, Static, TSchema } from '@sinclair/typebox'
 
-const C = Type.Date()
-console.log(Value.Cast(C, '00:01:33'))
-console.log(Value.Cast(C, '00:00:01').getTime())
+const T = Type.Object({
+  x: Type.Number(),
+  y: Type.Number(),
+  z: Type.Number(),
+})
+
+type T = Static<typeof T>
+
+console.log(T)
