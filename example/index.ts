@@ -1,4 +1,4 @@
-import { CodeGen } from '@sinclair/typebox/codegen'
+import { Codegen } from '@sinclair/typebox/codegen'
 import { TypeSystem } from '@sinclair/typebox/system'
 import { TypeCompiler } from '@sinclair/typebox/compiler'
 import { TypeGuard } from '@sinclair/typebox/guard'
@@ -8,12 +8,6 @@ import { Custom } from '@sinclair/typebox/custom'
 import { Value, ValuePointer } from '@sinclair/typebox/value'
 import { Type, Kind, Static, TSchema } from '@sinclair/typebox'
 
-const T = Type.Object({
-  x: Type.Number(),
-  y: Type.Number(),
-  z: Type.Number(),
-})
-
-type T = Static<typeof T>
-
-console.log(T)
+const C = Type.Date()
+console.log(Value.Cast(C, '00:01:33'))
+console.log(Value.Cast(C, '00:00:01').getTime())
