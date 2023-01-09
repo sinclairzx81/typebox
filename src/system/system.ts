@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { Kind, Type } from '@sinclair/typebox'
+import { Kind, Type } from '../typebox'
 import { Custom } from '../custom/index'
 import { Format } from '../format/index'
 
