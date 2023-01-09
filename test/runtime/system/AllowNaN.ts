@@ -2,7 +2,7 @@ import { Ok, Fail } from '../compiler/validate'
 import { TypeSystem } from '@sinclair/typebox/system'
 import { Type } from '@sinclair/typebox'
 
-describe('TypeSystem/AllowNaN', () => {
+describe('system/TypeSystem/AllowNaN', () => {
   before(() => {
     TypeSystem.AllowNaN = true
   })

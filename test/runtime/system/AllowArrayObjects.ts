@@ -2,7 +2,7 @@ import { Ok, Fail } from '../compiler/validate'
 import { TypeSystem } from '@sinclair/typebox/system'
 import { Type } from '@sinclair/typebox'
 
-describe('TypeSystem/AllowArrayObjects', () => {
+describe('system/TypeSystem/AllowArrayObjects', () => {
   before(() => {
     TypeSystem.AllowArrayObjects = true
   })

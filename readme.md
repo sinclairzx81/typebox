@@ -96,10 +96,11 @@ License MIT
   - [Errors](#values-errors)
   - [Pointer](#values-pointer)
 - [TypeCheck](#typecheck)
-  - [Ajv](#typecheck-ajv)
   - [TypeCompiler](#typecheck-typecompiler)
-  - [Custom Types](#typecheck-custom-types)
-  - [Custom Formats](#typecheck-custom-formats)
+  - [Ajv](#typecheck-ajv)
+- [TypeSystem](#typecheck)
+  - [Types](#typesystem-types)
+  - [Formats](#typesystem-formats)
 - [Benchmark](#benchmark)
   - [Compile](#benchmark-compile)
   - [Validate](#benchmark-validate)
@@ -936,6 +937,71 @@ TypeBox targets JSON Schema Draft 6 and is built and tested against the Ajv JSON
 
 The following sections detail using these validators.
 
+<a name='typecheck-typecompiler'></a>
+
+### TypeCompiler
+
+TypeBox includes an high performance just-in-time (JIT) compiler and type checker that can be used in applications that require extremely fast validation. Note that this compiler is optimized for TypeBox types only where the schematics are known in advance.
+
+The compiler module is provided as an optional import.
+
+```typescript
+import { TypeCompiler } from '@sinclair/typebox/compiler'
+```
+
+Use the `Compile(...)` function to compile a type.
+
+```typescript
+const C = TypeCompiler.Compile(Type.Object({         // const C: TypeCheck<TObject<{
+  x: Type.Number(),                                  //     x: TNumber;
+  y: Type.Number(),                                  //     y: TNumber;
+  z: Type.Number()                                   //     z: TNumber;
+}))                                                  // }>>
+
+const R = C.Check({ x: 1, y: 2, z: 3 })              // const R = true
+```
+
+Validation errors can be read with the `Errors(...)` function.
+
+```typescript
+const C = TypeCompiler.Compile(Type.Object({         // const C: TypeCheck<TObject<{
+  x: Type.Number(),                                  //     x: TNumber;
+  y: Type.Number(),                                  //     y: TNumber;
+  z: Type.Number()                                   //     z: TNumber;
+}))                                                  // }>>
+
+const value = { }
+
+const errors = [...C.Errors(value)]                  // const errors = [{
+                                                     //   schema: { type: 'number' },
+                                                     //   path: '/x',
+                                                     //   value: undefined,
+                                                     //   message: 'Expected number'
+                                                     // }, {
+                                                     //   schema: { type: 'number' },
+                                                     //   path: '/y',
+                                                     //   value: undefined,
+                                                     //   message: 'Expected number'
+                                                     // }, {
+                                                     //   schema: { type: 'number' },
+                                                     //   path: '/z',
+                                                     //   value: undefined,
+                                                     //   message: 'Expected number'
+                                                     // }]
+```
+
+Compiled routines can be inspected with the `.Code()` function.
+
+```typescript
+const C = TypeCompiler.Compile(Type.String())        // const C: TypeCheck<TString>
+
+console.log(C.Code())                                // return function check(value) {
+                                                     //   return (
+                                                     //     (typeof value === 'string')
+                                                     //   )
+                                                     // }
+```
+
 <a name='typecheck-ajv'></a>
 
 ### Ajv
@@ -1066,125 +1132,87 @@ const R = ajv.validate(Type.Object({                 // const R = true
 </details>
 
 
-<a name='typecheck-typecompiler'></a>
+<a name='typesystem'></a>
 
-### TypeCompiler
+## TypeSystem
 
-TypeBox provides an optional high performance just-in-time (JIT) compiler and type checker that can be used in applications that require extremely fast validation. Note that this compiler is optimized for TypeBox types only where the schematics are known in advance. If defining custom types with `Type.Unsafe<T>` please consider Ajv.
+TypeBox provides an extensible TypeSystem module that enables developers to register additional types above and beyond the standard or extended type set. This module also allows developers to define custom string formats as well as override certain type checking behaviours.
 
-The compiler module is provided as an optional import.
+The TypeSystem module is provided as an optional import.
 
 ```typescript
-import { TypeCompiler } from '@sinclair/typebox/compiler'
+import { TypeSystem } from '@sinclair/typebox/system'
 ```
 
-Use the `Compile(...)` function to compile a type.
+<a name='typesystem-types'></a>
+
+### Types
+
+Use the `CreateType(...)` function to specify and return a custom type. This function will return a type factory function that can be used to construct the type. The following creates and registers a BigNumber type which will statically infer as `bigint`.
 
 ```typescript
-const C = TypeCompiler.Compile(Type.Object({         // const C: TypeCheck<TObject<{
-  x: Type.Number(),                                  //     x: TNumber;
-  y: Type.Number(),                                  //     y: TNumber;
-  z: Type.Number()                                   //     z: TNumber;
-}))                                                  // }>>
+//--------------------------------------------------------------------------------------------
+//
+// Use TypeSystem.CreateType(...) to define and return a type factory function
+//
+//--------------------------------------------------------------------------------------------
 
-const R = C.Check({ x: 1, y: 2, z: 3 })              // const R = true
+type BigNumberOptions = { minimum?: bigint; maximum?: bigint }
+
+const BigNumber = TypeSystem.CreateType<bigint, BigNumberOptions>(
+  'BigNumber', 
+  (options, value) => {
+    if (typeof value !== 'bigint') return false
+    if (options.maximum !== undefined && value > options.maximum) return false
+    if (options.minimum !== undefined && value < options.minimum) return false
+    return true
+  }
+)
+
+//--------------------------------------------------------------------------------------------
+//
+// Use the custom type like any other type
+//
+//--------------------------------------------------------------------------------------------
+
+const T = BigNumber({ minimum: 10n, maximum: 20n })  // const T = { 
+                                                     //    minimum: 10n, 
+                                                     //    maximum: 20n, 
+                                                     //    [Symbol(TypeBox.Kind)]: 'BigNumber' 
+                                                     //  }
+
+const C = TypeCompiler.Compile(T)
+const X = C.Check(15n)                               // const X = true
+const Y = C.Check(5n)                                // const Y = false
+const Z = C.Check(25n)                               // const Z = false
 ```
 
-Validation errors can be read with the `Errors(...)` function.
+<a name='typesystem-formats'></a>
+
+### Formats
+
+Use the `CreateFormat(...)` function to specify user defined string formats. The following creates a custom string format that checks for lowercase.
 
 ```typescript
-const C = TypeCompiler.Compile(Type.Object({         // const C: TypeCheck<TObject<{
-  x: Type.Number(),                                  //     x: TNumber;
-  y: Type.Number(),                                  //     y: TNumber;
-  z: Type.Number()                                   //     z: TNumber;
-}))                                                  // }>>
+//--------------------------------------------------------------------------------------------
+//
+// Use TypeSystem.CreateFormat(...) to define a custom string format
+//
+//--------------------------------------------------------------------------------------------
 
-const value = { }
+TypeSystem.CreateFormat('lowercase', value => value === value.toLowerCase())
 
-const errors = [...C.Errors(value)]                  // const errors = [{
-                                                     //   schema: { type: 'number' },
-                                                     //   path: '/x',
-                                                     //   value: undefined,
-                                                     //   message: 'Expected number'
-                                                     // }, {
-                                                     //   schema: { type: 'number' },
-                                                     //   path: '/y',
-                                                     //   value: undefined,
-                                                     //   message: 'Expected number'
-                                                     // }, {
-                                                     //   schema: { type: 'number' },
-                                                     //   path: '/z',
-                                                     //   value: undefined,
-                                                     //   message: 'Expected number'
-                                                     // }]
-```
+//--------------------------------------------------------------------------------------------
+//
+// Use the format by creating string types with the 'format' option
+//
+//--------------------------------------------------------------------------------------------
 
-Compiled routines can be inspected with the `.Code()` function.
-
-```typescript
-const C = TypeCompiler.Compile(Type.String())        // const C: TypeCheck<TString>
-
-console.log(C.Code())                                // return function check(value) {
-                                                     //   return (
-                                                     //     (typeof value === 'string')
-                                                     //   )
-                                                     // }
-```
-
-<a name='typecheck-custom-types'></a>
-
-### Custom Types
-
-Use the custom module to create user defined types. User defined types require a `[Kind]` symbol property which is used to match the schema against a registered type. Custom types are specific to TypeBox and can only be used with the TypeCompiler and Value modules.
-
-The custom module is an optional import.
-
-```typescript
-import { Custom } from '@sinclair/typebox/custom'
-```
-
-The following creates a `bigint` type.
-
-```typescript
-import { Type, Kind } from '@sinclair/typebox'
-
-Custom.Set('bigint', (schema, value) => typeof value === 'bigint')
-//            ▲
-//            │
-//            └────────────────────────────┐
-//                                         │
-const T = Type.Unsafe<bigint>({ [Kind]: 'bigint' })  // const T = { [Kind]: 'BigInt' }
-
-const A = TypeCompiler.Compile(T).Check(1n)          // const A = true
-
-const B = Value.Check(T, 1)                          // const B = false
-```
-
-<a name='typecheck-custom-formats'></a>
-
-### Custom Formats
-
-Use the format module to create user defined string formats. The format module is specific to TypeBox can only be used with the TypeCompiler and Value modules. If using Ajv, please refer to the official Ajv format documentation located [here](https://ajv.js.org/guide/formats.html).
-
-The format module is an optional import.
-
-```typescript
-import { Format } from '@sinclair/typebox/format'
-```
-
-The following creates a custom string format that checks for lowercase.
-
-```typescript
-Format.Set('lowercase', value => value === value.toLowerCase())
-//            ▲
-//            │
-//            └────────────────────┐         
-//                                 │
 const T = Type.String({ format: 'lowercase' })
 
-const A = TypeCompiler.Compile(T).Check('action')    // const A = true
+const A = Value.Check(T, 'action')                   // const A = true
 
-const B = Value.Check(T, 'Action')                   // const B = false
+const B = Value.Check(T, 'ACTION')                   // const B = false
 ```
 
 <a name='benchmark'></a>
