@@ -41,21 +41,23 @@ export class TypeSystemDuplicateFormat extends Error {
   }
 }
 
+/** Creates user defined types and formats and provides overrides for value checking behaviours */
 export namespace TypeSystem {
   /** Sets whether arrays should be treated as kinds of objects. The default is `false` */
   export let AllowArrayObjects: boolean = false
+
   /** Sets whether numeric checks should consider NaN a valid number type. The default is `false` */
   export let AllowNaN: boolean = false
-  /** Creates a custom Type */
+
+  /** Creates a custom type */
   export function CreateType<Type, Options = object>(kind: string, callback: (options: Options, value: unknown) => boolean) {
     if (Custom.Has(kind)) throw new TypeSystemDuplicateTypeKind(kind)
     Custom.Set(kind, callback)
-    return (options: Partial<Options> = {}) => {
-      return Type.Unsafe<Type>({ ...options, [Kind]: kind })
-    }
+    return (options: Partial<Options> = {}) => Type.Unsafe<Type>({ ...options, [Kind]: kind })
   }
+
   /** Creates a custom string format */
-  export function CreateFormat<Type, Options = object>(format: string, callback: (value: string) => boolean) {
+  export function CreateFormat(format: string, callback: (value: string) => boolean) {
     if (Format.Has(format)) throw new TypeSystemDuplicateFormat(format)
     Format.Set(format, callback)
     return callback
