@@ -1,3 +1,9 @@
+## [0.25.18](https://www.npmjs.com/package/@sinclair/typebox/v/0.25.18)
+
+Updates:
+
+- [307](https://github.com/sinclairzx81/typebox/pull/307) implements date conversion when casting values with `Value.Cast(Type.Date(), ...)`. Castable values include numbers (interpretted as timestamps) and iso8601 string values. Uncastable values will result in dates with values of `1970-01-01T00:00:00.000Z`.
+
 ## [0.25.11](https://www.npmjs.com/package/@sinclair/typebox/v/0.25.11)
 
 Updates:
