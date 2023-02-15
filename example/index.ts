@@ -8,12 +8,36 @@ import { Custom } from '@sinclair/typebox/custom'
 import { Value, ValuePointer } from '@sinclair/typebox/value'
 import { Type, Kind, Static, TSchema } from '@sinclair/typebox'
 
-const T = Type.Object({
-  x: Type.Number(),
-  y: Type.Number(),
-  z: Type.Number(),
-})
+const Vector = Type.Object(
+  {
+    x: Type.Number(),
+    y: Type.Number(),
+    z: Type.Number(),
+  },
+  {
+    $id: 'http://domain.com/schemas/Vector',
+  },
+)
 
-type T = Static<typeof T>
+const C = TypeCompiler.Compile(Vector)
 
-console.log(T)
+console.log(C.Code())
+
+// function check_http_58_47_47_domain_46_com_47_schemas_47_Vector(value) {
+//   return (
+//     (typeof value === 'object' && value !== null && !Array.isArray(value)) &&
+//     (typeof value.x === 'number' && !isNaN(value.x)) &&
+//     (typeof value.y === 'number' && !isNaN(value.y)) &&
+//     (typeof value.z === 'number' && !isNaN(value.z))
+//  )
+// }
+// return function check(value) {
+//   return (
+//     (check_http_58_47_47_domain_46_com_47_schemas_47_Vector(value))
+//  )
+// }
+
+console.log(String.fromCharCode(58)) // :
+console.log(String.fromCharCode(47)) // /
+console.log(String.fromCharCode(47)) // /
+console.log(String.fromCharCode(46)) // .

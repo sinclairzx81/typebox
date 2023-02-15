@@ -94,7 +94,7 @@ namespace Identifier {
         buffer.push(`_${code}_`)
       }
     }
-    return buffer.join('')
+    return buffer.join('').replace(/__/g, '_')
   }
 }
 
