@@ -1,3 +1,9 @@
+## [0.25.22](https://www.npmjs.com/package/@sinclair/typebox/v/0.25.22)
+
+Updates:
+
+- [323](https://github.com/sinclairzx81/typebox/pull/323) adds compiler support for UTF-16 (unicode) characters for schema identifiers.  
+
 ## [0.25.18](https://www.npmjs.com/package/@sinclair/typebox/v/0.25.18)
 
 Updates:
