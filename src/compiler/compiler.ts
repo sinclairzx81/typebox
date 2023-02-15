@@ -62,40 +62,64 @@ export class TypeCheck<T extends Types.TSchema> {
     return this.checkFunc(value)
   }
 }
-
 // -------------------------------------------------------------------
-// Property
+// Character
 // -------------------------------------------------------------------
-
-export namespace Property {
-  function DollarSign(code: number) {
+namespace Character {
+  export function DollarSign(code: number) {
     return code === 36
   }
-  function Underscore(code: number) {
+  export function Underscore(code: number) {
     return code === 95
   }
-  function Numeric(code: number) {
+  export function Numeric(code: number) {
     return code >= 48 && code <= 57
   }
-  function Alpha(code: number) {
+  export function Alpha(code: number) {
     return (code >= 65 && code <= 90) || (code >= 97 && code <= 122)
   }
+}
 
-  export function Check(propertyName: string) {
+// -------------------------------------------------------------------
+// Identifier
+// -------------------------------------------------------------------
+namespace Identifier {
+  export function Encode($id: string) {
+    const buffer: string[] = []
+    for (let i = 0; i < $id.length; i++) {
+      const code = $id.charCodeAt(i)
+      if (Character.Numeric(code) || Character.Alpha(code)) {
+        buffer.push($id.charAt(i))
+      } else {
+        buffer.push(`_${code}_`)
+      }
+    }
+    return buffer.join('').replace(/__/g, '_')
+  }
+}
+
+// -------------------------------------------------------------------
+// MemberExpression
+// -------------------------------------------------------------------
+export namespace MemberExpression {
+  function Check(propertyName: string) {
     if (propertyName.length === 0) return false
     {
       const code = propertyName.charCodeAt(0)
-      if (!(DollarSign(code) || Underscore(code) || Alpha(code))) {
+      if (!(Character.DollarSign(code) || Character.Underscore(code) || Character.Alpha(code))) {
         return false
       }
     }
     for (let i = 1; i < propertyName.length; i++) {
       const code = propertyName.charCodeAt(i)
-      if (!(DollarSign(code) || Underscore(code) || Alpha(code) || Numeric(code))) {
+      if (!(Character.DollarSign(code) || Character.Underscore(code) || Character.Alpha(code) || Character.Numeric(code))) {
         return false
       }
     }
     return true
+  }
+  export function Encode(object: string, key: string) {
+    return !Check(key) ? `${object}['${key}']` : `${object}.${key}`
   }
 }
 
@@ -111,6 +135,9 @@ export class TypeCompilerUnknownTypeError extends Error {
 
 /** Compiles Types for Runtime Type Checking */
 export namespace TypeCompiler {
+  // -------------------------------------------------------------------
+  // Guards
+  // -------------------------------------------------------------------
   function IsNumber(value: unknown): value is number {
     return typeof value === 'number' && !globalThis.isNaN(value)
   }
@@ -118,7 +145,6 @@ export namespace TypeCompiler {
   // -------------------------------------------------------------------
   // Types
   // -------------------------------------------------------------------
-
   function* Any(schema: Types.TAny, value: string): IterableIterator<string> {
     yield '(true)'
   }
@@ -216,7 +242,7 @@ export namespace TypeCompiler {
       yield `(Object.getOwnPropertyNames(${value}).every(key => ${keys}.includes(key) || ${expression}))`
     }
     for (const propertyKey of propertyKeys) {
-      const memberExpression = Property.Check(propertyKey) ? `${value}.${propertyKey}` : `${value}['${propertyKey}']`
+      const memberExpression = MemberExpression.Encode(value, propertyKey)
       const propertySchema = schema.properties[propertyKey]
       if (schema.required && schema.required.includes(propertyKey)) {
         yield* Visit(propertySchema, memberExpression)
@@ -406,7 +432,7 @@ export namespace TypeCompiler {
   }
 
   function CreateFunctionName($id: string) {
-    return `check_${$id.replace(/-/g, '_')}`
+    return `check_${Identifier.Encode($id)}`
   }
 
   function CreateFunction(name: string, schema: Types.TSchema, value: string): string {
