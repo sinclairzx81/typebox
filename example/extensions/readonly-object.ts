@@ -26,7 +26,31 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export * from './intersect-allof'
-export * from './readonly-object'
-export * from './union-oneof'
-export * from './union-enum'
+import { Type, TSchema, TObject, TProperties, Modifier, TReadonly, TReadonlyOptional, TOptional } from '@sinclair/typebox'
+
+// prettier-ignore
+export type TReadonlyObject<T extends TObject> = TObject<{
+  [K in keyof T['properties']]: 
+    T['properties'][K] extends TReadonlyOptional<infer U> ? TReadonlyOptional<U> : 
+    T['properties'][K] extends TReadonly<infer U>         ? TReadonly<U> : 
+    T['properties'][K] extends TOptional<infer U>         ? TReadonlyOptional<U> : 
+    TReadonly<T['properties'][K]>
+}>
+
+/** Remaps all properties of an object to be readonly */
+export function ReadonlyObject<T extends TObject>(schema: T): TReadonlyObject<T> {
+  return Type.Object(
+    Object.keys(schema.properties).reduce((acc, key) => {
+      const property = schema.properties[key] as TSchema
+      const modifier = property[Modifier]
+      // prettier-ignore
+      const mapped = (
+        (modifier === 'ReadonlyOptional') ? { ...property, [Modifier]: 'ReadonlyOptional' } :
+        (modifier === 'Readonly')         ? { ...property, [Modifier]: 'Readonly' } :
+        (modifier === 'Optional')         ? { ...property, [Modifier]: 'ReadonlyOptional' } :
+        ({...property, [Modifier]: 'Readonly' })
+      )
+      return { ...acc, [key]: mapped }
+    }, {} as TProperties),
+  ) as TReadonlyObject<T>
+}
