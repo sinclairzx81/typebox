@@ -315,11 +315,17 @@ export type OptionalPropertyKeys<T extends TProperties> = { [K in keyof T]: T[K]
 export type RequiredPropertyKeys<T extends TProperties> = keyof Omit<T, ReadonlyOptionalPropertyKeys<T> | ReadonlyPropertyKeys<T> | OptionalPropertyKeys<T>>
 
 // prettier-ignore
-export type PropertiesReduce<T extends TProperties, P extends unknown[]> = 
-  Readonly<Partial<Pick<{ [K in keyof T]: Static<T[K], P> }, ReadonlyOptionalPropertyKeys<T>>>> &
-  Readonly<Pick<{ [K in keyof T]: Static<T[K], P> }, ReadonlyPropertyKeys<T>>> &
-  Partial<Pick<{ [K in keyof T]: Static<T[K], P> }, OptionalPropertyKeys<T>>> &
-  Required<Pick<{ [K in keyof T]: Static<T[K], P> }, RequiredPropertyKeys<T>>> extends infer R ? { [K in keyof R]: R[K] } : never
+export type PropertiesReducer<T extends TProperties, R extends Record<keyof any, unknown>> = (
+  Readonly<Partial<Pick<R, ReadonlyOptionalPropertyKeys<T>>>> &
+  Readonly<Pick<R, ReadonlyPropertyKeys<T>>> &
+  Partial<Pick<R, OptionalPropertyKeys<T>>> &
+  Required<Pick<R, RequiredPropertyKeys<T>>>
+) extends infer O ? { [K in keyof O]: O[K] } : never
+
+// prettier-ignore
+export type PropertiesReduce<T extends TProperties, P extends unknown[]> = PropertiesReducer<T, { 
+  [K in keyof T]: Static<T[K], P> 
+}>
 
 export type TRecordProperties<K extends TUnion<TLiteral[]>, T extends TSchema> = Static<K> extends string ? { [X in Static<K>]: T } : never
 
