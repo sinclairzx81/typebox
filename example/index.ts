@@ -9,6 +9,7 @@ import { Value, ValuePointer } from '@sinclair/typebox/value'
 import { Type, Kind, Static, TSchema } from '@sinclair/typebox'
 
 const T = Type.Object({
+  /** It's a X */
   x: Type.Number(),
   y: Type.Number(),
   z: Type.Number(),
