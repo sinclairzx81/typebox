@@ -319,7 +319,7 @@ export type PropertiesReduce<T extends TProperties, P extends unknown[]> =
   Readonly<Partial<Pick<{ [K in keyof T]: Static<T[K], P> }, ReadonlyOptionalPropertyKeys<T>>>> &
   Readonly<Pick<{ [K in keyof T]: Static<T[K], P> }, ReadonlyPropertyKeys<T>>> &
   Partial<Pick<{ [K in keyof T]: Static<T[K], P> }, OptionalPropertyKeys<T>>> &
-  Required<Pick<{ [K in keyof T]: Static<T[K], P> }, RequiredPropertyKeys<T>>> extends infer R ? { [K in keyof R]: R[K] } : never;
+  Required<Pick<{ [K in keyof T]: Static<T[K], P> }, RequiredPropertyKeys<T>>> extends infer R ? { [K in keyof R]: R[K] } : never
 
 export type TRecordProperties<K extends TUnion<TLiteral[]>, T extends TSchema> = Static<K> extends string ? { [X in Static<K>]: T } : never
 
