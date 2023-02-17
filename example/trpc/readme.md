@@ -11,7 +11,7 @@ To use TypeBox with TRPC, you will need to wrap types passed to procedures withi
 
 ## Example
 
-The following shows minimal setup using the `IoType` to provide value assertions for TRPC. See following sections for the implementation of `IoType`.
+The following example shows a minimal TypeBox TRPC setup with the `IoType` wrapper function described in the sections below.
 
 ```typescript
 import { Type } from '@sinclair/typebox'
