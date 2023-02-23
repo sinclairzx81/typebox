@@ -1218,15 +1218,15 @@ The following table lists esbuild compiled and minified sizes for each TypeBox m
 ┌──────────────────────┬────────────┬────────────┬─────────────┐
 │       (index)        │  Compiled  │  Minified  │ Compression │
 ├──────────────────────┼────────────┼────────────┼─────────────┤
-│ typebox/compiler     │ '   65 kb' │ '   32 kb' │  '2.03 x'   │
-│ typebox/conditional  │ '   45 kb' │ '   18 kb' │  '2.45 x'   │
-│ typebox/custom       │ '    0 kb' │ '    0 kb' │  '2.61 x'   │
-│ typebox/format       │ '    0 kb' │ '    0 kb' │  '2.66 x'   │
-│ typebox/guard        │ '   23 kb' │ '   11 kb' │  '2.08 x'   │
-│ typebox/hash         │ '    4 kb' │ '    1 kb' │  '2.30 x'   │
-│ typebox/system       │ '   14 kb' │ '    7 kb' │  '1.96 x'   │
-│ typebox/value        │ '   90 kb' │ '   42 kb' │  '2.15 x'   │
-│ typebox              │ '   12 kb' │ '    6 kb' │  '1.89 x'   │
+│ typebox/compiler     │ ' 65.4 kb' │ ' 32.2 kb' │  '2.03 x'   │
+│ typebox/conditional  │ ' 45.5 kb' │ ' 18.6 kb' │  '2.45 x'   │
+│ typebox/custom       │ '  0.6 kb' │ '  0.2 kb' │  '2.61 x'   │
+│ typebox/format       │ '  0.6 kb' │ '  0.2 kb' │  '2.66 x'   │
+│ typebox/guard        │ ' 23.8 kb' │ ' 11.4 kb' │  '2.08 x'   │
+│ typebox/hash         │ '  4.2 kb' │ '  1.8 kb' │  '2.30 x'   │
+│ typebox/system       │ ' 14.0 kb' │ '  7.1 kb' │  '1.96 x'   │
+│ typebox/value        │ ' 90.0 kb' │ ' 41.8 kb' │  '2.15 x'   │
+│ typebox              │ ' 12.0 kb' │ '  6.4 kb' │  '1.89 x'   │
 └──────────────────────┴────────────┴────────────┴─────────────┘
 ```
 
