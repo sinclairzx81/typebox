@@ -60,7 +60,7 @@ import { TRPCError } from '@trpc/server'
 export function RpcType<T extends TSchema>(schema: T, references: TSchema[] = []) {
   const check = TypeCompiler.Compile(schema, references)
   return (value: unknown) => {
-    if(check.Check(value)) return value
+    if (check.Check(value)) return value
     const { path, message } = [...check.Errors(value)][0]
     throw new TRPCError({ message: `${message} for ${path}`, code: 'BAD_REQUEST' })
   }
@@ -80,7 +80,7 @@ import { TRPCError } from '@trpc/server'
 
 export function RpcType<T extends TSchema>(schema: T, references: TSchema[] = []) {
   return (value: unknown) => {
-    if(Value.Check(schema, value)) return value
+    if (Value.Check(schema, value)) return value
     const { path, message } = [...Value.Errors(schema, references, value)][0]
     throw new TRPCError({ message: `${message} for ${path}`, code: 'BAD_REQUEST' })
   }
@@ -103,7 +103,7 @@ export function RpcType<T extends TSchema>(schema: T, references: TSchema[] = []
   references.forEach((reference) => ajv.addSchema(reference))
   const check = ajv.compile(schema)
   return (value: unknown): Static<T> => {
-    if(check(value)) return value
+    if (check(value)) return value
     const { message, instancePath } = check.errors![0]
     throw new TRPCError({ message: `${message} for ${instancePath}`, code: 'BAD_REQUEST' })
   }
