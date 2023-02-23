@@ -9,8 +9,8 @@ export async function measure(test: string) {
   const minified = statSync(`target/benchmark/compression/${test}.js`)
   return {
     test: test.padEnd(20),
-    compiled: `${Math.floor(compiled.size / 1000)} kb`.padStart(8),
-    minified: `${Math.floor(minified.size / 1000)} kb`.padStart(8),
+    compiled: `${(compiled.size / 1000).toFixed(1)} kb`.padStart(8),
+    minified: `${(minified.size / 1000).toFixed(1)} kb`.padStart(8),
     ratio: compiled.size / minified.size,
   }
 }

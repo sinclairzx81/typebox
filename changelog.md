@@ -1,3 +1,14 @@
+## [0.25.24](https://www.npmjs.com/package/@sinclair/typebox/v/0.25.23)
+
+Updates:
+
+- [331](https://github.com/sinclairzx81/typebox/pull/331) Implements an additional check specific to property types of `required & undefined`. This to ensure the property key exists when the property value extends `undefined`.
+- [331](https://github.com/sinclairzx81/typebox/pull/331) Documentation updates for Ajv and TypeCompiler
+
+Additional:
+
+- [331](https://github.com/sinclairzx81/typebox/pull/331) Remove unusued recursive code paths for create and cast.
+
 ## [0.25.23](https://www.npmjs.com/package/@sinclair/typebox/v/0.25.23)
 
 Updates:

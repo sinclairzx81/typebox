@@ -186,14 +186,6 @@ export namespace ValueCreate {
     }
   }
 
-  function Recursive(schema: Types.TRecursive<any>, references: Types.TSchema[]): any {
-    if (schema.default !== undefined) {
-      return schema.default
-    } else {
-      throw new Error('ValueCreate.Recursive: Recursive types require a default value')
-    }
-  }
-
   function Ref(schema: Types.TRef<any>, references: Types.TSchema[]): any {
     if (schema.default !== undefined) {
       return schema.default
@@ -336,8 +328,6 @@ export namespace ValueCreate {
         return Promise(anySchema, anyReferences)
       case 'Record':
         return Record(anySchema, anyReferences)
-      case 'Rec':
-        return Recursive(anySchema, anyReferences)
       case 'Ref':
         return Ref(anySchema, anyReferences)
       case 'Self':

@@ -28,6 +28,7 @@ THE SOFTWARE.
 
 import * as Types from '../typebox'
 import { TypeSystem } from '../system/index'
+import { TypeExtends } from '../guard/extends'
 import { Format } from '../format/index'
 import { Custom } from '../custom/index'
 import { ValueHash } from '../hash/index'
@@ -39,9 +40,17 @@ export class ValueCheckUnknownTypeError extends Error {
 }
 
 export namespace ValueCheck {
+  // --------------------------------------------------------
+  // Guards
+  // --------------------------------------------------------
+
   function IsNumber(value: unknown): value is number {
     return typeof value === 'number' && !isNaN(value)
   }
+
+  // --------------------------------------------------------
+  // Guards
+  // --------------------------------------------------------
 
   function Any(schema: Types.TAny, references: Types.TSchema[], value: any): boolean {
     return true
@@ -203,6 +212,9 @@ export namespace ValueCheck {
       if (schema.required && schema.required.includes(propertyKey)) {
         if (!Visit(propertySchema, references, value[propertyKey])) {
           return false
+        }
+        if (TypeExtends.Undefined(propertySchema)) {
+          return propertyKey in value
         }
       } else {
         if (value[propertyKey] !== undefined) {

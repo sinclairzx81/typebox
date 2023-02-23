@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------------
 
-@sinclair/typebox/guards
+@sinclair/typebox/extensions
 
 The MIT License (MIT)
 
@@ -26,5 +26,4 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export * from './guard'
-export * from './extends'
+export * from './typedef'

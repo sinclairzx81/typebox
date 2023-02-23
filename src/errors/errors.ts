@@ -28,6 +28,7 @@ THE SOFTWARE.
 
 import * as Types from '../typebox'
 import { TypeSystem } from '../system/index'
+import { TypeExtends } from '../guard/extends'
 import { Format } from '../format/index'
 import { Custom } from '../custom/index'
 import { ValueHash } from '../hash/index'
@@ -280,6 +281,9 @@ export namespace ValueErrors {
       const propertySchema = schema.properties[propertyKey]
       if (schema.required && schema.required.includes(propertyKey)) {
         yield* Visit(propertySchema, references, `${path}/${propertyKey}`, value[propertyKey])
+        if (TypeExtends.Undefined(schema) && !(propertyKey in value)) {
+          yield { type: ValueErrorType.ObjectRequiredProperties, schema: propertySchema, path: `${path}/${propertyKey}`, value: undefined, message: `Expected required property` }
+        }
       } else {
         if (value[propertyKey] !== undefined) {
           yield* Visit(propertySchema, references, `${path}/${propertyKey}`, value[propertyKey])

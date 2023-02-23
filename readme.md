@@ -19,17 +19,17 @@
 
 ## Install
 
-### npm
+#### Npm
 ```bash
 $ npm install @sinclair/typebox --save
 ```
 
-### deno
+#### Deno
 ```typescript
 import { Static, Type } from 'npm:@sinclair/typebox'
 ```
 
-### esm
+#### Esm
 
 ```typescript
 import { Static, Type } from 'https://esm.sh/@sinclair/typebox'
@@ -64,7 +64,7 @@ type T = Static<typeof T>                            // type T = {
 
 TypeBox is a type builder library that creates in-memory JSON Schema objects that can be statically inferred as TypeScript types. The schemas produced by this library are designed to match the static type checking rules of the TypeScript compiler. TypeBox enables one to create a unified type that can be statically checked by TypeScript and runtime asserted using standard JSON Schema validation.
 
-TypeBox is designed to enable JSON schema to compose with the same flexibility as TypeScript's type system. It can be used either as a simple tool to build up complex schemas or integrated into REST and RPC services to help validate data received over the wire. 
+This library is designed to enable JSON schema to compose with the same flexibility as TypeScript's type system. It can be used either as a simple tool to build up complex schemas or integrated into REST and RPC services to help validate data received over the wire. 
 
 License MIT
 
@@ -96,8 +96,8 @@ License MIT
   - [Errors](#values-errors)
   - [Pointer](#values-pointer)
 - [TypeCheck](#typecheck)
-  - [TypeCompiler](#typecheck-typecompiler)
   - [Ajv](#typecheck-ajv)
+  - [TypeCompiler](#typecheck-typecompiler)
 - [TypeSystem](#typecheck)
   - [Types](#typesystem-types)
   - [Formats](#typesystem-formats)
@@ -933,17 +933,58 @@ ValuePointer.Set(A, '/z', 1)                         // const A = { x: 1, y: 1, 
 
 ## TypeCheck
 
-TypeBox targets JSON Schema Draft 6 and is built and tested against the Ajv JSON Schema validator for standards compliance. TypeBox also includes an optional built-in TypeCompiler that can provide improved compilation and validation performance specifically for TypeBox types only.
+TypeBox constructs JSON Schema draft 6 compliant schematics and can be used with any validator that supports this specification. In JavaScript, an ideal validator to use is Ajv which supports draft 6 as well as more recent revisions to the specification. In addition to Ajv, TypeBox provides an optional built in type compiler which can offer faster runtime type compilation, as well as providing high performance data validation for TypeBox types only.
 
 The following sections detail using these validators.
+
+<a name='typecheck-ajv'></a>
+
+## Ajv
+
+The following shows the recommended setup for Ajv. 
+
+```bash
+$ npm install ajv ajv-formats --save
+```
+
+```typescript
+import { Type }   from '@sinclair/typebox'
+import addFormats from 'ajv-formats'
+import Ajv        from 'ajv'
+
+const ajv = addFormats(new Ajv({}), [
+  'date-time', 
+  'time', 
+  'date', 
+  'email',  
+  'hostname', 
+  'ipv4', 
+  'ipv6', 
+  'uri', 
+  'uri-reference', 
+  'uuid',
+  'uri-template', 
+  'json-pointer', 
+  'relative-json-pointer', 
+  'regex'
+])
+
+const C = ajv.compile(Type.Object({                
+  x: Type.Number(),
+  y: Type.Number(),
+  z: Type.Number()
+}))
+
+const R = C({ x: 1, y: 2, z: 3 })                    // const R = true 
+```
 
 <a name='typecheck-typecompiler'></a>
 
 ### TypeCompiler
 
-TypeBox includes an high performance just-in-time (JIT) compiler and type checker that can be used in applications that require extremely fast validation. Note that this compiler is optimized for TypeBox types only where the schematics are known in advance.
+The TypeCompiler is a Just-In-Time (JIT) runtime compiler that can be used to convert TypeBox types into fast validation routines. This compiler is specifically tuned for fast compilation and validation for TypeBox types only. 
 
-The compiler module is provided as an optional import.
+The TypeCompiler is provided as an optional import.
 
 ```typescript
 import { TypeCompiler } from '@sinclair/typebox/compiler'
@@ -961,7 +1002,7 @@ const C = TypeCompiler.Compile(Type.Object({         // const C: TypeCheck<TObje
 const R = C.Check({ x: 1, y: 2, z: 3 })              // const R = true
 ```
 
-Validation errors can be read with the `Errors(...)` function.
+Use `Errors(...)` to generate diagnostics for a value. The `Errors(...)` function will run an exhaustive check across the value and yield any error found. For performance, this function should only be called after failed `Check(...)`.
 
 ```typescript
 const C = TypeCompiler.Compile(Type.Object({         // const C: TypeCheck<TObject<{
@@ -1002,141 +1043,11 @@ console.log(C.Code())                                // return function check(va
                                                      // }
 ```
 
-<a name='typecheck-ajv'></a>
-
-### Ajv
-
-The following are the recommended configurations to support both the [Standard](#standard) and [Extended](#extended) type sets provided by TypeBox. For schema portability and publishing to remote systems, it is recommended to use the Standard type set only.
-
-```bash
-$ npm install ajv ajv-formats --save
-```
-
-<details>
-
-<summary>
-<strong>Standard Ajv Configuration</strong>
-<p>Expand for Standard Type Set Configuration</p>
-</summary>
-
-```typescript
-import { Type }   from '@sinclair/typebox'
-import addFormats from 'ajv-formats'
-import Ajv        from 'ajv'
-
-export function createAjv() {
-  return addFormats(new Ajv({}), [
-    'date-time', 
-    'time', 
-    'date', 
-    'email',  
-    'hostname', 
-    'ipv4', 
-    'ipv6', 
-    'uri', 
-    'uri-reference', 
-    'uuid',
-    'uri-template', 
-    'json-pointer', 
-    'relative-json-pointer', 
-    'regex'
-  ])
-}
-
-const ajv = createAjv()
-
-const R = ajv.validate(Type.Object({                 // const R = true
-  x: Type.Number(),
-  y: Type.Number(),
-  z: Type.Number()
-}), { x: 1, y: 2, z: 3 })     
-```
-
-</details>
-
-<details>
-
-<summary>
-<strong>Extended Ajv Configuration</strong>
-<p>Expand for Extended Type Set Configuration</p>
-</summary>
-
-```typescript
-import { TypeGuard } from '@sinclair/typebox/guard'
-import { Value }     from '@sinclair/typebox/value'
-import { Type }      from '@sinclair/typebox'
-import addFormats    from 'ajv-formats'
-import Ajv           from 'ajv'
-
-function schemaOf(schemaOf: string, value: unknown, schema: unknown) {
-  switch (schemaOf) {
-    case 'Constructor':
-      return TypeGuard.TConstructor(schema) && Value.Check(schema, value) // not supported
-    case 'Function':
-      return TypeGuard.TFunction(schema) && Value.Check(schema, value) // not supported
-    case 'Date':
-      return TypeGuard.TDate(schema) && Value.Check(schema, value)
-    case 'Promise':
-      return TypeGuard.TPromise(schema) && Value.Check(schema, value) // not supported
-    case 'Uint8Array':
-      return TypeGuard.TUint8Array(schema) && Value.Check(schema, value)
-    case 'Undefined':
-      return TypeGuard.TUndefined(schema) && Value.Check(schema, value) // not supported
-    case 'Void':
-      return TypeGuard.TVoid(schema) && Value.Check(schema, value)
-    default:
-      return false
-  }
-}
-
-export function createAjv() {
-  return addFormats(new Ajv({}), [
-    'date-time', 
-    'time', 
-    'date', 
-    'email',  
-    'hostname', 
-    'ipv4', 
-    'ipv6', 
-    'uri', 
-    'uri-reference', 
-    'uuid',
-    'uri-template', 
-    'json-pointer', 
-    'relative-json-pointer', 
-    'regex'
-  ])
-  .addKeyword({ type: 'object', keyword: 'instanceOf', validate: schemaOf })
-  .addKeyword({ type: 'null', keyword: 'typeOf', validate: schemaOf })
-  .addKeyword('exclusiveMinimumTimestamp')
-  .addKeyword('exclusiveMaximumTimestamp')
-  .addKeyword('minimumTimestamp')
-  .addKeyword('maximumTimestamp')
-  .addKeyword('minByteLength')
-  .addKeyword('maxByteLength')
-}
-
-const ajv = createAjv()
-
-const R = ajv.validate(Type.Object({                 // const R = true
-  buffer: Type.Uint8Array(),
-  date: Type.Date(),
-  void: Type.Void()
-}), {
-  buffer: new Uint8Array(),
-  date: new Date(),
-  void: null
-})
-```
-
-</details>
-
-
 <a name='typesystem'></a>
 
 ## TypeSystem
 
-TypeBox provides an extensible TypeSystem module that enables developers to register additional types above and beyond the standard or extended type set. This module also allows developers to define custom string formats as well as override certain type checking behaviours.
+TypeBox provides an extensible TypeSystem module that enables developers to define additional types above and beyond the built in type set. This module also allows developers to define custom string formats as well as override certain type checking behaviours.
 
 The TypeSystem module is provided as an optional import.
 
@@ -1148,7 +1059,7 @@ import { TypeSystem } from '@sinclair/typebox/system'
 
 ### Types
 
-Use the `CreateType(...)` function to specify and return a custom type. This function will return a type factory function that can be used to construct the type. The following creates and registers a BigNumber type which will statically infer as `bigint`.
+Use the `CreateType(...)` function to specify custom type. This function will return a type factory function that can be used to construct the type. The following creates and registers a BigNumber type which will statically infer as `bigint`. 
 
 ```typescript
 //--------------------------------------------------------------------------------------------
@@ -1233,29 +1144,29 @@ This benchmark measures compilation performance for varying types. You can revie
 ┌──────────────────┬────────────┬──────────────┬──────────────┬──────────────┐
 │     (index)      │ Iterations │     Ajv      │ TypeCompiler │ Performance  │
 ├──────────────────┼────────────┼──────────────┼──────────────┼──────────────┤
-│           Number │    2000    │ '    418 ms' │ '     14 ms' │ '   29.86 x' │
-│           String │    2000    │ '    331 ms' │ '     12 ms' │ '   27.58 x' │
-│          Boolean │    2000    │ '    290 ms' │ '     13 ms' │ '   22.31 x' │
-│             Null │    2000    │ '    253 ms' │ '      8 ms' │ '   31.63 x' │
-│            RegEx │    2000    │ '    481 ms' │ '     18 ms' │ '   26.72 x' │
-│          ObjectA │    2000    │ '   2675 ms' │ '     54 ms' │ '   49.54 x' │
-│          ObjectB │    2000    │ '   2849 ms' │ '     39 ms' │ '   73.05 x' │
-│            Tuple │    2000    │ '   1224 ms' │ '     22 ms' │ '   55.64 x' │
-│            Union │    2000    │ '   1225 ms' │ '     26 ms' │ '   47.12 x' │
-│          Vector4 │    2000    │ '   1777 ms' │ '     24 ms' │ '   74.04 x' │
-│          Matrix4 │    2000    │ '    825 ms' │ '     12 ms' │ '   68.75 x' │
-│   Literal_String │    2000    │ '    345 ms' │ '      9 ms' │ '   38.33 x' │
-│   Literal_Number │    2000    │ '    363 ms' │ '      7 ms' │ '   51.86 x' │
-│  Literal_Boolean │    2000    │ '    358 ms' │ '      6 ms' │ '   59.67 x' │
-│     Array_Number │    2000    │ '    687 ms' │ '      8 ms' │ '   85.88 x' │
-│     Array_String │    2000    │ '    726 ms' │ '      8 ms' │ '   90.75 x' │
-│    Array_Boolean │    2000    │ '    703 ms' │ '      8 ms' │ '   87.88 x' │
-│    Array_ObjectA │    2000    │ '   3686 ms' │ '     40 ms' │ '   92.15 x' │
-│    Array_ObjectB │    2000    │ '   3821 ms' │ '     40 ms' │ '   95.53 x' │
-│      Array_Tuple │    2000    │ '   2070 ms' │ '     17 ms' │ '  121.76 x' │
-│      Array_Union │    2000    │ '   1503 ms' │ '     21 ms' │ '   71.57 x' │
-│    Array_Vector4 │    2000    │ '   2185 ms' │ '     21 ms' │ '  104.05 x' │
-│    Array_Matrix4 │    2000    │ '   1502 ms' │ '     16 ms' │ '   93.88 x' │
+│           Number │    2000    │ '    451 ms' │ '     16 ms' │ '   28.19 x' │
+│           String │    2000    │ '    338 ms' │ '     14 ms' │ '   24.14 x' │
+│          Boolean │    2000    │ '    297 ms' │ '     13 ms' │ '   22.85 x' │
+│             Null │    2000    │ '    265 ms' │ '      8 ms' │ '   33.13 x' │
+│            RegEx │    2000    │ '    492 ms' │ '     18 ms' │ '   27.33 x' │
+│          ObjectA │    2000    │ '   2744 ms' │ '     55 ms' │ '   49.89 x' │
+│          ObjectB │    2000    │ '   3005 ms' │ '     44 ms' │ '   68.30 x' │
+│            Tuple │    2000    │ '   1283 ms' │ '     26 ms' │ '   49.35 x' │
+│            Union │    2000    │ '   1263 ms' │ '     27 ms' │ '   46.78 x' │
+│          Vector4 │    2000    │ '   1622 ms' │ '     23 ms' │ '   70.52 x' │
+│          Matrix4 │    2000    │ '    888 ms' │ '     12 ms' │ '   74.00 x' │
+│   Literal_String │    2000    │ '    344 ms' │ '     14 ms' │ '   24.57 x' │
+│   Literal_Number │    2000    │ '    389 ms' │ '      8 ms' │ '   48.63 x' │
+│  Literal_Boolean │    2000    │ '    374 ms' │ '      9 ms' │ '   41.56 x' │
+│     Array_Number │    2000    │ '    710 ms' │ '     12 ms' │ '   59.17 x' │
+│     Array_String │    2000    │ '    739 ms' │ '      9 ms' │ '   82.11 x' │
+│    Array_Boolean │    2000    │ '    732 ms' │ '      7 ms' │ '  104.57 x' │
+│    Array_ObjectA │    2000    │ '   3733 ms' │ '     42 ms' │ '   88.88 x' │
+│    Array_ObjectB │    2000    │ '   3602 ms' │ '     42 ms' │ '   85.76 x' │
+│      Array_Tuple │    2000    │ '   2204 ms' │ '     20 ms' │ '  110.20 x' │
+│      Array_Union │    2000    │ '   1533 ms' │ '     24 ms' │ '   63.88 x' │
+│    Array_Vector4 │    2000    │ '   2263 ms' │ '     21 ms' │ '  107.76 x' │
+│    Array_Matrix4 │    2000    │ '   1576 ms' │ '     14 ms' │ '  112.57 x' │
 └──────────────────┴────────────┴──────────────┴──────────────┴──────────────┘
 ```
 
@@ -1269,31 +1180,31 @@ This benchmark measures validation performance for varying types. You can review
 ┌──────────────────┬────────────┬──────────────┬──────────────┬──────────────┬──────────────┐
 │     (index)      │ Iterations │  ValueCheck  │     Ajv      │ TypeCompiler │ Performance  │
 ├──────────────────┼────────────┼──────────────┼──────────────┼──────────────┼──────────────┤
-│           Number │  1000000   │ '     28 ms' │ '      6 ms' │ '      6 ms' │ '    1.00 x' │
-│           String │  1000000   │ '     25 ms' │ '     23 ms' │ '     11 ms' │ '    2.09 x' │
-│          Boolean │  1000000   │ '     24 ms' │ '     21 ms' │ '     11 ms' │ '    1.91 x' │
-│             Null │  1000000   │ '     25 ms' │ '     22 ms' │ '     10 ms' │ '    2.20 x' │
-│            RegEx │  1000000   │ '    164 ms' │ '     53 ms' │ '     37 ms' │ '    1.43 x' │
-│          ObjectA │  1000000   │ '    593 ms' │ '     47 ms' │ '     25 ms' │ '    1.88 x' │
-│          ObjectB │  1000000   │ '   1053 ms' │ '     54 ms' │ '     40 ms' │ '    1.35 x' │
-│            Tuple │  1000000   │ '    129 ms' │ '     25 ms' │ '     16 ms' │ '    1.56 x' │
-│            Union │  1000000   │ '    334 ms' │ '     25 ms' │ '     16 ms' │ '    1.56 x' │
-│        Recursive │  1000000   │ '   3127 ms' │ '    424 ms' │ '     98 ms' │ '    4.33 x' │
-│          Vector4 │  1000000   │ '    152 ms' │ '     24 ms' │ '     12 ms' │ '    2.00 x' │
-│          Matrix4 │  1000000   │ '    593 ms' │ '     41 ms' │ '     27 ms' │ '    1.52 x' │
-│   Literal_String │  1000000   │ '     48 ms' │ '     20 ms' │ '     11 ms' │ '    1.82 x' │
-│   Literal_Number │  1000000   │ '     47 ms' │ '     22 ms' │ '     10 ms' │ '    2.20 x' │
-│  Literal_Boolean │  1000000   │ '     48 ms' │ '     21 ms' │ '     11 ms' │ '    1.91 x' │
-│     Array_Number │  1000000   │ '    495 ms' │ '     32 ms' │ '     21 ms' │ '    1.52 x' │
-│     Array_String │  1000000   │ '    481 ms' │ '     31 ms' │ '     21 ms' │ '    1.48 x' │
-│    Array_Boolean │  1000000   │ '    446 ms' │ '     32 ms' │ '     27 ms' │ '    1.19 x' │
-│    Array_ObjectA │  1000000   │ '  14314 ms' │ '   2341 ms' │ '   1969 ms' │ '    1.19 x' │
-│    Array_ObjectB │  1000000   │ '  16883 ms' │ '   2661 ms' │ '   2606 ms' │ '    1.02 x' │
-│      Array_Tuple │  1000000   │ '   1834 ms' │ '     98 ms' │ '     77 ms' │ '    1.27 x' │
-│      Array_Union │  1000000   │ '   4960 ms' │ '    240 ms' │ '     87 ms' │ '    2.76 x' │
-│  Array_Recursive │  1000000   │ '  56273 ms' │ '   7118 ms' │ '   1122 ms' │ '    6.34 x' │
-│    Array_Vector4 │  1000000   │ '   2498 ms' │ '     99 ms' │ '     48 ms' │ '    2.06 x' │
-│    Array_Matrix4 │  1000000   │ '  12487 ms' │ '    383 ms' │ '    246 ms' │ '    1.56 x' │
+│           Number │  1000000   │ '     30 ms' │ '      7 ms' │ '      6 ms' │ '    1.17 x' │
+│           String │  1000000   │ '     23 ms' │ '     21 ms' │ '     11 ms' │ '    1.91 x' │
+│          Boolean │  1000000   │ '     22 ms' │ '     21 ms' │ '     10 ms' │ '    2.10 x' │
+│             Null │  1000000   │ '     27 ms' │ '     20 ms' │ '     10 ms' │ '    2.00 x' │
+│            RegEx │  1000000   │ '    163 ms' │ '     47 ms' │ '     38 ms' │ '    1.24 x' │
+│          ObjectA │  1000000   │ '    654 ms' │ '     41 ms' │ '     24 ms' │ '    1.71 x' │
+│          ObjectB │  1000000   │ '   1173 ms' │ '     59 ms' │ '     41 ms' │ '    1.44 x' │
+│            Tuple │  1000000   │ '    124 ms' │ '     24 ms' │ '     17 ms' │ '    1.41 x' │
+│            Union │  1000000   │ '    332 ms' │ '     26 ms' │ '     16 ms' │ '    1.63 x' │
+│        Recursive │  1000000   │ '   3129 ms' │ '    412 ms' │ '    102 ms' │ '    4.04 x' │
+│          Vector4 │  1000000   │ '    147 ms' │ '     26 ms' │ '     13 ms' │ '    2.00 x' │
+│          Matrix4 │  1000000   │ '    576 ms' │ '     41 ms' │ '     28 ms' │ '    1.46 x' │
+│   Literal_String │  1000000   │ '     51 ms' │ '     21 ms' │ '     10 ms' │ '    2.10 x' │
+│   Literal_Number │  1000000   │ '     47 ms' │ '     21 ms' │ '     11 ms' │ '    1.91 x' │
+│  Literal_Boolean │  1000000   │ '     47 ms' │ '     21 ms' │ '     10 ms' │ '    2.10 x' │
+│     Array_Number │  1000000   │ '    490 ms' │ '     33 ms' │ '     18 ms' │ '    1.83 x' │
+│     Array_String │  1000000   │ '    502 ms' │ '     31 ms' │ '     25 ms' │ '    1.24 x' │
+│    Array_Boolean │  1000000   │ '    465 ms' │ '     33 ms' │ '     27 ms' │ '    1.22 x' │
+│    Array_ObjectA │  1000000   │ '  15463 ms' │ '   2470 ms' │ '   2052 ms' │ '    1.20 x' │
+│    Array_ObjectB │  1000000   │ '  18047 ms' │ '   2497 ms' │ '   2348 ms' │ '    1.06 x' │
+│      Array_Tuple │  1000000   │ '   1958 ms' │ '     99 ms' │ '     77 ms' │ '    1.29 x' │
+│      Array_Union │  1000000   │ '   5348 ms' │ '    254 ms' │ '     89 ms' │ '    2.85 x' │
+│  Array_Recursive │  1000000   │ '  54643 ms' │ '   8870 ms' │ '   1158 ms' │ '    7.66 x' │
+│    Array_Vector4 │  1000000   │ '   2724 ms' │ '    105 ms' │ '     48 ms' │ '    2.19 x' │
+│    Array_Matrix4 │  1000000   │ '  13821 ms' │ '    437 ms' │ '    266 ms' │ '    1.64 x' │
 └──────────────────┴────────────┴──────────────┴──────────────┴──────────────┴──────────────┘
 ```
 
@@ -1307,14 +1218,15 @@ The following table lists esbuild compiled and minified sizes for each TypeBox m
 ┌──────────────────────┬────────────┬────────────┬─────────────┐
 │       (index)        │  Compiled  │  Minified  │ Compression │
 ├──────────────────────┼────────────┼────────────┼─────────────┤
-│ typebox/compiler     │ '   64 kb' │ '   31 kb' │  '2.02 x'   │
-│ typebox/conditional  │ '   45 kb' │ '   18 kb' │  '2.44 x'   │
-│ typebox/custom       │ '    0 kb' │ '    0 kb' │  '2.61 x'   │
-│ typebox/format       │ '    0 kb' │ '    0 kb' │  '2.66 x'   │
-│ typebox/guard        │ '   23 kb' │ '   11 kb' │  '2.07 x'   │
-│ typebox/hash         │ '    4 kb' │ '    1 kb' │  '2.30 x'   │
-│ typebox/value        │ '   89 kb' │ '   41 kb' │  '2.15 x'   │
-│ typebox              │ '   12 kb' │ '    6 kb' │  '1.89 x'   │
+│ typebox/compiler     │ ' 65.4 kb' │ ' 32.2 kb' │  '2.03 x'   │
+│ typebox/conditional  │ ' 45.5 kb' │ ' 18.6 kb' │  '2.45 x'   │
+│ typebox/custom       │ '  0.6 kb' │ '  0.2 kb' │  '2.61 x'   │
+│ typebox/format       │ '  0.6 kb' │ '  0.2 kb' │  '2.66 x'   │
+│ typebox/guard        │ ' 23.8 kb' │ ' 11.4 kb' │  '2.08 x'   │
+│ typebox/hash         │ '  4.2 kb' │ '  1.8 kb' │  '2.30 x'   │
+│ typebox/system       │ ' 14.0 kb' │ '  7.1 kb' │  '1.96 x'   │
+│ typebox/value        │ ' 90.0 kb' │ ' 41.8 kb' │  '2.15 x'   │
+│ typebox              │ ' 12.0 kb' │ '  6.4 kb' │  '1.89 x'   │
 └──────────────────────┴────────────┴────────────┴─────────────┘
 ```
 

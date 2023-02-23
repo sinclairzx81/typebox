@@ -205,4 +205,26 @@ describe('type/compiler/Object', () => {
       z: 3,
     })
   })
+  it('Should check for property key if property type is undefined', () => {
+    const T = Type.Object({ x: Type.Undefined() })
+    Ok(T, { x: undefined })
+    Fail(T, {})
+  })
+  it('Should check for property key if property type extends undefined', () => {
+    const T = Type.Object({ x: Type.Union([Type.Number(), Type.Undefined()]) })
+    Ok(T, { x: 1 })
+    Ok(T, { x: undefined })
+    Fail(T, {})
+  })
+  it('Should not check for property key if property type is undefined and optional', () => {
+    const T = Type.Object({ x: Type.Optional(Type.Undefined()) })
+    Ok(T, { x: undefined })
+    Ok(T, {})
+  })
+  it('Should not check for property key if property type extends undefined and optional', () => {
+    const T = Type.Object({ x: Type.Optional(Type.Union([Type.Number(), Type.Undefined()])) })
+    Ok(T, { x: 1 })
+    Ok(T, { x: undefined })
+    Ok(T, {})
+  })
 })
