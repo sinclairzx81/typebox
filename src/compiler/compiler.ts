@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 import { ValueErrors, ValueError } from '../errors/index'
 import { TypeSystem } from '../system/index'
-import { TypeGuard } from '../guard/index'
+import { TypeExtends, TypeGuard } from '../guard/index'
 import { Format } from '../format/index'
 import { Custom } from '../custom/index'
 import { ValueHash } from '../hash/index'
@@ -246,6 +246,9 @@ export namespace TypeCompiler {
       const propertySchema = schema.properties[propertyKey]
       if (schema.required && schema.required.includes(propertyKey)) {
         yield* Visit(propertySchema, memberExpression)
+        if (TypeExtends.Undefined(propertySchema)) {
+          yield `('${propertyKey}' in ${value})`
+        }
       } else {
         const expression = CreateExpression(propertySchema, memberExpression)
         yield `(${memberExpression} === undefined ? true : (${expression}))`

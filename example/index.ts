@@ -9,12 +9,16 @@ import { Custom } from '@sinclair/typebox/custom'
 import { Value, ValuePointer } from '@sinclair/typebox/value'
 import { Type, Kind, Static, TSchema, TUnion } from '@sinclair/typebox'
 
+TypeSystem.AllowNaN = true
+
 const T = Type.Object({
-  x: Type.Undefined(),
+  x: Type.Union([Type.Number(), Type.Undefined()]),
 })
 
 const E = [...Value.Errors(T, {})]
 
-console.log(E)
+const C = TypeCompiler.Compile(T)
 
-console.log(Value.Check(T, { x: undefined }))
+console.log(C.Code())
+
+console.log(C.Check({ x: undefined }))

@@ -190,4 +190,26 @@ describe('value/check/Object', () => {
       false,
     )
   })
+  it('Should check for property key if property type is undefined', () => {
+    const T = Type.Object({ x: Type.Undefined() })
+    Assert.equal(Value.Check(T, { x: undefined }), true)
+    Assert.equal(Value.Check(T, {}), false)
+  })
+  it('Should check for property key if property type extends undefined', () => {
+    const T = Type.Object({ x: Type.Union([Type.Number(), Type.Undefined()]) })
+    Assert.equal(Value.Check(T, { x: 1 }), true)
+    Assert.equal(Value.Check(T, { x: undefined }), true)
+    Assert.equal(Value.Check(T, {}), false)
+  })
+  it('Should not check for property key if property type is undefined and optional', () => {
+    const T = Type.Object({ x: Type.Optional(Type.Undefined()) })
+    Assert.equal(Value.Check(T, { x: undefined }), true)
+    Assert.equal(Value.Check(T, {}), true)
+  })
+  it('Should not check for property key if property type extends undefined and optional', () => {
+    const T = Type.Object({ x: Type.Optional(Type.Union([Type.Number(), Type.Undefined()])) })
+    Assert.equal(Value.Check(T, { x: 1 }), true)
+    Assert.equal(Value.Check(T, { x: undefined }), true)
+    Assert.equal(Value.Check(T, {}), true)
+  })
 })
