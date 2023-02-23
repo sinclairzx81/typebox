@@ -982,7 +982,9 @@ const R = C({ x: 1, y: 2, z: 3 })                    // const R = true
 
 ### TypeCompiler
 
-The TypeBox TypeCompiler is a Just-In-Time (JIT) runtime compiler that can be used to compile TypeBox types into fast validation routines. This compiler is specifically tuned for fast compilation and validation for TypeBox types only. The TypeCompiler is provided as an optional import.
+The TypeCompiler is a Just-In-Time (JIT) runtime compiler that can be used to convert TypeBox types into fast validation routines. This compiler is specifically tuned for fast compilation and validation for TypeBox types only. 
+
+The TypeCompiler is provided as an optional import.
 
 ```typescript
 import { TypeCompiler } from '@sinclair/typebox/compiler'
@@ -1000,7 +1002,7 @@ const C = TypeCompiler.Compile(Type.Object({         // const C: TypeCheck<TObje
 const R = C.Check({ x: 1, y: 2, z: 3 })              // const R = true
 ```
 
-Use `Errors(...)` to generate diagnostic for a value. The `Errors(...)` function will run an exhaustive check across the value and yield any error found. For performance, this function should only be called after failed `Check(...)`.
+Use `Errors(...)` to generate diagnostics for a value. The `Errors(...)` function will run an exhaustive check across the value and yield any error found. For performance, this function should only be called after failed `Check(...)`.
 
 ```typescript
 const C = TypeCompiler.Compile(Type.Object({         // const C: TypeCheck<TObject<{
