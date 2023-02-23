@@ -284,9 +284,6 @@ export namespace ValueCast {
     }
     return result
   }
-  function Recursive(schema: Types.TRecursive<any>, references: Types.TSchema[], value: any): any {
-    throw new ValueCastRecursiveTypeError(schema)
-  }
   function Ref(schema: Types.TRef<any>, references: Types.TSchema[], value: any): any {
     const reference = references.find((reference) => reference.$id === schema.$ref)
     if (reference === undefined) throw new ValueCastReferenceTypeError(schema)
@@ -357,8 +354,6 @@ export namespace ValueCast {
         return Promise(anySchema, anyReferences, value)
       case 'Record':
         return Record(anySchema, anyReferences, value)
-      case 'Rec':
-        return Recursive(anySchema, anyReferences, value)
       case 'Ref':
         return Ref(anySchema, anyReferences, value)
       case 'Self':
