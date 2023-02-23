@@ -34,7 +34,7 @@ import { Type, Static, TUnsafe } from '@sinclair/typebox'
 // https://jsontypedef.com/docs/jtd-in-5-minutes/
 // ------------------------------------------------------------------------
 
-export type StaticTypeDefUnion<D extends string, M extends Record<string, TUnsafe<any>>> = { [K in keyof M]: {[P in D]: K } & Static<M[K]> }[keyof M]
+export type StaticTypeDefUnion<D extends string, M extends Record<string, TUnsafe<any>>> = { [K in keyof M]: { [P in D]: K } & Static<M[K]> }[keyof M]
 
 export namespace TypeDef {
   export function Boolean() {
@@ -77,7 +77,7 @@ export namespace TypeDef {
     return Type.Unsafe<Array<Static<T>>>({ elements: element })
   }
   export function Properties<T extends Record<string, TUnsafe<any>>>(properties: T) {
-    return Type.Unsafe<{[K in keyof T]: Static<T[K]>}>({ properties })
+    return Type.Unsafe<{ [K in keyof T]: Static<T[K]> }>({ properties })
   }
   export function Values<V extends TUnsafe<any>>(values: V) {
     return Type.Unsafe<Record<string, Static<V>>>({ values })

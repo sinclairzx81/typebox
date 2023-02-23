@@ -18,10 +18,12 @@ import { Type } from '@sinclair/typebox'
 import { initTRPC } from '@trpc/server'
 import { IoType } from './io-type'
 
-const addInput = IoType(Type.Object({
-  a: Type.Number(),
-  b: Type.Number()
-}))
+const addInput = IoType(
+  Type.Object({
+    a: Type.Number(),
+    b: Type.Number(),
+  }),
+)
 
 const addOutput = IoType(Type.Number())
 
@@ -31,7 +33,7 @@ export const appRouter = t.router({
   add: t.procedure
     .input(addInput)
     .output(addOutput)
-    .query(({ input }) => input.a + input.b) // type-safe
+    .query(({ input }) => input.a + input.b), // type-safe
 })
 ```
 
@@ -48,10 +50,13 @@ import { TRPCError } from '@trpc/server'
 
 export const IoType = <T extends TSchema>(schema: T, references: TSchema[] = []) => {
   const check = TypeCompiler.Compile(schema, references)
-  return (value: unknown) => check.Check(value) ? value : (() => {
-    const { path, message } = [...check.Errors(value)][0]
-    throw new TRPCError({ message: `${message} for ${path}`, code: 'BAD_REQUEST' })
-  })()
+  return (value: unknown) =>
+    check.Check(value)
+      ? value
+      : (() => {
+          const { path, message } = [...check.Errors(value)][0]
+          throw new TRPCError({ message: `${message} for ${path}`, code: 'BAD_REQUEST' })
+        })()
 }
 ```
 
@@ -66,17 +71,20 @@ import { Value } from '@sinclair/typebox/value'
 import { TSchema } from '@sinclair/typebox'
 import { TRPCError } from '@trpc/server'
 
-export const IoType = <T extends TSchema>(schema: T, references: TSchema[] = []) => 
-  (value: unknown) => Value.Check(schema, value) ? value : (() => {
-    const { path, message } = [...Value.Errors(schema, references, value)][0]
-    throw new TRPCError({ message: `${message} for ${path}`, code: 'BAD_REQUEST' })
-  })()
+export const IoType =
+  <T extends TSchema>(schema: T, references: TSchema[] = []) =>
+  (value: unknown) =>
+    Value.Check(schema, value)
+      ? value
+      : (() => {
+          const { path, message } = [...Value.Errors(schema, references, value)][0]
+          throw new TRPCError({ message: `${message} for ${path}`, code: 'BAD_REQUEST' })
+        })()
 ```
 
 <a name="Ajv"></a>
 
 ## With [Ajv](https://www.typescriptlang.org/dev/bug-workbench/?target=99&lib=true&ts=4.7.4#code/PTAEAEDMEsBsFMB2BDAtvAXKaB7AtAC4CeADvAHQEDOAUNKiTgE4GgDeoAKgMoDGAFvFTIANKG4FkBaL1ABfUJCY5UoAOTgq0RL1jJoTYMTIAjHAA81dBs1YdOAJQAKAYQCiTZU3mLlqjQRMJLzAVPBMAG7hVvSMLKAAggBWEb4q6sgpwAAm0FQEwABMAAwlVjTw5nGsvDiI+aAAkjicpPCgALygADycoJUESNlUXHyCwgB8ABRUAkLIWJxiTPCQ4Ui88FSLY-MA2gC6naCHAJSdE+w0oKC19ayZqV2I8ADuiSlTp9egK2srOi25EgzDcyAEUz+60BF1Aj3IyGy2V2wkhq2hm1O3xudwac14AGtjvDagw4PAZnNhNjfvACABXJiIUBTCLIWD0zCgemIAmIHCvRCnLASKQyXqXDqXfEE1nsznnAD8oDZHPaWCmX1hbB+OLqDQ46CoVGQAHN4GJtPlkICnFJ+D4ujLyOEvFQAIR7YoHXWgAj8ZTvF7vRyuDxeKaGrYm81YUAAAwAJGwjTH4AoQd5k1bJLb7XJ42JatkuWoAEIJAAiAH0HG4AIoAVTc3E4ankNLkpy+NDkNBoIAgMAQKHQWGU9MGTEotFitnY2EQ0AIoZcPiU6QCQRCYUi0Ws1QXrTI6786k02l0+kMxngZksB-nHGax-aGbPanIwFwhDa5VxDxIo0iAkJOxwvm0UyvuQADyJhJPAvAEJGPwLFwbTkAAcvSqAmOEXwiD8JiLBh2G4fh3xdt8NAAXCSIwZOoGsF0EFkFBpE4XhTBfNRtHMYuy6ruQvArFIFLUZUh60cgJAkA4OCTuExwEOQE5TihNyItkWAqSQyibNkjLwL65DaExUxacBTE0jc5AKQQ5laQxDmTjZoDkAAjpyTBEJqHBmWBXawgFKnIKAADUi5MeQJjnIOt54Caay9qcQA)
-
 
 The following uses Ajv to perform more generalized JSON Schema checks across the complete JSON Schema specification.
 
@@ -87,11 +95,14 @@ import Ajv from 'ajv/dist/2020'
 
 export const IoType = <T extends TSchema>(schema: T, references: TSchema[] = []) => {
   const ajv = new Ajv()
-  references.forEach(reference => ajv.addSchema(reference))
+  references.forEach((reference) => ajv.addSchema(reference))
   const check = ajv.compile(schema)
-  return (value: unknown): Static<T> => check(value) ? value : (() => {
-    const { message, instancePath } = check.errors![0]
-    throw new TRPCError({ message:  `${message} for ${instancePath}`, code: 'BAD_REQUEST' })
-  })()
+  return (value: unknown): Static<T> =>
+    check(value)
+      ? value
+      : (() => {
+          const { message, instancePath } = check.errors![0]
+          throw new TRPCError({ message: `${message} for ${instancePath}`, code: 'BAD_REQUEST' })
+        })()
 }
 ```

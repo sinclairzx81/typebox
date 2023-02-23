@@ -9,7 +9,7 @@ This example provides a reference implementation for JSON Type Definition.
 Refer to the `typedef.ts` file in this directory for a reference implementation of the JSON Type Definition type builder.
 
 ```typescript
-import { Static } from '@sinclair/typebox' 
+import { Static } from '@sinclair/typebox'
 import { TypeDef } from './typedef'
 ```
 
@@ -55,9 +55,8 @@ export const ValuesType = TypeDef.Values(TypeDef.Float64())
 //
 // ------------------------------------------------------------------------
 
-
 export type EnumType = Static<typeof EnumType>
-export const EnumType = TypeDef.Enum(["FOO", "BAR", "BAZ"])
+export const EnumType = TypeDef.Enum(['FOO', 'BAR', 'BAZ'])
 ```
 
 ## Elements
@@ -73,6 +72,7 @@ export const EnumType = TypeDef.Enum(["FOO", "BAR", "BAZ"])
 export type ElementsType = Static<typeof ElementsType>
 export const ElementsType = TypeDef.Elements(PropertiesType)
 ```
+
 ## Union
 
 ```typescript
@@ -85,16 +85,16 @@ export const ElementsType = TypeDef.Elements(PropertiesType)
 
 export type UnionType = Static<typeof UnionType>
 export const UnionType = TypeDef.Union('eventType', {
-  "USER_CREATED": TypeDef.Properties({
-    id: TypeDef.String()
-  }),
-  "USER_PAYMENT_PLAN_CHANGED": TypeDef.Properties({
+  USER_CREATED: TypeDef.Properties({
     id: TypeDef.String(),
-    plan: TypeDef.Enum(['FREE', 'PAID'])
   }),
-  "USER_DELETED": TypeDef.Properties({
+  USER_PAYMENT_PLAN_CHANGED: TypeDef.Properties({
     id: TypeDef.String(),
-    softDelete: TypeDef.Boolean()
-  })
+    plan: TypeDef.Enum(['FREE', 'PAID']),
+  }),
+  USER_DELETED: TypeDef.Properties({
+    id: TypeDef.String(),
+    softDelete: TypeDef.Boolean(),
+  }),
 })
 ```

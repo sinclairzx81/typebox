@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------------
 
-@sinclair/typebox/extensions
+@sinclair/typebox/guard
 
 The MIT License (MIT)
 
@@ -9,7 +9,7 @@ Copyright (c) 2017-2023 Haydn Paterson (sinclair) <haydn.developer@gmail.com>
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+to use, copy, modify, merge, publish, dTribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
 
@@ -26,4 +26,21 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export * from './typedef'
+import * as Types from '../typebox'
+
+export namespace TypeExtends {
+  /**
+   * This function returns true if the given schema is undefined, either directly
+   * or through union composition. This check is required on object property types
+   * of undefined, where a additional `key in value` check is used to determine
+   * the property key exists.
+   */
+  export function Undefined(schema: Types.TSchema): boolean {
+    if (schema[Types.Kind] === 'Undefined') return true
+    if (schema[Types.Kind] === 'Union') {
+      const union = schema as Types.TUnion
+      return union.anyOf.some((schema) => Undefined(schema))
+    }
+    return false
+  }
+}
