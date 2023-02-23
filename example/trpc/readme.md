@@ -1,13 +1,15 @@
-# TypeBox TRPC Integration
+# Using TypeBox with TRPC
 
 To use TypeBox with TRPC, you will need to wrap types passed to procedures within a TRPC compatible assert function. Once wrapped, TypeBox can offer typical auto type inference for procedures, enhanced runtime checking performance and enable publishable procedure schematics based on the JSON Schema specification.
 
 ## Contents
 
 - [Example](#Example)
-- [TypeCompiler](#TypeComplier)
+- [TypeCompiler](#TypeCompiler)
 - [Value](#Value)
 - [Ajv](#Ajv)
+
+<a name="Example"></a>
 
 ## Example
 
