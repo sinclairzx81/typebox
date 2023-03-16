@@ -6,12 +6,22 @@ describe('type/compiler/Number', () => {
     const T = Type.Number()
     Ok(T, 3.14)
   })
-
+  it('Should not validate NaN', () => {
+    const T = Type.Number()
+    Fail(T, NaN)
+  })
+  it('Should not validate +Infinity', () => {
+    const T = Type.Number()
+    Fail(T, Infinity)
+  })
+  it('Should not validate -Infinity', () => {
+    const T = Type.Number()
+    Fail(T, -Infinity)
+  })
   it('Should validate integer', () => {
     const T = Type.Number()
     Ok(T, 1)
   })
-
   it('Should not validate string', () => {
     const T = Type.Number()
     Fail(T, 'hello')
@@ -36,32 +46,32 @@ describe('type/compiler/Number', () => {
     const T = Type.Number()
     Fail(T, undefined)
   })
-
+  it('Should not validate bigint', () => {
+    const T = Type.Number()
+    Fail(T, BigInt(1))
+  })
+  it('Should not validate symbol', () => {
+    const T = Type.Number()
+    Fail(T, Symbol(1))
+  })
   it('Should validate minimum', () => {
     const T = Type.Number({ minimum: 10 })
     Fail(T, 9)
     Ok(T, 10)
   })
-
   it('Should validate maximum', () => {
     const T = Type.Number({ maximum: 10 })
     Ok(T, 10)
     Fail(T, 11)
   })
-
   it('Should validate Date exclusiveMinimum', () => {
     const T = Type.Number({ exclusiveMinimum: 10 })
     Fail(T, 10)
     Ok(T, 11)
   })
-
   it('Should validate Date exclusiveMaximum', () => {
     const T = Type.Number({ exclusiveMaximum: 10 })
     Ok(T, 9)
     Fail(T, 10)
-  })
-
-  it('Should not validate NaN', () => {
-    Fail(Type.Number(), NaN)
   })
 })

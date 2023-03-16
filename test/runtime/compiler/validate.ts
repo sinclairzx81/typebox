@@ -1,7 +1,6 @@
 import { TypeCompiler } from '@sinclair/typebox/compiler'
 import { Value } from '@sinclair/typebox/value'
-import { TSchema } from '@sinclair/typebox'
-import { Format } from 'src/format'
+import { TSchema, FormatRegistry } from '@sinclair/typebox'
 
 // -------------------------------------------------------------------------
 // Test Formats: https://github.com/ajv-validator/ajv-formats/blob/master/src/formats.ts
@@ -59,9 +58,9 @@ function isDateTime(str: string, strictTimeZone?: boolean): boolean {
 // Use Formats
 // -------------------------------------------------------------------------
 
-Format.Set('email', (value) => EMAIL.test(value))
-Format.Set('uuid', (value) => UUID.test(value))
-Format.Set('date-time', (value) => isDateTime(value, true))
+FormatRegistry.Set('email', (value) => EMAIL.test(value))
+FormatRegistry.Set('uuid', (value) => UUID.test(value))
+FormatRegistry.Set('date-time', (value) => isDateTime(value, true))
 
 export function Ok<T extends TSchema>(schema: T, data: unknown, references: any[] = []) {
   const C = TypeCompiler.Compile(schema, references)

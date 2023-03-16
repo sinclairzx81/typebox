@@ -1,8 +1,8 @@
 import { Static, TSchema } from '@sinclair/typebox'
 
-export function Expect<T extends TSchema>(schema: T) {
+export function Expect<T extends TSchema, S = Static<T>>(schema: T) {
   return {
-    ToInfer: <U extends Static<T>>() => {},
-    ToBe: <U extends T>() => {},
+    ToInfer: <U extends S>() => {},
+    ToBe: <U extends S>() => {},
   }
 }

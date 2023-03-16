@@ -1,10 +1,9 @@
 import { Value } from '@sinclair/typebox/value'
-import { Custom } from '@sinclair/typebox/custom'
-import { Type, Kind } from '@sinclair/typebox'
+import { Type, Kind, TypeRegistry } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
 describe('type/check/Custom', () => {
-  Custom.Set('BigInt', (schema, value) => typeof value === 'bigint')
+  TypeRegistry.Set('BigInt', (schema, value) => typeof value === 'bigint')
 
   it('Should validate bigint', () => {
     const T = Type.Unsafe({ [Kind]: 'BigInt' })

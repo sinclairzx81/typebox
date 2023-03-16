@@ -30,7 +30,14 @@ describe('type/compiler/String', () => {
     const T = Type.String()
     Fail(T, undefined)
   })
-
+  it('Should not validate bigint', () => {
+    const T = Type.String()
+    Fail(T, BigInt(1))
+  })
+  it('Should not validate symbol', () => {
+    const T = Type.String()
+    Fail(T, Symbol(1))
+  })
   it('Should validate string format as email', () => {
     const T = Type.String({ format: 'email' })
     Ok(T, 'name@domain.com')

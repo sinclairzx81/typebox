@@ -45,26 +45,38 @@ describe('type/compiler/Ref', () => {
   })
 
   it('Should de-reference object property schema', () => {
-    const R = Type.Object(
+    const T = Type.Object(
       {
         name: Type.String(),
       },
       { $id: 'R' },
     )
 
-    const T = Type.Object(
+    const R = Type.Object(
       {
         x: Type.Number(),
         y: Type.Number(),
         z: Type.Number(),
-        r: Type.Optional(Type.Ref(R)),
+        r: Type.Optional(Type.Ref(T)),
       },
       { $id: 'T' },
     )
 
-    Ok(T, { x: 1, y: 2, z: 3 }, [R])
-    Ok(T, { x: 1, y: 2, z: 3, r: { name: 'hello' } }, [R])
-    Fail(T, { x: 1, y: 2, z: 3, r: { name: 1 } }, [R])
-    Fail(T, { x: 1, y: 2, z: 3, r: {} }, [R])
+    Ok(R, { x: 1, y: 2, z: 3 }, [T])
+    Ok(R, { x: 1, y: 2, z: 3, r: { name: 'hello' } }, [T])
+    Fail(R, { x: 1, y: 2, z: 3, r: { name: 1 } }, [T])
+    Fail(R, { x: 1, y: 2, z: 3, r: {} }, [T])
+  })
+
+  it('Should reference recursive schema', () => {
+    const T = Type.Recursive((Node) =>
+      Type.Object({
+        id: Type.String(),
+        nodes: Type.Array(Node),
+      }),
+    )
+    const R = Type.Ref(T)
+    Ok(R, { id: '', nodes: [{ id: '', nodes: [] }] }, [T])
+    Fail(R, { id: '', nodes: [{ id: 1, nodes: [] }] }, [T])
   })
 })

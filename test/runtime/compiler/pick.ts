@@ -57,4 +57,30 @@ describe('type/compiler/Pick', () => {
     Ok(T, { x: 0, y: 0 })
     Fail(T, { x: 0, y: 0, z: 0 })
   })
+  it('Should support Pick of Literal', () => {
+    const A = Type.Object(
+      {
+        x: Type.Number(),
+        y: Type.Number(),
+        z: Type.Number(),
+      },
+      { additionalProperties: false },
+    )
+    const T = Type.Pick(A, Type.Literal('x'))
+    Ok(T, { x: 1 })
+    Fail(T, { x: 1, y: 1, z: 1 })
+  })
+  it('Should support Pick of Never', () => {
+    const A = Type.Object(
+      {
+        x: Type.Number(),
+        y: Type.Number(),
+        z: Type.Number(),
+      },
+      { additionalProperties: false },
+    )
+    const T = Type.Pick(A, Type.Never())
+    Fail(T, { x: 1, y: 1, z: 1 })
+    Ok(T, {})
+  })
 })

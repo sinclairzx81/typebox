@@ -136,4 +136,12 @@ describe('type/compiler/Record', () => {
     const T = Type.Record(Type.Number(), Type.Number())
     Fail(T, { '0': 1, '1': 2, '2': 3, '3': 4, a: 'hello' })
   })
+  it('Should fail record with Date', () => {
+    const T = Type.Record(Type.String(), Type.String())
+    Fail(T, new Date())
+  })
+  it('Should fail record with Uint8Array', () => {
+    const T = Type.Record(Type.String(), Type.String())
+    Fail(T, new Uint8Array())
+  })
 })

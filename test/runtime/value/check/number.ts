@@ -4,6 +4,21 @@ import { Assert } from '../../assert/index'
 
 describe('value/check/Number', () => {
   const T = Type.Number()
+  it('Should not validate NaN', () => {
+    const T = Type.Number()
+    const result = Value.Check(T, NaN)
+    Assert.equal(result, false)
+  })
+  it('Should not validate +Infinity', () => {
+    const T = Type.Number()
+    const result = Value.Check(T, Infinity)
+    Assert.equal(result, false)
+  })
+  it('Should not validate -Infinity', () => {
+    const T = Type.Number()
+    const result = Value.Check(T, -Infinity)
+    Assert.equal(result, false)
+  })
   it('Should fail string', () => {
     const value = 'hello'
     const result = Value.Check(T, value)

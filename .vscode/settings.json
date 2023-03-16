@@ -3,6 +3,6 @@
         "node_modules": true,
         "package-lock.json": true
     },
-    "typescript.tsdk": "node_modules\\typescript\\lib",
-    "editor.suggest.showStatusBar": false
+    "editor.suggest.showStatusBar": false,
+    "typescript.tsdk": "node_modules\\typescript\\lib"
 }

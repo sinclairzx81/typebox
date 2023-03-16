@@ -30,7 +30,6 @@ import * as Types from '../typebox'
 import { ValueCreate } from './create'
 import { ValueCheck } from './check'
 import { ValueClone } from './clone'
-import { Custom } from '../custom/index'
 
 // ----------------------------------------------------------------------------------------------
 // Errors
@@ -60,7 +59,11 @@ export class ValueCastUnknownTypeError extends Error {
     super('ValueCast: Unknown type')
   }
 }
-
+export class ValueCastDereferenceError extends Error {
+  constructor(public readonly schema: Types.TRef | Types.TSelf) {
+    super(`ValueCast: Unable to dereference schema with $id '${schema.$ref}'`)
+  }
+}
 // ----------------------------------------------------------------------------------------------
 // The following will score a schema against a value. For objects, the score is the tally of
 // points awarded for each property of the value. Property points are (1.0 / propertyCount)
@@ -109,93 +112,18 @@ export namespace ValueCast {
   // ----------------------------------------------------------------------------------------------
   // Guards
   // ----------------------------------------------------------------------------------------------
+  function IsObject(value: unknown): value is Record<keyof any, unknown> {
+    return typeof value === 'object' && value !== null && !globalThis.Array.isArray(value)
+  }
   function IsArray(value: unknown): value is unknown[] {
     return typeof value === 'object' && globalThis.Array.isArray(value)
-  }
-  function IsDate(value: unknown): value is Date {
-    return typeof value === 'object' && value instanceof globalThis.Date
-  }
-  function IsString(value: unknown): value is string {
-    return typeof value === 'string'
-  }
-  function IsBoolean(value: unknown): value is boolean {
-    return typeof value === 'boolean'
-  }
-  function IsBigInt(value: unknown): value is bigint {
-    return typeof value === 'bigint'
   }
   function IsNumber(value: unknown): value is number {
     return typeof value === 'number' && !isNaN(value)
   }
-  function IsStringNumeric(value: unknown): value is string {
-    return IsString(value) && !isNaN(value as any) && !isNaN(parseFloat(value))
+  function IsString(value: unknown): value is string {
+    return typeof value === 'string'
   }
-  function IsValueToString(value: unknown): value is { toString: () => string } {
-    return IsBigInt(value) || IsBoolean(value) || IsNumber(value)
-  }
-  function IsValueTrue(value: unknown): value is true {
-    return value === true || (IsNumber(value) && value === 1) || (IsBigInt(value) && value === globalThis.BigInt('1')) || (IsString(value) && (value.toLowerCase() === 'true' || value === '1'))
-  }
-  function IsValueFalse(value: unknown): value is true {
-    return value === false || (IsNumber(value) && value === 0) || (IsBigInt(value) && value === globalThis.BigInt('0')) || (IsString(value) && (value.toLowerCase() === 'false' || value === '0'))
-  }
-  function IsTimeStringWithTimeZone(value: unknown): value is string {
-    return IsString(value) && /^(?:[0-2]\d:[0-5]\d:[0-5]\d|23:59:60)(?:\.\d+)?(?:z|[+-]\d\d(?::?\d\d)?)$/i.test(value)
-  }
-  function IsTimeStringWithoutTimeZone(value: unknown): value is string {
-    return IsString(value) && /^(?:[0-2]\d:[0-5]\d:[0-5]\d|23:59:60)?$/i.test(value)
-  }
-  function IsDateTimeStringWithTimeZone(value: unknown): value is string {
-    return IsString(value) && /^\d\d\d\d-[0-1]\d-[0-3]\dt(?:[0-2]\d:[0-5]\d:[0-5]\d|23:59:60)(?:\.\d+)?(?:z|[+-]\d\d(?::?\d\d)?)$/i.test(value)
-  }
-  function IsDateTimeStringWithoutTimeZone(value: unknown): value is string {
-    return IsString(value) && /^\d\d\d\d-[0-1]\d-[0-3]\dt(?:[0-2]\d:[0-5]\d:[0-5]\d|23:59:60)?$/i.test(value)
-  }
-  function IsDateString(value: unknown): value is string {
-    return IsString(value) && /^\d\d\d\d-[0-1]\d-[0-3]\d$/i.test(value)
-  }
-
-  // ----------------------------------------------------------------------------------------------
-  // Convert
-  // ----------------------------------------------------------------------------------------------
-  function TryConvertString(value: unknown) {
-    return IsValueToString(value) ? value.toString() : value
-  }
-  function TryConvertNumber(value: unknown) {
-    return IsStringNumeric(value) ? parseFloat(value) : IsValueTrue(value) ? 1 : value
-  }
-  function TryConvertInteger(value: unknown) {
-    return IsStringNumeric(value) ? parseInt(value) : IsValueTrue(value) ? 1 : value
-  }
-  function TryConvertBoolean(value: unknown) {
-    return IsValueTrue(value) ? true : IsValueFalse(value) ? false : value
-  }
-  function TryConvertDate(value: unknown) {
-    // note: this function may return an invalid dates for the regex tests
-    // above. Invalid dates will however be checked during the casting
-    // function and will return a epoch date if invalid. Consider better
-    // string parsing for the iso dates in future revisions.
-    return IsDate(value)
-      ? value
-      : IsNumber(value)
-      ? new globalThis.Date(value)
-      : IsValueTrue(value)
-      ? new globalThis.Date(1)
-      : IsStringNumeric(value)
-      ? new globalThis.Date(parseInt(value))
-      : IsTimeStringWithoutTimeZone(value)
-      ? new globalThis.Date(`1970-01-01T${value}.000Z`)
-      : IsTimeStringWithTimeZone(value)
-      ? new globalThis.Date(`1970-01-01T${value}`)
-      : IsDateTimeStringWithoutTimeZone(value)
-      ? new globalThis.Date(`${value}.000Z`)
-      : IsDateTimeStringWithTimeZone(value)
-      ? new globalThis.Date(value)
-      : IsDateString(value)
-      ? new globalThis.Date(`${value}T00:00:00.000Z`)
-      : value
-  }
-
   // ----------------------------------------------------------------------------------------------
   // Cast
   // ----------------------------------------------------------------------------------------------
@@ -213,9 +141,11 @@ export namespace ValueCast {
     if (!ValueCheck.Check(schema, references, unique)) throw new ValueCastArrayUniqueItemsTypeError(schema, unique)
     return unique
   }
+  function BigInt(schema: Types.TBigInt, references: Types.TSchema[], value: any): any {
+    return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
+  }
   function Boolean(schema: Types.TBoolean, references: Types.TSchema[], value: any): any {
-    const conversion = TryConvertBoolean(value)
-    return ValueCheck.Check(schema, references, conversion) ? conversion : ValueCreate.Create(schema, references)
+    return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
   }
   function Constructor(schema: Types.TConstructor, references: Types.TSchema[], value: any): any {
     if (ValueCheck.Check(schema, references, value)) return ValueCreate.Create(schema, references)
@@ -228,31 +158,36 @@ export namespace ValueCast {
     return result
   }
   function Date(schema: Types.TDate, references: Types.TSchema[], value: any): any {
-    const conversion = TryConvertDate(value)
-    return ValueCheck.Check(schema, references, conversion) ? ValueClone.Clone(conversion) : ValueCreate.Create(schema, references)
+    return ValueCheck.Check(schema, references, value) ? ValueClone.Clone(value) : ValueCreate.Create(schema, references)
   }
   function Function(schema: Types.TFunction, references: Types.TSchema[], value: any): any {
     return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
   }
   function Integer(schema: Types.TInteger, references: Types.TSchema[], value: any): any {
-    const conversion = TryConvertInteger(value)
-    return ValueCheck.Check(schema, references, conversion) ? conversion : ValueCreate.Create(schema, references)
+    return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
+  }
+  function Intersect(schema: Types.TIntersect, references: Types.TSchema[], value: any): any {
+    const created = ValueCreate.Create(schema, references)
+    const mapped = IsObject(created) && IsObject(value) ? { ...(created as any), ...value } : value
+    return ValueCheck.Check(schema, references, mapped) ? mapped : ValueCreate.Create(schema, references)
   }
   function Literal(schema: Types.TLiteral, references: Types.TSchema[], value: any): any {
-    return ValueCheck.Check(schema, references, value) ? ValueClone.Clone(value) : ValueCreate.Create(schema, references)
+    return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
   }
   function Never(schema: Types.TNever, references: Types.TSchema[], value: any): any {
     throw new ValueCastNeverTypeError(schema)
   }
+  function Not(schema: Types.TNot, references: Types.TSchema[], value: any): any {
+    return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema.allOf[1], references)
+  }
   function Null(schema: Types.TNull, references: Types.TSchema[], value: any): any {
-    return ValueCheck.Check(schema, references, value) ? ValueClone.Clone(value) : ValueCreate.Create(schema, references)
+    return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
   }
   function Number(schema: Types.TNumber, references: Types.TSchema[], value: any): any {
-    const conversion = TryConvertNumber(value)
-    return ValueCheck.Check(schema, references, conversion) ? conversion : ValueCreate.Create(schema, references)
+    return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
   }
   function Object(schema: Types.TObject, references: Types.TSchema[], value: any): any {
-    if (ValueCheck.Check(schema, references, value)) return ValueClone.Clone(value)
+    if (ValueCheck.Check(schema, references, value)) return value
     if (value === null || typeof value !== 'object') return ValueCreate.Create(schema, references)
     const required = new Set(schema.required || [])
     const result = {} as Record<string, any>
@@ -285,18 +220,22 @@ export namespace ValueCast {
     return result
   }
   function Ref(schema: Types.TRef<any>, references: Types.TSchema[], value: any): any {
-    const reference = references.find((reference) => reference.$id === schema.$ref)
-    if (reference === undefined) throw new ValueCastReferenceTypeError(schema)
-    return Visit(reference, references, value)
+    const index = references.findIndex((foreign) => foreign.$id === schema.$ref)
+    if (index === -1) throw new ValueCastDereferenceError(schema)
+    const target = references[index]
+    return Visit(target, references, value)
   }
   function Self(schema: Types.TSelf, references: Types.TSchema[], value: any): any {
-    const reference = references.find((reference) => reference.$id === schema.$ref)
-    if (reference === undefined) throw new ValueCastReferenceTypeError(schema)
-    return Visit(reference, references, value)
+    const index = references.findIndex((foreign) => foreign.$id === schema.$ref)
+    if (index === -1) throw new ValueCastDereferenceError(schema)
+    const target = references[index]
+    return Visit(target, references, value)
   }
   function String(schema: Types.TString, references: Types.TSchema[], value: any): any {
-    const conversion = TryConvertString(value)
-    return ValueCheck.Check(schema, references, conversion) ? conversion : ValueCreate.Create(schema, references)
+    return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
+  }
+  function Symbol(schema: Types.TSymbol, references: Types.TSchema[], value: any): any {
+    return ValueCheck.Check(schema, references, value) ? ValueClone.Clone(value) : ValueCreate.Create(schema, references)
   }
   function Tuple(schema: Types.TTuple<any[]>, references: Types.TSchema[], value: any): any {
     if (ValueCheck.Check(schema, references, value)) return ValueClone.Clone(value)
@@ -323,61 +262,69 @@ export namespace ValueCast {
     return ValueCheck.Check(schema, references, value) ? ValueClone.Clone(value) : ValueCreate.Create(schema, references)
   }
   export function Visit(schema: Types.TSchema, references: Types.TSchema[], value: any): any {
-    const anyReferences = schema.$id === undefined ? references : [schema, ...references]
-    const anySchema = schema as any
+    const references_ = IsString(schema.$id) ? [...references, schema] : references
+    const schema_ = schema as any
     switch (schema[Types.Kind]) {
       case 'Any':
-        return Any(anySchema, anyReferences, value)
+        return Any(schema_, references_, value)
       case 'Array':
-        return Array(anySchema, anyReferences, value)
+        return Array(schema_, references_, value)
+      case 'BigInt':
+        return BigInt(schema_, references_, value)
       case 'Boolean':
-        return Boolean(anySchema, anyReferences, value)
+        return Boolean(schema_, references_, value)
       case 'Constructor':
-        return Constructor(anySchema, anyReferences, value)
+        return Constructor(schema_, references_, value)
       case 'Date':
-        return Date(anySchema, anyReferences, value)
+        return Date(schema_, references_, value)
       case 'Function':
-        return Function(anySchema, anyReferences, value)
+        return Function(schema_, references_, value)
       case 'Integer':
-        return Integer(anySchema, anyReferences, value)
+        return Integer(schema_, references_, value)
+      case 'Intersect':
+        return Intersect(schema_, references_, value)
       case 'Literal':
-        return Literal(anySchema, anyReferences, value)
+        return Literal(schema_, references_, value)
       case 'Never':
-        return Never(anySchema, anyReferences, value)
+        return Never(schema_, references_, value)
+      case 'Not':
+        return Not(schema_, references_, value)
       case 'Null':
-        return Null(anySchema, anyReferences, value)
+        return Null(schema_, references_, value)
       case 'Number':
-        return Number(anySchema, anyReferences, value)
+        return Number(schema_, references_, value)
       case 'Object':
-        return Object(anySchema, anyReferences, value)
+        return Object(schema_, references_, value)
       case 'Promise':
-        return Promise(anySchema, anyReferences, value)
+        return Promise(schema_, references_, value)
       case 'Record':
-        return Record(anySchema, anyReferences, value)
+        return Record(schema_, references_, value)
       case 'Ref':
-        return Ref(anySchema, anyReferences, value)
+        return Ref(schema_, references_, value)
       case 'Self':
-        return Self(anySchema, anyReferences, value)
+        return Self(schema_, references_, value)
       case 'String':
-        return String(anySchema, anyReferences, value)
+        return String(schema_, references_, value)
+      case 'Symbol':
+        return Symbol(schema_, references_, value)
       case 'Tuple':
-        return Tuple(anySchema, anyReferences, value)
+        return Tuple(schema_, references_, value)
       case 'Undefined':
-        return Undefined(anySchema, anyReferences, value)
+        return Undefined(schema_, references_, value)
       case 'Union':
-        return Union(anySchema, anyReferences, value)
+        return Union(schema_, references_, value)
       case 'Uint8Array':
-        return Uint8Array(anySchema, anyReferences, value)
+        return Uint8Array(schema_, references_, value)
       case 'Unknown':
-        return Unknown(anySchema, anyReferences, value)
+        return Unknown(schema_, references_, value)
       case 'Void':
-        return Void(anySchema, anyReferences, value)
+        return Void(schema_, references_, value)
       default:
-        if (!Custom.Has(anySchema[Types.Kind])) throw new ValueCastUnknownTypeError(anySchema)
-        return UserDefined(anySchema, anyReferences, value)
+        if (!Types.TypeRegistry.Has(schema_[Types.Kind])) throw new ValueCastUnknownTypeError(schema_)
+        return UserDefined(schema_, references_, value)
     }
   }
-  export function Cast<T extends Types.TSchema, R extends Types.TSchema[]>(schema: T, references: [...R], value: any): Types.Static<T> {
-    return schema.$id === undefined ? Visit(schema, references, value) : Visit(schema, [schema, ...references], value)
+  export function Cast<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: any): Types.Static<T> {
+    return Visit(schema, references, ValueClone.Clone(value))
   }
 }
