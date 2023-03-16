@@ -490,8 +490,8 @@ export namespace ValueErrors {
   }
 
   function* UserDefined(schema: Types.TSchema, path: string, value: any): IterableIterator<ValueError> {
-    const func = Types.TypeRegistry.Get(schema[Types.Kind])!
-    if (!func(schema, value)) {
+    const check = Types.TypeRegistry.Get(schema[Types.Kind])!
+    if (!check(schema, value)) {
       return yield { type: ValueErrorType.Custom, schema, path, value, message: `Expected kind ${schema[Types.Kind]}` }
     }
   }

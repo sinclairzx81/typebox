@@ -1,24 +1,18 @@
 # String Formats
 
-TypeBox does not implement any string formats by default. However it is possible to register user defined formats using the `FormatRegistry`. One registered, the format becomes globally available to the `Value` and `TypeCompiler` modules.
+TypeBox does not implement any string formats by default. However it is possible to register user defined formats using the `FormatRegistry`. Once registered, the format becomes available to both `Value` and `TypeCompiler` modules.
 
 ## FormatRegistry
 
+The following shows basic usage of the format registry
+
 ```typescript
-// ----------------------------------------------------------------
-// Register
-// ----------------------------------------------------------------
 import { Type, FormatRegistry } from '@sinclair/typebox'
+import { Value } from '@sinclair/typebox/value'
 
 // Register the 'foo-only' format. The format checks for 'foo' only.
 FormatRegistry.Set('foo-only', value => value === 'foo')
 
-// ----------------------------------------------------------------
-// Validate
-// ----------------------------------------------------------------
-import { Value } from '@sinclair/typebox/value'
-
-// Create String type with Format
 const T = Type.String({ format: 'foo-only' })
 
 // Validate
@@ -26,7 +20,7 @@ Value.Check(T, 'foo') // true
 Value.Check(T, 'bar') // false
 ```
 
-## StandardFormats
+## Standard Formats
 
 The `standard.ts` file provided with this example implements several standard string formats. 
 

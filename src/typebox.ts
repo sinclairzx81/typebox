@@ -1838,11 +1838,20 @@ export namespace KeyResolver {
 // TypeOrdinal: Used for auto $id generation
 // -------------------------------------------------------------------------------------
 let TypeOrdinal = 0
-
+// -------------------------------------------------------------------------------------
+// TypeBuilder
+// -------------------------------------------------------------------------------------
+export class TypeBuilder {
+  /** `[Utility]` Creates a schema without `static` and `params` types */
+  protected Create<T>(schema: Omit<T, 'static' | 'params'>): T {
+    ReferenceRegistry.Set(schema as any)
+    return schema as any
+  }
+}
 // -------------------------------------------------------------------------------------
 // StandardTypeBuilder
 // -------------------------------------------------------------------------------------
-export class StandardTypeBuilder {
+export class StandardTypeBuilder extends TypeBuilder {
   // ----------------------------------------------------------------------
   // Modifiers
   // ----------------------------------------------------------------------
@@ -2143,16 +2152,11 @@ export class StandardTypeBuilder {
   public Unsafe<T>(options: UnsafeOptions = {}): TUnsafe<T> {
     return this.Create({ ...options, [Kind]: options[Kind] || 'Unsafe' })
   }
-  /** `[Utility]` Creates a schema without `static` and `params` types */
-  protected Create<T>(schema: Omit<T, 'static' | 'params'>): T {
-    ReferenceRegistry.Set(schema as any)
-    return schema as any
-  }
 }
 // -------------------------------------------------------------------------------------
 // TypeBuilder
 // -------------------------------------------------------------------------------------
-export class TypeBuilder extends StandardTypeBuilder {
+export class ExtendedTypeBuilder extends StandardTypeBuilder {
   /** `[Extended]` Creates a BigInt */
   public BigInt(options: NumericOptions<bigint> = {}): TBigInt {
     return this.Create({ ...options, [Kind]: 'BigInt', type: 'null', typeOf: 'BigInt' })
@@ -2235,4 +2239,4 @@ export class TypeBuilder extends StandardTypeBuilder {
 export const StandardType = new StandardTypeBuilder()
 
 /** TypeBuilder with Static Resolution for TypeScript */
-export const Type = new TypeBuilder()
+export const Type = new ExtendedTypeBuilder()

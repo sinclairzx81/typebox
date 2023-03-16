@@ -34,26 +34,20 @@ import { ValueHash } from '../value/hash'
 // -------------------------------------------------------------------
 // CheckFunction
 // -------------------------------------------------------------------
-
 export type CheckFunction = (value: unknown) => boolean
-
 // -------------------------------------------------------------------
 // TypeCheck
 // -------------------------------------------------------------------
-
 export class TypeCheck<T extends Types.TSchema> {
   constructor(private readonly schema: T, private readonly checkFunc: CheckFunction, private readonly code: string) {}
-
   /** Returns the generated validation code used to validate this type. */
   public Code(): string {
     return this.code
   }
-
   /** Returns an iterator for each error in this value. */
   public Errors(value: unknown): IterableIterator<ValueError> {
     return ValueErrors.Errors(this.schema, value)
   }
-
   /** Returns true if the value matches the compiled type. */
   public Check(value: unknown): value is Types.Static<T> {
     return this.checkFunc(value)
@@ -76,7 +70,6 @@ namespace Character {
     return (code >= 65 && code <= 90) || (code >= 97 && code <= 122)
   }
 }
-
 // -------------------------------------------------------------------
 // Identifier
 // -------------------------------------------------------------------
@@ -94,7 +87,6 @@ namespace Identifier {
     return buffer.join('').replace(/__/g, '_')
   }
 }
-
 // -------------------------------------------------------------------
 // MemberExpression
 // -------------------------------------------------------------------
@@ -119,17 +111,19 @@ export namespace MemberExpression {
     return !Check(key) ? `${object}['${key}']` : `${object}.${key}`
   }
 }
-
 // -------------------------------------------------------------------
 // TypeCompiler
 // -------------------------------------------------------------------
-
 export class TypeCompilerUnknownTypeError extends Error {
   constructor(public readonly schema: Types.TSchema) {
     super('TypeCompiler: Unknown type')
   }
 }
-
+export class TypeCompilerPreflightCheckError extends Error {
+  constructor(public readonly schema: Types.TSchema) {
+    super('TypeCompiler: Preflight validation check failed for given schema')
+  }
+}
 /** Compiles Types for Runtime Type Checking */
 export namespace TypeCompiler {
   // -------------------------------------------------------------------
@@ -406,7 +400,6 @@ export namespace TypeCompiler {
         return yield* UserDefined(anySchema, value)
     }
   }
-
   // -------------------------------------------------------------------
   // Compiler State
   // -------------------------------------------------------------------
@@ -439,24 +432,20 @@ export namespace TypeCompiler {
   function GetLocals() {
     return [...state_local_variables.values()]
   }
-
   // -------------------------------------------------------------------
   // Compile
   // -------------------------------------------------------------------
-
-  function Build<T extends Types.TSchema>(schema: T, references: Types.TSchema[] = []): string {
+  function Build<T extends Types.TSchema>(schema: T): string {
     ResetCompiler()
     const check = CreateFunction('check', schema, 'value')
     const locals = GetLocals()
     return `${locals.join('\n')}\nreturn ${check}`
   }
-
   /** Returns the generated validation code used to validate this type. */
   export function Code<T extends Types.TSchema>(schema: T) {
-    if (!Types.TypeGuard.TSchema(schema)) throw Error('Invalid Schema')
+    if (!Types.TypeGuard.TSchema(schema)) throw new TypeCompilerPreflightCheckError(schema)
     return Build(schema)
   }
-
   /** Compiles the given type for runtime type checking. This compiler only accepts known TypeBox types non-inclusive of unsafe types. */
   export function Compile<T extends Types.TSchema>(schema: T): TypeCheck<T> {
     const code = Code(schema)

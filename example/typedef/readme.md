@@ -1,88 +1,31 @@
 # JSON Type Definition
 
-JSON Type Definition (JTD) specification is an alternative schema specification to JSON Schema that provides better support for nominal type systems. TypeBox doesn't provide JTD support by default, but can be expressed through unsafe types and validated with Ajv.
-
-This example provides a reference implementation for JSON Type Definition.
+[JSON Type Definition](https://jsontypedef.com/) is a alternative schema specification that defines a set of schematics more inline with the needs of nominal type systems. This example shows how to extend the TypeBox Type Builder to support this specification.
 
 ## TypeDef
 
-Refer to the `typedef.ts` file in this directory for a reference implementation of the JSON Type Definition type builder.
+The file `typedef.ts` provided with this example contains the full implementation. The following shows it's use.
 
 ```typescript
-import { Static } from '@sinclair/typebox'
-import { TypeDef } from './typedef'
-```
+import { TypeDef as Type, Static } from './typedef'
+import { Value } from '@sinclair/typebox/value'
 
-## Properties
-
-```typescript
-// ------------------------------------------------------------------------
-// PropertiesType
-//
-// https://jsontypedef.com/docs/jtd-in-5-minutes/#properties-schemas
-//
-// ------------------------------------------------------------------------
-
-export type PropertiesType = Static<typeof PropertiesType>
-export const PropertiesType = TypeDef.Properties({
-  x: TypeDef.Float32(),
-  y: TypeDef.Float32(),
-  z: TypeDef.Float32(),
+const T = Type.Object({
+  x: Type.Float32(),
+  y: Type.Float32(),
+  z: Type.Float32()
 })
+
+type T = Static<typeof T>                            // type T = {
+                                                     //   x: number,
+                                                     //   z: number,
+                                                     //   y: number
+                                                     // }
+
+const R = Value.Check(T, { x: 1, y: 2, z: 3 })       // const R = true
 ```
 
-## Values
-
 ```typescript
-// ------------------------------------------------------------------------
-// ValuesType
-//
-// https://jsontypedef.com/docs/jtd-in-5-minutes/#values-schemas
-//
-// ------------------------------------------------------------------------
-
-export type ValuesType = Static<typeof ValuesType>
-export const ValuesType = TypeDef.Values(TypeDef.Float64())
-```
-
-## Enum
-
-```typescript
-// ------------------------------------------------------------------------
-// EnumType
-//
-// https://jsontypedef.com/docs/jtd-in-5-minutes/#enum-schemas
-//
-// ------------------------------------------------------------------------
-
-export type EnumType = Static<typeof EnumType>
-export const EnumType = TypeDef.Enum(['FOO', 'BAR', 'BAZ'])
-```
-
-## Elements
-
-```typescript
-// ------------------------------------------------------------------------
-// ElementsType
-//
-// https://jsontypedef.com/docs/jtd-in-5-minutes/#elements-schemas
-//
-// ------------------------------------------------------------------------
-
-export type ElementsType = Static<typeof ElementsType>
-export const ElementsType = TypeDef.Elements(PropertiesType)
-```
-
-## Union
-
-```typescript
-// ------------------------------------------------------------------------
-// UnionType
-//
-// https://jsontypedef.com/docs/jtd-in-5-minutes/#discriminator-schemas
-//
-// ------------------------------------------------------------------------
-
 export type UnionType = Static<typeof UnionType>
 export const UnionType = TypeDef.Union('eventType', {
   USER_CREATED: TypeDef.Properties({

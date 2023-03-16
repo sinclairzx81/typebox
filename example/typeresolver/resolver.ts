@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------------
 
-@sinclair/typebox/resolve
+@sinclair/typebox/resolver
 
 The MIT License (MIT)
 
@@ -28,7 +28,10 @@ THE SOFTWARE.
 
 import * as Types from '@sinclair/typebox'
 
-export namespace ReferenceResolver {
+// -------------------------------------------------------------------------
+// TypeResolver
+// -------------------------------------------------------------------------
+export namespace TypeResolver {
   function* Intersect(schema: Types.TIntersect): IterableIterator<Types.TSchema> {
     for (const inner of schema.allOf) yield* Visit(inner)
   }
@@ -51,8 +54,8 @@ export namespace ReferenceResolver {
     for (const key of globalThis.Object.keys(schema.properties)) yield* Visit(schema.properties[key])
   }
   function* Record(schema: Types.TRecord): IterableIterator<Types.TSchema> {
-    throw Error('not implemented')
-    for (const key of globalThis.Object.keys(schema.properties)) yield* Visit(schema.properties[key])
+    const propertyKey = globalThis.Object.getOwnPropertyNames(schema.patternProperties)[0]
+    yield* Visit(schema.patternProperties[propertyKey])
   }
   function* Array(schema: Types.TArray): IterableIterator<Types.TSchema> {
     return yield* Visit(schema.items)
@@ -70,13 +73,14 @@ export namespace ReferenceResolver {
     if (Types.TypeGuard.TConstructor(schema)) return yield* Constructor(schema)
     if (Types.TypeGuard.TFunction(schema)) return yield* Function(schema)
     if (Types.TypeGuard.TIntersect(schema)) return yield* Intersect(schema)
+    if (Types.TypeGuard.TRecord(schema)) return yield* Record(schema)
     if (Types.TypeGuard.TObject(schema)) return yield* Object(schema)
     if (Types.TypeGuard.TArray(schema)) return yield* Array(schema)
     if (Types.TypeGuard.TPromise(schema)) return yield* Promise(schema)
     if (Types.TypeGuard.TUnion(schema)) return yield* Union(schema)
   }
-  /** Resolves the reference array for this schema. */
-  export function Resolve<T extends Types.TSchema>(schema: T): IterableIterator<Types.TSchema> {
+  /** Resolves direct or indirect references made by the given schema */
+  export function References<T extends Types.TSchema>(schema: T): IterableIterator<Types.TSchema> {
     return Visit(schema)
   }
 }

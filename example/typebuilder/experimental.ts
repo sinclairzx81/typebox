@@ -1,7 +1,7 @@
 
 /*--------------------------------------------------------------------------
 
-@sinclair/typebox/extended
+@sinclair/typebox/experimental
 
 The MIT License (MIT)
 
@@ -57,7 +57,6 @@ export interface TUnionEnum<T extends (string | number)[]> extends Types.TSchema
   static: T[number]
   enum: T
 }
-
 // -------------------------------------------------------------------------------------
 // UnionOneOf
 // -------------------------------------------------------------------------------------
@@ -66,12 +65,11 @@ export interface UnionOneOf<T extends Types.TSchema[]> extends Types.TSchema {
   static: { [K in keyof T]: Types.Static<T[K]> }[number]
   oneOf: T
 }
-
 // -------------------------------------------------------------------------------------
-// ExtendedTypeBuilder
+// ExperimentalTypeBuilder
 // -------------------------------------------------------------------------------------
-export class ExtendedTypeBuilder extends Types.TypeBuilder {
-  /** `[Extended]` Remaps a Intersect, Union or Object as readonly */
+export class ExperimentalTypeBuilder extends Types.ExtendedTypeBuilder {
+  /** `[Experimental]` Remaps a Intersect, Union or Object as readonly */
   public ReadonlyObject<T extends Types.TSchema>(schema: T): TReadonlyObject<T> {
     function Apply(property: Types.TSchema): any {
       // prettier-ignore
@@ -90,8 +88,7 @@ export class ExtendedTypeBuilder extends Types.TypeBuilder {
       return schema
     }, {}) : Apply(schema)
   }
-
-  /** `[Extended]` Creates a Union type with a `enum` schema representation  */
+  /** `[Experimental]` Creates a Union type with a `enum` schema representation  */
   public UnionEnum<T extends (string | number)[]>(values: [...T], options: Types.SchemaOptions = {}) {
     function UnionEnumCheck(schema: TUnionEnum<(string | number)[]>, value: unknown) {
       return (typeof value === 'string' || typeof value === 'number') && schema.enum.includes(value)
@@ -99,8 +96,7 @@ export class ExtendedTypeBuilder extends Types.TypeBuilder {
     if (!Types.TypeRegistry.Has('UnionEnum')) Types.TypeRegistry.Set('UnionEnum', UnionEnumCheck)
     return { ...options, [Types.Kind]: 'UnionEnum', enum: values } as TUnionEnum<T>
   }
-
-  /** `[Extended]` Creates a Union type with a `oneOf` schema representation */
+  /** `[Experimental]` Creates a Union type with a `oneOf` schema representation */
   public UnionOneOf<T extends Types.TSchema[]>(oneOf: [...T], options: Types.SchemaOptions = {}) {
     function UnionOneOfCheck(schema: UnionOneOf<Types.TSchema[]>, value: unknown) {
       return 1 === schema.oneOf.reduce((acc: number, schema: any) => (Value.Check(schema, value) ? acc + 1 : acc), 0)
@@ -110,5 +106,4 @@ export class ExtendedTypeBuilder extends Types.TypeBuilder {
   }
 }
 
-/** Extended TypeBuilder */
-export const Type = new ExtendedTypeBuilder()
+export const Type = new ExperimentalTypeBuilder()
