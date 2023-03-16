@@ -212,4 +212,16 @@ describe('value/check/Object', () => {
     Assert.equal(Value.Check(T, { x: undefined }), true)
     Assert.equal(Value.Check(T, {}), true)
   })
+  it('Should not check undefined for optional property of number', () => {
+    const T = Type.Object({ x: Type.Optional(Type.Number()) })
+    Assert.equal(Value.Check(T, { x: 1 }), true)
+    Assert.equal(Value.Check(T, {}), true)
+    Assert.equal(Value.Check(T, { x: undefined }), false)
+  })
+  it('Should check undefined for optional property of undefined', () => {
+    const T = Type.Object({ x: Type.Optional(Type.Undefined()) })
+    Assert.equal(Value.Check(T, { x: 1 }), false)
+    Assert.equal(Value.Check(T, {}), true)
+    Assert.equal(Value.Check(T, { x: undefined }), true)
+  })
 })

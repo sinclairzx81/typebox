@@ -6,7 +6,18 @@ describe('type/compiler/Integer', () => {
     const T = Type.Integer()
     Fail(T, 3.14)
   })
-
+  it('Should not validate NaN', () => {
+    const T = Type.Integer()
+    Fail(T, NaN)
+  })
+  it('Should not validate +Infinity', () => {
+    const T = Type.Integer()
+    Fail(T, Infinity)
+  })
+  it('Should not validate -Infinity', () => {
+    const T = Type.Integer()
+    Fail(T, -Infinity)
+  })
   it('Should validate integer', () => {
     const T = Type.Integer()
     Ok(T, 1)
@@ -40,7 +51,14 @@ describe('type/compiler/Integer', () => {
     const T = Type.Integer()
     Fail(T, undefined)
   })
-
+  it('Should not validate bigint', () => {
+    const T = Type.Integer()
+    Fail(T, BigInt(1))
+  })
+  it('Should not validate symbol', () => {
+    const T = Type.Integer()
+    Fail(T, Symbol(1))
+  })
   it('Should validate minimum', () => {
     const T = Type.Integer({ minimum: 10 })
     Fail(T, 9)
@@ -63,9 +81,5 @@ describe('type/compiler/Integer', () => {
     const T = Type.Integer({ exclusiveMaximum: 10 })
     Ok(T, 9)
     Fail(T, 10)
-  })
-
-  it('Should not validate NaN', () => {
-    Fail(Type.Integer(), NaN)
   })
 })

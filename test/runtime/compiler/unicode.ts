@@ -33,16 +33,12 @@ describe('type/compiler/Unicode', () => {
     const T = Type.Object({
       vector: Type.Ref(R),
     })
-    Ok(
-      T,
-      {
-        vector: {
-          x: 1,
-          y: 2,
-        },
+    Ok(T, {
+      vector: {
+        x: 1,
+        y: 2,
       },
-      [R],
-    )
+    })
   })
   it('Should support unicode identifier recursion', () => {
     const Node = Type.Recursive(

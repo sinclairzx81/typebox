@@ -3,97 +3,74 @@ import { Type } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
 describe('value/cast/Intersect', () => {
-  const A = Type.Object({
-    x: Type.Number({ default: 0 }),
-    y: Type.Number({ default: 1 }),
-    z: Type.Number({ default: 2 }),
+  it('Should cast from an invalid object', () => {
+    // prettier-ignore
+    const T = Type.Intersect([
+      Type.Object({ x: Type.Number() }), 
+      Type.Object({ y: Type.Number() })
+    ])
+    const V = Value.Cast(T, 1)
+    Assert.deepEqual(V, { x: 0, y: 0 })
   })
-  const B = Type.Object({
-    a: Type.Number({ default: 'a' }),
-    b: Type.Number({ default: 'b' }),
-    c: Type.Number({ default: 'c' }),
+  it('Should cast from an partial object and preserve', () => {
+    // prettier-ignore
+    const T = Type.Intersect([
+      Type.Object({ x: Type.Number() }), 
+      Type.Object({ y: Type.Number() })
+    ])
+    const V = Value.Cast(T, { x: 1 })
+    Assert.deepEqual(V, { x: 1, y: 0 })
   })
-  const T = Type.Intersect([A, B])
-  const E = {
-    x: 0,
-    y: 1,
-    z: 2,
-    a: 'a',
-    b: 'b',
-    c: 'c',
-  }
-
-  it('Should upcast from string', () => {
-    const value = 'hello'
-    const result = Value.Cast(T, value)
-    Assert.deepEqual(result, E)
+  it('Should cast and use default values', () => {
+    // prettier-ignore
+    const T = Type.Intersect([
+      Type.Object({ x: Type.Number() }), 
+      Type.Object({ y: Type.Number({ default: 42 }) })
+    ])
+    const V = Value.Cast(T, { x: 1 })
+    Assert.deepEqual(V, { x: 1, y: 42 })
   })
-
-  it('Should upcast from number', () => {
-    const value = E
-    const result = Value.Cast(T, value)
-    Assert.deepEqual(result, E)
+  it('Should throw with an illogical intersect', () => {
+    // prettier-ignore
+    const T = Type.Intersect([
+      Type.Object({ x: Type.Number() }), 
+      Type.Object({ x: Type.String() })
+    ])
+    Assert.throws(() => Value.Cast(T, { x: 1 }))
   })
-
-  it('Should upcast from boolean', () => {
-    const value = true
-    const result = Value.Cast(T, value)
-    Assert.deepEqual(result, E)
+  it('Should throw with an illogical intersect (primative)', () => {
+    // prettier-ignore
+    const T = Type.Intersect([
+      Type.Number(), 
+      Type.String()
+    ])
+    Assert.throws(() => Value.Cast(T, { x: 1 }))
   })
-
-  it('Should upcast from object', () => {
-    const value = {}
-    const result = Value.Cast(T, value)
-    Assert.deepEqual(result, E)
+  it('Should use last intersected default for equivalent sub schemas', () => {
+    // prettier-ignore
+    const T = Type.Intersect([
+      Type.Object({ x: Type.Number() }), 
+      Type.Object({ x: Type.Number({ default: 1000 }) })
+    ])
+    const V = Value.Cast(T, null)
+    Assert.deepEqual(V, { x: 1000 })
   })
-
-  it('Should upcast from array', () => {
-    const value = [1]
-    const result = Value.Cast(T, value)
-    Assert.deepEqual(result, E)
+  it('Should use last intersected default for equivalent sub schemas (primitives)', () => {
+    // prettier-ignore
+    const T = Type.Intersect([
+      Type.Number(), 
+      Type.Number({ default: 1000 })
+    ])
+    const V = Value.Cast(T, null)
+    Assert.deepEqual(V, 1000)
   })
-
-  it('Should upcast from undefined', () => {
-    const value = undefined
-    const result = Value.Cast(T, value)
-    Assert.deepEqual(result, E)
-  })
-
-  it('Should upcast from null', () => {
-    const value = null
-    const result = Value.Cast(T, value)
-    Assert.deepEqual(result, E)
-  })
-
-  it('Should upcast from date', () => {
-    const value = new Date(100)
-    const result = Value.Cast(T, value)
-    Assert.deepEqual(result, E)
-  })
-
-  it('Should upcast and preserve object', () => {
-    const value = { x: 7, y: 8, z: 9 }
-    const result = Value.Cast(T, value)
-    Assert.deepEqual(result, {
-      x: 7,
-      y: 8,
-      z: 9,
-      a: 'a',
-      b: 'b',
-      c: 'c',
-    })
-  })
-
-  it('Should upcast and preserve from incorrect properties', () => {
-    const value = { x: {}, y: 8, z: 9 }
-    const result = Value.Cast(T, value)
-    Assert.deepEqual(result, {
-      x: 0,
-      y: 8,
-      z: 9,
-      a: 'a',
-      b: 'b',
-      c: 'c',
-    })
+  it('Should preserve if default is specified', () => {
+    // prettier-ignore
+    const T = Type.Intersect([
+      Type.Number(), 
+      Type.Number({ default: 1000 })
+    ])
+    const V = Value.Cast(T, 2000)
+    Assert.deepEqual(V, 2000)
   })
 })

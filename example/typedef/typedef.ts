@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------------
 
-@sinclair/typebox/typedef
+@sinclair/typeboxdef
 
 The MIT License (MIT)
 
@@ -37,14 +37,14 @@ import { Type, Static, TUnsafe } from '@sinclair/typebox'
 export type StaticTypeDefUnion<D extends string, M extends Record<string, TUnsafe<any>>> = { [K in keyof M]: { [P in D]: K } & Static<M[K]> }[keyof M]
 
 export namespace TypeDef {
+  export function Array<T extends TUnsafe<any>>(element: T) {
+    return Type.Unsafe<Array<Static<T>>>({ elements: element })
+  }
   export function Boolean() {
     return Type.Unsafe<boolean>({ type: 'boolean' })
   }
-  export function String() {
-    return Type.Unsafe<string>({ type: 'string' })
-  }
-  export function TimeStamp() {
-    return Type.Unsafe<string>({ type: 'timestamp' })
+  export function Enum<T extends string[]>(values: [...T]) {
+    return Type.Unsafe<T[number]>({ enum: values })
   }
   export function Float32() {
     return Type.Unsafe<number>({ type: 'float32' })
@@ -55,32 +55,32 @@ export namespace TypeDef {
   export function Int8() {
     return Type.Unsafe<number>({ type: 'int8' })
   }
-  export function Uint8() {
-    return Type.Unsafe<number>({ type: 'uint8' })
-  }
   export function Int16() {
     return Type.Unsafe<number>({ type: 'int16' })
-  }
-  export function Uint16() {
-    return Type.Unsafe<number>({ type: 'uint16' })
   }
   export function Int32() {
     return Type.Unsafe<number>({ type: 'int32' })
   }
+  export function Uint8() {
+    return Type.Unsafe<number>({ type: 'uint8' })
+  }
+  export function Uint16() {
+    return Type.Unsafe<number>({ type: 'uint16' })
+  }
   export function Uint32() {
     return Type.Unsafe<number>({ type: 'uint32' })
   }
-  export function Enum<T extends string[]>(values: [...T]) {
-    return Type.Unsafe<T[number]>({ enum: values })
-  }
-  export function Elements<T extends TUnsafe<any>>(element: T) {
-    return Type.Unsafe<Array<Static<T>>>({ elements: element })
-  }
-  export function Properties<T extends Record<string, TUnsafe<any>>>(properties: T) {
+  export function Object<T extends Record<string, TUnsafe<any>>>(properties: T) {
     return Type.Unsafe<{ [K in keyof T]: Static<T[K]> }>({ properties })
   }
-  export function Values<V extends TUnsafe<any>>(values: V) {
+  export function Record<V extends TUnsafe<any>>(values: V) {
     return Type.Unsafe<Record<string, Static<V>>>({ values })
+  }
+  export function String() {
+    return Type.Unsafe<string>({ type: 'string' })
+  }
+  export function TimeStamp() {
+    return Type.Unsafe<string>({ type: 'timestamp' })
   }
   export function Union<D extends string, M extends Record<string, TUnsafe<any>>>(discriminator: D, mapping: M) {
     return Type.Unsafe<StaticTypeDefUnion<D, M>>({ discriminator, mapping })

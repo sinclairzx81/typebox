@@ -37,4 +37,12 @@ describe('type/compiler/Boolean', () => {
     const T = Type.Boolean()
     Fail(T, undefined)
   })
+  it('Should not validate bigint', () => {
+    const T = Type.Boolean()
+    Fail(T, BigInt(1))
+  })
+  it('Should not validate symbol', () => {
+    const T = Type.Boolean()
+    Fail(T, Symbol(1))
+  })
 })

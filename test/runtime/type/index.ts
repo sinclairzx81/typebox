@@ -1,0 +1,5 @@
+import './extends/index'
+import './guard/index'
+import './identifier/index'
+import './registry/index'
+import './normal/index'

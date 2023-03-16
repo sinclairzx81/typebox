@@ -1,4 +1,4 @@
-import { TypeGuard } from '@sinclair/typebox/guard'
+import { TypeGuard } from '@sinclair/typebox'
 import { Value } from '@sinclair/typebox/value'
 
 import { TSchema } from '@sinclair/typebox'

@@ -34,6 +34,14 @@ describe('type/compiler/Date', () => {
     const T = Type.Date()
     Ok(T, new Date())
   })
+  it('Should not validate bigint', () => {
+    const T = Type.Date()
+    Fail(T, BigInt(1))
+  })
+  it('Should not validate symbol', () => {
+    const T = Type.Date()
+    Fail(T, Symbol(1))
+  })
   it('Should not validate Date if is invalid', () => {
     const T = Type.Date()
     Fail(T, new Date('not-a-valid-date'))

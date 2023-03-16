@@ -28,10 +28,7 @@ THE SOFTWARE.
 
 import * as Types from '../typebox'
 import { TypeSystem } from '../system/index'
-import { TypeExtends } from '../guard/extends'
-import { Format } from '../format/index'
-import { Custom } from '../custom/index'
-import { ValueHash } from '../hash/index'
+import { ValueHash } from './hash'
 
 export class ValueCheckUnknownTypeError extends Error {
   constructor(public readonly schema: Types.TSchema) {
@@ -43,20 +40,19 @@ export namespace ValueCheck {
   // --------------------------------------------------------
   // Guards
   // --------------------------------------------------------
-
-  function IsNumber(value: unknown): value is number {
-    return typeof value === 'number' && !isNaN(value)
+  function IsBigInt(value: unknown): value is bigint {
+    return typeof value === 'bigint'
   }
-
+  function IsNumber(value: unknown): value is number {
+    return typeof value === 'number' && globalThis.Number.isFinite(value)
+  }
   // --------------------------------------------------------
   // Guards
   // --------------------------------------------------------
-
-  function Any(schema: Types.TAny, references: Types.TSchema[], value: any): boolean {
+  function Any(schema: Types.TAny, value: any): boolean {
     return true
   }
-
-  function Array(schema: Types.TArray, references: Types.TSchema[], value: any): boolean {
+  function Array(schema: Types.TArray, value: any): boolean {
     if (!globalThis.Array.isArray(value)) {
       return false
     }
@@ -70,22 +66,40 @@ export namespace ValueCheck {
     if (schema.uniqueItems === true && !((function() { const set = new Set(); for(const element of value) { const hashed = ValueHash.Create(element); if(set.has(hashed)) { return false } else { set.add(hashed) } } return true })())) {
       return false
     }
-    return value.every((val) => Visit(schema.items, references, val))
+    return value.every((value) => Visit(schema.items, value))
   }
-
-  function Boolean(schema: Types.TBoolean, references: Types.TSchema[], value: any): boolean {
+  function BigInt(schema: Types.TBigInt, value: any): boolean {
+    if (typeof value !== 'bigint') {
+      return false
+    }
+    if (IsBigInt(schema.multipleOf) && !(value % schema.multipleOf === globalThis.BigInt(0))) {
+      return false
+    }
+    if (IsBigInt(schema.exclusiveMinimum) && !(value > schema.exclusiveMinimum)) {
+      return false
+    }
+    if (IsBigInt(schema.exclusiveMaximum) && !(value < schema.exclusiveMaximum)) {
+      return false
+    }
+    if (IsBigInt(schema.minimum) && !(value >= schema.minimum)) {
+      return false
+    }
+    if (IsBigInt(schema.maximum) && !(value <= schema.maximum)) {
+      return false
+    }
+    return true
+  }
+  function Boolean(schema: Types.TBoolean, value: any): boolean {
     return typeof value === 'boolean'
   }
-
-  function Constructor(schema: Types.TConstructor, references: Types.TSchema[], value: any): boolean {
-    return Visit(schema.returns, references, value.prototype)
+  function Constructor(schema: Types.TConstructor, value: any): boolean {
+    return Visit(schema.returns, value.prototype)
   }
-
-  function Date(schema: Types.TDate, references: Types.TSchema[], value: any): boolean {
+  function Date(schema: Types.TDate, value: any): boolean {
     if (!(value instanceof globalThis.Date)) {
       return false
     }
-    if (isNaN(value.getTime())) {
+    if (!globalThis.Number.isFinite(value.getTime())) {
       return false
     }
     if (IsNumber(schema.exclusiveMinimumTimestamp) && !(value.getTime() > schema.exclusiveMinimumTimestamp)) {
@@ -102,12 +116,10 @@ export namespace ValueCheck {
     }
     return true
   }
-
-  function Function(schema: Types.TFunction, references: Types.TSchema[], value: any): boolean {
+  function Function(schema: Types.TFunction, value: any): boolean {
     return typeof value === 'function'
   }
-
-  function Integer(schema: Types.TInteger, references: Types.TSchema[], value: any): boolean {
+  function Integer(schema: Types.TInteger, value: any): boolean {
     if (!(typeof value === 'number' && globalThis.Number.isInteger(value))) {
       return false
     }
@@ -128,26 +140,40 @@ export namespace ValueCheck {
     }
     return true
   }
-
-  function Literal(schema: Types.TLiteral, references: Types.TSchema[], value: any): boolean {
+  function Intersect(schema: Types.TIntersect, value: any): boolean {
+    if (!schema.allOf.every((schema) => Visit(schema, value))) {
+      return false
+    } else if (schema.unevaluatedProperties === false) {
+      const schemaKeys = Types.KeyResolver.Resolve(schema)
+      const valueKeys = globalThis.Object.getOwnPropertyNames(value)
+      return valueKeys.every((key) => schemaKeys.includes(key))
+    } else if (Types.TypeGuard.TSchema(schema.unevaluatedProperties)) {
+      const schemaKeys = Types.KeyResolver.Resolve(schema)
+      const valueKeys = globalThis.Object.getOwnPropertyNames(value)
+      return valueKeys.every((key) => schemaKeys.includes(key) || Visit(schema.unevaluatedProperties as Types.TSchema, value[key]))
+    } else {
+      return true
+    }
+  }
+  function Literal(schema: Types.TLiteral, value: any): boolean {
     return value === schema.const
   }
-
-  function Never(schema: Types.TNever, references: Types.TSchema[], value: any): boolean {
+  function Never(schema: Types.TNever, value: any): boolean {
     return false
   }
-
-  function Null(schema: Types.TNull, references: Types.TSchema[], value: any): boolean {
+  function Not(schema: Types.TNot, value: any): boolean {
+    return !Visit(schema.allOf[0].not, value) && Visit(schema.allOf[1], value)
+  }
+  function Null(schema: Types.TNull, value: any): boolean {
     return value === null
   }
-
-  function Number(schema: Types.TNumber, references: Types.TSchema[], value: any): boolean {
+  function Number(schema: Types.TNumber, value: any): boolean {
     if (TypeSystem.AllowNaN) {
       if (!(typeof value === 'number')) {
         return false
       }
     } else {
-      if (!(typeof value === 'number' && !isNaN(value))) {
+      if (!(typeof value === 'number' && globalThis.Number.isFinite(value))) {
         return false
       }
     }
@@ -168,8 +194,7 @@ export namespace ValueCheck {
     }
     return true
   }
-
-  function Object(schema: Types.TObject, references: Types.TSchema[], value: any): boolean {
+  function Object(schema: Types.TObject, value: any): boolean {
     if (TypeSystem.AllowArrayObjects) {
       if (!(typeof value === 'object' && value !== null)) {
         return false
@@ -185,53 +210,41 @@ export namespace ValueCheck {
     if (IsNumber(schema.maxProperties) && !(globalThis.Object.getOwnPropertyNames(value).length <= schema.maxProperties)) {
       return false
     }
-    const propertyKeys = globalThis.Object.getOwnPropertyNames(schema.properties)
+    const schemaKeys = globalThis.Object.getOwnPropertyNames(schema.properties)
+    for (const schemaKey of schemaKeys) {
+      const property = schema.properties[schemaKey]
+      if (schema.required && schema.required.includes(schemaKey)) {
+        if (!Visit(property, value[schemaKey])) {
+          return false
+        }
+        if (Types.ExtendsUndefined.Check(property)) {
+          return schemaKey in value
+        }
+      } else {
+        if (schemaKey in value && !Visit(property, value[schemaKey])) {
+          return false
+        }
+      }
+    }
     if (schema.additionalProperties === false) {
-      // optimization: If the property key length matches the required keys length
-      // then we only need check that the values property key length matches that
-      // of the property key length. This is because exhaustive testing for values
-      // will occur in subsequent property tests.
-      if (schema.required && schema.required.length === propertyKeys.length && !(globalThis.Object.getOwnPropertyNames(value).length === propertyKeys.length)) {
-        return false
+      const valueKeys = globalThis.Object.getOwnPropertyNames(value)
+      // optimization: value is valid if schemaKey length matches the valueKey length
+      if (schema.required && schema.required.length === schemaKeys.length && valueKeys.length === schemaKeys.length) {
+        return true
       } else {
-        if (!globalThis.Object.getOwnPropertyNames(value).every((key) => propertyKeys.includes(key))) {
-          return false
-        }
+        return valueKeys.every((valueKey) => schemaKeys.includes(valueKey))
       }
+    } else if (typeof schema.additionalProperties === 'object') {
+      const valueKeys = globalThis.Object.getOwnPropertyNames(value)
+      return valueKeys.every((key) => schemaKeys.includes(key) || Visit(schema.additionalProperties as Types.TSchema, value[key]))
+    } else {
+      return true
     }
-    if (typeof schema.additionalProperties === 'object') {
-      for (const objectKey of globalThis.Object.getOwnPropertyNames(value)) {
-        if (propertyKeys.includes(objectKey)) continue
-        if (!Visit(schema.additionalProperties as Types.TSchema, references, value[objectKey])) {
-          return false
-        }
-      }
-    }
-    for (const propertyKey of propertyKeys) {
-      const propertySchema = schema.properties[propertyKey]
-      if (schema.required && schema.required.includes(propertyKey)) {
-        if (!Visit(propertySchema, references, value[propertyKey])) {
-          return false
-        }
-        if (TypeExtends.Undefined(propertySchema)) {
-          return propertyKey in value
-        }
-      } else {
-        if (value[propertyKey] !== undefined) {
-          if (!Visit(propertySchema, references, value[propertyKey])) {
-            return false
-          }
-        }
-      }
-    }
-    return true
   }
-
-  function Promise(schema: Types.TPromise<any>, references: Types.TSchema[], value: any): boolean {
+  function Promise(schema: Types.TPromise<any>, value: any): boolean {
     return typeof value === 'object' && typeof value.then === 'function'
   }
-
-  function Record(schema: Types.TRecord<any, any>, references: Types.TSchema[], value: any): boolean {
+  function Record(schema: Types.TRecord<any, any>, value: any): boolean {
     if (TypeSystem.AllowArrayObjects) {
       if (!(typeof value === 'object' && value !== null && !(value instanceof globalThis.Date))) {
         return false
@@ -247,24 +260,17 @@ export namespace ValueCheck {
       return false
     }
     for (const propValue of globalThis.Object.values(value)) {
-      if (!Visit(valueSchema, references, propValue)) return false
+      if (!Visit(valueSchema, propValue)) return false
     }
     return true
   }
-
-  function Ref(schema: Types.TRef<any>, references: Types.TSchema[], value: any): boolean {
-    const reference = references.find((reference) => reference.$id === schema.$ref)
-    if (reference === undefined) throw new Error(`ValueCheck.Ref: Cannot find schema with $id '${schema.$ref}'.`)
-    return Visit(reference, references, value)
+  function Ref(schema: Types.TRef<any>, value: any): boolean {
+    return Visit(Types.ReferenceRegistry.DerefOne(schema), value)
   }
-
-  function Self(schema: Types.TSelf, references: Types.TSchema[], value: any): boolean {
-    const reference = references.find((reference) => reference.$id === schema.$ref)
-    if (reference === undefined) throw new Error(`ValueCheck.Self: Cannot find schema with $id '${schema.$ref}'.`)
-    return Visit(reference, references, value)
+  function Self(schema: Types.TSelf, value: any): boolean {
+    return Visit(Types.ReferenceRegistry.DerefOne(schema), value)
   }
-
-  function String(schema: Types.TString, references: Types.TSchema[], value: any): boolean {
+  function String(schema: Types.TString, value: any): boolean {
     if (!(typeof value === 'string')) {
       return false
     }
@@ -279,14 +285,19 @@ export namespace ValueCheck {
       if (!regex.test(value)) return false
     }
     if (schema.format !== undefined) {
-      if (!Format.Has(schema.format)) return false
-      const func = Format.Get(schema.format)!
+      if (!Types.FormatRegistry.Has(schema.format)) return false
+      const func = Types.FormatRegistry.Get(schema.format)!
       return func(value)
     }
     return true
   }
-
-  function Tuple(schema: Types.TTuple<any[]>, references: Types.TSchema[], value: any): boolean {
+  function Symbol(schema: Types.TSymbol, value: any): boolean {
+    if (!(typeof value === 'symbol')) {
+      return false
+    }
+    return true
+  }
+  function Tuple(schema: Types.TTuple<any[]>, value: any): boolean {
     if (!globalThis.Array.isArray(value)) {
       return false
     }
@@ -300,20 +311,17 @@ export namespace ValueCheck {
       return true
     }
     for (let i = 0; i < schema.items.length; i++) {
-      if (!Visit(schema.items[i], references, value[i])) return false
+      if (!Visit(schema.items[i], value[i])) return false
     }
     return true
   }
-
-  function Undefined(schema: Types.TUndefined, references: Types.TSchema[], value: any): boolean {
+  function Undefined(schema: Types.TUndefined, value: any): boolean {
     return value === undefined
   }
-
-  function Union(schema: Types.TUnion<any[]>, references: Types.TSchema[], value: any): boolean {
-    return schema.anyOf.some((inner) => Visit(inner, references, value))
+  function Union(schema: Types.TUnion<any[]>, value: any): boolean {
+    return schema.anyOf.some((inner) => Visit(inner, value))
   }
-
-  function Uint8Array(schema: Types.TUint8Array, references: Types.TSchema[], value: any): boolean {
+  function Uint8Array(schema: Types.TUint8Array, value: any): boolean {
     if (!(value instanceof globalThis.Uint8Array)) {
       return false
     }
@@ -325,82 +333,83 @@ export namespace ValueCheck {
     }
     return true
   }
-
-  function Unknown(schema: Types.TUnknown, references: Types.TSchema[], value: any): boolean {
+  function Unknown(schema: Types.TUnknown, value: any): boolean {
     return true
   }
-
-  function Void(schema: Types.TVoid, references: Types.TSchema[], value: any): boolean {
-    return value === null
+  function Void(schema: Types.TVoid, value: any): boolean {
+    return value === void 0 || value === null
   }
-
-  function UserDefined(schema: Types.TSchema, references: Types.TSchema[], value: unknown): boolean {
-    if (!Custom.Has(schema[Types.Kind])) return false
-    const func = Custom.Get(schema[Types.Kind])!
+  function UserDefined(schema: Types.TSchema, value: unknown): boolean {
+    if (!Types.TypeRegistry.Has(schema[Types.Kind])) return false
+    const func = Types.TypeRegistry.Get(schema[Types.Kind])!
     return func(schema, value)
   }
-
-  function Visit<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: any): boolean {
-    const anyReferences = schema.$id === undefined ? references : [schema, ...references]
+  function Visit<T extends Types.TSchema>(schema: T, value: any): boolean {
     const anySchema = schema as any
     switch (anySchema[Types.Kind]) {
       case 'Any':
-        return Any(anySchema, anyReferences, value)
+        return Any(anySchema, value)
       case 'Array':
-        return Array(anySchema, anyReferences, value)
+        return Array(anySchema, value)
+      case 'BigInt':
+        return BigInt(anySchema, value)
       case 'Boolean':
-        return Boolean(anySchema, anyReferences, value)
+        return Boolean(anySchema, value)
       case 'Constructor':
-        return Constructor(anySchema, anyReferences, value)
+        return Constructor(anySchema, value)
       case 'Date':
-        return Date(anySchema, anyReferences, value)
+        return Date(anySchema, value)
       case 'Function':
-        return Function(anySchema, anyReferences, value)
+        return Function(anySchema, value)
       case 'Integer':
-        return Integer(anySchema, anyReferences, value)
+        return Integer(anySchema, value)
+      case 'Intersect':
+        return Intersect(anySchema, value)
       case 'Literal':
-        return Literal(anySchema, anyReferences, value)
+        return Literal(anySchema, value)
       case 'Never':
-        return Never(anySchema, anyReferences, value)
+        return Never(anySchema, value)
+      case 'Not':
+        return Not(anySchema, value)
       case 'Null':
-        return Null(anySchema, anyReferences, value)
+        return Null(anySchema, value)
       case 'Number':
-        return Number(anySchema, anyReferences, value)
+        return Number(anySchema, value)
       case 'Object':
-        return Object(anySchema, anyReferences, value)
+        return Object(anySchema, value)
       case 'Promise':
-        return Promise(anySchema, anyReferences, value)
+        return Promise(anySchema, value)
       case 'Record':
-        return Record(anySchema, anyReferences, value)
+        return Record(anySchema, value)
       case 'Ref':
-        return Ref(anySchema, anyReferences, value)
+        return Ref(anySchema, value)
       case 'Self':
-        return Self(anySchema, anyReferences, value)
+        return Self(anySchema, value)
       case 'String':
-        return String(anySchema, anyReferences, value)
+        return String(anySchema, value)
+      case 'Symbol':
+        return Symbol(anySchema, value)
       case 'Tuple':
-        return Tuple(anySchema, anyReferences, value)
+        return Tuple(anySchema, value)
       case 'Undefined':
-        return Undefined(anySchema, anyReferences, value)
+        return Undefined(anySchema, value)
       case 'Union':
-        return Union(anySchema, anyReferences, value)
+        return Union(anySchema, value)
       case 'Uint8Array':
-        return Uint8Array(anySchema, anyReferences, value)
+        return Uint8Array(anySchema, value)
       case 'Unknown':
-        return Unknown(anySchema, anyReferences, value)
+        return Unknown(anySchema, value)
       case 'Void':
-        return Void(anySchema, anyReferences, value)
+        return Void(anySchema, value)
       default:
-        if (!Custom.Has(anySchema[Types.Kind])) throw new ValueCheckUnknownTypeError(anySchema)
-        return UserDefined(anySchema, anyReferences, value)
+        if (!Types.TypeRegistry.Has(anySchema[Types.Kind])) throw new ValueCheckUnknownTypeError(anySchema)
+        return UserDefined(anySchema, value)
     }
   }
-
   // -------------------------------------------------------------------------
   // Check
   // -------------------------------------------------------------------------
-
-  export function Check<T extends Types.TSchema, R extends Types.TSchema[]>(schema: T, references: [...R], value: any): boolean {
-    return schema.$id === undefined ? Visit(schema, references, value) : Visit(schema, [schema, ...references], value)
+  export function Check<T extends Types.TSchema>(schema: T, value: any): boolean {
+    return Visit(schema, value)
   }
 }

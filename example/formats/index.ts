@@ -1,1 +1,1 @@
-export * from './additional'
+export * from './standard'

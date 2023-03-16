@@ -19,7 +19,6 @@ describe('value/cast/Object', () => {
     b: 'b',
     c: 'c',
   }
-
   it('Should upcast from string', () => {
     const value = 'hello'
     const result = Value.Cast(T, value)
@@ -35,37 +34,31 @@ describe('value/cast/Object', () => {
     const result = Value.Cast(T, value)
     Assert.deepEqual(result, E)
   })
-
   it('Should upcast from object', () => {
     const value = {}
     const result = Value.Cast(T, value)
     Assert.deepEqual(result, E)
   })
-
   it('Should upcast from array', () => {
     const value = [1]
     const result = Value.Cast(T, value)
     Assert.deepEqual(result, E)
   })
-
   it('Should upcast from undefined', () => {
     const value = undefined
     const result = Value.Cast(T, value)
     Assert.deepEqual(result, E)
   })
-
   it('Should upcast from null', () => {
     const value = null
     const result = Value.Cast(T, value)
     Assert.deepEqual(result, E)
   })
-
   it('Should upcast from date', () => {
     const value = new Date(100)
     const result = Value.Cast(T, value)
     Assert.deepEqual(result, E)
   })
-
   it('Should preserve', () => {
     const value = { x: 7, y: 8, z: 9, a: 10, b: 11, c: 12 }
     const result = Value.Cast(T, value)
@@ -90,7 +83,6 @@ describe('value/cast/Object', () => {
       c: 'c',
     })
   })
-
   it('Should upcast and preserve partial object with incorrect properties', () => {
     const value = { x: {}, y: 8, z: 9 }
     const result = Value.Cast(T, value)
@@ -103,7 +95,6 @@ describe('value/cast/Object', () => {
       c: 'c',
     })
   })
-
   it('Should upcast and preserve partial object and omit unknown properties', () => {
     const value = { x: 7, y: 8, z: 9, unknown: 'foo' }
     const result = Value.Cast(T, value)
@@ -116,7 +107,6 @@ describe('value/cast/Object', () => {
       c: 'c',
     })
   })
-
   it('Should upcast and create invalid additional properties', () => {
     const result = Value.Cast(
       Type.Object(
@@ -143,7 +133,6 @@ describe('value/cast/Object', () => {
       z: { a: 0, b: 0 },
     })
   })
-
   it('Should upcast and preserve additional properties', () => {
     const result = Value.Cast(
       Type.Object(

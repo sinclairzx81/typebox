@@ -30,4 +30,12 @@ describe('type/compiler/Any', () => {
     const T = Type.Any()
     Ok(T, undefined)
   })
+  it('Should validate bigint', () => {
+    const T = Type.Any()
+    Ok(T, BigInt(1))
+  })
+  it('Should validate symbol', () => {
+    const T = Type.Any()
+    Ok(T, Symbol(1))
+  })
 })

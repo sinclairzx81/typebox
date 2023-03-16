@@ -8,7 +8,7 @@ describe('value/create/Boolean', () => {
     Assert.deepEqual(Value.Create(T), false)
   })
   it('Should create default', () => {
-    const T = Type.Any({ default: true })
+    const T = Type.Boolean({ default: true })
     Assert.deepEqual(Value.Create(T), true)
   })
 })

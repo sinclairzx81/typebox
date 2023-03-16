@@ -1,7 +1,6 @@
 import { TypeCompiler } from '@sinclair/typebox/compiler'
 import { Value } from '@sinclair/typebox/value'
-import { TSchema } from '@sinclair/typebox'
-import { Format } from 'src/format'
+import { TSchema, FormatRegistry } from '@sinclair/typebox'
 
 // -------------------------------------------------------------------------
 // Test Formats: https://github.com/ajv-validator/ajv-formats/blob/master/src/formats.ts
@@ -59,22 +58,22 @@ function isDateTime(str: string, strictTimeZone?: boolean): boolean {
 // Use Formats
 // -------------------------------------------------------------------------
 
-Format.Set('email', (value) => EMAIL.test(value))
-Format.Set('uuid', (value) => UUID.test(value))
-Format.Set('date-time', (value) => isDateTime(value, true))
+FormatRegistry.Set('email', (value) => EMAIL.test(value))
+FormatRegistry.Set('uuid', (value) => UUID.test(value))
+FormatRegistry.Set('date-time', (value) => isDateTime(value, true))
 
-export function Ok<T extends TSchema>(schema: T, data: unknown, references: any[] = []) {
-  const C = TypeCompiler.Compile(schema, references)
+export function Ok<T extends TSchema>(schema: T, data: unknown) {
+  const C = TypeCompiler.Compile(schema)
   const result = C.Check(data)
-  if (result !== Value.Check(schema, references, data)) {
+  if (result !== Value.Check(schema, data)) {
     throw Error('Compiler and Value Check disparity')
   }
   if (result === false) {
-    const errors = [...Value.Errors(schema, references, data)]
+    const errors = [...Value.Errors(schema, data)]
     if (errors.length === 0) throw Error('expected at least 1 error')
   }
   if (result === true) {
-    const errors = [...Value.Errors(schema, references, data)]
+    const errors = [...Value.Errors(schema, data)]
     if (errors.length > 0) throw Error('expected no errors')
   }
   if (!result) {
@@ -94,15 +93,15 @@ export function Ok<T extends TSchema>(schema: T, data: unknown, references: any[
   }
 }
 
-export function Fail<T extends TSchema>(schema: T, data: unknown, references: any[] = []) {
-  const C = TypeCompiler.Compile(schema, references)
+export function Fail<T extends TSchema>(schema: T, data: unknown) {
+  const C = TypeCompiler.Compile(schema)
   const result = C.Check(data)
   if (result === false) {
-    const errors = [...Value.Errors(schema, references, data)]
+    const errors = [...Value.Errors(schema, data)]
     if (errors.length === 0) throw Error('expected at least 1 error')
   }
   if (result === true) {
-    const errors = [...Value.Errors(schema, references, data)]
+    const errors = [...Value.Errors(schema, data)]
     if (errors.length > 0) throw Error('expected no errors')
   }
   if (result) {

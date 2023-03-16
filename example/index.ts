@@ -1,12 +1,7 @@
-import { Codegen } from '@sinclair/typebox/codegen'
 import { TypeSystem } from '@sinclair/typebox/system'
 import { TypeCompiler } from '@sinclair/typebox/compiler'
-import { TypeGuard } from '@sinclair/typebox/guard'
-import { Conditional } from '@sinclair/typebox/conditional'
-import { Format } from '@sinclair/typebox/format'
-import { Custom } from '@sinclair/typebox/custom'
 import { Value, ValuePointer } from '@sinclair/typebox/value'
-import { Type, Kind, Static, TSchema } from '@sinclair/typebox'
+import { Type, Kind, Static, TSchema, TypeGuard } from '@sinclair/typebox'
 
 // -----------------------------------------------------------
 // Create: Type
@@ -17,6 +12,11 @@ const T = Type.Object({
   y: Type.Number(),
   z: Type.Number(),
 })
+
+const K = Type.KeyOf(Type.Object({
+  x: Type.String(),
+  y: Type.String()
+}))
 
 type T = Static<typeof T>
 

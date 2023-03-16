@@ -1,5 +1,5 @@
 import { Expect } from './assert'
-import { Type, TOptional, TString } from '@sinclair/typebox'
+import { Type, TOptional, TString, Static } from '@sinclair/typebox'
 
 {
   const A = Type.Object({
@@ -38,14 +38,17 @@ import { Type, TOptional, TString } from '@sinclair/typebox'
 
 // https://github.com/sinclairzx81/typebox/issues/113
 // https://github.com/sinclairzx81/typebox/issues/187
-// {
-//     const A = Type.Object({ A: Type.String() })
-//     const B = Type.Object({ B: Type.String() })
-//     const C = Type.Object({ C: Type.String() })
-//     const T = Type.Intersect([A, Type.Union([B, C])])
-//     type T = Static<typeof T>
-//     const _0: T = { A: '', B: '' }
-//     const _1: T = { A: '', C: '' }
-//     const _3: T = { A: '', B: '', C: '' }
-//     Expect(T).ToBe<{ A: string } & ({ B: string, } | { C: string })>()
-// }
+{
+  const A = Type.Object({ A: Type.String() })
+  const B = Type.Object({ B: Type.String() })
+  const C = Type.Object({ C: Type.String() })
+  const T = Type.Intersect([A, Type.Union([B, C])])
+  type T = Static<typeof T>
+  const _0: T = { A: '', B: '' }
+  const _1: T = { A: '', C: '' }
+  const _3: T = { A: '', B: '', C: '' }
+  // invert equivelence (expect true both cases)
+  type T1 = T extends { A: string } & ({ B: string } | { C: string }) ? true : false
+  type T2 = { A: string } & ({ B: string } | { C: string }) extends T ? true : false
+  Expect(T).ToBe<{ A: string } & ({ B: string } | { C: string })>() // solved!
+}

@@ -24,10 +24,10 @@ describe('value/check/Void', () => {
     const result = Value.Check(T, value)
     Assert.equal(result, true)
   })
-  it('Should fail undefined', () => {
+  it('Should pass undefined', () => {
     const value = undefined
     const result = Value.Check(T, value)
-    Assert.equal(result, false)
+    Assert.equal(result, true)
   })
   it('Should fail object', () => {
     const value = { a: 1 }
