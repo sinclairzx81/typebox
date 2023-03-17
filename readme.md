@@ -1181,7 +1181,7 @@ const R = Value.Check(T, { x: 1, y: 2 })              // const R = true
 
 ### Formats
 
-Use the `Format(...)` function to create a custom string formats. The following creates a custom string format that checks for lowercase strings.
+Use the `Format(...)` function to create a custom string format. The following creates a custom string format that checks for lowercase strings.
 
 ```typescript
 TypeSystem.Format('lowercase', value => value === value.toLowerCase()) // format should be lowercase
