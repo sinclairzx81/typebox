@@ -2235,8 +2235,8 @@ export class ExtendedTypeBuilder extends StandardTypeBuilder {
   }
 }
 
-/** Standard TypeBuilder supporting only JSON Schema specification types */
+/** JSON Schema TypeBuilder with Static Resolution for TypeScript */
 export const StandardType = new StandardTypeBuilder()
 
-/** TypeBuilder with Static Resolution for TypeScript */
+/** JSON Schema TypeBuilder with Static Resolution for TypeScript */
 export const Type = new ExtendedTypeBuilder()
