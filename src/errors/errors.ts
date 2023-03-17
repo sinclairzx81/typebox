@@ -484,8 +484,14 @@ export namespace ValueErrors {
   function* Unknown(schema: Types.TUnknown, path: string, value: any): IterableIterator<ValueError> {}
 
   function* Void(schema: Types.TVoid, path: string, value: any): IterableIterator<ValueError> {
-    if (!(value === void 0 || value === null)) {
-      return yield { type: ValueErrorType.Void, schema, path, value, message: `Expected null` }
+    if (TypeSystem.AllowVoidNull) {
+      if (!(value === undefined || value === null)) {
+        return yield { type: ValueErrorType.Void, schema, path, value, message: `Expected null or undefined` }
+      }
+    } else {
+      if (!(value === undefined)) {
+        return yield { type: ValueErrorType.Void, schema, path, value, message: `Expected undefined` }
+      }
     }
   }
 

@@ -1847,6 +1847,10 @@ export class TypeBuilder {
     ReferenceRegistry.Set(schema as any)
     return schema as any
   }
+  /** `[Standard]` Omits compositing symbols from this schema */
+  public Strict<T extends TSchema>(schema: T): T {
+    return JSON.parse(JSON.stringify(schema))
+  }
 }
 // -------------------------------------------------------------------------------------
 // StandardTypeBuilder
@@ -2114,10 +2118,6 @@ export class StandardTypeBuilder extends TypeBuilder {
       globalThis.Object.keys(schema.properties).forEach(key => Apply(schema.properties[key]))
       return schema
     }, options)
-  }
-  /** `[Standard]` Omits compositing symbols from this schema */
-  public Strict<T extends TSchema>(schema: T): T {
-    return JSON.parse(JSON.stringify(schema))
   }
   /** `[Standard]` Creates a String type */
   public String<Format extends string>(options: StringOptions<StringFormatOption | Format> = {}): TString<Format> {

@@ -1,20 +1,22 @@
-# JSON Type Definition
+# TypeDef
 
-[JSON Type Definition](https://jsontypedef.com/) is a alternative schema specification that defines a set of schematics more inline with the needs of nominal type systems. This example shows how to extend the TypeBox Type Builder to support this specification.
+TypeBox may offer support for [RPC8927](https://www.rfc-editor.org/rfc/rfc8927) JSON Type Definition in future revisions of the library. This specification is much simpler than JSON Schema but can be useful when describing schematics that need to be shared with nominal type languages.
 
-## TypeDef
+## Usage
 
-The file `typedef.ts` provided with this example contains the full implementation. The following shows it's use.
+The file `typedef.ts` provided with this example contains the provisional implementation for RPC8927.
 
 ```typescript
-import { TypeDef as Type, Static } from './typedef'
 import { Value } from '@sinclair/typebox/value'
+import { Type, Static } from './typedef'
 
-const T = Type.Object({
-  x: Type.Float32(),
-  y: Type.Float32(),
-  z: Type.Float32()
-})
+const T = Type.Struct({                              // const T = {
+  x: Type.Float32(),                                 //   properties: {
+  y: Type.Float32(),                                 //     x: { type: "float32" },
+  z: Type.Float32()                                  //     y: { type: 'float32' },
+})                                                   //     z: { type: 'float32' }
+                                                     //   }
+                                                     // }
 
 type T = Static<typeof T>                            // type T = {
                                                      //   x: number,
@@ -25,19 +27,55 @@ type T = Static<typeof T>                            // type T = {
 const R = Value.Check(T, { x: 1, y: 2, z: 3 })       // const R = true
 ```
 
+### Unions
+
+The JSON Type Definition has a different representation for unions and is primarily orientated towards discriminated unions. To use unions, you will need to name each struct on the first argument. TypeBox will take care of producing the union representation and static type.
+
 ```typescript
-export type UnionType = Static<typeof UnionType>
-export const UnionType = TypeDef.Union('eventType', {
-  USER_CREATED: TypeDef.Properties({
-    id: TypeDef.String(),
-  }),
-  USER_PAYMENT_PLAN_CHANGED: TypeDef.Properties({
-    id: TypeDef.String(),
-    plan: TypeDef.Enum(['FREE', 'PAID']),
-  }),
-  USER_DELETED: TypeDef.Properties({
-    id: TypeDef.String(),
-    softDelete: TypeDef.Boolean(),
-  }),
-})
+import { Type, Static } from './typedef'
+
+const Vector2 = Type.Struct('Vector2', {             // const Vector2 = {
+  x: Type.Float32(),                                 //   properties: {
+  y: Type.Float32(),                                 //     x: { type: 'float32' },
+})                                                   //     y: { type: 'float32' }
+                                                     //   }
+                                                     // }
+
+const Vector3 = Type.Struct('Vector3', {             // const Vector3 = {
+  x: Type.Float32(),                                 //   properties: {
+  y: Type.Float32(),                                 //     x: { type: 'float32' },
+  z: Type.Float32()                                  //     y: { type: 'float32' },
+})                                                   //     z: { type: 'float32' }
+                                                     //   }
+                                                     // }
+
+const Union = Type.Union('type', [                   //  const Union = {
+  Vector2,                                           //    discriminator: 'type',
+  Vector3                                            //    mapping: {
+])                                                   //      Vector2: {
+                                                     //        properties: {
+                                                     //         x: { type: 'float32' },
+                                                     //         y: { type: 'float32' },
+                                                     //       }
+                                                     //     },
+                                                     //     Vector3: {
+                                                     //       properties: {
+                                                     //         x: { type: 'float32' },
+                                                     //         y: { type: 'float32' },
+                                                     //         z: { type: 'float32' }
+                                                     //       }
+                                                     //     }
+                                                     //   }
+                                                     // }
+
+type Union = Static<typeof Union>                    // type Union = {
+                                                     //   type: 'Vector2'
+                                                     //   x: number
+                                                     //   y: number
+                                                     // } | {
+                                                     //   type: 'Vector3'
+                                                     //   x: number
+                                                     //   y: number
+                                                     //   z: number
+                                                     // }    
 ```

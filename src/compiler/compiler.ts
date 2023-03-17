@@ -320,7 +320,11 @@ export namespace TypeCompiler {
     yield 'true'
   }
   function* Void(schema: Types.TVoid, value: string): IterableIterator<string> {
-    yield `(${value} === void 0 || ${value} === null)`
+    if (TypeSystem.AllowVoidNull) {
+      yield `(${value} === undefined || ${value} === null)`
+    } else {
+      yield `${value} === undefined`
+    }
   }
   function* UserDefined(schema: Types.TSchema, value: string): IterableIterator<string> {
     const schema_key = `schema_key_${state_remote_custom_types.size}`

@@ -119,8 +119,23 @@ describe('system/TypeSystem/AllowArrayObjects', () => {
     ])
   })
 })
+describe('system/TypeSystem/AllowVoidNull', () => {
+  before(() => {
+    TypeSystem.AllowVoidNull = true
+  })
+  after(() => {
+    TypeSystem.AllowVoidNull = false
+  })
+  // ---------------------------------------------------------------
+  // Object
+  // ---------------------------------------------------------------
+  it('Should validate with null', () => {
+    const T = Type.Void()
+    Ok(T, null)
+  })
+})
 
-describe('system/TypeSystem/CreateFormat', () => {
+describe('system/TypeSystem/Format', () => {
   it('Should create and validate a format', () => {
     TypeSystem.Format('CreateFormat0', (value) => value === value.toLowerCase())
     const T = Type.String({ format: 'CreateFormat0' })
@@ -133,7 +148,7 @@ describe('system/TypeSystem/CreateFormat', () => {
   })
 })
 
-describe('system/TypeSystem/CreateType', () => {
+describe('system/TypeSystem/Type', () => {
   it('Should create and validate a type', () => {
     type BigNumberOptions = { minimum?: bigint; maximum?: bigint }
     const BigNumber = TypeSystem.Type<bigint, BigNumberOptions>('CreateType0', (options, value) => {

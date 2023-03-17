@@ -23,11 +23,15 @@ describe('type/compiler/Void', () => {
     Fail(T, { a: 1, b: 2 })
   })
   it('Should validate null', () => {
-    const T = Type.Null()
-    Ok(T, null)
+    const T = Type.Void()
+    Fail(T, null)
   })
   it('Should validate undefined', () => {
     const T = Type.Void()
     Ok(T, undefined)
+  })
+  it('Should validate void 0', () => {
+    const T = Type.Void()
+    Ok(T, void 0)
   })
 })

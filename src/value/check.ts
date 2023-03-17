@@ -337,7 +337,11 @@ export namespace ValueCheck {
     return true
   }
   function Void(schema: Types.TVoid, value: any): boolean {
-    return value === void 0 || value === null
+    if (TypeSystem.AllowVoidNull) {
+      return value === undefined || value === null
+    } else {
+      return value === undefined
+    }
   }
   function UserDefined(schema: Types.TSchema, value: unknown): boolean {
     if (!Types.TypeRegistry.Has(schema[Types.Kind])) return false

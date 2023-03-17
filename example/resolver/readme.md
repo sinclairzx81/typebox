@@ -1,4 +1,4 @@
-# TypeResolver
+# ReferenceResolver
 
 Automatic `$ref` resolution for Ajv compilation
 
@@ -41,7 +41,7 @@ const Ok = C({ x: 1, y: 2, z: 3 })                   // const Ok = true
 The following shows `$ref` resolution using the `TypeResolver` included with this example. Note that `T` type is not required for the compilation of `R` as it can be auto resolved through the TypeBox `ReferenceRegistry`.
 
 ```typescript
-import { TypeResolver } from './resolver'
+import { ReferenceResolver } from './resolver'
 
 const T = Type.Object({                               // This is the target type T
     x: Type.Number(),
@@ -55,7 +55,7 @@ const R = Type.Ref(T)                                 // This is the reference t
 
 const ajv = new Ajv()
 
-ajv.addSchema([...TypeResolver.References(R)])       // We only need R to gather all direct and indirect references.
+ajv.addSchema([...ReferenceResolver.Resolve(R)])       // We only need R to gather all direct and indirect references.
 
 const C = ajv.compile(R)
 

@@ -45,14 +45,14 @@ export namespace TypeSystem {
   export let AllowArrayObjects: boolean = false
   /** Sets whether `NaN` or `Infinity` should be treated as valid numeric values. The default is `false` */
   export let AllowNaN: boolean = false
-
+  /** Sets whether `null` should validate for void types. The default is `false` */
+  export let AllowVoidNull: boolean = false
   /** Creates a new type */
   export function Type<Type, Options = object>(kind: string, check: (options: Options, value: unknown) => boolean) {
     if (Types.TypeRegistry.Has(kind)) throw new TypeSystemDuplicateTypeKind(kind)
     Types.TypeRegistry.Set(kind, check)
     return (options: Partial<Options> = {}) => Types.Type.Unsafe<Type>({ ...options, [Types.Kind]: kind })
   }
-
   /** Creates a new string format */
   export function Format<F extends string>(format: F, check: (value: string) => boolean): F {
     if (Types.FormatRegistry.Has(format)) throw new TypeSystemDuplicateFormat(format)

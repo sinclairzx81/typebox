@@ -22,7 +22,7 @@ describe('value/check/Void', () => {
   it('Should pass null', () => {
     const value = null
     const result = Value.Check(T, value)
-    Assert.equal(result, true)
+    Assert.equal(result, false)
   })
   it('Should pass undefined', () => {
     const value = undefined

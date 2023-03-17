@@ -29,9 +29,9 @@ THE SOFTWARE.
 import * as Types from '@sinclair/typebox'
 
 // -------------------------------------------------------------------------
-// TypeResolver
+// ReferenceResolver
 // -------------------------------------------------------------------------
-export namespace TypeResolver {
+export namespace ReferenceResolver {
   function* Intersect(schema: Types.TIntersect): IterableIterator<Types.TSchema> {
     for (const inner of schema.allOf) yield* Visit(inner)
   }
@@ -80,7 +80,7 @@ export namespace TypeResolver {
     if (Types.TypeGuard.TUnion(schema)) return yield* Union(schema)
   }
   /** Resolves direct or indirect references made by the given schema */
-  export function References<T extends Types.TSchema>(schema: T): IterableIterator<Types.TSchema> {
+  export function Resolve<T extends Types.TSchema>(schema: T): IterableIterator<Types.TSchema> {
     return Visit(schema)
   }
 }
