@@ -27,12 +27,12 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import * as Types from '@sinclair/typebox'
-export { type Static } from '@sinclair/typebox'
+export { type Static, TSchema, PropertiesReduce, TReadonly, TReadonlyOptional, TOptional } from '@sinclair/typebox'
 
 // --------------------------------------------------------------------------
 // Symbols
 // --------------------------------------------------------------------------
-export const Discriminator = Symbol.for('TypeBox:TypeDef:Discriminator')
+export const Name = Symbol.for('TypeBox:Name')
 // --------------------------------------------------------------------------
 // TArray
 // --------------------------------------------------------------------------
@@ -124,7 +124,7 @@ export interface TUint32 extends Types.TSchema {
 // --------------------------------------------------------------------------
 // TProperties
 // --------------------------------------------------------------------------
-export type TFields = Record<keyof any, Types.TSchema>
+export type TFields = Record<string, Types.TSchema>
 // --------------------------------------------------------------------------
 // TRecord
 // --------------------------------------------------------------------------
@@ -143,19 +143,17 @@ export interface TString extends Types.TSchema {
 // --------------------------------------------------------------------------
 // TStruct
 // --------------------------------------------------------------------------
+type OptionalKeys<T extends TFields> = { [K in keyof T]: T[K] extends (Types.TReadonlyOptional<T[K]> | Types.TOptional<T[K]>) ? T[K] : never }
+type RequiredKeys<T extends TFields> = { [K in keyof T]: T[K] extends (Types.TReadonlyOptional<T[K]> | Types.TOptional<T[K]>) ? never : T[K] }
 export interface StructOptions {
   additionalProperties?: boolean
 }
-export interface TStruct<D extends string | undefined = undefined, T extends TFields = TFields> extends Types.TSchema, StructOptions {
-  [Discriminator]: D
+export interface TStruct<D extends string = string, T extends TFields = TFields> extends Types.TSchema, StructOptions {
+  [Name]: D
   [Types.Kind]: 'TypeDef:Struct'
   static: Types.PropertiesReduce<T, this['params']>
-  optionalProperties: {
-    [K in keyof T]: T[K] extends (Types.TReadonlyOptional<T[K]> | Types.TOptional<T[K]>) ? T[K] : never
-  }
-  properties: {
-    [K in keyof T]: T[K] extends (Types.TReadonlyOptional<T[K]> | Types.TOptional<T[K]>) ? never : T[K] 
-  }
+  optionalProperties: {[K in Types.Assert<OptionalKeys<T>, keyof T>]: T[K] }
+  properties: {[K in Types.Assert<RequiredKeys<T>, keyof T>]: T[K] }
 }
 // --------------------------------------------------------------------------
 // TTimestamp
@@ -167,9 +165,9 @@ export interface TTimestamp extends Types.TSchema {
 // --------------------------------------------------------------------------
 // TUnion
 // --------------------------------------------------------------------------
-export interface TUnion<D extends string = string, T extends TStruct<string, TFields>[] = []> extends Types.TSchema {
+export interface TUnion<D extends string = string, T extends TStruct[] = TStruct[]> extends Types.TSchema {
   [Types.Kind]: 'TypeDef:Union'
-  static: Types.Evaluate<{ [K in keyof T]: { [key in D]: T[K][typeof Discriminator] } & Types.Static<T[K]> }[number]>
+  static: Types.Evaluate<{ [K in keyof T]: { [key in D]: T[K][typeof Name] } & Types.Static<T[K]> }[number]>
   discriminator: D, 
   mapping: T
 }
@@ -256,11 +254,14 @@ export namespace TypeDefCheck {
     return typeof value === 'string'
   }
   function Struct(schema: TStruct, value: unknown): boolean {
-    if(schema.additionalProperties === true) {
-      const optionalKeys = schema.op
-      return IsObject(value) && globalThis.Object.getOwnPropertyNames(schema.properties).every(key => key in value && Visit(schema.properties[key], value[key]))
-    }
-    else return false
+    const optionalKeys = schema.optionalProperties === undefined ? [] : globalThis.Object.getOwnPropertyNames(schema.optionalProperties)
+    const requiredKeys = schema.properties === undefined ? [] : globalThis.Object.getOwnPropertyNames(schema.properties)
+    if(!(IsObject(value) && 
+      optionalKeys.every(key => key in value ? Visit((schema.optionalProperties as any)[key], value[key]) : true) &&
+      requiredKeys.every(key => key in value && Visit(((schema as any).properties[key] as any), value[key])))) return false
+    if(schema.additionalProperties === true) return true
+    const unknownKeys = globalThis.Object.getOwnPropertyNames(value)
+    return unknownKeys.every(key => optionalKeys.includes(key) || requiredKeys.includes(key))
   }
   function Timestamp(schema: TString, value: unknown): boolean {
     return IsInt(value, 0, Number.MAX_SAFE_INTEGER)
@@ -373,33 +374,26 @@ export class TypeDefTypeBuilder extends Types.TypeBuilder {
     return this.Create({ [Types.Kind]: 'TypeDef:String',type: 'string' })
   }  
   /** `[Standard]` Creates a TypeDef Struct type */
-  public Struct<D extends string | undefined, T extends TFields>(descriminator: D, fields: T, options: StructOptions = {}): TStruct<D, T> {
-    // prettier-ignore
-    const optionalProperties = globalThis.Object.getOwnPropertyNames(fields).reduce((acc, key) => {
-      return Types.TypeGuard.TOptional(fields[key]) || Types.TypeGuard.TReadonlyOptional(fields[key]) ? { [key]: fields[key] } : {... acc}
-    }, {} as TFields)
-    // prettier-ignore
-    const properties = globalThis.Object.getOwnPropertyNames(fields).reduce((acc, key) => {
-      return Types.TypeGuard.TOptional(fields[key]) || Types.TypeGuard.TReadonlyOptional(fields[key]) ? {... acc} : { [key]: fields[key] }
-    }, {} as TFields)
-    const optionalPropertiesLength = globalThis.Object.getOwnPropertyNames(optionalProperties).length
-    const propertiesLength = globalThis.Object.getOwnPropertyNames(properties).length
-    const optionalPropertiesObject = optionalPropertiesLength > 0 ? { optionalProperties: optionalProperties } : {}
-    const propertiesObject = propertiesLength === 0 ? {} : { properties: properties }
-    return this.Create({ ...options, [Types.Kind]: 'TypeDef:Struct', [Discriminator]: (descriminator || undefined) as D, ...propertiesObject, ...optionalPropertiesObject })
+  public Struct<N extends string, T extends TFields>(name: N, fields: T, options?: StructOptions): TStruct<N, T> {
+    const optionalProperties = globalThis.Object.getOwnPropertyNames(fields).reduce((acc, key) => (Types.TypeGuard.TOptional(fields[key]) || Types.TypeGuard.TReadonlyOptional(fields[key]) ? { ...acc, [key]: fields[key] } : { ...acc }), {} as TFields)
+    const properties = globalThis.Object.getOwnPropertyNames(fields).reduce((acc, key) => (Types.TypeGuard.TOptional(fields[key]) || Types.TypeGuard.TReadonlyOptional(fields[key]) ? {... acc } : { ...acc, [key]: fields[key] }), {} as TFields)
+    const optionalPropertiesObject = globalThis.Object.getOwnPropertyNames(optionalProperties).length > 0 ? { optionalProperties: optionalProperties } : {}
+    const propertiesObject = globalThis.Object.getOwnPropertyNames(properties).length === 0 ? {} : { properties: properties }
+    return this.Create({ ...options, [Types.Kind]: 'TypeDef:Struct', [Name]: name, ...propertiesObject, ...optionalPropertiesObject })
   }
   /** `[Standard]` Creates a TypeDef Timestamp type */
   public Timestamp(): TTimestamp {
     return this.Create({ [Types.Kind]: 'TypeDef:Timestamp', type: 'timestamp' })
   }
+
   /** `[Standard]` Creates a TypeDef Discriminated Union type */
   public Union<D extends string, T extends TStruct<string, TFields>[]>(discriminator: D, objects: [...T]): TUnion<D, T> {
     if(objects.length === 0) throw new Error('TypeDefTypeBuilder: Union types must have at least one object') 
-    const exists = objects.every(object => typeof object[Discriminator] === 'string')
+    const exists = objects.every(object => typeof object[Name] === 'string')
     if(!exists) throw new Error('TypeDefTypeBuilder: All union objects MUST have a descriminator')
-    const unique = objects.reduce((set, current) => set.add(current[Discriminator]), new Set<string>())
+    const unique = objects.reduce((set, current) => set.add(current[Name]), new Set<string>())
     if(unique.size !== objects.length) throw new Error('TypeDefTypeBuilder: All union objects MUST unique descriminator strings')
-    const mapping = objects.reduce((acc, current) => ({ ...acc, [current[Discriminator]]: current  }), {})
+    const mapping = objects.reduce((acc, current) => ({ ...acc, [current[Name]]: current  }), {})
     return this.Create({ [Types.Kind]: 'TypeDef:Union', discriminator, mapping })
   }
 }

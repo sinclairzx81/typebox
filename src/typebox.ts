@@ -1165,15 +1165,15 @@ export namespace TypeGuard {
   }
   /** Returns true if this schema has the ReadonlyOptional modifier */
   export function TReadonlyOptional<T extends TSchema>(schema: T): schema is TReadonlyOptional<T> {
-    return TSchema(schema) && schema[Modifier] === 'ReadonlyOptional'
+    return IsObject(schema) && schema[Modifier] === 'ReadonlyOptional'
   }
   /** Returns true if this schema has the Readonly modifier */
   export function TReadonly<T extends TSchema>(schema: T): schema is TReadonly<T> {
-    return TSchema(schema) && schema[Modifier] === 'Readonly'
+    return IsObject(schema) && schema[Modifier] === 'Readonly'
   }
   /** Returns true if this schema has the Optional modifier */
   export function TOptional<T extends TSchema>(schema: T): schema is TOptional<T> {
-    return TSchema(schema) && schema[Modifier] === 'Optional'
+    return IsObject(schema) && schema[Modifier] === 'Optional'
   }
   /** Returns true if the given schema is TSchema */
   export function TSchema(schema: unknown): schema is TSchema {

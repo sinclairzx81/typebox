@@ -10,7 +10,7 @@ The file `typedef.ts` provided with this example contains the provisional implem
 import { Value } from '@sinclair/typebox/value'
 import { Type, Static } from './typedef'
 
-const T = Type.Struct({                              // const T = {
+const T = Type.Struct('T', {                         // const T = {
   x: Type.Float32(),                                 //   properties: {
   y: Type.Float32(),                                 //     x: { type: "float32" },
   z: Type.Float32()                                  //     y: { type: 'float32' },

@@ -1,40 +1,21 @@
-import { TypeSystem } from '@sinclair/typebox/system'
-import { TypeCompiler } from '@sinclair/typebox/compiler'
 import { Value, ValuePointer } from '@sinclair/typebox/value'
-import { Type, Kind, Static, TSchema } from '@sinclair/typebox'
+import { Type, Static } from './typedef'
 
-// -----------------------------------------------------------
-// Create: Type
-// -----------------------------------------------------------
-
-const T = Type.Object({
-  x: Type.Number(),
-  y: Type.Number(),
-  z: Type.Number(),
+const A = Type.Struct('A', {
+  x: Type.Optional(Type.Float32()),
+  y: Type.Float32(),
+  z: Type.Float32(),
+})
+const B = Type.Struct('B', {
+  x: Type.Optional(Type.Float32()),
+  y: Type.Float32(),
+  z: Type.Float32(),
+})
+const C = Type.Struct('C', {
+  x: Type.String(),
+  y: Type.String(),
 })
 
-type T = Static<typeof T>
-
-console.log(T)
-
-// -----------------------------------------------------------
-// Create: Value
-// -----------------------------------------------------------
-
-const V = Value.Create(T)
-
-console.log(V)
-
-// -----------------------------------------------------------
-// Compile: Type
-// -----------------------------------------------------------
-
-const C = TypeCompiler.Compile(T)
-
-console.log(C.Code())
-
-// -----------------------------------------------------------
-// Check: Value
-// -----------------------------------------------------------
-
-console.log(C.Check(V))
+const U = Type.Union('type', [A, B, C])
+console.log(JSON.stringify(U, null, 2))
+console.log(Value.Check(U, { type: 'C', x: '', y: '1' }))
