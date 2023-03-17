@@ -812,7 +812,7 @@ type T = Static<typeof T>                            // type T = 'A' | 'B' | 'C'
 
 ### Guards
 
-TypeBox provides a `TypeGuard` module used for type value assertions and reflection.
+TypeBox provides a `TypeGuard` module for reflection and type assertion.
 
 ```typescript
 import { Type, TypeGuard } from '@sinclair/typebox'
