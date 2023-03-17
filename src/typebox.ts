@@ -2163,7 +2163,7 @@ export class StandardTypeBuilder extends TypeBuilder {
 // TypeBuilder
 // -------------------------------------------------------------------------------------
 export class ExtendedTypeBuilder extends StandardTypeBuilder {
-  /** `[Extended]` Creates a BigInt */
+  /** `[Extended]` Creates a BigInt type */
   public BigInt(options: NumericOptions<bigint> = {}): TBigInt {
     return this.Create({ ...options, [Kind]: 'BigInt', type: 'null', typeOf: 'BigInt' })
   }
