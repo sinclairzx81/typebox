@@ -1029,15 +1029,15 @@ ValuePointer.Set(A, '/z', 1)                         // const A = { x: 1, y: 1, 
 
 ## TypeCheck
 
-TypeBox types targets JSON Schema draft 6 so is immediately compatible with any validator that supports this specification. TypeBox also provides a built in type checking compiler designed specifically for high performance compilation and value assertion.
+TypeBox types target JSON Schema draft 6 so are compatible with any validator that supports this specification. TypeBox also provides a built in type checking compiler designed specifically for high performance compilation and value assertion.
 
-The following details using both Ajv and TypeBox's compiler infrastructure.
+The following sections detail using Ajv and TypeBox's compiler infrastructure.
 
 <a name='typecheck-ajv'></a>
 
 ## Ajv
 
-The following shows the recommended setup for Ajv with additional string formats.
+The following shows the recommended setup for Ajv.
 
 ```bash
 $ npm install ajv ajv-formats --save
@@ -1078,7 +1078,7 @@ const R = C({ x: 1, y: 2, z: 3 })                    // const R = true
 
 ### TypeCompiler
 
-The TypeBox TypeCompiler is a high performance JIT compiler that compiles TypeBox types into optimized JavaScript validation routines. The compiler is tuned both for fast compilation and value assertion. It is designed primarily for integrating into application frameworks but can also be used as a general purpose validator.
+The TypeBox TypeCompiler is a high performance JIT compiler that transforms TypeBox types into optimized JavaScript validation routines. The compiler is tuned for fast compilation as well as fast value assertion. It is designed to serve as a validation backend that can be integrated into larger applications; but can also be used as a general purpose validator.
 
 The TypeCompiler is provided as an optional import.
 
@@ -1098,7 +1098,7 @@ const C = TypeCompiler.Compile(Type.Object({         // const C: TypeCheck<TObje
 const R = C.Check({ x: 1, y: 2, z: 3 })              // const R = true
 ```
 
-Use the `Errors(...)` function to produce diagnostics for a value. The `Errors(...)` function will return an iterator that will perform an exhaustive check across the value and yield any error found. For performance, this function should only be called after failed `Check(...)`.
+Use the `Errors(...)` function to produce diagnostic errors for a value. The `Errors(...)` function will return an iterator that if enumerated; will perform an exhaustive check across the entire value and yield any error found. For performance, this function should only be called after failed `Check(...)`. Applications may also choose to yield only the first value to avoid exhaustive error generation.
 
 ```typescript
 const C = TypeCompiler.Compile(Type.Object({         // const C: TypeCheck<TObject<{

@@ -40,7 +40,7 @@ export type CheckFunction = (value: unknown) => boolean
 // -------------------------------------------------------------------
 export class TypeCheck<T extends Types.TSchema> {
   constructor(private readonly schema: T, private readonly checkFunc: CheckFunction, private readonly code: string) {}
-  /** Returns the generated validation code used to validate this type. */
+  /** Returns the generated assertion code used to validate this type. */
   public Code(): string {
     return this.code
   }
@@ -445,7 +445,7 @@ export namespace TypeCompiler {
     const locals = GetLocals()
     return `${locals.join('\n')}\nreturn ${check}`
   }
-  /** Returns the generated validation code used to validate this type. */
+  /** Returns the generated assertion code used to validate this type. */
   export function Code<T extends Types.TSchema>(schema: T) {
     if (!Types.TypeGuard.TSchema(schema)) throw new TypeCompilerPreflightCheckError(schema)
     return Build(schema)
