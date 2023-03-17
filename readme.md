@@ -777,7 +777,7 @@ const T = Type.Unsafe<string>({ type: 'number' })    // const T = {
 type T = Static<typeof T>                            // type T = string
 ```
 
-The `Type.Unsafe(...)` type allows specific or non-standard OpenAPI schematics can be constructed.
+The `Type.Unsafe(...)` type allows for the expression of specific OpenAPI schema representations.
 
 ```typescript
 import { Type, Static, TSchema } from '@sinclair/typebox'
