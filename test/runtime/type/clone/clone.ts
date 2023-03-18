@@ -72,6 +72,13 @@ describe('type/Clone', () => {
     Assert.equal(T.properties.z.properties.s.$id, undefined)
     Assert.equal(S.$id, 'S')
   })
+  it('Should remove cloned $id for Object additionalProperties', () => {
+    const S = Type.String({ $id: 'S' })
+    const T = Type.Object({}, { additionalProperties: S })
+    // @ts-ignore
+    Assert.equal(T.additionalProperties!.$id, undefined)
+    Assert.equal(S.$id, 'S')
+  })
   it('Should remove cloned $id for Promise', () => {
     const S = Type.String({ $id: 'S' })
     const T = Type.Promise(S)
