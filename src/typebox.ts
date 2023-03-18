@@ -1920,7 +1920,7 @@ export class StandardTypeBuilder extends TypeBuilder {
     const anyOf = values.map((value) => (typeof value === 'string' ? { [Kind]: 'Literal', type: 'string' as const, const: value } : { [Kind]: 'Literal', type: 'number' as const, const: value }))
     return this.Create({ ...options, [Kind]: 'Union', anyOf })
   }
-  /** `[Standard]` A conditional type expression that will return the true type if the left extends the right */
+  /** `[Standard]` A conditional type expression that will return the true type if the left type extends the right */
   public Extends<L extends TSchema, R extends TSchema, T extends TSchema, U extends TSchema>(left: L, right: R, trueType: T, falseType: U, options: SchemaOptions = {}): TExtends<L, R, T, U> {
     switch (TypeExtends.Extends(ReferenceRegistry.Deref(left), ReferenceRegistry.Deref(right))) {
       case TypeExtendsResult.Union:
@@ -1931,7 +1931,7 @@ export class StandardTypeBuilder extends TypeBuilder {
         return this.Clone(falseType, options) as TExtends<L, R, T, U>
     }
   }
-  /** `[Standard]` Excludes from left any type that is not assignable to the right. */
+  /** `[Standard]` Excludes from the left type any type that is not assignable to the right */
   public Exclude<L extends TSchema, R extends TSchema>(left: L, right: R, options: SchemaOptions = {}): TExclude<L, R> {
     if (TypeGuard.TUnion(left)) {
       const narrowed = left.anyOf.filter((inner) => TypeExtends.Extends(inner, right) === TypeExtendsResult.False)
@@ -1940,7 +1940,7 @@ export class StandardTypeBuilder extends TypeBuilder {
       return (TypeExtends.Extends(left, right) !== TypeExtendsResult.False ? this.Never(options) : this.Clone(left, options)) as any
     }
   }
-  /** `[Standard]` Extracts from left any type that is assignable to the right. */
+  /** `[Standard]` Extracts from left left any type that is assignable to the right */
   public Extract<L extends TSchema, R extends TSchema>(left: L, right: R, options: SchemaOptions = {}): TExtract<L, R> {
     if (TypeGuard.TUnion(left)) {
       const narrowed = left.anyOf.filter((inner) => TypeExtends.Extends(inner, right) !== TypeExtendsResult.False)
@@ -2001,7 +2001,7 @@ export class StandardTypeBuilder extends TypeBuilder {
   public Number(options: NumericOptions<number> = {}): TNumber {
     return this.Create({ ...options, [Kind]: 'Number', type: 'number' })
   }
-  /** `[Standard]` Creates a Object type */
+  /** `[Standard]` Creates an Object type */
   public Object<T extends TProperties>(properties: T, options: ObjectOptions = {}): TObject<T> {
     const keys = globalThis.Object.keys(properties)
     const optional = keys.filter((key) => TypeGuard.TOptional(properties[key]) || TypeGuard.TReadonlyOptional(properties[key]))
