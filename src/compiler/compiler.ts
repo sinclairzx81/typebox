@@ -27,7 +27,7 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import * as Types from '../typebox'
-import { ValueErrors, ValueError } from '../errors/index'
+import { ValueErrors, ValueErrorIterator } from '../errors/index'
 import { TypeSystem } from '../system/index'
 import { ValueHash } from '../value/hash'
 
@@ -45,7 +45,7 @@ export class TypeCheck<T extends Types.TSchema> {
     return this.code
   }
   /** Returns an iterator for each error in this value. */
-  public Errors(value: unknown): IterableIterator<ValueError> {
+  public Errors(value: unknown): ValueErrorIterator {
     return ValueErrors.Errors(this.schema, value)
   }
   /** Returns true if the value matches the compiled type. */

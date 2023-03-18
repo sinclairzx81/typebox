@@ -27,11 +27,12 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 // -------------------------------------------------------------------------------------
-// Symbols
+// Compositing Symbols
 // -------------------------------------------------------------------------------------
 export const Kind = Symbol.for('TypeBox.Kind')
 export const Hint = Symbol.for('TypeBox.Hint')
 export const Modifier = Symbol.for('TypeBox.Modifier')
+export const Recursive = Symbol.for('TypeBox.Recursive')
 // -------------------------------------------------------------------------------------
 // Helpers
 // -------------------------------------------------------------------------------------
@@ -71,8 +72,9 @@ export interface TKind {
   [Kind]: string
 }
 export interface TSchema extends SchemaOptions, TKind {
-  [Hint]?: string
   [Modifier]?: string
+  [Recursive]?: string
+  [Hint]?: string
   params: unknown[]
   static: unknown
 }
@@ -295,10 +297,10 @@ export type TKeyOfTuple<T extends TSchema> = {
   ? UnionToTuple<Exclude<{ [K in keyof U]: U[K] }[keyof U], undefined>> // optional yields undefined keys
   : never
 // prettier-ignore
-export type TKeyOf<T extends TSchema = TSchema> = (
-  T extends TIntersect ? TKeyOfTuple<T> :
-  T extends TUnion     ? TKeyOfTuple<T> :
-  T extends TObject    ? TKeyOfTuple<T> :
+export type TKeyOf<T extends TSchema = TSchema, D = TDeref<T>> = (
+  D extends TIntersect ? TKeyOfTuple<T> :
+  D extends TUnion     ? TKeyOfTuple<T> :
+  D extends TObject    ? TKeyOfTuple<T> :
   []
 ) extends infer R ? R extends [] ? TNever : TUnion<Assert<R, TSchema[]>> : never
 // -------------------------------------------------------------------------------------
@@ -384,11 +386,11 @@ export interface TObject<T extends TProperties = TProperties> extends TSchema, O
 export type TOmitArray<T extends TSchema[], K extends keyof any> = Assert<{ [K2 in keyof T]: TOmit<Assert<T[K2], TSchema>, K> }, TSchema[]>
 export type TOmitProperties<T extends TProperties, K extends keyof any> = Evaluate<Assert<Omit<T, K>, TProperties>>
 // prettier-ignore
-export type TOmit<T extends TSchema, K extends keyof any> = 
-  T extends TIntersect<infer S> ? TIntersect<TOmitArray<S, K>> : 
-  T extends TUnion<infer S> ? TUnion<TOmitArray<S, K>> : 
-  T extends TObject<infer S> ? TObject<TOmitProperties<S, K>> : 
-  T
+export type TOmit<T extends TSchema, K extends keyof any, D = TDeref<T>> = 
+  D extends TIntersect<infer S> ? TIntersect<TOmitArray<S, K>> : 
+  D extends TUnion<infer S> ? TUnion<TOmitArray<S, K>> : 
+  D extends TObject<infer S> ? TObject<TOmitProperties<S, K>> : 
+  D
 // -------------------------------------------------------------------------------------
 // TParameters
 // -------------------------------------------------------------------------------------
@@ -406,11 +408,11 @@ export type TPartialProperties<T extends TProperties> = Evaluate<Assert<{
     TOptional<T[K]>
 }, TProperties>>
 // prettier-ignore
-export type TPartial<T extends TSchema> = 
-  T extends TIntersect<infer S> ? TIntersect<TPartialArray<S>> : 
-  T extends TUnion<infer S>     ? TUnion<TPartialArray<S>> : 
-  T extends TObject<infer S>    ? TObject<TPartialProperties<S>> : 
-  T
+export type TPartial<T extends TSchema, D = TDeref<T>> = 
+  D extends TIntersect<infer S> ? TIntersect<TPartialArray<S>> : 
+  D extends TUnion<infer S>     ? TUnion<TPartialArray<S>> : 
+  D extends TObject<infer S>    ? TObject<TPartialProperties<S>> : 
+  D
 // -------------------------------------------------------------------------------------
 // TPick
 // -------------------------------------------------------------------------------------
@@ -423,11 +425,11 @@ export type TPickProperties<T extends TProperties, K extends keyof any> =
     [K in keyof R]: Assert<R[K], TSchema> extends TSchema ? R[K] : never
   }): never
 // prettier-ignore
-export type TPick<T extends TSchema, K extends keyof any> = 
-  T extends TIntersect<infer S> ? TIntersect<TPickArray<S, K>> : 
-  T extends TUnion<infer S> ? TUnion<TPickArray<S, K>> : 
-  T extends TObject<infer S> ? TObject<TPickProperties<S, K>>
-  : T
+export type TPick<T extends TSchema, K extends keyof any, D = TDeref<T>> = 
+  D extends TIntersect<infer S> ? TIntersect<TPickArray<S, K>> : 
+  D extends TUnion<infer S> ? TUnion<TPickArray<S, K>> : 
+  D extends TObject<infer S> ? TObject<TPickProperties<S, K>> :
+  D
 
 // -------------------------------------------------------------------------------------
 // TPromise
@@ -492,11 +494,11 @@ export type TRequiredProperties<T extends TProperties> = Evaluate<Assert<{
     T[K]
 }, TProperties>>
 // prettier-ignore
-export type TRequired<T extends TSchema> = 
-  T extends TIntersect<infer S> ? TIntersect<TRequiredArray<S>> : 
-  T extends TUnion<infer S>     ? TUnion<TRequiredArray<S>> : 
-  T extends TObject<infer S>    ? TObject<TRequiredProperties<S>> : 
-  T
+export type TRequired<T extends TSchema, D = TDeref<T>> = 
+  D extends TIntersect<infer S> ? TIntersect<TRequiredArray<S>> : 
+  D extends TUnion<infer S>     ? TUnion<TRequiredArray<S>> : 
+  D extends TObject<infer S>    ? TObject<TRequiredProperties<S>> : 
+  D
 // -------------------------------------------------------------------------------------
 // TString
 // -------------------------------------------------------------------------------------
@@ -1740,7 +1742,7 @@ export namespace TypeExtends {
     if (TypeGuard.TUnion(left_)) return Union(left_, right_)
     if (TypeGuard.TUnknown(left_)) return Unknown(left_, right_)
     if (TypeGuard.TVoid(left_)) return Void(left_, right_)
-    throw Error(`TypeExtends: Unknown left operand '${left[Kind]}'`)
+    throw Error(`TypeExtends: Unknown left type operand '${left[Kind]}'`)
   }
   export function Extends(left: TSchema, right: TSchema): TypeExtendsResult {
     return Visit(left, right)
@@ -1749,9 +1751,11 @@ export namespace TypeExtends {
 // -------------------------------------------------------------------------------------
 // TypeClone
 // -------------------------------------------------------------------------------------
-
-/** Specialized Clone for Types. */
+/** Specialized Clone for Types. Clones and removes non self-referential identifiers */
 export namespace TypeClone {
+  function IsRecursive(value: Record<string | symbol, any>): boolean {
+    return typeof value[Recursive] === 'string'
+  }
   function IsObject(value: unknown): value is Record<string | symbol, any> {
     return typeof value === 'object' && value !== null && !globalThis.Array.isArray(value)
   }
@@ -1763,18 +1767,19 @@ export namespace TypeClone {
   }
   function Object(value: Record<keyof any, unknown>) {
     const clone = globalThis.Object.getOwnPropertyNames(value).reduce(
-      (acc, key) => ({ ...acc, [key]: Visit((value as any)[key]) }),
-      globalThis.Object.getOwnPropertySymbols(value).reduce((acc, key) => ({ ...acc, [key]: Visit((value as any)[key]) }), {}),
+      (acc, key) => ({ ...acc, [key]: Visit(value[key]) }),
+      globalThis.Object.getOwnPropertySymbols(value).reduce((acc, key) => ({ ...acc, [key]: Visit(value[key]) }), {}),
     ) as TSchema
     return clone
   }
   function Visit(value: unknown) {
-    if (IsObject(value)) delete value['$id']
-    if (IsObject(value)) return Object({ ...value })
-    if (IsArray(value)) return Array([...value])
-    return value
+    const clone = IsObject(value) ? { ...value } : IsArray(value) ? [...value] : value
+    if (IsObject(clone) && !IsRecursive(clone)) delete clone['$id']
+    if (IsObject(clone)) return Object(clone)
+    if (IsArray(clone)) return Array(clone)
+    return clone
   }
-  export function Clone<T extends TSchema | TProperties>(schema: T, options: SchemaOptions): T {
+  export function Clone<T extends TSchema>(schema: T, options: SchemaOptions): T {
     return { ...Visit({ ...schema }), ...options }
   }
 }
@@ -1847,11 +1852,9 @@ export class TypeBuilder {
     ReferenceRegistry.Set(schema as any)
     return schema as any
   }
-  /** `[Utility]` Clones a schema or properties object */
-  protected Clone<T extends TSchema | TProperties>(schema: T, options: SchemaOptions = {}): T {
-    const clone = TypeClone.Clone(schema, options)
-    ReferenceRegistry.Set(clone as TSchema)
-    return clone
+  /** `[Standard]` Clones a type. This function will omit non-self referential identifiers on the cloned type. */
+  public Clone<T extends TSchema>(schema: T, options: SchemaOptions = {}): T {
+    return TypeClone.Clone(schema, options)
   }
   /** `[Standard]` Omits compositing symbols from this schema */
   public Strict<T extends TSchema>(schema: T): T {
@@ -1886,7 +1889,7 @@ export class StandardTypeBuilder extends TypeBuilder {
   }
   /** `[Standard]` Creates an Array type */
   public Array<T extends TSchema>(items: T, options: ArrayOptions = {}): TArray<T> {
-    return this.Create({ ...options, [Kind]: 'Array', type: 'array', items })
+    return this.Create({ ...options, [Kind]: 'Array', type: 'array', items: this.Clone(items, {}) })
   }
   /** `[Standard]` Creates a Boolean type */
   public Boolean(options: SchemaOptions = {}): TBoolean {
@@ -1903,7 +1906,7 @@ export class StandardTypeBuilder extends TypeBuilder {
     const properties = {} as TProperties
     for (const object of schemas) {
       for (const [key, property] of globalThis.Object.entries(object.properties)) {
-        const mapped = key in properties ? this.Union([properties[key], property]) : property
+        const mapped = key in properties ? this.Union([properties[key], property]) : this.Clone(property, {})
         properties[key] = optional.has(key) ? this.Optional(mapped) : mapped
       }
     }
@@ -1991,7 +1994,7 @@ export class StandardTypeBuilder extends TypeBuilder {
   }
   /** `[Standard]` Creates a Not type. The first argument is the disallowed type, the second is the allowed. */
   public Not<N extends TSchema, T extends TSchema>(not: N, schema: T, options?: SchemaOptions): TNot<N, T> {
-    return this.Create({ ...options, [Kind]: 'Not', allOf: [{ not }, schema] })
+    return this.Create({ ...options, [Kind]: 'Not', allOf: [{ not: this.Clone(not, {}) }, this.Clone(schema, {})] })
   }
   /** `[Standard]` Creates a Null type */
   public Null(options: SchemaOptions = {}): TNull {
@@ -2006,10 +2009,13 @@ export class StandardTypeBuilder extends TypeBuilder {
     const keys = globalThis.Object.keys(properties)
     const optional = keys.filter((key) => TypeGuard.TOptional(properties[key]) || TypeGuard.TReadonlyOptional(properties[key]))
     const required = keys.filter((name) => !optional.includes(name))
+    const clonedProperties = globalThis.Object.getOwnPropertyNames(properties).reduce((acc, key) => {
+      return { ...acc, [key]: this.Clone(properties[key]) }
+    }, {} as TProperties)
     if (required.length > 0) {
-      return this.Create({ ...options, [Kind]: 'Object', type: 'object', properties: this.Clone(properties, {}), required })
+      return this.Create({ ...options, [Kind]: 'Object', type: 'object', properties: clonedProperties, required })
     } else {
-      return this.Create({ ...options, [Kind]: 'Object', type: 'object', properties: this.Clone(properties, {}) })
+      return this.Create({ ...options, [Kind]: 'Object', type: 'object', properties: clonedProperties })
     }
   }
   /** `[Standard]` Creates a mapped type whose keys are omitted from the given type */
@@ -2076,7 +2082,7 @@ export class StandardTypeBuilder extends TypeBuilder {
   public Record(key: any, schema: TSchema, options: ObjectOptions = {}) {
     if (TypeGuard.TLiteral(key)) {
       if (typeof key.const === 'string' || typeof key.const === 'number') {
-        return this.Object({ [key.const]: schema }, options)
+        return this.Object({ [key.const]: this.Clone(schema, {}) }, options)
       } else throw Error('TypeBuilder: Record key can only be derived from literals of number or string')
     }
     if (TypeGuard.TUnion(key)) {
@@ -2090,7 +2096,7 @@ export class StandardTypeBuilder extends TypeBuilder {
       ...options,
       [Kind]: 'Record',
       type: 'object',
-      patternProperties: { [pattern]: schema },
+      patternProperties: { [pattern]: this.Clone(schema, {}) },
       additionalProperties: false,
     })
   }
@@ -2100,11 +2106,11 @@ export class StandardTypeBuilder extends TypeBuilder {
     const self = callback({ [Kind]: 'Self', $ref: `${options.$id}` } as any)
     const reassign = self as any
     reassign.$id = options.$id // required as $id is readonly
-    return this.Create({ ...options, ...self } as any)
+    return this.Create({ ...options, ...self, [Recursive]: reassign.$id } as any)
   }
   /** `[Standard]` Creates a Ref type. The referenced type must contain a $id */
   public Ref<T extends TSchema>(schema: T, options: SchemaOptions = {}): TRef<T> {
-    if (schema.$id === undefined) throw Error('TypeBuilder.Ref: Referenced schema must specify an $id')
+    if (schema.$id === undefined) throw Error('StandardTypeBuilder.Ref: Target type must specify an $id')
     return this.Create({ ...options, [Kind]: 'Ref', $ref: schema.$id! })
   }
   /** `[Standard]` Creates a mapped type where all properties are Required */
@@ -2132,9 +2138,10 @@ export class StandardTypeBuilder extends TypeBuilder {
   /** `[Standard]` Creates a Tuple type */
   public Tuple<T extends TSchema[]>(items: [...T], options: SchemaOptions = {}): TTuple<T> {
     const [additionalItems, minItems, maxItems] = [false, items.length, items.length]
+    const clonedItems = items.map((item) => this.Clone(item, {}))
     // prettier-ignore
     const schema = (items.length > 0 ? 
-      { ...options, [Kind]: 'Tuple', type: 'array', items, additionalItems, minItems, maxItems } : 
+      { ...options, [Kind]: 'Tuple', type: 'array', items: clonedItems, additionalItems, minItems, maxItems } : 
       { ...options, [Kind]: 'Tuple', type: 'array', minItems, maxItems }) as any
     return this.Create(schema)
   }
@@ -2147,8 +2154,8 @@ export class StandardTypeBuilder extends TypeBuilder {
   public Union(anyOf: TSchema[], options: SchemaOptions = {}) {
     if (anyOf.length === 0) return this.Never(options)
     if (anyOf.length === 1) return this.Clone(anyOf[0], options)
-    const cloned = anyOf.map((schema) => this.Clone(schema, {}))
-    return this.Create({ ...options, [Kind]: 'Union', anyOf: cloned })
+    const clonedAnyOf = anyOf.map((schema) => this.Clone(schema, {}))
+    return this.Create({ ...options, [Kind]: 'Union', anyOf: clonedAnyOf })
   }
   /** `[Standard]` Creates an Unknown type */
   public Unknown(options: SchemaOptions = {}): TUnknown {
@@ -2176,13 +2183,15 @@ export class ExtendedTypeBuilder extends StandardTypeBuilder {
   /** `[Extended]` Creates a Constructor type */
   public Constructor<T extends TSchema[], U extends TSchema>(parameters: [...T], returns: U, options?: SchemaOptions): TConstructor<T, U>
   public Constructor(parameters: any, returns: any, options: SchemaOptions = {}) {
-    if (parameters[Kind] === 'Tuple') {
-      const inner = parameters.items === undefined ? [] : parameters.items
-      return this.Create({ ...options, [Kind]: 'Constructor', type: 'object', instanceOf: 'Constructor', parameters: inner, returns })
+    const clonedReturns = this.Clone(returns, {})
+    if (TypeGuard.TTuple(parameters)) {
+      const clonedParameters = parameters.items === undefined ? [] : parameters.items.map((parameter) => this.Clone(parameter, {}))
+      return this.Create({ ...options, [Kind]: 'Constructor', type: 'object', instanceOf: 'Constructor', parameters: clonedParameters, returns: clonedReturns })
     } else if (globalThis.Array.isArray(parameters)) {
-      return this.Create({ ...options, [Kind]: 'Constructor', type: 'object', instanceOf: 'Constructor', parameters, returns })
+      const clonedParameters = parameters.map((parameter) => this.Clone(parameter, {}))
+      return this.Create({ ...options, [Kind]: 'Constructor', type: 'object', instanceOf: 'Constructor', parameters: clonedParameters, returns: clonedReturns })
     } else {
-      throw new Error('TypeBuilder.Constructor: Invalid parameters')
+      throw new Error('ExtendedTypeBuilder.Constructor: Invalid parameters')
     }
   }
   /** `[Extended]` Creates a Date type */
@@ -2194,13 +2203,15 @@ export class ExtendedTypeBuilder extends StandardTypeBuilder {
   /** `[Extended]` Creates a Function type */
   public Function<T extends TSchema[], U extends TSchema>(parameters: [...T], returns: U, options?: SchemaOptions): TFunction<T, U>
   public Function(parameters: any, returns: any, options: SchemaOptions = {}) {
-    if (parameters[Kind] === 'Tuple') {
-      const inner = parameters.items === undefined ? [] : parameters.items
-      return this.Create({ ...options, [Kind]: 'Function', type: 'object', instanceOf: 'Function', parameters: inner, returns })
+    const clonedReturns = this.Clone(returns, {})
+    if (TypeGuard.TTuple(parameters)) {
+      const clonedParameters = parameters.items === undefined ? [] : parameters.items.map((parameter) => this.Clone(parameter, {}))
+      return this.Create({ ...options, [Kind]: 'Function', type: 'object', instanceOf: 'Function', parameters: clonedParameters, returns: clonedReturns })
     } else if (globalThis.Array.isArray(parameters)) {
-      return this.Create({ ...options, [Kind]: 'Function', type: 'object', instanceOf: 'Function', parameters, returns })
+      const clonedParameters = parameters.map((parameter) => this.Clone(parameter, {}))
+      return this.Create({ ...options, [Kind]: 'Function', type: 'object', instanceOf: 'Function', parameters: clonedParameters, returns: clonedReturns })
     } else {
-      throw new Error('TypeBuilder.Function: Invalid parameters')
+      throw new Error('ExtendedTypeBuilder.Function: Invalid parameters')
     }
   }
   /** `[Extended]` Extracts the InstanceType from the given Constructor */
@@ -2213,7 +2224,7 @@ export class ExtendedTypeBuilder extends StandardTypeBuilder {
   }
   /** `[Extended]` Creates a Promise type */
   public Promise<T extends TSchema>(item: T, options: SchemaOptions = {}): TPromise<T> {
-    return this.Create({ ...options, [Kind]: 'Promise', type: 'object', instanceOf: 'Promise', item })
+    return this.Create({ ...options, [Kind]: 'Promise', type: 'object', instanceOf: 'Promise', item: this.Clone(item, {}) })
   }
   /** `[Extended]` Creates a regular expression type */
   public RegEx(regex: RegExp, options: SchemaOptions = {}): TString {

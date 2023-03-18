@@ -25,7 +25,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
-
 import * as Types from '../typebox'
 import { TypeSystem } from '../system/index'
 import { ValueHash } from '../value/hash'
@@ -33,7 +32,6 @@ import { ValueHash } from '../value/hash'
 // -------------------------------------------------------------------
 // ValueErrorType
 // -------------------------------------------------------------------
-
 export enum ValueErrorType {
   Array,
   ArrayMinItems,
@@ -95,11 +93,9 @@ export enum ValueErrorType {
   Void,
   Custom,
 }
-
 // -------------------------------------------------------------------
 // ValueError
 // -------------------------------------------------------------------
-
 export interface ValueError {
   type: ValueErrorType
   schema: Types.TSchema
@@ -107,17 +103,28 @@ export interface ValueError {
   value: unknown
   message: string
 }
-
+// -------------------------------------------------------------------
+// ValueErrorIterator
+// -------------------------------------------------------------------
+export class ValueErrorIterator {
+  constructor(private readonly iterator: IterableIterator<ValueError>) {}
+  public [Symbol.iterator]() {
+    return this.iterator
+  }
+  /** Returns the first value error or undefined if no errors */
+  public First(): ValueError | undefined {
+    const next = this.iterator.next()
+    return next.done ? undefined : next.value
+  }
+}
 // -------------------------------------------------------------------
 // ValueErrors
 // -------------------------------------------------------------------
-
 export class ValueErrorsUnknownTypeError extends Error {
   constructor(public readonly schema: Types.TSchema) {
     super('ValueErrors: Unknown type')
   }
 }
-
 /** Provides functionality to generate a sequence of errors against a TypeBox type.  */
 export namespace ValueErrors {
   function IsBigInt(value: unknown): value is bigint {
@@ -564,7 +571,7 @@ export namespace ValueErrors {
         return yield* UserDefined(anySchema, path, value)
     }
   }
-  export function* Errors<T extends Types.TSchema>(schema: T, value: any): IterableIterator<ValueError> {
-    yield* Visit(schema, '', value)
+  export function Errors<T extends Types.TSchema>(schema: T, value: any): ValueErrorIterator {
+    return new ValueErrorIterator(Visit(schema, '', value))
   }
 }

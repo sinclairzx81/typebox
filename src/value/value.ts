@@ -27,7 +27,7 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import * as Types from '../typebox'
-import { ValueErrors, ValueError } from '../errors/index'
+import { ValueErrors, ValueErrorIterator, ValueError } from '../errors/index'
 import { ValueHash } from './hash'
 import { ValueEqual } from './equal'
 import { ValueCast } from './cast'
@@ -60,7 +60,7 @@ export namespace Value {
     return ValueClone.Clone(value)
   }
   /** Returns an iterator for each error in this value. */
-  export function Errors<T extends Types.TSchema>(schema: T, value: unknown): IterableIterator<ValueError> {
+  export function Errors<T extends Types.TSchema>(schema: T, value: unknown): ValueErrorIterator {
     return ValueErrors.Errors(schema, value)
   }
   /** Returns true if left and right values are structurally equal */

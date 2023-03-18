@@ -1,6 +1,6 @@
 {
   "name": "@sinclair/typebox",
-  "version": "0.26.0-dev.1",
+  "version": "0.26.0-dev.2",
   "description": "JSONSchema Type Builder with Static Type Resolution for TypeScript",
   "keywords": [
     "typescript",

@@ -586,9 +586,9 @@ TypeBox provides property modifier types that allow properties to be mapped with
 │ const T = Type.Object({        │ type T = {                  │ const T = {                    │
 │   name: Type.Optional(         │   name?: string             │   type: 'object',              │
 │     Type.String()              │ }                           │   properties: {                │
-│   )                            │                             │      name: {                   │
-│ })  	                         │                             │        type: 'string'          │
-│                                │                             │      }                         │
+│   )                            │                             │     name: {                    │
+│ })  	                         │                             │       type: 'string'           │
+│                                │                             │     }                          │
 │                                │                             │   }                            │
 │                                │                             │ }                              │
 │                                │                             │                                │
