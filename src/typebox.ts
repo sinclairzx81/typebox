@@ -634,47 +634,55 @@ export type Static<T extends TSchema, P extends unknown[] = []> = (T & { params:
 // --------------------------------------------------------------------------
 export type TypeRegistryValidationFunction<TSchema> = (schema: TSchema, value: unknown) => boolean
 export namespace TypeRegistry {
-  const types = new Map<string, TypeRegistryValidationFunction<any>>()
+  const map = new Map<string, TypeRegistryValidationFunction<any>>()
+  /** Returns the entries in this registry */
+  export function Entries() {
+    return new Map(map)
+  }
   /** Clears all user defined types */
   export function Clear() {
-    return types.clear()
+    return map.clear()
   }
   /** Returns true if this registry contains this kind */
   export function Has(kind: string) {
-    return types.has(kind)
+    return map.has(kind)
   }
   /** Sets a validation function for a user defined type */
   export function Set<TSchema = unknown>(kind: string, func: TypeRegistryValidationFunction<TSchema>) {
-    types.set(kind, func)
+    map.set(kind, func)
   }
   /** Gets a custom validation function for a user defined type */
   export function Get(kind: string) {
-    return types.get(kind)
+    return map.get(kind)
   }
 }
 // --------------------------------------------------------------------------
 // ReferenceRegistry
 // --------------------------------------------------------------------------
 export namespace ReferenceRegistry {
-  const references = new Map<string, TSchema>()
+  const map = new Map<string, TSchema>()
+  /** Returns the entries in this registry */
+  export function Entries() {
+    return new Map(map)
+  }
   /** Clears the reference registry */
   export function Clear() {
-    return references.clear()
+    return map.clear()
   }
   /** Returns true if this registry contains this schema */
   export function Has(schema: TSchema) {
-    return references.has(schema.$id!)
+    return map.has(schema.$id!)
   }
   /** Sets this schema on this registry if a $id exists */
   export function Set(schema: TSchema) {
     const $id = typeof schema === 'object' && schema !== null && typeof (schema as any)['$id'] === 'string' ? ((schema as any)['$id'] as string) : undefined
-    if ($id !== undefined) references.set($id, schema as any)
+    if ($id !== undefined) map.set($id, schema as any)
   }
   /** Dereferences the schema one level deep */
   export function DerefOne(schema: TSchema): TSchema {
     if (TypeGuard.TRef(schema) || TypeGuard.TSelf(schema)) {
-      if (!references.has(schema.$ref)) throw Error(`ReferenceRegistry: Cannot deref schema with $id '${schema.$ref}'`)
-      return references.get(schema.$ref)!
+      if (!map.has(schema.$ref)) throw Error(`ReferenceRegistry: Cannot deref schema with $id '${schema.$ref}'`)
+      return map.get(schema.$ref)!
     } else {
       return schema
     }
@@ -694,22 +702,26 @@ export namespace ReferenceRegistry {
 export type FormatRegistryValidationFunction = (value: string) => boolean
 /** Provides functions to create user defined string formats */
 export namespace FormatRegistry {
-  const formats = new Map<string, FormatRegistryValidationFunction>()
+  const map = new Map<string, FormatRegistryValidationFunction>()
+  /** Returns the entries in this registry */
+  export function Entries() {
+    return new Map(map)
+  }
   /** Clears all user defined string formats */
   export function Clear() {
-    return formats.clear()
+    return map.clear()
   }
   /** Returns true if the user defined string format exists */
   export function Has(format: string) {
-    return formats.has(format)
+    return map.has(format)
   }
   /** Sets a validation function for a user defined string format */
   export function Set(format: string, func: FormatRegistryValidationFunction) {
-    formats.set(format, func)
+    map.set(format, func)
   }
   /** Gets a validation function for a user defined string format */
   export function Get(format: string) {
-    return formats.get(format)
+    return map.get(format)
   }
 }
 // --------------------------------------------------------------------------
