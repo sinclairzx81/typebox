@@ -48,6 +48,13 @@ describe('type/Clone', () => {
     Assert.equal(T.allOf[1].$id, undefined)
     Assert.equal(S.$id, 'S')
   })
+  it('Should remove cloned $id for Intersect with unevaluatedProperties', () => {
+    const S = Type.String({ $id: 'S' })
+    const T = Type.Intersect([S, S], { unevaluatedProperties: S })
+    // @ts-ignore
+    Assert.equal(T.unevaluatedProperties.$id, undefined)
+    Assert.equal(S.$id, 'S')
+  })
   it('Should remove cloned $id for Not', () => {
     const S = Type.String({ $id: 'S' })
     const T = Type.Not(S, S)

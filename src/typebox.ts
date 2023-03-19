@@ -26,16 +26,16 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // Compositing Symbols
-// -------------------------------------------------------------------------------------
-export const Kind = Symbol.for('TypeBox.Kind')
-export const Hint = Symbol.for('TypeBox.Hint')
-export const Modifier = Symbol.for('TypeBox.Modifier')
+// --------------------------------------------------------------------------
 export const Recursive = Symbol.for('TypeBox.Recursive')
-// -------------------------------------------------------------------------------------
+export const Modifier = Symbol.for('TypeBox.Modifier')
+export const Hint = Symbol.for('TypeBox.Hint')
+export const Kind = Symbol.for('TypeBox.Kind')
+// --------------------------------------------------------------------------
 // Helpers
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export type TupleToIntersect<T extends any[]> = T extends [infer I] ? I : T extends [infer I, ...infer R] ? I & TupleToIntersect<R> : never
 export type TupleToUnion<T extends any[]> = { [K in keyof T]: T[K] }[number]
 export type UnionToIntersect<U> = (U extends unknown ? (arg: U) => 0 : never) extends (arg: infer I) => 0 ? I : never
@@ -44,16 +44,16 @@ export type UnionToTuple<U, L = UnionLast<U>> = [U] extends [never] ? [] : [...U
 export type Assert<T, E> = T extends E ? T : never
 export type Evaluate<T> = T extends infer O ? { [K in keyof O]: O[K] } : never
 export type Ensure<T> = T extends infer U ? U : never
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // Modifiers
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export type TModifier = TReadonlyOptional<TSchema> | TOptional<TSchema> | TReadonly<TSchema>
 export type TReadonly<T extends TSchema> = T & { [Modifier]: 'Readonly' }
 export type TOptional<T extends TSchema> = T & { [Modifier]: 'Optional' }
 export type TReadonlyOptional<T extends TSchema> = T & { [Modifier]: 'ReadonlyOptional' }
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TSchema
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export interface SchemaOptions {
   $schema?: string
   /** Id for this schema */
@@ -78,9 +78,9 @@ export interface TSchema extends SchemaOptions, TKind {
   params: unknown[]
   static: unknown
 }
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TAnySchema
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export type TAnySchema =
   | TSchema
   | TAny
@@ -110,9 +110,9 @@ export type TAnySchema =
   | TUint8Array
   | TUnknown
   | TVoid
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TNumeric
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export type TNumeric = TInteger | TNumber
 export interface NumericOptions<N extends number | bigint> extends SchemaOptions {
   exclusiveMaximum?: N
@@ -121,16 +121,16 @@ export interface NumericOptions<N extends number | bigint> extends SchemaOptions
   minimum?: N
   multipleOf?: N
 }
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TAny
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export interface TAny extends TSchema {
   [Kind]: 'Any'
   static: any
 }
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TArray
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export interface ArrayOptions extends SchemaOptions {
   uniqueItems?: boolean
   minItems?: number
@@ -142,38 +142,38 @@ export interface TArray<T extends TSchema = TSchema> extends TSchema, ArrayOptio
   type: 'array'
   items: T
 }
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TBigInt
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export interface TBigInt extends TSchema, NumericOptions<bigint> {
   [Kind]: 'BigInt'
   static: bigint
   type: 'null'
   typeOf: 'BigInt'
 }
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TBoolean
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export interface TBoolean extends TSchema {
   [Kind]: 'Boolean'
   static: boolean
   type: 'boolean'
 }
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TConstructorParameters
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export type TConstructorParameters<T extends TConstructor<TSchema[], TSchema>> = TTuple<T['parameters']>
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TDeref
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export type TDeref<T> = T extends TRef<infer U> ? TDeref<U> : T
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TInstanceType
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export type TInstanceType<T extends TConstructor<TSchema[], TSchema>> = T['returns']
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TComposite
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export type TCompositeUnion<Left extends TSchema, Right extends TSchema> = Ensure<TUnion<[Left, Right]>>
 // prettier-ignore
 export type TCompositeMerge<T extends TObject, Output extends Record<any, TSchema>> = Evaluate<{
@@ -187,9 +187,9 @@ export type TCompositeReduce<T extends TObject[], Output extends {}> =
   T extends [] ? Output :
   never
 export type TComposite<T extends TObject[]> = Ensure<TObject<TCompositeReduce<T, {}>>>
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TConstructor
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export type TConstructorParameterArray<T extends readonly TSchema[], P extends unknown[]> = [...{ [K in keyof T]: Static<Assert<T[K], TSchema>, P> }]
 export interface TConstructor<T extends TSchema[] = TSchema[], U extends TSchema = TSchema> extends TSchema {
   [Kind]: 'Constructor'
@@ -199,9 +199,9 @@ export interface TConstructor<T extends TSchema[] = TSchema[], U extends TSchema
   parameters: T
   returns: U
 }
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TDate
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export interface DateOptions extends SchemaOptions {
   exclusiveMaximumTimestamp?: number
   exclusiveMinimumTimestamp?: number
@@ -214,9 +214,9 @@ export interface TDate extends TSchema, DateOptions {
   type: 'object'
   instanceOf: 'Date'
 }
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TEnum
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export interface TEnumOption<T> {
   type: 'number' | 'string'
   const: T
@@ -227,35 +227,33 @@ export interface TEnum<T extends Record<string, string | number> = Record<string
   static: TEnumStatic<T>
   anyOf: TLiteral<string | number>[]
 }
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TExtends
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // prettier-ignore
 export type TExtends<L extends TSchema, R extends TSchema, T extends TSchema, U extends TSchema> = 
   (Static<L> extends Static<R> ? T : U) extends infer O ? 
     UnionToTuple<O> extends [infer X, infer Y] ? TUnion<[Assert<X, TSchema>, Assert<Y, TSchema>]> : Assert<O, TSchema>
   : never
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TExclude
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // prettier-ignore
 export type TExcludeArray<T extends TSchema[], U extends TSchema> = Assert<UnionToTuple<{
   [K in keyof T]: Static<Assert<T[K], TSchema>> extends Static<U> ? never : T[K]
-}[number]>, TSchema[]> extends infer R ? TExcludeResult<Assert<R, TSchema[]>> : never
-export type TExcludeResult<T extends TSchema[]> = T extends [] ? TNever : T extends [infer S] ? S : TUnion<T>
+}[number]>, TSchema[]> extends infer R ? TUnionResult<Assert<R, TSchema[]>> : never
 export type TExclude<T extends TSchema, U extends TSchema> = T extends TUnion<infer S> ? TExcludeArray<S, U> : T extends U ? TNever : T
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TExtract
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // prettier-ignore
 export type TExtractArray<T extends TSchema[], U extends TSchema> = Assert<UnionToTuple<
   {[K in keyof T]: Static<Assert<T[K], TSchema>> extends Static<U> ? T[K] : never
-}[number]>, TSchema[]> extends infer R ? TExtractResult<Assert<R, TSchema[]>> : never
-export type TExtractResult<T extends TSchema[]> = T extends [] ? TNever : T extends [infer S] ? S : TUnion<T>
+}[number]>, TSchema[]> extends infer R ? TUnionResult<Assert<R, TSchema[]>> : never
 export type TExtract<T extends TSchema, U extends TSchema> = T extends TUnion<infer S> ? TExtractArray<S, U> : T extends U ? T : TNever
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TFunction
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export type TFunctionParameters<T extends readonly TSchema[], P extends unknown[]> = [...{ [K in keyof T]: Static<Assert<T[K], TSchema>, P> }]
 export interface TFunction<T extends readonly TSchema[] = TSchema[], U extends TSchema = TSchema> extends TSchema {
   [Kind]: 'Function'
@@ -265,17 +263,17 @@ export interface TFunction<T extends readonly TSchema[] = TSchema[], U extends T
   parameters: T
   returns: U
 }
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TInteger
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export interface TInteger extends TSchema, NumericOptions<number> {
   [Kind]: 'Integer'
   static: number
   type: 'integer'
 }
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TIntersect
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export type TUnevaluatedProperties = undefined | TSchema | boolean
 export interface IntersectOptions extends SchemaOptions {
   unevaluatedProperties?: TUnevaluatedProperties
@@ -287,9 +285,9 @@ export interface TIntersect<T extends TSchema[] = TSchema[]> extends TSchema, In
   static: TIntersectStatic<T, this['params']>
   allOf: [...T]
 }
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TKeyOf
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // prettier-ignore
 export type TKeyOfTuple<T extends TSchema> = {
   [K in keyof Static<T>]: TLiteral<Assert<K, TLiteralValue>>
@@ -302,52 +300,52 @@ export type TKeyOf<T extends TSchema = TSchema, D = TDeref<T>> = (
   D extends TUnion     ? TKeyOfTuple<T> :
   D extends TObject    ? TKeyOfTuple<T> :
   []
-) extends infer R ? R extends [] ? TNever : TUnion<Assert<R, TSchema[]>> : never
-// -------------------------------------------------------------------------------------
+) extends infer R ? TUnionResult<Assert<R, TSchema[]>> : never
+// --------------------------------------------------------------------------
 // TLiteral
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export type TLiteralValue = string | number | boolean | bigint
 export interface TLiteral<T extends TLiteralValue = TLiteralValue> extends TSchema {
   [Kind]: 'Literal'
   static: T
   const: T
 }
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TNever
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export interface TNever extends TSchema {
   [Kind]: 'Never'
   static: never
   allOf: [{ type: 'boolean'; const: false }, { type: 'boolean'; const: true }]
 }
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TNot
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export type TNotStatic<_ extends TSchema = TSchema, T extends TSchema = TSchema> = Static<T>
 export interface TNot<Not extends TSchema = TSchema, T extends TSchema = TSchema> extends TSchema {
   [Kind]: 'Not'
   static: TNotStatic<Not, T>
   allOf: [{ not: Not }, T]
 }
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TNull
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export interface TNull extends TSchema {
   [Kind]: 'Null'
   static: null
   type: 'null'
 }
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TNumber
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export interface TNumber extends TSchema, NumericOptions<number> {
   [Kind]: 'Number'
   static: number
   type: 'number'
 }
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TObject
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export type ReadonlyOptionalPropertyKeys<T extends TProperties> = { [K in keyof T]: T[K] extends TReadonlyOptional<TSchema> ? K : never }[keyof T]
 export type ReadonlyPropertyKeys<T extends TProperties> = { [K in keyof T]: T[K] extends TReadonly<TSchema> ? K : never }[keyof T]
 export type OptionalPropertyKeys<T extends TProperties> = { [K in keyof T]: T[K] extends TOptional<TSchema> ? K : never }[keyof T]
@@ -380,9 +378,9 @@ export interface TObject<T extends TProperties = TProperties> extends TSchema, O
   properties: T
   required?: string[]
 }
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TOmit
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export type TOmitArray<T extends TSchema[], K extends keyof any> = Assert<{ [K2 in keyof T]: TOmit<Assert<T[K2], TSchema>, K> }, TSchema[]>
 export type TOmitProperties<T extends TProperties, K extends keyof any> = Evaluate<Assert<Omit<T, K>, TProperties>>
 // prettier-ignore
@@ -391,13 +389,13 @@ export type TOmit<T extends TSchema, K extends keyof any, D = TDeref<T>> =
   D extends TUnion<infer S> ? TUnion<TOmitArray<S, K>> : 
   D extends TObject<infer S> ? TObject<TOmitProperties<S, K>> : 
   D
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TParameters
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export type TParameters<T extends TFunction> = TTuple<T['parameters']>
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TPartial
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export type TPartialArray<T extends TSchema[]> = Assert<{ [K in keyof T]: TPartial<Assert<T[K], TSchema>> }, TSchema[]>
 // prettier-ignore
 export type TPartialProperties<T extends TProperties> = Evaluate<Assert<{
@@ -413,9 +411,9 @@ export type TPartial<T extends TSchema, D = TDeref<T>> =
   D extends TUnion<infer S>     ? TUnion<TPartialArray<S>> : 
   D extends TObject<infer S>    ? TObject<TPartialProperties<S>> : 
   D
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TPick
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export type TPickArray<T extends TSchema[], K extends keyof any> = { [K2 in keyof T]: TPick<Assert<T[K2], TSchema>, K> }
 // Note the key K will overlap for varying TProperties gathered via recursive union and intersect traversal. Because of this,
 // we need to extract only keys assignable to T on K2. This behavior is only required for Pick only.
@@ -431,9 +429,9 @@ export type TPick<T extends TSchema, K extends keyof any, D = TDeref<T>> =
   D extends TObject<infer S> ? TObject<TPickProperties<S, K>> :
   D
 
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TPromise
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export type TPromiseStatic<T extends TSchema, P extends unknown[]> = Promise<Static<T, P>>
 export interface TPromise<T extends TSchema = TSchema> extends TSchema {
   [Kind]: 'Promise'
@@ -442,9 +440,9 @@ export interface TPromise<T extends TSchema = TSchema> extends TSchema {
   instanceOf: 'Promise'
   item: TSchema
 }
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TRecord
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export type TRecordKey = TString | TNumeric | TUnion<TLiteral<any>[]>
 export type TRecordPropertiesFromUnionLiteral<K extends TUnion<TLiteral<string | number>[]>, T extends TSchema> = Static<K> extends string ? { [X in Static<K>]: T } : never
 export type TRecordPropertiesFromLiteral<K extends TLiteral<string | number>, T extends TSchema> = Evaluate<{ [K2 in K['const']]: T }>
@@ -456,9 +454,9 @@ export interface TRecord<K extends TRecordKey = TRecordKey, T extends TSchema = 
   patternProperties: { [pattern: string]: T }
   additionalProperties: false
 }
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TRecursive
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export interface TSelf extends TSchema {
   [Kind]: 'Self'
   static: this['params'][0]
@@ -468,22 +466,22 @@ export type TRecursiveReduce<T extends TSchema> = Static<T, [TRecursiveReduce<T>
 export interface TRecursive<T extends TSchema> extends TSchema {
   static: TRecursiveReduce<T>
 }
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TRef
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export type TRefStatic<T extends TSchema, P extends unknown[]> = Static<T, P>
 export interface TRef<T extends TSchema = TSchema> extends TSchema {
   [Kind]: 'Ref'
   static: TRefStatic<T, this['params']>
   $ref: string
 }
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TReturnType
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export type TReturnType<T extends TFunction> = T['returns']
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TRequired
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export type TRequiredArray<T extends TSchema[]> = Assert<{ [K in keyof T]: TRequired<Assert<T[K], TSchema>> }, TSchema[]>
 // prettier-ignore
 export type TRequiredProperties<T extends TProperties> = Evaluate<Assert<{
@@ -499,9 +497,9 @@ export type TRequired<T extends TSchema, D = TDeref<T>> =
   D extends TUnion<infer S>     ? TUnion<TRequiredArray<S>> : 
   D extends TObject<infer S>    ? TObject<TRequiredProperties<S>> : 
   D
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TString
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export type StringFormatOption =
   | 'date-time'
   | 'time'
@@ -534,9 +532,9 @@ export interface TString<Format extends string = string> extends TSchema, String
   static: string
   type: 'string'
 }
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TSymbol
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export type SymbolValue = string | number | undefined
 export interface TSymbol extends TSchema, SchemaOptions {
   [Kind]: 'Symbol'
@@ -544,9 +542,9 @@ export interface TSymbol extends TSchema, SchemaOptions {
   type: 'null'
   typeOf: 'Symbol'
 }
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TTuple
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export type TTupleIntoArray<T extends TTuple<TSchema[]>> = T extends TTuple<infer R> ? Assert<R, TSchema[]> : never
 export type TTupleStatic<T extends TSchema[], P extends unknown[]> = {
   [K in keyof T]: T[K] extends TSchema ? Static<T[K], P> : T[K]
@@ -560,31 +558,35 @@ export interface TTuple<T extends TSchema[] = TSchema[]> extends TSchema {
   minItems: number
   maxItems: number
 }
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TUndefined
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export interface TUndefined extends TSchema {
   [Kind]: 'Undefined'
   static: undefined
   type: 'null'
   typeOf: 'Undefined'
 }
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TUnionOfLiteral
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export type TUnionOfLiteralArray<T extends TLiteral<string>[]> = { [K in keyof T]: Assert<T[K], TLiteral>['const'] }[number]
 export type TUnionOfLiteral<T extends TUnion<TLiteral<string>[]>> = TUnionOfLiteralArray<T['anyOf']>
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
+// TUnionResult - Used by Extract, Exclude and KeyOf for normalized union unwrap
+// --------------------------------------------------------------------------
+export type TUnionResult<T extends TSchema[]> = T extends [] ? TNever : T extends [infer S] ? S : TUnion<T>
+// --------------------------------------------------------------------------
 // TUnion
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export interface TUnion<T extends TSchema[] = TSchema[]> extends TSchema {
   [Kind]: 'Union'
   static: { [K in keyof T]: T[K] extends TSchema ? Static<T[K], this['params']> : never }[number]
   anyOf: T
 }
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TUint8Array
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export interface Uint8ArrayOptions extends SchemaOptions {
   maxByteLength?: number
   minByteLength?: number
@@ -595,16 +597,16 @@ export interface TUint8Array extends TSchema, Uint8ArrayOptions {
   instanceOf: 'Uint8Array'
   type: 'object'
 }
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TUnknown
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export interface TUnknown extends TSchema {
   [Kind]: 'Unknown'
   static: unknown
 }
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TUnsafe
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export interface UnsafeOptions extends SchemaOptions {
   [Kind]?: string
 }
@@ -612,24 +614,24 @@ export interface TUnsafe<T> extends TSchema {
   [Kind]: string
   static: T
 }
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TVoid
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export interface TVoid extends TSchema {
   [Kind]: 'Void'
   static: void
   type: 'null'
   typeOf: 'Void'
 }
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // Static<T>
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 /** Creates a static type from a TypeBox type */
 export type Static<T extends TSchema, P extends unknown[] = []> = (T & { params: P })['static']
 
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TypeRegistry
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export type TypeRegistryValidationFunction<TSchema> = (schema: TSchema, value: unknown) => boolean
 export namespace TypeRegistry {
   const types = new Map<string, TypeRegistryValidationFunction<any>>()
@@ -650,9 +652,9 @@ export namespace TypeRegistry {
     return types.get(kind)
   }
 }
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // ReferenceRegistry
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export namespace ReferenceRegistry {
   const references = new Map<string, TSchema>()
   /** Clears the reference registry */
@@ -686,9 +688,9 @@ export namespace ReferenceRegistry {
     }
   }
 }
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TypeRegistry
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export type FormatRegistryValidationFunction = (value: string) => boolean
 /** Provides functions to create user defined string formats */
 export namespace FormatRegistry {
@@ -710,9 +712,9 @@ export namespace FormatRegistry {
     return formats.get(format)
   }
 }
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TypeGuard
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export class TypeGuardUnknownTypeError extends Error {
   constructor(public readonly schema: unknown) {
     super('TypeGuard: Unknown type')
@@ -928,18 +930,17 @@ export namespace TypeGuard {
   /** Returns true if the given schema is TNever */
   export function TNever(schema: unknown): schema is TNever {
     return (
-      TKind(schema) &&
-      schema[Kind] === 'Never' &&
-      IsArray(schema.allOf) &&
-      schema.allOf.length === 2 &&
-      IsObject(schema.allOf[0]) &&
-      IsString(schema.allOf[0].type) &&
-      schema.allOf[0].type === 'boolean' &&
-      schema.allOf[0].const === false &&
-      IsObject(schema.allOf[1]) &&
-      IsString(schema.allOf[1].type) &&
-      schema.allOf[1].type === 'boolean' &&
-      schema.allOf[1].const === true
+      TKind(schema) && schema[Kind] === 'Never' && IsObject(schema.not) && globalThis.Object.getOwnPropertyNames(schema.not).length === 0
+      // IsArray(schema.allOf) &&
+      // schema.allOf.length === 2 &&
+      // IsObject(schema.allOf[0]) &&
+      // IsString(schema.allOf[0].type) &&
+      // schema.allOf[0].type === 'boolean' &&
+      // schema.allOf[0].const === false &&
+      // IsObject(schema.allOf[1]) &&
+      // IsString(schema.allOf[1].type) &&
+      // schema.allOf[1].type === 'boolean' &&
+      // schema.allOf[1].const === true
     )
   }
   /** Returns true if the given schema is TNot */
@@ -1212,9 +1213,9 @@ export namespace TypeGuard {
     )
   }
 }
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // ExtendsUndefined
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export namespace ExtendsUndefined {
   /** Fast undefined check for properties of type undefined */
   export function Check(schema: TSchema): boolean {
@@ -1226,24 +1227,24 @@ export namespace ExtendsUndefined {
     return false
   }
 }
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TypeExtends
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export enum TypeExtendsResult {
   Union,
   True,
   False,
 }
 export namespace TypeExtends {
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // IntoBooleanResult
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   function IntoBooleanResult(result: TypeExtendsResult) {
     return result === TypeExtendsResult.False ? TypeExtendsResult.False : TypeExtendsResult.True
   }
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // Any
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   function AnyRight(left: TSchema, right: TAny) {
     return TypeExtendsResult.True
   }
@@ -1255,9 +1256,9 @@ export namespace TypeExtends {
     if (TypeGuard.TAny(right)) return TypeExtendsResult.True
     return TypeExtendsResult.Union
   }
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // Array
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   function ArrayRight(left: TSchema, right: TArray) {
     if (TypeGuard.TUnknown(left)) return TypeExtendsResult.False
     if (TypeGuard.TAny(left)) return TypeExtendsResult.Union
@@ -1273,9 +1274,9 @@ export namespace TypeExtends {
     if (!TypeGuard.TArray(right)) return TypeExtendsResult.False
     return IntoBooleanResult(Visit(left.items, right.items))
   }
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // BigInt
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   function BigInt(left: TBigInt, right: TSchema): TypeExtendsResult {
     if (TypeGuard.TIntersect(right)) return IntersectRight(left, right)
     if (TypeGuard.TUnion(right)) return UnionRight(left, right)
@@ -1286,9 +1287,9 @@ export namespace TypeExtends {
     if (TypeGuard.TRecord(right)) return RecordRight(left, right)
     return TypeGuard.TBigInt(right) ? TypeExtendsResult.True : TypeExtendsResult.False
   }
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // Boolean
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   function BooleanRight(left: TSchema, right: TBoolean) {
     if (TypeGuard.TLiteral(left) && typeof left.const === 'boolean') return TypeExtendsResult.True
     return TypeGuard.TBoolean(left) ? TypeExtendsResult.True : TypeExtendsResult.False
@@ -1303,9 +1304,9 @@ export namespace TypeExtends {
     if (TypeGuard.TRecord(right)) return RecordRight(left, right)
     return TypeGuard.TBoolean(right) ? TypeExtendsResult.True : TypeExtendsResult.False
   }
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // Constructor
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   function Constructor(left: TConstructor, right: TSchema) {
     if (TypeGuard.TIntersect(right)) return IntersectRight(left, right)
     if (TypeGuard.TUnion(right)) return UnionRight(left, right)
@@ -1319,9 +1320,9 @@ export namespace TypeExtends {
     }
     return IntoBooleanResult(Visit(left.returns, right.returns))
   }
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // Date
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   function Date(left: TDate, right: TSchema) {
     if (TypeGuard.TIntersect(right)) return IntersectRight(left, right)
     if (TypeGuard.TUnion(right)) return UnionRight(left, right)
@@ -1331,9 +1332,9 @@ export namespace TypeExtends {
     if (TypeGuard.TRecord(right)) return RecordRight(left, right)
     return TypeGuard.TDate(right) ? TypeExtendsResult.True : TypeExtendsResult.False
   }
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // Function
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   function Function(left: TFunction, right: TSchema) {
     if (TypeGuard.TIntersect(right)) return IntersectRight(left, right)
     if (TypeGuard.TUnion(right)) return UnionRight(left, right)
@@ -1347,9 +1348,9 @@ export namespace TypeExtends {
     }
     return IntoBooleanResult(Visit(left.returns, right.returns))
   }
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // Integer
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   function IntegerRight(left: TSchema, right: TInteger) {
     if (TypeGuard.TLiteral(left) && typeof left.const === 'number') return TypeExtendsResult.True
     return TypeGuard.TNumber(left) || TypeGuard.TInteger(left) ? TypeExtendsResult.True : TypeExtendsResult.False
@@ -1364,18 +1365,18 @@ export namespace TypeExtends {
     if (TypeGuard.TRecord(right)) return RecordRight(left, right)
     return TypeGuard.TInteger(right) || TypeGuard.TNumber(right) ? TypeExtendsResult.True : TypeExtendsResult.False
   }
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // Intersect
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   function IntersectRight(left: TSchema, right: TIntersect): TypeExtendsResult {
     return right.allOf.every((schema) => Visit(left, schema) === TypeExtendsResult.True) ? TypeExtendsResult.True : TypeExtendsResult.False
   }
   function Intersect(left: TIntersect, right: TSchema) {
     return left.allOf.some((schema) => Visit(schema, right) === TypeExtendsResult.True) ? TypeExtendsResult.True : TypeExtendsResult.False
   }
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // Literal
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   function IsLiteralString(schema: TLiteral) {
     return typeof schema.const === 'string'
   }
@@ -1399,18 +1400,18 @@ export namespace TypeExtends {
     if (TypeGuard.TBoolean(right)) return BooleanRight(left, right)
     return TypeGuard.TLiteral(right) && right.const === left.const ? TypeExtendsResult.True : TypeExtendsResult.False
   }
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // Never
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   function NeverRight(left: TSchema, right: TNever) {
     return TypeExtendsResult.False
   }
   function Never(left: TNever, right: TSchema) {
     return TypeExtendsResult.True
   }
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // Null
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   function Null(left: TNull, right: TSchema) {
     if (TypeGuard.TIntersect(right)) return IntersectRight(left, right)
     if (TypeGuard.TUnion(right)) return UnionRight(left, right)
@@ -1421,9 +1422,9 @@ export namespace TypeExtends {
     if (TypeGuard.TRecord(right)) return RecordRight(left, right)
     return TypeGuard.TNull(right) ? TypeExtendsResult.True : TypeExtendsResult.False
   }
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // Number
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   function NumberRight(left: TSchema, right: TNumber) {
     if (TypeGuard.TLiteral(left) && IsLiteralNumber(left)) return TypeExtendsResult.True
     return TypeGuard.TNumber(left) || TypeGuard.TInteger(left) ? TypeExtendsResult.True : TypeExtendsResult.False
@@ -1438,9 +1439,9 @@ export namespace TypeExtends {
     if (TypeGuard.TRecord(right)) return RecordRight(left, right)
     return TypeGuard.TInteger(right) || TypeGuard.TNumber(right) ? TypeExtendsResult.True : TypeExtendsResult.False
   }
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // Object
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   function IsObjectPropertyCount(schema: TObject, count: number) {
     return globalThis.Object.keys(schema.properties).length === count
   }
@@ -1489,9 +1490,9 @@ export namespace TypeExtends {
     const then = Type.Function([Type.Any()], Type.Any())
     return IsObjectPropertyCount(schema, 0) || (IsObjectPropertyCount(schema, 1) && 'then' in schema.properties && IntoBooleanResult(Visit(schema.properties['then'], then)) === TypeExtendsResult.True)
   }
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // Property
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   function Property(left: TSchema, right: TSchema) {
     if (Visit(left, right) === TypeExtendsResult.False) return TypeExtendsResult.False
     if (TypeGuard.TOptional(left) && !TypeGuard.TOptional(right)) return TypeExtendsResult.False
@@ -1540,9 +1541,9 @@ export namespace TypeExtends {
     }
     return TypeExtendsResult.True
   }
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // Promise
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   function Promise(left: TPromise, right: TSchema) {
     if (TypeGuard.TIntersect(right)) return IntersectRight(left, right)
     if (TypeGuard.TUnion(right)) return UnionRight(left, right)
@@ -1552,9 +1553,9 @@ export namespace TypeExtends {
     if (!TypeGuard.TPromise(right)) return TypeExtendsResult.False
     return IntoBooleanResult(Visit(left.item, right.item))
   }
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // Record
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   function RecordKey(schema: TRecord) {
     if ('^(0|[1-9][0-9]*)$' in schema.patternProperties) return Type.Number()
     if ('^.*$' in schema.patternProperties) return Type.String()
@@ -1592,9 +1593,9 @@ export namespace TypeExtends {
     if (!TypeGuard.TRecord(right)) return TypeExtendsResult.False
     return Visit(Value, RecordValue(right))
   }
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // String
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   function StringRight(left: TSchema, right: TString) {
     if (TypeGuard.TLiteral(left) && typeof left.const === 'string') return TypeExtendsResult.True
     return TypeGuard.TString(left) ? TypeExtendsResult.True : TypeExtendsResult.False
@@ -1609,9 +1610,9 @@ export namespace TypeExtends {
     if (TypeGuard.TRecord(right)) return RecordRight(left, right)
     return TypeGuard.TString(right) ? TypeExtendsResult.True : TypeExtendsResult.False
   }
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // Symbol
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   function Symbol(left: TSymbol, right: TSchema): TypeExtendsResult {
     if (TypeGuard.TIntersect(right)) return IntersectRight(left, right)
     if (TypeGuard.TUnion(right)) return UnionRight(left, right)
@@ -1622,9 +1623,9 @@ export namespace TypeExtends {
     if (TypeGuard.TRecord(right)) return RecordRight(left, right)
     return TypeGuard.TSymbol(right) ? TypeExtendsResult.True : TypeExtendsResult.False
   }
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // Tuple
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   function TupleRight(left: TSchema, right: TTuple) {
     if (TypeGuard.TUnknown(left)) return TypeExtendsResult.False
     if (TypeGuard.TAny(left)) return TypeExtendsResult.Union
@@ -1646,9 +1647,9 @@ export namespace TypeExtends {
     if (left.items === undefined && right.items === undefined) return TypeExtendsResult.True
     return left.items!.every((schema, index) => Visit(schema, right.items![index]) === TypeExtendsResult.True) ? TypeExtendsResult.True : TypeExtendsResult.False
   }
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // Uint8Array
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   function Uint8Array(left: TUint8Array, right: TSchema) {
     if (TypeGuard.TIntersect(right)) return IntersectRight(left, right)
     if (TypeGuard.TUnion(right)) return UnionRight(left, right)
@@ -1658,9 +1659,9 @@ export namespace TypeExtends {
     if (TypeGuard.TRecord(right)) return RecordRight(left, right)
     return TypeGuard.TUint8Array(right) ? TypeExtendsResult.True : TypeExtendsResult.False
   }
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // Undefined
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   function Undefined(left: TUndefined, right: TSchema) {
     if (TypeGuard.TIntersect(right)) return IntersectRight(left, right)
     if (TypeGuard.TUnion(right)) return UnionRight(left, right)
@@ -1672,18 +1673,18 @@ export namespace TypeExtends {
     if (TypeGuard.TVoid(right)) return VoidRight(left, right)
     return TypeGuard.TUndefined(right) ? TypeExtendsResult.True : TypeExtendsResult.False
   }
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // Union
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   function UnionRight(left: TSchema, right: TUnion): TypeExtendsResult {
     return right.anyOf.some((schema) => Visit(left, schema) === TypeExtendsResult.True) ? TypeExtendsResult.True : TypeExtendsResult.False
   }
   function Union(left: TUnion, right: TSchema) {
     return left.anyOf.every((schema) => Visit(schema, right) === TypeExtendsResult.True) ? TypeExtendsResult.True : TypeExtendsResult.False
   }
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // Unknown
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   function UnknownRight(left: TSchema, right: TUnknown) {
     return TypeExtendsResult.True
   }
@@ -1700,9 +1701,9 @@ export namespace TypeExtends {
     if (TypeGuard.TObject(right)) return ObjectRight(left, right)
     return TypeGuard.TUnknown(right) ? TypeExtendsResult.True : TypeExtendsResult.False
   }
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // Void
-  // -----------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   function VoidRight(left: TSchema, right: TVoid) {
     if (TypeGuard.TUndefined(left)) return TypeExtendsResult.True
     return TypeGuard.TUndefined(left) ? TypeExtendsResult.True : TypeExtendsResult.False
@@ -1748,13 +1749,13 @@ export namespace TypeExtends {
     return Visit(left, right)
   }
 }
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TypeClone
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 /** Specialized Clone for Types. Clones and removes non self-referential identifiers */
 export namespace TypeClone {
   function IsRecursive(value: Record<string | symbol, any>): boolean {
-    return typeof value[Recursive] === 'string'
+    return typeof value[Recursive as any] === 'string'
   }
   function IsObject(value: unknown): value is Record<string | symbol, any> {
     return typeof value === 'object' && value !== null && !globalThis.Array.isArray(value)
@@ -1768,7 +1769,7 @@ export namespace TypeClone {
   function Object(value: Record<keyof any, unknown>) {
     const clone = globalThis.Object.getOwnPropertyNames(value).reduce(
       (acc, key) => ({ ...acc, [key]: Visit(value[key]) }),
-      globalThis.Object.getOwnPropertySymbols(value).reduce((acc, key) => ({ ...acc, [key]: Visit(value[key]) }), {}),
+      globalThis.Object.getOwnPropertySymbols(value).reduce((acc, key) => ({ ...acc, [key]: Visit(value[key as any]) }), {}),
     ) as TSchema
     return clone
   }
@@ -1784,9 +1785,9 @@ export namespace TypeClone {
     return { ...Visit({ ...schema }), ...options }
   }
 }
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // ObjectMap
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export namespace ObjectMap {
   function Intersect(schema: TIntersect, callback: (object: TObject) => TObject) {
     return Type.Intersect(
@@ -1813,12 +1814,12 @@ export namespace ObjectMap {
     return { ...Visit(TypeClone.Clone(schema, {}), callback), ...options } as unknown as T
   }
 }
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // KeyResolver
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export namespace KeyResolver {
   function IsKeyable(schema: TSchema) {
-    return TypeGuard.TIntersect(schema) || TypeGuard.TUnion(schema) || TypeGuard.TObject(schema)
+    return TypeGuard.TIntersect(schema) || TypeGuard.TUnion(schema) || (TypeGuard.TObject(schema) && globalThis.Object.getOwnPropertyNames(schema.properties).length > 0)
   }
   function Intersect(schema: TIntersect) {
     return [...schema.allOf.filter((schema) => IsKeyable(schema)).reduce((set, schema) => Visit(schema).map((key) => set.add(key))[0], new Set<string>())]
@@ -1840,13 +1841,13 @@ export namespace KeyResolver {
     return Visit(schema)
   }
 }
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TypeOrdinal: Used for auto $id generation
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 let TypeOrdinal = 0
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TypeBuilder
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export class TypeBuilder {
   /** `[Utility]` Creates a schema without `static` and `params` types */
   protected Create<T>(schema: Omit<T, 'static' | 'params'>): T {
@@ -1858,13 +1859,13 @@ export class TypeBuilder {
     return JSON.parse(JSON.stringify(schema))
   }
 }
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // StandardTypeBuilder
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export class StandardTypeBuilder extends TypeBuilder {
-  // ----------------------------------------------------------------------
+  // ------------------------------------------------------------------------
   // Modifiers
-  // ----------------------------------------------------------------------
+  // ------------------------------------------------------------------------
   /** `[Modifier]` Creates a Optional property */
   public Optional<T extends TSchema>(schema: T): TOptional<T> {
     return { [Modifier]: 'Optional', ...TypeClone.Clone(schema, {}) }
@@ -1877,9 +1878,9 @@ export class StandardTypeBuilder extends TypeBuilder {
   public Readonly<T extends TSchema>(schema: T): TReadonly<T> {
     return { [Modifier]: 'Readonly', ...schema }
   }
-  // ----------------------------------------------------------------------
+  // ------------------------------------------------------------------------
   // Types
-  // ----------------------------------------------------------------------
+  // ------------------------------------------------------------------------
   /** `[Standard]` Creates an Any type */
   public Any(options: SchemaOptions = {}): TAny {
     return this.Create({ ...options, [Kind]: 'Any' })
@@ -1964,10 +1965,11 @@ export class StandardTypeBuilder extends TypeBuilder {
     if (allOf.length === 1) return TypeClone.Clone(allOf[0], options)
     const objects = allOf.every((schema) => TypeGuard.TObject(schema))
     const cloned = allOf.map((schema) => TypeClone.Clone(schema, {}))
+    const clonedUnevaluatedProperties = TypeGuard.TSchema(options.unevaluatedProperties) ? { unevaluatedProperties: TypeClone.Clone(options.unevaluatedProperties, {}) } : {}
     if (options.unevaluatedProperties === false || TypeGuard.TSchema(options.unevaluatedProperties) || objects) {
-      return this.Create({ ...options, [Kind]: 'Intersect', type: 'object', allOf: cloned })
+      return this.Create({ ...options, ...clonedUnevaluatedProperties, [Kind]: 'Intersect', type: 'object', allOf: cloned })
     } else {
-      return this.Create({ ...options, [Kind]: 'Intersect', allOf: cloned })
+      return this.Create({ ...options, ...clonedUnevaluatedProperties, [Kind]: 'Intersect', allOf: cloned })
     }
   }
   /** `[Standard]` Creates a KeyOf type */
@@ -1983,11 +1985,7 @@ export class StandardTypeBuilder extends TypeBuilder {
   }
   /** `[Standard]` Creates a Never type */
   public Never(options: SchemaOptions = {}): TNever {
-    // prettier-ignore
-    return this.Create({ ...options, [Kind]: 'Never', allOf: [
-      { type: 'boolean', const: false },
-      { type: 'boolean', const: true },
-    ]})
+    return this.Create({ ...options, [Kind]: 'Never', not: {} })
   }
   /** `[Standard]` Creates a Not type. The first argument is the disallowed type, the second is the allowed. */
   public Not<N extends TSchema, T extends TSchema>(not: N, schema: T, options?: SchemaOptions): TNot<N, T> {
@@ -2164,9 +2162,9 @@ export class StandardTypeBuilder extends TypeBuilder {
     return this.Create({ ...options, [Kind]: options[Kind] || 'Unsafe' })
   }
 }
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // TypeBuilder
-// -------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 export class ExtendedTypeBuilder extends StandardTypeBuilder {
   /** `[Extended]` Creates a BigInt type */
   public BigInt(options: NumericOptions<bigint> = {}): TBigInt {

@@ -343,13 +343,7 @@ The following table lists the Standard TypeBox types. These types are fully comp
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Never()         │ type T = never              │ const T = {                    │
-│                                │                             │   allOf: [{                    │
-│                                │                             │     type: 'boolean',           │
-│                                │                             │     const: false               │
-│                                │                             │   }, {                         │
-│                                │                             │     type: 'boolean',           │
-│                                │                             │     const: true                │
-│                                │                             │   }]                           │
+│                                │                             │   not: {}                      │
 │                                │                             │ }                              │
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
