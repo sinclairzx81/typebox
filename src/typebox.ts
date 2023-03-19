@@ -2018,8 +2018,17 @@ export class StandardTypeBuilder extends TypeBuilder {
   public Omit<T extends TSchema, K extends (keyof Static<T>)[]>(schema: T, keys: readonly [...K], options?: SchemaOptions): TOmit<T, K[number]>
   /** `[Standard]` Creates a mapped type whose keys are omitted from the given type */
   public Omit<T extends TSchema, K extends TUnion<TLiteral<string>[]>>(schema: T, keys: K, options?: SchemaOptions): TOmit<T, TUnionOfLiteral<K>>
+  /** `[Standard]` Creates a mapped type whose keys are omitted from the given type */
+  public Omit<T extends TSchema, K extends TLiteral<string>>(schema: T, key: K, options?: SchemaOptions): TOmit<T, K['const']>
+  /** `[Standard]` Creates a mapped type whose keys are omitted from the given type */
+  public Omit<T extends TSchema, K extends TNever>(schema: T, key: K, options?: SchemaOptions): TOmit<T, never>
   public Omit(schema: TSchema, unresolved: unknown, options: SchemaOptions = {}): any {
-    const keys = TypeGuard.TUnionLiteral(unresolved) ? unresolved.anyOf.map((schema) => schema.const) : (unresolved as string[])
+    // prettier-ignore
+    const keys = 
+      TypeGuard.TUnionLiteral(unresolved) ? unresolved.anyOf.map((schema) => schema.const) : 
+      TypeGuard.TLiteral(unresolved) ? [unresolved.const] : 
+      TypeGuard.TNever(unresolved) ? [] :
+      (unresolved as string[])
     // prettier-ignore
     return ObjectMap.Map(TypeClone.Clone(ReferenceRegistry.Deref(schema), {}), (schema) => {
       if (schema.required) {
@@ -2055,8 +2064,17 @@ export class StandardTypeBuilder extends TypeBuilder {
   public Pick<T extends TSchema, K extends (keyof Static<T>)[]>(schema: T, keys: readonly [...K], options?: SchemaOptions): TPick<T, K[number]>
   /** `[Standard]` Creates a mapped type whose keys are picked from the given type */
   public Pick<T extends TSchema, K extends TUnion<TLiteral<string>[]>>(schema: T, keys: K, options?: SchemaOptions): TPick<T, TUnionOfLiteral<K>>
+  /** `[Standard]` Creates a mapped type whose keys are picked from the given type */
+  public Pick<T extends TSchema, K extends TLiteral<string>>(schema: T, key: K, options?: SchemaOptions): TPick<T, K['const']>
+  /** `[Standard]` Creates a mapped type whose keys are picked from the given type */
+  public Pick<T extends TSchema, K extends TNever>(schema: T, key: K, options?: SchemaOptions): TPick<T, never>
   public Pick(schema: TSchema, unresolved: unknown, options: SchemaOptions = {}): any {
-    const keys = TypeGuard.TUnionLiteral(unresolved) ? unresolved.anyOf.map((schema) => schema.const) : (unresolved as string[])
+    // prettier-ignore
+    const keys = 
+        TypeGuard.TUnionLiteral(unresolved) ? unresolved.anyOf.map((schema) => schema.const) : 
+        TypeGuard.TLiteral(unresolved) ? [unresolved.const] : 
+        TypeGuard.TNever(unresolved) ? [] :
+        (unresolved as string[])
     // prettier-ignore
     return ObjectMap.Map(TypeClone.Clone(ReferenceRegistry.Deref(schema), {}), (schema) => {
       if (schema.required) {
@@ -2149,7 +2167,7 @@ export class StandardTypeBuilder extends TypeBuilder {
   public Union<T extends TSchema[]>(anyOf: [...T], options?: SchemaOptions): TUnion<T>
   public Union(anyOf: TSchema[], options: SchemaOptions = {}) {
     if (anyOf.length === 0) return this.Never(options)
-    if (anyOf.length === 1) return TypeClone.Clone(anyOf[0], options)
+    if (anyOf.length === 1) return this.Create(TypeClone.Clone(anyOf[0], options))
     const clonedAnyOf = anyOf.map((schema) => TypeClone.Clone(schema, {}))
     return this.Create({ ...options, [Kind]: 'Union', anyOf: clonedAnyOf })
   }
