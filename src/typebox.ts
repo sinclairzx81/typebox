@@ -676,7 +676,8 @@ export namespace ReferenceRegistry {
   /** Sets this schema on this registry if a $id exists */
   export function Set(schema: TSchema) {
     const $id = typeof schema === 'object' && schema !== null && typeof (schema as any)['$id'] === 'string' ? ((schema as any)['$id'] as string) : undefined
-    if ($id !== undefined) map.set($id, schema as any)
+    if ($id === undefined) return
+    map.set($id, schema as any)
   }
   /** Dereferences the schema one level deep */
   export function DerefOne(schema: TSchema): TSchema {
@@ -941,19 +942,7 @@ export namespace TypeGuard {
   }
   /** Returns true if the given schema is TNever */
   export function TNever(schema: unknown): schema is TNever {
-    return (
-      TKind(schema) && schema[Kind] === 'Never' && IsObject(schema.not) && globalThis.Object.getOwnPropertyNames(schema.not).length === 0
-      // IsArray(schema.allOf) &&
-      // schema.allOf.length === 2 &&
-      // IsObject(schema.allOf[0]) &&
-      // IsString(schema.allOf[0].type) &&
-      // schema.allOf[0].type === 'boolean' &&
-      // schema.allOf[0].const === false &&
-      // IsObject(schema.allOf[1]) &&
-      // IsString(schema.allOf[1].type) &&
-      // schema.allOf[1].type === 'boolean' &&
-      // schema.allOf[1].const === true
-    )
+    return TKind(schema) && schema[Kind] === 'Never' && IsObject(schema.not) && globalThis.Object.getOwnPropertyNames(schema.not).length === 0
   }
   /** Returns true if the given schema is TNot */
   export function TNot(schema: unknown): schema is TNot {
@@ -1770,7 +1759,7 @@ export namespace TypeClone {
     return typeof value[Recursive as any] === 'string'
   }
   function IsObject(value: unknown): value is Record<string | symbol, any> {
-    return typeof value === 'object' && value !== null && !globalThis.Array.isArray(value)
+    return typeof value === 'object' && value !== null
   }
   function IsArray(value: unknown): value is unknown[] {
     return globalThis.Array.isArray(value)
@@ -1779,22 +1768,22 @@ export namespace TypeClone {
     return (value as any).map((value: unknown) => Visit(value as any))
   }
   function Object(value: Record<keyof any, unknown>) {
-    const clone = globalThis.Object.getOwnPropertyNames(value).reduce(
-      (acc, key) => ({ ...acc, [key]: Visit(value[key]) }),
-      globalThis.Object.getOwnPropertySymbols(value).reduce((acc, key) => ({ ...acc, [key]: Visit(value[key as any]) }), {}),
-    ) as TSchema
-    return clone
+    const clonedProperties = globalThis.Object.getOwnPropertyNames(value).reduce((acc, key) => {
+      return key === '$id' && !IsRecursive(value) ? { ...acc } : { ...acc, [key]: Visit(value[key]) }
+    }, {})
+    const clonedSymbols = globalThis.Object.getOwnPropertySymbols(value).reduce((acc, key) => {
+      return { ...acc, [key]: Visit(value[key]) }
+    }, {})
+    return { ...clonedProperties, ...clonedSymbols }
   }
-  function Visit(value: unknown) {
-    const clone = IsObject(value) ? { ...value } : IsArray(value) ? [...value] : value
-    if (IsObject(clone) && !IsRecursive(clone)) delete clone['$id']
-    if (IsObject(clone)) return Object(clone)
-    if (IsArray(clone)) return Array(clone)
-    return clone
+  function Visit(value: unknown): any {
+    if (IsArray(value)) return Array(value)
+    if (IsObject(value)) return Object(value)
+    return value
   }
   /** Clones a type. This function will omit non-self referential identifiers on the cloned type. */
   export function Clone<T extends TSchema>(schema: T, options: SchemaOptions): T {
-    return { ...Visit({ ...schema }), ...options }
+    return { ...Visit(schema), ...options }
   }
 }
 // --------------------------------------------------------------------------
@@ -2013,15 +2002,13 @@ export class StandardTypeBuilder extends TypeBuilder {
   }
   /** `[Standard]` Creates an Object type */
   public Object<T extends TProperties>(properties: T, options: ObjectOptions = {}): TObject<T> {
-    const keys = globalThis.Object.keys(properties)
-    const optional = keys.filter((key) => TypeGuard.TOptional(properties[key]) || TypeGuard.TReadonlyOptional(properties[key]))
-    const required = keys.filter((name) => !optional.includes(name))
+    const propertyKeys = globalThis.Object.getOwnPropertyNames(properties)
+    const optionalKeys = propertyKeys.filter((key) => TypeGuard.TOptional(properties[key]) || TypeGuard.TReadonlyOptional(properties[key]))
+    const requiredKeys = propertyKeys.filter((name) => !optionalKeys.includes(name))
     const clonedAdditionalProperties = TypeGuard.TSchema(options.additionalProperties) ? { additionalProperties: TypeClone.Clone(options.additionalProperties, {}) } : {}
-    const clonedProperties = globalThis.Object.getOwnPropertyNames(properties).reduce((acc, key) => {
-      return { ...acc, [key]: TypeClone.Clone(properties[key], {}) }
-    }, {} as TProperties)
-    if (required.length > 0) {
-      return this.Create({ ...options, ...clonedAdditionalProperties, [Kind]: 'Object', type: 'object', properties: clonedProperties, required })
+    const clonedProperties = propertyKeys.reduce((acc, key) => ({ ...acc, [key]: TypeClone.Clone(properties[key], {}) }), {} as TProperties)
+    if (requiredKeys.length > 0) {
+      return this.Create({ ...options, ...clonedAdditionalProperties, [Kind]: 'Object', type: 'object', properties: clonedProperties, required: requiredKeys })
     } else {
       return this.Create({ ...options, ...clonedAdditionalProperties, [Kind]: 'Object', type: 'object', properties: clonedProperties })
     }
@@ -2083,10 +2070,10 @@ export class StandardTypeBuilder extends TypeBuilder {
   public Pick(schema: TSchema, unresolved: unknown, options: SchemaOptions = {}): any {
     // prettier-ignore
     const keys = 
-        TypeGuard.TUnionLiteral(unresolved) ? unresolved.anyOf.map((schema) => schema.const) : 
-        TypeGuard.TLiteral(unresolved) ? [unresolved.const] : 
-        TypeGuard.TNever(unresolved) ? [] :
-        (unresolved as string[])
+      TypeGuard.TUnionLiteral(unresolved) ? unresolved.anyOf.map((schema) => schema.const) : 
+      TypeGuard.TLiteral(unresolved) ? [unresolved.const] : 
+      TypeGuard.TNever(unresolved) ? [] :
+      (unresolved as string[])
     // prettier-ignore
     return ObjectMap.Map(TypeClone.Clone(ReferenceRegistry.Deref(schema), {}), (schema) => {
       if (schema.required) {
