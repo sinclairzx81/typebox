@@ -76,12 +76,12 @@ export namespace Value {
     return ValueClone.Clone(value)
   }
   /** Returns an iterator for each error in this value. */
-  export function Errors<T extends Types.TSchema, R extends Types.TSchema[]>(schema: T, references: [...R], value: unknown): IterableIterator<ValueError>
+  export function Errors<T extends Types.TSchema, R extends Types.TSchema[]>(schema: T, references: [...R], value: unknown): ValueErrorIterator
   /** Returns an iterator for each error in this value. */
-  export function Errors<T extends Types.TSchema>(schema: T, value: unknown): IterableIterator<ValueError>
-  export function* Errors(...args: any[]) {
+  export function Errors<T extends Types.TSchema>(schema: T, value: unknown): ValueErrorIterator
+  export function Errors(...args: any[]) {
     const [schema, references, value] = args.length === 3 ? [args[0], args[1], args[2]] : [args[0], [], args[1]]
-    yield* ValueErrors.Errors(schema, references, value)
+    return ValueErrors.Errors(schema, references, value) as ValueErrorIterator
   }
   /** Returns true if left and right values are structurally equal */
   export function Equal<T>(left: T, right: unknown): right is T {
