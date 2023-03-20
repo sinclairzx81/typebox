@@ -13,12 +13,7 @@ describe('type/compiler/Composite', () => {
     const B = Type.Partial(Type.Object({ b: Type.Number() }))
     const P = Type.Composite([A, B], { additionalProperties: false })
     Ok(P, { a: 1, b: 2 })
-    // ok(P, { a: 1 })
-    // ok(P, { b: 1 })
-    // ok(P, {})
-    // fail(P, { c: 1 })
   })
-
   it('Should compose with overlapping same type', () => {
     const A = Type.Object({ a: Type.Number() })
     const B = Type.Object({ a: Type.Number() })
@@ -27,7 +22,6 @@ describe('type/compiler/Composite', () => {
     Fail(P, { a: 'hello' })
     Fail(P, {})
   })
-
   it('Should compose with overlapping varying type', () => {
     const A = Type.Object({ a: Type.Number() })
     const B = Type.Object({ a: Type.String() })
@@ -36,7 +30,6 @@ describe('type/compiler/Composite', () => {
     Ok(T, { a: 'hello' })
     Fail(T, {})
   })
-
   it('Should compose with deeply nest overlapping varying type', () => {
     const A = Type.Object({ a: Type.Number() })
     const B = Type.Object({ a: Type.String() })
@@ -50,7 +43,6 @@ describe('type/compiler/Composite', () => {
     Fail(T, { a: [] })
     Fail(T, {})
   })
-
   it('Should pick from composited type', () => {
     const A = Type.Object({ x: Type.Number() })
     const B = Type.Object({ y: Type.Number() })
@@ -60,7 +52,6 @@ describe('type/compiler/Composite', () => {
     Ok(P, { x: 1, y: 1 })
     Fail(P, { x: 1, y: 1, z: 1 })
   })
-
   it('Should omit from composited type', () => {
     const A = Type.Object({ x: Type.Number() })
     const B = Type.Object({ y: Type.Number() })
@@ -78,5 +69,25 @@ describe('type/compiler/Composite', () => {
     Ok(T, { x: { x: 1 } })
     Ok(T, { x: { x: 'hello' } })
     Fail(T, { x: { x: false } })
+  })
+  it('Should compose composite from intersect', () => {
+    const A = Type.Object({ x: Type.Number() })
+    const B = Type.Object({ y: Type.Number() })
+    const I = Type.Intersect([A, B])
+    const T = Type.Composite(I)
+    Ok(T, { x: 1, y: 1 })
+    Fail(T, { x: 1 })
+    Fail(T, { y: 1 })
+  })
+  it('Should compose composite from intersect and take union', () => {
+    const A = Type.Object({ x: Type.Number() })
+    const B = Type.Object({ y: Type.Number() })
+    const C = Type.Object({ x: Type.String() }) // union of x: number | string
+    const I = Type.Intersect([A, B, C])
+    const T = Type.Composite(I)
+    Ok(T, { x: 1, y: 1 })
+    Ok(T, { x: '1', y: 1 })
+    Fail(T, { x: 1 })
+    Fail(T, { y: 1 })
   })
 })

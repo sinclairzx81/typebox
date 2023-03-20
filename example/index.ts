@@ -1,20 +1,40 @@
 import { TypeSystem } from '@sinclair/typebox/system'
 import { TypeCompiler } from '@sinclair/typebox/compiler'
 import { Value, ValuePointer } from '@sinclair/typebox/value'
-import { Type, Kind, Static, TSchema } from '@sinclair/typebox'
+import { Type, TypeGuard, Kind, Static, TSchema } from '@sinclair/typebox'
 
-const T = Type.Recursive((Node) =>
-  Type.Object({
-    id: Type.String(),
-    nodes: Type.Array(Node),
-  }),
-)
-const R = Type.Ref(T)
+// -----------------------------------------------------------
+// Create: Type
+// -----------------------------------------------------------
 
-const C = TypeCompiler.Compile(R, [R])
+const T = Type.Object({
+  x: Type.Number(),
+  y: Type.Number(),
+  z: Type.Number(),
+})
 
-console.log(C.Check({ id: '', nodes: [{ id: '', nodes: [] }] }))
+type T = Static<typeof T>
 
-type R = Static<typeof R>
+console.log(T)
 
-console.log(R)
+// -----------------------------------------------------------
+// Create: Value
+// -----------------------------------------------------------
+
+const V = Value.Create(T)
+
+console.log(V)
+
+// -----------------------------------------------------------
+// Compile: Type
+// -----------------------------------------------------------
+
+const C = TypeCompiler.Compile(T)
+
+console.log(C.Code())
+
+// -----------------------------------------------------------
+// Check: Value
+// -----------------------------------------------------------
+
+console.log(C.Check(V))

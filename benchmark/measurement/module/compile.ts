@@ -8,7 +8,7 @@ const ajv = new Ajv() // ensure single instance
 
 export namespace CompileBenchmark {
   function Measure<T extends TSchema>(type: string, schema: T) {
-    const iterations = 2000
+    const iterations = 1000
     console.log('CompileBenchmark.Measure(', type, ')')
     // -------------------------------------------------------------------------------
     // Note: Ajv caches schemas by reference. To ensure we measure actual
@@ -27,7 +27,7 @@ export namespace CompileBenchmark {
       // track duplicate $id (resulting in compile error). It is not possible to ammend
       // recursive $id's without potentially biasing results, so we omit on this case.
       // -------------------------------------------------------------------------------
-      if (type === 'Recursive' || type === 'Array_Recursive') continue
+      if (type === 'Object_Recursive' || type === 'Array_Object_Recursive') continue
 
       yield Measure(type, schema)
     }

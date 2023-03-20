@@ -180,7 +180,7 @@ export type TCompositeReduce<T extends TObject[], Output extends {}> =
   T extends [infer L, ...infer R] ? TCompositeReduce<[...Assert<R, TObject[]>], TCompositeMerge<Assert<L, TObject>, Output>> :
   T extends [] ? Output :
   never
-export type TComposite<T extends TObject[]> = Ensure<TObject<TCompositeReduce<T, {}>>>
+export type TComposite<T extends TObject[] = TObject[]> = Ensure<TObject<TCompositeReduce<T, {}>>>
 // --------------------------------------------------------------------------
 // TConstructor
 // --------------------------------------------------------------------------
@@ -1842,7 +1842,11 @@ export class StandardTypeBuilder extends TypeBuilder {
     return this.Create({ ...options, [Kind]: 'Boolean', type: 'boolean' })
   }
   /** `[Standard]` Creates a Composite object type that will Union any overlapping properties of the given Object array */
-  public Composite<T extends TObject[]>(schemas: [...T], options: ObjectOptions = {}): TComposite<T> {
+  public Composite<T extends TIntersect<TObject[]>>(schema: T, options?: ObjectOptions): TComposite<T['allOf']>
+  /** `[Standard]` Creates a Composite object type that will Union any overlapping properties of the given Object array */
+  public Composite<T extends TObject[]>(schemas: [...T], options?: ObjectOptions): TComposite<T>
+  public Composite(unresolved: unknown, options: ObjectOptions = {}): TComposite {
+    const schemas = TypeGuard.TIntersect(unresolved) ? (unresolved.allOf as TObject[]) : (unresolved as TObject[])
     const optional = new Set<string>()
     for (const schema of schemas) {
       for (const [key, property] of globalThis.Object.entries(schema.properties)) {
@@ -1856,7 +1860,7 @@ export class StandardTypeBuilder extends TypeBuilder {
         properties[key] = optional.has(key) ? this.Optional(mapped) : mapped
       }
     }
-    return this.Object(properties, options) as TComposite<T>
+    return this.Object(properties, options) as TComposite
   }
   /** `[Standard]` Creates a Enum type */
   public Enum<T extends Record<string, string | number>>(item: T, options: SchemaOptions = {}): TEnum<T> {

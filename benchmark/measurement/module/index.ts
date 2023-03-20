@@ -9,7 +9,7 @@ export function present(results: Result[]) {
       if (result.value) {
         return {
           ...acc,
-          [result.type.padStart(16, ' ')]: {
+          [result.type.padEnd(26, ' ')]: {
             Iterations: result.compiler.iterations,
             ValueCheck: `${result.value.completed} ms`.padStart(10),
             Ajv: `${result.ajv.completed} ms`.padStart(10),
@@ -20,7 +20,7 @@ export function present(results: Result[]) {
       } else {
         return {
           ...acc,
-          [result.type.padStart(16, ' ')]: {
+          [result.type.padEnd(26, ' ')]: {
             Iterations: result.compiler.iterations,
             Ajv: `${result.ajv.completed} ms`.padStart(10),
             TypeCompiler: `${result.compiler.completed} ms`.padStart(10),
@@ -32,5 +32,5 @@ export function present(results: Result[]) {
   )
 }
 
-//present([...CompileBenchmark.Execute()])
+present([...CompileBenchmark.Execute()])
 present([...CheckBenchmark.Execute()])
