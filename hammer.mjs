@@ -26,7 +26,7 @@ export async function start(example = 'index') {
 // Benchmark
 // -------------------------------------------------------------------------------
 export async function benchmark() {
-    await compression()
+    //await compression()
     await measurement()
 }
 // -------------------------------------------------------------------------------

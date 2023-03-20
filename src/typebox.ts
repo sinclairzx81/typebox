@@ -1170,8 +1170,8 @@ export namespace TypeGuard {
 // --------------------------------------------------------------------------
 // ExtendsUndefined
 // --------------------------------------------------------------------------
+/** Fast undefined check used for properties of type undefined */
 export namespace ExtendsUndefined {
-  /** Fast undefined check for properties of type undefined */
   export function Check(schema: TSchema): boolean {
     if (schema[Kind] === 'Undefined') return true
     if (schema[Kind] === 'Union') {

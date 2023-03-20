@@ -235,7 +235,11 @@ export namespace TypeCompiler {
     if (IsNumber(schema.maximum)) yield `${value} <= ${schema.maximum}`
   }
   function* Object(schema: Types.TObject, references: Types.TSchema[], value: string): IterableIterator<string> {
-    yield `(typeof ${value} === 'object' && ${value} !== null)`
+    if (!TypeSystem.AllowArrayObjects) {
+      yield `(typeof ${value} === 'object' && ${value} !== null && !Array.isArray(${value}))`
+    } else {
+      yield `(typeof ${value} === 'object' && ${value} !== null)`
+    }
     if (!TypeSystem.AllowArrayObjects) yield `!Array.isArray(${value})`
     if (IsNumber(schema.minProperties)) yield `Object.getOwnPropertyNames(${value}).length >= ${schema.minProperties}`
     if (IsNumber(schema.maxProperties)) yield `Object.getOwnPropertyNames(${value}).length <= ${schema.maxProperties}`
@@ -269,7 +273,7 @@ export namespace TypeCompiler {
     yield `(typeof value === 'object' && typeof ${value}.then === 'function')`
   }
   function* Record(schema: Types.TRecord<any, any>, references: Types.TSchema[], value: string): IterableIterator<string> {
-    yield `(typeof ${value} === 'object' && ${value} !== null && !(${value} instanceof Date))`
+    yield `(typeof ${value} === 'object' && ${value} !== null && !(${value} instanceof Date) && !(${value} instanceof Uint8Array))`
     if (!TypeSystem.AllowArrayObjects) yield `!Array.isArray(${value})`
     const [keyPattern, valueSchema] = globalThis.Object.entries(schema.patternProperties)[0]
     const local = PushLocal(`new RegExp(/${keyPattern}/)`)

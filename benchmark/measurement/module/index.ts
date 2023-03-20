@@ -32,5 +32,5 @@ export function present(results: Result[]) {
   )
 }
 
-present([...CompileBenchmark.Execute()])
+//present([...CompileBenchmark.Execute()])
 present([...CheckBenchmark.Execute()])
