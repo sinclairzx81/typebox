@@ -64,9 +64,9 @@ export namespace Value {
     return ValueCheck.Check(schema, references, value)
   }
   /** Converts any type mismatched values to their target type if a conversion is possible. */
-  export function Convert<T extends Types.TSchema, R extends Types.TSchema[]>(schema: T, references: [...R], value: unknown): value is Types.Static<T>
+  export function Convert<T extends Types.TSchema, R extends Types.TSchema[]>(schema: T, references: [...R], value: unknown): unknown
   /** Converts any type mismatched values to their target type if a conversion is possible. */
-  export function Convert<T extends Types.TSchema>(schema: T, value: unknown): value is Types.Static<T>
+  export function Convert<T extends Types.TSchema>(schema: T, value: unknown): unknown
   export function Convert(...args: any[]) {
     const [schema, references, value] = args.length === 3 ? [args[0], args[1], args[2]] : [args[0], [], args[1]]
     return ValueConvert.Convert(schema, references, value)

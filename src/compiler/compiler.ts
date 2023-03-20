@@ -471,7 +471,7 @@ export namespace TypeCompiler {
     return `${locals.join('\n')}\nreturn ${check}`
   }
   /** Returns the generated assertion code used to validate this type. */
-  export function Code<T extends Types.TSchema>(schema: T, references: Types.TSchema[]) {
+  export function Code<T extends Types.TSchema>(schema: T, references: Types.TSchema[] = []) {
     if (!Types.TypeGuard.TSchema(schema)) throw new TypeCompilerTypeGuardError(schema)
     for (const schema of references) if (!Types.TypeGuard.TSchema(schema)) throw new TypeCompilerTypeGuardError(schema)
     return Build(schema, references)
