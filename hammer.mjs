@@ -60,7 +60,7 @@ export async function build(target = 'target/build') {
 // -------------------------------------------------------------
 export async function publish(otp, target = 'target/build') {
     const { version } = JSON.parse(readFileSync('package.json', 'utf8'))
-    await shell(`cd ${target} && npm publish sinclair-typebox-${version}.tgz --tag=dev --access=public --otp ${otp}`)
+    await shell(`cd ${target} && npm publish sinclair-typebox-${version}.tgz --access=public --otp ${otp}`)
     await shell(`git tag ${version}`)
     await shell(`git push origin ${version}`)
 }
