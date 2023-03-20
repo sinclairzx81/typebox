@@ -676,7 +676,7 @@ const BooleanVector = Vector(Type.Boolean())         // const BooleanVector = {
 
 ### Reference Types
 
-Reference types are supported with `Type.Ref(...)`. Use `Type.Deref(...)` to dereference a type. 
+Reference types are supported with `Type.Ref(...)`.
 
 ```typescript
 const T = Type.String({ $id: 'T' })                  // const T = {
@@ -686,11 +686,6 @@ const T = Type.String({ $id: 'T' })                  // const T = {
                                              
 const R = Type.Ref(T)                                // const R = {
                                                      //    $ref: 'T'
-                                                     // }
-
-const U = Type.Deref(R)                              // const U = {
-                                                     //    $id: 'T',
-                                                     //    type: 'string'
                                                      // }
 ```
 

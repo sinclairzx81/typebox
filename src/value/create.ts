@@ -47,49 +47,63 @@ export class ValueCreateIntersectTypeError extends Error {
     super('ValueCreate: Can only create values for intersected objects and non-varying primitive types. Consider using a default value.')
   }
 }
+export class ValueCreateDereferenceError extends Error {
+  constructor(public readonly schema: Types.TRef | Types.TSelf) {
+    super(`ValueCreate: Unable to dereference schema with $id '${schema.$ref}'`)
+  }
+}
 // --------------------------------------------------------------------------
 // ValueCreate
 // --------------------------------------------------------------------------
 export namespace ValueCreate {
-  function Any(schema: Types.TAny): any {
+  // --------------------------------------------------------
+  // Guards
+  // --------------------------------------------------------
+  function IsString(value: unknown): value is string {
+    return typeof value === 'string'
+  }
+  // --------------------------------------------------------
+  // Types
+  // --------------------------------------------------------
+  function Any(schema: Types.TAny, references: Types.TSchema[]): any {
     if ('default' in schema) {
       return schema.default
     } else {
       return {}
     }
   }
-  function Array(schema: Types.TArray): any {
+  function Array(schema: Types.TArray, references: Types.TSchema[]): any {
     if (schema.uniqueItems === true && schema.default === undefined) {
       throw new Error('ValueCreate.Array: Arrays with uniqueItems require a default value')
     } else if ('default' in schema) {
       return schema.default
     } else if (schema.minItems !== undefined) {
       return globalThis.Array.from({ length: schema.minItems }).map((item) => {
-        return ValueCreate.Create(schema.items)
+        return ValueCreate.Create(schema.items, references)
       })
     } else {
       return []
     }
   }
-  function BigInt(schema: Types.TBigInt): any {
+  function BigInt(schema: Types.TBigInt, references: Types.TSchema[]): any {
     if ('default' in schema) {
       return schema.default
     } else {
       return globalThis.BigInt(0)
     }
   }
-  function Boolean(schema: Types.TBoolean): any {
+  function Boolean(schema: Types.TBoolean, references: Types.TSchema[]): any {
     if ('default' in schema) {
       return schema.default
     } else {
       return false
     }
   }
-  function Constructor(schema: Types.TConstructor): any {
+  function Constructor(schema: Types.TConstructor, references: Types.TSchema[]): any {
     if ('default' in schema) {
       return schema.default
     } else {
-      const value = ValueCreate.Create(schema.returns) as any
+      const value = ValueCreate.Create(schema.returns, references) as any
       if (typeof value === 'object' && !globalThis.Array.isArray(value)) {
         return class {
           constructor() {
@@ -104,7 +118,7 @@ export namespace ValueCreate {
       }
     }
   }
-  function Date(schema: Types.TDate): any {
+  function Date(schema: Types.TDate, references: Types.TSchema[]): any {
     if ('default' in schema) {
       return schema.default
     } else if (schema.minimumTimestamp !== undefined) {
@@ -113,14 +127,14 @@ export namespace ValueCreate {
       return new globalThis.Date(0)
     }
   }
-  function Function(schema: Types.TFunction): any {
+  function Function(schema: Types.TFunction, references: Types.TSchema[]): any {
     if ('default' in schema) {
       return schema.default
     } else {
-      return () => ValueCreate.Create(schema.returns)
+      return () => ValueCreate.Create(schema.returns, references)
     }
   }
-  function Integer(schema: Types.TInteger): any {
+  function Integer(schema: Types.TInteger, references: Types.TSchema[]): any {
     if ('default' in schema) {
       return schema.default
     } else if (schema.minimum !== undefined) {
@@ -129,40 +143,40 @@ export namespace ValueCreate {
       return 0
     }
   }
-  function Intersect(schema: Types.TIntersect): any {
+  function Intersect(schema: Types.TIntersect, references: Types.TSchema[]): any {
     if ('default' in schema) {
       return schema.default
     } else {
-      const value = schema.type === 'object' ? schema.allOf.reduce((acc, schema) => ({ ...acc, ...(Visit(schema) as any) }), {}) : schema.allOf.reduce((_, schema) => Visit(schema), undefined as any)
-      if (!ValueCheck.Check(schema, value)) throw new ValueCreateIntersectTypeError(schema)
+      const value = schema.type === 'object' ? schema.allOf.reduce((acc, schema) => ({ ...acc, ...(Visit(schema, references) as any) }), {}) : schema.allOf.reduce((_, schema) => Visit(schema, references), undefined as any)
+      if (!ValueCheck.Check(schema, references, value)) throw new ValueCreateIntersectTypeError(schema)
       return value
     }
   }
-  function Literal(schema: Types.TLiteral): any {
+  function Literal(schema: Types.TLiteral, references: Types.TSchema[]): any {
     if ('default' in schema) {
       return schema.default
     } else {
       return schema.const
     }
   }
-  function Never(schema: Types.TNever): any {
+  function Never(schema: Types.TNever, references: Types.TSchema[]): any {
     throw new ValueCreateNeverTypeError(schema)
   }
-  function Not(schema: Types.TNot): any {
+  function Not(schema: Types.TNot, references: Types.TSchema[]): any {
     if ('default' in schema) {
       return schema.default
     } else {
-      return Visit(schema.allOf[1])
+      return Visit(schema.allOf[1], references)
     }
   }
-  function Null(schema: Types.TNull): any {
+  function Null(schema: Types.TNull, references: Types.TSchema[]): any {
     if ('default' in schema) {
       return schema.default
     } else {
       return null
     }
   }
-  function Number(schema: Types.TNumber): any {
+  function Number(schema: Types.TNumber, references: Types.TSchema[]): any {
     if ('default' in schema) {
       return schema.default
     } else if (schema.minimum !== undefined) {
@@ -171,7 +185,7 @@ export namespace ValueCreate {
       return 0
     }
   }
-  function Object(schema: Types.TObject): any {
+  function Object(schema: Types.TObject, references: Types.TSchema[]): any {
     if ('default' in schema) {
       return schema.default
     } else {
@@ -179,46 +193,52 @@ export namespace ValueCreate {
       return (
         schema.default ||
         globalThis.Object.entries(schema.properties).reduce((acc, [key, schema]) => {
-          return required.has(key) ? { ...acc, [key]: ValueCreate.Create(schema) } : { ...acc }
+          return required.has(key) ? { ...acc, [key]: ValueCreate.Create(schema, references) } : { ...acc }
         }, {})
       )
     }
   }
-  function Promise(schema: Types.TPromise<any>): any {
+  function Promise(schema: Types.TPromise<any>, references: Types.TSchema[]): any {
     if ('default' in schema) {
       return schema.default
     } else {
-      return globalThis.Promise.resolve(ValueCreate.Create(schema.item))
+      return globalThis.Promise.resolve(ValueCreate.Create(schema.item, references))
     }
   }
-  function Record(schema: Types.TRecord<any, any>): any {
+  function Record(schema: Types.TRecord<any, any>, references: Types.TSchema[]): any {
     const [keyPattern, valueSchema] = globalThis.Object.entries(schema.patternProperties)[0]
     if ('default' in schema) {
       return schema.default
     } else if (!(keyPattern === '^.*$' || keyPattern === '^(0|[1-9][0-9]*)$')) {
       const propertyKeys = keyPattern.slice(1, keyPattern.length - 1).split('|')
       return propertyKeys.reduce((acc, key) => {
-        return { ...acc, [key]: Create(valueSchema) }
+        return { ...acc, [key]: Create(valueSchema, references) }
       }, {})
     } else {
       return {}
     }
   }
-  function Ref(schema: Types.TRef<any>): any {
+  function Ref(schema: Types.TRef<any>, references: Types.TSchema[]): any {
     if ('default' in schema) {
       return schema.default
     } else {
-      return Visit(Types.ReferenceRegistry.DerefOne(schema))
+      const index = references.findIndex((foreign) => foreign.$id === schema.$id)
+      if (index === -1) throw new ValueCreateDereferenceError(schema)
+      const target = references[index]
+      return Visit(target, references)
     }
   }
-  function Self(schema: Types.TSelf): any {
+  function Self(schema: Types.TSelf, references: Types.TSchema[]): any {
     if ('default' in schema) {
       return schema.default
     } else {
-      return Visit(Types.ReferenceRegistry.DerefOne(schema))
+      const index = references.findIndex((foreign) => foreign.$id === schema.$id)
+      if (index === -1) throw new ValueCreateDereferenceError(schema)
+      const target = references[index]
+      return Visit(target, references)
     }
   }
-  function String(schema: Types.TString): any {
+  function String(schema: Types.TString, references: Types.TSchema[]): any {
     if (schema.pattern !== undefined) {
       if (!('default' in schema)) {
         throw new Error('ValueCreate.String: String types with patterns must specify a default value')
@@ -243,7 +263,7 @@ export namespace ValueCreate {
       }
     }
   }
-  function Symbol(schema: Types.TString): any {
+  function Symbol(schema: Types.TString, references: Types.TSchema[]): any {
     if ('default' in schema) {
       return schema.default
     } else if ('value' in schema) {
@@ -252,33 +272,33 @@ export namespace ValueCreate {
       return globalThis.Symbol()
     }
   }
-  function Tuple(schema: Types.TTuple<any[]>): any {
+  function Tuple(schema: Types.TTuple<any[]>, references: Types.TSchema[]): any {
     if ('default' in schema) {
       return schema.default
     }
     if (schema.items === undefined) {
       return []
     } else {
-      return globalThis.Array.from({ length: schema.minItems }).map((_, index) => ValueCreate.Create((schema.items as any[])[index]))
+      return globalThis.Array.from({ length: schema.minItems }).map((_, index) => ValueCreate.Create((schema.items as any[])[index], references))
     }
   }
-  function Undefined(schema: Types.TUndefined): any {
+  function Undefined(schema: Types.TUndefined, references: Types.TSchema[]): any {
     if ('default' in schema) {
       return schema.default
     } else {
       return undefined
     }
   }
-  function Union(schema: Types.TUnion<any[]>): any {
+  function Union(schema: Types.TUnion<any[]>, references: Types.TSchema[]): any {
     if ('default' in schema) {
       return schema.default
     } else if (schema.anyOf.length === 0) {
       throw new Error('ValueCreate.Union: Cannot create Union with zero variants')
     } else {
-      return ValueCreate.Create(schema.anyOf[0])
+      return ValueCreate.Create(schema.anyOf[0], references)
     }
   }
-  function Uint8Array(schema: Types.TUint8Array): any {
+  function Uint8Array(schema: Types.TUint8Array, references: Types.TSchema[]): any {
     if ('default' in schema) {
       return schema.default
     } else if (schema.minByteLength !== undefined) {
@@ -287,21 +307,21 @@ export namespace ValueCreate {
       return new globalThis.Uint8Array(0)
     }
   }
-  function Unknown(schema: Types.TUnknown): any {
+  function Unknown(schema: Types.TUnknown, references: Types.TSchema[]): any {
     if ('default' in schema) {
       return schema.default
     } else {
       return {}
     }
   }
-  function Void(schema: Types.TVoid): any {
+  function Void(schema: Types.TVoid, references: Types.TSchema[]): any {
     if ('default' in schema) {
       return schema.default
     } else {
       return void 0
     }
   }
-  function UserDefined(schema: Types.TSchema): any {
+  function UserDefined(schema: Types.TSchema, references: Types.TSchema[]): any {
     if ('default' in schema) {
       return schema.default
     } else {
@@ -309,69 +329,70 @@ export namespace ValueCreate {
     }
   }
   /** Creates a value from the given schema. If the schema specifies a default value, then that value is returned. */
-  export function Visit<T extends Types.TSchema>(schema: T): Types.Static<T> {
-    const anySchema = schema as any
-    switch (anySchema[Types.Kind]) {
+  export function Visit(schema: Types.TSchema, references: Types.TSchema[]): unknown {
+    const references_ = IsString(schema.$id) ? [...references, schema] : references
+    const schema_ = schema as any
+    switch (schema_[Types.Kind]) {
       case 'Any':
-        return Any(anySchema)
+        return Any(schema_, references_)
       case 'Array':
-        return Array(anySchema)
+        return Array(schema_, references_)
       case 'BigInt':
-        return BigInt(anySchema)
+        return BigInt(schema_, references_)
       case 'Boolean':
-        return Boolean(anySchema)
+        return Boolean(schema_, references_)
       case 'Constructor':
-        return Constructor(anySchema)
+        return Constructor(schema_, references_)
       case 'Date':
-        return Date(anySchema)
+        return Date(schema_, references_)
       case 'Function':
-        return Function(anySchema)
+        return Function(schema_, references_)
       case 'Integer':
-        return Integer(anySchema)
+        return Integer(schema_, references_)
       case 'Intersect':
-        return Intersect(anySchema)
+        return Intersect(schema_, references_)
       case 'Literal':
-        return Literal(anySchema)
+        return Literal(schema_, references_)
       case 'Never':
-        return Never(anySchema)
+        return Never(schema_, references_)
       case 'Not':
-        return Not(anySchema)
+        return Not(schema_, references_)
       case 'Null':
-        return Null(anySchema)
+        return Null(schema_, references_)
       case 'Number':
-        return Number(anySchema)
+        return Number(schema_, references_)
       case 'Object':
-        return Object(anySchema)
+        return Object(schema_, references_)
       case 'Promise':
-        return Promise(anySchema)
+        return Promise(schema_, references_)
       case 'Record':
-        return Record(anySchema)
+        return Record(schema_, references_)
       case 'Ref':
-        return Ref(anySchema)
+        return Ref(schema_, references_)
       case 'Self':
-        return Self(anySchema)
+        return Self(schema_, references_)
       case 'String':
-        return String(anySchema)
+        return String(schema_, references_)
       case 'Symbol':
-        return Symbol(anySchema)
+        return Symbol(schema_, references_)
       case 'Tuple':
-        return Tuple(anySchema)
+        return Tuple(schema_, references_)
       case 'Undefined':
-        return Undefined(anySchema)
+        return Undefined(schema_, references_)
       case 'Union':
-        return Union(anySchema)
+        return Union(schema_, references_)
       case 'Uint8Array':
-        return Uint8Array(anySchema)
+        return Uint8Array(schema_, references_)
       case 'Unknown':
-        return Unknown(anySchema)
+        return Unknown(schema_, references_)
       case 'Void':
-        return Void(anySchema)
+        return Void(schema_, references_)
       default:
-        if (!Types.TypeRegistry.Has(anySchema[Types.Kind])) throw new ValueCreateUnknownTypeError(anySchema)
-        return UserDefined(anySchema)
+        if (!Types.TypeRegistry.Has(schema_[Types.Kind])) throw new ValueCreateUnknownTypeError(schema_)
+        return UserDefined(schema_, references_)
     }
   }
-  export function Create<T extends Types.TSchema>(schema: T): Types.Static<T> {
-    return Visit(schema)
+  export function Create<T extends Types.TSchema>(schema: T, references: Types.TSchema[]): Types.Static<T> {
+    return Visit(schema, references)
   }
 }

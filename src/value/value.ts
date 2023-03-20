@@ -40,28 +40,48 @@ import { ValueDelta, Edit } from './delta'
 /** Provides functions to perform structural updates to JavaScript values */
 export namespace Value {
   /** Casts a value into a given type. The return value will retain as much information of the original value as possible. Cast will convert string, number, boolean and date values if a reasonable conversion is possible. */
-  export function Cast<T extends Types.TSchema>(schema: T, value: unknown): Types.Static<T> {
-    return ValueCast.Cast(schema, value)
+  export function Cast<T extends Types.TSchema, R extends Types.TSchema[]>(schema: T, references: [...R], value: unknown): Types.Static<T>
+  /** Casts a value into a given type. The return value will retain as much information of the original value as possible. Cast will convert string, number, boolean and date values if a reasonable conversion is possible. */
+  export function Cast<T extends Types.TSchema>(schema: T, value: unknown): Types.Static<T>
+  export function Cast(...args: any[]) {
+    const [schema, references, value] = args.length === 3 ? [args[0], args[1], args[2]] : [args[0], [], args[1]]
+    return ValueCast.Cast(schema, references, value)
   }
   /** Creates a value from the given type */
-  export function Create<T extends Types.TSchema>(schema: T): Types.Static<T> {
-    return ValueCreate.Create(schema)
+  export function Create<T extends Types.TSchema, R extends Types.TSchema[]>(schema: T, references: [...R]): Types.Static<T>
+  /** Creates a value from the given type */
+  export function Create<T extends Types.TSchema>(schema: T): Types.Static<T>
+  export function Create(...args: any[]) {
+    const [schema, references] = args.length === 2 ? [args[0], args[1]] : [args[0], []]
+    return ValueCreate.Create(schema, references)
   }
   /** Returns true if the value matches the given type. */
-  export function Check<T extends Types.TSchema>(schema: T, value: unknown): value is Types.Static<T> {
-    return ValueCheck.Check(schema, value)
+  export function Check<T extends Types.TSchema, R extends Types.TSchema[]>(schema: T, references: [...R], value: unknown): value is Types.Static<T>
+  /** Returns true if the value matches the given type. */
+  export function Check<T extends Types.TSchema>(schema: T, value: unknown): value is Types.Static<T>
+  export function Check(...args: any[]) {
+    const [schema, references, value] = args.length === 3 ? [args[0], args[1], args[2]] : [args[0], [], args[1]]
+    return ValueCheck.Check(schema, references, value)
   }
   /** Converts any type mismatched values to their target type if a conversion is possible. */
-  export function Convert<T extends Types.TSchema>(schema: T, value: unknown): unknown {
-    return ValueConvert.Convert(schema, value)
+  export function Convert<T extends Types.TSchema, R extends Types.TSchema[]>(schema: T, references: [...R], value: unknown): value is Types.Static<T>
+  /** Converts any type mismatched values to their target type if a conversion is possible. */
+  export function Convert<T extends Types.TSchema>(schema: T, value: unknown): value is Types.Static<T>
+  export function Convert(...args: any[]) {
+    const [schema, references, value] = args.length === 3 ? [args[0], args[1], args[2]] : [args[0], [], args[1]]
+    return ValueConvert.Convert(schema, references, value)
   }
   /** Returns a structural clone of the given value */
   export function Clone<T>(value: T): T {
     return ValueClone.Clone(value)
   }
   /** Returns an iterator for each error in this value. */
-  export function Errors<T extends Types.TSchema>(schema: T, value: unknown): ValueErrorIterator {
-    return ValueErrors.Errors(schema, value)
+  export function Errors<T extends Types.TSchema, R extends Types.TSchema[]>(schema: T, references: [...R], value: unknown): IterableIterator<ValueError>
+  /** Returns an iterator for each error in this value. */
+  export function Errors<T extends Types.TSchema>(schema: T, value: unknown): IterableIterator<ValueError>
+  export function* Errors(...args: any[]) {
+    const [schema, references, value] = args.length === 3 ? [args[0], args[1], args[2]] : [args[0], [], args[1]]
+    yield* ValueErrors.Errors(schema, references, value)
   }
   /** Returns true if left and right values are structurally equal */
   export function Equal<T>(left: T, right: unknown): right is T {

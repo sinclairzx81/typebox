@@ -32,14 +32,14 @@ import { ValueClone } from './clone'
 // ----------------------------------------------------------------------------------------------
 // Errors
 // ----------------------------------------------------------------------------------------------
-export class ValueConvertReferenceTypeError extends Error {
-  constructor(public readonly schema: Types.TRef | Types.TSelf) {
-    super(`ValueConvert: Cannot locate referenced schema with $id '${schema.$ref}'`)
-  }
-}
 export class ValueConvertUnknownTypeError extends Error {
   constructor(public readonly schema: Types.TSchema) {
     super('ValueConvert: Unknown type')
+  }
+}
+export class ValueConvertDereferenceError extends Error {
+  constructor(public readonly schema: Types.TRef | Types.TSelf) {
+    super(`ValueConvert: Unable to dereference schema with $id '${schema.$ref}'`)
   }
 }
 export namespace ValueConvert {
@@ -176,160 +176,167 @@ export namespace ValueConvert {
   // ----------------------------------------------------------------------------------------------
   // Cast
   // ----------------------------------------------------------------------------------------------
-  function Any(schema: Types.TAny, value: any): any {
+  function Any(schema: Types.TAny, references: Types.TSchema[], value: any): any {
     return value
   }
-  function Array(schema: Types.TArray, value: any): any {
+  function Array(schema: Types.TArray, references: Types.TSchema[], value: any): any {
     if (IsArray(value)) {
-      return value.map((value) => Visit(schema.items, value))
+      return value.map((value) => Visit(schema.items, references, value))
     }
     return value
   }
-  function BigInt(schema: Types.TBigInt, value: any): unknown {
+  function BigInt(schema: Types.TBigInt, references: Types.TSchema[], value: any): unknown {
     return TryConvertBigInt(value)
   }
-  function Boolean(schema: Types.TBoolean, value: any): unknown {
+  function Boolean(schema: Types.TBoolean, references: Types.TSchema[], value: any): unknown {
     return TryConvertBoolean(value)
   }
-  function Constructor(schema: Types.TConstructor, value: any): unknown {
+  function Constructor(schema: Types.TConstructor, references: Types.TSchema[], value: any): unknown {
     return ValueClone.Clone(value)
   }
-  function Date(schema: Types.TDate, value: any): unknown {
+  function Date(schema: Types.TDate, references: Types.TSchema[], value: any): unknown {
     return TryConvertDate(value)
   }
-  function Function(schema: Types.TFunction, value: any): unknown {
+  function Function(schema: Types.TFunction, references: Types.TSchema[], value: any): unknown {
     return value
   }
-  function Integer(schema: Types.TInteger, value: any): unknown {
+  function Integer(schema: Types.TInteger, references: Types.TSchema[], value: any): unknown {
     return TryConvertInteger(value)
   }
-  function Intersect(schema: Types.TIntersect, value: any): unknown {
+  function Intersect(schema: Types.TIntersect, references: Types.TSchema[], value: any): unknown {
     return value
   }
-  function Literal(schema: Types.TLiteral, value: any): unknown {
+  function Literal(schema: Types.TLiteral, references: Types.TSchema[], value: any): unknown {
     return TryConvertLiteral(schema, value)
   }
-  function Never(schema: Types.TNever, value: any): unknown {
+  function Never(schema: Types.TNever, references: Types.TSchema[], value: any): unknown {
     return value
   }
-  function Null(schema: Types.TNull, value: any): unknown {
+  function Null(schema: Types.TNull, references: Types.TSchema[], value: any): unknown {
     return TryConvertNull(value)
   }
-  function Number(schema: Types.TNumber, value: any): unknown {
+  function Number(schema: Types.TNumber, references: Types.TSchema[], value: any): unknown {
     return TryConvertNumber(value)
   }
-  function Object(schema: Types.TObject, value: any): unknown {
+  function Object(schema: Types.TObject, references: Types.TSchema[], value: any): unknown {
     if (IsObject(value))
       return globalThis.Object.keys(schema.properties).reduce((acc, key) => {
-        return value[key] !== undefined ? { ...acc, [key]: Visit(schema.properties[key], value[key]) } : { ...acc }
+        return value[key] !== undefined ? { ...acc, [key]: Visit(schema.properties[key], references, value[key]) } : { ...acc }
       }, value)
     return value
   }
-  function Promise(schema: Types.TSchema, value: any): unknown {
+  function Promise(schema: Types.TSchema, references: Types.TSchema[], value: any): unknown {
     return value
   }
-  function Record(schema: Types.TRecord<any, any>, value: any): unknown {
+  function Record(schema: Types.TRecord<any, any>, references: Types.TSchema[], value: any): unknown {
     return value
   }
-  function Ref(schema: Types.TRef<any>, value: any): unknown {
-    return Visit(Types.ReferenceRegistry.DerefOne(schema), value)
+  function Ref(schema: Types.TRef<any>, references: Types.TSchema[], value: any): unknown {
+    const index = references.findIndex((foreign) => foreign.$id === schema.$ref)
+    if (index === -1) throw new ValueConvertDereferenceError(schema)
+    const target = references[index]
+    return Visit(target, references, value)
   }
-  function Self(schema: Types.TSelf, value: any): unknown {
-    return Visit(Types.ReferenceRegistry.DerefOne(schema), value)
+  function Self(schema: Types.TSelf, references: Types.TSchema[], value: any): unknown {
+    const index = references.findIndex((foreign) => foreign.$id === schema.$ref)
+    if (index === -1) throw new ValueConvertDereferenceError(schema)
+    const target = references[index]
+    return Visit(target, references, value)
   }
-  function String(schema: Types.TString, value: any): unknown {
+  function String(schema: Types.TString, references: Types.TSchema[], value: any): unknown {
     return TryConvertString(value)
   }
-  function Symbol(schema: Types.TSymbol, value: any): unknown {
+  function Symbol(schema: Types.TSymbol, references: Types.TSchema[], value: any): unknown {
     return value
   }
-  function Tuple(schema: Types.TTuple<any[]>, value: any): unknown {
+  function Tuple(schema: Types.TTuple<any[]>, references: Types.TSchema[], value: any): unknown {
     if (IsArray(value) && schema.items !== undefined) {
       return value.map((value, index) => {
-        return index < schema.items!.length ? Visit(schema.items![index], value) : value
+        return index < schema.items!.length ? Visit(schema.items![index], references, value) : value
       })
     }
     return value
   }
-  function Undefined(schema: Types.TUndefined, value: any): unknown {
+  function Undefined(schema: Types.TUndefined, references: Types.TSchema[], value: any): unknown {
     return TryConvertUndefined(value)
   }
-  function Union(schema: Types.TUnion, value: any): unknown {
+  function Union(schema: Types.TUnion, references: Types.TSchema[], value: any): unknown {
     return value
   }
-  function Uint8Array(schema: Types.TUint8Array, value: any): unknown {
+  function Uint8Array(schema: Types.TUint8Array, references: Types.TSchema[], value: any): unknown {
     return value
   }
-  function Unknown(schema: Types.TUnknown, value: any): unknown {
+  function Unknown(schema: Types.TUnknown, references: Types.TSchema[], value: any): unknown {
     return value
   }
-  function Void(schema: Types.TVoid, value: any): unknown {
+  function Void(schema: Types.TVoid, references: Types.TSchema[], value: any): unknown {
     return value
   }
-  function UserDefined(schema: Types.TSchema, value: any): unknown {
+  function UserDefined(schema: Types.TSchema, references: Types.TSchema[], value: any): unknown {
     return value
   }
-  export function Visit(schema: Types.TSchema, value: any): unknown {
-    const anySchema = schema as any
+  export function Visit(schema: Types.TSchema, references: Types.TSchema[], value: any): unknown {
+    const references_ = IsString(schema.$id) ? [...references, schema] : references
+    const schema_ = schema as any
     switch (schema[Types.Kind]) {
       case 'Any':
-        return Any(anySchema, value)
+        return Any(schema_, references_, value)
       case 'Array':
-        return Array(anySchema, value)
+        return Array(schema_, references_, value)
       case 'BigInt':
-        return BigInt(anySchema, value)
+        return BigInt(schema_, references_, value)
       case 'Boolean':
-        return Boolean(anySchema, value)
+        return Boolean(schema_, references_, value)
       case 'Constructor':
-        return Constructor(anySchema, value)
+        return Constructor(schema_, references_, value)
       case 'Date':
-        return Date(anySchema, value)
+        return Date(schema_, references_, value)
       case 'Function':
-        return Function(anySchema, value)
+        return Function(schema_, references_, value)
       case 'Integer':
-        return Integer(anySchema, value)
+        return Integer(schema_, references_, value)
       case 'Intersect':
-        return Intersect(anySchema, value)
+        return Intersect(schema_, references_, value)
       case 'Literal':
-        return Literal(anySchema, value)
+        return Literal(schema_, references_, value)
       case 'Never':
-        return Never(anySchema, value)
+        return Never(schema_, references_, value)
       case 'Null':
-        return Null(anySchema, value)
+        return Null(schema_, references_, value)
       case 'Number':
-        return Number(anySchema, value)
+        return Number(schema_, references_, value)
       case 'Object':
-        return Object(anySchema, value)
+        return Object(schema_, references_, value)
       case 'Promise':
-        return Promise(anySchema, value)
+        return Promise(schema_, references_, value)
       case 'Record':
-        return Record(anySchema, value)
+        return Record(schema_, references_, value)
       case 'Ref':
-        return Ref(anySchema, value)
+        return Ref(schema_, references_, value)
       case 'Self':
-        return Self(anySchema, value)
+        return Self(schema_, references_, value)
       case 'String':
-        return String(anySchema, value)
+        return String(schema_, references_, value)
       case 'Symbol':
-        return Symbol(anySchema, value)
+        return Symbol(schema_, references_, value)
       case 'Tuple':
-        return Tuple(anySchema, value)
+        return Tuple(schema_, references_, value)
       case 'Undefined':
-        return Undefined(anySchema, value)
+        return Undefined(schema_, references_, value)
       case 'Union':
-        return Union(anySchema, value)
+        return Union(schema_, references_, value)
       case 'Uint8Array':
-        return Uint8Array(anySchema, value)
+        return Uint8Array(schema_, references_, value)
       case 'Unknown':
-        return Unknown(anySchema, value)
+        return Unknown(schema_, references_, value)
       case 'Void':
-        return Void(anySchema, value)
+        return Void(schema_, references_, value)
       default:
-        if (!Types.TypeRegistry.Has(anySchema[Types.Kind])) throw new ValueConvertUnknownTypeError(anySchema)
-        return UserDefined(anySchema, value)
+        if (!Types.TypeRegistry.Has(schema_[Types.Kind])) throw new ValueConvertUnknownTypeError(schema_)
+        return UserDefined(schema_, references_, value)
     }
   }
-  export function Convert<T extends Types.TSchema>(schema: T, value: any): unknown {
-    return Visit(schema, ValueClone.Clone(value))
+  export function Convert<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: any): unknown {
+    return Visit(schema, references, ValueClone.Clone(value))
   }
 }

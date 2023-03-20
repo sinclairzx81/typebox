@@ -59,7 +59,11 @@ export class ValueCastUnknownTypeError extends Error {
     super('ValueCast: Unknown type')
   }
 }
-
+export class ValueCastDereferenceError extends Error {
+  constructor(public readonly schema: Types.TRef | Types.TSelf) {
+    super(`ValueCast: Unable to dereference schema with $id '${schema.$ref}'`)
+  }
+}
 // ----------------------------------------------------------------------------------------------
 // The following will score a schema against a value. For objects, the score is the tally of
 // points awarded for each property of the value. Property points are (1.0 / propertyCount)
@@ -67,7 +71,7 @@ export class ValueCastUnknownTypeError extends Error {
 // maximally awarded as literals are typically used as union discriminator fields.
 // ----------------------------------------------------------------------------------------------
 namespace UnionCastCreate {
-  function Score(schema: Types.TSchema, value: any): number {
+  function Score(schema: Types.TSchema, references: Types.TSchema[], value: any): number {
     if (schema[Types.Kind] === 'Object' && typeof value === 'object' && value !== null) {
       const object = schema as Types.TObject
       const keys = Object.keys(value)
@@ -75,18 +79,18 @@ namespace UnionCastCreate {
       const [point, max] = [1 / entries.length, entries.length]
       return entries.reduce((acc, [key, schema]) => {
         const literal = schema[Types.Kind] === 'Literal' && schema.const === value[key] ? max : 0
-        const checks = ValueCheck.Check(schema, value[key]) ? point : 0
+        const checks = ValueCheck.Check(schema, references, value[key]) ? point : 0
         const exists = keys.includes(key) ? point : 0
         return acc + (literal + checks + exists)
       }, 0)
     } else {
-      return ValueCheck.Check(schema, value) ? 1 : 0
+      return ValueCheck.Check(schema, references, value) ? 1 : 0
     }
   }
-  function Select(union: Types.TUnion, value: any): Types.TSchema {
+  function Select(union: Types.TUnion, references: Types.TSchema[], value: any): Types.TSchema {
     let [select, best] = [union.anyOf[0], 0]
     for (const schema of union.anyOf) {
-      const score = Score(schema, value)
+      const score = Score(schema, references, value)
       if (score > best) {
         select = schema
         best = score
@@ -94,12 +98,12 @@ namespace UnionCastCreate {
     }
     return select
   }
-  export function Create(union: Types.TUnion, value: any) {
+  export function Create(union: Types.TUnion, references: Types.TSchema[], value: any) {
     if (union.default !== undefined) {
       return union.default
     } else {
-      const schema = Select(union, value)
-      return ValueCast.Cast(schema, value)
+      const schema = Select(union, references, value)
+      return ValueCast.Cast(schema, references, value)
     }
   }
 }
@@ -117,200 +121,210 @@ export namespace ValueCast {
   function IsNumber(value: unknown): value is number {
     return typeof value === 'number' && !isNaN(value)
   }
+  function IsString(value: unknown): value is string {
+    return typeof value === 'string'
+  }
   // ----------------------------------------------------------------------------------------------
   // Cast
   // ----------------------------------------------------------------------------------------------
-  function Any(schema: Types.TAny, value: any): any {
-    return ValueCheck.Check(schema, value) ? ValueClone.Clone(value) : ValueCreate.Create(schema)
+  function Any(schema: Types.TAny, references: Types.TSchema[], value: any): any {
+    return ValueCheck.Check(schema, references, value) ? ValueClone.Clone(value) : ValueCreate.Create(schema, references)
   }
-  function Array(schema: Types.TArray, value: any): any {
-    if (ValueCheck.Check(schema, value)) return ValueClone.Clone(value)
-    const created = IsArray(value) ? ValueClone.Clone(value) : ValueCreate.Create(schema)
+  function Array(schema: Types.TArray, references: Types.TSchema[], value: any): any {
+    if (ValueCheck.Check(schema, references, value)) return ValueClone.Clone(value)
+    const created = IsArray(value) ? ValueClone.Clone(value) : ValueCreate.Create(schema, references)
     const minimum = IsNumber(schema.minItems) && created.length < schema.minItems ? [...created, ...globalThis.Array.from({ length: schema.minItems - created.length }, () => null)] : created
     const maximum = IsNumber(schema.maxItems) && minimum.length > schema.maxItems ? minimum.slice(0, schema.maxItems) : minimum
-    const casted = maximum.map((value: unknown) => Visit(schema.items, value))
+    const casted = maximum.map((value: unknown) => Visit(schema.items, references, value))
     if (schema.uniqueItems !== true) return casted
     const unique = [...new Set(casted)]
-    if (!ValueCheck.Check(schema, unique)) throw new ValueCastArrayUniqueItemsTypeError(schema, unique)
+    if (!ValueCheck.Check(schema, references, unique)) throw new ValueCastArrayUniqueItemsTypeError(schema, unique)
     return unique
   }
-  function BigInt(schema: Types.TBigInt, value: any): any {
-    return ValueCheck.Check(schema, value) ? value : ValueCreate.Create(schema)
+  function BigInt(schema: Types.TBigInt, references: Types.TSchema[], value: any): any {
+    return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
   }
-  function Boolean(schema: Types.TBoolean, value: any): any {
-    return ValueCheck.Check(schema, value) ? value : ValueCreate.Create(schema)
+  function Boolean(schema: Types.TBoolean, references: Types.TSchema[], value: any): any {
+    return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
   }
-  function Constructor(schema: Types.TConstructor, value: any): any {
-    if (ValueCheck.Check(schema, value)) return ValueCreate.Create(schema)
+  function Constructor(schema: Types.TConstructor, references: Types.TSchema[], value: any): any {
+    if (ValueCheck.Check(schema, references, value)) return ValueCreate.Create(schema, references)
     const required = new Set(schema.returns.required || [])
     const result = function () {}
     for (const [key, property] of globalThis.Object.entries(schema.returns.properties)) {
       if (!required.has(key) && value.prototype[key] === undefined) continue
-      result.prototype[key] = Visit(property as Types.TSchema, value.prototype[key])
+      result.prototype[key] = Visit(property as Types.TSchema, references, value.prototype[key])
     }
     return result
   }
-  function Date(schema: Types.TDate, value: any): any {
-    return ValueCheck.Check(schema, value) ? ValueClone.Clone(value) : ValueCreate.Create(schema)
+  function Date(schema: Types.TDate, references: Types.TSchema[], value: any): any {
+    return ValueCheck.Check(schema, references, value) ? ValueClone.Clone(value) : ValueCreate.Create(schema, references)
   }
-  function Function(schema: Types.TFunction, value: any): any {
-    return ValueCheck.Check(schema, value) ? value : ValueCreate.Create(schema)
+  function Function(schema: Types.TFunction, references: Types.TSchema[], value: any): any {
+    return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
   }
-  function Integer(schema: Types.TInteger, value: any): any {
-    return ValueCheck.Check(schema, value) ? value : ValueCreate.Create(schema)
+  function Integer(schema: Types.TInteger, references: Types.TSchema[], value: any): any {
+    return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
   }
-  function Intersect(schema: Types.TIntersect, value: any): any {
-    const created = ValueCreate.Create(schema)
+  function Intersect(schema: Types.TIntersect, references: Types.TSchema[], value: any): any {
+    const created = ValueCreate.Create(schema, references)
     const mapped = IsObject(created) && IsObject(value) ? { ...(created as any), ...value } : value
-    return ValueCheck.Check(schema, mapped) ? mapped : ValueCreate.Create(schema)
+    return ValueCheck.Check(schema, references, mapped) ? mapped : ValueCreate.Create(schema, references)
   }
-  function Literal(schema: Types.TLiteral, value: any): any {
-    return ValueCheck.Check(schema, value) ? value : ValueCreate.Create(schema)
+  function Literal(schema: Types.TLiteral, references: Types.TSchema[], value: any): any {
+    return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
   }
-  function Never(schema: Types.TNever, value: any): any {
+  function Never(schema: Types.TNever, references: Types.TSchema[], value: any): any {
     throw new ValueCastNeverTypeError(schema)
   }
-  function Not(schema: Types.TNot, value: any): any {
-    return ValueCheck.Check(schema, value) ? value : ValueCreate.Create(schema.allOf[1])
+  function Not(schema: Types.TNot, references: Types.TSchema[], value: any): any {
+    return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema.allOf[1], references)
   }
-  function Null(schema: Types.TNull, value: any): any {
-    return ValueCheck.Check(schema, value) ? value : ValueCreate.Create(schema)
+  function Null(schema: Types.TNull, references: Types.TSchema[], value: any): any {
+    return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
   }
-  function Number(schema: Types.TNumber, value: any): any {
-    return ValueCheck.Check(schema, value) ? value : ValueCreate.Create(schema)
+  function Number(schema: Types.TNumber, references: Types.TSchema[], value: any): any {
+    return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
   }
-  function Object(schema: Types.TObject, value: any): any {
-    if (ValueCheck.Check(schema, value)) return value
-    if (value === null || typeof value !== 'object') return ValueCreate.Create(schema)
+  function Object(schema: Types.TObject, references: Types.TSchema[], value: any): any {
+    if (ValueCheck.Check(schema, references, value)) return value
+    if (value === null || typeof value !== 'object') return ValueCreate.Create(schema, references)
     const required = new Set(schema.required || [])
     const result = {} as Record<string, any>
     for (const [key, property] of globalThis.Object.entries(schema.properties)) {
       if (!required.has(key) && value[key] === undefined) continue
-      result[key] = Visit(property, value[key])
+      result[key] = Visit(property, references, value[key])
     }
     // additional schema properties
     if (typeof schema.additionalProperties === 'object') {
       const propertyNames = globalThis.Object.getOwnPropertyNames(schema.properties)
       for (const propertyName of globalThis.Object.getOwnPropertyNames(value)) {
         if (propertyNames.includes(propertyName)) continue
-        result[propertyName] = Visit(schema.additionalProperties, value[propertyName])
+        result[propertyName] = Visit(schema.additionalProperties, references, value[propertyName])
       }
     }
     return result
   }
-  function Promise(schema: Types.TSchema, value: any): any {
-    return ValueCheck.Check(schema, value) ? value : ValueCreate.Create(schema)
+  function Promise(schema: Types.TSchema, references: Types.TSchema[], value: any): any {
+    return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
   }
-  function Record(schema: Types.TRecord<any, any>, value: any): any {
-    if (ValueCheck.Check(schema, value)) return ValueClone.Clone(value)
-    if (value === null || typeof value !== 'object' || globalThis.Array.isArray(value) || value instanceof globalThis.Date) return ValueCreate.Create(schema)
+  function Record(schema: Types.TRecord<any, any>, references: Types.TSchema[], value: any): any {
+    if (ValueCheck.Check(schema, references, value)) return ValueClone.Clone(value)
+    if (value === null || typeof value !== 'object' || globalThis.Array.isArray(value) || value instanceof globalThis.Date) return ValueCreate.Create(schema, references)
     const subschemaPropertyName = globalThis.Object.getOwnPropertyNames(schema.patternProperties)[0]
     const subschema = schema.patternProperties[subschemaPropertyName]
     const result = {} as Record<string, any>
     for (const [propKey, propValue] of globalThis.Object.entries(value)) {
-      result[propKey] = Visit(subschema, propValue)
+      result[propKey] = Visit(subschema, references, propValue)
     }
     return result
   }
-  function Ref(schema: Types.TRef<any>, value: any): any {
-    return Visit(Types.ReferenceRegistry.DerefOne(schema), value)
+  function Ref(schema: Types.TRef<any>, references: Types.TSchema[], value: any): any {
+    const index = references.findIndex((foreign) => foreign.$id === schema.$ref)
+    if (index === -1) throw new ValueCastDereferenceError(schema)
+    const target = references[index]
+    return Visit(target, references, value)
   }
-  function Self(schema: Types.TSelf, value: any): any {
-    return Visit(Types.ReferenceRegistry.DerefOne(schema), value)
+  function Self(schema: Types.TSelf, references: Types.TSchema[], value: any): any {
+    const index = references.findIndex((foreign) => foreign.$id === schema.$ref)
+    if (index === -1) throw new ValueCastDereferenceError(schema)
+    const target = references[index]
+    return Visit(target, references, value)
   }
-  function String(schema: Types.TString, value: any): any {
-    return ValueCheck.Check(schema, value) ? value : ValueCreate.Create(schema)
+  function String(schema: Types.TString, references: Types.TSchema[], value: any): any {
+    return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
   }
-  function Symbol(schema: Types.TSymbol, value: any): any {
-    return ValueCheck.Check(schema, value) ? ValueClone.Clone(value) : ValueCreate.Create(schema)
+  function Symbol(schema: Types.TSymbol, references: Types.TSchema[], value: any): any {
+    return ValueCheck.Check(schema, references, value) ? ValueClone.Clone(value) : ValueCreate.Create(schema, references)
   }
-  function Tuple(schema: Types.TTuple<any[]>, value: any): any {
-    if (ValueCheck.Check(schema, value)) return ValueClone.Clone(value)
-    if (!globalThis.Array.isArray(value)) return ValueCreate.Create(schema)
+  function Tuple(schema: Types.TTuple<any[]>, references: Types.TSchema[], value: any): any {
+    if (ValueCheck.Check(schema, references, value)) return ValueClone.Clone(value)
+    if (!globalThis.Array.isArray(value)) return ValueCreate.Create(schema, references)
     if (schema.items === undefined) return []
-    return schema.items.map((schema, index) => Visit(schema, value[index]))
+    return schema.items.map((schema, index) => Visit(schema, references, value[index]))
   }
-  function Undefined(schema: Types.TUndefined, value: any): any {
-    return ValueCheck.Check(schema, value) ? ValueClone.Clone(value) : ValueCreate.Create(schema)
+  function Undefined(schema: Types.TUndefined, references: Types.TSchema[], value: any): any {
+    return ValueCheck.Check(schema, references, value) ? ValueClone.Clone(value) : ValueCreate.Create(schema, references)
   }
-  function Union(schema: Types.TUnion, value: any): any {
-    return ValueCheck.Check(schema, value) ? ValueClone.Clone(value) : UnionCastCreate.Create(schema, value)
+  function Union(schema: Types.TUnion, references: Types.TSchema[], value: any): any {
+    return ValueCheck.Check(schema, references, value) ? ValueClone.Clone(value) : UnionCastCreate.Create(schema, references, value)
   }
-  function Uint8Array(schema: Types.TUint8Array, value: any): any {
-    return ValueCheck.Check(schema, value) ? ValueClone.Clone(value) : ValueCreate.Create(schema)
+  function Uint8Array(schema: Types.TUint8Array, references: Types.TSchema[], value: any): any {
+    return ValueCheck.Check(schema, references, value) ? ValueClone.Clone(value) : ValueCreate.Create(schema, references)
   }
-  function Unknown(schema: Types.TUnknown, value: any): any {
-    return ValueCheck.Check(schema, value) ? ValueClone.Clone(value) : ValueCreate.Create(schema)
+  function Unknown(schema: Types.TUnknown, references: Types.TSchema[], value: any): any {
+    return ValueCheck.Check(schema, references, value) ? ValueClone.Clone(value) : ValueCreate.Create(schema, references)
   }
-  function Void(schema: Types.TVoid, value: any): any {
-    return ValueCheck.Check(schema, value) ? ValueClone.Clone(value) : ValueCreate.Create(schema)
+  function Void(schema: Types.TVoid, references: Types.TSchema[], value: any): any {
+    return ValueCheck.Check(schema, references, value) ? ValueClone.Clone(value) : ValueCreate.Create(schema, references)
   }
-  function UserDefined(schema: Types.TSchema, value: any): any {
-    return ValueCheck.Check(schema, value) ? ValueClone.Clone(value) : ValueCreate.Create(schema)
+  function UserDefined(schema: Types.TSchema, references: Types.TSchema[], value: any): any {
+    return ValueCheck.Check(schema, references, value) ? ValueClone.Clone(value) : ValueCreate.Create(schema, references)
   }
-  export function Visit(schema: Types.TSchema, value: any): any {
-    const anySchema = schema as any
+  export function Visit(schema: Types.TSchema, references: Types.TSchema[], value: any): any {
+    const references_ = IsString(schema.$id) ? [...references, schema] : references
+    const schema_ = schema as any
     switch (schema[Types.Kind]) {
       case 'Any':
-        return Any(anySchema, value)
+        return Any(schema_, references_, value)
       case 'Array':
-        return Array(anySchema, value)
+        return Array(schema_, references_, value)
       case 'BigInt':
-        return BigInt(anySchema, value)
+        return BigInt(schema_, references_, value)
       case 'Boolean':
-        return Boolean(anySchema, value)
+        return Boolean(schema_, references_, value)
       case 'Constructor':
-        return Constructor(anySchema, value)
+        return Constructor(schema_, references_, value)
       case 'Date':
-        return Date(anySchema, value)
+        return Date(schema_, references_, value)
       case 'Function':
-        return Function(anySchema, value)
+        return Function(schema_, references_, value)
       case 'Integer':
-        return Integer(anySchema, value)
+        return Integer(schema_, references_, value)
       case 'Intersect':
-        return Intersect(anySchema, value)
+        return Intersect(schema_, references_, value)
       case 'Literal':
-        return Literal(anySchema, value)
+        return Literal(schema_, references_, value)
       case 'Never':
-        return Never(anySchema, value)
+        return Never(schema_, references_, value)
       case 'Not':
-        return Not(anySchema, value)
+        return Not(schema_, references_, value)
       case 'Null':
-        return Null(anySchema, value)
+        return Null(schema_, references_, value)
       case 'Number':
-        return Number(anySchema, value)
+        return Number(schema_, references_, value)
       case 'Object':
-        return Object(anySchema, value)
+        return Object(schema_, references_, value)
       case 'Promise':
-        return Promise(anySchema, value)
+        return Promise(schema_, references_, value)
       case 'Record':
-        return Record(anySchema, value)
+        return Record(schema_, references_, value)
       case 'Ref':
-        return Ref(anySchema, value)
+        return Ref(schema_, references_, value)
       case 'Self':
-        return Self(anySchema, value)
+        return Self(schema_, references_, value)
       case 'String':
-        return String(anySchema, value)
+        return String(schema_, references_, value)
       case 'Symbol':
-        return Symbol(anySchema, value)
+        return Symbol(schema_, references_, value)
       case 'Tuple':
-        return Tuple(anySchema, value)
+        return Tuple(schema_, references_, value)
       case 'Undefined':
-        return Undefined(anySchema, value)
+        return Undefined(schema_, references_, value)
       case 'Union':
-        return Union(anySchema, value)
+        return Union(schema_, references_, value)
       case 'Uint8Array':
-        return Uint8Array(anySchema, value)
+        return Uint8Array(schema_, references_, value)
       case 'Unknown':
-        return Unknown(anySchema, value)
+        return Unknown(schema_, references_, value)
       case 'Void':
-        return Void(anySchema, value)
+        return Void(schema_, references_, value)
       default:
-        if (!Types.TypeRegistry.Has(anySchema[Types.Kind])) throw new ValueCastUnknownTypeError(anySchema)
-        return UserDefined(anySchema, value)
+        if (!Types.TypeRegistry.Has(schema_[Types.Kind])) throw new ValueCastUnknownTypeError(schema_)
+        return UserDefined(schema_, references_, value)
     }
   }
-  export function Cast<T extends Types.TSchema>(schema: T, value: any): Types.Static<T> {
-    return Visit(schema, ValueClone.Clone(value))
+  export function Cast<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: any): Types.Static<T> {
+    return Visit(schema, references, ValueClone.Clone(value))
   }
 }

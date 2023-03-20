@@ -62,18 +62,18 @@ FormatRegistry.Set('email', (value) => EMAIL.test(value))
 FormatRegistry.Set('uuid', (value) => UUID.test(value))
 FormatRegistry.Set('date-time', (value) => isDateTime(value, true))
 
-export function Ok<T extends TSchema>(schema: T, data: unknown) {
-  const C = TypeCompiler.Compile(schema)
+export function Ok<T extends TSchema>(schema: T, data: unknown, references: any[] = []) {
+  const C = TypeCompiler.Compile(schema, references)
   const result = C.Check(data)
-  if (result !== Value.Check(schema, data)) {
+  if (result !== Value.Check(schema, references, data)) {
     throw Error('Compiler and Value Check disparity')
   }
   if (result === false) {
-    const errors = [...Value.Errors(schema, data)]
+    const errors = [...Value.Errors(schema, references, data)]
     if (errors.length === 0) throw Error('expected at least 1 error')
   }
   if (result === true) {
-    const errors = [...Value.Errors(schema, data)]
+    const errors = [...Value.Errors(schema, references, data)]
     if (errors.length > 0) throw Error('expected no errors')
   }
   if (!result) {
@@ -93,15 +93,15 @@ export function Ok<T extends TSchema>(schema: T, data: unknown) {
   }
 }
 
-export function Fail<T extends TSchema>(schema: T, data: unknown) {
-  const C = TypeCompiler.Compile(schema)
+export function Fail<T extends TSchema>(schema: T, data: unknown, references: any[] = []) {
+  const C = TypeCompiler.Compile(schema, references)
   const result = C.Check(data)
   if (result === false) {
-    const errors = [...Value.Errors(schema, data)]
+    const errors = [...Value.Errors(schema, references, data)]
     if (errors.length === 0) throw Error('expected at least 1 error')
   }
   if (result === true) {
-    const errors = [...Value.Errors(schema, data)]
+    const errors = [...Value.Errors(schema, references, data)]
     if (errors.length > 0) throw Error('expected no errors')
   }
   if (result) {

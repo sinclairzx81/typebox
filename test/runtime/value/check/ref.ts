@@ -1,8 +1,8 @@
+import { Value } from '@sinclair/typebox/value'
 import { Type } from '@sinclair/typebox'
-import { Ok, Fail } from './validate'
-import { Assert } from '../assert/index'
+import { Assert } from '../../assert/index'
 
-describe('type/compiler/Ref', () => {
+describe('value/check/Ref', () => {
   it('Should should validate when referencing a type', () => {
     const T = Type.Object(
       {
@@ -13,14 +13,13 @@ describe('type/compiler/Ref', () => {
       { $id: Assert.nextId() },
     )
     const R = Type.Ref(T)
-    Ok(
-      R,
-      {
+    Assert.deepEqual(
+      Value.Check(R, [T], {
         x: 1,
         y: 2,
         z: 3,
-      },
-      [T],
+      }),
+      true,
     )
   })
 
@@ -34,13 +33,12 @@ describe('type/compiler/Ref', () => {
       { $id: Assert.nextId() },
     )
     const R = Type.Ref(T)
-    Fail(
-      R,
-      {
+    Assert.deepEqual(
+      Value.Check(R, [T], {
         x: 1,
         y: 2,
-      },
-      [T],
+      }),
+      false,
     )
   })
 
@@ -61,11 +59,14 @@ describe('type/compiler/Ref', () => {
       },
       { $id: 'T' },
     )
-
-    Ok(R, { x: 1, y: 2, z: 3 }, [T])
-    Ok(R, { x: 1, y: 2, z: 3, r: { name: 'hello' } }, [T])
-    Fail(R, { x: 1, y: 2, z: 3, r: { name: 1 } }, [T])
-    Fail(R, { x: 1, y: 2, z: 3, r: {} }, [T])
+    Assert.deepEqual(Value.Check(R, [T], { x: 1, y: 2, z: 3 }), true)
+    Assert.deepEqual(Value.Check(R, [T], { x: 1, y: 2, z: 3, r: { name: 'hello' } }), true)
+    Assert.deepEqual(Value.Check(R, [T], { x: 1, y: 2, z: 3, r: { name: 1 } }), false)
+    Assert.deepEqual(Value.Check(R, [T], { x: 1, y: 2, z: 3, r: {} }), false)
+    // Ok(R, { x: 1, y: 2, z: 3 }, [T])
+    // Ok(R, , [T])
+    // Fail(R, , [T])
+    // Fail(R, , [T])
   })
 
   it('Should reference recursive schema', () => {
@@ -76,7 +77,7 @@ describe('type/compiler/Ref', () => {
       }),
     )
     const R = Type.Ref(T)
-    Ok(R, { id: '', nodes: [{ id: '', nodes: [] }] }, [T])
-    Fail(R, { id: '', nodes: [{ id: 1, nodes: [] }] }, [T])
+    Assert.deepEqual(Value.Check(R, [T], { id: '', nodes: [{ id: '', nodes: [] }] }), true)
+    Assert.deepEqual(Value.Check(R, [T], { id: '', nodes: [{ id: 1, nodes: [] }] }), false)
   })
 })
