@@ -189,7 +189,7 @@ function receive(value: T) {                         // ... as a Static Type
 
 ## Types
 
-TypeBox types are JSON schema fragments that can compose into more complex types. Each schema fragment is designed to ensure a JSON Schema compliant validator can runtime assert a value in the same way TypeScript statically asserts a type. TypeBox provides two type sets; the first is a `Standard` set which produces spec compliant JSON schema, the second is an `Extended` set used to define primitives and constructs native to JavaScript. The following sections outline these type sets.
+TypeBox types are JSON schema fragments that can be composed into more complex types. Each fragment is structured such that a JSON schema compliant validator can assert values the same way TypeScript will statically assert a type. TypeBox includes both a set of `Standard` types which are used to produce spec compliant JSON schema, as well as a `Extended` type set used to define constructs native to JavaScript. The following sections outline these type sets.
 
 <a name='types-standard'></a>
 
