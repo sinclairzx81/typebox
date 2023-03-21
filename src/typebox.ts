@@ -179,7 +179,7 @@ export type TCompositeUnionRight<T extends TObject, Acc extends TProperties> = {
 export type TCompositeUnionObject<T extends TObject, Acc extends TProperties> = Evaluate<TCompositeUnionLeft<T, Acc> & TCompositeUnionRight<T, Acc>>
 // prettier-ignore
 export type TCompositeProperties<T extends TObject[], Acc extends TProperties> = 
-  T extends [...infer R, infer L] ? TCompositeProperties<Assert<R, TObject[]>, TCompositeUnionObject<Assert<L, TObject>, Acc>> :
+  T extends [...infer L, infer R] ? TCompositeProperties<Assert<L, TObject[]>, TCompositeUnionObject<Assert<R, TObject>, Acc>> :
   T extends [] ? Acc :
   never
 export type TComposite<T extends TObject[] = TObject[]> = Ensure<TObject<TCompositeProperties<T, {}>>>
