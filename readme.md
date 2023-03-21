@@ -605,7 +605,7 @@ TypeBox provides modifiers that allow schema properties to be statically inferre
 
 ### Options
 
-You can pass JSON Schema compliant options on the last argument of any type. Option property hints are provided for convenience.
+You can pass JSON Schema options on the last argument of any type. Option hints specific to each type are provided for convenience.
 
 ```typescript
 // String must be an email
