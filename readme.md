@@ -62,9 +62,9 @@ type T = Static<typeof T>                            // type T = {
 
 ## Overview
 
-TypeBox is a runtime type builder that constructs in-memory JSON Schema objects that can be statically inferred as TypeScript types. The schemas produced by this library are designed to match the static type checking rules of the TypeScript compiler. TypeBox enables one to create a unified type that can be statically checked by TypeScript and runtime asserted using standard JSON Schema validation.
+TypeBox is a runtime type builder that creates in-memory JSON Schema objects that can be statically inferred as TypeScript types. The schemas produced by this library are designed to match the static type assertion rules of the TypeScript compiler. TypeBox enables one to create a unified type that can be statically checked by TypeScript and runtime asserted using standard JSON Schema validation.
 
-This library is designed to enable JSON schema to compose with the same flexibility as TypeScript's type system. It can be used as a simple tool to build up complex schemas or integrated into REST and RPC services to help validate data received over the wire. 
+This library is designed to enable JSON schema to compose with the same flexibility as TypeScript's type system. It can be used as a simple tool to build up complex schemas or integrated into REST or RPC services to help validate data received over the wire. 
 
 License MIT
 
@@ -464,9 +464,7 @@ The following table lists the Standard TypeBox types. These types are fully comp
 
 ### Extended Types
 
-TypeBox provides several extended types that can be used to produce schematics for common JavaScript constructs. These types cannot be used with standard JSON schema validators; but are useful to help frame schematics for RPC interfaces that may receive JSON validated data. Extended types are prefixed with the `[Extended]` doc comment for convenience.
-
-The following lists the supported types
+TypeBox provides several extended types that can be used to produce schematics for common JavaScript constructs. These types can not be used with standard JSON schema validators; but are useful to help frame schematics for RPC interfaces that may receive JSON validated data. Extended types are prefixed with the `[Extended]` doc comment for convenience. The following table lists the supported types.
 
 ```typescript
 ┌────────────────────────────────┬─────────────────────────────┬────────────────────────────────┐
@@ -692,7 +690,7 @@ type T = Static<typeof T>                           // type T = string | null
 
 ### Reference Types
 
-Reference types are supported with `Type.Ref(...)`. The target type must specify an `$id`.
+Reference types are supported with `Type.Ref(...)`. The target type must specify a valid `$id`.
 
 ```typescript
 const T = Type.String({ $id: 'T' })                  // const T = {
@@ -748,7 +746,7 @@ function test(node: Node) {
 
 Conditional types are supported with `Extends`, `Exclude` and `Extract`.
 
-#### TypeScript
+**TypeScript**
 
 ```typescript
 type T0 = string extends number ? true : false                                                 
@@ -758,7 +756,7 @@ type T1 = Extract<string | number, number>
 type T2 = Exclude<string | number, number>                                                     
 //   ^ string
 ```
-#### TypeBox
+**TypeBox**
 ```typescript
 const T0 = Type.Extends(Type.String(), Type.Number(), Type.Literal(true), Type.Literal(false)) 
 //    ^ TLiteral<false>
@@ -772,7 +770,7 @@ const T2 = Type.Exclude(Type.Union([Type.String(), Type.Number()]), Type.Number(
 
 ### Unsafe
 
-Use `Type.Unsafe(...)` to create custom schemas with user defined inference rules.
+Use `Type.Unsafe(...)` to create custom schematics with user defined inference rules.
 
 ```typescript
 const T = Type.Unsafe<string>({ type: 'number' })    // const T = {
@@ -782,7 +780,7 @@ const T = Type.Unsafe<string>({ type: 'number' })    // const T = {
 type T = Static<typeof T>                            // type T = string
 ```
 
-The `Type.Unsafe(...)` type allows for the expression of specific OpenAPI schema representations.
+The `Type.Unsafe(...)` type can be useful to express specific OpenAPI schema representations.
 
 ```typescript
 import { Type, Static, TSchema } from '@sinclair/typebox'
@@ -817,7 +815,7 @@ type T = Static<typeof T>                            // type T = 'A' | 'B' | 'C'
 
 ### Guards
 
-TypeBox provides a `TypeGuard` module for reflection and type assertion.
+TypeBox provides a `TypeGuard` module that can be used for reflection and asserting values as types.
 
 ```typescript
 import { Type, TypeGuard } from '@sinclair/typebox'
@@ -834,7 +832,7 @@ if(TypeGuard.TString(T)) {
 
 ### Strict
 
-TypeBox schemas contain the `Kind` and `Modifier` symbol properties. These properties are used for type composition and runtime type reflection. These properties are not strictly valid JSON schema; so in some cases it may be desirable to omit them. TypeBox provides a `Type.Strict()` function that will omit these properties if necessary.
+TypeBox schemas contain the `Kind` and `Modifier` symbol properties. These properties are used for type composition and reflection. These properties are not strictly valid JSON schema; so in some cases it may be desirable to omit them. TypeBox provides a `Type.Strict()` function that will omit these properties if necessary.
 
 ```typescript
 const T = Type.Object({                              // const T = {
@@ -863,7 +861,7 @@ const U = Type.Strict(T)                             // const U = {
 
 ## Values
 
-TypeBox provides an optional utility module that can be used to perform common operations on JavaScript values. This module includes functionality to create, check and cast values from types as well as check equality, clone, diff and patch JavaScript values. This module is provided via additional import.
+TypeBox provides an optional utility module that can be used to perform common operations on JavaScript values. This module includes functionality to create, check and cast values from types as well as check equality, clone, diff and patch JavaScript values. This module is provided via optional import.
 
 ```typescript
 import { Value } from '@sinclair/typebox/value'
