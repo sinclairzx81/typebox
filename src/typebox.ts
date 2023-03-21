@@ -169,18 +169,20 @@ export type TInstanceType<T extends TConstructor<TSchema[], TSchema>> = T['retur
 // TComposite
 // --------------------------------------------------------------------------
 export type TCompositeUnion<Left extends TSchema, Right extends TSchema> = Ensure<TUnion<[Left, Right]>>
+// note: we need to take the left and right as the accumulator is assigned for multiple composite property sets with missing properties.
+export type TCompositeUnionLeft<T extends TObject, Acc extends TProperties> = {
+  [K in keyof T['properties']]: K extends keyof Acc ? TCompositeUnion<T['properties'][K], Acc[K]> : T['properties'][K]
+}
+export type TCompositeUnionRight<T extends TObject, Acc extends TProperties> = {
+  [K in keyof Acc]: K extends keyof T['properties'] ? TCompositeUnion<T['properties'][K], Acc[K]> : Acc[K]
+}
+export type TCompositeUnionObject<T extends TObject, Acc extends TProperties> = Evaluate<TCompositeUnionLeft<T, Acc> & TCompositeUnionRight<T, Acc>>
 // prettier-ignore
-export type TCompositeMerge<T extends TObject, Output extends Record<any, TSchema>> = Evaluate<{
-  [Key in keyof T['properties']]: Key extends keyof Output ? TCompositeUnion<T['properties'][Key], Output[Key]>: T['properties'][Key]
-} & {
-  [Key in keyof Output]: Key extends keyof T['properties'] ? TCompositeUnion<T['properties'][Key], Output[Key]> : Output[Key]
-}>
-// prettier-ignore
-export type TCompositeReduce<T extends TObject[], Output extends {}> = 
-  T extends [infer L, ...infer R] ? TCompositeReduce<[...Assert<R, TObject[]>], TCompositeMerge<Assert<L, TObject>, Output>> :
-  T extends [] ? Output :
+export type TCompositeProperties<T extends TObject[], Acc extends TProperties> = 
+  T extends [...infer R, infer L] ? TCompositeProperties<Assert<R, TObject[]>, TCompositeUnionObject<Assert<L, TObject>, Acc>> :
+  T extends [] ? Acc :
   never
-export type TComposite<T extends TObject[] = TObject[]> = Ensure<TObject<TCompositeReduce<T, {}>>>
+export type TComposite<T extends TObject[] = TObject[]> = Ensure<TObject<TCompositeProperties<T, {}>>>
 // --------------------------------------------------------------------------
 // TConstructor
 // --------------------------------------------------------------------------
@@ -1722,7 +1724,7 @@ export namespace TypeClone {
       return { ...acc, [key]: Visit(value[key]) }
     }, {})
     const clonedSymbols = globalThis.Object.getOwnPropertySymbols(value).reduce((acc, key) => {
-      return { ...acc, [key]: Visit(value[key]) }
+      return { ...acc, [key]: Visit(value[key as any]) }
     }, {})
     return { ...clonedProperties, ...clonedSymbols }
   }
@@ -1843,26 +1845,15 @@ export class StandardTypeBuilder extends TypeBuilder {
   public Boolean(options: SchemaOptions = {}): TBoolean {
     return this.Create({ ...options, [Kind]: 'Boolean', type: 'boolean' })
   }
-  /** `[Standard]` Creates a Composite object type that will Union any overlapping properties of the given Object array */
-  public Composite<T extends TIntersect<TObject[]>>(schema: T, options?: ObjectOptions): TComposite<T['allOf']>
-  /** `[Standard]` Creates a Composite object type that will Union any overlapping properties of the given Object array */
-  public Composite<T extends TObject[]>(schemas: [...T], options?: ObjectOptions): TComposite<T>
-  public Composite(unresolved: unknown, options: ObjectOptions = {}): TComposite {
-    const schemas = TypeGuard.TIntersect(unresolved) ? (unresolved.allOf as TObject[]) : (unresolved as TObject[])
-    const optional = new Set<string>()
-    for (const schema of schemas) {
-      for (const [key, property] of globalThis.Object.entries(schema.properties)) {
-        if (TypeGuard.TOptional(property) || TypeGuard.TReadonlyOptional(property)) optional.add(key)
-      }
-    }
+  /** `[Standard]` Creates a Composite object type that will union any overlapping properties of the given object array */
+  public Composite<T extends TObject[]>(schemas: [...T], options?: ObjectOptions): TComposite<T> {
     const properties = {} as TProperties
     for (const object of schemas) {
       for (const [key, property] of globalThis.Object.entries(object.properties)) {
-        const mapped = key in properties ? this.Union([properties[key], property]) : TypeClone.Clone(property, {})
-        properties[key] = optional.has(key) ? this.Optional(mapped) : mapped
+        properties[key] = key in properties ? this.Union([properties[key], property]) : TypeClone.Clone(property, {})
       }
     }
-    return this.Object(properties, options) as TComposite
+    return this.Object(properties, options) as TComposite<T>
   }
   /** `[Standard]` Creates a Enum type */
   public Enum<T extends Record<string, string | number>>(item: T, options: SchemaOptions = {}): TEnum<T> {
