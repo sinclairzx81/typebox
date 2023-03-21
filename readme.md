@@ -561,7 +561,7 @@ The following lists the supported types
 
 ### Modifiers
 
-TypeBox provides modifiers that allow schema properties to be statically inferred as `readonly` or `optional` properties. The following table shows the supported modifiers and how they map between TypeScript and JSON Schema.
+TypeBox provides modifiers that allow schema properties to be statically inferred as `readonly` or `optional`. The following table shows the supported modifiers and how they map between TypeScript and JSON Schema.
 
 ```typescript
 ┌────────────────────────────────┬─────────────────────────────┬────────────────────────────────┐
