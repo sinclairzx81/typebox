@@ -189,9 +189,7 @@ function receive(value: T) {                         // ... as a Static Type
 
 ## Types
 
-TypeBox types are JSON schema fragments that can be composed into more complex types. Each fragment is structured such that a JSON schema compliant validator can assert values the same way TypeScript will statically assert a type. TypeBox provides a set of `Standard` types which are used to define spec compliant JSON schema as well as a `Extended` type set used to define constructs native to JavaScript. 
-
-The following sections outline these type sets.
+TypeBox types are JSON schema fragments that can be composed into more complex types. Each fragment is structured such that a JSON schema compliant validator can assert values the same way TypeScript will statically assert a type. TypeBox provides a set of Standard types which are used to define spec compliant JSON schema as well as an Extended type set used to define constructs native to JavaScript. 
 
 <a name='types-standard'></a>
 
@@ -748,7 +746,7 @@ function test(node: Node) {
 
 ### Conditional Types
 
-Conditional types are supported with `Extends`, `Exclude` and `Extract`. These work the same as in TypeScript.
+Conditional types are supported with `Extends`, `Exclude` and `Extract`.
 
 #### TypeScript
 
