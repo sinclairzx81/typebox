@@ -11,11 +11,11 @@ export namespace Cases {
 
   export const Primitive_String = Type.String()
 
+  export const Primitive_String_Pattern = Type.RegEx(/foo/, { default: 'foo' })
+
   export const Primitive_Boolean = Type.Boolean()
 
   export const Primitive_Null = Type.Null()
-
-  export const Primitive_RegEx = Type.RegEx(/foo/, { default: 'foo' })
 
   export const Object_Unconstrained = Type.Object({
     number: Type.Number(),
