@@ -644,7 +644,7 @@ const T = Type.Array(Type.Integer(), {               // const T = {
 
 ### Generic Types
 
-Generic types can be created with generic functions. The following creates a generic `Vector<T>` type. 
+Generic types can be created with generic functions constrained to type `TSchema`. The following creates a generic `Vector<T>` type.
 
 ```typescript
 import { Type, Static, TSchema } from '@sinclair/typebox'
@@ -661,6 +661,12 @@ const NumberVector = Vector(Type.Number())           // const NumberVector = {
                                                      //   }
                                                      // }
 
+type NumberVector = Static<typeof NumberVector>      // type NumberVector = {
+                                                     //   x: number,
+                                                     //   y: number,
+                                                     //   z: number
+                                                     // }
+
 const BooleanVector = Vector(Type.Boolean())         // const BooleanVector = {
                                                      //   type: 'object',
                                                      //   required: ['x', 'y', 'z'],
@@ -670,13 +676,34 @@ const BooleanVector = Vector(Type.Boolean())         // const BooleanVector = {
                                                      //     z: { type: 'boolean' }
                                                      //   }
                                                      // }
+
+type BooleanVector = Static<typeof BooleanVector>    // type BooleanVector = {
+                                                     //   x: boolean,
+                                                     //   y: boolean,
+                                                     //   z: boolean
+                                                     // }
+```
+
+The following creates a generic `Nullable<T>` type.
+
+```typescript
+const Nullable = <T extends TSchema>(schema: T) => Type.Union([schema, Type.Null()])
+
+const T = Nullable(Type.String())                   // const T = {
+                                                    //   anyOf: [
+                                                    //     { type: 'string' },
+                                                    //     { type: 'null' }
+                                                    //   ]
+                                                    // }
+
+type T = Static<typeof T>                           // type T = string | null
 ```
 
 <a name='types-references'></a>
 
 ### Reference Types
 
-Reference types are supported with `Type.Ref(...)`.
+Reference types are supported with `Type.Ref(...)`. The target type must specify an `$id`.
 
 ```typescript
 const T = Type.String({ $id: 'T' })                  // const T = {
@@ -1144,14 +1171,14 @@ import { TypeSystem } from '@sinclair/typebox/system'
 
 ### Types
 
-Use the `CreateType(...)` function to create a custom type. This function will return a type factory function that can be used to construct the type. The following creates a Point type.
+Use the `Type(...)` function to create a custom type. This function will return a type factory function that can be used to construct the type. The following creates a Point type.
 
 ```typescript
 type PointOptions = { }                              // The Type Options
 
 type PointType = { x: number, y: number }            // The Static<T> Type
 
-const Point = TypeSystem.CreateType<PointType, PointOptions>('Point', (options, value) => {
+const Point = TypeSystem.Type<PointType, PointOptions>('Point', (options, value) => {
   return (
     typeof value === 'object' && value !== null &&
     typeof value.x === 'number' && 
@@ -1170,10 +1197,10 @@ const R = Value.Check(T, { x: 1, y: 2 })              // const R = true
 
 ### Formats
 
-Use the `CreateFormat(...)` function to create a custom string format. The following creates a custom string format that checks for lowercase strings.
+Use the `Format(...)` function to create a custom string format. The following creates a custom string format that checks for lowercase strings.
 
 ```typescript
-TypeSystem.CreateFormat('lowercase', value => value === value.toLowerCase()) // format should be lowercase
+TypeSystem.Format('lowercase', value => value === value.toLowerCase()) // format should be lowercase
 
 const T = Type.String({ format: 'lowercase' })       
 

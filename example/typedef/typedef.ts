@@ -26,8 +26,8 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import * as Types from '@sinclair/typebox'
 export { type Static, TSchema, PropertiesReduce, TReadonly, TReadonlyOptional, TOptional } from '@sinclair/typebox'
+import * as Types from '@sinclair/typebox'
 
 // --------------------------------------------------------------------------
 // Symbols

@@ -137,21 +137,21 @@ describe('system/TypeSystem/AllowVoidNull', () => {
 
 describe('system/TypeSystem/Format', () => {
   it('Should create and validate a format', () => {
-    TypeSystem.CreateFormat('CreateFormat0', (value) => value === value.toLowerCase())
+    TypeSystem.Format('CreateFormat0', (value) => value === value.toLowerCase())
     const T = Type.String({ format: 'CreateFormat0' })
     Ok(T, 'action')
     Fail(T, 'ACTION')
   })
   it('Should throw if registering the same format twice', () => {
-    TypeSystem.CreateFormat('CreateFormat1', (value) => true)
-    Assert.throws(() => TypeSystem.CreateFormat('CreateFormat1', (value) => true))
+    TypeSystem.Format('CreateFormat1', (value) => true)
+    Assert.throws(() => TypeSystem.Format('CreateFormat1', (value) => true))
   })
 })
 
 describe('system/TypeSystem/Type', () => {
   it('Should create and validate a type', () => {
     type BigNumberOptions = { minimum?: bigint; maximum?: bigint }
-    const BigNumber = TypeSystem.CreateType<bigint, BigNumberOptions>('CreateType0', (options, value) => {
+    const BigNumber = TypeSystem.Type<bigint, BigNumberOptions>('CreateType0', (options, value) => {
       if (typeof value !== 'bigint') return false
       if (options.maximum !== undefined && value > options.maximum) return false
       if (options.minimum !== undefined && value < options.minimum) return false
@@ -163,7 +163,7 @@ describe('system/TypeSystem/Type', () => {
     Fail(T, 25n)
   })
   it('Should throw if registering the same type twice', () => {
-    TypeSystem.CreateType('CreateType1', () => true)
-    Assert.throws(() => TypeSystem.CreateType('CreateType1', () => true))
+    TypeSystem.Type('CreateType1', () => true)
+    Assert.throws(() => TypeSystem.Type('CreateType1', () => true))
   })
 })
