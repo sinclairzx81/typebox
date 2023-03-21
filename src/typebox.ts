@@ -1882,7 +1882,7 @@ export class StandardTypeBuilder extends TypeBuilder {
       return (TypeExtends.Extends(left, right) !== TypeExtendsResult.False ? this.Never(options) : TypeClone.Clone(left, options)) as any
     }
   }
-  /** `[Standard]` Extracts from left left any type that is assignable to the right */
+  /** `[Standard]` Extracts from the left type any type that is assignable to the right */
   public Extract<L extends TSchema, R extends TSchema>(left: L, right: R, options: SchemaOptions = {}): TExtract<L, R> {
     if (TypeGuard.TUnion(left)) {
       const narrowed = left.anyOf.filter((inner) => TypeExtends.Extends(inner, right) !== TypeExtendsResult.False)
