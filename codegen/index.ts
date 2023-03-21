@@ -26,4 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export * from './codegen'
+export { TypeBoxToTypeScript } from './typebox-to-typescript'
+export { TypeBoxToZod } from './typebox-to-zod'
+export { TypeScriptToJsonSchema } from './typescript-to-json-schema'
+export { TypeScriptToTypeBox } from './typescript-to-typebox'

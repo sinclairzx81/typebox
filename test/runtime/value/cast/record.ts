@@ -28,37 +28,31 @@ describe('value/cast/Record', () => {
     const result = Value.Cast(T, value)
     Assert.deepEqual(result, E)
   })
-
   it('Should upcast from object', () => {
     const value = {}
     const result = Value.Cast(T, value)
     Assert.deepEqual(result, E)
   })
-
   it('Should upcast from array', () => {
     const value = [1]
     const result = Value.Cast(T, value)
     Assert.deepEqual(result, E)
   })
-
   it('Should upcast from undefined', () => {
     const value = undefined
     const result = Value.Cast(T, value)
     Assert.deepEqual(result, E)
   })
-
   it('Should upcast from null', () => {
     const value = null
     const result = Value.Cast(T, value)
     Assert.deepEqual(result, E)
   })
-
   it('Should upcast from date', () => {
     const value = new Date(100)
     const result = Value.Cast(T, value)
     Assert.deepEqual(result, E)
   })
-
   it('Should preserve', () => {
     const value = {
       a: { x: 1, y: 2, z: 3 },
@@ -67,7 +61,6 @@ describe('value/cast/Record', () => {
     const result = Value.Cast(T, value)
     Assert.deepEqual(result, value)
   })
-
   it('Should preserve and patch invalid records', () => {
     const value = {
       a: { x: 1, y: 2, z: 3 },

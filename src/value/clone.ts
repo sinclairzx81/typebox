@@ -32,24 +32,19 @@ export namespace ValueClone {
   function Array(value: ArrayType): any {
     return value.map((element: any) => Clone(element))
   }
-
   function Date(value: Date): any {
     return new globalThis.Date(value.toISOString())
   }
-
   function Object(value: ObjectType): any {
     const keys = [...globalThis.Object.keys(value), ...globalThis.Object.getOwnPropertySymbols(value)]
     return keys.reduce((acc, key) => ({ ...acc, [key]: Clone(value[key]) }), {})
   }
-
   function TypedArray(value: TypedArrayType): any {
     return value.slice()
   }
-
   function Value(value: ValueType): any {
     return value
   }
-
   export function Clone<T extends unknown>(value: T): T {
     if (Is.Date(value)) {
       return Date(value)

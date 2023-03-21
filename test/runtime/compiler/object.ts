@@ -6,27 +6,34 @@ describe('type/compiler/Object', () => {
     const T = Type.Object({})
     Fail(T, 42)
   })
-
   it('Should not validate a string', () => {
     const T = Type.Object({})
     Fail(T, 'hello')
   })
-
   it('Should not validate a boolean', () => {
     const T = Type.Object({})
     Fail(T, true)
   })
-
   it('Should not validate a null', () => {
     const T = Type.Object({})
     Fail(T, null)
   })
-
+  it('Should not validate undefined', () => {
+    const T = Type.Object({})
+    Fail(T, undefined)
+  })
+  it('Should not validate bigint', () => {
+    const T = Type.Object({})
+    Fail(T, BigInt(1))
+  })
+  it('Should not validate symbol', () => {
+    const T = Type.Object({})
+    Fail(T, Symbol(1))
+  })
   it('Should not validate an array', () => {
     const T = Type.Object({})
     Fail(T, [1, 2])
   })
-
   it('Should validate with correct property values', () => {
     const T = Type.Object({
       a: Type.Number(),
@@ -43,7 +50,6 @@ describe('type/compiler/Object', () => {
       e: { x: 10, y: 20 },
     })
   })
-
   it('Should not validate with incorrect property values', () => {
     const T = Type.Object({
       a: Type.Number(),
@@ -60,7 +66,6 @@ describe('type/compiler/Object', () => {
       e: { x: 10, y: 20 },
     })
   })
-
   it('Should allow additionalProperties by default', () => {
     const T = Type.Object({
       a: Type.Number(),
@@ -72,7 +77,6 @@ describe('type/compiler/Object', () => {
       c: true,
     })
   })
-
   it('Should not allow an empty object if minProperties is set to 1', () => {
     const T = Type.Object(
       {
@@ -85,7 +89,6 @@ describe('type/compiler/Object', () => {
     Ok(T, { b: 'hello' })
     Fail(T, {})
   })
-
   it('Should not allow 3 properties if maxProperties is set to 2', () => {
     const T = Type.Object(
       {
@@ -103,7 +106,6 @@ describe('type/compiler/Object', () => {
       c: true,
     })
   })
-
   it('Should not allow additionalProperties if additionalProperties is false', () => {
     const T = Type.Object(
       {
@@ -118,7 +120,6 @@ describe('type/compiler/Object', () => {
       c: true,
     })
   })
-
   it('Should not allow properties for an empty object when additionalProperties is false', () => {
     const T = Type.Object({}, { additionalProperties: false })
     Ok(T, {})
@@ -139,7 +140,6 @@ describe('type/compiler/Object', () => {
       '!@#$%^&*(': 4,
     })
   })
-
   it('Should validate schema additional properties of string', () => {
     const T = Type.Object(
       {
@@ -226,5 +226,17 @@ describe('type/compiler/Object', () => {
     Ok(T, { x: 1 })
     Ok(T, { x: undefined })
     Ok(T, {})
+  })
+  it('Should not check undefined for optional property of number', () => {
+    const T = Type.Object({ x: Type.Optional(Type.Number()) })
+    Ok(T, { x: 1 })
+    Ok(T, {})
+    Fail(T, { x: undefined })
+  })
+  it('Should check undefined for optional property of undefined', () => {
+    const T = Type.Object({ x: Type.Optional(Type.Undefined()) })
+    Fail(T, { x: 1 })
+    Ok(T, {})
+    Ok(T, { x: undefined })
   })
 })

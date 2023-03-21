@@ -22,7 +22,16 @@ describe('value/check/Record', () => {
     const result = Value.Check(T, value)
     Assert.equal(result, true)
   })
-
+  it('Should fail record with Date', () => {
+    const T = Type.Record(Type.String(), Type.String())
+    const result = Value.Check(T, new Date())
+    Assert.equal(result, false)
+  })
+  it('Should fail record with Uint8Array', () => {
+    const T = Type.Record(Type.String(), Type.String())
+    const result = Value.Check(T, new Uint8Array())
+    Assert.equal(result, false)
+  })
   it('Should fail record with missing property', () => {
     const T = Type.Record(
       Type.String(),

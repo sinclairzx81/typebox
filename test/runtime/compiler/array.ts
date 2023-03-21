@@ -39,10 +39,10 @@ describe('type/compiler/Array', () => {
     ])
   })
 
-  it('Should not validate for an array of intersection types when passing additionalProperties false', () => {
+  it('Should not validate for an array of composite types when passing additionalProperties false', () => {
     const A = Type.Object({ a: Type.String() })
     const B = Type.Object({ b: Type.String() })
-    const C = Type.Intersect([A, B], { additionalProperties: false })
+    const C = Type.Composite([A, B], { additionalProperties: false })
     const T = Type.Array(C)
     Fail(T, [
       { a: 'hello', b: 'hello' },

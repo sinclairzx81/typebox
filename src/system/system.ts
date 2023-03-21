@@ -26,40 +26,47 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { Kind, Type } from '../typebox'
-import { Custom } from '../custom/index'
-import { Format } from '../format/index'
+import * as Types from '../typebox'
 
 export class TypeSystemDuplicateTypeKind extends Error {
   constructor(kind: string) {
-    super(`Duplicate kind '${kind}' detected`)
+    super(`Duplicate type kind '${kind}' detected`)
   }
 }
 export class TypeSystemDuplicateFormat extends Error {
   constructor(kind: string) {
-    super(`Duplicate format '${kind}' detected`)
+    super(`Duplicate string format '${kind}' detected`)
   }
 }
-
 /** Creates user defined types and formats and provides overrides for value checking behaviours */
 export namespace TypeSystem {
-  /** Sets whether arrays should be treated as kinds of objects. The default is `false` */
+  /** Sets whether arrays should be treated as a kind of objects. The default is `false` */
   export let AllowArrayObjects: boolean = false
-
-  /** Sets whether numeric checks should consider NaN a valid number type. The default is `false` */
+  /** Sets whether `NaN` or `Infinity` should be treated as valid numeric values. The default is `false` */
   export let AllowNaN: boolean = false
-
-  /** Creates a custom type */
-  export function CreateType<Type, Options = object>(kind: string, callback: (options: Options, value: unknown) => boolean) {
-    if (Custom.Has(kind)) throw new TypeSystemDuplicateTypeKind(kind)
-    Custom.Set(kind, callback)
-    return (options: Partial<Options> = {}) => Type.Unsafe<Type>({ ...options, [Kind]: kind })
+  /** Sets whether `null` should validate for void types. The default is `false` */
+  export let AllowVoidNull: boolean = false
+  /** Creates a new type */
+  export function Type<Type, Options = object>(kind: string, check: (options: Options, value: unknown) => boolean) {
+    if (Types.TypeRegistry.Has(kind)) throw new TypeSystemDuplicateTypeKind(kind)
+    Types.TypeRegistry.Set(kind, check)
+    return (options: Partial<Options> = {}) => Types.Type.Unsafe<Type>({ ...options, [Types.Kind]: kind })
   }
-
-  /** Creates a custom string format */
-  export function CreateFormat(format: string, callback: (value: string) => boolean) {
-    if (Format.Has(format)) throw new TypeSystemDuplicateFormat(format)
-    Format.Set(format, callback)
-    return callback
+  /** Creates a new string format */
+  export function Format<F extends string>(format: F, check: (value: string) => boolean): F {
+    if (Types.FormatRegistry.Has(format)) throw new TypeSystemDuplicateFormat(format)
+    Types.FormatRegistry.Set(format, check)
+    return format
+  }
+  // ------------------------------------------------------------------------
+  // Deprecated
+  // ------------------------------------------------------------------------
+  /** @deprecated Use `TypeSystem.Type()` instead. */
+  export function CreateType<Type, Options = object>(kind: string, check: (options: Options, value: unknown) => boolean) {
+    return Type<Type, Options>(kind, check)
+  }
+  /** @deprecated Use `TypeSystem.Format()` instead.  */
+  export function CreateFormat<F extends string>(format: F, check: (value: string) => boolean): F {
+    return Format<F>(format, check)
   }
 }

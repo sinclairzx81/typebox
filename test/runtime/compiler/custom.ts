@@ -1,10 +1,8 @@
-import { Custom } from '@sinclair/typebox/custom'
-import { Type, Kind } from '@sinclair/typebox'
+import { Type, Kind, TypeRegistry } from '@sinclair/typebox'
 import { Ok, Fail } from './validate'
 
 describe('type/compiler/Custom', () => {
-  Custom.Set('BigInt', (schema, value) => typeof value === 'bigint')
-
+  TypeRegistry.Set('BigInt', (schema, value) => typeof value === 'bigint')
   it('Should validate bigint', () => {
     const T = Type.Unsafe({ [Kind]: 'BigInt' })
     Ok(T, 1n)

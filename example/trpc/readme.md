@@ -1,6 +1,6 @@
 # Using TypeBox with TRPC
 
-To use TypeBox with TRPC, you will need to wrap types passed to procedures within a TRPC compatible assertion function. Once wrapped, TypeBox can provide TRPC auto type inference for procedures, enhanced runtime checking performance and well as providing options for enabling publishable procedure schematics based on the JSON Schema specification.
+To use TypeBox with TRPC, you will need to wrap types passed to procedures within a TRPC compatible assertion function. Once wrapped, TypeBox can provide TRPC auto type inference for procedures, enhanced runtime checking performance as well as provide options to enabling publishable procedure schematics based on the JSON Schema specification.
 
 ## Contents
 
@@ -57,11 +57,11 @@ import { TSchema } from '@sinclair/typebox'
 import { TypeCompiler } from '@sinclair/typebox/compiler'
 import { TRPCError } from '@trpc/server'
 
-export function RpcType<T extends TSchema>(schema: T, references: TSchema[] = []) {
-  const check = TypeCompiler.Compile(schema, references)
+export function RpcType<T extends TSchema>(schema: T) {
+  const check = TypeCompiler.Compile(schema)
   return (value: unknown) => {
     if (check.Check(value)) return value
-    const { path, message } = [...check.Errors(value)][0]
+    const { path, message } = check.Errors(value).First()!
     throw new TRPCError({ message: `${message} for ${path}`, code: 'BAD_REQUEST' })
   }
 }
@@ -78,10 +78,10 @@ import { Value } from '@sinclair/typebox/value'
 import { TSchema } from '@sinclair/typebox'
 import { TRPCError } from '@trpc/server'
 
-export function RpcType<T extends TSchema>(schema: T, references: TSchema[] = []) {
+export function RpcType<T extends TSchema>(schema: T) {
   return (value: unknown) => {
     if (Value.Check(schema, value)) return value
-    const { path, message } = [...Value.Errors(schema, references, value)][0]
+    const { path, message } = check.Errors(value).First()!
     throw new TRPCError({ message: `${message} for ${path}`, code: 'BAD_REQUEST' })
   }
 }

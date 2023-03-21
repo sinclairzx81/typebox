@@ -27,11 +27,12 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import * as Types from '../typebox'
-import { ValueErrors, ValueError } from '../errors/index'
-import { ValueHash } from '../hash/index'
+import { ValueErrors, ValueErrorIterator, ValueError } from '../errors/index'
+import { ValueHash } from './hash'
 import { ValueEqual } from './equal'
 import { ValueCast } from './cast'
 import { ValueClone } from './clone'
+import { ValueConvert } from './convert'
 import { ValueCreate } from './create'
 import { ValueCheck } from './check'
 import { ValueDelta, Edit } from './delta'
@@ -46,7 +47,6 @@ export namespace Value {
     const [schema, references, value] = args.length === 3 ? [args[0], args[1], args[2]] : [args[0], [], args[1]]
     return ValueCast.Cast(schema, references, value)
   }
-
   /** Creates a value from the given type */
   export function Create<T extends Types.TSchema, R extends Types.TSchema[]>(schema: T, references: [...R]): Types.Static<T>
   /** Creates a value from the given type */
@@ -55,7 +55,6 @@ export namespace Value {
     const [schema, references] = args.length === 2 ? [args[0], args[1]] : [args[0], []]
     return ValueCreate.Create(schema, references)
   }
-
   /** Returns true if the value matches the given type. */
   export function Check<T extends Types.TSchema, R extends Types.TSchema[]>(schema: T, references: [...R], value: unknown): value is Types.Static<T>
   /** Returns true if the value matches the given type. */
@@ -64,36 +63,38 @@ export namespace Value {
     const [schema, references, value] = args.length === 3 ? [args[0], args[1], args[2]] : [args[0], [], args[1]]
     return ValueCheck.Check(schema, references, value)
   }
-
+  /** Converts any type mismatched values to their target type if a conversion is possible. */
+  export function Convert<T extends Types.TSchema, R extends Types.TSchema[]>(schema: T, references: [...R], value: unknown): unknown
+  /** Converts any type mismatched values to their target type if a conversion is possible. */
+  export function Convert<T extends Types.TSchema>(schema: T, value: unknown): unknown
+  export function Convert(...args: any[]) {
+    const [schema, references, value] = args.length === 3 ? [args[0], args[1], args[2]] : [args[0], [], args[1]]
+    return ValueConvert.Convert(schema, references, value)
+  }
   /** Returns a structural clone of the given value */
   export function Clone<T>(value: T): T {
     return ValueClone.Clone(value)
   }
-
   /** Returns an iterator for each error in this value. */
-  export function Errors<T extends Types.TSchema, R extends Types.TSchema[]>(schema: T, references: [...R], value: unknown): IterableIterator<ValueError>
+  export function Errors<T extends Types.TSchema, R extends Types.TSchema[]>(schema: T, references: [...R], value: unknown): ValueErrorIterator
   /** Returns an iterator for each error in this value. */
-  export function Errors<T extends Types.TSchema>(schema: T, value: unknown): IterableIterator<ValueError>
-  export function* Errors(...args: any[]) {
+  export function Errors<T extends Types.TSchema>(schema: T, value: unknown): ValueErrorIterator
+  export function Errors(...args: any[]) {
     const [schema, references, value] = args.length === 3 ? [args[0], args[1], args[2]] : [args[0], [], args[1]]
-    yield* ValueErrors.Errors(schema, references, value)
+    return ValueErrors.Errors(schema, references, value) as ValueErrorIterator
   }
-
   /** Returns true if left and right values are structurally equal */
   export function Equal<T>(left: T, right: unknown): right is T {
     return ValueEqual.Equal(left, right)
   }
-
   /** Returns edits to transform the current value into the next value */
   export function Diff(current: unknown, next: unknown): Edit[] {
     return ValueDelta.Diff(current, next)
   }
-
   /** Returns a FNV1A-64 non cryptographic hash of the given value */
   export function Hash(value: unknown): bigint {
     return ValueHash.Create(value)
   }
-
   /** Returns a new value with edits applied to the given value */
   export function Patch<T = any>(current: unknown, edits: Edit[]): T {
     return ValueDelta.Patch(current, edits) as T

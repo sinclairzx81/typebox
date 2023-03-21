@@ -1,0 +1,5 @@
+import './clone/index'
+import './extends/index'
+import './guard/index'
+import './registry/index'
+import './normal/index'

@@ -22,12 +22,12 @@ describe('value/check/Void', () => {
   it('Should pass null', () => {
     const value = null
     const result = Value.Check(T, value)
-    Assert.equal(result, true)
+    Assert.equal(result, false)
   })
-  it('Should fail undefined', () => {
+  it('Should pass undefined', () => {
     const value = undefined
     const result = Value.Check(T, value)
-    Assert.equal(result, false)
+    Assert.equal(result, true)
   })
   it('Should fail object', () => {
     const value = { a: 1 }

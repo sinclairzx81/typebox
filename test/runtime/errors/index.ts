@@ -1,1 +1,1 @@
-// todo: implement once errors are standardized
+import './iterator'

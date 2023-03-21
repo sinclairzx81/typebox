@@ -1,42 +1,40 @@
 import { Type } from '@sinclair/typebox'
 
 export namespace Cases {
-  export const Number = Type.Number()
+  export const Literal_String = Type.Literal('hello')
 
-  export const String = Type.String()
+  export const Literal_Number = Type.Literal(1)
 
-  export const Boolean = Type.Boolean()
+  export const Literal_Boolean = Type.Literal(true)
 
-  export const Null = Type.Null()
+  export const Primitive_Number = Type.Number()
 
-  export const RegEx = Type.RegEx(/foo/, { default: 'foo' })
+  export const Primitive_String = Type.String()
 
-  export const ObjectA = Type.Object({
-    p0: Type.String(),
-    p1: Type.Number(),
-    p2: Type.Number(),
-    p3: Type.Array(Type.Number(), { minItems: 4 }),
-    p4: Type.Object({
-      x: Type.Number(),
-      y: Type.Number(),
-      z: Type.Number(),
-    }),
-    p5: Type.Object({
-      a: Type.String(),
-      b: Type.String(),
-      c: Type.String(),
+  export const Primitive_String_Pattern = Type.RegEx(/foo/, { default: 'foo' })
+
+  export const Primitive_Boolean = Type.Boolean()
+
+  export const Primitive_Null = Type.Null()
+
+  export const Object_Unconstrained = Type.Object({
+    number: Type.Number(),
+    negNumber: Type.Number(),
+    maxNumber: Type.Number(),
+    string: Type.String(),
+    longString: Type.String(),
+    boolean: Type.Boolean(),
+    deeplyNested: Type.Object({
+      foo: Type.String(),
+      num: Type.Number(),
+      bool: Type.Boolean(),
     }),
   })
 
-  export const ObjectB = Type.Object(ObjectA.properties, {
+  export const Object_Constrained = Type.Object(Object_Unconstrained.properties, {
     additionalProperties: false,
   })
-
-  export const Tuple = Type.Tuple([Type.String(), Type.Number(), Type.Boolean()])
-
-  export const Union = Type.Union([Type.Object({ x: Type.Number(), y: Type.Number() }), Type.Object({ a: Type.String(), b: Type.String() })], { default: { a: 'a', b: 'b' } })
-
-  export const Recursive = Type.Recursive(
+  export const Object_Recursive = Type.Recursive(
     (Recursive) =>
       Type.Object({
         id: Type.String(),
@@ -75,9 +73,32 @@ export namespace Cases {
     },
   )
 
-  export const Vector4 = Type.Tuple([Type.Number(), Type.Number(), Type.Number(), Type.Number()])
+  // prettier-ignore
+  export const Tuple_Primitive = Type.Tuple([
+    Type.String(), 
+    Type.Number(), 
+    Type.Boolean()
+  ])
+  // prettier-ignore
+  export const Tuple_Object = Type.Tuple([
+    Type.Object({ x: Type.Number(), y: Type.Number() }), 
+    Type.Object({ a: Type.String(), b: Type.String() })
+  ])
+  // prettier-ignore
+  export const Composite_Intersect = Type.Intersect([
+    Type.Object({ x: Type.Number(), y: Type.Number() }), 
+    Type.Object({ a: Type.String(), b: Type.String() })
+  ], { default: { x: 1, y: 2, a: 'a', b: 'b' } })
 
-  export const Matrix4 = Type.Array(Type.Array(Type.Number()), {
+  // prettier-ignore
+  export const Composite_Union = Type.Union([
+    Type.Object({ x: Type.Number(), y: Type.Number() }), 
+    Type.Object({ a: Type.String(), b: Type.String() })
+  ], { default: { a: 'a', b: 'b' } })
+
+  export const Math_Vector4 = Type.Tuple([Type.Number(), Type.Number(), Type.Number(), Type.Number()])
+
+  export const Math_Matrix4 = Type.Array(Type.Array(Type.Number()), {
     default: [
       [1, 0, 0, 0],
       [0, 1, 0, 0],
@@ -86,29 +107,27 @@ export namespace Cases {
     ],
   })
 
-  export const Literal_String = Type.Literal('foo')
+  export const Array_Primitive_Number = Type.Array(Type.Number(), { minItems: 4 })
 
-  export const Literal_Number = Type.Literal(1)
+  export const Array_Primitive_String = Type.Array(Type.String(), { minItems: 4 })
 
-  export const Literal_Boolean = Type.Literal(true)
+  export const Array_Primitive_Boolean = Type.Array(Type.Boolean(), { minItems: 4 })
 
-  export const Array_Number = Type.Array(Type.Number(), { minItems: 16 })
+  export const Array_Object_Unconstrained = Type.Array(Object_Unconstrained, { minItems: 4 })
 
-  export const Array_String = Type.Array(Type.String(), { minItems: 16 })
+  export const Array_Object_Constrained = Type.Array(Object_Constrained, { minItems: 4 })
 
-  export const Array_Boolean = Type.Array(Type.Boolean(), { minItems: 16 })
+  export const Array_Object_Recursive = Type.Array(Object_Recursive, { minItems: 4 })
 
-  export const Array_ObjectA = Type.Array(ObjectA, { minItems: 16 })
+  export const Array_Tuple_Primitive = Type.Array(Tuple_Primitive, { minItems: 4 })
 
-  export const Array_ObjectB = Type.Array(ObjectB, { minItems: 16 })
+  export const Array_Tuple_Object = Type.Array(Tuple_Object, { minItems: 4 })
 
-  export const Array_Tuple = Type.Array(Tuple, { minItems: 16 })
+  export const Array_Composite_Intersect = Type.Array(Composite_Intersect, { minItems: 4 })
 
-  export const Array_Union = Type.Array(Union, { minItems: 16 })
+  export const Array_Composite_Union = Type.Array(Composite_Union, { minItems: 4 })
 
-  export const Array_Recursive = Type.Array(Recursive, { minItems: 16 })
+  export const Array_Math_Vector4 = Type.Array(Math_Vector4, { minItems: 4 })
 
-  export const Array_Vector4 = Type.Array(Vector4, { minItems: 16 })
-
-  export const Array_Matrix4 = Type.Array(Matrix4, { minItems: 16 })
+  export const Array_Math_Matrix4 = Type.Array(Math_Matrix4, { minItems: 4 })
 }
