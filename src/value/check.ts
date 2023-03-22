@@ -220,10 +220,10 @@ export namespace ValueCheck {
     if (!IsObject(value)) {
       return false
     }
-    if (IsNumber(schema.minProperties) && !(globalThis.Object.getOwnPropertyNames(value).length >= schema.minProperties)) {
+    if (IsDefined<number>(schema.minProperties) && !(globalThis.Object.getOwnPropertyNames(value).length >= schema.minProperties)) {
       return false
     }
-    if (IsNumber(schema.maxProperties) && !(globalThis.Object.getOwnPropertyNames(value).length <= schema.maxProperties)) {
+    if (IsDefined<number>(schema.maxProperties) && !(globalThis.Object.getOwnPropertyNames(value).length <= schema.maxProperties)) {
       return false
     }
     const knownKeys = globalThis.Object.getOwnPropertyNames(schema.properties)
