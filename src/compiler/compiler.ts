@@ -253,7 +253,6 @@ export namespace TypeCompiler {
 
   function* Object(schema: Types.TObject, references: Types.TSchema[], value: string): IterableIterator<string> {
     yield IsObjectCheck(value)
-    if (!TypeSystem.AllowArrayObjects) yield `!Array.isArray(${value})`
     if (IsNumber(schema.minProperties)) yield `Object.getOwnPropertyNames(${value}).length >= ${schema.minProperties}`
     if (IsNumber(schema.maxProperties)) yield `Object.getOwnPropertyNames(${value}).length <= ${schema.maxProperties}`
     const schemaKeys = globalThis.Object.getOwnPropertyNames(schema.properties)
