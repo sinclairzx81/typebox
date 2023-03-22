@@ -81,7 +81,7 @@ import { TRPCError } from '@trpc/server'
 export function RpcType<T extends TSchema>(schema: T) {
   return (value: unknown) => {
     if (Value.Check(schema, value)) return value
-    const { path, message } = check.Errors(value).First()!
+    const { path, message } = Value.Errors(schema, value).First()!
     throw new TRPCError({ message: `${message} for ${path}`, code: 'BAD_REQUEST' })
   }
 }
