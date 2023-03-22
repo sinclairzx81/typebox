@@ -1733,7 +1733,7 @@ export namespace TypeClone {
     if (IsObject(value)) return Object(value)
     return value
   }
-  /** Clones a type. This function will omit non-self referential identifiers on the cloned type. */
+  /** Clones a type. */
   export function Clone<T extends TSchema>(schema: T, options: SchemaOptions): T {
     return { ...Visit(schema), ...options }
   }
