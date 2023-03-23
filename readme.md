@@ -229,13 +229,13 @@ The following table lists the Standard TypeBox types. These types are fully comp
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Null()          │ type T = null               │ const T = {                    │
-│                                │                             │    type: 'null'                │
+│                                │                             │   type: 'null'                 │
 │                                │                             │ }                              │
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Literal(42)     │ type T = 42                 │ const T = {                    │
-│                                │                             │    const: 42,                  │
-│                                │                             │    type: 'number'              │
+│                                │                             │   const: 42,                   │
+│                                │                             │   type: 'number'               │
 │                                │                             │ }                              │
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
@@ -326,19 +326,16 @@ The following table lists the Standard TypeBox types. These types are fully comp
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Composite([     │ type T = {                  │ const T = {                    │
-│   Type.Object({                │   x: number | string        │   type: 'object',              │
-│     x: Type.Number()           │   y: number                 │   properties: {                │
-│   }),                          │ }                           │     x: {                       │
-│   Type.Object({                │                             │       anyOf: [                 │
-│     x: Type.String()           │                             │         { type: 'number' },    │
-│     y: Type.Number()           │                             │         { type: 'string' }     │
-│   })                           │                             │       ]                        │
-│ ])                             │                             │     },                         │
-│                                │                             │     y: {                       │
+│   Type.Object({                │   x: number                 │   type: 'object',              │
+│     x: Type.Number()           │   y: number                 │   required: ['x', 'y'],        │
+│   }),                          │ }                           │   properties: {                │
+│   Type.Object({                │                             │     x: {                       │
+│     y: Type.Number()           │                             │       type: 'number'           │
+│   })                           │                             │     },                         │
+│ ])                             │                             │     y: {                       │
 │                                │                             │       type: 'number'           │
 │                                │                             │     }                          │
-│                                │                             │   },                           │
-│                                │                             │   required: ['x', 'y']         │
+│                                │                             │   }                            │
 │                                │                             │ }                              │
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤

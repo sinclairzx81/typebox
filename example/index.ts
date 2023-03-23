@@ -3,17 +3,11 @@ import { TypeCompiler } from '@sinclair/typebox/compiler'
 import { Value, ValuePointer } from '@sinclair/typebox/value'
 import { Type, TypeGuard, Kind, Static, TSchema, Evaluate } from '@sinclair/typebox'
 
-const T = Type.Composite([
-  Type.Object({
-    a: Type.Literal(1),
-  }),
-  Type.Object({
-    a: Type.Number(),
-  }),
-])
+const A = Type.Object({ a: Type.Number() })
+const B = Type.Partial(Type.Object({ b: Type.Number() }))
+const C = Type.Object({ b: Type.String() })
+const P = Type.Composite([A, B, C], { additionalProperties: false })
 
-const M = Type.Partial(T)
+type T = Static<typeof P>
 
-type T = Static<typeof M>
-
-console.log(M)
+console.log(P)

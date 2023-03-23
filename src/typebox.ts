@@ -174,8 +174,8 @@ export type TCompositeArray<T extends readonly TObject[]> = {
   [K in keyof T]: T[K] extends TObject<infer P> ? P : {}
 }
 export interface TComposite<T extends TObject[] = TObject[]> extends TObject {
-  [Hint]: 'Composite' // required to differentiate between object and intersection
-  static: TCompositePropertiesReduce<unknown, TCompositeEvaluate<T, this['params']>>
+  [Hint]: 'Composite' // required to differentiate between object and intersection on pick, omit, required, partial and keyof
+  static: Evaluate<TCompositePropertiesReduce<unknown, TCompositeEvaluate<T, this['params']>>>
   properties: TCompositePropertiesReduce<unknown, TCompositeArray<T>>
 }
 // --------------------------------------------------------------------------
@@ -1846,16 +1846,22 @@ export class StandardTypeBuilder extends TypeBuilder {
   public Boolean(options: SchemaOptions = {}): TBoolean {
     return this.Create({ ...options, [Kind]: 'Boolean', type: 'boolean' })
   }
-  /** `[Standard]` Creates a Composite object type that is similar to an Intersect, but is expressed as an Object */
+  /** `[Standard]` Creates a Composite object type. */
   public Composite<T extends TObject[]>(objects: [...T], options?: ObjectOptions): TComposite<T> {
+    function IsOptional(schema: TSchema) {
+      return TypeGuard.TOptional(schema) || TypeGuard.TReadonlyOptional(schema)
+    }
+    function IsOptionalAll(objects: TObject[], key: string) {
+      return objects.every((object) => !(key in object.properties) || IsOptional(object.properties[key]))
+    }
     const [required, optional] = [new Set<string>(), new Set<string>()]
     for (const object of objects) {
-      for (const [key, schema] of Object.entries(object.properties)) {
-        if (TypeGuard.TOptional(schema) || TypeGuard.TReadonlyOptional(schema)) optional.add(key)
+      for (const key of globalThis.Object.getOwnPropertyNames(object.properties)) {
+        if (IsOptionalAll(objects, key)) optional.add(key)
       }
     }
     for (const object of objects) {
-      for (const key of Object.keys(object.properties)) {
+      for (const key of globalThis.Object.getOwnPropertyNames(object.properties)) {
         if (!optional.has(key)) required.add(key)
       }
     }
@@ -1865,18 +1871,18 @@ export class StandardTypeBuilder extends TypeBuilder {
         if (properties[key] === undefined) {
           properties[key] = TypeClone.Clone(schema, {})
         } else {
+          // If property overlaps, take most narrowed type if possible or evaluate as TNever
           const left = TypeExtends.Extends(properties[key], schema) !== TypeExtendsResult.False
           const right = TypeExtends.Extends(schema, properties[key]) !== TypeExtendsResult.False
-          if (left && !right) properties[key] = properties[key]
-          if (!left && right) properties[key] = schema
           if (!left && !right) properties[key] = Type.Never()
+          if (!left && right) properties[key] = schema
         }
       }
     }
     if (required.size > 0) {
-      return this.Create({ ...options, [Hint]: 'Composite', [Kind]: 'Object', type: 'object', properties, required: [...required] })
+      return this.Create({ ...options, [Kind]: 'Object', [Hint]: 'Composite', type: 'object', properties, required: [...required] })
     } else {
-      return this.Create({ ...options, [Hint]: 'Composite', [Kind]: 'Object', type: 'object', properties })
+      return this.Create({ ...options, [Kind]: 'Object', [Hint]: 'Composite', type: 'object', properties })
     }
   }
   /** `[Standard]` Creates a Enum type */
