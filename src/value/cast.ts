@@ -166,7 +166,7 @@ export namespace ValueCast {
   function Integer(schema: Types.TInteger, references: Types.TSchema[], value: any): any {
     return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
   }
-  function Intersect(schema: Types.TIntersect, references: Types.TSchema[], value: any): any {
+  function Intersect(schema: Types.TComposite, references: Types.TSchema[], value: any): any {
     const created = ValueCreate.Create(schema, references)
     const mapped = IsObject(created) && IsObject(value) ? { ...(created as any), ...value } : value
     return ValueCheck.Check(schema, references, mapped) ? mapped : ValueCreate.Create(schema, references)

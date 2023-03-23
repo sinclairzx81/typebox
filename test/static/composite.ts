@@ -1,5 +1,5 @@
 import { Expect } from './assert'
-import { Type } from '@sinclair/typebox'
+import { Type, Static } from '@sinclair/typebox'
 
 {
   const A = Type.Object({
@@ -13,7 +13,7 @@ import { Type } from '@sinclair/typebox'
   const T = Type.Composite([A, B])
 
   Expect(T).ToInfer<{
-    A: string | number
-    B: string | number
+    A: never
+    B: never
   }>()
 }

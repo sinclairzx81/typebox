@@ -1,4 +1,4 @@
-import { Type, Static } from '@sinclair/typebox'
+import { Type } from '@sinclair/typebox'
 import { Ok, Fail } from './validate'
 
 describe('type/compiler/Composite', () => {
@@ -13,33 +13,44 @@ describe('type/compiler/Composite', () => {
     const B = Type.Partial(Type.Object({ b: Type.Number() }))
     const P = Type.Composite([A, B], { additionalProperties: false })
     Ok(P, { a: 1, b: 2 })
+    Ok(P, { a: 1 })
+    Ok(P, { b: 1 })
+    Ok(P, {})
+    Fail(P, { c: 1 })
   })
   it('Should compose with overlapping same type', () => {
     const A = Type.Object({ a: Type.Number() })
     const B = Type.Object({ a: Type.Number() })
     const P = Type.Composite([A, B])
     Ok(P, { a: 1 })
-    Fail(P, { a: 'hello' })
-    Fail(P, {})
+    Fail(P, { a: '1' })
   })
-  it('Should compose with overlapping varying type', () => {
+  it('Should not compose with overlapping varying type', () => {
     const A = Type.Object({ a: Type.Number() })
     const B = Type.Object({ a: Type.String() })
     const T = Type.Composite([A, B])
-    Ok(T, { a: 1 })
-    Ok(T, { a: 'hello' })
+    Fail(T, { a: 1 })
+    Fail(T, { a: 'hello' })
     Fail(T, {})
   })
   it('Should compose with deeply nest overlapping varying type', () => {
+    const A = Type.Object({ a: Type.Number() })
+    const B = Type.Object({ b: Type.String() })
+    const C = Type.Object({ c: Type.Boolean() })
+    const D = Type.Object({ d: Type.Null() })
+    const T = Type.Composite([A, B, C, D])
+    Ok(T, { a: 1, b: 'hello', c: true, d: null })
+  })
+  it('Should not compose with deeply nest overlapping varying type', () => {
     const A = Type.Object({ a: Type.Number() })
     const B = Type.Object({ a: Type.String() })
     const C = Type.Object({ a: Type.Boolean() })
     const D = Type.Object({ a: Type.Null() })
     const T = Type.Composite([A, B, C, D])
-    Ok(T, { a: 1 })
-    Ok(T, { a: 'hello' })
-    Ok(T, { a: false })
-    Ok(T, { a: null })
+    Fail(T, { a: 1 })
+    Fail(T, { a: 'hello' })
+    Fail(T, { a: false })
+    Fail(T, { a: null })
     Fail(T, { a: [] })
     Fail(T, {})
   })
@@ -61,13 +72,12 @@ describe('type/compiler/Composite', () => {
     Ok(P, { x: 1, y: 1 })
     Fail(P, { x: 1, y: 1, z: 1 })
   })
-
   it('Should compose nested object properties', () => {
     const A = Type.Object({ x: Type.Object({ x: Type.Number() }) })
-    const B = Type.Object({ x: Type.Object({ x: Type.String() }) })
+    const B = Type.Object({ y: Type.Object({ x: Type.String() }) })
     const T = Type.Composite([A, B])
-    Ok(T, { x: { x: 1 } })
-    Ok(T, { x: { x: 'hello' } })
-    Fail(T, { x: { x: false } })
+    Ok(T, { x: { x: 1 }, y: { x: '' } })
+    Fail(T, { x: { x: '1' }, y: { x: '' } })
+    Fail(T, { x: { x: 1 }, y: { x: 1 } })
   })
 })
