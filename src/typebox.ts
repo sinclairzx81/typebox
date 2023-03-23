@@ -168,20 +168,13 @@ export type TInstanceType<T extends TConstructor<TSchema[], TSchema>> = T['retur
 // --------------------------------------------------------------------------
 // TComposite
 // --------------------------------------------------------------------------
-
-export type TCompositeEvaluate<T extends readonly TSchema[], P extends unknown[]> = { [K in keyof T]: T[K] extends TSchema ? Static<T[K], P> : never }
-export type TCompositeArray<T extends readonly TObject[]> = {
-  [K in keyof T]: T[K] extends TObject<infer P> ? P : {}
-}
-// prettier-ignore
-export type TCompositeEvaluateProperties<I extends unknown, T extends readonly any[]> = 
-  Evaluate<T extends [infer A, ...infer B] ? TCompositeEvaluateProperties<I & A, B> : I extends object ? I : {}> extends infer R 
-  ? { [K in keyof R]: R[K] extends never ? TNever : R[K] } 
-  : never
+export type TCompositeEvaluateArray<T extends readonly TSchema[], P extends unknown[]> = { [K in keyof T]: T[K] extends TSchema ? Static<T[K], P> : never }
+export type TCompositeArray<T extends readonly TObject[]> = { [K in keyof T]: T[K] extends TObject<infer P> ? P : {} }
+export type TCompositeProperties<I extends unknown, T extends readonly any[]> = Evaluate<T extends [infer A, ...infer B] ? TCompositeProperties<I & A, B> : I extends object ? I : {}>
 export interface TComposite<T extends TObject[] = TObject[]> extends TObject {
-  [Hint]: 'Composite' // required to differentiate between object and intersection on pick, omit, required, partial and keyof
-  static: Evaluate<TCompositeEvaluateProperties<unknown, TCompositeEvaluate<T, this['params']>>>
-  properties: TCompositeEvaluateProperties<unknown, TCompositeArray<T>>
+  [Hint]: 'Composite' // Hint is required to differentiate between object | intersection on pick, omit, required, partial and keyof
+  static: Evaluate<TCompositeProperties<unknown, TCompositeEvaluateArray<T, this['params']>>>
+  properties: TCompositeProperties<unknown, TCompositeArray<T>>
 }
 // --------------------------------------------------------------------------
 // TConstructor
@@ -314,7 +307,7 @@ export interface TLiteral<T extends TLiteralValue = TLiteralValue> extends TSche
 export interface TNever extends TSchema {
   [Kind]: 'Never'
   static: never
-  allOf: [{ type: 'boolean'; const: false }, { type: 'boolean'; const: true }]
+  not: {}
 }
 // --------------------------------------------------------------------------
 // TNot
