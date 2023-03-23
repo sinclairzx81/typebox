@@ -168,15 +168,20 @@ export type TInstanceType<T extends TConstructor<TSchema[], TSchema>> = T['retur
 // --------------------------------------------------------------------------
 // TComposite
 // --------------------------------------------------------------------------
-export type TCompositePropertiesReduce<I extends unknown, T extends readonly any[]> = Evaluate<T extends [infer A, ...infer B] ? TCompositePropertiesReduce<I & A, B> : I extends object ? I : {}>
+
 export type TCompositeEvaluate<T extends readonly TSchema[], P extends unknown[]> = { [K in keyof T]: T[K] extends TSchema ? Static<T[K], P> : never }
 export type TCompositeArray<T extends readonly TObject[]> = {
   [K in keyof T]: T[K] extends TObject<infer P> ? P : {}
 }
+// prettier-ignore
+export type TCompositeEvaluateProperties<I extends unknown, T extends readonly any[]> = 
+  Evaluate<T extends [infer A, ...infer B] ? TCompositeEvaluateProperties<I & A, B> : I extends object ? I : {}> extends infer R 
+  ? { [K in keyof R]: R[K] extends never ? TNever : R[K] } 
+  : never
 export interface TComposite<T extends TObject[] = TObject[]> extends TObject {
   [Hint]: 'Composite' // required to differentiate between object and intersection on pick, omit, required, partial and keyof
-  static: Evaluate<TCompositePropertiesReduce<unknown, TCompositeEvaluate<T, this['params']>>>
-  properties: TCompositePropertiesReduce<unknown, TCompositeArray<T>>
+  static: Evaluate<TCompositeEvaluateProperties<unknown, TCompositeEvaluate<T, this['params']>>>
+  properties: TCompositeEvaluateProperties<unknown, TCompositeArray<T>>
 }
 // --------------------------------------------------------------------------
 // TConstructor
@@ -1848,16 +1853,12 @@ export class StandardTypeBuilder extends TypeBuilder {
   }
   /** `[Standard]` Creates a Composite object type. */
   public Composite<T extends TObject[]>(objects: [...T], options?: ObjectOptions): TComposite<T> {
-    function IsOptional(schema: TSchema) {
-      return TypeGuard.TOptional(schema) || TypeGuard.TReadonlyOptional(schema)
-    }
-    function IsOptionalAll(objects: TObject[], key: string) {
-      return objects.every((object) => !(key in object.properties) || IsOptional(object.properties[key]))
-    }
+    const isOptionalAll = (objects: TObject[], key: string) => objects.every((object) => !(key in object.properties) || IsOptional(object.properties[key]))
+    const IsOptional = (schema: TSchema) => TypeGuard.TOptional(schema) || TypeGuard.TReadonlyOptional(schema)
     const [required, optional] = [new Set<string>(), new Set<string>()]
     for (const object of objects) {
       for (const key of globalThis.Object.getOwnPropertyNames(object.properties)) {
-        if (IsOptionalAll(objects, key)) optional.add(key)
+        if (isOptionalAll(objects, key)) optional.add(key)
       }
     }
     for (const object of objects) {
@@ -1868,14 +1869,15 @@ export class StandardTypeBuilder extends TypeBuilder {
     const properties = {} as Record<keyof any, any>
     for (const object of objects) {
       for (const [key, schema] of Object.entries(object.properties)) {
-        if (properties[key] === undefined) {
-          properties[key] = TypeClone.Clone(schema, {})
-        } else {
-          // If property overlaps, take most narrowed type if possible or evaluate as TNever
-          const left = TypeExtends.Extends(properties[key], schema) !== TypeExtendsResult.False
-          const right = TypeExtends.Extends(schema, properties[key]) !== TypeExtendsResult.False
+        const property = TypeClone.Clone(schema, {})
+        if (!optional.has(key)) delete property[Modifier]
+        if (key in properties) {
+          const left = TypeExtends.Extends(properties[key], property) !== TypeExtendsResult.False
+          const right = TypeExtends.Extends(property, properties[key]) !== TypeExtendsResult.False
           if (!left && !right) properties[key] = Type.Never()
-          if (!left && right) properties[key] = schema
+          if (!left && right) properties[key] = property
+        } else {
+          properties[key] = property
         }
       }
     }

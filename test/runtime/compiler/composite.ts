@@ -16,6 +16,7 @@ describe('type/compiler/Composite', () => {
     Ok(P, { a: 1 })
     Ok(P, { b: 1 })
     Ok(P, {})
+    Fail(P, { a: 1, b: 2, c: 3 })
     Fail(P, { c: 1 })
   })
   it('Should compose with overlapping same type', () => {
