@@ -325,15 +325,15 @@ The following table lists the Standard TypeBox types. These types are fully comp
 │                                │                             │ }                              │
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
-│ const T = Type.Composite([     │ type T = {                  │ const T = {                    │
+│ const T = Type.Composite([     │ type I = {                  │ const T = {                    │
 │   Type.Object({                │   x: number                 │   type: 'object',              │
-│     x: Type.Number()           │   y: number                 │   required: ['x', 'y'],        │
-│   }),                          │ }                           │   properties: {                │
-│   Type.Object({                │                             │     x: {                       │
+│     x: Type.Number()           │ } & {                       │   required: ['x', 'y'],        │
+│   }),                          │   y: number                 │   properties: {                │
+│   Type.Object({                │ }                           │     x: {                       │
 │     y: Type.Number()           │                             │       type: 'number'           │
-│   })                           │                             │     },                         │
-│ ])                             │                             │     y: {                       │
-│                                │                             │       type: 'number'           │
+│   })                           │ type T = {                  │     },                         │
+│ ])                             │   [K in keyof I]: I[K]      │     y: {                       │
+│                                │ }                           │       type: 'number'           │
 │                                │                             │     }                          │
 │                                │                             │   }                            │
 │                                │                             │ }                              │
