@@ -168,21 +168,14 @@ export type TInstanceType<T extends TConstructor<TSchema[], TSchema>> = T['retur
 // --------------------------------------------------------------------------
 // TComposite
 // --------------------------------------------------------------------------
-export type TCompositeUnion<Left extends TSchema, Right extends TSchema> = Ensure<TUnion<[Left, Right]>>
-// note: we need to take the left and right as the accumulator is assigned for multiple composite property sets with missing properties.
-export type TCompositeUnionLeft<T extends TObject, Acc extends TProperties> = {
-  [K in keyof T['properties']]: K extends keyof Acc ? TCompositeUnion<T['properties'][K], Acc[K]> : T['properties'][K]
+export type TCompositeEvaluateArray<T extends readonly TSchema[], P extends unknown[]> = { [K in keyof T]: T[K] extends TSchema ? Static<T[K], P> : never }
+export type TCompositeArray<T extends readonly TObject[]> = { [K in keyof T]: T[K] extends TObject<infer P> ? P : {} }
+export type TCompositeProperties<I extends unknown, T extends readonly any[]> = Evaluate<T extends [infer A, ...infer B] ? TCompositeProperties<I & A, B> : I extends object ? I : {}>
+export interface TComposite<T extends TObject[] = TObject[]> extends TObject {
+  [Hint]: 'Composite' // Hint is required to differentiate between object | intersection on pick, omit, required, partial and keyof
+  static: Evaluate<TCompositeProperties<unknown, TCompositeEvaluateArray<T, this['params']>>>
+  properties: TCompositeProperties<unknown, TCompositeArray<T>>
 }
-export type TCompositeUnionRight<T extends TObject, Acc extends TProperties> = {
-  [K in keyof Acc]: K extends keyof T['properties'] ? TCompositeUnion<T['properties'][K], Acc[K]> : Acc[K]
-}
-export type TCompositeUnionObject<T extends TObject, Acc extends TProperties> = Evaluate<TCompositeUnionLeft<T, Acc> & TCompositeUnionRight<T, Acc>>
-// prettier-ignore
-export type TCompositeProperties<T extends TObject[], Acc extends TProperties> = 
-  T extends [...infer L, infer R] ? TCompositeProperties<Assert<L, TObject[]>, TCompositeUnionObject<Assert<R, TObject>, Acc>> :
-  T extends [] ? Acc :
-  never
-export type TComposite<T extends TObject[] = TObject[]> = Ensure<TObject<TCompositeProperties<T, {}>>>
 // --------------------------------------------------------------------------
 // TConstructor
 // --------------------------------------------------------------------------
@@ -275,6 +268,7 @@ export interface IntersectOptions extends SchemaOptions {
   unevaluatedProperties?: TUnevaluatedProperties
 }
 export type TIntersectStatic<T extends TSchema[], P extends unknown[]> = TupleToIntersect<{ [K in keyof T]: Static<Assert<T[K], TSchema>, P> }>
+
 export interface TIntersect<T extends TSchema[] = TSchema[]> extends TSchema, IntersectOptions {
   [Kind]: 'Intersect'
   type?: 'object'
@@ -292,6 +286,7 @@ export type TKeyOfTuple<T extends TSchema> = {
   : never
 // prettier-ignore
 export type TKeyOf<T extends TSchema = TSchema> = (
+  T extends TComposite ? TKeyOfTuple<T> :
   T extends TIntersect ? TKeyOfTuple<T> :
   T extends TUnion     ? TKeyOfTuple<T> :
   T extends TObject    ? TKeyOfTuple<T> :
@@ -312,7 +307,7 @@ export interface TLiteral<T extends TLiteralValue = TLiteralValue> extends TSche
 export interface TNever extends TSchema {
   [Kind]: 'Never'
   static: never
-  allOf: [{ type: 'boolean'; const: false }, { type: 'boolean'; const: true }]
+  not: {}
 }
 // --------------------------------------------------------------------------
 // TNot
@@ -381,6 +376,7 @@ export type TOmitArray<T extends TSchema[], K extends keyof any> = Assert<{ [K2 
 export type TOmitProperties<T extends TProperties, K extends keyof any> = Evaluate<Assert<Omit<T, K>, TProperties>>
 // prettier-ignore
 export type TOmit<T extends TSchema, K extends keyof any> = 
+  T extends TComposite<infer S> ? TComposite<TOmitArray<S, K>> :
   T extends TIntersect<infer S> ? TIntersect<TOmitArray<S, K>> : 
   T extends TUnion<infer S> ? TUnion<TOmitArray<S, K>> : 
   T extends TObject<infer S> ? TObject<TOmitProperties<S, K>> : 
@@ -392,6 +388,7 @@ export type TParameters<T extends TFunction> = TTuple<T['parameters']>
 // --------------------------------------------------------------------------
 // TPartial
 // --------------------------------------------------------------------------
+export type TPartialObjectArray<T extends TObject[]> = Assert<{ [K in keyof T]: TPartial<Assert<T[K], TObject>> }, TObject[]>
 export type TPartialArray<T extends TSchema[]> = Assert<{ [K in keyof T]: TPartial<Assert<T[K], TSchema>> }, TSchema[]>
 // prettier-ignore
 export type TPartialProperties<T extends TProperties> = Evaluate<Assert<{
@@ -402,7 +399,8 @@ export type TPartialProperties<T extends TProperties> = Evaluate<Assert<{
     TOptional<T[K]>
 }, TProperties>>
 // prettier-ignore
-export type TPartial<T extends TSchema> = 
+export type TPartial<T extends TSchema> =  
+  T extends TComposite<infer S> ? TComposite<TPartialArray<S>> :
   T extends TIntersect<infer S> ? TIntersect<TPartialArray<S>> : 
   T extends TUnion<infer S>     ? TUnion<TPartialArray<S>> : 
   T extends TObject<infer S>    ? TObject<TPartialProperties<S>> : 
@@ -420,11 +418,11 @@ export type TPickProperties<T extends TProperties, K extends keyof any> =
   }): never
 // prettier-ignore
 export type TPick<T extends TSchema, K extends keyof any> = 
+  T extends TComposite<infer S> ? TComposite<TPickArray<S, K>> :
   T extends TIntersect<infer S> ? TIntersect<TPickArray<S, K>> : 
   T extends TUnion<infer S> ? TUnion<TPickArray<S, K>> : 
   T extends TObject<infer S> ? TObject<TPickProperties<S, K>> :
   T
-
 // --------------------------------------------------------------------------
 // TPromise
 // --------------------------------------------------------------------------
@@ -489,6 +487,7 @@ export type TRequiredProperties<T extends TProperties> = Evaluate<Assert<{
 }, TProperties>>
 // prettier-ignore
 export type TRequired<T extends TSchema> = 
+  T extends TComposite<infer S> ? TComposite<TRequiredArray<S>> : 
   T extends TIntersect<infer S> ? TIntersect<TRequiredArray<S>> : 
   T extends TUnion<infer S>     ? TUnion<TRequiredArray<S>> : 
   T extends TObject<infer S>    ? TObject<TRequiredProperties<S>> : 
@@ -1845,15 +1844,41 @@ export class StandardTypeBuilder extends TypeBuilder {
   public Boolean(options: SchemaOptions = {}): TBoolean {
     return this.Create({ ...options, [Kind]: 'Boolean', type: 'boolean' })
   }
-  /** `[Standard]` Creates a Composite object type that will union any overlapping properties of the given object array */
-  public Composite<T extends TObject[]>(schemas: [...T], options?: ObjectOptions): TComposite<T> {
-    const properties = {} as TProperties
-    for (const object of schemas) {
-      for (const [key, property] of globalThis.Object.entries(object.properties)) {
-        properties[key] = key in properties ? this.Union([properties[key], property]) : TypeClone.Clone(property, {})
+  /** `[Standard]` Creates a Composite object type. */
+  public Composite<T extends TObject[]>(objects: [...T], options?: ObjectOptions): TComposite<T> {
+    const isOptionalAll = (objects: TObject[], key: string) => objects.every((object) => !(key in object.properties) || IsOptional(object.properties[key]))
+    const IsOptional = (schema: TSchema) => TypeGuard.TOptional(schema) || TypeGuard.TReadonlyOptional(schema)
+    const [required, optional] = [new Set<string>(), new Set<string>()]
+    for (const object of objects) {
+      for (const key of globalThis.Object.getOwnPropertyNames(object.properties)) {
+        if (isOptionalAll(objects, key)) optional.add(key)
       }
     }
-    return this.Object(properties, options) as TComposite<T>
+    for (const object of objects) {
+      for (const key of globalThis.Object.getOwnPropertyNames(object.properties)) {
+        if (!optional.has(key)) required.add(key)
+      }
+    }
+    const properties = {} as Record<keyof any, any>
+    for (const object of objects) {
+      for (const [key, schema] of Object.entries(object.properties)) {
+        const property = TypeClone.Clone(schema, {})
+        if (!optional.has(key)) delete property[Modifier]
+        if (key in properties) {
+          const left = TypeExtends.Extends(properties[key], property) !== TypeExtendsResult.False
+          const right = TypeExtends.Extends(property, properties[key]) !== TypeExtendsResult.False
+          if (!left && !right) properties[key] = Type.Never()
+          if (!left && right) properties[key] = property
+        } else {
+          properties[key] = property
+        }
+      }
+    }
+    if (required.size > 0) {
+      return this.Create({ ...options, [Kind]: 'Object', [Hint]: 'Composite', type: 'object', properties, required: [...required] })
+    } else {
+      return this.Create({ ...options, [Kind]: 'Object', [Hint]: 'Composite', type: 'object', properties })
+    }
   }
   /** `[Standard]` Creates a Enum type */
   public Enum<T extends Record<string, string | number>>(item: T, options: SchemaOptions = {}): TEnum<T> {
