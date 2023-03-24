@@ -44,7 +44,7 @@ export namespace TypeSystem {
   // ------------------------------------------------------------------------
   // Assertion Policies
   // ------------------------------------------------------------------------
-  /** Sets whether assertions should allow strict `undefined` optional properties. The default is `false` */
+  /** Sets whether TypeBox should assert optional properties using the TypeScript `exactOptionalPropertyTypes` assertion policy. The default is `false` */
   export let ExactOptionalPropertyTypes: boolean = false
   /** Sets whether arrays should be treated as a kind of objects. The default is `false` */
   export let AllowArrayObjects: boolean = false
