@@ -135,19 +135,8 @@ export namespace ValueErrors {
   // ----------------------------------------------------------------------
   // Guards
   // ----------------------------------------------------------------------
-  function IsObject(value: unknown): value is Record<keyof any, unknown> {
-    const result = typeof value === 'object' && value !== null
-    return TypeSystem.AllowArrayObjects ? result : result && !globalThis.Array.isArray(value)
-  }
-  function IsRecordObject(value: unknown): value is Record<keyof any, unknown> {
-    return IsObject(value) && !(value instanceof globalThis.Date) && !(value instanceof globalThis.Uint8Array)
-  }
   function IsBigInt(value: unknown): value is bigint {
     return typeof value === 'bigint'
-  }
-  function IsNumber(value: unknown): value is number {
-    const result = typeof value === 'number'
-    return TypeSystem.AllowNaN ? result : result && globalThis.Number.isFinite(value)
   }
   function IsInteger(value: unknown): value is number {
     return globalThis.Number.isInteger(value)
@@ -155,13 +144,31 @@ export namespace ValueErrors {
   function IsString(value: unknown): value is string {
     return typeof value === 'string'
   }
+  function IsDefined<T>(value: unknown): value is T {
+    return value !== undefined
+  }
+  // ----------------------------------------------------------------------
+  // Policies
+  // ----------------------------------------------------------------------
+  function IsExactOptionalProperty(value: Record<keyof any, unknown>, key: string) {
+    return TypeSystem.ExactOptionalPropertyTypes ? key in value : value[key] !== undefined
+  }
+  function IsObject(value: unknown): value is Record<keyof any, unknown> {
+    const result = typeof value === 'object' && value !== null
+    return TypeSystem.AllowArrayObjects ? result : result && !globalThis.Array.isArray(value)
+  }
+  function IsRecordObject(value: unknown): value is Record<keyof any, unknown> {
+    return IsObject(value) && !(value instanceof globalThis.Date) && !(value instanceof globalThis.Uint8Array)
+  }
+  function IsNumber(value: unknown): value is number {
+    const result = typeof value === 'number'
+    return TypeSystem.AllowNaN ? result : result && globalThis.Number.isFinite(value)
+  }
   function IsVoid(value: unknown): value is void {
     const result = value === undefined
     return TypeSystem.AllowVoidNull ? result || value === null : result
   }
-  function IsDefined<T>(value: unknown): value is T {
-    return value !== undefined
-  }
+
   // ----------------------------------------------------------------------
   // Types
   // ----------------------------------------------------------------------
@@ -351,7 +358,7 @@ export namespace ValueErrors {
           yield { type: ValueErrorType.ObjectRequiredProperties, schema: property, path: `${path}/${knownKey}`, value: undefined, message: `Expected required property` }
         }
       } else {
-        if (knownKey in value) {
+        if (IsExactOptionalProperty(value, knownKey)) {
           yield* Visit(property, references, `${path}/${knownKey}`, value[knownKey])
         }
       }
