@@ -146,7 +146,7 @@ export namespace TypeCompiler {
   // -------------------------------------------------------------------
   // Polices
   // -------------------------------------------------------------------
-  function IsExactOptionalProperty(key: string, value: string, expression: string) {
+  function IsExactOptionalProperty(value: string, key: string, expression: string) {
     return TypeSystem.ExactOptionalPropertyTypes ? `('${key}' in ${value} ? ${expression} : true)` : `(${value}.${key} !== undefined ? ${expression} : true)`
   }
   function IsObjectCheck(value: string): string {
@@ -267,7 +267,7 @@ export namespace TypeCompiler {
         if (Types.ExtendsUndefined.Check(property)) yield `('${knownKey}' in ${value})`
       } else {
         const expression = CreateExpression(property, references, memberExpression)
-        yield IsExactOptionalProperty(knownKey, value, expression)
+        yield IsExactOptionalProperty(value, knownKey, expression)
       }
     }
     if (schema.additionalProperties === false) {

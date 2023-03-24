@@ -62,7 +62,7 @@ export namespace ValueCheck {
   // ----------------------------------------------------------------------
   // Policies
   // ----------------------------------------------------------------------
-  function IsExactOptionalProperty(key: string, value: Record<keyof any, unknown>) {
+  function IsExactOptionalProperty(value: Record<keyof any, unknown>, key: string) {
     return TypeSystem.ExactOptionalPropertyTypes ? key in value : value[key] !== undefined
   }
   function IsObject(value: unknown): value is Record<keyof any, unknown> {
@@ -243,7 +243,7 @@ export namespace ValueCheck {
           return knownKey in value
         }
       } else {
-        if (IsExactOptionalProperty(knownKey, value) && !Visit(property, references, value[knownKey])) {
+        if (IsExactOptionalProperty(value, knownKey) && !Visit(property, references, value[knownKey])) {
           return false
         }
       }

@@ -150,7 +150,7 @@ export namespace ValueErrors {
   // ----------------------------------------------------------------------
   // Policies
   // ----------------------------------------------------------------------
-  function IsExactOptionalProperty(key: string, value: Record<keyof any, unknown>) {
+  function IsExactOptionalProperty(value: Record<keyof any, unknown>, key: string) {
     return TypeSystem.ExactOptionalPropertyTypes ? key in value : value[key] !== undefined
   }
   function IsObject(value: unknown): value is Record<keyof any, unknown> {
@@ -358,7 +358,7 @@ export namespace ValueErrors {
           yield { type: ValueErrorType.ObjectRequiredProperties, schema: property, path: `${path}/${knownKey}`, value: undefined, message: `Expected required property` }
         }
       } else {
-        if (IsExactOptionalProperty(knownKey, value)) {
+        if (IsExactOptionalProperty(value, knownKey)) {
           yield* Visit(property, references, `${path}/${knownKey}`, value[knownKey])
         }
       }
