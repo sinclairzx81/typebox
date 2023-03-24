@@ -3,6 +3,42 @@ import { Assert } from '../assert/index'
 import { TypeSystem } from '@sinclair/typebox/system'
 import { Type } from '@sinclair/typebox'
 
+describe('system/TypeSystem/ExactOptionalPropertyTypes', () => {
+  before(() => {
+    TypeSystem.ExactOptionalPropertyTypes = true
+  })
+  after(() => {
+    TypeSystem.ExactOptionalPropertyTypes = false
+  })
+  // ---------------------------------------------------------------
+  // Number
+  // ---------------------------------------------------------------
+  it('Should not validate optional number', () => {
+    const T = Type.Object({
+      x: Type.Optional(Type.Number()),
+    })
+    Ok(T, {})
+    Ok(T, { x: 1 })
+    Fail(T, { x: undefined })
+  })
+  it('Should not validate undefined', () => {
+    const T = Type.Object({
+      x: Type.Optional(Type.Undefined()),
+    })
+    Ok(T, {})
+    Fail(T, { x: 1 })
+    Ok(T, { x: undefined })
+  })
+  it('Should validate optional number | undefined', () => {
+    const T = Type.Object({
+      x: Type.Optional(Type.Union([Type.Number(), Type.Undefined()])),
+    })
+    Ok(T, {})
+    Ok(T, { x: 1 })
+    Ok(T, { x: undefined })
+  })
+})
+
 describe('system/TypeSystem/AllowNaN', () => {
   before(() => {
     TypeSystem.AllowNaN = true

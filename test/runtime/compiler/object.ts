@@ -227,16 +227,16 @@ describe('type/compiler/Object', () => {
     Ok(T, { x: undefined })
     Ok(T, {})
   })
-  it('Should not check undefined for optional property of number', () => {
+  it('Should check undefined for optional property of number', () => {
     const T = Type.Object({ x: Type.Optional(Type.Number()) })
     Ok(T, { x: 1 })
+    Ok(T, { x: undefined }) // allowed by default
     Ok(T, {})
-    Fail(T, { x: undefined })
   })
   it('Should check undefined for optional property of undefined', () => {
     const T = Type.Object({ x: Type.Optional(Type.Undefined()) })
     Fail(T, { x: 1 })
-    Ok(T, {})
     Ok(T, { x: undefined })
+    Ok(T, {})
   })
 })

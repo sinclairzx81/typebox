@@ -351,7 +351,8 @@ export namespace ValueErrors {
           yield { type: ValueErrorType.ObjectRequiredProperties, schema: property, path: `${path}/${knownKey}`, value: undefined, message: `Expected required property` }
         }
       } else {
-        if (knownKey in value) {
+        const exactOptionalCheck = TypeSystem.ExactOptionalPropertyTypes ? knownKey in value : value[knownKey] !== undefined
+        if (exactOptionalCheck) {
           yield* Visit(property, references, `${path}/${knownKey}`, value[knownKey])
         }
       }

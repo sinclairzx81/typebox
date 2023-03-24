@@ -255,29 +255,33 @@ export namespace TypeCompiler {
     yield IsObjectCheck(value)
     if (IsNumber(schema.minProperties)) yield `Object.getOwnPropertyNames(${value}).length >= ${schema.minProperties}`
     if (IsNumber(schema.maxProperties)) yield `Object.getOwnPropertyNames(${value}).length <= ${schema.maxProperties}`
-    const schemaKeys = globalThis.Object.getOwnPropertyNames(schema.properties)
-    for (const schemaKey of schemaKeys) {
-      const memberExpression = MemberExpression.Encode(value, schemaKey)
-      const property = schema.properties[schemaKey]
-      if (schema.required && schema.required.includes(schemaKey)) {
+    const knownKeys = globalThis.Object.getOwnPropertyNames(schema.properties)
+    for (const knownKey of knownKeys) {
+      const memberExpression = MemberExpression.Encode(value, knownKey)
+      const property = schema.properties[knownKey]
+      if (schema.required && schema.required.includes(knownKey)) {
         yield* Visit(property, references, memberExpression)
-        if (Types.ExtendsUndefined.Check(property)) yield `('${schemaKey}' in ${value})`
+        if (Types.ExtendsUndefined.Check(property)) yield `('${knownKey}' in ${value})`
       } else {
         const expression = CreateExpression(property, references, memberExpression)
-        yield `('${schemaKey}' in ${value} ? ${expression} : true)`
+        if (TypeSystem.ExactOptionalPropertyTypes) {
+          yield `('${knownKey}' in ${value} ? ${expression} : true)`
+        } else {
+          yield `(${value}.${knownKey} !== undefined ? ${expression} : true)`
+        }
       }
     }
     if (schema.additionalProperties === false) {
-      if (schema.required && schema.required.length === schemaKeys.length) {
-        yield `Object.getOwnPropertyNames(${value}).length === ${schemaKeys.length}`
+      if (schema.required && schema.required.length === knownKeys.length) {
+        yield `Object.getOwnPropertyNames(${value}).length === ${knownKeys.length}`
       } else {
-        const keys = `[${schemaKeys.map((key) => `'${key}'`).join(', ')}]`
+        const keys = `[${knownKeys.map((key) => `'${key}'`).join(', ')}]`
         yield `Object.getOwnPropertyNames(${value}).every(key => ${keys}.includes(key))`
       }
     }
     if (typeof schema.additionalProperties === 'object') {
       const expression = CreateExpression(schema.additionalProperties, references, 'value[key]')
-      const keys = `[${schemaKeys.map((key) => `'${key}'`).join(', ')}]`
+      const keys = `[${knownKeys.map((key) => `'${key}'`).join(', ')}]`
       yield `(Object.getOwnPropertyNames(${value}).every(key => ${keys}.includes(key) || ${expression}))`
     }
   }
