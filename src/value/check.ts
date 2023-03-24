@@ -60,15 +60,10 @@ export namespace ValueCheck {
     return value !== undefined
   }
   // ----------------------------------------------------------------------
-  // Overrides
+  // Policies
   // ----------------------------------------------------------------------
-  function IsExactOptionalPropertyType(schema: Types.TSchema, references: Types.TSchema[], key: string, value: Record<keyof any, unknown>) {
-    if (TypeSystem.ExactOptionalPropertyTypes && key in value && !Visit(schema, references, value[key])) {
-      return false
-    }
-    if (value[key] !== undefined && !Visit(schema, references, value[key])) {
-      return false
-    }
+  function IsExactOptionalProperty(key: string, value: Record<keyof any, unknown>) {
+    return TypeSystem.ExactOptionalPropertyTypes ? key in value : value[key] !== undefined
   }
   function IsObject(value: unknown): value is Record<keyof any, unknown> {
     const result = typeof value === 'object' && value !== null
@@ -85,7 +80,6 @@ export namespace ValueCheck {
     const result = value === undefined
     return TypeSystem.AllowVoidNull ? result || value === null : result
   }
-
   // ----------------------------------------------------------------------
   // Types
   // ----------------------------------------------------------------------
@@ -249,8 +243,7 @@ export namespace ValueCheck {
           return knownKey in value
         }
       } else {
-        const exactOptionalCheck = TypeSystem.ExactOptionalPropertyTypes ? knownKey in value : value[knownKey] !== undefined
-        if (exactOptionalCheck && !Visit(property, references, value[knownKey])) {
+        if (IsExactOptionalProperty(knownKey, value) && !Visit(property, references, value[knownKey])) {
           return false
         }
       }

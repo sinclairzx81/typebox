@@ -144,10 +144,10 @@ export namespace TypeCompiler {
     return typeof value === 'string'
   }
   // -------------------------------------------------------------------
-  // Overrides
+  // Polices
   // -------------------------------------------------------------------
-  function IsNumberCheck(value: string): string {
-    return !TypeSystem.AllowNaN ? `(typeof ${value} === 'number' && Number.isFinite(${value}))` : `typeof ${value} === 'number'`
+  function IsExactOptionalProperty(key: string, value: string, expression: string) {
+    return TypeSystem.ExactOptionalPropertyTypes ? `('${key}' in ${value} ? ${expression} : true)` : `(${value}.${key} !== undefined ? ${expression} : true)`
   }
   function IsObjectCheck(value: string): string {
     return !TypeSystem.AllowArrayObjects ? `(typeof ${value} === 'object' && ${value} !== null && !Array.isArray(${value}))` : `(typeof ${value} === 'object' && ${value} !== null)`
@@ -156,6 +156,9 @@ export namespace TypeCompiler {
     return !TypeSystem.AllowArrayObjects
       ? `(typeof ${value} === 'object' && ${value} !== null && !Array.isArray(${value}) && !(${value} instanceof Date) && !(${value} instanceof Uint8Array))`
       : `(typeof ${value} === 'object' && ${value} !== null && !(${value} instanceof Date) && !(${value} instanceof Uint8Array))`
+  }
+  function IsNumberCheck(value: string): string {
+    return !TypeSystem.AllowNaN ? `(typeof ${value} === 'number' && Number.isFinite(${value}))` : `typeof ${value} === 'number'`
   }
   function IsVoidCheck(value: string): string {
     return TypeSystem.AllowVoidNull ? `(${value} === undefined || ${value} === null)` : `${value} === undefined`
@@ -264,11 +267,7 @@ export namespace TypeCompiler {
         if (Types.ExtendsUndefined.Check(property)) yield `('${knownKey}' in ${value})`
       } else {
         const expression = CreateExpression(property, references, memberExpression)
-        if (TypeSystem.ExactOptionalPropertyTypes) {
-          yield `('${knownKey}' in ${value} ? ${expression} : true)`
-        } else {
-          yield `(${value}.${knownKey} !== undefined ? ${expression} : true)`
-        }
+        yield IsExactOptionalProperty(knownKey, value, expression)
       }
     }
     if (schema.additionalProperties === false) {
