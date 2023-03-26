@@ -132,12 +132,16 @@ describe('type/compiler/Object', () => {
       '0-leading': Type.Literal(2),
       '$-leading': Type.Literal(3),
       '!@#$%^&*(': Type.Literal(4),
+      'node-mirror:release': Type.Literal(5), // issue: 353
+      "a'a": Type.Literal(6), // issue: 353
     })
     Ok(T, {
       'with-hyphen': 1,
       '0-leading': 2,
       '$-leading': 3,
       '!@#$%^&*(': 4,
+      'node-mirror:release': 5,
+      "a'a": 6,
     })
   })
   it('Should validate schema additional properties of string', () => {
