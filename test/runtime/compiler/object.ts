@@ -133,7 +133,7 @@ describe('type/compiler/Object', () => {
       '$-leading': Type.Literal(3),
       '!@#$%^&*(': Type.Literal(4),
       'node-mirror:release': Type.Literal(5), // issue: 353
-      "a'a": Type.Literal(6), // issue: 353
+      "a'a": Type.Literal(6),
     })
     Ok(T, {
       'with-hyphen': 1,
