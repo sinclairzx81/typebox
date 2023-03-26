@@ -60,14 +60,38 @@ namespace Character {
   export function DollarSign(code: number) {
     return code === 36
   }
-  export function Underscore(code: number) {
+  export function IsUnderscore(code: number) {
     return code === 95
   }
-  export function Numeric(code: number) {
+  export function IsAlpha(code: number) {
+    return (code >= 64 && code <= 90) || (code >= 97 && code <= 122)
+  }
+  export function IsNumeric(code: number) {
     return code >= 48 && code <= 57
   }
-  export function Alpha(code: number) {
-    return (code >= 65 && code <= 90) || (code >= 97 && code <= 122)
+}
+// -------------------------------------------------------------------
+// MemberExpression
+// -------------------------------------------------------------------
+namespace MemberExpression {
+  function IsFirstCharacterNumeric(value: string) {
+    if (value.length === 0) return false
+    return Character.IsNumeric(value.charCodeAt(0))
+  }
+  function IsAccessor(value: string) {
+    if (IsFirstCharacterNumeric(value)) return false
+    for (let i = 0; i < value.length; i++) {
+      const code = value.charCodeAt(i)
+      const check = Character.IsAlpha(code) || Character.IsNumeric(code) || Character.DollarSign(code) || Character.IsUnderscore(code)
+      if (!check) return false
+    }
+    return true
+  }
+  function EscapeHyphen(key: string) {
+    return key.replace(/'/g, "\\'")
+  }
+  export function Encode(object: string, key: string) {
+    return IsAccessor(key) ? `${object}.${key}` : `${object}['${EscapeHyphen(key)}']`
   }
 }
 // -------------------------------------------------------------------
@@ -78,37 +102,13 @@ namespace Identifier {
     const buffer: string[] = []
     for (let i = 0; i < $id.length; i++) {
       const code = $id.charCodeAt(i)
-      if (Character.Numeric(code) || Character.Alpha(code)) {
+      if (Character.IsNumeric(code) || Character.IsAlpha(code)) {
         buffer.push($id.charAt(i))
       } else {
         buffer.push(`_${code}_`)
       }
     }
     return buffer.join('').replace(/__/g, '_')
-  }
-}
-// -------------------------------------------------------------------
-// MemberExpression
-// -------------------------------------------------------------------
-export namespace MemberExpression {
-  function Check(propertyName: string) {
-    if (propertyName.length === 0) return false
-    {
-      const code = propertyName.charCodeAt(0)
-      if (!(Character.DollarSign(code) || Character.Underscore(code) || Character.Alpha(code))) {
-        return false
-      }
-    }
-    for (let i = 1; i < propertyName.length; i++) {
-      const code = propertyName.charCodeAt(i)
-      if (!(Character.DollarSign(code) || Character.Underscore(code) || Character.Alpha(code) || Character.Numeric(code))) {
-        return false
-      }
-    }
-    return true
-  }
-  export function Encode(object: string, key: string) {
-    return !Check(key) ? `${object}['${key}']` : `${object}.${key}`
   }
 }
 // -------------------------------------------------------------------
