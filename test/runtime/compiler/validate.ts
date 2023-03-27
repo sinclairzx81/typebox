@@ -96,6 +96,9 @@ export function Ok<T extends TSchema>(schema: T, data: unknown, references: any[
 export function Fail<T extends TSchema>(schema: T, data: unknown, references: any[] = []) {
   const C = TypeCompiler.Compile(schema, references)
   const result = C.Check(data)
+  if (result !== Value.Check(schema, references, data)) {
+    throw Error('Compiler and Value Check disparity')
+  }
   if (result === false) {
     const errors = [...Value.Errors(schema, references, data)]
     if (errors.length === 0) throw Error('expected at least 1 error')
