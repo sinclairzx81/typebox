@@ -132,16 +132,20 @@ describe('type/compiler/Object', () => {
       '0-leading': Type.Literal(2),
       '$-leading': Type.Literal(3),
       '!@#$%^&*(': Type.Literal(4),
-      'node-mirror:release': Type.Literal(5), // issue: 353
-      "a'a": Type.Literal(6),
+      'node-mirror:release:0': Type.Literal(5), // issue: 353
+      'node-mirror:release:1': Type.Optional(Type.Literal(6)), // issue: 356
+      'node-mirror:release:2': Type.Union([Type.Literal(7), Type.Undefined()]), // key known
+      "a'a": Type.Literal(8),
     })
     Ok(T, {
       'with-hyphen': 1,
       '0-leading': 2,
       '$-leading': 3,
       '!@#$%^&*(': 4,
-      'node-mirror:release': 5,
-      "a'a": 6,
+      'node-mirror:release:0': 5,
+      'node-mirror:release:1': 6,
+      'node-mirror:release:2': 7,
+      "a'a": 8,
     })
   })
   it('Should validate schema additional properties of string', () => {

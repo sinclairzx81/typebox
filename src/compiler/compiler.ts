@@ -147,7 +147,7 @@ export namespace TypeCompiler {
   // Polices
   // -------------------------------------------------------------------
   function IsExactOptionalProperty(value: string, key: string, expression: string) {
-    return TypeSystem.ExactOptionalPropertyTypes ? `('${key}' in ${value} ? ${expression} : true)` : `(${value}.${key} !== undefined ? ${expression} : true)`
+    return TypeSystem.ExactOptionalPropertyTypes ? `('${key}' in ${value} ? ${expression} : true)` : `(${MemberExpression.Encode(value, key)} !== undefined ? ${expression} : true)`
   }
   function IsObjectCheck(value: string): string {
     return !TypeSystem.AllowArrayObjects ? `(typeof ${value} === 'object' && ${value} !== null && !Array.isArray(${value}))` : `(typeof ${value} === 'object' && ${value} !== null)`
