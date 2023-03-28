@@ -14,7 +14,7 @@ describe('value/convert/Union', () => {
     Assert.deepEqual(V2, { x: null })
     Assert.deepEqual(V3, { x: 'hello' })
   })
-  it('Should convert first variant in ambigous conversion', () => {
+  it('Should convert first variant in ambiguous conversion', () => {
     const T = Type.Object({
       x: Type.Union([Type.Boolean(), Type.Number()]),
     })
