@@ -28,6 +28,7 @@ THE SOFTWARE.
 
 import * as Types from '../typebox'
 import { ValueClone } from './clone'
+import { ValueCheck } from './check'
 
 // ----------------------------------------------------------------------------------------------
 // Errors
@@ -129,7 +130,6 @@ export namespace ValueConvert {
   function TryConvertBigInt(value: unknown) {
     return IsStringNumeric(value) ? globalThis.BigInt(parseInt(value)) : IsNumber(value) ? globalThis.BigInt(value | 0) : IsValueFalse(value) ? 0 : IsValueTrue(value) ? 1 : value
   }
-
   function TryConvertString(value: unknown) {
     return IsValueToString(value) ? value.toString() : IsSymbol(value) && value.description !== undefined ? value.description.toString() : value
   }
@@ -229,7 +229,13 @@ export namespace ValueConvert {
     return value
   }
   function Record(schema: Types.TRecord<any, any>, references: Types.TSchema[], value: any): unknown {
-    return value
+    const propertyKey = globalThis.Object.getOwnPropertyNames(schema.patternProperties)[0]
+    const property = schema.patternProperties[propertyKey]
+    const result = {} as Record<string, unknown>
+    for (const [propKey, propValue] of globalThis.Object.entries(value)) {
+      result[propKey] = Visit(property, references, propValue)
+    }
+    return result
   }
   function Ref(schema: Types.TRef<any>, references: Types.TSchema[], value: any): unknown {
     const index = references.findIndex((foreign) => foreign.$id === schema.$ref)
@@ -261,6 +267,12 @@ export namespace ValueConvert {
     return TryConvertUndefined(value)
   }
   function Union(schema: Types.TUnion, references: Types.TSchema[], value: any): unknown {
+    for (const subschema of schema.anyOf) {
+      const converted = Visit(subschema, references, value)
+      if (ValueCheck.Check(subschema, references, converted)) {
+        return converted
+      }
+    }
     return value
   }
   function Uint8Array(schema: Types.TUint8Array, references: Types.TSchema[], value: any): unknown {
