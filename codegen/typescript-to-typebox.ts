@@ -116,7 +116,8 @@ export namespace TypeScriptToTypeBox {
   }
   function* InterfaceDeclaration(node: ts.InterfaceDeclaration): IterableIterator<string> {
     useImports = true
-    const heritage = node.heritageClauses !== undefined ? node.heritageClauses.flatMap((node) => node.types.map((node) => node.getText())) : []
+    const heritage = node.heritageClauses !== undefined ? node.heritageClauses.flatMap((node) => Collect(node)) : []
+    console.log('123', heritage)
     if (node.typeParameters) {
       useGenerics = true
       const exports = isExport(node) ? 'export ' : ''
@@ -160,6 +161,17 @@ export namespace TypeScriptToTypeBox {
       const typeDeclaration = isRecursiveType(node) ? `${exports}const ${node.name.getText()} = Type.Recursive(${node.name.getText()} => ${type})` : `${exports}const ${node.name.getText()} = ${type}`
       yield `${staticDeclaration}\n${typeDeclaration}`
     }
+  }
+  function* HeritageClause(node: ts.HeritageClause): IterableIterator<string> {
+    const types = node.types.map((node) => Collect(node))
+    if (types.length === 1) return yield types[0]
+    yield `Type.Intersect([${types.join(', ')}])`
+  }
+  function* ExpressionWithTypeArguments(node: ts.ExpressionWithTypeArguments): IterableIterator<string> {
+    const name = Collect(node.expression)
+    const typeArguments = node.typeArguments === undefined ? [] : node.typeArguments.map((node) => Collect(node))
+    // todo: default type argument (resolve `= number` from `type Foo<T = number>`)
+    return yield typeArguments.length === 0 ? `${name}` : `${name}(${typeArguments.join(', ')})`
   }
   function* TypeParameterDeclaration(node: ts.TypeParameterDeclaration): IterableIterator<string> {
     yield node.name.getText()
@@ -283,6 +295,10 @@ export namespace TypeScriptToTypeBox {
       return yield* UnionTypeNode(node)
     } else if (ts.isTypeOperatorNode(node)) {
       return yield* TypeOperatorNode(node)
+    } else if (ts.isHeritageClause(node)) {
+      return yield* HeritageClause(node)
+    } else if (ts.isExpressionWithTypeArguments(node)) {
+      return yield* ExpressionWithTypeArguments(node)
     } else if (ts.isTypeParameterDeclaration(node)) {
       return yield* TypeParameterDeclaration(node)
     } else if (ts.isParenthesizedTypeNode(node)) {
@@ -295,6 +311,8 @@ export namespace TypeScriptToTypeBox {
       return yield* ClassDeclaration(node)
     } else if (ts.isConditionalTypeNode(node)) {
       return yield* ConditionalTypeNode(node)
+    } else if (ts.isIdentifier(node)) {
+      return yield node.getText()
     } else if (node.kind === ts.SyntaxKind.ExportKeyword) {
       return yield `export`
     } else if (node.kind === ts.SyntaxKind.KeyOfKeyword) {
