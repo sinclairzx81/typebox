@@ -287,9 +287,10 @@ export namespace TypeCompiler {
   function* Promise(schema: Types.TPromise<any>, references: Types.TSchema[], value: string): IterableIterator<string> {
     yield `(typeof value === 'object' && typeof ${value}.then === 'function')`
   }
-
   function* Record(schema: Types.TRecord<any, any>, references: Types.TSchema[], value: string): IterableIterator<string> {
     yield IsRecordCheck(value)
+    if (IsNumber(schema.minProperties)) yield `Object.getOwnPropertyNames(${value}).length >= ${schema.minProperties}`
+    if (IsNumber(schema.maxProperties)) yield `Object.getOwnPropertyNames(${value}).length <= ${schema.maxProperties}`
     const [keyPattern, valueSchema] = globalThis.Object.entries(schema.patternProperties)[0]
     const local = PushLocal(`new RegExp(/${keyPattern}/)`)
     yield `(Object.getOwnPropertyNames(${value}).every(key => ${local}.test(key)))`

@@ -390,6 +390,12 @@ export namespace ValueErrors {
     if (!IsRecordObject(value)) {
       return yield { type: ValueErrorType.Object, schema, path, value, message: `Expected record object` }
     }
+    if (IsDefined<number>(schema.minProperties) && !(globalThis.Object.getOwnPropertyNames(value).length >= schema.minProperties)) {
+      yield { type: ValueErrorType.ObjectMinProperties, schema, path, value, message: `Expected object to have at least ${schema.minProperties} properties` }
+    }
+    if (IsDefined<number>(schema.maxProperties) && !(globalThis.Object.getOwnPropertyNames(value).length <= schema.maxProperties)) {
+      yield { type: ValueErrorType.ObjectMaxProperties, schema, path, value, message: `Expected object to have less than ${schema.minProperties} properties` }
+    }
     const [keyPattern, valueSchema] = globalThis.Object.entries(schema.patternProperties)[0]
     const regex = new RegExp(keyPattern)
     if (!globalThis.Object.getOwnPropertyNames(value).every((key) => regex.test(key))) {
