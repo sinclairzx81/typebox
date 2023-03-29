@@ -117,7 +117,6 @@ export namespace TypeScriptToTypeBox {
   function* InterfaceDeclaration(node: ts.InterfaceDeclaration): IterableIterator<string> {
     useImports = true
     const heritage = node.heritageClauses !== undefined ? node.heritageClauses.flatMap((node) => Collect(node)) : []
-    console.log('123', heritage)
     if (node.typeParameters) {
       useGenerics = true
       const exports = isExport(node) ? 'export ' : ''
