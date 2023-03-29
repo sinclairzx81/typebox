@@ -318,6 +318,8 @@ export namespace TypeScriptToTypeBox {
       return yield `Type.KeyOf()`
     } else if (node.kind === ts.SyntaxKind.NumberKeyword) {
       return yield `Type.Number()`
+    } else if (node.kind === ts.SyntaxKind.BigIntKeyword) {
+      return yield `Type.BigInt()`
     } else if (node.kind === ts.SyntaxKind.StringKeyword) {
       return yield `Type.String()`
     } else if (node.kind === ts.SyntaxKind.BooleanKeyword) {
