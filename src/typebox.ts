@@ -1112,6 +1112,14 @@ export namespace TypeGuard {
       IsOptionalString(schema.$id)
     )
   }
+  /** Returns true if the given schema is a raw TUnsafe */
+  export function TUnsafe(schema: unknown): schema is TUnsafe<unknown> {
+    // prettier-ignore
+    return (
+      TKind(schema) && 
+      schema[Kind] === 'Unsafe'
+    )
+  }
   /** Returns true if the given schema is TVoid */
   export function TVoid(schema: unknown): schema is TVoid {
     // prettier-ignore
@@ -1165,6 +1173,7 @@ export namespace TypeGuard {
         TUnion(schema) ||
         TUint8Array(schema) ||
         TUnknown(schema) ||
+        TUnsafe(schema) ||
         TVoid(schema) ||
         (TKind(schema) && TypeRegistry.Has(schema[Kind] as any)))
     )
