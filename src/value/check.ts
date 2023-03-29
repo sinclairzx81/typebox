@@ -270,6 +270,12 @@ export namespace ValueCheck {
     if (!IsRecordObject(value)) {
       return false
     }
+    if (IsDefined<number>(schema.minProperties) && !(globalThis.Object.getOwnPropertyNames(value).length >= schema.minProperties)) {
+      return false
+    }
+    if (IsDefined<number>(schema.maxProperties) && !(globalThis.Object.getOwnPropertyNames(value).length <= schema.maxProperties)) {
+      return false
+    }
     const [keyPattern, valueSchema] = globalThis.Object.entries(schema.patternProperties)[0]
     const regex = new RegExp(keyPattern)
     if (!globalThis.Object.getOwnPropertyNames(value).every((key) => regex.test(key))) {
