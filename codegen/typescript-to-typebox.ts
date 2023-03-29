@@ -35,6 +35,12 @@ import * as ts from 'typescript'
 
 /** Generates TypeBox types from TypeScript code */
 export namespace TypeScriptToTypeBox {
+  function isRecursiveType(decl: ts.InterfaceDeclaration | ts.TypeAliasDeclaration) {
+    function find(decl: ts.InterfaceDeclaration | ts.TypeAliasDeclaration, node: ts.Node): boolean {
+      return (ts.isTypeReferenceNode(node) && decl.name.getText() === node.getText()) || node.getChildren().some((node) => find(decl, node))
+    }
+    return ts.isTypeAliasDeclaration(decl) ? [decl.type].some((node) => find(decl, node)) : decl.members.some((node) => find(decl, node))
+  }
   function isReadonlyProperty(node: ts.PropertySignature): boolean {
     return node.modifiers !== undefined && node.modifiers.find((modifier) => modifier.getText() === 'readonly') !== undefined
   }
@@ -110,6 +116,7 @@ export namespace TypeScriptToTypeBox {
   }
   function* InterfaceDeclaration(node: ts.InterfaceDeclaration): IterableIterator<string> {
     useImports = true
+    const heritage = node.heritageClauses !== undefined ? node.heritageClauses.flatMap((node) => node.types.map((node) => node.getText())) : []
     if (node.typeParameters) {
       useGenerics = true
       const exports = isExport(node) ? 'export ' : ''
@@ -118,13 +125,17 @@ export namespace TypeScriptToTypeBox {
       const names = node.typeParameters.map((param) => `${Collect(param)}`).join(', ')
       const members = node.members.map((member) => Collect(member)).join(',\n')
       const staticDeclaration = `${exports}type ${node.name.getText()}<${constraints}> = Static<ReturnType<typeof ${node.name.getText()}<${names}>>>`
-      const typeDeclaration = `${exports}const ${node.name.getText()} = <${constraints}>(${parameters}) => Type.Object({\n${members}\n})`
+      const rawTypeExpression = isRecursiveType(node) ? `Type.Recursive(${node.name.getText()} => Type.Object({\n${members}\n}))` : `Type.Object({\n${members}\n})`
+      const typeExpression = heritage.length === 0 ? rawTypeExpression : `Type.Intersect([${heritage.join(', ')}, ${rawTypeExpression}])`
+      const typeDeclaration = `${exports}const ${node.name.getText()} = <${constraints}>(${parameters}) => ${typeExpression}`
       yield `${staticDeclaration}\n${typeDeclaration}`
     } else {
       const exports = isExport(node) ? 'export ' : ''
       const members = node.members.map((member) => Collect(member)).join(',\n')
       const staticDeclaration = `${exports}type ${node.name.getText()} = Static<typeof ${node.name.getText()}>`
-      const typeDeclaration = `${exports}const ${node.name.getText()} = Type.Object({\n${members}\n})`
+      const rawTypeExpression = isRecursiveType(node) ? `Type.Recursive(${node.name.getText()} => Type.Object({\n${members}\n}))` : `Type.Object({\n${members}\n})`
+      const typeExpression = heritage.length === 0 ? rawTypeExpression : `Type.Intersect([${heritage.join(', ')}, ${rawTypeExpression}])`
+      const typeDeclaration = `${exports}const ${node.name.getText()} = ${typeExpression}`
       yield `${staticDeclaration}\n${typeDeclaration}`
     }
   }
@@ -138,13 +149,15 @@ export namespace TypeScriptToTypeBox {
       const names = node.typeParameters.map((param) => Collect(param)).join(', ')
       const type = Collect(node.type)
       const staticDeclaration = `${exports}type ${node.name.getText()}<${constraints}> = Static<ReturnType<typeof ${node.name.getText()}<${names}>>>`
-      const typeDeclaration = `${exports}const ${node.name.getText()} = <${constraints}>(${parameters}) => ${type}`
+      const typeDeclaration = isRecursiveType(node)
+        ? `${exports}const ${node.name.getText()} = <${constraints}>(${parameters}) => Type.Recursive(${node.name.getText()} => ${type})`
+        : `${exports}const ${node.name.getText()} = <${constraints}>(${parameters}) => ${type}`
       yield `${staticDeclaration}\n${typeDeclaration}`
     } else {
       const exports = isExport(node) ? 'export ' : ''
       const type = Collect(node.type)
       const staticDeclaration = `${exports}type ${node.name.getText()} = Static<typeof ${node.name.getText()}>`
-      const typeDeclaration = `${exports}const ${node.name.getText()} = ${type}`
+      const typeDeclaration = isRecursiveType(node) ? `${exports}const ${node.name.getText()} = Type.Recursive(${node.name.getText()} => ${type})` : `${exports}const ${node.name.getText()} = ${type}`
       yield `${staticDeclaration}\n${typeDeclaration}`
     }
   }
