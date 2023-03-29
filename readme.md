@@ -444,12 +444,12 @@ The following table lists the Standard TypeBox types. These types are fully comp
 │                                │                             │ }                              │
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
-│ const A = Type.Object({        │ type A = {                  │ const T = {                    │
-│    x: Type.Number(),           │   x: number,                │   $ref: 'A'                    │
+│ const T = Type.Object({        │ type T = {                  │ const R = {                    │
+│    x: Type.Number(),           │   x: number,                │   $ref: 'T'                    │
 │    y: Type.Number()            │   y: number                 │ }                              │
-│ }, { $id: 'A' })               | }                           │                                │
+│ }, { $id: 'T' })               | }                           │                                │
 │                                │                             │                                │
-│ const T = Type.Ref(A)          │ type T = A                  │                                │
+│ const R = Type.Ref(T)          │ type R = T                  │                                │
 │                                │                             │                                │
 │                                │                             │                                │
 │                                │                             │                                │
