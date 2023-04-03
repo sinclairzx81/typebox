@@ -44,6 +44,9 @@ export namespace TypeScriptToTypeBox {
   let useGenerics = false
   // tracked for each generated type.
   const typeNames = new Set<string>()
+  // ----------------------------------------------------------------------------------------------------
+  // TypeScript AST Queries
+  // ----------------------------------------------------------------------------------------------------
   function FindRecursiveParent(decl: ts.InterfaceDeclaration | ts.TypeAliasDeclaration, node: ts.Node): boolean {
     return (ts.isTypeReferenceNode(node) && decl.name.getText() === node.typeName.getText()) || node.getChildren().some((node) => FindRecursiveParent(decl, node))
   }
@@ -62,6 +65,76 @@ export namespace TypeScriptToTypeBox {
   function IsNamespace(node: ts.ModuleDeclaration) {
     return node.flags === ts.NodeFlags.Namespace
   }
+  // ----------------------------------------------------------------------------------------------------
+  // String Template Literals: Entry TemplateLiteralTypeNode
+  //
+  // String Template Literals will evaluate as Regular Expressions. These require a distinct code path 
+  // specifically  for union, string, number and literal types embedded in the template literal. These 
+  // embedded types would otherwise be expressed as TUnion, TString, TNumber and TLiteral respectively.
+  // ----------------------------------------------------------------------------------------------------
+  function* TemplatedLiteralTypeNode(node: ts.LiteralTypeNode): IterableIterator<string> {
+    function dequote(value: string) {
+      const match = value.match(/^(['"])(.*)\1$/);
+      return match ? match[2] : value;
+    }
+    function escape(value: string) {
+      return value.replace(/[.*+?^${}()|[\]\\]/g, '\\\\$&')
+    }
+    yield escape(dequote(node.literal.getText()))
+  }
+  function * TemplatedUnionTypeNode(node: ts.UnionTypeNode) {
+    const tokens = node.types.map((type) => TemplateCollect(type)).join('|')
+    yield `(${tokens})`
+  }
+  function * TemplateLiteralTypeSpan(node: ts.TemplateLiteralTypeSpan) {
+    for(const inner of node.getChildren()) {
+      yield TemplateCollect(inner)
+    }
+  }
+  function * TemplateHead(node: ts.TemplateHead) {
+    yield node.text
+  }
+  function * TemplateTail(node: ts.TemplateTail) {
+    yield node.text
+  }
+  function * TemplateVisit(node: ts.Node | undefined): IterableIterator<string> {
+    if(node === undefined) return
+    if (ts.isUnionTypeNode(node)) {
+      return yield* TemplatedUnionTypeNode(node)
+    } else if(ts.isTemplateLiteralTypeSpan(node)) {
+      return yield* TemplateLiteralTypeSpan(node)
+    } else if(ts.isTemplateHead(node)) {
+      return yield* TemplateHead(node)
+    } else if(ts.isTemplateTail(node)) {
+      return yield* TemplateTail(node)
+    } else if(ts.isLiteralTypeNode(node)) {
+      return yield* TemplatedLiteralTypeNode(node)
+    } else if (node.kind === ts.SyntaxKind.NumberKeyword) { 
+      yield `(0|[1-9][0-9]*)`
+    } else if (node.kind === ts.SyntaxKind.StringKeyword) { 
+      yield `(.*)`
+    } else if (node.kind === ts.SyntaxKind.SyntaxList) {
+      for (const child of node.getChildren()) {
+        yield* TemplateVisit(child)
+      }
+      return
+    } else {
+      console.log('Unhandled:', ts.SyntaxKind[node.kind])
+    }
+  }
+  function TemplateCollect(node: ts.Node | undefined): string {
+    return `${[...TemplateVisit(node)].join('')}`
+  }
+  function * TemplateLiteralTypeNode(node: ts.TemplateLiteralTypeNode) {
+    const buffer: string[] = []
+    for(const inner of node.getChildren()) {
+      buffer.push(TemplateCollect(inner))
+    }
+    yield `Type.String({ pattern: '^${buffer.join('')}\$' })`
+  }
+  // ----------------------------------------------------------------------------------------------------
+  // TypeScript To TypeBox Type Transformation
+  // ----------------------------------------------------------------------------------------------------
   function* SourceFile(node: ts.SourceFile): IterableIterator<string> {
     for (const next of node.getChildren()) {
       yield* Visit(next)
@@ -100,6 +173,9 @@ export namespace TypeScriptToTypeBox {
     if (node.operator === ts.SyntaxKind.KeyOfKeyword) {
       const type = Collect(node.type)
       yield `Type.KeyOf(${type})`
+    }
+    if(node.operator === ts.SyntaxKind.ReadonlyKeyword) {
+      yield Collect(node.type)
     }
   }
   function* Parameter(node: ts.ParameterDeclaration): IterableIterator<string> {
@@ -307,8 +383,8 @@ export namespace TypeScriptToTypeBox {
       return yield* TypeReferenceNode(node)
     } else if (ts.isTypeLiteralNode(node)) {
       return yield* TypeLiteralNode(node)
-    } else if (ts.isLiteralTypeNode(node)) {
-      return yield* LiteralTypeNode(node)
+    } else if(ts.isLiteralTypeNode(node)) {
+      return yield *LiteralTypeNode(node)
     } else if (ts.isModuleDeclaration(node)) {
       return yield* ModuleDeclaration(node)
     } else if (ts.isModuleBlock(node)) {
@@ -321,6 +397,8 @@ export namespace TypeScriptToTypeBox {
       return yield* IntersectionTypeNode(node)
     } else if (ts.isUnionTypeNode(node)) {
       return yield* UnionTypeNode(node)
+    } else if (ts.isTemplateLiteralTypeNode(node)) {
+      return yield * TemplateLiteralTypeNode(node)
     } else if (ts.isTypeOperatorNode(node)) {
       return yield* TypeOperatorNode(node)
     } else if (ts.isHeritageClause(node)) {
