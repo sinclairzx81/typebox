@@ -26,6 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+
 import { Formatter } from './formatter'
 import * as ts from 'typescript'
 
@@ -35,22 +36,30 @@ import * as ts from 'typescript'
 
 /** Generates TypeBox types from TypeScript code */
 export namespace TypeScriptToTypeBox {
-  function isRecursiveType(decl: ts.InterfaceDeclaration | ts.TypeAliasDeclaration) {
-    function find(decl: ts.InterfaceDeclaration | ts.TypeAliasDeclaration, node: ts.Node): boolean {
-      return (ts.isTypeReferenceNode(node) && decl.name.getText() === node.getText()) || node.getChildren().some((node) => find(decl, node))
-    }
-    return ts.isTypeAliasDeclaration(decl) ? [decl.type].some((node) => find(decl, node)) : decl.members.some((node) => find(decl, node))
+  // tracked for recursive types and used to associate This type references
+  let recursiveDeclaration: ts.TypeAliasDeclaration | ts.InterfaceDeclaration | null = null
+  // tracked for injecting typebox import statements
+  let useImports = false
+  // tracked for injecting TSchema import statements
+  let useGenerics = false
+  // tracked for each generated type.
+  const typeNames = new Set<string>()
+  function FindRecursiveParent(decl: ts.InterfaceDeclaration | ts.TypeAliasDeclaration, node: ts.Node): boolean {
+    return (ts.isTypeReferenceNode(node) && decl.name.getText() === node.typeName.getText()) || node.getChildren().some((node) => FindRecursiveParent(decl, node))
   }
-  function isReadonlyProperty(node: ts.PropertySignature): boolean {
+  function IsRecursiveType(decl: ts.InterfaceDeclaration | ts.TypeAliasDeclaration) {
+    return ts.isTypeAliasDeclaration(decl) ? [decl.type].some((node) => FindRecursiveParent(decl, node)) : decl.members.some((node) => FindRecursiveParent(decl, node))
+  }
+  function IsReadonlyProperty(node: ts.PropertySignature): boolean {
     return node.modifiers !== undefined && node.modifiers.find((modifier) => modifier.getText() === 'readonly') !== undefined
   }
-  function isOptionalProperty(node: ts.PropertySignature) {
+  function IsOptionalProperty(node: ts.PropertySignature) {
     return node.questionToken !== undefined
   }
-  function isExport(node: ts.InterfaceDeclaration | ts.TypeAliasDeclaration | ts.EnumDeclaration | ts.ModuleDeclaration): boolean {
+  function IsExport(node: ts.InterfaceDeclaration | ts.TypeAliasDeclaration | ts.EnumDeclaration | ts.ModuleDeclaration): boolean {
     return node.modifiers !== undefined && node.modifiers.find((modifier) => modifier.getText() === 'export') !== undefined
   }
-  function isNamespace(node: ts.ModuleDeclaration) {
+  function IsNamespace(node: ts.ModuleDeclaration) {
     return node.flags === ts.NodeFlags.Namespace
   }
   function* SourceFile(node: ts.SourceFile): IterableIterator<string> {
@@ -59,7 +68,7 @@ export namespace TypeScriptToTypeBox {
     }
   }
   function* PropertySignature(node: ts.PropertySignature): IterableIterator<string> {
-    const [readonly, optional] = [isReadonlyProperty(node), isOptionalProperty(node)]
+    const [readonly, optional] = [IsReadonlyProperty(node), IsOptionalProperty(node)]
     const type = Collect(node.type)
     if (readonly && optional) {
       return yield `${node.name.getText()}: Type.ReadonlyOptional(${type})`
@@ -107,59 +116,68 @@ export namespace TypeScriptToTypeBox {
     yield `Type.Constructor([${parameters}], ${returns})`
   }
   function* EnumDeclaration(node: ts.EnumDeclaration): IterableIterator<string> {
-    const exports = isExport(node) ? 'export ' : ''
-    const name = node.name.getText()
+    useImports = true
+    const exports = IsExport(node) ? 'export ' : ''
     const members = node.members.map((member) => member.getText()).join(', ')
-    const enumType = `${exports}enum ${name}Enum { ${members} }`
-    const type = `${exports}const ${name} = Type.Enum(${name}Enum)`
+    const enumType = `${exports}enum ${node.name.getText()}Enum { ${members} }`
+    const type = `${exports}const ${node.name.getText()} = Type.Enum(${node.name.getText()}Enum)`
     yield [enumType, '', type].join('\n')
+    typeNames.add(node.name.getText())
   }
   function* InterfaceDeclaration(node: ts.InterfaceDeclaration): IterableIterator<string> {
     useImports = true
+    const isRecursiveType = IsRecursiveType(node)
+    if (isRecursiveType) recursiveDeclaration = node
     const heritage = node.heritageClauses !== undefined ? node.heritageClauses.flatMap((node) => Collect(node)) : []
     if (node.typeParameters) {
       useGenerics = true
-      const exports = isExport(node) ? 'export ' : ''
+      const exports = IsExport(node) ? 'export ' : ''
       const constraints = node.typeParameters.map((param) => `${Collect(param)} extends TSchema`).join(', ')
       const parameters = node.typeParameters.map((param) => `${Collect(param)}: ${Collect(param)}`).join(', ')
       const names = node.typeParameters.map((param) => `${Collect(param)}`).join(', ')
       const members = node.members.map((member) => Collect(member)).join(',\n')
       const staticDeclaration = `${exports}type ${node.name.getText()}<${constraints}> = Static<ReturnType<typeof ${node.name.getText()}<${names}>>>`
-      const rawTypeExpression = isRecursiveType(node) ? `Type.Recursive(${node.name.getText()} => Type.Object({\n${members}\n}))` : `Type.Object({\n${members}\n})`
+      const rawTypeExpression = IsRecursiveType(node) ? `Type.Recursive(This => Type.Object({\n${members}\n}))` : `Type.Object({\n${members}\n})`
       const typeExpression = heritage.length === 0 ? rawTypeExpression : `Type.Intersect([${heritage.join(', ')}, ${rawTypeExpression}])`
       const typeDeclaration = `${exports}const ${node.name.getText()} = <${constraints}>(${parameters}) => ${typeExpression}`
       yield `${staticDeclaration}\n${typeDeclaration}`
     } else {
-      const exports = isExport(node) ? 'export ' : ''
+      const exports = IsExport(node) ? 'export ' : ''
       const members = node.members.map((member) => Collect(member)).join(',\n')
       const staticDeclaration = `${exports}type ${node.name.getText()} = Static<typeof ${node.name.getText()}>`
-      const rawTypeExpression = isRecursiveType(node) ? `Type.Recursive(${node.name.getText()} => Type.Object({\n${members}\n}))` : `Type.Object({\n${members}\n})`
+      const rawTypeExpression = IsRecursiveType(node) ? `Type.Recursive(This => Type.Object({\n${members}\n}))` : `Type.Object({\n${members}\n})`
       const typeExpression = heritage.length === 0 ? rawTypeExpression : `Type.Intersect([${heritage.join(', ')}, ${rawTypeExpression}])`
       const typeDeclaration = `${exports}const ${node.name.getText()} = ${typeExpression}`
       yield `${staticDeclaration}\n${typeDeclaration}`
     }
+    typeNames.add(node.name.getText())
+    recursiveDeclaration = null
   }
   function* TypeAliasDeclaration(node: ts.TypeAliasDeclaration): IterableIterator<string> {
     useImports = true
+    const isRecursiveType = IsRecursiveType(node)
+    if (isRecursiveType) recursiveDeclaration = node
     if (node.typeParameters) {
       useGenerics = true
-      const exports = isExport(node) ? 'export ' : ''
+      const exports = IsExport(node) ? 'export ' : ''
       const constraints = node.typeParameters.map((param) => `${Collect(param)} extends TSchema`).join(', ')
       const parameters = node.typeParameters.map((param) => `${Collect(param)}: ${Collect(param)}`).join(', ')
       const names = node.typeParameters.map((param) => Collect(param)).join(', ')
       const type = Collect(node.type)
       const staticDeclaration = `${exports}type ${node.name.getText()}<${constraints}> = Static<ReturnType<typeof ${node.name.getText()}<${names}>>>`
-      const typeDeclaration = isRecursiveType(node)
-        ? `${exports}const ${node.name.getText()} = <${constraints}>(${parameters}) => Type.Recursive(${node.name.getText()} => ${type})`
+      const typeDeclaration = isRecursiveType
+        ? `${exports}const ${node.name.getText()} = <${constraints}>(${parameters}) => Type.Recursive(This => ${type})`
         : `${exports}const ${node.name.getText()} = <${constraints}>(${parameters}) => ${type}`
       yield `${staticDeclaration}\n${typeDeclaration}`
     } else {
-      const exports = isExport(node) ? 'export ' : ''
+      const exports = IsExport(node) ? 'export ' : ''
       const type = Collect(node.type)
       const staticDeclaration = `${exports}type ${node.name.getText()} = Static<typeof ${node.name.getText()}>`
-      const typeDeclaration = isRecursiveType(node) ? `${exports}const ${node.name.getText()} = Type.Recursive(${node.name.getText()} => ${type})` : `${exports}const ${node.name.getText()} = ${type}`
+      const typeDeclaration = isRecursiveType ? `${exports}const ${node.name.getText()} = Type.Recursive(This => ${type})` : `${exports}const ${node.name.getText()} = ${type}`
       yield `${staticDeclaration}\n${typeDeclaration}`
     }
+    typeNames.add(node.name.getText())
+    recursiveDeclaration = null
   }
   function* HeritageClause(node: ts.HeritageClause): IterableIterator<string> {
     const types = node.types.map((node) => Collect(node))
@@ -190,6 +208,9 @@ export namespace TypeScriptToTypeBox {
   }
   function* TypeReferenceNode(node: ts.TypeReferenceNode): IterableIterator<string> {
     const name = node.typeName.getText()
+    if (name === 'T') {
+      console.log(ts.SyntaxKind[node.kind])
+    }
     const args = node.typeArguments ? `(${node.typeArguments.map((type) => Collect(type)).join(', ')})` : ''
     if (name === 'Array') {
       return yield `Type.Array${args}`
@@ -199,6 +220,8 @@ export namespace TypeScriptToTypeBox {
       return yield `Type.Partial${args}`
     } else if (name === 'Uint8Array') {
       return yield `Type.Uint8Array()`
+    } else if (name === 'Date') {
+      return yield `Type.Date()`
     } else if (name === 'Required') {
       return yield `Type.Required${args}`
     } else if (name === 'Omit') {
@@ -219,6 +242,12 @@ export namespace TypeScriptToTypeBox {
       return yield `Type.Exclude${args}`
     } else if (name === 'Extract') {
       return yield `Type.Extract${args}`
+    } else if (recursiveDeclaration !== null && FindRecursiveParent(recursiveDeclaration, node)) {
+      return yield `This`
+    } else if (typeNames.has(name)) {
+      return yield `${name}${args}`
+    } else if (name in globalThis) {
+      return yield `Type.Never(/* Unsupported Type '${name}' */)`
     } else {
       return yield `${name}${args}`
     }
@@ -233,8 +262,8 @@ export namespace TypeScriptToTypeBox {
     yield `Type.Literal(${node.getText()})`
   }
   function* ModuleDeclaration(node: ts.ModuleDeclaration): IterableIterator<string> {
-    const export_specifier = isExport(node) ? 'export ' : ''
-    const module_specifier = isNamespace(node) ? 'namespace' : 'module'
+    const export_specifier = IsExport(node) ? 'export ' : ''
+    const module_specifier = IsNamespace(node) ? 'namespace' : 'module'
     yield `${export_specifier}${module_specifier} ${node.name.getText()} {`
     yield* Visit(node.body)
     yield `}`
@@ -348,10 +377,9 @@ export namespace TypeScriptToTypeBox {
       return yield node.getText()
     }
   }
-  let useImports = false
-  let useGenerics = false
   /** Generates TypeBox types from TypeScript interface and type definitions */
   export function Generate(typescriptCode: string) {
+    typeNames.clear()
     useImports = false
     useGenerics = false
     const source = ts.createSourceFile('code.ts', typescriptCode, ts.ScriptTarget.ESNext, true)

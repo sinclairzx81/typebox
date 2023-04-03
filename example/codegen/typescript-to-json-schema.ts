@@ -29,17 +29,6 @@ THE SOFTWARE.
 import { Formatter } from './formatter'
 import * as ts from 'typescript'
 
-// --------------------------------------------------------------------------
-// Errors
-// --------------------------------------------------------------------------
-export class TypeScriptToJsonSchemaNonExpressable extends Error {
-  constructor(type: string) {
-    super(`TypeScriptToJsonSchema: Cannot express syntax type '${type}'`)
-  }
-}
-// --------------------------------------------------------------------------
-// Transform
-// --------------------------------------------------------------------------
 export namespace TypeScriptToJsonSchema {
   function isReadonlyProperty(node: ts.PropertySignature): boolean {
     return node.modifiers !== undefined && node.modifiers.find((modifier) => modifier.getText() === 'readonly') !== undefined
@@ -101,16 +90,16 @@ export namespace TypeScriptToJsonSchema {
     }`
   }
   function* TypeOperatorNode(node: ts.TypeOperatorNode): IterableIterator<string> {
-    throw new TypeScriptToJsonSchemaNonExpressable('TypeOperatorNode')
+    return yield UnknownType('TypeOperatorNode')
   }
   function* Parameter(node: ts.ParameterDeclaration): IterableIterator<string> {
     yield Collect(node.type)
   }
   function* FunctionTypeNode(node: ts.FunctionTypeNode): IterableIterator<string> {
-    throw new TypeScriptToJsonSchemaNonExpressable('FunctionTypeNode')
+    return yield UnknownType('FunctionTypeNode')
   }
   function* ConstructorTypeNode(node: ts.ConstructorTypeNode): IterableIterator<string> {
-    throw new TypeScriptToJsonSchemaNonExpressable('ConstructorTypeNode')
+    return yield UnknownType('ConstructorTypeNode')
   }
   function* EnumMember(node: ts.EnumMember): IterableIterator<string> {
     if (node.initializer) {
@@ -136,20 +125,19 @@ export namespace TypeScriptToJsonSchema {
     if (node.typeParameters) {
       const exports = isExport(node) ? 'export ' : ''
       const members = node.members.map((member) => Collect(member)).join(',\n')
-      const required = node.members
-        .filter((member) => member.questionToken === undefined)
-        .map((member) => `'${member.name?.getText()}'`)
-        .join(',\n')
-      const parameters = node.typeParameters.map((param) => `${Collect(param)}`).join(', ')
-      const definition = `${exports}const ${node.name.getText()} = (${parameters}) => {
-        type: 'object,
+      // prettier-ignore
+      const required = node.members.filter((member) => member.questionToken === undefined).map((member) => `'${member.name?.getText()}'`).join(',\n')
+      const constraints = node.typeParameters.map((param) => `${Collect(param)}`).join(', ')
+      const parameters = node.typeParameters.map((param) => `${Collect(param)}: ${Collect(param)}`).join(', ')
+      const definition = `${exports}const ${node.name.getText()} = <${constraints}>(${parameters}) => ({
+        type: 'object',
         properties: {
           ${members}
         },
         required: [
           ${required}
         ],
-      }`
+      })`
       yield `${definition}`
     } else {
       const exports = isExport(node) ? 'export ' : ''
@@ -170,13 +158,13 @@ export namespace TypeScriptToJsonSchema {
       yield `${definition}`
     }
   }
-
   function* TypeAliasDeclaration(node: ts.TypeAliasDeclaration): IterableIterator<string> {
     if (node.typeParameters) {
       const exports = isExport(node) ? 'export ' : ''
-      const parameters = node.typeParameters.map((param) => `${Collect(param)}`).join(', ')
+      const constraints = node.typeParameters.map((param) => `${Collect(param)}`).join(', ')
+      const parameters = node.typeParameters.map((param) => `${Collect(param)}: ${Collect(param)}`).join(', ')
       const type = Collect(node.type)
-      const definition = `${exports}const ${node.name.getText()} = (${parameters}) => ${type}`
+      const definition = `${exports}const ${node.name.getText()} = <${constraints}>(${parameters}) => (${type})`
       yield `${definition}`
     } else {
       const exports = isExport(node) ? 'export ' : ''
@@ -185,62 +173,53 @@ export namespace TypeScriptToJsonSchema {
       yield `${definition}`
     }
   }
-
   function* TypeParameterDeclaration(node: ts.TypeParameterDeclaration): IterableIterator<string> {
     yield node.name.getText()
   }
-
   function* ParenthesizedTypeNode(node: ts.ParenthesizedTypeNode): IterableIterator<string> {
     yield Collect(node.type)
   }
-
   function* RestTypeNode(node: ts.RestTypeNode): IterableIterator<string> {
-    throw new TypeScriptToJsonSchemaNonExpressable('RestTypeNode')
+    return yield UnknownType('RestTypeNode')
   }
-
   function* ConditionalTypeNode(node: ts.ConditionalTypeNode): IterableIterator<string> {
-    throw new TypeScriptToJsonSchemaNonExpressable('ConditionalTypeNode')
+    return yield UnknownType('ConditionalTypeNode')
   }
-
   function* TypeReferenceNode(node: ts.TypeReferenceNode): IterableIterator<string> {
     const name = node.typeName.getText()
     const args = node.typeArguments ? `(${node.typeArguments.map((type) => Collect(type)).join(', ')})` : ''
     if (name === 'Array') {
-      return yield `{
-        type: 'array',
-        items: ${args}
-      }`
+      return yield `{ type: 'array', items: ${args} }`
     } else if (name === 'Record') {
-      throw new TypeScriptToJsonSchemaNonExpressable('TypeReferenceNode:Record')
+      return yield UnknownType('Record')
     } else if (name === 'Partial') {
-      throw new TypeScriptToJsonSchemaNonExpressable('TypeReferenceNode:Partial')
+      return yield UnknownType('Partial')
     } else if (name === 'Uint8Array') {
-      throw new TypeScriptToJsonSchemaNonExpressable('TypeReferenceNode:Uint8Array')
+      return yield UnknownType('Uint8Array')
     } else if (name === 'Required') {
-      throw new TypeScriptToJsonSchemaNonExpressable('TypeReferenceNode:Required')
+      return yield UnknownType('Required')
     } else if (name === 'Omit') {
-      throw new TypeScriptToJsonSchemaNonExpressable('TypeReferenceNode:Omit')
+      return yield UnknownType('Omit')
     } else if (name === 'Pick') {
-      throw new TypeScriptToJsonSchemaNonExpressable('TypeReferenceNode:Pick')
+      return yield UnknownType('Pick')
     } else if (name === 'Promise') {
-      throw new TypeScriptToJsonSchemaNonExpressable('TypeReferenceNode:Promise')
+      return yield UnknownType('Promise')
     } else if (name === 'ReturnType') {
-      throw new TypeScriptToJsonSchemaNonExpressable('TypeReferenceNode:ReturnType')
+      return yield UnknownType('ReturnType')
     } else if (name === 'InstanceType') {
-      throw new TypeScriptToJsonSchemaNonExpressable('TypeReferenceNode:InstanceType')
+      return yield UnknownType('InstanceType')
     } else if (name === 'Parameters') {
-      throw new TypeScriptToJsonSchemaNonExpressable('TypeReferenceNode:Parameters')
+      return yield UnknownType('Parameters')
     } else if (name === 'ConstructorParameters') {
-      throw new TypeScriptToJsonSchemaNonExpressable('TypeReferenceNode:ConstructorParameters')
+      return yield UnknownType('ConstructorParameters')
     } else if (name === 'Exclude') {
-      throw new TypeScriptToJsonSchemaNonExpressable('TypeReferenceNode:Exclude')
+      return yield UnknownType('Exclude')
     } else if (name === 'Extract') {
-      throw new TypeScriptToJsonSchemaNonExpressable('TypeReferenceNode:Extract')
+      return yield UnknownType('Extract')
     } else {
       return yield `${name}${args}`
     }
   }
-
   function* TypeLiteralNode(node: ts.TypeLiteralNode): IterableIterator<string> {
     const members = node.members.map((member) => Collect(member)).join(',\n')
     const required = node.members
@@ -257,7 +236,6 @@ export namespace TypeScriptToJsonSchema {
       ]
     }`
   }
-
   function* LiteralTypeNode(node: ts.LiteralTypeNode): IterableIterator<string> {
     const text = node.getText()
     if (text === 'null')
@@ -268,23 +246,24 @@ export namespace TypeScriptToJsonSchema {
       const: ${node.getText()} 
     }`
   }
-
   function* FunctionDeclaration(node: ts.FunctionDeclaration): IterableIterator<string> {
     yield node.getText()
   }
-
   function* ClassDeclaration(node: ts.ClassDeclaration): IterableIterator<string> {
     yield node.getText()
   }
-
   function Collect(node: ts.Node | undefined): string {
     return `${[...Visit(node)].join('')}`
   }
-
   function CollectNewLine(node: ts.Node | undefined): string {
     return [...Visit(node)].join('\n\n')
   }
-
+  function UnknownType(name: string = 'Unknown'): string {
+    return `{ not: { /* unsupported type '${name}' */ } }`
+  }
+  function KnownType(type: string): string {
+    return ['{', `type: '${type}'`, '}'].join('\n')
+  }
   function* Visit(node: ts.Node | undefined): IterableIterator<string> {
     if (node === undefined) return
     if (ts.isSourceFile(node)) {
@@ -333,49 +312,32 @@ export namespace TypeScriptToJsonSchema {
       return yield* ClassDeclaration(node)
     } else if (ts.isConditionalTypeNode(node)) {
       return yield* ConditionalTypeNode(node)
+    } else if (ts.isIdentifier(node)) {
+      return yield node.getText()
+    } else if (node.kind === ts.SyntaxKind.ExportKeyword) {
+      return yield `export`
     } else if (node.kind === ts.SyntaxKind.KeyOfKeyword) {
-      throw new TypeScriptToJsonSchemaNonExpressable('KeyOfKeyword')
+      return yield UnknownType()
     } else if (node.kind === ts.SyntaxKind.NumberKeyword) {
-      return yield `{ 
-        type: 'number' 
-      }`
+      return yield KnownType('number')
+    } else if (node.kind === ts.SyntaxKind.BigIntKeyword) {
+      return yield UnknownType()
     } else if (node.kind === ts.SyntaxKind.StringKeyword) {
-      return yield `{ 
-        type: 'string' 
-      }`
+      return yield KnownType('string')
     } else if (node.kind === ts.SyntaxKind.BooleanKeyword) {
-      return yield `{ 
-        type: 'boolean' 
-      }`
+      return yield KnownType('boolean')
     } else if (node.kind === ts.SyntaxKind.UndefinedKeyword) {
-      throw new TypeScriptToJsonSchemaNonExpressable('UndefinedKeyword')
+      return yield UnknownType('undefined')
     } else if (node.kind === ts.SyntaxKind.UnknownKeyword) {
-      return yield `{
-
-      }`
+      return yield `{ }`
     } else if (node.kind === ts.SyntaxKind.AnyKeyword) {
-      return yield `{ 
-
-      }`
+      return yield `{ }`
     } else if (node.kind === ts.SyntaxKind.NeverKeyword) {
-      return yield `{
-        anyOf: [
-          { 
-            type: 'boolean', 
-            const: true 
-          }, 
-          { 
-            type: 'boolean', 
-            const: false 
-          }
-        ]
-      }`
+      return yield `{ not: { } }`
     } else if (node.kind === ts.SyntaxKind.NullKeyword) {
-      return yield `{ 
-        type: 'null' 
-      }`
+      return yield KnownType('null')
     } else if (node.kind === ts.SyntaxKind.VoidKeyword) {
-      throw new TypeScriptToJsonSchemaNonExpressable('KeyOfKeyword')
+      return yield UnknownType('void')
     } else if (node.kind === ts.SyntaxKind.EndOfFileToken) {
       return
     } else if (node.kind === ts.SyntaxKind.SyntaxList) {
@@ -388,8 +350,7 @@ export namespace TypeScriptToJsonSchema {
       return yield node.getText()
     }
   }
-
-  /** Generates TypeBox types from TypeScript interface and type definitions */
+  /** Generates JsonSchema schematics from TypeScript interface and type definitions */
   export function Generate(typescriptCode: string) {
     const source = ts.createSourceFile('code.ts', typescriptCode, ts.ScriptTarget.ESNext, true)
     const declarations = CollectNewLine(source)

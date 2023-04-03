@@ -27,19 +27,36 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 export namespace Formatter {
-  // Code formatter
+  export function Includes(line: string, token: string) {
+    return line.includes(token)
+  }
+  function IntentBefore(line: string) {
+    if (Includes(line, '({') && Includes(line, '})')) return 0
+    if (Includes(line, '([') && Includes(line, '])')) return 0
+    if (Includes(line, '{') && Includes(line, '}')) return 0
+    if (Includes(line, '])')) return -1
+    if (Includes(line, '})')) return -1
+    if (Includes(line, '}')) return -1
+    if (Includes(line, ']')) return -1
+    return 0
+  }
+  function IndentAfter(line: string) {
+    if (Includes(line, '({') && Includes(line, '})')) return 0
+    if (Includes(line, '([') && Includes(line, '])')) return 0
+    if (Includes(line, '{') && Includes(line, '}')) return 0
+    if (Includes(line, '([')) return 1
+    if (Includes(line, '({')) return 1
+    if (Includes(line, '{')) return 1
+    if (Includes(line, '[')) return 1
+    return 0
+  }
   export function Format(input: string): string {
-    function count(line: string, opens: string[]) {
-      const codes = opens.map((open) => open.charCodeAt(0))
-      // prettier-ignore
-      return line.split('').map((char) => char.charCodeAt(0)).reduce((acc, current) => codes.includes(current) ? acc + 1 : acc, 0)
-    }
-    let indent = 0
     const output: string[] = []
+    let indent = 0
     for (const line of input.split('\n').map((n) => n.trim())) {
-      indent -= count(line, ['}'])
+      indent += IntentBefore(line)
       output.push(`${''.padStart(indent * 2, ' ')}${line}`)
-      indent += count(line, ['{'])
+      indent += IndentAfter(line)
     }
     return output.join('\n')
   }
