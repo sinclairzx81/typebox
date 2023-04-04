@@ -1,1 +1,2 @@
 import './format'
+import './type'

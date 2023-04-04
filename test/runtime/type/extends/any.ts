@@ -13,7 +13,6 @@ describe('type/extends/Any', () => {
     const R = TypeExtends.Extends(Type.Any(), Type.Unknown())
     Assert.deepEqual(R, TypeExtendsResult.True)
   })
-
   it('Should extend String', () => {
     type T = any extends string ? 1 : 2
     const R = TypeExtends.Extends(Type.Any(), Type.String())
@@ -89,7 +88,6 @@ describe('type/extends/Any', () => {
     const R = TypeExtends.Extends(Type.Any(), Type.Void())
     Assert.deepEqual(R, TypeExtendsResult.Union)
   })
-
   it('Should extend Date', () => {
     type T = any extends Date ? 1 : 2
     const R = TypeExtends.Extends(Type.Any(), Type.Date())

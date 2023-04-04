@@ -4,10 +4,10 @@ import { Assert } from '../../assert/index'
 
 describe('value/create/Recursive', () => {
   it('Should create value', () => {
-    const T = Type.Recursive((Self) =>
+    const T = Type.Recursive((This) =>
       Type.Object({
         id: Type.String(),
-        nodes: Type.Array(Self),
+        nodes: Type.Array(This),
       }),
     )
     Assert.deepEqual(Value.Create(T), {
@@ -18,10 +18,10 @@ describe('value/create/Recursive', () => {
 
   it('Should create default', () => {
     const T = Type.Recursive(
-      (Self) =>
+      (This) =>
         Type.Object({
           id: Type.String(),
-          nodes: Type.Array(Self),
+          nodes: Type.Array(This),
         }),
       { default: 7 },
     )

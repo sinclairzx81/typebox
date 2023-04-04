@@ -307,10 +307,6 @@ export namespace TypeCompiler {
     if (state_local_function_names.has(schema.$ref)) return yield `${CreateFunctionName(schema.$ref)}(${value})`
     yield* Visit(target, references, value)
   }
-  function* Self(schema: Types.TSelf, references: Types.TSchema[], value: string): IterableIterator<string> {
-    const func = CreateFunctionName(schema.$ref)
-    yield `${func}(${value})`
-  }
   function* String(schema: Types.TString, references: Types.TSchema[], value: string): IterableIterator<string> {
     yield `(typeof ${value} === 'string')`
     if (IsNumber(schema.minLength)) yield `${value}.length >= ${schema.minLength}`
@@ -325,6 +321,15 @@ export namespace TypeCompiler {
   }
   function* Symbol(schema: Types.TSymbol, references: Types.TSchema[], value: string): IterableIterator<string> {
     yield `(typeof ${value} === 'symbol')`
+  }
+  function* TemplateLiteral(schema: Types.TTemplateLiteral, references: Types.TSchema[], value: string): IterableIterator<string> {
+    yield `(typeof ${value} === 'string')`
+    const local = PushLocal(`${new RegExp(schema.pattern)};`)
+    yield `${local}.test(${value})`
+  }
+  function* This(schema: Types.TThis, references: Types.TSchema[], value: string): IterableIterator<string> {
+    const func = CreateFunctionName(schema.$ref)
+    yield `${func}(${value})`
   }
   function* Tuple(schema: Types.TTuple<any[]>, references: Types.TSchema[], value: string): IterableIterator<string> {
     yield `(Array.isArray(${value}))`
@@ -409,12 +414,14 @@ export namespace TypeCompiler {
         return yield* Record(schema_, references_, value)
       case 'Ref':
         return yield* Ref(schema_, references_, value)
-      case 'Self':
-        return yield* Self(schema_, references_, value)
       case 'String':
         return yield* String(schema_, references_, value)
       case 'Symbol':
         return yield* Symbol(schema_, references_, value)
+      case 'TemplateLiteral':
+        return yield* TemplateLiteral(schema_, references_, value)
+      case 'This':
+        return yield* This(schema_, references_, value)
       case 'Tuple':
         return yield* Tuple(schema_, references_, value)
       case 'Undefined':

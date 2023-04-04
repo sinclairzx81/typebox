@@ -126,7 +126,7 @@ export class ValueErrorsUnknownTypeError extends Error {
   }
 }
 export class ValueErrorsDereferenceError extends Error {
-  constructor(public readonly schema: Types.TRef | Types.TSelf) {
+  constructor(public readonly schema: Types.TRef | Types.TThis) {
     super(`ValueErrors: Unable to dereference schema with $id '${schema.$ref}'`)
   }
 }
@@ -399,7 +399,7 @@ export namespace ValueErrors {
     const [keyPattern, valueSchema] = globalThis.Object.entries(schema.patternProperties)[0]
     const regex = new RegExp(keyPattern)
     if (!globalThis.Object.getOwnPropertyNames(value).every((key) => regex.test(key))) {
-      const numeric = keyPattern === '^(0|[1-9][0-9]*)$'
+      const numeric = keyPattern === Types.PatternNumberExact
       const type = numeric ? ValueErrorType.RecordKeyNumeric : ValueErrorType.RecordKeyString
       const message = numeric ? 'Expected all object property keys to be numeric' : 'Expected all object property keys to be strings'
       return yield { type, schema, path, value, message }
@@ -409,12 +409,6 @@ export namespace ValueErrors {
     }
   }
   function* Ref(schema: Types.TRef<any>, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
-    const index = references.findIndex((foreign) => foreign.$id === schema.$ref)
-    if (index === -1) throw new ValueErrorsDereferenceError(schema)
-    const target = references[index]
-    yield* Visit(target, references, path, value)
-  }
-  function* Self(schema: Types.TSelf, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     const index = references.findIndex((foreign) => foreign.$id === schema.$ref)
     if (index === -1) throw new ValueErrorsDereferenceError(schema)
     const target = references[index]
@@ -451,6 +445,21 @@ export namespace ValueErrors {
     if (!(typeof value === 'symbol')) {
       return yield { type: ValueErrorType.Symbol, schema, path, value, message: 'Expected symbol' }
     }
+  }
+  function* TemplateLiteral(schema: Types.TTemplateLiteral, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
+    if (!IsString(value)) {
+      return yield { type: ValueErrorType.String, schema, path, value, message: 'Expected string' }
+    }
+    const regex = new RegExp(schema.pattern)
+    if (!regex.test(value)) {
+      yield { type: ValueErrorType.StringPattern, schema, path, value, message: `Expected string to match pattern ${schema.pattern}` }
+    }
+  }
+  function* This(schema: Types.TThis, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
+    const index = references.findIndex((foreign) => foreign.$id === schema.$ref)
+    if (index === -1) throw new ValueErrorsDereferenceError(schema)
+    const target = references[index]
+    yield* Visit(target, references, path, value)
   }
   function* Tuple(schema: Types.TTuple<any[]>, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     if (!globalThis.Array.isArray(value)) {
@@ -551,12 +560,14 @@ export namespace ValueErrors {
         return yield* Record(schema_, references_, path, value)
       case 'Ref':
         return yield* Ref(schema_, references_, path, value)
-      case 'Self':
-        return yield* Self(schema_, references_, path, value)
       case 'String':
         return yield* String(schema_, references_, path, value)
       case 'Symbol':
         return yield* Symbol(schema_, references_, path, value)
+      case 'TemplateLiteral':
+        return yield* TemplateLiteral(schema_, references_, path, value)
+      case 'This':
+        return yield* This(schema_, references_, path, value)
       case 'Tuple':
         return yield* Tuple(schema_, references_, path, value)
       case 'Undefined':

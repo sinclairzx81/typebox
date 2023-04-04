@@ -7,21 +7,18 @@ import { readFileSync } from 'fs'
 export async function clean() {
     await folder('target').delete()
 }
-
 // -------------------------------------------------------------------------------
 // Format
 // -------------------------------------------------------------------------------
 export async function format() {
     await shell('prettier --no-semi --single-quote --print-width 240 --trailing-comma all --write src test example/index.ts benchmark')
 }
-
 // -------------------------------------------------------------------------------
 // Start
 // -------------------------------------------------------------------------------
 export async function start(example = 'index') {
     await shell(`hammer run example/${example}.ts --dist target/example/${example}`)
 }
-
 // -------------------------------------------------------------------------------
 // Benchmark
 // -------------------------------------------------------------------------------

@@ -27,11 +27,20 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 // --------------------------------------------------------------------------
-// Compositing Symbols
+// Symbols
 // --------------------------------------------------------------------------
 export const Modifier = Symbol.for('TypeBox.Modifier')
 export const Hint = Symbol.for('TypeBox.Hint')
 export const Kind = Symbol.for('TypeBox.Kind')
+// --------------------------------------------------------------------------
+// Patterns
+// --------------------------------------------------------------------------
+export const PatternBoolean = '(true|false)'
+export const PatternNumber = '(0|[1-9][0-9]*)'
+export const PatternString = '.*'
+export const PatternBooleanExact = `^${PatternBoolean}$`
+export const PatternNumberExact = `^${PatternNumber}$`
+export const PatternStringExact = `^${PatternString}$`
 // --------------------------------------------------------------------------
 // Helpers
 // --------------------------------------------------------------------------
@@ -99,9 +108,10 @@ export type TAnySchema =
   | TPromise
   | TRecord
   | TRef
-  | TSelf
   | TString
   | TSymbol
+  | TTemplateLiteral
+  | TThis
   | TTuple
   | TUndefined
   | TUnion
@@ -210,10 +220,9 @@ export interface TEnumOption<T> {
   type: 'number' | 'string'
   const: T
 }
-export type TEnumStatic<T extends Record<string, string | number>> = T[keyof T]
 export interface TEnum<T extends Record<string, string | number> = Record<string, string | number>> extends TSchema {
   [Kind]: 'Union'
-  static: TEnumStatic<T>
+  static: T[keyof T]
   anyOf: TLiteral<string | number>[]
 }
 // --------------------------------------------------------------------------
@@ -227,19 +236,31 @@ export type TExtends<L extends TSchema, R extends TSchema, T extends TSchema, U 
 // --------------------------------------------------------------------------
 // TExclude
 // --------------------------------------------------------------------------
+export type TExcludeTemplateLiteralResult<T extends string> = TUnionResult<Assert<UnionToTuple<{ [K in T]: TLiteral<K> }[T]>, TSchema[]>>
+export type TExcludeTemplateLiteral<T extends TTemplateLiteral, U extends TSchema> = Exclude<Static<T>, Static<U>> extends infer S ? TExcludeTemplateLiteralResult<Assert<S, string>> : never
 // prettier-ignore
 export type TExcludeArray<T extends TSchema[], U extends TSchema> = Assert<UnionToTuple<{
   [K in keyof T]: Static<Assert<T[K], TSchema>> extends Static<U> ? never : T[K]
 }[number]>, TSchema[]> extends infer R ? TUnionResult<Assert<R, TSchema[]>> : never
-export type TExclude<T extends TSchema, U extends TSchema> = T extends TUnion<infer S> ? TExcludeArray<S, U> : T extends U ? TNever : T
+// prettier-ignore
+export type TExclude<T extends TSchema, U extends TSchema> = 
+  T extends TTemplateLiteral ? TExcludeTemplateLiteral<T, U> : 
+  T extends TUnion<infer S> ? TExcludeArray<S, U> : 
+  T extends U ? TNever : T
 // --------------------------------------------------------------------------
 // TExtract
 // --------------------------------------------------------------------------
+export type TExtractTemplateLiteralResult<T extends string> = TUnionResult<Assert<UnionToTuple<{ [K in T]: TLiteral<K> }[T]>, TSchema[]>>
+export type TExtractTemplateLiteral<T extends TTemplateLiteral, U extends TSchema> = Extract<Static<T>, Static<U>> extends infer S ? TExtractTemplateLiteralResult<Assert<S, string>> : never
 // prettier-ignore
 export type TExtractArray<T extends TSchema[], U extends TSchema> = Assert<UnionToTuple<
   {[K in keyof T]: Static<Assert<T[K], TSchema>> extends Static<U> ? T[K] : never
 }[number]>, TSchema[]> extends infer R ? TUnionResult<Assert<R, TSchema[]>> : never
-export type TExtract<T extends TSchema, U extends TSchema> = T extends TUnion<infer S> ? TExtractArray<S, U> : T extends U ? T : TNever
+// prettier-ignore
+export type TExtract<T extends TSchema, U extends TSchema> = 
+  T extends TTemplateLiteral ? TExtractTemplateLiteral<T, U> : 
+  T extends TUnion<infer S> ? TExtractArray<S, U> : 
+  T extends U ? T : T
 // --------------------------------------------------------------------------
 // TFunction
 // --------------------------------------------------------------------------
@@ -267,12 +288,10 @@ export type TUnevaluatedProperties = undefined | TSchema | boolean
 export interface IntersectOptions extends SchemaOptions {
   unevaluatedProperties?: TUnevaluatedProperties
 }
-export type TIntersectStatic<T extends TSchema[], P extends unknown[]> = TupleToIntersect<{ [K in keyof T]: Static<Assert<T[K], TSchema>, P> }>
-
 export interface TIntersect<T extends TSchema[] = TSchema[]> extends TSchema, IntersectOptions {
   [Kind]: 'Intersect'
+  static: TupleToIntersect<{ [K in keyof T]: Static<Assert<T[K], TSchema>, this['params']> }>
   type?: 'object'
-  static: TIntersectStatic<T, this['params']>
   allOf: [...T]
 }
 // --------------------------------------------------------------------------
@@ -286,10 +305,11 @@ export type TKeyOfTuple<T extends TSchema> = {
   : never
 // prettier-ignore
 export type TKeyOf<T extends TSchema = TSchema> = (
-  T extends TComposite ? TKeyOfTuple<T> :
-  T extends TIntersect ? TKeyOfTuple<T> :
-  T extends TUnion     ? TKeyOfTuple<T> :
-  T extends TObject    ? TKeyOfTuple<T> :
+  T extends TComposite       ? TKeyOfTuple<T> :
+  T extends TIntersect       ? TKeyOfTuple<T> :
+  T extends TUnion           ? TKeyOfTuple<T> :
+  T extends TObject          ? TKeyOfTuple<T> :
+  T extends TRecord<infer K> ? [K] :
   []
 ) extends infer R ? TUnionResult<Assert<R, TSchema[]>> : never
 // --------------------------------------------------------------------------
@@ -312,10 +332,9 @@ export interface TNever extends TSchema {
 // --------------------------------------------------------------------------
 // TNot
 // --------------------------------------------------------------------------
-export type TNotStatic<_ extends TSchema = TSchema, T extends TSchema = TSchema> = Static<T>
 export interface TNot<Not extends TSchema = TSchema, T extends TSchema = TSchema> extends TSchema {
   [Kind]: 'Not'
-  static: TNotStatic<Not, T>
+  static: Static<T>
   allOf: [{ not: Not }, T]
 }
 // --------------------------------------------------------------------------
@@ -426,10 +445,9 @@ export type TPick<T extends TSchema, K extends keyof any> =
 // --------------------------------------------------------------------------
 // TPromise
 // --------------------------------------------------------------------------
-export type TPromiseStatic<T extends TSchema, P extends unknown[]> = Promise<Static<T, P>>
 export interface TPromise<T extends TSchema = TSchema> extends TSchema {
   [Kind]: 'Promise'
-  static: TPromiseStatic<T, this['params']>
+  static: Promise<Static<T, this['params']>>
   type: 'object'
   instanceOf: 'Promise'
   item: TSchema
@@ -437,13 +455,16 @@ export interface TPromise<T extends TSchema = TSchema> extends TSchema {
 // --------------------------------------------------------------------------
 // TRecord
 // --------------------------------------------------------------------------
-export type TRecordKey = TString | TNumeric | TUnion<TLiteral<any>[]>
-export type TRecordPropertiesFromUnionLiteral<K extends TUnion<TLiteral<string | number>[]>, T extends TSchema> = Static<K> extends string ? { [X in Static<K>]: T } : never
-export type TRecordPropertiesFromLiteral<K extends TLiteral<string | number>, T extends TSchema> = Evaluate<{ [K2 in K['const']]: T }>
-export type TRecordStatic<K extends TRecordKey, T extends TSchema, P extends unknown[]> = Record<Static<K>, Static<T, P>>
-export interface TRecord<K extends TRecordKey = TRecordKey, T extends TSchema = TSchema> extends TSchema {
+export type RecordTemplateLiteralObjectType<K extends TTemplateLiteral, T extends TSchema> = Ensure<TObject<Evaluate<{ [_ in Static<K>]: T }>>>
+export type RecordTemplateLiteralType<K extends TTemplateLiteral, T extends TSchema> = IsTemplateLiteralFinite<K> extends true ? RecordTemplateLiteralObjectType<K, T> : TRecord<TString, T>
+export type RecordUnionLiteralType<K extends TUnion<TLiteral<string | number>[]>, T extends TSchema> = Static<K> extends string ? Ensure<TObject<{ [X in Static<K>]: T }>> : never
+export type RecordLiteralType<K extends TLiteral<string | number>, T extends TSchema> = Ensure<TObject<{ [K2 in K['const']]: T }>>
+export type RecordNumberType<K extends TInteger | TNumber, T extends TSchema> = Ensure<TRecord<K, T>>
+export type RecordStringType<K extends TString, T extends TSchema> = Ensure<TRecord<K, T>>
+export type RecordKey = TUnion<TLiteral<string | number>[]> | TLiteral<string | number> | TTemplateLiteral | TInteger | TNumber | TString
+export interface TRecord<K extends RecordKey = RecordKey, T extends TSchema = TSchema> extends TSchema {
   [Kind]: 'Record'
-  static: TRecordStatic<K, T, this['params']>
+  static: Record<Static<K>, Static<T, this['params']>>
   type: 'object'
   patternProperties: { [pattern: string]: T }
   additionalProperties: false
@@ -451,8 +472,8 @@ export interface TRecord<K extends TRecordKey = TRecordKey, T extends TSchema = 
 // --------------------------------------------------------------------------
 // TRecursive
 // --------------------------------------------------------------------------
-export interface TSelf extends TSchema {
-  [Kind]: 'Self'
+export interface TThis extends TSchema {
+  [Kind]: 'This'
   static: this['params'][0]
   $ref: string
 }
@@ -463,10 +484,9 @@ export interface TRecursive<T extends TSchema> extends TSchema {
 // --------------------------------------------------------------------------
 // TRef
 // --------------------------------------------------------------------------
-export type TRefStatic<T extends TSchema, P extends unknown[]> = Static<T, P>
 export interface TRef<T extends TSchema = TSchema> extends TSchema {
   [Kind]: 'Ref'
-  static: TRefStatic<T, this['params']>
+  static: Static<T, this['params']>
   $ref: string
 }
 // --------------------------------------------------------------------------
@@ -538,15 +558,54 @@ export interface TSymbol extends TSchema, SchemaOptions {
   typeOf: 'Symbol'
 }
 // --------------------------------------------------------------------------
+// TTemplateLiteral
+// --------------------------------------------------------------------------
+// prettier-ignore
+export type IsTemplateLiteralFiniteCheck<T> =
+  T extends TTemplateLiteral<infer U> ? IsTemplateLiteralFiniteArray<Assert<U, TTemplateLiteralKind[]>> :    
+  T extends TUnion<infer U> ? IsTemplateLiteralFiniteArray<Assert<U, TTemplateLiteralKind[]>> :    
+  T extends TString  ? false :
+  T extends TBoolean ? false :
+  T extends TNumber  ? false :
+  T extends TInteger ? false :
+  T extends TBigInt  ? false :
+  T extends TLiteral ? true  : 
+  false
+// prettier-ignore
+export type IsTemplateLiteralFiniteArray<T extends TTemplateLiteralKind[]> = 
+  T extends [infer L, ...infer R] ? IsTemplateLiteralFiniteCheck<L> extends false ? false : IsTemplateLiteralFiniteArray<Assert<R, TTemplateLiteralKind[]>> :
+  T extends [infer L] ? IsTemplateLiteralFiniteCheck<L> extends false ? false : true : 
+  true
+export type IsTemplateLiteralFinite<T> = T extends TTemplateLiteral<infer U> ? IsTemplateLiteralFiniteArray<U> : false
+export type TTemplateLiteralKind = TUnion | TLiteral | TInteger | TTemplateLiteral | TNumber | TBigInt | TString | TBoolean | TNever
+// prettier-ignore
+export type TTemplateLiteralConst<T, Acc extends string> = 
+  T extends TUnion<infer U> ? { [K in keyof U]: TTemplateLiteralUnion<Assert<[U[K]], TTemplateLiteralKind[]>, Acc> }[number] :
+  T extends TTemplateLiteral ? `${Static<T>}` : 
+  T extends TLiteral<infer U> ? `${U}` :
+  T extends TString ? `${string}` : 
+  T extends TNumber ? `${number}` : 
+  T extends TBigInt ? `${bigint}` : 
+  T extends TBoolean ? `${boolean}` :
+  never
+// prettier-ignore
+export type TTemplateLiteralUnion<T extends TTemplateLiteralKind[], Acc extends string = ''> = 
+  T extends [infer L, ...infer R] ? `${TTemplateLiteralConst<L, Acc>}${TTemplateLiteralUnion<Assert<R, TTemplateLiteralKind[]>, Acc>}` : 
+  T extends [infer L] ? `${TTemplateLiteralConst<L, Acc>}${Acc}` : 
+  Acc
+export interface TTemplateLiteral<T extends TTemplateLiteralKind[] = TTemplateLiteralKind[]> extends TSchema {
+  [Kind]: 'TemplateLiteral'
+  static: TTemplateLiteralUnion<T>
+  type: 'string'
+  pattern: string // todo: it may be possible to infer this pattern
+}
+// --------------------------------------------------------------------------
 // TTuple
 // --------------------------------------------------------------------------
 export type TTupleIntoArray<T extends TTuple<TSchema[]>> = T extends TTuple<infer R> ? Assert<R, TSchema[]> : never
-export type TTupleStatic<T extends TSchema[], P extends unknown[]> = {
-  [K in keyof T]: T[K] extends TSchema ? Static<T[K], P> : T[K]
-}
 export interface TTuple<T extends TSchema[] = TSchema[]> extends TSchema {
   [Kind]: 'Tuple'
-  static: TTupleStatic<T, this['params']>
+  static: { [K in keyof T]: T[K] extends TSchema ? Static<T[K], this['params']> : T[K] }
   type: 'array'
   items?: T
   additionalItems?: false
@@ -574,6 +633,8 @@ export type TUnionResult<T extends TSchema[]> = T extends [] ? TNever : T extend
 // --------------------------------------------------------------------------
 // TUnion
 // --------------------------------------------------------------------------
+// prettier-ignore
+export type TUnionTemplateLiteral<T extends TTemplateLiteral, S extends string = Static<T>> = Ensure<TUnionResult<Assert<UnionToTuple<{[K in S]: TLiteral<K>}[S]>,TLiteral[]>>>
 export interface TUnion<T extends TSchema[] = TSchema[]> extends TSchema {
   [Kind]: 'Union'
   static: { [K in keyof T]: T[K] extends TSchema ? Static<T[K], this['params']> : never }[number]
@@ -764,7 +825,7 @@ export namespace TypeGuard {
       IsOptionalBoolean(schema.uniqueItems)
     )
   }
-  /** Returns true if the given schema is TSymbol */
+  /** Returns true if the given schema is TBigInt */
   export function TBigInt(schema: unknown): schema is TBigInt {
     // prettier-ignore
     return (
@@ -996,16 +1057,6 @@ export namespace TypeGuard {
     }
     return true
   }
-  /** Returns true if the given schema is TSelf */
-  export function TSelf(schema: unknown): schema is TSelf {
-    // prettier-ignore
-    return (
-      TKind(schema) && 
-      schema[Kind] === 'Self' && 
-      IsOptionalString(schema.$id) && 
-      IsString(schema.$ref)
-    )
-  }
   /** Returns true if the given schema is TRef */
   export function TRef(schema: unknown): schema is TRef {
     // prettier-ignore
@@ -1029,7 +1080,6 @@ export namespace TypeGuard {
       IsOptionalFormat(schema.format)
     )
   }
-
   /** Returns true if the given schema is TSymbol */
   export function TSymbol(schema: unknown): schema is TSymbol {
     // prettier-ignore
@@ -1041,7 +1091,28 @@ export namespace TypeGuard {
       IsOptionalString(schema.$id)
     )
   }
-
+  /** Returns true if the given schema is TTemplateLiteral */
+  export function TTemplateLiteral(schema: unknown): schema is TTemplateLiteral {
+    // prettier-ignore
+    return (
+      TKind(schema) && 
+      schema[Kind] === 'TemplateLiteral' && 
+      schema.type === 'string' &&
+      IsString(schema.pattern) &&
+      schema.pattern[0] === '^' &&
+      schema.pattern[schema.pattern.length - 1] === '$'
+    )
+  }
+  /** Returns true if the given schema is TThis */
+  export function TThis(schema: unknown): schema is TThis {
+    // prettier-ignore
+    return (
+      TKind(schema) && 
+      schema[Kind] === 'This' && 
+      IsOptionalString(schema.$id) && 
+      IsString(schema.$ref)
+    )
+  }
   /** Returns true if the given schema is TTuple */
   export function TTuple(schema: unknown): schema is TTuple {
     // prettier-ignore
@@ -1098,7 +1169,6 @@ export namespace TypeGuard {
   export function TUnionLiteral(schema: unknown): schema is TUnion<TLiteral<string>[]> {
     return TUnion(schema) && schema.anyOf.every((schema) => TLiteral(schema) && typeof schema.const === 'string')
   }
-
   /** Returns true if the given schema is TUint8Array */
   export function TUint8Array(schema: unknown): schema is TUint8Array {
     return TKind(schema) && schema[Kind] === 'Uint8Array' && schema.type === 'object' && IsOptionalString(schema.$id) && schema.instanceOf === 'Uint8Array' && IsOptionalNumber(schema.minByteLength) && IsOptionalNumber(schema.maxByteLength)
@@ -1164,10 +1234,11 @@ export namespace TypeGuard {
         TObject(schema) ||
         TPromise(schema) ||
         TRecord(schema) ||
-        TSelf(schema) ||
         TRef(schema) ||
         TString(schema) ||
         TSymbol(schema) ||
+        TTemplateLiteral(schema) ||
+        TThis(schema) ||
         TTuple(schema) ||
         TUndefined(schema) ||
         TUnion(schema) ||
@@ -1523,13 +1594,13 @@ export namespace TypeExtends {
   // Record
   // --------------------------------------------------------------------------
   function RecordKey(schema: TRecord) {
-    if ('^(0|[1-9][0-9]*)$' in schema.patternProperties) return Type.Number()
-    if ('^.*$' in schema.patternProperties) return Type.String()
+    if (PatternNumberExact in schema.patternProperties) return Type.Number()
+    if (PatternStringExact in schema.patternProperties) return Type.String()
     throw Error('TypeExtends: Cannot get record key')
   }
   function RecordValue(schema: TRecord) {
-    if ('^(0|[1-9][0-9]*)$' in schema.patternProperties) return schema.patternProperties['^(0|[1-9][0-9]*)$']
-    if ('^.*$' in schema.patternProperties) return schema.patternProperties['^.*$']
+    if (PatternNumberExact in schema.patternProperties) return schema.patternProperties[PatternNumberExact]
+    if (PatternStringExact in schema.patternProperties) return schema.patternProperties[PatternStringExact]
     throw Error('TypeExtends: Cannot get record value')
   }
   function RecordRight(left: TSchema, right: TRecord) {
@@ -1645,7 +1716,7 @@ export namespace TypeExtends {
   function UnionRight(left: TSchema, right: TUnion): TypeExtendsResult {
     return right.anyOf.some((schema) => Visit(left, schema) === TypeExtendsResult.True) ? TypeExtendsResult.True : TypeExtendsResult.False
   }
-  function Union(left: TUnion, right: TSchema) {
+  function Union(left: TUnion, right: TSchema): TypeExtendsResult {
     return left.anyOf.every((schema) => Visit(schema, right) === TypeExtendsResult.True) ? TypeExtendsResult.True : TypeExtendsResult.False
   }
   // --------------------------------------------------------------------------
@@ -1683,6 +1754,10 @@ export namespace TypeExtends {
     return TypeGuard.TVoid(right) ? TypeExtendsResult.True : TypeExtendsResult.False
   }
   function Visit(left: TSchema, right: TSchema): TypeExtendsResult {
+    // template union remap
+    if (TypeGuard.TTemplateLiteral(left)) return Visit(TemplateLiteralResolver.Resolve(left), right)
+    if (TypeGuard.TTemplateLiteral(right)) return Visit(left, TemplateLiteralResolver.Resolve(right))
+    // standard extends
     if (TypeGuard.TAny(left)) return Any(left, right)
     if (TypeGuard.TArray(left)) return Array(left, right)
     if (TypeGuard.TBigInt(left)) return BigInt(left, right)
@@ -1696,10 +1771,10 @@ export namespace TypeExtends {
     if (TypeGuard.TNever(left)) return Never(left, right)
     if (TypeGuard.TNull(left)) return Null(left, right)
     if (TypeGuard.TNumber(left)) return Number(left, right)
+    if (TypeGuard.TObject(left)) return Object(left, right)
     if (TypeGuard.TRecord(left)) return Record(left, right)
     if (TypeGuard.TString(left)) return String(left, right)
     if (TypeGuard.TSymbol(left)) return Symbol(left, right)
-    if (TypeGuard.TObject(left)) return Object(left, right)
     if (TypeGuard.TTuple(left)) return Tuple(left, right)
     if (TypeGuard.TPromise(left)) return Promise(left, right)
     if (TypeGuard.TUint8Array(left)) return Uint8Array(left, right)
@@ -1800,6 +1875,224 @@ export namespace KeyResolver {
   }
   export function Resolve<T extends TSchema>(schema: T) {
     return Visit(schema)
+  }
+}
+// --------------------------------------------------------------------------
+// TemplateLiteralPattern
+// --------------------------------------------------------------------------
+export namespace TemplateLiteralPattern {
+  function Escape(value: string) {
+    return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  }
+  function Visit(schema: TSchema, acc: string): string {
+    if (TypeGuard.TTemplateLiteral(schema)) {
+      const pattern = schema.pattern.slice(1, schema.pattern.length - 1)
+      return pattern
+    } else if (TypeGuard.TUnion(schema)) {
+      const tokens = schema.anyOf.map((schema) => Visit(schema, acc)).join('|')
+      return `(${tokens})`
+    } else if (TypeGuard.TNumber(schema)) {
+      return `${acc}${PatternNumber}`
+    } else if (TypeGuard.TInteger(schema)) {
+      return `${acc}${PatternNumber}`
+    } else if (TypeGuard.TBigInt(schema)) {
+      return `${acc}${PatternNumber}`
+    } else if (TypeGuard.TString(schema)) {
+      return `${acc}${PatternString}`
+    } else if (TypeGuard.TLiteral(schema)) {
+      return `${acc}${Escape(schema.const.toString())}`
+    } else if (TypeGuard.TBoolean(schema)) {
+      return `${acc}${PatternBoolean}`
+    } else if (TypeGuard.TNever(schema)) {
+      throw Error('TemplateLiteralPattern: TemplateLiteral cannot operate on types of TNever')
+    } else {
+      throw Error(`TemplateLiteralPattern: Unexpected Kind '${schema[Kind]}'`)
+    }
+  }
+  export function Create(kinds: TTemplateLiteralKind[]): string {
+    return `^${kinds.map((schema) => Visit(schema, '')).join('')}\$`
+  }
+}
+// --------------------------------------------------------------------------------------
+// TemplateLiteralResolver
+// --------------------------------------------------------------------------------------
+export namespace TemplateLiteralResolver {
+  export function Resolve(template: TTemplateLiteral): TString | TUnion | TLiteral {
+    const expression = TemplateLiteralParser.ParseExact(template.pattern)
+    if (!TemplateLiteralFinite.Check(expression)) return Type.String()
+    const literals = [...TemplateLiteralGenerator.Generate(expression)].map((value) => Type.Literal(value))
+    return Type.Union(literals)
+  }
+}
+// --------------------------------------------------------------------------------------
+// TemplateLiteralParser
+// --------------------------------------------------------------------------------------
+export class TemplateLiteralParserError extends Error {
+  constructor(message: string) {
+    super(message)
+  }
+}
+export namespace TemplateLiteralParser {
+  export type Expression = And | Or | Const
+  export type Const = { type: 'const'; const: string }
+  export type And = { type: 'and'; expr: Expression[] }
+  export type Or = { type: 'or'; expr: Expression[] }
+  function Unescape(value: string) {
+    return value.replace(/\\/g, '')
+  }
+  function IsNonEscaped(pattern: string, index: number, char: string) {
+    return pattern[index] === char && pattern.charCodeAt(index - 1) !== 92
+  }
+  function IsOpenParen(pattern: string, index: number) {
+    return IsNonEscaped(pattern, index, '(')
+  }
+  function IsCloseParen(pattern: string, index: number) {
+    return IsNonEscaped(pattern, index, ')')
+  }
+  function IsSeparator(pattern: string, index: number) {
+    return IsNonEscaped(pattern, index, '|')
+  }
+  function IsGroup(pattern: string) {
+    if (!(IsOpenParen(pattern, 0) && IsCloseParen(pattern, pattern.length - 1))) return false
+    let count = 0
+    for (let index = 0; index < pattern.length; index++) {
+      if (IsOpenParen(pattern, index)) count += 1
+      if (IsCloseParen(pattern, index)) count -= 1
+      if (count === 0 && index !== pattern.length - 1) return false
+    }
+    return true
+  }
+  function InGroup(pattern: string) {
+    return pattern.slice(1, pattern.length - 1)
+  }
+  function IsPrecedenceOr(pattern: string) {
+    let count = 0
+    for (let index = 0; index < pattern.length; index++) {
+      if (IsOpenParen(pattern, index)) count += 1
+      if (IsCloseParen(pattern, index)) count -= 1
+      if (IsSeparator(pattern, index) && count === 0) return true
+    }
+    return false
+  }
+  function IsPrecedenceAnd(pattern: string) {
+    for (let index = 0; index < pattern.length; index++) {
+      if (IsOpenParen(pattern, index)) return true
+    }
+    return false
+  }
+  function Or(pattern: string): Expression {
+    let [count, start] = [0, 0]
+    const expressions: Expression[] = []
+    for (let index = 0; index < pattern.length; index++) {
+      if (IsOpenParen(pattern, index)) count += 1
+      if (IsCloseParen(pattern, index)) count -= 1
+      if (IsSeparator(pattern, index) && count === 0) {
+        const range = pattern.slice(start, index)
+        if (range.length > 0) expressions.push(Parse(range))
+        start = index + 1
+      }
+    }
+    const range = pattern.slice(start)
+    if (range.length > 0) expressions.push(Parse(range))
+    if (expressions.length === 0) return { type: 'const', const: '' }
+    if (expressions.length === 1) return expressions[0]
+    return { type: 'or', expr: expressions }
+  }
+  function And(pattern: string): Expression {
+    function Group(value: string, index: number): [number, number] {
+      if (!IsOpenParen(value, index)) throw new TemplateLiteralParserError(`TemplateLiteralParser: Index must point to open parens`)
+      let count = 0
+      for (let scan = index; scan < value.length; scan++) {
+        if (IsOpenParen(value, scan)) count += 1
+        if (IsCloseParen(value, scan)) count -= 1
+        if (count === 0) return [index, scan]
+      }
+      throw new TemplateLiteralParserError(`TemplateLiteralParser: Unclosed group parens in expression`)
+    }
+    function Range(pattern: string, index: number): [number, number] {
+      for (let scan = index; scan < pattern.length; scan++) {
+        if (IsOpenParen(pattern, scan)) return [index, scan]
+      }
+      return [index, pattern.length]
+    }
+    const expressions: Expression[] = []
+    for (let index = 0; index < pattern.length; index++) {
+      if (IsOpenParen(pattern, index)) {
+        const [start, end] = Group(pattern, index)
+        const range = pattern.slice(start, end + 1)
+        expressions.push(Parse(range))
+        index = end
+      } else {
+        const [start, end] = Range(pattern, index)
+        const range = pattern.slice(start, end)
+        if (range.length > 0) expressions.push(Parse(range))
+        index = end - 1
+      }
+    }
+    if (expressions.length === 0) return { type: 'const', const: '' }
+    if (expressions.length === 1) return expressions[0]
+    return { type: 'and', expr: expressions }
+  }
+  /** Parses a pattern and returns an expression tree */
+  export function Parse(pattern: string): Expression {
+    if (IsGroup(pattern)) return Parse(InGroup(pattern))
+    if (IsPrecedenceOr(pattern)) return Or(pattern)
+    if (IsPrecedenceAnd(pattern)) return And(pattern)
+    return { type: 'const', const: Unescape(pattern) }
+  }
+  /** Parses a pattern and strips forward and trailing ^ and $ */
+  export function ParseExact(pattern: string): Expression {
+    return Parse(pattern.slice(1, pattern.length - 1))
+  }
+}
+// --------------------------------------------------------------------------------------
+// TemplateLiteralFinite
+// --------------------------------------------------------------------------------------
+export namespace TemplateLiteralFinite {
+  function IsNumber(expression: TemplateLiteralParser.Expression): boolean {
+    return expression.type === 'or' && expression.expr.length === 2 && expression.expr[0].type === 'const' && expression.expr[0].const === '0' && expression.expr[1].type === 'const' && expression.expr[1].const === '[1-9][0-9]*'
+  }
+  function IsBoolean(expression: TemplateLiteralParser.Expression): boolean {
+    return expression.type === 'or' && expression.expr.length === 2 && expression.expr[0].type === 'const' && expression.expr[0].const === 'true' && expression.expr[1].type === 'const' && expression.expr[1].const === 'false'
+  }
+  function IsString(expression: TemplateLiteralParser.Expression) {
+    return expression.type === 'const' && expression.const === '.*'
+  }
+  export function Check(expression: TemplateLiteralParser.Expression): boolean {
+    if (IsBoolean(expression)) return true
+    if (IsNumber(expression) || IsString(expression)) return false
+    if (expression.type === 'and') return expression.expr.every((expr) => Check(expr))
+    if (expression.type === 'or') return expression.expr.every((expr) => Check(expr))
+    if (expression.type === 'const') return true
+    throw Error(`TemplateLiteralFinite: Unknown expression type`)
+  }
+}
+// --------------------------------------------------------------------------------------
+// TemplateLiteralGenerator
+// --------------------------------------------------------------------------------------
+export namespace TemplateLiteralGenerator {
+  function* Reduce(buffer: string[][]): IterableIterator<string> {
+    if (buffer.length === 1) return yield* buffer[0]
+    for (const left of buffer[0]) {
+      for (const right of Reduce(buffer.slice(1))) {
+        yield `${left}${right}`
+      }
+    }
+  }
+  function* And(expression: TemplateLiteralParser.And): IterableIterator<string> {
+    return yield* Reduce(expression.expr.map((expr) => [...Generate(expr)]))
+  }
+  function* Or(expression: TemplateLiteralParser.Or): IterableIterator<string> {
+    for (const expr of expression.expr) yield* Generate(expr)
+  }
+  function* Const(expression: TemplateLiteralParser.Const): IterableIterator<string> {
+    return yield expression.const
+  }
+  export function* Generate(expression: TemplateLiteralParser.Expression): IterableIterator<string> {
+    if (expression.type === 'and') return yield* And(expression)
+    if (expression.type === 'or') return yield* Or(expression)
+    if (expression.type === 'const') return yield* Const(expression)
+    throw Error('TemplateLiteralGenerator: Unknown expression')
   }
 }
 // --------------------------------------------------------------------------
@@ -1909,6 +2202,8 @@ export class StandardTypeBuilder extends TypeBuilder {
   }
   /** `[Standard]` Excludes from the left type any type that is not assignable to the right */
   public Exclude<L extends TSchema, R extends TSchema>(left: L, right: R, options: SchemaOptions = {}): TExclude<L, R> {
+    if (TypeGuard.TTemplateLiteral(left)) return this.Exclude(TemplateLiteralResolver.Resolve(left), right, options) as TExclude<L, R>
+    if (TypeGuard.TTemplateLiteral(right)) return this.Exclude(left, TemplateLiteralResolver.Resolve(right), options) as any as TExclude<L, R>
     if (TypeGuard.TUnion(left)) {
       const narrowed = left.anyOf.filter((inner) => TypeExtends.Extends(inner, right) === TypeExtendsResult.False)
       return (narrowed.length === 1 ? TypeClone.Clone(narrowed[0], options) : this.Union(narrowed, options)) as TExclude<L, R>
@@ -1918,6 +2213,8 @@ export class StandardTypeBuilder extends TypeBuilder {
   }
   /** `[Standard]` Extracts from the left type any type that is assignable to the right */
   public Extract<L extends TSchema, R extends TSchema>(left: L, right: R, options: SchemaOptions = {}): TExtract<L, R> {
+    if (TypeGuard.TTemplateLiteral(left)) return this.Extract(TemplateLiteralResolver.Resolve(left), right, options) as TExtract<L, R>
+    if (TypeGuard.TTemplateLiteral(right)) return this.Extract(left, TemplateLiteralResolver.Resolve(right), options) as any as TExtract<L, R>
     if (TypeGuard.TUnion(left)) {
       const narrowed = left.anyOf.filter((inner) => TypeExtends.Extends(inner, right) !== TypeExtendsResult.False)
       return (narrowed.length === 1 ? TypeClone.Clone(narrowed[0], options) : this.Union(narrowed, options)) as TExtract<L, R>
@@ -1949,10 +2246,17 @@ export class StandardTypeBuilder extends TypeBuilder {
   }
   /** `[Standard]` Creates a KeyOf type */
   public KeyOf<T extends TSchema>(schema: T, options: SchemaOptions = {}): TKeyOf<T> {
-    const keys = KeyResolver.Resolve(schema)
-    // prettier-ignore
-    const keyof = keys.length === 0 ? this.Never(options) : this.Union(keys.map((key) => this.Literal(key)), options)
-    return keyof as TKeyOf<T>
+    if (TypeGuard.TRecord(schema)) {
+      const pattern = Object.getOwnPropertyNames(schema.patternProperties)[0]
+      if (pattern === PatternNumberExact) return this.Number(options) as TKeyOf<T>
+      if (pattern === PatternStringExact) return this.String(options) as TKeyOf<T>
+      throw Error('StandardTypeBuilder: Unable to resolve key type from Record key pattern')
+    } else {
+      const resolved = KeyResolver.Resolve(schema)
+      if (resolved.length === 0) return this.Never(options) as TKeyOf<T>
+      const literals = resolved.map((key) => this.Literal(key))
+      return this.Union(literals, options) as TKeyOf<T>
+    }
   }
   /** `[Standard]` Creates a Literal type */
   public Literal<T extends TLiteralValue>(value: T, options: SchemaOptions = {}): TLiteral<T> {
@@ -2060,39 +2364,49 @@ export class StandardTypeBuilder extends TypeBuilder {
       return this.Create(schema)
     }, options)
   }
-  /** `[Standard]` Creates an Object type from the given Literal Union */
-  public Record<K extends TUnion<TLiteral<string | number>[]>, T extends TSchema>(key: K, schema: T, options?: ObjectOptions): TObject<TRecordPropertiesFromUnionLiteral<K, T>>
-  /** `[Standard]` Creates an Object type from the given Literal Union */
-  public Record<K extends TLiteral<string | number>, T extends TSchema>(key: K, schema: T, options?: ObjectOptions): TObject<TRecordPropertiesFromLiteral<K, T>>
   /** `[Standard]` Creates a Record type */
-  public Record<K extends TString | TNumeric, T extends TSchema>(key: K, schema: T, options?: ObjectOptions): TRecord<K, T>
-  public Record(key: any, schema: TSchema, options: ObjectOptions = {}) {
-    if (TypeGuard.TLiteral(key)) {
-      if (typeof key.const === 'string' || typeof key.const === 'number') {
-        return this.Object({ [key.const]: TypeClone.Clone(schema, {}) }, options)
-      } else throw Error('TypeBuilder: Record key can only be derived from literals of number or string')
-    }
-    if (TypeGuard.TUnion(key)) {
+  public Record<K extends TUnion<TLiteral<string | number>[]>, T extends TSchema>(key: K, schema: T): RecordUnionLiteralType<K, T>
+  /** `[Standard]` Creates a Record type */
+  public Record<K extends TLiteral<string | number>, T extends TSchema>(key: K, schema: T): RecordLiteralType<K, T>
+  /** `[Standard]` Creates a Record type */
+  public Record<K extends TTemplateLiteral, T extends TSchema>(key: K, schema: T): RecordTemplateLiteralType<K, T>
+  /** `[Standard]` Creates a Record type */
+  public Record<K extends TInteger | TNumber, T extends TSchema>(key: K, schema: T): RecordNumberType<K, T>
+  /** `[Standard]` Creates a Record type */
+  public Record<K extends TString, T extends TSchema>(key: K, schema: T): RecordStringType<K, T>
+  /** `[Standard]` Creates a Record type */
+  public Record(key: RecordKey, schema: TSchema, options: ObjectOptions = {}) {
+    if (TypeGuard.TTemplateLiteral(key)) {
+      const expression = TemplateLiteralParser.ParseExact(key.pattern)
+      // prettier-ignore
+      return TemplateLiteralFinite.Check(expression)
+        ? (this.Object([...TemplateLiteralGenerator.Generate(expression)].reduce((acc, key) => ({ ...acc, [key]: TypeClone.Clone(schema, {}) }), {} as TProperties), options))
+        : this.Create<any>({ ...options, [Kind]: 'Record', type: 'object', patternProperties: { [key.pattern]: TypeClone.Clone(schema, {}) }, additionalProperties: false })
+    } else if (TypeGuard.TUnionLiteral(key)) {
       if (key.anyOf.every((schema) => TypeGuard.TLiteral(schema) && (typeof schema.const === 'string' || typeof schema.const === 'number'))) {
         const properties = key.anyOf.reduce((acc: any, literal: any) => ({ ...acc, [literal.const]: TypeClone.Clone(schema, {}) }), {} as TProperties)
         return this.Object(properties, { ...options, [Hint]: 'Record' })
       } else throw Error('TypeBuilder: Record key can only be derived from union literal of number or string')
+    } else if (TypeGuard.TLiteral(key)) {
+      if (typeof key.const === 'string' || typeof key.const === 'number') {
+        return this.Object({ [key.const]: TypeClone.Clone(schema, {}) }, options)
+      } else throw Error('TypeBuilder: Record key can only be derived from literals of number or string')
+    } else if (TypeGuard.TInteger(key) || TypeGuard.TNumber(key)) {
+      const pattern = PatternNumberExact
+      return this.Create<any>({ ...options, [Kind]: 'Record', type: 'object', patternProperties: { [pattern]: TypeClone.Clone(schema, {}) }, additionalProperties: false })
+    } else if (TypeGuard.TString(key)) {
+      const pattern = key.pattern === undefined ? PatternStringExact : key.pattern
+      return this.Create<any>({ ...options, [Kind]: 'Record', type: 'object', patternProperties: { [pattern]: TypeClone.Clone(schema, {}) }, additionalProperties: false })
+    } else {
+      throw Error(`StandardTypeBuilder: Invalid Record Key`)
     }
-    const pattern = ['Integer', 'Number'].includes(key[Kind]) ? '^(0|[1-9][0-9]*)$' : key[Kind] === 'String' && key.pattern ? key.pattern : '^.*$'
-    return this.Create({
-      ...options,
-      [Kind]: 'Record',
-      type: 'object',
-      patternProperties: { [pattern]: TypeClone.Clone(schema, {}) },
-      additionalProperties: false,
-    })
   }
   /** `[Standard]` Creates a Recursive type */
-  public Recursive<T extends TSchema>(callback: (self: TSelf) => T, options: SchemaOptions = {}): TRecursive<T> {
+  public Recursive<T extends TSchema>(callback: (thisType: TThis) => T, options: SchemaOptions = {}): TRecursive<T> {
     if (options.$id === undefined) (options as any).$id = `T${TypeOrdinal++}`
-    const self = callback({ [Kind]: 'Self', $ref: `${options.$id}` } as any)
-    self.$id = options.$id
-    return this.Create({ ...options, ...self } as any)
+    const thisType = callback({ [Kind]: 'This', $ref: `${options.$id}` } as any)
+    thisType.$id = options.$id
+    return this.Create({ ...options, ...thisType } as any)
   }
   /** `[Standard]` Creates a Ref type. The referenced type must contain a $id */
   public Ref<T extends TSchema>(schema: T, options: SchemaOptions = {}): TRef<T> {
@@ -2121,6 +2435,11 @@ export class StandardTypeBuilder extends TypeBuilder {
   public String<Format extends string>(options: StringOptions<StringFormatOption | Format> = {}): TString<Format> {
     return this.Create({ ...options, [Kind]: 'String', type: 'string' })
   }
+  /** `[Standard]` Creates a template literal type */
+  public TemplateLiteral<T extends TTemplateLiteralKind[]>(kinds: [...T], options: SchemaOptions = {}): TTemplateLiteral<T> {
+    const pattern = TemplateLiteralPattern.Create(kinds)
+    return this.Create({ ...options, [Kind]: 'TemplateLiteral', type: 'string', pattern })
+  }
   /** `[Standard]` Creates a Tuple type */
   public Tuple<T extends TSchema[]>(items: [...T], options: SchemaOptions = {}): TTuple<T> {
     const [additionalItems, minItems, maxItems] = [false, items.length, items.length]
@@ -2137,11 +2456,18 @@ export class StandardTypeBuilder extends TypeBuilder {
   public Union<T extends [TSchema]>(anyOf: [...T], options?: SchemaOptions): T[0]
   /** `[Standard]` Creates a Union type */
   public Union<T extends TSchema[]>(anyOf: [...T], options?: SchemaOptions): TUnion<T>
-  public Union(anyOf: TSchema[], options: SchemaOptions = {}) {
-    if (anyOf.length === 0) return this.Never(options)
-    if (anyOf.length === 1) return this.Create(TypeClone.Clone(anyOf[0], options))
-    const clonedAnyOf = anyOf.map((schema) => TypeClone.Clone(schema, {}))
-    return this.Create({ ...options, [Kind]: 'Union', anyOf: clonedAnyOf })
+  /** `[Experimental]` Remaps a TemplateLiteral into a Union representation. This function is known to cause TS compiler crashes for finite templates with large generation counts. Use with caution. */
+  public Union<T extends TTemplateLiteral>(template: T): TUnionTemplateLiteral<T>
+  public Union(union: TSchema[] | TTemplateLiteral, options: SchemaOptions = {}) {
+    if (TypeGuard.TTemplateLiteral(union)) {
+      return TemplateLiteralResolver.Resolve(union)
+    } else {
+      const anyOf = union
+      if (anyOf.length === 0) return this.Never(options)
+      if (anyOf.length === 1) return this.Create(TypeClone.Clone(anyOf[0], options))
+      const clonedAnyOf = anyOf.map((schema) => TypeClone.Clone(schema, {}))
+      return this.Create({ ...options, [Kind]: 'Union', anyOf: clonedAnyOf })
+    }
   }
   /** `[Standard]` Creates an Unknown type */
   public Unknown(options: SchemaOptions = {}): TUnknown {
@@ -2153,7 +2479,7 @@ export class StandardTypeBuilder extends TypeBuilder {
   }
 }
 // --------------------------------------------------------------------------
-// TypeBuilder
+// ExtendedTypeBuilder
 // --------------------------------------------------------------------------
 export class ExtendedTypeBuilder extends StandardTypeBuilder {
   /** `[Extended]` Creates a BigInt type */

@@ -151,7 +151,7 @@ export namespace TypeBoxToZod {
     if (!reference_map.has(schema.$ref!)) throw new TypeBoxToZodNonReferentialType(schema.$ref!)
     return schema.$ref
   }
-  function Self(schema: Types.TSelf) {
+  function This(schema: Types.TThis) {
     if (!reference_map.has(schema.$ref!)) throw new TypeBoxToZodNonReferentialType(schema.$ref!)
     recursive_set.add(schema.$ref)
     return schema.$ref
@@ -208,10 +208,10 @@ export namespace TypeBoxToZod {
       return Record(schema)
     } else if (Types.TypeGuard.TRef(schema)) {
       return Ref(schema)
-    } else if (Types.TypeGuard.TSelf(schema)) {
-      return Self(schema)
     } else if (Types.TypeGuard.TString(schema)) {
       return String(schema)
+    } else if (Types.TypeGuard.TThis(schema)) {
+      return This(schema)
     } else if (Types.TypeGuard.TTuple(schema)) {
       return Tuple(schema)
     } else if (Types.TypeGuard.TUint8Array(schema)) {

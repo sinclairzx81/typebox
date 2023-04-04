@@ -39,7 +39,7 @@ export class ValueCheckUnknownTypeError extends Error {
   }
 }
 export class ValueCheckDereferenceError extends Error {
-  constructor(public readonly schema: Types.TRef | Types.TSelf) {
+  constructor(public readonly schema: Types.TRef | Types.TThis) {
     super(`ValueCheck: Unable to dereference schema with $id '${schema.$ref}'`)
   }
 }
@@ -292,12 +292,6 @@ export namespace ValueCheck {
     const target = references[index]
     return Visit(target, references, value)
   }
-  function Self(schema: Types.TSelf, references: Types.TSchema[], value: any): boolean {
-    const index = references.findIndex((foreign) => foreign.$id === schema.$ref)
-    if (index === -1) throw new ValueCheckDereferenceError(schema)
-    const target = references[index]
-    return Visit(target, references, value)
-  }
   function String(schema: Types.TString, references: Types.TSchema[], value: any): boolean {
     if (!IsString(value)) {
       return false
@@ -324,6 +318,18 @@ export namespace ValueCheck {
       return false
     }
     return true
+  }
+  function TemplateLiteral(schema: Types.TTemplateLiteralKind, references: Types.TSchema[], value: any): boolean {
+    if (!IsString(value)) {
+      return false
+    }
+    return new RegExp(schema.pattern).test(value)
+  }
+  function This(schema: Types.TThis, references: Types.TSchema[], value: any): boolean {
+    const index = references.findIndex((foreign) => foreign.$id === schema.$ref)
+    if (index === -1) throw new ValueCheckDereferenceError(schema)
+    const target = references[index]
+    return Visit(target, references, value)
   }
   function Tuple(schema: Types.TTuple<any[]>, references: Types.TSchema[], value: any): boolean {
     if (!globalThis.Array.isArray(value)) {
@@ -412,12 +418,14 @@ export namespace ValueCheck {
         return Record(schema_, references_, value)
       case 'Ref':
         return Ref(schema_, references_, value)
-      case 'Self':
-        return Self(schema_, references_, value)
       case 'String':
         return String(schema_, references_, value)
       case 'Symbol':
         return Symbol(schema_, references_, value)
+      case 'TemplateLiteral':
+        return TemplateLiteral(schema_, references_, value)
+      case 'This':
+        return This(schema_, references_, value)
       case 'Tuple':
         return Tuple(schema_, references_, value)
       case 'Undefined':

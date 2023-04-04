@@ -3,10 +3,10 @@ import { Type } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
 describe('value/check/Recursive', () => {
-  const T = Type.Recursive((Self) =>
+  const T = Type.Recursive((This) =>
     Type.Object({
       id: Type.String(),
-      nodes: Type.Array(Self),
+      nodes: Type.Array(This),
     }),
   )
 
