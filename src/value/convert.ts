@@ -39,7 +39,7 @@ export class ValueConvertUnknownTypeError extends Error {
   }
 }
 export class ValueConvertDereferenceError extends Error {
-  constructor(public readonly schema: Types.TRef | Types.TSelf) {
+  constructor(public readonly schema: Types.TRef | Types.TThis) {
     super(`ValueConvert: Unable to dereference schema with $id '${schema.$ref}'`)
   }
 }
@@ -243,17 +243,20 @@ export namespace ValueConvert {
     const target = references[index]
     return Visit(target, references, value)
   }
-  function Self(schema: Types.TSelf, references: Types.TSchema[], value: any): unknown {
-    const index = references.findIndex((foreign) => foreign.$id === schema.$ref)
-    if (index === -1) throw new ValueConvertDereferenceError(schema)
-    const target = references[index]
-    return Visit(target, references, value)
-  }
   function String(schema: Types.TString, references: Types.TSchema[], value: any): unknown {
     return TryConvertString(value)
   }
   function Symbol(schema: Types.TSymbol, references: Types.TSchema[], value: any): unknown {
     return value
+  }
+  function TemplateLiteral(schema: Types.TTemplateLiteral, references: Types.TSchema[], value: any) {
+    return value
+  }
+  function This(schema: Types.TThis, references: Types.TSchema[], value: any): unknown {
+    const index = references.findIndex((foreign) => foreign.$id === schema.$ref)
+    if (index === -1) throw new ValueConvertDereferenceError(schema)
+    const target = references[index]
+    return Visit(target, references, value)
   }
   function Tuple(schema: Types.TTuple<any[]>, references: Types.TSchema[], value: any): unknown {
     if (IsArray(value) && schema.items !== undefined) {
@@ -325,12 +328,14 @@ export namespace ValueConvert {
         return Record(schema_, references_, value)
       case 'Ref':
         return Ref(schema_, references_, value)
-      case 'Self':
-        return Self(schema_, references_, value)
       case 'String':
         return String(schema_, references_, value)
       case 'Symbol':
         return Symbol(schema_, references_, value)
+      case 'TemplateLiteral':
+        return TemplateLiteral(schema_, references_, value)
+      case 'This':
+        return This(schema_, references_, value)
       case 'Tuple':
         return Tuple(schema_, references_, value)
       case 'Undefined':

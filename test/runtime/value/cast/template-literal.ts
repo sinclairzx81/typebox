@@ -1,18 +1,12 @@
 import { Value } from '@sinclair/typebox/value'
-import { Type, Kind, TypeRegistry } from '@sinclair/typebox'
+import { Type } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
-describe('value/cast/Custom', () => {
-  before(() => {
-    TypeRegistry.Set('CustomCast', (schema, value) => value === 'hello' || value === 'world')
-  })
-  after(() => {
-    TypeRegistry.Clear()
-  })
-  const T = Type.Unsafe({ [Kind]: 'CustomCast', default: 'hello' })
-  const E = 'hello'
+describe('value/cast/TemplateLiteral', () => {
+  const T = Type.TemplateLiteral([Type.Literal('hello'), Type.Literal('world')])
+  const E = 'helloworld'
   it('Should upcast from string', () => {
-    const value = 'hello'
+    const value = 'world'
     const result = Value.Cast(T, value)
     Assert.deepEqual(result, E)
   })
@@ -22,7 +16,7 @@ describe('value/cast/Custom', () => {
     Assert.deepEqual(result, E)
   })
   it('Should upcast from boolean', () => {
-    const value = false
+    const value = true
     const result = Value.Cast(T, value)
     Assert.deepEqual(result, E)
   })
@@ -46,15 +40,14 @@ describe('value/cast/Custom', () => {
     const result = Value.Cast(T, value)
     Assert.deepEqual(result, E)
   })
-  it('Should preserve', () => {
-    const value = { a: 'hello', b: 'world' }
-    const result = Value.Cast(
-      Type.Object({
-        a: T,
-        b: T,
-      }),
-      value,
-    )
-    Assert.deepEqual(result, { a: 'hello', b: 'world' })
+  it('Should upcast from date', () => {
+    const value = new Date(100)
+    const result = Value.Cast(T, value)
+    Assert.deepEqual(result, E)
+  })
+  it('Should preseve', () => {
+    const value = 'helloworld'
+    const result = Value.Cast(T, value)
+    Assert.deepEqual(result, 'helloworld')
   })
 })

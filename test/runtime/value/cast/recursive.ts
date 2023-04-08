@@ -3,10 +3,10 @@ import { Type } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
 describe('value/cast/Recursive', () => {
-  const T = Type.Recursive((Self) =>
+  const T = Type.Recursive((This) =>
     Type.Object({
       id: Type.String(),
-      nodes: Type.Array(Self),
+      nodes: Type.Array(This),
     }),
   )
   const E = { id: '', nodes: [] }
@@ -63,17 +63,17 @@ describe('value/cast/Recursive', () => {
     Assert.deepEqual(result, value)
   })
   it('Should upcast from varying types', () => {
-    const TypeA = Type.Recursive((Self) =>
+    const TypeA = Type.Recursive((This) =>
       Type.Object({
         id: Type.String(),
-        nodes: Type.Array(Self),
+        nodes: Type.Array(This),
       }),
     )
-    const TypeB = Type.Recursive((Self) =>
+    const TypeB = Type.Recursive((This) =>
       Type.Object({
         id: Type.String(),
         name: Type.String({ default: 'test' }),
-        nodes: Type.Array(Self),
+        nodes: Type.Array(This),
       }),
     )
     const ValueA = {

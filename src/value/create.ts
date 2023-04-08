@@ -47,8 +47,13 @@ export class ValueCreateIntersectTypeError extends Error {
     super('ValueCreate: Can only create values for intersected objects and non-varying primitive types. Consider using a default value.')
   }
 }
+export class ValueCreateTempateLiteralTypeError extends Error {
+  constructor(public readonly schema: Types.TSchema) {
+    super('ValueCreate: Can only create template literal values from patterns that produce finite sequences. Consider using a default value.')
+  }
+}
 export class ValueCreateDereferenceError extends Error {
-  constructor(public readonly schema: Types.TRef | Types.TSelf) {
+  constructor(public readonly schema: Types.TRef | Types.TThis) {
     super(`ValueCreate: Unable to dereference schema with $id '${schema.$ref}'`)
   }
 }
@@ -209,7 +214,7 @@ export namespace ValueCreate {
     const [keyPattern, valueSchema] = globalThis.Object.entries(schema.patternProperties)[0]
     if ('default' in schema) {
       return schema.default
-    } else if (!(keyPattern === '^.*$' || keyPattern === '^(0|[1-9][0-9]*)$')) {
+    } else if (!(keyPattern === Types.PatternStringExact || keyPattern === Types.PatternNumberExact)) {
       const propertyKeys = keyPattern.slice(1, keyPattern.length - 1).split('|')
       return propertyKeys.reduce((acc, key) => {
         return { ...acc, [key]: Create(valueSchema, references) }
@@ -219,16 +224,6 @@ export namespace ValueCreate {
     }
   }
   function Ref(schema: Types.TRef<any>, references: Types.TSchema[]): any {
-    if ('default' in schema) {
-      return schema.default
-    } else {
-      const index = references.findIndex((foreign) => foreign.$id === schema.$id)
-      if (index === -1) throw new ValueCreateDereferenceError(schema)
-      const target = references[index]
-      return Visit(target, references)
-    }
-  }
-  function Self(schema: Types.TSelf, references: Types.TSchema[]): any {
     if ('default' in schema) {
       return schema.default
     } else {
@@ -270,6 +265,25 @@ export namespace ValueCreate {
       return globalThis.Symbol.for(schema.value)
     } else {
       return globalThis.Symbol()
+    }
+  }
+  function TemplateLiteral(schema: Types.TTemplateLiteral, references: Types.TSchema[]) {
+    if ('default' in schema) {
+      return schema.default
+    }
+    const expression = Types.TemplateLiteralParser.ParseExact(schema.pattern)
+    if (!Types.TemplateLiteralFinite.Check(expression)) throw new ValueCreateTempateLiteralTypeError(schema)
+    const sequence = Types.TemplateLiteralGenerator.Generate(expression)
+    return sequence.next().value
+  }
+  function This(schema: Types.TThis, references: Types.TSchema[]): any {
+    if ('default' in schema) {
+      return schema.default
+    } else {
+      const index = references.findIndex((foreign) => foreign.$id === schema.$id)
+      if (index === -1) throw new ValueCreateDereferenceError(schema)
+      const target = references[index]
+      return Visit(target, references)
     }
   }
   function Tuple(schema: Types.TTuple<any[]>, references: Types.TSchema[]): any {
@@ -369,12 +383,14 @@ export namespace ValueCreate {
         return Record(schema_, references_)
       case 'Ref':
         return Ref(schema_, references_)
-      case 'Self':
-        return Self(schema_, references_)
       case 'String':
         return String(schema_, references_)
       case 'Symbol':
         return Symbol(schema_, references_)
+      case 'TemplateLiteral':
+        return TemplateLiteral(schema_, references_)
+      case 'This':
+        return This(schema_, references_)
       case 'Tuple':
         return Tuple(schema_, references_)
       case 'Undefined':

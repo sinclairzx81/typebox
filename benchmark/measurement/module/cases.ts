@@ -34,6 +34,19 @@ export namespace Cases {
   export const Object_Constrained = Type.Object(Object_Unconstrained.properties, {
     additionalProperties: false,
   })
+
+  export const Object_Vector3 = Type.Object({
+    x: Type.Number(),
+    y: Type.Number(),
+    z: Type.Number(),
+  })
+
+  export const Object_Box3D = Type.Object({
+    scale: Object_Vector3,
+    position: Object_Vector3,
+    rotate: Object_Vector3,
+    pivot: Object_Vector3,
+  })
   export const Object_Recursive = Type.Recursive(
     (Recursive) =>
       Type.Object({

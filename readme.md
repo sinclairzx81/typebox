@@ -81,6 +81,7 @@ License MIT
   - [References](#types-references)
   - [Recursive](#types-recursive)
   - [Conditional](#types-conditional)
+  - [Template Literal](#types-template-literal)
   - [Guards](#types-guards)
   - [Unsafe](#types-unsafe)
   - [Strict](#types-strict)
@@ -264,12 +265,12 @@ The following table lists the Standard TypeBox types. These types are fully comp
 │   Type.Number(),               │                             │   type: 'array',               │
 │   Type.Number()                │                             │   items: [{                    │
 │ ])                             │                             │      type: 'number'            │
-│                                │                             │    }, {                        │
-│                                │                             │      type: 'number'            │
-│                                │                             │    }],                         │
-│                                │                             │    additionalItems: false,     │
-│                                │                             │    minItems: 2,                │
-│                                │                             │    maxItems: 2                 │
+│                                │                             │   }, {                         │
+│                                │                             │     type: 'number'             │
+│                                │                             │   }],                          │
+│                                │                             │   additionalItems: false,      │
+│                                │                             │   minItems: 2,                 │
+│                                │                             │   maxItems: 2                  │
 │                                │                             │ }                              │
 │                                │                             │                                │
 │                                │                             │                                │
@@ -321,6 +322,7 @@ The following table lists the Standard TypeBox types. These types are fully comp
 │                                │                             │       y: {                     │
 │                                │                             │         type: 'number'         │
 │                                │                             │       }                        │
+│                                │                             │     }                          │
 │                                │                             │   }]                           │
 │                                │                             │ }                              │
 │                                │                             │                                │
@@ -385,6 +387,18 @@ The following table lists the Standard TypeBox types. These types are fully comp
 │ )                              │                             │                                │
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
+│ const U = Type.Union([         │ type U = 'open' | 'close'   │ const T = {                    │
+│   Type.Literal('open'),        │                             │   type: 'string',              │
+│   Type.Literal('close')        │ type T = `on${U}`           │   pattern: '^on(open|close)$'  │
+│ ])                             │                             │ }                              │
+│                                │                             │                                │
+│ const T = Type                 │                             │                                │
+│   .TemplateLiteral([           │                             │                                │
+│      Type.Literal('on'),       │                             │                                │
+│      U                         │                             │                                │
+│   ])                           │                             │                                │
+│                                │                             │                                │
+├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Record(         │ type T = Record<            │ const T = {                    │
 │   Type.String(),               │   string,                   │   type: 'object',              │
 │   Type.Number()                │   number,                   │   patternProperties: {         │
@@ -424,23 +438,23 @@ The following table lists the Standard TypeBox types. These types are fully comp
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Pick(           │ type T = Pick<{             │ const T = {                    │
 │   Type.Object({                │   x: number,                │   type: 'object',              │
-│     x: Type.Number(),          │   y: number                 │   properties: {                │
-│     y: Type.Number()           | }, 'x'>                     │     x: {                       │
-│   }), ['x']                    │                             │       type: 'number'           │
-│ )                              │                             │     }                          │
-│                                │                             │   },                           │
-│                                │                             │   required: ['x']              │
+│     x: Type.Number(),          │   y: number                 │   required: ['x'],             │
+│     y: Type.Number()           │ }, 'x'>                     │   properties: {                │
+│   }), ['x']                    |                             │     x: {                       │
+│ )                              │                             │       type: 'number'           │
+│                                │                             │     }                          │
+│                                │                             │   }                            │
 │                                │                             │ }                              │
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Omit(           │ type T = Omit<{             │ const T = {                    │
 │   Type.Object({                │   x: number,                │   type: 'object',              │
-│     x: Type.Number(),          │   y: number                 │   properties: {                │
-│     y: Type.Number()           | }, 'x'>                     │     y: {                       │
-│   }), ['x']                    │                             │       type: 'number'           │
-│ )                              │                             │     }                          │
-│                                │                             │   },                           │
-│                                │                             │   required: ['y']              │
+│     x: Type.Number(),          │   y: number                 │   required: ['y'],             │
+│     y: Type.Number()           │ }, 'x'>                     │   properties: {                │
+│   }), ['x']                    |                             │     y: {                       │
+│ )                              │                             │       type: 'number'           │
+│                                │                             │     }                          │
+│                                │                             │   }                            │
 │                                │                             │ }                              │
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
@@ -687,7 +701,7 @@ type T = Static<typeof T>                           // type T = string | null
 
 ### Reference Types
 
-Reference types are supported with `Type.Ref(...)`. The target type must specify a valid `$id`.
+Reference types are supported with `Type.Ref`. The target type must specify a valid `$id`.
 
 ```typescript
 const T = Type.String({ $id: 'T' })                  // const T = {
@@ -704,7 +718,7 @@ const R = Type.Ref(T)                                // const R = {
 
 ### Recursive Types
 
-Recursive types are supported with `Type.Recursive(...)`.
+Recursive types are supported with `Type.Recursive`
 
 ```typescript
 const Node = Type.Recursive(Node => Type.Object({    // const Node = {
@@ -741,33 +755,85 @@ function test(node: Node) {
 
 ### Conditional Types
 
-Conditional types are supported with `Extends`, `Exclude` and `Extract`.
-
-**TypeScript**
+Conditional types are supported with `Type.Extends`, `Type.Exclude` and `Type.Extract`
 
 ```typescript
-type T0 = string extends number ? true : false                                                 
-//   ^ false
-type T1 = Extract<string | number, number>                                                     
-//   ^ number
-type T2 = Exclude<string | number, number>                                                     
-//   ^ string
+// TypeScript
+
+type T0 = string extends number ? true : false       // type T0 = false
+
+type T1 = Extract<string | number, number>           // type T1 = number
+
+type T2 = Exclude<string | number, number>           // type T2 = string
+
+// TypeBox
+
+const T0 = Type.Extends(Type.String(), Type.Number(), Type.Literal(true), Type.Literal(false))
+
+const T1 = Type.Extract(Type.Union([Type.String(), Type.Number()]), Type.Number())
+
+const T2 = Type.Exclude(Type.Union([Type.String(), Type.Number()]), Type.Number())
+
+
+type T0 = Static<typeof T0>                        // type T0 = false
+
+type T1 = Static<typeof T1>                        // type T1 = number
+
+type T2 = Static<typeof T2>                        // type T2 = string 
 ```
-**TypeBox**
+
+<a name='types-template-literal'></a>
+
+### Template Literal Types
+
+Template Literal types are supported with `Type.TemplateLiteral`
+
 ```typescript
-const T0 = Type.Extends(Type.String(), Type.Number(), Type.Literal(true), Type.Literal(false)) 
-//    ^ TLiteral<false>
-const T1 = Type.Extract(Type.Union([Type.String(), Type.Number()]), Type.Number())             
-//    ^ TNumber
-const T2 = Type.Exclude(Type.Union([Type.String(), Type.Number()]), Type.Number())             
-//    ^ TString<string>
+// TypeScript
+
+type T = `option${'A'|'B'}`                          // type T = 'optionA' | 'optionB'
+
+type R = Record<T, string>                           // type R = {
+                                                     //   optionA: string
+                                                     //   optionB: string
+                                                     // }
+
+// TypeBox
+
+const T = Type.TemplateLiteral([                     // const T = {
+  Type.Literal('option'),                            //   pattern: '^option(A|B)$',
+  Type.Union([                                       //   type: 'string'
+    Type.Literal('A'),                               // }
+    Type.Literal('B')
+  ])
+])
+
+const R = Type.Record(T, Type.String())              // const R = {
+                                                     //   type: 'object',
+                                                     //   required: ['optionA', 'optionB'],
+                                                     //   properties: {
+                                                     //     optionA: {
+                                                     //       type: 'string'
+                                                     //     },
+                                                     //     optionB: {
+                                                     //       type: 'string'
+                                                     //     }
+                                                     //   }
+                                                     // }
+
+type T = Static<typeof T>                            // type T = 'optionA' | 'optionB'
+
+type R = Static<typeof R>                            // type R = {
+                                                     //   optionA: string
+                                                     //   optionB: string
+                                                     // }
 ```
 
 <a name='types-unsafe'></a>
 
 ### Unsafe
 
-Use `Type.Unsafe(...)` to create custom schematics with user defined inference rules.
+Use `Type.Unsafe` to create custom schematics with user defined inference rules.
 
 ```typescript
 const T = Type.Unsafe<string>({ type: 'number' })    // const T = {
@@ -777,7 +843,7 @@ const T = Type.Unsafe<string>({ type: 'number' })    // const T = {
 type T = Static<typeof T>                            // type T = string
 ```
 
-The `Type.Unsafe(...)` type can be useful to express specific OpenAPI schema representations.
+The `Type.Unsafe` type can be useful to express specific OpenAPI schema representations.
 
 ```typescript
 import { Type, Static, TSchema } from '@sinclair/typebox'
@@ -829,7 +895,7 @@ if(TypeGuard.TString(T)) {
 
 ### Strict
 
-TypeBox schemas contain the `Kind` and `Modifier` symbol properties. These properties are used for type composition and reflection. These properties are not strictly valid JSON schema; so in some cases it may be desirable to omit them. TypeBox provides a `Type.Strict()` function that will omit these properties if necessary.
+TypeBox schemas contain the `Kind` and `Modifier` symbol properties. These properties are used for type composition and reflection. These properties are not strictly valid JSON schema; so in some cases it may be desirable to omit them. TypeBox provides a `Type.Strict` function that will omit these properties if necessary.
 
 ```typescript
 const T = Type.Object({                              // const T = {
@@ -905,7 +971,7 @@ const R = Value.Check(T, { x: 1 })                   // const R = true
 Use the Convert function to convert a value into its target type if a reasonable conversion is possible.
 
 ```typescript
-const T = Type.Object({ x: Type.Number(), y: Type.Number() })
+const T = Type.Object({ x: Type.Number() })
 
 const R1 = Value.Convert(T, { x: '3.14' })          // const R1 = { x: 3.14 }
 
@@ -1181,16 +1247,16 @@ const R = Value.Check(T, { x: 1, y: 2 })              // const R = true
 
 ### Formats
 
-Use the `Format(...)` function to create a custom string format. The following creates a custom string format that checks for lowercase strings.
+Use the `Format(...)` function to create a custom string format. The following creates a format that checks for lowercase strings.
 
 ```typescript
 TypeSystem.Format('lowercase', value => value === value.toLowerCase()) // format should be lowercase
 
 const T = Type.String({ format: 'lowercase' })       
 
-const A = Value.Check(T, 'action')                   // const A = true
+const A = Value.Check(T, 'Hello')                    // const A = false
 
-const B = Value.Check(T, 'ACTION')                   // const B = false
+const B = Value.Check(T, 'hello')                    // const B = true
 ```
 
 <a name='typesystem-policies'></a>
@@ -1217,7 +1283,7 @@ TypeSystem.AllowNaN = true
 
 ## Benchmark
 
-This project maintains a set of benchmarks that measure Ajv, Value and TypeCompiler compilation and validation performance. These benchmarks can be run locally by cloning this repository and running `npm run benchmark`. The results below show for Ajv version 8.11.2. 
+This project maintains a set of benchmarks that measure Ajv, Value and TypeCompiler compilation and validation performance. These benchmarks can be run locally by cloning this repository and running `npm run benchmark`. The results below show for Ajv version 8.12.0. 
 
 For additional comparative benchmarks, please refer to [typescript-runtime-type-benchmarks](https://moltar.github.io/typescript-runtime-type-benchmarks/).
 
@@ -1231,33 +1297,35 @@ This benchmark measures compilation performance for varying types. You can revie
 ┌────────────────────────────┬────────────┬──────────────┬──────────────┬──────────────┐
 │          (index)           │ Iterations │     Ajv      │ TypeCompiler │ Performance  │
 ├────────────────────────────┼────────────┼──────────────┼──────────────┼──────────────┤
-│ Literal_String             │    1000    │ '    260 ms' │ '      8 ms' │ '   32.50 x' │
-│ Literal_Number             │    1000    │ '    198 ms' │ '      4 ms' │ '   49.50 x' │
-│ Literal_Boolean            │    1000    │ '    185 ms' │ '      5 ms' │ '   37.00 x' │
-│ Primitive_Number           │    1000    │ '    176 ms' │ '      9 ms' │ '   19.56 x' │
-│ Primitive_String           │    1000    │ '    161 ms' │ '      9 ms' │ '   17.89 x' │
-│ Primitive_String_Pattern   │    1000    │ '    215 ms' │ '     12 ms' │ '   17.92 x' │
-│ Primitive_Boolean          │    1000    │ '    133 ms' │ '      5 ms' │ '   26.60 x' │
-│ Primitive_Null             │    1000    │ '    143 ms' │ '      8 ms' │ '   17.88 x' │
-│ Object_Unconstrained       │    1000    │ '   1181 ms' │ '     38 ms' │ '   31.08 x' │
-│ Object_Constrained         │    1000    │ '   1168 ms' │ '     32 ms' │ '   36.50 x' │
-│ Tuple_Primitive            │    1000    │ '    557 ms' │ '     16 ms' │ '   34.81 x' │
-│ Tuple_Object               │    1000    │ '   1119 ms' │ '     17 ms' │ '   65.82 x' │
-│ Composite_Intersect        │    1000    │ '    569 ms' │ '     22 ms' │ '   25.86 x' │
-│ Composite_Union            │    1000    │ '    513 ms' │ '     23 ms' │ '   22.30 x' │
-│ Math_Vector4               │    1000    │ '    802 ms' │ '     10 ms' │ '   80.20 x' │
-│ Math_Matrix4               │    1000    │ '    395 ms' │ '     12 ms' │ '   32.92 x' │
-│ Array_Primitive_Number     │    1000    │ '    282 ms' │ '      8 ms' │ '   35.25 x' │
-│ Array_Primitive_String     │    1000    │ '    321 ms' │ '      5 ms' │ '   64.20 x' │
-│ Array_Primitive_Boolean    │    1000    │ '    364 ms' │ '      5 ms' │ '   72.80 x' │
-│ Array_Object_Unconstrained │    1000    │ '   1573 ms' │ '     18 ms' │ '   87.39 x' │
-│ Array_Object_Constrained   │    1000    │ '   1270 ms' │ '     20 ms' │ '   63.50 x' │
-│ Array_Tuple_Primitive      │    1000    │ '    973 ms' │ '     18 ms' │ '   54.06 x' │
-│ Array_Tuple_Object         │    1000    │ '   1253 ms' │ '     16 ms' │ '   78.31 x' │
-│ Array_Composite_Intersect  │    1000    │ '    927 ms' │ '     20 ms' │ '   46.35 x' │
-│ Array_Composite_Union      │    1000    │ '   1123 ms' │ '     16 ms' │ '   70.19 x' │
-│ Array_Math_Vector4         │    1000    │ '   1068 ms' │ '     10 ms' │ '  106.80 x' │
-│ Array_Math_Matrix4         │    1000    │ '    488 ms' │ '      7 ms' │ '   69.71 x' │
+│ Literal_String             │    1000    │ '    257 ms' │ '      8 ms' │ '   32.13 x' │
+│ Literal_Number             │    1000    │ '    203 ms' │ '      4 ms' │ '   50.75 x' │
+│ Literal_Boolean            │    1000    │ '    183 ms' │ '      4 ms' │ '   45.75 x' │
+│ Primitive_Number           │    1000    │ '    174 ms' │ '      8 ms' │ '   21.75 x' │
+│ Primitive_String           │    1000    │ '    158 ms' │ '      9 ms' │ '   17.56 x' │
+│ Primitive_String_Pattern   │    1000    │ '    213 ms' │ '     13 ms' │ '   16.38 x' │
+│ Primitive_Boolean          │    1000    │ '    136 ms' │ '      6 ms' │ '   22.67 x' │
+│ Primitive_Null             │    1000    │ '    144 ms' │ '      6 ms' │ '   24.00 x' │
+│ Object_Unconstrained       │    1000    │ '   1176 ms' │ '     38 ms' │ '   30.95 x' │
+│ Object_Constrained         │    1000    │ '   1181 ms' │ '     31 ms' │ '   38.10 x' │
+│ Object_Vector3             │    1000    │ '    387 ms' │ '      8 ms' │ '   48.38 x' │
+│ Object_Box3D               │    1000    │ '   1693 ms' │ '     25 ms' │ '   67.72 x' │
+│ Tuple_Primitive            │    1000    │ '    470 ms' │ '     15 ms' │ '   31.33 x' │
+│ Tuple_Object               │    1000    │ '   1206 ms' │ '     17 ms' │ '   70.94 x' │
+│ Composite_Intersect        │    1000    │ '    567 ms' │ '     20 ms' │ '   28.35 x' │
+│ Composite_Union            │    1000    │ '    515 ms' │ '     21 ms' │ '   24.52 x' │
+│ Math_Vector4               │    1000    │ '    787 ms' │ '     10 ms' │ '   78.70 x' │
+│ Math_Matrix4               │    1000    │ '    386 ms' │ '      8 ms' │ '   48.25 x' │
+│ Array_Primitive_Number     │    1000    │ '    349 ms' │ '      7 ms' │ '   49.86 x' │
+│ Array_Primitive_String     │    1000    │ '    336 ms' │ '      4 ms' │ '   84.00 x' │
+│ Array_Primitive_Boolean    │    1000    │ '    284 ms' │ '      3 ms' │ '   94.67 x' │
+│ Array_Object_Unconstrained │    1000    │ '   1704 ms' │ '     19 ms' │ '   89.68 x' │
+│ Array_Object_Constrained   │    1000    │ '   1456 ms' │ '     18 ms' │ '   80.89 x' │
+│ Array_Tuple_Primitive      │    1000    │ '    792 ms' │ '     15 ms' │ '   52.80 x' │
+│ Array_Tuple_Object         │    1000    │ '   1552 ms' │ '     17 ms' │ '   91.29 x' │
+│ Array_Composite_Intersect  │    1000    │ '    744 ms' │ '     18 ms' │ '   41.33 x' │
+│ Array_Composite_Union      │    1000    │ '    783 ms' │ '     15 ms' │ '   52.20 x' │
+│ Array_Math_Vector4         │    1000    │ '   1093 ms' │ '     14 ms' │ '   78.07 x' │
+│ Array_Math_Matrix4         │    1000    │ '    684 ms' │ '      6 ms' │ '  114.00 x' │
 └────────────────────────────┴────────────┴──────────────┴──────────────┴──────────────┘
 ```
 
@@ -1271,35 +1339,37 @@ This benchmark measures validation performance for varying types. You can review
 ┌────────────────────────────┬────────────┬──────────────┬──────────────┬──────────────┬──────────────┐
 │          (index)           │ Iterations │  ValueCheck  │     Ajv      │ TypeCompiler │ Performance  │
 ├────────────────────────────┼────────────┼──────────────┼──────────────┼──────────────┼──────────────┤
-│ Literal_String             │  1000000   │ '     26 ms' │ '      6 ms' │ '      6 ms' │ '    1.00 x' │
-│ Literal_Number             │  1000000   │ '     21 ms' │ '     19 ms' │ '     11 ms' │ '    1.73 x' │
-│ Literal_Boolean            │  1000000   │ '     19 ms' │ '     18 ms' │ '     10 ms' │ '    1.80 x' │
-│ Primitive_Number           │  1000000   │ '     24 ms' │ '     19 ms' │ '     11 ms' │ '    1.73 x' │
-│ Primitive_String           │  1000000   │ '     26 ms' │ '     17 ms' │ '     10 ms' │ '    1.70 x' │
-│ Primitive_String_Pattern   │  1000000   │ '    159 ms' │ '     45 ms' │ '     37 ms' │ '    1.22 x' │
-│ Primitive_Boolean          │  1000000   │ '     23 ms' │ '     17 ms' │ '     10 ms' │ '    1.70 x' │
-│ Primitive_Null             │  1000000   │ '     23 ms' │ '     18 ms' │ '     10 ms' │ '    1.80 x' │
-│ Object_Unconstrained       │  1000000   │ '    809 ms' │ '     35 ms' │ '     30 ms' │ '    1.17 x' │
-│ Object_Constrained         │  1000000   │ '   1060 ms' │ '     56 ms' │ '     45 ms' │ '    1.24 x' │
-│ Object_Recursive           │  1000000   │ '   4965 ms' │ '    397 ms' │ '    100 ms' │ '    3.97 x' │
-│ Tuple_Primitive            │  1000000   │ '    159 ms' │ '     22 ms' │ '     16 ms' │ '    1.38 x' │
-│ Tuple_Object               │  1000000   │ '    658 ms' │ '     31 ms' │ '     27 ms' │ '    1.15 x' │
-│ Composite_Intersect        │  1000000   │ '    695 ms' │ '     26 ms' │ '     22 ms' │ '    1.18 x' │
-│ Composite_Union            │  1000000   │ '    503 ms' │ '     24 ms' │ '     19 ms' │ '    1.26 x' │
-│ Math_Vector4               │  1000000   │ '    259 ms' │ '     22 ms' │ '     14 ms' │ '    1.57 x' │
-│ Math_Matrix4               │  1000000   │ '   1007 ms' │ '     40 ms' │ '     29 ms' │ '    1.38 x' │
-│ Array_Primitive_Number     │  1000000   │ '    262 ms' │ '     23 ms' │ '     17 ms' │ '    1.35 x' │
-│ Array_Primitive_String     │  1000000   │ '    241 ms' │ '     27 ms' │ '     24 ms' │ '    1.13 x' │
-│ Array_Primitive_Boolean    │  1000000   │ '    141 ms' │ '     23 ms' │ '     20 ms' │ '    1.15 x' │
-│ Array_Object_Unconstrained │  1000000   │ '   4976 ms' │ '     70 ms' │ '     67 ms' │ '    1.04 x' │
-│ Array_Object_Constrained   │  1000000   │ '   5234 ms' │ '    143 ms' │ '    120 ms' │ '    1.19 x' │
-│ Array_Object_Recursive     │  1000000   │ '  19605 ms' │ '   1909 ms' │ '    350 ms' │ '    5.45 x' │
-│ Array_Tuple_Primitive      │  1000000   │ '    706 ms' │ '     39 ms' │ '     32 ms' │ '    1.22 x' │
-│ Array_Tuple_Object         │  1000000   │ '   2951 ms' │ '     67 ms' │ '     63 ms' │ '    1.06 x' │
-│ Array_Composite_Intersect  │  1000000   │ '   2969 ms' │ '     49 ms' │ '     44 ms' │ '    1.11 x' │
-│ Array_Composite_Union      │  1000000   │ '   2191 ms' │ '     77 ms' │ '     41 ms' │ '    1.88 x' │
-│ Array_Math_Vector4         │  1000000   │ '   1164 ms' │ '     41 ms' │ '     25 ms' │ '    1.64 x' │
-│ Array_Math_Matrix4         │  1000000   │ '   4903 ms' │ '    115 ms' │ '     99 ms' │ '    1.16 x' │
+│ Literal_String             │  1000000   │ '     27 ms' │ '      6 ms' │ '      5 ms' │ '    1.20 x' │
+│ Literal_Number             │  1000000   │ '     23 ms' │ '     21 ms' │ '     11 ms' │ '    1.91 x' │
+│ Literal_Boolean            │  1000000   │ '     21 ms' │ '     20 ms' │ '     10 ms' │ '    2.00 x' │
+│ Primitive_Number           │  1000000   │ '     26 ms' │ '     19 ms' │ '     11 ms' │ '    1.73 x' │
+│ Primitive_String           │  1000000   │ '     25 ms' │ '     19 ms' │ '     10 ms' │ '    1.90 x' │
+│ Primitive_String_Pattern   │  1000000   │ '    155 ms' │ '     49 ms' │ '     43 ms' │ '    1.14 x' │
+│ Primitive_Boolean          │  1000000   │ '     23 ms' │ '     19 ms' │ '     10 ms' │ '    1.90 x' │
+│ Primitive_Null             │  1000000   │ '     24 ms' │ '     19 ms' │ '     10 ms' │ '    1.90 x' │
+│ Object_Unconstrained       │  1000000   │ '    804 ms' │ '     35 ms' │ '     28 ms' │ '    1.25 x' │
+│ Object_Constrained         │  1000000   │ '   1041 ms' │ '     55 ms' │ '     41 ms' │ '    1.34 x' │
+│ Object_Vector3             │  1000000   │ '    380 ms' │ '     26 ms' │ '     20 ms' │ '    1.30 x' │
+│ Object_Box3D               │  1000000   │ '   1785 ms' │ '     65 ms' │ '     52 ms' │ '    1.25 x' │
+│ Object_Recursive           │  1000000   │ '   4984 ms' │ '    396 ms' │ '    114 ms' │ '    3.47 x' │
+│ Tuple_Primitive            │  1000000   │ '    168 ms' │ '     24 ms' │ '     16 ms' │ '    1.50 x' │
+│ Tuple_Object               │  1000000   │ '    673 ms' │ '     30 ms' │ '     26 ms' │ '    1.15 x' │
+│ Composite_Intersect        │  1000000   │ '    751 ms' │ '     28 ms' │ '     20 ms' │ '    1.40 x' │
+│ Composite_Union            │  1000000   │ '    489 ms' │ '     24 ms' │ '     16 ms' │ '    1.50 x' │
+│ Math_Vector4               │  1000000   │ '    259 ms' │ '     23 ms' │ '     13 ms' │ '    1.77 x' │
+│ Math_Matrix4               │  1000000   │ '   1002 ms' │ '     40 ms' │ '     30 ms' │ '    1.33 x' │
+│ Array_Primitive_Number     │  1000000   │ '    252 ms' │ '     22 ms' │ '     15 ms' │ '    1.47 x' │
+│ Array_Primitive_String     │  1000000   │ '    227 ms' │ '     22 ms' │ '     18 ms' │ '    1.22 x' │
+│ Array_Primitive_Boolean    │  1000000   │ '    150 ms' │ '     23 ms' │ '     22 ms' │ '    1.05 x' │
+│ Array_Object_Unconstrained │  1000000   │ '   4754 ms' │ '     71 ms' │ '     64 ms' │ '    1.11 x' │
+│ Array_Object_Constrained   │  1000000   │ '   4787 ms' │ '    142 ms' │ '    123 ms' │ '    1.15 x' │
+│ Array_Object_Recursive     │  1000000   │ '  19088 ms' │ '   1735 ms' │ '    314 ms' │ '    5.53 x' │
+│ Array_Tuple_Primitive      │  1000000   │ '    650 ms' │ '     41 ms' │ '     31 ms' │ '    1.32 x' │
+│ Array_Tuple_Object         │  1000000   │ '   2770 ms' │ '     67 ms' │ '     55 ms' │ '    1.22 x' │
+│ Array_Composite_Intersect  │  1000000   │ '   2693 ms' │ '     50 ms' │ '     39 ms' │ '    1.28 x' │
+│ Array_Composite_Union      │  1000000   │ '   1982 ms' │ '     72 ms' │ '     33 ms' │ '    2.18 x' │
+│ Array_Math_Vector4         │  1000000   │ '   1068 ms' │ '     40 ms' │ '     26 ms' │ '    1.54 x' │
+│ Array_Math_Matrix4         │  1000000   │ '   4609 ms' │ '    115 ms' │ '     88 ms' │ '    1.31 x' │
 └────────────────────────────┴────────────┴──────────────┴──────────────┴──────────────┴──────────────┘
 ```
 
@@ -1313,11 +1383,11 @@ The following table lists esbuild compiled and minified sizes for each TypeBox m
 ┌──────────────────────┬────────────┬────────────┬─────────────┐
 │       (index)        │  Compiled  │  Minified  │ Compression │
 ├──────────────────────┼────────────┼────────────┼─────────────┤
-│ typebox/compiler     │ '108.8 kb' │ ' 48.9 kb' │  '2.23 x'   │
-│ typebox/errors       │ ' 93.2 kb' │ ' 41.5 kb' │  '2.24 x'   │
-│ typebox/system       │ ' 60.0 kb' │ ' 24.6 kb' │  '2.43 x'   │
-│ typebox/value        │ '153.5 kb' │ ' 66.7 kb' │  '2.30 x'   │
-│ typebox              │ ' 58.7 kb' │ ' 24.1 kb' │  '2.43 x'   │
+│ typebox/compiler     │ '124.3 kb' │ ' 55.7 kb' │  '2.23 x'   │
+│ typebox/errors       │ '107.8 kb' │ ' 47.9 kb' │  '2.25 x'   │
+│ typebox/system       │ ' 73.3 kb' │ ' 30.2 kb' │  '2.43 x'   │
+│ typebox/value        │ '170.7 kb' │ ' 74.2 kb' │  '2.30 x'   │
+│ typebox              │ ' 72.0 kb' │ ' 29.7 kb' │  '2.43 x'   │
 └──────────────────────┴────────────┴────────────┴─────────────┘
 ```
 

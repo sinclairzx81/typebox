@@ -26,10 +26,10 @@ describe('type/schema/Recursive', () => {
   })
 
   it('Should validate recursive node type', () => {
-    const Node = Type.Recursive((Self) =>
+    const Node = Type.Recursive((This) =>
       Type.Object({
         id: Type.String(),
-        nodes: Type.Array(Self),
+        nodes: Type.Array(This),
       }),
     )
     Ok(Node, {
@@ -43,10 +43,10 @@ describe('type/schema/Recursive', () => {
 
   it('Should validate wrapped recursive node type', () => {
     const Node = Type.Tuple([
-      Type.Recursive((Self) =>
+      Type.Recursive((This) =>
         Type.Object({
           id: Type.String(),
-          nodes: Type.Array(Self),
+          nodes: Type.Array(This),
         }),
       ),
     ])
@@ -63,10 +63,10 @@ describe('type/schema/Recursive', () => {
 
   it('Should not validate wrapped recursive node type with invalid id', () => {
     const Node = Type.Tuple([
-      Type.Recursive((Self) =>
+      Type.Recursive((This) =>
         Type.Object({
           id: Type.String(),
-          nodes: Type.Array(Self),
+          nodes: Type.Array(This),
         }),
       ),
     ])

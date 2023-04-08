@@ -1,5 +1,6 @@
 import './clone/index'
 import './extends/index'
 import './guard/index'
+import './normalize/index'
 import './registry/index'
-import './normal/index'
+import './template/index'

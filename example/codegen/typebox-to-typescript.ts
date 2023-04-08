@@ -90,7 +90,7 @@ export namespace TypeBoxToTypeScript {
   function Record(schema: Types.TRecord) {
     for (const [key, value] of globalThis.Object.entries(schema.patternProperties)) {
       const type = Visit(value)
-      if (key === '^(0|[1-9][0-9]*)$') {
+      if (key === Types.PatternNumberExact) {
         return `Record<number, ${type}>`
       } else {
         return `Record<string, ${type}>`
@@ -101,7 +101,7 @@ export namespace TypeBoxToTypeScript {
   function Ref(schema: Types.TRef) {
     return schema.$ref
   }
-  function Self(schema: Types.TSelf) {
+  function This(schema: Types.TThis) {
     return schema.$ref
   }
   function Tuple(schema: Types.TTuple) {
@@ -155,10 +155,10 @@ export namespace TypeBoxToTypeScript {
       return Record(schema)
     } else if (Types.TypeGuard.TRef(schema)) {
       return Ref(schema)
-    } else if (Types.TypeGuard.TSelf(schema)) {
-      return Self(schema)
     } else if (Types.TypeGuard.TString(schema)) {
       return String(schema)
+    } else if (Types.TypeGuard.TThis(schema)) {
+      return This(schema)
     } else if (Types.TypeGuard.TTuple(schema)) {
       return Tuple(schema)
     } else if (Types.TypeGuard.TUint8Array(schema)) {

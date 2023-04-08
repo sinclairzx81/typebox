@@ -30,111 +30,7 @@ import { Formatter } from './formatter'
 import * as ts from 'typescript'
 
 // -------------------------------------------------------------------------
-// [StringTemplateLiteral]
-//
-// Specialized code path for evaluating string template literals as regular
-// expressions. This is distinct from typical code paths which would
-// otherwise yield types of TSchema inside the generated regular expression.
-// -------------------------------------------------------------------------
-namespace StringTemplateLiteral {
-  function DereferenceNode(reference: ts.TypeReferenceNode): ts.Node | undefined {
-    function find(node: ts.Node): ts.Node | undefined {
-      if (node.getText() === reference.getText()) return node.parent
-      for (const inner of node.getChildren()) {
-        const result = find(inner)
-        if (result) return result
-      }
-      return undefined
-    }
-    return find(reference.getSourceFile())
-  }
-  function Dequote(value: string) {
-    const match = value.match(/^(['"`])(.*)\1$/)
-    return match ? match[2] : value
-  }
-  function Escape(value: string) {
-    return value.replace(/[.*+?^${}()|[\]\\]/g, '\\\\$&')
-  }
-  function* LiteralTypeNode(node: ts.LiteralTypeNode) {
-    yield Escape(Dequote(node.literal.getText()))
-  }
-  function* UnionTypeNode(node: ts.UnionTypeNode) {
-    const tokens = node.types.map((type) => Collect(type)).join('|')
-    yield `(${tokens})`
-  }
-  function* StringLiteral(node: ts.StringLiteral) {
-    yield Dequote(node.getText())
-  }
-  function* TypeReference(node: ts.TypeReferenceNode) {
-    const target = DereferenceNode(node)
-    if (target === undefined) return
-    yield Collect(target)
-  }
-  function* TypeAliasDeclaration(node: ts.TypeAliasDeclaration) {
-    yield Collect(node.type)
-  }
-  function* LiteralTypeSpan(node: ts.TemplateLiteralTypeSpan) {
-    for (const inner of node.getChildren()) {
-      yield Collect(inner)
-    }
-  }
-  function* TemplateHead(node: ts.TemplateHead) {
-    yield node.text
-  }
-  function* TemplateMiddle(node: ts.TemplateMiddle) {
-    yield node.text
-  }
-  function* TemplateTail(node: ts.TemplateTail) {
-    yield node.text
-  }
-  function* Visit(node: ts.Node | undefined): IterableIterator<string> {
-    if (node === undefined) return
-    if (ts.isUnionTypeNode(node)) {
-      return yield* UnionTypeNode(node)
-    } else if (ts.isStringLiteral(node)) {
-      return yield* StringLiteral(node)
-    } else if (ts.isTemplateLiteralTypeSpan(node)) {
-      return yield* LiteralTypeSpan(node)
-    } else if (ts.isTypeReferenceNode(node)) {
-      return yield* TypeReference(node)
-    } else if (ts.isTypeAliasDeclaration(node)) {
-      return yield* TypeAliasDeclaration(node)
-    } else if (ts.isTemplateHead(node)) {
-      return yield* TemplateHead(node)
-    } else if (ts.isTemplateMiddle(node)) {
-      return yield* TemplateMiddle(node)
-    } else if (ts.isTemplateTail(node)) {
-      return yield* TemplateTail(node)
-    } else if (ts.isLiteralTypeNode(node)) {
-      return yield* LiteralTypeNode(node)
-    } else if (node.kind === ts.SyntaxKind.NumberKeyword) {
-      yield `(0|[1-9][0-9]*)`
-    } else if (node.kind === ts.SyntaxKind.StringKeyword) {
-      yield `(.*)`
-    } else if (node.kind === ts.SyntaxKind.SyntaxList) {
-      for (const child of node.getChildren()) {
-        yield* Visit(child)
-      }
-      return
-    } else {
-      console.log('StringTemplateLiteral Unhandled:', ts.SyntaxKind[node.kind])
-    }
-  }
-  function Collect(node: ts.Node | undefined): string {
-    return `${[...Visit(node)].join('')}`
-  }
-  export function* TemplateLiteralTypeNode(node: ts.TemplateLiteralTypeNode) {
-    const buffer: string[] = []
-    for (const inner of node.getChildren()) {
-      buffer.push(Collect(inner))
-    }
-    yield `Type.String({ pattern: '^${buffer.join('')}\$' })`
-  }
-}
-// -------------------------------------------------------------------------
 // [TypeScriptToTypeBox]
-//
-// The following are code generation paths for types of TSchema.
 // -------------------------------------------------------------------------
 /** Generates TypeBox types from TypeScript code */
 export namespace TypeScriptToTypeBox {
@@ -194,6 +90,26 @@ export namespace TypeScriptToTypeBox {
   function* UnionTypeNode(node: ts.UnionTypeNode): IterableIterator<string> {
     const types = node.types.map((type) => Collect(type)).join(',\n')
     yield `Type.Union([\n${types}\n])`
+  }
+  // -------------------------------------------------------------------------
+  // TemplateLiteral
+  // -------------------------------------------------------------------------
+  function* TemplateLiteralTypeNode(node: ts.TemplateLiteralTypeNode) {
+    const collect = node.getChildren().map(node => Collect(node))
+    yield `Type.TemplateLiteral([${collect.join('')}])`
+  }
+  function* TemplateLiteralTypeSpan(node: ts.TemplateLiteralTypeSpan) {
+    const collect = node.getChildren().map(node => Collect(node))
+    yield collect.join(', ')
+  }
+  function* TemplateHead(node: ts.TemplateHead) {
+    yield `Type.Literal('${node.text}'), `
+  }
+  function* TemplateMiddle(node: ts.TemplateMiddle) {
+    yield `Type.Literal('${node.text}'), `
+  }
+  function* TemplateTail(node: ts.TemplateTail) {
+    yield `Type.Literal('${node.text}')`
   }
   function* IntersectionTypeNode(node: ts.IntersectionTypeNode): IterableIterator<string> {
     const types = node.types.map((type) => Collect(type)).join(',\n')
@@ -340,45 +256,25 @@ export namespace TypeScriptToTypeBox {
   function* TypeReferenceNode(node: ts.TypeReferenceNode): IterableIterator<string> {
     const name = node.typeName.getText()
     const args = node.typeArguments ? `(${node.typeArguments.map((type) => Collect(type)).join(', ')})` : ''
-    if (name === 'Array') {
-      return yield `Type.Array${args}`
-    } else if (name === 'Record') {
-      return yield `Type.Record${args}`
-    } else if (name === 'Partial') {
-      return yield `Type.Partial${args}`
-    } else if (name === 'Uint8Array') {
-      return yield `Type.Uint8Array()`
-    } else if (name === 'Date') {
-      return yield `Type.Date()`
-    } else if (name === 'Required') {
-      return yield `Type.Required${args}`
-    } else if (name === 'Omit') {
-      return yield `Type.Omit${args}`
-    } else if (name === 'Pick') {
-      return yield `Type.Pick${args}`
-    } else if (name === 'Promise') {
-      return yield `Type.Promise${args}`
-    } else if (name === 'ReturnType') {
-      return yield `Type.ReturnType${args}`
-    } else if (name === 'InstanceType') {
-      return yield `Type.InstanceType${args}`
-    } else if (name === 'Parameters') {
-      return yield `Type.Parameters${args}`
-    } else if (name === 'ConstructorParameters') {
-      return yield `Type.ConstructorParameters${args}`
-    } else if (name === 'Exclude') {
-      return yield `Type.Exclude${args}`
-    } else if (name === 'Extract') {
-      return yield `Type.Extract${args}`
-    } else if (recursiveDeclaration !== null && FindRecursiveParent(recursiveDeclaration, node)) {
-      return yield `This`
-    } else if (typeNames.has(name)) {
-      return yield `${name}${args}`
-    } else if (name in globalThis) {
-      return yield `Type.Never(/* Unsupported Type '${name}' */)`
-    } else {
-      return yield `${name}${args}`
-    }
+    if (name === 'Array') return yield `Type.Array${args}`
+    if (name === 'Record') return yield `Type.Record${args}`
+    if (name === 'Partial') return yield `Type.Partial${args}`
+    if (name === 'Uint8Array') return yield `Type.Uint8Array()`
+    if (name === 'Date') return yield `Type.Date()`
+    if (name === 'Required') return yield `Type.Required${args}`
+    if (name === 'Omit') return yield `Type.Omit${args}`
+    if (name === 'Pick') return yield `Type.Pick${args}`
+    if (name === 'Promise') return yield `Type.Promise${args}`
+    if (name === 'ReturnType') return yield `Type.ReturnType${args}`
+    if (name === 'InstanceType') return yield `Type.InstanceType${args}`
+    if (name === 'Parameters') return yield `Type.Parameters${args}`
+    if (name === 'ConstructorParameters') return yield `Type.ConstructorParameters${args}`
+    if (name === 'Exclude') return yield `Type.Exclude${args}`
+    if (name === 'Extract') return yield `Type.Extract${args}`
+    if (recursiveDeclaration !== null && FindRecursiveParent(recursiveDeclaration, node)) return yield `This`
+    if (typeNames.has(name)) return yield `${name}${args}`
+    if (name in globalThis) return yield `Type.Never(/* Unsupported Type '${name}' */)`
+    return yield `${name}${args}`
   }
   function* LiteralTypeNode(node: ts.LiteralTypeNode): IterableIterator<string> {
     const text = node.getText()
@@ -411,99 +307,60 @@ export namespace TypeScriptToTypeBox {
   }
   function* Visit(node: ts.Node | undefined): IterableIterator<string> {
     if (node === undefined) return
-    if (ts.isSourceFile(node)) {
-      return yield* SourceFile(node)
-    } else if (ts.isInterfaceDeclaration(node)) {
-      return yield* InterfaceDeclaration(node)
-    } else if (ts.isTypeAliasDeclaration(node)) {
-      return yield* TypeAliasDeclaration(node)
-    } else if (ts.isParameter(node)) {
-      return yield* Parameter(node)
-    } else if (ts.isFunctionTypeNode(node)) {
-      return yield* FunctionTypeNode(node)
-    } else if (ts.isConstructorTypeNode(node)) {
-      return yield* ConstructorTypeNode(node)
-    } else if (ts.isEnumDeclaration(node)) {
-      return yield* EnumDeclaration(node)
-    } else if (ts.isPropertySignature(node)) {
-      return yield* PropertySignature(node)
-    } else if (ts.isTypeReferenceNode(node)) {
-      return yield* TypeReferenceNode(node)
-    } else if (ts.isTypeLiteralNode(node)) {
-      return yield* TypeLiteralNode(node)
-    } else if (ts.isLiteralTypeNode(node)) {
-      return yield* LiteralTypeNode(node)
-    } else if (ts.isModuleDeclaration(node)) {
-      return yield* ModuleDeclaration(node)
-    } else if (ts.isModuleBlock(node)) {
-      return yield* ModuleBlock(node)
-    } else if (ts.isArrayTypeNode(node)) {
-      return yield* ArrayTypeNode(node)
-    } else if (ts.isTupleTypeNode(node)) {
-      return yield* TupleTypeNode(node)
-    } else if (ts.isIntersectionTypeNode(node)) {
-      return yield* IntersectionTypeNode(node)
-    } else if (ts.isUnionTypeNode(node)) {
-      return yield* UnionTypeNode(node)
-    } else if (ts.isTemplateLiteralTypeNode(node)) {
-      return yield* StringTemplateLiteral.TemplateLiteralTypeNode(node)
-    } else if (ts.isTypeOperatorNode(node)) {
-      return yield* TypeOperatorNode(node)
-    } else if (ts.isHeritageClause(node)) {
-      return yield* HeritageClause(node)
-    } else if (ts.isExpressionWithTypeArguments(node)) {
-      return yield* ExpressionWithTypeArguments(node)
-    } else if (ts.isTypeParameterDeclaration(node)) {
-      return yield* TypeParameterDeclaration(node)
-    } else if (ts.isParenthesizedTypeNode(node)) {
-      return yield* ParenthesizedTypeNode(node)
-    } else if (ts.isRestTypeNode(node)) {
-      return yield* RestTypeNode(node)
-    } else if (ts.isFunctionDeclaration(node)) {
-      return yield* FunctionDeclaration(node)
-    } else if (ts.isClassDeclaration(node)) {
-      return yield* ClassDeclaration(node)
-    } else if (ts.isConditionalTypeNode(node)) {
-      return yield* ConditionalTypeNode(node)
-    } else if (ts.isIndexSignatureDeclaration(node)) {
-      return yield* isIndexSignatureDeclaration(node)
-    } else if (ts.isIdentifier(node)) {
-      return yield node.getText()
-    } else if (node.kind === ts.SyntaxKind.ExportKeyword) {
-      return yield `export`
-    } else if (node.kind === ts.SyntaxKind.KeyOfKeyword) {
-      return yield `Type.KeyOf()`
-    } else if (node.kind === ts.SyntaxKind.NumberKeyword) {
-      return yield `Type.Number()`
-    } else if (node.kind === ts.SyntaxKind.BigIntKeyword) {
-      return yield `Type.BigInt()`
-    } else if (node.kind === ts.SyntaxKind.StringKeyword) {
-      return yield `Type.String()`
-    } else if (node.kind === ts.SyntaxKind.BooleanKeyword) {
-      return yield `Type.Boolean()`
-    } else if (node.kind === ts.SyntaxKind.UndefinedKeyword) {
-      return yield `Type.Undefined()`
-    } else if (node.kind === ts.SyntaxKind.UnknownKeyword) {
-      return yield `Type.Unknown()`
-    } else if (node.kind === ts.SyntaxKind.AnyKeyword) {
-      return yield `Type.Any()`
-    } else if (node.kind === ts.SyntaxKind.NeverKeyword) {
-      return yield `Type.Never()`
-    } else if (node.kind === ts.SyntaxKind.NullKeyword) {
-      return yield `Type.Null()`
-    } else if (node.kind === ts.SyntaxKind.VoidKeyword) {
-      return yield `Type.Void()`
-    } else if (node.kind === ts.SyntaxKind.EndOfFileToken) {
-      return
-    } else if (node.kind === ts.SyntaxKind.SyntaxList) {
+    if (ts.isSourceFile(node)) return yield* SourceFile(node)
+    if (ts.isInterfaceDeclaration(node)) return yield* InterfaceDeclaration(node)
+    if (ts.isTypeAliasDeclaration(node)) return yield* TypeAliasDeclaration(node)
+    if (ts.isParameter(node)) return yield* Parameter(node)
+    if (ts.isFunctionTypeNode(node)) return yield* FunctionTypeNode(node)
+    if (ts.isConstructorTypeNode(node)) return yield* ConstructorTypeNode(node)
+    if (ts.isEnumDeclaration(node)) return yield* EnumDeclaration(node)
+    if (ts.isPropertySignature(node)) return yield* PropertySignature(node)
+    if (ts.isTypeReferenceNode(node)) return yield* TypeReferenceNode(node)
+    if (ts.isTypeLiteralNode(node)) return yield* TypeLiteralNode(node)
+    if (ts.isLiteralTypeNode(node)) return yield* LiteralTypeNode(node)
+    if (ts.isModuleDeclaration(node)) return yield* ModuleDeclaration(node)
+    if (ts.isModuleBlock(node)) return yield* ModuleBlock(node)
+    if (ts.isArrayTypeNode(node)) return yield* ArrayTypeNode(node)
+    if (ts.isTupleTypeNode(node)) return yield* TupleTypeNode(node)
+    if (ts.isIntersectionTypeNode(node)) return yield* IntersectionTypeNode(node)
+    if (ts.isUnionTypeNode(node)) return yield* UnionTypeNode(node)
+    if (ts.isTemplateLiteralTypeNode(node)) return yield* TemplateLiteralTypeNode(node)
+    if (ts.isTemplateLiteralTypeSpan(node)) return yield* TemplateLiteralTypeSpan(node)
+    if (ts.isTemplateHead(node)) return yield* TemplateHead(node)
+    if (ts.isTemplateMiddle(node)) return yield* TemplateMiddle(node)
+    if (ts.isTemplateTail(node)) return yield* TemplateTail(node)
+    if (ts.isTypeOperatorNode(node)) return yield* TypeOperatorNode(node)
+    if (ts.isHeritageClause(node)) return yield* HeritageClause(node)
+    if (ts.isExpressionWithTypeArguments(node)) return yield* ExpressionWithTypeArguments(node)
+    if (ts.isTypeParameterDeclaration(node)) return yield* TypeParameterDeclaration(node)
+    if (ts.isParenthesizedTypeNode(node)) return yield* ParenthesizedTypeNode(node)
+    if (ts.isRestTypeNode(node)) return yield* RestTypeNode(node)
+    if (ts.isFunctionDeclaration(node)) return yield* FunctionDeclaration(node)
+    if (ts.isClassDeclaration(node)) return yield* ClassDeclaration(node)
+    if (ts.isConditionalTypeNode(node)) return yield* ConditionalTypeNode(node)
+    if (ts.isIndexSignatureDeclaration(node)) return yield* isIndexSignatureDeclaration(node)
+    if (ts.isIdentifier(node)) return yield node.getText()
+    if (node.kind === ts.SyntaxKind.ExportKeyword) return yield `export`
+    if (node.kind === ts.SyntaxKind.KeyOfKeyword) return yield `Type.KeyOf()`
+    if (node.kind === ts.SyntaxKind.NumberKeyword) return yield `Type.Number()`
+    if (node.kind === ts.SyntaxKind.BigIntKeyword) return yield `Type.BigInt()`
+    if (node.kind === ts.SyntaxKind.StringKeyword) return yield `Type.String()`
+    if (node.kind === ts.SyntaxKind.BooleanKeyword) return yield `Type.Boolean()`
+    if (node.kind === ts.SyntaxKind.UndefinedKeyword) return yield `Type.Undefined()`
+    if (node.kind === ts.SyntaxKind.UnknownKeyword) return yield `Type.Unknown()`
+    if (node.kind === ts.SyntaxKind.AnyKeyword) return yield `Type.Any()`
+    if (node.kind === ts.SyntaxKind.NeverKeyword) return yield `Type.Never()`
+    if (node.kind === ts.SyntaxKind.NullKeyword) return yield `Type.Null()`
+    if (node.kind === ts.SyntaxKind.VoidKeyword) return yield `Type.Void()`
+    if (node.kind === ts.SyntaxKind.EndOfFileToken) return
+    if (node.kind === ts.SyntaxKind.SyntaxList) {
       for (const child of node.getChildren()) {
         yield* Visit(child)
       }
       return
-    } else {
-      console.log('Unhandled:', ts.SyntaxKind[node.kind])
-      return yield node.getText()
     }
+    console.log('Unhandled:', ts.SyntaxKind[node.kind])
+    return yield node.getText()
   }
   /** Generates TypeBox types from TypeScript interface and type definitions */
   export function Generate(typescriptCode: string) {
