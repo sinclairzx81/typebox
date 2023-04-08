@@ -94,22 +94,24 @@ export namespace TypeScriptToTypeBox {
   // -------------------------------------------------------------------------
   // TemplateLiteral
   // -------------------------------------------------------------------------
+  // prettier-ignore
   function* TemplateLiteralTypeNode(node: ts.TemplateLiteralTypeNode) {
-    const collect = node.getChildren().map(node => Collect(node))
-    yield `Type.TemplateLiteral([${collect.join('')}])`
+    const collect = node.getChildren().map(node => Collect(node)).join('')
+    yield `Type.TemplateLiteral([${collect.slice(0, collect.length - 2)}])` // can't remove trailing here
   }
+  // prettier-ignore
   function* TemplateLiteralTypeSpan(node: ts.TemplateLiteralTypeSpan) {
-    const collect = node.getChildren().map(node => Collect(node))
-    yield collect.join(', ')
+    const collect = node.getChildren().map(node => Collect(node)).join(', ')
+    if(collect.length > 0) yield `${collect}`
   }
   function* TemplateHead(node: ts.TemplateHead) {
-    yield `Type.Literal('${node.text}'), `
+    if (node.text.length > 0) yield `Type.Literal('${node.text}'), `
   }
   function* TemplateMiddle(node: ts.TemplateMiddle) {
-    yield `Type.Literal('${node.text}'), `
+    if (node.text.length > 0) yield `Type.Literal('${node.text}'), `
   }
   function* TemplateTail(node: ts.TemplateTail) {
-    yield `Type.Literal('${node.text}')`
+    if (node.text.length > 0) yield `Type.Literal('${node.text}'), `
   }
   function* IntersectionTypeNode(node: ts.IntersectionTypeNode): IterableIterator<string> {
     const types = node.types.map((type) => Collect(type)).join(',\n')
