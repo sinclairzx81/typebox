@@ -1297,35 +1297,35 @@ This benchmark measures compilation performance for varying types. You can revie
 ┌────────────────────────────┬────────────┬──────────────┬──────────────┬──────────────┐
 │          (index)           │ Iterations │     Ajv      │ TypeCompiler │ Performance  │
 ├────────────────────────────┼────────────┼──────────────┼──────────────┼──────────────┤
-│ Literal_String             │    1000    │ '    257 ms' │ '      9 ms' │ '   28.56 x' │
-│ Literal_Number             │    1000    │ '    194 ms' │ '      5 ms' │ '   38.80 x' │
-│ Literal_Boolean            │    1000    │ '    185 ms' │ '      5 ms' │ '   37.00 x' │
-│ Primitive_Number           │    1000    │ '    171 ms' │ '      9 ms' │ '   19.00 x' │
-│ Primitive_String           │    1000    │ '    158 ms' │ '      8 ms' │ '   19.75 x' │
-│ Primitive_String_Pattern   │    1000    │ '    217 ms' │ '     13 ms' │ '   16.69 x' │
-│ Primitive_Boolean          │    1000    │ '    141 ms' │ '      5 ms' │ '   28.20 x' │
+│ Literal_String             │    1000    │ '    257 ms' │ '      8 ms' │ '   32.13 x' │
+│ Literal_Number             │    1000    │ '    203 ms' │ '      4 ms' │ '   50.75 x' │
+│ Literal_Boolean            │    1000    │ '    183 ms' │ '      4 ms' │ '   45.75 x' │
+│ Primitive_Number           │    1000    │ '    174 ms' │ '      8 ms' │ '   21.75 x' │
+│ Primitive_String           │    1000    │ '    158 ms' │ '      9 ms' │ '   17.56 x' │
+│ Primitive_String_Pattern   │    1000    │ '    213 ms' │ '     13 ms' │ '   16.38 x' │
+│ Primitive_Boolean          │    1000    │ '    136 ms' │ '      6 ms' │ '   22.67 x' │
 │ Primitive_Null             │    1000    │ '    144 ms' │ '      6 ms' │ '   24.00 x' │
-│ Object_Unconstrained       │    1000    │ '   1195 ms' │ '     38 ms' │ '   31.45 x' │
-│ Object_Constrained         │    1000    │ '   1177 ms' │ '     31 ms' │ '   37.97 x' │
-│ Object_Vector3             │    1000    │ '    395 ms' │ '      7 ms' │ '   56.43 x' │
-│ Object_Box3D               │    1000    │ '   1722 ms' │ '     26 ms' │ '   66.23 x' │
-│ Tuple_Primitive            │    1000    │ '    475 ms' │ '     14 ms' │ '   33.93 x' │
-│ Tuple_Object               │    1000    │ '   1215 ms' │ '     16 ms' │ '   75.94 x' │
-│ Composite_Intersect        │    1000    │ '    572 ms' │ '     20 ms' │ '   28.60 x' │
-│ Composite_Union            │    1000    │ '    520 ms' │ '     20 ms' │ '   26.00 x' │
-│ Math_Vector4               │    1000    │ '    801 ms' │ '     14 ms' │ '   57.21 x' │
-│ Math_Matrix4               │    1000    │ '    399 ms' │ '      9 ms' │ '   44.33 x' │
-│ Array_Primitive_Number     │    1000    │ '    372 ms' │ '      6 ms' │ '   62.00 x' │
-│ Array_Primitive_String     │    1000    │ '    335 ms' │ '      6 ms' │ '   55.83 x' │
-│ Array_Primitive_Boolean    │    1000    │ '    312 ms' │ '      7 ms' │ '   44.57 x' │
-│ Array_Object_Unconstrained │    1000    │ '   1781 ms' │ '     19 ms' │ '   93.74 x' │
-│ Array_Object_Constrained   │    1000    │ '   1510 ms' │ '     19 ms' │ '   79.47 x' │
-│ Array_Tuple_Primitive      │    1000    │ '    820 ms' │ '     15 ms' │ '   54.67 x' │
-│ Array_Tuple_Object         │    1000    │ '   1625 ms' │ '     16 ms' │ '  101.56 x' │
-│ Array_Composite_Intersect  │    1000    │ '    763 ms' │ '     17 ms' │ '   44.88 x' │
-│ Array_Composite_Union      │    1000    │ '    789 ms' │ '     15 ms' │ '   52.60 x' │
-│ Array_Math_Vector4         │    1000    │ '   1123 ms' │ '     14 ms' │ '   80.21 x' │
-│ Array_Math_Matrix4         │    1000    │ '    685 ms' │ '      9 ms' │ '   76.11 x' │
+│ Object_Unconstrained       │    1000    │ '   1176 ms' │ '     38 ms' │ '   30.95 x' │
+│ Object_Constrained         │    1000    │ '   1181 ms' │ '     31 ms' │ '   38.10 x' │
+│ Object_Vector3             │    1000    │ '    387 ms' │ '      8 ms' │ '   48.38 x' │
+│ Object_Box3D               │    1000    │ '   1693 ms' │ '     25 ms' │ '   67.72 x' │
+│ Tuple_Primitive            │    1000    │ '    470 ms' │ '     15 ms' │ '   31.33 x' │
+│ Tuple_Object               │    1000    │ '   1206 ms' │ '     17 ms' │ '   70.94 x' │
+│ Composite_Intersect        │    1000    │ '    567 ms' │ '     20 ms' │ '   28.35 x' │
+│ Composite_Union            │    1000    │ '    515 ms' │ '     21 ms' │ '   24.52 x' │
+│ Math_Vector4               │    1000    │ '    787 ms' │ '     10 ms' │ '   78.70 x' │
+│ Math_Matrix4               │    1000    │ '    386 ms' │ '      8 ms' │ '   48.25 x' │
+│ Array_Primitive_Number     │    1000    │ '    349 ms' │ '      7 ms' │ '   49.86 x' │
+│ Array_Primitive_String     │    1000    │ '    336 ms' │ '      4 ms' │ '   84.00 x' │
+│ Array_Primitive_Boolean    │    1000    │ '    284 ms' │ '      3 ms' │ '   94.67 x' │
+│ Array_Object_Unconstrained │    1000    │ '   1704 ms' │ '     19 ms' │ '   89.68 x' │
+│ Array_Object_Constrained   │    1000    │ '   1456 ms' │ '     18 ms' │ '   80.89 x' │
+│ Array_Tuple_Primitive      │    1000    │ '    792 ms' │ '     15 ms' │ '   52.80 x' │
+│ Array_Tuple_Object         │    1000    │ '   1552 ms' │ '     17 ms' │ '   91.29 x' │
+│ Array_Composite_Intersect  │    1000    │ '    744 ms' │ '     18 ms' │ '   41.33 x' │
+│ Array_Composite_Union      │    1000    │ '    783 ms' │ '     15 ms' │ '   52.20 x' │
+│ Array_Math_Vector4         │    1000    │ '   1093 ms' │ '     14 ms' │ '   78.07 x' │
+│ Array_Math_Matrix4         │    1000    │ '    684 ms' │ '      6 ms' │ '  114.00 x' │
 └────────────────────────────┴────────────┴──────────────┴──────────────┴──────────────┘
 ```
 
@@ -1339,37 +1339,37 @@ This benchmark measures validation performance for varying types. You can review
 ┌────────────────────────────┬────────────┬──────────────┬──────────────┬──────────────┬──────────────┐
 │          (index)           │ Iterations │  ValueCheck  │     Ajv      │ TypeCompiler │ Performance  │
 ├────────────────────────────┼────────────┼──────────────┼──────────────┼──────────────┼──────────────┤
-│ Literal_String             │  1000000   │ '     26 ms' │ '      6 ms' │ '      5 ms' │ '    1.20 x' │
-│ Literal_Number             │  1000000   │ '     21 ms' │ '     19 ms' │ '     12 ms' │ '    1.58 x' │
-│ Literal_Boolean            │  1000000   │ '     19 ms' │ '     19 ms' │ '     10 ms' │ '    1.90 x' │
-│ Primitive_Number           │  1000000   │ '     24 ms' │ '     17 ms' │ '     11 ms' │ '    1.55 x' │
-│ Primitive_String           │  1000000   │ '     24 ms' │ '     17 ms' │ '     11 ms' │ '    1.55 x' │
-│ Primitive_String_Pattern   │  1000000   │ '    160 ms' │ '     46 ms' │ '     37 ms' │ '    1.24 x' │
-│ Primitive_Boolean          │  1000000   │ '     25 ms' │ '     18 ms' │ '     12 ms' │ '    1.50 x' │
-│ Primitive_Null             │  1000000   │ '     27 ms' │ '     20 ms' │ '     10 ms' │ '    2.00 x' │
-│ Object_Unconstrained       │  1000000   │ '    877 ms' │ '     36 ms' │ '     29 ms' │ '    1.24 x' │
-│ Object_Constrained         │  1000000   │ '   1085 ms' │ '     62 ms' │ '     45 ms' │ '    1.38 x' │
-│ Object_Vector3             │  1000000   │ '    396 ms' │ '     27 ms' │ '     20 ms' │ '    1.35 x' │
-│ Object_Box3D               │  1000000   │ '   1765 ms' │ '     61 ms' │ '     53 ms' │ '    1.15 x' │
-│ Object_Recursive           │  1000000   │ '   4792 ms' │ '    389 ms' │ '    116 ms' │ '    3.35 x' │
-│ Tuple_Primitive            │  1000000   │ '    186 ms' │ '     25 ms' │ '     16 ms' │ '    1.56 x' │
-│ Tuple_Object               │  1000000   │ '    716 ms' │ '     33 ms' │ '     27 ms' │ '    1.22 x' │
-│ Composite_Intersect        │  1000000   │ '    710 ms' │ '     28 ms' │ '     21 ms' │ '    1.33 x' │
-│ Composite_Union            │  1000000   │ '    509 ms' │ '     24 ms' │ '     16 ms' │ '    1.50 x' │
-│ Math_Vector4               │  1000000   │ '    264 ms' │ '     24 ms' │ '     13 ms' │ '    1.85 x' │
-│ Math_Matrix4               │  1000000   │ '   1028 ms' │ '     39 ms' │ '     32 ms' │ '    1.22 x' │
-│ Array_Primitive_Number     │  1000000   │ '    267 ms' │ '     21 ms' │ '     16 ms' │ '    1.31 x' │
-│ Array_Primitive_String     │  1000000   │ '    209 ms' │ '     22 ms' │ '     17 ms' │ '    1.29 x' │
-│ Array_Primitive_Boolean    │  1000000   │ '    136 ms' │ '     23 ms' │ '     21 ms' │ '    1.10 x' │
-│ Array_Object_Unconstrained │  1000000   │ '   5131 ms' │ '     70 ms' │ '     64 ms' │ '    1.09 x' │
-│ Array_Object_Constrained   │  1000000   │ '   5277 ms' │ '    140 ms' │ '    117 ms' │ '    1.20 x' │
-│ Array_Object_Recursive     │  1000000   │ '  19932 ms' │ '   1727 ms' │ '    315 ms' │ '    5.48 x' │
-│ Array_Tuple_Primitive      │  1000000   │ '    682 ms' │ '     37 ms' │ '     31 ms' │ '    1.19 x' │
-│ Array_Tuple_Object         │  1000000   │ '   2857 ms' │ '     70 ms' │ '     57 ms' │ '    1.23 x' │
-│ Array_Composite_Intersect  │  1000000   │ '   2799 ms' │ '     51 ms' │ '     43 ms' │ '    1.19 x' │
-│ Array_Composite_Union      │  1000000   │ '   2002 ms' │ '     71 ms' │ '     32 ms' │ '    2.22 x' │
-│ Array_Math_Vector4         │  1000000   │ '   1253 ms' │ '     40 ms' │ '     26 ms' │ '    1.54 x' │
-│ Array_Math_Matrix4         │  1000000   │ '   5712 ms' │ '    113 ms' │ '     89 ms' │ '    1.27 x' │
+│ Literal_String             │  1000000   │ '     27 ms' │ '      6 ms' │ '      5 ms' │ '    1.20 x' │
+│ Literal_Number             │  1000000   │ '     23 ms' │ '     21 ms' │ '     11 ms' │ '    1.91 x' │
+│ Literal_Boolean            │  1000000   │ '     21 ms' │ '     20 ms' │ '     10 ms' │ '    2.00 x' │
+│ Primitive_Number           │  1000000   │ '     26 ms' │ '     19 ms' │ '     11 ms' │ '    1.73 x' │
+│ Primitive_String           │  1000000   │ '     25 ms' │ '     19 ms' │ '     10 ms' │ '    1.90 x' │
+│ Primitive_String_Pattern   │  1000000   │ '    155 ms' │ '     49 ms' │ '     43 ms' │ '    1.14 x' │
+│ Primitive_Boolean          │  1000000   │ '     23 ms' │ '     19 ms' │ '     10 ms' │ '    1.90 x' │
+│ Primitive_Null             │  1000000   │ '     24 ms' │ '     19 ms' │ '     10 ms' │ '    1.90 x' │
+│ Object_Unconstrained       │  1000000   │ '    804 ms' │ '     35 ms' │ '     28 ms' │ '    1.25 x' │
+│ Object_Constrained         │  1000000   │ '   1041 ms' │ '     55 ms' │ '     41 ms' │ '    1.34 x' │
+│ Object_Vector3             │  1000000   │ '    380 ms' │ '     26 ms' │ '     20 ms' │ '    1.30 x' │
+│ Object_Box3D               │  1000000   │ '   1785 ms' │ '     65 ms' │ '     52 ms' │ '    1.25 x' │
+│ Object_Recursive           │  1000000   │ '   4984 ms' │ '    396 ms' │ '    114 ms' │ '    3.47 x' │
+│ Tuple_Primitive            │  1000000   │ '    168 ms' │ '     24 ms' │ '     16 ms' │ '    1.50 x' │
+│ Tuple_Object               │  1000000   │ '    673 ms' │ '     30 ms' │ '     26 ms' │ '    1.15 x' │
+│ Composite_Intersect        │  1000000   │ '    751 ms' │ '     28 ms' │ '     20 ms' │ '    1.40 x' │
+│ Composite_Union            │  1000000   │ '    489 ms' │ '     24 ms' │ '     16 ms' │ '    1.50 x' │
+│ Math_Vector4               │  1000000   │ '    259 ms' │ '     23 ms' │ '     13 ms' │ '    1.77 x' │
+│ Math_Matrix4               │  1000000   │ '   1002 ms' │ '     40 ms' │ '     30 ms' │ '    1.33 x' │
+│ Array_Primitive_Number     │  1000000   │ '    252 ms' │ '     22 ms' │ '     15 ms' │ '    1.47 x' │
+│ Array_Primitive_String     │  1000000   │ '    227 ms' │ '     22 ms' │ '     18 ms' │ '    1.22 x' │
+│ Array_Primitive_Boolean    │  1000000   │ '    150 ms' │ '     23 ms' │ '     22 ms' │ '    1.05 x' │
+│ Array_Object_Unconstrained │  1000000   │ '   4754 ms' │ '     71 ms' │ '     64 ms' │ '    1.11 x' │
+│ Array_Object_Constrained   │  1000000   │ '   4787 ms' │ '    142 ms' │ '    123 ms' │ '    1.15 x' │
+│ Array_Object_Recursive     │  1000000   │ '  19088 ms' │ '   1735 ms' │ '    314 ms' │ '    5.53 x' │
+│ Array_Tuple_Primitive      │  1000000   │ '    650 ms' │ '     41 ms' │ '     31 ms' │ '    1.32 x' │
+│ Array_Tuple_Object         │  1000000   │ '   2770 ms' │ '     67 ms' │ '     55 ms' │ '    1.22 x' │
+│ Array_Composite_Intersect  │  1000000   │ '   2693 ms' │ '     50 ms' │ '     39 ms' │ '    1.28 x' │
+│ Array_Composite_Union      │  1000000   │ '   1982 ms' │ '     72 ms' │ '     33 ms' │ '    2.18 x' │
+│ Array_Math_Vector4         │  1000000   │ '   1068 ms' │ '     40 ms' │ '     26 ms' │ '    1.54 x' │
+│ Array_Math_Matrix4         │  1000000   │ '   4609 ms' │ '    115 ms' │ '     88 ms' │ '    1.31 x' │
 └────────────────────────────┴────────────┴──────────────┴──────────────┴──────────────┴──────────────┘
 ```
 
@@ -1383,11 +1383,11 @@ The following table lists esbuild compiled and minified sizes for each TypeBox m
 ┌──────────────────────┬────────────┬────────────┬─────────────┐
 │       (index)        │  Compiled  │  Minified  │ Compression │
 ├──────────────────────┼────────────┼────────────┼─────────────┤
-│ typebox/compiler     │ '123.8 kb' │ ' 55.5 kb' │  '2.23 x'   │
-│ typebox/errors       │ '107.4 kb' │ ' 47.6 kb' │  '2.25 x'   │
-│ typebox/system       │ ' 72.9 kb' │ ' 30.0 kb' │  '2.43 x'   │
-│ typebox/value        │ '170.2 kb' │ ' 74.0 kb' │  '2.30 x'   │
-│ typebox              │ ' 71.6 kb' │ ' 29.5 kb' │  '2.43 x'   │
+│ typebox/compiler     │ '124.3 kb' │ ' 55.7 kb' │  '2.23 x'   │
+│ typebox/errors       │ '107.8 kb' │ ' 47.9 kb' │  '2.25 x'   │
+│ typebox/system       │ ' 73.3 kb' │ ' 30.2 kb' │  '2.43 x'   │
+│ typebox/value        │ '170.7 kb' │ ' 74.2 kb' │  '2.30 x'   │
+│ typebox              │ ' 72.0 kb' │ ' 29.7 kb' │  '2.43 x'   │
 └──────────────────────┴────────────┴────────────┴─────────────┘
 ```
 
