@@ -1116,6 +1116,7 @@ ValuePointer.Set(A, '/y', 1)                         // const A' = { x: 1, y: 1,
 
 ValuePointer.Set(A, '/z', 1)                         // const A' = { x: 1, y: 1, z: 1 }
 ```
+
 <a name='typecheck'></a>
 
 ## TypeCheck
