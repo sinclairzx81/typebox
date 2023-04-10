@@ -490,11 +490,11 @@ export namespace ValueErrors {
       if (variantErrors.length === 0) return
       errors.push(...variantErrors)
     }
-    for (const error of errors) {
-      yield error
-    }
     if (errors.length > 0) {
       yield { type: ValueErrorType.Union, schema, path, value, message: 'Expected value of union' }
+    }
+    for (const error of errors) {
+      yield error
     }
   }
   function* Uint8Array(schema: Types.TUint8Array, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
