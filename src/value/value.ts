@@ -28,6 +28,7 @@ THE SOFTWARE.
 
 import * as Types from '../typebox'
 import { ValueErrors, ValueErrorIterator, ValueError } from '../errors/index'
+import { ValueMutate, Mutable } from './mutate'
 import { ValueHash } from './hash'
 import { ValueEqual } from './equal'
 import { ValueCast } from './cast'
@@ -98,5 +99,9 @@ export namespace Value {
   /** Returns a new value with edits applied to the given value */
   export function Patch<T = any>(current: unknown, edits: Edit[]): T {
     return ValueDelta.Patch(current, edits) as T
+  }
+  /** Performs a deep mutable value assignment while retaining internal references. */
+  export function Mutate(current: Mutable, next: Mutable): void {
+    ValueMutate.Mutate(current, next)
   }
 }
