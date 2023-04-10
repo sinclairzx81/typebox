@@ -96,6 +96,7 @@ License MIT
   - [Diff](#values-diff)
   - [Patch](#values-patch)
   - [Errors](#values-errors)
+  - [Mutate](#values-mutate)
   - [Pointer](#values-pointer)
 - [TypeCheck](#typecheck)
   - [Ajv](#typecheck-ajv)
@@ -1053,7 +1054,6 @@ const E = Value.Diff(A, B)                           // const E = [
 const C = Value.Patch<typeof B>(A, E)                // const C = { x: 3 }
 ```
 
-
 <a name='values-errors'></a>
 
 ### Errors
@@ -1075,6 +1075,29 @@ const R = [...Value.Errors(T, { x: '42' })]          // const R = [{
                                                      //   message: 'Expected number'
                                                      // }]
 ```
+
+<a name='values-mutate'></a>
+
+### Mutate
+
+Use the Mutate function to perform a deep mutable value assignment while retain internal references.
+
+```typescript
+const Y = { z: 1 }                                   // const Y = { z: 1 } 
+
+const X = { y: Y }                                   // const X = { y: { z: 1 } }
+
+const A = { x: X }                                   // const A = { x: { y: { z: 1 } } }             
+
+
+Value.Mutate(A, { x: { y: { z: 2 } } })              // const A' = { x: { y: { z: 2 } } }   
+
+const R0 = A.x.y.z === 2                             // const R0 = 2
+
+const R1 = A.x.y === Y                               // const R1 = true
+
+const R2 = A.x === X                                 // const R2 = true
+```     
 
 <a name='values-pointer'></a>
 

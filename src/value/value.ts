@@ -28,6 +28,7 @@ THE SOFTWARE.
 
 import * as Types from '../typebox'
 import { ValueErrors, ValueErrorIterator, ValueError } from '../errors/index'
+import { ValueMutate, Mutable } from './mutate'
 import { ValueHash } from './hash'
 import { ValueEqual } from './equal'
 import { ValueCast } from './cast'
@@ -39,6 +40,7 @@ import { ValueDelta, Edit } from './delta'
 
 /** Provides functions to perform structural updates to JavaScript values */
 export namespace Value {
+
   /** Casts a value into a given type. The return value will retain as much information of the original value as possible. Cast will convert string, number, boolean and date values if a reasonable conversion is possible. */
   export function Cast<T extends Types.TSchema, R extends Types.TSchema[]>(schema: T, references: [...R], value: unknown): Types.Static<T>
   /** Casts a value into a given type. The return value will retain as much information of the original value as possible. Cast will convert string, number, boolean and date values if a reasonable conversion is possible. */
@@ -98,5 +100,9 @@ export namespace Value {
   /** Returns a new value with edits applied to the given value */
   export function Patch<T = any>(current: unknown, edits: Edit[]): T {
     return ValueDelta.Patch(current, edits) as T
+  }
+  /** Mutates the current value into the next value while retaining internal references. */
+  export function Mutate(current: Mutable, next: Mutable): void {
+    ValueMutate.Mutate(current, next)
   }
 }
