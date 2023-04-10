@@ -1110,9 +1110,11 @@ import { ValuePointer } from '@sinclair/typebox/value'
 
 const A = { x: 0, y: 0, z: 0 }
 
-ValuePointer.Set(A, '/x', 1)                         // const A = { x: 1, y: 0, z: 0 }
-ValuePointer.Set(A, '/y', 1)                         // const A = { x: 1, y: 1, z: 0 }
-ValuePointer.Set(A, '/z', 1)                         // const A = { x: 1, y: 1, z: 1 }
+ValuePointer.Set(A, '/x', 1)                         // const A' = { x: 1, y: 0, z: 0 }
+
+ValuePointer.Set(A, '/y', 1)                         // const A' = { x: 1, y: 1, z: 0 }
+
+ValuePointer.Set(A, '/z', 1)                         // const A' = { x: 1, y: 1, z: 1 }
 ```
 <a name='typecheck'></a>
 
