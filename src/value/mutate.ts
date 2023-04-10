@@ -97,7 +97,7 @@ export namespace ValueMutate {
       return Value(root, path, current, next)
     }
   }
-  /** Performs a mutable transform of the current value into the next value by assigning values from next on current and preserves the current values internal object and array references. */
+  /** Performs a deep mutable value assignment while retaining internal references. */
   export function Mutate(current: Mutable, next: Mutable): void {
     if (Is.TypedArray(current) || Is.Value(current) || Is.TypedArray(next) || Is.Value(next)) {
       throw new ValueMutateInvalidRootMutationError()

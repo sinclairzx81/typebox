@@ -1080,7 +1080,7 @@ const R = [...Value.Errors(T, { x: '42' })]          // const R = [{
 
 ### Mutate
 
-Use the Mutate function to perform a deep mutable value assignment while retain internal references.
+Use the Mutate function to perform a deep mutable value assignment while retaining internal references.
 
 ```typescript
 const Y = { z: 1 }                                   // const Y = { z: 1 } 
