@@ -2365,15 +2365,15 @@ export class StandardTypeBuilder extends TypeBuilder {
     }, options)
   }
   /** `[Standard]` Creates a Record type */
-  public Record<K extends TUnion<TLiteral<string | number>[]>, T extends TSchema>(key: K, schema: T): RecordUnionLiteralType<K, T>
+  public Record<K extends TUnion<TLiteral<string | number>[]>, T extends TSchema>(key: K, schema: T, options?: ObjectOptions): RecordUnionLiteralType<K, T>
   /** `[Standard]` Creates a Record type */
-  public Record<K extends TLiteral<string | number>, T extends TSchema>(key: K, schema: T): RecordLiteralType<K, T>
+  public Record<K extends TLiteral<string | number>, T extends TSchema>(key: K, schema: T, options?: ObjectOptions): RecordLiteralType<K, T>
   /** `[Standard]` Creates a Record type */
-  public Record<K extends TTemplateLiteral, T extends TSchema>(key: K, schema: T): RecordTemplateLiteralType<K, T>
+  public Record<K extends TTemplateLiteral, T extends TSchema>(key: K, schema: T, options?: ObjectOptions): RecordTemplateLiteralType<K, T>
   /** `[Standard]` Creates a Record type */
-  public Record<K extends TInteger | TNumber, T extends TSchema>(key: K, schema: T): RecordNumberType<K, T>
+  public Record<K extends TInteger | TNumber, T extends TSchema>(key: K, schema: T, options?: ObjectOptions): RecordNumberType<K, T>
   /** `[Standard]` Creates a Record type */
-  public Record<K extends TString, T extends TSchema>(key: K, schema: T): RecordStringType<K, T>
+  public Record<K extends TString, T extends TSchema>(key: K, schema: T, options?: ObjectOptions): RecordStringType<K, T>
   /** `[Standard]` Creates a Record type */
   public Record(key: RecordKey, schema: TSchema, options: ObjectOptions = {}) {
     if (TypeGuard.TTemplateLiteral(key)) {
