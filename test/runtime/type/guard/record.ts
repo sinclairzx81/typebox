@@ -1,8 +1,63 @@
-import { TypeGuard } from '@sinclair/typebox'
+import { TypeGuard, PatternNumberExact, PatternStringExact, PatternNumber } from '@sinclair/typebox'
 import { Type } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
 describe('type/guard/TRecord', () => {
+  // -------------------------------------------------------------
+  // Overloads
+  // -------------------------------------------------------------
+  it('Should guard overload 1', () => {
+    const T = Type.Record(Type.Union([Type.Literal('A'), Type.Literal('B')]), Type.String(), { extra: 1 })
+    Assert.equal(TypeGuard.TObject(T), true)
+    Assert.equal(TypeGuard.TString(T.properties.A), true)
+    Assert.equal(TypeGuard.TString(T.properties.B), true)
+    Assert.equal(T.extra, 1)
+  })
+  it('Should guard overload 2', () => {
+    const T = Type.Record(Type.Union([Type.Literal('A')]), Type.String(), { extra: 1 }) // unwrap as literal
+    Assert.equal(TypeGuard.TObject(T), true)
+    Assert.equal(TypeGuard.TString(T.properties.A), true)
+    Assert.equal(T.extra, 1)
+  })
+  it('Should guard overload 3', () => {
+    // @ts-ignore
+    Assert.throws(() => Type.Record(Type.Union([]), Type.String(), { extra: 1 }))
+  })
+  it('Should guard overload 4', () => {
+    const T = Type.Record(Type.Literal('A'), Type.String(), { extra: 1 })
+    Assert.equal(TypeGuard.TObject(T), true)
+    Assert.equal(TypeGuard.TString(T.properties.A), true)
+    Assert.equal(T.extra, 1)
+  })
+  it('Should guard overload 5', () => {
+    const L = Type.TemplateLiteral([Type.Literal('hello'), Type.Union([Type.Literal('A'), Type.Literal('B')])])
+    const T = Type.Record(L, Type.String(), { extra: 1 })
+    Assert.equal(TypeGuard.TObject(T), true)
+    Assert.equal(TypeGuard.TString(T.properties.helloA), true)
+    Assert.equal(TypeGuard.TString(T.properties.helloB), true)
+    Assert.equal(T.extra, 1)
+  })
+  it('Should guard overload 6', () => {
+    const T = Type.Record(Type.Number(), Type.String(), { extra: 1 })
+    Assert.equal(TypeGuard.TRecord(T), true)
+    Assert.equal(TypeGuard.TString(T.patternProperties[PatternNumberExact]), true)
+    Assert.equal(T.extra, 1)
+  })
+  it('Should guard overload 7', () => {
+    const T = Type.Record(Type.Integer(), Type.String(), { extra: 1 })
+    Assert.equal(TypeGuard.TRecord(T), true)
+    Assert.equal(TypeGuard.TString(T.patternProperties[PatternNumberExact]), true)
+    Assert.equal(T.extra, 1)
+  })
+  it('Should guard overload 8', () => {
+    const T = Type.Record(Type.String(), Type.String(), { extra: 1 })
+    Assert.equal(TypeGuard.TRecord(T), true)
+    Assert.equal(TypeGuard.TString(T.patternProperties[PatternStringExact]), true)
+    Assert.equal(T.extra, 1)
+  })
+  // -------------------------------------------------------------
+  // Variants
+  // -------------------------------------------------------------
   it('Should guard for TRecord', () => {
     const R = TypeGuard.TRecord(Type.Record(Type.String(), Type.Number()))
     Assert.equal(R, true)
