@@ -64,7 +64,7 @@ namespace Character {
     return code === 95
   }
   export function IsAlpha(code: number) {
-    return (code >= 64 && code <= 90) || (code >= 97 && code <= 122)
+    return (code >= 65 && code <= 90) || (code >= 97 && code <= 122)
   }
   export function IsNumeric(code: number) {
     return code >= 48 && code <= 57
