@@ -136,7 +136,7 @@ describe('type/compiler/Object', () => {
       'node-mirror:release:1': Type.Optional(Type.Literal(6)), // issue: 356
       'node-mirror:release:2': Type.Union([Type.Literal(7), Type.Undefined()]), // key known
       "a'a": Type.Literal(8),
-      "@onlyAtSymbol": Type.Literal(9)
+      '@onlyAtSymbol': Type.Literal(9),
     })
     Ok(T, {
       'with-hyphen': 1,
@@ -147,7 +147,7 @@ describe('type/compiler/Object', () => {
       'node-mirror:release:1': 6,
       'node-mirror:release:2': 7,
       "a'a": 8,
-      "@onlyAtSymbol": 9
+      '@onlyAtSymbol': 9,
     })
   })
   it('Should validate schema additional properties of string', () => {
