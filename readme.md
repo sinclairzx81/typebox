@@ -101,7 +101,7 @@ License MIT
 - [TypeCheck](#typecheck)
   - [Ajv](#typecheck-ajv)
   - [TypeCompiler](#typecheck-typecompiler)
-- [TypeSystem](#typecheck)
+- [TypeSystem](#typesystem)
   - [Types](#typesystem-types)
   - [Formats](#typesystem-formats)
   - [Policies](#typesystem-policies)
