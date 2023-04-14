@@ -79,3 +79,15 @@ import { Type } from '@sinclair/typebox'
     Expect(K2).ToInfer<'y' | 'z'>()
   }
 }
+{
+  const T = Type.Recursive((Self) =>
+    Type.Object({
+      a: Type.String(),
+      b: Type.String(),
+      c: Type.String(),
+      d: Type.Array(Self),
+    }),
+  )
+  const K = Type.KeyOf(T)
+  Expect(K).ToInfer<'a' | 'b' | 'c' | 'd'>()
+}
