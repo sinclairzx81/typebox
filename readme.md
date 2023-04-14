@@ -402,7 +402,7 @@ The following table lists the Standard TypeBox types. These types are fully comp
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Record(         │ type T = Record<            │ const T = {                    │
 │   Type.String(),               │   string,                   │   type: 'object',              │
-│   Type.Number()                │   number,                   │   patternProperties: {         │
+│   Type.Number()                │   number                    │   patternProperties: {         │
 │ )                              │ >                           │     '^.*$': {                  │
 │                                │                             │       type: 'number'           │
 │                                │                             │     }                          │

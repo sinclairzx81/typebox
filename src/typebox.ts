@@ -305,11 +305,12 @@ export type TKeyOfTuple<T extends TSchema> = {
   : never
 // prettier-ignore
 export type TKeyOf<T extends TSchema = TSchema> = (
-  T extends TComposite       ? TKeyOfTuple<T> :
-  T extends TIntersect       ? TKeyOfTuple<T> :
-  T extends TUnion           ? TKeyOfTuple<T> :
-  T extends TObject          ? TKeyOfTuple<T> :
-  T extends TRecord<infer K> ? [K] :
+  T extends TComposite          ? TKeyOfTuple<T> :
+  T extends TIntersect          ? TKeyOfTuple<T> :
+  T extends TUnion              ? TKeyOfTuple<T> :
+  T extends TObject             ? TKeyOfTuple<T> :
+  T extends TRecursive<infer S> ? TKeyOfTuple<S> :
+  T extends TRecord<infer K>    ? [K] :
   []
 ) extends infer R ? TUnionResult<Assert<R, TSchema[]>> : never
 // --------------------------------------------------------------------------
@@ -394,7 +395,7 @@ export interface TObject<T extends TProperties = TProperties> extends TSchema, O
 export type TOmitArray<T extends TSchema[], K extends keyof any> = Assert<{ [K2 in keyof T]: TOmit<Assert<T[K2], TSchema>, K> }, TSchema[]>
 export type TOmitProperties<T extends TProperties, K extends keyof any> = Evaluate<Assert<Omit<T, K>, TProperties>>
 // prettier-ignore
-export type TOmit<T extends TSchema, K extends keyof any> = 
+export type TOmit<T extends TSchema = TSchema, K extends keyof any = keyof any> = 
   T extends TComposite<infer S> ? TComposite<TOmitArray<S, K>> :
   T extends TIntersect<infer S> ? TIntersect<TOmitArray<S, K>> : 
   T extends TUnion<infer S> ? TUnion<TOmitArray<S, K>> : 
@@ -436,7 +437,7 @@ export type TPickProperties<T extends TProperties, K extends keyof any> =
     [K in keyof R]: Assert<R[K], TSchema> extends TSchema ? R[K] : never
   }): never
 // prettier-ignore
-export type TPick<T extends TSchema, K extends keyof any> = 
+export type TPick<T extends TSchema = TSchema, K extends keyof any = keyof any> = 
   T extends TComposite<infer S> ? TComposite<TPickArray<S, K>> :
   T extends TIntersect<infer S> ? TIntersect<TPickArray<S, K>> : 
   T extends TUnion<infer S> ? TUnion<TPickArray<S, K>> : 
