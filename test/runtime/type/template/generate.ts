@@ -44,12 +44,12 @@ describe('type/TemplateLiteralGenerator', () => {
   it('Expression 2', () => {
     const E = TemplateLiteralParser.Parse('\\)')
     const R = [...TemplateLiteralGenerator.Generate(E)]
-    Assert.deepEqual(R, [')'])
+    Assert.deepEqual(R, ['\\)'])
   })
   it('Expression 3', () => {
     const E = TemplateLiteralParser.Parse('\\(')
     const R = [...TemplateLiteralGenerator.Generate(E)]
-    Assert.deepEqual(R, ['('])
+    Assert.deepEqual(R, ['\\('])
   })
   it('Expression 4', () => {
     const E = TemplateLiteralParser.Parse('')
@@ -59,7 +59,7 @@ describe('type/TemplateLiteralGenerator', () => {
   it('Expression 5', () => {
     const E = TemplateLiteralParser.Parse('\\')
     const R = [...TemplateLiteralGenerator.Generate(E)]
-    Assert.deepEqual(R, [''])
+    Assert.deepEqual(R, ['\\'])
   })
   it('Expression 6', () => {
     const E = TemplateLiteralParser.Parse('()')

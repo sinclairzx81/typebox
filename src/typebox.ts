@@ -37,7 +37,7 @@ export const Kind = Symbol.for('TypeBox.Kind')
 // --------------------------------------------------------------------------
 export const PatternBoolean = '(true|false)'
 export const PatternNumber = '(0|[1-9][0-9]*)'
-export const PatternString = '.*'
+export const PatternString = '(.*)'
 export const PatternBooleanExact = `^${PatternBoolean}$`
 export const PatternNumberExact = `^${PatternNumber}$`
 export const PatternStringExact = `^${PatternString}$`
@@ -456,7 +456,7 @@ export interface TPromise<T extends TSchema = TSchema> extends TSchema {
 // TRecord
 // --------------------------------------------------------------------------
 export type RecordTemplateLiteralObjectType<K extends TTemplateLiteral, T extends TSchema> = Ensure<TObject<Evaluate<{ [_ in Static<K>]: T }>>>
-export type RecordTemplateLiteralType<K extends TTemplateLiteral, T extends TSchema> = IsTemplateLiteralFinite<K> extends true ? RecordTemplateLiteralObjectType<K, T> : TRecord<TString, T>
+export type RecordTemplateLiteralType<K extends TTemplateLiteral, T extends TSchema> = IsTemplateLiteralFinite<K> extends true ? RecordTemplateLiteralObjectType<K, T> : TRecord<K, T>
 export type RecordUnionLiteralType<K extends TUnion<TLiteral<string | number>[]>, T extends TSchema> = Static<K> extends string ? Ensure<TObject<{ [X in Static<K>]: T }>> : never
 export type RecordLiteralType<K extends TLiteral<string | number>, T extends TSchema> = Ensure<TObject<{ [K2 in K['const']]: T }>>
 export type RecordNumberType<K extends TInteger | TNumber, T extends TSchema> = Ensure<TRecord<K, T>>
@@ -1937,9 +1937,6 @@ export namespace TemplateLiteralParser {
   export type Const = { type: 'const'; const: string }
   export type And = { type: 'and'; expr: Expression[] }
   export type Or = { type: 'or'; expr: Expression[] }
-  function Unescape(value: string) {
-    return value.replace(/\\/g, '')
-  }
   function IsNonEscaped(pattern: string, index: number, char: string) {
     return pattern[index] === char && pattern.charCodeAt(index - 1) !== 92
   }
@@ -2038,7 +2035,7 @@ export namespace TemplateLiteralParser {
     if (IsGroup(pattern)) return Parse(InGroup(pattern))
     if (IsPrecedenceOr(pattern)) return Or(pattern)
     if (IsPrecedenceAnd(pattern)) return And(pattern)
-    return { type: 'const', const: Unescape(pattern) }
+    return { type: 'const', const: pattern }
   }
   /** Parses a pattern and strips forward and trailing ^ and $ */
   export function ParseExact(pattern: string): Expression {
@@ -2050,10 +2047,26 @@ export namespace TemplateLiteralParser {
 // --------------------------------------------------------------------------------------
 export namespace TemplateLiteralFinite {
   function IsNumber(expression: TemplateLiteralParser.Expression): boolean {
-    return expression.type === 'or' && expression.expr.length === 2 && expression.expr[0].type === 'const' && expression.expr[0].const === '0' && expression.expr[1].type === 'const' && expression.expr[1].const === '[1-9][0-9]*'
+    // prettier-ignore
+    return (
+      expression.type === 'or' && 
+      expression.expr.length === 2 && 
+      expression.expr[0].type === 'const' && 
+      expression.expr[0].const === '0' && 
+      expression.expr[1].type === 'const' && 
+      expression.expr[1].const === '[1-9][0-9]*'
+    )
   }
   function IsBoolean(expression: TemplateLiteralParser.Expression): boolean {
-    return expression.type === 'or' && expression.expr.length === 2 && expression.expr[0].type === 'const' && expression.expr[0].const === 'true' && expression.expr[1].type === 'const' && expression.expr[1].const === 'false'
+    // prettier-ignore
+    return (
+      expression.type === 'or' && 
+      expression.expr.length === 2 && 
+      expression.expr[0].type === 'const' && 
+      expression.expr[0].const === 'true' && 
+      expression.expr[1].type === 'const' && 
+      expression.expr[1].const === 'false'
+    )
   }
   function IsString(expression: TemplateLiteralParser.Expression) {
     return expression.type === 'const' && expression.const === '.*'
