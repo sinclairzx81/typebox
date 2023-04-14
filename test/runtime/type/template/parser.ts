@@ -84,14 +84,14 @@ describe('type/TemplateLiteralParser', () => {
     const E = TemplateLiteralParser.Parse('\\)')
     Assert.deepEqual(E, {
       type: 'const',
-      const: ')',
+      const: '\\)',
     })
   })
   it('Expression 3', () => {
     const E = TemplateLiteralParser.Parse('\\(')
     Assert.deepEqual(E, {
       type: 'const',
-      const: '(',
+      const: '\\(',
     })
   })
   it('Expression 4', () => {
@@ -105,7 +105,7 @@ describe('type/TemplateLiteralParser', () => {
     const E = TemplateLiteralParser.Parse('\\')
     Assert.deepEqual(E, {
       type: 'const',
-      const: '',
+      const: '\\',
     })
   })
   it('Expression 6', () => {

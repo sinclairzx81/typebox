@@ -1,4 +1,4 @@
-import { TypeGuard, PatternNumberExact, PatternStringExact, PatternNumber } from '@sinclair/typebox'
+import { TypeGuard, PatternNumberExact, PatternStringExact, PatternString, PatternNumber } from '@sinclair/typebox'
 import { Type } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
@@ -55,6 +55,13 @@ describe('type/guard/TRecord', () => {
     Assert.equal(TypeGuard.TString(T.patternProperties[PatternStringExact]), true)
     Assert.equal(T.extra, 1)
   })
+  it('Should guard overload 9', () => {
+    const L = Type.TemplateLiteral([Type.String(), Type.Literal('_foo')])
+    const T = Type.Record(L, Type.String(), { extra: 1 })
+    Assert.equal(TypeGuard.TRecord(T), true)
+    Assert.equal(TypeGuard.TString(T.patternProperties[`^${PatternString}_foo$`]), true)
+    Assert.equal(T.extra, 1)
+  })
   // -------------------------------------------------------------
   // Variants
   // -------------------------------------------------------------
@@ -62,7 +69,6 @@ describe('type/guard/TRecord', () => {
     const R = TypeGuard.TRecord(Type.Record(Type.String(), Type.Number()))
     Assert.equal(R, true)
   })
-
   it('Should guard for TRecord with TObject value', () => {
     const R = TypeGuard.TRecord(
       Type.Record(
@@ -75,18 +81,15 @@ describe('type/guard/TRecord', () => {
     )
     Assert.equal(R, true)
   })
-
   it('Should not guard for TRecord', () => {
     const R = TypeGuard.TRecord(null)
     Assert.equal(R, false)
   })
-
   it('Should not guard for TRecord with invalid $id', () => {
     // @ts-ignore
     const R = TypeGuard.TRecord(Type.Record(Type.String(), Type.Number(), { $id: 1 }))
     Assert.equal(R, false)
   })
-
   it('Should not guard for TRecord with TObject value with invalid Property', () => {
     const R = TypeGuard.TRecord(
       Type.Record(
@@ -99,7 +102,6 @@ describe('type/guard/TRecord', () => {
     )
     Assert.equal(R, false)
   })
-
   it('Transform: Should should transform to TObject for single literal union value', () => {
     const K = Type.Union([Type.Literal('ok')])
     const R = TypeGuard.TObject(Type.Record(K, Type.Number()))

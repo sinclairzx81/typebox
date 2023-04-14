@@ -25,6 +25,11 @@ describe('type/TemplateLiteralFinite', () => {
     const R = TemplateLiteralFinite.Check(E)
     Assert.deepEqual(R, true)
   })
+  it('Finite 5', () => {
+    const E = TemplateLiteralParser.Parse(`\\.\\*`)
+    const R = TemplateLiteralFinite.Check(E)
+    Assert.deepEqual(R, true)
+  })
   // ---------------------------------------------------------------
   // Infinite
   // ---------------------------------------------------------------
@@ -55,6 +60,11 @@ describe('type/TemplateLiteralFinite', () => {
   })
   it('Infinite 6', () => {
     const E = TemplateLiteralParser.Parse(`A(${PatternNumber})`)
+    const R = TemplateLiteralFinite.Check(E)
+    Assert.deepEqual(R, false)
+  })
+  it('Infinite 7', () => {
+    const E = TemplateLiteralParser.Parse(`${PatternString}_foo`)
     const R = TemplateLiteralFinite.Check(E)
     Assert.deepEqual(R, false)
   })
