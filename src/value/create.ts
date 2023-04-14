@@ -44,7 +44,7 @@ export class ValueCreateNeverTypeError extends Error {
 }
 export class ValueCreateIntersectTypeError extends Error {
   constructor(public readonly schema: Types.TSchema) {
-    super('ValueCreate: Can only create values for intersected objects and non-varying primitive types. Consider using a default value.')
+    super('ValueCreate: Intersect produced invalid value. Consider using a default value.')
   }
 }
 export class ValueCreateTempateLiteralTypeError extends Error {
@@ -152,7 +152,13 @@ export namespace ValueCreate {
     if ('default' in schema) {
       return schema.default
     } else {
-      const value = schema.type === 'object' ? schema.allOf.reduce((acc, schema) => ({ ...acc, ...(Visit(schema, references) as any) }), {}) : schema.allOf.reduce((_, schema) => Visit(schema, references), undefined as any)
+      // Note: The best we can do here is attempt to instance each sub type and apply through object assign. For non-object
+      // sub types, we just escape the assignment and just return the value. In the latter case, this is typically going to
+      // be a consequence of an illogical intersection.
+      const value = schema.allOf.reduce((acc, schema) => {
+        const next = Visit(schema, references) as any
+        return typeof next === 'object' ? { ...acc, ...next } : next
+      }, {})
       if (!ValueCheck.Check(schema, references, value)) throw new ValueCreateIntersectTypeError(schema)
       return value
     }
