@@ -305,11 +305,11 @@ export type TKeyOfTuple<T extends TSchema> = {
   : never
 // prettier-ignore
 export type TKeyOf<T extends TSchema = TSchema> = (
+  T extends TRecursive<infer S> ? TKeyOfTuple<S> :
   T extends TComposite          ? TKeyOfTuple<T> :
   T extends TIntersect          ? TKeyOfTuple<T> :
   T extends TUnion              ? TKeyOfTuple<T> :
   T extends TObject             ? TKeyOfTuple<T> :
-  T extends TRecursive<infer S> ? TKeyOfTuple<S> :
   T extends TRecord<infer K>    ? [K] :
   []
 ) extends infer R ? TUnionResult<Assert<R, TSchema[]>> : never
@@ -396,6 +396,7 @@ export type TOmitArray<T extends TSchema[], K extends keyof any> = Assert<{ [K2 
 export type TOmitProperties<T extends TProperties, K extends keyof any> = Evaluate<Assert<Omit<T, K>, TProperties>>
 // prettier-ignore
 export type TOmit<T extends TSchema = TSchema, K extends keyof any = keyof any> = 
+  T extends TRecursive<infer S> ? TRecursive<TOmit<S, K>> :
   T extends TComposite<infer S> ? TComposite<TOmitArray<S, K>> :
   T extends TIntersect<infer S> ? TIntersect<TOmitArray<S, K>> : 
   T extends TUnion<infer S> ? TUnion<TOmitArray<S, K>> : 
@@ -420,6 +421,7 @@ export type TPartialProperties<T extends TProperties> = Evaluate<Assert<{
 }, TProperties>>
 // prettier-ignore
 export type TPartial<T extends TSchema> =  
+  T extends TRecursive<infer S> ? TRecursive<TPartial<S>> :   
   T extends TComposite<infer S> ? TComposite<TPartialArray<S>> :
   T extends TIntersect<infer S> ? TIntersect<TPartialArray<S>> : 
   T extends TUnion<infer S>     ? TUnion<TPartialArray<S>> : 
@@ -438,6 +440,7 @@ export type TPickProperties<T extends TProperties, K extends keyof any> =
   }): never
 // prettier-ignore
 export type TPick<T extends TSchema = TSchema, K extends keyof any = keyof any> = 
+  T extends TRecursive<infer S> ? TRecursive<TPick<S, K>> :
   T extends TComposite<infer S> ? TComposite<TPickArray<S, K>> :
   T extends TIntersect<infer S> ? TIntersect<TPickArray<S, K>> : 
   T extends TUnion<infer S> ? TUnion<TPickArray<S, K>> : 
@@ -480,6 +483,7 @@ export interface TThis extends TSchema {
 }
 export type TRecursiveReduce<T extends TSchema> = Static<T, [TRecursiveReduce<T>]>
 export interface TRecursive<T extends TSchema> extends TSchema {
+  [Hint]: 'Recursive'
   static: TRecursiveReduce<T>
 }
 // --------------------------------------------------------------------------
@@ -508,6 +512,7 @@ export type TRequiredProperties<T extends TProperties> = Evaluate<Assert<{
 }, TProperties>>
 // prettier-ignore
 export type TRequired<T extends TSchema> = 
+  T extends TRecursive<infer S> ? TRecursive<TRequired<S>> :   
   T extends TComposite<infer S> ? TComposite<TRequiredArray<S>> : 
   T extends TIntersect<infer S> ? TIntersect<TRequiredArray<S>> : 
   T extends TUnion<infer S>     ? TUnion<TRequiredArray<S>> : 
@@ -584,9 +589,9 @@ export type TTemplateLiteralConst<T, Acc extends string> =
   T extends TUnion<infer U> ? { [K in keyof U]: TTemplateLiteralUnion<Assert<[U[K]], TTemplateLiteralKind[]>, Acc> }[number] :
   T extends TTemplateLiteral ? `${Static<T>}` : 
   T extends TLiteral<infer U> ? `${U}` :
-  T extends TString ? `${string}` : 
-  T extends TNumber ? `${number}` : 
-  T extends TBigInt ? `${bigint}` : 
+  T extends TString  ? `${string}`  : 
+  T extends TNumber  ? `${number}`  : 
+  T extends TBigInt  ? `${bigint}`  : 
   T extends TBoolean ? `${boolean}` :
   never
 // prettier-ignore
@@ -2420,7 +2425,7 @@ export class StandardTypeBuilder extends TypeBuilder {
     if (options.$id === undefined) (options as any).$id = `T${TypeOrdinal++}`
     const thisType = callback({ [Kind]: 'This', $ref: `${options.$id}` } as any)
     thisType.$id = options.$id
-    return this.Create({ ...options, ...thisType } as any)
+    return this.Create({ ...options, [Hint]: 'Recursive', ...thisType } as any)
   }
   /** `[Standard]` Creates a Ref type. The referenced type must contain a $id */
   public Ref<T extends TSchema>(schema: T, options: SchemaOptions = {}): TRef<T> {
