@@ -7,6 +7,25 @@ describe('type/TemplateLiteralPattern', () => {
     Assert.equal(pattern, expect)
   }
   // ---------------------------------------------------------------
+  // Escape
+  // ---------------------------------------------------------------
+  it('Escape 1', () => {
+    const T = Type.TemplateLiteral([Type.Literal('.*')])
+    Assert.equal(T.pattern, '^\\.\\*$')
+  })
+  it('Escape 2', () => {
+    const T = Type.TemplateLiteral([Type.Literal('(')])
+    Assert.equal(T.pattern, '^\\($')
+  })
+  it('Escape 3', () => {
+    const T = Type.TemplateLiteral([Type.Literal(')')])
+    Assert.equal(T.pattern, '^\\)$')
+  })
+  it('Escape 4', () => {
+    const T = Type.TemplateLiteral([Type.Literal('|')])
+    Assert.equal(T.pattern, '^\\|$')
+  })
+  // ---------------------------------------------------------------
   // Pattern
   // ---------------------------------------------------------------
   it('Pattern 1', () => {
