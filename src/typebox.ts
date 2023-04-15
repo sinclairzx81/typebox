@@ -1832,24 +1832,24 @@ export namespace TypeClone {
 // --------------------------------------------------------------------------
 export namespace ObjectMap {
   function Intersect(schema: TIntersect, callback: (object: TObject) => TObject) {
-    return Type.Intersect(
-      schema.allOf.map((inner) => Visit(inner, callback)),
-      { ...schema },
-    )
+    // prettier-ignore
+    return Type.Intersect(schema.allOf.map((inner) => Visit(inner, callback)), { ...schema })
   }
   function Union(schema: TUnion, callback: (object: TObject) => TObject) {
-    return Type.Union(
-      schema.anyOf.map((inner) => Visit(inner, callback)),
-      { ...schema },
-    )
+    // prettier-ignore
+    return Type.Union(schema.anyOf.map((inner) => Visit(inner, callback)), { ...schema })
   }
   function Object(schema: TObject, callback: (object: TObject) => TObject) {
     return callback(schema)
   }
   function Visit(schema: TSchema, callback: (object: TObject) => TObject): TSchema {
-    if (TypeGuard.TIntersect(schema)) return Intersect(schema, callback)
-    if (TypeGuard.TUnion(schema)) return Union(schema, callback)
-    if (TypeGuard.TObject(schema)) return Object(schema, callback)
+    // There are cases where users need to map objects with unregistered kinds. Using a TypeGuard here would
+    // prevent sub schema mapping as unregistered kinds will not pass TSchema checks. This is notable in the
+    // case of TObject where unregistered property kinds cause the TObject check to fail. As mapping is only
+    // used for composition, we use explicit checks instead.
+    if (schema[Kind] === 'Intersect') return Intersect(schema as TIntersect, callback)
+    if (schema[Kind] === 'Union') return Union(schema as TUnion, callback)
+    if (schema[Kind] === 'Object') return Object(schema as TObject, callback)
     return schema
   }
   export function Map<T = TSchema>(schema: TSchema, callback: (object: TObject) => TObject, options: SchemaOptions): T {
