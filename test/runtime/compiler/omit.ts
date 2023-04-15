@@ -1,6 +1,6 @@
-import { Type } from '@sinclair/typebox'
+import { Type, Kind } from '@sinclair/typebox'
 import { Ok, Fail } from './validate'
-import { strictEqual } from 'assert'
+import { deepEqual, strictEqual } from 'assert'
 
 describe('type/compiler/Omit', () => {
   it('Should omit properties on the source schema', () => {

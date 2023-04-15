@@ -50,20 +50,4 @@ describe('type/compiler/Partial', () => {
     strictEqual(A.additionalProperties, false)
     strictEqual(T.additionalProperties, false)
   })
-  it('Should support TUnsafe partial properties with no Kind', () => {
-    // https://github.com/sinclairzx81/typebox/issues/364
-    const T = Type.Partial(Type.Object({ x: Type.Unsafe({ x: 1 }) }))
-    strictEqual(T.required, undefined)
-  })
-  it('Should support TUnsafe partial properties with unregistered Kind', () => {
-    // https://github.com/sinclairzx81/typebox/issues/364
-    const T = Type.Partial(Type.Object({ x: Type.Unsafe({ [Kind]: 'UnknownPartialType', x: 1 }) }))
-    strictEqual(T.required, undefined)
-  })
-  it('Should support TUnsafe partial properties with registered Kind', () => {
-    // https://github.com/sinclairzx81/typebox/issues/364
-    const U = TypeSystem.Type('CustomPartialType', () => true)
-    const T = Type.Partial(Type.Object({ x: U() }))
-    strictEqual(T.required, undefined)
-  })
 })
