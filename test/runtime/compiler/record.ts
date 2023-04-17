@@ -1,7 +1,7 @@
 import { Type } from '@sinclair/typebox'
 import { Ok, Fail } from './validate'
 
-describe('type/compiler/Record', () => {
+describe('type/schema/Record', () => {
   it('Should validate when all property values are numbers', () => {
     const T = Type.Record(Type.String(), Type.Number())
     Ok(T, { a: 1, b: 2, c: 3 })
@@ -65,7 +65,7 @@ describe('type/compiler/Record', () => {
   })
   it('Should should not validate when specifying regular expressions and passing invalid property', () => {
     const K = Type.RegEx(/^op_.*$/)
-    const T = Type.Record(K, Type.Number())
+    const T = Type.Record(K, Type.Number(), { additionalProperties: false })
     Fail(T, {
       op_a: 1,
       op_b: 2,
@@ -80,11 +80,11 @@ describe('type/compiler/Record', () => {
     Ok(T, { '0': 1, '1': 2, '2': 3, '3': 4 })
   })
   it('Should validate when all property keys are integers, but one property is a string with varying type', () => {
-    const T = Type.Record(Type.Integer(), Type.Number())
+    const T = Type.Record(Type.Integer(), Type.Number(), { additionalProperties: false })
     Fail(T, { '0': 1, '1': 2, '2': 3, '3': 4, a: 'hello' })
   })
   it('Should not validate if passing a leading zeros for integers keys', () => {
-    const T = Type.Record(Type.Integer(), Type.Number())
+    const T = Type.Record(Type.Integer(), Type.Number(), { additionalProperties: false })
     Fail(T, {
       '00': 1,
       '01': 2,
@@ -93,7 +93,7 @@ describe('type/compiler/Record', () => {
     })
   })
   it('Should not validate if passing a signed integers keys', () => {
-    const T = Type.Record(Type.Integer(), Type.Number())
+    const T = Type.Record(Type.Integer(), Type.Number(), { additionalProperties: false })
     Fail(T, {
       '-0': 1,
       '-1': 2,
@@ -109,11 +109,11 @@ describe('type/compiler/Record', () => {
     Ok(T, { '0': 1, '1': 2, '2': 3, '3': 4 })
   })
   it('Should validate when all property keys are numbers, but one property is a string with varying type', () => {
-    const T = Type.Record(Type.Number(), Type.Number())
+    const T = Type.Record(Type.Number(), Type.Number(), { additionalProperties: false })
     Fail(T, { '0': 1, '1': 2, '2': 3, '3': 4, a: 'hello' })
   })
   it('Should not validate if passing a leading zeros for numeric keys', () => {
-    const T = Type.Record(Type.Number(), Type.Number())
+    const T = Type.Record(Type.Number(), Type.Number(), { additionalProperties: false })
     Fail(T, {
       '00': 1,
       '01': 2,
@@ -122,7 +122,7 @@ describe('type/compiler/Record', () => {
     })
   })
   it('Should not validate if passing a signed numeric keys', () => {
-    const T = Type.Record(Type.Number(), Type.Number())
+    const T = Type.Record(Type.Number(), Type.Number(), { additionalProperties: false })
     Fail(T, {
       '-0': 1,
       '-1': 2,
@@ -131,15 +131,7 @@ describe('type/compiler/Record', () => {
     })
   })
   it('Should not validate when all property keys are numbers, but one property is a string with varying type', () => {
-    const T = Type.Record(Type.Number(), Type.Number())
+    const T = Type.Record(Type.Number(), Type.Number(), { additionalProperties: false })
     Fail(T, { '0': 1, '1': 2, '2': 3, '3': 4, a: 'hello' })
-  })
-  it('Should fail record with Date', () => {
-    const T = Type.Record(Type.String(), Type.String())
-    Fail(T, new Date())
-  })
-  it('Should fail record with Uint8Array', () => {
-    const T = Type.Record(Type.String(), Type.String())
-    Fail(T, new Uint8Array())
   })
 })

@@ -3,38 +3,19 @@ import { TypeCompiler } from '@sinclair/typebox/compiler'
 import { Value, ValuePointer } from '@sinclair/typebox/value'
 import { Type, TypeGuard, Kind, Static, TSchema } from '@sinclair/typebox'
 
-// -----------------------------------------------------------
-// Create: Type
-// -----------------------------------------------------------
+import Ajv from 'ajv'
 
-const T = Type.Object({
-  x: Type.Number(),
-  y: Type.Number(),
-  z: Type.Number(),
+TypeSystem.AllowArrayObjects = true
+
+const T = Type.Record(Type.RegEx(/a.*/), Type.Number(), {
+  additionalProperties: false,
 })
 
-type T = Static<typeof T>
+console.log(TypeCompiler.Code(T))
 
-console.log(T)
-
-// -----------------------------------------------------------
-// Create: Value
-// -----------------------------------------------------------
-
-const V = Value.Create(T)
-
-console.log(V)
-
-// -----------------------------------------------------------
-// Compile: Type
-// -----------------------------------------------------------
-
-const C = TypeCompiler.Compile(T)
-
-console.log(C.Code())
-
-// -----------------------------------------------------------
-// Check: Value
-// -----------------------------------------------------------
-
-console.log(C.Check(V))
+const ajv = new Ajv()
+const data = [0, 1, 2]
+console.log(ajv.validate(T, data))
+console.log(Value.Check(T, data))
+console.log(TypeCompiler.Compile(T).Check(data))
+console.log([...Value.Errors(T, data)])

@@ -136,7 +136,7 @@ describe('value/check/Record', () => {
   })
 
   it('Should not pass record with invalid number key', () => {
-    const T = Type.Record(Type.Number(), Type.String())
+    const T = Type.Record(Type.Number(), Type.String(), { additionalProperties: false })
     const value = {
       a: 'a',
       1: 'a',
@@ -159,7 +159,7 @@ describe('value/check/Record', () => {
     Assert.equal(result, true)
   })
   it('Should not pass record with invalid integer key', () => {
-    const T = Type.Record(Type.Integer(), Type.String())
+    const T = Type.Record(Type.Integer(), Type.String(), { additionalProperties: false })
     const value = {
       a: 'a',
       1: 'a',

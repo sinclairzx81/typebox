@@ -471,7 +471,7 @@ export interface TRecord<K extends RecordKey = RecordKey, T extends TSchema = TS
   static: Record<Static<K>, Static<T, this['params']>>
   type: 'object'
   patternProperties: { [pattern: string]: T }
-  additionalProperties: false
+  additionalProperties: TAdditionalProperties
 }
 // --------------------------------------------------------------------------
 // TRecursive
@@ -781,6 +781,9 @@ export namespace TypeGuard {
     }
     return true
   }
+  function IsAdditionalProperties(value: unknown): value is TAdditionalProperties {
+    return IsOptionalBoolean(value) || TSchema(value)
+  }
   function IsBigInt(value: unknown): value is bigint {
     return typeof value === 'bigint'
   }
@@ -1013,7 +1016,7 @@ export namespace TypeGuard {
         schema.type === 'object' &&
         IsOptionalString(schema.$id) &&
         IsObject(schema.properties) &&
-        (IsOptionalBoolean(schema.additionalProperties) || IsOptionalSchema(schema.additionalProperties)) &&
+        IsAdditionalProperties(schema.additionalProperties) &&
         IsOptionalNumber(schema.minProperties) &&
         IsOptionalNumber(schema.maxProperties)
       )
@@ -1046,7 +1049,7 @@ export namespace TypeGuard {
       schema[Kind] === 'Record' && 
       schema.type === 'object' && 
       IsOptionalString(schema.$id) && 
-      schema.additionalProperties === false && 
+      IsAdditionalProperties(schema.additionalProperties) &&
       IsObject(schema.patternProperties))
     ) {
       return false
@@ -2412,10 +2415,10 @@ export class StandardTypeBuilder extends TypeBuilder {
       } else throw Error('TypeBuilder: Record key can only be derived from literals of number or string')
     } else if (TypeGuard.TInteger(key) || TypeGuard.TNumber(key)) {
       const pattern = PatternNumberExact
-      return this.Create<any>({ ...options, [Kind]: 'Record', type: 'object', patternProperties: { [pattern]: TypeClone.Clone(schema, {}) }, additionalProperties: false })
+      return this.Create<any>({ ...options, [Kind]: 'Record', type: 'object', patternProperties: { [pattern]: TypeClone.Clone(schema, {}) } })
     } else if (TypeGuard.TString(key)) {
       const pattern = key.pattern === undefined ? PatternStringExact : key.pattern
-      return this.Create<any>({ ...options, [Kind]: 'Record', type: 'object', patternProperties: { [pattern]: TypeClone.Clone(schema, {}) }, additionalProperties: false })
+      return this.Create<any>({ ...options, [Kind]: 'Record', type: 'object', patternProperties: { [pattern]: TypeClone.Clone(schema, {}) } })
     } else {
       throw Error(`StandardTypeBuilder: Invalid Record Key`)
     }

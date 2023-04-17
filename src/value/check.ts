@@ -276,15 +276,20 @@ export namespace ValueCheck {
     if (IsDefined<number>(schema.maxProperties) && !(globalThis.Object.getOwnPropertyNames(value).length <= schema.maxProperties)) {
       return false
     }
-    const [keyPattern, valueSchema] = globalThis.Object.entries(schema.patternProperties)[0]
-    const regex = new RegExp(keyPattern)
-    if (!globalThis.Object.getOwnPropertyNames(value).every((key) => regex.test(key))) {
-      return false
-    }
-    for (const propValue of globalThis.Object.values(value)) {
-      if (!Visit(valueSchema, references, propValue)) return false
-    }
-    return true
+    const [patternKey, patternSchema] = globalThis.Object.entries(schema.patternProperties)[0]
+    const regex = new RegExp(patternKey)
+    return globalThis.Object.entries(value).every(([key, value]) => {
+      if (regex.test(key)) {
+        return Visit(patternSchema, references, value)
+      }
+      if (typeof schema.additionalProperties === 'object') {
+        return Visit(schema.additionalProperties, references, value)
+      }
+      if (schema.additionalProperties === false) {
+        return false
+      }
+      return true
+    })
   }
   function Ref(schema: Types.TRef<any>, references: Types.TSchema[], value: any): boolean {
     const index = references.findIndex((foreign) => foreign.$id === schema.$ref)

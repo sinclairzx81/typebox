@@ -396,16 +396,21 @@ export namespace ValueErrors {
     if (IsDefined<number>(schema.maxProperties) && !(globalThis.Object.getOwnPropertyNames(value).length <= schema.maxProperties)) {
       yield { type: ValueErrorType.ObjectMaxProperties, schema, path, value, message: `Expected object to have less than ${schema.minProperties} properties` }
     }
-    const [keyPattern, valueSchema] = globalThis.Object.entries(schema.patternProperties)[0]
-    const regex = new RegExp(keyPattern)
-    if (!globalThis.Object.getOwnPropertyNames(value).every((key) => regex.test(key))) {
-      const numeric = keyPattern === Types.PatternNumberExact
-      const type = numeric ? ValueErrorType.RecordKeyNumeric : ValueErrorType.RecordKeyString
-      const message = numeric ? 'Expected all object property keys to be numeric' : 'Expected all object property keys to be strings'
-      return yield { type, schema, path, value, message }
-    }
-    for (const [propKey, propValue] of globalThis.Object.entries(value)) {
-      yield* Visit(valueSchema, references, `${path}/${propKey}`, propValue)
+    const [patternKey, patternSchema] = globalThis.Object.entries(schema.patternProperties)[0]
+    const regex = new RegExp(patternKey)
+    for (const [propertyKey, propertyValue] of globalThis.Object.entries(value)) {
+      if (regex.test(propertyKey)) {
+        yield* Visit(patternSchema, references, `${path}/${propertyKey}`, propertyValue)
+        continue
+      }
+      if (typeof schema.additionalProperties === 'object') {
+        yield* Visit(schema.additionalProperties, references, `${path}/${propertyKey}`, propertyValue)
+      }
+      if (schema.additionalProperties === false) {
+        const propertyPath = `${path}/${propertyKey}`
+        const message = `Unexpected property '${propertyPath}'`
+        return yield { type: ValueErrorType.ObjectAdditionalProperties, schema, path: propertyPath, value: propertyValue, message }
+      }
     }
   }
   function* Ref(schema: Types.TRef<any>, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {

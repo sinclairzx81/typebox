@@ -291,11 +291,12 @@ export namespace TypeCompiler {
     yield IsRecordCheck(value)
     if (IsNumber(schema.minProperties)) yield `Object.getOwnPropertyNames(${value}).length >= ${schema.minProperties}`
     if (IsNumber(schema.maxProperties)) yield `Object.getOwnPropertyNames(${value}).length <= ${schema.maxProperties}`
-    const [keyPattern, valueSchema] = globalThis.Object.entries(schema.patternProperties)[0]
-    const local = PushLocal(`new RegExp(/${keyPattern}/)`)
-    yield `(Object.getOwnPropertyNames(${value}).every(key => ${local}.test(key)))`
-    const expression = CreateExpression(valueSchema, references, 'value')
-    yield `Object.values(${value}).every(value => ${expression})`
+    const [patternKey, patternSchema] = globalThis.Object.entries(schema.patternProperties)[0]
+    const local = PushLocal(`new RegExp(/${patternKey}/)`)
+    const expr_pass = CreateExpression(patternSchema, references, value)
+    const expr_fail = Types.TypeGuard.TSchema(schema.additionalProperties) ? CreateExpression(schema.additionalProperties, references, value) : schema.additionalProperties === false ? 'false' : 'true'
+    const expression = `(${local}.test(key) ? ${expr_pass} : ${expr_fail})`
+    yield `(Object.entries(${value}).every(([key, value]) => ${expression}))`
   }
   function* Ref(schema: Types.TRef<any>, references: Types.TSchema[], value: string): IterableIterator<string> {
     const index = references.findIndex((foreign) => foreign.$id === schema.$ref)
