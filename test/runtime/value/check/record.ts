@@ -136,7 +136,7 @@ describe('value/check/Record', () => {
   })
 
   it('Should not pass record with invalid number key', () => {
-    const T = Type.Record(Type.Number(), Type.String())
+    const T = Type.Record(Type.Number(), Type.String(), { additionalProperties: false })
     const value = {
       a: 'a',
       1: 'a',
@@ -159,7 +159,7 @@ describe('value/check/Record', () => {
     Assert.equal(result, true)
   })
   it('Should not pass record with invalid integer key', () => {
-    const T = Type.Record(Type.Integer(), Type.String())
+    const T = Type.Record(Type.Integer(), Type.String(), { additionalProperties: false })
     const value = {
       a: 'a',
       1: 'a',
@@ -167,5 +167,33 @@ describe('value/check/Record', () => {
     }
     const result = Value.Check(T, value)
     Assert.equal(result, false)
+  })
+  // ------------------------------------------------------------
+  // AdditionalProperties
+  // ------------------------------------------------------------
+  it('AdditionalProperties 1', () => {
+    const T = Type.Record(Type.Number(), Type.String(), { additionalProperties: true })
+    const R = Value.Check(T, { 1: '', 2: '', x: 1, y: 2, z: 3 })
+    Assert.equal(R, true)
+  })
+  it('AdditionalProperties 2', () => {
+    const T = Type.Record(Type.Number(), Type.String(), { additionalProperties: false })
+    const R = Value.Check(T, { 1: '', 2: '', 3: '' })
+    Assert.equal(R, true)
+  })
+  it('AdditionalProperties 3', () => {
+    const T = Type.Record(Type.Number(), Type.String(), { additionalProperties: false })
+    const R = Value.Check(T, { 1: '', 2: '', x: '' })
+    Assert.equal(R, false)
+  })
+  it('AdditionalProperties 4', () => {
+    const T = Type.Record(Type.Number(), Type.String(), { additionalProperties: Type.Boolean() })
+    const R = Value.Check(T, { 1: '', 2: '', x: '' })
+    Assert.equal(R, false)
+  })
+  it('AdditionalProperties 5', () => {
+    const T = Type.Record(Type.Number(), Type.String(), { additionalProperties: Type.Boolean() })
+    const R = Value.Check(T, { 1: '', 2: '', x: true })
+    Assert.equal(R, true)
   })
 })

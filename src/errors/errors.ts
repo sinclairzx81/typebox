@@ -219,7 +219,7 @@ export namespace ValueErrors {
   function* Constructor(schema: Types.TConstructor, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     yield* Visit(schema.returns, references, path, value.prototype)
   }
-  function* Date(schema: Types.TNumeric, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
+  function* Date(schema: Types.TDate, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     if (!(value instanceof globalThis.Date)) {
       return yield { type: ValueErrorType.Date, schema, path, value, message: `Expected Date object` }
     }
@@ -244,7 +244,7 @@ export namespace ValueErrors {
       return yield { type: ValueErrorType.Function, schema, path, value, message: `Expected function` }
     }
   }
-  function* Integer(schema: Types.TNumeric, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
+  function* Integer(schema: Types.TInteger, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     if (!IsInteger(value)) {
       return yield { type: ValueErrorType.Integer, schema, path, value, message: `Expected integer` }
     }
@@ -265,8 +265,8 @@ export namespace ValueErrors {
     }
   }
   function* Intersect(schema: Types.TIntersect, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
-    for (const subschema of schema.allOf) {
-      const next = Visit(subschema, references, path, value).next()
+    for (const inner of schema.allOf) {
+      const next = Visit(inner, references, path, value).next()
       if (!next.done) {
         yield next.value
         yield { type: ValueErrorType.Intersect, schema, path, value, message: `Expected all sub schemas to be valid` }
@@ -274,19 +274,17 @@ export namespace ValueErrors {
       }
     }
     if (schema.unevaluatedProperties === false) {
-      const schemaKeys = Types.KeyResolver.Resolve(schema)
-      const valueKeys = globalThis.Object.getOwnPropertyNames(value)
-      for (const valueKey of valueKeys) {
-        if (!schemaKeys.includes(valueKey)) {
+      const keyCheck = new RegExp(Types.KeyResolver.ResolvePattern(schema))
+      for (const valueKey of globalThis.Object.getOwnPropertyNames(value)) {
+        if (!keyCheck.test(valueKey)) {
           yield { type: ValueErrorType.IntersectUnevaluatedProperties, schema, path: `${path}/${valueKey}`, value, message: `Unexpected property` }
         }
       }
     }
     if (typeof schema.unevaluatedProperties === 'object') {
-      const schemaKeys = Types.KeyResolver.Resolve(schema)
-      const valueKeys = globalThis.Object.getOwnPropertyNames(value)
-      for (const valueKey of valueKeys) {
-        if (!schemaKeys.includes(valueKey)) {
+      const keyCheck = new RegExp(Types.KeyResolver.ResolvePattern(schema))
+      for (const valueKey of globalThis.Object.getOwnPropertyNames(value)) {
+        if (!keyCheck.test(valueKey)) {
           const next = Visit(schema.unevaluatedProperties, references, `${path}/${valueKey}`, value[valueKey]).next()
           if (!next.done) {
             yield next.value
@@ -317,7 +315,7 @@ export namespace ValueErrors {
       return yield { type: ValueErrorType.Null, schema, path, value, message: `Expected null` }
     }
   }
-  function* Number(schema: Types.TNumeric, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
+  function* Number(schema: Types.TNumber, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     if (!IsNumber(value)) {
       return yield { type: ValueErrorType.Number, schema, path, value, message: `Expected number` }
     }
@@ -396,16 +394,21 @@ export namespace ValueErrors {
     if (IsDefined<number>(schema.maxProperties) && !(globalThis.Object.getOwnPropertyNames(value).length <= schema.maxProperties)) {
       yield { type: ValueErrorType.ObjectMaxProperties, schema, path, value, message: `Expected object to have less than ${schema.minProperties} properties` }
     }
-    const [keyPattern, valueSchema] = globalThis.Object.entries(schema.patternProperties)[0]
-    const regex = new RegExp(keyPattern)
-    if (!globalThis.Object.getOwnPropertyNames(value).every((key) => regex.test(key))) {
-      const numeric = keyPattern === Types.PatternNumberExact
-      const type = numeric ? ValueErrorType.RecordKeyNumeric : ValueErrorType.RecordKeyString
-      const message = numeric ? 'Expected all object property keys to be numeric' : 'Expected all object property keys to be strings'
-      return yield { type, schema, path, value, message }
-    }
-    for (const [propKey, propValue] of globalThis.Object.entries(value)) {
-      yield* Visit(valueSchema, references, `${path}/${propKey}`, propValue)
+    const [patternKey, patternSchema] = globalThis.Object.entries(schema.patternProperties)[0]
+    const regex = new RegExp(patternKey)
+    for (const [propertyKey, propertyValue] of globalThis.Object.entries(value)) {
+      if (regex.test(propertyKey)) {
+        yield* Visit(patternSchema, references, `${path}/${propertyKey}`, propertyValue)
+        continue
+      }
+      if (typeof schema.additionalProperties === 'object') {
+        yield* Visit(schema.additionalProperties, references, `${path}/${propertyKey}`, propertyValue)
+      }
+      if (schema.additionalProperties === false) {
+        const propertyPath = `${path}/${propertyKey}`
+        const message = `Unexpected property '${propertyPath}'`
+        return yield { type: ValueErrorType.ObjectAdditionalProperties, schema, path: propertyPath, value: propertyValue, message }
+      }
     }
   }
   function* Ref(schema: Types.TRef<any>, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {

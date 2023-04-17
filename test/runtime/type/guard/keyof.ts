@@ -3,7 +3,7 @@ import { Type } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
 describe('type/guard/TKeyOf', () => {
-  it('Should guard for keyof TObject', () => {
+  it('Should KeyOf 1', () => {
     const T = Type.Object({
       x: Type.Number(),
       y: Type.Number(),
@@ -13,7 +13,7 @@ describe('type/guard/TKeyOf', () => {
     Assert.deepEqual(TypeGuard.TLiteral(K.anyOf[0]), true)
     Assert.deepEqual(TypeGuard.TLiteral(K.anyOf[1]), true)
   })
-  it('Should guard for keyof TRecursive', () => {
+  it('Should KeyOf 2', () => {
     const T = Type.Recursive((Self) =>
       Type.Object({
         x: Type.Number(),
@@ -25,7 +25,7 @@ describe('type/guard/TKeyOf', () => {
     Assert.deepEqual(TypeGuard.TLiteral(K.anyOf[0]), true)
     Assert.deepEqual(TypeGuard.TLiteral(K.anyOf[1]), true)
   })
-  it('Should guard for keyof TIntersect', () => {
+  it('Should KeyOf 3', () => {
     const T = Type.Intersect([
       Type.Object({
         x: Type.Number(),
@@ -39,7 +39,7 @@ describe('type/guard/TKeyOf', () => {
     Assert.deepEqual(TypeGuard.TLiteral(K.anyOf[0]), true)
     Assert.deepEqual(TypeGuard.TLiteral(K.anyOf[1]), true)
   })
-  it('Should guard for keyof TUnion', () => {
+  it('Should KeyOf 4', () => {
     const T = Type.Union([
       Type.Object({
         x: Type.Number(),
@@ -51,9 +51,26 @@ describe('type/guard/TKeyOf', () => {
     const K = Type.KeyOf(T)
     Assert.deepEqual(TypeGuard.TNever(K), true)
   })
-  it('Should guard for keyof TNull', () => {
+  it('Should KeyOf 5', () => {
     const T = Type.Null()
     const K = Type.KeyOf(T)
     Assert.deepEqual(TypeGuard.TNever(K), true)
+  })
+  it('Should KeyOf 6', () => {
+    const T = Type.Array(Type.Number())
+    const K = Type.KeyOf(T)
+    Assert.deepEqual(TypeGuard.TNumber(K), true)
+  })
+  it('Should KeyOf 7', () => {
+    const T = Type.Tuple([])
+    const K = Type.KeyOf(T)
+    Assert.deepEqual(TypeGuard.TNever(K), true)
+  })
+  it('Should KeyOf 8', () => {
+    const T = Type.Tuple([Type.Number(), Type.Null()])
+    const K = Type.KeyOf(T)
+    Assert.deepEqual(TypeGuard.TUnion(K), true)
+    Assert.deepEqual(K.anyOf[0].const, '0')
+    Assert.deepEqual(K.anyOf[1].const, '1')
   })
 })
