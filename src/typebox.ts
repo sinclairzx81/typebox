@@ -1862,49 +1862,42 @@ export namespace ObjectMap {
 // --------------------------------------------------------------------------
 // KeyResolver
 // --------------------------------------------------------------------------
+export interface KeyResolverOptions {
+  includePatterns: boolean
+}
 export namespace KeyResolver {
   function UnwrapPattern(key: string) {
     return key[0] === '^' && key[key.length - 1] === '$' ? key.slice(1, key.length - 1) : key
   }
-  function IsKeyable(schema: TSchema) {
-    return (
-      TypeGuard.TIntersect(schema) ||
-      TypeGuard.TUnion(schema) ||
-      (TypeGuard.TObject(schema) && globalThis.Object.getOwnPropertyNames(schema.properties).length > 0) ||
-      (TypeGuard.TRecord(schema) && globalThis.Object.getOwnPropertyNames(schema.patternProperties).length > 0)
-    )
+  function Intersect(schema: TIntersect, options: KeyResolverOptions): string[] {
+    return schema.allOf.reduce((acc, schema) => [...acc, ...Visit(schema, options)], [] as string[])
   }
-  function Intersect(schema: TIntersect) {
-    return [...schema.allOf.filter((schema) => IsKeyable(schema)).reduce((set, schema) => Visit(schema).map((key) => set.add(key))[0], new Set<string>())]
-  }
-  function Union(schema: TUnion) {
-    const sets = schema.anyOf.filter((schema) => IsKeyable(schema)).map((inner) => Visit(inner))
+  function Union(schema: TUnion, options: KeyResolverOptions): string[] {
+    const sets = schema.anyOf.map((inner) => Visit(inner, options))
     return [...sets.reduce((set, outer) => outer.map((key) => (sets.every((inner) => inner.includes(key)) ? set.add(key) : set))[0], new Set<string>())]
   }
-  function Object(schema: TObject) {
+  function Object(schema: TObject, options: KeyResolverOptions): string[] {
     return globalThis.Object.keys(schema.properties)
   }
-  function Record(schema: TRecord) {
-    const key = globalThis.Object.keys(schema.patternProperties)[0]
-    return [key]
+  function Record(schema: TRecord, options: KeyResolverOptions): string[] {
+    return options.includePatterns ? globalThis.Object.keys(schema.patternProperties) : []
   }
-  function Visit(schema: TSchema): string[] {
-    if (TypeGuard.TIntersect(schema)) return Intersect(schema)
-    if (TypeGuard.TUnion(schema)) return Union(schema)
-    if (TypeGuard.TObject(schema)) return Object(schema)
-    if (TypeGuard.TRecord(schema)) return Record(schema)
+  function Visit(schema: TSchema, options: KeyResolverOptions): string[] {
+    if (TypeGuard.TIntersect(schema)) return Intersect(schema, options)
+    if (TypeGuard.TUnion(schema)) return Union(schema, options)
+    if (TypeGuard.TObject(schema)) return Object(schema, options)
+    if (TypeGuard.TRecord(schema)) return Record(schema, options)
     return []
   }
   /** Resolves an array of keys in this schema */
-  export function ResolveKeys(schema: TSchema): string[] {
-    return Visit(schema)
+  export function ResolveKeys(schema: TSchema, options: KeyResolverOptions): string[] {
+    return [...new Set(Visit(schema, options))]
   }
   /** Resolves a regular expression pattern matching all keys in this schema */
   export function ResolvePattern(schema: TSchema): string {
-    const pattern = ResolveKeys(schema)
-      .map((key) => `(${UnwrapPattern(key)})`)
-      .join('|')
-    return `^(${pattern})$`
+    const keys = ResolveKeys(schema, { includePatterns: true })
+    const pattern = keys.map((key) => `(${UnwrapPattern(key)})`)
+    return `^(${pattern.join('|')})$`
   }
 }
 // --------------------------------------------------------------------------
@@ -2295,9 +2288,9 @@ export class StandardTypeBuilder extends TypeBuilder {
       if (pattern === PatternStringExact) return this.String(options) as TKeyOf<T>
       throw Error('StandardTypeBuilder: Unable to resolve key type from Record key pattern')
     } else {
-      const resolved = KeyResolver.ResolveKeys(schema)
-      if (resolved.length === 0) return this.Never(options) as TKeyOf<T>
-      const literals = resolved.map((key) => this.Literal(key))
+      const keys = KeyResolver.ResolveKeys(schema, { includePatterns: false })
+      if (keys.length === 0) return this.Never(options) as TKeyOf<T>
+      const literals = keys.map((key) => this.Literal(key))
       return this.Union(literals, options) as TKeyOf<T>
     }
   }

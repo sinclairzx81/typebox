@@ -80,4 +80,140 @@ describe('type/schema/Intersect', () => {
     const T = Type.Intersect([A, B])
     Fail(T, { x: 1, y: 1 })
   })
+
+  it('unevaluatedProperties with Record 1', () => {
+    const T = Type.Intersect(
+      [
+        Type.Record(Type.Number(), Type.String()),
+        Type.Object({
+          x: Type.Number(),
+          y: Type.Number(),
+        }),
+      ],
+      {
+        unevaluatedProperties: false,
+      },
+    )
+    Ok(T, { x: 1, y: 2 })
+  })
+  it('unevaluatedProperties with Record 2', () => {
+    const T = Type.Intersect(
+      [
+        Type.Record(Type.Number(), Type.String()),
+        Type.Object({
+          x: Type.Number(),
+          y: Type.Number(),
+        }),
+      ],
+      {
+        unevaluatedProperties: false,
+      },
+    )
+    Ok(T, { x: 1, y: 2, 0: 'hello' })
+  })
+  it('unevaluatedProperties with Record 3', () => {
+    const T = Type.Intersect(
+      [
+        Type.Record(Type.Number(), Type.String()),
+        Type.Object({
+          x: Type.Number(),
+          y: Type.Number(),
+        }),
+      ],
+      {
+        unevaluatedProperties: false,
+      },
+    )
+    Fail(T, { x: 1, y: 2, 0: 1 })
+  })
+  it('unevaluatedProperties with Record 4', () => {
+    const T = Type.Intersect(
+      [
+        Type.Record(Type.Number(), Type.String()),
+        Type.Object({
+          x: Type.Number(),
+          y: Type.Number(),
+        }),
+      ],
+      {
+        unevaluatedProperties: Type.Boolean(),
+      },
+    )
+    Ok(T, { x: 1, y: 2 })
+  })
+  it('unevaluatedProperties with Record 5', () => {
+    const T = Type.Intersect(
+      [
+        Type.Record(Type.Number(), Type.String()),
+        Type.Object({
+          x: Type.Number(),
+          y: Type.Number(),
+        }),
+      ],
+      {
+        unevaluatedProperties: Type.Boolean(),
+      },
+    )
+    Ok(T, { x: 1, y: 2, z: true })
+  })
+  it('unevaluatedProperties with Record 6', () => {
+    const T = Type.Intersect(
+      [
+        Type.Record(Type.Number(), Type.String()),
+        Type.Object({
+          x: Type.Number(),
+          y: Type.Number(),
+        }),
+      ],
+      {
+        unevaluatedProperties: Type.Boolean(),
+      },
+    )
+    Fail(T, { x: 1, y: 2, z: 1 })
+  })
+  it('unevaluatedProperties with Record 7', () => {
+    const T = Type.Intersect(
+      [
+        Type.Record(Type.Number(), Type.String()),
+        Type.Object({
+          x: Type.Number(),
+          y: Type.Number(),
+        }),
+      ],
+      {
+        unevaluatedProperties: Type.Boolean(),
+      },
+    )
+    Ok(T, { x: 1, y: 2, 0: '' })
+  })
+  it('unevaluatedProperties with Record 8', () => {
+    const T = Type.Intersect(
+      [
+        Type.Record(Type.Number(), Type.String()),
+        Type.Object({
+          x: Type.Number(),
+          y: Type.Number(),
+        }),
+      ],
+      {
+        unevaluatedProperties: Type.Boolean(),
+      },
+    )
+    Ok(T, { x: 1, y: 2, 0: '', z: true })
+  })
+  it('unevaluatedProperties with Record 9', () => {
+    const T = Type.Intersect(
+      [
+        Type.Record(Type.Number(), Type.String()),
+        Type.Object({
+          x: Type.Number(),
+          y: Type.Number(),
+        }),
+      ],
+      {
+        unevaluatedProperties: Type.Boolean(),
+      },
+    )
+    Fail(T, { x: 1, y: 2, 0: '', z: 1 })
+  })
 })
