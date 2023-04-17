@@ -77,7 +77,6 @@ License MIT
   - [Extended](#types-extended)
   - [Modifiers](#types-modifiers)
   - [Options](#types-options)
-  - [Records](#types-records)
   - [Generics](#types-generics)
   - [References](#types-references)
   - [Recursive](#types-recursive)
@@ -638,39 +637,6 @@ const T = Type.Array(Type.Integer(), {               // const T = {
                                                      //   }
                                                      // }
 
-```
-
-<a name='types-records'></a>
-
-### Record Types
-
-Record types are supported with `Type.Record()`. TypeBox supports string, numeric, union, literal and template literal key types. Similar to TypeScript, TypeBox will transform a Record type into a Object type if the `Key` yields a finite set of keys. For numeric keys, you must specify a `additionalProperties: false` constraint to prevent non-numeric additional properties.
-
-```typescript
-const R1 = Type.Record(                              // type T = {
-  Type.String(),                                     //   [key: string]: number
-  Type.Number()                                      // }
-)  
-
-const R2 = Type.Record(                              // type T = {
-  Type.Number(),                                     //   [key: number]: boolean
-  Type.Number()                                      // }
-, {
-  additionalProperties: false                        // required for numeric keys
-})  
-
-const R3 = Type.Record(                              // type T = {
-  Type.Literal('x'),                                 //   x: number                           
-  Type.Number()                                      // }
-)  
-
-const R3 = Type.Record(                              // type T = {
-  Type.Union([                                       //   x: number
-    Type.Literal('x'),                               //   y: number
-    Type.Literal('y')                                // }
-  ]),                                   
-  Type.Number()                                     
-)
 ```
 
 <a name='types-generics'></a>
