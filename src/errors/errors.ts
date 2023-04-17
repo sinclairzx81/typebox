@@ -265,8 +265,8 @@ export namespace ValueErrors {
     }
   }
   function* Intersect(schema: Types.TIntersect, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
-    for (const subschema of schema.allOf) {
-      const next = Visit(subschema, references, path, value).next()
+    for (const inner of schema.allOf) {
+      const next = Visit(inner, references, path, value).next()
       if (!next.done) {
         yield next.value
         yield { type: ValueErrorType.Intersect, schema, path, value, message: `Expected all sub schemas to be valid` }
@@ -275,8 +275,7 @@ export namespace ValueErrors {
     }
     if (schema.unevaluatedProperties === false) {
       const keyCheck = new RegExp(Types.KeyResolver.ResolvePattern(schema))
-      const valueKeys = globalThis.Object.getOwnPropertyNames(value)
-      for (const valueKey of valueKeys) {
+      for (const valueKey of globalThis.Object.getOwnPropertyNames(value)) {
         if (!keyCheck.test(valueKey)) {
           yield { type: ValueErrorType.IntersectUnevaluatedProperties, schema, path: `${path}/${valueKey}`, value, message: `Unexpected property` }
         }
@@ -284,8 +283,7 @@ export namespace ValueErrors {
     }
     if (typeof schema.unevaluatedProperties === 'object') {
       const keyCheck = new RegExp(Types.KeyResolver.ResolvePattern(schema))
-      const valueKeys = globalThis.Object.getOwnPropertyNames(value)
-      for (const valueKey of valueKeys) {
+      for (const valueKey of globalThis.Object.getOwnPropertyNames(value)) {
         if (!keyCheck.test(valueKey)) {
           const next = Visit(schema.unevaluatedProperties, references, `${path}/${valueKey}`, value[valueKey]).next()
           if (!next.done) {

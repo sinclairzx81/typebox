@@ -209,20 +209,17 @@ export namespace TypeCompiler {
     if (IsNumber(schema.maximum)) yield `${value} <= ${schema.maximum}`
   }
   function* Intersect(schema: Types.TIntersect, references: Types.TSchema[], value: string): IterableIterator<string> {
-    if (schema.unevaluatedProperties === undefined || schema.unevaluatedProperties === true) {
-      const expressions = schema.allOf.map((schema: Types.TSchema) => CreateExpression(schema, references, value))
-      yield `${expressions.join(' && ')}`
-    } else if (schema.unevaluatedProperties === false) {
-      const local = PushLocal(`${new RegExp(Types.KeyResolver.ResolvePattern(schema))};`)
-      const expressions = schema.allOf.map((schema: Types.TSchema) => CreateExpression(schema, references, value))
-      const expression1 = `Object.getOwnPropertyNames(${value}).every(key => ${local}.test(key))`
-      yield `${expressions.join(' && ')} && ${expression1}`
+    const check1 = schema.allOf.map((schema: Types.TSchema) => CreateExpression(schema, references, value)).join(' && ')
+    if (schema.unevaluatedProperties === false) {
+      const keyCheck = PushLocal(`${new RegExp(Types.KeyResolver.ResolvePattern(schema))};`)
+      const check2 = `Object.getOwnPropertyNames(${value}).every(key => ${keyCheck}.test(key))`
+      yield `${check1} && ${check2}`
     } else if (Types.TypeGuard.TSchema(schema.unevaluatedProperties)) {
-      const local = PushLocal(`${new RegExp(Types.KeyResolver.ResolvePattern(schema))};`)
-      const expressions = schema.allOf.map((schema: Types.TSchema) => CreateExpression(schema, references, value))
-      const expression1 = CreateExpression(schema.unevaluatedProperties, references, 'value[key]')
-      const expression2 = `Object.getOwnPropertyNames(${value}).every(key => ${local}.test(key) || ${expression1})`
-      yield `${expressions.join(' && ')} && ${expression2}`
+      const keyCheck = PushLocal(`${new RegExp(Types.KeyResolver.ResolvePattern(schema))};`)
+      const check2 = `Object.getOwnPropertyNames(${value}).every(key => ${keyCheck}.test(key) || ${CreateExpression(schema.unevaluatedProperties, references, 'value[key]')})`
+      yield `${check1} && ${check2}`
+    } else {
+      yield `${check1}`
     }
   }
   function* Literal(schema: Types.TLiteral, references: Types.TSchema[], value: string): IterableIterator<string> {
@@ -291,9 +288,9 @@ export namespace TypeCompiler {
     if (IsNumber(schema.maxProperties)) yield `Object.getOwnPropertyNames(${value}).length <= ${schema.maxProperties}`
     const [patternKey, patternSchema] = globalThis.Object.entries(schema.patternProperties)[0]
     const local = PushLocal(`new RegExp(/${patternKey}/)`)
-    const expr_pass = CreateExpression(patternSchema, references, value)
-    const expr_fail = Types.TypeGuard.TSchema(schema.additionalProperties) ? CreateExpression(schema.additionalProperties, references, value) : schema.additionalProperties === false ? 'false' : 'true'
-    const expression = `(${local}.test(key) ? ${expr_pass} : ${expr_fail})`
+    const check1 = CreateExpression(patternSchema, references, value)
+    const check2 = Types.TypeGuard.TSchema(schema.additionalProperties) ? CreateExpression(schema.additionalProperties, references, value) : schema.additionalProperties === false ? 'false' : 'true'
+    const expression = `(${local}.test(key) ? ${check1} : ${check2})`
     yield `(Object.entries(${value}).every(([key, value]) => ${expression}))`
   }
   function* Ref(schema: Types.TRef<any>, references: Types.TSchema[], value: string): IterableIterator<string> {

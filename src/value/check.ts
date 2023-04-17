@@ -175,18 +175,17 @@ export namespace ValueCheck {
     return true
   }
   function Intersect(schema: Types.TIntersect, references: Types.TSchema[], value: any): boolean {
-    if (!schema.allOf.every((schema) => Visit(schema, references, value))) {
-      return false
-    } else if (schema.unevaluatedProperties === false) {
+    const check1 = schema.allOf.every((schema) => Visit(schema, references, value))
+    if (schema.unevaluatedProperties === false) {
       const keyCheck = new RegExp(Types.KeyResolver.ResolvePattern(schema))
-      const valueKeys = globalThis.Object.getOwnPropertyNames(value)
-      return valueKeys.every((key) => keyCheck.test(key))
+      const check2 = globalThis.Object.getOwnPropertyNames(value).every((key) => keyCheck.test(key))
+      return check1 && check2
     } else if (Types.TypeGuard.TSchema(schema.unevaluatedProperties)) {
       const keyCheck = new RegExp(Types.KeyResolver.ResolvePattern(schema))
-      const valueKeys = globalThis.Object.getOwnPropertyNames(value)
-      return valueKeys.every((key) => keyCheck.test(key) || Visit(schema.unevaluatedProperties as Types.TSchema, references, value[key]))
+      const check2 = globalThis.Object.getOwnPropertyNames(value).every((key) => keyCheck.test(key) || Visit(schema.unevaluatedProperties as Types.TSchema, references, value[key]))
+      return check1 && check2
     } else {
-      return true
+      return check1
     }
   }
   function Literal(schema: Types.TLiteral, references: Types.TSchema[], value: any): boolean {
