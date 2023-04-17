@@ -134,4 +134,27 @@ describe('type/schema/Record', () => {
     const T = Type.Record(Type.Number(), Type.Number(), { additionalProperties: false })
     Fail(T, { '0': 1, '1': 2, '2': 3, '3': 4, a: 'hello' })
   })
+  // ------------------------------------------------------------
+  // AdditionalProperties
+  // ------------------------------------------------------------
+  it('AdditionalProperties 1', () => {
+    const T = Type.Record(Type.Number(), Type.String(), { additionalProperties: true })
+    Ok(T, { 1: '', 2: '', x: 1, y: 2, z: 3 })
+  })
+  it('AdditionalProperties 2', () => {
+    const T = Type.Record(Type.Number(), Type.String(), { additionalProperties: false })
+    Ok(T, { 1: '', 2: '', 3: '' })
+  })
+  it('AdditionalProperties 3', () => {
+    const T = Type.Record(Type.Number(), Type.String(), { additionalProperties: false })
+    Fail(T, { 1: '', 2: '', x: '' })
+  })
+  it('AdditionalProperties 4', () => {
+    const T = Type.Record(Type.Number(), Type.String(), { additionalProperties: Type.Boolean() })
+    Fail(T, { 1: '', 2: '', x: '' })
+  })
+  it('AdditionalProperties 5', () => {
+    const T = Type.Record(Type.Number(), Type.String(), { additionalProperties: Type.Boolean() })
+    Ok(T, { 1: '', 2: '', x: true })
+  })
 })

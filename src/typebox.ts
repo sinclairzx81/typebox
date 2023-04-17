@@ -1863,8 +1863,16 @@ export namespace ObjectMap {
 // KeyResolver
 // --------------------------------------------------------------------------
 export namespace KeyResolver {
+  function UnwrapPattern(key: string) {
+    return key[0] === '^' && key[key.length - 1] === '$' ? key.slice(1, key.length - 1) : key
+  }
   function IsKeyable(schema: TSchema) {
-    return TypeGuard.TIntersect(schema) || TypeGuard.TUnion(schema) || (TypeGuard.TObject(schema) && globalThis.Object.getOwnPropertyNames(schema.properties).length > 0)
+    return (
+      TypeGuard.TIntersect(schema) ||
+      TypeGuard.TUnion(schema) ||
+      (TypeGuard.TObject(schema) && globalThis.Object.getOwnPropertyNames(schema.properties).length > 0) ||
+      (TypeGuard.TRecord(schema) && globalThis.Object.getOwnPropertyNames(schema.patternProperties).length > 0)
+    )
   }
   function Intersect(schema: TIntersect) {
     return [...schema.allOf.filter((schema) => IsKeyable(schema)).reduce((set, schema) => Visit(schema).map((key) => set.add(key))[0], new Set<string>())]
@@ -1876,14 +1884,27 @@ export namespace KeyResolver {
   function Object(schema: TObject) {
     return globalThis.Object.keys(schema.properties)
   }
+  function Record(schema: TRecord) {
+    const key = globalThis.Object.keys(schema.patternProperties)[0]
+    return [key]
+  }
   function Visit(schema: TSchema): string[] {
     if (TypeGuard.TIntersect(schema)) return Intersect(schema)
     if (TypeGuard.TUnion(schema)) return Union(schema)
     if (TypeGuard.TObject(schema)) return Object(schema)
+    if (TypeGuard.TRecord(schema)) return Record(schema)
     return []
   }
-  export function Resolve<T extends TSchema>(schema: T) {
+  /** Resolves an array of keys in this schema */
+  export function ResolveKeys(schema: TSchema): string[] {
     return Visit(schema)
+  }
+  /** Resolves a regular expression pattern matching all keys in this schema */
+  export function ResolvePattern(schema: TSchema): string {
+    const pattern = ResolveKeys(schema)
+      .map((key) => `(${UnwrapPattern(key)})`)
+      .join('|')
+    return `^(${pattern})$`
   }
 }
 // --------------------------------------------------------------------------
@@ -2274,7 +2295,7 @@ export class StandardTypeBuilder extends TypeBuilder {
       if (pattern === PatternStringExact) return this.String(options) as TKeyOf<T>
       throw Error('StandardTypeBuilder: Unable to resolve key type from Record key pattern')
     } else {
-      const resolved = KeyResolver.Resolve(schema)
+      const resolved = KeyResolver.ResolveKeys(schema)
       if (resolved.length === 0) return this.Never(options) as TKeyOf<T>
       const literals = resolved.map((key) => this.Literal(key))
       return this.Union(literals, options) as TKeyOf<T>

@@ -168,4 +168,32 @@ describe('value/check/Record', () => {
     const result = Value.Check(T, value)
     Assert.equal(result, false)
   })
+  // ------------------------------------------------------------
+  // AdditionalProperties
+  // ------------------------------------------------------------
+  it('AdditionalProperties 1', () => {
+    const T = Type.Record(Type.Number(), Type.String(), { additionalProperties: true })
+    const R = Value.Check(T, { 1: '', 2: '', x: 1, y: 2, z: 3 })
+    Assert.equal(R, true)
+  })
+  it('AdditionalProperties 2', () => {
+    const T = Type.Record(Type.Number(), Type.String(), { additionalProperties: false })
+    const R = Value.Check(T, { 1: '', 2: '', 3: '' })
+    Assert.equal(R, true)
+  })
+  it('AdditionalProperties 3', () => {
+    const T = Type.Record(Type.Number(), Type.String(), { additionalProperties: false })
+    const R = Value.Check(T, { 1: '', 2: '', x: '' })
+    Assert.equal(R, false)
+  })
+  it('AdditionalProperties 4', () => {
+    const T = Type.Record(Type.Number(), Type.String(), { additionalProperties: Type.Boolean() })
+    const R = Value.Check(T, { 1: '', 2: '', x: '' })
+    Assert.equal(R, false)
+  })
+  it('AdditionalProperties 5', () => {
+    const T = Type.Record(Type.Number(), Type.String(), { additionalProperties: Type.Boolean() })
+    const R = Value.Check(T, { 1: '', 2: '', x: true })
+    Assert.equal(R, true)
+  })
 })

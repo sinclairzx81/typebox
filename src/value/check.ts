@@ -178,13 +178,13 @@ export namespace ValueCheck {
     if (!schema.allOf.every((schema) => Visit(schema, references, value))) {
       return false
     } else if (schema.unevaluatedProperties === false) {
-      const schemaKeys = Types.KeyResolver.Resolve(schema)
+      const keyCheck = new RegExp(Types.KeyResolver.ResolvePattern(schema))
       const valueKeys = globalThis.Object.getOwnPropertyNames(value)
-      return valueKeys.every((key) => schemaKeys.includes(key))
+      return valueKeys.every((key) => keyCheck.test(key))
     } else if (Types.TypeGuard.TSchema(schema.unevaluatedProperties)) {
-      const schemaKeys = Types.KeyResolver.Resolve(schema)
+      const keyCheck = new RegExp(Types.KeyResolver.ResolvePattern(schema))
       const valueKeys = globalThis.Object.getOwnPropertyNames(value)
-      return valueKeys.every((key) => schemaKeys.includes(key) || Visit(schema.unevaluatedProperties as Types.TSchema, references, value[key]))
+      return valueKeys.every((key) => keyCheck.test(key) || Visit(schema.unevaluatedProperties as Types.TSchema, references, value[key]))
     } else {
       return true
     }

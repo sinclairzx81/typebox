@@ -274,19 +274,19 @@ export namespace ValueErrors {
       }
     }
     if (schema.unevaluatedProperties === false) {
-      const schemaKeys = Types.KeyResolver.Resolve(schema)
+      const keyCheck = new RegExp(Types.KeyResolver.ResolvePattern(schema))
       const valueKeys = globalThis.Object.getOwnPropertyNames(value)
       for (const valueKey of valueKeys) {
-        if (!schemaKeys.includes(valueKey)) {
+        if (!keyCheck.test(valueKey)) {
           yield { type: ValueErrorType.IntersectUnevaluatedProperties, schema, path: `${path}/${valueKey}`, value, message: `Unexpected property` }
         }
       }
     }
     if (typeof schema.unevaluatedProperties === 'object') {
-      const schemaKeys = Types.KeyResolver.Resolve(schema)
+      const keyCheck = new RegExp(Types.KeyResolver.ResolvePattern(schema))
       const valueKeys = globalThis.Object.getOwnPropertyNames(value)
       for (const valueKey of valueKeys) {
-        if (!schemaKeys.includes(valueKey)) {
+        if (!keyCheck.test(valueKey)) {
           const next = Visit(schema.unevaluatedProperties, references, `${path}/${valueKey}`, value[valueKey]).next()
           if (!next.done) {
             yield next.value

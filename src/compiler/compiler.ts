@@ -209,21 +209,19 @@ export namespace TypeCompiler {
     if (IsNumber(schema.maximum)) yield `${value} <= ${schema.maximum}`
   }
   function* Intersect(schema: Types.TIntersect, references: Types.TSchema[], value: string): IterableIterator<string> {
-    if (schema.unevaluatedProperties === undefined) {
+    if (schema.unevaluatedProperties === undefined || schema.unevaluatedProperties === true) {
       const expressions = schema.allOf.map((schema: Types.TSchema) => CreateExpression(schema, references, value))
       yield `${expressions.join(' && ')}`
     } else if (schema.unevaluatedProperties === false) {
-      // prettier-ignore
-      const schemaKeys = Types.KeyResolver.Resolve(schema).map((key) => `'${key}'`).join(', ')
+      const local = PushLocal(`${new RegExp(Types.KeyResolver.ResolvePattern(schema))};`)
       const expressions = schema.allOf.map((schema: Types.TSchema) => CreateExpression(schema, references, value))
-      const expression1 = `Object.getOwnPropertyNames(${value}).every(key => [${schemaKeys}].includes(key))`
+      const expression1 = `Object.getOwnPropertyNames(${value}).every(key => ${local}.test(key))`
       yield `${expressions.join(' && ')} && ${expression1}`
-    } else if (typeof schema.unevaluatedProperties === 'object') {
-      // prettier-ignore
-      const schemaKeys = Types.KeyResolver.Resolve(schema).map((key) => `'${key}'`).join(', ')
+    } else if (Types.TypeGuard.TSchema(schema.unevaluatedProperties)) {
+      const local = PushLocal(`${new RegExp(Types.KeyResolver.ResolvePattern(schema))};`)
       const expressions = schema.allOf.map((schema: Types.TSchema) => CreateExpression(schema, references, value))
       const expression1 = CreateExpression(schema.unevaluatedProperties, references, 'value[key]')
-      const expression2 = `Object.getOwnPropertyNames(${value}).every(key => [${schemaKeys}].includes(key) || ${expression1})`
+      const expression2 = `Object.getOwnPropertyNames(${value}).every(key => ${local}.test(key) || ${expression1})`
       yield `${expressions.join(' && ')} && ${expression2}`
     }
   }
