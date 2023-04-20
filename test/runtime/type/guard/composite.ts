@@ -10,11 +10,11 @@ describe('type/guard/TComposite', () => {
   })
   it('Should guard for overlapping properties', () => {
     const T = Type.Composite([Type.Object({ x: Type.Number() }), Type.Object({ x: Type.Number() })])
-    Assert.equal(TypeGuard.TNumber(T.properties.x), true)
-  })
-  it('Should guard for illogical intersection and yield never', () => {
-    const T = Type.Composite([Type.Object({ x: Type.Number() }), Type.Object({ x: Type.String() })])
-    Assert.equal(TypeGuard.TNever(T.properties.x), true)
+    Assert.equal(TypeGuard.TIntersect(T.properties.x), true)
+    // @ts-ignore
+    Assert.equal(TypeGuard.TNumber(T.properties.x.allOf[0]), true)
+    // @ts-ignore
+    Assert.equal(TypeGuard.TNumber(T.properties.x.allOf[1]), true)
   })
   it('Should not produce optional property if all properties are not optional', () => {
     const T = Type.Composite([Type.Object({ x: Type.Optional(Type.Number()) }), Type.Object({ x: Type.Number() })])

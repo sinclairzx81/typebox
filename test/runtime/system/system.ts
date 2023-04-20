@@ -135,9 +135,13 @@ describe('system/TypeSystem/AllowArrayObjects', () => {
     const T = Type.Record(Type.String(), Type.Number())
     Ok(T, [0, 1, 2])
   })
-  it('Should not validate arrays as Records with Number Keys', () => {
+  it('Should validate arrays as Records with Number Keys', () => {
+    const T = Type.Record(Type.Number(), Type.Number())
+    Ok(T, [0, 1, 2])
+  })
+  it('Should validate arrays as Records with Integer Keys', () => {
     const T = Type.Record(Type.Integer(), Type.Number())
-    Fail(T, [0, 1, 2])
+    Ok(T, [0, 1, 2])
   })
   it('Should not validate arrays as Records with Object Values', () => {
     const T = Type.Record(

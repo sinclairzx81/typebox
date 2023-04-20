@@ -81,4 +81,139 @@ describe('value/check/Intersect', () => {
     const T = Type.Intersect([A, B])
     Assert.equal(Value.Check(T, { x: 1, y: 1 }), false)
   })
+  it('unevaluatedProperties with Record 1', () => {
+    const T = Type.Intersect(
+      [
+        Type.Record(Type.Number(), Type.String()),
+        Type.Object({
+          x: Type.Number(),
+          y: Type.Number(),
+        }),
+      ],
+      {
+        unevaluatedProperties: false,
+      },
+    )
+    Assert.equal(Value.Check(T, { x: 1, y: 2 }), true)
+  })
+  it('unevaluatedProperties with Record 2', () => {
+    const T = Type.Intersect(
+      [
+        Type.Record(Type.Number(), Type.String()),
+        Type.Object({
+          x: Type.Number(),
+          y: Type.Number(),
+        }),
+      ],
+      {
+        unevaluatedProperties: false,
+      },
+    )
+    Assert.equal(Value.Check(T, { x: 1, y: 2, 0: 'hello' }), true)
+  })
+  it('unevaluatedProperties with Record 3', () => {
+    const T = Type.Intersect(
+      [
+        Type.Record(Type.Number(), Type.String()),
+        Type.Object({
+          x: Type.Number(),
+          y: Type.Number(),
+        }),
+      ],
+      {
+        unevaluatedProperties: false,
+      },
+    )
+    Assert.equal(Value.Check(T, { x: 1, y: 2, 0: 1 }), false)
+  })
+  it('unevaluatedProperties with Record 4', () => {
+    const T = Type.Intersect(
+      [
+        Type.Record(Type.Number(), Type.String()),
+        Type.Object({
+          x: Type.Number(),
+          y: Type.Number(),
+        }),
+      ],
+      {
+        unevaluatedProperties: Type.Boolean(),
+      },
+    )
+    Assert.equal(Value.Check(T, { x: 1, y: 2 }), true)
+  })
+  it('unevaluatedProperties with Record 5', () => {
+    const T = Type.Intersect(
+      [
+        Type.Record(Type.Number(), Type.String()),
+        Type.Object({
+          x: Type.Number(),
+          y: Type.Number(),
+        }),
+      ],
+      {
+        unevaluatedProperties: Type.Boolean(),
+      },
+    )
+    Assert.equal(Value.Check(T, { x: 1, y: 2, z: true }), true)
+  })
+  it('unevaluatedProperties with Record 6', () => {
+    const T = Type.Intersect(
+      [
+        Type.Record(Type.Number(), Type.String()),
+        Type.Object({
+          x: Type.Number(),
+          y: Type.Number(),
+        }),
+      ],
+      {
+        unevaluatedProperties: Type.Boolean(),
+      },
+    )
+    Assert.equal(Value.Check(T, { x: 1, y: 2, z: 1 }), false)
+  })
+  it('unevaluatedProperties with Record 7', () => {
+    const T = Type.Intersect(
+      [
+        Type.Record(Type.Number(), Type.String()),
+        Type.Object({
+          x: Type.Number(),
+          y: Type.Number(),
+        }),
+      ],
+      {
+        unevaluatedProperties: Type.Boolean(),
+      },
+    )
+    Assert.equal(Value.Check(T, { x: 1, y: 2, 0: '' }), true)
+  })
+  it('unevaluatedProperties with Record 8', () => {
+    const T = Type.Intersect(
+      [
+        Type.Record(Type.Number(), Type.String()),
+        Type.Object({
+          x: Type.Number(),
+          y: Type.Number(),
+        }),
+      ],
+      {
+        unevaluatedProperties: Type.Boolean(),
+      },
+    )
+    Assert.equal(Value.Check(T, { x: 1, y: 2, 0: '', z: true }), true)
+  })
+  it('unevaluatedProperties with Record 9', () => {
+    const T = Type.Intersect(
+      [
+        Type.Record(Type.Number(), Type.String()),
+        Type.Object({
+          x: Type.Number(),
+          y: Type.Number(),
+        }),
+      ],
+      {
+        unevaluatedProperties: Type.Boolean(),
+      },
+    )
+    Assert.equal(Value.Check(T, { x: 1, y: 2, 0: '', z: 1 }), false)
+  })
 })

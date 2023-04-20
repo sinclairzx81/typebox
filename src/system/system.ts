@@ -52,7 +52,6 @@ export namespace TypeSystem {
   export let AllowNaN: boolean = false
   /** Sets whether `null` should validate for void types. The default is `false` */
   export let AllowVoidNull: boolean = false
-
   // ------------------------------------------------------------------------
   // String Formats and Types
   // ------------------------------------------------------------------------
@@ -67,17 +66,5 @@ export namespace TypeSystem {
     if (Types.FormatRegistry.Has(format)) throw new TypeSystemDuplicateFormat(format)
     Types.FormatRegistry.Set(format, check)
     return format
-  }
-
-  // ------------------------------------------------------------------------
-  // Deprecated
-  // ------------------------------------------------------------------------
-  /** @deprecated Use `TypeSystem.Type()` instead. */
-  export function CreateType<Type, Options = object>(kind: string, check: (options: Options, value: unknown) => boolean) {
-    return Type<Type, Options>(kind, check)
-  }
-  /** @deprecated Use `TypeSystem.Format()` instead.  */
-  export function CreateFormat<F extends string>(format: F, check: (value: string) => boolean): F {
-    return Format<F>(format, check)
   }
 }
