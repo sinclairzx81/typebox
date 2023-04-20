@@ -55,14 +55,14 @@ export type Ensure<T> = T extends infer U ? U : never
 // --------------------------------------------------------------------------
 // Type Assertions
 // --------------------------------------------------------------------------
-export type Key = keyof any
-export type AssertKey<T> = Assert<T, keyof any>
-export type AssertKeys<T> = Assert<T, (keyof any)[]>
-export type AssertSchema<T, E extends TSchema = TSchema> = T extends E ? T : TNever
-export type AssertSchemas<T, E extends TSchema[] = TSchema[]> = T extends E ? T : []
-export type AssertObject<T> = Assert<T, TObject>
-export type AssertObjects<T> = Assert<T, TObject[]>
 export type AssertProperties<T> = T extends TProperties ? T : TProperties
+export type AssertSchemas<T, E extends TSchema[] = TSchema[]> = T extends E ? T : []
+export type AssertSchema<T, E extends TSchema = TSchema> = T extends E ? T : TNever
+export type AssertObjects<T> = Assert<T, TObject[]>
+export type AssertObject<T> = Assert<T, TObject>
+export type AssertKeys<T> = Assert<T, Key[]>
+export type AssertKey<T> = Assert<T, Key>
+export type Key = keyof any
 // --------------------------------------------------------------------------
 // Type Normalization
 // --------------------------------------------------------------------------
