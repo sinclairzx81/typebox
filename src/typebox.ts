@@ -710,7 +710,7 @@ export interface TUndefined extends TSchema {
 // --------------------------------------------------------------------------
 // prettier-ignore
 export type TLiteralUnionReduce<T extends TLiteral<string | number>[]> = 
-  T extends [infer L, ...infer R] ? [Assert<L, TLiteral<string | number>>['const'], ...TLiteralUnionReduce<Assert<R, TLiteral<string>[]>>] : 
+  T extends [infer L, ...infer R] ? [Assert<L, TLiteral<string | number>>['const'], ...TLiteralUnionReduce<Assert<R, TLiteral<string | number>[]>>] : 
   []
 // prettier-ignore
 export type TLiteralUnion<T extends TUnion<TLiteral<string | number>[]>> = 
