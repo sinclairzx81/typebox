@@ -1,15 +1,9 @@
 import { TypeSystem } from '@sinclair/typebox/system'
 import { TypeCompiler } from '@sinclair/typebox/compiler'
 import { Value, ValuePointer } from '@sinclair/typebox/value'
-import { Type, TypeGuard, Kind, Static, TSchema } from '@sinclair/typebox'
+import { Type, UnionResolver, TypeGuard, Kind, Static, TNever, TSchema, TUnion } from '@sinclair/typebox'
 
-type S = { 0: number }
-type M = S['0']
+const U = Type.Union([Type.Literal('A'), Type.Literal('B'), Type.Literal('C')])
+const X = Type.Record(U, Type.Number())
 
-const S = Type.Object({
-  0: Type.Number(),
-})
-
-type T = Static<typeof T>
-const T = Type.Index(S, Type.Literal('0'))
-console.log(T)
+console.log(X)
