@@ -27,3 +27,24 @@ import { Type, Static } from '@sinclair/typebox'
   const I = Type.Index(T, Type.TemplateLiteral([Type.Literal('a'), Type.Union([Type.Literal('b'), Type.Literal('c')])]))
   Expect(I).ToInfer<number | string>()
 }
+{
+  const A = Type.Tuple([Type.String(), Type.Boolean()])
+
+  const R = Type.Index(A, Type.Number())
+
+  Expect(R).ToInfer<string | boolean>()
+}
+{
+  const A = Type.Tuple([Type.String()])
+
+  const R = Type.Index(A, Type.Number())
+
+  Expect(R).ToInfer<string>()
+}
+{
+  const A = Type.Tuple([])
+
+  const R = Type.Index(A, Type.Number())
+
+  Expect(R).ToInfer<never>()
+}

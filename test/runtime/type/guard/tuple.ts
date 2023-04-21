@@ -5,19 +5,19 @@ import { Assert } from '../../assert/index'
 describe('type/guard/TTuple', () => {
   it('Should guard for TTuple', () => {
     const R = TypeGuard.TTuple(Type.Tuple([Type.Number(), Type.Number()]))
-    Assert.equal(R, true)
+    Assert.isEqual(R, true)
   })
   it('Should not guard for TTuple', () => {
     const R = TypeGuard.TTuple(null)
-    Assert.equal(R, false)
+    Assert.isEqual(R, false)
   })
   it('Should not guard for TTuple with invalid $id', () => {
     // @ts-ignore
     const R = TypeGuard.TTuple(Type.Tuple([Type.Number(), Type.Number()], { $id: 1 }))
-    Assert.equal(R, false)
+    Assert.isEqual(R, false)
   })
   it('Should not guard for TTuple with invalid Items', () => {
     const R = TypeGuard.TTuple(Type.Tuple([Type.Number(), {} as any]))
-    Assert.equal(R, false)
+    Assert.isEqual(R, false)
   })
 })

@@ -6,7 +6,7 @@ describe('type/guard/TThis', () => {
   it('Should guard for TThis', () => {
     Type.Recursive((This) => {
       const R = TypeGuard.TThis(This)
-      Assert.equal(R, true)
+      Assert.isEqual(R, true)
       return Type.Object({ nodes: Type.Array(This) })
     })
   })
@@ -15,7 +15,7 @@ describe('type/guard/TThis', () => {
       // @ts-ignore
       This.$ref = 1
       const R = TypeGuard.TThis(This)
-      Assert.equal(R, false)
+      Assert.isEqual(R, false)
       return Type.Object({ nodes: Type.Array(This) })
     })
   })

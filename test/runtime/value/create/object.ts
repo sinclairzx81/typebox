@@ -9,7 +9,7 @@ describe('value/create/Object', () => {
       y: Type.Number(),
       z: Type.Number(),
     })
-    Assert.deepEqual(Value.Create(T), {
+    Assert.isEqual(Value.Create(T), {
       x: 0,
       y: 0,
       z: 0,
@@ -22,7 +22,7 @@ describe('value/create/Object', () => {
       y: Type.Optional(Type.Number()),
       z: Type.Optional(Type.Number()),
     })
-    Assert.deepEqual(Value.Create(T), {})
+    Assert.isEqual(Value.Create(T), {})
   })
 
   it('Should create default with default properties', () => {
@@ -31,7 +31,7 @@ describe('value/create/Object', () => {
       y: Type.Number({ default: 2 }),
       z: Type.Number({ default: 3 }),
     })
-    Assert.deepEqual(Value.Create(T), {
+    Assert.isEqual(Value.Create(T), {
       x: 1,
       y: 2,
       z: 3,
@@ -49,7 +49,7 @@ describe('value/create/Object', () => {
         z: Type.Number(),
       }),
     })
-    Assert.deepEqual(Value.Create(T), {
+    Assert.isEqual(Value.Create(T), {
       x: 0,
       y: 0,
       z: 0,
@@ -66,7 +66,7 @@ describe('value/create/Object', () => {
       },
       { default: { x: 1, y: 2, z: 3 } },
     )
-    Assert.deepEqual(Value.Create(T), {
+    Assert.isEqual(Value.Create(T), {
       x: 1,
       y: 2,
       z: 3,

@@ -9,9 +9,9 @@ describe('type/guard/TKeyOf', () => {
       y: Type.Number(),
     })
     const K = Type.KeyOf(T)
-    Assert.deepEqual(TypeGuard.TUnion(K), true)
-    Assert.deepEqual(TypeGuard.TLiteral(K.anyOf[0]), true)
-    Assert.deepEqual(TypeGuard.TLiteral(K.anyOf[1]), true)
+    Assert.isEqual(TypeGuard.TUnion(K), true)
+    Assert.isEqual(TypeGuard.TLiteral(K.anyOf[0]), true)
+    Assert.isEqual(TypeGuard.TLiteral(K.anyOf[1]), true)
   })
   it('Should KeyOf 2', () => {
     const T = Type.Recursive((Self) =>
@@ -21,9 +21,9 @@ describe('type/guard/TKeyOf', () => {
       }),
     )
     const K = Type.KeyOf(T)
-    Assert.deepEqual(TypeGuard.TUnion(K), true)
-    Assert.deepEqual(TypeGuard.TLiteral(K.anyOf[0]), true)
-    Assert.deepEqual(TypeGuard.TLiteral(K.anyOf[1]), true)
+    Assert.isEqual(TypeGuard.TUnion(K), true)
+    Assert.isEqual(TypeGuard.TLiteral(K.anyOf[0]), true)
+    Assert.isEqual(TypeGuard.TLiteral(K.anyOf[1]), true)
   })
   it('Should KeyOf 3', () => {
     const T = Type.Intersect([
@@ -35,9 +35,9 @@ describe('type/guard/TKeyOf', () => {
       }),
     ])
     const K = Type.KeyOf(T)
-    Assert.deepEqual(TypeGuard.TUnion(K), true)
-    Assert.deepEqual(TypeGuard.TLiteral(K.anyOf[0]), true)
-    Assert.deepEqual(TypeGuard.TLiteral(K.anyOf[1]), true)
+    Assert.isEqual(TypeGuard.TUnion(K), true)
+    Assert.isEqual(TypeGuard.TLiteral(K.anyOf[0]), true)
+    Assert.isEqual(TypeGuard.TLiteral(K.anyOf[1]), true)
   })
   it('Should KeyOf 4', () => {
     const T = Type.Union([
@@ -49,28 +49,28 @@ describe('type/guard/TKeyOf', () => {
       }),
     ])
     const K = Type.KeyOf(T)
-    Assert.deepEqual(TypeGuard.TNever(K), true)
+    Assert.isEqual(TypeGuard.TNever(K), true)
   })
   it('Should KeyOf 5', () => {
     const T = Type.Null()
     const K = Type.KeyOf(T)
-    Assert.deepEqual(TypeGuard.TNever(K), true)
+    Assert.isEqual(TypeGuard.TNever(K), true)
   })
   it('Should KeyOf 6', () => {
     const T = Type.Array(Type.Number())
     const K = Type.KeyOf(T)
-    Assert.deepEqual(TypeGuard.TNumber(K), true)
+    Assert.isEqual(TypeGuard.TNumber(K), true)
   })
   it('Should KeyOf 7', () => {
     const T = Type.Tuple([])
     const K = Type.KeyOf(T)
-    Assert.deepEqual(TypeGuard.TNever(K), true)
+    Assert.isEqual(TypeGuard.TNever(K), true)
   })
   it('Should KeyOf 8', () => {
     const T = Type.Tuple([Type.Number(), Type.Null()])
     const K = Type.KeyOf(T)
-    Assert.deepEqual(TypeGuard.TUnion(K), true)
-    Assert.deepEqual(K.anyOf[0].const, '0')
-    Assert.deepEqual(K.anyOf[1].const, '1')
+    Assert.isEqual(TypeGuard.TUnion(K), true)
+    Assert.isEqual(K.anyOf[0].const, '0')
+    Assert.isEqual(K.anyOf[1].const, '1')
   })
 })

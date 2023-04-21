@@ -10,7 +10,7 @@ describe('value/cast/Intersect', () => {
       Type.Object({ y: Type.Number() })
     ])
     const V = Value.Cast(T, 1)
-    Assert.deepEqual(V, { x: 0, y: 0 })
+    Assert.isEqual(V, { x: 0, y: 0 })
   })
   it('Should cast from an partial object and preserve', () => {
     // prettier-ignore
@@ -19,7 +19,7 @@ describe('value/cast/Intersect', () => {
       Type.Object({ y: Type.Number() })
     ])
     const V = Value.Cast(T, { x: 1 })
-    Assert.deepEqual(V, { x: 1, y: 0 })
+    Assert.isEqual(V, { x: 1, y: 0 })
   })
   it('Should cast and use default values', () => {
     // prettier-ignore
@@ -28,7 +28,7 @@ describe('value/cast/Intersect', () => {
       Type.Object({ y: Type.Number({ default: 42 }) })
     ])
     const V = Value.Cast(T, { x: 1 })
-    Assert.deepEqual(V, { x: 1, y: 42 })
+    Assert.isEqual(V, { x: 1, y: 42 })
   })
   it('Should throw with an illogical intersect', () => {
     // prettier-ignore
@@ -53,7 +53,7 @@ describe('value/cast/Intersect', () => {
       Type.Object({ x: Type.Number({ default: 1000 }) })
     ])
     const V = Value.Cast(T, null)
-    Assert.deepEqual(V, { x: 1000 })
+    Assert.isEqual(V, { x: 1000 })
   })
   it('Should use last intersected default for equivalent sub schemas (primitives)', () => {
     // prettier-ignore
@@ -62,7 +62,7 @@ describe('value/cast/Intersect', () => {
       Type.Number({ default: 1000 })
     ])
     const V = Value.Cast(T, null)
-    Assert.deepEqual(V, 1000)
+    Assert.isEqual(V, 1000)
   })
   it('Should preserve if default is specified', () => {
     // prettier-ignore
@@ -71,6 +71,6 @@ describe('value/cast/Intersect', () => {
       Type.Number({ default: 1000 })
     ])
     const V = Value.Cast(T, 2000)
-    Assert.deepEqual(V, 2000)
+    Assert.isEqual(V, 2000)
   })
 })

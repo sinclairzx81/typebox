@@ -11,6 +11,6 @@ describe('value/create/RegEx', () => {
   })
   it('Should create default', () => {
     const T = Type.RegEx(/foo/, { default: 'foo' })
-    Assert.deepEqual(Value.Create(T), 'foo')
+    Assert.isEqual(Value.Create(T), 'foo')
   })
 })

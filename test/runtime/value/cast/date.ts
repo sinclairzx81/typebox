@@ -8,31 +8,31 @@ describe('value/cast/Date', () => {
   it('Should upcast from string', () => {
     const value = 'world'
     const result = Value.Cast(T, value)
-    Assert.deepEqual(result, E)
+    Assert.isEqual(result, E)
   })
   it('Should upcast from object', () => {
     const value = {}
     const result = Value.Cast(T, value)
-    Assert.deepEqual(result, E)
+    Assert.isEqual(result, E)
   })
   it('Should upcast from array', () => {
     const value = [1]
     const result = Value.Cast(T, value)
-    Assert.deepEqual(result, E)
+    Assert.isEqual(result, E)
   })
   it('Should upcast from undefined', () => {
     const value = undefined
     const result = Value.Cast(T, value)
-    Assert.deepEqual(result, E)
+    Assert.isEqual(result, E)
   })
   it('Should upcast from null', () => {
     const value = null
     const result = Value.Cast(T, value)
-    Assert.deepEqual(result, E)
+    Assert.isEqual(result, E)
   })
   it('Should preseve', () => {
     const value = new Date(100)
     const result = Value.Cast(T, value)
-    Assert.deepEqual(result.getTime(), 100)
+    Assert.isEqual(result.getTime(), 100)
   })
 })

@@ -33,49 +33,49 @@ describe('value/mutate/Mutate', () => {
     const X = { y: Y }
     const A = { x: X }
     Value.Mutate(A, {})
-    Assert.deepEqual(A, {})
+    Assert.isEqual(A, {})
   })
   it('Should mutate 1', () => {
     const Y = { z: 1 }
     const X = { y: Y }
     const A = { x: X }
     Value.Mutate(A, { x: { y: { z: 2 } } })
-    Assert.equal(A.x.y.z, 2)
-    Assert.equal(A.x.y, Y)
-    Assert.equal(A.x, X)
+    Assert.isEqual(A.x.y.z, 2)
+    Assert.isEqual(A.x.y, Y)
+    Assert.isEqual(A.x, X)
   })
   it('Should mutate 2', () => {
     const Y = { z: 1 }
     const X = { y: Y }
     const A = { x: X }
     Value.Mutate(A, { x: { y: { z: [1, 2, 3] } } })
-    Assert.deepEqual(A.x.y.z, [1, 2, 3])
-    Assert.equal(A.x.y, Y)
-    Assert.equal(A.x, X)
+    Assert.isEqual(A.x.y.z, [1, 2, 3])
+    Assert.isEqual(A.x.y, Y)
+    Assert.isEqual(A.x, X)
   })
   it('Should mutate 3', () => {
     const Y = { z: 1 }
     const X = { y: Y }
     const A = { x: X }
     Value.Mutate(A, { x: {} })
-    Assert.equal(A.x.y, undefined)
-    Assert.equal(A.x, X)
+    Assert.isEqual(A.x.y, undefined)
+    Assert.isEqual(A.x, X)
   })
   it('Should mutate 4', () => {
     const Y = { z: 1 }
     const X = { y: Y }
     const A = { x: X }
     Value.Mutate(A, { x: { y: 1 } })
-    Assert.equal(A.x.y, 1)
-    Assert.equal(A.x, X)
+    Assert.isEqual(A.x.y, 1)
+    Assert.isEqual(A.x, X)
   })
   it('Should mutate 5', () => {
     const Y = { z: 1 }
     const X = { y: Y }
     const A = { x: X }
     Value.Mutate(A, { x: { y: [1, 2, 3] } })
-    Assert.deepEqual(A.x.y, [1, 2, 3])
-    Assert.equal(A.x, X)
+    Assert.isEqual(A.x.y, [1, 2, 3])
+    Assert.isEqual(A.x, X)
   })
   it('Should mutate 6', () => {
     const Y = { z: 1 }
@@ -83,6 +83,6 @@ describe('value/mutate/Mutate', () => {
     const A = { x: X }
     Value.Mutate(A, { x: [1, 2, 3] })
     Assert.notEqual(A.x, X)
-    Assert.deepEqual(A.x, [1, 2, 3])
+    Assert.isEqual(A.x, [1, 2, 3])
   })
 })

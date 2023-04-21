@@ -14,11 +14,11 @@ describe('type/guard/TUnion', () => {
         }),
       ]),
     )
-    Assert.equal(R, true)
+    Assert.isEqual(R, true)
   })
   it('Should not guard for TUnion', () => {
     const R = TypeGuard.TUnion(null)
-    Assert.equal(R, false)
+    Assert.isEqual(R, false)
   })
   it('Should guard for TUnion with invalid $id', () => {
     const R = TypeGuard.TUnion(
@@ -38,7 +38,7 @@ describe('type/guard/TUnion', () => {
         },
       ),
     )
-    Assert.equal(R, false)
+    Assert.isEqual(R, false)
   })
   it('Should not guard for TUnion with invalid variant', () => {
     const R = TypeGuard.TUnion(
@@ -49,7 +49,7 @@ describe('type/guard/TUnion', () => {
         {} as any,
       ]),
     )
-    Assert.equal(R, false)
+    Assert.isEqual(R, false)
   })
   it('Should not guard for TUnion with invalid object variant', () => {
     const R = TypeGuard.TUnion(
@@ -62,25 +62,25 @@ describe('type/guard/TUnion', () => {
         }),
       ]),
     )
-    Assert.equal(R, false)
+    Assert.isEqual(R, false)
   })
   it('Transform: Should transform to never for zero length union', () => {
     const T = Type.Union([])
     const R = TypeGuard.TNever(T)
-    Assert.equal(R, true)
+    Assert.isEqual(R, true)
   })
   it('Transform: Should unwrap union type for array of length === 1', () => {
     const T = Type.Union([Type.String()])
     const R = TypeGuard.TString(T)
-    Assert.equal(R, true)
+    Assert.isEqual(R, true)
   })
   it('Transform: Should retain union if array length > 1', () => {
     const T = Type.Union([Type.String(), Type.Number()])
     const R1 = TypeGuard.TUnion(T)
     const R2 = TypeGuard.TString(T.anyOf[0])
     const R3 = TypeGuard.TNumber(T.anyOf[1])
-    Assert.equal(R1, true)
-    Assert.equal(R2, true)
-    Assert.equal(R3, true)
+    Assert.isEqual(R1, true)
+    Assert.isEqual(R2, true)
+    Assert.isEqual(R3, true)
   })
 })

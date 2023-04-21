@@ -5,18 +5,18 @@ import { Assert } from '../../assert/index'
 describe('value/create/Literal', () => {
   it('Should create literal string', () => {
     const T = Type.Literal('hello')
-    Assert.deepEqual(Value.Create(T), 'hello')
+    Assert.isEqual(Value.Create(T), 'hello')
   })
   it('Should create literal number', () => {
     const T = Type.Literal(1)
-    Assert.deepEqual(Value.Create(T), 1)
+    Assert.isEqual(Value.Create(T), 1)
   })
   it('Should create literal boolean', () => {
     const T = Type.Literal(true)
-    Assert.deepEqual(Value.Create(T), true)
+    Assert.isEqual(Value.Create(T), true)
   })
   it('Should create literal from default value', () => {
     const T = Type.Literal(true, { default: 'hello' })
-    Assert.deepEqual(Value.Create(T), 'hello')
+    Assert.isEqual(Value.Create(T), 'hello')
   })
 })

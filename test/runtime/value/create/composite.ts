@@ -15,7 +15,7 @@ describe('value/create/Composite', () => {
       c: Type.Number(),
     })
     const T = Type.Composite([A, B])
-    Assert.deepEqual(Value.Create(T), {
+    Assert.isEqual(Value.Create(T), {
       x: 0,
       y: 0,
       z: 0,
@@ -36,7 +36,7 @@ describe('value/create/Composite', () => {
       c: Type.Number({ default: 6 }),
     })
     const T = Type.Composite([A, B])
-    Assert.deepEqual(Value.Create(T), {
+    Assert.isEqual(Value.Create(T), {
       x: 1,
       y: 2,
       z: 3,
@@ -57,7 +57,7 @@ describe('value/create/Composite', () => {
       c: Type.Optional(Type.Number()),
     })
     const T = Type.Composite([A, B])
-    Assert.deepEqual(Value.Create(T), {
+    Assert.isEqual(Value.Create(T), {
       x: 0,
       y: 0,
       z: 0,

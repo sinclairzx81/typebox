@@ -7,6 +7,6 @@ describe('type/normal/Record', () => {
     const K = Type.Union([Type.Literal('A'), Type.Literal('B')])
     const T = Type.Record(K, Type.String())
     const R = TypeGuard.TObject(T)
-    Assert.deepEqual(R, true)
+    Assert.isEqual(R, true)
   })
 })

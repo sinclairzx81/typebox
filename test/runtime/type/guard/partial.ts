@@ -9,15 +9,15 @@ describe('type/guard/TPartial', () => {
   // -------------------------------------------------------------------------
   it('Should support TUnsafe partial properties with no Kind', () => {
     const T = Type.Partial(Type.Object({ x: Type.Unsafe({ x: 1 }) }))
-    Assert.deepEqual(T.required, undefined)
+    Assert.isEqual(T.required, undefined)
   })
   it('Should support TUnsafe partial properties with unregistered Kind', () => {
     const T = Type.Partial(Type.Object({ x: Type.Unsafe({ [Kind]: 'UnknownPartialType', x: 1 }) }))
-    Assert.deepEqual(T.required, undefined)
+    Assert.isEqual(T.required, undefined)
   })
   it('Should support TUnsafe partial properties with registered Kind', () => {
     const U = TypeSystem.Type('CustomPartialType', () => true)
     const T = Type.Partial(Type.Object({ x: U() }))
-    Assert.deepEqual(T.required, undefined)
+    Assert.isEqual(T.required, undefined)
   })
 })

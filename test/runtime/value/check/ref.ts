@@ -13,7 +13,7 @@ describe('value/check/Ref', () => {
       { $id: Assert.nextId() },
     )
     const R = Type.Ref(T)
-    Assert.deepEqual(
+    Assert.isEqual(
       Value.Check(R, [T], {
         x: 1,
         y: 2,
@@ -33,7 +33,7 @@ describe('value/check/Ref', () => {
       { $id: Assert.nextId() },
     )
     const R = Type.Ref(T)
-    Assert.deepEqual(
+    Assert.isEqual(
       Value.Check(R, [T], {
         x: 1,
         y: 2,
@@ -59,10 +59,10 @@ describe('value/check/Ref', () => {
       },
       { $id: 'T' },
     )
-    Assert.deepEqual(Value.Check(R, [T], { x: 1, y: 2, z: 3 }), true)
-    Assert.deepEqual(Value.Check(R, [T], { x: 1, y: 2, z: 3, r: { name: 'hello' } }), true)
-    Assert.deepEqual(Value.Check(R, [T], { x: 1, y: 2, z: 3, r: { name: 1 } }), false)
-    Assert.deepEqual(Value.Check(R, [T], { x: 1, y: 2, z: 3, r: {} }), false)
+    Assert.isEqual(Value.Check(R, [T], { x: 1, y: 2, z: 3 }), true)
+    Assert.isEqual(Value.Check(R, [T], { x: 1, y: 2, z: 3, r: { name: 'hello' } }), true)
+    Assert.isEqual(Value.Check(R, [T], { x: 1, y: 2, z: 3, r: { name: 1 } }), false)
+    Assert.isEqual(Value.Check(R, [T], { x: 1, y: 2, z: 3, r: {} }), false)
     // Ok(R, { x: 1, y: 2, z: 3 }, [T])
     // Ok(R, , [T])
     // Fail(R, , [T])
@@ -77,7 +77,7 @@ describe('value/check/Ref', () => {
       }),
     )
     const R = Type.Ref(T)
-    Assert.deepEqual(Value.Check(R, [T], { id: '', nodes: [{ id: '', nodes: [] }] }), true)
-    Assert.deepEqual(Value.Check(R, [T], { id: '', nodes: [{ id: 1, nodes: [] }] }), false)
+    Assert.isEqual(Value.Check(R, [T], { id: '', nodes: [{ id: '', nodes: [] }] }), true)
+    Assert.isEqual(Value.Check(R, [T], { id: '', nodes: [{ id: 1, nodes: [] }] }), false)
   })
 })

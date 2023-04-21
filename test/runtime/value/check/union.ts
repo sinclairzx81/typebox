@@ -20,25 +20,25 @@ describe('value/check/Union', () => {
   it('Should pass union A', () => {
     const value = { type: 'A', x: 1, y: 1 }
     const result = Value.Check(T, value)
-    Assert.equal(result, true)
+    Assert.isEqual(result, true)
   })
 
   it('Should pass union B', () => {
     const value = { type: 'B', x: true, y: false }
     const result = Value.Check(T, value)
-    Assert.equal(result, true)
+    Assert.isEqual(result, true)
   })
 
   it('Should fail union A', () => {
     const value = { type: 'A', x: true, y: false }
     const result = Value.Check(T, value)
-    Assert.equal(result, false)
+    Assert.isEqual(result, false)
   })
 
   it('Should fail union B', () => {
     const value = { type: 'B', x: 1, y: 1 }
     const result = Value.Check(T, value)
-    Assert.equal(result, false)
+    Assert.isEqual(result, false)
   })
 
   it('Should pass union A with optional properties', () => {
@@ -55,7 +55,7 @@ describe('value/check/Union', () => {
     const T = Type.Union([A, B])
     const value = { type: 'A' }
     const result = Value.Check(T, value)
-    Assert.equal(result, true)
+    Assert.isEqual(result, true)
   })
 
   it('Should fail union A with invalid optional properties', () => {
@@ -72,6 +72,6 @@ describe('value/check/Union', () => {
     const T = Type.Union([A, B])
     const value = { type: 'A', x: true, y: false }
     const result = Value.Check(T, value)
-    Assert.equal(result, false)
+    Assert.isEqual(result, false)
   })
 })

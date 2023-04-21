@@ -8,27 +8,27 @@ describe('type/TemplateLiteralFinite', () => {
   it('Finite 1', () => {
     const E = TemplateLiteralParser.Parse(`A`)
     const R = TemplateLiteralFinite.Check(E)
-    Assert.deepEqual(R, true)
+    Assert.isEqual(R, true)
   })
   it('Finite 2', () => {
     const E = TemplateLiteralParser.Parse(`A|B`)
     const R = TemplateLiteralFinite.Check(E)
-    Assert.deepEqual(R, true)
+    Assert.isEqual(R, true)
   })
   it('Finite 3', () => {
     const E = TemplateLiteralParser.Parse(`A(B|C)`)
     const R = TemplateLiteralFinite.Check(E)
-    Assert.deepEqual(R, true)
+    Assert.isEqual(R, true)
   })
   it('Finite 4', () => {
     const E = TemplateLiteralParser.Parse(`${PatternBoolean}`)
     const R = TemplateLiteralFinite.Check(E)
-    Assert.deepEqual(R, true)
+    Assert.isEqual(R, true)
   })
   it('Finite 5', () => {
     const E = TemplateLiteralParser.Parse(`\\.\\*`)
     const R = TemplateLiteralFinite.Check(E)
-    Assert.deepEqual(R, true)
+    Assert.isEqual(R, true)
   })
   // ---------------------------------------------------------------
   // Infinite
@@ -36,36 +36,36 @@ describe('type/TemplateLiteralFinite', () => {
   it('Infinite 1', () => {
     const E = TemplateLiteralParser.Parse(`${PatternString}`)
     const R = TemplateLiteralFinite.Check(E)
-    Assert.deepEqual(R, false)
+    Assert.isEqual(R, false)
   })
   it('Infinite 2', () => {
     const E = TemplateLiteralParser.Parse(`${PatternNumber}`)
     const R = TemplateLiteralFinite.Check(E)
-    Assert.deepEqual(R, false)
+    Assert.isEqual(R, false)
   })
   it('Infinite 3', () => {
     const E = TemplateLiteralParser.Parse(`A|${PatternString}`)
     const R = TemplateLiteralFinite.Check(E)
-    Assert.deepEqual(R, false)
+    Assert.isEqual(R, false)
   })
   it('Infinite 4', () => {
     const E = TemplateLiteralParser.Parse(`A|${PatternNumber}`)
     const R = TemplateLiteralFinite.Check(E)
-    Assert.deepEqual(R, false)
+    Assert.isEqual(R, false)
   })
   it('Infinite 5', () => {
     const E = TemplateLiteralParser.Parse(`A(${PatternString})`)
     const R = TemplateLiteralFinite.Check(E)
-    Assert.deepEqual(R, false)
+    Assert.isEqual(R, false)
   })
   it('Infinite 6', () => {
     const E = TemplateLiteralParser.Parse(`A(${PatternNumber})`)
     const R = TemplateLiteralFinite.Check(E)
-    Assert.deepEqual(R, false)
+    Assert.isEqual(R, false)
   })
   it('Infinite 7', () => {
     const E = TemplateLiteralParser.Parse(`${PatternString}_foo`)
     const R = TemplateLiteralFinite.Check(E)
-    Assert.deepEqual(R, false)
+    Assert.isEqual(R, false)
   })
 })

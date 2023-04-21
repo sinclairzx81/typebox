@@ -10,12 +10,12 @@ describe('type/guard/TObject', () => {
         y: Type.Number(),
       }),
     )
-    Assert.equal(R, true)
+    Assert.isEqual(R, true)
   })
 
   it('Should not guard for TObject', () => {
     const R = TypeGuard.TObject(null)
-    Assert.equal(R, false)
+    Assert.isEqual(R, false)
   })
 
   it('Should not guard for TObject with escape characters in property key', () => {
@@ -24,7 +24,7 @@ describe('type/guard/TObject', () => {
         'hello\nworld': Type.Number(),
       }),
     )
-    Assert.equal(R, false)
+    Assert.isEqual(R, false)
   })
 
   it('Should not guard for TObject with invalid property values', () => {
@@ -34,7 +34,7 @@ describe('type/guard/TObject', () => {
         y: {} as any,
       }),
     )
-    Assert.equal(R, false)
+    Assert.isEqual(R, false)
   })
 
   it('Should not guard for TObject with invalid additionalProperties', () => {
@@ -49,7 +49,7 @@ describe('type/guard/TObject', () => {
         },
       ),
     )
-    Assert.equal(R, false)
+    Assert.isEqual(R, false)
   })
 
   it('Should not guard for TObject with invalid $id', () => {
@@ -64,7 +64,7 @@ describe('type/guard/TObject', () => {
         },
       ),
     )
-    Assert.equal(R, false)
+    Assert.isEqual(R, false)
   })
 
   it('Should not guard for TObject with invalid minProperties', () => {
@@ -79,7 +79,7 @@ describe('type/guard/TObject', () => {
         },
       ),
     )
-    Assert.equal(R, false)
+    Assert.isEqual(R, false)
   })
 
   it('Should not guard for TObject with invalid maxProperties', () => {
@@ -94,7 +94,7 @@ describe('type/guard/TObject', () => {
         },
       ),
     )
-    Assert.equal(R, false)
+    Assert.isEqual(R, false)
   })
 
   it('Should guard for TObject with invalid additional properties', () => {
@@ -110,7 +110,7 @@ describe('type/guard/TObject', () => {
         },
       ),
     )
-    Assert.equal(R, false)
+    Assert.isEqual(R, false)
   })
 
   it('Should not guard for TObject with valid additional properties schema', () => {
@@ -125,6 +125,6 @@ describe('type/guard/TObject', () => {
         },
       ),
     )
-    Assert.equal(R, true)
+    Assert.isEqual(R, true)
   })
 })

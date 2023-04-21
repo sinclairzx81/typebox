@@ -89,6 +89,6 @@ describe('type/schema/Composite', () => {
     })
     const A = Type.Composite([T])
     const B = Type.Composite([T])
-    Assert.deepEqual(A, B)
+    Assert.isEqual(A, B)
   })
 })
