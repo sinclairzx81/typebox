@@ -10,14 +10,59 @@
   ],
   "author": "sinclairzx81",
   "license": "MIT",
-  "main": "./typebox.js",
-  "types": "./typebox.d.ts",
+  "main": "./cjs/typebox.js",
+  "types": "./cjs/typebox.d.ts",
   "exports": {
-    "./compiler": "./compiler/index.js",
-    "./errors": "./errors/index.js",
-    "./system": "./system/index.js",
-    "./value": "./value/index.js",
-    ".": "./typebox.js"
+    "./compiler": {
+      "import": {
+        "types": "./esm/compiler/index.d.ts",
+        "default": "./esm/compiler/index.js"
+      },
+      "require": {
+        "types": "./cjs/compiler/index.d.ts",
+        "default": "./cjs/compiler/index.js"
+      }
+    },
+    "./errors": {
+      "import": {
+        "types": "./esm/errors/index.d.js",
+        "default": "./esm/errors/index.js"
+      },
+      "require": {
+        "types": "./cjs/errors/index.d.js",
+        "default": "./cjs/errors/index.js"
+      }
+    },
+    "./system": {
+      "import": {
+        "types": "./esm/system/index.d.js",
+        "default": "./esm/system/index.js"
+      },
+      "require": {
+        "types": "./cjs/system/index.d.js",
+        "default": "./cjs/system/index.js"
+      }
+    },
+    "./value": {
+      "import": {
+        "types": "./esm/value/index.d.js",
+        "default": "./esm/value/index.js"
+      },
+      "require": {
+        "types": "./cjs/value/index.d.js",
+        "default": "./cjs/value/index.js"
+      }
+    },
+    ".": {
+      "import": {
+        "types": "./esm/typebox.d.js",
+        "default": "./esm/typebox.js"
+      },
+      "require": {
+        "types": "./cjs/typebox.d.js",
+        "default": "./cjs/typebox.js"
+      }
+    }
   },
   "repository": {
     "type": "git",

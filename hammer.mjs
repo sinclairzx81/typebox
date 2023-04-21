@@ -46,7 +46,8 @@ export async function test(filter = '') {
 export async function build(target = 'target/build') {
     await test()
     await folder(target).delete()
-    await shell(`tsc -p ./src/tsconfig.json --outDir ${target}`)
+    await shell(`tsc -p ./src/tsconfig.json --outDir ${target}/cjs && echo '{"type":"commonjs"}' > ${target}/cjs/package.json`)
+    await shell(`tsc -p ./src/tsconfig.json --outDir ${target}/esm --target esnext --module esnext && echo '{"type":"module"}' > ${target}/esm/package.json`)
     await folder(target).add('package.json')
     await folder(target).add('readme.md')
     await folder(target).add('license')
