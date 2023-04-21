@@ -3,6 +3,23 @@ import { Ok, Fail } from './validate'
 
 describe('type/compiler/Record', () => {
   // -------------------------------------------------------------
+  // Issues
+  // -------------------------------------------------------------
+  it('Issue: https://github.com/sinclairzx81/typebox/issues/402', () => {
+    const T = Type.Object({
+      foo: Type.Object({
+        bar: Type.Record(Type.String(), Type.Number()),
+      }),
+    })
+    Ok(T, { foo: { bar: { x: 42 } } })
+    Ok(T, { foo: { bar: {} } })
+    Fail(T, { foo: { bar: { x: '42' } } })
+    Fail(T, { foo: { bar: [] } })
+    Fail(T, { foo: {} })
+    Fail(T, { foo: [] })
+    Fail(T, {})
+  })
+  // -------------------------------------------------------------
   // TypeBox Only: Date and Record
   // -------------------------------------------------------------
   it('Should fail record with Date', () => {

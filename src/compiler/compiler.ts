@@ -248,7 +248,6 @@ export namespace TypeCompiler {
     if (IsNumber(schema.minimum)) yield `${value} >= ${schema.minimum}`
     if (IsNumber(schema.maximum)) yield `${value} <= ${schema.maximum}`
   }
-
   function* Object(schema: Types.TObject, references: Types.TSchema[], value: string): IterableIterator<string> {
     yield IsObjectCheck(value)
     if (IsNumber(schema.minProperties)) yield `Object.getOwnPropertyNames(${value}).length >= ${schema.minProperties}`
@@ -288,7 +287,7 @@ export namespace TypeCompiler {
     if (IsNumber(schema.maxProperties)) yield `Object.getOwnPropertyNames(${value}).length <= ${schema.maxProperties}`
     const [patternKey, patternSchema] = globalThis.Object.entries(schema.patternProperties)[0]
     const local = PushLocal(`new RegExp(/${patternKey}/)`)
-    const check1 = CreateExpression(patternSchema, references, value)
+    const check1 = CreateExpression(patternSchema, references, 'value')
     const check2 = Types.TypeGuard.TSchema(schema.additionalProperties) ? CreateExpression(schema.additionalProperties, references, value) : schema.additionalProperties === false ? 'false' : 'true'
     const expression = `(${local}.test(key) ? ${check1} : ${check2})`
     yield `(Object.entries(${value}).every(([key, value]) => ${expression}))`
