@@ -6,10 +6,10 @@ describe('value/create/Symbol', () => {
   it('Should create value', () => {
     const T = Type.Symbol()
     const V = Value.Create(T)
-    Assert.deepEqual(typeof V, 'symbol')
+    Assert.isEqual(typeof V, 'symbol')
   })
   it('Should create default', () => {
     const T = Type.Symbol({ default: true })
-    Assert.deepEqual(Value.Create(T), true)
+    Assert.isEqual(Value.Create(T), true)
   })
 })

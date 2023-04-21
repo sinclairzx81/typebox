@@ -5,7 +5,7 @@ import { Assert } from '../assert'
 describe('errors/ValueErrorIterator', () => {
   it('Should return undefined for non error', () => {
     const R = ValueErrors.Errors(Type.Number(), [], 1).First()
-    Assert.equal(R, undefined)
+    Assert.isEqual(R, undefined)
   })
   it('Should return a value error when error', () => {
     const { type, path, message } = ValueErrors.Errors(Type.Number(), [], '').First()!
@@ -15,11 +15,11 @@ describe('errors/ValueErrorIterator', () => {
   })
   it('Should yield empty array for non error', () => {
     const R = [...ValueErrors.Errors(Type.Number(), [], 1)]
-    Assert.equal(R.length, 0)
+    Assert.isEqual(R.length, 0)
   })
   it('Should yield array with 1 error when error', () => {
     const R = [...ValueErrors.Errors(Type.Number(), [], 'foo')]
-    Assert.equal(R.length, 1)
+    Assert.isEqual(R.length, 1)
   })
   it('Should yield array with N errors when error', () => {
     // prettier-ignore
@@ -27,6 +27,6 @@ describe('errors/ValueErrorIterator', () => {
       x: Type.Number(),
       y: Type.Number()
     }), [], {})] // require object to invoke internal check
-    Assert.equal(R.length > 1, true)
+    Assert.isEqual(R.length > 1, true)
   })
 })

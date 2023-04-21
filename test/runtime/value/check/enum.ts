@@ -12,23 +12,23 @@ describe('value/check/Enum', () => {
   it('Should pass enum option A', () => {
     const value = Foo.A
     const result = Value.Check(T, value)
-    Assert.equal(result, true)
+    Assert.isEqual(result, true)
   })
 
   it('Should pass enum option B', () => {
     const value = Foo.A
     const result = Value.Check(T, value)
-    Assert.equal(result, true)
+    Assert.isEqual(result, true)
   })
 
   it('Should fail unknown value', () => {
     const value = 'unknown'
     const result = Value.Check(T, value)
-    Assert.equal(result, false)
+    Assert.isEqual(result, false)
   })
   it('Should fail Date', () => {
     const value = new Date()
     const result = Value.Check(T, value)
-    Assert.equal(result, false)
+    Assert.isEqual(result, false)
   })
 })

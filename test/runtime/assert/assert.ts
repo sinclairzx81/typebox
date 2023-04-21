@@ -7,18 +7,21 @@ export namespace Assert {
     const next = port++
     return next
   }
-  export function equal(actual: unknown, expect: unknown) {
-    return assert.strictEqual(actual, expect)
+  export function isTrue(value: boolean) {
+    return assert.strictEqual(value, true)
   }
-  export function notEqual(actual: unknown, expect: unknown) {
-    return assert.notEqual(actual, expect)
+  export function isFalse(value: boolean) {
+    return assert.strictEqual(value, false)
   }
-  export function deepEqual(actual: unknown, expect: unknown) {
+  export function isEqual(actual: unknown, expect: unknown) {
     if (actual instanceof Uint8Array && expect instanceof Uint8Array) {
       assert.equal(actual.length, expect.length)
       for (let i = 0; i < actual.length; i++) assert.equal(actual[i], expect[i])
     }
     return assert.deepEqual(actual, expect)
+  }
+  export function notEqual(actual: unknown, expect: unknown) {
+    return assert.notEqual(actual, expect)
   }
   let nextIdOrdinal = 0
   export function nextId() {

@@ -10,7 +10,7 @@ describe('value/create/Recursive', () => {
         nodes: Type.Array(This),
       }),
     )
-    Assert.deepEqual(Value.Create(T), {
+    Assert.isEqual(Value.Create(T), {
       id: '',
       nodes: [],
     })
@@ -25,6 +25,6 @@ describe('value/create/Recursive', () => {
         }),
       { default: 7 },
     )
-    Assert.deepEqual(Value.Create(T), 7)
+    Assert.isEqual(Value.Create(T), 7)
   })
 })

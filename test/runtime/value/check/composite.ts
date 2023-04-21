@@ -25,7 +25,7 @@ describe('value/check/Composite', () => {
       c: '1',
     }
     const result = Value.Check(T, value)
-    Assert.equal(result, true)
+    Assert.isEqual(result, true)
   })
 
   it('Should fail intersect with invalid property', () => {
@@ -38,7 +38,7 @@ describe('value/check/Composite', () => {
       c: '1',
     }
     const result = Value.Check(T, value)
-    Assert.equal(result, false)
+    Assert.isEqual(result, false)
   })
 
   it('Should fail intersect with missing property', () => {
@@ -50,13 +50,13 @@ describe('value/check/Composite', () => {
       c: '1',
     }
     const result = Value.Check(T, value)
-    Assert.equal(result, false)
+    Assert.isEqual(result, false)
   })
 
   it('Should fail intersect with primitive value', () => {
     const value = 1
     const result = Value.Check(T, value)
-    Assert.equal(result, false)
+    Assert.isEqual(result, false)
   })
 
   it('Should pass intersect with optional properties', () => {
@@ -77,6 +77,6 @@ describe('value/check/Composite', () => {
       c: '1',
     }
     const result = Value.Check(T, value)
-    Assert.equal(result, true)
+    Assert.isEqual(result, true)
   })
 })

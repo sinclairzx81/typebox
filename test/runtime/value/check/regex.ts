@@ -7,13 +7,13 @@ describe('value/check/RegEx', () => {
     const T = Type.RegEx(/foo/)
     const value = 'foo'
     const result = Value.Check(T, value)
-    Assert.equal(result, true)
+    Assert.isEqual(result, true)
   })
 
   it('Should fail regex', () => {
     const T = Type.RegEx(/foo/)
     const value = 'bar'
     const result = Value.Check(T, value)
-    Assert.equal(result, false)
+    Assert.isEqual(result, false)
   })
 })

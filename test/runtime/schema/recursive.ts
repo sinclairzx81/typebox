@@ -10,7 +10,7 @@ describe('type/schema/Recursive', () => {
         nodes: Type.Array(Node),
       }),
     )
-    Assert.equal(Node.$id === undefined, false)
+    Assert.isEqual(Node.$id === undefined, false)
   })
 
   it('Should override default ordinal $id if specified', () => {
@@ -22,7 +22,7 @@ describe('type/schema/Recursive', () => {
         }),
       { $id: 'Node' },
     )
-    Assert.equal(Node.$id === 'Node', true)
+    Assert.isEqual(Node.$id === 'Node', true)
   })
 
   it('Should validate recursive node type', () => {

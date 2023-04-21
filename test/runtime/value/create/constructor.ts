@@ -13,7 +13,7 @@ describe('value/create/Constructor', () => {
     const C = Value.Create(T)
     const I = new C()
     const R = I.test()
-    Assert.deepEqual(R, 123)
+    Assert.isEqual(R, 123)
   })
 
   it('Should create default', () => {
@@ -33,6 +33,6 @@ describe('value/create/Constructor', () => {
     const C = Value.Create(T)
     const I = new C()
     const R = I.test()
-    Assert.deepEqual(R, 321)
+    Assert.isEqual(R, 321)
   })
 })

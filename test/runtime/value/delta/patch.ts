@@ -10,35 +10,35 @@ describe('value/delta/Patch', () => {
     const B = null
     const D = Value.Diff(A, B)
     const P = Value.Patch(A, D)
-    Assert.deepEqual(B, P)
+    Assert.isEqual(B, P)
   })
   it('Should patch NULL undefined to undefined', () => {
     const A = undefined
     const B = undefined
     const D = Value.Diff(A, B)
     const P = Value.Patch(A, D)
-    Assert.deepEqual(B, P)
+    Assert.isEqual(B, P)
   })
   it('Should patch NULL string to string', () => {
     const A = 'hello'
     const B = 'hello'
     const D = Value.Diff(A, B)
     const P = Value.Patch(A, D)
-    Assert.deepEqual(B, P)
+    Assert.isEqual(B, P)
   })
   it('Should patch NULL number to number', () => {
     const A = 1
     const B = 1
     const D = Value.Diff(A, B)
     const P = Value.Patch(A, D)
-    Assert.deepEqual(B, P)
+    Assert.isEqual(B, P)
   })
   it('Should patch NULL boolean to boolean', () => {
     const A = true
     const B = true
     const D = Value.Diff(A, B)
     const P = Value.Patch(A, D)
-    Assert.deepEqual(B, P)
+    Assert.isEqual(B, P)
   })
   it('Should patch NULL symbol to symbol', () => {
     const S = Symbol('A')
@@ -46,7 +46,7 @@ describe('value/delta/Patch', () => {
     const B = S
     const D = Value.Diff(A, B)
     const P = Value.Patch(A, D)
-    Assert.deepEqual(B, P)
+    Assert.isEqual(B, P)
   })
 
   it('Should patch NULL object to object', () => {
@@ -54,7 +54,7 @@ describe('value/delta/Patch', () => {
     const B = { x: 1, y: 2, z: 3 }
     const D = Value.Diff(A, B)
     const P = Value.Patch(A, D)
-    Assert.deepEqual(B, P)
+    Assert.isEqual(B, P)
   })
 
   it('Should patch NULL array to array', () => {
@@ -62,7 +62,7 @@ describe('value/delta/Patch', () => {
     const B = [1, 2, 3]
     const D = Value.Diff(A, B)
     const P = Value.Patch(A, D)
-    Assert.deepEqual(B, P)
+    Assert.isEqual(B, P)
   })
 
   // ----------------------------------------------------
@@ -74,7 +74,7 @@ describe('value/delta/Patch', () => {
     const B = null
     const D = Value.Diff(A, B)
     const P = Value.Patch(A, D)
-    Assert.deepEqual(B, P)
+    Assert.isEqual(B, P)
   })
 
   it('Should patch TYPE change null to undefined', () => {
@@ -82,56 +82,56 @@ describe('value/delta/Patch', () => {
     const B = undefined
     const D = Value.Diff(A, B)
     const P = Value.Patch(A, D)
-    Assert.deepEqual(B, P)
+    Assert.isEqual(B, P)
   })
   it('Should patch TYPE change null to number', () => {
     const A = null
     const B = 1
     const D = Value.Diff(A, B)
     const P = Value.Patch(A, D)
-    Assert.deepEqual(B, P)
+    Assert.isEqual(B, P)
   })
   it('Should patch TYPE change null to boolean', () => {
     const A = null
     const B = true
     const D = Value.Diff(A, B)
     const P = Value.Patch(A, D)
-    Assert.deepEqual(B, P)
+    Assert.isEqual(B, P)
   })
   it('Should patch TYPE change null to string', () => {
     const A = null
     const B = 'hello'
     const D = Value.Diff(A, B)
     const P = Value.Patch(A, D)
-    Assert.deepEqual(B, P)
+    Assert.isEqual(B, P)
   })
   it('Should patch TYPE change null to symbol', () => {
     const A = null
     const B = Symbol('A')
     const D = Value.Diff(A, B)
     const P = Value.Patch(A, D)
-    Assert.deepEqual(B, P)
+    Assert.isEqual(B, P)
   })
   it('Should patch TYPE change null to object', () => {
     const A = null
     const B = { x: 1, y: 1, z: 1 }
     const D = Value.Diff(A, B)
     const P = Value.Patch(A, D)
-    Assert.deepEqual(B, P)
+    Assert.isEqual(B, P)
   })
   it('Should patch TYPE change null to array', () => {
     const A = null
     const B = [1, 2, 3]
     const D = Value.Diff(A, B)
     const P = Value.Patch(A, D)
-    Assert.deepEqual(B, P)
+    Assert.isEqual(B, P)
   })
   it('Should patch TYPE change object to array', () => {
     const A = { x: 1, y: 2 }
     const B = [1, 2, 3]
     const D = Value.Diff<any>(A, B)
     const P = Value.Patch(A, D)
-    Assert.deepEqual(B, P)
+    Assert.isEqual(B, P)
   })
 
   it('Should patch TYPE change array to object', () => {
@@ -139,7 +139,7 @@ describe('value/delta/Patch', () => {
     const B = { x: 1, y: 2 }
     const D = Value.Diff<any>(A, B)
     const P = Value.Patch(A, D)
-    Assert.deepEqual(B, P)
+    Assert.isEqual(B, P)
   })
 
   // ----------------------------------------------------
@@ -151,7 +151,7 @@ describe('value/delta/Patch', () => {
     const B = 2
     const D = Value.Diff(A, B)
     const P = Value.Patch(A, D)
-    Assert.deepEqual(B, P)
+    Assert.isEqual(B, P)
   })
 
   it('Should patch VALUE change boolean', () => {
@@ -159,7 +159,7 @@ describe('value/delta/Patch', () => {
     const B = true
     const D = Value.Diff(A, B)
     const P = Value.Patch(A, D)
-    Assert.deepEqual(B, P)
+    Assert.isEqual(B, P)
   })
 
   it('Should patch VALUE change string', () => {
@@ -167,7 +167,7 @@ describe('value/delta/Patch', () => {
     const B = 'world'
     const D = Value.Diff(A, B)
     const P = Value.Patch(A, D)
-    Assert.deepEqual(B, P)
+    Assert.isEqual(B, P)
   })
 
   it('Should patch VALUE change symbol', () => {
@@ -175,7 +175,7 @@ describe('value/delta/Patch', () => {
     const B = Symbol('B')
     const D = Value.Diff<any>(A, B)
     const P = Value.Patch(A, D)
-    Assert.deepEqual(B, P)
+    Assert.isEqual(B, P)
   })
 
   // ----------------------------------------------------
@@ -187,7 +187,7 @@ describe('value/delta/Patch', () => {
     const B = [1, 2, 3, 9]
     const D = Value.Diff(A, B)
     const P = Value.Patch(A, D)
-    Assert.deepEqual(B, P)
+    Assert.isEqual(B, P)
   })
 
   it('Should patch ELEMENT push', () => {
@@ -195,7 +195,7 @@ describe('value/delta/Patch', () => {
     const B = [1, 2, 3, 4, 5]
     const D = Value.Diff(A, B)
     const P = Value.Patch(A, D)
-    Assert.deepEqual(B, P)
+    Assert.isEqual(B, P)
   })
 
   it('Should patch ELEMENT push twice', () => {
@@ -203,7 +203,7 @@ describe('value/delta/Patch', () => {
     const B = [1, 2, 3, 4, 5, 6]
     const D = Value.Diff(A, B)
     const P = Value.Patch(A, D)
-    Assert.deepEqual(B, P)
+    Assert.isEqual(B, P)
   })
 
   it('Should patch ELEMENT pop', () => {
@@ -211,7 +211,7 @@ describe('value/delta/Patch', () => {
     const B = [1, 2, 3]
     const D = Value.Diff(A, B)
     const P = Value.Patch(A, D)
-    Assert.deepEqual(B, P)
+    Assert.isEqual(B, P)
   })
 
   it('Should patch ELEMENT pop twice', () => {
@@ -219,7 +219,7 @@ describe('value/delta/Patch', () => {
     const B = [1, 2]
     const D = Value.Diff(A, B)
     const P = Value.Patch(A, D)
-    Assert.deepEqual(B, P)
+    Assert.isEqual(B, P)
   })
 
   it('Should patch ELEMENT unshift', () => {
@@ -227,7 +227,7 @@ describe('value/delta/Patch', () => {
     const B = [2, 3, 4]
     const D = Value.Diff(A, B)
     const P = Value.Patch(A, D)
-    Assert.deepEqual(B, P)
+    Assert.isEqual(B, P)
   })
 
   it('Should patch ELEMENT unshift twice', () => {
@@ -235,7 +235,7 @@ describe('value/delta/Patch', () => {
     const B = [3, 4]
     const D = Value.Diff(A, B)
     const P = Value.Patch(A, D)
-    Assert.deepEqual(B, P)
+    Assert.isEqual(B, P)
   })
 
   // ----------------------------------------------------
@@ -247,35 +247,35 @@ describe('value/delta/Patch', () => {
     const B = { x: 1, y: 1, z: 1 }
     const D = Value.Diff(A, B)
     const P = Value.Patch(A, D)
-    Assert.deepEqual(B, P)
+    Assert.isEqual(B, P)
   })
   it('Should patch PROPERTY delete', () => {
     const A = { x: 1, y: 1, z: 1 }
     const B = { x: 1, y: 1 }
     const D = Value.Diff(A, B)
     const P = Value.Patch(A, D)
-    Assert.deepEqual(B, P)
+    Assert.isEqual(B, P)
   })
   it('Should patch PROPERTY update', () => {
     const A = { x: 1, y: 1, z: 1 }
     const B = { x: 1, y: 1, z: 2 }
     const D = Value.Diff(A, B)
     const P = Value.Patch(A, D)
-    Assert.deepEqual(B, P)
+    Assert.isEqual(B, P)
   })
   it('Should patch PROPERTY all values', () => {
     const A = { x: 1, y: 1, z: 1 }
     const B = { x: 2, y: 2, z: 2 }
     const D = Value.Diff(A, B)
     const P = Value.Patch(A, D)
-    Assert.deepEqual(B, P)
+    Assert.isEqual(B, P)
   })
   it('Should patch PROPERTY all delete, all insert', () => {
     const A = { x: 1, y: 1, z: 1 }
     const B = { a: 2, b: 2, c: 2 }
     const D = Value.Diff<any>(A, B)
     const P = Value.Patch(A, D)
-    Assert.deepEqual(B, P)
+    Assert.isEqual(B, P)
   })
 
   it('Should patch PROPERTY update, insert and delete order preserved', () => {
@@ -283,7 +283,7 @@ describe('value/delta/Patch', () => {
     const B = { a: 2, b: 2, c: 2, w: 2 }
     const D = Value.Diff<any>(A, B)
     const P = Value.Patch(A, D)
-    Assert.deepEqual(B, P)
+    Assert.isEqual(B, P)
   })
   // ----------------------------------------------------
   // Object Nested
@@ -294,21 +294,21 @@ describe('value/delta/Patch', () => {
     const B = { v: { x: 1, y: 1, z: 1 } }
     const D = Value.Diff<any>(A, B)
     const P = Value.Patch(A, D)
-    Assert.deepEqual(B, P)
+    Assert.isEqual(B, P)
   })
   it('Should patch NESTED OBJECT diff value change update', () => {
     const A = { v: 1 }
     const B = { v: 2 }
     const D = Value.Diff(A, B)
     const P = Value.Patch(A, D)
-    Assert.deepEqual(B, P)
+    Assert.isEqual(B, P)
   })
   it('Should patch NESTED OBJECT diff partial property update', () => {
     const A = { v: { x: 1, y: 1, z: 1 } }
     const B = { v: { x: 2, y: 2, z: 2 } }
     const D = Value.Diff(A, B)
     const P = Value.Patch(A, D)
-    Assert.deepEqual(B, P)
+    Assert.isEqual(B, P)
   })
 
   it('Should patch NESTED OBJECT update, insert and delete order preserved', () => {
@@ -316,7 +316,7 @@ describe('value/delta/Patch', () => {
     const B = { v: { x: 2, w: 2 } }
     const D = Value.Diff<any>(A, B)
     const P = Value.Patch(A, D)
-    Assert.deepEqual(B, P)
+    Assert.isEqual(B, P)
   })
 
   // ----------------------------------------------------
@@ -328,7 +328,7 @@ describe('value/delta/Patch', () => {
     const B = [{ v: { x: 1, y: 1, z: 1 } }]
     const D = Value.Diff<any>(A, B)
     const P = Value.Patch(A, D)
-    Assert.deepEqual(B, P)
+    Assert.isEqual(B, P)
   })
 
   it('Should patch NESTED ARRAY object diff value change update', () => {
@@ -336,21 +336,21 @@ describe('value/delta/Patch', () => {
     const B = [{ v: 2 }]
     const D = Value.Diff(A, B)
     const P = Value.Patch(A, D)
-    Assert.deepEqual(B, P)
+    Assert.isEqual(B, P)
   })
   it('Should patch NESTED ARRAY object diff partial property update', () => {
     const A = [{ v: { x: 1, y: 1, z: 1 } }]
     const B = [{ v: { x: 2, y: 2, z: 2 } }]
     const D = Value.Diff(A, B)
     const P = Value.Patch(A, D)
-    Assert.deepEqual(B, P)
+    Assert.isEqual(B, P)
   })
   it('Should patch NESTED ARRAY object diff partial property insert', () => {
     const A = [{ v: { x: 1, y: 1, z: 1 } }]
     const B = [{ v: { x: 1, y: 1, z: 1, w: 1 } }]
     const D = Value.Diff(A, B)
     const P = Value.Patch(A, D)
-    Assert.deepEqual(B, P)
+    Assert.isEqual(B, P)
   })
 
   it('Should patch NESTED ARRAY object diff partial property delete', () => {
@@ -358,7 +358,7 @@ describe('value/delta/Patch', () => {
     const B = [{ v: { x: 1, y: 1 } }]
     const D = Value.Diff(A, B)
     const P = Value.Patch(A, D)
-    Assert.deepEqual(B, P)
+    Assert.isEqual(B, P)
   })
 
   it('Should patch NESTED ARRAY object ordered diff - update, insert and delete', () => {
@@ -366,7 +366,7 @@ describe('value/delta/Patch', () => {
     const B = [{ v: { x: 2, w: 2 } }]
     const D = Value.Diff<any>(A, B)
     const P = Value.Patch(A, D)
-    Assert.deepEqual(B, P)
+    Assert.isEqual(B, P)
   })
 
   it('Should patch Uint8Array (same size)', () => {
@@ -374,7 +374,7 @@ describe('value/delta/Patch', () => {
     const B = [{ v: new Uint8Array([0, 1, 2]) }]
     const D = Value.Diff<any>(A, B)
     const P = Value.Patch(A, D)
-    Assert.deepEqual(B, P)
+    Assert.isEqual(B, P)
   })
 
   it('Should patch Uint8Array (less than size)', () => {
@@ -382,7 +382,7 @@ describe('value/delta/Patch', () => {
     const B = [{ v: new Uint8Array([0, 1]) }]
     const D = Value.Diff<any>(A, B)
     const P = Value.Patch(A, D)
-    Assert.deepEqual(B, P)
+    Assert.isEqual(B, P)
   })
 
   it('Should patch Uint8Array (greater than size)', () => {
@@ -390,7 +390,7 @@ describe('value/delta/Patch', () => {
     const B = [{ v: new Uint8Array([0, 1, 2, 4]) }]
     const D = Value.Diff<any>(A, B)
     const P = Value.Patch(A, D)
-    Assert.deepEqual(B, P)
+    Assert.isEqual(B, P)
   })
   // ----------------------------------------------------
   // Mega Values
@@ -442,6 +442,6 @@ describe('value/delta/Patch', () => {
     ]
     const D = Value.Diff<any>(A, B)
     const P = Value.Patch(A, D)
-    Assert.deepEqual(B, P)
+    Assert.isEqual(B, P)
   })
 })

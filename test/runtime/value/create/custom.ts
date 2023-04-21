@@ -6,7 +6,7 @@ describe('value/create/Custom', () => {
   it('Should create custom value with default', () => {
     TypeRegistry.Set('CustomCreate1', () => true)
     const T = Type.Unsafe({ [Kind]: 'CustomCreate1', default: 'hello' })
-    Assert.deepEqual(Value.Create(T), 'hello')
+    Assert.isEqual(Value.Create(T), 'hello')
   })
 
   it('Should throw when no default value is specified', () => {

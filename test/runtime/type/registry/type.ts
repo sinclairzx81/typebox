@@ -8,15 +8,15 @@ describe('type/TypeRegistry', () => {
   it('Should get type', () => {
     TypeRegistry.Set('test#type2', () => true)
     const format = TypeRegistry.Get('test#type2')
-    Assert.equal(typeof format, 'function')
+    Assert.isEqual(typeof format, 'function')
   })
   it('Should return true if exists', () => {
     TypeRegistry.Set('test#type3', () => true)
-    Assert.equal(TypeRegistry.Has('test#type3'), true)
+    Assert.isEqual(TypeRegistry.Has('test#type3'), true)
   })
   it('Should clear types', () => {
     TypeRegistry.Set('test#type4', () => true)
     TypeRegistry.Clear()
-    Assert.equal(TypeRegistry.Has('test#type4'), false)
+    Assert.isEqual(TypeRegistry.Has('test#type4'), false)
   })
 })

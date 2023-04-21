@@ -8,46 +8,46 @@ describe('value/cast/RegEx', () => {
   it('Should upcast from string', () => {
     const value = 'hello'
     const result = Value.Cast(T, value)
-    Assert.deepEqual(result, 'foo')
+    Assert.isEqual(result, 'foo')
   })
   it('Should upcast from number', () => {
     const value = 1
     const result = Value.Cast(T, value)
-    Assert.deepEqual(result, E)
+    Assert.isEqual(result, E)
   })
   it('Should upcast from boolean', () => {
     const value = true
     const result = Value.Cast(T, value)
-    Assert.deepEqual(result, E)
+    Assert.isEqual(result, E)
   })
   it('Should upcast from object', () => {
     const value = {}
     const result = Value.Cast(T, value)
-    Assert.deepEqual(result, E)
+    Assert.isEqual(result, E)
   })
   it('Should upcast from array', () => {
     const value = [1]
     const result = Value.Cast(T, value)
-    Assert.deepEqual(result, E)
+    Assert.isEqual(result, E)
   })
   it('Should upcast from undefined', () => {
     const value = undefined
     const result = Value.Cast(T, value)
-    Assert.deepEqual(result, E)
+    Assert.isEqual(result, E)
   })
   it('Should upcast from null', () => {
     const value = null
     const result = Value.Cast(T, value)
-    Assert.deepEqual(result, E)
+    Assert.isEqual(result, E)
   })
   it('Should upcast from date', () => {
     const value = new Date(100)
     const result = Value.Cast(T, value)
-    Assert.deepEqual(result, E)
+    Assert.isEqual(result, E)
   })
   it('Should preserve', () => {
     const value = 'foo'
     const result = Value.Cast(T, value)
-    Assert.deepEqual(result, value)
+    Assert.isEqual(result, value)
   })
 })

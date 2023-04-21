@@ -10,15 +10,15 @@ describe('value/convert/Union', () => {
     const V1 = Value.Convert(T, { x: '42' })
     const V2 = Value.Convert(T, { x: 'null' })
     const V3 = Value.Convert(T, { x: 'hello' })
-    Assert.deepEqual(V1, { x: 42 })
-    Assert.deepEqual(V2, { x: null })
-    Assert.deepEqual(V3, { x: 'hello' })
+    Assert.isEqual(V1, { x: 42 })
+    Assert.isEqual(V2, { x: null })
+    Assert.isEqual(V3, { x: 'hello' })
   })
   it('Should convert first variant in ambiguous conversion', () => {
     const T = Type.Object({
       x: Type.Union([Type.Boolean(), Type.Number()]),
     })
     const V1 = Value.Convert(T, { x: '1' })
-    Assert.deepEqual(V1, { x: true })
+    Assert.isEqual(V1, { x: true })
   })
 })

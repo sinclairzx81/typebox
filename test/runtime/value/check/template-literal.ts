@@ -9,23 +9,23 @@ describe('value/check/TemplateLiteral', () => {
   it('Should validate finite pattern 1', () => {
     // prettier-ignore
     const T = Type.TemplateLiteral([])
-    Assert.equal(Value.Check(T, ''), true)
-    Assert.equal(Value.Check(T, 'X'), false)
+    Assert.isEqual(Value.Check(T, ''), true)
+    Assert.isEqual(Value.Check(T, 'X'), false)
   })
   it('Should validate finite pattern 1', () => {
     // prettier-ignore
     const T = Type.TemplateLiteral([Type.Boolean()])
-    Assert.equal(Value.Check(T, 'true'), true)
-    Assert.equal(Value.Check(T, 'false'), true)
-    Assert.equal(Value.Check(T, 'X'), false)
+    Assert.isEqual(Value.Check(T, 'true'), true)
+    Assert.isEqual(Value.Check(T, 'false'), true)
+    Assert.isEqual(Value.Check(T, 'X'), false)
   })
   it('Should validate finite pattern 2', () => {
     // prettier-ignore
     const T = Type.TemplateLiteral([
       Type.Literal('A')
     ])
-    Assert.equal(Value.Check(T, 'A'), true)
-    Assert.equal(Value.Check(T, 'X'), false)
+    Assert.isEqual(Value.Check(T, 'A'), true)
+    Assert.isEqual(Value.Check(T, 'X'), false)
   })
   it('Should validate finite pattern 3', () => {
     // prettier-ignore
@@ -33,8 +33,8 @@ describe('value/check/TemplateLiteral', () => {
       Type.Literal('A'),
       Type.Literal('B')
     ])
-    Assert.equal(Value.Check(T, 'AB'), true)
-    Assert.equal(Value.Check(T, 'X'), false)
+    Assert.isEqual(Value.Check(T, 'AB'), true)
+    Assert.isEqual(Value.Check(T, 'X'), false)
   })
   it('Should validate finite pattern 4', () => {
     // prettier-ignore
@@ -45,9 +45,9 @@ describe('value/check/TemplateLiteral', () => {
         Type.Literal('C')
       ]),
     ])
-    Assert.equal(Value.Check(T, 'AB'), true)
-    Assert.equal(Value.Check(T, 'AC'), true)
-    Assert.equal(Value.Check(T, 'X'), false)
+    Assert.isEqual(Value.Check(T, 'AB'), true)
+    Assert.isEqual(Value.Check(T, 'AC'), true)
+    Assert.isEqual(Value.Check(T, 'X'), false)
   })
   it('Should validate finite pattern 5', () => {
     // prettier-ignore
@@ -59,9 +59,9 @@ describe('value/check/TemplateLiteral', () => {
       ]),
       Type.Literal('D'),
     ])
-    Assert.equal(Value.Check(T, 'ABD'), true)
-    Assert.equal(Value.Check(T, 'ACD'), true)
-    Assert.equal(Value.Check(T, 'X'), false)
+    Assert.isEqual(Value.Check(T, 'ABD'), true)
+    Assert.isEqual(Value.Check(T, 'ACD'), true)
+    Assert.isEqual(Value.Check(T, 'X'), false)
   })
   it('Should validate finite pattern 6', () => {
     // prettier-ignore
@@ -75,11 +75,11 @@ describe('value/check/TemplateLiteral', () => {
         Type.Literal('1')
       ]),
     ])
-    Assert.equal(Value.Check(T, '00'), true)
-    Assert.equal(Value.Check(T, '01'), true)
-    Assert.equal(Value.Check(T, '10'), true)
-    Assert.equal(Value.Check(T, '11'), true)
-    Assert.equal(Value.Check(T, 'X'), false)
+    Assert.isEqual(Value.Check(T, '00'), true)
+    Assert.isEqual(Value.Check(T, '01'), true)
+    Assert.isEqual(Value.Check(T, '10'), true)
+    Assert.isEqual(Value.Check(T, '11'), true)
+    Assert.isEqual(Value.Check(T, 'X'), false)
   })
   // --------------------------------------------------------
   // Infinite
@@ -89,47 +89,47 @@ describe('value/check/TemplateLiteral', () => {
     const T = Type.TemplateLiteral([
       Type.Number()
     ])
-    Assert.equal(Value.Check(T, '1'), true)
-    Assert.equal(Value.Check(T, '22'), true)
-    Assert.equal(Value.Check(T, '333'), true)
-    Assert.equal(Value.Check(T, '4444'), true)
-    Assert.equal(Value.Check(T, 'X'), false)
+    Assert.isEqual(Value.Check(T, '1'), true)
+    Assert.isEqual(Value.Check(T, '22'), true)
+    Assert.isEqual(Value.Check(T, '333'), true)
+    Assert.isEqual(Value.Check(T, '4444'), true)
+    Assert.isEqual(Value.Check(T, 'X'), false)
   })
   it('Should validate infinite pattern 2', () => {
     // prettier-ignore
     const T = Type.TemplateLiteral([
       Type.Integer()
     ])
-    Assert.equal(Value.Check(T, '1'), true)
-    Assert.equal(Value.Check(T, '22'), true)
-    Assert.equal(Value.Check(T, '333'), true)
-    Assert.equal(Value.Check(T, '4444'), true)
-    Assert.equal(Value.Check(T, 'X'), false)
+    Assert.isEqual(Value.Check(T, '1'), true)
+    Assert.isEqual(Value.Check(T, '22'), true)
+    Assert.isEqual(Value.Check(T, '333'), true)
+    Assert.isEqual(Value.Check(T, '4444'), true)
+    Assert.isEqual(Value.Check(T, 'X'), false)
   })
   it('Should validate infinite pattern 3', () => {
     // prettier-ignore
     const T = Type.TemplateLiteral([
       Type.BigInt()
     ])
-    Assert.equal(Value.Check(T, '1'), true)
-    Assert.equal(Value.Check(T, '22'), true)
-    Assert.equal(Value.Check(T, '333'), true)
-    Assert.equal(Value.Check(T, '4444'), true)
-    Assert.equal(Value.Check(T, 'X'), false)
+    Assert.isEqual(Value.Check(T, '1'), true)
+    Assert.isEqual(Value.Check(T, '22'), true)
+    Assert.isEqual(Value.Check(T, '333'), true)
+    Assert.isEqual(Value.Check(T, '4444'), true)
+    Assert.isEqual(Value.Check(T, 'X'), false)
   })
   it('Should validate infinite pattern 4', () => {
     // prettier-ignore
     const T = Type.TemplateLiteral([
       Type.String()
     ])
-    Assert.equal(Value.Check(T, '1'), true)
-    Assert.equal(Value.Check(T, '22'), true)
-    Assert.equal(Value.Check(T, '333'), true)
-    Assert.equal(Value.Check(T, '4444'), true)
-    Assert.equal(Value.Check(T, 'a'), true)
-    Assert.equal(Value.Check(T, 'bb'), true)
-    Assert.equal(Value.Check(T, 'ccc'), true)
-    Assert.equal(Value.Check(T, 'dddd'), true)
+    Assert.isEqual(Value.Check(T, '1'), true)
+    Assert.isEqual(Value.Check(T, '22'), true)
+    Assert.isEqual(Value.Check(T, '333'), true)
+    Assert.isEqual(Value.Check(T, '4444'), true)
+    Assert.isEqual(Value.Check(T, 'a'), true)
+    Assert.isEqual(Value.Check(T, 'bb'), true)
+    Assert.isEqual(Value.Check(T, 'ccc'), true)
+    Assert.isEqual(Value.Check(T, 'dddd'), true)
   })
 
   it('Should validate infinite pattern 5', () => {
@@ -138,11 +138,11 @@ describe('value/check/TemplateLiteral', () => {
       Type.Literal('A'),
       Type.Number()
     ])
-    Assert.equal(Value.Check(T, 'A1'), true)
-    Assert.equal(Value.Check(T, 'A22'), true)
-    Assert.equal(Value.Check(T, 'A333'), true)
-    Assert.equal(Value.Check(T, 'A4444'), true)
-    Assert.equal(Value.Check(T, 'X'), false)
+    Assert.isEqual(Value.Check(T, 'A1'), true)
+    Assert.isEqual(Value.Check(T, 'A22'), true)
+    Assert.isEqual(Value.Check(T, 'A333'), true)
+    Assert.isEqual(Value.Check(T, 'A4444'), true)
+    Assert.isEqual(Value.Check(T, 'X'), false)
   })
   it('Should validate infinite pattern 6', () => {
     // prettier-ignore
@@ -150,11 +150,11 @@ describe('value/check/TemplateLiteral', () => {
       Type.Literal('A'),
       Type.Integer()
     ])
-    Assert.equal(Value.Check(T, 'A1'), true)
-    Assert.equal(Value.Check(T, 'A22'), true)
-    Assert.equal(Value.Check(T, 'A333'), true)
-    Assert.equal(Value.Check(T, 'A4444'), true)
-    Assert.equal(Value.Check(T, 'X'), false)
+    Assert.isEqual(Value.Check(T, 'A1'), true)
+    Assert.isEqual(Value.Check(T, 'A22'), true)
+    Assert.isEqual(Value.Check(T, 'A333'), true)
+    Assert.isEqual(Value.Check(T, 'A4444'), true)
+    Assert.isEqual(Value.Check(T, 'X'), false)
   })
   it('Should validate infinite pattern 7', () => {
     // prettier-ignore
@@ -162,11 +162,11 @@ describe('value/check/TemplateLiteral', () => {
       Type.Literal('A'),
       Type.BigInt()
     ])
-    Assert.equal(Value.Check(T, 'A1'), true)
-    Assert.equal(Value.Check(T, 'A22'), true)
-    Assert.equal(Value.Check(T, 'A333'), true)
-    Assert.equal(Value.Check(T, 'A4444'), true)
-    Assert.equal(Value.Check(T, 'X'), false)
+    Assert.isEqual(Value.Check(T, 'A1'), true)
+    Assert.isEqual(Value.Check(T, 'A22'), true)
+    Assert.isEqual(Value.Check(T, 'A333'), true)
+    Assert.isEqual(Value.Check(T, 'A4444'), true)
+    Assert.isEqual(Value.Check(T, 'X'), false)
   })
   it('Should validate infinite pattern 8', () => {
     // prettier-ignore
@@ -174,14 +174,14 @@ describe('value/check/TemplateLiteral', () => {
       Type.Literal('A'),
       Type.String()
     ])
-    Assert.equal(Value.Check(T, 'A1'), true)
-    Assert.equal(Value.Check(T, 'A22'), true)
-    Assert.equal(Value.Check(T, 'A333'), true)
-    Assert.equal(Value.Check(T, 'A4444'), true)
-    Assert.equal(Value.Check(T, 'Aa'), true)
-    Assert.equal(Value.Check(T, 'Abb'), true)
-    Assert.equal(Value.Check(T, 'Accc'), true)
-    Assert.equal(Value.Check(T, 'Adddd'), true)
-    Assert.equal(Value.Check(T, 'X'), false)
+    Assert.isEqual(Value.Check(T, 'A1'), true)
+    Assert.isEqual(Value.Check(T, 'A22'), true)
+    Assert.isEqual(Value.Check(T, 'A333'), true)
+    Assert.isEqual(Value.Check(T, 'A4444'), true)
+    Assert.isEqual(Value.Check(T, 'Aa'), true)
+    Assert.isEqual(Value.Check(T, 'Abb'), true)
+    Assert.isEqual(Value.Check(T, 'Accc'), true)
+    Assert.isEqual(Value.Check(T, 'Adddd'), true)
+    Assert.isEqual(Value.Check(T, 'X'), false)
   })
 })

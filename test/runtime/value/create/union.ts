@@ -17,7 +17,7 @@ describe('value/create/Union', () => {
       z: Type.String(),
     })
     const T = Type.Union([A, B])
-    Assert.deepEqual(Value.Create(T), {
+    Assert.isEqual(Value.Create(T), {
       type: 'A',
       x: 0,
       y: 0,
@@ -34,7 +34,7 @@ describe('value/create/Union', () => {
       z: Type.String(),
     })
     const T = Type.Union([A, B])
-    Assert.deepEqual(Value.Create(T), null)
+    Assert.isEqual(Value.Create(T), null)
   })
 
   it('Should create union Array', () => {
@@ -46,6 +46,6 @@ describe('value/create/Union', () => {
       z: Type.String(),
     })
     const T = Type.Union([A, B])
-    Assert.deepEqual(Value.Create(T), [])
+    Assert.isEqual(Value.Create(T), [])
   })
 })

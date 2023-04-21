@@ -6,12 +6,12 @@ describe('type/guard/TRef', () => {
   it('Should guard for TRef', () => {
     const T = Type.Number({ $id: 'T' })
     const R = TypeGuard.TRef(Type.Ref(T))
-    Assert.equal(R, true)
+    Assert.isEqual(R, true)
   })
 
   it('Should not guard for TRef', () => {
     const R = TypeGuard.TRef(null)
-    Assert.equal(R, false)
+    Assert.isEqual(R, false)
   })
 
   it('Should not guard for TRef with invalid $ref', () => {
@@ -20,6 +20,6 @@ describe('type/guard/TRef', () => {
     // @ts-ignore
     S.$ref = 1
     const R = TypeGuard.TRef(S)
-    Assert.equal(R, false)
+    Assert.isEqual(R, false)
   })
 })

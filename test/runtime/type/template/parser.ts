@@ -16,14 +16,14 @@ describe('type/TemplateLiteralParser', () => {
   // ---------------------------------------------------------------
   it('Exact 1', () => {
     const E = TemplateLiteralParser.Parse('^$')
-    Assert.deepEqual(E, {
+    Assert.isEqual(E, {
       type: 'const',
       const: '^$',
     })
   })
   it('Exact 2', () => {
     const E = TemplateLiteralParser.Parse('^A$')
-    Assert.deepEqual(E, {
+    Assert.isEqual(E, {
       type: 'const',
       const: '^A$',
     })
@@ -33,7 +33,7 @@ describe('type/TemplateLiteralParser', () => {
   // ---------------------------------------------------------------
   it('Pattern 1', () => {
     const E = TemplateLiteralParser.Parse('(true|false)')
-    Assert.deepEqual(E, {
+    Assert.isEqual(E, {
       type: 'or',
       expr: [
         {
@@ -49,7 +49,7 @@ describe('type/TemplateLiteralParser', () => {
   })
   it('Pattern 2', () => {
     const E = TemplateLiteralParser.Parse('(0|[1-9][0-9]*)')
-    Assert.deepEqual(E, {
+    Assert.isEqual(E, {
       type: 'or',
       expr: [
         {
@@ -65,7 +65,7 @@ describe('type/TemplateLiteralParser', () => {
   })
   it('Pattern 3', () => {
     const E = TemplateLiteralParser.Parse('.*')
-    Assert.deepEqual(E, {
+    Assert.isEqual(E, {
       type: 'const',
       const: '.*',
     })
@@ -75,56 +75,56 @@ describe('type/TemplateLiteralParser', () => {
   // ---------------------------------------------------------------
   it('Expression 1', () => {
     const E = TemplateLiteralParser.Parse(')')
-    Assert.deepEqual(E, {
+    Assert.isEqual(E, {
       type: 'const',
       const: ')',
     })
   })
   it('Expression 2', () => {
     const E = TemplateLiteralParser.Parse('\\)')
-    Assert.deepEqual(E, {
+    Assert.isEqual(E, {
       type: 'const',
       const: '\\)',
     })
   })
   it('Expression 3', () => {
     const E = TemplateLiteralParser.Parse('\\(')
-    Assert.deepEqual(E, {
+    Assert.isEqual(E, {
       type: 'const',
       const: '\\(',
     })
   })
   it('Expression 4', () => {
     const E = TemplateLiteralParser.Parse('')
-    Assert.deepEqual(E, {
+    Assert.isEqual(E, {
       type: 'const',
       const: '',
     })
   })
   it('Expression 5', () => {
     const E = TemplateLiteralParser.Parse('\\')
-    Assert.deepEqual(E, {
+    Assert.isEqual(E, {
       type: 'const',
       const: '\\',
     })
   })
   it('Expression 6', () => {
     const E = TemplateLiteralParser.Parse('()')
-    Assert.deepEqual(E, {
+    Assert.isEqual(E, {
       type: 'const',
       const: '',
     })
   })
   it('Expression 7', () => {
     const E = TemplateLiteralParser.Parse('(a)')
-    Assert.deepEqual(E, {
+    Assert.isEqual(E, {
       type: 'const',
       const: 'a',
     })
   })
   it('Expression 8', () => {
     const E = TemplateLiteralParser.Parse('()))')
-    Assert.deepEqual(E, {
+    Assert.isEqual(E, {
       type: 'and',
       expr: [
         {
@@ -140,7 +140,7 @@ describe('type/TemplateLiteralParser', () => {
   })
   it('Expression 9', () => {
     const E = TemplateLiteralParser.Parse('())')
-    Assert.deepEqual(E, {
+    Assert.isEqual(E, {
       type: 'and',
       expr: [
         {
@@ -156,7 +156,7 @@ describe('type/TemplateLiteralParser', () => {
   })
   it('Expression 10', () => {
     const E = TemplateLiteralParser.Parse('A|B')
-    Assert.deepEqual(E, {
+    Assert.isEqual(E, {
       type: 'or',
       expr: [
         {
@@ -172,7 +172,7 @@ describe('type/TemplateLiteralParser', () => {
   })
   it('Expression 11', () => {
     const E = TemplateLiteralParser.Parse('A|(B)')
-    Assert.deepEqual(E, {
+    Assert.isEqual(E, {
       type: 'or',
       expr: [
         {
@@ -188,7 +188,7 @@ describe('type/TemplateLiteralParser', () => {
   })
   it('Expression 12', () => {
     const E = TemplateLiteralParser.Parse('A(B)')
-    Assert.deepEqual(E, {
+    Assert.isEqual(E, {
       type: 'and',
       expr: [
         {
@@ -204,7 +204,7 @@ describe('type/TemplateLiteralParser', () => {
   })
   it('Expression 13', () => {
     const E = TemplateLiteralParser.Parse('(A)B')
-    Assert.deepEqual(E, {
+    Assert.isEqual(E, {
       type: 'and',
       expr: [
         {
@@ -220,7 +220,7 @@ describe('type/TemplateLiteralParser', () => {
   })
   it('Expression 14', () => {
     const E = TemplateLiteralParser.Parse('(A)|B')
-    Assert.deepEqual(E, {
+    Assert.isEqual(E, {
       type: 'or',
       expr: [
         {
@@ -236,35 +236,35 @@ describe('type/TemplateLiteralParser', () => {
   })
   it('Expression 15', () => {
     const E = TemplateLiteralParser.Parse('|')
-    Assert.deepEqual(E, {
+    Assert.isEqual(E, {
       type: 'const',
       const: '',
     })
   })
   it('Expression 16', () => {
     const E = TemplateLiteralParser.Parse('||')
-    Assert.deepEqual(E, {
+    Assert.isEqual(E, {
       type: 'const',
       const: '',
     })
   })
   it('Expression 17', () => {
     const E = TemplateLiteralParser.Parse('||A')
-    Assert.deepEqual(E, {
+    Assert.isEqual(E, {
       type: 'const',
       const: 'A',
     })
   })
   it('Expression 18', () => {
     const E = TemplateLiteralParser.Parse('A||')
-    Assert.deepEqual(E, {
+    Assert.isEqual(E, {
       type: 'const',
       const: 'A',
     })
   })
   it('Expression 19', () => {
     const E = TemplateLiteralParser.Parse('A||B')
-    Assert.deepEqual(E, {
+    Assert.isEqual(E, {
       type: 'or',
       expr: [
         {
@@ -280,7 +280,7 @@ describe('type/TemplateLiteralParser', () => {
   })
   it('Expression 20', () => {
     const E = TemplateLiteralParser.Parse('A|()|B')
-    Assert.deepEqual(E, {
+    Assert.isEqual(E, {
       type: 'or',
       expr: [
         {
@@ -300,7 +300,7 @@ describe('type/TemplateLiteralParser', () => {
   })
   it('Expression 21', () => {
     const E = TemplateLiteralParser.Parse('A|(|)|B')
-    Assert.deepEqual(E, {
+    Assert.isEqual(E, {
       type: 'or',
       expr: [
         {
@@ -320,7 +320,7 @@ describe('type/TemplateLiteralParser', () => {
   })
   it('Expression 22', () => {
     const E = TemplateLiteralParser.Parse('A|(||)|B')
-    Assert.deepEqual(E, {
+    Assert.isEqual(E, {
       type: 'or',
       expr: [
         {
@@ -340,7 +340,7 @@ describe('type/TemplateLiteralParser', () => {
   })
   it('Expression 23', () => {
     const E = TemplateLiteralParser.Parse('|A(||)B|')
-    Assert.deepEqual(E, {
+    Assert.isEqual(E, {
       type: 'and',
       expr: [
         {
@@ -360,7 +360,7 @@ describe('type/TemplateLiteralParser', () => {
   })
   it('Expression 24', () => {
     const E = TemplateLiteralParser.Parse('A(B)(C)')
-    Assert.deepEqual(E, {
+    Assert.isEqual(E, {
       type: 'and',
       expr: [
         {
@@ -380,7 +380,7 @@ describe('type/TemplateLiteralParser', () => {
   })
   it('Expression 25', () => {
     const E = TemplateLiteralParser.Parse('A(B)|(C)')
-    Assert.deepEqual(E, {
+    Assert.isEqual(E, {
       type: 'or',
       expr: [
         {
@@ -405,7 +405,7 @@ describe('type/TemplateLiteralParser', () => {
   })
   it('Expression 26', () => {
     const E = TemplateLiteralParser.Parse('A(B|C)')
-    Assert.deepEqual(E, {
+    Assert.isEqual(E, {
       type: 'and',
       expr: [
         {
@@ -430,7 +430,7 @@ describe('type/TemplateLiteralParser', () => {
   })
   it('Expression 27', () => {
     const E = TemplateLiteralParser.Parse('A|(B|C)')
-    Assert.deepEqual(E, {
+    Assert.isEqual(E, {
       type: 'or',
       expr: [
         {
@@ -455,7 +455,7 @@ describe('type/TemplateLiteralParser', () => {
   })
   it('Expression 28', () => {
     const E = TemplateLiteralParser.Parse('((A)B)C')
-    Assert.deepEqual(E, {
+    Assert.isEqual(E, {
       type: 'and',
       expr: [
         {
@@ -480,7 +480,7 @@ describe('type/TemplateLiteralParser', () => {
   })
   it('Expression 29', () => {
     const E = TemplateLiteralParser.Parse('(0|1)(0|1)')
-    Assert.deepEqual(E, {
+    Assert.isEqual(E, {
       type: 'and',
       expr: [
         {
@@ -514,7 +514,7 @@ describe('type/TemplateLiteralParser', () => {
   })
   it('Expression 30', () => {
     const E = TemplateLiteralParser.Parse('(0|1)|(0|1)')
-    Assert.deepEqual(E, {
+    Assert.isEqual(E, {
       type: 'or',
       expr: [
         {
@@ -548,7 +548,7 @@ describe('type/TemplateLiteralParser', () => {
   })
   it('Expression 31', () => {
     const E = TemplateLiteralParser.Parse('(0|(1|0)|1)')
-    Assert.deepEqual(E, {
+    Assert.isEqual(E, {
       type: 'or',
       expr: [
         {
@@ -577,7 +577,7 @@ describe('type/TemplateLiteralParser', () => {
   })
   it('Expression 32', () => {
     const E = TemplateLiteralParser.Parse('(0(1|0)1)')
-    Assert.deepEqual(E, {
+    Assert.isEqual(E, {
       type: 'and',
       expr: [
         {

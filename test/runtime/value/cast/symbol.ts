@@ -47,6 +47,6 @@ describe('value/cast/Symbol', () => {
   it('Should preserve', () => {
     const value = Symbol('hello')
     const result = Value.Cast(T, value)
-    Assert.deepEqual(result.description, value.description)
+    Assert.isEqual(result.description, value.description)
   })
 })

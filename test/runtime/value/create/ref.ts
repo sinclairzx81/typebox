@@ -25,6 +25,6 @@ describe('value/create/Ref', () => {
       { $id: 'T', default: 'target' },
     )
     const R = Type.Ref(T, { default: 'override' })
-    Assert.deepEqual(Value.Create(R), 'override') // terminated at R default value
+    Assert.isEqual(Value.Create(R), 'override') // terminated at R default value
   })
 })

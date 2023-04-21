@@ -16,42 +16,42 @@ describe('value/cast/Record', () => {
   it('Should upcast from string', () => {
     const value = 'hello'
     const result = Value.Cast(T, value)
-    Assert.deepEqual(result, E)
+    Assert.isEqual(result, E)
   })
   it('Should upcast from number', () => {
     const value = E
     const result = Value.Cast(T, value)
-    Assert.deepEqual(result, E)
+    Assert.isEqual(result, E)
   })
   it('Should upcast from boolean', () => {
     const value = true
     const result = Value.Cast(T, value)
-    Assert.deepEqual(result, E)
+    Assert.isEqual(result, E)
   })
   it('Should upcast from object', () => {
     const value = {}
     const result = Value.Cast(T, value)
-    Assert.deepEqual(result, E)
+    Assert.isEqual(result, E)
   })
   it('Should upcast from array', () => {
     const value = [1]
     const result = Value.Cast(T, value)
-    Assert.deepEqual(result, E)
+    Assert.isEqual(result, E)
   })
   it('Should upcast from undefined', () => {
     const value = undefined
     const result = Value.Cast(T, value)
-    Assert.deepEqual(result, E)
+    Assert.isEqual(result, E)
   })
   it('Should upcast from null', () => {
     const value = null
     const result = Value.Cast(T, value)
-    Assert.deepEqual(result, E)
+    Assert.isEqual(result, E)
   })
   it('Should upcast from date', () => {
     const value = new Date(100)
     const result = Value.Cast(T, value)
-    Assert.deepEqual(result, E)
+    Assert.isEqual(result, E)
   })
   it('Should preserve', () => {
     const value = {
@@ -59,7 +59,7 @@ describe('value/cast/Record', () => {
       b: { x: 4, y: 5, z: 6 },
     }
     const result = Value.Cast(T, value)
-    Assert.deepEqual(result, value)
+    Assert.isEqual(result, value)
   })
   it('Should preserve and patch invalid records', () => {
     const value = {
@@ -70,7 +70,7 @@ describe('value/cast/Record', () => {
       e: { x: 1, y: 2, w: 9000 },
     }
     const result = Value.Cast(T, value)
-    Assert.deepEqual(result, {
+    Assert.isEqual(result, {
       a: { x: 1, y: 2, z: 3 },
       b: { x: 4, y: 5, z: 0 },
       c: { x: 0, y: 0, z: 0 },

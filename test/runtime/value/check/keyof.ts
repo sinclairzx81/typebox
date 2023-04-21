@@ -14,24 +14,24 @@ describe('value/check/KeyOf', () => {
   it('Should pass keyof', () => {
     const value = 'x'
     const result = Value.Check(T, value)
-    Assert.equal(result, true)
+    Assert.isEqual(result, true)
   })
 
   it('Should fail keyof', () => {
     const value = 'w'
     const result = Value.Check(T, value)
-    Assert.equal(result, false)
+    Assert.isEqual(result, false)
   })
 
   it('Should fail keyof with undefined', () => {
     const value = undefined
     const result = Value.Check(T, value)
-    Assert.equal(result, false)
+    Assert.isEqual(result, false)
   })
 
   it('Should fail keyof with null', () => {
     const value = null
     const result = Value.Check(T, value)
-    Assert.equal(result, false)
+    Assert.isEqual(result, false)
   })
 })

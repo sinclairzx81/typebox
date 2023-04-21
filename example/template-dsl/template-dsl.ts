@@ -60,7 +60,7 @@ export type TTemplateLiteralParser<T extends string> = Ensure<TTemplateLiteral<A
 // ---------------------------------------------------------------------
 namespace TemplateLiteralParser {
   export function * ParseUnion(template: string): IterableIterator<TTemplateLiteralKind> {
-    const trim = template.trim()
+    const trim = template.trim().replace(/"|'/g, '')
     if(trim === 'boolean') return yield Type.Boolean()
     if(trim === 'number') return yield Type.Number()
     if(trim === 'bigint') return yield Type.BigInt()

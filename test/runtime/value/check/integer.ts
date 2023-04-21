@@ -8,34 +8,34 @@ describe('value/check/Integer', () => {
   it('Should not validate NaN', () => {
     const T = Type.Integer()
     const result = Value.Check(T, NaN)
-    Assert.equal(result, false)
+    Assert.isEqual(result, false)
   })
   it('Should not validate +Infinity', () => {
     const T = Type.Integer()
     const result = Value.Check(T, Infinity)
-    Assert.equal(result, false)
+    Assert.isEqual(result, false)
   })
   it('Should not validate -Infinity', () => {
     const T = Type.Integer()
     const result = Value.Check(T, -Infinity)
-    Assert.equal(result, false)
+    Assert.isEqual(result, false)
   })
 
   it('Should pass integer', () => {
     const value = 1
     const result = Value.Check(T, value)
-    Assert.equal(result, true)
+    Assert.isEqual(result, true)
   })
 
   it('Should fail integer', () => {
     const value = 3.14
     const result = Value.Check(T, value)
-    Assert.equal(result, false)
+    Assert.isEqual(result, false)
   })
 
   it('Should fail Date', () => {
     const value = new Date()
     const result = Value.Check(T, value)
-    Assert.equal(result, false)
+    Assert.isEqual(result, false)
   })
 })

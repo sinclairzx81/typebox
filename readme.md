@@ -83,6 +83,7 @@ License MIT
   - [Conditional](#types-conditional)
   - [Template](#types-template-literal)
   - [Indexed](#types-indexed)
+  - [Variadic](#types-variadic)
   - [Guards](#types-guards)
   - [Unsafe](#types-unsafe)
   - [Strict](#types-strict)
@@ -256,7 +257,8 @@ The following table lists the Standard TypeBox types. These types are fully comp
 │ })                             │ }                           │   properties: {                │
 │                                │                             │     x: {                       │
 │                                │                             │       type: 'number'           │
-│                                │                             │     }, {                       │
+│                                │                             │     },                         │
+│                                │                             │     y: {                       │
 │                                │                             │       type: 'number'           │
 │                                │                             │     }                          │
 │                                │                             │   }                            │
@@ -275,14 +277,6 @@ The following table lists the Standard TypeBox types. These types are fully comp
 │                                │                             │   maxItems: 2                  │
 │                                │                             │ }                              │
 │                                │                             │                                │
-│                                │                             │                                │
-├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
-│ const T = Type.Index(          │ type T = {                  │ const T = {                    │
-│   Type.Object({                │   x: number,                │   type: number                 │
-│     x: Type.Number(),          │   y: string                 │ }                              │
-│     y: Type.String()           │ }['x']                      │                                │
-│   }), ['x']                    │                             │                                │
-│ )                              │                             │                                │
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ enum Foo {                     │ enum Foo {                  │ const T = {                    │
@@ -466,6 +460,28 @@ The following table lists the Standard TypeBox types. These types are fully comp
 │                                │                             │     }                          │
 │                                │                             │   }                            │
 │                                │                             │ }                              │
+│                                │                             │                                │
+├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
+│ const T = Type.Index(          │ type T = {                  │ const T = {                    │
+│   Type.Object({                │   x: number,                │   type: 'number'               │
+│     x: Type.Number(),          │   y: string                 │ }                              │
+│     y: Type.String()           │ }['x']                      │                                │
+│   }), ['x']                    │                             │                                │
+│ )                              │                             │                                │
+│                                │                             │                                │
+├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
+│ const A = Type.Tuple([         │ type A = [0, 1]             │ const T = {                    │
+│   Type.Literal(0),             │ type B = [2, 3]             │   type: 'array',               │
+│   Type.Literal(1)              │ type T = [...A, ...B]       │   items: [                     │
+│ ])                             │                             │     { const: 0 },              │
+│ const B = Type.Tuple([         │                             │     { const: 1 },              │
+|   Type.Literal(2),             │                             │     { const: 2 },              │
+|   Type.Literal(3)              │                             │     { const: 3 }               │
+│ ])                             │                             │   ],                           │
+│ const T = Type.Tuple([         │                             │   additionalItems: false,      │
+|   ...Type.Rest(A),             │                             │   minItems: 4,                 │
+|   ...Type.Test(B)              │                             │   maxItems: 4                  │
+│ ])                             │                             │ }                              │
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Object({        │ type T = {                  │ const R = {                    │
@@ -856,10 +872,34 @@ const A = Type.Index(T, ['x'])                       // type A = T['x']
 
 const B = Type.Index(T, Type.KeyOf(T))               // type B = T[keyof T]
 ```
+<a name='types-variadic'></a>
 
+### Variadic Types
+
+Variadic types are supported with `Type.Rest`. This type will extract interior types from a tuple and return them as a flat array. This array can then be passed to other types that accept arrays as arguments.
+
+The following creates variadic functions using the Rest type.
+
+```typescript
+// TypeScript
+
+type P = [number, number]
+
+type F1 = (param: [...P]) => void
+
+type F2 = (param: [...P, number]) => void
+
+// TypeBox
+
+const P = Type.Tuple([Type.Number(), Type.Number()])
+
+const F1 = Type.Function(Type.Rest(P), Type.Void())
+
+const F2 = Type.Function([...Type.Rest(P), Type.Number()], Type.Void())
+```
 <a name='types-unsafe'></a>
 
-### Unsafe
+### Unsafe Types
 
 Use `Type.Unsafe` to create custom schematics with user defined inference rules.
 
@@ -904,7 +944,7 @@ type T = Static<typeof T>                            // type T = 'A' | 'B' | 'C'
 
 <a name='types-guards'></a>
 
-### Guards
+### Type Gaurds
 
 TypeBox provides a `TypeGuard` module that can be used for reflection and asserting values as types.
 
@@ -1436,11 +1476,11 @@ The following table lists esbuild compiled and minified sizes for each TypeBox m
 ┌──────────────────────┬────────────┬────────────┬─────────────┐
 │       (index)        │  Compiled  │  Minified  │ Compression │
 ├──────────────────────┼────────────┼────────────┼─────────────┤
-│ typebox/compiler     │ '127.2 kb' │ ' 56.9 kb' │  '2.23 x'   │
-│ typebox/errors       │ '110.9 kb' │ ' 49.2 kb' │  '2.25 x'   │
-│ typebox/system       │ ' 76.4 kb' │ ' 31.5 kb' │  '2.42 x'   │
-│ typebox/value        │ '176.9 kb' │ ' 76.8 kb' │  '2.30 x'   │
-│ typebox              │ ' 75.3 kb' │ ' 31.1 kb' │  '2.42 x'   │
+│ typebox/compiler     │ '126.7 kb' │ ' 56.6 kb' │  '2.24 x'   │
+│ typebox/errors       │ '110.4 kb' │ ' 48.8 kb' │  '2.26 x'   │
+│ typebox/system       │ ' 75.9 kb' │ ' 31.1 kb' │  '2.44 x'   │
+│ typebox/value        │ '176.4 kb' │ ' 76.4 kb' │  '2.31 x'   │
+│ typebox              │ ' 74.8 kb' │ ' 30.7 kb' │  '2.44 x'   │
 └──────────────────────┴────────────┴────────────┴─────────────┘
 ```
 
