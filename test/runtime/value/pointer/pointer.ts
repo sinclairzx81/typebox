@@ -1,5 +1,5 @@
 import { ValuePointer } from '@sinclair/typebox/value'
-import { Assert } from '../../assert/index'
+import { Assert } from '../../assert/index.js'
 
 describe('value/pointer/Pointer', () => {
   //-----------------------------------------------

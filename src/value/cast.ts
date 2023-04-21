@@ -26,10 +26,10 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import * as Types from '../typebox'
-import { ValueCreate } from './create'
-import { ValueCheck } from './check'
-import { ValueClone } from './clone'
+import * as Types from '../typebox.js'
+import { ValueCreate } from './create.js'
+import { ValueCheck } from './check.js'
+import { ValueClone } from './clone.js'
 
 // ----------------------------------------------------------------------------------------------
 // Errors

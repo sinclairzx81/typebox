@@ -1,6 +1,6 @@
 import { deepStrictEqual, strictEqual } from 'assert'
 import { Type } from '@sinclair/typebox'
-import { Ok, Fail } from './validate'
+import { Ok, Fail } from './validate.js'
 
 describe('type/compiler/Readonly', () => {
   it('Should validate object with readonly', () => {

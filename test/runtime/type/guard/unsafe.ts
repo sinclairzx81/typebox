@@ -1,6 +1,6 @@
 import { Kind, TypeGuard, TypeRegistry } from '@sinclair/typebox'
 import { Type } from '@sinclair/typebox'
-import { Assert } from '../../assert/index'
+import { Assert } from '../../assert/index.js'
 
 describe('type/guard/TUnsafe', () => {
   it('Should guard raw TUnsafe', () => {

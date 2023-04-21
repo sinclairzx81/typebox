@@ -26,9 +26,9 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import * as Types from '../typebox'
-import { TypeSystem } from '../system/index'
-import { ValueHash } from './hash'
+import * as Types from '../typebox.js'
+import { TypeSystem } from '../system/index.js'
+import { ValueHash } from './hash.js'
 
 // -------------------------------------------------------------------------
 // Errors

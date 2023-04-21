@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import * as Types from '../typebox'
+import * as Types from '../typebox.js'
 
 export class TypeSystemDuplicateTypeKind extends Error {
   constructor(kind: string) {

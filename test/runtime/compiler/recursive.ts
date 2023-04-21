@@ -1,6 +1,6 @@
 import { Type } from '@sinclair/typebox'
-import { Assert } from '../assert/index'
-import { Ok, Fail } from './validate'
+import { Assert } from '../assert/index.js'
+import { Ok, Fail } from './validate.js'
 
 describe('type/compiler/Recursive', () => {
   it('Should generate default ordinal $id if not specified', () => {

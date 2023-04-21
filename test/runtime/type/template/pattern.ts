@@ -1,5 +1,5 @@
 import { Type, TTemplateLiteral, PatternNumber, PatternString, PatternBoolean } from '@sinclair/typebox'
-import { Assert } from '../../assert/index'
+import { Assert } from '../../assert/index.js'
 
 describe('type/TemplateLiteralPattern', () => {
   const Equal = (template: TTemplateLiteral, expect: string) => {

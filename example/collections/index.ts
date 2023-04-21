@@ -26,6 +26,6 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export * from './array'
-export * from './map'
-export * from './set'
+export * from './array.js'
+export * from './map.js'
+export * from './set.js'

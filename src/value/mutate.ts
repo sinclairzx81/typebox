@@ -26,9 +26,9 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { Is, TypedArrayType } from './is'
-import { ValuePointer } from './pointer'
-import { ValueClone } from './clone'
+import { Is, TypedArrayType } from './is.js'
+import { ValuePointer } from './pointer.js'
+import { ValueClone } from './clone.js'
 
 export class ValueMutateTypeMismatchError extends Error {
   constructor() {

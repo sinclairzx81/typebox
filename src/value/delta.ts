@@ -26,10 +26,10 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { Type, Static } from '../typebox'
-import { Is, ObjectType, ArrayType, TypedArrayType, ValueType } from './is'
-import { ValueClone } from './clone'
-import { ValuePointer } from './pointer'
+import { Type, Static } from '../typebox.js'
+import { Is, ObjectType, ArrayType, TypedArrayType, ValueType } from './is.js'
+import { ValueClone } from './clone.js'
+import { ValuePointer } from './pointer.js'
 
 // ---------------------------------------------------------------------
 // Operations

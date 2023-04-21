@@ -1,5 +1,5 @@
 import { Type } from '@sinclair/typebox'
-import { Ok, Fail } from './validate'
+import { Ok, Fail } from './validate.js'
 
 describe('type/compiler/Enum', () => {
   it('Should validate when emum uses default numeric values', () => {

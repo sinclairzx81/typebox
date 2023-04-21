@@ -1,6 +1,6 @@
 import { Value } from '@sinclair/typebox/value'
 import { Type, Kind, TypeRegistry } from '@sinclair/typebox'
-import { Assert } from '../../assert/index'
+import { Assert } from '../../assert/index.js'
 
 describe('value/create/Custom', () => {
   it('Should create custom value with default', () => {

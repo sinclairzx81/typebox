@@ -1,6 +1,6 @@
 import { Type } from '@sinclair/typebox'
-import { Assert } from '../assert'
-import { Ok, Fail } from './validate'
+import { Assert } from '../assert/index.js'
+import { Ok, Fail } from './validate.js'
 
 describe('type/schema/Composite', () => {
   it('Should compose two objects', () => {

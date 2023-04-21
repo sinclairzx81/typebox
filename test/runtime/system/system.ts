@@ -1,5 +1,5 @@
-import { Ok, Fail } from '../compiler/validate'
-import { Assert } from '../assert/index'
+import { Ok, Fail } from '../compiler/validate.js'
+import { Assert } from '../assert/index.js'
 import { TypeSystem } from '@sinclair/typebox/system'
 import { Type } from '@sinclair/typebox'
 

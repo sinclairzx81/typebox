@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { Is, ObjectType, ArrayType, TypedArrayType, ValueType } from './is'
+import { Is, ObjectType, ArrayType, TypedArrayType, ValueType } from './is.js'
 
 export namespace ValueClone {
   function Array(value: ArrayType): any {

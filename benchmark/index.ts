@@ -1,2 +1,2 @@
-export * from './compression/index'
-export * from './measurement/index'
+export * from './compression/index.js'
+export * from './measurement/index.js'

@@ -1,5 +1,5 @@
 import { Type } from '@sinclair/typebox'
-import { Ok, Fail } from './validate'
+import { Ok, Fail } from './validate.js'
 
 // ----------------------------------------------------
 // These tests are implemented by way of .addKeyword()

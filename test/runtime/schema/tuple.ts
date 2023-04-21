@@ -1,6 +1,6 @@
 import { Type } from '@sinclair/typebox'
-import { Ok, Fail } from './validate'
-import { Assert } from '../assert'
+import { Ok, Fail } from './validate.js'
+import { Assert } from '../assert/index.js'
 
 describe('type/schema/Tuple', () => {
   it('Should validate tuple of [string, number]', () => {

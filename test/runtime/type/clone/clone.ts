@@ -3,7 +3,7 @@
 // --------------------------------------------------------------------
 
 // import { Type } from '@sinclair/typebox'
-// import { Assert } from '../../assert'
+// import { Assert } from '../../assert/index.js'
 
 // describe('type/Clone', () => {
 //   it('Should retain source type $id for cloned objects', () => {

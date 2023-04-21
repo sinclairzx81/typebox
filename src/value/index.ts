@@ -26,9 +26,9 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export { ValueError, ValueErrorIterator, ValueErrorType } from '../errors/index'
-export { ValueHash } from './hash'
-export { Edit, Insert, Update, Delete } from './delta'
-export { Mutable } from './mutate'
-export * from './pointer'
-export * from './value'
+export { ValueError, ValueErrorIterator, ValueErrorType } from '../errors/index.js'
+export { ValueHash } from './hash.js'
+export { Edit, Insert, Update, Delete } from './delta.js'
+export { Mutable } from './mutate.js'
+export * from './pointer.js'
+export * from './value.js'

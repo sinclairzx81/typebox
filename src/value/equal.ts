@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { Is, ObjectType, ArrayType, TypedArrayType, ValueType } from './is'
+import { Is, ObjectType, ArrayType, TypedArrayType, ValueType } from './is.js'
 
 export namespace ValueEqual {
   function Object(left: ObjectType, right: unknown): boolean {

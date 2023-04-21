@@ -1,5 +1,5 @@
 import { TypeRegistry } from '@sinclair/typebox'
-import { Assert } from '../../assert/index'
+import { Assert } from '../../assert/index.js'
 
 describe('type/TypeRegistry', () => {
   it('Should set type', () => {

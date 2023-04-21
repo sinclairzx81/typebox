@@ -1,5 +1,5 @@
 import { Type, Kind, TypeRegistry } from '@sinclair/typebox'
-import { Ok, Fail } from './validate'
+import { Ok, Fail } from './validate.js'
 
 describe('type/compiler/Custom', () => {
   TypeRegistry.Set('BigInt', (schema, value) => typeof value === 'bigint')

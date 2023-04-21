@@ -1,6 +1,6 @@
 import { TypeExtends, TypeExtendsResult } from '@sinclair/typebox'
 import { Type } from '@sinclair/typebox'
-import { Assert } from '../../assert/index'
+import { Assert } from '../../assert/index.js'
 
 describe('type/extends/Null', () => {
   it('Should extend Any', () => {

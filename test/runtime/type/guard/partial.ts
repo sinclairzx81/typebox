@@ -1,7 +1,7 @@
 import { TypeSystem } from '@sinclair/typebox/system'
 import { TypeGuard } from '@sinclair/typebox'
 import { Type, Kind } from '@sinclair/typebox'
-import { Assert } from '../../assert/index'
+import { Assert } from '../../assert/index.js'
 
 describe('type/guard/TPartial', () => {
   // -------------------------------------------------------------------------

@@ -1,6 +1,6 @@
 import { Value } from '@sinclair/typebox/value'
 import { Type } from '@sinclair/typebox'
-import { Assert } from '../../assert/index'
+import { Assert } from '../../assert/index.js'
 
 describe('value/cast/TemplateLiteral', () => {
   const T = Type.TemplateLiteral([Type.Literal('hello'), Type.Literal('world')])

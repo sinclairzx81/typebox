@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export { TypeBoxToTypeScript } from './typebox-to-typescript'
-export { TypeBoxToZod } from './typebox-to-zod'
-export { TypeScriptToJsonSchema } from './typescript-to-json-schema'
-export { TypeScriptToTypeBox } from './typescript-to-typebox'
+export { TypeBoxToTypeScript } from './typebox-to-typescript.js'
+export { TypeBoxToZod } from './typebox-to-zod.js'
+export { TypeScriptToJsonSchema } from './typescript-to-json-schema.js'
+export { TypeScriptToTypeBox } from './typescript-to-typebox.js'

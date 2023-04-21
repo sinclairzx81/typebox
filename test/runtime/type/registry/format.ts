@@ -1,5 +1,5 @@
 import { FormatRegistry } from '@sinclair/typebox'
-import { Assert } from '../../assert/index'
+import { Assert } from '../../assert/index.js'
 
 describe('type/FormatRegistry', () => {
   it('Should set format', () => {

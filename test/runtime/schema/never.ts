@@ -1,5 +1,5 @@
 import { Type } from '@sinclair/typebox'
-import { Fail } from './validate'
+import { Fail } from './validate.js'
 
 describe('type/schema/Never', () => {
   it('Should not validate number', () => {

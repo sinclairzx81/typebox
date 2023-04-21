@@ -1,6 +1,6 @@
 import { Type } from '@sinclair/typebox'
 import { ValueErrors } from '@sinclair/typebox/errors'
-import { Assert } from '../assert'
+import { Assert } from '../assert/index.js'
 
 describe('errors/ValueErrorIterator', () => {
   it('Should return undefined for non error', () => {

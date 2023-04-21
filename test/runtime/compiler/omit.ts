@@ -1,5 +1,5 @@
 import { Type, Kind } from '@sinclair/typebox'
-import { Ok, Fail } from './validate'
+import { Ok, Fail } from './validate.js'
 import { deepEqual, strictEqual } from 'assert'
 
 describe('type/compiler/Omit', () => {

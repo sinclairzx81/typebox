@@ -25,9 +25,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
-import * as Types from '../typebox'
-import { TypeSystem } from '../system/index'
-import { ValueHash } from '../value/hash'
+import * as Types from '../typebox.js'
+import { TypeSystem } from '../system/index.js'
+import { ValueHash } from '../value/hash.js'
 
 // -------------------------------------------------------------------
 // ValueErrorType

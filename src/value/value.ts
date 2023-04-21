@@ -26,17 +26,17 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import * as Types from '../typebox'
-import { ValueErrors, ValueErrorIterator, ValueError } from '../errors/index'
-import { ValueMutate, Mutable } from './mutate'
-import { ValueHash } from './hash'
-import { ValueEqual } from './equal'
-import { ValueCast } from './cast'
-import { ValueClone } from './clone'
-import { ValueConvert } from './convert'
-import { ValueCreate } from './create'
-import { ValueCheck } from './check'
-import { ValueDelta, Edit } from './delta'
+import * as Types from '../typebox.js'
+import { ValueErrors, ValueErrorIterator, ValueError } from '../errors/index.js'
+import { ValueMutate, Mutable } from './mutate.js'
+import { ValueHash } from './hash.js'
+import { ValueEqual } from './equal.js'
+import { ValueCast } from './cast.js'
+import { ValueClone } from './clone.js'
+import { ValueConvert } from './convert.js'
+import { ValueCreate } from './create.js'
+import { ValueCheck } from './check.js'
+import { ValueDelta, Edit } from './delta.js'
 
 /** Provides functions to perform structural updates to JavaScript values */
 export namespace Value {

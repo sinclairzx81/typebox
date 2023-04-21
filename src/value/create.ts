@@ -26,8 +26,8 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import * as Types from '../typebox'
-import { ValueCheck } from './check'
+import * as Types from '../typebox.js'
+import { ValueCheck } from './check.js'
 
 // --------------------------------------------------------------------------
 // Errors

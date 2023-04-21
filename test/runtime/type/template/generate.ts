@@ -1,5 +1,5 @@
 import { TemplateLiteralParser, TemplateLiteralGenerator } from '@sinclair/typebox'
-import { Assert } from '../../assert/index'
+import { Assert } from '../../assert/index.js'
 
 describe('type/TemplateLiteralGenerator', () => {
   // ---------------------------------------------------------------

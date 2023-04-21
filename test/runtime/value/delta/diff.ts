@@ -1,5 +1,5 @@
 import { Value, Edit } from '@sinclair/typebox/value'
-import { Assert } from '../../assert/index'
+import { Assert } from '../../assert/index.js'
 
 // -----------------------------------------------------------------
 // Diff Factory

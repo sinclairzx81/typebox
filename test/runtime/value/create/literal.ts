@@ -1,6 +1,6 @@
 import { Value } from '@sinclair/typebox/value'
 import { Type } from '@sinclair/typebox'
-import { Assert } from '../../assert/index'
+import { Assert } from '../../assert/index.js'
 
 describe('value/create/Literal', () => {
   it('Should create literal string', () => {

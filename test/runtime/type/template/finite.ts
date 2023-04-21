@@ -1,5 +1,5 @@
 import { PatternString, PatternBoolean, PatternNumber, TemplateLiteralParser, TemplateLiteralFinite } from '@sinclair/typebox'
-import { Assert } from '../../assert/index'
+import { Assert } from '../../assert/index.js'
 
 describe('type/TemplateLiteralFinite', () => {
   // ---------------------------------------------------------------

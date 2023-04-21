@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { Formatter } from './formatter'
+import { Formatter } from './formatter.js'
 import * as ts from 'typescript'
 
 // -------------------------------------------------------------------------

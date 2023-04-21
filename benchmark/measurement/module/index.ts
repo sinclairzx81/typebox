@@ -1,6 +1,6 @@
-import { CompileBenchmark } from './compile'
-import { CheckBenchmark } from './check'
-import { Result } from './result'
+import { CompileBenchmark } from './compile.js'
+import { CheckBenchmark } from './check.js'
+import { Result } from './result.js'
 
 export function present(results: Result[]) {
   console.table(

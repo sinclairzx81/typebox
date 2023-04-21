@@ -1,5 +1,5 @@
-import { Cases } from './cases'
-import { Benchmark } from './benchmark'
+import { Cases } from './cases.js'
+import { Benchmark } from './benchmark.js'
 import { TypeCompiler } from '@sinclair/typebox/compiler'
 import { TSchema, TypeGuard } from '@sinclair/typebox'
 import { Value } from '@sinclair/typebox/value'

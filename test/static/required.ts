@@ -1,4 +1,4 @@
-import { Expect } from './assert'
+import { Expect } from './assert.js'
 import { Type, Static } from '@sinclair/typebox'
 
 Expect(Type.RegEx(/foo/)).ToInfer<string>()

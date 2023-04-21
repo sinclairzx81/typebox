@@ -1,6 +1,6 @@
 import { TypeGuard } from '@sinclair/typebox'
 import { Type } from '@sinclair/typebox'
-import { Assert } from '../../assert/index'
+import { Assert } from '../../assert/index.js'
 
 describe('type/guard/TBigInt', () => {
   it('Should guard for TBigInt', () => {

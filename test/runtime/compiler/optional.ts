@@ -1,6 +1,6 @@
 import { strictEqual } from 'assert'
 import { Type } from '@sinclair/typebox'
-import { Ok } from './validate'
+import { Ok } from './validate.js'
 
 describe('type/compiler/Optional', () => {
   it('Should validate object with optional', () => {

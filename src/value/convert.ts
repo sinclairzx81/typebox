@@ -26,9 +26,9 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import * as Types from '../typebox'
-import { ValueClone } from './clone'
-import { ValueCheck } from './check'
+import * as Types from '../typebox.js'
+import { ValueClone } from './clone.js'
+import { ValueCheck } from './check.js'
 
 // ----------------------------------------------------------------------------------------------
 // Errors

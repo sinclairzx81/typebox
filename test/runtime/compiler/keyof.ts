@@ -1,5 +1,5 @@
 import { Type } from '@sinclair/typebox'
-import { Ok, Fail } from './validate'
+import { Ok, Fail } from './validate.js'
 import { strictEqual } from 'assert'
 
 describe('type/compiler/KeyOf', () => {

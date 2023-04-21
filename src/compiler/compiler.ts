@@ -26,10 +26,10 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import * as Types from '../typebox'
-import { ValueErrors, ValueErrorIterator } from '../errors/index'
-import { TypeSystem } from '../system/index'
-import { ValueHash } from '../value/hash'
+import * as Types from '../typebox.js'
+import { ValueErrors, ValueErrorIterator } from '../errors/index.js'
+import { TypeSystem } from '../system/index.js'
+import { ValueHash } from '../value/hash.js'
 
 // -------------------------------------------------------------------
 // CheckFunction

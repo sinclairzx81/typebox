@@ -1,5 +1,5 @@
 import { Type, TLiteral, TUnion } from '@sinclair/typebox'
-import { Expect } from './assert'
+import { Expect } from './assert.js'
 
 {
   const T = Type.Extract(Type.String(), Type.String())

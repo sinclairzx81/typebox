@@ -1,6 +1,6 @@
 import { Type } from '@sinclair/typebox'
-import { Ok, Fail } from './validate'
-import { Assert } from '../assert/index'
+import { Ok, Fail } from './validate.js'
+import { Assert } from '../assert/index.js'
 
 describe('type/schema/Ref', () => {
   it('Should should validate when referencing a type', () => {

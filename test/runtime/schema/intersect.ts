@@ -1,5 +1,5 @@
 import { Type, Static } from '@sinclair/typebox'
-import { Ok, Fail } from './validate'
+import { Ok, Fail } from './validate.js'
 
 describe('type/schema/Intersect', () => {
   it('Should intersect number and number', () => {

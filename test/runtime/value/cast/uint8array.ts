@@ -1,6 +1,6 @@
 import { Value } from '@sinclair/typebox/value'
 import { Type } from '@sinclair/typebox'
-import { Assert } from '../../assert/index'
+import { Assert } from '../../assert/index.js'
 
 describe('value/cast/Uint8Array', () => {
   const T = Type.Uint8Array({ default: new Uint8Array([0, 1, 2, 3]) })

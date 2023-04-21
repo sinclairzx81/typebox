@@ -1,4 +1,4 @@
-import { Expect } from './assert'
+import { Expect } from './assert.js'
 import { Type } from '@sinclair/typebox'
 
 // Asserts combinatory modifiers

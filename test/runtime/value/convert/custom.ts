@@ -1,6 +1,6 @@
 import { Value } from '@sinclair/typebox/value'
 import { TypeSystem } from '@sinclair/typebox/system'
-import { Assert } from '../../assert/index'
+import { Assert } from '../../assert/index.js'
 
 describe('value/convert/Custom', () => {
   it('Should not convert 1', () => {

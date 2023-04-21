@@ -1,4 +1,4 @@
-import { Expect } from './assert'
+import { Expect } from './assert.js'
 import { Type, TOptional, TString, Static } from '@sinclair/typebox'
 
 {
