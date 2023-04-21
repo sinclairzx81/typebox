@@ -472,15 +472,15 @@ The following table lists the Standard TypeBox types. These types are fully comp
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const A = Type.Tuple([         │ type A = [0, 1]             │ const T = {                    │
 │   Type.Literal(0),             │ type B = [2, 3]             │   type: 'array',               │
-│   Type.Literal(1),             │ type T = [...A, ...B]       │   items: [                     │
+│   Type.Literal(1)              │ type T = [...A, ...B]       │   items: [                     │
 │ ])                             │                             │     { const: 0 },              │
 │ const B = Type.Tuple([         │                             │     { const: 1 },              │
 |   Type.Literal(2),             │                             │     { const: 2 },              │
-|   Type.Literal(3),             │                             │     { const: 3 },              │
+|   Type.Literal(3)              │                             │     { const: 3 }               │
 │ ])                             │                             │   ],                           │
 │ const T = Type.Tuple([         │                             │   additionalItems: false,      │
 |   ...Type.Rest(A),             │                             │   minItems: 4,                 │
-|   ...Type.Test(B),             │                             │   maxItems: 4                  │
+|   ...Type.Test(B)              │                             │   maxItems: 4                  │
 │ ])                             │                             │ }                              │
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
