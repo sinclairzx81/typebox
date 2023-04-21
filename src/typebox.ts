@@ -73,7 +73,7 @@ export type TReadonlyOptional<T extends TSchema> = T & { [Modifier]: 'ReadonlyOp
 // --------------------------------------------------------------------------
 // Key
 // --------------------------------------------------------------------------
-export type Key = keyof any
+export type Key = string | number
 // --------------------------------------------------------------------------
 // TSchema
 // --------------------------------------------------------------------------
@@ -310,21 +310,20 @@ export interface TFunction<T extends readonly TSchema[] = TSchema[], U extends T
 // --------------------------------------------------------------------------
 // TIndex
 // --------------------------------------------------------------------------
-export type IndexKey = keyof any
 // prettier-ignore
-export type TIndexProperty<T extends TProperties, K extends IndexKey> = 
+export type TIndexProperty<T extends TProperties, K extends Key> = 
+  T[K] extends infer R ? [R] :
+  []
+// prettier-ignore
+export type TIndexTuple<T extends TSchema[], K extends Key> = 
   K extends keyof T ? [T[K]] : 
   []
 // prettier-ignore
-export type TIndexTuple<T extends TSchema[], K extends IndexKey> = 
-  K extends keyof T ? [T[K]] : 
-  []
-// prettier-ignore
-export type TIndexComposite<T extends TSchema[], K extends IndexKey> = 
+export type TIndexComposite<T extends TSchema[], K extends Key> = 
   T extends [infer L, ...infer R] ? [...TIndexKey<AssertType<L>, K>, ...TIndexComposite<AssertRest<R>, K>] : 
   []
 // prettier-ignore
-export type TIndexKey<T extends TSchema, K extends IndexKey> = 
+export type TIndexKey<T extends TSchema, K extends Key> = 
   T extends TRecursive<infer S> ? TIndexKey<S, K> :
   T extends TIntersect<infer S> ? TIndexComposite<S, K> :
   T extends TUnion<infer S>     ? TIndexComposite<S, K> :
@@ -333,11 +332,12 @@ export type TIndexKey<T extends TSchema, K extends IndexKey> =
   T extends TArray<infer S>     ? S :
   []
 // prettier-ignore
-export type TIndexKeys<T extends TSchema, K extends IndexKey[]> = 
-  K extends [infer L, ...infer R] ? [...TIndexKey<T, Assert<L, IndexKey>>, ...TIndexKeys<T, Assert<R, IndexKey[]>>] : 
+export type TIndexKeys<T extends TSchema, K extends Key[]> = 
+  K extends [infer L, ...infer R] ? 
+    [...TIndexKey<T, Assert<L, Key>>, ...TIndexKeys<T, Assert<R, Key[]>>] : 
   []
 // prettier-ignore
-export type TIndex<T extends TSchema, K extends IndexKey[]> = 
+export type TIndex<T extends TSchema, K extends Key[]> = 
   TIndexKeys<T, K> extends infer R ?
     T extends TRecursive<infer S> ? TIndex<S, K> :
     T extends TTuple              ? UnionType<AssertRest<R>> :
@@ -540,7 +540,7 @@ export interface TPromise<T extends TSchema = TSchema> extends TSchema {
 // --------------------------------------------------------------------------
 export type RecordTemplateLiteralObjectType<K extends TTemplateLiteral, T extends TSchema> = Ensure<TObject<Evaluate<{ [_ in Static<K>]: T }>>>
 export type RecordTemplateLiteralType<K extends TTemplateLiteral, T extends TSchema> = IsTemplateLiteralFinite<K> extends true ? RecordTemplateLiteralObjectType<K, T> : TRecord<K, T>
-export type RecordUnionLiteralType<K extends TUnion<TLiteral<string | number>[]>, T extends TSchema> = Static<K> extends string ? Ensure<TObject<{ [X in Static<K>]: T }>> : never
+export type RecordUnionLiteralType<K extends TUnion, T extends TSchema> = Static<K> extends string ? Ensure<TObject<{ [X in Static<K>]: T }>> : never
 export type RecordLiteralType<K extends TLiteral<string | number>, T extends TSchema> = Ensure<TObject<{ [K2 in K['const']]: T }>>
 export type RecordNumberType<K extends TInteger | TNumber, T extends TSchema> = Ensure<TRecord<K, T>>
 export type RecordStringType<K extends TString, T extends TSchema> = Ensure<TRecord<K, T>>
@@ -1045,9 +1045,9 @@ export namespace TypeGuard {
   export function TLiteralBoolean(schema: unknown): schema is TLiteral<boolean> {
     return TKind(schema) && schema[Kind] === 'Literal' && IsOptionalString(schema.$id) && typeof schema.const === 'boolean'
   }
-  /** Returns true if the given schema is TUnion<Literal<string>[]> */
-  export function TLiteralUnion(schema: unknown): schema is TUnion<TLiteral<string>[]> {
-    return TUnion(schema) && schema.anyOf.every((schema) => TLiteral(schema))
+  /** Returns true if the given schema is TUnion<Literal<string | number>[]> */
+  export function TLiteralUnion(schema: unknown): schema is TUnion<TLiteral[]> {
+    return TUnion(schema) && schema.anyOf.every((schema) => TLiteralString(schema) || TLiteralNumber(schema))
   }
   /** Returns true if the given schema is TLiteral */
   export function TLiteral(schema: unknown): schema is TLiteral {
@@ -1924,12 +1924,12 @@ export namespace IndexedAccessor {
     return schema.anyOf.reduce((acc, schema) => [...acc, ...Visit(schema, key)], [] as TSchema[])
   }
   function Object(schema: TObject, key: string): TSchema[] {
-    const keys = globalThis.Object.getOwnPropertyNames(schema.properties).filter((k) => k === key)
+    const keys = globalThis.Object.getOwnPropertyNames(schema.properties).filter((key_) => key_ === key)
     return keys.map((key) => schema.properties[key])
   }
   function Tuple(schema: TTuple, key: string): TSchema[] {
     const items = schema.items === undefined ? [] : (schema.items as TSchema[])
-    return items.filter((_, index) => index.toString() === key.toString())
+    return items.filter((_, index) => index.toString() === key)
   }
   function Visit(schema: TSchema, key: string): TSchema[] {
     if (schema[Kind] === 'Intersect') return Intersect(schema as TIntersect, key)
@@ -1938,8 +1938,8 @@ export namespace IndexedAccessor {
     if (schema[Kind] === 'Tuple') return Tuple(schema as TTuple, key)
     return []
   }
-  export function Resolve(schema: TSchema, keys: string[]): TSchema[] {
-    return keys.reduce((acc, key) => [...acc, ...Visit(schema, key)], [] as TSchema[])
+  export function Resolve(schema: TSchema, keys: (string | number)[]): TSchema[] {
+    return keys.reduce((acc, key) => [...acc, ...Visit(schema, key.toString())], [] as TSchema[])
   }
 }
 // --------------------------------------------------------------------------
@@ -2019,7 +2019,7 @@ export namespace KeyArrayResolver {
   /** Resolves an array of string[] keys from the given schema or array type. */
   export function Resolve(schema: TSchema | string[]): string[] {
     if (globalThis.Array.isArray(schema)) return schema
-    if (TypeGuard.TLiteralUnion(schema)) return schema.anyOf.map((schema) => schema.const)
+    if (TypeGuard.TLiteralUnion(schema)) return schema.anyOf.map((schema) => schema.const.toString())
     if (TypeGuard.TLiteral(schema)) return [schema.const as string]
     if (TypeGuard.TTemplateLiteral(schema)) {
       const expression = TemplateLiteralParser.ParseExact(schema.pattern)
@@ -2027,6 +2027,24 @@ export namespace KeyArrayResolver {
       return [...TemplateLiteralGenerator.Generate(expression)]
     }
     return []
+  }
+}
+// --------------------------------------------------------------------------
+// UnionResolver
+// --------------------------------------------------------------------------
+export namespace UnionResolver {
+  function* Union(union: TUnion): IterableIterator<TSchema> {
+    for (const schema of union.anyOf) {
+      if (schema[Kind] === 'Union') {
+        yield* Union(schema as TUnion)
+      } else {
+        yield schema
+      }
+    }
+  }
+  /** Returns a resolved union with interior unions flattened */
+  export function Resolve(union: TUnion): TUnion {
+    return Type.Union([...Union(union)], { ...union })
   }
 }
 // --------------------------------------------------------------------------
@@ -2389,11 +2407,11 @@ export class StandardTypeBuilder extends TypeBuilder {
     }
   }
   /** `[Standard]` Returns indexed property types for the given keys */
-  public Index<T extends TSchema, K extends (keyof Static<T>)[]>(schema: T, keys: [...K], options?: SchemaOptions): TIndex<T, K>
+  public Index<T extends TSchema, K extends (keyof Static<T>)[]>(schema: T, keys: [...K], options?: SchemaOptions): TIndex<T, Assert<K, Key[]>>
   /** `[Standard]` Returns indexed property types for the given keys */
-  public Index<T extends TSchema, K extends TUnion<TLiteral<string | number>[]>>(schema: T, keys: K, options?: SchemaOptions): TIndex<T, TLiteralUnion<K>>
+  public Index<T extends TSchema, K extends TUnion<TLiteral<Key>[]>>(schema: T, keys: K, options?: SchemaOptions): TIndex<T, TLiteralUnion<K>>
   /** `[Standard]` Returns indexed property types for the given keys */
-  public Index<T extends TSchema, K extends TLiteral<string | number>>(schema: T, key: K, options?: SchemaOptions): TIndex<T, [K['const']]>
+  public Index<T extends TSchema, K extends TLiteral<Key>>(schema: T, key: K, options?: SchemaOptions): TIndex<T, [K['const']]>
   /** `[Standard]` Returns indexed property types for the given keys */
   public Index<T extends TSchema, K extends TTemplateLiteral>(schema: T, key: K, options?: SchemaOptions): TIndex<T, TTemplateLiteralKeyArray<K>>
   /** `[Standard]` Returns indexed property types for the given keys */
@@ -2559,7 +2577,7 @@ export class StandardTypeBuilder extends TypeBuilder {
     }, options)
   }
   /** `[Standard]` Creates a Record type */
-  public Record<K extends TUnion<TLiteral<string | number>[]>, T extends TSchema>(key: K, schema: T, options?: ObjectOptions): RecordUnionLiteralType<K, T>
+  public Record<K extends TUnion, T extends TSchema>(key: K, schema: T, options?: ObjectOptions): RecordUnionLiteralType<K, T>
   /** `[Standard]` Creates a Record type */
   public Record<K extends TLiteral<string | number>, T extends TSchema>(key: K, schema: T, options?: ObjectOptions): RecordLiteralType<K, T>
   /** `[Standard]` Creates a Record type */
@@ -2576,15 +2594,16 @@ export class StandardTypeBuilder extends TypeBuilder {
       return TemplateLiteralFinite.Check(expression)
         ? (this.Object([...TemplateLiteralGenerator.Generate(expression)].reduce((acc, key) => ({ ...acc, [key]: TypeClone.Clone(schema, {}) }), {} as TProperties), options))
         : this.Create<any>({ ...options, [Kind]: 'Record', type: 'object', patternProperties: { [key.pattern]: TypeClone.Clone(schema, {}) }})
-    } else if (TypeGuard.TLiteralUnion(key)) {
-      if (key.anyOf.every((schema) => TypeGuard.TLiteral(schema) && (typeof schema.const === 'string' || typeof schema.const === 'number'))) {
-        const properties = key.anyOf.reduce((acc: any, literal: any) => ({ ...acc, [literal.const]: TypeClone.Clone(schema, {}) }), {} as TProperties)
+    } else if (TypeGuard.TUnion(key)) {
+      const union = UnionResolver.Resolve(key)
+      if (TypeGuard.TLiteralUnion(union)) {
+        const properties = union.anyOf.reduce((acc: any, literal: any) => ({ ...acc, [literal.const]: TypeClone.Clone(schema, {}) }), {} as TProperties)
         return this.Object(properties, { ...options, [Hint]: 'Record' })
-      } else throw Error('TypeBuilder: Record key can only be derived from union literal of number or string')
+      } else throw Error('TypeBuilder: Record key of type union contains non-literal types')
     } else if (TypeGuard.TLiteral(key)) {
       if (typeof key.const === 'string' || typeof key.const === 'number') {
         return this.Object({ [key.const]: TypeClone.Clone(schema, {}) }, options)
-      } else throw Error('TypeBuilder: Record key can only be derived from literals of number or string')
+      } else throw Error('TypeBuilder: Record key of type literal is not of type string or number')
     } else if (TypeGuard.TInteger(key) || TypeGuard.TNumber(key)) {
       const pattern = PatternNumberExact
       return this.Create<any>({ ...options, [Kind]: 'Record', type: 'object', patternProperties: { [pattern]: TypeClone.Clone(schema, {}) } })
@@ -2592,7 +2611,7 @@ export class StandardTypeBuilder extends TypeBuilder {
       const pattern = key.pattern === undefined ? PatternStringExact : key.pattern
       return this.Create<any>({ ...options, [Kind]: 'Record', type: 'object', patternProperties: { [pattern]: TypeClone.Clone(schema, {}) } })
     } else {
-      throw Error(`StandardTypeBuilder: Invalid Record Key`)
+      throw Error(`StandardTypeBuilder: Record key is an invalid type`)
     }
   }
   /** `[Standard]` Creates a Recursive type */

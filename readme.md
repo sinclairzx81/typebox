@@ -1476,11 +1476,11 @@ The following table lists esbuild compiled and minified sizes for each TypeBox m
 ┌──────────────────────┬────────────┬────────────┬─────────────┐
 │       (index)        │  Compiled  │  Minified  │ Compression │
 ├──────────────────────┼────────────┼────────────┼─────────────┤
-│ typebox/compiler     │ '126.7 kb' │ ' 56.6 kb' │  '2.24 x'   │
-│ typebox/errors       │ '110.4 kb' │ ' 48.8 kb' │  '2.26 x'   │
-│ typebox/system       │ ' 75.9 kb' │ ' 31.1 kb' │  '2.44 x'   │
-│ typebox/value        │ '176.4 kb' │ ' 76.4 kb' │  '2.31 x'   │
-│ typebox              │ ' 74.8 kb' │ ' 30.7 kb' │  '2.44 x'   │
+│ typebox/compiler     │ '127.1 kb' │ ' 56.7 kb' │  '2.24 x'   │
+│ typebox/errors       │ '110.9 kb' │ ' 48.9 kb' │  '2.27 x'   │
+│ typebox/system       │ ' 76.3 kb' │ ' 31.2 kb' │  '2.44 x'   │
+│ typebox/value        │ '176.8 kb' │ ' 76.5 kb' │  '2.31 x'   │
+│ typebox              │ ' 75.2 kb' │ ' 30.8 kb' │  '2.44 x'   │
 └──────────────────────┴────────────┴────────────┴─────────────┘
 ```
 
