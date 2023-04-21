@@ -73,7 +73,7 @@ export type TReadonlyOptional<T extends TSchema> = T & { [Modifier]: 'ReadonlyOp
 // --------------------------------------------------------------------------
 // Key
 // --------------------------------------------------------------------------
-export type Key = keyof any
+export type Key = string | number
 // --------------------------------------------------------------------------
 // TSchema
 // --------------------------------------------------------------------------
@@ -310,21 +310,20 @@ export interface TFunction<T extends readonly TSchema[] = TSchema[], U extends T
 // --------------------------------------------------------------------------
 // TIndex
 // --------------------------------------------------------------------------
-export type IndexKey = keyof any
 // prettier-ignore
-export type TIndexProperty<T extends TProperties, K extends IndexKey> = 
+export type TIndexProperty<T extends TProperties, K extends Key> = 
+  T[K] extends infer R ? [R] :
+  []
+// prettier-ignore
+export type TIndexTuple<T extends TSchema[], K extends Key> = 
   K extends keyof T ? [T[K]] : 
   []
 // prettier-ignore
-export type TIndexTuple<T extends TSchema[], K extends IndexKey> = 
-  K extends keyof T ? [T[K]] : 
-  []
-// prettier-ignore
-export type TIndexComposite<T extends TSchema[], K extends IndexKey> = 
+export type TIndexComposite<T extends TSchema[], K extends Key> = 
   T extends [infer L, ...infer R] ? [...TIndexKey<AssertType<L>, K>, ...TIndexComposite<AssertRest<R>, K>] : 
   []
 // prettier-ignore
-export type TIndexKey<T extends TSchema, K extends IndexKey> = 
+export type TIndexKey<T extends TSchema, K extends Key> = 
   T extends TRecursive<infer S> ? TIndexKey<S, K> :
   T extends TIntersect<infer S> ? TIndexComposite<S, K> :
   T extends TUnion<infer S>     ? TIndexComposite<S, K> :
@@ -333,11 +332,12 @@ export type TIndexKey<T extends TSchema, K extends IndexKey> =
   T extends TArray<infer S>     ? S :
   []
 // prettier-ignore
-export type TIndexKeys<T extends TSchema, K extends IndexKey[]> = 
-  K extends [infer L, ...infer R] ? [...TIndexKey<T, Assert<L, IndexKey>>, ...TIndexKeys<T, Assert<R, IndexKey[]>>] : 
+export type TIndexKeys<T extends TSchema, K extends Key[]> = 
+  K extends [infer L, ...infer R] ? 
+    [...TIndexKey<T, Assert<L, Key>>, ...TIndexKeys<T, Assert<R, Key[]>>] : 
   []
 // prettier-ignore
-export type TIndex<T extends TSchema, K extends IndexKey[]> = 
+export type TIndex<T extends TSchema, K extends Key[]> = 
   TIndexKeys<T, K> extends infer R ?
     T extends TRecursive<infer S> ? TIndex<S, K> :
     T extends TTuple              ? UnionType<AssertRest<R>> :
@@ -1924,12 +1924,12 @@ export namespace IndexedAccessor {
     return schema.anyOf.reduce((acc, schema) => [...acc, ...Visit(schema, key)], [] as TSchema[])
   }
   function Object(schema: TObject, key: string): TSchema[] {
-    const keys = globalThis.Object.getOwnPropertyNames(schema.properties).filter((k) => k === key)
+    const keys = globalThis.Object.getOwnPropertyNames(schema.properties).filter((key_) => key_ === key)
     return keys.map((key) => schema.properties[key])
   }
   function Tuple(schema: TTuple, key: string): TSchema[] {
     const items = schema.items === undefined ? [] : (schema.items as TSchema[])
-    return items.filter((_, index) => index.toString() === key.toString())
+    return items.filter((_, index) => index.toString() === key)
   }
   function Visit(schema: TSchema, key: string): TSchema[] {
     if (schema[Kind] === 'Intersect') return Intersect(schema as TIntersect, key)
@@ -1938,8 +1938,8 @@ export namespace IndexedAccessor {
     if (schema[Kind] === 'Tuple') return Tuple(schema as TTuple, key)
     return []
   }
-  export function Resolve(schema: TSchema, keys: string[]): TSchema[] {
-    return keys.reduce((acc, key) => [...acc, ...Visit(schema, key)], [] as TSchema[])
+  export function Resolve(schema: TSchema, keys: (string | number)[]): TSchema[] {
+    return keys.reduce((acc, key) => [...acc, ...Visit(schema, key.toString())], [] as TSchema[])
   }
 }
 // --------------------------------------------------------------------------
@@ -2389,11 +2389,11 @@ export class StandardTypeBuilder extends TypeBuilder {
     }
   }
   /** `[Standard]` Returns indexed property types for the given keys */
-  public Index<T extends TSchema, K extends (keyof Static<T>)[]>(schema: T, keys: [...K], options?: SchemaOptions): TIndex<T, K>
+  public Index<T extends TSchema, K extends (keyof Static<T>)[]>(schema: T, keys: [...K], options?: SchemaOptions): TIndex<T, Assert<K, Key[]>>
   /** `[Standard]` Returns indexed property types for the given keys */
-  public Index<T extends TSchema, K extends TUnion<TLiteral<string | number>[]>>(schema: T, keys: K, options?: SchemaOptions): TIndex<T, TLiteralUnion<K>>
+  public Index<T extends TSchema, K extends TUnion<TLiteral<Key>[]>>(schema: T, keys: K, options?: SchemaOptions): TIndex<T, TLiteralUnion<K>>
   /** `[Standard]` Returns indexed property types for the given keys */
-  public Index<T extends TSchema, K extends TLiteral<string | number>>(schema: T, key: K, options?: SchemaOptions): TIndex<T, [K['const']]>
+  public Index<T extends TSchema, K extends TLiteral<Key>>(schema: T, key: K, options?: SchemaOptions): TIndex<T, [K['const']]>
   /** `[Standard]` Returns indexed property types for the given keys */
   public Index<T extends TSchema, K extends TTemplateLiteral>(schema: T, key: K, options?: SchemaOptions): TIndex<T, TTemplateLiteralKeyArray<K>>
   /** `[Standard]` Returns indexed property types for the given keys */
