@@ -83,7 +83,7 @@ License MIT
   - [Conditional](#types-conditional)
   - [Template](#types-template-literal)
   - [Indexed](#types-indexed)
-  - [Variadic](#types-variadic)
+  - [Rest](#types-rest)
   - [Guards](#types-guards)
   - [Unsafe](#types-unsafe)
   - [Strict](#types-strict)
@@ -872,30 +872,43 @@ const A = Type.Index(T, ['x'])                       // type A = T['x']
 
 const B = Type.Index(T, Type.KeyOf(T))               // type B = T[keyof T]
 ```
-<a name='types-variadic'></a>
+<a name='types-rest'></a>
 
-### Variadic Types
+### Rest Types
 
-Variadic types are supported with `Type.Rest`. This type will extract interior types from a tuple and return them as a flat array. This array can then be passed to other types that accept arrays as arguments.
-
-The following creates variadic functions using the Rest type.
+Rest parameters are supported with `Type.Rest`. This function is used to extract interior arrays from tuples to allow them to compose with the JavaScript spread operator `...`. This type can be used for tuple concatination and variadic function composition.
 
 ```typescript
 // TypeScript
 
-type P = [number, number]
+type T = [number, number]                            // type T = [number, number]
 
-type F1 = (param: [...P]) => void
+type C = [...T, number]                              // type C = [number, number, number]
 
-type F2 = (param: [...P, number]) => void
+type F = (...param: C) => void                       // type F = (
+                                                     //   param0: number,
+                                                     //   param1: number,
+                                                     //   param2: number,
+                                                     // ) => void
 
 // TypeBox
 
-const P = Type.Tuple([Type.Number(), Type.Number()])
+const T = Type.Tuple([                               // const T: TTuple<[
+  Type.Number(),                                     //   TNumber,
+  Type.Number()                                      //   TNumber,
+])                                                   // ]>
 
-const F1 = Type.Function(Type.Rest(P), Type.Void())
+const C = Type.Tuple([                               // const C: TTuple<[
+  ...Type.Rest(T),                                   //   TNumber,
+  Type.Number()                                      //   TNumber,
+])                                                   //   TNumber
+                                                     // ]>
 
-const F2 = Type.Function([...Type.Rest(P), Type.Number()], Type.Void())
+const F = Type.Function(Type.Rest(C), Type.Void())   // const F: TFunction<[
+                                                     //   TNumber,
+                                                     //   TNumber,
+                                                     //   TNumber
+                                                     // ], TVoid>
 ```
 <a name='types-unsafe'></a>
 
