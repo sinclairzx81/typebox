@@ -348,7 +348,9 @@ export type TIndexFromKeyTuple<T extends TSchema, K extends Key[]> =
     TNever : 
   TNever
 // prettier-ignore
-export type TIndex<T extends TSchema, K extends TSchema> = 
+export type TIndex<T extends TSchema, K extends TSchema> =
+  [T, K] extends [TTuple, TNumber]  ? UnionType<Assert<T['items'], TSchema[]>> :  
+  [T, K] extends [TArray, TNumber]  ? AssertType<T['items']> :
   K extends TTemplateLiteral        ? TIndexFromKeyTuple<T, TTemplateLiteralKeyTuple<K>> :
   K extends TUnion<TLiteral<Key>[]> ? TIndexFromKeyTuple<T, TUnionLiteral<K>> :
   K extends TLiteral<Key>           ? TIndexFromKeyTuple<T, [K['const']]> :
@@ -2418,10 +2420,6 @@ export class StandardTypeBuilder extends TypeBuilder {
   }
   /** `[Standard]` Returns indexed property types for the given keys */
   public Index<T extends TSchema, K extends (keyof Static<T>)[]>(schema: T, keys: [...K], options?: SchemaOptions): TIndexFromKeyTuple<T, Assert<K, Key[]>>
-  /** `[Standard]` Returns indexed property types for the given keys */
-  public Index<T extends TTuple, K extends TNumber>(schema: T, key: K, options?: SchemaOptions): UnionType<Assert<T['items'], TSchema[]>>
-  /** `[Standard]` Returns indexed property types for the given keys */
-  public Index<T extends TArray, K extends TNumber>(schema: T, key: K, options?: SchemaOptions): AssertType<T['items']>
   /** `[Standard]` Returns indexed property types for the given keys */
   public Index<T extends TSchema, K extends TSchema>(schema: T, key: K, options?: SchemaOptions): TIndex<T, K>
   /** `[Standard]` Returns indexed property types for the given keys */
