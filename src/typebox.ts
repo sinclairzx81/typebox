@@ -697,13 +697,11 @@ export interface TTemplateLiteral<T extends TTemplateLiteralKind[] = TTemplateLi
 // --------------------------------------------------------------------------
 export type TTupleIntoArray<T extends TTuple<TSchema[]>> = T extends TTuple<infer R> ? AssertRest<R> : never
 
-export type TTupleInfer<T extends TSchema[], P extends unknown[]> = 
-  T extends [infer L, ...infer R] ? [Static<AssertType<L>, P>, ...TTupleInfer<AssertRest<R>, P>] 
-  : []
+export type TTupleInfer<T extends TSchema[], P extends unknown[]> = T extends [infer L, ...infer R] ? [Static<AssertType<L>, P>, ...TTupleInfer<AssertRest<R>, P>] : []
 
 export interface TTuple<T extends TSchema[] = TSchema[]> extends TSchema {
   [Kind]: 'Tuple'
-  static: TTupleInfer<T, this['params']>// { [K in keyof T]: T[K] extends TSchema ? Static<T[K], this['params']> : T[K] }
+  static: TTupleInfer<T, this['params']> // { [K in keyof T]: T[K] extends TSchema ? Static<T[K], this['params']> : T[K] }
   type: 'array'
   items?: T
   additionalItems?: false
@@ -2419,13 +2417,13 @@ export class StandardTypeBuilder extends TypeBuilder {
     }
   }
   /** `[Standard]` Returns indexed property types for the given keys */
+  public Index<T extends TSchema, K extends (keyof Static<T>)[]>(schema: T, keys: [...K], options?: SchemaOptions): TIndexFromKeyTuple<T, Assert<K, Key[]>>
+  /** `[Standard]` Returns indexed property types for the given keys */
   public Index<T extends TTuple, K extends TNumber>(schema: T, key: K, options?: SchemaOptions): UnionType<Assert<T['items'], TSchema[]>>
   /** `[Standard]` Returns indexed property types for the given keys */
   public Index<T extends TArray, K extends TNumber>(schema: T, key: K, options?: SchemaOptions): AssertType<T['items']>
   /** `[Standard]` Returns indexed property types for the given keys */
   public Index<T extends TSchema, K extends TSchema>(schema: T, key: K, options?: SchemaOptions): TIndex<T, K>
-  /** `[Standard]` Returns indexed property types for the given keys */
-  public Index<T extends TSchema, K extends (keyof Static<T>)[]>(schema: T, keys: [...K], options?: SchemaOptions): TIndexFromKeyTuple<T, Assert<K, Key[]>>
   /** `[Standard]` Returns indexed property types for the given keys */
   public Index(schema: TSchema, unresolved: any, options: SchemaOptions = {}): any {
     const keys = KeyArrayResolver.Resolve(unresolved)

@@ -151,4 +151,22 @@ describe('type/guard/TIndex', () => {
     Assert.isTrue(TypeGuard.TNumber(I.anyOf[0]))
     Assert.isTrue(TypeGuard.TBoolean(I.anyOf[1]))
   })
+  it('Should Index 20', () => {
+    const T = Type.Object({
+      0: Type.Number(),
+      1: Type.String(),
+      2: Type.Boolean(),
+    })
+    const I = Type.Index(T, Type.BigInt())
+    Assert.isTrue(TypeGuard.TNever(I))
+  })
+  it('Should Index 21', () => {
+    const T = Type.Object({
+      0: Type.Number(),
+      1: Type.String(),
+      2: Type.Boolean(),
+    })
+    const I = Type.Index(T, Type.Object({}))
+    Assert.isTrue(TypeGuard.TNever(I))
+  })
 })
