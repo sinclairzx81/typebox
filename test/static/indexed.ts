@@ -48,3 +48,17 @@ import { Type, Static } from '@sinclair/typebox'
 
   Expect(R).ToInfer<never>()
 }
+{
+  const A = Type.Object({})
+
+  const R = Type.Index(A, Type.BigInt()) // Support Overload
+
+  Expect(R).ToInfer<never>()
+}
+{
+  const A = Type.Array(Type.Number())
+
+  const R = Type.Index(A, Type.BigInt()) // Support Overload
+
+  Expect(R).ToInfer<never>()
+}
