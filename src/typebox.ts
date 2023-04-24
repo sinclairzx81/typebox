@@ -49,6 +49,8 @@ export type TupleToUnion<T extends any[]> = { [K in keyof T]: T[K] }[number]
 export type UnionToIntersect<U> = (U extends unknown ? (arg: U) => 0 : never) extends (arg: infer I) => 0 ? I : never
 export type UnionLast<U> = UnionToIntersect<U extends unknown ? (x: U) => 0 : never> extends (x: infer L) => 0 ? L : never
 export type UnionToTuple<U, L = UnionLast<U>> = [U] extends [never] ? [] : [...UnionToTuple<Exclude<U, L>>, L]
+export type Discard<T extends unknown[], D extends unknown> = T extends [infer L, ...infer R] ? (L extends D ? Discard<R, D> : [L, ...Discard<R, D>]) : []
+export type Flat<T> = T extends [] ? [] : T extends [infer L] ? [...Flat<L>] : T extends [infer L, ...infer R] ? [...Flat<L>, ...Flat<R>] : [T]
 export type Assert<T, E> = T extends E ? T : never
 export type Evaluate<T> = T extends infer O ? { [K in keyof O]: O[K] } : never
 export type Ensure<T> = T extends infer U ? U : never
@@ -310,50 +312,34 @@ export interface TFunction<T extends readonly TSchema[] = TSchema[], U extends T
 // --------------------------------------------------------------------------
 // TIndex
 // --------------------------------------------------------------------------
+export type TIndexRest<T extends TSchema[], K extends Key> = T extends [infer L, ...infer R] ? [TIndexType<AssertType<L>, K>, ...TIndexRest<AssertRest<R>, K>] : []
+export type TIndexProperty<T extends TProperties, K extends Key> = K extends keyof T ? [T[K]] : []
+export type TIndexTuple<T extends TSchema[], K extends Key> = K extends keyof T ? [T[K]] : []
 // prettier-ignore
-export type TIndexProperty<T extends TProperties, K extends Key> = 
-  T[K] extends infer R ? [R] :
+export type TIndexType<T extends TSchema, K extends Key> =
+  T extends TIntersect<infer S> ? IntersectType<AssertRest<Discard<Flat<TIndexRest<S, K>>, TNever>>> :
+  T extends TUnion<infer S>     ? UnionType<AssertRest<Flat<TIndexRest<S, K>>>> :
+  T extends TObject<infer S>    ? UnionType<AssertRest<Flat<TIndexProperty<S, K>>>> :
+  T extends TTuple<infer S>     ? UnionType<AssertRest<Flat<TIndexTuple<S, K>>>> :
   []
 // prettier-ignore
-export type TIndexTuple<T extends TSchema[], K extends Key> = 
-  K extends keyof T ? [T[K]] : 
-  []
+export type TIndexRestMany<T extends TSchema, K extends Key[]> = 
+ K extends [infer L, ...infer R] ? [TIndexType<T, Assert<L, Key>>, ...TIndexRestMany<T, Assert<R, Key[]>>] :
+ []
 // prettier-ignore
-export type TIndexComposite<T extends TSchema[], K extends Key> = 
-  T extends [infer L, ...infer R] ? [...TIndexKey<AssertType<L>, K>, ...TIndexComposite<AssertRest<R>, K>] : 
-  []
-// prettier-ignore
-export type TIndexKey<T extends TSchema, K extends Key> = 
-  T extends TRecursive<infer S> ? TIndexKey<S, K> :
-  T extends TIntersect<infer S> ? TIndexComposite<S, K> :
-  T extends TUnion<infer S>     ? TIndexComposite<S, K> :
-  T extends TObject<infer S>    ? TIndexProperty<S, K> : 
-  T extends TTuple<infer S>     ? TIndexTuple<S, K> :
-  T extends TArray<infer S>     ? S :
-  []
-// prettier-ignore
-export type TIndexKeys<T extends TSchema, K extends Key[]> = 
-  K extends [infer L, ...infer R] ? 
-    [...TIndexKey<T, Assert<L, Key>>, ...TIndexKeys<T, Assert<R, Key[]>>] : 
-  []
-// prettier-ignore
-export type TIndexFromKeyTuple<T extends TSchema, K extends Key[]> = 
-  TIndexKeys<T, K> extends infer R ?
-    T extends TRecursive<infer S> ? TIndexFromKeyTuple<S, K> :
-    T extends TTuple              ? UnionType<AssertRest<R>> :
-    T extends TIntersect          ? UnionType<AssertRest<R>> :
-    T extends TUnion              ? UnionType<AssertRest<R>> :
-    T extends TObject             ? UnionType<AssertRest<R>> :
-    T extends TArray              ? UnionType<AssertRest<R>> :
-    TNever : 
+export type TIndexReduce<T extends TSchema, K extends Key[]> =
+  T extends TIntersect ? UnionType<Flat<TIndexRestMany<T, K>>> :
+  T extends TUnion     ? UnionType<Flat<TIndexRestMany<T, K>>> :
+  T extends TObject    ? UnionType<Flat<TIndexRestMany<T, K>>> :
+  T extends TTuple     ? UnionType<Flat<TIndexRestMany<T, K>>> :
   TNever
 // prettier-ignore
 export type TIndex<T extends TSchema, K extends TSchema> =
   [T, K] extends [TTuple, TNumber]  ? UnionType<Assert<T['items'], TSchema[]>> :  
   [T, K] extends [TArray, TNumber]  ? AssertType<T['items']> :
-  K extends TTemplateLiteral        ? TIndexFromKeyTuple<T, TTemplateLiteralKeyTuple<K>> :
-  K extends TUnion<TLiteral<Key>[]> ? TIndexFromKeyTuple<T, TUnionLiteral<K>> :
-  K extends TLiteral<Key>           ? TIndexFromKeyTuple<T, [K['const']]> :
+  K extends TTemplateLiteral        ? TIndexReduce<T, TTemplateLiteralKeyRest<K>> :
+  K extends TUnion<TLiteral<Key>[]> ? TIndexReduce<T, TUnionLiteralKeyRest<K>> :
+  K extends TLiteral<Key>           ? TIndexReduce<T, [K['const']]> :
   TNever
 // --------------------------------------------------------------------------
 // TInteger
@@ -379,12 +365,9 @@ export interface TIntersect<T extends TSchema[] = TSchema[]> extends TSchema, In
 // --------------------------------------------------------------------------
 // TKeyOf
 // --------------------------------------------------------------------------
+// prettier-ignore
 export type TKeyOfProperties<T extends TSchema> = Static<T> extends infer S
-  ? UnionToTuple<
-      {
-        [K in keyof S]: TLiteral<`${Assert<K, TLiteralValue>}`>
-      }[keyof S]
-    >
+  ? UnionToTuple<{[K in keyof S]: TLiteral<`${Assert<K, TLiteralValue>}`>}[keyof S]>
   : []
 // prettier-ignore
 export type TKeyOfIndicesArray<T extends TSchema[]> = UnionToTuple<keyof T & `${number}`>
@@ -687,7 +670,7 @@ export type TTemplateLiteralConst<T, Acc extends string> =
 export type TTemplateLiteralUnion<T extends TTemplateLiteralKind[], Acc extends string = ''> = 
   T extends [infer L, ...infer R] ? `${TTemplateLiteralConst<L, Acc>}${TTemplateLiteralUnion<Assert<R, TTemplateLiteralKind[]>, Acc>}` :
   Acc
-export type TTemplateLiteralKeyTuple<T extends TTemplateLiteral> = Assert<UnionToTuple<Static<T>>, Key[]>
+export type TTemplateLiteralKeyRest<T extends TTemplateLiteral> = Assert<UnionToTuple<Static<T>>, Key[]>
 export interface TTemplateLiteral<T extends TTemplateLiteralKind[] = TTemplateLiteralKind[]> extends TSchema {
   [Kind]: 'TemplateLiteral'
   static: TTemplateLiteralUnion<T>
@@ -727,7 +710,7 @@ export type TLiteralUnionReduce<T extends TLiteral<string | number>[]> =
   T extends [infer L, ...infer R] ? [Assert<L, TLiteral<string | number>>['const'], ...TLiteralUnionReduce<Assert<R, TLiteral<string | number>[]>>] : 
   []
 // prettier-ignore
-export type TUnionLiteral<T extends TUnion<TLiteral<string | number>[]>> = 
+export type TUnionLiteralKeyRest<T extends TUnion<TLiteral<string | number>[]>> = 
   T extends TUnion<infer S> ? TLiteralUnionReduce<Assert<S, TLiteral<string | number>[]>> : 
   []
 // --------------------------------------------------------------------------
@@ -782,9 +765,8 @@ export interface TVoid extends TSchema {
 // --------------------------------------------------------------------------
 // Static<T>
 // --------------------------------------------------------------------------
-/** Creates a TypeScript static type from a TypeBox type */
+/** Infers a static type from a TypeBox type */
 export type Static<T extends TSchema, P extends unknown[] = []> = (T & { params: P })['static']
-
 // --------------------------------------------------------------------------
 // TypeRegistry
 // --------------------------------------------------------------------------
@@ -1929,29 +1911,37 @@ export namespace TypeClone {
 // IndexedAccessor
 // --------------------------------------------------------------------------
 export namespace IndexedAccessor {
-  function Intersect(schema: TIntersect, key: string): TSchema[] {
-    return schema.allOf.reduce((acc, schema) => [...acc, ...Visit(schema, key)], [] as TSchema[])
+  function Intersect(schema: TIntersect, key: string): TSchema {
+    const schemas = schema.allOf.reduce((acc, schema) => {
+      const indexed = Visit(schema, key)
+      return indexed[Kind] === 'Never' ? acc : [...acc, indexed]
+    }, [] as TSchema[])
+    return Type.Intersect(schemas)
   }
-  function Union(schema: TUnion, key: string): TSchema[] {
-    return schema.anyOf.reduce((acc, schema) => [...acc, ...Visit(schema, key)], [] as TSchema[])
+  function Union(schema: TUnion, key: string): TSchema {
+    const schemas = schema.anyOf.map((schema) => Visit(schema, key))
+    return Type.Union(schemas)
   }
-  function Object(schema: TObject, key: string): TSchema[] {
-    const keys = globalThis.Object.getOwnPropertyNames(schema.properties).filter((key_) => key_ === key)
-    return keys.map((key) => schema.properties[key])
+  function Object(schema: TObject, key: string): TSchema {
+    const property = schema.properties[key]
+    return property === undefined ? Type.Never() : Type.Union([property])
   }
-  function Tuple(schema: TTuple, key: string): TSchema[] {
-    const items = schema.items === undefined ? [] : (schema.items as TSchema[])
-    return items.filter((_, index) => index.toString() === key)
+  function Tuple(schema: TTuple, key: string): TSchema {
+    const items = schema.items
+    if (items === undefined) return Type.Never()
+    const element = items[key as any as number] //
+    if (element === undefined) return Type.Never()
+    return element
   }
-  function Visit(schema: TSchema, key: string): TSchema[] {
+  function Visit(schema: TSchema, key: string): TSchema {
     if (schema[Kind] === 'Intersect') return Intersect(schema as TIntersect, key)
     if (schema[Kind] === 'Union') return Union(schema as TUnion, key)
     if (schema[Kind] === 'Object') return Object(schema as TObject, key)
     if (schema[Kind] === 'Tuple') return Tuple(schema as TTuple, key)
-    return []
+    return Type.Never()
   }
-  export function Resolve(schema: TSchema, keys: (string | number)[]): TSchema[] {
-    return keys.reduce((acc, key) => [...acc, ...Visit(schema, key.toString())], [] as TSchema[])
+  export function Resolve(schema: TSchema, keys: Key[], options: SchemaOptions = {}): TSchema {
+    return Type.Union(keys.map((key) => Visit(schema, key.toString())))
   }
 }
 // --------------------------------------------------------------------------
@@ -2419,23 +2409,22 @@ export class StandardTypeBuilder extends TypeBuilder {
     }
   }
   /** `[Standard]` Returns indexed property types for the given keys */
-  public Index<T extends TSchema, K extends (keyof Static<T>)[]>(schema: T, keys: [...K], options?: SchemaOptions): TIndexFromKeyTuple<T, Assert<K, Key[]>>
+  public Index<T extends TSchema, K extends (keyof Static<T>)[]>(schema: T, keys: [...K], options?: SchemaOptions): TIndexReduce<T, Assert<K, Key[]>>
   /** `[Standard]` Returns indexed property types for the given keys */
   public Index<T extends TSchema, K extends TSchema>(schema: T, key: K, options?: SchemaOptions): TIndex<T, K>
   /** `[Standard]` Returns indexed property types for the given keys */
   public Index(schema: TSchema, unresolved: any, options: SchemaOptions = {}): any {
-    const keys = KeyArrayResolver.Resolve(unresolved)
     if (TypeGuard.TArray(schema) && TypeGuard.TNumber(unresolved)) {
       return TypeClone.Clone(schema.items, options)
-    }
-    if (TypeGuard.TTuple(schema) && TypeGuard.TNumber(unresolved)) {
+    } else if (TypeGuard.TTuple(schema) && TypeGuard.TNumber(unresolved)) {
       const items = schema.items === undefined ? [] : schema.items
       const cloned = items.map((schema) => TypeClone.Clone(schema, {}))
       return this.Union(cloned, options)
+    } else {
+      const keys = KeyArrayResolver.Resolve(unresolved)
+      const clone = TypeClone.Clone(schema, {})
+      return IndexedAccessor.Resolve(clone, keys, options)
     }
-    const resolved = IndexedAccessor.Resolve(schema, keys as any)
-    const cloned = resolved.map((schema) => TypeClone.Clone(schema, {}))
-    return this.Union(cloned, options)
   }
   /** `[Standard]` Creates an Integer type */
   public Integer(options: NumericOptions<number> = {}): TInteger {
@@ -2515,11 +2504,11 @@ export class StandardTypeBuilder extends TypeBuilder {
   /** `[Standard]` Creates a mapped type whose keys are omitted from the given type */
   public Omit<T extends TSchema, K extends (keyof Static<T>)[]>(schema: T, keys: readonly [...K], options?: SchemaOptions): TOmit<T, K[number]>
   /** `[Standard]` Creates a mapped type whose keys are omitted from the given type */
-  public Omit<T extends TSchema, K extends TUnion<TLiteral<string>[]>>(schema: T, keys: K, options?: SchemaOptions): TOmit<T, TUnionLiteral<K>[number]>
+  public Omit<T extends TSchema, K extends TUnion<TLiteral<string>[]>>(schema: T, keys: K, options?: SchemaOptions): TOmit<T, TUnionLiteralKeyRest<K>[number]>
   /** `[Standard]` Creates a mapped type whose keys are omitted from the given type */
   public Omit<T extends TSchema, K extends TLiteral<string>>(schema: T, key: K, options?: SchemaOptions): TOmit<T, K['const']>
   /** `[Standard]` Creates a mapped type whose keys are omitted from the given type */
-  public Omit<T extends TSchema, K extends TTemplateLiteral>(schema: T, key: K, options?: SchemaOptions): TOmit<T, TTemplateLiteralKeyTuple<K>[number]>
+  public Omit<T extends TSchema, K extends TTemplateLiteral>(schema: T, key: K, options?: SchemaOptions): TOmit<T, TTemplateLiteralKeyRest<K>[number]>
   /** `[Standard]` Creates a mapped type whose keys are omitted from the given type */
   public Omit<T extends TSchema, K extends TNever>(schema: T, key: K, options?: SchemaOptions): TOmit<T, never>
   public Omit(schema: TSchema, unresolved: any, options: SchemaOptions = {}): any {
@@ -2557,11 +2546,11 @@ export class StandardTypeBuilder extends TypeBuilder {
   /** `[Standard]` Creates a mapped type whose keys are picked from the given type */
   public Pick<T extends TSchema, K extends (keyof Static<T>)[]>(schema: T, keys: readonly [...K], options?: SchemaOptions): TPick<T, K[number]>
   /** `[Standard]` Creates a mapped type whose keys are picked from the given type */
-  public Pick<T extends TSchema, K extends TUnion<TLiteral<string>[]>>(schema: T, keys: K, options?: SchemaOptions): TPick<T, TUnionLiteral<K>[number]>
+  public Pick<T extends TSchema, K extends TUnion<TLiteral<string>[]>>(schema: T, keys: K, options?: SchemaOptions): TPick<T, TUnionLiteralKeyRest<K>[number]>
   /** `[Standard]` Creates a mapped type whose keys are picked from the given type */
   public Pick<T extends TSchema, K extends TLiteral<string>>(schema: T, key: K, options?: SchemaOptions): TPick<T, K['const']>
   /** `[Standard]` Creates a mapped type whose keys are picked from the given type */
-  public Pick<T extends TSchema, K extends TTemplateLiteral>(schema: T, key: K, options?: SchemaOptions): TPick<T, TTemplateLiteralKeyTuple<K>[number]>
+  public Pick<T extends TSchema, K extends TTemplateLiteral>(schema: T, key: K, options?: SchemaOptions): TPick<T, TTemplateLiteralKeyRest<K>[number]>
   /** `[Standard]` Creates a mapped type whose keys are picked from the given type */
   public Pick<T extends TSchema, K extends TNever>(schema: T, key: K, options?: SchemaOptions): TPick<T, never>
   public Pick(schema: TSchema, unresolved: any, options: SchemaOptions = {}): any {
