@@ -1371,9 +1371,15 @@ const B = Value.Check(T, 'hello')                    // const B = true
 
 ### Policies
 
-TypeBox validates using JSON Schema assertion policies by default. It is possible to override these policies and have TypeBox assert using TypeScript policies. The following overrides are available.
+TypeBox validates using standard JSON Schema assertion policies by default. It is possible to override some of these policies to have TypeBox assert inline with TypeScript static assertion rules. The following policy overrides are available.
 
 ```typescript
+// Disallow undefined values for optional properties (default is false)
+//
+// const A: { x?: number } = { x: undefined } - disallowed when enabled
+
+TypeSystem.ExactOptionalPropertyTypes = true
+
 // Allow arrays to validate as object types (default is false)
 //
 // const A: {} = [] - allowed in TS
