@@ -205,3 +205,21 @@ import { Type, Static } from '@sinclair/typebox'
   type O = Static<typeof R>
   Expect(R).ToBe<'A' | 'B' | 'C' | 'D'>()
 }
+{
+  type I = {
+    x: string
+    y: number
+    z: I
+  }
+  type R = I['x' | 'y' | 'z']
+  const I = Type.Recursive((This) =>
+    Type.Object({
+      x: Type.String(),
+      y: Type.Number(),
+      z: This,
+    }),
+  )
+  const R = Type.Index(I, ['x', 'y', 'z']) // z unresolvable
+  type O = Static<typeof R>
+  Expect(R).ToBe<string | number>()
+}

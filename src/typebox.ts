@@ -317,6 +317,7 @@ export type TIndexProperty<T extends TProperties, K extends Key> = K extends key
 export type TIndexTuple<T extends TSchema[], K extends Key> = K extends keyof T ? [T[K]] : []
 // prettier-ignore
 export type TIndexType<T extends TSchema, K extends Key> =
+  T extends TRecursive<infer S> ? TIndexType<S, K> :
   T extends TIntersect<infer S> ? IntersectType<AssertRest<Discard<Flat<TIndexRest<S, K>>, TNever>>> :
   T extends TUnion<infer S>     ? UnionType<AssertRest<Flat<TIndexRest<S, K>>>> :
   T extends TObject<infer S>    ? UnionType<AssertRest<Flat<TIndexProperty<S, K>>>> :
@@ -328,6 +329,7 @@ export type TIndexRestMany<T extends TSchema, K extends Key[]> =
  []
 // prettier-ignore
 export type TIndexReduce<T extends TSchema, K extends Key[]> =
+  T extends TRecursive<infer S> ? TIndexReduce<S, K> :
   T extends TIntersect ? UnionType<Flat<TIndexRestMany<T, K>>> :
   T extends TUnion     ? UnionType<Flat<TIndexRestMany<T, K>>> :
   T extends TObject    ? UnionType<Flat<TIndexRestMany<T, K>>> :

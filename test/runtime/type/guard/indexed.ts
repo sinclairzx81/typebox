@@ -219,4 +219,18 @@ describe('type/guard/TIndex', () => {
     Assert.isTrue(TypeGuard.TNumber(I.anyOf[1].allOf[0]))
     Assert.isTrue(TypeGuard.TString(I.anyOf[1].allOf[1]))
   })
+  it('Should Index 26', () => {
+    const T = Type.Recursive((This) =>
+      Type.Object({
+        x: Type.String(),
+        y: Type.Number(),
+        z: This,
+      }),
+    )
+    const I = Type.Index(T, ['x', 'y', 'z'])
+    Assert.isTrue(TypeGuard.TUnion(I))
+    Assert.isTrue(TypeGuard.TString(I.anyOf[0]))
+    Assert.isTrue(TypeGuard.TNumber(I.anyOf[1]))
+    Assert.isTrue(TypeGuard.TThis(I.anyOf[2]))
+  })
 })
