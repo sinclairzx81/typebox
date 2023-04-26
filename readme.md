@@ -959,7 +959,7 @@ type T = Static<typeof T>                            // type T = 'A' | 'B' | 'C'
 
 <a name='types-guards'></a>
 
-### Type Gaurds
+### Type Guards
 
 TypeBox provides a `TypeGuard` module that can be used for reflection and asserting values as types.
 
