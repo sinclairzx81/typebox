@@ -44,21 +44,21 @@ export const appRouter = t.router({
 
 ## RpcType
 
-Unlike Zod, Yup, Superstruct, TypeBox types are pure JSON Schema and do not implement built a in `parse` or `validate` function. Because of this, you will need to wrap the Type in a TRPC compatible function which implements `parse` or `validate` on behalf of TRPC. As JSON Schema is a formal specification, there are a number of ways you can choose to implement this function, the following shows recommended implementations.
+Unlike Zod, Yup, Superstruct, TypeBox types are pure JSON Schema and do not implement a built in `parse()` or `validate()` function. Because of this, you will need to wrap the Type in a TRPC compatible function which implements `parse()` on behalf of TRPC. As JSON Schema is a formal specification, there are a number of ways you may choose to implement this function. The following are some recommended implementations.
 
 <a name="TypeCompiler"></a>
 
-### With [TypeCompiler](https://www.typescriptlang.org/dev/bug-workbench/?target=99&lib=true&ts=4.7.4#code/PTAEAEDMEsBsFMB2BDAtvAXKATgBwMYAuAnrvAHSEDOAUNKrgPbaGgDeoAKgMr4AW8VMlABfUJGyNUoAOTgq0RPljJo2YCTIAjRgA8ZdBs1YdOpeAGEpuOPGyjxk6XIVKVajeZ27g+a7ewDeiYWdi4AJQAFCwBRbEl7MQkpWXBCPHxgKjsANzsDGnhdENZIAFclQmhGRFBwgjMyAB5OUCLCJAATKi5eASEAPgAKKn5BZCxOABoceEg7JHx4Kkm+8YBtAF1QAF5QLYBKdhpQUD9EKlYx-ABrXa5zKwYA8iebBBGxoRnsOYWlZYHE6zQhlbC1IY5ZCwMqYUAVG6IRgAd0QRx2A2Op1O0EgQ2uN1eAlukOhsIOR1+oPBoChMPgwNO50uYVwyEIfBm6CoVGQAHN4A49utyKKCeQ4gkqKT6QdNusAAybRmgDmSZGgRDwDWcKKxeLMIYcbm8gVYAAGABI2Cb+fAksxQNa2RyROaZn5OnCZAAhACCABEAPrhGIARQAqjFuJwZKIgacRDQkzQQBAYAgUOgsJIyh1sJRaMFjGFFNBCLrog5ks40hksrl8oYSmFGoKkk5Uq5lKp1Jp4N4gkZQhx6vg29XOzJyMAMv2CszWMhOp0AJKIXB5+5jttDNvkADyWgAVvAiEbgRMHmRyAA5MqoLR2IYHKbArSTcx3h9P7Av5MUjQNCLqAy6dAeeabqwew7uYe5fvej7PoBwE1Cy0GgGWFZ6uQ+C-Oy8D-oUxQliByC4Lg4SMHmdj3IQ5C5vmF6nGBWD0bgkhLJ0YIMtioDkIoUFDGB65QQm2LkNRhBCWBEHSXm4mnOQACOsLYMQQxGphG5biI6KYoJebkMIADU2lQeQWhHGm-YALS8vMAFAA)
+### With [TypeCompiler](https://www.typescriptlang.org/play?#code/JYWwDg9gTgLgBAbzgFQJ5gKYGELmAGwyjgF84AzKXOAcgAEBnYAOwGN8BDYKAehnQwAjCAA8erXGAJEaAWABQoSLEQoAyqwAWGEB1JwDhytXpM2nbnwHCRcxeGjwkyAEoAFLAFEoVYmSNUILR0MFBgrDwMRABuMgoKGCLK8OQArmwwwBDMcC7haJgAPMhwiTAYzAAmDOpaOhwAfAAUDHW6AFwoADRwUBjkRBWsGAydyBraugDaALpwALxwswCUiAoGEswM8HWsANYLKAI4eIRQAHQnUoQtbRw9fQN9bCPL670YMKlQOU3RHPhUhhOuk9swIAB3ZireYNNbyQxwYDkOBNXZ7S7afZ-AFA5arPpfH5wf6AjDvDbZbaqMAcGCaHogEYMDgAcww+kW6PO3l8DBxZOW5wAYtxtk1lgBCClwelUCFwZgYBWuDy86BNJBMhgs9mdAAGABIENrdRgyORoHBjbT6SR9T0JJVgbQAEIAQQAIgB9FyeACKAFVPGpkDRSG8EaQFCQgA)
 
 The following uses the TypeCompiler to perform JIT optimized type checking for TRPC.
 
 ```typescript
-import { TSchema } from '@sinclair/typebox'
 import { TypeCompiler } from '@sinclair/typebox/compiler'
+import { TSchema } from '@sinclair/typebox'
 import { TRPCError } from '@trpc/server'
 
-export function RpcType<T extends TSchema>(schema: T) {
-  const check = TypeCompiler.Compile(schema)
+export function RpcType<T extends TSchema>(schema: T, references: TSchema[] = []) {
+  const check = TypeCompiler.Compile(schema, references)
   return (value: unknown) => {
     if (check.Check(value)) return value
     const { path, message } = check.Errors(value).First()!
@@ -69,18 +69,18 @@ export function RpcType<T extends TSchema>(schema: T) {
 
 <a name="Value"></a>
 
-### With [Value](https://www.typescriptlang.org/dev/bug-workbench/?target=99&lib=true&ts=4.7.4#code/PTAEAEDMEsBsFMB2BDAtvAXKATgBwMYAuAnrvAHSEDOAUNKrgPbaGgDeoAasrAK7ygAvqEjZGqUAHJwVaInyxk0bMBJkARowAewAG49+kug2asOAFQDK+ABbxUyISLETps+YuWrS8TVqP0TCzsoOYASgAKAMIAothi2E6i4lLghHj4wFTw2Lo5RjTwWkGskLzyhNCMiKBhBOY+ADzmoEWESAAmVKHWdg4AfAAUVLb2yFjmADQ48JA5SPjwVBO9YwDaALqgALygmwCU7DSgM4S82DWD+nyYoOUA1oiMAO6Ih9v9Rycn0JCD3DdyFE7Ph7sNRg5ptd+PtDth4GcLqBofBjt98NUqGZQLhkIQbNN0FQqMgAOYCYS7NbkGkA-jkOIJKjgvrIabwubw+RLKEGeD7DZrAAMGzRJ3xYmeoEQ8Cl4WijOYgw4RJJ5KwAAMACRsVVk+DCSDMUA63H4wQa6YYjq3SQAIQAggARAD6YRiAEUAKoxSzmSRCfZowQ0EM0EAQGAIFDoLBiXjtbCUWiBUwhOTQQjyqJJFypdIELI5PLYAImYIWHy5lJuOQKJQqNS+bRlkohOr4BpkauucjADJNgoYxBY0DIDodACSiFwCZ2tXqPkGXYoAHl1AAreBEZVo8ahHzkAByvFQ6hyg32kzR6gmh5PZ4vQcEsJoNGHo-HHVXCdnrF2HYrsu96nue2CXkG76Yqw-6gBmWaRFE5D4PCeLwJeb5FG2H6sMguC4GEjAJjk86EOQ8aJruJxflgZG4GIiwdOcqLfKA5ByH+gxftOf5Bqx5BEYQnFfj+QkJnx3zkAAjvw2DEIMypwTOc4vjsnwcQm5COAA1Epf7kOohwRk2AC0JJzKG+xAA)
+### With [Value](https://www.typescriptlang.org/play?#code/JYWwDg9gTgLgBAbzgNQIYBsCuBTOBfOQwgMyghDgHIABAZ2ADsBjdVYKAehgE8xsAjCAA8OANww5KAWABQoSLERwAKgGUmAC2whU+IqXJU6jFm048+godLnho8JMoBKABQDCAUShkoegxRoYKDAmDlpsKFEIm1lsIQV4YkxmGGAIBjgnEOVebAAeZTg4mGwGABNaFXUtHQA+AApaTW1UAC4VABo4KGxiCNKmbFp2tWadAG0AXTgAXjgpgEpEWUIemEwoDPrxLGx25IBrBggAdwYlmdrlmSI4YGI4erRdgDo3LSYDxrHULp6+nrMIZdHY4BZLNYbDKg7ArIhMdK0BxwMCoGAaLogIa0VAAc1wBDmzxwLy8Plo3xqvzgMIWLwAYuwkfUFgBCOGEdFkE5wBjYHnOdxk6D1JBY2g4-HtAAGABIEOLJdgCMRoHB5aj0XhpV0EWU9lQAEIAQQAIgB9JweACKAFUPKplJR8As4XhZHggA)
 
-The following performs dynamic type checking without code evaluation.
+The following uses dynamic type checking without code evaluation. This is slower to validate, but may be required in restricted code evaluation environments.
 
 ```typescript
 import { Value } from '@sinclair/typebox/value'
 import { TSchema } from '@sinclair/typebox'
 import { TRPCError } from '@trpc/server'
 
-export function RpcType<T extends TSchema>(schema: T) {
+export function RpcType<T extends TSchema>(schema: T, references: TSchema[] = []) {
   return (value: unknown) => {
-    if (Value.Check(schema, value)) return value
+    if (Value.Check(schema, references, value)) return value
     const { path, message } = Value.Errors(schema, value).First()!
     throw new TRPCError({ message: `${message} for ${path}`, code: 'BAD_REQUEST' })
   }
@@ -89,7 +89,7 @@ export function RpcType<T extends TSchema>(schema: T) {
 
 <a name="Ajv"></a>
 
-### With [Ajv](https://www.typescriptlang.org/dev/bug-workbench/?target=99&lib=true&ts=4.7.4#code/PTAEAEDMEsBsFMB2BDAtvAXKATgBwMYAuAnrvAHSEDOAUNKrgPbaGgDeoAKgMr4AW8VMgA0oboWSFo+UAF9QkbI1SgA5OCrRE+WMmjZgJMgCNGAD1V0GzVh04AlAAoBhAKLYl2OQqUr1hPHxgKnhsADdQy3omFlAAQQArMJ9lNWQk4AATaCpCYAAmAAYiyxp4MxjWSABXbSlGRFB7Ak5SeAAeTlBywiRMqi5eASEAPgAKKn5BZCxOUWx4SFCkfHgqWaHpgG0AXVAAXlBdgEp2GlBQfAbc0HTkw8R4AHd4pLHj85xF5e018khmK5kPwxmMFksFr9TvsRrckuRkJlMpshGDvpDVscPhcrogblN8ABrA5wsLkK4MODwCZTITYr6EarYRpjMLIWDVTCgWqExCMJ6IY5YcSSaSdWEws4XC7QSBjAmE1nszlYhlMxpsjnwT44662UDoKhUZAAc3goi0uWQv0ckj43kOCvIoU8VAAhFtCjsdaBCHwlC9Hi8HC53J4xhxDcazVgAAYAEjYUdN8HkAK8ictEhtdtksdEV0yXNUACE4gARAD69lcAEUAKqubicVRyemyGgdmggCAwBAodBYJTVXrYSi0aI2digLTQQgh5zeRSpfyBYKhCLYKLWWJ2NpL3xqDRaHR6AxGeCmCxWSrT5r4VpkA8r8jAQIX0q4m6IzIASUQuAjiS96PtSoHkAA8sYCTwEQEafDMXBtOQABy1SoMYoTvMInzGLMyFoRhWEfLIWI0DQX6sD+EEjoBrCHCBbRjOBhGYdg7wfBReq+iSs7zk4zjkgskjUpx5S3pRty4Lg9iMCOoQkoQ5DDqO8EXD+WBKbgSirJkTLatKoDkFodFjD+-50fSFzkHJhCmdRtEjlZRkAI6ctgxCghwJlAaRBywj5SnIKAADUM4ASO5DGKcPYXgAtMaSydscQA)
+### With [Ajv](https://www.typescriptlang.org/play?#code/JYWwDg9gTgLgBAbzgFQMoGMAWBTEBDAGjlRjxmHTgF84AzKCEOAcgAEBnYAO3QBs9gUAPQwAnmGwAjCAA9mAWABQoSLEQoASgAUAwgFEoDKNTimzdBkzYwoYdEPbYoANycLl4aPACCAK2cWjCx4-kIAJsDsMEIATAAM8e5K2DKq8LQArjzkEFxwGnbI4tgAPMhwKTDYXGHsKBg4+AB8ABTsWLh4AFwoRFDYtE7V6NjsPWgd+ADaALpwALxwswCUiEqm6LlRcCEBi1zYAO5wfs4ty+tw-YP9PKMAdLTQenhYLS3XQ3er8007-vc8GEwg1Oh8Bl8RssLooNlt4B10ABrBb-Zz3TbgYC8bBtSZ4GGmfowDJQPItZx4XgZbA9LJIrgQQ5cZY9EhkChlP6-NawszAWhwFqIpEUqk06FXbAkslwSnU7CXOFcbZIECjdh4ADm2CI3CieDuWjImBMixF9ycRnYAEIpnEZkq4DBMAxjgdjshtPpDNAWmqNdraXAAAYAEgQ6vYmp1NCexgj+tIRpNVBDRE2YWDzAAQt4ACIAfQ0egAigBVPSoZDMaiE6hKKhAA)
 
 The following uses Ajv to perform more generalized JSON Schema checks across the complete JSON Schema specification.
 
