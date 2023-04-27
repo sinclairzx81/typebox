@@ -369,7 +369,7 @@ export interface TIntersect<T extends TSchema[] = TSchema[]> extends TSchema, In
 // --------------------------------------------------------------------------
 // prettier-ignore
 export type TKeyOfProperties<T extends TSchema> = Static<T> extends infer S
-  ? UnionToTuple<{[K in keyof S]: TLiteral<`${Assert<K, TLiteralValue>}`>}[keyof S]>
+  ? UnionToTuple<{[K in keyof S]: TLiteral<Assert<K, TLiteralValue>>}[keyof S]>
   : []
 // prettier-ignore
 export type TKeyOfIndicesArray<T extends TSchema[]> = UnionToTuple<keyof T & `${number}`>
@@ -1943,7 +1943,8 @@ export namespace IndexedAccessor {
     return Type.Never()
   }
   export function Resolve(schema: TSchema, keys: Key[], options: SchemaOptions = {}): TSchema {
-    return Type.Union(keys.map((key) => Visit(schema, key.toString())))
+    // prettier-ignore
+    return Type.Union(keys.map((key) => Visit(schema, key.toString())), options)
   }
 }
 // --------------------------------------------------------------------------

@@ -6,60 +6,60 @@ import { Type, Static } from '@sinclair/typebox'
     x: Type.Number(),
     y: Type.String(),
   })
-  const I = Type.Index(T, ['x', 'y'])
-  Expect(I).ToInfer<number | string>()
+  const R = Type.Index(T, ['x', 'y'])
+  type O = Static<typeof R>
+  Expect(R).ToInfer<number | string>()
 }
 {
   const T = Type.Tuple([Type.Number(), Type.String(), Type.Boolean()])
-  const I = Type.Index(T, Type.Union([Type.Literal('0'), Type.Literal('1')]))
-  Expect(I).ToInfer<number | string>()
+  const R = Type.Index(T, Type.Union([Type.Literal('0'), Type.Literal('1')]))
+  type O = Static<typeof R>
+  Expect(R).ToInfer<number | string>()
 }
 {
   const T = Type.Tuple([Type.Number(), Type.String(), Type.Boolean()])
-  const I = Type.Index(T, Type.Union([Type.Literal(0), Type.Literal(1)]))
-  Expect(I).ToInfer<number | string>()
+  const R = Type.Index(T, Type.Union([Type.Literal(0), Type.Literal(1)]))
+  type O = Static<typeof R>
+  Expect(R).ToInfer<number | string>()
 }
 {
   const T = Type.Object({
     ab: Type.Number(),
     ac: Type.String(),
   })
-  const I = Type.Index(T, Type.TemplateLiteral([Type.Literal('a'), Type.Union([Type.Literal('b'), Type.Literal('c')])]))
-  Expect(I).ToInfer<number | string>()
+
+  const R = Type.Index(T, Type.TemplateLiteral([Type.Literal('a'), Type.Union([Type.Literal('b'), Type.Literal('c')])]))
+  type O = Static<typeof R>
+  Expect(R).ToInfer<number | string>()
 }
 {
   const A = Type.Tuple([Type.String(), Type.Boolean()])
-
   const R = Type.Index(A, Type.Number())
-
+  type O = Static<typeof R>
   Expect(R).ToInfer<string | boolean>()
 }
 {
   const A = Type.Tuple([Type.String()])
-
   const R = Type.Index(A, Type.Number())
-
+  type O = Static<typeof R>
   Expect(R).ToInfer<string>()
 }
 {
   const A = Type.Tuple([])
-
   const R = Type.Index(A, Type.Number())
-
+  type O = Static<typeof R>
   Expect(R).ToInfer<never>()
 }
 {
   const A = Type.Object({})
-
   const R = Type.Index(A, Type.BigInt()) // Support Overload
-
+  type O = Static<typeof R>
   Expect(R).ToInfer<never>()
 }
 {
   const A = Type.Array(Type.Number())
-
   const R = Type.Index(A, Type.BigInt()) // Support Overload
-
+  type O = Static<typeof R>
   Expect(R).ToInfer<never>()
 }
 // ------------------------------------------------------------------
@@ -75,6 +75,7 @@ import { Type, Static } from '@sinclair/typebox'
   const B = Type.Object({ x: Type.String(), y: Type.Number() })
   const C = Type.Intersect([A, B])
   const R = Type.Index(C, ['y'])
+  type O = Static<typeof R>
   Expect(R).ToBe<1>()
 }
 {
@@ -87,6 +88,7 @@ import { Type, Static } from '@sinclair/typebox'
   const B = Type.Object({ x: Type.String(), y: Type.Number() })
   const C = Type.Intersect([A, B])
   const R = Type.Index(C, ['x'])
+  type O = Static<typeof R>
   Expect(R).ToBe<string>()
 }
 {
@@ -99,6 +101,7 @@ import { Type, Static } from '@sinclair/typebox'
   const B = Type.Object({ x: Type.String(), y: Type.Number() })
   const C = Type.Intersect([A, B])
   const R = Type.Index(C, ['x', 'y'])
+  type O = Static<typeof R>
   Expect(R).ToBe<string | 1>()
 }
 {
@@ -111,6 +114,7 @@ import { Type, Static } from '@sinclair/typebox'
   const B = Type.Object({ x: Type.Number(), y: Type.Number() })
   const C = Type.Intersect([A, B])
   const R = Type.Index(C, ['x'])
+  type O = Static<typeof R>
   Expect(R).ToBe<never>()
 }
 {
@@ -123,6 +127,7 @@ import { Type, Static } from '@sinclair/typebox'
   const B = Type.Object({ x: Type.Number(), y: Type.Number() })
   const C = Type.Intersect([A, B])
   const R = Type.Index(C, ['y'])
+  type O = Static<typeof R>
   Expect(R).ToBe<number>()
 }
 {
@@ -135,6 +140,7 @@ import { Type, Static } from '@sinclair/typebox'
   const B = Type.Object({ x: Type.Number(), y: Type.Number() })
   const C = Type.Intersect([A, B])
   const R = Type.Index(C, ['x', 'y'])
+  type O = Static<typeof R>
   Expect(R).ToBe<number>()
 }
 {
@@ -220,6 +226,27 @@ import { Type, Static } from '@sinclair/typebox'
     }),
   )
   const R = Type.Index(I, ['x', 'y', 'z']) // z unresolvable
+  type O = Static<typeof R>
+  Expect(R).ToBe<string | number>()
+}
+// ------------------------------------------------
+// Numeric | String Variants
+// ------------------------------------------------
+{
+  const T = Type.Object({
+    0: Type.Number(),
+    '1': Type.String(),
+  })
+  const R = Type.Index(T, [0, '1'])
+  type O = Static<typeof R>
+  Expect(R).ToBe<string | number>()
+}
+{
+  const T = Type.Object({
+    0: Type.Number(),
+    '1': Type.String(),
+  })
+  const R = Type.Index(T, Type.KeyOf(T))
   type O = Static<typeof R>
   Expect(R).ToBe<string | number>()
 }

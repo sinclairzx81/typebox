@@ -233,4 +233,48 @@ describe('type/guard/TIndex', () => {
     Assert.isTrue(TypeGuard.TNumber(I.anyOf[1]))
     Assert.isTrue(TypeGuard.TThis(I.anyOf[2]))
   })
+  it('Should Index 27', () => {
+    const T = Type.Object({
+      0: Type.String(),
+      1: Type.Number(),
+    })
+    const I = Type.Index(T, [0, 1])
+    Assert.isTrue(TypeGuard.TUnion(I))
+    Assert.isTrue(TypeGuard.TString(I.anyOf[0]))
+    Assert.isTrue(TypeGuard.TNumber(I.anyOf[1]))
+  })
+  it('Should Index 28', () => {
+    const T = Type.Object({
+      0: Type.String(),
+      '1': Type.Number(),
+    })
+    const I = Type.Index(T, [0, '1'])
+    Assert.isTrue(TypeGuard.TUnion(I))
+    Assert.isTrue(TypeGuard.TString(I.anyOf[0]))
+    Assert.isTrue(TypeGuard.TNumber(I.anyOf[1]))
+  })
+  it('Should Index 29', () => {
+    const T = Type.Object({
+      0: Type.String(),
+      '1': Type.Number(),
+    })
+    const I = Type.Index(T, Type.Union([Type.Literal(0), Type.Literal('1')]))
+    Assert.isTrue(TypeGuard.TUnion(I))
+    Assert.isTrue(TypeGuard.TString(I.anyOf[0]))
+    Assert.isTrue(TypeGuard.TNumber(I.anyOf[1]))
+  })
+  it('Should Index 30', () => {
+    const T = Type.Object({
+      0: Type.String(),
+      '1': Type.Number(),
+    })
+    const I = Type.Index(T, Type.Union([Type.Literal(0), Type.Literal(1)]))
+    Assert.isTrue(TypeGuard.TUnion(I))
+    Assert.isTrue(TypeGuard.TString(I.anyOf[0]))
+    Assert.isTrue(TypeGuard.TNumber(I.anyOf[1]))
+    // Note: Expect TNever for anyOf[1] but permit for TNumber due to IndexedAccess
+    // Resolve() which currently cannot differentiate between string and numeric keys
+    // on the object. This may be resolvable in later revisions, but test for this
+    // fall-through to ensure case is documented. For review.
+  })
 })
