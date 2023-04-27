@@ -1943,7 +1943,8 @@ export namespace IndexedAccessor {
     return Type.Never()
   }
   export function Resolve(schema: TSchema, keys: Key[], options: SchemaOptions = {}): TSchema {
-    return Type.Union(keys.map((key) => Visit(schema, key.toString())))
+    // prettier-ignore
+    return Type.Union(keys.map((key) => Visit(schema, key.toString())), options)
   }
 }
 // --------------------------------------------------------------------------
