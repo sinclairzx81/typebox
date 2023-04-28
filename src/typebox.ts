@@ -194,34 +194,18 @@ export type TInstanceType<T extends TConstructor<TSchema[], TSchema>> = T['retur
 // --------------------------------------------------------------------------
 // TComposite
 // --------------------------------------------------------------------------
-export type TCompositeIsOptional<T extends TSchema> = T extends TOptional<T> | TReadonlyOptional<T> ? true : false
 // prettier-ignore
-export type TCompositeOptional<T extends TSchema[]> = T extends [infer L, ...infer R] 
-  ? TCompositeIsOptional<AssertType<L>> extends false ? false 
-  : TCompositeOptional<AssertRest<R>> : true
-export type TCompositeKeyOfUnion1<T extends TObject> = keyof T['properties']
-// prettier-ignore
-export type TCompositeKeyOfUnion2<T extends TObject[]> = T extends [infer L, ...infer R] 
-  ? TCompositeKeyOfUnion1<Assert<L, TObject>> | TCompositeKeyOfUnion2<Assert<R, TObject[]>> 
-  : never
-export type TCompositeKeyOf<T extends TObject[]> = UnionToTuple<TCompositeKeyOfUnion2<T>>
-export type TCompositePropertiesWithKey1<T extends TObject, K extends Key> = K extends keyof T['properties'] ? [T['properties'][K]] : []
-// prettier-ignore
-export type TCompositePropertiesWithKey2<T extends TObject[], K extends Key> = T extends [infer L, ...infer R] 
-  ? [...TCompositePropertiesWithKey1<Assert<L, TObject>, K>, ...TCompositePropertiesWithKey2<Assert<R, TObject[]>, K>]
-  : []
-// prettier-ignore
-export type TCompositeObjectProperty<T extends TObject[], K extends Key> = TCompositePropertiesWithKey2<T, K> extends infer S ? 
-  TCompositeOptional<AssertRest<S>> extends true
-    ? { [_ in K]: TOptional<IntersectType<AssertRest<S>>> }
-    : { [_ in K]: IntersectType<AssertRest<S>> }
+export type TCompositeReduce<T extends TIntersect<TObject[]>, K extends string[]> = K extends [infer L, ...infer R] 
+  ? { [_ in Assert<L, string>]: TIndexType<T, Assert<L, string>> } & TCompositeReduce<T, Assert<R, string[]>> 
   : {}
 // prettier-ignore
-export type TCompositeObjectsWithKeys<T extends TObject[], K extends Key[]> = K extends [infer L, ...infer R] ? L extends Key
-    ? TCompositeObjectProperty<T, L> & TCompositeObjectsWithKeys<T, Assert<R, Key[]>>
-    : {} 
+export type TCompositeSelect<T extends TIntersect<TObject[]>> = UnionToTuple<keyof Static<T>> extends infer K 
+  ? Evaluate<TCompositeReduce<T, Assert<K, string[]>>> 
   : {}
-export type TComposite<T extends TObject[]> = Ensure<TObject<Evaluate<TCompositeObjectsWithKeys<T, Assert<TCompositeKeyOf<T>, Key[]>>>>>
+// prettier-ignore
+export type TComposite<T extends TObject[]> = TIntersect<T> extends infer R 
+  ? TObject<TCompositeSelect<Assert<R, TIntersect<TObject[]>>>>
+  : TObject<{}>
 // --------------------------------------------------------------------------
 // TConstructor
 // --------------------------------------------------------------------------
@@ -2337,39 +2321,10 @@ export class StandardTypeBuilder extends TypeBuilder {
   }
   /** `[Standard]` Creates a Composite object type. */
   public Composite<T extends TObject[]>(objects: [...T], options?: ObjectOptions): TComposite<T> {
-    const isOptionalAll = (objects: TObject[], key: string) => objects.every((object) => !(key in object.properties) || IsOptional(object.properties[key]))
-    const IsOptional = (schema: TSchema) => TypeGuard.TOptional(schema) || TypeGuard.TReadonlyOptional(schema)
-    const [required, optional] = [new Set<string>(), new Set<string>()]
-    for (const object of objects) {
-      for (const key of globalThis.Object.getOwnPropertyNames(object.properties)) {
-        if (isOptionalAll(objects, key)) optional.add(key)
-      }
-    }
-    for (const object of objects) {
-      for (const key of globalThis.Object.getOwnPropertyNames(object.properties)) {
-        if (!optional.has(key)) required.add(key)
-      }
-    }
-    const properties = {} as Record<keyof any, any>
-    for (const object of objects) {
-      for (const [key, schema] of Object.entries(object.properties)) {
-        const property = TypeClone.Clone(schema, {})
-        if (!optional.has(key)) delete property[Modifier]
-        if (key in properties) {
-          properties[key] = TypeGuard.TIntersect(properties[key]) ? this.Intersect([...properties[key].allOf, property]) : this.Intersect([properties[key], property])
-        } else {
-          properties[key] = property
-        }
-      }
-    }
-    for (const key of globalThis.Object.getOwnPropertyNames(properties)) {
-      properties[key] = optional.has(key) ? this.Optional(properties[key]) : properties[key]
-    }
-    if (required.size > 0) {
-      return this.Create({ ...options, [Kind]: 'Object', type: 'object', properties, required: [...required] })
-    } else {
-      return this.Create({ ...options, [Kind]: 'Object', type: 'object', properties })
-    }
+    const intersect: any = Type.Intersect(objects, {})
+    const keys = KeyResolver.ResolveKeys(intersect, { includePatterns: false })
+    const properties = keys.reduce((acc, key) => ({ ...acc, [key]: Type.Index(intersect, [key]) }), {} as TProperties)
+    return Type.Object(properties, options) as TComposite<T>
   }
   /** `[Standard]` Creates a Enum type */
   public Enum<T extends Record<string, string | number>>(item: T, options: SchemaOptions = {}): TEnum<T> {
