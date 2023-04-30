@@ -83,7 +83,7 @@ License MIT
   - [References](#types-references)
   - [Recursive](#types-recursive)
   - [Conditional](#types-conditional)
-  - [Template](#types-template-literal)
+  - [Template Literal](#types-template-literal)
   - [Indexed](#types-indexed)
   - [Rest](#types-rest)
   - [Guards](#types-guards)
@@ -814,10 +814,12 @@ type T2 = Static<typeof T2>                        // type T2 = string
 
 ### Template Literal Types
 
-Template Literal types are supported with `Type.TemplateLiteral`
+TypeBox supports Template Literal types using `Type.TemplateLiteral`. These types can be created using a simple template DSL syntax, however more complex template literals can be created by passing a sequence of literal and union types to the template literal function. The examples below show the template DSL syntax.
 
 ```typescript
 // TypeScript
+
+type P = `/post/${string}/user/${number}`            // type P = `/post/${string}/user/${number}`
 
 type T = `option${'A'|'B'}`                          // type T = 'optionA' | 'optionB'
 
@@ -828,13 +830,17 @@ type R = Record<T, string>                           // type R = {
 
 // TypeBox
 
-const T = Type.TemplateLiteral([                     // const T = {
-  Type.Literal('option'),                            //   pattern: '^option(A|B)$',
-  Type.Union([                                       //   type: 'string'
-    Type.Literal('A'),                               // }
-    Type.Literal('B')
-  ])
-])
+const P = Type.TemplateLiteral('/post/${string}/user/${number}')
+
+                                                     // const P = {
+                                                     //   type: 'string',
+                                                     //   pattern: '^/post/(.*)/user/(0|[1-9][0-9]*)$'
+                                                     // }
+
+const T = Type.TemplateLiteral('option${A|B}')       // const T = {
+                                                     //   pattern: '^option(A|B)$',
+                                                     //   type: 'string'
+                                                     // }
 
 const R = Type.Record(T, Type.String())              // const R = {
                                                      //   type: 'object',
@@ -848,37 +854,48 @@ const R = Type.Record(T, Type.String())              // const R = {
                                                      //     }
                                                      //   }
                                                      // }
-
-type T = Static<typeof T>                            // type T = 'optionA' | 'optionB'
-
-type R = Static<typeof R>                            // type R = {
-                                                     //   optionA: string
-                                                     //   optionB: string
-                                                     // }
 ```
 
 <a name='types-indexed'></a>
 
 ### Indexed Access Types
 
-Indexed Access types are supported with `Type.Index`
+TypeBox supports Indexed Access types using `Type.Index`. This feature provides a consistent way to access property types without having to extract them from the underlying schema representation. Indexed accessors are available for object and tuples types, as well as deeply nested union and intersect types.
 
 ```typescript
-const T = Type.Object({                              // type T = {
-  x: Type.Number(),                                  //   x: number
-  y: Type.String(),                                  //   y: string
-  z: Type.Boolean()                                  //   z: boolean
-})                                                   // }
+const T = Type.Object({                              // const T = {
+  x: Type.Number(),                                  //   type: 'object',
+  y: Type.String(),                                  //   required: ['x', 'y', 'z'],
+  z: Type.Boolean()                                  //   properties: {
+})                                                   //     x: { type: 'number' },
+                                                     //     y: { type: 'string' },
+                                                     //     z: { type: 'string' },
+                                                     //   }
+                                                     // }
 
-const A = Type.Index(T, ['x'])                       // type A = T['x']
+const A = Type.Index(T, ['x'])                       // const A = { type: 'number' }
 
-const B = Type.Index(T, Type.KeyOf(T))               // type B = T[keyof T]
+const B = Type.Index(T, ['x', 'y'])                  // const B = { 
+                                                     //   anyOf: [
+                                                     //     { type: 'number' },  
+                                                     //     { type: 'string' }
+                                                     //   ]
+                                                     // }
+
+const C = Type.Index(T, Type.KeyOf(T))               // const C = { 
+                                                     //   anyOf: [
+                                                     //     { type: 'number' },  
+                                                     //     { type: 'string' },
+                                                     //     { type: 'boolean' }
+                                                     //   ]
+                                                     // }
 ```
+
 <a name='types-rest'></a>
 
 ### Rest Types
 
-Rest parameters are supported with `Type.Rest`. This function is used to extract interior arrays from tuples to allow them to compose with the JavaScript spread operator `...`. This type can be used for tuple concatination and variadic function composition.
+Rest parameters are supported with `Type.Rest`. This function is used to extract interior type elements from tuples which enables them to compose with the JavaScript spread operator `...`. This type can be used for tuple concatination as well as for variadic functions.
 
 ```typescript
 // TypeScript

@@ -51,6 +51,7 @@ export type UnionLast<U> = UnionToIntersect<U extends unknown ? (x: U) => 0 : ne
 export type UnionToTuple<U, L = UnionLast<U>> = [U] extends [never] ? [] : [...UnionToTuple<Exclude<U, L>>, L]
 export type Discard<T extends unknown[], D extends unknown> = T extends [infer L, ...infer R] ? (L extends D ? Discard<R, D> : [L, ...Discard<R, D>]) : []
 export type Flat<T> = T extends [] ? [] : T extends [infer L] ? [...Flat<L>] : T extends [infer L, ...infer R] ? [...Flat<L>, ...Flat<R>] : [T]
+export type Trim<T> = T extends `${' '}${infer U}` ? Trim<U> : T extends `${infer U}${' '}` ? Trim<U> : T
 export type Assert<T, E> = T extends E ? T : never
 export type Evaluate<T> = T extends infer O ? { [K in keyof O]: O[K] } : never
 export type Ensure<T> = T extends infer U ? U : never
@@ -622,6 +623,29 @@ export interface TSymbol extends TSchema, SchemaOptions {
   type: 'null'
   typeOf: 'Symbol'
 }
+// -------------------------------------------------------------------------
+// TTemplateLiteralParserDsl
+// -------------------------------------------------------------------------
+// prettier-ignore
+export type TTemplateLiteralDslParserUnionLiteral<T extends string> = 
+  T extends `${infer L}|${infer R}` ? [TLiteral<Trim<L>>, ...TTemplateLiteralDslParserUnionLiteral<R>] : 
+  T extends `${infer L}` ? [TLiteral<Trim<L>>] : 
+  []
+export type TTemplateLiteralDslParserUnion<T extends string> = UnionType<TTemplateLiteralDslParserUnionLiteral<T>>
+// prettier-ignore
+export type TTemplateLiteralDslParserTerminal<T extends string> = 
+  T extends 'boolean' ? TBoolean :  
+  T extends 'bigint' ? TBigInt :  
+  T extends 'number' ? TNumber :
+  T extends 'string' ? TString :
+  TTemplateLiteralDslParserUnion<T>
+// prettier-ignore
+export type TTemplateLiteralDslParserTemplate<T extends string> = 
+  T extends `{${infer L}}${infer R}` ? [TTemplateLiteralDslParserTerminal<L>, ...TTemplateLiteralDslParserTemplate<R>] :
+  T extends `${infer L}$${infer R}`  ? [TLiteral<L>, ...TTemplateLiteralDslParserTemplate<R>] :
+  T extends `${infer L}`             ? [TLiteral<L>] : 
+  []
+export type TTemplateLiteralDslParser<T extends string> = Ensure<TTemplateLiteral<Assert<TTemplateLiteralDslParserTemplate<T>, TTemplateLiteralKind[]>>>
 // --------------------------------------------------------------------------
 // TTemplateLiteral
 // --------------------------------------------------------------------------
@@ -2268,6 +2292,48 @@ export namespace TemplateLiteralGenerator {
     throw Error('TemplateLiteralGenerator: Unknown expression')
   }
 }
+// ---------------------------------------------------------------------
+// TemplateLiteralDslParser
+// ---------------------------------------------------------------------
+export namespace TemplateLiteralDslParser {
+  export function* ParseUnion(template: string): IterableIterator<TTemplateLiteralKind> {
+    const trim = template.trim().replace(/"|'/g, '')
+    if (trim === 'boolean') return yield Type.Boolean()
+    if (trim === 'number') return yield Type.Number()
+    if (trim === 'bigint') return yield Type.BigInt()
+    if (trim === 'string') return yield Type.String()
+    const literals = trim.split('|').map((literal) => Type.Literal(literal.trim()))
+    return yield literals.length === 0 ? Type.Never() : literals.length === 1 ? literals[0] : Type.Union(literals)
+  }
+  export function* ParseTerminal(template: string): IterableIterator<TTemplateLiteralKind> {
+    if (template[1] !== '{') {
+      const L = Type.Literal('$')
+      const R = ParseLiteral(template.slice(1))
+      return yield* [L, ...R]
+    }
+    for (let i = 2; i < template.length; i++) {
+      if (template[i] === '}') {
+        const L = ParseUnion(template.slice(2, i))
+        const R = ParseLiteral(template.slice(i + 1))
+        return yield* [...L, ...R]
+      }
+    }
+    yield Type.Literal(template)
+  }
+  export function* ParseLiteral(template: string): IterableIterator<TTemplateLiteralKind> {
+    for (let i = 0; i < template.length; i++) {
+      if (template[i] === '$') {
+        const L = Type.Literal(template.slice(0, i))
+        const R = ParseTerminal(template.slice(i))
+        return yield* [L, ...R]
+      }
+    }
+    yield Type.Literal(template)
+  }
+  export function Parse(template: string, options: SchemaOptions): TTemplateLiteral {
+    return Type.TemplateLiteral([...ParseLiteral(template)], options)
+  }
+}
 // --------------------------------------------------------------------------
 // TypeOrdinal: Used for auto $id generation
 // --------------------------------------------------------------------------
@@ -2606,9 +2672,14 @@ export class StandardTypeBuilder extends TypeBuilder {
   public String(options: StringOptions = {}): TString {
     return this.Create({ ...options, [Kind]: 'String', type: 'string' })
   }
+  /** `[Experimental]` Creates a template literal type from dsl string */
+  public TemplateLiteral<T extends string>(dsl: T, options?: SchemaOptions): TTemplateLiteralDslParser<T>
   /** `[Standard]` Creates a template literal type */
-  public TemplateLiteral<T extends TTemplateLiteralKind[]>(kinds: [...T], options: SchemaOptions = {}): TTemplateLiteral<T> {
-    const pattern = TemplateLiteralPattern.Create(kinds)
+  public TemplateLiteral<T extends TTemplateLiteralKind[]>(kinds: [...T], options?: SchemaOptions): TTemplateLiteral<T>
+  /** `[Standard]` Creates a template literal type */
+  public TemplateLiteral(unresolved: unknown, options: SchemaOptions = {}) {
+    if (typeof unresolved === 'string') return TemplateLiteralDslParser.Parse(unresolved, options)
+    const pattern = TemplateLiteralPattern.Create(unresolved as TTemplateLiteralKind[])
     return this.Create({ ...options, [Kind]: 'TemplateLiteral', type: 'string', pattern })
   }
   /** `[Standard]` Creates a Tuple type */
