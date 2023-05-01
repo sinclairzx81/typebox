@@ -814,7 +814,7 @@ type T2 = Static<typeof T2>                        // type T2 = string
 
 ### Template Literal Types
 
-TypeBox supports Template Literal types using `Type.TemplateLiteral`. These types can be created using a simple template DSL syntax, however more complex template literals can be created by passing a sequence of literal and union types to the template literal function. The examples below show the template DSL syntax.
+TypeBox supports Template Literal types using `Type.TemplateLiteral`. These types can be created using a simple template DSL syntax, however more complex template literals can be created by passing an array of literal and union types. The examples below show the template DSL syntax.
 
 ```typescript
 // TypeScript
@@ -860,7 +860,7 @@ const R = Type.Record(T, Type.String())              // const R = {
 
 ### Indexed Access Types
 
-TypeBox supports Indexed Access types using `Type.Index`. This feature provides a consistent way to access property types without having to extract them from the underlying schema representation. Indexed accessors are available for object and tuples types, as well as deeply nested union and intersect types.
+TypeBox supports Indexed Access types using `Type.Index`. This feature provides a consistent way to access property types without having to extract them from the underlying schema representation. Indexed accessors are supported for object and tuples, as well as nested union and intersect types.
 
 ```typescript
 const T = Type.Object({                              // const T = {

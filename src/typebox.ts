@@ -2296,7 +2296,7 @@ export namespace TemplateLiteralGenerator {
 // TemplateLiteralDslParser
 // ---------------------------------------------------------------------
 export namespace TemplateLiteralDslParser {
-  export function* ParseUnion(template: string): IterableIterator<TTemplateLiteralKind> {
+  function* ParseUnion(template: string): IterableIterator<TTemplateLiteralKind> {
     const trim = template.trim().replace(/"|'/g, '')
     if (trim === 'boolean') return yield Type.Boolean()
     if (trim === 'number') return yield Type.Number()
@@ -2305,7 +2305,7 @@ export namespace TemplateLiteralDslParser {
     const literals = trim.split('|').map((literal) => Type.Literal(literal.trim()))
     return yield literals.length === 0 ? Type.Never() : literals.length === 1 ? literals[0] : Type.Union(literals)
   }
-  export function* ParseTerminal(template: string): IterableIterator<TTemplateLiteralKind> {
+  function* ParseTerminal(template: string): IterableIterator<TTemplateLiteralKind> {
     if (template[1] !== '{') {
       const L = Type.Literal('$')
       const R = ParseLiteral(template.slice(1))
@@ -2320,7 +2320,7 @@ export namespace TemplateLiteralDslParser {
     }
     yield Type.Literal(template)
   }
-  export function* ParseLiteral(template: string): IterableIterator<TTemplateLiteralKind> {
+  function* ParseLiteral(template: string): IterableIterator<TTemplateLiteralKind> {
     for (let i = 0; i < template.length; i++) {
       if (template[i] === '$') {
         const L = Type.Literal(template.slice(0, i))
@@ -2330,8 +2330,8 @@ export namespace TemplateLiteralDslParser {
     }
     yield Type.Literal(template)
   }
-  export function Parse(template: string, options: SchemaOptions): TTemplateLiteral {
-    return Type.TemplateLiteral([...ParseLiteral(template)], options)
+  export function Parse(template_dsl: string): TTemplateLiteralKind[] {
+    return [...ParseLiteral(template_dsl)]
   }
 }
 // --------------------------------------------------------------------------
@@ -2678,8 +2678,10 @@ export class StandardTypeBuilder extends TypeBuilder {
   public TemplateLiteral<T extends TTemplateLiteralKind[]>(kinds: [...T], options?: SchemaOptions): TTemplateLiteral<T>
   /** `[Standard]` Creates a template literal type */
   public TemplateLiteral(unresolved: unknown, options: SchemaOptions = {}) {
-    if (typeof unresolved === 'string') return TemplateLiteralDslParser.Parse(unresolved, options)
-    const pattern = TemplateLiteralPattern.Create(unresolved as TTemplateLiteralKind[])
+    // prettier-ignore
+    const pattern = (typeof unresolved === 'string')
+      ? TemplateLiteralPattern.Create(TemplateLiteralDslParser.Parse(unresolved))
+      : TemplateLiteralPattern.Create(unresolved as TTemplateLiteralKind[])
     return this.Create({ ...options, [Kind]: 'TemplateLiteral', type: 'string', pattern })
   }
   /** `[Standard]` Creates a Tuple type */
