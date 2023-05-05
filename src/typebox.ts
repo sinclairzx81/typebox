@@ -25,11 +25,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
+import { TypeSystem } from '@sinclair/typebox/system'
 
 // --------------------------------------------------------------------------
 // Symbols
 // --------------------------------------------------------------------------
-import { TypeSystem } from '@sinclair/typebox/system'
 
 export const Modifier = Symbol.for('TypeBox.Modifier')
 export const Hint = Symbol.for('TypeBox.Hint')
@@ -2522,7 +2522,7 @@ export class StandardTypeBuilder extends TypeBuilder {
 
     const additionalProperties = options.additionalProperties ?? TypeSystem.DefaultAdditionalProperties
 
-    const clonedAdditionalProperties = TypeGuard.TSchema(options) ? { additionalProperties: TypeClone.Clone(options, {}) } : {}
+    const clonedAdditionalProperties = TypeGuard.TSchema(additionalProperties) ? { additionalProperties: TypeClone.Clone(additionalProperties, {}) } : {}
     const clonedProperties = propertyKeys.reduce((acc, key) => ({ ...acc, [key]: TypeClone.Clone(properties[key], {}) }), {} as TProperties)
     if (requiredKeys.length > 0) {
       return this.Create({ ...options, additionalProperties, ...clonedAdditionalProperties, [Kind]: 'Object', type: 'object', properties: clonedProperties, required: requiredKeys })
