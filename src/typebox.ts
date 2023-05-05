@@ -2520,14 +2520,17 @@ export class StandardTypeBuilder extends TypeBuilder {
     const optionalKeys = propertyKeys.filter((key) => TypeGuard.TOptional(properties[key]) || TypeGuard.TReadonlyOptional(properties[key]))
     const requiredKeys = propertyKeys.filter((name) => !optionalKeys.includes(name))
 
-    const additionalProperties = options.additionalProperties ?? TypeSystem.DefaultAdditionalProperties
+    let additionalProperties = options.additionalProperties ?? TypeSystem.DefaultAdditionalProperties
 
-    const clonedAdditionalProperties = TypeGuard.TSchema(additionalProperties) ? { additionalProperties: TypeClone.Clone(additionalProperties, {}) } : {}
+    if (TypeGuard.TSchema(additionalProperties)) {
+      additionalProperties = TypeClone.Clone(additionalProperties, {})
+    }
+
     const clonedProperties = propertyKeys.reduce((acc, key) => ({ ...acc, [key]: TypeClone.Clone(properties[key], {}) }), {} as TProperties)
     if (requiredKeys.length > 0) {
-      return this.Create({ ...options, additionalProperties, ...clonedAdditionalProperties, [Kind]: 'Object', type: 'object', properties: clonedProperties, required: requiredKeys })
+      return this.Create({ ...options, additionalProperties, [Kind]: 'Object', type: 'object', properties: clonedProperties, required: requiredKeys })
     } else {
-      return this.Create({ ...options, additionalProperties, ...clonedAdditionalProperties, [Kind]: 'Object', type: 'object', properties: clonedProperties })
+      return this.Create({ ...options, additionalProperties, [Kind]: 'Object', type: 'object', properties: clonedProperties })
     }
   }
   /** `[Standard]` Creates a mapped type whose keys are omitted from the given type */
