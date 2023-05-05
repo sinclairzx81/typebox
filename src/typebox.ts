@@ -29,7 +29,7 @@ THE SOFTWARE.
 // --------------------------------------------------------------------------
 // Symbols
 // --------------------------------------------------------------------------
-import { TypeSystem } from '@sinclair/typebox/system';
+import { TypeSystem } from '@sinclair/typebox/system'
 
 export const Modifier = Symbol.for('TypeBox.Modifier')
 export const Hint = Symbol.for('TypeBox.Hint')
@@ -2520,7 +2520,7 @@ export class StandardTypeBuilder extends TypeBuilder {
     const optionalKeys = propertyKeys.filter((key) => TypeGuard.TOptional(properties[key]) || TypeGuard.TReadonlyOptional(properties[key]))
     const requiredKeys = propertyKeys.filter((name) => !optionalKeys.includes(name))
 
-    const additionalProperties = options.additionalProperties ?? TypeSystem.DefaultAdditionalProperties;
+    const additionalProperties = options.additionalProperties ?? TypeSystem.DefaultAdditionalProperties
 
     const clonedAdditionalProperties = TypeGuard.TSchema(options) ? { additionalProperties: TypeClone.Clone(options, {}) } : {}
     const clonedProperties = propertyKeys.reduce((acc, key) => ({ ...acc, [key]: TypeClone.Clone(properties[key], {}) }), {} as TProperties)
