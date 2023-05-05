@@ -52,6 +52,8 @@ export namespace TypeSystem {
   export let AllowNaN: boolean = false
   /** Sets whether `null` should validate for void types. The default is `false` */
   export let AllowVoidNull: boolean = false
+  /** Default value for `additionalProperties` on Object types */
+  export let DefaultAdditionalProperties: Types.TAdditionalProperties = undefined
   // ------------------------------------------------------------------------
   // String Formats and Types
   // ------------------------------------------------------------------------

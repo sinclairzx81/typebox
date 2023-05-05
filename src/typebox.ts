@@ -29,6 +29,8 @@ THE SOFTWARE.
 // --------------------------------------------------------------------------
 // Symbols
 // --------------------------------------------------------------------------
+import { TypeSystem } from '@sinclair/typebox/system';
+
 export const Modifier = Symbol.for('TypeBox.Modifier')
 export const Hint = Symbol.for('TypeBox.Hint')
 export const Kind = Symbol.for('TypeBox.Kind')
@@ -2517,12 +2519,15 @@ export class StandardTypeBuilder extends TypeBuilder {
     const propertyKeys = globalThis.Object.getOwnPropertyNames(properties)
     const optionalKeys = propertyKeys.filter((key) => TypeGuard.TOptional(properties[key]) || TypeGuard.TReadonlyOptional(properties[key]))
     const requiredKeys = propertyKeys.filter((name) => !optionalKeys.includes(name))
-    const clonedAdditionalProperties = TypeGuard.TSchema(options.additionalProperties) ? { additionalProperties: TypeClone.Clone(options.additionalProperties, {}) } : {}
+
+    const additionalProperties = options.additionalProperties ?? TypeSystem.DefaultAdditionalProperties;
+
+    const clonedAdditionalProperties = TypeGuard.TSchema(options) ? { additionalProperties: TypeClone.Clone(options, {}) } : {}
     const clonedProperties = propertyKeys.reduce((acc, key) => ({ ...acc, [key]: TypeClone.Clone(properties[key], {}) }), {} as TProperties)
     if (requiredKeys.length > 0) {
-      return this.Create({ ...options, ...clonedAdditionalProperties, [Kind]: 'Object', type: 'object', properties: clonedProperties, required: requiredKeys })
+      return this.Create({ ...options, additionalProperties, ...clonedAdditionalProperties, [Kind]: 'Object', type: 'object', properties: clonedProperties, required: requiredKeys })
     } else {
-      return this.Create({ ...options, ...clonedAdditionalProperties, [Kind]: 'Object', type: 'object', properties: clonedProperties })
+      return this.Create({ ...options, additionalProperties, ...clonedAdditionalProperties, [Kind]: 'Object', type: 'object', properties: clonedProperties })
     }
   }
   /** `[Standard]` Creates a mapped type whose keys are omitted from the given type */
