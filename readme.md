@@ -108,6 +108,7 @@ License MIT
   - [Types](#typesystem-types)
   - [Formats](#typesystem-formats)
   - [Policies](#typesystem-policies)
+- [Workbench](#workbench)
 - [Benchmark](#benchmark)
   - [Compile](#benchmark-compile)
   - [Validate](#benchmark-validate)
@@ -1345,26 +1346,31 @@ import { TypeSystem } from '@sinclair/typebox/system'
 
 ### Types
 
-Use the `Type(...)` function to create a custom type. This function will return a type factory function that can be used to construct the type. The following creates a Point type.
+Use the `Type(...)` function to create custom types. This function lets you specify custom assertion logic and will return a type factory function that is used to instance the type. This function accepts two generic arguments, the first is the inference type, the second is any options used to constrain the type. The following creates a Vector type.
 
 ```typescript
-type PointOptions = { }                              // The Type Options
+type VectorOptions = { abs: boolean }                 // The Type Options (Optional)
 
-type PointType = { x: number, y: number }            // The Static<T> Type
+type Vector = { x: number, y: number }                // The Static<T> Type
 
-const Point = TypeSystem.Type<PointType, PointOptions>('Point', (options, value) => {
+const Vector = TypeSystem.Type<Vector, VectorOptions>('Vector', (options, value) => {
   return (
     typeof value === 'object' && value !== null &&
-    typeof value.x === 'number' && 
-    typeof value.y === 'number'
+    'x' in value && typeof value.x === 'number' && 
+    'y' in value && typeof value.y === 'number' && 
+    (options.abs ? (value.x === Math.abs(value.x) && value.y === Math.abs(value.y)) : true)
   )
 })
 
-const T = Point()
+const T = Vector({ abs: true })
 
-type T = Static<typeof T>                             // type T = { x: number, y: number }
+type T = Static<typeof T>                            // type T = Vector
 
-const R = Value.Check(T, { x: 1, y: 2 })              // const R = true
+const R1 = Value.Check(T, { x: 1, y: 1 })            // const R1 = true
+
+const R2 = Value.Check(T, { x: 1, y: '1' })          // const R2 = false
+
+const R3 = Value.Check(T, { x: 1, y: -1 })           // const R3 = false
 ```
 
 <a name='typesystem-formats'></a>
@@ -1408,6 +1414,20 @@ TypeSystem.AllowArrayObjects = true
 
 TypeSystem.AllowNaN = true                      
 ```
+
+<a name='workbench'></a>
+
+## Workbench
+
+TypeBox offers a web based code generation tool that can be used to create TypeBox types from TypeScript types. This tool is used prototype new TypeBox features, but can be used to rapidly convert TypeScript type definitions in to TypeBox types as well as raw JSON Schema.
+
+[Workbench Link Here](https://sinclairzx81.github.io/typebox-workbench/)
+
+<div align='center'>
+	
+<img src="https://github.com/sinclairzx81/typebox/blob/master/workbench.png?raw=true" />
+
+</div>
 
 <a name='benchmark'></a>
 
