@@ -1419,13 +1419,13 @@ TypeSystem.AllowNaN = true
 
 ## Workbench
 
-TypeBox offers a web based code generation tool that can be used to create TypeBox types from TypeScript types. This tool is written to prototype new TypeBox features, but can be used to rapidly convert TypeScript type definitions in to TypeBox types as well as raw JSON Schema.
+TypeBox offers a web based code generation tool that can be used to create TypeBox types from TypeScript type definitions. This tool is written to prototype new TypeBox features, but can be used to rapidly convert TypeScript type definitions in to TypeBox types as well as raw JSON Schema.
 
 [Workbench Link Here](https://sinclairzx81.github.io/typebox-workbench/)
 
 <div align='center'>
 	
-<a href="https://sinclairzx81.github.io/typebox-workbench/"><img src="https://github.com/sinclairzx81/typebox/blob/workbench/workbench.png?raw=true" /></a>
+<a href="https://sinclairzx81.github.io/typebox-workbench/"><img src="https://github.com/sinclairzx81/typebox/blob/master/workbench.png?raw=true" /></a>
 
 </div>
 
