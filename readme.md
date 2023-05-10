@@ -1346,12 +1346,12 @@ import { TypeSystem } from '@sinclair/typebox/system'
 
 ### Types
 
-Use the `Type(...)` function to create custom types. This function lets you specify custom assertion logic and will return a type factory function that is used to instance the type. This function accepts two generic arguments, the first is the inference type, the second is any options used to constrain the type. The following creates a Vector type.
+Use the `Type(...)` function to create custom types. This function lets you specify custom value assertion logic and will return a type factory function which is used to instance the type. This function accepts two generic arguments, the first is the inference type, the second is options used to constrain the type. The following creates a Vector type.
 
 ```typescript
-type VectorOptions = { abs: boolean }                 // The Type Options (Optional)
+type VectorOptions = { abs: boolean }       
 
-type Vector = { x: number, y: number }                // The Static<T> Type
+type Vector = { x: number, y: number }
 
 const Vector = TypeSystem.Type<Vector, VectorOptions>('Vector', (options, value) => {
   return (
