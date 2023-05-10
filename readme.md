@@ -1425,7 +1425,7 @@ TypeBox offers a web based code generation tool that can be used to create TypeB
 
 <div align='center'>
 	
-<img src="https://github.com/sinclairzx81/typebox/blob/master/workbench.png?raw=true" />
+<img src="https://github.com/sinclairzx81/typebox/blob/workbench/workbench.png?raw=true" />
 
 </div>
 
