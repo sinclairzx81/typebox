@@ -215,6 +215,91 @@ describe('type/compiler/Object', () => {
       z: 3,
     })
   })
+
+  it('Should validate nested schema additional properties of string', () => {
+    const T = Type.Object({
+      nested: Type.Object(
+        {
+          x: Type.Number(),
+          y: Type.Number(),
+        },
+        {
+          additionalProperties: Type.String(),
+        },
+      ),
+    })
+    Ok(T, {
+      nested: {
+        x: 1,
+        y: 2,
+        z: 'hello',
+      },
+    })
+    Fail(T, {
+      nested: {
+        x: 1,
+        y: 2,
+        z: 3,
+      },
+    })
+  })
+  it('Should validate nested schema additional properties of array', () => {
+    const T = Type.Object({
+      nested: Type.Object(
+        {
+          x: Type.Number(),
+          y: Type.Number(),
+        },
+        {
+          additionalProperties: Type.Array(Type.Number()),
+        },
+      ),
+    })
+    Ok(T, {
+      nested: {
+        x: 1,
+        y: 2,
+        z: [0, 1, 2],
+      },
+    })
+    Fail(T, {
+      nested: {
+        x: 1,
+        y: 2,
+        z: 3,
+      },
+    })
+  })
+  it('Should validate nested schema additional properties of object', () => {
+    const T = Type.Object({
+      nested: Type.Object(
+        {
+          x: Type.Number(),
+          y: Type.Number(),
+        },
+        {
+          additionalProperties: Type.Object({
+            z: Type.Number(),
+          }),
+        },
+      ),
+    })
+    Ok(T, {
+      nested: {
+        x: 1,
+        y: 2,
+        z: { z: 1 },
+      },
+    })
+    Fail(T, {
+      nested: {
+        x: 1,
+        y: 2,
+        z: 3,
+      },
+    })
+  })
+
   it('Should check for property key if property type is undefined', () => {
     const T = Type.Object({ x: Type.Undefined() })
     Ok(T, { x: undefined })
