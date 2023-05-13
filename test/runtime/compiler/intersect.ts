@@ -54,6 +54,13 @@ describe('type/compiler/Intersect', () => {
     Ok(T, { x: 1, y: 2, z: 3 })
     Fail(T, { x: 1, y: 2, z: '1' })
   })
+  it('Should intersect two nested objects and allow unevaluated properties of number', () => {
+    const A = Type.Object({ x: Type.Number() })
+    const B = Type.Object({ y: Type.Number() })
+    const T = Type.Object({ nested: Type.Intersect([A, B], { unevaluatedProperties: Type.Number() }) })
+    Ok(T, { nested: { x: 1, y: 2, z: 3 } })
+    Fail(T, { nested: { x: 1, y: 2, z: '1' } })
+  })
   it('Should intersect two union objects with overlapping properties of the same type', () => {
     const A = Type.Union([Type.Object({ x: Type.Number() })])
     const B = Type.Union([Type.Object({ x: Type.Number() })])

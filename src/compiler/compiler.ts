@@ -216,7 +216,7 @@ export namespace TypeCompiler {
       yield `${check1} && ${check2}`
     } else if (Types.TypeGuard.TSchema(schema.unevaluatedProperties)) {
       const keyCheck = PushLocal(`${new RegExp(Types.KeyResolver.ResolvePattern(schema))};`)
-      const check2 = `Object.getOwnPropertyNames(${value}).every(key => ${keyCheck}.test(key) || ${CreateExpression(schema.unevaluatedProperties, references, 'value[key]')})`
+      const check2 = `Object.getOwnPropertyNames(${value}).every(key => ${keyCheck}.test(key) || ${CreateExpression(schema.unevaluatedProperties, references, `${value}[key]`)})`
       yield `${check1} && ${check2}`
     } else {
       yield `${check1}`
@@ -273,7 +273,7 @@ export namespace TypeCompiler {
       }
     }
     if (typeof schema.additionalProperties === 'object') {
-      const expression = CreateExpression(schema.additionalProperties, references, 'value[key]')
+      const expression = CreateExpression(schema.additionalProperties, references, `${value}[key]`)
       const keys = `[${knownKeys.map((key) => `'${key}'`).join(', ')}]`
       yield `(Object.getOwnPropertyNames(${value}).every(key => ${keys}.includes(key) || ${expression}))`
     }
