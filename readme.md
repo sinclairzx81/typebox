@@ -108,7 +108,7 @@ License MIT
   - [Types](#typesystem-types)
   - [Formats](#typesystem-formats)
   - [Policies](#typesystem-policies)
-- [Workbench](#workbench)
+- [Ecosystem](#ecosystem)
 - [Benchmark](#benchmark)
   - [Compile](#benchmark-compile)
   - [Validate](#benchmark-validate)
@@ -1415,19 +1415,26 @@ TypeSystem.AllowArrayObjects = true
 TypeSystem.AllowNaN = true                      
 ```
 
-<a name='workbench'></a>
+## Ecosystem
 
-## Workbench
+### Workbench
 
 TypeBox offers a web based code generation tool that can be used to create TypeBox types from TypeScript type definitions. This tool is written to prototype new TypeBox features, but can be used to rapidly convert TypeScript type definitions in to TypeBox types as well as raw JSON Schema.
 
 [Workbench Link Here](https://sinclairzx81.github.io/typebox-workbench/)
 
 <div align='center'>
-	
+
 <a href="https://sinclairzx81.github.io/typebox-workbench/"><img src="https://github.com/sinclairzx81/typebox/blob/master/workbench.png?raw=true" /></a>
 
 </div>
+
+### Other
+
+- [ts2typebox](https://github.com/xddq/ts2typebox) is a cli tool which helps you
+  automatically generate TypeBox code based on your Typescript types. Same
+  capabilites as the workbench project when it comes to Typescript -> Typebox
+  generation, with some extra knobs to customize the output.
 
 <a name='benchmark'></a>
 
