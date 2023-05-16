@@ -1277,7 +1277,8 @@ The TypeCompiler is provided as an optional import.
 import { TypeCompiler } from '@sinclair/typebox/compiler'
 ```
 
-Use the `Compile(...)` function to compile a type.
+Use the `Compile(...)` function to compile a type.  
+Please note that compiling a schema is an expensive task. It's better to compile the schema only once and reuse the checker object.
 
 ```typescript
 const C = TypeCompiler.Compile(Type.Object({         // const C: TypeCheck<TObject<{
