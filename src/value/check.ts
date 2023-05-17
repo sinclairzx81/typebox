@@ -238,8 +238,8 @@ export namespace ValueCheck {
         if (!Visit(property, references, value[knownKey])) {
           return false
         }
-        if (Types.ExtendsUndefined.Check(property)) {
-          return knownKey in value
+        if (Types.ExtendsUndefined.Check(property) && !(knownKey in value)) {
+          return false
         }
       } else {
         if (IsExactOptionalProperty(value, knownKey) && !Visit(property, references, value[knownKey])) {
