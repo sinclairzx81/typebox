@@ -1353,6 +1353,14 @@ export namespace TypeGuard {
 export namespace ExtendsUndefined {
   export function Check(schema: TSchema): boolean {
     if (schema[Kind] === 'Undefined') return true
+    if (schema[Kind] === 'Not') {
+      const not = schema as TNot
+      return Check(not.allOf[1])
+    }
+    if (schema[Kind] === 'Intersect') {
+      const intersect = schema as TIntersect
+      return intersect.allOf.every((schema) => Check(schema))
+    }
     if (schema[Kind] === 'Union') {
       const union = schema as TUnion
       return union.anyOf.some((schema) => Check(schema))
