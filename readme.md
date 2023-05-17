@@ -1277,8 +1277,7 @@ The TypeCompiler is provided as an optional import.
 import { TypeCompiler } from '@sinclair/typebox/compiler'
 ```
 
-Use the `Compile(...)` function to compile a type.  
-Note that compilation is an expensive operation that should typically be performed once per type during application start up. TypeBox does not cache previously compiled types, so applications are expected to hold references to each compiled type for the lifetime of the application.
+Use the `Compile(...)` function to compile a type. Note that compilation is an expensive operation that should typically be performed once per type during application start up. TypeBox does not cache previously compiled types, so applications are expected to hold references to each compiled type for the lifetime of the application.
 
 ```typescript
 const C = TypeCompiler.Compile(Type.Object({         // const C: TypeCheck<TObject<{
