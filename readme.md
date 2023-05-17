@@ -1278,7 +1278,7 @@ import { TypeCompiler } from '@sinclair/typebox/compiler'
 ```
 
 Use the `Compile(...)` function to compile a type.  
-Please note that compiling a schema is an expensive task. It's better to compile the schema only once and reuse the checker object.
+Note that compilation is an expensive operation that should typically be performed once per type during application start up. TypeBox does not cache previously compiled types, so applications are expected to hold references to each compiled type for the lifetime of the application.
 
 ```typescript
 const C = TypeCompiler.Compile(Type.Object({         // const C: TypeCheck<TObject<{
