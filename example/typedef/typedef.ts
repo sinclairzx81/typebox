@@ -267,11 +267,17 @@ export namespace TypeDefCheck {
     return IsInt(value, 0, Number.MAX_SAFE_INTEGER)
   }
   function Union(schema: TUnion, value: unknown): boolean {
-    return IsObject(value) && 
+    if (!(
+      IsObject(value) && 
       schema.discriminator in value &&
       IsString(value[schema.discriminator]) &&
-      value[schema.discriminator] as any in schema.mapping &&
-      Visit(schema.mapping[value[schema.discriminator] as any], value)
+      value[schema.discriminator] as any in schema.mapping
+    )) return false
+    // We shouldn't create objects just to omit the discriminator (optimize)
+    const inner = globalThis.Object.keys(value).reduce((acc, key) => {
+      return key === schema.discriminator ? acc : { [key]: value[key] }
+    }, {})
+    return Visit(schema.mapping[value[schema.discriminator] as any], inner)
   }
   function Visit(schema: Types.TSchema, value: unknown): boolean {
     const anySchema = schema as any
