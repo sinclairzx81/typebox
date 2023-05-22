@@ -108,6 +108,7 @@ License MIT
   - [Types](#typesystem-types)
   - [Formats](#typesystem-formats)
   - [Policies](#typesystem-policies)
+- [Workbench](#workbench)
 - [Ecosystem](#ecosystem)
 - [Benchmark](#benchmark)
   - [Compile](#benchmark-compile)
@@ -1415,9 +1416,9 @@ TypeSystem.AllowArrayObjects = true
 TypeSystem.AllowNaN = true                      
 ```
 
-## Ecosystem
+<a name='workbench'></a>
 
-### Workbench
+## Workbench
 
 TypeBox offers a small web based code generation tool that can be used to convert TypeScript types into TypeBox type definitions as well as a variety of other formats.
 
@@ -1429,12 +1430,16 @@ TypeBox offers a small web based code generation tool that can be used to conver
 
 </div>
 
-### Other
+<a name='ecosystem'></a>
 
-- [ts2typebox](https://github.com/xddq/ts2typebox) is a cli tool which helps you
-  automatically generate TypeBox code based on your Typescript types. Same
-  capabilites as the workbench project when it comes to Typescript -> Typebox
-  generation, with some extra knobs to customize the output.
+## Ecosystem
+
+| Package Name  | Short Description |
+| ------------- | ------------- |
+| [elysia](https://github.com/elysiajs/elysia) | Fast and friendly Bun web framework |
+| [fastify-type-provider-typebox](https://github.com/fastify/fastify-type-provider-typebox) | Fastify TypeBox integration with the Fastify Type Provider |
+| [fetch-typebox](https://github.com/erfanium/fetch-typebox) | Drop-in replacement for fetch that brings easy integration with TypeBox |
+| [ts2typebox](https://github.com/xddq/ts2typebox)  | Cli tool to generate TypeBox JSON schemas based on your Typescript types |
 
 <a name='benchmark'></a>
 
