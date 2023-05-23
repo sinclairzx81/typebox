@@ -1434,6 +1434,8 @@ TypeBox offers a small web based code generation tool that can be used to conver
 
 ## Ecosystem
 
+The following is a list of community packages that provide additional framework integration and tooling support for TypeBox.
+
 | Package Name  | Short Description |
 | ------------- | ------------- |
 | [elysia](https://github.com/elysiajs/elysia) | Fast and friendly Bun web framework |
