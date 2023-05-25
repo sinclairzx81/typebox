@@ -1434,7 +1434,7 @@ TypeBox offers a small web based code generation tool that can be used to conver
 
 ## Ecosystem
 
-The following is a list of community packages that provide additional framework integration and tooling support for TypeBox.
+The following is a list of community packages that provide general tooling and framework support for TypeBox.
 
 | Package   |  Description |
 | ------------- | ------------- |
