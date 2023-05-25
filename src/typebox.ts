@@ -244,7 +244,7 @@ export interface TEnumOption<T> {
 export interface TEnum<T extends Record<string, string | number> = Record<string, string | number>> extends TSchema {
   [Kind]: 'Union'
   static: T[keyof T]
-  anyOf: TLiteral<string | number>[]
+  anyOf: TLiteral<T[keyof T]>[]
 }
 // --------------------------------------------------------------------------
 // TExtends
