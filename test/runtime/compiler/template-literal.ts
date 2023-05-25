@@ -183,4 +183,28 @@ describe('type/compiler/TemplateLiteral', () => {
     Ok(T, 'Adddd')
     Fail(T, 'X')
   })
+  it('Should validate enum (implicit)', () => {
+    enum E {
+      A,
+      B,
+      C,
+    }
+    const T = Type.TemplateLiteral([Type.Literal('hello'), Type.Enum(E)])
+    Ok(T, 'hello0')
+    Ok(T, 'hello1')
+    Ok(T, 'hello2')
+    Fail(T, 'hello3')
+  })
+  it('Should validate enum (explicit)', () => {
+    enum E {
+      A,
+      B = 'B',
+      C = 'C',
+    }
+    const T = Type.TemplateLiteral([Type.Literal('hello'), Type.Enum(E)])
+    Ok(T, 'hello0')
+    Ok(T, 'helloB')
+    Ok(T, 'helloC')
+    Fail(T, 'helloD')
+  })
 })
