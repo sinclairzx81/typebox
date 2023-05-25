@@ -1,6 +1,6 @@
 {
   "name": "@sinclair/typebox",
-  "version": "0.28.11",
+  "version": "0.28.12",
   "description": "JSONSchema Type Builder with Static Type Resolution for TypeScript",
   "keywords": [
     "typescript",
@@ -42,6 +42,6 @@
     "chai": "^4.3.6",
     "mocha": "^9.2.2",
     "prettier": "^2.7.1",
-    "typescript": "^5.0.2"
+    "typescript": "^5.0.4"
   }
 }

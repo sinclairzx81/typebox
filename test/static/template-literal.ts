@@ -42,3 +42,31 @@ import { Type } from '@sinclair/typebox'
   const T = Type.TemplateLiteral([Type.Boolean()])
   Expect(T).ToInfer<`${boolean}`>()
 }
+{
+  // Enum Implicit
+  enum E {
+    A,
+    B,
+    C,
+  }
+  const A = Type.Enum(E)
+  const T = Type.TemplateLiteral([Type.Literal('hello'), A])
+  Expect(T).ToInfer<'hello0' | 'hello1' | 'hello2'>()
+}
+{
+  // Enum Explicit
+  enum E {
+    A,
+    B = 'B',
+    C = 'C',
+  }
+  const A = Type.Enum(E)
+  const T = Type.TemplateLiteral([Type.Literal('hello'), A])
+  Expect(T).ToInfer<'hello0' | 'helloB' | 'helloC'>()
+}
+{
+  // Enum Object Explicit
+  const A = Type.Enum(Object.freeze({ a: 'A', b: 'B' }))
+  const T = Type.TemplateLiteral([Type.Literal('hello'), A])
+  Expect(T).ToInfer<'helloA' | 'helloB'>()
+}
