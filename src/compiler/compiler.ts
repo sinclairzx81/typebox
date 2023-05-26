@@ -171,10 +171,10 @@ export namespace TypeCompiler {
   }
   function* Array(schema: Types.TArray, references: Types.TSchema[], value: string): IterableIterator<string> {
     const expression = CreateExpression(schema.items, references, 'value')
-    yield `Array.isArray(${value}) && ${value}.every(value => ${expression})`
     if (IsNumber(schema.minItems)) yield `${value}.length >= ${schema.minItems}`
     if (IsNumber(schema.maxItems)) yield `${value}.length <= ${schema.maxItems}`
     if (schema.uniqueItems === true) yield `((function() { const set = new Set(); for(const element of ${value}) { const hashed = hash(element); if(set.has(hashed)) { return false } else { set.add(hashed) } } return true })())`
+    yield `Array.isArray(${value}) && ${value}.every(value => ${expression})`
   }
   function* BigInt(schema: Types.TBigInt, references: Types.TSchema[], value: string): IterableIterator<string> {
     yield `(typeof ${value} === 'bigint')`
