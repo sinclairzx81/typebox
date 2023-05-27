@@ -3,7 +3,7 @@
 <h1>TypeBox</h1>
 
 <p>JSON Schema Type Builder with Static Type Resolution for TypeScript</p>
-	
+
 <img src="https://github.com/sinclairzx81/typebox/blob/master/typebox.png?raw=true" />
 
 <br />
@@ -65,7 +65,7 @@ type T = Static<typeof T>                            // type T = {
 
 TypeBox is a runtime type builder that creates in-memory JSON Schema objects that can be statically inferred as TypeScript types. The schemas produced by this library are designed to match the static type assertion rules of the TypeScript compiler. TypeBox enables one to create a unified type that can be statically checked by TypeScript and runtime asserted using standard JSON Schema validation.
 
-This library is designed to enable JSON schema to compose with the same flexibility as TypeScript's type system. It can be used as a simple tool to build up complex schemas or integrated into REST or RPC services to help validate data received over the wire. 
+This library is designed to enable JSON schema to compose with the same flexibility as TypeScript's type system. It can be used as a simple tool to build up complex schemas or integrated into REST or RPC services to help validate data received over the wire.
 
 License MIT
 
@@ -145,23 +145,23 @@ type T = {
 
 const T = Type.Object({                              // const T = {
   id: Type.String(),                                 //   type: 'object',
-  name: Type.String(),                               //   properties: { 
-  timestamp: Type.Integer()                          //     id: { 
-})                                                   //       type: 'string' 
+  name: Type.String(),                               //   properties: {
+  timestamp: Type.Integer()                          //     id: {
+})                                                   //       type: 'string'
                                                      //     },
-                                                     //     name: { 
-                                                     //       type: 'string' 
+                                                     //     name: {
+                                                     //       type: 'string'
                                                      //     },
-                                                     //     timestamp: { 
-                                                     //       type: 'integer' 
+                                                     //     timestamp: {
+                                                     //       type: 'integer'
                                                      //     }
-                                                     //   }, 
+                                                     //   },
                                                      //   required: [
                                                      //     'id',
                                                      //     'name',
                                                      //     'timestamp'
                                                      //   ]
-                                                     // } 
+                                                     // }
 
 //--------------------------------------------------------------------------------------------
 //
@@ -186,7 +186,7 @@ import { Value } from '@sinclair/typebox/value'
 function receive(value: T) {                         // ... as a Static Type
 
   if(Value.Check(T, value)) {                        // ... as a JSON Schema
-  
+
     // ok...
   }
 }
@@ -196,7 +196,7 @@ function receive(value: T) {                         // ... as a Static Type
 
 ## Types
 
-TypeBox types are JSON schema fragments that can be composed into more complex types. Each fragment is structured such that a JSON schema compliant validator can runtime assert a value the same way TypeScript will statically assert a type. TypeBox provides a set of Standard types which are used create JSON schema compliant schematics as well as an Extended type set used to create schematics for constructs native to JavaScript. 
+TypeBox types are JSON schema fragments that can be composed into more complex types. Each fragment is structured such that a JSON schema compliant validator can runtime assert a value the same way TypeScript will statically assert a type. TypeBox provides a set of Standard types which are used create JSON schema compliant schematics as well as an Extended type set used to create schematics for constructs native to JavaScript.
 
 <a name='types-standard'></a>
 
@@ -645,22 +645,22 @@ You can pass JSON Schema options on the last argument of any type. Option hints 
 
 ```typescript
 // String must be an email
-const T = Type.String({                              // const T = { 
+const T = Type.String({                              // const T = {
   format: 'email'                                    //   type: 'string',
-})                                                   //   format: 'email' 
+})                                                   //   format: 'email'
                                                      // }
 
 // Mumber must be a multiple of 2
-const T = Type.Number({                              // const T = { 
-  multipleOf: 2                                      //  type: 'number', 
-})                                                   //  multipleOf: 2 
+const T = Type.Number({                              // const T = {
+  multipleOf: 2                                      //  type: 'number',
+})                                                   //  multipleOf: 2
                                                      // }
 
 // Array must have at least 5 integer values
-const T = Type.Array(Type.Integer(), {               // const T = { 
+const T = Type.Array(Type.Integer(), {               // const T = {
   minItems: 5                                        //   type: 'array',
-})                                                   //   minItems: 5,        
-                                                     //   items: { 
+})                                                   //   minItems: 5,
+                                                     //   items: {
                                                      //     type: 'integer'
                                                      //   }
                                                      // }
@@ -737,7 +737,7 @@ const T = Type.String({ $id: 'T' })                  // const T = {
                                                      //    $id: 'T',
                                                      //    type: 'string'
                                                      // }
-                                             
+
 const R = Type.Ref(T)                                // const R = {
                                                      //    $ref: 'T'
                                                      // }
@@ -808,7 +808,7 @@ type T0 = Static<typeof T0>                        // type T0 = false
 
 type T1 = Static<typeof T1>                        // type T1 = number
 
-type T2 = Static<typeof T2>                        // type T2 = string 
+type T2 = Static<typeof T2>                        // type T2 = string
 ```
 
 <a name='types-template-literal'></a>
@@ -876,16 +876,16 @@ const T = Type.Object({                              // const T = {
 
 const A = Type.Index(T, ['x'])                       // const A = { type: 'number' }
 
-const B = Type.Index(T, ['x', 'y'])                  // const B = { 
+const B = Type.Index(T, ['x', 'y'])                  // const B = {
                                                      //   anyOf: [
-                                                     //     { type: 'number' },  
+                                                     //     { type: 'number' },
                                                      //     { type: 'string' }
                                                      //   ]
                                                      // }
 
-const C = Type.Index(T, Type.KeyOf(T))               // const C = { 
+const C = Type.Index(T, Type.KeyOf(T))               // const C = {
                                                      //   anyOf: [
-                                                     //     { type: 'number' },  
+                                                     //     { type: 'number' },
                                                      //     { type: 'string' },
                                                      //     { type: 'boolean' }
                                                      //   ]
@@ -987,7 +987,7 @@ import { Type, TypeGuard } from '@sinclair/typebox'
 const T = Type.String()
 
 if(TypeGuard.TString(T)) {
-    
+
   // T is TString
 }
 ```
@@ -1012,12 +1012,12 @@ const T = Type.Object({                              // const T = {
                                                      // }
 
 const U = Type.Strict(T)                             // const U = {
-                                                     //   type: 'object', 
-                                                     //   properties: { 
-                                                     //     name: { 
-                                                     //       type: 'string' 
-                                                     //     } 
-                                                     //   } 
+                                                     //   type: 'object',
+                                                     //   properties: {
+                                                     //     name: {
+                                                     //       type: 'string'
+                                                     //     }
+                                                     //   }
                                                      // }
 ```
 
@@ -1183,21 +1183,21 @@ const R = [...Value.Errors(T, { x: '42' })]          // const R = [{
 Use the Mutate function to perform a deep mutable value assignment while retaining internal references.
 
 ```typescript
-const Y = { z: 1 }                                   // const Y = { z: 1 } 
+const Y = { z: 1 }                                   // const Y = { z: 1 }
 
 const X = { y: Y }                                   // const X = { y: { z: 1 } }
 
-const A = { x: X }                                   // const A = { x: { y: { z: 1 } } }             
+const A = { x: X }                                   // const A = { x: { y: { z: 1 } } }
 
 
-Value.Mutate(A, { x: { y: { z: 2 } } })              // const A' = { x: { y: { z: 2 } } }   
+Value.Mutate(A, { x: { y: { z: 2 } } })              // const A' = { x: { y: { z: 2 } } }
 
 const R0 = A.x.y.z === 2                             // const R0 = 2
 
 const R1 = A.x.y === Y                               // const R1 = true
 
 const R2 = A.x === X                                 // const R2 = true
-```     
+```
 
 <a name='values-pointer'></a>
 
@@ -1241,29 +1241,29 @@ import addFormats from 'ajv-formats'
 import Ajv        from 'ajv'
 
 const ajv = addFormats(new Ajv({}), [
-  'date-time', 
-  'time', 
-  'date', 
-  'email',  
-  'hostname', 
-  'ipv4', 
-  'ipv6', 
-  'uri', 
-  'uri-reference', 
+  'date-time',
+  'time',
+  'date',
+  'email',
+  'hostname',
+  'ipv4',
+  'ipv6',
+  'uri',
+  'uri-reference',
   'uuid',
-  'uri-template', 
-  'json-pointer', 
-  'relative-json-pointer', 
+  'uri-template',
+  'json-pointer',
+  'relative-json-pointer',
   'regex'
 ])
 
-const C = ajv.compile(Type.Object({                
+const C = ajv.compile(Type.Object({
   x: Type.Number(),
   y: Type.Number(),
   z: Type.Number()
 }))
 
-const R = C({ x: 1, y: 2, z: 3 })                    // const R = true 
+const R = C({ x: 1, y: 2, z: 3 })                    // const R = true
 ```
 
 <a name='typecheck-typecompiler'></a>
@@ -1350,15 +1350,15 @@ import { TypeSystem } from '@sinclair/typebox/system'
 Use the `Type(...)` function to create custom types. This function lets you specify custom value assertion logic and will return a type factory function which is used to instance the type. This function accepts two generic arguments, the first is the inference type, the second is options used to constrain the type. The following creates a Vector type.
 
 ```typescript
-type VectorOptions = { abs: boolean }       
+type VectorOptions = { abs: boolean }
 
 type Vector = { x: number, y: number }
 
 const Vector = TypeSystem.Type<Vector, VectorOptions>('Vector', (options, value) => {
   return (
     typeof value === 'object' && value !== null &&
-    'x' in value && typeof value.x === 'number' && 
-    'y' in value && typeof value.y === 'number' && 
+    'x' in value && typeof value.x === 'number' &&
+    'y' in value && typeof value.y === 'number' &&
     (options.abs ? (value.x === Math.abs(value.x) && value.y === Math.abs(value.y)) : true)
   )
 })
@@ -1383,7 +1383,7 @@ Use the `Format(...)` function to create a custom string format. The following c
 ```typescript
 TypeSystem.Format('lowercase', value => value === value.toLowerCase()) // format should be lowercase
 
-const T = Type.String({ format: 'lowercase' })       
+const T = Type.String({ format: 'lowercase' })
 
 const A = Value.Check(T, 'Hello')                    // const A = false
 
@@ -1407,13 +1407,13 @@ TypeSystem.ExactOptionalPropertyTypes = true
 //
 // const A: {} = [] - allowed in TS
 
-TypeSystem.AllowArrayObjects = true                  
+TypeSystem.AllowArrayObjects = true
 
 // Allow numeric values to be NaN or + or - Infinity (default is false)
 //
 // const A: number = NaN - allowed in TS
 
-TypeSystem.AllowNaN = true                      
+TypeSystem.AllowNaN = true
 ```
 
 <a name='workbench'></a>
@@ -1441,7 +1441,8 @@ The following is a list of community packages that provide general tooling and f
 | [elysia](https://github.com/elysiajs/elysia) | Fast and friendly Bun web framework |
 | [fastify-type-provider-typebox](https://github.com/fastify/fastify-type-provider-typebox) | Fastify TypeBox integration with the Fastify Type Provider |
 | [fetch-typebox](https://github.com/erfanium/fetch-typebox) | Drop-in replacement for fetch that brings easy integration with TypeBox |
-| [ts2typebox](https://github.com/xddq/ts2typebox)  | Cli tool to generate TypeBox JSON schemas based on your Typescript types |
+| [schema2typebox](https://github.com/xddq/schema2typebox)  | Creating TypeBox code from JSON schemas |
+| [ts2typebox](https://github.com/xddq/ts2typebox)  | Creating TypeBox code from Typescript types |
 
 <a name='benchmark'></a>
 
