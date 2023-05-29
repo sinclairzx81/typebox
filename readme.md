@@ -1192,7 +1192,7 @@ const A = { x: X }                                   // const A = { x: { y: { z:
 
 Value.Mutate(A, { x: { y: { z: 2 } } })              // const A' = { x: { y: { z: 2 } } }
 
-const R0 = A.x.y.z === 2                             // const R0 = 2
+const R0 = A.x.y.z === 2                             // const R0 = true
 
 const R1 = A.x.y === Y                               // const R1 = true
 
