@@ -60,6 +60,12 @@ export namespace ValueCheck {
     return value !== undefined
   }
   // ----------------------------------------------------------------------
+  // SchemaGuards
+  // ----------------------------------------------------------------------
+  function IsAnyOrUnknown(schema: Types.TSchema) {
+    return schema[Types.Kind] === 'Any' || schema[Types.Kind] === 'Unknown'
+  }
+  // ----------------------------------------------------------------------
   // Policies
   // ----------------------------------------------------------------------
   function IsExactOptionalProperty(value: Record<keyof any, unknown>, key: string) {
@@ -238,7 +244,7 @@ export namespace ValueCheck {
         if (!Visit(property, references, value[knownKey])) {
           return false
         }
-        if (Types.ExtendsUndefined.Check(property) && !(knownKey in value)) {
+        if ((Types.ExtendsUndefined.Check(property) || IsAnyOrUnknown(property)) && !(knownKey in value)) {
           return false
         }
       } else {
