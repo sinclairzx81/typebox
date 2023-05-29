@@ -143,6 +143,12 @@ export namespace TypeCompiler {
   function IsString(value: unknown): value is string {
     return typeof value === 'string'
   }
+  // ----------------------------------------------------------------------
+  // SchemaGuards
+  // ----------------------------------------------------------------------
+  function IsAnyOrUnknown(schema: Types.TSchema) {
+    return schema[Types.Kind] === 'Any' || schema[Types.Kind] === 'Unknown'
+  }
   // -------------------------------------------------------------------
   // Polices
   // -------------------------------------------------------------------
@@ -258,7 +264,7 @@ export namespace TypeCompiler {
       const property = schema.properties[knownKey]
       if (schema.required && schema.required.includes(knownKey)) {
         yield* Visit(property, references, memberExpression)
-        if (Types.ExtendsUndefined.Check(property)) yield `('${knownKey}' in ${value})`
+        if (Types.ExtendsUndefined.Check(property) || IsAnyOrUnknown(property)) yield `('${knownKey}' in ${value})`
       } else {
         const expression = CreateExpression(property, references, memberExpression)
         yield IsExactOptionalProperty(value, knownKey, expression)
