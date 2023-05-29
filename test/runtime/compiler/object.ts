@@ -369,8 +369,22 @@ describe('type/compiler/Object', () => {
     Ok(T, { x: true })
   })
   it('Should check for required property of unknown', () => {
-    const T = Type.Object({ x: Type.Any() })
+    const T = Type.Object({ x: Type.Unknown() })
     Fail(T, {})
+    Ok(T, { x: undefined })
+    Ok(T, { x: 1 })
+    Ok(T, { x: true })
+  })
+  it('Should check for required property of any (when optional)', () => {
+    const T = Type.Object({ x: Type.Optional(Type.Any()) })
+    Ok(T, {})
+    Ok(T, { x: undefined })
+    Ok(T, { x: 1 })
+    Ok(T, { x: true })
+  })
+  it('Should check for required property of unknown (when optional)', () => {
+    const T = Type.Object({ x: Type.Optional(Type.Unknown()) })
+    Ok(T, {})
     Ok(T, { x: undefined })
     Ok(T, { x: 1 })
     Ok(T, { x: true })
