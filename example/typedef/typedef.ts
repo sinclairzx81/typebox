@@ -175,18 +175,18 @@ export interface TUnion<D extends string = string, T extends TStruct[] = TStruct
 // TypeRegistry
 // --------------------------------------------------------------------------
 Types.TypeRegistry.Set<TArray>('TypeDef:Array', (schema, value) => TypeDefCheck.Check(schema, value))
-Types.TypeRegistry.Set<TArray>('TypeDef:Boolean', (schema, value) => TypeDefCheck.Check(schema, value))
-Types.TypeRegistry.Set<TArray>('TypeDef:Int8', (schema, value) => TypeDefCheck.Check(schema, value))
-Types.TypeRegistry.Set<TArray>('TypeDef:Int16', (schema, value) => TypeDefCheck.Check(schema, value))
-Types.TypeRegistry.Set<TArray>('TypeDef:Int32', (schema, value) => TypeDefCheck.Check(schema, value))
-Types.TypeRegistry.Set<TArray>('TypeDef:Uint8', (schema, value) => TypeDefCheck.Check(schema, value))
-Types.TypeRegistry.Set<TArray>('TypeDef:Uint16', (schema, value) => TypeDefCheck.Check(schema, value))
-Types.TypeRegistry.Set<TArray>('TypeDef:Uint32', (schema, value) => TypeDefCheck.Check(schema, value))
-Types.TypeRegistry.Set<TArray>('TypeDef:Record', (schema, value) => TypeDefCheck.Check(schema, value))
-Types.TypeRegistry.Set<TArray>('TypeDef:String', (schema, value) => TypeDefCheck.Check(schema, value))
-Types.TypeRegistry.Set<TArray>('TypeDef:Struct', (schema, value) => TypeDefCheck.Check(schema, value))
-Types.TypeRegistry.Set<TArray>('TypeDef:Timestamp', (schema, value) => TypeDefCheck.Check(schema, value))
-Types.TypeRegistry.Set<TArray>('TypeDef:Union', (schema, value) => TypeDefCheck.Check(schema, value))
+Types.TypeRegistry.Set<TBoolean>('TypeDef:Boolean', (schema, value) => TypeDefCheck.Check(schema, value))
+Types.TypeRegistry.Set<TInt8>('TypeDef:Int8', (schema, value) => TypeDefCheck.Check(schema, value))
+Types.TypeRegistry.Set<TInt16>('TypeDef:Int16', (schema, value) => TypeDefCheck.Check(schema, value))
+Types.TypeRegistry.Set<TInt32>('TypeDef:Int32', (schema, value) => TypeDefCheck.Check(schema, value))
+Types.TypeRegistry.Set<TUint8>('TypeDef:Uint8', (schema, value) => TypeDefCheck.Check(schema, value))
+Types.TypeRegistry.Set<TUint16>('TypeDef:Uint16', (schema, value) => TypeDefCheck.Check(schema, value))
+Types.TypeRegistry.Set<TUint32>('TypeDef:Uint32', (schema, value) => TypeDefCheck.Check(schema, value))
+Types.TypeRegistry.Set<TRecord>('TypeDef:Record', (schema, value) => TypeDefCheck.Check(schema, value))
+Types.TypeRegistry.Set<TString>('TypeDef:String', (schema, value) => TypeDefCheck.Check(schema, value))
+Types.TypeRegistry.Set<TStruct>('TypeDef:Struct', (schema, value) => TypeDefCheck.Check(schema, value))
+Types.TypeRegistry.Set<TTimestamp>('TypeDef:Timestamp', (schema, value) => TypeDefCheck.Check(schema, value))
+Types.TypeRegistry.Set<TUnion>('TypeDef:Union', (schema, value) => TypeDefCheck.Check(schema, value))
 // --------------------------------------------------------------------------
 // TypeDefCheck
 // --------------------------------------------------------------------------
