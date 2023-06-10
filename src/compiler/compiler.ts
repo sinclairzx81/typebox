@@ -364,19 +364,25 @@ export namespace TypeCompiler {
     state_remote_custom_types.set(schema_key, schema)
     yield `custom('${schema[Types.Kind]}', '${schema_key}', ${value})`
   }
-  function* Visit<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: string): IterableIterator<string> {
+  function* Visit<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: string, root = false): IterableIterator<string> {
     const references_ = IsString(schema.$id) ? [...references, schema] : references
     const schema_ = schema as any
     // Reference: Referenced schemas can originate from either additional schemas
     // or inline in the schema itself. Ideally the recursive path should align to
     // reference path. Consider for refactor.
-    if (IsString(schema.$id) && !state_local_function_names.has(schema.$id)) {
-      state_local_function_names.add(schema.$id)
+    if (IsString(schema.$id)) {
       const name = CreateFunctionName(schema.$id)
-      const body = CreateFunction(name, schema, references, 'value')
-      PushFunction(body)
-      yield `${name}(${value})`
-      return
+
+      if (!state_local_function_names.has(schema.$id)) {
+        state_local_function_names.add(schema.$id)
+        const body = CreateFunction(name, schema, references, 'value')
+        PushFunction(body)
+      }
+
+      if (!root) {
+        yield `${name}(${value})`
+        return
+      }
     }
     switch (schema_[Types.Kind]) {
       case 'Any':
@@ -458,7 +464,7 @@ export namespace TypeCompiler {
     return `check_${Identifier.Encode($id)}`
   }
   function CreateFunction(name: string, schema: Types.TSchema, references: Types.TSchema[], value: string): string {
-    const expression = [...Visit(schema, references, value)].map((condition) => `    ${condition}`).join(' &&\n')
+    const expression = [...Visit(schema, references, value, true)].map((condition) => `    ${condition}`).join(' &&\n')
     return `function ${name}(value) {\n  return (\n${expression}\n )\n}`
   }
   function PushFunction(functionBody: string) {
