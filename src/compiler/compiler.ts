@@ -367,22 +367,18 @@ export namespace TypeCompiler {
   function* Visit<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: string, root = false): IterableIterator<string> {
     const references_ = IsString(schema.$id) ? [...references, schema] : references
     const schema_ = schema as any
-    // Reference: Referenced schemas can originate from either additional schemas
-    // or inline in the schema itself. Ideally the recursive path should align to
-    // reference path. Consider for refactor.
+    // Rule: Types with identifiers are hoisted into their own functions. The following will generate a function for the schema
+    // and yield the call to that function. This call is only made if NOT the root type which allows the generated function to
+    // yield its expression. The root argument is only true when making calls via CreateFunction(). Note there is potential to
+    // omit the root argument and conditional by refactoring the logic below. Consider for review.
     if (IsString(schema.$id)) {
       const name = CreateFunctionName(schema.$id)
-
       if (!state_local_function_names.has(schema.$id)) {
         state_local_function_names.add(schema.$id)
         const body = CreateFunction(name, schema, references, 'value')
         PushFunction(body)
       }
-
-      if (!root) {
-        yield `${name}(${value})`
-        return
-      }
+      if (!root) return yield `${name}(${value})`
     }
     switch (schema_[Types.Kind]) {
       case 'Any':
