@@ -479,9 +479,12 @@ export namespace TypeCompiler {
   // -------------------------------------------------------------------
   function Build<T extends Types.TSchema>(schema: T, references: Types.TSchema[]): string {
     ResetCompiler()
-    const check = CreateFunction('check', schema, references, 'value')
+    const check = CreateFunction('check', schema, references, 'value') // interior visit
     const locals = GetLocals()
-    return `${locals.join('\n')}\nreturn ${check}`
+    // prettier-ignore
+    return IsString(schema.$id) // ensure top level schemas with $id's are hoisted
+      ? `${locals.join('\n')}\nreturn function check(value) {\n  return ${CreateFunctionName(schema.$id)}(value)\n}`
+      : `${locals.join('\n')}\nreturn ${check}`
   }
   /** Returns the generated assertion code used to validate this type. */
   export function Code<T extends Types.TSchema>(schema: T, references: Types.TSchema[] = []) {
