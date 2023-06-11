@@ -80,7 +80,7 @@ export type Key = string | number
 // --------------------------------------------------------------------------
 // TSchema
 // --------------------------------------------------------------------------
-export interface SchemaOptions {
+export interface SchemaOptions<T extends { default: any } = any> {
   $schema?: string
   /** Id for this schema */
   $id?: string
@@ -89,7 +89,7 @@ export interface SchemaOptions {
   /** Description of this schema */
   description?: string
   /** Default value for this schema */
-  default?: any
+  default?: T['default']
   /** Example values matching this schema */
   examples?: any
   [prop: string]: any
@@ -196,15 +196,15 @@ export type TInstanceType<T extends TConstructor<TSchema[], TSchema>> = T['retur
 // TComposite
 // --------------------------------------------------------------------------
 // prettier-ignore
-export type TCompositeReduce<T extends TIntersect<TObject[]>, K extends string[]> = K extends [infer L, ...infer R] 
-  ? { [_ in Assert<L, string>]: TIndexType<T, Assert<L, string>> } & TCompositeReduce<T, Assert<R, string[]>> 
+export type TCompositeReduce<T extends TIntersect<TObject[]>, K extends string[]> = K extends [infer L, ...infer R]
+  ? { [_ in Assert<L, string>]: TIndexType<T, Assert<L, string>> } & TCompositeReduce<T, Assert<R, string[]>>
   : {}
 // prettier-ignore
-export type TCompositeSelect<T extends TIntersect<TObject[]>> = UnionToTuple<keyof Static<T>> extends infer K 
-  ? Evaluate<TCompositeReduce<T, Assert<K, string[]>>> 
+export type TCompositeSelect<T extends TIntersect<TObject[]>> = UnionToTuple<keyof Static<T>> extends infer K
+  ? Evaluate<TCompositeReduce<T, Assert<K, string[]>>>
   : {}
 // prettier-ignore
-export type TComposite<T extends TObject[]> = TIntersect<T> extends infer R 
+export type TComposite<T extends TObject[]> = TIntersect<T> extends infer R
   ? TObject<TCompositeSelect<Assert<R, TIntersect<TObject[]>>>>
   : TObject<{}>
 // --------------------------------------------------------------------------
@@ -250,8 +250,8 @@ export interface TEnum<T extends Record<string, string | number> = Record<string
 // TExtends
 // --------------------------------------------------------------------------
 // prettier-ignore
-export type TExtends<L extends TSchema, R extends TSchema, T extends TSchema, U extends TSchema> = 
-  (Static<L> extends Static<R> ? T : U) extends infer O ? 
+export type TExtends<L extends TSchema, R extends TSchema, T extends TSchema, U extends TSchema> =
+  (Static<L> extends Static<R> ? T : U) extends infer O ?
     UnionToTuple<O> extends [infer X, infer Y] ? TUnion<[AssertType<X>, AssertType<Y>]> : AssertType<O>
   : never
 // --------------------------------------------------------------------------
@@ -264,9 +264,9 @@ export type TExcludeArray<T extends TSchema[], U extends TSchema> = AssertRest<U
   [K in keyof T]: Static<AssertType<T[K]>> extends Static<U> ? never : T[K]
 }[number]>> extends infer R ? UnionType<AssertRest<R>> : never
 // prettier-ignore
-export type TExclude<T extends TSchema, U extends TSchema> = 
-  T extends TTemplateLiteral ? TExcludeTemplateLiteral<T, U> : 
-  T extends TUnion<infer S> ? TExcludeArray<S, U> : 
+export type TExclude<T extends TSchema, U extends TSchema> =
+  T extends TTemplateLiteral ? TExcludeTemplateLiteral<T, U> :
+  T extends TUnion<infer S> ? TExcludeArray<S, U> :
   T extends U ? TNever : T
 // --------------------------------------------------------------------------
 // TExtract
@@ -278,9 +278,9 @@ export type TExtractArray<T extends TSchema[], U extends TSchema> = AssertRest<U
   {[K in keyof T]: Static<AssertType<T[K]>> extends Static<U> ? T[K] : never
 }[number]>> extends infer R ? UnionType<AssertRest<R>> : never
 // prettier-ignore
-export type TExtract<T extends TSchema, U extends TSchema> = 
-  T extends TTemplateLiteral ? TExtractTemplateLiteral<T, U> : 
-  T extends TUnion<infer S> ? TExtractArray<S, U> : 
+export type TExtract<T extends TSchema, U extends TSchema> =
+  T extends TTemplateLiteral ? TExtractTemplateLiteral<T, U> :
+  T extends TUnion<infer S> ? TExtractArray<S, U> :
   T extends U ? T : T
 // --------------------------------------------------------------------------
 // TFunction
@@ -309,7 +309,7 @@ export type TIndexType<T extends TSchema, K extends Key> =
   T extends TTuple<infer S>     ? UnionType<AssertRest<Flat<TIndexTuple<S, K>>>> :
   []
 // prettier-ignore
-export type TIndexRestMany<T extends TSchema, K extends Key[]> = 
+export type TIndexRestMany<T extends TSchema, K extends Key[]> =
  K extends [infer L, ...infer R] ? [TIndexType<T, Assert<L, Key>>, ...TIndexRestMany<T, Assert<R, Key[]>>] :
  []
 // prettier-ignore
@@ -322,7 +322,7 @@ export type TIndexReduce<T extends TSchema, K extends Key[]> =
   TNever
 // prettier-ignore
 export type TIndex<T extends TSchema, K extends TSchema> =
-  [T, K] extends [TTuple, TNumber]  ? UnionType<Assert<T['items'], TSchema[]>> :  
+  [T, K] extends [TTuple, TNumber]  ? UnionType<Assert<T['items'], TSchema[]>> :
   [T, K] extends [TArray, TNumber]  ? AssertType<T['items']> :
   K extends TTemplateLiteral        ? TIndexReduce<T, TTemplateLiteralKeyRest<K>> :
   K extends TUnion<TLiteral<Key>[]> ? TIndexReduce<T, TUnionLiteralKeyRest<K>> :
@@ -455,11 +455,11 @@ export interface TObject<T extends TProperties = TProperties> extends TSchema, O
 export type TOmitArray<T extends TSchema[], K extends keyof any> = AssertRest<{ [K2 in keyof T]: TOmit<AssertType<T[K2]>, K> }>
 export type TOmitProperties<T extends TProperties, K extends keyof any> = Evaluate<AssertProperties<Omit<T, K>>>
 // prettier-ignore
-export type TOmit<T extends TSchema = TSchema, K extends keyof any = keyof any> = 
+export type TOmit<T extends TSchema = TSchema, K extends keyof any = keyof any> =
   T extends TRecursive<infer S> ? TRecursive<TOmit<S, K>> :
-  T extends TIntersect<infer S> ? TIntersect<TOmitArray<S, K>> : 
-  T extends TUnion<infer S> ? TUnion<TOmitArray<S, K>> : 
-  T extends TObject<infer S> ? TObject<TOmitProperties<S, K>> : 
+  T extends TIntersect<infer S> ? TIntersect<TOmitArray<S, K>> :
+  T extends TUnion<infer S> ? TUnion<TOmitArray<S, K>> :
+  T extends TObject<infer S> ? TObject<TOmitProperties<S, K>> :
   T
 // --------------------------------------------------------------------------
 // TParameters
@@ -472,18 +472,18 @@ export type TPartialObjectArray<T extends TObject[]> = AssertRest<{ [K in keyof 
 export type TPartialArray<T extends TSchema[]> = AssertRest<{ [K in keyof T]: TPartial<AssertType<T[K]>> }>
 // prettier-ignore
 export type TPartialProperties<T extends TProperties> = Evaluate<AssertProperties<{
-  [K in keyof T]: 
-    T[K] extends TReadonlyOptional<infer U> ? TReadonlyOptional<U> : 
-    T[K] extends TReadonly<infer U>         ? TReadonlyOptional<U> : 
-    T[K] extends TOptional<infer U>         ? TOptional<U>         : 
+  [K in keyof T]:
+    T[K] extends TReadonlyOptional<infer U> ? TReadonlyOptional<U> :
+    T[K] extends TReadonly<infer U>         ? TReadonlyOptional<U> :
+    T[K] extends TOptional<infer U>         ? TOptional<U>         :
     TOptional<T[K]>
 }>>
 // prettier-ignore
-export type TPartial<T extends TSchema> =  
-  T extends TRecursive<infer S> ? TRecursive<TPartial<S>> :   
-  T extends TIntersect<infer S> ? TIntersect<TPartialArray<S>> : 
-  T extends TUnion<infer S>     ? TUnion<TPartialArray<S>> : 
-  T extends TObject<infer S>    ? TObject<TPartialProperties<S>> : 
+export type TPartial<T extends TSchema> =
+  T extends TRecursive<infer S> ? TRecursive<TPartial<S>> :
+  T extends TIntersect<infer S> ? TIntersect<TPartialArray<S>> :
+  T extends TUnion<infer S>     ? TUnion<TPartialArray<S>> :
+  T extends TObject<infer S>    ? TObject<TPartialProperties<S>> :
   T
 // --------------------------------------------------------------------------
 // TPick
@@ -492,15 +492,15 @@ export type TPickArray<T extends TSchema[], K extends keyof any> = { [K2 in keyo
 // Note the key K will overlap for varying TProperties gathered via recursive union and intersect traversal. Because of this,
 // we need to extract only keys assignable to T on K2. This behavior is only required for Pick only.
 // prettier-ignore
-export type TPickProperties<T extends TProperties, K extends keyof any> = 
+export type TPickProperties<T extends TProperties, K extends keyof any> =
   Pick<T, Assert<Extract<K, keyof T>, keyof T>> extends infer R ? ({
     [K in keyof R]: AssertType<R[K]> extends TSchema ? R[K] : never
   }): never
 // prettier-ignore
-export type TPick<T extends TSchema = TSchema, K extends keyof any = keyof any> = 
+export type TPick<T extends TSchema = TSchema, K extends keyof any = keyof any> =
   T extends TRecursive<infer S> ? TRecursive<TPick<S, K>> :
-  T extends TIntersect<infer S> ? TIntersect<TPickArray<S, K>> : 
-  T extends TUnion<infer S> ? TUnion<TPickArray<S, K>> : 
+  T extends TIntersect<infer S> ? TIntersect<TPickArray<S, K>> :
+  T extends TUnion<infer S> ? TUnion<TPickArray<S, K>> :
   T extends TObject<infer S> ? TObject<TPickProperties<S, K>> :
   T
 // --------------------------------------------------------------------------
@@ -565,18 +565,18 @@ export type TReturnType<T extends TFunction> = T['returns']
 export type TRequiredArray<T extends TSchema[]> = AssertRest<{ [K in keyof T]: TRequired<AssertType<T[K]>> }>
 // prettier-ignore
 export type TRequiredProperties<T extends TProperties> = Evaluate<AssertProperties<{
-  [K in keyof T]: 
-    T[K] extends TReadonlyOptional<infer U> ? TReadonly<U> : 
-    T[K] extends TReadonly<infer U>         ? TReadonly<U> :  
-    T[K] extends TOptional<infer U>         ? U : 
+  [K in keyof T]:
+    T[K] extends TReadonlyOptional<infer U> ? TReadonly<U> :
+    T[K] extends TReadonly<infer U>         ? TReadonly<U> :
+    T[K] extends TOptional<infer U>         ? U :
     T[K]
 }>>
 // prettier-ignore
-export type TRequired<T extends TSchema> = 
-  T extends TRecursive<infer S> ? TRecursive<TRequired<S>> :   
-  T extends TIntersect<infer S> ? TIntersect<TRequiredArray<S>> : 
-  T extends TUnion<infer S>     ? TUnion<TRequiredArray<S>> : 
-  T extends TObject<infer S>    ? TObject<TRequiredProperties<S>> : 
+export type TRequired<T extends TSchema> =
+  T extends TRecursive<infer S> ? TRecursive<TRequired<S>> :
+  T extends TIntersect<infer S> ? TIntersect<TRequiredArray<S>> :
+  T extends TUnion<infer S>     ? TUnion<TRequiredArray<S>> :
+  T extends TObject<infer S>    ? TObject<TRequiredProperties<S>> :
   T
 // --------------------------------------------------------------------------
 // TString
@@ -627,23 +627,23 @@ export interface TSymbol extends TSchema, SchemaOptions {
 // TTemplateLiteralParserDsl
 // -------------------------------------------------------------------------
 // prettier-ignore
-export type TTemplateLiteralDslParserUnionLiteral<T extends string> = 
-  T extends `${infer L}|${infer R}` ? [TLiteral<Trim<L>>, ...TTemplateLiteralDslParserUnionLiteral<R>] : 
-  T extends `${infer L}` ? [TLiteral<Trim<L>>] : 
+export type TTemplateLiteralDslParserUnionLiteral<T extends string> =
+  T extends `${infer L}|${infer R}` ? [TLiteral<Trim<L>>, ...TTemplateLiteralDslParserUnionLiteral<R>] :
+  T extends `${infer L}` ? [TLiteral<Trim<L>>] :
   []
 export type TTemplateLiteralDslParserUnion<T extends string> = UnionType<TTemplateLiteralDslParserUnionLiteral<T>>
 // prettier-ignore
-export type TTemplateLiteralDslParserTerminal<T extends string> = 
-  T extends 'boolean' ? TBoolean :  
-  T extends 'bigint' ? TBigInt :  
+export type TTemplateLiteralDslParserTerminal<T extends string> =
+  T extends 'boolean' ? TBoolean :
+  T extends 'bigint' ? TBigInt :
   T extends 'number' ? TNumber :
   T extends 'string' ? TString :
   TTemplateLiteralDslParserUnion<T>
 // prettier-ignore
-export type TTemplateLiteralDslParserTemplate<T extends string> = 
+export type TTemplateLiteralDslParserTemplate<T extends string> =
   T extends `{${infer L}}${infer R}` ? [TTemplateLiteralDslParserTerminal<L>, ...TTemplateLiteralDslParserTemplate<R>] :
   T extends `${infer L}$${infer R}`  ? [TLiteral<L>, ...TTemplateLiteralDslParserTemplate<R>] :
-  T extends `${infer L}`             ? [TLiteral<L>] : 
+  T extends `${infer L}`             ? [TLiteral<L>] :
   []
 export type TTemplateLiteralDslParser<T extends string> = Ensure<TTemplateLiteral<Assert<TTemplateLiteralDslParserTemplate<T>, TTemplateLiteralKind[]>>>
 // --------------------------------------------------------------------------
@@ -651,33 +651,33 @@ export type TTemplateLiteralDslParser<T extends string> = Ensure<TTemplateLitera
 // --------------------------------------------------------------------------
 // prettier-ignore
 export type IsTemplateLiteralFiniteCheck<T> =
-  T extends TTemplateLiteral<infer U> ? IsTemplateLiteralFiniteArray<Assert<U, TTemplateLiteralKind[]>> :    
-  T extends TUnion<infer U> ? IsTemplateLiteralFiniteArray<Assert<U, TTemplateLiteralKind[]>> :    
+  T extends TTemplateLiteral<infer U> ? IsTemplateLiteralFiniteArray<Assert<U, TTemplateLiteralKind[]>> :
+  T extends TUnion<infer U> ? IsTemplateLiteralFiniteArray<Assert<U, TTemplateLiteralKind[]>> :
   T extends TString ? false :
   T extends TBoolean ? false :
   T extends TNumber ? false :
   T extends TInteger ? false :
   T extends TBigInt ? false :
-  T extends TLiteral ? true  : 
+  T extends TLiteral ? true  :
   false
 // prettier-ignore
-export type IsTemplateLiteralFiniteArray<T extends TTemplateLiteralKind[]> = 
+export type IsTemplateLiteralFiniteArray<T extends TTemplateLiteralKind[]> =
   T extends [infer L, ...infer R] ? IsTemplateLiteralFiniteCheck<L> extends false ? false : IsTemplateLiteralFiniteArray<Assert<R, TTemplateLiteralKind[]>> :
   true
 export type IsTemplateLiteralFinite<T> = T extends TTemplateLiteral<infer U> ? IsTemplateLiteralFiniteArray<U> : false
 export type TTemplateLiteralKind = TUnion | TLiteral | TInteger | TTemplateLiteral | TNumber | TBigInt | TString | TBoolean | TNever
 // prettier-ignore
-export type TTemplateLiteralConst<T, Acc extends string> = 
+export type TTemplateLiteralConst<T, Acc extends string> =
   T extends TUnion<infer U> ? { [K in keyof U]: TTemplateLiteralUnion<Assert<[U[K]], TTemplateLiteralKind[]>, Acc> }[number] :
-  T extends TTemplateLiteral ? `${Static<T>}` : 
+  T extends TTemplateLiteral ? `${Static<T>}` :
   T extends TLiteral<infer U> ? `${U}` :
-  T extends TString ? `${string}` : 
-  T extends TNumber ? `${number}` : 
-  T extends TBigInt ? `${bigint}` : 
+  T extends TString ? `${string}` :
+  T extends TNumber ? `${number}` :
+  T extends TBigInt ? `${bigint}` :
   T extends TBoolean ? `${boolean}` :
   never
 // prettier-ignore
-export type TTemplateLiteralUnion<T extends TTemplateLiteralKind[], Acc extends string = ''> = 
+export type TTemplateLiteralUnion<T extends TTemplateLiteralKind[], Acc extends string = ''> =
   T extends [infer L, ...infer R] ? `${TTemplateLiteralConst<L, Acc>}${TTemplateLiteralUnion<Assert<R, TTemplateLiteralKind[]>, Acc>}` :
   Acc
 export type TTemplateLiteralKeyRest<T extends TTemplateLiteral> = Assert<UnionToTuple<Static<T>>, Key[]>
@@ -716,12 +716,12 @@ export interface TUndefined extends TSchema {
 // TUnionLiteral
 // --------------------------------------------------------------------------
 // prettier-ignore
-export type TLiteralUnionReduce<T extends TLiteral<string | number>[]> = 
-  T extends [infer L, ...infer R] ? [Assert<L, TLiteral<string | number>>['const'], ...TLiteralUnionReduce<Assert<R, TLiteral<string | number>[]>>] : 
+export type TLiteralUnionReduce<T extends TLiteral<string | number>[]> =
+  T extends [infer L, ...infer R] ? [Assert<L, TLiteral<string | number>>['const'], ...TLiteralUnionReduce<Assert<R, TLiteral<string | number>[]>>] :
   []
 // prettier-ignore
-export type TUnionLiteralKeyRest<T extends TUnion<TLiteral<string | number>[]>> = 
-  T extends TUnion<infer S> ? TLiteralUnionReduce<Assert<S, TLiteral<string | number>[]>> : 
+export type TUnionLiteralKeyRest<T extends TUnion<TLiteral<string | number>[]>> =
+  T extends TUnion<infer S> ? TLiteralUnionReduce<Assert<S, TLiteral<string | number>[]>> :
   []
 // --------------------------------------------------------------------------
 // TUnion
@@ -924,8 +924,8 @@ export namespace TypeGuard {
   export function TBigInt(schema: unknown): schema is TBigInt {
     // prettier-ignore
     return (
-      TKind(schema) && 
-      schema[Kind] === 'BigInt' && 
+      TKind(schema) &&
+      schema[Kind] === 'BigInt' &&
       schema.type === 'null' &&
       schema.typeOf === 'BigInt' &&
       IsOptionalString(schema.$id) &&
@@ -941,8 +941,8 @@ export namespace TypeGuard {
     // prettier-ignore
     return (
       TKind(schema) &&
-      schema[Kind] === 'Boolean' && 
-      schema.type === 'boolean' && 
+      schema[Kind] === 'Boolean' &&
+      schema.type === 'boolean' &&
       IsOptionalString(schema.$id)
     )
   }
@@ -951,11 +951,11 @@ export namespace TypeGuard {
     // prettier-ignore
     if (!(
       TKind(schema) &&
-      schema[Kind] === 'Constructor' && 
-      schema.type === 'object' && 
-      schema.instanceOf === 'Constructor' && 
-      IsOptionalString(schema.$id) && 
-      IsArray(schema.parameters) && 
+      schema[Kind] === 'Constructor' &&
+      schema.type === 'object' &&
+      schema.instanceOf === 'Constructor' &&
+      IsOptionalString(schema.$id) &&
+      IsArray(schema.parameters) &&
       TSchema(schema.returns))
     ) {
       return false
@@ -984,11 +984,11 @@ export namespace TypeGuard {
     // prettier-ignore
     if (!(
       TKind(schema) &&
-      schema[Kind] === 'Function' && 
+      schema[Kind] === 'Function' &&
       schema.type === 'object' &&
       schema.instanceOf === 'Function' &&
-      IsOptionalString(schema.$id) && 
-      IsArray(schema.parameters) && 
+      IsOptionalString(schema.$id) &&
+      IsArray(schema.parameters) &&
       TSchema(schema.returns))
     ) {
       return false
@@ -1017,8 +1017,8 @@ export namespace TypeGuard {
     // prettier-ignore
     if (!(
       TKind(schema) &&
-      schema[Kind] === 'Intersect' && 
-      IsArray(schema.allOf) && 
+      schema[Kind] === 'Intersect' &&
+      IsArray(schema.allOf) &&
       IsOptionalString(schema.type) &&
       (IsOptionalBoolean(schema.unevaluatedProperties) || IsOptionalSchema(schema.unevaluatedProperties)) &&
       IsOptionalString(schema.$id))
@@ -1061,22 +1061,22 @@ export namespace TypeGuard {
   export function TNot(schema: unknown): schema is TNot {
     // prettier-ignore
     return (
-      TKind(schema) && 
-      schema[Kind] === 'Not' && 
-      IsArray(schema.allOf) && 
-      schema.allOf.length === 2 && 
-      IsObject(schema.allOf[0]) && 
-      TSchema(schema.allOf[0].not) && 
-      TSchema(schema.allOf[1]) 
+      TKind(schema) &&
+      schema[Kind] === 'Not' &&
+      IsArray(schema.allOf) &&
+      schema.allOf.length === 2 &&
+      IsObject(schema.allOf[0]) &&
+      TSchema(schema.allOf[0].not) &&
+      TSchema(schema.allOf[1])
     )
   }
   /** Returns true if the given schema is TNull */
   export function TNull(schema: unknown): schema is TNull {
     // prettier-ignore
     return (
-      TKind(schema) && 
-      schema[Kind] === 'Null' && 
-      schema.type === 'null' && 
+      TKind(schema) &&
+      schema[Kind] === 'Null' &&
+      schema.type === 'null' &&
       IsOptionalString(schema.$id)
     )
   }
@@ -1120,11 +1120,11 @@ export namespace TypeGuard {
   export function TPromise(schema: unknown): schema is TPromise {
     // prettier-ignore
     return (
-      TKind(schema) && 
-      schema[Kind] === 'Promise' && 
-      schema.type === 'object' && 
+      TKind(schema) &&
+      schema[Kind] === 'Promise' &&
+      schema.type === 'object' &&
       schema.instanceOf === 'Promise' &&
-      IsOptionalString(schema.$id) && 
+      IsOptionalString(schema.$id) &&
       TSchema(schema.item)
     )
   }
@@ -1132,10 +1132,10 @@ export namespace TypeGuard {
   export function TRecord(schema: unknown): schema is TRecord {
     // prettier-ignore
     if (!(
-      TKind(schema) && 
-      schema[Kind] === 'Record' && 
-      schema.type === 'object' && 
-      IsOptionalString(schema.$id) && 
+      TKind(schema) &&
+      schema[Kind] === 'Record' &&
+      schema.type === 'object' &&
+      IsOptionalString(schema.$id) &&
       IsAdditionalProperties(schema.additionalProperties) &&
       IsObject(schema.patternProperties))
     ) {
@@ -1157,9 +1157,9 @@ export namespace TypeGuard {
   export function TRef(schema: unknown): schema is TRef {
     // prettier-ignore
     return (
-      TKind(schema) && 
-      schema[Kind] === 'Ref' && 
-      IsOptionalString(schema.$id) && 
+      TKind(schema) &&
+      schema[Kind] === 'Ref' &&
+      IsOptionalString(schema.$id) &&
       IsString(schema.$ref)
     )
   }
@@ -1180,8 +1180,8 @@ export namespace TypeGuard {
   export function TSymbol(schema: unknown): schema is TSymbol {
     // prettier-ignore
     return (
-      TKind(schema) && 
-      schema[Kind] === 'Symbol' && 
+      TKind(schema) &&
+      schema[Kind] === 'Symbol' &&
       schema.type === 'null' &&
       schema.typeOf === 'Symbol' &&
       IsOptionalString(schema.$id)
@@ -1191,8 +1191,8 @@ export namespace TypeGuard {
   export function TTemplateLiteral(schema: unknown): schema is TTemplateLiteral {
     // prettier-ignore
     return (
-      TKind(schema) && 
-      schema[Kind] === 'TemplateLiteral' && 
+      TKind(schema) &&
+      schema[Kind] === 'TemplateLiteral' &&
       schema.type === 'string' &&
       IsString(schema.pattern) &&
       schema.pattern[0] === '^' &&
@@ -1203,9 +1203,9 @@ export namespace TypeGuard {
   export function TThis(schema: unknown): schema is TThis {
     // prettier-ignore
     return (
-      TKind(schema) && 
-      schema[Kind] === 'This' && 
-      IsOptionalString(schema.$id) && 
+      TKind(schema) &&
+      schema[Kind] === 'This' &&
+      IsOptionalString(schema.$id) &&
       IsString(schema.$ref)
     )
   }
@@ -1213,12 +1213,12 @@ export namespace TypeGuard {
   export function TTuple(schema: unknown): schema is TTuple {
     // prettier-ignore
     if (!(
-      TKind(schema) && 
-      schema[Kind] === 'Tuple' && 
-      schema.type === 'array' && 
-      IsOptionalString(schema.$id) && 
-      IsNumber(schema.minItems) && 
-      IsNumber(schema.maxItems) && 
+      TKind(schema) &&
+      schema[Kind] === 'Tuple' &&
+      schema.type === 'array' &&
+      IsOptionalString(schema.$id) &&
+      IsNumber(schema.minItems) &&
+      IsNumber(schema.maxItems) &&
       schema.minItems === schema.maxItems)
     ) {
       return false
@@ -1238,10 +1238,10 @@ export namespace TypeGuard {
   export function TUndefined(schema: unknown): schema is TUndefined {
     // prettier-ignore
     return (
-      TKind(schema) && 
-      schema[Kind] === 'Undefined' && 
-      schema.type === 'null' && 
-      schema.typeOf === 'Undefined' && 
+      TKind(schema) &&
+      schema[Kind] === 'Undefined' &&
+      schema.type === 'null' &&
+      schema.typeOf === 'Undefined' &&
       IsOptionalString(schema.$id)
     )
   }
@@ -1253,9 +1253,9 @@ export namespace TypeGuard {
   export function TUnion(schema: unknown): schema is TUnion {
     // prettier-ignore
     if (!(
-      TKind(schema) && 
-      schema[Kind] === 'Union' && 
-      IsArray(schema.anyOf) && 
+      TKind(schema) &&
+      schema[Kind] === 'Union' &&
+      IsArray(schema.anyOf) &&
       IsOptionalString(schema.$id))
     ) {
       return false
@@ -1273,8 +1273,8 @@ export namespace TypeGuard {
   export function TUnknown(schema: unknown): schema is TUnknown {
     // prettier-ignore
     return (
-      TKind(schema) && 
-      schema[Kind] === 'Unknown' && 
+      TKind(schema) &&
+      schema[Kind] === 'Unknown' &&
       IsOptionalString(schema.$id)
     )
   }
@@ -1282,7 +1282,7 @@ export namespace TypeGuard {
   export function TUnsafe(schema: unknown): schema is TUnsafe<unknown> {
     // prettier-ignore
     return (
-      TKind(schema) && 
+      TKind(schema) &&
       schema[Kind] === 'Unsafe'
     )
   }
@@ -1290,10 +1290,10 @@ export namespace TypeGuard {
   export function TVoid(schema: unknown): schema is TVoid {
     // prettier-ignore
     return (
-      TKind(schema) && 
-      schema[Kind] === 'Void' && 
-      schema.type === 'null' && 
-      schema.typeOf === 'Void' && 
+      TKind(schema) &&
+      schema[Kind] === 'Void' &&
+      schema.type === 'null' &&
+      schema.typeOf === 'Void' &&
       IsOptionalString(schema.$id)
     )
   }
@@ -2241,22 +2241,22 @@ export namespace TemplateLiteralFinite {
   function IsNumber(expression: TemplateLiteralParser.Expression): boolean {
     // prettier-ignore
     return (
-      expression.type === 'or' && 
-      expression.expr.length === 2 && 
-      expression.expr[0].type === 'const' && 
-      expression.expr[0].const === '0' && 
-      expression.expr[1].type === 'const' && 
+      expression.type === 'or' &&
+      expression.expr.length === 2 &&
+      expression.expr[0].type === 'const' &&
+      expression.expr[0].const === '0' &&
+      expression.expr[1].type === 'const' &&
       expression.expr[1].const === '[1-9][0-9]*'
     )
   }
   function IsBoolean(expression: TemplateLiteralParser.Expression): boolean {
     // prettier-ignore
     return (
-      expression.type === 'or' && 
-      expression.expr.length === 2 && 
-      expression.expr[0].type === 'const' && 
-      expression.expr[0].const === 'true' && 
-      expression.expr[1].type === 'const' && 
+      expression.type === 'or' &&
+      expression.expr.length === 2 &&
+      expression.expr[0].type === 'const' &&
+      expression.expr[0].const === 'true' &&
+      expression.expr[1].type === 'const' &&
       expression.expr[1].const === 'false'
     )
   }
@@ -2401,7 +2401,7 @@ export class StandardTypeBuilder extends TypeBuilder {
     return Type.Object(properties, options) as TComposite<T>
   }
   /** `[Standard]` Creates a Enum type */
-  public Enum<T extends Record<string, string | number>>(item: T, options: SchemaOptions = {}): TEnum<T> {
+  public Enum<T extends Record<string, string | number>>(item: T, options: SchemaOptions<{ default: keyof T }> = {}): TEnum<T> {
     // prettier-ignore
     const values = globalThis.Object.keys(item).filter((key) => isNaN(key as any)).map((key) => item[key]) as T[keyof T][]
     const anyOf = values.map((value) => (typeof value === 'string' ? { [Kind]: 'Literal', type: 'string' as const, const: value } : { [Kind]: 'Literal', type: 'number' as const, const: value }))
@@ -2697,8 +2697,8 @@ export class StandardTypeBuilder extends TypeBuilder {
     const [additionalItems, minItems, maxItems] = [false, items.length, items.length]
     const clonedItems = items.map((item) => TypeClone.Clone(item, {}))
     // prettier-ignore
-    const schema = (items.length > 0 ? 
-      { ...options, [Kind]: 'Tuple', type: 'array', items: clonedItems, additionalItems, minItems, maxItems } : 
+    const schema = (items.length > 0 ?
+      { ...options, [Kind]: 'Tuple', type: 'array', items: clonedItems, additionalItems, minItems, maxItems } :
       { ...options, [Kind]: 'Tuple', type: 'array', minItems, maxItems }) as any
     return this.Create(schema)
   }
