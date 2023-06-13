@@ -483,7 +483,7 @@ The following table lists the Standard TypeBox types. These types are fully comp
 │ ])                             │                             │   ],                           │
 │ const T = Type.Tuple([         │                             │   additionalItems: false,      │
 |   ...Type.Rest(A),             │                             │   minItems: 4,                 │
-|   ...Type.Test(B)              │                             │   maxItems: 4                  │
+|   ...Type.Rest(B)              │                             │   maxItems: 4                  │
 │ ])                             │                             │ }                              │
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
@@ -896,7 +896,7 @@ const C = Type.Index(T, Type.KeyOf(T))               // const C = {
 
 ### Rest Types
 
-Rest parameters are supported with `Type.Rest`. This function is used to extract interior type elements from tuples which enables them to compose with the JavaScript spread operator `...`. This type can be used for tuple concatination as well as for variadic functions.
+Rest parameters are supported with `Type.Rest`. This function is used to extract interior type elements from tuples which enables them to compose with the JavaScript spread operator `...`. This type can be used for tuple concatenation as well as for variadic functions.
 
 ```typescript
 // TypeScript
@@ -1335,7 +1335,7 @@ console.log(C.Code())                                // return function check(va
 
 ## TypeSystem
 
-The TypeBox TypeSystem module provides functionality to define types above and beyond the Standard and Extended type sets as well as control various assertion polices. Configurations made to the TypeSystem module are observed by both `TypeCompiler` and `Value` modules.
+The TypeBox TypeSystem module provides functionality to define types above and beyond the Standard and Extended type sets as well as control various assertion policies. Configurations made to the TypeSystem module are observed by both `TypeCompiler` and `Value` modules.
 
 The TypeSystem module is provided as an optional import.
 
