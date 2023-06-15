@@ -870,7 +870,7 @@ const T = Type.Object({                              // const T = {
   z: Type.Boolean()                                  //   properties: {
 })                                                   //     x: { type: 'number' },
                                                      //     y: { type: 'string' },
-                                                     //     z: { type: 'string' },
+                                                     //     z: { type: 'string' }
                                                      //   }
                                                      // }
 
@@ -908,14 +908,14 @@ type C = [...T, number]                              // type C = [number, number
 type F = (...param: C) => void                       // type F = (
                                                      //   param0: number,
                                                      //   param1: number,
-                                                     //   param2: number,
+                                                     //   param2: number
                                                      // ) => void
 
 // TypeBox
 
 const T = Type.Tuple([                               // const T: TTuple<[
   Type.Number(),                                     //   TNumber,
-  Type.Number()                                      //   TNumber,
+  Type.Number()                                      //   TNumber
 ])                                                   // ]>
 
 const C = Type.Tuple([                               // const C: TTuple<[
