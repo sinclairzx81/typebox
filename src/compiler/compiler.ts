@@ -176,11 +176,12 @@ export namespace TypeCompiler {
     yield 'true'
   }
   function* Array(schema: Types.TArray, references: Types.TSchema[], value: string): IterableIterator<string> {
-    const expression = CreateExpression(schema.items, references, 'value')
+    yield `Array.isArray(${value})`
     if (IsNumber(schema.minItems)) yield `${value}.length >= ${schema.minItems}`
     if (IsNumber(schema.maxItems)) yield `${value}.length <= ${schema.maxItems}`
     if (schema.uniqueItems === true) yield `((function() { const set = new Set(); for(const element of ${value}) { const hashed = hash(element); if(set.has(hashed)) { return false } else { set.add(hashed) } } return true })())`
-    yield `Array.isArray(${value}) && ${value}.every(value => ${expression})`
+    const expression = CreateExpression(schema.items, references, 'value')
+    yield `${value}.every(value => ${expression})`
   }
   function* BigInt(schema: Types.TBigInt, references: Types.TSchema[], value: string): IterableIterator<string> {
     yield `(typeof ${value} === 'bigint')`
@@ -302,9 +303,9 @@ export namespace TypeCompiler {
     const index = references.findIndex((foreign) => foreign.$id === schema.$ref)
     if (index === -1) throw new TypeCompilerDereferenceError(schema)
     const target = references[index]
-    // Reference: If we have seen this reference before we can just yield and return
-    // the function call. If this isn't the case we defer to visit to generate and
-    // set the function for subsequent passes. Consider for refactor.
+    // Reference: If we have seen this reference before we can just yield and
+    // return the function call. If this isn't the case we defer to visit to
+    // generate and set the function for subsequent passes.
     if (state_local_function_names.has(schema.$ref)) return yield `${CreateFunctionName(schema.$ref)}(${value})`
     yield* Visit(target, references, value)
   }
@@ -333,7 +334,7 @@ export namespace TypeCompiler {
     yield `${func}(${value})`
   }
   function* Tuple(schema: Types.TTuple<any[]>, references: Types.TSchema[], value: string): IterableIterator<string> {
-    yield `(Array.isArray(${value}))`
+    yield `Array.isArray(${value})`
     if (schema.items === undefined) return yield `${value}.length === 0`
     yield `(${value}.length === ${schema.maxItems})`
     for (let i = 0; i < schema.items.length; i++) {
@@ -367,10 +368,13 @@ export namespace TypeCompiler {
   function* Visit<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: string, root = false): IterableIterator<string> {
     const references_ = IsString(schema.$id) ? [...references, schema] : references
     const schema_ = schema as any
-    // Rule: Types with identifiers are hoisted into their own functions. The following will generate a function for the schema
-    // and yield the call to that function. This call is only made if NOT the root type which allows the generated function to
-    // yield its expression. The root argument is only true when making calls via CreateFunction(). Note there is potential to
-    // omit the root argument and conditional by refactoring the logic below. Consider for review.
+    // Rule: Types with identifiers are hoisted into their own functions.
+    // The following will generate a function for the schema and yield the
+    // call to that function. This call is only made if NOT the root type
+    // which allows the generated function to yield its expression. The
+    // root argument is only true when making calls via CreateFunction().
+    // Note there is potential to omit the root argument and conditional
+    // by refactoring the logic below. Consider for review.
     if (IsString(schema.$id)) {
       const name = CreateFunctionName(schema.$id)
       if (!state_local_function_names.has(schema.$id)) {
