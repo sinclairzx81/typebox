@@ -129,6 +129,10 @@ export class TypeCompilerTypeGuardError extends Error {
     super('TypeCompiler: Preflight validation check failed to guard for the given schema')
   }
 }
+
+export interface TypeCompilerOptions {
+  language: 'typescript' | 'javascript'
+}
 /** Compiles Types for Runtime Type Checking */
 export namespace TypeCompiler {
   // -------------------------------------------------------------------
@@ -306,7 +310,7 @@ export namespace TypeCompiler {
     // Reference: If we have seen this reference before we can just yield and
     // return the function call. If this isn't the case we defer to visit to
     // generate and set the function for subsequent passes.
-    if (state_local_function_names.has(schema.$ref)) return yield `${CreateFunctionName(schema.$ref)}(${value})`
+    if (state.function_names.has(schema.$ref)) return yield `${CreateFunctionName(schema.$ref)}(${value})`
     yield* Visit(target, references, value)
   }
   function* String(schema: Types.TString, references: Types.TSchema[], value: string): IterableIterator<string> {
@@ -361,8 +365,8 @@ export namespace TypeCompiler {
     yield IsVoidCheck(value)
   }
   function* UserDefined(schema: Types.TSchema, references: Types.TSchema[], value: string): IterableIterator<string> {
-    const schema_key = `schema_key_${state_remote_custom_types.size}`
-    state_remote_custom_types.set(schema_key, schema)
+    const schema_key = `schema_key_${state.custom_types.size}`
+    state.custom_types.set(schema_key, schema)
     yield `custom('${schema[Types.Kind]}', '${schema_key}', ${value})`
   }
   function* Visit<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: string, root = false): IterableIterator<string> {
@@ -377,8 +381,8 @@ export namespace TypeCompiler {
     // by refactoring the logic below. Consider for review.
     if (IsString(schema.$id)) {
       const name = CreateFunctionName(schema.$id)
-      if (!state_local_function_names.has(schema.$id)) {
-        state_local_function_names.add(schema.$id)
+      if (!state.function_names.has(schema.$id)) {
+        state.function_names.add(schema.$id)
         const body = CreateFunction(name, schema, references, 'value')
         PushFunction(body)
       }
@@ -449,57 +453,64 @@ export namespace TypeCompiler {
   // -------------------------------------------------------------------
   // Compiler State
   // -------------------------------------------------------------------
-  const state_local_variables = new Set<string>() // local variables and functions
-  const state_local_function_names = new Set<string>() // local function names used call ref validators
-  const state_remote_custom_types = new Map<string, unknown>() // remote custom types used during compilation
-  function ResetCompiler() {
-    state_local_variables.clear()
-    state_local_function_names.clear()
-    state_remote_custom_types.clear()
+  // prettier-ignore
+  const state = {
+    language: 'javascript',                   // target language
+    variables: new Set<string>(),             // local variables and functions
+    function_names: new Set<string>(),        // local function names used call ref validators
+    custom_types: new Map<string, unknown>(), // remote custom types used during compilation
   }
   function CreateExpression(schema: Types.TSchema, references: Types.TSchema[], value: string): string {
     return `(${[...Visit(schema, references, value)].join(' && ')})`
+  }
+  function CreateAnnotation() {
+    return state.language === 'typescript' ? ': any' : ''
   }
   function CreateFunctionName($id: string) {
     return `check_${Identifier.Encode($id)}`
   }
   function CreateFunction(name: string, schema: Types.TSchema, references: Types.TSchema[], value: string): string {
     const expression = [...Visit(schema, references, value, true)].map((condition) => `    ${condition}`).join(' &&\n')
-    return `function ${name}(value) {\n  return (\n${expression}\n )\n}`
+    const annotation = CreateAnnotation()
+    return `function ${name}(value${annotation}) {\n  return (\n${expression}\n )\n}`
   }
   function PushFunction(functionBody: string) {
-    state_local_variables.add(functionBody)
+    state.variables.add(functionBody)
   }
   function PushLocal(expression: string) {
-    const local = `local_${state_local_variables.size}`
-    state_local_variables.add(`const ${local} = ${expression}`)
+    const local = `local_${state.variables.size}`
+    state.variables.add(`const ${local} = ${expression}`)
     return local
   }
   function GetLocals() {
-    return [...state_local_variables.values()]
+    return [...state.variables.values()]
   }
   // -------------------------------------------------------------------
   // Compile
   // -------------------------------------------------------------------
   function Build<T extends Types.TSchema>(schema: T, references: Types.TSchema[]): string {
-    ResetCompiler()
+    const annotation = CreateAnnotation()
     const check = CreateFunction('check', schema, references, 'value') // interior visit
     const locals = GetLocals()
     // prettier-ignore
     return IsString(schema.$id) // ensure top level schemas with $id's are hoisted
-      ? `${locals.join('\n')}\nreturn function check(value) {\n  return ${CreateFunctionName(schema.$id)}(value)\n}`
+      ? `${locals.join('\n')}\nreturn function check(value${annotation}) {\n  return ${CreateFunctionName(schema.$id)}(value)\n}`
       : `${locals.join('\n')}\nreturn ${check}`
   }
   /** Returns the generated assertion code used to validate this type. */
-  export function Code<T extends Types.TSchema>(schema: T, references: Types.TSchema[] = []) {
+  export function Code<T extends Types.TSchema>(schema: T, references: Types.TSchema[] = [], options: TypeCompilerOptions = { language: 'javascript' }) {
+    state.language = options.language
+    state.variables.clear()
+    state.function_names.clear()
+    state.custom_types.clear()
     if (!Types.TypeGuard.TSchema(schema)) throw new TypeCompilerTypeGuardError(schema)
     for (const schema of references) if (!Types.TypeGuard.TSchema(schema)) throw new TypeCompilerTypeGuardError(schema)
     return Build(schema, references)
   }
   /** Compiles the given type for runtime type checking. This compiler only accepts known TypeBox types non-inclusive of unsafe types. */
   export function Compile<T extends Types.TSchema>(schema: T, references: Types.TSchema[] = []): TypeCheck<T> {
-    const code = Code(schema, references)
-    const custom_schemas = new Map(state_remote_custom_types)
+    const code = Code(schema, references, { language: 'javascript' })
+    const custom_schemas = new Map(state.custom_types)
     const compiledFunction = globalThis.Function('custom', 'format', 'hash', code)
     const checkFunction = compiledFunction(
       (kind: string, schema_key: string, value: unknown) => {
