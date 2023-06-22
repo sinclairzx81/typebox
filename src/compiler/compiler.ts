@@ -131,7 +131,7 @@ export class TypeCompilerTypeGuardError extends Error {
 }
 
 export interface TypeCompilerOptions {
-  language: 'typescript' | 'javascript'
+  language?: 'typescript' | 'javascript'
 }
 /** Compiles Types for Runtime Type Checking */
 export namespace TypeCompiler {
@@ -185,7 +185,7 @@ export namespace TypeCompiler {
     if (IsNumber(schema.maxItems)) yield `${value}.length <= ${schema.maxItems}`
     if (schema.uniqueItems === true) yield `((function() { const set = new Set(); for(const element of ${value}) { const hashed = hash(element); if(set.has(hashed)) { return false } else { set.add(hashed) } } return true })())`
     const expression = CreateExpression(schema.items, references, 'value')
-    const parameter = CreateParameter('value')
+    const parameter = CreateParameter('value', 'any')
     yield `${value}.every((${parameter}) => ${expression})`
   }
   function* BigInt(schema: Types.TBigInt, references: Types.TSchema[], value: string): IterableIterator<string> {
@@ -461,20 +461,24 @@ export namespace TypeCompiler {
     functions: new Set<string>(),                              // local functions
     customs: new Map<string, unknown>(),                       // custom type data
   }
-  function CreateExpression(schema: Types.TSchema, references: Types.TSchema[], value: string): string {
-    return `(${[...Visit(schema, references, value)].join(' && ')})`
-  }
   function CreateFunctionName($id: string) {
     return `check_${Identifier.Encode($id)}`
   }
-  function CreateParameter(name: string) {
-    const annotation = state.language === 'typescript' ? ': any' : ''
+  function CreateExpression(schema: Types.TSchema, references: Types.TSchema[], value: string): string {
+    return `(${[...Visit(schema, references, value)].join(' && ')})`
+  }
+  function CreateParameter(name: string, type: string) {
+    const annotation = state.language === 'typescript' ? `: ${type}` : ''
     return `${name}${annotation}`
+  }
+  function CreateReturns(type: string) {
+    return state.language === 'typescript' ? `: ${type}` : ''
   }
   function CreateFunction(name: string, schema: Types.TSchema, references: Types.TSchema[], value: string): string {
     const expression = [...Visit(schema, references, value, true)].map((condition) => `    ${condition}`).join(' &&\n')
-    const parameter = CreateParameter('value')
-    return `function ${name}(${parameter}) {\n  return (\n${expression}\n )\n}`
+    const parameter = CreateParameter('value', 'any')
+    const returns = CreateReturns('boolean')
+    return `function ${name}(${parameter})${returns} {\n  return (\n${expression}\n )\n}`
   }
   function PushFunction(functionBody: string) {
     state.variables.add(functionBody)
@@ -493,10 +497,11 @@ export namespace TypeCompiler {
   function Build<T extends Types.TSchema>(schema: T, references: Types.TSchema[]): string {
     const check = CreateFunction('check', schema, references, 'value') // interior visit
     const locals = GetLocals()
-    const parameter = CreateParameter('value')
+    const parameter = CreateParameter('value', 'any')
+    const returns = CreateReturns('boolean')
     // prettier-ignore
     return IsString(schema.$id) // ensure top level schemas with $id's are hoisted
-      ? `${locals.join('\n')}\nreturn function check(${parameter}) {\n  return ${CreateFunctionName(schema.$id)}(value)\n}`
+      ? `${locals.join('\n')}\nreturn function check(${parameter})${returns} {\n  return ${CreateFunctionName(schema.$id)}(value)\n}`
       : `${locals.join('\n')}\nreturn ${check}`
   }
   /** Returns the generated assertion code used to validate this type. */
