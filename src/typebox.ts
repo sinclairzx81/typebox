@@ -2403,7 +2403,7 @@ export class StandardTypeBuilder extends TypeBuilder {
   /** `[Standard]` Creates a Enum type */
   public Enum<T extends Record<string, string | number>>(item: T, options: SchemaOptions = {}): TEnum<T> {
     // prettier-ignore
-    const values = globalThis.Object.keys(item).filter((key) => isNaN(key as any)).map((key) => item[key]) as T[keyof T][]
+    const values = globalThis.Object.keys(item).map((key) => item[key]) as T[keyof T][]
     const anyOf = values.map((value) => (typeof value === 'string' ? { [Kind]: 'Literal', type: 'string' as const, const: value } : { [Kind]: 'Literal', type: 'number' as const, const: value }))
     return this.Create({ ...options, [Kind]: 'Union', anyOf })
   }
