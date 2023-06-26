@@ -27,7 +27,7 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import * as Types from '../typebox'
-import { ValueErrors, ValueErrorIterator, ValueError } from '../errors/index'
+import { ValueErrors, ValueErrorIterator } from '../errors/index'
 import { ValueMutate, Mutable } from './mutate'
 import { ValueHash } from './hash'
 import { ValueEqual } from './equal'

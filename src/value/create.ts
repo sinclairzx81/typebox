@@ -57,6 +57,11 @@ export class ValueCreateDereferenceError extends Error {
     super(`ValueCreate: Unable to dereference schema with $id '${schema.$ref}'`)
   }
 }
+export class ValueCreateRecursiveInstantiationError extends Error {
+  constructor(public readonly schema: Types.TSchema, public readonly recursiveMaxDepth: number) {
+    super('ValueCreate: Value cannot be created as recursive type may produce value of infinite size. Consider using a default.')
+  }
+}
 // --------------------------------------------------------------------------
 // ValueCreate
 // --------------------------------------------------------------------------
@@ -84,7 +89,7 @@ export namespace ValueCreate {
       return schema.default
     } else if (schema.minItems !== undefined) {
       return globalThis.Array.from({ length: schema.minItems }).map((item) => {
-        return ValueCreate.Create(schema.items, references)
+        return Visit(schema.items, references)
       })
     } else {
       return []
@@ -108,7 +113,7 @@ export namespace ValueCreate {
     if ('default' in schema) {
       return schema.default
     } else {
-      const value = ValueCreate.Create(schema.returns, references) as any
+      const value = Visit(schema.returns, references) as any
       if (typeof value === 'object' && !globalThis.Array.isArray(value)) {
         return class {
           constructor() {
@@ -136,7 +141,7 @@ export namespace ValueCreate {
     if ('default' in schema) {
       return schema.default
     } else {
-      return () => ValueCreate.Create(schema.returns, references)
+      return () => Visit(schema.returns, references)
     }
   }
   function Integer(schema: Types.TInteger, references: Types.TSchema[]): any {
@@ -204,7 +209,7 @@ export namespace ValueCreate {
       return (
         schema.default ||
         globalThis.Object.entries(schema.properties).reduce((acc, [key, schema]) => {
-          return required.has(key) ? { ...acc, [key]: ValueCreate.Create(schema, references) } : { ...acc }
+          return required.has(key) ? { ...acc, [key]: Visit(schema, references) } : { ...acc }
         }, {})
       )
     }
@@ -213,7 +218,7 @@ export namespace ValueCreate {
     if ('default' in schema) {
       return schema.default
     } else {
-      return globalThis.Promise.resolve(ValueCreate.Create(schema.item, references))
+      return globalThis.Promise.resolve(Visit(schema.item, references))
     }
   }
   function Record(schema: Types.TRecord<any, any>, references: Types.TSchema[]): any {
@@ -223,7 +228,7 @@ export namespace ValueCreate {
     } else if (!(keyPattern === Types.PatternStringExact || keyPattern === Types.PatternNumberExact)) {
       const propertyKeys = keyPattern.slice(1, keyPattern.length - 1).split('|')
       return propertyKeys.reduce((acc, key) => {
-        return { ...acc, [key]: Create(valueSchema, references) }
+        return { ...acc, [key]: Visit(valueSchema, references) }
       }, {})
     } else {
       return {}
@@ -233,7 +238,7 @@ export namespace ValueCreate {
     if ('default' in schema) {
       return schema.default
     } else {
-      const index = references.findIndex((foreign) => foreign.$id === schema.$id)
+      const index = references.findIndex((foreign) => foreign.$id === schema.$ref)
       if (index === -1) throw new ValueCreateDereferenceError(schema)
       const target = references[index]
       return Visit(target, references)
@@ -283,10 +288,11 @@ export namespace ValueCreate {
     return sequence.next().value
   }
   function This(schema: Types.TThis, references: Types.TSchema[]): any {
+    if (recursiveDepth++ > recursiveMaxDepth) throw new ValueCreateRecursiveInstantiationError(schema, recursiveMaxDepth)
     if ('default' in schema) {
       return schema.default
     } else {
-      const index = references.findIndex((foreign) => foreign.$id === schema.$id)
+      const index = references.findIndex((foreign) => foreign.$id === schema.$ref)
       if (index === -1) throw new ValueCreateDereferenceError(schema)
       const target = references[index]
       return Visit(target, references)
@@ -299,7 +305,7 @@ export namespace ValueCreate {
     if (schema.items === undefined) {
       return []
     } else {
-      return globalThis.Array.from({ length: schema.minItems }).map((_, index) => ValueCreate.Create((schema.items as any[])[index], references))
+      return globalThis.Array.from({ length: schema.minItems }).map((_, index) => Visit((schema.items as any[])[index], references))
     }
   }
   function Undefined(schema: Types.TUndefined, references: Types.TSchema[]): any {
@@ -315,7 +321,7 @@ export namespace ValueCreate {
     } else if (schema.anyOf.length === 0) {
       throw new Error('ValueCreate.Union: Cannot create Union with zero variants')
     } else {
-      return ValueCreate.Create(schema.anyOf[0], references)
+      return Visit(schema.anyOf[0], references)
     }
   }
   function Uint8Array(schema: Types.TUint8Array, references: Types.TSchema[]): any {
@@ -414,7 +420,15 @@ export namespace ValueCreate {
         return UserDefined(schema_, references_)
     }
   }
+  // --------------------------------------------------------
+  // State
+  // --------------------------------------------------------
+  const recursiveMaxDepth = 512
+  let recursiveDepth = 0
+
+  /** Creates a value from the given schema and references */
   export function Create<T extends Types.TSchema>(schema: T, references: Types.TSchema[]): Types.Static<T> {
+    recursiveDepth = 0
     return Visit(schema, references)
   }
 }

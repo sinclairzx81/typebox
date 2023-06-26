@@ -15,7 +15,6 @@ describe('value/create/Recursive', () => {
       nodes: [],
     })
   })
-
   it('Should create default', () => {
     const T = Type.Recursive(
       (This) =>
@@ -26,5 +25,13 @@ describe('value/create/Recursive', () => {
       { default: 7 },
     )
     Assert.isEqual(Value.Create(T), 7)
+  })
+  it('Should throw on infinite type', () => {
+    const T = Type.Recursive((This) =>
+      Type.Object({
+        x: This,
+      }),
+    )
+    Assert.throws(() => Value.Create(T))
   })
 })
