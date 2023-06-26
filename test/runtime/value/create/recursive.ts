@@ -15,7 +15,6 @@ describe('value/create/Recursive', () => {
       nodes: [],
     })
   })
-
   it('Should create default', () => {
     const T = Type.Recursive(
       (This) =>
@@ -26,5 +25,29 @@ describe('value/create/Recursive', () => {
       { default: 7 },
     )
     Assert.isEqual(Value.Create(T), 7)
+  })
+  it('Should throw on infinite type', () => {
+    const T = Type.Recursive((This) =>
+      Type.Object({
+        x: This,
+      }),
+    )
+    Assert.throws(() => Value.Create(T))
+  })
+  it('Should not throw on recursive type when terminating sub type proceeds self', () => {
+    const T = Type.Recursive((This) =>
+      Type.Object({
+        x: Type.Union([Type.Null(), This]),
+      }),
+    )
+    Assert.isEqual(Value.Create(T), { x: null })
+  })
+  it('Should not throw on recursive type when self is optional', () => {
+    const T = Type.Recursive((This) =>
+      Type.Object({
+        x: Type.Optional(This),
+      }),
+    )
+    Assert.isEqual(Value.Create(T), {})
   })
 })
