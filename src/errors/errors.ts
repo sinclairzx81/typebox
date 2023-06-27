@@ -329,10 +329,10 @@ export namespace ValueErrors {
       yield { type: ValueErrorType.NumberExclusiveMaximum, schema, path, value, message: `Expected number to be less than ${schema.exclusiveMaximum}` }
     }
     if (IsDefined<number>(schema.minimum) && !(value >= schema.minimum)) {
-      yield { type: ValueErrorType.NumberMaximum, schema, path, value, message: `Expected number to be greater or equal to ${schema.minimum}` }
+      yield { type: ValueErrorType.NumberMinumum, schema, path, value, message: `Expected number to be greater or equal to ${schema.minimum}` }
     }
     if (IsDefined<number>(schema.maximum) && !(value <= schema.maximum)) {
-      yield { type: ValueErrorType.NumberMinumum, schema, path, value, message: `Expected number to be less or equal to ${schema.maximum}` }
+      yield { type: ValueErrorType.NumberMaximum, schema, path, value, message: `Expected number to be less or equal to ${schema.maximum}` }
     }
   }
   function* Object(schema: Types.TObject, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
