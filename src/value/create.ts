@@ -42,6 +42,11 @@ export class ValueCreateNeverTypeError extends Error {
     super('ValueCreate: Never types cannot be created')
   }
 }
+export class ValueCreateNotTypeError extends Error {
+  constructor(public readonly schema: Types.TSchema) {
+    super('ValueCreate: Not types must have a default value')
+  }
+}
 export class ValueCreateIntersectTypeError extends Error {
   constructor(public readonly schema: Types.TSchema) {
     super('ValueCreate: Intersect produced invalid value. Consider using a default value.')
@@ -182,7 +187,7 @@ export namespace ValueCreate {
     if ('default' in schema) {
       return schema.default
     } else {
-      return Visit(schema.allOf[1], references)
+      throw new ValueCreateNotTypeError(schema)
     }
   }
   function Null(schema: Types.TNull, references: Types.TSchema[]): any {

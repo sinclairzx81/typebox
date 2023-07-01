@@ -305,10 +305,9 @@ export namespace ValueErrors {
     yield { type: ValueErrorType.Never, schema, path, value, message: `Value cannot be validated` }
   }
   function* Not(schema: Types.TNot, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
-    if (Visit(schema.allOf[0].not, references, path, value).next().done === true) {
+    if (Visit(schema.not, references, path, value).next().done === true) {
       yield { type: ValueErrorType.Not, schema, path, value, message: `Value should not validate` }
     }
-    yield* Visit(schema.allOf[1], references, path, value)
   }
   function* Null(schema: Types.TNull, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
     if (!(value === null)) {

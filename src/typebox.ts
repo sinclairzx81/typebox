@@ -313,20 +313,12 @@ export type TIndexRestMany<T extends TSchema, K extends Key[]> =
  K extends [infer L, ...infer R] ? [TIndexType<T, Assert<L, Key>>, ...TIndexRestMany<T, Assert<R, Key[]>>] :
  []
 // prettier-ignore
-export type TIndexReduce<T extends TSchema, K extends Key[]> =
-  T extends TRecursive<infer S> ? TIndexReduce<S, K> :
+export type TIndex<T extends TSchema, K extends Key[]> =
+  T extends TRecursive<infer S> ? TIndex<S, K> :
   T extends TIntersect ? UnionType<Flat<TIndexRestMany<T, K>>> :
   T extends TUnion     ? UnionType<Flat<TIndexRestMany<T, K>>> :
   T extends TObject    ? UnionType<Flat<TIndexRestMany<T, K>>> :
   T extends TTuple     ? UnionType<Flat<TIndexRestMany<T, K>>> :
-  TNever
-// prettier-ignore
-export type TIndex<T extends TSchema, K extends TSchema> =
-  [T, K] extends [TTuple, TNumber]  ? UnionType<Assert<T['items'], TSchema[]>> :  
-  [T, K] extends [TArray, TNumber]  ? AssertType<T['items']> :
-  K extends TTemplateLiteral        ? TIndexReduce<T, TTemplateLiteralKeyRest<K>> :
-  K extends TUnion<TLiteral<Key>[]> ? TIndexReduce<T, TUnionLiteralKeyRest<K>> :
-  K extends TLiteral<Key>           ? TIndexReduce<T, [K['const']]> :
   TNever
 // --------------------------------------------------------------------------
 // TInteger
@@ -393,10 +385,10 @@ export interface TNever extends TSchema {
 // --------------------------------------------------------------------------
 // TNot
 // --------------------------------------------------------------------------
-export interface TNot<Not extends TSchema = TSchema, T extends TSchema = TSchema> extends TSchema {
+export interface TNot<T extends TSchema = TSchema> extends TSchema {
   [Kind]: 'Not'
-  static: Static<T>
-  allOf: [{ not: Not }, T]
+  static: T extends TNot<infer U> ? Static<U> : unknown
+  not: T
 }
 // --------------------------------------------------------------------------
 // TNull
@@ -1063,11 +1055,7 @@ export namespace TypeGuard {
     return (
       TKind(schema) && 
       schema[Kind] === 'Not' && 
-      IsArray(schema.allOf) && 
-      schema.allOf.length === 2 && 
-      IsObject(schema.allOf[0]) && 
-      TSchema(schema.allOf[0].not) && 
-      TSchema(schema.allOf[1]) 
+      TSchema(schema.not) 
     )
   }
   /** Returns true if the given schema is TNull */
@@ -1354,8 +1342,7 @@ export namespace ExtendsUndefined {
   export function Check(schema: TSchema): boolean {
     if (schema[Kind] === 'Undefined') return true
     if (schema[Kind] === 'Not') {
-      const not = schema as TNot
-      return Check(not.allOf[1])
+      return !Check(schema.not)
     }
     if (schema[Kind] === 'Intersect') {
       const intersect = schema as TIntersect
@@ -1549,6 +1536,18 @@ export namespace TypeExtends {
   }
   function Never(left: TNever, right: TSchema) {
     return TypeExtendsResult.True
+  }
+  // --------------------------------------------------------------------------
+  // Not
+  // --------------------------------------------------------------------------
+  function ResolveNot<T extends TNot>(schema: T): TUnknown | TNot['not'] {
+    let [current, depth]: [TSchema, number] = [schema, 0]
+    while (true) {
+      if (!TypeGuard.TNot(current)) break
+      current = current.not
+      depth += 1
+    }
+    return depth % 2 === 0 ? current : Type.Unknown()
   }
   // --------------------------------------------------------------------------
   // Null
@@ -1858,6 +1857,9 @@ export namespace TypeExtends {
     return TypeGuard.TVoid(right) ? TypeExtendsResult.True : TypeExtendsResult.False
   }
   function Visit(left: TSchema, right: TSchema): TypeExtendsResult {
+    // Not Unwrap
+    if (TypeGuard.TNot(left)) return Visit(ResolveNot(left), right)
+    if (TypeGuard.TNot(right)) return Visit(left, ResolveNot(right))
     // Template Literal Union Unwrap
     if (TypeGuard.TTemplateLiteral(left)) return Visit(TemplateLiteralResolver.Resolve(left), right)
     if (TypeGuard.TTemplateLiteral(right)) return Visit(left, TemplateLiteralResolver.Resolve(right))
@@ -2441,9 +2443,19 @@ export class StandardTypeBuilder extends TypeBuilder {
     }
   }
   /** `[Standard]` Returns indexed property types for the given keys */
-  public Index<T extends TSchema, K extends (keyof Static<T>)[]>(schema: T, keys: [...K], options?: SchemaOptions): TIndexReduce<T, Assert<K, Key[]>>
+  public Index<T extends TTuple, K extends TNumber>(schema: T, keys: K, options?: SchemaOptions): UnionType<Assert<T['items'], TSchema[]>>
   /** `[Standard]` Returns indexed property types for the given keys */
-  public Index<T extends TSchema, K extends TSchema>(schema: T, key: K, options?: SchemaOptions): TIndex<T, K>
+  public Index<T extends TArray, K extends TNumber>(schema: T, keys: K, options?: SchemaOptions): AssertType<T['items']>
+  /** `[Standard]` Returns indexed property types for the given keys */
+  public Index<T extends TSchema, K extends TTemplateLiteral>(schema: T, keys: K, options?: SchemaOptions): TIndex<T, TTemplateLiteralKeyRest<K>>
+  /** `[Standard]` Returns indexed property types for the given keys */
+  public Index<T extends TSchema, K extends TLiteral<Key>>(schema: T, keys: K, options?: SchemaOptions): TIndex<T, [K['const']]>
+  /** `[Standard]` Returns indexed property types for the given keys */
+  public Index<T extends TSchema, K extends (keyof Static<T>)[]>(schema: T, keys: [...K], options?: SchemaOptions): TIndex<T, Assert<K, Key[]>>
+  /** `[Standard]` Returns indexed property types for the given keys */
+  public Index<T extends TSchema, K extends TUnion<TLiteral<Key>[]>>(schema: T, keys: K, options?: SchemaOptions): TIndex<T, TUnionLiteralKeyRest<K>>
+  /** `[Standard]` Returns indexed property types for the given keys */
+  public Index<T extends TSchema, K extends TSchema>(schema: T, key: K, options?: SchemaOptions): TSchema
   /** `[Standard]` Returns indexed property types for the given keys */
   public Index(schema: TSchema, unresolved: any, options: SchemaOptions = {}): any {
     if (TypeGuard.TArray(schema) && TypeGuard.TNumber(unresolved)) {
@@ -2508,9 +2520,9 @@ export class StandardTypeBuilder extends TypeBuilder {
   public Never(options: SchemaOptions = {}): TNever {
     return this.Create({ ...options, [Kind]: 'Never', not: {} })
   }
-  /** `[Standard]` Creates a Not type. The first argument is the disallowed type, the second is the allowed. */
-  public Not<N extends TSchema, T extends TSchema>(not: N, schema: T, options?: SchemaOptions): TNot<N, T> {
-    return this.Create({ ...options, [Kind]: 'Not', allOf: [{ not: TypeClone.Clone(not, {}) }, TypeClone.Clone(schema, {})] })
+  /** `[Standard]` Creates a Not type */
+  public Not<T extends TSchema>(not: T, options?: SchemaOptions): TNot<T> {
+    return this.Create({ ...options, [Kind]: 'Not', not })
   }
   /** `[Standard]` Creates a Null type */
   public Null(options: SchemaOptions = {}): TNull {

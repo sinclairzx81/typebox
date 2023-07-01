@@ -178,7 +178,7 @@ export namespace ValueCast {
     throw new ValueCastNeverTypeError(schema)
   }
   function Not(schema: Types.TNot, references: Types.TSchema[], value: any): any {
-    return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema.allOf[1], references)
+    return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
   }
   function Null(schema: Types.TNull, references: Types.TSchema[], value: any): any {
     return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)

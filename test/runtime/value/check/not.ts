@@ -30,10 +30,4 @@ describe('value/check/Not', () => {
     Assert.isEqual(Value.Check(T, 'A'), true)
     Assert.isEqual(Value.Check(T, true), true)
   })
-  it('Should not validate with symmetric left right', () => {
-    // prettier-ignore
-    const T = Type.Not(Type.Number(), Type.Number())
-    Assert.isEqual(Value.Check(T, 1), false)
-    Assert.isEqual(Value.Check(T, true), false)
-  })
 })
