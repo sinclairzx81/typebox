@@ -888,14 +888,16 @@ const C = Type.Index(T, Type.KeyOf(T))               // const C = {
 
 ### Not Types
 
-Not types are supported with `Type.Not`. This type represents the JSON Schema `not` keyword and will statically infer as `unknown`. Note that Not types are not supported in TypeScript, but can still be partially expressed by interpreting `not` as the broad type `unknown`. When used in intersections, the Not type can be used to create refined assertion rules for specific types, with the inference derived from TypeScript's ability to narrow from `unknown` to `T` via intersection.
-
-For example, consider a type which is `number` but not `1 | 2 | 3` and where the static type would still technically be a `number`. The following shows a pseudo TypeScript example using `not` followed by the TypeBox implementation.
+TypeBox has partial support for the JSON schema `not` keyword with `Type.Not`. This type is synonymous with the concept of a [negated types](https://github.com/microsoft/TypeScript/issues/4196) which are not supported in the TypeScript language. TypeBox does provide partial inference support via the intersection of `T & not U` (where all negated types infer as `unknown`). This can be used in the following context.
 
 ```typescript
-// Pseudo TypeScript
+// TypeScript
 
-type T = number & not (1 | 2 | 3)                    // allow all numbers except 1, 2, 3
+type T = Exclude<number, 1 | 2 | 3>                  // all numbers except 1, 2, 3
+                                                     //
+                                                     // ideally expressed as: 
+                                                     //
+                                                     // type T = number & not (1 | 2 | 3)
 
 // TypeBox
 
@@ -914,11 +916,11 @@ const T = Type.Intersect([                           // const T = {
                                                      //   ]
                                                      // }
 
-type T = Static<typeof T>                            // evaluates as:
+type T = Static<typeof T>                            // inferred:
                                                      //
-                                                     // type T = (number & (not (1 | 2 | 3)))
-                                                     // type T = (number & (unknown))
-                                                     // type T = (number) 
+                                                     // type T = number & not (1 | 2 | 3)
+                                                     // type T = number & unknown
+                                                     // type T = number
 ```
 
 The Not type can be used with constraints to define schematics for types that would otherwise be difficult to express.
