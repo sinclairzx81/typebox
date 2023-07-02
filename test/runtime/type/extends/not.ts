@@ -15,7 +15,7 @@ describe('type/extends/Not', () => {
   // check needs to return true for the following case to keep TypeBox aligned
   // with TypeScript static inference.
   // -------------------------------------------------------------------------
-  it('Should extend with nested negation', () => {
+  it('Should extend with unknown assignability check', () => {
     const A = Type.Number()
     const B = Type.Not(Type.Number())
     const R = TypeExtends.Extends(A, B)
