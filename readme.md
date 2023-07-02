@@ -84,6 +84,7 @@ License MIT
   - [Conditional](#types-conditional)
   - [Template Literal](#types-template-literal)
   - [Indexed](#types-indexed)
+  - [Not](#types-not)
   - [Rest](#types-rest)
   - [Guards](#types-guards)
   - [Unsafe](#types-unsafe)
@@ -353,20 +354,11 @@ The following table lists the Standard TypeBox types. These types are fully comp
 │                                │                             │ }                              │
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
-│ const T = Type.Not(            | type T = string             │ const T = {                    │
-|   Type.Union([                 │                             │   allOf: [{                    │
-│     Type.Literal('x'),         │                             │     not: {                     │
-│     Type.Literal('y'),         │                             │       anyOf: [                 │
-│     Type.Literal('z')          │                             │         { const: 'x' },        │
-│   ]),                          │                             │         { const: 'y' },        │
-│   Type.String()                │                             │         { const: 'z' }         │
-│ )                              │                             │       ]                        │
-│                                │                             │     }                          │
-│                                │                             │   }, {                         │
-│                                │                             │     type: 'string'             │
-│                                │                             │   }]                           │
+│ const T = Type.Not(            | type T = unknown            │ const T = {                    │
+│   Type.String()                │                             │   not: {                       │
+│ )                              │                             │     type: 'string'             │
+│                                │                             │   }                            │
 │                                │                             │ }                              │
-│                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Extends(        │ type T =                    │ const T = {                    │
 │   Type.String(),               │  string extends number      │   const: false,                │
@@ -650,7 +642,7 @@ const T = Type.String({                              // const T = {
 })                                                   //   format: 'email'
                                                      // }
 
-// Mumber must be a multiple of 2
+// Number must be a multiple of 2
 const T = Type.Number({                              // const T = {
   multipleOf: 2                                      //  type: 'number',
 })                                                   //  multipleOf: 2
@@ -892,6 +884,49 @@ const C = Type.Index(T, Type.KeyOf(T))               // const C = {
                                                      // }
 ```
 
+<a name='types-not'></a>
+
+### Not Types
+
+Not types are supported with `Type.Not`. This type represents the JSON Schema `not` keyword and will statically infer as `unknown`. Note that negated (or not) types are not supported in TypeScript, but can still be partially expressed by interpreting `not` as the broad type `unknown`. When used with intersect types, the Not type can create refined assertion rules for types by leveraging TypeScript's ability to narrow from `unknown` to an intended type through intersection.
+
+For example, consider a type which is `number` but not `1 | 2 | 3` and where the static type would still technically be a `number`. The following shows a pseudo TypeScript example using `not` followed by the TypeBox implementation.
+
+```typescript
+// Pseudo TypeScript
+
+type T = number & not (1 | 2 | 3)                    // allow all numbers except 1, 2, 3
+
+// TypeBox
+
+const T = Type.Intersect([                           // const T = {
+  Type.Number(),                                     //   allOf: [
+  Type.Not(Type.Union([                              //     { type: "number" },
+    Type.Literal(1),                                 //     {
+    Type.Literal(2),                                 //       not: {
+    Type.Literal(3)                                  //         anyOf: [
+  ]))                                                //           { const: 1, type: "number" },
+])                                                   //           { const: 2, type: "number" },
+                                                     //           { const: 3, type: "number" }
+                                                     //         ]
+                                                     //       }
+                                                     //     }
+                                                     //   ]
+                                                     // }
+
+type T = Static<typeof T>                            // evaluates as:
+                                                     //
+                                                     // type T = (number & (not (1 | 2 | 3)))
+                                                     // type T = (number & (unknown))
+                                                     // type T = (number) 
+```
+
+The Not type can be used with constraints to define schematics for types that would otherwise be difficult to express.
+```typescript
+const Even = Type.Number({ multipleOf: 2 })
+
+const Odd = Type.Intersect([Type.Number(), Type.Not(Even)])          
+```
 <a name='types-rest'></a>
 
 ### Rest Types
@@ -1420,29 +1455,25 @@ TypeSystem.AllowNaN = true
 
 ## Workbench
 
-TypeBox offers a small web based code generation tool that can be used to convert TypeScript types into TypeBox type definitions as well as a variety of other formats.
+TypeBox offers a web based code generation tool that can be used to convert TypeScript types into TypeBox types as well as a variety of other runtime type representations.
 
 [Workbench Link Here](https://sinclairzx81.github.io/typebox-workbench/)
-
-<div align='center'>
-
-<a href="https://sinclairzx81.github.io/typebox-workbench/"><img src="https://github.com/sinclairzx81/typebox/blob/master/workbench.png?raw=true" /></a>
-
-</div>
 
 <a name='ecosystem'></a>
 
 ## Ecosystem
 
-The following is a list of community packages that provide general tooling and framework support for TypeBox.
+The following is a list of community packages that provide general tooling and framework integration support for TypeBox.
 
 | Package   |  Description |
 | ------------- | ------------- |
 | [elysia](https://github.com/elysiajs/elysia) | Fast and friendly Bun web framework |
 | [fastify-type-provider-typebox](https://github.com/fastify/fastify-type-provider-typebox) | Fastify TypeBox integration with the Fastify Type Provider |
+| [feathersjs](https://github.com/feathersjs/feathers) | The API and real-time application framework |
 | [fetch-typebox](https://github.com/erfanium/fetch-typebox) | Drop-in replacement for fetch that brings easy integration with TypeBox |
 | [schema2typebox](https://github.com/xddq/schema2typebox)  | Creating TypeBox code from JSON schemas |
-| [ts2typebox](https://github.com/xddq/ts2typebox)  | Creating TypeBox code from Typescript types |
+| [ts2typebox](https://github.com/xddq/ts2typebox) | Creating TypeBox code from Typescript types |
+| [typebox-validators](https://github.com/jtlapp/typebox-validators) | Advanced validators supporting discriminated and heterogeneous unions |
 
 <a name='benchmark'></a>
 

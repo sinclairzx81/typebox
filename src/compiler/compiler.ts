@@ -245,9 +245,8 @@ export namespace TypeCompiler {
     yield `false`
   }
   function* Not(schema: Types.TNot, references: Types.TSchema[], value: string): IterableIterator<string> {
-    const left = CreateExpression(schema.allOf[0].not, references, value)
-    const right = CreateExpression(schema.allOf[1], references, value)
-    yield `!${left} && ${right}`
+    const expression = CreateExpression(schema.not, references, value)
+    yield `(!${expression})`
   }
   function* Null(schema: Types.TNull, references: Types.TSchema[], value: string): IterableIterator<string> {
     yield `(${value} === null)`

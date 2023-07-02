@@ -7,7 +7,7 @@ describe('type/compiler/Object', () => {
   // -----------------------------------------------------
   it('Should handle extends undefined check 1', () => {
     const T = Type.Object({
-      A: Type.Not(Type.Number(), Type.Undefined()),
+      A: Type.Not(Type.Number()),
       B: Type.Union([Type.Number(), Type.Undefined()]),
       C: Type.Intersect([Type.Undefined(), Type.Undefined()]),
     })
@@ -20,7 +20,7 @@ describe('type/compiler/Object', () => {
   // https://github.com/sinclairzx81/typebox/issues/437
   it('Should handle extends undefined check 2', () => {
     const T = Type.Object({
-      A: Type.Not(Type.Null(), Type.Undefined()),
+      A: Type.Not(Type.Null()),
     })
     Ok(T, { A: undefined })
     Fail(T, { A: null })
