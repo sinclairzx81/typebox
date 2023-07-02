@@ -888,7 +888,7 @@ const C = Type.Index(T, Type.KeyOf(T))               // const C = {
 
 ### Not Types
 
-Not types are supported with `Type.Not`. This type represents the JSON Schema `not` keyword and will statically infer as `unknown`. Note that negated (or not) types are not supported in TypeScript, but can still be partially expressed by interpreting `not` as the broad type `unknown`. When used with intersect types, the Not type can create refined assertion rules for types by leveraging TypeScript's ability to narrow from `unknown` to an intended type through intersection.
+Not types are supported with `Type.Not`. This type represents the JSON Schema `not` keyword and will statically infer as `unknown`. Note that Not types are not supported in TypeScript, but can still be partially expressed by interpreting `not` as the broad type `unknown`. When used in intersections, the Not type can be used to create refined assertion rules for specific types, with the inference derived from TypeScript's ability to narrow from `unknown` to `T` via intersection.
 
 For example, consider a type which is `number` but not `1 | 2 | 3` and where the static type would still technically be a `number`. The following shows a pseudo TypeScript example using `not` followed by the TypeBox implementation.
 
