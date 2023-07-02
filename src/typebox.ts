@@ -1540,7 +1540,7 @@ export namespace TypeExtends {
   // --------------------------------------------------------------------------
   // Not
   // --------------------------------------------------------------------------
-  function ResolveNot<T extends TNot>(schema: T): TUnknown | TNot['not'] {
+  function UnwrapNot<T extends TNot>(schema: T): TUnknown | TNot['not'] {
     let [current, depth]: [TSchema, number] = [schema, 0]
     while (true) {
       if (!TypeGuard.TNot(current)) break
@@ -1548,6 +1548,14 @@ export namespace TypeExtends {
       depth += 1
     }
     return depth % 2 === 0 ? current : Type.Unknown()
+  }
+  function Not(left: TSchema, right: TSchema) {
+    // TypeScript has no concept of negated types, and attempts to correctly check the negated
+    // type at runtime would put TypeBox at odds with TypeScripts ability to statically infer
+    // the type. Instead we unwrap to either unknown or T and continue evaluating.
+    if (TypeGuard.TNot(left)) return Visit(UnwrapNot(left), right)
+    if (TypeGuard.TNot(right)) return Visit(left, UnwrapNot(right))
+    throw new Error(`TypeExtends: Invalid fallthrough for Not`)
   }
   // --------------------------------------------------------------------------
   // Null
@@ -1764,6 +1772,17 @@ export namespace TypeExtends {
     return TypeGuard.TSymbol(right) ? TypeExtendsResult.True : TypeExtendsResult.False
   }
   // --------------------------------------------------------------------------
+  // TemplateLiteral
+  // --------------------------------------------------------------------------
+  function TemplateLiteral(left: TSchema, right: TSchema) {
+    // TemplateLiteral types are resolved to either unions for finite expressions or string
+    // for infinite expressions. Here we call to TemplateLiteralResolver to resolve for
+    // either type and continue evaluating.
+    if (TypeGuard.TTemplateLiteral(left)) return Visit(TemplateLiteralResolver.Resolve(left), right)
+    if (TypeGuard.TTemplateLiteral(right)) return Visit(left, TemplateLiteralResolver.Resolve(right))
+    throw new Error(`TypeExtends: Invalid fallthrough for TemplateLiteral`)
+  }
+  // --------------------------------------------------------------------------
   // Tuple
   // --------------------------------------------------------------------------
   function TupleRight(left: TSchema, right: TTuple) {
@@ -1857,13 +1876,10 @@ export namespace TypeExtends {
     return TypeGuard.TVoid(right) ? TypeExtendsResult.True : TypeExtendsResult.False
   }
   function Visit(left: TSchema, right: TSchema): TypeExtendsResult {
-    // Not Unwrap
-    if (TypeGuard.TNot(left)) return Visit(ResolveNot(left), right)
-    if (TypeGuard.TNot(right)) return Visit(left, ResolveNot(right))
-    // Template Literal Union Unwrap
-    if (TypeGuard.TTemplateLiteral(left)) return Visit(TemplateLiteralResolver.Resolve(left), right)
-    if (TypeGuard.TTemplateLiteral(right)) return Visit(left, TemplateLiteralResolver.Resolve(right))
-    // Standard Extends
+    // Resolvable Types
+    if (TypeGuard.TTemplateLiteral(left) || TypeGuard.TTemplateLiteral(right)) return TemplateLiteral(left, right)
+    if (TypeGuard.TNot(left) || TypeGuard.TNot(right)) return Not(left, right)
+    // Standard Types
     if (TypeGuard.TAny(left)) return Any(left, right)
     if (TypeGuard.TArray(left)) return Array(left, right)
     if (TypeGuard.TBigInt(left)) return BigInt(left, right)

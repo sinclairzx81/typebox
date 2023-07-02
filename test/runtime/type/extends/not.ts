@@ -6,6 +6,21 @@ import { Assert } from '../../assert/index'
 // Note: Not is equivalent to Unknown with the exception of nested negation.
 // ---------------------------------------------------------------------------
 describe('type/extends/Not', () => {
+  // -------------------------------------------------------------------------
+  // Issue: type T = number extends not number ? true : false // true
+  //        type T = number extends unknown ? true : false    // true
+  //
+  // TypeScript does not support type negation. The best TypeBox can do is
+  // treat "not" as "unknown". From this standpoint, the extends assignability
+  // check needs to return true for the following case to keep TypeBox aligned
+  // with TypeScript static inference.
+  // -------------------------------------------------------------------------
+  it('Should extend with unknown assignability check', () => {
+    const A = Type.Number()
+    const B = Type.Not(Type.Number())
+    const R = TypeExtends.Extends(A, B)
+    Assert.isEqual(R, TypeExtendsResult.True) // we would expect false
+  })
   // ---------------------------------------------------------------------------
   // Nested
   // ---------------------------------------------------------------------------
