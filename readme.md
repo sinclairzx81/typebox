@@ -1463,15 +1463,17 @@ TypeBox offers a web based code generation tool that can be used to convert Type
 
 ## Ecosystem
 
-The following is a list of community packages that provide general tooling and framework support for TypeBox.
+The following is a list of community packages that provide general tooling and framework integration support for TypeBox.
 
 | Package   |  Description |
 | ------------- | ------------- |
 | [elysia](https://github.com/elysiajs/elysia) | Fast and friendly Bun web framework |
 | [fastify-type-provider-typebox](https://github.com/fastify/fastify-type-provider-typebox) | Fastify TypeBox integration with the Fastify Type Provider |
+| [feathersjs](https://github.com/feathersjs/feathers) | The API and real-time application framework |
 | [fetch-typebox](https://github.com/erfanium/fetch-typebox) | Drop-in replacement for fetch that brings easy integration with TypeBox |
 | [schema2typebox](https://github.com/xddq/schema2typebox)  | Creating TypeBox code from JSON schemas |
-| [ts2typebox](https://github.com/xddq/ts2typebox)  | Creating TypeBox code from Typescript types |
+| [ts2typebox](https://github.com/xddq/ts2typebox) | Creating TypeBox code from Typescript types |
+| [typebox-validators](https://github.com/jtlapp/typebox-validators) | Advanced validators supporting discriminated and heterogeneous unions |
 
 <a name='benchmark'></a>
 
