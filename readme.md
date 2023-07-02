@@ -1473,6 +1473,7 @@ The following is a list of community packages that provide general tooling and f
 | [fetch-typebox](https://github.com/erfanium/fetch-typebox) | Drop-in replacement for fetch that brings easy integration with TypeBox |
 | [schema2typebox](https://github.com/xddq/schema2typebox)  | Creating TypeBox code from JSON schemas |
 | [ts2typebox](https://github.com/xddq/ts2typebox) | Creating TypeBox code from Typescript types |
+| [typebox-client](https://github.com/flodlc/typebox-client) | Type safe http client library for Fastify |
 | [typebox-validators](https://github.com/jtlapp/typebox-validators) | Advanced validators supporting discriminated and heterogeneous unions |
 
 <a name='benchmark'></a>
