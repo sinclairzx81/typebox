@@ -395,7 +395,7 @@ export interface TIntersect<T extends TSchema[] = TSchema[]> extends TSchema, In
 // prettier-ignore
 export type TKeyOfProperties<T extends TSchema> = Discard<Static<T> extends infer S
   ? UnionToTuple<{[K in keyof S]: TLiteral<Assert<K, TLiteralValue>>}[keyof S]>
-  : [], undefined> // optional properties evaluate to undefined here. discard
+  : [], undefined> // note: optional properties produce undefined types in tuple result. discard.
 // prettier-ignore
 export type TKeyOfIndicesArray<T extends TSchema[]> = UnionToTuple<keyof T & `${number}`>
 // prettier-ignore
