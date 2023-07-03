@@ -62,17 +62,62 @@ export type AssertProperties<T> = T extends TProperties ? T : TProperties
 export type AssertRest<T, E extends TSchema[] = TSchema[]> = T extends E ? T : []
 export type AssertType<T, E extends TSchema = TSchema> = T extends E ? T : TNever
 // --------------------------------------------------------------------------
-// Type Normalization
-// --------------------------------------------------------------------------
-export type IntersectType<T extends TSchema[]> = T extends [] ? TNever : T extends [TSchema] ? AssertType<T[0]> : TIntersect<T>
-export type UnionType<T extends TSchema[]> = T extends [] ? TNever : T extends [TSchema] ? AssertType<T[0]> : TUnion<T>
-// --------------------------------------------------------------------------
 // Modifiers
 // --------------------------------------------------------------------------
 export type TModifier = TReadonlyOptional<TSchema> | TOptional<TSchema> | TReadonly<TSchema>
 export type TReadonly<T extends TSchema> = T & { [Modifier]: 'Readonly' }
 export type TOptional<T extends TSchema> = T & { [Modifier]: 'Optional' }
 export type TReadonlyOptional<T extends TSchema> = T & { [Modifier]: 'ReadonlyOptional' }
+// --------------------------------------------------------------------------
+// Optional Unwrap
+// --------------------------------------------------------------------------
+// prettier-ignore
+export type OptionalUnwrapType<T extends TSchema> =
+  T extends (TOptional<infer S> | TReadonlyOptional<infer S>)
+    ? OptionalUnwrapType<S>
+    : T
+// prettier-ignore
+export type OptionalUnwrapRest<T extends TSchema[]> = T extends [infer L, ...infer R]
+  ? L extends (TOptional<infer S> | TReadonlyOptional<infer S>)
+    ? [OptionalUnwrapType<AssertType<S>>, ...OptionalUnwrapRest<AssertRest<R>>] 
+    : [L, ...OptionalUnwrapRest<AssertRest<R>>]
+  :  []
+// --------------------------------------------------------------------------
+// IntersectType
+// --------------------------------------------------------------------------
+// prettier-ignore
+export type IntersectOptional<T extends TSchema[]> = T extends [infer L, ...infer R] 
+  ? L extends TOptional<AssertType<L>> | TReadonlyOptional<AssertType<L>> 
+    ? IntersectOptional<AssertRest<R>> 
+    : false
+  : true
+// prettier-ignore
+export type IntersectResolve<T extends TSchema[], U = OptionalUnwrapRest<AssertRest<T>>> = IntersectOptional<AssertRest<T>> extends true
+  ? TOptional<TIntersect<AssertRest<U>>>
+  : TIntersect<AssertRest<U>>
+// prettier-ignore
+export type IntersectType<T extends TSchema[]> = 
+    T extends [] ? TNever : 
+    T extends [TSchema] ? AssertType<T[0]> : 
+    IntersectResolve<T>
+// --------------------------------------------------------------------------
+// UnionType
+// --------------------------------------------------------------------------
+// prettier-ignore
+export type UnionOptional<T extends TSchema[]> = T extends [infer L, ...infer R]
+  ? L extends (TOptional<AssertType<L>> | TReadonlyOptional<AssertType<L>>)
+    ? true 
+    : UnionOptional<AssertRest<R>> 
+  : false
+// prettier-ignore
+export type UnionResolve<T extends TSchema[], U = OptionalUnwrapRest<AssertRest<T>>> = UnionOptional<AssertRest<T>> extends true
+  ? TOptional<TUnion<AssertRest<U>>>
+  : TUnion<AssertRest<U>>
+// prettier-ignore
+export type UnionType<T extends TSchema[]> = 
+  T extends [] ? TNever : 
+  T extends [TSchema] ? AssertType<T[0]> : 
+  UnionResolve<T>
 // --------------------------------------------------------------------------
 // Key
 // --------------------------------------------------------------------------
@@ -297,6 +342,7 @@ export interface TFunction<T extends readonly TSchema[] = TSchema[], U extends T
 // --------------------------------------------------------------------------
 // TIndex
 // --------------------------------------------------------------------------
+
 export type TIndexRest<T extends TSchema[], K extends Key> = T extends [infer L, ...infer R] ? [TIndexType<AssertType<L>, K>, ...TIndexRest<AssertRest<R>, K>] : []
 export type TIndexProperty<T extends TProperties, K extends Key> = K extends keyof T ? [T[K]] : []
 export type TIndexTuple<T extends TSchema[], K extends Key> = K extends keyof T ? [T[K]] : []
@@ -308,6 +354,7 @@ export type TIndexType<T extends TSchema, K extends Key> =
   T extends TObject<infer S>    ? UnionType<AssertRest<Flat<TIndexProperty<S, K>>>> :
   T extends TTuple<infer S>     ? UnionType<AssertRest<Flat<TIndexTuple<S, K>>>> :
   []
+
 // prettier-ignore
 export type TIndexRestMany<T extends TSchema, K extends Key[]> = 
  K extends [infer L, ...infer R] ? [TIndexType<T, Assert<L, Key>>, ...TIndexRestMany<T, Assert<R, Key[]>>] :
@@ -320,6 +367,7 @@ export type TIndex<T extends TSchema, K extends Key[]> =
   T extends TObject    ? UnionType<Flat<TIndexRestMany<T, K>>> :
   T extends TTuple     ? UnionType<Flat<TIndexRestMany<T, K>>> :
   TNever
+
 // --------------------------------------------------------------------------
 // TInteger
 // --------------------------------------------------------------------------
@@ -1947,16 +1995,41 @@ export namespace TypeClone {
 // IndexedAccessor
 // --------------------------------------------------------------------------
 export namespace IndexedAccessor {
+  function OptionalUnwrap(schema: TSchema[]): TSchema[] {
+    return schema.map((schema) => {
+      const { [Modifier]: _, ...clone } = TypeClone.Clone(schema, {})
+      return clone
+    })
+  }
+  function IsIntersectOptional(schema: TSchema[]): boolean {
+    return schema.every((schema) => TypeGuard.TOptional(schema))
+  }
+  function IsUnionOptional(schema: TSchema[]): boolean {
+    return schema.some((schema) => TypeGuard.TOptional(schema))
+  }
+  function ResolveIntersect(schema: TIntersect): TSchema {
+    const optional = IsIntersectOptional(schema.allOf)
+    return optional ? Type.Optional(Type.Intersect(OptionalUnwrap(schema.allOf))) : schema
+  }
+  function ResolveUnion(schema: TUnion): TSchema {
+    const optional = IsUnionOptional(schema.anyOf)
+    return optional ? Type.Optional(Type.Union(OptionalUnwrap(schema.anyOf))) : schema
+  }
+  function ResolveOptional(schema: TSchema) {
+    if (schema[Kind] === 'Intersect') return ResolveIntersect(schema as TIntersect)
+    if (schema[Kind] === 'Union') return ResolveUnion(schema as TUnion)
+    return schema
+  }
   function Intersect(schema: TIntersect, key: string): TSchema {
-    const schemas = schema.allOf.reduce((acc, schema) => {
+    const resolved = schema.allOf.reduce((acc, schema) => {
       const indexed = Visit(schema, key)
       return indexed[Kind] === 'Never' ? acc : [...acc, indexed]
     }, [] as TSchema[])
-    return Type.Intersect(schemas)
+    return ResolveOptional(Type.Intersect(resolved))
   }
   function Union(schema: TUnion, key: string): TSchema {
-    const schemas = schema.anyOf.map((schema) => Visit(schema, key))
-    return Type.Union(schemas)
+    const resolved = schema.anyOf.map((schema) => Visit(schema, key))
+    return ResolveOptional(Type.Union(resolved))
   }
   function Object(schema: TObject, key: string): TSchema {
     const property = schema.properties[key]
@@ -1977,8 +2050,8 @@ export namespace IndexedAccessor {
     return Type.Never()
   }
   export function Resolve(schema: TSchema, keys: Key[], options: SchemaOptions = {}): TSchema {
-    // prettier-ignore
-    return Type.Union(keys.map((key) => Visit(schema, key.toString())), options)
+    const resolved = keys.map((key) => Visit(schema, key.toString()))
+    return ResolveOptional(Type.Union(resolved, options))
   }
 }
 // --------------------------------------------------------------------------
