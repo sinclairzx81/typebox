@@ -27,8 +27,30 @@ describe('type/guard/TComposite', () => {
   // rule is "if all composite properties for a key are optional, then the composite property is optional". Defer this test and
   // document as minor breaking change.
   //
-  // it('Should produce optional property if all properties are optional', () => {
-  //   const T = Type.Composite([Type.Object({ x: Type.Optional(Type.Number()) }), Type.Object({ x: Type.Optional(Type.Number()) })])
-  //   Assert.isEqual(TypeGuard.TOptional(T.properties.x), true)
-  // })
+  it('Should produce optional property if all composited properties are optional', () => {
+    // prettier-ignore
+    const T = Type.Composite([
+      Type.Object({ x: Type.Optional(Type.Number()) }), 
+      Type.Object({ x: Type.Optional(Type.Number()) })
+    ])
+    Assert.isEqual(TypeGuard.TOptional(T.properties.x), true)
+    Assert.isTrue(T.required === undefined)
+  })
+  it('Should produce required property if some composited properties are not optional', () => {
+    // prettier-ignore
+    const T = Type.Composite([
+      Type.Object({ x: Type.Optional(Type.Number()) }), 
+      Type.Object({ x: Type.Number() })
+    ])
+    Assert.isEqual(TypeGuard.TOptional(T.properties.x), false)
+    Assert.isTrue(T.required!.includes('x'))
+  })
+  it('Should preserve single optional property', () => {
+    // prettier-ignore
+    const T = Type.Composite([
+      Type.Object({ x: Type.Optional(Type.Number()) }), 
+    ])
+    Assert.isEqual(TypeGuard.TOptional(T.properties.x), true)
+    Assert.isTrue(T.required === undefined)
+  })
 })

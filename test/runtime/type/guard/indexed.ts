@@ -277,4 +277,42 @@ describe('type/guard/TIndex', () => {
     // on the object. This may be resolvable in later revisions, but test for this
     // fall-through to ensure case is documented. For review.
   })
+  // --------------------------------------------------------
+  // Modifier Optional Indexing
+  // --------------------------------------------------------
+  it('Should Index 31', () => {
+    const T = Type.Object({
+      x: Type.Optional(Type.String()),
+      y: Type.Number(),
+    })
+    const I = Type.Index(T, ['x'])
+    Assert.isTrue(TypeGuard.TOptional(I))
+    Assert.isTrue(TypeGuard.TString(I))
+  })
+  it('Should Index 32', () => {
+    const T = Type.Object({
+      x: Type.Optional(Type.String()),
+      y: Type.Number(),
+    })
+    const I = Type.Index(T, ['y'])
+    Assert.isFalse(TypeGuard.TOptional(I))
+    Assert.isTrue(TypeGuard.TNumber(I))
+  })
+  it('Should Index 33', () => {
+    const T = Type.Object({
+      x: Type.Optional(Type.String()),
+      y: Type.Number(),
+    })
+    const I = Type.Index(T, ['x', 'y'])
+    Assert.isTrue(TypeGuard.TOptional(I))
+    Assert.isTrue(TypeGuard.TUnion(I))
+    Assert.isTrue(TypeGuard.TString(I.anyOf[0]))
+    Assert.isTrue(TypeGuard.TNumber(I.anyOf[1]))
+  })
+  it('Should Index 34', () => {
+    const T = Type.String()
+    // @ts-ignore
+    const I = Type.Index(T, ['x'])
+    Assert.isTrue(TypeGuard.TNever(I))
+  })
 })
