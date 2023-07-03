@@ -91,3 +91,12 @@ import { Type } from '@sinclair/typebox'
   const K = Type.KeyOf(T)
   Expect(K).ToInfer<'a' | 'b' | 'c' | 'd'>()
 }
+{
+  const T = Type.Object({
+    a: Type.Optional(Type.String()),
+    b: Type.Optional(Type.String()),
+    c: Type.Optional(Type.String()),
+  })
+  const K = Type.KeyOf(T)
+  Expect(K).ToInfer<'a' | 'b' | 'c'>()
+}
