@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------------
 
-@sinclair/typebox/legacy
+@sinclair/typebox/experimental
 
 The MIT License (MIT)
 
@@ -26,4 +26,22 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export * from './intersect'
+import * as Types from '@sinclair/typebox'
+
+// -------------------------------------------------------------------------------------
+// TUnionEnum
+// -------------------------------------------------------------------------------------
+export interface TUnionEnum<T extends (string | number)[]> extends Types.TSchema {
+  [Types.Kind]: 'UnionEnum'
+  static: T[number]
+  enum: T
+}
+
+/** `[Experimental]` Creates a Union type with a `enum` schema representation  */
+export function UnionEnum<T extends (string | number)[]>(values: [...T], options: Types.SchemaOptions = {}) {
+  function UnionEnumCheck(schema: TUnionEnum<(string | number)[]>, value: unknown) {
+    return (typeof value === 'string' || typeof value === 'number') && schema.enum.includes(value)
+  }
+  if (!Types.TypeRegistry.Has('UnionEnum')) Types.TypeRegistry.Set('UnionEnum', UnionEnumCheck)
+  return { ...options, [Types.Kind]: 'UnionEnum', enum: values } as TUnionEnum<T>
+}

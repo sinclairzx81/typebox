@@ -1,34 +1,10 @@
-# String Formats
+# Formats
 
-TypeBox does not implement any string formats by default. However it is possible to register user defined formats using the `FormatRegistry`. Once registered, the format becomes available to both `Value` and `TypeCompiler` modules.
+This example provides TypeCompiler supported versions of the `ajv-formats` package.
 
-## FormatRegistry
-
-The following shows basic usage of the format registry
-
-```typescript
-import { Type, FormatRegistry } from '@sinclair/typebox'
-import { Value } from '@sinclair/typebox/value'
-
-// Register the 'foo-only' format. The format checks for 'foo' only.
-FormatRegistry.Set('foo-only', value => value === 'foo')
-
-const T = Type.String({ format: 'foo-only' })
-
-// Validate
-Value.Check(T, 'foo') // true
-Value.Check(T, 'bar') // false
-```
-
-## Standard Formats
+## Standard
 
 The `standard.ts` file provided with this example implements several standard string formats. 
-
-```typescript
-import './standard'
-```
-
-The following formats are implemented by `standard.ts`
 
 | Format      | Description |
 | ---         | --- |

@@ -1,30 +1,54 @@
-# ExperimentalTypeBuilder
+# Experimental Types
 
-An experimental TypeBox type builder with additional custom types.
+These examples are a set of experiemental candidate types that may introduced into TypeBox in future.
 
-## Overview
+## ReadonlyObject
 
-The TypeBox TypeBuilder classes are designed to be extended with user defined types. Instances where you may wish to do this are if your application is dependent on custom schematics and/or non-JSON serializable values (an example of which might be a Mongo's `ObjectId` or other such non-serializable value)
-
-## Application Type Builder
-
-The following shows creating a simple `ApplicationTypeBuilder` with additional types `Nullable` and `StringEnum`. These types are fairly common in OpenAPI implementations.
+Maps an object properties as `readonly`.
 
 ```typescript
-import { StandardTypeBuilder, Static, TSchema } from '@sinclair/typebox'
+import { ReadonlyObject } from './experimental'
 
-export class ApplicationTypeBuilder extends StandardTypeBuilder { // only JSON Schema types
-  public Nullable<T extends TSchema>(schema: T) {
-    return this.Unsafe<Static<T> | null>({ ...schema, nullable: true })
-  }
-  public StringEnum<T extends string[]>(values: [...T]) {
-    return this.Unsafe<T[number]>({ type: 'string', enum: values })
-  }
-}
+const T = ReadonlyObject(Type.Object({
+  x: Type.Number()
+}))
 
-export const Type = new ApplicationTypeBuilder()    // re-export!
+type T = Static<typeof T>                           // type T = {
+                                                    //   readonly x: number
+                                                    // }
 ```
+## UnionEnum
 
-## Experimental Type Builder
+Creates an `enum` union string schema representation.
 
-The `experimental.ts` file provided with this example shows advanced usage by creating complex types for potential inclusion in the TypeBox library in later revisions. It is offered for reference, experimentation and is open to contributor submission.
+```typescript
+import { UnionEnum } from './experimental'
+
+
+const T = UnionEnum(['A', 'B', 'C'])                // const T = {
+                                                    //   enum: ['A', 'B', 'C']
+                                                    // }
+
+type T = Static<typeof T>                           // type T = 'A' | 'B' | 'C'
+
+```
+## UnionOneOf
+
+Creates a `oneOf` union representation.
+
+
+```typescript
+import { UnionOneOf } from './experimental'
+
+
+const T = UnionOneOf([                              // const T = {
+  Type.Literal('A'),                                //   oneOf: [
+  Type.Literal('B'),                                //     { const: 'A' },
+  Type.Literal('C')                                 //     { const: 'B' },
+])                                                  //     { const: 'C' },
+                                                    //   ]
+                                                    // }
+
+type T = Static<typeof T>                           // type T = 'A' | 'B' | 'C'
+
+```
