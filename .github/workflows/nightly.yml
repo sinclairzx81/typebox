@@ -1,6 +1,5 @@
 name: Build Nightly
 on:
-  push:
   schedule:
     - cron: '0 18 * * *' # 6pm Daily
 jobs:
