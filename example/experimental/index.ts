@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------------
 
-@sinclair/typebox/extensions
+@sinclair/typebox/experimental
 
 The MIT License (MIT)
 
@@ -26,4 +26,6 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export * from './experimental'
+export * from './readonly-object'
+export * from './union-enum'
+export * from './union-oneof'
