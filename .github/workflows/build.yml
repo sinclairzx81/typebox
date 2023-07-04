@@ -1,7 +1,5 @@
-name: GitHub CI
-
+name: Build
 on: [push, pull_request]
-
 jobs:
   TypeBox:
     runs-on: ${{ matrix.os }}
@@ -12,11 +10,13 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install Node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
+
       - name: Install Packages
         run: npm install
+
       - name: Build Library
         run: npm run build
       - name: Test Library
