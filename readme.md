@@ -335,15 +335,15 @@ The following table lists the Standard TypeBox types. These types are fully comp
 │                                │                             │ }                              │
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
-│ const T = Type.Composite([     │ type I = {                  │ const T = {                    │
+│ const T = Type.Composite([     │ type T = {                  │ const T = {                    │
 │   Type.Object({                │   x: number                 │   type: 'object',              │
 │     x: Type.Number()           │ } & {                       │   required: ['x', 'y'],        │
 │   }),                          │   y: number                 │   properties: {                │
 │   Type.Object({                │ }                           │     x: {                       │
 │     y: Type.Number()           │                             │       type: 'number'           │
-│   })                           │ type T = {                  │     },                         │
-│ ])                             │   [K in keyof I]: I[K]      │     y: {                       │
-│                                │ }                           │       type: 'number'           │
+│   })                           │                             │     },                         │
+│ ])                             │                             │     y: {                       │
+│                                │                             │       type: 'number'           │
 │                                │                             │     }                          │
 │                                │                             │   }                            │
 │                                │                             │ }                              │
@@ -739,12 +739,12 @@ const R = Type.Ref(T)                                // const R = {
 
 ### Recursive Types
 
-Recursive types are supported with `Type.Recursive`
+Recursive types are supported with `Type.Recursive`.
 
 ```typescript
-const Node = Type.Recursive(Node => Type.Object({    // const Node = {
+const Node = Type.Recursive(This => Type.Object({    // const Node = {
   id: Type.String(),                                 //   $id: 'Node',
-  nodes: Type.Array(Node)                            //   type: 'object',
+  nodes: Type.Array(This)                            //   type: 'object',
 }), { $id: 'Node' })                                 //   properties: {
                                                      //     id: {
                                                      //       type: 'string'
@@ -776,38 +776,50 @@ function test(node: Node) {
 
 ### Conditional Types
 
-Conditional types are supported with `Type.Extends`, `Type.Exclude` and `Type.Extract`
+TypeBox supports conditional types with `Type.Extends`. This type will perform a structural assignment check for the first two parameters and return a `true` or `false` type from the second two parameters. The types `Type.Exclude` and `Type.Extract` are also supported.
 
 ```typescript
 // TypeScript
 
 type T0 = string extends number ? true : false       // type T0 = false
 
-type T1 = Extract<string | number, number>           // type T1 = number
+type T1 = Extract<(1 | 2 | 3), 1>                    // type T1 = 1
 
-type T2 = Exclude<string | number, number>           // type T2 = string
+type T2 = Exclude<(1 | 2 | 3), 1>                    // type T2 = 2 | 3
 
 // TypeBox
 
-const T0 = Type.Extends(Type.String(), Type.Number(), Type.Literal(true), Type.Literal(false))
+const T0 = Type.Extends(                             // const T0: TLiteral<false>
+  Type.String(), 
+  Type.Number(), 
+  Type.Literal(true), 
+  Type.Literal(false)
+)
 
-const T1 = Type.Extract(Type.Union([Type.String(), Type.Number()]), Type.Number())
+const T1 = Type.Extract(                             // const T1: TLiteral<1>
+  Type.Union([
+    Type.Literal(1), 
+    Type.Literal(2), 
+    Type.Literal(3) 
+  ]), 
+  Type.Literal(1)
+)
 
-const T2 = Type.Exclude(Type.Union([Type.String(), Type.Number()]), Type.Number())
-
-
-type T0 = Static<typeof T0>                        // type T0 = false
-
-type T1 = Static<typeof T1>                        // type T1 = number
-
-type T2 = Static<typeof T2>                        // type T2 = string
+const T2 = Type.Exclude(                            // const T2: TUnion<[
+  Type.Union([                                      //   TLiteral<2>,
+    Type.Literal(1),                                //   TLiteral<3>
+    Type.Literal(2),                                // ]>
+    Type.Literal(3) 
+  ]), 
+  Type.Literal(1)
+)
 ```
 
 <a name='types-template-literal'></a>
 
 ### Template Literal Types
 
-TypeBox supports Template Literal types using `Type.TemplateLiteral`. These types can be created using a simple template DSL syntax, however more complex template literals can be created by passing an array of literal and union types. The examples below show the template DSL syntax.
+TypeBox supports template literal types with `Type.TemplateLiteral`. This type implements an embedded DSL syntax to match the TypeScript template literal syntax. This type can also be composed by passing an array of union and literal types as parameters. The following example shows the DSL syntax.
 
 ```typescript
 // TypeScript
@@ -853,7 +865,7 @@ const R = Type.Record(T, Type.String())              // const R = {
 
 ### Indexed Access Types
 
-TypeBox supports Indexed Access types using `Type.Index`. This feature provides a consistent way to access property types without having to extract them from the underlying schema representation. Indexed accessors are supported for object and tuples, as well as nested union and intersect types.
+TypeBox supports indexed access types using `Type.Index`. This type provides a consistent way to access interior property and array element types without having to extract them from the underlying schema representation. Indexed access types are supported for object, array, tuple, union and intersect types.
 
 ```typescript
 const T = Type.Object({                              // const T = {
@@ -888,7 +900,7 @@ const C = Type.Index(T, Type.KeyOf(T))               // const C = {
 
 ### Not Types
 
-TypeBox has partial support for the JSON schema `not` keyword with `Type.Not`. This type is synonymous with the concept of a [negated types](https://github.com/microsoft/TypeScript/issues/4196) which are not supported in the TypeScript language. TypeBox does provide partial inference support via the intersection of `T & not U` (where all negated types infer as `unknown`). This can be used in the following context.
+TypeBox provides support for the `not` keyword with `Type.Not`. This type is synonymous with [negated types](https://github.com/microsoft/TypeScript/issues/4196) which are not supported in the TypeScript language. Partial inference of this type can be attained via the intersection of `T & not U` (where all Not types infer as `unknown`). This can be used in the following context to narrow for broader types.
 
 ```typescript
 // TypeScript

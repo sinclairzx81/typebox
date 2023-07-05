@@ -29,7 +29,14 @@ export async function benchmark() {
 // -------------------------------------------------------------------------------
 // Test
 // -------------------------------------------------------------------------------
+export async function test_typescript() {
+  for (const version of ['4.9.5', '5.0.4', '5.1.3', '5.1.6', 'next', 'latest']) {
+    await shell(`npm install typescript@${version} --no-save`)
+    await test_static()
+  }
+}
 export async function test_static() {
+  await shell(`tsc -v`)
   await shell(`tsc -p test/static/tsconfig.json --noEmit --strict`)
 }
 export async function test_runtime(filter = '') {

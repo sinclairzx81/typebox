@@ -241,16 +241,20 @@ export type TInstanceType<T extends TConstructor<TSchema[], TSchema>> = T['retur
 // TComposite
 // --------------------------------------------------------------------------
 // prettier-ignore
-export type TCompositeReduce<T extends TIntersect<TObject[]>, K extends string[]> = K extends [infer L, ...infer R] 
-  ? { [_ in Assert<L, string>]: TIndexType<T, Assert<L, string>> } & TCompositeReduce<T, Assert<R, string[]>> 
+export type TCompositeKeys<T extends TObject[]> = T extends [infer L, ...infer R] 
+  ? keyof Assert<L, TObject>['properties'] | TCompositeKeys<Assert<R, TObject[]>>
+  : never
+// prettier-ignore
+export type TCompositeIndex<T extends TIntersect<TObject[]>, K extends string[]> = K extends [infer L, ...infer R] 
+  ? { [_ in Assert<L, string>]: TIndexType<T, Assert<L, string>> } & TCompositeIndex<T, Assert<R, string[]>> 
   : {}
 // prettier-ignore
-export type TCompositeSelect<T extends TIntersect<TObject[]>> = UnionToTuple<keyof Static<T>> extends infer K 
-  ? Evaluate<TCompositeReduce<T, Assert<K, string[]>>> 
-  : {}
+export type TCompositeReduce<T extends TObject[]> = UnionToTuple<TCompositeKeys<T>> extends infer K 
+  ? Evaluate<TCompositeIndex<TIntersect<T>, Assert<K, string[]>>> 
+  : {} //                    ^ indexed via intersection of T
 // prettier-ignore
-export type TComposite<T extends TObject[]> = TIntersect<T> extends infer R 
-  ? TObject<TCompositeSelect<Assert<R, TIntersect<TObject[]>>>>
+export type TComposite<T extends TObject[]> = TIntersect<T> extends TIntersect 
+  ? TObject<TCompositeReduce<T>>
   : TObject<{}>
 // --------------------------------------------------------------------------
 // TConstructor
@@ -640,12 +644,21 @@ export type StringFormatOption =
   | 'json-pointer'
   | 'relative-json-pointer'
   | 'regex'
+  | ({} & string)
+// prettier-ignore
+export type StringContentEncodingOption = 
+  | '7bit' 
+  | '8bit' 
+  | 'binary' 
+  | 'quoted-printable' 
+  | 'base64' 
+  | ({} & string)
 export interface StringOptions extends SchemaOptions {
   minLength?: number
   maxLength?: number
   pattern?: string
-  format?: string
-  contentEncoding?: '7bit' | '8bit' | 'binary' | 'quoted-printable' | 'base64'
+  format?: StringFormatOption
+  contentEncoding?: StringContentEncodingOption
   contentMediaType?: string
 }
 export interface TString extends TSchema, StringOptions {
@@ -731,9 +744,7 @@ export interface TTemplateLiteral<T extends TTemplateLiteralKind[] = TTemplateLi
 // TTuple
 // --------------------------------------------------------------------------
 export type TTupleIntoArray<T extends TTuple<TSchema[]>> = T extends TTuple<infer R> ? AssertRest<R> : never
-
 export type TTupleInfer<T extends TSchema[], P extends unknown[]> = T extends [infer L, ...infer R] ? [Static<AssertType<L>, P>, ...TTupleInfer<AssertRest<R>, P>] : []
-
 export interface TTuple<T extends TSchema[] = TSchema[]> extends TSchema {
   [Kind]: 'Tuple'
   static: TTupleInfer<T, this['params']> // { [K in keyof T]: T[K] extends TSchema ? Static<T[K], this['params']> : T[K] }
