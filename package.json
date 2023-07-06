@@ -1,6 +1,6 @@
 {
   "name": "@sinclair/typebox",
-  "version": "0.29.3",
+  "version": "0.29.4",
   "description": "JSONSchema Type Builder with Static Type Resolution for TypeScript",
   "keywords": [
     "typescript",
@@ -24,10 +24,13 @@
     "url": "https://github.com/sinclairzx81/typebox"
   },
   "scripts": {
+    "test:typescript": "hammer task test_typescript",
+    "test:static": "hammer task test_static",
+    "test:runtime": "hammer task test_runtime",
+    "test": "hammer task test",
     "clean": "hammer task clean",
     "format": "hammer task format",
     "start": "hammer task start",
-    "test": "hammer task test",
     "benchmark": "hammer task benchmark",
     "build": "hammer task build",
     "publish": "hammer task publish"

@@ -1,7 +1,9 @@
 import { Expect } from './assert'
-import { Type, Static } from '@sinclair/typebox'
+import { Type, TObject, TIntersect, TNumber, TBoolean } from '@sinclair/typebox'
 
+// ----------------------------------------------------------------------------
 // Overlapping - Non Varying
+// ----------------------------------------------------------------------------
 {
   const A = Type.Object({
     A: Type.Number(),
@@ -15,7 +17,9 @@ import { Type, Static } from '@sinclair/typebox'
     A: number
   }>()
 }
+// ----------------------------------------------------------------------------
 // Overlapping - Varying
+// ----------------------------------------------------------------------------
 {
   const A = Type.Object({
     A: Type.Number(),
@@ -29,7 +33,9 @@ import { Type, Static } from '@sinclair/typebox'
     A: never
   }>()
 }
+// ----------------------------------------------------------------------------
 // Overlapping Single Optional
+// ----------------------------------------------------------------------------
 {
   const A = Type.Object({
     A: Type.Optional(Type.Number()),
@@ -43,26 +49,50 @@ import { Type, Static } from '@sinclair/typebox'
     A: number
   }>()
 }
+// ----------------------------------------------------------------------------
 // Overlapping All Optional (Deferred)
+//
 // Note for: https://github.com/sinclairzx81/typebox/issues/419
-// Determining if a composite property is optional requires a deep check for all properties gathered during a indexed access
-// call. Currently, there isn't a trivial way to perform this check without running into possibly infinite instantiation issues.
-// The optional check is only specific to overlapping properties. Singular properties will continue to work as expected. The
-// rule is "if all composite properties for a key are optional, then the composite property is optional". Defer this test and
-// document as minor breaking change.
+// ----------------------------------------------------------------------------
 {
-  // const A = Type.Object({
-  //   A: Type.Optional(Type.Number()),
-  // })
-  // const B = Type.Object({
-  //   A: Type.Optional(Type.Number()),
-  // })
-  // const T = Type.Composite([A, B])
-  // Expect(T).ToInfer<{
-  //   A: number | undefined
-  // }>()
+  const A = Type.Object({
+    A: Type.Optional(Type.Number()),
+  })
+  const B = Type.Object({
+    A: Type.Optional(Type.Number()),
+  })
+  const T = Type.Composite([A, B])
+  Expect(T).ToInfer<{
+    A: number | undefined
+  }>()
 }
+{
+  const A = Type.Object({
+    A: Type.Optional(Type.Number()),
+  })
+  const B = Type.Object({
+    A: Type.Number(),
+  })
+  const T = Type.Composite([A, B])
+  Expect(T).ToInfer<{
+    A: number
+  }>()
+}
+{
+  const A = Type.Object({
+    A: Type.Number(),
+  })
+  const B = Type.Object({
+    A: Type.Number(),
+  })
+  const T = Type.Composite([A, B])
+  Expect(T).ToInfer<{
+    A: number
+  }>()
+}
+// ----------------------------------------------------------------------------
 // Distinct Properties
+// ----------------------------------------------------------------------------
 {
   const A = Type.Object({
     A: Type.Number(),
@@ -76,4 +106,24 @@ import { Type, Static } from '@sinclair/typebox'
     A: number
     B: number
   }>()
+}
+// ----------------------------------------------------------------------------
+// Intersection Quirk
+//
+// TypeScript has an evaluation quirk for the following case where the first
+// type evaluates the sub property as never, but the second evaluates the
+// entire type as never. There is probably a reason for this behavior, but
+// TypeBox supports the former evaluation.
+//
+// { x: number } & { x: string }  -> { x: number } & { x: string } => { x: never }
+// { x: number } & { x: boolean } ->  never -> ...
+// ----------------------------------------------------------------------------
+{
+  // prettier-ignore
+  const T: TObject<{
+    x: TIntersect<[TNumber, TBoolean]>
+  }> = Type.Composite([
+    Type.Object({ x: Type.Number() }),
+    Type.Object({ x: Type.Boolean() })
+  ])
 }
