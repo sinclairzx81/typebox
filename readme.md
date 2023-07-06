@@ -900,7 +900,7 @@ const C = Type.Index(T, Type.KeyOf(T))               // const C = {
 
 ### Not Types
 
-TypeBox provides support for the `not` keyword with `Type.Not`. This type is synonymous with [negated types](https://github.com/microsoft/TypeScript/issues/4196) which are not supported in the TypeScript language. Partial inference of this type can be attained via the intersection of `T & not U` (where all Not types infer as `unknown`). This can be used in the following context to narrow for broader types.
+TypeBox provides support for the `not` keyword with `Type.Not`. This type is synonymous with [negated types](https://github.com/microsoft/TypeScript/issues/4196) which are not supported in the TypeScript language. Partial inference of this type can be attained via the intersection of `T & not U` (where all Not types infer as `unknown`). This approach can be used to narrow for broader types in the following context.
 
 ```typescript
 // TypeScript
