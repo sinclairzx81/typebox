@@ -342,7 +342,7 @@ export namespace ValueErrors {
       yield { type: ValueErrorType.ObjectMinProperties, schema, path, value, message: `Expected object to have at least ${schema.minProperties} properties` }
     }
     if (IsDefined<number>(schema.maxProperties) && !(globalThis.Object.getOwnPropertyNames(value).length <= schema.maxProperties)) {
-      yield { type: ValueErrorType.ObjectMaxProperties, schema, path, value, message: `Expected object to have less than ${schema.maxProperties} properties` }
+      yield { type: ValueErrorType.ObjectMaxProperties, schema, path, value, message: `Expected object to have no more than ${schema.maxProperties} properties` }
     }
     const requiredKeys = globalThis.Array.isArray(schema.required) ? schema.required : ([] as string[])
     const knownKeys = globalThis.Object.getOwnPropertyNames(schema.properties)
@@ -391,7 +391,7 @@ export namespace ValueErrors {
       yield { type: ValueErrorType.ObjectMinProperties, schema, path, value, message: `Expected object to have at least ${schema.minProperties} properties` }
     }
     if (IsDefined<number>(schema.maxProperties) && !(globalThis.Object.getOwnPropertyNames(value).length <= schema.maxProperties)) {
-      yield { type: ValueErrorType.ObjectMaxProperties, schema, path, value, message: `Expected object to have less than ${schema.minProperties} properties` }
+      yield { type: ValueErrorType.ObjectMaxProperties, schema, path, value, message: `Expected object to have no more than ${schema.maxProperties} properties` }
     }
     const [patternKey, patternSchema] = globalThis.Object.entries(schema.patternProperties)[0]
     const regex = new RegExp(patternKey)
