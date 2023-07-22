@@ -1,4 +1,4 @@
 import { Expect } from './assert'
 import { Type } from '@sinclair/typebox'
 
-Expect(Type.RegEx(/foo/)).ToInfer<string>()
+Expect(Type.Iterator(Type.String())).ToInfer<IterableIterator<string>>()

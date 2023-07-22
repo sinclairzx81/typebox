@@ -29,7 +29,8 @@ THE SOFTWARE.
 // --------------------------------------------------------------------------
 // Symbols
 // --------------------------------------------------------------------------
-export const Modifier = Symbol.for('TypeBox.Modifier')
+export const Readonly = Symbol.for('TypeBox.Readonly')
+export const Optional = Symbol.for('TypeBox.Optional')
 export const Hint = Symbol.for('TypeBox.Hint')
 export const Kind = Symbol.for('TypeBox.Kind')
 // --------------------------------------------------------------------------
@@ -64,21 +65,34 @@ export type AssertType<T, E extends TSchema = TSchema> = T extends E ? T : TNeve
 // --------------------------------------------------------------------------
 // Modifiers
 // --------------------------------------------------------------------------
-export type TModifier = TReadonlyOptional<TSchema> | TOptional<TSchema> | TReadonly<TSchema>
-export type TReadonly<T extends TSchema> = T & { [Modifier]: 'Readonly' }
-export type TOptional<T extends TSchema> = T & { [Modifier]: 'Optional' }
-export type TReadonlyOptional<T extends TSchema> = T & { [Modifier]: 'ReadonlyOptional' }
+export type TModifier = TOptional<TSchema> | TReadonly<TSchema>
+export type TReadonly<T extends TSchema> = T & { [Readonly]: 'Readonly' }
+export type TOptional<T extends TSchema> = T & { [Optional]: 'Optional' }
+// --------------------------------------------------------------------------
+// Readonly Unwrap
+// --------------------------------------------------------------------------
+// prettier-ignore
+export type ReadonlyUnwrapType<T extends TSchema> =
+  T extends TReadonly<infer S> ? ReadonlyUnwrapType<S> : 
+  T extends TOptional<infer S> ? TOptional<ReadonlyUnwrapType<S>> :
+  T
+// prettier-ignore
+export type ReadonlyUnwrapRest<T extends TSchema[]> = T extends [infer L, ...infer R]
+  ? L extends TReadonly<infer S>
+    ? [ReadonlyUnwrapType<AssertType<S>>, ...ReadonlyUnwrapRest<AssertRest<R>>] 
+    : [L, ...ReadonlyUnwrapRest<AssertRest<R>>]
+  :  []
 // --------------------------------------------------------------------------
 // Optional Unwrap
 // --------------------------------------------------------------------------
 // prettier-ignore
 export type OptionalUnwrapType<T extends TSchema> =
-  T extends (TOptional<infer S> | TReadonlyOptional<infer S>)
-    ? OptionalUnwrapType<S>
-    : T
+  T extends TReadonly<infer S> ? TReadonly<OptionalUnwrapType<S>> :
+  T extends TOptional<infer S> ? OptionalUnwrapType<S> : 
+  T
 // prettier-ignore
 export type OptionalUnwrapRest<T extends TSchema[]> = T extends [infer L, ...infer R]
-  ? L extends (TOptional<infer S> | TReadonlyOptional<infer S>)
+  ? L extends TOptional<infer S>
     ? [OptionalUnwrapType<AssertType<S>>, ...OptionalUnwrapRest<AssertRest<R>>] 
     : [L, ...OptionalUnwrapRest<AssertRest<R>>]
   :  []
@@ -87,7 +101,7 @@ export type OptionalUnwrapRest<T extends TSchema[]> = T extends [infer L, ...inf
 // --------------------------------------------------------------------------
 // prettier-ignore
 export type IntersectOptional<T extends TSchema[]> = T extends [infer L, ...infer R] 
-  ? L extends TOptional<AssertType<L>> | TReadonlyOptional<AssertType<L>> 
+  ? L extends TOptional<AssertType<L>> 
     ? IntersectOptional<AssertRest<R>> 
     : false
   : true
@@ -105,7 +119,7 @@ export type IntersectType<T extends TSchema[]> =
 // --------------------------------------------------------------------------
 // prettier-ignore
 export type UnionOptional<T extends TSchema[]> = T extends [infer L, ...infer R]
-  ? L extends (TOptional<AssertType<L>> | TReadonlyOptional<AssertType<L>>)
+  ? L extends (TOptional<AssertType<L>>)
     ? true 
     : UnionOptional<AssertRest<R>> 
   : false
@@ -137,13 +151,18 @@ export interface SchemaOptions {
   default?: any
   /** Example values matching this schema */
   examples?: any
+  /** Optional annotation for readOnly */
+  readOnly?: boolean
+  /** Optional annotation for writeOnly */
+  writeOnly?: boolean
   [prop: string]: any
 }
 export interface TKind {
   [Kind]: string
 }
 export interface TSchema extends SchemaOptions, TKind {
-  [Modifier]?: string
+  [Readonly]?: string
+  [Optional]?: string
   [Hint]?: string
   params: unknown[]
   static: unknown
@@ -155,6 +174,7 @@ export type TAnySchema =
   | TSchema
   | TAny
   | TArray
+  | TAsyncIterator
   | TBigInt
   | TBoolean
   | TConstructor
@@ -163,6 +183,7 @@ export type TAnySchema =
   | TFunction
   | TInteger
   | TIntersect
+  | TIterator
   | TLiteral
   | TNot
   | TNull
@@ -202,9 +223,12 @@ export interface TAny extends TSchema {
 // TArray
 // --------------------------------------------------------------------------
 export interface ArrayOptions extends SchemaOptions {
-  uniqueItems?: boolean
   minItems?: number
   maxItems?: number
+  contains?: TSchema
+  minContains?: number
+  maxContains?: number
+  uniqueItems?: boolean
 }
 export interface TArray<T extends TSchema = TSchema> extends TSchema, ArrayOptions {
   [Kind]: 'Array'
@@ -213,13 +237,21 @@ export interface TArray<T extends TSchema = TSchema> extends TSchema, ArrayOptio
   items: T
 }
 // --------------------------------------------------------------------------
+// TAsyncIterator
+// --------------------------------------------------------------------------
+export interface TAsyncIterator<T extends TSchema = TSchema> extends TSchema {
+  [Kind]: 'AsyncIterator'
+  static: AsyncIterableIterator<Static<T, this['params']>>
+  type: 'AsyncIterator'
+  items: T
+}
+// --------------------------------------------------------------------------
 // TBigInt
 // --------------------------------------------------------------------------
 export interface TBigInt extends TSchema, NumericOptions<bigint> {
   [Kind]: 'BigInt'
   static: bigint
-  type: 'null'
-  typeOf: 'BigInt'
+  type: 'bigint'
 }
 // --------------------------------------------------------------------------
 // TBoolean
@@ -263,8 +295,7 @@ export type TConstructorParameterArray<T extends readonly TSchema[], P extends u
 export interface TConstructor<T extends TSchema[] = TSchema[], U extends TSchema = TSchema> extends TSchema {
   [Kind]: 'Constructor'
   static: new (...param: TConstructorParameterArray<T, this['params']>) => Static<U, this['params']>
-  type: 'object'
-  instanceOf: 'Constructor'
+  type: 'constructor'
   parameters: T
   returns: U
 }
@@ -280,8 +311,7 @@ export interface DateOptions extends SchemaOptions {
 export interface TDate extends TSchema, DateOptions {
   [Kind]: 'Date'
   static: Date
-  type: 'object'
-  instanceOf: 'Date'
+  type: 'date'
 }
 // --------------------------------------------------------------------------
 // TEnum
@@ -338,8 +368,7 @@ export type TFunctionParameters<T extends readonly TSchema[], P extends unknown[
 export interface TFunction<T extends readonly TSchema[] = TSchema[], U extends TSchema = TSchema> extends TSchema {
   [Kind]: 'Function'
   static: (...param: TFunctionParameters<T, this['params']>) => Static<U, this['params']>
-  type: 'object'
-  instanceOf: 'Function'
+  type: 'function'
   parameters: T
   returns: U
 }
@@ -358,7 +387,6 @@ export type TIndexType<T extends TSchema, K extends Key> =
   T extends TObject<infer S>    ? UnionType<AssertRest<Flat<TIndexProperty<S, K>>>> :
   T extends TTuple<infer S>     ? UnionType<AssertRest<Flat<TIndexTuple<S, K>>>> :
   []
-
 // prettier-ignore
 export type TIndexRestMany<T extends TSchema, K extends Key[]> = 
  K extends [infer L, ...infer R] ? [TIndexType<T, Assert<L, Key>>, ...TIndexRestMany<T, Assert<R, Key[]>>] :
@@ -371,7 +399,6 @@ export type TIndex<T extends TSchema, K extends Key[]> =
   T extends TObject    ? UnionType<Flat<TIndexRestMany<T, K>>> :
   T extends TTuple     ? UnionType<Flat<TIndexRestMany<T, K>>> :
   TNever
-
 // --------------------------------------------------------------------------
 // TInteger
 // --------------------------------------------------------------------------
@@ -392,6 +419,15 @@ export interface TIntersect<T extends TSchema[] = TSchema[]> extends TSchema, In
   static: TupleToIntersect<{ [K in keyof T]: Static<AssertType<T[K]>, this['params']> }>
   type?: 'object'
   allOf: [...T]
+}
+// --------------------------------------------------------------------------
+// TIterator
+// --------------------------------------------------------------------------
+export interface TIterator<T extends TSchema = TSchema> extends TSchema {
+  [Kind]: 'Iterator'
+  static: IterableIterator<Static<T, this['params']>>
+  type: 'Iterator'
+  items: T
 }
 // --------------------------------------------------------------------------
 // TKeyOf
@@ -461,9 +497,9 @@ export interface TNumber extends TSchema, NumericOptions<number> {
 // --------------------------------------------------------------------------
 // TObject
 // --------------------------------------------------------------------------
-export type ReadonlyOptionalPropertyKeys<T extends TProperties> = { [K in keyof T]: T[K] extends TReadonlyOptional<TSchema> ? K : never }[keyof T]
-export type ReadonlyPropertyKeys<T extends TProperties> = { [K in keyof T]: T[K] extends TReadonly<TSchema> ? K : never }[keyof T]
-export type OptionalPropertyKeys<T extends TProperties> = { [K in keyof T]: T[K] extends TOptional<TSchema> ? K : never }[keyof T]
+export type ReadonlyOptionalPropertyKeys<T extends TProperties> = { [K in keyof T]: T[K] extends TReadonly<TSchema> ? (T[K] extends TOptional<T[K]> ? K : never) : never }[keyof T]
+export type ReadonlyPropertyKeys<T extends TProperties> = { [K in keyof T]: T[K] extends TReadonly<TSchema> ? (T[K] extends TOptional<T[K]> ? never : K) : never }[keyof T]
+export type OptionalPropertyKeys<T extends TProperties> = { [K in keyof T]: T[K] extends TOptional<TSchema> ? (T[K] extends TReadonly<T[K]> ? never : K) : never }[keyof T]
 export type RequiredPropertyKeys<T extends TProperties> = keyof Omit<T, ReadonlyOptionalPropertyKeys<T> | ReadonlyPropertyKeys<T> | OptionalPropertyKeys<T>>
 // prettier-ignore
 export type PropertiesReducer<T extends TProperties, R extends Record<keyof any, unknown>> = Evaluate<(
@@ -516,11 +552,7 @@ export type TPartialObjectArray<T extends TObject[]> = AssertRest<{ [K in keyof 
 export type TPartialArray<T extends TSchema[]> = AssertRest<{ [K in keyof T]: TPartial<AssertType<T[K]>> }>
 // prettier-ignore
 export type TPartialProperties<T extends TProperties> = Evaluate<AssertProperties<{
-  [K in keyof T]: 
-    T[K] extends TReadonlyOptional<infer U> ? TReadonlyOptional<U> : 
-    T[K] extends TReadonly<infer U>         ? TReadonlyOptional<U> : 
-    T[K] extends TOptional<infer U>         ? TOptional<U>         : 
-    TOptional<T[K]>
+  [K in keyof T]: TOptional<T[K]>
 }>>
 // prettier-ignore
 export type TPartial<T extends TSchema> =  
@@ -553,8 +585,7 @@ export type TPick<T extends TSchema = TSchema, K extends keyof any = keyof any> 
 export interface TPromise<T extends TSchema = TSchema> extends TSchema {
   [Kind]: 'Promise'
   static: Promise<Static<T, this['params']>>
-  type: 'object'
-  instanceOf: 'Promise'
+  type: 'promise'
   item: TSchema
 }
 // --------------------------------------------------------------------------
@@ -609,11 +640,7 @@ export type TReturnType<T extends TFunction> = T['returns']
 export type TRequiredArray<T extends TSchema[]> = AssertRest<{ [K in keyof T]: TRequired<AssertType<T[K]>> }>
 // prettier-ignore
 export type TRequiredProperties<T extends TProperties> = Evaluate<AssertProperties<{
-  [K in keyof T]: 
-    T[K] extends TReadonlyOptional<infer U> ? TReadonly<U> : 
-    T[K] extends TReadonly<infer U>         ? TReadonly<U> :  
-    T[K] extends TOptional<infer U>         ? U : 
-    T[K]
+  [K in keyof T]: T[K] extends TOptional<infer S> ? S : T[K]
 }>>
 // prettier-ignore
 export type TRequired<T extends TSchema> = 
@@ -673,8 +700,7 @@ export type SymbolValue = string | number | undefined
 export interface TSymbol extends TSchema, SchemaOptions {
   [Kind]: 'Symbol'
   static: symbol
-  type: 'null'
-  typeOf: 'Symbol'
+  type: 'symbol'
 }
 // -------------------------------------------------------------------------
 // TTemplateLiteralParserDsl
@@ -760,8 +786,7 @@ export interface TTuple<T extends TSchema[] = TSchema[]> extends TSchema {
 export interface TUndefined extends TSchema {
   [Kind]: 'Undefined'
   static: undefined
-  type: 'null'
-  typeOf: 'Undefined'
+  type: 'undefined'
 }
 // --------------------------------------------------------------------------
 // TUnionLiteral
@@ -794,8 +819,7 @@ export interface Uint8ArrayOptions extends SchemaOptions {
 export interface TUint8Array extends TSchema, Uint8ArrayOptions {
   [Kind]: 'Uint8Array'
   static: Uint8Array
-  instanceOf: 'Uint8Array'
-  type: 'object'
+  type: 'uint8array'
 }
 // --------------------------------------------------------------------------
 // TUnknown
@@ -820,8 +844,7 @@ export interface TUnsafe<T> extends TSchema {
 export interface TVoid extends TSchema {
   [Kind]: 'Void'
   static: void
-  type: 'null'
-  typeOf: 'Void'
+  type: 'void'
 }
 // --------------------------------------------------------------------------
 // Static<T>
@@ -966,9 +989,24 @@ export namespace TypeGuard {
       schema.type === 'array' &&
       IsOptionalString(schema.$id) &&
       TSchema(schema.items) &&
+      IsOptionalSchema(schema.contains) &&
+      IsOptionalNumber(schema.minContains) &&
+      IsOptionalNumber(schema.maxContains) &&
       IsOptionalNumber(schema.minItems) &&
       IsOptionalNumber(schema.maxItems) &&
       IsOptionalBoolean(schema.uniqueItems)
+    )
+  }
+  /** Returns true if the given schema is TAsyncIterator */
+  export function TAsyncIterator(schema: unknown): schema is TAsyncIterator {
+    // prettier-ignore
+    return (
+      IsObject(schema) && 
+      Kind in schema && 
+      schema[Kind] === 'AsyncIterator' && 
+      schema.type === 'AsyncIterator' &&
+      IsOptionalString(schema.$id) &&
+      TSchema(schema.items)
     )
   }
   /** Returns true if the given schema is TBigInt */
@@ -977,8 +1015,7 @@ export namespace TypeGuard {
     return (
       TKind(schema) && 
       schema[Kind] === 'BigInt' && 
-      schema.type === 'null' &&
-      schema.typeOf === 'BigInt' &&
+      schema.type === 'bigint' &&
       IsOptionalString(schema.$id) &&
       IsOptionalBigInt(schema.multipleOf) &&
       IsOptionalBigInt(schema.minimum) &&
@@ -1003,8 +1040,7 @@ export namespace TypeGuard {
     if (!(
       TKind(schema) &&
       schema[Kind] === 'Constructor' && 
-      schema.type === 'object' && 
-      schema.instanceOf === 'Constructor' && 
+      schema.type === 'constructor' &&
       IsOptionalString(schema.$id) && 
       IsArray(schema.parameters) && 
       TSchema(schema.returns))
@@ -1021,8 +1057,7 @@ export namespace TypeGuard {
     return (
       TKind(schema) &&
       schema[Kind] === 'Date' &&
-      schema.type === 'object' &&
-      schema.instanceOf === 'Date' &&
+      schema.type === 'Date' &&
       IsOptionalString(schema.$id) &&
       IsOptionalNumber(schema.minimumTimestamp) &&
       IsOptionalNumber(schema.maximumTimestamp) &&
@@ -1036,8 +1071,7 @@ export namespace TypeGuard {
     if (!(
       TKind(schema) &&
       schema[Kind] === 'Function' && 
-      schema.type === 'object' &&
-      schema.instanceOf === 'Function' &&
+      schema.type === 'function' &&
       IsOptionalString(schema.$id) && 
       IsArray(schema.parameters) && 
       TSchema(schema.returns))
@@ -1083,6 +1117,18 @@ export namespace TypeGuard {
       if (!TSchema(inner)) return false
     }
     return true
+  }
+  /** Returns true if the given schema is TIterator */
+  export function TIterator(schema: unknown): schema is TIterator {
+    // prettier-ignore
+    return (
+      IsObject(schema) && 
+      Kind in schema && 
+      schema[Kind] === 'Iterator' && 
+      schema.type === 'Iterator' &&
+      IsOptionalString(schema.$id) &&
+      TSchema(schema.items)
+    )
   }
   /** Returns true if the given schema is TKind */
   export function TKind(schema: unknown): schema is Record<typeof Kind | string, unknown> {
@@ -1169,8 +1215,7 @@ export namespace TypeGuard {
     return (
       TKind(schema) && 
       schema[Kind] === 'Promise' && 
-      schema.type === 'object' && 
-      schema.instanceOf === 'Promise' &&
+      schema.type === 'Promise' &&
       IsOptionalString(schema.$id) && 
       TSchema(schema.item)
     )
@@ -1229,8 +1274,7 @@ export namespace TypeGuard {
     return (
       TKind(schema) && 
       schema[Kind] === 'Symbol' && 
-      schema.type === 'null' &&
-      schema.typeOf === 'Symbol' &&
+      schema.type === 'symbol' &&
       IsOptionalString(schema.$id)
     )
   }
@@ -1287,8 +1331,7 @@ export namespace TypeGuard {
     return (
       TKind(schema) && 
       schema[Kind] === 'Undefined' && 
-      schema.type === 'null' && 
-      schema.typeOf === 'Undefined' && 
+      schema.type === 'undefined' &&
       IsOptionalString(schema.$id)
     )
   }
@@ -1314,7 +1357,15 @@ export namespace TypeGuard {
   }
   /** Returns true if the given schema is TUint8Array */
   export function TUint8Array(schema: unknown): schema is TUint8Array {
-    return TKind(schema) && schema[Kind] === 'Uint8Array' && schema.type === 'object' && IsOptionalString(schema.$id) && schema.instanceOf === 'Uint8Array' && IsOptionalNumber(schema.minByteLength) && IsOptionalNumber(schema.maxByteLength)
+    // prettier-ignore
+    return (
+      TKind(schema) && 
+      schema[Kind] === 'Uint8Array' && 
+      schema.type === 'Uint8Array' && 
+      IsOptionalString(schema.$id) && 
+      IsOptionalNumber(schema.minByteLength) && 
+      IsOptionalNumber(schema.maxByteLength)
+    )
   }
   /** Returns true if the given schema is TUnknown */
   export function TUnknown(schema: unknown): schema is TUnknown {
@@ -1339,22 +1390,17 @@ export namespace TypeGuard {
     return (
       TKind(schema) && 
       schema[Kind] === 'Void' && 
-      schema.type === 'null' && 
-      schema.typeOf === 'Void' && 
+      schema.type === 'void' &&
       IsOptionalString(schema.$id)
     )
   }
-  /** Returns true if this schema has the ReadonlyOptional modifier */
-  export function TReadonlyOptional<T extends TSchema>(schema: T): schema is TReadonlyOptional<T> {
-    return IsObject(schema) && schema[Modifier] === 'ReadonlyOptional'
-  }
   /** Returns true if this schema has the Readonly modifier */
   export function TReadonly<T extends TSchema>(schema: T): schema is TReadonly<T> {
-    return IsObject(schema) && schema[Modifier] === 'Readonly'
+    return IsObject(schema) && schema[Readonly] === 'Readonly'
   }
   /** Returns true if this schema has the Optional modifier */
   export function TOptional<T extends TSchema>(schema: T): schema is TOptional<T> {
-    return IsObject(schema) && schema[Modifier] === 'Optional'
+    return IsObject(schema) && schema[Optional] === 'Optional'
   }
   /** Returns true if the given schema is TSchema */
   export function TSchema(schema: unknown): schema is TSchema {
@@ -1364,11 +1410,13 @@ export namespace TypeGuard {
         TArray(schema) ||
         TBoolean(schema) ||
         TBigInt(schema) ||
+        TAsyncIterator(schema) ||
         TConstructor(schema) ||
         TDate(schema) ||
         TFunction(schema) ||
         TInteger(schema) ||
         TIntersect(schema) ||
+        TIterator(schema) ||
         TLiteral(schema) ||
         TNever(schema) ||
         TNot(schema) ||
@@ -1430,6 +1478,27 @@ export namespace TypeExtends {
     return result === TypeExtendsResult.False ? TypeExtendsResult.False : TypeExtendsResult.True
   }
   // --------------------------------------------------------------------------
+  // StructuralRight
+  // --------------------------------------------------------------------------
+  function IsStructuralRight(right: TSchema): boolean {
+    // prettier-ignore
+    return (
+      TypeGuard.TNever(right) || 
+      TypeGuard.TIntersect(right) || 
+      TypeGuard.TUnion(right) || 
+      TypeGuard.TUnknown(right) || 
+      TypeGuard.TAny(right)
+    )
+  }
+  function StructuralRight(left: TSchema, right: TSchema) {
+    if (TypeGuard.TNever(right)) return NeverRight(left, right)
+    if (TypeGuard.TIntersect(right)) return IntersectRight(left, right)
+    if (TypeGuard.TUnion(right)) return UnionRight(left, right)
+    if (TypeGuard.TUnknown(right)) return UnknownRight(left, right)
+    if (TypeGuard.TAny(right)) return AnyRight(left, right)
+    throw Error('TypeExtends: RightCompositeCheck')
+  }
+  // --------------------------------------------------------------------------
   // Any
   // --------------------------------------------------------------------------
   function AnyRight(left: TSchema, right: TAny) {
@@ -1453,23 +1522,24 @@ export namespace TypeExtends {
     return TypeExtendsResult.False
   }
   function Array(left: TArray, right: TSchema) {
-    if (TypeGuard.TIntersect(right)) return IntersectRight(left, right)
-    if (TypeGuard.TUnion(right)) return UnionRight(left, right)
-    if (TypeGuard.TUnknown(right)) return UnknownRight(left, right)
-    if (TypeGuard.TAny(right)) return AnyRight(left, right)
+    if (IsStructuralRight(right)) return StructuralRight(left, right)
     if (TypeGuard.TObject(right) && IsObjectArrayLike(right)) return TypeExtendsResult.True
     if (!TypeGuard.TArray(right)) return TypeExtendsResult.False
+    return IntoBooleanResult(Visit(left.items, right.items))
+  }
+  // --------------------------------------------------------------------------
+  // AsyncIterator
+  // --------------------------------------------------------------------------
+  function AsyncIterator(left: TAsyncIterator, right: TSchema) {
+    if (IsStructuralRight(right)) return StructuralRight(left, right)
+    if (!TypeGuard.TAsyncIterator(right)) return TypeExtendsResult.False
     return IntoBooleanResult(Visit(left.items, right.items))
   }
   // --------------------------------------------------------------------------
   // BigInt
   // --------------------------------------------------------------------------
   function BigInt(left: TBigInt, right: TSchema): TypeExtendsResult {
-    if (TypeGuard.TIntersect(right)) return IntersectRight(left, right)
-    if (TypeGuard.TUnion(right)) return UnionRight(left, right)
-    if (TypeGuard.TNever(right)) return NeverRight(left, right)
-    if (TypeGuard.TUnknown(right)) return UnknownRight(left, right)
-    if (TypeGuard.TAny(right)) return AnyRight(left, right)
+    if (IsStructuralRight(right)) return StructuralRight(left, right)
     if (TypeGuard.TObject(right)) return ObjectRight(left, right)
     if (TypeGuard.TRecord(right)) return RecordRight(left, right)
     return TypeGuard.TBigInt(right) ? TypeExtendsResult.True : TypeExtendsResult.False
@@ -1482,11 +1552,7 @@ export namespace TypeExtends {
     return TypeGuard.TBoolean(left) ? TypeExtendsResult.True : TypeExtendsResult.False
   }
   function Boolean(left: TBoolean, right: TSchema): TypeExtendsResult {
-    if (TypeGuard.TIntersect(right)) return IntersectRight(left, right)
-    if (TypeGuard.TUnion(right)) return UnionRight(left, right)
-    if (TypeGuard.TNever(right)) return NeverRight(left, right)
-    if (TypeGuard.TUnknown(right)) return UnknownRight(left, right)
-    if (TypeGuard.TAny(right)) return AnyRight(left, right)
+    if (IsStructuralRight(right)) return StructuralRight(left, right)
     if (TypeGuard.TObject(right)) return ObjectRight(left, right)
     if (TypeGuard.TRecord(right)) return RecordRight(left, right)
     return TypeGuard.TBoolean(right) ? TypeExtendsResult.True : TypeExtendsResult.False
@@ -1495,10 +1561,7 @@ export namespace TypeExtends {
   // Constructor
   // --------------------------------------------------------------------------
   function Constructor(left: TConstructor, right: TSchema) {
-    if (TypeGuard.TIntersect(right)) return IntersectRight(left, right)
-    if (TypeGuard.TUnion(right)) return UnionRight(left, right)
-    if (TypeGuard.TUnknown(right)) return UnknownRight(left, right)
-    if (TypeGuard.TAny(right)) return AnyRight(left, right)
+    if (IsStructuralRight(right)) return StructuralRight(left, right)
     if (TypeGuard.TObject(right)) return ObjectRight(left, right)
     if (!TypeGuard.TConstructor(right)) return TypeExtendsResult.False
     if (left.parameters.length > right.parameters.length) return TypeExtendsResult.False
@@ -1511,10 +1574,7 @@ export namespace TypeExtends {
   // Date
   // --------------------------------------------------------------------------
   function Date(left: TDate, right: TSchema) {
-    if (TypeGuard.TIntersect(right)) return IntersectRight(left, right)
-    if (TypeGuard.TUnion(right)) return UnionRight(left, right)
-    if (TypeGuard.TUnknown(right)) return UnknownRight(left, right)
-    if (TypeGuard.TAny(right)) return AnyRight(left, right)
+    if (IsStructuralRight(right)) return StructuralRight(left, right)
     if (TypeGuard.TObject(right)) return ObjectRight(left, right)
     if (TypeGuard.TRecord(right)) return RecordRight(left, right)
     return TypeGuard.TDate(right) ? TypeExtendsResult.True : TypeExtendsResult.False
@@ -1523,10 +1583,7 @@ export namespace TypeExtends {
   // Function
   // --------------------------------------------------------------------------
   function Function(left: TFunction, right: TSchema) {
-    if (TypeGuard.TIntersect(right)) return IntersectRight(left, right)
-    if (TypeGuard.TUnion(right)) return UnionRight(left, right)
-    if (TypeGuard.TUnknown(right)) return UnknownRight(left, right)
-    if (TypeGuard.TAny(right)) return AnyRight(left, right)
+    if (IsStructuralRight(right)) return StructuralRight(left, right)
     if (TypeGuard.TObject(right)) return ObjectRight(left, right)
     if (!TypeGuard.TFunction(right)) return TypeExtendsResult.False
     if (left.parameters.length > right.parameters.length) return TypeExtendsResult.False
@@ -1543,11 +1600,7 @@ export namespace TypeExtends {
     return TypeGuard.TNumber(left) || TypeGuard.TInteger(left) ? TypeExtendsResult.True : TypeExtendsResult.False
   }
   function Integer(left: TInteger, right: TSchema): TypeExtendsResult {
-    if (TypeGuard.TIntersect(right)) return IntersectRight(left, right)
-    if (TypeGuard.TUnion(right)) return UnionRight(left, right)
-    if (TypeGuard.TNever(right)) return NeverRight(left, right)
-    if (TypeGuard.TUnknown(right)) return UnknownRight(left, right)
-    if (TypeGuard.TAny(right)) return AnyRight(left, right)
+    if (IsStructuralRight(right)) return StructuralRight(left, right)
     if (TypeGuard.TObject(right)) return ObjectRight(left, right)
     if (TypeGuard.TRecord(right)) return RecordRight(left, right)
     return TypeGuard.TInteger(right) || TypeGuard.TNumber(right) ? TypeExtendsResult.True : TypeExtendsResult.False
@@ -1562,6 +1615,14 @@ export namespace TypeExtends {
     return left.allOf.some((schema) => Visit(schema, right) === TypeExtendsResult.True) ? TypeExtendsResult.True : TypeExtendsResult.False
   }
   // --------------------------------------------------------------------------
+  // Iterator
+  // --------------------------------------------------------------------------
+  function Iterator(left: TIterator, right: TSchema) {
+    if (IsStructuralRight(right)) return StructuralRight(left, right)
+    if (!TypeGuard.TIterator(right)) return TypeExtendsResult.False
+    return IntoBooleanResult(Visit(left.items, right.items))
+  }
+  // --------------------------------------------------------------------------
   // Literal
   // --------------------------------------------------------------------------
   function IsLiteralString(schema: TLiteral) {
@@ -1574,11 +1635,7 @@ export namespace TypeExtends {
     return typeof schema.const === 'boolean'
   }
   function Literal(left: TLiteral, right: TSchema): TypeExtendsResult {
-    if (TypeGuard.TIntersect(right)) return IntersectRight(left, right)
-    if (TypeGuard.TUnion(right)) return UnionRight(left, right)
-    if (TypeGuard.TNever(right)) return NeverRight(left, right)
-    if (TypeGuard.TUnknown(right)) return UnknownRight(left, right)
-    if (TypeGuard.TAny(right)) return AnyRight(left, right)
+    if (IsStructuralRight(right)) return StructuralRight(left, right)
     if (TypeGuard.TObject(right)) return ObjectRight(left, right)
     if (TypeGuard.TRecord(right)) return RecordRight(left, right)
     if (TypeGuard.TString(right)) return StringRight(left, right)
@@ -1620,11 +1677,7 @@ export namespace TypeExtends {
   // Null
   // --------------------------------------------------------------------------
   function Null(left: TNull, right: TSchema) {
-    if (TypeGuard.TIntersect(right)) return IntersectRight(left, right)
-    if (TypeGuard.TUnion(right)) return UnionRight(left, right)
-    if (TypeGuard.TNever(right)) return NeverRight(left, right)
-    if (TypeGuard.TUnknown(right)) return UnknownRight(left, right)
-    if (TypeGuard.TAny(right)) return AnyRight(left, right)
+    if (IsStructuralRight(right)) return StructuralRight(left, right)
     if (TypeGuard.TObject(right)) return ObjectRight(left, right)
     if (TypeGuard.TRecord(right)) return RecordRight(left, right)
     return TypeGuard.TNull(right) ? TypeExtendsResult.True : TypeExtendsResult.False
@@ -1637,11 +1690,7 @@ export namespace TypeExtends {
     return TypeGuard.TNumber(left) || TypeGuard.TInteger(left) ? TypeExtendsResult.True : TypeExtendsResult.False
   }
   function Number(left: TNumber, right: TSchema): TypeExtendsResult {
-    if (TypeGuard.TIntersect(right)) return IntersectRight(left, right)
-    if (TypeGuard.TUnion(right)) return UnionRight(left, right)
-    if (TypeGuard.TNever(right)) return NeverRight(left, right)
-    if (TypeGuard.TUnknown(right)) return UnknownRight(left, right)
-    if (TypeGuard.TAny(right)) return AnyRight(left, right)
+    if (IsStructuralRight(right)) return StructuralRight(left, right)
     if (TypeGuard.TObject(right)) return ObjectRight(left, right)
     if (TypeGuard.TRecord(right)) return RecordRight(left, right)
     return TypeGuard.TInteger(right) || TypeGuard.TNumber(right) ? TypeExtendsResult.True : TypeExtendsResult.False
@@ -1734,10 +1783,7 @@ export namespace TypeExtends {
     return TypeExtendsResult.False
   }
   function Object(left: TObject, right: TSchema) {
-    if (TypeGuard.TIntersect(right)) return IntersectRight(left, right)
-    if (TypeGuard.TUnion(right)) return UnionRight(left, right)
-    if (TypeGuard.TUnknown(right)) return UnknownRight(left, right)
-    if (TypeGuard.TAny(right)) return AnyRight(left, right)
+    if (IsStructuralRight(right)) return StructuralRight(left, right)
     if (TypeGuard.TRecord(right)) return RecordRight(left, right)
     if (!TypeGuard.TObject(right)) return TypeExtendsResult.False
     for (const key of globalThis.Object.keys(right.properties)) {
@@ -1752,10 +1798,7 @@ export namespace TypeExtends {
   // Promise
   // --------------------------------------------------------------------------
   function Promise(left: TPromise, right: TSchema) {
-    if (TypeGuard.TIntersect(right)) return IntersectRight(left, right)
-    if (TypeGuard.TUnion(right)) return UnionRight(left, right)
-    if (TypeGuard.TUnknown(right)) return UnknownRight(left, right)
-    if (TypeGuard.TAny(right)) return AnyRight(left, right)
+    if (IsStructuralRight(right)) return StructuralRight(left, right)
     if (TypeGuard.TObject(right) && IsObjectPromiseLike(right)) return TypeExtendsResult.True
     if (!TypeGuard.TPromise(right)) return TypeExtendsResult.False
     return IntoBooleanResult(Visit(left.item, right.item))
@@ -1792,10 +1835,7 @@ export namespace TypeExtends {
   }
   function Record(left: TRecord, right: TSchema) {
     const Value = RecordValue(left)
-    if (TypeGuard.TIntersect(right)) return IntersectRight(left, right)
-    if (TypeGuard.TUnion(right)) return UnionRight(left, right)
-    if (TypeGuard.TUnknown(right)) return UnknownRight(left, right)
-    if (TypeGuard.TAny(right)) return AnyRight(left, right)
+    if (IsStructuralRight(right)) return StructuralRight(left, right)
     if (TypeGuard.TObject(right)) return ObjectRight(left, right)
     if (!TypeGuard.TRecord(right)) return TypeExtendsResult.False
     return Visit(Value, RecordValue(right))
@@ -1808,11 +1848,7 @@ export namespace TypeExtends {
     return TypeGuard.TString(left) ? TypeExtendsResult.True : TypeExtendsResult.False
   }
   function String(left: TString, right: TSchema): TypeExtendsResult {
-    if (TypeGuard.TIntersect(right)) return IntersectRight(left, right)
-    if (TypeGuard.TUnion(right)) return UnionRight(left, right)
-    if (TypeGuard.TNever(right)) return NeverRight(left, right)
-    if (TypeGuard.TUnknown(right)) return UnknownRight(left, right)
-    if (TypeGuard.TAny(right)) return AnyRight(left, right)
+    if (IsStructuralRight(right)) return StructuralRight(left, right)
     if (TypeGuard.TObject(right)) return ObjectRight(left, right)
     if (TypeGuard.TRecord(right)) return RecordRight(left, right)
     return TypeGuard.TString(right) ? TypeExtendsResult.True : TypeExtendsResult.False
@@ -1821,11 +1857,7 @@ export namespace TypeExtends {
   // Symbol
   // --------------------------------------------------------------------------
   function Symbol(left: TSymbol, right: TSchema): TypeExtendsResult {
-    if (TypeGuard.TIntersect(right)) return IntersectRight(left, right)
-    if (TypeGuard.TUnion(right)) return UnionRight(left, right)
-    if (TypeGuard.TNever(right)) return NeverRight(left, right)
-    if (TypeGuard.TUnknown(right)) return UnknownRight(left, right)
-    if (TypeGuard.TAny(right)) return AnyRight(left, right)
+    if (IsStructuralRight(right)) return StructuralRight(left, right)
     if (TypeGuard.TObject(right)) return ObjectRight(left, right)
     if (TypeGuard.TRecord(right)) return RecordRight(left, right)
     return TypeGuard.TSymbol(right) ? TypeExtendsResult.True : TypeExtendsResult.False
@@ -1844,20 +1876,22 @@ export namespace TypeExtends {
   // --------------------------------------------------------------------------
   // Tuple
   // --------------------------------------------------------------------------
+  function IsArrayOfTuple(left: TTuple, right: TSchema) {
+    // prettier-ignore
+    return (
+      TypeGuard.TArray(right) && 
+      left.items !== undefined && 
+      left.items.every((schema) => Visit(schema, right.items) === TypeExtendsResult.True)
+    )
+  }
   function TupleRight(left: TSchema, right: TTuple) {
+    if (TypeGuard.TNever(left)) return TypeExtendsResult.True
     if (TypeGuard.TUnknown(left)) return TypeExtendsResult.False
     if (TypeGuard.TAny(left)) return TypeExtendsResult.Union
-    if (TypeGuard.TNever(left)) return TypeExtendsResult.True
     return TypeExtendsResult.False
   }
-  function IsArrayOfTuple(left: TTuple, right: TSchema) {
-    return TypeGuard.TArray(right) && left.items !== undefined && left.items.every((schema) => Visit(schema, right.items) === TypeExtendsResult.True)
-  }
   function Tuple(left: TTuple, right: TSchema): TypeExtendsResult {
-    if (TypeGuard.TIntersect(right)) return IntersectRight(left, right)
-    if (TypeGuard.TUnion(right)) return UnionRight(left, right)
-    if (TypeGuard.TUnknown(right)) return UnknownRight(left, right)
-    if (TypeGuard.TAny(right)) return AnyRight(left, right)
+    if (IsStructuralRight(right)) return StructuralRight(left, right)
     if (TypeGuard.TObject(right) && IsObjectArrayLike(right)) return TypeExtendsResult.True
     if (TypeGuard.TArray(right) && IsArrayOfTuple(left, right)) return TypeExtendsResult.True
     if (!TypeGuard.TTuple(right)) return TypeExtendsResult.False
@@ -1869,10 +1903,7 @@ export namespace TypeExtends {
   // Uint8Array
   // --------------------------------------------------------------------------
   function Uint8Array(left: TUint8Array, right: TSchema) {
-    if (TypeGuard.TIntersect(right)) return IntersectRight(left, right)
-    if (TypeGuard.TUnion(right)) return UnionRight(left, right)
-    if (TypeGuard.TUnknown(right)) return UnknownRight(left, right)
-    if (TypeGuard.TAny(right)) return AnyRight(left, right)
+    if (IsStructuralRight(right)) return StructuralRight(left, right)
     if (TypeGuard.TObject(right)) return ObjectRight(left, right)
     if (TypeGuard.TRecord(right)) return RecordRight(left, right)
     return TypeGuard.TUint8Array(right) ? TypeExtendsResult.True : TypeExtendsResult.False
@@ -1881,11 +1912,7 @@ export namespace TypeExtends {
   // Undefined
   // --------------------------------------------------------------------------
   function Undefined(left: TUndefined, right: TSchema) {
-    if (TypeGuard.TIntersect(right)) return IntersectRight(left, right)
-    if (TypeGuard.TUnion(right)) return UnionRight(left, right)
-    if (TypeGuard.TNever(right)) return NeverRight(left, right)
-    if (TypeGuard.TUnknown(right)) return UnknownRight(left, right)
-    if (TypeGuard.TAny(right)) return AnyRight(left, right)
+    if (IsStructuralRight(right)) return StructuralRight(left, right)
     if (TypeGuard.TObject(right)) return ObjectRight(left, right)
     if (TypeGuard.TRecord(right)) return RecordRight(left, right)
     if (TypeGuard.TVoid(right)) return VoidRight(left, right)
@@ -1907,6 +1934,7 @@ export namespace TypeExtends {
     return TypeExtendsResult.True
   }
   function Unknown(left: TUnknown, right: TSchema) {
+    if (TypeGuard.TNever(right)) return NeverRight(left, right)
     if (TypeGuard.TIntersect(right)) return IntersectRight(left, right)
     if (TypeGuard.TUnion(right)) return UnionRight(left, right)
     if (TypeGuard.TAny(right)) return AnyRight(left, right)
@@ -1943,11 +1971,13 @@ export namespace TypeExtends {
     if (TypeGuard.TArray(left)) return Array(left, right)
     if (TypeGuard.TBigInt(left)) return BigInt(left, right)
     if (TypeGuard.TBoolean(left)) return Boolean(left, right)
+    if (TypeGuard.TAsyncIterator(left)) return AsyncIterator(left, right)
     if (TypeGuard.TConstructor(left)) return Constructor(left, right)
     if (TypeGuard.TDate(left)) return Date(left, right)
     if (TypeGuard.TFunction(left)) return Function(left, right)
     if (TypeGuard.TInteger(left)) return Integer(left, right)
     if (TypeGuard.TIntersect(left)) return Intersect(left, right)
+    if (TypeGuard.TIterator(left)) return Iterator(left, right)
     if (TypeGuard.TLiteral(left)) return Literal(left, right)
     if (TypeGuard.TNever(left)) return Never(left, right)
     if (TypeGuard.TNull(left)) return Null(left, right)
@@ -2008,7 +2038,7 @@ export namespace TypeClone {
 export namespace IndexedAccessor {
   function OptionalUnwrap(schema: TSchema[]): TSchema[] {
     return schema.map((schema) => {
-      const { [Modifier]: _, ...clone } = TypeClone.Clone(schema, {})
+      const { [Optional]: _, ...clone } = TypeClone.Clone(schema, {})
       return clone
     })
   }
@@ -2456,6 +2486,11 @@ export class TypeBuilder {
   protected Create<T>(schema: Omit<T, 'static' | 'params'>): T {
     return schema as any
   }
+  /** `[Utility]` Discards a property key from the given schema */
+  protected DiscardProperty(schema: TSchema, key: PropertyKey): TSchema {
+    const { [key as any]: _, ...rest } = schema
+    return rest as TSchema
+  }
   /** `[Standard]` Omits compositing symbols from this schema */
   public Strict<T extends TSchema>(schema: T): T {
     return JSON.parse(JSON.stringify(schema))
@@ -2468,17 +2503,17 @@ export class StandardTypeBuilder extends TypeBuilder {
   // ------------------------------------------------------------------------
   // Modifiers
   // ------------------------------------------------------------------------
-  /** `[Modifier]` Creates a Optional property */
-  public Optional<T extends TSchema>(schema: T): TOptional<T> {
-    return { [Modifier]: 'Optional', ...TypeClone.Clone(schema, {}) }
+  /** `[Standard]` Creates a Readonly and Optional property */
+  public ReadonlyOptional<T extends TSchema>(schema: T): TReadonly<TOptional<T>> {
+    return this.Readonly(this.Optional(schema))
   }
-  /** `[Modifier]` Creates a ReadonlyOptional property */
-  public ReadonlyOptional<T extends TSchema>(schema: T): TReadonlyOptional<T> {
-    return { [Modifier]: 'ReadonlyOptional', ...TypeClone.Clone(schema, {}) }
-  }
-  /** `[Modifier]` Creates a Readonly object or property */
+  /** `[Standard]` Creates a Readonly property */
   public Readonly<T extends TSchema>(schema: T): TReadonly<T> {
-    return { [Modifier]: 'Readonly', ...schema }
+    return { ...TypeClone.Clone(schema, {}), [Readonly]: 'Readonly' }
+  }
+  /** `[Standard]` Creates an Optional property */
+  public Optional<T extends TSchema>(schema: T): TOptional<T> {
+    return { ...TypeClone.Clone(schema, {}), [Optional]: 'Optional' }
   }
   // ------------------------------------------------------------------------
   // Types
@@ -2635,7 +2670,7 @@ export class StandardTypeBuilder extends TypeBuilder {
   /** `[Standard]` Creates an Object type */
   public Object<T extends TProperties>(properties: T, options: ObjectOptions = {}): TObject<T> {
     const propertyKeys = globalThis.Object.getOwnPropertyNames(properties)
-    const optionalKeys = propertyKeys.filter((key) => TypeGuard.TOptional(properties[key]) || TypeGuard.TReadonlyOptional(properties[key]))
+    const optionalKeys = propertyKeys.filter((key) => TypeGuard.TOptional(properties[key]))
     const requiredKeys = propertyKeys.filter((name) => !optionalKeys.includes(name))
     const clonedAdditionalProperties = TypeGuard.TSchema(options.additionalProperties) ? { additionalProperties: TypeClone.Clone(options.additionalProperties, {}) } : {}
     const clonedProperties = propertyKeys.reduce((acc, key) => ({ ...acc, [key]: TypeClone.Clone(properties[key], {}) }), {} as TProperties)
@@ -2671,20 +2706,12 @@ export class StandardTypeBuilder extends TypeBuilder {
   }
   /** `[Standard]` Creates a mapped type where all properties are Optional */
   public Partial<T extends TSchema>(schema: T, options: ObjectOptions = {}): TPartial<T> {
-    function Apply(schema: TSchema) {
-      // prettier-ignore
-      switch (schema[Modifier]) {
-        case 'ReadonlyOptional': schema[Modifier] = 'ReadonlyOptional'; break;
-        case 'Readonly': schema[Modifier] = 'ReadonlyOptional'; break;
-        case 'Optional': schema[Modifier] = 'Optional'; break;
-        default: schema[Modifier] = 'Optional'; break;
-      }
-    }
     // prettier-ignore
-    return ObjectMap.Map<TPartial<T>>(TypeClone.Clone(schema, {}), (schema) => {
-      delete schema.required
-      globalThis.Object.keys(schema.properties).forEach(key => Apply(schema.properties[key]))
-      return schema
+    return ObjectMap.Map(schema, (object) => {
+      const properties = globalThis.Object.getOwnPropertyNames(object.properties).reduce((acc, key) => {
+        return { ...acc, [key]: this.Optional(object.properties[key]) }
+      }, {} as TProperties)
+      return this.Object(properties, this.DiscardProperty(object, 'required') /* object used as options to retain other constraints */)
     }, options)
   }
   /** `[Standard]` Creates a mapped type whose keys are picked from the given type */
@@ -2757,26 +2784,23 @@ export class StandardTypeBuilder extends TypeBuilder {
     return this.Create({ ...options, [Hint]: 'Recursive', ...thisType } as any)
   }
   /** `[Standard]` Creates a Ref type. The referenced type must contain a $id */
-  public Ref<T extends TSchema>(schema: T, options: SchemaOptions = {}): TRef<T> {
-    if (schema.$id === undefined) throw Error('StandardTypeBuilder.Ref: Target type must specify an $id')
-    return this.Create({ ...options, [Kind]: 'Ref', $ref: schema.$id! })
+  public Ref<T extends TSchema>(schema: T, options?: SchemaOptions): TRef<T>
+  /** `[Standard]` Creates a Ref type. */
+  public Ref<T extends TSchema>($ref: string, options?: SchemaOptions): TRef<T>
+  /** `[Standard]` Creates a Ref type. */
+  public Ref(unresolved: TSchema | string, options: SchemaOptions = {}) {
+    if (typeof unresolved === 'string') return this.Create({ ...options, [Kind]: 'Ref', $ref: unresolved })
+    if (unresolved.$id === undefined) throw Error('StandardTypeBuilder.Ref: Target type must specify an $id')
+    return this.Create({ ...options, [Kind]: 'Ref', $ref: unresolved.$id! })
   }
   /** `[Standard]` Creates a mapped type where all properties are Required */
   public Required<T extends TSchema>(schema: T, options: SchemaOptions = {}): TRequired<T> {
-    function Apply(schema: TSchema) {
-      // prettier-ignore
-      switch (schema[Modifier]) {
-        case 'ReadonlyOptional': schema[Modifier] = 'Readonly'; break
-        case 'Readonly': schema[Modifier] = 'Readonly'; break
-        case 'Optional': delete schema[Modifier]; break
-        default: delete schema[Modifier]; break
-      }
-    }
     // prettier-ignore
-    return ObjectMap.Map<TRequired<T>>(TypeClone.Clone(schema, {}), (schema) => {
-      schema.required = globalThis.Object.keys(schema.properties)
-      globalThis.Object.keys(schema.properties).forEach(key => Apply(schema.properties[key]))
-      return schema
+    return ObjectMap.Map(schema, (object) => {
+      const properties = globalThis.Object.keys(object.properties).reduce((acc, key) => {
+        return { ...acc, [key]: this.DiscardProperty(object.properties[key], Optional) as TSchema }
+      }, {} as TProperties)
+      return this.Object(properties, object /* object used as options to retain other constraints  */)
     }, options)
   }
   /** `[Standard]` Returns a schema array which allows types to compose with the JavaScript spread operator */
@@ -2846,9 +2870,13 @@ export class StandardTypeBuilder extends TypeBuilder {
 // ExtendedTypeBuilder
 // --------------------------------------------------------------------------
 export class ExtendedTypeBuilder extends StandardTypeBuilder {
+  /** `[Extended]` Creates a async iterator type */
+  public AsyncIterator<T extends TSchema>(items: T, options: SchemaOptions = {}): TAsyncIterator<T> {
+    return this.Create({ ...options, [Kind]: 'AsyncIterator', type: 'AsyncIterator', items: TypeClone.Clone(items, {}) })
+  }
   /** `[Extended]` Creates a BigInt type */
   public BigInt(options: NumericOptions<bigint> = {}): TBigInt {
-    return this.Create({ ...options, [Kind]: 'BigInt', type: 'null', typeOf: 'BigInt' })
+    return this.Create({ ...options, [Kind]: 'BigInt', type: 'bigint' })
   }
   /** `[Extended]` Extracts the ConstructorParameters from the given Constructor type */
   public ConstructorParameters<T extends TConstructor<any[], any>>(schema: T, options: SchemaOptions = {}): TConstructorParameters<T> {
@@ -2858,21 +2886,25 @@ export class ExtendedTypeBuilder extends StandardTypeBuilder {
   public Constructor<T extends TSchema[], U extends TSchema>(parameters: [...T], returns: U, options?: SchemaOptions): TConstructor<T, U> {
     const clonedReturns = TypeClone.Clone(returns, {})
     const clonedParameters = parameters.map((parameter) => TypeClone.Clone(parameter, {}))
-    return this.Create({ ...options, [Kind]: 'Constructor', type: 'object', instanceOf: 'Constructor', parameters: clonedParameters, returns: clonedReturns })
+    return this.Create({ ...options, [Kind]: 'Constructor', type: 'constructor', parameters: clonedParameters, returns: clonedReturns })
   }
   /** `[Extended]` Creates a Date type */
   public Date(options: DateOptions = {}): TDate {
-    return this.Create({ ...options, [Kind]: 'Date', type: 'object', instanceOf: 'Date' })
+    return this.Create({ ...options, [Kind]: 'Date', type: 'Date' })
   }
   /** `[Extended]` Creates a Function type */
   public Function<T extends TSchema[], U extends TSchema>(parameters: [...T], returns: U, options?: SchemaOptions): TFunction<T, U> {
     const clonedReturns = TypeClone.Clone(returns, {})
     const clonedParameters = parameters.map((parameter) => TypeClone.Clone(parameter, {}))
-    return this.Create({ ...options, [Kind]: 'Function', type: 'object', instanceOf: 'Function', parameters: clonedParameters, returns: clonedReturns })
+    return this.Create({ ...options, [Kind]: 'Function', type: 'function', parameters: clonedParameters, returns: clonedReturns })
   }
   /** `[Extended]` Extracts the InstanceType from the given Constructor */
   public InstanceType<T extends TConstructor<any[], any>>(schema: T, options: SchemaOptions = {}): TInstanceType<T> {
     return TypeClone.Clone(schema.returns, options)
+  }
+  /** `[Extended]` Creates an iterator type */
+  public Iterator<T extends TSchema>(items: T, options: SchemaOptions = {}): TIterator<T> {
+    return this.Create({ ...options, [Kind]: 'Iterator', type: 'Iterator', items: TypeClone.Clone(items, {}) })
   }
   /** `[Extended]` Extracts the Parameters from the given Function type */
   public Parameters<T extends TFunction<any[], any>>(schema: T, options: SchemaOptions = {}): TParameters<T> {
@@ -2880,11 +2912,23 @@ export class ExtendedTypeBuilder extends StandardTypeBuilder {
   }
   /** `[Extended]` Creates a Promise type */
   public Promise<T extends TSchema>(item: T, options: SchemaOptions = {}): TPromise<T> {
-    return this.Create({ ...options, [Kind]: 'Promise', type: 'object', instanceOf: 'Promise', item: TypeClone.Clone(item, {}) })
+    return this.Create({ ...options, [Kind]: 'Promise', type: 'Promise', item: TypeClone.Clone(item, {}) })
   }
-  /** `[Extended]` Creates a regular expression type */
-  public RegEx(regex: RegExp, options: SchemaOptions = {}): TString {
+  /**
+   * `[Extended]` Creates a String pattern type from Regular Expression
+   *
+   * This type is an alias for String + pattern and does not support Unicode or other ECMA262 control characters. For
+   * expressions matching for case insentivity, language character sets or extended symbols consider creating a format
+   * via the FormatRegistry.
+   */
+  public RegExp(regex: RegExp, options: SchemaOptions = {}): TString {
     return this.Create({ ...options, [Kind]: 'String', type: 'string', pattern: regex.source })
+  }
+  /**
+   * @deprecated Use `Type.RegExp(/xyz/)`
+   */
+  public RegEx(regex: RegExp, options: SchemaOptions = {}): TString {
+    return this.RegExp(regex, options)
   }
   /** `[Extended]` Extracts the ReturnType from the given Function */
   public ReturnType<T extends TFunction<any[], any>>(schema: T, options: SchemaOptions = {}): TReturnType<T> {
@@ -2892,24 +2936,24 @@ export class ExtendedTypeBuilder extends StandardTypeBuilder {
   }
   /** `[Extended]` Creates a Symbol type */
   public Symbol(options?: SchemaOptions): TSymbol {
-    return this.Create({ ...options, [Kind]: 'Symbol', type: 'null', typeOf: 'Symbol' })
+    return this.Create({ ...options, [Kind]: 'Symbol', type: 'symbol' })
   }
   /** `[Extended]` Creates a Undefined type */
   public Undefined(options: SchemaOptions = {}): TUndefined {
-    return this.Create({ ...options, [Kind]: 'Undefined', type: 'null', typeOf: 'Undefined' })
+    return this.Create({ ...options, [Kind]: 'Undefined', type: 'undefined' })
   }
   /** `[Extended]` Creates a Uint8Array type */
   public Uint8Array(options: Uint8ArrayOptions = {}): TUint8Array {
-    return this.Create({ ...options, [Kind]: 'Uint8Array', type: 'object', instanceOf: 'Uint8Array' })
+    return this.Create({ ...options, [Kind]: 'Uint8Array', type: 'Uint8Array' })
   }
   /** `[Extended]` Creates a Void type */
   public Void(options: SchemaOptions = {}): TVoid {
-    return this.Create({ ...options, [Kind]: 'Void', type: 'null', typeOf: 'Void' })
+    return this.Create({ ...options, [Kind]: 'Void', type: 'void' })
   }
 }
 
-/** JSON Schema TypeBuilder with Static Resolution for TypeScript */
+/** JSON Schema Type Builder with Static Resolution for TypeScript */
 export const StandardType = new StandardTypeBuilder()
 
-/** JSON Schema TypeBuilder with Static Resolution for TypeScript */
+/** JSON Schema Type Builder with Static Resolution for TypeScript */
 export const Type = new ExtendedTypeBuilder()

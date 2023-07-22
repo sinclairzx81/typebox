@@ -1,4 +1,4 @@
-import { Type, Modifier } from '@sinclair/typebox'
+import { Type, Readonly, Optional } from '@sinclair/typebox'
 import { Ok, Fail } from './validate'
 import { strictEqual } from 'assert'
 
@@ -22,7 +22,7 @@ describe('type/schema/Partial', () => {
   it('Should update modifier types correctly when converting to partial', () => {
     const A = Type.Object(
       {
-        x: Type.ReadonlyOptional(Type.Number()),
+        x: Type.Readonly(Type.Optional(Type.Number())),
         y: Type.Readonly(Type.Number()),
         z: Type.Optional(Type.Number()),
         w: Type.Number(),
@@ -30,10 +30,12 @@ describe('type/schema/Partial', () => {
       { additionalProperties: false },
     )
     const T = Type.Partial(A)
-    strictEqual(T.properties.x[Modifier], 'ReadonlyOptional')
-    strictEqual(T.properties.y[Modifier], 'ReadonlyOptional')
-    strictEqual(T.properties.z[Modifier], 'Optional')
-    strictEqual(T.properties.w[Modifier], 'Optional')
+    strictEqual(T.properties.x[Readonly], 'Readonly')
+    strictEqual(T.properties.x[Optional], 'Optional')
+    strictEqual(T.properties.y[Readonly], 'Readonly')
+    strictEqual(T.properties.y[Optional], 'Optional')
+    strictEqual(T.properties.z[Optional], 'Optional')
+    strictEqual(T.properties.w[Optional], 'Optional')
   })
 
   it('Should inherit options from the source object', () => {

@@ -3,7 +3,7 @@ import { Ok, Fail } from './validate'
 
 describe('type/compiler/RegEx', () => {
   it('Should validate numeric value', () => {
-    const T = Type.RegEx(/[012345]/)
+    const T = Type.RegExp(/[012345]/)
     Ok(T, '0')
     Ok(T, '1')
     Ok(T, '2')
@@ -11,9 +11,8 @@ describe('type/compiler/RegEx', () => {
     Ok(T, '4')
     Ok(T, '5')
   })
-
   it('Should validate true or false string value', () => {
-    const T = Type.RegEx(/true|false/)
+    const T = Type.RegExp(/true|false/)
     Ok(T, 'true')
     Ok(T, 'true')
     Ok(T, 'true')
@@ -22,14 +21,12 @@ describe('type/compiler/RegEx', () => {
     Ok(T, 'false')
     Fail(T, '6')
   })
-
   it('Should not validate failed regex test', () => {
-    const T = Type.RegEx(/true|false/)
+    const T = Type.RegExp(/true|false/)
     Fail(T, 'unknown')
   })
-
   it('Should pass numeric 5 digit test', () => {
-    const T = Type.RegEx(/[\d]{5}/)
+    const T = Type.RegExp(/[\d]{5}/)
     Ok(T, '12345')
   })
 })

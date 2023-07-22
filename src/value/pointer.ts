@@ -26,24 +26,27 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+// --------------------------------------------------------------------------
+// Errors
+// --------------------------------------------------------------------------
 export class ValuePointerRootSetError extends Error {
   constructor(public readonly value: unknown, public readonly path: string, public readonly update: unknown) {
     super('ValuePointer: Cannot set root value')
   }
 }
-
 export class ValuePointerRootDeleteError extends Error {
   constructor(public readonly value: unknown, public readonly path: string) {
     super('ValuePointer: Cannot delete root value')
   }
 }
-
+// --------------------------------------------------------------------------
+// ValuePointer
+// --------------------------------------------------------------------------
 /** Provides functionality to update values through RFC6901 string pointers */
 export namespace ValuePointer {
   function Escape(component: string) {
     return component.indexOf('~') === -1 ? component : component.replace(/~1/g, '/').replace(/~0/g, '~')
   }
-
   /** Formats the given pointer into navigable key components */
   export function* Format(pointer: string): IterableIterator<string> {
     if (pointer === '') return
@@ -64,7 +67,6 @@ export namespace ValuePointer {
     }
     yield Escape(pointer.slice(start))
   }
-
   /** Sets the value at the given pointer. If the value at the pointer does not exist it is created */
   export function Set(value: any, pointer: string, update: unknown): void {
     if (pointer === '') throw new ValuePointerRootSetError(value, pointer, update)
@@ -77,7 +79,6 @@ export namespace ValuePointer {
     }
     owner[key] = update
   }
-
   /** Deletes a value at the given pointer */
   export function Delete(value: any, pointer: string): void {
     if (pointer === '') throw new ValuePointerRootDeleteError(value, pointer)
@@ -95,7 +96,6 @@ export namespace ValuePointer {
       delete owner[key]
     }
   }
-
   /** Returns true if a value exists at the given pointer */
   export function Has(value: any, pointer: string): boolean {
     if (pointer === '') return true
@@ -108,7 +108,6 @@ export namespace ValuePointer {
     }
     return globalThis.Object.getOwnPropertyNames(owner).includes(key)
   }
-
   /** Gets the value at the given pointer */
   export function Get(value: any, pointer: string): any {
     if (pointer === '') return value

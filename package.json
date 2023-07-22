@@ -1,6 +1,6 @@
 {
   "name": "@sinclair/typebox",
-  "version": "0.29.6",
+  "version": "0.30.0",
   "description": "JSONSchema Type Builder with Static Type Resolution for TypeScript",
   "keywords": [
     "typescript",
@@ -16,6 +16,17 @@
     "./compiler": "./compiler/index.js",
     "./errors": "./errors/index.js",
     "./system": "./system/index.js",
+    "./value/cast": "./value/cast.js",
+    "./value/check": "./value/check.js",
+    "./value/clone": "./value/clone.js",
+    "./value/convert": "./value/convert.js",
+    "./value/create": "./value/create.js",
+    "./value/delta": "./value/delta.js",
+    "./value/equal": "./value/equal.js",
+    "./value/guard": "./value/guard.js",
+    "./value/hash": "./value/hash.js",
+    "./value/mutate": "./value/mutate.js",
+    "./value/pointer": "./value/pointer.js",
     "./value": "./value/index.js",
     ".": "./typebox.js"
   },

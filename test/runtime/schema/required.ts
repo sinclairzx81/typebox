@@ -1,4 +1,4 @@
-import { Type, Modifier } from '@sinclair/typebox'
+import { Type, Readonly, Optional } from '@sinclair/typebox'
 import { Ok, Fail } from './validate'
 import { strictEqual } from 'assert'
 
@@ -21,16 +21,16 @@ describe('type/schema/Required', () => {
 
   it('Should update modifier types correctly when converting to required', () => {
     const A = Type.Object({
-      x: Type.ReadonlyOptional(Type.Number()),
+      x: Type.Readonly(Type.Optional(Type.Number())),
       y: Type.Readonly(Type.Number()),
       z: Type.Optional(Type.Number()),
       w: Type.Number(),
     })
     const T = Type.Required(A)
-    strictEqual(T.properties.x[Modifier], 'Readonly')
-    strictEqual(T.properties.y[Modifier], 'Readonly')
-    strictEqual(T.properties.z[Modifier], undefined)
-    strictEqual(T.properties.w[Modifier], undefined)
+    strictEqual(T.properties.x[Readonly], 'Readonly')
+    strictEqual(T.properties.y[Readonly], 'Readonly')
+    strictEqual(T.properties.z[Optional], undefined)
+    strictEqual(T.properties.w[Optional], undefined)
   })
 
   it('Should inherit options from the source object', () => {

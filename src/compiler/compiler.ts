@@ -27,9 +27,9 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import * as Types from '../typebox'
-import { ValueErrors, ValueErrorIterator } from '../errors/index'
 import { TypeSystem } from '../system/index'
-import { ValueHash } from '../value/hash'
+import * as ValueErrors from '../errors/index'
+import * as ValueHash from '../value/hash'
 
 // -------------------------------------------------------------------
 // CheckFunction
@@ -45,7 +45,7 @@ export class TypeCheck<T extends Types.TSchema> {
     return this.code
   }
   /** Returns an iterator for each error in this value. */
-  public Errors(value: unknown): ValueErrorIterator {
+  public Errors(value: unknown): ValueErrors.ValueErrorIterator {
     return ValueErrors.Errors(this.schema, this.references, value)
   }
   /** Returns true if the value matches the compiled type. */
@@ -138,6 +138,9 @@ export namespace TypeCompiler {
   // -------------------------------------------------------------------
   // Guards
   // -------------------------------------------------------------------
+  function IsSchema<T>(value: unknown): value is Types.TSchema {
+    return Types.TypeGuard.TSchema(value)
+  }
   function IsBigInt(value: unknown): value is bigint {
     return typeof value === 'bigint'
   }
@@ -181,12 +184,28 @@ export namespace TypeCompiler {
   }
   function* Array(schema: Types.TArray, references: Types.TSchema[], value: string): IterableIterator<string> {
     yield `Array.isArray(${value})`
+    const [parameter, accumulator] = [CreateParameter('value', 'any'), CreateParameter('acc', 'number')]
     if (IsNumber(schema.minItems)) yield `${value}.length >= ${schema.minItems}`
     if (IsNumber(schema.maxItems)) yield `${value}.length <= ${schema.maxItems}`
-    if (schema.uniqueItems === true) yield `((function() { const set = new Set(); for(const element of ${value}) { const hashed = hash(element); if(set.has(hashed)) { return false } else { set.add(hashed) } } return true })())`
-    const expression = CreateExpression(schema.items, references, 'value')
-    const parameter = CreateParameter('value', 'any')
-    yield `${value}.every((${parameter}) => ${expression})`
+    const elementExpression = CreateExpression(schema.items, references, 'value')
+    yield `${value}.every((${parameter}) => ${elementExpression})`
+    if (IsSchema(schema.contains) || IsNumber(schema.minContains) || IsNumber(schema.maxContains)) {
+      const containsSchema = IsSchema(schema.contains) ? schema.contains : Types.Type.Never()
+      const checkExpression = CreateExpression(containsSchema, references, 'value')
+      const checkMinContains = IsNumber(schema.minContains) ? [`(count >= ${schema.minContains})`] : []
+      const checkMaxContains = IsNumber(schema.maxContains) ? [`(count <= ${schema.maxContains})`] : []
+      const checkCount = `const count = ${value}.reduce((${accumulator}, ${parameter}) => ${checkExpression} ? acc + 1 : acc, 0)`
+      const check = [`(count > 0)`, ...checkMinContains, ...checkMaxContains].join(' && ')
+      yield `((${parameter}) => { ${checkCount}; return ${check}})(${value})`
+    }
+    if (schema.uniqueItems === true) {
+      const check = `const hashed = hash(element); if(set.has(hashed)) { return false } else { set.add(hashed) } } return true`
+      const block = `const set = new Set(); for(const element of value) { ${check} }`
+      yield `((${parameter}) => { ${block} )(${value})`
+    }
+  }
+  function* AsyncIterator(schema: Types.TAsyncIterator, references: Types.TSchema[], value: string): IterableIterator<string> {
+    yield `(typeof value === 'object' && Symbol.asyncIterator in ${value})`
   }
   function* BigInt(schema: Types.TBigInt, references: Types.TSchema[], value: string): IterableIterator<string> {
     yield `(typeof ${value} === 'bigint')`
@@ -233,6 +252,9 @@ export namespace TypeCompiler {
     } else {
       yield `(${check1})`
     }
+  }
+  function* Iterator(schema: Types.TIterator, references: Types.TSchema[], value: string): IterableIterator<string> {
+    yield `(typeof value === 'object' && Symbol.iterator in ${value})`
   }
   function* Literal(schema: Types.TLiteral, references: Types.TSchema[], value: string): IterableIterator<string> {
     if (typeof schema.const === 'number' || typeof schema.const === 'boolean') {
@@ -307,9 +329,8 @@ export namespace TypeCompiler {
     const index = references.findIndex((foreign) => foreign.$id === schema.$ref)
     if (index === -1) throw new TypeCompilerDereferenceError(schema)
     const target = references[index]
-    // Reference: If we have seen this reference before we can just yield and
-    // return the function call. If this isn't the case we defer to visit to
-    // generate and set the function for subsequent passes.
+    // Reference: If we have seen this reference before we can just yield and return the function call.
+    // If this isn't the case we defer to visit to generate and set the function for subsequent passes.
     if (state.functions.has(schema.$ref)) return yield `${CreateFunctionName(schema.$ref)}(${value})`
     yield* Visit(target, references, value)
   }
@@ -372,13 +393,11 @@ export namespace TypeCompiler {
   function* Visit<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: string, root = false): IterableIterator<string> {
     const references_ = IsString(schema.$id) ? [...references, schema] : references
     const schema_ = schema as any
-    // Rule: Types with identifiers are hoisted into their own functions.
-    // The following will generate a function for the schema and yield the
-    // call to that function. This call is only made if NOT the root type
-    // which allows the generated function to yield its expression. The
-    // root argument is only true when making calls via CreateFunction().
-    // Note there is potential to omit the root argument and conditional
-    // by refactoring the logic below. Consider for review.
+    // Rule: Types with identifiers are hoisted into their own functions. The following will generate
+    // a function for the schema and yield the call to that function. This call is only made if NOT
+    // the root type which allows the generated function to yield its expression. The root argument
+    // is only true when making calls via CreateFunction(). Note there is potential to omit the root
+    // argument and conditional by refactoring the logic below. Consider for review.
     if (IsString(schema.$id)) {
       const name = CreateFunctionName(schema.$id)
       if (!state.functions.has(schema.$id)) {
@@ -393,6 +412,8 @@ export namespace TypeCompiler {
         return yield* Any(schema_, references_, value)
       case 'Array':
         return yield* Array(schema_, references_, value)
+      case 'AsyncIterator':
+        return yield* AsyncIterator(schema_, references_, value)
       case 'BigInt':
         return yield* BigInt(schema_, references_, value)
       case 'Boolean':
@@ -407,6 +428,8 @@ export namespace TypeCompiler {
         return yield* Integer(schema_, references_, value)
       case 'Intersect':
         return yield* Intersect(schema_, references_, value)
+      case 'Iterator':
+        return yield* Iterator(schema_, references_, value)
       case 'Literal':
         return yield* Literal(schema_, references_, value)
       case 'Never':
@@ -519,22 +542,21 @@ export namespace TypeCompiler {
     const code = Code(schema, references, { language: 'javascript' })
     const customs = new Map(state.customs)
     const compiledFunction = globalThis.Function('custom', 'format', 'hash', code)
-    const checkFunction = compiledFunction(
-      (kind: string, schema_key: string, value: unknown) => {
-        if (!Types.TypeRegistry.Has(kind) || !customs.has(schema_key)) return false
-        const schema = customs.get(schema_key)!
-        const func = Types.TypeRegistry.Get(kind)!
-        return func(schema, value)
-      },
-      (format: string, value: string) => {
-        if (!Types.FormatRegistry.Has(format)) return false
-        const func = Types.FormatRegistry.Get(format)!
-        return func(value)
-      },
-      (value: unknown) => {
-        return ValueHash.Create(value)
-      },
-    )
+    function typeRegistryFunction(kind: string, $id: string, value: unknown) {
+      if (!Types.TypeRegistry.Has(kind) || !customs.has($id)) return false
+      const schema = customs.get($id)!
+      const checkFunc = Types.TypeRegistry.Get(kind)!
+      return checkFunc(schema, value)
+    }
+    function formatRegistryFunction(format: string, value: string) {
+      if (!Types.FormatRegistry.Has(format)) return false
+      const checkFunc = Types.FormatRegistry.Get(format)!
+      return checkFunc(value)
+    }
+    function valueHashFunction(value: unknown) {
+      return ValueHash.Hash(value)
+    }
+    const checkFunction = compiledFunction(typeRegistryFunction, formatRegistryFunction, valueHashFunction)
     return new TypeCheck(schema, references, checkFunction, code)
   }
 }
