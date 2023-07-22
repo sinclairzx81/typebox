@@ -6,7 +6,7 @@ describe('type/compiler/ReadonlyOptional', () => {
   it('Should validate object with optional', () => {
     const T = Type.Object(
       {
-        a: Type.ReadonlyOptional(Type.String()),
+        a: Type.Readonly(Type.Optional(Type.String())),
         b: Type.String(),
       },
       { additionalProperties: false },
@@ -17,7 +17,7 @@ describe('type/compiler/ReadonlyOptional', () => {
   it('Should remove required value from schema', () => {
     const T = Type.Object(
       {
-        a: Type.ReadonlyOptional(Type.String()),
+        a: Type.Readonly(Type.Optional(Type.String())),
         b: Type.String(),
       },
       { additionalProperties: false },

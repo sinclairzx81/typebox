@@ -15,7 +15,6 @@ describe('type/schema/Omit', () => {
     const T = Type.Omit(A, ['z'])
     Ok(T, { x: 1, y: 1 })
   })
-
   it('Should remove required properties on the target schema', () => {
     const A = Type.Object(
       {
@@ -28,12 +27,11 @@ describe('type/schema/Omit', () => {
     const T = Type.Omit(A, ['z'])
     strictEqual(T.required!.includes('z'), false)
   })
-
   it('Should delete the required property if no required properties remain', () => {
     const A = Type.Object(
       {
         x: Type.Optional(Type.Number()),
-        y: Type.ReadonlyOptional(Type.Number()),
+        y: Type.Readonly(Type.Optional(Type.Number())),
         z: Type.Number(),
       },
       { additionalProperties: false },
@@ -41,7 +39,6 @@ describe('type/schema/Omit', () => {
     const T = Type.Omit(A, ['z'])
     strictEqual(T.required, undefined)
   })
-
   it('Should inherit options from the source object', () => {
     const A = Type.Object(
       {
@@ -55,7 +52,6 @@ describe('type/schema/Omit', () => {
     strictEqual(A.additionalProperties, false)
     strictEqual(T.additionalProperties, false)
   })
-
   it('Should omit with keyof object', () => {
     const A = Type.Object({
       x: Type.Number(),

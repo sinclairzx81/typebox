@@ -8,36 +8,36 @@ describe('value/cast/String', () => {
   it('Should upcast from string', () => {
     const value = 'hello'
     const result = Value.Cast(T, value)
-    Assert.isEqual(result, 'hello')
+    Assert.IsEqual(result, 'hello')
   })
   it('Should upcast from object', () => {
     const value = {}
     const result = Value.Cast(T, value)
-    Assert.isEqual(result, E)
+    Assert.IsEqual(result, E)
   })
   it('Should upcast from array', () => {
     const value = [1]
     const result = Value.Cast(T, value)
-    Assert.isEqual(result, E)
+    Assert.IsEqual(result, E)
   })
   it('Should upcast from undefined', () => {
     const value = undefined
     const result = Value.Cast(T, value)
-    Assert.isEqual(result, E)
+    Assert.IsEqual(result, E)
   })
   it('Should upcast from null', () => {
     const value = null
     const result = Value.Cast(T, value)
-    Assert.isEqual(result, E)
+    Assert.IsEqual(result, E)
   })
   it('Should upcast from date', () => {
     const value = new Date(100)
     const result = Value.Cast(T, value)
-    Assert.isEqual(result, E)
+    Assert.IsEqual(result, E)
   })
   it('Should preserve', () => {
     const value = 'foo'
     const result = Value.Cast(T, value)
-    Assert.isEqual(result, value)
+    Assert.IsEqual(result, value)
   })
 })

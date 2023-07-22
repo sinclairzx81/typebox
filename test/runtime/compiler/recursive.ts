@@ -10,9 +10,8 @@ describe('type/compiler/Recursive', () => {
         nodes: Type.Array(Node),
       }),
     )
-    Assert.isEqual(Node.$id === undefined, false)
+    Assert.IsEqual(Node.$id === undefined, false)
   })
-
   it('Should override default ordinal $id if specified', () => {
     const Node = Type.Recursive(
       (Node) =>
@@ -22,9 +21,8 @@ describe('type/compiler/Recursive', () => {
         }),
       { $id: 'Node' },
     )
-    Assert.isEqual(Node.$id === 'Node', true)
+    Assert.IsEqual(Node.$id === 'Node', true)
   })
-
   it('Should validate recursive node type', () => {
     const Node = Type.Recursive((This) =>
       Type.Object({
@@ -40,7 +38,6 @@ describe('type/compiler/Recursive', () => {
       ],
     })
   })
-
   it('Should validate wrapped recursive node type', () => {
     const Node = Type.Tuple([
       Type.Recursive((This) =>
@@ -60,7 +57,6 @@ describe('type/compiler/Recursive', () => {
       },
     ])
   })
-
   it('Should not validate wrapped recursive node type with invalid id', () => {
     const Node = Type.Tuple([
       Type.Recursive((This) =>

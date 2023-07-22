@@ -9,35 +9,32 @@ describe('value/create/Object', () => {
       y: Type.Number(),
       z: Type.Number(),
     })
-    Assert.isEqual(Value.Create(T), {
+    Assert.IsEqual(Value.Create(T), {
       x: 0,
       y: 0,
       z: 0,
     })
   })
-
   it('Should create value with optional properties', () => {
     const T = Type.Object({
       x: Type.Optional(Type.Number()),
       y: Type.Optional(Type.Number()),
       z: Type.Optional(Type.Number()),
     })
-    Assert.isEqual(Value.Create(T), {})
+    Assert.IsEqual(Value.Create(T), {})
   })
-
   it('Should create default with default properties', () => {
     const T = Type.Object({
       x: Type.Number({ default: 1 }),
       y: Type.Number({ default: 2 }),
       z: Type.Number({ default: 3 }),
     })
-    Assert.isEqual(Value.Create(T), {
+    Assert.IsEqual(Value.Create(T), {
       x: 1,
       y: 2,
       z: 3,
     })
   })
-
   it('Should create nested object', () => {
     const T = Type.Object({
       x: Type.Number(),
@@ -49,14 +46,13 @@ describe('value/create/Object', () => {
         z: Type.Number(),
       }),
     })
-    Assert.isEqual(Value.Create(T), {
+    Assert.IsEqual(Value.Create(T), {
       x: 0,
       y: 0,
       z: 0,
       w: { x: 7, y: 0, z: 0 },
     })
   })
-
   it('Should create with default', () => {
     const T = Type.Object(
       {
@@ -66,7 +62,7 @@ describe('value/create/Object', () => {
       },
       { default: { x: 1, y: 2, z: 3 } },
     )
-    Assert.isEqual(Value.Create(T), {
+    Assert.IsEqual(Value.Create(T), {
       x: 1,
       y: 2,
       z: 3,

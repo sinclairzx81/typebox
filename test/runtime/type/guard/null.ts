@@ -5,15 +5,15 @@ import { Assert } from '../../assert/index'
 describe('type/guard/TNull', () => {
   it('Should guard for TNull', () => {
     const R = TypeGuard.TNull(Type.Null())
-    Assert.isEqual(R, true)
+    Assert.IsEqual(R, true)
   })
   it('Should not guard for TNull', () => {
     const R = TypeGuard.TNull(null)
-    Assert.isEqual(R, false)
+    Assert.IsEqual(R, false)
   })
   it('Should not guard for TNull with invalid $id', () => {
     // @ts-ignore
     const R = TypeGuard.TNull(Type.Null({ $id: 1 }))
-    Assert.isEqual(R, false)
+    Assert.IsEqual(R, false)
   })
 })

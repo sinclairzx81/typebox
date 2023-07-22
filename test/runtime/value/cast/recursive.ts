@@ -13,42 +13,42 @@ describe('value/cast/Recursive', () => {
   it('Should upcast from string', () => {
     const value = 'hello'
     const result = Value.Cast(T, value)
-    Assert.isEqual(result, E)
+    Assert.IsEqual(result, E)
   })
   it('Should upcast from number', () => {
     const value = E
     const result = Value.Cast(T, value)
-    Assert.isEqual(result, E)
+    Assert.IsEqual(result, E)
   })
   it('Should upcast from boolean', () => {
     const value = true
     const result = Value.Cast(T, value)
-    Assert.isEqual(result, E)
+    Assert.IsEqual(result, E)
   })
   it('Should upcast from object', () => {
     const value = {}
     const result = Value.Cast(T, value)
-    Assert.isEqual(result, E)
+    Assert.IsEqual(result, E)
   })
   it('Should upcast from array', () => {
     const value = [1]
     const result = Value.Cast(T, value)
-    Assert.isEqual(result, E)
+    Assert.IsEqual(result, E)
   })
   it('Should upcast from undefined', () => {
     const value = undefined
     const result = Value.Cast(T, value)
-    Assert.isEqual(result, E)
+    Assert.IsEqual(result, E)
   })
   it('Should upcast from null', () => {
     const value = null
     const result = Value.Cast(T, value)
-    Assert.isEqual(result, E)
+    Assert.IsEqual(result, E)
   })
   it('Should upcast from date', () => {
     const value = new Date(100)
     const result = Value.Cast(T, value)
-    Assert.isEqual(result, E)
+    Assert.IsEqual(result, E)
   })
   it('Should preserve', () => {
     const value = {
@@ -60,7 +60,7 @@ describe('value/cast/Recursive', () => {
       ],
     }
     const result = Value.Cast(T, value)
-    Assert.isEqual(result, value)
+    Assert.IsEqual(result, value)
   })
   it('Should upcast from varying types', () => {
     const TypeA = Type.Recursive((This) =>

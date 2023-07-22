@@ -16,7 +16,6 @@ describe('type/compiler/KeyOf', () => {
     Ok(T, 'z')
     Fail(T, 'w')
   })
-
   it('Should validate when using pick', () => {
     const T = Type.KeyOf(
       Type.Pick(
@@ -32,7 +31,6 @@ describe('type/compiler/KeyOf', () => {
     Ok(T, 'y')
     Fail(T, 'z')
   })
-
   it('Should validate when using omit', () => {
     const T = Type.KeyOf(
       Type.Omit(
@@ -44,7 +42,6 @@ describe('type/compiler/KeyOf', () => {
         ['x', 'y'],
       ),
     )
-
     Fail(T, 'x')
     Fail(T, 'y')
     Ok(T, 'z')

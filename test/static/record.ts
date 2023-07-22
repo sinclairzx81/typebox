@@ -10,7 +10,7 @@ import { Type, Static } from '@sinclair/typebox'
 }
 {
   // type K = string
-  const K = Type.RegEx(/foo|bar/)
+  const K = Type.RegExp(/foo|bar/)
   const T = Type.Record(K, Type.Number())
   type T = Static<typeof T>
   Expect(T).ToInfer<Record<string, number>>()

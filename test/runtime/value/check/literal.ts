@@ -7,21 +7,21 @@ describe('value/check/Literal', () => {
   it('Should pass literal', () => {
     const value = 'hello'
     const result = Value.Check(T, value)
-    Assert.isEqual(result, true)
+    Assert.IsEqual(result, true)
   })
   it('Should fail literal', () => {
     const value = 1
     const result = Value.Check(T, value)
-    Assert.isEqual(result, false)
+    Assert.IsEqual(result, false)
   })
   it('Should fail literal with undefined', () => {
     const value = undefined
     const result = Value.Check(T, value)
-    Assert.isEqual(result, false)
+    Assert.IsEqual(result, false)
   })
   it('Should fail literal with null', () => {
     const value = null
     const result = Value.Check(T, value)
-    Assert.isEqual(result, false)
+    Assert.IsEqual(result, false)
   })
 })

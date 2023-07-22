@@ -63,7 +63,7 @@ type T = Static<typeof T>                            // type T = {
 
 ## Overview
 
-TypeBox is a runtime type builder that creates in-memory JSON Schema objects that can be statically inferred as TypeScript types. The schemas produced by this library are designed to match the static type assertion rules of the TypeScript compiler. TypeBox enables one to create a unified type that can be statically checked by TypeScript and runtime asserted using standard JSON Schema validation.
+TypeBox is a runtime type builder that creates in-memory JSON Schema objects that can be statically inferred as TypeScript types. The schemas produced by this library are designed to match the static type assertion rules of the TypeScript language. TypeBox allows one to create a unified type that can be statically checked by TypeScript and runtime asserted using standard JSON Schema validation.
 
 This library is designed to enable JSON schema to compose with the same flexibility as TypeScript's type system. It can be used as a simple tool to build up complex schemas or integrated into REST or RPC services to help validate data received over the wire.
 
@@ -72,19 +72,20 @@ License MIT
 ## Contents
 - [Install](#install)
 - [Overview](#overview)
+- [Features](#features)
 - [Usage](#usage)
 - [Types](#types)
   - [Standard](#types-standard)
   - [Extended](#types-extended)
-  - [Modifiers](#types-modifiers)
   - [Options](#types-options)
+  - [Properties](#types-properties)
   - [Generics](#types-generics)
   - [References](#types-references)
   - [Recursive](#types-recursive)
   - [Conditional](#types-conditional)
   - [Template Literal](#types-template-literal)
   - [Indexed](#types-indexed)
-  - [Not](#types-not)
+  - [Negated](#types-negated)
   - [Rest](#types-rest)
   - [Guards](#types-guards)
   - [Unsafe](#types-unsafe)
@@ -109,7 +110,7 @@ License MIT
   - [Types](#typesystem-types)
   - [Formats](#typesystem-formats)
   - [Policies](#typesystem-policies)
-- [Workbench](#workbench)
+- [Transform](#Transform)
 - [Ecosystem](#ecosystem)
 - [Benchmark](#benchmark)
   - [Compile](#benchmark-compile)
@@ -197,13 +198,13 @@ function receive(value: T) {                         // ... as a Static Type
 
 ## Types
 
-TypeBox types are JSON schema fragments that can be composed into more complex types. Each fragment is structured such that a JSON schema compliant validator can runtime assert a value the same way TypeScript will statically assert a type. TypeBox provides a set of Standard types which are used create JSON schema compliant schematics as well as an Extended type set used to create schematics for constructs native to JavaScript.
+TypeBox types are JSON schema fragments that compose into complex types. Each fragment is structured such that a JSON schema compliant validator can runtime assert a value the same way TypeScript will statically assert a type. TypeBox provides a set of Standard types which are used create JSON schema compliant schematics as well as an Extended type set used to create schematics for constructs native to JavaScript.
 
 <a name='types-standard'></a>
 
 ### Standard Types
 
-The following table lists the Standard TypeBox types. These types are fully compatible with the JSON Schema Draft 6 specification.
+The following table lists the Standard TypeBox types. These types are fully compatible with the JSON Schema Draft 7 specification.
 
 ```typescript
 ┌────────────────────────────────┬─────────────────────────────┬────────────────────────────────┐
@@ -336,10 +337,10 @@ The following table lists the Standard TypeBox types. These types are fully comp
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Composite([     │ type T = {                  │ const T = {                    │
-│   Type.Object({                │   x: number                 │   type: 'object',              │
-│     x: Type.Number()           │ } & {                       │   required: ['x', 'y'],        │
-│   }),                          │   y: number                 │   properties: {                │
-│   Type.Object({                │ }                           │     x: {                       │
+│   Type.Object({                │   x: number,                │   type: 'object',              │
+│     x: Type.Number()           │   y: number                 │   required: ['x', 'y'],        │
+│   }),                          │ }                           │   properties: {                │
+│   Type.Object({                │                             │     x: {                       │
 │     y: Type.Number()           │                             │       type: 'number'           │
 │   })                           │                             │     },                         │
 │ ])                             │                             │     y: {                       │
@@ -384,6 +385,12 @@ The following table lists the Standard TypeBox types. These types are fully comp
 │   ]),                          │                             │                                │
 │   Type.String()                │                             │                                │
 │ )                              │                             │                                │
+│                                │                             │                                │
+├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
+│ const T = Type.Pattern('^xy$') │ type T = string             │ const T = {                    │
+│                                │                             │    type: 'string',             │
+│                                │                             │    pattern: '^xy$'             │
+│                                │                             │ }                              │
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const U = Type.Union([         │ type U = 'open' | 'close'   │ const T = {                    │
@@ -504,10 +511,9 @@ TypeBox provides several extended types that can be used to produce schematics f
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Constructor([   │ type T = new (              │ const T = {                    │
-│   Type.String(),               │  arg0: string,              │   type: 'object',              │
-│   Type.Number()                │  arg1: number               │   instanceOf: 'Constructor',   │
-│ ], Type.Boolean())             │ ) => boolean                │   parameters: [{               │
-│                                │                             │     type: 'string'             │
+│   Type.String(),               │  arg0: string,              │   type: 'constructor',         │
+│   Type.Number()                │  arg0: number               │   parameters: [{               │
+│ ], Type.Boolean())             │ ) => boolean                │     type: 'string'             │
 │                                │                             │   }, {                         │
 │                                │                             │     type: 'number'             │
 │                                │                             │   }],                          │
@@ -518,10 +524,9 @@ TypeBox provides several extended types that can be used to produce schematics f
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Function([      │ type T = (                  │ const T = {                    │
-|   Type.String(),               │  arg0: string,              │   type : 'object',             │
-│   Type.Number()                │  arg1: number               │   instanceOf: 'Function',      │
-│ ], Type.Boolean())             │ ) => boolean                │   parameters: [{               │
-│                                │                             │     type: 'string'             │
+|   Type.String(),               │  arg0: string,              │   type: 'function',            │
+│   Type.Number()                │  arg1: number               │   parameters: [{               │
+│ ], Type.Boolean())             │ ) => boolean                │     type: 'string'             │
 │                                │                             │   }, {                         │
 │                                │                             │     type: 'number'             │
 │                                │                             │   }],                          │
@@ -532,98 +537,56 @@ TypeBox provides several extended types that can be used to produce schematics f
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Promise(        │ type T = Promise<string>    │ const T = {                    │
-│   Type.String()                │                             │   type: 'object',              │
-│ )                              │                             │   instanceOf: 'Promise',       │
-│                                │                             │   item: {                      │
+│   Type.String()                │                             │   type: 'Promise',             │
+│ )                              │                             │   item: {                      │
 │                                │                             │     type: 'string'             │
 │                                │                             │   }                            │
 │                                │                             │ }                              │
 │                                │                             │                                │
+├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
+│ const T = Type.Iterator(       │ type T =                    │ const T = {                    │
+│   Type.String()                │   IterableIterator<string>  │   type: 'Iterator',            │
+│ )                              │                             │   items: {                     │
+│                                │                             │     type: 'string'             │
+│                                │                             │   }                            │
+│                                │                             │ }                              │
+│                                │                             │                                │
+├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
+│ const T =                      │ type T =                    │ const T = {                    │
+│   Type.AsyncIterator(          │   AsyncIterableIterator<    │   type: 'AsyncIterator',       │
+│     Type.String()              │    string                   │   items: {                     │
+│   )                            │   >                         │     type: 'string'             │
+│                                │                             │   }                            │
+│                                │                             │ }                              │
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Uint8Array()    │ type T = Uint8Array         │ const T = {                    │
-│                                │                             │   type: 'object',              │
-│                                │                             │   instanceOf: 'Uint8Array'     │
+│                                │                             │   type: 'Uint8Array'           │
 │                                │                             │ }                              │
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Date()          │ type T = Date               │ const T = {                    │
-│                                │                             │   type: 'object',              │
-│                                │                             │   instanceOf: 'Date'           │
+│                                │                             │   type: 'Date'                 │
 │                                │                             │ }                              │
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Undefined()     │ type T = undefined          │ const T = {                    │
-│                                │                             │   type: 'null',                │
-│                                │                             │   typeOf: 'Undefined'          │
-│                                │                             │ }                              │
-│                                │                             │                                │
-├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
-│ const T = Type.RegEx(/foo/)    │ type T = string             │ const T = {                    │
-│                                │                             │    type: 'string',             │
-│                                │                             │    pattern: 'foo'              │
+│                                │                             │   type: 'undefined'            │
 │                                │                             │ }                              │
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Symbol()        │ type T = symbol             │ const T = {                    │
-│                                │                             │   type: 'null',                │
-│                                │                             │   typeOf: 'Symbol'             │
+│                                │                             │   type: 'symbol'               │
 │                                │                             │ }                              │
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.BigInt()        │ type T = bigint             │ const T = {                    │
-│                                │                             │   type: 'null',                │
-│                                │                             │   typeOf: 'BigInt'             │
+│                                │                             │   type: 'bigint'               │
 │                                │                             │ }                              │
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Void()          │ type T = void               │ const T = {                    │
-│                                │                             │   type: 'null'                 │
-│                                │                             │   typeOf: 'Void'               │
-│                                │                             │ }                              │
-│                                │                             │                                │
-└────────────────────────────────┴─────────────────────────────┴────────────────────────────────┘
-```
-
-<a name='types-modifiers'></a>
-
-### Modifiers
-
-TypeBox provides modifiers that allow schema properties to be statically inferred as `readonly` or `optional`. The following table shows the supported modifiers and how they map between TypeScript and JSON Schema.
-
-```typescript
-┌────────────────────────────────┬─────────────────────────────┬────────────────────────────────┐
-│ TypeBox                        │ TypeScript                  │ JSON Schema                    │
-│                                │                             │                                │
-├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
-│ const T = Type.Object({        │ type T = {                  │ const T = {                    │
-│   name: Type.Optional(         │   name?: string             │   type: 'object',              │
-│     Type.String()              │ }                           │   properties: {                │
-│   )                            │                             │     name: {                    │
-│ })  	                         │                             │       type: 'string'           │
-│                                │                             │     }                          │
-│                                │                             │   }                            │
-│                                │                             │ }                              │
-│                                │                             │                                │
-├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
-│ const T = Type.Object({        │ type T = {                  │ const T = {                    │
-│   name: Type.Readonly(         │   readonly name: string     │   type: 'object',              │
-│     Type.String()              │ }                           │   properties: {                │
-│   )                            │                             │     name: {                    │
-│ })  	                         │                             │       type: 'string'           │
-│                                │                             │     }                          │
-│                                │                             │   },                           │
-│                                │                             │   required: ['name']           │
-│                                │                             │ }                              │
-│                                │                             │                                │
-├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
-│ const T = Type.Object({        │ type T = {                  │ const T = {                    │
-│   name: Type.ReadonlyOptional( │   readonly name?: string    │   type: 'object',              │
-│     Type.String()              │ }                           │   properties: {                │
-│   )                            │                             │     name: {                    │
-│ })  	                         │                             │       type: 'string'           │
-│                                │                             │     }                          │
-│                                │                             │   }                            │
+│                                │                             │   type: 'void'                 │
 │                                │                             │ }                              │
 │                                │                             │                                │
 └────────────────────────────────┴─────────────────────────────┴────────────────────────────────┘
@@ -656,14 +619,56 @@ const T = Type.Array(Type.Integer(), {               // const T = {
                                                      //     type: 'integer'
                                                      //   }
                                                      // }
-
 ```
 
+<a name='types-properties'></a>
+
+### Properties
+
+Object properties can be modified with `readonly` or `optional`. The following table shows how these modifiers map between TypeScript and JSON Schema.
+
+```typescript
+┌────────────────────────────────┬─────────────────────────────┬────────────────────────────────┐
+│ TypeBox                        │ TypeScript                  │ JSON Schema                    │
+│                                │                             │                                │
+├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
+│ const T = Type.Object({        │ type T = {                  │ const T = {                    │
+│   name: Type.ReadonlyOptional( │   readonly name?: string    │   type: 'object',              │
+│     Type.String()              │ }                           │   properties: {                │
+│   )                            │                             │     name: {                    │
+│ })  	                         │                             │       type: 'string'           │
+│                                │                             │     }                          │
+│                                │                             │   }                            │
+│                                │                             │ }                              │
+│                                │                             │                                │
+├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
+│ const T = Type.Object({        │ type T = {                  │ const T = {                    │
+│   name: Type.Readonly(         │   readonly name: string     │   type: 'object',              │
+│     Type.String()              │ }                           │   properties: {                │
+│   )                            │                             │     name: {                    │
+│ })  	                         │                             │       type: 'string'           │
+│                                │                             │     }                          │
+│                                │                             │   },                           │
+│                                │                             │   required: ['name']           │
+│                                │                             │ }                              │
+│                                │                             │                                │
+├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
+│ const T = Type.Object({        │ type T = {                  │ const T = {                    │
+│   name: Type.Optional(         │   name?: string             │   type: 'object',              │
+│     Type.String()              │ }                           │   properties: {                │
+│   )                            │                             │     name: {                    │
+│ })  	                         │                             │       type: 'string'           │
+│                                │                             │     }                          │
+│                                │                             │   }                            │
+│                                │                             │ }                              │
+│                                │                             │                                │
+└────────────────────────────────┴─────────────────────────────┴────────────────────────────────┘
+```
 <a name='types-generics'></a>
 
 ### Generic Types
 
-Generic types can be created with generic functions constrained to type `TSchema`. The following creates a generic `Vector<T>` type.
+Generic types are created with generic functions. All TypeBox types extend the sub type `TSchema` so it is common to constrain function arguments to this type. The following creates a generic `Vector<T>` type.
 
 ```typescript
 import { Type, Static, TSchema } from '@sinclair/typebox'
@@ -685,25 +690,9 @@ type NumberVector = Static<typeof NumberVector>      // type NumberVector = {
                                                      //   y: number,
                                                      //   z: number
                                                      // }
-
-const BooleanVector = Vector(Type.Boolean())         // const BooleanVector = {
-                                                     //   type: 'object',
-                                                     //   required: ['x', 'y', 'z'],
-                                                     //   properties: {
-                                                     //     x: { type: 'boolean' },
-                                                     //     y: { type: 'boolean' },
-                                                     //     z: { type: 'boolean' }
-                                                     //   }
-                                                     // }
-
-type BooleanVector = Static<typeof BooleanVector>    // type BooleanVector = {
-                                                     //   x: boolean,
-                                                     //   y: boolean,
-                                                     //   z: boolean
-                                                     // }
 ```
 
-The following creates a generic `Nullable<T>` type.
+Generic types can be used to create aliases for more complex types. The following creates a `Nullable<T>` type.
 
 ```typescript
 const Nullable = <T extends TSchema>(schema: T) => Type.Union([schema, Type.Null()])
@@ -722,24 +711,26 @@ type T = Static<typeof T>                           // type T = string | null
 
 ### Reference Types
 
-Reference types are supported with `Type.Ref`. The target type must specify a valid `$id`.
+Reference types are supported with `Ref`.
 
 ```typescript
 const T = Type.String({ $id: 'T' })                  // const T = {
-                                                     //    $id: 'T',
-                                                     //    type: 'string'
+                                                     //   $id: 'T',
+                                                     //   type: 'string'
                                                      // }
 
-const R = Type.Ref(T)                                // const R = {
-                                                     //    $ref: 'T'
+const R = Type.Ref<typeof T>('T')                    // const R = {
+                                                     //   $ref: 'T'
                                                      // }
+
+type R = Static<typeof R>                            // type R = string
 ```
 
 <a name='types-recursive'></a>
 
 ### Recursive Types
 
-Recursive types are supported with `Type.Recursive`.
+Recursive types are supported with `Recursive`. Recursive type inference is also supported.
 
 ```typescript
 const Node = Type.Recursive(This => Type.Object({    // const Node = {
@@ -776,7 +767,7 @@ function test(node: Node) {
 
 ### Conditional Types
 
-TypeBox supports conditional types with `Type.Extends`. This type will perform a structural assignment check for the first two parameters and return a `true` or `false` type from the second two parameters. The types `Type.Exclude` and `Type.Extract` are also supported.
+TypeBox supports conditional types with `Extends`. This type performs a structural assignment check against the first two parameters and returns either the `true` or `false` type as given from the second two parameters. The conditional types `Exclude` and `Extract` are also supported.
 
 ```typescript
 // TypeScript
@@ -789,17 +780,17 @@ type T2 = Exclude<(1 | 2 | 3), 1>                    // type T2 = 2 | 3
 
 // TypeBox
 
-const T0 = Type.Extends(                             // const T0: TLiteral<false>
-  Type.String(), 
-  Type.Number(), 
-  Type.Literal(true), 
+const T0 = Type.Extends(                             // const T0: TLiteral<false> = {
+  Type.String(),                                     //   type: 'boolean',
+  Type.Number(),                                     //   const: false
+  Type.Literal(true),                                // }
   Type.Literal(false)
 )
 
-const T1 = Type.Extract(                             // const T1: TLiteral<1>
-  Type.Union([
-    Type.Literal(1), 
-    Type.Literal(2), 
+const T1 = Type.Extract(                             // const T1: TLiteral<1> = {
+  Type.Union([                                       //   type: 'number',
+    Type.Literal(1),                                 //   const: 1
+    Type.Literal(2),                                 // }
     Type.Literal(3) 
   ]), 
   Type.Literal(1)
@@ -808,42 +799,38 @@ const T1 = Type.Extract(                             // const T1: TLiteral<1>
 const T2 = Type.Exclude(                            // const T2: TUnion<[
   Type.Union([                                      //   TLiteral<2>,
     Type.Literal(1),                                //   TLiteral<3>
-    Type.Literal(2),                                // ]>
-    Type.Literal(3) 
-  ]), 
-  Type.Literal(1)
-)
+    Type.Literal(2),                                // ]> = {
+    Type.Literal(3)                                 //   anyOf: [{
+  ]),                                               //     type: 'number',
+  Type.Literal(1)                                   //     const: 2
+)                                                   //   }, {
+                                                    //     type: 'number',
+                                                    //     const: 3
+                                                    //   }]
+                                                    // }
 ```
 
 <a name='types-template-literal'></a>
 
 ### Template Literal Types
 
-TypeBox supports template literal types with `Type.TemplateLiteral`. This type implements an embedded DSL syntax to match the TypeScript template literal syntax. This type can also be composed by passing an array of union and literal types as parameters. The following example shows the DSL syntax.
+TypeBox supports template literal types with `TemplateLiteral`. This type provides an embedded DSL syntax that is similar to the TypeScript template literal syntax. These type can also be composed by passing a tuple of exterior union and literal types. The following example shows the DSL syntax.
 
 ```typescript
 // TypeScript
 
-type P = `/post/${string}/user/${number}`            // type P = `/post/${string}/user/${number}`
-
-type T = `option${'A'|'B'}`                          // type T = 'optionA' | 'optionB'
+type T = `option${'A'|'B'|'C'}`                      // type T = 'optionA' | 'optionB' | 'optionC'
 
 type R = Record<T, string>                           // type R = {
                                                      //   optionA: string
                                                      //   optionB: string
+                                                     //   optionC: string
                                                      // }
 
 // TypeBox
 
-const P = Type.TemplateLiteral('/post/${string}/user/${number}')
-
-                                                     // const P = {
-                                                     //   type: 'string',
-                                                     //   pattern: '^/post/(.*)/user/(0|[1-9][0-9]*)$'
-                                                     // }
-
-const T = Type.TemplateLiteral('option${A|B}')       // const T = {
-                                                     //   pattern: '^option(A|B)$',
+const T = Type.TemplateLiteral('option${A|B|C}')     // const T = {
+                                                     //   pattern: '^option(A|B|C)$',
                                                      //   type: 'string'
                                                      // }
 
@@ -857,6 +844,9 @@ const R = Type.Record(T, Type.String())              // const R = {
                                                      //     optionB: {
                                                      //       type: 'string'
                                                      //     }
+                                                     //     optionC: {
+                                                     //       type: 'string'
+                                                     //     }
                                                      //   }
                                                      // }
 ```
@@ -865,7 +855,7 @@ const R = Type.Record(T, Type.String())              // const R = {
 
 ### Indexed Access Types
 
-TypeBox supports indexed access types using `Type.Index`. This type provides a consistent way to access interior property and array element types without having to extract them from the underlying schema representation. Indexed access types are supported for object, array, tuple, union and intersect types.
+TypeBox supports indexed access types using `Index`. This type provides a consistent way of accessing interior property and array element types without having to extract them from the underlying schema representation. Indexed access types are supported for object, array, tuple, union and intersect types.
 
 ```typescript
 const T = Type.Object({                              // const T = {
@@ -896,20 +886,27 @@ const C = Type.Index(T, Type.KeyOf(T))               // const C = {
                                                      // }
 ```
 
-<a name='types-not'></a>
+<a name='types-negated'></a>
 
-### Not Types
+### Negated Types
 
-TypeBox provides support for the `not` keyword with `Type.Not`. This type is synonymous with [negated types](https://github.com/microsoft/TypeScript/issues/4196) which are not supported in the TypeScript language. Partial inference of this type can be attained via the intersection of `T & not U` (where all Not types infer as `unknown`). This approach can be used to narrow for broader types in the following context.
+TypeBox has support for type negation with `Not`. This type will always infer as `unknown`.
+
+```typescript
+const T = Type.Not(Type.String())                   // const T = {
+                                                    //   not: { type: 'string' }
+                                                    // }
+
+type T = Static<typeof T>                           // type T = unknown
+                                                    //
+                                                    // where T could be any type other than string
+```
+Type negation can be useful for certain forms of type narrowing. For example, consider a type that represents a `number` but not the numbers `1, 2, 3`. The example below shows an imaginary TypeScript syntax to express such a type followed by the TypeBox representation.
 
 ```typescript
 // TypeScript
 
-type T = Exclude<number, 1 | 2 | 3>                  // all numbers except 1, 2, 3
-                                                     //
-                                                     // ideally expressed as: 
-                                                     //
-                                                     // type T = number & not (1 | 2 | 3)
+type T = number & not (1 | 2 | 3)                    // not actual syntax
 
 // TypeBox
 
@@ -928,14 +925,9 @@ const T = Type.Intersect([                           // const T = {
                                                      //   ]
                                                      // }
 
-type T = Static<typeof T>                            // inferred:
-                                                     //
-                                                     // type T = number & not (1 | 2 | 3)
-                                                     // type T = number & unknown
-                                                     // type T = number
+type T = Static<typeof T>                            // type T = number
 ```
-
-The Not type can be used with constraints to define schematics for types that would otherwise be difficult to express.
+This type can be used with constraints to create schematics that would otherwise be difficult to express.
 ```typescript
 const Even = Type.Number({ multipleOf: 2 })
 
@@ -945,7 +937,7 @@ const Odd = Type.Intersect([Type.Number(), Type.Not(Even)])
 
 ### Rest Types
 
-Rest parameters are supported with `Type.Rest`. This function is used to extract interior type elements from tuples which enables them to compose with the JavaScript spread operator `...`. This type can be used for tuple concatenation as well as for variadic functions.
+Rest parameters are supported with `Rest`. This function is used to extract interior type elements from tuples which enables them to compose with the JavaScript spread operator `...`. This type can be used for tuple concatenation as well function parameter assignment.
 
 ```typescript
 // TypeScript
@@ -983,7 +975,7 @@ const F = Type.Function(Type.Rest(C), Type.Void())   // const F: TFunction<[
 
 ### Unsafe Types
 
-Use `Type.Unsafe` to create custom schematics with user defined inference rules.
+TypeBox supports the creation of user defined schematics with user defined inference rules using the Unsafe type.
 
 ```typescript
 const T = Type.Unsafe<string>({ type: 'number' })    // const T = {
@@ -993,7 +985,7 @@ const T = Type.Unsafe<string>({ type: 'number' })    // const T = {
 type T = Static<typeof T>                            // type T = string
 ```
 
-The `Type.Unsafe` type can be useful to express specific OpenAPI schema representations.
+This type can be useful to create various extended schematics, such as those used by OpenAPI.
 
 ```typescript
 import { Type, Static, TSchema } from '@sinclair/typebox'
@@ -1028,12 +1020,12 @@ type T = Static<typeof T>                            // type T = 'A' | 'B' | 'C'
 
 ### Type Guards
 
-TypeBox provides a `TypeGuard` module that can be used for reflection and asserting values as types.
+TypeBox provides a TypeGuard module to assert JavaScript values are valid TypeBox types.
 
 ```typescript
-import { Type, TypeGuard } from '@sinclair/typebox'
+import { Type, Kind, TypeGuard } from '@sinclair/typebox'
 
-const T = Type.String()
+const T = { [Kind]: 'String', type: 'string' }
 
 if(TypeGuard.TString(T)) {
 
@@ -1045,7 +1037,7 @@ if(TypeGuard.TString(T)) {
 
 ### Strict
 
-TypeBox schemas contain the `Kind` and `Modifier` symbol properties. These properties are used for type composition and reflection. These properties are not strictly valid JSON schema; so in some cases it may be desirable to omit them. TypeBox provides a `Type.Strict` function that will omit these properties if necessary.
+TypeBox types contain various symbol properties that are used for reflection, composition and compilation. These properties are not strictly valid JSON schema; so in some cases it may be desirable to omit them. TypeBox provides a `Strict` function that will omit these properties if necessary.
 
 ```typescript
 const T = Type.Object({                              // const T = {
@@ -1053,9 +1045,9 @@ const T = Type.Object({                              // const T = {
 })                                                   //   type: 'object',
                                                      //   properties: {
                                                      //     name: {
-                                                     //       [Kind]: 'String',
                                                      //       type: 'string',
-                                                     //       [Modifier]: 'Optional'
+                                                     //       [Kind]: 'String',
+                                                     //       [Optional]: 'Optional'
                                                      //     }
                                                      //   }
                                                      // }
@@ -1118,7 +1110,7 @@ const R = Value.Check(T, { x: 1 })                   // const R = true
 
 ### Convert
 
-Use the Convert function to convert a value into its target type if a reasonable conversion is possible.
+Use the Convert function to convert a value into its target type if a reasonable conversion is possible. This function may return an invalid value and should be checked before use. It's return type is `unknown`.
 
 ```typescript
 const T = Type.Object({ x: Type.Number() })
@@ -1270,7 +1262,7 @@ ValuePointer.Set(A, '/z', 1)                         // const A' = { x: 1, y: 1,
 
 ## TypeCheck
 
-TypeBox types target JSON Schema draft 6 so are compatible with any validator that supports this specification. TypeBox also provides a built in type checking compiler designed specifically for high performance compilation and value assertion.
+TypeBox types target JSON Schema draft 7 so are compatible with any validator that supports this specification. TypeBox also provides a built in type checking compiler designed specifically for high performance compilation and value assertion.
 
 The following sections detail using Ajv and TypeBox's compiler infrastructure.
 
@@ -1465,13 +1457,13 @@ TypeSystem.AllowArrayObjects = true
 TypeSystem.AllowNaN = true
 ```
 
-<a name='workbench'></a>
+<a name='transform'></a>
 
-## Workbench
+## TypeBox Transform
 
-TypeBox offers a web based code generation tool that can be used to convert TypeScript types into TypeBox types as well as a variety of other runtime type representations.
+TypeBox offers a small web based code generation tool that can be used to convert TypeScript types into TypeBox types as well as a variety of other runtime type representations.
 
-[Workbench Link Here](https://sinclairzx81.github.io/typebox-workbench/)
+[TypeBox Transform Link Here](https://sinclairzx81.github.io/typebox-transform/)
 
 <a name='ecosystem'></a>
 
@@ -1508,35 +1500,35 @@ This benchmark measures compilation performance for varying types. You can revie
 ┌────────────────────────────┬────────────┬──────────────┬──────────────┬──────────────┐
 │          (index)           │ Iterations │     Ajv      │ TypeCompiler │ Performance  │
 ├────────────────────────────┼────────────┼──────────────┼──────────────┼──────────────┤
-│ Literal_String             │    1000    │ '    227 ms' │ '      7 ms' │ '   32.43 x' │
-│ Literal_Number             │    1000    │ '    180 ms' │ '      6 ms' │ '   30.00 x' │
-│ Literal_Boolean            │    1000    │ '    152 ms' │ '      5 ms' │ '   30.40 x' │
-│ Primitive_Number           │    1000    │ '    161 ms' │ '      6 ms' │ '   26.83 x' │
-│ Primitive_String           │    1000    │ '    150 ms' │ '      8 ms' │ '   18.75 x' │
-│ Primitive_String_Pattern   │    1000    │ '    202 ms' │ '      9 ms' │ '   22.44 x' │
-│ Primitive_Boolean          │    1000    │ '    133 ms' │ '      3 ms' │ '   44.33 x' │
-│ Primitive_Null             │    1000    │ '    147 ms' │ '      3 ms' │ '   49.00 x' │
-│ Object_Unconstrained       │    1000    │ '   1145 ms' │ '     31 ms' │ '   36.94 x' │
-│ Object_Constrained         │    1000    │ '   1241 ms' │ '     26 ms' │ '   47.73 x' │
-│ Object_Vector3             │    1000    │ '    407 ms' │ '      7 ms' │ '   58.14 x' │
-│ Object_Box3D               │    1000    │ '   1781 ms' │ '     27 ms' │ '   65.96 x' │
-│ Tuple_Primitive            │    1000    │ '    489 ms' │ '     13 ms' │ '   37.62 x' │
-│ Tuple_Object               │    1000    │ '   1278 ms' │ '     34 ms' │ '   37.59 x' │
-│ Composite_Intersect        │    1000    │ '    613 ms' │ '     16 ms' │ '   38.31 x' │
-│ Composite_Union            │    1000    │ '    543 ms' │ '     18 ms' │ '   30.17 x' │
-│ Math_Vector4               │    1000    │ '    819 ms' │ '     13 ms' │ '   63.00 x' │
-│ Math_Matrix4               │    1000    │ '    407 ms' │ '      7 ms' │ '   58.14 x' │
-│ Array_Primitive_Number     │    1000    │ '    372 ms' │ '      6 ms' │ '   62.00 x' │
-│ Array_Primitive_String     │    1000    │ '    329 ms' │ '      6 ms' │ '   54.83 x' │
-│ Array_Primitive_Boolean    │    1000    │ '    313 ms' │ '      3 ms' │ '  104.33 x' │
-│ Array_Object_Unconstrained │    1000    │ '   1780 ms' │ '     20 ms' │ '   89.00 x' │
-│ Array_Object_Constrained   │    1000    │ '   1494 ms' │ '     21 ms' │ '   71.14 x' │
-│ Array_Tuple_Primitive      │    1000    │ '    917 ms' │ '     10 ms' │ '   91.70 x' │
-│ Array_Tuple_Object         │    1000    │ '   1666 ms' │ '     13 ms' │ '  128.15 x' │
-│ Array_Composite_Intersect  │    1000    │ '    791 ms' │ '     18 ms' │ '   43.94 x' │
-│ Array_Composite_Union      │    1000    │ '    833 ms' │ '     17 ms' │ '   49.00 x' │
-│ Array_Math_Vector4         │    1000    │ '   1161 ms' │ '     15 ms' │ '   77.40 x' │
-│ Array_Math_Matrix4         │    1000    │ '    697 ms' │ '     10 ms' │ '   69.70 x' │
+│ Literal_String             │    1000    │ '    232 ms' │ '      8 ms' │ '   29.00 x' │
+│ Literal_Number             │    1000    │ '    179 ms' │ '      6 ms' │ '   29.83 x' │
+│ Literal_Boolean            │    1000    │ '    154 ms' │ '      3 ms' │ '   51.33 x' │
+│ Primitive_Number           │    1000    │ '    160 ms' │ '      7 ms' │ '   22.86 x' │
+│ Primitive_String           │    1000    │ '    149 ms' │ '      6 ms' │ '   24.83 x' │
+│ Primitive_String_Pattern   │    1000    │ '    191 ms' │ '      9 ms' │ '   21.22 x' │
+│ Primitive_Boolean          │    1000    │ '    135 ms' │ '      4 ms' │ '   33.75 x' │
+│ Primitive_Null             │    1000    │ '    144 ms' │ '      6 ms' │ '   24.00 x' │
+│ Object_Unconstrained       │    1000    │ '   1144 ms' │ '     30 ms' │ '   38.13 x' │
+│ Object_Constrained         │    1000    │ '   1228 ms' │ '     24 ms' │ '   51.17 x' │
+│ Object_Vector3             │    1000    │ '    380 ms' │ '      9 ms' │ '   42.22 x' │
+│ Object_Box3D               │    1000    │ '   1771 ms' │ '     30 ms' │ '   59.03 x' │
+│ Tuple_Primitive            │    1000    │ '    471 ms' │ '     11 ms' │ '   42.82 x' │
+│ Tuple_Object               │    1000    │ '   1272 ms' │ '     15 ms' │ '   84.80 x' │
+│ Composite_Intersect        │    1000    │ '    606 ms' │ '     17 ms' │ '   35.65 x' │
+│ Composite_Union            │    1000    │ '    560 ms' │ '     22 ms' │ '   25.45 x' │
+│ Math_Vector4               │    1000    │ '    824 ms' │ '     14 ms' │ '   58.86 x' │
+│ Math_Matrix4               │    1000    │ '    419 ms' │ '      9 ms' │ '   46.56 x' │
+│ Array_Primitive_Number     │    1000    │ '    382 ms' │ '      6 ms' │ '   63.67 x' │
+│ Array_Primitive_String     │    1000    │ '    324 ms' │ '      6 ms' │ '   54.00 x' │
+│ Array_Primitive_Boolean    │    1000    │ '    301 ms' │ '      4 ms' │ '   75.25 x' │
+│ Array_Object_Unconstrained │    1000    │ '   1734 ms' │ '     21 ms' │ '   82.57 x' │
+│ Array_Object_Constrained   │    1000    │ '   1509 ms' │ '     20 ms' │ '   75.45 x' │
+│ Array_Tuple_Primitive      │    1000    │ '    824 ms' │ '     14 ms' │ '   58.86 x' │
+│ Array_Tuple_Object         │    1000    │ '   1619 ms' │ '     16 ms' │ '  101.19 x' │
+│ Array_Composite_Intersect  │    1000    │ '    773 ms' │ '     16 ms' │ '   48.31 x' │
+│ Array_Composite_Union      │    1000    │ '    822 ms' │ '     17 ms' │ '   48.35 x' │
+│ Array_Math_Vector4         │    1000    │ '   1131 ms' │ '     13 ms' │ '   87.00 x' │
+│ Array_Math_Matrix4         │    1000    │ '    661 ms' │ '     10 ms' │ '   66.10 x' │
 └────────────────────────────┴────────────┴──────────────┴──────────────┴──────────────┘
 ```
 
@@ -1550,37 +1542,37 @@ This benchmark measures validation performance for varying types. You can review
 ┌────────────────────────────┬────────────┬──────────────┬──────────────┬──────────────┬──────────────┐
 │          (index)           │ Iterations │  ValueCheck  │     Ajv      │ TypeCompiler │ Performance  │
 ├────────────────────────────┼────────────┼──────────────┼──────────────┼──────────────┼──────────────┤
-│ Literal_String             │  1000000   │ '     25 ms' │ '      5 ms' │ '      4 ms' │ '    1.25 x' │
-│ Literal_Number             │  1000000   │ '     19 ms' │ '     18 ms' │ '      9 ms' │ '    2.00 x' │
-│ Literal_Boolean            │  1000000   │ '     18 ms' │ '     18 ms' │ '      9 ms' │ '    2.00 x' │
-│ Primitive_Number           │  1000000   │ '     26 ms' │ '     18 ms' │ '      9 ms' │ '    2.00 x' │
-│ Primitive_String           │  1000000   │ '     25 ms' │ '     19 ms' │ '     10 ms' │ '    1.90 x' │
-│ Primitive_String_Pattern   │  1000000   │ '    160 ms' │ '     42 ms' │ '     36 ms' │ '    1.17 x' │
-│ Primitive_Boolean          │  1000000   │ '     24 ms' │ '     18 ms' │ '      9 ms' │ '    2.00 x' │
-│ Primitive_Null             │  1000000   │ '     24 ms' │ '     19 ms' │ '      9 ms' │ '    2.11 x' │
-│ Object_Unconstrained       │  1000000   │ '   1111 ms' │ '     34 ms' │ '     24 ms' │ '    1.42 x' │
-│ Object_Constrained         │  1000000   │ '   1262 ms' │ '     51 ms' │ '     37 ms' │ '    1.38 x' │
-│ Object_Vector3             │  1000000   │ '    445 ms' │ '     23 ms' │ '     13 ms' │ '    1.77 x' │
-│ Object_Box3D               │  1000000   │ '   2029 ms' │ '     66 ms' │ '     48 ms' │ '    1.38 x' │
-│ Object_Recursive           │  1000000   │ '   5121 ms' │ '    464 ms' │ '    156 ms' │ '    2.97 x' │
-│ Tuple_Primitive            │  1000000   │ '    158 ms' │ '     22 ms' │ '     12 ms' │ '    1.83 x' │
-│ Tuple_Object               │  1000000   │ '    761 ms' │ '     30 ms' │ '     18 ms' │ '    1.67 x' │
-│ Composite_Intersect        │  1000000   │ '    828 ms' │ '     24 ms' │ '     13 ms' │ '    1.85 x' │
-│ Composite_Union            │  1000000   │ '    529 ms' │ '     22 ms' │ '     13 ms' │ '    1.69 x' │
-│ Math_Vector4               │  1000000   │ '    252 ms' │ '     22 ms' │ '     11 ms' │ '    2.00 x' │
-│ Math_Matrix4               │  1000000   │ '   1024 ms' │ '     38 ms' │ '     27 ms' │ '    1.41 x' │
-│ Array_Primitive_Number     │  1000000   │ '    264 ms' │ '     22 ms' │ '     11 ms' │ '    2.00 x' │
-│ Array_Primitive_String     │  1000000   │ '    240 ms' │ '     20 ms' │ '     13 ms' │ '    1.54 x' │
-│ Array_Primitive_Boolean    │  1000000   │ '    137 ms' │ '     21 ms' │ '     13 ms' │ '    1.62 x' │
-│ Array_Object_Unconstrained │  1000000   │ '   6050 ms' │ '     66 ms' │ '     55 ms' │ '    1.20 x' │
-│ Array_Object_Constrained   │  1000000   │ '   5954 ms' │ '    124 ms' │ '    116 ms' │ '    1.07 x' │
-│ Array_Object_Recursive     │  1000000   │ '  21074 ms' │ '   1611 ms' │ '    626 ms' │ '    2.57 x' │
-│ Array_Tuple_Primitive      │  1000000   │ '    683 ms' │ '     37 ms' │ '     30 ms' │ '    1.23 x' │
-│ Array_Tuple_Object         │  1000000   │ '   3366 ms' │ '     69 ms' │ '     54 ms' │ '    1.28 x' │
-│ Array_Composite_Intersect  │  1000000   │ '   3285 ms' │ '     45 ms' │ '     36 ms' │ '    1.25 x' │
-│ Array_Composite_Union      │  1000000   │ '   2229 ms' │ '     69 ms' │ '     34 ms' │ '    2.03 x' │
-│ Array_Math_Vector4         │  1000000   │ '   1192 ms' │ '     38 ms' │ '     25 ms' │ '    1.52 x' │
-│ Array_Math_Matrix4         │  1000000   │ '   4916 ms' │ '    111 ms' │ '     88 ms' │ '    1.26 x' │
+│ Literal_String             │  1000000   │ '     18 ms' │ '      5 ms' │ '      4 ms' │ '    1.25 x' │
+│ Literal_Number             │  1000000   │ '     15 ms' │ '     18 ms' │ '      9 ms' │ '    2.00 x' │
+│ Literal_Boolean            │  1000000   │ '     13 ms' │ '     16 ms' │ '      9 ms' │ '    1.78 x' │
+│ Primitive_Number           │  1000000   │ '     21 ms' │ '     16 ms' │ '      9 ms' │ '    1.78 x' │
+│ Primitive_String           │  1000000   │ '     19 ms' │ '     16 ms' │ '     10 ms' │ '    1.60 x' │
+│ Primitive_String_Pattern   │  1000000   │ '    150 ms' │ '     41 ms' │ '     35 ms' │ '    1.17 x' │
+│ Primitive_Boolean          │  1000000   │ '     17 ms' │ '     17 ms' │ '      9 ms' │ '    1.89 x' │
+│ Primitive_Null             │  1000000   │ '     18 ms' │ '     16 ms' │ '      9 ms' │ '    1.78 x' │
+│ Object_Unconstrained       │  1000000   │ '   1001 ms' │ '     31 ms' │ '     24 ms' │ '    1.29 x' │
+│ Object_Constrained         │  1000000   │ '   1288 ms' │ '     50 ms' │ '     36 ms' │ '    1.39 x' │
+│ Object_Vector3             │  1000000   │ '    439 ms' │ '     23 ms' │ '     14 ms' │ '    1.64 x' │
+│ Object_Box3D               │  1000000   │ '   2109 ms' │ '     52 ms' │ '     45 ms' │ '    1.16 x' │
+│ Object_Recursive           │  1000000   │ '   5337 ms' │ '    356 ms' │ '    162 ms' │ '    2.20 x' │
+│ Tuple_Primitive            │  1000000   │ '    164 ms' │ '     21 ms' │ '     13 ms' │ '    1.62 x' │
+│ Tuple_Object               │  1000000   │ '    744 ms' │ '     29 ms' │ '     18 ms' │ '    1.61 x' │
+│ Composite_Intersect        │  1000000   │ '    764 ms' │ '     23 ms' │ '     14 ms' │ '    1.64 x' │
+│ Composite_Union            │  1000000   │ '    516 ms' │ '     23 ms' │ '     13 ms' │ '    1.77 x' │
+│ Math_Vector4               │  1000000   │ '    262 ms' │ '     20 ms' │ '     11 ms' │ '    1.82 x' │
+│ Math_Matrix4               │  1000000   │ '   1089 ms' │ '     37 ms' │ '     27 ms' │ '    1.37 x' │
+│ Array_Primitive_Number     │  1000000   │ '    276 ms' │ '     21 ms' │ '     11 ms' │ '    1.91 x' │
+│ Array_Primitive_String     │  1000000   │ '    228 ms' │ '     21 ms' │ '     14 ms' │ '    1.50 x' │
+│ Array_Primitive_Boolean    │  1000000   │ '    159 ms' │ '     21 ms' │ '     13 ms' │ '    1.62 x' │
+│ Array_Object_Unconstrained │  1000000   │ '   5695 ms' │ '     77 ms' │ '     69 ms' │ '    1.12 x' │
+│ Array_Object_Constrained   │  1000000   │ '   5701 ms' │ '    127 ms' │ '    110 ms' │ '    1.15 x' │
+│ Array_Object_Recursive     │  1000000   │ '  21267 ms' │ '   1664 ms' │ '    573 ms' │ '    2.90 x' │
+│ Array_Tuple_Primitive      │  1000000   │ '    702 ms' │ '     40 ms' │ '     32 ms' │ '    1.25 x' │
+│ Array_Tuple_Object         │  1000000   │ '   3141 ms' │ '     68 ms' │ '     51 ms' │ '    1.33 x' │
+│ Array_Composite_Intersect  │  1000000   │ '   3145 ms' │ '     44 ms' │ '     35 ms' │ '    1.26 x' │
+│ Array_Composite_Union      │  1000000   │ '   2134 ms' │ '     68 ms' │ '     31 ms' │ '    2.19 x' │
+│ Array_Math_Vector4         │  1000000   │ '   1197 ms' │ '     37 ms' │ '     25 ms' │ '    1.48 x' │
+│ Array_Math_Matrix4         │  1000000   │ '   5323 ms' │ '    111 ms' │ '     96 ms' │ '    1.16 x' │
 └────────────────────────────┴────────────┴──────────────┴──────────────┴──────────────┴──────────────┘
 ```
 
@@ -1594,11 +1586,11 @@ The following table lists esbuild compiled and minified sizes for each TypeBox m
 ┌──────────────────────┬────────────┬────────────┬─────────────┐
 │       (index)        │  Compiled  │  Minified  │ Compression │
 ├──────────────────────┼────────────┼────────────┼─────────────┤
-│ typebox/compiler     │ '130.3 kb' │ ' 58.2 kb' │  '2.24 x'   │
-│ typebox/errors       │ '113.3 kb' │ ' 49.8 kb' │  '2.27 x'   │
-│ typebox/system       │ ' 78.8 kb' │ ' 32.2 kb' │  '2.45 x'   │
-│ typebox/value        │ '180.0 kb' │ ' 77.7 kb' │  '2.32 x'   │
-│ typebox              │ ' 77.7 kb' │ ' 31.7 kb' │  '2.45 x'   │
+│ typebox/compiler     │ '128.3 kb' │ ' 58.0 kb' │  '2.21 x'   │
+│ typebox/errors       │ '110.5 kb' │ ' 49.5 kb' │  '2.23 x'   │
+│ typebox/system       │ ' 75.4 kb' │ ' 31.2 kb' │  '2.42 x'   │
+│ typebox/value        │ '179.7 kb' │ ' 78.7 kb' │  '2.28 x'   │
+│ typebox              │ ' 74.3 kb' │ ' 30.7 kb' │  '2.42 x'   │
 └──────────────────────┴────────────┴────────────┴─────────────┘
 ```
 

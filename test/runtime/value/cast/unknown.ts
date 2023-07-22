@@ -7,46 +7,46 @@ describe('value/cast/Unknown', () => {
   it('Should upcast from string', () => {
     const value = 'hello'
     const result = Value.Cast(T, value)
-    Assert.isEqual(result, value)
+    Assert.IsEqual(result, value)
   })
   it('Should upcast from number', () => {
     const value = 1
     const result = Value.Cast(T, value)
-    Assert.isEqual(result, value)
+    Assert.IsEqual(result, value)
   })
   it('Should upcast from boolean', () => {
     const value = false
     const result = Value.Cast(T, value)
-    Assert.isEqual(result, value)
+    Assert.IsEqual(result, value)
   })
   it('Should upcast from object', () => {
     const value = {}
     const result = Value.Cast(T, value)
-    Assert.isEqual(result, value)
+    Assert.IsEqual(result, value)
   })
   it('Should upcast from array', () => {
     const value = [1]
     const result = Value.Cast(T, value)
-    Assert.isEqual(result, value)
+    Assert.IsEqual(result, value)
   })
   it('Should upcast from undefined', () => {
     const value = undefined
     const result = Value.Cast(T, value)
-    Assert.isEqual(result, value)
+    Assert.IsEqual(result, value)
   })
   it('Should upcast from null', () => {
     const value = null
     const result = Value.Cast(T, value)
-    Assert.isEqual(result, value)
+    Assert.IsEqual(result, value)
   })
   it('Should upcast from date', () => {
     const value = new Date(100)
     const result: any = Value.Cast(T, value)
-    Assert.isEqual(result.getTime(), 100)
+    Assert.IsEqual(result.getTime(), 100)
   })
   it('Should preserve', () => {
     const value = { a: 1, b: 2 }
     const result = Value.Cast(T, value)
-    Assert.isEqual(result, { a: 1, b: 2 })
+    Assert.IsEqual(result, { a: 1, b: 2 })
   })
 })

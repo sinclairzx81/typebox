@@ -10,28 +10,24 @@ describe('value/check/KeyOf', () => {
       z: Type.Number(),
     }),
   )
-
   it('Should pass keyof', () => {
     const value = 'x'
     const result = Value.Check(T, value)
-    Assert.isEqual(result, true)
+    Assert.IsEqual(result, true)
   })
-
   it('Should fail keyof', () => {
     const value = 'w'
     const result = Value.Check(T, value)
-    Assert.isEqual(result, false)
+    Assert.IsEqual(result, false)
   })
-
   it('Should fail keyof with undefined', () => {
     const value = undefined
     const result = Value.Check(T, value)
-    Assert.isEqual(result, false)
+    Assert.IsEqual(result, false)
   })
-
   it('Should fail keyof with null', () => {
     const value = null
     const result = Value.Check(T, value)
-    Assert.isEqual(result, false)
+    Assert.IsEqual(result, false)
   })
 })

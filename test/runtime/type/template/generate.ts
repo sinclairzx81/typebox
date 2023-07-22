@@ -8,12 +8,12 @@ describe('type/TemplateLiteralGenerator', () => {
   it('Exact 1', () => {
     const E = TemplateLiteralParser.Parse('^$')
     const R = [...TemplateLiteralGenerator.Generate(E)]
-    Assert.isEqual(R, ['^$'])
+    Assert.IsEqual(R, ['^$'])
   })
   it('Exact 2', () => {
     const E = TemplateLiteralParser.Parse('^A$')
     const R = [...TemplateLiteralGenerator.Generate(E)]
-    Assert.isEqual(R, ['^A$'])
+    Assert.IsEqual(R, ['^A$'])
   })
   // ---------------------------------------------------------------
   // Patterns
@@ -21,17 +21,17 @@ describe('type/TemplateLiteralGenerator', () => {
   it('Pattern 1', () => {
     const E = TemplateLiteralParser.Parse('(true|false)')
     const R = [...TemplateLiteralGenerator.Generate(E)]
-    Assert.isEqual(R, ['true', 'false'])
+    Assert.IsEqual(R, ['true', 'false'])
   })
   it('Pattern 2', () => {
     const E = TemplateLiteralParser.Parse('(0|[1-9][0-9]*)')
     const R = [...TemplateLiteralGenerator.Generate(E)]
-    Assert.isEqual(R, ['0', '[1-9][0-9]*'])
+    Assert.IsEqual(R, ['0', '[1-9][0-9]*'])
   })
   it('Pattern 3', () => {
     const E = TemplateLiteralParser.Parse('.*')
     const R = [...TemplateLiteralGenerator.Generate(E)]
-    Assert.isEqual(R, ['.*'])
+    Assert.IsEqual(R, ['.*'])
   })
   // ---------------------------------------------------------------
   // Expression
@@ -39,161 +39,161 @@ describe('type/TemplateLiteralGenerator', () => {
   it('Expression 1', () => {
     const E = TemplateLiteralParser.Parse(')')
     const R = [...TemplateLiteralGenerator.Generate(E)]
-    Assert.isEqual(R, [')'])
+    Assert.IsEqual(R, [')'])
   })
   it('Expression 2', () => {
     const E = TemplateLiteralParser.Parse('\\)')
     const R = [...TemplateLiteralGenerator.Generate(E)]
-    Assert.isEqual(R, ['\\)'])
+    Assert.IsEqual(R, ['\\)'])
   })
   it('Expression 3', () => {
     const E = TemplateLiteralParser.Parse('\\(')
     const R = [...TemplateLiteralGenerator.Generate(E)]
-    Assert.isEqual(R, ['\\('])
+    Assert.IsEqual(R, ['\\('])
   })
   it('Expression 4', () => {
     const E = TemplateLiteralParser.Parse('')
     const R = [...TemplateLiteralGenerator.Generate(E)]
-    Assert.isEqual(R, [''])
+    Assert.IsEqual(R, [''])
   })
   it('Expression 5', () => {
     const E = TemplateLiteralParser.Parse('\\')
     const R = [...TemplateLiteralGenerator.Generate(E)]
-    Assert.isEqual(R, ['\\'])
+    Assert.IsEqual(R, ['\\'])
   })
   it('Expression 6', () => {
     const E = TemplateLiteralParser.Parse('()')
     const R = [...TemplateLiteralGenerator.Generate(E)]
-    Assert.isEqual(R, [''])
+    Assert.IsEqual(R, [''])
   })
   it('Expression 7', () => {
     const E = TemplateLiteralParser.Parse('(a)')
     const R = [...TemplateLiteralGenerator.Generate(E)]
-    Assert.isEqual(R, ['a'])
+    Assert.IsEqual(R, ['a'])
   })
   it('Expression 8', () => {
     const E = TemplateLiteralParser.Parse('()))')
     const R = [...TemplateLiteralGenerator.Generate(E)]
-    Assert.isEqual(R, ['))'])
+    Assert.IsEqual(R, ['))'])
   })
   it('Expression 9', () => {
     const E = TemplateLiteralParser.Parse('())')
     const R = [...TemplateLiteralGenerator.Generate(E)]
-    Assert.isEqual(R, [')'])
+    Assert.IsEqual(R, [')'])
   })
   it('Expression 10', () => {
     const E = TemplateLiteralParser.Parse('A|B')
     const R = [...TemplateLiteralGenerator.Generate(E)]
-    Assert.isEqual(R, ['A', 'B'])
+    Assert.IsEqual(R, ['A', 'B'])
   })
   it('Expression 11', () => {
     const E = TemplateLiteralParser.Parse('A|(B)')
     const R = [...TemplateLiteralGenerator.Generate(E)]
-    Assert.isEqual(R, ['A', 'B'])
+    Assert.IsEqual(R, ['A', 'B'])
   })
   it('Expression 12', () => {
     const E = TemplateLiteralParser.Parse('A(B)')
     const R = [...TemplateLiteralGenerator.Generate(E)]
-    Assert.isEqual(R, ['AB'])
+    Assert.IsEqual(R, ['AB'])
   })
   it('Expression 13', () => {
     const E = TemplateLiteralParser.Parse('(A)B')
     const R = [...TemplateLiteralGenerator.Generate(E)]
-    Assert.isEqual(R, ['AB'])
+    Assert.IsEqual(R, ['AB'])
   })
   it('Expression 14', () => {
     const E = TemplateLiteralParser.Parse('(A)|B')
     const R = [...TemplateLiteralGenerator.Generate(E)]
-    Assert.isEqual(R, ['A', 'B'])
+    Assert.IsEqual(R, ['A', 'B'])
   })
   it('Expression 15', () => {
     const E = TemplateLiteralParser.Parse('|')
     const R = [...TemplateLiteralGenerator.Generate(E)]
-    Assert.isEqual(R, [''])
+    Assert.IsEqual(R, [''])
   })
   it('Expression 16', () => {
     const E = TemplateLiteralParser.Parse('||')
     const R = [...TemplateLiteralGenerator.Generate(E)]
-    Assert.isEqual(R, [''])
+    Assert.IsEqual(R, [''])
   })
   it('Expression 17', () => {
     const E = TemplateLiteralParser.Parse('||A')
     const R = [...TemplateLiteralGenerator.Generate(E)]
-    Assert.isEqual(R, ['A'])
+    Assert.IsEqual(R, ['A'])
   })
   it('Expression 18', () => {
     const E = TemplateLiteralParser.Parse('A||')
     const R = [...TemplateLiteralGenerator.Generate(E)]
-    Assert.isEqual(R, ['A'])
+    Assert.IsEqual(R, ['A'])
   })
   it('Expression 19', () => {
     const E = TemplateLiteralParser.Parse('A||B')
     const R = [...TemplateLiteralGenerator.Generate(E)]
-    Assert.isEqual(R, ['A', 'B'])
+    Assert.IsEqual(R, ['A', 'B'])
   })
   it('Expression 20', () => {
     const E = TemplateLiteralParser.Parse('A|()|B')
     const R = [...TemplateLiteralGenerator.Generate(E)]
-    Assert.isEqual(R, ['A', '', 'B'])
+    Assert.IsEqual(R, ['A', '', 'B'])
   })
   it('Expression 21', () => {
     const E = TemplateLiteralParser.Parse('A|(|)|B')
     const R = [...TemplateLiteralGenerator.Generate(E)]
-    Assert.isEqual(R, ['A', '', 'B'])
+    Assert.IsEqual(R, ['A', '', 'B'])
   })
   it('Expression 22', () => {
     const E = TemplateLiteralParser.Parse('A|(||)|B')
     const R = [...TemplateLiteralGenerator.Generate(E)]
-    Assert.isEqual(R, ['A', '', 'B'])
+    Assert.IsEqual(R, ['A', '', 'B'])
   })
   it('Expression 23', () => {
     const E = TemplateLiteralParser.Parse('|A(||)B|')
     const R = [...TemplateLiteralGenerator.Generate(E)]
-    Assert.isEqual(R, ['AB'])
+    Assert.IsEqual(R, ['AB'])
   })
   it('Expression 24', () => {
     const E = TemplateLiteralParser.Parse('A(B)(C)')
     const R = [...TemplateLiteralGenerator.Generate(E)]
-    Assert.isEqual(R, ['ABC'])
+    Assert.IsEqual(R, ['ABC'])
   })
   it('Expression 25', () => {
     const E = TemplateLiteralParser.Parse('A(B)|(C)')
     const R = [...TemplateLiteralGenerator.Generate(E)]
-    Assert.isEqual(R, ['AB', 'C'])
+    Assert.IsEqual(R, ['AB', 'C'])
   })
   it('Expression 26', () => {
     const E = TemplateLiteralParser.Parse('A(B|C)')
     const R = [...TemplateLiteralGenerator.Generate(E)]
-    Assert.isEqual(R, ['AB', 'AC'])
+    Assert.IsEqual(R, ['AB', 'AC'])
   })
   it('Expression 27', () => {
     const E = TemplateLiteralParser.Parse('A|(B|C)')
     const R = [...TemplateLiteralGenerator.Generate(E)]
-    Assert.isEqual(R, ['A', 'B', 'C'])
+    Assert.IsEqual(R, ['A', 'B', 'C'])
   })
   it('Expression 28', () => {
     const E = TemplateLiteralParser.Parse('((A)B)C')
     const R = [...TemplateLiteralGenerator.Generate(E)]
-    Assert.isEqual(R, ['ABC'])
+    Assert.IsEqual(R, ['ABC'])
   })
   it('Expression 29', () => {
     const E = TemplateLiteralParser.Parse('(0|1)(0|1)')
     const R = [...TemplateLiteralGenerator.Generate(E)]
-    Assert.isEqual(R, ['00', '01', '10', '11'])
+    Assert.IsEqual(R, ['00', '01', '10', '11'])
   })
   it('Expression 30', () => {
     const E = TemplateLiteralParser.Parse('(0|1)|(0|1)')
     const R = [...TemplateLiteralGenerator.Generate(E)]
-    Assert.isEqual(R, ['0', '1', '0', '1'])
+    Assert.IsEqual(R, ['0', '1', '0', '1'])
   })
   it('Expression 31', () => {
     const E = TemplateLiteralParser.Parse('(0|(1|0)|1)')
     const R = [...TemplateLiteralGenerator.Generate(E)]
-    Assert.isEqual(R, ['0', '1', '0', '1'])
+    Assert.IsEqual(R, ['0', '1', '0', '1'])
   })
   it('Expression 32', () => {
     const E = TemplateLiteralParser.Parse('(0(1|0)1)')
     const R = [...TemplateLiteralGenerator.Generate(E)]
-    Assert.isEqual(R, ['011', '001'])
+    Assert.IsEqual(R, ['011', '001'])
   })
 })

@@ -4,26 +4,26 @@ import { Assert } from '../../assert/index'
 describe('type/TemplateLiteralPattern', () => {
   const Equal = (template: TTemplateLiteral, expect: string) => {
     const pattern = template.pattern.slice(1, template.pattern.length - 1)
-    Assert.isEqual(pattern, expect)
+    Assert.IsEqual(pattern, expect)
   }
   // ---------------------------------------------------------------
   // Escape
   // ---------------------------------------------------------------
   it('Escape 1', () => {
     const T = Type.TemplateLiteral([Type.Literal('.*')])
-    Assert.isEqual(T.pattern, '^\\.\\*$')
+    Assert.IsEqual(T.pattern, '^\\.\\*$')
   })
   it('Escape 2', () => {
     const T = Type.TemplateLiteral([Type.Literal('(')])
-    Assert.isEqual(T.pattern, '^\\($')
+    Assert.IsEqual(T.pattern, '^\\($')
   })
   it('Escape 3', () => {
     const T = Type.TemplateLiteral([Type.Literal(')')])
-    Assert.isEqual(T.pattern, '^\\)$')
+    Assert.IsEqual(T.pattern, '^\\)$')
   })
   it('Escape 4', () => {
     const T = Type.TemplateLiteral([Type.Literal('|')])
-    Assert.isEqual(T.pattern, '^\\|$')
+    Assert.IsEqual(T.pattern, '^\\|$')
   })
   // ---------------------------------------------------------------
   // Pattern
