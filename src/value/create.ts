@@ -88,8 +88,10 @@ export namespace ValueCreate {
     }
   }
   function Array(schema: Types.TArray, references: Types.TSchema[]): any {
-    if (schema.uniqueItems === true && schema.default === undefined) {
-      throw new Error('ValueCreate.Array: Arrays with uniqueItems require a default value')
+    if (schema.uniqueItems === true && !('default' in schema)) {
+      throw new Error('ValueCreate.Array: Array with the uniqueItems constraint requires a default value')
+    } else if ('contains' in schema && !('default' in schema)) {
+      throw new Error('ValueCreate.Array: Array with the contains constraint requires a default value')
     } else if ('default' in schema) {
       return schema.default
     } else if (schema.minItems !== undefined) {
@@ -98,6 +100,13 @@ export namespace ValueCreate {
       })
     } else {
       return []
+    }
+  }
+  function AsyncIterator(schema: Types.TAsyncIterator, references: Types.TSchema[]) {
+    if ('default' in schema) {
+      return schema.default
+    } else {
+      return (async function* () {})()
     }
   }
   function BigInt(schema: Types.TBigInt, references: Types.TSchema[]): any {
@@ -171,6 +180,13 @@ export namespace ValueCreate {
       }, {})
       if (!ValueCheck.Check(schema, references, value)) throw new ValueCreateIntersectTypeError(schema)
       return value
+    }
+  }
+  function Iterator(schema: Types.TIterator, references: Types.TSchema[]) {
+    if ('default' in schema) {
+      return schema.default
+    } else {
+      return (function* () {})()
     }
   }
   function Literal(schema: Types.TLiteral, references: Types.TSchema[]): any {
@@ -368,6 +384,8 @@ export namespace ValueCreate {
         return Any(schema_, references_)
       case 'Array':
         return Array(schema_, references_)
+      case 'AsyncIterator':
+        return AsyncIterator(schema_, references_)
       case 'BigInt':
         return BigInt(schema_, references_)
       case 'Boolean':
@@ -382,6 +400,8 @@ export namespace ValueCreate {
         return Integer(schema_, references_)
       case 'Intersect':
         return Intersect(schema_, references_)
+      case 'Iterator':
+        return Iterator(schema_, references_)
       case 'Literal':
         return Literal(schema_, references_)
       case 'Never':

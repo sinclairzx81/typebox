@@ -29,6 +29,15 @@ THE SOFTWARE.
 import { Is, ObjectType, ArrayType, TypedArrayType, ValueType } from './is'
 
 export namespace ValueClone {
+  function AsyncIterator(value: AsyncIterableIterator<unknown>): any {
+    return value
+  }
+  function Iterator(value: IterableIterator<unknown>): any {
+    return value
+  }
+  function Promise(value: Promise<unknown>): any {
+    return value
+  }
   function Array(value: ArrayType): any {
     return value.map((element: any) => Clone(element))
   }
@@ -36,7 +45,7 @@ export namespace ValueClone {
     return new globalThis.Date(value.toISOString())
   }
   function Object(value: ObjectType): any {
-    const keys = [...globalThis.Object.keys(value), ...globalThis.Object.getOwnPropertySymbols(value)]
+    const keys = [...globalThis.Object.getOwnPropertyNames(value), ...globalThis.Object.getOwnPropertySymbols(value)]
     return keys.reduce((acc, key) => ({ ...acc, [key]: Clone(value[key]) }), {})
   }
   function TypedArray(value: TypedArrayType): any {
@@ -46,18 +55,14 @@ export namespace ValueClone {
     return value
   }
   export function Clone<T extends unknown>(value: T): T {
-    if (Is.Date(value)) {
-      return Date(value)
-    } else if (Is.Object(value)) {
-      return Object(value)
-    } else if (Is.Array(value)) {
-      return Array(value)
-    } else if (Is.TypedArray(value)) {
-      return TypedArray(value)
-    } else if (Is.Value(value)) {
-      return Value(value)
-    } else {
-      throw new Error('ValueClone: Unable to clone value')
-    }
+    if (Is.AsyncIterator(value)) return AsyncIterator(value)
+    if (Is.Iterator(value)) return Iterator(value)
+    if (Is.Promise(value)) return Promise(value)
+    if (Is.Date(value)) return Date(value)
+    if (Is.Object(value)) return Object(value)
+    if (Is.Array(value)) return Array(value)
+    if (Is.TypedArray(value)) return TypedArray(value)
+    if (Is.Value(value)) return Value(value)
+    throw new Error('ValueClone: Unable to clone value')
   }
 }

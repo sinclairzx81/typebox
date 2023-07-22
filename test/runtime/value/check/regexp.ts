@@ -4,14 +4,14 @@ import { Assert } from '../../assert/index'
 
 describe('value/check/RegEx', () => {
   it('Should pass regex', () => {
-    const T = Type.RegEx(/foo/)
+    const T = Type.RegExp(/foo/)
     const value = 'foo'
     const result = Value.Check(T, value)
     Assert.isEqual(result, true)
   })
 
   it('Should fail regex', () => {
-    const T = Type.RegEx(/foo/)
+    const T = Type.RegExp(/foo/)
     const value = 'bar'
     const result = Value.Check(T, value)
     Assert.isEqual(result, false)

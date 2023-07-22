@@ -185,6 +185,9 @@ export namespace ValueConvert {
     }
     return value
   }
+  function AsyncIterator(schema: Types.TAsyncIterator, references: Types.TSchema[], value: any): any {
+    return value
+  }
   function BigInt(schema: Types.TBigInt, references: Types.TSchema[], value: any): unknown {
     return TryConvertBigInt(value)
   }
@@ -204,6 +207,9 @@ export namespace ValueConvert {
     return TryConvertInteger(value)
   }
   function Intersect(schema: Types.TIntersect, references: Types.TSchema[], value: any): unknown {
+    return value
+  }
+  function Iterator(schema: Types.TIterator, references: Types.TSchema[], value: any): unknown {
     return value
   }
   function Literal(schema: Types.TLiteral, references: Types.TSchema[], value: any): unknown {
@@ -298,6 +304,8 @@ export namespace ValueConvert {
         return Any(schema_, references_, value)
       case 'Array':
         return Array(schema_, references_, value)
+      case 'AsyncIterator':
+        return AsyncIterator(schema_, references_, value)
       case 'BigInt':
         return BigInt(schema_, references_, value)
       case 'Boolean':
@@ -312,6 +320,8 @@ export namespace ValueConvert {
         return Integer(schema_, references_, value)
       case 'Intersect':
         return Intersect(schema_, references_, value)
+      case 'Iterator':
+        return Iterator(schema_, references_, value)
       case 'Literal':
         return Literal(schema_, references_, value)
       case 'Never':

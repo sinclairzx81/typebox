@@ -36,7 +36,11 @@ export enum ValueErrorType {
   Array,
   ArrayMinItems,
   ArrayMaxItems,
+  ArrayContains,
+  ArrayMinContains,
+  ArrayMaxContains,
   ArrayUniqueItems,
+  AsyncIterator,
   BigInt,
   BigIntMultipleOf,
   BigIntExclusiveMinimum,
@@ -58,6 +62,7 @@ export enum ValueErrorType {
   IntegerMaximum,
   Intersect,
   IntersectUnevaluatedProperties,
+  Iterator,
   Literal,
   Never,
   Not,
@@ -183,12 +188,33 @@ export namespace ValueErrors {
     if (IsDefined<number>(schema.maxItems) && !(value.length <= schema.maxItems)) {
       yield { type: ValueErrorType.ArrayMinItems, schema, path, value, message: `Expected array length to be less or equal to ${schema.maxItems}` }
     }
+
+    for (let i = 0; i < value.length; i++) {
+      yield* Visit(schema.items, references, `${path}/${i}`, value[i])
+    }
     // prettier-ignore
     if (schema.uniqueItems === true && !((function () { const set = new Set(); for (const element of value) { const hashed = ValueHash.Create(element); if (set.has(hashed)) { return false } else { set.add(hashed) } } return true })())) {
       yield { type: ValueErrorType.ArrayUniqueItems, schema, path, value, message: `Expected array elements to be unique` }
     }
-    for (let i = 0; i < value.length; i++) {
-      yield* Visit(schema.items, references, `${path}/${i}`, value[i])
+    // contains
+    if (!(IsDefined(schema.contains) || IsNumber(schema.minContains) || IsNumber(schema.maxContains))) {
+      return
+    }
+    const containsSchema = IsDefined<Types.TSchema>(schema.contains) ? schema.contains : Types.Type.Never()
+    const containsCount = value.reduce((acc, value, index) => (Visit(containsSchema, references, `${path}${index}`, value).next().done === true ? acc + 1 : acc), 0)
+    if (containsCount === 0) {
+      yield { type: ValueErrorType.ArrayContains, schema, path, value, message: `Expected array to contain at least one matching type` }
+    }
+    if (IsNumber(schema.minContains) && containsCount < schema.minContains) {
+      yield { type: ValueErrorType.ArrayMinContains, schema, path, value, message: `Expected array to contain at least ${schema.minContains} matching types` }
+    }
+    if (IsNumber(schema.maxContains) && containsCount > schema.maxContains) {
+      yield { type: ValueErrorType.ArrayMaxContains, schema, path, value, message: `Expected array to contain no more than ${schema.maxContains} matching types` }
+    }
+  }
+  function* AsyncIterator(schema: Types.TAsyncIterator, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
+    if (!(IsObject(value) && globalThis.Symbol.asyncIterator in value)) {
+      yield { type: ValueErrorType.AsyncIterator, schema, path, value, message: `Expected value to be an async iterator` }
     }
   }
   function* BigInt(schema: Types.TBigInt, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
@@ -293,6 +319,11 @@ export namespace ValueErrors {
           }
         }
       }
+    }
+  }
+  function* Iterator(schema: Types.TIterator, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
+    if (!(IsObject(value) && globalThis.Symbol.iterator in value)) {
+      yield { type: ValueErrorType.Iterator, schema, path, value, message: `Expected value to be an iterator` }
     }
   }
   function* Literal(schema: Types.TLiteral, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
@@ -530,6 +561,8 @@ export namespace ValueErrors {
         return yield* Any(schema_, references_, path, value)
       case 'Array':
         return yield* Array(schema_, references_, path, value)
+      case 'AsyncIterator':
+        return yield* AsyncIterator(schema_, references_, path, value)
       case 'BigInt':
         return yield* BigInt(schema_, references_, path, value)
       case 'Boolean':
@@ -544,6 +577,8 @@ export namespace ValueErrors {
         return yield* Integer(schema_, references_, path, value)
       case 'Intersect':
         return yield* Intersect(schema_, references_, path, value)
+      case 'Iterator':
+        return yield* Iterator(schema_, references_, path, value)
       case 'Literal':
         return yield* Literal(schema_, references_, path, value)
       case 'Never':

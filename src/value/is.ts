@@ -32,22 +32,27 @@ export type TypedArrayType = Int8Array | Uint8Array | Uint8ClampedArray | Int16A
 export type ArrayType = unknown[]
 
 export namespace Is {
-  export function Object(value: unknown): value is ObjectType {
-    return value !== null && typeof value === 'object' && !globalThis.Array.isArray(value) && !ArrayBuffer.isView(value) && !(value instanceof globalThis.Date)
-  }
-
-  export function Date(value: unknown): value is Date {
-    return value instanceof globalThis.Date
-  }
-
   export function Array(value: unknown): value is ArrayType {
     return globalThis.Array.isArray(value) && !ArrayBuffer.isView(value)
   }
-
+  export function AsyncIterator(value: unknown): value is AsyncIterableIterator<any> {
+    return Object(value) && Symbol.asyncIterator in value
+  }
+  export function Promise(value: unknown): value is Promise<unknown> {
+    return value instanceof globalThis.Promise
+  }
+  export function Date(value: unknown): value is Date {
+    return value instanceof globalThis.Date
+  }
+  export function Iterator(value: unknown): value is IterableIterator<any> {
+    return Object(value) && Symbol.iterator in value
+  }
+  export function Object(value: unknown): value is ObjectType {
+    return value !== null && typeof value === 'object' && !globalThis.Array.isArray(value) && !ArrayBuffer.isView(value) && !(value instanceof globalThis.Date)
+  }
   export function Value(value: unknown): value is ValueType {
     return value === null || value === undefined || typeof value === 'function' || typeof value === 'symbol' || typeof value === 'bigint' || typeof value === 'number' || typeof value === 'boolean' || typeof value === 'string'
   }
-
   export function TypedArray(value: unknown): value is TypedArrayType {
     return ArrayBuffer.isView(value)
   }

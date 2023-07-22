@@ -141,6 +141,9 @@ export namespace ValueCast {
     if (!ValueCheck.Check(schema, references, unique)) throw new ValueCastArrayUniqueItemsTypeError(schema, unique)
     return unique
   }
+  function AsyncIterator(schema: Types.TAsyncIterator, references: Types.TSchema[], value: any): any {
+    return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
+  }
   function BigInt(schema: Types.TBigInt, references: Types.TSchema[], value: any): any {
     return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
   }
@@ -170,6 +173,9 @@ export namespace ValueCast {
     const created = ValueCreate.Create(schema, references)
     const mapped = IsObject(created) && IsObject(value) ? { ...(created as any), ...value } : value
     return ValueCheck.Check(schema, references, mapped) ? mapped : ValueCreate.Create(schema, references)
+  }
+  function Iterator(schema: Types.TIterator, references: Types.TSchema[], value: any): any {
+    return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
   }
   function Literal(schema: Types.TLiteral, references: Types.TSchema[], value: any): any {
     return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
@@ -272,6 +278,8 @@ export namespace ValueCast {
         return Any(schema_, references_, value)
       case 'Array':
         return Array(schema_, references_, value)
+      case 'AsyncIterator':
+        return AsyncIterator(schema_, references_, value)
       case 'BigInt':
         return BigInt(schema_, references_, value)
       case 'Boolean':
@@ -286,6 +294,8 @@ export namespace ValueCast {
         return Integer(schema_, references_, value)
       case 'Intersect':
         return Intersect(schema_, references_, value)
+      case 'Iterator':
+        return Iterator(schema_, references_, value)
       case 'Literal':
         return Literal(schema_, references_, value)
       case 'Never':

@@ -102,11 +102,32 @@ export namespace ValueCheck {
     if (IsDefined<number>(schema.maxItems) && !(value.length <= schema.maxItems)) {
       return false
     }
+    if (!value.every((value) => Visit(schema.items, references, value))) {
+      return false
+    }
     // prettier-ignore
     if (schema.uniqueItems === true && !((function() { const set = new Set(); for(const element of value) { const hashed = ValueHash.Create(element); if(set.has(hashed)) { return false } else { set.add(hashed) } } return true })())) {
       return false
     }
-    return value.every((value) => Visit(schema.items, references, value))
+    // contains
+    if (!(IsDefined(schema.contains) || IsNumber(schema.minContains) || IsNumber(schema.maxContains))) {
+      return true // exit
+    }
+    const containsSchema = IsDefined<Types.TSchema>(schema.contains) ? schema.contains : Types.Type.Never()
+    const containsCount = value.reduce((acc, value) => (Visit(containsSchema, references, value) ? acc + 1 : acc), 0)
+    if (containsCount === 0) {
+      return false
+    }
+    if (IsNumber(schema.minContains) && containsCount < schema.minContains) {
+      return false
+    }
+    if (IsNumber(schema.maxContains) && containsCount > schema.maxContains) {
+      return false
+    }
+    return true
+  }
+  function AsyncIterator(schema: Types.TAsyncIterator, references: Types.TSchema[], value: any): boolean {
+    return IsObject(value) && globalThis.Symbol.asyncIterator in value
   }
   function BigInt(schema: Types.TBigInt, references: Types.TSchema[], value: any): boolean {
     if (!IsBigInt(value)) {
@@ -183,8 +204,8 @@ export namespace ValueCheck {
   function Intersect(schema: Types.TIntersect, references: Types.TSchema[], value: any): boolean {
     const check1 = schema.allOf.every((schema) => Visit(schema, references, value))
     if (schema.unevaluatedProperties === false) {
-      const keyCheck = new RegExp(Types.KeyResolver.ResolvePattern(schema))
-      const check2 = globalThis.Object.getOwnPropertyNames(value).every((key) => keyCheck.test(key))
+      const keyPattern = new RegExp(Types.KeyResolver.ResolvePattern(schema))
+      const check2 = globalThis.Object.getOwnPropertyNames(value).every((key) => keyPattern.test(key))
       return check1 && check2
     } else if (Types.TypeGuard.TSchema(schema.unevaluatedProperties)) {
       const keyCheck = new RegExp(Types.KeyResolver.ResolvePattern(schema))
@@ -193,6 +214,9 @@ export namespace ValueCheck {
     } else {
       return check1
     }
+  }
+  function Iterator(schema: Types.TIterator, references: Types.TSchema[], value: any): boolean {
+    return IsObject(value) && globalThis.Symbol.iterator in value
   }
   function Literal(schema: Types.TLiteral, references: Types.TSchema[], value: any): boolean {
     return value === schema.const
@@ -396,6 +420,8 @@ export namespace ValueCheck {
         return Any(schema_, references_, value)
       case 'Array':
         return Array(schema_, references_, value)
+      case 'AsyncIterator':
+        return AsyncIterator(schema_, references_, value)
       case 'BigInt':
         return BigInt(schema_, references_, value)
       case 'Boolean':
@@ -410,6 +436,8 @@ export namespace ValueCheck {
         return Integer(schema_, references_, value)
       case 'Intersect':
         return Intersect(schema_, references_, value)
+      case 'Iterator':
+        return Iterator(schema_, references_, value)
       case 'Literal':
         return Literal(schema_, references_, value)
       case 'Never':

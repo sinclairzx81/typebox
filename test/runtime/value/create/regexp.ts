@@ -5,12 +5,12 @@ import { Assert } from '../../assert/index'
 describe('value/create/RegEx', () => {
   it('Should throw without a default value', () => {
     Assert.throws(() => {
-      const T = Type.RegEx(/foo/)
+      const T = Type.RegExp(/foo/)
       Value.Create(T)
     })
   })
   it('Should create default', () => {
-    const T = Type.RegEx(/foo/, { default: 'foo' })
+    const T = Type.RegExp(/foo/, { default: 'foo' })
     Assert.isEqual(Value.Create(T), 'foo')
   })
 })

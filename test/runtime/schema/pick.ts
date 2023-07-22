@@ -33,7 +33,7 @@ describe('type/schema/Pick', () => {
     const A = Type.Object(
       {
         x: Type.Optional(Type.Number()),
-        y: Type.ReadonlyOptional(Type.Number()),
+        y: Type.Readonly(Type.Optional(Type.Number())),
         z: Type.Number(),
       },
       { additionalProperties: false },
