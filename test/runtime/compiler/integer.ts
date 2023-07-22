@@ -22,27 +22,22 @@ describe('type/compiler/Integer', () => {
     const T = Type.Integer()
     Ok(T, 1)
   })
-
   it('Should not validate string', () => {
     const T = Type.Integer()
     Fail(T, 'hello')
   })
-
   it('Should not validate boolean', () => {
     const T = Type.Integer()
     Fail(T, true)
   })
-
   it('Should not validate array', () => {
     const T = Type.Integer()
     Fail(T, [1, 2, 3])
   })
-
   it('Should not validate object', () => {
     const T = Type.Integer()
     Fail(T, { a: 1, b: 2 })
   })
-
   it('Should not validate null', () => {
     const T = Type.Integer()
     Fail(T, null)
@@ -64,19 +59,16 @@ describe('type/compiler/Integer', () => {
     Fail(T, 9)
     Ok(T, 10)
   })
-
   it('Should validate maximum', () => {
     const T = Type.Integer({ maximum: 10 })
     Ok(T, 10)
     Fail(T, 11)
   })
-
   it('Should validate Date exclusiveMinimum', () => {
     const T = Type.Integer({ exclusiveMinimum: 10 })
     Fail(T, 10)
     Ok(T, 11)
   })
-
   it('Should validate Date exclusiveMaximum', () => {
     const T = Type.Integer({ exclusiveMaximum: 10 })
     Ok(T, 9)

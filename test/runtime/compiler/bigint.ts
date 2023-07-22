@@ -59,25 +59,21 @@ describe('type/compiler/BigInt', () => {
     Fail(T, BigInt(9))
     Ok(T, BigInt(10))
   })
-
   it('Should validate maximum', () => {
     const T = Type.BigInt({ maximum: BigInt(10) })
     Ok(T, BigInt(10))
     Fail(T, BigInt(11))
   })
-
   it('Should validate Date exclusiveMinimum', () => {
     const T = Type.BigInt({ exclusiveMinimum: BigInt(10) })
     Fail(T, BigInt(10))
     Ok(T, BigInt(11))
   })
-
   it('Should validate Date exclusiveMaximum', () => {
     const T = Type.BigInt({ exclusiveMaximum: BigInt(10) })
     Ok(T, BigInt(9))
     Fail(T, BigInt(10))
   })
-
   it('Should not validate NaN', () => {
     Fail(Type.Number(), NaN)
   })

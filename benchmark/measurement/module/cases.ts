@@ -11,7 +11,7 @@ export namespace Cases {
 
   export const Primitive_String = Type.String()
 
-  export const Primitive_String_Pattern = Type.RegEx(/foo/, { default: 'foo' })
+  export const Primitive_String_Pattern = Type.RegExp(/foo/, { default: 'foo' })
 
   export const Primitive_Boolean = Type.Boolean()
 

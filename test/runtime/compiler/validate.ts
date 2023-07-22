@@ -21,7 +21,6 @@ const DAYS = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 function isLeapYear(year: number): boolean {
   return year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0)
 }
-
 function isDate(str: string): boolean {
   const matches: string[] | null = DATE.exec(str)
   if (!matches) return false
@@ -30,7 +29,6 @@ function isDate(str: string): boolean {
   const day: number = +matches[3]
   return month >= 1 && month <= 12 && day >= 1 && day <= (month === 2 && isLeapYear(year) ? 29 : DAYS[month])
 }
-
 function isTime(str: string, strictTimeZone?: boolean): boolean {
   const matches: string[] | null = TIME.exec(str)
   if (!matches) return false
@@ -48,20 +46,16 @@ function isTime(str: string, strictTimeZone?: boolean): boolean {
   const utcHr = hr - tzH * tzSign - (utcMin < 0 ? 1 : 0)
   return (utcHr === 23 || utcHr === -1) && (utcMin === 59 || utcMin === -1) && sec < 61
 }
-
 function isDateTime(str: string, strictTimeZone?: boolean): boolean {
   const dateTime: string[] = str.split(DATE_TIME_SEPARATOR)
   return dateTime.length === 2 && isDate(dateTime[0]) && isTime(dateTime[1], strictTimeZone)
 }
-
 // -------------------------------------------------------------------------
 // Use Formats
 // -------------------------------------------------------------------------
-
 FormatRegistry.Set('email', (value) => EMAIL.test(value))
 FormatRegistry.Set('uuid', (value) => UUID.test(value))
 FormatRegistry.Set('date-time', (value) => isDateTime(value, true))
-
 export function Ok<T extends TSchema>(schema: T, data: unknown, references: any[] = []) {
   const C = TypeCompiler.Compile(schema, references)
   const result = C.Check(data)
@@ -92,7 +86,6 @@ export function Ok<T extends TSchema>(schema: T, data: unknown, references: any[
     throw Error('expected ok')
   }
 }
-
 export function Fail<T extends TSchema>(schema: T, data: unknown, references: any[] = []) {
   const C = TypeCompiler.Compile(schema, references)
   const result = C.Check(data)

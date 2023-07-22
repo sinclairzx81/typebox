@@ -14,7 +14,7 @@ describe('type/guard/TUnion', () => {
         }),
       ]),
     )
-    Assert.isEqual(R, true)
+    Assert.IsTrue(R)
   })
   it('Should not guard for TIntersect', () => {
     const R = TypeGuard.TIntersect(
@@ -27,6 +27,6 @@ describe('type/guard/TUnion', () => {
         }),
       ]),
     )
-    Assert.isEqual(R, false)
+    Assert.IsFalse(R)
   })
 })

@@ -13,9 +13,8 @@ describe('value/create/Constructor', () => {
     const C = Value.Create(T)
     const I = new C()
     const R = I.test()
-    Assert.isEqual(R, 123)
+    Assert.IsEqual(R, 123)
   })
-
   it('Should create default', () => {
     const T = Type.Constructor(
       [],
@@ -33,6 +32,6 @@ describe('value/create/Constructor', () => {
     const C = Value.Create(T)
     const I = new C()
     const R = I.test()
-    Assert.isEqual(R, 321)
+    Assert.IsEqual(R, 321)
   })
 })

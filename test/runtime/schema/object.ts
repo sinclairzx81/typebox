@@ -6,27 +6,22 @@ describe('type/schema/Object', () => {
     const T = Type.Object({})
     Fail(T, 42)
   })
-
   it('Should not validate a string', () => {
     const T = Type.Object({})
     Fail(T, 'hello')
   })
-
   it('Should not validate a boolean', () => {
     const T = Type.Object({})
     Fail(T, true)
   })
-
   it('Should not validate a null', () => {
     const T = Type.Object({})
     Fail(T, null)
   })
-
   it('Should not validate an array', () => {
     const T = Type.Object({})
     Fail(T, [1, 2])
   })
-
   it('Should validate with correct property values', () => {
     const T = Type.Object({
       a: Type.Number(),
@@ -43,7 +38,6 @@ describe('type/schema/Object', () => {
       e: { x: 10, y: 20 },
     })
   })
-
   it('Should not validate with incorrect property values', () => {
     const T = Type.Object({
       a: Type.Number(),

@@ -20,7 +20,6 @@ describe('type/compiler/Enum', () => {
     Fail(T, 'Foo')
     Fail(T, 'Bar')
   })
-
   it('Should validate when emum has defined string values', () => {
     enum Kind {
       Foo = 'foo',
@@ -30,7 +29,6 @@ describe('type/compiler/Enum', () => {
     Ok(T, 'foo')
     Ok(T, 'bar')
   })
-
   it('Should not validate when emum has defined string values and user passes numeric', () => {
     enum Kind {
       Foo = 'foo',
@@ -40,7 +38,6 @@ describe('type/compiler/Enum', () => {
     Fail(T, 0)
     Fail(T, 1)
   })
-
   it('Should validate when enum has one or more string values', () => {
     enum Kind {
       Foo,

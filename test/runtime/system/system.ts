@@ -38,7 +38,6 @@ describe('system/TypeSystem/ExactOptionalPropertyTypes', () => {
     Ok(T, { x: undefined })
   })
 })
-
 describe('system/TypeSystem/AllowNaN', () => {
   before(() => {
     TypeSystem.AllowNaN = true
@@ -97,7 +96,6 @@ describe('system/TypeSystem/AllowNaN', () => {
     Fail(T, -Infinity)
   })
 })
-
 describe('system/TypeSystem/AllowArrayObjects', () => {
   before(() => {
     TypeSystem.AllowArrayObjects = true
@@ -174,7 +172,6 @@ describe('system/TypeSystem/AllowVoidNull', () => {
     Ok(T, null)
   })
 })
-
 describe('system/TypeSystem/Format', () => {
   it('Should create and validate a format', () => {
     TypeSystem.Format('CreateFormat0', (value) => value === value.toLowerCase())
@@ -184,10 +181,9 @@ describe('system/TypeSystem/Format', () => {
   })
   it('Should throw if registering the same format twice', () => {
     TypeSystem.Format('CreateFormat1', (value) => true)
-    Assert.throws(() => TypeSystem.Format('CreateFormat1', (value) => true))
+    Assert.Throws(() => TypeSystem.Format('CreateFormat1', (value) => true))
   })
 })
-
 describe('system/TypeSystem/Type', () => {
   it('Should create and validate a type', () => {
     type BigNumberOptions = { minimum?: bigint; maximum?: bigint }
@@ -204,6 +200,6 @@ describe('system/TypeSystem/Type', () => {
   })
   it('Should throw if registering the same type twice', () => {
     TypeSystem.Type('CreateType1', () => true)
-    Assert.throws(() => TypeSystem.Type('CreateType1', () => true))
+    Assert.Throws(() => TypeSystem.Type('CreateType1', () => true))
   })
 })

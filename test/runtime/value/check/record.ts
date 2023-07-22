@@ -20,33 +20,33 @@ describe('value/check/Record', () => {
       },
     }
     const result = Value.Check(T, value)
-    Assert.isEqual(result, true)
+    Assert.IsEqual(result, true)
   })
   it('Should fail when below minProperties', () => {
     const T = Type.Record(Type.String(), Type.Number(), { minProperties: 4 })
-    Assert.isEqual(Value.Check(T, { a: 1, b: 2, c: 3, d: 4 }), true)
-    Assert.isEqual(Value.Check(T, { a: 1, b: 2, c: 3 }), false)
+    Assert.IsEqual(Value.Check(T, { a: 1, b: 2, c: 3, d: 4 }), true)
+    Assert.IsEqual(Value.Check(T, { a: 1, b: 2, c: 3 }), false)
   })
   it('Should fail when above maxProperties', () => {
     const T = Type.Record(Type.String(), Type.Number(), { maxProperties: 4 })
-    Assert.isEqual(Value.Check(T, { a: 1, b: 2, c: 3, d: 4 }), true)
-    Assert.isEqual(Value.Check(T, { a: 1, b: 2, c: 3, d: 4, e: 5 }), false)
+    Assert.IsEqual(Value.Check(T, { a: 1, b: 2, c: 3, d: 4 }), true)
+    Assert.IsEqual(Value.Check(T, { a: 1, b: 2, c: 3, d: 4, e: 5 }), false)
   })
   it('Should fail with illogical minProperties | maxProperties', () => {
     const T = Type.Record(Type.String(), Type.Number(), { minProperties: 5, maxProperties: 4 })
-    Assert.isEqual(Value.Check(T, { a: 1, b: 2, c: 3 }), false)
-    Assert.isEqual(Value.Check(T, { a: 1, b: 2, c: 3, d: 4 }), false)
-    Assert.isEqual(Value.Check(T, { a: 1, b: 2, c: 3, d: 4, e: 5 }), false)
+    Assert.IsEqual(Value.Check(T, { a: 1, b: 2, c: 3 }), false)
+    Assert.IsEqual(Value.Check(T, { a: 1, b: 2, c: 3, d: 4 }), false)
+    Assert.IsEqual(Value.Check(T, { a: 1, b: 2, c: 3, d: 4, e: 5 }), false)
   })
   it('Should fail record with Date', () => {
     const T = Type.Record(Type.String(), Type.String())
     const result = Value.Check(T, new Date())
-    Assert.isEqual(result, false)
+    Assert.IsEqual(result, false)
   })
   it('Should fail record with Uint8Array', () => {
     const T = Type.Record(Type.String(), Type.String())
     const result = Value.Check(T, new Uint8Array())
-    Assert.isEqual(result, false)
+    Assert.IsEqual(result, false)
   })
   it('Should fail record with missing property', () => {
     const T = Type.Record(
@@ -64,7 +64,7 @@ describe('value/check/Record', () => {
       },
     }
     const result = Value.Check(T, value)
-    Assert.isEqual(result, false)
+    Assert.IsEqual(result, false)
   })
   it('Should fail record with invalid property', () => {
     const T = Type.Record(
@@ -83,7 +83,7 @@ describe('value/check/Record', () => {
       },
     }
     const result = Value.Check(T, value)
-    Assert.isEqual(result, false)
+    Assert.IsEqual(result, false)
   })
   it('Should pass record with optional property', () => {
     const T = Type.Record(
@@ -101,7 +101,7 @@ describe('value/check/Record', () => {
       },
     }
     const result = Value.Check(T, value)
-    Assert.isEqual(result, true)
+    Assert.IsEqual(result, true)
   })
   it('Should pass record with optional property', () => {
     const T = Type.Record(
@@ -119,7 +119,7 @@ describe('value/check/Record', () => {
       },
     }
     const result = Value.Check(T, value)
-    Assert.isEqual(result, true)
+    Assert.IsEqual(result, true)
   })
   // -------------------------------------------------
   // Number Key
@@ -132,7 +132,7 @@ describe('value/check/Record', () => {
       2: 'a',
     }
     const result = Value.Check(T, value)
-    Assert.isEqual(result, true)
+    Assert.IsEqual(result, true)
   })
 
   it('Should not pass record with invalid number key', () => {
@@ -143,7 +143,7 @@ describe('value/check/Record', () => {
       2: 'a',
     }
     const result = Value.Check(T, value)
-    Assert.isEqual(result, false)
+    Assert.IsEqual(result, false)
   })
   // -------------------------------------------------
   // Integer Key
@@ -156,7 +156,7 @@ describe('value/check/Record', () => {
       2: 'a',
     }
     const result = Value.Check(T, value)
-    Assert.isEqual(result, true)
+    Assert.IsEqual(result, true)
   })
   it('Should not pass record with invalid integer key', () => {
     const T = Type.Record(Type.Integer(), Type.String(), { additionalProperties: false })
@@ -166,7 +166,7 @@ describe('value/check/Record', () => {
       2: 'a',
     }
     const result = Value.Check(T, value)
-    Assert.isEqual(result, false)
+    Assert.IsEqual(result, false)
   })
   // ------------------------------------------------------------
   // AdditionalProperties
@@ -174,26 +174,26 @@ describe('value/check/Record', () => {
   it('AdditionalProperties 1', () => {
     const T = Type.Record(Type.Number(), Type.String(), { additionalProperties: true })
     const R = Value.Check(T, { 1: '', 2: '', x: 1, y: 2, z: 3 })
-    Assert.isEqual(R, true)
+    Assert.IsEqual(R, true)
   })
   it('AdditionalProperties 2', () => {
     const T = Type.Record(Type.Number(), Type.String(), { additionalProperties: false })
     const R = Value.Check(T, { 1: '', 2: '', 3: '' })
-    Assert.isEqual(R, true)
+    Assert.IsEqual(R, true)
   })
   it('AdditionalProperties 3', () => {
     const T = Type.Record(Type.Number(), Type.String(), { additionalProperties: false })
     const R = Value.Check(T, { 1: '', 2: '', x: '' })
-    Assert.isEqual(R, false)
+    Assert.IsEqual(R, false)
   })
   it('AdditionalProperties 4', () => {
     const T = Type.Record(Type.Number(), Type.String(), { additionalProperties: Type.Boolean() })
     const R = Value.Check(T, { 1: '', 2: '', x: '' })
-    Assert.isEqual(R, false)
+    Assert.IsEqual(R, false)
   })
   it('AdditionalProperties 5', () => {
     const T = Type.Record(Type.Number(), Type.String(), { additionalProperties: Type.Boolean() })
     const R = Value.Check(T, { 1: '', 2: '', x: true })
-    Assert.isEqual(R, true)
+    Assert.IsEqual(R, true)
   })
 })

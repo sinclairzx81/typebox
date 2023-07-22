@@ -1,33 +1,27 @@
 import * as assert from 'assert'
 
 export namespace Assert {
-  let port = 9000
-  /** Generates a new port used for host binding */
-  export function nextPort() {
-    const next = port++
-    return next
-  }
-  export function isTrue(value: boolean) {
+  export function IsTrue(value: boolean): asserts value is true {
     return assert.strictEqual(value, true)
   }
-  export function isFalse(value: boolean) {
+  export function IsFalse(value: boolean): asserts value is false {
     return assert.strictEqual(value, false)
   }
-  export function isEqual(actual: unknown, expect: unknown) {
+  export function IsEqual(actual: unknown, expect: unknown) {
     if (actual instanceof Uint8Array && expect instanceof Uint8Array) {
       assert.equal(actual.length, expect.length)
       for (let i = 0; i < actual.length; i++) assert.equal(actual[i], expect[i])
     }
     return assert.deepEqual(actual, expect)
   }
-  export function notEqual(actual: unknown, expect: unknown) {
+  export function NotEqual(actual: unknown, expect: unknown) {
     return assert.notEqual(actual, expect)
   }
   let nextIdOrdinal = 0
-  export function nextId() {
-    return `nextID${nextIdOrdinal++}`
+  export function NextId() {
+    return `$id-${nextIdOrdinal++}`
   }
-  export function throws(callback: Function) {
+  export function Throws(callback: Function) {
     try {
       callback()
     } catch {
@@ -35,7 +29,7 @@ export namespace Assert {
     }
     throw Error('Expected throw')
   }
-  export async function throwsAsync(callback: Function) {
+  export async function ThrowsAsync(callback: Function) {
     try {
       await callback()
     } catch {
@@ -43,12 +37,12 @@ export namespace Assert {
     }
     throw Error('Expected throw')
   }
-  export function isTypeOf(value: any, type: any) {
-    if (typeof value === type) return
-    throw Error(`Value is not typeof ${type}`)
-  }
-  export function isInstanceOf(value: any, constructor: any) {
+  export function IsInstanceOf(value: any, constructor: any) {
     if (value instanceof constructor) return
     throw Error(`Value is not instance of ${constructor}`)
+  }
+  export function IsTypeOf(value: any, type: any) {
+    if (typeof value === type) return
+    throw Error(`Value is not typeof ${type}`)
   }
 }

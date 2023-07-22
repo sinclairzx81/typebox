@@ -10,10 +10,10 @@ describe('value/check/Ref', () => {
         y: Type.Number(),
         z: Type.Number(),
       },
-      { $id: Assert.nextId() },
+      { $id: Assert.NextId() },
     )
     const R = Type.Ref(T)
-    Assert.isEqual(
+    Assert.IsEqual(
       Value.Check(R, [T], {
         x: 1,
         y: 2,
@@ -30,10 +30,10 @@ describe('value/check/Ref', () => {
         y: Type.Number(),
         z: Type.Number(),
       },
-      { $id: Assert.nextId() },
+      { $id: Assert.NextId() },
     )
     const R = Type.Ref(T)
-    Assert.isEqual(
+    Assert.IsEqual(
       Value.Check(R, [T], {
         x: 1,
         y: 2,
@@ -59,10 +59,10 @@ describe('value/check/Ref', () => {
       },
       { $id: 'T' },
     )
-    Assert.isEqual(Value.Check(R, [T], { x: 1, y: 2, z: 3 }), true)
-    Assert.isEqual(Value.Check(R, [T], { x: 1, y: 2, z: 3, r: { name: 'hello' } }), true)
-    Assert.isEqual(Value.Check(R, [T], { x: 1, y: 2, z: 3, r: { name: 1 } }), false)
-    Assert.isEqual(Value.Check(R, [T], { x: 1, y: 2, z: 3, r: {} }), false)
+    Assert.IsEqual(Value.Check(R, [T], { x: 1, y: 2, z: 3 }), true)
+    Assert.IsEqual(Value.Check(R, [T], { x: 1, y: 2, z: 3, r: { name: 'hello' } }), true)
+    Assert.IsEqual(Value.Check(R, [T], { x: 1, y: 2, z: 3, r: { name: 1 } }), false)
+    Assert.IsEqual(Value.Check(R, [T], { x: 1, y: 2, z: 3, r: {} }), false)
     // Ok(R, { x: 1, y: 2, z: 3 }, [T])
     // Ok(R, , [T])
     // Fail(R, , [T])
@@ -77,7 +77,7 @@ describe('value/check/Ref', () => {
       }),
     )
     const R = Type.Ref(T)
-    Assert.isEqual(Value.Check(R, [T], { id: '', nodes: [{ id: '', nodes: [] }] }), true)
-    Assert.isEqual(Value.Check(R, [T], { id: '', nodes: [{ id: 1, nodes: [] }] }), false)
+    Assert.IsEqual(Value.Check(R, [T], { id: '', nodes: [{ id: '', nodes: [] }] }), true)
+    Assert.IsEqual(Value.Check(R, [T], { id: '', nodes: [{ id: 1, nodes: [] }] }), false)
   })
 })

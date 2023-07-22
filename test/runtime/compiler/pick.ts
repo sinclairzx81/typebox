@@ -15,7 +15,6 @@ describe('type/compiler/Pick', () => {
     const T = Type.Pick(Vector3, ['x', 'y'])
     Ok(T, { x: 1, y: 1 })
   })
-
   it('Should remove required properties on the target schema', () => {
     const A = Type.Object(
       {
@@ -28,7 +27,6 @@ describe('type/compiler/Pick', () => {
     const T = Type.Pick(A, ['x', 'y'])
     strictEqual(T.required!.includes('z'), false)
   })
-
   it('Should inherit options from the source object', () => {
     const A = Type.Object(
       {
@@ -42,7 +40,6 @@ describe('type/compiler/Pick', () => {
     strictEqual(A.additionalProperties, false)
     strictEqual(T.additionalProperties, false)
   })
-
   it('Should pick with keyof object', () => {
     const A = Type.Object({
       x: Type.Number(),

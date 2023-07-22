@@ -6,16 +6,16 @@ describe('type/normal/Union', () => {
   it('Normalize 1', () => {
     const T = Type.Union([Type.Number(), Type.String()])
     const R = TypeGuard.TUnion(T)
-    Assert.isEqual(R, true)
+    Assert.IsTrue(R)
   })
   it('Normalize 2', () => {
     const T = Type.Union([Type.Number()])
     const R = TypeGuard.TNumber(T)
-    Assert.isEqual(R, true)
+    Assert.IsTrue(R)
   })
   it('Normalize 3', () => {
     const T = Type.Union([])
     const R = TypeGuard.TNever(T)
-    Assert.isEqual(R, true)
+    Assert.IsTrue(R)
   })
 })

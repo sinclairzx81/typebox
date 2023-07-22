@@ -11,13 +11,13 @@ export async function clean() {
 // Format
 // -------------------------------------------------------------------------------
 export async function format() {
-  await shell('prettier --no-semi --single-quote --print-width 240 --trailing-comma all --write src test example/index.ts benchmark')
+  await shell('prettier --no-semi --single-quote --print-width 240 --trailing-comma all --write src test examples/index.ts benchmark')
 }
 // -------------------------------------------------------------------------------
 // Start
 // -------------------------------------------------------------------------------
-export async function start(example = 'index') {
-  await shell(`hammer run example/${example}.ts --dist target/example/${example}`)
+export async function start() {
+  await shell(`hammer run examples/index.ts --dist target/examples`)
 }
 // -------------------------------------------------------------------------------
 // Benchmark
@@ -64,7 +64,16 @@ export async function build(target = 'target/build') {
 // -------------------------------------------------------------
 export async function publish(otp, target = 'target/build') {
   const { version } = JSON.parse(readFileSync('package.json', 'utf8'))
+  if(version.includes('-dev')) throw Error(`package version should not include -dev specifier`)
   await shell(`cd ${target} && npm publish sinclair-typebox-${version}.tgz --access=public --otp ${otp}`)
   await shell(`git tag ${version}`)
   await shell(`git push origin ${version}`)
+}
+// -------------------------------------------------------------
+// Publish-Dev
+// -------------------------------------------------------------
+export async function publish_dev(otp, target = 'target/build') {
+  const { version } = JSON.parse(readFileSync(`${target}/package.json`, 'utf8'))
+  if(!version.includes('-dev')) throw Error(`development package version should include -dev specifier`)
+  await shell(`cd ${target} && npm publish sinclair-typebox-${version}.tgz --access=public --otp ${otp} --tag dev`)
 }

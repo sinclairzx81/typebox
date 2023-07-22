@@ -8,15 +8,15 @@ describe('type/FormatRegistry', () => {
   it('Should get format', () => {
     FormatRegistry.Set('test#format2', () => true)
     const format = FormatRegistry.Get('test#format2')
-    Assert.isEqual(typeof format, 'function')
+    Assert.IsEqual(typeof format, 'function')
   })
   it('Should return true if exists', () => {
     FormatRegistry.Set('test#format3', () => true)
-    Assert.isEqual(FormatRegistry.Has('test#format3'), true)
+    Assert.IsTrue(FormatRegistry.Has('test#format3'))
   })
   it('Should clear formats', () => {
     FormatRegistry.Set('test#format4', () => true)
     FormatRegistry.Clear()
-    Assert.isEqual(FormatRegistry.Has('test#format4'), false)
+    Assert.IsFalse(FormatRegistry.Has('test#format4'))
   })
 })

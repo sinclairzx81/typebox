@@ -11,7 +11,6 @@ describe('type/schema/Union', () => {
     Ok(T, true)
     Ok(T, 42)
   })
-
   it('Should validate union of objects', () => {
     const A = Type.Object({ a: Type.String() }, { additionalProperties: false })
     const B = Type.Object({ b: Type.String() }, { additionalProperties: false })
@@ -19,7 +18,6 @@ describe('type/schema/Union', () => {
     Ok(T, { a: 'hello' })
     Ok(T, { b: 'world' })
   })
-
   it('Should fail to validate for descriminated union types', () => {
     const A = Type.Object({ kind: Type.Literal('A'), value: Type.String() })
     const B = Type.Object({ kind: Type.Literal('B'), value: Type.Number() })
@@ -27,7 +25,6 @@ describe('type/schema/Union', () => {
     Fail(T, { kind: 'A', value: 42 }) // expect { kind: 'A', value: string }
     Fail(T, { kind: 'B', value: 'hello' }) // expect { kind: 'B', value: number }
   })
-
   it('Should validate union of objects where properties overlap', () => {
     const A = Type.Object({ a: Type.String() }, { additionalProperties: false })
     const B = Type.Object({ a: Type.String(), b: Type.String() }, { additionalProperties: false })
@@ -35,7 +32,6 @@ describe('type/schema/Union', () => {
     Ok(T, { a: 'hello' }) // A
     Ok(T, { a: 'hello', b: 'world' }) // B
   })
-
   it('Should validate union of overlapping property of varying type', () => {
     const A = Type.Object({ a: Type.String(), b: Type.Number() }, { additionalProperties: false })
     const B = Type.Object({ a: Type.String(), b: Type.String() }, { additionalProperties: false })
@@ -43,7 +39,6 @@ describe('type/schema/Union', () => {
     Ok(T, { a: 'hello', b: 42 }) // A
     Ok(T, { a: 'hello', b: 'world' }) // B
   })
-
   it('Should validate union of literal strings', () => {
     const A = Type.Literal('hello')
     const B = Type.Literal('world')
@@ -51,7 +46,6 @@ describe('type/schema/Union', () => {
     Ok(T, 'hello') // A
     Ok(T, 'world') // B
   })
-
   it('Should not validate union of literal strings for unknown string', () => {
     const A = Type.Literal('hello')
     const B = Type.Literal('world')

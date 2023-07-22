@@ -1,5 +1,5 @@
 import { Expect } from './assert'
-import { Type, Static } from '@sinclair/typebox'
+import { Type, TSchema } from '@sinclair/typebox'
 
 {
   const T = Type.Object({

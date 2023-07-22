@@ -1,3 +1,3 @@
-import { ValueErrorType } from '@sinclair/typebox/errors'
+import * as ValueErrors from '@sinclair/typebox/errors'
 
-console.log(ValueErrorType)
+console.log(ValueErrors)

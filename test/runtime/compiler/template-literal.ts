@@ -130,7 +130,6 @@ describe('type/compiler/TemplateLiteral', () => {
     Ok(T, 'ccc')
     Ok(T, 'dddd')
   })
-
   it('Should validate infinite pattern 5', () => {
     // prettier-ignore
     const T = Type.TemplateLiteral([

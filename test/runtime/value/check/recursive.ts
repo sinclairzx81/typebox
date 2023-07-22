@@ -20,7 +20,7 @@ describe('value/check/Recursive', () => {
       ],
     }
     const result = Value.Check(T, value)
-    Assert.isEqual(result, true)
+    Assert.IsEqual(result, true)
   })
 
   it('Should fail recursive with invalid id', () => {
@@ -33,7 +33,7 @@ describe('value/check/Recursive', () => {
       ],
     }
     const result = Value.Check(T, value)
-    Assert.isEqual(result, false)
+    Assert.IsEqual(result, false)
   })
 
   it('Should fail rec with invalid nodes', () => {
@@ -46,7 +46,7 @@ describe('value/check/Recursive', () => {
       ],
     }
     const result = Value.Check(T, value)
-    Assert.isEqual(result, false)
+    Assert.IsEqual(result, false)
   })
 
   it('Should fail recursive with missing id', () => {
@@ -55,7 +55,7 @@ describe('value/check/Recursive', () => {
       nodes: [{ nodes: [] }, { id: 'C', nodes: [] }, { id: 'D', nodes: [] }],
     }
     const result = Value.Check(T, value)
-    Assert.isEqual(result, false)
+    Assert.IsEqual(result, false)
   })
 
   it('Should fail rec with missing nodes', () => {
@@ -64,6 +64,6 @@ describe('value/check/Recursive', () => {
       nodes: [{ id: 'B' }, { id: 'C', nodes: [] }, { id: 'D', nodes: [] }],
     }
     const result = Value.Check(T, value)
-    Assert.isEqual(result, false)
+    Assert.IsEqual(result, false)
   })
 })

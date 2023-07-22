@@ -23,7 +23,6 @@ describe('type/schema/Ref', () => {
       [T],
     )
   })
-
   it('Should not validate when passing invalid data', () => {
     const T = Type.Object(
       {
@@ -60,7 +59,6 @@ describe('type/schema/Ref', () => {
       },
       { $id: 'T' },
     )
-
     Ok(T, { x: 1, y: 2, z: 3 }, [R])
     Ok(T, { x: 1, y: 2, z: 3, r: { name: 'hello' } }, [R])
     Fail(T, { x: 1, y: 2, z: 3, r: { name: 1 } }, [R])
