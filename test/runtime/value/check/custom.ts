@@ -3,29 +3,27 @@ import { Type, Kind, TypeRegistry } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
 describe('type/check/Custom', () => {
-  TypeRegistry.Set('BigInt', (schema, value) => typeof value === 'bigint')
-
-  it('Should validate bigint', () => {
-    const T = Type.Unsafe({ [Kind]: 'BigInt' })
-    Assert.isEqual(Value.Check(T, 1n), true)
+  const FooBar = Type.Unsafe({ [Kind]: 'FooBar' })
+  before(() => {
+    TypeRegistry.Set('FooBar', (schema, value) => value === 'foobar')
   })
-
-  it('Should not validate bigint', () => {
-    const T = Type.Unsafe({ [Kind]: 'BigInt' })
-    Assert.isEqual(Value.Check(T, 1), false)
+  after(() => {
+    TypeRegistry.Delete('FooBar')
   })
-
-  it('Should validate bigint nested', () => {
-    const T = Type.Object({
-      x: Type.Unsafe({ [Kind]: 'BigInt' }),
-    })
-    Assert.isEqual(Value.Check(T, { x: 1n }), true)
+  it('Should validate foobar', () => {
+    Assert.IsEqual(Value.Check(FooBar, 'foobar'), true)
   })
-
-  it('Should not validate bigint nested', () => {
-    const T = Type.Object({
-      x: Type.Unsafe({ [Kind]: 'BigInt' }),
-    })
-    Assert.isEqual(Value.Check(T, { x: 1 }), false)
+  it('Should not validate foobar', () => {
+    Assert.IsEqual(Value.Check(FooBar, 1), false)
+  })
+  it('Should validate foobar nested', () => {
+    // prettier-ignore
+    const T = Type.Object({ x: FooBar })
+    Assert.IsEqual(Value.Check(T, { x: 'foobar' }), true)
+  })
+  it('Should not validate foobar nested', () => {
+    // prettier-ignore
+    const T = Type.Object({ x: FooBar })
+    Assert.IsEqual(Value.Check(T, { x: 1 }), false)
   })
 })

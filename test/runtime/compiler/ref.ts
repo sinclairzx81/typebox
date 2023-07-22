@@ -10,7 +10,7 @@ describe('type/compiler/Ref', () => {
         y: Type.Number(),
         z: Type.Number(),
       },
-      { $id: Assert.nextId() },
+      { $id: Assert.NextId() },
     )
     const R = Type.Ref(T)
     Ok(
@@ -23,7 +23,6 @@ describe('type/compiler/Ref', () => {
       [T],
     )
   })
-
   it('Should not validate when passing invalid data', () => {
     const T = Type.Object(
       {
@@ -31,7 +30,7 @@ describe('type/compiler/Ref', () => {
         y: Type.Number(),
         z: Type.Number(),
       },
-      { $id: Assert.nextId() },
+      { $id: Assert.NextId() },
     )
     const R = Type.Ref(T)
     Fail(
@@ -43,7 +42,6 @@ describe('type/compiler/Ref', () => {
       [T],
     )
   })
-
   it('Should de-reference object property schema', () => {
     const T = Type.Object(
       {
@@ -51,7 +49,6 @@ describe('type/compiler/Ref', () => {
       },
       { $id: 'R' },
     )
-
     const R = Type.Object(
       {
         x: Type.Number(),
@@ -61,13 +58,11 @@ describe('type/compiler/Ref', () => {
       },
       { $id: 'T' },
     )
-
     Ok(R, { x: 1, y: 2, z: 3 }, [T])
     Ok(R, { x: 1, y: 2, z: 3, r: { name: 'hello' } }, [T])
     Fail(R, { x: 1, y: 2, z: 3, r: { name: 1 } }, [T])
     Fail(R, { x: 1, y: 2, z: 3, r: {} }, [T])
   })
-
   it('Should reference recursive schema', () => {
     const T = Type.Recursive((Node) =>
       Type.Object({

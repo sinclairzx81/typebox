@@ -1,4 +1,4 @@
-import { Type, Modifier } from '@sinclair/typebox'
+import { Type, Readonly, Optional } from '@sinclair/typebox'
 import { Ok, Fail } from './validate'
 import { strictEqual } from 'assert'
 
@@ -18,21 +18,19 @@ describe('type/compiler/compiler/Required', () => {
     Fail(T, { x: 1 })
     Fail(T, {})
   })
-
   it('Should update modifier types correctly when converting to required', () => {
     const A = Type.Object({
-      x: Type.ReadonlyOptional(Type.Number()),
+      x: Type.Readonly(Type.Optional(Type.Number())),
       y: Type.Readonly(Type.Number()),
       z: Type.Optional(Type.Number()),
       w: Type.Number(),
     })
     const T = Type.Required(A)
-    strictEqual(T.properties.x[Modifier], 'Readonly')
-    strictEqual(T.properties.y[Modifier], 'Readonly')
-    strictEqual(T.properties.z[Modifier], undefined)
-    strictEqual(T.properties.w[Modifier], undefined)
+    strictEqual(T.properties.x[Readonly], 'Readonly')
+    strictEqual(T.properties.y[Readonly], 'Readonly')
+    strictEqual(T.properties.z[Optional], undefined)
+    strictEqual(T.properties.w[Optional], undefined)
   })
-
   it('Should inherit options from the source object', () => {
     const A = Type.Object(
       {
@@ -46,7 +44,6 @@ describe('type/compiler/compiler/Required', () => {
     strictEqual(A.additionalPropeties, false)
     strictEqual(T.additionalPropeties, false)
   })
-
   // it('Should construct new object when targetting reference', () => {
   //   const T = Type.Object({ a: Type.String(), b: Type.String() }, { $id: 'T' })
   //   const R = Type.Ref(T)

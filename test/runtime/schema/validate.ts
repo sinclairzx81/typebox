@@ -25,7 +25,6 @@ function schemaOf(schemaOf: string, value: unknown, schema: unknown) {
       return false
   }
 }
-
 export function createAjv(references: AnySchema[]) {
   return addFormats(new Ajv({}), ['date-time', 'time', 'date', 'email', 'hostname', 'ipv4', 'ipv6', 'uri', 'uri-reference', 'uuid', 'uri-template', 'json-pointer', 'relative-json-pointer', 'regex'])
     .addKeyword({ type: 'object', keyword: 'instanceOf', validate: schemaOf })
@@ -38,7 +37,6 @@ export function createAjv(references: AnySchema[]) {
     .addKeyword('maxByteLength')
     .addSchema(references)
 }
-
 export function Ok<T extends TSchema>(type: T, data: unknown, additional: AnySchema[] = []) {
   const ajv = createAjv(additional)
   function execute() {
@@ -65,7 +63,6 @@ export function Ok<T extends TSchema>(type: T, data: unknown, additional: AnySch
     throw Error('expected ok')
   }
 }
-
 export function Fail<T extends TSchema>(type: T, data: unknown, additional: AnySchema[] = []) {
   const ajv = createAjv(additional)
   function execute() {

@@ -7,46 +7,46 @@ describe('value/cast/Symbol', () => {
   it('Should upcast from string', () => {
     const value = 'hello'
     const result = Value.Cast(T, value)
-    Assert.isTypeOf(result, 'symbol')
+    Assert.IsTypeOf(result, 'symbol')
   })
   it('Should upcast from number', () => {
     const value = 0
     const result = Value.Cast(T, value)
-    Assert.isTypeOf(result, 'symbol')
+    Assert.IsTypeOf(result, 'symbol')
   })
   it('Should upcast from boolean', () => {
     const value = true
     const result = Value.Cast(T, value)
-    Assert.isTypeOf(result, 'symbol')
+    Assert.IsTypeOf(result, 'symbol')
   })
   it('Should upcast from object', () => {
     const value = {}
     const result = Value.Cast(T, value)
-    Assert.isTypeOf(result, 'symbol')
+    Assert.IsTypeOf(result, 'symbol')
   })
   it('Should upcast from array', () => {
     const value = [1]
     const result = Value.Cast(T, value)
-    Assert.isTypeOf(result, 'symbol')
+    Assert.IsTypeOf(result, 'symbol')
   })
   it('Should upcast from undefined', () => {
     const value = undefined
     const result = Value.Cast(T, value)
-    Assert.isTypeOf(result, 'symbol')
+    Assert.IsTypeOf(result, 'symbol')
   })
   it('Should upcast from null', () => {
     const value = null
     const result = Value.Cast(T, value)
-    Assert.isTypeOf(result, 'symbol')
+    Assert.IsTypeOf(result, 'symbol')
   })
   it('Should upcast from date', () => {
     const value = new Date(100)
     const result = Value.Cast(T, value)
-    Assert.isTypeOf(result, 'symbol')
+    Assert.IsTypeOf(result, 'symbol')
   })
   it('Should preserve', () => {
     const value = Symbol('hello')
     const result = Value.Cast(T, value)
-    Assert.isEqual(result.description, value.description)
+    Assert.IsEqual(result.description, value.description)
   })
 })

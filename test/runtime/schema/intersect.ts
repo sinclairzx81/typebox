@@ -80,7 +80,6 @@ describe('type/schema/Intersect', () => {
     const T = Type.Intersect([A, B])
     Fail(T, { x: 1, y: 1 })
   })
-
   it('unevaluatedProperties with Record 1', () => {
     const T = Type.Intersect(
       [

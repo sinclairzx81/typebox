@@ -3,38 +3,12 @@ import { TypeCompiler } from '@sinclair/typebox/compiler'
 import { Value, ValuePointer } from '@sinclair/typebox/value'
 import { Type, TypeGuard, Kind, Static, TSchema } from '@sinclair/typebox'
 
-// -----------------------------------------------------------
-// Create: Type
-// -----------------------------------------------------------
+const T = Type.Intersect([Type.String(), Type.Number()])
 
-const T = Type.Object({
+const R = Type.RegExp('hello world')
+
+const M = Type.Object({
   x: Type.Number(),
-  y: Type.Number(),
-  z: Type.Number(),
+  y: Type.String(),
+  z: Type.Boolean(),
 })
-
-type T = Static<typeof T>
-
-console.log(T)
-
-// -----------------------------------------------------------
-// Create: Value
-// -----------------------------------------------------------
-
-const V = Value.Create(T)
-
-console.log(V)
-
-// -----------------------------------------------------------
-// Compile: Type
-// -----------------------------------------------------------
-
-const C = TypeCompiler.Compile(T)
-
-console.log(C.Code())
-
-// -----------------------------------------------------------
-// Check: Value
-// -----------------------------------------------------------
-
-console.log(C.Check(V))

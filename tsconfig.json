@@ -16,6 +16,39 @@
       "@sinclair/typebox/system": [
         "src/system/index.ts"
       ],
+      "@sinclair/typebox/value/cast": [
+        "src/value/cast.ts"
+      ],
+      "@sinclair/typebox/value/check": [
+        "src/value/check.ts"
+      ],
+      "@sinclair/typebox/value/clone": [
+        "src/value/clone.ts"
+      ],
+      "@sinclair/typebox/value/convert": [
+        "src/value/convert.ts"
+      ],
+      "@sinclair/typebox/value/create": [
+        "src/value/create.ts"
+      ],
+      "@sinclair/typebox/value/delta": [
+        "src/value/delta.ts"
+      ],
+      "@sinclair/typebox/value/equal": [
+        "src/value/equal.ts"
+      ],
+      "@sinclair/typebox/value/guard": [
+        "src/value/guard.ts"
+      ],
+      "@sinclair/typebox/value/hash": [
+        "src/value/hash.ts"
+      ],
+      "@sinclair/typebox/value/mutate": [
+        "src/value/mutate.ts"
+      ],
+      "@sinclair/typebox/value/pointer": [
+        "src/value/pointer.ts"
+      ],
       "@sinclair/typebox/value": [
         "src/value/index.ts"
       ],
