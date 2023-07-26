@@ -27,9 +27,9 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import * as Types from '../typebox'
-import { ValueErrors, ValueErrorIterator } from '../errors/index'
 import { TypeSystem } from '../system/index'
-import { ValueHash } from '../value/hash'
+import * as ValueErrors from '../errors/index'
+import * as ValueHash from '../value/hash'
 
 // -------------------------------------------------------------------
 // CheckFunction
@@ -45,7 +45,7 @@ export class TypeCheck<T extends Types.TSchema> {
     return this.code
   }
   /** Returns an iterator for each error in this value. */
-  public Errors(value: unknown): ValueErrorIterator {
+  public Errors(value: unknown): ValueErrors.ValueErrorIterator {
     return ValueErrors.Errors(this.schema, this.references, value)
   }
   /** Returns true if the value matches the compiled type. */
@@ -554,7 +554,7 @@ export namespace TypeCompiler {
       return checkFunc(value)
     }
     function valueHashFunction(value: unknown) {
-      return ValueHash.Create(value)
+      return ValueHash.Hash(value)
     }
     const checkFunction = compiledFunction(typeRegistryFunction, formatRegistryFunction, valueHashFunction)
     return new TypeCheck(schema, references, checkFunction, code)

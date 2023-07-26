@@ -1584,15 +1584,26 @@ This benchmark measures validation performance for varying types. You can review
 The following table lists esbuild compiled and minified sizes for each TypeBox module.
 
 ```typescript
-┌──────────────────────┬────────────┬────────────┬─────────────┐
-│       (index)        │  Compiled  │  Minified  │ Compression │
-├──────────────────────┼────────────┼────────────┼─────────────┤
-│ typebox/compiler     │ '130.3 kb' │ ' 58.2 kb' │  '2.24 x'   │
-│ typebox/errors       │ '113.3 kb' │ ' 49.8 kb' │  '2.27 x'   │
-│ typebox/system       │ ' 78.8 kb' │ ' 32.2 kb' │  '2.45 x'   │
-│ typebox/value        │ '180.0 kb' │ ' 77.7 kb' │  '2.32 x'   │
-│ typebox              │ ' 77.7 kb' │ ' 31.7 kb' │  '2.45 x'   │
-└──────────────────────┴────────────┴────────────┴─────────────┘
+┌───────────────────────┬────────────┬────────────┬─────────────┐
+│        (index)        │  Compiled  │  Minified  │ Compression │
+├───────────────────────┼────────────┼────────────┼─────────────┤
+│ typebox/compiler      │ '128.5 kb' │ ' 58.7 kb' │  '2.19 x'   │
+│ typebox/errors        │ '110.7 kb' │ ' 50.1 kb' │  '2.21 x'   │
+│ typebox/system        │ ' 75.4 kb' │ ' 31.3 kb' │  '2.41 x'   │
+│ typebox/value/cast    │ '123.0 kb' │ ' 51.8 kb' │  '2.37 x'   │
+│ typebox/value/check   │ ' 95.3 kb' │ ' 40.0 kb' │  '2.38 x'   │
+│ typebox/value/clone   │ '  3.0 kb' │ '  1.3 kb' │  '2.23 x'   │
+│ typebox/value/convert │ '108.1 kb' │ ' 45.6 kb' │  '2.37 x'   │
+│ typebox/value/create  │ '108.8 kb' │ ' 46.1 kb' │  '2.36 x'   │
+│ typebox/value/delta   │ ' 85.2 kb' │ ' 35.7 kb' │  '2.38 x'   │
+│ typebox/value/equal   │ '  2.9 kb' │ '  1.5 kb' │  '1.97 x'   │
+│ typebox/value/guard   │ '  2.8 kb' │ '  1.4 kb' │  '1.99 x'   │
+│ typebox/value/hash    │ '  4.1 kb' │ '  1.9 kb' │  '2.09 x'   │
+│ typebox/value/mutate  │ '  8.7 kb' │ '  3.5 kb' │  '2.46 x'   │
+│ typebox/value/pointer │ '  3.2 kb' │ '  1.2 kb' │  '2.61 x'   │
+│ typebox/value         │ '180.6 kb' │ ' 80.2 kb' │  '2.25 x'   │
+│ typebox               │ ' 74.3 kb' │ ' 30.8 kb' │  '2.41 x'   │
+└───────────────────────┴────────────┴────────────┴─────────────┘
 ```
 
 <a name='contribute'></a>

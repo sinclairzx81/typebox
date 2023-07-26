@@ -38,12 +38,8 @@ export class TypeSystemDuplicateFormat extends Error {
     super(`Duplicate string format '${kind}' detected`)
   }
 }
-
 /** Creates user defined types and formats and provides overrides for value checking behaviours */
 export namespace TypeSystem {
-  // ------------------------------------------------------------------------
-  // Assertion Policies
-  // ------------------------------------------------------------------------
   /** Sets whether TypeBox should assert optional properties using the TypeScript `exactOptionalPropertyTypes` assertion policy. The default is `false` */
   export let ExactOptionalPropertyTypes: boolean = false
   /** Sets whether arrays should be treated as a kind of objects. The default is `false` */
@@ -52,9 +48,7 @@ export namespace TypeSystem {
   export let AllowNaN: boolean = false
   /** Sets whether `null` should validate for void types. The default is `false` */
   export let AllowVoidNull: boolean = false
-  // ------------------------------------------------------------------------
-  // String Formats and Types
-  // ------------------------------------------------------------------------
+
   /** Creates a new type */
   export function Type<Type, Options = object>(kind: string, check: (options: Options, value: unknown) => boolean) {
     if (Types.TypeRegistry.Has(kind)) throw new TypeSystemDuplicateTypeKind(kind)

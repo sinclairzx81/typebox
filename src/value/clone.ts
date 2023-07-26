@@ -26,43 +26,55 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { Is, ObjectType, ArrayType, TypedArrayType, ValueType } from './is'
+import * as ValueGuard from './guard'
 
-export namespace ValueClone {
-  function AsyncIterator(value: AsyncIterableIterator<unknown>): any {
-    return value
-  }
-  function Iterator(value: IterableIterator<unknown>): any {
-    return value
-  }
-  function Promise(value: Promise<unknown>): any {
-    return value
-  }
-  function Array(value: ArrayType): any {
-    return value.map((element: any) => Clone(element))
-  }
-  function Date(value: Date): any {
-    return new globalThis.Date(value.toISOString())
-  }
-  function Object(value: ObjectType): any {
-    const keys = [...globalThis.Object.getOwnPropertyNames(value), ...globalThis.Object.getOwnPropertySymbols(value)]
-    return keys.reduce((acc, key) => ({ ...acc, [key]: Clone(value[key]) }), {})
-  }
-  function TypedArray(value: TypedArrayType): any {
-    return value.slice()
-  }
-  function Value(value: ValueType): any {
-    return value
-  }
-  export function Clone<T extends unknown>(value: T): T {
-    if (Is.AsyncIterator(value)) return AsyncIterator(value)
-    if (Is.Iterator(value)) return Iterator(value)
-    if (Is.Promise(value)) return Promise(value)
-    if (Is.Date(value)) return Date(value)
-    if (Is.Object(value)) return Object(value)
-    if (Is.Array(value)) return Array(value)
-    if (Is.TypedArray(value)) return TypedArray(value)
-    if (Is.Value(value)) return Value(value)
-    throw new Error('ValueClone: Unable to clone value')
-  }
+// --------------------------------------------------------------------------
+// Clonable
+// --------------------------------------------------------------------------
+function Array(value: ValueGuard.ArrayType): any {
+  return value.map((element: any) => Clone(element))
+}
+function Date(value: Date): any {
+  return new globalThis.Date(value.toISOString())
+}
+function Object(value: ValueGuard.ObjectType): any {
+  const keys = [...globalThis.Object.getOwnPropertyNames(value), ...globalThis.Object.getOwnPropertySymbols(value)]
+  return keys.reduce((acc, key) => ({ ...acc, [key]: Clone(value[key]) }), {})
+}
+function TypedArray(value: ValueGuard.TypedArrayType): any {
+  return value.slice()
+}
+function Value(value: ValueGuard.ValueType): any {
+  return value
+}
+// --------------------------------------------------------------------------
+// Non-Clonable
+// --------------------------------------------------------------------------
+function AsyncIterator(value: AsyncIterableIterator<unknown>): any {
+  return value
+}
+function Iterator(value: IterableIterator<unknown>): any {
+  return value
+}
+function Function(value: Function): any {
+  return value
+}
+function Promise(value: Promise<unknown>): any {
+  return value
+}
+// --------------------------------------------------------------------------
+// Clone
+// --------------------------------------------------------------------------
+/** Returns a clone of the given value */
+export function Clone<T extends unknown>(value: T): T {
+  if (ValueGuard.IsArray(value)) return Array(value)
+  if (ValueGuard.IsAsyncIterator(value)) return AsyncIterator(value)
+  if (ValueGuard.IsFunction(value)) return Function(value)
+  if (ValueGuard.IsIterator(value)) return Iterator(value)
+  if (ValueGuard.IsPromise(value)) return Promise(value)
+  if (ValueGuard.IsDate(value)) return Date(value)
+  if (ValueGuard.IsPlainObject(value)) return Object(value)
+  if (ValueGuard.IsTypedArray(value)) return TypedArray(value)
+  if (ValueGuard.IsValueType(value)) return Value(value)
+  throw new Error('ValueClone: Unable to clone value')
 }
