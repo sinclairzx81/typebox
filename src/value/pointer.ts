@@ -89,7 +89,7 @@ export namespace ValuePointer {
       next = next[component]
       key = component
     }
-    if (globalThis.Array.isArray(owner)) {
+    if (Array.isArray(owner)) {
       const index = parseInt(key)
       owner.splice(index, 1)
     } else {
@@ -106,7 +106,7 @@ export namespace ValuePointer {
       next = next[component]
       key = component
     }
-    return globalThis.Object.getOwnPropertyNames(owner).includes(key)
+    return Object.getOwnPropertyNames(owner).includes(key)
   }
   /** Gets the value at the given pointer */
   export function Get(value: any, pointer: string): any {

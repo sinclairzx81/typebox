@@ -47,12 +47,12 @@ export class ValueMutateInvalidRootMutationError extends Error {
 // Mutators
 // --------------------------------------------------------------------------
 export type Mutable = { [key: string]: unknown } | unknown[]
-function Object(root: Mutable, path: string, current: unknown, next: Record<string, unknown>) {
+function ObjectType(root: Mutable, path: string, current: unknown, next: Record<string, unknown>) {
   if (!ValueGuard.IsPlainObject(current)) {
     ValuePointer.Set(root, path, ValueClone.Clone(next))
   } else {
-    const currentKeys = globalThis.Object.keys(current)
-    const nextKeys = globalThis.Object.keys(next)
+    const currentKeys = Object.keys(current)
+    const nextKeys = Object.keys(next)
     for (const currentKey of currentKeys) {
       if (!nextKeys.includes(currentKey)) {
         delete current[currentKey]
@@ -68,7 +68,7 @@ function Object(root: Mutable, path: string, current: unknown, next: Record<stri
     }
   }
 }
-function Array(root: Mutable, path: string, current: unknown, next: unknown[]) {
+function ArrayType(root: Mutable, path: string, current: unknown, next: unknown[]) {
   if (!ValueGuard.IsArray(current)) {
     ValuePointer.Set(root, path, ValueClone.Clone(next))
   } else {
@@ -78,7 +78,7 @@ function Array(root: Mutable, path: string, current: unknown, next: unknown[]) {
     current.splice(next.length)
   }
 }
-function TypedArray(root: Mutable, path: string, current: unknown, next: ValueGuard.TypedArrayType) {
+function TypedArrayType(root: Mutable, path: string, current: unknown, next: ValueGuard.TypedArrayType) {
   if (ValueGuard.IsTypedArray(current) && current.length === next.length) {
     for (let i = 0; i < current.length; i++) {
       current[i] = next[i]
@@ -87,15 +87,15 @@ function TypedArray(root: Mutable, path: string, current: unknown, next: ValueGu
     ValuePointer.Set(root, path, ValueClone.Clone(next))
   }
 }
-function Value(root: Mutable, path: string, current: unknown, next: unknown) {
+function ValueType(root: Mutable, path: string, current: unknown, next: unknown) {
   if (current === next) return
   ValuePointer.Set(root, path, next)
 }
 function Visit(root: Mutable, path: string, current: unknown, next: unknown) {
-  if (ValueGuard.IsArray(next)) return Array(root, path, current, next)
-  if (ValueGuard.IsTypedArray(next)) return TypedArray(root, path, current, next)
-  if (ValueGuard.IsPlainObject(next)) return Object(root, path, current, next)
-  if (ValueGuard.IsValueType(next)) return Value(root, path, current, next)
+  if (ValueGuard.IsArray(next)) return ArrayType(root, path, current, next)
+  if (ValueGuard.IsTypedArray(next)) return TypedArrayType(root, path, current, next)
+  if (ValueGuard.IsPlainObject(next)) return ObjectType(root, path, current, next)
+  if (ValueGuard.IsValueType(next)) return ValueType(root, path, current, next)
 }
 // --------------------------------------------------------------------------
 // Mutate

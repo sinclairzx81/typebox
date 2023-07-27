@@ -65,15 +65,15 @@ export function IsTypedArray(value: unknown): value is TypedArrayType {
 }
 /** Returns true if this value is a Promise */
 export function IsPromise(value: unknown): value is Promise<unknown> {
-  return value instanceof globalThis.Promise
+  return value instanceof Promise
 }
 /** Returns true if the value is a Uint8Array */
 export function IsUint8Array(value: unknown): value is Uint8Array {
-  return value instanceof globalThis.Uint8Array
+  return value instanceof Uint8Array
 }
 /** Returns true if this value is a Date */
 export function IsDate(value: unknown): value is Date {
-  return value instanceof globalThis.Date
+  return value instanceof Date
 }
 // --------------------------------------------------------------------------
 // Standard
@@ -98,7 +98,7 @@ export function IsObject(value: unknown): value is ObjectType {
 }
 /** Returns true if this value is an array, but not a typed array */
 export function IsArray(value: unknown): value is ArrayType {
-  return globalThis.Array.isArray(value) && !ArrayBuffer.isView(value)
+  return Array.isArray(value) && !ArrayBuffer.isView(value)
 }
 /** Returns true if this value is an undefined */
 export function IsUndefined(value: unknown): value is undefined {
@@ -118,7 +118,7 @@ export function IsNumber(value: unknown): value is number {
 }
 /** Returns true if this value is an integer */
 export function IsInteger(value: unknown): value is number {
-  return IsNumber(value) && globalThis.Number.isInteger(value)
+  return IsNumber(value) && Number.isInteger(value)
 }
 /** Returns true if this value is bigint */
 export function IsBigInt(value: unknown): value is bigint {

@@ -76,8 +76,8 @@ namespace UnionCastCreate {
   function Score(schema: Types.TSchema, references: Types.TSchema[], value: any): number {
     if (schema[Types.Kind] === 'Object' && typeof value === 'object' && !ValueGuard.IsNull(value)) {
       const object = schema as Types.TObject
-      const keys = globalThis.Object.getOwnPropertyNames(value)
-      const entries = globalThis.Object.entries(object.properties)
+      const keys = Object.getOwnPropertyNames(value)
+      const entries = Object.entries(object.properties)
       const [point, max] = [1 / entries.length, entries.length]
       return entries.reduce((acc, [key, schema]) => {
         const literal = schema[Types.Kind] === 'Literal' && schema.const === value[key] ? max : 0
@@ -112,13 +112,13 @@ namespace UnionCastCreate {
 // --------------------------------------------------------------------------
 // Cast
 // --------------------------------------------------------------------------
-function Any(schema: Types.TAny, references: Types.TSchema[], value: any): any {
+function TAny(schema: Types.TAny, references: Types.TSchema[], value: any): any {
   return ValueCheck.Check(schema, references, value) ? ValueClone.Clone(value) : ValueCreate.Create(schema, references)
 }
-function Array(schema: Types.TArray, references: Types.TSchema[], value: any): any {
+function TArray(schema: Types.TArray, references: Types.TSchema[], value: any): any {
   if (ValueCheck.Check(schema, references, value)) return ValueClone.Clone(value)
   const created = ValueGuard.IsArray(value) ? ValueClone.Clone(value) : ValueCreate.Create(schema, references)
-  const minimum = ValueGuard.IsNumber(schema.minItems) && created.length < schema.minItems ? [...created, ...globalThis.Array.from({ length: schema.minItems - created.length }, () => null)] : created
+  const minimum = ValueGuard.IsNumber(schema.minItems) && created.length < schema.minItems ? [...created, ...Array.from({ length: schema.minItems - created.length }, () => null)] : created
   const maximum = ValueGuard.IsNumber(schema.maxItems) && minimum.length > schema.maxItems ? minimum.slice(0, schema.maxItems) : minimum
   const casted = maximum.map((value: unknown) => Visit(schema.items, references, value))
   if (schema.uniqueItems !== true) return casted
@@ -126,133 +126,133 @@ function Array(schema: Types.TArray, references: Types.TSchema[], value: any): a
   if (!ValueCheck.Check(schema, references, unique)) throw new ValueCastArrayUniqueItemsTypeError(schema, unique)
   return unique
 }
-function AsyncIterator(schema: Types.TAsyncIterator, references: Types.TSchema[], value: any): any {
+function TAsyncIterator(schema: Types.TAsyncIterator, references: Types.TSchema[], value: any): any {
   return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
 }
-function BigInt(schema: Types.TBigInt, references: Types.TSchema[], value: any): any {
+function TBigInt(schema: Types.TBigInt, references: Types.TSchema[], value: any): any {
   return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
 }
-function Boolean(schema: Types.TBoolean, references: Types.TSchema[], value: any): any {
+function TBoolean(schema: Types.TBoolean, references: Types.TSchema[], value: any): any {
   return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
 }
-function Constructor(schema: Types.TConstructor, references: Types.TSchema[], value: any): any {
+function TConstructor(schema: Types.TConstructor, references: Types.TSchema[], value: any): any {
   if (ValueCheck.Check(schema, references, value)) return ValueCreate.Create(schema, references)
   const required = new Set(schema.returns.required || [])
   const result = function () {}
-  for (const [key, property] of globalThis.Object.entries(schema.returns.properties)) {
+  for (const [key, property] of Object.entries(schema.returns.properties)) {
     if (!required.has(key) && value.prototype[key] === undefined) continue
     result.prototype[key] = Visit(property as Types.TSchema, references, value.prototype[key])
   }
   return result
 }
-function Date(schema: Types.TDate, references: Types.TSchema[], value: any): any {
+function TDate(schema: Types.TDate, references: Types.TSchema[], value: any): any {
   return ValueCheck.Check(schema, references, value) ? ValueClone.Clone(value) : ValueCreate.Create(schema, references)
 }
-function Function(schema: Types.TFunction, references: Types.TSchema[], value: any): any {
+function TFunction(schema: Types.TFunction, references: Types.TSchema[], value: any): any {
   return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
 }
-function Integer(schema: Types.TInteger, references: Types.TSchema[], value: any): any {
+function TInteger(schema: Types.TInteger, references: Types.TSchema[], value: any): any {
   return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
 }
-function Intersect(schema: Types.TIntersect, references: Types.TSchema[], value: any): any {
+function TIntersect(schema: Types.TIntersect, references: Types.TSchema[], value: any): any {
   const created = ValueCreate.Create(schema, references)
   const mapped = ValueGuard.IsPlainObject(created) && ValueGuard.IsPlainObject(value) ? { ...(created as any), ...value } : value
   return ValueCheck.Check(schema, references, mapped) ? mapped : ValueCreate.Create(schema, references)
 }
-function Iterator(schema: Types.TIterator, references: Types.TSchema[], value: any): any {
+function TIterator(schema: Types.TIterator, references: Types.TSchema[], value: any): any {
   return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
 }
-function Literal(schema: Types.TLiteral, references: Types.TSchema[], value: any): any {
+function TLiteral(schema: Types.TLiteral, references: Types.TSchema[], value: any): any {
   return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
 }
-function Never(schema: Types.TNever, references: Types.TSchema[], value: any): any {
+function TNever(schema: Types.TNever, references: Types.TSchema[], value: any): any {
   throw new ValueCastNeverTypeError(schema)
 }
-function Not(schema: Types.TNot, references: Types.TSchema[], value: any): any {
+function TNot(schema: Types.TNot, references: Types.TSchema[], value: any): any {
   return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
 }
-function Null(schema: Types.TNull, references: Types.TSchema[], value: any): any {
+function TNull(schema: Types.TNull, references: Types.TSchema[], value: any): any {
   return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
 }
-function Number(schema: Types.TNumber, references: Types.TSchema[], value: any): any {
+function TNumber(schema: Types.TNumber, references: Types.TSchema[], value: any): any {
   return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
 }
-function Object(schema: Types.TObject, references: Types.TSchema[], value: any): any {
+function TObject(schema: Types.TObject, references: Types.TSchema[], value: any): any {
   if (ValueCheck.Check(schema, references, value)) return value
   if (value === null || typeof value !== 'object') return ValueCreate.Create(schema, references)
   const required = new Set(schema.required || [])
   const result = {} as Record<string, any>
-  for (const [key, property] of globalThis.Object.entries(schema.properties)) {
+  for (const [key, property] of Object.entries(schema.properties)) {
     if (!required.has(key) && value[key] === undefined) continue
     result[key] = Visit(property, references, value[key])
   }
   // additional schema properties
   if (typeof schema.additionalProperties === 'object') {
-    const propertyNames = globalThis.Object.getOwnPropertyNames(schema.properties)
-    for (const propertyName of globalThis.Object.getOwnPropertyNames(value)) {
+    const propertyNames = Object.getOwnPropertyNames(schema.properties)
+    for (const propertyName of Object.getOwnPropertyNames(value)) {
       if (propertyNames.includes(propertyName)) continue
       result[propertyName] = Visit(schema.additionalProperties, references, value[propertyName])
     }
   }
   return result
 }
-function Promise(schema: Types.TSchema, references: Types.TSchema[], value: any): any {
+function TPromise(schema: Types.TSchema, references: Types.TSchema[], value: any): any {
   return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
 }
-function Record(schema: Types.TRecord<any, any>, references: Types.TSchema[], value: any): any {
+function TRecord(schema: Types.TRecord<any, any>, references: Types.TSchema[], value: any): any {
   if (ValueCheck.Check(schema, references, value)) return ValueClone.Clone(value)
-  if (value === null || typeof value !== 'object' || globalThis.Array.isArray(value) || value instanceof globalThis.Date) return ValueCreate.Create(schema, references)
-  const subschemaPropertyName = globalThis.Object.getOwnPropertyNames(schema.patternProperties)[0]
+  if (value === null || typeof value !== 'object' || Array.isArray(value) || value instanceof Date) return ValueCreate.Create(schema, references)
+  const subschemaPropertyName = Object.getOwnPropertyNames(schema.patternProperties)[0]
   const subschema = schema.patternProperties[subschemaPropertyName]
   const result = {} as Record<string, any>
-  for (const [propKey, propValue] of globalThis.Object.entries(value)) {
+  for (const [propKey, propValue] of Object.entries(value)) {
     result[propKey] = Visit(subschema, references, propValue)
   }
   return result
 }
-function Ref(schema: Types.TRef<any>, references: Types.TSchema[], value: any): any {
+function TRef(schema: Types.TRef<any>, references: Types.TSchema[], value: any): any {
   const index = references.findIndex((foreign) => foreign.$id === schema.$ref)
   if (index === -1) throw new ValueCastDereferenceError(schema)
   const target = references[index]
   return Visit(target, references, value)
 }
-function String(schema: Types.TString, references: Types.TSchema[], value: any): any {
+function TString(schema: Types.TString, references: Types.TSchema[], value: any): any {
   return ValueCheck.Check(schema, references, value) ? value : ValueCreate.Create(schema, references)
 }
-function Symbol(schema: Types.TSymbol, references: Types.TSchema[], value: any): any {
+function TSymbol(schema: Types.TSymbol, references: Types.TSchema[], value: any): any {
   return ValueCheck.Check(schema, references, value) ? ValueClone.Clone(value) : ValueCreate.Create(schema, references)
 }
-function TemplateLiteral(schema: Types.TSymbol, references: Types.TSchema[], value: any): any {
+function TTemplateLiteral(schema: Types.TSymbol, references: Types.TSchema[], value: any): any {
   return ValueCheck.Check(schema, references, value) ? ValueClone.Clone(value) : ValueCreate.Create(schema, references)
 }
-function This(schema: Types.TThis, references: Types.TSchema[], value: any): any {
+function TThis(schema: Types.TThis, references: Types.TSchema[], value: any): any {
   const index = references.findIndex((foreign) => foreign.$id === schema.$ref)
   if (index === -1) throw new ValueCastDereferenceError(schema)
   const target = references[index]
   return Visit(target, references, value)
 }
-function Tuple(schema: Types.TTuple<any[]>, references: Types.TSchema[], value: any): any {
+function TTuple(schema: Types.TTuple<any[]>, references: Types.TSchema[], value: any): any {
   if (ValueCheck.Check(schema, references, value)) return ValueClone.Clone(value)
   if (!ValueGuard.IsArray(value)) return ValueCreate.Create(schema, references)
   if (schema.items === undefined) return []
   return schema.items.map((schema, index) => Visit(schema, references, value[index]))
 }
-function Undefined(schema: Types.TUndefined, references: Types.TSchema[], value: any): any {
+function TUndefined(schema: Types.TUndefined, references: Types.TSchema[], value: any): any {
   return ValueCheck.Check(schema, references, value) ? ValueClone.Clone(value) : ValueCreate.Create(schema, references)
 }
-function Union(schema: Types.TUnion, references: Types.TSchema[], value: any): any {
+function TUnion(schema: Types.TUnion, references: Types.TSchema[], value: any): any {
   return ValueCheck.Check(schema, references, value) ? ValueClone.Clone(value) : UnionCastCreate.Create(schema, references, value)
 }
-function Uint8Array(schema: Types.TUint8Array, references: Types.TSchema[], value: any): any {
+function TUint8Array(schema: Types.TUint8Array, references: Types.TSchema[], value: any): any {
   return ValueCheck.Check(schema, references, value) ? ValueClone.Clone(value) : ValueCreate.Create(schema, references)
 }
-function Unknown(schema: Types.TUnknown, references: Types.TSchema[], value: any): any {
+function TUnknown(schema: Types.TUnknown, references: Types.TSchema[], value: any): any {
   return ValueCheck.Check(schema, references, value) ? ValueClone.Clone(value) : ValueCreate.Create(schema, references)
 }
-function Void(schema: Types.TVoid, references: Types.TSchema[], value: any): any {
+function TVoid(schema: Types.TVoid, references: Types.TSchema[], value: any): any {
   return ValueCheck.Check(schema, references, value) ? ValueClone.Clone(value) : ValueCreate.Create(schema, references)
 }
-function UserDefined(schema: Types.TSchema, references: Types.TSchema[], value: any): any {
+function TUserDefined(schema: Types.TSchema, references: Types.TSchema[], value: any): any {
   return ValueCheck.Check(schema, references, value) ? ValueClone.Clone(value) : ValueCreate.Create(schema, references)
 }
 export function Visit(schema: Types.TSchema, references: Types.TSchema[], value: any): any {
@@ -260,68 +260,68 @@ export function Visit(schema: Types.TSchema, references: Types.TSchema[], value:
   const schema_ = schema as any
   switch (schema[Types.Kind]) {
     case 'Any':
-      return Any(schema_, references_, value)
+      return TAny(schema_, references_, value)
     case 'Array':
-      return Array(schema_, references_, value)
+      return TArray(schema_, references_, value)
     case 'AsyncIterator':
-      return AsyncIterator(schema_, references_, value)
+      return TAsyncIterator(schema_, references_, value)
     case 'BigInt':
-      return BigInt(schema_, references_, value)
+      return TBigInt(schema_, references_, value)
     case 'Boolean':
-      return Boolean(schema_, references_, value)
+      return TBoolean(schema_, references_, value)
     case 'Constructor':
-      return Constructor(schema_, references_, value)
+      return TConstructor(schema_, references_, value)
     case 'Date':
-      return Date(schema_, references_, value)
+      return TDate(schema_, references_, value)
     case 'Function':
-      return Function(schema_, references_, value)
+      return TFunction(schema_, references_, value)
     case 'Integer':
-      return Integer(schema_, references_, value)
+      return TInteger(schema_, references_, value)
     case 'Intersect':
-      return Intersect(schema_, references_, value)
+      return TIntersect(schema_, references_, value)
     case 'Iterator':
-      return Iterator(schema_, references_, value)
+      return TIterator(schema_, references_, value)
     case 'Literal':
-      return Literal(schema_, references_, value)
+      return TLiteral(schema_, references_, value)
     case 'Never':
-      return Never(schema_, references_, value)
+      return TNever(schema_, references_, value)
     case 'Not':
-      return Not(schema_, references_, value)
+      return TNot(schema_, references_, value)
     case 'Null':
-      return Null(schema_, references_, value)
+      return TNull(schema_, references_, value)
     case 'Number':
-      return Number(schema_, references_, value)
+      return TNumber(schema_, references_, value)
     case 'Object':
-      return Object(schema_, references_, value)
+      return TObject(schema_, references_, value)
     case 'Promise':
-      return Promise(schema_, references_, value)
+      return TPromise(schema_, references_, value)
     case 'Record':
-      return Record(schema_, references_, value)
+      return TRecord(schema_, references_, value)
     case 'Ref':
-      return Ref(schema_, references_, value)
+      return TRef(schema_, references_, value)
     case 'String':
-      return String(schema_, references_, value)
+      return TString(schema_, references_, value)
     case 'Symbol':
-      return Symbol(schema_, references_, value)
+      return TSymbol(schema_, references_, value)
     case 'TemplateLiteral':
-      return TemplateLiteral(schema_, references_, value)
+      return TTemplateLiteral(schema_, references_, value)
     case 'This':
-      return This(schema_, references_, value)
+      return TThis(schema_, references_, value)
     case 'Tuple':
-      return Tuple(schema_, references_, value)
+      return TTuple(schema_, references_, value)
     case 'Undefined':
-      return Undefined(schema_, references_, value)
+      return TUndefined(schema_, references_, value)
     case 'Union':
-      return Union(schema_, references_, value)
+      return TUnion(schema_, references_, value)
     case 'Uint8Array':
-      return Uint8Array(schema_, references_, value)
+      return TUint8Array(schema_, references_, value)
     case 'Unknown':
-      return Unknown(schema_, references_, value)
+      return TUnknown(schema_, references_, value)
     case 'Void':
-      return Void(schema_, references_, value)
+      return TVoid(schema_, references_, value)
     default:
       if (!Types.TypeRegistry.Has(schema_[Types.Kind])) throw new ValueCastUnknownTypeError(schema_)
-      return UserDefined(schema_, references_, value)
+      return TUserDefined(schema_, references_, value)
   }
 }
 // --------------------------------------------------------------------------

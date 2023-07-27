@@ -54,10 +54,10 @@ function IsValueToString(value: unknown): value is { toString: () => string } {
   return ValueGuard.IsBigInt(value) || ValueGuard.IsBoolean(value) || ValueGuard.IsNumber(value)
 }
 function IsValueTrue(value: unknown): value is true {
-  return value === true || (ValueGuard.IsNumber(value) && value === 1) || (ValueGuard.IsBigInt(value) && value === globalThis.BigInt('1')) || (ValueGuard.IsString(value) && (value.toLowerCase() === 'true' || value === '1'))
+  return value === true || (ValueGuard.IsNumber(value) && value === 1) || (ValueGuard.IsBigInt(value) && value === BigInt('1')) || (ValueGuard.IsString(value) && (value.toLowerCase() === 'true' || value === '1'))
 }
 function IsValueFalse(value: unknown): value is false {
-  return value === false || (ValueGuard.IsNumber(value) && value === 0) || (ValueGuard.IsBigInt(value) && value === globalThis.BigInt('0')) || (ValueGuard.IsString(value) && (value.toLowerCase() === 'false' || value === '0'))
+  return value === false || (ValueGuard.IsNumber(value) && value === 0) || (ValueGuard.IsBigInt(value) && value === BigInt('0')) || (ValueGuard.IsString(value) && (value.toLowerCase() === 'false' || value === '0'))
 }
 function IsTimeStringWithTimeZone(value: unknown): value is string {
   return ValueGuard.IsString(value) && /^(?:[0-2]\d:[0-5]\d:[0-5]\d|23:59:60)(?:\.\d+)?(?:z|[+-]\d\d(?::?\d\d)?)$/i.test(value)
@@ -104,7 +104,7 @@ function TryConvertBoolean(value: unknown) {
   return IsValueTrue(value) ? true : IsValueFalse(value) ? false : value
 }
 function TryConvertBigInt(value: unknown) {
-  return IsStringNumeric(value) ? globalThis.BigInt(parseInt(value)) : ValueGuard.IsNumber(value) ? globalThis.BigInt(value | 0) : IsValueFalse(value) ? 0 : IsValueTrue(value) ? 1 : value
+  return IsStringNumeric(value) ? BigInt(parseInt(value)) : ValueGuard.IsNumber(value) ? BigInt(value | 0) : IsValueFalse(value) ? 0 : IsValueTrue(value) ? 1 : value
 }
 function TryConvertString(value: unknown) {
   return IsValueToString(value) ? value.toString() : ValueGuard.IsSymbol(value) && value.description !== undefined ? value.description.toString() : value
@@ -131,117 +131,117 @@ function TryConvertDate(value: unknown) {
   return ValueGuard.IsDate(value)
     ? value
     : ValueGuard.IsNumber(value)
-    ? new globalThis.Date(value)
+    ? new Date(value)
     : IsValueTrue(value)
-    ? new globalThis.Date(1)
+    ? new Date(1)
     : IsValueFalse(value)
-    ? new globalThis.Date(0)
+    ? new Date(0)
     : IsStringNumeric(value)
-    ? new globalThis.Date(parseInt(value))
+    ? new Date(parseInt(value))
     : IsTimeStringWithoutTimeZone(value)
-    ? new globalThis.Date(`1970-01-01T${value}.000Z`)
+    ? new Date(`1970-01-01T${value}.000Z`)
     : IsTimeStringWithTimeZone(value)
-    ? new globalThis.Date(`1970-01-01T${value}`)
+    ? new Date(`1970-01-01T${value}`)
     : IsDateTimeStringWithoutTimeZone(value)
-    ? new globalThis.Date(`${value}.000Z`)
+    ? new Date(`${value}.000Z`)
     : IsDateTimeStringWithTimeZone(value)
-    ? new globalThis.Date(value)
+    ? new Date(value)
     : IsDateString(value)
-    ? new globalThis.Date(`${value}T00:00:00.000Z`)
+    ? new Date(`${value}T00:00:00.000Z`)
     : value
 }
 // --------------------------------------------------------------------------
 // Cast
 // --------------------------------------------------------------------------
-function Any(schema: Types.TAny, references: Types.TSchema[], value: any): any {
+function TAny(schema: Types.TAny, references: Types.TSchema[], value: any): any {
   return value
 }
-function Array(schema: Types.TArray, references: Types.TSchema[], value: any): any {
+function TArray(schema: Types.TArray, references: Types.TSchema[], value: any): any {
   if (ValueGuard.IsArray(value)) {
     return value.map((value) => Visit(schema.items, references, value))
   }
   return value
 }
-function AsyncIterator(schema: Types.TAsyncIterator, references: Types.TSchema[], value: any): any {
+function TAsyncIterator(schema: Types.TAsyncIterator, references: Types.TSchema[], value: any): any {
   return value
 }
-function BigInt(schema: Types.TBigInt, references: Types.TSchema[], value: any): unknown {
+function TBigInt(schema: Types.TBigInt, references: Types.TSchema[], value: any): unknown {
   return TryConvertBigInt(value)
 }
-function Boolean(schema: Types.TBoolean, references: Types.TSchema[], value: any): unknown {
+function TBoolean(schema: Types.TBoolean, references: Types.TSchema[], value: any): unknown {
   return TryConvertBoolean(value)
 }
-function Constructor(schema: Types.TConstructor, references: Types.TSchema[], value: any): unknown {
+function TConstructor(schema: Types.TConstructor, references: Types.TSchema[], value: any): unknown {
   return ValueClone.Clone(value)
 }
-function Date(schema: Types.TDate, references: Types.TSchema[], value: any): unknown {
+function TDate(schema: Types.TDate, references: Types.TSchema[], value: any): unknown {
   return TryConvertDate(value)
 }
-function Function(schema: Types.TFunction, references: Types.TSchema[], value: any): unknown {
+function TFunction(schema: Types.TFunction, references: Types.TSchema[], value: any): unknown {
   return value
 }
-function Integer(schema: Types.TInteger, references: Types.TSchema[], value: any): unknown {
+function TInteger(schema: Types.TInteger, references: Types.TSchema[], value: any): unknown {
   return TryConvertInteger(value)
 }
-function Intersect(schema: Types.TIntersect, references: Types.TSchema[], value: any): unknown {
+function TIntersect(schema: Types.TIntersect, references: Types.TSchema[], value: any): unknown {
   return value
 }
-function Iterator(schema: Types.TIterator, references: Types.TSchema[], value: any): unknown {
+function TIterator(schema: Types.TIterator, references: Types.TSchema[], value: any): unknown {
   return value
 }
-function Literal(schema: Types.TLiteral, references: Types.TSchema[], value: any): unknown {
+function TLiteral(schema: Types.TLiteral, references: Types.TSchema[], value: any): unknown {
   return TryConvertLiteral(schema, value)
 }
-function Never(schema: Types.TNever, references: Types.TSchema[], value: any): unknown {
+function TNever(schema: Types.TNever, references: Types.TSchema[], value: any): unknown {
   return value
 }
-function Null(schema: Types.TNull, references: Types.TSchema[], value: any): unknown {
+function TNull(schema: Types.TNull, references: Types.TSchema[], value: any): unknown {
   return TryConvertNull(value)
 }
-function Number(schema: Types.TNumber, references: Types.TSchema[], value: any): unknown {
+function TNumber(schema: Types.TNumber, references: Types.TSchema[], value: any): unknown {
   return TryConvertNumber(value)
 }
-function Object(schema: Types.TObject, references: Types.TSchema[], value: any): unknown {
+function TObject(schema: Types.TObject, references: Types.TSchema[], value: any): unknown {
   if (ValueGuard.IsObject(value))
-    return globalThis.Object.keys(schema.properties).reduce((acc, key) => {
+    return Object.getOwnPropertyNames(schema.properties).reduce((acc, key) => {
       return value[key] !== undefined ? { ...acc, [key]: Visit(schema.properties[key], references, value[key]) } : { ...acc }
     }, value)
   return value
 }
-function Promise(schema: Types.TSchema, references: Types.TSchema[], value: any): unknown {
+function TPromise(schema: Types.TSchema, references: Types.TSchema[], value: any): unknown {
   return value
 }
-function Record(schema: Types.TRecord<any, any>, references: Types.TSchema[], value: any): unknown {
-  const propertyKey = globalThis.Object.getOwnPropertyNames(schema.patternProperties)[0]
+function TRecord(schema: Types.TRecord<any, any>, references: Types.TSchema[], value: any): unknown {
+  const propertyKey = Object.getOwnPropertyNames(schema.patternProperties)[0]
   const property = schema.patternProperties[propertyKey]
   const result = {} as Record<string, unknown>
-  for (const [propKey, propValue] of globalThis.Object.entries(value)) {
+  for (const [propKey, propValue] of Object.entries(value)) {
     result[propKey] = Visit(property, references, propValue)
   }
   return result
 }
-function Ref(schema: Types.TRef<any>, references: Types.TSchema[], value: any): unknown {
+function TRef(schema: Types.TRef<any>, references: Types.TSchema[], value: any): unknown {
   const index = references.findIndex((foreign) => foreign.$id === schema.$ref)
   if (index === -1) throw new ValueConvertDereferenceError(schema)
   const target = references[index]
   return Visit(target, references, value)
 }
-function String(schema: Types.TString, references: Types.TSchema[], value: any): unknown {
+function TString(schema: Types.TString, references: Types.TSchema[], value: any): unknown {
   return TryConvertString(value)
 }
-function Symbol(schema: Types.TSymbol, references: Types.TSchema[], value: any): unknown {
+function TSymbol(schema: Types.TSymbol, references: Types.TSchema[], value: any): unknown {
   return value
 }
-function TemplateLiteral(schema: Types.TTemplateLiteral, references: Types.TSchema[], value: any) {
+function TTemplateLiteral(schema: Types.TTemplateLiteral, references: Types.TSchema[], value: any) {
   return value
 }
-function This(schema: Types.TThis, references: Types.TSchema[], value: any): unknown {
+function TThis(schema: Types.TThis, references: Types.TSchema[], value: any): unknown {
   const index = references.findIndex((foreign) => foreign.$id === schema.$ref)
   if (index === -1) throw new ValueConvertDereferenceError(schema)
   const target = references[index]
   return Visit(target, references, value)
 }
-function Tuple(schema: Types.TTuple<any[]>, references: Types.TSchema[], value: any): unknown {
+function TTuple(schema: Types.TTuple<any[]>, references: Types.TSchema[], value: any): unknown {
   if (ValueGuard.IsArray(value) && !ValueGuard.IsUndefined(schema.items)) {
     return value.map((value, index) => {
       return index < schema.items!.length ? Visit(schema.items![index], references, value) : value
@@ -249,10 +249,10 @@ function Tuple(schema: Types.TTuple<any[]>, references: Types.TSchema[], value: 
   }
   return value
 }
-function Undefined(schema: Types.TUndefined, references: Types.TSchema[], value: any): unknown {
+function TUndefined(schema: Types.TUndefined, references: Types.TSchema[], value: any): unknown {
   return TryConvertUndefined(value)
 }
-function Union(schema: Types.TUnion, references: Types.TSchema[], value: any): unknown {
+function TUnion(schema: Types.TUnion, references: Types.TSchema[], value: any): unknown {
   for (const subschema of schema.anyOf) {
     const converted = Visit(subschema, references, value)
     if (ValueCheck.Check(subschema, references, converted)) {
@@ -261,16 +261,16 @@ function Union(schema: Types.TUnion, references: Types.TSchema[], value: any): u
   }
   return value
 }
-function Uint8Array(schema: Types.TUint8Array, references: Types.TSchema[], value: any): unknown {
+function TUint8Array(schema: Types.TUint8Array, references: Types.TSchema[], value: any): unknown {
   return value
 }
-function Unknown(schema: Types.TUnknown, references: Types.TSchema[], value: any): unknown {
+function TUnknown(schema: Types.TUnknown, references: Types.TSchema[], value: any): unknown {
   return value
 }
-function Void(schema: Types.TVoid, references: Types.TSchema[], value: any): unknown {
+function TVoid(schema: Types.TVoid, references: Types.TSchema[], value: any): unknown {
   return value
 }
-function UserDefined(schema: Types.TSchema, references: Types.TSchema[], value: any): unknown {
+function TUserDefined(schema: Types.TSchema, references: Types.TSchema[], value: any): unknown {
   return value
 }
 export function Visit(schema: Types.TSchema, references: Types.TSchema[], value: any): unknown {
@@ -278,66 +278,66 @@ export function Visit(schema: Types.TSchema, references: Types.TSchema[], value:
   const schema_ = schema as any
   switch (schema[Types.Kind]) {
     case 'Any':
-      return Any(schema_, references_, value)
+      return TAny(schema_, references_, value)
     case 'Array':
-      return Array(schema_, references_, value)
+      return TArray(schema_, references_, value)
     case 'AsyncIterator':
-      return AsyncIterator(schema_, references_, value)
+      return TAsyncIterator(schema_, references_, value)
     case 'BigInt':
-      return BigInt(schema_, references_, value)
+      return TBigInt(schema_, references_, value)
     case 'Boolean':
-      return Boolean(schema_, references_, value)
+      return TBoolean(schema_, references_, value)
     case 'Constructor':
-      return Constructor(schema_, references_, value)
+      return TConstructor(schema_, references_, value)
     case 'Date':
-      return Date(schema_, references_, value)
+      return TDate(schema_, references_, value)
     case 'Function':
-      return Function(schema_, references_, value)
+      return TFunction(schema_, references_, value)
     case 'Integer':
-      return Integer(schema_, references_, value)
+      return TInteger(schema_, references_, value)
     case 'Intersect':
-      return Intersect(schema_, references_, value)
+      return TIntersect(schema_, references_, value)
     case 'Iterator':
-      return Iterator(schema_, references_, value)
+      return TIterator(schema_, references_, value)
     case 'Literal':
-      return Literal(schema_, references_, value)
+      return TLiteral(schema_, references_, value)
     case 'Never':
-      return Never(schema_, references_, value)
+      return TNever(schema_, references_, value)
     case 'Null':
-      return Null(schema_, references_, value)
+      return TNull(schema_, references_, value)
     case 'Number':
-      return Number(schema_, references_, value)
+      return TNumber(schema_, references_, value)
     case 'Object':
-      return Object(schema_, references_, value)
+      return TObject(schema_, references_, value)
     case 'Promise':
-      return Promise(schema_, references_, value)
+      return TPromise(schema_, references_, value)
     case 'Record':
-      return Record(schema_, references_, value)
+      return TRecord(schema_, references_, value)
     case 'Ref':
-      return Ref(schema_, references_, value)
+      return TRef(schema_, references_, value)
     case 'String':
-      return String(schema_, references_, value)
+      return TString(schema_, references_, value)
     case 'Symbol':
-      return Symbol(schema_, references_, value)
+      return TSymbol(schema_, references_, value)
     case 'TemplateLiteral':
-      return TemplateLiteral(schema_, references_, value)
+      return TTemplateLiteral(schema_, references_, value)
     case 'This':
-      return This(schema_, references_, value)
+      return TThis(schema_, references_, value)
     case 'Tuple':
-      return Tuple(schema_, references_, value)
+      return TTuple(schema_, references_, value)
     case 'Undefined':
-      return Undefined(schema_, references_, value)
+      return TUndefined(schema_, references_, value)
     case 'Union':
-      return Union(schema_, references_, value)
+      return TUnion(schema_, references_, value)
     case 'Uint8Array':
-      return Uint8Array(schema_, references_, value)
+      return TUint8Array(schema_, references_, value)
     case 'Unknown':
-      return Unknown(schema_, references_, value)
+      return TUnknown(schema_, references_, value)
     case 'Void':
-      return Void(schema_, references_, value)
+      return TVoid(schema_, references_, value)
     default:
       if (!Types.TypeRegistry.Has(schema_[Types.Kind])) throw new ValueConvertUnknownTypeError(schema_)
-      return UserDefined(schema_, references_, value)
+      return TUserDefined(schema_, references_, value)
   }
 }
 // --------------------------------------------------------------------------

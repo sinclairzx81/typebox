@@ -71,14 +71,14 @@ export class ValueCreateRecursiveInstantiationError extends Error {
 // --------------------------------------------------------------------------
 // Types
 // --------------------------------------------------------------------------
-function Any(schema: Types.TAny, references: Types.TSchema[]): any {
+function TAny(schema: Types.TAny, references: Types.TSchema[]): any {
   if (ValueGuard.HasPropertyKey(schema, 'default')) {
     return schema.default
   } else {
     return {}
   }
 }
-function Array(schema: Types.TArray, references: Types.TSchema[]): any {
+function TArray(schema: Types.TArray, references: Types.TSchema[]): any {
   if (schema.uniqueItems === true && !ValueGuard.HasPropertyKey(schema, 'default')) {
     throw new Error('ValueCreate.Array: Array with the uniqueItems constraint requires a default value')
   } else if ('contains' in schema && !ValueGuard.HasPropertyKey(schema, 'default')) {
@@ -86,43 +86,43 @@ function Array(schema: Types.TArray, references: Types.TSchema[]): any {
   } else if ('default' in schema) {
     return schema.default
   } else if (schema.minItems !== undefined) {
-    return globalThis.Array.from({ length: schema.minItems }).map((item) => {
+    return Array.from({ length: schema.minItems }).map((item) => {
       return Visit(schema.items, references)
     })
   } else {
     return []
   }
 }
-function AsyncIterator(schema: Types.TAsyncIterator, references: Types.TSchema[]) {
+function TAsyncIterator(schema: Types.TAsyncIterator, references: Types.TSchema[]) {
   if (ValueGuard.HasPropertyKey(schema, 'default')) {
     return schema.default
   } else {
     return (async function* () {})()
   }
 }
-function BigInt(schema: Types.TBigInt, references: Types.TSchema[]): any {
+function TBigInt(schema: Types.TBigInt, references: Types.TSchema[]): any {
   if (ValueGuard.HasPropertyKey(schema, 'default')) {
     return schema.default
   } else {
-    return globalThis.BigInt(0)
+    return BigInt(0)
   }
 }
-function Boolean(schema: Types.TBoolean, references: Types.TSchema[]): any {
+function TBoolean(schema: Types.TBoolean, references: Types.TSchema[]): any {
   if (ValueGuard.HasPropertyKey(schema, 'default')) {
     return schema.default
   } else {
     return false
   }
 }
-function Constructor(schema: Types.TConstructor, references: Types.TSchema[]): any {
+function TConstructor(schema: Types.TConstructor, references: Types.TSchema[]): any {
   if (ValueGuard.HasPropertyKey(schema, 'default')) {
     return schema.default
   } else {
     const value = Visit(schema.returns, references) as any
-    if (typeof value === 'object' && !globalThis.Array.isArray(value)) {
+    if (typeof value === 'object' && !Array.isArray(value)) {
       return class {
         constructor() {
-          for (const [key, val] of globalThis.Object.entries(value)) {
+          for (const [key, val] of Object.entries(value)) {
             const self = this as any
             self[key] = val
           }
@@ -133,23 +133,23 @@ function Constructor(schema: Types.TConstructor, references: Types.TSchema[]): a
     }
   }
 }
-function Date(schema: Types.TDate, references: Types.TSchema[]): any {
+function TDate(schema: Types.TDate, references: Types.TSchema[]): any {
   if (ValueGuard.HasPropertyKey(schema, 'default')) {
     return schema.default
   } else if (schema.minimumTimestamp !== undefined) {
-    return new globalThis.Date(schema.minimumTimestamp)
+    return new Date(schema.minimumTimestamp)
   } else {
-    return new globalThis.Date(0)
+    return new Date(0)
   }
 }
-function Function(schema: Types.TFunction, references: Types.TSchema[]): any {
+function TFunction(schema: Types.TFunction, references: Types.TSchema[]): any {
   if (ValueGuard.HasPropertyKey(schema, 'default')) {
     return schema.default
   } else {
     return () => Visit(schema.returns, references)
   }
 }
-function Integer(schema: Types.TInteger, references: Types.TSchema[]): any {
+function TInteger(schema: Types.TInteger, references: Types.TSchema[]): any {
   if (ValueGuard.HasPropertyKey(schema, 'default')) {
     return schema.default
   } else if (schema.minimum !== undefined) {
@@ -158,7 +158,7 @@ function Integer(schema: Types.TInteger, references: Types.TSchema[]): any {
     return 0
   }
 }
-function Intersect(schema: Types.TIntersect, references: Types.TSchema[]): any {
+function TIntersect(schema: Types.TIntersect, references: Types.TSchema[]): any {
   if (ValueGuard.HasPropertyKey(schema, 'default')) {
     return schema.default
   } else {
@@ -173,38 +173,38 @@ function Intersect(schema: Types.TIntersect, references: Types.TSchema[]): any {
     return value
   }
 }
-function Iterator(schema: Types.TIterator, references: Types.TSchema[]) {
+function TIterator(schema: Types.TIterator, references: Types.TSchema[]) {
   if (ValueGuard.HasPropertyKey(schema, 'default')) {
     return schema.default
   } else {
     return (function* () {})()
   }
 }
-function Literal(schema: Types.TLiteral, references: Types.TSchema[]): any {
+function TLiteral(schema: Types.TLiteral, references: Types.TSchema[]): any {
   if (ValueGuard.HasPropertyKey(schema, 'default')) {
     return schema.default
   } else {
     return schema.const
   }
 }
-function Never(schema: Types.TNever, references: Types.TSchema[]): any {
+function TNever(schema: Types.TNever, references: Types.TSchema[]): any {
   throw new ValueCreateNeverTypeError(schema)
 }
-function Not(schema: Types.TNot, references: Types.TSchema[]): any {
+function TNot(schema: Types.TNot, references: Types.TSchema[]): any {
   if (ValueGuard.HasPropertyKey(schema, 'default')) {
     return schema.default
   } else {
     throw new ValueCreateNotTypeError(schema)
   }
 }
-function Null(schema: Types.TNull, references: Types.TSchema[]): any {
+function TNull(schema: Types.TNull, references: Types.TSchema[]): any {
   if (ValueGuard.HasPropertyKey(schema, 'default')) {
     return schema.default
   } else {
     return null
   }
 }
-function Number(schema: Types.TNumber, references: Types.TSchema[]): any {
+function TNumber(schema: Types.TNumber, references: Types.TSchema[]): any {
   if (ValueGuard.HasPropertyKey(schema, 'default')) {
     return schema.default
   } else if (schema.minimum !== undefined) {
@@ -213,28 +213,28 @@ function Number(schema: Types.TNumber, references: Types.TSchema[]): any {
     return 0
   }
 }
-function Object(schema: Types.TObject, references: Types.TSchema[]): any {
+function TObject(schema: Types.TObject, references: Types.TSchema[]): any {
   if (ValueGuard.HasPropertyKey(schema, 'default')) {
     return schema.default
   } else {
     const required = new Set(schema.required)
     return (
       schema.default ||
-      globalThis.Object.entries(schema.properties).reduce((acc, [key, schema]) => {
+      Object.entries(schema.properties).reduce((acc, [key, schema]) => {
         return required.has(key) ? { ...acc, [key]: Visit(schema, references) } : { ...acc }
       }, {})
     )
   }
 }
-function Promise(schema: Types.TPromise<any>, references: Types.TSchema[]): any {
+function TPromise(schema: Types.TPromise<any>, references: Types.TSchema[]): any {
   if (ValueGuard.HasPropertyKey(schema, 'default')) {
     return schema.default
   } else {
-    return globalThis.Promise.resolve(Visit(schema.item, references))
+    return Promise.resolve(Visit(schema.item, references))
   }
 }
-function Record(schema: Types.TRecord<any, any>, references: Types.TSchema[]): any {
-  const [keyPattern, valueSchema] = globalThis.Object.entries(schema.patternProperties)[0]
+function TRecord(schema: Types.TRecord<any, any>, references: Types.TSchema[]): any {
+  const [keyPattern, valueSchema] = Object.entries(schema.patternProperties)[0]
   if (ValueGuard.HasPropertyKey(schema, 'default')) {
     return schema.default
   } else if (!(keyPattern === Types.PatternStringExact || keyPattern === Types.PatternNumberExact)) {
@@ -246,7 +246,7 @@ function Record(schema: Types.TRecord<any, any>, references: Types.TSchema[]): a
     return {}
   }
 }
-function Ref(schema: Types.TRef<any>, references: Types.TSchema[]): any {
+function TRef(schema: Types.TRef<any>, references: Types.TSchema[]): any {
   if (ValueGuard.HasPropertyKey(schema, 'default')) {
     return schema.default
   } else {
@@ -256,7 +256,7 @@ function Ref(schema: Types.TRef<any>, references: Types.TSchema[]): any {
     return Visit(target, references)
   }
 }
-function String(schema: Types.TString, references: Types.TSchema[]): any {
+function TString(schema: Types.TString, references: Types.TSchema[]): any {
   if (schema.pattern !== undefined) {
     if (!ValueGuard.HasPropertyKey(schema, 'default')) {
       throw new Error('ValueCreate.String: String types with patterns must specify a default value')
@@ -273,7 +273,7 @@ function String(schema: Types.TString, references: Types.TSchema[]): any {
     if (ValueGuard.HasPropertyKey(schema, 'default')) {
       return schema.default
     } else if (schema.minLength !== undefined) {
-      return globalThis.Array.from({ length: schema.minLength })
+      return Array.from({ length: schema.minLength })
         .map(() => '.')
         .join('')
     } else {
@@ -281,16 +281,16 @@ function String(schema: Types.TString, references: Types.TSchema[]): any {
     }
   }
 }
-function Symbol(schema: Types.TString, references: Types.TSchema[]): any {
+function TSymbol(schema: Types.TString, references: Types.TSchema[]): any {
   if (ValueGuard.HasPropertyKey(schema, 'default')) {
     return schema.default
   } else if ('value' in schema) {
-    return globalThis.Symbol.for(schema.value)
+    return Symbol.for(schema.value)
   } else {
-    return globalThis.Symbol()
+    return Symbol()
   }
 }
-function TemplateLiteral(schema: Types.TTemplateLiteral, references: Types.TSchema[]) {
+function TTemplateLiteral(schema: Types.TTemplateLiteral, references: Types.TSchema[]) {
   if (ValueGuard.HasPropertyKey(schema, 'default')) {
     return schema.default
   }
@@ -299,7 +299,7 @@ function TemplateLiteral(schema: Types.TTemplateLiteral, references: Types.TSche
   const sequence = Types.TemplateLiteralGenerator.Generate(expression)
   return sequence.next().value
 }
-function This(schema: Types.TThis, references: Types.TSchema[]): any {
+function TThis(schema: Types.TThis, references: Types.TSchema[]): any {
   if (recursiveDepth++ > recursiveMaxDepth) throw new ValueCreateRecursiveInstantiationError(schema, recursiveMaxDepth)
   if (ValueGuard.HasPropertyKey(schema, 'default')) {
     return schema.default
@@ -310,24 +310,24 @@ function This(schema: Types.TThis, references: Types.TSchema[]): any {
     return Visit(target, references)
   }
 }
-function Tuple(schema: Types.TTuple<any[]>, references: Types.TSchema[]): any {
+function TTuple(schema: Types.TTuple<any[]>, references: Types.TSchema[]): any {
   if (ValueGuard.HasPropertyKey(schema, 'default')) {
     return schema.default
   }
   if (schema.items === undefined) {
     return []
   } else {
-    return globalThis.Array.from({ length: schema.minItems }).map((_, index) => Visit((schema.items as any[])[index], references))
+    return Array.from({ length: schema.minItems }).map((_, index) => Visit((schema.items as any[])[index], references))
   }
 }
-function Undefined(schema: Types.TUndefined, references: Types.TSchema[]): any {
+function TUndefined(schema: Types.TUndefined, references: Types.TSchema[]): any {
   if (ValueGuard.HasPropertyKey(schema, 'default')) {
     return schema.default
   } else {
     return undefined
   }
 }
-function Union(schema: Types.TUnion<any[]>, references: Types.TSchema[]): any {
+function TUnion(schema: Types.TUnion<any[]>, references: Types.TSchema[]): any {
   if (ValueGuard.HasPropertyKey(schema, 'default')) {
     return schema.default
   } else if (schema.anyOf.length === 0) {
@@ -336,30 +336,30 @@ function Union(schema: Types.TUnion<any[]>, references: Types.TSchema[]): any {
     return Visit(schema.anyOf[0], references)
   }
 }
-function Uint8Array(schema: Types.TUint8Array, references: Types.TSchema[]): any {
+function TUint8Array(schema: Types.TUint8Array, references: Types.TSchema[]): any {
   if (ValueGuard.HasPropertyKey(schema, 'default')) {
     return schema.default
   } else if (schema.minByteLength !== undefined) {
-    return new globalThis.Uint8Array(schema.minByteLength)
+    return new Uint8Array(schema.minByteLength)
   } else {
-    return new globalThis.Uint8Array(0)
+    return new Uint8Array(0)
   }
 }
-function Unknown(schema: Types.TUnknown, references: Types.TSchema[]): any {
+function TUnknown(schema: Types.TUnknown, references: Types.TSchema[]): any {
   if (ValueGuard.HasPropertyKey(schema, 'default')) {
     return schema.default
   } else {
     return {}
   }
 }
-function Void(schema: Types.TVoid, references: Types.TSchema[]): any {
+function TVoid(schema: Types.TVoid, references: Types.TSchema[]): any {
   if (ValueGuard.HasPropertyKey(schema, 'default')) {
     return schema.default
   } else {
     return void 0
   }
 }
-function UserDefined(schema: Types.TSchema, references: Types.TSchema[]): any {
+function TUserDefined(schema: Types.TSchema, references: Types.TSchema[]): any {
   if (ValueGuard.HasPropertyKey(schema, 'default')) {
     return schema.default
   } else {
@@ -372,68 +372,68 @@ export function Visit(schema: Types.TSchema, references: Types.TSchema[]): unkno
   const schema_ = schema as any
   switch (schema_[Types.Kind]) {
     case 'Any':
-      return Any(schema_, references_)
+      return TAny(schema_, references_)
     case 'Array':
-      return Array(schema_, references_)
+      return TArray(schema_, references_)
     case 'AsyncIterator':
-      return AsyncIterator(schema_, references_)
+      return TAsyncIterator(schema_, references_)
     case 'BigInt':
-      return BigInt(schema_, references_)
+      return TBigInt(schema_, references_)
     case 'Boolean':
-      return Boolean(schema_, references_)
+      return TBoolean(schema_, references_)
     case 'Constructor':
-      return Constructor(schema_, references_)
+      return TConstructor(schema_, references_)
     case 'Date':
-      return Date(schema_, references_)
+      return TDate(schema_, references_)
     case 'Function':
-      return Function(schema_, references_)
+      return TFunction(schema_, references_)
     case 'Integer':
-      return Integer(schema_, references_)
+      return TInteger(schema_, references_)
     case 'Intersect':
-      return Intersect(schema_, references_)
+      return TIntersect(schema_, references_)
     case 'Iterator':
-      return Iterator(schema_, references_)
+      return TIterator(schema_, references_)
     case 'Literal':
-      return Literal(schema_, references_)
+      return TLiteral(schema_, references_)
     case 'Never':
-      return Never(schema_, references_)
+      return TNever(schema_, references_)
     case 'Not':
-      return Not(schema_, references_)
+      return TNot(schema_, references_)
     case 'Null':
-      return Null(schema_, references_)
+      return TNull(schema_, references_)
     case 'Number':
-      return Number(schema_, references_)
+      return TNumber(schema_, references_)
     case 'Object':
-      return Object(schema_, references_)
+      return TObject(schema_, references_)
     case 'Promise':
-      return Promise(schema_, references_)
+      return TPromise(schema_, references_)
     case 'Record':
-      return Record(schema_, references_)
+      return TRecord(schema_, references_)
     case 'Ref':
-      return Ref(schema_, references_)
+      return TRef(schema_, references_)
     case 'String':
-      return String(schema_, references_)
+      return TString(schema_, references_)
     case 'Symbol':
-      return Symbol(schema_, references_)
+      return TSymbol(schema_, references_)
     case 'TemplateLiteral':
-      return TemplateLiteral(schema_, references_)
+      return TTemplateLiteral(schema_, references_)
     case 'This':
-      return This(schema_, references_)
+      return TThis(schema_, references_)
     case 'Tuple':
-      return Tuple(schema_, references_)
+      return TTuple(schema_, references_)
     case 'Undefined':
-      return Undefined(schema_, references_)
+      return TUndefined(schema_, references_)
     case 'Union':
-      return Union(schema_, references_)
+      return TUnion(schema_, references_)
     case 'Uint8Array':
-      return Uint8Array(schema_, references_)
+      return TUint8Array(schema_, references_)
     case 'Unknown':
-      return Unknown(schema_, references_)
+      return TUnknown(schema_, references_)
     case 'Void':
-      return Void(schema_, references_)
+      return TVoid(schema_, references_)
     default:
       if (!Types.TypeRegistry.Has(schema_[Types.Kind])) throw new ValueCreateUnknownTypeError(schema_)
-      return UserDefined(schema_, references_)
+      return TUserDefined(schema_, references_)
   }
 }
 // --------------------------------------------------------------------------

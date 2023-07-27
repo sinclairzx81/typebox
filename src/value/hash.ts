@@ -55,84 +55,84 @@ export enum ByteMarker {
 // --------------------------------------------------------------------------
 // State
 // --------------------------------------------------------------------------
-let Accumulator = globalThis.BigInt('14695981039346656037')
-const [Prime, Size] = [globalThis.BigInt('1099511628211'), globalThis.BigInt('2') ** globalThis.BigInt('64')]
-const Bytes = globalThis.Array.from({ length: 256 }).map((_, i) => globalThis.BigInt(i))
-const F64 = new globalThis.Float64Array(1)
-const F64In = new globalThis.DataView(F64.buffer)
-const F64Out = new globalThis.Uint8Array(F64.buffer)
+let Accumulator = BigInt('14695981039346656037')
+const [Prime, Size] = [BigInt('1099511628211'), BigInt('2') ** BigInt('64')]
+const Bytes = Array.from({ length: 256 }).map((_, i) => BigInt(i))
+const F64 = new Float64Array(1)
+const F64In = new DataView(F64.buffer)
+const F64Out = new Uint8Array(F64.buffer)
 // --------------------------------------------------------------------------
 // Hashing Functions
 // --------------------------------------------------------------------------
-function Array(value: Array<unknown>) {
+function ArrayType(value: Array<unknown>) {
   FNV1A64(ByteMarker.Array)
   for (const item of value) {
     Visit(item)
   }
 }
-function Boolean(value: boolean) {
+function BooleanType(value: boolean) {
   FNV1A64(ByteMarker.Boolean)
   FNV1A64(value ? 1 : 0)
 }
-function BigInt(value: bigint) {
+function BigIntType(value: bigint) {
   FNV1A64(ByteMarker.BigInt)
   F64In.setBigInt64(0, value)
   for (const byte of F64Out) {
     FNV1A64(byte)
   }
 }
-function Date(value: Date) {
+function DateType(value: Date) {
   FNV1A64(ByteMarker.Date)
   Visit(value.getTime())
 }
-function Null(value: null) {
+function NullType(value: null) {
   FNV1A64(ByteMarker.Null)
 }
-function Number(value: number) {
+function NumberType(value: number) {
   FNV1A64(ByteMarker.Number)
   F64In.setFloat64(0, value)
   for (const byte of F64Out) {
     FNV1A64(byte)
   }
 }
-function Object(value: Record<string, unknown>) {
+function ObjectType(value: Record<string, unknown>) {
   FNV1A64(ByteMarker.Object)
   for (const key of globalThis.Object.keys(value).sort()) {
     Visit(key)
     Visit(value[key])
   }
 }
-function String(value: string) {
+function StringType(value: string) {
   FNV1A64(ByteMarker.String)
   for (let i = 0; i < value.length; i++) {
     FNV1A64(value.charCodeAt(i))
   }
 }
-function Symbol(value: symbol) {
+function SymbolType(value: symbol) {
   FNV1A64(ByteMarker.Symbol)
   Visit(value.description)
 }
-function Uint8Array(value: Uint8Array) {
+function Uint8ArrayType(value: Uint8Array) {
   FNV1A64(ByteMarker.Uint8Array)
   for (let i = 0; i < value.length; i++) {
     FNV1A64(value[i])
   }
 }
-function Undefined(value: undefined) {
+function UndefinedType(value: undefined) {
   return FNV1A64(ByteMarker.Undefined)
 }
 function Visit(value: any) {
-  if (ValueGuard.IsArray(value)) return Array(value)
-  if (ValueGuard.IsBoolean(value)) return Boolean(value)
-  if (ValueGuard.IsBigInt(value)) return BigInt(value)
-  if (ValueGuard.IsDate(value)) return Date(value)
-  if (ValueGuard.IsNull(value)) return Null(value)
-  if (ValueGuard.IsNumber(value)) return Number(value)
-  if (ValueGuard.IsPlainObject(value)) return Object(value)
-  if (ValueGuard.IsString(value)) return String(value)
-  if (ValueGuard.IsSymbol(value)) return Symbol(value)
-  if (ValueGuard.IsUint8Array(value)) return Uint8Array(value)
-  if (ValueGuard.IsUndefined(value)) return Undefined(value)
+  if (ValueGuard.IsArray(value)) return ArrayType(value)
+  if (ValueGuard.IsBoolean(value)) return BooleanType(value)
+  if (ValueGuard.IsBigInt(value)) return BigIntType(value)
+  if (ValueGuard.IsDate(value)) return DateType(value)
+  if (ValueGuard.IsNull(value)) return NullType(value)
+  if (ValueGuard.IsNumber(value)) return NumberType(value)
+  if (ValueGuard.IsPlainObject(value)) return ObjectType(value)
+  if (ValueGuard.IsString(value)) return StringType(value)
+  if (ValueGuard.IsSymbol(value)) return SymbolType(value)
+  if (ValueGuard.IsUint8Array(value)) return Uint8ArrayType(value)
+  if (ValueGuard.IsUndefined(value)) return UndefinedType(value)
   throw new ValueHashError(value)
 }
 function FNV1A64(byte: number) {
@@ -144,7 +144,7 @@ function FNV1A64(byte: number) {
 // --------------------------------------------------------------------------
 /** Creates a FNV1A-64 non cryptographic hash of the given value */
 export function Hash(value: unknown) {
-  Accumulator = globalThis.BigInt('14695981039346656037')
+  Accumulator = BigInt('14695981039346656037')
   Visit(value)
   return Accumulator
 }

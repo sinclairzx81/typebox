@@ -67,11 +67,11 @@ function IsObject(value: unknown): value is Record<keyof any, unknown> {
   return TypeSystem.AllowArrayObjects ? isObject : isObject && !ValueGuard.IsArray(value)
 }
 function IsRecordObject(value: unknown): value is Record<keyof any, unknown> {
-  return IsObject(value) && !(value instanceof globalThis.Date) && !(value instanceof globalThis.Uint8Array)
+  return IsObject(value) && !(value instanceof Date) && !(value instanceof Uint8Array)
 }
 function IsNumber(value: unknown): value is number {
   const isNumber = ValueGuard.IsNumber(value)
-  return TypeSystem.AllowNaN ? isNumber : isNumber && globalThis.Number.isFinite(value)
+  return TypeSystem.AllowNaN ? isNumber : isNumber && Number.isFinite(value)
 }
 function IsVoid(value: unknown): value is void {
   const isUndefined = ValueGuard.IsUndefined(value)
@@ -80,11 +80,11 @@ function IsVoid(value: unknown): value is void {
 // --------------------------------------------------------------------------
 // Types
 // --------------------------------------------------------------------------
-function Any(schema: Types.TAny, references: Types.TSchema[], value: any): boolean {
+function TAny(schema: Types.TAny, references: Types.TSchema[], value: any): boolean {
   return true
 }
-function Array(schema: Types.TArray, references: Types.TSchema[], value: any): boolean {
-  if (!globalThis.Array.isArray(value)) {
+function TArray(schema: Types.TArray, references: Types.TSchema[], value: any): boolean {
+  if (!Array.isArray(value)) {
     return false
   }
   if (IsDefined<number>(schema.minItems) && !(value.length >= schema.minItems)) {
@@ -117,14 +117,14 @@ function Array(schema: Types.TArray, references: Types.TSchema[], value: any): b
   }
   return true
 }
-function AsyncIterator(schema: Types.TAsyncIterator, references: Types.TSchema[], value: any): boolean {
-  return IsObject(value) && globalThis.Symbol.asyncIterator in value
+function TAsyncIterator(schema: Types.TAsyncIterator, references: Types.TSchema[], value: any): boolean {
+  return IsObject(value) && Symbol.asyncIterator in value
 }
-function BigInt(schema: Types.TBigInt, references: Types.TSchema[], value: any): boolean {
+function TBigInt(schema: Types.TBigInt, references: Types.TSchema[], value: any): boolean {
   if (!ValueGuard.IsBigInt(value)) {
     return false
   }
-  if (IsDefined<bigint>(schema.multipleOf) && !(value % schema.multipleOf === globalThis.BigInt(0))) {
+  if (IsDefined<bigint>(schema.multipleOf) && !(value % schema.multipleOf === BigInt(0))) {
     return false
   }
   if (IsDefined<bigint>(schema.exclusiveMinimum) && !(value > schema.exclusiveMinimum)) {
@@ -141,14 +141,14 @@ function BigInt(schema: Types.TBigInt, references: Types.TSchema[], value: any):
   }
   return true
 }
-function Boolean(schema: Types.TBoolean, references: Types.TSchema[], value: any): boolean {
+function TBoolean(schema: Types.TBoolean, references: Types.TSchema[], value: any): boolean {
   return typeof value === 'boolean'
 }
-function Constructor(schema: Types.TConstructor, references: Types.TSchema[], value: any): boolean {
+function TConstructor(schema: Types.TConstructor, references: Types.TSchema[], value: any): boolean {
   return Visit(schema.returns, references, value.prototype)
 }
-function Date(schema: Types.TDate, references: Types.TSchema[], value: any): boolean {
-  if (!(value instanceof globalThis.Date)) {
+function TDate(schema: Types.TDate, references: Types.TSchema[], value: any): boolean {
+  if (!(value instanceof Date)) {
     return false
   }
   if (!IsNumber(value.getTime())) {
@@ -168,10 +168,10 @@ function Date(schema: Types.TDate, references: Types.TSchema[], value: any): boo
   }
   return true
 }
-function Function(schema: Types.TFunction, references: Types.TSchema[], value: any): boolean {
+function TFunction(schema: Types.TFunction, references: Types.TSchema[], value: any): boolean {
   return typeof value === 'function'
 }
-function Integer(schema: Types.TInteger, references: Types.TSchema[], value: any): boolean {
+function TInteger(schema: Types.TInteger, references: Types.TSchema[], value: any): boolean {
   if (!ValueGuard.IsInteger(value)) {
     return false
   }
@@ -192,36 +192,36 @@ function Integer(schema: Types.TInteger, references: Types.TSchema[], value: any
   }
   return true
 }
-function Intersect(schema: Types.TIntersect, references: Types.TSchema[], value: any): boolean {
+function TIntersect(schema: Types.TIntersect, references: Types.TSchema[], value: any): boolean {
   const check1 = schema.allOf.every((schema) => Visit(schema, references, value))
   if (schema.unevaluatedProperties === false) {
     const keyPattern = new RegExp(Types.KeyResolver.ResolvePattern(schema))
-    const check2 = globalThis.Object.getOwnPropertyNames(value).every((key) => keyPattern.test(key))
+    const check2 = Object.getOwnPropertyNames(value).every((key) => keyPattern.test(key))
     return check1 && check2
   } else if (Types.TypeGuard.TSchema(schema.unevaluatedProperties)) {
     const keyCheck = new RegExp(Types.KeyResolver.ResolvePattern(schema))
-    const check2 = globalThis.Object.getOwnPropertyNames(value).every((key) => keyCheck.test(key) || Visit(schema.unevaluatedProperties as Types.TSchema, references, value[key]))
+    const check2 = Object.getOwnPropertyNames(value).every((key) => keyCheck.test(key) || Visit(schema.unevaluatedProperties as Types.TSchema, references, value[key]))
     return check1 && check2
   } else {
     return check1
   }
 }
-function Iterator(schema: Types.TIterator, references: Types.TSchema[], value: any): boolean {
-  return IsObject(value) && globalThis.Symbol.iterator in value
+function TIterator(schema: Types.TIterator, references: Types.TSchema[], value: any): boolean {
+  return IsObject(value) && Symbol.iterator in value
 }
-function Literal(schema: Types.TLiteral, references: Types.TSchema[], value: any): boolean {
+function TLiteral(schema: Types.TLiteral, references: Types.TSchema[], value: any): boolean {
   return value === schema.const
 }
-function Never(schema: Types.TNever, references: Types.TSchema[], value: any): boolean {
+function TNever(schema: Types.TNever, references: Types.TSchema[], value: any): boolean {
   return false
 }
-function Not(schema: Types.TNot, references: Types.TSchema[], value: any): boolean {
+function TNot(schema: Types.TNot, references: Types.TSchema[], value: any): boolean {
   return !Visit(schema.not, references, value)
 }
-function Null(schema: Types.TNull, references: Types.TSchema[], value: any): boolean {
+function TNull(schema: Types.TNull, references: Types.TSchema[], value: any): boolean {
   return value === null
 }
-function Number(schema: Types.TNumber, references: Types.TSchema[], value: any): boolean {
+function TNumber(schema: Types.TNumber, references: Types.TSchema[], value: any): boolean {
   if (!IsNumber(value)) {
     return false
   }
@@ -242,17 +242,17 @@ function Number(schema: Types.TNumber, references: Types.TSchema[], value: any):
   }
   return true
 }
-function Object(schema: Types.TObject, references: Types.TSchema[], value: any): boolean {
+function TObject(schema: Types.TObject, references: Types.TSchema[], value: any): boolean {
   if (!IsObject(value)) {
     return false
   }
-  if (IsDefined<number>(schema.minProperties) && !(globalThis.Object.getOwnPropertyNames(value).length >= schema.minProperties)) {
+  if (IsDefined<number>(schema.minProperties) && !(Object.getOwnPropertyNames(value).length >= schema.minProperties)) {
     return false
   }
-  if (IsDefined<number>(schema.maxProperties) && !(globalThis.Object.getOwnPropertyNames(value).length <= schema.maxProperties)) {
+  if (IsDefined<number>(schema.maxProperties) && !(Object.getOwnPropertyNames(value).length <= schema.maxProperties)) {
     return false
   }
-  const knownKeys = globalThis.Object.getOwnPropertyNames(schema.properties)
+  const knownKeys = Object.getOwnPropertyNames(schema.properties)
   for (const knownKey of knownKeys) {
     const property = schema.properties[knownKey]
     if (schema.required && schema.required.includes(knownKey)) {
@@ -269,7 +269,7 @@ function Object(schema: Types.TObject, references: Types.TSchema[], value: any):
     }
   }
   if (schema.additionalProperties === false) {
-    const valueKeys = globalThis.Object.getOwnPropertyNames(value)
+    const valueKeys = Object.getOwnPropertyNames(value)
     // optimization: value is valid if schemaKey length matches the valueKey length
     if (schema.required && schema.required.length === knownKeys.length && valueKeys.length === knownKeys.length) {
       return true
@@ -277,28 +277,28 @@ function Object(schema: Types.TObject, references: Types.TSchema[], value: any):
       return valueKeys.every((valueKey) => knownKeys.includes(valueKey))
     }
   } else if (typeof schema.additionalProperties === 'object') {
-    const valueKeys = globalThis.Object.getOwnPropertyNames(value)
+    const valueKeys = Object.getOwnPropertyNames(value)
     return valueKeys.every((key) => knownKeys.includes(key) || Visit(schema.additionalProperties as Types.TSchema, references, value[key]))
   } else {
     return true
   }
 }
-function Promise(schema: Types.TPromise<any>, references: Types.TSchema[], value: any): boolean {
+function TPromise(schema: Types.TPromise<any>, references: Types.TSchema[], value: any): boolean {
   return typeof value === 'object' && typeof value.then === 'function'
 }
-function Record(schema: Types.TRecord<any, any>, references: Types.TSchema[], value: any): boolean {
+function TRecord(schema: Types.TRecord<any, any>, references: Types.TSchema[], value: any): boolean {
   if (!IsRecordObject(value)) {
     return false
   }
-  if (IsDefined<number>(schema.minProperties) && !(globalThis.Object.getOwnPropertyNames(value).length >= schema.minProperties)) {
+  if (IsDefined<number>(schema.minProperties) && !(Object.getOwnPropertyNames(value).length >= schema.minProperties)) {
     return false
   }
-  if (IsDefined<number>(schema.maxProperties) && !(globalThis.Object.getOwnPropertyNames(value).length <= schema.maxProperties)) {
+  if (IsDefined<number>(schema.maxProperties) && !(Object.getOwnPropertyNames(value).length <= schema.maxProperties)) {
     return false
   }
-  const [patternKey, patternSchema] = globalThis.Object.entries(schema.patternProperties)[0]
+  const [patternKey, patternSchema] = Object.entries(schema.patternProperties)[0]
   const regex = new RegExp(patternKey)
-  return globalThis.Object.entries(value).every(([key, value]) => {
+  return Object.entries(value).every(([key, value]) => {
     if (regex.test(key)) {
       return Visit(patternSchema, references, value)
     }
@@ -311,13 +311,13 @@ function Record(schema: Types.TRecord<any, any>, references: Types.TSchema[], va
     return true
   })
 }
-function Ref(schema: Types.TRef<any>, references: Types.TSchema[], value: any): boolean {
+function TRef(schema: Types.TRef<any>, references: Types.TSchema[], value: any): boolean {
   const index = references.findIndex((foreign) => foreign.$id === schema.$ref)
   if (index === -1) throw new ValueCheckDereferenceError(schema)
   const target = references[index]
   return Visit(target, references, value)
 }
-function String(schema: Types.TString, references: Types.TSchema[], value: any): boolean {
+function TString(schema: Types.TString, references: Types.TSchema[], value: any): boolean {
   if (!ValueGuard.IsString(value)) {
     return false
   }
@@ -338,26 +338,26 @@ function String(schema: Types.TString, references: Types.TSchema[], value: any):
   }
   return true
 }
-function Symbol(schema: Types.TSymbol, references: Types.TSchema[], value: any): boolean {
+function TSymbol(schema: Types.TSymbol, references: Types.TSchema[], value: any): boolean {
   if (!(typeof value === 'symbol')) {
     return false
   }
   return true
 }
-function TemplateLiteral(schema: Types.TTemplateLiteralKind, references: Types.TSchema[], value: any): boolean {
+function TTemplateLiteral(schema: Types.TTemplateLiteralKind, references: Types.TSchema[], value: any): boolean {
   if (!ValueGuard.IsString(value)) {
     return false
   }
   return new RegExp(schema.pattern).test(value)
 }
-function This(schema: Types.TThis, references: Types.TSchema[], value: any): boolean {
+function TThis(schema: Types.TThis, references: Types.TSchema[], value: any): boolean {
   const index = references.findIndex((foreign) => foreign.$id === schema.$ref)
   if (index === -1) throw new ValueCheckDereferenceError(schema)
   const target = references[index]
   return Visit(target, references, value)
 }
-function Tuple(schema: Types.TTuple<any[]>, references: Types.TSchema[], value: any): boolean {
-  if (!globalThis.Array.isArray(value)) {
+function TTuple(schema: Types.TTuple<any[]>, references: Types.TSchema[], value: any): boolean {
+  if (!ValueGuard.IsArray(value)) {
     return false
   }
   if (schema.items === undefined && !(value.length === 0)) {
@@ -374,14 +374,14 @@ function Tuple(schema: Types.TTuple<any[]>, references: Types.TSchema[], value: 
   }
   return true
 }
-function Undefined(schema: Types.TUndefined, references: Types.TSchema[], value: any): boolean {
+function TUndefined(schema: Types.TUndefined, references: Types.TSchema[], value: any): boolean {
   return value === undefined
 }
-function Union(schema: Types.TUnion<any[]>, references: Types.TSchema[], value: any): boolean {
+function TUnion(schema: Types.TUnion<any[]>, references: Types.TSchema[], value: any): boolean {
   return schema.anyOf.some((inner) => Visit(inner, references, value))
 }
-function Uint8Array(schema: Types.TUint8Array, references: Types.TSchema[], value: any): boolean {
-  if (!(value instanceof globalThis.Uint8Array)) {
+function TUint8Array(schema: Types.TUint8Array, references: Types.TSchema[], value: any): boolean {
+  if (!(value instanceof Uint8Array)) {
     return false
   }
   if (IsDefined<number>(schema.maxByteLength) && !(value.length <= schema.maxByteLength)) {
@@ -392,13 +392,13 @@ function Uint8Array(schema: Types.TUint8Array, references: Types.TSchema[], valu
   }
   return true
 }
-function Unknown(schema: Types.TUnknown, references: Types.TSchema[], value: any): boolean {
+function TUnknown(schema: Types.TUnknown, references: Types.TSchema[], value: any): boolean {
   return true
 }
-function Void(schema: Types.TVoid, references: Types.TSchema[], value: any): boolean {
+function TVoid(schema: Types.TVoid, references: Types.TSchema[], value: any): boolean {
   return IsVoid(value)
 }
-function UserDefined(schema: Types.TSchema, references: Types.TSchema[], value: unknown): boolean {
+function TUserDefined(schema: Types.TSchema, references: Types.TSchema[], value: unknown): boolean {
   if (!Types.TypeRegistry.Has(schema[Types.Kind])) return false
   const func = Types.TypeRegistry.Get(schema[Types.Kind])!
   return func(schema, value)
@@ -408,68 +408,68 @@ function Visit<T extends Types.TSchema>(schema: T, references: Types.TSchema[], 
   const schema_ = schema as any
   switch (schema_[Types.Kind]) {
     case 'Any':
-      return Any(schema_, references_, value)
+      return TAny(schema_, references_, value)
     case 'Array':
-      return Array(schema_, references_, value)
+      return TArray(schema_, references_, value)
     case 'AsyncIterator':
-      return AsyncIterator(schema_, references_, value)
+      return TAsyncIterator(schema_, references_, value)
     case 'BigInt':
-      return BigInt(schema_, references_, value)
+      return TBigInt(schema_, references_, value)
     case 'Boolean':
-      return Boolean(schema_, references_, value)
+      return TBoolean(schema_, references_, value)
     case 'Constructor':
-      return Constructor(schema_, references_, value)
+      return TConstructor(schema_, references_, value)
     case 'Date':
-      return Date(schema_, references_, value)
+      return TDate(schema_, references_, value)
     case 'Function':
-      return Function(schema_, references_, value)
+      return TFunction(schema_, references_, value)
     case 'Integer':
-      return Integer(schema_, references_, value)
+      return TInteger(schema_, references_, value)
     case 'Intersect':
-      return Intersect(schema_, references_, value)
+      return TIntersect(schema_, references_, value)
     case 'Iterator':
-      return Iterator(schema_, references_, value)
+      return TIterator(schema_, references_, value)
     case 'Literal':
-      return Literal(schema_, references_, value)
+      return TLiteral(schema_, references_, value)
     case 'Never':
-      return Never(schema_, references_, value)
+      return TNever(schema_, references_, value)
     case 'Not':
-      return Not(schema_, references_, value)
+      return TNot(schema_, references_, value)
     case 'Null':
-      return Null(schema_, references_, value)
+      return TNull(schema_, references_, value)
     case 'Number':
-      return Number(schema_, references_, value)
+      return TNumber(schema_, references_, value)
     case 'Object':
-      return Object(schema_, references_, value)
+      return TObject(schema_, references_, value)
     case 'Promise':
-      return Promise(schema_, references_, value)
+      return TPromise(schema_, references_, value)
     case 'Record':
-      return Record(schema_, references_, value)
+      return TRecord(schema_, references_, value)
     case 'Ref':
-      return Ref(schema_, references_, value)
+      return TRef(schema_, references_, value)
     case 'String':
-      return String(schema_, references_, value)
+      return TString(schema_, references_, value)
     case 'Symbol':
-      return Symbol(schema_, references_, value)
+      return TSymbol(schema_, references_, value)
     case 'TemplateLiteral':
-      return TemplateLiteral(schema_, references_, value)
+      return TTemplateLiteral(schema_, references_, value)
     case 'This':
-      return This(schema_, references_, value)
+      return TThis(schema_, references_, value)
     case 'Tuple':
-      return Tuple(schema_, references_, value)
+      return TTuple(schema_, references_, value)
     case 'Undefined':
-      return Undefined(schema_, references_, value)
+      return TUndefined(schema_, references_, value)
     case 'Union':
-      return Union(schema_, references_, value)
+      return TUnion(schema_, references_, value)
     case 'Uint8Array':
-      return Uint8Array(schema_, references_, value)
+      return TUint8Array(schema_, references_, value)
     case 'Unknown':
-      return Unknown(schema_, references_, value)
+      return TUnknown(schema_, references_, value)
     case 'Void':
-      return Void(schema_, references_, value)
+      return TVoid(schema_, references_, value)
     default:
       if (!Types.TypeRegistry.Has(schema_[Types.Kind])) throw new ValueCheckUnknownTypeError(schema_)
-      return UserDefined(schema_, references_, value)
+      return TUserDefined(schema_, references_, value)
   }
 }
 // --------------------------------------------------------------------------

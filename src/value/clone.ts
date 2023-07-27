@@ -31,35 +31,35 @@ import * as ValueGuard from './guard'
 // --------------------------------------------------------------------------
 // Clonable
 // --------------------------------------------------------------------------
-function Array(value: ValueGuard.ArrayType): any {
-  return value.map((element: any) => Clone(element))
-}
-function Date(value: Date): any {
-  return new globalThis.Date(value.toISOString())
-}
-function Object(value: ValueGuard.ObjectType): any {
-  const keys = [...globalThis.Object.getOwnPropertyNames(value), ...globalThis.Object.getOwnPropertySymbols(value)]
+function ObjectType(value: ValueGuard.ObjectType): any {
+  const keys = [...Object.getOwnPropertyNames(value), ...Object.getOwnPropertySymbols(value)]
   return keys.reduce((acc, key) => ({ ...acc, [key]: Clone(value[key]) }), {})
 }
-function TypedArray(value: ValueGuard.TypedArrayType): any {
+function ArrayType(value: ValueGuard.ArrayType): any {
+  return value.map((element: any) => Clone(element))
+}
+function TypedArrayType(value: ValueGuard.TypedArrayType): any {
   return value.slice()
 }
-function Value(value: ValueGuard.ValueType): any {
+function DateType(value: Date): any {
+  return new Date(value.toISOString())
+}
+function ValueType(value: ValueGuard.ValueType): any {
   return value
 }
 // --------------------------------------------------------------------------
 // Non-Clonable
 // --------------------------------------------------------------------------
-function AsyncIterator(value: AsyncIterableIterator<unknown>): any {
+function AsyncIteratorType(value: AsyncIterableIterator<unknown>): any {
   return value
 }
-function Iterator(value: IterableIterator<unknown>): any {
+function IteratorType(value: IterableIterator<unknown>): any {
   return value
 }
-function Function(value: Function): any {
+function FunctionType(value: Function): any {
   return value
 }
-function Promise(value: Promise<unknown>): any {
+function PromiseType(value: Promise<unknown>): any {
   return value
 }
 // --------------------------------------------------------------------------
@@ -67,14 +67,14 @@ function Promise(value: Promise<unknown>): any {
 // --------------------------------------------------------------------------
 /** Returns a clone of the given value */
 export function Clone<T extends unknown>(value: T): T {
-  if (ValueGuard.IsArray(value)) return Array(value)
-  if (ValueGuard.IsAsyncIterator(value)) return AsyncIterator(value)
-  if (ValueGuard.IsFunction(value)) return Function(value)
-  if (ValueGuard.IsIterator(value)) return Iterator(value)
-  if (ValueGuard.IsPromise(value)) return Promise(value)
-  if (ValueGuard.IsDate(value)) return Date(value)
-  if (ValueGuard.IsPlainObject(value)) return Object(value)
-  if (ValueGuard.IsTypedArray(value)) return TypedArray(value)
-  if (ValueGuard.IsValueType(value)) return Value(value)
+  if (ValueGuard.IsArray(value)) return ArrayType(value)
+  if (ValueGuard.IsAsyncIterator(value)) return AsyncIteratorType(value)
+  if (ValueGuard.IsFunction(value)) return FunctionType(value)
+  if (ValueGuard.IsIterator(value)) return IteratorType(value)
+  if (ValueGuard.IsPromise(value)) return PromiseType(value)
+  if (ValueGuard.IsDate(value)) return DateType(value)
+  if (ValueGuard.IsPlainObject(value)) return ObjectType(value)
+  if (ValueGuard.IsTypedArray(value)) return TypedArrayType(value)
+  if (ValueGuard.IsValueType(value)) return ValueType(value)
   throw new Error('ValueClone: Unable to clone value')
 }

@@ -81,13 +81,13 @@ function CreateDelete(path: string): Edit {
 // --------------------------------------------------------------------------
 // Diffing Generators
 // --------------------------------------------------------------------------
-function* Object(path: string, current: ValueGuard.ObjectType, next: unknown): IterableIterator<Edit> {
+function* ObjectType(path: string, current: ValueGuard.ObjectType, next: unknown): IterableIterator<Edit> {
   if (!ValueGuard.IsPlainObject(next)) return yield CreateUpdate(path, next)
-  const currentKeys = [...globalThis.Object.keys(current), ...globalThis.Object.getOwnPropertySymbols(current)]
-  const nextKeys = [...globalThis.Object.keys(next), ...globalThis.Object.getOwnPropertySymbols(next)]
+  const currentKeys = [...Object.keys(current), ...Object.getOwnPropertySymbols(current)]
+  const nextKeys = [...Object.keys(next), ...Object.getOwnPropertySymbols(next)]
   for (const key of currentKeys) {
     if (ValueGuard.IsSymbol(key)) throw new ValueDeltaObjectWithSymbolKeyError(key)
-    if (ValueGuard.IsUndefined(next[key]) && nextKeys.includes(key)) yield CreateUpdate(`${path}/${globalThis.String(key)}`, undefined)
+    if (ValueGuard.IsUndefined(next[key]) && nextKeys.includes(key)) yield CreateUpdate(`${path}/${String(key)}`, undefined)
   }
   for (const key of nextKeys) {
     if (ValueGuard.IsUndefined(current[key]) || ValueGuard.IsUndefined(next[key])) continue
@@ -96,14 +96,14 @@ function* Object(path: string, current: ValueGuard.ObjectType, next: unknown): I
   }
   for (const key of nextKeys) {
     if (ValueGuard.IsSymbol(key)) throw new ValueDeltaObjectWithSymbolKeyError(key)
-    if (ValueGuard.IsUndefined(current[key])) yield CreateInsert(`${path}/${globalThis.String(key)}`, next[key])
+    if (ValueGuard.IsUndefined(current[key])) yield CreateInsert(`${path}/${String(key)}`, next[key])
   }
   for (const key of currentKeys.reverse()) {
     if (ValueGuard.IsSymbol(key)) throw new ValueDeltaObjectWithSymbolKeyError(key)
-    if (ValueGuard.IsUndefined(next[key]) && !nextKeys.includes(key)) yield CreateDelete(`${path}/${globalThis.String(key)}`)
+    if (ValueGuard.IsUndefined(next[key]) && !nextKeys.includes(key)) yield CreateDelete(`${path}/${String(key)}`)
   }
 }
-function* Array(path: string, current: ValueGuard.ArrayType, next: unknown): IterableIterator<Edit> {
+function* ArrayType(path: string, current: ValueGuard.ArrayType, next: unknown): IterableIterator<Edit> {
   if (!ValueGuard.IsArray(next)) return yield CreateUpdate(path, next)
   for (let i = 0; i < Math.min(current.length, next.length); i++) {
     yield* Visit(`${path}/${i}`, current[i], next[i])
@@ -117,8 +117,8 @@ function* Array(path: string, current: ValueGuard.ArrayType, next: unknown): Ite
     yield CreateDelete(`${path}/${i}`)
   }
 }
-function* TypedArray(path: string, current: ValueGuard.TypedArrayType, next: unknown): IterableIterator<Edit> {
-  if (!ValueGuard.IsTypedArray(next) || current.length !== next.length || globalThis.Object.getPrototypeOf(current).constructor.name !== globalThis.Object.getPrototypeOf(next).constructor.name) return yield CreateUpdate(path, next)
+function* TypedArrayType(path: string, current: ValueGuard.TypedArrayType, next: unknown): IterableIterator<Edit> {
+  if (!ValueGuard.IsTypedArray(next) || current.length !== next.length || Object.getPrototypeOf(current).constructor.name !== Object.getPrototypeOf(next).constructor.name) return yield CreateUpdate(path, next)
   for (let i = 0; i < Math.min(current.length, next.length); i++) {
     yield* Visit(`${path}/${i}`, current[i], next[i])
   }
@@ -128,9 +128,9 @@ function* ValueType(path: string, current: ValueGuard.ValueType, next: unknown):
   yield CreateUpdate(path, next)
 }
 function* Visit(path: string, current: unknown, next: unknown): IterableIterator<Edit> {
-  if (ValueGuard.IsPlainObject(current)) return yield* Object(path, current, next)
-  if (ValueGuard.IsArray(current)) return yield* Array(path, current, next)
-  if (ValueGuard.IsTypedArray(current)) return yield* TypedArray(path, current, next)
+  if (ValueGuard.IsPlainObject(current)) return yield* ObjectType(path, current, next)
+  if (ValueGuard.IsArray(current)) return yield* ArrayType(path, current, next)
+  if (ValueGuard.IsTypedArray(current)) return yield* TypedArrayType(path, current, next)
   if (ValueGuard.IsValueType(current)) return yield* ValueType(path, current, next)
   throw new ValueDeltaUnableToDiffUnknownValue(current)
 }
