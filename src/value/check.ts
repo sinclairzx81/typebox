@@ -398,7 +398,7 @@ function TUnknown(schema: Types.TUnknown, references: Types.TSchema[], value: an
 function TVoid(schema: Types.TVoid, references: Types.TSchema[], value: any): boolean {
   return IsVoid(value)
 }
-function TUserDefined(schema: Types.TSchema, references: Types.TSchema[], value: unknown): boolean {
+function TKind(schema: Types.TSchema, references: Types.TSchema[], value: unknown): boolean {
   if (!Types.TypeRegistry.Has(schema[Types.Kind])) return false
   const func = Types.TypeRegistry.Get(schema[Types.Kind])!
   return func(schema, value)
@@ -469,7 +469,7 @@ function Visit<T extends Types.TSchema>(schema: T, references: Types.TSchema[], 
       return TVoid(schema_, references_, value)
     default:
       if (!Types.TypeRegistry.Has(schema_[Types.Kind])) throw new ValueCheckUnknownTypeError(schema_)
-      return TUserDefined(schema_, references_, value)
+      return TKind(schema_, references_, value)
   }
 }
 // --------------------------------------------------------------------------

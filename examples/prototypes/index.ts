@@ -26,6 +26,6 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export * from './readonly-object'
+export * from './const'
 export * from './union-enum'
 export * from './union-oneof'

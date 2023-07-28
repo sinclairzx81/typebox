@@ -177,7 +177,7 @@ function TThis(schema: Types.TThis, references: Types.TSchema[], value: any, mod
   return Apply(schema, resolved, mode)
 }
 function TTuple(schema: Types.TTuple<any[]>, references: Types.TSchema[], value: any, mode: ValueTransformMode) {
-  if (ValueGuard.IsArray(value)) return value
+  if (!ValueGuard.IsArray(value)) return value
   if (!ValueGuard.IsUndefined(schema.items)) return value
   // prettier-ignore
   return Apply(schema, value.map((value: any, index: any) => {
@@ -205,7 +205,7 @@ function TUnknown(schema: Types.TUnknown, references: Types.TSchema[], value: an
 function TVoid(schema: Types.TVoid, references: Types.TSchema[], value: any, mode: ValueTransformMode) {
   return Apply(schema, value, mode)
 }
-function TUserDefined(schema: Types.TSchema, references: Types.TSchema[], value: any, mode: ValueTransformMode) {
+function TKind(schema: Types.TSchema, references: Types.TSchema[], value: any, mode: ValueTransformMode) {
   return Apply(schema, value, mode)
 }
 export function Visit(schema: Types.TSchema, references: Types.TSchema[], value: any, mode: ValueTransformMode): any {
@@ -268,7 +268,7 @@ export function Visit(schema: Types.TSchema, references: Types.TSchema[], value:
       return TVoid(schema_, references_, value, mode)
     default:
       if (!Types.TypeRegistry.Has(schema_[Types.Kind])) throw new ValueTransformUnknownTypeError(schema_)
-      return TUserDefined(schema_, references_, value, mode)
+      return TKind(schema_, references_, value, mode)
   }
 }
 // --------------------------------------------------------------------------
@@ -316,10 +316,7 @@ export interface TTransform<Input extends Types.TSchema = Types.TSchema, Output 
 // Transform Functions
 // --------------------------------------------------------------------------
 /** Creates a transform type by applying transform codec */
-export function Transform<
-  Input extends Types.TSchema, 
-  Output extends unknown
->(schema: Input, codec: TransformCodec<Input, Output>): TTransform<Input, Output> {
+export function Transform<Input extends Types.TSchema, Output extends unknown>(schema: Input, codec: TransformCodec<Input, Output>): TTransform<Input, Output> {
   if (!HasTransform(schema)) return { ...schema, [TransformSymbol]: codec } as TTransform<Input, Output>
   const mapped_encode = (value: unknown) => codec.encode(schema[TransformSymbol].encode(value) as any)
   const mapped_decode = (value: unknown) => codec.decode(schema[TransformSymbol].decode(value))

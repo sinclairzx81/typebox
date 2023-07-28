@@ -1,15 +1,15 @@
-# Experimental Types
+# Prototype Types
 
-These examples are a set of experiemental candidate types that may introduced into TypeBox in future.
+The following are a set of candidate types that may introduced into TypeBox in future.
 
-## ReadonlyObject
+## Const
 
-Maps an object properties as `readonly`.
+This type will wrap all interior properties as `readonly` leaving the outer type unwrapped.
 
 ```typescript
-import { ReadonlyObject } from './experimental'
+import { Const } from './prototype'
 
-const T = ReadonlyObject(Type.Object({
+const T = Const(Type.Object({
   x: Type.Number()
 }))
 
@@ -22,7 +22,7 @@ type T = Static<typeof T>                           // type T = {
 Creates an `enum` union string schema representation.
 
 ```typescript
-import { UnionEnum } from './experimental'
+import { UnionEnum } from './prototype'
 
 
 const T = UnionEnum(['A', 'B', 'C'])                // const T = {
@@ -38,7 +38,7 @@ Creates a `oneOf` union representation.
 
 
 ```typescript
-import { UnionOneOf } from './experimental'
+import { UnionOneOf } from './prototype'
 
 
 const T = UnionOneOf([                              // const T = {

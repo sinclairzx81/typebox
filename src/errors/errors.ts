@@ -98,7 +98,7 @@ export enum ValueErrorType {
   Uint8ArrayMinByteLength,
   Uint8ArrayMaxByteLength,
   Void,
-  Custom,
+  Kind,
 }
 // --------------------------------------------------------------------------
 // ValueError
@@ -537,10 +537,10 @@ function* TVoid(schema: Types.TVoid, references: Types.TSchema[], path: string, 
     return yield { type: ValueErrorType.Void, schema, path, value, message: `Expected void` }
   }
 }
-function* TUserDefined(schema: Types.TSchema, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
+function* TKind(schema: Types.TSchema, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
   const check = Types.TypeRegistry.Get(schema[Types.Kind])!
   if (!check(schema, value)) {
-    return yield { type: ValueErrorType.Custom, schema, path, value, message: `Expected kind ${schema[Types.Kind]}` }
+    return yield { type: ValueErrorType.Kind, schema, path, value, message: `Expected kind ${schema[Types.Kind]}` }
   }
 }
 function* Visit<T extends Types.TSchema>(schema: T, references: Types.TSchema[], path: string, value: any): IterableIterator<ValueError> {
@@ -609,7 +609,7 @@ function* Visit<T extends Types.TSchema>(schema: T, references: Types.TSchema[],
       return yield* TVoid(schema_, references_, path, value)
     default:
       if (!Types.TypeRegistry.Has(schema_[Types.Kind])) throw new ValueErrorsUnknownTypeError(schema)
-      return yield* TUserDefined(schema_, references_, path, value)
+      return yield* TKind(schema_, references_, path, value)
   }
 }
 /** Returns an iterator for each error in this value. */

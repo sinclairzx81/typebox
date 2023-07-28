@@ -252,7 +252,7 @@ function TUnknown(schema: Types.TUnknown, references: Types.TSchema[], value: an
 function TVoid(schema: Types.TVoid, references: Types.TSchema[], value: any): any {
   return ValueCheck.Check(schema, references, value) ? ValueClone.Clone(value) : ValueCreate.Create(schema, references)
 }
-function TUserDefined(schema: Types.TSchema, references: Types.TSchema[], value: any): any {
+function TKind(schema: Types.TSchema, references: Types.TSchema[], value: any): any {
   return ValueCheck.Check(schema, references, value) ? ValueClone.Clone(value) : ValueCreate.Create(schema, references)
 }
 export function Visit(schema: Types.TSchema, references: Types.TSchema[], value: any): any {
@@ -321,7 +321,7 @@ export function Visit(schema: Types.TSchema, references: Types.TSchema[], value:
       return TVoid(schema_, references_, value)
     default:
       if (!Types.TypeRegistry.Has(schema_[Types.Kind])) throw new ValueCastUnknownTypeError(schema_)
-      return TUserDefined(schema_, references_, value)
+      return TKind(schema_, references_, value)
   }
 }
 // --------------------------------------------------------------------------

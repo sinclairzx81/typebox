@@ -359,11 +359,11 @@ function TVoid(schema: Types.TVoid, references: Types.TSchema[]): any {
     return void 0
   }
 }
-function TUserDefined(schema: Types.TSchema, references: Types.TSchema[]): any {
+function TKind(schema: Types.TSchema, references: Types.TSchema[]): any {
   if (ValueGuard.HasPropertyKey(schema, 'default')) {
     return schema.default
   } else {
-    throw new Error('ValueCreate.UserDefined: User defined types must specify a default value')
+    throw new Error('ValueCreate: User defined types must specify a default value')
   }
 }
 /** Creates a value from the given schema. If the schema specifies a default value, then that value is returned. */
@@ -433,7 +433,7 @@ export function Visit(schema: Types.TSchema, references: Types.TSchema[]): unkno
       return TVoid(schema_, references_)
     default:
       if (!Types.TypeRegistry.Has(schema_[Types.Kind])) throw new ValueCreateUnknownTypeError(schema_)
-      return TUserDefined(schema_, references_)
+      return TKind(schema_, references_)
   }
 }
 // --------------------------------------------------------------------------

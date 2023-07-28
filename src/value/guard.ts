@@ -29,9 +29,9 @@ THE SOFTWARE.
 // --------------------------------------------------------------------------
 // Types
 // --------------------------------------------------------------------------
-export type ValueType = null | undefined | symbol | bigint | number | boolean | string
-export type ObjectType = Record<keyof any, unknown>
+export type ObjectType = Record<PropertyKey, unknown>
 export type ArrayType = unknown[]
+export type ValueType = null | undefined | symbol | bigint | number | boolean | string
 // prettier-ignore
 export type TypedArrayType = 
   | Int8Array 
@@ -50,11 +50,11 @@ export type TypedArrayType =
 // --------------------------------------------------------------------------
 /** Returns true if this value is an async iterator */
 export function IsAsyncIterator(value: unknown): value is AsyncIterableIterator<any> {
-  return IsPlainObject(value) && Symbol.asyncIterator in value
+  return IsObject(value) && Symbol.asyncIterator in value
 }
 /** Returns true if this value is an iterator */
 export function IsIterator(value: unknown): value is IterableIterator<any> {
-  return IsPlainObject(value) && Symbol.iterator in value
+  return IsObject(value) && Symbol.iterator in value
 }
 // --------------------------------------------------------------------------
 // Nominal
@@ -82,15 +82,9 @@ export function IsDate(value: unknown): value is Date {
 export function HasPropertyKey<K extends PropertyKey>(value: Record<any, unknown>, key: K): value is ObjectType & Record<K, unknown> {
   return key in value
 }
-/** Returns true of this value is an object type, non-inclusive of arrays, typed-arrays, promises and dates */
+/** Returns true if this object is not an instance of any other type */
 export function IsPlainObject(value: unknown): value is ObjectType {
-  // prettier-ignore
-  return IsObject(value) && (
-    !IsArray(value) && 
-    !IsDate(value) &&
-    !IsTypedArray(value) && 
-    !IsPromise(value)
-  )
+  return IsObject(value) && IsFunction(value.constructor) && value.constructor.name === 'Object'
 }
 /** Returns true of this value is an object type */
 export function IsObject(value: unknown): value is ObjectType {

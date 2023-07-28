@@ -925,6 +925,9 @@ export namespace ValueGuard {
   export function IsArray(value: unknown): value is unknown[] {
     return Array.isArray(value)
   }
+  export function IsBoolean(value: unknown): value is boolean {
+    return typeof value === 'boolean'
+  }
   export function IsNull(value: unknown): value is null {
     return value === null
   }
@@ -933,9 +936,6 @@ export namespace ValueGuard {
   }
   export function IsBigInt(value: unknown): value is bigint {
     return typeof value === 'bigint'
-  }
-  export function IsBoolean(value: unknown): value is boolean {
-    return typeof value === 'boolean'
   }
   export function IsNumber(value: unknown): value is number {
     return typeof value === 'number'
@@ -2795,8 +2795,8 @@ export class StandardTypeBuilder extends TypeBuilder {
   public String(options: StringOptions = {}): TString {
     return this.Create({ ...options, [Kind]: 'String', type: 'string' })
   }
-  /** `[Experimental]` Creates a template literal type from dsl string */
-  public TemplateLiteral<T extends string>(dsl: T, options?: SchemaOptions): TTemplateLiteralDslParser<T>
+  /** `[Standard]` Creates a template literal type from template dsl string */
+  public TemplateLiteral<T extends string>(templateDsl: T, options?: SchemaOptions): TTemplateLiteralDslParser<T>
   /** `[Standard]` Creates a template literal type */
   public TemplateLiteral<T extends TTemplateLiteralKind[]>(kinds: [...T], options?: SchemaOptions): TTemplateLiteral<T>
   /** `[Standard]` Creates a template literal type */
@@ -2849,7 +2849,7 @@ export class StandardTypeBuilder extends TypeBuilder {
 // ExtendedTypeBuilder
 // --------------------------------------------------------------------------
 export class ExtendedTypeBuilder extends StandardTypeBuilder {
-  /** `[Extended]` Creates a async iterator type */
+  /** `[Extended]` Creates a AsyncIterator type */
   public AsyncIterator<T extends TSchema>(items: T, options: SchemaOptions = {}): TAsyncIterator<T> {
     return this.Create({ ...options, [Kind]: 'AsyncIterator', type: 'AsyncIterator', items: TypeClone.Clone(items, {}) })
   }
@@ -2881,7 +2881,7 @@ export class ExtendedTypeBuilder extends StandardTypeBuilder {
   public InstanceType<T extends TConstructor<any[], any>>(schema: T, options: SchemaOptions = {}): TInstanceType<T> {
     return TypeClone.Clone(schema.returns, options)
   }
-  /** `[Extended]` Creates an iterator type */
+  /** `[Extended]` Creates an Iterator type */
   public Iterator<T extends TSchema>(items: T, options: SchemaOptions = {}): TIterator<T> {
     return this.Create({ ...options, [Kind]: 'Iterator', type: 'Iterator', items: TypeClone.Clone(items, {}) })
   }

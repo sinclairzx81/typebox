@@ -31,19 +31,16 @@ import { TSchema, Static } from '@sinclair/typebox'
 import { Value } from '@sinclair/typebox/value'
 
 // ----------------------------------------------------------------
-// TypeSetError
+// Errors
 // ----------------------------------------------------------------
-
 export class TypeSetError extends Error {
   constructor(message: string) {
     super(`${message}`)
   }
 }
-
 // ----------------------------------------------------------------
 // TypeSet
 // ----------------------------------------------------------------
-
 /** Runtime type checked Set collection */
 export class TypeSet<T extends TSchema> {
   readonly #valuecheck: TypeCheck<T>
@@ -55,19 +52,16 @@ export class TypeSet<T extends TSchema> {
       this.add(value)
     }
   }
-
   /** Adds a value to this set */
   public add(value: Static<T>): this {
     this.#assertValue(value)
     this.values.set(this.#encodeKey(value), value)
     return this
   }
-
   /** Clears the values in this set */
   public clear(): void {
     this.values.clear()
   }
-
   /**
    * Removes a specified value from the Set.
    * @returns Returns true if an element in the Set existed and has been removed, or false if the element does not exist.
@@ -75,38 +69,31 @@ export class TypeSet<T extends TSchema> {
   public delete(value: Static<T>): boolean {
     return this.values.delete(this.#encodeKey(value))
   }
-
   /** Executes a provided function once per each value in the Set object, in insertion order. */
   public forEach(callbackfn: (value: Static<T>, value2: Static<T>, set: TypeSet<T>) => void, thisArg?: any): void {
     this.values.forEach((value, value2) => callbackfn(value, value2, this), thisArg)
   }
-
   /**
    * @returns a boolean indicating whether an element with the specified value exists in the Set or not.
    */
   public has(value: Static<T>): boolean {
     return this.values.has(this.#encodeKey(value))
   }
-
   /**
    * @returns the number of (unique) elements in Set.
    */
   public get size(): number {
     return this.values.size
   }
-
   // ---------------------------------------------------
   // Encoder
   // ---------------------------------------------------
-
   #encodeKey(value: Static<T>) {
     return Value.Hash(value)
   }
-
   // ---------------------------------------------------
   // Assertions
   // ---------------------------------------------------
-
   /** Formats errors */
   #formatError(errors: ValueError[]) {
     return errors
@@ -114,7 +101,6 @@ export class TypeSet<T extends TSchema> {
       .join('. ')
       .trim()
   }
-
   /** Asserts the key matches the value schema  */
   #assertValue(value: unknown): asserts value is Static<T> {
     if (this.#valuecheck.Check(value)) return
