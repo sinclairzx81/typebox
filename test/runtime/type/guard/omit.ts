@@ -25,7 +25,7 @@ describe('type/guard/TOmit', () => {
       }),
       ['x'],
     )
-    Assert.IsEqual(TypeGuard.TNumber(T.properties.y), true)
+    Assert.IsTrue(TypeGuard.TNumber(T.properties.y))
     Assert.IsEqual(T.required, ['y'])
   })
   it('Should Omit 2', () => {
@@ -36,7 +36,7 @@ describe('type/guard/TOmit', () => {
       }),
       ['x'],
     )
-    Assert.IsEqual(TypeGuard.TNumber(T.properties.y), true)
+    Assert.IsTrue(TypeGuard.TNumber(T.properties.y))
     Assert.IsEqual(T.required, undefined)
   })
   it('Should Omit 3', () => {
@@ -48,7 +48,7 @@ describe('type/guard/TOmit', () => {
       }),
       L,
     )
-    Assert.IsEqual(TypeGuard.TNumber(T.properties.y), true)
+    Assert.IsTrue(TypeGuard.TNumber(T.properties.y))
     Assert.IsEqual(T.required, ['y'])
   })
   it('Should Omit 4', () => {
@@ -100,7 +100,7 @@ describe('type/guard/TOmit', () => {
       }),
       L,
     )
-    Assert.IsEqual(TypeGuard.TNumber(T.properties.ad), true)
+    Assert.IsTrue(TypeGuard.TNumber(T.properties.ad))
     Assert.IsEqual(T.required, ['ad'])
   })
 })

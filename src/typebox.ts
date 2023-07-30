@@ -245,6 +245,19 @@ export interface TAsyncIterator<T extends TSchema = TSchema> extends TSchema {
   type: 'AsyncIterator'
   items: T
 }
+// -------------------------------------------------------------------------------
+// Awaited
+// -------------------------------------------------------------------------------
+// prettier-ignore
+export type TAwaitedRest<T extends TSchema[]> = T extends [infer L, ...infer R]
+  ? [TAwaited<AssertType<L>>, ...TAwaitedRest<AssertRest<R>>]
+  : []
+// prettier-ignore
+export type TAwaited<T extends TSchema> = 
+  T extends TIntersect<infer S> ? TIntersect<TAwaitedRest<S>> :
+  T extends TUnion<infer S>     ? TUnion<TAwaitedRest<S>> :
+  T extends TPromise<infer S>   ? TAwaited<S> :
+  T
 // --------------------------------------------------------------------------
 // TBigInt
 // --------------------------------------------------------------------------
@@ -532,13 +545,13 @@ export interface TObject<T extends TProperties = TProperties> extends TSchema, O
 // --------------------------------------------------------------------------
 // TOmit
 // --------------------------------------------------------------------------
-export type TOmitArray<T extends TSchema[], K extends keyof any> = AssertRest<{ [K2 in keyof T]: TOmit<AssertType<T[K2]>, K> }>
 export type TOmitProperties<T extends TProperties, K extends keyof any> = Evaluate<AssertProperties<Omit<T, K>>>
+export type TOmitRest<T extends TSchema[], K extends keyof any> = AssertRest<{ [K2 in keyof T]: TOmit<AssertType<T[K2]>, K> }>
 // prettier-ignore
 export type TOmit<T extends TSchema = TSchema, K extends keyof any = keyof any> = 
   T extends TRecursive<infer S> ? TRecursive<TOmit<S, K>> :
-  T extends TIntersect<infer S> ? TIntersect<TOmitArray<S, K>> : 
-  T extends TUnion<infer S> ? TUnion<TOmitArray<S, K>> : 
+  T extends TIntersect<infer S> ? TIntersect<TOmitRest<S, K>> : 
+  T extends TUnion<infer S> ? TUnion<TOmitRest<S, K>> : 
   T extends TObject<infer S> ? TObject<TOmitProperties<S, K>> : 
   T
 // --------------------------------------------------------------------------
@@ -564,7 +577,6 @@ export type TPartial<T extends TSchema> =
 // --------------------------------------------------------------------------
 // TPick
 // --------------------------------------------------------------------------
-export type TPickArray<T extends TSchema[], K extends keyof any> = { [K2 in keyof T]: TPick<AssertType<T[K2]>, K> }
 // Note the key K will overlap for varying TProperties gathered via recursive union and intersect traversal. Because of this,
 // we need to extract only keys assignable to T on K2. This behavior is only required for Pick only.
 // prettier-ignore
@@ -572,11 +584,12 @@ export type TPickProperties<T extends TProperties, K extends keyof any> =
   Pick<T, Assert<Extract<K, keyof T>, keyof T>> extends infer R ? ({
     [K in keyof R]: AssertType<R[K]> extends TSchema ? R[K] : never
   }): never
+export type TPickRest<T extends TSchema[], K extends keyof any> = { [K2 in keyof T]: TPick<AssertType<T[K2]>, K> }
 // prettier-ignore
 export type TPick<T extends TSchema = TSchema, K extends keyof any = keyof any> = 
   T extends TRecursive<infer S> ? TRecursive<TPick<S, K>> :
-  T extends TIntersect<infer S> ? TIntersect<TPickArray<S, K>> : 
-  T extends TUnion<infer S> ? TUnion<TPickArray<S, K>> : 
+  T extends TIntersect<infer S> ? TIntersect<TPickRest<S, K>> : 
+  T extends TUnion<infer S> ? TUnion<TPickRest<S, K>> : 
   T extends TObject<infer S> ? TObject<TPickProperties<S, K>> :
   T
 // --------------------------------------------------------------------------
@@ -1011,12 +1024,12 @@ export namespace TypeGuard {
       schema.type === 'array' &&
       IsOptionalString(schema.$id) &&
       TSchema(schema.items) &&
-      IsOptionalSchema(schema.contains) &&
-      IsOptionalNumber(schema.minContains) &&
-      IsOptionalNumber(schema.maxContains) &&
       IsOptionalNumber(schema.minItems) &&
       IsOptionalNumber(schema.maxItems) &&
-      IsOptionalBoolean(schema.uniqueItems)
+      IsOptionalBoolean(schema.uniqueItems) &&
+      IsOptionalSchema(schema.contains) &&
+      IsOptionalNumber(schema.minContains) &&
+      IsOptionalNumber(schema.maxContains)
     )
   }
   /** Returns true if the given schema is TAsyncIterator */
@@ -2510,6 +2523,11 @@ export class StandardTypeBuilder extends TypeBuilder {
   public Boolean(options: SchemaOptions = {}): TBoolean {
     return this.Create({ ...options, [Kind]: 'Boolean', type: 'boolean' })
   }
+  /** `[Standard]` Maps a literal strings first character to uppercase */
+  public Capitalize<T extends TLiteral<string>>(schema: T, options: SchemaOptions = {}): TLiteral<Capitalize<T['const']>> {
+    const [first, rest] = [schema.const.slice(0, 1), schema.const.slice(1)]
+    return Type.Literal(`${first.toUpperCase()}${rest}` as Capitalize<T['const']>, options)
+  }
   /** `[Standard]` Creates a Composite object type. */
   public Composite<T extends TObject[]>(objects: [...T], options?: ObjectOptions): TComposite<T> {
     const intersect: any = Type.Intersect(objects, {})
@@ -2630,6 +2648,10 @@ export class StandardTypeBuilder extends TypeBuilder {
   /** `[Standard]` Creates a Literal type */
   public Literal<T extends TLiteralValue>(value: T, options: SchemaOptions = {}): TLiteral<T> {
     return this.Create({ ...options, [Kind]: 'Literal', const: value, type: typeof value as 'string' | 'number' | 'boolean' })
+  }
+  /** `[Standard]` Maps a literal string to lowercase */
+  public Lowercase<T extends TLiteral<string>>(schema: T, options: SchemaOptions = {}): TLiteral<Lowercase<T['const']>> {
+    return Type.Literal(schema.const.toLowerCase() as Lowercase<T['const']>, options)
   }
   /** `[Standard]` Creates a Never type */
   public Never(options: SchemaOptions = {}): TNever {
@@ -2817,6 +2839,11 @@ export class StandardTypeBuilder extends TypeBuilder {
       { ...options, [Kind]: 'Tuple', type: 'array', minItems, maxItems }) as any
     return this.Create(schema)
   }
+  /** `[Standard]` Maps a literal strings first character to lowercase */
+  public Uncapitalize<T extends TLiteral<string>>(schema: T, options: SchemaOptions = {}): TLiteral<Uncapitalize<T['const']>> {
+    const [first, rest] = [schema.const.slice(0, 1), schema.const.slice(1)]
+    return Type.Literal(`${first.toLocaleLowerCase()}${rest}` as Uncapitalize<T['const']>, options)
+  }
   /** `[Standard]` Creates a Union type */
   public Union(anyOf: [], options?: SchemaOptions): TNever
   /** `[Standard]` Creates a Union type */
@@ -2844,6 +2871,10 @@ export class StandardTypeBuilder extends TypeBuilder {
   public Unsafe<T>(options: UnsafeOptions = {}): TUnsafe<T> {
     return this.Create({ ...options, [Kind]: options[Kind] || 'Unsafe' })
   }
+  /** `[Standard]` Maps a literal string to uppercase */
+  public Uppercase<T extends TLiteral<string>>(schema: T, options: SchemaOptions = {}): TLiteral<Uppercase<T['const']>> {
+    return Type.Literal(schema.const.toUpperCase() as Uppercase<T['const']>, options)
+  }
 }
 // --------------------------------------------------------------------------
 // ExtendedTypeBuilder
@@ -2852,6 +2883,21 @@ export class ExtendedTypeBuilder extends StandardTypeBuilder {
   /** `[Extended]` Creates a AsyncIterator type */
   public AsyncIterator<T extends TSchema>(items: T, options: SchemaOptions = {}): TAsyncIterator<T> {
     return this.Create({ ...options, [Kind]: 'AsyncIterator', type: 'AsyncIterator', items: TypeClone.Clone(items) })
+  }
+  /** `[Extended]` Recursively unwraps Promise from the given type. */
+  public Awaited<T extends TSchema>(schema: T, options: SchemaOptions = {}): TAwaited<T> {
+    const AwaitedRest = (rest: TSchema[]): TSchema[] => {
+      if (rest.length === 0) return rest
+      const [L, ...R] = rest
+      return [this.Awaited(L), ...AwaitedRest(R)]
+    }
+    // prettier-ignore
+    return (
+      TypeGuard.TIntersect(schema) ? Type.Intersect(AwaitedRest(schema.allOf)) : 
+      TypeGuard.TUnion(schema) ? Type.Union(AwaitedRest(schema.anyOf)) :
+      TypeGuard.TPromise(schema) ? this.Awaited(schema.item) : 
+      TypeClone.Clone(schema, options)
+    ) as TAwaited<T>
   }
   /** `[Extended]` Creates a BigInt type */
   public BigInt(options: NumericOptions<bigint> = {}): TBigInt {

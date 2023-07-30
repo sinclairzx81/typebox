@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------------
 
-@sinclair/typebox/experimental
+@sinclair/typebox/prototypes
 
 The MIT License (MIT)
 
@@ -26,22 +26,24 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import * as Types from '@sinclair/typebox'
+import { TypeRegistry, Kind, TSchema, SchemaOptions } from '@sinclair/typebox'
 
 // -------------------------------------------------------------------------------------
 // TUnionEnum
 // -------------------------------------------------------------------------------------
-export interface TUnionEnum<T extends (string | number)[]> extends Types.TSchema {
-  [Types.Kind]: 'UnionEnum'
+export interface TUnionEnum<T extends (string | number)[]> extends TSchema {
+  [Kind]: 'UnionEnum'
   static: T[number]
   enum: T
 }
-
+// -------------------------------------------------------------------------------------
+// UnionEnum
+// -------------------------------------------------------------------------------------
 /** `[Experimental]` Creates a Union type with a `enum` schema representation  */
-export function UnionEnum<T extends (string | number)[]>(values: [...T], options: Types.SchemaOptions = {}) {
+export function UnionEnum<T extends (string | number)[]>(values: [...T], options: SchemaOptions = {}) {
   function UnionEnumCheck(schema: TUnionEnum<(string | number)[]>, value: unknown) {
     return (typeof value === 'string' || typeof value === 'number') && schema.enum.includes(value)
   }
-  if (!Types.TypeRegistry.Has('UnionEnum')) Types.TypeRegistry.Set('UnionEnum', UnionEnumCheck)
-  return { ...options, [Types.Kind]: 'UnionEnum', enum: values } as TUnionEnum<T>
+  if (!TypeRegistry.Has('UnionEnum')) TypeRegistry.Set('UnionEnum', UnionEnumCheck)
+  return { ...options, [Kind]: 'UnionEnum', enum: values } as TUnionEnum<T>
 }

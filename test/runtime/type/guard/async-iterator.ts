@@ -6,17 +6,17 @@ describe('type/guard/TAsyncIterator', () => {
   it('Should guard for TAsyncIterator', () => {
     const T = Type.AsyncIterator(Type.Any())
     const R = TypeGuard.TAsyncIterator(T)
-    Assert.IsEqual(R, true)
+    Assert.IsTrue(R)
   })
   it('Should not guard for TAsyncIterator', () => {
     const T = null
     const R = TypeGuard.TAsyncIterator(T)
-    Assert.IsEqual(R, false)
+    Assert.IsFalse(R)
   })
   it('Should not guard for TAsyncIterator with invalid $id', () => {
     //@ts-ignore
     const T = Type.AsyncIterator(Type.Any(), { $id: 1 })
     const R = TypeGuard.TAsyncIterator(T)
-    Assert.IsEqual(R, false)
+    Assert.IsFalse(R)
   })
 })

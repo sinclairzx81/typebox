@@ -10,11 +10,11 @@ describe('type/guard/TObject', () => {
         y: Type.Number(),
       }),
     )
-    Assert.IsEqual(R, true)
+    Assert.IsTrue(R)
   })
   it('Should not guard for TObject', () => {
     const R = TypeGuard.TObject(null)
-    Assert.IsEqual(R, false)
+    Assert.IsFalse(R)
   })
   it('Should not guard for TObject with escape characters in property key', () => {
     const R = TypeGuard.TObject(
@@ -22,7 +22,7 @@ describe('type/guard/TObject', () => {
         'hello\nworld': Type.Number(),
       }),
     )
-    Assert.IsEqual(R, false)
+    Assert.IsFalse(R)
   })
   it('Should not guard for TObject with invalid property values', () => {
     const R = TypeGuard.TObject(
@@ -31,7 +31,7 @@ describe('type/guard/TObject', () => {
         y: {} as any,
       }),
     )
-    Assert.IsEqual(R, false)
+    Assert.IsFalse(R)
   })
   it('Should not guard for TObject with invalid additionalProperties', () => {
     const R = TypeGuard.TObject(
@@ -45,7 +45,7 @@ describe('type/guard/TObject', () => {
         },
       ),
     )
-    Assert.IsEqual(R, false)
+    Assert.IsFalse(R)
   })
   it('Should not guard for TObject with invalid $id', () => {
     const R = TypeGuard.TObject(
@@ -59,7 +59,7 @@ describe('type/guard/TObject', () => {
         },
       ),
     )
-    Assert.IsEqual(R, false)
+    Assert.IsFalse(R)
   })
   it('Should not guard for TObject with invalid minProperties', () => {
     const R = TypeGuard.TObject(
@@ -73,7 +73,7 @@ describe('type/guard/TObject', () => {
         },
       ),
     )
-    Assert.IsEqual(R, false)
+    Assert.IsFalse(R)
   })
   it('Should not guard for TObject with invalid maxProperties', () => {
     const R = TypeGuard.TObject(
@@ -87,7 +87,7 @@ describe('type/guard/TObject', () => {
         },
       ),
     )
-    Assert.IsEqual(R, false)
+    Assert.IsFalse(R)
   })
   it('Should guard for TObject with invalid additional properties', () => {
     const R = TypeGuard.TObject(
@@ -102,7 +102,7 @@ describe('type/guard/TObject', () => {
         },
       ),
     )
-    Assert.IsEqual(R, false)
+    Assert.IsFalse(R)
   })
   it('Should not guard for TObject with valid additional properties schema', () => {
     const R = TypeGuard.TObject(
@@ -116,6 +116,6 @@ describe('type/guard/TObject', () => {
         },
       ),
     )
-    Assert.IsEqual(R, true)
+    Assert.IsTrue(R)
   })
 })

@@ -26,36 +26,40 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { Type, ObjectMap, TypeGuard, TSchema, TIntersect, TUnion, TObject, TProperties, TReadonly, AssertProperties, AssertType, AssertRest, Evaluate, ReadonlyUnwrapType } from '@sinclair/typebox'
+import { TypeGuard, Type, TSchema, TIntersect, TUnion, TObject, TPartial, TProperties, AssertRest, AssertType, Evaluate } from '@sinclair/typebox'
 
 // -------------------------------------------------------------------------------------
-// TConst
+// TDeepPartial
 // -------------------------------------------------------------------------------------
-// prettier-ignore
-export type TConstArray<T extends TSchema[], E extends boolean> = T extends [infer L, ...infer R]
-  ? [TConst<AssertType<L>, E>, ...TConstArray<AssertRest<R>, E>]
+export type TPartialDeepProperties<T extends TProperties> = {
+  [K in keyof T]: TPartial<T[K]>
+}
+export type TPartialDeepRest<T extends TSchema[]> = T extends [infer L, ...infer R]
+  ? [TPartial<AssertType<L>>, ...TPartialDeepRest<AssertRest<R>>]
   : []
-// prettier-ignore
-export type TConstProperties<T extends TProperties, E extends boolean> = Evaluate<AssertProperties<{
-  [K in keyof T]: TConst<ReadonlyUnwrapType<T[K]>, E>
-}>>
-// prettier-ignore
-export type TConst<T extends TSchema, E extends boolean> =
-  T extends TIntersect<infer S> ? TIntersect<TConstArray<S, false>> :
-  T extends TUnion<infer S> ? TUnion<TConstArray<S, false>> :
-  T extends TObject<infer S> ? TObject<TConstProperties<S, false>> :
-  E extends true ? T : TReadonly<T>
+export type TPartialDeep<T extends TSchema> = 
+  T extends TIntersect<infer S> ? TIntersect<TPartialDeepRest<S>> :
+  T extends TUnion<infer S> ? TUnion<TPartialDeepRest<S>> :
+  T extends TObject<infer S> ? TPartial<TObject<Evaluate<TPartialDeepProperties<S>>>> :
+  T
 // -------------------------------------------------------------------------------------
-// Const
+// DeepPartial
 // -------------------------------------------------------------------------------------
-/** `[Experimental]` Assigns readonly to all interior properties */
-export function Const<T extends TSchema>(schema: T): TConst<T, true> {
-  const mappable = (TypeGuard.TIntersect(schema) || TypeGuard.TUnion(schema) || TypeGuard.TObject(schema))
-  // prettier-ignore
-  return mappable ? ObjectMap.Map(schema, (object) => {
-    const properties = Object.getOwnPropertyNames(object.properties).reduce((acc, key) => {
-      return { ...acc, [key]: Type.Readonly(object.properties[key] )}
-    }, {} as TProperties)
-    return Type.Object(properties, {...object})
-  }, {}) : schema as any
+function PartialDeepProperties<T extends TProperties>(properties: T) {
+  return Object.getOwnPropertyNames(properties).reduce((acc, key) => {
+    return {...acc, [key]: Type.Partial(properties[key])}
+  }, {} as TProperties)
+}
+function PartialDeepRest<T extends TSchema[]>(rest: [...T]): TPartialDeepRest<T> {
+  const [L, ...R] = rest
+  return (R.length > 0) ? [Type.Partial(L), ...PartialDeepRest(R)] : [] as any
+}
+/** Maps the given schema as deep partial, making all properties and sub properties optional */
+export function PartialDeep<T extends TSchema>(type: T): TPartialDeep<T> {
+  return (
+    TypeGuard.TIntersect(type) ? Type.Intersect(PartialDeepRest(type.allOf)) :
+    TypeGuard.TUnion(type) ? Type.Union(PartialDeepRest(type.anyOf)) :
+    TypeGuard.TObject(type) ? Type.Partial(Type.Object(PartialDeepProperties(type.properties))) :
+    type
+  ) as any
 }

@@ -31,7 +31,7 @@ describe('type/guard/TPick', () => {
       }),
       ['x'],
     )
-    Assert.IsEqual(TypeGuard.TNumber(T.properties.x), true)
+    Assert.IsTrue(TypeGuard.TNumber(T.properties.x))
     Assert.IsEqual(T.required, ['x'])
   })
   it('Should Pick 2', () => {
@@ -42,7 +42,7 @@ describe('type/guard/TPick', () => {
       }),
       ['x'],
     )
-    Assert.IsEqual(TypeGuard.TNumber(T.properties.x), true)
+    Assert.IsTrue(TypeGuard.TNumber(T.properties.x))
     Assert.IsEqual(T.required, undefined)
   })
   it('Should Pick 3', () => {
@@ -54,14 +54,14 @@ describe('type/guard/TPick', () => {
       }),
       L,
     )
-    Assert.IsEqual(TypeGuard.TNumber(T.properties.x), true)
+    Assert.IsTrue(TypeGuard.TNumber(T.properties.x))
     Assert.IsEqual(T.required, ['x'])
   })
   it('Should Pick 4', () => {
     const L = Type.Literal('x')
     const T = Type.Pick(Type.Intersect([Type.Object({ x: Type.Number() }), Type.Object({ y: Type.Number() })]), L)
 
-    Assert.IsEqual(TypeGuard.TNumber(T.allOf[0].properties.x), true)
+    Assert.IsTrue(TypeGuard.TNumber(T.allOf[0].properties.x))
     // @ts-ignore
     Assert.IsEqual(T.allOf[1].properties.y, undefined)
   })
@@ -74,8 +74,8 @@ describe('type/guard/TPick', () => {
       }),
       L,
     )
-    Assert.IsEqual(TypeGuard.TNumber(T.properties.x), true)
-    Assert.IsEqual(TypeGuard.TNumber(T.properties.y), true)
+    Assert.IsTrue(TypeGuard.TNumber(T.properties.x))
+    Assert.IsTrue(TypeGuard.TNumber(T.properties.y))
     Assert.IsEqual(T.required, ['x', 'y'])
   })
   it('Should Pick 6', () => {
@@ -87,8 +87,8 @@ describe('type/guard/TPick', () => {
       }),
       L,
     )
-    Assert.IsEqual(TypeGuard.TNumber(T.properties.x), true)
-    Assert.IsEqual(TypeGuard.TNumber(T.properties.y), true)
+    Assert.IsTrue(TypeGuard.TNumber(T.properties.x))
+    Assert.IsTrue(TypeGuard.TNumber(T.properties.y))
     Assert.IsEqual(T.required, ['x', 'y'])
   })
   it('Should Pick 7', () => {
@@ -101,8 +101,8 @@ describe('type/guard/TPick', () => {
       }),
       L,
     )
-    Assert.IsEqual(TypeGuard.TNumber(T.properties.ab), true)
-    Assert.IsEqual(TypeGuard.TNumber(T.properties.ac), true)
+    Assert.IsTrue(TypeGuard.TNumber(T.properties.ab))
+    Assert.IsTrue(TypeGuard.TNumber(T.properties.ac))
     Assert.IsEqual(T.required, ['ab', 'ac'])
   })
 })

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------------
 
-@sinclair/typebox/experimental
+@sinclair/typebox/prototypes
 
 The MIT License (MIT)
 
@@ -27,5 +27,7 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 export * from './const'
+export * from './evaluate'
+export * from './partial-deep'
 export * from './union-enum'
 export * from './union-oneof'
