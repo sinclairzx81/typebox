@@ -133,9 +133,13 @@ function TNumber(schema: Types.TNumber, references: Types.TSchema[], value: any,
   return Apply(schema, value, mode)
 }
 function TObject(schema: Types.TObject, references: Types.TSchema[], value: any, mode: ValueTransformMode) {
-  return Object.keys(schema.properties).reduce((acc, key) => {
-    return value[key] !== undefined ? { ...acc, [key]: Visit(schema.properties[key], references, value[key], mode) } : { ...acc }
-  }, value)
+  const transformed = Apply(schema, value, mode)
+  const properties = Object.keys(transformed).reduce((acc, key) => {
+    return key in schema.properties 
+      ? { ...acc, [key]: Visit(schema.properties[key], references, transformed[key], mode) }
+      : { ...acc, [key]: transformed[key] }
+  }, {})
+  return { ...properties }
 }
 function TPromise(schema: Types.TSchema, references: Types.TSchema[], value: any, mode: ValueTransformMode) {
   return Apply(schema, value, mode)

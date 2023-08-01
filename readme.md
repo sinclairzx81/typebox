@@ -110,7 +110,7 @@ License MIT
   - [Types](#typesystem-types)
   - [Formats](#typesystem-formats)
   - [Policies](#typesystem-policies)
-- [Transform](#Transform)
+- [Transform](#transform)
 - [Ecosystem](#ecosystem)
 - [Benchmark](#benchmark)
   - [Compile](#benchmark-compile)
