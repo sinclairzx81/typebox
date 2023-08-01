@@ -1,5 +1,5 @@
 import { Expect } from './assert'
-import { Type } from '@sinclair/typebox'
+import { Type, TSchema } from '@sinclair/typebox'
 
 // Asserts combinatory modifiers
 {

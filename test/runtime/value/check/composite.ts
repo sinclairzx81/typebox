@@ -14,7 +14,6 @@ describe('value/check/Composite', () => {
     c: Type.String(),
   })
   const T = Type.Composite([A, B])
-
   it('Should pass composite', () => {
     const value = {
       x: 1,
@@ -25,9 +24,8 @@ describe('value/check/Composite', () => {
       c: '1',
     }
     const result = Value.Check(T, value)
-    Assert.isEqual(result, true)
+    Assert.IsEqual(result, true)
   })
-
   it('Should fail intersect with invalid property', () => {
     const value = {
       x: true,
@@ -38,9 +36,8 @@ describe('value/check/Composite', () => {
       c: '1',
     }
     const result = Value.Check(T, value)
-    Assert.isEqual(result, false)
+    Assert.IsEqual(result, false)
   })
-
   it('Should fail intersect with missing property', () => {
     const value = {
       y: 1,
@@ -50,15 +47,13 @@ describe('value/check/Composite', () => {
       c: '1',
     }
     const result = Value.Check(T, value)
-    Assert.isEqual(result, false)
+    Assert.IsEqual(result, false)
   })
-
   it('Should fail intersect with primitive value', () => {
     const value = 1
     const result = Value.Check(T, value)
-    Assert.isEqual(result, false)
+    Assert.IsEqual(result, false)
   })
-
   it('Should pass intersect with optional properties', () => {
     const A = Type.Object({
       x: Type.Optional(Type.Number()),
@@ -77,6 +72,6 @@ describe('value/check/Composite', () => {
       c: '1',
     }
     const result = Value.Check(T, value)
-    Assert.isEqual(result, true)
+    Assert.IsEqual(result, true)
   })
 })

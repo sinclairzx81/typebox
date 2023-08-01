@@ -30,34 +30,28 @@ describe('type/schema/String', () => {
     const T = Type.String()
     Fail(T, undefined)
   })
-
   it('Should validate string format as email', () => {
     const T = Type.String({ format: 'email' })
     Ok(T, 'name@domain.com')
   })
-
   it('Should validate string format as uuid', () => {
     const T = Type.String({ format: 'uuid' })
     Ok(T, '4a7a17c9-2492-4a53-8e13-06ea2d3f3bbf')
   })
-
   it('Should validate string format as iso8601 date', () => {
     const T = Type.String({ format: 'date-time' })
     Ok(T, '2021-06-11T20:30:00-04:00')
   })
-
   it('Should validate minLength', () => {
     const T = Type.String({ minLength: 4 })
     Ok(T, '....')
     Fail(T, '...')
   })
-
   it('Should validate maxLength', () => {
     const T = Type.String({ maxLength: 4 })
     Ok(T, '....')
     Fail(T, '.....')
   })
-
   it('Should pass numeric 5 digit test', () => {
     const T = Type.String({ pattern: '[\\d]{5}' })
     Ok(T, '12345')

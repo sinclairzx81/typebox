@@ -26,9 +26,8 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export { ValueError, ValueErrorIterator, ValueErrorType } from '../errors/index'
-export { ValueHash } from './hash'
+export { ValueError, ValueErrorType, ValueErrorIterator } from '../errors/index'
 export { Edit, Insert, Update, Delete } from './delta'
 export { Mutable } from './mutate'
-export * from './pointer'
-export * from './value'
+export { ValuePointer } from './pointer'
+export { Value } from './value'

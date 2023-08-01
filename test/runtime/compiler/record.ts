@@ -86,7 +86,7 @@ describe('type/compiler/Record', () => {
     Fail(R, { a: 1, b: 2, c: 3, d: 4 })
   })
   it('Should should validate when specifying regular expressions', () => {
-    const K = Type.RegEx(/^op_.*$/)
+    const K = Type.RegExp(/^op_.*$/)
     const T = Type.Record(K, Type.Number())
     Ok(T, {
       op_a: 1,
@@ -95,7 +95,7 @@ describe('type/compiler/Record', () => {
     })
   })
   it('Should should not validate when specifying regular expressions and passing invalid property', () => {
-    const K = Type.RegEx(/^op_.*$/)
+    const K = Type.RegExp(/^op_.*$/)
     const T = Type.Record(K, Type.Number(), { additionalProperties: false })
     Fail(T, {
       op_a: 1,

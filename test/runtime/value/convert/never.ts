@@ -6,16 +6,16 @@ describe('value/convert/Never', () => {
   it('Should not convert 1', () => {
     const T = Type.Never()
     const R = Value.Convert(T, true)
-    Assert.isEqual(R, true)
+    Assert.IsEqual(R, true)
   })
   it('Should not convert 2', () => {
     const T = Type.Never()
     const R = Value.Convert(T, 42)
-    Assert.isEqual(R, 42)
+    Assert.IsEqual(R, 42)
   })
   it('Should not convert 3', () => {
     const T = Type.Never()
     const R = Value.Convert(T, 'true')
-    Assert.isEqual(R, 'true')
+    Assert.IsEqual(R, 'true')
   })
 })

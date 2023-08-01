@@ -9,7 +9,7 @@ describe('value/create/Boolean', () => {
       B,
     }
     const T = Type.Enum(Foo)
-    Assert.isEqual(Value.Create(T), Foo.A)
+    Assert.IsEqual(Value.Create(T), Foo.A)
   })
   it('Should create default', () => {
     enum Foo {
@@ -17,6 +17,6 @@ describe('value/create/Boolean', () => {
       B,
     }
     const T = Type.Enum(Foo, { default: Foo.B })
-    Assert.isEqual(Value.Create(T), Foo.B)
+    Assert.IsEqual(Value.Create(T), Foo.B)
   })
 })

@@ -10,7 +10,7 @@ describe('value/create/KeyOf', () => {
         y: Type.Number(),
       }),
     )
-    Assert.isEqual(Value.Create(T), 'x')
+    Assert.IsEqual(Value.Create(T), 'x')
   })
   it('Should create default', () => {
     const T = Type.KeyOf(
@@ -20,6 +20,6 @@ describe('value/create/KeyOf', () => {
       }),
       { default: 'y' },
     )
-    Assert.isEqual(Value.Create(T), 'y')
+    Assert.IsEqual(Value.Create(T), 'y')
   })
 })

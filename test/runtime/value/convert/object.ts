@@ -11,6 +11,6 @@ describe('value/convert/Object', () => {
       z: Type.Boolean()
     })
     const R = Value.Convert(T, { x: '42', y: 'true', z: 'hello' })
-    Assert.isEqual(R, { x: 42, y: true, z: 'hello' })
+    Assert.IsEqual(R, { x: 42, y: true, z: 'hello' })
   })
 })

@@ -13,7 +13,6 @@ describe('type/compiler/Readonly', () => {
     )
     Ok(T, { a: 'hello', b: 'world' })
   })
-
   it('Should retain required array on object', () => {
     const T = Type.Object(
       {

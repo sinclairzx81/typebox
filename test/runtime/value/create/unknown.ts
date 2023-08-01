@@ -5,10 +5,10 @@ import { Assert } from '../../assert/index'
 describe('value/create/Unknown', () => {
   it('Should create value', () => {
     const T = Type.Unknown()
-    Assert.isEqual(Value.Create(T), {})
+    Assert.IsEqual(Value.Create(T), {})
   })
   it('Should create default', () => {
     const T = Type.Unknown({ default: 1 })
-    Assert.isEqual(Value.Create(T), 1)
+    Assert.IsEqual(Value.Create(T), 1)
   })
 })

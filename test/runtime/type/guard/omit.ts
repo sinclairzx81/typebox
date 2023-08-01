@@ -8,11 +8,11 @@ describe('type/guard/TOmit', () => {
   // -------------------------------------------------------------------------
   it('Should support TUnsafe omit properties with no Kind', () => {
     const T = Type.Omit(Type.Object({ x: Type.Unsafe({ x: 1 }), y: Type.Number() }), ['x'])
-    Assert.isEqual(T.required, ['y'])
+    Assert.IsEqual(T.required, ['y'])
   })
   it('Should support TUnsafe omit properties with unregistered Kind', () => {
     const T = Type.Omit(Type.Object({ x: Type.Unsafe({ x: 1, [Kind]: 'UnknownOmitType' }), y: Type.Number() }), ['x'])
-    Assert.isEqual(T.required, ['y'])
+    Assert.IsEqual(T.required, ['y'])
   })
   // -------------------------------------------------------------------------
   // Standard Tests
@@ -25,8 +25,8 @@ describe('type/guard/TOmit', () => {
       }),
       ['x'],
     )
-    Assert.isEqual(TypeGuard.TNumber(T.properties.y), true)
-    Assert.isEqual(T.required, ['y'])
+    Assert.IsTrue(TypeGuard.TNumber(T.properties.y))
+    Assert.IsEqual(T.required, ['y'])
   })
   it('Should Omit 2', () => {
     const T = Type.Omit(
@@ -36,8 +36,8 @@ describe('type/guard/TOmit', () => {
       }),
       ['x'],
     )
-    Assert.isEqual(TypeGuard.TNumber(T.properties.y), true)
-    Assert.isEqual(T.required, undefined)
+    Assert.IsTrue(TypeGuard.TNumber(T.properties.y))
+    Assert.IsEqual(T.required, undefined)
   })
   it('Should Omit 3', () => {
     const L = Type.Literal('x')
@@ -48,15 +48,15 @@ describe('type/guard/TOmit', () => {
       }),
       L,
     )
-    Assert.isEqual(TypeGuard.TNumber(T.properties.y), true)
-    Assert.isEqual(T.required, ['y'])
+    Assert.IsTrue(TypeGuard.TNumber(T.properties.y))
+    Assert.IsEqual(T.required, ['y'])
   })
   it('Should Omit 4', () => {
     const L = Type.Literal('x')
     const T = Type.Omit(Type.Intersect([Type.Object({ x: Type.Number() }), Type.Object({ y: Type.Number() })]), L)
-    Assert.isEqual(TypeGuard.TNumber(T.allOf[1].properties.y), true)
+    Assert.IsEqual(TypeGuard.TNumber(T.allOf[1].properties.y), true)
     // @ts-ignore
-    Assert.isEqual(T.allOf[1].properties.x, undefined)
+    Assert.IsEqual(T.allOf[1].properties.x, undefined)
   })
   it('Should Omit 5', () => {
     const L = Type.Union([Type.Literal('x'), Type.Literal('y')])
@@ -68,11 +68,11 @@ describe('type/guard/TOmit', () => {
       L,
     )
     // @ts-ignore
-    Assert.isEqual(T.properties.x, undefined)
+    Assert.IsEqual(T.properties.x, undefined)
     // @ts-ignore
-    Assert.isEqual(T.properties.y, undefined)
+    Assert.IsEqual(T.properties.y, undefined)
     // @ts-ignore
-    Assert.isEqual(T.required, undefined)
+    Assert.IsEqual(T.required, undefined)
   })
   it('Should Omit 6', () => {
     const L = Type.Union([Type.Literal('x'), Type.Literal('y'), Type.Literal('z')])
@@ -84,11 +84,11 @@ describe('type/guard/TOmit', () => {
       L,
     )
     // @ts-ignore
-    Assert.isEqual(T.properties.x, undefined)
+    Assert.IsEqual(T.properties.x, undefined)
     // @ts-ignore
-    Assert.isEqual(T.properties.y, undefined)
+    Assert.IsEqual(T.properties.y, undefined)
     // @ts-ignore
-    Assert.isEqual(T.required, undefined)
+    Assert.IsEqual(T.required, undefined)
   })
   it('Should Omit 7', () => {
     const L = Type.TemplateLiteral([Type.Literal('a'), Type.Union([Type.Literal('b'), Type.Literal('c')])])
@@ -100,7 +100,7 @@ describe('type/guard/TOmit', () => {
       }),
       L,
     )
-    Assert.isEqual(TypeGuard.TNumber(T.properties.ad), true)
-    Assert.isEqual(T.required, ['ad'])
+    Assert.IsTrue(TypeGuard.TNumber(T.properties.ad))
+    Assert.IsEqual(T.required, ['ad'])
   })
 })
