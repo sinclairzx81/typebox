@@ -14,11 +14,10 @@ describe('type/compiler/Partial', () => {
       { additionalProperties: false },
     )
     const T = Type.Partial(A)
-    console.log(T)
-    //Ok(T, { x: 1, y: 1, z: 1 })
-    //Ok(T, { x: 1, y: 1 })
-    //Ok(T, { x: 1 })
-    //Ok(T, {})
+    Ok(T, { x: 1, y: 1, z: 1 })
+    Ok(T, { x: 1, y: 1 })
+    Ok(T, { x: 1 })
+    Ok(T, {})
   })
   it('Should update modifier types correctly when converting to partial', () => {
     const A = Type.Object(
@@ -38,7 +37,6 @@ describe('type/compiler/Partial', () => {
     strictEqual(T.properties.z[Optional], 'Optional')
     strictEqual(T.properties.w[Optional], 'Optional')
   })
-
   it('Should inherit options from the source object', () => {
     const A = Type.Object(
       {

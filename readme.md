@@ -84,6 +84,7 @@ License MIT
   - [Recursive](#types-recursive)
   - [Conditional](#types-conditional)
   - [Template Literal](#types-template-literal)
+  - [Intrinsic String](#types-intrinsic-string)
   - [Indexed](#types-indexed)
   - [Negated](#types-negated)
   - [Rest](#types-rest)
@@ -486,6 +487,30 @@ The following table lists the Standard TypeBox types. These types are fully comp
 │ ])                             │                             │ }                              │
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
+│ const T = Type.Uncapitalize(   │ type T = Uncapitalize<      │ const T = {                    │
+│   Type.Literal('Hello')        │   'Hello'                   │    type: 'string',             │
+│ )                              │ >                           │    const: 'hello'              │
+│                                │                             │ }                              │
+│                                │                             │                                │
+├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
+│ const T = Type.Capitalize(     │ type T = Capitalize<        │ const T = {                    │
+│   Type.Literal('hello')        │   'hello'                   │    type: 'string',             │
+│ )                              │ >                           │    const: 'Hello'              │
+│                                │                             │ }                              │
+│                                │                             │                                │
+├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
+│ const T = Type.Uppercase(      │ type T = Uppercase<         │ const T = {                    │
+│   Type.Literal('hello')        │   'hello'                   │    type: 'string',             │
+│ )                              │ >                           │    const: 'HELLO'              │
+│                                │                             │ }                              │
+│                                │                             │                                │
+├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
+│ const T = Type.Lowercase(      │ type T = Lowercase<         │ const T = {                    │
+│   Type.Literal('HELLO')        │   'HELLO'                   │    type: 'string',             │
+│ )                              │ >                           │    const: 'hello'              │
+│                                │                             │ }                              │
+│                                │                             │                                │
+├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Object({        │ type T = {                  │ const R = {                    │
 │    x: Type.Number(),           │   x: number,                │   $ref: 'T'                    │
 │    y: Type.Number()            │   y: number                 │ }                              │
@@ -849,6 +874,34 @@ const R = Type.Record(T, Type.String())              // const R = {
                                                      //     }
                                                      //   }
                                                      // }
+```
+
+<a name='types-intrinsic-string'></a>
+
+### Intrinsic String Types
+
+TypeBox supports a set of intrinsic string mapping functions which can be used on string literals. These functions match the TypeScript string intrinsic types `Uppercase`, `Lowercase`, `Capitalize` and `Uncapitalize`. These functions are supported for literal strings, template literals and union types. The following shows the literal string usage.
+
+```typescript
+// TypeScript
+
+type A = Uncapitalize<'HELLO'>                      // type A = 'hELLO'
+
+type B = Capitalize<'hello'>                        // type B = 'Hello'
+
+type C = Uppercase<'hello'>                         // type C = 'HELLO'
+
+type D = Lowercase<'HELLO'>                         // type D = 'hello'
+
+// TypeBox
+
+const A = Type.Uncapitalize(Type.Literal('HELLO')) // const A: TLiteral<'hELLO'>
+
+const B = Type.Capitalize(Type.Literal('hello'))   // const B: TLiteral<'Hello'>
+
+const C = Type.Uppercase(Type.Literal('hello'))    // const C: TLiteral<'HELLO'>
+
+const D = Type.Lowercase(Type.Literal('HELLO'))    // const D: TLiteral<'hello'>
 ```
 
 <a name='types-indexed'></a>
@@ -1586,11 +1639,11 @@ The following table lists esbuild compiled and minified sizes for each TypeBox m
 ┌──────────────────────┬────────────┬────────────┬─────────────┐
 │       (index)        │  Compiled  │  Minified  │ Compression │
 ├──────────────────────┼────────────┼────────────┼─────────────┤
-│ typebox/compiler     │ '129.4 kb' │ ' 58.6 kb' │  '2.21 x'   │
-│ typebox/errors       │ '111.6 kb' │ ' 50.1 kb' │  '2.23 x'   │
-│ typebox/system       │ ' 76.5 kb' │ ' 31.7 kb' │  '2.41 x'   │
-│ typebox/value        │ '180.7 kb' │ ' 79.3 kb' │  '2.28 x'   │
-│ typebox              │ ' 75.4 kb' │ ' 31.3 kb' │  '2.41 x'   │
+│ typebox/compiler     │ '131.4 kb' │ ' 59.4 kb' │  '2.21 x'   │
+│ typebox/errors       │ '113.6 kb' │ ' 50.9 kb' │  '2.23 x'   │
+│ typebox/system       │ ' 78.5 kb' │ ' 32.5 kb' │  '2.42 x'   │
+│ typebox/value        │ '182.8 kb' │ ' 80.0 kb' │  '2.28 x'   │
+│ typebox              │ ' 77.4 kb' │ ' 32.0 kb' │  '2.42 x'   │
 └──────────────────────┴────────────┴────────────┴─────────────┘
 ```
 
