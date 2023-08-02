@@ -72,7 +72,6 @@ License MIT
 ## Contents
 - [Install](#install)
 - [Overview](#overview)
-- [Features](#features)
 - [Usage](#usage)
 - [Types](#types)
   - [Standard](#types-standard)
