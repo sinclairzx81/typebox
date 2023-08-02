@@ -110,6 +110,29 @@ describe('type/intrinsic/IntrinsicString', () => {
     Assert.IsEqual(T.pattern, '^(hello1world|hello2world)$')
   })
   // ----------------------------------------------------
+  // Mode: TemplateLiteral Numeric
+  // ----------------------------------------------------
+  it('Should map template literal numeric: Capitalize', () => {
+    const T = Intrinsic.Map(Type.TemplateLiteral([Type.Literal('hello'), Type.Union([Type.Literal(1), Type.Literal(2)])]), 'Capitalize')
+    Assert.IsTrue(TypeGuard.TTemplateLiteral(T))
+    Assert.IsEqual(T.pattern, '^(Hello1|Hello2)$')
+  })
+  it('Should map template literal numeric: Uncapitalize', () => {
+    const T = Intrinsic.Map(Type.TemplateLiteral([Type.Literal('HELLO'), Type.Union([Type.Literal(1), Type.Literal(2)])]), 'Uncapitalize')
+    Assert.IsTrue(TypeGuard.TTemplateLiteral(T))
+    Assert.IsEqual(T.pattern, '^(hELLO1|hELLO2)$')
+  })
+  it('Should map template literal numeric: Uppercase', () => {
+    const T = Intrinsic.Map(Type.TemplateLiteral([Type.Literal('hello'), Type.Union([Type.Literal(1), Type.Literal(2)])]), 'Uppercase')
+    Assert.IsTrue(TypeGuard.TTemplateLiteral(T))
+    Assert.IsEqual(T.pattern, '^(HELLO1|HELLO2)$')
+  })
+  it('Should map template literal numeric: Lowercase', () => {
+    const T = Intrinsic.Map(Type.TemplateLiteral([Type.Literal('HELLO'), Type.Union([Type.Literal(1), Type.Literal(2)])]), 'Lowercase')
+    Assert.IsTrue(TypeGuard.TTemplateLiteral(T))
+    Assert.IsEqual(T.pattern, '^(hello1|hello2)$')
+  })
+  // ----------------------------------------------------
   // Mode: TemplateLiteral Patterns
   // ----------------------------------------------------
   it('Should map template literal patterns 1', () => {
