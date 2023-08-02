@@ -248,7 +248,7 @@ export interface TAsyncIterator<T extends TSchema = TSchema> extends TSchema {
   items: T
 }
 // -------------------------------------------------------------------------------
-// Awaited
+// TAwaited
 // -------------------------------------------------------------------------------
 // prettier-ignore
 export type TAwaitedRest<T extends TSchema[]> = T extends [infer L, ...infer R]
@@ -394,7 +394,6 @@ export interface TFunction<T extends TSchema[] = TSchema[], U extends TSchema = 
 // --------------------------------------------------------------------------
 // TIndex
 // --------------------------------------------------------------------------
-
 export type TIndexRest<T extends TSchema[], K extends TPropertyKey> = T extends [infer L, ...infer R] ? [TIndexType<AssertType<L>, K>, ...TIndexRest<AssertRest<R>, K>] : []
 export type TIndexProperty<T extends TProperties, K extends TPropertyKey> = K extends keyof T ? [T[K]] : []
 export type TIndexTuple<T extends TSchema[], K extends TPropertyKey> = K extends keyof T ? [T[K]] : []
@@ -418,6 +417,34 @@ export type TIndex<T extends TSchema, K extends TPropertyKey[]> =
   T extends TObject    ? UnionType<Flat<TIndexRestMany<T, K>>> :
   T extends TTuple     ? UnionType<Flat<TIndexRestMany<T, K>>> :
   TNever
+// --------------------------------------------------------------------------
+// TIntrinsic
+// --------------------------------------------------------------------------
+export type TIntrinsicMode = 'Uppercase' | 'Lowercase' | 'Capitalize' | 'Uncapitalize'
+// prettier-ignore
+export type TIntrinsicTemplateLiteral<T extends TTemplateLiteralKind[], M extends TIntrinsicMode> =
+  M extends ('Lowercase' | 'Uppercase')     ? T extends [infer L, ...infer R] ? [TIntrinsic<AssertType<L>, M>, ...TIntrinsicTemplateLiteral<AssertRest<R>, M>] : T :  
+  M extends ('Capitalize' | 'Uncapitalize') ? T extends [infer L, ...infer R] ? [TIntrinsic<AssertType<L>, M>, ...R] : T :  
+  T
+// prettier-ignore
+export type TIntrinsicLiteral<T, M extends TIntrinsicMode> = 
+  T extends string ? 
+    M extends 'Uncapitalize' ? Uncapitalize<T> :  
+    M extends 'Capitalize' ? Capitalize<T> :
+    M extends 'Uppercase' ? Uppercase<T> :
+    M extends 'Lowercase' ? Lowercase<T> :
+    string
+  : ''
+// prettier-ignore
+export type TIntrinsicRest<T extends TSchema[], M extends TIntrinsicMode> = T extends [infer L, ...infer R]
+  ? [TIntrinsic<AssertType<L>, M>, ...TIntrinsicRest<AssertRest<R>, M>]
+  : []
+// prettier-ignore
+export type TIntrinsic<T extends TSchema, M extends TIntrinsicMode> =
+  T extends TTemplateLiteral<infer S> ? TTemplateLiteral<TIntrinsicTemplateLiteral<S, M>> :
+  T extends TUnion<infer S> ? TUnion<TIntrinsicRest<S, M>> :
+  T extends TLiteral<infer S> ? TLiteral<TIntrinsicLiteral<S, M>> :
+  T
 // --------------------------------------------------------------------------
 // TInteger
 // --------------------------------------------------------------------------
@@ -1306,8 +1333,15 @@ export namespace TypeGuard {
   }
   /** Returns true if the given schema is TString */
   export function TString(schema: unknown): schema is TString {
+    // prettier-ignore
     return (
-      TKindOf(schema, 'String') && schema.type === 'string' && IsOptionalString(schema.$id) && IsOptionalNumber(schema.minLength) && IsOptionalNumber(schema.maxLength) && IsOptionalPattern(schema.pattern) && IsOptionalFormat(schema.format)
+      TKindOf(schema, 'String') && 
+      schema.type === 'string' && 
+      IsOptionalString(schema.$id) && 
+      IsOptionalNumber(schema.minLength) && 
+      IsOptionalNumber(schema.maxLength) && 
+      IsOptionalPattern(schema.pattern) && 
+      IsOptionalFormat(schema.format)
     )
   }
   /** Returns true if the given schema is TSymbol */
@@ -2106,6 +2140,61 @@ export namespace IndexedAccessor {
   }
 }
 // --------------------------------------------------------------------------
+// Intrinsic
+// --------------------------------------------------------------------------
+export namespace Intrinsic {
+  function Uncapitalize(value: string): string {
+    const [first, rest] = [value.slice(0, 1), value.slice(1)]
+    return `${first.toLowerCase()}${rest}`
+  }
+  function Capitalize(value: string): string {
+    const [first, rest] = [value.slice(0, 1), value.slice(1)]
+    return `${first.toUpperCase()}${rest}`
+  }
+  function Uppercase(value: string): string {
+    return value.toUpperCase()
+  }
+  function Lowercase(value: string): string {
+    return value.toLowerCase()
+  }
+  function IntrinsicTemplateLiteral(schema: TTemplateLiteral, mode: TIntrinsicMode) {
+    // note: template literals require special runtime handling as they are encoded in string patterns.
+    // This diverges from the mapped type which would otherwise map on the template literal kind.
+    const expression = TemplateLiteralParser.ParseExact(schema.pattern)
+    const finite = TemplateLiteralFinite.Check(expression)
+    if (!finite) return { ...schema, pattern: IntrinsicLiteral(schema.pattern, mode) } as any
+    const strings = [...TemplateLiteralGenerator.Generate(expression)]
+    const literals = strings.map((value) => Type.Literal(value))
+    const mapped = IntrinsicRest(literals as any, mode)
+    const union = Type.Union(mapped)
+    return Type.TemplateLiteral([union])
+  }
+  function IntrinsicLiteral(value: TLiteralValue, mode: TIntrinsicMode) {
+    // prettier-ignore
+    return typeof value === 'string' ? (
+      mode === 'Uncapitalize' ? Uncapitalize(value) :
+      mode === 'Capitalize' ? Capitalize(value) : 
+      mode === 'Uppercase' ? Uppercase(value) : 
+      mode === 'Lowercase' ? Lowercase(value) : 
+    value) : ''
+  }
+  function IntrinsicRest(schema: TSchema[], mode: TIntrinsicMode): TSchema[] {
+    if (schema.length === 0) return []
+    const [L, ...R] = schema
+    return [Map(L, mode), ...IntrinsicRest(R, mode)]
+  }
+  function Visit(schema: TSchema, mode: TIntrinsicMode) {
+    if (TypeGuard.TTemplateLiteral(schema)) return IntrinsicTemplateLiteral(schema, mode)
+    if (TypeGuard.TUnion(schema)) return Type.Union(IntrinsicRest(schema.anyOf, mode))
+    if (TypeGuard.TLiteral(schema)) return Type.Literal(IntrinsicLiteral(schema.const, mode))
+    return schema
+  }
+  /** Applies an intrinsic string manipulation to the given type. */
+  export function Map<T extends TSchema, M extends TIntrinsicMode>(schema: T, mode: M): TIntrinsic<T, M> {
+    return Visit(schema, mode)
+  }
+}
+// --------------------------------------------------------------------------
 // ObjectMap
 // --------------------------------------------------------------------------
 export namespace ObjectMap {
@@ -2538,10 +2627,9 @@ export class StandardTypeBuilder extends TypeBuilder {
   public Boolean(options: SchemaOptions = {}): TBoolean {
     return this.Create({ ...options, [Kind]: 'Boolean', type: 'boolean' })
   }
-  /** `[Standard]` Capitalize a LiteralString type */
-  public Capitalize<T extends TLiteral<string>>(schema: T, options: SchemaOptions = {}): TLiteral<Capitalize<T['const']>> {
-    const [first, rest] = [schema.const.slice(0, 1), schema.const.slice(1)]
-    return Type.Literal(`${first.toUpperCase()}${rest}` as Capitalize<T['const']>, options)
+  /** `[Standard]` Intrinsic function to Capitalize LiteralString types */
+  public Capitalize<T extends TSchema>(schema: T, options: SchemaOptions = {}): TIntrinsic<T, 'Capitalize'> {
+    return { ...Intrinsic.Map(TypeClone.Clone(schema), 'Capitalize'), ...options }
   }
   /** `[Standard]` Creates a Composite object type */
   public Composite<T extends TObject[]>(objects: [...T], options?: ObjectOptions): TComposite<T> {
@@ -2665,9 +2753,9 @@ export class StandardTypeBuilder extends TypeBuilder {
   public Literal<T extends TLiteralValue>(value: T, options: SchemaOptions = {}): TLiteral<T> {
     return this.Create({ ...options, [Kind]: 'Literal', const: value, type: typeof value as 'string' | 'number' | 'boolean' })
   }
-  /** `[Standard]` Lowercase a LiteralString type */
-  public Lowercase<T extends TLiteral<string>>(schema: T, options: SchemaOptions = {}): TLiteral<Lowercase<T['const']>> {
-    return Type.Literal(schema.const.toLowerCase() as Lowercase<T['const']>, options)
+  /** `[Standard]` Intrinsic function to Lowercase LiteralString types */
+  public Lowercase<T extends TSchema>(schema: T, options: SchemaOptions = {}): TIntrinsic<T, 'Lowercase'> {
+    return { ...Intrinsic.Map(TypeClone.Clone(schema), 'Lowercase'), ...options }
   }
   /** `[Standard]` Creates a Never type */
   public Never(options: SchemaOptions = {}): TNever {
@@ -2857,10 +2945,9 @@ export class StandardTypeBuilder extends TypeBuilder {
       { ...options, [Kind]: 'Tuple', type: 'array', minItems, maxItems }) as any
     return this.Create(schema)
   }
-  /** `[Standard]` Uncapitalize a LiteralString type */
-  public Uncapitalize<T extends TLiteral<string>>(schema: T, options: SchemaOptions = {}): TLiteral<Uncapitalize<T['const']>> {
-    const [first, rest] = [schema.const.slice(0, 1), schema.const.slice(1)]
-    return Type.Literal(`${first.toLocaleLowerCase()}${rest}` as Uncapitalize<T['const']>, options)
+  /** `[Standard]` Intrinsic function to Uncapitalize LiteralString types */
+  public Uncapitalize<T extends TSchema>(schema: T, options: SchemaOptions = {}): TIntrinsic<T, 'Uncapitalize'> {
+    return { ...Intrinsic.Map(TypeClone.Clone(schema), 'Uncapitalize'), ...options }
   }
   /** `[Standard]` Creates a Union type */
   public Union(anyOf: [], options?: SchemaOptions): TNever
@@ -2890,9 +2977,9 @@ export class StandardTypeBuilder extends TypeBuilder {
   public Unsafe<T>(options: UnsafeOptions = {}): TUnsafe<T> {
     return this.Create({ ...options, [Kind]: options[Kind] || 'Unsafe' })
   }
-  /** `[Standard]` Uppercase a LiteralString type */
-  public Uppercase<T extends TLiteral<string>>(schema: T, options: SchemaOptions = {}): TLiteral<Uppercase<T['const']>> {
-    return Type.Literal(schema.const.toUpperCase() as Uppercase<T['const']>, options)
+  /** `[Standard]` Intrinsic function to Uppercase LiteralString types */
+  public Uppercase<T extends TSchema>(schema: T, options: SchemaOptions = {}): TIntrinsic<T, 'Uppercase'> {
+    return { ...Intrinsic.Map(TypeClone.Clone(schema), 'Uppercase'), ...options }
   }
 }
 // --------------------------------------------------------------------------
