@@ -434,7 +434,7 @@ export type TIntrinsicLiteral<T, M extends TIntrinsicMode> =
     M extends 'Uppercase' ? Uppercase<T> :
     M extends 'Lowercase' ? Lowercase<T> :
     string
-  : ''
+  : T
 // prettier-ignore
 export type TIntrinsicRest<T extends TSchema[], M extends TIntrinsicMode> = T extends [infer L, ...infer R]
   ? [TIntrinsic<AssertType<L>, M>, ...TIntrinsicRest<AssertRest<R>, M>]
@@ -2176,7 +2176,7 @@ export namespace Intrinsic {
       mode === 'Capitalize' ? Capitalize(value) : 
       mode === 'Uppercase' ? Uppercase(value) : 
       mode === 'Lowercase' ? Lowercase(value) : 
-    value) : ''
+    value) : value.toString()
   }
   function IntrinsicRest(schema: TSchema[], mode: TIntrinsicMode): TSchema[] {
     if (schema.length === 0) return []

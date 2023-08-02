@@ -25,4 +25,9 @@ describe('type/guard/Uppercase', () => {
     Assert.IsTrue(TypeGuard.TTemplateLiteral(T))
     Assert.IsEqual(T.pattern, '^(HELLO0|HELLO1)$')
   })
+  it('Should guard for Uppercase 5', () => {
+    const T = Type.Uppercase(Type.TemplateLiteral([Type.Literal('hello'), Type.Union([Type.Literal(0), Type.Literal(1)])]))
+    Assert.IsTrue(TypeGuard.TTemplateLiteral(T))
+    Assert.IsEqual(T.pattern, '^(HELLO0|HELLO1)$')
+  })
 })

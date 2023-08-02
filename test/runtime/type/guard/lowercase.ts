@@ -25,4 +25,9 @@ describe('type/guard/Lowercase', () => {
     Assert.IsTrue(TypeGuard.TTemplateLiteral(T))
     Assert.IsEqual(T.pattern, '^(hello0|hello1)$')
   })
+  it('Should guard for Lowercase 5', () => {
+    const T = Type.Lowercase(Type.TemplateLiteral([Type.Literal('HELLO'), Type.Union([Type.Literal(0), Type.Literal(1)])]))
+    Assert.IsTrue(TypeGuard.TTemplateLiteral(T))
+    Assert.IsEqual(T.pattern, '^(hello0|hello1)$')
+  })
 })

@@ -25,4 +25,9 @@ describe('type/guard/Capitalize', () => {
     Assert.IsTrue(TypeGuard.TTemplateLiteral(T))
     Assert.IsEqual(T.pattern, '^(Hello0|Hello1)$')
   })
+  it('Should guard for Capitalize 5', () => {
+    const T = Type.Capitalize(Type.TemplateLiteral([Type.Literal('hello'), Type.Union([Type.Literal(0), Type.Literal(1)])]))
+    Assert.IsTrue(TypeGuard.TTemplateLiteral(T))
+    Assert.IsEqual(T.pattern, '^(Hello0|Hello1)$')
+  })
 })
