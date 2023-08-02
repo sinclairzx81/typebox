@@ -83,9 +83,9 @@ License MIT
   - [Recursive](#types-recursive)
   - [Conditional](#types-conditional)
   - [Template Literal](#types-template-literal)
-  - [Intrinsic String](#types-intrinsic-string)
   - [Indexed](#types-indexed)
   - [Negated](#types-negated)
+  - [Intrinsic](#types-intrinsic)
   - [Rest](#types-rest)
   - [Guards](#types-guards)
   - [Unsafe](#types-unsafe)
@@ -875,34 +875,6 @@ const R = Type.Record(T, Type.String())              // const R = {
                                                      // }
 ```
 
-<a name='types-intrinsic-string'></a>
-
-### Intrinsic String Types
-
-TypeBox supports a set of intrinsic string mapping functions which can be used on string literals. These functions match the TypeScript string intrinsic types `Uppercase`, `Lowercase`, `Capitalize` and `Uncapitalize`. These functions are supported for literal strings, template literals and union types. The following shows the literal string usage.
-
-```typescript
-// TypeScript
-
-type A = Uncapitalize<'HELLO'>                      // type A = 'hELLO'
-
-type B = Capitalize<'hello'>                        // type B = 'Hello'
-
-type C = Uppercase<'hello'>                         // type C = 'HELLO'
-
-type D = Lowercase<'HELLO'>                         // type D = 'hello'
-
-// TypeBox
-
-const A = Type.Uncapitalize(Type.Literal('HELLO')) // const A: TLiteral<'hELLO'>
-
-const B = Type.Capitalize(Type.Literal('hello'))   // const B: TLiteral<'Hello'>
-
-const C = Type.Uppercase(Type.Literal('hello'))    // const C: TLiteral<'HELLO'>
-
-const D = Type.Lowercase(Type.Literal('HELLO'))    // const D: TLiteral<'hello'>
-```
-
 <a name='types-indexed'></a>
 
 ### Indexed Access Types
@@ -985,6 +957,41 @@ const Even = Type.Number({ multipleOf: 2 })
 
 const Odd = Type.Intersect([Type.Number(), Type.Not(Even)])          
 ```
+
+<a name='types-intrinsic'></a>
+
+### Intrinsic String Types
+
+TypeBox supports TypeScript intrinsic string manipulation types `Uppercase`, `Lowercase`, `Capitalize` and `Uncapitalize`. These can be applied to string literals, template literals and unions. The following shows general usage.
+
+```typescript
+// TypeScript
+
+type A = Capitalize<'hello'>                        // type A = 'Hello'
+
+type B = Capitalize<'hello' | 'world'>              // type C = 'Hello' | 'World'
+
+type C = Capitalize<`hello${1|2|3}`>                // type B = 'Hello1' | 'Hello2' | 'Hello3'
+
+// TypeBox
+
+const A = Type.Capitalize(Type.Literal('hello'))    // const A: TLiteral<'Hello'>
+
+const B = Type.Capitalize(Type.Union([              // const B: TUnion<[
+  Type.Literal('hello'),                            //   TLiteral<'Hello'>,
+  Type.Literal('world')                             //   TLiteral<'World'>
+]))                                                 // ]>
+
+const C = Type.Capitalize(                          // const C: TTemplateLiteral<[
+  Type.TemplateLiteral('hello${1|2|3}')             //   TLiteral<'Hello'>,
+)                                                   //   TUnion<[
+                                                    //     TLiteral<'1'>,
+                                                    //     TLiteral<'2'>,
+                                                    //     TLiteral<'3'>
+                                                    //   ]>
+                                                    // ]>
+```
+
 <a name='types-rest'></a>
 
 ### Rest Types
