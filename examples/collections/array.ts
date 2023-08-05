@@ -27,18 +27,18 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import { TypeCheck, TypeCompiler, ValueError } from '@sinclair/typebox/compiler'
-import { TSchema, Static } from '@sinclair/typebox'
+import { TSchema, Static, TypeBoxError } from '@sinclair/typebox'
 import { Value } from '@sinclair/typebox/value'
 
 // ----------------------------------------------------------------
 // TypeArrayError
 // ----------------------------------------------------------------
-export class TypeArrayError extends Error {
+export class TypeArrayError extends TypeBoxError {
   constructor(message: string) {
     super(`${message}`)
   }
 }
-export class TypeArrayLengthError extends Error {
+export class TypeArrayLengthError extends TypeBoxError {
   constructor() {
     super('arrayLength not a number')
   }

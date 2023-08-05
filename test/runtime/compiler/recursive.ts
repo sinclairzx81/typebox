@@ -2,7 +2,7 @@ import { Type } from '@sinclair/typebox'
 import { Assert } from '../assert/index'
 import { Ok, Fail } from './validate'
 
-describe('type/compiler/Recursive', () => {
+describe('compiler/Recursive', () => {
   it('Should generate default ordinal $id if not specified', () => {
     const Node = Type.Recursive((Node) =>
       Type.Object({

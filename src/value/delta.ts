@@ -26,10 +26,11 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { IsPlainObject, IsArray, IsTypedArray, IsValueType, IsSymbol, IsUndefined } from './guard'
+import type { ObjectType, ArrayType, TypedArrayType, ValueType } from './guard'
 import { Type, Static } from '../typebox'
 import { ValuePointer } from './pointer'
-import * as ValueGuard from './guard'
-import * as ValueClone from './clone'
+import { Clone } from './clone'
 
 // --------------------------------------------------------------------------
 // Commands
@@ -58,12 +59,12 @@ export const Edit = Type.Union([Insert, Update, Delete])
 // --------------------------------------------------------------------------
 export class ValueDeltaObjectWithSymbolKeyError extends Error {
   constructor(public readonly key: unknown) {
-    super('ValueDelta: Cannot diff objects with symbol keys')
+    super('Cannot diff objects with symbol keys')
   }
 }
 export class ValueDeltaUnableToDiffUnknownValue extends Error {
   constructor(public readonly value: unknown) {
-    super('ValueDelta: Unable to create diff edits for unknown value')
+    super('Unable to create diff edits for unknown value')
   }
 }
 // --------------------------------------------------------------------------
@@ -81,30 +82,30 @@ function CreateDelete(path: string): Edit {
 // --------------------------------------------------------------------------
 // Diffing Generators
 // --------------------------------------------------------------------------
-function* ObjectType(path: string, current: ValueGuard.ObjectType, next: unknown): IterableIterator<Edit> {
-  if (!ValueGuard.IsPlainObject(next)) return yield CreateUpdate(path, next)
+function* ObjectType(path: string, current: ObjectType, next: unknown): IterableIterator<Edit> {
+  if (!IsPlainObject(next)) return yield CreateUpdate(path, next)
   const currentKeys = [...Object.keys(current), ...Object.getOwnPropertySymbols(current)]
   const nextKeys = [...Object.keys(next), ...Object.getOwnPropertySymbols(next)]
   for (const key of currentKeys) {
-    if (ValueGuard.IsSymbol(key)) throw new ValueDeltaObjectWithSymbolKeyError(key)
-    if (ValueGuard.IsUndefined(next[key]) && nextKeys.includes(key)) yield CreateUpdate(`${path}/${String(key)}`, undefined)
+    if (IsSymbol(key)) throw new ValueDeltaObjectWithSymbolKeyError(key)
+    if (IsUndefined(next[key]) && nextKeys.includes(key)) yield CreateUpdate(`${path}/${String(key)}`, undefined)
   }
   for (const key of nextKeys) {
-    if (ValueGuard.IsUndefined(current[key]) || ValueGuard.IsUndefined(next[key])) continue
-    if (ValueGuard.IsSymbol(key)) throw new ValueDeltaObjectWithSymbolKeyError(key)
+    if (IsUndefined(current[key]) || IsUndefined(next[key])) continue
+    if (IsSymbol(key)) throw new ValueDeltaObjectWithSymbolKeyError(key)
     yield* Visit(`${path}/${String(key)}`, current[key], next[key])
   }
   for (const key of nextKeys) {
-    if (ValueGuard.IsSymbol(key)) throw new ValueDeltaObjectWithSymbolKeyError(key)
-    if (ValueGuard.IsUndefined(current[key])) yield CreateInsert(`${path}/${String(key)}`, next[key])
+    if (IsSymbol(key)) throw new ValueDeltaObjectWithSymbolKeyError(key)
+    if (IsUndefined(current[key])) yield CreateInsert(`${path}/${String(key)}`, next[key])
   }
   for (const key of currentKeys.reverse()) {
-    if (ValueGuard.IsSymbol(key)) throw new ValueDeltaObjectWithSymbolKeyError(key)
-    if (ValueGuard.IsUndefined(next[key]) && !nextKeys.includes(key)) yield CreateDelete(`${path}/${String(key)}`)
+    if (IsSymbol(key)) throw new ValueDeltaObjectWithSymbolKeyError(key)
+    if (IsUndefined(next[key]) && !nextKeys.includes(key)) yield CreateDelete(`${path}/${String(key)}`)
   }
 }
-function* ArrayType(path: string, current: ValueGuard.ArrayType, next: unknown): IterableIterator<Edit> {
-  if (!ValueGuard.IsArray(next)) return yield CreateUpdate(path, next)
+function* ArrayType(path: string, current: ArrayType, next: unknown): IterableIterator<Edit> {
+  if (!IsArray(next)) return yield CreateUpdate(path, next)
   for (let i = 0; i < Math.min(current.length, next.length); i++) {
     yield* Visit(`${path}/${i}`, current[i], next[i])
   }
@@ -117,21 +118,21 @@ function* ArrayType(path: string, current: ValueGuard.ArrayType, next: unknown):
     yield CreateDelete(`${path}/${i}`)
   }
 }
-function* TypedArrayType(path: string, current: ValueGuard.TypedArrayType, next: unknown): IterableIterator<Edit> {
-  if (!ValueGuard.IsTypedArray(next) || current.length !== next.length || Object.getPrototypeOf(current).constructor.name !== Object.getPrototypeOf(next).constructor.name) return yield CreateUpdate(path, next)
+function* TypedArrayType(path: string, current: TypedArrayType, next: unknown): IterableIterator<Edit> {
+  if (!IsTypedArray(next) || current.length !== next.length || Object.getPrototypeOf(current).constructor.name !== Object.getPrototypeOf(next).constructor.name) return yield CreateUpdate(path, next)
   for (let i = 0; i < Math.min(current.length, next.length); i++) {
     yield* Visit(`${path}/${i}`, current[i], next[i])
   }
 }
-function* ValueType(path: string, current: ValueGuard.ValueType, next: unknown): IterableIterator<Edit> {
+function* ValueType(path: string, current: ValueType, next: unknown): IterableIterator<Edit> {
   if (current === next) return
   yield CreateUpdate(path, next)
 }
 function* Visit(path: string, current: unknown, next: unknown): IterableIterator<Edit> {
-  if (ValueGuard.IsPlainObject(current)) return yield* ObjectType(path, current, next)
-  if (ValueGuard.IsArray(current)) return yield* ArrayType(path, current, next)
-  if (ValueGuard.IsTypedArray(current)) return yield* TypedArrayType(path, current, next)
-  if (ValueGuard.IsValueType(current)) return yield* ValueType(path, current, next)
+  if (IsPlainObject(current)) return yield* ObjectType(path, current, next)
+  if (IsArray(current)) return yield* ArrayType(path, current, next)
+  if (IsTypedArray(current)) return yield* TypedArrayType(path, current, next)
+  if (IsValueType(current)) return yield* ValueType(path, current, next)
   throw new ValueDeltaUnableToDiffUnknownValue(current)
 }
 // ---------------------------------------------------------------------
@@ -151,12 +152,12 @@ function IsIdentity(edits: Edit[]) {
 }
 export function Patch<T = any>(current: unknown, edits: Edit[]): T {
   if (IsRootUpdate(edits)) {
-    return ValueClone.Clone(edits[0].value) as T
+    return Clone(edits[0].value) as T
   }
   if (IsIdentity(edits)) {
-    return ValueClone.Clone(current) as T
+    return Clone(current) as T
   }
-  const clone = ValueClone.Clone(current)
+  const clone = Clone(current)
   for (const edit of edits) {
     switch (edit.type) {
       case 'insert': {

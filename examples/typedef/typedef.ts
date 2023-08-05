@@ -26,6 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { TypeSystemErrorFunction, DefaultErrorFunction } from '@sinclair/typebox/system'
 import * as Types from '@sinclair/typebox'
 
 // --------------------------------------------------------------------------
@@ -239,9 +240,9 @@ export namespace TimestampFormat {
 // --------------------------------------------------------------------------
 // ValueCheck
 // --------------------------------------------------------------------------
-export class ValueCheckError extends Error {
+export class ValueCheckError extends Types.TypeBoxError {
   constructor(public readonly schema: Types.TSchema) {
-    super('ValueCheck: Unknown type')
+    super('Unknown type')
   }
 }
 export namespace ValueCheck {
@@ -483,6 +484,27 @@ Types.TypeRegistry.Set<TRecord>('TypeDef:Record', (schema, value) => ValueCheck.
 Types.TypeRegistry.Set<TString>('TypeDef:String', (schema, value) => ValueCheck.Check(schema, value))
 Types.TypeRegistry.Set<TStruct>('TypeDef:Struct', (schema, value) => ValueCheck.Check(schema, value))
 Types.TypeRegistry.Set<TTimestamp>('TypeDef:Timestamp', (schema, value) => ValueCheck.Check(schema, value))
+// --------------------------------------------------------------------------
+// TypeSystemErrorFunction
+// --------------------------------------------------------------------------
+TypeSystemErrorFunction.Set((schema, type) => {
+  switch(schema[Types.Kind]) {
+    case 'TypeDef:Array': return 'Expected Array'
+    case 'TypeDef:Boolean': return 'Expected Boolean'
+    case 'TypeDef:Union': return 'Expected Union'
+    case 'TypeDef:Int8': return 'Expected Int8'
+    case 'TypeDef:Int16': return 'Expected Int16'
+    case 'TypeDef:Int32': return 'Expected Int32'
+    case 'TypeDef:Uint8': return 'Expected Uint8'
+    case 'TypeDef:Uint16': return 'Expected Uint16'
+    case 'TypeDef:Uint32': return 'Expected Uint32'
+    case 'TypeDef:Record': return 'Expected Record'
+    case 'TypeDef:String': return 'Expected String'
+    case 'TypeDef:Struct': return 'Expected Struct'
+    case 'TypeDef:Timestamp': return 'Expected Timestamp'
+  }
+  return DefaultErrorFunction(schema, type)
+})
 // --------------------------------------------------------------------------
 // TypeDefBuilder
 // --------------------------------------------------------------------------

@@ -1,7 +1,7 @@
 import { Type } from '@sinclair/typebox'
 import { Ok, Fail } from './validate'
 
-describe('type/compiler/Iterator', () => {
+describe('compiler/Iterator', () => {
   it('Should validate a iterator 1', () => {
     function* f() {}
     const T = Type.Iterator(Type.Any())

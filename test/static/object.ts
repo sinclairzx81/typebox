@@ -8,7 +8,7 @@ import { Type } from '@sinclair/typebox'
     C: Type.String(),
   })
 
-  Expect(T).ToInfer<{
+  Expect(T).ToStatic<{
     A: string
     B: string
     C: string
@@ -32,7 +32,7 @@ import { Type } from '@sinclair/typebox'
       C: Type.String(),
     }),
   })
-  Expect(T).ToInfer<{
+  Expect(T).ToStatic<{
     A: {
       A: string
       B: string
@@ -62,7 +62,7 @@ import { Type } from '@sinclair/typebox'
     },
   )
   // note: Pending TypeScript support for negated types.
-  Expect(T).ToInfer<{
+  Expect(T).ToStatic<{
     A: number
     B: number
     C: number

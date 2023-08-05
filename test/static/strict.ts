@@ -12,7 +12,7 @@ import { Type, Static } from '@sinclair/typebox'
 
   type T = Static<typeof T>
 
-  Expect(T).ToInfer<{
+  Expect(T).ToStatic<{
     A: string
     B: string
     C: string

@@ -26,22 +26,18 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { TypeSystem } from '../system/index'
+import { IsArray, IsUint8Array, IsDate, IsPromise, IsFunction, IsAsyncIterator, IsIterator, IsBoolean, IsNumber, IsBigInt, IsString, IsSymbol, IsInteger, IsNull, IsUndefined } from './guard'
+import { TypeSystemPolicy } from '../system/index'
+import { Deref } from './deref'
+import { Hash } from './hash'
 import * as Types from '../typebox'
-import * as ValueGuard from './guard'
-import * as ValueHash from './hash'
 
 // --------------------------------------------------------------------------
 // Errors
 // --------------------------------------------------------------------------
-export class ValueCheckUnknownTypeError extends Error {
+export class ValueCheckUnknownTypeError extends Types.TypeBoxError {
   constructor(public readonly schema: Types.TSchema) {
-    super(`ValueCheck: ${schema[Types.Kind] ? `Unknown type '${schema[Types.Kind]}'` : 'Unknown type'}`)
-  }
-}
-export class ValueCheckDereferenceError extends Error {
-  constructor(public readonly schema: Types.TRef | Types.TThis) {
-    super(`ValueCheck: Unable to dereference type with $id '${schema.$ref}'`)
+    super(`Unknown type`)
   }
 }
 // --------------------------------------------------------------------------
@@ -57,36 +53,13 @@ function IsDefined<T>(value: unknown): value is T {
   return value !== undefined
 }
 // --------------------------------------------------------------------------
-// Policies
-// --------------------------------------------------------------------------
-function IsExactOptionalProperty(value: Record<keyof any, unknown>, key: string) {
-  return TypeSystem.ExactOptionalPropertyTypes ? key in value : value[key] !== undefined
-}
-function IsObject(value: unknown): value is Record<keyof any, unknown> {
-  const isObject = ValueGuard.IsObject(value)
-  return TypeSystem.AllowArrayObjects ? isObject : isObject && !ValueGuard.IsArray(value)
-}
-function IsRecordObject(value: unknown): value is Record<keyof any, unknown> {
-  return IsObject(value) && !(value instanceof Date) && !(value instanceof Uint8Array)
-}
-function IsNumber(value: unknown): value is number {
-  const isNumber = ValueGuard.IsNumber(value)
-  return TypeSystem.AllowNaN ? isNumber : isNumber && Number.isFinite(value)
-}
-function IsVoid(value: unknown): value is void {
-  const isUndefined = ValueGuard.IsUndefined(value)
-  return TypeSystem.AllowVoidNull ? isUndefined || value === null : isUndefined
-}
-// --------------------------------------------------------------------------
 // Types
 // --------------------------------------------------------------------------
 function TAny(schema: Types.TAny, references: Types.TSchema[], value: any): boolean {
   return true
 }
 function TArray(schema: Types.TArray, references: Types.TSchema[], value: any): boolean {
-  if (!Array.isArray(value)) {
-    return false
-  }
+  if (!IsArray(value)) return false
   if (IsDefined<number>(schema.minItems) && !(value.length >= schema.minItems)) {
     return false
   }
@@ -97,7 +70,7 @@ function TArray(schema: Types.TArray, references: Types.TSchema[], value: any): 
     return false
   }
   // prettier-ignore
-  if (schema.uniqueItems === true && !((function() { const set = new Set(); for(const element of value) { const hashed = ValueHash.Hash(element); if(set.has(hashed)) { return false } else { set.add(hashed) } } return true })())) {
+  if (schema.uniqueItems === true && !((function() { const set = new Set(); for(const element of value) { const hashed = Hash(element); if(set.has(hashed)) { return false } else { set.add(hashed) } } return true })())) {
       return false
     }
   // contains
@@ -105,7 +78,7 @@ function TArray(schema: Types.TArray, references: Types.TSchema[], value: any): 
     return true // exit
   }
   const containsSchema = IsDefined<Types.TSchema>(schema.contains) ? schema.contains : Types.Type.Never()
-  const containsCount = value.reduce((acc, value) => (Visit(containsSchema, references, value) ? acc + 1 : acc), 0)
+  const containsCount = value.reduce((acc: number, value) => (Visit(containsSchema, references, value) ? acc + 1 : acc), 0)
   if (containsCount === 0) {
     return false
   }
@@ -118,76 +91,72 @@ function TArray(schema: Types.TArray, references: Types.TSchema[], value: any): 
   return true
 }
 function TAsyncIterator(schema: Types.TAsyncIterator, references: Types.TSchema[], value: any): boolean {
-  return IsObject(value) && Symbol.asyncIterator in value
+  return IsAsyncIterator(value)
 }
 function TBigInt(schema: Types.TBigInt, references: Types.TSchema[], value: any): boolean {
-  if (!ValueGuard.IsBigInt(value)) {
-    return false
-  }
-  if (IsDefined<bigint>(schema.multipleOf) && !(value % schema.multipleOf === BigInt(0))) {
+  if (!IsBigInt(value)) return false
+  if (IsDefined<bigint>(schema.exclusiveMaximum) && !(value < schema.exclusiveMaximum)) {
     return false
   }
   if (IsDefined<bigint>(schema.exclusiveMinimum) && !(value > schema.exclusiveMinimum)) {
     return false
   }
-  if (IsDefined<bigint>(schema.exclusiveMaximum) && !(value < schema.exclusiveMaximum)) {
+  if (IsDefined<bigint>(schema.maximum) && !(value <= schema.maximum)) {
     return false
   }
   if (IsDefined<bigint>(schema.minimum) && !(value >= schema.minimum)) {
     return false
   }
-  if (IsDefined<bigint>(schema.maximum) && !(value <= schema.maximum)) {
+  if (IsDefined<bigint>(schema.multipleOf) && !(value % schema.multipleOf === BigInt(0))) {
     return false
   }
   return true
 }
 function TBoolean(schema: Types.TBoolean, references: Types.TSchema[], value: any): boolean {
-  return typeof value === 'boolean'
+  return IsBoolean(value)
 }
 function TConstructor(schema: Types.TConstructor, references: Types.TSchema[], value: any): boolean {
   return Visit(schema.returns, references, value.prototype)
 }
 function TDate(schema: Types.TDate, references: Types.TSchema[], value: any): boolean {
-  if (!(value instanceof Date)) {
-    return false
-  }
-  if (!IsNumber(value.getTime())) {
+  if (!IsDate(value)) return false
+  if (IsDefined<number>(schema.exclusiveMaximumTimestamp) && !(value.getTime() < schema.exclusiveMaximumTimestamp)) {
     return false
   }
   if (IsDefined<number>(schema.exclusiveMinimumTimestamp) && !(value.getTime() > schema.exclusiveMinimumTimestamp)) {
     return false
   }
-  if (IsDefined<number>(schema.exclusiveMaximumTimestamp) && !(value.getTime() < schema.exclusiveMaximumTimestamp)) {
+  if (IsDefined<number>(schema.maximumTimestamp) && !(value.getTime() <= schema.maximumTimestamp)) {
     return false
   }
   if (IsDefined<number>(schema.minimumTimestamp) && !(value.getTime() >= schema.minimumTimestamp)) {
     return false
   }
-  if (IsDefined<number>(schema.maximumTimestamp) && !(value.getTime() <= schema.maximumTimestamp)) {
+  if (IsDefined<number>(schema.multipleOfTimestamp) && !(value.getTime() % schema.multipleOfTimestamp === 0)) {
     return false
   }
   return true
 }
 function TFunction(schema: Types.TFunction, references: Types.TSchema[], value: any): boolean {
-  return typeof value === 'function'
+  return IsFunction(value)
 }
 function TInteger(schema: Types.TInteger, references: Types.TSchema[], value: any): boolean {
-  if (!ValueGuard.IsInteger(value)) {
-    return false
-  }
-  if (IsDefined<number>(schema.multipleOf) && !(value % schema.multipleOf === 0)) {
-    return false
-  }
-  if (IsDefined<number>(schema.exclusiveMinimum) && !(value > schema.exclusiveMinimum)) {
+  if (!IsInteger(value)) {
     return false
   }
   if (IsDefined<number>(schema.exclusiveMaximum) && !(value < schema.exclusiveMaximum)) {
     return false
   }
-  if (IsDefined<number>(schema.minimum) && !(value >= schema.minimum)) {
+  if (IsDefined<number>(schema.exclusiveMinimum) && !(value > schema.exclusiveMinimum)) {
     return false
   }
   if (IsDefined<number>(schema.maximum) && !(value <= schema.maximum)) {
+    return false
+  }
+  if (IsDefined<number>(schema.minimum) && !(value >= schema.minimum)) {
+    return false
+  }
+  if (IsDefined<number>(schema.multipleOf) && !(value % schema.multipleOf === 0)) {
     return false
   }
   return true
@@ -207,7 +176,7 @@ function TIntersect(schema: Types.TIntersect, references: Types.TSchema[], value
   }
 }
 function TIterator(schema: Types.TIterator, references: Types.TSchema[], value: any): boolean {
-  return IsObject(value) && Symbol.iterator in value
+  return IsIterator(value)
 }
 function TLiteral(schema: Types.TLiteral, references: Types.TSchema[], value: any): boolean {
   return value === schema.const
@@ -219,19 +188,14 @@ function TNot(schema: Types.TNot, references: Types.TSchema[], value: any): bool
   return !Visit(schema.not, references, value)
 }
 function TNull(schema: Types.TNull, references: Types.TSchema[], value: any): boolean {
-  return value === null
+  return IsNull(value)
 }
 function TNumber(schema: Types.TNumber, references: Types.TSchema[], value: any): boolean {
-  if (!IsNumber(value)) {
-    return false
-  }
-  if (IsDefined<number>(schema.multipleOf) && !(value % schema.multipleOf === 0)) {
+  if (!TypeSystemPolicy.IsNumberLike(value)) return false
+  if (IsDefined<number>(schema.exclusiveMaximum) && !(value < schema.exclusiveMaximum)) {
     return false
   }
   if (IsDefined<number>(schema.exclusiveMinimum) && !(value > schema.exclusiveMinimum)) {
-    return false
-  }
-  if (IsDefined<number>(schema.exclusiveMaximum) && !(value < schema.exclusiveMaximum)) {
     return false
   }
   if (IsDefined<number>(schema.minimum) && !(value >= schema.minimum)) {
@@ -240,12 +204,13 @@ function TNumber(schema: Types.TNumber, references: Types.TSchema[], value: any)
   if (IsDefined<number>(schema.maximum) && !(value <= schema.maximum)) {
     return false
   }
+  if (IsDefined<number>(schema.multipleOf) && !(value % schema.multipleOf === 0)) {
+    return false
+  }
   return true
 }
 function TObject(schema: Types.TObject, references: Types.TSchema[], value: any): boolean {
-  if (!IsObject(value)) {
-    return false
-  }
+  if (!TypeSystemPolicy.IsObjectLike(value)) return false
   if (IsDefined<number>(schema.minProperties) && !(Object.getOwnPropertyNames(value).length >= schema.minProperties)) {
     return false
   }
@@ -263,7 +228,7 @@ function TObject(schema: Types.TObject, references: Types.TSchema[], value: any)
         return false
       }
     } else {
-      if (IsExactOptionalProperty(value, knownKey) && !Visit(property, references, value[knownKey])) {
+      if (TypeSystemPolicy.IsExactOptionalProperty(value, knownKey) && !Visit(property, references, value[knownKey])) {
         return false
       }
     }
@@ -284,10 +249,10 @@ function TObject(schema: Types.TObject, references: Types.TSchema[], value: any)
   }
 }
 function TPromise(schema: Types.TPromise<any>, references: Types.TSchema[], value: any): boolean {
-  return typeof value === 'object' && typeof value.then === 'function'
+  return IsPromise(value)
 }
 function TRecord(schema: Types.TRecord<any, any>, references: Types.TSchema[], value: any): boolean {
-  if (!IsRecordObject(value)) {
+  if (!TypeSystemPolicy.IsRecordLike(value)) {
     return false
   }
   if (IsDefined<number>(schema.minProperties) && !(Object.getOwnPropertyNames(value).length >= schema.minProperties)) {
@@ -298,27 +263,27 @@ function TRecord(schema: Types.TRecord<any, any>, references: Types.TSchema[], v
   }
   const [patternKey, patternSchema] = Object.entries(schema.patternProperties)[0]
   const regex = new RegExp(patternKey)
-  return Object.entries(value).every(([key, value]) => {
-    if (regex.test(key)) {
-      return Visit(patternSchema, references, value)
-    }
-    if (typeof schema.additionalProperties === 'object') {
-      return Visit(schema.additionalProperties, references, value)
-    }
-    if (schema.additionalProperties === false) {
-      return false
-    }
-    return true
+  // prettier-ignore
+  const check1 = Object.entries(value).every(([key, value]) => {
+    return (regex.test(key)) ? Visit(patternSchema, references, value) : true
   })
+  // prettier-ignore
+  const check2 = typeof schema.additionalProperties === 'object' ? Object.entries(value).every(([key, value]) => {
+    return (!regex.test(key)) ? Visit(schema.additionalProperties as Types.TSchema, references, value) : true
+  }) : true
+  const check3 =
+    schema.additionalProperties === false
+      ? Object.getOwnPropertyNames(value).every((key) => {
+          return regex.test(key)
+        })
+      : true
+  return check1 && check2 && check3
 }
 function TRef(schema: Types.TRef<any>, references: Types.TSchema[], value: any): boolean {
-  const index = references.findIndex((foreign) => foreign.$id === schema.$ref)
-  if (index === -1) throw new ValueCheckDereferenceError(schema)
-  const target = references[index]
-  return Visit(target, references, value)
+  return Visit(Deref(schema, references), references, value)
 }
 function TString(schema: Types.TString, references: Types.TSchema[], value: any): boolean {
-  if (!ValueGuard.IsString(value)) {
+  if (!IsString(value)) {
     return false
   }
   if (IsDefined<number>(schema.minLength)) {
@@ -339,25 +304,16 @@ function TString(schema: Types.TString, references: Types.TSchema[], value: any)
   return true
 }
 function TSymbol(schema: Types.TSymbol, references: Types.TSchema[], value: any): boolean {
-  if (!(typeof value === 'symbol')) {
-    return false
-  }
-  return true
+  return IsSymbol(value)
 }
 function TTemplateLiteral(schema: Types.TTemplateLiteralKind, references: Types.TSchema[], value: any): boolean {
-  if (!ValueGuard.IsString(value)) {
-    return false
-  }
-  return new RegExp(schema.pattern).test(value)
+  return IsString(value) && new RegExp(schema.pattern).test(value)
 }
 function TThis(schema: Types.TThis, references: Types.TSchema[], value: any): boolean {
-  const index = references.findIndex((foreign) => foreign.$id === schema.$ref)
-  if (index === -1) throw new ValueCheckDereferenceError(schema)
-  const target = references[index]
-  return Visit(target, references, value)
+  return Visit(Deref(schema, references), references, value)
 }
 function TTuple(schema: Types.TTuple<any[]>, references: Types.TSchema[], value: any): boolean {
-  if (!ValueGuard.IsArray(value)) {
+  if (!IsArray(value)) {
     return false
   }
   if (schema.items === undefined && !(value.length === 0)) {
@@ -375,13 +331,13 @@ function TTuple(schema: Types.TTuple<any[]>, references: Types.TSchema[], value:
   return true
 }
 function TUndefined(schema: Types.TUndefined, references: Types.TSchema[], value: any): boolean {
-  return value === undefined
+  return IsUndefined(value)
 }
 function TUnion(schema: Types.TUnion<any[]>, references: Types.TSchema[], value: any): boolean {
   return schema.anyOf.some((inner) => Visit(inner, references, value))
 }
 function TUint8Array(schema: Types.TUint8Array, references: Types.TSchema[], value: any): boolean {
-  if (!(value instanceof Uint8Array)) {
+  if (!IsUint8Array(value)) {
     return false
   }
   if (IsDefined<number>(schema.maxByteLength) && !(value.length <= schema.maxByteLength)) {
@@ -396,7 +352,7 @@ function TUnknown(schema: Types.TUnknown, references: Types.TSchema[], value: an
   return true
 }
 function TVoid(schema: Types.TVoid, references: Types.TSchema[], value: any): boolean {
-  return IsVoid(value)
+  return TypeSystemPolicy.IsVoidLike(value)
 }
 function TKind(schema: Types.TSchema, references: Types.TSchema[], value: unknown): boolean {
   if (!Types.TypeRegistry.Has(schema[Types.Kind])) return false

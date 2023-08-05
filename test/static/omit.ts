@@ -12,7 +12,7 @@ import { Type, Static } from '@sinclair/typebox'
 
   type T = Static<typeof T>
 
-  Expect(T).ToInfer<{
+  Expect(T).ToStatic<{
     C: string
   }>()
 }
@@ -30,7 +30,7 @@ import { Type, Static } from '@sinclair/typebox'
 
   type T = Static<typeof T>
 
-  Expect(T).ToInfer<{
+  Expect(T).ToStatic<{
     C: string
   }>()
 }
@@ -50,7 +50,7 @@ import { Type, Static } from '@sinclair/typebox'
 
   type T = Static<typeof T>
 
-  Expect(T).ToInfer<{
+  Expect(T).ToStatic<{
     C: string
   }>()
 }
@@ -66,7 +66,7 @@ import { Type, Static } from '@sinclair/typebox'
   })
   const T = Type.Intersect([Union, Extended])
 
-  Expect(T).ToInfer<
+  Expect(T).ToStatic<
     (
       | {
           type: 'A'
@@ -86,7 +86,7 @@ import { Type, Static } from '@sinclair/typebox'
 
   const P = Type.Omit(T, ['type', 'x'])
 
-  Expect(P).ToInfer<
+  Expect(P).ToStatic<
     ({} | {} | {}) & {
       y: number
       z: number
@@ -95,7 +95,7 @@ import { Type, Static } from '@sinclair/typebox'
 
   const O = Type.Partial(P)
 
-  Expect(O).ToInfer<
+  Expect(O).ToStatic<
     ({} | {} | {}) & {
       y?: number | undefined
       z?: number | undefined

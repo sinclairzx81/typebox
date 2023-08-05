@@ -22,9 +22,15 @@ export async function start() {
 // -------------------------------------------------------------------------------
 // Benchmark
 // -------------------------------------------------------------------------------
-export async function benchmark() {
+export async function benchmark_compression() {
   await compression()
+}
+export async function benchmark_measurement() {
   await measurement()
+}
+export async function benchmark() {
+  await benchmark_compression()
+  await benchmark_measurement()
 }
 // -------------------------------------------------------------------------------
 // Test

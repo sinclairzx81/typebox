@@ -2,7 +2,7 @@ import { TypeGuard } from '@sinclair/typebox'
 import { Type } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
-describe('type/normal/Intersect', () => {
+describe('type/normalize/Intersect', () => {
   it('Normalize 1', () => {
     const T = Type.Intersect([Type.Number(), Type.String()])
     const R = TypeGuard.TIntersect(T)

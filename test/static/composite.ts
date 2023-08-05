@@ -13,7 +13,7 @@ import { Type, TObject, TIntersect, TNumber, TBoolean } from '@sinclair/typebox'
   })
   const T = Type.Composite([A, B])
 
-  Expect(T).ToInfer<{
+  Expect(T).ToStatic<{
     A: number
   }>()
 }
@@ -29,7 +29,7 @@ import { Type, TObject, TIntersect, TNumber, TBoolean } from '@sinclair/typebox'
   })
   const T = Type.Composite([A, B])
 
-  Expect(T).ToInfer<{
+  Expect(T).ToStatic<{
     A: never
   }>()
 }
@@ -45,7 +45,7 @@ import { Type, TObject, TIntersect, TNumber, TBoolean } from '@sinclair/typebox'
   })
   const T = Type.Composite([A, B])
 
-  Expect(T).ToInfer<{
+  Expect(T).ToStatic<{
     A: number
   }>()
 }
@@ -62,7 +62,7 @@ import { Type, TObject, TIntersect, TNumber, TBoolean } from '@sinclair/typebox'
     A: Type.Optional(Type.Number()),
   })
   const T = Type.Composite([A, B])
-  Expect(T).ToInfer<{
+  Expect(T).ToStatic<{
     A: number | undefined
   }>()
 }
@@ -74,7 +74,7 @@ import { Type, TObject, TIntersect, TNumber, TBoolean } from '@sinclair/typebox'
     A: Type.Number(),
   })
   const T = Type.Composite([A, B])
-  Expect(T).ToInfer<{
+  Expect(T).ToStatic<{
     A: number
   }>()
 }
@@ -86,7 +86,7 @@ import { Type, TObject, TIntersect, TNumber, TBoolean } from '@sinclair/typebox'
     A: Type.Number(),
   })
   const T = Type.Composite([A, B])
-  Expect(T).ToInfer<{
+  Expect(T).ToStatic<{
     A: number
   }>()
 }
@@ -102,7 +102,7 @@ import { Type, TObject, TIntersect, TNumber, TBoolean } from '@sinclair/typebox'
   })
   const T = Type.Composite([A, B])
 
-  Expect(T).ToInfer<{
+  Expect(T).ToStatic<{
     A: number
     B: number
   }>()

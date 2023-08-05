@@ -2,7 +2,7 @@ import { Value } from '@sinclair/typebox/value'
 import { Type } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
-describe('value/cast/RegEx', () => {
+describe('value/cast/RegExp', () => {
   const T = Type.RegExp(/foo/, { default: 'foo' })
   const E = 'foo'
   it('Should upcast from string', () => {

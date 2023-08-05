@@ -8,4 +8,4 @@ const C = Type.Function(
   }),
 )
 
-Expect(C).ToInfer<(param_0: number, param_1: string) => { method: (param_0: number, param_1: string) => boolean }>()
+Expect(C).ToStatic<(param_0: number, param_1: string) => { method: (param_0: number, param_1: string) => boolean }>()

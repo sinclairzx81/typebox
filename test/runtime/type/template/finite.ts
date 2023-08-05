@@ -1,7 +1,7 @@
 import { PatternString, PatternBoolean, PatternNumber, TemplateLiteralParser, TemplateLiteralFinite } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
-describe('type/TemplateLiteralFinite', () => {
+describe('type/templateliteral/TemplateLiteralFinite', () => {
   // ---------------------------------------------------------------
   // Finite
   // ---------------------------------------------------------------

@@ -3,15 +3,15 @@ import { Expect } from './assert'
 
 {
   const T = Type.Exclude(Type.String(), Type.String())
-  Expect(T).ToBe<never>()
+  Expect(T).ToStatic<never>()
 }
 {
   const T = Type.Exclude(Type.String(), Type.Number())
-  Expect(T).ToBe<string>()
+  Expect(T).ToStatic<string>()
 }
 {
   const T = Type.Exclude(Type.Union([Type.Number(), Type.String(), Type.Boolean()]), Type.Number())
-  Expect(T).ToBe<boolean | string>()
+  Expect(T).ToStatic<boolean | string>()
 }
 // ------------------------------------------------------------------------
 // TemplateLiteral | TemplateLiteral
@@ -21,20 +21,20 @@ import { Expect } from './assert'
   const B = Type.TemplateLiteral([Type.Union([Type.Literal('A'), Type.Literal('B'), Type.Literal('C')])])
 
   const T = Type.Exclude(A, B)
-  Expect(T).ToBe<never>()
+  Expect(T).ToStatic<never>()
 }
 {
   const A = Type.TemplateLiteral([Type.Union([Type.Literal('A'), Type.Literal('B'), Type.Literal('C')])])
   const B = Type.TemplateLiteral([Type.Union([Type.Literal('A'), Type.Literal('B')])])
 
   const T = Type.Exclude(A, B)
-  Expect(T).ToBe<'C'>()
+  Expect(T).ToStatic<'C'>()
 }
 {
   const A = Type.TemplateLiteral([Type.Union([Type.Literal('A'), Type.Literal('B'), Type.Literal('C')])])
   const B = Type.TemplateLiteral([Type.Union([Type.Literal('A')])])
   const T = Type.Exclude(A, B)
-  Expect(T).ToBe<'C' | 'B'>()
+  Expect(T).ToStatic<'C' | 'B'>()
 }
 // ------------------------------------------------------------------------
 // TemplateLiteral | Union
@@ -44,20 +44,20 @@ import { Expect } from './assert'
   const B = Type.Union([Type.Literal('A'), Type.Literal('B'), Type.Literal('C')])
 
   const T = Type.Exclude(A, B)
-  Expect(T).ToBe<never>()
+  Expect(T).ToStatic<never>()
 }
 {
   const A = Type.TemplateLiteral([Type.Union([Type.Literal('A'), Type.Literal('B'), Type.Literal('C')])])
   const B = Type.Union([Type.Literal('A'), Type.Literal('B')])
 
   const T = Type.Exclude(A, B)
-  Expect(T).ToBe<'C'>()
+  Expect(T).ToStatic<'C'>()
 }
 {
   const A = Type.TemplateLiteral([Type.Union([Type.Literal('A'), Type.Literal('B'), Type.Literal('C')])])
   const B = Type.Union([Type.Literal('A')])
   const T = Type.Exclude(A, B)
-  Expect(T).ToBe<'C' | 'B'>()
+  Expect(T).ToStatic<'C' | 'B'>()
 }
 // ------------------------------------------------------------------------
 // Union | TemplateLiteral
@@ -67,18 +67,18 @@ import { Expect } from './assert'
   const B = Type.TemplateLiteral([Type.Union([Type.Literal('A'), Type.Literal('B'), Type.Literal('C')])])
 
   const T = Type.Exclude(A, B)
-  Expect(T).ToBe<never>()
+  Expect(T).ToStatic<never>()
 }
 {
   const A = Type.Union([Type.Literal('A'), Type.Literal('B'), Type.Literal('C')])
   const B = Type.TemplateLiteral([Type.Union([Type.Literal('A'), Type.Literal('B')])])
 
   const T = Type.Exclude(A, B)
-  Expect(T).ToBe<'C'>()
+  Expect(T).ToStatic<'C'>()
 }
 {
   const A = Type.Union([Type.Literal('A'), Type.Literal('B'), Type.Literal('C')])
   const B = Type.TemplateLiteral([Type.Union([Type.Literal('A')])])
   const T = Type.Exclude(A, B)
-  Expect(T).ToBe<'C' | 'B'>()
+  Expect(T).ToStatic<'C' | 'B'>()
 }

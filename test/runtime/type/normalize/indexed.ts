@@ -2,7 +2,7 @@ import { TypeGuard } from '@sinclair/typebox'
 import { Type } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
-describe('type/normal/Index', () => {
+describe('type/normalize/Index', () => {
   // ---------------------------------------------------------
   // Array
   // ---------------------------------------------------------

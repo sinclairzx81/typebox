@@ -1,7 +1,7 @@
 import { Type } from '@sinclair/typebox'
 import { Ok, Fail } from './validate'
 
-describe('type/compiler/Array', () => {
+describe('compiler/Array', () => {
   it('Should validate an array of any', () => {
     const T = Type.Array(Type.Any())
     Ok(T, [0, true, 'hello', {}])

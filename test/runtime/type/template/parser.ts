@@ -1,7 +1,7 @@
 import { TemplateLiteralParser } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
-describe('type/TemplateLiteralParser', () => {
+describe('type/templateliteral/TemplateLiteralParser', () => {
   // ---------------------------------------------------------------
   // Throws
   // ---------------------------------------------------------------

@@ -1,7 +1,7 @@
 import { Type } from '@sinclair/typebox'
 import { Ok } from './validate'
 
-describe('type/compiler/Any', () => {
+describe('compiler/Any', () => {
   it('Should validate number', () => {
     const T = Type.Any()
     Ok(T, 1)

@@ -2,7 +2,7 @@ import { Type } from '@sinclair/typebox'
 import { Ok, Fail } from './validate'
 import { strictEqual } from 'assert'
 
-describe('type/compiler/Pick', () => {
+describe('compiler/Pick', () => {
   it('Should pick properties from the source schema', () => {
     const Vector3 = Type.Object(
       {

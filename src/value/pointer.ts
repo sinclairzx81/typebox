@@ -31,12 +31,12 @@ THE SOFTWARE.
 // --------------------------------------------------------------------------
 export class ValuePointerRootSetError extends Error {
   constructor(public readonly value: unknown, public readonly path: string, public readonly update: unknown) {
-    super('ValuePointer: Cannot set root value')
+    super('Cannot set root value')
   }
 }
 export class ValuePointerRootDeleteError extends Error {
   constructor(public readonly value: unknown, public readonly path: string) {
-    super('ValuePointer: Cannot delete root value')
+    super('Cannot delete root value')
   }
 }
 // --------------------------------------------------------------------------

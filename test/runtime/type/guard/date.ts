@@ -13,27 +13,32 @@ describe('type/guard/TDate', () => {
   })
   it('Should not guard for TDate with invalid $id', () => {
     // @ts-ignore
-    const R = TypeGuard.TDate(Type.Number({ $id: 1 }))
+    const R = TypeGuard.TDate(Type.Date({ $id: 1 }))
     Assert.IsFalse(R)
   })
-  it('Should not guard for TDate with invalid minimum', () => {
+  it('Should not guard for TDate with invalid exclusiveMaximumTimestamp', () => {
     // @ts-ignore
-    const R = TypeGuard.TDate(Type.Number({ minimum: '1' }))
+    const R = TypeGuard.TDate(Type.Date({ exclusiveMaximumTimestamp: '1' }))
     Assert.IsFalse(R)
   })
-  it('Should not guard for TDate with invalid maximum', () => {
+  it('Should not guard for TDate with invalid exclusiveMinimumTimestamp', () => {
     // @ts-ignore
-    const R = TypeGuard.TDate(Type.Number({ maximum: '1' }))
+    const R = TypeGuard.TDate(Type.Date({ exclusiveMinimumTimestamp: '1' }))
     Assert.IsFalse(R)
   })
-  it('Should not guard for TDate with invalid exclusiveMinimum', () => {
+  it('Should not guard for TDate with invalid maximumTimestamp', () => {
     // @ts-ignore
-    const R = TypeGuard.TDate(Type.Number({ exclusiveMinimum: '1' }))
+    const R = TypeGuard.TDate(Type.Date({ maximumTimestamp: '1' }))
     Assert.IsFalse(R)
   })
-  it('Should not guard for TDate with invalid exclusiveMaximum', () => {
+  it('Should not guard for TDate with invalid minimumTimestamp', () => {
     // @ts-ignore
-    const R = TypeGuard.TDate(Type.Number({ exclusiveMaximum: '1' }))
+    const R = TypeGuard.TDate(Type.Date({ minimumTimestamp: '1' }))
+    Assert.IsFalse(R)
+  })
+  it('Should not guard for TDate with invalid multipleOfTimestamp', () => {
+    // @ts-ignore
+    const R = TypeGuard.TDate(Type.Date({ multipleOfTimestamp: '1' }))
     Assert.IsFalse(R)
   })
 })

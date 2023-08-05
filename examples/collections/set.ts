@@ -27,13 +27,13 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import { TypeCheck, TypeCompiler, ValueError } from '@sinclair/typebox/compiler'
-import { TSchema, Static } from '@sinclair/typebox'
+import { TSchema, Static, TypeBoxError } from '@sinclair/typebox'
 import { Value } from '@sinclair/typebox/value'
 
 // ----------------------------------------------------------------
 // Errors
 // ----------------------------------------------------------------
-export class TypeSetError extends Error {
+export class TypeSetError extends TypeBoxError {
   constructor(message: string) {
     super(`${message}`)
   }

@@ -2,9 +2,6 @@ import { Value } from '@sinclair/typebox/value'
 import { Type } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
-// --------------------------------------------------------
-// non-convertable pass through
-// --------------------------------------------------------
 describe('value/convert/AsyncIterator', () => {
   const T = Type.AsyncIterator(Type.Any())
   it('Should passthrough 1', () => {

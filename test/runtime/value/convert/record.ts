@@ -6,6 +6,6 @@ describe('value/convert/Record', () => {
   it('Should convert record value to numeric', () => {
     const T = Type.Record(Type.String(), Type.Number())
     const V = Value.Convert(T, { x: '42', y: '24', z: 'hello' })
-    Assert.IsEqual(V, { x: 42, y: '24', z: 'hello' })
+    Assert.IsEqual(V, { x: 42, y: 24, z: 'hello' })
   })
 })

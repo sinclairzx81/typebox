@@ -44,7 +44,7 @@ describe('value/convert/Integer', () => {
   it('Should convert string #3', () => {
     const value = '-0'
     const result = Value.Convert(Type.Integer(), value)
-    Assert.IsEqual(result, 0)
+    Assert.IsEqual(result, -0)
   })
   it('Should convert string #4', () => {
     const value = '-100'

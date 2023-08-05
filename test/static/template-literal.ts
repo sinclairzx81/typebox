@@ -4,43 +4,43 @@ import { Type } from '@sinclair/typebox'
 {
   // Empty
   const T = Type.TemplateLiteral([])
-  Expect(T).ToInfer<''>()
+  Expect(T).ToStatic<''>()
 }
 {
   // Literal
   const T = Type.TemplateLiteral([Type.Literal('hello')])
-  Expect(T).ToInfer<'hello'>()
+  Expect(T).ToStatic<'hello'>()
 }
 {
   // And Sequence
   const T = Type.TemplateLiteral([Type.Literal('hello'), Type.Literal('world')])
-  Expect(T).ToInfer<'helloworld'>()
+  Expect(T).ToStatic<'helloworld'>()
 }
 {
   // And / Or Sequence
   const T = Type.TemplateLiteral([Type.Literal('hello'), Type.Union([Type.Literal('1'), Type.Literal('2')])])
-  Expect(T).ToInfer<'hello1' | 'hello2'>()
+  Expect(T).ToStatic<'hello1' | 'hello2'>()
 }
 {
   // Auxiliary Template
   const A = Type.TemplateLiteral([Type.Union([Type.Literal('1'), Type.Literal('2')])])
   const T = Type.TemplateLiteral([Type.Literal('hello'), A])
-  Expect(T).ToInfer<'hello1' | 'hello2'>()
+  Expect(T).ToStatic<'hello1' | 'hello2'>()
 }
 {
   // String
   const T = Type.TemplateLiteral([Type.String()])
-  Expect(T).ToInfer<`${string}`>()
+  Expect(T).ToStatic<`${string}`>()
 }
 {
   // Number
   const T = Type.TemplateLiteral([Type.Number()])
-  Expect(T).ToInfer<`${number}`>()
+  Expect(T).ToStatic<`${number}`>()
 }
 {
   // Boolean
   const T = Type.TemplateLiteral([Type.Boolean()])
-  Expect(T).ToInfer<`${boolean}`>()
+  Expect(T).ToStatic<`${boolean}`>()
 }
 {
   // Enum Implicit
@@ -51,7 +51,7 @@ import { Type } from '@sinclair/typebox'
   }
   const A = Type.Enum(E)
   const T = Type.TemplateLiteral([Type.Literal('hello'), A])
-  Expect(T).ToInfer<'hello0' | 'hello1' | 'hello2'>()
+  Expect(T).ToStatic<'hello0' | 'hello1' | 'hello2'>()
 }
 {
   // Enum Explicit
@@ -62,11 +62,11 @@ import { Type } from '@sinclair/typebox'
   }
   const A = Type.Enum(E)
   const T = Type.TemplateLiteral([Type.Literal('hello'), A])
-  Expect(T).ToInfer<'hello0' | 'helloB' | 'helloC'>()
+  Expect(T).ToStatic<'hello0' | 'helloB' | 'helloC'>()
 }
 {
   // Enum Object Explicit
   const A = Type.Enum(Object.freeze({ a: 'A', b: 'B' }))
   const T = Type.TemplateLiteral([Type.Literal('hello'), A])
-  Expect(T).ToInfer<'helloA' | 'helloB'>()
+  Expect(T).ToStatic<'helloA' | 'helloB'>()
 }

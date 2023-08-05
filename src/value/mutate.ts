@@ -26,21 +26,21 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { IsPlainObject, IsArray, IsTypedArray, IsValueType, type TypedArrayType } from './guard'
 import { ValuePointer } from './pointer'
-import * as ValueClone from './clone'
-import * as ValueGuard from './guard'
+import { Clone } from './clone'
 
 // --------------------------------------------------------------------------
 // Errors
 // --------------------------------------------------------------------------
 export class ValueMutateTypeMismatchError extends Error {
   constructor() {
-    super('ValueMutate: Cannot assign due type mismatch of assignable values')
+    super('Cannot assign due type mismatch of assignable values')
   }
 }
 export class ValueMutateInvalidRootMutationError extends Error {
   constructor() {
-    super('ValueMutate: Only object and array types can be mutated at the root level')
+    super('Only object and array types can be mutated at the root level')
   }
 }
 // --------------------------------------------------------------------------
@@ -48,8 +48,8 @@ export class ValueMutateInvalidRootMutationError extends Error {
 // --------------------------------------------------------------------------
 export type Mutable = { [key: string]: unknown } | unknown[]
 function ObjectType(root: Mutable, path: string, current: unknown, next: Record<string, unknown>) {
-  if (!ValueGuard.IsPlainObject(current)) {
-    ValuePointer.Set(root, path, ValueClone.Clone(next))
+  if (!IsPlainObject(current)) {
+    ValuePointer.Set(root, path, Clone(next))
   } else {
     const currentKeys = Object.keys(current)
     const nextKeys = Object.keys(next)
@@ -69,8 +69,8 @@ function ObjectType(root: Mutable, path: string, current: unknown, next: Record<
   }
 }
 function ArrayType(root: Mutable, path: string, current: unknown, next: unknown[]) {
-  if (!ValueGuard.IsArray(current)) {
-    ValuePointer.Set(root, path, ValueClone.Clone(next))
+  if (!IsArray(current)) {
+    ValuePointer.Set(root, path, Clone(next))
   } else {
     for (let index = 0; index < next.length; index++) {
       Visit(root, `${path}/${index}`, current[index], next[index])
@@ -78,13 +78,13 @@ function ArrayType(root: Mutable, path: string, current: unknown, next: unknown[
     current.splice(next.length)
   }
 }
-function TypedArrayType(root: Mutable, path: string, current: unknown, next: ValueGuard.TypedArrayType) {
-  if (ValueGuard.IsTypedArray(current) && current.length === next.length) {
+function TypedArrayType(root: Mutable, path: string, current: unknown, next: TypedArrayType) {
+  if (IsTypedArray(current) && current.length === next.length) {
     for (let i = 0; i < current.length; i++) {
       current[i] = next[i]
     }
   } else {
-    ValuePointer.Set(root, path, ValueClone.Clone(next))
+    ValuePointer.Set(root, path, Clone(next))
   }
 }
 function ValueType(root: Mutable, path: string, current: unknown, next: unknown) {
@@ -92,22 +92,22 @@ function ValueType(root: Mutable, path: string, current: unknown, next: unknown)
   ValuePointer.Set(root, path, next)
 }
 function Visit(root: Mutable, path: string, current: unknown, next: unknown) {
-  if (ValueGuard.IsArray(next)) return ArrayType(root, path, current, next)
-  if (ValueGuard.IsTypedArray(next)) return TypedArrayType(root, path, current, next)
-  if (ValueGuard.IsPlainObject(next)) return ObjectType(root, path, current, next)
-  if (ValueGuard.IsValueType(next)) return ValueType(root, path, current, next)
+  if (IsArray(next)) return ArrayType(root, path, current, next)
+  if (IsTypedArray(next)) return TypedArrayType(root, path, current, next)
+  if (IsPlainObject(next)) return ObjectType(root, path, current, next)
+  if (IsValueType(next)) return ValueType(root, path, current, next)
 }
 // --------------------------------------------------------------------------
 // Mutate
 // --------------------------------------------------------------------------
 function IsNonMutableValue(value: unknown): value is Mutable {
-  return ValueGuard.IsTypedArray(value) || ValueGuard.IsValueType(value)
+  return IsTypedArray(value) || IsValueType(value)
 }
 function IsMismatchedValue(current: unknown, next: unknown) {
   // prettier-ignore
   return (
-    (ValueGuard.IsPlainObject(current) && ValueGuard.IsArray(next)) || 
-    (ValueGuard.IsArray(current) && ValueGuard.IsPlainObject(next))
+    (IsPlainObject(current) && IsArray(next)) || 
+    (IsArray(current) && IsPlainObject(next))
   )
 }
 // --------------------------------------------------------------------------

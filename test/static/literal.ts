@@ -1,8 +1,8 @@
 import { Expect } from './assert'
 import { Type } from '@sinclair/typebox'
 
-Expect(Type.Literal('hello')).ToInfer<'hello'>()
+Expect(Type.Literal('hello')).ToStatic<'hello'>()
 
-Expect(Type.Literal(true)).ToInfer<true>()
+Expect(Type.Literal(true)).ToStatic<true>()
 
-Expect(Type.Literal(42)).ToInfer<42>()
+Expect(Type.Literal(42)).ToStatic<42>()

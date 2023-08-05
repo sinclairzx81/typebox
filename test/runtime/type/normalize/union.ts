@@ -2,7 +2,7 @@ import { TypeGuard } from '@sinclair/typebox'
 import { Type } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
-describe('type/normal/Union', () => {
+describe('type/normalize/Union', () => {
   it('Normalize 1', () => {
     const T = Type.Union([Type.Number(), Type.String()])
     const R = TypeGuard.TUnion(T)

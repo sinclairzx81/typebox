@@ -1,7 +1,7 @@
 import { Type } from '@sinclair/typebox'
 import { Ok, Fail } from './validate'
 
-describe('type/compiler/RegExp', () => {
+describe('compiler/RegExp', () => {
   //-----------------------------------------------------
   // Regular Expression
   //-----------------------------------------------------

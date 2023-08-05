@@ -2,7 +2,7 @@ import { deepStrictEqual, strictEqual } from 'assert'
 import { Type } from '@sinclair/typebox'
 import { Ok, Fail } from './validate'
 
-describe('type/compiler/Readonly', () => {
+describe('compiler/Readonly', () => {
   it('Should validate object with readonly', () => {
     const T = Type.Object(
       {

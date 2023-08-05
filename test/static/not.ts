@@ -14,13 +14,13 @@ import { Type } from '@sinclair/typebox'
   const A = Type.Number()
   const B = Type.Not(Type.Number())
   const T = Type.Extends(A, B, Type.Literal(true), Type.Literal(false))
-  Expect(T).ToInfer<true>()
+  Expect(T).ToStatic<true>()
 }
 {
   const T = Type.Not(Type.Number())
-  Expect(T).ToInfer<unknown>()
+  Expect(T).ToStatic<unknown>()
 }
 {
   const T = Type.Not(Type.Not(Type.Number()))
-  Expect(T).ToInfer<number>()
+  Expect(T).ToStatic<number>()
 }

@@ -2,7 +2,7 @@ import { Value } from '@sinclair/typebox/value'
 import { Type } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
-describe('value/convert/Literal:String', () => {
+describe('value/convert/LiteralString', () => {
   it('Should convert from number 1', () => {
     const T = Type.Literal('1')
     const R = Value.Convert(T, 1)
@@ -19,7 +19,7 @@ describe('value/convert/Literal:String', () => {
     Assert.IsEqual(R, 'true')
   })
 })
-describe('value/convert/Literal:Number', () => {
+describe('value/convert/LiteralNumber', () => {
   it('Should convert from number 1', () => {
     const T = Type.Literal(3.14)
     const R = Value.Convert(T, '3.14')
@@ -46,7 +46,7 @@ describe('value/convert/Literal:Number', () => {
     Assert.IsEqual(R, true)
   })
 })
-describe('value/convert/Literal:Boolean', () => {
+describe('value/convert/LiteralBoolean', () => {
   it('Should convert from number 1', () => {
     const T = Type.Literal(true)
     const R = Value.Convert(T, 3.14)

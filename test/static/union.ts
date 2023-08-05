@@ -8,7 +8,7 @@ import { Type, Static } from '@sinclair/typebox'
 
   type T = Static<typeof T>
 
-  Expect(T).ToInfer<string | number>()
+  Expect(T).ToStatic<string | number>()
 }
 {
   const A = Type.Object({
@@ -23,7 +23,7 @@ import { Type, Static } from '@sinclair/typebox'
 
   type T = Static<typeof T>
 
-  Expect(T).ToInfer<
+  Expect(T).ToStatic<
     | {
         A: string
         B: string
@@ -48,7 +48,7 @@ import { Type, Static } from '@sinclair/typebox'
 
   type T = Static<typeof T>
 
-  Expect(T).ToInfer<
+  Expect(T).ToStatic<
     | {
         A: string
         B: string
@@ -69,5 +69,5 @@ import { Type, Static } from '@sinclair/typebox'
 
 {
   const T = Type.Union([])
-  Expect(T).ToInfer<never>()
+  Expect(T).ToStatic<never>()
 }

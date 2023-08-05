@@ -1,5 +1,4 @@
-import { TypeGuard } from '@sinclair/typebox'
-import { Type, Kind } from '@sinclair/typebox'
+import { TypeGuard, Type, Kind, Transform } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
 describe('type/guard/TOmit', () => {
@@ -102,5 +101,19 @@ describe('type/guard/TOmit', () => {
     )
     Assert.IsTrue(TypeGuard.TNumber(T.properties.ad))
     Assert.IsEqual(T.required, ['ad'])
+  })
+  it('Should discard transform', () => {
+    const S = Type.Transform(
+      Type.Object({
+        x: Type.Number(),
+        y: Type.String(),
+      }),
+      {
+        Decode: (value) => value,
+        Encode: (value) => value,
+      },
+    )
+    const T = Type.Omit(S, ['x'])
+    Assert.IsFalse(Transform in T)
   })
 })

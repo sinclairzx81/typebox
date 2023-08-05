@@ -10,7 +10,7 @@ import { Type, Static } from '@sinclair/typebox'
     }),
   )
   type T = Static<typeof R>
-  Expect(R).ToInfer<{ id: string; nodes: T[] }>()
+  Expect(R).ToStatic<{ id: string; nodes: T[] }>()
 }
 {
   // keyof
@@ -21,7 +21,7 @@ import { Type, Static } from '@sinclair/typebox'
     }),
   )
   const T = Type.KeyOf(R)
-  Expect(T).ToInfer<'id' | 'nodes'>()
+  Expect(T).ToStatic<'id' | 'nodes'>()
 }
 {
   // partial
@@ -32,7 +32,7 @@ import { Type, Static } from '@sinclair/typebox'
     }),
   )
   const T = Type.Partial(R)
-  Expect(T).ToInfer<{
+  Expect(T).ToStatic<{
     id: string | undefined
     nodes: Static<typeof T>[] | undefined
   }>()
@@ -47,7 +47,7 @@ import { Type, Static } from '@sinclair/typebox'
   )
   const P = Type.Partial(R)
   const T = Type.Required(P)
-  Expect(T).ToInfer<{
+  Expect(T).ToStatic<{
     id: string
     nodes: Static<typeof T>[]
   }>()
@@ -61,7 +61,7 @@ import { Type, Static } from '@sinclair/typebox'
     }),
   )
   const T = Type.Pick(R, ['id'])
-  Expect(T).ToInfer<{
+  Expect(T).ToStatic<{
     id: string
   }>()
 }
@@ -74,7 +74,7 @@ import { Type, Static } from '@sinclair/typebox'
     }),
   )
   const T = Type.Omit(R, ['id'])
-  Expect(T).ToInfer<{
+  Expect(T).ToStatic<{
     nodes: Static<typeof T>[]
   }>()
 }

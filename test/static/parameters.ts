@@ -10,4 +10,4 @@ const C = Type.Function(
 
 const P = Type.Parameters(C)
 
-Expect(P).ToInfer<[number, string]>()
+Expect(P).ToStatic<[number, string]>()

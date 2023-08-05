@@ -1,7 +1,7 @@
 import { TypeRegistry } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
-describe('type/TypeRegistry', () => {
+describe('type/registry/Type', () => {
   it('Should set type', () => {
     TypeRegistry.Set('test#type1', () => true)
   })
