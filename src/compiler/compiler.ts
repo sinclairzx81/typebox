@@ -545,9 +545,10 @@ export namespace TypeCompiler {
   export function Compile<T extends Types.TSchema>(schema: T, references: Types.TSchema[] = []): TypeCheck<T> {
     const generatedCode = Code(schema, references, { language: 'javascript' })
     const compiledFunction = globalThis.Function('kind', 'format', 'hash', generatedCode)
+    const instances = new Map(state.instances)
     function typeRegistryFunction(kind: string, instance: number, value: unknown) {
-      if (!Types.TypeRegistry.Has(kind) || !state.instances.has(instance)) return false
-      const schema = state.instances.get(instance)
+      if (!Types.TypeRegistry.Has(kind) || !instances.has(instance)) return false
+      const schema = instances.get(instance)
       const checkFunc = Types.TypeRegistry.Get(kind)!
       return checkFunc(schema, value)
     }
