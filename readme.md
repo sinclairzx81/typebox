@@ -110,7 +110,7 @@ License MIT
   - [Types](#typesystem-types)
   - [Formats](#typesystem-formats)
   - [Policies](#typesystem-policies)
-- [Transform](#transform)
+- [Workbench](#workbench)
 - [Ecosystem](#ecosystem)
 - [Benchmark](#benchmark)
   - [Compile](#benchmark-compile)
@@ -1516,13 +1516,13 @@ TypeSystem.AllowArrayObjects = true
 TypeSystem.AllowNaN = true
 ```
 
-<a name='transform'></a>
+<a name='workbench'></a>
 
-## TypeBox Transform
+## TypeBox Workbench
 
 TypeBox offers a small web based code generation tool that can be used to convert TypeScript types into TypeBox types as well as a variety of other runtime type representations.
 
-[TypeBox Transform Link Here](https://sinclairzx81.github.io/typebox-transform/)
+[TypeBox Workbench Link Here](https://sinclairzx81.github.io/typebox-workbench/)
 
 <a name='ecosystem'></a>
 
