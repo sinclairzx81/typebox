@@ -2,14 +2,16 @@ import { Value } from '@sinclair/typebox/value'
 import { Type, Kind, TypeRegistry } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
-describe('value/cast/Custom', () => {
-  before(() => {
-    TypeRegistry.Set('CustomCast', (schema, value) => value === 'hello' || value === 'world')
-  })
-  after(() => {
-    TypeRegistry.Clear()
-  })
-  const T = Type.Unsafe({ [Kind]: 'CustomCast', default: 'hello' })
+describe('value/cast/Kind', () => {
+  // ---------------------------------------------------------
+  // Fixtures
+  // ---------------------------------------------------------
+  before(() => TypeRegistry.Set('Kind', (schema, value) => value === 'hello' || value === 'world'))
+  after(() => TypeRegistry.Clear())
+  // ---------------------------------------------------------
+  // Tests
+  // ---------------------------------------------------------
+  const T = Type.Unsafe({ [Kind]: 'Kind', default: 'hello' })
   const E = 'hello'
   it('Should upcast from string', () => {
     const value = 'hello'

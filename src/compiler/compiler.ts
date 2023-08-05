@@ -375,7 +375,9 @@ export namespace TypeCompiler {
     yield IsVoidCheck(value)
   }
   function* TKind(schema: Types.TSchema, references: Types.TSchema[], value: string): IterableIterator<string> {
-    yield `kind('${schema[Types.Kind]}', ${value})`
+    const instance = state.instances.size
+    state.instances.set(instance, schema)
+    yield `kind('${schema[Types.Kind]}', ${instance}, ${value})`
   }
   function* Visit<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: string, useHoisting: boolean = true): IterableIterator<string> {
     const references_ = ValueGuard.IsString(schema.$id) ? [...references, schema] : references
@@ -470,6 +472,7 @@ export namespace TypeCompiler {
     language: 'javascript',                       // target language
     functions: new Map<string, string>(),         // local functions
     variables: new Map<string, string>(),         // local variables
+    instances: new Map<number, Types.TKind>()     // exterior kind instances
   }
   // -------------------------------------------------------------------
   // Compiler Factory
@@ -533,6 +536,7 @@ export namespace TypeCompiler {
     state.language = options.language
     state.variables.clear()
     state.functions.clear()
+    state.instances.clear()
     if (!Types.TypeGuard.TSchema(schema)) throw new TypeCompilerTypeGuardError(schema)
     for (const schema of references) if (!Types.TypeGuard.TSchema(schema)) throw new TypeCompilerTypeGuardError(schema)
     return Build(schema, references, options)
@@ -541,8 +545,9 @@ export namespace TypeCompiler {
   export function Compile<T extends Types.TSchema>(schema: T, references: Types.TSchema[] = []): TypeCheck<T> {
     const generatedCode = Code(schema, references, { language: 'javascript' })
     const compiledFunction = globalThis.Function('kind', 'format', 'hash', generatedCode)
-    function typeRegistryFunction(kind: string, value: unknown) {
-      if (!Types.TypeRegistry.Has(kind)) return false
+    function typeRegistryFunction(kind: string, instance: number, value: unknown) {
+      if (!Types.TypeRegistry.Has(kind) || !state.instances.has(instance)) return false
+      const schema = state.instances.get(instance)
       const checkFunc = Types.TypeRegistry.Get(kind)!
       return checkFunc(schema, value)
     }
