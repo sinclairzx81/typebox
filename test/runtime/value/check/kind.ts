@@ -67,4 +67,41 @@ describe('value/check/Kind', () => {
     Assert.IsEqual(stack[1], 'B')
     TypeRegistry.Delete('Kind')
   })
+  it('Should retain kind instances on subsequent check', () => {
+    let stack: string[] = []
+    TypeRegistry.Set('Kind', (schema: unknown) => {
+      // prettier-ignore
+      return (typeof schema === 'object' && schema !== null && Kind in schema && schema[Kind] === 'Kind' && '$id' in schema && typeof schema.$id === 'string') 
+        ? (() => { stack.push(schema.$id); return true })()
+        : false
+    })
+    const A = { [Kind]: 'Kind', $id: 'A' } as TSchema
+    const B = { [Kind]: 'Kind', $id: 'B' } as TSchema
+    const C = { [Kind]: 'Kind', $id: 'C' } as TSchema
+    const D = { [Kind]: 'Kind', $id: 'D' } as TSchema
+    const T1 = Type.Object({ a: A, b: B })
+    const T2 = Type.Object({ a: C, b: D })
+    // run T1 check
+    const R2 = Value.Check(T1, { a: null, b: null })
+    Assert.IsTrue(R2)
+    Assert.IsEqual(stack.length, 2)
+    Assert.IsEqual(stack[0], 'A')
+    Assert.IsEqual(stack[1], 'B')
+    stack = []
+    // run T2 check
+    const R3 = Value.Check(T2, { a: null, b: null })
+    Assert.IsTrue(R3)
+    Assert.IsEqual(stack.length, 2)
+    Assert.IsEqual(stack[0], 'C')
+    Assert.IsEqual(stack[1], 'D')
+    stack = []
+    // run T1 check
+    const R4 = Value.Check(T1, { a: null, b: null })
+    Assert.IsTrue(R4)
+    Assert.IsEqual(stack.length, 2)
+    Assert.IsEqual(stack[0], 'A')
+    Assert.IsEqual(stack[1], 'B')
+    stack = []
+    TypeRegistry.Delete('Kind')
+  })
 })
