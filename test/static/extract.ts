@@ -3,15 +3,15 @@ import { Expect } from './assert'
 
 {
   const T = Type.Extract(Type.String(), Type.String())
-  Expect(T).ToBe<string>()
+  Expect(T).ToStatic<string>()
 }
 {
   const T = Type.Extract(Type.String(), Type.Number())
-  Expect(T).ToBe<string>()
+  Expect(T).ToStatic<string>()
 }
 {
   const T = Type.Extract(Type.Union([Type.Number(), Type.String(), Type.Boolean()]), Type.Number())
-  Expect(T).ToBe<number>()
+  Expect(T).ToStatic<number>()
 }
 // ------------------------------------------------------------------------
 // TemplateLiteral | TemplateLiteral
@@ -21,20 +21,20 @@ import { Expect } from './assert'
   const B = Type.TemplateLiteral([Type.Union([Type.Literal('A'), Type.Literal('B'), Type.Literal('C')])])
 
   const T = Type.Extract(A, B)
-  Expect(T).ToBe<'A' | 'B' | 'C'>()
+  Expect(T).ToStatic<'A' | 'B' | 'C'>()
 }
 {
   const A = Type.TemplateLiteral([Type.Union([Type.Literal('A'), Type.Literal('B'), Type.Literal('C')])])
   const B = Type.TemplateLiteral([Type.Union([Type.Literal('A'), Type.Literal('B')])])
 
   const T = Type.Extract(A, B)
-  Expect(T).ToBe<'A' | 'B'>()
+  Expect(T).ToStatic<'A' | 'B'>()
 }
 {
   const A = Type.TemplateLiteral([Type.Union([Type.Literal('A'), Type.Literal('B'), Type.Literal('C')])])
   const B = Type.TemplateLiteral([Type.Union([Type.Literal('A')])])
   const T = Type.Extract(A, B)
-  Expect(T).ToBe<'A'>()
+  Expect(T).ToStatic<'A'>()
 }
 // ------------------------------------------------------------------------
 // TemplateLiteral | Union
@@ -43,20 +43,20 @@ import { Expect } from './assert'
   const A = Type.TemplateLiteral([Type.Union([Type.Literal('A'), Type.Literal('B'), Type.Literal('C')])])
   const B = Type.Union([Type.Literal('A'), Type.Literal('B'), Type.Literal('C')])
   const T = Type.Extract(A, B)
-  Expect(T).ToBe<'A' | 'B' | 'C'>()
+  Expect(T).ToStatic<'A' | 'B' | 'C'>()
 }
 {
   const A = Type.TemplateLiteral([Type.Union([Type.Literal('A'), Type.Literal('B'), Type.Literal('C')])])
   const B = Type.Union([Type.Literal('A'), Type.Literal('B')])
 
   const T = Type.Extract(A, B)
-  Expect(T).ToBe<'A' | 'B'>()
+  Expect(T).ToStatic<'A' | 'B'>()
 }
 {
   const A = Type.TemplateLiteral([Type.Union([Type.Literal('A'), Type.Literal('B'), Type.Literal('C')])])
   const B = Type.Union([Type.Literal('A')])
   const T = Type.Extract(A, B)
-  Expect(T).ToBe<'A'>()
+  Expect(T).ToStatic<'A'>()
 }
 // ------------------------------------------------------------------------
 // Union | TemplateLiteral
@@ -66,18 +66,18 @@ import { Expect } from './assert'
   const B = Type.TemplateLiteral([Type.Union([Type.Literal('A'), Type.Literal('B'), Type.Literal('C')])])
 
   const T = Type.Extract(A, B)
-  Expect(T).ToBe<'A' | 'B' | 'C'>()
+  Expect(T).ToStatic<'A' | 'B' | 'C'>()
 }
 {
   const A = Type.Union([Type.Literal('A'), Type.Literal('B'), Type.Literal('C')])
   const B = Type.TemplateLiteral([Type.Union([Type.Literal('A'), Type.Literal('B')])])
 
   const T = Type.Extract(A, B)
-  Expect(T).ToBe<'A' | 'B'>()
+  Expect(T).ToStatic<'A' | 'B'>()
 }
 {
   const A = Type.Union([Type.Literal('A'), Type.Literal('B'), Type.Literal('C')])
   const B = Type.TemplateLiteral([Type.Union([Type.Literal('A')])])
   const T = Type.Extract(A, B)
-  Expect(T).ToBe<'A'>()
+  Expect(T).ToStatic<'A'>()
 }

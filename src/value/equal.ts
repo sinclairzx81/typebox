@@ -26,30 +26,31 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import * as ValueGuard from './guard'
+import { IsPlainObject, IsDate, IsArray, IsTypedArray, IsValueType } from './guard'
+import type { ObjectType, ArrayType, TypedArrayType, ValueType } from './guard'
 
 // --------------------------------------------------------------------------
 // Equality Checks
 // --------------------------------------------------------------------------
-function ObjectType(left: ValueGuard.ObjectType, right: unknown): boolean {
-  if (!ValueGuard.IsPlainObject(right)) return false
+function ObjectType(left: ObjectType, right: unknown): boolean {
+  if (!IsPlainObject(right)) return false
   const leftKeys = [...Object.keys(left), ...Object.getOwnPropertySymbols(left)]
   const rightKeys = [...Object.keys(right), ...Object.getOwnPropertySymbols(right)]
   if (leftKeys.length !== rightKeys.length) return false
   return leftKeys.every((key) => Equal(left[key], right[key]))
 }
 function DateType(left: Date, right: unknown): any {
-  return ValueGuard.IsDate(right) && left.getTime() === right.getTime()
+  return IsDate(right) && left.getTime() === right.getTime()
 }
-function ArrayType(left: ValueGuard.ArrayType, right: unknown): any {
-  if (!ValueGuard.IsArray(right) || left.length !== right.length) return false
+function ArrayType(left: ArrayType, right: unknown): any {
+  if (!IsArray(right) || left.length !== right.length) return false
   return left.every((value, index) => Equal(value, right[index]))
 }
-function TypedArrayType(left: ValueGuard.TypedArrayType, right: unknown): any {
-  if (!ValueGuard.IsTypedArray(right) || left.length !== right.length || Object.getPrototypeOf(left).constructor.name !== Object.getPrototypeOf(right).constructor.name) return false
+function TypedArrayType(left: TypedArrayType, right: unknown): any {
+  if (!IsTypedArray(right) || left.length !== right.length || Object.getPrototypeOf(left).constructor.name !== Object.getPrototypeOf(right).constructor.name) return false
   return left.every((value, index) => Equal(value, right[index]))
 }
-function ValueType(left: ValueGuard.ValueType, right: unknown): any {
+function ValueType(left: ValueType, right: unknown): any {
   return left === right
 }
 // --------------------------------------------------------------------------
@@ -57,10 +58,10 @@ function ValueType(left: ValueGuard.ValueType, right: unknown): any {
 // --------------------------------------------------------------------------
 /** Returns true if the left value deep-equals the right */
 export function Equal<T>(left: T, right: unknown): right is T {
-  if (ValueGuard.IsPlainObject(left)) return ObjectType(left, right)
-  if (ValueGuard.IsDate(left)) return DateType(left, right)
-  if (ValueGuard.IsTypedArray(left)) return TypedArrayType(left, right)
-  if (ValueGuard.IsArray(left)) return ArrayType(left, right)
-  if (ValueGuard.IsValueType(left)) return ValueType(left, right)
+  if (IsPlainObject(left)) return ObjectType(left, right)
+  if (IsDate(left)) return DateType(left, right)
+  if (IsTypedArray(left)) return TypedArrayType(left, right)
+  if (IsArray(left)) return ArrayType(left, right)
+  if (IsValueType(left)) return ValueType(left, right)
   throw new Error('ValueEquals: Unable to compare value')
 }

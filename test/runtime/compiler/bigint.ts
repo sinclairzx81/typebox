@@ -1,7 +1,7 @@
 import { Type } from '@sinclair/typebox'
 import { Ok, Fail } from './validate'
 
-describe('type/compiler/BigInt', () => {
+describe('compiler/BigInt', () => {
   it('Should not validate number', () => {
     const T = Type.BigInt()
     Fail(T, 3.14)

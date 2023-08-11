@@ -1,8 +1,7 @@
 import { Type } from '@sinclair/typebox'
 import { Ok, Fail } from './validate'
-import { strictEqual } from 'assert'
 
-describe('type/compiler/KeyOf', () => {
+describe('compiler/KeyOf', () => {
   it('Should validate with all object keys as a kind of union', () => {
     const T = Type.KeyOf(
       Type.Object({

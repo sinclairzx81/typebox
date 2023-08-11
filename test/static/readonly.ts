@@ -8,7 +8,7 @@ import { Type, Static } from '@sinclair/typebox'
 
   type T = Static<typeof T>
 
-  Expect(T).ToInfer<{
+  Expect(T).ToStatic<{
     readonly A: string
   }>()
 }

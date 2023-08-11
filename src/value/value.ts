@@ -36,6 +36,7 @@ import * as ValueConvert from './convert'
 import * as ValueCreate from './create'
 import * as ValueCheck from './check'
 import * as ValueDelta from './delta'
+import * as ValueTransform from './transform'
 import * as Types from '../typebox'
 
 /** Functions to perform structural operations on JavaScript values */
@@ -75,6 +76,27 @@ export namespace Value {
   /** Returns a structural clone of the given value */
   export function Clone<T>(value: T): T {
     return ValueClone.Clone(value)
+  }
+  /** Decodes a value or throws if error */
+  export function Decode<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: unknown): Types.StaticDecode<T>
+  /** Decodes a value or throws if error */
+  export function Decode<T extends Types.TSchema>(schema: T, value: unknown): Types.StaticDecode<T>
+  /** Decodes a value or throws if error */
+  export function Decode(...args: any[]) {
+    const [schema, references, value] = args.length === 3 ? [args[0], args[1], args[2]] : [args[0], [], args[1]]
+    if (!Check(schema, references, value)) throw new ValueTransform.TransformDecodeCheckError(schema, value, Errors(schema, references, value).First()!)
+    return ValueTransform.DecodeTransform.Decode(schema, references, value, ValueCheck.Check)
+  }
+  /** Encodes a value or throws if error */
+  export function Encode<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: unknown): Types.StaticEncode<T>
+  /** Encodes a value or throws if error */
+  export function Encode<T extends Types.TSchema>(schema: T, value: unknown): Types.StaticEncode<T>
+  /** Encodes a value or throws if error */
+  export function Encode(...args: any[]) {
+    const [schema, references, value] = args.length === 3 ? [args[0], args[1], args[2]] : [args[0], [], args[1]]
+    const encoded = ValueTransform.EncodeTransform.Encode(schema, references, value, ValueCheck.Check)
+    if (!Check(schema, references, encoded)) throw new ValueTransform.TransformEncodeCheckError(schema, value, Errors(schema, references, value).First()!)
+    return encoded
   }
   /** Returns an iterator for each error in this value. */
   export function Errors<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: unknown): ValueErrors.ValueErrorIterator

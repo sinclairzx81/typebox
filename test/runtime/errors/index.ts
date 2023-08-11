@@ -1,1 +1,2 @@
-import './iterator'
+import './iterator/index'
+import './types/index'

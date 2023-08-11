@@ -12,7 +12,7 @@ import { Type, TOptional, TString, Static } from '@sinclair/typebox'
   })
   const T = Type.Intersect([A, B])
 
-  Expect(T).ToInfer<
+  Expect(T).ToStatic<
     {
       A: string
       B: string
@@ -32,8 +32,8 @@ import { Type, TOptional, TString, Static } from '@sinclair/typebox'
   })
   const T = Type.Intersect([A, B])
 
-  Expect(T.properties.A).ToBe<TOptional<TString>>()
-  Expect(T.properties.B).ToBe<TString>()
+  Expect(T.properties.A).ToStatic<TOptional<TString>>()
+  Expect(T.properties.B).ToStatic<TString>()
 }
 
 // https://github.com/sinclairzx81/typebox/issues/113
@@ -50,5 +50,5 @@ import { Type, TOptional, TString, Static } from '@sinclair/typebox'
   // invert equivelence (expect true both cases)
   type T1 = T extends { A: string } & ({ B: string } | { C: string }) ? true : false
   type T2 = { A: string } & ({ B: string } | { C: string }) extends T ? true : false
-  Expect(T).ToBe<{ A: string } & ({ B: string } | { C: string })>() // solved!
+  Expect(T).ToStatic<{ A: string } & ({ B: string } | { C: string })>() // solved!
 }

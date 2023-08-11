@@ -12,7 +12,7 @@ export namespace Assert {
       assert.equal(actual.length, expect.length)
       for (let i = 0; i < actual.length; i++) assert.equal(actual[i], expect[i])
     }
-    return assert.deepEqual(actual, expect)
+    return assert.deepStrictEqual(actual, expect)
   }
   export function NotEqual(actual: unknown, expect: unknown) {
     return assert.notEqual(actual, expect)
@@ -37,7 +37,7 @@ export namespace Assert {
     }
     throw Error('Expected throw')
   }
-  export function IsInstanceOf(value: any, constructor: any) {
+  export function IsInstanceOf<T extends new (...args: any[]) => any>(value: any, constructor: T): asserts value is InstanceType<T> {
     if (value instanceof constructor) return
     throw Error(`Value is not instance of ${constructor}`)
   }

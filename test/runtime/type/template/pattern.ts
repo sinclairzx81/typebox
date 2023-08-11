@@ -1,7 +1,7 @@
 import { Type, TTemplateLiteral, PatternNumber, PatternString, PatternBoolean } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
-describe('type/TemplateLiteralPattern', () => {
+describe('type/templateliteral/TemplateLiteralPattern', () => {
   const Equal = (template: TTemplateLiteral, expect: string) => {
     const pattern = template.pattern.slice(1, template.pattern.length - 1)
     Assert.IsEqual(pattern, expect)

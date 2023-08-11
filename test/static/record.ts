@@ -6,29 +6,29 @@ import { Type, Static } from '@sinclair/typebox'
   const T = Type.Record(K, Type.Number())
   type T = Static<typeof T>
 
-  Expect(T).ToInfer<Record<string, number>>()
+  Expect(T).ToStatic<Record<string, number>>()
 }
 {
   // type K = string
   const K = Type.RegExp(/foo|bar/)
   const T = Type.Record(K, Type.Number())
   type T = Static<typeof T>
-  Expect(T).ToInfer<Record<string, number>>()
+  Expect(T).ToStatic<Record<string, number>>()
 }
 {
   // type K = number
   const K = Type.Number()
   const T = Type.Record(K, Type.Number())
   type T = Static<typeof T>
-  Expect(T).ToInfer<Record<string, number>>()
-  Expect(T).ToInfer<Record<number, number>>()
+  Expect(T).ToStatic<Record<string, number>>()
+  Expect(T).ToStatic<Record<number, number>>()
 }
 {
   // type K = 'A' | 'B' | 'C'
   const K = Type.Union([Type.Literal('A'), Type.Literal('B'), Type.Literal('C')])
   const T = Type.Record(K, Type.Number())
   type T = Static<typeof T>
-  Expect(T).ToInfer<Record<'A' | 'B' | 'C', number>>()
+  Expect(T).ToStatic<Record<'A' | 'B' | 'C', number>>()
 }
 {
   // type K = keyof { A: number, B: number, C: number }
@@ -41,7 +41,7 @@ import { Type, Static } from '@sinclair/typebox'
   )
   const T = Type.Record(K, Type.Number())
   type T = Static<typeof T>
-  Expect(T).ToInfer<Record<'A' | 'B' | 'C', number>>()
+  Expect(T).ToStatic<Record<'A' | 'B' | 'C', number>>()
 }
 {
   // type K = keyof Omit<{ A: number, B: number, C: number }, 'C'>
@@ -57,16 +57,16 @@ import { Type, Static } from '@sinclair/typebox'
   )
   const T = Type.Record(K, Type.Number())
   type T = Static<typeof T>
-  Expect(T).ToInfer<Record<'A' | 'B', number>>()
+  Expect(T).ToStatic<Record<'A' | 'B', number>>()
 }
 
 {
   const T = Type.Record(Type.Number(), Type.String())
 
-  Expect(T).ToInfer<Record<number, string>>()
+  Expect(T).ToStatic<Record<number, string>>()
 }
 {
   const T = Type.Record(Type.Integer(), Type.String())
 
-  Expect(T).ToInfer<Record<number, string>>()
+  Expect(T).ToStatic<Record<number, string>>()
 }

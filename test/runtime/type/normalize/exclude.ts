@@ -2,7 +2,7 @@ import { TypeGuard } from '@sinclair/typebox'
 import { Type } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
-describe('type/normal/Exclude', () => {
+describe('type/normalize/Exclude', () => {
   it('Normalize 1', () => {
     const T = Type.Exclude(Type.Union([Type.String(), Type.Number(), Type.Boolean()]), Type.String())
     const R = TypeGuard.TUnion(T)

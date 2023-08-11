@@ -11,7 +11,7 @@ import { Type, Static } from '@sinclair/typebox'
 
   type T = Static<typeof T>
 
-  Expect(T).ToInfer<{
+  Expect(T).ToStatic<{
     A: string
     B: string
     C: string
@@ -32,7 +32,7 @@ import { Type, Static } from '@sinclair/typebox'
 
     const P = Type.Partial(T)
 
-    Expect(P).ToInfer<
+    Expect(P).ToStatic<
       (
         | {
             type?: 'A' | undefined
@@ -52,7 +52,7 @@ import { Type, Static } from '@sinclair/typebox'
 
     const R = Type.Required(P)
 
-    Expect(R).ToInfer<
+    Expect(R).ToStatic<
       (
         | {
             type: 'A'

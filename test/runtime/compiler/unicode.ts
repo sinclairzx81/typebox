@@ -1,7 +1,7 @@
 import { Type } from '@sinclair/typebox'
 import { Ok } from './validate'
 
-describe('type/compiler/Unicode', () => {
+describe('compiler/Unicode', () => {
   // ---------------------------------------------------------
   // Identifiers
   // ---------------------------------------------------------

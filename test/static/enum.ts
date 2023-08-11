@@ -10,5 +10,5 @@ import { Type, Static } from '@sinclair/typebox'
 
   const T = Type.Enum(E)
 
-  Expect(T).ToBe<Static<typeof T>>() // ?
+  Expect(T).ToStatic<Static<typeof T>>() // ?
 }

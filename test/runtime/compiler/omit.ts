@@ -2,7 +2,7 @@ import { Type, Kind } from '@sinclair/typebox'
 import { Ok, Fail } from './validate'
 import { deepEqual, strictEqual } from 'assert'
 
-describe('type/compiler/Omit', () => {
+describe('compiler/Omit', () => {
   it('Should omit properties on the source schema', () => {
     const A = Type.Object(
       {

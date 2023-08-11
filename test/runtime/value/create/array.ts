@@ -2,7 +2,7 @@ import { Value } from '@sinclair/typebox/value'
 import { Type } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
-describe('value/create/Any', () => {
+describe('value/create/Array', () => {
   it('Should create value', () => {
     const T = Type.Array(Type.String())
     Assert.IsEqual(Value.Create(T), [])

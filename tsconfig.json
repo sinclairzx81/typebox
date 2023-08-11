@@ -49,6 +49,9 @@
       "@sinclair/typebox/value/pointer": [
         "src/value/pointer.ts"
       ],
+      "@sinclair/typebox/value/transform": [
+        "src/value/transform/index.ts"
+      ],
       "@sinclair/typebox/value": [
         "src/value/index.ts"
       ],

@@ -1,1 +1,2 @@
-import './system'
+import './policy/index'
+import './type/index'

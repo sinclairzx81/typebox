@@ -1,7 +1,7 @@
 import { FormatRegistry } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
-describe('type/FormatRegistry', () => {
+describe('type/registry/Format', () => {
   it('Should set format', () => {
     FormatRegistry.Set('test#format1', () => true)
   })

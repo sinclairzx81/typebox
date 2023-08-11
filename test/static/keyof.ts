@@ -9,7 +9,7 @@ import { Type } from '@sinclair/typebox'
       C: Type.Null(),
     }),
   )
-  Expect(K).ToInfer<'A' | 'B' | 'C'>()
+  Expect(K).ToStatic<'A' | 'B' | 'C'>()
 }
 
 {
@@ -24,7 +24,7 @@ import { Type } from '@sinclair/typebox'
 
   const K = Type.KeyOf(T)
 
-  Expect(K).ToInfer<'A' | 'B'>()
+  Expect(K).ToStatic<'A' | 'B'>()
 }
 
 {
@@ -39,7 +39,7 @@ import { Type } from '@sinclair/typebox'
 
   const K = Type.KeyOf(T)
 
-  Expect(K).ToInfer<'C'>()
+  Expect(K).ToStatic<'C'>()
 }
 
 {
@@ -53,7 +53,7 @@ import { Type } from '@sinclair/typebox'
       ['A', 'B'],
     ),
   )
-  Expect(T).ToInfer<'C'>()
+  Expect(T).ToStatic<'C'>()
 }
 {
   {
@@ -70,13 +70,13 @@ import { Type } from '@sinclair/typebox'
 
     const K1 = Type.KeyOf(T)
 
-    Expect(K1).ToInfer<'type' | 'x' | 'y' | 'z'>()
+    Expect(K1).ToStatic<'type' | 'x' | 'y' | 'z'>()
 
     const P = Type.Omit(T, ['type', 'x'])
 
     const K2 = Type.KeyOf(P)
 
-    Expect(K2).ToInfer<'y' | 'z'>()
+    Expect(K2).ToStatic<'y' | 'z'>()
   }
 }
 {
@@ -89,7 +89,7 @@ import { Type } from '@sinclair/typebox'
     }),
   )
   const K = Type.KeyOf(T)
-  Expect(K).ToInfer<'a' | 'b' | 'c' | 'd'>()
+  Expect(K).ToStatic<'a' | 'b' | 'c' | 'd'>()
 }
 {
   const T = Type.Object({
@@ -98,5 +98,5 @@ import { Type } from '@sinclair/typebox'
     c: Type.Optional(Type.String()),
   })
   const K = Type.KeyOf(T)
-  Expect(K).ToInfer<'a' | 'b' | 'c'>()
+  Expect(K).ToStatic<'a' | 'b' | 'c'>()
 }

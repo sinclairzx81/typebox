@@ -8,4 +8,4 @@ const C = Type.Constructor(
   }),
 )
 
-Expect(C).ToInfer<new (param_0: number, param_1: string) => { method: (param_0: number, param_1: string) => boolean }>()
+Expect(C).ToStatic<new (param_0: number, param_1: string) => { method: (param_0: number, param_1: string) => boolean }>()

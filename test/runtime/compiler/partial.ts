@@ -3,7 +3,7 @@ import { Type, Kind, Optional, Readonly } from '@sinclair/typebox'
 import { Ok, Fail } from './validate'
 import { strictEqual } from 'assert'
 
-describe('type/compiler/Partial', () => {
+describe('compiler/Partial', () => {
   it('Should convert a required object into a partial', () => {
     const A = Type.Object(
       {

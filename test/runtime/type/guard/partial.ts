@@ -1,4 +1,4 @@
-import { TypeGuard, TypeRegistry, Type, Kind } from '@sinclair/typebox'
+import { TypeGuard, TypeRegistry, Type, Kind, Transform } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
 describe('type/guard/TPartial', () => {
@@ -39,5 +39,19 @@ describe('type/guard/TPartial', () => {
     Assert.IsEqual(T.anyOf.length, 2)
     Assert.IsEqual(T.anyOf[0].required, undefined)
     Assert.IsEqual(T.anyOf[1].required, undefined)
+  })
+  it('Should discard transform', () => {
+    const S = Type.Transform(
+      Type.Object({
+        x: Type.Number(),
+        y: Type.String(),
+      }),
+      {
+        Decode: (value) => value,
+        Encode: (value) => value,
+      },
+    )
+    const T = Type.Partial(S)
+    Assert.IsFalse(Transform in T)
   })
 })

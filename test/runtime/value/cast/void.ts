@@ -4,7 +4,7 @@ import { Assert } from '../../assert/index'
 
 describe('value/cast/Void', () => {
   const T = Type.Void()
-  const E = null
+  const E = undefined
   it('Should upcast from string', () => {
     const value = 'world'
     const result = Value.Cast(T, value)
@@ -46,8 +46,8 @@ describe('value/cast/Void', () => {
     Assert.IsEqual(result, E)
   })
   it('Should preserve', () => {
-    const value = null
+    const value = undefined
     const result = Value.Cast(T, value)
-    Assert.IsEqual(result, null)
+    Assert.IsEqual(result, undefined)
   })
 })

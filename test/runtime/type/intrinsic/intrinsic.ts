@@ -2,7 +2,7 @@ import { TypeGuard, Intrinsic } from '@sinclair/typebox'
 import { Type } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
-describe('type/intrinsic/IntrinsicString', () => {
+describe('type/intrinsic/Map', () => {
   // ----------------------------------------------------
   // Passthrough
   // ----------------------------------------------------
@@ -139,19 +139,16 @@ describe('type/intrinsic/IntrinsicString', () => {
     const T = Intrinsic.Map(Type.TemplateLiteral('HELLO${string}WORLD'), 'Lowercase')
     Assert.IsTrue(TypeGuard.TTemplateLiteral(T))
     Assert.IsEqual(T.pattern, '^hello(.*)world$')
-    console.log(T.pattern)
   })
   it('Should map template literal patterns 2', () => {
     const T = Intrinsic.Map(Type.TemplateLiteral('HELLO${number}WORLD'), 'Lowercase')
     Assert.IsTrue(TypeGuard.TTemplateLiteral(T))
     Assert.IsEqual(T.pattern, '^hello(0|[1-9][0-9]*)world$')
-    console.log(T.pattern)
   })
   it('Should map template literal patterns 3', () => {
     const T = Intrinsic.Map(Type.TemplateLiteral('${number}${string}'), 'Lowercase')
     Assert.IsTrue(TypeGuard.TTemplateLiteral(T))
     Assert.IsEqual(T.pattern, '^(0|[1-9][0-9]*)(.*)$')
-    console.log(T.pattern)
   })
   it('Should map template literal patterns 3', () => {
     const T = Intrinsic.Map(Type.TemplateLiteral('${number}HELLO${string}'), 'Lowercase')

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------------
 
-@sinclair/typebox/hash
+@sinclair/typebox/value
 
 The MIT License (MIT)
 
@@ -26,14 +26,14 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import * as ValueGuard from './guard'
+import { IsArray, IsBoolean, IsBigInt, IsDate, IsNull, IsNumber, IsPlainObject, IsString, IsSymbol, IsUint8Array, IsUndefined } from './guard'
 
 // --------------------------------------------------------------------------
 // Errors
 // --------------------------------------------------------------------------
 export class ValueHashError extends Error {
   constructor(public readonly value: unknown) {
-    super(`Hash: Unable to hash value`)
+    super(`Unable to hash value`)
   }
 }
 // --------------------------------------------------------------------------
@@ -122,17 +122,17 @@ function UndefinedType(value: undefined) {
   return FNV1A64(ByteMarker.Undefined)
 }
 function Visit(value: any) {
-  if (ValueGuard.IsArray(value)) return ArrayType(value)
-  if (ValueGuard.IsBoolean(value)) return BooleanType(value)
-  if (ValueGuard.IsBigInt(value)) return BigIntType(value)
-  if (ValueGuard.IsDate(value)) return DateType(value)
-  if (ValueGuard.IsNull(value)) return NullType(value)
-  if (ValueGuard.IsNumber(value)) return NumberType(value)
-  if (ValueGuard.IsPlainObject(value)) return ObjectType(value)
-  if (ValueGuard.IsString(value)) return StringType(value)
-  if (ValueGuard.IsSymbol(value)) return SymbolType(value)
-  if (ValueGuard.IsUint8Array(value)) return Uint8ArrayType(value)
-  if (ValueGuard.IsUndefined(value)) return UndefinedType(value)
+  if (IsArray(value)) return ArrayType(value)
+  if (IsBoolean(value)) return BooleanType(value)
+  if (IsBigInt(value)) return BigIntType(value)
+  if (IsDate(value)) return DateType(value)
+  if (IsNull(value)) return NullType(value)
+  if (IsNumber(value)) return NumberType(value)
+  if (IsPlainObject(value)) return ObjectType(value)
+  if (IsString(value)) return StringType(value)
+  if (IsSymbol(value)) return SymbolType(value)
+  if (IsUint8Array(value)) return Uint8ArrayType(value)
+  if (IsUndefined(value)) return UndefinedType(value)
   throw new ValueHashError(value)
 }
 function FNV1A64(byte: number) {

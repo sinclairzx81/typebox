@@ -6,7 +6,7 @@ describe('value/convert/Tuple', () => {
   it('Should convert from Array 1', () => {
     const T = Type.Tuple([Type.Number(), Type.Number()])
     const R = Value.Convert(T, ['1', 'true'])
-    Assert.IsEqual(R, [1, true])
+    Assert.IsEqual(R, [1, 1])
   })
   it('Should convert from Array 2', () => {
     const T = Type.Tuple([Type.Number(), Type.Number()])

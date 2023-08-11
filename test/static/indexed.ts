@@ -8,19 +8,19 @@ import { Type, Static } from '@sinclair/typebox'
   })
   const R = Type.Index(T, ['x', 'y'])
   type O = Static<typeof R>
-  Expect(R).ToInfer<number | string>()
+  Expect(R).ToStatic<number | string>()
 }
 {
   const T = Type.Tuple([Type.Number(), Type.String(), Type.Boolean()])
   const R = Type.Index(T, Type.Union([Type.Literal('0'), Type.Literal('1')]))
   type O = Static<typeof R>
-  Expect(R).ToInfer<number | string>()
+  Expect(R).ToStatic<number | string>()
 }
 {
   const T = Type.Tuple([Type.Number(), Type.String(), Type.Boolean()])
   const R = Type.Index(T, Type.Union([Type.Literal(0), Type.Literal(1)]))
   type O = Static<typeof R>
-  Expect(R).ToInfer<number | string>()
+  Expect(R).ToStatic<number | string>()
 }
 {
   const T = Type.Object({
@@ -30,37 +30,37 @@ import { Type, Static } from '@sinclair/typebox'
 
   const R = Type.Index(T, Type.TemplateLiteral([Type.Literal('a'), Type.Union([Type.Literal('b'), Type.Literal('c')])]))
   type O = Static<typeof R>
-  Expect(R).ToInfer<number | string>()
+  Expect(R).ToStatic<number | string>()
 }
 {
   const A = Type.Tuple([Type.String(), Type.Boolean()])
   const R = Type.Index(A, Type.Number())
   type O = Static<typeof R>
-  Expect(R).ToInfer<string | boolean>()
+  Expect(R).ToStatic<string | boolean>()
 }
 {
   const A = Type.Tuple([Type.String()])
   const R = Type.Index(A, Type.Number())
   type O = Static<typeof R>
-  Expect(R).ToInfer<string>()
+  Expect(R).ToStatic<string>()
 }
 {
   const A = Type.Tuple([])
   const R = Type.Index(A, Type.Number())
   type O = Static<typeof R>
-  Expect(R).ToInfer<never>()
+  Expect(R).ToStatic<never>()
 }
 {
   const A = Type.Object({})
   const R = Type.Index(A, Type.BigInt()) // Support Overload
   type O = Static<typeof R>
-  Expect(R).ToInfer<never>()
+  Expect(R).ToStatic<never>()
 }
 {
   const A = Type.Array(Type.Number())
   const R = Type.Index(A, Type.BigInt()) // Support Overload
   type O = Static<typeof R>
-  Expect(R).ToInfer<never>()
+  Expect(R).ToStatic<never>()
 }
 // ------------------------------------------------------------------
 // Intersections
@@ -76,7 +76,7 @@ import { Type, Static } from '@sinclair/typebox'
   const C = Type.Intersect([A, B])
   const R = Type.Index(C, ['y'])
   type O = Static<typeof R>
-  Expect(R).ToBe<1>()
+  Expect(R).ToStatic<1>()
 }
 {
   type A = { x: string; y: 1 }
@@ -89,7 +89,7 @@ import { Type, Static } from '@sinclair/typebox'
   const C = Type.Intersect([A, B])
   const R = Type.Index(C, ['x'])
   type O = Static<typeof R>
-  Expect(R).ToBe<string>()
+  Expect(R).ToStatic<string>()
 }
 {
   type A = { x: string; y: 1 }
@@ -102,7 +102,7 @@ import { Type, Static } from '@sinclair/typebox'
   const C = Type.Intersect([A, B])
   const R = Type.Index(C, ['x', 'y'])
   type O = Static<typeof R>
-  Expect(R).ToBe<string | 1>()
+  Expect(R).ToStatic<string | 1>()
 }
 {
   type A = { x: string; y: number }
@@ -115,7 +115,7 @@ import { Type, Static } from '@sinclair/typebox'
   const C = Type.Intersect([A, B])
   const R = Type.Index(C, ['x'])
   type O = Static<typeof R>
-  Expect(R).ToBe<never>()
+  Expect(R).ToStatic<never>()
 }
 {
   type A = { x: string; y: number }
@@ -128,7 +128,7 @@ import { Type, Static } from '@sinclair/typebox'
   const C = Type.Intersect([A, B])
   const R = Type.Index(C, ['y'])
   type O = Static<typeof R>
-  Expect(R).ToBe<number>()
+  Expect(R).ToStatic<number>()
 }
 {
   type A = { x: string; y: number }
@@ -141,7 +141,7 @@ import { Type, Static } from '@sinclair/typebox'
   const C = Type.Intersect([A, B])
   const R = Type.Index(C, ['x', 'y'])
   type O = Static<typeof R>
-  Expect(R).ToBe<number>()
+  Expect(R).ToStatic<number>()
 }
 {
   type A = { x: string; y: 1 }
@@ -158,7 +158,7 @@ import { Type, Static } from '@sinclair/typebox'
   const I = Type.Intersect([Type.Intersect([A, B]), Type.Intersect([C, D])])
   const R = Type.Index(I, ['x', 'y'])
   type O = Static<typeof R>
-  Expect(R).ToBe<string | 1>()
+  Expect(R).ToStatic<string | 1>()
 }
 {
   type A = { x: string; y: 1 }
@@ -175,7 +175,7 @@ import { Type, Static } from '@sinclair/typebox'
   const I = Type.Intersect([Type.Intersect([A, B]), Type.Intersect([C, D])])
   const R = Type.Index(I, ['x', 'y'])
   type O = Static<typeof R>
-  Expect(R).ToBe<1>()
+  Expect(R).ToStatic<1>()
 }
 {
   type A = { x: string; y: 1 }
@@ -192,7 +192,7 @@ import { Type, Static } from '@sinclair/typebox'
   const I = Type.Intersect([Type.Union([A, B]), Type.Intersect([C, D])])
   const R = Type.Index(I, ['x', 'y'])
   type O = Static<typeof R>
-  Expect(R).ToBe<number | string>()
+  Expect(R).ToStatic<number | string>()
 }
 {
   type A = { x: 'A'; y: 1 }
@@ -209,7 +209,7 @@ import { Type, Static } from '@sinclair/typebox'
   const I = Type.Union([A, B, C, D])
   const R = Type.Index(I, Type.Union([Type.Literal('x')]))
   type O = Static<typeof R>
-  Expect(R).ToBe<'A' | 'B' | 'C' | 'D'>()
+  Expect(R).ToStatic<'A' | 'B' | 'C' | 'D'>()
 }
 {
   type I = {
@@ -227,7 +227,7 @@ import { Type, Static } from '@sinclair/typebox'
   )
   const R = Type.Index(I, ['x', 'y', 'z']) // z unresolvable
   type O = Static<typeof R>
-  Expect(R).ToBe<string | number>()
+  Expect(R).ToStatic<string | number>()
 }
 // ------------------------------------------------
 // Numeric | String Variants
@@ -239,7 +239,7 @@ import { Type, Static } from '@sinclair/typebox'
   })
   const R = Type.Index(T, [0, '1'])
   type O = Static<typeof R>
-  Expect(R).ToBe<string | number>()
+  Expect(R).ToStatic<string | number>()
 }
 {
   const T = Type.Object({
@@ -248,5 +248,12 @@ import { Type, Static } from '@sinclair/typebox'
   })
   const R = Type.Index(T, Type.KeyOf(T))
   type O = Static<typeof R>
-  Expect(R).ToBe<string | number>()
+  Expect(R).ToStatic<string | number>()
+}
+{
+  const P = Type.Tuple([Type.Number(), Type.String()])
+  const R = Type.Object({
+    x: Type.Index(P, [0, 1]),
+  })
+  Expect(R).ToStatic<{ x: number | string }>()
 }

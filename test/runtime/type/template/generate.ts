@@ -1,7 +1,7 @@
 import { TemplateLiteralParser, TemplateLiteralGenerator } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
-describe('type/TemplateLiteralGenerator', () => {
+describe('type/templateliteral/TemplateLiteralGenerator', () => {
   // ---------------------------------------------------------------
   // Exact (No Default Unwrap)
   // ---------------------------------------------------------------

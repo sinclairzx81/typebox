@@ -27,18 +27,18 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import { TypeCheck, TypeCompiler, ValueError } from '@sinclair/typebox/compiler'
-import { TSchema, Static } from '@sinclair/typebox'
+import { TSchema, Static, TypeBoxError } from '@sinclair/typebox'
 import { Value } from '@sinclair/typebox/value'
 
 // ----------------------------------------------------------------
 // TypeMapKeyError
 // ----------------------------------------------------------------
-export class TypeMapKeyError extends Error {
+export class TypeMapKeyError extends TypeBoxError {
   constructor(message: string) {
     super(`${message} for key`)
   }
 }
-export class TypeMapValueError extends Error {
+export class TypeMapValueError extends TypeBoxError {
   constructor(key: unknown, message: string) {
     super(`${message} for key ${JSON.stringify(key)}`)
   }

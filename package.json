@@ -1,6 +1,6 @@
 {
   "name": "@sinclair/typebox",
-  "version": "0.30.4",
+  "version": "0.31.0",
   "description": "JSONSchema Type Builder with Static Type Resolution for TypeScript",
   "keywords": [
     "typescript",
@@ -22,11 +22,13 @@
     "./value/convert": "./value/convert.js",
     "./value/create": "./value/create.js",
     "./value/delta": "./value/delta.js",
+    "./value/deref": "./value/deref.js",
     "./value/equal": "./value/equal.js",
     "./value/guard": "./value/guard.js",
     "./value/hash": "./value/hash.js",
     "./value/mutate": "./value/mutate.js",
     "./value/pointer": "./value/pointer.js",
+    "./value/transform": "./value/transform.js",
     "./value": "./value/index.js",
     ".": "./typebox.js"
   },
@@ -42,6 +44,8 @@
     "clean": "hammer task clean",
     "format": "hammer task format",
     "start": "hammer task start",
+    "benchmark:compression": "hammer task benchmark_compression",
+    "benchmark:measurement": "hammer task benchmark_measurement",
     "benchmark": "hammer task benchmark",
     "build": "hammer task build",
     "publish": "hammer task publish",
@@ -49,12 +53,10 @@
   },
   "devDependencies": {
     "@sinclair/hammer": "^0.17.1",
-    "@types/chai": "^4.3.3",
     "@types/mocha": "^9.1.1",
     "@types/node": "^18.11.9",
     "ajv": "^8.12.0",
     "ajv-formats": "^2.1.1",
-    "chai": "^4.3.6",
     "mocha": "^9.2.2",
     "prettier": "^2.7.1",
     "typescript": "^5.1.6"

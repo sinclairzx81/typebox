@@ -73,7 +73,7 @@ export function IsUint8Array(value: unknown): value is Uint8Array {
 }
 /** Returns true if this value is a Date */
 export function IsDate(value: unknown): value is Date {
-  return value instanceof Date
+  return value instanceof Date && Number.isFinite(value.getTime())
 }
 // --------------------------------------------------------------------------
 // Standard

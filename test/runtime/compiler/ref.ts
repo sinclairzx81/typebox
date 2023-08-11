@@ -2,7 +2,7 @@ import { Type } from '@sinclair/typebox'
 import { Ok, Fail } from './validate'
 import { Assert } from '../assert/index'
 
-describe('type/compiler/Ref', () => {
+describe('compiler/Ref', () => {
   it('Should should validate when referencing a type', () => {
     const T = Type.Object(
       {

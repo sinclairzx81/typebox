@@ -1,7 +1,7 @@
 import { Type } from '@sinclair/typebox'
 import { Ok, Fail } from './validate'
 
-describe('type/compiler/Date', () => {
+describe('compiler/Date', () => {
   it('Should not validate number', () => {
     const T = Type.Date()
     Fail(T, 1)
@@ -53,8 +53,8 @@ describe('type/compiler/Date', () => {
   })
   it('Should validate Date maximumTimestamp', () => {
     const T = Type.Date({ maximumTimestamp: 10 })
-    Ok(T, new Date(10))
     Fail(T, new Date(11))
+    Ok(T, new Date(10))
   })
   it('Should validate Date exclusiveMinimumTimestamp', () => {
     const T = Type.Date({ exclusiveMinimumTimestamp: 10 })
@@ -63,7 +63,12 @@ describe('type/compiler/Date', () => {
   })
   it('Should validate Date exclusiveMaximumTimestamp', () => {
     const T = Type.Date({ exclusiveMaximumTimestamp: 10 })
-    Ok(T, new Date(9))
     Fail(T, new Date(10))
+    Ok(T, new Date(9))
+  })
+  it('Should validate Date multipleOfTimestamp', () => {
+    const T = Type.Date({ multipleOfTimestamp: 2 })
+    Fail(T, new Date(1))
+    Ok(T, new Date(2))
   })
 })

@@ -1,7 +1,7 @@
 import { Type } from '@sinclair/typebox'
 import { Ok, Fail } from './validate'
 
-describe('type/compiler/Union', () => {
+describe('compiler/Union', () => {
   it('Should validate union of string, number and boolean', () => {
     const A = Type.String()
     const B = Type.Number()
