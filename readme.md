@@ -58,11 +58,9 @@ type T = Static<typeof T>                            // type T = {
 
 ## Overview
 
-TypeBox is a runtime type builder that creates Json Schema objects that infer as TypeScript types. The schemas produced by this library are designed to match the static type checking rules of the TypeScript compiler. TypeBox offers a unified type that can be statically checked by TypeScript and runtime checked using standard Json Schema validation.
+TypeBox is a runtime type builder that creates Json Schema objects that infer as TypeScript types. The schemas produced by this library are designed to match the static type checking rules of the TypeScript compiler. TypeBox offers a unified type that can be statically checked by TypeScript or runtime checked using standard Json Schema validation.
 
-TypeBox is designed to be a runtime type system based on industry standard specifications for use in distributed systems. It offers serializable and publishable types as standard, a fully extensible type system capable of supporting multiple schema specifications, a high performance runtime validation compiler, various tools for working with dynamic data and offers detailed structured error reporting.
-
-TypeBox can be used as a simple tool to build up complex schemas or integrated into applications to enable high performance runtime validation for data received over the wire.
+TypeBox is designed to be a runtime type system based on industry standard specifications. It offers serializable and publishable types as standard, a fully extensible type system capable of supporting multiple schema specifications, a high performance runtime validation compiler, various tools for working with dynamic data and offers detailed structured error reporting. It can either be used as a simple tool to build up complex schemas or integrated into applications to enable high performance runtime validation for data received over the wire.
 
 License MIT
 

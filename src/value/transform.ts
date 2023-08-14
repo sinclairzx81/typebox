@@ -76,10 +76,10 @@ export namespace HasTransform {
     return Types.TypeGuard.TTransform(schema) || Visit(schema.items, references)
   }
   function TConstructor(schema: Types.TConstructor, references: Types.TSchema[]) {
-    return Types.TypeGuard.TTransform(schema) || Visit(schema.returns, references) || schema.parameters.some((schema) => Visit(schema.returns, references))
+    return Types.TypeGuard.TTransform(schema) || Visit(schema.returns, references) || schema.parameters.some((schema) => Visit(schema, references))
   }
   function TFunction(schema: Types.TFunction, references: Types.TSchema[]) {
-    return Types.TypeGuard.TTransform(schema) || Visit(schema.returns, references) || schema.parameters.some((schema) => Visit(schema.returns, references))
+    return Types.TypeGuard.TTransform(schema) || Visit(schema.returns, references) || schema.parameters.some((schema) => Visit(schema, references))
   }
   function TIntersect(schema: Types.TIntersect, references: Types.TSchema[]) {
     return Types.TypeGuard.TTransform(schema) || Types.TypeGuard.TTransform(schema.unevaluatedProperties) || schema.allOf.some((schema) => Visit(schema, references))
