@@ -60,7 +60,9 @@ type T = Static<typeof T>                            // type T = {
 
 TypeBox is a runtime type builder that creates Json Schema objects that infer as TypeScript types. The schemas produced by this library are designed to match the static type checking rules of the TypeScript compiler. TypeBox offers a unified type that can be statically checked by TypeScript or runtime checked using standard Json Schema validation.
 
-TypeBox is designed to be a runtime type system based on industry standard specifications. It offers serializable and publishable types as standard, a fully extensible type system capable of supporting multiple schema specifications, a high performance runtime validation compiler, various tools for working with dynamic data and offers detailed structured error reporting. It can either be used as a simple tool to build up complex schemas or integrated into applications to enable high performance runtime validation for data received over the wire.
+TypeBox is built upon industry standard specifications. It offers reflectable, serializable and publishable types as standard, a fully extensible type system capable of supporting multiple schema specifications, includes a high performance validation compiler, offers various tools for working with dynamic data and provides detailed structured error reporting. 
+
+TypeBox can be used as a simple tool to build up complex schemas or integrated into applications to enable high performance runtime validation for data received over the wire.
 
 License MIT
 
@@ -1167,9 +1169,9 @@ const Z = Value.Cast(T, { x: 1, y: 2, z: 3 })        // const Z = { x: 1, y: 2 }
 Use the Decode function to decode a value from a type, or throw if the value is invalid. The return value will infer as the decoded type. This function will run Transform codecs if available.
 
 ```typescript
-const A = Type.Decode(Type.String(), 'hello')        // const A = 'hello'
+const A = Value.Decode(Type.String(), 'hello')        // const A = 'hello'
 
-const B = Type.Decode(Type.String(), 42)             // throw
+const B = Value.Decode(Type.String(), 42)             // throw
 ```
 <a name='values-decode'></a>
 
@@ -1178,9 +1180,9 @@ const B = Type.Decode(Type.String(), 42)             // throw
 Use the Encode function to encode a value to a type, or throw if the value is invalid. The return value will infer as the encoded type. This function will run Transform codecs if available.
 
 ```typescript
-const A = Type.Encode(Type.String(), 'hello')        // const A = 'hello'
+const A = Value.Encode(Type.String(), 'hello')        // const A = 'hello'
 
-const B = Type.Encode(Type.String(), 42)             // throw
+const B = Value.Encode(Type.String(), 42)             // throw
 ```
 
 <a name='values-equal'></a>
