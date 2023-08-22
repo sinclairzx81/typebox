@@ -36,4 +36,15 @@ describe('compiler/Literal', () => {
     Fail(T, 43)
     Fail(T, 'world')
   })
+  // reference: https://github.com/sinclairzx81/typebox/issues/539
+  it('Should escape single quote literals', () => {
+    const T = Type.Literal("it's")
+    Ok(T, "it's")
+    Fail(T, "it''s")
+  })
+  it('Should escape multiple single quote literals', () => {
+    const T = Type.Literal("'''''''''")
+    Ok(T, "'''''''''")
+    Fail(T, "''''''''") // minus 1
+  })
 })

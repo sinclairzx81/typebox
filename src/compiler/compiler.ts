@@ -129,6 +129,14 @@ namespace Identifier {
   }
 }
 // -------------------------------------------------------------------
+// LiteralString
+// -------------------------------------------------------------------
+namespace LiteralString {
+  export function Escape(content: string) {
+    return content.replace(/'/g, "\\'")
+  }
+}
+// -------------------------------------------------------------------
 // Errors
 // -------------------------------------------------------------------
 export class TypeCompilerUnknownTypeError extends Types.TypeBoxError {
@@ -263,7 +271,7 @@ export namespace TypeCompiler {
     if (typeof schema.const === 'number' || typeof schema.const === 'boolean') {
       yield `(${value} === ${schema.const})`
     } else {
-      yield `(${value} === '${schema.const}')`
+      yield `(${value} === '${LiteralString.Escape(schema.const)}')`
     }
   }
   function* TNever(schema: Types.TNever, references: Types.TSchema[], value: string): IterableIterator<string> {
