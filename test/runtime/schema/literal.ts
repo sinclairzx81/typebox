@@ -36,6 +36,7 @@ describe('type/schema/Literal', () => {
     Fail(T, 43)
     Fail(T, 'world')
   })
+  // reference: https://github.com/sinclairzx81/typebox/issues/539
   it('Should escape single quote literals', () => {
     const T = Type.Literal("it's")
     Ok(T, "it's")
