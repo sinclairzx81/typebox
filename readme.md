@@ -1604,13 +1604,16 @@ The following is a list of community packages that offer general tooling, extend
 
 | Package   |  Description |
 | ------------- | ------------- |
+| [drizzle-typebox](https://www.npmjs.com/package/drizzle-typebox) | Generates TypeBox types from Drizzle ORM schemas |
 | [elysia](https://github.com/elysiajs/elysia) | Fast and friendly Bun web framework |
 | [fastify-type-provider-typebox](https://github.com/fastify/fastify-type-provider-typebox) | Fastify TypeBox integration with the Fastify Type Provider |
 | [feathersjs](https://github.com/feathersjs/feathers) | The API and real-time application framework |
 | [fetch-typebox](https://github.com/erfanium/fetch-typebox) | Drop-in replacement for fetch that brings easy integration with TypeBox |
+| [h3-typebox](https://github.com/kevinmarrec/h3-typebox) | Schema validation utilities for h3, using TypeBox & Ajv |
 | [schema2typebox](https://github.com/xddq/schema2typebox)  | Creating TypeBox code from Json Schemas |
 | [ts2typebox](https://github.com/xddq/ts2typebox) | Creating TypeBox code from Typescript types |
 | [typebox-client](https://github.com/flodlc/typebox-client) | Type safe http client library for Fastify |
+| [typebox-form-parser](https://github.com/jtlapp/typebox-form-parser) | Parses form and query data based on TypeBox schemas |
 | [typebox-validators](https://github.com/jtlapp/typebox-validators) | Advanced validators supporting discriminated and heterogeneous unions |
 
 <a name='benchmark'></a>
