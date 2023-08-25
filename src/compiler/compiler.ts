@@ -330,7 +330,7 @@ export namespace TypeCompiler {
     if (IsNumber(schema.minProperties)) yield `Object.getOwnPropertyNames(${value}).length >= ${schema.minProperties}`
     if (IsNumber(schema.maxProperties)) yield `Object.getOwnPropertyNames(${value}).length <= ${schema.maxProperties}`
     const [patternKey, patternSchema] = Object.entries(schema.patternProperties)[0]
-    const variable = CreateVariable(`new RegExp(/${patternKey}/)`)
+    const variable = CreateVariable(`${new RegExp(patternKey)}`)
     const check1 = CreateExpression(patternSchema, references, 'value')
     const check2 = Types.TypeGuard.TSchema(schema.additionalProperties) ? CreateExpression(schema.additionalProperties, references, value) : schema.additionalProperties === false ? 'false' : 'true'
     const expression = `(${variable}.test(key) ? ${check1} : ${check2})`
