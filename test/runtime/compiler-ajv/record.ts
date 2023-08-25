@@ -1,38 +1,7 @@
 import { Type } from '@sinclair/typebox'
 import { Ok, Fail } from './validate'
 
-describe('compiler/Record', () => {
-  // -------------------------------------------------------------
-  // Issues
-  // -------------------------------------------------------------
-  it('Issue: https://github.com/sinclairzx81/typebox/issues/402', () => {
-    const T = Type.Object({
-      foo: Type.Object({
-        bar: Type.Record(Type.String(), Type.Number()),
-      }),
-    })
-    Ok(T, { foo: { bar: { x: 42 } } })
-    Ok(T, { foo: { bar: {} } })
-    Fail(T, { foo: { bar: { x: '42' } } })
-    Fail(T, { foo: { bar: [] } })
-    Fail(T, { foo: {} })
-    Fail(T, { foo: [] })
-    Fail(T, {})
-  })
-  // -------------------------------------------------------------
-  // TypeBox Only: Date and Record
-  // -------------------------------------------------------------
-  it('Should fail record with Date', () => {
-    const T = Type.Record(Type.String(), Type.String())
-    Fail(T, new Date())
-  })
-  it('Should fail record with Uint8Array', () => {
-    const T = Type.Record(Type.String(), Type.String())
-    Fail(T, new Uint8Array())
-  })
-  // -------------------------------------------------------------
-  // Standard Assertions
-  // -------------------------------------------------------------
+describe('compiler-ajv/Record', () => {
   it('Should validate when all property values are numbers', () => {
     const T = Type.Record(Type.String(), Type.Number())
     Ok(T, { a: 1, b: 2, c: 3 })
