@@ -855,30 +855,36 @@ export interface TTemplateLiteral<T extends TTemplateLiteralKind[] = TTemplateLi
 // TTransform
 // --------------------------------------------------------------------------
 // prettier-ignore
-export type DecodeStaticProperties<T extends TProperties> = {
-  [K in keyof T]: DecodeStaticType<T[K]>
+export type DecodeModifier<D extends TSchema, T extends TSchema> =
+  T extends TReadonly<T> & TOptional<T> ? TReadonly<TOptional<D>> :
+  T extends TReadonly<T> ? TReadonly<D> :
+  T extends TOptional<T> ? TOptional<D> :
+  D
+// prettier-ignore
+export type DecodeProperties<T extends TProperties> = {
+  [K in keyof T]: DecodeType<T[K]>
 }
 // prettier-ignore
-export type DecodeStaticRest<T extends TSchema[]> = T extends [infer L, ...infer R]
-  ? [DecodeStaticType<AssertType<L>>, ...DecodeStaticRest<AssertRest<R>>]
+export type DecodeRest<T extends TSchema[]> = T extends [infer L, ...infer R]
+  ? [DecodeType<AssertType<L>>, ...DecodeRest<AssertRest<R>>]
   : []
 // prettier-ignore
-export type DecodeStaticType<T extends TSchema> =
-  T extends TTransform<infer _, infer R>   ? TUnsafe<R> : 
-  T extends TArray<infer S> ? TArray<DecodeStaticType<S>> :
-  T extends TAsyncIterator<infer S> ? TAsyncIterator<DecodeStaticType<S>> :
-  T extends TConstructor<infer P, infer R> ? TConstructor<AssertRest<DecodeStaticRest<P>>, DecodeStaticType<R>> :
-  T extends TFunction<infer P, infer R> ? TFunction<AssertRest<DecodeStaticRest<P>>, DecodeStaticType<R>> :
-  T extends TIntersect<infer S> ? TIntersect<AssertRest<DecodeStaticRest<S>>> :
-  T extends TIterator<infer S> ? TIterator<DecodeStaticType<S>> :
-  T extends TNot<infer S> ? TNot<DecodeStaticType<S>> :
-  T extends TObject<infer S> ? TObject<Evaluate<DecodeStaticProperties<S>>> :
-  T extends TPromise<infer S> ? TPromise<DecodeStaticType<S>> :
-  T extends TRecord<infer K, infer S> ? TRecord<K, DecodeStaticType<S>> :
-  T extends TRecursive<infer S> ? TRecursive<DecodeStaticType<S>> :
-  T extends TRef<infer S> ? TRef<DecodeStaticType<S>> :
-  T extends TTuple<infer S> ? TTuple<AssertRest<DecodeStaticRest<S>>> :
-  T extends TUnion<infer S> ? TUnion<AssertRest<DecodeStaticRest<S>>> :
+export type DecodeType<T extends TSchema> =
+  T extends TTransform<infer _, infer R> ? DecodeModifier<TUnsafe<R>, T> : 
+  T extends TArray<infer S> ? DecodeModifier<TArray<DecodeType<S>>, T> :
+  T extends TAsyncIterator<infer S> ? DecodeModifier<TAsyncIterator<DecodeType<S>>, T> :
+  T extends TConstructor<infer P, infer R> ? DecodeModifier<TConstructor<AssertRest<DecodeRest<P>>, DecodeType<R>>, T> :
+  T extends TFunction<infer P, infer R> ? DecodeModifier<TFunction<AssertRest<DecodeRest<P>>, DecodeType<R>>, T> :
+  T extends TIntersect<infer S> ? DecodeModifier<TIntersect<AssertRest<DecodeRest<S>>>, T> :
+  T extends TIterator<infer S> ? DecodeModifier<TIterator<DecodeType<S>>, T> :
+  T extends TNot<infer S> ? DecodeModifier<TNot<DecodeType<S>>, T> :
+  T extends TObject<infer S> ? DecodeModifier<TObject<Evaluate<DecodeProperties<S>>>, T> :
+  T extends TPromise<infer S> ? DecodeModifier<TPromise<DecodeType<S>>, T> :
+  T extends TRecord<infer K, infer S> ? DecodeModifier<TRecord<K, DecodeType<S>>, T> :
+  T extends TRecursive<infer S> ? DecodeModifier<TRecursive<DecodeType<S>>, T> :
+  T extends TRef<infer S> ? DecodeModifier<TRef<DecodeType<S>>, T> :
+  T extends TTuple<infer S> ? DecodeModifier<TTuple<AssertRest<DecodeRest<S>>>, T> :
+  T extends TUnion<infer S> ? DecodeModifier<TUnion<AssertRest<DecodeRest<S>>>, T> :
   T
 export type TransformFunction<T = any, U = any> = (value: T) => U
 export interface TransformOptions<I extends TSchema = TSchema, O extends unknown = unknown> {
@@ -974,7 +980,7 @@ export interface TVoid extends TSchema {
 // Static<T>
 // --------------------------------------------------------------------------
 /** Creates the decoded static form for a TypeBox type */
-export type StaticDecode<T extends TSchema, P extends unknown[] = []> = Static<DecodeStaticType<T>, P>
+export type StaticDecode<T extends TSchema, P extends unknown[] = []> = Static<DecodeType<T>, P>
 /** Creates the encoded static form for a TypeBox type */
 export type StaticEncode<T extends TSchema, P extends unknown[] = []> = Static<T, P>
 /** Creates the static type for a TypeBox type */
