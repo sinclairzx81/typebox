@@ -189,8 +189,8 @@ import { Expect } from './assert'
     x: Type.Optional(Type.Number()),
     y: Type.Optional(Type.Number())
   })
-  Expect(T).ToStaticDecode<{ x: undefined, y: undefined }>()
-  Expect(T).ToStaticDecode<{ x: 1, y: 1 }>()
+  Expect(T).ToStaticDecode<{ x: undefined; y: undefined }>()
+  Expect(T).ToStaticDecode<{ x: 1; y: 1 }>()
 }
 {
   // ensure decode as readonly
@@ -199,7 +199,7 @@ import { Expect } from './assert'
     x: Type.Readonly(Type.Number()),
     y: Type.Readonly(Type.Number())
   })
-  Expect(T).ToStaticDecode<{ readonly x: 1, readonly y: 1 }>()
+  Expect(T).ToStaticDecode<{ readonly x: 1; readonly y: 1 }>()
 }
 {
   // ensure decode as optional union
