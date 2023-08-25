@@ -864,6 +864,7 @@ export type DecodeStaticRest<T extends TSchema[]> = T extends [infer L, ...infer
   : []
 // prettier-ignore
 export type DecodeStaticType<T extends TSchema> =
+  T extends TOptional<infer S> ? TOptional<DecodeStaticType<S>> :
   T extends TTransform<infer _, infer R>   ? TUnsafe<R> : 
   T extends TArray<infer S> ? TArray<DecodeStaticType<S>> :
   T extends TAsyncIterator<infer S> ? TAsyncIterator<DecodeStaticType<S>> :
