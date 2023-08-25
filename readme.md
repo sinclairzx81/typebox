@@ -60,7 +60,7 @@ type T = Static<typeof T>                            // type T = {
 
 TypeBox is a runtime type builder that creates Json Schema objects that infer as TypeScript types. The schemas produced by this library are designed to match the static type checking rules of the TypeScript compiler. TypeBox offers a unified type that can be statically checked by TypeScript or runtime checked using standard Json Schema validation.
 
-TypeBox is built upon industry standard specifications. It offers reflectable, serializable and publishable types as standard, a fully extensible type system capable of supporting multiple schema specifications, includes a high performance validation compiler, offers various tools for working with dynamic data and provides detailed structured error reporting. 
+TypeBox types are designed to express industry standard schematics as TypeScript types. All types are runtime reflectable, serializable and publishable by default. It includes an extensible type system able to represent type safe schematics for multiple schema specifications. It also provides a high performance validation compiler, various tools for working with dynamic data and offers detailed structured error reporting. 
 
 TypeBox can be used as a simple tool to build up complex schemas or integrated into applications to enable high performance runtime validation for data received over the wire.
 
@@ -949,7 +949,7 @@ const U = Type.Union(R)                              // const U = {
 
 ### Transform Types
 
-TypeBox supports bi-directional decode and encode with Transform types. These types are designed to operate with the Value and TypeCompiler Encode and Decode functions. Transform types are useful to convert Json encoded values into constructs more natural to JavaScript. The following creates a Transform type to convert between Date and number using the Value module.
+TypeBox supports value decoding and encoding with Transform types. These types work in tandem with the Encode and Decode functions available on the Value and TypeCompiler modules. Transform types can be used to convert Json encoded values into constructs more natural to JavaScript. The following creates a Transform type to decode numbers into Dates using the Value module.
 
 ```typescript
 import { Value } from '@sinclair/typebox/value'
