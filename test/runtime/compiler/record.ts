@@ -85,7 +85,7 @@ describe('compiler/Record', () => {
     const R = Type.Record(Type.KeyOf(T), Type.Number(), { additionalProperties: false })
     Fail(R, { a: 1, b: 2, c: 3, d: 4 })
   })
-  it('Should should validate when specifying regular expressions', () => {
+  it('Should validate when specifying regular expressions', () => {
     const K = Type.RegExp(/^op_.*$/)
     const T = Type.Record(K, Type.Number())
     Ok(T, {
@@ -94,13 +94,31 @@ describe('compiler/Record', () => {
       op_c: 3,
     })
   })
-  it('Should should not validate when specifying regular expressions and passing invalid property', () => {
+  it('Should not validate when specifying regular expressions and passing invalid property', () => {
     const K = Type.RegExp(/^op_.*$/)
     const T = Type.Record(K, Type.Number(), { additionalProperties: false })
     Fail(T, {
       op_a: 1,
       op_b: 2,
       aop_c: 3,
+    })
+  })
+  it('Should validate with quoted string pattern', () => {
+    const K = Type.String({ pattern: "'(a|b|c)" })
+    const T = Type.Record(K, Type.Number())
+    Ok(T, {
+      "'a": 1,
+      "'b": 2,
+      "'c": 3,
+    })
+  })
+  it('Should validate with forward-slash pattern', () => {
+    const K = Type.String({ pattern: '/(a|b|c)' })
+    const T = Type.Record(K, Type.Number())
+    Ok(T, {
+      '/a': 1,
+      '/b': 2,
+      '/c': 3,
     })
   })
   // ------------------------------------------------------------

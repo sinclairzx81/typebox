@@ -1,8 +1,8 @@
 import { Type } from '@sinclair/typebox'
-import { Ok, Fail } from './validate'
-import { strictEqual } from 'assert'
+import { Ok } from './validate'
+import { Assert } from '../assert'
 
-describe('type/schema/ReadonlyOptional', () => {
+describe('compiler-ajv/ReadonlyOptional', () => {
   it('Should validate object with optional', () => {
     const T = Type.Object(
       {
@@ -22,6 +22,6 @@ describe('type/schema/ReadonlyOptional', () => {
       },
       { additionalProperties: false },
     )
-    strictEqual(T.required!.includes('a'), false)
+    Assert.IsEqual(T.required!.includes('a'), false)
   })
 })

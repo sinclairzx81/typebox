@@ -2,7 +2,7 @@ import { Type } from '@sinclair/typebox'
 import { Ok, Fail } from './validate'
 import { strictEqual } from 'assert'
 
-describe('type/schema/Omit', () => {
+describe('compiler-ajv/Omit', () => {
   it('Should omit properties on the source schema', () => {
     const A = Type.Object(
       {

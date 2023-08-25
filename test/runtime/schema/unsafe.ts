@@ -1,7 +1,7 @@
 import { Type } from '@sinclair/typebox'
 import { Ok, Fail } from './validate'
 
-describe('type/schema/Unsafe', () => {
+describe('compiler-ajv/Unsafe', () => {
   it('Should validate an unsafe type', () => {
     const T = Type.Unsafe({
       type: 'object',

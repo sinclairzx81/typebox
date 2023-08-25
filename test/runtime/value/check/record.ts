@@ -121,6 +121,46 @@ describe('value/check/Record', () => {
     const result = Value.Check(T, value)
     Assert.IsEqual(result, true)
   })
+  it('Should validate when specifying regular expressions', () => {
+    const K = Type.RegExp(/^op_.*$/)
+    const T = Type.Record(K, Type.Number())
+    const R = Value.Check(T, {
+      op_a: 1,
+      op_b: 2,
+      op_c: 3,
+    })
+    Assert.IsTrue(R)
+  })
+  it('Should not validate when specifying regular expressions and passing invalid property', () => {
+    const K = Type.RegExp(/^op_.*$/)
+    const T = Type.Record(K, Type.Number(), { additionalProperties: false })
+    const R = Value.Check(T, {
+      op_a: 1,
+      op_b: 2,
+      aop_c: 3,
+    })
+    Assert.IsFalse(R)
+  })
+  it('Should validate with quoted string pattern', () => {
+    const K = Type.String({ pattern: "'(a|b|c)" })
+    const T = Type.Record(K, Type.Number())
+    const R = Value.Check(T, {
+      "'a": 1,
+      "'b": 2,
+      "'c": 3,
+    })
+    Assert.IsTrue(R)
+  })
+  it('Should validate with forward-slash pattern', () => {
+    const K = Type.String({ pattern: '/(a|b|c)' })
+    const T = Type.Record(K, Type.Number())
+    const R = Value.Check(T, {
+      '/a': 1,
+      '/b': 2,
+      '/c': 3,
+    })
+    Assert.IsTrue(R)
+  })
   // -------------------------------------------------
   // Number Key
   // -------------------------------------------------

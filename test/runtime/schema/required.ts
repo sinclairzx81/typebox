@@ -1,8 +1,8 @@
 import { Type, Readonly, Optional } from '@sinclair/typebox'
 import { Ok, Fail } from './validate'
-import { strictEqual } from 'assert'
+import { Assert } from '../assert'
 
-describe('type/schema/Required', () => {
+describe('compiler-ajv/Required', () => {
   it('Should convert a partial object into a required object', () => {
     const A = Type.Object(
       {
@@ -26,10 +26,10 @@ describe('type/schema/Required', () => {
       w: Type.Number(),
     })
     const T = Type.Required(A)
-    strictEqual(T.properties.x[Readonly], 'Readonly')
-    strictEqual(T.properties.y[Readonly], 'Readonly')
-    strictEqual(T.properties.z[Optional], undefined)
-    strictEqual(T.properties.w[Optional], undefined)
+    Assert.IsEqual(T.properties.x[Readonly], 'Readonly')
+    Assert.IsEqual(T.properties.y[Readonly], 'Readonly')
+    Assert.IsEqual(T.properties.z[Optional], undefined)
+    Assert.IsEqual(T.properties.w[Optional], undefined)
   })
   it('Should inherit options from the source object', () => {
     const A = Type.Object(
@@ -41,8 +41,8 @@ describe('type/schema/Required', () => {
       { additionalPropeties: false },
     )
     const T = Type.Required(A)
-    strictEqual(A.additionalPropeties, false)
-    strictEqual(T.additionalPropeties, false)
+    Assert.IsEqual(A.additionalPropeties, false)
+    Assert.IsEqual(T.additionalPropeties, false)
   })
   // it('Should construct new object when targetting reference', () => {
   //   const T = Type.Object({ a: Type.String(), b: Type.String() }, { $id: 'T' })

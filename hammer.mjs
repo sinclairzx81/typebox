@@ -36,7 +36,7 @@ export async function benchmark() {
 // Test
 // -------------------------------------------------------------------------------
 export async function test_typescript() {
-  for (const version of ['4.9.5', '5.0.4', '5.1.3', '5.1.6', 'next', 'latest']) {
+  for (const version of ['4.9.5', '5.0.4', '5.1.3', '5.1.6', '5.2.2', 'next', 'latest']) {
     await shell(`npm install typescript@${version} --no-save`)
     await test_static()
   }

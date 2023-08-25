@@ -3,7 +3,7 @@
 // ---------------------------------------------------
 // import { Type } from '@sinclair/typebox'
 // import { Ok, Fail } from './validate'
-// describe('type/schema/Uint8Array', () => {
+// describe('compiler-ajv/Uint8Array', () => {
 //   it('Should not validate number', () => {
 //     const T = Type.Uint8Array()
 //     Fail(T, 1)

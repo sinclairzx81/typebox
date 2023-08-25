@@ -1,7 +1,7 @@
 import { Type } from '@sinclair/typebox'
 import { Ok, Fail } from './validate'
 
-describe('type/schema/Enum', () => {
+describe('compiler-ajv/Enum', () => {
   it('Should validate when emum uses default numeric values', () => {
     enum Kind {
       Foo, // = 0

@@ -1,8 +1,8 @@
 import { Type, Readonly, Optional } from '@sinclair/typebox'
-import { Ok, Fail } from './validate'
-import { strictEqual } from 'assert'
+import { Ok } from './validate'
+import { Assert } from '../assert'
 
-describe('type/schema/Partial', () => {
+describe('compiler-ajv/Partial', () => {
   it('Should convert a required object into a partial.', () => {
     const A = Type.Object(
       {
@@ -29,12 +29,12 @@ describe('type/schema/Partial', () => {
       { additionalProperties: false },
     )
     const T = Type.Partial(A)
-    strictEqual(T.properties.x[Readonly], 'Readonly')
-    strictEqual(T.properties.x[Optional], 'Optional')
-    strictEqual(T.properties.y[Readonly], 'Readonly')
-    strictEqual(T.properties.y[Optional], 'Optional')
-    strictEqual(T.properties.z[Optional], 'Optional')
-    strictEqual(T.properties.w[Optional], 'Optional')
+    Assert.IsEqual(T.properties.x[Readonly], 'Readonly')
+    Assert.IsEqual(T.properties.x[Optional], 'Optional')
+    Assert.IsEqual(T.properties.y[Readonly], 'Readonly')
+    Assert.IsEqual(T.properties.y[Optional], 'Optional')
+    Assert.IsEqual(T.properties.z[Optional], 'Optional')
+    Assert.IsEqual(T.properties.w[Optional], 'Optional')
   })
   it('Should inherit options from the source object', () => {
     const A = Type.Object(
@@ -46,7 +46,7 @@ describe('type/schema/Partial', () => {
       { additionalProperties: false },
     )
     const T = Type.Partial(A)
-    strictEqual(A.additionalProperties, false)
-    strictEqual(T.additionalProperties, false)
+    Assert.IsEqual(A.additionalProperties, false)
+    Assert.IsEqual(T.additionalProperties, false)
   })
 })

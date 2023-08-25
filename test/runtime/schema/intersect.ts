@@ -1,7 +1,7 @@
 import { Type, Static } from '@sinclair/typebox'
 import { Ok, Fail } from './validate'
 
-describe('type/schema/Intersect', () => {
+describe('compiler-ajv/Intersect', () => {
   it('Should intersect number and number', () => {
     const A = Type.Number()
     const B = Type.Number()

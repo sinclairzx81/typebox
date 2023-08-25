@@ -1,7 +1,7 @@
 import { Type } from '@sinclair/typebox'
 import { Ok, Fail } from './validate'
 
-describe('type/schema/Object', () => {
+describe('compiler-ajv/Object', () => {
   it('Should not validate a number', () => {
     const T = Type.Object({})
     Fail(T, 42)

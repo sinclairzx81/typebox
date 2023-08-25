@@ -1,8 +1,8 @@
 import { Type } from '@sinclair/typebox'
 import { Ok, Fail } from './validate'
-import { strictEqual } from 'assert'
+import { Assert } from '../assert'
 
-describe('type/schema/Pick', () => {
+describe('compiler-ajv/Pick', () => {
   it('Should pick properties from the source schema', () => {
     const Vector3 = Type.Object(
       {
@@ -25,7 +25,7 @@ describe('type/schema/Pick', () => {
       { additionalProperties: false },
     )
     const T = Type.Pick(A, ['x', 'y'])
-    strictEqual(T.required!.includes('z'), false)
+    Assert.IsEqual(T.required!.includes('z'), false)
   })
   it('Should delete the required property if no required properties remain', () => {
     const A = Type.Object(
@@ -37,7 +37,7 @@ describe('type/schema/Pick', () => {
       { additionalProperties: false },
     )
     const T = Type.Pick(A, ['x', 'y'])
-    strictEqual(T.required, undefined)
+    Assert.IsEqual(T.required, undefined)
   })
   it('Should inherit options from the source object', () => {
     const A = Type.Object(
@@ -49,8 +49,8 @@ describe('type/schema/Pick', () => {
       { additionalProperties: false },
     )
     const T = Type.Pick(A, ['x', 'y'])
-    strictEqual(A.additionalProperties, false)
-    strictEqual(T.additionalProperties, false)
+    Assert.IsEqual(A.additionalProperties, false)
+    Assert.IsEqual(T.additionalProperties, false)
   })
   it('Should pick with keyof object', () => {
     const A = Type.Object({

@@ -1,8 +1,8 @@
-import { deepStrictEqual, strictEqual } from 'assert'
 import { Type } from '@sinclair/typebox'
-import { Ok, Fail } from './validate'
+import { Ok } from './validate'
+import { Assert } from '../assert'
 
-describe('type/schema/Readonly', () => {
+describe('compiler-ajv/Readonly', () => {
   it('Should validate object with readonly', () => {
     const T = Type.Object(
       {
@@ -21,7 +21,7 @@ describe('type/schema/Readonly', () => {
       },
       { additionalProperties: false },
     )
-    strictEqual(T.required!.includes('a'), true)
-    strictEqual(T.required!.includes('b'), true)
+    Assert.IsEqual(T.required!.includes('a'), true)
+    Assert.IsEqual(T.required!.includes('b'), true)
   })
 })

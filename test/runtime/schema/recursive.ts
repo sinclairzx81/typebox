@@ -1,8 +1,8 @@
 import { Type } from '@sinclair/typebox'
-import { Assert } from '../assert/index'
 import { Ok, Fail } from './validate'
+import { Assert } from '../assert/index'
 
-describe('type/schema/Recursive', () => {
+describe('compiler-ajv/Recursive', () => {
   it('Should generate default ordinal $id if not specified', () => {
     const Node = Type.Recursive((Node) =>
       Type.Object({
@@ -10,7 +10,7 @@ describe('type/schema/Recursive', () => {
         nodes: Type.Array(Node),
       }),
     )
-    Assert.IsEqual(Node.$id === undefined, false)
+    Assert.IsFalse(Node.$id === undefined)
   })
   it('Should override default ordinal $id if specified', () => {
     const Node = Type.Recursive(

@@ -10,7 +10,7 @@
 // which are configured to use Value.Check()
 // ----------------------------------------------------
 
-// describe('type/schema/Date', () => {
+// describe('compiler-ajv/Date', () => {
 //   it('Should not validate number', () => {
 //     const T = Type.Date()
 //     Fail(T, 1)

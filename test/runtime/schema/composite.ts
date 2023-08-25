@@ -2,7 +2,7 @@ import { Type } from '@sinclair/typebox'
 import { Assert } from '../assert'
 import { Ok, Fail } from './validate'
 
-describe('type/schema/Composite', () => {
+describe('compiler-ajv/Composite', () => {
   it('Should compose two objects', () => {
     const A = Type.Object({ a: Type.String() })
     const B = Type.Object({ b: Type.Number() })

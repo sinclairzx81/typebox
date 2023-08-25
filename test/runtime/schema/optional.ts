@@ -2,7 +2,7 @@ import { strictEqual } from 'assert'
 import { Type } from '@sinclair/typebox'
 import { Ok } from './validate'
 
-describe('type/schema/Optional', () => {
+describe('compiler-ajv/Optional', () => {
   it('Should validate object with optional', () => {
     const T = Type.Object(
       {

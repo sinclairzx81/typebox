@@ -1,6 +1,6 @@
 import './compiler/index'
-import './errors/index'
 import './schema/index'
+import './errors/index'
 import './system/index'
 import './type/index'
 import './value/index'
