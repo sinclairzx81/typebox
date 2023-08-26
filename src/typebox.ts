@@ -2901,7 +2901,7 @@ export class JsonTypeBuilder extends TypeBuilder {
     return Type.Object(properties, options) as TComposite<T>
   }
   /** `[Json]` Creates a Enum type */
-  public Enum<T extends Record<string, string | number>>(item: T, options: SchemaOptions = {}): TEnum<T> {
+  public Enum<V extends string | number, T extends Record<string, V>>(item: T, options: SchemaOptions = {}): TEnum<T> {
     // prettier-ignore
     const values = Object.getOwnPropertyNames(item).filter((key) => isNaN(key as any)).map((key) => item[key]) as T[keyof T][]
     // prettier-ignore
