@@ -1,5 +1,5 @@
 import './compiler/index'
-import './schema/index'
+import './compiler-ajv/index'
 import './errors/index'
 import './system/index'
 import './type/index'
