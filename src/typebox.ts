@@ -1204,7 +1204,7 @@ export namespace TypeGuard {
     // prettier-ignore
     return (
       TKindOf(schema, 'Constructor') && 
-      schema.type === 'constructor' &&
+      schema.type === 'Constructor' &&
       IsOptionalString(schema.$id) && 
       ValueGuard.IsArray(schema.parameters) &&
       schema.parameters.every(schema => TSchema(schema)) &&
@@ -1229,7 +1229,7 @@ export namespace TypeGuard {
     // prettier-ignore
     return (
       TKindOf(schema, 'Function') &&
-      schema.type === 'function' &&
+      schema.type === 'Function' &&
       IsOptionalString(schema.$id) && 
       ValueGuard.IsArray(schema.parameters) && 
       schema.parameters.every(schema => TSchema(schema)) &&
@@ -3300,7 +3300,7 @@ export class JavaScriptTypeBuilder extends JsonTypeBuilder {
   /** `[JavaScript]` Creates a Constructor type */
   public Constructor<T extends TSchema[], U extends TSchema>(parameters: [...T], returns: U, options?: SchemaOptions): TConstructor<T, U> {
     const [clonedParameters, clonedReturns] = [TypeClone.Rest(parameters), TypeClone.Type(returns)]
-    return this.Create({ ...options, [Kind]: 'Constructor', type: 'constructor', parameters: clonedParameters, returns: clonedReturns })
+    return this.Create({ ...options, [Kind]: 'Constructor', type: 'Constructor', parameters: clonedParameters, returns: clonedReturns })
   }
   /** `[JavaScript]` Creates a Date type */
   public Date(options: DateOptions = {}): TDate {
@@ -3309,7 +3309,7 @@ export class JavaScriptTypeBuilder extends JsonTypeBuilder {
   /** `[JavaScript]` Creates a Function type */
   public Function<T extends TSchema[], U extends TSchema>(parameters: [...T], returns: U, options?: SchemaOptions): TFunction<T, U> {
     const [clonedParameters, clonedReturns] = [TypeClone.Rest(parameters), TypeClone.Type(returns)]
-    return this.Create({ ...options, [Kind]: 'Function', type: 'function', parameters: clonedParameters, returns: clonedReturns })
+    return this.Create({ ...options, [Kind]: 'Function', type: 'Function', parameters: clonedParameters, returns: clonedReturns })
   }
   /** `[JavaScript]` Extracts the InstanceType from the given Constructor type */
   public InstanceType<T extends TConstructor<any[], any>>(schema: T, options: SchemaOptions = {}): TInstanceType<T> {
