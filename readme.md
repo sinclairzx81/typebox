@@ -277,7 +277,7 @@ The following table lists the supported Json types. These types are fully compat
 │ const T = Type.Tuple([         │ type T = [number, number]   │ const T = {                    │
 │   Type.Number(),               │                             │   type: 'array',               │
 │   Type.Number()                │                             │   items: [{                    │
-│ ])                             │                             │      type: 'number'            │
+│ ])                             │                             │     type: 'number'             │
 │                                │                             │   }, {                         │
 │                                │                             │     type: 'number'             │
 │                                │                             │   }],                          │
@@ -312,9 +312,9 @@ The following table lists the supported Json types. These types are fully compat
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Union([         │ type T = string | number    │ const T = {                    │
 │   Type.String(),               │                             │   anyOf: [{                    │
-│   Type.Number()                │                             │      type: 'string'            │
+│   Type.Number()                │                             │     type: 'string'             │
 │ ])                             │                             │   }, {                         │
-│                                │                             │      type: 'number'            │
+│                                │                             │     type: 'number'             │
 │                                │                             │   }]                           │
 │                                │                             │ }                              │
 │                                │                             │                                │
