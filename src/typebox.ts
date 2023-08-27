@@ -641,7 +641,7 @@ export type TPick<T extends TSchema = TSchema, K extends keyof any = keyof any> 
 export interface TPromise<T extends TSchema = TSchema> extends TSchema {
   [Kind]: 'Promise'
   static: Promise<Static<T, this['params']>>
-  type: 'promise'
+  type: 'Promise'
   item: TSchema
 }
 // --------------------------------------------------------------------------
