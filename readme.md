@@ -533,7 +533,7 @@ TypeBox provides an extended type set that can be used to create schematics for 
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Constructor([   │ type T = new (              │ const T = {                    │
-│   Type.String(),               │  arg0: string,              │   type: 'constructor',         │
+│   Type.String(),               │  arg0: string,              │   type: 'Constructor',         │
 │   Type.Number()                │  arg0: number               │   parameters: [{               │
 │ ], Type.Boolean())             │ ) => boolean                │     type: 'string'             │
 │                                │                             │   }, {                         │
@@ -546,7 +546,7 @@ TypeBox provides an extended type set that can be used to create schematics for 
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Function([      │ type T = (                  │ const T = {                    │
-|   Type.String(),               │  arg0: string,              │   type: 'function',            │
+|   Type.String(),               │  arg0: string,              │   type: 'Function',            │
 │   Type.Number()                │  arg1: number               │   parameters: [{               │
 │ ], Type.Boolean())             │ ) => boolean                │     type: 'string'             │
 │                                │                             │   }, {                         │

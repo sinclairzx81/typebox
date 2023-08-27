@@ -311,7 +311,7 @@ export type TConstructorParameterArray<T extends readonly TSchema[], P extends u
 export interface TConstructor<T extends TSchema[] = TSchema[], U extends TSchema = TSchema> extends TSchema {
   [Kind]: 'Constructor'
   static: new (...param: TConstructorParameterArray<T, this['params']>) => Static<U, this['params']>
-  type: 'constructor'
+  type: 'Constructor'
   parameters: T
   returns: U
 }
@@ -390,7 +390,7 @@ export type TFunctionParameters<T extends TSchema[], P extends unknown[]> = [...
 export interface TFunction<T extends TSchema[] = TSchema[], U extends TSchema = TSchema> extends TSchema {
   [Kind]: 'Function'
   static: (...param: TFunctionParameters<T, this['params']>) => Static<U, this['params']>
-  type: 'function'
+  type: 'Function'
   parameters: T
   returns: U
 }
