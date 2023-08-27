@@ -277,7 +277,7 @@ The following table lists the supported Json types. These types are fully compat
 │ const T = Type.Tuple([         │ type T = [number, number]   │ const T = {                    │
 │   Type.Number(),               │                             │   type: 'array',               │
 │   Type.Number()                │                             │   items: [{                    │
-│ ])                             │                             │      type: 'number'            │
+│ ])                             │                             │     type: 'number'             │
 │                                │                             │   }, {                         │
 │                                │                             │     type: 'number'             │
 │                                │                             │   }],                          │
@@ -312,9 +312,9 @@ The following table lists the supported Json types. These types are fully compat
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Union([         │ type T = string | number    │ const T = {                    │
 │   Type.String(),               │                             │   anyOf: [{                    │
-│   Type.Number()                │                             │      type: 'string'            │
+│   Type.Number()                │                             │     type: 'string'             │
 │ ])                             │                             │   }, {                         │
-│                                │                             │      type: 'number'            │
+│                                │                             │     type: 'number'             │
 │                                │                             │   }]                           │
 │                                │                             │ }                              │
 │                                │                             │                                │
@@ -472,10 +472,10 @@ The following table lists the supported Json types. These types are fully compat
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const A = Type.Tuple([         │ type A = [0, 1]             │ const T = {                    │
 │   Type.Literal(0),             │ type B = [2, 3]             │   type: 'array',               │
-│   Type.Literal(1)              │ type T = [...A, ...B]       │   items: [                     │
-│ ])                             │                             │     { const: 0 },              │
-│ const B = Type.Tuple([         │                             │     { const: 1 },              │
-|   Type.Literal(2),             │                             │     { const: 2 },              │
+│   Type.Literal(1)              │ type T = [                  │   items: [                     │
+│ ])                             │   ...A,                     │     { const: 0 },              │
+│ const B = Type.Tuple([         │   ...B                      │     { const: 1 },              │
+|   Type.Literal(2),             │ ]                           │     { const: 2 },              │
 |   Type.Literal(3)              │                             │     { const: 3 }               │
 │ ])                             │                             │   ],                           │
 │ const T = Type.Tuple([         │                             │   additionalItems: false,      │
@@ -485,26 +485,26 @@ The following table lists the supported Json types. These types are fully compat
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Uncapitalize(   │ type T = Uncapitalize<      │ const T = {                    │
-│   Type.Literal('Hello')        │   'Hello'                   │    type: 'string',             │
-│ )                              │ >                           │    const: 'hello'              │
+│   Type.Literal('Hello')        │   'Hello'                   │   type: 'string',              │
+│ )                              │ >                           │   const: 'hello'               │
 │                                │                             │ }                              │
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Capitalize(     │ type T = Capitalize<        │ const T = {                    │
-│   Type.Literal('hello')        │   'hello'                   │    type: 'string',             │
-│ )                              │ >                           │    const: 'Hello'              │
+│   Type.Literal('hello')        │   'hello'                   │   type: 'string',              │
+│ )                              │ >                           │   const: 'Hello'               │
 │                                │                             │ }                              │
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Uppercase(      │ type T = Uppercase<         │ const T = {                    │
-│   Type.Literal('hello')        │   'hello'                   │    type: 'string',             │
-│ )                              │ >                           │    const: 'HELLO'              │
+│   Type.Literal('hello')        │   'hello'                   │   type: 'string',              │
+│ )                              │ >                           │   const: 'HELLO'               │
 │                                │                             │ }                              │
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Lowercase(      │ type T = Lowercase<         │ const T = {                    │
-│   Type.Literal('HELLO')        │   'HELLO'                   │    type: 'string',             │
-│ )                              │ >                           │    const: 'hello'              │
+│   Type.Literal('HELLO')        │   'HELLO'                   │   type: 'string',              │
+│ )                              │ >                           │   const: 'hello'               │
 │                                │                             │ }                              │
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
@@ -533,26 +533,26 @@ TypeBox provides an extended type set that can be used to create schematics for 
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Constructor([   │ type T = new (              │ const T = {                    │
-│   Type.String(),               │  arg0: string,              │   type: 'constructor',         │
+│   Type.String(),               │  arg0: string,              │   type: 'Constructor',         │
 │   Type.Number()                │  arg0: number               │   parameters: [{               │
 │ ], Type.Boolean())             │ ) => boolean                │     type: 'string'             │
 │                                │                             │   }, {                         │
 │                                │                             │     type: 'number'             │
 │                                │                             │   }],                          │
-│                                │                             │   return: {                    │
+│                                │                             │   returns: {                   │
 │                                │                             │     type: 'boolean'            │
 │                                │                             │   }                            │
 │                                │                             │ }                              │
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
 │ const T = Type.Function([      │ type T = (                  │ const T = {                    │
-|   Type.String(),               │  arg0: string,              │   type: 'function',            │
+|   Type.String(),               │  arg0: string,              │   type: 'Function',            │
 │   Type.Number()                │  arg1: number               │   parameters: [{               │
 │ ], Type.Boolean())             │ ) => boolean                │     type: 'string'             │
 │                                │                             │   }, {                         │
 │                                │                             │     type: 'number'             │
 │                                │                             │   }],                          │
-│                                │                             │   return: {                    │
+│                                │                             │   returns: {                   │
 │                                │                             │     type: 'boolean'            │
 │                                │                             │   }                            │
 │                                │                             │ }                              │

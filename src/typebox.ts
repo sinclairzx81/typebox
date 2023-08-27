@@ -311,7 +311,7 @@ export type TConstructorParameterArray<T extends readonly TSchema[], P extends u
 export interface TConstructor<T extends TSchema[] = TSchema[], U extends TSchema = TSchema> extends TSchema {
   [Kind]: 'Constructor'
   static: new (...param: TConstructorParameterArray<T, this['params']>) => Static<U, this['params']>
-  type: 'constructor'
+  type: 'Constructor'
   parameters: T
   returns: U
 }
@@ -390,7 +390,7 @@ export type TFunctionParameters<T extends TSchema[], P extends unknown[]> = [...
 export interface TFunction<T extends TSchema[] = TSchema[], U extends TSchema = TSchema> extends TSchema {
   [Kind]: 'Function'
   static: (...param: TFunctionParameters<T, this['params']>) => Static<U, this['params']>
-  type: 'function'
+  type: 'Function'
   parameters: T
   returns: U
 }
@@ -641,7 +641,7 @@ export type TPick<T extends TSchema = TSchema, K extends keyof any = keyof any> 
 export interface TPromise<T extends TSchema = TSchema> extends TSchema {
   [Kind]: 'Promise'
   static: Promise<Static<T, this['params']>>
-  type: 'promise'
+  type: 'Promise'
   item: TSchema
 }
 // --------------------------------------------------------------------------
@@ -1204,7 +1204,7 @@ export namespace TypeGuard {
     // prettier-ignore
     return (
       TKindOf(schema, 'Constructor') && 
-      schema.type === 'constructor' &&
+      schema.type === 'Constructor' &&
       IsOptionalString(schema.$id) && 
       ValueGuard.IsArray(schema.parameters) &&
       schema.parameters.every(schema => TSchema(schema)) &&
@@ -1229,7 +1229,7 @@ export namespace TypeGuard {
     // prettier-ignore
     return (
       TKindOf(schema, 'Function') &&
-      schema.type === 'function' &&
+      schema.type === 'Function' &&
       IsOptionalString(schema.$id) && 
       ValueGuard.IsArray(schema.parameters) && 
       schema.parameters.every(schema => TSchema(schema)) &&
@@ -3300,7 +3300,7 @@ export class JavaScriptTypeBuilder extends JsonTypeBuilder {
   /** `[JavaScript]` Creates a Constructor type */
   public Constructor<T extends TSchema[], U extends TSchema>(parameters: [...T], returns: U, options?: SchemaOptions): TConstructor<T, U> {
     const [clonedParameters, clonedReturns] = [TypeClone.Rest(parameters), TypeClone.Type(returns)]
-    return this.Create({ ...options, [Kind]: 'Constructor', type: 'constructor', parameters: clonedParameters, returns: clonedReturns })
+    return this.Create({ ...options, [Kind]: 'Constructor', type: 'Constructor', parameters: clonedParameters, returns: clonedReturns })
   }
   /** `[JavaScript]` Creates a Date type */
   public Date(options: DateOptions = {}): TDate {
@@ -3309,7 +3309,7 @@ export class JavaScriptTypeBuilder extends JsonTypeBuilder {
   /** `[JavaScript]` Creates a Function type */
   public Function<T extends TSchema[], U extends TSchema>(parameters: [...T], returns: U, options?: SchemaOptions): TFunction<T, U> {
     const [clonedParameters, clonedReturns] = [TypeClone.Rest(parameters), TypeClone.Type(returns)]
-    return this.Create({ ...options, [Kind]: 'Function', type: 'function', parameters: clonedParameters, returns: clonedReturns })
+    return this.Create({ ...options, [Kind]: 'Function', type: 'Function', parameters: clonedParameters, returns: clonedReturns })
   }
   /** `[JavaScript]` Extracts the InstanceType from the given Constructor type */
   public InstanceType<T extends TConstructor<any[], any>>(schema: T, options: SchemaOptions = {}): TInstanceType<T> {
