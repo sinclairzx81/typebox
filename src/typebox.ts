@@ -867,7 +867,7 @@ export type DecodeType<T extends TSchema> = (
   T extends TOptional<infer S extends TSchema> ? TOptional<DecodeType<S>> :
   T extends TReadonly<infer S extends TSchema> ? TReadonly<DecodeType<S>> :
   T extends TTransform<infer _, infer R> ? TUnsafe<R> :
-  T extends TArray<infer S extends TSchema> ? Array<DecodeType<S>> :
+  T extends TArray<infer S extends TSchema> ? TArray<DecodeType<S>> :
   T extends TAsyncIterator<infer S extends TSchema> ? TAsyncIterator<DecodeType<S>> :
   T extends TConstructor<infer P extends TSchema[], infer R extends TSchema> ? TConstructor<P, DecodeType<R>> :
   T extends TFunction<infer P extends TSchema[], infer R extends TSchema> ? TFunction<P, DecodeType<R>> :

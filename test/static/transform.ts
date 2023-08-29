@@ -246,3 +246,11 @@ import { Expect } from './assert'
   const E4: E4 = false
   const E5: E5 = true
 }
+{
+  // should correctly decode array
+  // https://github.com/sinclairzx81/typebox/issues/561
+  const T = Type.Object({
+    x: Type.Array(Type.Object({ y: Type.String() })),
+  })
+  Expect(T).ToStaticDecode<{ x: { y: string }[] }>()
+}
