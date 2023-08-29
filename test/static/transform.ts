@@ -214,7 +214,8 @@ import { Expect } from './assert'
   Expect(T).ToStaticDecode<{ x: '1' }>()
   Expect(T).ToStaticDecode<{ x: undefined }>()
 }
-{ // should decode within generic function context
+{
+  // should decode within generic function context
   // https://github.com/sinclairzx81/typebox/issues/554
   // prettier-ignore
   const ArrayOrSingle = <T extends TSchema>(schema: T) =>
