@@ -1,4 +1,4 @@
-import { Type, Static, StaticDecode, TObject, TNumber } from '@sinclair/typebox'
+import { Type, TSchema, Static, StaticDecode, TObject, TNumber } from '@sinclair/typebox'
 import { Expect } from './assert'
 {
   // string > number
@@ -213,4 +213,35 @@ import { Expect } from './assert'
   Expect(T).ToStaticDecode<{ x: 1 }>()
   Expect(T).ToStaticDecode<{ x: '1' }>()
   Expect(T).ToStaticDecode<{ x: undefined }>()
+}
+{ // should decode within generic function context
+  // https://github.com/sinclairzx81/typebox/issues/554
+  // prettier-ignore
+  const ArrayOrSingle = <T extends TSchema>(schema: T) =>
+    Type.Transform(Type.Union([schema, Type.Array(schema)]))
+      .Decode((value) => (Array.isArray(value) ? value : [value]))
+      .Encode((value) => (value.length === 1 ? value[0] : value) as Static<T>[]);
+  const T = ArrayOrSingle(Type.String())
+  Expect(T).ToStaticDecode<string[]>()
+}
+{
+  // should correctly decode record keys
+  // https://github.com/sinclairzx81/typebox/issues/555
+  // prettier-ignore
+  const T = Type.Object({
+    x: Type.Optional(Type.Record(Type.Number(), Type.String()))
+  })
+  type A = StaticDecode<typeof T>
+  type Test<A, E> = E extends A ? true : false
+  type E1 = Test<A, {}>
+  type E2 = Test<A, { x: undefined }>
+  type E3 = Test<A, { x: { 1: '' } }>
+  type E4 = Test<A, { x: { 1: 1 } }>
+  type E5 = Test<A, { x: { x: 1 } }>
+  // assignment
+  const E1: E1 = true
+  const E2: E2 = true
+  const E3: E3 = true
+  const E4: E4 = false
+  const E5: E5 = true
 }
