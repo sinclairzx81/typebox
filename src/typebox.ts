@@ -66,7 +66,7 @@ export type AssertType<T, E extends TSchema = TSchema> = T extends E ? T : TNeve
 // --------------------------------------------------------------------------
 // Modifiers
 // --------------------------------------------------------------------------
-export type TModifier = TOptional<TSchema> | TReadonly<TSchema>
+export type TReadonlyOptional<T extends TSchema> = TOptional<T> & TReadonly<T>
 export type TReadonly<T extends TSchema> = T & { [Readonly]: 'Readonly' }
 export type TOptional<T extends TSchema> = T & { [Optional]: 'Optional' }
 // --------------------------------------------------------------------------
@@ -855,37 +855,34 @@ export interface TTemplateLiteral<T extends TTemplateLiteralKind[] = TTemplateLi
 // TTransform
 // --------------------------------------------------------------------------
 // prettier-ignore
-export type DecodeModifier<D extends TSchema, T extends TSchema> =
-  T extends TReadonly<T> & TOptional<T> ? TReadonly<TOptional<D>> :
-  T extends TReadonly<T> ? TReadonly<D> :
-  T extends TOptional<T> ? TOptional<D> :
-  D
-// prettier-ignore
 export type DecodeProperties<T extends TProperties> = {
   [K in keyof T]: DecodeType<T[K]>
 }
 // prettier-ignore
-export type DecodeRest<T extends TSchema[]> = T extends [infer L, ...infer R]
-  ? [DecodeType<AssertType<L>>, ...DecodeRest<AssertRest<R>>]
+export type DecodeRest<T extends TSchema[]> = T extends [infer L extends TSchema, ...infer R extends TSchema[]]
+  ? [DecodeType<L>, ...DecodeRest<R>]
   : []
 // prettier-ignore
-export type DecodeType<T extends TSchema> =
-  T extends TTransform<infer _, infer R> ? DecodeModifier<TUnsafe<R>, T> : 
-  T extends TArray<infer S> ? DecodeModifier<TArray<DecodeType<S>>, T> :
-  T extends TAsyncIterator<infer S> ? DecodeModifier<TAsyncIterator<DecodeType<S>>, T> :
-  T extends TConstructor<infer P, infer R> ? DecodeModifier<TConstructor<AssertRest<DecodeRest<P>>, DecodeType<R>>, T> :
-  T extends TFunction<infer P, infer R> ? DecodeModifier<TFunction<AssertRest<DecodeRest<P>>, DecodeType<R>>, T> :
-  T extends TIntersect<infer S> ? DecodeModifier<TIntersect<AssertRest<DecodeRest<S>>>, T> :
-  T extends TIterator<infer S> ? DecodeModifier<TIterator<DecodeType<S>>, T> :
-  T extends TNot<infer S> ? DecodeModifier<TNot<DecodeType<S>>, T> :
-  T extends TObject<infer S> ? DecodeModifier<TObject<Evaluate<DecodeProperties<S>>>, T> :
-  T extends TPromise<infer S> ? DecodeModifier<TPromise<DecodeType<S>>, T> :
-  T extends TRecord<infer K, infer S> ? DecodeModifier<TRecord<K, DecodeType<S>>, T> :
-  T extends TRecursive<infer S> ? DecodeModifier<TRecursive<DecodeType<S>>, T> :
-  T extends TRef<infer S> ? DecodeModifier<TRef<DecodeType<S>>, T> :
-  T extends TTuple<infer S> ? DecodeModifier<TTuple<AssertRest<DecodeRest<S>>>, T> :
-  T extends TUnion<infer S> ? DecodeModifier<TUnion<AssertRest<DecodeRest<S>>>, T> :
+export type DecodeType<T extends TSchema> = (
+  T extends TOptional<infer S extends TSchema> ? TOptional<DecodeType<S>> :
+  T extends TReadonly<infer S extends TSchema> ? TReadonly<DecodeType<S>> :
+  T extends TTransform<infer _, infer R> ? TUnsafe<R> :
+  T extends TArray<infer S extends TSchema> ? Array<DecodeType<S>> :
+  T extends TAsyncIterator<infer S extends TSchema> ? TAsyncIterator<DecodeType<S>> :
+  T extends TConstructor<infer P extends TSchema[], infer R extends TSchema> ? TConstructor<P, DecodeType<R>> :
+  T extends TFunction<infer P extends TSchema[], infer R extends TSchema> ? TFunction<P, DecodeType<R>> :
+  T extends TIntersect<infer S extends TSchema[]> ? TIntersect<S> :
+  T extends TIterator<infer S extends TSchema> ? TIterator<DecodeType<S>> :
+  T extends TNot<infer S extends TSchema> ? TNot<DecodeType<S>> :
+  T extends TObject<infer S> ? TObject<Evaluate<DecodeProperties<S>>> :
+  T extends TPromise<infer S extends TSchema> ? TPromise<DecodeType<S>> :
+  T extends TRecord<infer K, infer S> ? TRecord<K, DecodeType<S>> :
+  T extends TRecursive<infer S extends TSchema> ? TRecursive<DecodeType<S>> :
+  T extends TRef<infer S extends TSchema> ? TRef<DecodeType<S>> :
+  T extends TTuple<infer S extends TSchema[]> ? TTuple<S> :
+  T extends TUnion<infer S extends TSchema[]> ? TUnion<S> :
   T
+)
 export type TransformFunction<T = any, U = any> = (value: T) => U
 export interface TransformOptions<I extends TSchema = TSchema, O extends unknown = unknown> {
   Decode: TransformFunction<StaticDecode<I>, O>

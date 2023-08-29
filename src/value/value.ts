@@ -78,9 +78,9 @@ export namespace Value {
     return ValueClone.Clone(value)
   }
   /** Decodes a value or throws if error */
-  export function Decode<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: unknown): Types.StaticDecode<T>
+  export function Decode<T extends Types.TSchema, D = Types.StaticDecode<T>>(schema: T, references: Types.TSchema[], value: unknown): D
   /** Decodes a value or throws if error */
-  export function Decode<T extends Types.TSchema>(schema: T, value: unknown): Types.StaticDecode<T>
+  export function Decode<T extends Types.TSchema, D = Types.StaticDecode<T>>(schema: T, value: unknown): D
   /** Decodes a value or throws if error */
   export function Decode(...args: any[]) {
     const [schema, references, value] = args.length === 3 ? [args[0], args[1], args[2]] : [args[0], [], args[1]]
@@ -88,9 +88,9 @@ export namespace Value {
     return ValueTransform.DecodeTransform.Decode(schema, references, value, ValueCheck.Check)
   }
   /** Encodes a value or throws if error */
-  export function Encode<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: unknown): Types.StaticEncode<T>
+  export function Encode<T extends Types.TSchema, E = Types.StaticEncode<T>>(schema: T, references: Types.TSchema[], value: unknown): E
   /** Encodes a value or throws if error */
-  export function Encode<T extends Types.TSchema>(schema: T, value: unknown): Types.StaticEncode<T>
+  export function Encode<T extends Types.TSchema, E = Types.StaticEncode<T>>(schema: T, value: unknown): E
   /** Encodes a value or throws if error */
   export function Encode(...args: any[]) {
     const [schema, references, value] = args.length === 3 ? [args[0], args[1], args[2]] : [args[0], [], args[1]]
