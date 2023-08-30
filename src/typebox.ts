@@ -2842,10 +2842,12 @@ export class TypeBuilder {
   protected Throw(message: string): never {
     throw new TypeBuilderError(message)
   }
-  /** `[Internal]` Discards a property key from the given schema */
-  protected Discard(schema: TSchema, key: PropertyKey): TSchema {
-    const { [key as any]: _, ...rest } = schema
-    return rest as TSchema
+  /** `[Internal]` Discards property keys from the given record type */
+  protected Discard(record: Record<PropertyKey, any>, keys: PropertyKey[]) {
+    return keys.reduce((acc, key) => {
+      const { [key as any]: _, ...rest } = acc
+      return rest
+    }, record) as any
   }
   /** `[Json]` Omits compositing symbols from this schema */
   public Strict<T extends TSchema>(schema: T): T {
@@ -3082,7 +3084,7 @@ export class JsonTypeBuilder extends TypeBuilder {
   public Omit(schema: TSchema, unresolved: any, options: SchemaOptions = {}): any {
     const keys = KeyArrayResolver.Resolve(unresolved)
     // prettier-ignore
-    return ObjectMap.Map(this.Discard(TypeClone.Type(schema), Transform), (object) => {
+    return ObjectMap.Map(this.Discard(TypeClone.Type(schema), ['$id', Transform]), (object) => {
       if (ValueGuard.IsArray(object.required)) {
         object.required = object.required.filter((key: string) => !keys.includes(key as any))
         if (object.required.length === 0) delete object.required
@@ -3096,11 +3098,11 @@ export class JsonTypeBuilder extends TypeBuilder {
   /** `[Json]` Constructs a type where all properties are optional */
   public Partial<T extends TSchema>(schema: T, options: ObjectOptions = {}): TPartial<T> {
     // prettier-ignore
-    return ObjectMap.Map(this.Discard(TypeClone.Type(schema), Transform), (object) => {
+    return ObjectMap.Map(this.Discard(TypeClone.Type(schema), ['$id', Transform]), (object) => {
       const properties = Object.getOwnPropertyNames(object.properties).reduce((acc, key) => {
         return { ...acc, [key]: this.Optional(object.properties[key]) }
       }, {} as TProperties)
-      return this.Object(properties, this.Discard(object, 'required') /* object used as options to retain other constraints */)
+      return this.Object(properties, this.Discard(object, ['required']) /* object used as options to retain other constraints */)
     }, options)
   }
   /** `[Json]` Constructs a type whose keys are picked from the given type */
@@ -3117,7 +3119,7 @@ export class JsonTypeBuilder extends TypeBuilder {
   public Pick(schema: TSchema, unresolved: any, options: SchemaOptions = {}): any {
     const keys = KeyArrayResolver.Resolve(unresolved)
     // prettier-ignore
-    return ObjectMap.Map(this.Discard(TypeClone.Type(schema), Transform), (object) => {
+    return ObjectMap.Map(this.Discard(TypeClone.Type(schema), ['$id', Transform]), (object) => {
       if (ValueGuard.IsArray(object.required)) {
         object.required = object.required.filter((key: any) => keys.includes(key))
         if (object.required.length === 0) delete object.required
@@ -3182,9 +3184,9 @@ export class JsonTypeBuilder extends TypeBuilder {
   /** `[Json]` Constructs a type where all properties are required */
   public Required<T extends TSchema>(schema: T, options: SchemaOptions = {}): TRequired<T> {
     // prettier-ignore
-    return ObjectMap.Map(this.Discard(TypeClone.Type(schema), Transform), (object) => {
+    return ObjectMap.Map(this.Discard(TypeClone.Type(schema), ['$id', Transform]), (object) => {
       const properties = Object.getOwnPropertyNames(object.properties).reduce((acc, key) => {
-        return { ...acc, [key]: this.Discard(object.properties[key], Optional) as TSchema }
+        return { ...acc, [key]: this.Discard(object.properties[key], [Optional]) as TSchema }
       }, {} as TProperties)
       return this.Object(properties, object /* object used as options to retain other constraints  */)
     }, options)
