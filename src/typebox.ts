@@ -2842,12 +2842,12 @@ export class TypeBuilder {
   protected Throw(message: string): never {
     throw new TypeBuilderError(message)
   }
-  /** `[Internal]` Discards a property key from the given object value */
-  protected Discard<T extends Record<PropertyKey, any>>(value: T, keys: PropertyKey[]) {
+  /** `[Internal]` Discards a property keys from the given record type */
+  protected Discard(record: Record<PropertyKey, any>, keys: PropertyKey[]) {
     return keys.reduce((acc, key) => {
       const { [key as any]: _, ...rest } = acc
-      return rest as any
-    }, value) as any
+      return rest
+    }, record) as any
   }
   /** `[Json]` Omits compositing symbols from this schema */
   public Strict<T extends TSchema>(schema: T): T {
