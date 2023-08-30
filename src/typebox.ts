@@ -176,7 +176,6 @@ export type TAnySchema =
   | TBoolean
   | TConstructor
   | TDate
-  | TEnum
   | TFunction
   | TInteger
   | TIntersect
@@ -338,15 +337,11 @@ export interface TDate extends TSchema, DateOptions {
 // --------------------------------------------------------------------------
 // TEnum
 // --------------------------------------------------------------------------
-export interface TEnumOption<T> {
-  type: 'number' | 'string'
-  const: T
-}
-export interface TEnum<T extends Record<string, string | number> = Record<string, string | number>> extends TSchema {
-  [Kind]: 'Union'
-  static: T[keyof T]
-  anyOf: TLiteral<T[keyof T]>[]
-}
+export type TEnumKey = string
+export type TEnumValue = string | number
+export type TEnumToLiteralUnion<T extends TLiteralValue> = T extends any ? TLiteral<T> : never
+export type TEnumToLiteralTuple<T extends TLiteralValue> = UnionToTuple<TEnumToLiteralUnion<T>>
+export type TEnum<T extends TLiteralValue> = Ensure<TUnion<AssertRest<TEnumToLiteralTuple<T>>>>
 // --------------------------------------------------------------------------
 // TExtends
 // --------------------------------------------------------------------------
@@ -2898,7 +2893,7 @@ export class JsonTypeBuilder extends TypeBuilder {
     return Type.Object(properties, options) as TComposite<T>
   }
   /** `[Json]` Creates a Enum type */
-  public Enum<V extends string | number, T extends Record<string, V>>(item: T, options: SchemaOptions = {}): TEnum<T> {
+  public Enum<V extends TEnumValue, T extends Record<TEnumKey, V>>(item: T, options?: SchemaOptions): TEnum<T[keyof T]> {
     // prettier-ignore
     const values = Object.getOwnPropertyNames(item).filter((key) => isNaN(key as any)).map((key) => item[key]) as T[keyof T][]
     // prettier-ignore

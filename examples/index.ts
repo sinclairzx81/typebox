@@ -1,40 +1,41 @@
-import { TypeSystem } from '@sinclair/typebox/system'
-import { TypeCompiler } from '@sinclair/typebox/compiler'
-import { Value, ValuePointer } from '@sinclair/typebox/value'
-import { Type, TypeGuard, Kind, Static, TSchema } from '@sinclair/typebox'
+import { Type, Static } from '@sinclair/typebox'
 
-// -----------------------------------------------------------
-// Create: Type
-// -----------------------------------------------------------
+// ------------------------------------------------------------------
+// Tests
+// ------------------------------------------------------------------
 
-const T = Type.Object({
-  x: Type.Number(),
-  y: Type.Number(),
-  z: Type.Number(),
-})
+{ // Case A: Union Literal
+  const C = Type.Union([
+    Type.Literal('hello'),
+    Type.Literal(42),
+    Type.Literal(43)
+  ])
+  const R = Type.Record(C, Type.String())
+  type R = Static<typeof R> // ok
+}
 
-type T = Static<typeof T>
+{ // Case B: Object Literal Pattern
+  const E = Type.Enum({
+    x: 'hello',
+    y: 42,
+    z: 43
+  })
+  const R = Type.Record(E, Type.String())
+  type R = Static<typeof R> // ok
+}
 
-console.log(T)
+{ // Case C: Enum Pattern
+  enum Foo {
+    A = 'hello',
+    B = 42,
+    C
+  }
+  const E = Type.Enum(Foo)
+  const R = Type.Record(E, Type.String())
+  type R = Static<typeof R> // ok
+}
 
-// -----------------------------------------------------------
-// Create: Value
-// -----------------------------------------------------------
 
-const V = Value.Create(T)
 
-console.log(V)
 
-// -----------------------------------------------------------
-// Compile: Type
-// -----------------------------------------------------------
 
-const C = TypeCompiler.Compile(T)
-
-console.log(C.Code())
-
-// -----------------------------------------------------------
-// Check: Value
-// -----------------------------------------------------------
-
-console.log(C.Check(V))
