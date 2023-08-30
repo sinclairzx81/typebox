@@ -2842,7 +2842,7 @@ export class TypeBuilder {
   protected Throw(message: string): never {
     throw new TypeBuilderError(message)
   }
-  /** `[Internal]` Discards a property keys from the given record type */
+  /** `[Internal]` Discards property keys from the given record type */
   protected Discard(record: Record<PropertyKey, any>, keys: PropertyKey[]) {
     return keys.reduce((acc, key) => {
       const { [key as any]: _, ...rest } = acc
