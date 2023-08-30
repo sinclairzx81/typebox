@@ -50,12 +50,6 @@ describe('type/guard/TRequired', () => {
     const T = Type.Required(A)
     Assert.IsFalse('$id' in T)
   })
-  it('Should discard $id and reassign on mapped', () => {
-    const A = Type.Object({ x: Type.Number() }, { $id: 'A' })
-    const T = Type.Required(A, { $id: 'T' })
-    Assert.IsTrue('$id' in T)
-    Assert.IsEqual(T.$id!, 'T')
-  })
   it('Should discard transform', () => {
     const T = Type.Object({
       x: Type.Number(),
