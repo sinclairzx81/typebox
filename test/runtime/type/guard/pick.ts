@@ -104,18 +104,28 @@ describe('type/guard/TPick', () => {
     Assert.IsTrue(TypeGuard.TNumber(T.properties.ac))
     Assert.IsEqual(T.required, ['ab', 'ac'])
   })
+  // ----------------------------------------------------------------
+  // Discard
+  // ----------------------------------------------------------------
+  it('Should override $id', () => {
+    const A = Type.Object({ x: Type.Number() }, { $id: 'A' })
+    const T = Type.Pick(A, ['x'], { $id: 'T' })
+    Assert.IsEqual(T.$id!, 'T')
+  })
+  it('Should discard $id', () => {
+    const A = Type.Object({ x: Type.Number() }, { $id: 'A' })
+    const T = Type.Pick(A, ['x'])
+    Assert.IsFalse('$id' in T)
+  })
   it('Should discard transform', () => {
-    const S = Type.Transform(
-      Type.Object({
-        x: Type.Number(),
-        y: Type.String(),
-      }),
-      {
-        Decode: (value) => value,
-        Encode: (value) => value,
-      },
-    )
-    const T = Type.Pick(S, ['x'])
-    Assert.IsFalse(Transform in T)
+    const T = Type.Object({
+      x: Type.Number(),
+      y: Type.String(),
+    })
+    const S = Type.Transform(T)
+      .Decode((value) => value)
+      .Encode((value) => value)
+    const R = Type.Pick(S, ['x'])
+    Assert.IsFalse(Transform in R)
   })
 })
