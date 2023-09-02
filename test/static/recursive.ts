@@ -33,8 +33,8 @@ import { Type, Static } from '@sinclair/typebox'
   )
   const T = Type.Partial(R)
   Expect(T).ToStatic<{
-    id: string | undefined
-    nodes: Static<typeof T>[] | undefined
+    id?: string | undefined
+    nodes?: Static<typeof T>[] | undefined
   }>()
 }
 {

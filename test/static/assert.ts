@@ -1,9 +1,23 @@
 import { Static, StaticDecode, StaticEncode, TSchema } from '@sinclair/typebox'
 
+type ConstrainEqual<T, U> = (
+  <V>() => V extends T ? 1 : 2
+) extends <V>() => V extends U ? 1 : 2
+  ? T
+  : never
+
+// See https://github.com/microsoft/TypeScript/issues/51011
+type CircularHelper<T, U> = [T] extends U ? T : never
+type ConstraintMutuallyExtend<T, U> = CircularHelper<T, [U]>
+
+// Comment one or the other to see the difference
+// type Constraint<T, U> = ConstraintMutuallyExtend<T, U>
+type Constraint<T, U> = ConstrainEqual<T, U>
+
 export function Expect<T extends TSchema>(schema: T) {
   return {
-    ToStatic: <U extends Static<T>>() => {},
-    ToStaticDecode: <U extends StaticDecode<T>>() => {},
-    ToStaticEncode: <U extends StaticEncode<T>>() => {},
+    ToStatic: <U extends Constraint<Static<T>, U>>() => {},
+    ToStaticDecode: <U extends Constraint<StaticDecode<T>, U>>() => {},
+    ToStaticEncode: <U extends Constraint<StaticEncode<T>, U>>() => {},
   }
 }
