@@ -337,11 +337,12 @@ export interface TDate extends TSchema, DateOptions {
 // --------------------------------------------------------------------------
 // TEnum
 // --------------------------------------------------------------------------
-export type TEnumKey = string
+export type TEnumRecord = Record<TEnumKey, TEnumValue>
 export type TEnumValue = string | number
-export type TEnumToLiteralUnion<T extends TLiteralValue> = T extends TEnumValue ? TLiteral<T> : never
-export type TEnumToLiteralTuple<T extends TLiteralValue> = UnionToTuple<TEnumToLiteralUnion<T>>
-export type TEnum<T extends TLiteralValue> = Ensure<TUnion<AssertRest<TEnumToLiteralTuple<T>>>>
+export type TEnumKey = string
+export type TEnumToLiteralUnion<T extends TEnumValue> = T extends TEnumValue ? TLiteral<T> : never
+export type TEnumToLiteralTuple<T extends TEnumValue> = UnionToTuple<TEnumToLiteralUnion<T>>
+export type TEnum<T extends TEnumValue> = Ensure<TUnion<AssertRest<TEnumToLiteralTuple<T>>>>
 // --------------------------------------------------------------------------
 // TExtends
 // --------------------------------------------------------------------------
