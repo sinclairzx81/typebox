@@ -2898,9 +2898,10 @@ export class JsonTypeBuilder extends TypeBuilder {
   /** `[Json]` Creates a Enum type */
   public Enum<V extends TEnumValue, T extends Record<TEnumKey, V>>(item: T, options?: SchemaOptions): TEnum<T[keyof T]> {
     // prettier-ignore
-    const values = Object.getOwnPropertyNames(item).filter((key) => isNaN(key as any)).map((key) => item[key]) as T[keyof T][]
+    const values1 = Object.getOwnPropertyNames(item).filter((key) => isNaN(key as any)).map((key) => item[key]) as T[keyof T][]
+    const values2 = [...new Set(values1)] // ensure distinct
     // prettier-ignore
-    const anyOf = values.map((value) => ValueGuard.IsString(value) 
+    const anyOf = values2.map((value) => ValueGuard.IsString(value) 
       ? { [Kind]: 'Literal', type: 'string' as const, const: value } 
       : { [Kind]: 'Literal', type: 'number' as const, const: value }
     )
