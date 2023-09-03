@@ -76,11 +76,11 @@ import { Type, Static } from '@sinclair/typebox'
     A = 'X',
     B = 'Y',
     C = 'Z',
-  };
-  const T = Type.Record(Type.Enum(E), Type.Number());
+  }
+  const T = Type.Record(Type.Enum(E), Type.Number())
   Expect(T).ToStatic<{
-    X: number;
-    Y: number;
-    Z: number;
-  }>();
+    X: number
+    Y: number
+    Z: number
+  }>()
 }

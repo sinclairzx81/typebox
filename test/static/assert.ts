@@ -1,31 +1,38 @@
 import { Static, StaticDecode, StaticEncode, TSchema } from '@sinclair/typebox'
 
-declare const unsatisfiable: unique symbol
+// ------------------------------------------------------------------
+// Unsatisfiable
+// ------------------------------------------------------------------
+declare const Unsatisfiable: unique symbol
 // Warning: `never` and `any` satisfy the constraint `extends Expected<...>`
-type Expected<_> = { [unsatisfiable]: never; }
+export type Expected<_> = { [Unsatisfiable]: never }
 
+// ------------------------------------------------------------------
+// Constraints
+// ------------------------------------------------------------------
 // See https://github.com/Microsoft/TypeScript/issues/27024
-type ConstrainEqual<T, U> = (
+// prettier-ignore
+export type ConstrainEqual<T, U> = (
   <V>() => V extends T ? 1 : 2
 ) extends <V>() => V extends U ? 1 : 2
   ? T
   : Expected<T>
 
 // See https://github.com/microsoft/TypeScript/issues/51011
-type CircularHelper<T, U> = [T] extends U ? T : Expected<T>
-type ConstraintMutuallyExtend<T, U> = CircularHelper<T, [U]>
+export type CircularHelper<T, U> = [T] extends U ? T : Expected<T>
+export type ConstraintMutuallyExtend<T, U> = CircularHelper<T, [U]>
 
-type If<T, Y, N> = T extends true ? Y : N
-type And<T, U> = If<T, U, false>
-type Or<T, U> = If<T, true, U>
-type Not<T> = If<T, false, true>
+export type If<T, Y, N> = T extends true ? Y : N
+export type And<T, U> = If<T, U, false>
+export type Or<T, U> = If<T, true, U>
+export type Not<T> = If<T, false, true>
 
-type Extends<T, U> = [T] extends [U] ? true : false
-type IsAny<T> = 0 extends 1 & T ? true : false
-type IsNever<T> = Extends<T, never>
+export type Extends<T, U> = [T] extends [U] ? true : false
+export type IsAny<T> = 0 extends 1 & T ? true : false
+export type IsNever<T> = Extends<T, never>
 
 // If U is never, there's nothing we can do
-type ComplexConstraint<T, U> = If<
+export type ComplexConstraint<T, U> = If<
   // If U is any, we can't use Expect<T> or it would satisfy the constraint
   And<Not<IsAny<T>>, IsAny<U>>,
   never,
@@ -44,23 +51,25 @@ type ComplexConstraint<T, U> = If<
 // Uncomment one of the lines to see the difference
 // type Constraint<T, U> = ConstraintMutuallyExtend<T, U>
 // type Constraint<T, U> = ConstrainEqual<T, U>
-type Constraint<T, U> = ComplexConstraint<T, U>
+export type Constraint<T, U> = ComplexConstraint<T, U>
 
-type ExpectResult<T extends TSchema> = If<
+// ------------------------------------------------------------------
+// Expect
+// ------------------------------------------------------------------
+export type ExpectResult<T extends TSchema> = If<
   IsNever<Static<T>>,
   { ToStaticNever(): void },
   {
-    ToStatic<U extends Constraint<Static<T>, U>>(): void,
-    ToStaticDecode<U extends Constraint<StaticDecode<T>, U>>(): void,
-    ToStaticEncode<U extends Constraint<StaticEncode<T>, U>>(): void,
+    ToStatic<U extends Constraint<Static<T>, U>>(): void
+    ToStaticDecode<U extends Constraint<StaticDecode<T>, U>>(): void
+    ToStaticEncode<U extends Constraint<StaticEncode<T>, U>>(): void
   }
 >
-
 export function Expect<T extends TSchema>(schema: T) {
   return {
     ToStatic() {},
     ToStaticNever() {},
     ToStaticDecode() {},
     ToStaticEncode() {},
-  } as ExpectResult<T>;
+  } as ExpectResult<T>
 }

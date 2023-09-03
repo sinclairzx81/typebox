@@ -180,7 +180,7 @@ import { Expect } from './assert'
   //   x: number;
   //   y: number;
   //   z: number;
-  // } // lol
+  // }
 }
 {
   // ensure decode as optional
@@ -189,7 +189,7 @@ import { Expect } from './assert'
     x: Type.Optional(Type.Number()),
     y: Type.Optional(Type.Number())
   })
-  Expect(T).ToStaticDecode<{ x?: number | undefined; y?: number | undefined; }>()
+  Expect(T).ToStaticDecode<{ x?: number | undefined; y?: number | undefined }>()
 }
 {
   // ensure decode as readonly
