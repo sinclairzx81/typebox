@@ -4,6 +4,7 @@ declare const unsatisfiable: unique symbol
 // Warning: `never` and `any` satisfy the constraint `extends Expected<...>`
 type Expected<_> = { [unsatisfiable]: never; }
 
+// See https://github.com/Microsoft/TypeScript/issues/27024
 type ConstrainEqual<T, U> = (
   <V>() => V extends T ? 1 : 2
 ) extends <V>() => V extends U ? 1 : 2
