@@ -4,6 +4,45 @@ import { Assert } from '../../assert/index'
 
 describe('type/guard/TEnum', () => {
   // ----------------------------------------------------------------
+  // Options
+  // ----------------------------------------------------------------
+  it('Should guard for Options 1', () => {
+    const T = Type.Enum({ x: 1 }, { extra: 'hello', $id: 'T' })
+    Assert.IsEqual(T.extra, 'hello')
+    Assert.IsEqual(T.$id, 'T')
+  })
+  it('Should guard for Options 2', () => {
+    enum E {
+      x,
+    }
+    const T = Type.Enum(E, { extra: 'hello', $id: 'T' })
+    Assert.IsEqual(T.extra, 'hello')
+    Assert.IsEqual(T.$id, 'T')
+  })
+  it('Should guard for Options 3', () => {
+    enum E {}
+    const T = Type.Enum(E, { extra: 'hello', $id: 'T' })
+    Assert.IsEqual(T.extra, 'hello')
+    Assert.IsEqual(T.$id, 'T')
+  })
+  it('Should guard for Options 4', () => {
+    const T = Type.Enum({}, { extra: 'hello', $id: 'T' })
+    Assert.IsEqual(T.extra, 'hello')
+    Assert.IsEqual(T.$id, 'T')
+  })
+  // ----------------------------------------------------------------
+  // Empty
+  // ----------------------------------------------------------------
+  it('Should guard for Empty 1', () => {
+    const T = Type.Enum({})
+    Assert.IsTrue(TypeGuard.TNever(T))
+  })
+  it('Should guard for Empty 2', () => {
+    enum E {}
+    const T = Type.Enum(E)
+    Assert.IsTrue(TypeGuard.TNever(T))
+  })
+  // ----------------------------------------------------------------
   // Enum
   // ----------------------------------------------------------------
   it('Should guard for TEnum Enum 1', () => {
