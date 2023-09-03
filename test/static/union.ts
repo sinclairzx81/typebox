@@ -69,5 +69,5 @@ import { Type, Static } from '@sinclair/typebox'
 
 {
   const T = Type.Union([])
-  Expect(T).ToStatic<never>()
+  Expect(T).ToStaticNever()
 }

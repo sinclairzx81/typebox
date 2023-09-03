@@ -4,13 +4,13 @@ import { Type, Static } from '@sinclair/typebox'
   // union never
   const A = Type.String()
   const B = Type.Union(Type.Rest(A))
-  Expect(B).ToStatic<never>()
+  Expect(B).ToStaticNever()
 }
 {
   // intersect never
   const A = Type.String()
   const B = Type.Intersect(Type.Rest(A))
-  Expect(B).ToStatic<never>()
+  Expect(B).ToStaticNever()
 }
 {
   // tuple

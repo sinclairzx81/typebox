@@ -48,19 +48,19 @@ import { Type, Static } from '@sinclair/typebox'
   const A = Type.Tuple([])
   const R = Type.Index(A, Type.Number())
   type O = Static<typeof R>
-  Expect(R).ToStatic<never>()
+  Expect(R).ToStaticNever()
 }
 {
   const A = Type.Object({})
   const R = Type.Index(A, Type.BigInt()) // Support Overload
   type O = Static<typeof R>
-  Expect(R).ToStatic<never>()
+  Expect(R).ToStatic<unknown>()
 }
 {
   const A = Type.Array(Type.Number())
   const R = Type.Index(A, Type.BigInt()) // Support Overload
   type O = Static<typeof R>
-  Expect(R).ToStatic<never>()
+  Expect(R).ToStatic<unknown>()
 }
 // ------------------------------------------------------------------
 // Intersections
@@ -115,7 +115,7 @@ import { Type, Static } from '@sinclair/typebox'
   const C = Type.Intersect([A, B])
   const R = Type.Index(C, ['x'])
   type O = Static<typeof R>
-  Expect(R).ToStatic<never>()
+  Expect(R).ToStaticNever()
 }
 {
   type A = { x: string; y: number }
