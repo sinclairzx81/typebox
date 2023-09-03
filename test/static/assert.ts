@@ -20,8 +20,9 @@ type And<T, U> = If<T, U, false>
 type Or<T, U> = If<T, true, U>
 type Not<T> = If<T, false, true>
 
-type IsAny<a> = 0 extends 1 & a ? true : false
 type Extends<T, U> = [T] extends [U] ? true : false
+type IsAny<T> = 0 extends 1 & T ? true : false
+type IsNever<T> = Extends<T, never>
 
 // If U is never, there's nothing we can do
 type ComplexConstraint<T, U> = If<
@@ -45,10 +46,21 @@ type ComplexConstraint<T, U> = If<
 // type Constraint<T, U> = ConstrainEqual<T, U>
 type Constraint<T, U> = ComplexConstraint<T, U>
 
+type ExpectResult<T extends TSchema> = If<
+  IsNever<Static<T>>,
+  { ToStaticNever(): void },
+  {
+    ToStatic<U extends Constraint<Static<T>, U>>(): void,
+    ToStaticDecode<U extends Constraint<StaticDecode<T>, U>>(): void,
+    ToStaticEncode<U extends Constraint<StaticEncode<T>, U>>(): void,
+  }
+>
+
 export function Expect<T extends TSchema>(schema: T) {
   return {
-    ToStatic: <U extends Constraint<Static<T>, U>>() => {},
-    ToStaticDecode: <U extends Constraint<StaticDecode<T>, U>>() => {},
-    ToStaticEncode: <U extends Constraint<StaticEncode<T>, U>>() => {},
-  }
+    ToStatic() {},
+    ToStaticNever() {},
+    ToStaticDecode() {},
+    ToStaticEncode() {},
+  } as ExpectResult<T>;
 }
