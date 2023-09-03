@@ -1,5 +1,5 @@
 import { Expect } from './assert'
-import { Type, TOptional, TString, Static } from '@sinclair/typebox'
+import { Type, Static } from '@sinclair/typebox'
 
 {
   const A = Type.Object({
@@ -32,8 +32,7 @@ import { Type, TOptional, TString, Static } from '@sinclair/typebox'
   })
   const T = Type.Intersect([A, B])
 
-  Expect(T.properties.A).ToStatic<TOptional<TString>>()
-  Expect(T.properties.B).ToStatic<TString>()
+  Expect(T).ToStatic<{ A?: string | undefined } & { B: string }>()
 }
 
 // https://github.com/sinclairzx81/typebox/issues/113
