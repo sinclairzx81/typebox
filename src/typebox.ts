@@ -176,7 +176,6 @@ export type TAnySchema =
   | TBoolean
   | TConstructor
   | TDate
-  | TEnum
   | TFunction
   | TInteger
   | TIntersect
@@ -338,15 +337,12 @@ export interface TDate extends TSchema, DateOptions {
 // --------------------------------------------------------------------------
 // TEnum
 // --------------------------------------------------------------------------
-export interface TEnumOption<T> {
-  type: 'number' | 'string'
-  const: T
-}
-export interface TEnum<T extends Record<string, string | number> = Record<string, string | number>> extends TSchema {
-  [Kind]: 'Union'
-  static: T[keyof T]
-  anyOf: TLiteral<T[keyof T]>[]
-}
+export type TEnumRecord = Record<TEnumKey, TEnumValue>
+export type TEnumValue = string | number
+export type TEnumKey = string
+export type TEnumToLiteralUnion<T extends TEnumValue> = T extends TEnumValue ? TLiteral<T> : never
+export type TEnumToLiteralTuple<T extends TEnumValue> = UnionToTuple<TEnumToLiteralUnion<T>>
+export type TEnum<T extends TEnumValue> = Ensure<TUnion<AssertRest<TEnumToLiteralTuple<T>>>>
 // --------------------------------------------------------------------------
 // TExtends
 // --------------------------------------------------------------------------
@@ -2900,11 +2896,12 @@ export class JsonTypeBuilder extends TypeBuilder {
     return Type.Object(properties, options) as TComposite<T>
   }
   /** `[Json]` Creates a Enum type */
-  public Enum<V extends string | number, T extends Record<string, V>>(item: T, options: SchemaOptions = {}): TEnum<T> {
+  public Enum<V extends TEnumValue, T extends Record<TEnumKey, V>>(item: T, options?: SchemaOptions): TEnum<T[keyof T]> {
     // prettier-ignore
-    const values = Object.getOwnPropertyNames(item).filter((key) => isNaN(key as any)).map((key) => item[key]) as T[keyof T][]
+    const values1 = Object.getOwnPropertyNames(item).filter((key) => isNaN(key as any)).map((key) => item[key]) as T[keyof T][]
+    const values2 = [...new Set(values1)] // ensure distinct
     // prettier-ignore
-    const anyOf = values.map((value) => ValueGuard.IsString(value) 
+    const anyOf = values2.map((value) => ValueGuard.IsString(value) 
       ? { [Kind]: 'Literal', type: 'string' as const, const: value } 
       : { [Kind]: 'Literal', type: 'number' as const, const: value }
     )

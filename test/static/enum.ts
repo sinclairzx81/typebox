@@ -7,8 +7,6 @@ import { Type, Static } from '@sinclair/typebox'
     B = 'hello',
     C = 42,
   }
-
   const T = Type.Enum(E)
-
-  Expect(T).ToStatic<Static<typeof T>>() // ?
+  Expect(T).ToStatic<E.A | E.B | E.C>()
 }

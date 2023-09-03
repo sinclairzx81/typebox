@@ -84,7 +84,7 @@ import { Expect } from './assert'
     .Encode((value) => ({
       id: 'A',
       nodes: [
-        { id: 'B', nodes: [] }, 
+        { id: 'B', nodes: [] },
         { id: 'C', nodes: [] }
       ]
     }))
@@ -112,7 +112,7 @@ import { Expect } from './assert'
     .Encode((value) => ({
       id: 'A',
       nodes: [
-        { id: 'B', nodes: [] }, 
+        { id: 'B', nodes: [] },
         { id: 'C', nodes: [] }
       ]
     }))
@@ -160,8 +160,8 @@ import { Expect } from './assert'
   // null to typebox type
   // prettier-ignore
   const T = Type.Transform(Type.Null())
-    .Decode(value => Type.Object({ 
-      x: Type.Number(), 
+    .Decode(value => Type.Object({
+      x: Type.Number(),
       y: Type.Number(),
       z: Type.Number()
     }))
@@ -180,7 +180,7 @@ import { Expect } from './assert'
   //   x: number;
   //   y: number;
   //   z: number;
-  // } // lol
+  // }
 }
 {
   // ensure decode as optional
@@ -189,8 +189,7 @@ import { Expect } from './assert'
     x: Type.Optional(Type.Number()),
     y: Type.Optional(Type.Number())
   })
-  Expect(T).ToStaticDecode<{ x: undefined; y: undefined }>()
-  Expect(T).ToStaticDecode<{ x: 1; y: 1 }>()
+  Expect(T).ToStaticDecode<{ x?: number | undefined; y?: number | undefined }>()
 }
 {
   // ensure decode as readonly
@@ -199,7 +198,7 @@ import { Expect } from './assert'
     x: Type.Readonly(Type.Number()),
     y: Type.Readonly(Type.Number())
   })
-  Expect(T).ToStaticDecode<{ readonly x: 1; readonly y: 1 }>()
+  Expect(T).ToStaticDecode<{ readonly x: number; readonly y: number }>()
 }
 {
   // ensure decode as optional union
@@ -210,9 +209,7 @@ import { Expect } from './assert'
       Type.Number()
     ]))
   })
-  Expect(T).ToStaticDecode<{ x: 1 }>()
-  Expect(T).ToStaticDecode<{ x: '1' }>()
-  Expect(T).ToStaticDecode<{ x: undefined }>()
+  Expect(T).ToStaticDecode<{ x?: string | number | undefined }>()
 }
 {
   // should decode within generic function context

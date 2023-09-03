@@ -76,6 +76,19 @@ describe('type/guard/TRecord', () => {
     Assert.IsTrue(TypeGuard.TString(T.properties.B))
     Assert.IsTrue(TypeGuard.TString(T.properties.C))
   })
+  it('Should guard overload 12', () => {
+    enum E {
+      A = 'X',
+      B = 'Y',
+      C = 'Z',
+    }
+    const T = Type.Enum(E)
+    const R = Type.Record(T, Type.Null())
+    Assert.IsTrue(TypeGuard.TObject(R))
+    Assert.IsTrue(TypeGuard.TNull(R.properties.X))
+    Assert.IsTrue(TypeGuard.TNull(R.properties.Y))
+    Assert.IsTrue(TypeGuard.TNull(R.properties.Z))
+  })
   // -------------------------------------------------------------
   // Variants
   // -------------------------------------------------------------

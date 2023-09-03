@@ -63,7 +63,7 @@ import { Type, TObject, TIntersect, TNumber, TBoolean } from '@sinclair/typebox'
   })
   const T = Type.Composite([A, B])
   Expect(T).ToStatic<{
-    A: number | undefined
+    A?: number | undefined
   }>()
 }
 {
