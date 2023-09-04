@@ -251,3 +251,30 @@ import { Expect } from './assert'
   })
   Expect(T).ToStaticDecode<{ x: { y: string }[] }>()
 }
+{
+  // should decode generic union
+  const GenericUnion = <T extends TSchema>(t: T) => Type.Union([t, Type.Null()])
+  const T = Type.Transform(Type.String())
+    .Decode((value) => new Date(value))
+    .Encode((value) => value.toISOString())
+  Expect(T).ToStaticDecode<Date>()
+  Expect(GenericUnion(T)).ToStaticDecode<Date | null>()
+}
+{
+  // should decode generic tuple
+  const GenericTuple = <T extends TSchema>(t: T) => Type.Tuple([t, Type.Null()])
+  const T = Type.Transform(Type.String())
+    .Decode((value) => new Date(value))
+    .Encode((value) => value.toISOString())
+  Expect(T).ToStaticDecode<Date>()
+  Expect(GenericTuple(T)).ToStaticDecode<[Date, null]>()
+}
+{
+  // should decode generic intersect
+  const GenericIntersect = <T extends TSchema>(t: T) => Type.Intersect([t, Type.Literal(1)])
+  const T = Type.Transform(Type.Number())
+    .Decode((value) => value)
+    .Encode((value) => value)
+  Expect(T).ToStaticDecode<number>()
+  Expect(GenericIntersect(T)).ToStaticDecode<1>()
+}
