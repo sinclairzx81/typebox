@@ -868,7 +868,7 @@ export type DecodeType<T extends TSchema> = (
   T extends TAsyncIterator<infer S extends TSchema> ? TAsyncIterator<DecodeType<S>> :
   T extends TConstructor<infer P extends TSchema[], infer R extends TSchema> ? TConstructor<P, DecodeType<R>> :
   T extends TFunction<infer P extends TSchema[], infer R extends TSchema> ? TFunction<P, DecodeType<R>> :
-  T extends TIntersect<infer S extends TSchema[]> ? TIntersect<S> :
+  T extends TIntersect<infer S extends TSchema[]> ? TIntersect<DecodeRest<S>> :
   T extends TIterator<infer S extends TSchema> ? TIterator<DecodeType<S>> :
   T extends TNot<infer S extends TSchema> ? TNot<DecodeType<S>> :
   T extends TObject<infer S> ? TObject<Evaluate<DecodeProperties<S>>> :
@@ -876,8 +876,8 @@ export type DecodeType<T extends TSchema> = (
   T extends TRecord<infer K, infer S> ? TRecord<K, DecodeType<S>> :
   T extends TRecursive<infer S extends TSchema> ? TRecursive<DecodeType<S>> :
   T extends TRef<infer S extends TSchema> ? TRef<DecodeType<S>> :
-  T extends TTuple<infer S extends TSchema[]> ? TTuple<S> :
-  T extends TUnion<infer S extends TSchema[]> ? TUnion<S> :
+  T extends TTuple<infer S extends TSchema[]> ? TTuple<DecodeRest<S>> :
+  T extends TUnion<infer S extends TSchema[]> ? TUnion<DecodeRest<S>> :
   T
 )
 export type TransformFunction<T = any, U = any> = (value: T) => U
