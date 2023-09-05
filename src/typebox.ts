@@ -340,10 +340,10 @@ export interface TDate extends TSchema, DateOptions {
 export type TEnumRecord = Record<TEnumKey, TEnumValue>
 export type TEnumValue = string | number
 export type TEnumKey = string
-export type TEnumToLiteralUnion<T extends TEnumValue> = T extends TEnumValue ? TLiteral<T> : never
+export type TEnumToLiteralUnion<T extends TEnumValue> = T extends TEnumValue ? TLiteral<T> : never // Note: Empty enums infer as TLiteral<string>
 export type TEnumToLiteralTuple<T extends TEnumValue> = UnionToTuple<TEnumToLiteralUnion<T>>
-export type TEnumToUnion<T extends TEnumValue, R = UnionType<AssertRest<TEnumToLiteralTuple<T>>>> = R extends TLiteralString ? TNever : R // Note: Empty enum evaluates as TLiteralString
-export type TEnum<T extends TEnumValue> = Ensure<TEnumToUnion<T>>
+export type TEnumToUnion<T extends TEnumValue> = UnionType<AssertRest<TEnumToLiteralTuple<T>>>
+export type TEnum<T extends TEnumRecord> = TEnumToUnion<T[keyof T]>
 // --------------------------------------------------------------------------
 // TExtends
 // --------------------------------------------------------------------------
@@ -2897,13 +2897,13 @@ export class JsonTypeBuilder extends TypeBuilder {
     return Type.Object(properties, options) as TComposite<T>
   }
   /** `[Json]` Creates a Enum type */
-  public Enum<V extends TEnumValue, T extends Record<TEnumKey, V>>(item: T, options: SchemaOptions = {}): TEnum<T[keyof T]> {
-    if (ValueGuard.IsUndefined(item)) return this.Union([], options) as TEnum<T[keyof T]>
+  public Enum<V extends TEnumValue, T extends Record<TEnumKey, V>>(item: T, options: SchemaOptions = {}): TEnum<T> {
+    if (ValueGuard.IsUndefined(item)) return this.Never(options) as TEnum<T>
     // prettier-ignore
     const values1 = Object.getOwnPropertyNames(item).filter((key) => isNaN(key as any)).map((key) => item[key]) as T[keyof T][]
-    const values2 = [...new Set(values1)] // distinct
+    const values2 = [...new Set(values1)]
     const anyOf = values2.map((value) => Type.Literal(value))
-    return this.Union(anyOf, options) as TEnum<T[keyof T]>
+    return this.Union(anyOf, options) as TEnum<T>
   }
   /** `[Json]` Creates a Conditional type */
   public Extends<L extends TSchema, R extends TSchema, T extends TSchema, U extends TSchema>(left: L, right: R, trueType: T, falseType: U, options: SchemaOptions = {}): TExtends<L, R, T, U> {
