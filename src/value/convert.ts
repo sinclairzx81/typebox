@@ -173,6 +173,12 @@ function TDate(schema: Types.TDate, references: Types.TSchema[], value: any): un
 function TInteger(schema: Types.TInteger, references: Types.TSchema[], value: any): unknown {
   return TryConvertInteger(value)
 }
+function TIntersect(schema: Types.TIntersect, references: Types.TSchema[], value: any): unknown {
+  // prettier-ignore
+  return (schema.allOf.every(schema => Types.TypeGuard.TObject(schema)))
+    ? Visit(Types.Type.Composite(schema.allOf as Types.TObject[]), references, value)
+    : Visit(schema.allOf[0], references, value)
+}
 function TLiteral(schema: Types.TLiteral, references: Types.TSchema[], value: any): unknown {
   return TryConvertLiteral(schema, value)
 }
@@ -247,6 +253,8 @@ function Visit(schema: Types.TSchema, references: Types.TSchema[], value: any): 
       return TDate(schema_, references_, value)
     case 'Integer':
       return TInteger(schema_, references_, value)
+    case 'Intersect':
+      return TIntersect(schema_, references_, value)
     case 'Literal':
       return TLiteral(schema_, references_, value)
     case 'Null':
@@ -278,7 +286,6 @@ function Visit(schema: Types.TSchema, references: Types.TSchema[], value: any): 
     case 'AsyncIterator':
     case 'Constructor':
     case 'Function':
-    case 'Intersect':
     case 'Iterator':
     case 'Never':
     case 'Promise':
