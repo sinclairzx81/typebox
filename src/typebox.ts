@@ -176,6 +176,7 @@ export type TAnySchema =
   | TBoolean
   | TConstructor
   | TDate
+  | TEnum
   | TFunction
   | TInteger
   | TIntersect
@@ -340,11 +341,11 @@ export interface TDate extends TSchema, DateOptions {
 export type TEnumRecord = Record<TEnumKey, TEnumValue>
 export type TEnumValue = string | number
 export type TEnumKey = string
-export type TEnumToLiteralUnion<T extends TEnumValue> = T extends TEnumValue ? (string extends T ? TNever : TLiteral<T>) : never
-//                                                                             ^ empty enums evaluate as string
-export type TEnumToLiteralTuple<T extends TEnumValue> = UnionToTuple<TEnumToLiteralUnion<T>>
-export type TEnumToUnion<T extends TEnumValue> = UnionType<AssertRest<TEnumToLiteralTuple<T>>>
-export type TEnum<T extends TEnumRecord> = TEnumToUnion<T[keyof T]>
+export interface TEnum<T extends Record<string, string | number> = Record<string, string | number>> extends TSchema {
+  [Kind]: 'Union'
+  static: T[keyof T]
+  anyOf: TLiteral<T[keyof T]>[]
+}
 // --------------------------------------------------------------------------
 // TExtends
 // --------------------------------------------------------------------------
@@ -2899,7 +2900,6 @@ export class JsonTypeBuilder extends TypeBuilder {
   }
   /** `[Json]` Creates a Enum type */
   public Enum<V extends TEnumValue, T extends Record<TEnumKey, V>>(item: T, options: SchemaOptions = {}): TEnum<T> {
-    if (ValueGuard.IsUndefined(item)) return this.Never(options) as TEnum<T>
     // prettier-ignore
     const values1 = Object.getOwnPropertyNames(item).filter((key) => isNaN(key as any)).map((key) => item[key]) as T[keyof T][]
     const values2 = [...new Set(values1)]

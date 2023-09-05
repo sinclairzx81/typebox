@@ -33,7 +33,7 @@ import { Type } from '@sinclair/typebox'
   // expect empty enum to be string (as empty enums T[keyof T] evaluates as string)
   enum E {}
   const T = Type.Enum(E)
-  Expect(T).ToStaticNever()
+  Expect(T).ToStatic<string>()
 }
 {
   // expect empty enum to be never
