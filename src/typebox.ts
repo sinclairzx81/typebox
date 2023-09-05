@@ -340,7 +340,7 @@ export interface TDate extends TSchema, DateOptions {
 export type TEnumRecord = Record<TEnumKey, TEnumValue>
 export type TEnumValue = string | number
 export type TEnumKey = string
-export type TEnumToLiteralUnion<T extends TEnumValue> = T extends TEnumValue ? string extends T ? TNever : TLiteral<T> : never 
+export type TEnumToLiteralUnion<T extends TEnumValue> = T extends TEnumValue ? (string extends T ? TNever : TLiteral<T>) : never
 //                                                                             ^ empty enums evaluate as string
 export type TEnumToLiteralTuple<T extends TEnumValue> = UnionToTuple<TEnumToLiteralUnion<T>>
 export type TEnumToUnion<T extends TEnumValue> = UnionType<AssertRest<TEnumToLiteralTuple<T>>>
