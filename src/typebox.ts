@@ -176,6 +176,7 @@ export type TAnySchema =
   | TBoolean
   | TConstructor
   | TDate
+  | TEnum
   | TFunction
   | TInteger
   | TIntersect
@@ -340,11 +341,12 @@ export interface TDate extends TSchema, DateOptions {
 export type TEnumRecord = Record<TEnumKey, TEnumValue>
 export type TEnumValue = string | number
 export type TEnumKey = string
-export type TEnumToLiteralUnion<T extends TEnumValue> = T extends TEnumValue ? (string extends T ? TNever : TLiteral<T>) : never
-//                                                                             ^ empty enums evaluate as string
-export type TEnumToLiteralTuple<T extends TEnumValue> = UnionToTuple<TEnumToLiteralUnion<T>>
-export type TEnumToUnion<T extends TEnumValue> = UnionType<AssertRest<TEnumToLiteralTuple<T>>>
-export type TEnum<T extends TEnumRecord> = TEnumToUnion<T[keyof T]>
+export interface TEnum<T extends Record<string, string | number> = Record<string, string | number>> extends TSchema {
+  [Kind]: 'Union'
+  [Hint]: 'Enum'
+  static: T[keyof T]
+  anyOf: TLiteral<T[keyof T]>[]
+}
 // --------------------------------------------------------------------------
 // TExtends
 // --------------------------------------------------------------------------
@@ -868,6 +870,7 @@ export type DecodeType<T extends TSchema> = (
   T extends TArray<infer S extends TSchema> ? TArray<DecodeType<S>> :
   T extends TAsyncIterator<infer S extends TSchema> ? TAsyncIterator<DecodeType<S>> :
   T extends TConstructor<infer P extends TSchema[], infer R extends TSchema> ? TConstructor<P, DecodeType<R>> :
+  T extends TEnum<infer S> ? TEnum<S> : // intercept for union. interior non decodable
   T extends TFunction<infer P extends TSchema[], infer R extends TSchema> ? TFunction<P, DecodeType<R>> :
   T extends TIntersect<infer S extends TSchema[]> ? TIntersect<DecodeRest<S>> :
   T extends TIterator<infer S extends TSchema> ? TIterator<DecodeType<S>> :
@@ -2899,12 +2902,11 @@ export class JsonTypeBuilder extends TypeBuilder {
   }
   /** `[Json]` Creates a Enum type */
   public Enum<V extends TEnumValue, T extends Record<TEnumKey, V>>(item: T, options: SchemaOptions = {}): TEnum<T> {
-    if (ValueGuard.IsUndefined(item)) return this.Never(options) as TEnum<T>
     // prettier-ignore
     const values1 = Object.getOwnPropertyNames(item).filter((key) => isNaN(key as any)).map((key) => item[key]) as T[keyof T][]
     const values2 = [...new Set(values1)]
     const anyOf = values2.map((value) => Type.Literal(value))
-    return this.Union(anyOf, options) as TEnum<T>
+    return this.Union(anyOf, { ...options, [Hint]: 'Enum' }) as TEnum<T>
   }
   /** `[Json]` Creates a Conditional type */
   public Extends<L extends TSchema, R extends TSchema, T extends TSchema, U extends TSchema>(left: L, right: R, trueType: T, falseType: U, options: SchemaOptions = {}): TExtends<L, R, T, U> {

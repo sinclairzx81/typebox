@@ -278,3 +278,16 @@ import { Expect } from './assert'
   Expect(T).ToStaticDecode<number>()
   Expect(GenericIntersect(T)).ToStaticDecode<1>()
 }
+{
+  // should decode enum
+  enum E {
+    A,
+    B,
+    C,
+  }
+  const T = Type.Transform(Type.Enum(E))
+    .Decode((value) => 1 as const)
+    .Encode((value) => E.A)
+  Expect(T).ToStaticDecode<1>()
+  Expect(T).ToStaticEncode<E>()
+}
