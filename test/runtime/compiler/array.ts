@@ -98,7 +98,7 @@ describe('compiler/Array', () => {
   it('Should validate for an array with objects when items are distinct objects', () => {
     const T = Type.Array(
       Type.Object({ a: Type.String(), b: Type.String() }),
-      { uniqueItems: true, },
+      { uniqueItems: true },
     )
     Ok(T, [
       { a: '1', b: 'hieróglyphos' },
