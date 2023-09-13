@@ -95,6 +95,17 @@ describe('compiler/Array', () => {
     const T = Type.Array(Type.Number(), { uniqueItems: true })
     Fail(T, [0, 0])
   })
+  it('Should validate for an array with objects when items are distinct objects', () => {
+    const T = Type.Array(
+      Type.Object({ a: Type.String(), b: Type.String() }),
+      { uniqueItems: true, },
+    )
+    Ok(T, [
+      { a: '1', b: 'hieróglyphos' },
+      { a: '2', b: 'γράμματα' },
+      { a: '3', b: 'абвгд' },
+    ])
+  })
   // ---------------------------------------------------------
   // Contains
   // ---------------------------------------------------------

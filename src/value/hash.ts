@@ -57,7 +57,7 @@ export enum ByteMarker {
 // --------------------------------------------------------------------------
 let Accumulator = BigInt('14695981039346656037')
 const [Prime, Size] = [BigInt('1099511628211'), BigInt('2') ** BigInt('64')]
-const Bytes = Array.from({ length: 256 }).map((_, i) => BigInt(i))
+const Bytes = Array.from({ length: 2 ** 16 }).map((_, i) => BigInt(i)) // 2 ** 16 is max for charCodeAt() https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/charCodeAt
 const F64 = new Float64Array(1)
 const F64In = new DataView(F64.buffer)
 const F64Out = new Uint8Array(F64.buffer)
