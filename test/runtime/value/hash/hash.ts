@@ -108,4 +108,15 @@ describe('value/hash/Hash', () => {
     const B = ValueHash.Hash(BigInt(1))
     Assert.IsEqual(A, B)
   })
+  // ----------------------------------------------------------------
+  // Unicode
+  // ----------------------------------------------------------------
+  it('Should hash unicode 1 (retain single byte hash)', () => {
+    const hash = ValueHash.Hash('a')
+    Assert.IsEqual(hash, 586962220959696054n)
+  })
+  it('Should hash unicode 2', () => {
+    const hash = ValueHash.Hash('안녕 세계')
+    Assert.IsEqual(hash, 11219208047802711777n)
+  })
 })

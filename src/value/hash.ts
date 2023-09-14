@@ -62,6 +62,15 @@ const F64 = new Float64Array(1)
 const F64In = new DataView(F64.buffer)
 const F64Out = new Uint8Array(F64.buffer)
 // --------------------------------------------------------------------------
+// NumberToBytes
+// --------------------------------------------------------------------------
+function* NumberToBytes(value: number): IterableIterator<number> {
+  const byteCount = value === 0 ? 1 : Math.ceil(Math.floor(Math.log2(value) + 1) / 8)
+  for (let i = 0; i < byteCount; i++) {
+    yield (value >> (8 * (byteCount - 1 - i))) & 0xff
+  }
+}
+// --------------------------------------------------------------------------
 // Hashing Functions
 // --------------------------------------------------------------------------
 function ArrayType(value: Array<unknown>) {
@@ -105,7 +114,9 @@ function ObjectType(value: Record<string, unknown>) {
 function StringType(value: string) {
   FNV1A64(ByteMarker.String)
   for (let i = 0; i < value.length; i++) {
-    FNV1A64(value.charCodeAt(i))
+    for (const byte of NumberToBytes(value.charCodeAt(i))) {
+      FNV1A64(byte)
+    }
   }
 }
 function SymbolType(value: symbol) {
