@@ -1608,6 +1608,7 @@ The following is a list of community packages that offer general tooling, extend
 | [feathersjs](https://github.com/feathersjs/feathers) | The API and real-time application framework |
 | [fetch-typebox](https://github.com/erfanium/fetch-typebox) | Drop-in replacement for fetch that brings easy integration with TypeBox |
 | [h3-typebox](https://github.com/kevinmarrec/h3-typebox) | Schema validation utilities for h3 using TypeBox & Ajv |
+| [openapi-box](https://github.com/geut/openapi-box) | Generate TypeBox schemas from your openapi spec and use it as an http client library. |
 | [schema2typebox](https://github.com/xddq/schema2typebox)  | Creating TypeBox code from Json Schemas |
 | [ts2typebox](https://github.com/xddq/ts2typebox) | Creating TypeBox code from Typescript types |
 | [typebox-client](https://github.com/flodlc/typebox-client) | Type safe http client library for Fastify |
