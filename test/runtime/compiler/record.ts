@@ -206,4 +206,67 @@ describe('compiler/Record', () => {
     const T = Type.Record(Type.Number(), Type.String(), { additionalProperties: Type.Boolean() })
     Ok(T, { 1: '', 2: '', x: true })
   })
+  // ----------------------------------------------------------------
+  // TemplateLiteral
+  // ----------------------------------------------------------------
+  it('TemplateLiteral 1', () => {
+    const K = Type.TemplateLiteral('key${number}')
+    const R = Type.Record(K, Type.Number(), { additionalProperties: false })
+    Ok(R, {
+      key0: 1,
+      key1: 1,
+      key2: 1,
+    })
+  })
+  it('TemplateLiteral 2', () => {
+    const K = Type.TemplateLiteral('key${number}')
+    const R = Type.Record(K, Type.Number())
+    Ok(R, { keyA: 0 })
+  })
+  it('TemplateLiteral 3', () => {
+    const K = Type.TemplateLiteral('key${number}')
+    const R = Type.Record(K, Type.Number(), { additionalProperties: false })
+    Fail(R, { keyA: 0 })
+  })
+  it('TemplateLiteral 4', () => {
+    const K = Type.TemplateLiteral('key${number}')
+    const R = Type.Record(K, Type.Number())
+    const T = Type.Object({ x: Type.Number(), y: Type.Number() })
+    const I = Type.Intersect([R, T], { unevaluatedProperties: false })
+    Ok(I, {
+      x: 1,
+      y: 2,
+      key0: 1,
+      key1: 1,
+      key2: 1,
+    })
+  })
+  it('TemplateLiteral 5', () => {
+    const K = Type.TemplateLiteral('key${number}')
+    const R = Type.Record(K, Type.Number())
+    const T = Type.Object({ x: Type.Number(), y: Type.Number() })
+    const I = Type.Intersect([R, T])
+    Ok(I, {
+      x: 1,
+      y: 2,
+      z: 3,
+      key0: 1,
+      key1: 1,
+      key2: 1,
+    })
+  })
+  it('TemplateLiteral 6', () => {
+    const K = Type.TemplateLiteral('key${number}')
+    const R = Type.Record(K, Type.Number())
+    const T = Type.Object({ x: Type.Number(), y: Type.Number() })
+    const I = Type.Intersect([R, T], { unevaluatedProperties: false })
+    Fail(I, {
+      x: 1,
+      y: 2,
+      z: 3,
+      key0: 1,
+      key1: 1,
+      key2: 1,
+    })
+  })
 })

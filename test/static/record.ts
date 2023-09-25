@@ -70,7 +70,6 @@ import { Type, Static } from '@sinclair/typebox'
 
   Expect(T).ToStatic<Record<number, string>>()
 }
-
 {
   enum E {
     A = 'X',
@@ -79,4 +78,20 @@ import { Type, Static } from '@sinclair/typebox'
   }
   const T = Type.Record(Type.Enum(E), Type.Number())
   Expect(T).ToStatic<{}>()
+}
+{
+  // should support infinite record keys
+  // https://github.com/sinclairzx81/typebox/issues/604
+  const K = Type.TemplateLiteral('key${number}')
+  const R = Type.Record(K, Type.Number())
+  Expect(R).ToStatic<Record<`key${number}`, number>>()
+}
+{
+  // should support infinite record keys with intersect
+  // https://github.com/sinclairzx81/typebox/issues/604
+  const K = Type.TemplateLiteral('key${number}')
+  const R = Type.Record(K, Type.Number())
+  const T = Type.Object({ x: Type.Number(), y: Type.Number() })
+  const I = Type.Intersect([R, T])
+  Expect(I).ToStatic<Record<`key${number}`, number> & { x: number; y: number }>()
 }
