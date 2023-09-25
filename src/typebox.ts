@@ -656,11 +656,11 @@ export type TRecordFromUnionRest<K extends TSchema[], T extends TSchema> = K ext
   L extends TLiteralNumber ? TRecordFromUnionLiteralNumber<L, T> & TRecordFromUnionRest<AssertRest<R>, T> :
 {}) : {}
 export type TRecordFromUnion<K extends TSchema[], T extends TSchema> = Ensure<TObject<AssertProperties<Evaluate<TRecordFromUnionRest<K, T>>>>>
-export type TRecordFromTemplateLiteralKeyInfinite<T extends TSchema> = Ensure<TRecord<TString, T>>
+export type TRecordFromTemplateLiteralKeyInfinite<K extends TTemplateLiteral, T extends TSchema> = Ensure<TRecord<K, T>>
 export type TRecordFromTemplateLiteralKeyFinite<K extends TTemplateLiteral, T extends TSchema, I = Static<K>> = Ensure<TObject<Evaluate<{ [_ in Assert<I, string>]: T }>>>
 // prettier-ignore
 export type TRecordFromTemplateLiteralKey<K extends TTemplateLiteral, T extends TSchema> = IsTemplateLiteralFinite<K> extends false 
-  ? TRecordFromTemplateLiteralKeyInfinite<T> 
+  ? TRecordFromTemplateLiteralKeyInfinite<K, T> 
   : TRecordFromTemplateLiteralKeyFinite<K, T>
 export type TRecordFromLiteralStringKey<K extends TLiteralString, T extends TSchema> = Ensure<TObject<{ [_ in K['const']]: T }>>
 export type TRecordFromLiteralNumberKey<K extends TLiteralNumber, T extends TSchema> = Ensure<TObject<{ [_ in K['const']]: T }>>
