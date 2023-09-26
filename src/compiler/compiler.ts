@@ -204,7 +204,7 @@ export namespace TypeCompiler {
       const checkExpression = CreateExpression(containsSchema, references, 'value')
       const checkMinContains = IsNumber(schema.minContains) ? [`(count >= ${schema.minContains})`] : []
       const checkMaxContains = IsNumber(schema.maxContains) ? [`(count <= ${schema.maxContains})`] : []
-      const checkCount = `const count = ${value}.reduce((${accumulator}, ${parameter}) => ${checkExpression} ? acc + 1 : acc, 0)`
+      const checkCount = `const count = value.reduce((${accumulator}, ${parameter}) => ${checkExpression} ? acc + 1 : acc, 0)`
       const check = [`(count > 0)`, ...checkMinContains, ...checkMaxContains].join(' && ')
       yield `((${parameter}) => { ${checkCount}; return ${check}})(${value})`
     }

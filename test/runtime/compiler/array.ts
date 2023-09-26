@@ -145,4 +145,42 @@ describe('compiler/Array', () => {
     Fail(T, [1, 1, 1, 1, 1])
     Fail(T, [1, 1, 1, 1, 1, 1])
   })
+  // ----------------------------------------------------------------
+  // Issue: https://github.com/sinclairzx81/typebox/discussions/607
+  // ----------------------------------------------------------------
+  it('Should correctly handle undefined array properties', () => {
+    const Answer = Type.Object({
+      text: Type.String(),
+      isCorrect: Type.Boolean(),
+    })
+    const Question = Type.Object({
+      text: Type.String(),
+      options: Type.Array(Answer, {
+        minContains: 1,
+        maxContains: 1,
+        contains: Type.Object({
+          text: Type.String(),
+          isCorrect: Type.Literal(true),
+        }),
+      }),
+    })
+    Fail(Question, { text: 'A' })
+    Fail(Question, { text: 'A', options: [] })
+    Ok(Question, { text: 'A', options: [{ text: 'A', isCorrect: true }] })
+    Ok(Question, {
+      text: 'A',
+      options: [
+        { text: 'A', isCorrect: true },
+        { text: 'B', isCorrect: false },
+      ],
+    })
+    Fail(Question, { text: 'A', options: [{ text: 'A', isCorrect: false }] })
+    Fail(Question, {
+      text: 'A',
+      options: [
+        { text: 'A', isCorrect: true },
+        { text: 'B', isCorrect: true },
+      ],
+    })
+  })
 })

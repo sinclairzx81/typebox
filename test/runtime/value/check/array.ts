@@ -110,4 +110,46 @@ describe('value/check/Array', () => {
     Assert.IsFalse(Value.Check(T, [1, 1, 1, 1, 1]))
     Assert.IsFalse(Value.Check(T, [1, 1, 1, 1, 1, 1]))
   })
+  // ----------------------------------------------------------------
+  // Issue: https://github.com/sinclairzx81/typebox/discussions/607
+  // ----------------------------------------------------------------
+  it('Should correctly handle undefined array properties', () => {
+    const Answer = Type.Object({
+      text: Type.String(),
+      isCorrect: Type.Boolean(),
+    })
+    const Question = Type.Object({
+      text: Type.String(),
+      options: Type.Array(Answer, {
+        minContains: 1,
+        maxContains: 1,
+        contains: Type.Object({
+          text: Type.String(),
+          isCorrect: Type.Literal(true),
+        }),
+      }),
+    })
+    Assert.IsFalse(Value.Check(Question, { text: 'A' }))
+    Assert.IsFalse(Value.Check(Question, { text: 'A', options: [] }))
+    Assert.IsTrue(Value.Check(Question, { text: 'A', options: [{ text: 'A', isCorrect: true }] }))
+    Assert.IsTrue(
+      Value.Check(Question, {
+        text: 'A',
+        options: [
+          { text: 'A', isCorrect: true },
+          { text: 'B', isCorrect: false },
+        ],
+      }),
+    )
+    Assert.IsFalse(Value.Check(Question, { text: 'A', options: [{ text: 'A', isCorrect: false }] }))
+    Assert.IsFalse(
+      Value.Check(Question, {
+        text: 'A',
+        options: [
+          { text: 'A', isCorrect: true },
+          { text: 'B', isCorrect: true },
+        ],
+      }),
+    )
+  })
 })
