@@ -151,7 +151,7 @@ describe('compiler-ajv/Array', () => {
   it('Should correctly handle undefined array properties', () => {
     const Answer = Type.Object({
       text: Type.String(),
-      isCorrect: Type.Boolean()
+      isCorrect: Type.Boolean(),
     })
     const Question = Type.Object({
       text: Type.String(),
@@ -160,15 +160,27 @@ describe('compiler-ajv/Array', () => {
         maxContains: 1,
         contains: Type.Object({
           text: Type.String(),
-          isCorrect: Type.Literal(true)
-        })
-      })
+          isCorrect: Type.Literal(true),
+        }),
+      }),
     })
     Fail(Question, { text: 'A' })
     Fail(Question, { text: 'A', options: [] })
     Ok(Question, { text: 'A', options: [{ text: 'A', isCorrect: true }] })
-    Ok(Question, { text: 'A', options: [{ text: 'A', isCorrect: true }, { text: 'B', isCorrect: false }] })
+    Ok(Question, {
+      text: 'A',
+      options: [
+        { text: 'A', isCorrect: true },
+        { text: 'B', isCorrect: false },
+      ],
+    })
     Fail(Question, { text: 'A', options: [{ text: 'A', isCorrect: false }] })
-    Fail(Question, { text: 'A', options: [{ text: 'A', isCorrect: true }, { text: 'B', isCorrect: true }] })
+    Fail(Question, {
+      text: 'A',
+      options: [
+        { text: 'A', isCorrect: true },
+        { text: 'B', isCorrect: true },
+      ],
+    })
   })
 })
