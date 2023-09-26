@@ -148,7 +148,6 @@ describe('compiler/Array', () => {
   // ----------------------------------------------------------------
   // Issue: https://github.com/sinclairzx81/typebox/discussions/607
   // ----------------------------------------------------------------
-  // prettier-ignore
   it('Should correctly handle undefined array properties', () => {
     const Answer = Type.Object({
       text: Type.String(),
