@@ -52,7 +52,7 @@
     "publish:dev": "hammer task publish_dev"
   },
   "devDependencies": {
-    "@sinclair/hammer": "^0.17.1",
+    "@sinclair/hammer": "^0.18.0",
     "@types/mocha": "^9.1.1",
     "@types/node": "^18.11.9",
     "ajv": "^8.12.0",
