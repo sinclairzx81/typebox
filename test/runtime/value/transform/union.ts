@@ -1,6 +1,6 @@
 import { Assert } from '../../assert'
 import { Value } from '@sinclair/typebox/value'
-import { Type } from '@sinclair/typebox'
+import { Type, TSchema } from '@sinclair/typebox'
 
 describe('value/transform/Union', () => {
   // --------------------------------------------------------
@@ -126,11 +126,10 @@ describe('value/transform/Union', () => {
   const N41 = Type.Transform(Type.Number())
     .Decode((value) => value + 1)
     .Encode((value) => value - 1)
-  const N42 = Type.Transform(
-    Type.Object({
-      x: Type.Number(),
-    }),
-  )
+  // prettier-ignore
+  const N42 = Type.Transform(Type.Object({
+    x: Type.Number()
+  }))
     .Decode((value) => ({ x: value.x + 1 }))
     .Encode((value) => ({ x: value.x - 1 }))
   const N43 = Type.Transform(Type.Tuple([Type.Number()]))
@@ -166,5 +165,36 @@ describe('value/transform/Union', () => {
   })
   it('Should throw on mixed types decode', () => {
     Assert.Throws(() => Value.Decode(T4, null))
+  })
+  // --------------------------------------------------------
+  // Generic Union Transform
+  //
+  // https://github.com/sinclairzx81/typebox/issues/631
+  // --------------------------------------------------------
+  const Nullable = <T extends TSchema>(schema: T) => Type.Union([schema, Type.Null()])
+  // prettier-ignore
+  const DateType = () => Type.Transform(Type.String())
+    .Decode((value) => new Date(value))
+    .Encode((value) => value.toISOString())
+  it('Should decode generic union 1', () => {
+    const T = Nullable(DateType())
+    const R = Value.Decode(T, null)
+    Assert.IsEqual(R, null)
+  })
+  it('Should decode generic union 2', () => {
+    const T = Nullable(DateType())
+    const R = Value.Decode(T, new Date().toISOString())
+    Assert.IsInstanceOf(R, Date)
+  })
+  it('Should encode generic union 1', () => {
+    const T = Nullable(DateType())
+    const R = Value.Encode(T, null)
+    Assert.IsEqual(R, null)
+  })
+  it('Should encode generic union 2', () => {
+    const T = Nullable(DateType())
+    const D = new Date()
+    const R = Value.Encode(T, D)
+    Assert.IsEqual(R, D.toISOString())
   })
 })
