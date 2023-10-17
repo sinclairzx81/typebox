@@ -167,34 +167,35 @@ describe('value/transform/Union', () => {
     Assert.Throws(() => Value.Decode(T4, null))
   })
   // --------------------------------------------------------
-  // Generic Union Transform
+  // Interior Union Transform
   //
   // https://github.com/sinclairzx81/typebox/issues/631
   // --------------------------------------------------------
-  const Nullable = <T extends TSchema>(schema: T) => Type.Union([schema, Type.Null()])
-  // prettier-ignore
-  const DateType = () => Type.Transform(Type.String())
+  const T51 = Type.Transform(Type.String())
     .Decode((value) => new Date(value))
     .Encode((value) => value.toISOString())
-  it('Should decode generic union 1', () => {
-    const T = Nullable(DateType())
-    const R = Value.Decode(T, null)
+  const T52 = Type.Union([Type.Null(), T51])
+  it('Should decode interior union 1', () => {
+    const R = Value.Decode(T52, null)
     Assert.IsEqual(R, null)
   })
-  it('Should decode generic union 2', () => {
-    const T = Nullable(DateType())
-    const R = Value.Decode(T, new Date().toISOString())
+  it('Should decode interior union 2', () => {
+    const R = Value.Decode(T52, new Date().toISOString())
     Assert.IsInstanceOf(R, Date)
   })
-  it('Should encode generic union 1', () => {
-    const T = Nullable(DateType())
-    const R = Value.Encode(T, null)
+  it('Should encode interior union 1', () => {
+    const R = Value.Encode(T52, null)
     Assert.IsEqual(R, null)
   })
-  it('Should encode generic union 2', () => {
-    const T = Nullable(DateType())
+  it('Should encode interior union 2', () => {
     const D = new Date()
-    const R = Value.Encode(T, D)
+    const R = Value.Encode(T52, D)
     Assert.IsEqual(R, D.toISOString())
+  })
+  it('Should throw on interior union decode', () => {
+    Assert.Throws(() => Value.Decode(T52, {}))
+  })
+  it('Should throw on interior union encode', () => {
+    Assert.Throws(() => Value.Encode(T52, 1))
   })
 })
