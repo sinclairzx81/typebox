@@ -403,9 +403,16 @@ export namespace EncodeTransform {
     return IsArray(schema.items) ? schema.items.map((schema, index) => Visit(schema, references, value1[index])) : []
   }
   function TUnion(schema: Types.TUnion, references: Types.TSchema[], value: any) {
+    // test value against union variants
     for (const subschema of schema.anyOf) {
       if (!checkFunction(subschema, references, value)) continue
       const value1 = Visit(subschema, references, value)
+      return Default(schema, value1)
+    }
+    // test transformed value against union variants
+    for (const subschema of schema.anyOf) {
+      const value1 = Visit(subschema, references, value)
+      if (!checkFunction(schema, references, value1)) continue
       return Default(schema, value1)
     }
     return Default(schema, value)

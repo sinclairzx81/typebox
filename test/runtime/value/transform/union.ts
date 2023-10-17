@@ -1,6 +1,6 @@
 import { Assert } from '../../assert'
 import { Value } from '@sinclair/typebox/value'
-import { Type } from '@sinclair/typebox'
+import { Type, TSchema } from '@sinclair/typebox'
 
 describe('value/transform/Union', () => {
   // --------------------------------------------------------
@@ -126,11 +126,10 @@ describe('value/transform/Union', () => {
   const N41 = Type.Transform(Type.Number())
     .Decode((value) => value + 1)
     .Encode((value) => value - 1)
-  const N42 = Type.Transform(
-    Type.Object({
-      x: Type.Number(),
-    }),
-  )
+  // prettier-ignore
+  const N42 = Type.Transform(Type.Object({
+    x: Type.Number()
+  }))
     .Decode((value) => ({ x: value.x + 1 }))
     .Encode((value) => ({ x: value.x - 1 }))
   const N43 = Type.Transform(Type.Tuple([Type.Number()]))
@@ -166,5 +165,37 @@ describe('value/transform/Union', () => {
   })
   it('Should throw on mixed types decode', () => {
     Assert.Throws(() => Value.Decode(T4, null))
+  })
+  // --------------------------------------------------------
+  // Interior Union Transform
+  //
+  // https://github.com/sinclairzx81/typebox/issues/631
+  // --------------------------------------------------------
+  const T51 = Type.Transform(Type.String())
+    .Decode((value) => new Date(value))
+    .Encode((value) => value.toISOString())
+  const T52 = Type.Union([Type.Null(), T51])
+  it('Should decode interior union 1', () => {
+    const R = Value.Decode(T52, null)
+    Assert.IsEqual(R, null)
+  })
+  it('Should decode interior union 2', () => {
+    const R = Value.Decode(T52, new Date().toISOString())
+    Assert.IsInstanceOf(R, Date)
+  })
+  it('Should encode interior union 1', () => {
+    const R = Value.Encode(T52, null)
+    Assert.IsEqual(R, null)
+  })
+  it('Should encode interior union 2', () => {
+    const D = new Date()
+    const R = Value.Encode(T52, D)
+    Assert.IsEqual(R, D.toISOString())
+  })
+  it('Should throw on interior union decode', () => {
+    Assert.Throws(() => Value.Decode(T52, {}))
+  })
+  it('Should throw on interior union encode', () => {
+    Assert.Throws(() => Value.Encode(T52, 1))
   })
 })
