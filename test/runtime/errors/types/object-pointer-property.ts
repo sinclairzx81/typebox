@@ -111,4 +111,29 @@ describe('errors/type/ObjectPointerProperty', () => {
     Assert.IsEqual(R.length, 1)
     Assert.IsEqual(R[0].path, '/x/y/z~1w')
   })
+  // ----------------------------------------------------------------
+  // Nested Array
+  // ----------------------------------------------------------------
+  it('Should produce nested array pointer property path 1', () => {
+    const T = Type.Object({
+      'x/y': Type.Object({
+        z: Type.Array(Type.String()),
+      }),
+    })
+    const R = Resolve(T, { 'x/y': { z: ['a', 'b', 1] } })
+    Assert.IsEqual(R.length, 1)
+    Assert.IsEqual(R[0].path, '/x~1y/z/2')
+  })
+  it('Should produce nested array pointer property path 2', () => {
+    const T = Type.Object({
+      x: Type.Array(
+        Type.Object({
+          'y/z': Type.String(),
+        }),
+      ),
+    })
+    const R = Resolve(T, { x: [{ 'y/z': 'a' }, { 'y/z': 'b' }, { 'y/z': 1 }] })
+    Assert.IsEqual(R.length, 1)
+    Assert.IsEqual(R[0].path, '/x/2/y~1z')
+  })
 })
