@@ -119,6 +119,12 @@ export class ValueErrorsUnknownTypeError extends Types.TypeBoxError {
   }
 }
 // --------------------------------------------------------------------------
+// EscapeKey
+// --------------------------------------------------------------------------
+export function EscapeKey(key: string): string {
+  return key.replace(/~/g, '~0').replace(/\//g, '~1') // RFC6901 Path
+}
+// --------------------------------------------------------------------------
 // Guards
 // --------------------------------------------------------------------------
 function IsDefined<T>(value: unknown): value is T {
@@ -319,31 +325,31 @@ function* TObject(schema: Types.TObject, references: Types.TSchema[], path: stri
   const unknownKeys = Object.getOwnPropertyNames(value)
   for (const requiredKey of requiredKeys) {
     if (unknownKeys.includes(requiredKey)) continue
-    yield Create(ValueErrorType.ObjectRequiredProperty, schema.properties[requiredKey], `${path}/${requiredKey}`, undefined)
+    yield Create(ValueErrorType.ObjectRequiredProperty, schema.properties[requiredKey], `${path}/${EscapeKey(requiredKey)}`, undefined)
   }
   if (schema.additionalProperties === false) {
     for (const valueKey of unknownKeys) {
       if (!knownKeys.includes(valueKey)) {
-        yield Create(ValueErrorType.ObjectAdditionalProperties, schema, `${path}/${valueKey}`, value[valueKey])
+        yield Create(ValueErrorType.ObjectAdditionalProperties, schema, `${path}/${EscapeKey(valueKey)}`, value[valueKey])
       }
     }
   }
   if (typeof schema.additionalProperties === 'object') {
     for (const valueKey of unknownKeys) {
       if (knownKeys.includes(valueKey)) continue
-      yield* Visit(schema.additionalProperties as Types.TSchema, references, `${path}/${valueKey}`, value[valueKey])
+      yield* Visit(schema.additionalProperties as Types.TSchema, references, `${path}/${EscapeKey(valueKey)}`, value[valueKey])
     }
   }
   for (const knownKey of knownKeys) {
     const property = schema.properties[knownKey]
     if (schema.required && schema.required.includes(knownKey)) {
-      yield* Visit(property, references, `${path}/${knownKey}`, value[knownKey])
+      yield* Visit(property, references, `${path}/${EscapeKey(knownKey)}`, value[knownKey])
       if (Types.ExtendsUndefined.Check(schema) && !(knownKey in value)) {
-        yield Create(ValueErrorType.ObjectRequiredProperty, property, `${path}/${knownKey}`, undefined)
+        yield Create(ValueErrorType.ObjectRequiredProperty, property, `${path}/${EscapeKey(knownKey)}`, undefined)
       }
     } else {
       if (TypeSystemPolicy.IsExactOptionalProperty(value, knownKey)) {
-        yield* Visit(property, references, `${path}/${knownKey}`, value[knownKey])
+        yield* Visit(property, references, `${path}/${EscapeKey(knownKey)}`, value[knownKey])
       }
     }
   }
@@ -362,17 +368,17 @@ function* TRecord(schema: Types.TRecord, references: Types.TSchema[], path: stri
   const [patternKey, patternSchema] = Object.entries(schema.patternProperties)[0]
   const regex = new RegExp(patternKey)
   for (const [propertyKey, propertyValue] of Object.entries(value)) {
-    if (regex.test(propertyKey)) yield* Visit(patternSchema, references, `${path}/${propertyKey}`, propertyValue)
+    if (regex.test(propertyKey)) yield* Visit(patternSchema, references, `${path}/${EscapeKey(propertyKey)}`, propertyValue)
   }
   if (typeof schema.additionalProperties === 'object') {
     for (const [propertyKey, propertyValue] of Object.entries(value)) {
-      if (!regex.test(propertyKey)) yield* Visit(schema.additionalProperties as Types.TSchema, references, `${path}/${propertyKey}`, propertyValue)
+      if (!regex.test(propertyKey)) yield* Visit(schema.additionalProperties as Types.TSchema, references, `${path}/${EscapeKey(propertyKey)}`, propertyValue)
     }
   }
   if (schema.additionalProperties === false) {
     for (const [propertyKey, propertyValue] of Object.entries(value)) {
       if (regex.test(propertyKey)) continue
-      return yield Create(ValueErrorType.ObjectAdditionalProperties, schema, `${path}/${propertyKey}`, propertyValue)
+      return yield Create(ValueErrorType.ObjectAdditionalProperties, schema, `${path}/${EscapeKey(propertyKey)}`, propertyValue)
     }
   }
 }
