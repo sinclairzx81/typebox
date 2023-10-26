@@ -223,26 +223,7 @@ function Visit(schema: Types.TSchema, references: Types.TSchema[], value: any): 
     // ------------------------------------------------------
     // Default
     // ------------------------------------------------------
-    case 'Any':
-    case 'AsyncIterator':
-    case 'BigInt':
-    case 'Boolean':
-    case 'Function':
-    case 'Integer':
-    case 'Iterator':
-    case 'Literal':
-    case 'Not':
-    case 'Null':
-    case 'Number':
-    case 'Promise':
-    case 'String':
-    case 'TemplateLiteral':
-    case 'Undefined':
-    case 'Unknown':
-    case 'Void':
-      return Default(schema_, references_, value)
     default:
-      if (!Types.TypeRegistry.Has(schema_[Types.Kind])) throw new ValueCastUnknownTypeError(schema_)
       return Default(schema_, references_, value)
   }
 }

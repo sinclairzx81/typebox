@@ -1,6 +1,6 @@
 {
   "name": "@sinclair/typebox",
-  "version": "0.31.19",
+  "version": "0.31.20",
   "description": "JSONSchema Type Builder with Static Type Resolution for TypeScript",
   "keywords": [
     "typescript",
@@ -21,6 +21,7 @@
     "./value/clone": "./value/clone.js",
     "./value/convert": "./value/convert.js",
     "./value/create": "./value/create.js",
+    "./value/defaults": "./value/defaults.js",
     "./value/delta": "./value/delta.js",
     "./value/deref": "./value/deref.js",
     "./value/equal": "./value/equal.js",

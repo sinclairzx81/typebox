@@ -121,7 +121,7 @@ export class ValueErrorsUnknownTypeError extends Types.TypeBoxError {
 // --------------------------------------------------------------------------
 // EscapeKey
 // --------------------------------------------------------------------------
-export function EscapeKey(key: string): string {
+function EscapeKey(key: string): string {
   return key.replace(/~/g, '~0').replace(/\//g, '~1') // RFC6901 Path
 }
 // --------------------------------------------------------------------------

@@ -123,9 +123,9 @@ export namespace HasTransform {
     if (schema.$id && visited.has(schema.$id)) return false
     if (schema.$id) visited.add(schema.$id)
     switch (schema[Types.Kind]) {
-      // ------------------------------------------------------
+      // ------------------------------------------------------------
       // Structural
-      // ------------------------------------------------------
+      // ------------------------------------------------------------
       case 'Array':
         return TArray(schema_, references_)
       case 'AsyncIterator':
@@ -154,28 +154,10 @@ export namespace HasTransform {
         return TTuple(schema_, references_)
       case 'Union':
         return TUnion(schema_, references_)
-      // ------------------------------------------------------
-      // Default
-      // ------------------------------------------------------
-      case 'Any':
-      case 'BigInt':
-      case 'Boolean':
-      case 'Date':
-      case 'Integer':
-      case 'Literal':
-      case 'Never':
-      case 'Null':
-      case 'Number':
-      case 'String':
-      case 'Symbol':
-      case 'TemplateLiteral':
-      case 'Undefined':
-      case 'Uint8Array':
-      case 'Unknown':
-      case 'Void':
-        return Types.TypeGuard.TTransform(schema)
+      // ------------------------------------------------------------
+      // NonStructural
+      // ------------------------------------------------------------
       default:
-        if (!Types.TypeRegistry.Has(schema_[Types.Kind])) throw new TransformUnknownTypeError(schema_)
         return Types.TypeGuard.TTransform(schema)
     }
   }
@@ -271,9 +253,9 @@ export namespace DecodeTransform {
     const references_ = typeof schema.$id === 'string' ? [...references, schema] : references
     const schema_ = schema as any
     switch (schema[Types.Kind]) {
-      // ------------------------------------------------------
+      // ------------------------------------------------------------
       // Structural
-      // ------------------------------------------------------
+      // ------------------------------------------------------------
       case 'Array':
         return TArray(schema_, references_, value)
       case 'Intersect':
@@ -294,32 +276,10 @@ export namespace DecodeTransform {
         return TTuple(schema_, references_, value)
       case 'Union':
         return TUnion(schema_, references_, value)
-      // ------------------------------------------------------
-      // Default
-      // ------------------------------------------------------
-      case 'Any':
-      case 'AsyncIterator':
-      case 'BigInt':
-      case 'Boolean':
-      case 'Constructor':
-      case 'Date':
-      case 'Function':
-      case 'Integer':
-      case 'Iterator':
-      case 'Literal':
-      case 'Never':
-      case 'Null':
-      case 'Number':
-      case 'Promise':
-      case 'String':
-      case 'TemplateLiteral':
-      case 'Undefined':
-      case 'Uint8Array':
-      case 'Unknown':
-      case 'Void':
-        return Default(schema_, value)
+      // ------------------------------------------------------------
+      // NonStructural
+      // ------------------------------------------------------------
       default:
-        if (!Types.TypeRegistry.Has(schema_[Types.Kind])) throw new TransformUnknownTypeError(schema_)
         return Default(schema_, value)
     }
   }
@@ -421,9 +381,9 @@ export namespace EncodeTransform {
     const references_ = typeof schema.$id === 'string' ? [...references, schema] : references
     const schema_ = schema as any
     switch (schema[Types.Kind]) {
-      // ------------------------------------------------------
+      // ------------------------------------------------------------
       // Structural
-      // ------------------------------------------------------
+      // ------------------------------------------------------------
       case 'Array':
         return TArray(schema_, references_, value)
       case 'Intersect':
@@ -442,33 +402,10 @@ export namespace EncodeTransform {
         return TTuple(schema_, references_, value)
       case 'Union':
         return TUnion(schema_, references_, value)
-      // ------------------------------------------------------
-      // Apply
-      // ------------------------------------------------------
-      case 'Any':
-      case 'AsyncIterator':
-      case 'BigInt':
-      case 'Boolean':
-      case 'Constructor':
-      case 'Date':
-      case 'Function':
-      case 'Integer':
-      case 'Iterator':
-      case 'Literal':
-      case 'Never':
-      case 'Null':
-      case 'Number':
-      case 'Promise':
-      case 'String':
-      case 'Symbol':
-      case 'TemplateLiteral':
-      case 'Undefined':
-      case 'Uint8Array':
-      case 'Unknown':
-      case 'Void':
-        return Default(schema_, value)
+      // ------------------------------------------------------------
+      // NonStructural
+      // ------------------------------------------------------------
       default:
-        if (!Types.TypeRegistry.Has(schema_[Types.Kind])) throw new TransformUnknownTypeError(schema_)
         return Default(schema_, value)
     }
   }

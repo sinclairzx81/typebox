@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { HasPropertyKey, IsString } from './guard'
+import { HasPropertyKey, IsString, IsObject } from './guard'
 import { Check } from './check'
 import { Deref } from './deref'
 import * as Types from '../typebox'
@@ -162,9 +162,9 @@ function TIntersect(schema: Types.TIntersect, references: Types.TSchema[]): any 
     // sub types, we just escape the assignment and just return the value. In the latter case, this is typically going to
     // be a consequence of an illogical intersection.
     const value = schema.allOf.reduce((acc, schema) => {
-      const next = Visit(schema, references) as any
-      return typeof next === 'object' ? { ...acc, ...next } : next
-    }, {})
+      const next = Visit(schema, references)
+      return IsObject(next) ? { ...acc, ...next } : next
+    }, {} as any)
     if (!Check(schema, references, value)) throw new ValueCreateIntersectTypeError(schema)
     return value
   }

@@ -35,6 +35,7 @@ import * as ValueClone from './clone'
 import * as ValueConvert from './convert'
 import * as ValueCreate from './create'
 import * as ValueCheck from './check'
+import * as ValueDefault from './defaults'
 import * as ValueDelta from './delta'
 import * as ValueTransform from './transform'
 import * as Types from '../typebox'
@@ -67,11 +68,19 @@ export namespace Value {
   }
   /** Converts any type mismatched values to their target type if a reasonable conversion is possible */
   export function Convert<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: unknown): unknown
-  /** Converts any type mismatched values to their target type if a reasonable conversion is possibl. */
+  /** Converts any type mismatched values to their target type if a reasonable conversion is possible. */
   export function Convert<T extends Types.TSchema>(schema: T, value: unknown): unknown
   /** Converts any type mismatched values to their target type if a reasonable conversion is possible */
   export function Convert(...args: any[]) {
     return ValueConvert.Convert.apply(ValueConvert, args as any)
+  }
+  /** Creates default values for any missing internal properties, elements or values using `default` annotations. The return value should be checked before use. */
+  export function Defaults<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: unknown): unknown
+  /** Creates default values for any missing internal properties, elements or values using `default` annotations. The return value should be checked before use. */
+  export function Defaults<T extends Types.TSchema>(schema: T, value: unknown): unknown
+  /** Creates default values for any missing internal properties, elements or values using `default` annotations. The return value should be checked before use. */
+  export function Defaults(...args: any[]) {
+    return ValueDefault.Defaults.apply(ValueDefault, args as any)
   }
   /** Returns a structural clone of the given value */
   export function Clone<T>(value: T): T {
