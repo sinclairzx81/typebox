@@ -650,6 +650,8 @@ export interface TPromise<T extends TSchema = TSchema> extends TSchema {
 export type TRecordFromUnionLiteralString<K extends TLiteralString, T extends TSchema> = { [_ in K['const']]: T }
 export type TRecordFromUnionLiteralNumber<K extends TLiteralNumber, T extends TSchema> = { [_ in K['const']]: T }
 // prettier-ignore
+export type TRecordFromEnumKey<K extends TEnum, T extends TSchema> = Ensure<TRecord<K, T>>
+// prettier-ignore
 export type TRecordFromUnionRest<K extends TSchema[], T extends TSchema> = K extends [infer L, ...infer R] ? (
   L extends TUnion<infer S> ? TRecordFromUnionRest<S, T> & TRecordFromUnionRest<AssertRest<R>, T> :
   L extends TLiteralString ? TRecordFromUnionLiteralString<L, T> & TRecordFromUnionRest<AssertRest<R>, T> :
@@ -669,6 +671,7 @@ export type TRecordFromNumberKey<K extends TNumber, T extends TSchema> = Ensure<
 export type TRecordFromIntegerKey<K extends TInteger, T extends TSchema> = Ensure<TRecord<K, T>>
 // prettier-ignore
 export type TRecordResolve<K extends TSchema, T extends TSchema> = 
+  K extends TEnum<infer _> ? TRecordFromEnumKey<K, T> : // Enum before Union (intercept Hint)
   K extends TUnion<infer S> ? TRecordFromUnion<S, T> :
   K extends TTemplateLiteral ? TRecordFromTemplateLiteralKey<K, T> :
   K extends TLiteralString ? TRecordFromLiteralStringKey<K, T> :
