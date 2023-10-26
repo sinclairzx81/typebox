@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { IsArray, IsDate, IsPlainObject, IsTypedArray, IsValueType } from './guard'
+import { IsArray, IsDate, IsObject, IsTypedArray, IsValueType } from './guard'
 import type { ObjectType, ArrayType, TypedArrayType, ValueType } from './guard'
 
 // --------------------------------------------------------------------------
@@ -51,12 +51,12 @@ function ValueType(value: ValueType): any {
 // --------------------------------------------------------------------------
 // Clone
 // --------------------------------------------------------------------------
-/** `[Immutable]` Returns a structural clone of the given value */
+/** Returns a structural clone of the given value */
 export function Clone<T extends unknown>(value: T): T {
+  if (IsTypedArray(value)) return TypedArrayType(value)
   if (IsArray(value)) return ArrayType(value)
   if (IsDate(value)) return DateType(value)
-  if (IsPlainObject(value)) return ObjectType(value)
-  if (IsTypedArray(value)) return TypedArrayType(value)
+  if (IsObject(value)) return ObjectType(value)
   if (IsValueType(value)) return ValueType(value)
   throw new Error('ValueClone: Unable to clone value')
 }

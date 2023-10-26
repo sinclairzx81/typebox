@@ -38,12 +38,6 @@ export function ValueOrDefault(schema: Types.TSchema, value: unknown) {
   return !(value === undefined) || !('default' in schema) ? value : schema.default
 }
 // --------------------------------------------------------------------------
-// Default
-// --------------------------------------------------------------------------
-export function Default(schema: Types.TArray, references: Types.TSchema[], value: unknown) {
-  return ValueOrDefault(schema, value)
-}
-// --------------------------------------------------------------------------
 // Types
 // --------------------------------------------------------------------------
 function TArray(schema: Types.TArray, references: Types.TSchema[], value: unknown): any {
@@ -61,9 +55,11 @@ function TObject(schema: Types.TObject, references: Types.TSchema[], value: unkn
   const object = ValueOrDefault(schema, value)
   if (!IsObject(object)) return object
   return Object.getOwnPropertyNames(schema.properties).reduce((acc, key) => {
-    const property = Visit(schema.properties[key], references, object[key])
-    return { ...acc, [key]: property }
-  }, {})
+    // prettier-ignore
+    return (!Types.TypeGuard.TOptional(schema.properties[key]))
+      ? { ...acc, [key]: Visit(schema.properties[key], references, object[key]) }
+      : { ...acc }
+  }, object)
 }
 function TRecord(schema: Types.TRecord<any, any>, references: Types.TSchema[], value: unknown): any {
   const object = ValueOrDefault(schema, value)
@@ -71,13 +67,11 @@ function TRecord(schema: Types.TRecord<any, any>, references: Types.TSchema[], v
   const [patternKey, patternSchema] = Object.entries(schema.patternProperties)[0]
   const patternRegExp = new RegExp(patternKey)
   return Object.getOwnPropertyNames(value).reduce((acc, key) => {
-    if (patternRegExp.test(key)) {
-      const property = Visit(patternSchema, references, object[key])
-      return { ...acc, [key]: property }
-    } else {
-      return acc
-    }
-  }, {})
+    // prettier-ignore
+    return patternRegExp.test(key)
+      ? { ...acc, [key]: Visit(patternSchema, references, object[key]) }
+      : { ...acc }
+  }, object)
 }
 function TRef(schema: Types.TRef<any>, references: Types.TSchema[], value: unknown): any {
   return Visit(Deref(schema, references), references, value)
@@ -114,17 +108,17 @@ function Visit(schema: Types.TSchema, references: Types.TSchema[], value: unknow
     // NonStructural
     // --------------------------------------------------------------
     default:
-      return Default(schema_, references_, value)
+      return ValueOrDefault(schema_, value)
   }
 }
 // --------------------------------------------------------------------------
 // Default
 // --------------------------------------------------------------------------
-/** `[Immutable]` Applies default values for any missing interior properties or value using `default` annotations. The return value may be invalid and should be checked before use. */
-export function Defaults<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: unknown): unknown
-/** `[Immutable]` Applies default values for any missing interior properties or value using `default` annotations. The return value may be invalid and should be checked before use. */
-export function Defaults<T extends Types.TSchema>(schema: T, value: unknown): unknown
-/** `[Immutable]` Applies default values for any missing interior properties or value using `default` annotations. The return value may be invalid and should be checked before use. */
-export function Defaults(...args: any[]) {
+/** Creates a new value by applying annotated defaults to any missing or undefined interior values within the provided value. This function returns unknown, so it is essential to check the return value before use. */
+export function Default<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: unknown): unknown
+/** Creates a new value by applying annotated defaults to any missing or undefined interior values within the provided value. This function returns unknown, so it is essential to check the return value before use. */
+export function Default<T extends Types.TSchema>(schema: T, value: unknown): unknown
+/** Creates a new value by applying annotated defaults to any missing or undefined interior values within the provided value. This function returns unknown, so it is essential to check the return value before use. */
+export function Default(...args: any[]) {
   return args.length === 3 ? Visit(args[0], args[1], Clone(args[2])) : Visit(args[0], [], Clone(args[1]))
 }

@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { IsArray, IsBoolean, IsBigInt, IsDate, IsNull, IsNumber, IsPlainObject, IsString, IsSymbol, IsUint8Array, IsUndefined } from './guard'
+import { IsObject, IsArray, IsBoolean, IsBigInt, IsDate, IsNull, IsNumber, IsString, IsSymbol, IsUint8Array, IsUndefined } from './guard'
 
 // --------------------------------------------------------------------------
 // Errors
@@ -139,7 +139,7 @@ function Visit(value: any) {
   if (IsDate(value)) return DateType(value)
   if (IsNull(value)) return NullType(value)
   if (IsNumber(value)) return NumberType(value)
-  if (IsPlainObject(value)) return ObjectType(value)
+  if (IsObject(value)) return ObjectType(value)
   if (IsString(value)) return StringType(value)
   if (IsSymbol(value)) return SymbolType(value)
   if (IsUint8Array(value)) return Uint8ArrayType(value)

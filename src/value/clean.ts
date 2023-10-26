@@ -35,15 +35,14 @@ import * as Types from '../typebox'
 // --------------------------------------------------------------------------
 // Types
 // --------------------------------------------------------------------------
-function Default(schema: Types.TSchema, references: Types.TSchema[], value: unknown) {
-  console.log('hello', value)
+function Default(value: unknown) {
   return value
 }
 // --------------------------------------------------------------------------
 // Structural
 // --------------------------------------------------------------------------
 function TArray(schema: Types.TArray, references: Types.TSchema[], value: unknown): any {
-  if (!IsArray(value)) return Default(schema, references, value)
+  if (!IsArray(value)) return Default(value)
   return value.map((value) => Visit(schema.items, references, value))
 }
 function TIntersect(schema: Types.TIntersect, references: Types.TSchema[], value: unknown): any {
@@ -53,17 +52,23 @@ function TIntersect(schema: Types.TIntersect, references: Types.TSchema[], value
   }, {} as any)
 }
 function TObject(schema: Types.TObject, references: Types.TSchema[], value: unknown): any {
-  if (!IsObject(value)) return Default(schema, references, value)
+  if (!IsObject(value)) return Default(value)
   return Object.keys(schema.properties).reduce((acc, key) => {
-    return key in value ? { ...acc, [key]: Visit(schema.properties[key], references, value[key]) } : acc
+    // prettier-ignore
+    return key in value 
+      ? { ...acc, [key]: Visit(schema.properties[key], references, value[key]) } 
+      : acc
   }, {})
 }
 function TRecord(schema: Types.TRecord<any, any>, references: Types.TSchema[], value: unknown): any {
-  if (!IsObject(value)) return Default(schema, references, value)
+  if (!IsObject(value)) return Default(value)
   const [patternKey, patternSchema] = Object.entries(schema.patternProperties)[0]
   const patternRegExp = new RegExp(patternKey)
   return Object.keys(value).reduce((acc, key) => {
-    return patternRegExp.test(key) ? { ...acc, [key]: Visit(patternSchema, references, value[key]) } : acc
+    // prettier-ignore
+    return patternRegExp.test(key) 
+      ? { ...acc, [key]: Visit(patternSchema, references, value[key]) } 
+      : acc
   }, {})
 }
 function TRef(schema: Types.TRef<any>, references: Types.TSchema[], value: unknown): any {
@@ -75,7 +80,7 @@ function TThis(schema: Types.TThis, references: Types.TSchema[], value: unknown)
   return Visit(target, references, value)
 }
 function TTuple(schema: Types.TTuple, references: Types.TSchema[], value: unknown): any {
-  if (!IsArray(value)) return Default(schema, references, value)
+  if (!IsArray(value)) return Default(value)
   if (IsUndefined(schema.items)) return []
   return schema.items!.map((schema, index) => Visit(schema, references, value[index]))
 }
@@ -84,7 +89,7 @@ function TUnion(schema: Types.TUnion, references: Types.TSchema[], value: unknow
     if (!Check(inner, value)) continue
     return Visit(inner, references, value)
   }
-  return Default(schema, references, value)
+  return Default(value)
 }
 function Visit(schema: Types.TSchema, references: Types.TSchema[], value: unknown): unknown {
   const references_ = IsString(schema.$id) ? [...references, schema] : references
@@ -113,17 +118,17 @@ function Visit(schema: Types.TSchema, references: Types.TSchema[], value: unknow
     // NonStructural
     // --------------------------------------------------------------
     default:
-      return Default(schema_, references_, value)
+      return Default(value)
   }
 }
 // --------------------------------------------------------------------------
 // Clean
 // --------------------------------------------------------------------------
-/** `[Immutable]` Removes unknown property or interior value from the given value. The return value may be invalid and should be checked before use. */
+/** Removes unknown property or interior value from the given value. The return value may be invalid and should be checked before use. */
 export function Clean<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: unknown): unknown
-/** `[Immutable]` Removes unknown property or interior value from the given value. The return value may be invalid and should be checked before use. */
+/** Removes unknown property or interior value from the given value. The return value may be invalid and should be checked before use. */
 export function Clean<T extends Types.TSchema>(schema: T): unknown
-/** `[Immutable]` Removes unknown property or interior value from the given value. The return value may be invalid and should be checked before use. */
+/** Removes unknown property or interior value from the given value. The return value may be invalid and should be checked before use. */
 export function Clean(...args: any[]) {
   return args.length === 3 ? Visit(args[0], args[1], Clone(args[2])) : Visit(args[0], [], Clone(args[1]))
 }

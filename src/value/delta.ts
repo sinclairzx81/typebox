@@ -26,8 +26,8 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { IsPlainObject, IsArray, IsTypedArray, IsValueType, IsSymbol, IsUndefined } from './guard'
 import type { ObjectType, ArrayType, TypedArrayType, ValueType } from './guard'
+import { IsObject, IsInstanceObject, IsArray, IsTypedArray, IsValueType, IsSymbol, IsUndefined } from './guard'
 import { Type, Static } from '../typebox'
 import { ValuePointer } from './pointer'
 import { Clone } from './clone'
@@ -83,7 +83,7 @@ function CreateDelete(path: string): Edit {
 // Diffing Generators
 // --------------------------------------------------------------------------
 function* ObjectType(path: string, current: ObjectType, next: unknown): IterableIterator<Edit> {
-  if (!IsPlainObject(next)) return yield CreateUpdate(path, next)
+  if (!IsObject(next) || IsInstanceObject(next)) return yield CreateUpdate(path, next)
   const currentKeys = [...Object.keys(current), ...Object.getOwnPropertySymbols(current)]
   const nextKeys = [...Object.keys(next), ...Object.getOwnPropertySymbols(next)]
   for (const key of currentKeys) {
@@ -129,7 +129,7 @@ function* ValueType(path: string, current: ValueType, next: unknown): IterableIt
   yield CreateUpdate(path, next)
 }
 function* Visit(path: string, current: unknown, next: unknown): IterableIterator<Edit> {
-  if (IsPlainObject(current)) return yield* ObjectType(path, current, next)
+  if (IsObject(current) && !IsInstanceObject(current)) return yield* ObjectType(path, current, next)
   if (IsArray(current)) return yield* ArrayType(path, current, next)
   if (IsTypedArray(current)) return yield* TypedArrayType(path, current, next)
   if (IsValueType(current)) return yield* ValueType(path, current, next)
@@ -152,7 +152,7 @@ function IsIdentity(edits: Edit[]) {
   return edits.length === 0
 }
 
-/** `[Immutable]` Returns a new value with edits applied to the given value */
+/** Returns a new value with edits applied to the given value */
 export function Patch<T = any>(current: unknown, edits: Edit[]): T {
   if (IsRootUpdate(edits)) {
     return Clone(edits[0].value) as T

@@ -182,14 +182,14 @@ describe('value/guard/ValueGuard', () => {
     Assert.IsFalse(R)
   })
   // -----------------------------------------------------
-  // IsPlainObject
+  // IsInstanceObject
   // -----------------------------------------------------
-  it('Should guard plain object 1', () => {
-    const R = ValueGuard.IsPlainObject({})
+  it('Should guard instance object 1', () => {
+    const R = ValueGuard.IsInstanceObject(new (class {})())
     Assert.IsTrue(R)
   })
-  it('Should guard plain object 2', () => {
-    const R = ValueGuard.IsPlainObject(new (class {})())
+  it('Should guard instance object 2', () => {
+    const R = ValueGuard.IsInstanceObject({})
     Assert.IsFalse(R)
   })
   // -----------------------------------------------------

@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { IsPlainObject, IsArray, IsString, IsNumber, IsNull } from './guard'
+import { IsObject, IsArray, IsString, IsNumber, IsNull } from './guard'
 import { Create } from './create'
 import { Check } from './check'
 import { Clone } from './clone'
@@ -135,7 +135,7 @@ function TConstructor(schema: Types.TConstructor, references: Types.TSchema[], v
 }
 function TIntersect(schema: Types.TIntersect, references: Types.TSchema[], value: any): any {
   const created = Create(schema, references)
-  const mapped = IsPlainObject(created) && IsPlainObject(value) ? { ...(created as any), ...value } : value
+  const mapped = IsObject(created) && IsObject(value) ? { ...(created as any), ...value } : value
   return Check(schema, references, mapped) ? mapped : Create(schema, references)
 }
 function TNever(schema: Types.TNever, references: Types.TSchema[], value: any): any {
@@ -230,11 +230,11 @@ function Visit(schema: Types.TSchema, references: Types.TSchema[], value: any): 
 // --------------------------------------------------------------------------
 // Cast
 // --------------------------------------------------------------------------
-/** `[Immutable]` Casts a value into a given type. The return value will retain as much information of the original value as possible. */
+/** Casts a value into a given type. The return value will retain as much information of the original value as possible. */
 export function Cast<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: unknown): Types.Static<T>
-/** `[Immutable]` Casts a value into a given type. The return value will retain as much information of the original value as possible. */
+/** Casts a value into a given type. The return value will retain as much information of the original value as possible. */
 export function Cast<T extends Types.TSchema>(schema: T, value: unknown): Types.Static<T>
-/** `[Immutable]` Casts a value into a given type. The return value will retain as much information of the original value as possible. */
+/** Casts a value into a given type. The return value will retain as much information of the original value as possible. */
 export function Cast(...args: any[]) {
   return args.length === 3 ? Visit(args[0], args[1], args[2]) : Visit(args[0], [], args[1])
 }

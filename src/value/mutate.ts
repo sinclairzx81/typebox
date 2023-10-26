@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { IsPlainObject, IsArray, IsTypedArray, IsValueType, type TypedArrayType } from './guard'
+import { IsObject, IsArray, IsTypedArray, IsValueType, type TypedArrayType } from './guard'
 import { ValuePointer } from './pointer'
 import { Clone } from './clone'
 
@@ -48,7 +48,7 @@ export class ValueMutateInvalidRootMutationError extends Error {
 // --------------------------------------------------------------------------
 export type Mutable = { [key: string]: unknown } | unknown[]
 function ObjectType(root: Mutable, path: string, current: unknown, next: Record<string, unknown>) {
-  if (!IsPlainObject(current)) {
+  if (!IsObject(current)) {
     ValuePointer.Set(root, path, Clone(next))
   } else {
     const currentKeys = Object.keys(current)
@@ -94,7 +94,7 @@ function ValueType(root: Mutable, path: string, current: unknown, next: unknown)
 function Visit(root: Mutable, path: string, current: unknown, next: unknown) {
   if (IsArray(next)) return ArrayType(root, path, current, next)
   if (IsTypedArray(next)) return TypedArrayType(root, path, current, next)
-  if (IsPlainObject(next)) return ObjectType(root, path, current, next)
+  if (IsObject(next)) return ObjectType(root, path, current, next)
   if (IsValueType(next)) return ValueType(root, path, current, next)
 }
 // --------------------------------------------------------------------------
@@ -106,8 +106,8 @@ function IsNonMutableValue(value: unknown): value is Mutable {
 function IsMismatchedValue(current: unknown, next: unknown) {
   // prettier-ignore
   return (
-    (IsPlainObject(current) && IsArray(next)) || 
-    (IsArray(current) && IsPlainObject(next))
+    (IsObject(current) && IsArray(next)) || 
+    (IsArray(current) && IsObject(next))
   )
 }
 // --------------------------------------------------------------------------

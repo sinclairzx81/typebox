@@ -92,7 +92,7 @@ License MIT
   - [Cast](#values-cast)
   - [Convert](#values-convert)
   - [Clean](#values-clean)
-  - [Defaults](#values-defaults)
+  - [Default](#values-default)
   - [Decode](#values-decode)
   - [Encode](#values-decode)
   - [Equal](#values-equal)
@@ -1178,14 +1178,18 @@ const Y = Value.Clean(T, { x: 1 })                    // const Y = { x: 1 }
 const Z = Value.Clean(T, { x: 1, y: 2, z: 3 })        // const Z = { x: 1, y: 2 }
 ```
 
-<a name='values-defaults'></a>
+<a name='values-default'></a>
 
-### Defaults
+### Default
 
-Use the Defaults function to assign missing interior properties, elements values using the `default` annotation. This function returns unknown and the return value should be checked before use.
+Creates a new value by applying annotated defaults to any missing or undefined interior values within the provided value. This function returns unknown, so it is essential to check the return value before use.
 
 ```typescript
-const T = Type.Object({ x: Type.Number({ default: 0 }), y: Type.Number({ default: 0 }) })
+const T = Type.Object({ 
+  x: Type.Number({ default: 0 }), 
+  y: Type.Number({ default: 0 }),
+  z: Type.Number()
+})
 
 const X = Value.Defaults(T, null)                        // const X = null
 

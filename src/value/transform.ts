@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { IsString, IsPlainObject, IsArray, IsValueType } from './guard'
+import { IsObject, IsArray, IsString, IsValueType, IsInstanceObject } from './guard'
 import { ValueError } from '../errors/errors'
 import { Deref } from './deref'
 import { Clone } from './clone'
@@ -186,7 +186,7 @@ export namespace DecodeTransform {
     return Default(schema, elements1)
   }
   function TIntersect(schema: Types.TIntersect, references: Types.TSchema[], value: any) {
-    if (!IsPlainObject(value) || IsValueType(value)) return Default(schema, value)
+    if (!IsObject(value) || IsValueType(value)) return Default(schema, value)
     const keys = Types.KeyResolver.ResolveKeys(schema, { includePatterns: false })
     const properties1 = Object.entries(value).reduce((acc, [key, value]) => {
       return !keys.includes(key) ? { ...acc, [key]: value } : { ...acc, [key]: Default(Types.IndexedAccessor.Resolve(schema, [key]), value) }
@@ -202,7 +202,7 @@ export namespace DecodeTransform {
     return Default(schema, value1)
   }
   function TObject(schema: Types.TObject, references: Types.TSchema[], value: any) {
-    if (!IsPlainObject(value)) return Default(schema, value)
+    if (!IsObject(value)) return Default(schema, value)
     const properties1 = Object.entries(value).reduce((acc, [key, value]) => {
       return !(key in schema.properties) ? { ...acc, [key]: value } : { ...acc, [key]: Visit(schema.properties[key], references, value) }
     }, {} as Record<any, any>)
@@ -214,7 +214,7 @@ export namespace DecodeTransform {
     return Default(schema, properties2)
   }
   function TRecord(schema: Types.TRecord<any, any>, references: Types.TSchema[], value: any) {
-    if (!IsPlainObject(value)) return Default(schema, value)
+    if (!IsObject(value) || IsInstanceObject(value)) return Default(schema, value)
     const pattern = Object.getOwnPropertyNames(schema.patternProperties)[0]
     const property = schema.patternProperties[pattern]
     const regex = new RegExp(pattern)
@@ -308,7 +308,7 @@ export namespace EncodeTransform {
   }
   function TIntersect(schema: Types.TIntersect, references: Types.TSchema[], value: any) {
     const properties1 = Default(schema, value)
-    if (!IsPlainObject(value) || IsValueType(value)) return properties1
+    if (!IsObject(value) || IsValueType(value)) return properties1
     const keys = Types.KeyResolver.ResolveKeys(schema, { includePatterns: false })
     const properties2 = Object.entries(properties1).reduce((acc, [key, value]) => {
       return !keys.includes(key) ? { ...acc, [key]: value } : { ...acc, [key]: Default(Types.IndexedAccessor.Resolve(schema, [key]), value) }
@@ -324,7 +324,7 @@ export namespace EncodeTransform {
   }
   function TObject(schema: Types.TObject, references: Types.TSchema[], value: any) {
     const properties1 = Default(schema, value) as Record<any, any>
-    if (!IsPlainObject(value)) return properties1
+    if (!IsObject(value)) return properties1
     const properties2 = Object.entries(properties1).reduce((acc, [key, value]) => {
       return !(key in schema.properties) ? { ...acc, [key]: value } : { ...acc, [key]: Visit(schema.properties[key], references, value) }
     }, {} as Record<any, any>)
@@ -336,7 +336,7 @@ export namespace EncodeTransform {
   }
   function TRecord(schema: Types.TRecord<any, any>, references: Types.TSchema[], value: any) {
     const properties1 = Default(schema, value) as Record<any, any>
-    if (!IsPlainObject(value)) return properties1
+    if (!IsObject(value) || IsInstanceObject(value)) return properties1
     const pattern = Object.getOwnPropertyNames(schema.patternProperties)[0]
     const property = schema.patternProperties[pattern]
     const regex = new RegExp(pattern)

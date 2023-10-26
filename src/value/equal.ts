@@ -26,14 +26,14 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { IsPlainObject, IsDate, IsArray, IsTypedArray, IsValueType } from './guard'
 import type { ObjectType, ArrayType, TypedArrayType, ValueType } from './guard'
+import { IsObject, IsInstanceObject, IsDate, IsArray, IsTypedArray, IsValueType } from './guard'
 
 // --------------------------------------------------------------------------
 // Equality Checks
 // --------------------------------------------------------------------------
 function ObjectType(left: ObjectType, right: unknown): boolean {
-  if (!IsPlainObject(right)) return false
+  if (!IsObject(right) || IsInstanceObject(right)) return false
   const leftKeys = [...Object.keys(left), ...Object.getOwnPropertySymbols(left)]
   const rightKeys = [...Object.keys(right), ...Object.getOwnPropertySymbols(right)]
   if (leftKeys.length !== rightKeys.length) return false
@@ -58,10 +58,10 @@ function ValueType(left: ValueType, right: unknown): any {
 // --------------------------------------------------------------------------
 /** Returns true if left and right values are structurally equal */
 export function Equal<T>(left: T, right: unknown): right is T {
-  if (IsPlainObject(left)) return ObjectType(left, right)
-  if (IsDate(left)) return DateType(left, right)
   if (IsTypedArray(left)) return TypedArrayType(left, right)
+  if (IsDate(left)) return DateType(left, right)
   if (IsArray(left)) return ArrayType(left, right)
+  if (IsObject(left)) return ObjectType(left, right)
   if (IsValueType(left)) return ValueType(left, right)
   throw new Error('ValueEquals: Unable to compare value')
 }

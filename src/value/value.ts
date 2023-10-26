@@ -36,18 +36,18 @@ import * as ValueClean from './clean'
 import * as ValueConvert from './convert'
 import * as ValueCreate from './create'
 import * as ValueCheck from './check'
-import * as ValueDefault from './defaults'
+import * as ValueDefault from './default'
 import * as ValueDelta from './delta'
 import * as ValueTransform from './transform'
 import * as Types from '../typebox'
 
 /** Functions to perform structural operations on JavaScript values */
 export namespace Value {
-  /** `[Immutable]` Casts a value into a given type. The return value will retain as much information of the original value as possible. */
+  /** Casts a value into a given type. The return value will retain as much information of the original value as possible. */
   export function Cast<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: unknown): Types.Static<T>
-  /** `[Immutable]` Casts a value into a given type. The return value will retain as much information of the original value as possible. */
+  /** Casts a value into a given type. The return value will retain as much information of the original value as possible. */
   export function Cast<T extends Types.TSchema>(schema: T, value: unknown): Types.Static<T>
-  /** `[Immutable]` Casts a value into a given type. The return value will retain as much information of the original value as possible. */
+  /** Casts a value into a given type. The return value will retain as much information of the original value as possible. */
   export function Cast(...args: any[]) {
     return ValueCast.Cast.apply(ValueCast, args as any)
   }
@@ -67,49 +67,49 @@ export namespace Value {
   export function Check(...args: any[]) {
     return ValueCheck.Check.apply(ValueCheck, args as any)
   }
-  /** `[Immutable]` Converts any type mismatched values to their target type if a reasonable conversion is possible */
+  /** Converts any type mismatched values to their target type if a reasonable conversion is possible. This function returns unknown, so it is essential to check the return value before use. */
   export function Convert<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: unknown): unknown
-  /** `[Immutable]` Converts any type mismatched values to their target type if a reasonable conversion is possible. */
+  /** Converts any type mismatched values to their target type if a reasonable conversion is possible. This function returns unknown, so it is essential to check the return value before use. */
   export function Convert<T extends Types.TSchema>(schema: T, value: unknown): unknown
-  /** `[Immutable]` Converts any type mismatched values to their target type if a reasonable conversion is possible */
+  /** Converts any type mismatched values to their target type if a reasonable conversion is possible This function returns unknown, so it is essential to check the return value before use. */
   export function Convert(...args: any[]) {
     return ValueConvert.Convert.apply(ValueConvert, args as any)
   }
-  /** `[Immutable]` Removes unknown property or interior value from the given value. The return value may be invalid and should be checked before use. */
+  /** Creates a new value by discarding excess properties from the provided value. This function returns unknown, so it is essential to check the return value before use. */
   export function Clean<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: unknown): unknown
-  /** `[Immutable]` Removes unknown property or interior value from the given value. The return value may be invalid and should be checked before use. */
+  /** Creates a new value by discarding excess properties from the provided value. This function returns unknown, so it is essential to check the return value before use. */
   export function Clean<T extends Types.TSchema>(schema: T, value: unknown): unknown
-  /** `[Immutable]` Removes unknown property or interior value from the given value. The return value may be invalid and should be checked before use. */
+  /** Creates a new value by discarding excess properties from the provided value. This function returns unknown, so it is essential to check the return value before use. */
   export function Clean(...args: any[]) {
     return ValueClean.Clean.apply(ValueClean, args as any)
   }
-  /** `[Immutable]` Applies default values for any missing interior properties or value using `default` annotations. The return value may be invalid and should be checked before use. */
-  export function Defaults<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: unknown): unknown
-  /** `[Immutable]` Applies default values for any missing interior properties or value using `default` annotations. The return value may be invalid and should be checked before use. */
-  export function Defaults<T extends Types.TSchema>(schema: T, value: unknown): unknown
-  /** `[Immutable]` Applies default values for any missing interior properties or value using `default` annotations. The return value may be invalid and should be checked before use. */
-  export function Defaults(...args: any[]) {
-    return ValueDefault.Defaults.apply(ValueDefault, args as any)
+  /** Creates a new value by applying annotated defaults to any missing or undefined interior values within the provided value. This function returns unknown, so it is essential to check the return value before use. */
+  export function Default<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: unknown): unknown
+  /** Creates a new value by applying annotated defaults to any missing or undefined interior values within the provided value. This function returns unknown, so it is essential to check the return value before use. */
+  export function Default<T extends Types.TSchema>(schema: T, value: unknown): unknown
+  /** Creates a new value by applying annotated defaults to any missing or undefined interior values within the provided value. This function returns unknown, so it is essential to check the return value before use. */
+  export function Default(...args: any[]) {
+    return ValueDefault.Default.apply(ValueDefault, args as any)
   }
-  /** `[Immutable]` Returns a structural clone of the given value */
+  /** Returns a structural clone of the given value */
   export function Clone<T>(value: T): T {
     return ValueClone.Clone(value)
   }
-  /** `[Immutable]` Decodes a value or throws if error */
+  /** Decodes a value or throws if error */
   export function Decode<T extends Types.TSchema, D = Types.StaticDecode<T>>(schema: T, references: Types.TSchema[], value: unknown): D
-  /** `[Immutable]` Decodes a value or throws if error */
+  /** Decodes a value or throws if error */
   export function Decode<T extends Types.TSchema, D = Types.StaticDecode<T>>(schema: T, value: unknown): D
-  /** `[Immutable]` Decodes a value or throws if error */
+  /** Decodes a value or throws if error */
   export function Decode(...args: any[]) {
     const [schema, references, value] = args.length === 3 ? [args[0], args[1], args[2]] : [args[0], [], args[1]]
     if (!Check(schema, references, value)) throw new ValueTransform.TransformDecodeCheckError(schema, value, Errors(schema, references, value).First()!)
     return ValueTransform.DecodeTransform.Decode(schema, references, value, ValueCheck.Check)
   }
-  /** `[Immutable]` Encodes a value or throws if error */
+  /** Encodes a value or throws if error */
   export function Encode<T extends Types.TSchema, E = Types.StaticEncode<T>>(schema: T, references: Types.TSchema[], value: unknown): E
-  /** `[Immutable]` Encodes a value or throws if error */
+  /** Encodes a value or throws if error */
   export function Encode<T extends Types.TSchema, E = Types.StaticEncode<T>>(schema: T, value: unknown): E
-  /** `[Immutable]` Encodes a value or throws if error */
+  /** Encodes a value or throws if error */
   export function Encode(...args: any[]) {
     const [schema, references, value] = args.length === 3 ? [args[0], args[1], args[2]] : [args[0], [], args[1]]
     const encoded = ValueTransform.EncodeTransform.Encode(schema, references, value, ValueCheck.Check)
@@ -136,7 +136,7 @@ export namespace Value {
   export function Hash(value: unknown): bigint {
     return ValueHash.Hash(value)
   }
-  /** `[Immutable]` Returns a new value with edits applied to the given value */
+  /** Returns a new value with edits applied to the given value */
   export function Patch<T = any>(current: unknown, edits: ValueDelta.Edit[]): T {
     return ValueDelta.Patch(current, edits) as T
   }

@@ -82,9 +82,9 @@ export function IsDate(value: unknown): value is Date {
 export function HasPropertyKey<K extends PropertyKey>(value: Record<any, unknown>, key: K): value is ObjectType & Record<K, unknown> {
   return key in value
 }
-/** Returns true if this object is not an instance of any other type */
-export function IsPlainObject(value: unknown): value is ObjectType {
-  return IsObject(value) && IsFunction(value.constructor) && value.constructor.name === 'Object'
+/** Returns true if this object is an instance of anything other than Object */
+export function IsInstanceObject(value: unknown): value is ObjectType {
+  return IsObject(value) && IsFunction(value.constructor) && value.constructor.name !== 'Object'
 }
 /** Returns true of this value is an object type */
 export function IsObject(value: unknown): value is ObjectType {
