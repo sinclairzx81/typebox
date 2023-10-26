@@ -1102,10 +1102,13 @@ import { Value } from '@sinclair/typebox/value'
 
 ### Create
 
-Use the Create function to create a value from a type. TypeBox will use default values if specified.
+Use the Create function to create a value from a type. This function will use default values if specified.
 
 ```typescript
-const T = Type.Object({ x: Type.Number(), y: Type.Number({ default: 42 }) })
+const T = Type.Object({ 
+  x: Type.Number(), 
+  y: Type.Number({ default: 42 }) 
+})
 
 const A = Value.Create(T)                            // const A = { x: 0, y: 42 }
 ```
@@ -1127,7 +1130,9 @@ const A = Value.Clone({ x: 1, y: 2, z: 3 })          // const A = { x: 1, y: 2, 
 Use the Check function to type check a value.
 
 ```typescript
-const T = Type.Object({ x: Type.Number() })
+const T = Type.Object({ 
+  x: Type.Number() 
+})
 
 const R = Value.Check(T, { x: 1 })                   // const R = true
 ```
@@ -1136,10 +1141,15 @@ const R = Value.Check(T, { x: 1 })                   // const R = true
 
 ### Cast
 
-Use the Cast function to cast a value with a type. The cast function will retain as much information as possible from the original value.
+Use the Cast function to convert a value into a new value matching the target type. This function will retain as much information as possible from the original value. Any invalid values will be replaced with valid values using reasonable defaults.
 
 ```typescript
-const T = Type.Object({ x: Type.Number(), y: Type.Number() }, { additionalProperties: false })
+const T = Type.Object({ 
+  x: Type.Number(), 
+  y: Type.Number() 
+}, { 
+  additionalProperties: false 
+})
 
 const X = Value.Cast(T, null)                        // const X = { x: 0, y: 0 }
 
@@ -1152,10 +1162,12 @@ const Z = Value.Cast(T, { x: 1, y: 2, z: 3 })        // const Z = { x: 1, y: 2 }
 
 ### Convert
 
-Use the Convert function to convert a value into its target type if a reasonable conversion is possible. This function returns unknown and the return value should be checked before use.
+Use the Convert function to convert a value into its target type if a reasonable conversion is possible. This function may return an invalid value which should be checked prior to use.
 
 ```typescript
-const T = Type.Object({ x: Type.Number() })
+const T = Type.Object({ 
+  x: Type.Number() 
+})
 
 const R1 = Value.Convert(T, { x: '3.14' })           // const R1 = { x: 3.14 }
 
@@ -1166,10 +1178,13 @@ const R2 = Value.Convert(T, { x: 'not a number' })   // const R2 = { x: 'not a n
 
 ### Clean
 
-Use the Clean function to remove unknown properties from objects. This function returns unknown and the return value should be checked before use.
+Use the Clean function to remove any excess or unexpected values not represented a type. This function may return an invalid value which should be checked prior to use.
 
 ```typescript
-const T = Type.Object({ x: Type.Number(), y: Type.Number() })
+const T = Type.Object({ 
+  x: Type.Number(), 
+  y: Type.Number() 
+})
 
 const X = Value.Clean(T, null)                        // const X = null
 
@@ -1182,7 +1197,7 @@ const Z = Value.Clean(T, { x: 1, y: 2, z: 3 })        // const Z = { x: 1, y: 2 
 
 ### Default
 
-Creates a new value by applying annotated defaults to any missing or undefined interior values within the provided value. This function returns unknown, so it is essential to check the return value before use.
+Creates a value by applying annotated defaults to any missing or undefined values within the provided value. This function operates exclusively on the optional default property of any given type, otherwise no action. This function may return an invalid value which should be checked prior to use.
 
 ```typescript
 const T = Type.Object({ 
@@ -1196,6 +1211,8 @@ const X = Value.Defaults(T, null)                        // const X = null
 const Y = Value.Defaults(T, { })                         // const Y = { x: 0, y: 0 }
 
 const Z = Value.Defaults(T, { x: 1 })                    // const Z = { x: 1, y: 0 }
+
+const W = Value.Defaults(T, { x: true })                 // const W = { x: true, y: 0 }
 ```
 
 <a name='values-decode'></a>
@@ -1287,7 +1304,10 @@ const C = Value.Patch<typeof B>(A, E)                // const C = { x: 3 }
 Use the Errors function to enumerate validation errors.
 
 ```typescript
-const T = Type.Object({ x: Type.Number(), y: Type.Number() })
+const T = Type.Object({ 
+  x: Type.Number(), 
+  y: Type.Number() 
+})
 
 const R = [...Value.Errors(T, { x: '42' })]          // const R = [{
                                                      //   schema: { type: 'number' },
