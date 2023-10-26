@@ -71,13 +71,46 @@ import { Type, Static } from '@sinclair/typebox'
   Expect(T).ToStatic<Record<number, string>>()
 }
 {
+  // Should support enum keys 1
   enum E {
     A = 'X',
     B = 'Y',
     C = 'Z',
   }
   const T = Type.Record(Type.Enum(E), Type.Number())
-  Expect(T).ToStatic<{}>()
+  Expect(T).ToStatic<{
+    X: number
+    Y: number
+    Z: number
+  }>()
+}
+{
+  // Should support enum keys 2
+  enum E {
+    A,
+    B,
+    C,
+  }
+  const T = Type.Record(Type.Enum(E), Type.Number())
+  Expect(T).ToStatic<{
+    0: number
+    1: number
+    2: number
+  }>()
+}
+{
+  // Should support enum keys 3
+  enum E {
+    A = 1,
+    B = '2',
+    C = 'Z',
+  }
+  const T = Type.Record(Type.Enum(E), Type.Number())
+  Expect(T).ToStatic<{
+    1: number
+    2: number
+    Z: number
+  }>()
 }
 {
   // should support infinite record keys
