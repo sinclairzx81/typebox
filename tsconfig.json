@@ -22,6 +22,9 @@
       "@sinclair/typebox/value/check": [
         "src/value/check.ts"
       ],
+      "@sinclair/typebox/value/clean": [
+        "src/value/clean.ts"
+      ],
       "@sinclair/typebox/value/clone": [
         "src/value/clone.ts"
       ],
@@ -30,6 +33,9 @@
       ],
       "@sinclair/typebox/value/create": [
         "src/value/create.ts"
+      ],
+      "@sinclair/typebox/value/default": [
+        "src/value/default.ts"
       ],
       "@sinclair/typebox/value/delta": [
         "src/value/delta.ts"

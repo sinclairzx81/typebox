@@ -38,6 +38,12 @@ export function ValueOrDefault(schema: Types.TSchema, value: unknown) {
   return !(value === undefined) || !('default' in schema) ? value : schema.default
 }
 // --------------------------------------------------------------------------
+// HasDefault
+// --------------------------------------------------------------------------
+export function HasDefault(schema: Types.TSchema) {
+  return 'default' in schema
+}
+// --------------------------------------------------------------------------
 // Types
 // --------------------------------------------------------------------------
 function TArray(schema: Types.TArray, references: Types.TSchema[], value: unknown): any {
@@ -54,34 +60,46 @@ function TIntersect(schema: Types.TIntersect, references: Types.TSchema[], value
 function TObject(schema: Types.TObject, references: Types.TSchema[], value: unknown): any {
   const object = ValueOrDefault(schema, value)
   if (!IsObject(object)) return object
-  return Object.getOwnPropertyNames(schema.properties).reduce((acc, key) => {
-    // prettier-ignore
-    return (!Types.TypeGuard.TOptional(schema.properties[key]))
-      ? { ...acc, [key]: Visit(schema.properties[key], references, object[key]) }
-      : { ...acc }
+  const knownObject = Object.getOwnPropertyNames(schema.properties).reduce((acc, key) => {
+    return HasDefault(schema.properties[key]) ? { ...acc, [key]: Visit(schema.properties[key], references, object[key]) } : acc
   }, object)
+  if (!Types.TypeGuard.TSchema(schema.additionalProperties) || !HasDefault(schema.additionalProperties as Types.TSchema)) {
+    return knownObject
+  }
+  const knownKeys = Object.getOwnPropertyNames(schema.properties)
+  return Object.getOwnPropertyNames(knownObject).reduce((acc, key) => {
+    return knownKeys.includes(key) ? acc : { ...acc, [key]: Visit(schema.additionalProperties as Types.TSchema, references, knownObject[key]) }
+  }, knownObject)
 }
 function TRecord(schema: Types.TRecord<any, any>, references: Types.TSchema[], value: unknown): any {
   const object = ValueOrDefault(schema, value)
   if (!IsObject(object)) return object
   const [patternKey, patternSchema] = Object.entries(schema.patternProperties)[0]
   const patternRegExp = new RegExp(patternKey)
-  return Object.getOwnPropertyNames(value).reduce((acc, key) => {
-    // prettier-ignore
-    return patternRegExp.test(key)
-      ? { ...acc, [key]: Visit(patternSchema, references, object[key]) }
-      : { ...acc }
+  const knownObject = Object.getOwnPropertyNames(value).reduce((acc, key) => {
+    return HasDefault(patternSchema) && patternRegExp.test(key) ? { ...acc, [key]: Visit(patternSchema, references, object[key]) } : acc
   }, object)
+  if (!Types.TypeGuard.TSchema(schema.additionalProperties) || !HasDefault(schema.additionalProperties as Types.TSchema)) {
+    return knownObject
+  }
+  return Object.getOwnPropertyNames(knownObject).reduce((acc, key) => {
+    return !patternRegExp.test(key) ? { ...acc, [key]: Visit(schema.additionalProperties as Types.TSchema, references, knownObject[key]) } : acc
+  }, knownObject)
 }
 function TRef(schema: Types.TRef<any>, references: Types.TSchema[], value: unknown): any {
-  return Visit(Deref(schema, references), references, value)
+  return Visit(Deref(schema, references), references, ValueOrDefault(schema, value))
 }
 function TThis(schema: Types.TThis, references: Types.TSchema[], value: unknown): any {
   return Visit(Deref(schema, references), references, value)
 }
 function TTuple(schema: Types.TTuple<any[]>, references: Types.TSchema[], value: unknown): any {
   const elements = ValueOrDefault(schema, value)
-  return !IsArray(elements) || IsUndefined(schema.items) ? elements : schema.items!.map((schema, index) => Visit(schema, references, elements[index]))
+  if (!IsArray(elements) || IsUndefined(schema.items)) return elements
+  const [items, max] = [schema.items!, Math.max(schema.items!.length, elements.length)]
+  for (let i = 0; i < max; i++) {
+    if (i < items.length) elements[i] = Visit(items[i], references, elements[i])
+  }
+  return elements
 }
 function Visit(schema: Types.TSchema, references: Types.TSchema[], value: unknown): any {
   const references_ = IsString(schema.$id) ? [...references, schema] : references
