@@ -289,11 +289,11 @@ function Visit(schema: Types.TSchema, references: Types.TSchema[], value: any): 
 // --------------------------------------------------------------------------
 // Convert
 // --------------------------------------------------------------------------
-/** Converts any type mismatched values to their target type if a reasonable conversion is possible. */
+/** `[Immutable]` Converts any type mismatched values to their target type if a reasonable conversion is possible */
 export function Convert<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: unknown): unknown
-/** Converts any type mismatched values to their target type if a reasonable conversion is possible. */
+/** `[Immutable]` Converts any type mismatched values to their target type if a reasonable conversion is possible */
 export function Convert<T extends Types.TSchema>(schema: T, value: unknown): unknown
-/** Converts any type mismatched values to their target type if a reasonable conversion is possible. */
+/** `[Immutable]` Converts any type mismatched values to their target type if a reasonable conversion is possible */
 export function Convert(...args: any[]) {
   return args.length === 3 ? Visit(args[0], args[1], args[2]) : Visit(args[0], [], args[1])
 }

@@ -69,9 +69,9 @@ function TRecord(schema: Types.TRecord<any, any>, references: Types.TSchema[], v
   const object = ValueOrDefault(schema, value)
   if (!IsObject(object)) return object
   const [patternKey, patternSchema] = Object.entries(schema.patternProperties)[0]
-  const patternRegexp = new RegExp(patternKey)
+  const patternRegExp = new RegExp(patternKey)
   return Object.getOwnPropertyNames(value).reduce((acc, key) => {
-    if (patternRegexp.test(key)) {
+    if (patternRegExp.test(key)) {
       const property = Visit(patternSchema, references, object[key])
       return { ...acc, [key]: property }
     } else {
@@ -120,11 +120,11 @@ function Visit(schema: Types.TSchema, references: Types.TSchema[], value: unknow
 // --------------------------------------------------------------------------
 // Default
 // --------------------------------------------------------------------------
-/** Creates default values for any missing internal properties, elements or values using `default` annotations. The return value should be checked before use. */
+/** `[Immutable]` Applies default values for any missing interior properties or value using `default` annotations. The return value may be invalid and should be checked before use. */
 export function Defaults<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: unknown): unknown
-/** Creates default values for any missing internal properties, elements or values using `default` annotations. The return value should be checked before use. */
+/** `[Immutable]` Applies default values for any missing interior properties or value using `default` annotations. The return value may be invalid and should be checked before use. */
 export function Defaults<T extends Types.TSchema>(schema: T, value: unknown): unknown
-/** Creates default values for any missing internal properties, elements or values using `default` annotations. The return value should be checked before use. */
+/** `[Immutable]` Applies default values for any missing interior properties or value using `default` annotations. The return value may be invalid and should be checked before use. */
 export function Defaults(...args: any[]) {
   return args.length === 3 ? Visit(args[0], args[1], Clone(args[2])) : Visit(args[0], [], Clone(args[1]))
 }

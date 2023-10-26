@@ -51,7 +51,7 @@ function ValueType(value: ValueType): any {
 // --------------------------------------------------------------------------
 // Clone
 // --------------------------------------------------------------------------
-/** Returns a clone of the given value */
+/** `[Immutable]` Returns a structural clone of the given value */
 export function Clone<T extends unknown>(value: T): T {
   if (IsArray(value)) return ArrayType(value)
   if (IsDate(value)) return DateType(value)

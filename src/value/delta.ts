@@ -138,6 +138,7 @@ function* Visit(path: string, current: unknown, next: unknown): IterableIterator
 // ---------------------------------------------------------------------
 // Diff
 // ---------------------------------------------------------------------
+/** Returns edits to transform the current value into the next value */
 export function Diff(current: unknown, next: unknown): Edit[] {
   return [...Visit('', current, next)]
 }
@@ -150,6 +151,8 @@ function IsRootUpdate(edits: Edit[]): edits is [Update] {
 function IsIdentity(edits: Edit[]) {
   return edits.length === 0
 }
+
+/** `[Immutable]` Returns a new value with edits applied to the given value */
 export function Patch<T = any>(current: unknown, edits: Edit[]): T {
   if (IsRootUpdate(edits)) {
     return Clone(edits[0].value) as T

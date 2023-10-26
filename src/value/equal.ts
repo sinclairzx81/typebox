@@ -56,7 +56,7 @@ function ValueType(left: ValueType, right: unknown): any {
 // --------------------------------------------------------------------------
 // Equal
 // --------------------------------------------------------------------------
-/** Returns true if the left value deep-equals the right */
+/** Returns true if left and right values are structurally equal */
 export function Equal<T>(left: T, right: unknown): right is T {
   if (IsPlainObject(left)) return ObjectType(left, right)
   if (IsDate(left)) return DateType(left, right)

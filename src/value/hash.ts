@@ -153,7 +153,7 @@ function FNV1A64(byte: number) {
 // --------------------------------------------------------------------------
 // Hash
 // --------------------------------------------------------------------------
-/** Creates a FNV1A-64 non cryptographic hash of the given value */
+/** Returns a FNV1A-64 non cryptographic hash of the given value */
 export function Hash(value: unknown) {
   Accumulator = BigInt('14695981039346656037')
   Visit(value)

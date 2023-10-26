@@ -431,11 +431,11 @@ function Visit<T extends Types.TSchema>(schema: T, references: Types.TSchema[], 
 // --------------------------------------------------------------------------
 // Check
 // --------------------------------------------------------------------------
-/** Returns true if the value matches the given type. */
+/** Returns true if the value matches the given type */
 export function Check<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: unknown): value is Types.Static<T>
-/** Returns true if the value matches the given type. */
+/** Returns true if the value matches the given type */
 export function Check<T extends Types.TSchema>(schema: T, value: unknown): value is Types.Static<T>
-/** Returns true if the value matches the given type. */
+/** Returns true if the value matches the given type */
 export function Check(...args: any[]) {
   return args.length === 3 ? Visit(args[0], args[1], args[2]) : Visit(args[0], [], args[1])
 }

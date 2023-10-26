@@ -230,11 +230,11 @@ function Visit(schema: Types.TSchema, references: Types.TSchema[], value: any): 
 // --------------------------------------------------------------------------
 // Cast
 // --------------------------------------------------------------------------
-/** Casts a value into a given type and references. The return value will retain as much information of the original value as possible. */
+/** `[Immutable]` Casts a value into a given type. The return value will retain as much information of the original value as possible. */
 export function Cast<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: unknown): Types.Static<T>
-/** Casts a value into a given type. The return value will retain as much information of the original value as possible. */
+/** `[Immutable]` Casts a value into a given type. The return value will retain as much information of the original value as possible. */
 export function Cast<T extends Types.TSchema>(schema: T, value: unknown): Types.Static<T>
-/** Casts a value into a given type. The return value will retain as much information of the original value as possible. */
+/** `[Immutable]` Casts a value into a given type. The return value will retain as much information of the original value as possible. */
 export function Cast(...args: any[]) {
   return args.length === 3 ? Visit(args[0], args[1], args[2]) : Visit(args[0], [], args[1])
 }

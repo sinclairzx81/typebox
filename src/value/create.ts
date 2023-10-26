@@ -222,14 +222,14 @@ function TObject(schema: Types.TObject, references: Types.TSchema[]): any {
     )
   }
 }
-function TPromise(schema: Types.TPromise<any>, references: Types.TSchema[]): any {
+function TPromise(schema: Types.TPromise, references: Types.TSchema[]): any {
   if (HasPropertyKey(schema, 'default')) {
     return schema.default
   } else {
     return Promise.resolve(Visit(schema.item, references))
   }
 }
-function TRecord(schema: Types.TRecord<any, any>, references: Types.TSchema[]): any {
+function TRecord(schema: Types.TRecord, references: Types.TSchema[]): any {
   const [keyPattern, valueSchema] = Object.entries(schema.patternProperties)[0]
   if (HasPropertyKey(schema, 'default')) {
     return schema.default
@@ -242,7 +242,7 @@ function TRecord(schema: Types.TRecord<any, any>, references: Types.TSchema[]): 
     return {}
   }
 }
-function TRef(schema: Types.TRef<any>, references: Types.TSchema[]): any {
+function TRef(schema: Types.TRef, references: Types.TSchema[]): any {
   if (HasPropertyKey(schema, 'default')) {
     return schema.default
   } else {
@@ -300,7 +300,7 @@ function TThis(schema: Types.TThis, references: Types.TSchema[]): any {
     return Visit(Deref(schema, references), references)
   }
 }
-function TTuple(schema: Types.TTuple<any[]>, references: Types.TSchema[]): any {
+function TTuple(schema: Types.TTuple, references: Types.TSchema[]): any {
   if (HasPropertyKey(schema, 'default')) {
     return schema.default
   }
@@ -317,7 +317,7 @@ function TUndefined(schema: Types.TUndefined, references: Types.TSchema[]): any 
     return undefined
   }
 }
-function TUnion(schema: Types.TUnion<any[]>, references: Types.TSchema[]): any {
+function TUnion(schema: Types.TUnion, references: Types.TSchema[]): any {
   if (HasPropertyKey(schema, 'default')) {
     return schema.default
   } else if (schema.anyOf.length === 0) {

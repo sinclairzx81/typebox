@@ -113,7 +113,7 @@ function IsMismatchedValue(current: unknown, next: unknown) {
 // --------------------------------------------------------------------------
 // Mutate
 // --------------------------------------------------------------------------
-/** Performs a deep mutable value assignment while retaining internal references */
+/** `[Mutable]` Performs a deep mutable value assignment while retaining internal references. */
 export function Mutate(current: Mutable, next: Mutable): void {
   if (IsNonMutableValue(current) || IsNonMutableValue(next)) throw new ValueMutateInvalidRootMutationError()
   if (IsMismatchedValue(current, next)) throw new ValueMutateTypeMismatchError()

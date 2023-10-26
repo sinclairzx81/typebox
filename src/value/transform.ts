@@ -29,6 +29,7 @@ THE SOFTWARE.
 import { IsString, IsPlainObject, IsArray, IsValueType } from './guard'
 import { ValueError } from '../errors/errors'
 import { Deref } from './deref'
+import { Clone } from './clone'
 import * as Types from '../typebox'
 
 // -------------------------------------------------------------------------
