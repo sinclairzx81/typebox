@@ -89,8 +89,10 @@ License MIT
   - [Create](#values-create)
   - [Clone](#values-clone)
   - [Check](#values-check)
-  - [Convert](#values-convert)
   - [Cast](#values-cast)
+  - [Convert](#values-convert)
+  - [Clean](#values-clean)
+  - [Defaults](#values-defaults)
   - [Decode](#values-decode)
   - [Encode](#values-decode)
   - [Equal](#values-equal)
@@ -1130,20 +1132,6 @@ const T = Type.Object({ x: Type.Number() })
 const R = Value.Check(T, { x: 1 })                   // const R = true
 ```
 
-<a name='values-convert'></a>
-
-### Convert
-
-Use the Convert function to convert a value into its target type if a reasonable conversion is possible. This function may return an invalid value and should be checked before use. Its return type is `unknown`.
-
-```typescript
-const T = Type.Object({ x: Type.Number() })
-
-const R1 = Value.Convert(T, { x: '3.14' })           // const R1 = { x: 3.14 }
-
-const R2 = Value.Convert(T, { x: 'not a number' })   // const R2 = { x: 'not a number' }
-```
-
 <a name='values-cast'></a>
 
 ### Cast
@@ -1158,6 +1146,52 @@ const X = Value.Cast(T, null)                        // const X = { x: 0, y: 0 }
 const Y = Value.Cast(T, { x: 1 })                    // const Y = { x: 1, y: 0 }
 
 const Z = Value.Cast(T, { x: 1, y: 2, z: 3 })        // const Z = { x: 1, y: 2 }
+```
+
+<a name='values-convert'></a>
+
+### Convert
+
+Use the Convert function to convert a value into its target type if a reasonable conversion is possible. This function returns unknown and the return value should be checked before use.
+
+```typescript
+const T = Type.Object({ x: Type.Number() })
+
+const R1 = Value.Convert(T, { x: '3.14' })           // const R1 = { x: 3.14 }
+
+const R2 = Value.Convert(T, { x: 'not a number' })   // const R2 = { x: 'not a number' }
+```
+
+<a name='values-clean'></a>
+
+### Clean
+
+Use the Clean function to remove unknown properties from objects. This function returns unknown and the return value should be checked before use.
+
+```typescript
+const T = Type.Object({ x: Type.Number(), y: Type.Number() })
+
+const X = Value.Clean(T, null)                        // const X = null
+
+const Y = Value.Clean(T, { x: 1 })                    // const Y = { x: 1 }
+
+const Z = Value.Clean(T, { x: 1, y: 2, z: 3 })        // const Z = { x: 1, y: 2 }
+```
+
+<a name='values-defaults'></a>
+
+### Defaults
+
+Use the Defaults function to assign missing interior properties, elements values using the `default` annotation. This function returns unknown and the return value should be checked before use.
+
+```typescript
+const T = Type.Object({ x: Type.Number({ default: 0 }), y: Type.Number({ default: 0 }) })
+
+const X = Value.Defaults(T, null)                        // const X = null
+
+const Y = Value.Defaults(T, { })                         // const Y = { x: 0, y: 0 }
+
+const Z = Value.Defaults(T, { x: 1 })                    // const Z = { x: 1, y: 0 }
 ```
 
 <a name='values-decode'></a>
