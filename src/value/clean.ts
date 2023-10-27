@@ -146,11 +146,11 @@ function Visit(schema: Types.TSchema, references: Types.TSchema[], value: unknow
 // --------------------------------------------------------------------------
 // Clean
 // --------------------------------------------------------------------------
-/** `[Mutable]` Removes excess properties from the input value and returns the result. This function is mutable and will modify the input value. To avoid mutation, clone the input value before passing to this function. In addition, this function does not type check the input value and will return invalid results for invalid inputs. You should type check the result before use. */
+/** Removes excess properties from the input value and returns the result. This function does not type check the input value and may return invalid results for invalid inputs. You should type check the result before use. */
 export function Clean<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: unknown): unknown
-/** `[Mutable]` Removes excess properties from the input value and returns the result. This function is mutable and will modify the input value. To avoid mutation, clone the input value before passing to this function. In addition, this function does not type check the input value and will return invalid results for invalid inputs. You should type check the result before use. */
+/** Removes excess properties from the input value and returns the result. This function does not type check the input value and may return invalid results for invalid inputs. You should type check the result before use. */
 export function Clean<T extends Types.TSchema>(schema: T): unknown
-/** `[Mutable]` Removes excess properties from the input value and returns the result. This function is mutable and will modify the input value. To avoid mutation, clone the input value before passing to this function. In addition, this function does not type check the input value and will return invalid results for invalid inputs. You should type check the result before use. */
+/** Removes excess properties from the input value and returns the result. This function does not type check the input value and may return invalid results for invalid inputs. You should type check the result before use. */
 export function Clean(...args: any[]) {
   return args.length === 3 ? Visit(args[0], args[1], args[2]) : Visit(args[0], [], args[1])
 }

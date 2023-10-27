@@ -5,11 +5,18 @@ import { Type, TypeGuard, Kind, Static, TSchema, KeyResolver, TObject } from '@s
 import { Run } from './benchmark'
 
 // Todo: Investigate Union Default (initialize interior types)
-// Todo: Implement Value.Clean() Tests
+// Todo: Implement Value.Clean() Tests - Done
 
-const X = Type.Object({ x: Type.Number() })
-const Y = Type.Object({ y: Type.Number() })
-const T = Type.Union([X, Y])
-const R = Value.Clean(T, { u: null, x: 1 })
+const A = Type.Union([
+  Type.Number({ default: 1 }),
+  Type.String({ default: 'hello' })
+])
 
-console.log(R)
+const X = Value.Default(A, undefined) // should pick the first?
+
+console.log(X)
+
+
+
+
+

@@ -139,11 +139,11 @@ function Visit(schema: Types.TSchema, references: Types.TSchema[], value: unknow
 // --------------------------------------------------------------------------
 // Default
 // --------------------------------------------------------------------------
-/** `[Mutable]` Patches a given value with defaults derived from default schema annotations. This function is mutable and will modify the input value. To avoid mutation, clone the input value prior to calling this function. This function may return an incomplete or invalid result and should be checked before use. */
+/** Applies default annotations to missing values and returns the result. This function does not type check the input value and may return invalid results for invalid inputs. You should type check the result before use. */
 export function Default<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: unknown): unknown
-/** `[Mutable]` Patches a given value with defaults derived from default schema annotations. This function is mutable and will modify the input value. To avoid mutation, clone the input value prior to calling this function. This function may return an incomplete or invalid result and should be checked before use. */
+/** Applies default annotations to missing values and returns the result. This function does not type check the input value and may return invalid results for invalid inputs. You should type check the result before use. */
 export function Default<T extends Types.TSchema>(schema: T, value: unknown): unknown
-/** `[Mutable]` Patches a given value with defaults derived from default schema annotations. This function is mutable and will modify the input value. To avoid mutation, clone the input value prior to calling this function. This function may return an incomplete or invalid result and should be checked before use. */
+/** Applies default annotations to missing values and returns the result. This function does not type check the input value and may return invalid results for invalid inputs. You should type check the result before use. */
 export function Default(...args: any[]) {
   return args.length === 3 ? Visit(args[0], args[1], args[2]) : Visit(args[0], [], args[1])
 }

@@ -115,7 +115,7 @@ function IsMismatchedValue(current: unknown, next: unknown) {
 // --------------------------------------------------------------------------
 // Transmute
 // --------------------------------------------------------------------------
-/** `[Mutable]` Transforms the current value into the next value and returns the result. This function performs mutable operations on the current value. To avoid mutation, clone the current value before passing to this function. */
+/** Transforms the current value into the next value and returns the result. This function performs mutable operations on the input value. To avoid mutation, clone the input value before passing to this function. */
 export function Transmute<Next extends Transmutable>(current: Transmutable, next: Next): Next {
   if (IsNonMutableValue(current) || IsNonMutableValue(next)) throw new ValueMutateInvalidRootMutationError()
   if (IsMismatchedValue(current, next)) throw new ValueMutateTypeMismatchError()

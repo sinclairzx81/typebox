@@ -26,28 +26,28 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import * as ValueErrors from '../errors/index'
-import * as ValueMutate from './transmute'
-import * as ValueHash from './hash'
-import * as ValueEqual from './equal'
 import * as ValueCast from './cast'
+import * as ValueClean from './clean'
 import * as ValueClone from './clone'
 import * as ValueConvert from './convert'
 import * as ValueCreate from './create'
 import * as ValueCheck from './check'
 import * as ValueDefault from './default'
 import * as ValueDelta from './delta'
-import * as ValueStrict from './clean'
+import * as ValueEqual from './equal'
+import * as ValueErrors from '../errors'
+import * as ValueHash from './hash'
 import * as ValueTransform from './transform'
+import * as ValueTransmute from './transmute'
 import * as Types from '../typebox'
 
 /** Functions to perform structural operations on JavaScript values */
 export namespace Value {
-  /** Casts a value into a given type. The return value will retain as much information of the original value as possible. */
+  /** Casts a value into a given type. The return value will retain as much information from the original value as possible. */
   export function Cast<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: unknown): Types.Static<T>
-  /** Casts a value into a given type. The return value will retain as much information of the original value as possible. */
+  /** Casts a value into a given type. The return value will retain as much information from the original value as possible. */
   export function Cast<T extends Types.TSchema>(schema: T, value: unknown): Types.Static<T>
-  /** Casts a value into a given type. The return value will retain as much information of the original value as possible. */
+  /** Casts a value into a given type. The return value will retain as much information from the original value as possible. */
   export function Cast(...args: any[]) {
     return ValueCast.Cast.apply(ValueCast, args as any)
   }
@@ -59,23 +59,23 @@ export namespace Value {
   export function Check(...args: any[]) {
     return ValueCheck.Check.apply(ValueCheck, args as any)
   }
+  /** Removes excess properties from the input value and returns the result. This function does not type check the input value and may return invalid results for invalid inputs. You should type check the result before use. */
+  export function Clean<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: unknown): unknown
+  /** Removes excess properties from the input value and returns the result. This function does not type check the input value and may return invalid results for invalid inputs. You should type check the result before use. */
+  export function Clean<T extends Types.TSchema>(schema: T, value: unknown): unknown
+  /** Removes excess properties from the input value and returns the result. This function does not type check the input value and may return invalid results for invalid inputs. You should type check the result before use. */
+  export function Clean(...args: any[]) {
+    return ValueClean.Clean.apply(ValueClean, args as any)
+  }
   /** Returns a structural clone of the given value */
   export function Clone<T>(value: T): T {
     return ValueClone.Clone(value)
   }
-  /** `[Mutable]` Removes excess properties from the input value and returns the result. This function is mutable and will modify the input value. To avoid mutation, clone the input value before passing to this function. In addition, this function does not type check the input value and will return invalid results for invalid inputs. You should type check the result before use. */
-  export function Clean<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: unknown): unknown
-  /** `[Mutable]` Removes excess properties from the input value and returns the result. This function is mutable and will modify the input value. To avoid mutation, clone the input value before passing to this function. In addition, this function does not type check the input value and will return invalid results for invalid inputs. You should type check the result before use. */
-  export function Clean<T extends Types.TSchema>(schema: T, value: unknown): unknown
-  /** `[Mutable]` Removes excess properties from the input value and returns the result. This function is mutable and will modify the input value. To avoid mutation, clone the input value before passing to this function. In addition, this function does not type check the input value and will return invalid results for invalid inputs. You should type check the result before use. */
-  export function Clean(...args: any[]) {
-    return ValueStrict.Clean.apply(ValueStrict, args as any)
-  }
-  /** Converts any type mismatched values to their target type if a reasonable conversion is possible. This function returns unknown, so it is essential to check the return value before use. */
+  /** Converts any type mismatched values to their target type if a reasonable conversion is possible. This function does not type check the input value and may return invalid results for invalid inputs. You should type check the result before use. */
   export function Convert<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: unknown): unknown
-  /** Converts any type mismatched values to their target type if a reasonable conversion is possible. This function returns unknown, so it is essential to check the return value before use. */
+  /** Converts any type mismatched values to their target type if a reasonable conversion is possible. This function does not type check the input value and may return invalid results for invalid inputs. You should type check the result before use. */
   export function Convert<T extends Types.TSchema>(schema: T, value: unknown): unknown
-  /** Converts any type mismatched values to their target type if a reasonable conversion is possible This function returns unknown, so it is essential to check the return value before use. */
+  /** Converts any type mismatched values to their target type if a reasonable conversion is possible. This function does not type check the input value and may return invalid results for invalid inputs. You should type check the result before use. */
   export function Convert(...args: any[]) {
     return ValueConvert.Convert.apply(ValueConvert, args as any)
   }
@@ -87,14 +87,6 @@ export namespace Value {
   export function Create(...args: any[]) {
     return ValueCreate.Create.apply(ValueCreate, args as any)
   }
-  /** `[Mutable]` Patches a given value with defaults derived from default schema annotations. This function is mutable and will modify the input value. To avoid mutation, clone the input value prior to calling this function. This function may return an incomplete or invalid result and should be checked before use. */
-  export function Default<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: unknown): unknown
-  /** `[Mutable]` Patches a given value with defaults derived from default schema annotations. This function is mutable and will modify the input value. To avoid mutation, clone the input value prior to calling this function. This function may return an incomplete or invalid result and should be checked before use. */
-  export function Default<T extends Types.TSchema>(schema: T, value: unknown): unknown
-  /** `[Mutable]` Patches a given value with defaults derived from default schema annotations. This function is mutable and will modify the input value. To avoid mutation, clone the input value prior to calling this function. This function may return an incomplete or invalid result and should be checked before use. */
-  export function Default(...args: any[]) {
-    return ValueDefault.Default.apply(ValueDefault, args as any)
-  }
   /** Decodes a value or throws if error */
   export function Decode<T extends Types.TSchema, D = Types.StaticDecode<T>>(schema: T, references: Types.TSchema[], value: unknown): D
   /** Decodes a value or throws if error */
@@ -104,6 +96,14 @@ export namespace Value {
     const [schema, references, value] = args.length === 3 ? [args[0], args[1], args[2]] : [args[0], [], args[1]]
     if (!Check(schema, references, value)) throw new ValueTransform.TransformDecodeCheckError(schema, value, Errors(schema, references, value).First()!)
     return ValueTransform.DecodeTransform.Decode(schema, references, value, ValueCheck.Check)
+  }
+  /** Applies default annotations to missing values and returns the result. This function does not type check the input value and may return invalid results for invalid inputs. You should type check the result before use. */
+  export function Default<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: unknown): unknown
+  /** Applies default annotations to missing values and returns the result. This function does not type check the input value and may return invalid results for invalid inputs. You should type check the result before use. */
+  export function Default<T extends Types.TSchema>(schema: T, value: unknown): unknown
+  /** Applies default annotations to missing values and returns the result. This function does not type check the input value and may return invalid results for invalid inputs. You should type check the result before use. */
+  export function Default(...args: any[]) {
+    return ValueDefault.Default.apply(ValueDefault, args as any)
   }
   /** Encodes a value or throws if error */
   export function Encode<T extends Types.TSchema, E = Types.StaticEncode<T>>(schema: T, references: Types.TSchema[], value: unknown): E
@@ -136,12 +136,12 @@ export namespace Value {
   export function Hash(value: unknown): bigint {
     return ValueHash.Hash(value)
   }
-  /** Returns a new value with edits applied to the given value */
+  /** Applies edits to the current value and returns the result */
   export function Patch<T = any>(current: unknown, edits: ValueDelta.Edit[]): T {
     return ValueDelta.Patch(current, edits) as T
   }
-  /** `[Mutable]` Transforms the current value into the next value and returns the result. This function performs mutable operations on the current value. To avoid mutation, clone the current value before passing to this function. */
-  export function Transmute<Next extends ValueMutate.Transmutable>(current: ValueMutate.Transmutable, next: Next): Next {
-    return ValueMutate.Transmute(current, next)
+  /** Transforms the current value into the next value and returns the result. This function performs mutable operations on the input value. To avoid mutation, clone the input value before passing to this function. */
+  export function Transmute<Next extends ValueTransmute.Transmutable>(current: ValueTransmute.Transmutable, next: Next): Next {
+    return ValueTransmute.Transmute(current, next)
   }
 }
