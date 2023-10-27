@@ -13,9 +13,9 @@ describe('value/default/Record', () => {
     const R = Value.Default(T, null)
     Assert.IsEqual(R, null)
   })
-  // ----------------------------------------------------------------
-  // Properties
-  // ----------------------------------------------------------------
+  // // ----------------------------------------------------------------
+  // // Properties
+  // // ----------------------------------------------------------------
   it('Should use property defaults 1', () => {
     const T = Type.Record(Type.Number(), Type.Number({ default: 1 }))
     const R = Value.Default(T, { 0: undefined })
@@ -32,6 +32,16 @@ describe('value/default/Record', () => {
     Assert.IsEqual(R, { a: undefined })
   })
   it('Should use property defaults 4', () => {
+    const T = Type.Record(Type.Number(), Type.Number({ default: 1 }))
+    const R = Value.Default(T, { 0: undefined })
+    Assert.IsEqual(R, { 0: 1 })
+  })
+  it('Should use property defaults 5', () => {
+    const T = Type.Record(Type.Number(), Type.Number())
+    const R = Value.Default(T, { 0: undefined })
+    Assert.IsEqual(R, { 0: undefined })
+  })
+  it('Should use property defaults 6', () => {
     const T = Type.Record(Type.Number(), Type.Number({ default: 1 }))
     const R = Value.Default(T, {})
     Assert.IsEqual(R, {})

@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { IsString, IsObject, IsArray, IsUndefined } from './guard'
+import { HasPropertyKey, IsString, IsObject, IsArray, IsUndefined } from './guard'
 import { Deref } from './deref'
 import { Clone } from './clone'
 import * as Types from '../typebox'
@@ -60,31 +60,39 @@ function TIntersect(schema: Types.TIntersect, references: Types.TSchema[], value
 function TObject(schema: Types.TObject, references: Types.TSchema[], value: unknown): any {
   const object = ValueOrDefault(schema, value)
   if (!IsObject(object)) return object
-  const knownObject = Object.getOwnPropertyNames(schema.properties).reduce((acc, key) => {
+  const knownPropertyKeys = Object.getOwnPropertyNames(schema.properties)
+  // Reduce on object using known keys and only map for property types that have
+  // default values specified. The returned object should be the complete object
+  // with additional properties unmapped.
+  const properties = knownPropertyKeys.reduce((acc, key) => {
     return HasDefault(schema.properties[key]) ? { ...acc, [key]: Visit(schema.properties[key], references, object[key]) } : acc
   }, object)
-  if (!Types.TypeGuard.TSchema(schema.additionalProperties) || !HasDefault(schema.additionalProperties as Types.TSchema)) {
-    return knownObject
-  }
-  const knownKeys = Object.getOwnPropertyNames(schema.properties)
-  return Object.getOwnPropertyNames(knownObject).reduce((acc, key) => {
-    return knownKeys.includes(key) ? acc : { ...acc, [key]: Visit(schema.additionalProperties as Types.TSchema, references, knownObject[key]) }
-  }, knownObject)
+  // If additionalProperties not is schema-like with a default property, we exit with properties.
+  const additionalPropertiesSchema = schema.additionalProperties as Types.TSchema
+  if (!(IsObject(additionalPropertiesSchema) && HasDefault(additionalPropertiesSchema))) return properties
+  // Reduce on properties using object key. Only map properties outside the known key set
+  return Object.getOwnPropertyNames(object).reduce((acc, key) => {
+    return !knownPropertyKeys.includes(key) ? { ...acc, [key]: Visit(additionalPropertiesSchema, references, object[key]) } : acc
+  }, properties)
 }
 function TRecord(schema: Types.TRecord<any, any>, references: Types.TSchema[], value: unknown): any {
   const object = ValueOrDefault(schema, value)
   if (!IsObject(object)) return object
-  const [patternKey, patternSchema] = Object.entries(schema.patternProperties)[0]
-  const patternRegExp = new RegExp(patternKey)
-  const knownObject = Object.getOwnPropertyNames(value).reduce((acc, key) => {
-    return HasDefault(patternSchema) && patternRegExp.test(key) ? { ...acc, [key]: Visit(patternSchema, references, object[key]) } : acc
+  const [propertyKeyPattern, propertySchema] = Object.entries(schema.patternProperties)[0]
+  const knownPropertyKey = new RegExp(propertyKeyPattern)
+  // Reduce on object keys using object keys and only map for property types that have
+  // default values specified. The returned object should be the complete object
+  // with additional properties unmapped.
+  const properties = Object.getOwnPropertyNames(object).reduce((acc, key) => {
+    return knownPropertyKey.test(key) && HasDefault(propertySchema) ? { ...acc, [key]: Visit(propertySchema, references, object[key]) } : { ...acc, [key]: object[key] }
   }, object)
-  if (!Types.TypeGuard.TSchema(schema.additionalProperties) || !HasDefault(schema.additionalProperties as Types.TSchema)) {
-    return knownObject
-  }
-  return Object.getOwnPropertyNames(knownObject).reduce((acc, key) => {
-    return !patternRegExp.test(key) ? { ...acc, [key]: Visit(schema.additionalProperties as Types.TSchema, references, knownObject[key]) } : acc
-  }, knownObject)
+  // If additionalProperties not is schema-like with a default property, we exit with properties.
+  const additionalPropertiesSchema = schema.additionalProperties as Types.TSchema
+  if (!(IsObject(additionalPropertiesSchema) && HasDefault(additionalPropertiesSchema))) return properties
+  // Reduce on properties using object key. Only map properties outside the known key set
+  return Object.getOwnPropertyNames(object).reduce((acc, key) => {
+    return !knownPropertyKey.test(key) ? { ...acc, [key]: Visit(additionalPropertiesSchema, references, object[key]) } : acc
+  }, properties)
 }
 function TRef(schema: Types.TRef<any>, references: Types.TSchema[], value: unknown): any {
   return Visit(Deref(schema, references), references, ValueOrDefault(schema, value))

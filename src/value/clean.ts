@@ -39,6 +39,12 @@ function Default(value: unknown) {
   return value
 }
 // --------------------------------------------------------------------------
+// IsSchema
+// --------------------------------------------------------------------------
+function IsSchema(value: unknown): value is Types.TSchema {
+  return Types.TypeGuard.TKind(value) && Types.TypeRegistry.Has(value[Types.Kind])
+}
+// --------------------------------------------------------------------------
 // Structural
 // --------------------------------------------------------------------------
 function TArray(schema: Types.TArray, references: Types.TSchema[], value: unknown): any {
@@ -53,23 +59,28 @@ function TIntersect(schema: Types.TIntersect, references: Types.TSchema[], value
 }
 function TObject(schema: Types.TObject, references: Types.TSchema[], value: unknown): any {
   if (!IsObject(value)) return Default(value)
-  return Object.keys(schema.properties).reduce((acc, key) => {
-    // prettier-ignore
-    return key in value 
-      ? { ...acc, [key]: Visit(schema.properties[key], references, value[key]) } 
-      : acc
+  const properties = Object.keys(schema.properties).reduce((acc, key) => {
+    return key in value ? { ...acc, [key]: Visit(schema.properties[key], references, value[key]) } : acc
   }, {})
+  if (!IsSchema(schema.additionalProperties)) {
+    return properties
+  }
+  const additionalProperties = Object.keys(value).reduce((acc, key) => {
+    if (key in schema.properties) return acc
+    return Check(schema.additionalProperties as Types.TSchema, value[key]) ? { ...acc, [key]: value[key] } : acc
+  }, {})
+  return { ...properties, ...additionalProperties }
 }
 function TRecord(schema: Types.TRecord<any, any>, references: Types.TSchema[], value: unknown): any {
   if (!IsObject(value)) return Default(value)
   const [patternKey, patternSchema] = Object.entries(schema.patternProperties)[0]
   const patternRegExp = new RegExp(patternKey)
-  return Object.keys(value).reduce((acc, key) => {
-    // prettier-ignore
-    return patternRegExp.test(key) 
-      ? { ...acc, [key]: Visit(patternSchema, references, value[key]) } 
-      : acc
+  const properties = Object.keys(value).reduce((acc, key) => {
+    return patternRegExp.test(key) ? { ...acc, [key]: Visit(patternSchema, references, value[key]) } : acc
   }, {})
+  if (!Types.TypeGuard.TKind(schema.additionalProperties)) {
+    return properties
+  }
 }
 function TRef(schema: Types.TRef<any>, references: Types.TSchema[], value: unknown): any {
   const target = Deref(schema, references)

@@ -1,5 +1,6 @@
 import './cast'
 import './check'
+import './clean'
 import './clone'
 import './convert'
 import './create'
