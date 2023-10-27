@@ -19,14 +19,14 @@ import { Run } from './benchmark'
 
 const T = Type.Object(
   {
-    number: Type.Number({ default: 1}),
-    negNumber: Type.Number({ default: 1}),
+    number: Type.Number({ default: 1 }),
+    negNumber: Type.Number({ default: 1 }),
     maxNumber: Type.Number({ default: 3 }),
-    string: Type.String({ default: 5}),
+    string: Type.String({ default: 5 }),
     longString: Type.String(),
     boolean: Type.Boolean(),
     deeplyNested: Type.Object({
-      foo: Type.String({default: 2}),
+      foo: Type.String({ default: 2 }),
       num: Type.Number(),
       bool: Type.Boolean(),
     }),
