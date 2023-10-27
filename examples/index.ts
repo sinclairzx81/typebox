@@ -10,6 +10,26 @@ const T = Type.Record(Type.Number(), Type.String({ default: 1 }), {
   additionalProperties: Type.Any({ default: 1000 }),
 })
 
-const R = Value.Default(T, { y: 2, z: undefined })
+export const Loose = Type.Object({
+  number: Type.Number(),
+  negNumber: Type.Number(),
+  maxNumber: Type.Number(),
+  string: Type.String(),
+  longString: Type.String(),
+  boolean: Type.Boolean(),
+  deeplyNested: Type.Object({
+    foo: Type.String(),
+    num: Type.Number(),
+    bool: Type.Boolean(),
+  }),
+})
 
-console.log(R)
+const C = TypeCompiler.Compile(Loose)
+
+const A = Value.Create(Loose)
+
+let S = Date.now()
+for (let i = 0; i < 1_000_000; i++) {
+  Value.Clean(Loose, A)
+}
+console.log(Date.now() - S)
