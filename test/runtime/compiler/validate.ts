@@ -59,17 +59,35 @@ FormatRegistry.Set('date-time', (value) => isDateTime(value, true))
 export function Ok<T extends TSchema>(schema: T, data: unknown, references: any[] = []) {
   const C = TypeCompiler.Compile(schema, references)
   const result = C.Check(data)
+  // ----------------------------------------------------------------
+  // Compiler Value Check Disparity
+  // ----------------------------------------------------------------
   if (result !== Value.Check(schema, references, data)) {
     throw Error('Compiler and Value Check disparity')
   }
+  // ----------------------------------------------------------------
+  // Check: Expect Clean to Produce Valid Value
+  // ----------------------------------------------------------------
+  if (result === true && !C.Check(Value.Clean(schema, references, data))) {
+    throw Error('Value Clean Returned Invalid Value')
+  }
+  // ----------------------------------------------------------------
+  // Check: Expect Error
+  // ----------------------------------------------------------------
   if (result === false) {
     const errors = [...Value.Errors(schema, references, data)]
     if (errors.length === 0) throw Error('expected at least 1 error')
   }
+  // ----------------------------------------------------------------
+  // Check: Expect No Error
+  // ----------------------------------------------------------------
   if (result === true) {
     const errors = [...Value.Errors(schema, references, data)]
     if (errors.length > 0) throw Error('expected no errors')
   }
+  // ----------------------------------------------------------------
+  // Printing
+  // ----------------------------------------------------------------
   if (!result) {
     console.log('---------------------------')
     console.log('type')

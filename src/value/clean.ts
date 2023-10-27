@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { IsString, IsObject, IsArray, IsUndefined, IsValueType } from './guard'
+import { IsString, IsObject, IsArray, IsUndefined } from './guard'
 import { Check } from './check'
 import { Deref } from './deref'
 import { Clone } from './clone'
@@ -60,7 +60,7 @@ function TIntersect(schema: Types.TIntersect, references: Types.TSchema[], value
   return composite
 }
 function TObject(schema: Types.TObject, references: Types.TSchema[], value: unknown): any {
-  if (!IsObject(value)) return value
+  if (!IsObject(value) || IsArray(value)) return value // IsArray escape for AllowArrayObject
   const additionalProperties = schema.additionalProperties as Types.TSchema
   for (const key of Object.getOwnPropertyNames(value)) {
     if (key in schema.properties) {
