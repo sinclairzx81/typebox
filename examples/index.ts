@@ -6,6 +6,10 @@ import { Run } from './benchmark'
 
 // Todo: Investigate Union Default (initialize interior types)
 // Todo: Implement Value.Clean() Tests
-const T = Type.Tuple([Type.Number(), Type.Number()])
-const R = Value.Clean(T, [1, 2, 3])
+
+const X = Type.Object({ x: Type.Number() })
+const Y = Type.Object({ y: Type.Number() })
+const T = Type.Union([X, Y])
+const R = Value.Clean(T, { u: null, x: 1 })
+
 console.log(R)
