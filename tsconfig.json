@@ -23,7 +23,7 @@
         "src/value/check.ts"
       ],
       "@sinclair/typebox/value/clean": [
-        "src/value/clean.ts"
+        "src/value/strict.ts"
       ],
       "@sinclair/typebox/value/clone": [
         "src/value/clone.ts"

@@ -28,7 +28,6 @@ THE SOFTWARE.
 
 import { IsString, IsObject, IsArray, IsUndefined } from './guard'
 import { Deref } from './deref'
-import { Clone } from './clone'
 import * as Types from '../typebox'
 
 // --------------------------------------------------------------------------
@@ -140,11 +139,11 @@ function Visit(schema: Types.TSchema, references: Types.TSchema[], value: unknow
 // --------------------------------------------------------------------------
 // Default
 // --------------------------------------------------------------------------
-/** Creates a new value by applying annotated defaults to any missing or undefined interior values within the provided value. This function returns unknown, so it is essential to check the return value before use. */
+/** `[Mutable]` Patches a given value with defaults derived from default schema annotations. This function is mutable and will modify the input value. To avoid mutation, clone the input value prior to calling this function. This function may return an incomplete or invalid result and should be checked before use. */
 export function Default<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: unknown): unknown
-/** Creates a new value by applying annotated defaults to any missing or undefined interior values within the provided value. This function returns unknown, so it is essential to check the return value before use. */
+/** `[Mutable]` Patches a given value with defaults derived from default schema annotations. This function is mutable and will modify the input value. To avoid mutation, clone the input value prior to calling this function. This function may return an incomplete or invalid result and should be checked before use. */
 export function Default<T extends Types.TSchema>(schema: T, value: unknown): unknown
-/** Creates a new value by applying annotated defaults to any missing or undefined interior values within the provided value. This function returns unknown, so it is essential to check the return value before use. */
+/** `[Mutable]` Patches a given value with defaults derived from default schema annotations. This function is mutable and will modify the input value. To avoid mutation, clone the input value prior to calling this function. This function may return an incomplete or invalid result and should be checked before use. */
 export function Default(...args: any[]) {
-  return args.length === 3 ? Visit(args[0], args[1], Clone(args[2])) : Visit(args[0], [], Clone(args[1]))
+  return args.length === 3 ? Visit(args[0], args[1], args[2]) : Visit(args[0], [], args[1])
 }

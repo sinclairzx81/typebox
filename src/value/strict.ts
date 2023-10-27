@@ -28,87 +28,92 @@ THE SOFTWARE.
 
 import { IsString, IsObject, IsArray, IsUndefined } from './guard'
 import { Check } from './check'
-import { Clone } from './clone'
 import { Deref } from './deref'
 import * as Types from '../typebox'
 
 // --------------------------------------------------------------------------
-// Types
+// FastIsSchema
 // --------------------------------------------------------------------------
-function Default(value: unknown) {
-  return value
-}
-// --------------------------------------------------------------------------
-// IsSchema
-// --------------------------------------------------------------------------
-function IsSchema(value: unknown): value is Types.TSchema {
-  return Types.TypeGuard.TKind(value) && Types.TypeRegistry.Has(value[Types.Kind])
+function FastIsSchema(value: unknown): value is Types.TSchema {
+  return value !== undefined && typeof value === 'object' && Types.TypeGuard.TSchema(value)
 }
 // --------------------------------------------------------------------------
 // Structural
 // --------------------------------------------------------------------------
 function TArray(schema: Types.TArray, references: Types.TSchema[], value: unknown): any {
-  if (!IsArray(value)) return Default(value)
+  if (!IsArray(value)) return value
   return value.map((value) => Visit(schema.items, references, value))
 }
 function TIntersect(schema: Types.TIntersect, references: Types.TSchema[], value: unknown): any {
-  const values: any[] = schema.allOf.map((schema) => Visit(schema, references, Clone(value)))
+  const values: any[] = schema.allOf.map((schema) => Visit(schema, references, value))
   return values.reduce((acc, value) => {
     return IsObject(value) ? { ...acc, ...value } : value
   }, {} as any)
 }
 function TObject(schema: Types.TObject, references: Types.TSchema[], value: unknown): any {
-  if (!IsObject(value)) return Default(value)
-  const properties = Object.keys(schema.properties).reduce((acc, key) => {
-    return key in value ? { ...acc, [key]: Visit(schema.properties[key], references, value[key]) } : acc
-  }, {})
-  if (!IsSchema(schema.additionalProperties)) {
-    return properties
+  if (!IsObject(value)) return value
+  const additionalProperties = schema.additionalProperties as Types.TSchema
+  const hasAdditionalProperties = FastIsSchema(additionalProperties)
+  const propertyKeys = Object.keys(value)
+  for (const key of propertyKeys) {
+    if (key in schema.properties) {
+      value[key] = Visit(schema.properties[key], references, value[key])
+      continue
+    }
+    if (hasAdditionalProperties && Check(additionalProperties, references, value[key])) {
+      value[key] = Visit(additionalProperties, references, value[key])
+      continue
+    }
+    delete value[key]
   }
-  const additionalProperties = Object.keys(value).reduce((acc, key) => {
-    if (key in schema.properties) return acc
-    return Check(schema.additionalProperties as Types.TSchema, value[key]) ? { ...acc, [key]: value[key] } : acc
-  }, {})
-  return { ...properties, ...additionalProperties }
+  return value
 }
 function TRecord(schema: Types.TRecord<any, any>, references: Types.TSchema[], value: unknown): any {
-  if (!IsObject(value)) return Default(value)
-  const [patternKey, patternSchema] = Object.entries(schema.patternProperties)[0]
-  const patternRegExp = new RegExp(patternKey)
-  const properties = Object.keys(value).reduce((acc, key) => {
-    return patternRegExp.test(key) ? { ...acc, [key]: Visit(patternSchema, references, value[key]) } : acc
-  }, {})
-  if (!Types.TypeGuard.TKind(schema.additionalProperties)) {
-    return properties
+  if (!IsObject(value)) return value
+  const additionalProperties = schema.additionalProperties as Types.TSchema
+  const useAdditionalProperties = FastIsSchema(additionalProperties)
+  const [propertyKey, propertySchema] = Object.entries(schema.patternProperties)[0]
+  const propertyKeys = Object.keys(value)
+  const propertyKeyTest = new RegExp(propertyKey)
+  for (const key of propertyKeys) {
+    if (propertyKeyTest.test(key)) {
+      value[key] = Visit(propertySchema, references, value[key])
+      continue
+    }
+    if (useAdditionalProperties && Check(additionalProperties, references, value[key])) {
+      value[key] = Visit(additionalProperties, references, value[key])
+      continue
+    }
+    delete value[key]
   }
+  return value
 }
 function TRef(schema: Types.TRef<any>, references: Types.TSchema[], value: unknown): any {
-  const target = Deref(schema, references)
-  return Visit(target, references, value)
+  return Visit(Deref(schema, references), references, value)
 }
 function TThis(schema: Types.TThis, references: Types.TSchema[], value: unknown): any {
-  const target = Deref(schema, references)
-  return Visit(target, references, value)
+  return Visit(Deref(schema, references), references, value)
 }
 function TTuple(schema: Types.TTuple, references: Types.TSchema[], value: unknown): any {
-  if (!IsArray(value)) return Default(value)
+  if (!IsArray(value)) return value
   if (IsUndefined(schema.items)) return []
-  return schema.items!.map((schema, index) => Visit(schema, references, value[index]))
+  const length = schema.items.length
+  for (let i = 0; i < length; i++) {
+    value[i] = Visit(schema.items[i], references, value[i])
+  }
+  return value.length > length ? value.splice(length) : value
 }
 function TUnion(schema: Types.TUnion, references: Types.TSchema[], value: unknown): any {
   for (const inner of schema.anyOf) {
     if (!Check(inner, value)) continue
     return Visit(inner, references, value)
   }
-  return Default(value)
+  return value
 }
 function Visit(schema: Types.TSchema, references: Types.TSchema[], value: unknown): unknown {
   const references_ = IsString(schema.$id) ? [...references, schema] : references
   const schema_ = schema as any
   switch (schema_[Types.Kind]) {
-    // --------------------------------------------------------------
-    // Structural
-    // --------------------------------------------------------------
     case 'Array':
       return TArray(schema_, references_, value)
     case 'Intersect':
@@ -125,21 +130,18 @@ function Visit(schema: Types.TSchema, references: Types.TSchema[], value: unknow
       return TTuple(schema_, references_, value)
     case 'Union':
       return TUnion(schema_, references_, value)
-    // --------------------------------------------------------------
-    // NonStructural
-    // --------------------------------------------------------------
     default:
-      return Default(value)
+      return value
   }
 }
 // --------------------------------------------------------------------------
-// Clean
+// Strict
 // --------------------------------------------------------------------------
-/** Removes unknown property or interior value from the given value. The return value may be invalid and should be checked before use. */
-export function Clean<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: unknown): unknown
-/** Removes unknown property or interior value from the given value. The return value may be invalid and should be checked before use. */
-export function Clean<T extends Types.TSchema>(schema: T): unknown
-/** Removes unknown property or interior value from the given value. The return value may be invalid and should be checked before use. */
-export function Clean(...args: any[]) {
-  return args.length === 3 ? Visit(args[0], args[1], Clone(args[2])) : Visit(args[0], [], Clone(args[1]))
+/** `[Mutable]` Discards any unknown properties from the provided value and returns the result. This function is mutable and will modify the input value. To avoid mutation, clone the input value prior to calling this function. This function does not check and may return an incomplete or invalid result and should be checked before use. */
+export function Strict<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: unknown): unknown
+/** `[Mutable]` Discards any unknown properties from the provided value and returns the result. This function is mutable and will modify the input value. To avoid mutation, clone the input value prior to calling this function. This function does not check and may return an incomplete or invalid result and should be checked before use. */
+export function Strict<T extends Types.TSchema>(schema: T): unknown
+/** `[Mutable]` Discards any unknown properties from the provided value and returns the result. This function is mutable and will modify the input value. To avoid mutation, clone the input value prior to calling this function. This function does not check and may return an incomplete or invalid result and should be checked before use. */
+export function Strict(...args: any[]) {
+  return args.length === 3 ? Visit(args[0], args[1], args[2]) : Visit(args[0], [], args[1])
 }
