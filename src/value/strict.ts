@@ -26,9 +26,10 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { IsString, IsObject, IsArray, IsUndefined } from './guard'
+import { IsString, IsObject, IsArray, IsUndefined, IsValueType } from './guard'
 import { Check } from './check'
 import { Deref } from './deref'
+import { Clone } from './clone'
 import * as Types from '../typebox'
 
 // --------------------------------------------------------------------------
@@ -45,22 +46,29 @@ function TArray(schema: Types.TArray, references: Types.TSchema[], value: unknow
   return value.map((value) => Visit(schema.items, references, value))
 }
 function TIntersect(schema: Types.TIntersect, references: Types.TSchema[], value: unknown): any {
-  const values: any[] = schema.allOf.map((schema) => Visit(schema, references, value))
-  return values.reduce((acc, value) => {
-    return IsObject(value) ? { ...acc, ...value } : value
-  }, {} as any)
+  const unevaluatedProperties = schema.unevaluatedProperties as Types.TSchema
+  const intersections = schema.allOf.map((schema) => Visit(schema, references, Clone(value)))
+  const composite = intersections.reduce((acc: any, value: any) => (IsObject(value) ? { ...acc, ...value } : value), {})
+  // unevaluatedProperties can only be applied to objects
+  if (!IsObject(value) || !IsObject(composite) || !FastIsSchema(unevaluatedProperties)) return composite
+  const knownkeys = Types.KeyResolver.ResolveKeys(schema, { includePatterns: false })
+  for (const key of Object.getOwnPropertyNames(value)) {
+    if (knownkeys.includes(key)) continue
+    if (Check(unevaluatedProperties, references, value[key])) {
+      composite[key] = Visit(unevaluatedProperties, references, value[key])
+    }
+  }
+  return composite
 }
 function TObject(schema: Types.TObject, references: Types.TSchema[], value: unknown): any {
   if (!IsObject(value)) return value
   const additionalProperties = schema.additionalProperties as Types.TSchema
-  const hasAdditionalProperties = FastIsSchema(additionalProperties)
-  const propertyKeys = Object.keys(value)
-  for (const key of propertyKeys) {
+  for (const key of Object.getOwnPropertyNames(value)) {
     if (key in schema.properties) {
       value[key] = Visit(schema.properties[key], references, value[key])
       continue
     }
-    if (hasAdditionalProperties && Check(additionalProperties, references, value[key])) {
+    if (FastIsSchema(additionalProperties) && Check(additionalProperties, references, value[key])) {
       value[key] = Visit(additionalProperties, references, value[key])
       continue
     }
@@ -71,16 +79,15 @@ function TObject(schema: Types.TObject, references: Types.TSchema[], value: unkn
 function TRecord(schema: Types.TRecord<any, any>, references: Types.TSchema[], value: unknown): any {
   if (!IsObject(value)) return value
   const additionalProperties = schema.additionalProperties as Types.TSchema
-  const useAdditionalProperties = FastIsSchema(additionalProperties)
-  const [propertyKey, propertySchema] = Object.entries(schema.patternProperties)[0]
   const propertyKeys = Object.keys(value)
+  const [propertyKey, propertySchema] = Object.entries(schema.patternProperties)[0]
   const propertyKeyTest = new RegExp(propertyKey)
   for (const key of propertyKeys) {
     if (propertyKeyTest.test(key)) {
       value[key] = Visit(propertySchema, references, value[key])
       continue
     }
-    if (useAdditionalProperties && Check(additionalProperties, references, value[key])) {
+    if (FastIsSchema(additionalProperties) && Check(additionalProperties, references, value[key])) {
       value[key] = Visit(additionalProperties, references, value[key])
       continue
     }
