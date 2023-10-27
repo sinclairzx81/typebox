@@ -77,14 +77,38 @@ describe('value/clean/Record', () => {
     const T = Type.Record(Type.Number(), Type.String(), {
       additionalProperties: Type.Boolean(),
     })
-    const R = Value.Clean(T, {})
+    const R = Value.Clean(T, { a: null })
     Assert.IsEqual(R, {})
   })
   it('Should clean additional properties discard 3', () => {
     const T = Type.Record(Type.Number(), Type.String(), {
       additionalProperties: Type.Boolean(),
     })
-    const R = Value.Clean(T, { 0: null })
+    const R = Value.Clean(T, { a: null, 0: null })
     Assert.IsEqual(R, { 0: null })
+  })
+  // ----------------------------------------------------------------
+  // Additional Properties Keep
+  // ----------------------------------------------------------------
+  it('Should clean additional properties keep 1', () => {
+    const T = Type.Record(Type.Number(), Type.String(), {
+      additionalProperties: Type.Boolean(),
+    })
+    const R = Value.Clean(T, null)
+    Assert.IsEqual(R, null)
+  })
+  it('Should clean additional properties keep 2', () => {
+    const T = Type.Record(Type.Number(), Type.String(), {
+      additionalProperties: Type.Boolean(),
+    })
+    const R = Value.Clean(T, { a: true })
+    Assert.IsEqual(R, { a: true })
+  })
+  it('Should clean additional properties keep 3', () => {
+    const T = Type.Record(Type.Number(), Type.String(), {
+      additionalProperties: Type.Boolean(),
+    })
+    const R = Value.Clean(T, { a: true, 0: null })
+    Assert.IsEqual(R, { a: true, 0: null })
   })
 })

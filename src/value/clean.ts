@@ -60,7 +60,7 @@ function TIntersect(schema: Types.TIntersect, references: Types.TSchema[], value
   return composite
 }
 function TObject(schema: Types.TObject, references: Types.TSchema[], value: unknown): any {
-  if (!IsObject(value) || IsArray(value)) return value // IsArray escape for AllowArrayObject
+  if (!IsObject(value) || IsArray(value)) return value // Check IsArray for AllowArrayObject configuration
   const additionalProperties = schema.additionalProperties as Types.TSchema
   for (const key of Object.getOwnPropertyNames(value)) {
     if (key in schema.properties) {
@@ -103,11 +103,14 @@ function TThis(schema: Types.TThis, references: Types.TSchema[], value: unknown)
 function TTuple(schema: Types.TTuple, references: Types.TSchema[], value: unknown): any {
   if (!IsArray(value)) return value
   if (IsUndefined(schema.items)) return []
-  const length = schema.items.length
+  const length = Math.min(value.length, schema.items.length)
   for (let i = 0; i < length; i++) {
     value[i] = Visit(schema.items[i], references, value[i])
   }
-  return value.length > length ? value.splice(length) : value
+  // prettier-ignore
+  return value.length > length 
+    ? value.slice(0, length) 
+    : value
 }
 function TUnion(schema: Types.TUnion, references: Types.TSchema[], value: unknown): any {
   for (const inner of schema.anyOf) {
