@@ -27,7 +27,7 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import * as ValueErrors from '../errors/index'
-import * as ValueMutate from './mutate'
+import * as ValueMutate from './transmute'
 import * as ValueHash from './hash'
 import * as ValueEqual from './equal'
 import * as ValueCast from './cast'
@@ -37,7 +37,7 @@ import * as ValueCreate from './create'
 import * as ValueCheck from './check'
 import * as ValueDefault from './default'
 import * as ValueDelta from './delta'
-import * as ValueStrict from './strict'
+import * as ValueStrict from './clean'
 import * as ValueTransform from './transform'
 import * as Types from '../typebox'
 
@@ -51,14 +51,6 @@ export namespace Value {
   export function Cast(...args: any[]) {
     return ValueCast.Cast.apply(ValueCast, args as any)
   }
-  /** Creates a value from the given type and references */
-  export function Create<T extends Types.TSchema>(schema: T, references: Types.TSchema[]): Types.Static<T>
-  /** Creates a value from the given type */
-  export function Create<T extends Types.TSchema>(schema: T): Types.Static<T>
-  /** Creates a value from the given type */
-  export function Create(...args: any[]) {
-    return ValueCreate.Create.apply(ValueCreate, args as any)
-  }
   /** Returns true if the value matches the given type */
   export function Check<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: unknown): value is Types.Static<T>
   /** Returns true if the value matches the given type */
@@ -66,6 +58,18 @@ export namespace Value {
   /** Returns true if the value matches the given type */
   export function Check(...args: any[]) {
     return ValueCheck.Check.apply(ValueCheck, args as any)
+  }
+  /** Returns a structural clone of the given value */
+  export function Clone<T>(value: T): T {
+    return ValueClone.Clone(value)
+  }
+  /** `[Mutable]` Removes excess properties from the input value and returns the result. This function is mutable and will modify the input value. To avoid mutation, clone the input value before passing to this function. In addition, this function does not type check the input value and will return invalid results for invalid inputs. You should type check the result before use. */
+  export function Clean<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: unknown): unknown
+  /** `[Mutable]` Removes excess properties from the input value and returns the result. This function is mutable and will modify the input value. To avoid mutation, clone the input value before passing to this function. In addition, this function does not type check the input value and will return invalid results for invalid inputs. You should type check the result before use. */
+  export function Clean<T extends Types.TSchema>(schema: T, value: unknown): unknown
+  /** `[Mutable]` Removes excess properties from the input value and returns the result. This function is mutable and will modify the input value. To avoid mutation, clone the input value before passing to this function. In addition, this function does not type check the input value and will return invalid results for invalid inputs. You should type check the result before use. */
+  export function Clean(...args: any[]) {
+    return ValueStrict.Clean.apply(ValueStrict, args as any)
   }
   /** Converts any type mismatched values to their target type if a reasonable conversion is possible. This function returns unknown, so it is essential to check the return value before use. */
   export function Convert<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: unknown): unknown
@@ -75,6 +79,14 @@ export namespace Value {
   export function Convert(...args: any[]) {
     return ValueConvert.Convert.apply(ValueConvert, args as any)
   }
+  /** Creates a value from the given type and references */
+  export function Create<T extends Types.TSchema>(schema: T, references: Types.TSchema[]): Types.Static<T>
+  /** Creates a value from the given type */
+  export function Create<T extends Types.TSchema>(schema: T): Types.Static<T>
+  /** Creates a value from the given type */
+  export function Create(...args: any[]) {
+    return ValueCreate.Create.apply(ValueCreate, args as any)
+  }
   /** `[Mutable]` Patches a given value with defaults derived from default schema annotations. This function is mutable and will modify the input value. To avoid mutation, clone the input value prior to calling this function. This function may return an incomplete or invalid result and should be checked before use. */
   export function Default<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: unknown): unknown
   /** `[Mutable]` Patches a given value with defaults derived from default schema annotations. This function is mutable and will modify the input value. To avoid mutation, clone the input value prior to calling this function. This function may return an incomplete or invalid result and should be checked before use. */
@@ -82,10 +94,6 @@ export namespace Value {
   /** `[Mutable]` Patches a given value with defaults derived from default schema annotations. This function is mutable and will modify the input value. To avoid mutation, clone the input value prior to calling this function. This function may return an incomplete or invalid result and should be checked before use. */
   export function Default(...args: any[]) {
     return ValueDefault.Default.apply(ValueDefault, args as any)
-  }
-  /** Returns a structural clone of the given value */
-  export function Clone<T>(value: T): T {
-    return ValueClone.Clone(value)
   }
   /** Decodes a value or throws if error */
   export function Decode<T extends Types.TSchema, D = Types.StaticDecode<T>>(schema: T, references: Types.TSchema[], value: unknown): D
@@ -132,16 +140,8 @@ export namespace Value {
   export function Patch<T = any>(current: unknown, edits: ValueDelta.Edit[]): T {
     return ValueDelta.Patch(current, edits) as T
   }
-  /** `[Mutable]` Performs a deep mutable value assignment while retaining internal references. */
-  export function Mutate(current: ValueMutate.Mutable, next: ValueMutate.Mutable): void {
-    ValueMutate.Mutate(current, next)
-  }
-  /** `[Mutable]` Discards any unknown properties from the provided value and returns the result. This function is mutable and will modify the input value. To avoid mutation, clone the input value prior to calling this function. This function does not check and may return an incomplete or invalid result and should be checked before use. */
-  export function Strict<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: unknown): unknown
-  /** `[Mutable]` Discards any unknown properties from the provided value and returns the result. This function is mutable and will modify the input value. To avoid mutation, clone the input value prior to calling this function. This function does not check and may return an incomplete or invalid result and should be checked before use. */
-  export function Strict<T extends Types.TSchema>(schema: T, value: unknown): unknown
-  /** `[Mutable]` Discards any unknown properties from the provided value and returns the result. This function is mutable and will modify the input value. To avoid mutation, clone the input value prior to calling this function. This function does not check and may return an incomplete or invalid result and should be checked before use. */
-  export function Strict(...args: any[]) {
-    return ValueStrict.Strict.apply(ValueStrict, args as any)
+  /** `[Mutable]` Transforms the current value into the next value and returns the result. This function performs mutable operations on the current value. To avoid mutation, clone the current value before passing to this function. */
+  export function Transmute<Next extends ValueMutate.Transmutable>(current: ValueMutate.Transmutable, next: Next): Next {
+    return ValueMutate.Transmute(current, next)
   }
 }

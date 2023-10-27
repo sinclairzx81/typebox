@@ -33,13 +33,13 @@ import { Clone } from './clone'
 import * as Types from '../typebox'
 
 // --------------------------------------------------------------------------
-// FastIsSchema
+// IsSchema
 // --------------------------------------------------------------------------
-function FastIsSchema(value: unknown): value is Types.TSchema {
-  return value !== undefined && typeof value === 'object' && Types.TypeGuard.TSchema(value)
+function IsSchema(schema: unknown): schema is Types.TSchema {
+  return Types.TypeGuard.TSchema(schema)
 }
 // --------------------------------------------------------------------------
-// Structural
+// Types
 // --------------------------------------------------------------------------
 function TArray(schema: Types.TArray, references: Types.TSchema[], value: unknown): any {
   if (!IsArray(value)) return value
@@ -49,8 +49,7 @@ function TIntersect(schema: Types.TIntersect, references: Types.TSchema[], value
   const unevaluatedProperties = schema.unevaluatedProperties as Types.TSchema
   const intersections = schema.allOf.map((schema) => Visit(schema, references, Clone(value)))
   const composite = intersections.reduce((acc: any, value: any) => (IsObject(value) ? { ...acc, ...value } : value), {})
-  // unevaluatedProperties can only be applied to objects
-  if (!IsObject(value) || !IsObject(composite) || !FastIsSchema(unevaluatedProperties)) return composite
+  if (!IsObject(value) || !IsObject(composite) || !IsSchema(unevaluatedProperties)) return composite
   const knownkeys = Types.KeyResolver.ResolveKeys(schema, { includePatterns: false })
   for (const key of Object.getOwnPropertyNames(value)) {
     if (knownkeys.includes(key)) continue
@@ -68,7 +67,7 @@ function TObject(schema: Types.TObject, references: Types.TSchema[], value: unkn
       value[key] = Visit(schema.properties[key], references, value[key])
       continue
     }
-    if (FastIsSchema(additionalProperties) && Check(additionalProperties, references, value[key])) {
+    if (IsSchema(additionalProperties) && Check(additionalProperties, references, value[key])) {
       value[key] = Visit(additionalProperties, references, value[key])
       continue
     }
@@ -87,7 +86,7 @@ function TRecord(schema: Types.TRecord<any, any>, references: Types.TSchema[], v
       value[key] = Visit(propertySchema, references, value[key])
       continue
     }
-    if (FastIsSchema(additionalProperties) && Check(additionalProperties, references, value[key])) {
+    if (IsSchema(additionalProperties) && Check(additionalProperties, references, value[key])) {
       value[key] = Visit(additionalProperties, references, value[key])
       continue
     }
@@ -142,13 +141,13 @@ function Visit(schema: Types.TSchema, references: Types.TSchema[], value: unknow
   }
 }
 // --------------------------------------------------------------------------
-// Strict
+// Clean
 // --------------------------------------------------------------------------
-/** `[Mutable]` Discards any unknown properties from the provided value and returns the result. This function is mutable and will modify the input value. To avoid mutation, clone the input value prior to calling this function. This function does not check and may return an incomplete or invalid result and should be checked before use. */
-export function Strict<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: unknown): unknown
-/** `[Mutable]` Discards any unknown properties from the provided value and returns the result. This function is mutable and will modify the input value. To avoid mutation, clone the input value prior to calling this function. This function does not check and may return an incomplete or invalid result and should be checked before use. */
-export function Strict<T extends Types.TSchema>(schema: T): unknown
-/** `[Mutable]` Discards any unknown properties from the provided value and returns the result. This function is mutable and will modify the input value. To avoid mutation, clone the input value prior to calling this function. This function does not check and may return an incomplete or invalid result and should be checked before use. */
-export function Strict(...args: any[]) {
+/** `[Mutable]` Removes excess properties from the input value and returns the result. This function is mutable and will modify the input value. To avoid mutation, clone the input value before passing to this function. In addition, this function does not type check the input value and will return invalid results for invalid inputs. You should type check the result before use. */
+export function Clean<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: unknown): unknown
+/** `[Mutable]` Removes excess properties from the input value and returns the result. This function is mutable and will modify the input value. To avoid mutation, clone the input value before passing to this function. In addition, this function does not type check the input value and will return invalid results for invalid inputs. You should type check the result before use. */
+export function Clean<T extends Types.TSchema>(schema: T): unknown
+/** `[Mutable]` Removes excess properties from the input value and returns the result. This function is mutable and will modify the input value. To avoid mutation, clone the input value before passing to this function. In addition, this function does not type check the input value and will return invalid results for invalid inputs. You should type check the result before use. */
+export function Clean(...args: any[]) {
   return args.length === 3 ? Visit(args[0], args[1], args[2]) : Visit(args[0], [], args[1])
 }

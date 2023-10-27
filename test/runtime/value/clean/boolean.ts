@@ -2,10 +2,10 @@ import { Value } from '@sinclair/typebox/value'
 import { Type } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
-describe('value/strict/Enum', () => {
+describe('value/clean/Boolean', () => {
   it('Should clean 1', () => {
-    const T = Type.Enum({ x: 1, y: 2 })
-    const R = Value.Strict(T, null)
+    const T = Type.Boolean()
+    const R = Value.Clean(T, null)
     Assert.IsEqual(R, null)
   })
 })

@@ -1533,40 +1533,42 @@ export namespace TypeGuard {
   }
   /** Returns true if the given value is TSchema */
   export function TSchema(schema: unknown): schema is TSchema {
+    // prettier-ignore
     return (
-      ValueGuard.IsObject(schema) &&
-      (TAny(schema) ||
-        TArray(schema) ||
-        TBoolean(schema) ||
-        TBigInt(schema) ||
-        TAsyncIterator(schema) ||
-        TConstructor(schema) ||
-        TDate(schema) ||
-        TFunction(schema) ||
-        TInteger(schema) ||
-        TIntersect(schema) ||
-        TIterator(schema) ||
-        TLiteral(schema) ||
-        TNever(schema) ||
-        TNot(schema) ||
-        TNull(schema) ||
-        TNumber(schema) ||
-        TObject(schema) ||
-        TPromise(schema) ||
-        TRecord(schema) ||
-        TRef(schema) ||
-        TString(schema) ||
-        TSymbol(schema) ||
-        TTemplateLiteral(schema) ||
-        TThis(schema) ||
-        TTuple(schema) ||
-        TUndefined(schema) ||
-        TUnion(schema) ||
-        TUint8Array(schema) ||
-        TUnknown(schema) ||
-        TUnsafe(schema) ||
-        TVoid(schema) ||
-        (TKind(schema) && TypeRegistry.Has(schema[Kind] as any)))
+      ValueGuard.IsObject(schema)
+    ) && (
+      TAny(schema) ||
+      TArray(schema) ||
+      TBoolean(schema) ||
+      TBigInt(schema) ||
+      TAsyncIterator(schema) ||
+      TConstructor(schema) ||
+      TDate(schema) ||
+      TFunction(schema) ||
+      TInteger(schema) ||
+      TIntersect(schema) ||
+      TIterator(schema) ||
+      TLiteral(schema) ||
+      TNever(schema) ||
+      TNot(schema) ||
+      TNull(schema) ||
+      TNumber(schema) ||
+      TObject(schema) ||
+      TPromise(schema) ||
+      TRecord(schema) ||
+      TRef(schema) ||
+      TString(schema) ||
+      TSymbol(schema) ||
+      TTemplateLiteral(schema) ||
+      TThis(schema) ||
+      TTuple(schema) ||
+      TUndefined(schema) ||
+      TUnion(schema) ||
+      TUint8Array(schema) ||
+      TUnknown(schema) ||
+      TUnsafe(schema) ||
+      TVoid(schema) ||
+      (TKind(schema) && TypeRegistry.Has(schema[Kind] as any))
     )
   }
 }

@@ -100,7 +100,7 @@ License MIT
   - [Diff](#values-diff)
   - [Patch](#values-patch)
   - [Errors](#values-errors)
-  - [Mutate](#values-mutate)
+  - [Transmute](#values-transmute)
   - [Pointer](#values-pointer)
 - [TypeRegistry](#typeregistry)
   - [Type](#typeregistry-type)
@@ -1322,22 +1322,22 @@ const R = [...Value.Errors(T, { x: '42' })]          // const R = [{
                                                      // }]
 ```
 
-<a name='values-mutate'></a>
+<a name='values-transmute'></a>
 
-### Mutate
+### Transmute
 
-Use the Mutate function to perform a deep mutable value assignment while retaining internal references.
+Use the Transmute function to perform a deep mutable value assignment while retaining internal references. The first argument is the current value, the second is the next value that the first value should transform into.
 
 ```typescript
-const Y = { z: 1 }                                   // const Y = { z: 1 }
-const X = { y: Y }                                   // const X = { y: { z: 1 } }
-const A = { x: X }                                   // const A = { x: { y: { z: 1 } } }
+const Y = { z: 1 }                                    // const Y = { z: 1 }
+const X = { y: Y }                                    // const X = { y: { z: 1 } }
+const A = { x: X }                                    // const A = { x: { y: { z: 1 } } }
 
-Value.Mutate(A, { x: { y: { z: 2 } } })              // const A' = { x: { y: { z: 2 } } }
+const A_ = Value.Transmute(A, { x: { y: { z: 2 } } }) // const A_ = { x: { y: { z: 2 } } }
 
-const R0 = A.x.y.z === 2                             // const R0 = true
-const R1 = A.x.y === Y                               // const R1 = true
-const R2 = A.x === X                                 // const R2 = true
+const R0 = A_.x.y.z === 2                             // const R0 = true
+const R1 = A_.x.y === Y                               // const R1 = true
+const R2 = A_.x === X                                 // const R2 = true
 ```
 
 <a name='values-pointer'></a>

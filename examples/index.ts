@@ -7,14 +7,36 @@ import { Run } from './benchmark'
 // Todo: Investigate Union Default (initialize interior types)
 // Todo: Implement Value.Clean() Tests
 
-const T = Type.Intersect([Type.Number(), Type.Number()])
+// const T = Type.Intersect([
+//   Type.Object({ x: Type.Number() }),
+//   Type.Object({ y: Type.Number() })
+// ], {
+//   unevaluatedProperties: Type.Union([
+//     Type.Number(),
+//     Type.Null()
+//   ])
+// })
 
-const R = Value.Strict(T, 1)
+const T = Type.Object(
+  {
+    number: Type.Number({ default: 1}),
+    negNumber: Type.Number({ default: 1}),
+    maxNumber: Type.Number({ default: 3 }),
+    string: Type.String({ default: 5}),
+    longString: Type.String(),
+    boolean: Type.Boolean(),
+    deeplyNested: Type.Object({
+      foo: Type.String({default: 2}),
+      num: Type.Number(),
+      bool: Type.Boolean(),
+    }),
+  },
+  {
+    additionalProperties: Type.Any(),
+  },
+)
 
-console.log(R)
+const A = Value.Default(T, {})
+console.log(A)
 
-// const C = TypeCompiler.Compile(Loose)
-
-// const A = Value.Clone(new Map())
-
-// console.log(A)
+console.log(Value.Transmute({}, {}))

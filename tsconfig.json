@@ -23,7 +23,7 @@
         "src/value/check.ts"
       ],
       "@sinclair/typebox/value/clean": [
-        "src/value/strict.ts"
+        "src/value/clean.ts"
       ],
       "@sinclair/typebox/value/clone": [
         "src/value/clone.ts"
@@ -50,7 +50,7 @@
         "src/value/hash.ts"
       ],
       "@sinclair/typebox/value/mutate": [
-        "src/value/mutate.ts"
+        "src/value/transmute.ts"
       ],
       "@sinclair/typebox/value/pointer": [
         "src/value/pointer.ts"

@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 export { ValueError, ValueErrorType, ValueErrorIterator } from '../errors/index'
 export { Edit, Insert, Update, Delete } from './delta'
-export { Mutable } from './mutate'
+export { Transmutable as Mutable } from './transmute'
 export { ValuePointer } from './pointer'
 export { Value } from './value'
 export * as ValueGuard from './guard'

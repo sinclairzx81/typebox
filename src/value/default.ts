@@ -33,14 +33,14 @@ import * as Types from '../typebox'
 // --------------------------------------------------------------------------
 // ValueOrDefault
 // --------------------------------------------------------------------------
-export function ValueOrDefault(schema: Types.TSchema, value: unknown) {
+function ValueOrDefault(schema: Types.TSchema, value: unknown) {
   return !(value === undefined) || !('default' in schema) ? value : schema.default
 }
 // --------------------------------------------------------------------------
-// HasDefault
+// IsDefaultSchema
 // --------------------------------------------------------------------------
-export function HasDefault(schema: Types.TSchema) {
-  return 'default' in schema
+function IsDefaultSchema(value: unknown): value is Types.TSchema {
+  return Types.TypeGuard.TSchema(value) && 'default' in value
 }
 // --------------------------------------------------------------------------
 // Types
@@ -63,15 +63,15 @@ function TIntersect(schema: Types.TIntersect, references: Types.TSchema[], value
 function TObject(schema: Types.TObject, references: Types.TSchema[], value: unknown): any {
   const object = ValueOrDefault(schema, value)
   if (!IsObject(object)) return object
+  const additionalPropertiesSchema = schema.additionalProperties as Types.TSchema
   const knownPropertyKeys = Object.getOwnPropertyNames(schema.properties)
   // properties
   for (const key of knownPropertyKeys) {
-    if (!HasDefault(schema.properties[key])) continue
+    if (!IsDefaultSchema(schema.properties[key])) continue
     object[key] = Visit(schema.properties[key], references, object[key])
   }
-  // additional property check
-  const additionalPropertiesSchema = schema.additionalProperties as Types.TSchema
-  if (!(IsObject(additionalPropertiesSchema) && HasDefault(additionalPropertiesSchema))) return object
+  // return if not additional properties
+  if (!IsDefaultSchema(additionalPropertiesSchema)) return object
   // additional properties
   for (const key of Object.getOwnPropertyNames(object)) {
     if (knownPropertyKeys.includes(key)) continue
@@ -82,16 +82,16 @@ function TObject(schema: Types.TObject, references: Types.TSchema[], value: unkn
 function TRecord(schema: Types.TRecord<any, any>, references: Types.TSchema[], value: unknown): any {
   const object = ValueOrDefault(schema, value)
   if (!IsObject(object)) return object
+  const additionalPropertiesSchema = schema.additionalProperties as Types.TSchema
   const [propertyKeyPattern, propertySchema] = Object.entries(schema.patternProperties)[0]
   const knownPropertyKey = new RegExp(propertyKeyPattern)
   // properties
   for (const key of Object.getOwnPropertyNames(object)) {
-    if (!(knownPropertyKey.test(key) && HasDefault(propertySchema))) continue
+    if (!(knownPropertyKey.test(key) && IsDefaultSchema(propertySchema))) continue
     object[key] = Visit(propertySchema, references, object[key])
   }
-  // additional property check
-  const additionalPropertiesSchema = schema.additionalProperties as Types.TSchema
-  if (!(IsObject(additionalPropertiesSchema) && HasDefault(additionalPropertiesSchema))) return object
+  // return if not additional properties
+  if (!IsDefaultSchema(additionalPropertiesSchema)) return object
   // additional properties
   for (const key of Object.getOwnPropertyNames(object)) {
     if (knownPropertyKey.test(key)) continue

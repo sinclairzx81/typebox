@@ -44,10 +44,12 @@ export class ValueMutateInvalidRootMutationError extends Error {
   }
 }
 // --------------------------------------------------------------------------
-// Mutators
+// Transmutable
 // --------------------------------------------------------------------------
-export type Mutable = { [key: string]: unknown } | unknown[]
-function ObjectType(root: Mutable, path: string, current: unknown, next: Record<string, unknown>) {
+
+export type Transmutable = Record<PropertyKey, unknown> | Array<unknown>
+
+function ObjectType(root: Transmutable, path: string, current: unknown, next: Record<string, unknown>) {
   if (!IsObject(current)) {
     ValuePointer.Set(root, path, Clone(next))
   } else {
@@ -68,7 +70,7 @@ function ObjectType(root: Mutable, path: string, current: unknown, next: Record<
     }
   }
 }
-function ArrayType(root: Mutable, path: string, current: unknown, next: unknown[]) {
+function ArrayType(root: Transmutable, path: string, current: unknown, next: unknown[]) {
   if (!IsArray(current)) {
     ValuePointer.Set(root, path, Clone(next))
   } else {
@@ -78,7 +80,7 @@ function ArrayType(root: Mutable, path: string, current: unknown, next: unknown[
     current.splice(next.length)
   }
 }
-function TypedArrayType(root: Mutable, path: string, current: unknown, next: TypedArrayType) {
+function TypedArrayType(root: Transmutable, path: string, current: unknown, next: TypedArrayType) {
   if (IsTypedArray(current) && current.length === next.length) {
     for (let i = 0; i < current.length; i++) {
       current[i] = next[i]
@@ -87,11 +89,11 @@ function TypedArrayType(root: Mutable, path: string, current: unknown, next: Typ
     ValuePointer.Set(root, path, Clone(next))
   }
 }
-function ValueType(root: Mutable, path: string, current: unknown, next: unknown) {
+function ValueType(root: Transmutable, path: string, current: unknown, next: unknown) {
   if (current === next) return
   ValuePointer.Set(root, path, next)
 }
-function Visit(root: Mutable, path: string, current: unknown, next: unknown) {
+function Visit(root: Transmutable, path: string, current: unknown, next: unknown) {
   if (IsArray(next)) return ArrayType(root, path, current, next)
   if (IsTypedArray(next)) return TypedArrayType(root, path, current, next)
   if (IsObject(next)) return ObjectType(root, path, current, next)
@@ -100,7 +102,7 @@ function Visit(root: Mutable, path: string, current: unknown, next: unknown) {
 // --------------------------------------------------------------------------
 // Mutate
 // --------------------------------------------------------------------------
-function IsNonMutableValue(value: unknown): value is Mutable {
+function IsNonMutableValue(value: unknown): value is Transmutable {
   return IsTypedArray(value) || IsValueType(value)
 }
 function IsMismatchedValue(current: unknown, next: unknown) {
@@ -111,11 +113,12 @@ function IsMismatchedValue(current: unknown, next: unknown) {
   )
 }
 // --------------------------------------------------------------------------
-// Mutate
+// Transmute
 // --------------------------------------------------------------------------
-/** `[Mutable]` Performs a deep mutable value assignment while retaining internal references. */
-export function Mutate(current: Mutable, next: Mutable): void {
+/** `[Mutable]` Transforms the current value into the next value and returns the result. This function performs mutable operations on the current value. To avoid mutation, clone the current value before passing to this function. */
+export function Transmute<Next extends Transmutable>(current: Transmutable, next: Next): Next {
   if (IsNonMutableValue(current) || IsNonMutableValue(next)) throw new ValueMutateInvalidRootMutationError()
   if (IsMismatchedValue(current, next)) throw new ValueMutateTypeMismatchError()
   Visit(current, '', current, next)
+  return next
 }
