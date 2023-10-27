@@ -82,7 +82,7 @@ License MIT
   - [Rest](#types-rest)
   - [Transform](#types-transform)
   - [Intrinsic](#types-intrinsic)
-  - [Guard](#types-guard)
+  - [TypeGuard](#types-typeguard)
   - [Unsafe](#types-unsafe)
   - [Strict](#types-strict)
 - [Values](#values)
@@ -1042,9 +1042,9 @@ const S = StringEnum(['A', 'B', 'C'])                // const S = {
 
 type S = Static<typeof T>                            // type S = 'A' | 'B' | 'C'
 ```
-<a name='types-guard'></a>
+<a name='types-typeguard'></a>
 
-### Type Guard
+### TypeGuard
 
 TypeBox can type check its own types with the TypeGuard module. This module is written for reflection and provides structural tests for every TypeBox type. Functions of this module return `is` guards which can be used with TypeScript control flow assertions to obtain schema inference. The following guards that the value A is TString.
 
