@@ -124,7 +124,7 @@ export namespace Value {
   export function Errors(...args: any[]) {
     return ValueErrors.Errors.apply(ValueErrors, args as any)
   }
-  /** Returns true if left and right values are structurally equal */
+  /** Returns true if left and right values are deeply equal */
   export function Equal<T>(left: T, right: unknown): right is T {
     return ValueEqual.Equal(left, right)
   }

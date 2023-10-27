@@ -27,30 +27,53 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import type { ObjectType, ArrayType, TypedArrayType, ValueType } from './guard'
-import { IsObject, IsInstanceObject, IsDate, IsArray, IsTypedArray, IsValueType } from './guard'
+import { IsObject, IsInstanceObject, IsSet, IsMap, IsDate, IsArray, IsTypedArray, IsValueType } from './guard'
 
 // --------------------------------------------------------------------------
-// Equality Checks
+// Equality
 // --------------------------------------------------------------------------
-function ObjectType(left: ObjectType, right: unknown): boolean {
+function EqualsTypedArray(left: TypedArrayType, right: unknown): any {
+  if (!IsTypedArray(right) || left.length !== right.length || Object.getPrototypeOf(left).constructor.name !== Object.getPrototypeOf(right).constructor.name) return false
+  return left.every((value, index) => Equal(value, right[index]))
+}
+function EqualsDate(left: Date, right: unknown): any {
+  return IsDate(right) && left.getTime() === right.getTime()
+}
+function EqualsMap(left: Map<unknown, unknown>, right: unknown) {
+  if (!IsMap(right) || left.size !== right.size) return false
+  for (const [key, value] of left) {
+    if (!Equal(value, right.get(key))) return false
+  }
+  return true
+}
+function EqualsSet(left: Set<unknown>, right: unknown) {
+  if (!IsSet(right) || left.size !== right.size) return false
+  for (const leftValue of left) {
+    let found = false
+    for (const rightValue of right) {
+      if (Equal(leftValue, rightValue)) {
+        found = true
+        break
+      }
+    }
+    if (!found) {
+      return false
+    }
+  }
+  return true
+}
+function EqualsArray(left: ArrayType, right: unknown): any {
+  if (!IsArray(right) || left.length !== right.length) return false
+  return left.every((value, index) => Equal(value, right[index]))
+}
+function EqualsObject(left: ObjectType, right: unknown): boolean {
   if (!IsObject(right) || IsInstanceObject(right)) return false
   const leftKeys = [...Object.keys(left), ...Object.getOwnPropertySymbols(left)]
   const rightKeys = [...Object.keys(right), ...Object.getOwnPropertySymbols(right)]
   if (leftKeys.length !== rightKeys.length) return false
   return leftKeys.every((key) => Equal(left[key], right[key]))
 }
-function DateType(left: Date, right: unknown): any {
-  return IsDate(right) && left.getTime() === right.getTime()
-}
-function ArrayType(left: ArrayType, right: unknown): any {
-  if (!IsArray(right) || left.length !== right.length) return false
-  return left.every((value, index) => Equal(value, right[index]))
-}
-function TypedArrayType(left: TypedArrayType, right: unknown): any {
-  if (!IsTypedArray(right) || left.length !== right.length || Object.getPrototypeOf(left).constructor.name !== Object.getPrototypeOf(right).constructor.name) return false
-  return left.every((value, index) => Equal(value, right[index]))
-}
-function ValueType(left: ValueType, right: unknown): any {
+function EqualsValueType(left: ValueType, right: unknown): any {
   return left === right
 }
 // --------------------------------------------------------------------------
@@ -58,10 +81,15 @@ function ValueType(left: ValueType, right: unknown): any {
 // --------------------------------------------------------------------------
 /** Returns true if left and right values are structurally equal */
 export function Equal<T>(left: T, right: unknown): right is T {
-  if (IsTypedArray(left)) return TypedArrayType(left, right)
-  if (IsDate(left)) return DateType(left, right)
-  if (IsArray(left)) return ArrayType(left, right)
-  if (IsObject(left)) return ObjectType(left, right)
-  if (IsValueType(left)) return ValueType(left, right)
-  throw new Error('ValueEquals: Unable to compare value')
+  // prettier-ignore
+  return (
+    IsTypedArray(left) ? EqualsTypedArray(left, right) :
+    IsDate(left) ? EqualsDate(left, right) :
+    IsMap(left) ? EqualsMap(left, right) :
+    IsSet(left) ? EqualsSet(left, right) :
+    IsArray(left) ? EqualsArray(left, right) :
+    IsObject(left) ? EqualsObject(left, right) :
+    IsValueType(left) ? EqualsValueType(left, right) :
+    false
+  )
 }

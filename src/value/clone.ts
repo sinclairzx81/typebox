@@ -26,26 +26,41 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { IsArray, IsDate, IsObject, IsTypedArray, IsValueType } from './guard'
 import type { ObjectType, ArrayType, TypedArrayType, ValueType } from './guard'
+import { IsArray, IsDate, IsMap, IsSet, IsObject, IsTypedArray, IsValueType } from './guard'
+import * as Types from '../typebox'
 
+// --------------------------------------------------------------------------
+// Errors
+// --------------------------------------------------------------------------
+export class CloneError extends Types.TypeBoxError {
+  constructor(public readonly value: unknown) {
+    super('Unable to clone value')
+  }
+}
 // --------------------------------------------------------------------------
 // Clonable
 // --------------------------------------------------------------------------
-function ObjectType(value: ObjectType): any {
+function CloneTypedArray(value: TypedArrayType): any {
+  return value.slice()
+}
+function CloneArray(value: ArrayType): any {
+  return value.map((element: any) => Clone(element))
+}
+function CloneDate(value: Date): any {
+  return new Date(value.getTime())
+}
+function CloneMap(value: Map<unknown, unknown>): any {
+  return new Map(value.entries())
+}
+function CloneSet(value: Set<unknown>): any {
+  return new Set(value.values())
+}
+function CloneObject(value: ObjectType): any {
   const keys = [...Object.getOwnPropertyNames(value), ...Object.getOwnPropertySymbols(value)]
   return keys.reduce((acc, key) => ({ ...acc, [key]: Clone(value[key]) }), {})
 }
-function ArrayType(value: ArrayType): any {
-  return value.map((element: any) => Clone(element))
-}
-function TypedArrayType(value: TypedArrayType): any {
-  return value.slice()
-}
-function DateType(value: Date): any {
-  return new Date(value.toISOString())
-}
-function ValueType(value: ValueType): any {
+function CloneValueType(value: ValueType): any {
   return value
 }
 // --------------------------------------------------------------------------
@@ -53,10 +68,15 @@ function ValueType(value: ValueType): any {
 // --------------------------------------------------------------------------
 /** Returns a structural clone of the given value */
 export function Clone<T extends unknown>(value: T): T {
-  if (IsTypedArray(value)) return TypedArrayType(value)
-  if (IsArray(value)) return ArrayType(value)
-  if (IsDate(value)) return DateType(value)
-  if (IsObject(value)) return ObjectType(value)
-  if (IsValueType(value)) return ValueType(value)
-  throw new Error('ValueClone: Unable to clone value')
+  // prettier-ignore
+  return (
+    IsTypedArray(value) ? CloneTypedArray(value) :
+    IsMap(value) ? CloneMap(value) :
+    IsSet(value) ? CloneSet(value) :
+    IsDate(value) ? CloneDate(value) :
+    IsArray(value) ? CloneArray(value) :
+    IsObject(value) ? CloneObject(value) :
+    IsValueType(value) ? CloneValueType(value) :
+    (() => { throw new CloneError(value) })
+  )
 }

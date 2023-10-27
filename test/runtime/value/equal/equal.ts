@@ -90,4 +90,46 @@ describe('value/equal/Equal', () => {
     const R = Value.Equal(new Uint8Array([0, 1, 2]), new Int8Array([0, 1, 2]))
     Assert.IsFalse(R)
   })
+  // ----------------------------------------------------------------
+  // Map
+  // ----------------------------------------------------------------
+  it('Should check equality for Map 1', () => {
+    const A = new Map([
+      ['X', { x: 1, y: 2 }],
+      ['Y', { x: 3, y: 4 }],
+    ])
+    const B = new Map([
+      ['X', { x: 1, y: 2 }],
+      ['Y', { x: 3, y: 4 }],
+    ])
+    const R = Value.Equal(A, B)
+    Assert.IsTrue(R)
+  })
+  it('Should check equality for Map 2', () => {
+    const A = new Map([
+      ['X', { x: 1, y: 2 }],
+      ['Y', { x: 3, y: 4 }],
+    ])
+    const B = new Map([
+      ['X', { x: 1, y: 2 }],
+      ['Y', { x: 3, y: 100 }],
+    ])
+    const R = Value.Equal(A, B)
+    Assert.IsFalse(R)
+  })
+  // ----------------------------------------------------------------
+  // Set
+  // ----------------------------------------------------------------
+  it('Should check equality for Set 1', () => {
+    const A = new Set([{ x: 1 }, { x: 2 }, { x: 3 }])
+    const B = new Set([{ x: 1 }, { x: 2 }, { x: 3 }])
+    const R = Value.Equal(A, B)
+    Assert.IsTrue(R)
+  })
+  it('Should check equality for Set 2', () => {
+    const A = new Set([{ x: 1 }, { x: 2 }, { x: 3 }])
+    const B = new Set([{ x: 1 }, { x: 2 }, { x: 100 }])
+    const R = Value.Equal(A, B)
+    Assert.IsFalse(R)
+  })
 })

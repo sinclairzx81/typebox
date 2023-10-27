@@ -57,34 +57,39 @@ export function IsIterator(value: unknown): value is IterableIterator<any> {
   return IsObject(value) && Symbol.iterator in value
 }
 // --------------------------------------------------------------------------
-// Nominal
-// --------------------------------------------------------------------------
-/** Returns true if this value is a typed array */
-export function IsTypedArray(value: unknown): value is TypedArrayType {
-  return ArrayBuffer.isView(value)
-}
-/** Returns true if this value is a Promise */
-export function IsPromise(value: unknown): value is Promise<unknown> {
-  return value instanceof Promise
-}
-/** Returns true if the value is a Uint8Array */
-export function IsUint8Array(value: unknown): value is Uint8Array {
-  return value instanceof Uint8Array
-}
-/** Returns true if this value is a Date */
-export function IsDate(value: unknown): value is Date {
-  return value instanceof Date && Number.isFinite(value.getTime())
-}
-// --------------------------------------------------------------------------
 // Standard
 // --------------------------------------------------------------------------
 /** Returns true if this value has this property key */
 export function HasPropertyKey<K extends PropertyKey>(value: Record<any, unknown>, key: K): value is ObjectType & Record<K, unknown> {
   return key in value
 }
-/** Returns true if this object is an instance of anything other than Object */
+/** Returns true if this value is an object instance extending anything other than Object */
 export function IsInstanceObject(value: unknown): value is ObjectType {
   return IsObject(value) && IsFunction(value.constructor) && value.constructor.name !== 'Object'
+}
+/** Returns true if the value is a Uint8Array */
+export function IsUint8Array(value: unknown): value is Uint8Array {
+  return value instanceof Uint8Array
+}
+/** Returns true if this value is a Promise */
+export function IsPromise(value: unknown): value is Promise<unknown> {
+  return value instanceof Promise
+}
+/** Returns true if this value is an instance of Map<K, T> */
+export function IsMap(value: unknown): value is Map<unknown, unknown> {
+  return value instanceof Map
+}
+/** Returns true if this value is an instance of Set<T> */
+export function IsSet(value: unknown): value is Set<unknown> {
+  return value instanceof Set
+}
+/** Returns true if this value is a typed array */
+export function IsTypedArray(value: unknown): value is TypedArrayType {
+  return ArrayBuffer.isView(value)
+}
+/** Returns true if this value is a Date */
+export function IsDate(value: unknown): value is Date {
+  return value instanceof Date && Number.isFinite(value.getTime())
 }
 /** Returns true of this value is an object type */
 export function IsObject(value: unknown): value is ObjectType {

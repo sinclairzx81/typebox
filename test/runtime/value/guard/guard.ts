@@ -145,6 +145,28 @@ describe('value/guard/ValueGuard', () => {
     Assert.IsFalse(R)
   })
   // -----------------------------------------------------
+  // IsMap
+  // -----------------------------------------------------
+  it('Should guard Map 1', () => {
+    const R = ValueGuard.IsMap(new Map())
+    Assert.IsTrue(R)
+  })
+  it('Should guard Map 2', () => {
+    const R = ValueGuard.IsMap({})
+    Assert.IsFalse(R)
+  })
+  // -----------------------------------------------------
+  // IsSet
+  // -----------------------------------------------------
+  it('Should guard Set 1', () => {
+    const R = ValueGuard.IsSet(new Set())
+    Assert.IsTrue(R)
+  })
+  it('Should guard Set 2', () => {
+    const R = ValueGuard.IsMap([])
+    Assert.IsFalse(R)
+  })
+  // -----------------------------------------------------
   // IsFunction
   // -----------------------------------------------------
   it('Should guard function 1', () => {

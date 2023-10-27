@@ -153,4 +153,26 @@ describe('value/clone/Clone', () => {
     const R = Value.Clone(V)
     Assert.IsEqual(R, V)
   })
+  // --------------------------------------------
+  // Map
+  // --------------------------------------------
+  it('Should clone Map 1', () => {
+    const V = new Map([
+      ['A', 1],
+      ['B', 2],
+      ['C', 3],
+    ])
+    const R = Value.Clone(V)
+    Assert.IsEqual(V, R)
+    Assert.IsTrue(V !== R)
+  })
+  // --------------------------------------------
+  // Set
+  // --------------------------------------------
+  it('Should clone Set 1', () => {
+    const V = new Set([1, 2, 3])
+    const R = Value.Clone(V)
+    Assert.IsEqual(V, R)
+    Assert.IsTrue(V !== R)
+  })
 })
