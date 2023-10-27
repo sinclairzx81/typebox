@@ -1,45 +1,39 @@
 import { TypeSystem } from '@sinclair/typebox/system'
 import { TypeCompiler } from '@sinclair/typebox/compiler'
 import { Value, ValueGuard } from '@sinclair/typebox/value'
-import { Type, TypeGuard, Kind, Static, TSchema, KeyResolver } from '@sinclair/typebox'
+import { Type, TypeGuard, Kind, Static, TSchema, KeyResolver, TObject } from '@sinclair/typebox'
 import { Run } from './benchmark'
 
 // Todo: Investigate Union Default (initialize interior types)
 // Todo: Implement Value.Clean() Tests
 
-const T = Type.Intersect([Type.Number(), Type.Number()])
-const R = Value.Clean(T, { u: null, x: 1 })
+function ParseEnv<T extends TObject>(schema: T, value: unknown = process.env): Static<T> {
+  const converted = Value.Convert(schema, value)
+  const defaulted = Value.Default(schema, converted)
+  const checked = Value.Check(schema, defaulted)
+  return checked
+    ? (Value.Clean(schema, defaulted) as Static<T>)
+    : (() => {
+        const first = Value.Errors(schema, defaulted).First()!
+        throw new Error(`${first.message} ${first.path}. Value is ${first.value}`)
+      })()
+}
+console.log(process.env)
+
+const R = Run(
+  () => {
+    const E = ParseEnv(
+      Type.Object({
+        PROCESSOR_ARCHITECTURE: Type.String(),
+        PROCESSOR_IDENTIFIER: Type.String(),
+        PROCESSOR_LEVEL: Type.Number(),
+        PROCESSOR_REVISION: Type.Number(),
+      }),
+    )
+  },
+  {
+    iterations: 2000,
+  },
+)
+
 console.log(R)
-// const T = Type.Intersect([
-//   Type.Object({ x: Type.Number() }),
-//   Type.Object({ y: Type.Number() })
-// ], {
-//   unevaluatedProperties: Type.Union([
-//     Type.Number(),
-//     Type.Null()
-//   ])
-// })
-
-// const T = Type.Object(
-//   {
-//     number: Type.Number({ default: 1 }),
-//     negNumber: Type.Number({ default: 1 }),
-//     maxNumber: Type.Number({ default: 3 }),
-//     string: Type.String({ default: 5 }),
-//     longString: Type.String(),
-//     boolean: Type.Boolean(),
-//     deeplyNested: Type.Object({
-//       foo: Type.String({ default: 2 }),
-//       num: Type.Number(),
-//       bool: Type.Boolean(),
-//     }),
-//   },
-//   {
-//     additionalProperties: Type.Any(),
-//   },
-// )
-
-// const A = Value.Default(T, {})
-// console.log(A)
-
-// console.log(Value.Transmute({}, {}))
