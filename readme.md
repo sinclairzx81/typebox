@@ -1141,7 +1141,7 @@ const R = Value.Check(T, { x: 1 })                   // const R = true
 
 ### Cast
 
-Use the Cast function to convert a value into a new value matching the target type. This function will retain as much information as possible from the original value. Any invalid values will be replaced with valid values using reasonable defaults.
+Use the Cast function to convert a value into a new value matching a type. This function will retain valid properties from value and regenerate new values for invalid properties. The Cast function is intended to be used to help automate migrating existing values from one type to another.
 
 ```typescript
 const T = Type.Object({ 
@@ -1162,7 +1162,7 @@ const Z = Value.Cast(T, { x: 1, y: 2, z: 3 })        // const Z = { x: 1, y: 2 }
 
 ### Convert
 
-Use the Convert function to convert a value into its target type if a reasonable conversion is possible. This function may return an invalid value which should be checked prior to use.
+Use the Convert function to convert a value into its target type if a reasonable conversion is possible. Passing structurally invalid values to this function may cause this function to return invalid results. You should check the result of this function before use. The Convert function can be used to preprocess values prior to validation.
 
 ```typescript
 const T = Type.Object({ 
@@ -1178,7 +1178,7 @@ const R2 = Value.Convert(T, { x: 'not a number' })   // const R2 = { x: 'not a n
 
 ### Clean
 
-Use the Clean function to remove any excess or unexpected values not represented a type. This function may return an invalid value which should be checked prior to use.
+Use the Clean function to remove excess properties from a value. Passing structurally invalid values to this function may cause this function to return invalid results. You should check the result of this function before use. The Clean function can be used to post process values after validation.
 
 ```typescript
 const T = Type.Object({ 
@@ -1197,22 +1197,19 @@ const Z = Value.Clean(T, { x: 1, y: 2, z: 3 })        // const Z = { x: 1, y: 2 
 
 ### Default
 
-Creates a value by applying annotated defaults to any missing or undefined values within the provided value. This function operates exclusively on the optional default property of any given type, otherwise no action. This function may return an invalid value which should be checked prior to use.
+Use the Default function to generate missing properties from default annotations. Passing structurally invalid values to this function may cause this function to return invalid results. You should check the result of this function before use. The Default function can be used to pre process values before validation.
 
 ```typescript
 const T = Type.Object({ 
   x: Type.Number({ default: 0 }), 
-  y: Type.Number({ default: 0 }),
-  z: Type.Number()
+  y: Type.Number({ default: 0 })
 })
 
-const X = Value.Defaults(T, null)                        // const X = null
+const X = Value.Default(T, null)                        // const X = null - structurally invalid
 
-const Y = Value.Defaults(T, { })                         // const Y = { x: 0, y: 0 }
+const Y = Value.Default(T, { })                         // const Y = { x: 0, y: 0 }
 
-const Z = Value.Defaults(T, { x: 1 })                    // const Z = { x: 1, y: 0 }
-
-const W = Value.Defaults(T, { x: true })                 // const W = { x: true, y: 0 }
+const Z = Value.Default(T, { x: 1 })                    // const Z = { x: 1, y: 0 }
 ```
 
 <a name='values-decode'></a>
