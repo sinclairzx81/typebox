@@ -13,19 +13,3 @@ export function Parse<T extends TSchema>(schema: T, value: unknown): StaticDecod
   const decoded = Value.Decode(schema, defaulted)
   return Value.Clean(schema, decoded)
 }
-
-const DateNumber = Type.Transform(Type.Number())
-  .Decode((value) => new Date(value))
-  .Encode((value) => value.getTime())
-
-const R = Parse(
-  Type.Object({
-    PROCESSOR_ARCHITECTURE: Type.String(),
-    PROCESSOR_IDENTIFIER: Type.String(),
-    PROCESSOR_LEVEL: DateNumber,
-    PROCESSOR_REVISION: Type.Number(),
-  }),
-  process.env,
-)
-
-console.log(R)

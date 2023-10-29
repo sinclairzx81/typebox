@@ -1,15 +1,12 @@
-import { Type, Static, TSchema } from '@sinclair/typebox'
+import { Type, StaticDecode, TSchema } from '@sinclair/typebox'
 import { Value } from '@sinclair/typebox/value'
 
 /** User defined parse function */
-export function Parse<T extends TSchema>(schema: T, value: unknown): Static<T> {
+export function Parse<T extends TSchema>(schema: T, value: unknown): StaticDecode<T> {
   const converted = Value.Convert(schema, value)
   const defaulted = Value.Default(schema, converted)
-  const checked = Value.Check(schema, defaulted)
-  return checked ? Value.Clean(schema, defaulted) as Static<T> : (() => {
-    const first = Value.Errors(schema, defaulted).First()!
-    throw new Error(`${first.message} ${first.path}. Value is ${first.value}`)
-  })()
+  const decoded = Value.Decode(schema, defaulted)
+  return Value.Clean(schema, decoded)
 }
 
 // Parse some environment variables
