@@ -1144,6 +1144,9 @@ export namespace TypeGuard {
   function IsOptionalSchema(value: unknown): value is boolean | undefined {
     return ValueGuard.IsUndefined(value) || TSchema(value)
   }
+  // ----------------------------------------------------------------
+  // Types
+  // ----------------------------------------------------------------
   /** Returns true if the given value is TAny */
   export function TAny(schema: unknown): schema is TAny {
     // prettier-ignore
@@ -1533,40 +1536,42 @@ export namespace TypeGuard {
   }
   /** Returns true if the given value is TSchema */
   export function TSchema(schema: unknown): schema is TSchema {
+    // prettier-ignore
     return (
-      ValueGuard.IsObject(schema) &&
-      (TAny(schema) ||
-        TArray(schema) ||
-        TBoolean(schema) ||
-        TBigInt(schema) ||
-        TAsyncIterator(schema) ||
-        TConstructor(schema) ||
-        TDate(schema) ||
-        TFunction(schema) ||
-        TInteger(schema) ||
-        TIntersect(schema) ||
-        TIterator(schema) ||
-        TLiteral(schema) ||
-        TNever(schema) ||
-        TNot(schema) ||
-        TNull(schema) ||
-        TNumber(schema) ||
-        TObject(schema) ||
-        TPromise(schema) ||
-        TRecord(schema) ||
-        TRef(schema) ||
-        TString(schema) ||
-        TSymbol(schema) ||
-        TTemplateLiteral(schema) ||
-        TThis(schema) ||
-        TTuple(schema) ||
-        TUndefined(schema) ||
-        TUnion(schema) ||
-        TUint8Array(schema) ||
-        TUnknown(schema) ||
-        TUnsafe(schema) ||
-        TVoid(schema) ||
-        (TKind(schema) && TypeRegistry.Has(schema[Kind] as any)))
+      ValueGuard.IsObject(schema)
+    ) && (
+      TAny(schema) ||
+      TArray(schema) ||
+      TBoolean(schema) ||
+      TBigInt(schema) ||
+      TAsyncIterator(schema) ||
+      TConstructor(schema) ||
+      TDate(schema) ||
+      TFunction(schema) ||
+      TInteger(schema) ||
+      TIntersect(schema) ||
+      TIterator(schema) ||
+      TLiteral(schema) ||
+      TNever(schema) ||
+      TNot(schema) ||
+      TNull(schema) ||
+      TNumber(schema) ||
+      TObject(schema) ||
+      TPromise(schema) ||
+      TRecord(schema) ||
+      TRef(schema) ||
+      TString(schema) ||
+      TSymbol(schema) ||
+      TTemplateLiteral(schema) ||
+      TThis(schema) ||
+      TTuple(schema) ||
+      TUndefined(schema) ||
+      TUnion(schema) ||
+      TUint8Array(schema) ||
+      TUnknown(schema) ||
+      TUnsafe(schema) ||
+      TVoid(schema) ||
+      (TKind(schema) && TypeRegistry.Has(schema[Kind] as any))
     )
   }
 }
@@ -1986,7 +1991,12 @@ export namespace TypeExtends {
       !TypeGuard.TObject(right) ? TypeExtendsResult.False :
       (() => {
         for (const key of Object.getOwnPropertyNames(right.properties)) {
-          if (!(key in left.properties)) return TypeExtendsResult.False
+          if (!(key in left.properties) && !TypeGuard.TOptional(right.properties[key])) {
+            return TypeExtendsResult.False
+          }
+          if(TypeGuard.TOptional(right.properties[key])) {
+            return TypeExtendsResult.True
+          }
           if (Property(left.properties[key], right.properties[key]) === TypeExtendsResult.False) {
             return TypeExtendsResult.False
           }
