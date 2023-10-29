@@ -27,6 +27,7 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import { IsString, IsObject, IsArray, IsUndefined } from './guard'
+import { Check } from './check'
 import { Deref } from './deref'
 import * as Types from '../typebox'
 
@@ -35,6 +36,12 @@ import * as Types from '../typebox'
 // --------------------------------------------------------------------------
 function ValueOrDefault(schema: Types.TSchema, value: unknown) {
   return !(value === undefined) || !('default' in schema) ? value : schema.default
+}
+// ----------------------------------------------------------------
+// IsCheckable
+// ----------------------------------------------------------------
+function IsCheckable(schema: unknown): boolean {
+  return Types.TypeGuard.TSchema(schema) && schema[Types.Kind] !== 'Unsafe'
 }
 // --------------------------------------------------------------------------
 // IsDefaultSchema
@@ -46,58 +53,58 @@ function IsDefaultSchema(value: unknown): value is Types.TSchema {
 // Types
 // --------------------------------------------------------------------------
 function TArray(schema: Types.TArray, references: Types.TSchema[], value: unknown): any {
-  const elements = ValueOrDefault(schema, value)
-  if (!IsArray(elements)) return elements
-  for (let i = 0; i < elements.length; i++) {
-    elements[i] = Visit(schema.items, references, elements[i])
+  const defaulted = ValueOrDefault(schema, value)
+  if (!IsArray(defaulted)) return defaulted
+  for (let i = 0; i < defaulted.length; i++) {
+    defaulted[i] = Visit(schema.items, references, defaulted[i])
   }
-  return elements
+  return defaulted
 }
 function TIntersect(schema: Types.TIntersect, references: Types.TSchema[], value: unknown): any {
-  const result = ValueOrDefault(schema, value)
+  const defaulted = ValueOrDefault(schema, value)
   return schema.allOf.reduce((acc, schema) => {
-    const next = Visit(schema, references, result)
+    const next = Visit(schema, references, defaulted)
     return IsObject(next) ? { ...acc, ...next } : next
   }, {})
 }
 function TObject(schema: Types.TObject, references: Types.TSchema[], value: unknown): any {
-  const object = ValueOrDefault(schema, value)
-  if (!IsObject(object)) return object
+  const defaulted = ValueOrDefault(schema, value)
+  if (!IsObject(defaulted)) return defaulted
   const additionalPropertiesSchema = schema.additionalProperties as Types.TSchema
   const knownPropertyKeys = Object.getOwnPropertyNames(schema.properties)
   // properties
   for (const key of knownPropertyKeys) {
     if (!IsDefaultSchema(schema.properties[key])) continue
-    object[key] = Visit(schema.properties[key], references, object[key])
+    defaulted[key] = Visit(schema.properties[key], references, defaulted[key])
   }
   // return if not additional properties
-  if (!IsDefaultSchema(additionalPropertiesSchema)) return object
+  if (!IsDefaultSchema(additionalPropertiesSchema)) return defaulted
   // additional properties
-  for (const key of Object.getOwnPropertyNames(object)) {
+  for (const key of Object.getOwnPropertyNames(defaulted)) {
     if (knownPropertyKeys.includes(key)) continue
-    object[key] = Visit(additionalPropertiesSchema, references, object[key])
+    defaulted[key] = Visit(additionalPropertiesSchema, references, defaulted[key])
   }
-  return object
+  return defaulted
 }
 function TRecord(schema: Types.TRecord<any, any>, references: Types.TSchema[], value: unknown): any {
-  const object = ValueOrDefault(schema, value)
-  if (!IsObject(object)) return object
+  const defaulted = ValueOrDefault(schema, value)
+  if (!IsObject(defaulted)) return defaulted
   const additionalPropertiesSchema = schema.additionalProperties as Types.TSchema
   const [propertyKeyPattern, propertySchema] = Object.entries(schema.patternProperties)[0]
   const knownPropertyKey = new RegExp(propertyKeyPattern)
   // properties
-  for (const key of Object.getOwnPropertyNames(object)) {
+  for (const key of Object.getOwnPropertyNames(defaulted)) {
     if (!(knownPropertyKey.test(key) && IsDefaultSchema(propertySchema))) continue
-    object[key] = Visit(propertySchema, references, object[key])
+    defaulted[key] = Visit(propertySchema, references, defaulted[key])
   }
   // return if not additional properties
-  if (!IsDefaultSchema(additionalPropertiesSchema)) return object
+  if (!IsDefaultSchema(additionalPropertiesSchema)) return defaulted
   // additional properties
-  for (const key of Object.getOwnPropertyNames(object)) {
+  for (const key of Object.getOwnPropertyNames(defaulted)) {
     if (knownPropertyKey.test(key)) continue
-    object[key] = Visit(additionalPropertiesSchema, references, object[key])
+    defaulted[key] = Visit(additionalPropertiesSchema, references, defaulted[key])
   }
-  return object
+  return defaulted
 }
 function TRef(schema: Types.TRef<any>, references: Types.TSchema[], value: unknown): any {
   return Visit(Deref(schema, references), references, ValueOrDefault(schema, value))
@@ -105,14 +112,24 @@ function TRef(schema: Types.TRef<any>, references: Types.TSchema[], value: unkno
 function TThis(schema: Types.TThis, references: Types.TSchema[], value: unknown): any {
   return Visit(Deref(schema, references), references, value)
 }
-function TTuple(schema: Types.TTuple<any[]>, references: Types.TSchema[], value: unknown): any {
-  const elements = ValueOrDefault(schema, value)
-  if (!IsArray(elements) || IsUndefined(schema.items)) return elements
-  const [items, max] = [schema.items!, Math.max(schema.items!.length, elements.length)]
+function TTuple(schema: Types.TTuple, references: Types.TSchema[], value: unknown): any {
+  const defaulted = ValueOrDefault(schema, value)
+  if (!IsArray(defaulted) || IsUndefined(schema.items)) return defaulted
+  const [items, max] = [schema.items!, Math.max(schema.items!.length, defaulted.length)]
   for (let i = 0; i < max; i++) {
-    if (i < items.length) elements[i] = Visit(items[i], references, elements[i])
+    if (i < items.length) defaulted[i] = Visit(items[i], references, defaulted[i])
   }
-  return elements
+  return defaulted
+}
+function TUnion(schema: Types.TUnion, references: Types.TSchema[], value: unknown): any {
+  const defaulted = ValueOrDefault(schema, value)
+  for (const inner of schema.anyOf) {
+    const result = Visit(inner, references, defaulted)
+    if (IsCheckable(inner) && Check(inner, result)) {
+      return result
+    }
+  }
+  return defaulted
 }
 function Visit(schema: Types.TSchema, references: Types.TSchema[], value: unknown): any {
   const references_ = IsString(schema.$id) ? [...references, schema] : references
@@ -132,6 +149,8 @@ function Visit(schema: Types.TSchema, references: Types.TSchema[], value: unknow
       return TThis(schema_, references_, value)
     case 'Tuple':
       return TTuple(schema_, references_, value)
+    case 'Union':
+      return TUnion(schema_, references_, value)
     default:
       return ValueOrDefault(schema_, value)
   }

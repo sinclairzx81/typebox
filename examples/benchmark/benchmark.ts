@@ -28,7 +28,6 @@ THE SOFTWARE.
 
 import { Stopwatch } from './stopwatch'
 
-
 export type BenchmarkFunction = () => any
 
 export interface BenchmarkOptions {
@@ -37,7 +36,7 @@ export interface BenchmarkOptions {
 export interface BenchmarkResult extends BenchmarkOptions {
   elapsed: number
 }
-export function Run(callback: BenchmarkFunction, options: BenchmarkOptions): BenchmarkResult {
+export function Benchmark(callback: BenchmarkFunction, options: BenchmarkOptions): BenchmarkResult {
   const stopwatch = new Stopwatch()
   for (let i = 0; i < options.iterations; i++) {
     callback()

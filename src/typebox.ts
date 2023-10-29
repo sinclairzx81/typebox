@@ -1144,6 +1144,9 @@ export namespace TypeGuard {
   function IsOptionalSchema(value: unknown): value is boolean | undefined {
     return ValueGuard.IsUndefined(value) || TSchema(value)
   }
+  // ----------------------------------------------------------------
+  // Types
+  // ----------------------------------------------------------------
   /** Returns true if the given value is TAny */
   export function TAny(schema: unknown): schema is TAny {
     // prettier-ignore

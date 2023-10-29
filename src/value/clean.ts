@@ -28,8 +28,8 @@ THE SOFTWARE.
 
 import { IsString, IsObject, IsArray, IsUndefined } from './guard'
 import { Check } from './check'
-import { Deref } from './deref'
 import { Clone } from './clone'
+import { Deref } from './deref'
 import * as Types from '../typebox'
 
 // --------------------------------------------------------------------------
@@ -37,6 +37,12 @@ import * as Types from '../typebox'
 // --------------------------------------------------------------------------
 function IsSchema(schema: unknown): schema is Types.TSchema {
   return Types.TypeGuard.TSchema(schema)
+}
+// ----------------------------------------------------------------
+// IsCheckable
+// ----------------------------------------------------------------
+function IsCheckable(schema: unknown): boolean {
+  return Types.TypeGuard.TSchema(schema) && schema[Types.Kind] !== 'Unsafe'
 }
 // --------------------------------------------------------------------------
 // Types
@@ -114,8 +120,9 @@ function TTuple(schema: Types.TTuple, references: Types.TSchema[], value: unknow
 }
 function TUnion(schema: Types.TUnion, references: Types.TSchema[], value: unknown): any {
   for (const inner of schema.anyOf) {
-    if (!Check(inner, value)) continue
-    return Visit(inner, references, value)
+    if (IsCheckable(inner) && Check(inner, value)) {
+      return Visit(inner, references, value)
+    }
   }
   return value
 }
