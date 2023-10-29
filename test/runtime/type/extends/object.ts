@@ -174,4 +174,55 @@ describe('type/extends/Object', () => {
     const R = TypeExtends.Extends(Type.Object({ a: Type.Number() }), Type.Date())
     Assert.IsEqual(R, TypeExtendsResult.False)
   })
+  // ----------------------------------------------------------------
+  // Optional
+  // ----------------------------------------------------------------
+  it('Should extend optional 1', () => {
+    const A = Type.Object({ a: Type.Number() })
+    const B = Type.Object({ a: Type.Optional(Type.Number()) })
+    const C = TypeExtends.Extends(A, B)
+    Assert.IsEqual(C, TypeExtendsResult.True)
+  })
+  it('Should extend optional 2', () => {
+    const A = Type.Object({ a: Type.Number() })
+    const B = Type.Object({ a: Type.Optional(Type.Number()) })
+    const C = TypeExtends.Extends(B, A)
+    Assert.IsEqual(C, TypeExtendsResult.False)
+  })
+  it('Should extend optional 3', () => {
+    const A = Type.Object({
+      x: Type.Optional(Type.Number()),
+      y: Type.Number(),
+    })
+    const B = Type.Object({
+      y: Type.Number(),
+      z: Type.Number(),
+    })
+    const R = TypeExtends.Extends(A, B)
+    Assert.IsEqual(R, TypeExtendsResult.False)
+  })
+  it('Should extend optional 4', () => {
+    const A = Type.Object({
+      x: Type.Number(),
+      y: Type.Number(),
+    })
+    const B = Type.Object({
+      y: Type.Number(),
+      z: Type.Number(),
+    })
+    const R = TypeExtends.Extends(A, B)
+    Assert.IsEqual(R, TypeExtendsResult.False)
+  })
+  it('Should extend optional 5', () => {
+    const A = Type.Object({
+      x: Type.Number(),
+      y: Type.Number(),
+    })
+    const B = Type.Object({
+      y: Type.Number(),
+      z: Type.Optional(Type.Number()),
+    })
+    const R = TypeExtends.Extends(A, B)
+    Assert.IsEqual(R, TypeExtendsResult.True)
+  })
 })

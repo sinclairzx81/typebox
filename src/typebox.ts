@@ -1991,7 +1991,12 @@ export namespace TypeExtends {
       !TypeGuard.TObject(right) ? TypeExtendsResult.False :
       (() => {
         for (const key of Object.getOwnPropertyNames(right.properties)) {
-          if (!(key in left.properties)) return TypeExtendsResult.False
+          if (!(key in left.properties) && !TypeGuard.TOptional(right.properties[key])) {
+            return TypeExtendsResult.False
+          }
+          if(TypeGuard.TOptional(right.properties[key])) {
+            return TypeExtendsResult.True
+          }
           if (Property(left.properties[key], right.properties[key]) === TypeExtendsResult.False) {
             return TypeExtendsResult.False
           }
