@@ -128,3 +128,51 @@ import { Type, Static } from '@sinclair/typebox'
   const I = Type.Intersect([R, T])
   Expect(I).ToStatic<Record<`key${number}`, number> & { x: number; y: number }>()
 }
+{
+  // expect T as Object
+  enum E {
+    A,
+    B,
+    C,
+  }
+  const T = Type.Record(Type.Enum(E), Type.Number())
+  Expect(T).ToStatic<{
+    0: number
+    1: number
+    2: number
+  }>
+}
+{
+  // expect T as Partial Object
+  enum E {
+    A,
+    B,
+    C,
+  }
+  const T = Type.Partial(Type.Record(Type.Enum(E), Type.Number()))
+  Expect(T).ToStatic<{
+    0?: number
+    1?: number
+    2?: number
+  }>
+}
+{
+  // expect T to support named properties
+  enum E {
+    A = 'A',
+    B = 'B',
+    C = 'C',
+  }
+  const T = Type.Record(Type.Enum(E), Type.Number())
+  Expect(T).ToStatic<{
+    A: number
+    B: number
+    C: number
+  }>
+}
+{
+  // expect T to support named properties
+  enum E {}
+  const T = Type.Record(Type.Enum(E), Type.Number())
+  Expect(T).ToStatic<{}>
+}
