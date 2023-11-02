@@ -650,7 +650,7 @@ export interface TPromise<T extends TSchema = TSchema> extends TSchema {
 export type TRecordFromUnionLiteralString<K extends TLiteralString, T extends TSchema> = { [_ in K['const']]: T }
 export type TRecordFromUnionLiteralNumber<K extends TLiteralNumber, T extends TSchema> = { [_ in K['const']]: T }
 // prettier-ignore
-export type TRecordFromEnumKey<K extends TEnum, T extends TSchema> = Ensure<TRecord<K, T>>
+export type TRecordFromEnumKey<K extends Record<string, string | number>, T extends TSchema> = Ensure<TObject<{ [_ in K[keyof K]]: T }>>
 // prettier-ignore
 export type TRecordFromUnionRest<K extends TSchema[], T extends TSchema> = K extends [infer L, ...infer R] ? (
   L extends TUnion<infer S> ? TRecordFromUnionRest<S, T> & TRecordFromUnionRest<AssertRest<R>, T> :
@@ -671,7 +671,7 @@ export type TRecordFromNumberKey<K extends TNumber, T extends TSchema> = Ensure<
 export type TRecordFromIntegerKey<K extends TInteger, T extends TSchema> = Ensure<TRecord<K, T>>
 // prettier-ignore
 export type TRecordResolve<K extends TSchema, T extends TSchema> = 
-  K extends TEnum<infer _> ? TRecordFromEnumKey<K, T> : // Enum before Union (intercept Hint)
+  K extends TEnum<infer S> ? TRecordFromEnumKey<S, T> : // Enum before Union (intercept Hint)
   K extends TUnion<infer S> ? TRecordFromUnion<S, T> :
   K extends TTemplateLiteral ? TRecordFromTemplateLiteralKey<K, T> :
   K extends TLiteralString ? TRecordFromLiteralStringKey<K, T> :
@@ -2915,6 +2915,7 @@ export class JsonTypeBuilder extends TypeBuilder {
   }
   /** `[Json]` Creates a Enum type */
   public Enum<V extends TEnumValue, T extends Record<TEnumKey, V>>(item: T, options: SchemaOptions = {}): TEnum<T> {
+    if (ValueGuard.IsUndefined(item)) return this.Throw('Enum undefined or empty')
     // prettier-ignore
     const values1 = Object.getOwnPropertyNames(item).filter((key) => isNaN(key as any)).map((key) => item[key]) as T[keyof T][]
     const values2 = [...new Set(values1)]
