@@ -608,7 +608,11 @@ export type TPartialObjectArray<T extends TObject[]> = AssertRest<{ [K in keyof 
 export type TPartialRest<T extends TSchema[]> = AssertRest<{ [K in keyof T]: TPartial<AssertType<T[K]>> }>
 // prettier-ignore
 export type TPartialProperties<T extends TProperties> = Evaluate<AssertProperties<{
-  [K in keyof T]: TOptional<T[K]>
+  [K in keyof T]: 
+    T[K] extends (TReadonlyOptional<infer S>) ? TReadonlyOptional<S> : 
+    T[K] extends (TReadonly<infer S>) ? TReadonlyOptional<S> : 
+    T[K] extends (TOptional<infer S>) ? TOptional<S> : 
+    TOptional<T[K]>
 }>>
 // prettier-ignore
 export type TPartial<T extends TSchema> =  
@@ -722,7 +726,11 @@ export type TReturnType<T extends TFunction> = T['returns']
 export type TRequiredRest<T extends TSchema[]> = AssertRest<{ [K in keyof T]: TRequired<AssertType<T[K]>> }>
 // prettier-ignore
 export type TRequiredProperties<T extends TProperties> = Evaluate<AssertProperties<{
-  [K in keyof T]: T[K] extends TOptional<infer S> ? S : T[K]
+  [K in keyof T]: 
+    T[K] extends (TReadonlyOptional<infer S>) ? TReadonly<S> : 
+    T[K] extends (TReadonly<infer S>) ? TReadonly<S> : 
+    T[K] extends (TOptional<infer S>) ? S : 
+    T[K]
 }>>
 // prettier-ignore
 export type TRequired<T extends TSchema> = 

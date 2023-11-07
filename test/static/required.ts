@@ -1,5 +1,6 @@
 import { Expect } from './assert'
 import { Type, Static } from '@sinclair/typebox'
+import * as Types from '@sinclair/typebox'
 {
   const T = Type.Required(
     Type.Object({
@@ -70,4 +71,19 @@ import { Type, Static } from '@sinclair/typebox'
       }
     >()
   }
+}
+{
+  // https://github.com/sinclairzx81/typebox/issues/655
+  const T = Type.Object({
+    a: Type.ReadonlyOptional(Type.Number()),
+    b: Type.Readonly(Type.Number()),
+    c: Type.Optional(Type.Number()),
+    d: Type.Number(),
+  })
+  const R: Types.TObject<{
+    a: Types.TReadonly<Types.TNumber>
+    b: Types.TReadonly<Types.TNumber>
+    c: Types.TNumber
+    d: Types.TNumber
+  }> = Type.Required(T)
 }
