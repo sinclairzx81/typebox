@@ -1,18 +1,40 @@
+import { TypeSystem } from '@sinclair/typebox/system'
+import { TypeCompiler } from '@sinclair/typebox/compiler'
+import { Value, ValuePointer } from '@sinclair/typebox/value'
+import { Type, TypeGuard, Kind, Static, TSchema } from '@sinclair/typebox'
 
-// Todo: Investigate Union Default (initialize interior types)
-// Todo: Implement Value.Clean() Tests - Done
+// -----------------------------------------------------------
+// Create: Type
+// -----------------------------------------------------------
 
-import { Type, Static } from '@sinclair/typebox';
-
-export const A = Type.Object({
-    a: Type.ReadonlyOptional(Type.Number()),
-    b: Type.Readonly(Type.Number()),
-    c: Type.Optional(Type.Number()),
-    d: Type.Number()
+const T = Type.Object({
+  x: Type.Number(),
+  y: Type.Number(),
+  z: Type.Number(),
 })
-const B = Type.Required(A)
-const C = Type.Partial(A)
 
-type A = Static<typeof A>
-type B = Static<typeof B>
-type C = Static<typeof C>
+type T = Static<typeof T>
+
+console.log(T)
+
+// -----------------------------------------------------------
+// Create: Value
+// -----------------------------------------------------------
+
+const V = Value.Create(T)
+
+console.log(V)
+
+// -----------------------------------------------------------
+// Compile: Type
+// -----------------------------------------------------------
+
+const C = TypeCompiler.Compile(T)
+
+console.log(C.Code())
+
+// -----------------------------------------------------------
+// Check: Value
+// -----------------------------------------------------------
+
+console.log(C.Check(V))
