@@ -1663,10 +1663,10 @@ The following is a list of community packages that offer general tooling, extend
 | [feathersjs](https://github.com/feathersjs/feathers) | The API and real-time application framework |
 | [fetch-typebox](https://github.com/erfanium/fetch-typebox) | Drop-in replacement for fetch that brings easy integration with TypeBox |
 | [h3-typebox](https://github.com/kevinmarrec/h3-typebox) | Schema validation utilities for h3 using TypeBox & Ajv |
+| [http-wizard](https://github.com/flodlc/http-wizard) | Type safe http client library for Fastify |
 | [openapi-box](https://github.com/geut/openapi-box) | Generate TypeBox types from OpenApi IDL + Http client library |
 | [schema2typebox](https://github.com/xddq/schema2typebox)  | Creating TypeBox code from Json Schemas |
 | [ts2typebox](https://github.com/xddq/ts2typebox) | Creating TypeBox code from Typescript types |
-| [http-wizard](https://github.com/flodlc/http-wizard) | Type safe http client library for Fastify |
 | [typebox-form-parser](https://github.com/jtlapp/typebox-form-parser) | Parses form and query data based on TypeBox schemas |
 | [typebox-validators](https://github.com/jtlapp/typebox-validators) | Advanced validators supporting discriminated and heterogeneous unions |
 
