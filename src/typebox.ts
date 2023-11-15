@@ -308,11 +308,12 @@ export type TComposite<T extends TObject[]> = TIntersect<T> extends TIntersect
 // --------------------------------------------------------------------------
 // TConstructor
 // --------------------------------------------------------------------------
-export type TConstructorReturnType<T extends TSchema, P extends unknown[]> = Static<T, P>
-export type TConstructorParameterArray<T extends TSchema[], P extends unknown[]> = T extends [infer L extends TSchema, ...infer R extends TSchema[]] ? [Static<L, P>, ...TFunctionParameters<R, P>] : []
+export type TConstructorReturnTypeResolve<T extends TSchema, P extends unknown[]> = Static<T, P>
+export type TConstructorParametersResolve<T extends TSchema[], P extends unknown[]> = T extends [infer L extends TSchema, ...infer R extends TSchema[]] ? [Static<L, P>, ...TFunctionParametersResolve<R, P>] : []
+export type TConstructorResolve<T extends TSchema[], U extends TSchema, P extends unknown[]> = Ensure<new (...param: TConstructorParametersResolve<T, P>) => TConstructorReturnTypeResolve<U, P>>
 export interface TConstructor<T extends TSchema[] = TSchema[], U extends TSchema = TSchema> extends TSchema {
   [Kind]: 'Constructor'
-  static: new (...param: TConstructorParameterArray<T, this['params']>) => TConstructorReturnType<U, this['params']>
+  static: TConstructorResolve<T, U, this['params']>
   type: 'Constructor'
   parameters: T
   returns: U
@@ -388,11 +389,12 @@ export type TExtract<T extends TSchema, U extends TSchema> =
 // --------------------------------------------------------------------------
 // TFunction
 // --------------------------------------------------------------------------
-export type TFunctionReturnType<T extends TSchema, P extends unknown[]> = Static<T, P>
-export type TFunctionParameters<T extends TSchema[], P extends unknown[]> = T extends [infer L extends TSchema, ...infer R extends TSchema[]] ? [Static<L, P>, ...TFunctionParameters<R, P>] : []
+export type TFunctionReturnTypeResolve<T extends TSchema, P extends unknown[]> = Static<T, P>
+export type TFunctionParametersResolve<T extends TSchema[], P extends unknown[]> = T extends [infer L extends TSchema, ...infer R extends TSchema[]] ? [Static<L, P>, ...TFunctionParametersResolve<R, P>] : []
+export type TFunctionResolve<T extends TSchema[], U extends TSchema, P extends unknown[]> = Ensure<(...param: TFunctionParametersResolve<T, P>) => TFunctionReturnTypeResolve<U, P>>
 export interface TFunction<T extends TSchema[] = TSchema[], U extends TSchema = TSchema> extends TSchema {
   [Kind]: 'Function'
-  static: (...param: TFunctionParameters<T, this['params']>) => TFunctionReturnType<U, this['params']>
+  static: TFunctionResolve<T, U, this['params']>
   type: 'Function'
   parameters: T
   returns: U
