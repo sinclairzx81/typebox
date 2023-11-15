@@ -291,3 +291,21 @@ import { Expect } from './assert'
   Expect(T).ToStaticDecode<1>()
   Expect(T).ToStaticEncode<E>()
 }
+{
+  // should transform functions
+  const S = Type.Transform(Type.Number())
+    .Decode((value) => new Date(value))
+    .Encode((value) => value.getTime())
+  const T = Type.Function([S], S)
+  Expect(T).ToStaticDecode<(x: Date) => Date>()
+  Expect(T).ToStaticEncode<(x: number) => number>()
+}
+{
+  // should transform constructors
+  const S = Type.Transform(Type.Number())
+    .Decode((value) => new Date(value))
+    .Encode((value) => value.getTime())
+  const T = Type.Constructor([S], S)
+  Expect(T).ToStaticDecode<new (x: Date) => Date>()
+  Expect(T).ToStaticEncode<new (x: number) => number>()
+}
