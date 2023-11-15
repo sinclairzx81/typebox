@@ -992,11 +992,11 @@ export interface TVoid extends TSchema {
 // --------------------------------------------------------------------------
 // Static<T>
 // --------------------------------------------------------------------------
-/** Creates the decoded static form for a TypeBox type */
+/** Creates an decoded static type from a TypeBox type */
 export type StaticDecode<T extends TSchema, P extends unknown[] = []> = Static<DecodeType<T>, P>
-/** Creates the encoded static form for a TypeBox type */
+/** Creates an encoded static type from a TypeBox type */
 export type StaticEncode<T extends TSchema, P extends unknown[] = []> = Static<T, P>
-/** Creates the static type for a TypeBox type */
+/** Creates a static type from a TypeBox type */
 export type Static<T extends TSchema, P extends unknown[] = []> = (T & { params: P })['static']
 // --------------------------------------------------------------------------
 // TypeRegistry
