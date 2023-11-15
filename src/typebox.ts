@@ -242,9 +242,10 @@ export interface TArray<T extends TSchema = TSchema> extends TSchema, ArrayOptio
 // --------------------------------------------------------------------------
 // TAsyncIterator
 // --------------------------------------------------------------------------
+export type TAsyncIteratorResolve<T extends TSchema, P extends unknown[]> = Ensure<AsyncIterableIterator<Static<T, P>>>
 export interface TAsyncIterator<T extends TSchema = TSchema> extends TSchema {
   [Kind]: 'AsyncIterator'
-  static: AsyncIterableIterator<Static<T, this['params']>>
+  static: TAsyncIteratorResolve<T, this['params']>
   type: 'AsyncIterator'
   items: T
 }
@@ -280,7 +281,7 @@ export interface TBoolean extends TSchema {
 // --------------------------------------------------------------------------
 // TConstructorParameters
 // --------------------------------------------------------------------------
-export type TConstructorParameters<T extends TConstructor<TSchema[], TSchema>> = TTuple<T['parameters']>
+export type TConstructorParameters<T extends TConstructor<TSchema[], TSchema>> = Ensure<TTuple<T['parameters']>>
 // --------------------------------------------------------------------------
 // TInstanceType
 // --------------------------------------------------------------------------
@@ -307,10 +308,12 @@ export type TComposite<T extends TObject[]> = TIntersect<T> extends TIntersect
 // --------------------------------------------------------------------------
 // TConstructor
 // --------------------------------------------------------------------------
-export type TConstructorParameterArray<T extends readonly TSchema[], P extends unknown[]> = [...{ [K in keyof T]: Static<AssertType<T[K]>, P> }]
+export type TConstructorReturnTypeResolve<T extends TSchema, P extends unknown[]> = Static<T, P>
+export type TConstructorParametersResolve<T extends TSchema[], P extends unknown[]> = T extends [infer L extends TSchema, ...infer R extends TSchema[]] ? [Static<L, P>, ...TFunctionParametersResolve<R, P>] : []
+export type TConstructorResolve<T extends TSchema[], U extends TSchema, P extends unknown[]> = Ensure<new (...param: TConstructorParametersResolve<T, P>) => TConstructorReturnTypeResolve<U, P>>
 export interface TConstructor<T extends TSchema[] = TSchema[], U extends TSchema = TSchema> extends TSchema {
   [Kind]: 'Constructor'
-  static: new (...param: TConstructorParameterArray<T, this['params']>) => Static<U, this['params']>
+  static: TConstructorResolve<T, U, this['params']>
   type: 'Constructor'
   parameters: T
   returns: U
@@ -386,10 +389,12 @@ export type TExtract<T extends TSchema, U extends TSchema> =
 // --------------------------------------------------------------------------
 // TFunction
 // --------------------------------------------------------------------------
-export type TFunctionParameters<T extends TSchema[], P extends unknown[]> = [...{ [K in keyof T]: Static<AssertType<T[K]>, P> }]
+export type TFunctionReturnTypeResolve<T extends TSchema, P extends unknown[]> = Static<T, P>
+export type TFunctionParametersResolve<T extends TSchema[], P extends unknown[]> = T extends [infer L extends TSchema, ...infer R extends TSchema[]] ? [Static<L, P>, ...TFunctionParametersResolve<R, P>] : []
+export type TFunctionResolve<T extends TSchema[], U extends TSchema, P extends unknown[]> = Ensure<(...param: TFunctionParametersResolve<T, P>) => TFunctionReturnTypeResolve<U, P>>
 export interface TFunction<T extends TSchema[] = TSchema[], U extends TSchema = TSchema> extends TSchema {
   [Kind]: 'Function'
-  static: (...param: TFunctionParameters<T, this['params']>) => Static<U, this['params']>
+  static: TFunctionResolve<T, U, this['params']>
   type: 'Function'
   parameters: T
   returns: U
@@ -472,9 +477,10 @@ export interface TIntersect<T extends TSchema[] = TSchema[]> extends TSchema, In
 // --------------------------------------------------------------------------
 // TIterator
 // --------------------------------------------------------------------------
+export type TIteratorResolve<T extends TSchema, P extends unknown[]> = Ensure<IterableIterator<Static<T, P>>>
 export interface TIterator<T extends TSchema = TSchema> extends TSchema {
   [Kind]: 'Iterator'
-  static: IterableIterator<Static<T, this['params']>>
+  static: TIteratorResolve<T, this['params']>
   type: 'Iterator'
   items: T
 }
@@ -880,9 +886,9 @@ export type DecodeType<T extends TSchema> = (
   T extends TTransform<infer _, infer R> ? TUnsafe<R> :
   T extends TArray<infer S extends TSchema> ? TArray<DecodeType<S>> :
   T extends TAsyncIterator<infer S extends TSchema> ? TAsyncIterator<DecodeType<S>> :
-  T extends TConstructor<infer P extends TSchema[], infer R extends TSchema> ? TConstructor<P, DecodeType<R>> :
+  T extends TConstructor<infer P extends TSchema[], infer R extends TSchema> ? TConstructor<DecodeRest<P>, DecodeType<R>> :
   T extends TEnum<infer S> ? TEnum<S> : // intercept for union. interior non decodable
-  T extends TFunction<infer P extends TSchema[], infer R extends TSchema> ? TFunction<P, DecodeType<R>> :
+  T extends TFunction<infer P extends TSchema[], infer R extends TSchema> ? TFunction<DecodeRest<P>, DecodeType<R>> :
   T extends TIntersect<infer S extends TSchema[]> ? TIntersect<DecodeRest<S>> :
   T extends TIterator<infer S extends TSchema> ? TIterator<DecodeType<S>> :
   T extends TNot<infer S extends TSchema> ? TNot<DecodeType<S>> :
@@ -988,11 +994,11 @@ export interface TVoid extends TSchema {
 // --------------------------------------------------------------------------
 // Static<T>
 // --------------------------------------------------------------------------
-/** Creates the decoded static form for a TypeBox type */
+/** Creates an decoded static type from a TypeBox type */
 export type StaticDecode<T extends TSchema, P extends unknown[] = []> = Static<DecodeType<T>, P>
-/** Creates the encoded static form for a TypeBox type */
+/** Creates an encoded static type from a TypeBox type */
 export type StaticEncode<T extends TSchema, P extends unknown[] = []> = Static<T, P>
-/** Creates the static type for a TypeBox type */
+/** Creates a static type from a TypeBox type */
 export type Static<T extends TSchema, P extends unknown[] = []> = (T & { params: P })['static']
 // --------------------------------------------------------------------------
 // TypeRegistry
@@ -3313,7 +3319,7 @@ export class JavaScriptTypeBuilder extends JsonTypeBuilder {
     return this.Create({ ...options, [Kind]: 'BigInt', type: 'bigint' })
   }
   /** `[JavaScript]` Extracts the ConstructorParameters from the given Constructor type */
-  public ConstructorParameters<T extends TConstructor<any[], any>>(schema: T, options: SchemaOptions = {}): TConstructorParameters<T> {
+  public ConstructorParameters<T extends TConstructor<TSchema[], TSchema>>(schema: T, options: SchemaOptions = {}): TConstructorParameters<T> {
     return this.Tuple([...schema.parameters], { ...options })
   }
   /** `[JavaScript]` Creates a Constructor type */
@@ -3339,7 +3345,7 @@ export class JavaScriptTypeBuilder extends JsonTypeBuilder {
     return this.Create({ ...options, [Kind]: 'Iterator', type: 'Iterator', items: TypeClone.Type(items) })
   }
   /** `[JavaScript]` Extracts the Parameters from the given Function type */
-  public Parameters<T extends TFunction<any[], any>>(schema: T, options: SchemaOptions = {}): TParameters<T> {
+  public Parameters<T extends TFunction<TSchema[], TSchema>>(schema: T, options: SchemaOptions = {}): TParameters<T> {
     return this.Tuple(schema.parameters, { ...options })
   }
   /** `[JavaScript]` Creates a Promise type */
