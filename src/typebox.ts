@@ -857,15 +857,14 @@ export type TTemplateLiteralConst<T, Acc extends string> =
   T extends TBigInt ? `${bigint}` : 
   T extends TBoolean ? `${boolean}` :
   never
-export type TTemplateLiteralUnionInitial = '' // resolves github rendering bug
 // prettier-ignore
-export type TTemplateLiteralUnion<T extends TTemplateLiteralKind[], Acc extends string = TTemplateLiteralUnionInitial> = 
+export type TTemplateLiteralUnion<T extends TTemplateLiteralKind[], Acc extends string> = 
   T extends [infer L, ...infer R] ? `${TTemplateLiteralConst<L, Acc>}${TTemplateLiteralUnion<Assert<R, TTemplateLiteralKind[]>, Acc>}` :
   Acc
 export type TTemplateLiteralKeyRest<T extends TTemplateLiteral> = Assert<UnionToTuple<Static<T>>, TPropertyKey[]>
 export interface TTemplateLiteral<T extends TTemplateLiteralKind[] = TTemplateLiteralKind[]> extends TSchema {
   [Kind]: 'TemplateLiteral'
-  static: TTemplateLiteralUnion<T>
+  static: TTemplateLiteralUnion<T, ''>
   type: 'string'
   pattern: string // todo: it may be possible to infer this pattern
 }
