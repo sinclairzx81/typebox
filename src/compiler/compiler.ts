@@ -61,11 +61,11 @@ export class TypeCheck<T extends Types.TSchema> {
   /** Decodes a value or throws if error */
   public Decode(value: unknown): Types.StaticDecode<T> {
     if (!this.checkFunc(value)) throw new TransformDecodeCheckError(this.schema, value, this.Errors(value).First()!)
-    return this.hasTransform ? DecodeTransform.Decode(this.schema, this.references, value, (_, __, value) => this.Check(value)) : value
+    return this.hasTransform ? DecodeTransform.Decode(this.schema, this.references, value) : value
   }
   /** Encodes a value or throws if error */
   public Encode(value: unknown): Types.StaticEncode<T> {
-    const encoded = this.hasTransform ? EncodeTransform.Encode(this.schema, this.references, value, (_, __, value) => this.Check(value)) : value
+    const encoded = this.hasTransform ? EncodeTransform.Encode(this.schema, this.references, value) : value
     if (!this.checkFunc(encoded)) throw new TransformEncodeCheckError(this.schema, value, this.Errors(value).First()!)
     return encoded
   }

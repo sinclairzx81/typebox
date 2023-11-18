@@ -1,3 +1,4 @@
+import * as Encoder from './_encoder'
 import { Assert } from '../../assert'
 import { Value } from '@sinclair/typebox/value'
 import { Type } from '@sinclair/typebox'
@@ -10,7 +11,7 @@ describe('value/transform/Record', () => {
     .Decode((value) => value)
     .Encode((value) => value)
   it('Should decode identity', () => {
-    const R = Value.Decode(T0, {
+    const R = Encoder.Decode(T0, {
       a: true,
       b: false,
     })
@@ -20,7 +21,7 @@ describe('value/transform/Record', () => {
     })
   })
   it('Should encode identity', () => {
-    const R = Value.Encode(T0, {
+    const R = Encoder.Encode(T0, {
       a: true,
       b: false,
     })
@@ -30,7 +31,7 @@ describe('value/transform/Record', () => {
     })
   })
   it('Should throw on identity', () => {
-    Assert.Throws(() => Value.Decode(T0, null))
+    Assert.Throws(() => Encoder.Decode(T0, null))
   })
   // ------------------------------------------------------------
   // Additional Properties True
@@ -40,7 +41,7 @@ describe('value/transform/Record', () => {
     .Encode((value) => parseFloat(value.replace(/number-/g, '')))
   const T1 = Type.Record(Type.Number(), N1)
   it('Should decode additional properties allowed', () => {
-    const R = Value.Decode(T1, {
+    const R = Encoder.Decode(T1, {
       0: 1,
       a: true,
     })
@@ -50,7 +51,7 @@ describe('value/transform/Record', () => {
     })
   })
   it('Should encode additional properties allowed', () => {
-    const R = Value.Encode(T1, {
+    const R = Encoder.Encode(T1, {
       0: 'number-1',
       a: true,
     })
@@ -60,7 +61,7 @@ describe('value/transform/Record', () => {
     })
   })
   it('Should throw on additional properties allowed', () => {
-    Assert.Throws(() => Value.Decode(T1, null))
+    Assert.Throws(() => Encoder.Decode(T1, null))
   })
   // ------------------------------------------------------------
   // Complex Transform
@@ -73,7 +74,7 @@ describe('value/transform/Record', () => {
     .Encode((value) => (value === 'TRUE' ? true : false))
   const T3 = Type.Record(Type.Number(), N2, { additionalProperties: B2 })
   it('Should decode complex', () => {
-    const R = Value.Decode(T3, {
+    const R = Encoder.Decode(T3, {
       0: 1,
       a: true,
     })
@@ -83,7 +84,7 @@ describe('value/transform/Record', () => {
     })
   })
   it('Should encode complex', () => {
-    const R = Value.Encode(T3, {
+    const R = Encoder.Encode(T3, {
       0: 'number-1',
       a: 'TRUE',
     })
@@ -93,7 +94,7 @@ describe('value/transform/Record', () => {
     })
   })
   it('Should throw on complex decode', () => {
-    Assert.Throws(() => Value.Decode(T3, null))
+    Assert.Throws(() => Encoder.Decode(T3, null))
   })
   // ------------------------------------------------------------
   // Map
@@ -102,13 +103,13 @@ describe('value/transform/Record', () => {
     .Decode((value) => new Map(Object.entries(value)))
     .Encode((value) => Object.fromEntries(value.entries()))
   it('should decode map', () => {
-    const R = Value.Decode(T4, { x: 'hello', y: 'world' })
+    const R = Encoder.Decode(T4, { x: 'hello', y: 'world' })
     Assert.IsInstanceOf(R, Map)
     Assert.IsEqual(R.get('x'), 'hello')
     Assert.IsEqual(R.get('y'), 'world')
   })
   it('should encode map', () => {
-    const R = Value.Encode(
+    const R = Encoder.Encode(
       T4,
       new Map([
         ['x', 'hello'],
@@ -118,6 +119,6 @@ describe('value/transform/Record', () => {
     Assert.IsEqual(R, { x: 'hello', y: 'world' })
   })
   it('Should throw on map decode', () => {
-    Assert.Throws(() => Value.Decode(T4, null))
+    Assert.Throws(() => Encoder.Decode(T4, null))
   })
 })

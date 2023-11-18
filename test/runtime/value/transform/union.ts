@@ -1,3 +1,4 @@
+import * as Encoder from './_encoder'
 import { Assert } from '../../assert'
 import { Value } from '@sinclair/typebox/value'
 import { Type, TSchema } from '@sinclair/typebox'
@@ -14,15 +15,15 @@ describe('value/transform/Union', () => {
     .Decode((value) => value)
     .Encode((value) => value)
   it('Should decode identity', () => {
-    const R = Value.Decode(T0, { x: 1 })
+    const R = Encoder.Decode(T0, { x: 1 })
     Assert.IsEqual(R, { x: 1 })
   })
   it('Should encode identity', () => {
-    const R = Value.Encode(T0, { y: 2 })
+    const R = Encoder.Encode(T0, { y: 2 })
     Assert.IsEqual(R, { y: 2 })
   })
   it('Should throw on identity decode', () => {
-    Assert.Throws(() => Value.Decode(T0, null))
+    Assert.Throws(() => Encoder.Decode(T0, null))
   })
   // --------------------------------------------------------
   // Mapped
@@ -35,15 +36,15 @@ describe('value/transform/Union', () => {
     .Decode((value) => 'test' as const)
     .Encode((value) => ({ type: 'hello' as const }))
   it('Should decode mapped', () => {
-    const R = Value.Decode(T1, { type: 'hello' })
+    const R = Encoder.Decode(T1, { type: 'hello' })
     Assert.IsEqual(R, 'test')
   })
   it('Should encode mapped', () => {
-    const R = Value.Encode(T1, 'test')
+    const R = Encoder.Encode(T1, 'test')
     Assert.IsEqual(R, { type: 'hello' })
   })
   it('Should throw on mapped decode', () => {
-    Assert.Throws(() => Value.Decode(T1, null))
+    Assert.Throws(() => Encoder.Decode(T1, null))
   })
   // --------------------------------------------------------
   // Mapped ValueType
@@ -62,23 +63,23 @@ describe('value/transform/Union', () => {
       return value
     })
   it('Should decode value type 1', () => {
-    const R = Value.Decode(T2, 0)
+    const R = Encoder.Decode(T2, 0)
     Assert.IsEqual(R, 2)
   })
   it('Should decode value type 2', () => {
-    const R = Value.Decode(T2, 'hello')
+    const R = Encoder.Decode(T2, 'hello')
     Assert.IsEqual(R, 'hello')
   })
   it('Should encode value type 1', () => {
-    const R = Value.Encode(T2, 'hello')
+    const R = Encoder.Encode(T2, 'hello')
     Assert.IsEqual(R, 'world')
   })
   it('Should encode value type 2', () => {
-    const R = Value.Encode(T2, 2)
+    const R = Encoder.Encode(T2, 2)
     Assert.IsEqual(R, 0)
   })
   it('Should throw on value type decode', () => {
-    Assert.Throws(() => Value.Decode(T2, null))
+    Assert.Throws(() => Encoder.Decode(T2, null))
   })
   // --------------------------------------------------------
   // Mapped ObjectType
@@ -102,23 +103,23 @@ describe('value/transform/Union', () => {
     .Decode((value) => value)
     .Encode((value) => value)
   it('Should decode object types 1', () => {
-    const R = Value.Decode(T3, { x: 0 })
+    const R = Encoder.Decode(T3, { x: 0 })
     Assert.IsEqual(R, { x: 1 })
   })
   it('Should decode object types 2', () => {
-    const R = Value.Decode(T3, { x: 'abc' })
+    const R = Encoder.Decode(T3, { x: 'abc' })
     Assert.IsEqual(R, { x: 'cba' })
   })
   it('Should encode object types 1', () => {
-    const R = Value.Encode(T3, { x: 1 })
+    const R = Encoder.Encode(T3, { x: 1 })
     Assert.IsEqual(R, { x: 0 })
   })
   it('Should encode object types 2', () => {
-    const R = Value.Encode(T3, { x: 'cba' })
+    const R = Encoder.Encode(T3, { x: 'cba' })
     Assert.IsEqual(R, { x: 'abc' })
   })
   it('Should throw on object types decode', () => {
-    Assert.Throws(() => Value.Decode(T3, null))
+    Assert.Throws(() => Encoder.Decode(T3, null))
   })
   // --------------------------------------------------------
   // Mapped Mixed Types
@@ -140,31 +141,31 @@ describe('value/transform/Union', () => {
     .Decode((value) => typeof value === 'number' ? value + 1 : value)
     .Encode((value) => typeof value === 'number' ? value - 1 : value)
   it('Should decode mixed types 1', () => {
-    const R = Value.Decode(T4, { x: 0 })
+    const R = Encoder.Decode(T4, { x: 0 })
     Assert.IsEqual(R, { x: 1 })
   })
   it('Should decode mixed types 2', () => {
-    const R = Value.Decode(T4, 0)
+    const R = Encoder.Decode(T4, 0)
     Assert.IsEqual(R, 2)
   })
   it('Should decode mixed types 3', () => {
-    const R = Value.Decode(T4, [0])
+    const R = Encoder.Decode(T4, [0])
     Assert.IsEqual(R, [1])
   })
   it('Should encode mixed types 1', () => {
-    const R = Value.Encode(T4, { x: 1 })
+    const R = Encoder.Encode(T4, { x: 1 })
     Assert.IsEqual(R, { x: 0 })
   })
   it('Should encode mixed types 2', () => {
-    const R = Value.Encode(T4, 2)
+    const R = Encoder.Encode(T4, 2)
     Assert.IsEqual(R, 0)
   })
   it('Should encode mixed types 3', () => {
-    const R = Value.Encode(T4, [1])
+    const R = Encoder.Encode(T4, [1])
     Assert.IsEqual(R, [0])
   })
   it('Should throw on mixed types decode', () => {
-    Assert.Throws(() => Value.Decode(T4, null))
+    Assert.Throws(() => Encoder.Decode(T4, null))
   })
   // --------------------------------------------------------
   // Interior Union Transform
@@ -176,26 +177,26 @@ describe('value/transform/Union', () => {
     .Encode((value) => value.toISOString())
   const T52 = Type.Union([Type.Null(), T51])
   it('Should decode interior union 1', () => {
-    const R = Value.Decode(T52, null)
+    const R = Encoder.Decode(T52, null)
     Assert.IsEqual(R, null)
   })
   it('Should decode interior union 2', () => {
-    const R = Value.Decode(T52, new Date().toISOString())
+    const R = Encoder.Decode(T52, new Date().toISOString())
     Assert.IsInstanceOf(R, Date)
   })
   it('Should encode interior union 1', () => {
-    const R = Value.Encode(T52, null)
+    const R = Encoder.Encode(T52, null)
     Assert.IsEqual(R, null)
   })
   it('Should encode interior union 2', () => {
     const D = new Date()
-    const R = Value.Encode(T52, D)
+    const R = Encoder.Encode(T52, D)
     Assert.IsEqual(R, D.toISOString())
   })
   it('Should throw on interior union decode', () => {
-    Assert.Throws(() => Value.Decode(T52, {}))
+    Assert.Throws(() => Encoder.Decode(T52, {}))
   })
   it('Should throw on interior union encode', () => {
-    Assert.Throws(() => Value.Encode(T52, 1))
+    Assert.Throws(() => Encoder.Encode(T52, 1))
   })
 })

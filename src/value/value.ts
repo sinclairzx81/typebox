@@ -78,23 +78,23 @@ export namespace Value {
     return ValueClone.Clone(value)
   }
   /** Decodes a value or throws if error */
-  export function Decode<T extends Types.TSchema, D = Types.StaticDecode<T>>(schema: T, references: Types.TSchema[], value: unknown): D
+  export function Decode<T extends Types.TSchema, R = Types.StaticDecode<T>>(schema: T, references: Types.TSchema[], value: unknown): R
   /** Decodes a value or throws if error */
-  export function Decode<T extends Types.TSchema, D = Types.StaticDecode<T>>(schema: T, value: unknown): D
+  export function Decode<T extends Types.TSchema, R = Types.StaticDecode<T>>(schema: T, value: unknown): R
   /** Decodes a value or throws if error */
   export function Decode(...args: any[]) {
     const [schema, references, value] = args.length === 3 ? [args[0], args[1], args[2]] : [args[0], [], args[1]]
     if (!Check(schema, references, value)) throw new ValueTransform.TransformDecodeCheckError(schema, value, Errors(schema, references, value).First()!)
-    return ValueTransform.DecodeTransform.Decode(schema, references, value, ValueCheck.Check)
+    return ValueTransform.DecodeTransform.Decode(schema, references, value)
   }
   /** Encodes a value or throws if error */
-  export function Encode<T extends Types.TSchema, E = Types.StaticEncode<T>>(schema: T, references: Types.TSchema[], value: unknown): E
+  export function Encode<T extends Types.TSchema, R = Types.StaticEncode<T>>(schema: T, references: Types.TSchema[], value: unknown): R
   /** Encodes a value or throws if error */
-  export function Encode<T extends Types.TSchema, E = Types.StaticEncode<T>>(schema: T, value: unknown): E
+  export function Encode<T extends Types.TSchema, R = Types.StaticEncode<T>>(schema: T, value: unknown): R
   /** Encodes a value or throws if error */
   export function Encode(...args: any[]) {
     const [schema, references, value] = args.length === 3 ? [args[0], args[1], args[2]] : [args[0], [], args[1]]
-    const encoded = ValueTransform.EncodeTransform.Encode(schema, references, value, ValueCheck.Check)
+    const encoded = ValueTransform.EncodeTransform.Encode(schema, references, value)
     if (!Check(schema, references, encoded)) throw new ValueTransform.TransformEncodeCheckError(schema, value, Errors(schema, references, value).First()!)
     return encoded
   }

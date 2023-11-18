@@ -1,3 +1,4 @@
+import * as Encoder from './_encoder'
 import { Assert } from '../../assert'
 import { Value } from '@sinclair/typebox/value'
 import { Type } from '@sinclair/typebox'
@@ -11,10 +12,10 @@ describe('value/transform/Never', () => {
     // @ts-ignore
     .Encode((value) => value)
   it('Should throw on identity encode', () => {
-    Assert.Throws(() => Value.Encode(T0, undefined))
+    Assert.Throws(() => Encoder.Encode(T0, undefined))
   })
   it('Should throw on identity decode', () => {
-    Assert.Throws(() => Value.Decode(T0, undefined))
+    Assert.Throws(() => Encoder.Decode(T0, undefined))
   })
   // --------------------------------------------------------
   // Mapped
@@ -25,9 +26,9 @@ describe('value/transform/Never', () => {
     // @ts-ignore
     .Encode((value) => 1)
   it('Should throw on mapped encode', () => {
-    Assert.Throws(() => Value.Encode(T1, undefined))
+    Assert.Throws(() => Encoder.Encode(T1, undefined))
   })
   it('Should throw on mapped decode', () => {
-    Assert.Throws(() => Value.Decode(T1, undefined))
+    Assert.Throws(() => Encoder.Decode(T1, undefined))
   })
 })

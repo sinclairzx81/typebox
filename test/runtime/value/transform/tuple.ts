@@ -1,3 +1,4 @@
+import * as Encoder from './_encoder'
 import { Assert } from '../../assert'
 import { Value } from '@sinclair/typebox/value'
 import { Type } from '@sinclair/typebox'
@@ -10,15 +11,15 @@ describe('value/transform/Tuple', () => {
     .Decode((value) => value)
     .Encode((value) => value)
   it('Should decode identity', () => {
-    const R = Value.Decode(T0, [1, 2])
+    const R = Encoder.Decode(T0, [1, 2])
     Assert.IsEqual(R, [1, 2])
   })
   it('Should encode identity', () => {
-    const R = Value.Encode(T0, [1, 2])
+    const R = Encoder.Encode(T0, [1, 2])
     Assert.IsEqual(R, [1, 2])
   })
   it('Should throw on identity decode', () => {
-    Assert.Throws(() => Value.Decode(T0, null))
+    Assert.Throws(() => Encoder.Decode(T0, null))
   })
   // --------------------------------------------------------
   // Mapped
@@ -27,15 +28,15 @@ describe('value/transform/Tuple', () => {
     .Decode((value) => [value[0] + 1] as [number])
     .Encode((value) => [value[0] - 1] as [number])
   it('Should decode mapped', () => {
-    const R = Value.Decode(T1, [0])
+    const R = Encoder.Decode(T1, [0])
     Assert.IsEqual(R, [1])
   })
   it('Should encode mapped', () => {
-    const R = Value.Encode(T1, [1])
+    const R = Encoder.Encode(T1, [1])
     Assert.IsEqual(R, [0])
   })
   it('Should throw on mapped decode', () => {
-    Assert.Throws(() => Value.Decode(T1, null))
+    Assert.Throws(() => Encoder.Decode(T1, null))
   })
   // --------------------------------------------------------
   // Mapped Element
@@ -47,15 +48,15 @@ describe('value/transform/Tuple', () => {
     .Decode((value) => value)
     .Encode((value) => value)
   it('Should decode mapped element', () => {
-    const R = Value.Decode(T2, [0])
+    const R = Encoder.Decode(T2, [0])
     Assert.IsEqual(R, [1])
   })
   it('Should encode mapped element', () => {
-    const R = Value.Encode(T2, [1])
+    const R = Encoder.Encode(T2, [1])
     Assert.IsEqual(R, [0])
   })
   it('Should throw on mapped element decode', () => {
-    Assert.Throws(() => Value.Decode(T2, null))
+    Assert.Throws(() => Encoder.Decode(T2, null))
   })
   // --------------------------------------------------------
   // Mapped Element
@@ -67,15 +68,15 @@ describe('value/transform/Tuple', () => {
     .Decode((value) => [value[0].toString()])
     .Encode((value) => [parseFloat(value[0])] as [number])
   it('Should decode mapped element', () => {
-    const R = Value.Decode(T3, [0])
+    const R = Encoder.Decode(T3, [0])
     Assert.IsEqual(R, ['1'])
   })
   it('Should encode mapped element', () => {
-    const R = Value.Encode(T3, ['1'])
+    const R = Encoder.Encode(T3, ['1'])
     Assert.IsEqual(R, [0])
   })
   it('Should throw on mapped element decode', () => {
-    Assert.Throws(() => Value.Decode(T3, null))
+    Assert.Throws(() => Encoder.Decode(T3, null))
   })
   // ------------------------------------------------------------
   // Set
@@ -84,15 +85,15 @@ describe('value/transform/Tuple', () => {
     .Decode((value) => new Set(value))
     .Encode((value) => [...value] as any)
   it('should decode set', () => {
-    const R = Value.Decode(T4, [1])
+    const R = Encoder.Decode(T4, [1])
     Assert.IsInstanceOf(R, Set)
     Assert.IsTrue(R.has(1))
   })
   it('should encode set', () => {
-    const R = Value.Encode(T4, new Set([1]))
+    const R = Encoder.Encode(T4, new Set([1]))
     Assert.IsEqual(R, [1])
   })
   it('Should throw on set decode', () => {
-    Assert.Throws(() => Value.Decode(T4, {}))
+    Assert.Throws(() => Encoder.Decode(T4, {}))
   })
 })
