@@ -242,7 +242,7 @@ export interface TArray<T extends TSchema = TSchema> extends TSchema, ArrayOptio
 // --------------------------------------------------------------------------
 // TAsyncIterator
 // --------------------------------------------------------------------------
-export type TAsyncIteratorResolve<T extends TSchema, P extends unknown[]> = AsyncIterableIterator<Ensure<Static<T, P>>>
+export type TAsyncIteratorResolve<T extends TSchema, P extends unknown[]> = Ensure<AsyncIterableIterator<Static<T, P>>>
 export interface TAsyncIterator<T extends TSchema = TSchema> extends TSchema {
   [Kind]: 'AsyncIterator'
   static: TAsyncIteratorResolve<T, this['params']>
@@ -477,7 +477,7 @@ export interface TIntersect<T extends TSchema[] = TSchema[]> extends TSchema, In
 // --------------------------------------------------------------------------
 // TIterator
 // --------------------------------------------------------------------------
-export type TIteratorResolve<T extends TSchema, P extends unknown[]> = IterableIterator<Ensure<Static<T, P>>>
+export type TIteratorResolve<T extends TSchema, P extends unknown[]> = Ensure<IterableIterator<Static<T, P>>>
 export interface TIterator<T extends TSchema = TSchema> extends TSchema {
   [Kind]: 'Iterator'
   static: TIteratorResolve<T, this['params']>
