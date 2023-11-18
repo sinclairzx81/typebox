@@ -1,3 +1,4 @@
+import * as Encoder from './_encoder'
 import { Assert } from '../../assert'
 import { Value } from '@sinclair/typebox/value'
 import { Type } from '@sinclair/typebox'
@@ -10,15 +11,15 @@ describe('value/transform/String', () => {
     .Decode((value) => value)
     .Encode((value) => value)
   it('Should decode identity', () => {
-    const R = Value.Decode(T0, Symbol('hello'))
+    const R = Encoder.Decode(T0, Symbol('hello'))
     Assert.IsEqual(R.description, 'hello')
   })
   it('Should encode identity', () => {
-    const R = Value.Encode(T0, Symbol('hello'))
+    const R = Encoder.Encode(T0, Symbol('hello'))
     Assert.IsEqual(R.description, 'hello')
   })
   it('Should throw on identity decode', () => {
-    Assert.Throws(() => Value.Decode(T0, null))
+    Assert.Throws(() => Encoder.Decode(T0, null))
   })
   // --------------------------------------------------------
   // Mapped
@@ -27,14 +28,14 @@ describe('value/transform/String', () => {
     .Decode((value) => Symbol(value.description?.split('').reverse().join('')))
     .Encode((value) => Symbol(value.description?.split('').reverse().join('')))
   it('Should decode mapped', () => {
-    const R = Value.Decode(T1, Symbol('ABC'))
+    const R = Encoder.Decode(T1, Symbol('ABC'))
     Assert.IsEqual(R.description, 'CBA')
   })
   it('Should encode mapped', () => {
-    const R = Value.Encode(T1, Symbol('CBA'))
+    const R = Encoder.Encode(T1, Symbol('CBA'))
     Assert.IsEqual(R.description, 'ABC')
   })
   it('Should throw on mapped decode', () => {
-    Assert.Throws(() => Value.Decode(T1, null))
+    Assert.Throws(() => Encoder.Decode(T1, null))
   })
 })

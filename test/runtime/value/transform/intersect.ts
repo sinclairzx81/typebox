@@ -1,3 +1,4 @@
+import * as Encoder from './_encoder'
 import { Assert } from '../../assert'
 import { Value } from '@sinclair/typebox/value'
 import { Type } from '@sinclair/typebox'
@@ -14,15 +15,15 @@ describe('value/transform/Intersect', () => {
   .Decode(value => value)
   .Encode(value => value)
   it('Should decode identity', () => {
-    const R = Value.Decode(T0, { x: 1, y: 2 })
+    const R = Encoder.Decode(T0, { x: 1, y: 2 })
     Assert.IsEqual(R, { x: 1, y: 2 })
   })
   it('Should encode identity', () => {
-    const R = Value.Encode(T0, { x: 1, y: 2 })
+    const R = Encoder.Encode(T0, { x: 1, y: 2 })
     Assert.IsEqual(R, { x: 1, y: 2 })
   })
   it('Should throw on identity decode', () => {
-    Assert.Throws(() => Value.Decode(T0, null))
+    Assert.Throws(() => Encoder.Decode(T0, null))
   })
   // --------------------------------------------------------
   // Mapped
@@ -35,15 +36,15 @@ describe('value/transform/Intersect', () => {
   .Decode((value) => 1)
   .Encode((value) => ({ x: 1, y: 2 }))
   it('Should decode mapped', () => {
-    const R = Value.Decode(T1, { x: 1, y: 2 })
+    const R = Encoder.Decode(T1, { x: 1, y: 2 })
     Assert.IsEqual(R, 1)
   })
   it('Should encode mapped', () => {
-    const R = Value.Encode(T1, null)
+    const R = Encoder.Encode(T1, null)
     Assert.IsEqual(R, { x: 1, y: 2 })
   })
   it('Should throw on mapped decode', () => {
-    Assert.Throws(() => Value.Decode(T1, null))
+    Assert.Throws(() => Encoder.Decode(T1, null))
   })
   // --------------------------------------------------------
   // Mapped Property
@@ -59,15 +60,15 @@ describe('value/transform/Intersect', () => {
   .Decode((value) => value)
   .Encode((value) => value)
   it('Should decode property', () => {
-    const R = Value.Decode(T2, { x: 1, y: 2 })
+    const R = Encoder.Decode(T2, { x: 1, y: 2 })
     Assert.IsEqual(R, { x: 1, y: '2' })
   })
   it('Should encode property', () => {
-    const R = Value.Encode(T2, { x: 1, y: '2' })
+    const R = Encoder.Encode(T2, { x: 1, y: '2' })
     Assert.IsEqual(R, { x: 1, y: 2 })
   })
   it('Should throw on property decode', () => {
-    Assert.Throws(() => Value.Decode(T2, null))
+    Assert.Throws(() => Encoder.Decode(T2, null))
   })
   // --------------------------------------------------------
   // Unevaluated Property
@@ -83,15 +84,15 @@ describe('value/transform/Intersect', () => {
     unevaluatedProperties: N3
   })
   it('Should decode unevaluated property', () => {
-    const R = Value.Decode(T3, { x: 1, y: 2, z: 3 })
+    const R = Encoder.Decode(T3, { x: 1, y: 2, z: 3 })
     Assert.IsEqual(R, { x: 1, y: 2, z: '3' })
   })
   it('Should encode unevaluated property', () => {
-    const R = Value.Encode(T3, { x: 1, y: 2, z: '3' })
+    const R = Encoder.Encode(T3, { x: 1, y: 2, z: '3' })
     Assert.IsEqual(R, { x: 1, y: 2, z: 3 })
   })
   it('Should throw on unevaluated property decode', () => {
-    Assert.Throws(() => Value.Decode(T3, null))
+    Assert.Throws(() => Encoder.Decode(T3, null))
   })
   // --------------------------------------------------------
   // Transform Intersection Interior (Not Supported)
@@ -109,14 +110,14 @@ describe('value/transform/Intersect', () => {
     .Decode((value) => value + 1)
     .Encode((value) => value - 1)
   it('Should decode exterior value type', () => {
-    const R = Value.Decode(T4, 1)
+    const R = Encoder.Decode(T4, 1)
     Assert.IsEqual(R, 2)
   })
   it('Should encode exterior value type', () => {
-    const R = Value.Encode(T4, 2)
+    const R = Encoder.Encode(T4, 2)
     Assert.IsEqual(R, 1)
   })
   it('Should throw on exterior value type decode', () => {
-    Assert.Throws(() => Value.Decode(T4, null))
+    Assert.Throws(() => Encoder.Decode(T4, null))
   })
 })

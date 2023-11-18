@@ -26,9 +26,10 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { IsString, IsPlainObject, IsArray, IsValueType } from './guard'
+import { IsString, IsPlainObject, IsArray, IsValueType, IsUndefined } from './guard'
 import { ValueError } from '../errors/errors'
 import { Deref } from './deref'
+import { Check } from './check'
 import * as Types from '../typebox'
 
 // -------------------------------------------------------------------------
@@ -112,7 +113,7 @@ export namespace HasTransform {
     return Visit(Deref(schema, references), references)
   }
   function TTuple(schema: Types.TTuple<any[]>, references: Types.TSchema[]) {
-    return Types.TypeGuard.TTransform(schema) || (Types.TypeGuard.TSchema(schema.items) && schema.items.some((schema) => Visit(schema, references)))
+    return Types.TypeGuard.TTransform(schema) || (!IsUndefined(schema.items) && schema.items.some((schema) => Visit(schema, references)))
   }
   function TUnion(schema: Types.TUnion, references: Types.TSchema[]) {
     return Types.TypeGuard.TTransform(schema) || schema.anyOf.some((schema) => Visit(schema, references))
@@ -262,7 +263,7 @@ export namespace DecodeTransform {
   function TUnion(schema: Types.TUnion, references: Types.TSchema[], value: any) {
     const value1 = Default(schema, value)
     for (const subschema of schema.anyOf) {
-      if (!checkFunction(subschema, references, value1)) continue
+      if (!Check(subschema, references, value1)) continue
       return Visit(subschema, references, value1)
     }
     return value1
@@ -323,9 +324,7 @@ export namespace DecodeTransform {
         return Default(schema_, value)
     }
   }
-  let checkFunction: CheckFunction = () => false
-  export function Decode(schema: Types.TSchema, references: Types.TSchema[], value: unknown, check: CheckFunction): unknown {
-    checkFunction = check
+  export function Decode(schema: Types.TSchema, references: Types.TSchema[], value: unknown): unknown {
     return Visit(schema, references, value)
   }
 }
@@ -405,14 +404,14 @@ export namespace EncodeTransform {
   function TUnion(schema: Types.TUnion, references: Types.TSchema[], value: any) {
     // test value against union variants
     for (const subschema of schema.anyOf) {
-      if (!checkFunction(subschema, references, value)) continue
+      if (!Check(subschema, references, value)) continue
       const value1 = Visit(subschema, references, value)
       return Default(schema, value1)
     }
     // test transformed value against union variants
     for (const subschema of schema.anyOf) {
       const value1 = Visit(subschema, references, value)
-      if (!checkFunction(schema, references, value1)) continue
+      if (!Check(schema, references, value1)) continue
       return Default(schema, value1)
     }
     return Default(schema, value)
@@ -472,9 +471,7 @@ export namespace EncodeTransform {
         return Default(schema_, value)
     }
   }
-  let checkFunction: CheckFunction = () => false
-  export function Encode(schema: Types.TSchema, references: Types.TSchema[], value: unknown, check: CheckFunction): unknown {
-    checkFunction = check
+  export function Encode(schema: Types.TSchema, references: Types.TSchema[], value: unknown): unknown {
     return Visit(schema, references, value)
   }
 }

@@ -1,3 +1,4 @@
+import * as Encoder from './_encoder'
 import { Assert } from '../../assert'
 import { Value } from '@sinclair/typebox/value'
 import { Type } from '@sinclair/typebox'
@@ -17,7 +18,7 @@ describe('value/transform/Recursive', () => {
     .Decode((value) => value)
     .Encode((value) => value)
   it('Should decode identity', () => {
-    const R = Value.Decode(T0, {
+    const R = Encoder.Decode(T0, {
       value: 1,
       nodes: [
         { value: 2, nodes: [] },
@@ -33,7 +34,7 @@ describe('value/transform/Recursive', () => {
     })
   })
   it('Should encode identity', () => {
-    const R = Value.Encode(T0, {
+    const R = Encoder.Encode(T0, {
       value: 1,
       nodes: [
         { value: 2, nodes: [] },
@@ -49,7 +50,7 @@ describe('value/transform/Recursive', () => {
     })
   })
   it('Should throw on identity decode', () => {
-    Assert.Throws(() => Value.Decode(T0, undefined))
+    Assert.Throws(() => Encoder.Decode(T0, undefined))
   })
   // -----------------------------------------------
   // Mapped
@@ -65,7 +66,7 @@ describe('value/transform/Recursive', () => {
     .Decode((value) => 1)
     .Encode((value) => ({ value: 1, nodes: [] }))
   it('Should decode mapped', () => {
-    const R = Value.Decode(T1, {
+    const R = Encoder.Decode(T1, {
       value: 1,
       nodes: [
         { value: 2, nodes: [] },
@@ -75,11 +76,11 @@ describe('value/transform/Recursive', () => {
     Assert.IsEqual(R, 1)
   })
   it('Should encode mapped', () => {
-    const R = Value.Encode(T1, null)
+    const R = Encoder.Encode(T1, null)
     Assert.IsEqual(R, { value: 1, nodes: [] })
   })
   it('Should throw on mapped decode', () => {
-    Assert.Throws(() => Value.Decode(T1, null))
+    Assert.Throws(() => Encoder.Decode(T1, null))
   })
   // -----------------------------------------------
   // Recursive Property Remap
@@ -94,7 +95,7 @@ describe('value/transform/Recursive', () => {
     }),
   )
   it('Should decode property', () => {
-    const R = Value.Decode(T2, {
+    const R = Encoder.Decode(T2, {
       value: 1,
       nodes: [
         { value: 2, nodes: [] },
@@ -110,7 +111,7 @@ describe('value/transform/Recursive', () => {
     })
   })
   it('Should encode property', () => {
-    const R = Value.Encode(T2, {
+    const R = Encoder.Encode(T2, {
       value: new Date(1),
       nodes: [
         { value: new Date(2), nodes: [] },
@@ -126,6 +127,6 @@ describe('value/transform/Recursive', () => {
     })
   })
   it('Should throw on decode property', () => {
-    Assert.Throws(() => Value.Decode(T2, null))
+    Assert.Throws(() => Encoder.Decode(T2, null))
   })
 })
