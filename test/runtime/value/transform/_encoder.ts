@@ -1,4 +1,4 @@
-import { IsAsyncIterator, IsIterator, IsFunction, IsSymbol } from '@sinclair/typebox/value/guard'
+import { IsAsyncIterator, IsIterator, IsFunction, IsSymbol, IsDate } from '@sinclair/typebox/value/guard'
 import { TSchema, StaticDecode, StaticEncode } from '@sinclair/typebox'
 import { TypeCompiler } from '@sinclair/typebox/compiler'
 import { Value } from '@sinclair/typebox/value'
@@ -9,6 +9,9 @@ function AssertSame(actual: unknown, expect: unknown) {
   if (IsIterator(actual) && IsIterator(expect)) return
   if (IsSymbol(actual) && IsSymbol(expect)) return
   if (IsFunction(actual) && IsFunction(expect)) return
+  if (IsDate(actual) && IsDate(expect)) {
+    return Assert.IsEqual(actual.getTime(), expect.getTime())
+  }
   Assert.IsEqual(actual, expect)
 }
 
