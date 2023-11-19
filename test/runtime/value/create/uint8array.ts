@@ -23,4 +23,12 @@ describe('value/create/Uint8Array', () => {
     Assert.IsEqual(value.length, 4)
     Assert.IsEqual([value[0], value[1], value[2], value[3]], [0, 0, 0, 0])
   })
+  it('Should create value nested', () => {
+    const T = Type.Object({ value: Type.Uint8Array() })
+    Assert.IsEqual(Value.Create(T), { value: new Uint8Array() })
+  })
+  it('Should create default nested', () => {
+    const T = Type.Object({ value: Type.Date({ default: new Uint8Array([1, 2, 3, 4]) }) })
+    Assert.IsEqual(Value.Create(T), { value: new Uint8Array([1, 2, 3, 4]) })
+  })
 })

@@ -135,7 +135,7 @@ function TDate(schema: Types.TDate, references: Types.TSchema[]): any {
   } else if (schema.minimumTimestamp !== undefined) {
     return new Date(schema.minimumTimestamp)
   } else {
-    return new Date(0)
+    return new Date()
   }
 }
 function TFunction(schema: Types.TFunction, references: Types.TSchema[]): any {

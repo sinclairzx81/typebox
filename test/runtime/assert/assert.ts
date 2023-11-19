@@ -17,6 +17,11 @@ export namespace Assert {
   export function NotEqual(actual: unknown, expect: unknown) {
     return assert.notEqual(actual, expect)
   }
+  /** Asserts a numeric value is within range of the expected */
+  export function InRange(value: number, expect: number, range: number) {
+    if (Math.abs(value - expect) <= range) return
+    throw Error('Expected value to be in range')
+  }
   let nextIdOrdinal = 0
   export function NextId() {
     return `$id-${nextIdOrdinal++}`
