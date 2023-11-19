@@ -26,9 +26,9 @@ describe('value/transform/Date', () => {
   // --------------------------------------------------------
   const T1 = Type.Transform(Type.Date())
     .Decode((value) => 1)
-    .Encode((value) => new Date())
+    .Encode((value) => new Date(0))
   it('Should decode mapped', () => {
-    const R = Encoder.Decode(T1, new Date())
+    const R = Encoder.Decode(T1, new Date(0))
     Assert.IsEqual(R, 1)
   })
   it('Should encode mapped', () => {
