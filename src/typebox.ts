@@ -1087,6 +1087,14 @@ export namespace ValueGuard {
   export function IsBoolean(value: unknown): value is boolean {
     return typeof value === 'boolean'
   }
+  /** Returns true if this value is a Date object */
+  export function IsDate(value: unknown): value is Date {
+    return value instanceof globalThis.Date
+  }
+  /** Returns true if this value is a function */
+  export function IsFunction(value: unknown): value is Function {
+    return typeof value === 'function'
+  }
   /** Returns true if this value is null */
   export function IsNull(value: unknown): value is null {
     return value === null
@@ -1102,6 +1110,10 @@ export namespace ValueGuard {
   /** Returns true if this value is string */
   export function IsString(value: unknown): value is string {
     return typeof value === 'string'
+  }
+  /** Returns true if this value is a Uint8Array */
+  export function IsUint8Array(value: unknown): value is Uint8Array {
+    return value instanceof globalThis.Uint8Array
   }
   /** Returns true if this value is undefined */
   export function IsUndefined(value: unknown): value is undefined {
@@ -2287,19 +2299,29 @@ export namespace TypeExtends {
 // --------------------------------------------------------------------------
 /** Specialized Clone for Types */
 export namespace TypeClone {
+  function ArrayType(value: unknown[]) {
+    return (value as any).map((value: unknown) => Visit(value as any))
+  }
+  function DateType(value: Date) {
+    return new Date(value.getTime())
+  }
+  function Uint8ArrayType(value: Uint8Array) {
+    return new Uint8Array(value)
+  }
   function ObjectType(value: Record<keyof any, unknown>) {
     const clonedProperties = Object.getOwnPropertyNames(value).reduce((acc, key) => ({ ...acc, [key]: Visit(value[key]) }), {})
     const clonedSymbols = Object.getOwnPropertySymbols(value).reduce((acc, key) => ({ ...acc, [key]: Visit(value[key as any]) }), {})
     return { ...clonedProperties, ...clonedSymbols }
   }
-  function ArrayType(value: unknown[]) {
-    return (value as any).map((value: unknown) => Visit(value as any))
-  }
   function Visit(value: unknown): any {
     // prettier-ignore
-    return ValueGuard.IsArray(value) ? ArrayType(value) :
+    return (
+      ValueGuard.IsArray(value) ? ArrayType(value) :
+      ValueGuard.IsDate(value) ? DateType(value) : 
+      ValueGuard.IsUint8Array(value) ? Uint8ArrayType(value) :
       ValueGuard.IsObject(value) ? ObjectType(value) :
       value
+    )
   }
   /** Clones a Rest */
   export function Rest<T extends TSchema[]>(schemas: [...T]): T {
