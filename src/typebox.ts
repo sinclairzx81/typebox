@@ -1091,10 +1091,6 @@ export namespace ValueGuard {
   export function IsDate(value: unknown): value is Date {
     return value instanceof globalThis.Date
   }
-  /** Returns true if this value is a function */
-  export function IsFunction(value: unknown): value is Function {
-    return typeof value === 'function'
-  }
   /** Returns true if this value is null */
   export function IsNull(value: unknown): value is null {
     return value === null
