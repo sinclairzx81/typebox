@@ -120,4 +120,61 @@ describe('value/transform/Intersect', () => {
   it('Should throw on exterior value type decode', () => {
     Assert.Throws(() => Encoder.Decode(T4, null))
   })
+  // --------------------------------------------------------
+  // https://github.com/sinclairzx81/typebox/discussions/672
+  // --------------------------------------------------------
+  // prettier-ignore
+  {
+    const A = Type.Object({ isHybrid: Type.Boolean() })
+    const T = Type.Transform(A)
+      .Decode((value) => ({ isHybrid: value.isHybrid ? 1 : 0 }))
+      .Encode((value) => ({ isHybrid: value.isHybrid === 1 ? true : false }))
+    const I = Type.Intersect([
+      Type.Object({ model: Type.String() }),
+      Type.Object({ features: Type.Array(T) }),
+    ])
+    it('Should decode nested 1', () => {
+      const value = Value.Decode(T, { isHybrid: true })
+      Assert.IsEqual(value, { isHybrid: 1 })
+    })
+    // prettier-ignore
+    it('Should decode nested 2', () => {
+      const value = Value.Decode(I, {
+        model: 'Prius',
+        features: [
+          { isHybrid: true },
+          { isHybrid: false }
+        ],
+      })
+      Assert.IsEqual(value, {
+        model: 'Prius',
+        features: [
+          { isHybrid: 1 },
+          { isHybrid: 0 }
+        ],
+      })
+    })
+    it('should encode nested 1', () => {
+      let value = Value.Encode(T, { isHybrid: 1 })
+      Assert.IsEqual(value, { isHybrid: true })
+    })
+    // prettier-ignore
+    it('Should encode nested 2', () => {
+      const value = Value.Encode(I, {
+        model: 'Prius',
+        features: [
+          { isHybrid: 1 },
+          { isHybrid: 0 }
+        ],
+      })
+      Assert.IsEqual(value, {
+        model: 'Prius',
+        features: [
+          { isHybrid: true },
+          { isHybrid: false }
+
+        ],
+      })
+    })
+  }
 })
