@@ -33,18 +33,8 @@ import { Check } from './check'
 import * as Types from '../typebox'
 
 // -------------------------------------------------------------------------
-// CheckFunction
-// -------------------------------------------------------------------------
-export type CheckFunction = (schema: Types.TSchema, references: Types.TSchema[], value: unknown) => boolean
-
-// -------------------------------------------------------------------------
 // Errors
 // -------------------------------------------------------------------------
-export class TransformUnknownTypeError extends Types.TypeBoxError {
-  constructor(public readonly schema: Types.TRef | Types.TThis) {
-    super(`Unknown type`)
-  }
-}
 export class TransformDecodeCheckError extends Types.TypeBoxError {
   constructor(public readonly schema: Types.TSchema, public readonly value: unknown, public readonly error: ValueError) {
     super(`Unable to decode due to invalid value`)
@@ -65,9 +55,9 @@ export class TransformEncodeError extends Types.TypeBoxError {
     super(`${error instanceof Error ? error.message : 'Unknown error'}`)
   }
 }
-// -------------------------------------------------------------------------
+// ------------------------------------------------------------------
 // HasTransform
-// -------------------------------------------------------------------------
+// ------------------------------------------------------------------
 /** Recursively checks a schema for transform codecs */
 export namespace HasTransform {
   function TArray(schema: Types.TArray, references: Types.TSchema[]): boolean {
@@ -124,9 +114,6 @@ export namespace HasTransform {
     if (schema.$id && visited.has(schema.$id)) return false
     if (schema.$id) visited.add(schema.$id)
     switch (schema[Types.Kind]) {
-      // ------------------------------------------------------
-      // Structural
-      // ------------------------------------------------------
       case 'Array':
         return TArray(schema_, references_)
       case 'AsyncIterator':
@@ -155,28 +142,7 @@ export namespace HasTransform {
         return TTuple(schema_, references_)
       case 'Union':
         return TUnion(schema_, references_)
-      // ------------------------------------------------------
-      // Default
-      // ------------------------------------------------------
-      case 'Any':
-      case 'BigInt':
-      case 'Boolean':
-      case 'Date':
-      case 'Integer':
-      case 'Literal':
-      case 'Never':
-      case 'Null':
-      case 'Number':
-      case 'String':
-      case 'Symbol':
-      case 'TemplateLiteral':
-      case 'Undefined':
-      case 'Uint8Array':
-      case 'Unknown':
-      case 'Void':
-        return Types.TypeGuard.TTransform(schema)
       default:
-        if (!Types.TypeRegistry.Has(schema_[Types.Kind])) throw new TransformUnknownTypeError(schema_)
         return Types.TypeGuard.TTransform(schema)
     }
   }
@@ -187,9 +153,9 @@ export namespace HasTransform {
     return Visit(schema, references)
   }
 }
-// -------------------------------------------------------------------------
+// ------------------------------------------------------------------
 // DecodeTransform
-// -------------------------------------------------------------------------
+// ------------------------------------------------------------------
 /** Decodes a value using transform decoders if available. Does not ensure correct results. */
 export namespace DecodeTransform {
   function Default(schema: Types.TSchema, value: any) {
@@ -199,82 +165,105 @@ export namespace DecodeTransform {
       throw new TransformDecodeError(schema, value, error)
     }
   }
+  // prettier-ignore
   function TArray(schema: Types.TArray, references: Types.TSchema[], value: any): any {
-    const elements1 = value.map((value: any) => Visit(schema.items, references, value)) as unknown[]
-    return Default(schema, elements1)
+    return (IsArray(value))
+      ? Default(schema, value.map((value: any) => Visit(schema.items, references, value)))
+      : Default(schema, value)
   }
+  // prettier-ignore
   function TIntersect(schema: Types.TIntersect, references: Types.TSchema[], value: any) {
     if (!IsPlainObject(value) || IsValueType(value)) return Default(schema, value)
-    const keys = Types.KeyResolver.ResolveKeys(schema, { includePatterns: false })
-    const properties1 = Object.entries(value).reduce((acc, [key, value]) => {
-      return !keys.includes(key) ? { ...acc, [key]: value } : { ...acc, [key]: Default(Types.IndexedAccessor.Resolve(schema, [key]), value) }
-    }, {} as Record<any, any>)
-    if (!Types.TypeGuard.TTransform(schema.unevaluatedProperties)) return Default(schema, properties1)
-    const properties2 = Object.entries(properties1).reduce((acc, [key, value]) => {
-      return keys.includes(key) ? { ...acc, [key]: value } : { ...acc, [key]: Default(schema.unevaluatedProperties as Types.TSchema, value) }
-    }, {} as Record<any, any>)
-    return Default(schema, properties2)
+    const knownKeys = Types.KeyResolver.ResolveKeys(schema, { includePatterns: false })
+    const knownProperties = knownKeys.reduce((value, key) => {
+      return (key in value)
+        ? { ...value, [key]: Visit(Types.IndexedAccessor.Resolve(schema, [key]), references, value[key]) }
+        : value
+    }, value)
+    if (!Types.TypeGuard.TTransform(schema.unevaluatedProperties)) {
+      return Default(schema, knownProperties)
+    }
+    const unknownKeys = Object.getOwnPropertyNames(knownProperties)
+    const unevaluatedProperties = schema.unevaluatedProperties as Types.TSchema
+    const unknownProperties = unknownKeys.reduce((value, key) => {
+      return !knownKeys.includes(key)
+        ? { ...value, [key]: Default(unevaluatedProperties, value[key]) }
+        : value
+    }, knownProperties)
+    return Default(schema, unknownProperties)
   }
   function TNot(schema: Types.TNot, references: Types.TSchema[], value: any) {
-    const value1 = Visit(schema.not, references, value)
-    return Default(schema, value1)
+    return Default(schema, Visit(schema.not, references, value))
   }
+  // prettier-ignore
   function TObject(schema: Types.TObject, references: Types.TSchema[], value: any) {
     if (!IsPlainObject(value)) return Default(schema, value)
-    const properties1 = Object.entries(value).reduce((acc, [key, value]) => {
-      return !(key in schema.properties) ? { ...acc, [key]: value } : { ...acc, [key]: Visit(schema.properties[key], references, value) }
-    }, {} as Record<any, any>)
-    if (!Types.TypeGuard.TSchema(schema.additionalProperties)) return Default(schema, properties1)
+    const knownKeys = Types.KeyResolver.ResolveKeys(schema, { includePatterns: false })
+    const knownProperties = knownKeys.reduce((value, key) => {
+      return (key in value) 
+        ? { ...value, [key]: Visit(schema.properties[key], references, value[key]) }  
+        : value
+    }, value)
+    if (!Types.TypeGuard.TSchema(schema.additionalProperties)) {
+      return Default(schema, knownProperties)
+    }
+    const unknownKeys = Object.getOwnPropertyNames(knownProperties)
     const additionalProperties = schema.additionalProperties as Types.TSchema
-    const properties2 = Object.entries(properties1).reduce((acc, [key, value]) => {
-      return key in schema.properties ? { ...acc, [key]: value } : { ...acc, [key]: Visit(additionalProperties, references, value) }
-    }, {} as Record<any, any>)
-    return Default(schema, properties2)
+    const unknownProperties = unknownKeys.reduce((value, key) => {
+      return !knownKeys.includes(key)
+      ? { ...value, [key]: Default(additionalProperties, value[key]) }
+      : value
+    }, knownProperties)
+    return Default(schema, unknownProperties)
   }
+  // prettier-ignore
   function TRecord(schema: Types.TRecord<any, any>, references: Types.TSchema[], value: any) {
     if (!IsPlainObject(value)) return Default(schema, value)
     const pattern = Object.getOwnPropertyNames(schema.patternProperties)[0]
-    const property = schema.patternProperties[pattern]
-    const regex = new RegExp(pattern)
-    const properties1 = Object.entries(value).reduce((acc, [key, value]) => {
-      return !regex.test(key) ? { ...acc, [key]: value } : { ...acc, [key]: Visit(property, references, value) }
-    }, {} as Record<any, any>)
-    if (!Types.TypeGuard.TSchema(schema.additionalProperties)) return Default(schema, properties1)
+    const knownKeys = new RegExp(pattern)
+    const knownProperties = Object.getOwnPropertyNames(value).reduce((value, key) => {
+      return knownKeys.test(key) 
+        ? { ...value, [key]: Visit(schema.patternProperties[pattern], references, value[key]) }
+        : value
+    }, value)
+    if (!Types.TypeGuard.TSchema(schema.additionalProperties)) {
+      return Default(schema, knownProperties)
+    }
+    const unknownKeys = Object.getOwnPropertyNames(knownProperties)
     const additionalProperties = schema.additionalProperties as Types.TSchema
-    const properties2 = Object.entries(properties1).reduce((acc, [key, value]) => {
-      return regex.test(key) ? { ...acc, [key]: value } : { ...acc, [key]: Visit(additionalProperties, references, value) }
-    }, {} as Record<any, any>)
-    return Default(schema, properties2)
+    const unknownProperties = unknownKeys.reduce((value, key) => {
+      return !knownKeys.test(key)
+      ? { ...value, [key]: Default(additionalProperties, value[key]) }
+      : value
+    }, knownProperties)
+    return Default(schema, unknownProperties)
   }
   function TRef(schema: Types.TRef<any>, references: Types.TSchema[], value: any) {
     const target = Deref(schema, references)
-    const resolved = Visit(target, references, value)
-    return Default(schema, resolved)
+    return Default(schema, Visit(target, references, value))
   }
   function TThis(schema: Types.TThis, references: Types.TSchema[], value: any) {
     const target = Deref(schema, references)
-    const resolved = Visit(target, references, value)
-    return Default(schema, resolved)
+    return Default(schema, Visit(target, references, value))
   }
+  // prettier-ignore
   function TTuple(schema: Types.TTuple, references: Types.TSchema[], value: any) {
-    const value1 = IsArray(schema.items) ? schema.items.map((schema, index) => Visit(schema, references, value[index])) : []
-    return Default(schema, value1)
+    return (IsArray(value) && IsArray(schema.items))
+      ? Default(schema, schema.items.map((schema, index) => Visit(schema, references, value[index])))
+      : Default(schema, value)
   }
   function TUnion(schema: Types.TUnion, references: Types.TSchema[], value: any) {
-    const value1 = Default(schema, value)
+    const defaulted = Default(schema, value)
     for (const subschema of schema.anyOf) {
-      if (!Check(subschema, references, value1)) continue
-      return Visit(subschema, references, value1)
+      if (!Check(subschema, references, defaulted)) continue
+      return Visit(subschema, references, defaulted)
     }
-    return value1
+    return defaulted
   }
   function Visit(schema: Types.TSchema, references: Types.TSchema[], value: any): any {
     const references_ = typeof schema.$id === 'string' ? [...references, schema] : references
     const schema_ = schema as any
     switch (schema[Types.Kind]) {
-      // ------------------------------------------------------
-      // Structural
-      // ------------------------------------------------------
       case 'Array':
         return TArray(schema_, references_, value)
       case 'Intersect':
@@ -295,32 +284,7 @@ export namespace DecodeTransform {
         return TTuple(schema_, references_, value)
       case 'Union':
         return TUnion(schema_, references_, value)
-      // ------------------------------------------------------
-      // Default
-      // ------------------------------------------------------
-      case 'Any':
-      case 'AsyncIterator':
-      case 'BigInt':
-      case 'Boolean':
-      case 'Constructor':
-      case 'Date':
-      case 'Function':
-      case 'Integer':
-      case 'Iterator':
-      case 'Literal':
-      case 'Never':
-      case 'Null':
-      case 'Number':
-      case 'Promise':
-      case 'String':
-      case 'TemplateLiteral':
-      case 'Undefined':
-      case 'Uint8Array':
-      case 'Unknown':
-      case 'Void':
-        return Default(schema_, value)
       default:
-        if (!Types.TypeRegistry.Has(schema_[Types.Kind])) throw new TransformUnknownTypeError(schema_)
         return Default(schema_, value)
     }
   }
@@ -328,9 +292,9 @@ export namespace DecodeTransform {
     return Visit(schema, references, value)
   }
 }
-// -------------------------------------------------------------------------
+// ------------------------------------------------------------------
 // DecodeTransform
-// -------------------------------------------------------------------------
+// ------------------------------------------------------------------
 /** Encodes a value using transform encoders if available. Does not ensure correct results. */
 export namespace EncodeTransform {
   function Default(schema: Types.TSchema, value: any) {
@@ -340,52 +304,79 @@ export namespace EncodeTransform {
       throw new TransformEncodeError(schema, value, error)
     }
   }
+  // prettier-ignore
   function TArray(schema: Types.TArray, references: Types.TSchema[], value: any): any {
-    const elements1 = Default(schema, value)
-    return elements1.map((value: any) => Visit(schema.items, references, value)) as unknown[]
+    const defaulted = Default(schema, value)
+    return IsArray(defaulted)
+      ? defaulted.map((value: any) => Visit(schema.items, references, value))
+      : defaulted
   }
+  // prettier-ignore
   function TIntersect(schema: Types.TIntersect, references: Types.TSchema[], value: any) {
-    const properties1 = Default(schema, value)
-    if (!IsPlainObject(value) || IsValueType(value)) return properties1
-    const keys = Types.KeyResolver.ResolveKeys(schema, { includePatterns: false })
-    const properties2 = Object.entries(properties1).reduce((acc, [key, value]) => {
-      return !keys.includes(key) ? { ...acc, [key]: value } : { ...acc, [key]: Default(Types.IndexedAccessor.Resolve(schema, [key]), value) }
-    }, {} as Record<any, any>)
-    if (!Types.TypeGuard.TTransform(schema.unevaluatedProperties)) return Default(schema, properties2)
-    return Object.entries(properties2).reduce((acc, [key, value]) => {
-      return keys.includes(key) ? { ...acc, [key]: value } : { ...acc, [key]: Default(schema.unevaluatedProperties as Types.TSchema, value) }
-    }, {} as Record<any, any>)
+    const defaulted = Default(schema, value)
+    if (!IsPlainObject(value) || IsValueType(value)) return defaulted
+    const knownKeys = Types.KeyResolver.ResolveKeys(schema, { includePatterns: false })
+    const knownProperties = knownKeys.reduce((value, key) => {
+      return key in defaulted 
+        ? { ...value, [key]: Visit(Types.IndexedAccessor.Resolve(schema, [key]), references, value[key]) } 
+        : value
+    }, defaulted)
+    if (!Types.TypeGuard.TTransform(schema.unevaluatedProperties)) {
+      return Default(schema, knownProperties)
+    }
+    const unknownKeys = Object.getOwnPropertyNames(knownProperties)
+    const unevaluatedProperties = schema.unevaluatedProperties as Types.TSchema
+    return unknownKeys.reduce((value, key) => {
+      return !knownKeys.includes(key) 
+        ? { ...value, [key]: Default(unevaluatedProperties, value[key]) }  
+        : value
+    }, knownProperties)
   }
   function TNot(schema: Types.TNot, references: Types.TSchema[], value: any) {
-    const value1 = Default(schema, value)
-    return Default(schema.not, value1)
+    return Default(schema.not, Default(schema, value))
   }
+  // prettier-ignore
   function TObject(schema: Types.TObject, references: Types.TSchema[], value: any) {
-    const properties1 = Default(schema, value) as Record<any, any>
-    if (!IsPlainObject(value)) return properties1
-    const properties2 = Object.entries(properties1).reduce((acc, [key, value]) => {
-      return !(key in schema.properties) ? { ...acc, [key]: value } : { ...acc, [key]: Visit(schema.properties[key], references, value) }
-    }, {} as Record<any, any>)
-    if (!Types.TypeGuard.TSchema(schema.additionalProperties)) return properties2
+    const defaulted = Default(schema, value)
+    if (!IsPlainObject(value)) return defaulted
+    const knownKeys = Types.KeyResolver.ResolveKeys(schema, { includePatterns: false })
+    const knownProperties = knownKeys.reduce((value, key) => {
+      return key in value 
+        ? { ...value, [key]: Visit(schema.properties[key], references, value[key]) } 
+        : value
+    }, defaulted)
+    if (!Types.TypeGuard.TSchema(schema.additionalProperties)) {
+      return knownProperties
+    }
+    const unknownKeys = Object.getOwnPropertyNames(knownProperties)
     const additionalProperties = schema.additionalProperties as Types.TSchema
-    return Object.entries(properties2).reduce((acc, [key, value]) => {
-      return key in schema.properties ? { ...acc, [key]: value } : { ...acc, [key]: Visit(additionalProperties, references, value) }
-    }, {} as Record<any, any>)
+    return unknownKeys.reduce((value, key) => {
+      return !knownKeys.includes(key) 
+        ? { ...value, [key]: Default(additionalProperties, value[key]) }  
+        : value
+    }, knownProperties)
   }
+  // prettier-ignore
   function TRecord(schema: Types.TRecord<any, any>, references: Types.TSchema[], value: any) {
-    const properties1 = Default(schema, value) as Record<any, any>
-    if (!IsPlainObject(value)) return properties1
+    const defaulted = Default(schema, value) as Record<any, any>
+    if (!IsPlainObject(value)) return defaulted
     const pattern = Object.getOwnPropertyNames(schema.patternProperties)[0]
-    const property = schema.patternProperties[pattern]
-    const regex = new RegExp(pattern)
-    const properties2 = Object.entries(properties1).reduce((acc, [key, value]) => {
-      return !regex.test(key) ? { ...acc, [key]: value } : { ...acc, [key]: Visit(property, references, value) }
-    }, {} as Record<any, any>)
-    if (!Types.TypeGuard.TSchema(schema.additionalProperties)) return Default(schema, properties2)
+    const knownKeys = new RegExp(pattern)
+    const knownProperties = Object.getOwnPropertyNames(value).reduce((value, key) => {
+      return knownKeys.test(key) 
+        ? { ...value, [key]: Visit(schema.patternProperties[pattern], references, value[key]) }
+        : value
+    }, defaulted)
+    if (!Types.TypeGuard.TSchema(schema.additionalProperties)) {
+      return Default(schema, knownProperties)
+    }
+    const unknownKeys = Object.getOwnPropertyNames(knownProperties)
     const additionalProperties = schema.additionalProperties as Types.TSchema
-    return Object.entries(properties2).reduce((acc, [key, value]) => {
-      return regex.test(key) ? { ...acc, [key]: value } : { ...acc, [key]: Visit(additionalProperties, references, value) }
-    }, {} as Record<any, any>)
+    return unknownKeys.reduce((value, key) => {
+      return !knownKeys.test(key) 
+        ? { ...value, [key]: Default(additionalProperties, value[key]) }  
+        : value
+    }, knownProperties)
   }
   function TRef(schema: Types.TRef<any>, references: Types.TSchema[], value: any) {
     const target = Deref(schema, references)
@@ -420,9 +411,6 @@ export namespace EncodeTransform {
     const references_ = typeof schema.$id === 'string' ? [...references, schema] : references
     const schema_ = schema as any
     switch (schema[Types.Kind]) {
-      // ------------------------------------------------------
-      // Structural
-      // ------------------------------------------------------
       case 'Array':
         return TArray(schema_, references_, value)
       case 'Intersect':
@@ -441,33 +429,7 @@ export namespace EncodeTransform {
         return TTuple(schema_, references_, value)
       case 'Union':
         return TUnion(schema_, references_, value)
-      // ------------------------------------------------------
-      // Apply
-      // ------------------------------------------------------
-      case 'Any':
-      case 'AsyncIterator':
-      case 'BigInt':
-      case 'Boolean':
-      case 'Constructor':
-      case 'Date':
-      case 'Function':
-      case 'Integer':
-      case 'Iterator':
-      case 'Literal':
-      case 'Never':
-      case 'Null':
-      case 'Number':
-      case 'Promise':
-      case 'String':
-      case 'Symbol':
-      case 'TemplateLiteral':
-      case 'Undefined':
-      case 'Uint8Array':
-      case 'Unknown':
-      case 'Void':
-        return Default(schema_, value)
       default:
-        if (!Types.TypeRegistry.Has(schema_[Types.Kind])) throw new TransformUnknownTypeError(schema_)
         return Default(schema_, value)
     }
   }
