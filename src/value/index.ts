@@ -26,8 +26,56 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+// ------------------------------------------------------------------
+// Value Errors (re-export)
+// ------------------------------------------------------------------
 export { ValueError, ValueErrorType, ValueErrorIterator } from '../errors/index'
-export { Edit, Insert, Update, Delete } from './delta'
-export { Mutable } from './mutate'
-export { ValuePointer } from './pointer'
-export { Value } from './value'
+// ------------------------------------------------------------------
+// Value Operators
+// ------------------------------------------------------------------
+export { Cast, ValueCastArrayUniqueItemsTypeError, ValueCastNeverTypeError, ValueCastRecursiveTypeError, ValueCastUnknownTypeError } from './cast/index'
+export { Check } from './check/index'
+export { Clean } from './clean/index'
+export { Clone } from './clone/index'
+export { Convert, ValueConvertUnknownTypeError } from './convert/index'
+export { Create, ValueCreateIntersectTypeError, ValueCreateNeverTypeError, ValueCreateNotTypeError, ValueCreateRecursiveInstantiationError, ValueCreateTempateLiteralTypeError, ValueCreateUnknownTypeError } from './create/index'
+export { Default } from './default/index'
+export { Diff, Patch, Edit, Delete, Insert, Update, ValueDeltaObjectWithSymbolKeyError, ValueDeltaUnableToDiffUnknownValue } from './delta/index'
+export { Equal } from './equal/index'
+export { Hash, ValueHashError } from './hash/index'
+export { Mutate, type Mutable, ValueMutateInvalidRootMutationError, ValueMutateTypeMismatchError } from './mutate/index'
+export { ValuePointer } from './pointer/index'
+export { TransformDecode as DecodeTransform, TransformEncode as EncodeTransform, HasTransform, TransformDecodeCheckError, TransformDecodeError, TransformEncodeCheckError, TransformEncodeError } from './transform/index'
+// ------------------------------------------------------------------
+// Value Guards
+// ------------------------------------------------------------------
+export {
+  ArrayType,
+  HasPropertyKey,
+  IsArray,
+  IsAsyncIterator,
+  IsBigInt,
+  IsBoolean,
+  IsDate,
+  IsFunction,
+  IsInteger,
+  IsIterator,
+  IsNull,
+  IsNumber,
+  IsObject,
+  IsPlainObject,
+  IsPromise,
+  IsString,
+  IsSymbol,
+  IsTypedArray,
+  IsUint8Array,
+  IsUndefined,
+  IsValueType,
+  ObjectType,
+  TypedArrayType,
+  ValueType,
+} from './guard/index'
+// ------------------------------------------------------------------
+// Value Namespace
+// ------------------------------------------------------------------
+export { Value } from './value/index'

@@ -26,5 +26,5 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export { ValueErrorType } from '../errors/errors'
-export * from './system'
+export { TypeSystemPolicy } from './policy'
+export { TypeSystem, TypeSystemDuplicateFormat, TypeSystemDuplicateTypeKind } from './system'

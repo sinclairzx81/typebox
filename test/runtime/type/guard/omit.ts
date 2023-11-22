@@ -1,4 +1,4 @@
-import { TypeGuard, Type, Kind, Transform } from '@sinclair/typebox'
+import { TypeGuard, Type, Kind, TransformKind } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
 describe('type/guard/TOmit', () => {
@@ -124,6 +124,6 @@ describe('type/guard/TOmit', () => {
       .Decode((value) => value)
       .Encode((value) => value)
     const R = Type.Omit(S, ['x'])
-    Assert.IsFalse(Transform in R)
+    Assert.IsFalse(TransformKind in R)
   })
 })

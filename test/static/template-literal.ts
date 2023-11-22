@@ -28,6 +28,13 @@ import { Type } from '@sinclair/typebox'
   Expect(T).ToStatic<'hello1' | 'hello2'>()
 }
 {
+  // TemplateLiteral Composition
+  const A = Type.TemplateLiteral('${A|B}')
+  const B = Type.TemplateLiteral('${C|D}')
+  const T = Type.TemplateLiteral([A, B])
+  Expect(T).ToStatic<'AC' | 'AD' | 'BC' | 'BD'>()
+}
+{
   // String
   const T = Type.TemplateLiteral([Type.String()])
   Expect(T).ToStatic<`${string}`>()

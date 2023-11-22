@@ -71,3 +71,36 @@ import { Type, Static } from '@sinclair/typebox'
   const T = Type.Union([])
   Expect(T).ToStaticNever()
 }
+// prettier-ignore
+{ // Scalable Union
+  const X = Type.Object({ x: Type.Number() })
+  const Y = Type.Object({ y: Type.Number() })
+  const Z = Type.Object({ z: Type.Number() })
+  const W = Type.Object({ w: Type.Number() })
+
+  const T = Type.Union([
+    X, Y, Z, W, X, Y, Z, W,
+    X, Y, Z, W, X, Y, Z, W,
+    X, Y, Z, W, X, Y, Z, W,
+    X, Y, Z, W, X, Y, Z, W,
+    X, Y, Z, W, X, Y, Z, W,
+    X, Y, Z, W, X, Y, Z, W,
+    X, Y, Z, W, X, Y, Z, W,
+    X, Y, Z, W, X, Y, Z, W,
+
+    X, Y, Z, W, X, Y, Z, W,
+    X, Y, Z, W, X, Y, Z, W,
+    X, Y, Z, W, X, Y, Z, W,
+    X, Y, Z, W, X, Y, Z, W,
+    X, Y, Z, W, X, Y, Z, W,
+    X, Y, Z, W, X, Y, Z, W,
+    X, Y, Z, W, X, Y, Z, W,
+    X, Y, Z, W, X, Y, Z, W,
+  ])
+  Expect(T).ToStatic<
+    { x: number } | 
+    { y: number } | 
+    { z: number } | 
+    { w: number }
+  >()
+}

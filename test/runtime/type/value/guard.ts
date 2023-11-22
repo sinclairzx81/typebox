@@ -3,6 +3,17 @@ import { ValueGuard } from '@sinclair/typebox'
 
 describe('type/ValueGuard', () => {
   // -----------------------------------------------------
+  // IsSymbol
+  // -----------------------------------------------------
+  it('Should guard symbol 1', () => {
+    const R = ValueGuard.IsSymbol(Symbol())
+    Assert.IsTrue(R)
+  })
+  it('Should guard symbol 2', () => {
+    const R = ValueGuard.IsSymbol({})
+    Assert.IsFalse(R)
+  })
+  // -----------------------------------------------------
   // IsNull
   // -----------------------------------------------------
   it('Should guard null 1', () => {
@@ -104,6 +115,73 @@ describe('type/ValueGuard', () => {
   })
   it('Should guard array 2', () => {
     const R = ValueGuard.IsArray({})
+    Assert.IsFalse(R)
+  })
+  // -----------------------------------------------------
+  // IsFunction
+  // -----------------------------------------------------
+  it('Should guard function 1', () => {
+    const R = ValueGuard.IsFunction(function () {})
+    Assert.IsTrue(R)
+  })
+  it('Should guard function 2', () => {
+    const R = ValueGuard.IsFunction({})
+    Assert.IsFalse(R)
+  })
+  // -----------------------------------------------------
+  // IsAsyncIterator
+  // -----------------------------------------------------
+  it('Should guard async iterator 1', () => {
+    const R = ValueGuard.IsAsyncIterator((async function* (): any {})())
+    Assert.IsTrue(R)
+  })
+  it('Should guard async iterator 2', () => {
+    const R = ValueGuard.IsAsyncIterator((function* (): any {})())
+    Assert.IsFalse(R)
+  })
+  // -----------------------------------------------------
+  // IsAsyncIterator
+  // -----------------------------------------------------
+  it('Should guard iterator 1', () => {
+    const R = ValueGuard.IsIterator((function* (): any {})())
+    Assert.IsTrue(R)
+  })
+  it('Should guard iterator 2', () => {
+    const R = ValueGuard.IsIterator((async function* (): any {})())
+    Assert.IsFalse(R)
+  })
+  it('Should guard iterator 3', () => {
+    const R = ValueGuard.IsIterator([])
+    Assert.IsFalse(R)
+  })
+  it('Should guard iterator 4', () => {
+    const R = ValueGuard.IsIterator(new Uint8Array())
+    Assert.IsFalse(R)
+  })
+  // -----------------------------------------------------
+  // Date
+  // -----------------------------------------------------
+  it('Should guard date 1', () => {
+    const R = ValueGuard.IsDate(new Date())
+    Assert.IsTrue(R)
+  })
+  it('Should guard date 2', () => {
+    const R = ValueGuard.IsDate({})
+    Assert.IsFalse(R)
+  })
+  // -----------------------------------------------------
+  // Date
+  // -----------------------------------------------------
+  it('Should guard uint8array 1', () => {
+    const R = ValueGuard.IsUint8Array(new Uint8Array())
+    Assert.IsTrue(R)
+  })
+  it('Should guard uint8array 2', () => {
+    const R = ValueGuard.IsUint8Array({})
+    Assert.IsFalse(R)
+  })
+  it('Should guard uint8array 2', () => {
+    const R = ValueGuard.IsUint8Array([])
     Assert.IsFalse(R)
   })
 })

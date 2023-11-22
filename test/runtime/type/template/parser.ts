@@ -1,4 +1,4 @@
-import { TemplateLiteralParser } from '@sinclair/typebox'
+import { TemplateLiteralParse } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
 describe('type/templateliteral/TemplateLiteralParser', () => {
@@ -6,23 +6,23 @@ describe('type/templateliteral/TemplateLiteralParser', () => {
   // Throws
   // ---------------------------------------------------------------
   it('Throw 1', () => {
-    Assert.Throws(() => TemplateLiteralParser.Parse('('))
+    Assert.Throws(() => TemplateLiteralParse('('))
   })
   it('Throw 2', () => {
-    Assert.Throws(() => TemplateLiteralParser.Parse('('))
+    Assert.Throws(() => TemplateLiteralParse('('))
   })
   // ---------------------------------------------------------------
   // Exact (No Default Unwrap)
   // ---------------------------------------------------------------
   it('Exact 1', () => {
-    const E = TemplateLiteralParser.Parse('^$')
+    const E = TemplateLiteralParse('^$')
     Assert.IsEqual(E, {
       type: 'const',
       const: '^$',
     })
   })
   it('Exact 2', () => {
-    const E = TemplateLiteralParser.Parse('^A$')
+    const E = TemplateLiteralParse('^A$')
     Assert.IsEqual(E, {
       type: 'const',
       const: '^A$',
@@ -32,7 +32,7 @@ describe('type/templateliteral/TemplateLiteralParser', () => {
   // Patterns
   // ---------------------------------------------------------------
   it('Pattern 1', () => {
-    const E = TemplateLiteralParser.Parse('(true|false)')
+    const E = TemplateLiteralParse('(true|false)')
     Assert.IsEqual(E, {
       type: 'or',
       expr: [
@@ -48,7 +48,7 @@ describe('type/templateliteral/TemplateLiteralParser', () => {
     })
   })
   it('Pattern 2', () => {
-    const E = TemplateLiteralParser.Parse('(0|[1-9][0-9]*)')
+    const E = TemplateLiteralParse('(0|[1-9][0-9]*)')
     Assert.IsEqual(E, {
       type: 'or',
       expr: [
@@ -64,7 +64,7 @@ describe('type/templateliteral/TemplateLiteralParser', () => {
     })
   })
   it('Pattern 3', () => {
-    const E = TemplateLiteralParser.Parse('.*')
+    const E = TemplateLiteralParse('.*')
     Assert.IsEqual(E, {
       type: 'const',
       const: '.*',
@@ -74,56 +74,56 @@ describe('type/templateliteral/TemplateLiteralParser', () => {
   // Expression
   // ---------------------------------------------------------------
   it('Expression 1', () => {
-    const E = TemplateLiteralParser.Parse(')')
+    const E = TemplateLiteralParse(')')
     Assert.IsEqual(E, {
       type: 'const',
       const: ')',
     })
   })
   it('Expression 2', () => {
-    const E = TemplateLiteralParser.Parse('\\)')
+    const E = TemplateLiteralParse('\\)')
     Assert.IsEqual(E, {
       type: 'const',
       const: '\\)',
     })
   })
   it('Expression 3', () => {
-    const E = TemplateLiteralParser.Parse('\\(')
+    const E = TemplateLiteralParse('\\(')
     Assert.IsEqual(E, {
       type: 'const',
       const: '\\(',
     })
   })
   it('Expression 4', () => {
-    const E = TemplateLiteralParser.Parse('')
+    const E = TemplateLiteralParse('')
     Assert.IsEqual(E, {
       type: 'const',
       const: '',
     })
   })
   it('Expression 5', () => {
-    const E = TemplateLiteralParser.Parse('\\')
+    const E = TemplateLiteralParse('\\')
     Assert.IsEqual(E, {
       type: 'const',
       const: '\\',
     })
   })
   it('Expression 6', () => {
-    const E = TemplateLiteralParser.Parse('()')
+    const E = TemplateLiteralParse('()')
     Assert.IsEqual(E, {
       type: 'const',
       const: '',
     })
   })
   it('Expression 7', () => {
-    const E = TemplateLiteralParser.Parse('(a)')
+    const E = TemplateLiteralParse('(a)')
     Assert.IsEqual(E, {
       type: 'const',
       const: 'a',
     })
   })
   it('Expression 8', () => {
-    const E = TemplateLiteralParser.Parse('()))')
+    const E = TemplateLiteralParse('()))')
     Assert.IsEqual(E, {
       type: 'and',
       expr: [
@@ -139,7 +139,7 @@ describe('type/templateliteral/TemplateLiteralParser', () => {
     })
   })
   it('Expression 9', () => {
-    const E = TemplateLiteralParser.Parse('())')
+    const E = TemplateLiteralParse('())')
     Assert.IsEqual(E, {
       type: 'and',
       expr: [
@@ -155,7 +155,7 @@ describe('type/templateliteral/TemplateLiteralParser', () => {
     })
   })
   it('Expression 10', () => {
-    const E = TemplateLiteralParser.Parse('A|B')
+    const E = TemplateLiteralParse('A|B')
     Assert.IsEqual(E, {
       type: 'or',
       expr: [
@@ -171,7 +171,7 @@ describe('type/templateliteral/TemplateLiteralParser', () => {
     })
   })
   it('Expression 11', () => {
-    const E = TemplateLiteralParser.Parse('A|(B)')
+    const E = TemplateLiteralParse('A|(B)')
     Assert.IsEqual(E, {
       type: 'or',
       expr: [
@@ -187,7 +187,7 @@ describe('type/templateliteral/TemplateLiteralParser', () => {
     })
   })
   it('Expression 12', () => {
-    const E = TemplateLiteralParser.Parse('A(B)')
+    const E = TemplateLiteralParse('A(B)')
     Assert.IsEqual(E, {
       type: 'and',
       expr: [
@@ -203,7 +203,7 @@ describe('type/templateliteral/TemplateLiteralParser', () => {
     })
   })
   it('Expression 13', () => {
-    const E = TemplateLiteralParser.Parse('(A)B')
+    const E = TemplateLiteralParse('(A)B')
     Assert.IsEqual(E, {
       type: 'and',
       expr: [
@@ -219,7 +219,7 @@ describe('type/templateliteral/TemplateLiteralParser', () => {
     })
   })
   it('Expression 14', () => {
-    const E = TemplateLiteralParser.Parse('(A)|B')
+    const E = TemplateLiteralParse('(A)|B')
     Assert.IsEqual(E, {
       type: 'or',
       expr: [
@@ -235,35 +235,35 @@ describe('type/templateliteral/TemplateLiteralParser', () => {
     })
   })
   it('Expression 15', () => {
-    const E = TemplateLiteralParser.Parse('|')
+    const E = TemplateLiteralParse('|')
     Assert.IsEqual(E, {
       type: 'const',
       const: '',
     })
   })
   it('Expression 16', () => {
-    const E = TemplateLiteralParser.Parse('||')
+    const E = TemplateLiteralParse('||')
     Assert.IsEqual(E, {
       type: 'const',
       const: '',
     })
   })
   it('Expression 17', () => {
-    const E = TemplateLiteralParser.Parse('||A')
+    const E = TemplateLiteralParse('||A')
     Assert.IsEqual(E, {
       type: 'const',
       const: 'A',
     })
   })
   it('Expression 18', () => {
-    const E = TemplateLiteralParser.Parse('A||')
+    const E = TemplateLiteralParse('A||')
     Assert.IsEqual(E, {
       type: 'const',
       const: 'A',
     })
   })
   it('Expression 19', () => {
-    const E = TemplateLiteralParser.Parse('A||B')
+    const E = TemplateLiteralParse('A||B')
     Assert.IsEqual(E, {
       type: 'or',
       expr: [
@@ -279,7 +279,7 @@ describe('type/templateliteral/TemplateLiteralParser', () => {
     })
   })
   it('Expression 20', () => {
-    const E = TemplateLiteralParser.Parse('A|()|B')
+    const E = TemplateLiteralParse('A|()|B')
     Assert.IsEqual(E, {
       type: 'or',
       expr: [
@@ -299,7 +299,7 @@ describe('type/templateliteral/TemplateLiteralParser', () => {
     })
   })
   it('Expression 21', () => {
-    const E = TemplateLiteralParser.Parse('A|(|)|B')
+    const E = TemplateLiteralParse('A|(|)|B')
     Assert.IsEqual(E, {
       type: 'or',
       expr: [
@@ -319,7 +319,7 @@ describe('type/templateliteral/TemplateLiteralParser', () => {
     })
   })
   it('Expression 22', () => {
-    const E = TemplateLiteralParser.Parse('A|(||)|B')
+    const E = TemplateLiteralParse('A|(||)|B')
     Assert.IsEqual(E, {
       type: 'or',
       expr: [
@@ -339,7 +339,7 @@ describe('type/templateliteral/TemplateLiteralParser', () => {
     })
   })
   it('Expression 23', () => {
-    const E = TemplateLiteralParser.Parse('|A(||)B|')
+    const E = TemplateLiteralParse('|A(||)B|')
     Assert.IsEqual(E, {
       type: 'and',
       expr: [
@@ -359,7 +359,7 @@ describe('type/templateliteral/TemplateLiteralParser', () => {
     })
   })
   it('Expression 24', () => {
-    const E = TemplateLiteralParser.Parse('A(B)(C)')
+    const E = TemplateLiteralParse('A(B)(C)')
     Assert.IsEqual(E, {
       type: 'and',
       expr: [
@@ -379,7 +379,7 @@ describe('type/templateliteral/TemplateLiteralParser', () => {
     })
   })
   it('Expression 25', () => {
-    const E = TemplateLiteralParser.Parse('A(B)|(C)')
+    const E = TemplateLiteralParse('A(B)|(C)')
     Assert.IsEqual(E, {
       type: 'or',
       expr: [
@@ -404,7 +404,7 @@ describe('type/templateliteral/TemplateLiteralParser', () => {
     })
   })
   it('Expression 26', () => {
-    const E = TemplateLiteralParser.Parse('A(B|C)')
+    const E = TemplateLiteralParse('A(B|C)')
     Assert.IsEqual(E, {
       type: 'and',
       expr: [
@@ -429,7 +429,7 @@ describe('type/templateliteral/TemplateLiteralParser', () => {
     })
   })
   it('Expression 27', () => {
-    const E = TemplateLiteralParser.Parse('A|(B|C)')
+    const E = TemplateLiteralParse('A|(B|C)')
     Assert.IsEqual(E, {
       type: 'or',
       expr: [
@@ -454,7 +454,7 @@ describe('type/templateliteral/TemplateLiteralParser', () => {
     })
   })
   it('Expression 28', () => {
-    const E = TemplateLiteralParser.Parse('((A)B)C')
+    const E = TemplateLiteralParse('((A)B)C')
     Assert.IsEqual(E, {
       type: 'and',
       expr: [
@@ -479,7 +479,7 @@ describe('type/templateliteral/TemplateLiteralParser', () => {
     })
   })
   it('Expression 29', () => {
-    const E = TemplateLiteralParser.Parse('(0|1)(0|1)')
+    const E = TemplateLiteralParse('(0|1)(0|1)')
     Assert.IsEqual(E, {
       type: 'and',
       expr: [
@@ -513,7 +513,7 @@ describe('type/templateliteral/TemplateLiteralParser', () => {
     })
   })
   it('Expression 30', () => {
-    const E = TemplateLiteralParser.Parse('(0|1)|(0|1)')
+    const E = TemplateLiteralParse('(0|1)|(0|1)')
     Assert.IsEqual(E, {
       type: 'or',
       expr: [
@@ -547,7 +547,7 @@ describe('type/templateliteral/TemplateLiteralParser', () => {
     })
   })
   it('Expression 31', () => {
-    const E = TemplateLiteralParser.Parse('(0|(1|0)|1)')
+    const E = TemplateLiteralParse('(0|(1|0)|1)')
     Assert.IsEqual(E, {
       type: 'or',
       expr: [
@@ -576,7 +576,7 @@ describe('type/templateliteral/TemplateLiteralParser', () => {
     })
   })
   it('Expression 32', () => {
-    const E = TemplateLiteralParser.Parse('(0(1|0)1)')
+    const E = TemplateLiteralParse('(0(1|0)1)')
     Assert.IsEqual(E, {
       type: 'and',
       expr: [
