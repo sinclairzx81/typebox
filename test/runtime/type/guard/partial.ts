@@ -1,4 +1,4 @@
-import { TypeGuard, TypeRegistry, Type, Kind, Transform } from '@sinclair/typebox'
+import { TypeGuard, TypeRegistry, Type, Kind, TransformKind } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
 describe('type/guard/TPartial', () => {
@@ -62,6 +62,6 @@ describe('type/guard/TPartial', () => {
       .Decode((value) => value)
       .Encode((value) => value)
     const R = Type.Partial(S)
-    Assert.IsFalse(Transform in R)
+    Assert.IsFalse(TransformKind in R)
   })
 })

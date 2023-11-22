@@ -1,4 +1,4 @@
-import { TypeGuard } from '@sinclair/typebox'
+import { TSchema, TypeGuard } from '@sinclair/typebox'
 import { Type } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
@@ -46,7 +46,7 @@ describe('type/guard/TUnion', () => {
         Type.Object({
           x: Type.Number(),
         }),
-        {} as any,
+        {} as TSchema,
       ]),
     )
     Assert.IsFalse(R)

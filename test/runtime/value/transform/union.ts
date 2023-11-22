@@ -1,7 +1,6 @@
 import * as Encoder from './_encoder'
 import { Assert } from '../../assert'
-import { Value } from '@sinclair/typebox/value'
-import { Type, TSchema } from '@sinclair/typebox'
+import { Type } from '@sinclair/typebox'
 
 describe('value/transform/Union', () => {
   // --------------------------------------------------------
@@ -199,4 +198,44 @@ describe('value/transform/Union', () => {
   it('Should throw on interior union encode', () => {
     Assert.Throws(() => Encoder.Encode(T52, 1))
   })
+  // prettier-ignore
+  { // https://github.com/sinclairzx81/typebox/issues/676
+    // interior-type
+    const S = Type.Transform(Type.String())
+    .Decode((value: string) => new globalThis.Date(value))
+    .Encode((value: Date) => value.toISOString())
+    // union-type
+    const U = Type.Union([
+      Type.Object({ date: S }), 
+      Type.Number()
+    ])
+    // expect date on decode
+    const T1 = Type.Transform(U)
+      .Decode((value) => { 
+        Assert.IsTypeOf(value, 'object')
+        Assert.HasProperty(value, 'date')
+        Assert.IsInstanceOf(value.date, globalThis.Date); 
+        return value 
+      })
+      .Encode((value) => value)
+    // expect number on decode
+    const T2 = Type.Transform(U)
+      .Decode((value) => { 
+        Assert.IsTypeOf(value, 'number')
+        return value 
+      })
+      .Encode((value) => value)
+    
+    it('Should decode interior union 1', () => {
+      const R = Encoder.Decode(T1, { date: new globalThis.Date().toISOString() })
+      Assert.IsTypeOf(R, 'object')
+      Assert.HasProperty(R, 'date')
+      Assert.IsInstanceOf(R.date, globalThis.Date); 
+    })
+    it('Should decode interior union 2', () => {
+      const R = Encoder.Decode(T2, 123)
+      Assert.IsTypeOf(R, 'number')
+      Assert.IsEqual(R, 123)
+    })
+  }
 })

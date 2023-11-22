@@ -311,8 +311,17 @@ describe('type/guard/TIndex', () => {
   })
   it('Should Index 34', () => {
     const T = Type.String()
-    // @ts-ignore
     const I = Type.Index(T, ['x'])
     Assert.IsTrue(TypeGuard.TNever(I))
+  })
+  it('Should Index 35', () => {
+    const T = Type.Array(Type.String())
+    const I = Type.Index(T, Type.Number())
+    Assert.IsTrue(TypeGuard.TString(I))
+  })
+  it('Should Index 36', () => {
+    const T = Type.Array(Type.String())
+    const I = Type.Index(T, ['[number]'])
+    Assert.IsTrue(TypeGuard.TString(I))
   })
 })
