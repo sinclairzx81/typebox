@@ -1,10 +1,10 @@
-import { TypeGuard, TypeRegistry, Type, Kind, Transform } from '@sinclair/typebox'
+import { TypeGuard, TypeRegistry, Type, Kind, TransformKind } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
 describe('type/guard/TRequired', () => {
   it('Should produce a valid TSchema', () => {
     const T = Type.Required(Type.Object({ x: Type.Number() }))
-    Assert.IsTrue(TypeGuard.TSchema(T))
+    Assert.IsTrue(TypeGuard.IsSchema(T))
   })
   it('Should support TUnsafe required properties with no Kind', () => {
     const T = Type.Required(Type.Object({ x: Type.Optional(Type.Unsafe({ x: 1 })) }))
@@ -59,6 +59,6 @@ describe('type/guard/TRequired', () => {
       .Decode((value) => value)
       .Encode((value) => value)
     const R = Type.Required(S)
-    Assert.IsFalse(Transform in R)
+    Assert.IsFalse(TransformKind in R)
   })
 })

@@ -26,25 +26,70 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { EncodeTransform, DecodeTransform, HasTransform, TransformDecodeCheckError, TransformEncodeCheckError } from '../value/transform'
-import { IsArray, IsString, IsNumber, IsBigInt } from '../value/guard'
-import { Errors, ValueErrorIterator } from '../errors/errors'
+import { TransformEncode, TransformDecode, HasTransform, TransformDecodeCheckError, TransformEncodeCheckError } from '../value/transform/index'
+import { Errors, ValueErrorIterator } from '../errors/index'
 import { TypeSystemPolicy } from '../system/index'
-import { Deref } from '../value/deref'
-import { Hash } from '../value/hash'
-import * as Types from '../typebox'
+import { TypeBoxError } from '../type/error/index'
+import { Deref } from '../value/deref/index'
+import { Hash } from '../value/hash/index'
+import { Kind } from '../type/symbols/index'
 
-// -------------------------------------------------------------------
+import { TypeRegistry, FormatRegistry } from '../type/registry/index'
+import { KeyOfPattern } from '../type/keyof/index'
+import { ExtendsUndefinedCheck } from '../type/extends/extends-undefined'
+
+import type { TSchema } from '../type/schema/index'
+import type { TAsyncIterator } from '../type/async-iterator/index'
+import type { TAny } from '../type/any/index'
+import type { TArray } from '../type/array/index'
+import type { TBigInt } from '../type/bigint/index'
+import type { TBoolean } from '../type/boolean/index'
+import type { TDate } from '../type/date/index'
+import type { TConstructor } from '../type/constructor/index'
+import type { TFunction } from '../type/function/index'
+import type { TInteger } from '../type/integer/index'
+import type { TIntersect } from '../type/intersect/index'
+import type { TIterator } from '../type/iterator/index'
+import type { TLiteral } from '../type/literal/index'
+import { Never, type TNever } from '../type/never/index'
+import type { TNot } from '../type/not/index'
+import type { TNull } from '../type/null/index'
+import type { TNumber } from '../type/number/index'
+import type { TObject } from '../type/object/index'
+import type { TPromise } from '../type/promise/index'
+import type { TRecord } from '../type/record/index'
+import type { TRef } from '../type/ref/index'
+import type { TRegExp } from '../type/regexp/index'
+import type { TTemplateLiteral } from '../type/template-literal/index'
+import type { TThis } from '../type/recursive/index'
+import type { TTuple } from '../type/tuple/index'
+import type { TUnion } from '../type/union/index'
+import type { TUnknown } from '../type/unknown/index'
+import type { Static, StaticDecode, StaticEncode } from '../type/static/index'
+import type { TString } from '../type/string/index'
+import type { TSymbol } from '../type/symbol/index'
+import type { TUndefined } from '../type/undefined/index'
+import type { TUint8Array } from '../type/uint8array/index'
+import type { TVoid } from '../type/void/index'
+// ------------------------------------------------------------------
+// ValueGuard
+// ------------------------------------------------------------------
+import { IsArray, IsString, IsNumber, IsBigInt } from '../value/guard/index'
+// ------------------------------------------------------------------
+// TypeGuard
+// ------------------------------------------------------------------
+import { IsSchema } from '../type/guard/type'
+// ------------------------------------------------------------------
 // CheckFunction
-// -------------------------------------------------------------------
+// ------------------------------------------------------------------
 export type CheckFunction = (value: unknown) => boolean
-// -------------------------------------------------------------------
+// ------------------------------------------------------------------
 // TypeCheck
-// -------------------------------------------------------------------
-export class TypeCheck<T extends Types.TSchema> {
+// ------------------------------------------------------------------
+export class TypeCheck<T extends TSchema> {
   private readonly hasTransform: boolean
-  constructor(private readonly schema: T, private readonly references: Types.TSchema[], private readonly checkFunc: CheckFunction, private readonly code: string) {
-    this.hasTransform = HasTransform.Has(schema, references)
+  constructor(private readonly schema: T, private readonly references: TSchema[], private readonly checkFunc: CheckFunction, private readonly code: string) {
+    this.hasTransform = HasTransform(schema, references)
   }
   /** Returns the generated assertion code used to validate this type. */
   public Code(): string {
@@ -55,24 +100,24 @@ export class TypeCheck<T extends Types.TSchema> {
     return Errors(this.schema, this.references, value)
   }
   /** Returns true if the value matches the compiled type. */
-  public Check(value: unknown): value is Types.Static<T> {
+  public Check(value: unknown): value is Static<T> {
     return this.checkFunc(value)
   }
   /** Decodes a value or throws if error */
-  public Decode(value: unknown): Types.StaticDecode<T> {
+  public Decode(value: unknown): StaticDecode<T> {
     if (!this.checkFunc(value)) throw new TransformDecodeCheckError(this.schema, value, this.Errors(value).First()!)
-    return this.hasTransform ? DecodeTransform.Decode(this.schema, this.references, value) : value
+    return this.hasTransform ? TransformDecode(this.schema, this.references, value) : value
   }
   /** Encodes a value or throws if error */
-  public Encode(value: unknown): Types.StaticEncode<T> {
-    const encoded = this.hasTransform ? EncodeTransform.Encode(this.schema, this.references, value) : value
+  public Encode(value: unknown): StaticEncode<T> {
+    const encoded = this.hasTransform ? TransformEncode(this.schema, this.references, value) : value
     if (!this.checkFunc(encoded)) throw new TransformEncodeCheckError(this.schema, value, this.Errors(value).First()!)
     return encoded
   }
 }
-// -------------------------------------------------------------------
+// ------------------------------------------------------------------
 // Character
-// -------------------------------------------------------------------
+// ------------------------------------------------------------------
 namespace Character {
   export function DollarSign(code: number) {
     return code === 36
@@ -87,9 +132,9 @@ namespace Character {
     return code >= 48 && code <= 57
   }
 }
-// -------------------------------------------------------------------
+// ------------------------------------------------------------------
 // MemberExpression
-// -------------------------------------------------------------------
+// ------------------------------------------------------------------
 namespace MemberExpression {
   function IsFirstCharacterNumeric(value: string) {
     if (value.length === 0) return false
@@ -111,9 +156,9 @@ namespace MemberExpression {
     return IsAccessor(key) ? `${object}.${key}` : `${object}['${EscapeHyphen(key)}']`
   }
 }
-// -------------------------------------------------------------------
+// ------------------------------------------------------------------
 // Identifier
-// -------------------------------------------------------------------
+// ------------------------------------------------------------------
 namespace Identifier {
   export function Encode($id: string) {
     const buffer: string[] = []
@@ -128,30 +173,30 @@ namespace Identifier {
     return buffer.join('').replace(/__/g, '_')
   }
 }
-// -------------------------------------------------------------------
+// ------------------------------------------------------------------
 // LiteralString
-// -------------------------------------------------------------------
+// ------------------------------------------------------------------
 namespace LiteralString {
   export function Escape(content: string) {
     return content.replace(/'/g, "\\'")
   }
 }
-// -------------------------------------------------------------------
+// ------------------------------------------------------------------
 // Errors
-// -------------------------------------------------------------------
-export class TypeCompilerUnknownTypeError extends Types.TypeBoxError {
-  constructor(public readonly schema: Types.TSchema) {
+// ------------------------------------------------------------------
+export class TypeCompilerUnknownTypeError extends TypeBoxError {
+  constructor(public readonly schema: TSchema) {
     super('Unknown type')
   }
 }
-export class TypeCompilerTypeGuardError extends Types.TypeBoxError {
-  constructor(public readonly schema: Types.TSchema) {
+export class TypeCompilerTypeGuardError extends TypeBoxError {
+  constructor(public readonly schema: TSchema) {
     super('Preflight validation check failed to guard for the given schema')
   }
 }
-// -------------------------------------------------------------------
+// ------------------------------------------------------------------
 // Policy
-// -------------------------------------------------------------------
+// ------------------------------------------------------------------
 export namespace Policy {
   export function IsExactOptionalProperty(value: string, key: string, expression: string) {
     return TypeSystemPolicy.ExactOptionalPropertyTypes ? `('${key}' in ${value} ? ${expression} : true)` : `(${MemberExpression.Encode(value, key)} !== undefined ? ${expression} : true)`
@@ -171,36 +216,36 @@ export namespace Policy {
     return TypeSystemPolicy.AllowNullVoid ? `(${value} === undefined || ${value} === null)` : `${value} === undefined`
   }
 }
-// -------------------------------------------------------------------
+// ------------------------------------------------------------------
 // TypeCompiler
-// -------------------------------------------------------------------
+// ------------------------------------------------------------------
 export type TypeCompilerLanguageOption = 'typescript' | 'javascript'
 export interface TypeCompilerCodegenOptions {
   language?: TypeCompilerLanguageOption
 }
 /** Compiles Types for Runtime Type Checking */
 export namespace TypeCompiler {
-  // ----------------------------------------------------------------------
+  // ----------------------------------------------------------------
   // Guards
-  // ----------------------------------------------------------------------
-  function IsAnyOrUnknown(schema: Types.TSchema) {
-    return schema[Types.Kind] === 'Any' || schema[Types.Kind] === 'Unknown'
+  // ----------------------------------------------------------------
+  function IsAnyOrUnknown(schema: TSchema) {
+    return schema[Kind] === 'Any' || schema[Kind] === 'Unknown'
   }
-  // -------------------------------------------------------------------
+  // ----------------------------------------------------------------
   // Types
-  // -------------------------------------------------------------------
-  function* TAny(schema: Types.TAny, references: Types.TSchema[], value: string): IterableIterator<string> {
+  // ----------------------------------------------------------------
+  function* FromAny(schema: TAny, references: TSchema[], value: string): IterableIterator<string> {
     yield 'true'
   }
-  function* TArray(schema: Types.TArray, references: Types.TSchema[], value: string): IterableIterator<string> {
+  function* FromArray(schema: TArray, references: TSchema[], value: string): IterableIterator<string> {
     yield `Array.isArray(${value})`
     const [parameter, accumulator] = [CreateParameter('value', 'any'), CreateParameter('acc', 'number')]
     if (IsNumber(schema.maxItems)) yield `${value}.length <= ${schema.maxItems}`
     if (IsNumber(schema.minItems)) yield `${value}.length >= ${schema.minItems}`
     const elementExpression = CreateExpression(schema.items, references, 'value')
     yield `${value}.every((${parameter}) => ${elementExpression})`
-    if (Types.TypeGuard.TSchema(schema.contains) || IsNumber(schema.minContains) || IsNumber(schema.maxContains)) {
-      const containsSchema = Types.TypeGuard.TSchema(schema.contains) ? schema.contains : Types.Type.Never()
+    if (IsSchema(schema.contains) || IsNumber(schema.minContains) || IsNumber(schema.maxContains)) {
+      const containsSchema = IsSchema(schema.contains) ? schema.contains : Never()
       const checkExpression = CreateExpression(containsSchema, references, 'value')
       const checkMinContains = IsNumber(schema.minContains) ? [`(count >= ${schema.minContains})`] : []
       const checkMaxContains = IsNumber(schema.maxContains) ? [`(count <= ${schema.maxContains})`] : []
@@ -214,10 +259,10 @@ export namespace TypeCompiler {
       yield `((${parameter}) => { ${block} )(${value})`
     }
   }
-  function* TAsyncIterator(schema: Types.TAsyncIterator, references: Types.TSchema[], value: string): IterableIterator<string> {
+  function* FromAsyncIterator(schema: TAsyncIterator, references: TSchema[], value: string): IterableIterator<string> {
     yield `(typeof value === 'object' && Symbol.asyncIterator in ${value})`
   }
-  function* TBigInt(schema: Types.TBigInt, references: Types.TSchema[], value: string): IterableIterator<string> {
+  function* FromBigInt(schema: TBigInt, references: TSchema[], value: string): IterableIterator<string> {
     yield `(typeof ${value} === 'bigint')`
     if (IsBigInt(schema.exclusiveMaximum)) yield `${value} < BigInt(${schema.exclusiveMaximum})`
     if (IsBigInt(schema.exclusiveMinimum)) yield `${value} > BigInt(${schema.exclusiveMinimum})`
@@ -225,13 +270,13 @@ export namespace TypeCompiler {
     if (IsBigInt(schema.minimum)) yield `${value} >= BigInt(${schema.minimum})`
     if (IsBigInt(schema.multipleOf)) yield `(${value} % BigInt(${schema.multipleOf})) === 0`
   }
-  function* TBoolean(schema: Types.TBoolean, references: Types.TSchema[], value: string): IterableIterator<string> {
+  function* FromBoolean(schema: TBoolean, references: TSchema[], value: string): IterableIterator<string> {
     yield `(typeof ${value} === 'boolean')`
   }
-  function* TConstructor(schema: Types.TConstructor, references: Types.TSchema[], value: string): IterableIterator<string> {
+  function* FromConstructor(schema: TConstructor, references: TSchema[], value: string): IterableIterator<string> {
     yield* Visit(schema.returns, references, `${value}.prototype`)
   }
-  function* TDate(schema: Types.TDate, references: Types.TSchema[], value: string): IterableIterator<string> {
+  function* FromDate(schema: TDate, references: TSchema[], value: string): IterableIterator<string> {
     yield `(${value} instanceof Date) && Number.isFinite(${value}.getTime())`
     if (IsNumber(schema.exclusiveMaximumTimestamp)) yield `${value}.getTime() < ${schema.exclusiveMaximumTimestamp}`
     if (IsNumber(schema.exclusiveMinimumTimestamp)) yield `${value}.getTime() > ${schema.exclusiveMinimumTimestamp}`
@@ -239,10 +284,10 @@ export namespace TypeCompiler {
     if (IsNumber(schema.minimumTimestamp)) yield `${value}.getTime() >= ${schema.minimumTimestamp}`
     if (IsNumber(schema.multipleOfTimestamp)) yield `(${value}.getTime() % ${schema.multipleOfTimestamp}) === 0`
   }
-  function* TFunction(schema: Types.TFunction, references: Types.TSchema[], value: string): IterableIterator<string> {
+  function* FromFunction(schema: TFunction, references: TSchema[], value: string): IterableIterator<string> {
     yield `(typeof ${value} === 'function')`
   }
-  function* TInteger(schema: Types.TInteger, references: Types.TSchema[], value: string): IterableIterator<string> {
+  function* FromInteger(schema: TInteger, references: TSchema[], value: string): IterableIterator<string> {
     yield `(typeof ${value} === 'number' && Number.isInteger(${value}))`
     if (IsNumber(schema.exclusiveMaximum)) yield `${value} < ${schema.exclusiveMaximum}`
     if (IsNumber(schema.exclusiveMinimum)) yield `${value} > ${schema.exclusiveMinimum}`
@@ -250,41 +295,41 @@ export namespace TypeCompiler {
     if (IsNumber(schema.minimum)) yield `${value} >= ${schema.minimum}`
     if (IsNumber(schema.multipleOf)) yield `(${value} % ${schema.multipleOf}) === 0`
   }
-  function* TIntersect(schema: Types.TIntersect, references: Types.TSchema[], value: string): IterableIterator<string> {
-    const check1 = schema.allOf.map((schema: Types.TSchema) => CreateExpression(schema, references, value)).join(' && ')
+  function* FromIntersect(schema: TIntersect, references: TSchema[], value: string): IterableIterator<string> {
+    const check1 = schema.allOf.map((schema: TSchema) => CreateExpression(schema, references, value)).join(' && ')
     if (schema.unevaluatedProperties === false) {
-      const keyCheck = CreateVariable(`${new RegExp(Types.KeyResolver.ResolvePattern(schema))};`)
+      const keyCheck = CreateVariable(`${new RegExp(KeyOfPattern(schema))};`)
       const check2 = `Object.getOwnPropertyNames(${value}).every(key => ${keyCheck}.test(key))`
       yield `(${check1} && ${check2})`
-    } else if (Types.TypeGuard.TSchema(schema.unevaluatedProperties)) {
-      const keyCheck = CreateVariable(`${new RegExp(Types.KeyResolver.ResolvePattern(schema))};`)
+    } else if (IsSchema(schema.unevaluatedProperties)) {
+      const keyCheck = CreateVariable(`${new RegExp(KeyOfPattern(schema))};`)
       const check2 = `Object.getOwnPropertyNames(${value}).every(key => ${keyCheck}.test(key) || ${CreateExpression(schema.unevaluatedProperties, references, `${value}[key]`)})`
       yield `(${check1} && ${check2})`
     } else {
       yield `(${check1})`
     }
   }
-  function* TIterator(schema: Types.TIterator, references: Types.TSchema[], value: string): IterableIterator<string> {
+  function* FromIterator(schema: TIterator, references: TSchema[], value: string): IterableIterator<string> {
     yield `(typeof value === 'object' && Symbol.iterator in ${value})`
   }
-  function* TLiteral(schema: Types.TLiteral, references: Types.TSchema[], value: string): IterableIterator<string> {
+  function* FromLiteral(schema: TLiteral, references: TSchema[], value: string): IterableIterator<string> {
     if (typeof schema.const === 'number' || typeof schema.const === 'boolean') {
       yield `(${value} === ${schema.const})`
     } else {
       yield `(${value} === '${LiteralString.Escape(schema.const)}')`
     }
   }
-  function* TNever(schema: Types.TNever, references: Types.TSchema[], value: string): IterableIterator<string> {
+  function* FromNever(schema: TNever, references: TSchema[], value: string): IterableIterator<string> {
     yield `false`
   }
-  function* TNot(schema: Types.TNot, references: Types.TSchema[], value: string): IterableIterator<string> {
+  function* FromNot(schema: TNot, references: TSchema[], value: string): IterableIterator<string> {
     const expression = CreateExpression(schema.not, references, value)
     yield `(!${expression})`
   }
-  function* TNull(schema: Types.TNull, references: Types.TSchema[], value: string): IterableIterator<string> {
+  function* FromNull(schema: TNull, references: TSchema[], value: string): IterableIterator<string> {
     yield `(${value} === null)`
   }
-  function* TNumber(schema: Types.TNumber, references: Types.TSchema[], value: string): IterableIterator<string> {
+  function* FromNumber(schema: TNumber, references: TSchema[], value: string): IterableIterator<string> {
     yield Policy.IsNumberLike(value)
     if (IsNumber(schema.exclusiveMaximum)) yield `${value} < ${schema.exclusiveMaximum}`
     if (IsNumber(schema.exclusiveMinimum)) yield `${value} > ${schema.exclusiveMinimum}`
@@ -292,7 +337,7 @@ export namespace TypeCompiler {
     if (IsNumber(schema.minimum)) yield `${value} >= ${schema.minimum}`
     if (IsNumber(schema.multipleOf)) yield `(${value} % ${schema.multipleOf}) === 0`
   }
-  function* TObject(schema: Types.TObject, references: Types.TSchema[], value: string): IterableIterator<string> {
+  function* FromObject(schema: TObject, references: TSchema[], value: string): IterableIterator<string> {
     yield Policy.IsObjectLike(value)
     if (IsNumber(schema.minProperties)) yield `Object.getOwnPropertyNames(${value}).length >= ${schema.minProperties}`
     if (IsNumber(schema.maxProperties)) yield `Object.getOwnPropertyNames(${value}).length <= ${schema.maxProperties}`
@@ -302,7 +347,7 @@ export namespace TypeCompiler {
       const property = schema.properties[knownKey]
       if (schema.required && schema.required.includes(knownKey)) {
         yield* Visit(property, references, memberExpression)
-        if (Types.ExtendsUndefined.Check(property) || IsAnyOrUnknown(property)) yield `('${knownKey}' in ${value})`
+        if (ExtendsUndefinedCheck(property) || IsAnyOrUnknown(property)) yield `('${knownKey}' in ${value})`
       } else {
         const expression = CreateExpression(property, references, memberExpression)
         yield Policy.IsExactOptionalProperty(value, knownKey, expression)
@@ -322,28 +367,33 @@ export namespace TypeCompiler {
       yield `(Object.getOwnPropertyNames(${value}).every(key => ${keys}.includes(key) || ${expression}))`
     }
   }
-  function* TPromise(schema: Types.TPromise<any>, references: Types.TSchema[], value: string): IterableIterator<string> {
+  function* FromPromise(schema: TPromise, references: TSchema[], value: string): IterableIterator<string> {
     yield `(typeof value === 'object' && typeof ${value}.then === 'function')`
   }
-  function* TRecord(schema: Types.TRecord<any, any>, references: Types.TSchema[], value: string): IterableIterator<string> {
+  function* FromRecord(schema: TRecord, references: TSchema[], value: string): IterableIterator<string> {
     yield Policy.IsRecordLike(value)
     if (IsNumber(schema.minProperties)) yield `Object.getOwnPropertyNames(${value}).length >= ${schema.minProperties}`
     if (IsNumber(schema.maxProperties)) yield `Object.getOwnPropertyNames(${value}).length <= ${schema.maxProperties}`
     const [patternKey, patternSchema] = Object.entries(schema.patternProperties)[0]
     const variable = CreateVariable(`${new RegExp(patternKey)}`)
     const check1 = CreateExpression(patternSchema, references, 'value')
-    const check2 = Types.TypeGuard.TSchema(schema.additionalProperties) ? CreateExpression(schema.additionalProperties, references, value) : schema.additionalProperties === false ? 'false' : 'true'
+    const check2 = IsSchema(schema.additionalProperties) ? CreateExpression(schema.additionalProperties, references, value) : schema.additionalProperties === false ? 'false' : 'true'
     const expression = `(${variable}.test(key) ? ${check1} : ${check2})`
     yield `(Object.entries(${value}).every(([key, value]) => ${expression}))`
   }
-  function* TRef(schema: Types.TRef<any>, references: Types.TSchema[], value: string): IterableIterator<string> {
+  function* FromRef(schema: TRef, references: TSchema[], value: string): IterableIterator<string> {
     const target = Deref(schema, references)
     // Reference: If we have seen this reference before we can just yield and return the function call.
     // If this isn't the case we defer to visit to generate and set the function for subsequent passes.
     if (state.functions.has(schema.$ref)) return yield `${CreateFunctionName(schema.$ref)}(${value})`
     yield* Visit(target, references, value)
   }
-  function* TString(schema: Types.TString, references: Types.TSchema[], value: string): IterableIterator<string> {
+  function* FromRegExp(schema: TRegExp, references: TSchema[], value: string): IterableIterator<string> {
+    const variable = CreateVariable(`${new RegExp(schema.source, schema.flags)};`)
+    yield `(typeof ${value} === 'string')`
+    yield `${variable}.test(${value})`
+  }
+  function* FromString(schema: TString, references: TSchema[], value: string): IterableIterator<string> {
     yield `(typeof ${value} === 'string')`
     if (IsNumber(schema.maxLength)) yield `${value}.length <= ${schema.maxLength}`
     if (IsNumber(schema.minLength)) yield `${value}.length >= ${schema.minLength}`
@@ -355,19 +405,19 @@ export namespace TypeCompiler {
       yield `format('${schema.format}', ${value})`
     }
   }
-  function* TSymbol(schema: Types.TSymbol, references: Types.TSchema[], value: string): IterableIterator<string> {
+  function* FromSymbol(schema: TSymbol, references: TSchema[], value: string): IterableIterator<string> {
     yield `(typeof ${value} === 'symbol')`
   }
-  function* TTemplateLiteral(schema: Types.TTemplateLiteral, references: Types.TSchema[], value: string): IterableIterator<string> {
+  function* FromTemplateLiteral(schema: TTemplateLiteral, references: TSchema[], value: string): IterableIterator<string> {
     yield `(typeof ${value} === 'string')`
     const variable = CreateVariable(`${new RegExp(schema.pattern)};`)
     yield `${variable}.test(${value})`
   }
-  function* TThis(schema: Types.TThis, references: Types.TSchema[], value: string): IterableIterator<string> {
+  function* FromThis(schema: TThis, references: TSchema[], value: string): IterableIterator<string> {
     // Note: This types are assured to be hoisted prior to this call. Just yield the function.
     yield `${CreateFunctionName(schema.$ref)}(${value})`
   }
-  function* TTuple(schema: Types.TTuple<any[]>, references: Types.TSchema[], value: string): IterableIterator<string> {
+  function* FromTuple(schema: TTuple, references: TSchema[], value: string): IterableIterator<string> {
     yield `Array.isArray(${value})`
     if (schema.items === undefined) return yield `${value}.length === 0`
     yield `(${value}.length === ${schema.maxItems})`
@@ -376,35 +426,35 @@ export namespace TypeCompiler {
       yield `${expression}`
     }
   }
-  function* TUndefined(schema: Types.TUndefined, references: Types.TSchema[], value: string): IterableIterator<string> {
+  function* FromUndefined(schema: TUndefined, references: TSchema[], value: string): IterableIterator<string> {
     yield `${value} === undefined`
   }
-  function* TUnion(schema: Types.TUnion<any[]>, references: Types.TSchema[], value: string): IterableIterator<string> {
-    const expressions = schema.anyOf.map((schema: Types.TSchema) => CreateExpression(schema, references, value))
+  function* FromUnion(schema: TUnion, references: TSchema[], value: string): IterableIterator<string> {
+    const expressions = schema.anyOf.map((schema: TSchema) => CreateExpression(schema, references, value))
     yield `(${expressions.join(' || ')})`
   }
-  function* TUint8Array(schema: Types.TUint8Array, references: Types.TSchema[], value: string): IterableIterator<string> {
+  function* FromUint8Array(schema: TUint8Array, references: TSchema[], value: string): IterableIterator<string> {
     yield `${value} instanceof Uint8Array`
     if (IsNumber(schema.maxByteLength)) yield `(${value}.length <= ${schema.maxByteLength})`
     if (IsNumber(schema.minByteLength)) yield `(${value}.length >= ${schema.minByteLength})`
   }
-  function* TUnknown(schema: Types.TUnknown, references: Types.TSchema[], value: string): IterableIterator<string> {
+  function* FromUnknown(schema: TUnknown, references: TSchema[], value: string): IterableIterator<string> {
     yield 'true'
   }
-  function* TVoid(schema: Types.TVoid, references: Types.TSchema[], value: string): IterableIterator<string> {
+  function* FromVoid(schema: TVoid, references: TSchema[], value: string): IterableIterator<string> {
     yield Policy.IsVoidLike(value)
   }
-  function* TKind(schema: Types.TSchema, references: Types.TSchema[], value: string): IterableIterator<string> {
+  function* FromKind(schema: TSchema, references: TSchema[], value: string): IterableIterator<string> {
     const instance = state.instances.size
     state.instances.set(instance, schema)
-    yield `kind('${schema[Types.Kind]}', ${instance}, ${value})`
+    yield `kind('${schema[Kind]}', ${instance}, ${value})`
   }
-  function* Visit<T extends Types.TSchema>(schema: T, references: Types.TSchema[], value: string, useHoisting: boolean = true): IterableIterator<string> {
+  function* Visit(schema: TSchema, references: TSchema[], value: string, useHoisting: boolean = true): IterableIterator<string> {
     const references_ = IsString(schema.$id) ? [...references, schema] : references
     const schema_ = schema as any
-    // ----------------------------------------------------------------------------------
+    // --------------------------------------------------------------
     // Hoisting
-    // ----------------------------------------------------------------------------------
+    // --------------------------------------------------------------
     if (useHoisting && IsString(schema.$id)) {
       const functionName = CreateFunctionName(schema.$id)
       if (state.functions.has(functionName)) {
@@ -415,86 +465,88 @@ export namespace TypeCompiler {
         return yield `${functionName}(${value})`
       }
     }
-    switch (schema_[Types.Kind]) {
+    switch (schema_[Kind]) {
       case 'Any':
-        return yield* TAny(schema_, references_, value)
+        return yield* FromAny(schema_, references_, value)
       case 'Array':
-        return yield* TArray(schema_, references_, value)
+        return yield* FromArray(schema_, references_, value)
       case 'AsyncIterator':
-        return yield* TAsyncIterator(schema_, references_, value)
+        return yield* FromAsyncIterator(schema_, references_, value)
       case 'BigInt':
-        return yield* TBigInt(schema_, references_, value)
+        return yield* FromBigInt(schema_, references_, value)
       case 'Boolean':
-        return yield* TBoolean(schema_, references_, value)
+        return yield* FromBoolean(schema_, references_, value)
       case 'Constructor':
-        return yield* TConstructor(schema_, references_, value)
+        return yield* FromConstructor(schema_, references_, value)
       case 'Date':
-        return yield* TDate(schema_, references_, value)
+        return yield* FromDate(schema_, references_, value)
       case 'Function':
-        return yield* TFunction(schema_, references_, value)
+        return yield* FromFunction(schema_, references_, value)
       case 'Integer':
-        return yield* TInteger(schema_, references_, value)
+        return yield* FromInteger(schema_, references_, value)
       case 'Intersect':
-        return yield* TIntersect(schema_, references_, value)
+        return yield* FromIntersect(schema_, references_, value)
       case 'Iterator':
-        return yield* TIterator(schema_, references_, value)
+        return yield* FromIterator(schema_, references_, value)
       case 'Literal':
-        return yield* TLiteral(schema_, references_, value)
+        return yield* FromLiteral(schema_, references_, value)
       case 'Never':
-        return yield* TNever(schema_, references_, value)
+        return yield* FromNever(schema_, references_, value)
       case 'Not':
-        return yield* TNot(schema_, references_, value)
+        return yield* FromNot(schema_, references_, value)
       case 'Null':
-        return yield* TNull(schema_, references_, value)
+        return yield* FromNull(schema_, references_, value)
       case 'Number':
-        return yield* TNumber(schema_, references_, value)
+        return yield* FromNumber(schema_, references_, value)
       case 'Object':
-        return yield* TObject(schema_, references_, value)
+        return yield* FromObject(schema_, references_, value)
       case 'Promise':
-        return yield* TPromise(schema_, references_, value)
+        return yield* FromPromise(schema_, references_, value)
       case 'Record':
-        return yield* TRecord(schema_, references_, value)
+        return yield* FromRecord(schema_, references_, value)
       case 'Ref':
-        return yield* TRef(schema_, references_, value)
+        return yield* FromRef(schema_, references_, value)
+      case 'RegExp':
+        return yield* FromRegExp(schema_, references_, value)
       case 'String':
-        return yield* TString(schema_, references_, value)
+        return yield* FromString(schema_, references_, value)
       case 'Symbol':
-        return yield* TSymbol(schema_, references_, value)
+        return yield* FromSymbol(schema_, references_, value)
       case 'TemplateLiteral':
-        return yield* TTemplateLiteral(schema_, references_, value)
+        return yield* FromTemplateLiteral(schema_, references_, value)
       case 'This':
-        return yield* TThis(schema_, references_, value)
+        return yield* FromThis(schema_, references_, value)
       case 'Tuple':
-        return yield* TTuple(schema_, references_, value)
+        return yield* FromTuple(schema_, references_, value)
       case 'Undefined':
-        return yield* TUndefined(schema_, references_, value)
+        return yield* FromUndefined(schema_, references_, value)
       case 'Union':
-        return yield* TUnion(schema_, references_, value)
+        return yield* FromUnion(schema_, references_, value)
       case 'Uint8Array':
-        return yield* TUint8Array(schema_, references_, value)
+        return yield* FromUint8Array(schema_, references_, value)
       case 'Unknown':
-        return yield* TUnknown(schema_, references_, value)
+        return yield* FromUnknown(schema_, references_, value)
       case 'Void':
-        return yield* TVoid(schema_, references_, value)
+        return yield* FromVoid(schema_, references_, value)
       default:
-        if (!Types.TypeRegistry.Has(schema_[Types.Kind])) throw new TypeCompilerUnknownTypeError(schema)
-        return yield* TKind(schema_, references_, value)
+        if (!TypeRegistry.Has(schema_[Kind])) throw new TypeCompilerUnknownTypeError(schema)
+        return yield* FromKind(schema_, references_, value)
     }
   }
-  // -------------------------------------------------------------------
+  // ----------------------------------------------------------------
   // Compiler State
-  // -------------------------------------------------------------------
+  // ----------------------------------------------------------------
   // prettier-ignore
   const state = {
-    language: 'javascript',                       // target language
-    functions: new Map<string, string>(),         // local functions
-    variables: new Map<string, string>(),         // local variables
-    instances: new Map<number, Types.TKind>()     // exterior kind instances
+    language: 'javascript',                   // target language
+    functions: new Map<string, string>(),     // local functions
+    variables: new Map<string, string>(),     // local variables
+    instances: new Map<number, TSchema>()     // exterior kind instances
   }
-  // -------------------------------------------------------------------
+  // ----------------------------------------------------------------
   // Compiler Factory
-  // -------------------------------------------------------------------
-  function CreateExpression(schema: Types.TSchema, references: Types.TSchema[], value: string, useHoisting: boolean = true): string {
+  // ----------------------------------------------------------------
+  function CreateExpression(schema: TSchema, references: TSchema[], value: string, useHoisting: boolean = true): string {
     return `(${[...Visit(schema, references, value, useHoisting)].join(' && ')})`
   }
   function CreateFunctionName($id: string) {
@@ -505,7 +557,7 @@ export namespace TypeCompiler {
     state.variables.set(variableName, `const ${variableName} = ${expression}`)
     return variableName
   }
-  function CreateFunction(name: string, schema: Types.TSchema, references: Types.TSchema[], value: string, useHoisting: boolean = true): string {
+  function CreateFunction(name: string, schema: TSchema, references: TSchema[], value: string, useHoisting: boolean = true): string {
     const [newline, pad] = ['\n', (length: number) => ''.padStart(length, ' ')]
     const parameter = CreateParameter('value', 'any')
     const returns = CreateReturns('boolean')
@@ -519,10 +571,10 @@ export namespace TypeCompiler {
   function CreateReturns(type: string) {
     return state.language === 'typescript' ? `: ${type}` : ''
   }
-  // -------------------------------------------------------------------
+  // ----------------------------------------------------------------
   // Compile
-  // -------------------------------------------------------------------
-  function Build<T extends Types.TSchema>(schema: T, references: Types.TSchema[], options: TypeCompilerCodegenOptions): string {
+  // ----------------------------------------------------------------
+  function Build<T extends TSchema>(schema: T, references: TSchema[], options: TypeCompilerCodegenOptions): string {
     const functionCode = CreateFunction('check', schema, references, 'value') // will populate functions and variables
     const parameter = CreateParameter('value', 'any')
     const returns = CreateReturns('boolean')
@@ -535,9 +587,9 @@ export namespace TypeCompiler {
     return [...variables, ...functions, checkFunction].join('\n')
   }
   /** Generates the code used to assert this type and returns it as a string */
-  export function Code<T extends Types.TSchema>(schema: T, references: Types.TSchema[], options?: TypeCompilerCodegenOptions): string
+  export function Code<T extends TSchema>(schema: T, references: TSchema[], options?: TypeCompilerCodegenOptions): string
   /** Generates the code used to assert this type and returns it as a string */
-  export function Code<T extends Types.TSchema>(schema: T, options?: TypeCompilerCodegenOptions): string
+  export function Code<T extends TSchema>(schema: T, options?: TypeCompilerCodegenOptions): string
   /** Generates the code used to assert this type and returns it as a string */
   export function Code(...args: any[]) {
     const defaults = { language: 'javascript' }
@@ -554,24 +606,24 @@ export namespace TypeCompiler {
     state.variables.clear()
     state.functions.clear()
     state.instances.clear()
-    if (!Types.TypeGuard.TSchema(schema)) throw new TypeCompilerTypeGuardError(schema)
-    for (const schema of references) if (!Types.TypeGuard.TSchema(schema)) throw new TypeCompilerTypeGuardError(schema)
+    if (!IsSchema(schema)) throw new TypeCompilerTypeGuardError(schema)
+    for (const schema of references) if (!IsSchema(schema)) throw new TypeCompilerTypeGuardError(schema)
     return Build(schema, references, options)
   }
   /** Compiles a TypeBox type for optimal runtime type checking. Types must be valid TypeBox types of TSchema */
-  export function Compile<T extends Types.TSchema>(schema: T, references: Types.TSchema[] = []): TypeCheck<T> {
+  export function Compile<T extends TSchema>(schema: T, references: TSchema[] = []): TypeCheck<T> {
     const generatedCode = Code(schema, references, { language: 'javascript' })
     const compiledFunction = globalThis.Function('kind', 'format', 'hash', generatedCode)
     const instances = new Map(state.instances)
     function typeRegistryFunction(kind: string, instance: number, value: unknown) {
-      if (!Types.TypeRegistry.Has(kind) || !instances.has(instance)) return false
-      const checkFunc = Types.TypeRegistry.Get(kind)!
+      if (!TypeRegistry.Has(kind) || !instances.has(instance)) return false
+      const checkFunc = TypeRegistry.Get(kind)!
       const schema = instances.get(instance)!
       return checkFunc(schema, value)
     }
     function formatRegistryFunction(format: string, value: string) {
-      if (!Types.FormatRegistry.Has(format)) return false
-      const checkFunc = Types.FormatRegistry.Get(format)!
+      if (!FormatRegistry.Has(format)) return false
+      const checkFunc = FormatRegistry.Get(format)!
       return checkFunc(value)
     }
     function hashFunction(value: unknown) {

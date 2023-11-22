@@ -4,16 +4,16 @@ import { Assert } from '../../assert/index'
 
 describe('type/guard/TUndefined', () => {
   it('Should guard for TUndefined', () => {
-    const R = TypeGuard.TUndefined(Type.Undefined())
+    const R = TypeGuard.IsUndefined(Type.Undefined())
     Assert.IsTrue(R)
   })
   it('Should not guard for TUndefined', () => {
-    const R = TypeGuard.TUndefined(null)
+    const R = TypeGuard.IsUndefined(null)
     Assert.IsFalse(R)
   })
   it('Should not guard for TUndefined with invalid $id', () => {
     // @ts-ignore
-    const R = TypeGuard.TUndefined(Type.Undefined({ $id: 1 }))
+    const R = TypeGuard.IsUndefined(Type.Undefined({ $id: 1 }))
     Assert.IsFalse(R)
   })
 })

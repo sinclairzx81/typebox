@@ -4,7 +4,7 @@ import { Assert } from '../../assert/index'
 
 describe('type/guard/TObject', () => {
   it('Should guard for TObject', () => {
-    const R = TypeGuard.TObject(
+    const R = TypeGuard.IsObject(
       Type.Object({
         x: Type.Number(),
         y: Type.Number(),
@@ -13,11 +13,11 @@ describe('type/guard/TObject', () => {
     Assert.IsTrue(R)
   })
   it('Should not guard for TObject', () => {
-    const R = TypeGuard.TObject(null)
+    const R = TypeGuard.IsObject(null)
     Assert.IsFalse(R)
   })
   it('Should not guard for TObject with escape characters in property key', () => {
-    const R = TypeGuard.TObject(
+    const R = TypeGuard.IsObject(
       Type.Object({
         'hello\nworld': Type.Number(),
       }),
@@ -25,7 +25,7 @@ describe('type/guard/TObject', () => {
     Assert.IsFalse(R)
   })
   it('Should not guard for TObject with invalid property values', () => {
-    const R = TypeGuard.TObject(
+    const R = TypeGuard.IsObject(
       Type.Object({
         x: Type.Number(),
         y: {} as any,
@@ -34,7 +34,7 @@ describe('type/guard/TObject', () => {
     Assert.IsFalse(R)
   })
   it('Should not guard for TObject with invalid additionalProperties', () => {
-    const R = TypeGuard.TObject(
+    const R = TypeGuard.IsObject(
       Type.Object(
         {
           x: Type.Number(),
@@ -48,7 +48,7 @@ describe('type/guard/TObject', () => {
     Assert.IsFalse(R)
   })
   it('Should not guard for TObject with invalid $id', () => {
-    const R = TypeGuard.TObject(
+    const R = TypeGuard.IsObject(
       Type.Object(
         {
           x: Type.Number(),
@@ -62,7 +62,7 @@ describe('type/guard/TObject', () => {
     Assert.IsFalse(R)
   })
   it('Should not guard for TObject with invalid minProperties', () => {
-    const R = TypeGuard.TObject(
+    const R = TypeGuard.IsObject(
       Type.Object(
         {
           x: Type.Number(),
@@ -76,7 +76,7 @@ describe('type/guard/TObject', () => {
     Assert.IsFalse(R)
   })
   it('Should not guard for TObject with invalid maxProperties', () => {
-    const R = TypeGuard.TObject(
+    const R = TypeGuard.IsObject(
       Type.Object(
         {
           x: Type.Number(),
@@ -90,7 +90,7 @@ describe('type/guard/TObject', () => {
     Assert.IsFalse(R)
   })
   it('Should guard for TObject with invalid additional properties', () => {
-    const R = TypeGuard.TObject(
+    const R = TypeGuard.IsObject(
       Type.Object(
         {
           x: Type.Number(),
@@ -105,7 +105,7 @@ describe('type/guard/TObject', () => {
     Assert.IsFalse(R)
   })
   it('Should not guard for TObject with valid additional properties schema', () => {
-    const R = TypeGuard.TObject(
+    const R = TypeGuard.IsObject(
       Type.Object(
         {
           x: Type.Number(),

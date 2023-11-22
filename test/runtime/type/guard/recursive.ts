@@ -5,12 +5,12 @@ import { Assert } from '../../assert/index'
 describe('type/guard/TRecursive', () => {
   it('Should guard 1', () => {
     const T = Type.Recursive((This) => Type.Object({ nodes: This }))
-    Assert.IsTrue(TypeGuard.TRecursive(T))
-    Assert.IsTrue(TypeGuard.TObject(T))
+    Assert.IsTrue(TypeGuard.IsRecursive(T))
+    Assert.IsTrue(TypeGuard.IsObject(T))
   })
   it('Should guard 2', () => {
     const T = Type.Recursive((This) => Type.Tuple([This]))
-    Assert.IsTrue(TypeGuard.TRecursive(T))
-    Assert.IsTrue(TypeGuard.TTuple(T))
+    Assert.IsTrue(TypeGuard.IsRecursive(T))
+    Assert.IsTrue(TypeGuard.IsTuple(T))
   })
 })

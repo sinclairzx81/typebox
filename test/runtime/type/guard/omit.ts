@@ -1,4 +1,4 @@
-import { TypeGuard, Type, Kind, Transform } from '@sinclair/typebox'
+import { TypeGuard, Type, Kind, TransformKind } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
 describe('type/guard/TOmit', () => {
@@ -24,7 +24,7 @@ describe('type/guard/TOmit', () => {
       }),
       ['x'],
     )
-    Assert.IsTrue(TypeGuard.TNumber(T.properties.y))
+    Assert.IsTrue(TypeGuard.IsNumber(T.properties.y))
     Assert.IsEqual(T.required, ['y'])
   })
   it('Should Omit 2', () => {
@@ -35,7 +35,7 @@ describe('type/guard/TOmit', () => {
       }),
       ['x'],
     )
-    Assert.IsTrue(TypeGuard.TNumber(T.properties.y))
+    Assert.IsTrue(TypeGuard.IsNumber(T.properties.y))
     Assert.IsEqual(T.required, undefined)
   })
   it('Should Omit 3', () => {
@@ -47,13 +47,13 @@ describe('type/guard/TOmit', () => {
       }),
       L,
     )
-    Assert.IsTrue(TypeGuard.TNumber(T.properties.y))
+    Assert.IsTrue(TypeGuard.IsNumber(T.properties.y))
     Assert.IsEqual(T.required, ['y'])
   })
   it('Should Omit 4', () => {
     const L = Type.Literal('x')
     const T = Type.Omit(Type.Intersect([Type.Object({ x: Type.Number() }), Type.Object({ y: Type.Number() })]), L)
-    Assert.IsEqual(TypeGuard.TNumber(T.allOf[1].properties.y), true)
+    Assert.IsEqual(TypeGuard.IsNumber(T.allOf[1].properties.y), true)
     // @ts-ignore
     Assert.IsEqual(T.allOf[1].properties.x, undefined)
   })
@@ -99,7 +99,7 @@ describe('type/guard/TOmit', () => {
       }),
       L,
     )
-    Assert.IsTrue(TypeGuard.TNumber(T.properties.ad))
+    Assert.IsTrue(TypeGuard.IsNumber(T.properties.ad))
     Assert.IsEqual(T.required, ['ad'])
   })
   // ----------------------------------------------------------------
@@ -124,6 +124,6 @@ describe('type/guard/TOmit', () => {
       .Decode((value) => value)
       .Encode((value) => value)
     const R = Type.Omit(S, ['x'])
-    Assert.IsFalse(Transform in R)
+    Assert.IsFalse(TransformKind in R)
   })
 })

@@ -1,4 +1,4 @@
-import { Type, Readonly, Optional } from '@sinclair/typebox'
+import { Type, ReadonlyKind, OptionalKind } from '@sinclair/typebox'
 import { Ok, Fail } from './validate'
 import { Assert } from '../assert'
 
@@ -26,10 +26,10 @@ describe('compiler-ajv/Required', () => {
       w: Type.Number(),
     })
     const T = Type.Required(A)
-    Assert.IsEqual(T.properties.x[Readonly], 'Readonly')
-    Assert.IsEqual(T.properties.y[Readonly], 'Readonly')
-    Assert.IsEqual(T.properties.z[Optional], undefined)
-    Assert.IsEqual(T.properties.w[Optional], undefined)
+    Assert.IsEqual(T.properties.x[ReadonlyKind], 'Readonly')
+    Assert.IsEqual(T.properties.y[ReadonlyKind], 'Readonly')
+    Assert.IsEqual(T.properties.z[OptionalKind], undefined)
+    Assert.IsEqual(T.properties.w[OptionalKind], undefined)
   })
   it('Should inherit options from the source object', () => {
     const A = Type.Object(

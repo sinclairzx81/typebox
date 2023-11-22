@@ -1,4 +1,4 @@
-import { IsAsyncIterator, IsIterator, IsFunction, IsSymbol, IsDate } from '@sinclair/typebox/value/guard'
+import { IsAsyncIterator, IsIterator, IsFunction, IsSymbol, IsDate } from '@sinclair/typebox/value'
 import { TSchema, StaticDecode, StaticEncode } from '@sinclair/typebox'
 import { TypeCompiler } from '@sinclair/typebox/compiler'
 import { Value } from '@sinclair/typebox/value'

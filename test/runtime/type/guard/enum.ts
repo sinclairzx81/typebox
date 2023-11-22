@@ -35,12 +35,12 @@ describe('type/guard/TEnum', () => {
   // ----------------------------------------------------------------
   it('Should guard for Empty 1', () => {
     const T = Type.Enum({})
-    Assert.IsTrue(TypeGuard.TNever(T))
+    Assert.IsTrue(TypeGuard.IsNever(T))
   })
   it('Should guard for Empty 2', () => {
     enum E {}
     const T = Type.Enum(E)
-    Assert.IsTrue(TypeGuard.TNever(T))
+    Assert.IsTrue(TypeGuard.IsNever(T))
   })
 
   // ----------------------------------------------------------------
@@ -49,14 +49,14 @@ describe('type/guard/TEnum', () => {
   it('Should guard for TEnum Enum 0', () => {
     enum E {}
     const T = Type.Enum(E)
-    Assert.IsTrue(TypeGuard.TNever(T))
+    Assert.IsTrue(TypeGuard.IsNever(T))
   })
   it('Should guard for TEnum Enum 1', () => {
     enum E {
       A,
     }
     const T = Type.Enum(E)
-    Assert.IsTrue(TypeGuard.TLiteral(T))
+    Assert.IsTrue(TypeGuard.IsLiteral(T))
     Assert.IsEqual(T.const, E.A)
   })
   it('Should guard for TEnum Enum 2', () => {
@@ -66,7 +66,7 @@ describe('type/guard/TEnum', () => {
       C = 3,
     }
     const T = Type.Enum(E)
-    Assert.IsTrue(TypeGuard.TUnion(T))
+    Assert.IsTrue(TypeGuard.IsUnion(T))
     Assert.IsEqual(T.anyOf[0].const, E.A)
     Assert.IsEqual(T.anyOf[1].const, E.B)
     Assert.IsEqual(T.anyOf[2].const, E.C)
@@ -78,7 +78,7 @@ describe('type/guard/TEnum', () => {
       C = 'Z',
     }
     const T = Type.Enum(E)
-    Assert.IsTrue(TypeGuard.TUnion(T))
+    Assert.IsTrue(TypeGuard.IsUnion(T))
     Assert.IsEqual(T.anyOf[0].const, E.A)
     Assert.IsEqual(T.anyOf[1].const, E.B)
     Assert.IsEqual(T.anyOf[2].const, E.C)
@@ -90,7 +90,7 @@ describe('type/guard/TEnum', () => {
       C = 'X',
     }
     const T = Type.Enum(E)
-    Assert.IsTrue(TypeGuard.TUnion(T))
+    Assert.IsTrue(TypeGuard.IsUnion(T))
     Assert.IsEqual(T.anyOf[0].const, E.A)
     Assert.IsEqual(T.anyOf[1].const, E.B)
     Assert.IsEqual(T.anyOf.length, 2)
@@ -100,11 +100,11 @@ describe('type/guard/TEnum', () => {
   // ----------------------------------------------------------------
   it('Should guard for TEnum Object Literal 0', () => {
     const T = Type.Enum({})
-    Assert.IsTrue(TypeGuard.TNever(T))
+    Assert.IsTrue(TypeGuard.IsNever(T))
   })
   it('Should guard for TEnum Object Literal 1', () => {
     const T = Type.Enum({ A: 1 })
-    Assert.IsTrue(TypeGuard.TLiteral(T))
+    Assert.IsTrue(TypeGuard.IsLiteral(T))
     Assert.IsEqual(T.const, 1)
   })
   it('Should guard for TEnum Object Literal 2', () => {
@@ -113,7 +113,7 @@ describe('type/guard/TEnum', () => {
       B: 2,
       C: 3,
     })
-    Assert.IsTrue(TypeGuard.TUnion(T))
+    Assert.IsTrue(TypeGuard.IsUnion(T))
     Assert.IsEqual(T.anyOf[0].const, 1)
     Assert.IsEqual(T.anyOf[1].const, 2)
     Assert.IsEqual(T.anyOf[2].const, 3)
@@ -124,7 +124,7 @@ describe('type/guard/TEnum', () => {
       B: 'Y',
       C: 'Z',
     })
-    Assert.IsTrue(TypeGuard.TUnion(T))
+    Assert.IsTrue(TypeGuard.IsUnion(T))
     Assert.IsEqual(T.anyOf[0].const, 'X')
     Assert.IsEqual(T.anyOf[1].const, 'Y')
     Assert.IsEqual(T.anyOf[2].const, 'Z')
@@ -135,7 +135,7 @@ describe('type/guard/TEnum', () => {
       B: 'Y',
       C: 'X',
     })
-    Assert.IsTrue(TypeGuard.TUnion(T))
+    Assert.IsTrue(TypeGuard.IsUnion(T))
     Assert.IsEqual(T.anyOf[0].const, 'X')
     Assert.IsEqual(T.anyOf[1].const, 'Y')
     Assert.IsEqual(T.anyOf.length, 2)

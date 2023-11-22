@@ -4,31 +4,31 @@ import { Assert } from '../../assert/index'
 
 describe('type/guard/TString', () => {
   it('Should guard for TString', () => {
-    const R = TypeGuard.TString(Type.String())
+    const R = TypeGuard.IsString(Type.String())
     Assert.IsTrue(R)
   })
   it('Should not guard for TString', () => {
-    const R = TypeGuard.TString(null)
+    const R = TypeGuard.IsString(null)
     Assert.IsFalse(R)
   })
   it('Should not guard for TString with invalid $id', () => {
     // @ts-ignore
-    const R = TypeGuard.TString(Type.String({ $id: 1 }))
+    const R = TypeGuard.IsString(Type.String({ $id: 1 }))
     Assert.IsFalse(R)
   })
   it('Should not guard for TString with invalid minLength', () => {
     // @ts-ignore
-    const R = TypeGuard.TString(Type.String({ minLength: '1' }))
+    const R = TypeGuard.IsString(Type.String({ minLength: '1' }))
     Assert.IsFalse(R)
   })
   it('Should not guard for TString with invalid maxLength', () => {
     // @ts-ignore
-    const R = TypeGuard.TString(Type.String({ maxLength: '1' }))
+    const R = TypeGuard.IsString(Type.String({ maxLength: '1' }))
     Assert.IsFalse(R)
   })
   it('Should not guard for TString with invalid pattern', () => {
     // @ts-ignore
-    const R = TypeGuard.TString(Type.String({ pattern: 1 }))
+    const R = TypeGuard.IsString(Type.String({ pattern: 1 }))
     Assert.IsFalse(R)
   })
 })

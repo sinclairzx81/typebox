@@ -1,6 +1,10 @@
 import * as assert from 'assert'
 
 export namespace Assert {
+  export function HasProperty<K extends PropertyKey>(value: unknown, key: K): asserts value is Record<K, unknown> {
+    if (typeof value === 'object' && value !== null && key in value) return
+    throw new Error(`Expected value to have property '${key as string}'`)
+  }
   export function IsTrue(value: boolean): asserts value is true {
     return assert.strictEqual(value, true)
   }
@@ -46,7 +50,7 @@ export namespace Assert {
     if (value instanceof constructor) return
     throw Error(`Value is not instance of ${constructor}`)
   }
-  export function IsTypeOf(value: any, type: any) {
+  export function IsTypeOf<T extends 'string' | 'boolean' | 'number' | 'bigint' | 'symbol' | 'object' | 'function'>(value: any, type: T) {
     if (typeof value === type) return
     throw Error(`Value is not typeof ${type}`)
   }

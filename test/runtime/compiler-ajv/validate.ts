@@ -8,19 +8,19 @@ import Ajv, { AnySchema } from 'ajv/dist/2019'
 function schemaOf(schemaOf: string, value: unknown, schema: unknown) {
   switch (schemaOf) {
     case 'Constructor':
-      return TypeGuard.TConstructor(schema) && Value.Check(schema, value)
+      return TypeGuard.IsConstructor(schema) && Value.Check(schema, value)
     case 'Function':
-      return TypeGuard.TFunction(schema) && Value.Check(schema, value)
+      return TypeGuard.IsFunction(schema) && Value.Check(schema, value)
     case 'Date':
-      return TypeGuard.TDate(schema) && Value.Check(schema, value)
+      return TypeGuard.IsDate(schema) && Value.Check(schema, value)
     case 'Promise':
-      return TypeGuard.TPromise(schema) && Value.Check(schema, value)
+      return TypeGuard.IsPromise(schema) && Value.Check(schema, value)
     case 'Uint8Array':
-      return TypeGuard.TUint8Array(schema) && Value.Check(schema, value)
+      return TypeGuard.IsUint8Array(schema) && Value.Check(schema, value)
     case 'Undefined':
-      return TypeGuard.TUndefined(schema) && Value.Check(schema, value)
+      return TypeGuard.IsUndefined(schema) && Value.Check(schema, value)
     case 'Void':
-      return TypeGuard.TVoid(schema) && Value.Check(schema, value)
+      return TypeGuard.IsVoid(schema) && Value.Check(schema, value)
     default:
       return false
   }

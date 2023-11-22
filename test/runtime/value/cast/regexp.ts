@@ -50,4 +50,11 @@ describe('value/cast/RegExp', () => {
     const result = Value.Cast(T, value)
     Assert.IsEqual(result, value)
   })
+  // ----------------------------------------------------------------
+  // Throw
+  // ----------------------------------------------------------------
+  it('Should throw with no default', () => {
+    const T = Type.RegExp(/foo/)
+    Assert.Throws(() => Value.Cast(T, null))
+  })
 })

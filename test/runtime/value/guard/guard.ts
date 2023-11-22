@@ -1,5 +1,5 @@
 import { Assert } from '../../assert/index'
-import * as ValueGuard from '@sinclair/typebox/value/guard'
+import * as ValueGuard from '@sinclair/typebox/value'
 
 describe('value/guard/ValueGuard', () => {
   // -----------------------------------------------------

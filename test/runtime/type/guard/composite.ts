@@ -5,20 +5,20 @@ import { Assert } from '../../assert/index'
 describe('type/guard/TComposite', () => {
   it('Should guard for distinct properties', () => {
     const T = Type.Composite([Type.Object({ x: Type.Number() }), Type.Object({ y: Type.Number() })])
-    Assert.IsTrue(TypeGuard.TNumber(T.properties.x))
-    Assert.IsTrue(TypeGuard.TNumber(T.properties.y))
+    Assert.IsTrue(TypeGuard.IsNumber(T.properties.x))
+    Assert.IsTrue(TypeGuard.IsNumber(T.properties.y))
   })
   it('Should guard for overlapping properties', () => {
     const T = Type.Composite([Type.Object({ x: Type.Number() }), Type.Object({ x: Type.Number() })])
-    Assert.IsTrue(TypeGuard.TIntersect(T.properties.x))
+    Assert.IsTrue(TypeGuard.IsIntersect(T.properties.x))
     // @ts-ignore
-    Assert.IsTrue(TypeGuard.TNumber(T.properties.x.allOf[0]))
+    Assert.IsTrue(TypeGuard.IsNumber(T.properties.x.allOf[0]))
     // @ts-ignore
-    Assert.IsTrue(TypeGuard.TNumber(T.properties.x.allOf[1]))
+    Assert.IsTrue(TypeGuard.IsNumber(T.properties.x.allOf[1]))
   })
   it('Should not produce optional property if all properties are not optional', () => {
     const T = Type.Composite([Type.Object({ x: Type.Optional(Type.Number()) }), Type.Object({ x: Type.Number() })])
-    Assert.IsFalse(TypeGuard.TOptional(T.properties.x))
+    Assert.IsFalse(TypeGuard.IsOptional(T.properties.x))
   })
   // Note for: https://github.com/sinclairzx81/typebox/issues/419
   // Determining if a composite property is optional requires a deep check for all properties gathered during a indexed access
@@ -33,7 +33,7 @@ describe('type/guard/TComposite', () => {
       Type.Object({ x: Type.Optional(Type.Number()) }), 
       Type.Object({ x: Type.Optional(Type.Number()) })
     ])
-    Assert.IsTrue(TypeGuard.TOptional(T.properties.x))
+    Assert.IsTrue(TypeGuard.IsOptional(T.properties.x))
     Assert.IsEqual(T.required, undefined)
   })
   it('Should produce required property if some composited properties are not optional', () => {
@@ -42,7 +42,7 @@ describe('type/guard/TComposite', () => {
       Type.Object({ x: Type.Optional(Type.Number()) }), 
       Type.Object({ x: Type.Number() })
     ])
-    Assert.IsFalse(TypeGuard.TOptional(T.properties.x))
+    Assert.IsFalse(TypeGuard.IsOptional(T.properties.x))
     Assert.IsTrue(T.required!.includes('x'))
   })
   it('Should preserve single optional property', () => {
@@ -50,7 +50,7 @@ describe('type/guard/TComposite', () => {
     const T = Type.Composite([
       Type.Object({ x: Type.Optional(Type.Number()) }), 
     ])
-    Assert.IsTrue(TypeGuard.TOptional(T.properties.x))
+    Assert.IsTrue(TypeGuard.IsOptional(T.properties.x))
     Assert.IsEqual(T.required, undefined)
   })
 })
