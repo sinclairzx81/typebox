@@ -747,6 +747,7 @@ export type TRequired<T extends TSchema> =
 // TString
 // --------------------------------------------------------------------------
 export type StringFormatOption =
+  | 'uri'
   | 'date-time'
   | 'time'
   | 'date'
