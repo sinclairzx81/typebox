@@ -4,16 +4,16 @@ import { Assert } from '../../assert/index'
 
 describe('type/guard/TSymbol', () => {
   it('Should guard for TSymbol', () => {
-    const R = TypeGuard.TSymbol(Type.Symbol())
+    const R = TypeGuard.IsSymbol(Type.Symbol())
     Assert.IsTrue(R)
   })
   it('Should not guard for TSymbol', () => {
-    const R = TypeGuard.TSymbol(null)
+    const R = TypeGuard.IsSymbol(null)
     Assert.IsFalse(R)
   })
   it('Should not guard for TSymbol with invalid $id', () => {
     // @ts-ignore
-    const R = TypeGuard.TSymbol(Type.Symbol({ $id: 1 }))
+    const R = TypeGuard.IsSymbol(Type.Symbol({ $id: 1 }))
     Assert.IsFalse(R)
   })
 })

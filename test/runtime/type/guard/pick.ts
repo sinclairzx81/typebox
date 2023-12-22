@@ -1,4 +1,4 @@
-import { TypeGuard, Type, Kind, Transform } from '@sinclair/typebox'
+import { TypeGuard, Type, Kind, TransformKind } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
 describe('type/guard/TPick', () => {
@@ -30,7 +30,7 @@ describe('type/guard/TPick', () => {
       }),
       ['x'],
     )
-    Assert.IsTrue(TypeGuard.TNumber(T.properties.x))
+    Assert.IsTrue(TypeGuard.IsNumber(T.properties.x))
     Assert.IsEqual(T.required, ['x'])
   })
   it('Should Pick 2', () => {
@@ -41,7 +41,7 @@ describe('type/guard/TPick', () => {
       }),
       ['x'],
     )
-    Assert.IsTrue(TypeGuard.TNumber(T.properties.x))
+    Assert.IsTrue(TypeGuard.IsNumber(T.properties.x))
     Assert.IsEqual(T.required, undefined)
   })
   it('Should Pick 3', () => {
@@ -53,14 +53,14 @@ describe('type/guard/TPick', () => {
       }),
       L,
     )
-    Assert.IsTrue(TypeGuard.TNumber(T.properties.x))
+    Assert.IsTrue(TypeGuard.IsNumber(T.properties.x))
     Assert.IsEqual(T.required, ['x'])
   })
   it('Should Pick 4', () => {
     const L = Type.Literal('x')
     const T = Type.Pick(Type.Intersect([Type.Object({ x: Type.Number() }), Type.Object({ y: Type.Number() })]), L)
 
-    Assert.IsTrue(TypeGuard.TNumber(T.allOf[0].properties.x))
+    Assert.IsTrue(TypeGuard.IsNumber(T.allOf[0].properties.x))
     // @ts-ignore
     Assert.IsEqual(T.allOf[1].properties.y, undefined)
   })
@@ -73,8 +73,8 @@ describe('type/guard/TPick', () => {
       }),
       L,
     )
-    Assert.IsTrue(TypeGuard.TNumber(T.properties.x))
-    Assert.IsTrue(TypeGuard.TNumber(T.properties.y))
+    Assert.IsTrue(TypeGuard.IsNumber(T.properties.x))
+    Assert.IsTrue(TypeGuard.IsNumber(T.properties.y))
     Assert.IsEqual(T.required, ['x', 'y'])
   })
   it('Should Pick 6', () => {
@@ -86,8 +86,8 @@ describe('type/guard/TPick', () => {
       }),
       L,
     )
-    Assert.IsTrue(TypeGuard.TNumber(T.properties.x))
-    Assert.IsTrue(TypeGuard.TNumber(T.properties.y))
+    Assert.IsTrue(TypeGuard.IsNumber(T.properties.x))
+    Assert.IsTrue(TypeGuard.IsNumber(T.properties.y))
     Assert.IsEqual(T.required, ['x', 'y'])
   })
   it('Should Pick 7', () => {
@@ -100,8 +100,8 @@ describe('type/guard/TPick', () => {
       }),
       L,
     )
-    Assert.IsTrue(TypeGuard.TNumber(T.properties.ab))
-    Assert.IsTrue(TypeGuard.TNumber(T.properties.ac))
+    Assert.IsTrue(TypeGuard.IsNumber(T.properties.ab))
+    Assert.IsTrue(TypeGuard.IsNumber(T.properties.ac))
     Assert.IsEqual(T.required, ['ab', 'ac'])
   })
   // ----------------------------------------------------------------
@@ -126,6 +126,6 @@ describe('type/guard/TPick', () => {
       .Decode((value) => value)
       .Encode((value) => value)
     const R = Type.Pick(S, ['x'])
-    Assert.IsFalse(Transform in R)
+    Assert.IsFalse(TransformKind in R)
   })
 })

@@ -5,7 +5,7 @@ import { Assert } from '../../assert/index'
 describe('type/guard/TThis', () => {
   it('Should guard for TThis', () => {
     Type.Recursive((This) => {
-      const R = TypeGuard.TThis(This)
+      const R = TypeGuard.IsThis(This)
       Assert.IsTrue(R)
       return Type.Object({ nodes: Type.Array(This) })
     })
@@ -14,7 +14,7 @@ describe('type/guard/TThis', () => {
     Type.Recursive((This) => {
       // @ts-ignore
       This.$ref = 1
-      const R = TypeGuard.TThis(This)
+      const R = TypeGuard.IsThis(This)
       Assert.IsFalse(R)
       return Type.Object({ nodes: Type.Array(This) })
     })

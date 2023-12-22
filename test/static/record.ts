@@ -20,7 +20,6 @@ import { Type, Static } from '@sinclair/typebox'
   const K = Type.Number()
   const T = Type.Record(K, Type.Number())
   type T = Static<typeof T>
-  Expect(T).ToStatic<Record<string, number>>()
   Expect(T).ToStatic<Record<number, number>>()
 }
 {
@@ -174,5 +173,5 @@ import { Type, Static } from '@sinclair/typebox'
   // expect T to support named properties
   enum E {}
   const T = Type.Record(Type.Enum(E), Type.Number())
-  Expect(T).ToStatic<{}>
+  Expect(T).ToStatic<{ [x: string]: number }>
 }

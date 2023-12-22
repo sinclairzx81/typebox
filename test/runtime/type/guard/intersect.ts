@@ -4,7 +4,7 @@ import { Assert } from '../../assert/index'
 
 describe('type/guard/TIntersect', () => {
   it('Should guard for TIntersect', () => {
-    const R = TypeGuard.TIntersect(
+    const R = TypeGuard.IsIntersect(
       Type.Intersect([
         Type.Object({
           x: Type.Number(),
@@ -17,7 +17,7 @@ describe('type/guard/TIntersect', () => {
     Assert.IsTrue(R)
   })
   it('Should not guard for TIntersect', () => {
-    const R = TypeGuard.TIntersect(
+    const R = TypeGuard.IsIntersect(
       Type.Union([
         Type.Object({
           x: Type.Number(),

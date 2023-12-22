@@ -5,21 +5,21 @@ import { Assert } from '../../assert/index'
 describe('type/guard/TExtract', () => {
   it('Should extract string from number', () => {
     const T = Type.Extract(Type.String(), Type.Number())
-    Assert.IsTrue(TypeGuard.TNever(T))
+    Assert.IsTrue(TypeGuard.IsNever(T))
   })
   it('Should extract string from string', () => {
     const T = Type.Extract(Type.String(), Type.String())
-    Assert.IsTrue(TypeGuard.TString(T))
+    Assert.IsTrue(TypeGuard.IsString(T))
   })
   it('Should extract string | number | boolean from string', () => {
     const T = Type.Extract(Type.Union([Type.String(), Type.Number(), Type.Boolean()]), Type.String())
-    Assert.IsTrue(TypeGuard.TString(T))
+    Assert.IsTrue(TypeGuard.IsString(T))
   })
   it('Should extract string | number | boolean from string | boolean', () => {
     const T = Type.Extract(Type.Union([Type.String(), Type.Number(), Type.Boolean()]), Type.Union([Type.String(), Type.Boolean()]))
-    Assert.IsTrue(TypeGuard.TUnion(T))
-    Assert.IsTrue(TypeGuard.TString(T.anyOf[0]))
-    Assert.IsTrue(TypeGuard.TBoolean(T.anyOf[1]))
+    Assert.IsTrue(TypeGuard.IsUnion(T))
+    Assert.IsTrue(TypeGuard.IsString(T.anyOf[0]))
+    Assert.IsTrue(TypeGuard.IsBoolean(T.anyOf[1]))
   })
   // ------------------------------------------------------------------------
   // TemplateLiteral | TemplateLiteral

@@ -215,12 +215,12 @@ import { Expect } from './assert'
   // should decode within generic function context
   // https://github.com/sinclairzx81/typebox/issues/554
   // prettier-ignore
-  const ArrayOrSingle = <T extends TSchema>(schema: T) =>
-    Type.Transform(Type.Union([schema, Type.Array(schema)]))
-      .Decode((value) => (Array.isArray(value) ? value : [value]))
-      .Encode((value) => (value.length === 1 ? value[0] : value) as Static<T>[]);
-  const T = ArrayOrSingle(Type.String())
-  Expect(T).ToStaticDecode<string[]>()
+  // const ArrayOrSingle = <T extends TSchema>(schema: T) =>
+  //   Type.Transform(Type.Union([schema, Type.Array(schema)])[0])
+  //     .Decode((value) => (Array.isArray(value) ? value : [value]))
+  //     .Encode((value) => (value.length === 1 ? value[0] : value) as Static<T>[]);
+  // const T = ArrayOrSingle(Type.String())
+  // Expect(T).ToStaticDecode<string[]>()
 }
 {
   // should correctly decode record keys

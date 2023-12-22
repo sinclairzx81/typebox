@@ -27,4 +27,4 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 export { ValueError, ValueErrorType, ValueErrorIterator } from '../errors/index'
-export * from './compiler'
+export { TypeCompiler, TypeCheck, type TypeCompilerCodegenOptions, type TypeCompilerLanguageOption, TypeCompilerTypeGuardError, TypeCompilerUnknownTypeError } from './compiler'

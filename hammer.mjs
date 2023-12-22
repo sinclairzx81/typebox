@@ -1,36 +1,32 @@
-import { compression, measurement } from './benchmark'
-import { readFileSync } from 'fs'
+import * as Benchmark from './task/benchmark'
+import * as Build from './task/build'
+import * as Fs from 'fs'
 
 // -------------------------------------------------------------------------------
 // Clean
 // -------------------------------------------------------------------------------
 export async function clean() {
+  await folder('node_modules/typebox').delete()
   await folder('target').delete()
 }
 // -------------------------------------------------------------------------------
 // Format
 // -------------------------------------------------------------------------------
 export async function format() {
-  await shell('prettier --no-semi --single-quote --print-width 240 --trailing-comma all --write src test examples/index.ts benchmark')
+  await shell('prettier --no-semi --single-quote --print-width 240 --trailing-comma all --write src test task example/index.ts')
 }
 // -------------------------------------------------------------------------------
 // Start
 // -------------------------------------------------------------------------------
 export async function start() {
-  await shell(`hammer run examples/index.ts --dist target/examples`)
+  await shell(`hammer run example/index.ts --dist target/example`)
 }
 // -------------------------------------------------------------------------------
 // Benchmark
 // -------------------------------------------------------------------------------
-export async function benchmark_compression() {
-  await compression()
-}
-export async function benchmark_measurement() {
-  await measurement()
-}
 export async function benchmark() {
-  await benchmark_compression()
-  await benchmark_measurement()
+  await Benchmark.compression()
+  await Benchmark.measurement()
 }
 // -------------------------------------------------------------------------------
 // Test
@@ -56,20 +52,36 @@ export async function test(filter = '') {
 // -------------------------------------------------------------------------------
 // Build
 // -------------------------------------------------------------------------------
+export async function build_check(target = 'target/build') {
+  const { version } = JSON.parse(Fs.readFileSync('package.json', 'utf8'))
+  await shell(`cd ${target} && attw sinclair-typebox-${version}.tgz`)
+}
 export async function build(target = 'target/build') {
   await test()
-  await folder(target).delete()
-  await shell(`tsc -p ./src/tsconfig.json --outDir ${target}`)
-  await folder(target).add('package.json')
+  await clean()
+  await Promise.all([
+    Build.Import.build(target),
+    Build.Require.build(target),
+    Build.Redirect.build(target)
+  ])
   await folder(target).add('readme.md')
   await folder(target).add('license')
   await shell(`cd ${target} && npm pack`)
+  await build_check(target)
+}
+// -------------------------------------------------------------------------------
+// Install
+// -------------------------------------------------------------------------------
+export async function install_local() {
+  await clean()
+  await build('target/typebox')
+  await folder('node_modules').add('target/typebox')
 }
 // -------------------------------------------------------------
 // Publish
 // -------------------------------------------------------------
 export async function publish(otp, target = 'target/build') {
-  const { version } = JSON.parse(readFileSync('package.json', 'utf8'))
+  const { version } = JSON.parse(Fs.readFileSync('package.json', 'utf8'))
   if(version.includes('-dev')) throw Error(`package version should not include -dev specifier`)
   await shell(`cd ${target} && npm publish sinclair-typebox-${version}.tgz --access=public --otp ${otp}`)
   await shell(`git tag ${version}`)
@@ -79,7 +91,7 @@ export async function publish(otp, target = 'target/build') {
 // Publish-Dev
 // -------------------------------------------------------------
 export async function publish_dev(otp, target = 'target/build') {
-  const { version } = JSON.parse(readFileSync(`${target}/package.json`, 'utf8'))
+  const { version } = JSON.parse(Fs.readFileSync(`${target}/package.json`, 'utf8'))
   if(!version.includes('-dev')) throw Error(`development package version should include -dev specifier`)
   await shell(`cd ${target} && npm publish sinclair-typebox-${version}.tgz --access=public --otp ${otp} --tag dev`)
 }

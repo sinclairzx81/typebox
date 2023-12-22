@@ -1,10 +1,10 @@
-import { TypeGuard, TypeRegistry, Type, Kind, Transform } from '@sinclair/typebox'
+import { TypeGuard, TypeRegistry, Type, Kind, TransformKind } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
 describe('type/guard/TPartial', () => {
   it('Should produce a valid TSchema', () => {
     const T = Type.Partial(Type.Object({ x: Type.Number() }))
-    Assert.IsTrue(TypeGuard.TSchema(T))
+    Assert.IsTrue(TypeGuard.IsSchema(T))
   })
   // -------------------------------------------------------------------------
   // case: https://github.com/sinclairzx81/typebox/issues/364
@@ -62,6 +62,6 @@ describe('type/guard/TPartial', () => {
       .Decode((value) => value)
       .Encode((value) => value)
     const R = Type.Partial(S)
-    Assert.IsFalse(Transform in R)
+    Assert.IsFalse(TransformKind in R)
   })
 })

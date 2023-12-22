@@ -4,20 +4,20 @@ import { Assert } from '../../assert/index'
 
 describe('type/guard/TPromise', () => {
   it('Should guard for TPromise', () => {
-    const R = TypeGuard.TPromise(Type.Promise(Type.Number()))
+    const R = TypeGuard.IsPromise(Type.Promise(Type.Number()))
     Assert.IsTrue(R)
   })
   it('Should not guard for TPromise', () => {
-    const R = TypeGuard.TPromise(null)
+    const R = TypeGuard.IsPromise(null)
     Assert.IsFalse(R)
   })
   it('Should not guard for TPromise with invalid $id', () => {
     // @ts-ignore
-    const R = TypeGuard.TPromise(Type.Promise(Type.Number(), { $id: 1 }))
+    const R = TypeGuard.IsPromise(Type.Promise(Type.Number(), { $id: 1 }))
     Assert.IsFalse(R)
   })
   it('Should guard for TPromise with nested TObject', () => {
-    const R = TypeGuard.TPromise(
+    const R = TypeGuard.IsPromise(
       Type.Promise(
         Type.Object({
           x: Type.Number(),
@@ -28,7 +28,7 @@ describe('type/guard/TPromise', () => {
     Assert.IsTrue(R)
   })
   it('Should not guard for TPromise with nested TObject', () => {
-    const R = TypeGuard.TPromise(
+    const R = TypeGuard.IsPromise(
       Type.Promise(
         Type.Object({
           x: Type.Number(),

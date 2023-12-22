@@ -5,17 +5,17 @@ import { Assert } from '../../assert/index'
 describe('type/normalize/Exclude', () => {
   it('Normalize 1', () => {
     const T = Type.Exclude(Type.Union([Type.String(), Type.Number(), Type.Boolean()]), Type.String())
-    const R = TypeGuard.TUnion(T)
+    const R = TypeGuard.IsUnion(T)
     Assert.IsTrue(R)
   })
   it('Normalize 2', () => {
     const T = Type.Exclude(Type.Union([Type.String(), Type.Number()]), Type.String())
-    const R = TypeGuard.TNumber(T)
+    const R = TypeGuard.IsNumber(T)
     Assert.IsTrue(R)
   })
   it('Normalize 3', () => {
     const T = Type.Exclude(Type.Union([Type.String()]), Type.String())
-    const R = TypeGuard.TNever(T)
+    const R = TypeGuard.IsNever(T)
     Assert.IsTrue(R)
   })
 })

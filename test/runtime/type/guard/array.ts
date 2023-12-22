@@ -4,15 +4,15 @@ import { Assert } from '../../assert/index'
 
 describe('type/guard/TArray', () => {
   it('Should guard for TArray', () => {
-    const R = TypeGuard.TArray(Type.Array(Type.Number()))
+    const R = TypeGuard.IsArray(Type.Array(Type.Number()))
     Assert.IsTrue(R)
   })
   it('Should not guard for TArray', () => {
-    const R = TypeGuard.TArray(null)
+    const R = TypeGuard.IsArray(null)
     Assert.IsFalse(R)
   })
   it('Should guard for nested object TArray', () => {
-    const R = TypeGuard.TArray(
+    const R = TypeGuard.IsArray(
       Type.Array(
         Type.Object({
           x: Type.Number(),
@@ -23,7 +23,7 @@ describe('type/guard/TArray', () => {
     Assert.IsTrue(R)
   })
   it('Should not guard for nested object TArray', () => {
-    const R = TypeGuard.TArray(
+    const R = TypeGuard.IsArray(
       Type.Array(
         Type.Object({
           x: Type.Number(),
@@ -35,22 +35,22 @@ describe('type/guard/TArray', () => {
   })
   it('Should not guard for TArray with invalid $id', () => {
     // @ts-ignore
-    const R = TypeGuard.TArray(Type.Array(Type.Number(), { $id: 1 }))
+    const R = TypeGuard.IsArray(Type.Array(Type.Number(), { $id: 1 }))
     Assert.IsFalse(R)
   })
   it('Should not guard for TArray with invalid minItems', () => {
     // @ts-ignore
-    const R = TypeGuard.TArray(Type.Array(Type.String(), { minItems: '1' }))
+    const R = TypeGuard.IsArray(Type.Array(Type.String(), { minItems: '1' }))
     Assert.IsFalse(R)
   })
   it('Should not guard for TArray with invalid maxItems', () => {
     // @ts-ignore
-    const R = TypeGuard.TArray(Type.Array(Type.String(), { maxItems: '1' }))
+    const R = TypeGuard.IsArray(Type.Array(Type.String(), { maxItems: '1' }))
     Assert.IsFalse(R)
   })
   it('Should not guard for TArray with invalid uniqueItems', () => {
     // @ts-ignore
-    const R = TypeGuard.TArray(Type.Array(Type.String(), { uniqueItems: '1' }))
+    const R = TypeGuard.IsArray(Type.Array(Type.String(), { uniqueItems: '1' }))
     Assert.IsFalse(R)
   })
 })
