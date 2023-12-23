@@ -48,12 +48,13 @@ function resolvePackageJson(submodules: string[]) {
 function resolveSubmoduleExports(submodule: string) {
   return {
     require: {
+      types: `./build/require/${submodule}/index.d.ts`,
       default: `./build/require/${submodule}/index.js`,
-      types: `./build/require/${submodule}/index.d.ts`
     },
     import: {
-      default: `./build/import/${submodule}/index.mjs`,
       types: `./build/import/${submodule}/index.d.mts`,
+      default: `./build/import/${submodule}/index.mjs`,
+      
     }
   }
 }
@@ -65,12 +66,13 @@ function resolveExports(submodules: string[]) {
     // ... and root module
     ".": {
       "require": {
+        "types": "./build/require/index.d.ts",
         "default": "./build/require/index.js",
-        "types": "./build/require/index.d.ts"
+        
       },
       "import": {
+        "types": "./build/import/index.d.mts",
         "default": "./build/import/index.mjs",
-        "types": "./build/import/index.d.mts"
       }
     }
   })
@@ -89,8 +91,8 @@ function resolveMetadata() {
     license: packageJson.license,
     repository: packageJson.repository,
     scripts: { test: 'echo test' }, // flagged by socket.dev
-    module: "./build/import/index.mjs",
     types: "./build/require/index.d.ts",
-    main: "./build/require/index.js"
+    main: "./build/require/index.js",
+    module: "./build/import/index.mjs",
   }
 }
