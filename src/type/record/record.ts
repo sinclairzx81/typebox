@@ -181,7 +181,7 @@ function FromNumberKey<K extends TNumber, T extends TSchema>(_: K, T: T, options
 // ------------------------------------------------------------------
 // prettier-ignore
 type RecordStatic<K extends TSchema, T extends TSchema, P extends unknown[]> = (
-  Record<Assert<Static<K>, PropertyKey>, Static<T, P>>
+  Evaluate<Record<Assert<Static<K>, PropertyKey>, Static<T, P>>>
 )
 // prettier-ignore
 export interface TRecord<K extends TSchema = TSchema, T extends TSchema = TSchema> extends TSchema {
