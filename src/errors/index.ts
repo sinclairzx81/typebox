@@ -27,4 +27,4 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 export { Errors, ValueError, ValueErrorIterator, ValueErrorType, ValueErrorsUnknownTypeError } from './errors'
-export { DefaultErrorFunction, GetErrorFunction, SetErrorFunction, type ErrorFunction } from './function'
+export { DefaultErrorFunction, GetErrorFunction, SetErrorFunction, type ErrorFunction, type ErrorFunctionParameter } from './function'
