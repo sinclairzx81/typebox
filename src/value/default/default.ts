@@ -176,9 +176,9 @@ function Visit(schema: TSchema, references: TSchema[], value: unknown): any {
 // Default
 // ------------------------------------------------------------------
 /** `[Mutable]` Generates missing properties on a value using default schema annotations if available. This function does not check the value and returns an unknown type. You should Check the result before use. Default is a mutable operation. To avoid mutation, Clone the value first. */
-export function Default<T extends TSchema>(schema: T, references: TSchema[], value: unknown): unknown
+export function Default(schema: TSchema, references: TSchema[], value: unknown): unknown
 /** `[Mutable]` Generates missing properties on a value using default schema annotations if available. This function does not check the value and returns an unknown type. You should Check the result before use. Default is a mutable operation. To avoid mutation, Clone the value first. */
-export function Default<T extends TSchema>(schema: T, value: unknown): unknown
+export function Default(schema: TSchema, value: unknown): unknown
 /** `[Mutable]` Generates missing properties on a value using default schema annotations if available. This function does not check the value and returns an unknown type. You should Check the result before use. Default is a mutable operation. To avoid mutation, Clone the value first. */
 export function Default(...args: any[]) {
   return args.length === 3 ? Visit(args[0], args[1], args[2]) : Visit(args[0], [], args[1])

@@ -68,17 +68,17 @@ export function Check(...args: any[]) {
   return CheckValue.apply(CheckValue, args as any)
 }
 /** `[Mutable]` Removes excess properties from a value and returns the result. This function does not check the value and returns an unknown type. You should Check the result before use. Clean is a mutable operation. To avoid mutation, Clone the value first. */
-export function Clean<T extends TSchema>(schema: T, references: TSchema[], value: unknown): unknown
+export function Clean(schema: TSchema, references: TSchema[], value: unknown): unknown
 /** `[Mutable]` Removes excess properties from a value and returns the result. This function does not check the value and returns an unknown type. You should Check the result before use. Clean is a mutable operation. To avoid mutation, Clone the value first. */
-export function Clean<T extends TSchema>(schema: T, value: unknown): unknown
+export function Clean(schema: TSchema, value: unknown): unknown
 /** `[Mutable]` Removes excess properties from a value and returns the result. This function does not check the value and returns an unknown type. You should Check the result before use. Clean is a mutable operation. To avoid mutation, Clone the value first. */
 export function Clean(...args: any[]) {
   return CleanValue.apply(CleanValue, args as any)
 }
 /** Converts any type mismatched values to their target type if a reasonable conversion is possible */
-export function Convert<T extends TSchema>(schema: T, references: TSchema[], value: unknown): unknown
+export function Convert(schema: TSchema, references: TSchema[], value: unknown): unknown
 /** Converts any type mismatched values to their target type if a reasonable conversion is possibl. */
-export function Convert<T extends TSchema>(schema: T, value: unknown): unknown
+export function Convert(schema: TSchema, value: unknown): unknown
 /** Converts any type mismatched values to their target type if a reasonable conversion is possible */
 export function Convert(...args: any[]) {
   return ConvertValue.apply(ConvertValue, args as any)
@@ -98,9 +98,9 @@ export function Decode(...args: any[]) {
   return TransformDecode(schema, references, value)
 }
 /** `[Mutable]` Generates missing properties on a value using default schema annotations if available. This function does not check the value and returns an unknown type. You should Check the result before use. Default is a mutable operation. To avoid mutation, Clone the value first. */
-export function Default<T extends TSchema>(schema: T, references: TSchema[], value: unknown): unknown
+export function Default(schema: TSchema, references: TSchema[], value: unknown): unknown
 /** `[Mutable]` Generates missing properties on a value using default schema annotations if available. This function does not check the value and returns an unknown type. You should Check the result before use. Default is a mutable operation. To avoid mutation, Clone the value first. */
-export function Default<T extends TSchema>(schema: T, value: unknown): unknown
+export function Default(schema: TSchema, value: unknown): unknown
 /** `[Mutable]` Generates missing properties on a value using default schema annotations if available. This function does not check the value and returns an unknown type. You should Check the result before use. Default is a mutable operation. To avoid mutation, Clone the value first. */
 export function Default(...args: any[]) {
   return DefaultValue.apply(DefaultValue, args as any)
