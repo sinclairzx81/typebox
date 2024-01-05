@@ -299,9 +299,9 @@ function Visit(schema: TSchema, references: TSchema[], value: any): unknown {
 // Convert
 // ------------------------------------------------------------------
 /** Converts any type mismatched values to their target type if a reasonable conversion is possible. */
-export function Convert<T extends TSchema>(schema: T, references: TSchema[], value: unknown): unknown
+export function Convert(schema: TSchema, references: TSchema[], value: unknown): unknown
 /** Converts any type mismatched values to their target type if a reasonable conversion is possible. */
-export function Convert<T extends TSchema>(schema: T, value: unknown): unknown
+export function Convert(schema: TSchema, value: unknown): unknown
 /** Converts any type mismatched values to their target type if a reasonable conversion is possible. */
 // prettier-ignore
 export function Convert(...args: any[]) {

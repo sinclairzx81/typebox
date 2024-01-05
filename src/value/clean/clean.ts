@@ -175,9 +175,9 @@ function Visit(schema: TSchema, references: TSchema[], value: unknown): unknown 
 // Clean
 // ------------------------------------------------------------------
 /** `[Mutable]` Removes excess properties from a value and returns the result. This function does not check the value and returns an unknown type. You should Check the result before use. Clean is a mutable operation. To avoid mutation, Clone the value first. */
-export function Clean<T extends TSchema>(schema: T, references: TSchema[], value: unknown): unknown
+export function Clean(schema: TSchema, references: TSchema[], value: unknown): unknown
 /** `[Mutable]` Removes excess properties from a value and returns the result. This function does not check the value and returns an unknown type. You should Check the result before use. Clean is a mutable operation. To avoid mutation, Clone the value first. */
-export function Clean<T extends TSchema>(schema: T): unknown
+export function Clean(schema: TSchema, value: unknown): unknown
 /** `[Mutable]` Removes excess properties from a value and returns the result. This function does not check the value and returns an unknown type. You should Check the result before use. Clean is a mutable operation. To avoid mutation, Clone the value first. */
 export function Clean(...args: any[]) {
   return args.length === 3 ? Visit(args[0], args[1], args[2]) : Visit(args[0], [], args[1])
