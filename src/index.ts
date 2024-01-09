@@ -98,6 +98,8 @@ export {
   TemplateLiteralParseExact,
   TemplateLiteralGenerate,
   TemplateLiteralExpressionGenerate,
+  TemplateLiteralSyntax,
+  type TTemplateLiteralSyntax,
   type TTemplateLiteral,
   type TIsTemplateLiteralFinite,
   type TTemplateLiteralGenerate,
