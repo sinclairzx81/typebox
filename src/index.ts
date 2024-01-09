@@ -86,7 +86,7 @@ export { Required, type TRequired, type TRequiredFromMappedResult } from './type
 export { Rest, type TRest } from './type/rest/index'
 export { ReturnType, type TReturnType } from './type/return-type/index'
 export { type TSchema, type TKind, type SchemaOptions, type TAnySchema } from './type/schema/index'
-export { type Static, type StaticDecode, type StaticEncode } from './type/static/index'
+export { type Static, type StaticDecode, type StaticEncode, type TDecodeType, type TDecodeRest, type TDecodeProperties } from './type/static/index'
 export { Strict } from './type/strict/index'
 export { String, type TString, type StringOptions, type StringFormatOption, type StringContentEncodingOption } from './type/string/index'
 export { Symbol, type TSymbol, type TSymbolValue as SymbolValue } from './type/symbol/index'

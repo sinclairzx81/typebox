@@ -52,41 +52,41 @@ import type { TTransform } from '../transform/index'
 // DecodeType
 // ------------------------------------------------------------------
 // prettier-ignore
-export type DecodeProperties<T extends TProperties> = {
-  [K in keyof T]: DecodeType<T[K]>
+export type TDecodeProperties<T extends TProperties> = {
+  [K in keyof T]: TDecodeType<T[K]>
 }
 // prettier-ignore
-export type DecodeRest<T extends TSchema[], Acc extends TSchema[] = []> = 
+export type TDecodeRest<T extends TSchema[], Acc extends TSchema[] = []> = 
   T extends [infer L extends TSchema, ...infer R extends TSchema[]]
-    ? DecodeRest<R, [...Acc, DecodeType<L>]>
+    ? TDecodeRest<R, [...Acc, TDecodeType<L>]>
     : Acc
 // prettier-ignore
-export type DecodeType<T extends TSchema> = (
-  T extends TOptional<infer S extends TSchema> ? TOptional<DecodeType<S>> :
-  T extends TReadonly<infer S extends TSchema> ? TReadonly<DecodeType<S>> :
+export type TDecodeType<T extends TSchema> = (
+  T extends TOptional<infer S extends TSchema> ? TOptional<TDecodeType<S>> :
+  T extends TReadonly<infer S extends TSchema> ? TReadonly<TDecodeType<S>> :
   T extends TTransform<infer _, infer R> ? TUnsafe<R> :
-  T extends TArray<infer S extends TSchema> ? TArray<DecodeType<S>> :
-  T extends TAsyncIterator<infer S extends TSchema> ? TAsyncIterator<DecodeType<S>> :
-  T extends TConstructor<infer P extends TSchema[], infer R extends TSchema> ? TConstructor<DecodeRest<P>, DecodeType<R>> :
+  T extends TArray<infer S extends TSchema> ? TArray<TDecodeType<S>> :
+  T extends TAsyncIterator<infer S extends TSchema> ? TAsyncIterator<TDecodeType<S>> :
+  T extends TConstructor<infer P extends TSchema[], infer R extends TSchema> ? TConstructor<TDecodeRest<P>, TDecodeType<R>> :
   T extends TEnum<infer S> ? TEnum<S> : // intercept for union. interior non decodable
-  T extends TFunction<infer P extends TSchema[], infer R extends TSchema> ? TFunction<DecodeRest<P>, DecodeType<R>> :
-  T extends TIntersect<infer S extends TSchema[]> ? TIntersect<DecodeRest<S>> :
-  T extends TIterator<infer S extends TSchema> ? TIterator<DecodeType<S>> :
-  T extends TNot<infer S extends TSchema> ? TNot<DecodeType<S>> :
-  T extends TObject<infer S> ? TObject<Evaluate<DecodeProperties<S>>> :
-  T extends TPromise<infer S extends TSchema> ? TPromise<DecodeType<S>> :
-  T extends TRecord<infer K, infer S> ? TRecord<K, DecodeType<S>> :
-  T extends TRecursive<infer S extends TSchema> ? TRecursive<DecodeType<S>> :
-  T extends TRef<infer S extends TSchema> ? TRef<DecodeType<S>> :
-  T extends TTuple<infer S extends TSchema[]> ? TTuple<DecodeRest<S>> :
-  T extends TUnion<infer S extends TSchema[]> ? TUnion<DecodeRest<S>> :
+  T extends TFunction<infer P extends TSchema[], infer R extends TSchema> ? TFunction<TDecodeRest<P>, TDecodeType<R>> :
+  T extends TIntersect<infer S extends TSchema[]> ? TIntersect<TDecodeRest<S>> :
+  T extends TIterator<infer S extends TSchema> ? TIterator<TDecodeType<S>> :
+  T extends TNot<infer S extends TSchema> ? TNot<TDecodeType<S>> :
+  T extends TObject<infer S> ? TObject<Evaluate<TDecodeProperties<S>>> :
+  T extends TPromise<infer S extends TSchema> ? TPromise<TDecodeType<S>> :
+  T extends TRecord<infer K, infer S> ? TRecord<K, TDecodeType<S>> :
+  T extends TRecursive<infer S extends TSchema> ? TRecursive<TDecodeType<S>> :
+  T extends TRef<infer S extends TSchema> ? TRef<TDecodeType<S>> :
+  T extends TTuple<infer S extends TSchema[]> ? TTuple<TDecodeRest<S>> :
+  T extends TUnion<infer S extends TSchema[]> ? TUnion<TDecodeRest<S>> :
   T
 )
 // ------------------------------------------------------------------
 // Static
 // ------------------------------------------------------------------
 /** Creates an decoded static type from a TypeBox type */
-export type StaticDecode<T extends TSchema, P extends unknown[] = []> = Static<DecodeType<T>, P>
+export type StaticDecode<T extends TSchema, P extends unknown[] = []> = Static<TDecodeType<T>, P>
 /** Creates an encoded static type from a TypeBox type */
 export type StaticEncode<T extends TSchema, P extends unknown[] = []> = Static<T, P>
 /** Creates a static type from a TypeBox type */
