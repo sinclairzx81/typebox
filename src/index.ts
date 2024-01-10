@@ -41,7 +41,7 @@ export { TypeBoxError } from './type/error/index'
 export { Any, type TAny } from './type/any/index'
 export { Array, type TArray, type ArrayOptions } from './type/array/index'
 export { AsyncIterator, type TAsyncIterator } from './type/async-iterator/index'
-export { Awaited, type TAwaited, type TAwaitedResolve } from './type/awaited/index'
+export { Awaited, type TAwaited } from './type/awaited/index'
 export { BigInt, type TBigInt, type BigIntOptions } from './type/bigint/index'
 export { Boolean, type TBoolean } from './type/boolean/index'
 export { Composite, type TComposite } from './type/composite/index'
@@ -56,7 +56,20 @@ export { Extends, ExtendsCheck, ExtendsResult, ExtendsUndefinedCheck, type TExte
 export { Extract, type TExtract, type TExtractFromMappedResult } from './type/extract/index'
 export { Function, type TFunction } from './type/function/index'
 export { Increment, type Assert, type AssertType, type AssertRest, type AssertProperties, type Ensure, type Evaluate, type TupleToIntersect, type TupleToUnion, type UnionToTuple } from './type/helpers/index'
-export { Index, IndexPropertyKeys, IndexFromMappedKey, IndexFromMappedResult, type TIndex, type TIndexPropertyKeys, type TIndexFromMappedKey, type TIndexFromMappedResult } from './type/indexed/index'
+export {
+  Index,
+  IndexPropertyKeys,
+  IndexFromPropertyKeys,
+  IndexFromPropertyKey,
+  IndexFromMappedKey,
+  IndexFromMappedResult,
+  type TIndex,
+  type TIndexPropertyKeys,
+  type TIndexFromPropertyKeys,
+  type TIndexFromPropertyKey,
+  type TIndexFromMappedKey,
+  type TIndexFromMappedResult,
+} from './type/indexed/index'
 export { InstanceType, type TInstanceType } from './type/instance-type/index'
 export { Integer, type TInteger, type IntegerOptions } from './type/integer/index'
 export { Intersect, IntersectEvaluated, type TIntersect, type TIntersectEvaluated, type IntersectOptions } from './type/intersect/index'
@@ -70,11 +83,11 @@ export { Not, type TNot } from './type/not/index'
 export { Null, type TNull } from './type/null/index'
 export { Number, type TNumber, type NumberOptions } from './type/number/index'
 export { Object, type TObject, type TProperties, type ObjectOptions } from './type/object/index'
-export { Omit, type TOmit, type TOmitResolve, type TOmitFromMappedKey, type TOmitFromMappedResult } from './type/omit/index'
+export { Omit, type TOmit, type TOmitFromMappedKey, type TOmitFromMappedResult } from './type/omit/index'
 export { Optional, OptionalFromMappedResult, type TOptional, type TOptionalWithFlag, type TOptionalFromMappedResult } from './type/optional/index'
 export { Parameters, type TParameters } from './type/parameters/index'
 export { Partial, PartialFromMappedResult, type TPartial, type TPartialFromMappedResult } from './type/partial/index'
-export { Pick, type TPick, type TPickResolve, type TPickFromMappedKey, type TPickFromMappedResult } from './type/pick/index'
+export { Pick, type TPick, type TPickFromMappedKey, type TPickFromMappedResult } from './type/pick/index'
 export { Promise, type TPromise } from './type/promise/index'
 export { Readonly, ReadonlyFromMappedResult, type TReadonly, type TReadonlyWithFlag, type TReadonlyFromMappedResult } from './type/readonly/index'
 export { ReadonlyOptional, type TReadonlyOptional } from './type/readonly-optional/index'
@@ -92,18 +105,18 @@ export { String, type TString, type StringOptions, type StringFormatOption, type
 export { Symbol, type TSymbol, type TSymbolValue as SymbolValue } from './type/symbol/index'
 export {
   TemplateLiteral,
-  IsTemplateLiteralFinite,
-  IsTemplateLiteralExpressionFinite,
+  TemplateLiteralSyntax,
+  TemplateLiteralGenerate,
   TemplateLiteralParse,
   TemplateLiteralParseExact,
-  TemplateLiteralGenerate,
+  IsTemplateLiteralFinite,
   TemplateLiteralExpressionGenerate,
-  TemplateLiteralSyntax,
-  type TTemplateLiteralSyntax,
+  IsTemplateLiteralExpressionFinite,
   type TTemplateLiteral,
-  type TIsTemplateLiteralFinite,
+  type TTemplateLiteralSyntax,
   type TTemplateLiteralGenerate,
   type TTemplateLiteralKind,
+  type TIsTemplateLiteralFinite,
 } from './type/template-literal/index'
 export { Transform, TransformDecodeBuilder, TransformEncodeBuilder, type TTransform, type TransformOptions, type TransformFunction } from './type/transform/index'
 export { Tuple, type TTuple } from './type/tuple/index'

@@ -50,7 +50,7 @@ import { IsMappedKey, IsMappedResult, IsIntersect, IsUnion, IsObject, IsSchema }
 // prettier-ignore
 type FromIntersect<T extends TSchema[], K extends PropertyKey[], Acc extends TSchema[] = []> = 
   T extends [infer L extends TSchema, ...infer R extends TSchema[]]
-    ? FromIntersect<R, K, [...Acc, TPickResolve<L, K>]>
+    ? FromIntersect<R, K, [...Acc, TPick<L, K>]>
     : Acc
 function FromIntersect<T extends TSchema[], K extends PropertyKey[]>(T: T, K: K) {
   return T.map((T) => PickResolve(T, K)) as FromIntersect<T, K>
@@ -61,7 +61,7 @@ function FromIntersect<T extends TSchema[], K extends PropertyKey[]>(T: T, K: K)
 // prettier-ignore
 type FromUnion<T extends TSchema[], K extends PropertyKey[], Acc extends TSchema[] = []> = 
   T extends [infer L extends TSchema, ...infer R extends TSchema[]]
-    ? FromUnion<R, K, [...Acc, TPickResolve<L, K>]>
+    ? FromUnion<R, K, [...Acc, TPick<L, K>]>
     : Acc
 // prettier-ignore
 function FromUnion<T extends TSchema[], K extends PropertyKey[]>(T: T, K: K) {
@@ -82,25 +82,21 @@ function FromProperties<T extends TProperties, K extends PropertyKey[]>(T: T, K:
 // PickResolve
 // ------------------------------------------------------------------
 // prettier-ignore
-export type TPickResolve<T extends TProperties, K extends PropertyKey[]> = 
-  T extends TRecursive<infer S> ? TRecursive<TPickResolve<S, K>> : 
-  T extends TIntersect<infer S> ? TIntersect<FromIntersect<S, K>> : 
-  T extends TUnion<infer S> ? TUnion<FromUnion<S, K>> : 
-  T extends TObject<infer S> ? TObject<FromProperties<S, K>> : 
-  TObject<{}>
-// prettier-ignore
-export function PickResolve<T extends TSchema, K extends PropertyKey[]>(T: T, K: [...K]): TPickResolve<T, K> {
+function PickResolve<T extends TSchema, K extends PropertyKey[]>(T: T, K: [...K]): TPick<T, K> {
   return (
     IsIntersect(T) ? Intersect(FromIntersect(T.allOf, K)) : 
     IsUnion(T) ? Union(FromUnion(T.anyOf, K)) : 
     IsObject(T) ? Object(FromProperties(T.properties, K)) : 
     Object({})
-  ) as TPickResolve<T, K>
+  ) as TPick<T, K>
 }
-// ------------------------------------------------------------------
-// TPick
-// ------------------------------------------------------------------
-export type TPick<T extends TSchema, K extends PropertyKey[]> = TPickResolve<T, K>
+// prettier-ignore
+export type TPick<T extends TProperties, K extends PropertyKey[]> = 
+  T extends TRecursive<infer S> ? TRecursive<TPick<S, K>> : 
+  T extends TIntersect<infer S> ? TIntersect<FromIntersect<S, K>> : 
+  T extends TUnion<infer S> ? TUnion<FromUnion<S, K>> : 
+  T extends TObject<infer S> ? TObject<FromProperties<S, K>> : 
+  TObject<{}>
 
 /** `[Json]` Constructs a type whose keys are picked from the given type */
 export function Pick<T extends TMappedResult, K extends PropertyKey[]>(T: T, K: [...K], options?: SchemaOptions): TPickFromMappedResult<T, K>

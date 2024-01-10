@@ -53,7 +53,7 @@ type T = Static<typeof T>                            // type T = {
 
 TypeBox is a runtime type builder that creates in-memory Json Schema objects that infer as TypeScript types. The schematics produced by this library are designed to match the static type checking rules of the TypeScript compiler. TypeBox offers a unified type that can be statically checked by TypeScript and runtime asserted using standard Json Schema validation.
 
-This library is built to be a runtime type system offering similar capabilities to TypeScript's static type system. It can be used as a simple tool to build up complex schematics or integrated into REST and RPC services to help validate data received over the wire.
+This library is designed to be a runtime type system providing similar capabilities to TypeScript's programmable type system. It can be used as a simple tool to build up complex schematics or integrated into REST and RPC services to help validate data received over the wire.
 
 License MIT
 
@@ -648,7 +648,7 @@ TypeBox provides an extended type set that can be used to create schematics for 
 
 ### Import
 
-Import the Type namespace to bring in TypeBox's full type system. This is recommended for most users.
+Import the Type namespace to bring in the full TypeBox type system. This is recommended for most users.
 
 ```typescript
 import { Type, type Static } from '@sinclair/typebox'
@@ -870,7 +870,7 @@ function test(node: Node) {
 
 ### Template Literal Types
 
-TypeBox supports template literal types with TemplateLiteral. This type can be created using a syntax similar to the TypeScript template literal syntax or composed from exterior types. TypeBox encodes template literals as regular expressions which enables the template to be checked by Json Schema validators. This type also supports regular expression parsing that enables template patterns to be used for generative types. The following shows both TypeScript and TypeBox usage.
+TypeBox supports template literal types with the TemplateLiteral function. This type can be created using a syntax similar to the TypeScript template literal syntax or composed from exterior types. TypeBox encodes template literals as regular expressions which enables the template to be checked by Json Schema validators. This type also supports regular expression parsing that enables template patterns to be used for generative types. The following shows both TypeScript and TypeBox usage.
 
 ```typescript
 // TypeScript
@@ -905,7 +905,7 @@ const R = Type.Record(K, Type.String())              // const R: TObject<{
 
 ### Indexed Access Types
 
-TypeBox supports indexed access types with Index. This type enables uniform access to interior property and element types without having to extract them from the underlying schema representation. This type is supported for Object, Array, Tuple, Union and Intersect types.
+TypeBox supports indexed access types with the Index function. This function enables uniform access to interior property and element types without having to extract them from the underlying schema representation. Index types are supported for Object, Array, Tuple, Union and Intersect types.
 
 ```typescript
 const T = Type.Object({                              // type T = {
@@ -944,7 +944,7 @@ const C = Type.Index(T, Type.KeyOf(T))               // type C = T[keyof T]
 
 ### Mapped Types
 
-TypeBox supports mapped object types with Mapped. This type accepts two arguments, the first is a union type typically derived from KeyOf, the second is a mapping function that receives a mapping key `K` that can be used to index properties of a type. The following implements Partial using mapped types.
+TypeBox supports mapped types with the Mapped function. This function accepts two arguments, the first is a union type typically derived from KeyOf, the second is a mapping function that receives a mapping key `K` that can be used to index properties of a type. The following implements a mapped type that remaps each property to be `T | null`
 
 ```typescript
 const T = Type.Object({                              // type T = {
@@ -953,14 +953,14 @@ const T = Type.Object({                              // type T = {
   z: Type.Boolean()                                  //   z: boolean
 })                                                   // }
 
-const M = Type.Mapped(Type.KeyOf(T), K => {          // type M = { [K in keyof T]?: T[K] }
-  return Type.Optional(Type.Index(T, K))             //
+const M = Type.Mapped(Type.KeyOf(T), K => {          // type M = { [K in keyof T]: T[K] | null }
+  return Type.Union([Type.Index(T, K), Type.Null()]) //
 })                                                   // ... evaluated as
                                                      // 
                                                      // const M: TObject<{
-                                                     //   x: TOptional<TNumber>,
-                                                     //   y: TOptional<TString>,
-                                                     //   z: TOptional<TBoolean>
+                                                     //   x: TUnion<[TNumber, TNull]>,
+                                                     //   y: TUnion<[TString, TNull]>,
+                                                     //   z: TUnion<[TBoolean, TNull]>
                                                      // }>
 ```
 
@@ -968,7 +968,7 @@ const M = Type.Mapped(Type.KeyOf(T), K => {          // type M = { [K in keyof T
 
 ### Conditional Types
 
-TypeBox supports runtime conditional types with Extends. This type performs a structural assignability check against the first (`left`) and second (`right`) arguments and will return either the third (`true`) or fourth (`false`) argument based on the result. The conditional types Exclude and Extract are also supported. The following shows both TypeScript and TypeBox examples of conditional types.
+TypeBox supports runtime conditional types with the Extends function. This function performs a structural assignability check against the first (`left`) and second (`right`) arguments and will return either the third (`true`) or fourth (`false`) argument based on the result. The conditional types Exclude and Extract are also supported. The following shows both TypeScript and TypeBox examples of conditional types.
 
 ```typescript
 // Extends
