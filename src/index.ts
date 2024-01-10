@@ -105,18 +105,18 @@ export { String, type TString, type StringOptions, type StringFormatOption, type
 export { Symbol, type TSymbol, type TSymbolValue as SymbolValue } from './type/symbol/index'
 export {
   TemplateLiteral,
-  IsTemplateLiteralFinite,
-  IsTemplateLiteralExpressionFinite,
+  TemplateLiteralSyntax,
+  TemplateLiteralGenerate,
   TemplateLiteralParse,
   TemplateLiteralParseExact,
-  TemplateLiteralGenerate,
+  IsTemplateLiteralFinite,
   TemplateLiteralExpressionGenerate,
-  TemplateLiteralSyntax,
-  type TTemplateLiteralSyntax,
+  IsTemplateLiteralExpressionFinite,
   type TTemplateLiteral,
-  type TIsTemplateLiteralFinite,
+  type TTemplateLiteralSyntax,
   type TTemplateLiteralGenerate,
   type TTemplateLiteralKind,
+  type TIsTemplateLiteralFinite,
 } from './type/template-literal/index'
 export { Transform, TransformDecodeBuilder, TransformEncodeBuilder, type TTransform, type TransformOptions, type TransformFunction } from './type/transform/index'
 export { Tuple, type TTuple } from './type/tuple/index'
