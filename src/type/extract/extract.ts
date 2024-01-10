@@ -33,7 +33,7 @@ import { TemplateLiteralToUnion, type TTemplateLiteral } from '../template-liter
 import { type TLiteral } from '../literal/index'
 import { Union, type TUnion } from '../union/index'
 import { type Static } from '../static/index'
-import { Never } from '../never/index'
+import { Never, type TNever } from '../never/index'
 import { type TUnionEvaluated } from '../union/index'
 import { ExtendsCheck, ExtendsResult } from '../extends/index'
 import { CloneType } from '../clone/type'
@@ -44,51 +44,42 @@ import { ExtractFromMappedResult, type TExtractFromMappedResult } from './extrac
 // ------------------------------------------------------------------
 import { IsMappedResult, IsTemplateLiteral, IsUnion } from '../guard/type'
 // ------------------------------------------------------------------
-// ExtractResolve
+// ExtractTemplateLiteral
 // ------------------------------------------------------------------
 // prettier-ignore
-type TFromTemplateLiteralResult<T extends string> = TUnionEvaluated<AssertRest<UnionToTuple<{ [K in T]: TLiteral<K> }[T]>>>
+type TExtractTemplateLiteralResult<T extends string> = TUnionEvaluated<AssertRest<UnionToTuple<{ [K in T]: TLiteral<K> }[T]>>>
 // prettier-ignore
-type TFromTemplateLiteral<T extends TTemplateLiteral, U extends TSchema> = Extract<Static<T>, Static<U>> extends infer S ? TFromTemplateLiteralResult<Assert<S, string>> : never
+type TExtractTemplateLiteral<L extends TTemplateLiteral, R extends TSchema> = Extract<Static<L>, Static<R>> extends infer S ? TExtractTemplateLiteralResult<Assert<S, string>> : never
+// ------------------------------------------------------------------
+// ExtractRest
+// ------------------------------------------------------------------
 // prettier-ignore
-type TFromArray<T extends TSchema[], U extends TSchema> = AssertRest<UnionToTuple<
-  { [K in keyof T]: Static<AssertType<T[K]>> extends Static<U> ? T[K] : never
+type TExtractRest<L extends TSchema[], R extends TSchema> = AssertRest<UnionToTuple<
+  { [K in keyof L]: Static<AssertType<L[K]>> extends Static<R> ? L[K] : never
 }[number]>> extends infer R extends TSchema[] ? TUnionEvaluated<R> : never
-// prettier-ignore
-type TExtractResolve<T extends TSchema, U extends TSchema> = (
-  T extends TTemplateLiteral ? TFromTemplateLiteral<T, U> :
-  T extends TUnion<infer S> ? TFromArray<S, U> :
-  T
-)
-// prettier-ignore
-function ExtractResolve<L extends TSchema, R extends TSchema>(L: L, R: R): TExtractResolve<L, R> {
-  return (
-    IsTemplateLiteral(L)  ? ExtractResolve(TemplateLiteralToUnion(L), R) :
-    IsTemplateLiteral(R) ? ExtractResolve(L, TemplateLiteralToUnion(R) as any) :
-    IsUnion(L) ? (() => {
-      const narrowed = L.anyOf.filter((inner) => ExtendsCheck(inner, R) !== ExtendsResult.False)
-      return (narrowed.length === 1 ? narrowed[0] : Union(narrowed))
-    })() :
-      ExtendsCheck(L, R) !== ExtendsResult.False ? L :
-      Never()
-  ) as TExtractResolve<L, R>
+
+function ExtractRest<L extends TSchema[], R extends TSchema>(L: [...L], R: R) {
+  const extracted = L.filter((inner) => ExtendsCheck(inner, R) !== ExtendsResult.False)
+  return extracted.length === 1 ? extracted[0] : Union(extracted)
 }
 // ------------------------------------------------------------------
 // TExtract
 // ------------------------------------------------------------------
 // prettier-ignore
-export type TExtract<T extends TSchema, U extends TSchema> = TExtractResolve<T, U>
-
+export type TExtract<L extends TSchema, U extends TSchema> = (
+  L extends TMappedResult ? TExtractFromMappedResult<L, U> :
+  L extends TTemplateLiteral ? TExtractTemplateLiteral<L, U> :
+  L extends TUnion<infer S> ? TExtractRest<S, U> :
+  L extends U ? L : TNever
+)
 /** `[Json]` Constructs a type by extracting from type all union members that are assignable to union */
-export function Extract<L extends TMappedResult, R extends TSchema>(type: L, union: R, options?: SchemaOptions): TExtractFromMappedResult<L, R>
-/** `[Json]` Constructs a type by extracting from type all union members that are assignable to union */
-export function Extract<L extends TSchema, R extends TSchema>(type: L, union: R, options?: SchemaOptions): TExtract<L, R>
-/** `[Json]` Constructs a type by extracting from type all union members that are assignable to union */
-export function Extract(type: TSchema, union: TSchema, options: SchemaOptions = {}) {
-  if (IsMappedResult(type)) {
-    return ExtractFromMappedResult(type, union, options)
-  } else {
-    const E = ExtractResolve(type, union)
-    return CloneType(E, options)
-  }
+export function Extract<L extends TSchema, R extends TSchema>(L: L, R: R, options: SchemaOptions = {}): TExtract<L, R> {
+  // prettier-ignore
+  return CloneType((
+    IsMappedResult(L) ? ExtractFromMappedResult(L, R, options) :
+    IsTemplateLiteral(L) ? Extract(TemplateLiteralToUnion(L), R) :
+    IsTemplateLiteral(R) ? Extract(L, TemplateLiteralToUnion(R) as any) :
+    IsUnion(L) ? ExtractRest(L.anyOf, R) :
+    ExtendsCheck(L, R) !== ExtendsResult.False ? L : Never()
+  ), options) as never
 }

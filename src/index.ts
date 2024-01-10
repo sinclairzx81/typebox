@@ -41,7 +41,7 @@ export { TypeBoxError } from './type/error/index'
 export { Any, type TAny } from './type/any/index'
 export { Array, type TArray, type ArrayOptions } from './type/array/index'
 export { AsyncIterator, type TAsyncIterator } from './type/async-iterator/index'
-export { Awaited, type TAwaited } from './type/awaited/index'
+export { Awaited, type TAwaited, type TAwaitedResolve } from './type/awaited/index'
 export { BigInt, type TBigInt, type BigIntOptions } from './type/bigint/index'
 export { Boolean, type TBoolean } from './type/boolean/index'
 export { Composite, type TComposite } from './type/composite/index'
@@ -52,7 +52,7 @@ export { Date, type TDate, type DateOptions } from './type/date/index'
 export { Deref, type TDeref } from './type/deref/index'
 export { Enum, type TEnum } from './type/enum/index'
 export { Exclude, type TExclude, type TExcludeFromMappedResult } from './type/exclude/index'
-export { Extends, type TExtends, type ExtendsFromMappedResult, type ExtendsFromMappedKey, ExtendsCheck, ExtendsResult, ExtendsUndefinedCheck } from './type/extends/index'
+export { Extends, ExtendsCheck, ExtendsResult, ExtendsUndefinedCheck, type TExtends, type ExtendsFromMappedResult, type ExtendsFromMappedKey } from './type/extends/index'
 export { Extract, type TExtract, type TExtractFromMappedResult } from './type/extract/index'
 export { Function, type TFunction } from './type/function/index'
 export { Increment, type Assert, type AssertType, type AssertRest, type AssertProperties, type Ensure, type Evaluate, type TupleToIntersect, type TupleToUnion, type UnionToTuple } from './type/helpers/index'
@@ -62,29 +62,19 @@ export { Integer, type TInteger, type IntegerOptions } from './type/integer/inde
 export { Intersect, IntersectEvaluated, type TIntersect, type TIntersectEvaluated, type IntersectOptions } from './type/intersect/index'
 export { Iterator, type TIterator } from './type/iterator/index'
 export { Intrinsic, IntrinsicFromMappedKey, type TIntrinsic, Capitalize, type TCapitalize, Lowercase, type TLowercase, Uncapitalize, type TUncapitalize, Uppercase, type TUppercase } from './type/intrinsic/index'
-export {
-  KeyOf,
-  KeyOfPropertyKeys,
-  KeyOfPropertyKeysToRest as KeyOfFromPropertyKeys,
-  KeyOfFromMappedResult,
-  KeyOfPattern,
-  type TKeyOf,
-  type TKeyOfPropertyKeys,
-  type TKeyOfPropertyKeysToRest as TKeyOfFromPropertyKeys,
-  type TKeyOfFromMappedResult,
-} from './type/keyof/index'
+export { KeyOf, KeyOfPropertyKeys, KeyOfPropertyKeysToRest, KeyOfFromMappedResult, KeyOfPattern, type TKeyOf, type TKeyOfPropertyKeys, type TKeyOfPropertyKeysToRest, type TKeyOfFromMappedResult } from './type/keyof/index'
 export { Literal, type TLiteral, type TLiteralValue } from './type/literal/index'
-export { Mapped, MappedKey, MappedResult, type TMapped, type TMappedKey, type TMappedResult, type TMappedFunction } from './type/mapped/index'
+export { Mapped, MappedKey, MappedResult, MappedFunctionReturnType, type TMapped, type TMappedKey, type TMappedResult, type TMappedFunction, type TMappedFunctionReturnType } from './type/mapped/index'
 export { Never, type TNever } from './type/never/index'
 export { Not, type TNot } from './type/not/index'
 export { Null, type TNull } from './type/null/index'
 export { Number, type TNumber, type NumberOptions } from './type/number/index'
 export { Object, type TObject, type TProperties, type ObjectOptions } from './type/object/index'
-export { Omit, type TOmit, type TOmitFromMappedKey, type TOmitFromMappedResult } from './type/omit/index'
+export { Omit, type TOmit, type TOmitResolve, type TOmitFromMappedKey, type TOmitFromMappedResult } from './type/omit/index'
 export { Optional, OptionalFromMappedResult, type TOptional, type TOptionalWithFlag, type TOptionalFromMappedResult } from './type/optional/index'
 export { Parameters, type TParameters } from './type/parameters/index'
 export { Partial, PartialFromMappedResult, type TPartial, type TPartialFromMappedResult } from './type/partial/index'
-export { Pick, type TPick, type TPickFromMappedKey, type TPickFromMappedResult } from './type/pick/index'
+export { Pick, type TPick, type TPickResolve, type TPickFromMappedKey, type TPickFromMappedResult } from './type/pick/index'
 export { Promise, type TPromise } from './type/promise/index'
 export { Readonly, ReadonlyFromMappedResult, type TReadonly, type TReadonlyWithFlag, type TReadonlyFromMappedResult } from './type/readonly/index'
 export { ReadonlyOptional, type TReadonlyOptional } from './type/readonly-optional/index'

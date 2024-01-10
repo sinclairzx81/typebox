@@ -44,53 +44,44 @@ import { ExcludeFromMappedResult, type TExcludeFromMappedResult } from './exclud
 // ------------------------------------------------------------------
 import { IsMappedResult, IsTemplateLiteral, IsUnion } from '../guard/type'
 // ------------------------------------------------------------------
-// ExcludeResolve
+// ExcludeTemplateLiteral
 // ------------------------------------------------------------------
 // prettier-ignore
 type TExcludeTemplateLiteralResult<T extends string> = TUnionEvaluated<AssertRest<UnionToTuple<{ [K in T]: TLiteral<K> }[T]>>>
 // prettier-ignore
-type TExcludeTemplateLiteral<T extends TTemplateLiteral, U extends TSchema> = (
-  Exclude<Static<T>, Static<U>> extends infer S ? TExcludeTemplateLiteralResult<Assert<S, string>> : never
+type TExcludeTemplateLiteral<L extends TTemplateLiteral, R extends TSchema> = (
+  Exclude<Static<L>, Static<R>> extends infer S ? TExcludeTemplateLiteralResult<Assert<S, string>> : never
 )
+// ------------------------------------------------------------------
+// ExcludeRest
+// ------------------------------------------------------------------
 // prettier-ignore
-type TExcludeArray<T extends TSchema[], U extends TSchema> = AssertRest<UnionToTuple<{
-  [K in keyof T]: Static<AssertType<T[K]>> extends Static<U> ? never : T[K]
+type TExcludeRest<L extends TSchema[], R extends TSchema> = AssertRest<UnionToTuple<{
+  [K in keyof L]: Static<AssertType<L[K]>> extends Static<R> ? never : L[K]
 }[number]>> extends infer R extends TSchema[] ? TUnionEvaluated<R> : never
-// prettier-ignore
-type TExcludeResolve<T extends TSchema, U extends TSchema> =
-  T extends TTemplateLiteral ? TExcludeTemplateLiteral<T, U> :
-  T extends TUnion<infer S> ? TExcludeArray<S, U> :
-  T extends U 
-    ? TNever 
-    : T
-// prettier-ignore
-function ExcludeResolve<L extends TSchema, R extends TSchema>(L: L, R: R): TExcludeResolve<L, R> {
-  return (
-    IsTemplateLiteral(L) ? ExcludeResolve(TemplateLiteralToUnion(L), R) :
-    IsTemplateLiteral(R) ? ExcludeResolve(L, TemplateLiteralToUnion(R)) :
-    IsUnion(L) ? (() => {
-      const narrowed = L.anyOf.filter((inner) => ExtendsCheck(inner, R) === ExtendsResult.False)
-      return (narrowed.length === 1 ? narrowed[0] : Union(narrowed))
-    })() :
-    ExtendsCheck(L, R) !== ExtendsResult.False ? Never() :
-    L
-  ) as TExcludeResolve<L, R>
+
+function ExcludeRest<L extends TSchema[], R extends TSchema>(L: [...L], R: R) {
+  const excluded = L.filter((inner) => ExtendsCheck(inner, R) === ExtendsResult.False)
+  return excluded.length === 1 ? excluded[0] : Union(excluded)
 }
 // ------------------------------------------------------------------
 // TExclude
 // ------------------------------------------------------------------
-export type TExclude<T extends TSchema, U extends TSchema> = TExcludeResolve<T, U>
-
+// prettier-ignore
+export type TExclude<L extends TSchema, R extends TSchema> = (
+  L extends TMappedResult<L> ? TExcludeFromMappedResult<L, R> :
+  L extends TTemplateLiteral ? TExcludeTemplateLiteral<L, R> :
+  L extends TUnion<infer S> ? TExcludeRest<S, R> :
+  L extends R ? TNever : L
+)
 /** `[Json]` Constructs a type by excluding from unionType all union members that are assignable to excludedMembers */
-export function Exclude<L extends TMappedResult, R extends TSchema>(unionType: L, excludedMembers: R, options?: SchemaOptions): TExcludeFromMappedResult<L, R>
-/** `[Json]` Constructs a type by excluding from unionType all union members that are assignable to excludedMembers */
-export function Exclude<L extends TSchema, R extends TSchema>(unionType: L, excludedMembers: R, options?: SchemaOptions): TExclude<L, R>
-/** `[Json]` Constructs a type by excluding from unionType all union members that are assignable to excludedMembers */
-export function Exclude(unionType: TSchema, excludedMembers: TSchema, options: SchemaOptions = {}) {
-  if (IsMappedResult(unionType)) {
-    return ExcludeFromMappedResult(unionType, excludedMembers, options)
-  } else {
-    const E = ExcludeResolve(unionType, excludedMembers) as any
-    return CloneType(E, options)
-  }
+export function Exclude<L extends TSchema, R extends TSchema>(L: L, R: R, options: SchemaOptions = {}): TExclude<L, R> {
+  // prettier-ignore
+  return CloneType((
+    IsMappedResult(L) ? ExcludeFromMappedResult(L, R, options) :
+    IsTemplateLiteral(L) ? Exclude(TemplateLiteralToUnion(L), R) :
+    IsTemplateLiteral(R) ? Exclude(L, TemplateLiteralToUnion(R)) :
+    IsUnion(L) ? ExcludeRest(L.anyOf, R) :
+    ExtendsCheck(L, R) !== ExtendsResult.False ? Never() : L
+  ), options) as never
 }

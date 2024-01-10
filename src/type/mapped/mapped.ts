@@ -241,19 +241,19 @@ function FromSchemaType<K extends PropertyKey, T extends TSchema>(K: K, T: T): F
   ) as FromSchemaType<K, T>
 }
 // ------------------------------------------------------------------
-// FromMappedFunctionReturnType
+// MappedFunctionReturnType
 // ------------------------------------------------------------------
 // prettier-ignore
-type FromMappedFunctionReturnType<K extends PropertyKey[], T extends TSchema, Acc extends TProperties = {}> = (
+export type TMappedFunctionReturnType<K extends PropertyKey[], T extends TSchema, Acc extends TProperties = {}> = (
   K extends [infer L extends PropertyKey, ...infer R extends PropertyKey[]]
-    ? FromMappedFunctionReturnType<R, T, Acc & { [_ in L]: FromSchemaType<L, T> }>
+    ? TMappedFunctionReturnType<R, T, Acc & { [_ in L]: FromSchemaType<L, T> }>
     : Acc
 )
 // prettier-ignore
-function FromMappedFunctionReturnType<K extends PropertyKey[], T extends TSchema>(K: [...K], T: T, Acc: TProperties = {}): FromMappedFunctionReturnType<K, T> {
+export function MappedFunctionReturnType<K extends PropertyKey[], T extends TSchema>(K: [...K], T: T, Acc: TProperties = {}): TMappedFunctionReturnType<K, T> {
   return K.reduce((Acc, L) => {
     return { ...Acc, [L]: FromSchemaType(L, T) }
-  }, {} as TProperties) as FromMappedFunctionReturnType<K, T>
+  }, {} as TProperties) as TMappedFunctionReturnType<K, T>
 }
 // ------------------------------------------------------------------
 // TMappedFunction
@@ -267,7 +267,7 @@ export type TMappedFunction<K extends PropertyKey[], I = TMappedKey<K>> = (T: I)
 export type TMapped<
   K extends PropertyKey[], 
   F extends TMappedFunction<K>,
-  R extends TProperties = Evaluate<FromMappedFunctionReturnType<K, ReturnType<F>>>, 
+  R extends TProperties = Evaluate<TMappedFunctionReturnType<K, ReturnType<F>>>, 
 > = Ensure<TObject<R>>
 
 /** `[Json]` Creates a Mapped object type */
@@ -278,6 +278,6 @@ export function Mapped<K extends PropertyKey[], F extends TMappedFunction<K> = T
 export function Mapped(key: any, map: Function, options: ObjectOptions = {}) {
   const K = IsSchema(key) ? IndexPropertyKeys(key) : (key as PropertyKey[])
   const RT = map({ [Kind]: 'MappedKey', keys: K } as TMappedKey)
-  const R = FromMappedFunctionReturnType(K, RT)
+  const R = MappedFunctionReturnType(K, RT)
   return CloneType(Object(R), options)
 }
