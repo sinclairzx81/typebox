@@ -56,7 +56,20 @@ export { Extends, ExtendsCheck, ExtendsResult, ExtendsUndefinedCheck, type TExte
 export { Extract, type TExtract, type TExtractFromMappedResult } from './type/extract/index'
 export { Function, type TFunction } from './type/function/index'
 export { Increment, type Assert, type AssertType, type AssertRest, type AssertProperties, type Ensure, type Evaluate, type TupleToIntersect, type TupleToUnion, type UnionToTuple } from './type/helpers/index'
-export { Index, IndexPropertyKeys, IndexFromMappedKey, IndexFromMappedResult, type TIndex, type TIndexPropertyKeys, type TIndexFromMappedKey, type TIndexFromMappedResult } from './type/indexed/index'
+export {
+  Index,
+  IndexPropertyKeys,
+  IndexFromPropertyKeys,
+  IndexFromPropertyKey,
+  IndexFromMappedKey,
+  IndexFromMappedResult,
+  type TIndex,
+  type TIndexPropertyKeys,
+  type TIndexFromPropertyKeys,
+  type TIndexFromPropertyKey,
+  type TIndexFromMappedKey,
+  type TIndexFromMappedResult,
+} from './type/indexed/index'
 export { InstanceType, type TInstanceType } from './type/instance-type/index'
 export { Integer, type TInteger, type IntegerOptions } from './type/integer/index'
 export { Intersect, IntersectEvaluated, type TIntersect, type TIntersectEvaluated, type IntersectOptions } from './type/intersect/index'
