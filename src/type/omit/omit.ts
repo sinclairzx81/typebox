@@ -51,7 +51,7 @@ import { IsMappedKey, IsIntersect, IsUnion, IsObject, IsSchema, IsMappedResult }
 // prettier-ignore
 type TFromIntersect<T extends TSchema[], K extends PropertyKey[], Acc extends TSchema[] = []> = (
   T extends [infer L extends TSchema, ...infer R extends TSchema[]] 
-    ? TFromIntersect<R, K, [...Acc, TOmitResolve<L, K>]>
+    ? TFromIntersect<R, K, [...Acc, TOmit<L, K>]>
     : Acc
 )
 // prettier-ignore
@@ -64,7 +64,7 @@ function FromIntersect<T extends TSchema[], K extends PropertyKey[]>(T: T, K: K)
 // prettier-ignore
 type TFromUnion<T extends TSchema[], K extends PropertyKey[], Acc extends TSchema[] = []> = (
   T extends [infer L extends TSchema, ...infer R extends TSchema[]] 
-    ? TFromUnion<R, K, [...Acc, TOmitResolve<L, K>]>
+    ? TFromUnion<R, K, [...Acc, TOmit<L, K>]>
     : Acc
 )
 // prettier-ignore
@@ -91,27 +91,24 @@ function FromProperties<T extends TProperties, K extends PropertyKey[]>(T: T, K:
 // OmitResolve
 // ------------------------------------------------------------------
 // prettier-ignore
-export type TOmitResolve<T extends TProperties, K extends PropertyKey[]> = 
-  T extends TRecursive<infer S> ? TRecursive<TOmitResolve<S, K>> : 
-  T extends TIntersect<infer S> ? TIntersect<TFromIntersect<S, K>> : 
-  T extends TUnion<infer S> ? TUnion<TFromUnion<S, K>> : 
-  T extends TObject<infer S> ? TObject<TFromProperties<S, K>> : 
-  TObject<{}>
-// prettier-ignore
-export function OmitResolve<T extends TSchema, K extends PropertyKey[]>(T: T, K: [...K]): TOmitResolve<T, K> {
+function OmitResolve<T extends TSchema, K extends PropertyKey[]>(T: T, K: [...K]): TOmit<T, K> {
   return (
     IsIntersect(T) ? Intersect(FromIntersect(T.allOf, K)) : 
     IsUnion(T) ? Union(FromUnion(T.anyOf, K)) : 
     IsObject(T) ? Object(FromProperties(T.properties, K)) : 
     Object({})
-  ) as TOmitResolve<T, K>
+  ) as TOmit<T, K>
 }
+// prettier-ignore
+export type TOmit<T extends TProperties, K extends PropertyKey[]> = 
+  T extends TRecursive<infer S> ? TRecursive<TOmit<S, K>> : 
+  T extends TIntersect<infer S> ? TIntersect<TFromIntersect<S, K>> : 
+  T extends TUnion<infer S> ? TUnion<TFromUnion<S, K>> : 
+  T extends TObject<infer S> ? TObject<TFromProperties<S, K>> : 
+  TObject<{}>
 // ------------------------------------------------------------------
 // TOmit
 // ------------------------------------------------------------------
-// prettier-ignore
-export type TOmit<T extends TSchema, K extends PropertyKey[]> = TOmitResolve<T, K>
-
 /** `[Json]` Constructs a type whose keys are omitted from the given type */
 export function Omit<T extends TMappedResult, K extends PropertyKey[]>(T: T, K: [...K], options?: SchemaOptions): TOmitFromMappedResult<T, K>
 /** `[Json]` Constructs a type whose keys are omitted from the given type */

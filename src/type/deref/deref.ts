@@ -133,7 +133,7 @@ function FromRef(schema: TRef, references: TSchema[]) {
   return Deref(discard, references)
 }
 // prettier-ignore
-export function DerefResolve<T extends TSchema>(schema: T, references: TSchema[]): TDeref<T>  {
+function DerefResolve<T extends TSchema>(schema: T, references: TSchema[]): TDeref<T>  {
   return (
     IsConstructor(schema) ? FromConstructor(schema, references) :
     IsFunction(schema) ? FromFunction(schema, references) :
