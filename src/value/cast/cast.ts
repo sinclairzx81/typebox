@@ -92,7 +92,7 @@ function SelectUnion(union: TUnion, references: TSchema[], value: any): TSchema 
 }
 function CastUnion(union: TUnion, references: TSchema[], value: any) {
   if ('default' in union) {
-    return union.default
+    return typeof value === 'function' ? union.default : Clone(union.default)
   } else {
     const schema = SelectUnion(union, references, value)
     return Cast(schema, references, value)

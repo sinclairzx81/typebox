@@ -68,4 +68,19 @@ describe('value/create/Object', () => {
       z: 3,
     })
   })
+  // ----------------------------------------------------------------
+  // Mutation
+  // ----------------------------------------------------------------
+  // https://github.com/sinclairzx81/typebox/issues/726
+  it('Should clone defaults on assignment - no mutation', () => {
+    const T = Type.Object(
+      {
+        x: Type.Number(),
+      },
+      { default: { x: 1 } },
+    )
+    const V = Value.Create(T)
+    V.x = 123
+    Assert.IsEqual(T.default, { x: 1 })
+  })
 })
