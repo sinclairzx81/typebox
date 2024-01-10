@@ -27,6 +27,7 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import type { SchemaOptions } from '../schema/index'
+import type { Ensure, Evaluate } from '../helpers/index'
 import type { TProperties } from '../object/index'
 import { MappedResult, type TMappedResult } from '../mapped/index'
 import { Partial, type TPartial } from './partial'
@@ -55,7 +56,7 @@ function FromProperties<
 type TFromMappedResult<
   R extends TMappedResult
 > = (
-  TFromProperties<R['properties']>
+  Evaluate<TFromProperties<R['properties']>>
 )
 // prettier-ignore
 function FromMappedResult<
@@ -71,7 +72,7 @@ export type TPartialFromMappedResult<
   R extends TMappedResult,
   P extends TProperties = TFromMappedResult<R>
 > = (
-  TMappedResult<P>
+  Ensure<TMappedResult<P>>
 )
 // prettier-ignore
 export function PartialFromMappedResult<

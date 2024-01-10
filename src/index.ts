@@ -78,7 +78,7 @@ export { Pick, type TPick, type TPickFromMappedKey, type TPickFromMappedResult }
 export { Promise, type TPromise } from './type/promise/index'
 export { Readonly, ReadonlyFromMappedResult, type TReadonly, type TReadonlyWithFlag, type TReadonlyFromMappedResult } from './type/readonly/index'
 export { ReadonlyOptional, type TReadonlyOptional } from './type/readonly-optional/index'
-export { Record, type TRecord } from './type/record/index'
+export { Record, type TRecord, type TRecordOrObject } from './type/record/index'
 export { Recursive, type TRecursive, type TThis } from './type/recursive/index'
 export { Ref, type TRef } from './type/ref/index'
 export { RegExp, type TRegExp } from './type/regexp/index'

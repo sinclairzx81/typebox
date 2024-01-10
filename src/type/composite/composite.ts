@@ -27,12 +27,11 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import type { TSchema } from '../schema/index'
-import type { UnionToTuple, Assert, Evaluate } from '../helpers/index'
+import type { UnionToTuple, Assert, Ensure, Evaluate } from '../helpers/index'
 import { Object, type TObject, type TProperties, type ObjectOptions } from '../object/index'
 import { Intersect, type TIntersect } from '../intersect/index'
 import { Index, type TIndex } from '../indexed/index'
 import { KeyOfPropertyKeys } from '../keyof/index'
-import { CloneType } from '../clone/type'
 
 // ------------------------------------------------------------------
 // TCompositeKeys
@@ -54,22 +53,18 @@ type TCompositeIndex<T extends TIntersect<TObject[]>, K extends string[], Acc ex
 type TCompositeReduce<T extends TObject[]> = UnionToTuple<TCompositeKeys<T>> extends infer K
   ? Evaluate<TCompositeIndex<TIntersect<T>, Assert<K, string[]>>>
   : {} //                    ^ indexed via intersection of T
-// prettier-ignore
-type TCompositeResolve<T extends TObject[]> = TIntersect<T> extends TIntersect
-  ? TObject<TCompositeReduce<T>>
-  : TObject<{}>
-function CompositeResolve<T extends TObject[]>(T: [...T]): TCompositeResolve<T> {
-  const intersect: TSchema = Intersect(T, {})
-  const keys = KeyOfPropertyKeys(intersect) as string[]
-  const properties = keys.reduce((acc, key) => ({ ...acc, [key]: Index(intersect, [key]) }), {} as TProperties)
-  return Object(properties) as TCompositeResolve<T>
-}
 // ------------------------------------------------------------------
 // TComposite
 // ------------------------------------------------------------------
-export type TComposite<T extends TObject[]> = TCompositeResolve<T>
+// prettier-ignore
+export type TComposite<T extends TObject[]> = TIntersect<T> extends TIntersect
+  ? Ensure<TObject<TCompositeReduce<T>>>
+  : Ensure<TObject<{}>>
 
 /** `[Json]` Creates a Composite object type */
 export function Composite<T extends TObject[]>(T: [...T], options?: ObjectOptions): TComposite<T> {
-  return CloneType(CompositeResolve(T) as TObject, options) as TComposite<T>
+  const intersect: TSchema = Intersect(T, {})
+  const keys = KeyOfPropertyKeys(intersect) as string[]
+  const properties = keys.reduce((acc, key) => ({ ...acc, [key]: Index(intersect, [key]) }), {} as TProperties)
+  return Object(properties, options) as TComposite<T>
 }
