@@ -62,7 +62,17 @@ export { Integer, type TInteger, type IntegerOptions } from './type/integer/inde
 export { Intersect, IntersectEvaluated, type TIntersect, type TIntersectEvaluated, type IntersectOptions } from './type/intersect/index'
 export { Iterator, type TIterator } from './type/iterator/index'
 export { Intrinsic, IntrinsicFromMappedKey, type TIntrinsic, Capitalize, type TCapitalize, Lowercase, type TLowercase, Uncapitalize, type TUncapitalize, Uppercase, type TUppercase } from './type/intrinsic/index'
-export { KeyOf, type TKeyOf, type KeyOfFromMappedResult, KeyOfPropertyKeys, KeyOfPattern } from './type/keyof/index'
+export {
+  KeyOf,
+  KeyOfPropertyKeys,
+  KeyOfPropertyKeysToRest as KeyOfFromPropertyKeys,
+  KeyOfFromMappedResult,
+  KeyOfPattern,
+  type TKeyOf,
+  type TKeyOfPropertyKeys,
+  type TKeyOfPropertyKeysToRest as TKeyOfFromPropertyKeys,
+  type TKeyOfFromMappedResult,
+} from './type/keyof/index'
 export { Literal, type TLiteral, type TLiteralValue } from './type/literal/index'
 export { Mapped, MappedKey, MappedResult, type TMapped, type TMappedKey, type TMappedResult, type TMappedFunction } from './type/mapped/index'
 export { Never, type TNever } from './type/never/index'
