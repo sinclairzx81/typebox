@@ -27,6 +27,7 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import type { SchemaOptions } from '../schema/index'
+import type { Ensure, Evaluate } from '../helpers/index'
 import type { TProperties } from '../object/index'
 import { MappedResult, type TMappedResult } from '../mapped/index'
 import { Omit, type TOmit } from './omit'
@@ -58,7 +59,7 @@ type TFromMappedResult<
   R extends TMappedResult,
   K extends PropertyKey[],
 > = (
-  TFromProperties<R['properties'], K>
+  Evaluate<TFromProperties<R['properties'], K>>
 )
 // prettier-ignore
 function FromMappedResult<
@@ -76,7 +77,7 @@ export type TOmitFromMappedResult<
   K extends PropertyKey[],
   P extends TProperties = TFromMappedResult<T, K>
 > = (
-  TMappedResult<P>
+  Ensure<TMappedResult<P>>
 )
 // prettier-ignore
 export function OmitFromMappedResult<

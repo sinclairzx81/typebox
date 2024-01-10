@@ -42,11 +42,11 @@ import { IsIntersect, IsUnion, IsPromise } from '../guard/type'
 // prettier-ignore
 type TFromRest<T extends TSchema[], Acc extends TSchema[] = []> =
   T extends [infer L extends TSchema, ...infer R extends TSchema[]]
-    ? TFromRest<R, [...Acc, TFromSchema<L>]>
+    ? TFromRest<R, [...Acc, TAwaitedResolve<L>]>
     : Acc
 // prettier-ignore
 function FromRest<T extends TSchema[]>(T: [...T]) : TFromRest<T> {
-  return T.map(L => FromSchema(L)) as TFromRest<T>
+  return T.map(L => AwaitedResolve(L)) as TFromRest<T>
 }
 // ----------------------------------------------------------------
 // FromIntersect
@@ -69,37 +69,37 @@ function FromUnion<T extends TSchema[]>(T: [...T]): TFromUnion<T> {
 // ----------------------------------------------------------------
 // Promise
 // ----------------------------------------------------------------
-type TFromPromise<T extends TSchema> = TFromSchema<T>
+type TFromPromise<T extends TSchema> = TAwaitedResolve<T>
 // prettier-ignore
 function FromPromise<T extends TSchema>(T: T): TFromPromise<T> {
-  return FromSchema(T) as TFromPromise<T>
+  return AwaitedResolve(T) as TFromPromise<T>
 }
 // ----------------------------------------------------------------
 // FromSchema
 // ----------------------------------------------------------------
 // prettier-ignore
-type TFromSchema<T extends TSchema> =
+export type TAwaitedResolve<T extends TSchema> =
   T extends TIntersect<infer S> ? TIntersect<TFromRest<S>> :
   T extends TUnion<infer S> ? TUnion<TFromRest<S>> :
-  T extends TPromise<infer S> ? TFromSchema<S> :
+  T extends TPromise<infer S> ? TAwaitedResolve<S> :
   T
 // prettier-ignore
-function FromSchema<T extends TSchema>(T: T): TFromSchema<T> {
+export function AwaitedResolve<T extends TSchema>(T: T): TAwaitedResolve<T> {
   return (
     IsIntersect(T) ? FromIntersect(T.allOf) :
     IsUnion(T) ? FromUnion(T.anyOf) :
     IsPromise(T) ? FromPromise(T.item) :
     T
-  ) as TFromSchema<T>
+  ) as TAwaitedResolve<T>
 }
 // ------------------------------------------------------------------
 // TAwaited
 // ------------------------------------------------------------------
 // prettier-ignore
 export type TAwaited<T extends TSchema> = (
-  TFromSchema<T>
+  TAwaitedResolve<T>
 )
 /** `[JavaScript]` Constructs a type by recursively unwrapping Promise types */
-export function Awaited<T extends TSchema>(T: T, options: SchemaOptions = {}): TFromSchema<T> {
-  return CloneType(FromSchema(T), options)
+export function Awaited<T extends TSchema>(T: T, options: SchemaOptions = {}): TAwaitedResolve<T> {
+  return CloneType(AwaitedResolve(T), options)
 }

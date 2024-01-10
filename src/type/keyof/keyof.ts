@@ -45,16 +45,16 @@ import { IsMappedResult } from '../guard/type'
 // FromPropertyKeys
 // ------------------------------------------------------------------
 // prettier-ignore
-type TFromPropertyKeys<T extends PropertyKey[], Acc extends TSchema[] = []> = (
+export type TKeyOfPropertyKeysToRest<T extends PropertyKey[], Acc extends TSchema[] = []> = (
   T extends [infer L extends PropertyKey, ...infer R extends PropertyKey[]]
     ? L extends '[number]'
-      ? TFromPropertyKeys<R, [...Acc, TNumber]>
-      : TFromPropertyKeys<R, [...Acc, TLiteral<Assert<L, TLiteralValue>>]>
+      ? TKeyOfPropertyKeysToRest<R, [...Acc, TNumber]>
+      : TKeyOfPropertyKeysToRest<R, [...Acc, TLiteral<Assert<L, TLiteralValue>>]>
     : Acc
 )
 // prettier-ignore
-function FromPropertyKeys<T extends PropertyKey[]>(T: [...T]): TFromPropertyKeys<T> {
-  return T.map(L => L === '[number]' ? Number() : Literal(L as TLiteralValue)) as TFromPropertyKeys<T>
+export function KeyOfPropertyKeysToRest<T extends PropertyKey[]>(T: [...T]): TKeyOfPropertyKeysToRest<T> {
+  return T.map(L => L === '[number]' ? Number() : Literal(L as TLiteralValue)) as TKeyOfPropertyKeysToRest<T>
 }
 // ------------------------------------------------------------------
 // KeyOfTypeResolve
@@ -63,7 +63,7 @@ function FromPropertyKeys<T extends PropertyKey[]>(T: [...T]): TFromPropertyKeys
 export type TKeyOf<
   T extends TSchema, 
   K extends PropertyKey[] = TKeyOfPropertyKeys<T>,
-  S extends TSchema[] = TFromPropertyKeys<K>,
+  S extends TSchema[] = TKeyOfPropertyKeysToRest<K>,
   U = TUnionEvaluated<S>
 > = (
   Ensure<U>
@@ -78,7 +78,7 @@ export function KeyOf(T: TSchema, options: SchemaOptions = {}): any {
     return KeyOfFromMappedResult(T, options)
   } else {
     const K = KeyOfPropertyKeys(T)
-    const S = FromPropertyKeys(K)
+    const S = KeyOfPropertyKeysToRest(K)
     const U = UnionEvaluated(S)
     return CloneType(U, options)
   }

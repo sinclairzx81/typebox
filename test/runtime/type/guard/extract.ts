@@ -93,4 +93,10 @@ describe('type/guard/TExtract', () => {
     const T = Type.Extract(A, B)
     Assert.IsTrue(['A'].includes(T.const))
   })
+  it('Should extract with options', () => {
+    const A = Type.String()
+    const B = Type.String()
+    const T = Type.Extract(A, B, { foo: 'bar' })
+    Assert.IsEqual(T.foo, 'bar')
+  })
 })

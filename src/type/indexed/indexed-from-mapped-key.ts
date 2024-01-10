@@ -27,7 +27,7 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import type { TSchema, SchemaOptions } from '../schema/index'
-import type { Evaluate } from '../helpers/index'
+import type { Ensure, Evaluate } from '../helpers/index'
 import type { TProperties } from '../object/index'
 import { Index, type TIndex } from './indexed'
 import { MappedResult, type TMappedResult, type TMappedKey } from '../mapped/index'
@@ -90,7 +90,7 @@ export type TIndexFromMappedKey<
   K extends TMappedKey, 
   P extends TProperties = TMappedIndexProperties<T, K>
 > = (
-  TMappedResult<P>
+  Ensure<TMappedResult<P>>
 )
 // prettier-ignore
 export function IndexFromMappedKey<
