@@ -28,6 +28,7 @@ THE SOFTWARE.
 
 import { HasPropertyKey, IsString } from '../guard/index'
 import { Check } from '../check/index'
+import { Clone } from '../clone/index'
 import { Deref } from '../deref/index'
 import { TemplateLiteralGenerate, IsTemplateLiteralFinite } from '../../type/template-literal/index'
 import { PatternStringExact, PatternNumberExact } from '../../type/patterns/index'
@@ -78,11 +79,17 @@ export class ValueCreateError extends TypeBoxError {
   }
 }
 // ------------------------------------------------------------------
+// Default
+// ------------------------------------------------------------------
+function FromDefault(value: unknown) {
+  return typeof value === 'function' ? value : Clone(value)
+}
+// ------------------------------------------------------------------
 // Create
 // ------------------------------------------------------------------
 function FromAny(schema: TAny, references: TSchema[]): any {
   if (HasPropertyKey(schema, 'default')) {
-    return schema.default
+    return FromDefault(schema.default)
   } else {
     return {}
   }
@@ -93,7 +100,7 @@ function FromArray(schema: TArray, references: TSchema[]): any {
   } else if ('contains' in schema && !HasPropertyKey(schema, 'default')) {
     throw new ValueCreateError(schema, 'Array with the contains constraint requires a default value')
   } else if ('default' in schema) {
-    return schema.default
+    return FromDefault(schema.default)
   } else if (schema.minItems !== undefined) {
     return Array.from({ length: schema.minItems }).map((item) => {
       return Visit(schema.items, references)
@@ -104,28 +111,28 @@ function FromArray(schema: TArray, references: TSchema[]): any {
 }
 function FromAsyncIterator(schema: TAsyncIterator, references: TSchema[]) {
   if (HasPropertyKey(schema, 'default')) {
-    return schema.default
+    return FromDefault(schema.default)
   } else {
     return (async function* () {})()
   }
 }
 function FromBigInt(schema: TBigInt, references: TSchema[]): any {
   if (HasPropertyKey(schema, 'default')) {
-    return schema.default
+    return FromDefault(schema.default)
   } else {
     return BigInt(0)
   }
 }
 function FromBoolean(schema: TBoolean, references: TSchema[]): any {
   if (HasPropertyKey(schema, 'default')) {
-    return schema.default
+    return FromDefault(schema.default)
   } else {
     return false
   }
 }
 function FromConstructor(schema: TConstructor, references: TSchema[]): any {
   if (HasPropertyKey(schema, 'default')) {
-    return schema.default
+    return FromDefault(schema.default)
   } else {
     const value = Visit(schema.returns, references) as any
     if (typeof value === 'object' && !Array.isArray(value)) {
@@ -144,7 +151,7 @@ function FromConstructor(schema: TConstructor, references: TSchema[]): any {
 }
 function FromDate(schema: TDate, references: TSchema[]): any {
   if (HasPropertyKey(schema, 'default')) {
-    return schema.default
+    return FromDefault(schema.default)
   } else if (schema.minimumTimestamp !== undefined) {
     return new Date(schema.minimumTimestamp)
   } else {
@@ -153,14 +160,14 @@ function FromDate(schema: TDate, references: TSchema[]): any {
 }
 function FromFunction(schema: TFunction, references: TSchema[]): any {
   if (HasPropertyKey(schema, 'default')) {
-    return schema.default
+    return FromDefault(schema.default)
   } else {
     return () => Visit(schema.returns, references)
   }
 }
 function FromInteger(schema: TInteger, references: TSchema[]): any {
   if (HasPropertyKey(schema, 'default')) {
-    return schema.default
+    return FromDefault(schema.default)
   } else if (schema.minimum !== undefined) {
     return schema.minimum
   } else {
@@ -169,7 +176,7 @@ function FromInteger(schema: TInteger, references: TSchema[]): any {
 }
 function FromIntersect(schema: TIntersect, references: TSchema[]): any {
   if (HasPropertyKey(schema, 'default')) {
-    return schema.default
+    return FromDefault(schema.default)
   } else {
     // --------------------------------------------------------------
     // Note: The best we can do here is attempt to instance each
@@ -188,42 +195,42 @@ function FromIntersect(schema: TIntersect, references: TSchema[]): any {
 }
 function FromIterator(schema: TIterator, references: TSchema[]) {
   if (HasPropertyKey(schema, 'default')) {
-    return schema.default
+    return FromDefault(schema.default)
   } else {
     return (function* () {})()
   }
 }
 function FromLiteral(schema: TLiteral, references: TSchema[]): any {
   if (HasPropertyKey(schema, 'default')) {
-    return schema.default
+    return FromDefault(schema.default)
   } else {
     return schema.const
   }
 }
 function FromNever(schema: TNever, references: TSchema[]): any {
   if (HasPropertyKey(schema, 'default')) {
-    return schema.default
+    return FromDefault(schema.default)
   } else {
     throw new ValueCreateError(schema, 'Never types cannot be created. Consider using a default value.')
   }
 }
 function FromNot(schema: TNot, references: TSchema[]): any {
   if (HasPropertyKey(schema, 'default')) {
-    return schema.default
+    return FromDefault(schema.default)
   } else {
     throw new ValueCreateError(schema, 'Not types must have a default value')
   }
 }
 function FromNull(schema: TNull, references: TSchema[]): any {
   if (HasPropertyKey(schema, 'default')) {
-    return schema.default
+    return FromDefault(schema.default)
   } else {
     return null
   }
 }
 function FromNumber(schema: TNumber, references: TSchema[]): any {
   if (HasPropertyKey(schema, 'default')) {
-    return schema.default
+    return FromDefault(schema.default)
   } else if (schema.minimum !== undefined) {
     return schema.minimum
   } else {
@@ -232,11 +239,11 @@ function FromNumber(schema: TNumber, references: TSchema[]): any {
 }
 function FromObject(schema: TObject, references: TSchema[]): any {
   if (HasPropertyKey(schema, 'default')) {
-    return schema.default
+    return FromDefault(schema.default)
   } else {
     const required = new Set(schema.required)
     return (
-      schema.default ||
+      FromDefault(schema.default) ||
       Object.entries(schema.properties).reduce((acc, [key, schema]) => {
         return required.has(key) ? { ...acc, [key]: Visit(schema, references) } : { ...acc }
       }, {})
@@ -245,7 +252,7 @@ function FromObject(schema: TObject, references: TSchema[]): any {
 }
 function FromPromise(schema: TPromise, references: TSchema[]): any {
   if (HasPropertyKey(schema, 'default')) {
-    return schema.default
+    return FromDefault(schema.default)
   } else {
     return Promise.resolve(Visit(schema.item, references))
   }
@@ -253,7 +260,7 @@ function FromPromise(schema: TPromise, references: TSchema[]): any {
 function FromRecord(schema: TRecord, references: TSchema[]): any {
   const [keyPattern, valueSchema] = Object.entries(schema.patternProperties)[0]
   if (HasPropertyKey(schema, 'default')) {
-    return schema.default
+    return FromDefault(schema.default)
   } else if (!(keyPattern === PatternStringExact || keyPattern === PatternNumberExact)) {
     const propertyKeys = keyPattern.slice(1, keyPattern.length - 1).split('|')
     return propertyKeys.reduce((acc, key) => {
@@ -265,14 +272,14 @@ function FromRecord(schema: TRecord, references: TSchema[]): any {
 }
 function FromRef(schema: TRef, references: TSchema[]): any {
   if (HasPropertyKey(schema, 'default')) {
-    return schema.default
+    return FromDefault(schema.default)
   } else {
     return Visit(Deref(schema, references), references)
   }
 }
 function FromRegExp(schema: TRegExp, references: TSchema[]): any {
   if (HasPropertyKey(schema, 'default')) {
-    return schema.default
+    return FromDefault(schema.default)
   } else {
     throw new ValueCreateError(schema, 'RegExp types cannot be created. Consider using a default value.')
   }
@@ -282,17 +289,17 @@ function FromString(schema: TString, references: TSchema[]): any {
     if (!HasPropertyKey(schema, 'default')) {
       throw new ValueCreateError(schema, 'String types with patterns must specify a default value')
     } else {
-      return schema.default
+      return FromDefault(schema.default)
     }
   } else if (schema.format !== undefined) {
     if (!HasPropertyKey(schema, 'default')) {
       throw new ValueCreateError(schema, 'String types with formats must specify a default value')
     } else {
-      return schema.default
+      return FromDefault(schema.default)
     }
   } else {
     if (HasPropertyKey(schema, 'default')) {
-      return schema.default
+      return FromDefault(schema.default)
     } else if (schema.minLength !== undefined) {
       // prettier-ignore
       return Array.from({ length: schema.minLength }).map(() => ' ').join('')
@@ -303,7 +310,7 @@ function FromString(schema: TString, references: TSchema[]): any {
 }
 function FromSymbol(schema: TSymbol, references: TSchema[]): any {
   if (HasPropertyKey(schema, 'default')) {
-    return schema.default
+    return FromDefault(schema.default)
   } else if ('value' in schema) {
     return Symbol.for(schema.value)
   } else {
@@ -312,7 +319,7 @@ function FromSymbol(schema: TSymbol, references: TSchema[]): any {
 }
 function FromTemplateLiteral(schema: TTemplateLiteral, references: TSchema[]) {
   if (HasPropertyKey(schema, 'default')) {
-    return schema.default
+    return FromDefault(schema.default)
   }
   if (!IsTemplateLiteralFinite(schema)) throw new ValueCreateError(schema, 'Can only create template literals that produce a finite variants. Consider using a default value.')
   const generated = TemplateLiteralGenerate(schema) as string[]
@@ -321,14 +328,14 @@ function FromTemplateLiteral(schema: TTemplateLiteral, references: TSchema[]) {
 function FromThis(schema: TThis, references: TSchema[]): any {
   if (recursiveDepth++ > recursiveMaxDepth) throw new ValueCreateError(schema, 'Cannot create recursive type as it appears possibly infinite. Consider using a default.')
   if (HasPropertyKey(schema, 'default')) {
-    return schema.default
+    return FromDefault(schema.default)
   } else {
     return Visit(Deref(schema, references), references)
   }
 }
 function FromTuple(schema: TTuple, references: TSchema[]): any {
   if (HasPropertyKey(schema, 'default')) {
-    return schema.default
+    return FromDefault(schema.default)
   }
   if (schema.items === undefined) {
     return []
@@ -338,14 +345,14 @@ function FromTuple(schema: TTuple, references: TSchema[]): any {
 }
 function FromUndefined(schema: TUndefined, references: TSchema[]): any {
   if (HasPropertyKey(schema, 'default')) {
-    return schema.default
+    return FromDefault(schema.default)
   } else {
     return undefined
   }
 }
 function FromUnion(schema: TUnion, references: TSchema[]): any {
   if (HasPropertyKey(schema, 'default')) {
-    return schema.default
+    return FromDefault(schema.default)
   } else if (schema.anyOf.length === 0) {
     throw new Error('ValueCreate.Union: Cannot create Union with zero variants')
   } else {
@@ -354,7 +361,7 @@ function FromUnion(schema: TUnion, references: TSchema[]): any {
 }
 function FromUint8Array(schema: TUint8Array, references: TSchema[]): any {
   if (HasPropertyKey(schema, 'default')) {
-    return schema.default
+    return FromDefault(schema.default)
   } else if (schema.minByteLength !== undefined) {
     return new Uint8Array(schema.minByteLength)
   } else {
@@ -363,21 +370,21 @@ function FromUint8Array(schema: TUint8Array, references: TSchema[]): any {
 }
 function FromUnknown(schema: TUnknown, references: TSchema[]): any {
   if (HasPropertyKey(schema, 'default')) {
-    return schema.default
+    return FromDefault(schema.default)
   } else {
     return {}
   }
 }
 function FromVoid(schema: TVoid, references: TSchema[]): any {
   if (HasPropertyKey(schema, 'default')) {
-    return schema.default
+    return FromDefault(schema.default)
   } else {
     return void 0
   }
 }
 function FromKind(schema: TSchema, references: TSchema[]): any {
   if (HasPropertyKey(schema, 'default')) {
-    return schema.default
+    return FromDefault(schema.default)
   } else {
     throw new Error('User defined types must specify a default value')
   }
