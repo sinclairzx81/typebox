@@ -1,5 +1,5 @@
 import { Value } from '@sinclair/typebox/value'
-import { Type } from '@sinclair/typebox'
+import { Type, CloneType } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
 describe('value/default/Object', () => {
@@ -176,5 +176,37 @@ describe('value/default/Object', () => {
     )
     const R = Value.Default(T, { x: null, y: null, z: undefined })
     Assert.IsEqual(R, { x: null, y: null, z: undefined })
+  })
+  // ----------------------------------------------------------------
+  // Mutation
+  // ----------------------------------------------------------------
+  // https://github.com/sinclairzx81/typebox/issues/726
+  it('Should retain defaults on operation', () => {
+    const A = Type.Object({
+      a: Type.Object(
+        {
+          b: Type.Array(Type.String(), { default: [] }),
+        },
+        { default: {} },
+      ),
+    })
+    const value = Value.Default(A, {})
+    Assert.IsEqual(value, { a: { b: [] } })
+    Assert.IsEqual(A.properties.a.default, {})
+    Assert.IsEqual(A.properties.a.properties.b.default, [])
+  })
+  // https://github.com/sinclairzx81/typebox/issues/726
+  it('Should retain schematics on operation', () => {
+    const A = Type.Object({
+      a: Type.Object(
+        {
+          b: Type.Array(Type.String(), { default: [] }),
+        },
+        { default: {} },
+      ),
+    })
+    const B = CloneType(A)
+    Value.Default(A, {})
+    Assert.IsEqual(A, B)
   })
 })
