@@ -27,6 +27,7 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import { Check } from '../check/index'
+import { Clone } from '../clone/index'
 import { Deref } from '../deref/index'
 import { Kind } from '../../type/symbols/index'
 
@@ -52,7 +53,7 @@ import { IsSchema } from '../../type/guard/type'
 // ValueOrDefault
 // ------------------------------------------------------------------
 function ValueOrDefault(schema: TSchema, value: unknown) {
-  return !(value === undefined) || !('default' in schema) ? value : schema.default
+  return value === undefined && 'default' in schema ? Clone(schema.default) : value
 }
 // ------------------------------------------------------------------
 // IsCheckable
