@@ -1814,4 +1814,4 @@ The following table lists esbuild compiled and minified sizes for each TypeBox m
 
 ## Contribute
 
-TypeBox is open to community contribution. Please ensure you submit an open issue before submitting your pull request. The TypeBox project preferences open community discussion prior to accepting new features.
+TypeBox is open to community contribution. Please ensure you submit an open issue before submitting your pull request. The TypeBox project prefers open community discussion before accepting new features.
