@@ -90,14 +90,12 @@ export function SetIntersect<T extends PropertyKey[], S extends PropertyKey[]>(T
 // SetUnion
 // ------------------------------------------------------------------
 // prettier-ignore
-export type TSetUnion<T extends PropertyKey[], S extends PropertyKey[], Acc extends PropertyKey[] = S> = (
-  T extends [infer L extends PropertyKey, ...infer R extends PropertyKey[]]
-    ? TSetUnion<R, S, [L, ...Acc]>
-    : Acc
+export type TSetUnion<T extends PropertyKey[], S extends PropertyKey[]> = (
+  [...T, ...S]
 )
 /** Returns the Union of the given sets */
 export function SetUnion<T extends PropertyKey[], S extends PropertyKey[]>(T: [...T], S: [...S]): TSetUnion<T, S> {
-  return [...T, ...S] as never
+  return [...T, ...S]
 }
 // ------------------------------------------------------------------
 // SetComplement
@@ -119,25 +117,35 @@ export function SetComplement<T extends PropertyKey[], S extends PropertyKey[]>(
 // SetIntersectMany
 // ------------------------------------------------------------------
 // prettier-ignore
-type TSetIntersectManyResolve<T extends PropertyKey[][], Acc extends PropertyKey[] = []> = (
+type TSetIntersectManyResolve<T extends PropertyKey[][], Acc extends PropertyKey[]> = (
   T extends [infer L extends PropertyKey[], ...infer R extends PropertyKey[][]]
     ? TSetIntersectManyResolve<R, TSetIntersect<Acc, L>>
     : Acc
 )
 // prettier-ignore
+function SetIntersectManyResolve<T extends PropertyKey[][], Acc extends PropertyKey[]>(T: [...T], Init: Acc): TSetIntersectManyResolve<T, Acc> {
+  return T.reduce((Acc: PropertyKey[], L: PropertyKey[]) => {
+    return SetIntersect(Acc, L)
+  }, Init) as never
+}
+// prettier-ignore
 export type TSetIntersectMany<T extends PropertyKey[][]> = (
   T extends [infer L extends PropertyKey[]] 
     ? L 
-    // take first set and use as initializer for resolve accumulator
+    // Use left to initialize the accumulator for resolve
     : T extends [infer L extends PropertyKey[], ...infer R extends PropertyKey[][]]
       ? TSetIntersectManyResolve<R, L>
       : []
 )
-/** Returns the Intersect of multiple sets */
 // prettier-ignore
 export function SetIntersectMany<T extends PropertyKey[][]>(T: [...T]): TSetIntersectMany<T> {
   return (
-    T.length === 1 ? T[0] : T.reduce((Acc, L) => [...SetIntersect(Acc, L)], [])
+    T.length === 1
+      ? T[0]
+      // Use left to initialize the accumulator for resolve
+      : T.length > 1
+        ? SetIntersectManyResolve(T.slice(1), T[0])
+        : []
   ) as TSetIntersectMany<T>
 }
 // ------------------------------------------------------------------
