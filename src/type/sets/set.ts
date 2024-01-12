@@ -37,7 +37,7 @@ export type TSetIncludes<T extends PropertyKey[], S extends PropertyKey> = (
       : TSetIncludes<R, S>
     : false
 )
-/** Returns true if element S is in the set of T */
+/** Returns true if element right is in the set of left */
 // prettier-ignore
 export function SetIncludes<T extends PropertyKey[], S extends PropertyKey>(T: [...T], S: S): TSetIncludes<T, S> {
   return T.includes(S) as TSetIncludes<T, S>
