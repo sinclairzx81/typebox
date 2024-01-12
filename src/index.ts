@@ -34,9 +34,37 @@ export { PatternBoolean, PatternBooleanExact, PatternNumber, PatternNumberExact,
 export { TypeRegistry, FormatRegistry } from './type/registry/index'
 export { TypeGuard, ValueGuard } from './type/guard/index'
 export { CloneType, CloneRest } from './type/clone/type'
+// ------------------------------------------------------------------
+// Error
+// ------------------------------------------------------------------
 export { TypeBoxError } from './type/error/index'
 // ------------------------------------------------------------------
-// Type
+// Sets
+// ------------------------------------------------------------------
+export {
+  SetComplement,
+  SetDistinct,
+  SetIncludes,
+  SetIntersect,
+  SetIntersectMany,
+  SetIsSubset,
+  SetUnion,
+  SetUnionMany,
+  type TSetComplement,
+  type TSetDistinct,
+  type TSetIncludes,
+  type TSetIntersect,
+  type TSetIntersectMany,
+  type TSetIsSubset,
+  type TSetUnion,
+  type TSetUnionMany,
+} from './type/sets/index'
+// ------------------------------------------------------------------
+// Helpers
+// ------------------------------------------------------------------
+export { Increment, type TIncrement, type Assert, type AssertType, type AssertRest, type AssertProperties, type Ensure, type Evaluate, type TupleToIntersect, type TupleToUnion, type UnionToTuple } from './type/helpers/index'
+// ------------------------------------------------------------------
+// Types
 // ------------------------------------------------------------------
 export { Any, type TAny } from './type/any/index'
 export { Array, type TArray, type ArrayOptions } from './type/array/index'
@@ -55,7 +83,6 @@ export { Exclude, type TExclude, type TExcludeFromMappedResult } from './type/ex
 export { Extends, ExtendsCheck, ExtendsResult, ExtendsUndefinedCheck, type TExtends, type ExtendsFromMappedResult, type ExtendsFromMappedKey } from './type/extends/index'
 export { Extract, type TExtract, type TExtractFromMappedResult } from './type/extract/index'
 export { Function, type TFunction } from './type/function/index'
-export { Increment, type Assert, type AssertType, type AssertRest, type AssertProperties, type Ensure, type Evaluate, type TupleToIntersect, type TupleToUnion, type UnionToTuple } from './type/helpers/index'
 export {
   Index,
   IndexPropertyKeys,
@@ -102,7 +129,7 @@ export { type TSchema, type TKind, type SchemaOptions, type TAnySchema } from '.
 export { type Static, type StaticDecode, type StaticEncode, type TDecodeType, type TDecodeRest, type TDecodeProperties } from './type/static/index'
 export { Strict } from './type/strict/index'
 export { String, type TString, type StringOptions, type StringFormatOption, type StringContentEncodingOption } from './type/string/index'
-export { Symbol, type TSymbol, type TSymbolValue as SymbolValue } from './type/symbol/index'
+export { Symbol, type TSymbol, type TSymbolValue } from './type/symbol/index'
 export {
   TemplateLiteral,
   TemplateLiteralSyntax,

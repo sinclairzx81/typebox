@@ -36,8 +36,8 @@ describe('type/guard/TComposite', () => {
     Assert.IsTrue(TypeGuard.IsOptional(T.properties.x))
     Assert.IsEqual(T.required, undefined)
   })
+  // prettier-ignore
   it('Should produce required property if some composited properties are not optional', () => {
-    // prettier-ignore
     const T = Type.Composite([
       Type.Object({ x: Type.Optional(Type.Number()) }), 
       Type.Object({ x: Type.Number() })
@@ -45,12 +45,119 @@ describe('type/guard/TComposite', () => {
     Assert.IsFalse(TypeGuard.IsOptional(T.properties.x))
     Assert.IsTrue(T.required!.includes('x'))
   })
+  // prettier-ignore
   it('Should preserve single optional property', () => {
-    // prettier-ignore
     const T = Type.Composite([
       Type.Object({ x: Type.Optional(Type.Number()) }), 
     ])
     Assert.IsTrue(TypeGuard.IsOptional(T.properties.x))
     Assert.IsEqual(T.required, undefined)
+  })
+  // ----------------------------------------------------------------
+  // Intersect
+  // ----------------------------------------------------------------
+  // prettier-ignore
+  it('Should composite Intersect 1', () => {
+    const T = Type.Composite([
+      Type.Intersect([
+        Type.Object({ x: Type.Number() }),
+        Type.Object({ y: Type.Number() }),
+      ]),
+      Type.Intersect([
+        Type.Object({ z: Type.Number() }),
+      ])
+    ])
+    Assert.IsEqual(T, Type.Object({
+      x: Type.Number(),
+      y: Type.Number(),
+      z: Type.Number()
+    }))
+  })
+  // prettier-ignore
+  it('Should composite Intersect 2', () => {
+    const T = Type.Composite([
+      Type.Intersect([
+        Type.Object({ x: Type.Number() }),
+        Type.Object({ x: Type.Number() }),
+      ]),
+      Type.Intersect([
+        Type.Object({ x: Type.Number() }),
+      ])
+    ])
+    Assert.IsEqual(T, Type.Object({
+      x: Type.Intersect([Type.Intersect([Type.Number(), Type.Number()]), Type.Number()])
+    }))
+  })
+  // prettier-ignore
+  it('Should composite Intersect 3', () => {
+    const T = Type.Composite([
+      Type.Number(),
+      Type.Boolean()
+    ])
+    Assert.IsEqual(T, Type.Object({}))
+  })
+  // prettier-ignore
+  it('Should composite Intersect 4', () => {
+    const T = Type.Composite([
+      Type.Number(),
+      Type.Boolean(),
+      Type.Object({ x: Type.String() })
+    ])
+    Assert.IsEqual(T, Type.Object({
+      x: Type.String()
+    }))
+  })
+  // prettier-ignore
+  it('Should composite Intersect 5', () => {
+    const T = Type.Composite([
+      Type.Object({ x: Type.Optional(Type.String()) }),
+      Type.Object({ x: Type.String() })
+    ])
+    Assert.IsEqual(T, Type.Object({
+      x: Type.Intersect([Type.String(), Type.String()])
+    }))
+  })
+  // prettier-ignore
+  it('Should composite Intersect 6', () => {
+    const T = Type.Composite([
+      Type.Object({ x: Type.Optional(Type.String()) }),
+      Type.Object({ x: Type.Optional(Type.String()) })
+    ])
+    Assert.IsEqual(T, Type.Object({
+      x: Type.Optional(Type.Intersect([Type.String(), Type.String()]))
+    }))
+  })
+  // ----------------------------------------------------------------
+  // Union
+  // ----------------------------------------------------------------
+  // prettier-ignore
+  it('Should composite Union 1', () => {
+    const T = Type.Composite([
+      Type.Union([
+        Type.Object({ x: Type.Number() }),
+        Type.Object({ y: Type.Number() }),
+      ]),
+      Type.Union([
+        Type.Object({ z: Type.Number() }),
+      ])
+    ])
+    Assert.IsEqual(T, Type.Object({
+      z: Type.Intersect([Type.Union([Type.Never(), Type.Never()]), Type.Number()])
+    }))
+  })
+  // prettier-ignore
+  it('Should composite Union 2', () => {
+    const T = Type.Composite([
+      Type.Union([
+        Type.Object({ x: Type.Number() }),
+        Type.Object({ x: Type.Number() }),
+      ]),
+      Type.Union([
+        Type.Object({ x: Type.Number() }),
+      ])
+    ])
+    Assert.IsEqual(T, Type.Object({
+      x: Type.Intersect([Type.Union([Type.Number(), Type.Number()]), Type.Number()])
+    }))
   })
 })

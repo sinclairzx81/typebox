@@ -81,4 +81,21 @@ describe('compiler/Composite', () => {
     Fail(T, { x: { x: '1' }, y: { x: '' } })
     Fail(T, { x: { x: 1 }, y: { x: 1 } })
   })
+  // prettier-ignore
+  it('Should composite intersection', () => {
+    const T = Type.Composite([
+      Type.Intersect([
+        Type.Object({ x: Type.Number() })
+      ]),
+      Type.Intersect([
+        Type.Object({ y: Type.Number() })
+      ]),
+      Type.Intersect([
+        Type.Object({ z: Type.Number() })
+      ]),
+    ])
+    Ok(T, { x: 1, y: 2, z: 3 })
+    Fail(T, { x: 1, y: 2, z: '3' })
+    Fail(T, { x: 1, y: 2 })
+  })
 })
