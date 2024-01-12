@@ -59,31 +59,31 @@ function FromRest<T extends TSchema[]>(T: [...T]): TFromRest<T> {
 // FromIntersect
 // ------------------------------------------------------------------
 // prettier-ignore
-type FromIntersect<
+type TFromIntersect<
   T extends TSchema[], 
   C extends PropertyKey[][] = TFromRest<T>,
   R extends PropertyKey[] = TSetUnionMany<C>
 > = R
 // prettier-ignore
-function FromIntersect<T extends TSchema[]>(T: [...T]): FromIntersect<T> {
+function FromIntersect<T extends TSchema[]>(T: [...T]): TFromIntersect<T> {
   const C = FromRest(T) as PropertyKey[][]
   const R = SetUnionMany(C)
-  return R as FromIntersect<T>
+  return R as TFromIntersect<T>
 }
 // ------------------------------------------------------------------
 // FromUnion
 // ------------------------------------------------------------------
 // prettier-ignore
-type FromUnion<
+type TFromUnion<
   T extends TSchema[], 
   C extends PropertyKey[][] = TFromRest<T>,
   R extends PropertyKey[] = TSetIntersectMany<C>
 > = R
 // prettier-ignore
-function FromUnion<T extends TSchema[]>(T: [...T]): FromUnion<T> {
+function FromUnion<T extends TSchema[]>(T: [...T]): TFromUnion<T> {
   const C = FromRest(T) as PropertyKey[][]
   const R = SetIntersectMany(C)
-  return R as FromUnion<T>
+  return R as TFromUnion<T>
 }
 // ------------------------------------------------------------------
 // FromTuple
@@ -142,8 +142,8 @@ function FromPatternProperties(patternProperties: Record<PropertyKey, TSchema>):
 // prettier-ignore
 export type TKeyOfPropertyKeys<T extends TSchema> = (
   T extends TRecursive<infer S> ? TKeyOfPropertyKeys<S> :
-  T extends TIntersect<infer S> ? FromIntersect<S> :
-  T extends TUnion<infer S> ? FromUnion<S> :
+  T extends TIntersect<infer S> ? TFromIntersect<S> :
+  T extends TUnion<infer S> ? TFromUnion<S> :
   T extends TTuple<infer S> ? TFromTuple<S> :
   T extends TArray<infer S> ? TFromArray<S> :
   T extends TObject<infer S> ? TFromProperties<S> :

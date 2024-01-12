@@ -119,11 +119,19 @@ export function SetComplement<T extends PropertyKey[], S extends PropertyKey[]>(
 // SetIntersectMany
 // ------------------------------------------------------------------
 // prettier-ignore
-export type TSetIntersectMany<T extends PropertyKey[][], Acc extends PropertyKey[] = []> = (
-  T extends [infer L extends PropertyKey[]] ? L :
+type TSetIntersectManyResolve<T extends PropertyKey[][], Acc extends PropertyKey[] = []> = (
   T extends [infer L extends PropertyKey[], ...infer R extends PropertyKey[][]]
-    ? TSetIntersectMany<R, TSetIntersect<Acc, L>>
+    ? TSetIntersectManyResolve<R, TSetIntersect<Acc, L>>
     : Acc
+)
+// prettier-ignore
+export type TSetIntersectMany<T extends PropertyKey[][]> = (
+  T extends [infer L extends PropertyKey[]] 
+    ? L 
+    // take first set and use as initializer for resolve accumulator
+    : T extends [infer L extends PropertyKey[], ...infer R extends PropertyKey[][]]
+      ? TSetIntersectManyResolve<R, L>
+      : []
 )
 /** Returns the Intersect of multiple sets */
 // prettier-ignore
