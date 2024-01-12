@@ -27,7 +27,7 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import type { TSchema } from '../schema/index'
-import { type ZeroString, type UnionToTuple, TIncrement } from '../helpers/index'
+import { type ZeroString, type UnionToTuple, type TIncrement } from '../helpers/index'
 import type { TRecursive } from '../recursive/index'
 import type { TIntersect } from '../intersect/index'
 import type { TUnion } from '../union/index'
