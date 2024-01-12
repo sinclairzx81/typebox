@@ -27,44 +27,95 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import type { TSchema } from '../schema/index'
-import type { UnionToTuple, Assert, Ensure, Evaluate } from '../helpers/index'
+import type { Evaluate } from '../helpers/index'
+import { IntersectEvaluated, type TIntersectEvaluated } from '../intersect/index'
+import { IndexFromPropertyKeys, type TIndexFromPropertyKeys } from '../indexed/index'
+import { KeyOfPropertyKeys, type TKeyOfPropertyKeys } from '../keyof/index'
+import { type TNever } from '../never/index'
 import { Object, type TObject, type TProperties, type ObjectOptions } from '../object/index'
-import { Intersect, type TIntersect } from '../intersect/index'
-import { Index, type TIndex } from '../indexed/index'
-import { KeyOfPropertyKeys } from '../keyof/index'
+import { SetDistinct, TSetDistinct } from '../sets/index'
 
 // ------------------------------------------------------------------
-// TCompositeKeys
+// TypeGuard
+// ------------------------------------------------------------------
+import { IsNever } from '../guard/type'
+// ------------------------------------------------------------------
+// CompositeKeys
 // ------------------------------------------------------------------
 // prettier-ignore
-type TCompositeKeys<T extends TObject[], Acc extends PropertyKey = never> =
-  T extends [infer L extends TObject, ...infer R extends TObject[]]
-    ? TCompositeKeys<R, Acc | keyof L['properties']>
+type TCompositeKeys<T extends TSchema[], Acc extends PropertyKey[] = []> = (
+  T extends [infer L extends TSchema, ...infer R extends TSchema[]]
+    ? TCompositeKeys<R, TSetDistinct<[...Acc, ...TKeyOfPropertyKeys<L>]>>
     : Acc
+)
+// prettier-ignore
+function CompositeKeys<T extends TSchema[]>(T: [...T]): TCompositeKeys<T> {
+  return T.reduce((Acc, L) => {
+    return SetDistinct([...Acc, ...KeyOfPropertyKeys(L)]) as never
+  }, []) as never
+}
 // ------------------------------------------------------------------
-// TCompositeIndex
+// FilterNever
 // ------------------------------------------------------------------
 // prettier-ignore
-type TCompositeIndex<T extends TIntersect<TObject[]>, K extends string[], Acc extends TProperties = {}> =
-  K extends [infer L extends string, ...infer R extends string[]]
-    ? TCompositeIndex<T, R, Acc & { [_ in L]: TIndex<T, [L]> }>
+type TFilterNever<T extends TSchema[], Acc extends TSchema[] = []> = (
+  T extends [infer L extends TSchema, ...infer R extends TSchema[]]
+    ? L extends TNever 
+      ? Acc 
+      : TFilterNever<R, [...Acc, L]>
     : Acc
+)
 // prettier-ignore
-type TCompositeReduce<T extends TObject[]> = UnionToTuple<TCompositeKeys<T>> extends infer K
-  ? Evaluate<TCompositeIndex<TIntersect<T>, Assert<K, string[]>>>
-  : {} //                    ^ indexed via intersection of T
+function FilterNever<T extends TSchema[]>(T: [...T]): TFilterNever<T> {
+  return T.filter(L => !IsNever(L)) as never
+}
 // ------------------------------------------------------------------
-// TComposite
+// CompositeProperty
 // ------------------------------------------------------------------
 // prettier-ignore
-export type TComposite<T extends TObject[]> = TIntersect<T> extends TIntersect
-  ? Ensure<TObject<TCompositeReduce<T>>>
-  : Ensure<TObject<{}>>
+type TCompositeProperty<T extends TSchema[], K extends PropertyKey, Acc extends TSchema[] = []> = (
+  T extends [infer L extends TSchema, ...infer R extends TSchema[]]
+   ? TCompositeProperty<R, K, TFilterNever<[...Acc, ...TIndexFromPropertyKeys<L, [K]>]>>
+   : Acc
+)
+// prettier-ignore
+function CompositeProperty<T extends TSchema[], K extends PropertyKey>(T: [...T], K: K): TCompositeProperty<T, K> {
+  return T.reduce((Acc, L) => {
+    return FilterNever([...Acc, ...IndexFromPropertyKeys(L, [K])])
+  }, []) as never
+}
+// ------------------------------------------------------------------
+// CompositeProperties
+// ------------------------------------------------------------------
+// prettier-ignore
+type TCompositeProperties<T extends TSchema[], K extends PropertyKey[], Acc = {}> = (
+  K extends [infer L extends PropertyKey, ...infer R extends PropertyKey[]]
+    ? TCompositeProperties<T, R, Acc & { [_ in L]: TIntersectEvaluated<TCompositeProperty<T, L>> }>
+    : Acc
+)
+// prettier-ignore
+function CompositeProperties<T extends TSchema[], K extends PropertyKey[] = []>(T: [...T], K: [...K]): TCompositeProperties<T, K> {
+  return K.reduce((Acc, L) => {
+   return { ...Acc, [L]: IntersectEvaluated(CompositeProperty(T, L)) }
+  }, {}) as never
+}
+// ------------------------------------------------------------------
+// Composite
+// ------------------------------------------------------------------
+// prettier-ignore
+type TCompositeEvaluate<
+  T extends TSchema[], 
+  K extends PropertyKey[] = TCompositeKeys<T>,
+  P extends TProperties = Evaluate<TCompositeProperties<T, K>>,
+  R extends TObject = TObject<P>
+> = R
+// prettier-ignore
+export type TComposite<T extends TSchema[]> = TCompositeEvaluate<T>
 
-/** `[Json]` Creates a Composite object type */
-export function Composite<T extends TObject[]>(T: [...T], options?: ObjectOptions): TComposite<T> {
-  const intersect: TSchema = Intersect(T, {})
-  const keys = KeyOfPropertyKeys(intersect) as string[]
-  const properties = keys.reduce((acc, key) => ({ ...acc, [key]: Index(intersect, [key]) }), {} as TProperties)
-  return Object(properties, options) as TComposite<T>
+// prettier-ignore
+export function Composite<T extends TSchema[]>(T: [...T], options: ObjectOptions = {}): TComposite<T> {
+  const K = CompositeKeys(T)
+  const P = CompositeProperties(T, K)
+  const R = Object(P, options)
+  return R as TComposite<T>
 }

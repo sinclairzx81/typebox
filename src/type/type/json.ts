@@ -130,8 +130,8 @@ export class JsonTypeBuilder {
     return Capitalize(schema, options)
   }
   /** `[Json]` Creates a Composite object type */
-  public Composite<T extends TObject[]>(objects: [...T], options?: ObjectOptions): TComposite<T> {
-    return Composite(objects, options) as any // (error) TS 5.4.0-dev - review TComposite implementation
+  public Composite<T extends TSchema[]>(schemas: [...T], options?: ObjectOptions): TComposite<T> {
+    return Composite(schemas, options) // (error) TS 5.4.0-dev - review TComposite implementation
   }
   /** `[JavaScript]` Creates a readonly const type from the given value. */
   public Const</* const (not supported in 4.0) */ T>(value: T, options: SchemaOptions = {}): TConst<T> {

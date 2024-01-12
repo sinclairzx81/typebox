@@ -56,10 +56,10 @@ type IncrementStep<T extends string> = T extends IncrementBase['m']
     : `${IncrementTake<L>}${R}`
   : never
 type IncrementReverse<T extends string> = T extends `${infer L}${infer R}` ? `${IncrementReverse<R>}${L}` : T
-export type Increment<T extends string> = IncrementReverse<IncrementStep<IncrementReverse<T>>>
+export type TIncrement<T extends string> = IncrementReverse<IncrementStep<IncrementReverse<T>>>
 /** Increments the given string value + 1 */
-export function Increment<T extends string>(T: T): Increment<T> {
-  return (parseInt(T) + 1).toString() as Increment<T>
+export function Increment<T extends string>(T: T): TIncrement<T> {
+  return (parseInt(T) + 1).toString() as TIncrement<T>
 }
 // ------------------------------------------------------------------
 // Helper: Type Asserts

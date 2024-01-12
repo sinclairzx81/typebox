@@ -56,7 +56,7 @@ export interface TBoolean extends Types.TSchema {
 // --------------------------------------------------------------------------
 export type InferUnion<T extends TStruct[], D extends string, Index = string> = 
   T extends [infer L extends TStruct, ...infer R extends TStruct[]]
-    ? Types.Evaluate<{ [_ in D]: Index } & Types.Static<L>> | InferUnion<R, D, Types.Increment<Types.Assert<Index, string>>>
+    ? Types.Evaluate<{ [_ in D]: Index } & Types.Static<L>> | InferUnion<R, D, Types.TIncrement<Types.Assert<Index, string>>>
     : never
 
 export interface TUnion<T extends TStruct[] = TStruct[], D extends string = string> extends Types.TSchema {

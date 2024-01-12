@@ -46,16 +46,16 @@ export function SetIncludes<T extends PropertyKey[], S extends PropertyKey>(T: [
 // SetIsSubset
 // ------------------------------------------------------------------
 // prettier-ignore
-export type SetIsSubset<T extends PropertyKey[], S extends PropertyKey[]> = (
+export type TSetIsSubset<T extends PropertyKey[], S extends PropertyKey[]> = (
   T extends [infer L extends PropertyKey, ...infer R extends PropertyKey[]]
     ? TSetIncludes<S, L> extends true
-      ? SetIsSubset<R, S>
+      ? TSetIsSubset<R, S>
       : false
     : true
 )
-/** Returns true if T is a subset of S */
-export function SetIsSubset<T extends PropertyKey[], S extends PropertyKey[]>(T: [...T], S: [...S]): SetIsSubset<T, S> {
-  return T.every((L) => SetIncludes(S, L)) as SetIsSubset<T, S>
+/** Returns true if left is a subset of right */
+export function SetIsSubset<T extends PropertyKey[], S extends PropertyKey[]>(T: [...T], S: [...S]): TSetIsSubset<T, S> {
+  return T.every((L) => SetIncludes(S, L)) as TSetIsSubset<T, S>
 }
 // ------------------------------------------------------------------
 // SetDistinct
@@ -78,7 +78,7 @@ export function SetDistinct<T extends PropertyKey[]>(T: [...T]): TSetDistinct<T>
 export type TSetIntersect<T extends PropertyKey[], S extends PropertyKey[], Acc extends PropertyKey[] = []> = (
   T extends [infer L extends PropertyKey, ...infer R extends PropertyKey[]]
     ? TSetIncludes<S, L> extends true
-      ? TSetIntersect<R, S, [L, ...Acc]>
+      ? TSetIntersect<R, S, [...Acc, L]>
       : TSetIntersect<R, S, [...Acc]>
     : Acc
 )
@@ -92,7 +92,7 @@ export function SetIntersect<T extends PropertyKey[], S extends PropertyKey[]>(T
 // prettier-ignore
 export type TSetUnion<T extends PropertyKey[], S extends PropertyKey[], Acc extends PropertyKey[] = S> = (
   T extends [infer L extends PropertyKey, ...infer R extends PropertyKey[]]
-    ? TSetUnion<R, S, [...Acc, L]>
+    ? TSetUnion<R, S, [L, ...Acc]>
     : Acc
 )
 /** Returns the Union of the given sets */

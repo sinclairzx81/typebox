@@ -27,7 +27,7 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import type { TSchema } from '../schema/index'
-import { type ZeroString, type UnionToTuple, Increment } from '../helpers/index'
+import { type ZeroString, type UnionToTuple, TIncrement } from '../helpers/index'
 import type { TRecursive } from '../recursive/index'
 import type { TIntersect } from '../intersect/index'
 import type { TUnion } from '../union/index'
@@ -91,7 +91,7 @@ function FromUnion<T extends TSchema[]>(T: [...T]): TFromUnion<T> {
 // prettier-ignore
 type TFromTuple<T extends TSchema[], I extends string = ZeroString, Acc extends PropertyKey[] = []> = 
   T extends [infer _ extends TSchema, ...infer R extends TSchema[]]
-    ? TFromTuple<R, Increment<I>, [...Acc, I]>
+    ? TFromTuple<R, TIncrement<I>, [...Acc, I]>
     : Acc
 // prettier-ignore
 function FromTuple<T extends TSchema[]>(T: [...T]): TFromTuple<T> {
