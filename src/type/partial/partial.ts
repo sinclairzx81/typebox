@@ -52,7 +52,7 @@ import { IsMappedResult, IsIntersect, IsUnion, IsObject } from '../guard/type'
 // prettier-ignore
 type TFromRest<T extends TSchema[], Acc extends TSchema[] = []> = (
   T extends [infer L extends TSchema, ...infer R extends TSchema[]]
-    ? TFromRest<R, [...Acc, PartialResolve<L>]>
+    ? TFromRest<R, [...Acc, TPartial<L>]>
     : Acc
 )
 // prettier-ignore
@@ -80,27 +80,25 @@ function FromProperties<T extends TProperties>(T: T) {
 // PartialResolve
 // ------------------------------------------------------------------
 // prettier-ignore
-type PartialResolve<T extends TSchema> = (
-  T extends TRecursive<infer S> ? TRecursive<PartialResolve<S>> :
-  T extends TIntersect<infer S> ? TIntersect<TFromRest<S>> :
-  T extends TUnion<infer S> ? TUnion<TFromRest<S>> :
-  T extends TObject<infer S> ? TObject<TFromProperties<S>> :
-  TObject<{}>
-)
-// prettier-ignore
-function PartialResolve<T extends TSchema>(T: T): PartialResolve<T> {
+function PartialResolve<T extends TSchema>(T: T): TPartial<T> {
   return (
     IsIntersect(T) ? Intersect(FromRest(T.allOf)) :
     IsUnion(T) ? Union(FromRest(T.anyOf)) :
     IsObject(T) ? Object(FromProperties(T.properties)) :
     Object({})
-  ) as PartialResolve<T>
+  ) as TPartial<T>
 }
 // ------------------------------------------------------------------
 // TPartial
 // ------------------------------------------------------------------
-export type TPartial<T extends TSchema> = PartialResolve<T>
-
+// prettier-ignore
+export type TPartial<T extends TSchema> = (
+  T extends TRecursive<infer S> ? TRecursive<TPartial<S>> :
+  T extends TIntersect<infer S> ? TIntersect<TFromRest<S>> :
+  T extends TUnion<infer S> ? TUnion<TFromRest<S>> :
+  T extends TObject<infer S> ? TObject<TFromProperties<S>> :
+  TObject<{}>
+)
 /** `[Json]` Constructs a type where all properties are optional */
 export function Partial<T extends TMappedResult>(T: T, options?: SchemaOptions): TPartialFromMappedResult<T>
 /** `[Json]` Constructs a type where all properties are optional */
@@ -110,5 +108,5 @@ export function Partial(T: TSchema, options: SchemaOptions = {}): any {
   if (IsMappedResult(T)) return PartialFromMappedResult(T, options)
   const D = Discard(T, [TransformKind, '$id', 'required']) as TSchema
   const R = CloneType(PartialResolve(T), options)
-  return { ...D, ...R } as any
+  return { ...D, ...R } as never
 }
