@@ -53,7 +53,7 @@ import { IsMappedResult, IsIntersect, IsUnion, IsObject } from '../guard/type'
 // prettier-ignore
 type TFromRest<T extends TSchema[], Acc extends TSchema[] = []> = (
   T extends [infer L extends TSchema, ...infer R extends TSchema[]]
-    ? TFromRest<R, [...Acc, TRequiredResolve<L>]>
+    ? TFromRest<R, [...Acc, TRequired<L>]>
     : Acc
 )
 // prettier-ignore
@@ -80,28 +80,27 @@ function FromProperties<T extends TProperties>(T: T) {
 // ------------------------------------------------------------------
 // RequiredResolve
 // ------------------------------------------------------------------
+
 // prettier-ignore
-type TRequiredResolve<T extends TSchema> = (
-  T extends TRecursive<infer S> ? TRecursive<TRequiredResolve<S>> :
-  T extends TIntersect<infer S> ? TIntersect<TFromRest<S>> :
-  T extends TUnion<infer S> ? TUnion<TFromRest<S>> :
-  T extends TObject<infer S> ? TObject<TFromProperties<S>> :
-  TObject<{}>
-)
-// prettier-ignore
-function RequiredResolve<T extends TSchema>(T: T): TRequiredResolve<T> {
+function RequiredResolve<T extends TSchema>(T: T): TRequired<T> {
   return (
     IsIntersect(T) ? Intersect(FromRest(T.allOf)) :
     IsUnion(T) ?  Union(FromRest(T.anyOf)) :
     IsObject(T) ? Object(FromProperties(T.properties)) :
     Object({})
-  ) as TRequiredResolve<T>
+  ) as TRequired<T>
 }
 // ------------------------------------------------------------------
 // TRequired
 // ------------------------------------------------------------------
-export type TRequired<T extends TSchema> = TRequiredResolve<T>
-
+// prettier-ignore
+export type TRequired<T extends TSchema> = (
+  T extends TRecursive<infer S> ? TRecursive<TRequired<S>> :
+  T extends TIntersect<infer S> ? TIntersect<TFromRest<S>> :
+  T extends TUnion<infer S> ? TUnion<TFromRest<S>> :
+  T extends TObject<infer S> ? TObject<TFromProperties<S>> :
+  TObject<{}>
+)
 /** `[Json]` Constructs a type where all properties are required */
 export function Required<T extends TMappedResult>(T: T, options?: SchemaOptions): TRequiredFromMappedResult<T>
 /** `[Json]` Constructs a type where all properties are required */
