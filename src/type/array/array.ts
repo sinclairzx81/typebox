@@ -27,7 +27,7 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import { CloneType } from '../clone/type'
-import { Ensure } from '../helpers'
+import { Ensure } from '../helpers/index'
 import type { SchemaOptions, TSchema } from '../schema/index'
 import type { Static } from '../static/index'
 import { Kind } from '../symbols/index'
