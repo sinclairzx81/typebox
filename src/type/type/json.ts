@@ -33,9 +33,9 @@ import { Composite, type TComposite } from '../composite/index'
 import { Const, type TConst } from '../const/index'
 import { Deref, type TDeref } from '../deref/index'
 import { Enum, type TEnum, type TEnumKey, type TEnumValue } from '../enum/index'
-import { Exclude, type TExclude, type TExcludeFromMappedResult } from '../exclude/index'
+import { Exclude, type TExclude, type TExcludeFromMappedResult, type TExcludeFromTemplateLiteral } from '../exclude/index'
 import { Extends, type TExtends, type TExtendsFromMappedKey, type TExtendsFromMappedResult } from '../extends/index'
-import { Extract, type TExtract, type TExtractFromMappedResult } from '../extract/index'
+import { Extract, type TExtract, type TExtractFromMappedResult, type TExtractFromTemplateLiteral } from '../extract/index'
 import { Index, TIndex, type TIndexPropertyKeys, type TIndexFromMappedKey, type TIndexFromMappedResult } from '../indexed/index'
 import { Integer, type IntegerOptions, type TInteger } from '../integer/index'
 import { Intersect, type IntersectOptions } from '../intersect/index'
@@ -148,6 +148,8 @@ export class JsonTypeBuilder {
   /** `[Json]` Constructs a type by excluding from unionType all union members that are assignable to excludedMembers */
   public Exclude<L extends TMappedResult, R extends TSchema>(unionType: L, excludedMembers: R, options?: SchemaOptions): TExcludeFromMappedResult<L, R>
   /** `[Json]` Constructs a type by excluding from unionType all union members that are assignable to excludedMembers */
+  public Exclude<L extends TTemplateLiteral, R extends TSchema>(unionType: L, excludedMembers: R, options?: SchemaOptions): TExcludeFromTemplateLiteral<L, R>
+  /** `[Json]` Constructs a type by excluding from unionType all union members that are assignable to excludedMembers */
   public Exclude<L extends TSchema, R extends TSchema>(unionType: L, excludedMembers: R, options?: SchemaOptions): TExclude<L, R>
   /** `[Json]` Constructs a type by excluding from unionType all union members that are assignable to excludedMembers */
   public Exclude(unionType: TSchema, excludedMembers: TSchema, options: SchemaOptions = {}): any {
@@ -165,6 +167,8 @@ export class JsonTypeBuilder {
   }
   /** `[Json]` Constructs a type by extracting from type all union members that are assignable to union */
   public Extract<L extends TMappedResult, R extends TSchema>(type: L, union: R, options?: SchemaOptions): TExtractFromMappedResult<L, R>
+  /** `[Json]` Constructs a type by extracting from type all union members that are assignable to union */
+  public Extract<L extends TTemplateLiteral, R extends TSchema>(type: L, union: R, options?: SchemaOptions): TExtractFromTemplateLiteral<L, R>
   /** `[Json]` Constructs a type by extracting from type all union members that are assignable to union */
   public Extract<L extends TSchema, R extends TSchema>(type: L, union: R, options?: SchemaOptions): TExtract<L, R>
   /** `[Json]` Constructs a type by extracting from type all union members that are assignable to union */

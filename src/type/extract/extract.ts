@@ -27,29 +27,23 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import type { TSchema, SchemaOptions } from '../schema/index'
-import type { Assert, AssertRest, AssertType, UnionToTuple } from '../helpers/index'
+import type { AssertRest, AssertType, UnionToTuple } from '../helpers/index'
 import type { TMappedResult } from '../mapped/index'
-import { TemplateLiteralToUnion, type TTemplateLiteral } from '../template-literal/index'
-import { type TLiteral } from '../literal/index'
 import { Union, type TUnion } from '../union/index'
 import { type Static } from '../static/index'
 import { Never, type TNever } from '../never/index'
 import { type TUnionEvaluated } from '../union/index'
+import { type TTemplateLiteral } from '../template-literal/index'
 import { ExtendsCheck, ExtendsResult } from '../extends/index'
 import { CloneType } from '../clone/type'
 import { ExtractFromMappedResult, type TExtractFromMappedResult } from './extract-from-mapped-result'
+import { ExtractFromTemplateLiteral, type TExtractFromTemplateLiteral } from './extract-from-template-literal'
 
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
 import { IsMappedResult, IsTemplateLiteral, IsUnion } from '../guard/type'
-// ------------------------------------------------------------------
-// ExtractTemplateLiteral
-// ------------------------------------------------------------------
-// prettier-ignore
-type TExtractTemplateLiteralResult<T extends string> = TUnionEvaluated<AssertRest<UnionToTuple<{ [K in T]: TLiteral<K> }[T]>>>
-// prettier-ignore
-type TExtractTemplateLiteral<L extends TTemplateLiteral, R extends TSchema> = Extract<Static<L>, Static<R>> extends infer S ? TExtractTemplateLiteralResult<Assert<S, string>> : never
+
 // ------------------------------------------------------------------
 // ExtractRest
 // ------------------------------------------------------------------
@@ -67,19 +61,23 @@ function ExtractRest<L extends TSchema[], R extends TSchema>(L: [...L], R: R) {
 // ------------------------------------------------------------------
 // prettier-ignore
 export type TExtract<L extends TSchema, U extends TSchema> = (
-  L extends TMappedResult ? TExtractFromMappedResult<L, U> :
-  L extends TTemplateLiteral ? TExtractTemplateLiteral<L, U> :
   L extends TUnion<infer S> ? TExtractRest<S, U> :
   L extends U ? L : TNever
 )
 /** `[Json]` Constructs a type by extracting from type all union members that are assignable to union */
-export function Extract<L extends TSchema, R extends TSchema>(L: L, R: R, options: SchemaOptions = {}): TExtract<L, R> {
+export function Extract<L extends TMappedResult, R extends TSchema>(type: L, union: R, options?: SchemaOptions): TExtractFromMappedResult<L, R>
+/** `[Json]` Constructs a type by extracting from type all union members that are assignable to union */
+export function Extract<L extends TTemplateLiteral, R extends TSchema>(type: L, union: R, options?: SchemaOptions): TExtractFromTemplateLiteral<L, R>
+/** `[Json]` Constructs a type by extracting from type all union members that are assignable to union */
+export function Extract<L extends TSchema, R extends TSchema>(type: L, union: R, options?: SchemaOptions): TExtract<L, R>
+/** `[Json]` Constructs a type by extracting from type all union members that are assignable to union */
+export function Extract(L: TSchema, R: TSchema, options: SchemaOptions = {}): any {
+  // overloads
+  if (IsTemplateLiteral(L)) return CloneType(ExtractFromTemplateLiteral(L, R), options)
+  if (IsMappedResult(L)) return CloneType(ExtractFromMappedResult(L, R), options)
   // prettier-ignore
-  return CloneType((
-    IsMappedResult(L) ? ExtractFromMappedResult(L, R, options) :
-    IsTemplateLiteral(L) ? Extract(TemplateLiteralToUnion(L), R) :
-    IsTemplateLiteral(R) ? Extract(L, TemplateLiteralToUnion(R) as any) :
+  return CloneType(
     IsUnion(L) ? ExtractRest(L.anyOf, R) :
     ExtendsCheck(L, R) !== ExtendsResult.False ? L : Never()
-  ), options) as never
+  , options)
 }

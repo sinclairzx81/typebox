@@ -26,6 +26,14 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export * from './extract-from-mapped-result'
-export * from './extract-from-template-literal'
-export * from './extract'
+import type { TSchema } from '../schema/index'
+import { Extract, type TExtract } from './extract'
+import { TemplateLiteralToUnion, type TTemplateLiteral, type TTemplateLiteralToUnion } from '../template-literal/index'
+
+// prettier-ignore
+export type TExtractFromTemplateLiteral<L extends TTemplateLiteral, R extends TSchema> = (
+  TExtract<TTemplateLiteralToUnion<L>, R>
+)
+export function ExtractFromTemplateLiteral<L extends TTemplateLiteral, R extends TSchema>(L: L, R: R): TExtractFromTemplateLiteral<L, R> {
+  return Extract(TemplateLiteralToUnion(L), R) as never
+}

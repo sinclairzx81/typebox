@@ -79,9 +79,9 @@ export { ConstructorParameters, type TConstructorParameters } from './type/const
 export { Date, type TDate, type DateOptions } from './type/date/index'
 export { Deref, type TDeref } from './type/deref/index'
 export { Enum, type TEnum } from './type/enum/index'
-export { Exclude, type TExclude, type TExcludeFromMappedResult } from './type/exclude/index'
+export { Exclude, type TExclude, type TExcludeFromMappedResult, type TExcludeFromTemplateLiteral } from './type/exclude/index'
 export { Extends, ExtendsCheck, ExtendsResult, ExtendsUndefinedCheck, type TExtends, type ExtendsFromMappedResult, type ExtendsFromMappedKey } from './type/extends/index'
-export { Extract, type TExtract, type TExtractFromMappedResult } from './type/extract/index'
+export { Extract, type TExtract, type TExtractFromMappedResult, type TExtractFromTemplateLiteral } from './type/extract/index'
 export { Function, type TFunction } from './type/function/index'
 export {
   Index,
@@ -136,6 +136,7 @@ export {
   TemplateLiteralGenerate,
   TemplateLiteralParse,
   TemplateLiteralParseExact,
+  TemplateLiteralToUnion,
   IsTemplateLiteralFinite,
   TemplateLiteralExpressionGenerate,
   IsTemplateLiteralExpressionFinite,
@@ -143,6 +144,7 @@ export {
   type TTemplateLiteralSyntax,
   type TTemplateLiteralGenerate,
   type TTemplateLiteralKind,
+  type TTemplateLiteralToUnion,
   type TIsTemplateLiteralFinite,
 } from './type/template-literal/index'
 export { Transform, TransformDecodeBuilder, TransformEncodeBuilder, type TTransform, type TransformOptions, type TransformFunction } from './type/transform/index'

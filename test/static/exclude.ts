@@ -82,3 +82,18 @@ import { Expect } from './assert'
   const T = Type.Exclude(A, B)
   Expect(T).ToStatic<'C' | 'B'>()
 }
+// https://github.com/sinclairzx81/typebox/issues/737
+{
+  const U = Type.Union([Type.Literal('A'), Type.Literal('B')])
+  const T = Type.Object({
+    type: Type.Exclude(U, Type.Literal('A')),
+  })
+  Expect(T).ToStatic<{ type: 'B' }>()
+}
+{
+  const U = Type.Union([Type.Literal('A'), Type.Literal('B'), Type.Literal('C')])
+  const T = Type.Object({
+    type: Type.Exclude(U, Type.Literal('A')),
+  })
+  Expect(T).ToStatic<{ type: 'B' | 'C' }>()
+}

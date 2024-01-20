@@ -27,31 +27,22 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import type { TSchema, SchemaOptions } from '../schema/index'
-import type { UnionToTuple, AssertRest, AssertType, Assert } from '../helpers/index'
+import type { UnionToTuple, AssertRest, AssertType } from '../helpers/index'
 import type { TMappedResult } from '../mapped/index'
-import { TemplateLiteralToUnion, type TTemplateLiteral } from '../template-literal/index'
+import { type TTemplateLiteral } from '../template-literal/index'
 import { Union, type TUnion } from '../union/index'
 import { Never, type TNever } from '../never/index'
-import { type TLiteral } from '../literal/index'
 import { type Static } from '../static/index'
 import { type TUnionEvaluated } from '../union/index'
 import { ExtendsCheck, ExtendsResult } from '../extends/index'
 import { CloneType } from '../clone/type'
 import { ExcludeFromMappedResult, type TExcludeFromMappedResult } from './exclude-from-mapped-result'
+import { ExcludeFromTemplateLiteral, type TExcludeFromTemplateLiteral } from './exclude-from-template-literal'
 
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
 import { IsMappedResult, IsTemplateLiteral, IsUnion } from '../guard/type'
-// ------------------------------------------------------------------
-// ExcludeTemplateLiteral
-// ------------------------------------------------------------------
-// prettier-ignore
-type TExcludeTemplateLiteralResult<T extends string> = TUnionEvaluated<AssertRest<UnionToTuple<{ [K in T]: TLiteral<K> }[T]>>>
-// prettier-ignore
-type TExcludeTemplateLiteral<L extends TTemplateLiteral, R extends TSchema> = (
-  Exclude<Static<L>, Static<R>> extends infer S ? TExcludeTemplateLiteralResult<Assert<S, string>> : never
-)
 // ------------------------------------------------------------------
 // ExcludeRest
 // ------------------------------------------------------------------
@@ -69,19 +60,23 @@ function ExcludeRest<L extends TSchema[], R extends TSchema>(L: [...L], R: R) {
 // ------------------------------------------------------------------
 // prettier-ignore
 export type TExclude<L extends TSchema, R extends TSchema> = (
-  L extends TMappedResult<L> ? TExcludeFromMappedResult<L, R> :
-  L extends TTemplateLiteral ? TExcludeTemplateLiteral<L, R> :
   L extends TUnion<infer S> ? TExcludeRest<S, R> :
   L extends R ? TNever : L
 )
 /** `[Json]` Constructs a type by excluding from unionType all union members that are assignable to excludedMembers */
-export function Exclude<L extends TSchema, R extends TSchema>(L: L, R: R, options: SchemaOptions = {}): TExclude<L, R> {
+export function Exclude<L extends TMappedResult, R extends TSchema>(unionType: L, excludedMembers: R, options?: SchemaOptions): TExcludeFromMappedResult<L, R>
+/** `[Json]` Constructs a type by excluding from unionType all union members that are assignable to excludedMembers */
+export function Exclude<L extends TTemplateLiteral, R extends TSchema>(unionType: L, excludedMembers: R, options?: SchemaOptions): TExcludeFromTemplateLiteral<L, R>
+/** `[Json]` Constructs a type by excluding from unionType all union members that are assignable to excludedMembers */
+export function Exclude<L extends TSchema, R extends TSchema>(unionType: L, excludedMembers: R, options?: SchemaOptions): TExclude<L, R>
+/** `[Json]` Constructs a type by excluding from unionType all union members that are assignable to excludedMembers */
+export function Exclude(L: TSchema, R: TSchema, options: SchemaOptions = {}): any {
+  // overloads
+  if (IsTemplateLiteral(L)) return CloneType(ExcludeFromTemplateLiteral(L, R), options)
+  if (IsMappedResult(L)) return CloneType(ExcludeFromMappedResult(L, R), options)
   // prettier-ignore
-  return CloneType((
-    IsMappedResult(L) ? ExcludeFromMappedResult(L, R, options) :
-    IsTemplateLiteral(L) ? Exclude(TemplateLiteralToUnion(L), R) :
-    IsTemplateLiteral(R) ? Exclude(L, TemplateLiteralToUnion(R)) :
-    IsUnion(L) ? ExcludeRest(L.anyOf, R) :
+  return CloneType(
+    IsUnion(L) ? ExcludeRest(L.anyOf, R) : 
     ExtendsCheck(L, R) !== ExtendsResult.False ? Never() : L
-  ), options) as never
+  , options)
 }

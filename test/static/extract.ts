@@ -81,3 +81,20 @@ import { Expect } from './assert'
   const T = Type.Extract(A, B)
   Expect(T).ToStatic<'A'>()
 }
+// ------------------------------------------------------------------------
+// Nested (Inference Test)
+// ------------------------------------------------------------------------
+{
+  const U = Type.Union([Type.Literal('A'), Type.Literal('B')])
+  const T = Type.Object({
+    type: Type.Extract(U, Type.Literal('A')),
+  })
+  Expect(T).ToStatic<{ type: 'A' }>()
+}
+{
+  const U = Type.Union([Type.Literal('A'), Type.Literal('B'), Type.Literal('C')])
+  const T = Type.Object({
+    type: Type.Extract(U, Type.Union([Type.Literal('A'), Type.Literal('B')])),
+  })
+  Expect(T).ToStatic<{ type: 'A' | 'B' }>()
+}
