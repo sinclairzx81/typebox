@@ -26,6 +26,14 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export * from './extract-from-mapped-result'
-export * from './extract-from-template-literal'
-export * from './extract'
+import type { TSchema } from '../schema/index'
+import { TExclude, Exclude } from './exclude'
+import { TemplateLiteralToUnion, type TTemplateLiteral, type TTemplateLiteralToUnion } from '../template-literal/index'
+
+// prettier-ignore
+export type TExcludeFromTemplateLiteral<L extends TTemplateLiteral, R extends TSchema> = (
+  TExclude<TTemplateLiteralToUnion<L>, R>
+)
+export function ExcludeFromTemplateLiteral<L extends TTemplateLiteral, R extends TSchema>(L: L, R: R): TExcludeFromTemplateLiteral<L, R> {
+  return Exclude(TemplateLiteralToUnion(L), R) as never
+}

@@ -26,19 +26,31 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import type { Static } from '../static/index'
 import type { TTemplateLiteral } from './template-literal'
-import { Union, type TUnion } from '../union/index'
+import type { UnionToTuple } from '../helpers/index'
+import { UnionEvaluated, type TUnionEvaluated } from '../union/index'
 import { Literal, type TLiteral } from '../literal/index'
-import { type TString } from '../string/index'
-import { type TNever } from '../never/index'
 import { TemplateLiteralGenerate } from './generate'
 
 // ------------------------------------------------------------------
 // TemplateLiteralToUnion
 // ------------------------------------------------------------------
+// prettier-ignore
+export type TTemplateLiteralToUnionLiteralArray<T extends string[], Acc extends TLiteral[] = []> = (
+  T extends [infer L extends string, ...infer R extends string[]]
+    ? TTemplateLiteralToUnionLiteralArray<R, [...Acc, TLiteral<L>]>
+    : Acc
+)
+// prettier-ignore
+export type TTemplateLiteralToUnion<
+  T extends TTemplateLiteral,
+  U extends string[] = UnionToTuple<Static<T>>
+> = TUnionEvaluated<TTemplateLiteralToUnionLiteralArray<U>>
+
 /** Returns a Union from the given TemplateLiteral */
-export function TemplateLiteralToUnion(schema: TTemplateLiteral): TNever | TString | TUnion<TLiteral[]> {
+export function TemplateLiteralToUnion<T extends TTemplateLiteral>(schema: TTemplateLiteral): TTemplateLiteralToUnion<T> {
   const R = TemplateLiteralGenerate(schema) as string[]
   const L = R.map((S) => Literal(S))
-  return Union(L)
+  return UnionEvaluated(L)
 }

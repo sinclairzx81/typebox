@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import type { TSchema, SchemaOptions } from '../schema/index'
+import type { TSchema } from '../schema/index'
 import type { TProperties } from '../object/index'
 import { MappedResult, type TMappedResult } from '../mapped/index'
 import { Exclude, type TExclude } from './exclude'
@@ -45,9 +45,9 @@ type TFromProperties<
 function FromProperties<
   P extends TProperties,
   T extends TSchema
->(P: P, U: T, options: SchemaOptions): TFromProperties<P, T> {
+>(P: P, U: T): TFromProperties<P, T> {
   return globalThis.Object.getOwnPropertyNames(P).reduce((Acc, K2) => {
-    return {...Acc, [K2]: Exclude(P[K2], U, options) }
+    return {...Acc, [K2]: Exclude(P[K2], U) }
   }, {}) as TFromProperties<P, T>
 }
 // ------------------------------------------------------------------
@@ -64,8 +64,8 @@ type TFromMappedResult<
 function FromMappedResult<
   R extends TMappedResult,
   T extends TSchema
->(R: R, T: T, options: SchemaOptions): TFromMappedResult<R, T> {
-  return FromProperties(R.properties, T, options) as TFromMappedResult<R, T>
+>(R: R, T: T): TFromMappedResult<R, T> {
+  return FromProperties(R.properties, T) as TFromMappedResult<R, T>
 }
 // ------------------------------------------------------------------
 // ExcludeFromMappedResult
@@ -83,7 +83,7 @@ export function ExcludeFromMappedResult<
   R extends TMappedResult,
   T extends TSchema,
   P extends TProperties = TFromMappedResult<R, T>
->(R: R, T: T, options: SchemaOptions): TMappedResult<P> {
-  const P = FromMappedResult(R, T, options) as unknown as P
+>(R: R, T: T): TMappedResult<P> {
+  const P = FromMappedResult(R, T) as unknown as P
   return MappedResult(P) 
 }
