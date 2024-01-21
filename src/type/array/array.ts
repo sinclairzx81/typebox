@@ -26,10 +26,11 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import type { TSchema, SchemaOptions } from '../schema/index'
+import { CloneType } from '../clone/type'
+import { Ensure } from '../helpers/index'
+import type { SchemaOptions, TSchema } from '../schema/index'
 import type { Static } from '../static/index'
 import { Kind } from '../symbols/index'
-import { CloneType } from '../clone/type'
 
 export interface ArrayOptions extends SchemaOptions {
   /** The minimum number of items in this array */
@@ -45,9 +46,10 @@ export interface ArrayOptions extends SchemaOptions {
   /** A maximum number of contains schema matches */
   maxContains?: number
 }
+type ArrayStatic<T extends TSchema, P extends unknown[]> = Ensure<Static<T, P>[]>
 export interface TArray<T extends TSchema = TSchema> extends TSchema, ArrayOptions {
   [Kind]: 'Array'
-  static: Array<Static<T, this['params']>>
+  static: ArrayStatic<T, this['params']>
   type: 'array'
   items: T
 }

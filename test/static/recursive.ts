@@ -1,5 +1,5 @@
+import { Static, Type } from '@sinclair/typebox'
 import { Expect } from './assert'
-import { Type, Static } from '@sinclair/typebox'
 
 {
   // identity
@@ -77,4 +77,25 @@ import { Type, Static } from '@sinclair/typebox'
   Expect(T).ToStatic<{
     nodes: Static<typeof T>[]
   }>()
+}
+{
+  // issue: https://github.com/sinclairzx81/typebox/issues/336
+  type JSONValue =
+    | string
+    | number
+    | null
+    | boolean
+    | { [x: string]: JSONValue }
+    | JSONValue[]
+  const R = Type.Recursive((Node) =>
+    Type.Union([
+      Type.Null(),
+      Type.String(),
+      Type.Number(),
+      Type.Boolean(),
+      Type.Record(Type.String(), Node),
+      Type.Array(Node),
+    ]),
+  )
+  Expect(R).ToStatic<JSONValue>()
 }
