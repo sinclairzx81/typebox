@@ -273,7 +273,7 @@ export class JsonTypeBuilder {
   }
   /** `[Json]` Creates a Record type */
   public Record<K extends TSchema, T extends TSchema>(key: K, schema: T, options: ObjectOptions = {}): TRecordOrObject<K, T> {
-    return Record(key, schema)
+    return Record(key, schema, options)
   }
   /** `[Json]` Creates a Recursive type */
   public Recursive<T extends TSchema>(callback: (thisType: TThis) => T, options: SchemaOptions = {}): TRecursive<T> {
