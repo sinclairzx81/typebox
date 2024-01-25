@@ -444,6 +444,13 @@ function* FromRef(schema: TRef, references: TSchema[], path: string, value: any)
   yield* Visit(Deref(schema, references), references, path, value)
 }
 function* FromRegExp(schema: TRegExp, references: TSchema[], path: string, value: any): IterableIterator<ValueError> {
+  if (!IsString(value)) return yield Create(ValueErrorType.String, schema, path, value)
+  if (IsDefined<number>(schema.minLength) && !(value.length >= schema.minLength)) {
+    yield Create(ValueErrorType.StringMinLength, schema, path, value)
+  }
+  if (IsDefined<number>(schema.maxLength) && !(value.length <= schema.maxLength)) {
+    yield Create(ValueErrorType.StringMaxLength, schema, path, value)
+  }
   const regex = new RegExp(schema.source, schema.flags)
   if (!regex.test(value)) {
     return yield Create(ValueErrorType.RegExp, schema, path, value)

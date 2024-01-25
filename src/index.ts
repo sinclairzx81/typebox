@@ -121,7 +121,7 @@ export { ReadonlyOptional, type TReadonlyOptional } from './type/readonly-option
 export { Record, type TRecord, type TRecordOrObject } from './type/record/index'
 export { Recursive, type TRecursive, type TThis } from './type/recursive/index'
 export { Ref, type TRef } from './type/ref/index'
-export { RegExp, type TRegExp } from './type/regexp/index'
+export { RegExp, type TRegExp, type RegExpOptions } from './type/regexp/index'
 export { Required, type TRequired, type TRequiredFromMappedResult } from './type/required/index'
 export { Rest, type TRest } from './type/rest/index'
 export { ReturnType, type TReturnType } from './type/return-type/index'

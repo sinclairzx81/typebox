@@ -13,4 +13,18 @@ describe('compiler/RegExp', () => {
     const T = Type.RegExp(/<a?:.+?:\d{18}>|\p{Extended_Pictographic}/gu)
     Ok(T, '♥️♦️♠️♣️')
   })
+  it('Should validate with minLength constraint', () => {
+    const T = Type.RegExp(/(.*)/, {
+      minLength: 3,
+    })
+    Ok(T, 'xxx')
+    Fail(T, 'xx')
+  })
+  it('Should validate with maxLength constraint', () => {
+    const T = Type.RegExp(/(.*)/, {
+      maxLength: 3,
+    })
+    Ok(T, 'xxx')
+    Fail(T, 'xxxx')
+  })
 })

@@ -38,7 +38,7 @@ import { InstanceType, type TInstanceType } from '../instance-type/index'
 import { Iterator, type TIterator } from '../iterator/index'
 import { Parameters, type TParameters } from '../parameters/index'
 import { Promise, type TPromise } from '../promise/index'
-import { RegExp, type TRegExp } from '../regexp/index'
+import { RegExp, type TRegExp, RegExpOptions } from '../regexp/index'
 import { ReturnType, type TReturnType } from '../return-type/index'
 import { type TSchema, type SchemaOptions } from '../schema/index'
 import { Symbol, type TSymbol } from '../symbol/index'
@@ -93,11 +93,11 @@ export class JavaScriptTypeBuilder extends JsonTypeBuilder {
     return Promise(item, options)
   }
   /** `[JavaScript]` Creates a RegExp type */
-  public RegExp(pattern: string, options?: SchemaOptions): TRegExp
+  public RegExp(pattern: string, options?: RegExpOptions): TRegExp
   /** `[JavaScript]` Creates a RegExp type */
-  public RegExp(regex: RegExp, options?: SchemaOptions): TRegExp
+  public RegExp(regex: RegExp, options?: RegExpOptions): TRegExp
   /** `[JavaScript]` Creates a RegExp type */
-  public RegExp(unresolved: string | RegExp, options: SchemaOptions = {}) {
+  public RegExp(unresolved: string | RegExp, options: RegExpOptions = {}) {
     return RegExp(unresolved as any, options)
   }
   /** `[JavaScript]` Extracts the ReturnType from the given Function type */
