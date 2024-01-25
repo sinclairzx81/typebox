@@ -20,4 +20,14 @@ describe('type/guard/TRegExp', () => {
     const T = Type.RegExp('foo', { $id: 1 })
     Assert.IsFalse(TypeGuard.IsRegExp(T))
   })
+  it('Should guard for RegExp constraint 1', () => {
+    // @ts-ignore
+    const T = Type.RegExp('foo', { maxLength: '1' })
+    Assert.IsFalse(TypeGuard.IsRegExp(T))
+  })
+  it('Should guard for RegExp constraint 2', () => {
+    // @ts-ignore
+    const T = Type.RegExp('foo', { minLength: '1' })
+    Assert.IsFalse(TypeGuard.IsRegExp(T))
+  })
 })
