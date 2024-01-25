@@ -391,6 +391,8 @@ export namespace TypeCompiler {
   function* FromRegExp(schema: TRegExp, references: TSchema[], value: string): IterableIterator<string> {
     const variable = CreateVariable(`${new RegExp(schema.source, schema.flags)};`)
     yield `(typeof ${value} === 'string')`
+    if (IsNumber(schema.maxLength)) yield `${value}.length <= ${schema.maxLength}`
+    if (IsNumber(schema.minLength)) yield `${value}.length >= ${schema.minLength}`
     yield `${variable}.test(${value})`
   }
   function* FromString(schema: TString, references: TSchema[], value: string): IterableIterator<string> {

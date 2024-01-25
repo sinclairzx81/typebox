@@ -444,7 +444,9 @@ export function IsRegExp(value: unknown): value is TRegExp {
     IsKindOf(value, 'RegExp') &&
     IsOptionalString(value.$id) &&
     ValueGuard.IsString(value.source) &&
-    ValueGuard.IsString(value.flags)
+    ValueGuard.IsString(value.flags) &&
+    IsOptionalNumber(value.maxLength) &&
+    IsOptionalNumber(value.minLength)
   )
 }
 /** Returns true if the given value is TString */

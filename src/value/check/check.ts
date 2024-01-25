@@ -329,6 +329,12 @@ function FromRef(schema: TRef, references: TSchema[], value: any): boolean {
 }
 function FromRegExp(schema: TRegExp, references: TSchema[], value: any): boolean {
   const regex = new RegExp(schema.source, schema.flags)
+  if (IsDefined<number>(schema.minLength)) {
+    if (!(value.length >= schema.minLength)) return false
+  }
+  if (IsDefined<number>(schema.maxLength)) {
+    if (!(value.length <= schema.maxLength)) return false
+  }
   return regex.test(value)
 }
 function FromString(schema: TString, references: TSchema[], value: any): boolean {

@@ -33,4 +33,18 @@ describe('value/check/RegExp', () => {
     const result = Value.Check(T, value)
     Assert.IsEqual(result, false)
   })
+  it('Should validate with minLength constraint', () => {
+    const T = Type.RegExp(/(.*)/, {
+      minLength: 3,
+    })
+    Assert.IsTrue(Value.Check(T, 'xxx'))
+    Assert.IsFalse(Value.Check(T, 'xx'))
+  })
+  it('Should validate with maxLength constraint', () => {
+    const T = Type.RegExp(/(.*)/, {
+      maxLength: 3,
+    })
+    Assert.IsTrue(Value.Check(T, 'xxx'))
+    Assert.IsFalse(Value.Check(T, 'xxxx'))
+  })
 })

@@ -31,6 +31,12 @@ import type { TSchema } from '../schema/index'
 import { IsString } from '../guard/value'
 import { Kind } from '../symbols/index'
 
+export interface RegExpOptions extends SchemaOptions {
+  /** The maximum length of the string */
+  maxLength?: number
+  /** The minimum length of the string */
+  minLength?: number
+}
 export interface TRegExp extends TSchema {
   [Kind]: 'RegExp'
   static: `${string}`
@@ -40,11 +46,11 @@ export interface TRegExp extends TSchema {
 }
 
 /** `[JavaScript]` Creates a RegExp type */
-export function RegExp(pattern: string, options?: SchemaOptions): TRegExp
+export function RegExp(pattern: string, options?: RegExpOptions): TRegExp
 /** `[JavaScript]` Creates a RegExp type */
-export function RegExp(regex: RegExp, options?: SchemaOptions): TRegExp
+export function RegExp(regex: RegExp, options?: RegExpOptions): TRegExp
 /** `[JavaScript]` Creates a RegExp type */
-export function RegExp(unresolved: RegExp | string, options: SchemaOptions = {}) {
+export function RegExp(unresolved: RegExp | string, options: RegExpOptions = {}) {
   const expr = IsString(unresolved) ? new globalThis.RegExp(unresolved) : unresolved
   return { ...options, [Kind]: 'RegExp', type: 'RegExp', source: expr.source, flags: expr.flags } as never
 }
