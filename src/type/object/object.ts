@@ -84,7 +84,7 @@ export interface TObject<T extends TProperties = TProperties> extends TSchema, O
   required?: string[]
 }
 /** `[Json]` Creates an Object type */
-export function _Object<T extends TProperties>(properties: T, options: ObjectOptions = {}): TObject<T> {
+function _Object<T extends TProperties>(properties: T, options: ObjectOptions = {}): TObject<T> {
   const propertyKeys = globalThis.Object.getOwnPropertyNames(properties)
   const optionalKeys = propertyKeys.filter((key) => IsOptional(properties[key]))
   const requiredKeys = propertyKeys.filter((name) => !optionalKeys.includes(name))

@@ -26,5 +26,5 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export * as TypeClone from './type'
-export * as ValueClone from './value'
+export * from './type'
+export * from './value'
