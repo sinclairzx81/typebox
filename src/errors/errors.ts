@@ -366,7 +366,7 @@ function* FromNumber(schema: TNumber, references: TSchema[], path: string, value
   if (IsDefined<number>(schema.minimum) && !(value >= schema.minimum)) {
     yield Create(ValueErrorType.NumberMinimum, schema, path, value)
   }
-  if (IsDefined<number>(schema.multipleOf) && !(value % schema.multipleOf === 0)) {
+  if (IsDefined<number>(schema.multipleOf) && !Number.isInteger(value / schema.multipleOf)) {
     yield Create(ValueErrorType.NumberMultipleOf, schema, path, value)
   }
 }

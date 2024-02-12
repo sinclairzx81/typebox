@@ -14,4 +14,22 @@ describe('errors/type/NumberMultipleOf', () => {
     Assert.IsEqual(R.length, 1)
     Assert.IsEqual(R[0].type, ValueErrorType.NumberMultipleOf)
   })
+  const T2 = Type.Number({ multipleOf: 0.1 })
+  it('Should pass 2', () => {
+    const R = Resolve(T2, 0)
+    Assert.IsEqual(R.length, 0)
+  })
+  it('Should pass 3', () => {
+    const R = Resolve(T2, 1)
+    Assert.IsEqual(R.length, 0)
+  })
+  it('Should pass 4', () => {
+    const R = Resolve(T2, 1.1)
+    Assert.IsEqual(R.length, 0)
+  })
+  it('Should pass 5', () => {
+    const R = Resolve(T2, 1.15)
+    Assert.IsEqual(R.length, 1)
+    Assert.IsEqual(R[0].type, ValueErrorType.NumberMultipleOf)
+  })
 })
