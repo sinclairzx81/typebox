@@ -366,7 +366,7 @@ function* FromNumber(schema: TNumber, references: TSchema[], path: string, value
   if (IsDefined<number>(schema.minimum) && !(value >= schema.minimum)) {
     yield Create(ValueErrorType.NumberMinimum, schema, path, value)
   }
-  if (IsDefined<number>(schema.multipleOf) && !Number.isInteger(value / schema.multipleOf)) {
+  if (IsDefined<number>(schema.multipleOf) && !IsDecimalSafeMultipleOf(value, schema.multipleOf)) {
     yield Create(ValueErrorType.NumberMultipleOf, schema, path, value)
   }
 }
@@ -610,6 +610,29 @@ function* Visit<T extends TSchema>(schema: T, references: TSchema[], path: strin
       if (!TypeRegistry.Has(schema_[Kind])) throw new ValueErrorsUnknownTypeError(schema)
       return yield* FromKind(schema_, references_, path, value)
   }
+}
+// Credit: jsonschema (https://github.com/tdegrunt/jsonschema)
+function IsDecimalSafeMultipleOf(value: number, multipleOf: number): boolean {
+  const multiplier = Math.pow(10, Math.max(GetDecimalPlaces(value) , GetDecimalPlaces(multipleOf)))
+  return 0 === Math.round(value * multiplier) % Math.round(multipleOf * multiplier)
+};
+function GetDecimalPlaces(number: number): number {
+  let decimalPlaces = 0
+  if (Number.isNaN(number)) {
+    return decimalPlaces
+  }
+  const parts = String(number).split('e')
+  if (2 === parts.length) {
+    if (!parts[1].startsWith('-')) {
+      return decimalPlaces
+    }
+    decimalPlaces = Number(parts[1].slice(1))
+  }
+  const decimalParts = parts[0].split('.')
+  if (2 === decimalParts.length) {
+    decimalPlaces += decimalParts[1].length
+  }
+  return decimalPlaces
 }
 /** Returns an iterator for each error in this value. */
 export function Errors<T extends TSchema>(schema: T, references: TSchema[], value: unknown): ValueErrorIterator

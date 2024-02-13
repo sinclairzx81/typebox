@@ -32,4 +32,8 @@ describe('errors/type/NumberMultipleOf', () => {
     Assert.IsEqual(R.length, 1)
     Assert.IsEqual(R[0].type, ValueErrorType.NumberMultipleOf)
   })
+  it('Should pass 6', () => {
+    const R = Resolve(T2, 1.4)
+    Assert.IsEqual(R.length, 0)
+  })
 })
