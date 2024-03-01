@@ -26,5 +26,5 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export { TypeSystemPolicy } from './policy'
-export { TypeSystem, TypeSystemDuplicateFormat, TypeSystemDuplicateTypeKind } from './system'
+export * from './policy'
+export * from './system'

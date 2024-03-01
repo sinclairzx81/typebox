@@ -57,23 +57,86 @@ export function IsIterator(value: unknown): value is IterableIterator<any> {
   return IsObject(value) && Symbol.iterator in value
 }
 // --------------------------------------------------------------------------
-// Nominal
+// Object Instances
 // --------------------------------------------------------------------------
-/** Returns true if this value is a typed array */
-export function IsTypedArray(value: unknown): value is TypedArrayType {
-  return ArrayBuffer.isView(value)
+/** Returns true if this value is not an instance of a class */
+export function IsStandardObject(value: unknown): value is ObjectType {
+  return IsObject(value) && IsFunction(value.constructor) && value.constructor.name === 'Object'
 }
+/** Returns true if this value is an instance of a class */
+export function IsInstanceObject(value: unknown): value is ObjectType {
+  return IsObject(value) && IsFunction(value.constructor) && value.constructor.name !== 'Object'
+}
+// --------------------------------------------------------------------------
+// JavaScript
+// --------------------------------------------------------------------------
 /** Returns true if this value is a Promise */
 export function IsPromise(value: unknown): value is Promise<unknown> {
   return value instanceof Promise
 }
-/** Returns true if the value is a Uint8Array */
-export function IsUint8Array(value: unknown): value is Uint8Array {
-  return value instanceof Uint8Array
-}
 /** Returns true if this value is a Date */
 export function IsDate(value: unknown): value is Date {
   return value instanceof Date && Number.isFinite(value.getTime())
+}
+/** Returns true if this value is an instance of Map<K, T> */
+export function IsMap(value: unknown): value is Map<unknown, unknown> {
+  return value instanceof globalThis.Map
+}
+/** Returns true if this value is an instance of Set<T> */
+export function IsSet(value: unknown): value is Set<unknown> {
+  return value instanceof globalThis.Set
+}
+/** Returns true if this value is RegExp */
+export function IsRegExp(value: unknown): value is RegExp {
+  return value instanceof globalThis.RegExp
+}
+/** Returns true if this value is a typed array */
+export function IsTypedArray(value: unknown): value is TypedArrayType {
+  return ArrayBuffer.isView(value)
+}
+/** Returns true if the value is a Int8Array */
+export function IsInt8Array(value: unknown): value is Int8Array {
+  return value instanceof globalThis.Int8Array
+}
+/** Returns true if the value is a Uint8Array */
+export function IsUint8Array(value: unknown): value is Uint8Array {
+  return value instanceof globalThis.Uint8Array
+}
+/** Returns true if the value is a Uint8ClampedArray */
+export function IsUint8ClampedArray(value: unknown): value is Uint8ClampedArray {
+  return value instanceof globalThis.Uint8ClampedArray
+}
+/** Returns true if the value is a Int16Array */
+export function IsInt16Array(value: unknown): value is Int16Array {
+  return value instanceof globalThis.Int16Array
+}
+/** Returns true if the value is a Uint16Array */
+export function IsUint16Array(value: unknown): value is Uint16Array {
+  return value instanceof globalThis.Uint16Array
+}
+/** Returns true if the value is a Int32Array */
+export function IsInt32Array(value: unknown): value is Int32Array {
+  return value instanceof globalThis.Int32Array
+}
+/** Returns true if the value is a Uint32Array */
+export function IsUint32Array(value: unknown): value is Uint32Array {
+  return value instanceof globalThis.Uint32Array
+}
+/** Returns true if the value is a Float32Array */
+export function IsFloat32Array(value: unknown): value is Float32Array {
+  return value instanceof globalThis.Float32Array
+}
+/** Returns true if the value is a Float64Array */
+export function IsFloat64Array(value: unknown): value is Float64Array {
+  return value instanceof globalThis.Float64Array
+}
+/** Returns true if the value is a BigInt64Array */
+export function IsBigInt64Array(value: unknown): value is BigInt64Array {
+  return value instanceof globalThis.BigInt64Array
+}
+/** Returns true if the value is a BigUint64Array */
+export function IsBigUint64Array(value: unknown): value is BigUint64Array {
+  return value instanceof globalThis.BigUint64Array
 }
 // --------------------------------------------------------------------------
 // Standard
@@ -81,10 +144,6 @@ export function IsDate(value: unknown): value is Date {
 /** Returns true if this value has this property key */
 export function HasPropertyKey<K extends PropertyKey>(value: Record<any, unknown>, key: K): value is ObjectType & Record<K, unknown> {
   return key in value
-}
-/** Returns true if this object is not an instance of any other type */
-export function IsPlainObject(value: unknown): value is ObjectType {
-  return IsObject(value) && IsFunction(value.constructor) && value.constructor.name === 'Object'
 }
 /** Returns true of this value is an object type */
 export function IsObject(value: unknown): value is ObjectType {

@@ -31,7 +31,7 @@ import type { ObjectType, ArrayType, TypedArrayType, ValueType } from '../guard/
 // ------------------------------------------------------------------
 // ValueGuard
 // ------------------------------------------------------------------
-import { IsArray, IsDate, IsPlainObject, IsTypedArray, IsValueType } from '../guard/index'
+import { IsArray, IsDate, IsStandardObject, IsTypedArray, IsValueType } from '../guard/index'
 // ------------------------------------------------------------------
 // Clonable
 // ------------------------------------------------------------------
@@ -58,7 +58,7 @@ function ValueType(value: ValueType): any {
 export function Clone<T extends unknown>(value: T): T {
   if (IsArray(value)) return ArrayType(value)
   if (IsDate(value)) return DateType(value)
-  if (IsPlainObject(value)) return ObjectType(value)
+  if (IsStandardObject(value)) return ObjectType(value)
   if (IsTypedArray(value)) return TypedArrayType(value)
   if (IsValueType(value)) return ValueType(value)
   throw new Error('ValueClone: Unable to clone value')

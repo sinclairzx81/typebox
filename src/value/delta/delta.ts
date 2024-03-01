@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { IsPlainObject, IsArray, IsTypedArray, IsValueType, IsSymbol, IsUndefined } from '../guard/index'
+import { IsStandardObject, IsArray, IsTypedArray, IsValueType, IsSymbol, IsUndefined } from '../guard/index'
 import type { ObjectType, ArrayType, TypedArrayType, ValueType } from '../guard/index'
 import type { Static } from '../../type/static/index'
 import { ValuePointer } from '../pointer/index'
@@ -90,7 +90,7 @@ function CreateDelete(path: string): Edit {
 // Diffing Generators
 // ------------------------------------------------------------------
 function* ObjectType(path: string, current: ObjectType, next: unknown): IterableIterator<Edit> {
-  if (!IsPlainObject(next)) return yield CreateUpdate(path, next)
+  if (!IsStandardObject(next)) return yield CreateUpdate(path, next)
   const currentKeys = [...globalThis.Object.keys(current), ...globalThis.Object.getOwnPropertySymbols(current)]
   const nextKeys = [...globalThis.Object.keys(next), ...globalThis.Object.getOwnPropertySymbols(next)]
   for (const key of currentKeys) {
@@ -136,7 +136,7 @@ function* ValueType(path: string, current: ValueType, next: unknown): IterableIt
   yield CreateUpdate(path, next)
 }
 function* Visit(path: string, current: unknown, next: unknown): IterableIterator<Edit> {
-  if (IsPlainObject(current)) return yield* ObjectType(path, current, next)
+  if (IsStandardObject(current)) return yield* ObjectType(path, current, next)
   if (IsArray(current)) return yield* ArrayType(path, current, next)
   if (IsTypedArray(current)) return yield* TypedArrayType(path, current, next)
   if (IsValueType(current)) return yield* ValueType(path, current, next)

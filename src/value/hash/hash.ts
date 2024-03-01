@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { IsArray, IsBoolean, IsBigInt, IsDate, IsNull, IsNumber, IsPlainObject, IsString, IsSymbol, IsUint8Array, IsUndefined } from '../guard/index'
+import { IsArray, IsBoolean, IsBigInt, IsDate, IsNull, IsNumber, IsStandardObject, IsString, IsSymbol, IsUint8Array, IsUndefined } from '../guard/index'
 import { TypeBoxError } from '../../type/error/index'
 
 // ------------------------------------------------------------------
@@ -140,7 +140,7 @@ function Visit(value: any) {
   if (IsDate(value)) return DateType(value)
   if (IsNull(value)) return NullType(value)
   if (IsNumber(value)) return NumberType(value)
-  if (IsPlainObject(value)) return ObjectType(value)
+  if (IsStandardObject(value)) return ObjectType(value)
   if (IsString(value)) return StringType(value)
   if (IsSymbol(value)) return SymbolType(value)
   if (IsUint8Array(value)) return Uint8ArrayType(value)
