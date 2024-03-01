@@ -61,11 +61,11 @@ export function IsIterator(value: unknown): value is IterableIterator<any> {
 // --------------------------------------------------------------------------
 /** Returns true if this value is not an instance of a class */
 export function IsStandardObject(value: unknown): value is ObjectType {
-  return IsObject(value) && IsFunction(value.constructor) && value.constructor.name === 'Object'
+  return IsObject(value) && !IsArray(value) && IsFunction(value.constructor) && value.constructor.name === 'Object'
 }
 /** Returns true if this value is an instance of a class */
 export function IsInstanceObject(value: unknown): value is ObjectType {
-  return IsObject(value) && IsFunction(value.constructor) && value.constructor.name !== 'Object'
+  return IsObject(value) && !IsArray(value) && IsFunction(value.constructor) && value.constructor.name !== 'Object'
 }
 // --------------------------------------------------------------------------
 // JavaScript

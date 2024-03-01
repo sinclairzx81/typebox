@@ -179,13 +179,21 @@ describe('value/guard/ValueGuard', () => {
     Assert.IsFalse(R)
   })
   // -----------------------------------------------------
-  // IsNonInstanceObject
+  // IsStandardObject
   // -----------------------------------------------------
-  it('Should guard NonInstanceObject 1', () => {
+  it('Should guard StandardObject 1', () => {
     const R = ValueGuard.IsStandardObject({})
     Assert.IsTrue(R)
   })
-  it('Should guard NonInstanceObject 2', () => {
+  it('Should guard StandardObject 2', () => {
+    const R = ValueGuard.IsStandardObject(1)
+    Assert.IsFalse(R)
+  })
+  it('Should guard StandardObject 3', () => {
+    const R = ValueGuard.IsStandardObject([])
+    Assert.IsFalse(R)
+  })
+  it('Should guard StandardObject 4', () => {
     const R = ValueGuard.IsStandardObject(new (class {})())
     Assert.IsFalse(R)
   })
@@ -197,6 +205,14 @@ describe('value/guard/ValueGuard', () => {
     Assert.IsFalse(R)
   })
   it('Should guard InstanceObject 2', () => {
+    const R = ValueGuard.IsInstanceObject(1)
+    Assert.IsFalse(R)
+  })
+  it('Should guard InstanceObject 3', () => {
+    const R = ValueGuard.IsInstanceObject([])
+    Assert.IsFalse(R)
+  })
+  it('Should guard InstanceObject 4', () => {
     const R = ValueGuard.IsInstanceObject(new (class {})())
     Assert.IsTrue(R)
   })
@@ -405,6 +421,36 @@ describe('value/guard/ValueGuard', () => {
   })
   it('Should guard BigUint64Array 2', () => {
     const R = ValueGuard.IsBigUint64Array(1)
+    Assert.IsFalse(R)
+  })
+  // -----------------------------------------------------
+  // IsMap
+  // -----------------------------------------------------
+  it('Should guard Map 1', () => {
+    const R = ValueGuard.IsMap(new Map())
+    Assert.IsTrue(R)
+  })
+  it('Should guard Map 2', () => {
+    const R = ValueGuard.IsMap(new Float32Array(1))
+    Assert.IsFalse(R)
+  })
+  it('Should guard Map 2', () => {
+    const R = ValueGuard.IsMap(1)
+    Assert.IsFalse(R)
+  })
+  // -----------------------------------------------------
+  // IsSet
+  // -----------------------------------------------------
+  it('Should guard Set 1', () => {
+    const R = ValueGuard.IsSet(new Set())
+    Assert.IsTrue(R)
+  })
+  it('Should guard Set 2', () => {
+    const R = ValueGuard.IsSet(new Float32Array(1))
+    Assert.IsFalse(R)
+  })
+  it('Should guard Set 2', () => {
+    const R = ValueGuard.IsSet(1)
     Assert.IsFalse(R)
   })
   // -----------------------------------------------------
