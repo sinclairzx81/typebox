@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { IsPlainObject, IsArray, IsString, IsNumber, IsNull } from '../guard/index'
+import { IsStandardObject, IsArray, IsString, IsNumber, IsNull } from '../guard/index'
 import { TypeBoxError } from '../../type/error/index'
 import { Kind } from '../../type/symbols/index'
 import { Create } from '../create/index'
@@ -134,7 +134,7 @@ function FromConstructor(schema: TConstructor, references: TSchema[], value: any
 }
 function FromIntersect(schema: TIntersect, references: TSchema[], value: any): any {
   const created = Create(schema, references)
-  const mapped = IsPlainObject(created) && IsPlainObject(value) ? { ...(created as any), ...value } : value
+  const mapped = IsStandardObject(created) && IsStandardObject(value) ? { ...(created as any), ...value } : value
   return Check(schema, references, mapped) ? mapped : Create(schema, references)
 }
 function FromNever(schema: TNever, references: TSchema[], value: any): any {

@@ -48,7 +48,7 @@ import type { TUnion } from '../../type/union/index'
 // ------------------------------------------------------------------
 // ValueGuard
 // ------------------------------------------------------------------
-import { IsPlainObject, IsArray, IsValueType } from '../guard/index'
+import { IsStandardObject, IsArray, IsValueType } from '../guard/index'
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
@@ -86,7 +86,7 @@ function FromArray(schema: TArray, references: TSchema[], value: any): any {
 }
 // prettier-ignore
 function FromIntersect(schema: TIntersect, references: TSchema[], value: any) {
-  if (!IsPlainObject(value) || IsValueType(value)) return Default(schema, value)
+  if (!IsStandardObject(value) || IsValueType(value)) return Default(schema, value)
   const knownKeys = KeyOfPropertyKeys(schema) as string[]
   const knownProperties = knownKeys.reduce((value, key) => {
     return (key in value)
@@ -110,7 +110,7 @@ function FromNot(schema: TNot, references: TSchema[], value: any) {
 }
 // prettier-ignore
 function FromObject(schema: TObject, references: TSchema[], value: any) {
-  if (!IsPlainObject(value)) return Default(schema, value)
+  if (!IsStandardObject(value)) return Default(schema, value)
   const knownKeys = KeyOfPropertyKeys(schema)
   const knownProperties = knownKeys.reduce((value, key) => {
     return (key in value) 
@@ -131,7 +131,7 @@ function FromObject(schema: TObject, references: TSchema[], value: any) {
 }
 // prettier-ignore
 function FromRecord(schema: TRecord, references: TSchema[], value: any) {
-  if (!IsPlainObject(value)) return Default(schema, value)
+  if (!IsStandardObject(value)) return Default(schema, value)
   const pattern = Object.getOwnPropertyNames(schema.patternProperties)[0]
   const knownKeys = new RegExp(pattern)
   const knownProperties = Object.getOwnPropertyNames(value).reduce((value, key) => {

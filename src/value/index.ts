@@ -27,55 +27,30 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 // ------------------------------------------------------------------
-// Value Errors (re-export)
+// Errors (re-export)
 // ------------------------------------------------------------------
 export { ValueError, ValueErrorType, ValueErrorIterator } from '../errors/index'
 // ------------------------------------------------------------------
-// Value Operators
+// Guards
 // ------------------------------------------------------------------
-export { Cast, ValueCastError } from './cast/index'
-export { Check } from './check/index'
-export { Clean } from './clean/index'
-export { Clone } from './clone/index'
-export { Convert } from './convert/index'
-export { Create, ValueCreateError } from './create/index'
-export { Default } from './default/index'
-export { Diff, Patch, Edit, Delete, Insert, Update, ValueDeltaError } from './delta/index'
-export { Equal } from './equal/index'
-export { Hash, ValueHashError } from './hash/index'
-export { Mutate, ValueMutateError, type Mutable } from './mutate/index'
-export { ValuePointer } from './pointer/index'
-export { TransformDecode, TransformEncode, HasTransform, TransformDecodeCheckError, TransformDecodeError, TransformEncodeCheckError, TransformEncodeError } from './transform/index'
+export * from './guard/index'
 // ------------------------------------------------------------------
-// Value Guards
+// Operators
 // ------------------------------------------------------------------
-export {
-  ArrayType,
-  HasPropertyKey,
-  IsArray,
-  IsAsyncIterator,
-  IsBigInt,
-  IsBoolean,
-  IsDate,
-  IsFunction,
-  IsInteger,
-  IsIterator,
-  IsNull,
-  IsNumber,
-  IsObject,
-  IsPlainObject,
-  IsPromise,
-  IsString,
-  IsSymbol,
-  IsTypedArray,
-  IsUint8Array,
-  IsUndefined,
-  IsValueType,
-  type ObjectType,
-  type TypedArrayType,
-  type ValueType,
-} from './guard/index'
+export * from './cast/index'
+export * from './check/index'
+export * from './clean/index'
+export * from './clone/index'
+export * from './convert/index'
+export * from './create/index'
+export * from './default/index'
+export * from './delta/index'
+export * from './equal/index'
+export * from './hash/index'
+export * from './mutate/index'
+export * from './pointer/index'
+export * from './transform/index'
 // ------------------------------------------------------------------
-// Value Namespace
+// Namespace
 // ------------------------------------------------------------------
 export { Value } from './value/index'
