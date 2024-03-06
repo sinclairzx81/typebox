@@ -1694,6 +1694,7 @@ The following is a list of community packages that offer general tooling, extend
 | [http-wizard](https://github.com/flodlc/http-wizard) | Type safe http client library for Fastify |
 | [openapi-box](https://github.com/geut/openapi-box) | Generate TypeBox types from OpenApi IDL + Http client library |
 | [schema2typebox](https://github.com/xddq/schema2typebox)  | Creating TypeBox code from Json Schemas |
+| [sveltekit-superforms](https://github.com/ciscoheat/sveltekit-superforms)  | A comprehensive SvelteKit form library for server and client validation |
 | [ts2typebox](https://github.com/xddq/ts2typebox) | Creating TypeBox code from Typescript types |
 | [typebox-form-parser](https://github.com/jtlapp/typebox-form-parser) | Parses form and query data based on TypeBox schemas |
 | [typebox-validators](https://github.com/jtlapp/typebox-validators) | Advanced validators supporting discriminated and heterogeneous unions |
