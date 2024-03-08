@@ -74,6 +74,7 @@ function Default(schema: TSchema, value: any) {
   try {
     return IsTransform(schema) ? schema[TransformKind].Encode(value) : value
   } catch (error) {
+    if (error instanceof TypeBoxError) throw error
     throw new TransformEncodeError(schema, value, error)
   }
 }
