@@ -513,14 +513,21 @@ function* FromUndefined(schema: TUndefined, references: TSchema[], path: string,
   if (!IsUndefined(value)) yield Create(ValueErrorType.Undefined, schema, path, value)
 }
 function* FromUnion(schema: TUnion, references: TSchema[], path: string, value: any): IterableIterator<ValueError> {
-  let count = 0
+  let unionErrors: ValueError[] | undefined
   for (const subschema of schema.anyOf) {
     const errors = [...Visit(subschema, references, path, value)]
     if (errors.length === 0) return // matched
-    count += errors.length
+    if (unionErrors) {
+      for (const error of errors) unionErrors.push(error)
+    } else {
+      unionErrors = errors
+    }
   }
-  if (count > 0) {
-    yield Create(ValueErrorType.Union, schema, path, value)
+  if (unionErrors) {
+    const pathDepth = (error: ValueError) => error.path.split('/').length
+    yield unionErrors.reduce(
+      (deepestError, error) => (!deepestError || pathDepth(error) > pathDepth(deepestError) ? error : deepestError)
+    )
   }
 }
 function* FromUint8Array(schema: TUint8Array, references: TSchema[], path: string, value: any): IterableIterator<ValueError> {
