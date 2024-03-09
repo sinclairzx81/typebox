@@ -63,7 +63,7 @@ export class TransformDecodeCheckError extends TypeBoxError {
   }
 }
 export class TransformDecodeError extends TypeBoxError {
-  constructor(public readonly schema: TSchema, public readonly value: unknown, error: any) {
+  constructor(public readonly schema: TSchema, public readonly value: unknown, error?: any) {
     super(`${error instanceof Error ? error.message : 'Unknown error'}`)
   }
 }

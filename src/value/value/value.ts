@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { TransformDecode, TransformEncode, TransformDecodeCheckError, TransformEncodeCheckError } from '../transform/index'
+import { TransformDecode, TransformEncode, TransformDecodeCheckError, TransformEncodeCheckError, TransformEncodeError, TransformDecodeError } from '../transform/index'
 import { Mutate as MutateValue, type Mutable } from '../mutate/index'
 import { Hash as HashValue } from '../hash/index'
 import { Equal as EqualValue } from '../equal/index'
@@ -87,6 +87,7 @@ export function Convert(...args: any[]) {
 export function Clone<T>(value: T): T {
   return CloneValue(value)
 }
+const decodeStack: any[][] = []
 /** Decodes a value or throws if error */
 export function Decode<T extends TSchema, R = StaticDecode<T>>(schema: T, references: TSchema[], value: unknown): R
 /** Decodes a value or throws if error */
@@ -94,8 +95,29 @@ export function Decode<T extends TSchema, R = StaticDecode<T>>(schema: T, value:
 /** Decodes a value or throws if error */
 export function Decode(...args: any[]) {
   const [schema, references, value] = args.length === 3 ? [args[0], args[1], args[2]] : [args[0], [], args[1]]
-  if (!Check(schema, references, value)) throw new TransformDecodeCheckError(schema, value, Errors(schema, references, value).First()!)
-  return TransformDecode(schema, references, value)
+  decodeStack.push(args)
+  try {
+    if (Check(schema, references, value)) {
+      return TransformDecode(schema, references, value)
+    }
+  } catch(error) {
+    // If this is not a nested Decode call and the error is from a failed
+    // TransformDecode, we want to call Errors from here so the
+    // TransformDecodeCheckError includes the full JSON path. So the following
+    // check will only rethrow when we don't want to call Errors.
+    if (!(decodeStack.length === 1 && error instanceof TransformDecodeError)) {
+      throw error
+    }
+  } finally {
+    decodeStack.pop()
+  }
+  // If this is a nested Decode call, avoid calling Errors since it will not
+  // have the full JSON path. Also, it would likely produce a useless stack
+  // trace as most of the stack frames would be TypeBox internals.
+  if (decodeStack.length > 0) {
+    throw new TransformDecodeError(schema, value)
+  }
+  throw new TransformDecodeCheckError(schema, value, Errors(schema, references, value).First()!)
 }
 /** `[Mutable]` Generates missing properties on a value using default schema annotations if available. This function does not check the value and returns an unknown type. You should Check the result before use. Default is a mutable operation. To avoid mutation, Clone the value first. */
 export function Default(schema: TSchema, references: TSchema[], value: unknown): unknown
@@ -105,6 +127,7 @@ export function Default(schema: TSchema, value: unknown): unknown
 export function Default(...args: any[]) {
   return DefaultValue.apply(DefaultValue, args as any)
 }
+const encodeStack: any[][] = []
 /** Encodes a value or throws if error */
 export function Encode<T extends TSchema, R = StaticEncode<T>>(schema: T, references: TSchema[], value: unknown): R
 /** Encodes a value or throws if error */
@@ -112,9 +135,30 @@ export function Encode<T extends TSchema, R = StaticEncode<T>>(schema: T, value:
 /** Encodes a value or throws if error */
 export function Encode(...args: any[]) {
   const [schema, references, value] = args.length === 3 ? [args[0], args[1], args[2]] : [args[0], [], args[1]]
-  const encoded = TransformEncode(schema, references, value)
-  if (!Check(schema, references, encoded)) throw new TransformEncodeCheckError(schema, value, Errors(schema, references, value).First()!)
-  return encoded
+  encodeStack.push(args)
+  try {
+    const encoded = TransformEncode(schema, references, value)
+    if (Check(schema, references, encoded)) {
+      return encoded
+    }
+  } catch(error) {
+    // If this is not a nested Encode call and the error is from a failed
+    // TransformEncode, we want to call Errors from here so the
+    // TransformEncodeCheckError includes the full JSON path. So the following
+    // check will only rethrow when we don't want to call Errors.
+    if (!(encodeStack.length === 1 && error instanceof TransformEncodeError)) {
+      throw error
+    }
+  } finally {
+    encodeStack.pop()
+  }
+  // If this is a nested Encode call, avoid calling Errors since it will not
+  // have the full JSON path. Also, it would likely produce a useless stack
+  // trace as most of the stack frames would be TypeBox internals.
+  if (encodeStack.length > 0) {
+    throw new TransformEncodeError(schema, value)
+  }
+  throw new TransformEncodeCheckError(schema, value, Errors(schema, references, value).First()!)
 }
 /** Returns an iterator for each error in this value. */
 export function Errors<T extends TSchema>(schema: T, references: TSchema[], value: unknown): ValueErrorIterator
