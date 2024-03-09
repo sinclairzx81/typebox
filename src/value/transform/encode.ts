@@ -171,6 +171,9 @@ function FromTuple(schema: TTuple, references: TSchema[], value: any) {
 }
 // prettier-ignore
 function FromUnion(schema: TUnion, references: TSchema[], value: any) {
+  if (IsOptional(schema) && value === undefined) {
+    return undefined
+  }
   // test value against union variants
   for (const subschema of schema.anyOf) {
     if (!Check(subschema, references, value)) continue
