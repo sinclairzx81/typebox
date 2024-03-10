@@ -30,6 +30,8 @@ import type { TSchema, SchemaOptions } from '../schema/index'
 import type { Static } from '../static/index'
 import { Kind } from '../symbols/index'
 
+type Simplify<T> = {} & { [P in keyof T]: T[P] }
+
 // ------------------------------------------------------------------
 // IntersectStatic
 // ------------------------------------------------------------------
@@ -50,7 +52,7 @@ export interface IntersectOptions extends SchemaOptions {
 // prettier-ignore
 export interface TIntersect<T extends TSchema[] = TSchema[]> extends TSchema, IntersectOptions {
   [Kind]: 'Intersect'
-  static: TIntersectStatic<T, this['params']>
+  static: Simplify<TIntersectStatic<T, this['params']>>
   type?: 'object'
   allOf: [...T]
 }
