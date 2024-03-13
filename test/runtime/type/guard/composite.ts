@@ -130,8 +130,9 @@ describe('type/guard/TComposite', () => {
   // ----------------------------------------------------------------
   // Union
   // ----------------------------------------------------------------
+  // https://github.com/sinclairzx81/typebox/issues/789
   // prettier-ignore
-  it('Should composite Union 1', () => {
+  it('Should composite Union 1 (non-overlapping)', () => {
     const T = Type.Composite([
       Type.Union([
         Type.Object({ x: Type.Number() }),
@@ -142,11 +143,12 @@ describe('type/guard/TComposite', () => {
       ])
     ])
     Assert.IsEqual(T, Type.Object({
-      z: Type.Intersect([Type.Union([Type.Never(), Type.Never()]), Type.Number()])
+      z: Type.Number()
     }))
   })
+  // https://github.com/sinclairzx81/typebox/issues/789
   // prettier-ignore
-  it('Should composite Union 2', () => {
+  it('Should composite Union 2 (overlapping)', () => {
     const T = Type.Composite([
       Type.Union([
         Type.Object({ x: Type.Number() }),
