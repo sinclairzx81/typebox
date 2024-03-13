@@ -56,13 +56,24 @@ import { IsTransform, IsSchema } from '../../type/guard/type'
 // ------------------------------------------------------------------
 // Errors
 // ------------------------------------------------------------------
+// prettier-ignore
 export class TransformEncodeCheckError extends TypeBoxError {
-  constructor(public readonly schema: TSchema, public readonly value: unknown, public readonly error: ValueError) {
-    super(`Unable to encode due to invalid value`)
+  constructor(
+    public readonly schema: TSchema,
+    public readonly value: unknown, 
+    public readonly error: ValueError
+  ) {
+    super(`The encoded value does not match the expected schema`)
   }
 }
+// prettier-ignore
 export class TransformEncodeError extends TypeBoxError {
-  constructor(public readonly schema: TSchema, public readonly value: unknown, error: any) {
+  constructor(
+    public readonly schema: TSchema, 
+    public readonly path: string,
+    public readonly value: unknown, 
+    public readonly error: Error, 
+  ) {
     super(`${error instanceof Error ? error.message : 'Unknown error'}`)
   }
 }
@@ -70,53 +81,53 @@ export class TransformEncodeError extends TypeBoxError {
 // Encode
 // ------------------------------------------------------------------
 // prettier-ignore
-function Default(schema: TSchema, value: any) {
+function Default(schema: TSchema, path: string, value: any) {
   try {
     return IsTransform(schema) ? schema[TransformKind].Encode(value) : value
   } catch (error) {
-    throw new TransformEncodeError(schema, value, error)
+    throw new TransformEncodeError(schema, path, value, error as Error)
   }
 }
 // prettier-ignore
-function FromArray(schema: TArray, references: TSchema[], value: any): any {
-  const defaulted = Default(schema, value)
+function FromArray(schema: TArray, references: TSchema[], path: string, value: any): any {
+  const defaulted = Default(schema, path, value)
   return IsArray(defaulted)
-    ? defaulted.map((value: any) => Visit(schema.items, references, value))
+    ? defaulted.map((value: any, index) => Visit(schema.items, references, `${path}/${index}`, value))
     : defaulted
 }
 // prettier-ignore
-function FromIntersect(schema: TIntersect, references: TSchema[], value: any) {
-  const defaulted = Default(schema, value)
+function FromIntersect(schema: TIntersect, references: TSchema[], path: string, value: any) {
+  const defaulted = Default(schema, path, value)
   if (!IsStandardObject(value) || IsValueType(value)) return defaulted
   const knownKeys = KeyOfPropertyKeys(schema) as string[]
   const knownProperties = knownKeys.reduce((value, key) => {
     return key in defaulted 
-      ? { ...value, [key]: Visit(Index(schema, [key]), references, value[key]) } 
+      ? { ...value, [key]: Visit(Index(schema, [key]), references, `${path}/${key}`, value[key]) } 
       : value
   }, defaulted)
   if (!IsTransform(schema.unevaluatedProperties)) {
-    return Default(schema, knownProperties)
+    return Default(schema, path, knownProperties)
   }
   const unknownKeys = Object.getOwnPropertyNames(knownProperties)
   const unevaluatedProperties = schema.unevaluatedProperties as TSchema
   return unknownKeys.reduce((value, key) => {
     return !knownKeys.includes(key) 
-      ? { ...value, [key]: Default(unevaluatedProperties, value[key]) }  
+      ? { ...value, [key]: Default(unevaluatedProperties, `${path}/${key}`, value[key]) }  
       : value
   }, knownProperties)
 }
 // prettier-ignore
-function FromNot(schema: TNot, references: TSchema[], value: any) {
-  return Default(schema.not, Default(schema, value))
+function FromNot(schema: TNot, references: TSchema[], path: string, value: any) {
+  return Default(schema.not, path, Default(schema, path, value))
 }
 // prettier-ignore
-function FromObject(schema: TObject, references: TSchema[], value: any) {
-  const defaulted = Default(schema, value)
+function FromObject(schema: TObject, references: TSchema[], path: string, value: any) {
+  const defaulted = Default(schema, path, value)
   if (!IsStandardObject(value)) return defaulted
   const knownKeys = KeyOfPropertyKeys(schema) as string[]
   const knownProperties = knownKeys.reduce((value, key) => {
     return key in value 
-      ? { ...value, [key]: Visit(schema.properties[key], references, value[key]) } 
+      ? { ...value, [key]: Visit(schema.properties[key], references, `${path}/${key}`, value[key]) } 
       : value
   }, defaulted)
   if (!IsSchema(schema.additionalProperties)) {
@@ -126,90 +137,90 @@ function FromObject(schema: TObject, references: TSchema[], value: any) {
   const additionalProperties = schema.additionalProperties as TSchema
   return unknownKeys.reduce((value, key) => {
     return !knownKeys.includes(key) 
-      ? { ...value, [key]: Default(additionalProperties, value[key]) }  
+      ? { ...value, [key]: Default(additionalProperties, `${path}/${key}`, value[key]) }  
       : value
   }, knownProperties)
 }
 // prettier-ignore
-function FromRecord(schema: TRecord, references: TSchema[], value: any) {
-  const defaulted = Default(schema, value) as Record<PropertyKey, unknown>
+function FromRecord(schema: TRecord, references: TSchema[], path: string, value: any) {
+  const defaulted = Default(schema, path, value) as Record<PropertyKey, unknown>
   if (!IsStandardObject(value)) return defaulted
   const pattern = Object.getOwnPropertyNames(schema.patternProperties)[0]
   const knownKeys = new RegExp(pattern)
   const knownProperties = Object.getOwnPropertyNames(value).reduce((value, key) => {
     return knownKeys.test(key) 
-      ? { ...value, [key]: Visit(schema.patternProperties[pattern], references, value[key]) }
+      ? { ...value, [key]: Visit(schema.patternProperties[pattern], references, `${path}/${key}`, value[key]) }
       : value
   }, defaulted)
   if (!IsSchema(schema.additionalProperties)) {
-    return Default(schema, knownProperties)
+    return Default(schema, path, knownProperties)
   }
   const unknownKeys = Object.getOwnPropertyNames(knownProperties)
   const additionalProperties = schema.additionalProperties as TSchema
   return unknownKeys.reduce((value, key) => {
     return !knownKeys.test(key) 
-      ? { ...value, [key]: Default(additionalProperties, value[key]) }  
+      ? { ...value, [key]: Default(additionalProperties, `${path}/${key}`, value[key]) }  
       : value
   }, knownProperties)
 }
 // prettier-ignore
-function FromRef(schema: TRef, references: TSchema[], value: any) {
+function FromRef(schema: TRef, references: TSchema[], path: string, value: any) {
   const target = Deref(schema, references)
-  const resolved = Visit(target, references, value)
-  return Default(schema, resolved)
+  const resolved = Visit(target, references, path, value)
+  return Default(schema, path, resolved)
 }
 // prettier-ignore
-function FromThis(schema: TThis, references: TSchema[], value: any) {
+function FromThis(schema: TThis, references: TSchema[], path: string, value: any) {
   const target = Deref(schema, references)
-  const resolved = Visit(target, references, value)
-  return Default(schema, resolved)
+  const resolved = Visit(target, references, path, value)
+  return Default(schema, path, resolved)
 }
 // prettier-ignore
-function FromTuple(schema: TTuple, references: TSchema[], value: any) {
-  const value1 = Default(schema, value)
-  return IsArray(schema.items) ? schema.items.map((schema, index) => Visit(schema, references, value1[index])) : []
+function FromTuple(schema: TTuple, references: TSchema[], path: string, value: any) {
+  const value1 = Default(schema, path, value)
+  return IsArray(schema.items) ? schema.items.map((schema, index) => Visit(schema, references, `${path}/${index}`, value1[index])) : []
 }
 // prettier-ignore
-function FromUnion(schema: TUnion, references: TSchema[], value: any) {
+function FromUnion(schema: TUnion, references: TSchema[], path: string, value: any) {
   // test value against union variants
   for (const subschema of schema.anyOf) {
     if (!Check(subschema, references, value)) continue
-    const value1 = Visit(subschema, references, value)
-    return Default(schema, value1)
+    const value1 = Visit(subschema, references, path, value)
+    return Default(schema, path, value1)
   }
   // test transformed value against union variants
   for (const subschema of schema.anyOf) {
-    const value1 = Visit(subschema, references, value)
+    const value1 = Visit(subschema, references, path, value)
     if (!Check(schema, references, value1)) continue
-    return Default(schema, value1)
+    return Default(schema, path, value1)
   }
-  return Default(schema, value)
+  return Default(schema, path, value)
 }
 // prettier-ignore
-function Visit(schema: TSchema, references: TSchema[], value: any): any {
+function Visit(schema: TSchema, references: TSchema[], path: string, value: any): any {
   const references_ = typeof schema.$id === 'string' ? [...references, schema] : references
   const schema_ = schema as any
   switch (schema[Kind]) {
     case 'Array':
-      return FromArray(schema_, references_, value)
+      return FromArray(schema_, references_, path, value)
     case 'Intersect':
-      return FromIntersect(schema_, references_, value)
+      return FromIntersect(schema_, references_, path, value)
     case 'Not':
-      return FromNot(schema_, references_, value)
+      return FromNot(schema_, references_, path, value)
     case 'Object':
-      return FromObject(schema_, references_, value)
+      return FromObject(schema_, references_, path, value)
     case 'Record':
-      return FromRecord(schema_, references_, value)
+      return FromRecord(schema_, references_, path, value)
     case 'Ref':
-      return FromRef(schema_, references_, value)
+      return FromRef(schema_, references_, path, value)
     case 'This':
-      return FromThis(schema_, references_, value)
+      return FromThis(schema_, references_, path, value)
     case 'Tuple':
-      return FromTuple(schema_, references_, value)
+      return FromTuple(schema_, references_, path, value)
     case 'Union':
-      return FromUnion(schema_, references_, value)
+      return FromUnion(schema_, references_, path, value)
     default:
-      return Default(schema_, value)
+      return Default(schema_, path, value)
   }
 }
 /**
@@ -219,5 +230,5 @@ function Visit(schema: TSchema, references: TSchema[], value: any): any {
  * `Value.Encode()` function for implementation details.
  */
 export function TransformEncode(schema: TSchema, references: TSchema[], value: unknown): unknown {
-  return Visit(schema, references, value)
+  return Visit(schema, references, '', value)
 }
