@@ -183,11 +183,8 @@ function FromDate(schema: TDate, references: TSchema[], value: any): unknown {
 function FromInteger(schema: TInteger, references: TSchema[], value: any): unknown {
   return TryConvertInteger(value)
 }
-// prettier-ignore
 function FromIntersect(schema: TIntersect, references: TSchema[], value: any): unknown {
-  const allObjects = schema.allOf.every(schema => IsObjectType(schema))
-  if(allObjects) return Visit(Composite(schema.allOf as TObject[]), references, value)
-  return Visit(schema.allOf[0], references, value) // todo: fix this
+  return schema.allOf.reduce((value, schema) => Visit(schema, references, value), value)
 }
 function FromLiteral(schema: TLiteral, references: TSchema[], value: any): unknown {
   return TryConvertLiteral(schema, value)
@@ -243,13 +240,7 @@ function FromUndefined(schema: TUndefined, references: TSchema[], value: any): u
   return TryConvertUndefined(value)
 }
 function FromUnion(schema: TUnion, references: TSchema[], value: any): unknown {
-  for (const subschema of schema.anyOf) {
-    const converted = Visit(subschema, references, value)
-    if (Check(subschema, references, converted)) {
-      return converted
-    }
-  }
-  return value
+  return schema.anyOf.reduce((value, schema) => Visit(schema, references, value), value)
 }
 function Visit(schema: TSchema, references: TSchema[], value: any): unknown {
   const references_ = IsString(schema.$id) ? [...references, schema] : references

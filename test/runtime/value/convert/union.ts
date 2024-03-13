@@ -14,11 +14,11 @@ describe('value/convert/Union', () => {
     Assert.IsEqual(V2, { x: null })
     Assert.IsEqual(V3, { x: 'hello' })
   })
-  it('Should convert first variant in ambiguous conversion', () => {
+  it('Should convert last variant in ambiguous conversion', () => {
     const T = Type.Object({
       x: Type.Union([Type.Boolean(), Type.Number()]),
     })
     const V1 = Value.Convert(T, { x: '1' })
-    Assert.IsEqual(V1, { x: true })
+    Assert.IsEqual(V1, { x: 1 })
   })
 })
