@@ -1,4 +1,4 @@
-import { Value } from '@sinclair/typebox/value'
+import { Convert, Value } from '@sinclair/typebox/value'
 import { Type } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
@@ -20,5 +20,24 @@ describe('value/convert/Union', () => {
     })
     const V1 = Value.Convert(T, { x: '1' })
     Assert.IsEqual(V1, { x: 1 })
+  })
+  // ----------------------------------------------------------------
+  // https://github.com/sinclairzx81/typebox/issues/787
+  // ----------------------------------------------------------------
+  // prettier-ignore
+  it('Should convert Intersect Union', () => {
+    const T = Type.Intersect([
+      Type.Union([
+        Type.Object({ a: Type.Number() }),
+        Type.Object({ b: Type.Number() }),
+      ]),
+      Type.Object({ c: Type.Number() }),
+    ])
+    const A = Convert(T, { a: '1', c: '2' })
+    const B = Convert(T, { b: '1', c: '2' })
+    const C = Convert(T, { a: '1', b: '2', c: '3' })
+    Assert.IsEqual(A, { a: 1, c: 2 })
+    Assert.IsEqual(B, { b: 1, c: 2 })
+    Assert.IsEqual(C, { a: 1, b: 2, c: 3 })
   })
 })
