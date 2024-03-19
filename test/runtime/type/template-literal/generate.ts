@@ -44,12 +44,12 @@ describe('type/template-literal/TemplateLiteralExpressionGenerate', () => {
   it('Expression 2', () => {
     const E = TemplateLiteralParse('\\)')
     const R = [...TemplateLiteralExpressionGenerate(E)]
-    Assert.IsEqual(R, ['\\)'])
+    Assert.IsEqual(R, [')'])
   })
   it('Expression 3', () => {
     const E = TemplateLiteralParse('\\(')
     const R = [...TemplateLiteralExpressionGenerate(E)]
-    Assert.IsEqual(R, ['\\('])
+    Assert.IsEqual(R, ['('])
   })
   it('Expression 4', () => {
     const E = TemplateLiteralParse('')
@@ -195,5 +195,10 @@ describe('type/template-literal/TemplateLiteralExpressionGenerate', () => {
     const E = TemplateLiteralParse('(0(1|0)1)')
     const R = [...TemplateLiteralExpressionGenerate(E)]
     Assert.IsEqual(R, ['011', '001'])
+  })
+  it('Expression 33', () => {
+    const E = TemplateLiteralParse('\\$prop(1|2|3)')
+    const R = [...TemplateLiteralExpressionGenerate(E)]
+    Assert.IsEqual(R, ['$prop1', '$prop2', '$prop3'])
   })
 })

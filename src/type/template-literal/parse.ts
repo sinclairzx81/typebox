@@ -40,23 +40,42 @@ export type Expression = ExpressionAnd | ExpressionOr | ExpressionConst
 export type ExpressionConst = { type: 'const'; const: string }
 export type ExpressionAnd = { type: 'and'; expr: Expression[] }
 export type ExpressionOr = { type: 'or'; expr: Expression[] }
+// -------------------------------------------------------------------
+// Unescape
+//
+// Unescape for these control characters specifically. Note that this
+// function is only called on non union group content, and where we
+// still want to allow the user to embed control characters in that
+// content. For review.
+// -------------------------------------------------------------------
 // prettier-ignore
+function Unescape(pattern: string) {
+  return pattern
+    .replace(/\\\$/g, '$')
+    .replace(/\\\*/g, '*')
+    .replace(/\\\^/g, '^')
+    .replace(/\\\|/g, '|')
+    .replace(/\\\(/g, '(')
+    .replace(/\\\)/g, ')')
+}
+// -------------------------------------------------------------------
+// Control Characters
+// -------------------------------------------------------------------
 function IsNonEscaped(pattern: string, index: number, char: string) {
   return pattern[index] === char && pattern.charCodeAt(index - 1) !== 92
 }
-// prettier-ignore
 function IsOpenParen(pattern: string, index: number) {
   return IsNonEscaped(pattern, index, '(')
 }
-// prettier-ignore
 function IsCloseParen(pattern: string, index: number) {
   return IsNonEscaped(pattern, index, ')')
 }
-// prettier-ignore
 function IsSeparator(pattern: string, index: number) {
   return IsNonEscaped(pattern, index, '|')
 }
-// prettier-ignore
+// -------------------------------------------------------------------
+// Control Groups
+// -------------------------------------------------------------------
 function IsGroup(pattern: string) {
   if (!(IsOpenParen(pattern, 0) && IsCloseParen(pattern, pattern.length - 1))) return false
   let count = 0
@@ -155,7 +174,7 @@ export function TemplateLiteralParse(pattern: string): Expression {
     IsGroup(pattern) ? TemplateLiteralParse(InGroup(pattern)) :
     IsPrecedenceOr(pattern) ? Or(pattern) :
     IsPrecedenceAnd(pattern) ? And(pattern) :
-    { type: 'const', const: pattern }
+    { type: 'const', const: Unescape(pattern) }
   )
 }
 // ------------------------------------------------------------------

@@ -113,7 +113,7 @@ export function Encode<T extends TSchema, R = StaticEncode<T>>(schema: T, value:
 export function Encode(...args: any[]) {
   const [schema, references, value] = args.length === 3 ? [args[0], args[1], args[2]] : [args[0], [], args[1]]
   const encoded = TransformEncode(schema, references, value)
-  if (!Check(schema, references, encoded)) throw new TransformEncodeCheckError(schema, value, Errors(schema, references, value).First()!)
+  if (!Check(schema, references, encoded)) throw new TransformEncodeCheckError(schema, encoded, Errors(schema, references, encoded).First()!)
   return encoded
 }
 /** Returns an iterator for each error in this value. */

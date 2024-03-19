@@ -88,12 +88,41 @@ function FromIntersect<T extends TSchema[], K extends PropertyKey>(T: [...T], K:
 }
 // ------------------------------------------------------------------
 // FromUnionRest
+//
+// The following accept a tuple of indexed key results. When evaluating
+// these results, we check if any result evaluated to TNever. For key
+// indexed unions, a TNever result indicates that the key was not
+// present on the variant. In these cases, we must evaluate the indexed
+// union to TNever (as given by a [] result). This logic aligns to the
+// following behaviour.
+//
+// Non-Overlapping Union
+//
+// type A = { a: string }
+// type B = { b: string }
+// type C = (A | B) & { a: number } // C is { a: number }
+//
+// Overlapping Union
+//
+// type A = { a: string }
+// type B = { a: string }
+// type C = (A | B) & { a: number } // C is { a: never }
+//
 // ------------------------------------------------------------------
 // prettier-ignore
-type TFromUnionRest<T extends TSchema[]> = T
+type TFromUnionRest<T extends TSchema[], Acc extends TSchema[] = []> = 
+  T extends [infer L extends TSchema, ...infer R extends TSchema[]]
+    ? L extends TNever 
+      ? []
+      : TFromUnionRest<R, [L, ...Acc]>
+    : Acc
 // prettier-ignore
 function FromUnionRest<T extends TSchema[]>(T: [...T]): TFromUnionRest<T> {
-  return T as never // review this
+  return (
+    T.some(L => IsNever(L)) 
+      ? [] 
+      : T 
+  ) as never
 }
 // ------------------------------------------------------------------
 // FromUnion
