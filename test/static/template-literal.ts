@@ -77,3 +77,38 @@ import { Type } from '@sinclair/typebox'
   const T = Type.TemplateLiteral([Type.Literal('hello'), A])
   Expect(T).ToStatic<'helloA' | 'helloB'>()
 }
+// ------------------------------------------------------------------
+// Dollar Sign Escape
+// https://github.com/sinclairzx81/typebox/issues/794
+// ------------------------------------------------------------------
+// prettier-ignore
+{
+  const T = Type.TemplateLiteral('$prop${A|B|C}') // issue
+  Expect(T).ToStatic<'$propA' | '$propB' | '$propC'>()
+}
+// prettier-ignore
+{
+  const T = Type.TemplateLiteral('$prop${A|B|C}x') // trailing
+  Expect(T).ToStatic<'$propAx' | '$propBx' | '$propCx'>()
+}
+// prettier-ignore
+{ 
+  const T = Type.TemplateLiteral('$prop${A|B|C}x}') // non-greedy
+  Expect(T).ToStatic<'$propAx}' | '$propBx}' | '$propCx}'>()
+}
+// prettier-ignore
+{
+  const T = Type.TemplateLiteral('$prop${A|B|C}x}${X|Y}') // distributive - non-greedy
+  Expect(T).ToStatic<
+    '$propAx}X' | '$propBx}X' | '$propCx}X' | 
+    '$propAx}Y' | '$propBx}Y' | '$propCx}Y'
+  >()
+}
+// prettier-ignore
+{ 
+  const T = Type.TemplateLiteral('$prop${A|B|C}x}${X|Y}x') // distributive - non-greedy - trailing
+  Expect(T).ToStatic<
+    '$propAx}Xx' | '$propBx}Xx' | '$propCx}Xx' | 
+    '$propAx}Yx' | '$propBx}Yx' | '$propCx}Yx'
+  >()
+}

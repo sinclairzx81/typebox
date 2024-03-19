@@ -84,14 +84,14 @@ describe('type/template-literal/TemplateLiteralParser', () => {
     const E = TemplateLiteralParse('\\)')
     Assert.IsEqual(E, {
       type: 'const',
-      const: '\\)',
+      const: ')',
     })
   })
   it('Expression 3', () => {
     const E = TemplateLiteralParse('\\(')
     Assert.IsEqual(E, {
       type: 'const',
-      const: '\\(',
+      const: '(',
     })
   })
   it('Expression 4', () => {

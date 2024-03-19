@@ -139,4 +139,18 @@ describe('type/guard/TRecord', () => {
     const R = TypeGuard.IsObject(Type.Record(K, Type.Number()))
     Assert.IsTrue(R)
   })
+  // ------------------------------------------------------------------
+  // Evaluated: Dollar Sign Escape
+  // https://github.com/sinclairzx81/typebox/issues/794
+  // ------------------------------------------------------------------
+  // prettier-ignore
+  {
+    const K = Type.TemplateLiteral('$prop${A|B|C}') // issue
+    const T = Type.Record(K, Type.String())
+    Assert.IsTrue(TypeGuard.IsObject(T))
+    Assert.IsTrue(TypeGuard.IsString(T.properties.$propA))
+    Assert.IsTrue(TypeGuard.IsString(T.properties.$propB))
+    Assert.IsTrue(TypeGuard.IsString(T.properties.$propC))
+    Assert.IsEqual(T.required, ['$propA', '$propB', '$propC'])
+  }
 })

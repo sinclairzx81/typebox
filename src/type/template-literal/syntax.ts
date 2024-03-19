@@ -100,7 +100,10 @@ type FromTerminal<T extends string> =
 // prettier-ignore
 type FromString<T extends string> =
   T extends `{${infer L}}${infer R}` ? [FromTerminal<L>, ...FromString<R>] :
-  T extends `${infer L}$${infer R}` ? [TLiteral<L>, ...FromString<R>] :
+  // note: to correctly handle $ characters encoded in the sequence, we need to
+  // lookahead and test against opening and closing union groups.
+  T extends `${infer L}$\{${infer R1}\}${infer R2}` ? [TLiteral<L>, ...FromString<`{${R1}}`>, ...FromString<R2>] :
+  T extends `${infer L}$\{${infer R1}\}` ? [TLiteral<L>, ...FromString<`{${R1}}`>] :
   T extends `${infer L}` ? [TLiteral<L>] :
   []
 

@@ -175,3 +175,17 @@ import { Type, Static } from '@sinclair/typebox'
   const T = Type.Record(Type.Enum(E), Type.Number())
   Expect(T).ToStatic<{ [x: string]: number }>
 }
+// ------------------------------------------------------------------
+// Dollar Sign Escape
+// https://github.com/sinclairzx81/typebox/issues/794
+// ------------------------------------------------------------------
+// prettier-ignore
+{
+  const K = Type.TemplateLiteral('$prop${A|B|C}') // issue
+  const T = Type.Record(K, Type.String())
+  Expect(T).ToStatic<{
+    '$propA': string,
+    '$propB': string,
+    '$propC': string
+  }>()
+}
