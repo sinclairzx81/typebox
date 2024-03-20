@@ -1,4 +1,7 @@
 import { Type, TSchema, Static, StaticDecode, TObject, TNumber } from '@sinclair/typebox'
+import { TypeCheck } from '@sinclair/typebox/compiler'
+import { Value } from '@sinclair/typebox/value'
+
 import { Expect } from './assert'
 {
   // string > number
@@ -308,4 +311,12 @@ import { Expect } from './assert'
   const T = Type.Constructor([S], S)
   Expect(T).ToStaticDecode<new (x: Date) => Date>()
   Expect(T).ToStaticEncode<new (x: number) => number>()
+}
+// -------------------------------------------------------------
+// https://github.com/sinclairzx81/typebox/issues/798
+// -------------------------------------------------------------
+{
+  const c1: TypeCheck<any> = {} as any
+  const x1 = c1.Decode({})
+  const x2 = Value.Decode({} as any, {})
 }
