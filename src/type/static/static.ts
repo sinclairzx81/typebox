@@ -85,8 +85,9 @@ export type TDecodeType<T extends TSchema> = (
 // ------------------------------------------------------------------
 // Static
 // ------------------------------------------------------------------
+export type StaticDecodeIsAny<T> = boolean extends (T extends TSchema ? true : false) ? true : false
 /** Creates an decoded static type from a TypeBox type */
-export type StaticDecode<T extends TSchema, P extends unknown[] = []> = Static<TDecodeType<T>, P>
+export type StaticDecode<T extends TSchema, P extends unknown[] = []> = StaticDecodeIsAny<T> extends true ? unknown : Static<TDecodeType<T>, P>
 /** Creates an encoded static type from a TypeBox type */
 export type StaticEncode<T extends TSchema, P extends unknown[] = []> = Static<T, P>
 /** Creates a static type from a TypeBox type */
