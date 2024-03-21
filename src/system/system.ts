@@ -27,7 +27,7 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import { TypeRegistry, FormatRegistry } from '../type/registry/index'
-import { Unsafe } from '../type/unsafe/index'
+import { Unsafe, type TUnsafe } from '../type/unsafe/index'
 import { Kind } from '../type/symbols/index'
 import { TypeBoxError } from '../type/error/index'
 
@@ -47,10 +47,12 @@ export class TypeSystemDuplicateFormat extends TypeBoxError {
 // ------------------------------------------------------------------
 // TypeSystem
 // ------------------------------------------------------------------
+export type TypeFactoryFunction<Type, Options = Record<PropertyKey, unknown>> = (options?: Partial<Options>) => TUnsafe<Type>
+
 /** Creates user defined types and formats and provides overrides for value checking behaviours */
 export namespace TypeSystem {
   /** Creates a new type */
-  export function Type<Type, Options = Record<PropertyKey, unknown>>(kind: string, check: (options: Options, value: unknown) => boolean) {
+  export function Type<Type, Options = Record<PropertyKey, unknown>>(kind: string, check: (options: Options, value: unknown) => boolean): TypeFactoryFunction<Type, Options> {
     if (TypeRegistry.Has(kind)) throw new TypeSystemDuplicateTypeKind(kind)
     TypeRegistry.Set(kind, check)
     return (options: Partial<Options> = {}) => Unsafe<Type>({ ...options, [Kind]: kind })
