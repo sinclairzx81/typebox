@@ -14,12 +14,12 @@ describe('value/convert/Union', () => {
     Assert.IsEqual(V2, { x: null })
     Assert.IsEqual(V3, { x: 'hello' })
   })
-  it('Should convert last variant in ambiguous conversion', () => {
+  it('Should convert first variant in ambiguous conversion', () => {
     const T = Type.Object({
       x: Type.Union([Type.Boolean(), Type.Number()]),
     })
     const V1 = Value.Convert(T, { x: '1' })
-    Assert.IsEqual(V1, { x: 1 })
+    Assert.IsEqual(V1, { x: true })
   })
   // ----------------------------------------------------------------
   // https://github.com/sinclairzx81/typebox/issues/787
@@ -38,6 +38,6 @@ describe('value/convert/Union', () => {
     const C = Convert(T, { a: '1', b: '2', c: '3' })
     Assert.IsEqual(A, { a: 1, c: 2 })
     Assert.IsEqual(B, { b: 1, c: 2 })
-    Assert.IsEqual(C, { a: 1, b: 2, c: 3 })
+    Assert.IsEqual(C, { a: 1, b: '2', c: 3 }) // note: matching on first
   })
 })
