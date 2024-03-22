@@ -240,7 +240,12 @@ function FromUndefined(schema: TUndefined, references: TSchema[], value: any): u
   return TryConvertUndefined(value)
 }
 function FromUnion(schema: TUnion, references: TSchema[], value: any): unknown {
-  return schema.anyOf.reduce((value, schema) => Visit(schema, references, value), value)
+  for (const subschema of schema.anyOf) {
+    const converted = Visit(subschema, references, value)
+    if (!Check(subschema, references, converted)) continue
+    return converted
+  }
+  return value
 }
 function Visit(schema: TSchema, references: TSchema[], value: any): unknown {
   const references_ = IsString(schema.$id) ? [...references, schema] : references
