@@ -33,34 +33,55 @@ import { ValuePointer } from '../pointer/index'
 import { Clone } from '../clone/index'
 import { TypeBoxError } from '../../type/error/index'
 
-import { Literal as CreateLiteral } from '../../type/literal/index'
-import { Object as CreateObject } from '../../type/object/index'
-import { String as CreateString } from '../../type/string/index'
-import { Unknown as CreateUnknown } from '../../type/unknown/index'
-import { Union as CreateUnion } from '../../type/union/index'
+import { Literal, type TLiteral } from '../../type/literal/index'
+import { Object, type TObject } from '../../type/object/index'
+import { String, type TString } from '../../type/string/index'
+import { Unknown, type TUnknown } from '../../type/unknown/index'
+import { Union, type TUnion } from '../../type/union/index'
 
 // ------------------------------------------------------------------
 // Commands
 // ------------------------------------------------------------------
+
+// Note: A TypeScript 5.4.2 compiler regression resulted in the type
+// import paths being generated incorrectly. We can resolve this by
+// explicitly importing the correct TSchema types above. Note also
+// that the left-side annotations are optional, but since the types
+// are imported we might as well use them. We should check this
+// regression in future. The regression occured between TypeScript
+// versions 5.3.3 -> 5.4.2.
+
 export type Insert = Static<typeof Insert>
-export const Insert = CreateObject({
-  type: CreateLiteral('insert'),
-  path: CreateString(),
-  value: CreateUnknown(),
+export const Insert: TObject<{
+  type: TLiteral<'insert'>
+  path: TString
+  value: TUnknown
+}> = Object({
+  type: Literal('insert'),
+  path: String(),
+  value: Unknown(),
 })
 export type Update = Static<typeof Update>
-export const Update = CreateObject({
-  type: CreateLiteral('update'),
-  path: CreateString(),
-  value: CreateUnknown(),
+export const Update: TObject<{
+  type: TLiteral<'update'>
+  path: TString
+  value: TUnknown
+}> = Object({
+  type: Literal('update'),
+  path: String(),
+  value: Unknown(),
 })
 export type Delete = Static<typeof Delete>
-export const Delete = CreateObject({
-  type: CreateLiteral('delete'),
-  path: CreateString(),
+export const Delete: TObject<{
+  type: TLiteral<'delete'>
+  path: TString
+}> = Object({
+  type: Literal('delete'),
+  path: String(),
 })
 export type Edit = Static<typeof Edit>
-export const Edit = CreateUnion([Insert, Update, Delete])
+export const Edit: TUnion<[typeof Insert, typeof Update, typeof Delete]> = Union([Insert, Update, Delete])
+
 // ------------------------------------------------------------------
 // Errors
 // ------------------------------------------------------------------
