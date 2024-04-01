@@ -66,7 +66,7 @@ export interface StringOptions extends SchemaOptions {
   /** The minimum string length */
   minLength?: number
   /** A regular expression pattern this string should match */
-  pattern?: string
+  pattern?: RegExp
   /** A format this string should match */
   format?: StringFormatOption
   /** The content encoding for this string */
