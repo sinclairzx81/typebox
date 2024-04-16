@@ -1698,6 +1698,7 @@ The following is a list of community packages that offer general tooling, extend
 | [ts2typebox](https://github.com/xddq/ts2typebox) | Creating TypeBox code from Typescript types |
 | [typebox-form-parser](https://github.com/jtlapp/typebox-form-parser) | Parses form and query data based on TypeBox schemas |
 | [typebox-validators](https://github.com/jtlapp/typebox-validators) | Advanced validators supporting discriminated and heterogeneous unions |
+| [prismabox](https://github.com/m1212e/prismabox) | Converts a prisma.schema to typebox schemes matching the database models |
 
 <a name='benchmark'></a>
 
