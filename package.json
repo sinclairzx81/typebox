@@ -37,6 +37,6 @@
     "ajv-formats": "^2.1.1",
     "mocha": "^9.2.2",
     "prettier": "^2.7.1",
-    "typescript": "^5.4.3"
+    "typescript": "^5.4.5"
   }
 }
