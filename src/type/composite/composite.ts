@@ -45,14 +45,14 @@ import { IsNever } from '../guard/type'
 // prettier-ignore
 type TCompositeKeys<T extends TSchema[], Acc extends PropertyKey[] = []> = (
   T extends [infer L extends TSchema, ...infer R extends TSchema[]]
-    ? TCompositeKeys<R, TSetDistinct<[...Acc, ...TKeyOfPropertyKeys<L>]>>
-    : Acc
+    ? TCompositeKeys<R, [...Acc, ...TKeyOfPropertyKeys<L>]>
+    : TSetDistinct<Acc>
 )
 // prettier-ignore
 function CompositeKeys<T extends TSchema[]>(T: [...T]): TCompositeKeys<T> {
-  return T.reduce((Acc, L) => {
-    return SetDistinct([...Acc, ...KeyOfPropertyKeys(L)]) as never
-  }, []) as never
+  return SetDistinct(T.reduce((Acc, L) => {
+    return ([...Acc, ...KeyOfPropertyKeys(L)]) as never
+  }, [])) as never
 }
 // ------------------------------------------------------------------
 // FilterNever
@@ -61,7 +61,7 @@ function CompositeKeys<T extends TSchema[]>(T: [...T]): TCompositeKeys<T> {
 type TFilterNever<T extends TSchema[], Acc extends TSchema[] = []> = (
   T extends [infer L extends TSchema, ...infer R extends TSchema[]]
     ? L extends TNever 
-      ? Acc 
+      ? TFilterNever<R, [...Acc]> 
       : TFilterNever<R, [...Acc, L]>
     : Acc
 )
@@ -75,14 +75,14 @@ function FilterNever<T extends TSchema[]>(T: [...T]): TFilterNever<T> {
 // prettier-ignore
 type TCompositeProperty<T extends TSchema[], K extends PropertyKey, Acc extends TSchema[] = []> = (
   T extends [infer L extends TSchema, ...infer R extends TSchema[]]
-   ? TCompositeProperty<R, K, TFilterNever<[...Acc, ...TIndexFromPropertyKeys<L, [K]>]>>
-   : Acc
+   ? TCompositeProperty<R, K, [...Acc, ...TIndexFromPropertyKeys<L, [K]>]>
+   : TFilterNever<Acc>
 )
 // prettier-ignore
 function CompositeProperty<T extends TSchema[], K extends PropertyKey>(T: [...T], K: K): TCompositeProperty<T, K> {
-  return T.reduce((Acc, L) => {
-    return FilterNever([...Acc, ...IndexFromPropertyKeys(L, [K])])
-  }, []) as never
+  return FilterNever(T.reduce((Acc, L) => {
+    return [...Acc, ...IndexFromPropertyKeys(L, [K])] as never
+  }, [])) as never
 }
 // ------------------------------------------------------------------
 // CompositeProperties

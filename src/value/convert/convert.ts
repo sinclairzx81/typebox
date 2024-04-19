@@ -29,10 +29,7 @@ THE SOFTWARE.
 import { Clone } from '../clone/index'
 import { Check } from '../check/index'
 import { Deref } from '../deref/index'
-
-import { IsObject as IsObjectType } from '../../type/guard/type'
 import { Kind } from '../../type/symbols/index'
-import { Composite } from '../../type/composite/index'
 
 import type { TSchema } from '../../type/schema/index'
 import type { TArray } from '../../type/array/index'
@@ -166,10 +163,8 @@ function Default(value: any) {
 // Convert
 // ------------------------------------------------------------------
 function FromArray(schema: TArray, references: TSchema[], value: any): any {
-  if (IsArray(value)) {
-    return value.map((value) => Visit(schema.items, references, value))
-  }
-  return value
+  const elements = IsArray(value) ? value : [value]
+  return elements.map((element) => Visit(schema.items, references, element))
 }
 function FromBigInt(schema: TBigInt, references: TSchema[], value: any): unknown {
   return TryConvertBigInt(value)
