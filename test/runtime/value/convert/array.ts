@@ -29,4 +29,28 @@ describe('value/convert/Array', () => {
     Assert.IsEqual(R[5].getTime(), 0)
     Assert.IsEqual(R[6], 'hello')
   })
+  // ----------------------------------------------------------------
+  // Array Coercion
+  // ----------------------------------------------------------------
+  it('Should convert into array (convert interior)', () => {
+    const T = Type.Array(Type.Number())
+    const R = Value.Convert(T, '1')
+    Assert.IsEqual(R, [1])
+  })
+  it('Should convert into array (retain interior)', () => {
+    const T = Type.Array(Type.Number())
+    const R = Value.Convert(T, 'A')
+    Assert.IsEqual(R, ['A'])
+  })
+  it('Should convert into array (object)', () => {
+    const T = Type.Array(
+      Type.Object({
+        x: Type.Number(),
+        y: Type.Number(),
+        z: Type.Number(),
+      }),
+    )
+    const R = Value.Convert(T, { x: '1', y: true, z: null })
+    Assert.IsEqual(R, [{ x: 1, y: 1, z: null }])
+  })
 })
