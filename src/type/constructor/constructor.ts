@@ -36,7 +36,7 @@ import { CloneType, CloneRest } from '../clone/type'
 import { Kind } from '../symbols/index'
 
 // ------------------------------------------------------------------
-// StaticFunction
+// StaticConstructor
 // ------------------------------------------------------------------
 type StaticReturnType<U extends TSchema, P extends unknown[]> = Static<U, P>
 // prettier-ignore
