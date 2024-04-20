@@ -29,28 +29,38 @@ THE SOFTWARE.
 import type { TSchema, SchemaOptions } from '../schema/index'
 import type { Static } from '../static/index'
 import type { Ensure } from '../helpers/index'
+import type { TReadonlyOptional } from '../readonly-optional/index'
+import type { TReadonly } from '../readonly/index'
+import type { TOptional } from '../optional/index'
 import { CloneType, CloneRest } from '../clone/type'
 import { Kind } from '../symbols/index'
 
 // ------------------------------------------------------------------
-// FunctionStatic
+// StaticFunction
 // ------------------------------------------------------------------
-type FunctionStaticReturnType<T extends TSchema, P extends unknown[]> = Static<T, P>
+type StaticReturnType<U extends TSchema, P extends unknown[]> = Static<U, P>
 // prettier-ignore
-type FunctionStaticParameters<T extends TSchema[], P extends unknown[], Acc extends unknown[] = []> = 
+type StaticParameter<T extends TSchema, P extends unknown[]> =
+  T extends TReadonlyOptional<T> ? [Readonly<Static<T, P>>?] :
+  T extends TReadonly<T> ? [Readonly<Static<T, P>>] :
+  T extends TOptional<T> ? [Static<T, P>?] :
+  [Static<T, P>]
+// prettier-ignore
+type StaticParameters<T extends TSchema[], P extends unknown[], Acc extends unknown[] = []> = (
   T extends [infer L extends TSchema, ...infer R extends TSchema[]]
-    ? FunctionStaticParameters<R, P, [...Acc, Static<L, P>]>
+    ? StaticParameters<R, P, [...Acc, ...StaticParameter<L, P>]>
     : Acc
-// prettier-ignore
-type FunctionStatic<T extends TSchema[], U extends TSchema, P extends unknown[]> = (
-  Ensure<(...param: FunctionStaticParameters<T, P>) => FunctionStaticReturnType<U, P>>
 )
+// prettier-ignore
+type StaticFunction<T extends TSchema[], U extends TSchema, P extends unknown[]> =
+  Ensure<(...params: StaticParameters<T, P>) => StaticReturnType<U, P>>
+
 // ------------------------------------------------------------------
 // TFunction
 // ------------------------------------------------------------------
 export interface TFunction<T extends TSchema[] = TSchema[], U extends TSchema = TSchema> extends TSchema {
   [Kind]: 'Function'
-  static: FunctionStatic<T, U, this['params']>
+  static: StaticFunction<T, U, this['params']>
   type: 'Function'
   parameters: T
   returns: U
