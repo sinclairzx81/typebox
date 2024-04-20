@@ -29,28 +29,37 @@ THE SOFTWARE.
 import type { TSchema, SchemaOptions } from '../schema/index'
 import type { Static } from '../static/index'
 import type { Ensure } from '../helpers/index'
+import type { TReadonlyOptional } from '../readonly-optional/index'
+import type { TReadonly } from '../readonly/index'
+import type { TOptional } from '../optional/index'
 import { CloneType, CloneRest } from '../clone/type'
 import { Kind } from '../symbols/index'
 
 // ------------------------------------------------------------------
-// TConstructorStatic
+// StaticConstructor
 // ------------------------------------------------------------------
-type ConstructorStaticReturnType<T extends TSchema, P extends unknown[]> = Static<T, P>
+type StaticReturnType<U extends TSchema, P extends unknown[]> = Static<U, P>
 // prettier-ignore
-type ConstructorStaticParameters<T extends TSchema[], P extends unknown[], Acc extends unknown[] = []> = 
+type StaticParameter<T extends TSchema, P extends unknown[]> =
+  T extends TReadonlyOptional<T> ? [Readonly<Static<T, P>>?] :
+  T extends TReadonly<T> ? [Readonly<Static<T, P>>] :
+  T extends TOptional<T> ? [Static<T, P>?] :
+  [Static<T, P>]
+// prettier-ignore
+type StaticParameters<T extends TSchema[], P extends unknown[], Acc extends unknown[] = []> = (
   T extends [infer L extends TSchema, ...infer R extends TSchema[]]
-    ? ConstructorStaticParameters<R, P, [...Acc, Static<L, P>]>
+    ? StaticParameters<R, P, [...Acc, ...StaticParameter<L, P>]>
     : Acc
-// prettier-ignore
-type ConstructorStatic<T extends TSchema[], U extends TSchema, P extends unknown[]> = (
-  Ensure<new (...param: ConstructorStaticParameters<T, P>) => ConstructorStaticReturnType<U, P>>
 )
+// prettier-ignore
+type StaticConstructor<T extends TSchema[], U extends TSchema, P extends unknown[]> =
+  Ensure<new (...params: StaticParameters<T, P>) => StaticReturnType<U, P>>
 // ------------------------------------------------------------------
 // TConstructor
 // ------------------------------------------------------------------
 export interface TConstructor<T extends TSchema[] = TSchema[], U extends TSchema = TSchema> extends TSchema {
   [Kind]: 'Constructor'
-  static: ConstructorStatic<T, U, this['params']>
+  static: StaticConstructor<T, U, this['params']>
   type: 'Constructor'
   parameters: T
   returns: U

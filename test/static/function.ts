@@ -15,6 +15,28 @@ import { Type } from '@sinclair/typebox'
   Expect(T).ToStatic<(param_0: number, param_1: string) => { method: (param_0: number, param_1: string) => boolean }>()
 }
 {
+  // readonly-optional
+  const T = Type.Function([Type.ReadonlyOptional(Type.Array(Type.Number()))], Type.Number())
+  Expect(T).ToStaticDecode<(param_0?: readonly number[]) => number>()
+}
+{
+  // readonly
+  const T = Type.Function([Type.Readonly(Type.Array(Type.Number()))], Type.Number())
+  Expect(T).ToStaticDecode<(param_0: readonly number[]) => number>()
+}
+{
+  // optional 1
+  const T = Type.Function([Type.Optional(Type.Number())], Type.Number())
+  Expect(T).ToStaticDecode<(param_0?: number) => number>()
+}
+{
+  // optional 2
+  const T = Type.Function([Type.Number(), Type.Optional(Type.Number())], Type.Number())
+  Expect(T).ToStaticDecode<(param_0: number, param_1?: number) => number>()
+}
+const F = Type.Constructor([Type.Readonly(Type.Array(Type.String()))], Type.Number())
+
+{
   // decode 2
   const S = Type.Transform(Type.Integer())
     .Decode((value) => new Date(value))
