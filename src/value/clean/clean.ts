@@ -141,7 +141,7 @@ function FromTuple(schema: TTuple, references: TSchema[], value: unknown): any {
 }
 function FromUnion(schema: TUnion, references: TSchema[], value: unknown): any {
   for (const inner of schema.anyOf) {
-    if (IsCheckable(inner) && Check(inner, value)) {
+    if (IsCheckable(inner) && Check(inner, references, value)) {
       return Visit(inner, references, value)
     }
   }
