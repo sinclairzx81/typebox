@@ -75,11 +75,11 @@ export function Clean(schema: TSchema, value: unknown): unknown
 export function Clean(...args: any[]) {
   return CleanValue.apply(CleanValue, args as any)
 }
-/** Converts any type mismatched values to their target type if a reasonable conversion is possible */
+/** Converts any type mismatched values to their target type if a reasonable conversion is possible. */
 export function Convert(schema: TSchema, references: TSchema[], value: unknown): unknown
-/** Converts any type mismatched values to their target type if a reasonable conversion is possibl. */
+/** Converts any type mismatched values to their target type if a reasonable conversion is possible. */
 export function Convert(schema: TSchema, value: unknown): unknown
-/** Converts any type mismatched values to their target type if a reasonable conversion is possible */
+/** Converts any type mismatched values to their target type if a reasonable conversion is possible. */
 export function Convert(...args: any[]) {
   return ConvertValue.apply(ConvertValue, args as any)
 }
