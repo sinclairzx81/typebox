@@ -137,17 +137,19 @@ describe('value/clean/Union', () => {
   // https://github.com/sinclairzx81/typebox/issues/845
   // ----------------------------------------------------------------
   it('Should clean recursive with union', () => {
-    const T = Type.Recursive((This) => Type.Object({
-      id: Type.Number(),
-      parent: Type.Union([This, Type.Null()]),
-    }))
-    const R = Value.Clean(T,  {
+    const T = Type.Recursive((This) =>
+      Type.Object({
+        id: Type.Number(),
+        parent: Type.Union([This, Type.Null()]),
+      }),
+    )
+    const R = Value.Clean(T, {
       id: 1,
       unknown: 1,
       parent: {
         id: 2,
         unknown: 1,
-        parent: null
+        parent: null,
       },
     })
     Assert.IsEqual(R, { id: 1, parent: { id: 2, parent: null } })
