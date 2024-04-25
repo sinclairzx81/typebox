@@ -41,5 +41,5 @@ export function Unsafe<T>(options: UnsafeOptions = {}): TUnsafe<T> {
   return {
     ...options,
     [Kind]: options[Kind] ?? 'Unsafe',
-  } as unknown as TUnsafe<T>
+  } as never
 }

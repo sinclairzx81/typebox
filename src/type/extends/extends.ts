@@ -39,7 +39,7 @@ import { ExtendsFromMappedResult, type TExtendsFromMappedResult } from './extend
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-import { IsMappedKey, IsMappedResult } from '../guard/type'
+import { IsMappedKey, IsMappedResult } from '../guard/kind'
 
 // prettier-ignore
 type TExtendsResolve<L extends TSchema, R extends TSchema, T extends TSchema, U extends TSchema> = (
@@ -56,7 +56,7 @@ function ExtendsResolve<L extends TSchema, R extends TSchema, T extends TSchema,
     R === ExtendsResult.Union ? Union([trueType, falseType]) : 
     R === ExtendsResult.True ? trueType : 
     falseType
-  ) as unknown as TExtendsResolve<L, R, T, U>
+  ) as never
 }
 // ------------------------------------------------------------------
 // TExtends
@@ -76,5 +76,5 @@ export function Extends<L extends TSchema, R extends TSchema, T extends TSchema,
     IsMappedResult(L) ? ExtendsFromMappedResult(L, R, T, F, options) :
     IsMappedKey(L) ? CloneType(ExtendsFromMappedKey(L, R, T, F, options)) :
     CloneType(ExtendsResolve(L, R, T, F), options)
-  ) as TExtends<L, R, T, F>
+  ) as never
 }

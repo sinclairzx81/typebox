@@ -47,8 +47,8 @@ function ObjectType(root: Mutable, path: string, current: unknown, next: Record<
   if (!IsStandardObject(current)) {
     ValuePointer.Set(root, path, Clone(next))
   } else {
-    const currentKeys = Object.keys(current)
-    const nextKeys = Object.keys(next)
+    const currentKeys = Object.getOwnPropertyNames(current)
+    const nextKeys = Object.getOwnPropertyNames(next)
     for (const currentKey of currentKeys) {
       if (!nextKeys.includes(currentKey)) {
         delete current[currentKey]

@@ -45,9 +45,9 @@ function FromProperties<
   P extends TProperties,
   F extends boolean,
 >(P: P, F: F): TFromProperties<P, F> {
-  return globalThis.Object.getOwnPropertyNames(P).reduce((Acc, K2) => {
-    return {...Acc, [K2]: Optional(P[K2], F) }
-  }, {}) as TFromProperties<P, F>
+  const Acc = {} as TProperties
+  for(const K2 of globalThis.Object.getOwnPropertyNames(P)) Acc[K2] = Optional(P[K2], F)
+  return Acc as never
 }
 // ------------------------------------------------------------------
 // FromMappedResult
@@ -64,7 +64,7 @@ function FromMappedResult<
   R extends TMappedResult,
   F extends boolean,
 >(R: R, F: F): TFromMappedResult<R, F> {
-  return FromProperties(R.properties, F) as TFromMappedResult<R, F>
+  return FromProperties(R.properties, F) as never
 }
 // ------------------------------------------------------------------
 // OptionalFromMappedResult

@@ -42,5 +42,5 @@ export function Not<T extends TSchema>(schema: T, options?: SchemaOptions): TNot
     ...options,
     [Kind]: 'Not',
     not: CloneType(schema),
-  } as unknown as TNot<T>
+  } as never
 }

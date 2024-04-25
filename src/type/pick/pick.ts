@@ -31,7 +31,7 @@ import type { TupleToUnion, Evaluate } from '../helpers/index'
 import { type TRecursive } from '../recursive/index'
 import { type TIntersect, Intersect } from '../intersect/index'
 import { type TUnion, Union } from '../union/index'
-import { type TObject, type TProperties, Object } from '../object/index'
+import { type TObject, type TProperties, type TPropertyKey, Object } from '../object/index'
 import type { TMappedKey, TMappedResult } from '../mapped/index'
 import { IndexPropertyKeys, type TIndexPropertyKeys } from '../indexed/index'
 import { Discard } from '../discard/index'
@@ -43,7 +43,7 @@ import { PickFromMappedResult, type TPickFromMappedResult } from './pick-from-ma
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-import { IsMappedKey, IsMappedResult, IsIntersect, IsUnion, IsObject, IsSchema } from '../guard/type'
+import { IsMappedKey, IsMappedResult, IsIntersect, IsUnion, IsObject, IsSchema } from '../guard/kind'
 // ------------------------------------------------------------------
 // FromIntersect
 // ------------------------------------------------------------------
@@ -74,9 +74,9 @@ function FromUnion<T extends TSchema[], K extends PropertyKey[]>(T: T, K: K) {
 type FromProperties<T extends TProperties, K extends PropertyKey[], I extends PropertyKey = TupleToUnion<K>> = Evaluate<Pick<T, I & keyof T>>
 // prettier-ignore
 function FromProperties<T extends TProperties, K extends PropertyKey[]>(T: T, K: K) {
-  return K.reduce((Acc, K) => {
-    return K in T ? { ...Acc, [K]: T[K as keyof T] } : Acc
-  }, {})
+  const Acc = {} as TProperties
+  for(const K2 of K) if(K2 in T) Acc[K2 as TPropertyKey] = T[K2 as keyof T]
+  return Acc as never
 }
 // ------------------------------------------------------------------
 // PickResolve
@@ -88,7 +88,7 @@ function PickResolve<T extends TSchema, K extends PropertyKey[]>(T: T, K: [...K]
     IsUnion(T) ? Union(FromUnion(T.anyOf, K)) : 
     IsObject(T) ? Object(FromProperties(T.properties, K)) : 
     Object({})
-  ) as TPick<T, K>
+  ) as never
 }
 // prettier-ignore
 export type TPick<T extends TProperties, K extends PropertyKey[]> = 

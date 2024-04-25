@@ -47,7 +47,7 @@ function MappedIndexPropertyKey<
   T extends TSchema, 
   K extends PropertyKey
 >(T: T, K: K, options: SchemaOptions): TMappedIndexPropertyKey<T, K> {
-  return { [K]: Index(T, [K], options) } as TMappedIndexPropertyKey<T, K>
+  return { [K]: Index(T, [K], options) } as never
 }
 // ------------------------------------------------------------------
 // MappedIndexPropertyKeys
@@ -65,7 +65,7 @@ function MappedIndexPropertyKeys<
 >(T: T, K: [...K], options: SchemaOptions): TMappedIndexPropertyKeys<T, K> {
   return K.reduce((Acc, L) => {
     return { ...Acc, ...MappedIndexPropertyKey(T, L, options) }
-  }, {} as TProperties) as TMappedIndexPropertyKeys<T, K>
+  }, {} as TProperties) as never
 }
 // ------------------------------------------------------------------
 // MappedIndexProperties
@@ -79,7 +79,7 @@ function MappedIndexProperties<
   T extends TSchema, 
   K extends TMappedKey
 >(T: T, K: K, options: SchemaOptions): TMappedIndexProperties<T, K> {
-  return MappedIndexPropertyKeys(T, K.keys, options) as TMappedIndexProperties<T, K>
+  return MappedIndexPropertyKeys(T, K.keys, options) as never
 }
 // ------------------------------------------------------------------
 // TIndexFromMappedKey
@@ -98,6 +98,6 @@ export function IndexFromMappedKey<
   K extends TMappedKey, 
   P extends TProperties = TMappedIndexProperties<T, K>
 >(T: T, K: K, options: SchemaOptions): TMappedResult<P> {
-  const P = MappedIndexProperties(T, K, options) as unknown as P
-  return MappedResult(P)
+  const P = MappedIndexProperties(T, K, options)
+  return MappedResult(P) as never
 }

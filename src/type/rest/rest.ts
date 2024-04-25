@@ -35,7 +35,7 @@ import { CloneRest } from '../clone/type'
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-import { IsIntersect, IsUnion, IsTuple } from '../guard/type'
+import { IsIntersect, IsUnion, IsTuple } from '../guard/kind'
 // ------------------------------------------------------------------
 // RestResolve
 // ------------------------------------------------------------------
@@ -48,11 +48,11 @@ type TRestResolve<T extends TSchema> =
 // prettier-ignore
 function RestResolve<T extends TSchema>(T: T) {
   return (
-    IsIntersect(T) ? [...T.allOf] : 
-    IsUnion(T) ? [...T.anyOf] : 
-    IsTuple(T) ? [...(T.items ?? [])] : 
+    IsIntersect(T) ? CloneRest(T.allOf) : 
+    IsUnion(T) ? CloneRest(T.anyOf) : 
+    IsTuple(T) ? CloneRest(T.items ?? []) : 
     []
-  ) as TRestResolve<T>
+  ) as never
 }
 // ------------------------------------------------------------------
 // TRest

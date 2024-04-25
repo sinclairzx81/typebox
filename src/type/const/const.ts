@@ -60,7 +60,7 @@ type TFromArray<T extends readonly unknown[]> =
     : T
 // prettier-ignore
 function FromArray<T extends readonly unknown[]>(T: [...T]): TFromArray<T> {
-  return T.map(L => FromValue(L, false)) as TFromArray<T>
+  return T.map(L => FromValue(L, false)) as never
 }
 // ------------------------------------------------------------------
 // FromProperties
@@ -73,16 +73,16 @@ type TFromProperties<T extends Record<PropertyKey, unknown>> = {
 }
 // prettier-ignore
 function FromProperties<T extends Record<PropertyKey, unknown>>(value: T): TFromProperties<T> {
-  return globalThis.Object.getOwnPropertyNames(value).reduce((acc, key) => {
-    return { ...acc, [key]: Readonly(FromValue(value[key], false)) }
-  }, {} as TProperties) as unknown as TFromProperties<T>
+  const Acc = {} as TProperties
+  for(const K of globalThis.Object.getOwnPropertyNames(value)) Acc[K] = Readonly(FromValue(value[K], false))
+  return Acc as never
 }
 // ------------------------------------------------------------------
 // ConditionalReadonly - Only applied if not root
 // ------------------------------------------------------------------
 type TConditionalReadonly<T extends TSchema, Root extends boolean> = Root extends true ? T : TReadonly<T>
 function ConditionalReadonly<T extends TSchema, Root extends boolean>(T: T, root: Root): TConditionalReadonly<T, Root> {
-  return (root === true ? T : Readonly(T)) as unknown as TConditionalReadonly<T, Root>
+  return (root === true ? T : Readonly(T)) as never
 }
 // ------------------------------------------------------------------
 // FromValue
@@ -122,7 +122,7 @@ function FromValue<T, Root extends boolean>(value: T, root: Root): FromValue<T, 
     IsBoolean(value) ? Literal(value) :
     IsString(value) ? Literal(value) :
     Object({})
-  ) as FromValue<T, Root>
+  ) as never
 }
 // ------------------------------------------------------------------
 // TConst
@@ -131,5 +131,5 @@ export type TConst<T> = FromValue<T, true>
 
 /** `[JavaScript]` Creates a readonly const type from the given value. */
 export function Const</* const (not supported in 4.0) */ T>(T: T, options: SchemaOptions = {}): TConst<T> {
-  return CloneType(FromValue(T, true), options) as TConst<T>
+  return CloneType(FromValue(T, true), options) as never
 }

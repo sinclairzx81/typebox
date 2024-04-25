@@ -242,12 +242,12 @@ function FromObject(schema: TObject, references: TSchema[]): any {
     return FromDefault(schema.default)
   } else {
     const required = new Set(schema.required)
-    return (
-      FromDefault(schema.default) ||
-      Object.entries(schema.properties).reduce((acc, [key, schema]) => {
-        return required.has(key) ? { ...acc, [key]: Visit(schema, references) } : { ...acc }
-      }, {})
-    )
+    const Acc = {} as Record<PropertyKey, unknown>
+    for (const [key, subschema] of Object.entries(schema.properties)) {
+      if (!required.has(key)) continue
+      Acc[key] = Visit(subschema, references)
+    }
+    return Acc
   }
 }
 function FromPromise(schema: TPromise, references: TSchema[]): any {
@@ -263,9 +263,9 @@ function FromRecord(schema: TRecord, references: TSchema[]): any {
     return FromDefault(schema.default)
   } else if (!(keyPattern === PatternStringExact || keyPattern === PatternNumberExact)) {
     const propertyKeys = keyPattern.slice(1, keyPattern.length - 1).split('|')
-    return propertyKeys.reduce((acc, key) => {
-      return { ...acc, [key]: Visit(valueSchema, references) }
-    }, {})
+    const Acc = {} as Record<PropertyKey, unknown>
+    for (const key of propertyKeys) Acc[key] = Visit(valueSchema, references)
+    return Acc
   } else {
     return {}
   }

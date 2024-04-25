@@ -72,5 +72,5 @@ export function Constructor<T extends TSchema[], U extends TSchema>(parameters: 
     type: 'Constructor',
     parameters: CloneRest(parameters),
     returns: CloneType(returns),
-  } as unknown as TConstructor<T, U>
+  } as never
 }

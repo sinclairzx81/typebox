@@ -59,5 +59,5 @@ export function Recursive<T extends TSchema>(callback: (thisType: TThis) => T, o
   const thisType = callback({ [Kind]: 'This', $ref: `${options.$id}` } as any)
   thisType.$id = options.$id
   // prettier-ignore
-  return CloneType({ ...options, [Hint]: 'Recursive', ...thisType }) as unknown as TRecursive<T>
+  return CloneType({ ...options, [Hint]: 'Recursive', ...thisType }) as never
 }

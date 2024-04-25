@@ -39,7 +39,7 @@ import { SetUnionMany, SetIntersectMany, type TSetUnionMany, type TSetIntersectM
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-import { IsIntersect, IsUnion, IsTuple, IsArray, IsObject, IsRecord } from '../guard/type'
+import { IsIntersect, IsUnion, IsTuple, IsArray, IsObject, IsRecord } from '../guard/kind'
 // ------------------------------------------------------------------
 // FromRest
 // ------------------------------------------------------------------
@@ -51,9 +51,9 @@ type TFromRest<T extends TSchema[], Acc extends PropertyKey[][] = []> = (
 )
 // prettier-ignore
 function FromRest<T extends TSchema[]>(T: [...T]): TFromRest<T> {
-  return T.reduce((Acc, L) => {
-    return [...Acc, KeyOfPropertyKeys(L)]
-  }, [] as PropertyKey[][]) as TFromRest<T>
+  const Acc = [] as PropertyKey[][]
+  for(const L of T) Acc.push(KeyOfPropertyKeys(L))
+  return Acc as never
 }
 // ------------------------------------------------------------------
 // FromIntersect
@@ -68,7 +68,7 @@ type TFromIntersect<
 function FromIntersect<T extends TSchema[]>(T: [...T]): TFromIntersect<T> {
   const C = FromRest(T) as PropertyKey[][]
   const R = SetUnionMany(C)
-  return R as TFromIntersect<T>
+  return R as never
 }
 // ------------------------------------------------------------------
 // FromUnion
@@ -83,7 +83,7 @@ type TFromUnion<
 function FromUnion<T extends TSchema[]>(T: [...T]): TFromUnion<T> {
   const C = FromRest(T) as PropertyKey[][]
   const R = SetIntersectMany(C)
-  return R as TFromUnion<T>
+  return R as never
 }
 // ------------------------------------------------------------------
 // FromTuple
@@ -95,7 +95,7 @@ type TFromTuple<T extends TSchema[], I extends string = ZeroString, Acc extends 
     : Acc
 // prettier-ignore
 function FromTuple<T extends TSchema[]>(T: [...T]): TFromTuple<T> {
-  return T.map((_, I) => I.toString()) as TFromTuple<T>
+  return T.map((_, I) => I.toString()) as never
 }
 // ------------------------------------------------------------------
 // FromArray
@@ -121,7 +121,7 @@ type TFromProperties<T extends TProperties> = (
 function FromProperties<T extends TProperties>(T: T): TFromProperties<T> {
   return (
     globalThis.Object.getOwnPropertyNames(T)
-  ) as TFromProperties<T>
+  ) as never
 }
 // ------------------------------------------------------------------
 // FromPatternProperties
@@ -160,7 +160,7 @@ export function KeyOfPropertyKeys<T extends TSchema>(T: T): TKeyOfPropertyKeys<T
     IsObject(T) ? FromProperties(T.properties) :
     IsRecord(T) ? FromPatternProperties(T.patternProperties) :
     []
-  ) as TKeyOfPropertyKeys<T>
+  ) as never
 }
 // ----------------------------------------------------------------
 // KeyOfPattern

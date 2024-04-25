@@ -34,7 +34,7 @@ import { CloneType } from '../clone/type'
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-import { IsTransform } from '../guard/type'
+import { IsTransform } from '../guard/kind'
 
 // ------------------------------------------------------------------
 // TransformBuilders
@@ -56,13 +56,13 @@ export class TransformEncodeBuilder<T extends TSchema, D extends TransformFuncti
   }
   private EncodeSchema<E extends TransformFunction<ReturnType<D>, StaticDecode<T>>>(encode: E, schema: TSchema) {
     const Codec = { Decode: this.decode, Encode: encode }
-    return { ...schema as TSchema, [TransformKind]: Codec }
+    return { ...schema, [TransformKind]: Codec }
   }
   public Encode<E extends TransformFunction<ReturnType<D>, StaticDecode<T>>>(encode: E): TTransform<T, ReturnType<D>> {
     const schema = CloneType(this.schema)
     return (
       IsTransform(schema) ? this.EncodeTransform(encode, schema): this.EncodeSchema(encode, schema)
-    ) as unknown as TTransform<T, ReturnType<D>>
+    ) as never
   }
 }
 // ------------------------------------------------------------------

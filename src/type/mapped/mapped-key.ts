@@ -39,5 +39,5 @@ export function MappedKey<T extends PropertyKey[]>(T: [...T]): TMappedKey<T> {
   return {
     [Kind]: 'MappedKey',
     keys: T
-  } as unknown as TMappedKey<T> 
+  } as never
 }

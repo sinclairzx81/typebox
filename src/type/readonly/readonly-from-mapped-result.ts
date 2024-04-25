@@ -45,9 +45,9 @@ function FromProperties<
   P extends TProperties,
   F extends boolean,
 >(K: P, F: F): TFromProperties<P, F> {
-  return globalThis.Object.getOwnPropertyNames(K).reduce((Acc, K2) => {
-    return {...Acc, [K2]: Readonly(K[K2], F) }
-  }, {}) as TFromProperties<P, F>
+  const Acc = {} as TProperties
+  for(const K2 of globalThis.Object.getOwnPropertyNames(K)) Acc[K2] = Readonly(K[K2], F)
+  return Acc as never
 }
 // ------------------------------------------------------------------
 // FromMappedResult
@@ -64,7 +64,7 @@ function FromMappedResult<
   R extends TMappedResult,
   F extends boolean,
 >(R: R, F: F): TFromMappedResult<R, F> {
-  return FromProperties(R.properties, F) as TFromMappedResult<R, F>
+  return FromProperties(R.properties, F) as never
 }
 // ------------------------------------------------------------------
 // ReadonlyFromMappedResult
@@ -83,6 +83,6 @@ export function ReadonlyFromMappedResult<
   F extends boolean,
   P extends TProperties = TFromMappedResult<R, F>
 >(R: R, F: F): TMappedResult<P> {
-  const P = FromMappedResult(R, F) as unknown as P
-  return MappedResult(P) 
+  const P = FromMappedResult(R, F)
+  return MappedResult(P) as never
 }

@@ -40,7 +40,7 @@ import { KeyOfFromMappedResult, type TKeyOfFromMappedResult } from './keyof-from
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-import { IsMappedResult } from '../guard/type'
+import { IsMappedResult } from '../guard/kind'
 // ------------------------------------------------------------------
 // FromPropertyKeys
 // ------------------------------------------------------------------
@@ -54,7 +54,7 @@ export type TKeyOfPropertyKeysToRest<T extends PropertyKey[], Acc extends TSchem
 )
 // prettier-ignore
 export function KeyOfPropertyKeysToRest<T extends PropertyKey[]>(T: [...T]): TKeyOfPropertyKeysToRest<T> {
-  return T.map(L => L === '[number]' ? Number() : Literal(L as TLiteralValue)) as TKeyOfPropertyKeysToRest<T>
+  return T.map(L => L === '[number]' ? Number() : Literal(L as TLiteralValue)) as never
 }
 // ------------------------------------------------------------------
 // KeyOfTypeResolve

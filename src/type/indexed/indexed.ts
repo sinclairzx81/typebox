@@ -46,7 +46,7 @@ import { IndexFromMappedResult, type TIndexFromMappedResult } from './indexed-fr
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-import { IsArray, IsIntersect, IsObject, IsMappedKey, IsMappedResult, IsNever, IsSchema, IsTuple, IsUnion } from '../guard/type'
+import { IsArray, IsIntersect, IsObject, IsMappedKey, IsMappedResult, IsNever, IsSchema, IsTuple, IsUnion } from '../guard/kind'
 
 // ------------------------------------------------------------------
 // FromRest
@@ -59,7 +59,7 @@ type TFromRest<T extends TSchema[], K extends PropertyKey, Acc extends TSchema[]
 )
 // prettier-ignore
 function FromRest<T extends TSchema[], K extends PropertyKey>(T: [...T], K: K): TFromRest<T, K> {
-  return T.map(L => IndexFromPropertyKey(L, K)) as TFromRest<T, K>
+  return T.map(L => IndexFromPropertyKey(L, K)) as never
 }
 // ------------------------------------------------------------------
 // FromIntersectRest
@@ -84,7 +84,7 @@ type TFromIntersect<T extends TSchema[], K extends PropertyKey> = (
 function FromIntersect<T extends TSchema[], K extends PropertyKey>(T: [...T], K: K): TFromIntersect<T, K> {
   return (
     IntersectEvaluated(FromIntersectRest(FromRest(T as TSchema[], K)))
-  ) as TFromIntersect<T, K>
+  ) as never
 }
 // ------------------------------------------------------------------
 // FromUnionRest
@@ -135,7 +135,7 @@ type TFromUnion<T extends TSchema[], K extends PropertyKey> = (
 function FromUnion<T extends TSchema[], K extends PropertyKey>(T: [...T], K: K): TFromUnion<T, K> {
   return (
     UnionEvaluated(FromUnionRest(FromRest(T as TSchema[], K)))
-  ) as TFromUnion<T, K>
+  ) as never
 }
 // ------------------------------------------------------------------
 // FromTuple
@@ -152,7 +152,7 @@ function FromTuple<T extends TSchema[], K extends PropertyKey>(T: [...T], K: K):
     K in T ? T[K as number] : 
     K === '[number]' ? UnionEvaluated(T) : 
     Never()
-  ) as TFromTuple<T, K>
+  ) as never
 }
 // ------------------------------------------------------------------
 // FromArray
@@ -169,7 +169,7 @@ function FromArray<T extends TSchema, K extends PropertyKey>(T: T, K: K): TFromA
     K === '[number]' 
       ? T 
       : Never()
-  ) as TFromArray<T, K>
+  ) as never
 }
 // ------------------------------------------------------------------
 // FromProperty
@@ -191,7 +191,7 @@ type TFromProperty<
 )
 // prettier-ignore
 function FromProperty<T extends TProperties, K extends PropertyKey>(T: T, K: K): TFromProperty<T, K> {
-  return (K in T ? T[K as string] : Never()) as TFromProperty<T, K>
+  return (K in T ? T[K as string] : Never()) as never
 }
 // ------------------------------------------------------------------
 // FromKey
@@ -215,7 +215,7 @@ export function IndexFromPropertyKey<T extends TSchema, K extends PropertyKey>(T
     IsArray(T) ? FromArray(T.items, K) :
     IsObject(T) ? FromProperty(T.properties, K) :
     Never()
-  ) as TIndexFromPropertyKey<T, K>
+  ) as never
 }
 // ------------------------------------------------------------------
 // FromKeys
@@ -228,7 +228,7 @@ export type TIndexFromPropertyKeys<T extends TSchema, K extends PropertyKey[], A
 )
 // prettier-ignore
 export function IndexFromPropertyKeys<T extends TSchema, K extends PropertyKey[]>(T: T, K: [...K]): TIndexFromPropertyKeys<T, K> {
-  return K.map(L => IndexFromPropertyKey(T, L)) as TIndexFromPropertyKeys<T, K>
+  return K.map(L => IndexFromPropertyKey(T, L)) as never
 }
 // ------------------------------------------------------------------
 // FromSchema
@@ -241,7 +241,7 @@ type FromSchema<T extends TSchema, K extends PropertyKey[]> = (
 function FromSchema<T extends TSchema, K extends PropertyKey[]>(T: T, K: [...K]): FromSchema<T, K> {
   return (
     UnionEvaluated(IndexFromPropertyKeys(T, K as PropertyKey[]))
-  ) as FromSchema<T, K>
+  ) as never
 }
 // ------------------------------------------------------------------
 // TIndex

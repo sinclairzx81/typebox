@@ -40,5 +40,5 @@ export function Boolean(options: SchemaOptions = {}): TBoolean {
     ...options,
     [Kind]: 'Boolean',
     type: 'boolean',
-  } as unknown as TBoolean
+  } as never
 }

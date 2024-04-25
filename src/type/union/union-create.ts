@@ -32,5 +32,5 @@ import { TUnion } from './union-type'
 import { Kind } from '../symbols/index'
 
 export function UnionCreate<T extends TSchema[]>(T: [...T], options: SchemaOptions): TUnion<T> {
-  return { ...options, [Kind]: 'Union', anyOf: CloneRest(T) } as unknown as TUnion<T>
+  return { ...options, [Kind]: 'Union', anyOf: CloneRest(T) } as never
 }

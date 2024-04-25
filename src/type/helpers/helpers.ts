@@ -59,7 +59,7 @@ type IncrementReverse<T extends string> = T extends `${infer L}${infer R}` ? `${
 export type TIncrement<T extends string> = IncrementReverse<IncrementStep<IncrementReverse<T>>>
 /** Increments the given string value + 1 */
 export function Increment<T extends string>(T: T): TIncrement<T> {
-  return (parseInt(T) + 1).toString() as TIncrement<T>
+  return (parseInt(T) + 1).toString() as never
 }
 // ------------------------------------------------------------------
 // Helper: Type Asserts

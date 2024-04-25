@@ -40,5 +40,5 @@ export function Void(options: SchemaOptions = {}): TVoid {
     ...options,
     [Kind]: 'Void',
     type: 'void',
-  } as unknown as TVoid
+  } as never
 }

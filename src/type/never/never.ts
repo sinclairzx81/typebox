@@ -40,5 +40,5 @@ export function Never(options: SchemaOptions = {}): TNever {
     ...options,
     [Kind]: 'Never',
     not: {},
-  } as unknown as TNever
+  } as never
 }

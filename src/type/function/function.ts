@@ -73,5 +73,5 @@ export function Function<T extends TSchema[], U extends TSchema>(parameters: [..
     type: 'Function',
     parameters: CloneRest(parameters),
     returns: CloneType(returns),
-  } as unknown as TFunction<T, U>
+  } as never
 }

@@ -36,8 +36,14 @@ import { IsArray, IsDate, IsStandardObject, IsTypedArray, IsValueType } from '..
 // Clonable
 // ------------------------------------------------------------------
 function ObjectType(value: ObjectType): any {
-  const keys = [...Object.getOwnPropertyNames(value), ...Object.getOwnPropertySymbols(value)]
-  return keys.reduce((acc, key) => ({ ...acc, [key]: Clone(value[key]) }), {})
+  const Acc = {} as Record<PropertyKey, unknown>
+  for (const key of Object.getOwnPropertyNames(value)) {
+    Acc[key] = Clone(value[key])
+  }
+  for (const key of Object.getOwnPropertySymbols(value)) {
+    Acc[key] = Clone(value[key])
+  }
+  return Acc
 }
 function ArrayType(value: ArrayType): any {
   return value.map((element: any) => Clone(element))

@@ -34,7 +34,7 @@ import { Discard } from '../discard/index'
 import type { TMappedResult } from '../mapped/index'
 
 import { OptionalFromMappedResult, type TOptionalFromMappedResult } from './optional-from-mapped-result'
-import { IsMappedResult } from '../guard/type'
+import { IsMappedResult } from '../guard/kind'
 // ------------------------------------------------------------------
 // RemoveOptional
 // ------------------------------------------------------------------

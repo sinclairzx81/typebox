@@ -36,7 +36,7 @@ import { type TMappedKey } from '../mapped/index'
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-import { IsMappedKey, IsTemplateLiteral, IsUnion, IsLiteral } from '../guard/type'
+import { IsMappedKey, IsTemplateLiteral, IsUnion, IsLiteral } from '../guard/kind'
 // ------------------------------------------------------------------
 // Apply
 // ------------------------------------------------------------------
@@ -78,7 +78,7 @@ function FromTemplateLiteral<T extends TTemplateLiteralKind[], M extends Intrins
   const literals = strings.map((value) => Literal(value))
   const mapped = FromRest(literals as any, mode)
   const union = Union(mapped)
-  return TemplateLiteral([union], options) as unknown as TFromTemplateLiteral<T, M>
+  return TemplateLiteral([union], options) as never
 }
 // ------------------------------------------------------------------
 // FromLiteralValue
@@ -115,7 +115,7 @@ type TFromRest<T extends TSchema[], M extends IntrinsicMode, Acc extends TSchema
     : Acc
 // prettier-ignore
 function FromRest<T extends TSchema[], M extends IntrinsicMode>(T: [...T], M: M): TFromRest<T, M> {
-  return T.map(L => Intrinsic(L, M)) as TFromRest<T, M>
+  return T.map(L => Intrinsic(L, M)) as never
 }
 // ------------------------------------------------------------------
 // TIntrinsic

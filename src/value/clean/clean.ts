@@ -105,7 +105,7 @@ function FromObject(schema: TObject, references: TSchema[], value: unknown): any
 function FromRecord(schema: TRecord, references: TSchema[], value: unknown): any {
   if (!IsObject(value)) return value
   const additionalProperties = schema.additionalProperties as TSchema
-  const propertyKeys = Object.keys(value)
+  const propertyKeys = Object.getOwnPropertyNames(value)
   const [propertyKey, propertySchema] = Object.entries(schema.patternProperties)[0]
   const propertyKeyTest = new RegExp(propertyKey)
   for (const key of propertyKeys) {

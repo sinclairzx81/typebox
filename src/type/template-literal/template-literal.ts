@@ -94,7 +94,7 @@ export function TemplateLiteral<T extends string>(syntax: T, options?: SchemaOpt
 export function TemplateLiteral<T extends TTemplateLiteralKind[]>(kinds: [...T], options?: SchemaOptions): TTemplateLiteral<T>
 /** `[Json]` Creates a TemplateLiteral type */
 // prettier-ignore
-export function TemplateLiteral(unresolved: TTemplateLiteralKind[] | string, options: SchemaOptions = {}) {
+export function TemplateLiteral(unresolved: TTemplateLiteralKind[] | string, options: SchemaOptions = {}): any {
   const pattern = IsString(unresolved) 
     ? TemplateLiteralPattern(TemplateLiteralSyntax(unresolved)) 
     : TemplateLiteralPattern(unresolved as TTemplateLiteralKind[])

@@ -40,5 +40,5 @@ export function Null(options: SchemaOptions = {}): TNull {
     ...options,
     [Kind]: 'Null',
     type: 'null',
-  } as unknown as TNull
+  } as never
 }

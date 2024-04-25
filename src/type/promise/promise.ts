@@ -44,5 +44,5 @@ export function Promise<T extends TSchema>(item: T, options: SchemaOptions = {})
     [Kind]: 'Promise',
     type: 'Promise',
     item: CloneType(item),
-  } as unknown as TPromise<T>
+  } as never
 }

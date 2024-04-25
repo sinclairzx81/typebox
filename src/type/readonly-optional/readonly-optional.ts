@@ -34,5 +34,5 @@ export type TReadonlyOptional<T extends TSchema> = TOptional<T> & TReadonly<T>
 
 /** `[Json]` Creates a Readonly and Optional property */
 export function ReadonlyOptional<T extends TSchema>(schema: T): TReadonly<TOptional<T>> {
-  return Readonly(Optional(schema)) as TReadonly<TOptional<T>>
+  return Readonly(Optional(schema)) as never
 }

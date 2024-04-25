@@ -47,5 +47,5 @@ export function BigInt(options: BigIntOptions = {}): TBigInt {
     ...options,
     [Kind]: 'BigInt',
     type: 'bigint',
-  } as TBigInt
+  } as never
 }

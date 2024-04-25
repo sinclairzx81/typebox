@@ -44,5 +44,5 @@ export function Iterator<T extends TSchema>(items: T, options: SchemaOptions = {
     [Kind]: 'Iterator',
     type: 'Iterator',
     items: CloneType(items),
-  } as unknown as TIterator<T>
+  } as never
 }

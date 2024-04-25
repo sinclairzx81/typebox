@@ -55,24 +55,7 @@ import type { TMappedKey } from './mapped-key'
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-// prettier-ignore
-import {
-  IsArray,
-  IsAsyncIterator,
-  IsConstructor,
-  IsFunction,
-  IsIntersect,
-  IsIterator,
-  IsReadonly,
-  IsMappedResult,
-  IsMappedKey,
-  IsObject,
-  IsOptional,
-  IsPromise,
-  IsSchema,
-  IsTuple,
-  IsUnion,
-} from '../guard/type'
+import { IsArray, IsAsyncIterator, IsConstructor, IsFunction, IsIntersect, IsIterator, IsReadonly, IsMappedResult, IsMappedKey, IsObject, IsOptional, IsPromise, IsSchema, IsTuple, IsUnion } from '../guard/kind'
 // ------------------------------------------------------------------
 // FromMappedResult
 //
@@ -101,7 +84,7 @@ function FromMappedResult<K extends PropertyKey, P extends TProperties>(K: K, P:
     K in P 
       ? FromSchemaType(K, P[K as string])
       : MappedResult(P)
-  ) as TFromMappedResult<K, P>
+  ) as never
 }
 // ------------------------------------------------------------------
 // MappedKeyToKnownMappedResultProperties
@@ -115,7 +98,7 @@ type TMappedKeyToKnownMappedResultProperties<K extends PropertyKey> = {
 }
 // prettier-ignore
 function MappedKeyToKnownMappedResultProperties<K extends PropertyKey>(K: K): TMappedKeyToKnownMappedResultProperties<K> {
-  return { [K]: Literal(K as TLiteralValue) } as TMappedKeyToKnownMappedResultProperties<K>
+  return { [K]: Literal(K as TLiteralValue) } as never
 }
 // ------------------------------------------------------------------
 // MappedKeyToUnknownMappedResultProperties
@@ -133,9 +116,9 @@ type TMappedKeyToUnknownMappedResultProperties<P extends PropertyKey[], Acc exte
 )
 // prettier-ignore
 function MappedKeyToUnknownMappedResultProperties<P extends PropertyKey[]>(P: [...P]): TMappedKeyToUnknownMappedResultProperties<P> {
-  return P.reduce((Acc, L) => {
-    return { ...Acc, [L]: Literal(L as TLiteralValue) }
-  }, {} as TProperties) as TMappedKeyToUnknownMappedResultProperties<P>
+  const Acc = {} as Record<PropertyKey, TSchema>
+  for(const L of P) Acc[L] = Literal(L as TLiteralValue)
+  return Acc as never
 }
 // ------------------------------------------------------------------
 // MappedKeyToMappedResultProperties
@@ -152,7 +135,7 @@ function MappedKeyToMappedResultProperties<K extends PropertyKey, P extends Prop
     SetIncludes(P, K)
       ? MappedKeyToKnownMappedResultProperties(K)
       : MappedKeyToUnknownMappedResultProperties(P)
-  ) as TMappedKeyToMappedResultProperties<K, P>
+  ) as never
 }
 // prettier-ignore
 type TFromMappedKey<
@@ -163,9 +146,9 @@ type TFromMappedKey<
   TFromMappedResult<K, R>
 )
 // prettier-ignore
-function FromMappedKey<K extends PropertyKey, P extends PropertyKey[]>(K: K, P: [...P]) {
+function FromMappedKey<K extends PropertyKey, P extends PropertyKey[]>(K: K, P: [...P]): TFromMappedKey<K, P> {
   const R = MappedKeyToMappedResultProperties(K, P)
-  return FromMappedResult(K, R)
+  return FromMappedResult(K, R) as never
 }
 // ------------------------------------------------------------------
 // FromRest
@@ -178,7 +161,7 @@ type TFromRest<K extends PropertyKey, T extends TSchema[], Acc extends TSchema[]
 )
 // prettier-ignore
 function FromRest<K extends PropertyKey, T extends TSchema[]>(K: K, T: [...T]): TFromRest<K, T> {
-  return T.map(L => FromSchemaType(K, L)) as TFromRest<K, T>
+  return T.map(L => FromSchemaType(K, L)) as never
 }
 // ------------------------------------------------------------------
 // FromProperties
@@ -189,9 +172,9 @@ type FromProperties<K extends PropertyKey, T extends TProperties, R extends TPro
 }>> = R
 // prettier-ignore
 function FromProperties<K extends PropertyKey, T extends TProperties>(K: K, T: T): FromProperties<K, T> {
-  return globalThis.Object.getOwnPropertyNames(T).reduce((Acc, K2) => {
-    return { ...Acc, [K2]: FromSchemaType(K, T[K2]) }
-  }, {}) as FromProperties<K, T>
+  const Acc = {} as Record<PropertyKey, TSchema>
+  for(const K2 of globalThis.Object.getOwnPropertyNames(T)) Acc[K2] = FromSchemaType(K, T[K2])
+  return Acc as never
 }
 // ------------------------------------------------------------------
 // FromMappedPropertyKey
@@ -238,7 +221,7 @@ function FromSchemaType<K extends PropertyKey, T extends TSchema>(K: K, T: T): F
     IsArray(T) ? Array(FromSchemaType(K, T.items)) :
     IsPromise(T) ? Promise(FromSchemaType(K, T.item)) :
     T
-  ) as FromSchemaType<K, T>
+  ) as never
 }
 // ------------------------------------------------------------------
 // MappedFunctionReturnType
@@ -250,10 +233,10 @@ export type TMappedFunctionReturnType<K extends PropertyKey[], T extends TSchema
     : Acc
 )
 // prettier-ignore
-export function MappedFunctionReturnType<K extends PropertyKey[], T extends TSchema>(K: [...K], T: T, Acc: TProperties = {}): TMappedFunctionReturnType<K, T> {
-  return K.reduce((Acc, L) => {
-    return { ...Acc, [L]: FromSchemaType(L, T) }
-  }, {} as TProperties) as TMappedFunctionReturnType<K, T>
+export function MappedFunctionReturnType<K extends PropertyKey[], T extends TSchema>(K: [...K], T: T): TMappedFunctionReturnType<K, T> {
+  const Acc = {} as Record<PropertyKey, TSchema>
+  for(const L of K) Acc[L] = FromSchemaType(L, T)
+  return Acc as never
 }
 // ------------------------------------------------------------------
 // TMappedFunction

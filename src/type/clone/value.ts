@@ -41,9 +41,14 @@ function RegExpType(value: RegExp) {
   return new RegExp(value.source, value.flags)
 }
 function ObjectType(value: Record<keyof any, unknown>) {
-  const clonedProperties = Object.getOwnPropertyNames(value).reduce((acc, key) => ({ ...acc, [key]: Visit(value[key]) }), {})
-  const clonedSymbols = Object.getOwnPropertySymbols(value).reduce((acc, key) => ({ ...acc, [key]: Visit(value[key as any]) }), {})
-  return { ...clonedProperties, ...clonedSymbols }
+  const result = {} as Record<PropertyKey, unknown>
+  for (const key of Object.getOwnPropertyNames(value)) {
+    result[key] = Visit(value[key])
+  }
+  for (const key of Object.getOwnPropertySymbols(value)) {
+    result[key] = Visit(value[key])
+  }
+  return result
 }
 // prettier-ignore
 function Visit(value: unknown): any {

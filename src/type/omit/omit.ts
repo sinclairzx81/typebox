@@ -43,7 +43,7 @@ import { OmitFromMappedResult, type TOmitFromMappedResult } from './omit-from-ma
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-import { IsMappedKey, IsIntersect, IsUnion, IsObject, IsSchema, IsMappedResult } from '../guard/type'
+import { IsMappedKey, IsIntersect, IsUnion, IsObject, IsSchema, IsMappedResult } from '../guard/kind'
 
 // ------------------------------------------------------------------
 // FromIntersect
@@ -56,7 +56,7 @@ type TFromIntersect<T extends TSchema[], K extends PropertyKey[], Acc extends TS
 )
 // prettier-ignore
 function FromIntersect<T extends TSchema[], K extends PropertyKey[]>(T: T, K: K) {
-  return T.map((T) => OmitResolve(T, K)) as TFromIntersect<T, K>
+  return T.map((T) => OmitResolve(T, K)) as never
 }
 // ------------------------------------------------------------------
 // FromUnion
@@ -69,23 +69,21 @@ type TFromUnion<T extends TSchema[], K extends PropertyKey[], Acc extends TSchem
 )
 // prettier-ignore
 function FromUnion<T extends TSchema[], K extends PropertyKey[]>(T: T, K: K) {
-  return T.map((T) => OmitResolve(T, K)) as TFromUnion<T, K>
+  return T.map((T) => OmitResolve(T, K)) as never
 }
 // ------------------------------------------------------------------
 // FromProperty
 // ------------------------------------------------------------------
 // prettier-ignore
-function FromProperty<T extends Record<any, any>, K extends PropertyKey>(T: T, K: K) {
+function FromProperty<T extends Record<any, any>, K extends PropertyKey>(T: T, K: K): TProperties {
   const { [K]: _, ...R } = T
-  return R as TProperties
+  return R
 }
 // prettier-ignore
 type TFromProperties<T extends TProperties, K extends PropertyKey[], I extends PropertyKey = TupleToUnion<K>> = Evaluate<Omit<T, I>>
 // prettier-ignore
 function FromProperties<T extends TProperties, K extends PropertyKey[]>(T: T, K: K) {
-  return K.reduce((T, K2) => {
-    return FromProperty(T, K2)
-  }, T as TProperties)
+  return K.reduce((T, K2) => FromProperty(T, K2), T as TProperties)
 }
 // ------------------------------------------------------------------
 // OmitResolve
@@ -97,7 +95,7 @@ function OmitResolve<T extends TSchema, K extends PropertyKey[]>(T: T, K: [...K]
     IsUnion(T) ? Union(FromUnion(T.anyOf, K)) : 
     IsObject(T) ? Object(FromProperties(T.properties, K)) : 
     Object({})
-  ) as TOmit<T, K>
+  ) as never
 }
 // prettier-ignore
 export type TOmit<T extends TProperties, K extends PropertyKey[]> = 

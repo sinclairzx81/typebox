@@ -38,7 +38,7 @@ import { SetDistinct, TSetDistinct } from '../sets/index'
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-import { IsNever } from '../guard/type'
+import { IsNever } from '../guard/kind'
 // ------------------------------------------------------------------
 // CompositeKeys
 // ------------------------------------------------------------------
@@ -50,9 +50,9 @@ type TCompositeKeys<T extends TSchema[], Acc extends PropertyKey[] = []> = (
 )
 // prettier-ignore
 function CompositeKeys<T extends TSchema[]>(T: [...T]): TCompositeKeys<T> {
-  return SetDistinct(T.reduce((Acc, L) => {
-    return ([...Acc, ...KeyOfPropertyKeys(L)]) as never
-  }, [])) as never
+  const Acc = [] as PropertyKey[]
+  for(const L of T) Acc.push(...KeyOfPropertyKeys(L))
+  return SetDistinct(Acc) as never
 }
 // ------------------------------------------------------------------
 // FilterNever
@@ -80,9 +80,9 @@ type TCompositeProperty<T extends TSchema[], K extends PropertyKey, Acc extends 
 )
 // prettier-ignore
 function CompositeProperty<T extends TSchema[], K extends PropertyKey>(T: [...T], K: K): TCompositeProperty<T, K> {
-  return FilterNever(T.reduce((Acc, L) => {
-    return [...Acc, ...IndexFromPropertyKeys(L, [K])] as never
-  }, [])) as never
+  const Acc = [] as TSchema[]
+  for(const L of T) Acc.push(...IndexFromPropertyKeys(L, [K]))
+  return FilterNever(Acc) as never
 }
 // ------------------------------------------------------------------
 // CompositeProperties
@@ -95,9 +95,11 @@ type TCompositeProperties<T extends TSchema[], K extends PropertyKey[], Acc = {}
 )
 // prettier-ignore
 function CompositeProperties<T extends TSchema[], K extends PropertyKey[] = []>(T: [...T], K: [...K]): TCompositeProperties<T, K> {
-  return K.reduce((Acc, L) => {
-   return { ...Acc, [L]: IntersectEvaluated(CompositeProperty(T, L)) }
-  }, {}) as never
+  const Acc = {} as never
+  for(const L of K) {
+    Acc[L] = IntersectEvaluated(CompositeProperty(T, L))
+  }
+  return Acc
 }
 // ------------------------------------------------------------------
 // Composite
@@ -111,11 +113,10 @@ type TCompositeEvaluate<
 > = R
 // prettier-ignore
 export type TComposite<T extends TSchema[]> = TCompositeEvaluate<T>
-
 // prettier-ignore
 export function Composite<T extends TSchema[]>(T: [...T], options: ObjectOptions = {}): TComposite<T> {
   const K = CompositeKeys(T)
   const P = CompositeProperties(T, K)
   const R = Object(P, options)
-  return R as TComposite<T>
+  return R as never
 }
