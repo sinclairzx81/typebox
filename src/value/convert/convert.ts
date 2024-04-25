@@ -54,7 +54,7 @@ import type { TUndefined } from '../../type/undefined/index'
 // ------------------------------------------------------------------
 // ValueGuard
 // ------------------------------------------------------------------
-import { IsArray, IsObject, IsDate, IsUndefined, IsString, IsNumber, IsBoolean, IsBigInt, IsSymbol } from '../guard/index'
+import { IsArray, IsObject, IsDate, IsUndefined, IsString, IsNumber, IsBoolean, IsBigInt, IsSymbol, HasPropertyKey } from '../guard/index'
 // ------------------------------------------------------------------
 // Conversions
 // ------------------------------------------------------------------
@@ -194,11 +194,13 @@ function FromNumber(schema: TNumber, references: TSchema[], value: any): unknown
 function FromObject(schema: TObject, references: TSchema[], value: any): unknown {
   const isConvertable = IsObject(value)
   if(!isConvertable) return value
-  return Object.getOwnPropertyNames(schema.properties).reduce((value, key) => {
-    return !IsUndefined(value[key])
-      ? ({ ...value, [key]: Visit(schema.properties[key], references, value[key]) })
-      : ({ ...value })
-  }, value) 
+  const result: Record<PropertyKey, unknown> = {}
+  for(const key of Object.keys(value)) {
+    result[key] = HasPropertyKey(schema.properties, key)
+      ? Visit(schema.properties[key], references, value[key])
+      : value[key]
+  }
+  return result
 }
 function FromRecord(schema: TRecord, references: TSchema[], value: any): unknown {
   const propertyKey = Object.getOwnPropertyNames(schema.patternProperties)[0]
