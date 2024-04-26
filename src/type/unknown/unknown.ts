@@ -38,5 +38,5 @@ export function Unknown(options: SchemaOptions = {}): TUnknown {
   return {
     ...options,
     [Kind]: 'Unknown',
-  } as unknown as TUnknown
+  } as never
 }

@@ -34,7 +34,7 @@ import type { TIntersect, IntersectOptions } from './intersect-type'
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-import { IsObject, IsSchema } from '../guard/type'
+import { IsObject, IsSchema } from '../guard/kind'
 // ------------------------------------------------------------------
 // IntersectCreate
 // ------------------------------------------------------------------
@@ -48,5 +48,5 @@ export function IntersectCreate<T extends TSchema[]>(T: [...T], options: Interse
     (options.unevaluatedProperties === false || IsSchema(options.unevaluatedProperties) || allObjects
       ? { ...options, ...clonedUnevaluatedProperties, [Kind]: 'Intersect', type: 'object', allOf: CloneRest(T) }
       : { ...options, ...clonedUnevaluatedProperties, [Kind]: 'Intersect', allOf: CloneRest(T) })
-  ) as TIntersect<T>
+  ) as never
 }

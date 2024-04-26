@@ -472,7 +472,7 @@ export function IsSymbol(value: unknown): value is TSymbol {
   )
 }
 /** Returns true if the given value is TTemplateLiteral */
-export function IsTemplateLiteral(value: unknown): value is TTemplateLiteral<TTemplateLiteralKind[]> {
+export function IsTemplateLiteral(value: unknown): value is TTemplateLiteral {
   // prettier-ignore
   return (
     IsKindOf(value, 'TemplateLiteral') &&

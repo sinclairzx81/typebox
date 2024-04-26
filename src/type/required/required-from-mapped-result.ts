@@ -45,9 +45,9 @@ type TFromProperties<
 function FromProperties<
   P extends TProperties
 >(P: P, options: SchemaOptions): TFromProperties<P> {
-  return globalThis.Object.getOwnPropertyNames(P).reduce((Acc, K2) => {
-    return {...Acc, [K2]: Required(P[K2], options) }
-  }, {}) as TFromProperties<P>
+  const Acc = {} as TProperties
+  for(const K2 of globalThis.Object.getOwnPropertyNames(P)) Acc[K2] = Required(P[K2], options)
+  return Acc as never
 }
 // ------------------------------------------------------------------
 // FromMappedResult
@@ -62,7 +62,7 @@ type TFromMappedResult<
 function FromMappedResult<
   R extends TMappedResult
 >(R: R, options: SchemaOptions): TFromMappedResult<R> {
-  return FromProperties(R.properties, options) as TFromMappedResult<R>
+  return FromProperties(R.properties, options) as never
 }
 // ------------------------------------------------------------------
 // TRequiredFromMappedResult
@@ -79,6 +79,6 @@ export function RequiredFromMappedResult<
   R extends TMappedResult,
   P extends TProperties = TFromMappedResult<R>
 >(R: R, options: SchemaOptions): TMappedResult<P> {
-  const P = FromMappedResult(R, options) as unknown as P
-  return MappedResult(P) 
+  const P = FromMappedResult(R, options)
+  return MappedResult(P) as never
 }

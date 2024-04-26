@@ -47,5 +47,5 @@ export function Number(options: NumberOptions = {}): TNumber {
     ...options,
     [Kind]: 'Number',
     type: 'number',
-  } as unknown as TNumber
+  } as never
 }

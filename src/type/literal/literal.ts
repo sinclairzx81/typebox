@@ -49,5 +49,5 @@ export function Literal<T extends TLiteralValue>(value: T, options: SchemaOption
     [Kind]: 'Literal',
     const: value,
     type: typeof value as 'string' | 'number' | 'boolean',
-  } as unknown as TLiteral<T>
+  } as never
 }

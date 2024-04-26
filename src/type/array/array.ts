@@ -60,5 +60,5 @@ export function Array<T extends TSchema>(schema: T, options: ArrayOptions = {}):
     [Kind]: 'Array',
     type: 'array',
     items: CloneType(schema),
-  } as unknown as TArray<T>
+  } as never
 }

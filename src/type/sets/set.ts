@@ -40,7 +40,7 @@ export type TSetIncludes<T extends PropertyKey[], S extends PropertyKey> = (
 /** Returns true if element right is in the set of left */
 // prettier-ignore
 export function SetIncludes<T extends PropertyKey[], S extends PropertyKey>(T: [...T], S: S): TSetIncludes<T, S> {
-  return T.includes(S) as TSetIncludes<T, S>
+  return T.includes(S) as never
 }
 // ------------------------------------------------------------------
 // SetIsSubset
@@ -55,7 +55,7 @@ export type TSetIsSubset<T extends PropertyKey[], S extends PropertyKey[]> = (
 )
 /** Returns true if left is a subset of right */
 export function SetIsSubset<T extends PropertyKey[], S extends PropertyKey[]>(T: [...T], S: [...S]): TSetIsSubset<T, S> {
-  return T.every((L) => SetIncludes(S, L)) as TSetIsSubset<T, S>
+  return T.every((L) => SetIncludes(S, L)) as never
 }
 // ------------------------------------------------------------------
 // SetDistinct
@@ -69,7 +69,7 @@ export type TSetDistinct<T extends PropertyKey[], Acc extends PropertyKey[] = []
     : Acc
 /** Returns a distinct set of elements */
 export function SetDistinct<T extends PropertyKey[]>(T: [...T]): TSetDistinct<T> {
-  return [...new Set(T)] as TSetDistinct<T>
+  return [...new Set(T)] as never
 }
 // ------------------------------------------------------------------
 // SetIntersect
@@ -84,7 +84,7 @@ export type TSetIntersect<T extends PropertyKey[], S extends PropertyKey[], Acc 
 )
 /** Returns the Intersect of the given sets */
 export function SetIntersect<T extends PropertyKey[], S extends PropertyKey[]>(T: [...T], S: [...S]): TSetIntersect<T, S> {
-  return T.filter((L) => S.includes(L)) as TSetIntersect<T, S>
+  return T.filter((L) => S.includes(L)) as never
 }
 // ------------------------------------------------------------------
 // SetUnion
@@ -111,7 +111,7 @@ export type TSetComplement<T extends PropertyKey[], S extends PropertyKey[], Acc
 /** Returns the Complement by omitting elements in T that are in S */
 // prettier-ignore
 export function SetComplement<T extends PropertyKey[], S extends PropertyKey[]>(T: [...T], S: [...S]): TSetComplement<T, S> {
-  return T.filter(L => !S.includes(L)) as TSetComplement<T, S>
+  return T.filter(L => !S.includes(L)) as never
 }
 // ------------------------------------------------------------------
 // SetIntersectMany
@@ -146,7 +146,7 @@ export function SetIntersectMany<T extends PropertyKey[][]>(T: [...T]): TSetInte
       : T.length > 1
         ? SetIntersectManyResolve(T.slice(1), T[0])
         : []
-  ) as TSetIntersectMany<T>
+  ) as never
 }
 // ------------------------------------------------------------------
 // SetUnionMany
@@ -159,5 +159,7 @@ export type TSetUnionMany<T extends PropertyKey[][], Acc extends PropertyKey[] =
 )
 /** Returns the Union of multiple sets */
 export function SetUnionMany<T extends PropertyKey[][]>(T: [...T]): TSetUnionMany<T> {
-  return T.reduce((Acc, L) => [...Acc, ...L], [] as PropertyKey[]) as TSetUnionMany<T>
+  const Acc = [] as PropertyKey[]
+  for (const L of T) Acc.push(...L)
+  return Acc as never
 }

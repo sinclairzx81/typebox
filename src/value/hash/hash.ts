@@ -107,7 +107,7 @@ function NumberType(value: number) {
 }
 function ObjectType(value: Record<string, unknown>) {
   FNV1A64(ByteMarker.Object)
-  for (const key of globalThis.Object.keys(value).sort()) {
+  for (const key of globalThis.Object.getOwnPropertyNames(value).sort()) {
     Visit(key)
     Visit(value[key])
   }

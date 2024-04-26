@@ -37,7 +37,7 @@ import { Kind } from '../symbols/index'
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-import { IsOptional, IsSchema } from '../guard/type'
+import { IsOptional, IsSchema } from '../guard/kind'
 
 // ------------------------------------------------------------------
 // ObjectStatic
@@ -89,10 +89,13 @@ function _Object<T extends TProperties>(properties: T, options: ObjectOptions = 
   const optionalKeys = propertyKeys.filter((key) => IsOptional(properties[key]))
   const requiredKeys = propertyKeys.filter((name) => !optionalKeys.includes(name))
   const clonedAdditionalProperties = IsSchema(options.additionalProperties) ? { additionalProperties: CloneType(options.additionalProperties) } : {}
-  const clonedProperties = propertyKeys.reduce((acc, key) => ({ ...acc, [key]: CloneType(properties[key]) }), {} as TProperties)
-  return (requiredKeys.length > 0
-    ? { ...options, ...clonedAdditionalProperties, [Kind]: 'Object', type: 'object', properties: clonedProperties, required: requiredKeys }
-    : { ...options, ...clonedAdditionalProperties, [Kind]: 'Object', type: 'object', properties: clonedProperties }) as unknown as TObject<T>
+  const clonedProperties = {} as Record<PropertyKey, TSchema>
+  for (const key of propertyKeys) clonedProperties[key] = CloneType(properties[key])
+  return (
+    requiredKeys.length > 0
+      ? { ...options, ...clonedAdditionalProperties, [Kind]: 'Object', type: 'object', properties: clonedProperties, required: requiredKeys }
+      : { ...options, ...clonedAdditionalProperties, [Kind]: 'Object', type: 'object', properties: clonedProperties }
+  ) as never
 }
 
 /** `[Json]` Creates an Object type */

@@ -46,9 +46,9 @@ function FromProperties<
   P extends TProperties,
   T extends TSchema
 >(P: P, U: T): TFromProperties<P, T> {
-  return globalThis.Object.getOwnPropertyNames(P).reduce((Acc, K2) => {
-    return {...Acc, [K2]: Exclude(P[K2], U) }
-  }, {}) as TFromProperties<P, T>
+  const Acc = {} as TProperties
+  for(const K2 of globalThis.Object.getOwnPropertyNames(P)) Acc[K2] = Exclude(P[K2], U)
+  return Acc as never
 }
 // ------------------------------------------------------------------
 // FromMappedResult
@@ -65,7 +65,7 @@ function FromMappedResult<
   R extends TMappedResult,
   T extends TSchema
 >(R: R, T: T): TFromMappedResult<R, T> {
-  return FromProperties(R.properties, T) as TFromMappedResult<R, T>
+  return FromProperties(R.properties, T) as never
 }
 // ------------------------------------------------------------------
 // ExcludeFromMappedResult
@@ -84,6 +84,6 @@ export function ExcludeFromMappedResult<
   T extends TSchema,
   P extends TProperties = TFromMappedResult<R, T>
 >(R: R, T: T): TMappedResult<P> {
-  const P = FromMappedResult(R, T) as unknown as P
-  return MappedResult(P) 
+  const P = FromMappedResult(R, T)
+  return MappedResult(P) as never
 }

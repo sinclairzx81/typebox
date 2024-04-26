@@ -50,7 +50,7 @@ function MappedIntrinsicPropertyKey<
 >(K: K, M: M, options: SchemaOptions): TMappedIntrinsicPropertyKey<K, M> {
   return {
     [K]: Intrinsic(Literal(K as TLiteralValue), M, options)
-  } as TMappedIntrinsicPropertyKey<K, M>
+  } as never
 }
 // ------------------------------------------------------------------
 // MappedIntrinsicPropertyKeys
@@ -72,7 +72,7 @@ function MappedIntrinsicPropertyKeys<
 >(K: [...K], M: M, options: SchemaOptions): TMappedIntrinsicPropertyKeys<K, M> {
   return K.reduce((Acc, L) => {
     return { ...Acc, ...MappedIntrinsicPropertyKey(L, M, options) }
-  }, {} as TProperties) as TMappedIntrinsicPropertyKeys<K, M>
+  }, {} as TProperties) as never
 }
 // ------------------------------------------------------------------
 // MappedIntrinsicProperties
@@ -89,7 +89,7 @@ function MappedIntrinsicProperties<
   K extends TMappedKey,
   M extends IntrinsicMode,
 >(T: K, M: M, options: SchemaOptions): TMappedIntrinsicProperties<K, M> {
-  return MappedIntrinsicPropertyKeys(T['keys'], M, options) as TMappedIntrinsicProperties<K, M>
+  return MappedIntrinsicPropertyKeys(T['keys'], M, options) as never
 }
 // ------------------------------------------------------------------
 // IntrinsicFromMappedKey
@@ -108,6 +108,6 @@ export function IntrinsicFromMappedKey<
   M extends IntrinsicMode,
   P extends TProperties = TMappedIntrinsicProperties<K, M>
 >(T: K, M: M, options: SchemaOptions): TMappedResult<P> {
-  const P = MappedIntrinsicProperties(T, M, options) as unknown as P
-  return MappedResult(P) 
+  const P = MappedIntrinsicProperties(T, M, options)
+  return MappedResult(P) as never
 }

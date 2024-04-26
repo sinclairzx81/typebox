@@ -42,7 +42,7 @@ import { ExtractFromTemplateLiteral, type TExtractFromTemplateLiteral } from './
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-import { IsMappedResult, IsTemplateLiteral, IsUnion } from '../guard/type'
+import { IsMappedResult, IsTemplateLiteral, IsUnion } from '../guard/kind'
 
 // ------------------------------------------------------------------
 // ExtractRest

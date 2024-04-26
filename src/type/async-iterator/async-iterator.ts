@@ -44,5 +44,5 @@ export function AsyncIterator<T extends TSchema>(items: T, options: SchemaOption
     [Kind]: 'AsyncIterator',
     type: 'AsyncIterator',
     items: CloneType(items),
-  } as unknown as TAsyncIterator<T>
+  } as never
 }

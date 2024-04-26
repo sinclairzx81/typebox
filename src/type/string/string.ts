@@ -82,5 +82,5 @@ export interface TString extends TSchema, StringOptions {
 
 /** `[Json]` Creates a String type */
 export function String(options: StringOptions = {}): TString {
-  return { ...options, [Kind]: 'String', type: 'string' } as unknown as TString
+  return { ...options, [Kind]: 'String', type: 'string' } as never
 }

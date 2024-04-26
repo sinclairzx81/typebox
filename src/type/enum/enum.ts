@@ -54,5 +54,5 @@ export function Enum<V extends TEnumValue, T extends Record<TEnumKey, V>>(item: 
     .map((key) => item[key]) as T[keyof T][]
   const values2 = [...new Set(values1)]
   const anyOf = values2.map((value) => Literal(value))
-  return Union(anyOf, { ...options, [Hint]: 'Enum' }) as unknown as TEnum<T>
+  return Union(anyOf, { ...options, [Hint]: 'Enum' }) as never
 }

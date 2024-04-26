@@ -52,5 +52,5 @@ export function Date(options: DateOptions = {}): TDate {
     ...options,
     [Kind]: 'Date',
     type: 'Date',
-  } as unknown as TDate
+  } as never
 }

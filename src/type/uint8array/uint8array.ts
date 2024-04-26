@@ -40,5 +40,5 @@ export interface TUint8Array extends TSchema, Uint8ArrayOptions {
 }
 /** `[JavaScript]` Creates a Uint8Array type */
 export function Uint8Array(options: Uint8ArrayOptions = {}): TUint8Array {
-  return { ...options, [Kind]: 'Uint8Array', type: 'Uint8Array' } as unknown as TUint8Array
+  return { ...options, [Kind]: 'Uint8Array', type: 'Uint8Array' } as never
 }

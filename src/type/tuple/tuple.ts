@@ -60,5 +60,5 @@ export function Tuple<T extends TSchema[]>(items: [...T], options: SchemaOptions
     items.length > 0 ?
       { ...options, [Kind]: 'Tuple', type: 'array', items: CloneRest(items), additionalItems, minItems, maxItems } :
       { ...options, [Kind]: 'Tuple', type: 'array', minItems, maxItems }
-  ) as unknown as TTuple<T>
+  ) as never
 }

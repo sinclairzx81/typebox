@@ -144,5 +144,5 @@ export function TemplateLiteralGenerate<T extends TTemplateLiteral>(schema: T): 
     IsTemplateLiteralExpressionFinite(expression)
      ? [...TemplateLiteralExpressionGenerate(expression)]
      : []
-  ) as TTemplateLiteralGenerate<T>
+  ) as never
 }

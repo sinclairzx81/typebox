@@ -51,7 +51,7 @@ import { IsUndefined } from '../guard/value'
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-import { IsInteger, IsLiteral, IsNumber, IsString, IsRegExp, IsTemplateLiteral, IsUnion } from '../guard/type'
+import { IsInteger, IsLiteral, IsNumber, IsString, IsRegExp, IsTemplateLiteral, IsUnion } from '../guard/kind'
 // ------------------------------------------------------------------
 // RecordCreateFromPattern
 // ------------------------------------------------------------------
@@ -62,15 +62,16 @@ function RecordCreateFromPattern(pattern: string, T: TSchema, options: ObjectOpt
     [Kind]: 'Record', 
     type: 'object', 
     patternProperties: { [pattern]: CloneType(T) } 
-  } as unknown as TRecord<TSchema, TSchema> 
+  } as never
 }
 // ------------------------------------------------------------------
 // RecordCreateFromKeys
 // ------------------------------------------------------------------
 // prettier-ignore
 function RecordCreateFromKeys(K: string[], T: TSchema, options: ObjectOptions): TObject<TProperties> {
-  const P = K.reduce((Acc, K) => ({ ...Acc, [K]: CloneType(T) }), {} as TProperties)
-  return Object(P, { ...options, [Hint]: 'Record' })
+  const Acc = {} as TProperties
+  for(const K2 of K) Acc[K2] = CloneType(T)
+  return Object(Acc, { ...options, [Hint]: 'Record' })
 }
 // ------------------------------------------------------------------
 // FromTemplateLiteralKey (Fast Inference)
@@ -91,7 +92,7 @@ function FromTemplateLiteralKey<K extends TTemplateLiteral, T extends TSchema>(K
     IsTemplateLiteralFinite(K)
       ? RecordCreateFromKeys(IndexPropertyKeys(K), T, options)
       : RecordCreateFromPattern(K.pattern, T, options)
-  ) as TFromTemplateLiteralKey<K, T>
+  ) as never
 }
 // ------------------------------------------------------------------
 // FromEnumKey (Special Case)
@@ -118,7 +119,7 @@ type TFromUnionKey<K extends TSchema[], T extends TSchema, P extends TProperties
 )
 // prettier-ignore
 function FromUnionKey<K extends TSchema[], T extends TSchema>(K: K, T: T, options: ObjectOptions): TFromUnionKey<K, T> {
-  return RecordCreateFromKeys(IndexPropertyKeys(Union(K)), T, options) as  TFromUnionKey<K, T>
+  return RecordCreateFromKeys(IndexPropertyKeys(Union(K)), T, options) as never
 }
 // ------------------------------------------------------------------
 // FromLiteralKey
@@ -129,7 +130,7 @@ type TFromLiteralKey<K extends TLiteralValue, T extends TSchema> = (
 )
 // prettier-ignore
 function FromLiteralKey<K extends TLiteralValue, T extends TSchema>(K: K, T: T, options: ObjectOptions): TFromLiteralKey<K, T> {
-  return RecordCreateFromKeys([(K as string).toString()], T, options) as TFromLiteralKey<K, T>
+  return RecordCreateFromKeys([(K as string).toString()], T, options) as never
 }
 // ------------------------------------------------------------------
 // TFromRegExpKey
@@ -140,7 +141,7 @@ type TFromRegExpKey<_ extends TRegExp, T extends TSchema> = (
 )
 // prettier-ignore
 function FromRegExpKey<K extends TRegExp, T extends TSchema>(K: K, T: T, options: ObjectOptions): TFromRegExpKey<K, T> {
-  return RecordCreateFromPattern(K.source, T, options) as TFromRegExpKey<K, T>
+  return RecordCreateFromPattern(K.source, T, options) as never
 }
 // ------------------------------------------------------------------
 // FromStringKey
@@ -152,7 +153,7 @@ type TFromStringKey<_ extends TString, T extends TSchema> = (
 // prettier-ignore
 function FromStringKey<K extends TString, T extends TSchema>(K: K, T: T, options: ObjectOptions): TFromStringKey<K, T> {
   const pattern = IsUndefined(K.pattern) ? PatternStringExact : K.pattern
-  return RecordCreateFromPattern(pattern, T, options) as TFromStringKey<K, T>
+  return RecordCreateFromPattern(pattern, T, options) as never
 }
 // ------------------------------------------------------------------
 // FromIntegerKey
@@ -163,7 +164,7 @@ type TFromIntegerKey<_ extends TSchema, T extends TSchema> = (
 )
 // prettier-ignore
 function FromIntegerKey<K extends TInteger, T extends TSchema>(_: K, T: T, options: ObjectOptions): TFromIntegerKey<K, T> {
-  return RecordCreateFromPattern(PatternNumberExact, T, options) as TFromIntegerKey<K, T>
+  return RecordCreateFromPattern(PatternNumberExact, T, options) as never
 }
 // ------------------------------------------------------------------
 // FromNumberKey
@@ -174,7 +175,7 @@ type TFromNumberKey<_ extends TSchema, T extends TSchema> = (
 )
 // prettier-ignore
 function FromNumberKey<K extends TNumber, T extends TSchema>(_: K, T: T, options: ObjectOptions): TFromNumberKey<K, T> {
-  return RecordCreateFromPattern(PatternNumberExact, T, options) as TFromNumberKey<K, T>
+  return RecordCreateFromPattern(PatternNumberExact, T, options) as never
 }
 // ------------------------------------------------------------------
 // TRecord
@@ -220,5 +221,5 @@ export function Record<K extends TSchema, T extends TSchema>(K: K, T: T, options
     IsRegExp(K) ? FromRegExpKey(K, T, options) :
     IsString(K) ? FromStringKey(K, T, options) :
     Never(options)
-  ) as TRecordOrObject<K, T>
+  ) as never
 }

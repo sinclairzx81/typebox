@@ -36,7 +36,7 @@ import type { TUnion } from '../union/index'
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-import { IsTemplateLiteral, IsUnion, IsLiteral, IsNumber, IsInteger } from '../guard/type'
+import { IsTemplateLiteral, IsUnion, IsLiteral, IsNumber, IsInteger } from '../guard/kind'
 // ------------------------------------------------------------------
 // FromTemplateLiteral
 // ------------------------------------------------------------------
@@ -45,7 +45,7 @@ type TFromTemplateLiteral<T extends TTemplateLiteral, R extends string[] = TTemp
 // prettier-ignore
 function FromTemplateLiteral<T extends TTemplateLiteral>(T: T): TFromTemplateLiteral<T> {
   const R = TemplateLiteralGenerate(T) as string[]
-  return R.map(S => S.toString()) as TFromTemplateLiteral<T>
+  return R.map(S => S.toString()) as never
 }
 // ------------------------------------------------------------------
 // FromUnion
@@ -58,9 +58,9 @@ type TFromUnion<T extends TSchema[], Acc extends string[] = []> = (
 )
 // prettier-ignore
 function FromUnion<T extends TSchema[]>(T: T): TFromUnion<T> {
-  return T.reduce((Acc, L) => {
-    return [...Acc, ...IndexPropertyKeys(L)]
-  }, [] as string[]) as TFromUnion<T>
+  const Acc = [] as string[]
+  for(const L of T) Acc.push(...IndexPropertyKeys(L))
+  return Acc as never
 }
 // ------------------------------------------------------------------
 // FromLiteral
@@ -75,7 +75,7 @@ type TFromLiteral<T extends TLiteralValue> = (
 function FromLiteral<T extends TLiteralValue>(T: T): TFromLiteral<T> {
   return (
     [(T as string).toString()] // TS 5.4 observes TLiteralValue as not having a toString()
-  ) as TFromLiteral<T>
+  ) as never
 }
 // ------------------------------------------------------------------
 // IndexedKeyResolve
@@ -99,5 +99,5 @@ export function IndexPropertyKeys<T extends TSchema>(T: T): TIndexPropertyKeys<T
     IsNumber(T) ? ['[number]'] : 
     IsInteger(T) ? ['[number]'] :
     []
-  ))] as TIndexPropertyKeys<T>
+  ))] as never
 }

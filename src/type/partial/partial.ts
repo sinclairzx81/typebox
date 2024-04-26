@@ -45,7 +45,7 @@ import { PartialFromMappedResult, type TPartialFromMappedResult } from './partia
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-import { IsMappedResult, IsIntersect, IsUnion, IsObject } from '../guard/type'
+import { IsMappedResult, IsIntersect, IsUnion, IsObject } from '../guard/kind'
 // ------------------------------------------------------------------
 // FromRest
 // ------------------------------------------------------------------
@@ -57,7 +57,7 @@ type TFromRest<T extends TSchema[], Acc extends TSchema[] = []> = (
 )
 // prettier-ignore
 function FromRest<T extends TSchema[]>(T: [...T]): TFromRest<T> {
-  return T.map(L => PartialResolve(L)) as TFromRest<T>
+  return T.map(L => PartialResolve(L)) as never
 }
 // ------------------------------------------------------------------
 // FromProperties
@@ -71,10 +71,10 @@ type TFromProperties<T extends TProperties> = Evaluate<{
     TOptional<T[K]>
 }>
 // prettier-ignore
-function FromProperties<T extends TProperties>(T: T) {
-  return globalThis.Object.getOwnPropertyNames(T).reduce((Acc, K) => {
-    return { ...Acc, [K]: Optional(T[K]) }
-  }, {} as TProperties)
+function FromProperties<T extends TProperties>(T: T): TFromProperties<T> {
+  const Acc = {} as TProperties
+  for(const K of globalThis.Object.getOwnPropertyNames(T)) Acc[K] = Optional(T[K])
+  return Acc as never
 }
 // ------------------------------------------------------------------
 // PartialResolve
@@ -86,7 +86,7 @@ function PartialResolve<T extends TSchema>(T: T): TPartial<T> {
     IsUnion(T) ? Union(FromRest(T.anyOf)) :
     IsObject(T) ? Object(FromProperties(T.properties)) :
     Object({})
-  ) as TPartial<T>
+  ) as never
 }
 // ------------------------------------------------------------------
 // TPartial

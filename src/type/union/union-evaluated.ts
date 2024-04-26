@@ -39,7 +39,7 @@ import { UnionCreate } from './union-create'
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-import { IsOptional } from '../guard/type'
+import { IsOptional } from '../guard/kind'
 // ------------------------------------------------------------------
 // IsUnionOptional
 // ------------------------------------------------------------------
@@ -53,7 +53,7 @@ type TIsUnionOptional<T extends TSchema[]> = (
 )
 // prettier-ignore
 function IsUnionOptional<T extends TSchema[]>(T: T): TIsUnionOptional<T> {
-  return T.some(L => IsOptional(L)) as TIsUnionOptional<T>
+  return T.some(L => IsOptional(L)) as never
 }
 // ------------------------------------------------------------------
 // RemoveOptionalFromRest
@@ -68,7 +68,7 @@ type TRemoveOptionalFromRest<T extends TSchema[], Acc extends TSchema[] = []> = 
 )
 // prettier-ignore
 function RemoveOptionalFromRest<T extends TSchema[]>(T: T): TRemoveOptionalFromRest<T> {
-  return T.map(L => IsOptional(L) ? RemoveOptionalFromType(L) : L) as TRemoveOptionalFromRest<T>
+  return T.map(L => IsOptional(L) ? RemoveOptionalFromType(L) : L) as never
 }
 // ------------------------------------------------------------------
 // RemoveOptionalFromType
@@ -83,7 +83,7 @@ type TRemoveOptionalFromType<T extends TSchema> = (
 function RemoveOptionalFromType<T extends TSchema>(T: T): TRemoveOptionalFromType<T> {
   return (
     Discard(T, [OptionalKind])
-  ) as TRemoveOptionalFromType<T>
+  ) as never
 }
 // ------------------------------------------------------------------
 // ResolveUnion
@@ -100,7 +100,7 @@ function ResolveUnion<T extends TSchema[]>(T: T, options: SchemaOptions): TResol
     IsUnionOptional(T)
       ? Optional(UnionCreate(RemoveOptionalFromRest(T) as TSchema[], options))
       : UnionCreate(RemoveOptionalFromRest(T) as TSchema[], options)
-  ) as TResolveUnion<T>
+  ) as never
 }
 // ------------------------------------------------------------------
 // Union
@@ -118,5 +118,5 @@ export function UnionEvaluated<T extends TSchema[], R = TUnionEvaluated<T>>(T: [
     T.length === 0 ? Never(options) :
     T.length === 1 ? CloneType(T[0], options) :
     ResolveUnion(T, options)
-  ) as R
+  ) as never
 }

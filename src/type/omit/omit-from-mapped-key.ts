@@ -48,7 +48,7 @@ function FromPropertyKey<
 >(T: T, K: K, options: SchemaOptions): TFromPropertyKey<T, K> {
   return {
     [K]: Omit(T, [K], options)
-  } as TFromPropertyKey<T, K>
+  } as never
 }
 // ------------------------------------------------------------------
 // FromPropertyKeys
@@ -70,7 +70,7 @@ function FromPropertyKeys<
 >(T: T, K: [...K], options: SchemaOptions): TFromPropertyKeys<T, K> {
   return K.reduce((Acc, LK) => {
     return { ...Acc, ...FromPropertyKey(T, LK, options) }
-  }, {} as TProperties) as TFromPropertyKeys<T, K>
+  }, {} as TProperties) as never
 }
 // ------------------------------------------------------------------
 // FromMappedKey
@@ -87,7 +87,7 @@ function FromMappedKey<
   T extends TSchema,
   K extends TMappedKey,
 >(T: T, K: K, options: SchemaOptions): TFromMappedKey<T, K> {
-  return FromPropertyKeys(T, K.keys, options) as TFromMappedKey<T, K>
+  return FromPropertyKeys(T, K.keys, options) as never
 }
 // ------------------------------------------------------------------
 // OmitFromMappedKey
@@ -106,6 +106,6 @@ export function OmitFromMappedKey<
   K extends TMappedKey,
   P extends TProperties = TFromMappedKey<T, K>
 >(T: T, K: K, options: SchemaOptions): TMappedResult<P> {
-  const P = FromMappedKey(T, K, options) as unknown as P
-  return MappedResult(P) 
+  const P = FromMappedKey(T, K, options)
+  return MappedResult(P) as never
 }

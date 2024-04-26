@@ -100,21 +100,20 @@ function FromIntersect(schema: TIntersect, references: TSchema[], path: string, 
   const defaulted = Default(schema, path, value)
   if (!IsStandardObject(value) || IsValueType(value)) return defaulted
   const knownKeys = KeyOfPropertyKeys(schema) as string[]
-  const knownProperties = knownKeys.reduce((value, key) => {
-    return key in defaulted 
-      ? { ...value, [key]: Visit(Index(schema, [key]), references, `${path}/${key}`, value[key]) } 
-      : value
-  }, defaulted)
+  const knownProperties = { ...defaulted } as Record<PropertyKey, unknown>
+  for(const key of knownKeys) if(key in knownProperties) {
+    knownProperties[key] = Visit(Index(schema, [key]), references, `${path}/${key}`, knownProperties[key])
+  }
   if (!IsTransform(schema.unevaluatedProperties)) {
     return Default(schema, path, knownProperties)
   }
   const unknownKeys = Object.getOwnPropertyNames(knownProperties)
   const unevaluatedProperties = schema.unevaluatedProperties as TSchema
-  return unknownKeys.reduce((value, key) => {
-    return !knownKeys.includes(key) 
-      ? { ...value, [key]: Default(unevaluatedProperties, `${path}/${key}`, value[key]) }  
-      : value
-  }, knownProperties)
+  const properties = { ...knownProperties } as Record<PropertyKey, unknown>
+  for(const key of unknownKeys) if(!knownKeys.includes(key)) {
+    properties[key] = Default(unevaluatedProperties, `${path}/${key}`, properties[key])
+  }
+  return properties
 }
 // prettier-ignore
 function FromNot(schema: TNot, references: TSchema[], path: string, value: any) {
@@ -125,21 +124,20 @@ function FromObject(schema: TObject, references: TSchema[], path: string, value:
   const defaulted = Default(schema, path, value)
   if (!IsStandardObject(value)) return defaulted
   const knownKeys = KeyOfPropertyKeys(schema) as string[]
-  const knownProperties = knownKeys.reduce((value, key) => {
-    return key in value 
-      ? { ...value, [key]: Visit(schema.properties[key], references, `${path}/${key}`, value[key]) } 
-      : value
-  }, defaulted)
+  const knownProperties = { ...defaulted } as Record<PropertyKey, unknown>
+  for(const key of knownKeys) if(key in value) {
+    knownProperties[key] = Visit(schema.properties[key], references, `${path}/${key}`, knownProperties[key])
+  }
   if (!IsSchema(schema.additionalProperties)) {
     return knownProperties
   }
   const unknownKeys = Object.getOwnPropertyNames(knownProperties)
   const additionalProperties = schema.additionalProperties as TSchema
-  return unknownKeys.reduce((value, key) => {
-    return !knownKeys.includes(key) 
-      ? { ...value, [key]: Default(additionalProperties, `${path}/${key}`, value[key]) }  
-      : value
-  }, knownProperties)
+  const properties = { ...knownProperties } as Record<PropertyKey, unknown>
+  for(const key of unknownKeys) if(!knownKeys.includes(key)) {
+    properties[key] = Default(additionalProperties, `${path}/${key}`, properties[key])
+  }
+  return properties
 }
 // prettier-ignore
 function FromRecord(schema: TRecord, references: TSchema[], path: string, value: any) {
@@ -147,21 +145,20 @@ function FromRecord(schema: TRecord, references: TSchema[], path: string, value:
   if (!IsStandardObject(value)) return defaulted
   const pattern = Object.getOwnPropertyNames(schema.patternProperties)[0]
   const knownKeys = new RegExp(pattern)
-  const knownProperties = Object.getOwnPropertyNames(value).reduce((value, key) => {
-    return knownKeys.test(key) 
-      ? { ...value, [key]: Visit(schema.patternProperties[pattern], references, `${path}/${key}`, value[key]) }
-      : value
-  }, defaulted)
+  const knownProperties = {...defaulted } as Record<PropertyKey, unknown>
+  for(const key of Object.getOwnPropertyNames(value)) if(knownKeys.test(key)) {
+    knownProperties[key] = Visit(schema.patternProperties[pattern], references, `${path}/${key}`, knownProperties[key])
+  }
   if (!IsSchema(schema.additionalProperties)) {
     return Default(schema, path, knownProperties)
   }
   const unknownKeys = Object.getOwnPropertyNames(knownProperties)
   const additionalProperties = schema.additionalProperties as TSchema
-  return unknownKeys.reduce((value, key) => {
-    return !knownKeys.test(key) 
-      ? { ...value, [key]: Default(additionalProperties, `${path}/${key}`, value[key]) }  
-      : value
-  }, knownProperties)
+  const properties = { ...knownProperties } as Record<PropertyKey, unknown>
+  for(const key of unknownKeys) if(!knownKeys.test(key)) {
+    properties[key] = Default(additionalProperties, `${path}/${key}`, properties[key])
+  }
+  return properties
 }
 // prettier-ignore
 function FromRef(schema: TRef, references: TSchema[], path: string, value: any) {

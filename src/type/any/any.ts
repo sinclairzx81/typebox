@@ -36,5 +36,5 @@ export interface TAny extends TSchema {
 
 /** `[Json]` Creates an Any type */
 export function Any(options: SchemaOptions = {}): TAny {
-  return { ...options, [Kind]: 'Any' } as unknown as TAny
+  return { ...options, [Kind]: 'Any' } as never
 }

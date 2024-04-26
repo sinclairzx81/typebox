@@ -47,9 +47,9 @@ function FromProperties<
   P extends TProperties,
   K extends PropertyKey[],
 >(P: P, K: [...K], options: SchemaOptions): TFromProperties<P, K> {
-  return globalThis.Object.getOwnPropertyNames(P).reduce((Acc, K2) => {
-    return {...Acc, [K2]: Omit(P[K2], K, options) }
-  }, {}) as TFromProperties<P, K>
+  const Acc = {} as TProperties
+  for(const K2 of globalThis.Object.getOwnPropertyNames(P)) Acc[K2] = Omit(P[K2], K, options)
+  return Acc as never
 }
 // ------------------------------------------------------------------
 // FromMappedResult
@@ -66,7 +66,7 @@ function FromMappedResult<
   R extends TMappedResult,
   K extends PropertyKey[]
 >(R: R, K: [...K], options: SchemaOptions): TFromMappedResult<R, K> {
-  return FromProperties(R.properties, K, options) as TFromMappedResult<R, K>
+  return FromProperties(R.properties, K, options) as never
 }
 // ------------------------------------------------------------------
 // TOmitFromMappedResult
@@ -85,6 +85,6 @@ export function OmitFromMappedResult<
   K extends PropertyKey[],
   P extends TProperties = TFromMappedResult<R, K>
 >(R: R, K: [...K], options: SchemaOptions): TMappedResult<P> {
-  const P = FromMappedResult(R, K, options) as unknown as P
-  return MappedResult(P) 
+  const P = FromMappedResult(R, K, options)
+  return MappedResult(P) as never
 }

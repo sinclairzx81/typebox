@@ -47,5 +47,5 @@ export function Integer(options: IntegerOptions = {}): TInteger {
     ...options,
     [Kind]: 'Integer',
     type: 'integer',
-  } as unknown as TInteger
+  } as never
 }

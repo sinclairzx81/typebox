@@ -35,17 +35,7 @@ import { TypeBoxError } from '../error/index'
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-// prettier-ignore
-import {
-  IsTemplateLiteral,
-  IsUnion,
-  IsNumber,
-  IsInteger,
-  IsBigInt,
-  IsString,
-  IsLiteral,
-  IsBoolean
-} from '../guard/type'
+import { IsTemplateLiteral, IsUnion, IsNumber, IsInteger, IsBigInt, IsString, IsLiteral, IsBoolean } from '../guard/kind'
 
 // ------------------------------------------------------------------
 // TemplateLiteralPatternError

@@ -35,7 +35,7 @@ import { CloneType } from '../clone/type'
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-import { IsIntersect, IsUnion, IsPromise } from '../guard/type'
+import { IsIntersect, IsUnion, IsPromise } from '../guard/kind'
 // ------------------------------------------------------------------
 // FromRest
 // ------------------------------------------------------------------
@@ -46,7 +46,7 @@ type TFromRest<T extends TSchema[], Acc extends TSchema[] = []> =
     : Acc
 // prettier-ignore
 function FromRest<T extends TSchema[]>(T: [...T]) : TFromRest<T> {
-  return T.map(L => AwaitedResolve(L)) as TFromRest<T>
+  return T.map(L => AwaitedResolve(L)) as never
 }
 // ----------------------------------------------------------------
 // FromIntersect
@@ -55,7 +55,7 @@ function FromRest<T extends TSchema[]>(T: [...T]) : TFromRest<T> {
 type TFromIntersect<T extends TSchema[]> = TIntersect<TFromRest<T>>
 // prettier-ignore
 function FromIntersect<T extends TSchema[]>(T: [...T]): TFromIntersect<T> {
-  return Intersect(FromRest(T) as TSchema[]) as unknown as TFromIntersect<T>
+  return Intersect(FromRest(T) as TSchema[]) as never
 }
 // ----------------------------------------------------------------
 // FromUnion
@@ -64,7 +64,7 @@ function FromIntersect<T extends TSchema[]>(T: [...T]): TFromIntersect<T> {
 type TFromUnion<T extends TSchema[]> = TUnion<TFromRest<T>>
 // prettier-ignore
 function FromUnion<T extends TSchema[]>(T: [...T]): TFromUnion<T> {
-  return Union(FromRest(T) as TSchema[]) as unknown as TFromUnion<T>
+  return Union(FromRest(T) as TSchema[]) as never
 }
 // ----------------------------------------------------------------
 // Promise
@@ -72,7 +72,7 @@ function FromUnion<T extends TSchema[]>(T: [...T]): TFromUnion<T> {
 type TFromPromise<T extends TSchema> = TAwaited<T>
 // prettier-ignore
 function FromPromise<T extends TSchema>(T: T): TFromPromise<T> {
-  return AwaitedResolve(T) as TFromPromise<T>
+  return AwaitedResolve(T) as never
 }
 // ----------------------------------------------------------------
 // AwaitedResolve
@@ -84,7 +84,7 @@ function AwaitedResolve<T extends TSchema>(T: T): TAwaited<T> {
     IsUnion(T) ? FromUnion(T.anyOf) :
     IsPromise(T) ? FromPromise(T.item) :
     T
-  ) as TAwaited<T>
+  ) as never
 }
 // ------------------------------------------------------------------
 // TAwaited

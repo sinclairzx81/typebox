@@ -41,11 +41,7 @@ import { IntersectCreate } from './intersect-create'
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-// prettier-ignore
-import { 
-  IsOptional,
-  IsTransform,
-} from '../guard/type'
+import { IsOptional, IsTransform } from '../guard/kind'
 
 // ------------------------------------------------------------------
 // IsIntersectOptional
@@ -60,7 +56,7 @@ type TIsIntersectOptional<T extends TSchema[]> = (
 )
 // prettier-ignore
 function IsIntersectOptional<T extends TSchema[]>(T: T): TIsIntersectOptional<T> {
-  return T.every(L => IsOptional(L)) as TIsIntersectOptional<T>
+  return T.every(L => IsOptional(L)) as never
 }
 // ------------------------------------------------------------------
 // RemoveOptionalFromType
@@ -75,7 +71,7 @@ type TRemoveOptionalFromType<T extends TSchema> = (
 function RemoveOptionalFromType<T extends TSchema>(T: T): TRemoveOptionalFromType<T> {
   return (
     Discard(T, [OptionalKind])
-    ) as TRemoveOptionalFromType<T>
+    ) as never
 }
 // ------------------------------------------------------------------
 // RemoveOptionalFromRest
@@ -90,7 +86,7 @@ type TRemoveOptionalFromRest<T extends TSchema[], Acc extends TSchema[] = []> = 
 )
 // prettier-ignore
 function RemoveOptionalFromRest<T extends TSchema[]>(T: T): TRemoveOptionalFromRest<T> {
-  return T.map(L => IsOptional(L) ? RemoveOptionalFromType(L) : L) as TRemoveOptionalFromRest<T>
+  return T.map(L => IsOptional(L) ? RemoveOptionalFromType(L) : L) as never
 }
 // ------------------------------------------------------------------
 // ResolveIntersect
@@ -107,7 +103,7 @@ function ResolveIntersect<T extends TSchema[]>(T: [...T], options: SchemaOptions
     IsIntersectOptional(T)
       ? Optional(IntersectCreate(RemoveOptionalFromRest(T) as TSchema[], options))
       : IntersectCreate(RemoveOptionalFromRest(T) as TSchema[], options)
-  ) as unknown as TResolveIntersect<T>
+  ) as never
 }
 // ------------------------------------------------------------------
 // IntersectEvaluated

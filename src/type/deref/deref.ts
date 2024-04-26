@@ -46,7 +46,7 @@ import { IsUndefined } from '../guard/value'
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-import { IsConstructor, IsFunction, IsIntersect, IsUnion, IsTuple, IsArray, IsObject, IsPromise, IsAsyncIterator, IsIterator, IsRef } from '../guard/type'
+import { IsConstructor, IsFunction, IsIntersect, IsUnion, IsTuple, IsArray, IsObject, IsPromise, IsAsyncIterator, IsIterator, IsRef } from '../guard/kind'
 // ------------------------------------------------------------------
 // FromRest
 // ------------------------------------------------------------------
@@ -56,8 +56,8 @@ export type TFromRest<T extends TSchema[], Acc extends TSchema[] = []> = (
    ? TFromRest<R, [...Acc, TDeref<L>]>
    : Acc
 )
-function FromRest(schema: TSchema[], references: TSchema[]) {
-  return schema.map((schema) => Deref(schema, references))
+function FromRest<T extends TSchema[]>(schema: [...T], references: TSchema[]): TFromRest<T> {
+  return schema.map((schema) => Deref(schema, references)) as never
 }
 // ------------------------------------------------------------------
 // FromProperties
@@ -68,9 +68,11 @@ type FromProperties<T extends TProperties> = Evaluate<{
 }>
 // prettier-ignore
 function FromProperties(properties: TProperties, references: TSchema[]) {
-  return globalThis.Object.getOwnPropertyNames(properties).reduce((acc, key) => {
-    return {...acc, [key]: Deref(properties[key], references) }
-  }, {} as TProperties)
+  const Acc = {} as TProperties
+  for(const K of globalThis.Object.getOwnPropertyNames(properties)) {
+    Acc[K] = Deref(properties[K], references)
+  }
+  return Acc as never
 }
 // prettier-ignore
 function FromConstructor(schema: TConstructor, references: TSchema[]) {
@@ -147,7 +149,7 @@ function DerefResolve<T extends TSchema>(schema: T, references: TSchema[]): TDer
     IsIterator(schema) ? FromIterator(schema, references) :
     IsRef(schema) ? FromRef(schema, references) :
     schema
-  ) as TDeref<T> 
+  ) as never
 }
 // prettier-ignore
 export type TDeref<T extends TSchema> =

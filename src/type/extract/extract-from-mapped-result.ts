@@ -46,9 +46,9 @@ function FromProperties<
   P extends TProperties,
   T extends TSchema
 >(P: P, T: T): TFromProperties<P, T> {
-  return globalThis.Object.getOwnPropertyNames(P).reduce((Acc, K2) => {
-    return {...Acc, [K2]: Extract(P[K2], T) }
-  }, {}) as TFromProperties<P, T>
+  const Acc = {} as TProperties
+  for(const K2 of globalThis.Object.getOwnPropertyNames(P)) Acc[K2] = Extract(P[K2], T)
+  return Acc as never
 }
 // ------------------------------------------------------------------
 // FromMappedResult
@@ -65,7 +65,7 @@ function FromMappedResult<
   R extends TMappedResult,
   T extends TSchema
 >(R: R, T: T): TFromMappedResult<R, T> {
-  return FromProperties(R.properties, T) as TFromMappedResult<R, T>
+  return FromProperties(R.properties, T) as never
 }
 // ------------------------------------------------------------------
 // ExtractFromMappedResult
@@ -84,6 +84,6 @@ export function ExtractFromMappedResult<
   T extends TSchema,
   P extends TProperties = TFromMappedResult<R, T>
 >(R: R, T: T): TMappedResult<P> {
-  const P = FromMappedResult(R, T) as unknown as P
-  return MappedResult(P) 
+  const P = FromMappedResult(R, T)
+  return MappedResult(P) as never
 }

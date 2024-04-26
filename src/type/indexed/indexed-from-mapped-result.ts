@@ -47,9 +47,11 @@ function FromProperties<
   T extends TSchema,
   P extends TProperties
 >(T: T, P: P, options: SchemaOptions): TFromProperties<T, P> {
-  return globalThis.Object.getOwnPropertyNames(P).reduce((Acc, K2) => {
-    return {...Acc, [K2]: Index(T, IndexPropertyKeys(P[K2]), options) }
-  }, {}) as TFromProperties<T, P>
+  const Acc = {} as Record<PropertyKey, TSchema>
+  for(const K2 of Object.getOwnPropertyNames(P)) {
+    Acc[K2] = Index(T, IndexPropertyKeys(P[K2]), options)
+  }
+  return Acc as never
 }
 // ------------------------------------------------------------------
 // FromMappedResult
@@ -66,7 +68,7 @@ function FromMappedResult<
   T extends TSchema,
   R extends TMappedResult
 >(T: T, R: R, options: SchemaOptions): TFromMappedResult<T, R> {
-  return FromProperties(T, R.properties, options) as TFromMappedResult<T, R>
+  return FromProperties(T, R.properties, options) as never
 }
 // ------------------------------------------------------------------
 // TIndexFromMappedResult
@@ -85,6 +87,6 @@ export function IndexFromMappedResult<
   R extends TMappedResult,
   P extends TProperties = TFromMappedResult<T, R>
 >(T: T, R: R, options: SchemaOptions): TMappedResult<P> {
-  const P = FromMappedResult(T, R, options) as unknown as P
-  return MappedResult(P) 
+  const P = FromMappedResult(T, R, options)
+  return MappedResult(P) as never
 }

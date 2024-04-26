@@ -46,7 +46,7 @@ import { RequiredFromMappedResult, type TRequiredFromMappedResult } from './requ
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-import { IsMappedResult, IsIntersect, IsUnion, IsObject } from '../guard/type'
+import { IsMappedResult, IsIntersect, IsUnion, IsObject } from '../guard/kind'
 // ------------------------------------------------------------------
 // FromRest
 // ------------------------------------------------------------------
@@ -58,7 +58,7 @@ type TFromRest<T extends TSchema[], Acc extends TSchema[] = []> = (
 )
 // prettier-ignore
 function FromRest<T extends TSchema[]>(T: [...T]) : TFromRest<T> {
-  return T.map(L => RequiredResolve(L)) as TFromRest<T>
+  return T.map(L => RequiredResolve(L)) as never
 }
 // ------------------------------------------------------------------
 // FromProperties
@@ -73,9 +73,9 @@ type TFromProperties<T extends TProperties> = Evaluate<{
 }>
 // prettier-ignore
 function FromProperties<T extends TProperties>(T: T) {
-  return globalThis.Object.getOwnPropertyNames(T).reduce((Acc, K) => {
-    return { ...Acc, [K]: Discard(T[K], [OptionalKind]) as TSchema }
-  }, {} as TProperties)
+  const Acc = {} as TProperties
+  for(const K of globalThis.Object.getOwnPropertyNames(T)) Acc[K] = Discard(T[K], [OptionalKind]) as TSchema
+  return Acc as never
 }
 // ------------------------------------------------------------------
 // RequiredResolve
@@ -88,7 +88,7 @@ function RequiredResolve<T extends TSchema>(T: T): TRequired<T> {
     IsUnion(T) ?  Union(FromRest(T.anyOf)) :
     IsObject(T) ? Object(FromProperties(T.properties)) :
     Object({})
-  ) as TRequired<T>
+  ) as never
 }
 // ------------------------------------------------------------------
 // TRequired
