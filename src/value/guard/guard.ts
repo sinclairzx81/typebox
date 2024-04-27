@@ -171,7 +171,7 @@ export function IsNumber(value: unknown): value is number {
 }
 /** Returns true if this value is an integer */
 export function IsInteger(value: unknown): value is number {
-  return IsNumber(value) && Number.isInteger(value)
+  return Number.isInteger(value)
 }
 /** Returns true if this value is bigint */
 export function IsBigInt(value: unknown): value is bigint {
