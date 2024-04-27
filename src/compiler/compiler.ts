@@ -210,7 +210,7 @@ export namespace Policy {
       : `(typeof ${value} === 'object' && ${value} !== null && !(${value} instanceof Date) && !(${value} instanceof Uint8Array))`
   }
   export function IsNumberLike(value: string): string {
-    return !TypeSystemPolicy.AllowNaN ? `(typeof ${value} === 'number' && Number.isFinite(${value}))` : `typeof ${value} === 'number'`
+    return TypeSystemPolicy.AllowNaN ? `typeof ${value} === 'number'` : `Number.isFinite(${value})`
   }
   export function IsVoidLike(value: string): string {
     return TypeSystemPolicy.AllowNullVoid ? `(${value} === undefined || ${value} === null)` : `${value} === undefined`
@@ -288,7 +288,7 @@ export namespace TypeCompiler {
     yield `(typeof ${value} === 'function')`
   }
   function* FromInteger(schema: TInteger, references: TSchema[], value: string): IterableIterator<string> {
-    yield `(typeof ${value} === 'number' && Number.isInteger(${value}))`
+    yield `Number.isInteger(${value})`
     if (IsNumber(schema.exclusiveMaximum)) yield `${value} < ${schema.exclusiveMaximum}`
     if (IsNumber(schema.exclusiveMinimum)) yield `${value} > ${schema.exclusiveMinimum}`
     if (IsNumber(schema.maximum)) yield `${value} <= ${schema.maximum}`

@@ -56,8 +56,7 @@ export namespace TypeSystemPolicy {
   }
   /** Asserts this value using the AllowNaN policy */
   export function IsNumberLike(value: unknown): value is number {
-    const isNumber = IsNumber(value)
-    return AllowNaN ? isNumber : isNumber && Number.isFinite(value)
+    return AllowNaN ? IsNumber(value) : Number.isFinite(value)
   }
   /** Asserts this value using the AllowVoidNull policy */
   export function IsVoidLike(value: unknown): value is void {
