@@ -26,26 +26,15 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import * as Fs from 'node:fs'
+import { removeNotices } from '../notices/remove-notices'
+import { convertToEsm } from './convert-to-esm'
+import { compile } from './compile'
 
-// --------------------------------------------------------------------------------------------------------------------------
-// Builds redirect directories for earlier versions of Node. Note that TypeScript will use these directories to
-// resolve types when tsconfig.json is configured for `moduleResolution: 'node'`. This approach is referred to as
-// `package-json-redirect` and enables correct type resolution in lieu of a correct end user configuration.
-//
-// https://github.com/andrewbranch/example-subpath-exports-ts-compat/tree/main/examples/node_modules/package-json-redirects
-// --------------------------------------------------------------------------------------------------------------------------
-
-// prettier-ignore
-export function createRedirectPaths(target: string, submodules: string[]) {
-  submodules.forEach((submodule) => writeRedirect(target, submodule))
-}
-
-// prettier-ignore
-function writeRedirect(target: string, submodule: string) {
-  Fs.mkdirSync(`${target}/${submodule}`, { recursive: true })
-  Fs.writeFileSync(`${target}/${submodule}/package.json`,JSON.stringify({
-    main: `../build/require/${submodule}/index.js`,
-    types: `../build/require/${submodule}/index.d.ts`,
-  }, null, 2))
+/** Builds the ESM version of this package */
+export async function build(target: string) {
+  console.log('building...esm')
+  const buildTarget = `${target}/build/esm`
+  await compile(buildTarget)
+  await convertToEsm(buildTarget)
+  await removeNotices(buildTarget)
 }

@@ -26,13 +26,13 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { removeNotices } from '../common/remove-notices'
+import { removeNotices } from '../notices/remove-notices'
 import { compile } from './compile'
 
 /** Builds the CommonJS version of this package */
 export async function build(target: string) {
-  console.log('building...require')
-  const buildTarget = `${target}/build/require`
+  console.log('building...cjs')
+  const buildTarget = `${target}/build/cjs`
   await compile(buildTarget)
   await removeNotices(buildTarget)
 }

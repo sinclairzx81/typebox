@@ -48,13 +48,12 @@ function resolvePackageJson(submodules: string[]) {
 function resolveSubmoduleExports(submodule: string) {
   return {
     require: {
-      types: `./build/require/${submodule}/index.d.ts`,
-      default: `./build/require/${submodule}/index.js`,
+      types: `./build/cjs/${submodule}/index.d.ts`,
+      default: `./build/cjs/${submodule}/index.js`,
     },
     import: {
-      types: `./build/import/${submodule}/index.d.mts`,
-      default: `./build/import/${submodule}/index.mjs`,
-      
+      types: `./build/esm/${submodule}/index.d.mts`,
+      default: `./build/esm/${submodule}/index.mjs`,
     }
   }
 }
@@ -66,13 +65,13 @@ function resolveExports(submodules: string[]) {
     // ... and root module
     ".": {
       "require": {
-        "types": "./build/require/index.d.ts",
-        "default": "./build/require/index.js",
+        "types": "./build/cjs/index.d.ts",
+        "default": "./build/cjs/index.js",
         
       },
       "import": {
-        "types": "./build/import/index.d.mts",
-        "default": "./build/import/index.mjs",
+        "types": "./build/esm/index.d.mts",
+        "default": "./build/esm/index.mjs",
       }
     }
   })
@@ -90,9 +89,12 @@ function resolveMetadata() {
     author: packageJson.author,
     license: packageJson.license,
     repository: packageJson.repository,
-    scripts: { test: 'echo test' }, // flagged by socket.dev
-    types: "./build/require/index.d.ts",
-    main: "./build/require/index.js",
-    module: "./build/import/index.mjs",
+    // flagged by socket.dev if not present
+    scripts: { test: 'echo test' },
+    // disable auto bundle strategy: see https://github.com/esm-dev/esm.sh#bundling-strategy
+    'esm.sh': { 'bundle': false }, 
+    types: "./build/cjs/index.d.ts",
+    main: "./build/cjs/index.js",
+    module: "./build/esm/index.mjs"
   }
 }

@@ -60,9 +60,9 @@ export async function build(target = 'target/build') {
   await test()
   await clean()
   await Promise.all([
-    Build.Import.build(target),
-    Build.Require.build(target),
-    Build.Redirect.build(target)
+    Build.Package.build(target),
+    Build.Esm.build(target),
+    Build.Cjs.build(target),
   ])
   await folder(target).add('readme.md')
   await folder(target).add('license')
