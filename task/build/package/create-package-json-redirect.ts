@@ -26,13 +26,25 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { createPackageJson } from './create-package-json'
-import { createRedirectPaths } from './create-redirect-paths'
+import * as Fs from 'node:fs'
 
-/** Builds package.json and redirect directories */
-export async function build(target: string) {
-  console.log('building...redirect')
-  const submodules = ['compiler', 'errors', 'system', 'type', 'value']
-  await createPackageJson(target, submodules)
-  await createRedirectPaths(target, submodules)
+// prettier-ignore
+function writeRedirect(target: string, submodule: string) {
+  Fs.mkdirSync(`${target}/${submodule}`, { recursive: true })
+  Fs.writeFileSync(`${target}/${submodule}/package.json`,JSON.stringify({
+    main: `../build/cjs/${submodule}/index.js`,
+    types: `../build/cjs/${submodule}/index.d.ts`,
+  }, null, 2))
+}
+// --------------------------------------------------------------------------------------------------------------------------
+// Builds redirect directories for earlier versions of Node. Note that TypeScript will use these directories to
+// resolve types when tsconfig.json is configured for `moduleResolution: 'node'`. This approach is referred to as
+// `package-json-redirect` and enables correct type resolution in lieu of a correct end user configuration.
+//
+// https://github.com/andrewbranch/example-subpath-exports-ts-compat/tree/main/examples/node_modules/package-json-redirects
+// --------------------------------------------------------------------------------------------------------------------------
+
+// prettier-ignore
+export function createPackageJsonRedirect(target: string, submodules: string[]) {
+  submodules.forEach((submodule) => writeRedirect(target, submodule))
 }

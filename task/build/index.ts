@@ -26,6 +26,6 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export * as Import from './import/build'
-export * as Require from './require/build'
-export * as Redirect from './redirect/build'
+export * as Package from './package/build'
+export * as Esm from './esm/build'
+export * as Cjs from './cjs/build'

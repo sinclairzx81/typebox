@@ -26,15 +26,13 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { removeNotices } from '../common/remove-notices'
-import { convertToEsm } from './convert-to-esm'
-import { compile } from './compile'
+import { createPackageJsonRedirect } from './create-package-json-redirect'
+import { createPackageJson } from './create-package-json'
 
-/** Builds the ESM version of this package */
+/** Builds package.json and redirect directories */
 export async function build(target: string) {
-  console.log('building...import')
-  const buildTarget = `${target}/build/import`
-  await compile(buildTarget)
-  await convertToEsm(buildTarget)
-  await removeNotices(buildTarget)
+  console.log('building...package.json')
+  const submodules = ['compiler', 'errors', 'system', 'type', 'value']
+  await createPackageJsonRedirect(target, submodules)
+  await createPackageJson(target, submodules)
 }
