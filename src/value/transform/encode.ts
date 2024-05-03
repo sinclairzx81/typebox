@@ -48,7 +48,7 @@ import type { TUnion } from '../../type/union/index'
 // ------------------------------------------------------------------
 // ValueGuard
 // ------------------------------------------------------------------
-import { IsStandardObject, IsArray, IsValueType, IsObject } from '../guard/index'
+import { IsStandardObject, IsArray, IsValueType } from '../guard/index'
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
@@ -125,7 +125,7 @@ function FromObject(schema: TObject, references: TSchema[], path: string, value:
   if (!IsStandardObject(defaulted)) return defaulted
   const knownKeys = KeyOfPropertyKeys(schema) as string[]
   const knownProperties = { ...defaulted } as Record<PropertyKey, unknown>
-  for(const key of knownKeys) if(key in defaulted) {
+  for(const key of knownKeys) if(key in knownProperties) {
     knownProperties[key] = Visit(schema.properties[key], references, `${path}/${key}`, knownProperties[key])
   }
   if (!IsSchema(schema.additionalProperties)) {
