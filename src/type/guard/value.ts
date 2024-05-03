@@ -26,6 +26,10 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+/** Returns true if this value is an object with the given property key  */
+export function HasPropertyKey<K extends PropertyKey>(value: unknown, key: K): value is Record<PropertyKey, unknown> & { [_ in K]: unknown } {
+  return IsObject(value) && key in value
+}
 /** Returns true if this value is an async iterator */
 export function IsAsyncIterator(value: unknown): value is AsyncIterableIterator<unknown> {
   return IsObject(value) && !IsArray(value) && !IsUint8Array(value) && Symbol.asyncIterator in value

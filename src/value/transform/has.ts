@@ -33,7 +33,9 @@ import type { TSchema } from '../../type/schema/index'
 import type { TArray } from '../../type/array/index'
 import type { TAsyncIterator } from '../../type/async-iterator/index'
 import type { TConstructor } from '../../type/constructor/index'
+import type { TConstructorCall } from '../../type/constructor-call/index'
 import type { TFunction } from '../../type/function/index'
+import type { TFunctionCall } from '../../type/function-call/index'
 import type { TIntersect } from '../../type/intersect/index'
 import type { TIterator } from '../../type/iterator/index'
 import type { TNot } from '../../type/not/index'
@@ -67,8 +69,16 @@ function FromConstructor(schema: TConstructor, references: TSchema[]) {
   return IsTransform(schema) || Visit(schema.returns, references) || schema.parameters.some((schema) => Visit(schema, references))
 }
 // prettier-ignore
+function FromConstructorCall(schema: TConstructorCall, references: TSchema[]) {
+  return IsTransform(schema) || Visit(schema.constructorCall.returns, references)
+}
+// prettier-ignore
 function FromFunction(schema: TFunction, references: TSchema[]) {
   return IsTransform(schema) || Visit(schema.returns, references) || schema.parameters.some((schema) => Visit(schema, references))
+}
+// prettier-ignore
+function FromFunctionCall(schema: TFunctionCall, references: TSchema[]) {
+  return IsTransform(schema) || Visit(schema.functionCall.returns, references)
 }
 // prettier-ignore
 function FromIntersect(schema: TIntersect, references: TSchema[]) {
@@ -133,8 +143,12 @@ function Visit(schema: TSchema, references: TSchema[]): boolean {
       return FromAsyncIterator(schema_, references_)
     case 'Constructor':
       return FromConstructor(schema_, references_)
+    case 'ConstructorCall':
+      return FromConstructorCall(schema_, references_)
     case 'Function':
       return FromFunction(schema_, references_)
+    case 'FunctionCall':
+      return FromFunctionCall(schema_, references_)
     case 'Intersect':
       return FromIntersect(schema_, references_)
     case 'Iterator':

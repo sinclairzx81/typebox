@@ -1,40 +1,29 @@
-import { TypeSystem } from '@sinclair/typebox/system'
-import { TypeCompiler } from '@sinclair/typebox/compiler'
-import { Value, ValuePointer } from '@sinclair/typebox/value'
-import { Type, TypeGuard, Kind, Static, TSchema } from '@sinclair/typebox'
+import { Type, TypeRegistry, Kind, TSchema, SchemaOptions } from '@sinclair/typebox'
+import { Value } from '@sinclair/typebox/value'
 
-// -----------------------------------------------------------
-// Create: Type
-// -----------------------------------------------------------
+// Tests:
+// - Check
+// - Create
+// - Transform.Has
+// Todo:
+// - Propogation of This into nested Constructor / Function calls
 
-const T = Type.Object({
-  x: Type.Number(),
-  y: Type.Number(),
-  z: Type.Number(),
-})
+export class Foo {
+  constructor(public a: number) {
+    console.log('Inside Consructor', a)
+  }
+  method(a: number) {
+    console.log('Inside Method', a, this)
+  }
+}
+// prettier-ignore
+const T = Type.ConstructorCall([1], Type.Object({
+  method: Type.FunctionCall(null, [2], Type.Number())
+}))
 
-type T = Static<typeof T>
+const C = Value.Create(T)
 
-console.log(T)
+const X = new C(1)
+console.log(X.method(12))
 
-// -----------------------------------------------------------
-// Create: Value
-// -----------------------------------------------------------
-
-const V = Value.Create(T)
-
-console.log(V)
-
-// -----------------------------------------------------------
-// Compile: Type
-// -----------------------------------------------------------
-
-const C = TypeCompiler.Compile(T)
-
-console.log(C.Code())
-
-// -----------------------------------------------------------
-// Check: Value
-// -----------------------------------------------------------
-
-console.log(C.Check(V))
+console.log(Value.Check(T, Foo))

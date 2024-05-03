@@ -27,45 +27,40 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import type { TSchema, SchemaOptions } from '../schema/index'
-import { type TConst, Const } from '../const/index'
-import { type TTuple, Tuple } from '../tuple/index'
-import type { TFunction } from '../function/index'
-import type { TFunctionCall } from '../function-call/index'
-import { CloneRest } from '../clone/type'
+import type { Static } from '../static/index'
+import type { Ensure } from '../helpers/index'
+import { CloneType } from '../clone/type'
 import { Clone } from '../clone/value'
+import { Kind } from '../symbols/index'
 
 // ------------------------------------------------------------------
-// TypeGuard
+// StaticConstructorCall
 // ------------------------------------------------------------------
-import { IsFunction, IsFunctionCall } from '../guard/kind'
+type StaticInstanceType<U extends TSchema, P extends unknown[]> = Static<U, P>
 
-// ------------------------------------------------------------------
-// CallParameters
-// ------------------------------------------------------------------
 // prettier-ignore
-type TFunctionCallParameters<T extends unknown[], Acc extends TSchema[] = []> =
-  T extends [infer L extends unknown, ...infer R extends unknown[]]
-    ? TFunctionCallParameters<R, [...Acc, TConst<L>]>
-    : Acc
-// prettier-ignore
-function FunctionCallParameters<T extends unknown[]>(parameters: T): TFunctionCallParameters<T> {
-  return parameters.map(parameter => Const(parameter)) as never
-}
-// ------------------------------------------------------------------
-// Parameters
-// ------------------------------------------------------------------
-// prettier-ignore
-export type TParameters<T extends TSchema> = (
-  T extends TFunctionCall<infer S extends unknown[]> ? TTuple<TFunctionCallParameters<S>> :
-  T extends TFunction<infer S> ? TTuple<S> :
-  TTuple<[]>
+type StaticConstructorCall<T extends unknown[], U extends TSchema, P extends unknown[]> = (
+  Ensure<new (...param: [...T]) => StaticInstanceType<U, P>>
 )
-/** `[JavaScript]` Extracts the Parameters from the given Function or Call type */
-export function Parameters<T extends TSchema>(schema: T, options: SchemaOptions = {}): TParameters<T> {
-  // prettier-ignore
-  return (
-    IsFunctionCall(schema) ? Tuple(FunctionCallParameters(Clone(schema.functionCall.parameters)), options) :
-    IsFunction(schema) ? Tuple(CloneRest(schema.parameters), options) :
-    Tuple([])
-  ) as never
+// ------------------------------------------------------------------
+// TConstructorCall
+// ------------------------------------------------------------------
+export interface TConstructorCall<T extends unknown[] = unknown[], U extends TSchema = TSchema> extends TSchema {
+  [Kind]: 'ConstructorCall'
+  static: StaticConstructorCall<T, U, this['params']>
+  constructorCall: {
+    parameters: [...T]
+    returns: U
+  }
+}
+/** `[JavaScript]` Creates a ConstructorCall type */
+export function ConstructorCall<T extends unknown[], U extends TSchema>(parameters: [...T], returns: U, options?: SchemaOptions): TConstructorCall<T, U> {
+  return {
+    ...options,
+    [Kind]: 'ConstructorCall',
+    constructorCall: {
+      parameters: Clone(parameters),
+      returns: CloneType(returns),
+    },
+  } as never
 }

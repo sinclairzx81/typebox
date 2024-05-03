@@ -40,7 +40,9 @@ import type { TAny } from '../any/index'
 import type { TAsyncIterator } from '../async-iterator/index'
 import type { TBigInt } from '../bigint/index'
 import type { TConstructor } from '../constructor/index'
+import type { TConstructorCall } from '../constructor-call/index'
 import type { TFunction } from '../function/index'
+import type { TFunctionCall } from '../function-call/index'
 import type { TInteger } from '../integer/index'
 import type { TIntersect } from '../intersect/index'
 import type { TIterator } from '../iterator/index'
@@ -228,6 +230,20 @@ export function IsConstructor(value: unknown): value is TConstructor {
     IsSchema(value.returns)
   )
 }
+/** Returns true if the given value is TConstructorCall */
+export function IsConstructorCall(value: unknown): value is TConstructorCall {
+  // prettier-ignore
+  return (
+    IsKindOf(value, 'ConstructorCall') &&
+    ValueGuard.HasPropertyKey(value, 'constructorCall') &&
+    ValueGuard.IsObject(value.constructorCall) && (
+      ValueGuard.HasPropertyKey(value.constructorCall, 'parameters') && 
+      ValueGuard.HasPropertyKey(value.constructorCall, 'returns') && 
+      ValueGuard.IsArray(value.constructorCall.parameters) &&
+      IsSchema(value.constructorCall.returns)
+    )
+  )
+}
 /** Returns true if the given value is TDate */
 export function IsDate(value: unknown): value is TDate {
   return (
@@ -251,6 +267,21 @@ export function IsFunction(value: unknown): value is TFunction {
     ValueGuard.IsArray(value.parameters) &&
     value.parameters.every(schema => IsSchema(schema)) &&
     IsSchema(value.returns)
+  )
+}
+/** Returns true if the given value is TFunctionCall */
+export function IsFunctionCall(value: unknown): value is TFunctionCall {
+  // prettier-ignore
+  return (
+    IsKindOf(value, 'FunctionCall') &&
+    ValueGuard.HasPropertyKey(value, 'functionCall') &&
+    ValueGuard.IsObject(value.functionCall) && (
+      ValueGuard.HasPropertyKey(value.functionCall, 'thisArg') &&
+      ValueGuard.HasPropertyKey(value.functionCall, 'parameters') && 
+      ValueGuard.HasPropertyKey(value.functionCall, 'returns') && 
+      ValueGuard.IsArray(value.functionCall.parameters) &&
+      IsSchema(value.functionCall.returns)
+    )
   )
 }
 /** Returns true if the given value is TInteger */

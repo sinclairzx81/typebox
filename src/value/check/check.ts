@@ -43,7 +43,9 @@ import type { TBigInt } from '../../type/bigint/index'
 import type { TBoolean } from '../../type/boolean/index'
 import type { TDate } from '../../type/date/index'
 import type { TConstructor } from '../../type/constructor/index'
+import type { TConstructorCall } from '../../type/constructor-call/index'
 import type { TFunction } from '../../type/function/index'
+import type { TFunctionCall } from '../../type/function-call/index'
 import type { TInteger } from '../../type/integer/index'
 import type { TIntersect } from '../../type/intersect/index'
 import type { TIterator } from '../../type/iterator/index'
@@ -72,7 +74,7 @@ import type { TVoid } from '../../type/void/index'
 // ------------------------------------------------------------------
 // ValueGuard
 // ------------------------------------------------------------------
-import { IsArray, IsUint8Array, IsDate, IsPromise, IsFunction, IsAsyncIterator, IsIterator, IsBoolean, IsNumber, IsBigInt, IsString, IsSymbol, IsInteger, IsNull, IsUndefined } from '../guard/index'
+import { IsArray, IsUint8Array, IsDate, IsPromise, IsFunction, IsAsyncIterator, IsIterator, IsBoolean, IsNumber, IsBigInt, IsString, IsSymbol, IsInteger, IsNull, IsUndefined, IsConstructor } from '../guard/index'
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
@@ -163,6 +165,13 @@ function FromBoolean(schema: TBoolean, references: TSchema[], value: any): boole
 function FromConstructor(schema: TConstructor, references: TSchema[], value: any): boolean {
   return Visit(schema.returns, references, value.prototype)
 }
+function FromConstructorCall(schema: TConstructorCall, references: TSchema[], value: any): boolean {
+  try {
+    return IsConstructor(value) && Visit(schema.constructorCall.returns, references, new value(...schema.constructorCall.parameters))
+  } catch (err) {
+    return false
+  }
+}
 function FromDate(schema: TDate, references: TSchema[], value: any): boolean {
   if (!IsDate(value)) return false
   if (IsDefined<number>(schema.exclusiveMaximumTimestamp) && !(value.getTime() < schema.exclusiveMaximumTimestamp)) {
@@ -184,6 +193,13 @@ function FromDate(schema: TDate, references: TSchema[], value: any): boolean {
 }
 function FromFunction(schema: TFunction, references: TSchema[], value: any): boolean {
   return IsFunction(value)
+}
+function FromFunctionCall(schema: TFunctionCall, references: TSchema[], value: any): boolean {
+  try {
+    return IsFunction(value) && Visit(schema.functionCall.returns, references, value.apply(schema.functionCall.thisArg, schema.functionCall.parameters))
+  } catch {
+    return false
+  }
 }
 function FromInteger(schema: TInteger, references: TSchema[], value: any): boolean {
   if (!IsInteger(value)) {
@@ -430,10 +446,14 @@ function Visit<T extends TSchema>(schema: T, references: TSchema[], value: any):
       return FromBoolean(schema_, references_, value)
     case 'Constructor':
       return FromConstructor(schema_, references_, value)
+    case 'ConstructorCall':
+      return FromConstructorCall(schema_, references_, value)
     case 'Date':
       return FromDate(schema_, references_, value)
     case 'Function':
       return FromFunction(schema_, references_, value)
+    case 'FunctionCall':
+      return FromFunctionCall(schema_, references_, value)
     case 'Integer':
       return FromInteger(schema_, references_, value)
     case 'Intersect':

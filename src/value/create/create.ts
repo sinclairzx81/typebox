@@ -44,7 +44,9 @@ import type { TBigInt } from '../../type/bigint/index'
 import type { TBoolean } from '../../type/boolean/index'
 import type { TDate } from '../../type/date/index'
 import type { TConstructor } from '../../type/constructor/index'
+import type { TConstructorCall } from '../../type/constructor-call/index'
 import type { TFunction } from '../../type/function/index'
+import type { TFunctionCall } from '../../type/function-call/index'
 import type { TInteger } from '../../type/integer/index'
 import type { TIntersect } from '../../type/intersect/index'
 import type { TIterator } from '../../type/iterator/index'
@@ -149,6 +151,25 @@ function FromConstructor(schema: TConstructor, references: TSchema[]): any {
     }
   }
 }
+function FromConstructorCall(schema: TConstructorCall, references: TSchema[]): any {
+  if (HasPropertyKey(schema, 'default')) {
+    return FromDefault(schema.default)
+  } else {
+    const value = Visit(schema.constructorCall.returns, references) as any
+    if (typeof value === 'object' && !Array.isArray(value)) {
+      return class {
+        constructor() {
+          for (const [key, val] of Object.entries(value)) {
+            const self = this as any
+            self[key] = val
+          }
+        }
+      }
+    } else {
+      return class {}
+    }
+  }
+}
 function FromDate(schema: TDate, references: TSchema[]): any {
   if (HasPropertyKey(schema, 'default')) {
     return FromDefault(schema.default)
@@ -163,6 +184,13 @@ function FromFunction(schema: TFunction, references: TSchema[]): any {
     return FromDefault(schema.default)
   } else {
     return () => Visit(schema.returns, references)
+  }
+}
+function FromFunctionCall(schema: TFunctionCall, references: TSchema[]): any {
+  if (HasPropertyKey(schema, 'default')) {
+    return FromDefault(schema.default)
+  } else {
+    return () => Visit(schema.functionCall.returns, references)
   }
 }
 function FromInteger(schema: TInteger, references: TSchema[]): any {
@@ -405,10 +433,14 @@ function Visit(schema: TSchema, references: TSchema[]): unknown {
       return FromBoolean(schema_, references_)
     case 'Constructor':
       return FromConstructor(schema_, references_)
+    case 'ConstructorCall':
+      return FromConstructorCall(schema_, references_)
     case 'Date':
       return FromDate(schema_, references_)
     case 'Function':
       return FromFunction(schema_, references_)
+    case 'FunctionCall':
+      return FromFunctionCall(schema_, references_)
     case 'Integer':
       return FromInteger(schema_, references_)
     case 'Intersect':

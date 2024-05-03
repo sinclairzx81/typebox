@@ -31,9 +31,11 @@ import { AsyncIterator, type TAsyncIterator } from '../async-iterator/index'
 import { Awaited, type TAwaited } from '../awaited/index'
 import { BigInt, type TBigInt, type BigIntOptions } from '../bigint/index'
 import { Constructor, type TConstructor } from '../constructor/index'
+import { ConstructorCall, type TConstructorCall } from '../constructor-call/index'
 import { ConstructorParameters, type TConstructorParameters } from '../constructor-parameters/index'
 import { Date, type TDate, type DateOptions } from '../date/index'
 import { Function as FunctionType, type TFunction } from '../function/index'
+import { FunctionCall, type TFunctionCall } from '../function-call/index'
 import { InstanceType, type TInstanceType } from '../instance-type/index'
 import { Iterator, type TIterator } from '../iterator/index'
 import { Parameters, type TParameters } from '../parameters/index'
@@ -60,6 +62,14 @@ export class JavaScriptTypeBuilder extends JsonTypeBuilder {
   public BigInt(options: BigIntOptions = {}): TBigInt {
     return BigInt(options)
   }
+  /** `[JavaScript]` Creates a FunctionCall type */
+  public FunctionCall<T extends unknown[], U extends TSchema>(thisArg: unknown, parameters: [...T], returnType: U, options: SchemaOptions = {}): TFunctionCall<T, U> {
+    return FunctionCall(thisArg, parameters, returnType, options)
+  }
+  /** `[JavaScript]` Creates a ConstructorCall type */
+  public ConstructorCall<T extends unknown[], U extends TSchema>(parameters: [...T], returnType: U, options: SchemaOptions = {}): TConstructorCall<T, U> {
+    return ConstructorCall(parameters, returnType, options)
+  }
   /** `[JavaScript]` Extracts the ConstructorParameters from the given Constructor type */
   public ConstructorParameters<T extends TConstructor<TSchema[], TSchema>>(schema: T, options: SchemaOptions = {}): TConstructorParameters<T> {
     return ConstructorParameters(schema, options)
@@ -85,7 +95,7 @@ export class JavaScriptTypeBuilder extends JsonTypeBuilder {
     return Iterator(items, options)
   }
   /** `[JavaScript]` Extracts the Parameters from the given Function type */
-  public Parameters<T extends TFunction<TSchema[], TSchema>>(schema: T, options: SchemaOptions = {}): TParameters<T> {
+  public Parameters<T extends TSchema>(schema: T, options: SchemaOptions = {}): TParameters<T> {
     return Parameters(schema, options)
   }
   /** `[JavaScript]` Creates a Promise type */
@@ -100,8 +110,8 @@ export class JavaScriptTypeBuilder extends JsonTypeBuilder {
   public RegExp(unresolved: string | RegExp, options: RegExpOptions = {}) {
     return RegExp(unresolved as any, options)
   }
-  /** `[JavaScript]` Extracts the ReturnType from the given Function type */
-  public ReturnType<T extends TFunction<any[], any>>(schema: T, options: SchemaOptions = {}): TReturnType<T> {
+  /** `[JavaScript]` Extracts the ReturnType from the given Function or Call type */
+  public ReturnType<T extends TSchema>(schema: T, options: SchemaOptions = {}): TReturnType<T> {
     return ReturnType(schema, options)
   }
   /** `[JavaScript]` Creates a Symbol type */

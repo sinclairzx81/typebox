@@ -26,32 +26,4 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import type { TSchema, SchemaOptions } from '../schema/index'
-import { type TFunction } from '../function/index'
-import { type TFunctionCall } from '../function-call/index'
-import { type TNever, Never } from '../never/index'
-import { CloneType } from '../clone/type'
-
-// ------------------------------------------------------------------
-// TypeGuard
-// ------------------------------------------------------------------
-import { IsFunction, IsFunctionCall } from '../guard/kind'
-
-// ------------------------------------------------------------------
-// ReturnType
-// ------------------------------------------------------------------
-// prettier-ignore
-export type TReturnType<T extends TSchema> = 
-  T extends TFunctionCall<infer _, infer S> ? S :
-  T extends TFunction<infer _, infer S> ? S :
-  TNever
-
-/** `[JavaScript]` Extracts the ReturnType from the given Function or Call type */
-export function ReturnType<T extends TSchema>(schema: T, options: SchemaOptions = {}): TReturnType<T> {
-  // prettier-ignore
-  return CloneType((
-    IsFunctionCall(schema) ? schema.call.returns :
-    IsFunction(schema) ? schema.returns :
-    Never()
-  ), options) as never
-}
+export * from './constructor-call'

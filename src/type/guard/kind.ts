@@ -39,7 +39,9 @@ import type { TAny } from '../any/index'
 import type { TAsyncIterator } from '../async-iterator/index'
 import type { TBigInt } from '../bigint/index'
 import type { TConstructor } from '../constructor/index'
+import type { TConstructorCall } from '../constructor-call/index'
 import type { TFunction } from '../function/index'
+import type { TFunctionCall } from '../function-call/index'
 import type { TInteger } from '../integer/index'
 import type { TIntersect } from '../intersect/index'
 import type { TIterator } from '../iterator/index'
@@ -94,9 +96,17 @@ export function IsBigInt(value: unknown): value is TBigInt {
 export function IsBoolean(value: unknown): value is TBoolean {
   return IsKindOf(value, 'Boolean')
 }
+/** `[Kind-Only]` Returns true if the given value is TFunctionCall */
+export function IsFunctionCall(value: unknown): value is TFunctionCall {
+  return IsKindOf(value, 'FunctionCall')
+}
 /** `[Kind-Only]` Returns true if the given value is TConstructor */
 export function IsConstructor(value: unknown): value is TConstructor {
   return IsKindOf(value, 'Constructor')
+}
+/** `[Kind-Only]` Returns true if the given value is TConstructorCall */
+export function IsConstructorCall(value: unknown): value is TConstructorCall {
+  return IsKindOf(value, 'ConstructorCall')
 }
 /** `[Kind-Only]` Returns true if the given value is TDate */
 export function IsDate(value: unknown): value is TDate {

@@ -76,7 +76,7 @@ License MIT
   - [Conditional](#types-conditional)
   - [Intrinsic](#types-intrinsic)
   - [Transform](#types-transform)
-  - [Rest](#types-rest)
+  - [Invocation](#types-invocation)
   - [Guard](#types-guard)
   - [Unsafe](#types-unsafe)
   - [Strict](#types-strict)

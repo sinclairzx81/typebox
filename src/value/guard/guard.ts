@@ -182,8 +182,12 @@ export function IsString(value: unknown): value is string {
   return typeof value === 'string'
 }
 /** Returns true if this value is a function */
-export function IsFunction(value: unknown): value is Function {
+export function IsFunction(value: unknown): value is (...args: unknown[]) => unknown {
   return typeof value === 'function'
+}
+/** Returns true if this value is a constructor */
+export function IsConstructor(value: unknown): value is new (...args: unknown[]) => unknown {
+  return typeof value === 'function' && value.hasOwnProperty('prototype')
 }
 /** Returns true if this value is a symbol */
 export function IsSymbol(value: unknown): value is symbol {
