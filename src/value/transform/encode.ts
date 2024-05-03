@@ -122,10 +122,10 @@ function FromNot(schema: TNot, references: TSchema[], path: string, value: any) 
 // prettier-ignore
 function FromObject(schema: TObject, references: TSchema[], path: string, value: any) {
   const defaulted = Default(schema, path, value)
-  if (!IsStandardObject(value)) return defaulted
+  if (!IsStandardObject(defaulted)) return defaulted
   const knownKeys = KeyOfPropertyKeys(schema) as string[]
   const knownProperties = { ...defaulted } as Record<PropertyKey, unknown>
-  for(const key of knownKeys) if(key in value) {
+  for(const key of knownKeys) if(key in knownProperties) {
     knownProperties[key] = Visit(schema.properties[key], references, `${path}/${key}`, knownProperties[key])
   }
   if (!IsSchema(schema.additionalProperties)) {

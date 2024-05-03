@@ -151,4 +151,26 @@ describe('value/transform/Object', () => {
   it('Should throw on map decode', () => {
     Assert.Throws(() => Encoder.Decode(T5, {}))
   })
+  // ----------------------------------------------------------------
+  // https://github.com/sinclairzx81/typebox/issues/859
+  // ----------------------------------------------------------------
+  // prettier-ignore
+  it('Should decode for nested transform with renamed property', () => {
+    class User { constructor(public name: string, public createdAt: Date) {} }
+    const TDate = Type.Transform(Type.Number())
+      .Decode(v => new Date(v))
+      .Encode(v => v.getTime())
+    const TUser = Type.Transform(Type.Object({
+      name: Type.String(),
+      created_at: TDate
+    }))
+      .Decode(v => new User(v.name, v.created_at))
+      .Encode(v => ({ name: v.name, created_at: v.createdAt }))
+
+    const D = Value.Decode(TUser, { name: 'name', created_at: 0 })
+    const E = Value.Encode(TUser, D)
+
+    Assert.IsEqual(E.name, 'name')
+    Assert.IsEqual(E.created_at, 0)
+  })
 })
