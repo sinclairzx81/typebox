@@ -1,29 +1,33 @@
-import { Type, TypeRegistry, Kind, TSchema, SchemaOptions } from '@sinclair/typebox'
+import { Type, Static, TypeRegistry, Kind, TSchema, SchemaOptions } from '@sinclair/typebox'
 import { Value } from '@sinclair/typebox/value'
+
+
+
 
 // Tests:
 // - Check
 // - Create
 // - Transform.Has
 // Todo:
-// - Propogation of This into nested Constructor / Function calls
+// - Propogation of This into nested Constructor / Function revise Compiler implementation.
+// - Check.FromThis. Currently checking thisArgs against value for instance
+//   methods that return 'this'. This is a hack and needs to be revised. Need
+//   to investigate a Type.This()
 
-export class Foo {
-  constructor(public a: number) {
-    console.log('Inside Consructor', a)
-  }
-  method(a: number) {
-    console.log('Inside Method', a, this)
+
+
+const T = Type.Recursive(This => {
+  return Type.ConstructorCall([], Type.Object({
+    method: Type.FunctionCall([], This),
+  }))
+})
+
+type T = Static<typeof T>
+
+class Test {
+  method(): this {
+    return this
   }
 }
-// prettier-ignore
-const T = Type.ConstructorCall([1], Type.Object({
-  method: Type.FunctionCall(null, [2], Type.Number())
-}))
 
-const C = Value.Create(T)
-
-const X = new C(1)
-console.log(X.method(12))
-
-console.log(Value.Check(T, Foo))
+Value.Check(T, Test) // true

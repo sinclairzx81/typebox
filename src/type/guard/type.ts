@@ -276,7 +276,6 @@ export function IsFunctionCall(value: unknown): value is TFunctionCall {
     IsKindOf(value, 'FunctionCall') &&
     ValueGuard.HasPropertyKey(value, 'functionCall') &&
     ValueGuard.IsObject(value.functionCall) && (
-      ValueGuard.HasPropertyKey(value.functionCall, 'thisArg') &&
       ValueGuard.HasPropertyKey(value.functionCall, 'parameters') && 
       ValueGuard.HasPropertyKey(value.functionCall, 'returns') && 
       ValueGuard.IsArray(value.functionCall.parameters) &&

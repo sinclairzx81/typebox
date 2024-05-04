@@ -48,12 +48,11 @@ export interface TFunctionCall<T extends unknown[] = unknown[], U extends TSchem
   [Kind]: 'Call'
   static: StaticFunctionCall<T, U, this['params']>
   functionCall: {
-    thisArg: unknown
     parameters: [...T]
     returns: U
   }
 }
 /** `[JavaScript]` Creates a FunctionCall type */
-export function FunctionCall<T extends unknown[], U extends TSchema>(thisArg: unknown, parameters: [...T], returns: U, options?: SchemaOptions): TFunctionCall<T, U> {
-  return { ...options, [Kind]: 'FunctionCall', functionCall: { thisArg, parameters, returns: CloneType(returns) } } as never
+export function FunctionCall<T extends unknown[], U extends TSchema>(parameters: [...T], returns: U, options?: SchemaOptions): TFunctionCall<T, U> {
+  return { ...options, [Kind]: 'FunctionCall', functionCall: { parameters, returns: CloneType(returns) } } as never
 }

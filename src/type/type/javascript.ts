@@ -63,8 +63,8 @@ export class JavaScriptTypeBuilder extends JsonTypeBuilder {
     return BigInt(options)
   }
   /** `[JavaScript]` Creates a FunctionCall type */
-  public FunctionCall<T extends unknown[], U extends TSchema>(thisArg: unknown, parameters: [...T], returnType: U, options: SchemaOptions = {}): TFunctionCall<T, U> {
-    return FunctionCall(thisArg, parameters, returnType, options)
+  public FunctionCall<T extends unknown[], U extends TSchema>(parameters: [...T], returnType: U, options: SchemaOptions = {}): TFunctionCall<T, U> {
+    return FunctionCall(parameters, returnType, options)
   }
   /** `[JavaScript]` Creates a ConstructorCall type */
   public ConstructorCall<T extends unknown[], U extends TSchema>(parameters: [...T], returnType: U, options: SchemaOptions = {}): TConstructorCall<T, U> {
