@@ -26,7 +26,17 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export * from './keyof-from-mapped-result'
-export * from './keyof-property-entries'
-export * from './keyof-property-keys'
-export * from './keyof'
+import { IndexFromPropertyKeys } from '../indexed/indexed'
+import { KeyOfPropertyKeys } from './keyof-property-keys'
+import { TSchema } from '../schema/index'
+
+/**
+ * `[Utility]` Resolves an array of keys and schemas from the given schema. This method is faster
+ * than obtaining the keys and resolving each individually via indexing. This method was written
+ * accellerate Intersect and Union encoding.
+ */
+export function KeyOfPropertyEntries(schema: TSchema): [key: string, schema: TSchema][] {
+  const keys = KeyOfPropertyKeys(schema) as string[]
+  const schemas = IndexFromPropertyKeys(schema, keys)
+  return keys.map((_, index) => [keys[index], schemas[index]])
+}

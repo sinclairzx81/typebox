@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { TransformDecode, TransformEncode, TransformDecodeCheckError, TransformEncodeCheckError } from '../transform/index'
+import { HasTransform, TransformDecode, TransformEncode, TransformDecodeCheckError, TransformEncodeCheckError } from '../transform/index'
 import { Mutate as MutateValue, type Mutable } from '../mutate/index'
 import { Hash as HashValue } from '../hash/index'
 import { Equal as EqualValue } from '../equal/index'
@@ -95,7 +95,7 @@ export function Decode<T extends TSchema, R = StaticDecode<T>>(schema: T, value:
 export function Decode(...args: any[]) {
   const [schema, references, value] = args.length === 3 ? [args[0], args[1], args[2]] : [args[0], [], args[1]]
   if (!Check(schema, references, value)) throw new TransformDecodeCheckError(schema, value, Errors(schema, references, value).First()!)
-  return TransformDecode(schema, references, value)
+  return HasTransform(schema, references) ? TransformDecode(schema, references, value) : value
 }
 /** `[Mutable]` Generates missing properties on a value using default schema annotations if available. This function does not check the value and returns an unknown type. You should Check the result before use. Default is a mutable operation. To avoid mutation, Clone the value first. */
 export function Default(schema: TSchema, references: TSchema[], value: unknown): unknown
@@ -112,7 +112,7 @@ export function Encode<T extends TSchema, R = StaticEncode<T>>(schema: T, value:
 /** Encodes a value or throws if error */
 export function Encode(...args: any[]) {
   const [schema, references, value] = args.length === 3 ? [args[0], args[1], args[2]] : [args[0], [], args[1]]
-  const encoded = TransformEncode(schema, references, value)
+  const encoded = HasTransform(schema, references) ? TransformEncode(schema, references, value) : value
   if (!Check(schema, references, encoded)) throw new TransformEncodeCheckError(schema, encoded, Errors(schema, references, encoded).First()!)
   return encoded
 }
