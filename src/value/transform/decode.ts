@@ -29,7 +29,7 @@ THE SOFTWARE.
 import { Kind, TransformKind } from '../../type/symbols/index'
 import { TypeBoxError } from '../../type/error/index'
 import { ValueError } from '../../errors/index'
-import { KeyOfPropertyKeys } from '../../type/keyof/index'
+import { KeyOfPropertyKeys, KeyOfPropertyEntries } from '../../type/keyof/index'
 import { Index } from '../../type/indexed/index'
 import { Deref } from '../deref/index'
 import { Check } from '../check/index'
@@ -98,10 +98,11 @@ function FromArray(schema: TArray, references: TSchema[], path: string, value: a
 // prettier-ignore
 function FromIntersect(schema: TIntersect, references: TSchema[], path: string, value: any) {
   if (!IsStandardObject(value) || IsValueType(value)) return Default(schema, path, value)
-  const knownKeys = KeyOfPropertyKeys(schema) as string[]
+  const knownEntries = KeyOfPropertyEntries(schema)
+  const knownKeys = knownEntries.map(entry => entry[0])
   const knownProperties = { ...value } as Record<PropertyKey, unknown>
-  for(const key of knownKeys) if(key in knownProperties) {
-    knownProperties[key] = Visit(Index(schema, [key]), references, `${path}/${key}`, knownProperties[key])
+  for(const [knownKey, knownSchema] of knownEntries) if(knownKey in knownProperties) {
+    knownProperties[knownKey] = Visit(knownSchema, references, `${path}/${knownKey}`, knownProperties[knownKey])
   }
   if (!IsTransform(schema.unevaluatedProperties)) {
     return Default(schema, path, knownProperties)
