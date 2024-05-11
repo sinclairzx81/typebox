@@ -197,6 +197,10 @@ describe('value/guard/ValueGuard', () => {
     const R = ValueGuard.IsStandardObject(new (class {})())
     Assert.IsFalse(R)
   })
+  it('Should guard StandardObject 5', () => {
+    const R = ValueGuard.IsStandardObject(Object.create(null))
+    Assert.IsTrue(R)
+  })
   // -----------------------------------------------------
   // IsInstanceObject
   // -----------------------------------------------------

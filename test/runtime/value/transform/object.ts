@@ -3,6 +3,7 @@ import { Assert } from '../../assert'
 import { Value } from '@sinclair/typebox/value'
 import { Type } from '@sinclair/typebox'
 
+// prettier-ignore
 describe('value/transform/Object', () => {
   // --------------------------------------------------------
   // Identity
@@ -154,7 +155,6 @@ describe('value/transform/Object', () => {
   // ----------------------------------------------------------------
   // https://github.com/sinclairzx81/typebox/issues/859
   // ----------------------------------------------------------------
-  // prettier-ignore
   it('Should decode for nested transform with renamed property', () => {
     class User { constructor(public name: string, public createdAt: Date) {} }
     const TDate = Type.Transform(Type.Number())
@@ -172,5 +172,20 @@ describe('value/transform/Object', () => {
 
     Assert.IsEqual(E.name, 'name')
     Assert.IsEqual(E.created_at, 0)
+  })
+  // ----------------------------------------------------------------
+  // https://github.com/sinclairzx81/typebox/issues/865
+  // ----------------------------------------------------------------
+  it('Should decode for null prototype', () => {
+    const N = Type.Transform(Type.Number())
+      .Decode(value => value.toString())
+      .Encode(value => parseInt(value))
+    const T = Type.Object({ x: N })
+    const A = Object.create(null); A.x = 1
+    const B = Object.create(null); B.x = '1'
+    const D = Value.Decode(T, A)
+    const E = Value.Encode(T, B)
+    Assert.IsEqual(D, { x: '1' })    
+    Assert.IsEqual(E, { x: 1 })
   })
 })
