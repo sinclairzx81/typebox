@@ -145,4 +145,20 @@ describe('value/cast/Union', () => {
       value: 'B',
     })
   })
+  // ----------------------------------------------------------------
+  // https://github.com/sinclairzx81/typebox/issues/880
+  // ----------------------------------------------------------------
+  // prettier-ignore
+  it('Should dereference union variants', () => {
+    const A = Type.Object({ type: Type.Literal('A') }, { $id: 'A' })
+    const B = Type.Object({ type: Type.Literal('B'), value: Type.Number() }, { $id: 'B' })
+    const RA = Type.Union([A, B])
+    const RB = Type.Union([Type.Ref(A), Type.Ref(B)])
+    // variant 0
+    Assert.IsEqual(Value.Cast(RA, [A, B], { type: 'B' }), { type: 'B', value: 0 })
+    Assert.IsEqual(Value.Cast(RB, [A, B], { type: 'B' }), { type: 'B', value: 0 })
+    // variant 1
+    Assert.IsEqual(Value.Cast(RA, [A, B], { type: 'A' }), { type: 'A' })
+    Assert.IsEqual(Value.Cast(RB, [A, B], { type: 'A' }), { type: 'A' })
+  })
 })

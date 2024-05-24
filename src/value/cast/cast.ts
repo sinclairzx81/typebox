@@ -80,8 +80,9 @@ function ScoreUnion(schema: TSchema, references: TSchema[], value: any): number 
   }
 }
 function SelectUnion(union: TUnion, references: TSchema[], value: any): TSchema {
-  let [select, best] = [union.anyOf[0], 0]
-  for (const schema of union.anyOf) {
+  const schemas = union.anyOf.map((schema) => Deref(schema, references))
+  let [select, best] = [schemas[0], 0]
+  for (const schema of schemas) {
     const score = ScoreUnion(schema, references, value)
     if (score > best) {
       select = schema
