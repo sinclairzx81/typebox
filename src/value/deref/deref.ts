@@ -30,15 +30,22 @@ import type { TSchema } from '../../type/schema/index'
 import type { TRef } from '../../type/ref/index'
 import type { TThis } from '../../type/recursive/index'
 import { TypeBoxError } from '../../type/error/index'
+import { Kind } from '../../type/symbols/index'
 
 export class TypeDereferenceError extends TypeBoxError {
   constructor(public readonly schema: TRef | TThis) {
     super(`Unable to dereference schema with $id '${schema.$id}'`)
   }
 }
+function Resolve(schema: TThis | TRef, references: TSchema[]): TSchema {
+  const target = references.find((target) => target.$id === schema.$ref)
+  if (target === undefined) throw new TypeDereferenceError(schema)
+  return Deref(target, references)
+}
 /** Dereferences a schema from the references array or throws if not found */
-export function Deref(schema: TRef | TThis, references: TSchema[]): TSchema {
-  const index = references.findIndex((target) => target.$id === schema.$ref)
-  if (index === -1) throw new TypeDereferenceError(schema)
-  return references[index]
+export function Deref(schema: TSchema, references: TSchema[]): TSchema {
+  // prettier-ignore
+  return (schema[Kind] === 'This' || schema[Kind] === 'Ref') 
+    ? Resolve(schema as never, references)
+    : schema
 }
