@@ -34,7 +34,6 @@ export async function compile(target: string) {
     `--outDir ${target}`,
     '--target ES2020',
     '--module CommonJS',
-    '--declaration',
   ].join(' ')
   await shell(`tsc -p ./src/tsconfig.json ${options}`)
 }

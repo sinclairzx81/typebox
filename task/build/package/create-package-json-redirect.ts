@@ -31,9 +31,9 @@ import * as Fs from 'node:fs'
 // prettier-ignore
 function writeRedirect(target: string, submodule: string) {
   Fs.mkdirSync(`${target}/${submodule}`, { recursive: true })
-  Fs.writeFileSync(`${target}/${submodule}/package.json`,JSON.stringify({
+  Fs.writeFileSync(`${target}/${submodule}/package.json`, JSON.stringify({
     main: `../build/cjs/${submodule}/index.js`,
-    types: `../build/cjs/${submodule}/index.d.ts`,
+    types: `../types/${submodule}/index.d.ts`,
   }, null, 2))
 }
 // --------------------------------------------------------------------------------------------------------------------------

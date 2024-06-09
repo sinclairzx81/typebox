@@ -31,9 +31,9 @@ declare function shell(command: string): Promise<void>
 // prettier-ignore
 export async function compile(target: string) {
   const options = [
-    `--outDir ${target}`,
-    '--target ESNext',
-    '--module ESNext',
+    `--declaration`,
+    `--declarationDir ${target}`,
+    '--emitDeclarationOnly',
   ].join(' ')
   await shell(`tsc -p ./src/tsconfig.json ${options}`)
 }

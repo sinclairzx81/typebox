@@ -48,11 +48,11 @@ function resolvePackageJson(submodules: string[]) {
 function resolveSubmoduleExports(submodule: string) {
   return {
     require: {
-      types: `./build/cjs/${submodule}/index.d.ts`,
+      types: `./types/${submodule}/index.d.ts`,
       default: `./build/cjs/${submodule}/index.js`,
     },
     import: {
-      types: `./build/esm/${submodule}/index.d.mts`,
+      types: `./types/${submodule}/index.d.ts`,
       default: `./build/esm/${submodule}/index.mjs`,
     }
   }
@@ -65,12 +65,12 @@ function resolveExports(submodules: string[]) {
     // ... and root module
     ".": {
       "require": {
-        "types": "./build/cjs/index.d.ts",
+        "types": "./types/index.d.ts",
         "default": "./build/cjs/index.js",
         
       },
       "import": {
-        "types": "./build/esm/index.d.mts",
+        "types": "./types/index.d.ts",
         "default": "./build/esm/index.mjs",
       }
     }
@@ -93,7 +93,7 @@ function resolveMetadata() {
     scripts: { test: 'echo test' },
     // disable auto bundle strategy: see https://github.com/esm-dev/esm.sh#bundling-strategy
     'esm.sh': { 'bundle': false }, 
-    types: "./build/cjs/index.d.ts",
+    types: "./types/index.d.ts",
     main: "./build/cjs/index.js",
     module: "./build/esm/index.mjs"
   }

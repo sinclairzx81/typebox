@@ -26,14 +26,11 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-declare function shell(command: string): Promise<void>
+import { compile } from './compile';
 
-// prettier-ignore
-export async function compile(target: string) {
-  const options = [
-    `--outDir ${target}`,
-    '--target ESNext',
-    '--module ESNext',
-  ].join(' ')
-  await shell(`tsc -p ./src/tsconfig.json ${options}`)
+/** Builds the types of this package */
+export async function build(target: string) {
+  console.log('building...types')
+  const buildTarget = `${target}/types`
+  await compile(buildTarget);
 }

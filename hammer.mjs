@@ -63,6 +63,7 @@ export async function build(target = 'target/build') {
     Build.Package.build(target),
     Build.Esm.build(target),
     Build.Cjs.build(target),
+    Build.Types.build(target),
   ])
   await folder(target).add('readme.md')
   await folder(target).add('license')

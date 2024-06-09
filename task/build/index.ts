@@ -29,3 +29,4 @@ THE SOFTWARE.
 export * as Package from './package/build'
 export * as Esm from './esm/build'
 export * as Cjs from './cjs/build'
+export * as Types from './types/build'
