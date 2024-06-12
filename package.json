@@ -1,6 +1,6 @@
 {
   "name": "@sinclair/typebox",
-  "version": "0.32.31",
+  "version": "0.32.32",
   "description": "Json Schema Type Builder with Static Type Resolution for TypeScript",
   "keywords": [
     "typescript",
@@ -35,7 +35,7 @@
     "@types/node": "^20.10.1",
     "ajv": "^8.12.0",
     "ajv-formats": "^2.1.1",
-    "mocha": "^9.2.2",
+    "mocha": "^10.4.0",
     "prettier": "^2.7.1",
     "typescript": "^5.4.5"
   }
