@@ -35,6 +35,7 @@ import { Discard } from '../discard/index'
 import { Array, type TArray } from '../array/index'
 import { AsyncIterator, type TAsyncIterator } from '../async-iterator/index'
 import { Constructor, type TConstructor } from '../constructor/index'
+import { type TEnum, type TEnumRecord } from '../enum/index'
 import { Function as FunctionType, type TFunction } from '../function/index'
 import { IndexPropertyKeys, type TIndexPropertyKeys } from '../indexed/index'
 import { Intersect, type TIntersect } from '../intersect/index'
@@ -56,7 +57,6 @@ import type { TMappedKey } from './mapped-key'
 // TypeGuard
 // ------------------------------------------------------------------
 import { IsArray, IsAsyncIterator, IsConstructor, IsFunction, IsIntersect, IsIterator, IsReadonly, IsMappedResult, IsMappedKey, IsObject, IsOptional, IsPromise, IsSchema, IsTuple, IsUnion } from '../guard/kind'
-import { TEnum, TEnumRecord } from '../enum'
 // ------------------------------------------------------------------
 // FromMappedResult
 //
@@ -194,6 +194,7 @@ type FromSchemaType<K extends PropertyKey, T extends TSchema> = (
   T extends TAsyncIterator<infer S extends TSchema> ? TAsyncIterator<FromSchemaType<K, S>> :
   T extends TIterator<infer S extends TSchema> ? TIterator<FromSchemaType<K, S>> :
   T extends TIntersect<infer S extends TSchema[]> ? TIntersect<TFromRest<K, S>> :
+  // note: special case for enums as these are mapped as union types.
   T extends TEnum<infer S extends TEnumRecord> ? TEnum<S> :
   T extends TUnion<infer S extends TSchema[]> ? TUnion<TFromRest<K, S>> :
   T extends TTuple<infer S extends TSchema[]> ? TTuple<TFromRest<K, S>> :
