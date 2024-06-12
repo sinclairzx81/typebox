@@ -402,3 +402,16 @@ Expect(T).ToStatic<E> // ok
     y: { y: number }
   }>
 }
+// ------------------------------------------------------------------
+// With Enum
+// issue: https://github.com/sinclairzx81/typebox/issues/897
+// ------------------------------------------------------------------
+{
+  enum E {
+    A,
+    B,
+  }
+  const T = Type.Object({ a: Type.Enum(E) })
+  const M = Type.Mapped(Type.KeyOf(T), (K) => Type.Index(T, K))
+  Expect(M).ToStatic<{ a: E }>
+}

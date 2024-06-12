@@ -35,6 +35,7 @@ import { Discard } from '../discard/index'
 import { Array, type TArray } from '../array/index'
 import { AsyncIterator, type TAsyncIterator } from '../async-iterator/index'
 import { Constructor, type TConstructor } from '../constructor/index'
+import { type TEnum, type TEnumRecord } from '../enum/index'
 import { Function as FunctionType, type TFunction } from '../function/index'
 import { IndexPropertyKeys, type TIndexPropertyKeys } from '../indexed/index'
 import { Intersect, type TIntersect } from '../intersect/index'
@@ -182,22 +183,24 @@ function FromProperties<K extends PropertyKey, T extends TProperties>(K: K, T: T
 // prettier-ignore
 type FromSchemaType<K extends PropertyKey, T extends TSchema> = (
   // unevaluated modifier types
-  T extends TReadonly<infer S> ? TReadonly<FromSchemaType<K, S>> :
-  T extends TOptional<infer S> ? TOptional<FromSchemaType<K, S>> :
+  T extends TReadonly<infer S extends TSchema> ? TReadonly<FromSchemaType<K, S>> :
+  T extends TOptional<infer S extends TSchema> ? TOptional<FromSchemaType<K, S>> :
   // unevaluated mapped types
-  T extends TMappedResult<infer P> ? TFromMappedResult<K, P> :
-  T extends TMappedKey<infer P> ? TFromMappedKey<K, P> :
+  T extends TMappedResult<infer P extends TProperties> ? TFromMappedResult<K, P> :
+  T extends TMappedKey<infer P extends PropertyKey[]> ? TFromMappedKey<K, P> :
   // unevaluated types
   T extends TConstructor<infer S extends TSchema[], infer R extends TSchema> ? TConstructor<TFromRest<K, S>, FromSchemaType<K, R>> :
   T extends TFunction<infer S extends TSchema[], infer R extends TSchema> ? TFunction<TFromRest<K, S>, FromSchemaType<K, R>> :
-  T extends TAsyncIterator<infer S> ? TAsyncIterator<FromSchemaType<K, S>> :
-  T extends TIterator<infer S> ? TIterator<FromSchemaType<K, S>> :
-  T extends TIntersect<infer S> ? TIntersect<TFromRest<K, S>> :
-  T extends TUnion<infer S> ? TUnion<TFromRest<K, S>> :
-  T extends TTuple<infer S> ? TTuple<TFromRest<K, S>> :
-  T extends TObject<infer S> ? TObject<FromProperties<K, S>> :
-  T extends TArray<infer S> ? TArray<FromSchemaType<K, S>> :
-  T extends TPromise<infer S> ? TPromise<FromSchemaType<K, S>> :
+  T extends TAsyncIterator<infer S extends TSchema> ? TAsyncIterator<FromSchemaType<K, S>> :
+  T extends TIterator<infer S extends TSchema> ? TIterator<FromSchemaType<K, S>> :
+  T extends TIntersect<infer S extends TSchema[]> ? TIntersect<TFromRest<K, S>> :
+  // note: special case for enums as these are mapped as union types.
+  T extends TEnum<infer S extends TEnumRecord> ? TEnum<S> :
+  T extends TUnion<infer S extends TSchema[]> ? TUnion<TFromRest<K, S>> :
+  T extends TTuple<infer S extends TSchema[]> ? TTuple<TFromRest<K, S>> :
+  T extends TObject<infer S extends TProperties> ? TObject<FromProperties<K, S>> :
+  T extends TArray<infer S extends TSchema> ? TArray<FromSchemaType<K, S>> :
+  T extends TPromise<infer S extends TSchema> ? TPromise<FromSchemaType<K, S>> :
   T
 )
 // prettier-ignore
