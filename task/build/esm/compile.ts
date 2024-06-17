@@ -32,7 +32,7 @@ declare function shell(command: string): Promise<void>
 export async function compile(target: string) {
   const options = [
     `--outDir ${target}`,
-    '--target ESNext',
+    '--target ES2020',
     '--module ESNext',
     '--declaration',
   ].join(' ')

@@ -2,7 +2,7 @@
   "compilerOptions": {
     "strict": true,
     "target": "ESNext",
-    "module": "ESNext",
+    "module": "ES2020",
     "moduleResolution": "Node",
     "baseUrl": ".",
     "paths": {
