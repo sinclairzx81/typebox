@@ -95,6 +95,7 @@ function resolveMetadata() {
     'esm.sh': { 'bundle': false }, 
     types: "./build/cjs/index.d.ts",
     main: "./build/cjs/index.js",
-    module: "./build/esm/index.mjs"
+    module: "./build/esm/index.mjs",
+    sideEffects: false
   }
 }
