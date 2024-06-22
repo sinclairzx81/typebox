@@ -1,5 +1,5 @@
 import { TypeGuard } from '@sinclair/typebox'
-import { Type } from '@sinclair/typebox'
+import { Type, TemplateLiteralGenerate } from '@sinclair/typebox'
 import { Assert } from '../../../assert/index'
 
 describe('guard/type/TTemplateLiteral', () => {
@@ -43,5 +43,40 @@ describe('guard/type/TTemplateLiteral', () => {
     // @ts-ignore
     T.pattern = T.pattern.slice(0, T.pattern.length - 1)
     Assert.IsFalse(TypeGuard.IsTemplateLiteral(T))
+  })
+  // ----------------------------------------------------------------
+  // issue: https://github.com/sinclairzx81/typebox/issues/913
+  // ----------------------------------------------------------------
+  it('Should generate embedded template literal 1', () => {
+    const A = Type.TemplateLiteral([Type.Union([Type.Literal('A'), Type.Literal('B')])])
+    const B = Type.TemplateLiteral([Type.Union([Type.Literal('X'), Type.Literal('Y')])])
+    const L = Type.TemplateLiteral([Type.Literal('KEY'), A, B])
+    const T = TemplateLiteralGenerate(L)
+    Assert.IsEqual(T, ['KEYAX', 'KEYAY', 'KEYBX', 'KEYBY'])
+  })
+  it('Should generate embedded template literal 2', () => {
+    const A = Type.TemplateLiteral([Type.Union([Type.Literal('A'), Type.Literal('B')])])
+    const B = Type.TemplateLiteral([Type.Union([Type.Literal('X'), Type.Literal('Y')])])
+    const L = Type.TemplateLiteral([A, Type.Literal('KEY'), B])
+    const T = TemplateLiteralGenerate(L)
+    Assert.IsEqual(T, ['AKEYX', 'AKEYY', 'BKEYX', 'BKEYY'])
+  })
+  it('Should generate embedded template literal 3', () => {
+    const A = Type.TemplateLiteral([Type.Union([Type.Literal('A'), Type.Literal('B')])])
+    const B = Type.TemplateLiteral([Type.Union([Type.Literal('X'), Type.Literal('Y')])])
+    const L = Type.TemplateLiteral([A, B, Type.Literal('KEY')])
+    const T = TemplateLiteralGenerate(L)
+    Assert.IsEqual(T, ['AXKEY', 'AYKEY', 'BXKEY', 'BYKEY'])
+  })
+  it('Should map embedded template literal', () => {
+    const A = Type.TemplateLiteral([Type.Union([Type.Literal('A'), Type.Literal('B')])])
+    const B = Type.TemplateLiteral([Type.Union([Type.Literal('X'), Type.Literal('Y')])])
+    const L = Type.TemplateLiteral([Type.Literal('KEY'), A, B])
+    const T = Type.Mapped(L, (K) => Type.Null())
+    Assert.IsTrue(TypeGuard.IsObject(T))
+    Assert.IsTrue(TypeGuard.IsNull(T.properties.KEYAX))
+    Assert.IsTrue(TypeGuard.IsNull(T.properties.KEYAY))
+    Assert.IsTrue(TypeGuard.IsNull(T.properties.KEYBX))
+    Assert.IsTrue(TypeGuard.IsNull(T.properties.KEYBY))
   })
 })

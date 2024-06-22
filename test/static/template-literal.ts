@@ -112,3 +112,18 @@ import { Type } from '@sinclair/typebox'
     '$propAx}Yx' | '$propBx}Yx' | '$propCx}Yx'
   >()
 }
+// ---------------------------------------------------------------------
+// issue: https://github.com/sinclairzx81/typebox/issues/913
+// ---------------------------------------------------------------------
+{
+  const A = Type.TemplateLiteral([Type.Union([Type.Literal('A'), Type.Literal('B')])])
+  const B = Type.TemplateLiteral([Type.Union([Type.Literal('X'), Type.Literal('Y')])])
+  const L = Type.TemplateLiteral([Type.Literal('KEY'), A, B])
+  const T = Type.Mapped(L, (K) => Type.Null())
+  Expect(T).ToStatic<{
+    KEYAX: null
+    KEYAY: null
+    KEYBX: null
+    KEYBY: null
+  }>()
+}

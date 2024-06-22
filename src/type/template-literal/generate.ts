@@ -83,6 +83,7 @@ type TFromTemplateLiteralUnionKinds<T extends TTemplateLiteralKind[]> =
 type TFromTemplateLiteralKinds<T extends TTemplateLiteralKind[], Acc extends TLiteralValue[][] = []> = 
   T extends [infer L extends TTemplateLiteralKind, ...infer R extends TTemplateLiteralKind[]]
     ? (
+     L extends TTemplateLiteral<infer S extends TTemplateLiteralKind[]> ? TFromTemplateLiteralKinds<[...S, ...R], Acc> : 
      L extends TLiteral<infer S extends TLiteralValue> ? TFromTemplateLiteralKinds<R, [...Acc, [S]]> : 
      L extends TUnion<infer S extends TTemplateLiteralKind[]> ? TFromTemplateLiteralKinds<R, [...Acc, TFromTemplateLiteralUnionKinds<S>]> : 
      L extends TBoolean ? TFromTemplateLiteralKinds<R, [...Acc, ['true', 'false']]> : 
