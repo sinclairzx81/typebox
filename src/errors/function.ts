@@ -124,7 +124,7 @@ export function DefaultErrorFunction(error: ErrorFunctionParameter) {
     case ValueErrorType.ObjectMinProperties:
       return `Expected object to have at least ${error.schema.minProperties} properties`
     case ValueErrorType.ObjectRequiredProperty:
-      return 'Required property'
+      return 'Expected required property'
     case ValueErrorType.Promise:
       return 'Expected Promise'
     case ValueErrorType.RegExp:
