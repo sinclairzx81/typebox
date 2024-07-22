@@ -203,6 +203,8 @@ function FromObject(schema: TObject, references: TSchema[], value: any): unknown
   return result
 }
 function FromRecord(schema: TRecord, references: TSchema[], value: any): unknown {
+  const isConvertable = IsObject(value)
+  if (!isConvertable) return value
   const propertyKey = Object.getOwnPropertyNames(schema.patternProperties)[0]
   const property = schema.patternProperties[propertyKey]
   const result = {} as Record<string, unknown>

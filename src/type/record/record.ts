@@ -29,6 +29,7 @@ THE SOFTWARE.
 import type { TSchema } from '../schema/index'
 import type { Static } from '../static/index'
 import type { Evaluate, Ensure, Assert } from '../helpers/index'
+import { type TAny } from '../any/index'
 import { Object, type TObject, type TProperties, type TAdditionalProperties, type ObjectOptions } from '../object/index'
 import { type TLiteral, type TLiteralValue } from '../literal/index'
 import { Never, type TNever } from '../never/index'
@@ -40,7 +41,7 @@ import { type TNumber } from '../number/index'
 import { type TEnum } from '../enum/index'
 
 import { IsTemplateLiteralFinite, TIsTemplateLiteralFinite, type TTemplateLiteral } from '../template-literal/index'
-import { PatternStringExact, PatternNumberExact } from '../patterns/index'
+import { PatternStringExact, PatternNumberExact, PatternNeverExact } from '../patterns/index'
 import { IndexPropertyKeys } from '../indexed/index'
 import { Kind, Hint } from '../symbols/index'
 import { CloneType } from '../clone/type'
@@ -51,7 +52,7 @@ import { IsUndefined } from '../guard/value'
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-import { IsInteger, IsLiteral, IsNumber, IsString, IsRegExp, IsTemplateLiteral, IsUnion } from '../guard/kind'
+import { IsInteger, IsLiteral, IsAny, IsNever, IsNumber, IsString, IsRegExp, IsTemplateLiteral, IsUnion } from '../guard/kind'
 // ------------------------------------------------------------------
 // RecordCreateFromPattern
 // ------------------------------------------------------------------
@@ -156,6 +157,28 @@ function FromStringKey<K extends TString, T extends TSchema>(K: K, T: T, options
   return RecordCreateFromPattern(pattern, T, options) as never
 }
 // ------------------------------------------------------------------
+// FromAnyKey
+// ------------------------------------------------------------------
+// prettier-ignore
+type TFromAnyKey<_ extends TAny, T extends TSchema> = (
+  Ensure<TRecord<TAny, T>>
+)
+// prettier-ignore
+function FromAnyKey<K extends TAny, T extends TSchema>(K: K, T: T, options: ObjectOptions): TFromAnyKey<K, T> {
+  return RecordCreateFromPattern(PatternStringExact, T, options) as never
+}
+// ------------------------------------------------------------------
+// FromNeverKey
+// ------------------------------------------------------------------
+// prettier-ignore
+type TFromNeverKey<_ extends TNever, T extends TSchema> = (
+  Ensure<TRecord<TNever, T>>
+)
+// prettier-ignore
+function FromNeverKey<K extends TNever, T extends TSchema>(K: K, T: T, options: ObjectOptions): TFromNeverKey<K, T> {
+  return RecordCreateFromPattern(PatternNeverExact, T, options) as never
+}
+// ------------------------------------------------------------------
 // FromIntegerKey
 // ------------------------------------------------------------------
 // prettier-ignore
@@ -205,6 +228,8 @@ export type TRecordOrObject<K extends TSchema, T extends TSchema> =
   K extends TNumber ? TFromNumberKey<K, T> :
   K extends TRegExp ? TFromRegExpKey<K, T> :
   K extends TString ? TFromStringKey<K, T> :
+  K extends TAny ? TFromAnyKey<K, T> :
+  K extends TNever ? TFromNeverKey<K, T> :
   TNever
 // ------------------------------------------------------------------
 // TRecordOrObject
@@ -220,6 +245,8 @@ export function Record<K extends TSchema, T extends TSchema>(K: K, T: T, options
     IsNumber(K) ? FromNumberKey(K, T, options) :
     IsRegExp(K) ? FromRegExpKey(K, T, options) :
     IsString(K) ? FromStringKey(K, T, options) :
+    IsAny(K) ? FromAnyKey(K, T, options) :
+    IsNever(K) ? FromNeverKey(K, T, options) :
     Never(options)
   ) as never
 }

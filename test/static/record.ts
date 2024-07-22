@@ -189,3 +189,16 @@ import { Type, Static } from '@sinclair/typebox'
     '$propC': string
   }>()
 }
+// ------------------------------------------------------------------
+// https://github.com/sinclairzx81/typebox/issues/916
+// ------------------------------------------------------------------
+{
+  const K = Type.Any()
+  const T = Type.Record(K, Type.String())
+  Expect(T).ToStatic<Record<string, string>>()
+}
+{
+  const K = Type.Never()
+  const T = Type.Record(K, Type.String())
+  Expect(T).ToStatic<{}>()
+}

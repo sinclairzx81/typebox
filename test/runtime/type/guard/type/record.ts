@@ -1,4 +1,4 @@
-import { TypeGuard, PatternNumberExact, PatternStringExact, PatternString, PatternNumber } from '@sinclair/typebox'
+import { TypeGuard, PatternNumberExact, PatternStringExact, PatternNeverExact, PatternString, PatternNumber } from '@sinclair/typebox'
 import { Type } from '@sinclair/typebox'
 import { Assert } from '../../../assert/index'
 
@@ -21,8 +21,11 @@ describe('guard/type/TRecord', () => {
   })
   it('Should guard overload 3', () => {
     // @ts-ignore
-    const T = Type.Record(Type.Union([]), Type.String(), { extra: 1 })
-    Assert.IsTrue(TypeGuard.IsNever(T))
+    const N = Type.Union([]) // Never
+    const T = Type.Record(N, Type.String(), { extra: 1 })
+    Assert.IsTrue(TypeGuard.IsRecord(T))
+    Assert.IsTrue(TypeGuard.IsString(T.patternProperties[PatternNeverExact]))
+    Assert.IsEqual(T.extra, 1)
   })
   it('Should guard overload 4', () => {
     // @ts-ignore
@@ -88,6 +91,25 @@ describe('guard/type/TRecord', () => {
     Assert.IsTrue(TypeGuard.IsNull(R.properties.X))
     Assert.IsTrue(TypeGuard.IsNull(R.properties.Y))
     Assert.IsTrue(TypeGuard.IsNull(R.properties.Z))
+  })
+  // ----------------------------------------------------------------
+  // https://github.com/sinclairzx81/typebox/issues/916
+  //
+  // Added overload for Any and Never Keys
+  // ----------------------------------------------------------------
+  it('Should guard overload 13', () => {
+    // @ts-ignore
+    const T = Type.Record(Type.Never(), Type.String(), { extra: 1 })
+    Assert.IsTrue(TypeGuard.IsRecord(T))
+    Assert.IsTrue(TypeGuard.IsString(T.patternProperties[PatternNeverExact]))
+    Assert.IsEqual(T.extra, 1)
+  })
+  it('Should guard overload 14', () => {
+    // @ts-ignore
+    const T = Type.Record(Type.Any(), Type.String(), { extra: 1 })
+    Assert.IsTrue(TypeGuard.IsRecord(T))
+    Assert.IsTrue(TypeGuard.IsString(T.patternProperties[PatternStringExact]))
+    Assert.IsEqual(T.extra, 1)
   })
   // -------------------------------------------------------------
   // Variants

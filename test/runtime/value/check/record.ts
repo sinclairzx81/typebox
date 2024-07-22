@@ -236,4 +236,62 @@ describe('value/check/Record', () => {
     const R = Value.Check(T, { 1: '', 2: '', x: true })
     Assert.IsEqual(R, true)
   })
+  // ----------------------------------------------------------------
+  // https://github.com/sinclairzx81/typebox/issues/916
+  // ----------------------------------------------------------------
+  it('Should validate for string keys', () => {
+    const T = Type.Record(Type.String(), Type.Null(), {
+      additionalProperties: false,
+    })
+    const R = Value.Check(T, {
+      a: null,
+      b: null,
+      0: null,
+      1: null,
+    })
+    Assert.IsEqual(R, true)
+  })
+  it('Should validate for number keys', () => {
+    const T = Type.Record(Type.Number(), Type.Null(), {
+      additionalProperties: false,
+    })
+    const R1 = Value.Check(T, {
+      a: null,
+      b: null,
+      0: null,
+      1: null,
+    })
+    const R2 = Value.Check(T, {
+      0: null,
+      1: null,
+    })
+    Assert.IsEqual(R1, false)
+    Assert.IsEqual(R2, true)
+  })
+  it('Should validate for any keys', () => {
+    const T = Type.Record(Type.Any(), Type.Null(), {
+      additionalProperties: false,
+    })
+    const R = Value.Check(T, {
+      a: null,
+      b: null,
+      0: null,
+      1: null,
+    })
+    Assert.IsEqual(R, true)
+  })
+  it('Should validate for never keys', () => {
+    const T = Type.Record(Type.Never(), Type.Null(), {
+      additionalProperties: false,
+    })
+    const R1 = Value.Check(T, {})
+    const R2 = Value.Check(T, {
+      a: null,
+      b: null,
+      0: null,
+      1: null,
+    })
+    Assert.IsEqual(R1, true)
+    Assert.IsEqual(R2, false)
+  })
 })

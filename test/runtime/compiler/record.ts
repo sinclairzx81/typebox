@@ -269,4 +269,56 @@ describe('compiler/Record', () => {
       key2: 1,
     })
   })
+  // ----------------------------------------------------------------
+  // https://github.com/sinclairzx81/typebox/issues/916
+  // ----------------------------------------------------------------
+  it('Should validate for string keys', () => {
+    const T = Type.Record(Type.String(), Type.Null(), {
+      additionalProperties: false,
+    })
+    Ok(T, {
+      a: null,
+      b: null,
+      0: null,
+      1: null,
+    })
+  })
+  it('Should validate for number keys', () => {
+    const T = Type.Record(Type.Number(), Type.Null(), {
+      additionalProperties: false,
+    })
+    Fail(T, {
+      a: null,
+      b: null,
+      0: null,
+      1: null,
+    })
+    Ok(T, {
+      0: null,
+      1: null,
+    })
+  })
+  it('Should validate for any keys', () => {
+    const T = Type.Record(Type.Any(), Type.Null(), {
+      additionalProperties: false,
+    })
+    Ok(T, {
+      a: null,
+      b: null,
+      0: null,
+      1: null,
+    })
+  })
+  it('Should validate for never keys', () => {
+    const T = Type.Record(Type.Never(), Type.Null(), {
+      additionalProperties: false,
+    })
+    Ok(T, {})
+    Fail(T, {
+      a: null,
+      b: null,
+      0: null,
+      1: null,
+    })
+  })
 })
