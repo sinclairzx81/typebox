@@ -37,10 +37,8 @@ import { type TRecursive } from '../recursive/index'
 import { type TIntersect, Intersect } from '../intersect/index'
 import { type TUnion, Union } from '../union/index'
 import { type TObject, type TProperties, Object } from '../object/index'
-
 import { OptionalKind, TransformKind } from '../symbols/index'
 import { Discard } from '../discard/index'
-
 import { RequiredFromMappedResult, type TRequiredFromMappedResult } from './required-from-mapped-result'
 
 // ------------------------------------------------------------------

@@ -31,6 +31,7 @@ import type { Ensure, Evaluate } from '../helpers/index'
 import type { TProperties } from '../object/index'
 import { Index, type TIndex } from './indexed'
 import { MappedResult, type TMappedResult, type TMappedKey } from '../mapped/index'
+import { Clone } from '../clone/value'
 
 // ------------------------------------------------------------------
 // MappedIndexPropertyKey
@@ -47,7 +48,7 @@ function MappedIndexPropertyKey<
   T extends TSchema, 
   K extends PropertyKey
 >(T: T, K: K, options?: SchemaOptions): TMappedIndexPropertyKey<T, K> {
-  return { [K]: Index(T, [K], options) } as never
+  return { [K]: Index(T, [K], Clone(options)) } as never
 }
 // ------------------------------------------------------------------
 // MappedIndexPropertyKeys

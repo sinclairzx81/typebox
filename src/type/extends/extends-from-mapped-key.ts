@@ -32,6 +32,7 @@ import type { Assert } from '../helpers/index'
 import { MappedResult, type TMappedResult, type TMappedKey } from '../mapped/index'
 import { Literal, type TLiteral, type TLiteralValue } from '../literal/index'
 import { Extends, type TExtends } from './extends'
+import { Clone } from '../clone/value'
 
 // ------------------------------------------------------------------
 // FromPropertyKey
@@ -53,7 +54,7 @@ function FromPropertyKey<
   R extends TSchema
 >(K: K, U: U, L: L, R: R, options?: SchemaOptions): TFromPropertyKey<K, U, L, R> {
   return {
-    [K]: Extends(Literal(K as TLiteralValue), U, L, R, options) as any
+    [K]: Extends(Literal(K as TLiteralValue), U, L, R, Clone(options)) as any
   } as never
 }
 // ------------------------------------------------------------------

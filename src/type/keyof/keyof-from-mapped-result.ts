@@ -31,7 +31,7 @@ import type { Ensure, Evaluate } from '../helpers/index'
 import type { TProperties } from '../object/index'
 import { MappedResult, type TMappedResult } from '../mapped/index'
 import { KeyOf, type TKeyOf } from './keyof'
-
+import { Clone } from '../clone/value'
 // ------------------------------------------------------------------
 // FromProperties
 // ------------------------------------------------------------------
@@ -46,7 +46,7 @@ function FromProperties<
   K extends TProperties
 >(K: K, options?: SchemaOptions): TFromProperties<K> {
   const Acc = {} as TProperties
-  for(const K2 of globalThis.Object.getOwnPropertyNames(K)) Acc[K2] = KeyOf(K[K2], options)
+  for(const K2 of globalThis.Object.getOwnPropertyNames(K)) Acc[K2] = KeyOf(K[K2], Clone(options))
   return Acc as never
 }
 // ------------------------------------------------------------------

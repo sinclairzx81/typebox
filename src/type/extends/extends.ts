@@ -33,7 +33,6 @@ import { type TUnion, Union } from '../union/index'
 import { TMappedKey, TMappedResult } from '../mapped/index'
 import { ExtendsCheck, ExtendsResult } from './extends-check'
 import { UnionToTuple } from '../helpers/index'
-
 import { ExtendsFromMappedKey, type TExtendsFromMappedKey } from './extends-from-mapped-key'
 import { ExtendsFromMappedResult, type TExtendsFromMappedResult } from './extends-from-mapped-result'
 

@@ -30,6 +30,7 @@ import type { TSchema, SchemaOptions } from '../schema/index'
 import type { TProperties } from '../object/index'
 import { MappedResult, type TMappedResult } from '../mapped/index'
 import { Extends, type TExtends } from './extends'
+import { Clone } from '../clone/value'
 
 // ------------------------------------------------------------------
 // FromProperties
@@ -51,7 +52,7 @@ function FromProperties<
   False extends TSchema
 >(P: P, Right: Right, True: True, False: False, options?: SchemaOptions): TFromProperties<P, Right, True, False> {
   const Acc = {} as TProperties
-  for(const K2 of globalThis.Object.getOwnPropertyNames(P)) Acc[K2] = Extends(P[K2], Right, True, False, options)
+  for(const K2 of globalThis.Object.getOwnPropertyNames(P)) Acc[K2] = Extends(P[K2], Right, True, False, Clone(options))
   return Acc as never
 }
 // ------------------------------------------------------------------

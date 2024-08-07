@@ -32,6 +32,7 @@ import { Assert } from '../helpers/index'
 import { MappedResult, type TMappedResult, type TMappedKey } from '../mapped/index'
 import { Intrinsic, type TIntrinsic, type IntrinsicMode } from './intrinsic'
 import { Literal, type TLiteral, type TLiteralValue } from '../literal/index'
+import { Clone } from '../clone/value'
 
 // ------------------------------------------------------------------
 // MappedIntrinsicPropertyKey
@@ -49,7 +50,7 @@ function MappedIntrinsicPropertyKey<
   M extends IntrinsicMode,
 >(K: K, M: M, options: SchemaOptions): TMappedIntrinsicPropertyKey<K, M> {
   return {
-    [K]: Intrinsic(Literal(K as TLiteralValue), M, options)
+    [K]: Intrinsic(Literal(K as TLiteralValue), M, Clone(options))
   } as never
 }
 // ------------------------------------------------------------------
@@ -71,15 +72,9 @@ function MappedIntrinsicPropertyKeys<
   M extends IntrinsicMode
 >(K: [...K], M: M, options: SchemaOptions): TMappedIntrinsicPropertyKeys<K, M> {
   const result = K.reduce((Acc, L) => {
-    console.log('--------------------------')
-    const X = MappedIntrinsicPropertyKey(L, M, options)
-    const R = { ...Acc, ...X }
-    console.log('BEFORE', Acc)
-    console.log('APPLY', X)
-    console.log('AFTER', R)
-    return R
+    return { ...Acc, ...MappedIntrinsicPropertyKey(L, M, options) }
   }, {} as TProperties) as never
-  console.log('OUTPUT', result)
+  
   return result
 }
 // ------------------------------------------------------------------

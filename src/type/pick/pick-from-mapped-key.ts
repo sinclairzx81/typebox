@@ -30,6 +30,7 @@ import type { TSchema, SchemaOptions } from '../schema/index'
 import type { TProperties } from '../object/index'
 import { MappedResult, type TMappedResult, type TMappedKey } from '../mapped/index'
 import { Pick, type TPick } from './pick'
+import { Clone } from '../clone/value'
 
 // ------------------------------------------------------------------
 // FromPropertyKey
@@ -47,7 +48,7 @@ function FromPropertyKey<
   K extends PropertyKey,
 >(T: T, K: K, options?: SchemaOptions): TFromPropertyKey<T, K> {
   return {
-    [K]: Pick(T, [K], options)
+    [K]: Pick(T, [K], Clone(options))
   } as never
 }
 // ------------------------------------------------------------------

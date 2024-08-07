@@ -31,6 +31,7 @@ import type { Ensure, Evaluate } from '../helpers/index'
 import type { TProperties } from '../object/index'
 import { MappedResult, type TMappedResult } from '../mapped/index'
 import { Pick, type TPick } from './pick'
+import { Clone } from '../clone/value'
 
 // ------------------------------------------------------------------
 // FromProperties
@@ -48,7 +49,7 @@ function FromProperties<
   K extends PropertyKey[],
 >(P: P, K: [...K], options?: SchemaOptions): TFromProperties<P, K> {
   const Acc = {} as TProperties
-  for(const K2 of globalThis.Object.getOwnPropertyNames(P)) Acc[K2] = Pick(P[K2], K, options)
+  for(const K2 of globalThis.Object.getOwnPropertyNames(P)) Acc[K2] = Pick(P[K2], K, Clone(options))
   return Acc as never
 }
 // ------------------------------------------------------------------

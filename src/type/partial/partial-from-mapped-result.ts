@@ -31,6 +31,7 @@ import type { Ensure, Evaluate } from '../helpers/index'
 import type { TProperties } from '../object/index'
 import { MappedResult, type TMappedResult } from '../mapped/index'
 import { Partial, type TPartial } from './partial'
+import { Clone } from '../clone/value'
 
 // ------------------------------------------------------------------
 // FromProperties
@@ -46,7 +47,7 @@ function FromProperties<
   P extends TProperties
 >(K: P, options?: SchemaOptions): TFromProperties<P> {
   const Acc = {} as TProperties
-  for(const K2 of globalThis.Object.getOwnPropertyNames(K)) Acc[K2] = Partial(K[K2], options)
+  for(const K2 of globalThis.Object.getOwnPropertyNames(K)) Acc[K2] = Partial(K[K2], Clone(options))
   return Acc as never
 }
 // ------------------------------------------------------------------
