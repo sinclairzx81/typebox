@@ -26,6 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { CreateType } from '../create/type'
 import type { TSchema, SchemaOptions } from '../schema/index'
 import { Kind } from '../symbols/index'
 
@@ -38,8 +39,5 @@ export interface TUnsafe<T> extends TSchema {
 }
 /** `[Json]` Creates a Unsafe type that will infers as the generic argument T */
 export function Unsafe<T>(options: UnsafeOptions = {}): TUnsafe<T> {
-  return {
-    ...options,
-    [Kind]: options[Kind] ?? 'Unsafe',
-  } as never
+  return CreateType({ [Kind]: options[Kind] ?? 'Unsafe' }, options) as never
 }

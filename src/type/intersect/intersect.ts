@@ -26,10 +26,9 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { CreateType } from '../create/type'
 import type { TSchema } from '../schema/index'
-import { CloneType } from '../clone/type'
 import { Never, type TNever } from '../never/index'
-
 import { TIntersect, IntersectOptions } from './intersect-type'
 import { IntersectCreate } from './intersect-create'
 
@@ -47,9 +46,9 @@ export type Intersect<T extends TSchema[]> = (
   TIntersect<T>
 )
 /** `[Json]` Creates an evaluated Intersect type */
-export function Intersect<T extends TSchema[]>(T: [...T], options: IntersectOptions = {}): Intersect<T> {
-  if (T.length === 0) return Never(options) as Intersect<T>
-  if (T.length === 1) return CloneType(T[0], options) as Intersect<T>
+export function Intersect<T extends TSchema[]>(T: [...T], options?: IntersectOptions): Intersect<T> {
+  if (T.length === 0) return Never(options) as never
+  if (T.length === 1) return CreateType(T[0], options) as never
   if (T.some((schema) => IsTransform(schema))) throw new Error('Cannot intersect transform types')
-  return IntersectCreate(T, options) as Intersect<T>
+  return IntersectCreate(T, options) as never
 }

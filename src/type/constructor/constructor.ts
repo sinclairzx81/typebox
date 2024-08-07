@@ -32,7 +32,7 @@ import type { Ensure } from '../helpers/index'
 import type { TReadonlyOptional } from '../readonly-optional/index'
 import type { TReadonly } from '../readonly/index'
 import type { TOptional } from '../optional/index'
-import { CloneType, CloneRest } from '../clone/type'
+import { CreateType } from '../create/type'
 import { Kind } from '../symbols/index'
 
 // ------------------------------------------------------------------
@@ -66,11 +66,5 @@ export interface TConstructor<T extends TSchema[] = TSchema[], U extends TSchema
 }
 /** `[JavaScript]` Creates a Constructor type */
 export function Constructor<T extends TSchema[], U extends TSchema>(parameters: [...T], returns: U, options?: SchemaOptions): TConstructor<T, U> {
-  return {
-    ...options,
-    [Kind]: 'Constructor',
-    type: 'Constructor',
-    parameters: CloneRest(parameters),
-    returns: CloneType(returns),
-  } as never
+  return CreateType({ [Kind]: 'Constructor', type: 'Constructor', parameters, returns }, options) as never
 }

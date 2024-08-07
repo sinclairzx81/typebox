@@ -26,6 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { CreateType } from '../create/index'
 import type { TSchema, SchemaOptions } from '../schema/index'
 import { Kind } from '../symbols/index'
 
@@ -35,6 +36,6 @@ export interface TAny extends TSchema {
 }
 
 /** `[Json]` Creates an Any type */
-export function Any(options: SchemaOptions = {}): TAny {
-  return { ...options, [Kind]: 'Any' } as never
+export function Any(options?: SchemaOptions): TAny {
+  return CreateType({ [Kind]: 'Any' }, options) as never
 }

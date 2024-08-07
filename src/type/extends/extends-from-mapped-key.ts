@@ -51,7 +51,7 @@ function FromPropertyKey<
   U extends TSchema,
   L extends TSchema,
   R extends TSchema
->(K: K, U: U, L: L, R: R, options: SchemaOptions): TFromPropertyKey<K, U, L, R> {
+>(K: K, U: U, L: L, R: R, options?: SchemaOptions): TFromPropertyKey<K, U, L, R> {
   return {
     [K]: Extends(Literal(K as TLiteralValue), U, L, R, options) as any
   } as never
@@ -77,7 +77,7 @@ function FromPropertyKeys<
   U extends TSchema,
   L extends TSchema,
   R extends TSchema
->(K: [...K], U: U, L: L, R: R, options: SchemaOptions): TFromPropertyKeys<K, U, L, R> {
+>(K: [...K], U: U, L: L, R: R, options?: SchemaOptions): TFromPropertyKeys<K, U, L, R> {
   return K.reduce((Acc, LK) => {
     return { ...Acc, ...FromPropertyKey(LK, U, L, R, options) }
   }, {} as TProperties) as never
@@ -100,7 +100,7 @@ function FromMappedKey<
   U extends TSchema,
   L extends TSchema,
   R extends TSchema
->(K: K, U: U, L: L, R: R, options: SchemaOptions): TFromMappedKey<K, U, L, R> {
+>(K: K, U: U, L: L, R: R, options?: SchemaOptions): TFromMappedKey<K, U, L, R> {
   return FromPropertyKeys(K.keys, U, L, R, options) as never
 }
 // ------------------------------------------------------------------
@@ -123,7 +123,7 @@ export function ExtendsFromMappedKey<
   L extends TSchema,
   R extends TSchema,
   P extends TProperties = TFromMappedKey<T, U, L, R>
->(T: T, U: U, L: L, R: R, options: SchemaOptions): TMappedResult<P> {
+>(T: T, U: U, L: L, R: R, options?: SchemaOptions): TMappedResult<P> {
   const P = FromMappedKey(T, U, L, R, options)
   return MappedResult(P) as never
 }

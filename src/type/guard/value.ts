@@ -26,6 +26,9 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+// --------------------------------------------------------------------------
+// Object Instances
+// --------------------------------------------------------------------------
 /** Returns true if this value is an async iterator */
 export function IsAsyncIterator(value: unknown): value is AsyncIterableIterator<unknown> {
   return IsObject(value) && !IsArray(value) && !IsUint8Array(value) && Symbol.asyncIterator in value
@@ -61,6 +64,14 @@ export function IsNull(value: unknown): value is null {
 /** Returns true if this value is number */
 export function IsNumber(value: unknown): value is number {
   return typeof value === 'number'
+}
+/** Returns true if this value is not an instance of a class */
+export function IsStandardObject(value: unknown): value is Record<PropertyKey, unknown> {
+  return IsObject(value) && (Object.getPrototypeOf(value) === Object.prototype || Object.getPrototypeOf(value) === null)
+}
+/** Returns true if this value is an instance of a class */
+export function IsInstanceObject(value: unknown): value is Record<PropertyKey, unknown> {
+  return IsObject(value) && !IsArray(value) && IsFunction(value.constructor) && value.constructor.name !== 'Object'
 }
 /** Returns true if this value is an object */
 export function IsObject(value: unknown): value is Record<PropertyKey, unknown> {

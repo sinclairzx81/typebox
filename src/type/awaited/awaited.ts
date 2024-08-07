@@ -30,7 +30,7 @@ import type { TSchema, SchemaOptions } from '../schema/index'
 import { Intersect, type TIntersect } from '../intersect/index'
 import { Union, type TUnion } from '../union/index'
 import { type TPromise } from '../promise/index'
-import { CloneType } from '../clone/type'
+import { CreateType } from '../create/type'
 
 // ------------------------------------------------------------------
 // TypeGuard
@@ -96,6 +96,6 @@ export type TAwaited<T extends TSchema> =
   T extends TPromise<infer S> ? TAwaited<S> :
   T
 /** `[JavaScript]` Constructs a type by recursively unwrapping Promise types */
-export function Awaited<T extends TSchema>(T: T, options: SchemaOptions = {}): TAwaited<T> {
-  return CloneType(AwaitedResolve(T), options)
+export function Awaited<T extends TSchema>(T: T, options?: SchemaOptions): TAwaited<T> {
+  return CreateType(AwaitedResolve(T), options) as never
 }

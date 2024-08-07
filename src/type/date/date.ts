@@ -28,6 +28,7 @@ THE SOFTWARE.
 
 import type { TSchema, SchemaOptions } from '../schema/index'
 import { Kind } from '../symbols/index'
+import { CreateType } from '../create/type'
 
 export interface DateOptions extends SchemaOptions {
   /** The exclusive maximum timestamp value */
@@ -47,10 +48,6 @@ export interface TDate extends TSchema, DateOptions {
   type: 'date'
 }
 /** `[JavaScript]` Creates a Date type */
-export function Date(options: DateOptions = {}): TDate {
-  return {
-    ...options,
-    [Kind]: 'Date',
-    type: 'Date',
-  } as never
+export function Date(options?: DateOptions): TDate {
+  return CreateType({ [Kind]: 'Date', type: 'Date' }, options) as never
 }

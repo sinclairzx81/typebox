@@ -114,7 +114,7 @@ type TCompositeEvaluate<
 // prettier-ignore
 export type TComposite<T extends TSchema[]> = TCompositeEvaluate<T>
 // prettier-ignore
-export function Composite<T extends TSchema[]>(T: [...T], options: ObjectOptions = {}): TComposite<T> {
+export function Composite<T extends TSchema[]>(T: [...T], options?: ObjectOptions): TComposite<T> {
   const K = CompositeKeys(T)
   const P = CompositeProperties(T, K)
   const R = Object(P, options)

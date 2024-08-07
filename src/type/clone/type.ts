@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import type { TSchema, SchemaOptions } from '../schema/index'
+import { TSchema, SchemaOptions } from '../schema/index'
 import { Clone } from './value'
 
 /** Clones a Rest */
@@ -34,6 +34,6 @@ export function CloneRest<T extends TSchema[]>(schemas: T): T {
   return schemas.map((schema) => CloneType(schema)) as never
 }
 /** Clones a Type */
-export function CloneType<T extends TSchema>(schema: T, options: SchemaOptions = {}): T {
-  return { ...Clone(schema), ...options }
+export function CloneType<T extends TSchema>(schema: T, options?: SchemaOptions): T {
+  return options === undefined ? Clone(schema) : Clone({ ...options, ...schema })
 }

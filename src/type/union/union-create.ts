@@ -27,10 +27,10 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import type { TSchema, SchemaOptions } from '../schema/index'
-import { CloneRest } from '../clone/type'
+import { CreateType } from '../create/type'
 import { TUnion } from './union-type'
 import { Kind } from '../symbols/index'
 
-export function UnionCreate<T extends TSchema[]>(T: [...T], options: SchemaOptions): TUnion<T> {
-  return { ...options, [Kind]: 'Union', anyOf: CloneRest(T) } as never
+export function UnionCreate<T extends TSchema[]>(T: [...T], options?: SchemaOptions): TUnion<T> {
+  return CreateType({ [Kind]: 'Union', anyOf: T }, options) as never
 }

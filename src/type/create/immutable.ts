@@ -26,16 +26,41 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { CreateType } from '../create/type'
-import type { TSchema, SchemaOptions } from '../schema/index'
-import { Kind } from '../symbols/index'
+import * as ValueGuard from '../guard/value'
 
-export interface TVoid extends TSchema {
-  [Kind]: 'Void'
-  static: void
-  type: 'void'
+function ImmutableArray(value: unknown[]) {
+  return globalThis.Object.freeze(value as any).map((value: unknown) => Immutable(value as any))
 }
-/** `[JavaScript]` Creates a Void type */
-export function Void(options?: SchemaOptions): TVoid {
-  return CreateType({ [Kind]: 'Void', type: 'void' }, options) as never
+function ImmutableDate(value: Date) {
+  return value
+}
+function ImmutableUint8Array(value: Uint8Array) {
+  return value
+}
+function ImmutableRegExp(value: RegExp) {
+  return value
+}
+function ImmutableObject(value: Record<keyof any, unknown>) {
+  const result = {} as Record<PropertyKey, unknown>
+  for (const key of Object.getOwnPropertyNames(value)) {
+    result[key] = Immutable(value[key])
+  }
+  for (const key of Object.getOwnPropertySymbols(value)) {
+    result[key] = Immutable(value[key])
+  }
+  return globalThis.Object.freeze(result)
+}
+/** Specialized deep immutable value. Applies freeze recursively to the given value */
+export function Immutable<T>(value: T): T {
+  return ValueGuard.IsArray(value)
+    ? ImmutableArray(value)
+    : ValueGuard.IsDate(value)
+    ? ImmutableDate(value)
+    : ValueGuard.IsUint8Array(value)
+    ? ImmutableUint8Array(value)
+    : ValueGuard.IsRegExp(value)
+    ? ImmutableRegExp(value)
+    : ValueGuard.IsObject(value)
+    ? ImmutableObject(value)
+    : value
 }

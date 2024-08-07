@@ -26,12 +26,12 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { CreateType } from '../create/type'
 import type { TSchema, SchemaOptions } from '../schema/index'
 import type { Static } from '../static/index'
 import type { Evaluate } from '../helpers/index'
 import type { TReadonly } from '../readonly/index'
 import type { TOptional } from '../optional/index'
-import { CloneType } from '../clone/type'
 import { Kind } from '../symbols/index'
 
 // ------------------------------------------------------------------
@@ -83,19 +83,18 @@ export interface TObject<T extends TProperties = TProperties> extends TSchema, O
   properties: T
   required?: string[]
 }
+function RequiredKeys<T extends TProperties>(properties: T): string[] {
+  const keys: string[] = []
+  for (let key in properties) {
+    if (!IsOptional(properties[key])) keys.push(key)
+  }
+  return keys
+}
 /** `[Json]` Creates an Object type */
-function _Object<T extends TProperties>(properties: T, options: ObjectOptions = {}): TObject<T> {
-  const propertyKeys = globalThis.Object.getOwnPropertyNames(properties)
-  const optionalKeys = propertyKeys.filter((key) => IsOptional(properties[key]))
-  const requiredKeys = propertyKeys.filter((name) => !optionalKeys.includes(name))
-  const clonedAdditionalProperties = IsSchema(options.additionalProperties) ? { additionalProperties: CloneType(options.additionalProperties) } : {}
-  const clonedProperties = {} as Record<PropertyKey, TSchema>
-  for (const key of propertyKeys) clonedProperties[key] = CloneType(properties[key])
-  return (
-    requiredKeys.length > 0
-      ? { ...options, ...clonedAdditionalProperties, [Kind]: 'Object', type: 'object', properties: clonedProperties, required: requiredKeys }
-      : { ...options, ...clonedAdditionalProperties, [Kind]: 'Object', type: 'object', properties: clonedProperties }
-  ) as never
+function _Object<T extends TProperties>(properties: T, options?: ObjectOptions): TObject<T> {
+  const required = RequiredKeys(properties)
+  const schematic = required.length > 0 ? { [Kind]: 'Object', type: 'object', properties, required } : { [Kind]: 'Object', type: 'object', properties }
+  return CreateType(schematic, options) as never
 }
 
 /** `[Json]` Creates an Object type */

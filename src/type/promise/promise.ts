@@ -26,9 +26,9 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { CreateType } from '../create/type'
 import type { TSchema, SchemaOptions } from '../schema/index'
 import type { Static } from '../static/index'
-import { CloneType } from '../clone/type'
 import { Kind } from '../symbols/index'
 
 export interface TPromise<T extends TSchema = TSchema> extends TSchema {
@@ -38,11 +38,6 @@ export interface TPromise<T extends TSchema = TSchema> extends TSchema {
   item: TSchema
 }
 /** `[JavaScript]` Creates a Promise type */
-export function Promise<T extends TSchema>(item: T, options: SchemaOptions = {}): TPromise<T> {
-  return {
-    ...options,
-    [Kind]: 'Promise',
-    type: 'Promise',
-    item: CloneType(item),
-  } as never
+export function Promise<T extends TSchema>(item: T, options?: SchemaOptions): TPromise<T> {
+  return CreateType({ [Kind]: 'Promise', type: 'Promise', item }, options) as never
 }

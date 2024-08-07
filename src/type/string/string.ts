@@ -26,6 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { CreateType } from '../create/type'
 import { TSchema, SchemaOptions } from '../schema/index'
 import { Kind } from '../symbols/index'
 
@@ -81,6 +82,6 @@ export interface TString extends TSchema, StringOptions {
 }
 
 /** `[Json]` Creates a String type */
-export function String(options: StringOptions = {}): TString {
-  return { ...options, [Kind]: 'String', type: 'string' } as never
+export function String(options?: StringOptions): TString {
+  return CreateType({ [Kind]: 'String', type: 'string' }, options) as never
 }

@@ -26,6 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { CreateType } from '../create/type'
 import { TSchema, SchemaOptions } from '../schema/index'
 import { Kind } from '../symbols/index'
 
@@ -37,5 +38,5 @@ export interface TSymbol extends TSchema, SchemaOptions {
 }
 /** `[JavaScript]` Creates a Symbol type */
 export function Symbol(options?: SchemaOptions): TSymbol {
-  return { ...options, [Kind]: 'Symbol', type: 'symbol' } as never
+  return CreateType({ [Kind]: 'Symbol', type: 'symbol' }, options) as never
 }

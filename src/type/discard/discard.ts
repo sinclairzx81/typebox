@@ -30,6 +30,7 @@ function DiscardKey(value: Record<PropertyKey, any>, key: PropertyKey) {
   const { [key]: _, ...rest } = value
   return rest
 }
+/** Discards property keys from the given value. This function returns a shallow Clone. */
 export function Discard(value: Record<PropertyKey, any>, keys: PropertyKey[]) {
   return keys.reduce((acc, key) => DiscardKey(acc, key), value)
 }

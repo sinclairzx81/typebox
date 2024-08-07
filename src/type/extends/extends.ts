@@ -26,13 +26,14 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { CreateType } from '../create/type'
 import type { TSchema, SchemaOptions } from '../schema/index'
 import type { Static } from '../static/index'
 import { type TUnion, Union } from '../union/index'
 import { TMappedKey, TMappedResult } from '../mapped/index'
 import { ExtendsCheck, ExtendsResult } from './extends-check'
 import { UnionToTuple } from '../helpers/index'
-import { CloneType } from '../clone/type'
+
 import { ExtendsFromMappedKey, type TExtendsFromMappedKey } from './extends-from-mapped-key'
 import { ExtendsFromMappedResult, type TExtendsFromMappedResult } from './extends-from-mapped-result'
 
@@ -70,11 +71,11 @@ export function Extends<L extends TMappedKey, R extends TSchema, T extends TSche
 /** `[Json]` Creates a Conditional type */
 export function Extends<L extends TSchema, R extends TSchema, T extends TSchema, F extends TSchema>(L: L, R: R, T: T, F: F, options?: SchemaOptions): TExtends<L, R, T, F>
 /** `[Json]` Creates a Conditional type */
-export function Extends<L extends TSchema, R extends TSchema, T extends TSchema, F extends TSchema>(L: L, R: R, T: T, F: F, options: SchemaOptions = {}) {
+export function Extends<L extends TSchema, R extends TSchema, T extends TSchema, F extends TSchema>(L: L, R: R, T: T, F: F, options?: SchemaOptions) {
   // prettier-ignore
   return (
     IsMappedResult(L) ? ExtendsFromMappedResult(L, R, T, F, options) :
-    IsMappedKey(L) ? CloneType(ExtendsFromMappedKey(L, R, T, F, options)) :
-    CloneType(ExtendsResolve(L, R, T, F), options)
+    IsMappedKey(L) ? CreateType(ExtendsFromMappedKey(L, R, T, F, options)) :
+    CreateType(ExtendsResolve(L, R, T, F), options)
   ) as never
 }

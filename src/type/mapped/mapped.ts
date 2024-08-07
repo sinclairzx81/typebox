@@ -29,7 +29,7 @@ THE SOFTWARE.
 import type { TSchema } from '../schema/index'
 import type { Ensure, Evaluate, Assert } from '../helpers/index'
 import { Kind, OptionalKind, ReadonlyKind } from '../symbols/index'
-import { CloneType } from '../clone/type'
+import { CreateType } from '../create/type'
 import { Discard } from '../discard/index'
 // evaluation types
 import { Array, type TArray } from '../array/index'
@@ -261,9 +261,9 @@ export function Mapped<K extends TSchema, I extends PropertyKey[] = TIndexProper
 /** `[Json]` Creates a Mapped object type */
 export function Mapped<K extends PropertyKey[], F extends TMappedFunction<K> = TMappedFunction<K>, R extends TMapped<K, F> = TMapped<K, F>>(key: [...K], map: F, options?: ObjectOptions): R
 /** `[Json]` Creates a Mapped object type */
-export function Mapped(key: any, map: Function, options: ObjectOptions = {}) {
+export function Mapped(key: any, map: Function, options?: ObjectOptions) {
   const K = IsSchema(key) ? IndexPropertyKeys(key) : (key as PropertyKey[])
   const RT = map({ [Kind]: 'MappedKey', keys: K } as TMappedKey)
   const R = MappedFunctionReturnType(K, RT)
-  return CloneType(Object(R), options)
+  return Object(R, options)
 }

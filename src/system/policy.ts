@@ -32,7 +32,8 @@ export namespace TypeSystemPolicy {
   // ------------------------------------------------------------------
   // TypeSystemPolicy
   // ------------------------------------------------------------------
-  /** Shared assertion routines used by the value and errors modules */
+  /** Sets whether TypeBox should freeze values created by the type system. This function ensures that types cannot be modified once created. The default is `false` */
+  export let ImmutableTypes: boolean = false
   /** Sets whether TypeBox should assert optional properties using the TypeScript `exactOptionalPropertyTypes` assertion policy. The default is `false` */
   export let ExactOptionalPropertyTypes: boolean = false
   /** Sets whether arrays should be treated as a kind of objects. The default is `false` */

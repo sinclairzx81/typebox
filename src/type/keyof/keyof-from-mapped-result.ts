@@ -44,7 +44,7 @@ type TFromProperties<
 // prettier-ignore
 function FromProperties<
   K extends TProperties
->(K: K, options: SchemaOptions): TFromProperties<K> {
+>(K: K, options?: SchemaOptions): TFromProperties<K> {
   const Acc = {} as TProperties
   for(const K2 of globalThis.Object.getOwnPropertyNames(K)) Acc[K2] = KeyOf(K[K2], options)
   return Acc as never
@@ -61,7 +61,7 @@ type TFromMappedResult<
 // prettier-ignore
 function FromMappedResult<
   R extends TMappedResult
->(R: R, options: SchemaOptions): TFromMappedResult<R> {
+>(R: R, options?: SchemaOptions): TFromMappedResult<R> {
   return FromProperties(R.properties, options) as never
 }
 // ------------------------------------------------------------------
@@ -78,7 +78,7 @@ export type TKeyOfFromMappedResult<
 export function KeyOfFromMappedResult<
   R extends TMappedResult,
   P extends TProperties = TFromMappedResult<R>
->(R: R, options: SchemaOptions): TMappedResult<P> {
+>(R: R, options?: SchemaOptions): TMappedResult<P> {
   const P = FromMappedResult(R, options)
   return MappedResult(P) as never
 }

@@ -26,9 +26,9 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { CreateType } from '../create/type'
 import type { TSchema, SchemaOptions } from '../schema/index'
 import type { Static } from '../static/index'
-import { CloneType } from '../clone/type'
 import { Kind } from '../symbols/index'
 
 export interface TNot<T extends TSchema = TSchema> extends TSchema {
@@ -37,10 +37,6 @@ export interface TNot<T extends TSchema = TSchema> extends TSchema {
   not: T
 }
 /** `[Json]` Creates a Not type */
-export function Not<T extends TSchema>(schema: T, options?: SchemaOptions): TNot<T> {
-  return {
-    ...options,
-    [Kind]: 'Not',
-    not: CloneType(schema),
-  } as never
+export function Not<T extends TSchema>(not: T, options?: SchemaOptions): TNot<T> {
+  return CreateType({ [Kind]: 'Not', not }, options) as never
 }

@@ -26,13 +26,13 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { CreateType } from '../create/type'
 import type { TSchema, SchemaOptions } from '../schema/index'
 import type { TConstructor } from '../constructor/index'
-import { CloneType } from '../clone/type'
 
 export type TInstanceType<T extends TConstructor<TSchema[], TSchema>> = T['returns']
 
 /** `[JavaScript]` Extracts the InstanceType from the given Constructor type */
-export function InstanceType<T extends TConstructor<any[], any>>(schema: T, options: SchemaOptions = {}): TInstanceType<T> {
-  return CloneType(schema.returns, options)
+export function InstanceType<T extends TConstructor<any[], any>>(schema: T, options?: SchemaOptions): TInstanceType<T> {
+  return CreateType(schema.returns, options)
 }

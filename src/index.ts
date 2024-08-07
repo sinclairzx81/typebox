@@ -30,6 +30,7 @@ THE SOFTWARE.
 // Infrastructure
 // ------------------------------------------------------------------
 export * from './type/clone/index'
+export * from './type/create/index'
 export * from './type/error/index'
 export * from './type/guard/index'
 export * from './type/helpers/index'

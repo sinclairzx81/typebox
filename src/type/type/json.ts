@@ -114,19 +114,19 @@ export class JsonTypeBuilder {
   // Types
   // ------------------------------------------------------------------------
   /** `[Json]` Creates an Any type */
-  public Any(options: SchemaOptions = {}): TAny {
+  public Any(options?: SchemaOptions): TAny {
     return Any(options)
   }
   /** `[Json]` Creates an Array type */
-  public Array<T extends TSchema>(schema: T, options: ArrayOptions = {}): TArray<T> {
+  public Array<T extends TSchema>(schema: T, options?: ArrayOptions): TArray<T> {
     return Array(schema, options)
   }
   /** `[Json]` Creates a Boolean type */
-  public Boolean(options: SchemaOptions = {}): TBoolean {
+  public Boolean(options?: SchemaOptions): TBoolean {
     return Boolean(options)
   }
   /** `[Json]` Intrinsic function to Capitalize LiteralString types */
-  public Capitalize<T extends TSchema>(schema: T, options: SchemaOptions = {}): TCapitalize<T> {
+  public Capitalize<T extends TSchema>(schema: T, options?: SchemaOptions): TCapitalize<T> {
     return Capitalize(schema, options)
   }
   /** `[Json]` Creates a Composite object type */
@@ -134,7 +134,7 @@ export class JsonTypeBuilder {
     return Composite(schemas, options) // (error) TS 5.4.0-dev - review TComposite implementation
   }
   /** `[JavaScript]` Creates a readonly const type from the given value. */
-  public Const</* const (not supported in 4.0) */ T>(value: T, options: SchemaOptions = {}): TConst<T> {
+  public Const</* const (not supported in 4.0) */ T>(value: T, options?: SchemaOptions): TConst<T> {
     return Const(value, options)
   }
   /** `[Json]` Creates a dereferenced type */
@@ -142,7 +142,7 @@ export class JsonTypeBuilder {
     return Deref(schema, references)
   }
   /** `[Json]` Creates a Enum type */
-  public Enum<V extends TEnumValue, T extends Record<TEnumKey, V>>(item: T, options: SchemaOptions = {}): TEnum<T> {
+  public Enum<V extends TEnumValue, T extends Record<TEnumKey, V>>(item: T, options?: SchemaOptions): TEnum<T> {
     return Enum(item, options)
   }
   /** `[Json]` Constructs a type by excluding from unionType all union members that are assignable to excludedMembers */
@@ -152,7 +152,7 @@ export class JsonTypeBuilder {
   /** `[Json]` Constructs a type by excluding from unionType all union members that are assignable to excludedMembers */
   public Exclude<L extends TSchema, R extends TSchema>(unionType: L, excludedMembers: R, options?: SchemaOptions): TExclude<L, R>
   /** `[Json]` Constructs a type by excluding from unionType all union members that are assignable to excludedMembers */
-  public Exclude(unionType: TSchema, excludedMembers: TSchema, options: SchemaOptions = {}): any {
+  public Exclude(unionType: TSchema, excludedMembers: TSchema, options?: SchemaOptions): any {
     return Exclude(unionType, excludedMembers, options)
   }
   /** `[Json]` Creates a Conditional type */
@@ -162,7 +162,7 @@ export class JsonTypeBuilder {
   /** `[Json]` Creates a Conditional type */
   public Extends<L extends TSchema, R extends TSchema, T extends TSchema, F extends TSchema>(L: L, R: R, T: T, F: F, options?: SchemaOptions): TExtends<L, R, T, F>
   /** `[Json]` Creates a Conditional type */
-  public Extends<L extends TSchema, R extends TSchema, T extends TSchema, F extends TSchema>(L: L, R: R, T: T, F: F, options: SchemaOptions = {}) {
+  public Extends<L extends TSchema, R extends TSchema, T extends TSchema, F extends TSchema>(L: L, R: R, T: T, F: F, options?: SchemaOptions) {
     return Extends(L, R, T, F, options)
   }
   /** `[Json]` Constructs a type by extracting from type all union members that are assignable to union */
@@ -172,7 +172,7 @@ export class JsonTypeBuilder {
   /** `[Json]` Constructs a type by extracting from type all union members that are assignable to union */
   public Extract<L extends TSchema, R extends TSchema>(type: L, union: R, options?: SchemaOptions): TExtract<L, R>
   /** `[Json]` Constructs a type by extracting from type all union members that are assignable to union */
-  public Extract(type: TSchema, union: TSchema, options: SchemaOptions = {}): any {
+  public Extract(type: TSchema, union: TSchema, options?: SchemaOptions): any {
     return Extract(type, union, options)
   }
   /** `[Json]` Returns an Indexed property type for the given keys */
@@ -184,15 +184,15 @@ export class JsonTypeBuilder {
   /** `[Json]` Returns an Indexed property type for the given keys */
   public Index<T extends TSchema, K extends PropertyKey[]>(T: T, K: readonly [...K], options?: SchemaOptions): TIndex<T, K>
   /** `[Json]` Returns an Indexed property type for the given keys */
-  public Index(schema: TSchema, unresolved: any, options: SchemaOptions = {}): any {
+  public Index(schema: TSchema, unresolved: any, options?: SchemaOptions): any {
     return Index(schema, unresolved, options)
   }
   /** `[Json]` Creates an Integer type */
-  public Integer(options: IntegerOptions = {}): TInteger {
+  public Integer(options?: IntegerOptions): TInteger {
     return Integer(options)
   }
   /** `[Json]` Creates an Intersect type */
-  public Intersect<T extends TSchema[]>(T: [...T], options: IntersectOptions = {}): Intersect<T> {
+  public Intersect<T extends TSchema[]>(T: [...T], options?: IntersectOptions): Intersect<T> {
     return Intersect(T, options)
   }
   /** `[Json]` Creates a KeyOf type */
@@ -200,15 +200,15 @@ export class JsonTypeBuilder {
   /** `[Json]` Creates a KeyOf type */
   public KeyOf<T extends TSchema>(schema: T, options?: SchemaOptions): TKeyOf<T>
   /** `[Json]` Creates a KeyOf type */
-  public KeyOf(schema: TSchema, options: SchemaOptions = {}): any {
+  public KeyOf(schema: TSchema, options?: SchemaOptions): any {
     return KeyOf(schema, options)
   }
   /** `[Json]` Creates a Literal type */
-  public Literal<T extends TLiteralValue>(value: T, options: SchemaOptions = {}): TLiteral<T> {
+  public Literal<T extends TLiteralValue>(value: T, options?: SchemaOptions): TLiteral<T> {
     return Literal(value, options)
   }
   /** `[Json]` Intrinsic function to Lowercase LiteralString types */
-  public Lowercase<T extends TSchema>(schema: T, options: SchemaOptions = {}): TLowercase<T> {
+  public Lowercase<T extends TSchema>(schema: T, options?: SchemaOptions): TLowercase<T> {
     return Lowercase(schema, options)
   }
   /** `[Json]` Creates a Mapped object type */
@@ -216,11 +216,11 @@ export class JsonTypeBuilder {
   /** `[Json]` Creates a Mapped object type */
   public Mapped<K extends PropertyKey[], F extends TMappedFunction<K> = TMappedFunction<K>, R extends TMapped<K, F> = TMapped<K, F>>(key: [...K], map: F, options?: ObjectOptions): R
   /** `[Json]` Creates a Mapped object type */
-  public Mapped(key: any, map: TMappedFunction<any>, options: ObjectOptions = {}): any {
+  public Mapped(key: any, map: TMappedFunction<any>, options?: ObjectOptions): any {
     return Mapped(key, map, options)
   }
   /** `[Json]` Creates a Never type */
-  public Never(options: SchemaOptions = {}): TNever {
+  public Never(options?: SchemaOptions): TNever {
     return Never(options)
   }
   /** `[Json]` Creates a Not type */
@@ -228,15 +228,15 @@ export class JsonTypeBuilder {
     return Not(schema, options)
   }
   /** `[Json]` Creates a Null type */
-  public Null(options: SchemaOptions = {}): TNull {
+  public Null(options?: SchemaOptions): TNull {
     return Null(options)
   }
   /** `[Json]` Creates a Number type */
-  public Number(options: NumberOptions = {}): TNumber {
+  public Number(options?: NumberOptions): TNumber {
     return Number(options)
   }
   /** `[Json]` Creates an Object type */
-  public Object<T extends TProperties>(properties: T, options: ObjectOptions = {}): TObject<T> {
+  public Object<T extends TProperties>(properties: T, options?: ObjectOptions): TObject<T> {
     return Object(properties, options)
   }
   /** `[Json]` Constructs a type whose keys are omitted from the given type */
@@ -248,7 +248,7 @@ export class JsonTypeBuilder {
   /** `[Json]` Constructs a type whose keys are omitted from the given type */
   public Omit<T extends TSchema, K extends PropertyKey[]>(T: T, K: readonly [...K], options?: SchemaOptions): TOmit<T, K>
   /** `[Json]` Constructs a type whose keys are omitted from the given type */
-  public Omit(schema: TSchema, unresolved: any, options: SchemaOptions = {}): any {
+  public Omit(schema: TSchema, unresolved: any, options?: SchemaOptions): any {
     return Omit(schema, unresolved, options)
   }
   /** `[Json]` Constructs a type where all properties are optional */
@@ -256,7 +256,7 @@ export class JsonTypeBuilder {
   /** `[Json]` Constructs a type where all properties are optional */
   public Partial<T extends TSchema>(schema: T, options?: ObjectOptions): TPartial<T>
   /** `[Json]` Constructs a type where all properties are optional */
-  public Partial(schema: TSchema, options: ObjectOptions = {}): any {
+  public Partial(schema: TSchema, options?: ObjectOptions): any {
     return Partial(schema, options)
   }
   /** `[Json]` Constructs a type whose keys are picked from the given type */
@@ -268,15 +268,15 @@ export class JsonTypeBuilder {
   /** `[Json]` Constructs a type whose keys are picked from the given type */
   public Pick<T extends TSchema, K extends PropertyKey[]>(T: T, K: readonly [...K], options?: SchemaOptions): TPick<T, K>
   /** `[Json]` Constructs a type whose keys are picked from the given type */
-  public Pick(schema: TSchema, unresolved: any, options: SchemaOptions = {}): any {
+  public Pick(schema: TSchema, unresolved: any, options?: SchemaOptions): any {
     return Pick(schema, unresolved, options)
   }
   /** `[Json]` Creates a Record type */
-  public Record<K extends TSchema, T extends TSchema>(key: K, schema: T, options: ObjectOptions = {}): TRecordOrObject<K, T> {
+  public Record<K extends TSchema, T extends TSchema>(key: K, schema: T, options?: ObjectOptions): TRecordOrObject<K, T> {
     return Record(key, schema, options)
   }
   /** `[Json]` Creates a Recursive type */
-  public Recursive<T extends TSchema>(callback: (thisType: TThis) => T, options: SchemaOptions = {}): TRecursive<T> {
+  public Recursive<T extends TSchema>(callback: (thisType: TThis) => T, options?: SchemaOptions): TRecursive<T> {
     return Recursive(callback, options)
   }
   /** `[Json]` Creates a Ref type. The referenced type must contain a $id */
@@ -284,7 +284,7 @@ export class JsonTypeBuilder {
   /** `[Json]` Creates a Ref type. */
   public Ref<T extends TSchema>($ref: string, options?: SchemaOptions): TRef<T>
   /** `[Json]` Creates a Ref type. */
-  public Ref(unresolved: TSchema | string, options: SchemaOptions = {}) {
+  public Ref(unresolved: TSchema | string, options?: SchemaOptions) {
     return Ref(unresolved as any, options)
   }
   /** `[Json]` Constructs a type where all properties are required */
@@ -292,7 +292,7 @@ export class JsonTypeBuilder {
   /** `[Json]` Constructs a type where all properties are required */
   public Required<T extends TSchema>(schema: T, options?: ObjectOptions): TRequired<T>
   /** `[Json]` Constructs a type where all properties are required */
-  public Required(schema: TSchema, options: ObjectOptions = {}): any {
+  public Required(schema: TSchema, options?: ObjectOptions): any {
     return Required(schema, options)
   }
   /** `[Json]` Extracts interior Rest elements from Tuple, Intersect and Union types */
@@ -300,7 +300,7 @@ export class JsonTypeBuilder {
     return Rest(schema)
   }
   /** `[Json]` Creates a String type */
-  public String(options: StringOptions = {}): TString {
+  public String(options?: StringOptions): TString {
     return String(options)
   }
   /** `[Json]` Creates a TemplateLiteral type from template dsl string */
@@ -308,7 +308,7 @@ export class JsonTypeBuilder {
   /** `[Json]` Creates a TemplateLiteral type */
   public TemplateLiteral<T extends TTemplateLiteralKind[]>(kinds: [...T], options?: SchemaOptions): TTemplateLiteral<T>
   /** `[Json]` Creates a TemplateLiteral type */
-  public TemplateLiteral(unresolved: TTemplateLiteralKind[] | string, options: SchemaOptions = {}) {
+  public TemplateLiteral(unresolved: TTemplateLiteralKind[] | string, options?: SchemaOptions) {
     return TemplateLiteral(unresolved as any, options)
   }
   /** `[Json]` Creates a Transform type */
@@ -316,27 +316,27 @@ export class JsonTypeBuilder {
     return Transform(schema)
   }
   /** `[Json]` Creates a Tuple type */
-  public Tuple<T extends TSchema[]>(items: [...T], options: SchemaOptions = {}): TTuple<T> {
+  public Tuple<T extends TSchema[]>(items: [...T], options?: SchemaOptions): TTuple<T> {
     return Tuple(items, options)
   }
   /** `[Json]` Intrinsic function to Uncapitalize LiteralString types */
-  public Uncapitalize<T extends TSchema>(schema: T, options: SchemaOptions = {}): TUncapitalize<T> {
+  public Uncapitalize<T extends TSchema>(schema: T, options?: SchemaOptions): TUncapitalize<T> {
     return Uncapitalize(schema, options)
   }
   /** `[Json]` Creates a Union type */
-  public Union<T extends TSchema[]>(schemas: [...T], options: SchemaOptions = {}): Union<T> {
+  public Union<T extends TSchema[]>(schemas: [...T], options?: SchemaOptions): Union<T> {
     return Union(schemas, options)
   }
   /** `[Json]` Creates an Unknown type */
-  public Unknown(options: SchemaOptions = {}): TUnknown {
+  public Unknown(options?: SchemaOptions): TUnknown {
     return Unknown(options)
   }
   /** `[Json]` Creates a Unsafe type that will infers as the generic argument T */
-  public Unsafe<T>(options: UnsafeOptions = {}): TUnsafe<T> {
+  public Unsafe<T>(options?: UnsafeOptions): TUnsafe<T> {
     return Unsafe(options)
   }
   /** `[Json]` Intrinsic function to Uppercase LiteralString types */
-  public Uppercase<T extends TSchema>(schema: T, options: SchemaOptions = {}): TUppercase<T> {
+  public Uppercase<T extends TSchema>(schema: T, options?: SchemaOptions): TUppercase<T> {
     return Uppercase(schema, options)
   }
 }

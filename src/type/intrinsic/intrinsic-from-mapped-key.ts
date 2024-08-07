@@ -70,9 +70,17 @@ function MappedIntrinsicPropertyKeys<
   K extends PropertyKey[],
   M extends IntrinsicMode
 >(K: [...K], M: M, options: SchemaOptions): TMappedIntrinsicPropertyKeys<K, M> {
-  return K.reduce((Acc, L) => {
-    return { ...Acc, ...MappedIntrinsicPropertyKey(L, M, options) }
+  const result = K.reduce((Acc, L) => {
+    console.log('--------------------------')
+    const X = MappedIntrinsicPropertyKey(L, M, options)
+    const R = { ...Acc, ...X }
+    console.log('BEFORE', Acc)
+    console.log('APPLY', X)
+    console.log('AFTER', R)
+    return R
   }, {} as TProperties) as never
+  console.log('OUTPUT', result)
+  return result
 }
 // ------------------------------------------------------------------
 // MappedIntrinsicProperties

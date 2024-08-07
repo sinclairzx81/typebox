@@ -28,6 +28,7 @@ THE SOFTWARE.
 
 import type { TSchema, SchemaOptions } from '../schema/index'
 import { Kind } from '../symbols/index'
+import { CreateType } from '../create/index'
 
 export interface TBoolean extends TSchema {
   [Kind]: 'Boolean'
@@ -35,10 +36,6 @@ export interface TBoolean extends TSchema {
   type: 'boolean'
 }
 /** `[Json]` Creates a Boolean type */
-export function Boolean(options: SchemaOptions = {}): TBoolean {
-  return {
-    ...options,
-    [Kind]: 'Boolean',
-    type: 'boolean',
-  } as never
+export function Boolean(options?: SchemaOptions): TBoolean {
+  return CreateType({ [Kind]: 'Boolean', type: 'boolean' }, options) as never
 }

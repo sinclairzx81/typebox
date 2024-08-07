@@ -26,6 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { CreateType } from '../create/type'
 import type { TSchema, SchemaOptions } from '../schema/index'
 import { Kind } from '../symbols/index'
 
@@ -43,11 +44,13 @@ export interface TLiteral<T extends TLiteralValue = TLiteralValue> extends TSche
   const: T
 }
 /** `[Json]` Creates a Literal type */
-export function Literal<T extends TLiteralValue>(value: T, options: SchemaOptions = {}): TLiteral<T> {
-  return {
-    ...options,
-    [Kind]: 'Literal',
-    const: value,
-    type: typeof value as 'string' | 'number' | 'boolean',
-  } as never
+export function Literal<T extends TLiteralValue>(value: T, options?: SchemaOptions): TLiteral<T> {
+  return CreateType(
+    {
+      [Kind]: 'Literal',
+      const: value,
+      type: typeof value as 'string' | 'number' | 'boolean',
+    },
+    options,
+  ) as never
 }

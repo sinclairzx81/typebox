@@ -26,6 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { CreateType } from '../create/type'
 import type { TSchema, SchemaOptions } from '../schema/index'
 import { Kind } from '../symbols/index'
 
@@ -39,6 +40,6 @@ export interface TUint8Array extends TSchema, Uint8ArrayOptions {
   type: 'uint8array'
 }
 /** `[JavaScript]` Creates a Uint8Array type */
-export function Uint8Array(options: Uint8ArrayOptions = {}): TUint8Array {
-  return { ...options, [Kind]: 'Uint8Array', type: 'Uint8Array' } as never
+export function Uint8Array(options?: Uint8ArrayOptions): TUint8Array {
+  return CreateType({ [Kind]: 'Uint8Array', type: 'Uint8Array' }, options) as never
 }

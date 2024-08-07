@@ -26,6 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { CreateType } from '../create/type'
 import type { TSchema, SchemaOptions } from '../schema/index'
 import type { TupleToUnion, Evaluate } from '../helpers/index'
 import { type TRecursive } from '../recursive/index'
@@ -36,7 +37,6 @@ import { Object, type TObject, type TProperties } from '../object/index'
 import { IndexPropertyKeys, type TIndexPropertyKeys } from '../indexed/index'
 import { Discard } from '../discard/index'
 import { TransformKind } from '../symbols/index'
-import { CloneType } from '../clone/type'
 import { OmitFromMappedKey, type TOmitFromMappedKey } from './omit-from-mapped-key'
 import { OmitFromMappedResult, type TOmitFromMappedResult } from './omit-from-mapped-result'
 
@@ -115,13 +115,13 @@ export function Omit<T extends TSchema, K extends TMappedKey>(T: T, K: K, option
 export function Omit<T extends TSchema, K extends TSchema, I extends PropertyKey[] = TIndexPropertyKeys<K>>(T: T, K: K, options?: SchemaOptions): TOmit<T, I>
 /** `[Json]` Constructs a type whose keys are omitted from the given type */
 export function Omit<T extends TSchema, K extends PropertyKey[]>(T: T, K: readonly [...K], options?: SchemaOptions): TOmit<T, K>
-export function Omit(T: TSchema, K: any, options: SchemaOptions = {}): any {
+export function Omit(T: TSchema, K: any, options?: SchemaOptions): any {
   // mapped
   if (IsMappedKey(K)) return OmitFromMappedKey(T, K, options)
   if (IsMappedResult(T)) return OmitFromMappedResult(T, K, options)
   // non-mapped
   const I = IsSchema(K) ? IndexPropertyKeys(K) : (K as string[])
   const D = Discard(T, [TransformKind, '$id', 'required']) as TSchema
-  const R = CloneType(OmitResolve(T, I), options)
-  return { ...D, ...R }
+  const R = OmitResolve(T, I)
+  return CreateType({ ...D, ...R }, options)
 }

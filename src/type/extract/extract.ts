@@ -26,6 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { CreateType } from '../create/type'
 import type { TSchema, SchemaOptions } from '../schema/index'
 import type { AssertRest, AssertType, UnionToTuple } from '../helpers/index'
 import type { TMappedResult } from '../mapped/index'
@@ -35,7 +36,6 @@ import { Never, type TNever } from '../never/index'
 import { type TUnionEvaluated } from '../union/index'
 import { type TTemplateLiteral } from '../template-literal/index'
 import { ExtendsCheck, ExtendsResult } from '../extends/index'
-import { CloneType } from '../clone/type'
 import { ExtractFromMappedResult, type TExtractFromMappedResult } from './extract-from-mapped-result'
 import { ExtractFromTemplateLiteral, type TExtractFromTemplateLiteral } from './extract-from-template-literal'
 
@@ -50,7 +50,7 @@ import { IsMappedResult, IsTemplateLiteral, IsUnion } from '../guard/kind'
 // prettier-ignore
 type TExtractRest<L extends TSchema[], R extends TSchema> = AssertRest<UnionToTuple<
   { [K in keyof L]: Static<AssertType<L[K]>> extends Static<R> ? L[K] : never
-}[number]>> extends infer R extends TSchema[] ? TUnionEvaluated<R> : never
+  }[number]>> extends infer R extends TSchema[] ? TUnionEvaluated<R> : never
 
 function ExtractRest<L extends TSchema[], R extends TSchema>(L: [...L], R: R) {
   const extracted = L.filter((inner) => ExtendsCheck(inner, R) !== ExtendsResult.False)
@@ -71,13 +71,13 @@ export function Extract<L extends TTemplateLiteral, R extends TSchema>(type: L, 
 /** `[Json]` Constructs a type by extracting from type all union members that are assignable to union */
 export function Extract<L extends TSchema, R extends TSchema>(type: L, union: R, options?: SchemaOptions): TExtract<L, R>
 /** `[Json]` Constructs a type by extracting from type all union members that are assignable to union */
-export function Extract(L: TSchema, R: TSchema, options: SchemaOptions = {}): any {
+export function Extract(L: TSchema, R: TSchema, options?: SchemaOptions): never {
   // overloads
-  if (IsTemplateLiteral(L)) return CloneType(ExtractFromTemplateLiteral(L, R), options)
-  if (IsMappedResult(L)) return CloneType(ExtractFromMappedResult(L, R), options)
+  if (IsTemplateLiteral(L)) return CreateType(ExtractFromTemplateLiteral(L, R), options) as never
+  if (IsMappedResult(L)) return CreateType(ExtractFromMappedResult(L, R), options) as never
   // prettier-ignore
-  return CloneType(
+  return CreateType(
     IsUnion(L) ? ExtractRest(L.anyOf, R) :
-    ExtendsCheck(L, R) !== ExtendsResult.False ? L : Never()
-  , options)
+      ExtendsCheck(L, R) !== ExtendsResult.False ? L : Never()
+    , options) as never
 }

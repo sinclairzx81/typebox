@@ -26,10 +26,11 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { CreateType } from '../create/type'
 import type { TSchema } from '../schema/index'
 import { Kind } from '../symbols/index'
-import { CloneType, CloneRest } from '../clone/type'
 import type { TIntersect, IntersectOptions } from './intersect-type'
+import { IsObject as IsObjectValue } from '../guard/value'
 
 // ------------------------------------------------------------------
 // TypeGuard
@@ -39,14 +40,14 @@ import { IsObject, IsSchema } from '../guard/kind'
 // IntersectCreate
 // ------------------------------------------------------------------
 // prettier-ignore
-export function IntersectCreate<T extends TSchema[]>(T: [...T], options: IntersectOptions): TIntersect<T> {
+export function IntersectCreate<T extends TSchema[]>(T: [...T], options: IntersectOptions = {}): TIntersect<T> {
   const allObjects = T.every((schema) => IsObject(schema))
   const clonedUnevaluatedProperties = IsSchema(options.unevaluatedProperties) 
-    ? { unevaluatedProperties: CloneType(options.unevaluatedProperties) } 
+    ? { unevaluatedProperties: options.unevaluatedProperties } 
     : {}
-  return (
+  return CreateType(
     (options.unevaluatedProperties === false || IsSchema(options.unevaluatedProperties) || allObjects
-      ? { ...options, ...clonedUnevaluatedProperties, [Kind]: 'Intersect', type: 'object', allOf: CloneRest(T) }
-      : { ...options, ...clonedUnevaluatedProperties, [Kind]: 'Intersect', allOf: CloneRest(T) })
-  ) as never
+      ? { ...clonedUnevaluatedProperties, [Kind]: 'Intersect', type: 'object', allOf: T }
+      : { ...clonedUnevaluatedProperties, [Kind]: 'Intersect', allOf: T })
+  , options) as never
 }

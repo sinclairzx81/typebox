@@ -47,7 +47,7 @@ export interface TEnum<T extends Record<string, string | number> = Record<string
   anyOf: TLiteral<T[keyof T]>[]
 }
 /** `[Json]` Creates a Enum type */
-export function Enum<V extends TEnumValue, T extends Record<TEnumKey, V>>(item: T, options: SchemaOptions = {}): TEnum<T> {
+export function Enum<V extends TEnumValue, T extends Record<TEnumKey, V>>(item: T, options?: SchemaOptions): TEnum<T> {
   if (IsUndefined(item)) throw new Error('Enum undefined or empty')
   const values1 = globalThis.Object.getOwnPropertyNames(item)
     .filter((key) => isNaN(key as any))

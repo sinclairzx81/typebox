@@ -26,6 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { CreateType } from '../create/type'
 import type { TSchema, SchemaOptions } from '../schema/index'
 import type { Evaluate } from '../helpers/index'
 import type { TMappedResult } from '../mapped/index'
@@ -38,7 +39,6 @@ import { type TIntersect, Intersect } from '../intersect/index'
 import { type TUnion, Union } from '../union/index'
 import { Discard } from '../discard/index'
 import { TransformKind } from '../symbols/index'
-import { CloneType } from '../clone/type'
 
 import { PartialFromMappedResult, type TPartialFromMappedResult } from './partial-from-mapped-result'
 
@@ -104,9 +104,9 @@ export function Partial<T extends TMappedResult>(T: T, options?: SchemaOptions):
 /** `[Json]` Constructs a type where all properties are optional */
 export function Partial<T extends TSchema>(T: T, options?: SchemaOptions): TPartial<T>
 /** `[Json]` Constructs a type where all properties are optional */
-export function Partial(T: TSchema, options: SchemaOptions = {}): any {
+export function Partial(T: TSchema, options?: SchemaOptions): any {
   if (IsMappedResult(T)) return PartialFromMappedResult(T, options)
   const D = Discard(T, [TransformKind, '$id', 'required']) as TSchema
-  const R = CloneType(PartialResolve(T), options)
-  return { ...D, ...R } as never
+  const R = PartialResolve(T)
+  return CreateType({ ...options, ...D, ...R }) as never
 }

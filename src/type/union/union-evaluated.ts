@@ -26,9 +26,9 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { CreateType } from '../create/type'
 import type { SchemaOptions, TSchema } from '../schema/index'
 import { OptionalKind } from '../symbols/index'
-import { CloneType } from '../clone/type'
 import { Discard } from '../discard/index'
 import { Never, type TNever } from '../never/index'
 import { Optional, type TOptional } from '../optional/index'
@@ -95,7 +95,7 @@ type TResolveUnion<T extends TSchema[], R extends TSchema[] = TRemoveOptionalFro
     : TUnion<R>
 )
 // prettier-ignore
-function ResolveUnion<T extends TSchema[]>(T: T, options: SchemaOptions): TResolveUnion<T> {
+function ResolveUnion<T extends TSchema[]>(T: T, options?: SchemaOptions): TResolveUnion<T> {
   return (
     IsUnionOptional(T)
       ? Optional(UnionCreate(RemoveOptionalFromRest(T) as TSchema[], options))
@@ -112,11 +112,11 @@ export type TUnionEvaluated<T extends TSchema[]> = (
   TResolveUnion<T>
 )
 /** `[Json]` Creates an evaluated Union type */
-export function UnionEvaluated<T extends TSchema[], R = TUnionEvaluated<T>>(T: [...T], options: SchemaOptions = {}): R {
+export function UnionEvaluated<T extends TSchema[], R = TUnionEvaluated<T>>(T: [...T], options?: SchemaOptions): R {
   // prettier-ignore
   return (
     T.length === 0 ? Never(options) :
-    T.length === 1 ? CloneType(T[0], options) :
+    T.length === 1 ? CreateType(T[0], options) :
     ResolveUnion(T, options)
   ) as never
 }

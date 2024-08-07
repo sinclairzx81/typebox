@@ -26,6 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { CreateType } from '../create/type'
 import type { SchemaOptions } from '../schema/index'
 import type { TSchema } from '../schema/index'
 import { IsString } from '../guard/value'
@@ -50,7 +51,7 @@ export function RegExp(pattern: string, options?: RegExpOptions): TRegExp
 /** `[JavaScript]` Creates a RegExp type */
 export function RegExp(regex: RegExp, options?: RegExpOptions): TRegExp
 /** `[JavaScript]` Creates a RegExp type */
-export function RegExp(unresolved: RegExp | string, options: RegExpOptions = {}) {
+export function RegExp(unresolved: RegExp | string, options?: RegExpOptions) {
   const expr = IsString(unresolved) ? new globalThis.RegExp(unresolved) : unresolved
-  return { ...options, [Kind]: 'RegExp', type: 'RegExp', source: expr.source, flags: expr.flags } as never
+  return CreateType({ [Kind]: 'RegExp', type: 'RegExp', source: expr.source, flags: expr.flags }, options) as never
 }

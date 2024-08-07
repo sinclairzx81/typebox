@@ -26,9 +26,9 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { CreateType } from '../create/type'
 import type { TSchema, SchemaOptions } from '../schema/index'
 import type { Static } from '../static/index'
-import { CloneType } from '../clone/type'
 import { Kind } from '../symbols/index'
 
 export interface TIterator<T extends TSchema = TSchema> extends TSchema {
@@ -38,11 +38,6 @@ export interface TIterator<T extends TSchema = TSchema> extends TSchema {
   items: T
 }
 /** `[JavaScript]` Creates an Iterator type */
-export function Iterator<T extends TSchema>(items: T, options: SchemaOptions = {}): TIterator<T> {
-  return {
-    ...options,
-    [Kind]: 'Iterator',
-    type: 'Iterator',
-    items: CloneType(items),
-  } as never
+export function Iterator<T extends TSchema>(items: T, options?: SchemaOptions): TIterator<T> {
+  return CreateType({ [Kind]: 'Iterator', type: 'Iterator', items }, options) as never
 }

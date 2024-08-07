@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { CloneType } from '../clone/type'
+import { CreateType } from '../create/type'
 import { Ensure } from '../helpers/index'
 import type { SchemaOptions, TSchema } from '../schema/index'
 import type { Static } from '../static/index'
@@ -54,11 +54,6 @@ export interface TArray<T extends TSchema = TSchema> extends TSchema, ArrayOptio
   items: T
 }
 /** `[Json]` Creates an Array type */
-export function Array<T extends TSchema>(schema: T, options: ArrayOptions = {}): TArray<T> {
-  return {
-    ...options,
-    [Kind]: 'Array',
-    type: 'array',
-    items: CloneType(schema),
-  } as never
+export function Array<T extends TSchema>(items: T, options?: ArrayOptions): TArray<T> {
+  return CreateType({ [Kind]: 'Array', type: 'array', items }, options) as never
 }

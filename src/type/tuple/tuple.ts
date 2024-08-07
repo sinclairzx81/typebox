@@ -26,9 +26,9 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { CreateType } from '../create/type'
 import type { TSchema, SchemaOptions } from '../schema/index'
 import type { Static } from '../static/index'
-import { CloneRest } from '../clone/type'
 import { Kind } from '../symbols/index'
 
 // ------------------------------------------------------------------
@@ -52,13 +52,11 @@ export interface TTuple<T extends TSchema[] = TSchema[]> extends TSchema {
   maxItems: number
 }
 /** `[Json]` Creates a Tuple type */
-export function Tuple<T extends TSchema[]>(items: [...T], options: SchemaOptions = {}): TTuple<T> {
-  // return TupleResolver.Resolve(T)
-  const [additionalItems, minItems, maxItems] = [false, items.length, items.length]
+export function Tuple<T extends TSchema[]>(items: [...T], options?: SchemaOptions): TTuple<T> {
   // prettier-ignore
-  return (
+  return CreateType(
     items.length > 0 ?
-      { ...options, [Kind]: 'Tuple', type: 'array', items: CloneRest(items), additionalItems, minItems, maxItems } :
-      { ...options, [Kind]: 'Tuple', type: 'array', minItems, maxItems }
-  ) as never
+      { [Kind]: 'Tuple', type: 'array', items, additionalItems: false, minItems: items.length, maxItems: items.length } :
+      { [Kind]: 'Tuple', type: 'array', minItems: items.length, maxItems: items.length },
+  options) as never
 }
