@@ -26,6 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { CreateType } from '../create/type'
 import type { TSchema } from '../schema/index'
 import { Kind } from '../symbols/index'
 
@@ -36,8 +37,8 @@ export interface TMappedKey<T extends PropertyKey[] = PropertyKey[]> extends TSc
 }
 // prettier-ignore
 export function MappedKey<T extends PropertyKey[]>(T: [...T]): TMappedKey<T> {
-  return {
+  return CreateType({
     [Kind]: 'MappedKey',
     keys: T
-  } as never
+  }) as never
 }

@@ -31,6 +31,7 @@ import type { Ensure, Evaluate } from '../helpers/index'
 import type { TProperties } from '../object/index'
 import { Index, type TIndex } from './indexed'
 import { MappedResult, type TMappedResult, type TMappedKey } from '../mapped/index'
+import { Clone } from '../clone/value'
 
 // ------------------------------------------------------------------
 // MappedIndexPropertyKey
@@ -46,8 +47,8 @@ type TMappedIndexPropertyKey<
 function MappedIndexPropertyKey<
   T extends TSchema, 
   K extends PropertyKey
->(T: T, K: K, options: SchemaOptions): TMappedIndexPropertyKey<T, K> {
-  return { [K]: Index(T, [K], options) } as never
+>(T: T, K: K, options?: SchemaOptions): TMappedIndexPropertyKey<T, K> {
+  return { [K]: Index(T, [K], Clone(options)) } as never
 }
 // ------------------------------------------------------------------
 // MappedIndexPropertyKeys
@@ -62,7 +63,7 @@ type TMappedIndexPropertyKeys<T extends TSchema, K extends PropertyKey[], Acc ex
 function MappedIndexPropertyKeys<
   T extends TSchema, 
   K extends PropertyKey[]
->(T: T, K: [...K], options: SchemaOptions): TMappedIndexPropertyKeys<T, K> {
+>(T: T, K: [...K], options?: SchemaOptions): TMappedIndexPropertyKeys<T, K> {
   return K.reduce((Acc, L) => {
     return { ...Acc, ...MappedIndexPropertyKey(T, L, options) }
   }, {} as TProperties) as never
@@ -78,7 +79,7 @@ type TMappedIndexProperties<T extends TSchema, K extends TMappedKey> = Evaluate<
 function MappedIndexProperties<
   T extends TSchema, 
   K extends TMappedKey
->(T: T, K: K, options: SchemaOptions): TMappedIndexProperties<T, K> {
+>(T: T, K: K, options?: SchemaOptions): TMappedIndexProperties<T, K> {
   return MappedIndexPropertyKeys(T, K.keys, options) as never
 }
 // ------------------------------------------------------------------
@@ -97,7 +98,7 @@ export function IndexFromMappedKey<
   T extends TSchema, 
   K extends TMappedKey, 
   P extends TProperties = TMappedIndexProperties<T, K>
->(T: T, K: K, options: SchemaOptions): TMappedResult<P> {
+>(T: T, K: K, options?: SchemaOptions): TMappedResult<P> {
   const P = MappedIndexProperties(T, K, options)
   return MappedResult(P) as never
 }

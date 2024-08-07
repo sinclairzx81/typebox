@@ -26,6 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { CreateType } from '../create/type'
 import type { TSchema, SchemaOptions } from '../schema/index'
 import { TemplateLiteral, TemplateLiteralParseExact, IsTemplateLiteralExpressionFinite, TemplateLiteralExpressionGenerate, type TTemplateLiteral, type TTemplateLiteralKind } from '../template-literal/index'
 import { IntrinsicFromMappedKey, type TIntrinsicFromMappedKey } from './intrinsic-from-mapped-key'
@@ -134,7 +135,7 @@ export function Intrinsic<T extends TMappedKey, M extends IntrinsicMode>(schema:
 /** Applies an intrinsic string manipulation to the given type. */
 export function Intrinsic<T extends TSchema, M extends IntrinsicMode>(schema: T, mode: M, options?: SchemaOptions): TIntrinsic<T, M>
 /** Applies an intrinsic string manipulation to the given type. */
-export function Intrinsic(schema: TSchema, mode: IntrinsicMode, options: SchemaOptions = {}): any {
+export function Intrinsic(schema: TSchema, mode: IntrinsicMode, options: SchemaOptions = {}): never {
   // prettier-ignore
   return (
     // Intrinsic-Mapped-Inference
@@ -143,6 +144,7 @@ export function Intrinsic(schema: TSchema, mode: IntrinsicMode, options: SchemaO
     IsTemplateLiteral(schema) ? FromTemplateLiteral(schema, mode, schema) :
     IsUnion(schema) ? Union(FromRest(schema.anyOf, mode), options) :
     IsLiteral(schema) ? Literal(FromLiteralValue(schema.const, mode), options) :
-    schema
-  )
+    // Default Type
+    CreateType(schema, options)
+  ) as never
 }

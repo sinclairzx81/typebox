@@ -29,7 +29,7 @@ THE SOFTWARE.
 import type { TSchema, SchemaOptions } from '../schema/index'
 import type { Static } from '../static/index'
 import { Kind } from '../symbols/index'
-import { CloneType } from '../clone/type'
+import { CreateType } from '../create/type'
 
 export interface TAsyncIterator<T extends TSchema = TSchema> extends TSchema {
   [Kind]: 'AsyncIterator'
@@ -38,11 +38,6 @@ export interface TAsyncIterator<T extends TSchema = TSchema> extends TSchema {
   items: T
 }
 /** `[JavaScript]` Creates a AsyncIterator type */
-export function AsyncIterator<T extends TSchema>(items: T, options: SchemaOptions = {}): TAsyncIterator<T> {
-  return {
-    ...options,
-    [Kind]: 'AsyncIterator',
-    type: 'AsyncIterator',
-    items: CloneType(items),
-  } as never
+export function AsyncIterator<T extends TSchema>(items: T, options?: SchemaOptions): TAsyncIterator<T> {
+  return CreateType({ [Kind]: 'AsyncIterator', type: 'AsyncIterator', items }, options) as never
 }

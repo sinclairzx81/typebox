@@ -26,6 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { CreateType } from '../create/type'
 import type { TSchema } from '../schema/index'
 import type { Assert, Ensure } from '../helpers/index'
 import type { TMappedResult } from '../mapped/index'
@@ -34,7 +35,6 @@ import { Literal, type TLiteral, type TLiteralValue } from '../literal/index'
 import { Number, type TNumber } from '../number/index'
 import { KeyOfPropertyKeys, type TKeyOfPropertyKeys } from './keyof-property-keys'
 import { UnionEvaluated, type TUnionEvaluated } from '../union/index'
-import { CloneType } from '../clone/type'
 import { KeyOfFromMappedResult, type TKeyOfFromMappedResult } from './keyof-from-mapped-result'
 
 // ------------------------------------------------------------------
@@ -73,13 +73,13 @@ export function KeyOf<T extends TMappedResult>(T: T, options?: SchemaOptions): T
 /** `[Json]` Creates a KeyOf type */
 export function KeyOf<T extends TSchema>(T: T, options?: SchemaOptions): TKeyOf<T>
 /** `[Json]` Creates a KeyOf type */
-export function KeyOf(T: TSchema, options: SchemaOptions = {}): any {
+export function KeyOf(T: TSchema, options?: SchemaOptions): never {
   if (IsMappedResult(T)) {
-    return KeyOfFromMappedResult(T, options)
+    return KeyOfFromMappedResult(T, options) as never
   } else {
     const K = KeyOfPropertyKeys(T)
     const S = KeyOfPropertyKeysToRest(K)
     const U = UnionEvaluated(S)
-    return CloneType(U, options)
+    return CreateType(U, options) as never
   }
 }

@@ -26,6 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { CreateType } from '../create/type'
 import type { TSchema, SchemaOptions } from '../schema/index'
 import type { TupleToUnion, Evaluate } from '../helpers/index'
 import { type TRecursive } from '../recursive/index'
@@ -36,7 +37,6 @@ import type { TMappedKey, TMappedResult } from '../mapped/index'
 import { IndexPropertyKeys, type TIndexPropertyKeys } from '../indexed/index'
 import { Discard } from '../discard/index'
 import { TransformKind } from '../symbols/index'
-import { CloneType } from '../clone/type'
 import { PickFromMappedKey, type TPickFromMappedKey } from './pick-from-mapped-key'
 import { PickFromMappedResult, type TPickFromMappedResult } from './pick-from-mapped-result'
 
@@ -106,13 +106,13 @@ export function Pick<T extends TSchema, K extends TMappedKey>(T: T, K: K, option
 export function Pick<T extends TSchema, K extends TSchema, I extends PropertyKey[] = TIndexPropertyKeys<K>>(T: T, K: K, options?: SchemaOptions): TPick<T, I>
 /** `[Json]` Constructs a type whose keys are picked from the given type */
 export function Pick<T extends TSchema, K extends PropertyKey[]>(T: T, K: readonly [...K], options?: SchemaOptions): TPick<T, K>
-export function Pick(T: TSchema, K: any, options: SchemaOptions = {}): any {
+export function Pick(T: TSchema, K: any, options?: SchemaOptions): any {
   // mapped
   if (IsMappedKey(K)) return PickFromMappedKey(T, K, options)
   if (IsMappedResult(T)) return PickFromMappedResult(T, K, options)
   // non-mapped
   const I = IsSchema(K) ? IndexPropertyKeys(K) : (K as string[])
   const D = Discard(T, [TransformKind, '$id', 'required']) as TSchema
-  const R = CloneType(PickResolve(T, I), options)
-  return { ...D, ...R }
+  const R = PickResolve(T, I)
+  return CreateType({ ...D, ...R }, options)
 }

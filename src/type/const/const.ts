@@ -44,7 +44,7 @@ import { Readonly, type TReadonly } from '../readonly/index'
 import { Undefined, type TUndefined } from '../undefined/index'
 import { Uint8Array, type TUint8Array } from '../uint8array/index'
 import { Unknown, type TUnknown } from '../unknown/index'
-import { CloneType } from '../clone/index'
+import { CreateType } from '../create/index'
 
 // ------------------------------------------------------------------
 // ValueGuard
@@ -130,6 +130,6 @@ function FromValue<T, Root extends boolean>(value: T, root: Root): FromValue<T, 
 export type TConst<T> = FromValue<T, true>
 
 /** `[JavaScript]` Creates a readonly const type from the given value. */
-export function Const</* const (not supported in 4.0) */ T>(T: T, options: SchemaOptions = {}): TConst<T> {
-  return CloneType(FromValue(T, true), options) as never
+export function Const</* const (not supported in 4.0) */ T>(T: T, options?: SchemaOptions): TConst<T> {
+  return CreateType(FromValue(T, true), options) as never
 }

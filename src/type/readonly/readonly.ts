@@ -26,10 +26,10 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { CreateType } from '../create/type'
 import type { TSchema } from '../schema/index'
 import type { Ensure } from '../helpers/index'
 import { ReadonlyKind } from '../symbols/index'
-import { CloneType } from '../clone/type'
 import { Discard } from '../discard/index'
 import type { TMappedResult } from '../mapped/index'
 
@@ -40,14 +40,14 @@ import { IsMappedResult } from '../guard/kind'
 // ------------------------------------------------------------------
 type TRemoveReadonly<T extends TSchema> = T extends TReadonly<infer S> ? S : T
 function RemoveReadonly<T extends TSchema>(schema: T) {
-  return Discard(CloneType(schema), [ReadonlyKind])
+  return CreateType(Discard(schema, [ReadonlyKind]))
 }
 // ------------------------------------------------------------------
 // AddReadonly
 // ------------------------------------------------------------------
 type TAddReadonly<T extends TSchema> = T extends TReadonly<infer S> ? TReadonly<S> : Ensure<TReadonly<T>>
 function AddReadonly<T extends TSchema>(schema: T) {
-  return { ...CloneType(schema), [ReadonlyKind]: 'Readonly' }
+  return CreateType({ ...schema, [ReadonlyKind]: 'Readonly' })
 }
 // prettier-ignore
 export type TReadonlyWithFlag<T extends TSchema, F extends boolean> = 

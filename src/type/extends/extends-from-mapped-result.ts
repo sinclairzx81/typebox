@@ -30,6 +30,7 @@ import type { TSchema, SchemaOptions } from '../schema/index'
 import type { TProperties } from '../object/index'
 import { MappedResult, type TMappedResult } from '../mapped/index'
 import { Extends, type TExtends } from './extends'
+import { Clone } from '../clone/value'
 
 // ------------------------------------------------------------------
 // FromProperties
@@ -49,9 +50,9 @@ function FromProperties<
   Right extends TSchema,
   True extends TSchema,
   False extends TSchema
->(P: P, Right: Right, True: True, False: False, options: SchemaOptions): TFromProperties<P, Right, True, False> {
+>(P: P, Right: Right, True: True, False: False, options?: SchemaOptions): TFromProperties<P, Right, True, False> {
   const Acc = {} as TProperties
-  for(const K2 of globalThis.Object.getOwnPropertyNames(P)) Acc[K2] = Extends(P[K2], Right, True, False, options)
+  for(const K2 of globalThis.Object.getOwnPropertyNames(P)) Acc[K2] = Extends(P[K2], Right, True, False, Clone(options))
   return Acc as never
 }
 // ------------------------------------------------------------------
@@ -72,7 +73,7 @@ function FromMappedResult<
   Right extends TSchema,
   True extends TSchema,
   False extends TSchema
->(Left: Left, Right: Right, True: True, False: False, options: SchemaOptions): TFromMappedResult<Left, Right, True, False> {
+>(Left: Left, Right: Right, True: True, False: False, options?: SchemaOptions): TFromMappedResult<Left, Right, True, False> {
   return FromProperties(Left.properties, Right, True, False, options) as never
 }
 // ------------------------------------------------------------------
@@ -95,7 +96,7 @@ export function ExtendsFromMappedResult<
   True extends TSchema,
   False extends TSchema,
   P extends TProperties = TFromMappedResult<Left, Right, True, False>
->(Left: Left, Right: Right, True: True, False: False, options: SchemaOptions): TMappedResult<P> {
+>(Left: Left, Right: Right, True: True, False: False, options?: SchemaOptions): TMappedResult<P> {
   const P = FromMappedResult(Left, Right, True, False, options)
   return MappedResult(P) as never
 }

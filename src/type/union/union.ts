@@ -29,7 +29,7 @@ THE SOFTWARE.
 import type { TSchema, SchemaOptions } from '../schema/index'
 import { type TNever, Never } from '../never/index'
 import type { TUnion } from './union-type'
-import { CloneType } from '../clone/type'
+import { CreateType } from '../create/type'
 import { UnionCreate } from './union-create'
 
 // prettier-ignore
@@ -39,11 +39,11 @@ export type Union<T extends TSchema[]> = (
   TUnion<T>
 )
 /** `[Json]` Creates a Union type */
-export function Union<T extends TSchema[]>(T: [...T], options: SchemaOptions = {}): Union<T> {
+export function Union<T extends TSchema[]>(T: [...T], options?: SchemaOptions): Union<T> {
   // prettier-ignore
   return (
     T.length === 0 ? Never(options) :
-    T.length === 1 ? CloneType(T[0], options) :
+    T.length === 1 ? CreateType(T[0], options) :
     UnionCreate(T, options)
   ) as Union<T>
 }

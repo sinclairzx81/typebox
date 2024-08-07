@@ -26,6 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { CreateType } from '../create/type'
 import { type TSchema, SchemaOptions } from '../schema/index'
 import { type TObject, type TProperties } from '../object/index'
 import { type Assert } from '../helpers/index'
@@ -38,7 +39,6 @@ import { type TTuple } from '../tuple/index'
 import { type TArray } from '../array/index'
 import { IntersectEvaluated, type TIntersectEvaluated } from '../intersect/index'
 import { UnionEvaluated, type TUnionEvaluated } from '../union/index'
-import { CloneType } from '../clone/type'
 
 import { IndexPropertyKeys, type TIndexPropertyKeys } from './indexed-property-keys'
 import { IndexFromMappedKey, type TIndexFromMappedKey } from './indexed-from-mapped-key'
@@ -259,12 +259,14 @@ export function Index<T extends TSchema, K extends TSchema, I extends PropertyKe
 /** `[Json]` Returns an Indexed property type for the given keys */
 export function Index<T extends TSchema, K extends PropertyKey[]>(T: T, K: readonly [...K], options?: SchemaOptions): TIndex<T, K>
 /** `[Json]` Returns an Indexed property type for the given keys */
-export function Index(T: TSchema, K: any, options: SchemaOptions = {}): any {
+export function Index(T: TSchema, K: any, options?: SchemaOptions): any {
+  // mapped-types
+  if (IsMappedResult(K)) return IndexFromMappedResult(T, K, options)
+  if (IsMappedKey(K)) return IndexFromMappedKey(T, K, options)
   // prettier-ignore
-  return (
-    IsMappedResult(K) ? CloneType(IndexFromMappedResult(T, K, options)) :
-    IsMappedKey(K) ? CloneType(IndexFromMappedKey(T, K, options)) :
-    IsSchema(K) ? CloneType(FromSchema(T, IndexPropertyKeys(K)), options) :
-    CloneType(FromSchema(T, K as string[]), options)
-  )
+  return CreateType(
+    IsSchema(K) 
+      ? FromSchema(T, IndexPropertyKeys(K)) 
+      : FromSchema(T, K as string[])
+  , options) as never
 }

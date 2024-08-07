@@ -26,16 +26,4 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { CreateType } from '../create/type'
-import type { TSchema, SchemaOptions } from '../schema/index'
-import { Kind } from '../symbols/index'
-
-export interface TVoid extends TSchema {
-  [Kind]: 'Void'
-  static: void
-  type: 'void'
-}
-/** `[JavaScript]` Creates a Void type */
-export function Void(options?: SchemaOptions): TVoid {
-  return CreateType({ [Kind]: 'Void', type: 'void' }, options) as never
-}
+export * from './type'

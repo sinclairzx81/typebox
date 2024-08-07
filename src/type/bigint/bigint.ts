@@ -28,6 +28,7 @@ THE SOFTWARE.
 
 import type { TSchema, SchemaOptions } from '../schema/index'
 import { Kind } from '../symbols/index'
+import { CreateType } from '../create/index'
 
 export interface BigIntOptions extends SchemaOptions {
   exclusiveMaximum?: bigint
@@ -42,10 +43,6 @@ export interface TBigInt extends TSchema, BigIntOptions {
   type: 'bigint'
 }
 /** `[JavaScript]` Creates a BigInt type */
-export function BigInt(options: BigIntOptions = {}): TBigInt {
-  return {
-    ...options,
-    [Kind]: 'BigInt',
-    type: 'bigint',
-  } as never
+export function BigInt(options?: BigIntOptions): TBigInt {
+  return CreateType({ [Kind]: 'BigInt', type: 'bigint' }, options) as never
 }

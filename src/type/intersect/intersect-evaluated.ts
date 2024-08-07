@@ -28,9 +28,8 @@ THE SOFTWARE.
 
 import type { SchemaOptions, TSchema } from '../schema/index'
 import { OptionalKind } from '../symbols/index'
-import { CloneType } from '../clone/type'
+import { CreateType } from '../create/type'
 import { Discard } from '../discard/index'
-
 import { Never, type TNever } from '../never/index'
 import { Optional, type TOptional } from '../optional/index'
 import type { TReadonly } from '../readonly/index'
@@ -116,8 +115,8 @@ export type TIntersectEvaluated<T extends TSchema[]> = (
 )
 /** `[Json]` Creates an evaluated Intersect type */
 export function IntersectEvaluated<T extends TSchema[], R = TIntersectEvaluated<T>>(T: [...T], options: IntersectOptions = {}): R {
-  if (T.length === 0) return Never(options) as R
-  if (T.length === 1) return CloneType(T[0], options) as R
+  if (T.length === 0) return Never(options) as never
+  if (T.length === 1) return CreateType(T[0], options) as never
   if (T.some((schema) => IsTransform(schema))) throw new Error('Cannot intersect transform types')
-  return ResolveIntersect(T, options) as R
+  return ResolveIntersect(T, options) as never
 }

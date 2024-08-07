@@ -1,5 +1,5 @@
 import { TypeGuard } from '@sinclair/typebox'
-import { Type, TemplateLiteralGenerate } from '@sinclair/typebox'
+import { Type, CloneType, TemplateLiteralGenerate } from '@sinclair/typebox'
 import { Assert } from '../../../assert/index'
 
 describe('guard/type/TTemplateLiteral', () => {
@@ -33,13 +33,13 @@ describe('guard/type/TTemplateLiteral', () => {
     Assert.IsTrue(R)
   })
   it('Should not guard for missing ^ expression prefix', () => {
-    const T = Type.TemplateLiteral([Type.Literal('hello')])
+    const T = CloneType(Type.TemplateLiteral([Type.Literal('hello')]))
     // @ts-ignore
     T.pattern = T.pattern.slice(1)
     Assert.IsFalse(TypeGuard.IsTemplateLiteral(T))
   })
   it('Should not guard for missing $ expression postfix', () => {
-    const T = Type.TemplateLiteral([Type.Literal('hello')])
+    const T = CloneType(Type.TemplateLiteral([Type.Literal('hello')]))
     // @ts-ignore
     T.pattern = T.pattern.slice(0, T.pattern.length - 1)
     Assert.IsFalse(TypeGuard.IsTemplateLiteral(T))

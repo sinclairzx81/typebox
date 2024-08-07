@@ -31,6 +31,7 @@ import type { Ensure, Evaluate } from '../helpers/index'
 import type { TProperties } from '../object/index'
 import { MappedResult, type TMappedResult } from '../mapped/index'
 import { Omit, type TOmit } from './omit'
+import { Clone } from '../clone/value'
 
 // ------------------------------------------------------------------
 // FromProperties
@@ -46,9 +47,9 @@ type TFromProperties<
 function FromProperties<
   P extends TProperties,
   K extends PropertyKey[],
->(P: P, K: [...K], options: SchemaOptions): TFromProperties<P, K> {
+>(P: P, K: [...K], options?: SchemaOptions): TFromProperties<P, K> {
   const Acc = {} as TProperties
-  for(const K2 of globalThis.Object.getOwnPropertyNames(P)) Acc[K2] = Omit(P[K2], K, options)
+  for(const K2 of globalThis.Object.getOwnPropertyNames(P)) Acc[K2] = Omit(P[K2], K, Clone(options))
   return Acc as never
 }
 // ------------------------------------------------------------------
@@ -65,7 +66,7 @@ type TFromMappedResult<
 function FromMappedResult<
   R extends TMappedResult,
   K extends PropertyKey[]
->(R: R, K: [...K], options: SchemaOptions): TFromMappedResult<R, K> {
+>(R: R, K: [...K], options?: SchemaOptions): TFromMappedResult<R, K> {
   return FromProperties(R.properties, K, options) as never
 }
 // ------------------------------------------------------------------
@@ -84,7 +85,7 @@ export function OmitFromMappedResult<
   R extends TMappedResult,
   K extends PropertyKey[],
   P extends TProperties = TFromMappedResult<R, K>
->(R: R, K: [...K], options: SchemaOptions): TMappedResult<P> {
+>(R: R, K: [...K], options?: SchemaOptions): TMappedResult<P> {
   const P = FromMappedResult(R, K, options)
   return MappedResult(P) as never
 }

@@ -26,6 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { CreateType } from '../create/type'
 import type { TSchema, SchemaOptions } from '../schema/index'
 import type { UnionToTuple, AssertRest, AssertType } from '../helpers/index'
 import type { TMappedResult } from '../mapped/index'
@@ -35,7 +36,6 @@ import { Never, type TNever } from '../never/index'
 import { type Static } from '../static/index'
 import { type TUnionEvaluated } from '../union/index'
 import { ExtendsCheck, ExtendsResult } from '../extends/index'
-import { CloneType } from '../clone/type'
 import { ExcludeFromMappedResult, type TExcludeFromMappedResult } from './exclude-from-mapped-result'
 import { ExcludeFromTemplateLiteral, type TExcludeFromTemplateLiteral } from './exclude-from-template-literal'
 
@@ -72,10 +72,10 @@ export function Exclude<L extends TSchema, R extends TSchema>(unionType: L, excl
 /** `[Json]` Constructs a type by excluding from unionType all union members that are assignable to excludedMembers */
 export function Exclude(L: TSchema, R: TSchema, options: SchemaOptions = {}): any {
   // overloads
-  if (IsTemplateLiteral(L)) return CloneType(ExcludeFromTemplateLiteral(L, R), options)
-  if (IsMappedResult(L)) return CloneType(ExcludeFromMappedResult(L, R), options)
+  if (IsTemplateLiteral(L)) return CreateType(ExcludeFromTemplateLiteral(L, R), options)
+  if (IsMappedResult(L)) return CreateType(ExcludeFromMappedResult(L, R), options)
   // prettier-ignore
-  return CloneType(
+  return CreateType(
     IsUnion(L) ? ExcludeRest(L.anyOf, R) : 
     ExtendsCheck(L, R) !== ExtendsResult.False ? Never() : L
   , options)

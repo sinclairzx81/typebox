@@ -26,6 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { CreateType } from '../create/type'
 import type { TSchema, SchemaOptions } from '../schema/index'
 import { Kind } from '../symbols/index'
 
@@ -35,10 +36,6 @@ export interface TNever extends TSchema {
   not: {}
 }
 /** `[Json]` Creates a Never type */
-export function Never(options: SchemaOptions = {}): TNever {
-  return {
-    ...options,
-    [Kind]: 'Never',
-    not: {},
-  } as never
+export function Never(options?: SchemaOptions): TNever {
+  return CreateType({ [Kind]: 'Never', not: {} }, options) as never
 }

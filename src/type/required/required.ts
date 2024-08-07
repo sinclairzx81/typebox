@@ -26,6 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { CreateType } from '../create/type'
 import type { TSchema, SchemaOptions } from '../schema/index'
 import type { Evaluate } from '../helpers/index'
 import type { TMappedResult } from '../mapped/index'
@@ -36,11 +37,8 @@ import { type TRecursive } from '../recursive/index'
 import { type TIntersect, Intersect } from '../intersect/index'
 import { type TUnion, Union } from '../union/index'
 import { type TObject, type TProperties, Object } from '../object/index'
-
 import { OptionalKind, TransformKind } from '../symbols/index'
-import { CloneType } from '../clone/type'
 import { Discard } from '../discard/index'
-
 import { RequiredFromMappedResult, type TRequiredFromMappedResult } from './required-from-mapped-result'
 
 // ------------------------------------------------------------------
@@ -106,12 +104,12 @@ export function Required<T extends TMappedResult>(T: T, options?: SchemaOptions)
 /** `[Json]` Constructs a type where all properties are required */
 export function Required<T extends TSchema>(T: T, options?: SchemaOptions): TRequired<T>
 /** `[Json]` Constructs a type where all properties are required */
-export function Required<T extends TSchema>(T: T, options: SchemaOptions = {}) {
+export function Required<T extends TSchema>(T: T, options?: SchemaOptions): never {
   if (IsMappedResult(T)) {
-    return RequiredFromMappedResult(T, options)
+    return RequiredFromMappedResult(T, options) as never
   } else {
     const D = Discard(T, [TransformKind, '$id', 'required']) as TSchema
-    const R = CloneType(RequiredResolve(T) as any, options)
-    return { ...D, ...R }
+    const R = RequiredResolve(T) as any
+    return CreateType({ ...D, ...R }, options) as never
   }
 }

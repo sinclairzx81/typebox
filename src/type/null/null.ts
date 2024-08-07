@@ -26,6 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { CreateType } from '../create/type'
 import type { TSchema, SchemaOptions } from '../schema/index'
 import { Kind } from '../symbols/index'
 
@@ -35,10 +36,6 @@ export interface TNull extends TSchema {
   type: 'null'
 }
 /** `[Json]` Creates a Null type */
-export function Null(options: SchemaOptions = {}): TNull {
-  return {
-    ...options,
-    [Kind]: 'Null',
-    type: 'null',
-  } as never
+export function Null(options?: SchemaOptions): TNull {
+  return CreateType({ [Kind]: 'Null', type: 'null' }, options) as never
 }

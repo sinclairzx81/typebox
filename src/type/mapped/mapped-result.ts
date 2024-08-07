@@ -26,6 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { CreateType } from '../create/type'
 import type { TSchema } from '../schema/index'
 import type { TProperties } from '../object/index'
 import { Kind } from '../symbols/index'
@@ -37,8 +38,8 @@ export interface TMappedResult<T extends TProperties = TProperties> extends TSch
 }
 // prettier-ignore
 export function MappedResult<T extends TProperties>(properties: T): TMappedResult<T> {
-  return {
+  return CreateType({
     [Kind]: 'MappedResult',
     properties
-  } as never
+  }) as never
 }

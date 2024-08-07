@@ -26,6 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { CreateType } from '../create/type'
 import type { TSchema, SchemaOptions } from '../schema/index'
 import type { Static } from '../static/index'
 import { Kind } from '../symbols/index'
@@ -46,12 +47,8 @@ export function Ref<T extends TSchema>(schema: T, options?: SchemaOptions): TRef
 /** `[Json]` Creates a Ref type. */
 export function Ref<T extends TSchema>($ref: string, options?: SchemaOptions): TRef<T>
 /** `[Json]` Creates a Ref type. */
-export function Ref(unresolved: TSchema | string, options: SchemaOptions = {}) {
-  if (IsString(unresolved)) return { ...options, [Kind]: 'Ref', $ref: unresolved }
+export function Ref(unresolved: TSchema | string, options?: SchemaOptions) {
+  if (IsString(unresolved)) return CreateType({ [Kind]: 'Ref', $ref: unresolved }, options)
   if (IsUndefined(unresolved.$id)) throw new Error('Reference target type must specify an $id')
-  return {
-    ...options,
-    [Kind]: 'Ref',
-    $ref: unresolved.$id!,
-  }
+  return CreateType({ [Kind]: 'Ref', $ref: unresolved.$id! }, options)
 }

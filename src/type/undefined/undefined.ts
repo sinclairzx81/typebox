@@ -26,6 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { CreateType } from '../create/type'
 import type { TSchema, SchemaOptions } from '../schema/index'
 import { Kind } from '../symbols/index'
 
@@ -35,6 +36,6 @@ export interface TUndefined extends TSchema {
   type: 'undefined'
 }
 /** `[JavaScript]` Creates a Undefined type */
-export function Undefined(options: SchemaOptions = {}): TUndefined {
-  return { ...options, [Kind]: 'Undefined', type: 'undefined' } as never
+export function Undefined(options?: SchemaOptions): TUndefined {
+  return CreateType({ [Kind]: 'Undefined', type: 'undefined' }, options) as never
 }

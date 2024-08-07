@@ -26,6 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { CreateType } from '../create/type'
 import type { TSchema } from '../schema/index'
 import type { Static } from '../static/index'
 import type { Evaluate, Ensure, Assert } from '../helpers/index'
@@ -44,7 +45,6 @@ import { IsTemplateLiteralFinite, TIsTemplateLiteralFinite, type TTemplateLitera
 import { PatternStringExact, PatternNumberExact, PatternNeverExact } from '../patterns/index'
 import { IndexPropertyKeys } from '../indexed/index'
 import { Kind, Hint } from '../symbols/index'
-import { CloneType } from '../clone/type'
 // ------------------------------------------------------------------
 // ValueGuard
 // ------------------------------------------------------------------
@@ -58,12 +58,11 @@ import { IsInteger, IsLiteral, IsAny, IsNever, IsNumber, IsString, IsRegExp, IsT
 // ------------------------------------------------------------------
 // prettier-ignore
 function RecordCreateFromPattern(pattern: string, T: TSchema, options: ObjectOptions): TRecord<TSchema, TSchema> {
-  return { 
-    ...options, 
+  return CreateType({ 
     [Kind]: 'Record', 
     type: 'object', 
-    patternProperties: { [pattern]: CloneType(T) } 
-  } as never
+    patternProperties: { [pattern]: T } 
+  }, options) as never
 }
 // ------------------------------------------------------------------
 // RecordCreateFromKeys
@@ -71,7 +70,7 @@ function RecordCreateFromPattern(pattern: string, T: TSchema, options: ObjectOpt
 // prettier-ignore
 function RecordCreateFromKeys(K: string[], T: TSchema, options: ObjectOptions): TObject<TProperties> {
   const Acc = {} as TProperties
-  for(const K2 of K) Acc[K2] = CloneType(T)
+  for(const K2 of K) Acc[K2] = T
   return Object(Acc, { ...options, [Hint]: 'Record' })
 }
 // ------------------------------------------------------------------

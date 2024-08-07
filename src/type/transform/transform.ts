@@ -29,7 +29,6 @@ THE SOFTWARE.
 import type { TSchema } from '../schema/index'
 import type { Static, StaticDecode } from '../static/index'
 import { TransformKind } from '../symbols/index'
-import { CloneType } from '../clone/type'
 
 // ------------------------------------------------------------------
 // TypeGuard
@@ -58,10 +57,9 @@ export class TransformEncodeBuilder<T extends TSchema, D extends TransformFuncti
     const Codec = { Decode: this.decode, Encode: encode }
     return { ...schema, [TransformKind]: Codec }
   }
-  public Encode<E extends TransformFunction<ReturnType<D>, StaticDecode<T>>>(encode: E): TTransform<T, ReturnType<D>> {
-    const schema = CloneType(this.schema)
+  public Encode<E extends TransformFunction<ReturnType<D>, StaticDecode<T>>>(encode: E): TTransform<T, ReturnType<D>> { 
     return (
-      IsTransform(schema) ? this.EncodeTransform(encode, schema): this.EncodeSchema(encode, schema)
+      IsTransform(this.schema) ? this.EncodeTransform(encode, this.schema): this.EncodeSchema(encode, this.schema)
     ) as never
   }
 }

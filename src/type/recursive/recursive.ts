@@ -28,6 +28,7 @@ THE SOFTWARE.
 
 import type { TSchema, SchemaOptions } from '../schema/index'
 import { CloneType } from '../clone/type'
+import { CreateType } from '../create/type'
 import { IsUndefined } from '../guard/value'
 import { Kind, Hint } from '../symbols/index'
 import { Static } from '../static/index'
@@ -56,8 +57,8 @@ let Ordinal = 0
 /** `[Json]` Creates a Recursive type */
 export function Recursive<T extends TSchema>(callback: (thisType: TThis) => T, options: SchemaOptions = {}): TRecursive<T> {
   if (IsUndefined(options.$id)) (options as any).$id = `T${Ordinal++}`
-  const thisType = callback({ [Kind]: 'This', $ref: `${options.$id}` } as any)
+  const thisType = CloneType(callback({ [Kind]: 'This', $ref: `${options.$id}` } as any))
   thisType.$id = options.$id
   // prettier-ignore
-  return CloneType({ ...options, [Hint]: 'Recursive', ...thisType }) as never
+  return CreateType({ [Hint]: 'Recursive', ...thisType }, options) as never
 }

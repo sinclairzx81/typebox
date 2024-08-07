@@ -26,16 +26,20 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { CreateType } from '../create/type'
-import type { TSchema, SchemaOptions } from '../schema/index'
-import { Kind } from '../symbols/index'
+import { TypeSystemPolicy } from '../../system/policy'
+import { SchemaOptions } from '../schema/schema'
+import { Immutable } from './immutable'
+import { Clone } from '../clone/value'
 
-export interface TVoid extends TSchema {
-  [Kind]: 'Void'
-  static: void
-  type: 'void'
-}
-/** `[JavaScript]` Creates a Void type */
-export function Void(options?: SchemaOptions): TVoid {
-  return CreateType({ [Kind]: 'Void', type: 'void' }, options) as never
+/** Creates TypeBox schematics using the configured InstanceMode */
+export function CreateType(schema: Record<any, unknown>, options?: SchemaOptions): unknown {
+  const result = options !== undefined ? Object.assign(options, schema) : schema
+  switch (TypeSystemPolicy.InstanceMode) {
+    case 'freeze':
+      return Immutable(result)
+    case 'clone':
+      return Clone(result)
+    default:
+      return result
+  }
 }

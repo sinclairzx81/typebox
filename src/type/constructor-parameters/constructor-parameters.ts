@@ -30,7 +30,6 @@ import type { TSchema, SchemaOptions } from '../schema/index'
 import type { Ensure } from '../helpers/index'
 import type { TConstructor } from '../constructor/index'
 import { Tuple, type TTuple } from '../tuple/index'
-import { CloneRest } from '../clone/type'
 
 // ------------------------------------------------------------------
 // ConstructorParameters
@@ -41,6 +40,6 @@ export type TConstructorParameters<T extends TConstructor<TSchema[], TSchema>> =
 )
 
 /** `[JavaScript]` Extracts the ConstructorParameters from the given Constructor type */
-export function ConstructorParameters<T extends TConstructor<TSchema[], TSchema>>(schema: T, options: SchemaOptions = {}): TConstructorParameters<T> {
-  return Tuple(CloneRest(schema.parameters), { ...options })
+export function ConstructorParameters<T extends TConstructor<TSchema[], TSchema>>(schema: T, options?: SchemaOptions): TConstructorParameters<T> {
+  return Tuple(schema.parameters, options)
 }

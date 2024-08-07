@@ -26,6 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { CreateType } from '../create/type'
 import type { TSchema, SchemaOptions } from '../schema/index'
 import { Kind } from '../symbols/index'
 
@@ -42,10 +43,6 @@ export interface TNumber extends TSchema, NumberOptions {
   type: 'number'
 }
 /** `[Json]` Creates a Number type */
-export function Number(options: NumberOptions = {}): TNumber {
-  return {
-    ...options,
-    [Kind]: 'Number',
-    type: 'number',
-  } as never
+export function Number(options?: NumberOptions): TNumber {
+  return CreateType({ [Kind]: 'Number', type: 'number' }, options) as never
 }

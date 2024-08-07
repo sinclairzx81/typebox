@@ -26,13 +26,13 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { CreateType } from '../create/type'
 import type { SchemaOptions } from '../schema/index'
 import type { TFunction } from '../function/index'
-import { CloneType } from '../clone/type'
 
 export type TReturnType<T extends TFunction> = T['returns']
 
 /** `[JavaScript]` Extracts the ReturnType from the given Function type */
-export function ReturnType<T extends TFunction<any[], any>>(schema: T, options: SchemaOptions = {}): TReturnType<T> {
-  return CloneType(schema.returns, options)
+export function ReturnType<T extends TFunction<any[], any>>(schema: T, options?: SchemaOptions): TReturnType<T> {
+  return CreateType(schema.returns, options) as never
 }

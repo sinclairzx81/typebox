@@ -26,6 +26,9 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+// --------------------------------------------------------------------------
+// Object Instances
+// --------------------------------------------------------------------------
 /** Returns true if this value is an async iterator */
 export function IsAsyncIterator(value: unknown): value is AsyncIterableIterator<unknown> {
   return IsObject(value) && !IsArray(value) && !IsUint8Array(value) && Symbol.asyncIterator in value
