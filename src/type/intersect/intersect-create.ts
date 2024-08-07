@@ -30,7 +30,6 @@ import { CreateType } from '../create/type'
 import type { TSchema } from '../schema/index'
 import { Kind } from '../symbols/index'
 import type { TIntersect, IntersectOptions } from './intersect-type'
-import { IsObject as IsObjectValue } from '../guard/value'
 
 // ------------------------------------------------------------------
 // TypeGuard

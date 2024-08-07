@@ -59,11 +59,10 @@ import { IsInteger, IsLiteral, IsAny, IsNever, IsNumber, IsString, IsRegExp, IsT
 // prettier-ignore
 function RecordCreateFromPattern(pattern: string, T: TSchema, options: ObjectOptions): TRecord<TSchema, TSchema> {
   return CreateType({ 
-    ...options, 
     [Kind]: 'Record', 
     type: 'object', 
     patternProperties: { [pattern]: T } 
-  }) as never
+  }, options) as never
 }
 // ------------------------------------------------------------------
 // RecordCreateFromKeys
