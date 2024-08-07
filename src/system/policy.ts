@@ -30,10 +30,20 @@ import { IsObject, IsArray, IsNumber, IsUndefined } from '../value/guard/index'
 
 export namespace TypeSystemPolicy {
   // ------------------------------------------------------------------
-  // TypeSystemPolicy
+  // TypeSystemPolicy: Instancing
   // ------------------------------------------------------------------
-  /** Sets whether TypeBox should freeze values created by the type system. This function ensures that types cannot be modified once created. The default is `false` */
-  export let ImmutableTypes: boolean = false
+  /**
+   * Configures the instantiation behavior of TypeBox types. The `default` option assigns raw JavaScript
+   * references for embedded types, which may cause side effects if type properties are explicitly updated
+   * outside the TypeBox type builder. The `clone` option creates copies of any shared types upon creation,
+   * preventing unintended side effects. The `freeze` option applies `Object.freeze()` to the type, making
+   * it fully readonly and immutable. Implementations should use `default` whenever possible, as it is the
+   * fastest way to instantiate types. The default setting is `default`.
+   */
+  export let InstanceMode: 'default' | 'clone' | 'freeze' = 'default'
+  // ------------------------------------------------------------------
+  // TypeSystemPolicy: Checking
+  // ------------------------------------------------------------------
   /** Sets whether TypeBox should assert optional properties using the TypeScript `exactOptionalPropertyTypes` assertion policy. The default is `false` */
   export let ExactOptionalPropertyTypes: boolean = false
   /** Sets whether arrays should be treated as a kind of objects. The default is `false` */

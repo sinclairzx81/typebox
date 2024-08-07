@@ -1,9 +1,9 @@
 import { TypeSystemPolicy } from '@sinclair/typebox/system'
 
 // ------------------------------------------------------------------
-// Immutable Types:
+// InstanceMode: Freeze (Detect Unintended Side Effects)
 // ------------------------------------------------------------------
-TypeSystemPolicy.ImmutableTypes = true
+TypeSystemPolicy.InstanceMode = 'freeze'
 
 import './compiler/index'
 import './compiler-ajv/index'

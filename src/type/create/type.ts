@@ -29,9 +29,17 @@ THE SOFTWARE.
 import { TypeSystemPolicy } from '../../system/policy'
 import { SchemaOptions } from '../schema/schema'
 import { Immutable } from './immutable'
+import { Clone } from '../clone/value'
 
 /** Creates a raw TypeBox schematics. */
 export function CreateType(schema: Record<any, unknown>, options?: SchemaOptions): unknown {
   const result = options !== undefined ? { ...options, ...schema } : schema
-  return TypeSystemPolicy.ImmutableTypes ? Immutable(result) : result
+  switch (TypeSystemPolicy.InstanceMode) {
+    case 'freeze':
+      return Immutable(result)
+    case 'clone':
+      return Clone(result)
+    default:
+      return result
+  }
 }
