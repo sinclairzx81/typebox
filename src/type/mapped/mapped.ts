@@ -205,6 +205,8 @@ type FromSchemaType<K extends PropertyKey, T extends TSchema> = (
 )
 // prettier-ignore
 function FromSchemaType<K extends PropertyKey, T extends TSchema>(K: K, T: T): FromSchemaType<K, T> {
+  // required to retain user defined options for mapped type
+  const options = { ...T }
   return (
     // unevaluated modifier types
     IsOptional(T) ? Optional(FromSchemaType(K, Discard(T, [OptionalKind]) as TSchema)) :
@@ -213,16 +215,16 @@ function FromSchemaType<K extends PropertyKey, T extends TSchema>(K: K, T: T): F
     IsMappedResult(T) ? FromMappedResult(K, T.properties) :
     IsMappedKey(T) ? FromMappedKey(K, T.keys) :
     // unevaluated types
-    IsConstructor(T) ? Constructor(FromRest(K, T.parameters), FromSchemaType(K, T.returns)) :
-    IsFunction(T) ? FunctionType(FromRest(K, T.parameters), FromSchemaType(K, T.returns)) :
-    IsAsyncIterator(T) ? AsyncIterator(FromSchemaType(K, T.items)) :
-    IsIterator(T) ? Iterator(FromSchemaType(K, T.items)) :
-    IsIntersect(T) ? Intersect(FromRest(K, T.allOf)) :
-    IsUnion(T) ? Union(FromRest(K, T.anyOf)) :
-    IsTuple(T) ? Tuple(FromRest(K, T.items ?? [])) :
-    IsObject(T) ? Object(FromProperties(K, T.properties)) :
-    IsArray(T) ? Array(FromSchemaType(K, T.items)) :
-    IsPromise(T) ? Promise(FromSchemaType(K, T.item)) :
+    IsConstructor(T) ? Constructor(FromRest(K, T.parameters), FromSchemaType(K, T.returns), options) :
+    IsFunction(T) ? FunctionType(FromRest(K, T.parameters), FromSchemaType(K, T.returns), options) :
+    IsAsyncIterator(T) ? AsyncIterator(FromSchemaType(K, T.items), options) :
+    IsIterator(T) ? Iterator(FromSchemaType(K, T.items), options) :
+    IsIntersect(T) ? Intersect(FromRest(K, T.allOf), options) :
+    IsUnion(T) ? Union(FromRest(K, T.anyOf), options) :
+    IsTuple(T) ? Tuple(FromRest(K, T.items ?? []), options) :
+    IsObject(T) ? Object(FromProperties(K, T.properties), options) :
+    IsArray(T) ? Array(FromSchemaType(K, T.items), options) :
+    IsPromise(T) ? Promise(FromSchemaType(K, T.item), options) :
     T
   ) as never
 }
