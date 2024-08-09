@@ -48,7 +48,7 @@ import type { TUnion } from '../../type/union/index'
 // ------------------------------------------------------------------
 // ValueGuard
 // ------------------------------------------------------------------
-import { IsStandardObject, IsArray, IsValueType } from '../guard/index'
+import { IsObject, IsArray, IsValueType } from '../guard/index'
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
@@ -98,7 +98,7 @@ function FromArray(schema: TArray, references: TSchema[], path: string, value: a
 // prettier-ignore
 function FromIntersect(schema: TIntersect, references: TSchema[], path: string, value: any) {
   const defaulted = Default(schema, path, value)
-  if (!IsStandardObject(value) || IsValueType(value)) return defaulted
+  if (!IsObject(value) || IsValueType(value)) return defaulted
   const knownEntries = KeyOfPropertyEntries(schema)
   const knownKeys = knownEntries.map(entry => entry[0])
   const knownProperties = { ...defaulted } as Record<PropertyKey, unknown>
@@ -123,7 +123,7 @@ function FromNot(schema: TNot, references: TSchema[], path: string, value: any) 
 // prettier-ignore
 function FromObject(schema: TObject, references: TSchema[], path: string, value: any) {
   const defaulted = Default(schema, path, value)
-  if (!IsStandardObject(defaulted)) return defaulted
+  if (!IsObject(defaulted)) return defaulted
   const knownKeys = KeyOfPropertyKeys(schema) as string[]
   const knownProperties = { ...defaulted } as Record<PropertyKey, unknown>
   for(const key of knownKeys) if(key in knownProperties) {
@@ -143,7 +143,7 @@ function FromObject(schema: TObject, references: TSchema[], path: string, value:
 // prettier-ignore
 function FromRecord(schema: TRecord, references: TSchema[], path: string, value: any) {
   const defaulted = Default(schema, path, value) as Record<PropertyKey, unknown>
-  if (!IsStandardObject(value)) return defaulted
+  if (!IsObject(value)) return defaulted
   const pattern = Object.getOwnPropertyNames(schema.patternProperties)[0]
   const knownKeys = new RegExp(pattern)
   const knownProperties = {...defaulted } as Record<PropertyKey, unknown>
@@ -151,7 +151,7 @@ function FromRecord(schema: TRecord, references: TSchema[], path: string, value:
     knownProperties[key] = Visit(schema.patternProperties[pattern], references, `${path}/${key}`, knownProperties[key])
   }
   if (!IsSchema(schema.additionalProperties)) {
-    return Default(schema, path, knownProperties)
+    return knownProperties
   }
   const unknownKeys = Object.getOwnPropertyNames(knownProperties)
   const additionalProperties = schema.additionalProperties as TSchema
@@ -159,6 +159,7 @@ function FromRecord(schema: TRecord, references: TSchema[], path: string, value:
   for(const key of unknownKeys) if(!knownKeys.test(key)) {
     properties[key] = Default(additionalProperties, `${path}/${key}`, properties[key])
   }
+  console.log('ret', properties)
   return properties
 }
 // prettier-ignore
@@ -194,9 +195,13 @@ function FromUnion(schema: TUnion, references: TSchema[], path: string, value: a
   }
   return Default(schema, path, value)
 }
+function AddReference(references: TSchema[], schema: TSchema): TSchema[] {
+  references.push(schema)
+  return references
+}
 // prettier-ignore
 function Visit(schema: TSchema, references: TSchema[], path: string, value: any): any {
-  const references_ = typeof schema.$id === 'string' ? [...references, schema] : references
+  const references_ = typeof schema.$id === 'string' ? AddReference(references, schema) : references
   const schema_ = schema as any
   switch (schema[Kind]) {
     case 'Array':

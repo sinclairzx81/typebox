@@ -48,7 +48,7 @@ import { IsString, IsObject, IsArray, IsUndefined } from '../guard/index'
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-import { IsSchema } from '../../type/guard/type'
+import { IsKind } from '../../type/guard/kind'
 // ------------------------------------------------------------------
 // ValueOrDefault
 // ------------------------------------------------------------------
@@ -56,16 +56,10 @@ function ValueOrDefault(schema: TSchema, value: unknown) {
   return value === undefined && 'default' in schema ? Clone(schema.default) : value
 }
 // ------------------------------------------------------------------
-// IsCheckable
+// HasDefaultProperty
 // ------------------------------------------------------------------
-function IsCheckable(schema: unknown): boolean {
-  return IsSchema(schema) && schema[Kind] !== 'Unsafe'
-}
-// ------------------------------------------------------------------
-// IsDefaultSchema
-// ------------------------------------------------------------------
-function IsDefaultSchema(value: unknown): value is TSchema {
-  return IsSchema(value) && 'default' in value
+function HasDefaultProperty(schema: unknown): schema is TSchema {
+  return IsKind(schema) && 'default' in schema
 }
 // ------------------------------------------------------------------
 // Types
@@ -92,11 +86,11 @@ function FromObject(schema: TObject, references: TSchema[], value: unknown): any
   const knownPropertyKeys = Object.getOwnPropertyNames(schema.properties)
   // properties
   for (const key of knownPropertyKeys) {
-    if (!IsDefaultSchema(schema.properties[key])) continue
+    if (!HasDefaultProperty(schema.properties[key])) continue
     defaulted[key] = Visit(schema.properties[key], references, defaulted[key])
   }
   // return if not additional properties
-  if (!IsDefaultSchema(additionalPropertiesSchema)) return defaulted
+  if (!HasDefaultProperty(additionalPropertiesSchema)) return defaulted
   // additional properties
   for (const key of Object.getOwnPropertyNames(defaulted)) {
     if (knownPropertyKeys.includes(key)) continue
@@ -112,11 +106,11 @@ function FromRecord(schema: TRecord, references: TSchema[], value: unknown): any
   const knownPropertyKey = new RegExp(propertyKeyPattern)
   // properties
   for (const key of Object.getOwnPropertyNames(defaulted)) {
-    if (!(knownPropertyKey.test(key) && IsDefaultSchema(propertySchema))) continue
+    if (!(knownPropertyKey.test(key) && HasDefaultProperty(propertySchema))) continue
     defaulted[key] = Visit(propertySchema, references, defaulted[key])
   }
   // return if not additional properties
-  if (!IsDefaultSchema(additionalPropertiesSchema)) return defaulted
+  if (!HasDefaultProperty(additionalPropertiesSchema)) return defaulted
   // additional properties
   for (const key of Object.getOwnPropertyNames(defaulted)) {
     if (knownPropertyKey.test(key)) continue
@@ -143,14 +137,18 @@ function FromUnion(schema: TUnion, references: TSchema[], value: unknown): any {
   const defaulted = ValueOrDefault(schema, value)
   for (const inner of schema.anyOf) {
     const result = Visit(inner, references, defaulted)
-    if (IsCheckable(inner) && Check(inner, result)) {
+    if (Check(inner, result)) {
       return result
     }
   }
   return defaulted
 }
+function AddReference(references: TSchema[], schema: TSchema): TSchema[] {
+  references.push(schema)
+  return references
+}
 function Visit(schema: TSchema, references: TSchema[], value: unknown): any {
-  const references_ = IsString(schema.$id) ? [...references, schema] : references
+  const references_ = IsString(schema.$id) ? AddReference(references, schema) : references
   const schema_ = schema as any
   switch (schema_[Kind]) {
     case 'Array':

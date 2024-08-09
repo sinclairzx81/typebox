@@ -389,8 +389,12 @@ function FromKind(schema: TSchema, references: TSchema[]): any {
     throw new Error('User defined types must specify a default value')
   }
 }
+function AddReference(references: TSchema[], schema: TSchema): TSchema[] {
+  references.push(schema)
+  return references
+}
 function Visit(schema: TSchema, references: TSchema[]): unknown {
-  const references_ = IsString(schema.$id) ? [...references, schema] : references
+  const references_ = IsString(schema.$id) ? AddReference(references, schema) : references
   const schema_ = schema as any
   switch (schema_[Kind]) {
     case 'Any':

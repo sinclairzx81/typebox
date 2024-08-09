@@ -47,6 +47,7 @@ import type { TUnion } from '../../type/union/index'
 // ------------------------------------------------------------------
 // prettier-ignore
 import { 
+  HasPropertyKey,
   IsString, 
   IsObject, 
   IsArray, 
@@ -57,13 +58,13 @@ import {
 // ------------------------------------------------------------------
 // prettier-ignore
 import { 
-  IsSchema
-} from '../../type/guard/type'
+  IsKind
+} from '../../type/guard/kind'
 // ------------------------------------------------------------------
 // IsCheckable
 // ------------------------------------------------------------------
 function IsCheckable(schema: unknown): boolean {
-  return IsSchema(schema) && schema[Kind] !== 'Unsafe'
+  return IsKind(schema) && schema[Kind] !== 'Unsafe'
 }
 // ------------------------------------------------------------------
 // Types
@@ -76,7 +77,7 @@ function FromIntersect(schema: TIntersect, references: TSchema[], value: unknown
   const unevaluatedProperties = schema.unevaluatedProperties as TSchema
   const intersections = schema.allOf.map((schema) => Visit(schema, references, Clone(value)))
   const composite = intersections.reduce((acc: any, value: any) => (IsObject(value) ? { ...acc, ...value } : value), {})
-  if (!IsObject(value) || !IsObject(composite) || !IsSchema(unevaluatedProperties)) return composite
+  if (!IsObject(value) || !IsObject(composite) || !IsKind(unevaluatedProperties)) return composite
   const knownkeys = KeyOfPropertyKeys(schema) as string[]
   for (const key of Object.getOwnPropertyNames(value)) {
     if (knownkeys.includes(key)) continue
@@ -90,11 +91,11 @@ function FromObject(schema: TObject, references: TSchema[], value: unknown): any
   if (!IsObject(value) || IsArray(value)) return value // Check IsArray for AllowArrayObject configuration
   const additionalProperties = schema.additionalProperties as TSchema
   for (const key of Object.getOwnPropertyNames(value)) {
-    if (key in schema.properties) {
+    if (HasPropertyKey(schema.properties, key)) {
       value[key] = Visit(schema.properties[key], references, value[key])
       continue
     }
-    if (IsSchema(additionalProperties) && Check(additionalProperties, references, value[key])) {
+    if (IsKind(additionalProperties) && Check(additionalProperties, references, value[key])) {
       value[key] = Visit(additionalProperties, references, value[key])
       continue
     }
@@ -113,7 +114,7 @@ function FromRecord(schema: TRecord, references: TSchema[], value: unknown): any
       value[key] = Visit(propertySchema, references, value[key])
       continue
     }
-    if (IsSchema(additionalProperties) && Check(additionalProperties, references, value[key])) {
+    if (IsKind(additionalProperties) && Check(additionalProperties, references, value[key])) {
       value[key] = Visit(additionalProperties, references, value[key])
       continue
     }

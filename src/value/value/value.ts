@@ -27,6 +27,7 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import { HasTransform, TransformDecode, TransformEncode, TransformDecodeCheckError, TransformEncodeCheckError } from '../transform/index'
+import { Assert as AssertValue } from '../assert/index'
 import { Mutate as MutateValue, type Mutable } from '../mutate/index'
 import { Hash as HashValue } from '../hash/index'
 import { Equal as EqualValue } from '../equal/index'
@@ -36,6 +37,7 @@ import { Convert as ConvertValue } from '../convert/index'
 import { Create as CreateValue } from '../create/index'
 import { Clean as CleanValue } from '../clean/index'
 import { Check as CheckValue } from '../check/index'
+import { Parse as ParseValue } from '../parse/index'
 import { Default as DefaultValue } from '../default/index'
 import { Diff as DiffValue, Patch as PatchValue, Edit } from '../delta/index'
 import { Errors as ValueErrors, ValueErrorIterator } from '../../errors/index'
@@ -43,12 +45,20 @@ import { Errors as ValueErrors, ValueErrorIterator } from '../../errors/index'
 import type { TSchema } from '../../type/schema/index'
 import type { Static, StaticDecode, StaticEncode } from '../../type/static/index'
 
+/** Asserts a value matches the given type or throws an `AssertError` if invalid. */
+export function Assert<T extends TSchema, R = Static<T>>(schema: T, references: TSchema[], value: unknown): asserts value is R
+/** Asserts a value matches the given type or throws an `AssertError` if invalid. */
+export function Assert<T extends TSchema, R = Static<T>>(schema: T, value: unknown): asserts value is R
+/** Asserts a value matches the given type or throws an `AssertError` if invalid. */
+export function Assert(...args: any[]): any {
+  return AssertValue.apply(AssertValue, args as any)
+}
 /** Casts a value into a given type. The return value will retain as much information of the original value as possible. */
 export function Cast<T extends TSchema>(schema: T, references: TSchema[], value: unknown): Static<T>
 /** Casts a value into a given type. The return value will retain as much information of the original value as possible. */
 export function Cast<T extends TSchema>(schema: T, value: unknown): Static<T>
 /** Casts a value into a given type. The return value will retain as much information of the original value as possible. */
-export function Cast(...args: any[]) {
+export function Cast(...args: any[]): any {
   return CastValue.apply(CastValue, args as any)
 }
 /** Creates a value from the given type and references */
@@ -56,7 +66,7 @@ export function Create<T extends TSchema>(schema: T, references: TSchema[]): Sta
 /** Creates a value from the given type */
 export function Create<T extends TSchema>(schema: T): Static<T>
 /** Creates a value from the given type */
-export function Create(...args: any[]) {
+export function Create(...args: any[]): any {
   return CreateValue.apply(CreateValue, args as any)
 }
 /** Returns true if the value matches the given type and references */
@@ -64,7 +74,7 @@ export function Check<T extends TSchema>(schema: T, references: TSchema[], value
 /** Returns true if the value matches the given type */
 export function Check<T extends TSchema>(schema: T, value: unknown): value is Static<T>
 /** Returns true if the value matches the given type */
-export function Check(...args: any[]) {
+export function Check(...args: any[]): any {
   return CheckValue.apply(CheckValue, args as any)
 }
 /** `[Mutable]` Removes excess properties from a value and returns the result. This function does not check the value and returns an unknown type. You should Check the result before use. Clean is a mutable operation. To avoid mutation, Clone the value first. */
@@ -72,7 +82,7 @@ export function Clean(schema: TSchema, references: TSchema[], value: unknown): u
 /** `[Mutable]` Removes excess properties from a value and returns the result. This function does not check the value and returns an unknown type. You should Check the result before use. Clean is a mutable operation. To avoid mutation, Clone the value first. */
 export function Clean(schema: TSchema, value: unknown): unknown
 /** `[Mutable]` Removes excess properties from a value and returns the result. This function does not check the value and returns an unknown type. You should Check the result before use. Clean is a mutable operation. To avoid mutation, Clone the value first. */
-export function Clean(...args: any[]) {
+export function Clean(...args: any[]): any {
   return CleanValue.apply(CleanValue, args as any)
 }
 /** Converts any type mismatched values to their target type if a reasonable conversion is possible. */
@@ -80,7 +90,7 @@ export function Convert(schema: TSchema, references: TSchema[], value: unknown):
 /** Converts any type mismatched values to their target type if a reasonable conversion is possible. */
 export function Convert(schema: TSchema, value: unknown): unknown
 /** Converts any type mismatched values to their target type if a reasonable conversion is possible. */
-export function Convert(...args: any[]) {
+export function Convert(...args: any[]): any {
   return ConvertValue.apply(ConvertValue, args as any)
 }
 /** Returns a structural clone of the given value */
@@ -92,7 +102,7 @@ export function Decode<T extends TSchema, R = StaticDecode<T>>(schema: T, refere
 /** Decodes a value or throws if error */
 export function Decode<T extends TSchema, R = StaticDecode<T>>(schema: T, value: unknown): R
 /** Decodes a value or throws if error */
-export function Decode(...args: any[]) {
+export function Decode(...args: any[]): any {
   const [schema, references, value] = args.length === 3 ? [args[0], args[1], args[2]] : [args[0], [], args[1]]
   if (!Check(schema, references, value)) throw new TransformDecodeCheckError(schema, value, Errors(schema, references, value).First()!)
   return HasTransform(schema, references) ? TransformDecode(schema, references, value) : value
@@ -102,7 +112,7 @@ export function Default(schema: TSchema, references: TSchema[], value: unknown):
 /** `[Mutable]` Generates missing properties on a value using default schema annotations if available. This function does not check the value and returns an unknown type. You should Check the result before use. Default is a mutable operation. To avoid mutation, Clone the value first. */
 export function Default(schema: TSchema, value: unknown): unknown
 /** `[Mutable]` Generates missing properties on a value using default schema annotations if available. This function does not check the value and returns an unknown type. You should Check the result before use. Default is a mutable operation. To avoid mutation, Clone the value first. */
-export function Default(...args: any[]) {
+export function Default(...args: any[]): any {
   return DefaultValue.apply(DefaultValue, args as any)
 }
 /** Encodes a value or throws if error */
@@ -110,18 +120,26 @@ export function Encode<T extends TSchema, R = StaticEncode<T>>(schema: T, refere
 /** Encodes a value or throws if error */
 export function Encode<T extends TSchema, R = StaticEncode<T>>(schema: T, value: unknown): R
 /** Encodes a value or throws if error */
-export function Encode(...args: any[]) {
+export function Encode(...args: any[]): any {
   const [schema, references, value] = args.length === 3 ? [args[0], args[1], args[2]] : [args[0], [], args[1]]
   const encoded = HasTransform(schema, references) ? TransformEncode(schema, references, value) : value
   if (!Check(schema, references, encoded)) throw new TransformEncodeCheckError(schema, encoded, Errors(schema, references, encoded).First()!)
   return encoded
+}
+/** Parses a value or throws an `AssertError` if invalid. */
+export function Parse<T extends TSchema, R = StaticDecode<T>>(schema: T, references: TSchema[], value: unknown): R
+/** Parses a value or throws an `AssertError` if invalid. */
+export function Parse<T extends TSchema, R = StaticDecode<T>>(schema: T, value: unknown): R
+/** Parses a value or throws an `AssertError` if invalid. */
+export function Parse(...args: any[]): unknown {
+  return ParseValue.apply(ParseValue, args as any)
 }
 /** Returns an iterator for each error in this value. */
 export function Errors<T extends TSchema>(schema: T, references: TSchema[], value: unknown): ValueErrorIterator
 /** Returns an iterator for each error in this value. */
 export function Errors<T extends TSchema>(schema: T, value: unknown): ValueErrorIterator
 /** Returns an iterator for each error in this value. */
-export function Errors(...args: any[]) {
+export function Errors(...args: any[]): any {
   return ValueErrors.apply(ValueErrors, args as any)
 }
 /** Returns true if left and right values are structurally equal */

@@ -71,6 +71,7 @@ import type { TSymbol } from '../type/symbol/index'
 import type { TUndefined } from '../type/undefined/index'
 import type { TUint8Array } from '../type/uint8array/index'
 import type { TVoid } from '../type/void/index'
+
 // ------------------------------------------------------------------
 // ValueGuard
 // ------------------------------------------------------------------
@@ -104,15 +105,15 @@ export class TypeCheck<T extends TSchema> {
     return this.checkFunc(value)
   }
   /** Decodes a value or throws if error */
-  public Decode(value: unknown): StaticDecode<T> {
+  public Decode<R = StaticDecode<T>>(value: unknown): R {
     if (!this.checkFunc(value)) throw new TransformDecodeCheckError(this.schema, value, this.Errors(value).First()!)
-    return this.hasTransform ? TransformDecode(this.schema, this.references, value) : value
+    return (this.hasTransform ? TransformDecode(this.schema, this.references, value) : value) as never
   }
   /** Encodes a value or throws if error */
-  public Encode(value: unknown): StaticEncode<T> {
+  public Encode<R = StaticEncode<T>>(value: unknown): R {
     const encoded = this.hasTransform ? TransformEncode(this.schema, this.references, value) : value
     if (!this.checkFunc(encoded)) throw new TransformEncodeCheckError(this.schema, value, this.Errors(value).First()!)
-    return encoded
+    return encoded as never
   }
 }
 // ------------------------------------------------------------------

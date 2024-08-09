@@ -120,9 +120,13 @@ function FromTuple(schema: TTuple, references: TSchema[]) {
 function FromUnion(schema: TUnion, references: TSchema[]) {
   return IsTransform(schema) || schema.anyOf.some((schema) => Visit(schema, references))
 }
+function AddReference(references: TSchema[], schema: TSchema): TSchema[] {
+  references.push(schema)
+  return references
+}
 // prettier-ignore
 function Visit(schema: TSchema, references: TSchema[]): boolean {
-  const references_ = IsString(schema.$id) ? [...references, schema] : references
+  const references_ = IsString(schema.$id) ? AddReference(references, schema) : references
   const schema_ = schema as any
   if (schema.$id && visited.has(schema.$id)) return false
   if (schema.$id) visited.add(schema.$id)

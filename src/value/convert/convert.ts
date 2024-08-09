@@ -106,7 +106,7 @@ function TryConvertLiteral(schema: TLiteral, value: unknown) {
     IsString(schema.const) ? TryConvertLiteralString(value, schema.const) :
     IsNumber(schema.const) ? TryConvertLiteralNumber(value, schema.const) :
     IsBoolean(schema.const) ? TryConvertLiteralBoolean(value, schema.const) :
-    Clone(value)
+    value
   )
 }
 function TryConvertBoolean(value: unknown) {
@@ -156,7 +156,7 @@ function TryConvertDate(value: unknown) {
 // ------------------------------------------------------------------
 // Default
 // ------------------------------------------------------------------
-function Default(value: any) {
+function Default(value: unknown): unknown {
   return value
 }
 // ------------------------------------------------------------------
@@ -192,26 +192,21 @@ function FromNumber(schema: TNumber, references: TSchema[], value: any): unknown
 }
 // prettier-ignore
 function FromObject(schema: TObject, references: TSchema[], value: any): unknown {
-  const isConvertable = IsObject(value)
-  if(!isConvertable) return value
-  const result: Record<PropertyKey, unknown> = {}
-  for(const key of Object.keys(value)) {
-    result[key] = HasPropertyKey(schema.properties, key)
-      ? Visit(schema.properties[key], references, value[key])
-      : value[key]
+  if(!IsObject(value)) return value
+  for(const key of Object.getOwnPropertyNames(schema.properties)) {
+    value[key] = Visit(schema.properties[key], references, value[key])
   }
-  return result
+  return value
 }
 function FromRecord(schema: TRecord, references: TSchema[], value: any): unknown {
   const isConvertable = IsObject(value)
   if (!isConvertable) return value
   const propertyKey = Object.getOwnPropertyNames(schema.patternProperties)[0]
   const property = schema.patternProperties[propertyKey]
-  const result = {} as Record<string, unknown>
   for (const [propKey, propValue] of Object.entries(value)) {
-    result[propKey] = Visit(property, references, propValue)
+    value[propKey] = Visit(property, references, propValue)
   }
-  return result
+  return value
 }
 function FromRef(schema: TRef, references: TSchema[], value: any): unknown {
   return Visit(Deref(schema, references), references, value)
@@ -233,21 +228,25 @@ function FromTuple(schema: TTuple, references: TSchema[], value: any): unknown {
     return (index < schema.items!.length)
       ? Visit(schema.items![index], references, value) 
       : value
-  }) 
+  })
 }
 function FromUndefined(schema: TUndefined, references: TSchema[], value: any): unknown {
   return TryConvertUndefined(value)
 }
 function FromUnion(schema: TUnion, references: TSchema[], value: any): unknown {
   for (const subschema of schema.anyOf) {
-    const converted = Visit(subschema, references, value)
+    const converted = Visit(subschema, references, Clone(value))
     if (!Check(subschema, references, converted)) continue
     return converted
   }
   return value
 }
+function AddReference(references: TSchema[], schema: TSchema): TSchema[] {
+  references.push(schema)
+  return references
+}
 function Visit(schema: TSchema, references: TSchema[], value: any): unknown {
-  const references_ = IsString(schema.$id) ? [...references, schema] : references
+  const references_ = IsString(schema.$id) ? AddReference(references, schema) : references
   const schema_ = schema as any
   switch (schema[Kind]) {
     case 'Array':
@@ -300,7 +299,5 @@ export function Convert(schema: TSchema, value: unknown): unknown
 /** Converts any type mismatched values to their target type if a reasonable conversion is possible. */
 // prettier-ignore
 export function Convert(...args: any[]) {
-  return args.length === 3 
-    ? Visit(args[0], args[1], args[2]) 
-    : Visit(args[0], [], args[1])
+  return args.length === 3 ? Visit(args[0], args[1], args[2]) : Visit(args[0], [], args[1])
 }

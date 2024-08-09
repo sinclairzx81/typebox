@@ -74,13 +74,12 @@ License MIT
   - [Indexed](#types-indexed)
   - [Mapped](#types-mapped)
   - [Conditional](#types-conditional)
-  - [Intrinsic](#types-intrinsic)
   - [Transform](#types-transform)
-  - [Rest](#types-rest)
   - [Guard](#types-guard)
   - [Unsafe](#types-unsafe)
   - [Strict](#types-strict)
 - [Values](#values)
+  - [Assert](#values-assert)
   - [Create](#values-create)
   - [Clone](#values-clone)
   - [Check](#values-check)
@@ -90,6 +89,7 @@ License MIT
   - [Cast](#values-cast)
   - [Decode](#values-decode)
   - [Encode](#values-decode)
+  - [Parse](#values-parse)
   - [Equal](#values-equal)
   - [Hash](#values-hash)
   - [Diff](#values-diff)
@@ -176,19 +176,17 @@ type T = Static<typeof T>                            // type T = {
 
 //--------------------------------------------------------------------------------------------
 //
-// ... then use the type both as Json Schema and as a TypeScript type.
+// ... or use the type to parse JavaScript values.
 //
 //--------------------------------------------------------------------------------------------
 
 import { Value } from '@sinclair/typebox/value'
 
-function receive(value: T) {                         // ... as a Static Type
-
-  if(Value.Check(T, value)) {                        // ... as a Json Schema
-
-    // ok...
-  }
-}
+const R = Value.Parse(T, { ... })                    // const R: {
+                                                     //   id: string,
+                                                     //   name: string,
+                                                     //   timestamp: number
+                                                     // }
 ```
 
 <a name='types'></a>
@@ -1000,38 +998,6 @@ const C = Type.Exclude(                              // type C = Exclude<1 | 2 |
 )                                                    // ]>
 ```
 
-<a name='types-intrinsic'></a>
-
-### Intrinsic Types
-
-TypeBox supports the TypeScript intrinsic string manipulation types Uppercase, Lowercase, Capitalize and Uncapitalize. These types can be used to remap Literal, Template Literal and Union of Literal types.
-
-```typescript
-// TypeScript
-type A = Capitalize<'hello'>                         // type A = 'Hello'
-
-type B = Capitalize<'hello' | 'world'>               // type C = 'Hello' | 'World'
-
-type C = Capitalize<`hello${1|2|3}`>                 // type B = 'Hello1' | 'Hello2' | 'Hello3'
-
-// TypeBox
-const A = Type.Capitalize(Type.Literal('hello'))     // const A: TLiteral<'Hello'>
-
-const B = Type.Capitalize(Type.Union([               // const B: TUnion<[
-  Type.Literal('hello'),                             //   TLiteral<'Hello'>,
-  Type.Literal('world')                              //   TLiteral<'World'>
-]))                                                  // ]>
-
-const C = Type.Capitalize(                           // const C: TTemplateLiteral<[
-  Type.TemplateLiteral('hello${1|2|3}')              //   TLiteral<'Hello'>,
-)                                                    //   TUnion<[
-                                                     //     TLiteral<'1'>,
-                                                     //     TLiteral<'2'>,
-                                                     //     TLiteral<'3'>
-                                                     //   ]>
-                                                     // ]>
-```
-
 <a name='types-transform'></a>
 
 ### Transform Types
@@ -1059,26 +1025,6 @@ const T = Type.Transform(Type.Array(Type.Number(), { uniqueItems: true }))
 type D = StaticDecode<typeof T>                      // type D = Set<number>      
 type E = StaticEncode<typeof T>                      // type E = Array<number>
 type T = Static<typeof T>                            // type T = Array<number>
-```
-
-<a name='types-rest'></a>
-
-### Rest Types
-
-TypeBox provides the Rest type to uniformly extract variadic tuples from Intersect, Union and Tuple types. This type can be useful to remap variadic types into different forms. The following uses Rest to remap a Tuple into a Union.
-
-```typescript
-const T = Type.Tuple([                               // const T: TTuple<[
-  Type.String(),                                     //   TString,
-  Type.Number()                                      //   TNumber
-])                                                   // ]>
-
-const R = Type.Rest(T)                               // const R: [TString, TNumber]
-
-const U = Type.Union(R)                              // const T: TUnion<[
-                                                     //   TString,
-                                                     //   TNumber
-                                                     // ]>
 ```
 
 <a name='types-unsafe'></a>
@@ -1169,6 +1115,18 @@ TypeBox provides an optional Value submodule that can be used to perform structu
 
 ```typescript
 import { Value } from '@sinclair/typebox/value'
+```
+
+<a name='values-assert'></a>
+
+### Assert
+
+Use the Assert function to assert a value or throw if invalid.
+
+```typescript
+let value: unknown = 1
+
+Value.Assert(Type.Number(), value)                   // throws AssertError if invalid
 ```
 
 <a name='values-create'></a>
@@ -1294,6 +1252,32 @@ Use the Encode function to encode a value to a type or throw if the value is inv
 const A = Value.Encode(Type.String(), 'hello')        // const A = 'hello'
 
 const B = Value.Encode(Type.String(), 42)             // throw
+```
+
+<a name='values-parse'></a>
+
+### Parse
+
+Use the Parse function to parse a value or throw if invalid.
+
+```typescript
+const T = Type.Object({ x: Type.Number({ default: 0 }), y: Type.Number({ default: 0 }) })
+
+// Default
+
+const A = Value.Parse(T, { })                                 // const A = { x: 0, y: 0 }
+
+// Convert
+
+const B = Value.Parse(T, { x: '1', y: '2' })                  // const B = { x: 1, y: 2 }
+
+// Clean
+
+const C = Value.Parse(T, { x: 1, y: 2, z: 3 })                // const C = { x: 1, y: 2 }
+
+// Assert
+
+const D = Value.Parse(T, undefined)                           // throws AssertError
 ```
 
 <a name='values-equal'></a>
