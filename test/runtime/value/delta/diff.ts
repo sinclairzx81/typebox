@@ -251,14 +251,14 @@ describe('value/delta/Diff', () => {
     const A = { x: 1, y: 1, z: 1 }
     const B = { a: 2, b: 2, c: 2 }
     const D = Value.Diff(A, B)
-    const E = [Insert('/a', 2), Insert('/b', 2), Insert('/c', 2), Delete('/z'), Delete('/y'), Delete('/x')]
+    const E = [Insert('/a', 2), Insert('/b', 2), Insert('/c', 2), Delete('/x'), Delete('/y'), Delete('/z')]
     Assert.IsEqual(D, E)
   })
-  it('Should diff PROPERTY update, insert and delete order preserved', () => {
+  it('Should diff PROPERTY insert, update, and delete order preserved', () => {
     const A = { x: 1, y: 1, z: 1, w: 1 }
     const B = { a: 2, b: 2, c: 2, w: 2 }
     const D = Value.Diff(A, B)
-    const E = [Update('/w', 2), Insert('/a', 2), Insert('/b', 2), Insert('/c', 2), Delete('/z'), Delete('/y'), Delete('/x')]
+    const E = [Insert('/a', 2), Insert('/b', 2), Insert('/c', 2), Update('/w', 2), Delete('/x'), Delete('/y'), Delete('/z')]
     Assert.IsEqual(D, E)
   })
   // ----------------------------------------------------
@@ -303,7 +303,7 @@ describe('value/delta/Diff', () => {
     const A = { v: { x: 1, y: 1 } }
     const B = { v: { x: 2, w: 2 } }
     const D = Value.Diff(A, B)
-    const E = [Update('/v/x', B.v.x), Insert('/v/w', B.v.w), Delete('/v/y')]
+    const E = [Insert('/v/w', B.v.w), Update('/v/x', B.v.x), Delete('/v/y')]
     Assert.IsEqual(D, E)
   })
   // ----------------------------------------------------
@@ -344,11 +344,11 @@ describe('value/delta/Diff', () => {
     const E = [Delete('/0/v/z')]
     Assert.IsEqual(D, E)
   })
-  it('Should diff NESTED ARRAY update, insert and delete order preserved', () => {
+  it('Should diff NESTED ARRAY insert update and delete order preserved', () => {
     const A = [{ v: { x: 1, y: 1 } }]
     const B = [{ v: { x: 2, w: 2 } }]
     const D = Value.Diff(A, B)
-    const E = [Update('/0/v/x', B[0].v.x), Insert('/0/v/w', B[0].v.w), Delete('/0/v/y')]
+    const E = [Insert('/0/v/w', B[0].v.w), Update('/0/v/x', B[0].v.x), Delete('/0/v/y')]
     Assert.IsEqual(D, E)
   })
   it('Should throw if attempting to diff a current value with symbol key', () => {
@@ -380,6 +380,16 @@ describe('value/delta/Diff', () => {
     const B = new Uint8Array([0, 9, 2, 3, 4])
     const D = Value.Diff(A, B)
     const E = [Update('', new Uint8Array([0, 9, 2, 3, 4]))]
+    Assert.IsEqual(D, E)
+  })
+  // ----------------------------------------------------------------
+  // https://github.com/sinclairzx81/typebox/issues/937
+  // ----------------------------------------------------------------
+  it('Should generate no diff for undefined properties of current and next', () => {
+    const A = { a: undefined }
+    const B = { a: undefined }
+    const D = Value.Diff(A, B)
+    const E = [] as any
     Assert.IsEqual(D, E)
   })
 })

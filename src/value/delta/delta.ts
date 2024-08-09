@@ -26,11 +26,12 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { IsStandardObject, IsArray, IsTypedArray, IsValueType, IsSymbol, IsUndefined } from '../guard/index'
+import { HasPropertyKey, IsStandardObject, IsArray, IsTypedArray, IsValueType } from '../guard/index'
 import type { ObjectType, ArrayType, TypedArrayType, ValueType } from '../guard/index'
 import type { Static } from '../../type/static/index'
 import { ValuePointer } from '../pointer/index'
 import { Clone } from '../clone/index'
+import { Equal } from '../equal/equal'
 import { TypeBoxError } from '../../type/error/index'
 
 import { Literal, type TLiteral } from '../../type/literal/index'
@@ -85,14 +86,9 @@ export const Edit: TUnion<[typeof Insert, typeof Update, typeof Delete]> = Union
 // ------------------------------------------------------------------
 // Errors
 // ------------------------------------------------------------------
-export class ValueDeltaError extends TypeBoxError {
+export class ValueDiffError extends TypeBoxError {
   constructor(public readonly value: unknown, message: string) {
     super(message)
-  }
-}
-export class ValueDeltaSymbolError extends ValueDeltaError {
-  constructor(public readonly value: unknown) {
-    super(value, 'Cannot diff objects with symbol keys')
   }
 }
 // ------------------------------------------------------------------
@@ -108,28 +104,41 @@ function CreateDelete(path: string): Edit {
   return { type: 'delete', path }
 }
 // ------------------------------------------------------------------
+// AssertDiffable
+// ------------------------------------------------------------------
+function AssertDiffable(value: unknown): asserts value is Record<string | number, unknown> {
+  if (globalThis.Object.getOwnPropertySymbols(value).length > 0) throw new ValueDiffError(value, 'Cannot diff objects with symbols')
+}
+// ------------------------------------------------------------------
 // Diffing Generators
 // ------------------------------------------------------------------
 function* ObjectType(path: string, current: ObjectType, next: unknown): IterableIterator<Edit> {
+  AssertDiffable(current)
+  AssertDiffable(next)
   if (!IsStandardObject(next)) return yield CreateUpdate(path, next)
-  const currentKeys = [...globalThis.Object.keys(current), ...globalThis.Object.getOwnPropertySymbols(current)]
-  const nextKeys = [...globalThis.Object.keys(next), ...globalThis.Object.getOwnPropertySymbols(next)]
+  const currentKeys = globalThis.Object.getOwnPropertyNames(current)
+  const nextKeys = globalThis.Object.getOwnPropertyNames(next)
+  // ----------------------------------------------------------------
+  // inserts
+  // ----------------------------------------------------------------
+  for (const key of nextKeys) {
+    if (HasPropertyKey(current, key)) continue
+    yield CreateInsert(`${path}/${key}`, next[key])
+  }
+  // ----------------------------------------------------------------
+  // updates
+  // ----------------------------------------------------------------
   for (const key of currentKeys) {
-    if (IsSymbol(key)) throw new ValueDeltaSymbolError(key)
-    if (IsUndefined(next[key]) && nextKeys.includes(key)) yield CreateUpdate(`${path}/${globalThis.String(key)}`, undefined)
+    if (!HasPropertyKey(next, key)) continue
+    if (Equal(current, next)) continue
+    yield* Visit(`${path}/${key}`, current[key], next[key])
   }
-  for (const key of nextKeys) {
-    if (IsUndefined(current[key]) || IsUndefined(next[key])) continue
-    if (IsSymbol(key)) throw new ValueDeltaSymbolError(key)
-    yield* Visit(`${path}/${globalThis.String(key)}`, current[key], next[key])
-  }
-  for (const key of nextKeys) {
-    if (IsSymbol(key)) throw new ValueDeltaSymbolError(key)
-    if (IsUndefined(current[key])) yield CreateInsert(`${path}/${globalThis.String(key)}`, next[key])
-  }
-  for (const key of currentKeys.reverse()) {
-    if (IsSymbol(key)) throw new ValueDeltaSymbolError(key)
-    if (IsUndefined(next[key]) && !nextKeys.includes(key)) yield CreateDelete(`${path}/${globalThis.String(key)}`)
+  // ----------------------------------------------------------------
+  // deletes
+  // ----------------------------------------------------------------
+  for (const key of currentKeys) {
+    if (HasPropertyKey(next, key)) continue
+    yield CreateDelete(`${path}/${key}`)
   }
 }
 function* ArrayType(path: string, current: ArrayType, next: unknown): IterableIterator<Edit> {
@@ -161,7 +170,7 @@ function* Visit(path: string, current: unknown, next: unknown): IterableIterator
   if (IsArray(current)) return yield* ArrayType(path, current, next)
   if (IsTypedArray(current)) return yield* TypedArrayType(path, current, next)
   if (IsValueType(current)) return yield* ValueType(path, current, next)
-  throw new ValueDeltaError(current, 'Unable to create diff edits for unknown value')
+  throw new ValueDiffError(current, 'Unable to diff value')
 }
 // ------------------------------------------------------------------
 // Diff
