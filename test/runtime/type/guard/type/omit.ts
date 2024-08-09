@@ -126,4 +126,35 @@ describe('guard/type/TOmit', () => {
     const R = Type.Omit(S, ['x'])
     Assert.IsFalse(TransformKind in R)
   })
+  // ----------------------------------------------------------------
+  // https://github.com/sinclairzx81/typebox/issues/944
+  // ----------------------------------------------------------------
+  it('Should retain interior properties 1', () => {
+    const A = Type.Object({ x: Type.Number() }, { additionalProperties: false })
+    const T = Type.Omit(A, ['x'])
+    Assert.IsFalse(T.additionalProperties as boolean)
+  })
+  it('Should retain interior properties 2', () => {
+    const A = Type.Object({ x: Type.Number() }, { additionalProperties: false })
+    const B = Type.Object({ y: Type.Number() }, { additionalProperties: false })
+    const U = Type.Union([A, B])
+    const T = Type.Omit(U, ['x'])
+    Assert.IsFalse(T.anyOf[0].additionalProperties as boolean)
+    Assert.IsFalse(T.anyOf[1].additionalProperties as boolean)
+  })
+  it('Should retain interior properties 3', () => {
+    const A = Type.Object({ x: Type.Number() }, { additionalProperties: false })
+    const B = Type.Object({ y: Type.Number() }, { additionalProperties: false })
+    const U = Type.Intersect([A, B])
+    const T = Type.Omit(U, ['x'])
+    Assert.IsFalse(T.allOf[0].additionalProperties as boolean)
+    Assert.IsFalse(T.allOf[1].additionalProperties as boolean)
+  })
+  it('Should retain interior properties 4', () => {
+    const A = Type.Object({ x: Type.Number(), y: Type.Number() }, { additionalProperties: false })
+    const T = Type.Mapped(Type.TemplateLiteral('${x|y|z}'), (_) => Type.Omit(A, ['x']))
+    Assert.IsFalse(T.properties.x.additionalProperties as boolean)
+    Assert.IsFalse(T.properties.y.additionalProperties as boolean)
+    Assert.IsFalse(T.properties.z.additionalProperties as boolean)
+  })
 })

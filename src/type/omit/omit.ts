@@ -93,7 +93,7 @@ function OmitResolve<T extends TSchema, K extends PropertyKey[]>(T: T, K: [...K]
   return (
     IsIntersect(T) ? Intersect(FromIntersect(T.allOf, K)) : 
     IsUnion(T) ? Union(FromUnion(T.anyOf, K)) : 
-    IsObject(T) ? Object(FromProperties(T.properties, K)) : 
+    IsObject(T) ? Object(FromProperties(T.properties, K), Discard(T, [TransformKind, '$id', 'required'])) : 
     Object({})
   ) as never
 }
@@ -121,7 +121,5 @@ export function Omit(T: TSchema, K: any, options?: SchemaOptions): any {
   if (IsMappedResult(T)) return OmitFromMappedResult(T, K, options)
   // non-mapped
   const I = IsSchema(K) ? IndexPropertyKeys(K) : (K as string[])
-  const D = Discard(T, [TransformKind, '$id', 'required']) as TSchema
-  const R = OmitResolve(T, I)
-  return CreateType({ ...D, ...R }, options)
+  return CreateType(OmitResolve(T, I), options)
 }
