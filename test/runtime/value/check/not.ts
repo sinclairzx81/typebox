@@ -4,7 +4,7 @@ import { Assert } from '../../assert/index'
 
 describe('value/check/Not', () => {
   it('Should validate with not number', () => {
-    const T = Type.Not(Type.Number(), Type.String())
+    const T = Type.Not(Type.Number())
     Assert.IsEqual(Value.Check(T, 1), false)
     Assert.IsEqual(Value.Check(T, 'A'), true)
   })
@@ -14,7 +14,7 @@ describe('value/check/Not', () => {
             Type.Literal('A'),
             Type.Literal('B'),
             Type.Literal('C')
-        ]), Type.String())
+        ]))
     Assert.IsEqual(Value.Check(T, 'A'), false)
     Assert.IsEqual(Value.Check(T, 'B'), false)
     Assert.IsEqual(Value.Check(T, 'C'), false)
@@ -22,10 +22,7 @@ describe('value/check/Not', () => {
   })
   it('Should validate with union right', () => {
     // prettier-ignore
-    const T = Type.Not(Type.Number(), Type.Union([
-            Type.String(),
-            Type.Boolean()
-        ]))
+    const T = Type.Not(Type.Number())
     Assert.IsEqual(Value.Check(T, 1), false)
     Assert.IsEqual(Value.Check(T, 'A'), true)
     Assert.IsEqual(Value.Check(T, true), true)

@@ -33,7 +33,7 @@ import { Clone } from '../clone/value'
 
 /** Creates TypeBox schematics using the configured InstanceMode */
 export function CreateType(schema: Record<any, unknown>, options?: SchemaOptions): unknown {
-  const result = options !== undefined ? Object.assign(options, schema) : schema
+  const result = options !== undefined ? { ...options, ...schema } : schema
   switch (TypeSystemPolicy.InstanceMode) {
     case 'freeze':
       return Immutable(result)
