@@ -411,4 +411,14 @@ describe('value/delta/Patch', () => {
     const P = Value.Patch(A, D)
     Assert.IsEqual(B, P)
   })
+  // ----------------------------------------------------------------
+  // https://github.com/sinclairzx81/typebox/issues/937
+  // ----------------------------------------------------------------
+  it('Should generate no diff for undefined properties of current and next', () => {
+    const A = { a: undefined }
+    const B = { a: undefined }
+    const D = Value.Diff(A, B)
+    const P = Value.Patch(A, D)
+    Assert.IsEqual(B, P)
+  })
 })
