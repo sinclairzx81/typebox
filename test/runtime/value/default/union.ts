@@ -1,5 +1,5 @@
 import { Value } from '@sinclair/typebox/value'
-import { Type } from '@sinclair/typebox'
+import { Type, Kind, TypeRegistry } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
 describe('value/default/Union', () => {
@@ -86,25 +86,29 @@ describe('value/default/Union', () => {
   // Interior Unsafe
   // ----------------------------------------------------------------
   it('Should default interior unsafe 1', () => {
+    TypeRegistry.Set('DefaultUnsafe', (schema, value) => typeof value === 'string')
     const T = Type.Union([
       Type.Object({
         x: Type.Number({ default: 1 }),
         y: Type.Number({ default: 2 }),
       }),
-      Type.Unsafe({ default: 'hello' }),
+      Type.Unsafe({ [Kind]: 'DefaultUnsafe', default: 'hello' }),
     ])
     const R = Value.Default(T, undefined)
-    Assert.IsEqual(R, undefined)
+    Assert.IsEqual(R, 'hello')
+    TypeRegistry.Delete('DefaultUnsafe')
   })
   it('Should default interior unsafe 2', () => {
+    TypeRegistry.Set('DefaultUnsafe', (schema, value) => typeof value === 'string')
     const T = Type.Union([
       Type.Object({
         x: Type.Number({ default: 1 }),
         y: Type.Number({ default: 2 }),
       }),
-      Type.Unsafe({ default: 'hello' }),
+      Type.Unsafe({ [Kind]: 'DefaultUnsafe', default: 'hello' }),
     ])
     const R = Value.Default(T, 'world')
     Assert.IsEqual(R, 'world')
+    TypeRegistry.Delete('DefaultUnsafe')
   })
 })

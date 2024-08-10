@@ -26,16 +26,16 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import type { ObjectType, ArrayType, TypedArrayType, ValueType } from '../guard/index'
+import type { ObjectType as FromObject, ArrayType as FromArray, TypedArrayType, ValueType } from '../guard/index'
 
 // ------------------------------------------------------------------
 // ValueGuard
 // ------------------------------------------------------------------
-import { IsArray, IsDate, IsStandardObject, IsTypedArray, IsValueType } from '../guard/index'
+import { IsArray, IsDate, IsMap, IsSet, IsObject, IsTypedArray, IsValueType } from '../guard/index'
 // ------------------------------------------------------------------
 // Clonable
 // ------------------------------------------------------------------
-function ObjectType(value: ObjectType): any {
+function FromObject(value: FromObject): any {
   const Acc = {} as Record<PropertyKey, unknown>
   for (const key of Object.getOwnPropertyNames(value)) {
     Acc[key] = Clone(value[key])
@@ -45,16 +45,22 @@ function ObjectType(value: ObjectType): any {
   }
   return Acc
 }
-function ArrayType(value: ArrayType): any {
+function FromArray(value: FromArray): any {
   return value.map((element: any) => Clone(element))
 }
-function TypedArrayType(value: TypedArrayType): any {
+function FromTypedArray(value: TypedArrayType): any {
   return value.slice()
 }
-function DateType(value: Date): any {
+function FromMap(value: Map<unknown, unknown>): any {
+  return new Map(Clone([...value.entries()]))
+}
+function FromSet(value: Set<unknown>): any {
+  return new Set(Clone([...value.entries()]))
+}
+function FromDate(value: Date): any {
   return new Date(value.toISOString())
 }
-function ValueType(value: ValueType): any {
+function FromValue(value: ValueType): any {
   return value
 }
 // ------------------------------------------------------------------
@@ -62,10 +68,12 @@ function ValueType(value: ValueType): any {
 // ------------------------------------------------------------------
 /** Returns a clone of the given value */
 export function Clone<T extends unknown>(value: T): T {
-  if (IsArray(value)) return ArrayType(value)
-  if (IsDate(value)) return DateType(value)
-  if (IsStandardObject(value)) return ObjectType(value)
-  if (IsTypedArray(value)) return TypedArrayType(value)
-  if (IsValueType(value)) return ValueType(value)
+  if (IsArray(value)) return FromArray(value)
+  if (IsDate(value)) return FromDate(value)
+  if (IsTypedArray(value)) return FromTypedArray(value)
+  if (IsMap(value)) return FromMap(value)
+  if (IsSet(value)) return FromSet(value)
+  if (IsObject(value)) return FromObject(value)
+  if (IsValueType(value)) return FromValue(value)
   throw new Error('ValueClone: Unable to clone value')
 }

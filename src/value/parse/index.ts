@@ -26,33 +26,4 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// ------------------------------------------------------------------
-// Errors (re-export)
-// ------------------------------------------------------------------
-export { ValueError, ValueErrorType, ValueErrorIterator } from '../errors/index'
-// ------------------------------------------------------------------
-// Guards
-// ------------------------------------------------------------------
-export * from './guard/index'
-// ------------------------------------------------------------------
-// Operators
-// ------------------------------------------------------------------
-export * from './assert/index'
-export * from './cast/index'
-export * from './check/index'
-export * from './clean/index'
-export * from './clone/index'
-export * from './convert/index'
-export * from './create/index'
-export * from './default/index'
-export * from './delta/index'
-export * from './equal/index'
-export * from './hash/index'
-export * from './mutate/index'
-export * from './parse/index'
-export * from './pointer/index'
-export * from './transform/index'
-// ------------------------------------------------------------------
-// Namespace
-// ------------------------------------------------------------------
-export { Value } from './value/index'
+export * from './parse'
