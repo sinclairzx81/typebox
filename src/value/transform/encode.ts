@@ -159,7 +159,6 @@ function FromRecord(schema: TRecord, references: TSchema[], path: string, value:
   for(const key of unknownKeys) if(!knownKeys.test(key)) {
     properties[key] = Default(additionalProperties, `${path}/${key}`, properties[key])
   }
-  console.log('ret', properties)
   return properties
 }
 // prettier-ignore

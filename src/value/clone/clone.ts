@@ -75,6 +75,5 @@ export function Clone<T extends unknown>(value: T): T {
   if (IsSet(value)) return FromSet(value)
   if (IsObject(value)) return FromObject(value)
   if (IsValueType(value)) return FromValue(value)
-  console.log(value)
   throw new Error('ValueClone: Unable to clone value')
 }

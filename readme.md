@@ -1121,7 +1121,7 @@ import { Value } from '@sinclair/typebox/value'
 
 ### Assert
 
-Use the Assert function to assert a value or throw if invalid.
+Use the Assert function to assert a value is valid.
 
 ```typescript
 let value: unknown = 1
