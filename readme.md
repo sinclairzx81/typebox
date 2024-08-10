@@ -182,7 +182,7 @@ type T = Static<typeof T>                            // type T = {
 
 import { Value } from '@sinclair/typebox/value'
 
-const R = Value.Parse(T, { ... })                    // const R: {
+const R = Value.Parse(T, value)                      // const R: {
                                                      //   id: string,
                                                      //   name: string,
                                                      //   timestamp: number
@@ -1258,7 +1258,7 @@ const B = Value.Encode(Type.String(), 42)             // throw
 
 ### Parse
 
-Use the Parse function to parse a value or throw if invalid.
+Use the Parse function to parse a value or throw if invalid. This function internally uses Default, Clean, Convert and Decode to make a best effort attempt to parse the value into the expected type. This function should not be used in performance critical code paths.
 
 ```typescript
 const T = Type.Object({ x: Type.Number({ default: 0 }), y: Type.Number({ default: 0 }) })

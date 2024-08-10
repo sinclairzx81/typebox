@@ -292,11 +292,11 @@ function Visit(schema: TSchema, references: TSchema[], value: any): unknown {
 // ------------------------------------------------------------------
 // Convert
 // ------------------------------------------------------------------
-/** Converts any type mismatched values to their target type if a reasonable conversion is possible. */
+/** `[Mutable]` Converts any type mismatched values to their target type if a reasonable conversion is possible. */
 export function Convert(schema: TSchema, references: TSchema[], value: unknown): unknown
-/** Converts any type mismatched values to their target type if a reasonable conversion is possible. */
+/** `[Mutable]` Converts any type mismatched values to their target type if a reasonable conversion is possible. */
 export function Convert(schema: TSchema, value: unknown): unknown
-/** Converts any type mismatched values to their target type if a reasonable conversion is possible. */
+/** `[Mutable]` Converts any type mismatched values to their target type if a reasonable conversion is possible. */
 // prettier-ignore
 export function Convert(...args: any[]) {
   return args.length === 3 ? Visit(args[0], args[1], args[2]) : Visit(args[0], [], args[1])
