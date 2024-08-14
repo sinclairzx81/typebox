@@ -26,11 +26,11 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { TypeSystemPolicy } from '../../system/policy'
 import { Kind, TransformKind } from '../../type/symbols/index'
 import { TypeBoxError } from '../../type/error/index'
 import { ValueError } from '../../errors/index'
 import { KeyOfPropertyKeys, KeyOfPropertyEntries } from '../../type/keyof/index'
-import { Index } from '../../type/indexed/index'
 import { Deref } from '../deref/index'
 import { Check } from '../check/index'
 
@@ -48,11 +48,11 @@ import type { TUnion } from '../../type/union/index'
 // ------------------------------------------------------------------
 // ValueGuard
 // ------------------------------------------------------------------
-import { IsObject, IsArray, IsValueType } from '../guard/index'
+import { HasPropertyKey, IsObject, IsArray, IsValueType, IsUndefined as IsUndefinedValue } from '../guard/index'
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-import { IsTransform, IsSchema } from '../../type/guard/type'
+import { IsTransform, IsSchema, IsUndefined } from '../../type/guard/type'
 // ------------------------------------------------------------------
 // Errors
 // ------------------------------------------------------------------
@@ -121,9 +121,18 @@ function FromNot(schema: TNot, references: TSchema[], path: string, value: any) 
 // prettier-ignore
 function FromObject(schema: TObject, references: TSchema[], path: string, value: any) {
   if (!IsObject(value)) return Default(schema, path, value)
-  const knownKeys = KeyOfPropertyKeys(schema)
+  const knownKeys = KeyOfPropertyKeys(schema) as string[]
   const knownProperties = { ...value } as Record<PropertyKey, unknown>
-  for(const key of knownKeys) if(key in knownProperties) {
+  for(const key of knownKeys) {
+    if(!HasPropertyKey(knownProperties, key)) continue
+    // if the property value is undefined, but the target is not, nor does it satisfy exact optional 
+    // property policy, then we need to continue. This is a special case for optional property handling 
+    // where a transforms wrapped in a optional modifiers should not run.
+    if(IsUndefinedValue(knownProperties[key]) && (
+      !IsUndefined(schema.properties[key]) ||
+      TypeSystemPolicy.IsExactOptionalProperty(knownProperties, key)
+    )) continue
+    // decode property
     knownProperties[key] = Visit(schema.properties[key], references, `${path}/${key}`, knownProperties[key])
   }
   if (!IsSchema(schema.additionalProperties)) {

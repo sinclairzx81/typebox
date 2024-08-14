@@ -1,5 +1,7 @@
 import * as Encoder from './_encoder'
 import { Assert } from '../../assert'
+
+import { TypeSystemPolicy } from '@sinclair/typebox/system'
 import { Value } from '@sinclair/typebox/value'
 import { Type } from '@sinclair/typebox'
 
@@ -156,7 +158,7 @@ describe('value/transform/Object', () => {
   // https://github.com/sinclairzx81/typebox/issues/859
   // ----------------------------------------------------------------
   it('Should decode for nested transform with renamed property', () => {
-    class User { constructor(public name: string, public createdAt: Date) {} }
+    class User { constructor(public name: string, public createdAt: Date) { } }
     const TDate = Type.Transform(Type.Number())
       .Decode(v => new Date(v))
       .Encode(v => v.getTime())
@@ -185,7 +187,116 @@ describe('value/transform/Object', () => {
     const B = Object.create(null); B.x = '1'
     const D = Value.Decode(T, A)
     const E = Value.Encode(T, B)
-    Assert.IsEqual(D, { x: '1' })    
+    Assert.IsEqual(D, { x: '1' })
     Assert.IsEqual(E, { x: 1 })
+  })
+  // ----------------------------------------------------------------
+  // https://github.com/sinclairzx81/typebox/issues/958
+  // ----------------------------------------------------------------
+  it('Should not decode missing optional properties 0', () => {
+    let Invoked = false
+    const S = Type.Transform(Type.RegExp(/foo/))
+      .Decode((value) => { Invoked = true; return value })
+      .Encode((value) => value)
+    const T = Type.Object({ value: Type.Optional(S) })
+    const D = Value.Decode(T, { value: 'foo' })
+    Assert.IsEqual(D, { value: 'foo' })
+    Assert.IsTrue(Invoked)
+  })
+  it('Should not decode missing optional properties 1', () => {
+    let Invoked = false
+    const S = Type.Transform(Type.RegExp(/foo/))
+      .Decode((value) => { Invoked = true; return value })
+      .Encode((value) => value)
+    const T = Type.Object({ value: Type.Optional(S) })
+    const D = Value.Decode(T, {})
+    Assert.IsEqual(D, {})
+    Assert.IsFalse(Invoked)
+  })
+  it('Should not decode missing optional properties 2', () => {
+    let Invoked = false
+    const S = Type.Transform(Type.RegExp(/foo/))
+      .Decode((value) => { Invoked = true; return value })
+      .Encode((value) => value)
+    const T = Type.Object({ value: Type.Optional(S) })
+    const D = Value.Decode(T, { value: undefined })
+    Assert.IsEqual(D, { value: undefined })
+    Assert.IsFalse(Invoked)
+  })
+  it('Should not decode missing optional properties 3 (ExactOptionalPropertyTypes)', () => {
+    let [Invoked, Revert] = [false, TypeSystemPolicy.ExactOptionalPropertyTypes]
+    TypeSystemPolicy.ExactOptionalPropertyTypes = true
+    const S = Type.Transform(Type.RegExp(/foo/))
+      .Decode((value) => { Invoked = true; return value })
+      .Encode((value) => value)
+    const T = Type.Object({ value: Type.Optional(S) })
+    const D = Value.Decode(T, {})
+    Assert.IsEqual(D, {})
+    Assert.IsFalse(Invoked)
+    TypeSystemPolicy.ExactOptionalPropertyTypes = Revert
+  })
+  it('Should not decode missing optional properties 4 (ExactOptionalPropertyTypes)', () => {
+    let [Invoked, Revert] = [false, TypeSystemPolicy.ExactOptionalPropertyTypes]
+    TypeSystemPolicy.ExactOptionalPropertyTypes = true
+    const S = Type.Transform(Type.RegExp(/foo/))
+      .Decode((value) => { Invoked = true; return value })
+      .Encode((value) => value)
+    const T = Type.Object({ value: Type.Optional(S) })
+    Assert.Throws(() => Value.Decode(T, { value: undefined }))
+    Assert.IsFalse(Invoked)
+    TypeSystemPolicy.ExactOptionalPropertyTypes = Revert
+  })
+  it('Should not encode missing optional properties 0', () => {
+    let Invoked = false
+    const S = Type.Transform(Type.RegExp(/foo/))
+      .Decode((value) => value)
+      .Encode((value) => { Invoked = true; return value })
+    const T = Type.Object({ value: Type.Optional(S) })
+    const D = Value.Encode(T, { value: 'foo' })
+    Assert.IsEqual(D, { value: 'foo' })
+    Assert.IsTrue(Invoked)
+  })
+  it('Should not encode missing optional properties 1', () => {
+    let Invoked = false
+    const S = Type.Transform(Type.RegExp(/foo/))
+      .Decode((value) => value)
+      .Encode((value) => { Invoked = true; return value })
+    const T = Type.Object({ value: Type.Optional(S) })
+    const D = Value.Encode(T, {})
+    Assert.IsEqual(D, {})
+    Assert.IsFalse(Invoked)
+  })
+  it('Should not encode missing optional properties 2', () => {
+    let Invoked = false
+    const S = Type.Transform(Type.RegExp(/foo/))
+      .Decode((value) => value)
+      .Encode((value) => { Invoked = true; return value })
+    const T = Type.Object({ value: Type.Optional(S) })
+    const D = Value.Encode(T, { value: undefined })
+    Assert.IsEqual(D, { value: undefined })
+    Assert.IsFalse(Invoked)
+  })
+  it('Should not encode missing optional properties 3 (ExactOptionalPropertyTypes)', () => {
+    let [Invoked, Revert] = [false, TypeSystemPolicy.ExactOptionalPropertyTypes]
+    TypeSystemPolicy.ExactOptionalPropertyTypes = true
+    const S = Type.Transform(Type.RegExp(/foo/))
+      .Decode((value) => value)
+      .Encode((value) => { Invoked = true; return value })
+    const T = Type.Object({ value: Type.Optional(S) })
+    const D = Value.Encode(T, {})
+    Assert.IsEqual(D, {})
+    Assert.IsFalse(Invoked)
+    TypeSystemPolicy.ExactOptionalPropertyTypes = Revert
+  })
+  it('Should not encode missing optional properties 4 (ExactOptionalPropertyTypes)', () => {
+    let [Invoked, Revert] = [false, TypeSystemPolicy.ExactOptionalPropertyTypes]
+    TypeSystemPolicy.ExactOptionalPropertyTypes = true
+    const S = Type.Transform(Type.RegExp(/foo/))
+      .Decode((value) => value)
+      .Encode((value) => { Invoked = true; return value })
+    const T = Type.Object({ value: Type.Optional(S) })
+    Assert.Throws(() => Value.Encode(T, { value: undefined }))
+    Assert.IsFalse(Invoked)
+    TypeSystemPolicy.ExactOptionalPropertyTypes = Revert
   })
 })

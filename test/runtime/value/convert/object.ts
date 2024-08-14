@@ -21,4 +21,9 @@ describe('value/convert/Object', () => {
     const R = Value.Convert(T, { x: '42', y: 'true', z: 'hello' })
     Assert.IsEqual(R, { x: 42, y: true, z: 'hello' })
   })
+  it('Should not convert missing properties', () => {
+    const T = Type.Object({ x: Type.Number() })
+    const R = Value.Convert(T, { })
+    Assert.IsEqual(R, { })
+  })
 })
