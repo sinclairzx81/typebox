@@ -55,6 +55,12 @@ import type { TUndefined } from '../../type/undefined/index'
 // ValueGuard
 // ------------------------------------------------------------------
 import { IsArray, IsObject, IsDate, IsUndefined, IsString, IsNumber, IsBoolean, IsBigInt, IsSymbol, HasPropertyKey } from '../guard/index'
+
+// ------------------------------------------------------------------
+// TypeGuard
+// ------------------------------------------------------------------
+import { IsOptional } from '../../type/guard/kind'
+
 // ------------------------------------------------------------------
 // Conversions
 // ------------------------------------------------------------------
@@ -193,8 +199,9 @@ function FromNumber(schema: TNumber, references: TSchema[], value: any): unknown
 // prettier-ignore
 function FromObject(schema: TObject, references: TSchema[], value: any): unknown {
   if(!IsObject(value)) return value
-  for(const key of Object.getOwnPropertyNames(schema.properties)) {
-    value[key] = Visit(schema.properties[key], references, value[key])
+  for(const propertyKey of Object.getOwnPropertyNames(schema.properties)) {
+    if(!HasPropertyKey(value, propertyKey)) continue
+    value[propertyKey] = Visit(schema.properties[propertyKey], references, value[propertyKey])
   }
   return value
 }

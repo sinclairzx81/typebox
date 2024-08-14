@@ -52,24 +52,24 @@ export namespace TypeSystemPolicy {
   export let AllowNaN: boolean = false
   /** Sets whether `null` should validate for void types. The default is `false` */
   export let AllowNullVoid: boolean = false
-  /** Asserts this value using the ExactOptionalPropertyTypes policy */
+  /** Checks this value using the ExactOptionalPropertyTypes policy */
   export function IsExactOptionalProperty(value: Record<keyof any, unknown>, key: string) {
     return ExactOptionalPropertyTypes ? key in value : value[key] !== undefined
   }
-  /** Asserts this value using the AllowArrayObjects policy */
+  /** Checks this value using the AllowArrayObjects policy */
   export function IsObjectLike(value: unknown): value is Record<keyof any, unknown> {
     const isObject = IsObject(value)
     return AllowArrayObject ? isObject : isObject && !IsArray(value)
   }
-  /** Asserts this value as a record using the AllowArrayObjects policy */
+  /** Checks this value as a record using the AllowArrayObjects policy */
   export function IsRecordLike(value: unknown): value is Record<keyof any, unknown> {
     return IsObjectLike(value) && !(value instanceof Date) && !(value instanceof Uint8Array)
   }
-  /** Asserts this value using the AllowNaN policy */
+  /** Checks this value using the AllowNaN policy */
   export function IsNumberLike(value: unknown): value is number {
     return AllowNaN ? IsNumber(value) : Number.isFinite(value)
   }
-  /** Asserts this value using the AllowVoidNull policy */
+  /** Checks this value using the AllowVoidNull policy */
   export function IsVoidLike(value: unknown): value is void {
     const isUndefined = IsUndefined(value)
     return AllowNullVoid ? isUndefined || value === null : isUndefined
