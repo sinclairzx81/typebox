@@ -224,7 +224,7 @@ describe('value/transform/Object', () => {
     Assert.IsFalse(Invoked)
   })
   it('Should not decode missing optional properties 3 (ExactOptionalPropertyTypes)', () => {
-    let Invoked = false
+    let [Invoked, Revert] = [false, TypeSystemPolicy.ExactOptionalPropertyTypes]
     TypeSystemPolicy.ExactOptionalPropertyTypes = true
     const S = Type.Transform(Type.RegExp(/foo/))
       .Decode((value) => { Invoked = true; return value })
@@ -233,10 +233,10 @@ describe('value/transform/Object', () => {
     const D = Value.Decode(T, {})
     Assert.IsEqual(D, {})
     Assert.IsFalse(Invoked)
-    TypeSystemPolicy.ExactOptionalPropertyTypes = false
+    TypeSystemPolicy.ExactOptionalPropertyTypes = Revert
   })
   it('Should not decode missing optional properties 4 (ExactOptionalPropertyTypes)', () => {
-    let Invoked = false
+    let [Invoked, Revert] = [false, TypeSystemPolicy.ExactOptionalPropertyTypes]
     TypeSystemPolicy.ExactOptionalPropertyTypes = true
     const S = Type.Transform(Type.RegExp(/foo/))
       .Decode((value) => { Invoked = true; return value })
@@ -244,7 +244,7 @@ describe('value/transform/Object', () => {
     const T = Type.Object({ value: Type.Optional(S) })
     Assert.Throws(() => Value.Decode(T, { value: undefined }))
     Assert.IsFalse(Invoked)
-    TypeSystemPolicy.ExactOptionalPropertyTypes = false
+    TypeSystemPolicy.ExactOptionalPropertyTypes = Revert
   })
   it('Should not encode missing optional properties 0', () => {
     let Invoked = false
@@ -277,7 +277,7 @@ describe('value/transform/Object', () => {
     Assert.IsFalse(Invoked)
   })
   it('Should not encode missing optional properties 3 (ExactOptionalPropertyTypes)', () => {
-    let Invoked = false
+    let [Invoked, Revert] = [false, TypeSystemPolicy.ExactOptionalPropertyTypes]
     TypeSystemPolicy.ExactOptionalPropertyTypes = true
     const S = Type.Transform(Type.RegExp(/foo/))
       .Decode((value) => value)
@@ -286,10 +286,10 @@ describe('value/transform/Object', () => {
     const D = Value.Encode(T, {})
     Assert.IsEqual(D, {})
     Assert.IsFalse(Invoked)
-    TypeSystemPolicy.ExactOptionalPropertyTypes = false
+    TypeSystemPolicy.ExactOptionalPropertyTypes = Revert
   })
   it('Should not encode missing optional properties 4 (ExactOptionalPropertyTypes)', () => {
-    let Invoked = false
+    let [Invoked, Revert] = [false, TypeSystemPolicy.ExactOptionalPropertyTypes]
     TypeSystemPolicy.ExactOptionalPropertyTypes = true
     const S = Type.Transform(Type.RegExp(/foo/))
       .Decode((value) => value)
@@ -297,6 +297,6 @@ describe('value/transform/Object', () => {
     const T = Type.Object({ value: Type.Optional(S) })
     Assert.Throws(() => Value.Encode(T, { value: undefined }))
     Assert.IsFalse(Invoked)
-    TypeSystemPolicy.ExactOptionalPropertyTypes = false
+    TypeSystemPolicy.ExactOptionalPropertyTypes = Revert
   })
 })
