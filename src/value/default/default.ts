@@ -82,19 +82,22 @@ function FromIntersect(schema: TIntersect, references: TSchema[], value: unknown
 function FromObject(schema: TObject, references: TSchema[], value: unknown): any {
   const defaulted = ValueOrDefault(schema, value)
   if (!IsObject(defaulted)) return defaulted
-  const additionalPropertiesSchema = schema.additionalProperties as TSchema
   const knownPropertyKeys = Object.getOwnPropertyNames(schema.properties)
   // properties
   for (const key of knownPropertyKeys) {
-    if (!HasDefaultProperty(schema.properties[key])) continue
-    defaulted[key] = Visit(schema.properties[key], references, defaulted[key])
+    // note: we need to traverse into the object and test if the return value
+    // yielded a non undefined result. Here we interpret an undefined result as
+    // a non assignable property and continue.
+    const propertyValue = Visit(schema.properties[key], references, defaulted[key])
+    if (IsUndefined(propertyValue)) continue
+    defaulted[key] = propertyValue
   }
   // return if not additional properties
-  if (!HasDefaultProperty(additionalPropertiesSchema)) return defaulted
+  if (!HasDefaultProperty(schema.additionalProperties)) return defaulted
   // additional properties
   for (const key of Object.getOwnPropertyNames(defaulted)) {
     if (knownPropertyKeys.includes(key)) continue
-    defaulted[key] = Visit(additionalPropertiesSchema, references, defaulted[key])
+    defaulted[key] = Visit(schema.additionalProperties, references, defaulted[key])
   }
   return defaulted
 }

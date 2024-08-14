@@ -209,4 +209,23 @@ describe('value/default/Object', () => {
     Value.Default(A, {})
     Assert.IsEqual(A, B)
   })
+  // ----------------------------------------------------------------
+  // Traveral: https://github.com/sinclairzx81/typebox/issues/962
+  // ----------------------------------------------------------------
+  it('Should traverse into an object 1 (initialize)', () => {
+    const Child = Type.Object({ a: Type.String({ default: 'x' }) })
+    const Parent = Type.Object({ child: Child })
+    Assert.IsEqual(Value.Default(Child, {}), { a: 'x' })
+    Assert.IsEqual(Value.Default(Parent, { child: {} }), { child: { a: 'x' } })
+  })
+  it('Should traverse into an object 2 (retain)', () => {
+    const Child = Type.Object({ a: Type.String({ default: 'x' }) })
+    const Parent = Type.Object({ child: Child })
+    Assert.IsEqual(Value.Default(Parent, { child: { a: 1 } }), { child: { a: 1 } })
+  })
+  it('Should traverse into an object 3 (ignore on undefined)', () => {
+    const Child = Type.Object({ a: Type.String({ default: 'x' }) })
+    const Parent = Type.Object({ child: Child })
+    Assert.IsEqual(Value.Default(Parent, { child: undefined }), { child: undefined })
+  })
 })
