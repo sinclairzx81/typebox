@@ -44,7 +44,7 @@ import type { TUnion } from '../../type/union/index'
 // ------------------------------------------------------------------
 // ValueGuard
 // ------------------------------------------------------------------
-import { IsString, IsObject, IsArray, IsUndefined } from '../guard/index'
+import { IsString, IsObject, IsArray, IsUndefined, HasPropertyKey } from '../guard/index'
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
@@ -52,8 +52,9 @@ import { IsKind } from '../../type/guard/kind'
 // ------------------------------------------------------------------
 // ValueOrDefault
 // ------------------------------------------------------------------
-function ValueOrDefault(schema: TSchema, value: unknown) {
-  return value === undefined && 'default' in schema ? Clone(schema.default) : value
+function ValueOrDefault(schema: TSchema, value: unknown): unknown {
+  const clone = HasPropertyKey(schema, 'default') ? Clone(schema.default) : undefined
+  return IsUndefined(value) ? clone : IsObject(value) && IsObject(clone) ? Object.assign(clone, value) : value
 }
 // ------------------------------------------------------------------
 // HasDefaultProperty
@@ -81,6 +82,7 @@ function FromIntersect(schema: TIntersect, references: TSchema[], value: unknown
 }
 function FromObject(schema: TObject, references: TSchema[], value: unknown): any {
   const defaulted = ValueOrDefault(schema, value)
+  // return defaulted
   if (!IsObject(defaulted)) return defaulted
   const knownPropertyKeys = Object.getOwnPropertyNames(schema.properties)
   // properties
@@ -90,7 +92,7 @@ function FromObject(schema: TObject, references: TSchema[], value: unknown): any
     // a non assignable property and continue.
     const propertyValue = Visit(schema.properties[key], references, defaulted[key])
     if (IsUndefined(propertyValue)) continue
-    defaulted[key] = propertyValue
+    defaulted[key] = Visit(schema.properties[key], references, defaulted[key])
   }
   // return if not additional properties
   if (!HasDefaultProperty(schema.additionalProperties)) return defaulted
