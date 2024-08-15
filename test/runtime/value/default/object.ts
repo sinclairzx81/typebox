@@ -213,19 +213,47 @@ describe('value/default/Object', () => {
   // Traveral: https://github.com/sinclairzx81/typebox/issues/962
   // ----------------------------------------------------------------
   it('Should traverse into an object 1 (initialize)', () => {
-    const Child = Type.Object({ a: Type.String({ default: 'x' }) })
-    const Parent = Type.Object({ child: Child })
-    Assert.IsEqual(Value.Default(Child, {}), { a: 'x' })
-    Assert.IsEqual(Value.Default(Parent, { child: {} }), { child: { a: 'x' } })
+    const Y = Type.Object({ y: Type.String({ default: 'y' }) })
+    const X = Type.Object({ x: Y })
+    Assert.IsEqual(Value.Default(Y, {}), { y: 'y' })
+    Assert.IsEqual(Value.Default(X, { x: {} }), { x: { y: 'y' } })
   })
   it('Should traverse into an object 2 (retain)', () => {
-    const Child = Type.Object({ a: Type.String({ default: 'x' }) })
-    const Parent = Type.Object({ child: Child })
-    Assert.IsEqual(Value.Default(Parent, { child: { a: 1 } }), { child: { a: 1 } })
+    const Y = Type.Object({ y: Type.String({ default: 'y' }) })
+    const X = Type.Object({ x: Y })
+    Assert.IsEqual(Value.Default(X, { x: { y: 1 } }), { x: { y: 1 } })
   })
   it('Should traverse into an object 3 (ignore on undefined)', () => {
-    const Child = Type.Object({ a: Type.String({ default: 'x' }) })
-    const Parent = Type.Object({ child: Child })
-    Assert.IsEqual(Value.Default(Parent, { child: undefined }), { child: undefined })
+    const Y = Type.Object({ y: Type.String({ default: 'y' }) })
+    const X = Type.Object({ x: Y })
+    Assert.IsEqual(Value.Default(X, { x: undefined }), { x: undefined })
+  })
+  // ----------------------------------------------------------------
+  // Exterior Object Defaults
+  // ----------------------------------------------------------------
+  it('Should default exterior into an object 1', () => {
+    const X = Type.Object({ x: Type.String({ default: 1 }) }, { default: {} })
+    const R = Value.Default(X, undefined)
+    Assert.IsEqual(R, { x: 1 })
+  })
+  it('Should default exterior into an object 2', () => {
+    const X = Type.Object({ x: Type.String({ default: 1 }) }, { default: {} })
+    const R = Value.Default(X, {})
+    Assert.IsEqual(R, { x: 1 })
+  })
+  it('Should default exterior into an object 3', () => {
+    const X = Type.Object({ x: Type.String({ default: 1 }) }, { default: {} })
+    const R = Value.Default(X, { y: 3 })
+    Assert.IsEqual(R, { y: 3, x: 1 })
+  })
+  it('Should default exterior into an object 4', () => {
+    const X = Type.Object({ x: Type.String({ default: 1 }) }, { default: {} })
+    const R = Value.Default(X, { y: 3, x: 7 })
+    Assert.IsEqual(R, { y: 3, x: 7 })
+  })
+  it('Should default exterior into an object 5', () => {
+    const X = Type.Object({ x: Type.String({ default: 1 }) }, { default: {} })
+    const R = Value.Default(X, { x: 2 })
+    Assert.IsEqual(R, { x: 2 })
   })
 })
