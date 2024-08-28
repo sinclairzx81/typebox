@@ -1,6 +1,6 @@
 ### 0.33.0
 
-- [Revision 0.33.7](https://github.com/sinclairzx81/typebox/pull/963) Additional updates to improve Default for enumerable objects.
+- [Revision 0.33.7](https://github.com/sinclairzx81/typebox/pull/964) Additional updates to improve Default for enumerable objects.
 - [Revision 0.33.6](https://github.com/sinclairzx81/typebox/pull/963) Add object traversal path for Default. Ensure enumerable objects are traversed.
 - [Revision 0.33.5](https://github.com/sinclairzx81/typebox/pull/959) Provide better support for transforming properties with optional modifiers. 
 - [Revision 0.33.4](https://github.com/sinclairzx81/typebox/pull/953) Add Assert and Parse value functions. Add defacto AssertError type.
