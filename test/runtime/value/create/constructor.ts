@@ -22,11 +22,12 @@ describe('value/create/Constructor', () => {
         test: Type.Function([], Type.Number({ default: 123 })),
       }),
       {
-        default: class {
-          test() {
-            return 321
-          }
-        },
+        default: () =>
+          class {
+            test() {
+              return 321
+            }
+          },
       },
     )
     const C = Value.Create(T)

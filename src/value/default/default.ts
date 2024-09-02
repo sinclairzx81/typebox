@@ -44,7 +44,7 @@ import type { TUnion } from '../../type/union/index'
 // ------------------------------------------------------------------
 // ValueGuard
 // ------------------------------------------------------------------
-import { IsString, IsObject, IsArray, IsUndefined, HasPropertyKey } from '../guard/index'
+import { IsString, IsFunction, IsObject, IsArray, IsUndefined, HasPropertyKey } from '../guard/index'
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
@@ -53,7 +53,8 @@ import { IsKind } from '../../type/guard/kind'
 // ValueOrDefault
 // ------------------------------------------------------------------
 function ValueOrDefault(schema: TSchema, value: unknown): unknown {
-  const clone = HasPropertyKey(schema, 'default') ? Clone(schema.default) : undefined
+  const defaultValue = HasPropertyKey(schema, 'default') ? schema.default : undefined
+  const clone = IsFunction(defaultValue) ? defaultValue() : Clone(defaultValue)
   return IsUndefined(value) ? clone : IsObject(value) && IsObject(clone) ? Object.assign(clone, value) : value
 }
 // ------------------------------------------------------------------

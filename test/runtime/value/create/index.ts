@@ -1,3 +1,4 @@
+import './_deferred'
 import './any'
 import './array'
 import './async-iterator'
