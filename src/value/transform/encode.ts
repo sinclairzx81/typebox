@@ -106,7 +106,7 @@ function FromIntersect(schema: TIntersect, references: TSchema[], path: string, 
     knownProperties[knownKey] = Visit(knownSchema, references, `${path}/${knownKey}`, knownProperties[knownKey])
   }
   if (!IsTransform(schema.unevaluatedProperties)) {
-    return Default(schema, path, knownProperties)
+    return knownProperties
   }
   const unknownKeys = Object.getOwnPropertyNames(knownProperties)
   const unevaluatedProperties = schema.unevaluatedProperties as TSchema

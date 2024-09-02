@@ -77,7 +77,6 @@ License MIT
   - [Transform](#types-transform)
   - [Guard](#types-guard)
   - [Unsafe](#types-unsafe)
-  - [Strict](#types-strict)
 - [Values](#values)
   - [Assert](#values-assert)
   - [Create](#values-create)
@@ -1076,35 +1075,6 @@ if(TypeGuard.IsString(T)) {
 
   // T is TString
 }
-```
-
-<a name='types-strict'></a>
-
-### Strict
-
-TypeBox types contain various symbol properties that are used for reflection, composition and compilation. These properties are not strictly valid Json Schema; so in some cases it may be desirable to omit them. TypeBox provides a `Strict` function that will omit these properties if necessary.
-
-```typescript
-const T = Type.Object({                              // const T = {
-  name: Type.Optional(Type.String())                 //   [Symbol(TypeBox.Kind)]: 'Object',
-})                                                   //   type: 'object',
-                                                     //   properties: {
-                                                     //     name: {
-                                                     //       type: 'string',
-                                                     //       [Symbol(TypeBox.Kind)]: 'String',
-                                                     //       [Symbol(TypeBox.Optional)]: 'Optional'
-                                                     //     }
-                                                     //   }
-                                                     // }
-
-const U = Type.Strict(T)                             // const U = {
-                                                     //   type: 'object',
-                                                     //   properties: {
-                                                     //     name: {
-                                                     //       type: 'string'
-                                                     //     }
-                                                     //   }
-                                                     // }
 ```
 
 <a name='values'></a>

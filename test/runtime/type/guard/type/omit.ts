@@ -157,4 +157,13 @@ describe('guard/type/TOmit', () => {
     Assert.IsFalse(T.properties.y.additionalProperties as boolean)
     Assert.IsFalse(T.properties.z.additionalProperties as boolean)
   })
+  // ----------------------------------------------------------------
+  // https://github.com/sinclairzx81/typebox/issues/980
+  // ----------------------------------------------------------------
+  it('Should override properties in source type', () => {
+    const A = Type.Object({ x: Type.Number() }, { title: 'A' })
+    const B = Type.Omit(A, ['x'], { title: 'B' })
+    Assert.IsEqual(A.title, 'A')
+    Assert.IsEqual(B.title, 'B')
+  })
 })

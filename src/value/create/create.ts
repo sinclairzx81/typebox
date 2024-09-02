@@ -82,7 +82,7 @@ export class ValueCreateError extends TypeBoxError {
 // Default
 // ------------------------------------------------------------------
 function FromDefault(value: unknown) {
-  return typeof value === 'function' ? value : Clone(value)
+  return typeof value === 'function' ? value() : Clone(value)
 }
 // ------------------------------------------------------------------
 // Create
@@ -132,7 +132,7 @@ function FromBoolean(schema: TBoolean, references: TSchema[]): any {
 }
 function FromConstructor(schema: TConstructor, references: TSchema[]): any {
   if (HasPropertyKey(schema, 'default')) {
-    return FromDefault(schema.default)
+    return schema.default
   } else {
     const value = Visit(schema.returns, references) as any
     if (typeof value === 'object' && !Array.isArray(value)) {
@@ -160,7 +160,7 @@ function FromDate(schema: TDate, references: TSchema[]): any {
 }
 function FromFunction(schema: TFunction, references: TSchema[]): any {
   if (HasPropertyKey(schema, 'default')) {
-    return FromDefault(schema.default)
+    return schema.default
   } else {
     return () => Visit(schema.returns, references)
   }

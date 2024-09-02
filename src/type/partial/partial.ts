@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 import { CreateType } from '../create/type'
 import type { TSchema, SchemaOptions } from '../schema/index'
-import type { Evaluate } from '../helpers/index'
+import type { Evaluate, Ensure } from '../helpers/index'
 import type { TMappedResult } from '../mapped/index'
 import { type TReadonlyOptional } from '../readonly-optional/index'
 import { type TOptional, Optional } from '../optional/index'
@@ -77,6 +77,19 @@ function FromProperties<T extends TProperties>(T: T): TFromProperties<T> {
   return Acc as never
 }
 // ------------------------------------------------------------------
+// FromObject
+// ------------------------------------------------------------------
+// prettier-ignore
+type TFromObject<T extends TObject, Properties extends TProperties = T['properties']> = Ensure<TObject<(
+  TFromProperties<Properties>
+)>>
+// prettier-ignore
+function FromObject<T extends TObject>(T: T): TFromObject<T> {
+  const options = Discard(T, [TransformKind, '$id', 'required', 'properties'])
+  const properties = FromProperties(T['properties'])
+  return Object(properties, options) as never
+}
+// ------------------------------------------------------------------
 // PartialResolve
 // ------------------------------------------------------------------
 // prettier-ignore
@@ -84,7 +97,7 @@ function PartialResolve<T extends TSchema>(T: T): TPartial<T> {
   return (
     IsIntersect(T) ? Intersect(FromRest(T.allOf)) :
     IsUnion(T) ? Union(FromRest(T.anyOf)) :
-    IsObject(T) ? Object(FromProperties(T.properties)) :
+    IsObject(T) ? FromObject(T) :
     Object({})
   ) as never
 }
@@ -93,10 +106,10 @@ function PartialResolve<T extends TSchema>(T: T): TPartial<T> {
 // ------------------------------------------------------------------
 // prettier-ignore
 export type TPartial<T extends TSchema> = (
-  T extends TRecursive<infer S> ? TRecursive<TPartial<S>> :
-  T extends TIntersect<infer S> ? TIntersect<TFromRest<S>> :
-  T extends TUnion<infer S> ? TUnion<TFromRest<S>> :
-  T extends TObject<infer S> ? TObject<TFromProperties<S>> :
+  T extends TRecursive<infer S extends TSchema> ? TRecursive<TPartial<S>> :
+  T extends TIntersect<infer S extends TSchema[]> ? TIntersect<TFromRest<S>> :
+  T extends TUnion<infer S extends TSchema[]> ? TUnion<TFromRest<S>> :
+  T extends TObject<infer S extends TProperties> ? TFromObject<TObject<S>> :
   TObject<{}>
 )
 /** `[Json]` Constructs a type where all properties are optional */
@@ -105,8 +118,10 @@ export function Partial<T extends TMappedResult>(T: T, options?: SchemaOptions):
 export function Partial<T extends TSchema>(T: T, options?: SchemaOptions): TPartial<T>
 /** `[Json]` Constructs a type where all properties are optional */
 export function Partial(T: TSchema, options?: SchemaOptions): any {
-  if (IsMappedResult(T)) return PartialFromMappedResult(T, options)
-  const D = Discard(T, [TransformKind, '$id', 'required']) as TSchema
-  const R = PartialResolve(T)
-  return CreateType({ ...options, ...D, ...R }) as never
+  if (IsMappedResult(T)) {
+    return PartialFromMappedResult(T, options)
+  } else {
+    // special: mapping types require overridable options
+    return CreateType({ ...PartialResolve(T), ...options })
+  }
 }

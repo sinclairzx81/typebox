@@ -28,7 +28,17 @@ THE SOFTWARE.
 
 import type { TSchema } from '../schema/index'
 
-/** `[Json]` Omits compositing symbols from this schema. */
-export function Strict<T extends TSchema>(schema: T): T {
+export type TStrict<T extends TSchema> = T
+
+/**
+ * @deprecated `[Json]` Omits compositing symbols from this schema. It is recommended
+ * to use the JSON parse/stringify to remove compositing symbols if needed. This
+ * is how Strict works internally.
+ *
+ * ```typescript
+ * JSON.parse(JSON.stringify(Type.String()))
+ * ```
+ */
+export function Strict<T extends TSchema>(schema: T): TStrict<T> {
   return JSON.parse(JSON.stringify(schema))
 }

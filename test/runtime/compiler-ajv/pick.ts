@@ -52,6 +52,7 @@ describe('compiler-ajv/Pick', () => {
     Assert.IsEqual(A.additionalProperties, false)
     Assert.IsEqual(T.additionalProperties, false)
   })
+
   it('Should pick with keyof object', () => {
     const A = Type.Object({
       x: Type.Number(),
