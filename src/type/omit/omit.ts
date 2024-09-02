@@ -27,19 +27,18 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import { CreateType } from '../create/type'
-import type { TSchema, SchemaOptions } from '../schema/index'
-import type { TupleToUnion, Evaluate } from '../helpers/index'
+import { Discard } from '../discard/discard'
+import type { SchemaOptions, TSchema } from '../schema/index'
+import type { TupleToUnion, Evaluate, Ensure } from '../helpers/index'
 import { type TRecursive } from '../recursive/index'
 import type { TMappedKey, TMappedResult } from '../mapped/index'
 import { Intersect, type TIntersect } from '../intersect/index'
 import { Union, type TUnion } from '../union/index'
 import { Object, type TObject, type TProperties } from '../object/index'
 import { IndexPropertyKeys, type TIndexPropertyKeys } from '../indexed/index'
-import { Discard } from '../discard/index'
-import { TransformKind } from '../symbols/index'
 import { OmitFromMappedKey, type TOmitFromMappedKey } from './omit-from-mapped-key'
 import { OmitFromMappedResult, type TOmitFromMappedResult } from './omit-from-mapped-result'
-
+import { TransformKind } from '../symbols/symbols'
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
@@ -86,6 +85,19 @@ function FromProperties<T extends TProperties, K extends PropertyKey[]>(T: T, K:
   return K.reduce((T, K2) => FromProperty(T, K2), T as TProperties)
 }
 // ------------------------------------------------------------------
+// FromObject
+// ------------------------------------------------------------------
+// prettier-ignore
+type TFromObject<T extends TObject, K extends PropertyKey[], Properties extends TProperties = T['properties']> = Ensure<TObject<(
+  TFromProperties<Properties, K>
+)>>
+// prettier-ignore
+function FromObject<T extends TObject, K extends PropertyKey[]>(T: T, K: K): TFromObject<T, K> {
+  const options = Discard(T, [TransformKind, '$id', 'required', 'properties'])
+  const properties = FromProperties(T['properties'], K)
+  return Object(properties, options) as never
+}
+// ------------------------------------------------------------------
 // OmitResolve
 // ------------------------------------------------------------------
 // prettier-ignore
@@ -93,17 +105,18 @@ function OmitResolve<T extends TSchema, K extends PropertyKey[]>(T: T, K: [...K]
   return (
     IsIntersect(T) ? Intersect(FromIntersect(T.allOf, K)) : 
     IsUnion(T) ? Union(FromUnion(T.anyOf, K)) : 
-    IsObject(T) ? Object(FromProperties(T.properties, K), Discard(T, [TransformKind, '$id', 'required'])) : 
+    IsObject(T) ? FromObject(T, K) : 
     Object({})
   ) as never
 }
 // prettier-ignore
-export type TOmit<T extends TProperties, K extends PropertyKey[]> = 
-  T extends TRecursive<infer S> ? TRecursive<TOmit<S, K>> : 
-  T extends TIntersect<infer S> ? TIntersect<TFromIntersect<S, K>> : 
-  T extends TUnion<infer S> ? TUnion<TFromUnion<S, K>> : 
-  T extends TObject<infer S> ? TObject<TFromProperties<S, K>> : 
+export type TOmit<T extends TProperties, K extends PropertyKey[]> = (
+  T extends TRecursive<infer S extends TSchema> ? TRecursive<TOmit<S, K>> : 
+  T extends TIntersect<infer S extends TSchema[]> ? TIntersect<TFromIntersect<S, K>> : 
+  T extends TUnion<infer S extends TSchema[]> ? TUnion<TFromUnion<S, K>> : 
+  T extends TObject<infer S extends TProperties> ? TFromObject<TObject<S>, K> : 
   TObject<{}>
+)
 // ------------------------------------------------------------------
 // TOmit
 // ------------------------------------------------------------------
@@ -121,5 +134,6 @@ export function Omit(T: TSchema, K: any, options?: SchemaOptions): any {
   if (IsMappedResult(T)) return OmitFromMappedResult(T, K, options)
   // non-mapped
   const I = IsSchema(K) ? IndexPropertyKeys(K) : (K as string[])
-  return CreateType(OmitResolve(T, I), options)
+  // special: mapping types require overridable options
+  return CreateType({ ...OmitResolve(T, I), ...options })
 }

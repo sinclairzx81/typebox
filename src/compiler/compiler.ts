@@ -105,12 +105,12 @@ export class TypeCheck<T extends TSchema> {
     return this.checkFunc(value)
   }
   /** Decodes a value or throws if error */
-  public Decode<R = StaticDecode<T>>(value: unknown): R {
+  public Decode<Static = StaticDecode<T>, Result extends Static = Static>(value: unknown): Result {
     if (!this.checkFunc(value)) throw new TransformDecodeCheckError(this.schema, value, this.Errors(value).First()!)
     return (this.hasTransform ? TransformDecode(this.schema, this.references, value) : value) as never
   }
   /** Encodes a value or throws if error */
-  public Encode<R = StaticEncode<T>>(value: unknown): R {
+  public Encode<Static = StaticDecode<T>, Result extends Static = Static>(value: unknown): Result {
     const encoded = this.hasTransform ? TransformEncode(this.schema, this.references, value) : value
     if (!this.checkFunc(encoded)) throw new TransformEncodeCheckError(this.schema, value, this.Errors(value).First()!)
     return encoded as never

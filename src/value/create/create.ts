@@ -70,6 +70,8 @@ import type { TUndefined } from '../../type/undefined/index'
 import type { TUint8Array } from '../../type/uint8array/index'
 import type { TVoid } from '../../type/void/index'
 
+import { IsFunction } from '../guard/guard'
+
 // ------------------------------------------------------------------
 // Errors
 // ------------------------------------------------------------------
@@ -82,7 +84,7 @@ export class ValueCreateError extends TypeBoxError {
 // Default
 // ------------------------------------------------------------------
 function FromDefault(value: unknown) {
-  return typeof value === 'function' ? value : Clone(value)
+  return IsFunction(value) ? value() : Clone(value)
 }
 // ------------------------------------------------------------------
 // Create

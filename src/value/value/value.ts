@@ -98,9 +98,9 @@ export function Clone<T>(value: T): T {
   return CloneValue(value)
 }
 /** Decodes a value or throws if error */
-export function Decode<T extends TSchema, R = StaticDecode<T>>(schema: T, references: TSchema[], value: unknown): R
+export function Decode<T extends TSchema, Static = StaticDecode<T>, Result extends Static = Static>(schema: T, references: TSchema[], value: unknown): Result
 /** Decodes a value or throws if error */
-export function Decode<T extends TSchema, R = StaticDecode<T>>(schema: T, value: unknown): R
+export function Decode<T extends TSchema, Static = StaticDecode<T>, Result extends Static = Static>(schema: T, value: unknown): Result
 /** Decodes a value or throws if error */
 export function Decode(...args: any[]): any {
   const [schema, references, value] = args.length === 3 ? [args[0], args[1], args[2]] : [args[0], [], args[1]]
@@ -116,9 +116,9 @@ export function Default(...args: any[]): any {
   return DefaultValue.apply(DefaultValue, args as any)
 }
 /** Encodes a value or throws if error */
-export function Encode<T extends TSchema, R = StaticEncode<T>>(schema: T, references: TSchema[], value: unknown): R
+export function Encode<T extends TSchema, Static = StaticEncode<T>, Result extends Static = Static>(schema: T, references: TSchema[], value: unknown): Result
 /** Encodes a value or throws if error */
-export function Encode<T extends TSchema, R = StaticEncode<T>>(schema: T, value: unknown): R
+export function Encode<T extends TSchema, Static = StaticEncode<T>, Result extends Static = Static>(schema: T, value: unknown): Result
 /** Encodes a value or throws if error */
 export function Encode(...args: any[]): any {
   const [schema, references, value] = args.length === 3 ? [args[0], args[1], args[2]] : [args[0], [], args[1]]

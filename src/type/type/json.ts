@@ -61,7 +61,7 @@ import { Ref, type TRef } from '../ref/index'
 import { Required, type TRequired, type TRequiredFromMappedResult } from '../required/index'
 import { Rest, type TRest } from '../rest/index'
 import { type TSchema, type SchemaOptions } from '../schema/index'
-import { Strict } from '../strict/index'
+import { Strict, type TStrict } from '../strict/index'
 import { String, type TString, type StringOptions } from '../string/index'
 import { TemplateLiteral, type TTemplateLiteral, type TTemplateLiteralKind, type TTemplateLiteralSyntax } from '../template-literal/index'
 import { Transform, TransformDecodeBuilder } from '../transform/index'
@@ -75,8 +75,16 @@ export class JsonTypeBuilder {
   // ------------------------------------------------------------------------
   // Strict
   // ------------------------------------------------------------------------
-  /** `[Json]` Omits compositing symbols from this schema */
-  public Strict<T extends TSchema>(schema: T): T {
+  /**
+   * @deprecated `[Json]` Omits compositing symbols from this schema. It is recommended
+   * to use the JSON parse/stringify to remove compositing symbols if needed. This
+   * is how Strict works internally.
+   *
+   * ```typescript
+   * JSON.parse(JSON.stringify(Type.String()))
+   * ```
+   */
+  public Strict<T extends TSchema>(schema: T): TStrict<T> {
     return Strict(schema)
   }
   // ------------------------------------------------------------------------
@@ -242,7 +250,7 @@ export class JsonTypeBuilder {
   /** `[Json]` Constructs a type whose keys are omitted from the given type */
   public Omit<T extends TMappedResult, K extends PropertyKey[]>(T: T, K: [...K], options?: SchemaOptions): TOmitFromMappedResult<T, K>
   /** `[Json]` Constructs a type whose keys are omitted from the given type */
-  public Omit<T extends TSchema, K extends TMappedKey>(T: T, K: K): TOmitFromMappedKey<T, K>
+  public Omit<T extends TSchema, K extends TMappedKey>(T: T, K: K, options?: SchemaOptions): TOmitFromMappedKey<T, K>
   /** `[Json]` Constructs a type whose keys are omitted from the given type */
   public Omit<T extends TSchema, K extends TSchema, I extends PropertyKey[] = TIndexPropertyKeys<K>>(T: T, K: K, options?: SchemaOptions): TOmit<T, I>
   /** `[Json]` Constructs a type whose keys are omitted from the given type */
@@ -252,17 +260,17 @@ export class JsonTypeBuilder {
     return Omit(schema, unresolved, options)
   }
   /** `[Json]` Constructs a type where all properties are optional */
-  public Partial<T extends TMappedResult>(T: T, options?: ObjectOptions): TPartialFromMappedResult<T>
+  public Partial<T extends TMappedResult>(T: T, options?: SchemaOptions): TPartialFromMappedResult<T>
   /** `[Json]` Constructs a type where all properties are optional */
-  public Partial<T extends TSchema>(schema: T, options?: ObjectOptions): TPartial<T>
+  public Partial<T extends TSchema>(schema: T, options?: SchemaOptions): TPartial<T>
   /** `[Json]` Constructs a type where all properties are optional */
-  public Partial(schema: TSchema, options?: ObjectOptions): any {
+  public Partial(schema: TSchema, options?: SchemaOptions): any {
     return Partial(schema, options)
   }
   /** `[Json]` Constructs a type whose keys are picked from the given type */
-  public Pick<T extends TMappedResult, K extends PropertyKey[]>(T: T, K: [...K]): TPickFromMappedResult<T, K>
+  public Pick<T extends TMappedResult, K extends PropertyKey[]>(T: T, K: [...K], options?: SchemaOptions): TPickFromMappedResult<T, K>
   /** `[Json]` Constructs a type whose keys are picked from the given type */
-  public Pick<T extends TSchema, K extends TMappedKey>(T: T, K: K): TPickFromMappedKey<T, K>
+  public Pick<T extends TSchema, K extends TMappedKey>(T: T, K: K, options?: SchemaOptions): TPickFromMappedKey<T, K>
   /** `[Json]` Constructs a type whose keys are picked from the given type */
   public Pick<T extends TSchema, K extends TSchema, I extends PropertyKey[] = TIndexPropertyKeys<K>>(T: T, K: K, options?: SchemaOptions): TPick<T, I>
   /** `[Json]` Constructs a type whose keys are picked from the given type */
@@ -288,11 +296,11 @@ export class JsonTypeBuilder {
     return Ref(unresolved as any, options)
   }
   /** `[Json]` Constructs a type where all properties are required */
-  public Required<T extends TMappedResult>(T: T, options?: ObjectOptions): TRequiredFromMappedResult<T>
+  public Required<T extends TMappedResult>(T: T, options?: SchemaOptions): TRequiredFromMappedResult<T>
   /** `[Json]` Constructs a type where all properties are required */
-  public Required<T extends TSchema>(schema: T, options?: ObjectOptions): TRequired<T>
+  public Required<T extends TSchema>(schema: T, options?: SchemaOptions): TRequired<T>
   /** `[Json]` Constructs a type where all properties are required */
-  public Required(schema: TSchema, options?: ObjectOptions): any {
+  public Required(schema: TSchema, options?: SchemaOptions): any {
     return Required(schema, options)
   }
   /** `[Json]` Extracts interior Rest elements from Tuple, Intersect and Union types */

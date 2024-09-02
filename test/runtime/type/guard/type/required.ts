@@ -61,4 +61,13 @@ describe('guard/type/TRequired', () => {
     const R = Type.Required(S)
     Assert.IsFalse(TransformKind in R)
   })
+  // ----------------------------------------------------------------
+  // https://github.com/sinclairzx81/typebox/issues/980
+  // ----------------------------------------------------------------
+  it('Should override properties in source type', () => {
+    const A = Type.Object({ x: Type.Number() }, { title: 'A' })
+    const B = Type.Required(A, { title: 'B' })
+    Assert.IsEqual(A.title, 'A')
+    Assert.IsEqual(B.title, 'B')
+  })
 })
