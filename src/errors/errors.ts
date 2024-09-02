@@ -312,12 +312,15 @@ function* FromInteger(schema: TInteger, references: TSchema[], path: string, val
   }
 }
 function* FromIntersect(schema: TIntersect, references: TSchema[], path: string, value: any): IterableIterator<ValueError> {
+  let hasError = false
   for (const inner of schema.allOf) {
-    const next = Visit(inner, references, path, value).next()
-    if (!next.done) {
-      yield Create(ValueErrorType.Intersect, schema, path, value)
-      yield next.value
+    for (const error of Visit(inner, references, path, value)) {
+      hasError = true
+      yield error
     }
+  }
+  if (hasError) {
+    return yield Create(ValueErrorType.Intersect, schema, path, value)
   }
   if (schema.unevaluatedProperties === false) {
     const keyCheck = new RegExp(KeyOfPattern(schema))
