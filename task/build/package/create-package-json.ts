@@ -98,12 +98,12 @@ function resolveMetadata() {
     'esm.sh': { 'bundle': false }, 
     // specify modules with potential for side effects
     'sideEffects': [
-      "./build/esm/type/registry/format.mjs",
-      "./build/esm/type/registry/type.mjs",
-      "./build/esm/type/system/policy.mjs",
-      "./build/cjs/type/registry/format.js",
-      "./build/cjs/type/registry/type.js",
-      "./build/cjs/type/system/policy.js"
+      './build/esm/type/registry/format.mjs',
+      './build/esm/type/registry/type.mjs',
+      './build/esm/type/system/policy.mjs',
+      './build/cjs/type/registry/format.js',
+      './build/cjs/type/registry/type.js',
+      './build/cjs/type/system/policy.js'
     ]
   }
 }
