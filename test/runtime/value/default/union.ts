@@ -2,6 +2,7 @@ import { Value } from '@sinclair/typebox/value'
 import { Type, Kind, TypeRegistry } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
+// prettier-ignore
 describe('value/default/Union', () => {
   it('Should use default', () => {
     const T = Type.Union([Type.Number(), Type.String()], { default: 1 })
@@ -82,10 +83,13 @@ describe('value/default/Union', () => {
     const R = Value.Default(T, { x: 3, y: 4 })
     Assert.IsEqual(R, { x: 3, y: 4 })
   })
-  it('Should return the original value if no schemas match', async () => {
+  // ----------------------------------------------------------------
+  // https://github.com/sinclairzx81/typebox/issues/993
+  // ----------------------------------------------------------------
+  it('Should return the original value if no schemas match (cloned interior variant)', async () => {
     const T = Type.Union([
-      Type.Tuple([Type.Number(), Type.Number()]),
-      Type.Array(Type.Number()),
+      Type.Tuple([Type.Number(), Type.Number()]), 
+      Type.Array(Type.Number())
     ])
     const value = ['hello']
     const R = Value.Default(T, value)

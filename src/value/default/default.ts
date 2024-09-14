@@ -143,7 +143,6 @@ function FromUnion(schema: TUnion, references: TSchema[], value: unknown): any {
   const defaulted = ValueOrDefault(schema, value)
   for (const inner of schema.anyOf) {
     const result = Visit(inner, references, Clone(defaulted))
-    
     if (Check(inner, result)) {
       return result
     }
