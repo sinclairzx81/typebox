@@ -82,6 +82,15 @@ describe('value/default/Union', () => {
     const R = Value.Default(T, { x: 3, y: 4 })
     Assert.IsEqual(R, { x: 3, y: 4 })
   })
+  it('Should return the original value if no schemas match', async () => {
+    const T = Type.Union([
+      Type.Tuple([Type.Number(), Type.Number()]),
+      Type.Array(Type.Number()),
+    ])
+    const value = ['hello']
+    const R = Value.Default(T, value)
+    Assert.IsTrue(R === value)
+  })
   // ----------------------------------------------------------------
   // Interior Unsafe
   // ----------------------------------------------------------------
