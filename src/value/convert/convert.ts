@@ -122,7 +122,8 @@ function TryConvertBoolean(value: unknown) {
   return IsValueTrue(value) ? true : IsValueFalse(value) ? false : value
 }
 function TryConvertBigInt(value: unknown) {
-  return IsStringBigIntLike(value) ? BigInt(value) : IsStringNumeric(value) ? BigInt(parseInt(value)) : IsNumber(value) ? BigInt(value | 0) : IsValueFalse(value) ? BigInt(0) : IsValueTrue(value) ? BigInt(1) : value
+  const truncateInteger = (value: string) => value.split(/\.|,/)[0];
+  return IsStringBigIntLike(value) ? BigInt(value) : IsStringNumeric(value) ? BigInt(truncateInteger(value)) : IsNumber(value) ? BigInt(value | 0) : IsValueFalse(value) ? BigInt(0) : IsValueTrue(value) ? BigInt(1) : value
 }
 function TryConvertString(value: unknown) {
   return IsValueToString(value) ? value.toString() : IsSymbol(value) && value.description !== undefined ? value.description.toString() : value

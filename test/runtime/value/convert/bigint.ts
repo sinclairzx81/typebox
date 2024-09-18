@@ -35,8 +35,8 @@ describe('value/convert/BigInt', () => {
   })
   it('Should convert bigint from string 7', () => {
     const T = Type.BigInt()
-    const R = Value.Convert(T, '123.456')
-    Assert.IsEqual(R, BigInt("123"))
+    const R = Value.Convert(T, '12345678901234567890.123')
+    Assert.IsEqual(R, BigInt("12345678901234567890"))
   })
   it('Should convert bitint from number 1', () => {
     const T = Type.BigInt()
