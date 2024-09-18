@@ -23,6 +23,26 @@ describe('value/convert/BigInt', () => {
     const R = Value.Convert(T, 'false')
     Assert.IsEqual(R, BigInt(0))
   })
+  it('Should convert bigint from string 5', () => {
+    const T = Type.BigInt()
+    const R = Value.Convert(T, '12345678901234567890')
+    Assert.IsEqual(R, BigInt("12345678901234567890"))
+  })
+  it('Should convert bigint from string 6', () => {
+    const T = Type.BigInt()
+    const R = Value.Convert(T, '-12345678901234567890')
+    Assert.IsEqual(R, BigInt("-12345678901234567890"))
+  })
+  it('Should convert bigint from string 7', () => {
+    const T = Type.BigInt()
+    const R = Value.Convert(T, '12345678901234567890.123')
+    Assert.IsEqual(R, BigInt("12345678901234567890"))
+  })
+  it('Should convert bigint from string 8', () => {
+    const T = Type.BigInt()
+    const R = Value.Convert(T, '-12345678901234567890.123')
+    Assert.IsEqual(R, BigInt("-12345678901234567890"))
+  })
   it('Should convert bitint from number 1', () => {
     const T = Type.BigInt()
     const R = Value.Convert(T, 1)
