@@ -522,7 +522,11 @@ function* FromUnion(schema: TUnion, references: TSchema[], path: string, value: 
     let error: ValueError | undefined
     for (error of Visit(subschema, references, path, value)) {
       errors ||= []
-      errors.push(error)
+      if (error.type === ValueErrorType.Union) {
+        errors.push(...error.errors!)
+      } else {
+        errors.push(error)
+      }
       break
     }
     if (!error) {
