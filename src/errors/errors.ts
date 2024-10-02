@@ -167,6 +167,7 @@ export interface ValueError {
   path: string
   value: unknown
   message: string
+  errors?: ValueError[]
 }
 // ------------------------------------------------------------------
 // ValueErrors
@@ -205,8 +206,8 @@ export class ValueErrorIterator {
 // --------------------------------------------------------------------------
 // Create
 // --------------------------------------------------------------------------
-function Create(errorType: ValueErrorType, schema: TSchema, path: string, value: unknown): ValueError {
-  return { type: errorType, schema, path, value, message: GetErrorFunction()({ errorType, path, schema, value }) }
+function Create(errorType: ValueErrorType, schema: TSchema, path: string, value: unknown, errors?: ValueError[]): ValueError {
+  return { type: errorType, schema, path, value, message: GetErrorFunction()({ errorType, path, schema, value }), errors }
 }
 // --------------------------------------------------------------------------
 // Types
@@ -516,14 +517,23 @@ function* FromUndefined(schema: TUndefined, references: TSchema[], path: string,
   if (!IsUndefined(value)) yield Create(ValueErrorType.Undefined, schema, path, value)
 }
 function* FromUnion(schema: TUnion, references: TSchema[], path: string, value: any): IterableIterator<ValueError> {
-  let count = 0
+  let errors: ValueError[] | undefined
   for (const subschema of schema.anyOf) {
-    const errors = [...Visit(subschema, references, path, value)]
-    if (errors.length === 0) return // matched
-    count += errors.length
+    let error: ValueError | undefined
+    for (error of Visit(subschema, references, path, value)) {
+      break
+    }
+    if (!error) {
+      return
+    }
+    errors ||= []
+    errors.push(error)
   }
-  if (count > 0) {
-    yield Create(ValueErrorType.Union, schema, path, value)
+  if (errors) {
+    if (errors.length === 1) {
+      yield errors[0]
+    }
+    yield Create(ValueErrorType.Union, schema, path, value, errors)
   }
 }
 function* FromUint8Array(schema: TUint8Array, references: TSchema[], path: string, value: any): IterableIterator<ValueError> {
