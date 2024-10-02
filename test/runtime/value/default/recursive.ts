@@ -1,5 +1,5 @@
 import { Value } from '@sinclair/typebox/value'
-import { Type } from '@sinclair/typebox'
+import { TSchema, Type } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
 // prettier-ignore
@@ -53,6 +53,41 @@ describe('value/default/Recursive', () => {
         id: 1
       }],
       id: 1
+    })
+  })
+  // ----------------------------------------------------------------
+  // https://github.com/sinclairzx81/typebox/issues/1010
+  // ----------------------------------------------------------------
+  it('Should default Recursive Union', () => {
+    const Binary = <Node extends TSchema>(node: Node) => Type.Object({
+      type: Type.Literal('Binary'),
+      left: node,
+      right: node
+    })
+    const Node = Type.Object({
+      type: Type.Literal('Node'),
+      value: Type.String({ default: 'X' })
+    })
+    const Expr = Type.Recursive(This => Type.Union([Binary(This), Node]))
+    const R = Value.Default(Expr, {
+      type: 'Binary',
+      left: {
+        type: 'Node'
+      },
+      right: {
+        type: 'Node'
+      }
+    })
+    Assert.IsEqual(R, {
+      type: 'Binary',
+      left: {
+        type: 'Node',
+        value: 'X'
+      },
+      right: {
+        type: 'Node',
+        value: 'X'
+      }
     })
   })
 })

@@ -26,10 +26,10 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { HasPropertyKey, IsString } from '../guard/index'
+import { HasPropertyKey } from '../guard/index'
 import { Check } from '../check/index'
 import { Clone } from '../clone/index'
-import { Deref } from '../deref/index'
+import { Deref, Pushref } from '../deref/index'
 import { TemplateLiteralGenerate, IsTemplateLiteralFinite } from '../../type/template-literal/index'
 import { PatternStringExact, PatternNumberExact } from '../../type/patterns/index'
 import { TypeRegistry } from '../../type/registry/index'
@@ -391,12 +391,8 @@ function FromKind(schema: TSchema, references: TSchema[]): any {
     throw new Error('User defined types must specify a default value')
   }
 }
-function AddReference(references: TSchema[], schema: TSchema): TSchema[] {
-  references.push(schema)
-  return references
-}
 function Visit(schema: TSchema, references: TSchema[]): unknown {
-  const references_ = IsString(schema.$id) ? AddReference(references, schema) : references
+  const references_ = Pushref(schema, references)
   const schema_ = schema as any
   switch (schema_[Kind]) {
     case 'Any':

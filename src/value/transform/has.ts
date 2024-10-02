@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { Deref } from '../deref/index'
+import { Deref, Pushref } from '../deref/index'
 import { Kind } from '../../type/symbols/index'
 
 import type { TSchema } from '../../type/schema/index'
@@ -52,7 +52,7 @@ import { IsTransform, IsSchema } from '../../type/guard/type'
 // ------------------------------------------------------------------
 // ValueGuard
 // ------------------------------------------------------------------
-import { IsString, IsUndefined } from '../guard/index'
+import { IsUndefined } from '../guard/index'
 
 // prettier-ignore
 function FromArray(schema: TArray, references: TSchema[]): boolean {
@@ -120,13 +120,9 @@ function FromTuple(schema: TTuple, references: TSchema[]) {
 function FromUnion(schema: TUnion, references: TSchema[]) {
   return IsTransform(schema) || schema.anyOf.some((schema) => Visit(schema, references))
 }
-function AddReference(references: TSchema[], schema: TSchema): TSchema[] {
-  references.push(schema)
-  return references
-}
 // prettier-ignore
 function Visit(schema: TSchema, references: TSchema[]): boolean {
-  const references_ = IsString(schema.$id) ? AddReference(references, schema) : references
+  const references_ = Pushref(schema, references)
   const schema_ = schema as any
   if (schema.$id && visited.has(schema.$id)) return false
   if (schema.$id) visited.add(schema.$id)
