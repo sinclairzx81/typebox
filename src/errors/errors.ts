@@ -521,13 +521,13 @@ function* FromUnion(schema: TUnion, references: TSchema[], path: string, value: 
   for (const subschema of schema.anyOf) {
     let error: ValueError | undefined
     for (error of Visit(subschema, references, path, value)) {
+      errors ||= []
+      errors.push(error)
       break
     }
     if (!error) {
       return
     }
-    errors ||= []
-    errors.push(error)
   }
   if (errors) {
     if (errors.length === 1) {
