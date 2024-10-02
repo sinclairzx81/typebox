@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 import { Check } from '../check/index'
 import { Clone } from '../clone/index'
-import { Deref } from '../deref/index'
+import { Deref, Pushref } from '../deref/index'
 import { Kind } from '../../type/symbols/index'
 
 import type { TSchema } from '../../type/schema/index'
@@ -44,7 +44,7 @@ import type { TUnion } from '../../type/union/index'
 // ------------------------------------------------------------------
 // ValueGuard
 // ------------------------------------------------------------------
-import { IsString, IsFunction, IsObject, IsArray, IsUndefined, HasPropertyKey } from '../guard/index'
+import { IsFunction, IsObject, IsArray, IsUndefined, HasPropertyKey } from '../guard/index'
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
@@ -143,18 +143,14 @@ function FromUnion(schema: TUnion, references: TSchema[], value: unknown): any {
   const defaulted = ValueOrDefault(schema, value)
   for (const inner of schema.anyOf) {
     const result = Visit(inner, references, Clone(defaulted))
-    if (Check(inner, result)) {
+    if (Check(inner, references, result)) {
       return result
     }
   }
   return defaulted
 }
-function AddReference(references: TSchema[], schema: TSchema): TSchema[] {
-  references.push(schema)
-  return references
-}
 function Visit(schema: TSchema, references: TSchema[], value: unknown): any {
-  const references_ = IsString(schema.$id) ? AddReference(references, schema) : references
+  const references_ = Pushref(schema, references)
   const schema_ = schema as any
   switch (schema_[Kind]) {
     case 'Array':

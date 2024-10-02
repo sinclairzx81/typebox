@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 import { Clone } from '../clone/index'
 import { Check } from '../check/index'
-import { Deref } from '../deref/index'
+import { Deref, Pushref } from '../deref/index'
 import { Kind } from '../../type/symbols/index'
 
 import type { TSchema } from '../../type/schema/index'
@@ -249,12 +249,8 @@ function FromUnion(schema: TUnion, references: TSchema[], value: any): unknown {
   }
   return value
 }
-function AddReference(references: TSchema[], schema: TSchema): TSchema[] {
-  references.push(schema)
-  return references
-}
 function Visit(schema: TSchema, references: TSchema[], value: any): unknown {
-  const references_ = IsString(schema.$id) ? AddReference(references, schema) : references
+  const references_ = Pushref(schema, references)
   const schema_ = schema as any
   switch (schema[Kind]) {
     case 'Array':
