@@ -17,9 +17,12 @@ describe('errors/type/Union', () => {
     const R = Resolve(T, true)
     Assert.IsEqual(R.length, 1)
     Assert.IsEqual(R[0].type, ValueErrorType.Union)
-    Assert.NotEqual(R[0].errors, undefined)
-    Assert.IsEqual(R[0].errors!.length, 2)
-    Assert.IsEqual(R[0].errors![0].type, ValueErrorType.String)
-    Assert.IsEqual(R[0].errors![1].type, ValueErrorType.Number)
+    if (R[0].errors) {
+      Assert.IsEqual(R[0].errors.length, 2)
+      Assert.IsEqual(R[0].errors[0].type, ValueErrorType.String)
+      Assert.IsEqual(R[0].errors[1].type, ValueErrorType.Number)
+    } else {
+      Assert.NotEqual(R[0].errors, undefined)
+    }
   })
 })
