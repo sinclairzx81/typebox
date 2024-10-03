@@ -26,7 +26,6 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export * from './evaluate'
 export * from './from-schema'
 export * from './module'
 export * from './partial-deep'

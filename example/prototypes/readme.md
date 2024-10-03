@@ -1,48 +1,44 @@
 # TypeBox Prototypes
 
-TypeBox prototypes are a set of types that are either under consideration for inclusion into the library, or have been requested by users but cannot be added to the library either due to complexity, using schematics that fall outside the supported TypeBox or should be expressed by users via advanced type composition. 
+TypeBox prototypes are a set of types that are either under consideration for inclusion into the library, or have been requested by users but cannot be added to the library either due to complexity, using schematics that fall outside the supported TypeBox or should be expressed by users via advanced type composition.
 
-Each prototype is written as a standalone module that can be copied into projects and used directly, or integrated into extended type builders.
+## Module, ModuleRef and Import 
 
-## Const
-
-This type will wrap all interior properties as `readonly` leaving the outer type unwrapped. This type is analogous to the `Readonly<T>` TypeScript utility type, but as TypeBox uses this name as a property modifier, the name `Const` is used.
+The Module type as a candidate referencing system for TypeBox. Modules enable deferred cross type referencing and support mutual recursive inference. Module types must be instances via `M.Import(...)` which constructs a `$def` schematic containing each definition required to validate, but a self referential `$ref` to the type being imported.
 
 ```typescript
-import { Const } from './prototypes'
+import { Module, ModuleRef } from './prototypes'
 
-const T = Const(Type.Object({                       // const T: TObject<{
-  x: Type.Number()                                  //   x: Type.Readonly(Type.Number())
-}))                                                 // }>
+// A module of cross referenced Types. ModuleRef is used to cross reference.
+const Math = new Module({
+  Vector2: Type.Object({
+    x: Type.Number(),
+    y: Type.Number(),
+  }),
+  Vector3: Type.Object({
+    x: Type.Number(),
+    y: Type.Number(),
+    z: Type.Number()
+  }),
+  Vertex: Type.Object({
+    position: ModuleRef('Vector3'),
+    normal: ModuleRef('Vector3'),
+    texcoord: ModuleRef('Vector2')
+  }),
+  Geometry: Type.Object({
+    vertices: Type.Array(ModuleRef('Vertex')),
+    indices: Type.Array(Type.Integer())
+  })
+})
 
-type T = Static<typeof T>                           // type T = {
-                                                    //   readonly x: number
-                                                    // }
-```
-## Evaluate
+// Types must be imported from the Module.
+const Vector2 = Math.Import('Vector2')
 
-This type is an advanced mapping type will evaluate for schema redundancy by reducing evaluating intersection rest arguments. This type detects if intersection would produce illogical `never`, removes duplicates and handles intersection type narrowing. This type is a strong candidate for inclusion into the TypeBox library but is pending an equivalent redundancy check for `union` rest arguments. 
+const Vector3 = Math.Import('Vector2')
 
-```typescript
-import { Evaluate } from './prototypes'
+const Vertex = Math.Import('Vertex')
 
-// Evaluate for Duplicates
-//
-const T = Type.Intersect([ Type.Number(), Type.Number(), Type.Number() ])
-
-const E = Evaluate(T)                               // const E: TNumber
-
-// Evaluate for TNever
-//
-const T = Type.Intersect([ Type.Number(), Type.String() ])
-
-const E = Evaluate(T)                               // const E: TIntersect<[TNumber, TString]>
-
-// Evaluate for most narrowed type
-//
-const T = Type.Intersect([ Type.Number(), Type.Literal(1) ])
-
-const E = Evaluate(T)                               // const E: TLiteral<1>
+const Geometry = Math.Import('Geometry')
 ```
 
 ## PartialDeep
