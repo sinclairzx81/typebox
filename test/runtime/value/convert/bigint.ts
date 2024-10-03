@@ -63,12 +63,12 @@ describe('value/convert/BigInt', () => {
     const R = Value.Convert(T, Number.MAX_SAFE_INTEGER)
     Assert.IsEqual(R, BigInt(9007199254740991))
   })
-  it('Should convert bigint from number 4', () => {
+  it('Should convert bigint from number 5', () => {
     const T = Type.BigInt()
     const R = Value.Convert(T, Number.MAX_SAFE_INTEGER)
     Assert.IsEqual(R, BigInt(9007199254740991))
   })
-  it('Should convert bigint from number 5 1', () => {
+  it('Should convert bigint from number 6', () => {
     const T = Type.BigInt()
     const R = Value.Convert(T, 123456789012345.6789)
     Assert.IsEqual(R, BigInt(123456789012345))
