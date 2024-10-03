@@ -28,6 +28,7 @@ THE SOFTWARE.
 
 export * from './evaluate'
 export * from './from-schema'
+export * from './module'
 export * from './partial-deep'
 export * from './union-enum'
 export * from './union-oneof'
