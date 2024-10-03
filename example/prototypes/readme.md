@@ -4,12 +4,14 @@ TypeBox prototypes are a set of types that are either under consideration for in
 
 ## Module, ModuleRef and Import 
 
-The Module type as a candidate referencing system for TypeBox. Modules enable deferred cross type referencing and support mutual recursive inference. Module types must be instances via `M.Import(...)` which constructs a `$def` schematic containing each definition required to validate, but a self referential `$ref` to the type being imported.
+The Module type as a candidate referencing system for TypeBox. Modules enable deferred cross type referencing and support mutual recursive inference. Module types must be instanced via `M.Import(...)` which constructs a `$def` schematic containing each definition required to validate, and a self referential `$ref` to one of the type being imported.
 
 ```typescript
 import { Module, ModuleRef } from './prototypes'
 
-// A module of cross referenced Types. ModuleRef is used to cross reference.
+// ------------------------------------------------------------------
+// Module, ModuleRef
+// ------------------------------------------------------------------
 const Math = new Module({
   Vector2: Type.Object({
     x: Type.Number(),
@@ -31,13 +33,13 @@ const Math = new Module({
   })
 })
 
-// Types must be imported from the Module.
+// ------------------------------------------------------------------
+// Import
+// -----------------------------------------------------------------
+
 const Vector2 = Math.Import('Vector2')
-
 const Vector3 = Math.Import('Vector2')
-
 const Vertex = Math.Import('Vertex')
-
 const Geometry = Math.Import('Geometry')
 ```
 
