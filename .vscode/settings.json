@@ -4,5 +4,13 @@
         "package-lock.json": true
     },
     "editor.suggest.showStatusBar": false,
-    "typescript.tsdk": "node_modules\\typescript\\lib"
+    "typescript.tsdk": "node_modules\\typescript\\lib",
+    "prettier.semi": false,
+    "prettier.singleQuote": true,
+    "prettier.printWidth": 240,
+    "prettier.trailingComma": "all",
+    "[typescript]": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    }
 }
