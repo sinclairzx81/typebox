@@ -3,7 +3,7 @@ import { Type } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
 describe('value/convert/BigInt', () => {
-  it('Should convert bitint from string 1', () => {
+  it('Should convert bigint from string 1', () => {
     const T = Type.BigInt()
     const R = Value.Convert(T, '1')
     Assert.IsEqual(R, BigInt(1))
@@ -13,7 +13,7 @@ describe('value/convert/BigInt', () => {
     const R = Value.Convert(T, '3.14')
     Assert.IsEqual(R, BigInt(3))
   })
-  it('Should convert bitint from string 3', () => {
+  it('Should convert bigint from string 3', () => {
     const T = Type.BigInt()
     const R = Value.Convert(T, 'true')
     Assert.IsEqual(R, BigInt(1))
@@ -43,7 +43,7 @@ describe('value/convert/BigInt', () => {
     const R = Value.Convert(T, '-12345678901234567890.123')
     Assert.IsEqual(R, BigInt('-12345678901234567890'))
   })
-  it('Should convert bitint from number 1', () => {
+  it('Should convert bigint from number 1', () => {
     const T = Type.BigInt()
     const R = Value.Convert(T, 1)
     Assert.IsEqual(R, BigInt(1))
@@ -63,10 +63,15 @@ describe('value/convert/BigInt', () => {
     const R = Value.Convert(T, Number.MAX_SAFE_INTEGER)
     Assert.IsEqual(R, BigInt(9007199254740991))
   })
-  it('Should convert bitint from boolean 1', () => {
+  it('Should convert bigint from number 4', () => {
     const T = Type.BigInt()
-    const R = Value.Convert(T, true)
-    Assert.IsEqual(R, BigInt(1))
+    const R = Value.Convert(T, Number.MAX_SAFE_INTEGER)
+    Assert.IsEqual(R, BigInt(9007199254740991))
+  })
+  it('Should convert bigint from number 5 1', () => {
+    const T = Type.BigInt()
+    const R = Value.Convert(T, 123456789012345.6789)
+    Assert.IsEqual(R, BigInt(123456789012345))
   })
   it('Should convert bigint from boolean 2', () => {
     const T = Type.BigInt()
