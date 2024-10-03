@@ -12,7 +12,7 @@ import { Module, ModuleRef } from './prototypes'
 // ------------------------------------------------------------------
 // Module, ModuleRef
 // ------------------------------------------------------------------
-const Math = new Module({
+const Math = Module({
   Vector2: Type.Object({
     x: Type.Number(),
     y: Type.Number(),
