@@ -55,7 +55,7 @@ describe('value/convert/BigInt', () => {
   })
   it('Should convert bigint from number 3', () => {
     const T = Type.BigInt()
-    const R = Value.Convert(T, 2147483648)
+    const R = Value.Convert(T, Math.pow(2, 31))
     Assert.IsEqual(R, BigInt(2147483648))
   })
   it('Should convert bigint from number 4', () => {
