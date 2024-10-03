@@ -73,6 +73,11 @@ describe('value/convert/BigInt', () => {
     const R = Value.Convert(T, 123456789012345.6789)
     Assert.IsEqual(R, BigInt(123456789012345))
   })
+  it('Should convert bigint from boolean 1', () => {
+    const T = Type.BigInt()
+    const R = Value.Convert(T, true)
+    Assert.IsEqual(R, BigInt(1))
+  })
   it('Should convert bigint from boolean 2', () => {
     const T = Type.BigInt()
     const R = Value.Convert(T, false)
