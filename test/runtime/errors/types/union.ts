@@ -17,9 +17,7 @@ describe('errors/type/Union', () => {
     const R = Resolve(T, true)
     Assert.IsEqual(R.length, 1)
     Assert.IsEqual(R[0].type, ValueErrorType.Union)
-    Assert.IsInstanceOf(R[0].errors, ValueErrorIterator)
-    const variantErrors = [...R[0].errors]
-    Assert.IsEqual(variantErrors[0].type, ValueErrorType.String)
-    Assert.IsEqual(variantErrors[1].type, ValueErrorType.Number)
+    Assert.IsEqual(R[0].errors[0].First()?.type, ValueErrorType.String)
+    Assert.IsEqual(R[0].errors[1].First()?.type, ValueErrorType.Number)
   })
 })
