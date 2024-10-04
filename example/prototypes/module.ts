@@ -96,22 +96,7 @@ type Infer<Type extends Types.TSchema, Module extends TModuleProperties = {}> = 
   Type extends Types.TIterator<infer S extends Types.TSchema> ? InferIterator<S, Module> :
   Type extends Types.TTemplateLiteral<infer S extends Types.TTemplateLiteralKind[]> ? Types.Static<Types.TTemplateLiteral<S>> :
   Type extends Types.TLiteral<infer S extends Types.TLiteralValue> ? S :
-  Type extends Types.TAny ? any :
-  Type extends Types.TBigInt ? bigint :
-  Type extends Types.TBoolean ? boolean :
-  Type extends Types.TDate ? Date :
-  Type extends Types.TInteger ? number :
-  Type extends Types.TNever ? never :
-  Type extends Types.TNumber ? number :
-  Type extends Types.TRegExp ? string :
-  Type extends Types.TString ? string :
-  Type extends Types.TSymbol ? symbol :
-  Type extends Types.TNull ? null :
-  Type extends Types.TUint8Array ? Uint8Array :
-  Type extends Types.TUndefined ? undefined :
-  Type extends Types.TUnknown ? unknown :
-  Type extends Types.TVoid ? void :
-  never
+  Type['static']
 )
 // ------------------------------------------------------------------
 // ModuleRef
@@ -161,6 +146,3 @@ export class ModuleInstance<Properties extends TModuleProperties> {
 export function Module<Properties extends TModuleProperties>(properties: Properties): ModuleInstance<Properties> {
   return new ModuleInstance(properties)
 }
-
-
-
