@@ -119,9 +119,8 @@ function TryConvertBoolean(value: unknown) {
   return IsValueTrue(value) ? true : IsValueFalse(value) ? false : value
 }
 function TryConvertBigInt(value: unknown) {
-  value = IsNumber(value) ? value.toString() : value;
   const truncateInteger = (value: string) => value.split('.')[0]
-  return IsStringNumeric(value) ? BigInt(truncateInteger(value)) : IsValueFalse(value) ? BigInt(0) : IsValueTrue(value) ? BigInt(1) : value
+  return IsStringNumeric(value) ? BigInt(truncateInteger(value)) : IsNumber(value) ? BigInt(Math.floor(value)) : IsValueFalse(value) ? BigInt(0) : IsValueTrue(value) ? BigInt(1) : value
 }
 function TryConvertString(value: unknown) {
   return IsValueToString(value) ? value.toString() : IsSymbol(value) && value.description !== undefined ? value.description.toString() : value
