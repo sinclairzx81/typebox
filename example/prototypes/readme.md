@@ -7,6 +7,7 @@ TypeBox prototypes are a set of types that are either under consideration for in
 The Module type as a candidate referencing system for TypeBox. Modules enable deferred cross type referencing and support mutual recursive inference. Module types must be instanced via `M.Import(...)` which constructs a `$def` schematic containing each definition required to validate, and a self referential `$ref` to one of the type being imported.
 
 ```typescript
+import { Type } from '@sinclair/typebox'
 import { Module, ModuleRef } from './prototypes'
 
 // ------------------------------------------------------------------
