@@ -27,6 +27,13 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 // --------------------------------------------------------------------------
+// PropertyKey
+// --------------------------------------------------------------------------
+/** Returns true if this value has this property key */
+export function HasPropertyKey<K extends PropertyKey>(value: Record<any, unknown>, key: K): value is Record<PropertyKey, unknown> & { [_ in K]: unknown } {
+  return key in value
+}
+// --------------------------------------------------------------------------
 // Object Instances
 // --------------------------------------------------------------------------
 /** Returns true if this value is an async iterator */

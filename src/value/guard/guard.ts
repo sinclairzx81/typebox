@@ -139,12 +139,15 @@ export function IsBigUint64Array(value: unknown): value is BigUint64Array {
   return value instanceof globalThis.BigUint64Array
 }
 // --------------------------------------------------------------------------
-// Standard
+// PropertyKey
 // --------------------------------------------------------------------------
 /** Returns true if this value has this property key */
-export function HasPropertyKey<K extends PropertyKey>(value: Record<any, unknown>, key: K): value is ObjectType & Record<K, unknown> {
+export function HasPropertyKey<K extends PropertyKey>(value: Record<any, unknown>, key: K): value is Record<PropertyKey, unknown> & { [_ in K]: unknown } {
   return key in value
 }
+// --------------------------------------------------------------------------
+// Standard
+// --------------------------------------------------------------------------
 /** Returns true of this value is an object type */
 export function IsObject(value: unknown): value is ObjectType {
   return value !== null && typeof value === 'object'

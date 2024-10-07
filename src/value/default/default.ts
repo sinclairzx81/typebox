@@ -44,7 +44,7 @@ import type { TUnion } from '../../type/union/index'
 // ------------------------------------------------------------------
 // ValueGuard
 // ------------------------------------------------------------------
-import { IsFunction, IsObject, IsArray, IsUndefined, HasPropertyKey } from '../guard/index'
+import { IsArray, IsDate, IsFunction, IsObject, IsUndefined, HasPropertyKey } from '../guard/index'
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
@@ -73,6 +73,10 @@ function FromArray(schema: TArray, references: TSchema[], value: unknown): any {
     defaulted[i] = Visit(schema.items, references, defaulted[i])
   }
   return defaulted
+}
+function FromDate(schema: TArray, references: TSchema[], value: unknown): any {
+  // special case intercept for dates
+  return IsDate(value) ? value : ValueOrDefault(schema, value)
 }
 function FromIntersect(schema: TIntersect, references: TSchema[], value: unknown): any {
   const defaulted = ValueOrDefault(schema, value)
@@ -155,6 +159,8 @@ function Visit(schema: TSchema, references: TSchema[], value: unknown): any {
   switch (schema_[Kind]) {
     case 'Array':
       return FromArray(schema_, references_, value)
+    case 'Date':
+      return FromDate(schema_, references_, value)
     case 'Intersect':
       return FromIntersect(schema_, references_, value)
     case 'Object':
