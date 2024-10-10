@@ -213,7 +213,7 @@ function Create(errorType: ValueErrorType, schema: TSchema, path: string, value:
     schema,
     path,
     value,
-    message: GetErrorFunction()({ errorType, path, schema, value }),
+    message: GetErrorFunction()({ errorType, path, schema, value, errors }),
     errors,
   }
 }
