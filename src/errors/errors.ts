@@ -34,6 +34,7 @@ import { GetErrorFunction } from './function'
 import { TypeBoxError } from '../type/error/index'
 import { Deref } from '../value/deref/index'
 import { Hash } from '../value/hash/index'
+import { Check } from '../value/check/index'
 import { Kind } from '../type/symbols/index'
 
 import type { TSchema } from '../type/schema/index'
@@ -167,6 +168,7 @@ export interface ValueError {
   path: string
   value: unknown
   message: string
+  errors: ValueErrorIterator[]
 }
 // ------------------------------------------------------------------
 // ValueErrors
@@ -205,8 +207,15 @@ export class ValueErrorIterator {
 // --------------------------------------------------------------------------
 // Create
 // --------------------------------------------------------------------------
-function Create(errorType: ValueErrorType, schema: TSchema, path: string, value: unknown): ValueError {
-  return { type: errorType, schema, path, value, message: GetErrorFunction()({ errorType, path, schema, value }) }
+function Create(errorType: ValueErrorType, schema: TSchema, path: string, value: unknown, errors: ValueErrorIterator[] = []): ValueError {
+  return {
+    type: errorType,
+    schema,
+    path,
+    value,
+    message: GetErrorFunction()({ errorType, path, schema, value, errors }),
+    errors,
+  }
 }
 // --------------------------------------------------------------------------
 // Types
@@ -516,15 +525,9 @@ function* FromUndefined(schema: TUndefined, references: TSchema[], path: string,
   if (!IsUndefined(value)) yield Create(ValueErrorType.Undefined, schema, path, value)
 }
 function* FromUnion(schema: TUnion, references: TSchema[], path: string, value: any): IterableIterator<ValueError> {
-  let count = 0
-  for (const subschema of schema.anyOf) {
-    const errors = [...Visit(subschema, references, path, value)]
-    if (errors.length === 0) return // matched
-    count += errors.length
-  }
-  if (count > 0) {
-    yield Create(ValueErrorType.Union, schema, path, value)
-  }
+  if (Check(schema, references, value)) return
+  const errors = schema.anyOf.map((variant) => new ValueErrorIterator(Visit(variant, references, path, value)))
+  yield Create(ValueErrorType.Union, schema, path, value, errors)
 }
 function* FromUint8Array(schema: TUint8Array, references: TSchema[], path: string, value: any): IterableIterator<ValueError> {
   if (!IsUint8Array(value)) return yield Create(ValueErrorType.Uint8Array, schema, path, value)

@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 import { TSchema } from '../type/schema/index'
 import { Kind } from '../type/symbols/index'
-import { ValueErrorType } from './errors'
+import { ValueErrorIterator, ValueErrorType } from './errors'
 
 /** Creates an error message using en-US as the default locale */
 export function DefaultErrorFunction(error: ErrorFunctionParameter) {
@@ -178,6 +178,8 @@ export type ErrorFunctionParameter = {
   schema: TSchema
   /** The value associated with the error */
   value: unknown
+  /** Interior errors for this error */
+  errors: ValueErrorIterator[]
 }
 export type ErrorFunction = (parameter: ErrorFunctionParameter) => string
 /** Manages error message providers */

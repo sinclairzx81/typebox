@@ -1,5 +1,5 @@
 import { Type } from '@sinclair/typebox'
-import { ValueErrorType } from '@sinclair/typebox/errors'
+import { ValueErrorIterator, ValueErrorType } from '@sinclair/typebox/errors'
 import { Resolve } from './resolve'
 import { Assert } from '../../assert'
 
@@ -17,5 +17,7 @@ describe('errors/type/Union', () => {
     const R = Resolve(T, true)
     Assert.IsEqual(R.length, 1)
     Assert.IsEqual(R[0].type, ValueErrorType.Union)
+    Assert.IsEqual(R[0].errors[0].First()?.type, ValueErrorType.String)
+    Assert.IsEqual(R[0].errors[1].First()?.type, ValueErrorType.Number)
   })
 })
