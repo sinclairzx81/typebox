@@ -170,6 +170,7 @@ function Default(value: unknown): unknown {
 // Convert
 // ------------------------------------------------------------------
 function FromArray(schema: TArray, references: TSchema[], value: any): any {
+  if (value === undefined) return undefined;
   const elements = IsArray(value) ? value : [value]
   return elements.map((element) => Visit(schema.items, references, element))
 }

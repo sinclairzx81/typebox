@@ -53,4 +53,9 @@ describe('value/convert/Array', () => {
     const R = Value.Convert(T, { x: '1', y: true, z: null })
     Assert.IsEqual(R, [{ x: 1, y: 1, z: null }])
   })
+  it('Should not convert optional array if input in undefined', () => {
+    const T = Type.Optional(Type.Array(Type.Number()));
+    const R = Value.Convert(T, undefined);
+    Assert.IsEqual(R, undefined)
+  })
 })
