@@ -1,6 +1,6 @@
 {
   "name": "@sinclair/typebox",
-  "version": "0.33.15",
+  "version": "0.33.16",
   "description": "Json Schema Type Builder with Static Type Resolution for TypeScript",
   "keywords": [
     "typescript",
