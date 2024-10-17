@@ -57,7 +57,7 @@ enum ByteMarker {
 // State
 // ------------------------------------------------------------------
 let Accumulator = BigInt('14695981039346656037')
-const [Prime, Size] = [BigInt('1099511628211'), BigInt('18446744073709551616' /* 2 ^ 64 */)] // ES2015: BigInt('2') ** BigInt('64')]
+const [Prime, Size] = [BigInt('1099511628211'), BigInt('18446744073709551616' /* 2 ^ 64 */)]
 const Bytes = Array.from({ length: 256 }).map((_, i) => BigInt(i))
 const F64 = new Float64Array(1)
 const F64In = new DataView(F64.buffer)
