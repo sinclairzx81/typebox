@@ -26,35 +26,20 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// ------------------------------------------------------------------
-// Errors (re-export)
-// ------------------------------------------------------------------
-export { ValueError, ValueErrorType, ValueErrorIterator } from '../errors/index'
-// ------------------------------------------------------------------
-// Guards
-// ------------------------------------------------------------------
-export * from './guard/index'
-// ------------------------------------------------------------------
-// Operators
-// ------------------------------------------------------------------
-export * from './assert/index'
-export * from './cast/index'
-export * from './check/index'
-export * from './clean/index'
-export * from './clone/index'
-export * from './convert/index'
-export * from './create/index'
-export * from './decode/index'
-export * from './default/index'
-export * from './delta/index'
-export * from './encode/index'
-export * from './equal/index'
-export * from './hash/index'
-export * from './mutate/index'
-export * from './parse/index'
-export * from './pointer/index'
-export * from './transform/index'
-// ------------------------------------------------------------------
-// Namespace
-// ------------------------------------------------------------------
-export { Value } from './value/index'
+import { HasTransform, TransformDecode, TransformDecodeCheckError } from '../transform/index'
+import { Check } from '../check/index'
+import { Errors } from '../../errors/index'
+
+import type { TSchema } from '../../type/schema/index'
+import type { StaticDecode } from '../../type/static/index'
+
+/** Decodes a value or throws if error */
+export function Decode<T extends TSchema, Static = StaticDecode<T>, Result extends Static = Static>(schema: T, references: TSchema[], value: unknown): Result
+/** Decodes a value or throws if error */
+export function Decode<T extends TSchema, Static = StaticDecode<T>, Result extends Static = Static>(schema: T, value: unknown): Result
+/** Decodes a value or throws if error */
+export function Decode(...args: any[]): any {
+  const [schema, references, value] = args.length === 3 ? [args[0], args[1], args[2]] : [args[0], [], args[1]]
+  if (!Check(schema, references, value)) throw new TransformDecodeCheckError(schema, value, Errors(schema, references, value).First()!)
+  return HasTransform(schema, references) ? TransformDecode(schema, references, value) : value
+}
