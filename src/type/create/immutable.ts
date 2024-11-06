@@ -50,17 +50,16 @@ function ImmutableObject(value: Record<keyof any, unknown>) {
   }
   return globalThis.Object.freeze(result)
 }
+
 /** Specialized deep immutable value. Applies freeze recursively to the given value */
-export function Immutable<T>(value: T): T {
-  return ValueGuard.IsArray(value)
-    ? ImmutableArray(value)
-    : ValueGuard.IsDate(value)
-    ? ImmutableDate(value)
-    : ValueGuard.IsUint8Array(value)
-    ? ImmutableUint8Array(value)
-    : ValueGuard.IsRegExp(value)
-    ? ImmutableRegExp(value)
-    : ValueGuard.IsObject(value)
-    ? ImmutableObject(value)
-    : value
+// prettier-ignore
+export function Immutable(value: unknown): unknown {
+  return (
+    ValueGuard.IsArray(value) ? ImmutableArray(value) : 
+    ValueGuard.IsDate(value) ? ImmutableDate(value) : 
+    ValueGuard.IsUint8Array(value) ? ImmutableUint8Array(value) : 
+    ValueGuard.IsRegExp(value) ? ImmutableRegExp(value) : 
+    ValueGuard.IsObject(value) ? ImmutableObject(value) : 
+    value
+  )
 }
