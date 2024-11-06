@@ -98,4 +98,4 @@ function _Object<T extends TProperties>(properties: T, options?: ObjectOptions):
 }
 
 /** `[Json]` Creates an Object type */
-export const Object = _Object
+export var Object = _Object
