@@ -39,6 +39,10 @@ export * from './type/registry/index'
 export * from './type/sets/index'
 export * from './type/symbols/index'
 // ------------------------------------------------------------------
+// Parse
+// ------------------------------------------------------------------
+export * from './parse/index'
+// ------------------------------------------------------------------
 // Types
 // ------------------------------------------------------------------
 export * from './type/any/index'
@@ -102,6 +106,6 @@ export * from './type/unknown/index'
 export * from './type/unsafe/index'
 export * from './type/void/index'
 // ------------------------------------------------------------------
-// Namespace
+// Type.*
 // ------------------------------------------------------------------
 export * from './type/type/index'

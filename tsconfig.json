@@ -8,6 +8,7 @@
     "paths": {
       "@sinclair/typebox/compiler": ["src/compiler/index.ts"],
       "@sinclair/typebox/errors": ["src/errors/index.ts"],
+      "@sinclair/typebox/parse": ["src/parse/index.ts"],
       "@sinclair/typebox/system": ["src/system/index.ts"],
       "@sinclair/typebox/type": ["src/type/index.ts"],
       "@sinclair/typebox/value": ["src/value/index.ts"],
