@@ -32,19 +32,20 @@ import { TSchema, SchemaOptions } from '../type/schema/index'
 import { Module } from './runtime'
 import { Type } from './static'
 
-/** Parses and Infers a TypeBox type from TypeScript annotation syntax */
+/** `[Experimental]` Parses a TypeScript type annotation as an inferred TypeBox type */
 export function Parse<Code extends string, Context extends Record<PropertyKey, TSchema> = {}>(context: Context, code: Code, options?: SchemaOptions): Static.Parse<Type, Code, Context>[0]
-/** Parses and Infers a TypeBox type from TypeScript annotation syntax */
+/** `[Experimental]` Parses a TypeScript type annotation as an inferred TypeBox type */
 export function Parse<Code extends string>(code: Code, options?: SchemaOptions): Static.Parse<Type, Code, {}>[0]
-/** Parses and Infers a TypeBox type from TypeScript annotation syntax */
+/** `[Experimental]` Parses a TypeScript type annotation as an inferred TypeBox type */
 export function Parse(...args: any[]): never {
   return ParseOnly.apply(null, args as never) as never
 }
 
-/** Parses and Infers a TypeBox type from TypeScript annotation syntax */
-export function ParseOnly<Code extends string, Context extends Record<PropertyKey, TSchema> = {}>(context: Context, code: Code, options?: SchemaOptions): Static.Parse<Type, Code, Context>[0]
-/** Parses and Infers a TypeBox type from TypeScript annotation syntax */
-export function ParseOnly<Code extends string>(code: Code, options?: SchemaOptions): Static.Parse<Type, Code, {}>[0]
+/** `[Experimental]` Parses a TypeScript type annotation as TSchema */
+export function ParseOnly<Code extends string, Context extends Record<PropertyKey, TSchema> = {}>(context: Context, code: Code, options?: SchemaOptions): TSchema | undefined
+/** `[Experimental]` Parses a TypeScript type annotation as TSchema */
+export function ParseOnly<Code extends string>(code: Code, options?: SchemaOptions): TSchema | undefined
+/** `[Experimental]` Parses a TypeScript type annotation as TSchema */
 export function ParseOnly(...args: any[]): TSchema | undefined {
   const withContext = typeof args[0] === 'string' ? false : true
   const [context, code, options] = withContext ? [args[0], args[1], args[2] || {}] : [{}, args[0], args[1] || {}]
