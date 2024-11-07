@@ -322,7 +322,7 @@ const ObjectMapping = (values: Record<string, Types.TSchema>[]) => Types.Object(
   return { ...properties, ...record }
 }, {} as Types.TProperties))
 // prettier-ignore
-const Object = Runtime.Tuple([
+const _Object = Runtime.Tuple([
   Runtime.Const(LBrace),
   Runtime.Ref<Record<string, Types.TSchema>[]>('Properties'),
   Runtime.Const(RBrace)
@@ -644,7 +644,7 @@ export const Module = new Runtime.Module({
   Property,
   PropertyDelimiter,
   Properties,
-  Object,
+  Object: _Object,
   Elements,
   Tuple,
   Parameter,
