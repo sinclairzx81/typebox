@@ -61,9 +61,9 @@ describe('parse/Parse', () => {
   it('Should parse Extract', () => {
     const T = Parse(`Extract<1 | 2 | 3, 1 | 2>`)
     Assert.IsTrue(TypeGuard.IsUnion(T))
-    // @ts-ignore fix: incorrect union order (result of UnionToTuple, replace with Tuple destructing)
+    // @ts-ignore fix: incorrect union order (result of UnionToTuple, replace with Tuple destructuring)
     Assert.IsTrue(T.anyOf[0].const === 1)
-    // @ts-ignore fix: incorrect union order (result of UnionToTuple, replace with Tuple destructing)
+    // @ts-ignore fix: incorrect union order (result of UnionToTuple, replace with Tuple destructuring)
     Assert.IsTrue(T.anyOf[1].const === 2)
   })
   it('Should parse Function', () => {
