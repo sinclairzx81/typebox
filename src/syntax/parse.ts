@@ -40,16 +40,16 @@ export type StaticParseAsSchema<Context extends Record<PropertyKey, TSchema>, Co
 export type StaticParseAsType<Context extends Record<PropertyKey, TSchema>, Code extends string> = StaticParseAsSchema<Context, Code> extends infer Type extends TSchema ? StaticDecode<Type> : undefined
 
 /** `[Experimental]` Parses a TypeBox type from TypeScript syntax. */
-export function Parse<Context extends Record<PropertyKey, TSchema> = {}, Code extends string = ''>(context: Context, code: Code, options?: SchemaOptions): StaticParseAsSchema<Context, Code>
+export function Parse<Context extends Record<PropertyKey, TSchema>, Code extends string>(context: Context, code: Code, options?: SchemaOptions): StaticParseAsSchema<Context, Code>
 /** `[Experimental]` Parses a TypeBox type from TypeScript syntax. */
-export function Parse<Code extends string = ''>(code: Code, options?: SchemaOptions): StaticParseAsSchema<{}, Code>
+export function Parse<Code extends string>(code: Code, options?: SchemaOptions): StaticParseAsSchema<{}, Code>
 /** `[Experimental]` Parses a TypeBox type from TypeScript syntax. */
 export function Parse(...args: any[]): never {
   return ParseOnly.apply(null, args as never) as never
 }
 
 /** `[Experimental]` Parses a TypeBox TSchema from TypeScript syntax. This function does not infer the type. */
-export function ParseOnly<Code extends string, Context extends Record<PropertyKey, TSchema> = {}>(context: Context, code: Code, options?: SchemaOptions): TSchema | undefined
+export function ParseOnly<Context extends Record<PropertyKey, TSchema>, Code extends string>(context: Context, code: Code, options?: SchemaOptions): TSchema | undefined
 /** `[Experimental]` Parses a TypeBox TSchema from TypeScript syntax */
 export function ParseOnly<Code extends string>(code: Code, options?: SchemaOptions): TSchema | undefined
 /** `[Experimental]` Parses a TypeBox TSchema from TypeScript syntax. This function does not infer the type. */
