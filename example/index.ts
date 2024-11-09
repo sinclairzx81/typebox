@@ -1,7 +1,8 @@
 import { TypeSystem } from '@sinclair/typebox/system'
 import { TypeCompiler } from '@sinclair/typebox/compiler'
 import { Value, ValuePointer } from '@sinclair/typebox/value'
-import { Type, Parse, TypeGuard, Kind, Static, TSchema } from '@sinclair/typebox'
+import { Type, TypeGuard, Kind, Static, TSchema } from '@sinclair/typebox'
+import { Parse } from '@sinclair/typebox/syntax'
 
 // -----------------------------------------------------------
 // Create: Type
@@ -21,7 +22,14 @@ console.log(T)
 // Parse: Type
 // -----------------------------------------------------------
 
-const S = Parse({ T }, `Partial<T>`)
+const S = Parse(
+  { T },
+  `{
+  x: number
+  y: number
+  z: number  
+}`,
+)
 
 type S = Static<typeof S>
 
