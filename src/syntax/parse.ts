@@ -29,7 +29,7 @@ THE SOFTWARE.
 import { Static } from './parsebox/index'
 import { CreateType } from '../type/create/type'
 import { TSchema, SchemaOptions } from '../type/schema/index'
-import { StaticDecode } from '../type/static'
+import { StaticDecode } from '../type/static/index'
 import { Module } from './runtime'
 import { Type } from './static'
 
