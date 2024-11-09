@@ -29,14 +29,21 @@ THE SOFTWARE.
 import { Static } from './parsebox/index'
 import { CreateType } from '../type/create/type'
 import { TSchema, SchemaOptions } from '../type/schema/index'
+import { StaticDecode } from '../type/static'
 import { Module } from './runtime'
 import { Type } from './static'
 
-/** `[Experimental]` Parses a TypeBox type from TypeScript syntax */
-export function Parse<Code extends string, Context extends Record<PropertyKey, TSchema> = {}>(context: Context, code: Code, options?: SchemaOptions): Static.Parse<Type, Code, Context>[0]
-/** `[Experimental]` Parses a TypeBox type from TypeScript syntax */
-export function Parse<Code extends string>(code: Code, options?: SchemaOptions): Static.Parse<Type, Code, {}>[0]
-/** `[Experimental]` Parses a TypeBox type from TypeScript syntax */
+/** `[Experimental]` Infers a TypeBox type from TypeScript syntax. */
+export type StaticParseAsSchema<Context extends Record<PropertyKey, TSchema>, Code extends string> = Static.Parse<Type, Code, Context>[0]
+
+/** `[Experimental]` Infers a TypeScript type from TypeScript syntax. */
+export type StaticParseAsType<Context extends Record<PropertyKey, TSchema>, Code extends string> = StaticParseAsSchema<Context, Code> extends infer Type extends TSchema ? StaticDecode<Type> : undefined
+
+/** `[Experimental]` Parses a TypeBox type from TypeScript syntax. */
+export function Parse<Context extends Record<PropertyKey, TSchema> = {}, Code extends string = ''>(context: Context, code: Code, options?: SchemaOptions): StaticParseAsSchema<Context, Code>
+/** `[Experimental]` Parses a TypeBox type from TypeScript syntax. */
+export function Parse<Code extends string = ''>(code: Code, options?: SchemaOptions): StaticParseAsSchema<{}, Code>
+/** `[Experimental]` Parses a TypeBox type from TypeScript syntax. */
 export function Parse(...args: any[]): never {
   return ParseOnly.apply(null, args as never) as never
 }
