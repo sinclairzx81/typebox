@@ -1,5 +1,6 @@
 import { TypeGuard } from '@sinclair/typebox'
-import { Type, Parse } from '@sinclair/typebox'
+import { Type } from '@sinclair/typebox'
+import { Parse } from '@sinclair/typebox/syntax'
 import { Assert } from '../assert/index'
 
 // prettier-ignore
