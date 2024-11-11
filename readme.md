@@ -77,6 +77,11 @@ License MIT
   - [Transform](#types-transform)
   - [Guard](#types-guard)
   - [Unsafe](#types-unsafe)
+- [Syntax](#syntax)
+  - [Parse](#syntax-parse)
+  - [Param](#syntax-param)
+  - [Static](#syntax-static)
+  - [Limits](#syntax-limits)
 - [Values](#values)
   - [Assert](#values-assert)
   - [Create](#values-create)
@@ -1076,6 +1081,148 @@ if(TypeGuard.IsString(T)) {
   // T is TString
 }
 ```
+
+<a name='syntax'></a>
+
+## Syntax
+
+TypeBox supports parsing TypeScript type annotation syntax directly into TypeBox types, providing an alternative to the Type.* API for type construction. This feature functions at runtime and within the TypeScript type system, enabling types encoded as strings to be inferred as equivalent TypeBox types.
+
+TypeScript syntax parsing is provided as an optional import.
+
+```typescript
+import { Parse } from '@sinclair/typebox/syntax'
+```
+
+<a name='syntax-parse'></a>
+
+### Parse
+
+The Parse function can be used to parse TypeScript code into TypeBox types. The left hand result will be a inferred TypeBox type of TSchema. Invalid syntax will result in an undefined return value.
+
+```typescript
+const A = Parse('string')                           // const A: TString
+
+const B = Parse('[1, 2, 3]')                        // const B: TTuple<[
+                                                    //   TLiteral<1>,
+                                                    //   TLiteral<2>,
+                                                    //   TLiteral<3>
+                                                    // ]>
+
+const C = Parse(`{ x: number, y: number }`)         // const C: TObject<{
+                                                    //   x: TNumber
+                                                    //   y: TNumber
+                                                    // }>
+```
+
+<a name='syntax-param'></a>
+
+### Param
+
+The Parse function accepts an optional context parameter that enables external types to be referenced within the syntax. This can be helpful for reusing types in different contexts.
+
+```typescript
+const T = Type.Object({                             // could be written as: Parse(`{
+  x: Type.Number(),                                 //   x: number,
+  y: Type.Number(),                                 //   y: number,
+  z: Type.Number()                                 //    z: number
+})                                                  // }`)
+
+const A = Parse({ T }, `Partial<T>`)                // const A: TObject<{
+                                                    //   x: TOptional<TNumber>,
+                                                    //   y: TOptional<TNumber>,
+                                                    //   z: TOptional<TNumber>
+                                                    // }>
+
+const B = Parse({ T }, `keyof T`)                   // const B: TUnion<[
+                                                    //   TLiteral<'x'>,
+                                                    //   TLiteral<'y'>,
+                                                    //   TLiteral<'z'>
+                                                    // ]>
+
+const C = Parse({ T }, `T & { w: number }`)         // const C: TObject<{
+                                                    //   x: TNumber,
+                                                    //   y: TNumber,
+                                                    //   z: TNumber,
+                                                    //   w: TNumber
+                                                    // }>
+
+
+```
+
+<a name='syntax-static'></a>
+
+### Static
+
+TypeBox provides two Static types for inferring TypeScript syntax directly from strings.
+
+```typescript
+import { StaticParseAsSchema, StaticParseAsType } from '@sinclair/typebox/syntax' 
+
+// Will infer as a TSchema
+
+type S = StaticParseAsSchema<`{ x: number }`>       // type S: TObject<{
+                                                    //   x: TNumber
+                                                    // }>
+
+// Will infer as a type
+
+type T = StaticParseAsType<`{ x: number }`>         // type T = {
+                                                    //  x: number
+                                                    //                       
+```
+
+
+<a name='syntax-limits'></a>
+
+### Limits
+
+The Parse function works by TypeBox parsing TypeScript syntax within the type system itself. This can place some additional demand on the TypeScript compiler, which may affect language service (LSP) responsiveness when working with especially large or complex types. In particular, very wide structures or deeply nested types may approach TypeScript’s instantiation limits.
+
+```typescript
+// Excessively wide structures will result in instantiation limits exceeding
+const A = Parse(`[
+  0, 1, 2, 3, 4, 5, 6, 7,
+  0, 1, 2, 3, 4, 5, 6, 7,
+  0, 1, 2, 3, 4, 5, 6, 7,
+  0, 1, 2, 3, 4, 5, 6, 7,
+  0, 1, 2, 3, 4, 5, 6, 7,
+  0, 1, 2, 3, 4, 5, 6, 7,
+  0, 1, 2, 3, 4, 5, 6, 7,
+  0, 1, 2, 3, 4, 5, 6, 7,
+]`)
+
+// Excessively nested structures will result in instantiation limits exceeding
+const B = Parse(`{
+  x: {
+    y: {
+      z: {
+        w: 1 <-- Type instantiation is excessively deep and possibly infinite.
+      } 
+    }
+  }  
+}`)
+```
+
+For parsing especially complex types, TypeBox provides the ParseOnly function, which parses strings at runtime and returns a non-inferred TSchema type. ParseOnly allows for arbitrarily complex types without reaching instantiation limits, making it useful for cases where TypeScript types need to be directly converted to Json Schema.
+
+```typescript
+import { ParseOnly } from '@sinclair/typebox/syntax'
+
+// ok: but where A is TSchema | undefined 
+
+const A = ParseOnly(`{
+  x: {
+    y: {
+      z: {
+        w: 1
+      } 
+    }
+  }  
+}`)
+```
+
+Optimizing TypeScript string parsing performance is an ongoing area of research. For more information, see the [ParseBox](https://github.com/sinclairzx81/parsebox) project, which documents TypeBox’s parsing infrastructure and focuses efforts to improve parsing performance.
 
 <a name='values'></a>
 
