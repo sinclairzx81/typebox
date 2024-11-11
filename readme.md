@@ -79,7 +79,7 @@ License MIT
   - [Unsafe](#types-unsafe)
 - [Syntax](#syntax)
   - [Parse](#syntax-parse)
-  - [Param](#syntax-param)
+  - [Context](#syntax-context)
   - [Static](#syntax-static)
   - [Limits](#syntax-limits)
 - [Values](#values)
@@ -1100,6 +1100,8 @@ import { Parse } from '@sinclair/typebox/syntax'
 
 The Parse function can be used to parse TypeScript code into TypeBox types. The left hand result will be a inferred TypeBox type of TSchema. Invalid syntax will result in an undefined return value.
 
+[TypeScript Link Here](https://www.typescriptlang.org/play/?moduleResolution=99&module=199#code/JYWwDg9gTgLgBAbzgBQIZQM4FM4F84BmUEIcA5AAIbAB2AxgDarBQD0MAnmFgEYQAerDBxoxU-MgChJdCDQzwAgnAC8KdNgAUZBVFoBzMgEo4ps+YuXLrVnFnylALjgAVAMow9NfdPsK4AEKq6phY2gDaAIwANHAATLEAzAC6xlbpGTZ2cv4Bzi4uAK5gDFgAPOGSGdU1tdVZpi4AMsAwWFCoDGWRAHzRVXWDQ5m2jS1tHV1xfQPDc3MNruPtnWWJPbPzW7VZyRsyOfAAwsFooZoABkj8zjSFIDztsRy3949QeBcm6Vl+x-kAeR4ACssHQYGUEJttjCrIsbq4AHJvdrQ2Ho0yLF5IlFQNEY2FZXD7IA)
+
 ```typescript
 const A = Parse('string')                           // const A: TString
 
@@ -1115,11 +1117,13 @@ const C = Parse(`{ x: number, y: number }`)         // const C: TObject<{
                                                     // }>
 ```
 
-<a name='syntax-param'></a>
+<a name='syntax-context'></a>
 
-### Param
+### Context
 
-The Parse function accepts an optional context parameter that enables external types to be referenced within the syntax. This can be helpful for reusing types in different contexts.
+The Parse function accepts an optional context parameter that enables external types to be referenced within the syntax.
+
+[TypeScript Link Here](https://www.typescriptlang.org/play/?moduleResolution=99&module=199#code/JYWwDg9gTgLgBAbzgBQIZQM4FM4F84BmUEIcA5AAIbAB2AxgDarBQD0MAnmFgEYQAerDBxoxU-MgChQkWIjgAVLjnxES5KrUbM2nbnwmTJdCDQzwFcALyLlAOgDyPAFZY6MABRI4P33-8BgayscCYArgwAJnA8OADuUMAwMFg0cKgYAFwo6NgeAAYIkj782UrcdgByYSCxUB4AlAA0ga1tbcG+pXA0NXVNxXAcZfbVtVj1ze3TM50+wz19EwM+AF4jFWN1jTO7rXNr2b3jUJK4DXuXV-6duPkNRiZm8ACC1jmYWF6KeC35aLBgKgGAAeBQAPnuV06T3McBeZScrncIKK13R1wO3QUDjAMGApmBYK2E3BKwxFNmIXmiLxBJoRIUJKgZMGlPZQWpcHWilx+MJoKZSxZbI5Yp8t3Bj1McIAQu8AXkkJZcH8ANZYDgQAiKKHomEy+CysoAVRo9JBAG1ReKOQcFAAZJITIlkCSs222+1OlJQV0cMgez1i73Ov2gsirQM24MYzoAXSlxkNcAAwgrcl9lb84PlLAAyeRxI7CvB6zmhFOpsoASVEE2wKMtOJcbhgqJjscxXLg2OZAG5O13LgchmUB0Ph7tRzyhSdB1OKZKWi3ke20Yv9T3i4oJ5ut3hwYmjEA)
 
 ```typescript
 const T = Type.Object({                             // could be written as: Parse(`{
@@ -1140,12 +1144,13 @@ const B = Parse({ T }, `keyof T`)                   // const B: TUnion<[
                                                     //   TLiteral<'z'>
                                                     // ]>
 
-const C = Parse({ T }, `T & { w: number }`)         // const C: TObject<{
-                                                    //   x: TNumber,
-                                                    //   y: TNumber,
-                                                    //   z: TNumber,
-                                                    //   w: TNumber
-                                                    // }>
+const C = Parse({ T }, `T & { w: number }`)         // const C: TIntersect<[TObject<{
+                                                    //    x: TNumber;
+                                                    //    y: TNumber;
+                                                    //    z: TNumber;
+                                                    // }>, TObject<{
+                                                    //    w: TNumber;
+                                                    // }>]>
 
 
 ```
@@ -1156,18 +1161,20 @@ const C = Parse({ T }, `T & { w: number }`)         // const C: TObject<{
 
 TypeBox provides two Static types for inferring TypeScript syntax directly from strings.
 
+[TypeScript Link Here](https://www.typescriptlang.org/play/?moduleResolution=99&module=199#code/JYWwDg9gTgLgBAbzgZRgQxsAxgBTVAZwFMBBA5LACyJDQBoV1Nd9iyAVATzCLgF84AMygQQcAOQABAsAB2WADZpgUAPQxuRAEYQAHqoKdZ6XeLgAoc6tVwA6sAUK4cwUShw0BD3HYVqtSw0eFDgAXkYMbDxCUnIqGjQAHgQ+BgADJF0ALjhZAFcQLTd+NIA+OArrOCDeZBz2AHktACsiLBhk8wrunt6+-oHBgaqK7J8AOQKiqC6hufmF3qq+Ussq+0dnWVd3T28awM0fMIjmaLYCLh5k1LgMuDH8wuK+MqWbGuPwhFnFv--3qMck9pr8AeDFiM4EA)
+
 ```typescript
 import { StaticParseAsSchema, StaticParseAsType } from '@sinclair/typebox/syntax' 
 
 // Will infer as a TSchema
 
-type S = StaticParseAsSchema<`{ x: number }`>       // type S: TObject<{
+type S = StaticParseAsSchema<{}, `{ x: number }`>   // type S: TObject<{
                                                     //   x: TNumber
                                                     // }>
 
 // Will infer as a type
 
-type T = StaticParseAsType<`{ x: number }`>         // type T = {
+type T = StaticParseAsType<{}, `{ x: number }`>     // type T = {
                                                     //  x: number
                                                     //                       
 ```
