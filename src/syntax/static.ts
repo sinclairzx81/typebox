@@ -48,6 +48,7 @@ type SemiColon = ';'
 type SingleQuote = "'"
 type DoubleQuote = '"'
 type Tilde = '`'
+type Equals = '='
 
 // ------------------------------------------------------------------
 // Delimit
@@ -135,18 +136,156 @@ type Delimit<Parser extends Static.IParser, Delimiter extends Static.IParser> = 
   ], DelimitMapping>
 )
 // ------------------------------------------------------------------
+// Deref
+// ------------------------------------------------------------------
+// prettier-ignore
+type Deref<Context extends Types.TProperties, Ref extends string> = (
+  Ref extends keyof Context ? Context[Ref] : Types.TRef<Ref>
+)
+// ------------------------------------------------------------------
+// ExportModifier
+// ------------------------------------------------------------------
+// prettier-ignore
+interface ExportModifierMapping extends Static.IMapping {
+  output: this['input'] extends [string] ? true : false
+}
+// prettier-ignore
+type ExportModifier = Static.Union<[
+  Static.Tuple<[Static.Const<'export'>]>,
+  Static.Tuple<[]>,
+], ExportModifierMapping>
+
+// ------------------------------------------------------------------
+// TypeAliasDeclaration
+// ------------------------------------------------------------------
+// prettier-ignore
+interface TypeAliasDeclarationMapping extends Static.IMapping {
+  output: this['input'] extends [infer _Export extends boolean, 'type', infer Ident extends string, Equals, infer Type extends Types.TSchema] 
+    ? { [_ in Ident]: Type } 
+    : never
+}
+// prettier-ignore
+type TypeAliasDeclaration = Static.Tuple<[
+  ExportModifier, Static.Const<'type'>, Static.Ident, Static.Const<Equals>, Type
+], TypeAliasDeclarationMapping>
+
+// ------------------------------------------------------------------
+// HeritageList
+// ------------------------------------------------------------------
+// prettier-ignore (note, heritage list should disallow trailing comma)
+type HeritageListDelimiter = Static.Union<[Static.Tuple<[Static.Const<Comma>, Static.Const<Newline>]>, Static.Tuple<[Static.Const<Comma>]>]>
+// prettier-ignore
+type HeritageListReduce<Values extends string[], Context extends Types.TProperties, Result extends Types.TSchema[] = []> = (
+  Values extends [infer Ref extends string, ...infer Rest extends string[]]
+    ? HeritageListReduce<Rest, Context, [...Result, Deref<Context, Ref>]>
+    : Result
+)
+// prettier-ignore
+interface HeritageListMapping extends Static.IMapping {
+  output: (
+    this['context'] extends Types.TProperties ?
+    this['input'] extends string[] 
+      ? HeritageListReduce<this['input'], this['context']> 
+      : []
+    : []
+  )
+}
+// prettier-ignore
+type HeritageList = Static.Union<[Delimit<Static.Ident, HeritageListDelimiter>], HeritageListMapping>
+// ------------------------------------------------------------------
+// Heritage
+// ------------------------------------------------------------------
+// prettier-ignore
+interface HeritageMapping extends Static.IMapping {
+  output: this['input'] extends ['extends', infer List extends Types.TSchema[]] ? List : []
+}
+// prettier-ignore
+type Heritage = Static.Union<[
+  Static.Tuple<[Static.Const<'extends'>, HeritageList]>,
+  Static.Tuple<[]>
+], HeritageMapping>
+// ------------------------------------------------------------------
+// InterfaceDeclaration
+// ------------------------------------------------------------------
+// prettier-ignore
+interface InterfaceDeclarationMapping extends Static.IMapping {
+  output: this['input'] extends [boolean, 'interface', infer Ident extends string, infer Heritage extends Types.TSchema[], LBrace, infer Properties extends Types.TProperties, RBrace]
+    ? { [_ in Ident]: Types.TIntersectEvaluated<[...Heritage, Types.TObject<Properties>]> }
+    : never
+}
+// prettier-ignore
+type InterfaceDeclaration = Static.Tuple<[
+  ExportModifier,
+  Static.Const<'interface'>, 
+  Static.Ident, 
+  Heritage,
+  Static.Const<LBrace>, 
+  Properties,
+  Static.Const<RBrace>, 
+], InterfaceDeclarationMapping>
+// ------------------------------------------------------------------
+// ModuleType
+// ------------------------------------------------------------------
+// prettier-ignore
+type ModuleType = Static.Union<[
+  InterfaceDeclaration,
+  TypeAliasDeclaration
+]>
+// ------------------------------------------------------------------
+// ModuleProperties
+// ------------------------------------------------------------------
+// prettier-ignore
+type ModulePropertiesDelimiter = Static.Union<[
+  Static.Tuple<[Static.Const<SemiColon>, Static.Const<Newline>]>,
+  Static.Tuple<[Static.Const<SemiColon>]>,
+  Static.Tuple<[Static.Const<Newline>]>,
+]>
+// prettier-ignore
+type ModulePropertiesReduce<Value extends unknown[], Result extends Types.TProperties = {}> = (
+  Value extends [infer ModuleType extends Types.TProperties, unknown[], ...infer Rest extends unknown[]] ? ModulePropertiesReduce<Rest, Result & ModuleType> :
+  Value extends [infer ModuleType extends Types.TProperties] ? ModulePropertiesReduce<[], Result & ModuleType> : 
+  Types.Evaluate<Result>
+)
+// prettier-ignore
+interface ModulePropertiesMapping extends Static.IMapping {
+  output: this['input'] extends unknown[] ? ModulePropertiesReduce<this['input']> : never
+}
+// prettier-ignore
+type ModuleProperties = Static.Union<[
+  Static.Tuple<[ModuleType, ModulePropertiesDelimiter, ModuleProperties]>,
+  Static.Tuple<[ModuleType]>,
+  Static.Tuple<[]>,
+], ModulePropertiesMapping>
+// ------------------------------------------------------------------
+// ModuleDeclaration
+// ------------------------------------------------------------------
+// prettier-ignore
+type ModuleIdentifier = Static.Union<[
+  Static.Tuple<[Static.Ident]>,
+  Static.Tuple<[]>
+]>
+// prettier-ignore
+interface ModuleDeclarationMapping extends Static.IMapping {
+  output: this['input'] extends [boolean, 'module', infer _Ident extends string[], LBrace, infer Properties extends Types.TProperties, RBrace] 
+    ? Types.TModule<Properties> 
+    : never
+}
+// prettier-ignore
+type ModuleDeclaration = Static.Tuple<[
+  ExportModifier, Static.Const<'module'>, ModuleIdentifier, Static.Const<LBrace>, ModuleProperties, Static.Const<RBrace>
+], ModuleDeclarationMapping>
+// ------------------------------------------------------------------
 // Reference
 // ------------------------------------------------------------------
 // prettier-ignore
 interface ReferenceMapping extends Static.IMapping {
-  output: this['input'] extends [infer Key extends string]
-    ? Key extends keyof this['context']
-      ? this['context'][Key]
-      : Types.TRef<Types.TUnknown>
-    : never
+  output: this['context'] extends Types.TProperties
+    ? this['input'] extends string
+      ? Deref<this['context'], this['input']>
+      : never
+    : never  
 }
-type Reference = Static.Tuple<[Static.Ident], ReferenceMapping>
-
+type Reference = Static.Ident<ReferenceMapping>
 // ------------------------------------------------------------------
 // Literal
 // ------------------------------------------------------------------
@@ -198,7 +337,6 @@ type KeyOf = Static.Union<[
   Static.Tuple<[Static.Const<'keyof'>]>,
   Static.Tuple<[]>
 ], KeyOfMapping>
-
 // ------------------------------------------------------------------
 // IndexArray
 // ------------------------------------------------------------------
@@ -231,7 +369,6 @@ type Extends = Static.Union<[
   Static.Tuple<[Static.Const<'extends'>, Type, Static.Const<Question>, Type, Static.Const<Colon>, Type]>,
   Static.Tuple<[]>
 ], ExtendsMapping>
-
 // ------------------------------------------------------------------
 // Base
 // ------------------------------------------------------------------
@@ -361,7 +498,7 @@ type Expr = Static.Tuple<[
 // ------------------------------------------------------------------
 // Type
 // ------------------------------------------------------------------
-export type Type = Expr
+type Type = Expr
 // ------------------------------------------------------------------
 // Properties
 // ------------------------------------------------------------------
@@ -370,34 +507,30 @@ interface PropertyKeyStringMapping extends Static.IMapping {
   output: this['input']
 }
 type PropertyKeyString = Static.String<[SingleQuote, DoubleQuote], PropertyKeyStringMapping>
-
 type PropertyKey = Static.Union<[Static.Ident, PropertyKeyString]>
 // prettier-ignore
-interface PropertyReadonlyMapping extends Static.IMapping {
+interface ReadonlyMapping extends Static.IMapping {
   output: this['input'] extends ['readonly'] ? true : false
 }
-type PropertyReadonly = Static.Union<[Static.Tuple<[Static.Const<'readonly'>]>, Static.Tuple<[]>], PropertyReadonlyMapping>
+type Readonly = Static.Union<[Static.Tuple<[Static.Const<'readonly'>]>, Static.Tuple<[]>], ReadonlyMapping>
 // prettier-ignore
-interface PropertyOptionalMapping extends Static.IMapping {
+interface OptionalMapping extends Static.IMapping {
   output: this['input'] extends [Question] ? true : false
 }
-type PropertyOptional = Static.Union<[Static.Tuple<[Static.Const<Question>]>, Static.Tuple<[]>], PropertyOptionalMapping>
+type Optional = Static.Union<[Static.Tuple<[Static.Const<Question>]>, Static.Tuple<[]>], OptionalMapping>
 // prettier-ignore
 interface PropertyMapping extends Static.IMapping {
-  output: this['input'] extends [infer Readonly extends boolean, infer Key extends string, infer Optional extends boolean, string, infer Type extends Types.TSchema]
+  output: this['input'] extends [infer IsReadonly extends boolean, infer Key extends string, infer IsOptional extends boolean, string, infer Type extends Types.TSchema]
   ? { 
     [_ in Key]: (
-      [Readonly, Optional] extends [true, true] ? Types.TReadonlyOptional<Type> :
-      [Readonly, Optional] extends [true, false] ? Types.TReadonly<Type> :
-      [Readonly, Optional] extends [false, true] ? Types.TOptional<Type> :
+      [IsReadonly, IsOptional] extends [true, true] ? Types.TReadonlyOptional<Type> :
+      [IsReadonly, IsOptional] extends [true, false] ? Types.TReadonly<Type> :
+      [IsReadonly, IsOptional] extends [false, true] ? Types.TOptional<Type> :
       Type 
     ) 
   } : never
 }
-
-type Property = Static.Tuple<[PropertyReadonly, PropertyKey, PropertyOptional, Static.Const<Colon>, Type], PropertyMapping>
-
-type PropertiesEvaluate<T> = { [K in keyof T]: T[K] } & {}
+type Property = Static.Tuple<[Readonly, PropertyKey, Optional, Static.Const<Colon>, Type], PropertyMapping>
 // prettier-ignore
 type PropertyDelimiter = Static.Union<[
   Static.Tuple<[Static.Const<Comma>, Static.Const<Newline>]>,
@@ -409,7 +542,7 @@ type PropertyDelimiter = Static.Union<[
 // prettier-ignore
 type PropertiesReduce<PropertiesArray extends Types.TProperties[], Result extends Types.TProperties = {}> = (
   PropertiesArray extends [infer Left extends Types.TProperties, ...infer Right extends Types.TProperties[]]
-  ? PropertiesReduce<Right, PropertiesEvaluate<Result & Left>>
+  ? PropertiesReduce<Right, Types.Evaluate<Result & Left>>
   : Result
 )
 // prettier-ignore
@@ -485,7 +618,7 @@ type Constructor = Static.Tuple<[
 // ------------------------------------------------------------------
 // prettier-ignore
 interface MappedMapping extends Static.IMapping {
-  output: this['input'] extends [LBrace, LBracket, infer Key extends string, 'in', infer Right extends Types.TSchema, RBracket, Colon, infer Type extends Types.TSchema, RBrace]
+  output: this['input'] extends [LBrace, LBracket, infer _Key extends string, 'in', infer _Right extends Types.TSchema, RBracket, Colon, infer Type extends Types.TSchema, RBrace]
     ? Types.TLiteral<'Mapped types not supported'>
     : this['input']
 }
@@ -762,3 +895,14 @@ type Date = Static.Const<'Date', Static.As<Types.TDate>>
 // Uint8Array
 // ------------------------------------------------------------------
 type Uint8Array = Static.Const<'Uint8Array', Static.As<Types.TUint8Array>>
+
+// ------------------------------------------------------------------
+// Main
+// ------------------------------------------------------------------
+// prettier-ignore
+export type Main = Static.Union<[
+  ModuleDeclaration,
+  TypeAliasDeclaration,
+  InterfaceDeclaration,
+  Type
+]>

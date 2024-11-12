@@ -1,10 +1,100 @@
 import { TypeGuard } from '@sinclair/typebox'
-import { Type } from '@sinclair/typebox'
+import { Type, TModule } from '@sinclair/typebox'
 import { Parse } from '@sinclair/typebox/syntax'
 import { Assert } from '../assert/index'
 
 // prettier-ignore
-describe('parse/Parse', () => {
+describe('syntax/Parse', () => {
+  // ----------------------------------------------------------------
+  // Type Alias
+  // ----------------------------------------------------------------
+  it('Should parse Type Alias 1', () => {
+    const T = Parse('type A = 1')
+    Assert.IsTrue(TypeGuard.IsLiteral(T.A))
+    Assert.IsTrue(T.A.const === 1)
+  })
+  it('Should parse Type Alias 2', () => {
+    const T = Parse('export type A = 1')
+    Assert.IsTrue(TypeGuard.IsLiteral(T.A))
+    Assert.IsTrue(T.A.const === 1)
+  })
+  // ----------------------------------------------------------------
+  // Interface
+  // ----------------------------------------------------------------
+  it('Should parse Interface 1', () => {
+    const T = Parse('interface A { x: 1 }')
+    Assert.IsTrue(TypeGuard.IsObject(T.A))
+    Assert.IsTrue(TypeGuard.IsLiteral(T.A.properties.x))
+    Assert.IsTrue(T.A.properties.x.const === 1)
+  })
+  it('Should parse Interface 2', () => {
+    const T = Parse('export interface A { x: 1 }')
+    Assert.IsTrue(TypeGuard.IsObject(T.A))
+    Assert.IsTrue(TypeGuard.IsLiteral(T.A.properties.x))
+    Assert.IsTrue(T.A.properties.x.const === 1)
+  })
+  // ----------------------------------------------------------------
+  // Module
+  // ----------------------------------------------------------------
+  it('Should parse Module 1', () => {
+    const T = Parse('module {}')
+    Assert.IsTrue(T instanceof TModule)
+  })
+  it('Should parse Module 2', () => {
+    const T = Parse('export module {}')
+    Assert.IsTrue(T instanceof TModule)
+  })
+  it('Should parse Module 3', () => {
+    const T = Parse('module A {}')
+    Assert.IsTrue(T instanceof TModule)
+  })
+  it('Should parse Module 4', () => {
+    const T = Parse('export module A {}')
+    Assert.IsTrue(T instanceof TModule)
+  })
+  it('Should parse Module 5', () => {
+    const T = Parse(`export module A {
+      export type A = number
+    }`)
+    const A = T.Import('A')
+    Assert.IsTrue(T instanceof TModule)
+    Assert.IsTrue(TypeGuard.IsImport(A))
+    const N = A.$defs[A.$ref]
+    Assert.IsTrue(TypeGuard.IsNumber(N))
+  })
+  it('Should parse Module 6', () => {
+    const T = Parse(`export module A {
+      export interface A { x: number }
+    }`)
+    const A = T.Import('A')
+    Assert.IsTrue(T instanceof TModule)
+    Assert.IsTrue(TypeGuard.IsImport(A))
+    const N = A.$defs[A.$ref]
+    Assert.IsTrue(TypeGuard.IsObject(N))
+    Assert.IsTrue(TypeGuard.IsNumber(N.properties.x))
+  })
+  it('Should parse Module 7', () => {
+    const T = Parse(`export module A {
+      export interface A { x: number }
+      export type B = number
+    }`)
+    // A
+    const A = T.Import('A')
+    Assert.IsTrue(T instanceof TModule)
+    Assert.IsTrue(TypeGuard.IsImport(A))
+    const N1 = A.$defs[A.$ref]
+    Assert.IsTrue(TypeGuard.IsObject(N1))
+    Assert.IsTrue(TypeGuard.IsNumber(N1.properties.x))
+    // B
+    const B = T.Import('B')
+    Assert.IsTrue(T instanceof TModule)
+    Assert.IsTrue(TypeGuard.IsImport(B))
+    const N2 = B.$defs[B.$ref]
+    Assert.IsTrue(TypeGuard.IsNumber(N2))
+  })
+  // ----------------------------------------------------------------
+  // Type Expressions
+  // ----------------------------------------------------------------
   it('Should parse Any', () => {
     const T = Parse(`any`)
     Assert.IsTrue(TypeGuard.IsAny(T))

@@ -12,7 +12,7 @@ describe('value/create/Ref', () => {
       },
       { $id: 'T', default: 'target' },
     )
-    const R = Type.Ref(T)
+    const R = Type.Ref('T')
     Assert.Throws(() => Value.Create(R))
   })
   it('Should create ref default if ref default is defined', () => {
@@ -24,12 +24,12 @@ describe('value/create/Ref', () => {
       },
       { $id: 'T', default: 'target' },
     )
-    const R = Type.Ref(T, { default: 'override' })
+    const R = Type.Ref('T', { default: 'override' })
     Assert.IsEqual(Value.Create(R), 'override') // terminated at R default value
   })
   it('Should dereference remote schema via $ref', () => {
-    const R = Type.Number({ $id: 'S' })
-    const T = Type.Object({ x: Type.Ref(R) })
+    const R = Type.Number({ $id: 'R' })
+    const T = Type.Object({ x: Type.Ref('R') })
     Assert.IsEqual(Value.Create(T, [R]), { x: 0 })
   })
 })

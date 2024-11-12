@@ -47,6 +47,7 @@ import type { TBoolean } from '../type/boolean/index'
 import type { TDate } from '../type/date/index'
 import type { TConstructor } from '../type/constructor/index'
 import type { TFunction } from '../type/function/index'
+import type { TImport } from '../type/module/index'
 import type { TInteger } from '../type/integer/index'
 import type { TIntersect } from '../type/intersect/index'
 import type { TIterator } from '../type/iterator/index'
@@ -110,7 +111,7 @@ export class TypeCheck<T extends TSchema> {
     return (this.hasTransform ? TransformDecode(this.schema, this.references, value) : value) as never
   }
   /** Encodes a value or throws if error */
-  public Encode<Static = StaticDecode<T>, Result extends Static = Static>(value: unknown): Result {
+  public Encode<Static = StaticEncode<T>, Result extends Static = Static>(value: unknown): Result {
     const encoded = this.hasTransform ? TransformEncode(this.schema, this.references, value) : value
     if (!this.checkFunc(encoded)) throw new TransformEncodeCheckError(this.schema, value, this.Errors(value).First()!)
     return encoded as never
@@ -288,6 +289,11 @@ export namespace TypeCompiler {
   function* FromFunction(schema: TFunction, references: TSchema[], value: string): IterableIterator<string> {
     yield `(typeof ${value} === 'function')`
   }
+  function* FromImport(schema: TImport, references: TSchema[], value: string): IterableIterator<string> {
+    const definitions = globalThis.Object.values(schema.$defs) as TSchema[]
+    const target = schema.$defs[schema.$ref] as TSchema
+    yield* Visit(target, [...references, ...definitions], value)
+  }
   function* FromInteger(schema: TInteger, references: TSchema[], value: string): IterableIterator<string> {
     yield `Number.isInteger(${value})`
     if (IsNumber(schema.exclusiveMaximum)) yield `${value} < ${schema.exclusiveMaximum}`
@@ -385,8 +391,12 @@ export namespace TypeCompiler {
   function* FromRef(schema: TRef, references: TSchema[], value: string): IterableIterator<string> {
     const target = Deref(schema, references)
     // Reference: If we have seen this reference before we can just yield and return the function call.
-    // If this isn't the case we defer to visit to generate and set the function for subsequent passes.
-    if (state.functions.has(schema.$ref)) return yield `${CreateFunctionName(schema.$ref)}(${value})`
+    // If this isn't the case we defer to visit to generate and set the _recursion_end_for_ for subsequent
+    // passes. This operation is very awkward as we are using the functions state to store values to
+    // enable self referential types to terminate. This needs to be refactored.
+    const recursiveEnd = `_recursion_end_for_${schema.$ref}`
+    if (state.functions.has(recursiveEnd)) return yield `${CreateFunctionName(schema.$ref)}(${value})`
+    state.functions.set(recursiveEnd, '') // terminate recursion here by setting the name.
     yield* Visit(target, references, value)
   }
   function* FromRegExp(schema: TRegExp, references: TSchema[], value: string): IterableIterator<string> {
@@ -485,6 +495,8 @@ export namespace TypeCompiler {
         return yield* FromDate(schema_, references_, value)
       case 'Function':
         return yield* FromFunction(schema_, references_, value)
+      case 'Import':
+        return yield* FromImport(schema_, references_, value)
       case 'Integer':
         return yield* FromInteger(schema_, references_, value)
       case 'Intersect':

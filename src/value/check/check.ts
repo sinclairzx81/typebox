@@ -27,7 +27,7 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import { TypeSystemPolicy } from '../../system/index'
-import { Deref } from '../deref/index'
+import { Deref, Pushref } from '../deref/index'
 import { Hash } from '../hash/index'
 import { Kind } from '../../type/symbols/index'
 import { KeyOfPattern } from '../../type/keyof/index'
@@ -48,6 +48,7 @@ import type { TInteger } from '../../type/integer/index'
 import type { TIntersect } from '../../type/intersect/index'
 import type { TIterator } from '../../type/iterator/index'
 import type { TLiteral } from '../../type/literal/index'
+import type { TImport } from '../../type/module/index'
 import { Never, type TNever } from '../../type/never/index'
 import type { TNot } from '../../type/not/index'
 import type { TNull } from '../../type/null/index'
@@ -184,6 +185,11 @@ function FromDate(schema: TDate, references: TSchema[], value: any): boolean {
 }
 function FromFunction(schema: TFunction, references: TSchema[], value: any): boolean {
   return IsFunction(value)
+}
+function FromImport(schema: TImport, references: TSchema[], value: any): boolean {
+  const definitions = globalThis.Object.values(schema.$defs) as TSchema[]
+  const target = schema.$defs[schema.$ref] as TSchema
+  return Visit(target, [...references, ...definitions], value)
 }
 function FromInteger(schema: TInteger, references: TSchema[], value: any): boolean {
   if (!IsInteger(value)) {
@@ -415,7 +421,7 @@ function FromKind(schema: TSchema, references: TSchema[], value: unknown): boole
   return func(schema, value)
 }
 function Visit<T extends TSchema>(schema: T, references: TSchema[], value: any): boolean {
-  const references_ = IsDefined<string>(schema.$id) ? [...references, schema] : references
+  const references_ = IsDefined<string>(schema.$id) ? Pushref(schema, references) : references
   const schema_ = schema as any
   switch (schema_[Kind]) {
     case 'Any':
@@ -434,6 +440,8 @@ function Visit<T extends TSchema>(schema: T, references: TSchema[], value: any):
       return FromDate(schema_, references_, value)
     case 'Function':
       return FromFunction(schema_, references_, value)
+    case 'Import':
+      return FromImport(schema_, references_, value)
     case 'Integer':
       return FromInteger(schema_, references_, value)
     case 'Intersect':

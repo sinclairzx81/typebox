@@ -77,7 +77,7 @@ export type TDecodeType<T extends TSchema> = (
   T extends TPromise<infer S extends TSchema> ? TPromise<TDecodeType<S>> :
   T extends TRecord<infer K, infer S> ? TRecord<K, TDecodeType<S>> :
   T extends TRecursive<infer S extends TSchema> ? TRecursive<TDecodeType<S>> :
-  T extends TRef<infer S extends TSchema> ? TRef<TDecodeType<S>> :
+  T extends TRef<infer S extends string> ? TRef<S> :
   T extends TTuple<infer S extends TSchema[]> ? TTuple<TDecodeRest<S>> :
   T extends TUnion<infer S extends TSchema[]> ? TUnion<TDecodeRest<S>> :
   T

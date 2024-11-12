@@ -41,6 +41,7 @@ import type { TAsyncIterator } from '../async-iterator/index'
 import type { TBigInt } from '../bigint/index'
 import type { TConstructor } from '../constructor/index'
 import type { TFunction } from '../function/index'
+import type { TImport } from '../module/index'
 import type { TInteger } from '../integer/index'
 import type { TIntersect } from '../intersect/index'
 import type { TIterator } from '../iterator/index'
@@ -251,6 +252,19 @@ export function IsFunction(value: unknown): value is TFunction {
     ValueGuard.IsArray(value.parameters) &&
     value.parameters.every(schema => IsSchema(schema)) &&
     IsSchema(value.returns)
+  )
+}
+/** Returns true if the given value is TImport */
+export function IsImport(value: unknown): value is TImport {
+  // prettier-ignore
+  return (
+    IsKindOf(value, 'Import') &&
+    ValueGuard.HasPropertyKey(value, '$defs') &&
+    ValueGuard.IsObject(value.$defs) &&
+    IsProperties(value.$defs) &&
+    ValueGuard.HasPropertyKey(value, '$ref') &&
+    ValueGuard.IsString(value.$ref) &&
+    value.$ref in value.$defs // required
   )
 }
 /** Returns true if the given value is TInteger */

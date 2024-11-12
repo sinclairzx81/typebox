@@ -26,29 +26,19 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { CreateType } from '../create/type'
 import type { TSchema, SchemaOptions } from '../schema/index'
-import type { Static } from '../static/index'
+import { CreateType } from '../create/type'
 import { Kind } from '../symbols/index'
-// ------------------------------------------------------------------
-// ValueGuard
-// ------------------------------------------------------------------
-import { IsString, IsUndefined } from '../guard/value'
+
 // ------------------------------------------------------------------
 // TRef
 // ------------------------------------------------------------------
-export interface TRef<T extends TSchema = TSchema> extends TSchema {
+export interface TRef<Ref extends string = string> extends TSchema {
   [Kind]: 'Ref'
-  static: Static<T, this['params']>
-  $ref: string
+  static: unknown
+  $ref: Ref
 }
 /** `[Json]` Creates a Ref type. The referenced type must contain a $id */
-export function Ref<T extends TSchema>(schema: T, options?: SchemaOptions): TRef<T>
-/** `[Json]` Creates a Ref type. */
-export function Ref<T extends TSchema>($ref: string, options?: SchemaOptions): TRef<T>
-/** `[Json]` Creates a Ref type. */
-export function Ref(unresolved: TSchema | string, options?: SchemaOptions) {
-  if (IsString(unresolved)) return CreateType({ [Kind]: 'Ref', $ref: unresolved }, options)
-  if (IsUndefined(unresolved.$id)) throw new Error('Reference target type must specify an $id')
-  return CreateType({ [Kind]: 'Ref', $ref: unresolved.$id! }, options)
+export function Ref<Ref extends string>($ref: Ref, options?: SchemaOptions): TRef<Ref> {
+  return CreateType({ [Kind]: 'Ref', $ref }, options) as never
 }

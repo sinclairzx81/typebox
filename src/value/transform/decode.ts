@@ -36,6 +36,7 @@ import { Check } from '../check/index'
 
 import type { TSchema } from '../../type/schema/index'
 import type { TArray } from '../../type/array/index'
+import type { TImport } from '../../type/module/index'
 import type { TIntersect } from '../../type/intersect/index'
 import type { TNot } from '../../type/not/index'
 import type { TObject } from '../../type/object/index'
@@ -82,7 +83,7 @@ export class TransformDecodeError extends TypeBoxError {
 // Decode
 // ------------------------------------------------------------------
 // prettier-ignore
-function Default(schema: TSchema, path: string, value: any) {
+function Default(schema: TSchema, path: string, value: any): unknown {
   try {
     return IsTransform(schema) ? schema[TransformKind].Decode(value) : value
   } catch (error) {
@@ -90,13 +91,13 @@ function Default(schema: TSchema, path: string, value: any) {
   }
 }
 // prettier-ignore
-function FromArray(schema: TArray, references: TSchema[], path: string, value: any): any {
+function FromArray(schema: TArray, references: TSchema[], path: string, value: any): unknown {
   return (IsArray(value))
     ? Default(schema, path, value.map((value: any, index) => Visit(schema.items, references, `${path}/${index}`, value)))
     : Default(schema, path, value)
 }
 // prettier-ignore
-function FromIntersect(schema: TIntersect, references: TSchema[], path: string, value: any) {
+function FromIntersect(schema: TIntersect, references: TSchema[], path: string, value: any): unknown {
   if (!IsObject(value) || IsValueType(value)) return Default(schema, path, value)
   const knownEntries = KeyOfPropertyEntries(schema)
   const knownKeys = knownEntries.map(entry => entry[0])
@@ -115,11 +116,20 @@ function FromIntersect(schema: TIntersect, references: TSchema[], path: string, 
   }
   return Default(schema, path, unknownProperties)
 }
-function FromNot(schema: TNot, references: TSchema[], path: string, value: any) {
+// prettier-ignore
+function FromImport(schema: TImport, references: TSchema[], path: string, value: unknown): unknown {
+  const definitions = globalThis.Object.values(schema.$defs) as TSchema[]
+  const target = schema.$defs[schema.$ref] as TSchema
+  const transform = schema[TransformKind as never]
+  // Note: we need to re-spec the target as TSchema + [TransformKind]
+  const transformTarget = { [TransformKind]: transform, ...target } as TSchema
+  return Visit(transformTarget as never, [...references, ...definitions], path, value)
+}
+function FromNot(schema: TNot, references: TSchema[], path: string, value: any): unknown {
   return Default(schema, path, Visit(schema.not, references, path, value))
 }
 // prettier-ignore
-function FromObject(schema: TObject, references: TSchema[], path: string, value: any) {
+function FromObject(schema: TObject, references: TSchema[], path: string, value: any): unknown {
   if (!IsObject(value)) return Default(schema, path, value)
   const knownKeys = KeyOfPropertyKeys(schema) as string[]
   const knownProperties = { ...value } as Record<PropertyKey, unknown>
@@ -147,7 +157,7 @@ function FromObject(schema: TObject, references: TSchema[], path: string, value:
   return Default(schema, path, unknownProperties)
 }
 // prettier-ignore
-function FromRecord(schema: TRecord, references: TSchema[], path: string, value: any) {
+function FromRecord(schema: TRecord, references: TSchema[], path: string, value: any): unknown {
   if (!IsObject(value)) return Default(schema, path, value)
   const pattern = Object.getOwnPropertyNames(schema.patternProperties)[0]
   const knownKeys = new RegExp(pattern)
@@ -167,23 +177,23 @@ function FromRecord(schema: TRecord, references: TSchema[], path: string, value:
   return Default(schema, path, unknownProperties)
 }
 // prettier-ignore
-function FromRef(schema: TRef, references: TSchema[], path: string, value: any) {
+function FromRef(schema: TRef, references: TSchema[], path: string, value: any): unknown {
   const target = Deref(schema, references)
   return Default(schema, path, Visit(target, references, path, value))
 }
 // prettier-ignore
-function FromThis(schema: TThis, references: TSchema[], path: string, value: any) {
+function FromThis(schema: TThis, references: TSchema[], path: string, value: any): unknown {
   const target = Deref(schema, references)
   return Default(schema, path, Visit(target, references, path, value))
 }
 // prettier-ignore
-function FromTuple(schema: TTuple, references: TSchema[], path: string, value: any) {
+function FromTuple(schema: TTuple, references: TSchema[], path: string, value: any): unknown {
   return (IsArray(value) && IsArray(schema.items))
     ? Default(schema, path, schema.items.map((schema, index) => Visit(schema, references, `${path}/${index}`, value[index])))
     : Default(schema, path, value)
 }
 // prettier-ignore
-function FromUnion(schema: TUnion, references: TSchema[], path: string, value: any) {
+function FromUnion(schema: TUnion, references: TSchema[], path: string, value: any): unknown {
   for (const subschema of schema.anyOf) {
     if (!Check(subschema, references, value)) continue
     // note: ensure interior is decoded first
@@ -199,6 +209,8 @@ function Visit(schema: TSchema, references: TSchema[], path: string, value: any)
   switch (schema[Kind]) {
     case 'Array':
       return FromArray(schema_, references_, path, value)
+    case 'Import':
+      return FromImport(schema_, references_, path, value)      
     case 'Intersect':
       return FromIntersect(schema_, references_, path, value)
     case 'Not':

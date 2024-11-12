@@ -12,7 +12,7 @@ describe('compiler/Ref', () => {
       },
       { $id: Assert.NextId() },
     )
-    const R = Type.Ref(T)
+    const R = Type.Ref(T.$id!)
     Ok(
       R,
       {
@@ -32,7 +32,7 @@ describe('compiler/Ref', () => {
       },
       { $id: Assert.NextId() },
     )
-    const R = Type.Ref(T)
+    const R = Type.Ref(T.$id!)
     Fail(
       R,
       {
@@ -54,7 +54,7 @@ describe('compiler/Ref', () => {
         x: Type.Number(),
         y: Type.Number(),
         z: Type.Number(),
-        r: Type.Optional(Type.Ref(T)),
+        r: Type.Optional(Type.Ref(T.$id!)),
       },
       { $id: 'T' },
     )
@@ -70,7 +70,7 @@ describe('compiler/Ref', () => {
         nodes: Type.Array(Node),
       }),
     )
-    const R = Type.Ref(T)
+    const R = Type.Ref(T.$id!)
     Ok(R, { id: '', nodes: [{ id: '', nodes: [] }] }, [T])
     Fail(R, { id: '', nodes: [{ id: 1, nodes: [] }] }, [T])
   })

@@ -153,7 +153,7 @@ describe('value/cast/Union', () => {
     const A = Type.Object({ type: Type.Literal('A') }, { $id: 'A' })
     const B = Type.Object({ type: Type.Literal('B'), value: Type.Number() }, { $id: 'B' })
     const RA = Type.Union([A, B])
-    const RB = Type.Union([Type.Ref(A), Type.Ref(B)])
+    const RB = Type.Union([Type.Ref('A'), Type.Ref('B')])
     // variant 0
     Assert.IsEqual(Value.Cast(RA, [A, B], { type: 'B' }), { type: 'B', value: 0 })
     Assert.IsEqual(Value.Cast(RB, [A, B], { type: 'B' }), { type: 'B', value: 0 })
