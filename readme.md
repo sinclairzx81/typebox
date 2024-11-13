@@ -4,7 +4,7 @@
 
 <p>Json Schema Type Builder with Static Type Resolution for TypeScript</p>
 
-<img src="https://github.com/sinclairzx81/typebox/blob/master/typebox.png?raw=true" />
+<img src="https://raw.githubusercontent.com/sinclairzx81/typebox/refs/heads/master/typebox.png" />
 
 <br />
 <br />
@@ -777,7 +777,8 @@ type T = Static<typeof T>                            // type T = string | null
 TypeBox Modules are containers for related types. They function as namespaces and enable internal types to reference each other via string references. Modules support both singular and mutually recursive types. They provide a mechanism to create circular types irrespective of the order in which types are defined.
 
 ```typescript
-// The following creates a circular recursive type.
+
+// The following creates a Module of circular recursive Types.
 
 const Module = Type.Module({
   A: Type.Object({ 
@@ -791,7 +792,7 @@ const Module = Type.Module({
   }),
 })
 
-// Module types must be imported before use.
+// Module Types must be imported before use.
 
 const A = Module.Import('A')                     // const A: TImport<{...}, 'A'>
 
