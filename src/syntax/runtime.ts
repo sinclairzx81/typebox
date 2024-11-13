@@ -48,6 +48,7 @@ const SemiColon = ';'
 const SingleQuote = "'"
 const DoubleQuote = '"'
 const Tilde = '`'
+const Equals = '='
 
 // ------------------------------------------------------------------
 // DestructureRight
@@ -59,13 +60,140 @@ function DestructureRight<T>(values: T[]): [T[], T | undefined] {
     : [values, undefined]
 }
 // ------------------------------------------------------------------
+// Deref
+// ------------------------------------------------------------------
+const Deref = (context: Types.TProperties, key: string): Types.TSchema => {
+  return key in context ? context[key] : Types.Ref(key)
+}
+// ------------------------------------------------------------------
+// ExportModifier
+// ------------------------------------------------------------------
+// prettier-ignore
+const ExportModifierMapping = (values: unknown[]) => {
+  return values.length === 1
+}
+// prettier-ignore
+const ExportModifier = Runtime.Union([
+  Runtime.Tuple([Runtime.Const('export')]), Runtime.Tuple([])
+], ExportModifierMapping)
+
+// ------------------------------------------------------------------
+// TypeAliasDeclaration
+// ------------------------------------------------------------------
+// prettier-ignore
+const TypeAliasDeclarationMapping = (_Export: boolean, _Keyword: 'type', Ident: string, _Equals: typeof Equals, Type: Types.TSchema) => {
+  return { [Ident]: Type }
+}
+// prettier-ignore
+const TypeAliasDeclaration = Runtime.Tuple([
+  Runtime.Ref<boolean>('ExportModifier'), 
+  Runtime.Const('type'), 
+  Runtime.Ident(), 
+  Runtime.Const(Equals), 
+  Runtime.Ref<Types.TSchema>('Type')
+], value => TypeAliasDeclarationMapping(...value))
+
+// ------------------------------------------------------------------
+// HeritageList
+// ------------------------------------------------------------------
+// prettier-ignore (note, heritage list should disallow trailing comma)
+const HeritageListDelimiter = Runtime.Union([Runtime.Tuple([Runtime.Const(Comma), Runtime.Const(Newline)]), Runtime.Tuple([Runtime.Const(Comma)])])
+// prettier-ignore
+const HeritageListMapping = (values: string[], context: Types.TProperties): Types.TSchema[] => {
+  return (
+    values.length === 3 ? [Deref(context, values[0]), ...values[2] as never] :
+    values.length === 1 ? [Deref(context, values[0])] :
+    []
+  ) as never
+}
+// prettier-ignore
+const HeritageList = Runtime.Union([
+  Runtime.Tuple([Runtime.Ident(), HeritageListDelimiter, Runtime.Ref('HeritageList')]),
+  Runtime.Tuple([Runtime.Ident()]),
+  Runtime.Tuple([])
+], HeritageListMapping)
+// ------------------------------------------------------------------
+// Heritage
+// ------------------------------------------------------------------
+// prettier-ignore
+const HeritageMapping = (values: unknown[]): unknown[] => {
+  return (values.length === 2 ? values[1] : []) as never
+}
+// prettier-ignore
+const Heritage = Runtime.Union([
+  Runtime.Tuple([Runtime.Const('extends'), Runtime.Ref('HeritageList')]),
+  Runtime.Tuple([])
+], HeritageMapping)
+// ------------------------------------------------------------------
+// InterfaceDeclaration
+// ------------------------------------------------------------------
+// prettier-ignore
+const InterfaceDeclarationMapping = (_0: boolean, _1: 'interface', Ident: string, Heritage: Types.TRef[], _4: typeof LBrace, Properties: Types.TProperties, _6: typeof RBrace) => {
+  return { [Ident]: Types.Intersect([...Heritage, Types.Object(Properties)]) }
+}
+// prettier-ignore
+const InterfaceDeclaration = Runtime.Tuple([
+  Runtime.Ref<boolean>('ExportModifier'), 
+  Runtime.Const('interface'), 
+  Runtime.Ident(), 
+  Runtime.Ref<Types.TRef[]>('Heritage'), 
+  Runtime.Const(LBrace), 
+  Runtime.Ref<Types.TProperties>('Properties'), 
+  Runtime.Const(RBrace), 
+], values => InterfaceDeclarationMapping(...values))
+
+// ------------------------------------------------------------------
+// ModuleType
+// ------------------------------------------------------------------
+// prettier-ignore
+const ModuleType = Runtime.Union([
+  Runtime.Ref('InterfaceDeclaration'),
+  Runtime.Ref('TypeAliasDeclaration')
+])
+// ------------------------------------------------------------------
+// ModuleProperties
+// ------------------------------------------------------------------
+// prettier-ignore
+const ModulePropertiesDelimiter = Runtime.Union([
+  Runtime.Tuple([Runtime.Const(SemiColon), Runtime.Const(Newline)]),
+  Runtime.Tuple([Runtime.Const(SemiColon)]),
+  Runtime.Tuple([Runtime.Const(Newline)]),
+])
+// prettier-ignore
+const ModulePropertiesMapping = (values: unknown[]): Types.TProperties => {
+  return (
+    values.length === 3 ? { ...values[0] as Types.TProperties, ...values[2] as Types.TProperties }:
+    values.length === 1 ? values[0] as Types.TProperties :
+    {} as Types.TProperties
+  )
+}
+// prettier-ignore
+const ModuleProperties = Runtime.Union([
+  Runtime.Tuple([Runtime.Ref<Types.TProperties>('ModuleType'), ModulePropertiesDelimiter, Runtime.Ref<Types.TProperties>('ModuleProperties')]),
+  Runtime.Tuple([Runtime.Ref<Types.TProperties>('ModuleType')]),
+  Runtime.Tuple([]),
+], ModulePropertiesMapping)
+// ------------------------------------------------------------------
+// ModuleDeclaration
+// ------------------------------------------------------------------
+// prettier-ignore
+const ModuleIdentifier = Runtime.Union([
+  Runtime.Tuple([Runtime.Ident()]),
+  Runtime.Tuple([])
+])
+// prettier-ignore
+const ModuleDeclarationMapping = (_1: boolean, _2: 'module', _Ident: string[], _3: typeof LBrace, Properties: Types.TProperties, _5: typeof RBrace) => {
+  return Types.Module(Properties)
+}
+// prettier-ignore
+const ModuleDeclaration = Runtime.Tuple([
+  Runtime.Ref<boolean>('ExportModifier'), Runtime.Const('module'), ModuleIdentifier, Runtime.Const(LBrace), Runtime.Ref<Types.TProperties>('ModuleProperties'), Runtime.Const(RBrace)
+], values => ModuleDeclarationMapping(...values))
+// ------------------------------------------------------------------
 // Reference
 // ------------------------------------------------------------------
 // prettier-ignore
-const Reference = Runtime.Ident((value, context: Record<PropertyKey, Types.TSchema>) => {
-  return value in context ? context[value] : Types.Ref(value)
-})
-
+const Reference = Runtime.Ident((value, context: Types.TProperties) => Deref(context, value))
 // ------------------------------------------------------------------
 // Literal
 // ------------------------------------------------------------------
@@ -75,7 +203,6 @@ const Literal = Runtime.Union([
   Runtime.Number(value => Types.Literal(parseFloat(value))),
   Runtime.String([SingleQuote, DoubleQuote, Tilde], value => Types.Literal(value))
 ])
-
 // ------------------------------------------------------------------
 // Keyword
 // ------------------------------------------------------------------
@@ -94,7 +221,6 @@ const Keyword = Runtime.Union([
   Runtime.Const('unknown', Runtime.As(Types.Unknown())),
   Runtime.Const('void', Runtime.As(Types.Void())),
 ])
-
 // ------------------------------------------------------------------
 // KeyOf
 // ------------------------------------------------------------------
@@ -106,7 +232,6 @@ const KeyOfMapping = (values: unknown[]) => (
 const KeyOf = Runtime.Union([
   Runtime.Tuple([Runtime.Const('keyof')]), Runtime.Tuple([])
 ], KeyOfMapping)
-
 // ------------------------------------------------------------------
 // IndexArray
 // ------------------------------------------------------------------
@@ -137,7 +262,6 @@ const Extends = Runtime.Union([
   Runtime.Tuple([Runtime.Const('extends'), Runtime.Ref('Type'), Runtime.Const(Question), Runtime.Ref('Type'), Runtime.Const(Colon), Runtime.Ref('Type')]),
   Runtime.Tuple([])
 ], ExtendsMapping)
-
 // ------------------------------------------------------------------
 // Base
 // ------------------------------------------------------------------
@@ -219,7 +343,6 @@ const Factor = Runtime.Tuple([
   Runtime.Ref<unknown[]>('IndexArray'),
   Runtime.Ref<Types.TSchema[]>('Extends')
 ], values => FactorMapping(...values))
-
 // ------------------------------------------------------------------
 // Expr
 // ------------------------------------------------------------------
@@ -266,30 +389,26 @@ const Expr = Runtime.Tuple([
 // Type
 // ------------------------------------------------------------------
 const Type = Runtime.Ref('Expr')
-
 // ------------------------------------------------------------------
 // Properties
 // ------------------------------------------------------------------
-// prettier-ignore
 const PropertyKey = Runtime.Union([Runtime.Ident(), Runtime.String([SingleQuote, DoubleQuote])])
+const Readonly = Runtime.Union([Runtime.Tuple([Runtime.Const('readonly')]), Runtime.Tuple([])], (value) => value.length > 0)
+const Optional = Runtime.Union([Runtime.Tuple([Runtime.Const(Question)]), Runtime.Tuple([])], (value) => value.length > 0)
 // prettier-ignore
-const PropertyReadonly = Runtime.Union([Runtime.Tuple([Runtime.Const('readonly')]), Runtime.Tuple([])], value => value.length > 0)
-// prettier-ignore
-const PropertyOptional = Runtime.Union([Runtime.Tuple([Runtime.Const(Question)]), Runtime.Tuple([])], value => value.length > 0)
-// prettier-ignore
-const PropertyMapping = (Readonly: boolean, Key: string, Optional: boolean, _: typeof Colon, Type: Types.TSchema) => ({
+const PropertyMapping = (IsReadonly: boolean, Key: string, IsOptional: boolean, _: typeof Colon, Type: Types.TSchema) => ({
   [Key]: (
-    Readonly && Optional ? Types.ReadonlyOptional(Type) :
-    Readonly && !Optional ? Types.Readonly(Type) :
-    !Readonly && Optional ? Types.Optional(Type) :
+    IsReadonly && IsOptional ? Types.ReadonlyOptional(Type) :
+    IsReadonly && !IsOptional ? Types.Readonly(Type) :
+    !IsReadonly && IsOptional ? Types.Optional(Type) :
     Type
   )
 })
 // prettier-ignore
 const Property = Runtime.Tuple([
-  Runtime.Ref<boolean>('PropertyReadonly'),
+  Runtime.Ref<boolean>('Readonly'),
   Runtime.Ref<string>('PropertyKey'),
-  Runtime.Ref<boolean>('PropertyOptional'),
+  Runtime.Ref<boolean>('Optional'),
   Runtime.Const(Colon),
   Runtime.Ref<Types.TSchema>('Type'),
 ], value => PropertyMapping(...value))
@@ -303,30 +422,27 @@ const PropertyDelimiter = Runtime.Union([
 ])
 // prettier-ignore
 const Properties = Runtime.Union([
-  Runtime.Tuple([Runtime.Ref('Property'), Runtime.Ref('PropertyDelimiter'), Runtime.Ref('Properties')]),
-  Runtime.Tuple([Runtime.Ref('Property'), Runtime.Ref('PropertyDelimiter')]),
-  Runtime.Tuple([Runtime.Ref('Property')]),
+  Runtime.Tuple([Runtime.Ref<Types.TProperties>('Property'), Runtime.Ref('PropertyDelimiter'), Runtime.Ref<Types.TProperties>('Properties')]),
+  Runtime.Tuple([Runtime.Ref<Types.TProperties>('Property'), Runtime.Ref('PropertyDelimiter')]),
+  Runtime.Tuple([Runtime.Ref<Types.TProperties>('Property')]),
   Runtime.Tuple([])
 ], values => (
-  values.length === 3 ? [values[0], ...values[2] as unknown[]] :
-  values.length === 2 ? [values[0]] :
-  values.length === 1 ? [values[0]] :
-  []
+  values.length === 3 ? { ...values[0], ...values[2] } :
+  values.length === 2 ? values[0] :
+  values.length === 1 ? values[0] :
+  {}
 ))
-
 // ------------------------------------------------------------------
 // Object
 // ------------------------------------------------------------------
 // prettier-ignore
-const ObjectMapping = (values: Record<string, Types.TSchema>[]) => Types.Object(values.reduce((properties, record) => {
-  return { ...properties, ...record }
-}, {} as Types.TProperties))
+const ObjectMapping = (_0: typeof LBrace, Properties: Types.TProperties, _2: typeof RBrace) => Types.Object(Properties)
 // prettier-ignore
 const _Object = Runtime.Tuple([
   Runtime.Const(LBrace),
-  Runtime.Ref<Record<string, Types.TSchema>[]>('Properties'),
+  Runtime.Ref<Types.TProperties>('Properties'),
   Runtime.Const(RBrace)
-], values => ObjectMapping(values[1]))
+], values => ObjectMapping(...values))
 
 // ------------------------------------------------------------------
 // Tuple
@@ -401,7 +517,15 @@ const MappedMapping = (values: unknown[]) => {
 }
 // prettier-ignore
 const Mapped = Runtime.Tuple([
-  Runtime.Const(LBrace), Runtime.Const(LBracket), Runtime.Ident(), Runtime.Const('in'), Runtime.Ref<Types.TSchema>('Type'), Runtime.Const(RBracket), Runtime.Const(Colon), Runtime.Ref<Types.TSchema>('Type'), Runtime.Const(RBrace)
+  Runtime.Const(LBrace), 
+  Runtime.Const(LBracket), 
+  Runtime.Ident(), 
+  Runtime.Const('in'), 
+  Runtime.Ref<Types.TSchema>('Type'), 
+  Runtime.Const(RBracket), 
+  Runtime.Const(Colon), 
+  Runtime.Ref<Types.TSchema>('Type'), 
+  Runtime.Const(RBrace)
 ], MappedMapping)
 // ------------------------------------------------------------------
 // AsyncIterator
@@ -621,11 +745,37 @@ const Date = Runtime.Const('Date', Runtime.As(Types.Date()))
 // Uint8Array
 // ------------------------------------------------------------------
 const Uint8Array = Runtime.Const('Uint8Array', Runtime.As(Types.Uint8Array()))
+
+// ------------------------------------------------------------------
+// Main
+// ------------------------------------------------------------------
+// prettier-ignore
+const Main = Runtime.Union([
+  ModuleDeclaration,
+  TypeAliasDeclaration,
+  InterfaceDeclaration,
+  Type
+])
 // ------------------------------------------------------------------
 // Module
 // ------------------------------------------------------------------
 // prettier-ignore
 export const Module = new Runtime.Module({
+  // ----------------------------------------------------------------
+  // Modules, Interfaces and Type Aliases
+  // ----------------------------------------------------------------
+  ExportModifier,
+  HeritageList,
+  Heritage,
+  InterfaceDeclaration,
+  TypeAliasDeclaration,
+  ModuleType,
+  ModuleProperties,
+  ModuleDeclaration,
+
+  // ----------------------------------------------------------------
+  // Type Expressions
+  // ----------------------------------------------------------------
   Literal,
   Keyword,
   KeyOf,
@@ -637,10 +787,10 @@ export const Module = new Runtime.Module({
   ExprTerm,
   ExprTail,
   Expr,
-  Type,
+  Type, // Alias for Expr
   PropertyKey,
-  PropertyReadonly,
-  PropertyOptional,
+  Readonly,
+  Optional,
   Property,
   PropertyDelimiter,
   Properties,
@@ -674,5 +824,10 @@ export const Module = new Runtime.Module({
   Uncapitalize,
   Date,
   Uint8Array,
-  Reference
+  Reference,
+
+  // ----------------------------------------------------------------
+  // Main
+  // ----------------------------------------------------------------
+  Main
 })

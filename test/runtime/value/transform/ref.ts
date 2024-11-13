@@ -8,7 +8,7 @@ describe('value/transform/Ref', () => {
   // Identity
   // --------------------------------------------------------
   const N0 = Type.Number({ $id: 'N0' })
-  const T0 = Type.Transform(Type.Ref(N0))
+  const T0 = Type.Transform(Type.Ref('N0'))
     .Decode((value) => value)
     .Encode((value) => value)
   it('Should decode mapped', () => {
@@ -26,7 +26,7 @@ describe('value/transform/Ref', () => {
   // Mapped
   // --------------------------------------------------------
   const N1 = Type.Number({ $id: 'N1' })
-  const T1 = Type.Transform(Type.Ref(N1))
+  const T1 = Type.Transform(Type.Unsafe<number>(Type.Ref('N1')))
     .Decode((value) => value + 1)
     .Encode((value) => value - 1)
   it('Should decode mapped', () => {
@@ -46,7 +46,7 @@ describe('value/transform/Ref', () => {
   const N2 = Type.Transform(Type.Number({ $id: 'N2' }))
     .Decode((value) => value + 1)
     .Encode((value) => value - 1)
-  const T2 = Type.Transform(Type.Ref(N2))
+  const T2 = Type.Transform(Type.Unsafe<number>(Type.Ref('N2')))
     .Decode((value) => value + 1)
     .Encode((value) => value - 1)
   it('Should decode mapped remote', () => {

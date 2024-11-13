@@ -38,6 +38,7 @@ import type { TBoolean } from '../../type/boolean/index'
 import type { TDate } from '../../type/date/index'
 import type { TInteger } from '../../type/integer/index'
 import type { TIntersect } from '../../type/intersect/index'
+import type { TImport } from '../../type/module/index'
 import type { TLiteral } from '../../type/literal/index'
 import type { TNull } from '../../type/null/index'
 import type { TNumber } from '../../type/number/index'
@@ -182,6 +183,11 @@ function FromBoolean(schema: TBoolean, references: TSchema[], value: any): unkno
 function FromDate(schema: TDate, references: TSchema[], value: any): unknown {
   return TryConvertDate(value)
 }
+function FromImport(schema: TImport, references: TSchema[], value: unknown): unknown {
+  const definitions = globalThis.Object.values(schema.$defs) as TSchema[]
+  const target = schema.$defs[schema.$ref] as TSchema
+  return Visit(target, [...references, ...definitions], value)
+}
 function FromInteger(schema: TInteger, references: TSchema[], value: any): unknown {
   return TryConvertInteger(value)
 }
@@ -261,6 +267,8 @@ function Visit(schema: TSchema, references: TSchema[], value: any): unknown {
       return FromBoolean(schema_, references_, value)
     case 'Date':
       return FromDate(schema_, references_, value)
+    case 'Import':
+      return FromImport(schema_, references_, value)
     case 'Integer':
       return FromInteger(schema_, references_, value)
     case 'Intersect':

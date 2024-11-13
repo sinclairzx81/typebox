@@ -32,12 +32,13 @@ import { Kind } from '../../type/symbols/index'
 import { Create } from '../create/index'
 import { Check } from '../check/index'
 import { Clone } from '../clone/index'
-import { Deref } from '../deref/index'
+import { Deref, Pushref } from '../deref/index'
 
 import type { TSchema } from '../../type/schema/index'
 import type { Static } from '../../type/static/index'
 import type { TArray } from '../../type/array/index'
 import type { TConstructor } from '../../type/constructor/index'
+import type { TImport } from '../../type/module/index'
 import type { TIntersect } from '../../type/intersect/index'
 import type { TObject } from '../../type/object/index'
 import type { TRecord } from '../../type/record/index'
@@ -133,6 +134,11 @@ function FromConstructor(schema: TConstructor, references: TSchema[], value: any
   }
   return result
 }
+function FromImport(schema: TImport, references: TSchema[], value: unknown): boolean {
+  const definitions = globalThis.Object.values(schema.$defs) as TSchema[]
+  const target = schema.$defs[schema.$ref] as TSchema
+  return Visit(target, [...references, ...definitions], value)
+}
 function FromIntersect(schema: TIntersect, references: TSchema[], value: any): any {
   const created = Create(schema, references)
   const mapped = IsObject(created) && IsObject(value) ? { ...(created as any), ...value } : value
@@ -187,7 +193,7 @@ function FromUnion(schema: TUnion, references: TSchema[], value: any): any {
   return Check(schema, references, value) ? Clone(value) : CastUnion(schema, references, value)
 }
 function Visit(schema: TSchema, references: TSchema[], value: any): any {
-  const references_ = IsString(schema.$id) ? [...references, schema] : references
+  const references_ = IsString(schema.$id) ? Pushref(schema, references) : references
   const schema_ = schema as any
   switch (schema[Kind]) {
     // --------------------------------------------------------------
@@ -197,6 +203,8 @@ function Visit(schema: TSchema, references: TSchema[], value: any): any {
       return FromArray(schema_, references_, value)
     case 'Constructor':
       return FromConstructor(schema_, references_, value)
+    case 'Import':
+      return FromImport(schema_, references_, value)
     case 'Intersect':
       return FromIntersect(schema_, references_, value)
     case 'Never':

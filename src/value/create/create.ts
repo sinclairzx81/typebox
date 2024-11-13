@@ -45,6 +45,7 @@ import type { TBoolean } from '../../type/boolean/index'
 import type { TDate } from '../../type/date/index'
 import type { TConstructor } from '../../type/constructor/index'
 import type { TFunction } from '../../type/function/index'
+import type { TImport } from '../../type/module/index'
 import type { TInteger } from '../../type/integer/index'
 import type { TIntersect } from '../../type/intersect/index'
 import type { TIterator } from '../../type/iterator/index'
@@ -166,6 +167,11 @@ function FromFunction(schema: TFunction, references: TSchema[]): any {
   } else {
     return () => Visit(schema.returns, references)
   }
+}
+function FromImport(schema: TImport, references: TSchema[]): any {
+  const definitions = globalThis.Object.values(schema.$defs) as TSchema[]
+  const target = schema.$defs[schema.$ref] as TSchema
+  return Visit(target, [...references, ...definitions])
 }
 function FromInteger(schema: TInteger, references: TSchema[]): any {
   if (HasPropertyKey(schema, 'default')) {
@@ -411,6 +417,8 @@ function Visit(schema: TSchema, references: TSchema[]): unknown {
       return FromDate(schema_, references_)
     case 'Function':
       return FromFunction(schema_, references_)
+    case 'Import':
+      return FromImport(schema_, references_)
     case 'Integer':
       return FromInteger(schema_, references_)
     case 'Intersect':

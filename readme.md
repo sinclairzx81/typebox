@@ -68,8 +68,7 @@ License MIT
   - [Options](#types-options)
   - [Properties](#types-properties)
   - [Generics](#types-generics)
-  - [References](#types-references)
-  - [Recursive](#types-recursive)
+  - [Modules](#types-modules)
   - [Template Literal](#types-template-literal)
   - [Indexed](#types-indexed)
   - [Mapped](#types-mapped)
@@ -79,7 +78,9 @@ License MIT
   - [Unsafe](#types-unsafe)
 - [Syntax](#syntax)
   - [Parse](#syntax-parse)
+  - [Compose](#syntax-compose)
   - [Context](#syntax-context)
+  - [Module](#syntax-module)
   - [Static](#syntax-static)
   - [Limits](#syntax-limits)
 - [Values](#values)
@@ -769,103 +770,40 @@ const T = Nullable(Type.String())                    // const T = {
 type T = Static<typeof T>                            // type T = string | null
 ```
 
-<a name='types-references'></a>
+<a name='types-modules'></a>
 
-### Reference Types
+### Module Types
 
-Reference types can be created with Ref. These types infer the same as the target type but only store a named `$ref` to the target type.
-
-```typescript
-const Vector = Type.Object({                         // const Vector = {
-  x: Type.Number(),                                  //   type: 'object',
-  y: Type.Number(),                                  //   required: ['x', 'y', 'z'],
-}, { $id: 'Vector' })                                //   properties: {
-                                                     //     x: { type: 'number' },
-                                                     //     y: { type: 'number' }
-                                                     //   },
-                                                     //   $id: 'Vector'
-                                                     // }
-
-const VectorRef = Type.Ref(Vector)                   // const VectorRef = {
-                                                     //   $ref: 'Vector'
-                                                     // }
-
-type VectorRef = Static<typeof VectorRef>            // type VectorRef = {
-                                                     //    x: number,
-                                                     //    y: number
-                                                     // }
-```
-Use Deref to dereference a type. This function will replace any interior reference with the target type.
-```typescript
-const Vertex = Type.Object({                         // const Vertex = {
-  position: VectorRef,                               //   type: 'object',
-  texcoord: VectorRef,                               //   required: ['position', 'texcoord'],
-})                                                   //   properties: {
-                                                     //     position: { $ref: 'Vector' },
-                                                     //     texcoord: { $ref: 'Vector' }
-                                                     //   }
-                                                     // }
-
-const VertexDeref = Type.Deref(Vertex, [Vector])     // const VertexDeref = {
-                                                     //   type: 'object',
-                                                     //   required: ['position', 'texcoord'],
-                                                     //   properties: {
-                                                     //     position: {
-                                                     //       type: 'object',
-                                                     //       required: ['x', 'y', 'z'],
-                                                     //       properties: {
-                                                     //         x: { type: 'number' },
-                                                     //         y: { type: 'number' }
-                                                     //       }
-                                                     //     },
-                                                     //     texcoord: {
-                                                     //       type: 'object',
-                                                     //       required: ['x', 'y', 'z'],
-                                                     //       properties: {
-                                                     //         x: { type: 'number' },
-                                                     //         y: { type: 'number' }
-                                                     //       }
-                                                     //     }
-                                                     //   }
-                                                     // }
-```
-Note that Ref types do not store structural information about the type they're referencing. Because of this, these types cannot be used with some mapping types (such as Partial or Pick). For applications that require mapping on Ref, use Deref to normalize the type first.
-
-<a name='types-recursive'></a>
-
-### Recursive Types
-
-TypeBox supports recursive data structures with Recursive. This type wraps an interior type and provides it a `this` context that allows the type to reference itself. The following creates a recursive type. Singular recursive inference is also supported.
+TypeBox Modules are containers for related types. They function as namespaces and enable internal types to reference each other via string references. Modules support both singular and mutually recursive types. They provide a mechanism to create circular types irrespective of the order in which types are defined.
 
 ```typescript
-const Node = Type.Recursive(This => Type.Object({    // const Node = {
-  id: Type.String(),                                 //   $id: 'Node',
-  nodes: Type.Array(This)                            //   type: 'object',
-}), { $id: 'Node' })                                 //   properties: {
-                                                     //     id: {
-                                                     //       type: 'string'
-                                                     //     },
-                                                     //     nodes: {
-                                                     //       type: 'array',
-                                                     //       items: {
-                                                     //         $ref: 'Node'
-                                                     //       }
-                                                     //     }
-                                                     //   },
-                                                     //   required: [
-                                                     //     'id',
-                                                     //     'nodes'
-                                                     //   ]
-                                                     // }
+// The following creates a circular recursive type.
 
-type Node = Static<typeof Node>                      // type Node = {
-                                                     //   id: string
-                                                     //   nodes: Node[]
-                                                     // }
+const Module = Type.Module({
+  A: Type.Object({ 
+    b: Type.Ref('B') // Ref B:
+  }),
+  B: Type.Object({
+    c: Type.Ref('C') // Ref C:
+  }),
+  C: Type.Object({
+    a: Type.Ref('A') // Ref A:
+  }),
+})
 
-function test(node: Node) {
-  const id = node.nodes[0].nodes[0].id               // id is string
-}
+// Module types must be imported before use.
+
+const A = Module.Import('A')                     // const A: TImport<{...}, 'A'>
+
+type A = Static<typeof A>                        // type A = { 
+                                                 //   b: {
+                                                 //     c: {
+                                                 //       a: {
+                                                 //         b: ...
+                                                 //       }
+                                                 //     }
+                                                 //   }
+                                                 // }
 ```
 
 <a name='types-template-literal'></a>
@@ -1084,11 +1022,11 @@ if(TypeGuard.IsString(T)) {
 
 <a name='syntax'></a>
 
-## Syntax
+## Syntax Types
 
-TypeBox supports parsing TypeScript type annotation syntax directly into TypeBox types, providing an alternative to the Type.* API for type construction. This feature functions at runtime and within the TypeScript type system, enabling types encoded as strings to be inferred as equivalent TypeBox types.
+TypeBox provides support for Syntax Types, enabling it to parse TypeScript syntax directly into TypeBox types. Syntax Types serve as a DSL frontend for TypeBox's type builder and are useful for converting existing TypeScript type definitions into Json Schema schematics.
 
-TypeScript syntax parsing is provided as an optional import.
+Syntax Types are provided via optional import.
 
 ```typescript
 import { Parse } from '@sinclair/typebox/syntax'
@@ -1098,9 +1036,7 @@ import { Parse } from '@sinclair/typebox/syntax'
 
 ### Parse
 
-The Parse function can be used to parse TypeScript code into TypeBox types. The left hand result will be a inferred TypeBox type of TSchema. Invalid syntax will result in an undefined return value.
-
-[TypeScript Link Here](https://www.typescriptlang.org/play/?moduleResolution=99&module=199#code/JYWwDg9gTgLgBAbzgBQIZQM4FM4F84BmUEIcA5AAIbAB2AxgDarBQD0MAnmFgEYQAerDBxoxU-MgChJdCDQzwAgnAC8KdNgAUZBVFoBzMgEo4ps+YuXLrVnFnylALjgAVAMow9NfdPsK4AEKq6phY2gDaAIwANHAATLEAzAC6xlbpGTZ2cv4Bzi4uAK5gDFgAPOGSGdU1tdVZpi4AMsAwWFCoDGWRAHzRVXWDQ5m2jS1tHV1xfQPDc3MNruPtnWWJPbPzW7VZyRsyOfAAwsFooZoABkj8zjSFIDztsRy3949QeBcm6Vl+x-kAeR4ACssHQYGUEJttjCrIsbq4AHJvdrQ2Ho0yLF5IlFQNEY2FZXD7IA)
+Use the Parse function to convert a TypeScript string into a TypeBox type. TypeBox will infer the appropriate TSchema type or return undefined if there is a syntax error.
 
 ```typescript
 const A = Parse('string')                           // const A: TString
@@ -1117,64 +1053,96 @@ const C = Parse(`{ x: number, y: number }`)         // const C: TObject<{
                                                     // }>
 ```
 
+
+
+<a name='syntax-compose'></a>
+
+### Compose
+
+Syntax Types are designed to be interchangeable with standard Types.
+
+```typescript
+const T = Type.Object({                             // const T: TObject<{
+  x: Parse('number'),                               //   x: TNumber,
+  y: Parse('number'),                               //   y: TNumber,
+  z: Parse('number')                                //   z: TNumber
+})                                                  // }>
+```
+
+<a name='syntax-module'></a>
+
+### Module
+
+Syntax Types support Module parsing, which is useful for processing multiple TypeScript types. Module parsing supports type alias and interface definitions. Generics are currently unsupported as of 0.34.0.
+
+```typescript
+const Foo = Parse(`module Foo {
+
+  export type A = string
+
+  export type B = number
+
+  export type C = A | B
+
+}`)
+
+const C = Foo.Import('C')                           // const C: TImport<{
+                                                    //   ...
+                                                    // }, 'C'>
+```
+
 <a name='syntax-context'></a>
 
 ### Context
 
-The Parse function accepts an optional context parameter that enables external types to be referenced within the syntax.
-
-[TypeScript Link Here](https://www.typescriptlang.org/play/?moduleResolution=99&module=199#code/JYWwDg9gTgLgBAbzgBQIZQM4FM4F84BmUEIcA5AAIbAB2AxgDarBQD0MAnmFgEYQAerDBxoxU-MgChQkWIjgAVLjnxES5KrUbM2nbnwmTJdCDQzwFcALyLlAOgDyPAFZY6MABRI4P33-8BgayscCYArgwAJnA8OADuUMAwMFg0cKgYAFwo6NgeAAYIkj782UrcdgByYSCxUB4AlAA0ga1tbcG+pXA0NXVNxXAcZfbVtVj1ze3TM50+wz19EwM+AF4jFWN1jTO7rXNr2b3jUJK4DXuXV-6duPkNRiZm8ACC1jmYWF6KeC35aLBgKgGAAeBQAPnuV06T3McBeZScrncIKK13R1wO3QUDjAMGApmBYK2E3BKwxFNmIXmiLxBJoRIUJKgZMGlPZQWpcHWilx+MJoKZSxZbI5Yp8t3Bj1McIAQu8AXkkJZcH8ANZYDgQAiKKHomEy+CysoAVRo9JBAG1ReKOQcFAAZJITIlkCSs222+1OlJQV0cMgez1i73Ov2gsirQM24MYzoAXSlxkNcAAwgrcl9lb84PlLAAyeRxI7CvB6zmhFOpsoASVEE2wKMtOJcbhgqJjscxXLg2OZAG5O13LgchmUB0Ph7tRzyhSdB1OKZKWi3ke20Yv9T3i4oJ5ut3hwYmjEA)
+The Parse function accepts an initial Context argument, allowing external types to be passed into the parser.
 
 ```typescript
 const T = Type.Object({                             // could be written as: Parse(`{
   x: Type.Number(),                                 //   x: number,
   y: Type.Number(),                                 //   y: number,
-  z: Type.Number()                                 //    z: number
+  z: Type.Number()                                  //   z: number
 })                                                  // }`)
 
-const A = Parse({ T }, `Partial<T>`)                // const A: TObject<{
+const A = Parse({ T }, 'Partial<T>')                // const A: TObject<{
                                                     //   x: TOptional<TNumber>,
                                                     //   y: TOptional<TNumber>,
                                                     //   z: TOptional<TNumber>
                                                     // }>
 
-const B = Parse({ T }, `keyof T`)                   // const B: TUnion<[
+const B = Parse({ T }, 'keyof T')                   // const B: TUnion<[
                                                     //   TLiteral<'x'>,
                                                     //   TLiteral<'y'>,
                                                     //   TLiteral<'z'>
                                                     // ]>
 
-const C = Parse({ T }, `T & { w: number }`)         // const C: TIntersect<[TObject<{
+const C = Parse({ T }, 'T & { w: number }')         // const C: TIntersect<[TObject<{
                                                     //    x: TNumber;
                                                     //    y: TNumber;
                                                     //    z: TNumber;
                                                     // }>, TObject<{
                                                     //    w: TNumber;
                                                     // }>]>
-
-
 ```
 
 <a name='syntax-static'></a>
 
 ### Static
 
-TypeBox provides two Static types for inferring TypeScript syntax directly from strings.
-
-[TypeScript Link Here](https://www.typescriptlang.org/play/?moduleResolution=99&module=199#code/JYWwDg9gTgLgBAbzgZRgQxsAxgBTVAZwFMBBA5LACyJDQBoV1Nd9iyAVATzCLgF84AMygQQcAOQABAsAB2WADZpgUAPQxuRAEYQAHqoKdZ6XeLgAoc6tVwA6sAUK4cwUShw0BD3HYVqtSw0eFDgAXkYMbDxCUnIqGjQAHgQ+BgADJF0ALjhZAFcQLTd+NIA+OArrOCDeZBz2AHktACsiLBhk8wrunt6+-oHBgaqK7J8AOQKiqC6hufmF3qq+Ussq+0dnWVd3T28awM0fMIjmaLYCLh5k1LgMuDH8wuK+MqWbGuPwhFnFv--3qMck9pr8AeDFiM4EA)
+Syntax Types provide two Static types for inferring TypeScript syntax from strings.
 
 ```typescript
 import { StaticParseAsSchema, StaticParseAsType } from '@sinclair/typebox/syntax' 
 
 // Will infer as a TSchema
 
-type S = StaticParseAsSchema<{}, `{ x: number }`>   // type S: TObject<{
+type S = StaticParseAsSchema<{}, '{ x: number }'>   // type S: TObject<{
                                                     //   x: TNumber
                                                     // }>
 
 // Will infer as a type
 
-type T = StaticParseAsType<{}, `{ x: number }`>     // type T = {
+type T = StaticParseAsType<{}, '{ x: number }'>     // type T = {
                                                     //  x: number
                                                     //                       
 ```
@@ -1182,9 +1150,9 @@ type T = StaticParseAsType<{}, `{ x: number }`>     // type T = {
 
 <a name='syntax-limits'></a>
 
-### Limits
+### Limitations
 
-The Parse function works by TypeBox parsing TypeScript syntax within the type system itself. This can place some additional demand on the TypeScript compiler, which may affect language service (LSP) responsiveness when working with especially large or complex types. In particular, very wide structures or deeply nested types may approach TypeScript’s instantiation limits.
+Syntax Types work by having TypeBox parse TypeScript syntax within the TypeScript type system. This approach can place some strain on the TypeScript compiler and language service, potentially affecting responsiveness. While TypeBox makes a best-effort attempt to optimize for Syntax Types, users should be mindful of the following structures:
 
 ```typescript
 // Excessively wide structures will result in instantiation limits exceeding
@@ -1211,12 +1179,12 @@ const B = Parse(`{
 }`)
 ```
 
-For parsing especially complex types, TypeBox provides the ParseOnly function, which parses strings at runtime and returns a non-inferred TSchema type. ParseOnly allows for arbitrarily complex types without reaching instantiation limits, making it useful for cases where TypeScript types need to be directly converted to Json Schema.
+In cases where Syntax Types busts through TypeScript instantiation limits, TypeBox offers a fallback ParseOnly function which will Parse the types at runtime, but not infer the type. This function can also be used for parsing non-constant strings.
 
 ```typescript
 import { ParseOnly } from '@sinclair/typebox/syntax'
 
-// ok: but where A is TSchema | undefined 
+// Where A is TSchema | undefined 
 
 const A = ParseOnly(`{
   x: {
@@ -1229,7 +1197,7 @@ const A = ParseOnly(`{
 }`)
 ```
 
-Optimizing TypeScript string parsing performance is an ongoing area of research. For more information, see the [ParseBox](https://github.com/sinclairzx81/parsebox) project, which documents TypeBox’s parsing infrastructure and focuses efforts to improve parsing performance.
+For more information on TypeBox's parsing infrastructure, refer to the [ParseBox](https://github.com/sinclairzx81/parsebox) project.
 
 <a name='values'></a>
 
@@ -1914,12 +1882,12 @@ The following table lists esbuild compiled and minified sizes for each TypeBox m
 ┌──────────────────────┬────────────┬────────────┬─────────────┐
 │ (index)              │ Compiled   │ Minified   │ Compression │
 ├──────────────────────┼────────────┼────────────┼─────────────┤
-│ typebox/compiler     │ '119.8 kb' │ ' 52.6 kb' │ '2.28 x'    │
-│ typebox/errors       │ ' 74.4 kb' │ ' 33.1 kb' │ '2.25 x'    │
-│ typebox/syntax       │ '115.3 kb' │ ' 48.3 kb' │ '2.39 x'    │
+│ typebox/compiler     │ '121.7 kb' │ ' 53.4 kb' │ '2.28 x'    │
+│ typebox/errors       │ ' 75.3 kb' │ ' 33.4 kb' │ '2.25 x'    │
+│ typebox/syntax       │ '120.1 kb' │ ' 50.5 kb' │ '2.38 x'    │
 │ typebox/system       │ '  7.4 kb' │ '  3.2 kb' │ '2.33 x'    │
-│ typebox/value        │ '157.2 kb' │ ' 66.1 kb' │ '2.38 x'    │
-│ typebox              │ ' 98.9 kb' │ ' 41.2 kb' │ '2.40 x'    │
+│ typebox/value        │ '160.3 kb' │ ' 67.4 kb' │ '2.38 x'    │
+│ typebox              │ ' 96.2 kb' │ ' 40.2 kb' │ '2.39 x'    │
 └──────────────────────┴────────────┴────────────┴─────────────┘
 ```
 

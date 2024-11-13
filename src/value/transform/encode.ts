@@ -36,6 +36,7 @@ import { Check } from '../check/index'
 
 import type { TSchema } from '../../type/schema/index'
 import type { TArray } from '../../type/array/index'
+import type { TImport } from '../../type/module/index'
 import type { TIntersect } from '../../type/intersect/index'
 import type { TNot } from '../../type/not/index'
 import type { TObject } from '../../type/object/index'
@@ -94,6 +95,15 @@ function FromArray(schema: TArray, references: TSchema[], path: string, value: a
   return IsArray(defaulted)
     ? defaulted.map((value: any, index) => Visit(schema.items, references, `${path}/${index}`, value))
     : defaulted
+}
+// prettier-ignore
+function FromImport(schema: TImport, references: TSchema[], path: string, value: unknown): unknown {
+  const definitions = globalThis.Object.values(schema.$defs) as TSchema[]
+  const target = schema.$defs[schema.$ref] as TSchema
+  const transform = schema[TransformKind as never]
+  // Note: we need to re-spec the target as TSchema + [TransformKind]
+  const transformTarget = { [TransformKind]: transform, ...target } as TSchema
+  return Visit(transformTarget as never, [...references, ...definitions], path, value)
 }
 // prettier-ignore
 function FromIntersect(schema: TIntersect, references: TSchema[], path: string, value: any) {
@@ -210,6 +220,8 @@ function Visit(schema: TSchema, references: TSchema[], path: string, value: any)
   switch (schema[Kind]) {
     case 'Array':
       return FromArray(schema_, references_, path, value)
+    case 'Import':
+      return FromImport(schema_, references_, path, value)
     case 'Intersect':
       return FromIntersect(schema_, references_, path, value)
     case 'Not':

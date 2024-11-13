@@ -33,6 +33,7 @@ import { Kind } from '../../type/symbols/index'
 
 import type { TSchema } from '../../type/schema/index'
 import type { TArray } from '../../type/array/index'
+import type { TImport } from '../../type/module/index'
 import type { TIntersect } from '../../type/intersect/index'
 import type { TObject } from '../../type/object/index'
 import type { TRecord } from '../../type/record/index'
@@ -77,6 +78,11 @@ function FromArray(schema: TArray, references: TSchema[], value: unknown): any {
 function FromDate(schema: TArray, references: TSchema[], value: unknown): any {
   // special case intercept for dates
   return IsDate(value) ? value : ValueOrDefault(schema, value)
+}
+function FromImport(schema: TImport, references: TSchema[], value: unknown): any {
+  const definitions = globalThis.Object.values(schema.$defs) as TSchema[]
+  const target = schema.$defs[schema.$ref] as TSchema
+  return Visit(target, [...references, ...definitions], value)
 }
 function FromIntersect(schema: TIntersect, references: TSchema[], value: unknown): any {
   const defaulted = ValueOrDefault(schema, value)
@@ -161,6 +167,8 @@ function Visit(schema: TSchema, references: TSchema[], value: unknown): any {
       return FromArray(schema_, references_, value)
     case 'Date':
       return FromDate(schema_, references_, value)
+    case 'Import':
+      return FromImport(schema_, references_, value)
     case 'Intersect':
       return FromIntersect(schema_, references_, value)
     case 'Object':

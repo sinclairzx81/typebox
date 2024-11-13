@@ -11,7 +11,7 @@ describe('compiler-ajv/Ref', () => {
       },
       { $id: 'T' },
     )
-    const R = Type.Ref(T)
+    const R = Type.Ref(T.$id!)
     Ok(
       R,
       {
@@ -31,7 +31,7 @@ describe('compiler-ajv/Ref', () => {
       },
       { $id: 'T' },
     )
-    const R = Type.Ref(T)
+    const R = Type.Ref(T.$id!)
     Fail(
       R,
       {
@@ -54,7 +54,7 @@ describe('compiler-ajv/Ref', () => {
         x: Type.Number(),
         y: Type.Number(),
         z: Type.Number(),
-        r: Type.Optional(Type.Ref(R)),
+        r: Type.Optional(Type.Ref(R.$id!)),
       },
       { $id: 'T' },
     )

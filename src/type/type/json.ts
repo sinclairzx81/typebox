@@ -31,7 +31,6 @@ import { Array, type TArray, type ArrayOptions } from '../array/index'
 import { Boolean, type TBoolean } from '../boolean/index'
 import { Composite, type TComposite } from '../composite/index'
 import { Const, type TConst } from '../const/index'
-import { Deref, type TDeref } from '../deref/index'
 import { Enum, type TEnum, type TEnumKey, type TEnumValue } from '../enum/index'
 import { Exclude, type TExclude, type TExcludeFromMappedResult, type TExcludeFromTemplateLiteral } from '../exclude/index'
 import { Extends, type TExtends, type TExtendsFromMappedKey, type TExtendsFromMappedResult } from '../extends/index'
@@ -47,6 +46,7 @@ import { Never, type TNever } from '../never/index'
 import { Not, type TNot } from '../not/index'
 import { Null, type TNull } from '../null/index'
 import { type TMappedKey } from '../mapped/index'
+import { Module, TModule } from '../module/index'
 import { Number, type TNumber, type NumberOptions } from '../number/index'
 import { Object, type TObject, type TProperties, type ObjectOptions } from '../object/index'
 import { Omit, type TOmit, type TOmitFromMappedKey, type TOmitFromMappedResult } from '../omit/index'
@@ -61,7 +61,6 @@ import { Ref, type TRef } from '../ref/index'
 import { Required, type TRequired, type TRequiredFromMappedResult } from '../required/index'
 import { Rest, type TRest } from '../rest/index'
 import { type TSchema, type SchemaOptions } from '../schema/index'
-import { Strict, type TStrict } from '../strict/index'
 import { String, type TString, type StringOptions } from '../string/index'
 import { TemplateLiteral, type TTemplateLiteral, type TTemplateLiteralKind, type TTemplateLiteralSyntax } from '../template-literal/index'
 import { Transform, TransformDecodeBuilder } from '../transform/index'
@@ -72,21 +71,6 @@ import { Unsafe, type TUnsafe, type UnsafeOptions } from '../unsafe/index'
 
 /** Json Type Builder with Static Resolution for TypeScript */
 export class JsonTypeBuilder {
-  // ------------------------------------------------------------------------
-  // Strict
-  // ------------------------------------------------------------------------
-  /**
-   * @deprecated `[Json]` Omits compositing symbols from this schema. It is recommended
-   * to use the JSON parse/stringify to remove compositing symbols if needed. This
-   * is how Strict works internally.
-   *
-   * ```typescript
-   * JSON.parse(JSON.stringify(Type.String()))
-   * ```
-   */
-  public Strict<T extends TSchema>(schema: T): TStrict<T> {
-    return Strict(schema)
-  }
   // ------------------------------------------------------------------------
   // Modifiers
   // ------------------------------------------------------------------------
@@ -144,10 +128,6 @@ export class JsonTypeBuilder {
   /** `[JavaScript]` Creates a readonly const type from the given value. */
   public Const</* const (not supported in 4.0) */ T>(value: T, options?: SchemaOptions): TConst<T> {
     return Const(value, options)
-  }
-  /** `[Json]` Creates a dereferenced type */
-  public Deref<T extends TSchema>(schema: T, references: TSchema[]): TDeref<T> {
-    return Deref(schema, references)
   }
   /** `[Json]` Creates a Enum type */
   public Enum<V extends TEnumValue, T extends Record<TEnumKey, V>>(item: T, options?: SchemaOptions): TEnum<T> {
@@ -227,6 +207,10 @@ export class JsonTypeBuilder {
   public Mapped(key: any, map: TMappedFunction<any>, options?: ObjectOptions): any {
     return Mapped(key, map, options)
   }
+  /** `[Json]` Creates a Type Definition Module. */
+  public Module<Properties extends TProperties>(properties: Properties): TModule<Properties> {
+    return Module(properties)
+  }
   /** `[Json]` Creates a Never type */
   public Never(options?: SchemaOptions): TNever {
     return Never(options)
@@ -287,13 +271,9 @@ export class JsonTypeBuilder {
   public Recursive<T extends TSchema>(callback: (thisType: TThis) => T, options?: SchemaOptions): TRecursive<T> {
     return Recursive(callback, options)
   }
-  /** `[Json]` Creates a Ref type. The referenced type must contain a $id */
-  public Ref<T extends TSchema>(schema: T, options?: SchemaOptions): TRef<T>
   /** `[Json]` Creates a Ref type. */
-  public Ref<T extends TSchema>($ref: string, options?: SchemaOptions): TRef<T>
-  /** `[Json]` Creates a Ref type. */
-  public Ref(unresolved: TSchema | string, options?: SchemaOptions) {
-    return Ref(unresolved as any, options)
+  public Ref<Ref extends string>($ref: Ref, options?: SchemaOptions): TRef<Ref> {
+    return Ref($ref, options)
   }
   /** `[Json]` Constructs a type where all properties are required */
   public Required<T extends TMappedResult>(T: T, options?: SchemaOptions): TRequiredFromMappedResult<T>

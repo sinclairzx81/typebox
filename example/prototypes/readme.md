@@ -2,46 +2,6 @@
 
 TypeBox prototypes are a set of types that are either under consideration for inclusion into the library, or have been requested by users but cannot be added to the library either due to complexity, using schematics that fall outside the supported TypeBox or should be expressed by users via advanced type composition.
 
-## Module, ModuleRef and Import 
-
-The Module type as a candidate referencing system for TypeBox. Modules enable deferred cross type referencing and support mutual recursive inference. Module types must be instanced via `M.Import(...)` which constructs a `$def` schematic containing each definition required to validate, and a self referential `$ref` to one of the type being imported.
-
-```typescript
-import { Module, ModuleRef } from './prototypes'
-
-// ------------------------------------------------------------------
-// Module, ModuleRef
-// ------------------------------------------------------------------
-const Math = Module({
-  Vector2: Type.Object({
-    x: Type.Number(),
-    y: Type.Number(),
-  }),
-  Vector3: Type.Object({
-    x: Type.Number(),
-    y: Type.Number(),
-    z: Type.Number()
-  }),
-  Vertex: Type.Object({
-    position: ModuleRef('Vector3'),
-    normal: ModuleRef('Vector3'),
-    texcoord: ModuleRef('Vector2')
-  }),
-  Geometry: Type.Object({
-    vertices: Type.Array(ModuleRef('Vertex')),
-    indices: Type.Array(Type.Integer())
-  })
-})
-
-// ------------------------------------------------------------------
-// Import
-// -----------------------------------------------------------------
-
-const Vector2 = Math.Import('Vector2')
-const Vector3 = Math.Import('Vector2')
-const Vertex = Math.Import('Vertex')
-const Geometry = Math.Import('Geometry')
-```
 
 ## PartialDeep
 
