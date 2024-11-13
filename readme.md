@@ -1086,10 +1086,9 @@ const Foo = Parse(`module Foo {
 
 }`)
 
-const C = Foo.Import('C')                           // const C: TUnion<[
-                                                    //   TString,
-                                                    //   TNumber
-                                                    // ]>
+const C = Foo.Import('C')                           // const C: TImport<{
+                                                    //   ...
+                                                    // }, 'C'>
 ```
 
 <a name='syntax-context'></a>
@@ -1102,7 +1101,7 @@ The Parse function accepts an initial Context argument, allowing external types 
 const T = Type.Object({                             // could be written as: Parse(`{
   x: Type.Number(),                                 //   x: number,
   y: Type.Number(),                                 //   y: number,
-  z: Type.Number()                                  //    z: number
+  z: Type.Number()                                  //   z: number
 })                                                  // }`)
 
 const A = Parse({ T }, 'Partial<T>')                // const A: TObject<{
