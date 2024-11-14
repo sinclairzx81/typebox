@@ -31,73 +31,99 @@ import type { TSchema, SchemaOptions } from '../schema/index'
 import type { Evaluate, Ensure } from '../helpers/index'
 import type { TMappedResult } from '../mapped/index'
 import { type TReadonlyOptional } from '../readonly-optional/index'
+import { type TComputed, Computed } from '../computed/index'
 import { type TOptional, Optional } from '../optional/index'
 import { type TReadonly } from '../readonly/index'
 import { type TRecursive } from '../recursive/index'
 import { type TObject, type TProperties, Object } from '../object/index'
 import { type TIntersect, Intersect } from '../intersect/index'
 import { type TUnion, Union } from '../union/index'
+import { type TRef, Ref } from '../ref/index'
 import { Discard } from '../discard/index'
 import { TransformKind } from '../symbols/index'
-
 import { PartialFromMappedResult, type TPartialFromMappedResult } from './partial-from-mapped-result'
 
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-import { IsMappedResult, IsIntersect, IsUnion, IsObject } from '../guard/kind'
+import { IsMappedResult, IsIntersect, IsUnion, IsObject, IsRef, IsComputed } from '../guard/kind'
+
 // ------------------------------------------------------------------
-// FromRest
+// FromComputed
 // ------------------------------------------------------------------
 // prettier-ignore
-type TFromRest<T extends TSchema[], Acc extends TSchema[] = []> = (
-  T extends [infer L extends TSchema, ...infer R extends TSchema[]]
-    ? TFromRest<R, [...Acc, TPartial<L>]>
-    : Acc
-)
+type TFromComputed<Target extends string, Parameters extends TSchema[]> = Ensure<
+  TComputed<'Partial', [TComputed<Target, Parameters>]>
+>
 // prettier-ignore
-function FromRest<T extends TSchema[]>(T: [...T]): TFromRest<T> {
-  return T.map(L => PartialResolve(L)) as never
+function FromComputed<Target extends string, Parameters extends TSchema[]>(target: Target, parameters: Parameters): TFromComputed<Target, Parameters> {
+  return Computed('Partial', [Computed(target, parameters)]) as never
+}
+// ------------------------------------------------------------------
+// FromRef
+// ------------------------------------------------------------------
+// prettier-ignore
+type TFromRef<Ref extends string> = Ensure<
+  TComputed<'Partial', [TRef<Ref>]>
+>
+// prettier-ignore
+function FromRef<Ref extends string>($ref: Ref): TFromRef<Ref> {
+  return Computed('Partial', [Ref($ref)]) as never
 }
 // ------------------------------------------------------------------
 // FromProperties
 // ------------------------------------------------------------------
 // prettier-ignore
-type TFromProperties<T extends TProperties> = Evaluate<{
-  [K in keyof T]: 
-    T[K] extends (TReadonlyOptional<infer S>) ? TReadonlyOptional<S> : 
-    T[K] extends (TReadonly<infer S>) ? TReadonlyOptional<S> : 
-    T[K] extends (TOptional<infer S>) ? TOptional<S> : 
-    TOptional<T[K]>
+type TFromProperties<Properties extends TProperties> = Evaluate<{
+  [K in keyof Properties]: 
+    Properties[K] extends (TReadonlyOptional<infer S>) ? TReadonlyOptional<S> : 
+    Properties[K] extends (TReadonly<infer S>) ? TReadonlyOptional<S> : 
+    Properties[K] extends (TOptional<infer S>) ? TOptional<S> : 
+    TOptional<Properties[K]>
 }>
 // prettier-ignore
-function FromProperties<T extends TProperties>(T: T): TFromProperties<T> {
-  const Acc = {} as TProperties
-  for(const K of globalThis.Object.getOwnPropertyNames(T)) Acc[K] = Optional(T[K])
-  return Acc as never
+function FromProperties<Properties extends TProperties>(properties: Properties): TFromProperties<Properties> {
+  const partialProperties = {} as TProperties
+  for(const K of globalThis.Object.getOwnPropertyNames(properties)) partialProperties[K] = Optional(properties[K])
+  return partialProperties as never
 }
 // ------------------------------------------------------------------
 // FromObject
 // ------------------------------------------------------------------
 // prettier-ignore
-type TFromObject<T extends TObject, Properties extends TProperties = T['properties']> = Ensure<TObject<(
+type TFromObject<Type extends TObject, Properties extends TProperties = Type['properties']> = Ensure<TObject<(
   TFromProperties<Properties>
 )>>
 // prettier-ignore
-function FromObject<T extends TObject>(T: T): TFromObject<T> {
+function FromObject<Type extends TObject>(T: Type): TFromObject<Type> {
   const options = Discard(T, [TransformKind, '$id', 'required', 'properties'])
   const properties = FromProperties(T['properties'])
   return Object(properties, options) as never
 }
 // ------------------------------------------------------------------
+// FromRest
+// ------------------------------------------------------------------
+// prettier-ignore
+type TFromRest<Types extends TSchema[], Result extends TSchema[] = []> = (
+  Types extends [infer L extends TSchema, ...infer R extends TSchema[]]
+    ? TFromRest<R, [...Result, TPartial<L>]>
+    : Result
+)
+// prettier-ignore
+function FromRest<Types extends TSchema[]>(types: [...Types]): TFromRest<Types> {
+  return types.map(type => PartialResolve(type)) as never
+}
+// ------------------------------------------------------------------
 // PartialResolve
 // ------------------------------------------------------------------
 // prettier-ignore
-function PartialResolve<T extends TSchema>(T: T): TPartial<T> {
+function PartialResolve<Type extends TSchema>(type: Type): TPartial<Type> {
   return (
-    IsIntersect(T) ? Intersect(FromRest(T.allOf)) :
-    IsUnion(T) ? Union(FromRest(T.anyOf)) :
-    IsObject(T) ? FromObject(T) :
+    IsComputed(type) ? FromComputed(type.target, type.parameters) :
+    IsRef(type) ? FromRef(type.$ref) :
+    IsIntersect(type) ? Intersect(FromRest(type.allOf)) :
+    IsUnion(type) ? Union(FromRest(type.anyOf)) :
+    IsObject(type) ? FromObject(type) :
     Object({})
   ) as never
 }
@@ -106,22 +132,24 @@ function PartialResolve<T extends TSchema>(T: T): TPartial<T> {
 // ------------------------------------------------------------------
 // prettier-ignore
 export type TPartial<T extends TSchema> = (
-  T extends TRecursive<infer S extends TSchema> ? TRecursive<TPartial<S>> :
-  T extends TIntersect<infer S extends TSchema[]> ? TIntersect<TFromRest<S>> :
-  T extends TUnion<infer S extends TSchema[]> ? TUnion<TFromRest<S>> :
-  T extends TObject<infer S extends TProperties> ? TFromObject<TObject<S>> :
+  T extends TRecursive<infer Type extends TSchema> ? TRecursive<TPartial<Type>> :
+  T extends TComputed<infer Target extends string, infer Parameters extends TSchema[]> ? TFromComputed<Target, Parameters> :
+  T extends TRef<infer Ref extends string> ? TFromRef<Ref> :
+  T extends TIntersect<infer Types extends TSchema[]> ? TIntersect<TFromRest<Types>> :
+  T extends TUnion<infer Types extends TSchema[]> ? TUnion<TFromRest<Types>> :
+  T extends TObject<infer Properties extends TProperties> ? TFromObject<TObject<Properties>> :
   TObject<{}>
 )
 /** `[Json]` Constructs a type where all properties are optional */
-export function Partial<T extends TMappedResult>(T: T, options?: SchemaOptions): TPartialFromMappedResult<T>
+export function Partial<MappedResult extends TMappedResult>(type: MappedResult, options?: SchemaOptions): TPartialFromMappedResult<MappedResult>
 /** `[Json]` Constructs a type where all properties are optional */
-export function Partial<T extends TSchema>(T: T, options?: SchemaOptions): TPartial<T>
+export function Partial<Type extends TSchema>(type: Type, options?: SchemaOptions): TPartial<Type>
 /** `[Json]` Constructs a type where all properties are optional */
-export function Partial(T: TSchema, options?: SchemaOptions): any {
-  if (IsMappedResult(T)) {
-    return PartialFromMappedResult(T, options)
+export function Partial(type: TSchema, options?: SchemaOptions): any {
+  if (IsMappedResult(type)) {
+    return PartialFromMappedResult(type, options)
   } else {
     // special: mapping types require overridable options
-    return CreateType({ ...PartialResolve(T), ...options })
+    return CreateType({ ...PartialResolve(type), ...options })
   }
 }

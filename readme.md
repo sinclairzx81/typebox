@@ -1074,22 +1074,25 @@ const T = Type.Object({                             // const T: TObject<{
 
 ### Module
 
-Syntax Types support Module parsing, which is useful for processing multiple TypeScript types. Module parsing supports type alias and interface definitions. Generics are currently unsupported as of 0.34.0.
+Syntax Types also support Module parsing. This can provide a more terse syntax for creating Module definitions, but comes with an inference performance cost. Module parsing supports interface and type alias definitions. Generics types are currently unsupported. Consider the following which defines a explicit Module on the left, and the parsed Module on the right.
 
 ```typescript
-const Foo = Parse(`module Foo {
-
-  export type A = string
-
-  export type B = number
-
-  export type C = A | B
-
-}`)
-
-const C = Foo.Import('C')                           // const C: TImport<{
-                                                    //   ...
-                                                    // }, 'C'>
+const Module = Type.Module({                        // const Module = Parse(`module {
+                                                    //   
+  User: Type.Object({                               //   export interface User {
+    id: Type.String(),                              //     id: string
+    name: Type.String(),                            //     name: string
+    email: Type.String(),                           //     email: string
+  }),                                               //   }
+                                                    //   
+  PartialUser: Type.Intersect([                     //   export type PartialUser = (
+    Type.Pick(Type.Ref('User'), ['id']),            //     Pick<User, 'id'> &
+    Type.Partial(                                   //     Partial<Omit<User, 'id'>>
+      Type.Omit(Type.Ref('User'), ['id'])           //   )
+    ),                                              //
+  ])                                                //
+                                                    //
+})                                                  // }`)
 ```
 
 <a name='syntax-context'></a>
@@ -1883,12 +1886,12 @@ The following table lists esbuild compiled and minified sizes for each TypeBox m
 ┌──────────────────────┬────────────┬────────────┬─────────────┐
 │ (index)              │ Compiled   │ Minified   │ Compression │
 ├──────────────────────┼────────────┼────────────┼─────────────┤
-│ typebox/compiler     │ '121.7 kb' │ ' 53.4 kb' │ '2.28 x'    │
-│ typebox/errors       │ ' 75.3 kb' │ ' 33.4 kb' │ '2.25 x'    │
-│ typebox/syntax       │ '120.1 kb' │ ' 50.5 kb' │ '2.38 x'    │
+│ typebox/compiler     │ '122.4 kb' │ ' 53.4 kb' │ '2.29 x'    │
+│ typebox/errors       │ ' 67.6 kb' │ ' 29.6 kb' │ '2.28 x'    │
+│ typebox/syntax       │ '132.9 kb' │ ' 54.2 kb' │ '2.45 x'    │
 │ typebox/system       │ '  7.4 kb' │ '  3.2 kb' │ '2.33 x'    │
-│ typebox/value        │ '160.3 kb' │ ' 67.4 kb' │ '2.38 x'    │
-│ typebox              │ ' 96.2 kb' │ ' 40.2 kb' │ '2.39 x'    │
+│ typebox/value        │ '150.1 kb' │ ' 62.2 kb' │ '2.41 x'    │
+│ typebox              │ '106.8 kb' │ ' 43.2 kb' │ '2.47 x'    │
 └──────────────────────┴────────────┴────────────┴─────────────┘
 ```
 

@@ -81,7 +81,7 @@ function FromDate(schema: TArray, references: TSchema[], value: unknown): any {
 }
 function FromImport(schema: TImport, references: TSchema[], value: unknown): any {
   const definitions = globalThis.Object.values(schema.$defs) as TSchema[]
-  const target = schema.$defs[schema.$ref] as TSchema
+  const target = schema.$defs[schema.$ref as never] as TSchema
   return Visit(target, [...references, ...definitions], value)
 }
 function FromIntersect(schema: TIntersect, references: TSchema[], value: unknown): any {

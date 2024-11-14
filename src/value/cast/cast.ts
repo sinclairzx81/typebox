@@ -136,7 +136,7 @@ function FromConstructor(schema: TConstructor, references: TSchema[], value: any
 }
 function FromImport(schema: TImport, references: TSchema[], value: unknown): boolean {
   const definitions = globalThis.Object.values(schema.$defs) as TSchema[]
-  const target = schema.$defs[schema.$ref] as TSchema
+  const target = schema.$defs[schema.$ref as never] as TSchema
   return Visit(target, [...references, ...definitions], value)
 }
 function FromIntersect(schema: TIntersect, references: TSchema[], value: any): any {

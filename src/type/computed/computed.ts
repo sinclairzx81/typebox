@@ -26,37 +26,19 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { CreateType } from '../create/type'
 import type { TSchema, SchemaOptions } from '../schema/index'
-import type { Static } from '../static/index'
-import { Kind } from '../symbols/index'
+import { CreateType } from '../create/index'
+import { Kind } from '../symbols/symbols'
 
 // ------------------------------------------------------------------
-// TupleStatic
+// Computed
 // ------------------------------------------------------------------
-// prettier-ignore
-type TupleStatic<T extends TSchema[], P extends unknown[], Acc extends unknown[] = []> = 
-  T extends [infer L extends TSchema, ...infer R extends TSchema[]] 
-    ? TupleStatic<R, P, [...Acc, Static<L, P>]>
-    : Acc
-// ------------------------------------------------------------------
-// TTuple
-// ------------------------------------------------------------------
-export interface TTuple<T extends TSchema[] = TSchema[]> extends TSchema {
-  [Kind]: 'Tuple'
-  static: TupleStatic<T, this['params']>
-  type: 'array'
-  items?: T
-  additionalItems?: false
-  minItems: number
-  maxItems: number
+export interface TComputed<Target extends string = string, Parameters extends TSchema[] = []> extends TSchema {
+  [Kind]: 'Computed'
+  target: Target
+  parameters: Parameters
 }
-/** `[Json]` Creates a Tuple type */
-export function Tuple<Types extends TSchema[]>(types: [...Types], options?: SchemaOptions): TTuple<Types> {
-  // prettier-ignore
-  return CreateType(
-    types.length > 0 ?
-      { [Kind]: 'Tuple', type: 'array', items: types, additionalItems: false, minItems: types.length, maxItems: types.length } :
-      { [Kind]: 'Tuple', type: 'array', minItems: types.length, maxItems: types.length },
-  options) as never
+/** `[Internal]` Creates a deferred computed type. This type is used exclusively in modules to defer resolution of computable types that contain interior references  */
+export function Computed<Target extends string, Parameters extends TSchema[]>(target: Target, parameters: [...Parameters], options?: SchemaOptions): TComputed<Target, Parameters> {
+  return CreateType({ [Kind]: 'Computed', target, parameters }, options) as never
 }

@@ -46,9 +46,9 @@ import type { TTuple } from '../../type/tuple/index'
 import type { TUnion } from '../../type/union/index'
 
 // ------------------------------------------------------------------
-// TypeGuard
+// KindGuard
 // ------------------------------------------------------------------
-import { IsTransform, IsSchema } from '../../type/guard/type'
+import { IsTransform, IsSchema } from '../../type/guard/kind'
 // ------------------------------------------------------------------
 // ValueGuard
 // ------------------------------------------------------------------

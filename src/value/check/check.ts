@@ -75,9 +75,9 @@ import type { TVoid } from '../../type/void/index'
 // ------------------------------------------------------------------
 import { IsArray, IsUint8Array, IsDate, IsPromise, IsFunction, IsAsyncIterator, IsIterator, IsBoolean, IsNumber, IsBigInt, IsString, IsSymbol, IsInteger, IsNull, IsUndefined } from '../guard/index'
 // ------------------------------------------------------------------
-// TypeGuard
+// KindGuard
 // ------------------------------------------------------------------
-import { IsSchema } from '../../type/guard/type'
+import { IsSchema } from '../../type/guard/kind'
 // ------------------------------------------------------------------
 // Errors
 // ------------------------------------------------------------------
@@ -188,7 +188,7 @@ function FromFunction(schema: TFunction, references: TSchema[], value: any): boo
 }
 function FromImport(schema: TImport, references: TSchema[], value: any): boolean {
   const definitions = globalThis.Object.values(schema.$defs) as TSchema[]
-  const target = schema.$defs[schema.$ref] as TSchema
+  const target = schema.$defs[schema.$ref as never] as TSchema
   return Visit(target, [...references, ...definitions], value)
 }
 function FromInteger(schema: TInteger, references: TSchema[], value: any): boolean {

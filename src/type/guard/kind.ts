@@ -29,9 +29,10 @@ THE SOFTWARE.
 import * as ValueGuard from './value'
 import { Kind, Hint, TransformKind, ReadonlyKind, OptionalKind } from '../symbols/index'
 import { TransformOptions } from '../transform/index'
-import { TTemplateLiteral } from '../template-literal/index'
-import { TArray } from '../array/index'
-import { TBoolean } from '../boolean/index'
+import type { TTemplateLiteral } from '../template-literal/index'
+import type { TArray } from '../array/index'
+import type { TBoolean } from '../boolean/index'
+import type { TComputed } from '../computed/index'
 import type { TRecord } from '../record/index'
 import type { TString } from '../string/index'
 import type { TUnion } from '../union/index'
@@ -44,7 +45,7 @@ import type { TImport } from '../module/index'
 import type { TInteger } from '../integer/index'
 import type { TIntersect } from '../intersect/index'
 import type { TIterator } from '../iterator/index'
-import type { TLiteral } from '../literal/index'
+import type { TLiteral, TLiteralValue } from '../literal/index'
 import type { TMappedKey, TMappedResult } from '../mapped/index'
 import type { TNever } from '../never/index'
 import type { TNot } from '../not/index'
@@ -95,6 +96,10 @@ export function IsBigInt(value: unknown): value is TBigInt {
 export function IsBoolean(value: unknown): value is TBoolean {
   return IsKindOf(value, 'Boolean')
 }
+/** `[Kind-Only]` Returns true if the given value is TComputed */
+export function IsComputed(value: unknown): value is TComputed {
+  return IsKindOf(value, 'Computed')
+}
 /** `[Kind-Only]` Returns true if the given value is TConstructor */
 export function IsConstructor(value: unknown): value is TConstructor {
   return IsKindOf(value, 'Constructor')
@@ -142,6 +147,10 @@ export function IsLiteralNumber(value: unknown): value is TLiteral<number> {
 /** `[Kind-Only]` Returns true if the given value is TLiteral<boolean> */
 export function IsLiteralBoolean(value: unknown): value is TLiteral<boolean> {
   return IsLiteral(value) && ValueGuard.IsBoolean(value.const)
+}
+/** `[Kind-Only]` Returns true if the given value is TLiteralValue */
+export function IsLiteralValue(value: unknown): value is TLiteralValue {
+  return ValueGuard.IsBoolean(value) || ValueGuard.IsNumber(value) || ValueGuard.IsString(value)
 }
 /** `[Kind-Only]` Returns true if the given value is TLiteral */
 export function IsLiteral(value: unknown): value is TLiteral {

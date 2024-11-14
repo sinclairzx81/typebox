@@ -39,7 +39,7 @@ import { Index, TIndex, type TIndexPropertyKeys, type TIndexFromMappedKey, type 
 import { Integer, type IntegerOptions, type TInteger } from '../integer/index'
 import { Intersect, type IntersectOptions } from '../intersect/index'
 import { Capitalize, Uncapitalize, Lowercase, Uppercase, type TCapitalize, type TUncapitalize, type TLowercase, type TUppercase } from '../intrinsic/index'
-import { KeyOf, type TKeyOf, type TKeyOfFromMappedResult } from '../keyof/index'
+import { KeyOf, type TKeyOf } from '../keyof/index'
 import { Literal, type TLiteral, type TLiteralValue } from '../literal/index'
 import { Mapped, type TMappedFunction, type TMapped, type TMappedResult } from '../mapped/index'
 import { Never, type TNever } from '../never/index'
@@ -49,10 +49,10 @@ import { type TMappedKey } from '../mapped/index'
 import { Module, TModule } from '../module/index'
 import { Number, type TNumber, type NumberOptions } from '../number/index'
 import { Object, type TObject, type TProperties, type ObjectOptions } from '../object/index'
-import { Omit, type TOmit, type TOmitFromMappedKey, type TOmitFromMappedResult } from '../omit/index'
+import { Omit, type TOmit } from '../omit/index'
 import { Optional, type TOptionalWithFlag, type TOptionalFromMappedResult } from '../optional/index'
 import { Partial, type TPartial, type TPartialFromMappedResult } from '../partial/index'
-import { Pick, type TPick, type TPickFromMappedKey, type TPickFromMappedResult } from '../pick/index'
+import { Pick, type TPick } from '../pick/index'
 import { Readonly, type TReadonlyWithFlag, type TReadonlyFromMappedResult } from '../readonly/index'
 import { ReadonlyOptional, type TReadonlyOptional } from '../readonly-optional/index'
 import { Record, type TRecordOrObject } from '../record/index'
@@ -75,32 +75,32 @@ export class JsonTypeBuilder {
   // Modifiers
   // ------------------------------------------------------------------------
   /** `[Json]` Creates a Readonly and Optional property */
-  public ReadonlyOptional<T extends TSchema>(schema: T): TReadonlyOptional<T> {
-    return ReadonlyOptional(schema)
+  public ReadonlyOptional<Type extends TSchema>(type: Type): TReadonlyOptional<Type> {
+    return ReadonlyOptional(type)
   }
   /** `[Json]` Creates a Readonly property */
-  public Readonly<T extends TMappedResult, F extends boolean>(schema: T, enable: F): TReadonlyFromMappedResult<T, F>
+  public Readonly<Type extends TMappedResult, Flag extends boolean>(type: Type, enable: Flag): TReadonlyFromMappedResult<Type, Flag>
   /** `[Json]` Creates a Readonly property */
-  public Readonly<T extends TSchema, F extends boolean>(schema: T, enable: F): TReadonlyWithFlag<T, F>
+  public Readonly<Type extends TSchema, Flag extends boolean>(type: Type, enable: Flag): TReadonlyWithFlag<Type, Flag>
   /** `[Json]` Creates a Optional property */
-  public Readonly<T extends TMappedResult>(schema: T): TReadonlyFromMappedResult<T, true>
+  public Readonly<Type extends TMappedResult>(type: Type): TReadonlyFromMappedResult<Type, true>
   /** `[Json]` Creates a Readonly property */
-  public Readonly<T extends TSchema>(schema: T): TReadonlyWithFlag<T, true>
+  public Readonly<Type extends TSchema>(type: Type): TReadonlyWithFlag<Type, true>
   /** `[Json]` Creates a Readonly property */
-  public Readonly(schema: TSchema, enable?: boolean): any {
-    return Readonly(schema, enable ?? true)
+  public Readonly(type: TSchema, enable?: boolean): any {
+    return Readonly(type, enable ?? true)
   }
   /** `[Json]` Creates a Optional property */
-  public Optional<T extends TMappedResult, F extends boolean>(schema: T, enable: F): TOptionalFromMappedResult<T, F>
+  public Optional<Type extends TMappedResult, Flag extends boolean>(type: Type, enable: Flag): TOptionalFromMappedResult<Type, Flag>
   /** `[Json]` Creates a Optional property */
-  public Optional<T extends TSchema, F extends boolean>(schema: T, enable: F): TOptionalWithFlag<T, F>
+  public Optional<Type extends TSchema, Flag extends boolean>(type: Type, enable: Flag): TOptionalWithFlag<Type, Flag>
   /** `[Json]` Creates a Optional property */
-  public Optional<T extends TMappedResult>(schema: T): TOptionalFromMappedResult<T, true>
+  public Optional<Type extends TMappedResult>(type: Type): TOptionalFromMappedResult<Type, true>
   /** `[Json]` Creates a Optional property */
-  public Optional<T extends TSchema>(schema: T): TOptionalWithFlag<T, true>
+  public Optional<Type extends TSchema>(type: Type): TOptionalWithFlag<Type, true>
   /** `[Json]` Creates a Optional property */
-  public Optional(schema: TSchema, enable?: boolean): any {
-    return Optional(schema, enable ?? true)
+  public Optional(type: TSchema, enable?: boolean): any {
+    return Optional(type, enable ?? true)
   }
   // ------------------------------------------------------------------------
   // Types
@@ -110,8 +110,8 @@ export class JsonTypeBuilder {
     return Any(options)
   }
   /** `[Json]` Creates an Array type */
-  public Array<T extends TSchema>(schema: T, options?: ArrayOptions): TArray<T> {
-    return Array(schema, options)
+  public Array<Type extends TSchema>(items: Type, options?: ArrayOptions): TArray<Type> {
+    return Array(items, options)
   }
   /** `[Json]` Creates a Boolean type */
   public Boolean(options?: SchemaOptions): TBoolean {
@@ -164,40 +164,36 @@ export class JsonTypeBuilder {
     return Extract(type, union, options)
   }
   /** `[Json]` Returns an Indexed property type for the given keys */
-  public Index<T extends TSchema, K extends TMappedResult>(T: T, K: K, options?: SchemaOptions): TIndexFromMappedResult<T, K>
+  public Index<Type extends TSchema, PropertyKeys extends PropertyKey[]>(type: Type, key: readonly [...PropertyKeys], options?: SchemaOptions): TIndex<Type, PropertyKeys>
   /** `[Json]` Returns an Indexed property type for the given keys */
-  public Index<T extends TSchema, K extends TMappedKey>(T: T, K: K, options?: SchemaOptions): TIndexFromMappedKey<T, K>
+  public Index<Type extends TSchema, Key extends TMappedKey>(type: Type, key: Key, options?: SchemaOptions): TIndex<Type, Key>
   /** `[Json]` Returns an Indexed property type for the given keys */
-  public Index<T extends TSchema, K extends TSchema, I extends PropertyKey[] = TIndexPropertyKeys<K>>(T: T, K: K, options?: SchemaOptions): TIndex<T, I>
+  public Index<Type extends TSchema, Key extends TMappedResult>(type: Type, key: Key, options?: SchemaOptions): TIndex<Type, Key>
   /** `[Json]` Returns an Indexed property type for the given keys */
-  public Index<T extends TSchema, K extends PropertyKey[]>(T: T, K: readonly [...K], options?: SchemaOptions): TIndex<T, K>
+  public Index<Type extends TSchema, Key extends TSchema>(type: Type, key: Key, options?: SchemaOptions): TIndex<Type, Key>
   /** `[Json]` Returns an Indexed property type for the given keys */
-  public Index(schema: TSchema, unresolved: any, options?: SchemaOptions): any {
-    return Index(schema, unresolved, options)
+  public Index(type: TSchema, key: any, options?: SchemaOptions): any {
+    return Index(type, key, options)
   }
   /** `[Json]` Creates an Integer type */
   public Integer(options?: IntegerOptions): TInteger {
     return Integer(options)
   }
   /** `[Json]` Creates an Intersect type */
-  public Intersect<T extends TSchema[]>(T: [...T], options?: IntersectOptions): Intersect<T> {
-    return Intersect(T, options)
+  public Intersect<Types extends TSchema[]>(types: [...Types], options?: IntersectOptions): Intersect<Types> {
+    return Intersect(types, options)
   }
   /** `[Json]` Creates a KeyOf type */
-  public KeyOf<T extends TMappedResult>(schema: T, options?: SchemaOptions): TKeyOfFromMappedResult<T>
-  /** `[Json]` Creates a KeyOf type */
-  public KeyOf<T extends TSchema>(schema: T, options?: SchemaOptions): TKeyOf<T>
-  /** `[Json]` Creates a KeyOf type */
-  public KeyOf(schema: TSchema, options?: SchemaOptions): any {
-    return KeyOf(schema, options)
+  public KeyOf<Type extends TSchema>(type: Type, options?: SchemaOptions): TKeyOf<Type> {
+    return KeyOf(type, options) as never
   }
   /** `[Json]` Creates a Literal type */
-  public Literal<T extends TLiteralValue>(value: T, options?: SchemaOptions): TLiteral<T> {
-    return Literal(value, options)
+  public Literal<LiteralValue extends TLiteralValue>(literalValue: LiteralValue, options?: SchemaOptions): TLiteral<LiteralValue> {
+    return Literal(literalValue, options)
   }
   /** `[Json]` Intrinsic function to Lowercase LiteralString types */
-  public Lowercase<T extends TSchema>(schema: T, options?: SchemaOptions): TLowercase<T> {
-    return Lowercase(schema, options)
+  public Lowercase<Type extends TSchema>(type: Type, options?: SchemaOptions): TLowercase<Type> {
+    return Lowercase(type, options)
   }
   /** `[Json]` Creates a Mapped object type */
   public Mapped<K extends TSchema, I extends PropertyKey[] = TIndexPropertyKeys<K>, F extends TMappedFunction<I> = TMappedFunction<I>, R extends TMapped<I, F> = TMapped<I, F>>(key: K, map: F, options?: ObjectOptions): R
@@ -216,8 +212,8 @@ export class JsonTypeBuilder {
     return Never(options)
   }
   /** `[Json]` Creates a Not type */
-  public Not<T extends TSchema>(schema: T, options?: SchemaOptions): TNot<T> {
-    return Not(schema, options)
+  public Not<T extends TSchema>(type: T, options?: SchemaOptions): TNot<T> {
+    return Not(type, options)
   }
   /** `[Json]` Creates a Null type */
   public Null(options?: SchemaOptions): TNull {
@@ -231,41 +227,33 @@ export class JsonTypeBuilder {
   public Object<T extends TProperties>(properties: T, options?: ObjectOptions): TObject<T> {
     return Object(properties, options)
   }
+  /** `[Json]` Constructs a type whose keys are picked from the given type */
+  public Omit<Type extends TSchema, Key extends PropertyKey[]>(type: Type, key: readonly [...Key], options?: SchemaOptions): TOmit<Type, Key>
+  /** `[Json]` Constructs a type whose keys are picked from the given type */
+  public Omit<Type extends TSchema, Key extends TSchema>(type: Type, key: Key, options?: SchemaOptions): TOmit<Type, Key>
   /** `[Json]` Constructs a type whose keys are omitted from the given type */
-  public Omit<T extends TMappedResult, K extends PropertyKey[]>(T: T, K: [...K], options?: SchemaOptions): TOmitFromMappedResult<T, K>
-  /** `[Json]` Constructs a type whose keys are omitted from the given type */
-  public Omit<T extends TSchema, K extends TMappedKey>(T: T, K: K, options?: SchemaOptions): TOmitFromMappedKey<T, K>
-  /** `[Json]` Constructs a type whose keys are omitted from the given type */
-  public Omit<T extends TSchema, K extends TSchema, I extends PropertyKey[] = TIndexPropertyKeys<K>>(T: T, K: K, options?: SchemaOptions): TOmit<T, I>
-  /** `[Json]` Constructs a type whose keys are omitted from the given type */
-  public Omit<T extends TSchema, K extends PropertyKey[]>(T: T, K: readonly [...K], options?: SchemaOptions): TOmit<T, K>
-  /** `[Json]` Constructs a type whose keys are omitted from the given type */
-  public Omit(schema: TSchema, unresolved: any, options?: SchemaOptions): any {
-    return Omit(schema, unresolved, options)
+  public Omit(schema: TSchema, selector: any, options?: SchemaOptions): any {
+    return Omit(schema, selector, options)
   }
   /** `[Json]` Constructs a type where all properties are optional */
-  public Partial<T extends TMappedResult>(T: T, options?: SchemaOptions): TPartialFromMappedResult<T>
+  public Partial<MappedResult extends TMappedResult>(type: MappedResult, options?: SchemaOptions): TPartialFromMappedResult<MappedResult>
   /** `[Json]` Constructs a type where all properties are optional */
-  public Partial<T extends TSchema>(schema: T, options?: SchemaOptions): TPartial<T>
+  public Partial<Type extends TSchema>(type: Type, options?: SchemaOptions): TPartial<Type>
   /** `[Json]` Constructs a type where all properties are optional */
-  public Partial(schema: TSchema, options?: SchemaOptions): any {
-    return Partial(schema, options)
+  public Partial(type: TSchema, options?: SchemaOptions): any {
+    return Partial(type, options)
   }
   /** `[Json]` Constructs a type whose keys are picked from the given type */
-  public Pick<T extends TMappedResult, K extends PropertyKey[]>(T: T, K: [...K], options?: SchemaOptions): TPickFromMappedResult<T, K>
+  public Pick<Type extends TSchema, Key extends PropertyKey[]>(type: Type, key: readonly [...Key], options?: SchemaOptions): TPick<Type, Key>
   /** `[Json]` Constructs a type whose keys are picked from the given type */
-  public Pick<T extends TSchema, K extends TMappedKey>(T: T, K: K, options?: SchemaOptions): TPickFromMappedKey<T, K>
+  public Pick<Type extends TSchema, Key extends TSchema>(type: Type, key: Key, options?: SchemaOptions): TPick<Type, Key>
   /** `[Json]` Constructs a type whose keys are picked from the given type */
-  public Pick<T extends TSchema, K extends TSchema, I extends PropertyKey[] = TIndexPropertyKeys<K>>(T: T, K: K, options?: SchemaOptions): TPick<T, I>
-  /** `[Json]` Constructs a type whose keys are picked from the given type */
-  public Pick<T extends TSchema, K extends PropertyKey[]>(T: T, K: readonly [...K], options?: SchemaOptions): TPick<T, K>
-  /** `[Json]` Constructs a type whose keys are picked from the given type */
-  public Pick(schema: TSchema, unresolved: any, options?: SchemaOptions): any {
-    return Pick(schema, unresolved, options)
+  public Pick(type: any, key: any, options?: SchemaOptions): any {
+    return Pick(type, key, options)
   }
   /** `[Json]` Creates a Record type */
-  public Record<K extends TSchema, T extends TSchema>(key: K, schema: T, options?: ObjectOptions): TRecordOrObject<K, T> {
-    return Record(key, schema, options)
+  public Record<Key extends TSchema, Value extends TSchema>(key: Key, value: Value, options?: ObjectOptions): TRecordOrObject<Key, Value> {
+    return Record(key, value, options)
   }
   /** `[Json]` Creates a Recursive type */
   public Recursive<T extends TSchema>(callback: (thisType: TThis) => T, options?: SchemaOptions): TRecursive<T> {
@@ -276,44 +264,44 @@ export class JsonTypeBuilder {
     return Ref($ref, options)
   }
   /** `[Json]` Constructs a type where all properties are required */
-  public Required<T extends TMappedResult>(T: T, options?: SchemaOptions): TRequiredFromMappedResult<T>
+  public Required<MappedResult extends TMappedResult>(type: MappedResult, options?: SchemaOptions): TRequiredFromMappedResult<MappedResult>
   /** `[Json]` Constructs a type where all properties are required */
-  public Required<T extends TSchema>(schema: T, options?: SchemaOptions): TRequired<T>
+  public Required<Type extends TSchema>(type: Type, options?: SchemaOptions): TRequired<Type>
   /** `[Json]` Constructs a type where all properties are required */
-  public Required(schema: TSchema, options?: SchemaOptions): any {
-    return Required(schema, options)
+  public Required(type: TSchema, options?: SchemaOptions): any {
+    return Required(type, options)
   }
   /** `[Json]` Extracts interior Rest elements from Tuple, Intersect and Union types */
-  public Rest<T extends TSchema>(schema: T): TRest<T> {
-    return Rest(schema)
+  public Rest<Type extends TSchema>(type: Type): TRest<Type> {
+    return Rest(type)
   }
   /** `[Json]` Creates a String type */
   public String(options?: StringOptions): TString {
     return String(options)
   }
   /** `[Json]` Creates a TemplateLiteral type from template dsl string */
-  public TemplateLiteral<T extends string>(syntax: T, options?: SchemaOptions): TTemplateLiteralSyntax<T>
+  public TemplateLiteral<Syntax extends string>(syntax: Syntax, options?: SchemaOptions): TTemplateLiteralSyntax<Syntax>
   /** `[Json]` Creates a TemplateLiteral type */
-  public TemplateLiteral<T extends TTemplateLiteralKind[]>(kinds: [...T], options?: SchemaOptions): TTemplateLiteral<T>
+  public TemplateLiteral<Kinds extends TTemplateLiteralKind[]>(kinds: [...Kinds], options?: SchemaOptions): TTemplateLiteral<Kinds>
   /** `[Json]` Creates a TemplateLiteral type */
   public TemplateLiteral(unresolved: TTemplateLiteralKind[] | string, options?: SchemaOptions) {
     return TemplateLiteral(unresolved as any, options)
   }
   /** `[Json]` Creates a Transform type */
-  public Transform<I extends TSchema>(schema: I): TransformDecodeBuilder<I> {
-    return Transform(schema)
+  public Transform<Type extends TSchema>(type: Type): TransformDecodeBuilder<Type> {
+    return Transform(type)
   }
   /** `[Json]` Creates a Tuple type */
-  public Tuple<T extends TSchema[]>(items: [...T], options?: SchemaOptions): TTuple<T> {
-    return Tuple(items, options)
+  public Tuple<Types extends TSchema[]>(types: [...Types], options?: SchemaOptions): TTuple<Types> {
+    return Tuple(types, options)
   }
   /** `[Json]` Intrinsic function to Uncapitalize LiteralString types */
-  public Uncapitalize<T extends TSchema>(schema: T, options?: SchemaOptions): TUncapitalize<T> {
-    return Uncapitalize(schema, options)
+  public Uncapitalize<Type extends TSchema>(type: Type, options?: SchemaOptions): TUncapitalize<Type> {
+    return Uncapitalize(type, options)
   }
   /** `[Json]` Creates a Union type */
-  public Union<T extends TSchema[]>(schemas: [...T], options?: SchemaOptions): Union<T> {
-    return Union(schemas, options)
+  public Union<Types extends TSchema[]>(types: [...Types], options?: SchemaOptions): Union<Types> {
+    return Union(types, options)
   }
   /** `[Json]` Creates an Unknown type */
   public Unknown(options?: SchemaOptions): TUnknown {

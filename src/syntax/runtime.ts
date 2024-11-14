@@ -324,11 +324,12 @@ const FactorIndexArray = (Type: Types.TSchema, IndexArray: unknown[]): Types.TSc
   const [Left, Right] = DestructureRight(IndexArray) as [unknown[], Types.TSchema[]]
   return (
     !Types.ValueGuard.IsUndefined(Right) ? (
-      Right.length === 1 ? Types.Index(FactorIndexArray(Type, Left), Right[0]) :
+      // note: Indexed types require reimplementation to replace `[number]` indexers
+      Right.length === 1 ? Types.Index(FactorIndexArray(Type, Left), Right[0]) as never :
       Right.length === 0 ? Types.Array(FactorIndexArray(Type, Left)) :
       Types.Never()
     ) : Type
-  )
+  ) 
 }
 // prettier-ignore
 const FactorMapping = (KeyOf: boolean, Type: Types.TSchema, IndexArray: unknown[], Extends: Types.TSchema[]) => {
