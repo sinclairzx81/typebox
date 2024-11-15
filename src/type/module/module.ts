@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { Ensure } from '../helpers/index'
+import { Assert, Ensure } from '../helpers/index'
 import { CreateType } from '../create/index'
 import { Kind } from '../symbols/index'
 import { SchemaOptions, TSchema } from '../schema/index'
@@ -58,6 +58,7 @@ import { TUndefined } from '../undefined/index'
 import { TUnknown } from '../unknown/index'
 import { TVoid } from '../void/index'
 import { Static } from '../static/index'
+import { TRecord } from '../record/index'
 
 // ------------------------------------------------------------------
 // Infer
@@ -73,6 +74,10 @@ type InferRef<Ref extends string, Properties extends TProperties> = (
 // prettier-ignore
 type InferObject<Properties extends TProperties, ModuleProperties extends TProperties> = { 
   [K in keyof Properties]: Infer<Properties[K], ModuleProperties> 
+} & {}
+// prettier-ignore
+type InferRecord<Properties extends TSchema, S extends TSchema, ModuleProperties extends TProperties> = { 
+  [_ in Assert<Static<Properties>, PropertyKey>]: Infer<S, ModuleProperties> 
 } & {}
 // prettier-ignore
 type InferConstructor<Parameters extends TSchema[], InstanceType extends TSchema, Properties extends TProperties> = Ensure<
@@ -116,6 +121,7 @@ type InferIterator<Type extends TSchema, Properties extends TProperties> = (
 type Infer<Type extends TSchema, Properties extends TProperties = {}> = (
   Type extends TImport<infer S extends TProperties, infer K extends string> ? InferImport<S, K, S> :
   Type extends TRef<infer S extends string> ? InferRef<S, Properties> :
+  Type extends TRecord<infer K extends TSchema, infer S extends TSchema> ? InferRecord<K, S, Properties> :
   Type extends TObject<infer S extends TProperties> ? InferObject<S, Properties> :
   Type extends TConstructor<infer S extends TSchema[], infer R extends TSchema> ? InferConstructor<S, R, Properties> :
   Type extends TFunction<infer S extends TSchema[], infer R extends TSchema> ? InferFunction<S, R, Properties> :

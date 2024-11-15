@@ -202,3 +202,12 @@ import { Type, Static } from '@sinclair/typebox'
   const T = Type.Record(K, Type.String())
   Expect(T).ToStatic<{}>()
 }
+
+{
+  const Module = Type.Module({
+    T: Type.Record(Type.String(), Type.Ref('A')),
+    A: Type.String({ format: 'email' }),
+  });
+  const T = Module.Import('T');
+  Expect(T).ToStatic<{ [x: string]: string }>()
+}
