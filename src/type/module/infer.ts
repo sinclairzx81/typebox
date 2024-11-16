@@ -151,11 +151,11 @@ type TInfer<ModuleProperties extends TProperties, Type extends TSchema> = (
   Static<Type>
 )
 // ------------------------------------------------------------------
-// InferImport
+// InferFromModuleKey
 // ------------------------------------------------------------------
 /** Inference Path for Imports. This type is used to compute TImport `static` */
 // prettier-ignore
-export type TInferType<ModuleProperties extends TProperties, Key extends PropertyKey> = (
+export type TInferFromModuleKey<ModuleProperties extends TProperties, Key extends PropertyKey> = (
   Key extends keyof ModuleProperties
     ? TInfer<ModuleProperties, ModuleProperties[Key]>
     : never

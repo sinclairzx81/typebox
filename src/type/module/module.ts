@@ -35,9 +35,8 @@ import { Static } from '../static/index'
 // ------------------------------------------------------------------
 // Module Infrastructure Types
 // ------------------------------------------------------------------
-import { type TComputeType } from './compute'
 import { ComputeModuleProperties, TComputeModuleProperties } from './compute'
-import { TInferType } from './infer'
+import { TInferFromModuleKey } from './infer'
 
 // ------------------------------------------------------------------
 // Definitions
@@ -52,8 +51,8 @@ export interface TDefinitions<ModuleProperties extends TProperties> extends TSch
 // prettier-ignore
 export interface TImport<ModuleProperties extends TProperties = {}, Key extends keyof ModuleProperties = keyof ModuleProperties> extends TSchema {
   [Kind]: 'Import'
-  static: TInferType<ModuleProperties, Key>
-  $defs: TComputeModuleProperties<ModuleProperties>
+  static: TInferFromModuleKey<ModuleProperties, Key>
+  $defs: ModuleProperties
   $ref: Key
 }
 // ------------------------------------------------------------------
