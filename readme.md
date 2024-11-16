@@ -1074,25 +1074,32 @@ const T = Type.Object({                             // const T: TObject<{
 
 ### Module
 
-Syntax Types also support Module parsing. This can provide a more terse syntax for creating Module definitions, but comes with an inference performance cost. Module parsing supports interface and type alias definitions. Generics types are currently unsupported. Consider the following which defines a explicit Module on the left, and the parsed Module on the right.
+Syntax Types also support Module parsing. This can provide a more terse syntax for creating Module definitions, but comes with an inference performance cost. Module parsing supports interface and type alias definitions. Generics types are currently unsupported. 
 
 ```typescript
-const Module = Type.Module({                        // const Module = Parse(`module {
-                                                    //   
-  User: Type.Object({                               //   export interface User {
-    id: Type.String(),                              //     id: string
-    name: Type.String(),                            //     name: string
-    email: Type.String(),                           //     email: string
-  }),                                               //   }
-                                                    //   
-  PartialUser: Type.Intersect([                     //   export type PartialUser = (
-    Type.Pick(Type.Ref('User'), ['id']),            //     Pick<User, 'id'> &
-    Type.Partial(                                   //     Partial<Omit<User, 'id'>>
-      Type.Omit(Type.Ref('User'), ['id'])           //   )
-    ),                                              //
-  ])                                                //
-                                                    //
-})                                                  // }`)
+const Module = Parse(`module {
+  
+  export interface User {
+    id: string
+    name: string
+    email: string
+  }
+ 
+  export type PartialUser = (
+    Pick<User, 'id'> &
+    Partial<Omit<User, 'id'>>
+  )
+
+}`)
+
+const PartialUser = Module.Import('PartialUser')    // TImport<{...}, 'PartialUser'>
+
+type PartialUser = Static<typeof PartialUser>       // type PartialUser = {
+                                                    //   id: string,
+                                                    // } & {
+                                                    //   name?: string,
+                                                    //   email?: string,
+                                                    // }
 ```
 
 <a name='syntax-context'></a>
