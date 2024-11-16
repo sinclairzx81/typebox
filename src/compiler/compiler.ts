@@ -291,7 +291,7 @@ export namespace TypeCompiler {
   }
   function* FromImport(schema: TImport, references: TSchema[], value: string): IterableIterator<string> {
     const definitions = globalThis.Object.values(schema.$defs) as TSchema[]
-    const target = schema.$defs[schema.$ref as never] as TSchema
+    const target = schema.$defs[schema.$ref] as TSchema
     yield* Visit(target, [...references, ...definitions], value)
   }
   function* FromInteger(schema: TInteger, references: TSchema[], value: string): IterableIterator<string> {

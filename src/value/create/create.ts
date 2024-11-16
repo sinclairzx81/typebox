@@ -170,7 +170,7 @@ function FromFunction(schema: TFunction, references: TSchema[]): any {
 }
 function FromImport(schema: TImport, references: TSchema[]): any {
   const definitions = globalThis.Object.values(schema.$defs) as TSchema[]
-  const target = schema.$defs[schema.$ref as never] as TSchema
+  const target = schema.$defs[schema.$ref] as TSchema
   return Visit(target, [...references, ...definitions])
 }
 function FromInteger(schema: TInteger, references: TSchema[]): any {

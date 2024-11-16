@@ -119,7 +119,7 @@ function FromIntersect(schema: TIntersect, references: TSchema[], path: string, 
 // prettier-ignore
 function FromImport(schema: TImport, references: TSchema[], path: string, value: unknown): unknown {
   const definitions = globalThis.Object.values(schema.$defs) as TSchema[]
-  const target = schema.$defs[schema.$ref as never] as TSchema
+  const target = schema.$defs[schema.$ref] as TSchema
   const transform = schema[TransformKind as never]
   // Note: we need to re-spec the target as TSchema + [TransformKind]
   const transformTarget = { [TransformKind]: transform, ...target } as TSchema

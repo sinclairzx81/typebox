@@ -305,7 +305,7 @@ function* FromFunction(schema: TFunction, references: TSchema[], path: string, v
 }
 function* FromImport(schema: TImport, references: TSchema[], path: string, value: any): IterableIterator<ValueError> {
   const definitions = globalThis.Object.values(schema.$defs) as TSchema[]
-  const target = schema.$defs[schema.$ref as never] as TSchema
+  const target = schema.$defs[schema.$ref] as TSchema
   yield* Visit(target, [...references, ...definitions], path, value)
 }
 function* FromInteger(schema: TInteger, references: TSchema[], path: string, value: any): IterableIterator<ValueError> {

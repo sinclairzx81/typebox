@@ -185,7 +185,7 @@ function FromDate(schema: TDate, references: TSchema[], value: any): unknown {
 }
 function FromImport(schema: TImport, references: TSchema[], value: unknown): unknown {
   const definitions = globalThis.Object.values(schema.$defs) as TSchema[]
-  const target = schema.$defs[schema.$ref as never] as TSchema
+  const target = schema.$defs[schema.$ref] as TSchema
   return Visit(target, [...references, ...definitions], value)
 }
 function FromInteger(schema: TInteger, references: TSchema[], value: any): unknown {
