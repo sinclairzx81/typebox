@@ -776,7 +776,7 @@ type Partial = Static.Tuple<[
 // prettier-ignore
 interface RequiredMapping extends Static.IMapping {
   output: this['input'] extends ['Required', LAngle, infer Type extends Types.TSchema, RAngle]
-    ? Types.TPartial<Type>
+    ? Types.TRequired<Type>
     : never
 }
 // prettier-ignore
@@ -788,8 +788,8 @@ type Required = Static.Tuple<[
 // ------------------------------------------------------------------
 // prettier-ignore
 interface PickMapping extends Static.IMapping {
-  output: this['input'] extends ['Pick', LAngle, infer Type extends Types.TSchema, Comma, infer PropertyKey extends Types.TSchema, RAngle]
-    ? Types.TPick<Type, Types.TIndexPropertyKeys<PropertyKey>>
+  output: this['input'] extends ['Pick', LAngle, infer Type extends Types.TSchema, Comma, infer Key extends Types.TSchema, RAngle]
+    ? Types.TPick<Type, Key>
     : never
 }
 // prettier-ignore
@@ -801,8 +801,8 @@ type Pick = Static.Tuple<[
 // ------------------------------------------------------------------
 // prettier-ignore
 interface OmitMapping extends Static.IMapping {
-  output: this['input'] extends ['Omit', LAngle, infer Type extends Types.TSchema, Comma, infer PropertyKey extends Types.TSchema, RAngle]
-    ? Types.TOmit<Type, Types.TIndexPropertyKeys<PropertyKey>>
+  output: this['input'] extends ['Omit', LAngle, infer Type extends Types.TSchema, Comma, infer Key extends Types.TSchema, RAngle]
+    ? Types.TOmit<Type, Key>
     : never
 }
 // prettier-ignore

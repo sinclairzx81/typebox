@@ -30,9 +30,10 @@ import * as ValueGuard from './value'
 import { Kind, Hint, TransformKind, ReadonlyKind, OptionalKind } from '../symbols/index'
 import { TypeBoxError } from '../error/index'
 import { TransformOptions } from '../transform/index'
-import { TTemplateLiteral } from '../template-literal/index'
-import { TArray } from '../array/index'
-import { TBoolean } from '../boolean/index'
+import type { TTemplateLiteral } from '../template-literal/index'
+import type { TArray } from '../array/index'
+import type { TBoolean } from '../boolean/index'
+import type { TComputed } from '../computed/index'
 import type { TRecord } from '../record/index'
 import type { TString } from '../string/index'
 import type { TUnion } from '../union/index'
@@ -76,6 +77,7 @@ const KnownTypes = [
   'AsyncIterator',
   'BigInt',
   'Boolean',
+  'Computed',
   'Constructor',
   'Date',
   'Enum',
@@ -216,6 +218,10 @@ export function IsBoolean(value: unknown): value is TBoolean {
     value.type === 'boolean' &&
     IsOptionalString(value.$id)
   )
+}
+/** Returns true if the given value is TComputed */
+export function IsComputed(value: unknown): value is TComputed {
+  return IsKindOf(value, 'Computed') && IsString(value.target) && ValueGuard.IsArray(value.parameters) && value.parameters.every((schema) => IsSchema(schema))
 }
 /** Returns true if the given value is TConstructor */
 export function IsConstructor(value: unknown): value is TConstructor {

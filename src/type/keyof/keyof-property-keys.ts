@@ -44,58 +44,56 @@ import { IsIntersect, IsUnion, IsTuple, IsArray, IsObject, IsRecord } from '../g
 // FromRest
 // ------------------------------------------------------------------
 // prettier-ignore
-type TFromRest<T extends TSchema[], Acc extends PropertyKey[][] = []> = (
-  T extends [infer L extends TSchema, ...infer R extends TSchema[]]
-    ? TFromRest<R, [...Acc, TKeyOfPropertyKeys<L>]>
-    : Acc
+type TFromRest<Types extends TSchema[], Result extends PropertyKey[][] = []> = (
+  Types extends [infer L extends TSchema, ...infer R extends TSchema[]]
+    ? TFromRest<R, [...Result, TKeyOfPropertyKeys<L>]>
+    : Result
 )
 // prettier-ignore
-function FromRest<T extends TSchema[]>(T: [...T]): TFromRest<T> {
-  const Acc = [] as PropertyKey[][]
-  for(const L of T) Acc.push(KeyOfPropertyKeys(L))
-  return Acc as never
+function FromRest<Types extends TSchema[]>(types: [...Types]): TFromRest<Types> {
+  const result = [] as PropertyKey[][]
+  for(const L of types) result.push(KeyOfPropertyKeys(L))
+  return result as never
 }
 // ------------------------------------------------------------------
 // FromIntersect
 // ------------------------------------------------------------------
 // prettier-ignore
-type TFromIntersect<
-  T extends TSchema[], 
-  C extends PropertyKey[][] = TFromRest<T>,
-  R extends PropertyKey[] = TSetUnionMany<C>
-> = R
+type TFromIntersect<Types extends TSchema[], 
+  PropertyKeysArray extends PropertyKey[][] = TFromRest<Types>,
+  PropertyKeys extends PropertyKey[] = TSetUnionMany<PropertyKeysArray>
+> = PropertyKeys
 // prettier-ignore
-function FromIntersect<T extends TSchema[]>(T: [...T]): TFromIntersect<T> {
-  const C = FromRest(T) as PropertyKey[][]
-  const R = SetUnionMany(C)
-  return R as never
+function FromIntersect<Types extends TSchema[]>(types: [...Types]): TFromIntersect<Types> {
+  const propertyKeysArray = FromRest(types) as PropertyKey[][]
+  const propertyKeys = SetUnionMany(propertyKeysArray)
+  return propertyKeys as never
 }
 // ------------------------------------------------------------------
 // FromUnion
 // ------------------------------------------------------------------
 // prettier-ignore
-type TFromUnion<
-  T extends TSchema[], 
-  C extends PropertyKey[][] = TFromRest<T>,
-  R extends PropertyKey[] = TSetIntersectMany<C>
-> = R
+type TFromUnion<Types extends TSchema[], 
+  PropertyKeysArray extends PropertyKey[][] = TFromRest<Types>,
+  PropertyKeys extends PropertyKey[] = TSetIntersectMany<PropertyKeysArray>
+> = PropertyKeys
 // prettier-ignore
-function FromUnion<T extends TSchema[]>(T: [...T]): TFromUnion<T> {
-  const C = FromRest(T) as PropertyKey[][]
-  const R = SetIntersectMany(C)
-  return R as never
+function FromUnion<Types extends TSchema[]>(types: [...Types]): TFromUnion<Types> {
+  const propertyKeysArray = FromRest(types) as PropertyKey[][]
+  const propertyKeys = SetIntersectMany(propertyKeysArray)
+  return propertyKeys as never
 }
 // ------------------------------------------------------------------
 // FromTuple
 // ------------------------------------------------------------------
 // prettier-ignore
-type TFromTuple<T extends TSchema[], I extends string = ZeroString, Acc extends PropertyKey[] = []> = 
-  T extends [infer _ extends TSchema, ...infer R extends TSchema[]]
-    ? TFromTuple<R, TIncrement<I>, [...Acc, I]>
+type TFromTuple<Types extends TSchema[], Indexer extends string = ZeroString, Acc extends PropertyKey[] = []> = 
+  Types extends [infer _ extends TSchema, ...infer R extends TSchema[]]
+    ? TFromTuple<R, TIncrement<Indexer>, [...Acc, Indexer]>
     : Acc
 // prettier-ignore
-function FromTuple<T extends TSchema[]>(T: [...T]): TFromTuple<T> {
-  return T.map((_, I) => I.toString()) as never
+function FromTuple<Types extends TSchema[]>(types: [...Types]): TFromTuple<Types> {
+  return types.map((_, indexer) => indexer.toString()) as never
 }
 // ------------------------------------------------------------------
 // FromArray
@@ -114,11 +112,11 @@ function FromArray<_ extends TSchema>(_: _): TFromArray<_> {
 // FromProperties
 // ------------------------------------------------------------------
 // prettier-ignore
-type TFromProperties<T extends TProperties> = (
-  UnionToTuple<keyof T>
+type TFromProperties<Properties extends TProperties> = (
+  UnionToTuple<keyof Properties>
 )
 // prettier-ignore
-function FromProperties<T extends TProperties>(T: T): TFromProperties<T> {
+function FromProperties<Properties extends TProperties>(T: Properties): TFromProperties<Properties> {
   return (
     globalThis.Object.getOwnPropertyNames(T)
   ) as never
@@ -140,25 +138,25 @@ function FromPatternProperties(patternProperties: Record<PropertyKey, TSchema>):
 // KeyOfPropertyKeys
 // ------------------------------------------------------------------
 // prettier-ignore
-export type TKeyOfPropertyKeys<T extends TSchema> = (
-  T extends TRecursive<infer S> ? TKeyOfPropertyKeys<S> :
-  T extends TIntersect<infer S> ? TFromIntersect<S> :
-  T extends TUnion<infer S> ? TFromUnion<S> :
-  T extends TTuple<infer S> ? TFromTuple<S> :
-  T extends TArray<infer S> ? TFromArray<S> :
-  T extends TObject<infer S> ? TFromProperties<S> :
+export type TKeyOfPropertyKeys<Type extends TSchema> = (
+  Type extends TRecursive<infer Type extends TSchema> ? TKeyOfPropertyKeys<Type> :
+  Type extends TIntersect<infer Types extends TSchema[]> ? TFromIntersect<Types> :
+  Type extends TUnion<infer Types extends TSchema[]> ? TFromUnion<Types> :
+  Type extends TTuple<infer Types extends TSchema[]> ? TFromTuple<Types> :
+  Type extends TArray<infer Type extends TSchema> ? TFromArray<Type> :
+  Type extends TObject<infer Properties extends TProperties> ? TFromProperties<Properties> :
   []
 )
 /** Returns a tuple of PropertyKeys derived from the given TSchema. */
 // prettier-ignore
-export function KeyOfPropertyKeys<T extends TSchema>(T: T): TKeyOfPropertyKeys<T> {
+export function KeyOfPropertyKeys<Type extends TSchema>(type: Type): TKeyOfPropertyKeys<Type> {
   return (
-    IsIntersect(T) ? FromIntersect(T.allOf) :
-    IsUnion(T) ? FromUnion(T.anyOf) :
-    IsTuple(T) ? FromTuple(T.items ?? []) :
-    IsArray(T) ? FromArray(T.items) :
-    IsObject(T) ? FromProperties(T.properties) :
-    IsRecord(T) ? FromPatternProperties(T.patternProperties) :
+    IsIntersect(type) ? FromIntersect(type.allOf) :
+    IsUnion(type) ? FromUnion(type.anyOf) :
+    IsTuple(type) ? FromTuple(type.items ?? []) :
+    IsArray(type) ? FromArray(type.items) :
+    IsObject(type) ? FromProperties(type.properties) :
+    IsRecord(type) ? FromPatternProperties(type.patternProperties) :
     []
   ) as never
 }

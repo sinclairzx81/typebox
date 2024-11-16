@@ -31,6 +31,7 @@ import type { TSchema } from '../schema/index'
 import type { Static } from '../static/index'
 import type { Evaluate, Ensure, Assert } from '../helpers/index'
 import { type TAny } from '../any/index'
+import { Computed, type TComputed } from '../computed/index'
 import { Object, type TObject, type TProperties, type TAdditionalProperties, type ObjectOptions } from '../object/index'
 import { type TLiteral, type TLiteralValue } from '../literal/index'
 import { Never, type TNever } from '../never/index'
@@ -40,6 +41,7 @@ import { type TString } from '../string/index'
 import { type TInteger } from '../integer/index'
 import { type TNumber } from '../number/index'
 import { type TEnum } from '../enum/index'
+import { type TRef } from '../ref/index'
 
 import { IsTemplateLiteralFinite, TIsTemplateLiteralFinite, type TTemplateLiteral } from '../template-literal/index'
 import { PatternStringExact, PatternNumberExact, PatternNeverExact } from '../patterns/index'
@@ -52,7 +54,8 @@ import { IsUndefined } from '../guard/value'
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-import { IsInteger, IsLiteral, IsAny, IsNever, IsNumber, IsString, IsRegExp, IsTemplateLiteral, IsUnion } from '../guard/kind'
+import { IsInteger, IsLiteral, IsAny, IsNever, IsNumber, IsString, IsRegExp, IsTemplateLiteral, IsUnion, IsRef, IsComputed } from '../guard/kind'
+
 // ------------------------------------------------------------------
 // RecordCreateFromPattern
 // ------------------------------------------------------------------
@@ -218,34 +221,38 @@ export interface TRecord<K extends TSchema = TSchema, T extends TSchema = TSchem
 // TRecordOrObject
 // ------------------------------------------------------------------
 // prettier-ignore
-export type TRecordOrObject<K extends TSchema, T extends TSchema> =
-  K extends TTemplateLiteral ? TFromTemplateLiteralKey<K, T> :  
-  K extends TEnum<infer S> ? TFromEnumKey<S, T> : // (Special: Ensure resolve Enum before Union)
-  K extends TUnion<infer S> ? TFromUnionKey<S, T> :
-  K extends TLiteral<infer S> ? TFromLiteralKey<S, T> :
-  K extends TInteger ? TFromIntegerKey<K, T> :
-  K extends TNumber ? TFromNumberKey<K, T> :
-  K extends TRegExp ? TFromRegExpKey<K, T> :
-  K extends TString ? TFromStringKey<K, T> :
-  K extends TAny ? TFromAnyKey<K, T> :
-  K extends TNever ? TFromNeverKey<K, T> :
+export type TRecordOrObject<Key extends TSchema, Type extends TSchema> =
+  Type extends TRef ? TComputed<'Record', [Key, Type]> :
+  Key extends TRef ? TComputed<'Record', [Key, Type]> :
+  Key extends TTemplateLiteral ? TFromTemplateLiteralKey<Key, Type> :  
+  Key extends TEnum<infer S> ? TFromEnumKey<S, Type> : // (Special: Ensure resolve Enum before Union)
+  Key extends TUnion<infer S> ? TFromUnionKey<S, Type> :
+  Key extends TLiteral<infer S> ? TFromLiteralKey<S, Type> :
+  Key extends TInteger ? TFromIntegerKey<Key, Type> :
+  Key extends TNumber ? TFromNumberKey<Key, Type> :
+  Key extends TRegExp ? TFromRegExpKey<Key, Type> :
+  Key extends TString ? TFromStringKey<Key, Type> :
+  Key extends TAny ? TFromAnyKey<Key, Type> :
+  Key extends TNever ? TFromNeverKey<Key, Type> :
   TNever
 // ------------------------------------------------------------------
 // TRecordOrObject
 // ------------------------------------------------------------------
 /** `[Json]` Creates a Record type */
-export function Record<K extends TSchema, T extends TSchema>(K: K, T: T, options: ObjectOptions = {}): TRecordOrObject<K, T> {
+export function Record<Key extends TSchema, Type extends TSchema>(key: Key, type: Type, options: ObjectOptions = {}): TRecordOrObject<Key, Type> {
   // prettier-ignore
   return (
-    IsUnion(K) ? FromUnionKey(K.anyOf, T, options) :
-    IsTemplateLiteral(K) ? FromTemplateLiteralKey(K, T, options) :
-    IsLiteral(K) ? FromLiteralKey(K.const, T, options) :
-    IsInteger(K) ? FromIntegerKey(K, T, options) :
-    IsNumber(K) ? FromNumberKey(K, T, options) :
-    IsRegExp(K) ? FromRegExpKey(K, T, options) :
-    IsString(K) ? FromStringKey(K, T, options) :
-    IsAny(K) ? FromAnyKey(K, T, options) :
-    IsNever(K) ? FromNeverKey(K, T, options) :
+    IsRef(type) ? Computed('Record', [key, type]) :
+    IsRef(key) ? Computed('Record', [key, type]) :
+    IsUnion(key) ? FromUnionKey(key.anyOf, type, options) :
+    IsTemplateLiteral(key) ? FromTemplateLiteralKey(key, type, options) :
+    IsLiteral(key) ? FromLiteralKey(key.const, type, options) :
+    IsInteger(key) ? FromIntegerKey(key, type, options) :
+    IsNumber(key) ? FromNumberKey(key, type, options) :
+    IsRegExp(key) ? FromRegExpKey(key, type, options) :
+    IsString(key) ? FromStringKey(key, type, options) :
+    IsAny(key) ? FromAnyKey(key, type, options) :
+    IsNever(key) ? FromNeverKey(key, type, options) :
     Never(options)
   ) as never
 }

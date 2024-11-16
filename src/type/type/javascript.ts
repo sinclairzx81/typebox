@@ -49,11 +49,11 @@ import { Void, type TVoid } from '../void/index'
 /** JavaScript Type Builder with Static Resolution for TypeScript */
 export class JavaScriptTypeBuilder extends JsonTypeBuilder {
   /** `[JavaScript]` Creates a AsyncIterator type */
-  public AsyncIterator<T extends TSchema>(items: T, options?: SchemaOptions): TAsyncIterator<T> {
+  public AsyncIterator<Type extends TSchema>(items: Type, options?: SchemaOptions): TAsyncIterator<Type> {
     return AsyncIterator(items, options)
   }
   /** `[JavaScript]` Constructs a type by recursively unwrapping Promise types */
-  public Awaited<T extends TSchema>(schema: T, options?: SchemaOptions): TAwaited<T> {
+  public Awaited<Type extends TSchema>(schema: Type, options?: SchemaOptions): TAwaited<Type> {
     return Awaited(schema, options)
   }
   /** `[JavaScript]` Creates a BigInt type */
@@ -61,35 +61,35 @@ export class JavaScriptTypeBuilder extends JsonTypeBuilder {
     return BigInt(options)
   }
   /** `[JavaScript]` Extracts the ConstructorParameters from the given Constructor type */
-  public ConstructorParameters<T extends TConstructor<TSchema[], TSchema>>(schema: T, options?: SchemaOptions): TConstructorParameters<T> {
+  public ConstructorParameters<Type extends TConstructor>(schema: Type, options?: SchemaOptions): TConstructorParameters<Type> {
     return ConstructorParameters(schema, options)
   }
   /** `[JavaScript]` Creates a Constructor type */
-  public Constructor<T extends TSchema[], U extends TSchema>(parameters: [...T], returns: U, options?: SchemaOptions): TConstructor<T, U> {
-    return Constructor(parameters, returns, options)
+  public Constructor<Parameters extends TSchema[], InstanceType extends TSchema>(parameters: [...Parameters], instanceType: InstanceType, options?: SchemaOptions): TConstructor<Parameters, InstanceType> {
+    return Constructor(parameters, instanceType, options)
   }
   /** `[JavaScript]` Creates a Date type */
   public Date(options: DateOptions = {}): TDate {
     return Date(options)
   }
   /** `[JavaScript]` Creates a Function type */
-  public Function<T extends TSchema[], U extends TSchema>(parameters: [...T], returns: U, options?: SchemaOptions): TFunction<T, U> {
-    return FunctionType(parameters, returns, options)
+  public Function<Parameters extends TSchema[], ReturnType extends TSchema>(parameters: [...Parameters], returnType: ReturnType, options?: SchemaOptions): TFunction<Parameters, ReturnType> {
+    return FunctionType(parameters, returnType, options)
   }
   /** `[JavaScript]` Extracts the InstanceType from the given Constructor type */
-  public InstanceType<T extends TConstructor<any[], any>>(schema: T, options?: SchemaOptions): TInstanceType<T> {
+  public InstanceType<Type extends TConstructor>(schema: Type, options?: SchemaOptions): TInstanceType<Type> {
     return InstanceType(schema, options)
   }
   /** `[JavaScript]` Creates an Iterator type */
-  public Iterator<T extends TSchema>(items: T, options?: SchemaOptions): TIterator<T> {
+  public Iterator<Type extends TSchema>(items: Type, options?: SchemaOptions): TIterator<Type> {
     return Iterator(items, options)
   }
   /** `[JavaScript]` Extracts the Parameters from the given Function type */
-  public Parameters<T extends TFunction<TSchema[], TSchema>>(schema: T, options?: SchemaOptions): TParameters<T> {
+  public Parameters<Type extends TFunction>(schema: Type, options?: SchemaOptions): TParameters<Type> {
     return Parameters(schema, options)
   }
   /** `[JavaScript]` Creates a Promise type */
-  public Promise<T extends TSchema>(item: T, options?: SchemaOptions): TPromise<T> {
+  public Promise<Type extends TSchema>(item: Type, options?: SchemaOptions): TPromise<Type> {
     return Promise(item, options)
   }
   /** `[JavaScript]` Creates a RegExp type */
@@ -101,8 +101,8 @@ export class JavaScriptTypeBuilder extends JsonTypeBuilder {
     return RegExp(unresolved as any, options)
   }
   /** `[JavaScript]` Extracts the ReturnType from the given Function type */
-  public ReturnType<T extends TFunction<any[], any>>(schema: T, options?: SchemaOptions): TReturnType<T> {
-    return ReturnType(schema, options)
+  public ReturnType<Type extends TFunction>(type: Type, options?: SchemaOptions): TReturnType<Type> {
+    return ReturnType(type, options)
   }
   /** `[JavaScript]` Creates a Symbol type */
   public Symbol(options?: SchemaOptions): TSymbol {

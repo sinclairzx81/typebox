@@ -33,6 +33,8 @@ import type { TMappedResult } from '../mapped/index'
 import type { SchemaOptions } from '../schema/index'
 import { Literal, type TLiteral, type TLiteralValue } from '../literal/index'
 import { Number, type TNumber } from '../number/index'
+import { Computed, TComputed } from '../computed/index'
+import { Ref, type TRef } from '../ref/index'
 import { KeyOfPropertyKeys, type TKeyOfPropertyKeys } from './keyof-property-keys'
 import { UnionEvaluated, type TUnionEvaluated } from '../union/index'
 import { KeyOfFromMappedResult, type TKeyOfFromMappedResult } from './keyof-from-mapped-result'
@@ -40,46 +42,72 @@ import { KeyOfFromMappedResult, type TKeyOfFromMappedResult } from './keyof-from
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-import { IsMappedResult } from '../guard/kind'
+import { IsMappedResult, IsRef, IsComputed } from '../guard/kind'
+// ------------------------------------------------------------------
+// FromComputed
+// ------------------------------------------------------------------
+// prettier-ignore
+type TFromComputed<Target extends string, Parameters extends TSchema[]> = Ensure<
+  TComputed<'KeyOf', [TComputed<Target, Parameters>]>
+>
+// prettier-ignore
+function FromComputed<Target extends string, Parameters extends TSchema[]>(target: Target, parameters: Parameters): TFromComputed<Target, Parameters> {
+  return Computed('KeyOf', [Computed(target, parameters)]) as never
+}
+// ------------------------------------------------------------------
+// FromRef
+// ------------------------------------------------------------------
+// prettier-ignore
+type TFromRef<Ref extends string> = Ensure<
+  TComputed<'KeyOf', [TRef<Ref>]>
+>
+// prettier-ignore
+function FromRef<Ref extends string>($ref: Ref): TFromRef<Ref> {
+  return Computed('KeyOf', [Ref($ref)]) as never
+}
+// ------------------------------------------------------------------
+// KeyOfFromType
+// ------------------------------------------------------------------
+// prettier-ignore
+/** `[Internal]` Used by KeyOfFromMappedResult */
+export type TKeyOfFromType<Type extends TSchema, 
+  PropertyKeys extends PropertyKey[] = TKeyOfPropertyKeys<Type>,
+  PropertyKeyTypes extends TSchema[] = TKeyOfPropertyKeysToRest<PropertyKeys>,
+  Result = TUnionEvaluated<PropertyKeyTypes>
+> = Ensure<Result>
+// prettier-ignore
+function KeyOfFromType<Type extends TSchema>(type: Type, options?: SchemaOptions): TKeyOfFromType<Type> {
+  const propertyKeys = KeyOfPropertyKeys(type) as PropertyKey[]
+  const propertyKeyTypes = KeyOfPropertyKeysToRest(propertyKeys)
+  const result = UnionEvaluated(propertyKeyTypes)
+  return CreateType(result, options) as never
+}
 // ------------------------------------------------------------------
 // FromPropertyKeys
 // ------------------------------------------------------------------
 // prettier-ignore
-export type TKeyOfPropertyKeysToRest<T extends PropertyKey[], Acc extends TSchema[] = []> = (
-  T extends [infer L extends PropertyKey, ...infer R extends PropertyKey[]]
+export type TKeyOfPropertyKeysToRest<PropertyKeys extends PropertyKey[], Result extends TSchema[] = []> = (
+  PropertyKeys extends [infer L extends PropertyKey, ...infer R extends PropertyKey[]]
     ? L extends '[number]'
-      ? TKeyOfPropertyKeysToRest<R, [...Acc, TNumber]>
-      : TKeyOfPropertyKeysToRest<R, [...Acc, TLiteral<Assert<L, TLiteralValue>>]>
-    : Acc
+      ? TKeyOfPropertyKeysToRest<R, [...Result, TNumber]>
+      : TKeyOfPropertyKeysToRest<R, [...Result, TLiteral<Assert<L, TLiteralValue>>]>
+    : Result
 )
 // prettier-ignore
-export function KeyOfPropertyKeysToRest<T extends PropertyKey[]>(T: [...T]): TKeyOfPropertyKeysToRest<T> {
-  return T.map(L => L === '[number]' ? Number() : Literal(L as TLiteralValue)) as never
+export function KeyOfPropertyKeysToRest<PropertyKeys extends PropertyKey[]>(propertyKeys: [...PropertyKeys]): TKeyOfPropertyKeysToRest<PropertyKeys> {
+  return propertyKeys.map(L => L === '[number]' ? Number() : Literal(L as TLiteralValue)) as never
 }
 // ------------------------------------------------------------------
-// KeyOfTypeResolve
+// TKeyOf
 // ------------------------------------------------------------------
 // prettier-ignore
-export type TKeyOf<
-  T extends TSchema, 
-  K extends PropertyKey[] = TKeyOfPropertyKeys<T>,
-  S extends TSchema[] = TKeyOfPropertyKeysToRest<K>,
-  U = TUnionEvaluated<S>
-> = (
-  Ensure<U>
+export type TKeyOf<Type extends TSchema> = (
+  Type extends TComputed<infer Target extends string, infer Parameters extends TSchema[]> ? TFromComputed<Target, Parameters> :
+  Type extends TRef<infer Ref extends string> ? TFromRef<Ref> :
+  Type extends TMappedResult ? TKeyOfFromMappedResult<Type> :
+  TKeyOfFromType<Type>
 )
 /** `[Json]` Creates a KeyOf type */
-export function KeyOf<T extends TMappedResult>(T: T, options?: SchemaOptions): TKeyOfFromMappedResult<T>
-/** `[Json]` Creates a KeyOf type */
-export function KeyOf<T extends TSchema>(T: T, options?: SchemaOptions): TKeyOf<T>
-/** `[Json]` Creates a KeyOf type */
-export function KeyOf(T: TSchema, options?: SchemaOptions): never {
-  if (IsMappedResult(T)) {
-    return KeyOfFromMappedResult(T, options) as never
-  } else {
-    const K = KeyOfPropertyKeys(T)
-    const S = KeyOfPropertyKeysToRest(K)
-    const U = UnionEvaluated(S)
-    return CreateType(U, options) as never
-  }
+export function KeyOf<Type extends TSchema>(type: Type, options?: SchemaOptions): TKeyOf<Type> {
+  return (IsComputed(type) ? FromComputed(type.target, type.parameters) : IsRef(type) ? FromRef(type.$ref) : IsMappedResult(type) ? KeyOfFromMappedResult(type, options) : KeyOfFromType(type, options)) as never
 }

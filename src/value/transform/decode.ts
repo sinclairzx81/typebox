@@ -51,9 +51,9 @@ import type { TUnion } from '../../type/union/index'
 // ------------------------------------------------------------------
 import { HasPropertyKey, IsObject, IsArray, IsValueType, IsUndefined as IsUndefinedValue } from '../guard/index'
 // ------------------------------------------------------------------
-// TypeGuard
+// KindGuard
 // ------------------------------------------------------------------
-import { IsTransform, IsSchema, IsUndefined } from '../../type/guard/type'
+import { IsTransform, IsSchema, IsUndefined } from '../../type/guard/kind'
 // ------------------------------------------------------------------
 // Errors
 // ------------------------------------------------------------------

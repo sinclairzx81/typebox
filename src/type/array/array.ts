@@ -54,6 +54,6 @@ export interface TArray<T extends TSchema = TSchema> extends TSchema, ArrayOptio
   items: T
 }
 /** `[Json]` Creates an Array type */
-export function Array<T extends TSchema>(items: T, options?: ArrayOptions): TArray<T> {
+export function Array<Type extends TSchema>(items: Type, options?: ArrayOptions): TArray<Type> {
   return CreateType({ [Kind]: 'Array', type: 'array', items }, options) as never
 }

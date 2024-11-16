@@ -41,38 +41,40 @@ import { IsTemplateLiteral, IsUnion, IsLiteral, IsNumber, IsInteger } from '../g
 // FromTemplateLiteral
 // ------------------------------------------------------------------
 // prettier-ignore
-type TFromTemplateLiteral<T extends TTemplateLiteral, R extends string[] = TTemplateLiteralGenerate<T>> = (R)
+type TFromTemplateLiteral<TemplateLiteral extends TTemplateLiteral, 
+  Result extends string[] = TTemplateLiteralGenerate<TemplateLiteral>
+> = Result
 // prettier-ignore
-function FromTemplateLiteral<T extends TTemplateLiteral>(T: T): TFromTemplateLiteral<T> {
-  const R = TemplateLiteralGenerate(T) as string[]
-  return R.map(S => S.toString()) as never
+function FromTemplateLiteral<TemplateLiteral extends TTemplateLiteral>(templateLiteral: TemplateLiteral): TFromTemplateLiteral<TemplateLiteral> {
+  const result = TemplateLiteralGenerate(templateLiteral) as string[]
+  return result.map(S => S.toString()) as never
 }
 // ------------------------------------------------------------------
 // FromUnion
 // ------------------------------------------------------------------
 // prettier-ignore
-type TFromUnion<T extends TSchema[], Acc extends string[] = []> = (
-  T extends [infer L extends TSchema, ...infer R extends TSchema[]] 
-    ? TFromUnion<R, [...Acc, ...TIndexPropertyKeys<L>]>
-    : Acc
+type TFromUnion<Types extends TSchema[], Result extends string[] = []> = (
+  Types extends [infer Left extends TSchema, ...infer Right extends TSchema[]] 
+    ? TFromUnion<Right, [...Result, ...TIndexPropertyKeys<Left>]>
+    : Result
 )
 // prettier-ignore
-function FromUnion<T extends TSchema[]>(T: T): TFromUnion<T> {
-  const Acc = [] as string[]
-  for(const L of T) Acc.push(...IndexPropertyKeys(L))
-  return Acc as never
+function FromUnion<Type extends TSchema[]>(type: Type): TFromUnion<Type> {
+  const result = [] as string[]
+  for(const left of type) result.push(...IndexPropertyKeys(left))
+  return result as never
 }
 // ------------------------------------------------------------------
 // FromLiteral
 // ------------------------------------------------------------------
 // prettier-ignore
-type TFromLiteral<T extends TLiteralValue> = (
-  T extends PropertyKey 
-    ? [`${T}`] 
+type TFromLiteral<LiteralValue extends TLiteralValue> = (
+  LiteralValue extends PropertyKey 
+    ? [`${LiteralValue}`] 
     : []
 )
 // prettier-ignore
-function FromLiteral<T extends TLiteralValue>(T: T): TFromLiteral<T> {
+function FromLiteral<LiteralValue extends TLiteralValue>(T: LiteralValue): TFromLiteral<LiteralValue> {
   return (
     [(T as string).toString()] // TS 5.4 observes TLiteralValue as not having a toString()
   ) as never
@@ -81,23 +83,23 @@ function FromLiteral<T extends TLiteralValue>(T: T): TFromLiteral<T> {
 // IndexedKeyResolve
 // ------------------------------------------------------------------
 // prettier-ignore
-export type TIndexPropertyKeys<T extends TSchema> = (
-  T extends TTemplateLiteral  ? TFromTemplateLiteral<T> :
-  T extends TUnion<infer S>   ? TFromUnion<S> :
-  T extends TLiteral<infer S> ? TFromLiteral<S> :
-  T extends TNumber           ? ['[number]'] :  
-  T extends TInteger          ? ['[number]'] :
+export type TIndexPropertyKeys<Type extends TSchema, Result extends PropertyKey[] = (
+  Type extends TTemplateLiteral ? TFromTemplateLiteral<Type> :
+  Type extends TUnion<infer Types extends TSchema[]> ? TFromUnion<Types> :
+  Type extends TLiteral<infer LiteralValue extends TLiteralValue> ? TFromLiteral<LiteralValue> :
+  Type extends TNumber ? ['[number]'] :  
+  Type extends TInteger ? ['[number]'] :
   []
-)
+)> = Result
 /** Returns a tuple of PropertyKeys derived from the given TSchema */
 // prettier-ignore
-export function IndexPropertyKeys<T extends TSchema>(T: T): TIndexPropertyKeys<T> {
+export function IndexPropertyKeys<Type extends TSchema>(type: Type): TIndexPropertyKeys<Type> {
   return [...new Set<string>((
-    IsTemplateLiteral(T) ? FromTemplateLiteral(T) :
-    IsUnion(T) ? FromUnion(T.anyOf) :
-    IsLiteral(T) ? FromLiteral(T.const) :
-    IsNumber(T) ? ['[number]'] : 
-    IsInteger(T) ? ['[number]'] :
+    IsTemplateLiteral(type) ? FromTemplateLiteral(type) :
+    IsUnion(type) ? FromUnion(type.anyOf) :
+    IsLiteral(type) ? FromLiteral(type.const) :
+    IsNumber(type) ? ['[number]'] : 
+    IsInteger(type) ? ['[number]'] :
     []
   ))] as never
 }

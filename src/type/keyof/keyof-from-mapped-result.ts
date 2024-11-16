@@ -30,55 +30,47 @@ import type { SchemaOptions } from '../schema/index'
 import type { Ensure, Evaluate } from '../helpers/index'
 import type { TProperties } from '../object/index'
 import { MappedResult, type TMappedResult } from '../mapped/index'
-import { KeyOf, type TKeyOf } from './keyof'
+import { KeyOf, type TKeyOfFromType } from './keyof'
 import { Clone } from '../clone/value'
 // ------------------------------------------------------------------
 // FromProperties
 // ------------------------------------------------------------------
 // prettier-ignore
-type TFromProperties<
-  K extends TProperties
-> = (
-  { [K2 in keyof K]: TKeyOf<K[K2]> }   
+type TFromProperties<Properties extends TProperties> = (
+  { [K2 in keyof Properties]: TKeyOfFromType<Properties[K2]> }   
 )
 // prettier-ignore
-function FromProperties<
-  K extends TProperties
->(K: K, options?: SchemaOptions): TFromProperties<K> {
-  const Acc = {} as TProperties
-  for(const K2 of globalThis.Object.getOwnPropertyNames(K)) Acc[K2] = KeyOf(K[K2], Clone(options))
-  return Acc as never
+function FromProperties<Properties extends TProperties>(properties: Properties, options?: SchemaOptions): TFromProperties<Properties> {
+  const result = {} as TProperties
+  for(const K2 of globalThis.Object.getOwnPropertyNames(properties)) result[K2] = KeyOf(properties[K2], Clone(options))
+  return result as never
 }
 // ------------------------------------------------------------------
 // FromMappedResult
 // ------------------------------------------------------------------
 // prettier-ignore
-type TFromMappedResult<
-  R extends TMappedResult
-> = (
-  Evaluate<TFromProperties<R['properties']>>
+type TFromMappedResult<MappedResult extends TMappedResult> = (
+  Evaluate<TFromProperties<MappedResult['properties']>>
 )
 // prettier-ignore
-function FromMappedResult<
-  R extends TMappedResult
->(R: R, options?: SchemaOptions): TFromMappedResult<R> {
-  return FromProperties(R.properties, options) as never
+function FromMappedResult<MappedResult extends TMappedResult>(mappedResult: MappedResult, options?: SchemaOptions): TFromMappedResult<MappedResult> {
+  return FromProperties(mappedResult.properties, options) as never
 }
 // ------------------------------------------------------------------
 // KeyOfFromMappedResult
 // ------------------------------------------------------------------
 // prettier-ignore
 export type TKeyOfFromMappedResult<
-  R extends TMappedResult,
-  P extends TProperties = TFromMappedResult<R>
+  MappedResult extends TMappedResult,
+  Properties extends TProperties = TFromMappedResult<MappedResult>
 > = (
-  Ensure<TMappedResult<P>>
+  Ensure<TMappedResult<Properties>>
 )
 // prettier-ignore
 export function KeyOfFromMappedResult<
-  R extends TMappedResult,
-  P extends TProperties = TFromMappedResult<R>
->(R: R, options?: SchemaOptions): TMappedResult<P> {
-  const P = FromMappedResult(R, options)
-  return MappedResult(P) as never
+  MappedResult extends TMappedResult,
+  Properties extends TProperties = TFromMappedResult<MappedResult>
+>(mappedResult: MappedResult, options?: SchemaOptions): TMappedResult<Properties> {
+  const properties = FromMappedResult(mappedResult, options)
+  return MappedResult(properties) as never
 }

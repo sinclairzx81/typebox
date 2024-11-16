@@ -75,9 +75,9 @@ import type { TVoid } from '../../type/void/index'
 // ------------------------------------------------------------------
 import { IsArray, IsUint8Array, IsDate, IsPromise, IsFunction, IsAsyncIterator, IsIterator, IsBoolean, IsNumber, IsBigInt, IsString, IsSymbol, IsInteger, IsNull, IsUndefined } from '../guard/index'
 // ------------------------------------------------------------------
-// TypeGuard
+// KindGuard
 // ------------------------------------------------------------------
-import { IsSchema } from '../../type/guard/type'
+import { IsSchema } from '../../type/guard/kind'
 // ------------------------------------------------------------------
 // Errors
 // ------------------------------------------------------------------

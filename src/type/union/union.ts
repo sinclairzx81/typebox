@@ -39,11 +39,11 @@ export type Union<T extends TSchema[]> = (
   TUnion<T>
 )
 /** `[Json]` Creates a Union type */
-export function Union<T extends TSchema[]>(T: [...T], options?: SchemaOptions): Union<T> {
+export function Union<Types extends TSchema[]>(types: [...Types], options?: SchemaOptions): Union<Types> {
   // prettier-ignore
   return (
-    T.length === 0 ? Never(options) :
-    T.length === 1 ? CreateType(T[0], options) :
-    UnionCreate(T, options)
-  ) as Union<T>
+    types.length === 0 ? Never(options) :
+    types.length === 1 ? CreateType(types[0], options) :
+    UnionCreate(types, options)
+  ) as Union<Types>
 }

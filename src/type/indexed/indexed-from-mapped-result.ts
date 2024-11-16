@@ -36,57 +36,42 @@ import { Index, type TIndex } from './index'
 // FromProperties
 // ------------------------------------------------------------------
 // prettier-ignore
-type TFromProperties<
-  T extends TSchema,
-  P extends TProperties
-> = (
-  { [K2 in keyof P]: TIndex<T, TIndexPropertyKeys<P[K2]>> }   
+type TFromProperties<Type extends TSchema, Properties extends TProperties> = (
+  { [K2 in keyof Properties]: TIndex<Type, TIndexPropertyKeys<Properties[K2]>> }   
 )
 // prettier-ignore
-function FromProperties<
-  T extends TSchema,
-  P extends TProperties
->(T: T, P: P, options?: SchemaOptions): TFromProperties<T, P> {
-  const Acc = {} as Record<PropertyKey, TSchema>
-  for(const K2 of Object.getOwnPropertyNames(P)) {
-    Acc[K2] = Index(T, IndexPropertyKeys(P[K2]), options)
+function FromProperties<Type extends TSchema, Properties extends TProperties>(type: Type, properties: Properties, options?: SchemaOptions): TFromProperties<Type, Properties> {
+  const result = {} as Record<PropertyKey, TSchema>
+  for(const K2 of Object.getOwnPropertyNames(properties)) {
+    const keys = IndexPropertyKeys(properties[K2])
+    result[K2] = Index(type, keys, options) as never
   }
-  return Acc as never
+  return result as never
 }
 // ------------------------------------------------------------------
 // FromMappedResult
 // ------------------------------------------------------------------
 // prettier-ignore
-type TFromMappedResult<
-  T extends TSchema,
-  R extends TMappedResult
-> = (
-  TFromProperties<T, R['properties']>
+type TFromMappedResult<Type extends TSchema, MappedResult extends TMappedResult> = (
+  TFromProperties<Type, MappedResult['properties']>
 )
 // prettier-ignore
-function FromMappedResult<
-  T extends TSchema,
-  R extends TMappedResult
->(T: T, R: R, options?: SchemaOptions): TFromMappedResult<T, R> {
-  return FromProperties(T, R.properties, options) as never
+function FromMappedResult<Type extends TSchema, MappedResult extends TMappedResult>(type: Type, mappedResult: MappedResult, options?: SchemaOptions): TFromMappedResult<Type, MappedResult> {
+  return FromProperties(type, mappedResult.properties, options) as never
 }
 // ------------------------------------------------------------------
 // TIndexFromMappedResult
 // ------------------------------------------------------------------
 // prettier-ignore
-export type TIndexFromMappedResult<
-  T extends TSchema,
-  R extends TMappedResult,
-  P extends TProperties = TFromMappedResult<T, R>
+export type TIndexFromMappedResult<Type extends TSchema, MappedResult extends TMappedResult,
+  Properties extends TProperties = TFromMappedResult<Type, MappedResult>
 > = (
-  TMappedResult<P>
+  TMappedResult<Properties>
 )
 // prettier-ignore
-export function IndexFromMappedResult<
-  T extends TSchema,
-  R extends TMappedResult,
-  P extends TProperties = TFromMappedResult<T, R>
->(T: T, R: R, options?: SchemaOptions): TMappedResult<P> {
-  const P = FromMappedResult(T, R, options)
-  return MappedResult(P) as never
+export function IndexFromMappedResult<Type extends TSchema, MappedResult extends TMappedResult,
+  Properties extends TProperties = TFromMappedResult<Type, MappedResult>
+>(type: Type, mappedResult: MappedResult, options?: SchemaOptions): TMappedResult<Properties> {
+  const properties = FromMappedResult(type, mappedResult, options)
+  return MappedResult(properties) as never
 }
