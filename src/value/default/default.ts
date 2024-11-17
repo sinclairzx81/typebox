@@ -68,6 +68,14 @@ function HasDefaultProperty(schema: unknown): schema is TSchema {
 // Types
 // ------------------------------------------------------------------
 function FromArray(schema: TArray, references: TSchema[], value: unknown): any {
+  // if the value is an array, we attempt to initialize it's elements
+  if (IsArray(value)) {
+    for (let i = 0; i < value.length; i++) {
+      value[i] = Visit(schema.items, references, value[i])
+    }
+    return value
+  }
+  // ... otherwise use default initialization
   const defaulted = ValueOrDefault(schema, value)
   if (!IsArray(defaulted)) return defaulted
   for (let i = 0; i < defaulted.length; i++) {
