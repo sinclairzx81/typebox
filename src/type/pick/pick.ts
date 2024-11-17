@@ -45,7 +45,7 @@ import { TransformKind } from '../symbols/symbols'
 // Guards
 // ------------------------------------------------------------------
 import { IsMappedKey, IsMappedResult, IsIntersect, IsUnion, IsObject, IsSchema, IsLiteralValue, IsRef } from '../guard/kind'
-import { IsArray as IsArrayValue } from 'src/value/guard'
+import { IsArray as IsArrayValue } from '../guard/value'
 
 // ------------------------------------------------------------------
 // Infrastructure

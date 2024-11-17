@@ -34,7 +34,7 @@ import { Kind } from '../../type/symbols/index'
 
 import type { TSchema } from '../../type/schema/index'
 import type { TArray } from '../../type/array/index'
-import type { TImport } from 'src/type/module/index'
+import type { TImport } from '../../type/module/index'
 import type { TIntersect } from '../../type/intersect/index'
 import type { TObject } from '../../type/object/index'
 import type { TRecord } from '../../type/record/index'
