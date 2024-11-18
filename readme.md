@@ -774,38 +774,46 @@ type T = Static<typeof T>                            // type T = string | null
 
 ### Module Types
 
-TypeBox Modules are containers for related types. They function as namespaces and enable internal types to reference each other via string references. Modules support both singular and mutually recursive types. They provide a mechanism to create circular types irrespective of the order in which types are defined.
+TypeBox Modules are containers for related types. They provide a referential namespace, enabling types to reference one another via string identifiers. Modules support both singular and mutually recursive referencing within the context of a module, as well as referential computed types (such as Partial + Ref). All Module types must be imported before use. TypeBox represents an imported type with the `$defs` Json Schema keyword. 
+
+#### Usage
+
+The following creates a Module with User and PartialUser types. Note that the PartialUser type is specified as a Partial + Ref to the User type. It is not possible to perform a Partial operation directly on a reference, so TypeBox will return a TComputed type that defers the Partial operation until all types are resolved. The TComputed type is evaluated when calling Import on the Module.
 
 ```typescript
-
-// The following creates a Module of circular recursive Types.
+// Module with PartialUser and User types
 
 const Module = Type.Module({
-  A: Type.Object({ 
-    b: Type.Ref('B') // Ref B:
-  }),
-  B: Type.Object({
-    c: Type.Ref('C') // Ref C:
-  }),
-  C: Type.Object({
-    a: Type.Ref('A') // Ref A:
-  }),
+
+  PartialUser: Type.Partial(Type.Ref('User')),  // TComputed<'Partial', [TRef<'User'>]>
+
+  User: Type.Object({                           // TObject<{
+    id: Type.String(),                          //   user: TString,
+    name: Type.String(),                        //   name: TString,
+    email: Type.String()                        //   email: TString
+  }),                                           // }>
+  
 })
 
-// Module Types must be imported before use.
+// Types must be imported before use.
 
-const A = Module.Import('A')                     // const A: TImport<{...}, 'A'>
+const User = Module.Import('User')               // const User: TImport<{...}, 'User'>
 
-type A = Static<typeof A>                        // type A = { 
-                                                 //   b: {
-                                                 //     c: {
-                                                 //       a: {
-                                                 //         b: ...
-                                                 //       }
-                                                 //     }
-                                                 //   }
+type User = Static<typeof User>                  // type User = { 
+                                                 //   id: string,
+                                                 //   name: string,
+                                                 //   email: string
+                                                 // }
+
+const PartialUser = Module.Import('PartialUser') // const PartialUser: TImport<{...}, 'PartialUser'>
+
+type PartialUser = Static<typeof PartialUser>    // type PartialUser = { 
+                                                 //   id?: string,
+                                                 //   name?: string,
+                                                 //   email?: string
                                                  // }
 ```
+
 
 <a name='types-template-literal'></a>
 
@@ -1025,7 +1033,7 @@ if(TypeGuard.IsString(T)) {
 
 ## Syntax Types
 
-TypeBox provides support for Syntax Types, enabling it to parse TypeScript syntax directly into TypeBox types. Syntax Types serve as a DSL frontend for TypeBox's type builder and are useful for converting existing TypeScript type definitions into Json Schema schematics.
+TypeBox provides support for parsing TypeScript syntax directly into TypeBox Json Schema schematics. Syntax Types offer a string based DSL frontend to TypeBox's Type Builder system and can be useful for converting existing TypeScript type definitions into Json Schema schematics without reimplementation via the Type Builder.
 
 Syntax Types are provided via optional import.
 
@@ -1106,14 +1114,14 @@ type PartialUser = Static<typeof PartialUser>       // type PartialUser = {
 
 ### Context
 
-The Parse function accepts an initial Context argument, allowing external types to be passed into the parser.
+The Parse function takes an optional leading Context object that contains external types. This Context allows the syntax to reference these external types using the property identifiers provided by the Context. The following passes the external type `T` to Parse.
 
 ```typescript
-const T = Type.Object({                             // could be written as: Parse(`{
-  x: Type.Number(),                                 //   x: number,
-  y: Type.Number(),                                 //   y: number,
-  z: Type.Number()                                  //   z: number
-})                                                  // }`)
+const T = Type.Object({                             // const T: TObject<{
+  x: Type.Number(),                                 //   x: TNumber,
+  y: Type.Number(),                                 //   y: TNumber,
+  z: Type.Number()                                  //   z: TNumber
+})                                                  // }>
 
 const A = Parse({ T }, 'Partial<T>')                // const A: TObject<{
                                                     //   x: TOptional<TNumber>,
@@ -1140,7 +1148,7 @@ const C = Parse({ T }, 'T & { w: number }')         // const C: TIntersect<[TObj
 
 ### Static
 
-Syntax Types provide two Static types for inferring TypeScript syntax from strings.
+Syntax Types provide two Static types for inferring TypeScript types and TypeBox schematics from strings.
 
 ```typescript
 import { StaticParseAsSchema, StaticParseAsType } from '@sinclair/typebox/syntax' 
@@ -1190,7 +1198,7 @@ const B = Parse(`{
 }`)
 ```
 
-In cases where Syntax Types busts through TypeScript instantiation limits, TypeBox offers a fallback ParseOnly function which will Parse the types at runtime, but not infer the type. This function can also be used for parsing non-constant strings.
+In cases where Syntax Types exceed TypeScript's instantiation limits, TypeBox offers a fallback ParseOnly function, which will only parse but not infer. This function can also be used to parse types where the syntax is statically unknown to TypeScript (for example, when loading types from disk).
 
 ```typescript
 import { ParseOnly } from '@sinclair/typebox/syntax'
