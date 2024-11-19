@@ -31,6 +31,7 @@ import { TSchema } from '../schema/index'
 import { TArray } from '../array/index'
 import { TAsyncIterator } from '../async-iterator/index'
 import { TConstructor } from '../constructor/index'
+import { TEnum, TEnumRecord } from '../enum/index'
 import { TFunction } from '../function/index'
 import { TIntersect } from '../intersect/index'
 import { TIterator } from '../iterator/index'
@@ -147,6 +148,7 @@ type TInfer<ModuleProperties extends TProperties, Type extends TSchema> = (
   Type extends TObject<infer Properties extends TProperties> ? TInferObject<ModuleProperties, Properties> :
   Type extends TRef<infer Ref extends string> ? TInferRef<ModuleProperties, Ref> :
   Type extends TTuple<infer Types extends TSchema[]> ? TInferTuple<ModuleProperties, Types> :
+  Type extends TEnum<infer _ extends TEnumRecord> ? Static<Type> : // intercept enum before union
   Type extends TUnion<infer Types extends TSchema[]> ? TInferUnion<ModuleProperties, Types> :
   Static<Type>
 )
