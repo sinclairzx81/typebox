@@ -35,6 +35,7 @@ import { AsyncIterator, type TAsyncIterator } from '../async-iterator/index'
 import { TComputed } from '../computed/index'
 import { Constructor, type TConstructor } from '../constructor/index'
 import { Index, type TIndex } from '../indexed/index'
+import { TEnum, TEnumRecord } from '../enum/index'
 import { Function, type TFunction } from '../function/index'
 import { Intersect, type TIntersect, type TIntersectEvaluated } from '../intersect/index'
 import { Iterator, type TIterator } from '../iterator/index'
@@ -339,34 +340,35 @@ function FromRest<ModuleProperties extends TProperties, Types extends TSchema[]>
 // ------------------------------------------------------------------
 // prettier-ignore
 export type TFromType<ModuleProperties extends TProperties, Type extends TSchema> = (
-  Type extends TComputed<infer T extends string, infer S extends TSchema[]> ? TFromComputed<ModuleProperties, T, S> :
-  Type extends TObject<infer S extends TProperties> ? TFromObject<ModuleProperties, S> :
-  Type extends TConstructor<infer S extends TSchema[], infer R extends TSchema> ? TFromConstructor<ModuleProperties, S, R> :
-  Type extends TFunction<infer S extends TSchema[], infer R extends TSchema> ? TFromFunction<ModuleProperties, S, R> :
-  Type extends TTuple<infer S extends TSchema[]> ? TFromTuple<ModuleProperties, S> :
-  Type extends TIntersect<infer S extends TSchema[]> ? TFromIntersect<ModuleProperties, S> :
-  Type extends TUnion<infer S extends TSchema[]> ? TFromUnion<ModuleProperties, S> :
-  Type extends TArray<infer S extends TSchema> ? TFromArray<ModuleProperties, S> :
-  Type extends TAsyncIterator<infer S extends TSchema> ? TFromAsyncIterator<ModuleProperties, S> :
-  Type extends TIterator<infer S extends TSchema> ? TFromIterator<ModuleProperties, S> :
+  Type extends TArray<infer Type extends TSchema> ? TFromArray<ModuleProperties, Type> :
+  Type extends TAsyncIterator<infer Type extends TSchema> ? TFromAsyncIterator<ModuleProperties, Type> :
+  Type extends TComputed<infer Target extends string, infer Parameters extends TSchema[]> ? TFromComputed<ModuleProperties, Target, Parameters> :
+  Type extends TConstructor<infer Parameters extends TSchema[], infer InstanceType extends TSchema> ? TFromConstructor<ModuleProperties, Parameters, InstanceType> :
+  Type extends TFunction<infer Parameters extends TSchema[], infer ReturnType extends TSchema> ? TFromFunction<ModuleProperties, Parameters, ReturnType> :
+  Type extends TIntersect<infer Types extends TSchema[]> ? TFromIntersect<ModuleProperties, Types> :
+  Type extends TIterator<infer Type extends TSchema> ? TFromIterator<ModuleProperties, Type> :
+  Type extends TObject<infer Properties extends TProperties> ? TFromObject<ModuleProperties, Properties> :
+  Type extends TTuple<infer Types extends TSchema[]> ? TFromTuple<ModuleProperties, Types> :
+  Type extends TEnum<infer _ extends TEnumRecord> ? Type : // intercept enum before union
+  Type extends TUnion<infer Types extends TSchema[]> ? TFromUnion<ModuleProperties, Types> :
   Type
 )
 // prettier-ignore
 export function FromType<ModuleProperties extends TProperties, Type extends TSchema>(moduleProperties: ModuleProperties, type: Type): TFromType<ModuleProperties, Type> {
   return (
+    KindGuard.IsArray(type) ? CreateType(FromArray(moduleProperties, type.items), type) :
+    KindGuard.IsAsyncIterator(type) ? CreateType(FromAsyncIterator(moduleProperties, type.items), type) :
     // Note: The 'as never' is required due to excessive resolution of TIndex. In fact TIndex, TPick, TOmit and
     // all need re-implementation to remove the PropertyKey[] selector. Reimplementation of these types should
     // be a priority as there is a potential for the current inference to break on TS compiler changes.
     KindGuard.IsComputed(type) ? CreateType(FromComputed(moduleProperties, type.target, type.parameters) as never) :
-    KindGuard.IsObject(type) ? CreateType(FromObject(moduleProperties, type.properties), type) :
     KindGuard.IsConstructor(type) ? CreateType(FromConstructor(moduleProperties, type.parameters, type.returns), type) :
     KindGuard.IsFunction(type) ? CreateType(FromFunction(moduleProperties, type.parameters, type.returns), type) :
-    KindGuard.IsTuple(type)? CreateType(FromTuple(moduleProperties, type.items || []), type) :
     KindGuard.IsIntersect(type) ? CreateType(FromIntersect(moduleProperties, type.allOf), type) :
-    KindGuard.IsUnion(type) ? CreateType(FromUnion(moduleProperties, type.anyOf), type) :
-    KindGuard.IsArray(type) ? CreateType(FromArray(moduleProperties, type.items), type) :
-    KindGuard.IsAsyncIterator(type) ? CreateType(FromAsyncIterator(moduleProperties, type.items), type) :
     KindGuard.IsIterator(type) ? CreateType(FromIterator(moduleProperties, type.items), type) :
+    KindGuard.IsObject(type) ? CreateType(FromObject(moduleProperties, type.properties), type) :
+    KindGuard.IsTuple(type)? CreateType(FromTuple(moduleProperties, type.items || []), type) :
+    KindGuard.IsUnion(type) ? CreateType(FromUnion(moduleProperties, type.anyOf), type) :
     type
   ) as never
 }
