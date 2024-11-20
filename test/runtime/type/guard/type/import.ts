@@ -13,6 +13,41 @@ describe('guard/type/TImport', () => {
     Assert.IsTrue(TypeGuard.IsString(N))
   })
   // ----------------------------------------------------------------
+  // Computed: Options
+  // ----------------------------------------------------------------
+  it('Should guard for TImport with Options 1', () => {
+    const Module = Type.Module({
+      A: Type.String(),
+    })
+    const A = Module.Import('A', { format: 'string' })
+    const N = A.$defs[A.$ref]
+    Assert.IsTrue(TypeGuard.IsImport(A))
+    Assert.IsTrue(TypeGuard.IsString(N))
+    Assert.IsTrue(N.format === 'string')
+  })
+  it('Should guard for TImport with Options 2', () => {
+    const Module = Type.Module({
+      R: Type.Object({ x: Type.Number() }),
+      A: Type.Ref('R'),
+    })
+    const A = Module.Import('A', { test: 'test' })
+    const N = A.$defs[A.$ref]
+    Assert.IsTrue(TypeGuard.IsImport(A))
+    Assert.IsTrue(TypeGuard.IsRef(N))
+    Assert.IsTrue(N.test === 'test')
+  })
+  it('Should guard for TImport with Options 3', () => {
+    const Module = Type.Module({
+      R: Type.Object({ x: Type.Number() }),
+      A: Type.Partial(Type.Ref('R')),
+    })
+    const A = Module.Import('A', { additionalProperties: false })
+    const N = A.$defs[A.$ref]
+    Assert.IsTrue(TypeGuard.IsImport(A))
+    Assert.IsTrue(TypeGuard.IsObject(N))
+    Assert.IsTrue(N.additionalProperties === false)
+  })
+  // ----------------------------------------------------------------
   // Computed: Awaited
   // ----------------------------------------------------------------
   it('Should compute for Awaited', () => {
@@ -109,9 +144,14 @@ describe('guard/type/TImport', () => {
       R: Type.Record(Type.String(), Type.Ref('T')),
     })
     const T = Module.Import('R')
+
+    console.dir(T, { depth: 100 })
     Assert.IsTrue(TypeGuard.IsRecord(T.$defs['R']))
-    Assert.IsTrue(TypeGuard.IsNumber(T.$defs['R'].patternProperties['^(.*)$'].properties.x))
-    Assert.IsTrue(TypeGuard.IsString(T.$defs['R'].patternProperties['^(.*)$'].properties.y))
+    // note: TRecord<TSchema, TRef<...>> are not computed. Only the Key is
+    // computed as TypeBox needs to make a deferred call to transform from
+    // TRecord to TObject for finite keys.
+    Assert.IsTrue(TypeGuard.IsRef(T.$defs['R'].patternProperties['^(.*)$']))
+    Assert.IsTrue(T.$defs['R'].patternProperties['^(.*)$'].$ref === 'T')
   })
   it('Should compute for Record 2', () => {
     const Module = Type.Module({
