@@ -337,7 +337,7 @@ The following table lists the supported Json types. These types are fully compat
 │   }),                          │   y: number                 │     required: ['x'],           │
 │   Type.Object({                │ }                           │     properties: {              │
 │     y: Type.Number()           │                             │       x: {                     │
-│   ])                           │                             │         type: 'number'         │
+│   })                           │                             │         type: 'number'         │
 │ ])                             │                             │       }                        │
 │                                │                             │     }                          │
 │                                │                             │   }, {                         │
