@@ -27,26 +27,27 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import { CreateType } from '../create/type'
+import { Kind, Hint } from '../symbols/index'
 import type { TSchema } from '../schema/index'
 import type { Static } from '../static/index'
 import type { Evaluate, Ensure, Assert } from '../helpers/index'
 import { type TAny } from '../any/index'
-import { Computed, type TComputed } from '../computed/index'
-import { Object, type TObject, type TProperties, type TAdditionalProperties, type ObjectOptions } from '../object/index'
+import { type TComputed, Computed } from '../computed/index'
+import { type TEnumRecord, type TEnum } from '../enum/index'
+import { type TInteger } from '../integer/index'
 import { type TLiteral, type TLiteralValue } from '../literal/index'
-import { Never, type TNever } from '../never/index'
-import { Union, type TUnion } from '../union/index'
+import { type TNever, Never } from '../never/index'
+import { type TNumber } from '../number/index'
+import { type TObject, type TProperties, type TAdditionalProperties, type ObjectOptions, Object } from '../object/index'
+import { type TRef, Ref } from '../ref/index'
 import { type TRegExp } from '../regexp/index'
 import { type TString } from '../string/index'
-import { type TInteger } from '../integer/index'
-import { type TNumber } from '../number/index'
-import { type TEnum } from '../enum/index'
-import { type TRef } from '../ref/index'
+import { type TUnion, Union } from '../union/index'
 
 import { IsTemplateLiteralFinite, TIsTemplateLiteralFinite, type TTemplateLiteral } from '../template-literal/index'
 import { PatternStringExact, PatternNumberExact, PatternNeverExact } from '../patterns/index'
 import { IndexPropertyKeys } from '../indexed/index'
-import { Kind, Hint } from '../symbols/index'
+
 // ------------------------------------------------------------------
 // ValueGuard
 // ------------------------------------------------------------------
@@ -61,36 +62,32 @@ import { IsInteger, IsLiteral, IsAny, IsNever, IsNumber, IsString, IsRegExp, IsT
 // ------------------------------------------------------------------
 // prettier-ignore
 function RecordCreateFromPattern(pattern: string, T: TSchema, options: ObjectOptions): TRecord<TSchema, TSchema> {
-  return CreateType({ 
-    [Kind]: 'Record', 
-    type: 'object', 
-    patternProperties: { [pattern]: T } 
-  }, options) as never
+  return CreateType({ [Kind]: 'Record', type: 'object', patternProperties: { [pattern]: T } }, options) as never
 }
 // ------------------------------------------------------------------
 // RecordCreateFromKeys
 // ------------------------------------------------------------------
 // prettier-ignore
 function RecordCreateFromKeys(K: string[], T: TSchema, options: ObjectOptions): TObject<TProperties> {
-  const Acc = {} as TProperties
-  for(const K2 of K) Acc[K2] = T
-  return Object(Acc, { ...options, [Hint]: 'Record' })
+  const result = {} as TProperties
+  for(const K2 of K) result[K2] = T
+  return Object(result, { ...options, [Hint]: 'Record' })
 }
 // ------------------------------------------------------------------
 // FromTemplateLiteralKey (Fast Inference)
 // ------------------------------------------------------------------
 // prettier-ignore
-type TFromTemplateLiteralKeyInfinite<K extends TTemplateLiteral, T extends TSchema> = Ensure<TRecord<K, T>>
+type TFromTemplateLiteralKeyInfinite<Key extends TTemplateLiteral, Type extends TSchema> = Ensure<TRecord<Key, Type>>
 // prettier-ignore
-type TFromTemplateLiteralKeyFinite<K extends TTemplateLiteral, T extends TSchema, I extends string = Static<K>> = (
-  Ensure<TObject<Evaluate<{ [_ in I]: T }>>>
+type TFromTemplateLiteralKeyFinite<Key extends TTemplateLiteral, Type extends TSchema, I extends string = Static<Key>> = (
+  Ensure<TObject<Evaluate<{ [_ in I]: Type }>>>
 )
 // prettier-ignore
-type TFromTemplateLiteralKey<K extends TTemplateLiteral, T extends TSchema> = TIsTemplateLiteralFinite<K> extends false
-  ? TFromTemplateLiteralKeyInfinite<K, T>
-  : TFromTemplateLiteralKeyFinite<K, T>
+type TFromTemplateLiteralKey<Key extends TTemplateLiteral, Type extends TSchema> = TIsTemplateLiteralFinite<Key> extends false
+  ? TFromTemplateLiteralKeyInfinite<Key, Type>
+  : TFromTemplateLiteralKeyFinite<Key, Type>
 // prettier-ignore
-function FromTemplateLiteralKey<K extends TTemplateLiteral, T extends TSchema>(K: K, T: T, options: ObjectOptions): TFromTemplateLiteralKey<K, T> {
+function FromTemplateLiteralKey<Key extends TTemplateLiteral, Type extends TSchema>(K: Key, T: Type, options: ObjectOptions): TFromTemplateLiteralKey<Key, Type> {
   return (
     IsTemplateLiteralFinite(K)
       ? RecordCreateFromKeys(IndexPropertyKeys(K), T, options)
@@ -101,140 +98,142 @@ function FromTemplateLiteralKey<K extends TTemplateLiteral, T extends TSchema>(K
 // FromEnumKey (Special Case)
 // ------------------------------------------------------------------
 // prettier-ignore
-type TFromEnumKey<K extends Record<string, string | number>, T extends TSchema> = Ensure<TObject<{ [_ in K[keyof K]]: T }>>
+type TFromEnumKey<Key extends Record<string, string | number>, Type extends TSchema> = Ensure<TObject<{ [_ in Key[keyof Key]]: Type }>>
 // ------------------------------------------------------------------
 // FromUnionKey
 // ------------------------------------------------------------------
 // prettier-ignore
-type TFromUnionKeyLiteralString<K extends TLiteral<string>, T extends TSchema> = { [_ in K['const']]: T }
+type TFromUnionKeyLiteralString<Key extends TLiteral<string>, Type extends TSchema> = { [_ in Key['const']]: Type }
 // prettier-ignore
-type TFromUnionKeyLiteralNumber<K extends TLiteral<number>, T extends TSchema> = { [_ in K['const']]: T }
+type TFromUnionKeyLiteralNumber<Key extends TLiteral<number>, Type extends TSchema> = { [_ in Key['const']]: Type }
 // prettier-ignore
-type TFromUnionKeyRest<K extends TSchema[], T extends TSchema> = 
-  K extends [infer L extends TSchema, ...infer R extends TSchema[]] ? (
-    L extends TUnion<infer S> ? TFromUnionKeyRest<S, T> & TFromUnionKeyRest<R, T> :
-    L extends TLiteral<string> ? TFromUnionKeyLiteralString<L, T> & TFromUnionKeyRest<R, T> :
-    L extends TLiteral<number> ? TFromUnionKeyLiteralNumber<L, T> & TFromUnionKeyRest<R, T> :
+type TFromUnionKeyRest<Keys extends TSchema[], Type extends TSchema> = 
+  Keys extends [infer Left extends TSchema, ...infer Right extends TSchema[]] ? (
+    Left extends TUnion<infer Types extends TSchema[]> ? TFromUnionKeyRest<Types, Type> & TFromUnionKeyRest<Right, Type> :
+    Left extends TLiteral<string> ? TFromUnionKeyLiteralString<Left, Type> & TFromUnionKeyRest<Right, Type> :
+    Left extends TLiteral<number> ? TFromUnionKeyLiteralNumber<Left, Type> & TFromUnionKeyRest<Right, Type> :
   {}) : {}
 // prettier-ignore
-type TFromUnionKey<K extends TSchema[], T extends TSchema, P extends TProperties = TFromUnionKeyRest<K, T>> = (
+type TFromUnionKey<Key extends TSchema[], Type extends TSchema, P extends TProperties = TFromUnionKeyRest<Key, Type>> = (
   Ensure<TObject<Evaluate<P>>>
 )
 // prettier-ignore
-function FromUnionKey<K extends TSchema[], T extends TSchema>(K: K, T: T, options: ObjectOptions): TFromUnionKey<K, T> {
-  return RecordCreateFromKeys(IndexPropertyKeys(Union(K)), T, options) as never
+function FromUnionKey<Key extends TSchema[], Type extends TSchema>(key: Key, type: Type, options: ObjectOptions): TFromUnionKey<Key, Type> {
+  return RecordCreateFromKeys(IndexPropertyKeys(Union(key)), type, options) as never
 }
 // ------------------------------------------------------------------
 // FromLiteralKey
 // ------------------------------------------------------------------
 // prettier-ignore
-type TFromLiteralKey<K extends TLiteralValue, T extends TSchema> = (
-  Ensure<TObject<{ [_ in Assert<K, PropertyKey>]: T }>>
+type TFromLiteralKey<Key extends TLiteralValue, Type extends TSchema> = (
+  Ensure<TObject<{ [_ in Assert<Key, PropertyKey>]: Type }>>
 )
 // prettier-ignore
-function FromLiteralKey<K extends TLiteralValue, T extends TSchema>(K: K, T: T, options: ObjectOptions): TFromLiteralKey<K, T> {
-  return RecordCreateFromKeys([(K as string).toString()], T, options) as never
+function FromLiteralKey<Key extends TLiteralValue, Type extends TSchema>(key: Key, type: Type, options: ObjectOptions): TFromLiteralKey<Key, Type> {
+  return RecordCreateFromKeys([(key as string).toString()], type, options) as never
 }
 // ------------------------------------------------------------------
 // TFromRegExpKey
 // ------------------------------------------------------------------
 // prettier-ignore
-type TFromRegExpKey<_ extends TRegExp, T extends TSchema> = (
-  Ensure<TRecord<TRegExp, T>>
+type TFromRegExpKey<_Key extends TRegExp, Type extends TSchema> = (
+  Ensure<TRecord<TRegExp, Type>>
 )
 // prettier-ignore
-function FromRegExpKey<K extends TRegExp, T extends TSchema>(K: K, T: T, options: ObjectOptions): TFromRegExpKey<K, T> {
-  return RecordCreateFromPattern(K.source, T, options) as never
+function FromRegExpKey<Key extends TRegExp, Type extends TSchema>(key: Key, type: Type, options: ObjectOptions): TFromRegExpKey<Key, Type> {
+  return RecordCreateFromPattern(key.source, type, options) as never
 }
 // ------------------------------------------------------------------
 // FromStringKey
 // ------------------------------------------------------------------
 // prettier-ignore
-type TFromStringKey<_ extends TString, T extends TSchema> = (
-  Ensure<TRecord<TString, T>>
+type TFromStringKey<_Key extends TString, Type extends TSchema> = (
+  Ensure<TRecord<TString, Type>>
 )
 // prettier-ignore
-function FromStringKey<K extends TString, T extends TSchema>(K: K, T: T, options: ObjectOptions): TFromStringKey<K, T> {
-  const pattern = IsUndefined(K.pattern) ? PatternStringExact : K.pattern
-  return RecordCreateFromPattern(pattern, T, options) as never
+function FromStringKey<Key extends TString, Type extends TSchema>(key: Key, type: Type, options: ObjectOptions): TFromStringKey<Key, Type> {
+  const pattern = IsUndefined(key.pattern) ? PatternStringExact : key.pattern
+  return RecordCreateFromPattern(pattern, type, options) as never
 }
 // ------------------------------------------------------------------
 // FromAnyKey
 // ------------------------------------------------------------------
 // prettier-ignore
-type TFromAnyKey<_ extends TAny, T extends TSchema> = (
-  Ensure<TRecord<TAny, T>>
+type TFromAnyKey<_Key extends TAny, Type extends TSchema> = (
+  Ensure<TRecord<TAny, Type>>
 )
 // prettier-ignore
-function FromAnyKey<K extends TAny, T extends TSchema>(K: K, T: T, options: ObjectOptions): TFromAnyKey<K, T> {
-  return RecordCreateFromPattern(PatternStringExact, T, options) as never
+function FromAnyKey<Key extends TAny, Type extends TSchema>(_: Key, type: Type, options: ObjectOptions): TFromAnyKey<Key, Type> {
+  return RecordCreateFromPattern(PatternStringExact, type, options) as never
 }
 // ------------------------------------------------------------------
 // FromNeverKey
 // ------------------------------------------------------------------
 // prettier-ignore
-type TFromNeverKey<_ extends TNever, T extends TSchema> = (
-  Ensure<TRecord<TNever, T>>
+type TFromNeverKey<_Key extends TNever, Type extends TSchema> = (
+  Ensure<TRecord<TNever, Type>>
 )
 // prettier-ignore
-function FromNeverKey<K extends TNever, T extends TSchema>(K: K, T: T, options: ObjectOptions): TFromNeverKey<K, T> {
-  return RecordCreateFromPattern(PatternNeverExact, T, options) as never
+function FromNeverKey<Key extends TNever, Type extends TSchema>(_key: Key, type: Type, options: ObjectOptions): TFromNeverKey<Key, Type> {
+  return RecordCreateFromPattern(PatternNeverExact, type, options) as never
 }
 // ------------------------------------------------------------------
 // FromIntegerKey
 // ------------------------------------------------------------------
 // prettier-ignore
-type TFromIntegerKey<_ extends TSchema, T extends TSchema> = (
-  Ensure<TRecord<TNumber, T>>
+type TFromIntegerKey<_Key extends TSchema, Type extends TSchema> = (
+  Ensure<TRecord<TNumber, Type>>
 )
 // prettier-ignore
-function FromIntegerKey<K extends TInteger, T extends TSchema>(_: K, T: T, options: ObjectOptions): TFromIntegerKey<K, T> {
-  return RecordCreateFromPattern(PatternNumberExact, T, options) as never
+function FromIntegerKey<Key extends TInteger, Type extends TSchema>(_key: Key, type: Type, options: ObjectOptions): TFromIntegerKey<Key, Type> {
+  return RecordCreateFromPattern(PatternNumberExact, type, options) as never
 }
 // ------------------------------------------------------------------
 // FromNumberKey
 // ------------------------------------------------------------------
 // prettier-ignore
-type TFromNumberKey<_ extends TSchema, T extends TSchema> = (
-  Ensure<TRecord<TNumber, T>>
+type TFromNumberKey<_Key extends TSchema, Type extends TSchema> = (
+  Ensure<TRecord<TNumber, Type>>
 )
 // prettier-ignore
-function FromNumberKey<K extends TNumber, T extends TSchema>(_: K, T: T, options: ObjectOptions): TFromNumberKey<K, T> {
-  return RecordCreateFromPattern(PatternNumberExact, T, options) as never
+function FromNumberKey<Key extends TNumber, Type extends TSchema>(_: Key, type: Type, options: ObjectOptions): TFromNumberKey<Key, Type> {
+  return RecordCreateFromPattern(PatternNumberExact, type, options) as never
 }
 // ------------------------------------------------------------------
 // TRecord
 // ------------------------------------------------------------------
 // prettier-ignore
-type RecordStatic<K extends TSchema, T extends TSchema, P extends unknown[]> = (
-  Evaluate<{ [_ in Assert<Static<K>, PropertyKey>]: Static<T, P>; }>
+type RecordStatic<Key extends TSchema, Type extends TSchema, P extends unknown[]> = (
+  Evaluate<{ [_ in Assert<Static<Key>, PropertyKey>]: Static<Type, P>; }>
 )
 // prettier-ignore
-export interface TRecord<K extends TSchema = TSchema, T extends TSchema = TSchema> extends TSchema {
+export interface TRecord<Key extends TSchema = TSchema, Type extends TSchema = TSchema> extends TSchema {
   [Kind]: 'Record'
-  static: RecordStatic<K, T, this['params']>
+  static: RecordStatic<Key, Type, this['params']>
   type: 'object'
-  patternProperties: { [pattern: string]: T }
+  patternProperties: { [pattern: string]: Type }
   additionalProperties: TAdditionalProperties
 }
 // ------------------------------------------------------------------
 // TRecordOrObject
 // ------------------------------------------------------------------
 // prettier-ignore
-export type TRecordOrObject<Key extends TSchema, Type extends TSchema> =
-  Type extends TRef ? TComputed<'Record', [Key, Type]> :
-  Key extends TRef ? TComputed<'Record', [Key, Type]> :
+export type TRecordOrObject<Key extends TSchema, Type extends TSchema> = (
+  Type extends TComputed<infer Target extends string, infer Parameters extends TSchema[]> ? TComputed<'Record', [Key, TComputed<Target, Parameters>]> :
+  Key extends TComputed<infer Target extends string, infer Parameters extends TSchema[]> ? TComputed<'Record', [TComputed<Target, Parameters>, Type]> :
+  Key extends TRef<infer Ref extends string> ? TComputed<'Record', [TRef<Ref>, Type]> :
   Key extends TTemplateLiteral ? TFromTemplateLiteralKey<Key, Type> :  
-  Key extends TEnum<infer S> ? TFromEnumKey<S, Type> : // (Special: Ensure resolve Enum before Union)
-  Key extends TUnion<infer S> ? TFromUnionKey<S, Type> :
-  Key extends TLiteral<infer S> ? TFromLiteralKey<S, Type> :
+  Key extends TEnum<infer Enum extends TEnumRecord> ? TFromEnumKey<Enum, Type> : // (Special: Ensure resolve Enum before Union)
+  Key extends TUnion<infer Types extends TSchema[]> ? TFromUnionKey<Types, Type> :
+  Key extends TLiteral<infer Value extends TLiteralValue> ? TFromLiteralKey<Value, Type> :
   Key extends TInteger ? TFromIntegerKey<Key, Type> :
   Key extends TNumber ? TFromNumberKey<Key, Type> :
   Key extends TRegExp ? TFromRegExpKey<Key, Type> :
   Key extends TString ? TFromStringKey<Key, Type> :
   Key extends TAny ? TFromAnyKey<Key, Type> :
   Key extends TNever ? TFromNeverKey<Key, Type> :
-  TNever
+  Key
+)
 // ------------------------------------------------------------------
 // TRecordOrObject
 // ------------------------------------------------------------------
@@ -242,8 +241,9 @@ export type TRecordOrObject<Key extends TSchema, Type extends TSchema> =
 export function Record<Key extends TSchema, Type extends TSchema>(key: Key, type: Type, options: ObjectOptions = {}): TRecordOrObject<Key, Type> {
   // prettier-ignore
   return (
-    IsRef(type) ? Computed('Record', [key, type]) :
-    IsRef(key) ? Computed('Record', [key, type]) :
+    IsComputed(type) ? Computed('Record', [key, Computed(type.target, type.parameters)]) :
+    IsComputed(key) ? Computed('Record', [Computed(type.target, type.parameters), type]) :
+    IsRef(key) ? Computed('Record', [Ref(key.$ref), type]) :
     IsUnion(key) ? FromUnionKey(key.anyOf, type, options) :
     IsTemplateLiteral(key) ? FromTemplateLiteralKey(key, type, options) :
     IsLiteral(key) ? FromLiteralKey(key.const, type, options) :

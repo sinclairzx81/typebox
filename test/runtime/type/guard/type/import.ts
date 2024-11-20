@@ -109,9 +109,14 @@ describe('guard/type/TImport', () => {
       R: Type.Record(Type.String(), Type.Ref('T')),
     })
     const T = Module.Import('R')
+
+    console.dir(T, { depth: 100 })
     Assert.IsTrue(TypeGuard.IsRecord(T.$defs['R']))
-    Assert.IsTrue(TypeGuard.IsNumber(T.$defs['R'].patternProperties['^(.*)$'].properties.x))
-    Assert.IsTrue(TypeGuard.IsString(T.$defs['R'].patternProperties['^(.*)$'].properties.y))
+    // note: TRecord<TSchema, TRef<...>> are not computed. Only the Key is 
+    // computed as TypeBox needs to make a deferred call to transform from 
+    // TRecord to TObject for finite keys.
+    Assert.IsTrue(TypeGuard.IsRef(T.$defs['R'].patternProperties['^(.*)$']))
+    Assert.IsTrue(T.$defs['R'].patternProperties['^(.*)$'].$ref === 'T')
   })
   it('Should compute for Record 2', () => {
     const Module = Type.Module({

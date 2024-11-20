@@ -110,8 +110,11 @@ describe('guard/kind/TImport', () => {
     })
     const T = Module.Import('R')
     Assert.IsTrue(KindGuard.IsRecord(T.$defs['R']))
-    Assert.IsTrue(KindGuard.IsNumber(T.$defs['R'].patternProperties['^(.*)$'].properties.x))
-    Assert.IsTrue(KindGuard.IsString(T.$defs['R'].patternProperties['^(.*)$'].properties.y))
+    // note: TRecord<TSchema, TRef<...>> are not computed. Only the Key is 
+    // computed as TypeBox needs to make a deferred call to transform from 
+    // TRecord to TObject for finite keys.
+    Assert.IsTrue(KindGuard.IsRef(T.$defs['R'].patternProperties['^(.*)$']))
+    Assert.IsTrue(T.$defs['R'].patternProperties['^(.*)$'].$ref === 'T')
   })
   it('Should compute for Record 2', () => {
     const Module = Type.Module({

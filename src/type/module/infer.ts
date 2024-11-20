@@ -37,6 +37,7 @@ import { TIntersect } from '../intersect/index'
 import { TIterator } from '../iterator/index'
 import { TObject, TProperties } from '../object/index'
 import { TOptional } from '../optional/index'
+import { TRecord } from '../record/index'
 import { TReadonly } from '../readonly/index'
 import { TRef } from '../ref/index'
 import { TTuple } from '../tuple/index'
@@ -83,16 +84,16 @@ type TInferIterator<ModuleProperties extends TProperties, Type extends TSchema> 
 // ------------------------------------------------------------------
 // prettier-ignore
 type TInferIntersect<ModuleProperties extends TProperties, Types extends TSchema[], Result extends unknown = unknown> = (
-  Types extends [infer L extends TSchema, ...infer R extends TSchema[]]
-    ? TInferIntersect<ModuleProperties, R, Result & TInfer<ModuleProperties, L>>
+  Types extends [infer Left extends TSchema, ...infer Right extends TSchema[]]
+    ? TInferIntersect<ModuleProperties, Right, Result & TInfer<ModuleProperties, Left>>
     : Result
 )
 // ------------------------------------------------------------------
 // Object
 // ------------------------------------------------------------------
-type ReadonlyOptionalPropertyKeys<Properties extends TProperties> = { [K in keyof Properties]: Properties[K] extends TReadonly<TSchema> ? (Properties[K] extends TOptional<Properties[K]> ? K : never) : never }[keyof Properties]
-type ReadonlyPropertyKeys<Source extends TProperties> = { [K in keyof Source]: Source[K] extends TReadonly<TSchema> ? (Source[K] extends TOptional<Source[K]> ? never : K) : never }[keyof Source]
-type OptionalPropertyKeys<Source extends TProperties> = { [K in keyof Source]: Source[K] extends TOptional<TSchema> ? (Source[K] extends TReadonly<Source[K]> ? never : K) : never }[keyof Source]
+type ReadonlyOptionalPropertyKeys<Properties extends TProperties> = { [Key in keyof Properties]: Properties[Key] extends TReadonly<TSchema> ? (Properties[Key] extends TOptional<Properties[Key]> ? Key : never) : never }[keyof Properties]
+type ReadonlyPropertyKeys<Source extends TProperties> = { [Key in keyof Source]: Source[Key] extends TReadonly<TSchema> ? (Source[Key] extends TOptional<Source[Key]> ? never : Key) : never }[keyof Source]
+type OptionalPropertyKeys<Source extends TProperties> = { [Key in keyof Source]: Source[Key] extends TOptional<TSchema> ? (Source[Key] extends TReadonly<Source[Key]> ? never : Key) : never }[keyof Source]
 type RequiredPropertyKeys<Source extends TProperties> = keyof Omit<Source, ReadonlyOptionalPropertyKeys<Source> | ReadonlyPropertyKeys<Source> | OptionalPropertyKeys<Source>>
 // prettier-ignore
 type InferPropertiesWithModifiers<Properties extends TProperties, Source extends Record<keyof any, unknown>> = Evaluate<(
@@ -118,6 +119,14 @@ type TInferTuple<ModuleProperties extends TProperties, Types extends TSchema[] ,
     ? TInferTuple<ModuleProperties, R, [...Result, TInfer<ModuleProperties, L>]>
     : Result
 )
+// ------------------------------------------------------------------
+// Record
+// ------------------------------------------------------------------
+// prettier-ignore
+type TInferRecord<ModuleProperties extends TProperties, Key extends TSchema, Type extends TSchema,
+  InferredKey extends PropertyKey = TInfer<ModuleProperties, Key> extends infer Key extends PropertyKey ? Key : never,
+  InferedType extends unknown = TInfer<ModuleProperties, Type>,
+> = Record<InferredKey, InferedType>
 // ------------------------------------------------------------------
 // Ref
 // ------------------------------------------------------------------
@@ -146,6 +155,7 @@ type TInfer<ModuleProperties extends TProperties, Type extends TSchema> = (
   Type extends TIntersect<infer Types extends TSchema[]> ? TInferIntersect<ModuleProperties, Types> :
   Type extends TIterator<infer Type extends TSchema> ? TInferIterator<ModuleProperties, Type> :
   Type extends TObject<infer Properties extends TProperties> ? TInferObject<ModuleProperties, Properties> :
+  Type extends TRecord<infer Key extends TSchema, infer Type extends TSchema> ? TInferRecord<ModuleProperties, Key, Type> :
   Type extends TRef<infer Ref extends string> ? TInferRef<ModuleProperties, Ref> :
   Type extends TTuple<infer Types extends TSchema[]> ? TInferTuple<ModuleProperties, Types> :
   Type extends TEnum<infer _ extends TEnumRecord> ? Static<Type> : // intercept enum before union
