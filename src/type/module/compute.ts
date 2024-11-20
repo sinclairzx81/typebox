@@ -36,7 +36,7 @@ import { TComputed } from '../computed/index'
 import { Constructor, type TConstructor } from '../constructor/index'
 import { Index, type TIndex } from '../indexed/index'
 import { TEnum, TEnumRecord } from '../enum/index'
-import { Function, type TFunction } from '../function/index'
+import { Function as FunctionType, type TFunction } from '../function/index'
 import { Intersect, type TIntersect, type TIntersectEvaluated } from '../intersect/index'
 import { Iterator, type TIterator } from '../iterator/index'
 import { KeyOf, type TKeyOf } from '../keyof/index'
@@ -261,7 +261,7 @@ function FromFunction<ModuleProperties extends TProperties, Parameters extends T
   parameters: [...Parameters],
   returnType: ReturnType,
 ): TFromFunction<ModuleProperties, Parameters, ReturnType> {
-  return Function(FromRest(moduleProperties, parameters as never), FromType(moduleProperties, returnType) as never) as never
+  return FunctionType(FromRest(moduleProperties, parameters as never), FromType(moduleProperties, returnType) as never) as never
 }
 // ------------------------------------------------------------------
 // Tuple

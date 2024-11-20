@@ -4,6 +4,14 @@ import { Assert } from '../../../assert/index'
 
 describe('guard/kind/TComputed', () => {
   // ----------------------------------------------------------------
+  // Schema
+  // ----------------------------------------------------------------
+  it('Should guard for Schema', () => {
+    const T = Type.Partial(Type.Ref('A'))
+    Assert.IsTrue(KindGuard.IsComputed(T))
+    Assert.IsTrue(KindGuard.IsSchema(T))
+  })
+  // ----------------------------------------------------------------
   // Record
   // ----------------------------------------------------------------
   it('Should guard for Record 1', () => {

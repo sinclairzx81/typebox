@@ -221,7 +221,13 @@ export function IsBoolean(value: unknown): value is TBoolean {
 }
 /** Returns true if the given value is TComputed */
 export function IsComputed(value: unknown): value is TComputed {
-  return IsKindOf(value, 'Computed') && IsString(value.target) && ValueGuard.IsArray(value.parameters) && value.parameters.every((schema) => IsSchema(schema))
+  // prettier-ignore
+  return (
+    IsKindOf(value, 'Computed') && 
+    ValueGuard.IsString(value.target) && 
+    ValueGuard.IsArray(value.parameters) && 
+    value.parameters.every((schema) => IsSchema(schema))
+  )
 }
 /** Returns true if the given value is TConstructor */
 export function IsConstructor(value: unknown): value is TConstructor {
@@ -606,6 +612,7 @@ export function IsSchema(value: unknown): value is TSchema {
       IsBoolean(value) ||
       IsBigInt(value) ||
       IsAsyncIterator(value) ||
+      IsComputed(value) ||
       IsConstructor(value) ||
       IsDate(value) ||
       IsFunction(value) ||
