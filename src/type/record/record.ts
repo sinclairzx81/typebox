@@ -241,8 +241,8 @@ export type TRecordOrObject<Key extends TSchema, Type extends TSchema> = (
 export function Record<Key extends TSchema, Type extends TSchema>(key: Key, type: Type, options: ObjectOptions = {}): TRecordOrObject<Key, Type> {
   // prettier-ignore
   return (
-    IsComputed(type) ? Computed('Record', [key, Computed(type.target, type.parameters)]) :
-    IsComputed(key) ? Computed('Record', [Computed(type.target, type.parameters), type]) :
+    IsComputed(type) ? Computed('Record', [key, Computed(type.target, type.parameters)], options) :
+    IsComputed(key) ? Computed('Record', [Computed(type.target, type.parameters), type], options) :
     IsRef(key) ? Computed('Record', [Ref(key.$ref), type]) :
     IsUnion(key) ? FromUnionKey(key.anyOf, type, options) :
     IsTemplateLiteral(key) ? FromTemplateLiteralKey(key, type, options) :

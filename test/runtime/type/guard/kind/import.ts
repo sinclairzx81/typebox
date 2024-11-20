@@ -13,6 +13,41 @@ describe('guard/kind/TImport', () => {
     Assert.IsTrue(KindGuard.IsString(N))
   })
   // ----------------------------------------------------------------
+  // Computed: Options
+  // ----------------------------------------------------------------
+  it('Should guard for TImport with Options 1', () => {
+    const Module = Type.Module({
+      A: Type.String(),
+    })
+    const A = Module.Import('A', { format: 'string' })
+    const N = A.$defs[A.$ref]
+    Assert.IsTrue(KindGuard.IsImport(A))
+    Assert.IsTrue(KindGuard.IsString(N))
+    Assert.IsTrue(N.format === 'string')
+  })
+  it('Should guard for TImport with Options 2', () => {
+    const Module = Type.Module({
+      R: Type.Object({ x: Type.Number() }),
+      A: Type.Ref('R'),
+    })
+    const A = Module.Import('A', { test: 'test' })
+    const N = A.$defs[A.$ref]
+    Assert.IsTrue(KindGuard.IsImport(A))
+    Assert.IsTrue(KindGuard.IsRef(N))
+    Assert.IsTrue(N.test === 'test')
+  })
+  it('Should guard for TImport with Options 3', () => {
+    const Module = Type.Module({
+      R: Type.Object({ x: Type.Number() }),
+      A: Type.Partial(Type.Ref('R')),
+    })
+    const A = Module.Import('A', { additionalProperties: false })
+    const N = A.$defs[A.$ref]
+    Assert.IsTrue(KindGuard.IsImport(A))
+    Assert.IsTrue(KindGuard.IsObject(N))
+    Assert.IsTrue(N.additionalProperties === false)
+  })
+  // ----------------------------------------------------------------
   // Computed: Awaited
   // ----------------------------------------------------------------
   it('Should compute for Awaited', () => {
@@ -110,8 +145,8 @@ describe('guard/kind/TImport', () => {
     })
     const T = Module.Import('R')
     Assert.IsTrue(KindGuard.IsRecord(T.$defs['R']))
-    // note: TRecord<TSchema, TRef<...>> are not computed. Only the Key is 
-    // computed as TypeBox needs to make a deferred call to transform from 
+    // note: TRecord<TSchema, TRef<...>> are not computed. Only the Key is
+    // computed as TypeBox needs to make a deferred call to transform from
     // TRecord to TObject for finite keys.
     Assert.IsTrue(KindGuard.IsRef(T.$defs['R'].patternProperties['^(.*)$']))
     Assert.IsTrue(T.$defs['R'].patternProperties['^(.*)$'].$ref === 'T')

@@ -1,5 +1,5 @@
 import { Expect } from './assert'
-import { Type } from '@sinclair/typebox'
+import { Type, Static } from '@sinclair/typebox'
 
 // ------------------------------------------------------------------
 // Enum 1
@@ -36,5 +36,68 @@ import { Type } from '@sinclair/typebox'
 
   Expect(T).ToStatic<{
     value: 1 | 2
+  }>()
+}
+// ------------------------------------------------------------------
+// Record 1
+// ------------------------------------------------------------------
+// prettier-ignore
+{
+  const T = Type.Module({
+    R: Type.Object({ x: Type.Number(), y: Type.Number() }),
+    T: Type.Record(Type.String(), Type.Ref('R')),
+  }).Import('T')
+
+  type T = Static<typeof T>
+  Expect(T).ToStatic<{ 
+    [key: string]: { x: number, y: number } 
+  }>()
+}
+// ------------------------------------------------------------------
+// Record 2
+// ------------------------------------------------------------------
+// prettier-ignore
+{
+  const T = Type.Module({
+    R: Type.Object({ x: Type.Number(), y: Type.Number() }),
+    T: Type.Record(Type.String(), Type.Partial(Type.Ref('R'))),
+  }).Import('T')
+
+  type T = Static<typeof T>
+  Expect(T).ToStatic<{ 
+    [key: string]: { x?: number, y?: number } 
+  }>()
+}
+// ------------------------------------------------------------------
+// Record 3
+// ------------------------------------------------------------------
+// prettier-ignore
+{
+  const T = Type.Module({
+    R: Type.Object({ x: Type.Number(), y: Type.Number() }),
+    K: Type.Number(),
+    T: Type.Record(Type.Ref('K'), Type.Partial(Type.Ref('R'))),
+  }).Import('T')
+
+  type T = Static<typeof T>
+  Expect(T).ToStatic<{ 
+    [key: number]: { x?: number, y?: number } 
+  }>()
+}
+// ------------------------------------------------------------------
+// Record 4
+// ------------------------------------------------------------------
+// prettier-ignore
+{
+  const T = Type.Module({
+    R: Type.Object({ x: Type.Number(), y: Type.Number() }),
+    K: Type.TemplateLiteral('${A|B|C}'),
+    T: Type.Record(Type.Ref('K'), Type.Partial(Type.Ref('R'))),
+  }).Import('T')
+  type T = Static<typeof T>
+  Expect(T).ToStatic<{ 
+    A: { x?: number, y?: number },
+    B: { x?: number, y?: number },
+    C: { x?: number, y?: number } 
   }>()
 }
