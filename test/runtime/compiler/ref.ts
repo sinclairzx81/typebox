@@ -3,6 +3,18 @@ import { Ok, Fail } from './validate'
 import { Assert } from '../assert/index'
 
 describe('compiler/Ref', () => {
+  // ----------------------------------------------------------------
+  // Deprecated
+  // ----------------------------------------------------------------
+  it('Should validate for Ref(Schema)', () => {
+    const T = Type.Number({ $id: 'T' })
+    const R = Type.Ref(T)
+    Ok(R, 1234, [T])
+    Fail(R, 'hello', [T])
+  })
+  // ----------------------------------------------------------------
+  // Standard
+  // ----------------------------------------------------------------
   it('Should should validate when referencing a type', () => {
     const T = Type.Object(
       {

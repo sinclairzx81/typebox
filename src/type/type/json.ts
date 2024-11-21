@@ -57,7 +57,7 @@ import { Readonly, type TReadonlyWithFlag, type TReadonlyFromMappedResult } from
 import { ReadonlyOptional, type TReadonlyOptional } from '../readonly-optional/index'
 import { Record, type TRecordOrObject } from '../record/index'
 import { Recursive, type TRecursive, type TThis } from '../recursive/index'
-import { Ref, type TRef } from '../ref/index'
+import { Ref, type TRef, type TRefUnsafe } from '../ref/index'
 import { Required, type TRequired, type TRequiredFromMappedResult } from '../required/index'
 import { Rest, type TRest } from '../rest/index'
 import { type TSchema, type SchemaOptions } from '../schema/index'
@@ -259,9 +259,28 @@ export class JsonTypeBuilder {
   public Recursive<T extends TSchema>(callback: (thisType: TThis) => T, options?: SchemaOptions): TRecursive<T> {
     return Recursive(callback, options)
   }
-  /** `[Json]` Creates a Ref type. */
-  public Ref<Ref extends string>($ref: Ref, options?: SchemaOptions): TRef<Ref> {
-    return Ref($ref, options)
+
+  /** `[Json]` Creates a Ref type.*/
+  public Ref<Ref extends string>($ref: Ref, options?: SchemaOptions): TRef<Ref>
+  /**
+   * @deprecated `[Json]` Creates a Ref type. The referenced type MUST contain a $id. The Ref(TSchema) signature was
+   * deprecated on 0.34.0 in support of a new type referencing model (Module). Existing implementations using Ref(TSchema)
+   * can migrate using the following. The Ref(TSchema) validation behavior of Ref will be preserved how the construction
+   * of legacy Ref(TSchema) will require wrapping in TUnsafe (where TUnsafe is used for inference only)
+   *
+   * ```typescript
+   * const R = Type.Ref(T)
+   * ```
+   * to
+   *
+   * ```typescript
+   * const R = Type.Unsafe<Static<T>>(T.$id)
+   * ```
+   */
+  public Ref<Type extends TSchema>(type: Type, options?: SchemaOptions): TRefUnsafe<Type>
+  /** `[Json]` Creates a Ref type. The referenced type must contain a $id */
+  public Ref(...args: any[]): unknown {
+    return Ref(args[0] as string, args[1])
   }
   /** `[Json]` Constructs a type where all properties are required */
   public Required<MappedResult extends TMappedResult>(type: MappedResult, options?: SchemaOptions): TRequiredFromMappedResult<MappedResult>

@@ -27,8 +27,11 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import type { TSchema, SchemaOptions } from '../schema/index'
+import { TypeBoxError } from '../error/index'
 import { CreateType } from '../create/type'
 import { Kind } from '../symbols/index'
+import { TUnsafe } from '../unsafe/index'
+import { Static } from '../static/index'
 
 // ------------------------------------------------------------------
 // TRef
@@ -38,7 +41,30 @@ export interface TRef<Ref extends string = string> extends TSchema {
   static: unknown
   $ref: Ref
 }
+
+export type TRefUnsafe<Type extends TSchema> = TUnsafe<Static<Type>>
+
+/** `[Json]` Creates a Ref type.*/
+export function Ref<Ref extends string>($ref: Ref, options?: SchemaOptions): TRef<Ref>
+/**
+ * @deprecated `[Json]` Creates a Ref type. The referenced type MUST contain a $id. The Ref(TSchema) signature was
+ * deprecated on 0.34.0 in support of a new type referencing model (Module). Existing implementations using Ref(TSchema)
+ * can migrate using the following. The Ref(TSchema) validation behavior of Ref will be preserved how the construction
+ * of legacy Ref(TSchema) will require wrapping in TUnsafe (where TUnsafe is used for inference only)
+ *
+ * ```typescript
+ * const R = Type.Ref(T)
+ * ```
+ * to
+ *
+ * ```typescript
+ * const R = Type.Unsafe<Static<T>>(T.$id)
+ * ```
+ */
+export function Ref<Type extends TSchema>(type: Type, options?: SchemaOptions): TRefUnsafe<Type>
 /** `[Json]` Creates a Ref type. The referenced type must contain a $id */
-export function Ref<Ref extends string>($ref: Ref, options?: SchemaOptions): TRef<Ref> {
+export function Ref(...args: any[]): unknown {
+  const [$ref, options] = typeof args[0] === 'string' ? [args[0], args[1]] : [args[0].$id, args[1]]
+  if (typeof $ref !== 'string') throw new TypeBoxError('Ref: $ref must be a string')
   return CreateType({ [Kind]: 'Ref', $ref }, options) as never
 }

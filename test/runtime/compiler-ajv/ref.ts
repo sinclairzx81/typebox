@@ -2,6 +2,18 @@ import { Type } from '@sinclair/typebox'
 import { Ok, Fail } from './validate'
 
 describe('compiler-ajv/Ref', () => {
+  // ----------------------------------------------------------------
+  // Deprecated
+  // ----------------------------------------------------------------
+  it('Should validate for Ref(Schema)', () => {
+    const T = Type.Number({ $id: 'T' })
+    const R = Type.Ref(T)
+    Ok(R, 1234, [T])
+    Fail(R, 'hello', [T])
+  })
+  // ----------------------------------------------------------------
+  // Standard
+  // ----------------------------------------------------------------
   it('Should should validate when referencing a type', () => {
     const T = Type.Object(
       {
