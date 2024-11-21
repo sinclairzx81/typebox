@@ -3,6 +3,18 @@ import { Type } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
 describe('value/check/Ref', () => {
+  // ----------------------------------------------------------------
+  // Deprecated
+  // ----------------------------------------------------------------
+  it('Should validate for Ref(Schema)', () => {
+    const T = Type.Number({ $id: 'T' })
+    const R = Type.Ref(T)
+    Assert.IsTrue(Value.Check(T, [T], 1234))
+    Assert.IsFalse(Value.Check(T, [T], 'hello'))
+  })
+  // ----------------------------------------------------------------
+  // Standard
+  // ----------------------------------------------------------------
   it('Should should validate when referencing a type', () => {
     const T = Type.Object(
       {

@@ -534,15 +534,7 @@ The following table lists the supported Json types. These types are fully compat
 │                                │                             │ }                              │
 │                                │                             │                                │
 ├────────────────────────────────┼─────────────────────────────┼────────────────────────────────┤
-│ const T = Type.Object({        │ type T = {                  │ const R = {                    │
-│    x: Type.Number(),           │   x: number,                │   $ref: 'T'                    │
-│    y: Type.Number()            │   y: number                 │ }                              │
-│ }, { $id: 'T' })               | }                           │                                │
-│                                │                             │                                │
-│ const R = Type.Ref(T)          │ type R = T                  │                                │
-│                                │                             │                                │
-│                                │                             │                                │
-│                                │                             │                                │
+│ const R = Type.Ref('T')        │ type R = unknown            │ const R = { $ref: 'T' }        │
 │                                │                             │                                │
 └────────────────────────────────┴─────────────────────────────┴────────────────────────────────┘
 ```
