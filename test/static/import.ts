@@ -101,3 +101,14 @@ import { Type, Static } from '@sinclair/typebox'
     C: { x?: number, y?: number } 
   }>()
 }
+// ------------------------------------------------------------------
+// Object 1
+// ------------------------------------------------------------------
+// prettier-ignore
+{
+  const T = Type.Module({
+    R: Type.Object({ x: Type.Optional(Type.Number()), a: Type.Optional(Type.Array(Type.Number())) }),
+  }).Import('R')
+  type T = Static<typeof T>
+  Expect(T).ToStatic<{ x?: number, a?: number[] }>()
+}

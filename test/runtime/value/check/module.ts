@@ -77,4 +77,17 @@ describe('value/check/Module', () => {
     Assert.IsTrue(Value.Check(T, 'hello'))
     Assert.IsFalse(Value.Check(T, 'world'))
   })
+  it('Should validate objects with optional properties', () => {
+    const Module = Type.Module({
+      A: Type.Object({
+        x: Type.Optional(Type.Number()),
+        y: Type.Optional(Type.Array(Type.Number())),
+        a: Type.String(),
+      }),
+    })
+    const T = Module.Import('A')
+    Assert.IsTrue(Value.Check(T, { a: '1' }))
+    Assert.IsTrue(Value.Check(T, { a: '1', x: 5, y: [4] }))
+    Assert.IsFalse(Value.Check(T, { a: '1', y: 'hello' }))
+  })
 })

@@ -42,6 +42,7 @@ import { Iterator, type TIterator } from '../iterator/index'
 import { KeyOf, type TKeyOf } from '../keyof/index'
 import { Object, type TObject, type TProperties } from '../object/index'
 import { Omit, type TOmit } from '../omit/index'
+import { type TOptional } from '../optional'
 import { Pick, type TPick } from '../pick/index'
 import { Never, type TNever } from '../never/index'
 import { Partial, TPartial } from '../partial/index'
@@ -340,6 +341,7 @@ function FromRest<ModuleProperties extends TProperties, Types extends TSchema[]>
 // ------------------------------------------------------------------
 // prettier-ignore
 export type TFromType<ModuleProperties extends TProperties, Type extends TSchema> = (
+  Type extends TOptional<infer Type extends TSchema> ? TOptional<TFromType<ModuleProperties, Type>> :
   Type extends TArray<infer Type extends TSchema> ? TFromArray<ModuleProperties, Type> :
   Type extends TAsyncIterator<infer Type extends TSchema> ? TFromAsyncIterator<ModuleProperties, Type> :
   Type extends TComputed<infer Target extends string, infer Parameters extends TSchema[]> ? TFromComputed<ModuleProperties, Target, Parameters> :
