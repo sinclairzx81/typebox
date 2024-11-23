@@ -190,4 +190,91 @@ describe('guard/kind/TImport', () => {
     Assert.IsTrue(T.$defs['R'].anyOf[0].const === 'x')
     Assert.IsTrue(T.$defs['R'].anyOf[1].const === 'y')
   })
+  // ----------------------------------------------------------------
+  // Modifiers: 1
+  // ----------------------------------------------------------------
+  it('Should compute for Modifiers 1', () => {
+    const Module = Type.Module({
+      T: Type.Object({
+        x: Type.ReadonlyOptional(Type.Null()),
+        y: Type.Readonly(Type.Null()),
+        z: Type.Optional(Type.Null()),
+        w: Type.Null(),
+      }),
+    })
+    const T = Module.Import('T')
+    const R = T.$defs[T.$ref]
+    Assert.IsTrue(KindGuard.IsObject(R))
+
+    Assert.IsTrue(KindGuard.IsNull(R.properties.x))
+    Assert.IsTrue(KindGuard.IsReadonly(R.properties.x))
+    Assert.IsTrue(KindGuard.IsOptional(R.properties.x))
+
+    Assert.IsTrue(KindGuard.IsNull(R.properties.y))
+    Assert.IsTrue(KindGuard.IsReadonly(R.properties.y))
+    Assert.IsFalse(KindGuard.IsOptional(R.properties.y))
+
+    Assert.IsTrue(KindGuard.IsNull(R.properties.z))
+    Assert.IsTrue(KindGuard.IsOptional(R.properties.z))
+    Assert.IsFalse(KindGuard.IsReadonly(R.properties.z))
+
+    Assert.IsTrue(KindGuard.IsNull(R.properties.w))
+    Assert.IsFalse(KindGuard.IsOptional(R.properties.w))
+    Assert.IsFalse(KindGuard.IsReadonly(R.properties.w))
+  })
+  // ----------------------------------------------------------------
+  // Modifiers: 2
+  // ----------------------------------------------------------------
+  it('Should compute for Modifiers 2', () => {
+    const Module = Type.Module({
+      T: Type.Object({
+        x: Type.ReadonlyOptional(Type.Array(Type.Null())),
+        y: Type.Readonly(Type.Array(Type.Null())),
+        z: Type.Optional(Type.Array(Type.Null())),
+        w: Type.Array(Type.Null()),
+      }),
+    })
+    const T = Module.Import('T')
+    const R = T.$defs[T.$ref]
+    Assert.IsTrue(KindGuard.IsObject(R))
+
+    Assert.IsTrue(KindGuard.IsArray(R.properties.x))
+    Assert.IsTrue(KindGuard.IsNull(R.properties.x.items))
+    Assert.IsTrue(KindGuard.IsReadonly(R.properties.x))
+    Assert.IsTrue(KindGuard.IsOptional(R.properties.x))
+
+    Assert.IsTrue(KindGuard.IsArray(R.properties.y))
+    Assert.IsTrue(KindGuard.IsNull(R.properties.y.items))
+    Assert.IsTrue(KindGuard.IsReadonly(R.properties.y))
+    Assert.IsFalse(KindGuard.IsOptional(R.properties.y))
+
+    Assert.IsTrue(KindGuard.IsArray(R.properties.z))
+    Assert.IsTrue(KindGuard.IsNull(R.properties.z.items))
+    Assert.IsTrue(KindGuard.IsOptional(R.properties.z))
+    Assert.IsFalse(KindGuard.IsReadonly(R.properties.z))
+
+    Assert.IsTrue(KindGuard.IsArray(R.properties.w))
+    Assert.IsTrue(KindGuard.IsNull(R.properties.w.items))
+    Assert.IsFalse(KindGuard.IsOptional(R.properties.w))
+    Assert.IsFalse(KindGuard.IsReadonly(R.properties.w))
+  })
+  // ----------------------------------------------------------------
+  // Modifiers: 3
+  // ----------------------------------------------------------------
+  it('Should compute for Modifiers 3', () => {
+    const Module = Type.Module({
+      T: Type.Object({
+        x: Type.Array(Type.Null()),
+      }),
+      // Computed Partial
+      U: Type.Partial(Type.Ref('T')),
+    })
+    const T = Module.Import('U')
+    const R = T.$defs[T.$ref]
+    Assert.IsTrue(KindGuard.IsObject(R))
+
+    Assert.IsTrue(KindGuard.IsArray(R.properties.x))
+    Assert.IsTrue(KindGuard.IsNull(R.properties.x.items))
+    Assert.IsTrue(KindGuard.IsOptional(R.properties.x))
+  })
 })

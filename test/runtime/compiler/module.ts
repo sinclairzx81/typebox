@@ -75,4 +75,35 @@ describe('compiler/Module', () => {
     Ok(T, 'hello')
     Fail(T, 'world')
   })
+  // ----------------------------------------------------------------
+  // Modifiers
+  // ----------------------------------------------------------------
+  it('Should validate objects with property modifiers 1', () => {
+    const Module = Type.Module({
+      T: Type.Object({
+        x: Type.ReadonlyOptional(Type.Null()),
+        y: Type.Readonly(Type.Null()),
+        z: Type.Optional(Type.Null()),
+        w: Type.Null(),
+      }),
+    })
+    const T = Module.Import('T')
+    Ok(T, { x: null, y: null, w: null })
+    Ok(T, { y: null, w: null })
+    Fail(T, { x: 1, y: null, w: null })
+  })
+  it('Should validate objects with property modifiers 2', () => {
+    const Module = Type.Module({
+      T: Type.Object({
+        x: Type.ReadonlyOptional(Type.Array(Type.Null())),
+        y: Type.Readonly(Type.Array(Type.Null())),
+        z: Type.Optional(Type.Array(Type.Null())),
+        w: Type.Array(Type.Null()),
+      }),
+    })
+    const T = Module.Import('T')
+    Ok(T, { x: [null], y: [null], w: [null] })
+    Ok(T, { y: [null], w: [null] })
+    Fail(T, { x: [1], y: [null], w: [null] })
+  })
 })

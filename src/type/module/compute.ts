@@ -27,6 +27,7 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import { CreateType } from '../create/index'
+import { Discard } from '../discard/index'
 import { Ensure, Evaluate } from '../helpers/index'
 import { type TSchema } from '../schema/index'
 import { Array, type TArray } from '../array/index'
@@ -42,16 +43,18 @@ import { Iterator, type TIterator } from '../iterator/index'
 import { KeyOf, type TKeyOf } from '../keyof/index'
 import { Object, type TObject, type TProperties } from '../object/index'
 import { Omit, type TOmit } from '../omit/index'
-import { type TOptional } from '../optional'
+import { type TOptional } from '../optional/index'
 import { Pick, type TPick } from '../pick/index'
 import { Never, type TNever } from '../never/index'
 import { Partial, TPartial } from '../partial/index'
+import { type TReadonly } from '../readonly/index'
 import { Record, type TRecordOrObject } from '../record/index'
 import { type TRef } from '../ref/index'
 import { Required, TRequired } from '../required/index'
 import { Tuple, type TTuple } from '../tuple/index'
 import { Union, type TUnion, type TUnionEvaluated } from '../union/index'
 
+import { OptionalKind, ReadonlyKind } from '../symbols/index'
 // ------------------------------------------------------------------
 // KindGuard
 // ------------------------------------------------------------------
@@ -341,7 +344,10 @@ function FromRest<ModuleProperties extends TProperties, Types extends TSchema[]>
 // ------------------------------------------------------------------
 // prettier-ignore
 export type TFromType<ModuleProperties extends TProperties, Type extends TSchema> = (
+  // Modifier Unwrap
   Type extends TOptional<infer Type extends TSchema> ? TOptional<TFromType<ModuleProperties, Type>> :
+  Type extends TReadonly<infer Type extends TSchema> ? TReadonly<TFromType<ModuleProperties, Type>> :
+  // Traveral
   Type extends TArray<infer Type extends TSchema> ? TFromArray<ModuleProperties, Type> :
   Type extends TAsyncIterator<infer Type extends TSchema> ? TFromAsyncIterator<ModuleProperties, Type> :
   Type extends TComputed<infer Target extends string, infer Parameters extends TSchema[]> ? TFromComputed<ModuleProperties, Target, Parameters> :
@@ -358,6 +364,10 @@ export type TFromType<ModuleProperties extends TProperties, Type extends TSchema
 // prettier-ignore
 export function FromType<ModuleProperties extends TProperties, Type extends TSchema>(moduleProperties: ModuleProperties, type: Type): TFromType<ModuleProperties, Type> {
   return (
+    // Modifier Unwrap
+    KindGuard.IsOptional(type) ? CreateType(FromType(moduleProperties, Discard(type, [OptionalKind]) as TSchema) as never, type) :
+    KindGuard.IsReadonly(type) ? CreateType(FromType(moduleProperties, Discard(type, [ReadonlyKind]) as TSchema) as never, type) :
+    // Traveral
     KindGuard.IsArray(type) ? CreateType(FromArray(moduleProperties, type.items), type) :
     KindGuard.IsAsyncIterator(type) ? CreateType(FromAsyncIterator(moduleProperties, type.items), type) :
     // Note: The 'as never' is required due to excessive resolution of TIndex. In fact TIndex, TPick, TOmit and
