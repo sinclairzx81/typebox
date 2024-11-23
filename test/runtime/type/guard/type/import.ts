@@ -144,8 +144,6 @@ describe('guard/type/TImport', () => {
       R: Type.Record(Type.String(), Type.Ref('T')),
     })
     const T = Module.Import('R')
-
-    console.dir(T, { depth: 100 })
     Assert.IsTrue(TypeGuard.IsRecord(T.$defs['R']))
     // note: TRecord<TSchema, TRef<...>> are not computed. Only the Key is
     // computed as TypeBox needs to make a deferred call to transform from
@@ -191,5 +189,92 @@ describe('guard/type/TImport', () => {
     Assert.IsTrue(TypeGuard.IsLiteral(T.$defs['R'].anyOf[1]))
     Assert.IsTrue(T.$defs['R'].anyOf[0].const === 'x')
     Assert.IsTrue(T.$defs['R'].anyOf[1].const === 'y')
+  })
+  // ----------------------------------------------------------------
+  // Modifiers: 1
+  // ----------------------------------------------------------------
+  it('Should compute for Modifiers 1', () => {
+    const Module = Type.Module({
+      T: Type.Object({
+        x: Type.ReadonlyOptional(Type.Null()),
+        y: Type.Readonly(Type.Null()),
+        z: Type.Optional(Type.Null()),
+        w: Type.Null(),
+      }),
+    })
+    const T = Module.Import('T')
+    const R = T.$defs[T.$ref]
+    Assert.IsTrue(TypeGuard.IsObject(R))
+
+    Assert.IsTrue(TypeGuard.IsNull(R.properties.x))
+    Assert.IsTrue(TypeGuard.IsReadonly(R.properties.x))
+    Assert.IsTrue(TypeGuard.IsOptional(R.properties.x))
+
+    Assert.IsTrue(TypeGuard.IsNull(R.properties.y))
+    Assert.IsTrue(TypeGuard.IsReadonly(R.properties.y))
+    Assert.IsFalse(TypeGuard.IsOptional(R.properties.y))
+
+    Assert.IsTrue(TypeGuard.IsNull(R.properties.z))
+    Assert.IsTrue(TypeGuard.IsOptional(R.properties.z))
+    Assert.IsFalse(TypeGuard.IsReadonly(R.properties.z))
+
+    Assert.IsTrue(TypeGuard.IsNull(R.properties.w))
+    Assert.IsFalse(TypeGuard.IsOptional(R.properties.w))
+    Assert.IsFalse(TypeGuard.IsReadonly(R.properties.w))
+  })
+  // ----------------------------------------------------------------
+  // Modifiers: 2
+  // ----------------------------------------------------------------
+  it('Should compute for Modifiers 2', () => {
+    const Module = Type.Module({
+      T: Type.Object({
+        x: Type.ReadonlyOptional(Type.Array(Type.Null())),
+        y: Type.Readonly(Type.Array(Type.Null())),
+        z: Type.Optional(Type.Array(Type.Null())),
+        w: Type.Array(Type.Null()),
+      }),
+    })
+    const T = Module.Import('T')
+    const R = T.$defs[T.$ref]
+    Assert.IsTrue(TypeGuard.IsObject(R))
+
+    Assert.IsTrue(TypeGuard.IsArray(R.properties.x))
+    Assert.IsTrue(TypeGuard.IsNull(R.properties.x.items))
+    Assert.IsTrue(TypeGuard.IsReadonly(R.properties.x))
+    Assert.IsTrue(TypeGuard.IsOptional(R.properties.x))
+
+    Assert.IsTrue(TypeGuard.IsArray(R.properties.y))
+    Assert.IsTrue(TypeGuard.IsNull(R.properties.y.items))
+    Assert.IsTrue(TypeGuard.IsReadonly(R.properties.y))
+    Assert.IsFalse(TypeGuard.IsOptional(R.properties.y))
+
+    Assert.IsTrue(TypeGuard.IsArray(R.properties.z))
+    Assert.IsTrue(TypeGuard.IsNull(R.properties.z.items))
+    Assert.IsTrue(TypeGuard.IsOptional(R.properties.z))
+    Assert.IsFalse(TypeGuard.IsReadonly(R.properties.z))
+
+    Assert.IsTrue(TypeGuard.IsArray(R.properties.w))
+    Assert.IsTrue(TypeGuard.IsNull(R.properties.w.items))
+    Assert.IsFalse(TypeGuard.IsOptional(R.properties.w))
+    Assert.IsFalse(TypeGuard.IsReadonly(R.properties.w))
+  })
+  // ----------------------------------------------------------------
+  // Modifiers: 3
+  // ----------------------------------------------------------------
+  it('Should compute for Modifiers 3', () => {
+    const Module = Type.Module({
+      T: Type.Object({
+        x: Type.Array(Type.Null()),
+      }),
+      // Computed Partial
+      U: Type.Partial(Type.Ref('T')),
+    })
+    const T = Module.Import('U')
+    const R = T.$defs[T.$ref]
+    Assert.IsTrue(TypeGuard.IsObject(R))
+
+    Assert.IsTrue(TypeGuard.IsArray(R.properties.x))
+    Assert.IsTrue(TypeGuard.IsNull(R.properties.x.items))
+    Assert.IsTrue(TypeGuard.IsOptional(R.properties.x))
   })
 })

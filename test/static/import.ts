@@ -101,3 +101,65 @@ import { Type, Static } from '@sinclair/typebox'
     C: { x?: number, y?: number } 
   }>()
 }
+// ------------------------------------------------------------------
+// Modifiers 1
+// ------------------------------------------------------------------
+// prettier-ignore
+{
+  const Module = Type.Module({
+    T: Type.Object({
+      x: Type.ReadonlyOptional(Type.Null()), 
+      y: Type.Readonly(Type.Null()),
+      z: Type.Optional(Type.Null()),
+      w: Type.Null()
+    })
+  })
+  const T = Module.Import('T')
+  type T = Static<typeof T>
+  Expect(T).ToStatic<{ 
+    readonly x?: null,
+    readonly y: null,
+    z?: null,
+    w: null
+  }>()
+}
+// ------------------------------------------------------------------
+// Modifiers 2
+// ------------------------------------------------------------------
+// prettier-ignore
+{
+  const Module = Type.Module({
+    T: Type.Object({
+      x: Type.ReadonlyOptional(Type.Array(Type.Null())), 
+      y: Type.Readonly(Type.Array(Type.Null())),
+      z: Type.Optional(Type.Array(Type.Null())),
+      w: Type.Array(Type.Null())
+    })
+  })
+  const T = Module.Import('T')
+  type T = Static<typeof T>
+  Expect(T).ToStatic<{ 
+    readonly x?: null[],
+    readonly y: null[],
+    z?:null[],
+    w: null[]
+  }>()
+}
+// ------------------------------------------------------------------
+// Modifiers 3
+// ------------------------------------------------------------------
+// prettier-ignore
+{
+  const Module = Type.Module({
+    T: Type.Object({
+      x: Type.Array(Type.Null())
+    }),
+    // Computed Partial
+    U: Type.Partial(Type.Ref('T'))
+  })
+  const T = Module.Import('U')
+  type T = Static<typeof T>
+  Expect(T).ToStatic<{ 
+    x?: null[],
+  }>()
+}
