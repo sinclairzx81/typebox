@@ -364,7 +364,7 @@ export type TFromType<ModuleProperties extends TProperties, Type extends TSchema
 // prettier-ignore
 export function FromType<ModuleProperties extends TProperties, Type extends TSchema>(moduleProperties: ModuleProperties, type: Type): TFromType<ModuleProperties, Type> {
   return (
-    // Modifier Unwrap
+    // Modifier Unwrap - Reapplied via CreateType Options
     KindGuard.IsOptional(type) ? CreateType(FromType(moduleProperties, Discard(type, [OptionalKind]) as TSchema) as never, type) :
     KindGuard.IsReadonly(type) ? CreateType(FromType(moduleProperties, Discard(type, [ReadonlyKind]) as TSchema) as never, type) :
     // Traveral
