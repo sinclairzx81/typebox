@@ -30,10 +30,10 @@ import { TypeBoxError } from '../../type/error/index'
 import { TransformDecode, TransformEncode, HasTransform } from '../transform/index'
 import { TSchema } from '../../type/schema/index'
 import { StaticDecode } from '../../type/static/index'
-import { Assert } from '../assert/assert'
-import { Default } from '../default/default'
-import { Convert } from '../convert/convert'
-import { Clean } from '../clean/clean'
+import { Assert } from '../assert/index'
+import { Default } from '../default/index'
+import { Convert } from '../convert/index'
+import { Clean } from '../clean/index'
 import { Clone } from '../clone/index'
 
 // ------------------------------------------------------------------
@@ -81,7 +81,7 @@ export namespace ParseRegistry {
   }
 }
 // ------------------------------------------------------------------
-// ParseDefault: Default Sequence
+// Default Parse Sequence
 // ------------------------------------------------------------------
 // prettier-ignore
 export const ParseDefault = [
@@ -96,10 +96,10 @@ export const ParseDefault = [
 // ------------------------------------------------------------------
 // ParseValue
 // ------------------------------------------------------------------
-function ParseValue<Type extends TSchema, Result extends StaticDecode<Type> = StaticDecode<Type>>(keys: TParseOperation[], type: Type, references: TSchema[], value: unknown): Result {
-  return keys.reduce((value, key) => {
-    const operation = ParseRegistry.Get(key)
-    if (IsUndefined(operation)) throw new ParseError(`Unable to find Parse operation '${key}'`)
+function ParseValue<Type extends TSchema, Result extends StaticDecode<Type> = StaticDecode<Type>>(operations: TParseOperation[], type: Type, references: TSchema[], value: unknown): Result {
+  return operations.reduce((value, operationKey) => {
+    const operation = ParseRegistry.Get(operationKey)
+    if (IsUndefined(operation)) throw new ParseError(`Unable to find Parse operation '${operationKey}'`)
     return operation(type, references, value)
   }, value) as Result
 }
@@ -118,11 +118,11 @@ export function Parse<Type extends TSchema>(operations: TParseOperation[], schem
 /** Parses a value */
 export function Parse(...args: any[]): unknown {
   // prettier-ignore
-  const [reducers, schema, references, value] = (
+  const [operations, schema, references, value] = (
     args.length === 4 ? [args[0], args[1], args[2], args[3]] :
     args.length === 3 ? IsArray(args[0]) ? [args[0], args[1], [], args[2]] : [ParseDefault, args[0], args[1], args[2]] :
     args.length === 2 ? [ParseDefault, args[0], [], args[1]] :
     (() => { throw new ParseError('Invalid Arguments') })()
   )
-  return ParseValue(reducers, schema, references, value)
+  return ParseValue(operations, schema, references, value)
 }
