@@ -1022,7 +1022,7 @@ if(TypeGuard.IsString(T)) {
 
 ## Syntax Types
 
-Syntax Types is a feature that enables TypeBox to parse TypeScript type annotations directly into Json Schema. This feature works both at runtime and statically within the type system. Syntax Types use Json Schema as the Abstract Syntax Tree (AST) parse target for TypeScript types. Syntax Types are designed to offer a syntactical frontend to the standard Type Builder API.
+TypeBox has support for parsing TypeScript type annotations directly into TypeBox types. This feature supports both runtime and static parsing, with TypeBox implementing TypeScript parsers within the TypeScript type system itself. Syntax Types use the TypeBox Json Schema representations as an AST target for TypeScript types, providing a direct mapping between TypeScript syntax and Json Schema. Syntax Types are offered as a syntactical frontend to the Standard Type Builder API.
 
 This feature is available via optional import.
 
@@ -1051,7 +1051,7 @@ const C = Parse(`{ x: number, y: number }`)         // const C: TObject<{
                                                     // }>
 ```
 
-Syntax Types can be composed with Standard Types. 
+Syntax Types can compose with Standard Types created via the Type Builder API
 
 ```typescript
 const T = Type.Object({                             // const T: TObject<{
@@ -1061,7 +1061,7 @@ const T = Type.Object({                             // const T: TObject<{
 })                                                  // }>
 ```
 
-It is also possible to pass Standard Types to Syntax Types in the following way.
+Standard Types can also be passed to and referenced within Syntax Types.
 
 ```typescript
 const X = Type.Number()
@@ -1075,7 +1075,7 @@ const T = Parse({ X, Y, Z }, `{
 }`)
 ```
 
-Syntax Types can also be used to parse Module types.
+Syntax Types also support Module parsing.
 
 ```typescript
 const Foo = Parse(`module Foo {
@@ -1127,7 +1127,7 @@ type T = StaticParseAsType<{}, '{ x: number }'>     // type T = {
 
 ### Limitations
 
-Syntax Types work by having TypeBox parse TypeScript syntax within the TypeScript type system. This approach can place some strain on the TypeScript compiler and language service, potentially affecting responsiveness. While TypeBox makes a best-effort attempt to optimize for Syntax Types, users should be mindful of the following structures:
+TypeBox parses TypeScript types directly within the TypeScript type system. This process does come with an inference cost, which scales with the size and complexity of the types being parsed. Although TypeBox strives to optimize Syntax Types, users should be aware of the following structures:
 
 ```typescript
 // Excessively wide structures will result in instantiation limits exceeding
@@ -1154,12 +1154,12 @@ const B = Parse(`{
 }`)
 ```
 
-In cases where Syntax Types exceed TypeScript's instantiation limits, TypeBox offers a fallback ParseOnly function, which will only parse but not infer. This function can also be used to parse types where the syntax is statically unknown to TypeScript (for example, when loading types from disk).
+If Syntax Types exceed TypeScript's instantiation limits, users are advised to fall back to the Standard Type Builder API. Alternatively, TypeBox offers a `ParseOnly` function that parses the TypeScript syntax at runtime without statically inferring the schema.
 
 ```typescript
 import { ParseOnly } from '@sinclair/typebox/syntax'
 
-// Where A is TSchema | undefined 
+// const A: TSchema | undefined 
 
 const A = ParseOnly(`{
   x: {
@@ -1172,7 +1172,7 @@ const A = ParseOnly(`{
 }`)
 ```
 
-For more information on TypeBox's parsing infrastructure, refer to the [ParseBox](https://github.com/sinclairzx81/parsebox) project.
+For more information on static parsing, refer to the [ParseBox](https://github.com/sinclairzx81/parsebox) project.
 
 <a name='values'></a>
 
@@ -1333,7 +1333,7 @@ const R = Value.Parse(Type.String(), 'hello')      // const R: string = "hello"
 const E = Value.Parse(Type.String(), undefined)    // throws AssertError 
 ```
 
-You can override the order in which functions are are run, or omit functions entirely in the following way.
+You can override the order in which functions are run, or omit functions entirely using the following.
 
 ```typescript
 // Runs no functions.
