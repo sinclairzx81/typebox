@@ -1,3 +1,4 @@
+import './__members'
 import './any'
 import './array'
 import './async-iterator'

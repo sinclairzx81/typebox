@@ -97,6 +97,14 @@ export class TypeCheck<T extends TSchema> {
   public Code(): string {
     return this.code
   }
+  /** Returns the schema type used to validate */
+  public Schema(): T {
+    return this.schema
+  }
+  /** Returns reference types used to validate */
+  public References(): TSchema[] {
+    return this.references
+  }
   /** Returns an iterator for each error in this value. */
   public Errors(value: unknown): ValueErrorIterator {
     return Errors(this.schema, this.references, value)
