@@ -78,9 +78,6 @@ License MIT
   - [Unsafe](#types-unsafe)
 - [Syntax](#syntax)
   - [Parse](#syntax-parse)
-  - [Compose](#syntax-compose)
-  - [Context](#syntax-context)
-  - [Module](#syntax-module)
   - [Static](#syntax-static)
   - [Limits](#syntax-limits)
 - [Values](#values)
@@ -1025,9 +1022,9 @@ if(TypeGuard.IsString(T)) {
 
 ## Syntax Types
 
-TypeBox provides support for parsing TypeScript syntax directly into TypeBox Json Schema schematics. Syntax Types offer a string based DSL frontend to TypeBox's Type Builder system and can be useful for converting existing TypeScript type definitions into Json Schema schematics without reimplementation via the Type Builder.
+Syntax Types is a feature that enables TypeBox to parse TypeScript type annotations directly into Json Schema. This feature works both at runtime and statically within the type system. Syntax Types use Json Schema as the Abstract Syntax Tree (AST) parse target for TypeScript types. Syntax Types are designed to offer a syntactical frontend to the standard Type Builder API.
 
-Syntax Types are provided via optional import.
+This feature is available via optional import.
 
 ```typescript
 import { Parse } from '@sinclair/typebox/syntax'
@@ -1037,7 +1034,7 @@ import { Parse } from '@sinclair/typebox/syntax'
 
 ### Parse
 
-Use the Parse function to convert a TypeScript string into a TypeBox type. TypeBox will infer the appropriate TSchema type or return undefined if there is a syntax error.
+Use the Parse function to transform a TypeScript type annotation into a TypeBox type. This function will return the parsed TypeBox type or undefined on error.
 
 ```typescript
 const A = Parse('string')                           // const A: TString
@@ -1054,45 +1051,46 @@ const C = Parse(`{ x: number, y: number }`)         // const C: TObject<{
                                                     // }>
 ```
 
-
-
-<a name='syntax-compose'></a>
-
-### Compose
-
-Syntax Types are designed to be interchangeable with standard Types.
+Syntax Types can be composed with Standard Types. 
 
 ```typescript
 const T = Type.Object({                             // const T: TObject<{
   x: Parse('number'),                               //   x: TNumber,
-  y: Parse('number'),                               //   y: TNumber,
-  z: Parse('number')                                //   z: TNumber
+  y: Parse('string'),                               //   y: TString,
+  z: Parse('boolean')                               //   z: TBoolean
 })                                                  // }>
 ```
 
-<a name='syntax-module'></a>
-
-### Module
-
-Syntax Types also support Module parsing. This can provide a more terse syntax for creating Module definitions, but comes with an inference performance cost. Module parsing supports interface and type alias definitions. Generics types are currently unsupported. 
+It is also possible to pass Standard Types to Syntax Types in the following way.
 
 ```typescript
-const Module = Parse(`module {
-  
+const X = Type.Number()
+const Y = Type.String()
+const Z = Type.Boolean()
+
+const T = Parse({ X, Y, Z }, `{ 
+  x: X, 
+  y: Y, 
+  z: Z 
+}`)
+```
+
+Syntax Types can also be used to parse Module types.
+
+```typescript
+const Foo = Parse(`module Foo {
+
+  export type PartialUser = Pick<User, 'id'> & Partial<Omit<User, 'id'>>
+
   export interface User {
     id: string
     name: string
     email: string
   }
- 
-  export type PartialUser = (
-    Pick<User, 'id'> &
-    Partial<Omit<User, 'id'>>
-  )
 
 }`)
 
-const PartialUser = Module.Import('PartialUser')    // TImport<{...}, 'PartialUser'>
+const PartialUser = Foo.Import('PartialUser')       // TImport<{...}, 'PartialUser'>
 
 type PartialUser = Static<typeof PartialUser>       // type PartialUser = {
                                                     //   id: string,
@@ -1102,45 +1100,11 @@ type PartialUser = Static<typeof PartialUser>       // type PartialUser = {
                                                     // }
 ```
 
-<a name='syntax-context'></a>
-
-### Context
-
-The Parse function takes an optional leading Context object that contains external types. This Context allows the syntax to reference these external types using the property identifiers provided by the Context. The following passes the external type `T` to Parse.
-
-```typescript
-const T = Type.Object({                             // const T: TObject<{
-  x: Type.Number(),                                 //   x: TNumber,
-  y: Type.Number(),                                 //   y: TNumber,
-  z: Type.Number()                                  //   z: TNumber
-})                                                  // }>
-
-const A = Parse({ T }, 'Partial<T>')                // const A: TObject<{
-                                                    //   x: TOptional<TNumber>,
-                                                    //   y: TOptional<TNumber>,
-                                                    //   z: TOptional<TNumber>
-                                                    // }>
-
-const B = Parse({ T }, 'keyof T')                   // const B: TUnion<[
-                                                    //   TLiteral<'x'>,
-                                                    //   TLiteral<'y'>,
-                                                    //   TLiteral<'z'>
-                                                    // ]>
-
-const C = Parse({ T }, 'T & { w: number }')         // const C: TIntersect<[TObject<{
-                                                    //    x: TNumber;
-                                                    //    y: TNumber;
-                                                    //    z: TNumber;
-                                                    // }>, TObject<{
-                                                    //    w: TNumber;
-                                                    // }>]>
-```
-
 <a name='syntax-static'></a>
 
 ### Static
 
-Syntax Types provide two Static types for inferring TypeScript types and TypeBox schematics from strings.
+Syntax Types provide two Static types specific to inferring TypeBox and TypeScript types from strings.
 
 ```typescript
 import { StaticParseAsSchema, StaticParseAsType } from '@sinclair/typebox/syntax' 
@@ -1154,8 +1118,8 @@ type S = StaticParseAsSchema<{}, '{ x: number }'>   // type S: TObject<{
 // Will infer as a type
 
 type T = StaticParseAsType<{}, '{ x: number }'>     // type T = {
-                                                    //  x: number
-                                                    //                       
+                                                    //   x: number
+                                                    // }                      
 ```
 
 
