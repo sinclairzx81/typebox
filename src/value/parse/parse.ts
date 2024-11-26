@@ -26,7 +26,8 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { TransformDecode, HasTransform } from '../transform/index'
+import { TypeBoxError } from '../../type/error/index'
+import { TransformDecode, TransformEncode, HasTransform } from '../transform/index'
 import { TSchema } from '../../type/schema/index'
 import { StaticDecode } from '../../type/static/index'
 import { Assert } from '../assert/assert'
@@ -36,33 +37,92 @@ import { Clean } from '../clean/clean'
 import { Clone } from '../clone/index'
 
 // ------------------------------------------------------------------
-// ParseReducer
+// Guards
 // ------------------------------------------------------------------
-type ReducerFunction = (schema: TSchema, references: TSchema[], value: unknown) => unknown
+import { IsArray, IsUndefined } from '../guard/index'
+
+// ------------------------------------------------------------------
+// Error
+// ------------------------------------------------------------------
+export class ParseError extends TypeBoxError {
+  constructor(message: string) {
+    super(message)
+  }
+}
+
+// ------------------------------------------------------------------
+// ParseRegistry
+// ------------------------------------------------------------------
+export type TParseOperation = 'Clone' | 'Clean' | 'Default' | 'Convert' | 'Assert' | 'Decode' | ({} & string)
+export type TParseFunction = (type: TSchema, references: TSchema[], value: unknown) => unknown
 
 // prettier-ignore
-const ParseReducer: ReducerFunction[] = [
-  (_schema, _references, value) => Clone(value),
-  (schema, references, value) => Default(schema, references, value),
-  (schema, references, value) => Clean(schema, references, value),
-  (schema, references, value) => Convert(schema, references, value),
-  (schema, references, value) => { Assert(schema, references, value); return value },
-  (schema, references, value) => (HasTransform(schema, references) ? TransformDecode(schema, references, value) : value),
-]
+export namespace ParseRegistry {
+  const registry = new Map<string, TParseFunction>([
+    ['Clone', (_type, _references, value: unknown) => Clone(value)],
+    ['Clean', (type, references, value: unknown) => Clean(type, references, value)],
+    ['Default', (type, references, value: unknown) => Default(type, references, value)],
+    ['Convert', (type, references, value: unknown) => Convert(type, references, value)],
+    ['Assert', (type, references, value: unknown) => { Assert(type, references, value); return value }],
+    ['Decode', (type, references, value: unknown) => (HasTransform(type, references) ? TransformDecode(type, references, value) : value)],
+    ['Encode', (type, references, value: unknown) => (HasTransform(type, references) ? TransformEncode(type, references, value) : value)],
+  ])
+  // Deletes an entry from the registry
+  export function Delete(key: string): void {
+    registry.delete(key)
+  }
+  // Sets an entry in the registry
+  export function Set(key: string, callback: TParseFunction): void {
+    registry.set(key, callback)
+  }
+  // Gets an entry in the registry
+  export function Get(key: string): TParseFunction | undefined {
+    return registry.get(key)
+  }
+}
+// ------------------------------------------------------------------
+// ParseDefault: Default Sequence
+// ------------------------------------------------------------------
+// prettier-ignore
+export const ParseDefault = [
+  'Clone',
+  'Clean',
+  'Default',
+  'Convert',
+  'Assert',
+  'Decode'
+] as const
+
 // ------------------------------------------------------------------
 // ParseValue
 // ------------------------------------------------------------------
-function ParseValue<T extends TSchema, R = StaticDecode<T>>(schema: T, references: TSchema[], value: unknown): R {
-  return ParseReducer.reduce((value, reducer) => reducer(schema, references, value), value) as R
+function ParseValue<Type extends TSchema, Result extends StaticDecode<Type> = StaticDecode<Type>>(keys: TParseOperation[], type: Type, references: TSchema[], value: unknown): Result {
+  return keys.reduce((value, key) => {
+    const operation = ParseRegistry.Get(key)
+    if (IsUndefined(operation)) throw new ParseError(`Unable to find Parse operation '${key}'`)
+    return operation(type, references, value)
+  }, value) as Result
 }
+
 // ------------------------------------------------------------------
 // Parse
 // ------------------------------------------------------------------
-/** Parses a value or throws an `AssertError` if invalid. */
-export function Parse<T extends TSchema, R = StaticDecode<T>>(schema: T, references: TSchema[], value: unknown): R
-/** Parses a value or throws an `AssertError` if invalid. */
-export function Parse<T extends TSchema, R = StaticDecode<T>>(schema: T, value: unknown): R
-/** Parses a value or throws an `AssertError` if invalid. */
+/** Parses a value using the default parse pipeline. Will throws an `AssertError` if invalid. */
+export function Parse<Type extends TSchema, Output = StaticDecode<Type>, Result extends Output = Output>(schema: Type, references: TSchema[], value: unknown): Result
+/** Parses a value using the default parse pipeline. Will throws an `AssertError` if invalid. */
+export function Parse<Type extends TSchema, Output = StaticDecode<Type>, Result extends Output = Output>(schema: Type, value: unknown): Result
+/** Parses a value using the specified operations. */
+export function Parse<Type extends TSchema>(operations: TParseOperation[], schema: Type, references: TSchema[], value: unknown): unknown
+/** Parses a value using the specified operations. */
+export function Parse<Type extends TSchema>(operations: TParseOperation[], schema: Type, value: unknown): unknown
+/** Parses a value */
 export function Parse(...args: any[]): unknown {
-  return args.length === 3 ? ParseValue(args[0], args[1], args[2]) : ParseValue(args[0], [], args[1])
+  // prettier-ignore
+  const [reducers, schema, references, value] = (
+    args.length === 4 ? [args[0], args[1], args[2], args[3]] :
+    args.length === 3 ? IsArray(args[0]) ? [args[0], args[1], [], args[2]] : [ParseDefault, args[0], args[1], args[2]] :
+    args.length === 2 ? [ParseDefault, args[0], [], args[1]] :
+    (() => { throw new ParseError('Invalid Arguments') })()
+  )
+  return ParseValue(reducers, schema, references, value)
 }

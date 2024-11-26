@@ -1325,26 +1325,28 @@ const B = Value.Encode(Type.String(), 42)             // throw
 
 ### Parse
 
-Use the Parse function to parse a value or throw if invalid. This function internally uses Default, Clean, Convert and Decode to make a best effort attempt to parse the value into the expected type. This function should not be used in performance critical code paths.
+Use the Parse function to parse a value. This function calls the Value functions `Clone` `Clean`, `Default`, `Convert`, `Assert` and `Decode` in this order to process a value.
 
 ```typescript
-const T = Type.Object({ x: Type.Number({ default: 0 }), y: Type.Number({ default: 0 }) })
+const R = Value.Parse(Type.String(), 'hello')      // const R: string = "hello"
 
-// Default
+const E = Value.Parse(Type.String(), undefined)    // throws AssertError 
+```
 
-const A = Value.Parse(T, { })                                 // const A = { x: 0, y: 0 }
+You can override the order in which functions are are run, or omit functions  entirely in the following way.
 
-// Convert
+```typescript
+// Runs no functions.
 
-const B = Value.Parse(T, { x: '1', y: '2' })                  // const B = { x: 1, y: 2 }
+const R = Value.Parse([], Type.String(), 12345)
 
-// Clean
+// Runs the Assert() function.
 
-const C = Value.Parse(T, { x: 1, y: 2, z: 3 })                // const C = { x: 1, y: 2 }
+const E = Value.Parse(['Assert'], Type.String(), 12345)
 
-// Assert
+// Runs the Convert() function followed by the Assert() function.
 
-const D = Value.Parse(T, undefined)                           // throws AssertError
+const S = Value.Parse(['Convert', 'Assert'], Type.String(), 12345)
 ```
 
 <a name='values-equal'></a>

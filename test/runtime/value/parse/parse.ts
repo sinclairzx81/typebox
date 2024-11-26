@@ -1,5 +1,5 @@
-import { Value, AssertError } from '@sinclair/typebox/value'
-import { Type } from '@sinclair/typebox'
+import { Value, AssertError, ParseRegistry } from '@sinclair/typebox/value'
+import { Type, TypeGuard } from '@sinclair/typebox'
 import { Assert } from '../../assert/index'
 
 // prettier-ignore
@@ -86,5 +86,40 @@ describe('value/Parse', () => {
       .Encode(value => value)
     const X = Value.Parse(T, 'world')
     Assert.IsEqual(X, 'hello')
+  })
+  // ----------------------------------------------------------------
+  // Operations
+  // ----------------------------------------------------------------
+  it('Should run operations 1', () => {
+    const A = Type.Object({ x: Type.Number() })
+    const I = { x: 1 }
+    const O = Value.Parse([], A, I)
+    Assert.IsTrue(I === O)
+  })
+  it('Should run operations 2', () => {
+    const A = Type.Object({ x: Type.Number() })
+    const I = { x: 1 }
+    const O = Value.Parse(['Clone'], A, I)
+    Assert.IsTrue(I !== O)
+  })
+  it('Should run operations 3', () => {
+    ParseRegistry.Set('Intercept', ( schema, references, value) => { throw 1 })
+    const A = Type.Object({ x: Type.Number() })
+    Assert.Throws(() => Value.Parse(['Intercept'], A, null))
+    ParseRegistry.Delete('Intercept')
+    const F = ParseRegistry.Get('Intercept')
+    Assert.IsEqual(F, undefined)
+  })
+  it('Should run operations 4', () => {
+    ParseRegistry.Set('Intercept', ( schema, references, value) => { 
+      Assert.IsEqual(value, 12345)
+      Assert.IsTrue(TypeGuard.IsNumber(schema))
+      Assert.IsTrue(TypeGuard.IsString(references[0]))
+    })
+    Value.Parse(['Intercept'], Type.Number(), [Type.String()], 12345)
+    ParseRegistry.Delete('Intercept')
+  })
+  it('Should run operations 5', () => {
+    Assert.Throws(() => Value.Parse(['Intercept'], Type.String(), null))
   })
 })
