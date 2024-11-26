@@ -1325,7 +1325,7 @@ const B = Value.Encode(Type.String(), 42)             // throw
 
 ### Parse
 
-Use the Parse function to parse a value. This function calls the Value functions `Clone` `Clean`, `Default`, `Convert`, `Assert` and `Decode` in this order to process a value.
+Use the Parse function to parse a value. This function calls the `Clone` `Clean`, `Default`, `Convert`, `Assert` and `Decode` Value functions in this exact order to process a value.
 
 ```typescript
 const R = Value.Parse(Type.String(), 'hello')      // const R: string = "hello"
@@ -1333,7 +1333,7 @@ const R = Value.Parse(Type.String(), 'hello')      // const R: string = "hello"
 const E = Value.Parse(Type.String(), undefined)    // throws AssertError 
 ```
 
-You can override the order in which functions are are run, or omit functions  entirely in the following way.
+You can override the order in which functions are are run, or omit functions entirely in the following way.
 
 ```typescript
 // Runs no functions.
