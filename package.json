@@ -20,6 +20,7 @@
     "test:runtime": "hammer task test_runtime",
     "install:local": "hammer task install_local",
     "benchmark": "hammer task benchmark",
+    "build:to": "hammer task build_to",
     "build": "hammer task build",
     "test": "hammer task test",
     "clean": "hammer task clean",
