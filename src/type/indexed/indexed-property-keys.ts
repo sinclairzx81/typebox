@@ -83,7 +83,7 @@ function FromLiteral<LiteralValue extends TLiteralValue>(literalValue: LiteralVa
 // prettier-ignore
 export type TIndexPropertyKeys<Type extends TSchema> = (
   Type extends TTemplateLiteral  ? TFromTemplateLiteral<Type> :
-  Type extends TUnion<infer Types extends TSchema[]>   ? TFromUnion<Types> :
+  Type extends TUnion<infer Types extends TSchema[]> ? TFromUnion<Types> :
   Type extends TLiteral<infer Value extends TLiteralValue> ? TFromLiteral<Value> :
   Type extends TNumber ? ['[number]'] :  
   Type extends TInteger ? ['[number]'] :

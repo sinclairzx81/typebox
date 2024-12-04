@@ -77,7 +77,7 @@ export async function build(target = 'target/build') {
 // -------------------------------------------------------------------------------
 // Build To
 // -------------------------------------------------------------------------------
-export async function build_to(remote = 'target/build', target = 'target/build') {
+export async function build_to(remote = 'target/remote', target = 'target/build') {
   await clean()
   await Promise.all([
     Build.Package.build(target),
