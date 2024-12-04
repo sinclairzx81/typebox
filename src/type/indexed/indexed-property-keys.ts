@@ -41,13 +41,11 @@ import { IsTemplateLiteral, IsUnion, IsLiteral, IsNumber, IsInteger } from '../g
 // FromTemplateLiteral
 // ------------------------------------------------------------------
 // prettier-ignore
-type TFromTemplateLiteral<TemplateLiteral extends TTemplateLiteral, 
-  Result extends string[] = TTemplateLiteralGenerate<TemplateLiteral>
-> = Result
+type TFromTemplateLiteral<TemplateLiteral extends TTemplateLiteral, Keys extends string[] = TTemplateLiteralGenerate<TemplateLiteral>> = (Keys)
 // prettier-ignore
 function FromTemplateLiteral<TemplateLiteral extends TTemplateLiteral>(templateLiteral: TemplateLiteral): TFromTemplateLiteral<TemplateLiteral> {
-  const result = TemplateLiteralGenerate(templateLiteral) as string[]
-  return result.map(S => S.toString()) as never
+  const keys = TemplateLiteralGenerate(templateLiteral) as string[]
+  return keys.map(key => key.toString()) as never
 }
 // ------------------------------------------------------------------
 // FromUnion
@@ -59,9 +57,9 @@ type TFromUnion<Types extends TSchema[], Result extends string[] = []> = (
     : Result
 )
 // prettier-ignore
-function FromUnion<Type extends TSchema[]>(type: Type): TFromUnion<Type> {
+function FromUnion<Types extends TSchema[]>(types: Types): TFromUnion<Types> {
   const result = [] as string[]
-  for(const left of type) result.push(...IndexPropertyKeys(left))
+  for(const type of types) result.push(...IndexPropertyKeys(type))
   return result as never
 }
 // ------------------------------------------------------------------
@@ -74,23 +72,23 @@ type TFromLiteral<LiteralValue extends TLiteralValue> = (
     : []
 )
 // prettier-ignore
-function FromLiteral<LiteralValue extends TLiteralValue>(T: LiteralValue): TFromLiteral<LiteralValue> {
+function FromLiteral<LiteralValue extends TLiteralValue>(literalValue: LiteralValue): TFromLiteral<LiteralValue> {
   return (
-    [(T as string).toString()] // TS 5.4 observes TLiteralValue as not having a toString()
+    [(literalValue as string).toString()] // TS 5.4 observes TLiteralValue as not having a toString()
   ) as never
 }
 // ------------------------------------------------------------------
-// IndexedKeyResolve
+// IndexPropertyKeys
 // ------------------------------------------------------------------
 // prettier-ignore
-export type TIndexPropertyKeys<Type extends TSchema, Result extends PropertyKey[] = (
-  Type extends TTemplateLiteral ? TFromTemplateLiteral<Type> :
-  Type extends TUnion<infer Types extends TSchema[]> ? TFromUnion<Types> :
-  Type extends TLiteral<infer LiteralValue extends TLiteralValue> ? TFromLiteral<LiteralValue> :
+export type TIndexPropertyKeys<Type extends TSchema> = (
+  Type extends TTemplateLiteral  ? TFromTemplateLiteral<Type> :
+  Type extends TUnion<infer Types extends TSchema[]>   ? TFromUnion<Types> :
+  Type extends TLiteral<infer Value extends TLiteralValue> ? TFromLiteral<Value> :
   Type extends TNumber ? ['[number]'] :  
   Type extends TInteger ? ['[number]'] :
   []
-)> = Result
+)
 /** Returns a tuple of PropertyKeys derived from the given TSchema */
 // prettier-ignore
 export function IndexPropertyKeys<Type extends TSchema>(type: Type): TIndexPropertyKeys<Type> {
