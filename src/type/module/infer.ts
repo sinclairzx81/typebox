@@ -126,7 +126,7 @@ type TInferTuple<ModuleProperties extends TProperties, Types extends TSchema[] ,
 type TInferRecord<ModuleProperties extends TProperties, Key extends TSchema, Type extends TSchema,
   InferredKey extends PropertyKey = TInfer<ModuleProperties, Key> extends infer Key extends PropertyKey ? Key : never,
   InferedType extends unknown = TInfer<ModuleProperties, Type>,
-> = Record<InferredKey, InferedType>
+> = Ensure<{ [_ in InferredKey]: InferedType }>
 // ------------------------------------------------------------------
 // Ref
 // ------------------------------------------------------------------

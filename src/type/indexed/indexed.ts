@@ -27,70 +27,45 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import { CreateType } from '../create/type'
+import { TypeBoxError } from '../error/index'
+
 import { type TSchema, SchemaOptions } from '../schema/index'
-import { Computed, type TComputed } from '../computed/index'
-import { Literal, type TLiteral, type TLiteralValue } from '../literal/index'
-import { type TObject, type TProperties } from '../object/index'
-import { type Ensure, type Assert } from '../helpers/index'
-import { Never, type TNever } from '../never/index'
-import { type TRecursive } from '../recursive/index'
-import { type TIntersect } from '../intersect/index'
-import { TMappedResult, type TMappedKey } from '../mapped/index'
-import { Union, type TUnion } from '../union/index'
-import { type TTuple } from '../tuple/index'
+import { type Assert } from '../helpers/index'
+import { type TComputed, Computed } from '../computed/index'
+import { type TNever, Never } from '../never/index'
 import { type TArray } from '../array/index'
-import { Ref, type TRef } from '../ref/index'
+import { type TIntersect } from '../intersect/index'
+import { type TMappedResult, type TMappedKey } from '../mapped/index'
+import { type TObject, type TProperties } from '../object/index'
+import { type TUnion } from '../union/index'
+import { type TRecursive } from '../recursive/index'
+import { type TRef } from '../ref/index'
+import { type TTuple } from '../tuple/index'
+
 import { IntersectEvaluated, type TIntersectEvaluated } from '../intersect/index'
 import { UnionEvaluated, type TUnionEvaluated } from '../union/index'
 
-// ------------------------------------------------------------------
-// Infrastructure
-// ------------------------------------------------------------------
 import { IndexPropertyKeys, type TIndexPropertyKeys } from './indexed-property-keys'
 import { IndexFromMappedKey, type TIndexFromMappedKey } from './indexed-from-mapped-key'
 import { IndexFromMappedResult, type TIndexFromMappedResult } from './indexed-from-mapped-result'
 
 // ------------------------------------------------------------------
-// KindGuard
+// TypeGuard
 // ------------------------------------------------------------------
-import { IsArray, IsIntersect, IsObject, IsMappedKey, IsMappedResult, IsNever, IsSchema, IsTuple, IsUnion, IsLiteralValue, IsRef, IsComputed } from '../guard/kind'
-import { IsArray as IsArrayValue } from '../guard/value'
-
-// ------------------------------------------------------------------
-// FromComputed
-// ------------------------------------------------------------------
-// prettier-ignore
-// type TFromComputed<Target extends string, Parameters extends TSchema[]> = Ensure<
-//   TComputed<'Partial', [TComputed<Target, Parameters>]>
-// >
-// // prettier-ignore
-// function FromComputed<Target extends string, Parameters extends TSchema[]>(target: Target, parameters: Parameters): TFromComputed<Target, Parameters> {
-//   return Computed('Partial', [Computed(target, parameters)]) as never
-// }
-// // ------------------------------------------------------------------
-// // FromRef
-// // ------------------------------------------------------------------
-// // prettier-ignore
-// type TFromRef<Ref extends string> = Ensure<
-//   TComputed<'Partial', [TRef<Ref>]>
-// >
-// // prettier-ignore
-// function FromRef<Ref extends string>($ref: Ref): TFromRef<Ref> {
-//   return Computed('Partial', [Ref($ref)]) as never
-// }
+import { IsArray, IsIntersect, IsObject, IsMappedKey, IsMappedResult, IsNever, IsSchema, IsTuple, IsUnion, IsRef } from '../guard/kind'
 
 // ------------------------------------------------------------------
 // FromRest
 // ------------------------------------------------------------------
 // prettier-ignore
-type TFromRest<T extends TSchema[], K extends PropertyKey, Result extends TSchema[] = []> = (
-  T extends [infer L extends TSchema, ...infer R extends TSchema[]]
-    ? TFromRest<R, K, [...Result, Assert<TIndexFromPropertyKey<L, K>, TSchema>]>
+type TFromRest<Types extends TSchema[], Key extends PropertyKey, Result extends TSchema[] = []> = (
+  Types extends [infer Left extends TSchema, ...infer Right extends TSchema[]]
+    ? TFromRest<Right, Key, [...Result, Assert<TIndexFromPropertyKey<Left, Key>, TSchema>]>
     : Result
 )
 // prettier-ignore
-function FromRest<Types extends TSchema[], K extends PropertyKey>(types: [...Types], key: K): TFromRest<Types, K> {
-  return types.map(left => IndexFromPropertyKey(left, key)) as never
+function FromRest<Types extends TSchema[], Key extends PropertyKey>(types: [...Types], key: Key): TFromRest<Types, Key> {
+  return types.map(type => IndexFromPropertyKey(type, key)) as never
 }
 // ------------------------------------------------------------------
 // FromIntersectRest
@@ -105,7 +80,7 @@ type TFromIntersectRest<Types extends TSchema[], Result extends TSchema[] = []> 
 )
 // prettier-ignore
 function FromIntersectRest<Types extends TSchema[]>(types: [...Types]): TFromIntersectRest<Types> {
-  return types.filter(left => !IsNever(left)) as never
+  return types.filter(type => !IsNever(type)) as never
 }
 // prettier-ignore
 type TFromIntersect<Types extends TSchema[], Key extends PropertyKey> = (
@@ -171,21 +146,17 @@ function FromUnion<Types extends TSchema[], Key extends PropertyKey>(types: [...
 // ------------------------------------------------------------------
 // FromTuple
 // ------------------------------------------------------------------
-
 // prettier-ignore
-type TFromTuple<Types extends TSchema[], Key extends PropertyKey, Result extends TSchema = (
-  Key extends '[number]' ? TUnionEvaluated<Types> :
-  Key extends keyof Types
-    ? Types[Key] extends infer Type extends TSchema
-      ? Type
-      : TNever 
-    : TNever
-)> = Result
+type TFromTuple<Types extends TSchema[], Key extends PropertyKey> = (
+  Key extends keyof Types ? Types[Key] : 
+  Key extends '[number]' ? TUnionEvaluated<Types> : 
+  TNever
+)
 // prettier-ignore
 function FromTuple<Types extends TSchema[], Key extends PropertyKey>(types: [...Types], key: Key): TFromTuple<Types, Key>  {
   return (
-    key === '[number]' ? UnionEvaluated(types) : 
     key in types ? types[key as number] : 
+    key === '[number]' ? UnionEvaluated(types) : 
     Never()
   ) as never
 }
@@ -194,20 +165,25 @@ function FromTuple<Types extends TSchema[], Key extends PropertyKey>(types: [...
 // ------------------------------------------------------------------
 // prettier-ignore
 type TFromArray<Type extends TSchema, Key extends PropertyKey> = (
-  Key extends '[number]' ? Type : TNever
+  Key extends '[number]' 
+    ? Type 
+    : TNever
 )
 // prettier-ignore
-function FromArray<Type extends TSchema, Key extends PropertyKey>(type: Type, key: Key): TFromArray<Type, Key> {
-  // ... ?
-  return (key === '[number]' ? type : Never()) as never
+function FromArray<Type extends TSchema, Key extends PropertyKey>(type: Type, key: Key): TFromArray<Type, Key>  {
+  return (
+    key === '[number]' 
+      ? type 
+      : Never()
+  ) as never
 }
 // ------------------------------------------------------------------
 // FromProperty
 // ------------------------------------------------------------------
-type AssertPropertyKey<T extends unknown> = Assert<T, string | number>
+type AssertPropertyKey<T> = Assert<T, string | number>
 
 // prettier-ignore
-type TFromProperty<Properties extends TProperties, Key extends PropertyKey, Result extends TSchema = (
+type TFromProperty<Properties extends TProperties, Key extends PropertyKey> = (
   // evaluate for string keys
   Key extends keyof Properties 
     ? Properties[Key] 
@@ -215,32 +191,32 @@ type TFromProperty<Properties extends TProperties, Key extends PropertyKey, Resu
     : `${AssertPropertyKey<Key>}` extends `${AssertPropertyKey<keyof Properties>}` 
       ? Properties[AssertPropertyKey<Key>]
       : TNever
-)> = Result
+)
 // prettier-ignore
-function FromProperty<Properties extends TProperties, Key extends PropertyKey>(properties: Properties, key: Key): TFromProperty<Properties, Key> {
-  return (key in properties ? properties[key as string] : Never()) as never
+function FromProperty<Properties extends TProperties, Key extends PropertyKey>(properties: Properties, propertyKey: Key): TFromProperty<Properties, Key> {
+  return (propertyKey in properties ? properties[propertyKey as string] : Never()) as never
 }
 // ------------------------------------------------------------------
 // FromKey
 // ------------------------------------------------------------------
 // prettier-ignore
 export type TIndexFromPropertyKey<Type extends TSchema, Key extends PropertyKey> = (
-  Type extends TRecursive<infer S extends TSchema> ? TIndexFromPropertyKey<S, Key> :
-  Type extends TIntersect<infer S extends TSchema[]> ? TFromIntersect<S, Key> :
-  Type extends TUnion<infer S extends TSchema[]> ? TFromUnion<S, Key> :
-  Type extends TTuple<infer S extends TSchema[]> ? TFromTuple<S, Key> :
-  Type extends TArray<infer S extends TSchema> ? TFromArray<S, Key> :
-  Type extends TObject<infer S extends TProperties> ? TFromProperty<S, Key> :
+  Type extends TRecursive<infer Type extends TSchema> ? TIndexFromPropertyKey<Type, Key> :
+  Type extends TIntersect<infer Types extends TSchema[]> ? TFromIntersect<Types, Key> :
+  Type extends TUnion<infer Types extends TSchema[]> ? TFromUnion<Types, Key> :
+  Type extends TTuple<infer Types extends TSchema[]> ? TFromTuple<Types, Key> :
+  Type extends TArray<infer Type extends TSchema> ? TFromArray<Type, Key> :
+  Type extends TObject<infer Properties extends TProperties> ? TFromProperty<Properties, Key> :
   TNever
 )
 // prettier-ignore
-export function IndexFromPropertyKey<Type extends TSchema, Key extends PropertyKey>(type: Type, key: Key): TIndexFromPropertyKey<Type, Key> {
+export function IndexFromPropertyKey<Type extends TSchema, Key extends PropertyKey>(type: Type, propertyKey: Key): TIndexFromPropertyKey<Type, Key> {
   return (
-    IsIntersect(type) ? FromIntersect(type.allOf, key) :
-    IsUnion(type) ? FromUnion(type.anyOf, key) :
-    IsTuple(type) ? FromTuple(type.items ?? [], key) :
-    IsArray(type) ? FromArray(type.items, key) :
-    IsObject(type) ? FromProperty(type.properties, key) :
+    IsIntersect(type) ? FromIntersect(type.allOf, propertyKey) :
+    IsUnion(type) ? FromUnion(type.anyOf, propertyKey) :
+    IsTuple(type) ? FromTuple(type.items ?? [], propertyKey) :
+    IsArray(type) ? FromArray(type.items, propertyKey) :
+    IsObject(type) ? FromProperty(type.properties, propertyKey) :
     Never()
   ) as never
 }
@@ -255,76 +231,70 @@ export type TIndexFromPropertyKeys<Type extends TSchema, PropertyKeys extends Pr
 )
 // prettier-ignore
 export function IndexFromPropertyKeys<Type extends TSchema, PropertyKeys extends PropertyKey[]>(type: Type, propertyKeys: [...PropertyKeys]): TIndexFromPropertyKeys<Type, PropertyKeys> {
-  return propertyKeys.map(left => IndexFromPropertyKey(type, left)) as never
+  return propertyKeys.map(propertyKey => IndexFromPropertyKey(type, propertyKey)) as never
 }
 // ------------------------------------------------------------------
 // FromSchema
 // ------------------------------------------------------------------
 // prettier-ignore
-type TFromType<Type extends TSchema, PropertyKeys extends PropertyKey[], 
-  Result extends TSchema[] = TIndexFromPropertyKeys<Type, PropertyKeys>,
-> = TUnionEvaluated<Result>
-// prettier-ignore
-function FromType<Type extends TSchema, PropertyKeys extends PropertyKey[]>(type: Type, propertyKeys: [...PropertyKeys]): TFromType<Type, PropertyKeys> {
-  const result = IndexFromPropertyKeys(type, propertyKeys as PropertyKey[])
-  return UnionEvaluated(result) as never
-}
-// ------------------------------------------------------------------
-// UnionFromPropertyKeys
-// ------------------------------------------------------------------
-// prettier-ignore
-type TUnionFromPropertyKeys<PropertyKeys extends PropertyKey[], Result extends TLiteral[] = []> = (
-  PropertyKeys extends [infer Key extends PropertyKey, ...infer Rest extends PropertyKey[]]
-    ? Key extends TLiteralValue
-      ? TUnionFromPropertyKeys<Rest, [...Result, TLiteral<Key>]>
-      : TUnionFromPropertyKeys<Rest, [...Result]>
-    : TUnionEvaluated<Result>
+type FromSchema<Type extends TSchema, PropertyKeys extends PropertyKey[]> = (
+  TUnionEvaluated<TIndexFromPropertyKeys<Type, PropertyKeys>>
 )
 // prettier-ignore
-function UnionFromPropertyKeys<PropertyKeys extends PropertyKey[]>(propertyKeys: PropertyKeys): TUnionFromPropertyKeys<PropertyKeys> {
-  const result = propertyKeys.reduce((result, key) => IsLiteralValue(key) ? [...result, Literal(key)]: result, [] as TLiteral[])
-  return UnionEvaluated(result) as never
+function FromSchema<Type extends TSchema, PropertyKeys extends PropertyKey[]>(type: Type, propertyKeys: [...PropertyKeys]): FromSchema<Type, PropertyKeys> {
+  return (
+    UnionEvaluated(IndexFromPropertyKeys(type, propertyKeys as PropertyKey[]))
+  ) as never
+}
+// ------------------------------------------------------------------
+// FromSchema
+// ------------------------------------------------------------------
+// prettier-ignore
+export type TIndexFromComputed<Type extends TSchema, Key extends TSchema> = (
+  TComputed<'Index', [Type, Key]>
+)
+// prettier-ignore
+export function IndexFromComputed<Type extends TSchema, Key extends TSchema>(type: Type, key: Key): TIndexFromComputed<Type, Key> {
+  return Computed('Index', [type, key])
 }
 // ------------------------------------------------------------------
 // TIndex
 // ------------------------------------------------------------------
-// prettier-ignore (do not export this type)
-type TResolvePropertyKeys<Key extends TSchema | PropertyKey[]> = Key extends TSchema ? TIndexPropertyKeys<Key> : Key
-// prettier-ignore (do not export this type)
-type TResolveTypeKey<Key extends TSchema | PropertyKey[]> = Key extends PropertyKey[] ? TUnionFromPropertyKeys<Key> : Key
 // prettier-ignore
-export type TIndex<Type extends TSchema, Key extends TSchema | PropertyKey[],
-  IsTypeRef extends boolean = Type extends TRef ? true : false,
-  IsKeyRef extends boolean = Key extends TRef ? true : false,
-> = (
-  Key extends TMappedResult ? TIndexFromMappedResult<Type, Key> :
-  Key extends TMappedKey ? TIndexFromMappedKey<Type, Key> :
-  [IsTypeRef, IsKeyRef] extends [true, true] ? TComputed<'Index', [Type, TResolveTypeKey<Key>]> :
-  [IsTypeRef, IsKeyRef] extends [false, true] ? TComputed<'Index', [Type, TResolveTypeKey<Key>]> :
-  [IsTypeRef, IsKeyRef] extends [true, false] ? TComputed<'Index', [Type, TResolveTypeKey<Key>]> : 
-  TFromType<Type, TResolvePropertyKeys<Key>>
+export type TIndex<Type extends TSchema, PropertyKeys extends PropertyKey[]> = (
+  FromSchema<Type, PropertyKeys>
 )
 /** `[Json]` Returns an Indexed property type for the given keys */
-export function Index<Type extends TSchema, Key extends PropertyKey[]>(type: Type, key: readonly [...Key], options?: SchemaOptions): TIndex<Type, Key>
+export function Index<Type extends TRef, Key extends TSchema>(type: Type, key: Key, options?: SchemaOptions): TIndexFromComputed<Type, Key>
 /** `[Json]` Returns an Indexed property type for the given keys */
-export function Index<Type extends TSchema, Key extends TMappedKey>(type: Type, key: Key, options?: SchemaOptions): TIndex<Type, Key>
+export function Index<Type extends TSchema, Key extends TRef>(type: Type, key: Key, options?: SchemaOptions): TIndexFromComputed<Type, Key>
 /** `[Json]` Returns an Indexed property type for the given keys */
-export function Index<Type extends TSchema, Key extends TMappedResult>(type: Type, key: Key, options?: SchemaOptions): TIndex<Type, Key>
+export function Index<Type extends TRef, Key extends TRef>(type: Type, key: Key, options?: SchemaOptions): TIndexFromComputed<Type, Key>
 /** `[Json]` Returns an Indexed property type for the given keys */
-export function Index<Type extends TSchema, Key extends TSchema>(type: Type, key: Key, options?: SchemaOptions): TIndex<Type, Key>
+export function Index<Type extends TSchema, MappedResult extends TMappedResult>(type: Type, mappedResult: MappedResult, options?: SchemaOptions): TIndexFromMappedResult<Type, MappedResult>
 /** `[Json]` Returns an Indexed property type for the given keys */
-// prettier-ignore
-export function Index(type: any, key: any, options?: SchemaOptions): any {
-  const typeKey: TSchema = IsArrayValue(key) ? UnionFromPropertyKeys(key as PropertyKey[]) : key 
-  const propertyKeys: PropertyKey[] = IsSchema(key) ? IndexPropertyKeys(key) : key
-  const isTypeRef: boolean = IsRef(type)
-  const isKeyRef: boolean = IsRef(key)
-  return (
-    IsMappedResult(key) ? IndexFromMappedResult(type, key, options) :
-    IsMappedKey(key) ? IndexFromMappedKey(type, key, options) :
-    (isTypeRef && isKeyRef) ? Computed('Index', [type, typeKey], options) :
-    (!isTypeRef && isKeyRef) ? Computed('Index', [type, typeKey], options) :
-    (isTypeRef && !isKeyRef) ? Computed('Index', [type, typeKey], options) :
-    CreateType(FromType(type, propertyKeys), options) 
-  ) as never
+export function Index<Type extends TSchema, MappedResult extends TMappedResult>(type: Type, mappedResult: MappedResult, options?: SchemaOptions): TIndexFromMappedResult<Type, MappedResult>
+/** `[Json]` Returns an Indexed property type for the given keys */
+export function Index<Type extends TSchema, MappedKey extends TMappedKey>(type: Type, mappedKey: MappedKey, options?: SchemaOptions): TIndexFromMappedKey<Type, MappedKey>
+/** `[Json]` Returns an Indexed property type for the given keys */
+export function Index<Type extends TSchema, Key extends TSchema, PropertyKeys extends PropertyKey[] = TIndexPropertyKeys<Key>>(T: Type, K: Key, options?: SchemaOptions): TIndex<Type, PropertyKeys>
+/** `[Json]` Returns an Indexed property type for the given keys */
+export function Index<Type extends TSchema, PropertyKeys extends PropertyKey[]>(type: Type, propertyKeys: readonly [...PropertyKeys], options?: SchemaOptions): TIndex<Type, PropertyKeys>
+/** `[Json]` Returns an Indexed property type for the given keys */
+export function Index(type: TSchema, key: any, options?: SchemaOptions): any {
+  // computed-type
+  if (IsRef(type) || IsRef(key)) {
+    const error = `Index types using Ref parameters require both Type and Key to be of TSchema`
+    if (!IsSchema(type) || !IsSchema(key)) throw new TypeBoxError(error)
+    return Computed('Index', [type, key])
+  }
+  // mapped-types
+  if (IsMappedResult(key)) return IndexFromMappedResult(type, key, options)
+  if (IsMappedKey(key)) return IndexFromMappedKey(type, key, options)
+  // prettier-ignore
+  return CreateType(
+    IsSchema(key) 
+      ? FromSchema(type, IndexPropertyKeys(key)) 
+      : FromSchema(type, key as string[])
+  , options) as never
 }

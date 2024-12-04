@@ -41,8 +41,7 @@ type TMappedIndexPropertyKey<Type extends TSchema, Key extends PropertyKey> = {
   [_ in Key]: TIndex<Type, [Key]>
 }
 // prettier-ignore
-function MappedIndexPropertyKey<Type extends TSchema, Key extends PropertyKey
->(type: Type, key: Key, options?: SchemaOptions): TMappedIndexPropertyKey<Type, Key> {
+function MappedIndexPropertyKey<Type extends TSchema, Key extends PropertyKey>(type: Type, key: Key, options?: SchemaOptions): TMappedIndexPropertyKey<Type, Key> {
   return { [key]: Index(type, [key], Clone(options)) } as never
 }
 // ------------------------------------------------------------------
@@ -55,7 +54,10 @@ type TMappedIndexPropertyKeys<Type extends TSchema, PropertyKeys extends Propert
     : Result
 )
 // prettier-ignore
-function MappedIndexPropertyKeys<Type extends TSchema, PropertyKeys extends PropertyKey[]>(type: Type, propertyKeys: [...PropertyKeys], options?: SchemaOptions): TMappedIndexPropertyKeys<Type, PropertyKeys> {
+function MappedIndexPropertyKeys<
+  Type extends TSchema, 
+  PropertyKeys extends PropertyKey[]
+>(type: Type, propertyKeys: [...PropertyKeys], options?: SchemaOptions): TMappedIndexPropertyKeys<Type, PropertyKeys> {
   return propertyKeys.reduce((result, left) => {
     return { ...result, ...MappedIndexPropertyKey(type, left, options) }
   }, {} as TProperties) as never
@@ -68,7 +70,8 @@ type TMappedIndexProperties<Type extends TSchema, MappedKey extends TMappedKey> 
   TMappedIndexPropertyKeys<Type, MappedKey['keys']>
 >
 // prettier-ignore
-function MappedIndexProperties<Type extends TSchema, MappedKey extends TMappedKey>(type: Type, mappedKey: MappedKey, options?: SchemaOptions): TMappedIndexProperties<Type, MappedKey> {
+function MappedIndexProperties<Type extends TSchema, MappedKey extends TMappedKey
+>(type: Type, mappedKey: MappedKey, options?: SchemaOptions): TMappedIndexProperties<Type, MappedKey> {
   return MappedIndexPropertyKeys(type, mappedKey.keys, options) as never
 }
 // ------------------------------------------------------------------

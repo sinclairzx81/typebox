@@ -35,7 +35,7 @@ import { Enum, type TEnum, type TEnumKey, type TEnumValue } from '../enum/index'
 import { Exclude, type TExclude, type TExcludeFromMappedResult, type TExcludeFromTemplateLiteral } from '../exclude/index'
 import { Extends, type TExtends, type TExtendsFromMappedKey, type TExtendsFromMappedResult } from '../extends/index'
 import { Extract, type TExtract, type TExtractFromMappedResult, type TExtractFromTemplateLiteral } from '../extract/index'
-import { Index, TIndex, type TIndexPropertyKeys, type TIndexFromMappedKey, type TIndexFromMappedResult } from '../indexed/index'
+import { Index, TIndex, type TIndexPropertyKeys, type TIndexFromMappedKey, type TIndexFromMappedResult, type TIndexFromComputed } from '../indexed/index'
 import { Integer, type IntegerOptions, type TInteger } from '../integer/index'
 import { Intersect, type IntersectOptions } from '../intersect/index'
 import { Capitalize, Uncapitalize, Lowercase, Uppercase, type TCapitalize, type TUncapitalize, type TLowercase, type TUppercase } from '../intrinsic/index'
@@ -164,13 +164,19 @@ export class JsonTypeBuilder {
     return Extract(type, union, options)
   }
   /** `[Json]` Returns an Indexed property type for the given keys */
-  public Index<Type extends TSchema, PropertyKeys extends PropertyKey[]>(type: Type, key: readonly [...PropertyKeys], options?: SchemaOptions): TIndex<Type, PropertyKeys>
+  public Index<Type extends TRef, Key extends TSchema>(type: Type, key: Key, options?: SchemaOptions): TIndexFromComputed<Type, Key>
   /** `[Json]` Returns an Indexed property type for the given keys */
-  public Index<Type extends TSchema, Key extends TMappedKey>(type: Type, key: Key, options?: SchemaOptions): TIndex<Type, Key>
+  public Index<Type extends TSchema, Key extends TRef>(type: Type, key: Key, options?: SchemaOptions): TIndexFromComputed<Type, Key>
   /** `[Json]` Returns an Indexed property type for the given keys */
-  public Index<Type extends TSchema, Key extends TMappedResult>(type: Type, key: Key, options?: SchemaOptions): TIndex<Type, Key>
+  public Index<Type extends TRef, Key extends TRef>(type: Type, key: Key, options?: SchemaOptions): TIndexFromComputed<Type, Key>
   /** `[Json]` Returns an Indexed property type for the given keys */
-  public Index<Type extends TSchema, Key extends TSchema>(type: Type, key: Key, options?: SchemaOptions): TIndex<Type, Key>
+  public Index<Type extends TSchema, MappedResult extends TMappedResult>(type: Type, mappedResult: MappedResult, options?: SchemaOptions): TIndexFromMappedResult<Type, MappedResult>
+  /** `[Json]` Returns an Indexed property type for the given keys */
+  public Index<Type extends TSchema, MappedKey extends TMappedKey>(type: Type, mappedKey: MappedKey, options?: SchemaOptions): TIndexFromMappedKey<Type, MappedKey>
+  /** `[Json]` Returns an Indexed property type for the given keys */
+  public Index<Type extends TSchema, Key extends TSchema, PropertyKeys extends PropertyKey[] = TIndexPropertyKeys<Key>>(T: Type, K: Key, options?: SchemaOptions): TIndex<Type, PropertyKeys>
+  /** `[Json]` Returns an Indexed property type for the given keys */
+  public Index<Type extends TSchema, PropertyKeys extends PropertyKey[]>(type: Type, propertyKeys: readonly [...PropertyKeys], options?: SchemaOptions): TIndex<Type, PropertyKeys>
   /** `[Json]` Returns an Indexed property type for the given keys */
   public Index(type: TSchema, key: any, options?: SchemaOptions): any {
     return Index(type, key, options)

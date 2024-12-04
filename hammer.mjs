@@ -9,12 +9,14 @@ export async function clean() {
   await folder('node_modules/typebox').delete()
   await folder('target').delete()
 }
+
 // -------------------------------------------------------------------------------
 // Format
 // -------------------------------------------------------------------------------
 export async function format() {
   await shell('prettier --no-semi --single-quote --print-width 240 --trailing-comma all --write src test task example/index.ts')
 }
+
 // -------------------------------------------------------------------------------
 // Start
 // -------------------------------------------------------------------------------
@@ -28,6 +30,7 @@ export async function benchmark() {
   await Benchmark.compression()
   await Benchmark.measurement()
 }
+
 // -------------------------------------------------------------------------------
 // Test
 // -------------------------------------------------------------------------------
@@ -49,6 +52,7 @@ export async function test(filter = '') {
   await test_static()
   await test_runtime(filter)
 }
+
 // -------------------------------------------------------------------------------
 // Build
 // -------------------------------------------------------------------------------
@@ -69,6 +73,25 @@ export async function build(target = 'target/build') {
   await shell(`cd ${target} && npm pack`)
   await build_check(target)
 }
+
+// -------------------------------------------------------------------------------
+// Build To
+// -------------------------------------------------------------------------------
+export async function build_to(remote = 'target/remote', target = 'target/build') {
+  await clean()
+  await Promise.all([
+    Build.Package.build(target),
+    Build.Esm.build(target),
+    Build.Cjs.build(target),
+  ])
+  await folder(target).add('readme.md')
+  await folder(target).add('license')
+  await shell(`cd ${target} && npm pack`)
+  const { version } = JSON.parse(Fs.readFileSync('package.json', 'utf8'))
+  const filename = `${target}/sinclair-typebox-${version}.tgz`
+  await folder(remote).add(filename)
+}
+
 // -------------------------------------------------------------------------------
 // Install
 // -------------------------------------------------------------------------------
@@ -77,6 +100,7 @@ export async function install_local() {
   await build('target/typebox')
   await folder('node_modules').add('target/typebox')
 }
+
 // -------------------------------------------------------------
 // Publish
 // -------------------------------------------------------------
@@ -87,6 +111,7 @@ export async function publish(otp, target = 'target/build') {
   await shell(`git tag ${version}`)
   await shell(`git push origin ${version}`)
 }
+
 // -------------------------------------------------------------
 // Publish-Dev
 // -------------------------------------------------------------

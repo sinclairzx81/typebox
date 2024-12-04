@@ -43,8 +43,7 @@ type TFromProperties<Type extends TSchema, Properties extends TProperties> = (
 function FromProperties<Type extends TSchema, Properties extends TProperties>(type: Type, properties: Properties, options?: SchemaOptions): TFromProperties<Type, Properties> {
   const result = {} as Record<PropertyKey, TSchema>
   for(const K2 of Object.getOwnPropertyNames(properties)) {
-    const keys = IndexPropertyKeys(properties[K2])
-    result[K2] = Index(type, keys, options) as never
+    result[K2] = Index(type, IndexPropertyKeys(properties[K2]), options)
   }
   return result as never
 }

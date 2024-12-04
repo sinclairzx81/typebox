@@ -53,7 +53,7 @@ export class ParseError extends TypeBoxError {
 // ------------------------------------------------------------------
 // ParseRegistry
 // ------------------------------------------------------------------
-export type TParseOperation = 'Clone' | 'Clean' | 'Default' | 'Convert' | 'Assert' | 'Decode' | ({} & string)
+export type TParseOperation = 'Clone' | 'Clean' | 'Default' | 'Convert' | 'Assert' | 'Decode' | 'Encode' | ({} & string)
 export type TParseFunction = (type: TSchema, references: TSchema[], value: unknown) => unknown
 
 // prettier-ignore

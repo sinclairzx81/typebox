@@ -35,8 +35,8 @@ import { Awaited, type TAwaited } from '../awaited/index'
 import { AsyncIterator, type TAsyncIterator } from '../async-iterator/index'
 import { TComputed } from '../computed/index'
 import { Constructor, type TConstructor } from '../constructor/index'
-import { Index, type TIndex } from '../indexed/index'
-import { TEnum, TEnumRecord } from '../enum/index'
+import { Index, type TIndex, type TIndexPropertyKeys } from '../indexed/index'
+import { TEnum, type TEnumRecord } from '../enum/index'
 import { Function as FunctionType, type TFunction } from '../function/index'
 import { Intersect, type TIntersect, type TIntersectEvaluated } from '../intersect/index'
 import { Iterator, type TIterator } from '../iterator/index'
@@ -119,7 +119,14 @@ function FromAwaited<Parameters extends TSchema[]>(parameters: Parameters): TFro
 // ------------------------------------------------------------------
 // prettier-ignore
 type TFromIndex<Parameters extends TSchema[]> = (
-  Parameters extends [infer T0 extends TSchema, infer T1 extends TSchema] ? TIndex<T0, T1> : never
+  Parameters extends [infer T0 extends TSchema, infer T1 extends TSchema] 
+    // Note: This inferred result check is required to mitgate a "as never" 
+    // assertion on FromComputed resolution. This should be removed when
+    // reimplementing TIndex to use TSchema as the primary key indexer.
+    ? TIndex<T0, TIndexPropertyKeys<T1>> extends infer Result extends TSchema 
+      ? Result
+      : never
+    : never
 )
 // prettier-ignore
 function FromIndex<Parameters extends TSchema[]>(parameters: Parameters): TFromIndex<Parameters> {
@@ -370,10 +377,7 @@ export function FromType<ModuleProperties extends TProperties, Type extends TSch
     // Traveral
     KindGuard.IsArray(type) ? CreateType(FromArray(moduleProperties, type.items), type) :
     KindGuard.IsAsyncIterator(type) ? CreateType(FromAsyncIterator(moduleProperties, type.items), type) :
-    // Note: The 'as never' is required due to excessive resolution of TIndex. In fact TIndex, TPick, TOmit and
-    // all need re-implementation to remove the PropertyKey[] selector. Reimplementation of these types should
-    // be a priority as there is a potential for the current inference to break on TS compiler changes.
-    KindGuard.IsComputed(type) ? CreateType(FromComputed(moduleProperties, type.target, type.parameters) as never) :
+    KindGuard.IsComputed(type) ? CreateType(FromComputed(moduleProperties, type.target, type.parameters)) :
     KindGuard.IsConstructor(type) ? CreateType(FromConstructor(moduleProperties, type.parameters, type.returns), type) :
     KindGuard.IsFunction(type) ? CreateType(FromFunction(moduleProperties, type.parameters, type.returns), type) :
     KindGuard.IsIntersect(type) ? CreateType(FromIntersect(moduleProperties, type.allOf), type) :
