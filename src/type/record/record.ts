@@ -234,7 +234,7 @@ export type TRecordOrObject<Key extends TSchema, Type extends TSchema> = (
   Key extends TString ? TFromStringKey<Key, Type> :
   Key extends TAny ? TFromAnyKey<Key, Type> :
   Key extends TNever ? TFromNeverKey<Key, Type> :
-  Key
+  TNever
 )
 // ------------------------------------------------------------------
 // TRecordOrObject
