@@ -204,7 +204,9 @@ function FromNumberKey<Key extends TNumber, Type extends TSchema>(_: Key, type: 
 // ------------------------------------------------------------------
 // prettier-ignore
 type RecordStatic<Key extends TSchema, Type extends TSchema, P extends unknown[]> = (
-  Evaluate<{ [_ in Assert<Static<Key>, PropertyKey>]: Static<Type, P>; }>
+  // Note: We would return a Record<K, T> here, but recursive Record<K, T> types will
+  // break when T is self recursive. We can mitigate this by using a Mapped instead.
+  Evaluate<{ [_ in Assert<Static<Key>, PropertyKey>]: Static<Type, P> }>
 )
 // prettier-ignore
 export interface TRecord<Key extends TSchema = TSchema, Type extends TSchema = TSchema> extends TSchema {
