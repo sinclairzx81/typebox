@@ -97,14 +97,6 @@ export class TypeCheck<T extends TSchema> {
   public Code(): string {
     return this.code
   }
-  /** Returns an iterator for each error in this value. */
-  public Errors(value: unknown): ValueErrorIterator {
-    return Errors(this.schema, this.references, value)
-  }
-  /** Returns true if the value matches the compiled type. */
-  public Check(value: unknown): value is Static<T> {
-    return this.checkFunc(value)
-  }
   /** Returns the schema type used to validate */
   public Schema(): T {
     return this.schema
@@ -113,13 +105,21 @@ export class TypeCheck<T extends TSchema> {
   public References(): TSchema[] {
     return this.references
   }
+  /** Returns an iterator for each error in this value. */
+  public Errors(value: unknown): ValueErrorIterator {
+    return Errors(this.schema, this.references, value)
+  }
+  /** Returns true if the value matches the compiled type. */
+  public Check(value: unknown): value is Static<T> {
+    return this.checkFunc(value)
+  }
   /** Decodes a value or throws if error */
   public Decode<Static = StaticDecode<T>, Result extends Static = Static>(value: unknown): Result {
     if (!this.checkFunc(value)) throw new TransformDecodeCheckError(this.schema, value, this.Errors(value).First()!)
     return (this.hasTransform ? TransformDecode(this.schema, this.references, value) : value) as never
   }
   /** Encodes a value or throws if error */
-  public Encode<Static = StaticDecode<T>, Result extends Static = Static>(value: unknown): Result {
+  public Encode<Static = StaticEncode<T>, Result extends Static = Static>(value: unknown): Result {
     const encoded = this.hasTransform ? TransformEncode(this.schema, this.references, value) : value
     if (!this.checkFunc(encoded)) throw new TransformEncodeCheckError(this.schema, value, this.Errors(value).First()!)
     return encoded as never
