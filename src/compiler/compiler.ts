@@ -59,7 +59,7 @@ import type { TNumber } from '../type/number/index'
 import type { TObject } from '../type/object/index'
 import type { TPromise } from '../type/promise/index'
 import type { TRecord } from '../type/record/index'
-import type { TRef } from '../type/ref/index'
+import { Ref, type TRef } from '../type/ref/index'
 import type { TRegExp } from '../type/regexp/index'
 import type { TTemplateLiteral } from '../type/template-literal/index'
 import type { TThis } from '../type/recursive/index'
@@ -298,11 +298,11 @@ export namespace TypeCompiler {
     yield `(typeof ${value} === 'function')`
   }
   function* FromImport(schema: TImport, references: TSchema[], value: string): IterableIterator<string> {
-    const interior = globalThis.Object.getOwnPropertyNames(schema.$defs).reduce((result, key) => {
+    const members = globalThis.Object.getOwnPropertyNames(schema.$defs).reduce((result, key) => {
       return [...result, schema.$defs[key as never] as TSchema]
     }, [] as TSchema[])
-    const target = { [Kind]: 'Ref', $ref: schema.$ref } as never
-    yield* Visit(target, [...references, ...interior], value)
+    const ref = Ref(schema.$ref)
+    yield* Visit(ref, [...references, ...members], value)
   }
   function* FromInteger(schema: TInteger, references: TSchema[], value: string): IterableIterator<string> {
     yield `Number.isInteger(${value})`
