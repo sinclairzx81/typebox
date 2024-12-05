@@ -97,14 +97,6 @@ export class TypeCheck<T extends TSchema> {
   public Code(): string {
     return this.code
   }
-  /** Returns the schema type used to validate */
-  public Schema(): T {
-    return this.schema
-  }
-  /** Returns reference types used to validate */
-  public References(): TSchema[] {
-    return this.references
-  }
   /** Returns an iterator for each error in this value. */
   public Errors(value: unknown): ValueErrorIterator {
     return Errors(this.schema, this.references, value)
@@ -113,13 +105,21 @@ export class TypeCheck<T extends TSchema> {
   public Check(value: unknown): value is Static<T> {
     return this.checkFunc(value)
   }
+  /** Returns the schema type used to validate */
+  public Schema(): T {
+    return this.schema
+  }
+  /** Returns reference types used to validate */
+  public References(): TSchema[] {
+    return this.references
+  }
   /** Decodes a value or throws if error */
   public Decode<Static = StaticDecode<T>, Result extends Static = Static>(value: unknown): Result {
     if (!this.checkFunc(value)) throw new TransformDecodeCheckError(this.schema, value, this.Errors(value).First()!)
     return (this.hasTransform ? TransformDecode(this.schema, this.references, value) : value) as never
   }
   /** Encodes a value or throws if error */
-  public Encode<Static = StaticEncode<T>, Result extends Static = Static>(value: unknown): Result {
+  public Encode<Static = StaticDecode<T>, Result extends Static = Static>(value: unknown): Result {
     const encoded = this.hasTransform ? TransformEncode(this.schema, this.references, value) : value
     if (!this.checkFunc(encoded)) throw new TransformEncodeCheckError(this.schema, value, this.Errors(value).First()!)
     return encoded as never
@@ -298,9 +298,11 @@ export namespace TypeCompiler {
     yield `(typeof ${value} === 'function')`
   }
   function* FromImport(schema: TImport, references: TSchema[], value: string): IterableIterator<string> {
-    const definitions = globalThis.Object.values(schema.$defs) as TSchema[]
-    const target = schema.$defs[schema.$ref] as TSchema
-    yield* Visit(target, [...references, ...definitions], value)
+    const interior = globalThis.Object.getOwnPropertyNames(schema.$defs).reduce((result, key) => {
+      return [...result, schema.$defs[key as never] as TSchema]
+    }, [] as TSchema[])
+    const target = { [Kind]: 'Ref', $ref: schema.$ref } as never
+    yield* Visit(target, [...references, ...interior], value)
   }
   function* FromInteger(schema: TInteger, references: TSchema[], value: string): IterableIterator<string> {
     yield `Number.isInteger(${value})`
@@ -399,12 +401,8 @@ export namespace TypeCompiler {
   function* FromRef(schema: TRef, references: TSchema[], value: string): IterableIterator<string> {
     const target = Deref(schema, references)
     // Reference: If we have seen this reference before we can just yield and return the function call.
-    // If this isn't the case we defer to visit to generate and set the _recursion_end_for_ for subsequent
-    // passes. This operation is very awkward as we are using the functions state to store values to
-    // enable self referential types to terminate. This needs to be refactored.
-    const recursiveEnd = `_recursion_end_for_${schema.$ref}`
-    if (state.functions.has(recursiveEnd)) return yield `${CreateFunctionName(schema.$ref)}(${value})`
-    state.functions.set(recursiveEnd, '') // terminate recursion here by setting the name.
+    // If this isn't the case we defer to visit to generate and set the function for subsequent passes.
+    if (state.functions.has(schema.$ref)) return yield `${CreateFunctionName(schema.$ref)}(${value})`
     yield* Visit(target, references, value)
   }
   function* FromRegExp(schema: TRegExp, references: TSchema[], value: string): IterableIterator<string> {
@@ -481,6 +479,10 @@ export namespace TypeCompiler {
       if (state.functions.has(functionName)) {
         return yield `${functionName}(${value})`
       } else {
+        // Note: In the case of cyclic types, we need to create a 'functions' record
+        // to prevent infinitely re-visiting the CreateFunction. Subsequent attempts
+        // to visit will be caught by the above condition.
+        state.functions.set(functionName, '<deferred>')
         const functionCode = CreateFunction(functionName, schema, references, 'value', false)
         state.functions.set(functionName, functionCode)
         return yield `${functionName}(${value})`
