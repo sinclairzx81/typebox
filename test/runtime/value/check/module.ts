@@ -108,4 +108,39 @@ describe('value/check/Module', () => {
     Assert.IsTrue(Value.Check(T, { y: [null], w: [null] }))
     Assert.IsFalse(Value.Check(T, { x: [1], y: [null], w: [null] }))
   })
+  // ----------------------------------------------------------------
+  // https://github.com/sinclairzx81/typebox/issues/1109
+  // ----------------------------------------------------------------
+  it('Should validate deep referential 1', () => {
+    const Module = Type.Module({
+      A: Type.Union([Type.Literal('Foo'), Type.Literal('Bar')]),
+      B: Type.Ref('A'),
+      C: Type.Object({ ref: Type.Ref('B') }),
+      D: Type.Union([Type.Ref('B'), Type.Ref('C')]),
+    })
+    Assert.IsTrue(Value.Check(Module.Import('A') as never, 'Foo'))
+    Assert.IsTrue(Value.Check(Module.Import('A') as never, 'Bar'))
+    Assert.IsTrue(Value.Check(Module.Import('B') as never, 'Foo'))
+    Assert.IsTrue(Value.Check(Module.Import('B') as never, 'Bar'))
+    Assert.IsTrue(Value.Check(Module.Import('C') as never, { ref: 'Foo' }))
+    Assert.IsTrue(Value.Check(Module.Import('C') as never, { ref: 'Bar' }))
+    Assert.IsTrue(Value.Check(Module.Import('D') as never, 'Foo'))
+    Assert.IsTrue(Value.Check(Module.Import('D') as never, 'Bar'))
+    Assert.IsTrue(Value.Check(Module.Import('D') as never, { ref: 'Foo' }))
+    Assert.IsTrue(Value.Check(Module.Import('D') as never, { ref: 'Bar' }))
+  })
+  it('Should validate deep referential 2', () => {
+    const Module = Type.Module({
+      A: Type.Literal('Foo'),
+      B: Type.Ref('A'),
+      C: Type.Ref('B'),
+      D: Type.Ref('C'),
+      E: Type.Ref('D'),
+    })
+    Assert.IsTrue(Value.Check(Module.Import('A'), 'Foo'))
+    Assert.IsTrue(Value.Check(Module.Import('B'), 'Foo'))
+    Assert.IsTrue(Value.Check(Module.Import('C'), 'Foo'))
+    Assert.IsTrue(Value.Check(Module.Import('D'), 'Foo'))
+    Assert.IsTrue(Value.Check(Module.Import('E'), 'Foo'))
+  })
 })

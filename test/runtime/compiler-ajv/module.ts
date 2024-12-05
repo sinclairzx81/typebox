@@ -106,4 +106,39 @@ describe('compiler-ajv/Module', () => {
     Ok(T, { y: [null], w: [null] })
     Fail(T, { x: [1], y: [null], w: [null] })
   })
+  // ----------------------------------------------------------------
+  // https://github.com/sinclairzx81/typebox/issues/1109
+  // ----------------------------------------------------------------
+  it('Should validate deep referential 1', () => {
+    const Module = Type.Module({
+      A: Type.Union([Type.Literal('Foo'), Type.Literal('Bar')]),
+      B: Type.Ref('A'),
+      C: Type.Object({ ref: Type.Ref('B') }),
+      D: Type.Union([Type.Ref('B'), Type.Ref('C')]),
+    })
+    Ok(Module.Import('A') as never, 'Foo')
+    Ok(Module.Import('A') as never, 'Bar')
+    Ok(Module.Import('B') as never, 'Foo')
+    Ok(Module.Import('B') as never, 'Bar')
+    Ok(Module.Import('C') as never, { ref: 'Foo' })
+    Ok(Module.Import('C') as never, { ref: 'Bar' })
+    Ok(Module.Import('D') as never, 'Foo')
+    Ok(Module.Import('D') as never, 'Bar')
+    Ok(Module.Import('D') as never, { ref: 'Foo' })
+    Ok(Module.Import('D') as never, { ref: 'Bar' })
+  })
+  it('Should validate deep referential 2', () => {
+    const Module = Type.Module({
+      A: Type.Literal('Foo'),
+      B: Type.Ref('A'),
+      C: Type.Ref('B'),
+      D: Type.Ref('C'),
+      E: Type.Ref('D'),
+    })
+    Ok(Module.Import('A'), 'Foo')
+    Ok(Module.Import('B'), 'Foo')
+    Ok(Module.Import('C'), 'Foo')
+    Ok(Module.Import('D'), 'Foo')
+    Ok(Module.Import('E'), 'Foo')
+  })
 })
