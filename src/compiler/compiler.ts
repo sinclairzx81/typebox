@@ -301,8 +301,7 @@ export namespace TypeCompiler {
     const members = globalThis.Object.getOwnPropertyNames(schema.$defs).reduce((result, key) => {
       return [...result, schema.$defs[key as never] as TSchema]
     }, [] as TSchema[])
-    const ref = Ref(schema.$ref)
-    yield* Visit(ref, [...references, ...members], value)
+    yield* Visit(Ref(schema.$ref), [...references, ...members], value)
   }
   function* FromInteger(schema: TInteger, references: TSchema[], value: string): IterableIterator<string> {
     yield `Number.isInteger(${value})`
