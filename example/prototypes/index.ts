@@ -26,6 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+export * from './discriminated-union'
 export * from './from-schema'
 export * from './partial-deep'
 export * from './union-enum'
