@@ -85,4 +85,32 @@ describe('value/mutate/Mutate', () => {
     Assert.NotEqual(A.x, X)
     Assert.IsEqual(A.x, [1, 2, 3])
   })
+  // ----------------------------------------------------------------
+  // https://github.com/sinclairzx81/typebox/issues/1119
+  // ----------------------------------------------------------------
+  it('Should mutate array 1', () => {
+    const A: unknown[] = []
+    Value.Mutate(A, [])
+    Assert.IsEqual(A, [])
+  })
+  it('Should mutate array 2', () => {
+    const A: unknown[] = []
+    Value.Mutate(A, [1])
+    Assert.IsEqual(A, [1])
+  })
+  it('Should mutate array 3', () => {
+    const A: unknown[] = [1, 2, 3]
+    Value.Mutate(A, [1, 2])
+    Assert.IsEqual(A, [1, 2])
+  })
+  it('Should mutate array 4', () => {
+    const A: unknown[] = [1, 2, 3]
+    Value.Mutate(A, [1, 2, 3, 4])
+    Assert.IsEqual(A, [1, 2, 3, 4])
+  })
+  it('Should mutate array 5', () => {
+    const A: unknown[] = [1, 2, 3]
+    Value.Mutate(A, [{}, {}, {}, [1, 2, 3]])
+    Assert.IsEqual(A, [{}, {}, {}, [1, 2, 3]])
+  })
 })
