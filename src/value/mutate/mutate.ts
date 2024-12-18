@@ -32,6 +32,12 @@ import { Clone } from '../clone/index'
 import { TypeBoxError } from '../../type/error/index'
 
 // ------------------------------------------------------------------
+// IsStandardObject
+// ------------------------------------------------------------------
+function IsStandardObject(value: unknown): value is Record<PropertyKey, unknown> {
+  return IsObject(value) && !IsArray(value)
+}
+// ------------------------------------------------------------------
 // Errors
 // ------------------------------------------------------------------
 export class ValueMutateError extends TypeBoxError {
@@ -44,7 +50,7 @@ export class ValueMutateError extends TypeBoxError {
 // ------------------------------------------------------------------
 export type Mutable = { [key: string]: unknown } | unknown[]
 function ObjectType(root: Mutable, path: string, current: unknown, next: Record<string, unknown>) {
-  if (!IsObject(current)) {
+  if (!IsStandardObject(current)) {
     ValuePointer.Set(root, path, Clone(next))
   } else {
     const currentKeys = Object.getOwnPropertyNames(current)
@@ -90,7 +96,7 @@ function ValueType(root: Mutable, path: string, current: unknown, next: unknown)
 function Visit(root: Mutable, path: string, current: unknown, next: unknown) {
   if (IsArray(next)) return ArrayType(root, path, current, next)
   if (IsTypedArray(next)) return TypedArrayType(root, path, current, next)
-  if (IsObject(next)) return ObjectType(root, path, current, next)
+  if (IsStandardObject(next)) return ObjectType(root, path, current, next)
   if (IsValueType(next)) return ValueType(root, path, current, next)
 }
 // ------------------------------------------------------------------
@@ -102,8 +108,8 @@ function IsNonMutableValue(value: unknown): value is Mutable {
 function IsMismatchedValue(current: unknown, next: unknown) {
   // prettier-ignore
   return (
-    (IsObject(current) && IsArray(next)) || 
-    (IsArray(current) && IsObject(next))
+    (IsStandardObject(current) && IsArray(next)) || 
+    (IsArray(current) && IsStandardObject(next))
   )
 }
 // ------------------------------------------------------------------

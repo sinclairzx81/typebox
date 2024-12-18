@@ -68,6 +68,7 @@ License MIT
   - [Options](#types-options)
   - [Properties](#types-properties)
   - [Generics](#types-generics)
+  - [Recursive](#types-recursive)
   - [Modules](#types-modules)
   - [Template Literal](#types-template-literal)
   - [Indexed](#types-indexed)
@@ -759,21 +760,51 @@ const T = Nullable(Type.String())                    // const T = {
 type T = Static<typeof T>                            // type T = string | null
 ```
 
+<a name='types-recursive'></a>
+
+### Recursive Types
+
+Use the Recursive function to create a singular recursive type.
+
+```typescript
+const Node = Type.Recursive(Self => Type.Object({    // const Node = {
+  id: Type.String(),                                 //   $id: 'Node',
+  nodes: Type.Array(Self)                            //   type: 'object',
+}), { $id: 'Node' })                                 //   properties: {
+                                                     //     id: {
+                                                     //       type: 'string'
+                                                     //     },
+                                                     //     nodes: {
+                                                     //       type: 'array',
+                                                     //       items: {
+                                                     //         $ref: 'Node'
+                                                     //       }
+                                                     //     }
+                                                     //   },
+                                                     //   required: [
+                                                     //     'id',
+                                                     //     'nodes'
+                                                     //   ]
+                                                     // }
+
+type Node = Static<typeof Node>                      // type Node = {
+                                                     //   id: string
+                                                     //   nodes: Node[]
+                                                     // }
+
+function test(node: Node) {
+  const id = node.nodes[0].nodes[0].id               // id is string
+}
+```
+
 <a name='types-modules'></a>
 
 ### Module Types
 
-TypeBox Modules are containers for related types. They provide a referential namespace, enabling types to reference one another via string identifiers. Modules support both singular and mutually recursive referencing within the context of a module, as well as referential computed types (such as Partial + Ref). All Module types must be imported before use. TypeBox represents an imported type with the `$defs` Json Schema keyword. 
-
-#### Usage
-
-The following creates a Module with User and PartialUser types. Note that the PartialUser type is specified as a Partial + Ref to the User type. It is not possible to perform a Partial operation directly on a reference, so TypeBox will return a TComputed type that defers the Partial operation until all types are resolved. The TComputed type is evaluated when calling Import on the Module.
+Module types are containers for a set of referential types. Modules act as namespaces, enabling types to reference one another via string identifiers. Modules support both singular and mutually recursive references, as well as deferred dereferencing for computed types such as Partial. Types imported from a module are expressed using the Json Schema `$defs` keyword. 
 
 ```typescript
-// Module with PartialUser and User types
-
 const Module = Type.Module({
-
   PartialUser: Type.Partial(Type.Ref('User')),  // TComputed<'Partial', [TRef<'User'>]>
 
   User: Type.Object({                           // TObject<{
@@ -781,11 +812,7 @@ const Module = Type.Module({
     name: Type.String(),                        //   name: TString,
     email: Type.String()                        //   email: TString
   }),                                           // }>
-  
 })
-
-// Types must be imported before use.
-
 const User = Module.Import('User')               // const User: TImport<{...}, 'User'>
 
 type User = Static<typeof User>                  // type User = { 
@@ -802,7 +829,6 @@ type PartialUser = Static<typeof PartialUser>    // type PartialUser = {
                                                  //   email?: string
                                                  // }
 ```
-
 
 <a name='types-template-literal'></a>
 
