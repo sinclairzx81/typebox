@@ -269,18 +269,31 @@ export class JsonTypeBuilder {
   /** `[Json]` Creates a Ref type.*/
   public Ref<Ref extends string>($ref: Ref, options?: SchemaOptions): TRef<Ref>
   /**
-   * @deprecated `[Json]` Creates a Ref type. The referenced type MUST contain a $id. The Ref(TSchema) signature was
-   * deprecated on 0.34.0 in support of a new type referencing model (Module). Existing implementations using Ref(TSchema)
-   * can migrate using the following. The Ref(TSchema) validation behavior of Ref will be preserved how the construction
-   * of legacy Ref(TSchema) will require wrapping in TUnsafe (where TUnsafe is used for inference only)
+   * @deprecated `[Json]` Creates a Ref type. This signature was deprecated in 0.34.0 where Ref requires callers to pass
+   * a `string` value for the reference (and not a schema).
+   *
+   * To adhere to the 0.34.0 signature, Ref implementations should be updated to the following.
    *
    * ```typescript
+   * // pre-0.34.0
+   *
+   * const T = Type.String({ $id: 'T' })
+   *
    * const R = Type.Ref(T)
    * ```
-   * to
+   * should be changed to the following
    *
    * ```typescript
-   * const R = Type.Unsafe<Static<T>>(T.$id)
+   * // post-0.34.0
+   *
+   * const T = Type.String({ $id: 'T' })
+   *
+   * const R = Type.Unsafe<Static<typeof T>>(Type.Ref('T'))
+   * ```
+   * You can also create a generic function to replicate the pre-0.34.0 signature if required
+   *
+   * ```typescript
+   * const LegacyRef = <T extends TSchema>(schema: T) => Type.Unsafe<Static<T>>(Type.Ref(schema.$id!))
    * ```
    */
   public Ref<Type extends TSchema>(type: Type, options?: SchemaOptions): TRefUnsafe<Type>
