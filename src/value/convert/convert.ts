@@ -58,11 +58,6 @@ import type { TUndefined } from '../../type/undefined/index'
 import { IsArray, IsObject, IsDate, IsUndefined, IsString, IsNumber, IsBoolean, IsBigInt, IsSymbol, HasPropertyKey } from '../guard/index'
 
 // ------------------------------------------------------------------
-// TypeGuard
-// ------------------------------------------------------------------
-import { IsOptional } from '../../type/guard/kind'
-
-// ------------------------------------------------------------------
 // Conversions
 // ------------------------------------------------------------------
 function IsStringNumeric(value: unknown): value is string {
@@ -124,7 +119,7 @@ function TryConvertBigInt(value: unknown) {
   return IsStringNumeric(value) ? BigInt(truncateInteger(value)) : IsNumber(value) ? BigInt(Math.trunc(value)) : IsValueFalse(value) ? BigInt(0) : IsValueTrue(value) ? BigInt(1) : value
 }
 function TryConvertString(value: unknown) {
-  return IsValueToString(value) ? value.toString() : IsSymbol(value) && value.description !== undefined ? value.description.toString() : value
+  return IsSymbol(value) && value.description !== undefined ? value.description.toString() : IsValueToString(value) ? value.toString() : value
 }
 function TryConvertNumber(value: unknown) {
   return IsStringNumeric(value) ? parseFloat(value) : IsValueTrue(value) ? 1 : IsValueFalse(value) ? 0 : value
