@@ -11,9 +11,4 @@ describe('system/TypeSystem/Format', () => {
     Fail(T, 'bar')
     FormatRegistry.Delete('Foo')
   })
-  it('Should throw if registering the same type twice', () => {
-    TypeSystem.Format('Foo', () => true)
-    Assert.Throws(() => TypeSystem.Format('Foo', () => true))
-    FormatRegistry.Delete('Foo')
-  })
 })

@@ -31,27 +31,27 @@ import { TSchema, SchemaOptions } from '../schema/index'
 import { Kind } from '../symbols/index'
 
 // ------------------------------------------------------------------
-// TString
+// StringFormatOption
 // ------------------------------------------------------------------
 export type StringFormatOption =
   | 'date-time'
-  | 'time'
   | 'date'
+  | 'duration'
   | 'email'
-  | 'idn-email'
   | 'hostname'
+  | 'idn-email'
   | 'idn-hostname'
   | 'ipv4'
   | 'ipv6'
-  | 'uri'
-  | 'uri-reference'
-  | 'iri'
-  | 'uuid'
   | 'iri-reference'
-  | 'uri-template'
+  | 'iri'
   | 'json-pointer'
-  | 'relative-json-pointer'
   | 'regex'
+  | 'time'
+  | 'uri-reference'
+  | 'uri-template'
+  | 'uri'
+  | 'uuid'
   | ({} & string)
 // prettier-ignore
 export type StringContentEncodingOption =
@@ -75,12 +75,14 @@ export interface StringOptions extends SchemaOptions {
   /** The content media type for this string */
   contentMediaType?: string
 }
+// ------------------------------------------------------------------
+// TString
+// ------------------------------------------------------------------
 export interface TString extends TSchema, StringOptions {
   [Kind]: 'String'
   static: string
   type: 'string'
 }
-
 /** `[Json]` Creates a String type */
 export function String(options?: StringOptions): TString {
   return CreateType({ [Kind]: 'String', type: 'string' }, options) as never

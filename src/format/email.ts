@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------------
 
-@sinclair/typebox/system
+@sinclair/typebox/format
 
 The MIT License (MIT)
 
@@ -26,25 +26,14 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { TypeRegistry, FormatRegistry } from '../type/registry/index'
-import { Unsafe, type TUnsafe } from '../type/unsafe/index'
-import { Kind } from '../type/symbols/index'
+import { FormatRegistry } from '../type/index'
 
-// ------------------------------------------------------------------
-// TypeSystem
-// ------------------------------------------------------------------
-export type TypeFactoryFunction<Type, Options = Record<PropertyKey, unknown>> = (options?: Partial<Options>) => TUnsafe<Type>
+const username = "a-z0-9&#%$!'/=_~^*+?`|{}-"
+const charset = 'a-z0-9'
+const pattern = new RegExp(`^[${username}]+(?:\\.[${username}]+)*@(?:[${charset}](?:[${charset}-]*[${charset}])?\\.)+[${charset}](?:[${charset}-]*[${charset}])?$`, 'i')
 
-/** Creates user defined types and formats and provides overrides for value checking behaviours */
-export namespace TypeSystem {
-  /** Creates a new type */
-  export function Type<Type, Options = Record<PropertyKey, unknown>>(kind: string, check: (options: Options, value: unknown) => boolean): TypeFactoryFunction<Type, Options> {
-    TypeRegistry.Set(kind, check)
-    return (options: Partial<Options> = {}) => Unsafe<Type>({ ...options, [Kind]: kind })
-  }
-  /** Creates a new string format */
-  export function Format<F extends string>(format: F, check: (value: string) => boolean): F {
-    FormatRegistry.Set(format, check)
-    return format
-  }
+export function IsEmail(value: string): boolean {
+  return pattern.test(value)
 }
+
+FormatRegistry.Set('email', IsEmail)

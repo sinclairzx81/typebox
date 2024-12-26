@@ -14,9 +14,4 @@ describe('system/TypeSystem/Type', () => {
     Fail(T, 'bar')
     TypeRegistry.Delete('Foo')
   })
-  it('Should throw if registering the same type twice', () => {
-    TypeSystem.Type('Foo', () => true)
-    Assert.Throws(() => TypeSystem.Type('Foo', () => true))
-    TypeRegistry.Delete('Foo')
-  })
 })

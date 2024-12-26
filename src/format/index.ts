@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------------
 
-@sinclair/typebox/system
+@sinclair/typebox/format
 
 The MIT License (MIT)
 
@@ -26,25 +26,21 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { TypeRegistry, FormatRegistry } from '../type/registry/index'
-import { Unsafe, type TUnsafe } from '../type/unsafe/index'
-import { Kind } from '../type/symbols/index'
-
-// ------------------------------------------------------------------
-// TypeSystem
-// ------------------------------------------------------------------
-export type TypeFactoryFunction<Type, Options = Record<PropertyKey, unknown>> = (options?: Partial<Options>) => TUnsafe<Type>
-
-/** Creates user defined types and formats and provides overrides for value checking behaviours */
-export namespace TypeSystem {
-  /** Creates a new type */
-  export function Type<Type, Options = Record<PropertyKey, unknown>>(kind: string, check: (options: Options, value: unknown) => boolean): TypeFactoryFunction<Type, Options> {
-    TypeRegistry.Set(kind, check)
-    return (options: Partial<Options> = {}) => Unsafe<Type>({ ...options, [Kind]: kind })
-  }
-  /** Creates a new string format */
-  export function Format<F extends string>(format: F, check: (value: string) => boolean): F {
-    FormatRegistry.Set(format, check)
-    return format
-  }
-}
+export * from './date-time'
+export * from './date'
+export * from './duration'
+export * from './email'
+export * from './hostname'
+export * from './idn-email'
+export * from './idn-hostname'
+export * from './ipv4'
+export * from './ipv6'
+export * from './iri'
+export * from './iri-reference'
+export * from './json-pointer'
+export * from './regex'
+export * from './time'
+export * from './uri-reference'
+export * from './uri-template'
+export * from './uri'
+export * from './uuid'
