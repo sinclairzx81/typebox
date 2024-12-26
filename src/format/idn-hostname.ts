@@ -28,7 +28,11 @@ THE SOFTWARE.
 
 import { FormatRegistry } from '../type/index'
 
-const pattern = /^(?!:\/\/)([a-zA-Z0-9\u00A1-\uFFFF-_]+\.)*[a-zA-Z0-9\u00A1-\uFFFF][a-zA-Z0-9\u00A1-\uFFFF-_]{0,61}[a-zA-Z0-9\u00A1-\uFFFF]\.[a-zA-Z\u00A1-\uFFFF]{2,}$/u
+const alpha = 'a-zA-Z\u00A1-\uFFFF' // Alphanumeric + Unicode characters (no symbols)
+const alpha_num = 'a-zA-Z0-9\u00A1-\uFFFF' // Alphanumeric + Unicode characters (no symbols)
+const pattern = new RegExp(`^(?!:\/\/)(?:[${alpha_num}-]{1,63}\\.)*[${alpha_num}][${alpha_num}-]{0,61}[${alpha_num}]\\.[${alpha}]{2,}$`)
+
+// example.☺com --- the above says this is a valid hostname_idn..
 
 export function IsIdnHostname(value: string): boolean {
   return pattern.test(value)

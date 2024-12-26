@@ -27,7 +27,7 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import * as Types from '../type/index'
-import { Static } from './parsebox/index'
+import { Static } from '../parse/index'
 import { Module } from './runtime'
 import { Main } from './static'
 

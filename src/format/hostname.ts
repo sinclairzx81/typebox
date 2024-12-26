@@ -28,10 +28,11 @@ THE SOFTWARE.
 
 import { FormatRegistry } from '../type/index'
 
-const pattern = /^(?!:\/\/)([a-zA-Z0-9-_]+\.)*[a-zA-Z0-9][a-zA-Z0-9-_]{0,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$/
+const alpha = 'a-zA-Z'
+const alpha_num = 'a-zA-Z0-9'
+const pattern = new RegExp(`^(?!:\/\/)([${alpha_num}-_]+\\.)*[${alpha_num}][${alpha_num}-_]{0,61}[${alpha_num}]\\.[${alpha}]{2,}$`)
 
 export function IsHostname(value: string): boolean {
   return pattern.test(value)
 }
-
 FormatRegistry.Set('hostname', IsHostname)

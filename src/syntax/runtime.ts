@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { Runtime } from './parsebox/index'
+import { Runtime } from '../parse/index'
 import * as Types from '../type/index'
 
 // ------------------------------------------------------------------

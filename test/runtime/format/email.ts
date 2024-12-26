@@ -3,7 +3,7 @@ import * as Format from '@sinclair/typebox/format'
 
 describe('format/IsEmail', () => {
   it('Should validate Email 1', () => {
-    Assert.IsFalse(Format.IsDate('not-a-email'))
+    Assert.IsFalse(Format.IsEmail('not-a-email'))
   })
   it('Should validate Email 2', () => {
     Assert.IsTrue(Format.IsEmail('test@example.com'))

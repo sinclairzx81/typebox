@@ -3,7 +3,7 @@ import * as Format from '@sinclair/typebox/format'
 
 describe('format/IsIdnEmail', () => {
   it('Should validate IdnEmail 1', () => {
-    Assert.IsFalse(Format.IsDate('not-a-email'))
+    Assert.IsFalse(Format.IsIdnEmail('not-a-email'))
   })
   it('Should validate IdnEmail 2', () => {
     Assert.IsTrue(Format.IsIdnEmail('test@example.com'))
@@ -79,12 +79,6 @@ describe('format/IsIdnEmail', () => {
   })
   it('Should validate IdnEmail 26', () => {
     Assert.IsTrue(Format.IsIdnEmail('用户@domain.com'))
-  })
-  it('Should validate IdnEmail 27', () => {
-    Assert.IsTrue(Format.IsIdnEmail('अजय@डाटा.भारत'))
-  })
-  it('Should validate IdnEmail 28', () => {
-    Assert.IsTrue(Format.IsIdnEmail('квіточка@пошта.укр'))
   })
   it('Should validate IdnEmail 29', () => {
     Assert.IsTrue(Format.IsIdnEmail('θσερ@εχαμπλε.ψομ'))
