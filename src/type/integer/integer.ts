@@ -42,7 +42,7 @@ export interface TInteger extends TSchema, IntegerOptions {
   static: number
   type: 'integer'
 }
-/** `[Json]` Creates an Integer type */
+/** `[Standard]` Creates an Integer type */
 export function Integer(options?: IntegerOptions): TInteger {
   return CreateType({ [Kind]: 'Integer', type: 'integer' }, options) as never
 }

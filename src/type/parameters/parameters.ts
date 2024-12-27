@@ -36,7 +36,7 @@ import { Tuple, type TTuple } from '../tuple/index'
 // ------------------------------------------------------------------
 export type TParameters<T extends TFunction> = Ensure<TTuple<T['parameters']>>
 
-/** `[JavaScript]` Extracts the Parameters from the given Function type */
+/** `[Extended]` Extracts the Parameters from the given Function type */
 export function Parameters<T extends TFunction<TSchema[], TSchema>>(schema: T, options?: SchemaOptions): TParameters<T> {
   return Tuple(schema.parameters, options)
 }

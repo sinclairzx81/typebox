@@ -31,7 +31,7 @@ import { Intrinsic, type TIntrinsic } from './intrinsic'
 
 // prettier-ignore
 export type TUncapitalize<T extends TSchema> = TIntrinsic<T, 'Uncapitalize'>
-/** `[Json]` Intrinsic function to Uncapitalize LiteralString types */
+/** `[Standard]` Intrinsic function to Uncapitalize LiteralString types */
 export function Uncapitalize<T extends TSchema>(T: T, options: SchemaOptions = {}): TUncapitalize<T> {
   return Intrinsic(T, 'Uncapitalize', options)
 }

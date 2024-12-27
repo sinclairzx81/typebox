@@ -47,7 +47,7 @@ export interface TDate extends TSchema, DateOptions {
   static: Date
   type: 'date'
 }
-/** `[JavaScript]` Creates a Date type */
+/** `[Extended]` Creates a Date type */
 export function Date(options?: DateOptions): TDate {
   return CreateType({ [Kind]: 'Date', type: 'Date' }, options) as never
 }

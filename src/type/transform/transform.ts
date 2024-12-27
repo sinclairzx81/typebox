@@ -80,7 +80,7 @@ export interface TTransform<I extends TSchema = TSchema, O extends unknown = unk
   [TransformKind]: TransformOptions<I, O>
   [key: string]: any
 }
-/** `[Json]` Creates a Transform type */
+/** `[Standard]` Creates a Transform type */
 export function Transform<I extends TSchema>(schema: I): TransformDecodeBuilder<I> {
   return new TransformDecodeBuilder(schema)
 }

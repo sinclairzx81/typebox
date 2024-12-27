@@ -64,7 +64,7 @@ export interface TConstructor<T extends TSchema[] = TSchema[], U extends TSchema
   parameters: T
   returns: U
 }
-/** `[JavaScript]` Creates a Constructor type */
+/** `[Extended]` Creates a Constructor type */
 export function Constructor<T extends TSchema[], U extends TSchema>(parameters: [...T], returns: U, options?: SchemaOptions): TConstructor<T, U> {
   return CreateType({ [Kind]: 'Constructor', type: 'Constructor', parameters, returns }, options) as never
 }

@@ -140,11 +140,11 @@ export type TPartial<T extends TSchema> = (
   T extends TObject<infer Properties extends TProperties> ? TFromObject<TObject<Properties>> :
   TObject<{}>
 )
-/** `[Json]` Constructs a type where all properties are optional */
+/** `[Standard]` Constructs a type where all properties are optional */
 export function Partial<MappedResult extends TMappedResult>(type: MappedResult, options?: SchemaOptions): TPartialFromMappedResult<MappedResult>
-/** `[Json]` Constructs a type where all properties are optional */
+/** `[Standard]` Constructs a type where all properties are optional */
 export function Partial<Type extends TSchema>(type: Type, options?: SchemaOptions): TPartial<Type>
-/** `[Json]` Constructs a type where all properties are optional */
+/** `[Standard]` Constructs a type where all properties are optional */
 export function Partial(type: TSchema, options?: SchemaOptions): any {
   if (IsMappedResult(type)) {
     return PartialFromMappedResult(type, options)

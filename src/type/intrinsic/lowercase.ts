@@ -31,7 +31,7 @@ import { Intrinsic, type TIntrinsic } from './intrinsic'
 
 // prettier-ignore
 export type TLowercase<T extends TSchema> = TIntrinsic<T, 'Lowercase'>
-/** `[Json]` Intrinsic function to Lowercase LiteralString types */
+/** `[Standard]` Intrinsic function to Lowercase LiteralString types */
 export function Lowercase<T extends TSchema>(T: T, options: SchemaOptions = {}): TLowercase<T> {
   return Intrinsic(T, 'Lowercase', options)
 }

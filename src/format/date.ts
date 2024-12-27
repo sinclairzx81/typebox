@@ -4,7 +4,9 @@
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2024 Haydn Paterson (sinclair) <haydn.developer@gmail.com>
+2020 Evgeny Poberezkin
+2024 Haydn Paterson (sinclair) <haydn.developer@gmail.com>
+
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,9 +30,29 @@ THE SOFTWARE.
 
 import { FormatRegistry } from '../type/index'
 
-const pattern = /^(?:19|20)\d\d-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/
+// --------------------------------------------------------------------------
+// This code ported form the ajv-format project for compatibility. All credit
+// goes to Evgeny Poberezkin and contributors.
+// --------------------------------------------------------------------------
 
-export function IsDate(value: string): boolean {
-  return pattern.test(value)
+const Days = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+const Date = /^(\d\d\d\d)-(\d\d)-(\d\d)$/
+
+function IsLeapYear(year: number): boolean {
+  return year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0)
 }
+/**
+ * Returns true of this string is a date
+ * @documentation https://datatracker.ietf.org/doc/html/rfc3339#section-5.6
+ * @example `2020-12-12`
+ */
+export function IsDate(value: string): boolean {
+  const matches: string[] | null = Date.exec(value)
+  if (!matches) return false
+  const year: number = +matches[1]
+  const month: number = +matches[2]
+  const day: number = +matches[3]
+  return month >= 1 && month <= 12 && day >= 1 && day <= (month === 2 && IsLeapYear(year) ? 29 : Days[month])
+}
+
 FormatRegistry.Set('date', IsDate)

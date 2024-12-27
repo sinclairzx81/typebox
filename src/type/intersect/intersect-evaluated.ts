@@ -113,7 +113,7 @@ export type TIntersectEvaluated<Types extends TSchema[]> = (
   Types extends [] ? TNever :
   TResolveIntersect<Types>
 )
-/** `[Json]` Creates an evaluated Intersect type */
+/** `[Standard]` Creates an evaluated Intersect type */
 export function IntersectEvaluated<Types extends TSchema[], Result extends TSchema = TIntersectEvaluated<Types>>(types: [...Types], options: IntersectOptions = {}): Result {
   if (types.length === 1) return CreateType(types[0], options) as never
   if (types.length === 0) return Never(options) as never

@@ -42,7 +42,7 @@ export interface TBigInt extends TSchema, BigIntOptions {
   static: bigint
   type: 'bigint'
 }
-/** `[JavaScript]` Creates a BigInt type */
+/** `[Extended]` Creates a BigInt type */
 export function BigInt(options?: BigIntOptions): TBigInt {
   return CreateType({ [Kind]: 'BigInt', type: 'bigint' }, options) as never
 }

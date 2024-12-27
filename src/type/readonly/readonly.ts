@@ -67,15 +67,15 @@ function ReadonlyWithFlag<T extends TSchema, F extends boolean>(schema: T, F: F)
 // ------------------------------------------------------------------
 export type TReadonly<T extends TSchema> = T & { [ReadonlyKind]: 'Readonly' }
 
-/** `[Json]` Creates a Readonly property */
+/** `[Standard]` Creates a Readonly property */
 export function Readonly<T extends TMappedResult, F extends boolean>(schema: T, enable: F): TReadonlyFromMappedResult<T, F>
-/** `[Json]` Creates a Readonly property */
+/** `[Standard]` Creates a Readonly property */
 export function Readonly<T extends TSchema, F extends boolean>(schema: T, enable: F): TReadonlyWithFlag<T, F>
-/** `[Json]` Creates a Readonly property */
+/** `[Standard]` Creates a Readonly property */
 export function Readonly<T extends TMappedResult>(schema: T): TReadonlyFromMappedResult<T, true>
-/** `[Json]` Creates a Readonly property */
+/** `[Standard]` Creates a Readonly property */
 export function Readonly<T extends TSchema>(schema: T): TReadonlyWithFlag<T, true>
-/** `[Json]` Creates a Readonly property */
+/** `[Standard]` Creates a Readonly property */
 export function Readonly(schema: TSchema, enable?: boolean): any {
   const F = enable ?? true
   return IsMappedResult(schema) ? ReadonlyFromMappedResult(schema, F) : ReadonlyWithFlag(schema, F)

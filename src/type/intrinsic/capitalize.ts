@@ -31,7 +31,7 @@ import { Intrinsic, type TIntrinsic } from './intrinsic'
 
 // prettier-ignore
 export type TCapitalize<T extends TSchema> = TIntrinsic<T, 'Capitalize'>
-/** `[Json]` Intrinsic function to Capitalize LiteralString types */
+/** `[Standard]` Intrinsic function to Capitalize LiteralString types */
 export function Capitalize<T extends TSchema>(T: T, options: SchemaOptions = {}): TCapitalize<T> {
   return Intrinsic(T, 'Capitalize', options)
 }

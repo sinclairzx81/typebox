@@ -37,7 +37,7 @@ export interface TUnsafe<T> extends TSchema {
   [Kind]: string
   static: T
 }
-/** `[Json]` Creates a Unsafe type that will infers as the generic argument T */
+/** `[Standard]` Creates a Unsafe type that will infers as the generic argument T */
 export function Unsafe<T>(options: UnsafeOptions = {}): TUnsafe<T> {
   return CreateType({ [Kind]: options[Kind] ?? 'Unsafe' }, options) as never
 }

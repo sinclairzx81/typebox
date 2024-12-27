@@ -37,7 +37,7 @@ export interface TIterator<T extends TSchema = TSchema> extends TSchema {
   type: 'Iterator'
   items: T
 }
-/** `[JavaScript]` Creates an Iterator type */
+/** `[Extended]` Creates an Iterator type */
 export function Iterator<T extends TSchema>(items: T, options?: SchemaOptions): TIterator<T> {
   return CreateType({ [Kind]: 'Iterator', type: 'Iterator', items }, options) as never
 }

@@ -115,7 +115,7 @@ export type TUnionEvaluated<Types extends TSchema[]> = (
   Types extends [] ? TNever :
   TResolveUnion<Types>
 )
-/** `[Json]` Creates an evaluated Union type */
+/** `[Standard]` Creates an evaluated Union type */
 export function UnionEvaluated<Types extends TSchema[], Result = TUnionEvaluated<Types>>(T: [...Types], options?: SchemaOptions): Result {
   // prettier-ignore
   return (

@@ -4,7 +4,9 @@
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2024 Haydn Paterson (sinclair) <haydn.developer@gmail.com>
+2020 Evgeny Poberezkin
+2024 Haydn Paterson (sinclair) <haydn.developer@gmail.com>
+
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,9 +30,19 @@ THE SOFTWARE.
 
 import { FormatRegistry } from '../type/index'
 
-const pattern = /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i
+// ------------------------------------------------------------------
+// This expression is borrowed the ajv-format project for compatibility. 
+// All credit goes to Evgeny Poberezkin and contributors.
+// ------------------------------------------------------------------
 
+const Uri = /^(?:[a-z][a-z0-9+\-.]*:)(?:\/?\/)?[^\s]*$/i
+
+/**
+ * Returns true if this string is a uri
+ * @documentation https://datatracker.ietf.org/doc/html/rfc3986
+ * @example `https://www.example.com/path/to/resource?query=value#fragment`
+ */
 export function IsUri(value: string): boolean {
-  return pattern.test(value)
+  return Uri.test(value)
 }
 FormatRegistry.Set('uri', IsUri)

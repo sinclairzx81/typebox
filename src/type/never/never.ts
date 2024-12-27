@@ -35,7 +35,7 @@ export interface TNever extends TSchema {
   static: never
   not: {}
 }
-/** `[Json]` Creates a Never type */
+/** `[Standard]` Creates a Never type */
 export function Never(options?: SchemaOptions): TNever {
   return CreateType({ [Kind]: 'Never', not: {} }, options) as never
 }

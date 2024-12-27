@@ -37,7 +37,7 @@ export interface TPromise<T extends TSchema = TSchema> extends TSchema {
   type: 'Promise'
   item: TSchema
 }
-/** `[JavaScript]` Creates a Promise type */
+/** `[Extended]` Creates a Promise type */
 export function Promise<T extends TSchema>(item: T, options?: SchemaOptions): TPromise<T> {
   return CreateType({ [Kind]: 'Promise', type: 'Promise', item }, options) as never
 }

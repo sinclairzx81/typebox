@@ -63,13 +63,13 @@ export type TExclude<L extends TSchema, R extends TSchema> = (
   L extends TUnion<infer S> ? TExcludeRest<S, R> :
   L extends R ? TNever : L
 )
-/** `[Json]` Constructs a type by excluding from unionType all union members that are assignable to excludedMembers */
+/** `[Standard]` Constructs a type by excluding from unionType all union members that are assignable to excludedMembers */
 export function Exclude<L extends TMappedResult, R extends TSchema>(unionType: L, excludedMembers: R, options?: SchemaOptions): TExcludeFromMappedResult<L, R>
-/** `[Json]` Constructs a type by excluding from unionType all union members that are assignable to excludedMembers */
+/** `[Standard]` Constructs a type by excluding from unionType all union members that are assignable to excludedMembers */
 export function Exclude<L extends TTemplateLiteral, R extends TSchema>(unionType: L, excludedMembers: R, options?: SchemaOptions): TExcludeFromTemplateLiteral<L, R>
-/** `[Json]` Constructs a type by excluding from unionType all union members that are assignable to excludedMembers */
+/** `[Standard]` Constructs a type by excluding from unionType all union members that are assignable to excludedMembers */
 export function Exclude<L extends TSchema, R extends TSchema>(unionType: L, excludedMembers: R, options?: SchemaOptions): TExclude<L, R>
-/** `[Json]` Constructs a type by excluding from unionType all union members that are assignable to excludedMembers */
+/** `[Standard]` Constructs a type by excluding from unionType all union members that are assignable to excludedMembers */
 export function Exclude(L: TSchema, R: TSchema, options: SchemaOptions = {}): any {
   // overloads
   if (IsTemplateLiteral(L)) return CreateType(ExcludeFromTemplateLiteral(L, R), options)

@@ -89,11 +89,11 @@ export interface TTemplateLiteral<T extends TTemplateLiteralKind[] = TTemplateLi
   type: 'string'
   pattern: string // todo: it may be possible to infer this pattern
 }
-/** `[Json]` Creates a TemplateLiteral type from template dsl string */
+/** `[Standard]` Creates a TemplateLiteral type from template dsl string */
 export function TemplateLiteral<T extends string>(syntax: T, options?: SchemaOptions): TTemplateLiteralSyntax<T>
-/** `[Json]` Creates a TemplateLiteral type */
+/** `[Standard]` Creates a TemplateLiteral type */
 export function TemplateLiteral<T extends TTemplateLiteralKind[]>(kinds: [...T], options?: SchemaOptions): TTemplateLiteral<T>
-/** `[Json]` Creates a TemplateLiteral type */
+/** `[Standard]` Creates a TemplateLiteral type */
 // prettier-ignore
 export function TemplateLiteral(unresolved: TTemplateLiteralKind[] | string, options?: SchemaOptions): any {
   const pattern = IsString(unresolved) 

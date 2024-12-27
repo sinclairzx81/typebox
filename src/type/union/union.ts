@@ -38,7 +38,7 @@ export type Union<T extends TSchema[]> = (
   T extends [TSchema] ? T[0] :
   TUnion<T>
 )
-/** `[Json]` Creates a Union type */
+/** `[Standard]` Creates a Union type */
 export function Union<Types extends TSchema[]>(types: [...Types], options?: SchemaOptions): Union<Types> {
   // prettier-ignore
   return (

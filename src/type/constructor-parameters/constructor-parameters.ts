@@ -39,7 +39,7 @@ export type TConstructorParameters<T extends TConstructor<TSchema[], TSchema>> =
   Ensure<TTuple<T['parameters']>>
 )
 
-/** `[JavaScript]` Extracts the ConstructorParameters from the given Constructor type */
+/** `[Extended]` Extracts the ConstructorParameters from the given Constructor type */
 export function ConstructorParameters<T extends TConstructor<TSchema[], TSchema>>(schema: T, options?: SchemaOptions): TConstructorParameters<T> {
   return Tuple(schema.parameters, options)
 }

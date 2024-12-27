@@ -112,7 +112,7 @@ export type TAwaited<Type extends TSchema> = (
   Type extends TPromise<infer Type extends TSchema> ? TAwaited<Type> :
   Type
 )
-/** `[JavaScript]` Constructs a type by recursively unwrapping Promise types */
+/** `[Extended]` Constructs a type by recursively unwrapping Promise types */
 export function Awaited<T extends TSchema>(type: T, options?: SchemaOptions): TAwaited<T> {
   return CreateType(
     IsComputed(type) ? FromComputed(type.target, type.parameters) : IsIntersect(type) ? FromIntersect(type.allOf) : IsUnion(type) ? FromUnion(type.anyOf) : IsPromise(type) ? FromPromise(type.item) : IsRef(type) ? FromRef(type.$ref) : type,

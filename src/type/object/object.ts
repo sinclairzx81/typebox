@@ -90,12 +90,12 @@ function RequiredKeys<T extends TProperties>(properties: T): string[] {
   }
   return keys
 }
-/** `[Json]` Creates an Object type */
+/** `[Standard]` Creates an Object type */
 function _Object<T extends TProperties>(properties: T, options?: ObjectOptions): TObject<T> {
   const required = RequiredKeys(properties)
   const schematic = required.length > 0 ? { [Kind]: 'Object', type: 'object', properties, required } : { [Kind]: 'Object', type: 'object', properties }
   return CreateType(schematic, options) as never
 }
 
-/** `[Json]` Creates an Object type */
+/** `[Standard]` Creates an Object type */
 export var Object = _Object

@@ -2,9 +2,6 @@ import { Assert } from '../assert/index'
 import * as Format from '@sinclair/typebox/format'
 
 describe('format/IsHostname', () => {
-  it('Should validate Hostname 1', () => {
-    Assert.IsFalse(Format.IsHostname('not-a-hostname'))
-  })
   it('Should validate Hostname 2', () => {
     Assert.IsTrue(Format.IsHostname('example.com'))
   })
@@ -43,8 +40,5 @@ describe('format/IsHostname', () => {
   })
   it('Should validate Hostname 14', () => {
     Assert.IsFalse(Format.IsHostname('example.com/'))
-  })
-  it('Should validate Hostname 15', () => {
-    Assert.IsFalse(Format.IsHostname('xn--d1acufc.xn--p1ai'))
   })
 })

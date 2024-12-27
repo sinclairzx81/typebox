@@ -48,75 +48,75 @@ import { Void, type TVoid } from '../void/index'
 
 /** JavaScript Type Builder with Static Resolution for TypeScript */
 export class JavaScriptTypeBuilder extends JsonTypeBuilder {
-  /** `[JavaScript]` Creates a AsyncIterator type */
+  /** `[Extended]` Creates a AsyncIterator type */
   public AsyncIterator<Type extends TSchema>(items: Type, options?: SchemaOptions): TAsyncIterator<Type> {
     return AsyncIterator(items, options)
   }
-  /** `[JavaScript]` Constructs a type by recursively unwrapping Promise types */
+  /** `[Extended]` Constructs a type by recursively unwrapping Promise types */
   public Awaited<Type extends TSchema>(schema: Type, options?: SchemaOptions): TAwaited<Type> {
     return Awaited(schema, options)
   }
-  /** `[JavaScript]` Creates a BigInt type */
+  /** `[Extended]` Creates a BigInt type */
   public BigInt(options?: BigIntOptions): TBigInt {
     return BigInt(options)
   }
-  /** `[JavaScript]` Extracts the ConstructorParameters from the given Constructor type */
+  /** `[Extended]` Extracts the ConstructorParameters from the given Constructor type */
   public ConstructorParameters<Type extends TConstructor>(schema: Type, options?: SchemaOptions): TConstructorParameters<Type> {
     return ConstructorParameters(schema, options)
   }
-  /** `[JavaScript]` Creates a Constructor type */
+  /** `[Extended]` Creates a Constructor type */
   public Constructor<Parameters extends TSchema[], InstanceType extends TSchema>(parameters: [...Parameters], instanceType: InstanceType, options?: SchemaOptions): TConstructor<Parameters, InstanceType> {
     return Constructor(parameters, instanceType, options)
   }
-  /** `[JavaScript]` Creates a Date type */
+  /** `[Extended]` Creates a Date type */
   public Date(options: DateOptions = {}): TDate {
     return Date(options)
   }
-  /** `[JavaScript]` Creates a Function type */
+  /** `[Extended]` Creates a Function type */
   public Function<Parameters extends TSchema[], ReturnType extends TSchema>(parameters: [...Parameters], returnType: ReturnType, options?: SchemaOptions): TFunction<Parameters, ReturnType> {
     return FunctionType(parameters, returnType, options)
   }
-  /** `[JavaScript]` Extracts the InstanceType from the given Constructor type */
+  /** `[Extended]` Extracts the InstanceType from the given Constructor type */
   public InstanceType<Type extends TConstructor>(schema: Type, options?: SchemaOptions): TInstanceType<Type> {
     return InstanceType(schema, options)
   }
-  /** `[JavaScript]` Creates an Iterator type */
+  /** `[Extended]` Creates an Iterator type */
   public Iterator<Type extends TSchema>(items: Type, options?: SchemaOptions): TIterator<Type> {
     return Iterator(items, options)
   }
-  /** `[JavaScript]` Extracts the Parameters from the given Function type */
+  /** `[Extended]` Extracts the Parameters from the given Function type */
   public Parameters<Type extends TFunction>(schema: Type, options?: SchemaOptions): TParameters<Type> {
     return Parameters(schema, options)
   }
-  /** `[JavaScript]` Creates a Promise type */
+  /** `[Extended]` Creates a Promise type */
   public Promise<Type extends TSchema>(item: Type, options?: SchemaOptions): TPromise<Type> {
     return Promise(item, options)
   }
-  /** `[JavaScript]` Creates a RegExp type */
+  /** `[Extended]` Creates a RegExp type */
   public RegExp(pattern: string, options?: RegExpOptions): TRegExp
-  /** `[JavaScript]` Creates a RegExp type */
+  /** `[Extended]` Creates a RegExp type */
   public RegExp(regex: RegExp, options?: RegExpOptions): TRegExp
-  /** `[JavaScript]` Creates a RegExp type */
+  /** `[Extended]` Creates a RegExp type */
   public RegExp(unresolved: string | RegExp, options?: RegExpOptions) {
     return RegExp(unresolved as any, options)
   }
-  /** `[JavaScript]` Extracts the ReturnType from the given Function type */
+  /** `[Extended]` Extracts the ReturnType from the given Function type */
   public ReturnType<Type extends TFunction>(type: Type, options?: SchemaOptions): TReturnType<Type> {
     return ReturnType(type, options)
   }
-  /** `[JavaScript]` Creates a Symbol type */
+  /** `[Extended]` Creates a Symbol type */
   public Symbol(options?: SchemaOptions): TSymbol {
     return Symbol(options)
   }
-  /** `[JavaScript]` Creates a Undefined type */
+  /** `[Extended]` Creates a Undefined type */
   public Undefined(options?: SchemaOptions): TUndefined {
     return Undefined(options)
   }
-  /** `[JavaScript]` Creates a Uint8Array type */
+  /** `[Extended]` Creates a Uint8Array type */
   public Uint8Array(options?: Uint8ArrayOptions): TUint8Array {
     return Uint8Array(options)
   }
-  /** `[JavaScript]` Creates a Void type */
+  /** `[Extended]` Creates a Void type */
   public Void(options?: SchemaOptions): TVoid {
     return Void(options)
   }

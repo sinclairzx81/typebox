@@ -36,7 +36,7 @@ export interface TSymbol extends TSchema, SchemaOptions {
   static: symbol
   type: 'symbol'
 }
-/** `[JavaScript]` Creates a Symbol type */
+/** `[Extended]` Creates a Symbol type */
 export function Symbol(options?: SchemaOptions): TSymbol {
   return CreateType({ [Kind]: 'Symbol', type: 'symbol' }, options) as never
 }

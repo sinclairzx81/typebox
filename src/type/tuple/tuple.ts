@@ -51,7 +51,7 @@ export interface TTuple<T extends TSchema[] = TSchema[]> extends TSchema {
   minItems: number
   maxItems: number
 }
-/** `[Json]` Creates a Tuple type */
+/** `[Standard]` Creates a Tuple type */
 export function Tuple<Types extends TSchema[]>(types: [...Types], options?: SchemaOptions): TTuple<Types> {
   // prettier-ignore
   return CreateType(

@@ -64,13 +64,13 @@ export type TExtract<L extends TSchema, U extends TSchema> = (
   L extends TUnion<infer S> ? TExtractRest<S, U> :
   L extends U ? L : TNever
 )
-/** `[Json]` Constructs a type by extracting from type all union members that are assignable to union */
+/** `[Standard]` Constructs a type by extracting from type all union members that are assignable to union */
 export function Extract<L extends TMappedResult, R extends TSchema>(type: L, union: R, options?: SchemaOptions): TExtractFromMappedResult<L, R>
-/** `[Json]` Constructs a type by extracting from type all union members that are assignable to union */
+/** `[Standard]` Constructs a type by extracting from type all union members that are assignable to union */
 export function Extract<L extends TTemplateLiteral, R extends TSchema>(type: L, union: R, options?: SchemaOptions): TExtractFromTemplateLiteral<L, R>
-/** `[Json]` Constructs a type by extracting from type all union members that are assignable to union */
+/** `[Standard]` Constructs a type by extracting from type all union members that are assignable to union */
 export function Extract<L extends TSchema, R extends TSchema>(type: L, union: R, options?: SchemaOptions): TExtract<L, R>
-/** `[Json]` Constructs a type by extracting from type all union members that are assignable to union */
+/** `[Standard]` Constructs a type by extracting from type all union members that are assignable to union */
 export function Extract(L: TSchema, R: TSchema, options?: SchemaOptions): never {
   // overloads
   if (IsTemplateLiteral(L)) return CreateType(ExtractFromTemplateLiteral(L, R), options) as never

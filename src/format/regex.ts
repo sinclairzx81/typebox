@@ -4,7 +4,9 @@
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2024 Haydn Paterson (sinclair) <haydn.developer@gmail.com>
+2020 Evgeny Poberezkin
+2024 Haydn Paterson (sinclair) <haydn.developer@gmail.com>
+
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,6 +30,11 @@ THE SOFTWARE.
 
 import { FormatRegistry } from '../type/index'
 
+/**
+ * Returns true if this string is a ecma 262 regular expression
+ * @documentation https://www.ecma-international.org/publications-and-standards/standards/ecma-262/
+ * @example `(a|b|c)`
+ */
 export function IsRegEx(value: string): boolean {
   try {
     new RegExp(value)

@@ -62,8 +62,8 @@ License MIT
 - [Overview](#overview)
 - [Usage](#usage)
 - [Types](#types)
-  - [Json](#types-json)
-  - [JavaScript](#types-javascript)
+  - [Standard](#types-standard)
+  - [Extended](#types-extended)
   - [Import](#types-import)
   - [Options](#types-options)
   - [Properties](#types-properties)
@@ -77,10 +77,6 @@ License MIT
   - [Transform](#types-transform)
   - [Guard](#types-guard)
   - [Unsafe](#types-unsafe)
-- [Syntax](#syntax)
-  - [Parse](#syntax-parse)
-  - [Static](#syntax-static)
-  - [Limits](#syntax-limits)
 - [Values](#values)
   - [Assert](#values-assert)
   - [Create](#values-create)
@@ -100,6 +96,11 @@ License MIT
   - [Errors](#values-errors)
   - [Mutate](#values-mutate)
   - [Pointer](#values-pointer)
+- [Formats](#formats)
+- [Syntax](#syntax)
+  - [Parse](#syntax-parse)
+  - [Static](#syntax-static)
+  - [Limits](#syntax-limits)
 - [TypeRegistry](#typeregistry)
   - [Type](#typeregistry-type)
   - [Format](#typeregistry-format)
@@ -198,9 +199,9 @@ const R = Value.Parse(T, value)                      // const R: {
 
 TypeBox types are Json Schema fragments that compose into more complex types. Each fragment is structured such that any Json Schema compliant validator can runtime assert a value the same way TypeScript will statically assert a type. TypeBox offers a set of Json Types which are used to create Json Schema compliant schematics as well as a JavaScript type set used to create schematics for constructs native to JavaScript.
 
-<a name='types-json'></a>
+<a name='types-standard'></a>
 
-### Json Types
+### Standard Types
 
 The following table lists the supported Json types. These types are fully compatible with the Json Schema Draft 7 specification.
 
@@ -539,9 +540,9 @@ The following table lists the supported Json types. These types are fully compat
 
 <a name='types-javascript'></a>
 
-### JavaScript Types
+### Extended Types
 
-TypeBox provides an extended type set that can be used to create schematics for common JavaScript constructs. These types can not be used with any standard Json Schema validator; but can be used to frame schematics for interfaces that may receive Json validated data. JavaScript types are prefixed with the `[JavaScript]` jsdoc comment for convenience. The following table lists the supported types.
+TypeBox provides an extended type set that can be used to create schematics for common JavaScript constructs. These types can not be used with any standard Json Schema validator; but can be used to frame schematics for interfaces that may receive Json validated data. JavaScript types are prefixed with the `[Extended]` jsdoc comment for convenience. The following table lists the supported types.
 
 ```typescript
 ┌────────────────────────────────┬─────────────────────────────┬────────────────────────────────┐
@@ -1044,162 +1045,6 @@ if(TypeGuard.IsString(T)) {
 }
 ```
 
-<a name='syntax'></a>
-
-## Syntax Types
-
-TypeBox has support for parsing TypeScript type annotations directly into TypeBox types. This feature supports both runtime and static parsing, with TypeBox implementing TypeScript parsers within the TypeScript type system itself. Syntax Types use the TypeBox Json Schema representations as an AST target for TypeScript types, providing a direct mapping between TypeScript syntax and Json Schema. Syntax Types are offered as a syntactical frontend to the Standard Type Builder API.
-
-This feature is available via optional import.
-
-```typescript
-import { Parse } from '@sinclair/typebox/syntax'
-```
-
-<a name='syntax-parse'></a>
-
-### Parse
-
-Use the Parse function to transform a TypeScript type annotation into a TypeBox type. This function will return the parsed TypeBox type or undefined on error.
-
-```typescript
-const A = Parse('string')                           // const A: TString
-
-const B = Parse('[1, 2, 3]')                        // const B: TTuple<[
-                                                    //   TLiteral<1>,
-                                                    //   TLiteral<2>,
-                                                    //   TLiteral<3>
-                                                    // ]>
-
-const C = Parse(`{ x: number, y: number }`)         // const C: TObject<{
-                                                    //   x: TNumber
-                                                    //   y: TNumber
-                                                    // }>
-```
-
-Syntax Types can compose with Standard Types created via the Type Builder API
-
-```typescript
-const T = Type.Object({                             // const T: TObject<{
-  x: Parse('number'),                               //   x: TNumber,
-  y: Parse('string'),                               //   y: TString,
-  z: Parse('boolean')                               //   z: TBoolean
-})                                                  // }>
-```
-
-Standard Types can also be passed to and referenced within Syntax Types.
-
-```typescript
-const X = Type.Number()
-const Y = Type.String()
-const Z = Type.Boolean()
-
-const T = Parse({ X, Y, Z }, `{ 
-  x: X, 
-  y: Y, 
-  z: Z 
-}`)
-```
-
-Syntax Types also support Module parsing.
-
-```typescript
-const Foo = Parse(`module Foo {
-
-  export type PartialUser = Pick<User, 'id'> & Partial<Omit<User, 'id'>>
-
-  export interface User {
-    id: string
-    name: string
-    email: string
-  }
-
-}`)
-
-const PartialUser = Foo.Import('PartialUser')       // TImport<{...}, 'PartialUser'>
-
-type PartialUser = Static<typeof PartialUser>       // type PartialUser = {
-                                                    //   id: string,
-                                                    // } & {
-                                                    //   name?: string,
-                                                    //   email?: string,
-                                                    // }
-```
-
-<a name='syntax-static'></a>
-
-### Static
-
-Syntax Types provide two Static types specific to inferring TypeBox and TypeScript types from strings.
-
-```typescript
-import { StaticParseAsSchema, StaticParseAsType } from '@sinclair/typebox/syntax' 
-
-// Will infer as a TSchema
-
-type S = StaticParseAsSchema<{}, '{ x: number }'>   // type S: TObject<{
-                                                    //   x: TNumber
-                                                    // }>
-
-// Will infer as a type
-
-type T = StaticParseAsType<{}, '{ x: number }'>     // type T = {
-                                                    //   x: number
-                                                    // }                      
-```
-
-
-<a name='syntax-limits'></a>
-
-### Limitations
-
-TypeBox parses TypeScript types directly within the TypeScript type system. This process does come with an inference cost, which scales with the size and complexity of the types being parsed. Although TypeBox strives to optimize Syntax Types, users should be aware of the following structures:
-
-```typescript
-// Excessively wide structures will result in instantiation limits exceeding
-const A = Parse(`[
-  0, 1, 2, 3, 4, 5, 6, 7,
-  0, 1, 2, 3, 4, 5, 6, 7,
-  0, 1, 2, 3, 4, 5, 6, 7,
-  0, 1, 2, 3, 4, 5, 6, 7,
-  0, 1, 2, 3, 4, 5, 6, 7,
-  0, 1, 2, 3, 4, 5, 6, 7,
-  0, 1, 2, 3, 4, 5, 6, 7,
-  0, 1, 2, 3, 4, 5, 6, 7,
-]`)
-
-// Excessively nested structures will result in instantiation limits exceeding
-const B = Parse(`{
-  x: {
-    y: {
-      z: {
-        w: 1 <-- Type instantiation is excessively deep and possibly infinite.
-      } 
-    }
-  }  
-}`)
-```
-
-If Syntax Types exceed TypeScript's instantiation limits, users are advised to fall back to the Standard Type Builder API. Alternatively, TypeBox offers a `ParseOnly` function that parses the TypeScript syntax at runtime without statically inferring the schema.
-
-```typescript
-import { ParseOnly } from '@sinclair/typebox/syntax'
-
-// const A: TSchema | undefined 
-
-const A = ParseOnly(`{
-  x: {
-    y: {
-      z: {
-        w: 1
-      } 
-    }
-  }  
-}`)
-```
-
-For more information on static parsing, refer to the [ParseBox](https://github.com/sinclairzx81/parsebox) project.
-
 <a name='values'></a>
 
 ## Values
@@ -1489,6 +1334,164 @@ ValuePointer.Set(A, '/x', 1)                         // A' = { x: 1, y: 0, z: 0 
 ValuePointer.Set(A, '/y', 1)                         // A' = { x: 1, y: 1, z: 0 }
 ValuePointer.Set(A, '/z', 1)                         // A' = { x: 1, y: 1, z: 1 }
 ```
+
+
+<a name='syntax'></a>
+
+## Syntax Types
+
+TypeBox has support for parsing TypeScript type annotations directly into TypeBox types. This feature supports both runtime and static parsing, with TypeBox implementing TypeScript parsers within the TypeScript type system itself. Syntax Types use the TypeBox Json Schema representations as an AST target for TypeScript types, providing a direct mapping between TypeScript syntax and Json Schema. Syntax Types are offered as a syntactical frontend to the Standard Type Builder API.
+
+This feature is available via optional import.
+
+```typescript
+import { Parse } from '@sinclair/typebox/syntax'
+```
+
+<a name='syntax-parse'></a>
+
+### Parse
+
+Use the Parse function to transform a TypeScript type annotation into a TypeBox type. This function will return the parsed TypeBox type or undefined on error.
+
+```typescript
+const A = Parse('string')                           // const A: TString
+
+const B = Parse('[1, 2, 3]')                        // const B: TTuple<[
+                                                    //   TLiteral<1>,
+                                                    //   TLiteral<2>,
+                                                    //   TLiteral<3>
+                                                    // ]>
+
+const C = Parse(`{ x: number, y: number }`)         // const C: TObject<{
+                                                    //   x: TNumber
+                                                    //   y: TNumber
+                                                    // }>
+```
+
+Syntax Types can compose with Standard Types created via the Type Builder API
+
+```typescript
+const T = Type.Object({                             // const T: TObject<{
+  x: Parse('number'),                               //   x: TNumber,
+  y: Parse('string'),                               //   y: TString,
+  z: Parse('boolean')                               //   z: TBoolean
+})                                                  // }>
+```
+
+Standard Types can also be passed to and referenced within Syntax Types.
+
+```typescript
+const X = Type.Number()
+const Y = Type.String()
+const Z = Type.Boolean()
+
+const T = Parse({ X, Y, Z }, `{ 
+  x: X, 
+  y: Y, 
+  z: Z 
+}`)
+```
+
+Syntax Types also support Module parsing.
+
+```typescript
+const Foo = Parse(`module Foo {
+
+  export type PartialUser = Pick<User, 'id'> & Partial<Omit<User, 'id'>>
+
+  export interface User {
+    id: string
+    name: string
+    email: string
+  }
+
+}`)
+
+const PartialUser = Foo.Import('PartialUser')       // TImport<{...}, 'PartialUser'>
+
+type PartialUser = Static<typeof PartialUser>       // type PartialUser = {
+                                                    //   id: string,
+                                                    // } & {
+                                                    //   name?: string,
+                                                    //   email?: string,
+                                                    // }
+```
+
+<a name='syntax-static'></a>
+
+### Static
+
+Syntax Types provide two Static types specific to inferring TypeBox and TypeScript types from strings.
+
+```typescript
+import { StaticParseAsSchema, StaticParseAsType } from '@sinclair/typebox/syntax' 
+
+// Will infer as a TSchema
+
+type S = StaticParseAsSchema<{}, '{ x: number }'>   // type S: TObject<{
+                                                    //   x: TNumber
+                                                    // }>
+
+// Will infer as a type
+
+type T = StaticParseAsType<{}, '{ x: number }'>     // type T = {
+                                                    //   x: number
+                                                    // }                      
+```
+
+
+<a name='syntax-limits'></a>
+
+### Limitations
+
+TypeBox parses TypeScript types directly within the TypeScript type system. This process does come with an inference cost, which scales with the size and complexity of the types being parsed. Although TypeBox strives to optimize Syntax Types, users should be aware of the following structures:
+
+```typescript
+// Excessively wide structures will result in instantiation limits exceeding
+const A = Parse(`[
+  0, 1, 2, 3, 4, 5, 6, 7,
+  0, 1, 2, 3, 4, 5, 6, 7,
+  0, 1, 2, 3, 4, 5, 6, 7,
+  0, 1, 2, 3, 4, 5, 6, 7,
+  0, 1, 2, 3, 4, 5, 6, 7,
+  0, 1, 2, 3, 4, 5, 6, 7,
+  0, 1, 2, 3, 4, 5, 6, 7,
+  0, 1, 2, 3, 4, 5, 6, 7,
+]`)
+
+// Excessively nested structures will result in instantiation limits exceeding
+const B = Parse(`{
+  x: {
+    y: {
+      z: {
+        w: 1 <-- Type instantiation is excessively deep and possibly infinite.
+      } 
+    }
+  }  
+}`)
+```
+
+If Syntax Types exceed TypeScript's instantiation limits, users are advised to fall back to the Standard Type Builder API. Alternatively, TypeBox offers a `ParseOnly` function that parses the TypeScript syntax at runtime without statically inferring the schema.
+
+```typescript
+import { ParseOnly } from '@sinclair/typebox/syntax'
+
+// const A: TSchema | undefined 
+
+const A = ParseOnly(`{
+  x: {
+    y: {
+      z: {
+        w: 1
+      } 
+    }
+  }  
+}`)
+```
+
+For more information on static parsing, refer to the [ParseBox](https://github.com/sinclairzx81/parsebox) project.
+
 
 <a name='typeregistry'></a>
 

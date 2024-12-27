@@ -4,7 +4,9 @@
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2024 Haydn Paterson (sinclair) <haydn.developer@gmail.com>
+2020 Evgeny Poberezkin
+2024 Haydn Paterson (sinclair) <haydn.developer@gmail.com>
+
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,9 +30,20 @@ THE SOFTWARE.
 
 import { FormatRegistry } from '../type/index'
 
-const pattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+// ------------------------------------------------------------------
+// This expression is borrowed the ajv-format project for compatibility. 
+// All credit goes to Evgeny Poberezkin and contributors.
+// ------------------------------------------------------------------
 
+const Uuid = /^(?:urn:uuid:)?[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/i
+
+/**
+ * Returns true if this string is a uuid
+ * @documentation https://datatracker.ietf.org/doc/html/rfc4122
+ * @example `00000000-0000-0000-0000-000000000000`
+ */
 export function IsUuid(value: string): boolean {
-  return pattern.test(value)
+  return Uuid.test(value)
 }
+
 FormatRegistry.Set('uuid', IsUuid)

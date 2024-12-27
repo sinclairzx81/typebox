@@ -35,7 +35,7 @@ export interface TUndefined extends TSchema {
   static: undefined
   type: 'undefined'
 }
-/** `[JavaScript]` Creates a Undefined type */
+/** `[Extended]` Creates a Undefined type */
 export function Undefined(options?: SchemaOptions): TUndefined {
   return CreateType({ [Kind]: 'Undefined', type: 'undefined' }, options) as never
 }

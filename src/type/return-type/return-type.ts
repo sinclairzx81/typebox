@@ -32,7 +32,7 @@ import type { TFunction } from '../function/index'
 
 export type TReturnType<T extends TFunction> = T['returns']
 
-/** `[JavaScript]` Extracts the ReturnType from the given Function type */
+/** `[Extended]` Extracts the ReturnType from the given Function type */
 export function ReturnType<T extends TFunction<any[], any>>(schema: T, options?: SchemaOptions): TReturnType<T> {
   return CreateType(schema.returns, options) as never
 }

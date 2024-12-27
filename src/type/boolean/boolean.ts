@@ -35,7 +35,7 @@ export interface TBoolean extends TSchema {
   static: boolean
   type: 'boolean'
 }
-/** `[Json]` Creates a Boolean type */
+/** `[Standard]` Creates a Boolean type */
 export function Boolean(options?: SchemaOptions): TBoolean {
   return CreateType({ [Kind]: 'Boolean', type: 'boolean' }, options) as never
 }

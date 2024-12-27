@@ -35,7 +35,7 @@ export interface TVoid extends TSchema {
   static: void
   type: 'void'
 }
-/** `[JavaScript]` Creates a Void type */
+/** `[Extended]` Creates a Void type */
 export function Void(options?: SchemaOptions): TVoid {
   return CreateType({ [Kind]: 'Void', type: 'void' }, options) as never
 }

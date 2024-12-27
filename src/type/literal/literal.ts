@@ -43,7 +43,7 @@ export interface TLiteral<T extends TLiteralValue = TLiteralValue> extends TSche
   static: T
   const: T
 }
-/** `[Json]` Creates a Literal type */
+/** `[Standard]` Creates a Literal type */
 export function Literal<T extends TLiteralValue>(value: T, options?: SchemaOptions): TLiteral<T> {
   return CreateType(
     {

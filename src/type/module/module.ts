@@ -66,7 +66,7 @@ export class TModule<ModuleProperties extends TProperties, ComputedModulePropert
     const identified = this.WithIdentifiers(computed as never)
     this.$defs = identified as never
   }
-  /** `[Json]` Imports a Type by Key. */
+  /** `[Standard]` Imports a Type by Key. */
   public Import<Key extends keyof ComputedModuleProperties>(key: Key, options?: SchemaOptions): TImport<ComputedModuleProperties, Key> {
     const $defs = { ...this.$defs, [key]: CreateType(this.$defs[key], options) }
     return CreateType({ [Kind]: 'Import', $defs, $ref: key }) as never
@@ -78,7 +78,7 @@ export class TModule<ModuleProperties extends TProperties, ComputedModulePropert
     }, {}) as never
   }
 }
-/** `[Json]` Creates a Type Definition Module. */
+/** `[Standard]` Creates a Type Definition Module. */
 export function Module<Properties extends TProperties>(properties: Properties): TModule<Properties> {
   return new TModule(properties)
 }

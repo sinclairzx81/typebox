@@ -36,7 +36,7 @@ export interface TNot<T extends TSchema = TSchema> extends TSchema {
   static: T extends TNot<infer U> ? Static<U> : unknown
   not: T
 }
-/** `[Json]` Creates a Not type */
+/** `[Standard]` Creates a Not type */
 export function Not<Type extends TSchema>(type: Type, options?: SchemaOptions): TNot<Type> {
   return CreateType({ [Kind]: 'Not', not: type }, options) as never
 }

@@ -4,7 +4,9 @@
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2024 Haydn Paterson (sinclair) <haydn.developer@gmail.com>
+2020 Evgeny Poberezkin
+2024 Haydn Paterson (sinclair) <haydn.developer@gmail.com>
+
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,10 +30,24 @@ THE SOFTWARE.
 
 import { FormatRegistry } from '../type/index'
 
-const pattern = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})([+-]\d{2}:\d{2}|Z)$/
+// ------------------------------------------------------------------
+// This code ported form the ajv-format project for compatibility. 
+// All credit goes to Evgeny Poberezkin and contributors.
+// ------------------------------------------------------------------
 
-export function IsDateTime(value: string): boolean {
-  return pattern.test(value) && new globalThis.Date(value) instanceof globalThis.Date
+import { IsDate } from './date'
+import { IsTime } from './time'
+
+const DateTimeSeperator = /t|\s/i
+
+/**
+ * Returns true of this string is a date-time
+ * @documentation https://datatracker.ietf.org/doc/html/rfc3339#section-5.6
+ * @example `2020-12-12T20:20:40+00:00`
+ */
+export function IsDateTime(value: string, strictTimeZone?: boolean): boolean {
+  const dateTime: string[] = value.split(DateTimeSeperator)
+  return dateTime.length === 2 && IsDate(dateTime[0]) && IsTime(dateTime[1], strictTimeZone)
 }
 
 FormatRegistry.Set('date-time', IsDateTime)

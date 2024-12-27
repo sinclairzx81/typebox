@@ -65,7 +65,7 @@ export interface TFunction<T extends TSchema[] = TSchema[], U extends TSchema = 
   parameters: T
   returns: U
 }
-/** `[JavaScript]` Creates a Function type */
+/** `[Extended]` Creates a Function type */
 export function Function<T extends TSchema[], U extends TSchema>(parameters: [...T], returns: U, options?: SchemaOptions): TFunction<T, U> {
   return CreateType({ [Kind]: 'Function', type: 'Function', parameters, returns }, options) as never
 }

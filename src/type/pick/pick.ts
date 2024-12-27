@@ -166,11 +166,11 @@ export type TPick<Type extends TSchema, Key extends TSchema | PropertyKey[],
   [IsTypeRef, IsKeyRef] extends [true, false] ? TComputed<'Pick', [Type, TResolveTypeKey<Key>]> :
   TPickResolve<Type, TResolvePropertyKeys<Key>>
 )
-/** `[Json]` Constructs a type whose keys are picked from the given type */
+/** `[Standard]` Constructs a type whose keys are picked from the given type */
 export function Pick<Type extends TSchema, Key extends PropertyKey[]>(type: Type, key: readonly [...Key], options?: SchemaOptions): TPick<Type, Key>
-/** `[Json]` Constructs a type whose keys are picked from the given type */
+/** `[Standard]` Constructs a type whose keys are picked from the given type */
 export function Pick<Type extends TSchema, Key extends TSchema>(type: Type, key: Key, options?: SchemaOptions): TPick<Type, Key>
-/** `[Json]` Constructs a type whose keys are picked from the given type */
+/** `[Standard]` Constructs a type whose keys are picked from the given type */
 // prettier-ignore
 export function Pick(type: any, key: any, options?: SchemaOptions): any {
   const typeKey: TSchema = IsArrayValue(key) ? UnionFromPropertyKeys(key as PropertyKey[]) : key 

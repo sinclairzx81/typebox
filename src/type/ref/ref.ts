@@ -44,10 +44,10 @@ export interface TRef<Ref extends string = string> extends TSchema {
 
 export type TRefUnsafe<Type extends TSchema> = TUnsafe<Static<Type>>
 
-/** `[Json]` Creates a Ref type.*/
+/** `[Standard]` Creates a Ref type.*/
 export function Ref<Ref extends string>($ref: Ref, options?: SchemaOptions): TRef<Ref>
 /**
- * @deprecated `[Json]` Creates a Ref type. This signature was deprecated in 0.34.0 where Ref requires callers to pass
+ * @deprecated `[Standard]` Creates a Ref type. This signature was deprecated in 0.34.0 where Ref requires callers to pass
  * a `string` value for the reference (and not a schema).
  *
  * To adhere to the 0.34.0 signature, Ref implementations should be updated to the following.
@@ -75,7 +75,7 @@ export function Ref<Ref extends string>($ref: Ref, options?: SchemaOptions): TRe
  * ```
  */
 export function Ref<Type extends TSchema>(type: Type, options?: SchemaOptions): TRefUnsafe<Type>
-/** `[Json]` Creates a Ref type. The referenced type must contain a $id */
+/** `[Standard]` Creates a Ref type. The referenced type must contain a $id */
 export function Ref(...args: any[]): unknown {
   const [$ref, options] = typeof args[0] === 'string' ? [args[0], args[1]] : [args[0].$id, args[1]]
   if (typeof $ref !== 'string') throw new TypeBoxError('Ref: $ref must be a string')

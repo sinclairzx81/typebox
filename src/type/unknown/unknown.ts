@@ -34,7 +34,7 @@ export interface TUnknown extends TSchema {
   [Kind]: 'Unknown'
   static: unknown
 }
-/** `[Json]` Creates an Unknown type */
+/** `[Standard]` Creates an Unknown type */
 export function Unknown(options?: SchemaOptions): TUnknown {
   return CreateType({ [Kind]: 'Unknown' }, options) as never
 }

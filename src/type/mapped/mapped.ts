@@ -258,11 +258,11 @@ export type TMapped<
   R extends TProperties = Evaluate<TMappedFunctionReturnType<K, ReturnType<F>>>, 
 > = Ensure<TObject<R>>
 
-/** `[Json]` Creates a Mapped object type */
+/** `[Standard]` Creates a Mapped object type */
 export function Mapped<K extends TSchema, I extends PropertyKey[] = TIndexPropertyKeys<K>, F extends TMappedFunction<I> = TMappedFunction<I>, R extends TMapped<I, F> = TMapped<I, F>>(key: K, map: F, options?: ObjectOptions): R
-/** `[Json]` Creates a Mapped object type */
+/** `[Standard]` Creates a Mapped object type */
 export function Mapped<K extends PropertyKey[], F extends TMappedFunction<K> = TMappedFunction<K>, R extends TMapped<K, F> = TMapped<K, F>>(key: [...K], map: F, options?: ObjectOptions): R
-/** `[Json]` Creates a Mapped object type */
+/** `[Standard]` Creates a Mapped object type */
 export function Mapped(key: any, map: Function, options?: ObjectOptions) {
   const K = IsSchema(key) ? IndexPropertyKeys(key) : (key as PropertyKey[])
   const RT = map({ [Kind]: 'MappedKey', keys: K } as TMappedKey)

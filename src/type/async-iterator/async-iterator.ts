@@ -37,7 +37,7 @@ export interface TAsyncIterator<T extends TSchema = TSchema> extends TSchema {
   type: 'AsyncIterator'
   items: T
 }
-/** `[JavaScript]` Creates a AsyncIterator type */
+/** `[Extended]` Creates a AsyncIterator type */
 export function AsyncIterator<T extends TSchema>(items: T, options?: SchemaOptions): TAsyncIterator<T> {
   return CreateType({ [Kind]: 'AsyncIterator', type: 'AsyncIterator', items }, options) as never
 }

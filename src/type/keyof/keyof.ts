@@ -107,7 +107,7 @@ export type TKeyOf<Type extends TSchema> = (
   Type extends TMappedResult ? TKeyOfFromMappedResult<Type> :
   TKeyOfFromType<Type>
 )
-/** `[Json]` Creates a KeyOf type */
+/** `[Standard]` Creates a KeyOf type */
 export function KeyOf<Type extends TSchema>(type: Type, options?: SchemaOptions): TKeyOf<Type> {
   return (IsComputed(type) ? FromComputed(type.target, type.parameters) : IsRef(type) ? FromRef(type.$ref) : IsMappedResult(type) ? KeyOfFromMappedResult(type, options) : KeyOfFromType(type, options)) as never
 }

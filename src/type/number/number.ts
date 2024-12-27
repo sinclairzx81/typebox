@@ -42,7 +42,7 @@ export interface TNumber extends TSchema, NumberOptions {
   static: number
   type: 'number'
 }
-/** `[Json]` Creates a Number type */
+/** `[Standard]` Creates a Number type */
 export function Number(options?: NumberOptions): TNumber {
   return CreateType({ [Kind]: 'Number', type: 'number' }, options) as never
 }

@@ -46,11 +46,11 @@ export interface TRegExp extends TSchema {
   flags: string
 }
 
-/** `[JavaScript]` Creates a RegExp type */
+/** `[Extended]` Creates a RegExp type */
 export function RegExp(pattern: string, options?: RegExpOptions): TRegExp
-/** `[JavaScript]` Creates a RegExp type */
+/** `[Extended]` Creates a RegExp type */
 export function RegExp(regex: RegExp, options?: RegExpOptions): TRegExp
-/** `[JavaScript]` Creates a RegExp type */
+/** `[Extended]` Creates a RegExp type */
 export function RegExp(unresolved: RegExp | string, options?: RegExpOptions) {
   const expr = IsString(unresolved) ? new globalThis.RegExp(unresolved) : unresolved
   return CreateType({ [Kind]: 'RegExp', type: 'RegExp', source: expr.source, flags: expr.flags }, options) as never

@@ -31,7 +31,7 @@ import { Intrinsic, type TIntrinsic } from './intrinsic'
 
 // prettier-ignore
 export type TUppercase<T extends TSchema> = TIntrinsic<T, 'Uppercase'>
-/** `[Json]` Intrinsic function to Uppercase LiteralString types */
+/** `[Standard]` Intrinsic function to Uppercase LiteralString types */
 export function Uppercase<T extends TSchema>(T: T, options: SchemaOptions = {}): TUppercase<T> {
   return Intrinsic(T, 'Uppercase', options)
 }

@@ -264,23 +264,23 @@ export function IndexFromComputed<Type extends TSchema, Key extends TSchema>(typ
 export type TIndex<Type extends TSchema, PropertyKeys extends PropertyKey[]> = (
   FromSchema<Type, PropertyKeys>
 )
-/** `[Json]` Returns an Indexed property type for the given keys */
+/** `[Standard]` Returns an Indexed property type for the given keys */
 export function Index<Type extends TRef, Key extends TSchema>(type: Type, key: Key, options?: SchemaOptions): TIndexFromComputed<Type, Key>
-/** `[Json]` Returns an Indexed property type for the given keys */
+/** `[Standard]` Returns an Indexed property type for the given keys */
 export function Index<Type extends TSchema, Key extends TRef>(type: Type, key: Key, options?: SchemaOptions): TIndexFromComputed<Type, Key>
-/** `[Json]` Returns an Indexed property type for the given keys */
+/** `[Standard]` Returns an Indexed property type for the given keys */
 export function Index<Type extends TRef, Key extends TRef>(type: Type, key: Key, options?: SchemaOptions): TIndexFromComputed<Type, Key>
-/** `[Json]` Returns an Indexed property type for the given keys */
+/** `[Standard]` Returns an Indexed property type for the given keys */
 export function Index<Type extends TSchema, MappedResult extends TMappedResult>(type: Type, mappedResult: MappedResult, options?: SchemaOptions): TIndexFromMappedResult<Type, MappedResult>
-/** `[Json]` Returns an Indexed property type for the given keys */
+/** `[Standard]` Returns an Indexed property type for the given keys */
 export function Index<Type extends TSchema, MappedResult extends TMappedResult>(type: Type, mappedResult: MappedResult, options?: SchemaOptions): TIndexFromMappedResult<Type, MappedResult>
-/** `[Json]` Returns an Indexed property type for the given keys */
+/** `[Standard]` Returns an Indexed property type for the given keys */
 export function Index<Type extends TSchema, MappedKey extends TMappedKey>(type: Type, mappedKey: MappedKey, options?: SchemaOptions): TIndexFromMappedKey<Type, MappedKey>
-/** `[Json]` Returns an Indexed property type for the given keys */
+/** `[Standard]` Returns an Indexed property type for the given keys */
 export function Index<Type extends TSchema, Key extends TSchema, PropertyKeys extends PropertyKey[] = TIndexPropertyKeys<Key>>(T: Type, K: Key, options?: SchemaOptions): TIndex<Type, PropertyKeys>
-/** `[Json]` Returns an Indexed property type for the given keys */
+/** `[Standard]` Returns an Indexed property type for the given keys */
 export function Index<Type extends TSchema, PropertyKeys extends PropertyKey[]>(type: Type, propertyKeys: readonly [...PropertyKeys], options?: SchemaOptions): TIndex<Type, PropertyKeys>
-/** `[Json]` Returns an Indexed property type for the given keys */
+/** `[Standard]` Returns an Indexed property type for the given keys */
 export function Index(type: TSchema, key: any, options?: SchemaOptions): any {
   // computed-type
   if (IsRef(type) || IsRef(key)) {

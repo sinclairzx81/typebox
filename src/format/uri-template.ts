@@ -4,7 +4,9 @@
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2024 Haydn Paterson (sinclair) <haydn.developer@gmail.com>
+2020 Evgeny Poberezkin
+2024 Haydn Paterson (sinclair) <haydn.developer@gmail.com>
+
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,9 +30,19 @@ THE SOFTWARE.
 
 import { FormatRegistry } from '../type/index'
 
-const pattern = /^(https?|ftp|file|mailto|data|irc|tel|urn|ws|wss):\/\/[^\s/$.?#].[^\s]*$/i
+// ------------------------------------------------------------------
+// This expression is borrowed the ajv-format project for compatibility. 
+// All credit goes to Evgeny Poberezkin and contributors.
+// ------------------------------------------------------------------
 
-export function UriTemplate(value: string): boolean {
-  return pattern.test(value)
+const UrlTemplate = /^(?:(?:[^\x00-\x20"'<>%\\^`{|}]|%[0-9a-f]{2})|\{[+#./;?&=,!@|]?(?:[a-z0-9_]|%[0-9a-f]{2})+(?::[1-9][0-9]{0,3}|\*)?(?:,(?:[a-z0-9_]|%[0-9a-f]{2})+(?::[1-9][0-9]{0,3}|\*)?)*\})*$/i
+
+/**
+ * Returns true if this string is a uri-template
+ * @documentation https://datatracker.ietf.org/doc/html/rfc6570
+ * @example `/products/{category}/{productId}/reviews/{reviewId}`
+ */
+export function IsUriTemplate(value: string): boolean {
+  return UrlTemplate.test(value)
 }
-FormatRegistry.Set('uri-template', UriTemplate)
+FormatRegistry.Set('uri-template', IsUriTemplate)

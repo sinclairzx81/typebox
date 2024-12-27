@@ -4,7 +4,9 @@
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2024 Haydn Paterson (sinclair) <haydn.developer@gmail.com>
+2020 Evgeny Poberezkin
+2024 Haydn Paterson (sinclair) <haydn.developer@gmail.com>
+
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,12 +30,20 @@ THE SOFTWARE.
 
 import { FormatRegistry } from '../type/index'
 
-const username = "a-z0-9&#%$!'/=_~^*+?`|{}-"
-const charset = 'a-z0-9'
-const pattern = new RegExp(`^[${username}]+(?:\\.[${username}]+)*@(?:[${charset}](?:[${charset}-]*[${charset}])?\\.)+[${charset}](?:[${charset}-]*[${charset}])?$`, 'i')
+// ------------------------------------------------------------------
+// This expression is borrowed the ajv-format project for compatibility. 
+// All credit goes to Evgeny Poberezkin and contributors.
+// ------------------------------------------------------------------
 
+const Email = /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/i
+
+/**
+ * Returns true if this string is an email address.
+ * @documentation https://datatracker.ietf.org/doc/html/rfc5321#section-4.1.2
+ * @example `example@domain.com`
+ */
 export function IsEmail(value: string): boolean {
-  return pattern.test(value)
+  return Email.test(value)
 }
 
 FormatRegistry.Set('email', IsEmail)

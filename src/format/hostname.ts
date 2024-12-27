@@ -4,7 +4,9 @@
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2024 Haydn Paterson (sinclair) <haydn.developer@gmail.com>
+2020 Evgeny Poberezkin
+2024 Haydn Paterson (sinclair) <haydn.developer@gmail.com>
+
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,11 +30,19 @@ THE SOFTWARE.
 
 import { FormatRegistry } from '../type/index'
 
-const alpha = 'a-zA-Z'
-const alpha_num = 'a-zA-Z0-9'
-const pattern = new RegExp(`^(?!:\/\/)([${alpha_num}-_]+\\.)*[${alpha_num}][${alpha_num}-_]{0,61}[${alpha_num}]\\.[${alpha}]{2,}$`)
+// ------------------------------------------------------------------
+// This expression is borrowed the ajv-format project for compatibility. 
+// All credit goes to Evgeny Poberezkin and contributors.
+// ------------------------------------------------------------------
 
+const Hostname = /^(?=.{1,253}\.?$)[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[-0-9a-z]{0,61}[0-9a-z])?)*\.?$/i
+
+/**
+ * Returns true if this string is a hostname
+ * @documentation https://datatracker.ietf.org/doc/html/rfc1123#section-2.1
+ * @example `domain.com`
+ */
 export function IsHostname(value: string): boolean {
-  return pattern.test(value)
+  return Hostname.test(value)
 }
 FormatRegistry.Set('hostname', IsHostname)

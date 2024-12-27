@@ -67,15 +67,15 @@ function OptionalWithFlag<T extends TSchema, F extends boolean>(schema: T, F: F)
 // ------------------------------------------------------------------
 export type TOptional<T extends TSchema> = T & { [OptionalKind]: 'Optional' }
 
-/** `[Json]` Creates a Optional property */
+/** `[Standard]` Creates a Optional property */
 export function Optional<T extends TMappedResult, F extends boolean>(schema: T, enable: F): TOptionalFromMappedResult<T, F>
-/** `[Json]` Creates a Optional property */
+/** `[Standard]` Creates a Optional property */
 export function Optional<T extends TSchema, F extends boolean>(schema: T, enable: F): TOptionalWithFlag<T, F>
-/** `[Json]` Creates a Optional property */
+/** `[Standard]` Creates a Optional property */
 export function Optional<T extends TMappedResult>(schema: T): TOptionalFromMappedResult<T, true>
-/** `[Json]` Creates a Optional property */
+/** `[Standard]` Creates a Optional property */
 export function Optional<T extends TSchema>(schema: T): TOptionalWithFlag<T, true>
-/** `[Json]` Creates a Optional property */
+/** `[Standard]` Creates a Optional property */
 export function Optional(schema: TSchema, enable?: boolean): any {
   const F = enable ?? true
   return IsMappedResult(schema) ? OptionalFromMappedResult(schema, F) : OptionalWithFlag(schema, F)

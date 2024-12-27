@@ -239,7 +239,7 @@ export type TRecordOrObject<Key extends TSchema, Type extends TSchema> = (
 // ------------------------------------------------------------------
 // TRecordOrObject
 // ------------------------------------------------------------------
-/** `[Json]` Creates a Record type */
+/** `[Standard]` Creates a Record type */
 export function Record<Key extends TSchema, Type extends TSchema>(key: Key, type: Type, options: ObjectOptions = {}): TRecordOrObject<Key, Type> {
   // prettier-ignore
   return (

@@ -140,11 +140,11 @@ export type TRequired<Type extends TSchema> = (
   Type extends TObject<infer Properties extends TProperties> ? TFromObject<TObject<Properties>> :
   TObject<{}>
 )
-/** `[Json]` Constructs a type where all properties are required */
+/** `[Standard]` Constructs a type where all properties are required */
 export function Required<MappedResult extends TMappedResult>(type: MappedResult, options?: SchemaOptions): TRequiredFromMappedResult<MappedResult>
-/** `[Json]` Constructs a type where all properties are required */
+/** `[Standard]` Constructs a type where all properties are required */
 export function Required<Type extends TSchema>(type: Type, options?: SchemaOptions): TRequired<Type>
-/** `[Json]` Constructs a type where all properties are required */
+/** `[Standard]` Constructs a type where all properties are required */
 export function Required<Type extends TSchema>(type: Type, options?: SchemaOptions): never {
   if (IsMappedResult(type)) {
     return RequiredFromMappedResult(type, options) as never

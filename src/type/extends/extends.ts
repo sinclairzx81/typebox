@@ -63,13 +63,13 @@ function ExtendsResolve<L extends TSchema, R extends TSchema, T extends TSchema,
 // ------------------------------------------------------------------
 export type TExtends<L extends TSchema, R extends TSchema, T extends TSchema, F extends TSchema> = TExtendsResolve<L, R, T, F>
 
-/** `[Json]` Creates a Conditional type */
+/** `[Standard]` Creates a Conditional type */
 export function Extends<L extends TMappedResult, R extends TSchema, T extends TSchema, F extends TSchema>(L: L, R: R, T: T, F: F, options?: SchemaOptions): TExtendsFromMappedResult<L, R, T, F>
-/** `[Json]` Creates a Conditional type */
+/** `[Standard]` Creates a Conditional type */
 export function Extends<L extends TMappedKey, R extends TSchema, T extends TSchema, F extends TSchema>(L: L, R: R, T: T, F: F, options?: SchemaOptions): TExtendsFromMappedKey<L, R, T, F>
-/** `[Json]` Creates a Conditional type */
+/** `[Standard]` Creates a Conditional type */
 export function Extends<L extends TSchema, R extends TSchema, T extends TSchema, F extends TSchema>(L: L, R: R, T: T, F: F, options?: SchemaOptions): TExtends<L, R, T, F>
-/** `[Json]` Creates a Conditional type */
+/** `[Standard]` Creates a Conditional type */
 export function Extends<L extends TSchema, R extends TSchema, T extends TSchema, F extends TSchema>(L: L, R: R, T: T, F: F, options?: SchemaOptions) {
   // prettier-ignore
   return (

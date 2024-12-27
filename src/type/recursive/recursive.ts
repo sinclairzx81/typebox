@@ -54,7 +54,7 @@ export interface TRecursive<T extends TSchema> extends TSchema {
 }
 // Auto Tracked For Recursive Types without ID's
 let Ordinal = 0
-/** `[Json]` Creates a Recursive type */
+/** `[Standard]` Creates a Recursive type */
 export function Recursive<T extends TSchema>(callback: (thisType: TThis) => T, options: SchemaOptions = {}): TRecursive<T> {
   if (IsUndefined(options.$id)) (options as any).$id = `T${Ordinal++}`
   const thisType = CloneType(callback({ [Kind]: 'This', $ref: `${options.$id}` } as any))

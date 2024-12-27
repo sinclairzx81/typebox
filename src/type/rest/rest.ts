@@ -58,7 +58,7 @@ function RestResolve<T extends TSchema>(T: T) {
 // ------------------------------------------------------------------
 export type TRest<T extends TSchema> = TRestResolve<T>
 
-/** `[Json]` Extracts interior Rest elements from Tuple, Intersect and Union types */
+/** `[Standard]` Extracts interior Rest elements from Tuple, Intersect and Union types */
 export function Rest<T extends TSchema>(T: T): TRest<T> {
   return RestResolve(T)
 }
