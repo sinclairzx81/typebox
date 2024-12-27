@@ -4,10 +4,6 @@
 
 The MIT License (MIT)
 
-2020 Evgeny Poberezkin
-2024 Haydn Paterson (sinclair) <haydn.developer@gmail.com>
-
-
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
@@ -30,11 +26,6 @@ THE SOFTWARE.
 
 import { FormatRegistry } from '../type/index'
 
-// ------------------------------------------------------------------
-// This code ported form the ajv-format project for compatibility. 
-// All credit goes to Evgeny Poberezkin and contributors.
-// ------------------------------------------------------------------
-
 import { IsDate } from './date'
 import { IsTime } from './time'
 
@@ -42,7 +33,10 @@ const DateTimeSeperator = /t|\s/i
 
 /**
  * Returns true of this string is a date-time
- * @documentation https://datatracker.ietf.org/doc/html/rfc3339#section-5.6
+ * @spec https://datatracker.ietf.org/doc/html/rfc3339#section-5.6
+ * @see https://github.com/ajv-validator/ajv-formats
+ * @author Evgeny Poberezkin and contributors
+ * @license MIT
  * @example `2020-12-12T20:20:40+00:00`
  */
 export function IsDateTime(value: string, strictTimeZone?: boolean): boolean {

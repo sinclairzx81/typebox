@@ -4,10 +4,6 @@
 
 The MIT License (MIT)
 
-2020 Evgeny Poberezkin
-2024 Haydn Paterson (sinclair) <haydn.developer@gmail.com>
-
-
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
@@ -31,7 +27,7 @@ THE SOFTWARE.
 import { FormatRegistry } from '../type/index'
 
 // ------------------------------------------------------------------
-// This expression is borrowed the ajv-format project for compatibility. 
+// This expression is borrowed the ajv-format project for compatibility.
 // All credit goes to Evgeny Poberezkin and contributors.
 // ------------------------------------------------------------------
 
@@ -39,7 +35,10 @@ const URI_REFERENCE = /^(?:(?:[a-z][a-z0-9+\-.]*:)?\/?\/)?(?:[^\\\s#][^\s#]*)?(?
 
 /**
  * Returns true if this string is a uri-reference
- * @documentation https://datatracker.ietf.org/doc/html/rfc3986#section-4.1
+ * @spec https://datatracker.ietf.org/doc/html/rfc3986#section-4.1
+ * @see https://github.com/ajv-validator/ajv-formats
+ * @author Evgeny Poberezkin and contributors
+ * @license MIT
  * @example `/path/to/resource`
  */
 export function IsUriReference(value: string): boolean {

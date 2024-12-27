@@ -4,10 +4,6 @@
 
 The MIT License (MIT)
 
-2020 Evgeny Poberezkin
-2024 Haydn Paterson (sinclair) <haydn.developer@gmail.com>
-
-
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
@@ -30,11 +26,6 @@ THE SOFTWARE.
 
 import { FormatRegistry } from '../type/index'
 
-// --------------------------------------------------------------------------
-// This code ported form the ajv-format project for compatibility. All credit
-// goes to Evgeny Poberezkin and contributors.
-// --------------------------------------------------------------------------
-
 const Days = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 const Date = /^(\d\d\d\d)-(\d\d)-(\d\d)$/
 
@@ -43,7 +34,10 @@ function IsLeapYear(year: number): boolean {
 }
 /**
  * Returns true of this string is a date
- * @documentation https://datatracker.ietf.org/doc/html/rfc3339#section-5.6
+ * @spec https://datatracker.ietf.org/doc/html/rfc3339#section-5.6
+ * @see https://github.com/ajv-validator/ajv-formats
+ * @author Evgeny Poberezkin and contributors
+ * @license MIT
  * @example `2020-12-12`
  */
 export function IsDate(value: string): boolean {

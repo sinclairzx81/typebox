@@ -4,10 +4,6 @@
 
 The MIT License (MIT)
 
-2020 Evgeny Poberezkin
-2024 Haydn Paterson (sinclair) <haydn.developer@gmail.com>
-
-
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
@@ -39,7 +35,10 @@ const TIME = /^(\d\d):(\d\d):(\d\d(?:\.\d+)?)(z|([+-])(\d\d)(?::?(\d\d))?)?$/i
 
 /**
  * Returns true of this string is a iso time.
- * @documentation https://datatracker.ietf.org/doc/html/rfc3339#section-5.6
+ * @spec https://datatracker.ietf.org/doc/html/rfc3339#section-5.6
+ * @see https://github.com/ajv-validator/ajv-formats
+ * @author Evgeny Poberezkin and contributors
+ * @license MIT
  * @example `20:20:39+00:00`
  */
 export function IsTime(value: string, strictTimeZone?: boolean): boolean {

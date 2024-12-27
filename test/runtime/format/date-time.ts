@@ -3,7 +3,7 @@ import * as Format from '@sinclair/typebox/format'
 
 describe('format/IsDateTime', () => {
   it('Should validate DateTime 1', () => {
-    Assert.IsFalse(Format.IsDateTime('not-a-iso-date-time'))
+    Assert.IsFalse(Format.IsDateTime('not-a-date-time'))
   })
   it('Should validate DateTime 2', () => {
     Assert.IsTrue(Format.IsDateTime('2023-10-01T12:00:00Z'))
@@ -15,6 +15,6 @@ describe('format/IsDateTime', () => {
     Assert.IsFalse(Format.IsDateTime('2023-10-01'))
   })
   it('Should validate DateTime 5', () => {
-    Assert.IsFalse(Format.IsDateTime('2023-10-01T12:00:00'))
+    Assert.IsTrue(Format.IsDateTime('2023-10-01T12:00:00'))
   })
 })

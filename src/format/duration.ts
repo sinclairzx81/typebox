@@ -4,10 +4,6 @@
 
 The MIT License (MIT)
 
-2020 Evgeny Poberezkin
-2024 Haydn Paterson (sinclair) <haydn.developer@gmail.com>
-
-
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
@@ -30,16 +26,14 @@ THE SOFTWARE.
 
 import { FormatRegistry } from '../type/index'
 
-// ------------------------------------------------------------------
-// This expression is borrowed the ajv-format project for compatibility. 
-// All credit goes to Evgeny Poberezkin and contributors.
-// ------------------------------------------------------------------
-
 const Duration = /^P(?!$)((\d+Y)?(\d+M)?(\d+D)?(T(?=\d)(\d+H)?(\d+M)?(\d+S)?)?|(\d+W)?)$/
 
 /**
- * `[Ajv-Formats]` Returns true if this string is a duration
- * @documentation https://datatracker.ietf.org/doc/html/rfc3339#appendix-A
+ * Returns true if this string is a duration
+ * @spec https://datatracker.ietf.org/doc/html/rfc3339#appendix-A
+ * @see https://github.com/ajv-validator/ajv-formats
+ * @author Evgeny Poberezkin and contributors
+ * @license MIT
  * @example `P3D`
  */
 export function IsDuration(value: string): boolean {
