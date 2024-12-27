@@ -26,7 +26,9 @@ THE SOFTWARE.
 
 import { FormatRegistry } from '../type/index'
 
-const Email = /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/i
+const AllowedUser = "a-z0-9!#$%&'*+/=?^_`{|}~"
+const AllowedDomain = 'a-z0-9'
+const Email = new RegExp(`^[${AllowedUser}-]+(?:\\.[${AllowedUser}-]+)*@(?:[${AllowedDomain}](?:[${AllowedDomain}-]*[${AllowedDomain}])?\\.)+[${AllowedDomain}](?:[${AllowedDomain}-]*[${AllowedDomain}])?$`, 'i')
 
 /**
  * Returns true if this string is an email address.

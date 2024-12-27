@@ -1,7 +1,7 @@
 import { Assert } from '../assert/index'
 import * as Format from '@sinclair/typebox/format'
 
-describe('format/IsIdnHostname', () => {
+describe('format/IdnHostname', () => {
   it('Should validate Idn Hostname 1', () => {
     Assert.IsFalse(Format.IsIdnHostname('not-a-hostname'))
   })

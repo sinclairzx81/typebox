@@ -26,14 +26,17 @@ THE SOFTWARE.
 
 import { FormatRegistry } from '../type/index'
 
-const alpha = 'a-zA-Z\u00A1-\uFFFF' // Alphanumeric + Unicode characters (no symbols)
-const alpha_num = 'a-zA-Z0-9\u00A1-\uFFFF' // Alphanumeric + Unicode characters (no symbols)
-const pattern = new RegExp(`^(?!:\/\/)(?:[${alpha_num}-]{1,63}\\.)*[${alpha_num}][${alpha_num}-]{0,61}[${alpha_num}]\\.[${alpha}]{2,}$`)
+// Extended for international character sets
+const Allowed = 'a-zA-Z0-9\u00A1-\uFFFF'
+const IdnHostname = new RegExp(`^(?=.{1,253}$)(?:[${Allowed}](?:[${Allowed}-]*[${Allowed}])?)(?:\\.(?!-)(?:[${Allowed}](?:[${Allowed}-]*[${Allowed}])?))(?:$|(?=\\.(?!$)))`, 'i')
 
-// example.☺com --- the above says this is a valid hostname_idn..
-
+/**
+ * Returns true if this string is an idn email address.
+ * @spec https://datatracker.ietf.org/doc/html/rfc5890#section-2.3.2.3
+ * @example `example@domain.com`
+ */
 export function IsIdnHostname(value: string): boolean {
-  return pattern.test(value)
+  return IdnHostname.test(value)
 }
 
 FormatRegistry.Set('idn-hostname', IsIdnHostname)

@@ -26,11 +26,18 @@ THE SOFTWARE.
 
 import { FormatRegistry } from '../type/index'
 
-const username = "a-z0-9\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF&#%$!'/=_~^*+?`|{}-"
-const charset = 'a-z0-9\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF'
-const pattern = new RegExp(`^[${username}]+(?:\\.[${username}]+)*@(?:[${charset}](?:[${charset}-]*[${charset}])?\\.)+[${charset}](?:[${charset}-]*[${charset}])?$`, 'i')
+// Extended for international character sets
+const AllowedUser = "a-z0-9!#$%&'*+/=?^_`{|}~\u00A1-\uFFFF"
+const AllowedDomain = 'a-z0-9\u00A1-\uFFFF'
+const Email = new RegExp(`^[${AllowedUser}-]+(?:\\.[${AllowedUser}-]+)*@(?:[${AllowedDomain}](?:[${AllowedDomain}-]*[${AllowedDomain}])?\\.)+[${AllowedDomain}](?:[${AllowedDomain}-]*[${AllowedDomain}])?$`, 'i')
 
+/**
+ * Returns true if this string is a valid idn email address.
+ * @spec https://datatracker.ietf.org/doc/html/rfc5321#section-4.1.2
+ * @example `example@domain.com`
+ */
 export function IsIdnEmail(value: string): boolean {
-  return pattern.test(value)
+  return Email.test(value)
 }
+
 FormatRegistry.Set('idn-email', IsIdnEmail)

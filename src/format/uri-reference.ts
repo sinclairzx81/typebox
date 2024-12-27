@@ -26,11 +26,6 @@ THE SOFTWARE.
 
 import { FormatRegistry } from '../type/index'
 
-// ------------------------------------------------------------------
-// This expression is borrowed the ajv-format project for compatibility.
-// All credit goes to Evgeny Poberezkin and contributors.
-// ------------------------------------------------------------------
-
 const URI_REFERENCE = /^(?:(?:[a-z][a-z0-9+\-.]*:)?\/?\/)?(?:[^\\\s#][^\s#]*)?(?:#[^\\\s]*)?$/i
 
 /**

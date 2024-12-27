@@ -1,7 +1,7 @@
 import { Assert } from '../assert/index'
 import * as Format from '@sinclair/typebox/format'
 
-describe('format/IsDateTime', () => {
+describe('format/DateTime', () => {
   it('Should validate DateTime 1', () => {
     Assert.IsFalse(Format.IsDateTime('not-a-date-time'))
   })

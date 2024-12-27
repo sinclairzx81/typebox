@@ -29,7 +29,7 @@ import { FormatRegistry } from '../type/index'
 const Uri = /^(?:[a-z][a-z0-9+\-.]*:)(?:\/?\/)?[^\s]*$/i
 
 /**
- * Returns true if this string is a uri
+ * Returns true if this string is a valid Uri.
  * @spec https://datatracker.ietf.org/doc/html/rfc3986
  * @see https://github.com/ajv-validator/ajv-formats
  * @author Evgeny Poberezkin and contributors

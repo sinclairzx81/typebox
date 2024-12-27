@@ -26,10 +26,11 @@ THE SOFTWARE.
 
 import { FormatRegistry } from '../type/index'
 
-const Hostname = /^(?=.{1,253}\.?$)[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[-0-9a-z]{0,61}[0-9a-z])?)*\.?$/i
+const Allowed = `a-z0-9`
+const Hostname = new RegExp(`^(?=.{1,253}\\.?$)[${Allowed}](?:[${Allowed}-]{0,61}[${Allowed}])?(?:\\.[${Allowed}](?:[-${Allowed}]{0,61}[${Allowed}])?)*\\.?$`, 'i')
 
 /**
- * Returns true if this string is a hostname
+ * Returns true if this string is a valid hostname
  * @spec https://datatracker.ietf.org/doc/html/rfc1123#section-2.1
  * @see https://github.com/ajv-validator/ajv-formats
  * @author Evgeny Poberezkin and contributors

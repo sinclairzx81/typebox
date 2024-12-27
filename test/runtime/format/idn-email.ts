@@ -1,7 +1,7 @@
 import { Assert } from '../assert/index'
 import * as Format from '@sinclair/typebox/format'
 
-describe('format/IsIdnEmail', () => {
+describe('format/IdnEmail', () => {
   it('Should validate IdnEmail 1', () => {
     Assert.IsFalse(Format.IsIdnEmail('not-a-email'))
   })

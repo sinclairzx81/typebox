@@ -26,10 +26,10 @@ THE SOFTWARE.
 
 import { FormatRegistry } from '../type/index'
 
-const IpV4 = /^(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.){3}(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)$/
+const IpV4 = new RegExp('^(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.){3}(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)$')
 
 /**
- * Returns true if this string is a ipv4 format.
+ * Returns true if this string is a valid ipv4
  * @spec https://datatracker.ietf.org/doc/html/rfc2673#section-3.2
  * @see https://github.com/ajv-validator/ajv-formats
  * @author Evgeny Poberezkin and contributors
