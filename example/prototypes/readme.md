@@ -70,3 +70,53 @@ const T = UnionOneOf([                              // const T = {
 type T = Static<typeof T>                           // type T = 'A' | 'B' | 'C'
 
 ```
+
+## Options
+
+By default, TypeBox does not represent arbituary options as generics aware properties. However, there are cases where having options observable to the type system can be useful, for example conditionally mapping schematics based on custom metadata. The Options function makes user defined options generics aware.
+
+```typescript
+import { Options } from './prototypes'
+
+const A = Options(Type.String(), { foo: 1 })             // Options<TString, { foo: number }>
+
+type A = typeof A extends { foo: number } ? true : false // true: foo property is observable to the type system
+```
+
+## Recursive Map
+
+The Recursive Map type enables deep structural remapping of a type and it's internal constituents. This type accepts a TSchema type and a mapping type function (expressed via HKT). The HKT is applied when traversing the type and it's interior. The mapping HKT can apply conditional tests to each visited type to remap into a new form. The following augments a schematic via Options, and conditionally remaps any schema with an default annotation to make it optional. 
+
+```typescript
+import { Type, TOptional, Static, TSchema } from '@sinclair/typebox'
+
+import { TRecursiveMap, TMappingType, Options } from './prototypes'
+
+// ------------------------------------------------------------------
+// StaticDefault
+// ------------------------------------------------------------------
+export interface StaticDefaultMapping extends TMappingType { 
+  output: (
+    this['input'] extends TSchema                        // if input schematic contains an default 
+      ? this['input'] extends { default: unknown }       // annotation, remap it to be optional, 
+        ? TOptional<this['input']>                       // otherwise just return the schema as is.
+        : this['input']
+      : this['input']
+  )
+}
+export type StaticDefault<Type extends TSchema> = (
+  Static<TRecursiveMap<Type, StaticDefaultMapping>>
+)
+
+// ------------------------------------------------------------------
+// Usage
+// ------------------------------------------------------------------
+
+const T = Type.Object({
+  x: Options(Type.String(), { default: 'hello' }),
+  y: Type.String()
+})
+
+type T = StaticDefault<typeof T>   // { x?: string, y: string }
+type S = Static<typeof T>          // { x: string, y: string }
+```
