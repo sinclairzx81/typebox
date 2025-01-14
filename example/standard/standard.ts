@@ -26,43 +26,60 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { AssertError, Value, ValueError } from '@sinclair/typebox/value'
+import { AssertError, Value, ValueError, ValueErrorType } from '@sinclair/typebox/value'
 import { TSchema, StaticDecode, CloneType } from '@sinclair/typebox'
 
 // ------------------------------------------------------------------
-// StandardSchema: Common
+// StandardSchema
 // ------------------------------------------------------------------
 interface StandardResult<Output> {
   value: Output
-  issues: [ValueError[]]
+  issues: ValueError[]
 }
 interface StandardSchema<Input = unknown, Output = Input> {
-  readonly "~standard": StandardSchemaProps<Input, Output>;
+  readonly "~standard": StandardSchemaProperties<Input, Output>
 }
-
-interface StandardSchemaProps<Input = unknown, Output = Input> {
-  readonly version: 1;
-  readonly vendor: 'TypeBox';
-  readonly validate: (value: unknown) => StandardResult<Output>;
-  readonly types?: undefined;
+interface StandardSchemaProperties<Input = unknown, Output = Input> {
+  readonly version: 1
+  readonly vendor: 'TypeBox'
+  readonly validate: (value: unknown) => StandardResult<Output>
+  readonly types?: undefined
 }
 // ------------------------------------------------------------------
-// StandardSchema: TypeBox
+// Issues
 // ------------------------------------------------------------------
-export type TStandardSchema<Input = unknown, Output = Input, Result = Input & StandardSchema<Input, Output>> = Result
-/** 
- * Augments a Json Schema with runtime validation logic required by StandardSchema. Wrapping a type in this way renders the type
- * incompatible with the Json Schema specification.
- */
-export function StandardSchema<Type extends TSchema>(schema: Type, references: TSchema[] = []): TStandardSchema<Type, StaticDecode<Type>> {
-  const validate = (value: unknown) => {
+// prettier-ignore
+function CreateIssues(schema: TSchema, value: unknown, error: unknown): ValueError[] {
+  const isAssertError = error instanceof AssertError ? error : undefined
+  return !isAssertError 
+    ? [{errors: [], message: 'Unknown error', path: '/', type: ValueErrorType.Kind, schema, value }]
+    : [...isAssertError.Errors()] 
+}
+// ------------------------------------------------------------------
+// Validate
+// ------------------------------------------------------------------
+// prettier-ignore
+function CreateValidator<Type extends TSchema>(schema: Type, references: TSchema[]): (value: unknown) => StandardResult<StaticDecode<Type>> {
+  return (value: unknown): StandardResult<StaticDecode<Type>> => {
     try {
-      return { value: Value.Parse(schema, references, value) }
+      return { value: Value.Parse(schema, references, value), issues: [] }
     } catch (error) {
-      const asserted = error instanceof AssertError ? error : undefined
-      return asserted ? { issues: [...asserted.Errors()] } : { issues: ['Unknown error']}
+      return { value: undefined, issues: CreateIssues(schema, value, error) }
     }
   }
-  const standard = { version: 1, vendor: 'TypeBox', validate }
-  return CloneType(schema, { ['~standard']: standard }) as never
+}
+// ------------------------------------------------------------------
+// StandardSchema
+// ------------------------------------------------------------------
+/** Augments a TypeBox type with the `~standard` validation interface. */
+export type TStandardSchema<Input = unknown, Output = Input> = (
+  Input & StandardSchema<Input, Output>
+)
+/** Augments a TypeBox type with the `~standard` validation interface. */
+export function StandardSchema<Type extends TSchema>(schema: Type, references: TSchema[] = []): TStandardSchema<Type, StaticDecode<Type>> {
+  const standard = { version: 1, vendor: 'TypeBox', validate: CreateValidator(schema, references) }
+  return Object.defineProperty(CloneType(schema), "~standard", { 
+    enumerable: false, 
+    value: standard 
+  }) as never
 }

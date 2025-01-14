@@ -26,10 +26,15 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export * from './discriminated-union'
-export * from './from-schema'
-export * from './options'
-export * from './partial-deep'
-export * from './union-enum'
-export * from './union-oneof'
-export * from './recursive-map'
+import { TSchema, CloneType } from '@sinclair/typebox'
+
+// prettier-ignore
+export type TOptions<Type extends TSchema, Options extends Record<PropertyKey, unknown>> = (
+  Type & Options
+)
+
+/** `[Prototype]` Augments a schema with additional generics aware properties */
+// prettier-ignore
+export function Options<Type extends TSchema, Options extends Record<PropertyKey, unknown>>(type: Type, options: Options): TOptions<Type, Options> {
+  return CloneType(type, options) as never
+}
