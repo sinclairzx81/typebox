@@ -384,7 +384,7 @@ export namespace TypeCompiler {
     }
   }
   function* FromPromise(schema: TPromise, references: TSchema[], value: string): IterableIterator<string> {
-    yield `(typeof value === 'object' && typeof ${value}.then === 'function')`
+    yield `${value} instanceof Promise`
   }
   function* FromRecord(schema: TRecord, references: TSchema[], value: string): IterableIterator<string> {
     yield Policy.IsRecordLike(value)
