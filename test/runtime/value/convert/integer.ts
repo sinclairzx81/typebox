@@ -76,4 +76,27 @@ describe('value/convert/Integer', () => {
     const result = Value.Convert(Type.Integer(), value)
     Assert.IsEqual(result, [])
   })
+  // ----------------------------------------------------------
+  // https://github.com/sinclairzx81/typebox/issues/1147
+  // ----------------------------------------------------------
+  it('Should convert large Integer 1', () => {
+    const N = 1738213389080
+    const R = Value.Convert(Type.Integer(), N)
+    Assert.IsEqual(R, N)
+  })
+  it('Should convert large Integer 2', () => {
+    const N = 1738213389080.5555
+    const R = Value.Convert(Type.Integer(), N)
+    Assert.IsEqual(R, 1738213389080)
+  })
+  it('Should convert large Integer 3', () => {
+    const N = '1738213389080'
+    const R = Value.Convert(Type.Integer(), N)
+    Assert.IsEqual(R, 1738213389080)
+  })
+  it('Should convert large Integer 3', () => {
+    const N = '1738213389080.555'
+    const R = Value.Convert(Type.Integer(), N)
+    Assert.IsEqual(R, 1738213389080)
+  })
 })
