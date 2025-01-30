@@ -25,31 +25,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
+import { BaseRegistry } from "./base";
 
 export type FormatRegistryValidationFunction = (value: string) => boolean
-/** A registry for user defined string formats */
-const map = new Map<string, FormatRegistryValidationFunction>()
-/** Returns the entries in this registry */
-export function Entries() {
-  return new Map(map)
-}
-/** Clears all user defined string formats */
-export function Clear() {
-  return map.clear()
-}
-/** Deletes a registered format */
-export function Delete(format: string) {
-  return map.delete(format)
-}
-/** Returns true if the user defined string format exists */
-export function Has(format: string) {
-  return map.has(format)
-}
-/** Sets a validation function for a user defined string format */
-export function Set(format: string, func: FormatRegistryValidationFunction) {
-  map.set(format, func)
-}
-/** Gets a validation function for a user defined string format */
-export function Get(format: string) {
-  return map.get(format)
-}
+
+const FormatRegistry = new BaseRegistry<FormatRegistryValidationFunction>()
+
+export const Entries = FormatRegistry.Entries
+export const Clear = FormatRegistry.Clear
+export const Delete = FormatRegistry.Delete
+export const Has = FormatRegistry.Has
+export const Set = FormatRegistry.Set
+export const Get = FormatRegistry.Get

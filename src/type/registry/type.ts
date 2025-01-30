@@ -25,32 +25,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
+import { BaseRegistry } from "./base"
 
 export type TypeRegistryValidationFunction<TSchema> = (schema: TSchema, value: unknown) => boolean
-/** A registry for user defined types */
 
-const map = new Map<string, TypeRegistryValidationFunction<any>>()
-/** Returns the entries in this registry */
-export function Entries() {
-  return new Map(map)
-}
-/** Clears all user defined types */
-export function Clear() {
-  return map.clear()
-}
-/** Deletes a registered type */
-export function Delete(kind: string) {
-  return map.delete(kind)
-}
-/** Returns true if this registry contains this kind */
-export function Has(kind: string) {
-  return map.has(kind)
-}
-/** Sets a validation function for a user defined type */
-export function Set<TSchema = unknown>(kind: string, func: TypeRegistryValidationFunction<TSchema>) {
-  map.set(kind, func)
-}
-/** Gets a custom validation function for a user defined type */
-export function Get(kind: string) {
-  return map.get(kind)
-}
+const TypeRegistry = new BaseRegistry<TypeRegistryValidationFunction<any>>()
+
+export const Entries = TypeRegistry.Entries
+export const Clear = TypeRegistry.Clear
+export const Delete = TypeRegistry.Delete
+export const Has = TypeRegistry.Has
+export const Set = TypeRegistry.Set
+export const Get = TypeRegistry.Get
