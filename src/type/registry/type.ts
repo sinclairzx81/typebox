@@ -25,7 +25,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
-import { BaseRegistry } from "./base"
+import { BaseRegistry } from './base'
 
 export type TypeRegistryValidationFunction<TSchema> = (schema: TSchema, value: unknown) => boolean
 
