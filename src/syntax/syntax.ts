@@ -31,6 +31,26 @@ import { Static } from '../parser/index'
 import { Module } from './runtime'
 import { Type } from './static'
 
+// ------------------------------------------------------------------
+// NoInfer
+// ------------------------------------------------------------------
+/** Parses a TSchema type from TypeScript syntax but does not infer schematics */
+export function NoInfer<Context extends Record<PropertyKey, Types.TSchema>, Code extends string>(context: Context, code: Code, options?: Types.SchemaOptions): Types.TSchema | undefined
+/** Parses a TSchema type from TypeScript syntax but does not infer schematics */
+export function NoInfer<Code extends string>(code: Code, options?: Types.SchemaOptions): Types.TSchema | undefined
+/** Parses a TSchema type from TypeScript syntax but does not infer schematics */
+// prettier-ignore
+export function NoInfer(...args: any[]): Types.TSchema | undefined {
+  const withContext = typeof args[0] === 'string' ? false : true
+  const [context, code, options] = withContext ? [args[0], args[1], args[2] || {}] : [{}, args[0], args[1] || {}]
+  const type = Module.Parse('Type', code, context)[0]
+  return Types.KindGuard.IsSchema(type) 
+    ? Types.CloneType(type, options) 
+    : Types.Never(options)
+}
+// ------------------------------------------------------------------
+// Syntax
+// ------------------------------------------------------------------
 /** Infers a TSchema type from TypeScript syntax. */
 // prettier-ignore
 export type TSyntax<Context extends Record<PropertyKey, Types.TSchema>, Code extends string> = (
@@ -46,21 +66,6 @@ export function Syntax<Code extends string>(code: Code, options?: Types.SchemaOp
 export function Syntax(...args: any[]): never {
   return NoInfer.apply(null, args as never) as never
 }
-/** Parses a TSchema type from TypeScript syntax but does not infer schematics */
-export function NoInfer<Context extends Record<PropertyKey, Types.TSchema>, Code extends string>(context: Context, code: Code, options?: Types.SchemaOptions): Types.TSchema | undefined
-/** Parses a TSchema type from TypeScript syntax but does not infer schematics */
-export function NoInfer<Code extends string>(code: Code, options?: Types.SchemaOptions): Types.TSchema | undefined
-/** Parses a TSchema type from TypeScript syntax but does not infer schematics */
-// prettier-ignore
-export function NoInfer(...args: any[]): Types.TSchema | undefined {
-  const withContext = typeof args[0] === 'string' ? false : true
-  const [context, code, options] = withContext ? [args[0], args[1], args[2] || {}] : [{}, args[0], args[1] || {}]
-  const type = Module.Parse('Type', code, context)[0]
-  return Types.KindGuard.IsSchema(type) 
-    ? Types.CloneType(type, options) 
-    : Types.Never(options)
-}
-
 // ------------------------------------------------------------------
 // Deprecated
 // ------------------------------------------------------------------
@@ -81,7 +86,6 @@ export function Parse<Code extends string>(code: Code, options?: Types.SchemaOpt
 export function Parse(...args: any[]): never {
   return NoInfer.apply(null, args as never) as never
 }
-
 /**
  * Parses a TSchema from TypeScript Syntax
  * @deprecated Use NoInfer() function
