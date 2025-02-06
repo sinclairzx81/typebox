@@ -27,12 +27,19 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import { CreateType } from '../create/type'
-import type { TSchema, SchemaOptions } from '../schema/index'
-import type { TConstructor } from '../constructor/index'
+import { type TSchema, SchemaOptions } from '../schema/index'
+import { type TConstructor } from '../constructor/index'
+import { type TNever, Never } from '../never/index'
+import * as KindGuard from '../guard/kind'
 
-export type TInstanceType<T extends TConstructor<TSchema[], TSchema>> = T['returns']
+// prettier-ignore
+export type TInstanceType<Type extends TSchema,
+  Result extends TSchema = Type extends TConstructor<infer _Parameters extends TSchema[], infer InstanceType extends TSchema>
+    ? InstanceType
+    : TNever
+> = Result
 
 /** `[JavaScript]` Extracts the InstanceType from the given Constructor type */
-export function InstanceType<T extends TConstructor<any[], any>>(schema: T, options?: SchemaOptions): TInstanceType<T> {
-  return CreateType(schema.returns, options)
+export function InstanceType<Type extends TSchema>(schema: Type, options?: SchemaOptions): TInstanceType<Type> {
+  return (KindGuard.IsConstructor(schema) ? CreateType(schema.returns, options) : Never(options)) as never
 }

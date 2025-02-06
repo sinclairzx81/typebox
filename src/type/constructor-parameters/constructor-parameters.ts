@@ -27,19 +27,21 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import type { TSchema, SchemaOptions } from '../schema/index'
-import type { Ensure } from '../helpers/index'
 import type { TConstructor } from '../constructor/index'
 import { Tuple, type TTuple } from '../tuple/index'
+import { Never, type TNever } from '../never/index'
+import * as KindGuard from '../guard/kind'
 
 // ------------------------------------------------------------------
 // ConstructorParameters
 // ------------------------------------------------------------------
 // prettier-ignore
-export type TConstructorParameters<T extends TConstructor<TSchema[], TSchema>> = (
-  Ensure<TTuple<T['parameters']>>
+export type TConstructorParameters<Type extends TSchema> = (
+  Type extends TConstructor<infer Parameters extends TSchema[], infer _InstanceType extends TSchema>
+    ? TTuple<Parameters>
+    : TNever
 )
-
 /** `[JavaScript]` Extracts the ConstructorParameters from the given Constructor type */
-export function ConstructorParameters<T extends TConstructor<TSchema[], TSchema>>(schema: T, options?: SchemaOptions): TConstructorParameters<T> {
-  return Tuple(schema.parameters, options)
+export function ConstructorParameters<Type extends TSchema>(schema: Type, options?: SchemaOptions): TConstructorParameters<Type> {
+  return (KindGuard.IsConstructor(schema) ? Tuple(schema.parameters, options) : Never(options)) as never
 }

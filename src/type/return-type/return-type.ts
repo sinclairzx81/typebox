@@ -27,12 +27,19 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import { CreateType } from '../create/type'
-import type { SchemaOptions } from '../schema/index'
-import type { TFunction } from '../function/index'
+import { type TSchema, type SchemaOptions } from '../schema/index'
+import { type TFunction } from '../function/index'
+import { type TNever, Never } from '../never/index'
+import * as KindGuard from '../guard/kind'
 
-export type TReturnType<T extends TFunction> = T['returns']
+// prettier-ignore
+export type TReturnType<Type extends TSchema,
+  Result extends TSchema = Type extends TFunction<infer _Parameters extends TSchema[], infer ReturnType extends TSchema>
+    ? ReturnType
+    : TNever
+> = Result
 
 /** `[JavaScript]` Extracts the ReturnType from the given Function type */
-export function ReturnType<T extends TFunction<any[], any>>(schema: T, options?: SchemaOptions): TReturnType<T> {
-  return CreateType(schema.returns, options) as never
+export function ReturnType<Type extends TSchema>(schema: Type, options?: SchemaOptions): TReturnType<Type> {
+  return (KindGuard.IsFunction(schema) ? CreateType(schema.returns, options) : Never(options)) as never
 }

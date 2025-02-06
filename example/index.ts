@@ -1,8 +1,8 @@
 import { TypeSystem } from '@sinclair/typebox/system'
 import { TypeCompiler } from '@sinclair/typebox/compiler'
 import { Value, ValuePointer } from '@sinclair/typebox/value'
-import { Parse, StaticParseAsType } from '@sinclair/typebox/syntax'
 import { Type, TypeGuard, Kind, Static, TSchema } from '@sinclair/typebox'
+import { Syntax } from '@sinclair/typebox/syntax'
 
 // -----------------------------------------------------------
 // Create: Type
@@ -22,7 +22,7 @@ console.log(T)
 // Parse: Type
 // -----------------------------------------------------------
 
-const S = Parse({ T }, `{ x: T, y: T, z: T }`)
+const S = Syntax({ T }, `{ x: T, y: T, z: T }`)
 
 type S = Static<typeof S>
 
