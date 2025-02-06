@@ -1,49 +1,19 @@
 import { TypeSystem } from '@sinclair/typebox/system'
 import { TypeCompiler } from '@sinclair/typebox/compiler'
 import { Value, ValuePointer } from '@sinclair/typebox/value'
-import { Parse, StaticParseAsType } from '@sinclair/typebox/syntax'
+import { Syntax, TSyntax } from '@sinclair/typebox/syntax'
 import { Type, TypeGuard, Kind, Static, TSchema } from '@sinclair/typebox'
 
-// -----------------------------------------------------------
-// Create: Type
-// -----------------------------------------------------------
+// Updates:
+//
+// renamed Parse() to Syntax()
+// updated ReturnType to be TSchema generic
+// updated InstanceType to be TSchema generic
+// updated Parameters to be TSchema generic
+// updated ConstructorParameters to be TSchema generic
 
-const T = Type.Object({
-  x: Type.Number(),
-  y: Type.Number(),
-  z: Type.Number(),
-})
+const T = Syntax(`new (a: number | number) => string`)
 
-type T = Static<typeof T>
+const A = Type.ConstructorParameters(T)
 
 console.log(T)
-
-// -----------------------------------------------------------
-// Parse: Type
-// -----------------------------------------------------------
-
-const S = Parse({ T }, `{ x: T, y: T, z: T }`)
-
-type S = Static<typeof S>
-
-// -----------------------------------------------------------
-// Create: Value
-// -----------------------------------------------------------
-
-const V = Value.Create(T)
-
-console.log(V)
-
-// -----------------------------------------------------------
-// Compile: Type
-// -----------------------------------------------------------
-
-const C = TypeCompiler.Compile(T)
-
-console.log(C.Code())
-
-// -----------------------------------------------------------
-// Check: Value
-// -----------------------------------------------------------
-
-console.log(C.Check(V))

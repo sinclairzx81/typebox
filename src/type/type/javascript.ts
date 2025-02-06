@@ -61,7 +61,7 @@ export class JavaScriptTypeBuilder extends JsonTypeBuilder {
     return BigInt(options)
   }
   /** `[JavaScript]` Extracts the ConstructorParameters from the given Constructor type */
-  public ConstructorParameters<Type extends TConstructor>(schema: Type, options?: SchemaOptions): TConstructorParameters<Type> {
+  public ConstructorParameters<Type extends TSchema>(schema: Type, options?: SchemaOptions): TConstructorParameters<Type> {
     return ConstructorParameters(schema, options)
   }
   /** `[JavaScript]` Creates a Constructor type */
@@ -77,7 +77,7 @@ export class JavaScriptTypeBuilder extends JsonTypeBuilder {
     return FunctionType(parameters, returnType, options)
   }
   /** `[JavaScript]` Extracts the InstanceType from the given Constructor type */
-  public InstanceType<Type extends TConstructor>(schema: Type, options?: SchemaOptions): TInstanceType<Type> {
+  public InstanceType<Type extends TSchema>(schema: Type, options?: SchemaOptions): TInstanceType<Type> {
     return InstanceType(schema, options)
   }
   /** `[JavaScript]` Creates an Iterator type */
@@ -85,7 +85,7 @@ export class JavaScriptTypeBuilder extends JsonTypeBuilder {
     return Iterator(items, options)
   }
   /** `[JavaScript]` Extracts the Parameters from the given Function type */
-  public Parameters<Type extends TFunction>(schema: Type, options?: SchemaOptions): TParameters<Type> {
+  public Parameters<Type extends TSchema>(schema: Type, options?: SchemaOptions): TParameters<Type> {
     return Parameters(schema, options)
   }
   /** `[JavaScript]` Creates a Promise type */
@@ -101,7 +101,7 @@ export class JavaScriptTypeBuilder extends JsonTypeBuilder {
     return RegExp(unresolved as any, options)
   }
   /** `[JavaScript]` Extracts the ReturnType from the given Function type */
-  public ReturnType<Type extends TFunction>(type: Type, options?: SchemaOptions): TReturnType<Type> {
+  public ReturnType<Type extends TSchema>(type: Type, options?: SchemaOptions): TReturnType<Type> {
     return ReturnType(type, options)
   }
   /** `[JavaScript]` Creates a Symbol type */

@@ -26,8 +26,8 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { Runtime } from './parsebox/index'
-import * as Types from '../type/index'
+import { Runtime } from '../parse/index'
+import * as t from '../type/index'
 
 // ------------------------------------------------------------------
 // Tokens
@@ -62,164 +62,40 @@ function DestructureRight<T>(values: T[]): [T[], T | undefined] {
 // ------------------------------------------------------------------
 // Deref
 // ------------------------------------------------------------------
-const Deref = (context: Types.TProperties, key: string): Types.TSchema => {
-  return key in context ? context[key] : Types.Ref(key)
+const Deref = (context: t.TProperties, key: string): t.TSchema => {
+  return key in context ? context[key] : t.Ref(key)
 }
-// ------------------------------------------------------------------
-// ExportModifier
-// ------------------------------------------------------------------
-// prettier-ignore
-const ExportModifierMapping = (values: unknown[]) => {
-  return values.length === 1
-}
-// prettier-ignore
-const ExportModifier = Runtime.Union([
-  Runtime.Tuple([Runtime.Const('export')]), Runtime.Tuple([])
-], ExportModifierMapping)
-
-// ------------------------------------------------------------------
-// TypeAliasDeclaration
-// ------------------------------------------------------------------
-// prettier-ignore
-const TypeAliasDeclarationMapping = (_Export: boolean, _Keyword: 'type', Ident: string, _Equals: typeof Equals, Type: Types.TSchema) => {
-  return { [Ident]: Type }
-}
-// prettier-ignore
-const TypeAliasDeclaration = Runtime.Tuple([
-  Runtime.Ref<boolean>('ExportModifier'), 
-  Runtime.Const('type'), 
-  Runtime.Ident(), 
-  Runtime.Const(Equals), 
-  Runtime.Ref<Types.TSchema>('Type')
-], value => TypeAliasDeclarationMapping(...value))
-
-// ------------------------------------------------------------------
-// HeritageList
-// ------------------------------------------------------------------
-// prettier-ignore (note, heritage list should disallow trailing comma)
-const HeritageListDelimiter = Runtime.Union([Runtime.Tuple([Runtime.Const(Comma), Runtime.Const(Newline)]), Runtime.Tuple([Runtime.Const(Comma)])])
-// prettier-ignore
-const HeritageListMapping = (values: string[], context: Types.TProperties): Types.TSchema[] => {
-  return (
-    values.length === 3 ? [Deref(context, values[0]), ...values[2] as never] :
-    values.length === 1 ? [Deref(context, values[0])] :
-    []
-  ) as never
-}
-// prettier-ignore
-const HeritageList = Runtime.Union([
-  Runtime.Tuple([Runtime.Ident(), HeritageListDelimiter, Runtime.Ref('HeritageList')]),
-  Runtime.Tuple([Runtime.Ident()]),
-  Runtime.Tuple([])
-], HeritageListMapping)
-// ------------------------------------------------------------------
-// Heritage
-// ------------------------------------------------------------------
-// prettier-ignore
-const HeritageMapping = (values: unknown[]): unknown[] => {
-  return (values.length === 2 ? values[1] : []) as never
-}
-// prettier-ignore
-const Heritage = Runtime.Union([
-  Runtime.Tuple([Runtime.Const('extends'), Runtime.Ref('HeritageList')]),
-  Runtime.Tuple([])
-], HeritageMapping)
-// ------------------------------------------------------------------
-// InterfaceDeclaration
-// ------------------------------------------------------------------
-// prettier-ignore
-const InterfaceDeclarationMapping = (_0: boolean, _1: 'interface', Ident: string, Heritage: Types.TRef[], _4: typeof LBrace, Properties: Types.TProperties, _6: typeof RBrace) => {
-  return { [Ident]: Types.Intersect([...Heritage, Types.Object(Properties)]) }
-}
-// prettier-ignore
-const InterfaceDeclaration = Runtime.Tuple([
-  Runtime.Ref<boolean>('ExportModifier'), 
-  Runtime.Const('interface'), 
-  Runtime.Ident(), 
-  Runtime.Ref<Types.TRef[]>('Heritage'), 
-  Runtime.Const(LBrace), 
-  Runtime.Ref<Types.TProperties>('Properties'), 
-  Runtime.Const(RBrace), 
-], values => InterfaceDeclarationMapping(...values))
-
-// ------------------------------------------------------------------
-// ModuleType
-// ------------------------------------------------------------------
-// prettier-ignore
-const ModuleType = Runtime.Union([
-  Runtime.Ref('InterfaceDeclaration'),
-  Runtime.Ref('TypeAliasDeclaration')
-])
-// ------------------------------------------------------------------
-// ModuleProperties
-// ------------------------------------------------------------------
-// prettier-ignore
-const ModulePropertiesDelimiter = Runtime.Union([
-  Runtime.Tuple([Runtime.Const(SemiColon), Runtime.Const(Newline)]),
-  Runtime.Tuple([Runtime.Const(SemiColon)]),
-  Runtime.Tuple([Runtime.Const(Newline)]),
-])
-// prettier-ignore
-const ModulePropertiesMapping = (values: unknown[]): Types.TProperties => {
-  return (
-    values.length === 3 ? { ...values[0] as Types.TProperties, ...values[2] as Types.TProperties }:
-    values.length === 1 ? values[0] as Types.TProperties :
-    {} as Types.TProperties
-  )
-}
-// prettier-ignore
-const ModuleProperties = Runtime.Union([
-  Runtime.Tuple([Runtime.Ref<Types.TProperties>('ModuleType'), ModulePropertiesDelimiter, Runtime.Ref<Types.TProperties>('ModuleProperties')]),
-  Runtime.Tuple([Runtime.Ref<Types.TProperties>('ModuleType')]),
-  Runtime.Tuple([]),
-], ModulePropertiesMapping)
-// ------------------------------------------------------------------
-// ModuleDeclaration
-// ------------------------------------------------------------------
-// prettier-ignore
-const ModuleIdentifier = Runtime.Union([
-  Runtime.Tuple([Runtime.Ident()]),
-  Runtime.Tuple([])
-])
-// prettier-ignore
-const ModuleDeclarationMapping = (_1: boolean, _2: 'module', _Ident: string[], _3: typeof LBrace, Properties: Types.TProperties, _5: typeof RBrace) => {
-  return Types.Module(Properties)
-}
-// prettier-ignore
-const ModuleDeclaration = Runtime.Tuple([
-  Runtime.Ref<boolean>('ExportModifier'), Runtime.Const('module'), ModuleIdentifier, Runtime.Const(LBrace), Runtime.Ref<Types.TProperties>('ModuleProperties'), Runtime.Const(RBrace)
-], values => ModuleDeclarationMapping(...values))
 // ------------------------------------------------------------------
 // Reference
 // ------------------------------------------------------------------
 // prettier-ignore
-const Reference = Runtime.Ident((value, context: Types.TProperties) => Deref(context, value))
+const Reference = Runtime.Ident((value, context: t.TProperties) => Deref(context, value))
 // ------------------------------------------------------------------
 // Literal
 // ------------------------------------------------------------------
 // prettier-ignore
 const Literal = Runtime.Union([
-  Runtime.Union([Runtime.Const('true'), Runtime.Const('false')], value => Types.Literal(value === 'true')),
-  Runtime.Number(value => Types.Literal(parseFloat(value))),
-  Runtime.String([SingleQuote, DoubleQuote, Tilde], value => Types.Literal(value))
+  Runtime.Union([Runtime.Const('true'), Runtime.Const('false')], value => t.Literal(value === 'true')),
+  Runtime.Number(value => t.Literal(parseFloat(value))),
+  Runtime.String([SingleQuote, DoubleQuote, Tilde], value => t.Literal(value))
 ])
 // ------------------------------------------------------------------
 // Keyword
 // ------------------------------------------------------------------
 // prettier-ignore
 const Keyword = Runtime.Union([
-  Runtime.Const('any', Runtime.As(Types.Any())),
-  Runtime.Const('bigint', Runtime.As(Types.BigInt())),
-  Runtime.Const('boolean', Runtime.As(Types.Boolean())),
-  Runtime.Const('integer', Runtime.As(Types.Integer())),
-  Runtime.Const('never', Runtime.As(Types.Never())),
-  Runtime.Const('null', Runtime.As(Types.Null())),
-  Runtime.Const('number', Runtime.As(Types.Number())),
-  Runtime.Const('string', Runtime.As(Types.String())),
-  Runtime.Const('symbol', Runtime.As(Types.Symbol())),
-  Runtime.Const('undefined', Runtime.As(Types.Undefined())),
-  Runtime.Const('unknown', Runtime.As(Types.Unknown())),
-  Runtime.Const('void', Runtime.As(Types.Void())),
+  Runtime.Const('any', Runtime.As(t.Any())),
+  Runtime.Const('bigint', Runtime.As(t.BigInt())),
+  Runtime.Const('boolean', Runtime.As(t.Boolean())),
+  Runtime.Const('integer', Runtime.As(t.Integer())),
+  Runtime.Const('never', Runtime.As(t.Never())),
+  Runtime.Const('null', Runtime.As(t.Null())),
+  Runtime.Const('number', Runtime.As(t.Number())),
+  Runtime.Const('string', Runtime.As(t.String())),
+  Runtime.Const('symbol', Runtime.As(t.Symbol())),
+  Runtime.Const('undefined', Runtime.As(t.Undefined())),
+  Runtime.Const('unknown', Runtime.As(t.Unknown())),
+  Runtime.Const('void', Runtime.As(t.Void())),
 ])
 // ------------------------------------------------------------------
 // KeyOf
@@ -314,54 +190,54 @@ const Base = Runtime.Union([
 // Factor
 // ------------------------------------------------------------------
 // prettier-ignore
-const FactorExtends = (Type: Types.TSchema, Extends: Types.TSchema[]) => {
+const FactorExtends = (Type: t.TSchema, Extends: t.TSchema[]) => {
   return Extends.length === 3
-    ? Types.Extends(Type, Extends[0], Extends[1], Extends[2])
+    ? t.Extends(Type, Extends[0], Extends[1], Extends[2])
     : Type
 }
 // prettier-ignore
-const FactorIndexArray = (Type: Types.TSchema, IndexArray: unknown[]): Types.TSchema => {
-  const [Left, Right] = DestructureRight(IndexArray) as [unknown[], Types.TSchema[]]
+const FactorIndexArray = (Type: t.TSchema, IndexArray: unknown[]): t.TSchema => {
+  const [Left, Right] = DestructureRight(IndexArray) as [unknown[], t.TSchema[]]
   return (
-    !Types.ValueGuard.IsUndefined(Right) ? (
+    !t.ValueGuard.IsUndefined(Right) ? (
       // note: Indexed types require reimplementation to replace `[number]` indexers
-      Right.length === 1 ? Types.Index(FactorIndexArray(Type, Left), Right[0]) as never :
-      Right.length === 0 ? Types.Array(FactorIndexArray(Type, Left)) :
-      Types.Never()
+      Right.length === 1 ? t.Index(FactorIndexArray(Type, Left), Right[0]) as never :
+      Right.length === 0 ? t.Array(FactorIndexArray(Type, Left)) :
+      t.Never()
     ) : Type
   ) 
 }
 // prettier-ignore
-const FactorMapping = (KeyOf: boolean, Type: Types.TSchema, IndexArray: unknown[], Extends: Types.TSchema[]) => {
+const FactorMapping = (KeyOf: boolean, Type: t.TSchema, IndexArray: unknown[], Extends: t.TSchema[]) => {
   return KeyOf
-    ? FactorExtends(Types.KeyOf(FactorIndexArray(Type, IndexArray)), Extends)
+    ? FactorExtends(t.KeyOf(FactorIndexArray(Type, IndexArray)), Extends)
     : FactorExtends(FactorIndexArray(Type, IndexArray), Extends)
 }
 // prettier-ignore
 const Factor = Runtime.Tuple([
   Runtime.Ref<boolean>('KeyOf'), 
-  Runtime.Ref<Types.TSchema>('Base'),
+  Runtime.Ref<t.TSchema>('Base'),
   Runtime.Ref<unknown[]>('IndexArray'),
-  Runtime.Ref<Types.TSchema[]>('Extends')
+  Runtime.Ref<t.TSchema[]>('Extends')
 ], values => FactorMapping(...values))
 // ------------------------------------------------------------------
 // Expr
 // ------------------------------------------------------------------
 // prettier-ignore
-function ExprBinaryMapping(Left: Types.TSchema, Rest: unknown[]): Types.TSchema {
+function ExprBinaryMapping(Left: t.TSchema, Rest: unknown[]): t.TSchema {
   return (
     Rest.length === 3 ? (() => {
-      const [Operator, Right, Next] = Rest as [string, Types.TSchema, unknown[]]
+      const [Operator, Right, Next] = Rest as [string, t.TSchema, unknown[]]
       const Schema = ExprBinaryMapping(Right, Next)
       if (Operator === '&') {
-        return Types.TypeGuard.IsIntersect(Schema)
-          ? Types.Intersect([Left, ...Schema.allOf])
-          : Types.Intersect([Left, Schema])
+        return t.TypeGuard.IsIntersect(Schema)
+          ? t.Intersect([Left, ...Schema.allOf])
+          : t.Intersect([Left, Schema])
       }
       if (Operator === '|') {
-        return Types.TypeGuard.IsUnion(Schema)
-          ? Types.Union([Left, ...Schema.anyOf])
-          : Types.Union([Left, Schema])
+        return t.TypeGuard.IsUnion(Schema)
+          ? t.Union([Left, ...Schema.anyOf])
+          : t.Union([Left, Schema])
       }
       throw 1
     })() : Left
@@ -374,7 +250,7 @@ const ExprTermTail = Runtime.Union([
 ])
 // prettier-ignore
 const ExprTerm = Runtime.Tuple([
-  Runtime.Ref<Types.TSchema>('Factor'), Runtime.Ref<unknown[]>('ExprTermTail')
+  Runtime.Ref<t.TSchema>('Factor'), Runtime.Ref<unknown[]>('ExprTermTail')
 ], value => ExprBinaryMapping(...value))
 // prettier-ignore
 const ExprTail = Runtime.Union([
@@ -383,7 +259,7 @@ const ExprTail = Runtime.Union([
 ])
 // prettier-ignore
 const Expr = Runtime.Tuple([
-  Runtime.Ref<Types.TSchema>('ExprTerm'), Runtime.Ref<unknown[]>('ExprTail')
+  Runtime.Ref<t.TSchema>('ExprTerm'), Runtime.Ref<unknown[]>('ExprTail')
 ], value => ExprBinaryMapping(...value))
 
 // ------------------------------------------------------------------
@@ -397,11 +273,11 @@ const PropertyKey = Runtime.Union([Runtime.Ident(), Runtime.String([SingleQuote,
 const Readonly = Runtime.Union([Runtime.Tuple([Runtime.Const('readonly')]), Runtime.Tuple([])], (value) => value.length > 0)
 const Optional = Runtime.Union([Runtime.Tuple([Runtime.Const(Question)]), Runtime.Tuple([])], (value) => value.length > 0)
 // prettier-ignore
-const PropertyMapping = (IsReadonly: boolean, Key: string, IsOptional: boolean, _: typeof Colon, Type: Types.TSchema) => ({
+const PropertyMapping = (IsReadonly: boolean, Key: string, IsOptional: boolean, _: typeof Colon, Type: t.TSchema) => ({
   [Key]: (
-    IsReadonly && IsOptional ? Types.ReadonlyOptional(Type) :
-    IsReadonly && !IsOptional ? Types.Readonly(Type) :
-    !IsReadonly && IsOptional ? Types.Optional(Type) :
+    IsReadonly && IsOptional ? t.ReadonlyOptional(Type) :
+    IsReadonly && !IsOptional ? t.Readonly(Type) :
+    !IsReadonly && IsOptional ? t.Optional(Type) :
     Type
   )
 })
@@ -411,7 +287,7 @@ const Property = Runtime.Tuple([
   Runtime.Ref<string>('PropertyKey'),
   Runtime.Ref<boolean>('Optional'),
   Runtime.Const(Colon),
-  Runtime.Ref<Types.TSchema>('Type'),
+  Runtime.Ref<t.TSchema>('Type'),
 ], value => PropertyMapping(...value))
 // prettier-ignore
 const PropertyDelimiter = Runtime.Union([
@@ -423,9 +299,9 @@ const PropertyDelimiter = Runtime.Union([
 ])
 // prettier-ignore
 const Properties = Runtime.Union([
-  Runtime.Tuple([Runtime.Ref<Types.TProperties>('Property'), Runtime.Ref('PropertyDelimiter'), Runtime.Ref<Types.TProperties>('Properties')]),
-  Runtime.Tuple([Runtime.Ref<Types.TProperties>('Property'), Runtime.Ref('PropertyDelimiter')]),
-  Runtime.Tuple([Runtime.Ref<Types.TProperties>('Property')]),
+  Runtime.Tuple([Runtime.Ref<t.TProperties>('Property'), Runtime.Ref('PropertyDelimiter'), Runtime.Ref<t.TProperties>('Properties')]),
+  Runtime.Tuple([Runtime.Ref<t.TProperties>('Property'), Runtime.Ref('PropertyDelimiter')]),
+  Runtime.Tuple([Runtime.Ref<t.TProperties>('Property')]),
   Runtime.Tuple([])
 ], values => (
   values.length === 3 ? { ...values[0], ...values[2] } :
@@ -437,11 +313,11 @@ const Properties = Runtime.Union([
 // Object
 // ------------------------------------------------------------------
 // prettier-ignore
-const ObjectMapping = (_0: typeof LBrace, Properties: Types.TProperties, _2: typeof RBrace) => Types.Object(Properties)
+const ObjectMapping = (_0: typeof LBrace, Properties: t.TProperties, _2: typeof RBrace) => t.Object(Properties)
 // prettier-ignore
 const _Object = Runtime.Tuple([
   Runtime.Const(LBrace),
-  Runtime.Ref<Types.TProperties>('Properties'),
+  Runtime.Ref<t.TProperties>('Properties'),
   Runtime.Const(RBrace)
 ], values => ObjectMapping(...values))
 
@@ -463,16 +339,16 @@ const Elements = Runtime.Union([
 // prettier-ignore
 const Tuple = Runtime.Tuple([
   Runtime.Const(LBracket),
-  Runtime.Ref<Types.TSchema[]>('Elements'),
+  Runtime.Ref<t.TSchema[]>('Elements'),
   Runtime.Const(RBracket)
-], value => Types.Tuple(value[1]))
+], value => t.Tuple(value[1]))
 
 // ------------------------------------------------------------------
 // Parameters
 // ------------------------------------------------------------------
 // prettier-ignore
 const Parameter = Runtime.Tuple([
-  Runtime.Ident(), Runtime.Const(Colon), Runtime.Ref<Types.TSchema>('Type')
+  Runtime.Ident(), Runtime.Const(Colon), Runtime.Ref<t.TSchema>('Type')
 ], value => value[2])
 // prettier-ignore
 const Parameters = Runtime.Union([
@@ -493,28 +369,28 @@ const Parameters = Runtime.Union([
 const Constructor = Runtime.Tuple([
   Runtime.Const('new'), 
   Runtime.Const(LParen), 
-  Runtime.Ref<Types.TSchema[]>('Parameters'), 
+  Runtime.Ref<t.TSchema[]>('Parameters'), 
   Runtime.Const(RParen), 
   Runtime.Const('=>'), 
-  Runtime.Ref<Types.TSchema>('Type')
-], value => Types.Constructor(value[2], value[5]))
+  Runtime.Ref<t.TSchema>('Type')
+], value => t.Constructor(value[2], value[5]))
 // ------------------------------------------------------------------
 // Function
 // ------------------------------------------------------------------
 // prettier-ignore
 const Function = Runtime.Tuple([
   Runtime.Const(LParen), 
-  Runtime.Ref<Types.TSchema[]>('Parameters'), 
+  Runtime.Ref<t.TSchema[]>('Parameters'), 
   Runtime.Const(RParen), 
   Runtime.Const('=>'), 
-  Runtime.Ref<Types.TSchema>('Type')
-], value => Types.Function(value[1], value[4]))
+  Runtime.Ref<t.TSchema>('Type')
+], value => t.Function(value[1], value[4]))
 // ------------------------------------------------------------------
 // Mapped (requires deferred types)
 // ------------------------------------------------------------------
 // prettier-ignore
 const MappedMapping = (values: unknown[]) => {
-  return Types.Literal('Mapped types not supported')
+  return t.Literal('Mapped types not supported')
 }
 // prettier-ignore
 const Mapped = Runtime.Tuple([
@@ -522,10 +398,10 @@ const Mapped = Runtime.Tuple([
   Runtime.Const(LBracket), 
   Runtime.Ident(), 
   Runtime.Const('in'), 
-  Runtime.Ref<Types.TSchema>('Type'), 
+  Runtime.Ref<t.TSchema>('Type'), 
   Runtime.Const(RBracket), 
   Runtime.Const(Colon), 
-  Runtime.Ref<Types.TSchema>('Type'), 
+  Runtime.Ref<t.TSchema>('Type'), 
   Runtime.Const(RBrace)
 ], MappedMapping)
 // ------------------------------------------------------------------
@@ -535,9 +411,9 @@ const Mapped = Runtime.Tuple([
 const AsyncIterator = Runtime.Tuple([
   Runtime.Const('AsyncIterator'), 
   Runtime.Const(LAngle), 
-  Runtime.Ref<Types.TSchema>('Type'), 
+  Runtime.Ref<t.TSchema>('Type'), 
   Runtime.Const(RAngle),
-], value => Types.AsyncIterator(value[2]))
+], value => t.AsyncIterator(value[2]))
 // ------------------------------------------------------------------
 // Iterator
 // ------------------------------------------------------------------
@@ -545,9 +421,9 @@ const AsyncIterator = Runtime.Tuple([
 const Iterator = Runtime.Tuple([
   Runtime.Const('Iterator'), 
   Runtime.Const(LAngle), 
-  Runtime.Ref<Types.TSchema>('Type'), 
+  Runtime.Ref<t.TSchema>('Type'), 
   Runtime.Const(RAngle),
-], value => Types.Iterator(value[2]))
+], value => t.Iterator(value[2]))
 // ------------------------------------------------------------------
 // ConstructorParameters
 // ------------------------------------------------------------------
@@ -555,9 +431,9 @@ const Iterator = Runtime.Tuple([
 const ConstructorParameters = Runtime.Tuple([
   Runtime.Const('ConstructorParameters'), 
   Runtime.Const(LAngle), 
-  Runtime.Ref<Types.TConstructor>('Type'), 
+  Runtime.Ref<t.TConstructor>('Type'), 
   Runtime.Const(RAngle),
-], value => Types.ConstructorParameters(value[2]))
+], value => t.ConstructorParameters(value[2]))
 // ------------------------------------------------------------------
 // Parameters
 // ------------------------------------------------------------------
@@ -565,9 +441,9 @@ const ConstructorParameters = Runtime.Tuple([
 const FunctionParameters = Runtime.Tuple([
   Runtime.Const('Parameters'), 
   Runtime.Const(LAngle), 
-  Runtime.Ref<Types.TFunction>('Type'), 
+  Runtime.Ref<t.TFunction>('Type'), 
   Runtime.Const(RAngle),
-], value => Types.Parameters(value[2]))
+], value => t.Parameters(value[2]))
 // ------------------------------------------------------------------
 // InstanceType
 // ------------------------------------------------------------------
@@ -575,9 +451,9 @@ const FunctionParameters = Runtime.Tuple([
 const InstanceType = Runtime.Tuple([
   Runtime.Const('InstanceType'), 
   Runtime.Const(LAngle), 
-  Runtime.Ref<Types.TConstructor>('Type'), 
+  Runtime.Ref<t.TConstructor>('Type'), 
   Runtime.Const(RAngle),
-], value => Types.InstanceType(value[2]))
+], value => t.InstanceType(value[2]))
 // ------------------------------------------------------------------
 // ReturnType
 // ------------------------------------------------------------------
@@ -585,9 +461,9 @@ const InstanceType = Runtime.Tuple([
 const ReturnType = Runtime.Tuple([
   Runtime.Const('ReturnType'), 
   Runtime.Const(LAngle), 
-  Runtime.Ref<Types.TFunction>('Type'), 
+  Runtime.Ref<t.TFunction>('Type'), 
   Runtime.Const(RAngle),
-], value => Types.ReturnType(value[2]))
+], value => t.ReturnType(value[2]))
 // ------------------------------------------------------------------
 // Awaited
 // ------------------------------------------------------------------
@@ -595,9 +471,9 @@ const ReturnType = Runtime.Tuple([
 const Awaited = Runtime.Tuple([
   Runtime.Const('Awaited'), 
   Runtime.Const(LAngle), 
-  Runtime.Ref<Types.TSchema>('Type'), 
+  Runtime.Ref<t.TSchema>('Type'), 
   Runtime.Const(RAngle),
-], value => Types.Awaited(value[2]))
+], value => t.Awaited(value[2]))
 // ------------------------------------------------------------------
 // Array
 // ------------------------------------------------------------------
@@ -605,9 +481,9 @@ const Awaited = Runtime.Tuple([
 const Array = Runtime.Tuple([
   Runtime.Const('Array'), 
   Runtime.Const(LAngle), 
-  Runtime.Ref<Types.TSchema>('Type'), 
+  Runtime.Ref<t.TSchema>('Type'), 
   Runtime.Const(RAngle),
-], value => Types.Array(value[2]))
+], value => t.Array(value[2]))
 // ------------------------------------------------------------------
 // Record
 // ------------------------------------------------------------------
@@ -615,11 +491,11 @@ const Array = Runtime.Tuple([
 const Record = Runtime.Tuple([
   Runtime.Const('Record'), 
   Runtime.Const(LAngle), 
-  Runtime.Ref<Types.TSchema>('Type'),
+  Runtime.Ref<t.TSchema>('Type'),
   Runtime.Const(Comma), 
-  Runtime.Ref<Types.TSchema>('Type'),
+  Runtime.Ref<t.TSchema>('Type'),
   Runtime.Const(RAngle),  
-], value => Types.Record(value[2], value[4]))
+], value => t.Record(value[2], value[4]))
 // ------------------------------------------------------------------
 // Promise
 // ------------------------------------------------------------------
@@ -627,9 +503,9 @@ const Record = Runtime.Tuple([
 const Promise = Runtime.Tuple([
   Runtime.Const('Promise'), 
   Runtime.Const(LAngle), 
-  Runtime.Ref<Types.TSchema>('Type'), 
+  Runtime.Ref<t.TSchema>('Type'), 
   Runtime.Const(RAngle),  
-], value => Types.Promise(value[2]))
+], value => t.Promise(value[2]))
 // ------------------------------------------------------------------
 // Partial
 // ------------------------------------------------------------------
@@ -637,9 +513,9 @@ const Promise = Runtime.Tuple([
 const Partial = Runtime.Tuple([
   Runtime.Const('Partial'), 
   Runtime.Const(LAngle), 
-  Runtime.Ref<Types.TSchema>('Type'), 
+  Runtime.Ref<t.TSchema>('Type'), 
   Runtime.Const(RAngle),  
-], value => Types.Partial(value[2]))
+], value => t.Partial(value[2]))
 // ------------------------------------------------------------------
 // Required
 // ------------------------------------------------------------------
@@ -647,9 +523,9 @@ const Partial = Runtime.Tuple([
 const Required = Runtime.Tuple([
   Runtime.Const('Required'), 
   Runtime.Const(LAngle), 
-  Runtime.Ref<Types.TSchema>('Type'), 
+  Runtime.Ref<t.TSchema>('Type'), 
   Runtime.Const(RAngle),  
-], value => Types.Required(value[2]))
+], value => t.Required(value[2]))
 // ------------------------------------------------------------------
 // Pick
 // ------------------------------------------------------------------
@@ -657,11 +533,11 @@ const Required = Runtime.Tuple([
 const Pick = Runtime.Tuple([
   Runtime.Const('Pick'), 
   Runtime.Const(LAngle), 
-  Runtime.Ref<Types.TSchema>('Type'), 
+  Runtime.Ref<t.TSchema>('Type'), 
   Runtime.Const(Comma), 
-  Runtime.Ref<Types.TSchema>('Type'), 
+  Runtime.Ref<t.TSchema>('Type'), 
   Runtime.Const(RAngle),  
-], value => Types.Pick(value[2], value[4]))
+], value => t.Pick(value[2], value[4]))
 // ------------------------------------------------------------------
 // Omit
 // ------------------------------------------------------------------
@@ -669,11 +545,11 @@ const Pick = Runtime.Tuple([
 const Omit = Runtime.Tuple([
   Runtime.Const('Omit'), 
   Runtime.Const(LAngle), 
-  Runtime.Ref<Types.TSchema>('Type'), 
+  Runtime.Ref<t.TSchema>('Type'), 
   Runtime.Const(Comma), 
-  Runtime.Ref<Types.TSchema>('Type'), 
+  Runtime.Ref<t.TSchema>('Type'), 
   Runtime.Const(RAngle),  
-], value => Types.Omit(value[2], value[4]))
+], value => t.Omit(value[2], value[4]))
 // ------------------------------------------------------------------
 // Exclude
 // ------------------------------------------------------------------
@@ -681,11 +557,11 @@ const Omit = Runtime.Tuple([
 const Exclude = Runtime.Tuple([
   Runtime.Const('Exclude'), 
   Runtime.Const(LAngle), 
-  Runtime.Ref<Types.TSchema>('Type'), 
+  Runtime.Ref<t.TSchema>('Type'), 
   Runtime.Const(Comma), 
-  Runtime.Ref<Types.TSchema>('Type'), 
+  Runtime.Ref<t.TSchema>('Type'), 
   Runtime.Const(RAngle),  
-], value => Types.Exclude(value[2], value[4]))
+], value => t.Exclude(value[2], value[4]))
 // ------------------------------------------------------------------
 // Extract
 // ------------------------------------------------------------------
@@ -693,11 +569,11 @@ const Exclude = Runtime.Tuple([
 const Extract = Runtime.Tuple([
   Runtime.Const('Extract'), 
   Runtime.Const(LAngle), 
-  Runtime.Ref<Types.TSchema>('Type'), 
+  Runtime.Ref<t.TSchema>('Type'), 
   Runtime.Const(Comma), 
-  Runtime.Ref<Types.TSchema>('Type'), 
+  Runtime.Ref<t.TSchema>('Type'), 
   Runtime.Const(RAngle),  
-], value => Types.Extract(value[2], value[4]))
+], value => t.Extract(value[2], value[4]))
 // ------------------------------------------------------------------
 // Uppercase
 // ------------------------------------------------------------------
@@ -705,9 +581,9 @@ const Extract = Runtime.Tuple([
 const Uppercase = Runtime.Tuple([
   Runtime.Const('Uppercase'), 
   Runtime.Const(LAngle), 
-  Runtime.Ref<Types.TSchema>('Type'), 
+  Runtime.Ref<t.TSchema>('Type'), 
   Runtime.Const(RAngle),  
-], value => Types.Uppercase(value[2]))
+], value => t.Uppercase(value[2]))
 // ------------------------------------------------------------------
 // Lowercase
 // ------------------------------------------------------------------
@@ -715,9 +591,9 @@ const Uppercase = Runtime.Tuple([
 const Lowercase = Runtime.Tuple([
   Runtime.Const('Lowercase'), 
   Runtime.Const(LAngle), 
-  Runtime.Ref<Types.TSchema>('Type'), 
+  Runtime.Ref<t.TSchema>('Type'), 
   Runtime.Const(RAngle),  
-], value => Types.Lowercase(value[2]))
+], value => t.Lowercase(value[2]))
 // ------------------------------------------------------------------
 // Capitalize
 // ------------------------------------------------------------------
@@ -725,9 +601,9 @@ const Lowercase = Runtime.Tuple([
 const Capitalize = Runtime.Tuple([
   Runtime.Const('Capitalize'), 
   Runtime.Const(LAngle), 
-  Runtime.Ref<Types.TSchema>('Type'), 
+  Runtime.Ref<t.TSchema>('Type'), 
   Runtime.Const(RAngle),  
-], value => Types.Capitalize(value[2]))
+], value => t.Capitalize(value[2]))
 // ------------------------------------------------------------------
 // Uncapitalize
 // ------------------------------------------------------------------
@@ -735,45 +611,22 @@ const Capitalize = Runtime.Tuple([
 const Uncapitalize = Runtime.Tuple([
   Runtime.Const('Uncapitalize'), 
   Runtime.Const(LAngle), 
-  Runtime.Ref<Types.TSchema>('Type'), 
+  Runtime.Ref<t.TSchema>('Type'), 
   Runtime.Const(RAngle),  
-], value => Types.Uncapitalize(value[2]))
+], value => t.Uncapitalize(value[2]))
 // ------------------------------------------------------------------
 // Date
 // ------------------------------------------------------------------
-const Date = Runtime.Const('Date', Runtime.As(Types.Date()))
+const Date = Runtime.Const('Date', Runtime.As(t.Date()))
 // ------------------------------------------------------------------
 // Uint8Array
 // ------------------------------------------------------------------
-const Uint8Array = Runtime.Const('Uint8Array', Runtime.As(Types.Uint8Array()))
-
-// ------------------------------------------------------------------
-// Main
-// ------------------------------------------------------------------
-// prettier-ignore
-const Main = Runtime.Union([
-  ModuleDeclaration,
-  TypeAliasDeclaration,
-  InterfaceDeclaration,
-  Type
-])
+const Uint8Array = Runtime.Const('Uint8Array', Runtime.As(t.Uint8Array()))
 // ------------------------------------------------------------------
 // Module
 // ------------------------------------------------------------------
 // prettier-ignore
 export const Module = new Runtime.Module({
-  // ----------------------------------------------------------------
-  // Modules, Interfaces and Type Aliases
-  // ----------------------------------------------------------------
-  ExportModifier,
-  HeritageList,
-  Heritage,
-  InterfaceDeclaration,
-  TypeAliasDeclaration,
-  ModuleType,
-  ModuleProperties,
-  ModuleDeclaration,
-
   // ----------------------------------------------------------------
   // Type Expressions
   // ----------------------------------------------------------------
@@ -826,9 +679,4 @@ export const Module = new Runtime.Module({
   Date,
   Uint8Array,
   Reference,
-
-  // ----------------------------------------------------------------
-  // Main
-  // ----------------------------------------------------------------
-  Main
 })

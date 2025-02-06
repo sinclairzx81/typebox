@@ -28,15 +28,20 @@ THE SOFTWARE.
 
 import type { TSchema, SchemaOptions } from '../schema/index'
 import type { TFunction } from '../function/index'
-import type { Ensure } from '../helpers/index'
 import { Tuple, type TTuple } from '../tuple/index'
+import { Never, type TNever } from '../never/index'
+import * as KindGuard from '../guard/kind'
 
 // ------------------------------------------------------------------
 // Parameters
 // ------------------------------------------------------------------
-export type TParameters<T extends TFunction> = Ensure<TTuple<T['parameters']>>
-
+// prettier-ignore
+export type TParameters<Type extends TSchema> = (
+  Type extends TFunction<infer Parameters extends TSchema[], infer _ReturnType extends TSchema>
+    ? TTuple<Parameters>
+    : TNever
+)
 /** `[JavaScript]` Extracts the Parameters from the given Function type */
-export function Parameters<T extends TFunction<TSchema[], TSchema>>(schema: T, options?: SchemaOptions): TParameters<T> {
-  return Tuple(schema.parameters, options)
+export function Parameters<Type extends TSchema>(schema: Type, options?: SchemaOptions): TParameters<Type> {
+  return (KindGuard.IsFunction(schema) ? Tuple(schema.parameters, options) : Never()) as never
 }
