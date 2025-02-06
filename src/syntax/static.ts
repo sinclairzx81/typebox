@@ -26,8 +26,8 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { Static } from './parsebox/index'
-import * as Types from '../type/index'
+import { Static } from '../parser/index'
+import * as t from '../type/index'
 
 // ------------------------------------------------------------------
 // Tokens
@@ -139,147 +139,15 @@ type Delimit<Parser extends Static.IParser, Delimiter extends Static.IParser> = 
 // Deref
 // ------------------------------------------------------------------
 // prettier-ignore
-type Deref<Context extends Types.TProperties, Ref extends string> = (
-  Ref extends keyof Context ? Context[Ref] : Types.TRef<Ref>
+type Deref<Context extends t.TProperties, Ref extends string> = (
+  Ref extends keyof Context ? Context[Ref] : t.TRef<Ref>
 )
-// ------------------------------------------------------------------
-// ExportModifier
-// ------------------------------------------------------------------
-// prettier-ignore
-interface ExportModifierMapping extends Static.IMapping {
-  output: this['input'] extends [string] ? true : false
-}
-// prettier-ignore
-type ExportModifier = Static.Union<[
-  Static.Tuple<[Static.Const<'export'>]>,
-  Static.Tuple<[]>,
-], ExportModifierMapping>
-
-// ------------------------------------------------------------------
-// TypeAliasDeclaration
-// ------------------------------------------------------------------
-// prettier-ignore
-interface TypeAliasDeclarationMapping extends Static.IMapping {
-  output: this['input'] extends [infer _Export extends boolean, 'type', infer Ident extends string, Equals, infer Type extends Types.TSchema] 
-    ? { [_ in Ident]: Type } 
-    : never
-}
-// prettier-ignore
-type TypeAliasDeclaration = Static.Tuple<[
-  ExportModifier, Static.Const<'type'>, Static.Ident, Static.Const<Equals>, Type
-], TypeAliasDeclarationMapping>
-
-// ------------------------------------------------------------------
-// HeritageList
-// ------------------------------------------------------------------
-// prettier-ignore (note, heritage list should disallow trailing comma)
-type HeritageListDelimiter = Static.Union<[Static.Tuple<[Static.Const<Comma>, Static.Const<Newline>]>, Static.Tuple<[Static.Const<Comma>]>]>
-// prettier-ignore
-type HeritageListReduce<Values extends string[], Context extends Types.TProperties, Result extends Types.TSchema[] = []> = (
-  Values extends [infer Ref extends string, ...infer Rest extends string[]]
-    ? HeritageListReduce<Rest, Context, [...Result, Deref<Context, Ref>]>
-    : Result
-)
-// prettier-ignore
-interface HeritageListMapping extends Static.IMapping {
-  output: (
-    this['context'] extends Types.TProperties ?
-    this['input'] extends string[] 
-      ? HeritageListReduce<this['input'], this['context']> 
-      : []
-    : []
-  )
-}
-// prettier-ignore
-type HeritageList = Static.Union<[Delimit<Static.Ident, HeritageListDelimiter>], HeritageListMapping>
-// ------------------------------------------------------------------
-// Heritage
-// ------------------------------------------------------------------
-// prettier-ignore
-interface HeritageMapping extends Static.IMapping {
-  output: this['input'] extends ['extends', infer List extends Types.TSchema[]] ? List : []
-}
-// prettier-ignore
-type Heritage = Static.Union<[
-  Static.Tuple<[Static.Const<'extends'>, HeritageList]>,
-  Static.Tuple<[]>
-], HeritageMapping>
-// ------------------------------------------------------------------
-// InterfaceDeclaration
-// ------------------------------------------------------------------
-// prettier-ignore
-interface InterfaceDeclarationMapping extends Static.IMapping {
-  output: this['input'] extends [boolean, 'interface', infer Ident extends string, infer Heritage extends Types.TSchema[], LBrace, infer Properties extends Types.TProperties, RBrace]
-    ? { [_ in Ident]: Types.TIntersectEvaluated<[...Heritage, Types.TObject<Properties>]> }
-    : never
-}
-// prettier-ignore
-type InterfaceDeclaration = Static.Tuple<[
-  ExportModifier,
-  Static.Const<'interface'>, 
-  Static.Ident, 
-  Heritage,
-  Static.Const<LBrace>, 
-  Properties,
-  Static.Const<RBrace>, 
-], InterfaceDeclarationMapping>
-// ------------------------------------------------------------------
-// ModuleType
-// ------------------------------------------------------------------
-// prettier-ignore
-type ModuleType = Static.Union<[
-  InterfaceDeclaration,
-  TypeAliasDeclaration
-]>
-// ------------------------------------------------------------------
-// ModuleProperties
-// ------------------------------------------------------------------
-// prettier-ignore
-type ModulePropertiesDelimiter = Static.Union<[
-  Static.Tuple<[Static.Const<SemiColon>, Static.Const<Newline>]>,
-  Static.Tuple<[Static.Const<SemiColon>]>,
-  Static.Tuple<[Static.Const<Newline>]>,
-]>
-// prettier-ignore
-type ModulePropertiesReduce<Value extends unknown[], Result extends Types.TProperties = {}> = (
-  Value extends [infer ModuleType extends Types.TProperties, unknown[], ...infer Rest extends unknown[]] ? ModulePropertiesReduce<Rest, Result & ModuleType> :
-  Value extends [infer ModuleType extends Types.TProperties] ? ModulePropertiesReduce<[], Result & ModuleType> : 
-  Types.Evaluate<Result>
-)
-// prettier-ignore
-interface ModulePropertiesMapping extends Static.IMapping {
-  output: this['input'] extends unknown[] ? ModulePropertiesReduce<this['input']> : never
-}
-// prettier-ignore
-type ModuleProperties = Static.Union<[
-  Static.Tuple<[ModuleType, ModulePropertiesDelimiter, ModuleProperties]>,
-  Static.Tuple<[ModuleType]>,
-  Static.Tuple<[]>,
-], ModulePropertiesMapping>
-// ------------------------------------------------------------------
-// ModuleDeclaration
-// ------------------------------------------------------------------
-// prettier-ignore
-type ModuleIdentifier = Static.Union<[
-  Static.Tuple<[Static.Ident]>,
-  Static.Tuple<[]>
-]>
-// prettier-ignore
-interface ModuleDeclarationMapping extends Static.IMapping {
-  output: this['input'] extends [boolean, 'module', infer _Ident extends string[], LBrace, infer Properties extends Types.TProperties, RBrace] 
-    ? Types.TModule<Properties> 
-    : never
-}
-// prettier-ignore
-type ModuleDeclaration = Static.Tuple<[
-  ExportModifier, Static.Const<'module'>, ModuleIdentifier, Static.Const<LBrace>, ModuleProperties, Static.Const<RBrace>
-], ModuleDeclarationMapping>
 // ------------------------------------------------------------------
 // Reference
 // ------------------------------------------------------------------
 // prettier-ignore
 interface ReferenceMapping extends Static.IMapping {
-  output: this['context'] extends Types.TProperties
+  output: this['context'] extends t.TProperties
     ? this['input'] extends string
       ? Deref<this['context'], this['input']>
       : never
@@ -291,15 +159,15 @@ type Reference = Static.Ident<ReferenceMapping>
 // ------------------------------------------------------------------
 // prettier-ignore
 interface LiteralBooleanMapping extends Static.IMapping {
-  output: this['input'] extends `${infer S extends boolean}` ? Types.TLiteral<S> : never
+  output: this['input'] extends `${infer S extends boolean}` ? t.TLiteral<S> : never
 }
 // prettier-ignore
 interface LiteralNumberMapping extends Static.IMapping {
-  output: this['input'] extends `${infer S extends number}` ? Types.TLiteral<S> : never
+  output: this['input'] extends `${infer S extends number}` ? t.TLiteral<S> : never
 }
 // prettier-ignore
 interface LiteralStringMapping extends Static.IMapping {
-  output: this['input'] extends `${infer S extends string}` ? Types.TLiteral<S> : never
+  output: this['input'] extends `${infer S extends string}` ? t.TLiteral<S> : never
 }
 // prettier-ignore
 type Literal = Static.Union<[
@@ -312,18 +180,18 @@ type Literal = Static.Union<[
 // ------------------------------------------------------------------
 // prettier-ignore
 type Keyword = Static.Union<[
-  Static.Const<'any', Static.As<Types.TAny>>,
-  Static.Const<'bigint', Static.As<Types.TBigInt>>,
-  Static.Const<'boolean', Static.As<Types.TBoolean>>,
-  Static.Const<'integer', Static.As<Types.TInteger>>,
-  Static.Const<'never', Static.As<Types.TNever>>,
-  Static.Const<'null', Static.As<Types.TNull>>,
-  Static.Const<'number', Static.As<Types.TNumber>>,
-  Static.Const<'string', Static.As<Types.TString>>,
-  Static.Const<'symbol', Static.As<Types.TSymbol>>,
-  Static.Const<'undefined', Static.As<Types.TUndefined>>,
-  Static.Const<'unknown', Static.As<Types.TUnknown>>,
-  Static.Const<'void', Static.As<Types.TVoid>>,
+  Static.Const<'any', Static.As<t.TAny>>,
+  Static.Const<'bigint', Static.As<t.TBigInt>>,
+  Static.Const<'boolean', Static.As<t.TBoolean>>,
+  Static.Const<'integer', Static.As<t.TInteger>>,
+  Static.Const<'never', Static.As<t.TNever>>,
+  Static.Const<'null', Static.As<t.TNull>>,
+  Static.Const<'number', Static.As<t.TNumber>>,
+  Static.Const<'string', Static.As<t.TString>>,
+  Static.Const<'symbol', Static.As<t.TSymbol>>,
+  Static.Const<'undefined', Static.As<t.TUndefined>>,
+  Static.Const<'unknown', Static.As<t.TUnknown>>,
+  Static.Const<'void', Static.As<t.TVoid>>,
 ]>
 // ------------------------------------------------------------------
 // KeyOf
@@ -343,7 +211,7 @@ type KeyOf = Static.Union<[
 // prettier-ignore
 interface IndexArrayMapping extends Static.IMapping {
   output: (
-    this['input'] extends [LBracket, infer Type extends Types.TSchema, RBracket, infer Rest extends unknown[]] ? [[Type], ...Rest] :
+    this['input'] extends [LBracket, infer Type extends t.TSchema, RBracket, infer Rest extends unknown[]] ? [[Type], ...Rest] :
     this['input'] extends [LBracket, RBracket, infer Rest extends unknown[]] ? [[], ...Rest] :
     []
   )
@@ -360,7 +228,7 @@ type IndexArray = Static.Union<[
 // ------------------------------------------------------------------
 // prettier-ignore
 interface ExtendsMapping extends Static.IMapping {
-  output: this['input'] extends ['extends', infer Type extends Types.TSchema, Question, infer True extends Types.TSchema, Colon, infer False extends Types.TSchema]
+  output: this['input'] extends ['extends', infer Type extends t.TSchema, Question, infer True extends t.TSchema, Colon, infer False extends t.TSchema]
     ? [Type, True, False]
     : []
 }
@@ -375,8 +243,8 @@ type Extends = Static.Union<[
 // prettier-ignore
 interface BaseMapping extends Static.IMapping {
   output: (
-    this['input'] extends [LParen, infer Type extends Types.TSchema, RParen] ? Type :
-    this['input'] extends [infer Type extends Types.TSchema] ? Type :
+    this['input'] extends [LParen, infer Type extends t.TSchema, RParen] ? Type :
+    this['input'] extends [infer Type extends t.TSchema] ? Type :
     never
   )
 }
@@ -424,24 +292,24 @@ type Base = Static.Union<[
 // Factor
 // ------------------------------------------------------------------
 // prettier-ignore
-type FactorExtends<Type extends Types.TSchema, Extends extends unknown[]> = (
-  Extends extends [infer Right extends Types.TSchema, infer True extends Types.TSchema, infer False extends Types.TSchema] 
-    ? Types.TExtends<Type, Right, True, False>
+type FactorExtends<Type extends t.TSchema, Extends extends unknown[]> = (
+  Extends extends [infer Right extends t.TSchema, infer True extends t.TSchema, infer False extends t.TSchema] 
+    ? t.TExtends<Type, Right, True, False>
     : Type
 )
 // prettier-ignore
-type FactorIndexArray<Type extends Types.TSchema, IndexArray extends unknown[]> = (
-  IndexArray extends [...infer Left extends unknown[], infer Right extends Types.TSchema[]] ? (
-    Right extends [infer Indexer extends Types.TSchema] ? Types.TIndex<FactorIndexArray<Type, Left>, Types.TIndexPropertyKeys<Indexer>> : 
-    Right extends [] ? Types.TArray<FactorIndexArray<Type, Left>> :
-    Types.TNever
+type FactorIndexArray<Type extends t.TSchema, IndexArray extends unknown[]> = (
+  IndexArray extends [...infer Left extends unknown[], infer Right extends t.TSchema[]] ? (
+    Right extends [infer Indexer extends t.TSchema] ? t.TIndex<FactorIndexArray<Type, Left>, t.TIndexPropertyKeys<Indexer>> : 
+    Right extends [] ? t.TArray<FactorIndexArray<Type, Left>> :
+    t.TNever
   ) : Type
 )
 // prettier-ignore
 interface FactorMapping extends Static.IMapping {
-  output: this['input'] extends [infer KeyOf extends boolean, infer Type extends Types.TSchema, infer IndexArray extends unknown[], infer Extends extends unknown[]]
+  output: this['input'] extends [infer KeyOf extends boolean, infer Type extends t.TSchema, infer IndexArray extends unknown[], infer Extends extends unknown[]]
   ? KeyOf extends true
-    ? FactorExtends<Types.TKeyOf<FactorIndexArray<Type, IndexArray>>, Extends>
+    ? FactorExtends<t.TKeyOf<FactorIndexArray<Type, IndexArray>>, Extends>
     : FactorExtends<FactorIndexArray<Type, IndexArray>, Extends>
   : never
 }
@@ -453,18 +321,18 @@ type Factor = Static.Tuple<[
 // Expr
 // ------------------------------------------------------------------
 // prettier-ignore
-type ExprBinaryReduce<Left extends Types.TSchema, Rest extends unknown[]> = (
-  Rest extends [infer Operator extends unknown, infer Right extends Types.TSchema, infer Next extends unknown[]] ? (
-    ExprBinaryReduce<Right, Next> extends infer Schema extends Types.TSchema ? (
+type ExprBinaryReduce<Left extends t.TSchema, Rest extends unknown[]> = (
+  Rest extends [infer Operator extends unknown, infer Right extends t.TSchema, infer Next extends unknown[]] ? (
+    ExprBinaryReduce<Right, Next> extends infer Schema extends t.TSchema ? (
       Operator extends '&' ? (
-        Schema extends Types.TIntersect<infer Types extends Types.TSchema[]>
-        ? Types.TIntersect<[Left, ...Types]>
-        : Types.TIntersect<[Left, Schema]>
+        Schema extends t.TIntersect<infer Types extends t.TSchema[]>
+        ? t.TIntersect<[Left, ...Types]>
+        : t.TIntersect<[Left, Schema]>
       ) :
       Operator extends '|' ? (
-        Schema extends Types.TUnion<infer Types extends Types.TSchema[]>
-        ? Types.TUnion<[Left, ...Types]>
-        : Types.TUnion<[Left, Schema]>
+        Schema extends t.TUnion<infer Types extends t.TSchema[]>
+        ? t.TUnion<[Left, ...Types]>
+        : t.TUnion<[Left, Schema]>
       ) : never
     ) : never
   ) : Left
@@ -472,7 +340,7 @@ type ExprBinaryReduce<Left extends Types.TSchema, Rest extends unknown[]> = (
 // prettier-ignore
 interface ExprBinaryMapping extends Static.IMapping {
   output: (
-    this['input'] extends [infer Left extends Types.TSchema, infer Rest extends unknown[]]
+    this['input'] extends [infer Left extends t.TSchema, infer Rest extends unknown[]]
     ? ExprBinaryReduce<Left, Rest>
     : []
   )
@@ -498,7 +366,7 @@ type Expr = Static.Tuple<[
 // ------------------------------------------------------------------
 // Type
 // ------------------------------------------------------------------
-type Type = Expr
+export type Type = Expr
 // ------------------------------------------------------------------
 // Properties
 // ------------------------------------------------------------------
@@ -520,12 +388,12 @@ interface OptionalMapping extends Static.IMapping {
 type Optional = Static.Union<[Static.Tuple<[Static.Const<Question>]>, Static.Tuple<[]>], OptionalMapping>
 // prettier-ignore
 interface PropertyMapping extends Static.IMapping {
-  output: this['input'] extends [infer IsReadonly extends boolean, infer Key extends string, infer IsOptional extends boolean, string, infer Type extends Types.TSchema]
+  output: this['input'] extends [infer IsReadonly extends boolean, infer Key extends string, infer IsOptional extends boolean, string, infer Type extends t.TSchema]
   ? { 
     [_ in Key]: (
-      [IsReadonly, IsOptional] extends [true, true] ? Types.TReadonlyOptional<Type> :
-      [IsReadonly, IsOptional] extends [true, false] ? Types.TReadonly<Type> :
-      [IsReadonly, IsOptional] extends [false, true] ? Types.TOptional<Type> :
+      [IsReadonly, IsOptional] extends [true, true] ? t.TReadonlyOptional<Type> :
+      [IsReadonly, IsOptional] extends [true, false] ? t.TReadonly<Type> :
+      [IsReadonly, IsOptional] extends [false, true] ? t.TOptional<Type> :
       Type 
     ) 
   } : never
@@ -540,14 +408,14 @@ type PropertyDelimiter = Static.Union<[
   Static.Tuple<[Static.Const<Newline>]>,
 ]>
 // prettier-ignore
-type PropertiesReduce<PropertiesArray extends Types.TProperties[], Result extends Types.TProperties = {}> = (
-  PropertiesArray extends [infer Left extends Types.TProperties, ...infer Right extends Types.TProperties[]]
-  ? PropertiesReduce<Right, Types.Evaluate<Result & Left>>
+type PropertiesReduce<PropertiesArray extends t.TProperties[], Result extends t.TProperties = {}> = (
+  PropertiesArray extends [infer Left extends t.TProperties, ...infer Right extends t.TProperties[]]
+  ? PropertiesReduce<Right, t.Evaluate<Result & Left>>
   : Result
 )
 // prettier-ignore
 interface PropertiesMapping extends Static.IMapping {
-  output: this['input'] extends Types.TProperties[] ? PropertiesReduce<this['input']> : never
+  output: this['input'] extends t.TProperties[] ? PropertiesReduce<this['input']> : never
 }
 type Properties = Static.Union<[Delimit<Property, PropertyDelimiter>], PropertiesMapping>
 // ------------------------------------------------------------------
@@ -555,8 +423,8 @@ type Properties = Static.Union<[Delimit<Property, PropertyDelimiter>], Propertie
 // ------------------------------------------------------------------
 // prettier-ignore
 interface ObjectMapping extends Static.IMapping {
-  output: this['input'] extends [unknown, infer Properties extends Types.TProperties, unknown] 
-    ? Types.TObject<Properties> 
+  output: this['input'] extends [unknown, infer Properties extends t.TProperties, unknown] 
+    ? t.TObject<Properties> 
     : never
 }
 // prettier-ignore
@@ -569,7 +437,7 @@ type Object = Static.Tuple<[
 type Elements = Delimit<Type, Static.Const<Comma>>
 // prettier-ignore
 interface TupleMapping extends Static.IMapping {
-  output: this['input'] extends [unknown, infer Elements extends Types.TSchema[], unknown] ? Types.TTuple<Elements> : never
+  output: this['input'] extends [unknown, infer Elements extends t.TSchema[], unknown] ? t.TTuple<Elements> : never
 }
 // prettier-ignore
 type Tuple = Static.Tuple<[
@@ -579,7 +447,7 @@ type Tuple = Static.Tuple<[
 // Parameters
 // ------------------------------------------------------------------
 interface ParameterMapping extends Static.IMapping {
-  output: this['input'] extends [string, Colon, infer Type extends Types.TSchema] ? Type : never
+  output: this['input'] extends [string, Colon, infer Type extends t.TSchema] ? Type : never
 }
 // prettier-ignore
 type Parameter = Static.Tuple<[
@@ -592,8 +460,8 @@ type Parameters = Delimit<Parameter, Static.Const<Comma>>
 // ------------------------------------------------------------------
 // prettier-ignore
 interface FunctionMapping extends Static.IMapping {
-  output: this['input'] extends [LParen, infer Parameters extends Types.TSchema[], RParen, '=>', infer ReturnType extends Types.TSchema]
-    ? Types.TFunction<Parameters, ReturnType>
+  output: this['input'] extends [LParen, infer Parameters extends t.TSchema[], RParen, '=>', infer ReturnType extends t.TSchema]
+    ? t.TFunction<Parameters, ReturnType>
     : never
 }
 // prettier-ignore
@@ -605,8 +473,8 @@ type Function = Static.Tuple<[
 // ------------------------------------------------------------------
 // prettier-ignore
 interface ConstructorMapping extends Static.IMapping {
-  output: this['input'] extends ['new', LParen, infer Parameters extends Types.TSchema[], RParen, '=>', infer InstanceType extends Types.TSchema]
-    ? Types.TConstructor<Parameters, InstanceType>
+  output: this['input'] extends ['new', LParen, infer Parameters extends t.TSchema[], RParen, '=>', infer InstanceType extends t.TSchema]
+    ? t.TConstructor<Parameters, InstanceType>
     : never
 }
 // prettier-ignore
@@ -618,8 +486,8 @@ type Constructor = Static.Tuple<[
 // ------------------------------------------------------------------
 // prettier-ignore
 interface MappedMapping extends Static.IMapping {
-  output: this['input'] extends [LBrace, LBracket, infer _Key extends string, 'in', infer _Right extends Types.TSchema, RBracket, Colon, infer Type extends Types.TSchema, RBrace]
-    ? Types.TLiteral<'Mapped types not supported'>
+  output: this['input'] extends [LBrace, LBracket, infer _Key extends string, 'in', infer _Right extends t.TSchema, RBracket, Colon, infer Type extends t.TSchema, RBrace]
+    ? t.TLiteral<'Mapped types not supported'>
     : this['input']
 }
 // prettier-ignore
@@ -631,8 +499,8 @@ type Mapped = Static.Tuple<[
 // ------------------------------------------------------------------
 // prettier-ignore
 interface ArrayMapping extends Static.IMapping {
-  output: this['input'] extends ['Array', LAngle, infer Type extends Types.TSchema, RAngle]
-    ? Types.TArray<Type>
+  output: this['input'] extends ['Array', LAngle, infer Type extends t.TSchema, RAngle]
+    ? t.TArray<Type>
     : never
 }
 // prettier-ignore
@@ -644,8 +512,8 @@ type Array = Static.Tuple<[
 // ------------------------------------------------------------------
 // prettier-ignore
 interface AsyncIteratorMapping extends Static.IMapping {
-  output: this['input'] extends ['AsyncIterator', LAngle, infer Type extends Types.TSchema, RAngle]
-    ? Types.TAsyncIterator<Type>
+  output: this['input'] extends ['AsyncIterator', LAngle, infer Type extends t.TSchema, RAngle]
+    ? t.TAsyncIterator<Type>
     : never
 }
 // prettier-ignore
@@ -657,8 +525,8 @@ type AsyncIterator = Static.Tuple<[
 // ------------------------------------------------------------------
 // prettier-ignore
 interface IteratorMapping extends Static.IMapping {
-  output: this['input'] extends ['Iterator', LAngle, infer Type extends Types.TSchema, RAngle]
-    ? Types.TIterator<Type>
+  output: this['input'] extends ['Iterator', LAngle, infer Type extends t.TSchema, RAngle]
+    ? t.TIterator<Type>
     : never
 }
 // prettier-ignore
@@ -671,8 +539,8 @@ type Iterator = Static.Tuple<[
 // ------------------------------------------------------------------
 // prettier-ignore
 interface ConstructorParametersMapping extends Static.IMapping {
-  output: this['input'] extends ['ConstructorParameters', LAngle, infer Type extends Types.TConstructor, RAngle]
-    ? Types.TConstructorParameters<Type>
+  output: this['input'] extends ['ConstructorParameters', LAngle, infer Type extends t.TSchema, RAngle]
+    ? t.TConstructorParameters<Type>
     : never
 }
 // prettier-ignore
@@ -684,8 +552,8 @@ type ConstructorParameters = Static.Tuple<[
 // ------------------------------------------------------------------
 // prettier-ignore
 interface FunctionParametersMapping extends Static.IMapping {
-  output: this['input'] extends ['Parameters', LAngle, infer Type extends Types.TFunction, RAngle]
-    ? Types.TParameters<Type>
+  output: this['input'] extends ['Parameters', LAngle, infer Type extends t.TSchema, RAngle]
+    ? t.TParameters<Type>
     : never
 }
 // prettier-ignore
@@ -697,8 +565,8 @@ type FunctionParameters = Static.Tuple<[
 // ------------------------------------------------------------------
 // prettier-ignore
 interface InstanceTypeMapping extends Static.IMapping {
-  output: this['input'] extends ['InstanceType', LAngle, infer Type extends Types.TConstructor, RAngle]
-    ? Types.TInstanceType<Type>
+  output: this['input'] extends ['InstanceType', LAngle, infer Type extends t.TSchema, RAngle]
+    ? t.TInstanceType<Type>
     : never
 }
 // prettier-ignore
@@ -710,8 +578,8 @@ type InstanceType = Static.Tuple<[
 // ------------------------------------------------------------------
 // prettier-ignore
 interface ReturnTypeMapping extends Static.IMapping {
-  output: this['input'] extends ['ReturnType', LAngle, infer Type extends Types.TFunction, RAngle]
-    ? Types.TReturnType<Type>
+  output: this['input'] extends ['ReturnType', LAngle, infer Type extends t.TSchema, RAngle]
+    ? t.TReturnType<Type>
     : never
 }
 // prettier-ignore
@@ -723,8 +591,8 @@ type ReturnType = Static.Tuple<[
 // ------------------------------------------------------------------
 // prettier-ignore
 interface AwaitedMapping extends Static.IMapping {
-  output: this['input'] extends ['Awaited', LAngle, infer Type extends Types.TSchema, RAngle]
-    ? Types.TAwaited<Type>
+  output: this['input'] extends ['Awaited', LAngle, infer Type extends t.TSchema, RAngle]
+    ? t.TAwaited<Type>
     : never
 }
 // prettier-ignore
@@ -736,8 +604,8 @@ type Awaited = Static.Tuple<[
 // ------------------------------------------------------------------
 // prettier-ignore
 interface PromiseMapping extends Static.IMapping {
-  output: this['input'] extends ['Promise', LAngle, infer Type extends Types.TSchema, RAngle]
-    ? Types.TPromise<Type>
+  output: this['input'] extends ['Promise', LAngle, infer Type extends t.TSchema, RAngle]
+    ? t.TPromise<Type>
     : never
 }
 // prettier-ignore
@@ -749,8 +617,8 @@ type Promise = Static.Tuple<[
 // ------------------------------------------------------------------
 // prettier-ignore
 interface RecordMapping extends Static.IMapping {
-  output: this['input'] extends ['Record', LAngle, infer Key extends Types.TSchema, Comma, infer Type extends Types.TSchema,  RAngle]
-    ? Types.TRecord<Key, Type>
+  output: this['input'] extends ['Record', LAngle, infer Key extends t.TSchema, Comma, infer Type extends t.TSchema,  RAngle]
+    ? t.TRecord<Key, Type>
     : never
 }
 // prettier-ignore
@@ -762,8 +630,8 @@ type Record = Static.Tuple<[
 // ------------------------------------------------------------------
 // prettier-ignore
 interface PartialMapping extends Static.IMapping {
-  output: this['input'] extends ['Partial', LAngle, infer Type extends Types.TSchema, RAngle]
-    ? Types.TPartial<Type>
+  output: this['input'] extends ['Partial', LAngle, infer Type extends t.TSchema, RAngle]
+    ? t.TPartial<Type>
     : never
 }
 // prettier-ignore
@@ -775,8 +643,8 @@ type Partial = Static.Tuple<[
 // ------------------------------------------------------------------
 // prettier-ignore
 interface RequiredMapping extends Static.IMapping {
-  output: this['input'] extends ['Required', LAngle, infer Type extends Types.TSchema, RAngle]
-    ? Types.TRequired<Type>
+  output: this['input'] extends ['Required', LAngle, infer Type extends t.TSchema, RAngle]
+    ? t.TRequired<Type>
     : never
 }
 // prettier-ignore
@@ -788,8 +656,8 @@ type Required = Static.Tuple<[
 // ------------------------------------------------------------------
 // prettier-ignore
 interface PickMapping extends Static.IMapping {
-  output: this['input'] extends ['Pick', LAngle, infer Type extends Types.TSchema, Comma, infer Key extends Types.TSchema, RAngle]
-    ? Types.TPick<Type, Key>
+  output: this['input'] extends ['Pick', LAngle, infer Type extends t.TSchema, Comma, infer Key extends t.TSchema, RAngle]
+    ? t.TPick<Type, Key>
     : never
 }
 // prettier-ignore
@@ -801,8 +669,8 @@ type Pick = Static.Tuple<[
 // ------------------------------------------------------------------
 // prettier-ignore
 interface OmitMapping extends Static.IMapping {
-  output: this['input'] extends ['Omit', LAngle, infer Type extends Types.TSchema, Comma, infer Key extends Types.TSchema, RAngle]
-    ? Types.TOmit<Type, Key>
+  output: this['input'] extends ['Omit', LAngle, infer Type extends t.TSchema, Comma, infer Key extends t.TSchema, RAngle]
+    ? t.TOmit<Type, Key>
     : never
 }
 // prettier-ignore
@@ -814,8 +682,8 @@ type Omit = Static.Tuple<[
 // ------------------------------------------------------------------
 // prettier-ignore
 interface ExcludeMapping extends Static.IMapping {
-  output: this['input'] extends ['Exclude', LAngle, infer Type extends Types.TSchema, Comma, infer PropertyKey extends Types.TSchema, RAngle]
-    ? Types.TExclude<Type, PropertyKey>
+  output: this['input'] extends ['Exclude', LAngle, infer Type extends t.TSchema, Comma, infer PropertyKey extends t.TSchema, RAngle]
+    ? t.TExclude<Type, PropertyKey>
     : never
 }
 // prettier-ignore
@@ -827,8 +695,8 @@ type Exclude = Static.Tuple<[
 // ------------------------------------------------------------------
 // prettier-ignore
 interface ExtractMapping extends Static.IMapping {
-  output: this['input'] extends ['Extract', LAngle, infer Type extends Types.TSchema, Comma, infer PropertyKey extends Types.TSchema, RAngle]
-    ? Types.TExtract<Type, PropertyKey>
+  output: this['input'] extends ['Extract', LAngle, infer Type extends t.TSchema, Comma, infer PropertyKey extends t.TSchema, RAngle]
+    ? t.TExtract<Type, PropertyKey>
     : never
 }
 // prettier-ignore
@@ -840,8 +708,8 @@ type Extract = Static.Tuple<[
 // ------------------------------------------------------------------
 // prettier-ignore
 interface UppercaseMapping extends Static.IMapping {
-  output: this['input'] extends ['Uppercase', LAngle, infer Type extends Types.TSchema, RAngle]
-    ? Types.TUppercase<Type>
+  output: this['input'] extends ['Uppercase', LAngle, infer Type extends t.TSchema, RAngle]
+    ? t.TUppercase<Type>
     : never
 }
 // prettier-ignore
@@ -853,8 +721,8 @@ type Uppercase = Static.Tuple<[
 // ------------------------------------------------------------------
 // prettier-ignore
 interface LowercaseMapping extends Static.IMapping {
-  output: this['input'] extends ['Lowercase', LAngle, infer Type extends Types.TSchema, RAngle]
-    ? Types.TLowercase<Type>
+  output: this['input'] extends ['Lowercase', LAngle, infer Type extends t.TSchema, RAngle]
+    ? t.TLowercase<Type>
     : never
 }
 // prettier-ignore
@@ -866,8 +734,8 @@ type Lowercase = Static.Tuple<[
 // ------------------------------------------------------------------
 // prettier-ignore
 interface CapitalizeMapping extends Static.IMapping {
-  output: this['input'] extends ['Capitalize', LAngle, infer Type extends Types.TSchema, RAngle]
-    ? Types.TCapitalize<Type>
+  output: this['input'] extends ['Capitalize', LAngle, infer Type extends t.TSchema, RAngle]
+    ? t.TCapitalize<Type>
     : never
 }
 // prettier-ignore
@@ -879,8 +747,8 @@ type Capitalize = Static.Tuple<[
 // ------------------------------------------------------------------
 // prettier-ignore
 interface UncapitalizeMapping extends Static.IMapping {
-  output: this['input'] extends ['Uncapitalize', LAngle, infer Type extends Types.TSchema, RAngle]
-    ? Types.TUncapitalize<Type>
+  output: this['input'] extends ['Uncapitalize', LAngle, infer Type extends t.TSchema, RAngle]
+    ? t.TUncapitalize<Type>
     : never
 }
 // prettier-ignore
@@ -890,19 +758,8 @@ type Uncapitalize = Static.Tuple<[
 // ------------------------------------------------------------------
 // Date
 // ------------------------------------------------------------------
-type Date = Static.Const<'Date', Static.As<Types.TDate>>
+type Date = Static.Const<'Date', Static.As<t.TDate>>
 // ------------------------------------------------------------------
 // Uint8Array
 // ------------------------------------------------------------------
-type Uint8Array = Static.Const<'Uint8Array', Static.As<Types.TUint8Array>>
-
-// ------------------------------------------------------------------
-// Main
-// ------------------------------------------------------------------
-// prettier-ignore
-export type Main = Static.Union<[
-  ModuleDeclaration,
-  TypeAliasDeclaration,
-  InterfaceDeclaration,
-  Type
-]>
+type Uint8Array = Static.Const<'Uint8Array', Static.As<t.TUint8Array>>

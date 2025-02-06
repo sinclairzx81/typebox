@@ -77,10 +77,6 @@ License MIT
   - [Transform](#types-transform)
   - [Guard](#types-guard)
   - [Unsafe](#types-unsafe)
-- [Syntax](#syntax)
-  - [Parse](#syntax-parse)
-  - [Static](#syntax-static)
-  - [Limits](#syntax-limits)
 - [Values](#values)
   - [Assert](#values-assert)
   - [Create](#values-create)
@@ -100,6 +96,11 @@ License MIT
   - [Errors](#values-errors)
   - [Mutate](#values-mutate)
   - [Pointer](#values-pointer)
+- [Syntax](#syntax)
+  - [Type](#syntax-type)
+  - [Options](#syntax-options)
+  - [Parameters](#syntax-parameters)
+  - [Generics](#syntax-generics)
 - [TypeRegistry](#typeregistry)
   - [Type](#typeregistry-type)
   - [Format](#typeregistry-format)
@@ -1044,162 +1045,6 @@ if(TypeGuard.IsString(T)) {
 }
 ```
 
-<a name='syntax'></a>
-
-## Syntax Types
-
-TypeBox has support for parsing TypeScript type annotations directly into TypeBox types. This feature supports both runtime and static parsing, with TypeBox implementing TypeScript parsers within the TypeScript type system itself. Syntax Types use the TypeBox Json Schema representations as an AST target for TypeScript types, providing a direct mapping between TypeScript syntax and Json Schema. Syntax Types are offered as a syntactical frontend to the Standard Type Builder API.
-
-This feature is available via optional import.
-
-```typescript
-import { Parse } from '@sinclair/typebox/syntax'
-```
-
-<a name='syntax-parse'></a>
-
-### Parse
-
-Use the Parse function to transform a TypeScript type annotation into a TypeBox type. This function will return the parsed TypeBox type or undefined on error.
-
-```typescript
-const A = Parse('string')                           // const A: TString
-
-const B = Parse('[1, 2, 3]')                        // const B: TTuple<[
-                                                    //   TLiteral<1>,
-                                                    //   TLiteral<2>,
-                                                    //   TLiteral<3>
-                                                    // ]>
-
-const C = Parse(`{ x: number, y: number }`)         // const C: TObject<{
-                                                    //   x: TNumber
-                                                    //   y: TNumber
-                                                    // }>
-```
-
-Syntax Types can compose with Standard Types created via the Type Builder API
-
-```typescript
-const T = Type.Object({                             // const T: TObject<{
-  x: Parse('number'),                               //   x: TNumber,
-  y: Parse('string'),                               //   y: TString,
-  z: Parse('boolean')                               //   z: TBoolean
-})                                                  // }>
-```
-
-Standard Types can also be passed to and referenced within Syntax Types.
-
-```typescript
-const X = Type.Number()
-const Y = Type.String()
-const Z = Type.Boolean()
-
-const T = Parse({ X, Y, Z }, `{ 
-  x: X, 
-  y: Y, 
-  z: Z 
-}`)
-```
-
-Syntax Types also support Module parsing.
-
-```typescript
-const Foo = Parse(`module Foo {
-
-  export type PartialUser = Pick<User, 'id'> & Partial<Omit<User, 'id'>>
-
-  export interface User {
-    id: string
-    name: string
-    email: string
-  }
-
-}`)
-
-const PartialUser = Foo.Import('PartialUser')       // TImport<{...}, 'PartialUser'>
-
-type PartialUser = Static<typeof PartialUser>       // type PartialUser = {
-                                                    //   id: string,
-                                                    // } & {
-                                                    //   name?: string,
-                                                    //   email?: string,
-                                                    // }
-```
-
-<a name='syntax-static'></a>
-
-### Static
-
-Syntax Types provide two Static types specific to inferring TypeBox and TypeScript types from strings.
-
-```typescript
-import { StaticParseAsSchema, StaticParseAsType } from '@sinclair/typebox/syntax' 
-
-// Will infer as a TSchema
-
-type S = StaticParseAsSchema<{}, '{ x: number }'>   // type S: TObject<{
-                                                    //   x: TNumber
-                                                    // }>
-
-// Will infer as a type
-
-type T = StaticParseAsType<{}, '{ x: number }'>     // type T = {
-                                                    //   x: number
-                                                    // }                      
-```
-
-
-<a name='syntax-limits'></a>
-
-### Limitations
-
-TypeBox parses TypeScript types directly within the TypeScript type system. This process does come with an inference cost, which scales with the size and complexity of the types being parsed. Although TypeBox strives to optimize Syntax Types, users should be aware of the following structures:
-
-```typescript
-// Excessively wide structures will result in instantiation limits exceeding
-const A = Parse(`[
-  0, 1, 2, 3, 4, 5, 6, 7,
-  0, 1, 2, 3, 4, 5, 6, 7,
-  0, 1, 2, 3, 4, 5, 6, 7,
-  0, 1, 2, 3, 4, 5, 6, 7,
-  0, 1, 2, 3, 4, 5, 6, 7,
-  0, 1, 2, 3, 4, 5, 6, 7,
-  0, 1, 2, 3, 4, 5, 6, 7,
-  0, 1, 2, 3, 4, 5, 6, 7,
-]`)
-
-// Excessively nested structures will result in instantiation limits exceeding
-const B = Parse(`{
-  x: {
-    y: {
-      z: {
-        w: 1 <-- Type instantiation is excessively deep and possibly infinite.
-      } 
-    }
-  }  
-}`)
-```
-
-If Syntax Types exceed TypeScript's instantiation limits, users are advised to fall back to the Standard Type Builder API. Alternatively, TypeBox offers a `ParseOnly` function that parses the TypeScript syntax at runtime without statically inferring the schema.
-
-```typescript
-import { ParseOnly } from '@sinclair/typebox/syntax'
-
-// const A: TSchema | undefined 
-
-const A = ParseOnly(`{
-  x: {
-    y: {
-      z: {
-        w: 1
-      } 
-    }
-  }  
-}`)
-```
-
-For more information on static parsing, refer to the [ParseBox](https://github.com/sinclairzx81/parsebox) project.
-
 <a name='values'></a>
 
 ## Values
@@ -1489,6 +1334,87 @@ ValuePointer.Set(A, '/x', 1)                         // A' = { x: 1, y: 0, z: 0 
 ValuePointer.Set(A, '/y', 1)                         // A' = { x: 1, y: 1, z: 0 }
 ValuePointer.Set(A, '/z', 1)                         // A' = { x: 1, y: 1, z: 1 }
 ```
+
+
+
+<a name='syntax'></a>
+
+## Syntax Types
+
+TypeBox provides optional support for runtime and type level parsing from TypeScript syntax.
+
+```typescript
+import { Syntax } from '@sinclair/typebox/syntax'
+```
+
+<a name='syntax-type'></a>
+
+### Type
+
+Use the Syntax function to create TypeBox type from TypeScript syntax.
+
+```typescript
+const T = Syntax(`{ x: number, y: number }`)        // const T: TObject<{
+                                                    //   x: TNumber
+                                                    //   y: TNumber
+                                                    // }>
+```
+
+<a name='syntax-options'></a>
+
+### Options
+
+Options can be passed to types on the last parameter
+
+```typescript
+const T = Syntax(`number`, {                      // const T = {
+  minimum: 0,                                     //   type: 'number',
+  maximum: 10                                     //   minimum: 0,
+})                                                //   maximum: 10
+                                                  // }
+```
+
+<a name="syntax-parameters"></a>
+
+### Parameters
+
+Syntax types can be parameterized to accept exterior types.
+
+```typescript
+const T = Syntax('number')
+
+const S = Syntax({ T }, `{ x: T, y: T, z: T }`)     // const S: TObject<{
+                                                    //   x: TNumber,
+                                                    //   y: TNumber,
+                                                    //   z: TNumber
+                                                    // }>
+```
+
+<a name="syntax-generics"></a>
+
+### Generics
+
+Generic syntax types can be created using parameterized types.
+
+```typescript
+// Generic Syntax Type
+
+const Vector = <T extends string>(T: T) => Syntax({ T: Syntax(T) }, `{
+  x: T,
+  y: T,
+  z: T
+}`)
+
+
+// Instanced Generic Syntax Type
+
+const NumberVector = Vector('number')                 // const NumberVector: TObject<{
+                                                      //   x: TNumber,
+                                                      //   y: TNumber,
+                                                      //   z: TNumber
+                                                      // }>
+```
+
 
 <a name='typeregistry'></a>
 
