@@ -1364,7 +1364,7 @@ const T = Syntax(`{ x: number, y: number }`)        // const T: TObject<{
 
 ### Options
 
-Options can be passed to syntax types as the last parameter
+Options can be passed to types on the last parameter
 
 ```typescript
 const T = Syntax(`number`, {                      // const T = {
@@ -1394,7 +1394,7 @@ const S = Syntax({ T }, `{ x: T, y: T, z: T }`)     // const S: TObject<{
 
 ### Generics
 
-Generic syntax types can be created
+Generic syntax types can be created using parameterized types.
 
 ```typescript
 // Generic Syntax Type
@@ -1408,7 +1408,7 @@ const Vector = <T extends string>(T: T) => Syntax({ T: Syntax(T) }, `{
 
 // Instanced Generic Syntax Type
 
-const NumberVector = Vector('number')                 // const S: TObject<{
+const NumberVector = Vector('number')                 // const NumberVector: TObject<{
                                                       //   x: TNumber,
                                                       //   y: TNumber,
                                                       //   z: TNumber
