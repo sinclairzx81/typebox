@@ -4,6 +4,16 @@ import { Value, ValuePointer } from '@sinclair/typebox/value'
 import { Syntax, TSyntax } from '@sinclair/typebox/syntax'
 import { Type, TypeGuard, Kind, Static, TSchema } from '@sinclair/typebox'
 
+import { Runtime } from '@sinclair/typebox/parser'
+
+const AA = Runtime.Tuple([
+  Runtime.Const('A'),
+  Runtime.Const('B'),
+  Runtime.Const('C'),
+])
+
+console.log(Runtime.Parse(AA, 'A B C'))
+
 // Updates:
 //
 // renamed Parse() to Syntax()
@@ -12,8 +22,8 @@ import { Type, TypeGuard, Kind, Static, TSchema } from '@sinclair/typebox'
 // updated Parameters to be TSchema generic
 // updated ConstructorParameters to be TSchema generic
 
-const T = Syntax(`new (a: number | number) => string`)
+// const T = Syntax(`new (a: number | number) => string`)
 
-const A = Type.ConstructorParameters(T)
+// const A = Type.ConstructorParameters(T)
 
-console.log(T)
+// console.log(T)

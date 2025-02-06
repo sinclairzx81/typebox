@@ -1,4 +1,4 @@
 {
   "extends": "../tsconfig.json",
-  "files": ["compiler/index.ts", "errors/index.ts", "parse/index.ts", "syntax/index.ts", "system/index.ts", "type/index.ts", "value/index.ts", "index.ts"]
+  "files": ["compiler/index.ts", "errors/index.ts", "parser/index.ts", "syntax/index.ts", "system/index.ts", "type/index.ts", "value/index.ts", "index.ts"]
 }

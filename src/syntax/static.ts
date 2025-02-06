@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { Static } from '../parse/index'
+import { Static } from '../parser/index'
 import * as t from '../type/index'
 
 // ------------------------------------------------------------------
