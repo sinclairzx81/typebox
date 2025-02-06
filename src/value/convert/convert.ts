@@ -125,7 +125,7 @@ function TryConvertNumber(value: unknown) {
   return IsStringNumeric(value) ? parseFloat(value) : IsValueTrue(value) ? 1 : IsValueFalse(value) ? 0 : value
 }
 function TryConvertInteger(value: unknown) {
-  return IsStringNumeric(value) ? parseInt(value) : IsNumber(value) ? value | 0 : IsValueTrue(value) ? 1 : IsValueFalse(value) ? 0 : value
+  return IsStringNumeric(value) ? parseInt(value) : IsNumber(value) ? Math.trunc(value) : IsValueTrue(value) ? 1 : IsValueFalse(value) ? 0 : value
 }
 function TryConvertNull(value: unknown) {
   return IsString(value) && value.toLowerCase() === 'null' ? null : value
