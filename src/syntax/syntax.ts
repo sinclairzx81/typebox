@@ -60,3 +60,42 @@ export function NoInfer(...args: any[]): Types.TSchema | undefined {
     ? Types.CloneType(type, options) 
     : Types.Never(options)
 }
+
+// ------------------------------------------------------------------
+// Deprecated
+// ------------------------------------------------------------------
+/**
+ * Parses a TSchema type from Syntax.
+ * @deprecated Use Syntax() function
+ */
+export function Parse<Context extends Record<PropertyKey, Types.TSchema>, Code extends string>(context: Context, code: Code, options?: Types.SchemaOptions): TSyntax<Context, Code>
+/**
+ * Parses a TSchema type from Syntax.
+ * @deprecated Use Syntax() function
+ */
+export function Parse<Code extends string>(code: Code, options?: Types.SchemaOptions): TSyntax<{}, Code>
+/**
+ * Parses a TSchema type from Syntax.
+ * @deprecated Use Syntax() function
+ */
+export function Parse(...args: any[]): never {
+  return NoInfer.apply(null, args as never) as never
+}
+
+/**
+ * Parses a TSchema from TypeScript Syntax
+ * @deprecated Use NoInfer() function
+ */
+export function ParseOnly<Context extends Record<PropertyKey, Types.TSchema>, Code extends string>(context: Context, code: Code, options?: Types.SchemaOptions): Types.TSchema | undefined
+/**
+ * Parses a TSchema from TypeScript Syntax
+ * @deprecated Use NoInfer() function
+ */
+export function ParseOnly<Code extends string>(code: Code, options?: Types.SchemaOptions): Types.TSchema | undefined
+/**
+ * Parses a TSchema from TypeScript Syntax
+ * @deprecated Use NoInfer() function
+ */
+export function ParseOnly(...args: any[]): Types.TSchema | undefined {
+  return NoInfer.apply(null, args as never) as never
+}
