@@ -31,26 +31,26 @@ import { Static } from '../parser/index'
 import { Module } from './runtime'
 import { Type } from './static'
 
-/** Infers a TSchema from Syntax. */
+/** Infers a TSchema type from TypeScript syntax. */
 // prettier-ignore
 export type TSyntax<Context extends Record<PropertyKey, Types.TSchema>, Code extends string> = (
   Static.Parse<Type, Code, Context> extends [infer Type extends Types.TSchema, string] 
     ? Type
     : Types.TNever
 )
-/** Parses a TSchema type from Syntax. */
+/** Parses a TSchema type from TypeScript syntax */
 export function Syntax<Context extends Record<PropertyKey, Types.TSchema>, Code extends string>(context: Context, code: Code, options?: Types.SchemaOptions): TSyntax<Context, Code>
-/** Parses a TSchema type from Syntax. */
+/** Parses a TSchema type from TypeScript syntax */
 export function Syntax<Code extends string>(code: Code, options?: Types.SchemaOptions): TSyntax<{}, Code>
-/** Parses a TSchema type from Syntax. */
+/** Parses a TSchema type from TypeScript syntax */
 export function Syntax(...args: any[]): never {
   return NoInfer.apply(null, args as never) as never
 }
-/** Parses a TSchema from TypeScript Syntax */
+/** Parses a TSchema type from TypeScript syntax but does not infer schematics */
 export function NoInfer<Context extends Record<PropertyKey, Types.TSchema>, Code extends string>(context: Context, code: Code, options?: Types.SchemaOptions): Types.TSchema | undefined
-/** Parses a TSchema from TypeScript Syntax */
+/** Parses a TSchema type from TypeScript syntax but does not infer schematics */
 export function NoInfer<Code extends string>(code: Code, options?: Types.SchemaOptions): Types.TSchema | undefined
-/** Parses a TSchema from TypeScript Syntax */
+/** Parses a TSchema type from TypeScript syntax but does not infer schematics */
 // prettier-ignore
 export function NoInfer(...args: any[]): Types.TSchema | undefined {
   const withContext = typeof args[0] === 'string' ? false : true
