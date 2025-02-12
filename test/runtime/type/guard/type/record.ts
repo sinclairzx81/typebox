@@ -1,5 +1,5 @@
 import { TypeGuard, PatternNumberExact, PatternStringExact, PatternNeverExact, PatternString, PatternNumber } from '@sinclair/typebox'
-import { Type } from '@sinclair/typebox'
+import { Type, RecordKey, RecordValue, RecordPattern } from '@sinclair/typebox'
 import { Assert } from '../../../assert/index'
 
 describe('guard/type/TRecord', () => {
@@ -151,15 +151,51 @@ describe('guard/type/TRecord', () => {
     )
     Assert.IsFalse(R)
   })
-  it('Normalize: Should should normalize to TObject for single literal union value', () => {
+  it('Normalize: Should normalize to TObject for single literal union value', () => {
     const K = Type.Union([Type.Literal('ok')])
     const R = TypeGuard.IsObject(Type.Record(K, Type.Number()))
     Assert.IsTrue(R)
   })
-  it('Normalize: Should should normalize to TObject for multi literal union value', () => {
+  it('Normalize: Should normalize to TObject for multi literal union value', () => {
     const K = Type.Union([Type.Literal('A'), Type.Literal('B')])
     const R = TypeGuard.IsObject(Type.Record(K, Type.Number()))
     Assert.IsTrue(R)
+  })
+  it('Normalize: Should normalize boolean key into true and false', () => {
+    const K = Type.Boolean()
+    const R = Type.Record(K, Type.Number())
+    Assert.IsTrue(TypeGuard.IsObject(R))
+    Assert.IsTrue(TypeGuard.IsNumber(R.properties.true))
+    Assert.IsTrue(TypeGuard.IsNumber(R.properties.false))
+  })
+  // ------------------------------------------------------------------
+  // Utility Types
+  // ------------------------------------------------------------------
+  it('Should return RecordPattern', () => {
+    const R = Type.Record(Type.Number(), Type.Number())
+    const K = RecordPattern(R)
+    Assert.IsTrue(typeof K === 'string')
+  })
+  it('Should return RecordKey (Number)', () => {
+    const R = Type.Record(Type.Number(), Type.Number())
+    const K = RecordKey(R)
+    Assert.IsTrue(TypeGuard.IsNumber(K))
+  })
+  it('Should return RecordKey (String)', () => {
+    const R = Type.Record(Type.String(), Type.Number())
+    const K = RecordKey(R)
+    Assert.IsTrue(TypeGuard.IsString(K))
+  })
+  it('Should return RecordKey (RegExp)', () => {
+    const R = Type.Record(Type.RegExp(/(a|b)/), Type.Number())
+    const K = RecordKey(R)
+    Assert.IsTrue(TypeGuard.IsString(K)) // facade
+  })
+  it('Should return RecordValue', () => {
+    const R = Type.Record(Type.String(), Type.Literal(12345))
+    const V = RecordValue(R)
+    Assert.IsTrue(TypeGuard.IsLiteral(V))
+    Assert.IsEqual(V.const, 12345)
   })
   // ------------------------------------------------------------------
   // Evaluated: Dollar Sign Escape

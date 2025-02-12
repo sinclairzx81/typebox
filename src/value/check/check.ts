@@ -36,9 +36,11 @@ import { TypeRegistry, FormatRegistry } from '../../type/registry/index'
 import { TypeBoxError } from '../../type/error/index'
 
 import type { TSchema } from '../../type/schema/index'
-import type { TAsyncIterator } from '../../type/async-iterator/index'
+
 import type { TAny } from '../../type/any/index'
+import type { TArgument } from '../../type/argument/index'
 import type { TArray } from '../../type/array/index'
+import type { TAsyncIterator } from '../../type/async-iterator/index'
 import type { TBigInt } from '../../type/bigint/index'
 import type { TBoolean } from '../../type/boolean/index'
 import type { TDate } from '../../type/date/index'
@@ -102,6 +104,9 @@ function IsDefined<T>(value: unknown): value is T {
 // Types
 // ------------------------------------------------------------------
 function FromAny(schema: TAny, references: TSchema[], value: any): boolean {
+  return true
+}
+function FromArgument(schema: TArgument, references: TSchema[], value: any): boolean {
   return true
 }
 function FromArray(schema: TArray, references: TSchema[], value: any): boolean {
@@ -426,6 +431,8 @@ function Visit<T extends TSchema>(schema: T, references: TSchema[], value: any):
   switch (schema_[Kind]) {
     case 'Any':
       return FromAny(schema_, references_, value)
+    case 'Argument':
+      return FromArgument(schema_, references_, value)
     case 'Array':
       return FromArray(schema_, references_, value)
     case 'AsyncIterator':

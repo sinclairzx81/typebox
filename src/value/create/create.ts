@@ -97,6 +97,9 @@ function FromAny(schema: TAny, references: TSchema[]): any {
     return {}
   }
 }
+function FromArgument(schema: TAny, references: TSchema[]): any {
+  return {}
+}
 function FromArray(schema: TArray, references: TSchema[]): any {
   if (schema.uniqueItems === true && !HasPropertyKey(schema, 'default')) {
     throw new ValueCreateError(schema, 'Array with the uniqueItems constraint requires a default value')
@@ -403,6 +406,8 @@ function Visit(schema: TSchema, references: TSchema[]): unknown {
   switch (schema_[Kind]) {
     case 'Any':
       return FromAny(schema_, references_)
+    case 'Argument':
+      return FromArgument(schema_, references_)
     case 'Array':
       return FromArray(schema_, references_)
     case 'AsyncIterator':

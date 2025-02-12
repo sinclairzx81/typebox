@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------------
 
-@sinclair/typebox/prototypes
+@sinclair/typebox/type
 
 The MIT License (MIT)
 
@@ -26,9 +26,16 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export * from './discriminated-union'
-export * from './from-schema'
-export * from './options'
-export * from './partial-deep'
-export * from './union-enum'
-export * from './union-oneof'
+import { CreateType } from '../create/type'
+import type { TSchema } from '../schema/index'
+import { Kind } from '../symbols/index'
+
+export interface TArgument<Index extends number = number> extends TSchema {
+  [Kind]: 'Argument'
+  static: unknown
+  index: Index
+}
+/** `[JavaScript]` Creates an Argument Type. */
+export function Argument<Index extends number>(index: Index): TArgument<Index> {
+  return CreateType({ [Kind]: 'Argument', index }) as never
+}

@@ -731,46 +731,42 @@ Object properties can be modified with Readonly and Optional. The following tabl
 
 ### Generic Types
 
-Generic types can be created with functions. TypeBox types extend the TSchema interface so you should constrain parameters to this type. The following creates a generic Vector type.
+Generic types can be created with generic functions
 
 ```typescript
-import { Type, type Static, type TSchema } from '@sinclair/typebox'
+const Nullable = <T extends TSchema>(T: T) => {     // type Nullable<T> = T | null
+  return Type.Union([T, Type.Null())
+}
 
-const Vector = <T extends TSchema>(T: T) => 
-  Type.Object({                                      // type Vector<T> = {
-    x: T,                                            //   x: T,
-    y: T,                                            //   y: T,
-    z: T                                             //   z: T
-  })                                                 // }
-
-const NumberVector = Vector(Type.Number())           // type NumberVector = Vector<number>
+const T = Nullable(Type.String())                  // type T = Nullable<string>
 ```
 
-Generic types are often used to create aliases for complex types. The following creates a Nullable generic type.
+Generic types can also be created with Argument types
 
 ```typescript
-const Nullable = <T extends TSchema>(schema: T) => Type.Union([schema, Type.Null()])
+const Vector = Type.Object({                        // type Vector<A_0, A_1, A_2> = {
+  x: Type.Argument(0),                              //   x: A_0,
+  y: Type.Argument(1),                              //   y: A_1,
+  z: Type.Argument(2),                              //   z: A_2
+})                                                  // }
 
-const T = Nullable(Type.String())                    // const T = {
-                                                     //   anyOf: [
-                                                     //     { type: 'string' },
-                                                     //     { type: 'null' }
-                                                     //   ]
-                                                     // }
-
-type T = Static<typeof T>                            // type T = string | null
+const T = Type.Instantiate(Vector, [                // type T = Vector<
+  Type.Boolean(),                                   //   boolean, 
+  Type.Number(),                                    //   number,
+  Type.String()                                     //   string
+])                                                  // >
 ```
 
 <a name='types-recursive'></a>
 
 ### Recursive Types
 
-Use the Recursive function to create a singular recursive type.
+Use the Recursive function to create recursive types
 
 ```typescript
-const Node = Type.Recursive(Self => Type.Object({    // const Node = {
+const Node = Type.Recursive(This => Type.Object({    // const Node = {
   id: Type.String(),                                 //   $id: 'Node',
-  nodes: Type.Array(Self)                            //   type: 'object',
+  nodes: Type.Array(This)                            //   type: 'object',
 }), { $id: 'Node' })                                 //   properties: {
                                                      //     id: {
                                                      //       type: 'string'
@@ -1394,27 +1390,26 @@ const S = Syntax({ T }, `{ x: T, y: T, z: T }`)     // const S: TObject<{
 
 ### Generics
 
-Generic syntax types can be created using parameterized types.
+Generic types can be created by passing Argument types as parameters.
 
 ```typescript
-// Generic Syntax Type
+// Generic Vector Type
 
-const Vector = <T extends string>(T: T) => Syntax({ T: Syntax(T) }, `{
-  x: T,
-  y: T,
-  z: T
+const Vector = Syntax({                             // type Vector<X, Y, Z> = {
+  X: Type.Argument(0),                              //   x: X
+  Y: Type.Argument(1),                              //   y: Y,
+  Z: Type.Argument(2)                               //   z: Z
+},                                                  // }
+`{                            
+  x: X,
+  y: Y,
+  z: Z
 }`)
 
+// Instanced Vector Type 
 
-// Instanced Generic Syntax Type
-
-const NumberVector = Vector('number')                 // const NumberVector: TObject<{
-                                                      //   x: TNumber,
-                                                      //   y: TNumber,
-                                                      //   z: TNumber
-                                                      // }>
+const Up = Syntax({ Vector }, `Vector<0, 1, 0>`)    // type Up = Vector<0, 1, 0>
 ```
-
 
 <a name='typeregistry'></a>
 

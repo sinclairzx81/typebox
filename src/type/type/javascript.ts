@@ -27,6 +27,7 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import { JsonTypeBuilder } from './json'
+import { Argument, type TArgument } from '../argument/index'
 import { AsyncIterator, type TAsyncIterator } from '../async-iterator/index'
 import { Awaited, type TAwaited } from '../awaited/index'
 import { BigInt, type TBigInt, type BigIntOptions } from '../bigint/index'
@@ -35,6 +36,7 @@ import { ConstructorParameters, type TConstructorParameters } from '../construct
 import { Date, type TDate, type DateOptions } from '../date/index'
 import { Function as FunctionType, type TFunction } from '../function/index'
 import { InstanceType, type TInstanceType } from '../instance-type/index'
+import { Instantiate, type TInstantiate } from '../instantiate/index'
 import { Iterator, type TIterator } from '../iterator/index'
 import { Parameters, type TParameters } from '../parameters/index'
 import { Promise, type TPromise } from '../promise/index'
@@ -48,6 +50,10 @@ import { Void, type TVoid } from '../void/index'
 
 /** JavaScript Type Builder with Static Resolution for TypeScript */
 export class JavaScriptTypeBuilder extends JsonTypeBuilder {
+  /** `[JavaScript]` Creates a Generic Argument Type */
+  public Argument<Index extends number>(index: Index): TArgument<Index> {
+    return Argument(index)
+  }
   /** `[JavaScript]` Creates a AsyncIterator type */
   public AsyncIterator<Type extends TSchema>(items: Type, options?: SchemaOptions): TAsyncIterator<Type> {
     return AsyncIterator(items, options)
@@ -79,6 +85,10 @@ export class JavaScriptTypeBuilder extends JsonTypeBuilder {
   /** `[JavaScript]` Extracts the InstanceType from the given Constructor type */
   public InstanceType<Type extends TSchema>(schema: Type, options?: SchemaOptions): TInstanceType<Type> {
     return InstanceType(schema, options)
+  }
+  /** `[JavaScript]` Instantiates a type with the given parameters */
+  public Instantiate<Type extends TSchema, Parameters extends TSchema[]>(schema: Type, parameters: [...Parameters]): TInstantiate<Type, Parameters> {
+    return Instantiate(schema, parameters)
   }
   /** `[JavaScript]` Creates an Iterator type */
   public Iterator<Type extends TSchema>(items: Type, options?: SchemaOptions): TIterator<Type> {

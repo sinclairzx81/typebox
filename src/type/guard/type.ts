@@ -30,15 +30,13 @@ import * as ValueGuard from './value'
 import { Kind, Hint, TransformKind, ReadonlyKind, OptionalKind } from '../symbols/index'
 import { TypeBoxError } from '../error/index'
 import { TransformOptions } from '../transform/index'
-import type { TTemplateLiteral } from '../template-literal/index'
+
+import type { TAny } from '../any/index'
+import type { TArgument } from '../argument/index'
 import type { TArray } from '../array/index'
+import type { TAsyncIterator } from '../async-iterator/index'
 import type { TBoolean } from '../boolean/index'
 import type { TComputed } from '../computed/index'
-import type { TRecord } from '../record/index'
-import type { TString } from '../string/index'
-import type { TUnion } from '../union/index'
-import type { TAny } from '../any/index'
-import type { TAsyncIterator } from '../async-iterator/index'
 import type { TBigInt } from '../bigint/index'
 import type { TConstructor } from '../constructor/index'
 import type { TFunction } from '../function/index'
@@ -56,13 +54,17 @@ import type { TObject, TAdditionalProperties, TProperties } from '../object/inde
 import type { TOptional } from '../optional/index'
 import type { TPromise } from '../promise/index'
 import type { TReadonly } from '../readonly/index'
+import type { TRecord } from '../record/index'
 import type { TRef } from '../ref/index'
 import type { TRegExp } from '../regexp/index'
 import type { TSchema } from '../schema/index'
+import type { TString } from '../string/index'
 import type { TSymbol } from '../symbol/index'
+import type { TTemplateLiteral } from '../template-literal/index'
 import type { TTuple } from '../tuple/index'
 import type { TUint8Array } from '../uint8array/index'
 import type { TUndefined } from '../undefined/index'
+import type { TUnion } from '../union/index'
 import type { TUnknown } from '../unknown/index'
 import type { TUnsafe } from '../unsafe/index'
 import type { TVoid } from '../void/index'
@@ -72,6 +74,7 @@ import type { TThis } from '../recursive/index'
 export class TypeGuardUnknownTypeError extends TypeBoxError {}
 
 const KnownTypes = [
+  'Argument',
   'Any',
   'Array',
   'AsyncIterator',
@@ -169,6 +172,14 @@ export function IsAny(value: unknown): value is TAny {
   return (
     IsKindOf(value, 'Any') &&
     IsOptionalString(value.$id)
+  )
+}
+/** Returns true if the given value is TArgument */
+export function IsArgument(value: unknown): value is TArgument {
+  // prettier-ignore
+  return (
+    IsKindOf(value, 'Argument') &&
+    ValueGuard.IsNumber(value.index)
   )
 }
 /** Returns true if the given value is TArray */
@@ -608,6 +619,7 @@ export function IsSchema(value: unknown): value is TSchema {
     ValueGuard.IsObject(value)
   ) && (
       IsAny(value) ||
+      IsArgument(value) ||
       IsArray(value) ||
       IsBoolean(value) ||
       IsBigInt(value) ||

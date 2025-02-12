@@ -222,6 +222,7 @@ function Create(errorType: ValueErrorType, schema: TSchema, path: string, value:
 // Types
 // --------------------------------------------------------------------------
 function* FromAny(schema: TAny, references: TSchema[], path: string, value: any): IterableIterator<ValueError> {}
+function* FromArgument(schema: TAny, references: TSchema[], path: string, value: any): IterableIterator<ValueError> {}
 function* FromArray(schema: TArray, references: TSchema[], path: string, value: any): IterableIterator<ValueError> {
   if (!IsArray(value)) {
     return yield Create(ValueErrorType.Array, schema, path, value)
@@ -558,6 +559,8 @@ function* Visit<T extends TSchema>(schema: T, references: TSchema[], path: strin
   switch (schema_[Kind]) {
     case 'Any':
       return yield* FromAny(schema_, references_, path, value)
+    case 'Argument':
+      return yield* FromArgument(schema_, references_, path, value)
     case 'Array':
       return yield* FromArray(schema_, references_, path, value)
     case 'AsyncIterator':

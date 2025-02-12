@@ -390,4 +390,33 @@ describe('syntax/Syntax', () => {
     const T = Syntax(`void`)
     Assert.IsTrue(TypeGuard.IsVoid(T))
   })
+  // ----------------------------------------------------------------
+  // Argument + Instantiation
+  // ----------------------------------------------------------------
+  it('Should parse Argument 0', () => {
+    const G = Syntax(`[Argument<0>]`)
+    const T = Syntax({ G }, `G`)
+    Assert.IsTrue(TypeGuard.IsTuple(T))
+    Assert.IsTrue(TypeGuard.IsArgument(T.items![0]))
+  })
+  it('Should parse Argument 1', () => {
+    const G = Syntax(`[Argument<0>]`)
+    const T = Syntax({ G }, `G<number>`)
+    Assert.IsTrue(TypeGuard.IsTuple(T))
+    Assert.IsTrue(TypeGuard.IsNumber(T.items![0]))
+  })
+  it('Should parse Argument 2', () => {
+    const G = Syntax(`[Argument<0>, Argument<1>]`)
+    const T = Syntax({ G }, `G<number, string>`)
+    Assert.IsTrue(TypeGuard.IsTuple(T))
+    Assert.IsTrue(TypeGuard.IsNumber(T.items![0]))
+    Assert.IsTrue(TypeGuard.IsString(T.items![1]))
+  })
+  it('Should parse Argument 3', () => {
+    const G = Syntax(`[Argument<0>, Argument<1>]`)
+    const T = Syntax({ G }, `G<number>`)
+    Assert.IsTrue(TypeGuard.IsTuple(T))
+    Assert.IsTrue(TypeGuard.IsNumber(T.items![0]))
+    Assert.IsTrue(TypeGuard.IsNever(T.items![1]))
+  })
 })
