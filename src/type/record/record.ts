@@ -33,14 +33,12 @@ import type { Static } from '../static/index'
 import type { Evaluate, Ensure, Assert } from '../helpers/index'
 import { type TAny } from '../any/index'
 import { type TBoolean } from '../boolean/index'
-import { type TComputed, Computed } from '../computed/index'
 import { type TEnumRecord, type TEnum } from '../enum/index'
 import { type TInteger } from '../integer/index'
 import { type TLiteral, type TLiteralValue } from '../literal/index'
 import { type TNever, Never } from '../never/index'
 import { type TNumber, Number } from '../number/index'
 import { type TObject, type TProperties, type TAdditionalProperties, type ObjectOptions, Object } from '../object/index'
-import { type TRef, Ref } from '../ref/index'
 import { type TRegExp } from '../regexp/index'
 import { type TString, String } from '../string/index'
 import { type TUnion, Union } from '../union/index'
@@ -233,9 +231,6 @@ export interface TRecord<Key extends TSchema = TSchema, Type extends TSchema = T
 // ------------------------------------------------------------------
 // prettier-ignore
 export type TRecordOrObject<Key extends TSchema, Type extends TSchema> = (
-  Type extends TComputed<infer Target extends string, infer Parameters extends TSchema[]> ? TComputed<'Record', [Key, TComputed<Target, Parameters>]> :
-  Key extends TComputed<infer Target extends string, infer Parameters extends TSchema[]> ? TComputed<'Record', [TComputed<Target, Parameters>, Type]> :
-  Key extends TRef<infer Ref extends string> ? TComputed<'Record', [TRef<Ref>, Type]> :
   Key extends TTemplateLiteral ? TFromTemplateLiteralKey<Key, Type> :  
   Key extends TEnum<infer Enum extends TEnumRecord> ? TFromEnumKey<Enum, Type> : // (Special: Ensure resolve Enum before Union)
   Key extends TUnion<infer Types extends TSchema[]> ? TFromUnionKey<Types, Type> :
@@ -256,9 +251,6 @@ export type TRecordOrObject<Key extends TSchema, Type extends TSchema> = (
 export function Record<Key extends TSchema, Type extends TSchema>(key: Key, type: Type, options: ObjectOptions = {}): TRecordOrObject<Key, Type> {
   // prettier-ignore
   return (
-    IsComputed(type) ? Computed('Record', [key, Computed(type.target, type.parameters)], options) :
-    IsComputed(key) ? Computed('Record', [Computed(type.target, type.parameters), type], options) :
-    IsRef(key) ? Computed('Record', [Ref(key.$ref), type]) :
     IsUnion(key) ? FromUnionKey(key.anyOf, type, options) :
     IsTemplateLiteral(key) ? FromTemplateLiteralKey(key, type, options) :
     IsLiteral(key) ? FromLiteralKey(key.const, type, options) :
