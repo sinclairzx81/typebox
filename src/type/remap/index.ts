@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------------
 
-@sinclair/typebox/prototypes
+@sinclair/typebox/type
 
 The MIT License (MIT)
 
@@ -26,9 +26,4 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export * from './discriminated-union'
-export * from './from-schema'
-export * from './options'
-export * from './partial-deep'
-export * from './union-enum'
-export * from './union-oneof'
+export * from './remap'

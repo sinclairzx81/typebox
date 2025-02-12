@@ -60,16 +60,28 @@ function DestructureRight<T>(values: T[]): [T[], T | undefined] {
     : [values, undefined]
 }
 // ------------------------------------------------------------------
-// Deref
+// Dereference
 // ------------------------------------------------------------------
-const Deref = (context: t.TProperties, key: string): t.TSchema => {
+const Dereference = (context: t.TProperties, key: string): t.TSchema => {
   return key in context ? context[key] : t.Ref(key)
 }
 // ------------------------------------------------------------------
+// GenericReference
+// ------------------------------------------------------------------
+function GenericReferenceMapping(results: unknown[], context: t.TProperties) {
+  const target = Dereference(context, results[0] as string)
+  return t.Instantiate(target, results[2] as t.TSchema[])
+}
+const GenericReference = Runtime.Tuple([Runtime.Ident(), Runtime.Const(LAngle), Runtime.Ref('Elements'), Runtime.Const(RAngle)], (results, context) => GenericReferenceMapping(results, context))
+// ------------------------------------------------------------------
 // Reference
 // ------------------------------------------------------------------
+function ReferenceMapping(result: string, context: t.TProperties) {
+  const target = Dereference(context, result)
+  return target
+}
 // prettier-ignore
-const Reference = Runtime.Ident((value, context: t.TProperties) => Deref(context, value))
+const Reference = Runtime.Ident((result, context) => ReferenceMapping(result, context))
 // ------------------------------------------------------------------
 // Literal
 // ------------------------------------------------------------------
@@ -166,6 +178,7 @@ const Base = Runtime.Union([
     Runtime.Ref('FunctionParameters'),
     Runtime.Ref('InstanceType'),
     Runtime.Ref('ReturnType'),
+    Runtime.Ref('Argument'),
     Runtime.Ref('Awaited'),
     Runtime.Ref('Array'),
     Runtime.Ref('Record'),
@@ -182,6 +195,7 @@ const Base = Runtime.Union([
     Runtime.Ref('Uncapitalize'),
     Runtime.Ref('Date'),
     Runtime.Ref('Uint8Array'),
+    Runtime.Ref('GenericReference'),
     Runtime.Ref('Reference')
   ])])
 ], BaseMapping)
@@ -465,6 +479,20 @@ const ReturnType = Runtime.Tuple([
   Runtime.Const(RAngle),
 ], value => t.ReturnType(value[2]))
 // ------------------------------------------------------------------
+// Argument
+// ------------------------------------------------------------------
+// prettier-ignore
+const Argument = Runtime.Tuple([
+  Runtime.Const('Argument'), 
+  Runtime.Const(LAngle), 
+  Runtime.Ref<t.TSchema>('Type'), 
+  Runtime.Const(RAngle),
+], results => {
+  return t.KindGuard.IsLiteralNumber(results[2])
+    ? t.Argument(Math.trunc(results[2].const))
+    : t.Never()
+})
+// ------------------------------------------------------------------
 // Awaited
 // ------------------------------------------------------------------
 // prettier-ignore
@@ -658,6 +686,7 @@ export const Module = new Runtime.Module({
   Mapped,
   AsyncIterator,
   Iterator,
+  Argument,
   Awaited,
   Array,
   Record,
@@ -678,5 +707,6 @@ export const Module = new Runtime.Module({
   Uncapitalize,
   Date,
   Uint8Array,
+  GenericReference,
   Reference,
 })

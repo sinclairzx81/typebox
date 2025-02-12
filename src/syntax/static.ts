@@ -136,12 +136,30 @@ type Delimit<Parser extends Static.IParser, Delimiter extends Static.IParser> = 
   ], DelimitMapping>
 )
 // ------------------------------------------------------------------
-// Deref
+// Dereference
 // ------------------------------------------------------------------
 // prettier-ignore
-type Deref<Context extends t.TProperties, Ref extends string> = (
+type Dereference<Context extends t.TProperties, Ref extends string> = (
   Ref extends keyof Context ? Context[Ref] : t.TRef<Ref>
 )
+// ------------------------------------------------------------------
+// GenericReference
+// ------------------------------------------------------------------
+// prettier-ignore
+interface GenericReferenceMapping extends Static.IMapping {
+  output: this['context'] extends t.TProperties
+    ? this['input'] extends [infer Reference extends string, LAngle, infer Parameters extends t.TSchema[], RAngle]
+      ? t.TInstantiate<Dereference<this['context'], Reference>, [...Parameters]>
+      : never
+    : never  
+}
+// prettier-ignore
+type GenericReference = Static.Tuple<[
+  Static.Ident,
+  Static.Const<LAngle>,
+  Elements,
+  Static.Const<RAngle>,
+], GenericReferenceMapping>
 // ------------------------------------------------------------------
 // Reference
 // ------------------------------------------------------------------
@@ -149,7 +167,7 @@ type Deref<Context extends t.TProperties, Ref extends string> = (
 interface ReferenceMapping extends Static.IMapping {
   output: this['context'] extends t.TProperties
     ? this['input'] extends string
-      ? Deref<this['context'], this['input']>
+      ? Dereference<this['context'], this['input']>
       : never
     : never  
 }
@@ -267,6 +285,7 @@ type Base = Static.Union<[
     Iterator,
     ConstructorParameters,
     FunctionParameters,
+    Argument,
     InstanceType,
     ReturnType,
     Awaited,
@@ -285,6 +304,7 @@ type Base = Static.Union<[
     Uncapitalize,
     Date,
     Uint8Array,
+    GenericReference,
     Reference
   ]>]>
 ], BaseMapping>
@@ -586,6 +606,21 @@ interface ReturnTypeMapping extends Static.IMapping {
 type ReturnType = Static.Tuple<[
   Static.Const<'ReturnType'>, Static.Const<LAngle>, Type, Static.Const<RAngle>,
 ], ReturnTypeMapping>
+// ------------------------------------------------------------------
+// Argument
+// ------------------------------------------------------------------
+// prettier-ignore
+interface ArgumentMapping extends Static.IMapping {
+  output: this['input'] extends ['Argument', LAngle, infer Type extends t.TSchema, RAngle]
+    ? Type extends t.TLiteral<infer Index extends number>
+      ? t.TArgument<Index>
+      : t.TNever
+    : never
+}
+// prettier-ignore
+type Argument = Static.Tuple<[
+  Static.Const<'Argument'>, Static.Const<LAngle>, Type, Static.Const<RAngle>,
+], ArgumentMapping>
 // ------------------------------------------------------------------
 // Awaited
 // ------------------------------------------------------------------

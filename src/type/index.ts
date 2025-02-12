@@ -27,6 +27,7 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 export * from './any/index'
+export * from './argument/index'
 export * from './array/index'
 export * from './async-iterator/index'
 export * from './awaited/index'
@@ -49,6 +50,7 @@ export * from './guard/index'
 export * from './helpers/index'
 export * from './indexed/index'
 export * from './instance-type/index'
+export * from './instantiate/index'
 export * from './integer/index'
 export * from './intersect/index'
 export * from './intrinsic/index'

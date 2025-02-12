@@ -32,16 +32,17 @@ import type { TSchema } from '../schema/index'
 import type { Static } from '../static/index'
 import type { Evaluate, Ensure, Assert } from '../helpers/index'
 import { type TAny } from '../any/index'
+import { type TBoolean } from '../boolean/index'
 import { type TComputed, Computed } from '../computed/index'
 import { type TEnumRecord, type TEnum } from '../enum/index'
 import { type TInteger } from '../integer/index'
 import { type TLiteral, type TLiteralValue } from '../literal/index'
 import { type TNever, Never } from '../never/index'
-import { type TNumber } from '../number/index'
+import { type TNumber, Number } from '../number/index'
 import { type TObject, type TProperties, type TAdditionalProperties, type ObjectOptions, Object } from '../object/index'
 import { type TRef, Ref } from '../ref/index'
 import { type TRegExp } from '../regexp/index'
-import { type TString } from '../string/index'
+import { type TString, String } from '../string/index'
 import { type TUnion, Union } from '../union/index'
 
 import { IsTemplateLiteralFinite, TIsTemplateLiteralFinite, type TTemplateLiteral } from '../template-literal/index'
@@ -55,7 +56,7 @@ import { IsUndefined } from '../guard/value'
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-import { IsInteger, IsLiteral, IsAny, IsNever, IsNumber, IsString, IsRegExp, IsTemplateLiteral, IsUnion, IsRef, IsComputed } from '../guard/kind'
+import { IsInteger, IsLiteral, IsAny, IsBoolean, IsNever, IsNumber, IsString, IsRegExp, IsTemplateLiteral, IsUnion, IsRef, IsComputed } from '../guard/kind'
 
 // ------------------------------------------------------------------
 // RecordCreateFromPattern
@@ -178,6 +179,17 @@ function FromNeverKey<Key extends TNever, Type extends TSchema>(_key: Key, type:
   return RecordCreateFromPattern(PatternNeverExact, type, options) as never
 }
 // ------------------------------------------------------------------
+// TromBooleanKey
+// ------------------------------------------------------------------
+// prettier-ignore
+type TFromBooleanKey<_Key extends TBoolean, Type extends TSchema> = (
+  Ensure<TObject<{ true: Type, false: Type }>>
+)
+// prettier-ignore
+function FromBooleanKey<Key extends TBoolean, Type extends TSchema>(_key: Key, type: Type, options: ObjectOptions): TFromBooleanKey<Key, Type> {
+  return Object({ true: type, false: type }, options)
+}
+// ------------------------------------------------------------------
 // FromIntegerKey
 // ------------------------------------------------------------------
 // prettier-ignore
@@ -228,6 +240,7 @@ export type TRecordOrObject<Key extends TSchema, Type extends TSchema> = (
   Key extends TEnum<infer Enum extends TEnumRecord> ? TFromEnumKey<Enum, Type> : // (Special: Ensure resolve Enum before Union)
   Key extends TUnion<infer Types extends TSchema[]> ? TFromUnionKey<Types, Type> :
   Key extends TLiteral<infer Value extends TLiteralValue> ? TFromLiteralKey<Value, Type> :
+  Key extends TBoolean ? TFromBooleanKey<Key, Type> :
   Key extends TInteger ? TFromIntegerKey<Key, Type> :
   Key extends TNumber ? TFromNumberKey<Key, Type> :
   Key extends TRegExp ? TFromRegExpKey<Key, Type> :
@@ -249,6 +262,7 @@ export function Record<Key extends TSchema, Type extends TSchema>(key: Key, type
     IsUnion(key) ? FromUnionKey(key.anyOf, type, options) :
     IsTemplateLiteral(key) ? FromTemplateLiteralKey(key, type, options) :
     IsLiteral(key) ? FromLiteralKey(key.const, type, options) :
+    IsBoolean(key) ?  FromBooleanKey(key, type, options) :
     IsInteger(key) ? FromIntegerKey(key, type, options) :
     IsNumber(key) ? FromNumberKey(key, type, options) :
     IsRegExp(key) ? FromRegExpKey(key, type, options) :
@@ -257,4 +271,48 @@ export function Record<Key extends TSchema, Type extends TSchema>(key: Key, type
     IsNever(key) ? FromNeverKey(key, type, options) :
     Never(options)
   ) as never
+}
+
+// ------------------------------------------------------------------
+// Record Utilities
+// ------------------------------------------------------------------
+/** Gets the Records Pattern */
+export function RecordPattern(record: TRecord): string {
+  return globalThis.Object.getOwnPropertyNames(record.patternProperties)[0]
+}
+// ------------------------------------------------------------------
+// RecordKey
+// ------------------------------------------------------------------
+/** Gets the Records Key Type */
+// prettier-ignore
+export type TRecordKey<Type extends TRecord> = (
+  Type extends TRecord<infer Key extends TSchema, TSchema> 
+    ? (
+      Key extends TNumber ? TNumber :
+      Key extends TString ? TString :
+      TString
+    ) : TString
+)
+/** Gets the Records Key Type */
+// prettier-ignore
+export function RecordKey<Type extends TRecord>(type: Type): TRecordKey<Type> {
+  const pattern = RecordPattern(type)
+  return (
+    pattern === PatternStringExact ? String() :
+    pattern === PatternNumberExact ? Number() :
+    String({ pattern })
+  ) as never
+}
+// ------------------------------------------------------------------
+// RecordValue
+// ------------------------------------------------------------------
+/** Gets a Record Value Type */
+// prettier-ignore
+export type TRecordValue<Type extends TRecord> = (
+  Type extends TRecord<TSchema, infer Value extends TSchema> ? Value : TNever
+)
+/** Gets a Record Value Type */
+// prettier-ignore
+export function RecordValue<Type extends TRecord>(type: Type): TRecordValue<Type> {
+  return type.patternProperties[RecordPattern(type)] as never
 }

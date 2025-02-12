@@ -41,6 +41,7 @@ import { ExtendsUndefinedCheck } from '../type/extends/extends-undefined'
 import type { TSchema } from '../type/schema/index'
 import type { TAsyncIterator } from '../type/async-iterator/index'
 import type { TAny } from '../type/any/index'
+import type { TArgument } from '../type/argument/index'
 import type { TArray } from '../type/array/index'
 import type { TBigInt } from '../type/bigint/index'
 import type { TBoolean } from '../type/boolean/index'
@@ -245,6 +246,9 @@ export namespace TypeCompiler {
   // Types
   // ----------------------------------------------------------------
   function* FromAny(schema: TAny, references: TSchema[], value: string): IterableIterator<string> {
+    yield 'true'
+  }
+  function* FromArgument(schema: TArgument, references: TSchema[], value: string): IterableIterator<string> {
     yield 'true'
   }
   function* FromArray(schema: TArray, references: TSchema[], value: string): IterableIterator<string> {
@@ -490,6 +494,8 @@ export namespace TypeCompiler {
     switch (schema_[Kind]) {
       case 'Any':
         return yield* FromAny(schema_, references_, value)
+      case 'Argument':
+        return yield* FromArgument(schema_, references_, value)
       case 'Array':
         return yield* FromArray(schema_, references_, value)
       case 'AsyncIterator':

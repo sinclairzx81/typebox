@@ -29,15 +29,13 @@ THE SOFTWARE.
 import * as ValueGuard from './value'
 import { Kind, Hint, TransformKind, ReadonlyKind, OptionalKind } from '../symbols/index'
 import { TransformOptions } from '../transform/index'
-import type { TTemplateLiteral } from '../template-literal/index'
+
+import type { TAny } from '../any/index'
+import type { TArgument } from '../argument/index'
 import type { TArray } from '../array/index'
+import type { TAsyncIterator } from '../async-iterator/index'
 import type { TBoolean } from '../boolean/index'
 import type { TComputed } from '../computed/index'
-import type { TRecord } from '../record/index'
-import type { TString } from '../string/index'
-import type { TUnion } from '../union/index'
-import type { TAny } from '../any/index'
-import type { TAsyncIterator } from '../async-iterator/index'
 import type { TBigInt } from '../bigint/index'
 import type { TConstructor } from '../constructor/index'
 import type { TFunction } from '../function/index'
@@ -55,14 +53,18 @@ import type { TObject, TProperties } from '../object/index'
 import type { TOptional } from '../optional/index'
 import type { TPromise } from '../promise/index'
 import type { TReadonly } from '../readonly/index'
+import type { TRecord } from '../record/index'
 import type { TRef } from '../ref/index'
 import type { TRegExp } from '../regexp/index'
 import type { TSchema } from '../schema/index'
+import type { TString } from '../string/index'
 import type { TSymbol } from '../symbol/index'
+import type { TTemplateLiteral } from '../template-literal/index'
 import type { TTuple } from '../tuple/index'
 import type { TUint8Array } from '../uint8array/index'
 import type { TUndefined } from '../undefined/index'
 import type { TUnknown } from '../unknown/index'
+import type { TUnion } from '../union/index'
 import type { TUnsafe } from '../unsafe/index'
 import type { TVoid } from '../void/index'
 import type { TDate } from '../date/index'
@@ -79,6 +81,10 @@ export function IsOptional<T extends TSchema>(value: T): value is TOptional<T> {
 /** `[Kind-Only]` Returns true if the given value is TAny */
 export function IsAny(value: unknown): value is TAny {
   return IsKindOf(value, 'Any')
+}
+/** `[Kind-Only]` Returns true if the given value is TArgument */
+export function IsArgument(value: unknown): value is TArgument {
+  return IsKindOf(value, 'Argument')
 }
 /** `[Kind-Only]` Returns true if the given value is TArray */
 export function IsArray(value: unknown): value is TArray {
@@ -261,6 +267,7 @@ export function IsSchema(value: unknown): value is TSchema {
   // prettier-ignore
   return (
     IsAny(value) ||
+    IsArgument(value) ||
     IsArray(value) ||
     IsBoolean(value) ||
     IsBigInt(value) ||

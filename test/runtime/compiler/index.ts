@@ -1,5 +1,6 @@
 import './__members'
 import './any'
+import './argument'
 import './array'
 import './async-iterator'
 import './bigint'

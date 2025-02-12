@@ -59,6 +59,7 @@ FormatRegistry.Set('date-time', (value) => isDateTime(value, true))
 export function Ok<T extends TSchema>(schema: T, data: unknown, references: any[] = []) {
   const C = TypeCompiler.Compile(schema, references)
   const result = C.Check(data)
+
   if (result !== Value.Check(schema, references, data)) {
     throw Error('Compiler and Value Check disparity')
   }
