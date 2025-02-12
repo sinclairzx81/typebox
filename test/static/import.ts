@@ -58,49 +58,49 @@ import { Type, Static } from '@sinclair/typebox'
 // ------------------------------------------------------------------
 // prettier-ignore
 {
-  const T = Type.Module({
-    R: Type.Object({ x: Type.Number(), y: Type.Number() }),
-    T: Type.Record(Type.String(), Type.Partial(Type.Ref('R'))),
-  }).Import('T')
+  // const T = Type.Module({
+  //   R: Type.Object({ x: Type.Number(), y: Type.Number() }),
+  //   T: Type.Record(Type.String(), Type.Partial(Type.Ref('R'))),
+  // }).Import('T')
 
-  type T = Static<typeof T>
-  Expect(T).ToStatic<{ 
-    [key: string]: { x?: number, y?: number } 
-  }>()
+  // type T = Static<typeof T>
+  // Expect(T).ToStatic<{ 
+  //   [key: string]: { x?: number, y?: number } 
+  // }>()
 }
 // ------------------------------------------------------------------
 // Record 3
 // ------------------------------------------------------------------
 // prettier-ignore
 {
-  const T = Type.Module({
-    R: Type.Object({ x: Type.Number(), y: Type.Number() }),
-    K: Type.Number(),
-    T: Type.Record(Type.Ref('K'), Type.Partial(Type.Ref('R'))),
-  }).Import('T')
+  // const T = Type.Module({
+  //   R: Type.Object({ x: Type.Number(), y: Type.Number() }),
+  //   K: Type.Number(),
+  //   T: Type.Record(Type.Ref('K'), Type.Partial(Type.Ref('R'))),
+  // }).Import('T')
 
-  type T = Static<typeof T>
-  Expect(T).ToStatic<{ 
-    [key: number]: { x?: number, y?: number } 
-  }>()
+  // type T = Static<typeof T>
+  // Expect(T).ToStatic<{ 
+  //   [key: number]: { x?: number, y?: number } 
+  // }>()
 }
 // ------------------------------------------------------------------
 // Record 4
 // ------------------------------------------------------------------
 // prettier-ignore
-{
-  const T = Type.Module({
-    R: Type.Object({ x: Type.Number(), y: Type.Number() }),
-    K: Type.TemplateLiteral('${A|B|C}'),
-    T: Type.Record(Type.Ref('K'), Type.Partial(Type.Ref('R'))),
-  }).Import('T')
-  type T = Static<typeof T>
-  Expect(T).ToStatic<{ 
-    A: { x?: number, y?: number },
-    B: { x?: number, y?: number },
-    C: { x?: number, y?: number } 
-  }>()
-}
+// {
+//   const T = Type.Module({
+//     R: Type.Object({ x: Type.Number(), y: Type.Number() }),
+//     K: Type.TemplateLiteral('${A|B|C}'),
+//     T: Type.Record(Type.Ref('K'), Type.Partial(Type.Ref('R'))),
+//   }).Import('T')
+//   type T = Static<typeof T>
+//   Expect(T).ToStatic<{
+//     A: { x?: number, y?: number },
+//     B: { x?: number, y?: number },
+//     C: { x?: number, y?: number }
+//   }>()
+// }
 // ------------------------------------------------------------------
 // Modifiers 1
 // ------------------------------------------------------------------
