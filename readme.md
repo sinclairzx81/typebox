@@ -1390,25 +1390,26 @@ const S = Syntax({ T }, `{ x: T, y: T, z: T }`)     // const S: TObject<{
 
 ### Generics
 
-Generic types can be created by passing Argument types as parameters.
+Generic types can be created using Argument types.
 
 ```typescript
-// Generic Vector Type
-
-const Vector = Syntax({                             // type Vector<X, Y, Z> = {
-  X: Type.Argument(0),                              //   x: X
-  Y: Type.Argument(1),                              //   y: Y,
-  Z: Type.Argument(2)                               //   z: Z
-},                                                  // }
-`{                            
-  x: X,
-  y: Y,
-  z: Z
+const Vector = Syntax(`{
+  x: Argument<0>,
+  y: Argument<1>,
+  z: Argument<2>
 }`)
 
-// Instanced Vector Type 
+const Basis = Syntax({ Vector }, `{
+  x: Vector<1, 0, 0>,
+  y: Vector<0, 1, 0>,
+  z: Vector<0, 0, 1>,
+}`)
 
-const Up = Syntax({ Vector }, `Vector<0, 1, 0>`)    // type Up = Vector<0, 1, 0>
+type Basis = Static<typeof Basis>                   // type Basis = {
+                                                    //   x: { x: 1, y: 0, z: 0 },
+                                                    //   y: { x: 0, y: 1, z: 0 },
+                                                    //   z: { x: 0, y: 0, z: 1 }
+                                                    // } 
 ```
 
 <a name='typeregistry'></a>
