@@ -27,6 +27,7 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import { CreateType } from '../create/index'
+import { CloneType } from '../clone/index'
 import { Discard } from '../discard/index'
 import { Ensure, Evaluate } from '../helpers/index'
 import { type TSchema } from '../schema/index'
@@ -48,7 +49,7 @@ import { Pick, type TPick } from '../pick/index'
 import { Never, type TNever } from '../never/index'
 import { Partial, TPartial } from '../partial/index'
 import { type TReadonly } from '../readonly/index'
-import { Record, type TRecordOrObject } from '../record/index'
+import { RecordValue, RecordPattern, type TRecordOrObject, type TRecord } from '../record/index'
 import { type TRef } from '../ref/index'
 import { Required, TRequired } from '../required/index'
 import { Tuple, type TTuple } from '../tuple/index'
@@ -177,17 +178,6 @@ function FromPick<Parameters extends TSchema[]>(parameters: Parameters): TFromPi
   return Pick(parameters[0], parameters[1]) as never
 }
 // ------------------------------------------------------------------
-// Record
-// ------------------------------------------------------------------
-// prettier-ignore
-type TFromRecord<Parameters extends TSchema[]> = (
-  Parameters extends [infer T0 extends TSchema, infer T1 extends TSchema] ? TRecordOrObject<T0, T1> : never
-)
-// prettier-ignore
-function FromRecord<Parameters extends TSchema[]>(parameters: Parameters): TFromPick<Parameters> {
-  return Record(parameters[0], parameters[1]) as never
-}
-// ------------------------------------------------------------------
 // Required
 // ------------------------------------------------------------------
 // prettier-ignore
@@ -211,7 +201,6 @@ type TFromComputed<ModuleProperties extends TProperties, Target extends string, 
   Target extends 'Partial' ? TFromPartial<Dereferenced> :
   Target extends 'Omit' ? TFromOmit<Dereferenced> :
   Target extends 'Pick' ? TFromPick<Dereferenced> :
-  Target extends 'Record' ? TFromRecord<Dereferenced> :
   Target extends 'Required' ? TFromRequired<Dereferenced> :
   TNever
 )
@@ -225,7 +214,6 @@ function FromComputed<ModuleProperties extends TProperties, Target extends strin
     target === 'Partial' ? FromPartial(dereferenced) :
     target === 'Omit' ? FromOmit(dereferenced) :
     target === 'Pick' ? FromPick(dereferenced) :
-    target === 'Record' ? FromRecord(dereferenced) :
     target === 'Required' ? FromRequired(dereferenced) :
     Never()
   ) as never
@@ -243,6 +231,25 @@ function FromObject<ModuleProperties extends TProperties, Properties extends TPr
       return { ...result, [key]: FromType(moduleProperties, properties[key]) as never }
     }, {} as TProperties),
   ) as never
+}
+// ------------------------------------------------------------------
+// Record
+//
+// Note: Varying Runtime and Static path here as we need to retain
+// constraints on the Record. This requires remapping the Record
+// in the Runtime path and where the Static path is a facade for
+// Record pattern.
+// ------------------------------------------------------------------
+// prettier-ignore
+type TFromRecord<ModuleProperties extends TProperties, Key extends TSchema, Value extends TSchema,
+  Result extends TSchema = TRecordOrObject<Key, TFromType<ModuleProperties, Value>> 
+> = Result
+// prettier-ignore
+function FromRecord<ModuleProperties extends TProperties, Type extends TRecord>(moduleProperties: ModuleProperties, type: Type): never {
+  const [value, pattern] = [FromType(moduleProperties, RecordValue(type)), RecordPattern(type)]
+  const result = CloneType(type)
+  result.patternProperties[pattern] = value
+  return result as never
 }
 // ------------------------------------------------------------------
 // Constructor
@@ -363,6 +370,7 @@ export type TFromType<ModuleProperties extends TProperties, Type extends TSchema
   Type extends TIntersect<infer Types extends TSchema[]> ? TFromIntersect<ModuleProperties, Types> :
   Type extends TIterator<infer Type extends TSchema> ? TFromIterator<ModuleProperties, Type> :
   Type extends TObject<infer Properties extends TProperties> ? TFromObject<ModuleProperties, Properties> :
+  Type extends TRecord<infer Key extends TSchema, infer Value extends TSchema> ? TFromRecord<ModuleProperties, Key, Value> :
   Type extends TTuple<infer Types extends TSchema[]> ? TFromTuple<ModuleProperties, Types> :
   Type extends TEnum<infer _ extends TEnumRecord> ? Type : // intercept enum before union
   Type extends TUnion<infer Types extends TSchema[]> ? TFromUnion<ModuleProperties, Types> :
@@ -383,6 +391,7 @@ export function FromType<ModuleProperties extends TProperties, Type extends TSch
     KindGuard.IsIntersect(type) ? CreateType(FromIntersect(moduleProperties, type.allOf), type) :
     KindGuard.IsIterator(type) ? CreateType(FromIterator(moduleProperties, type.items), type) :
     KindGuard.IsObject(type) ? CreateType(FromObject(moduleProperties, type.properties), type) :
+    KindGuard.IsRecord(type) ? CreateType(FromRecord(moduleProperties, type)) :
     KindGuard.IsTuple(type)? CreateType(FromTuple(moduleProperties, type.items || []), type) :
     KindGuard.IsUnion(type) ? CreateType(FromUnion(moduleProperties, type.anyOf), type) :
     type
