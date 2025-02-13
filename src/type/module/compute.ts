@@ -236,9 +236,9 @@ function FromObject<ModuleProperties extends TProperties, Properties extends TPr
 // Record
 //
 // Note: Varying Runtime and Static path here as we need to retain
-// constraints on the Record. This requires remapping the Record
-// in the Runtime path and where the Static path is a facade for
-// Record pattern.
+// constraints on the Record. This requires remapping the entire
+// Record in the Runtime path but where the Static path is merely
+// a facade for the patternProperties regular expression.
 // ------------------------------------------------------------------
 // prettier-ignore
 type TFromRecord<ModuleProperties extends TProperties, Key extends TSchema, Value extends TSchema,
