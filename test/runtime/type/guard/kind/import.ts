@@ -151,17 +151,28 @@ describe('guard/kind/TImport', () => {
     Assert.IsTrue(KindGuard.IsRef(T.$defs['R'].patternProperties['^(.*)$']))
     Assert.IsTrue(T.$defs['R'].patternProperties['^(.*)$'].$ref === 'T')
   })
-  // it('Should compute for Record 2', () => {
-  //   const Module = Type.Module({
-  //     T: Type.Number(),
-  //     K: Type.Union([Type.Literal('x'), Type.Literal('y')]),
-  //     R: Type.Record(Type.Ref('K'), Type.Ref('T')),
-  //   })
-  //   const T = Module.Import('R')
-  //   Assert.IsTrue(KindGuard.IsObject(T.$defs['R']))
-  //   Assert.IsTrue(KindGuard.IsNumber(T.$defs['R'].properties.x))
-  //   Assert.IsTrue(KindGuard.IsNumber(T.$defs['R'].properties.x))
-  // })
+  it('Should compute for Record 2', () => {
+    const Module = Type.Module({
+      T: Type.Number(),
+      R: Type.Record(Type.Union([Type.Literal('x'), Type.Literal('y')]), Type.Ref('T')),
+    })
+    // Retain reference if not computed
+    const T = Module.Import('R')
+    Assert.IsTrue(KindGuard.IsObject(T.$defs['R']))
+    Assert.IsTrue(KindGuard.IsRef(T.$defs['R'].properties.x))
+    Assert.IsTrue(KindGuard.IsRef(T.$defs['R'].properties.y))
+  })
+  it('Should compute for Record 3', () => {
+    const Module = Type.Module({
+      T: Type.Object({ x: Type.Number() }),
+      R: Type.Record(Type.Union([Type.Literal('x'), Type.Literal('y')]), Type.Partial(Type.Ref('T'))),
+    })
+    // Dereference if computed
+    const T = Module.Import('R')
+    Assert.IsTrue(KindGuard.IsObject(T.$defs['R']))
+    Assert.IsTrue(KindGuard.IsObject(T.$defs['R'].properties.x))
+    Assert.IsTrue(KindGuard.IsObject(T.$defs['R'].properties.y))
+  })
   // ----------------------------------------------------------------
   // Computed: Required
   // ----------------------------------------------------------------

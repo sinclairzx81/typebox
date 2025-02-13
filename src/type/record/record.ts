@@ -277,14 +277,13 @@ export function RecordPattern(record: TRecord): string {
 // ------------------------------------------------------------------
 /** Gets the Records Key Type */
 // prettier-ignore
-export type TRecordKey<Type extends TRecord> = (
-  Type extends TRecord<infer Key extends TSchema, TSchema> 
-    ? (
-      Key extends TNumber ? TNumber :
-      Key extends TString ? TString :
-      TString
-    ) : TString
-)
+export type TRecordKey<Type extends TRecord,
+  Result extends TSchema = Type extends TRecord<infer Key extends TSchema, TSchema> ? (
+    Key extends TNumber ? TNumber :
+    Key extends TString ? TString :
+    TString
+  ) : TString
+> = Result
 /** Gets the Records Key Type */
 // prettier-ignore
 export function RecordKey<Type extends TRecord>(type: Type): TRecordKey<Type> {
@@ -300,9 +299,13 @@ export function RecordKey<Type extends TRecord>(type: Type): TRecordKey<Type> {
 // ------------------------------------------------------------------
 /** Gets a Record Value Type */
 // prettier-ignore
-export type TRecordValue<Type extends TRecord> = (
-  Type extends TRecord<TSchema, infer Value extends TSchema> ? Value : TNever
-)
+export type TRecordValue<Type extends TRecord,
+  Result extends TSchema = (
+    Type extends TRecord<TSchema, infer Value extends TSchema> 
+      ? Value 
+      : TNever
+    )
+> = Result
 /** Gets a Record Value Type */
 // prettier-ignore
 export function RecordValue<Type extends TRecord>(type: Type): TRecordValue<Type> {
