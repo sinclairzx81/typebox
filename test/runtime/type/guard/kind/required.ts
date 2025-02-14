@@ -65,7 +65,7 @@ describe('guard/kind/TRequired', () => {
   // Intrinsic Passthough
   // https://github.com/sinclairzx81/typebox/issues/1169
   // ------------------------------------------------------------------
-  it('Should pass through on intrinsic types on union', () => {
+  it('Should pass through on intrinsic types on union 1', () => {
     const T = Type.Required(
       Type.Union([
         Type.Number(),
@@ -79,7 +79,7 @@ describe('guard/kind/TRequired', () => {
     Assert.IsTrue(KindGuard.IsObject(T.anyOf[1]))
     Assert.IsFalse(KindGuard.IsOptional(T.anyOf[1].properties.x))
   })
-  it('Should pass through on intrinsic types on union', () => {
+  it('Should pass through on intrinsic types on union 2', () => {
     const T = Type.Required(
       Type.Union([
         Type.Literal(1),
