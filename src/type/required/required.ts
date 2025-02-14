@@ -39,6 +39,14 @@ import { type TObject, type TProperties, Object } from '../object/index'
 import { type TIntersect, Intersect } from '../intersect/index'
 import { type TUnion, Union } from '../union/index'
 import { type TRef, Ref } from '../ref/index'
+import { type TBigInt } from '../bigint/index'
+import { type TBoolean } from '../boolean/index'
+import { type TInteger } from '../integer/index'
+import { type TNumber } from '../number/index'
+import { type TString } from '../string/index'
+import { type TSymbol } from '../symbol/index'
+import { type TNull } from '../null/index'
+import { type TUndefined } from '../undefined/index'
 import { OptionalKind, TransformKind } from '../symbols/index'
 import { Discard } from '../discard/index'
 import { RequiredFromMappedResult, type TRequiredFromMappedResult } from './required-from-mapped-result'
@@ -46,7 +54,7 @@ import { RequiredFromMappedResult, type TRequiredFromMappedResult } from './requ
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-import { IsMappedResult, IsIntersect, IsUnion, IsObject, IsRef, IsComputed } from '../guard/kind'
+import * as KindGuard from '../guard/kind'
 
 // ------------------------------------------------------------------
 // FromComputed
@@ -119,11 +127,22 @@ function FromRest<Types extends TSchema[]>(types: [...Types]) : TFromRest<Types>
 // prettier-ignore
 function RequiredResolve<Type extends TSchema>(type: Type): TRequired<Type> {
   return (
-    IsComputed(type) ? FromComputed(type.target, type.parameters) :
-    IsRef(type) ? FromRef(type.$ref) :
-    IsIntersect(type) ? Intersect(FromRest(type.allOf)) :
-    IsUnion(type) ?  Union(FromRest(type.anyOf)) :
-    IsObject(type) ? FromObject(type) :
+    // Mappable
+    KindGuard.IsComputed(type) ? FromComputed(type.target, type.parameters) :
+    KindGuard.IsRef(type) ? FromRef(type.$ref) :
+    KindGuard.IsIntersect(type) ? Intersect(FromRest(type.allOf)) :
+    KindGuard.IsUnion(type) ?  Union(FromRest(type.anyOf)) :
+    KindGuard.IsObject(type) ? FromObject(type) :
+    // Intrinsic
+    KindGuard.IsBoolean(type) ? type :
+    KindGuard.IsBigInt(type) ? type :
+    KindGuard.IsInteger(type) ? type :
+    KindGuard.IsNumber(type) ? type :
+    KindGuard.IsNull(type) ? type :
+    KindGuard.IsString(type) ? type :
+    KindGuard.IsSymbol(type) ? type :
+    KindGuard.IsUndefined(type) ? type :
+    // Passthrough
     Object({})
   ) as never
 }
@@ -132,12 +151,23 @@ function RequiredResolve<Type extends TSchema>(type: Type): TRequired<Type> {
 // ------------------------------------------------------------------
 // prettier-ignore
 export type TRequired<Type extends TSchema> = (
+  // Mappable
   Type extends TRecursive<infer Type extends TSchema> ? TRecursive<TRequired<Type>> :
   Type extends TComputed<infer Target extends string, infer Parameters extends TSchema[]> ? TFromComputed<Target, Parameters> :
   Type extends TRef<infer Ref extends string> ? TFromRef<Ref> :
   Type extends TIntersect<infer Types extends TSchema[]> ? TIntersect<TFromRest<Types>> :
   Type extends TUnion<infer Types extends TSchema[]> ? TUnion<TFromRest<Types>> :
   Type extends TObject<infer Properties extends TProperties> ? TFromObject<TObject<Properties>> :
+  // Intrinsic
+  Type extends TBoolean ? Type :
+  Type extends TBigInt ? Type :
+  Type extends TInteger ? Type :
+  Type extends TNumber ? Type :
+  Type extends TNull ? Type :
+  Type extends TString ? Type :
+  Type extends TSymbol ? Type :
+  Type extends TUndefined ? Type :
+  // Passthrough
   TObject<{}>
 )
 /** `[Json]` Constructs a type where all properties are required */
@@ -146,7 +176,7 @@ export function Required<MappedResult extends TMappedResult>(type: MappedResult,
 export function Required<Type extends TSchema>(type: Type, options?: SchemaOptions): TRequired<Type>
 /** `[Json]` Constructs a type where all properties are required */
 export function Required<Type extends TSchema>(type: Type, options?: SchemaOptions): never {
-  if (IsMappedResult(type)) {
+  if (KindGuard.IsMappedResult(type)) {
     return RequiredFromMappedResult(type, options) as never
   } else {
     // special: mapping types require overridable options
