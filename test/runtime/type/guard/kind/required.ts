@@ -61,4 +61,36 @@ describe('guard/kind/TRequired', () => {
     const R = Type.Required(S)
     Assert.IsFalse(TransformKind in R)
   })
+  // ------------------------------------------------------------------
+  // Intrinsic Passthough
+  // https://github.com/sinclairzx81/typebox/issues/1169
+  // ------------------------------------------------------------------
+  it('Should pass through on intrinsic types on union', () => {
+    const T = Type.Required(
+      Type.Union([
+        Type.Number(),
+        Type.Object({
+          x: Type.Optional(Type.Number()),
+        }),
+      ]),
+    )
+    Assert.IsTrue(KindGuard.IsUnion(T))
+    Assert.IsTrue(KindGuard.IsNumber(T.anyOf[0]))
+    Assert.IsTrue(KindGuard.IsObject(T.anyOf[1]))
+    Assert.IsFalse(KindGuard.IsOptional(T.anyOf[1].properties.x))
+  })
+  it('Should pass through on intrinsic types on union', () => {
+    const T = Type.Required(
+      Type.Union([
+        Type.Literal(1),
+        Type.Object({
+          x: Type.Optional(Type.Number()),
+        }),
+      ]),
+    )
+    Assert.IsTrue(KindGuard.IsUnion(T))
+    Assert.IsTrue(KindGuard.IsLiteral(T.anyOf[0]))
+    Assert.IsTrue(KindGuard.IsObject(T.anyOf[1]))
+    Assert.IsFalse(KindGuard.IsOptional(T.anyOf[1].properties.x))
+  })
 })

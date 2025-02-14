@@ -96,3 +96,10 @@ import * as Types from '@sinclair/typebox'
   })]))
   Expect(T).ToStatic<number | { x?: number }>
 }
+// prettier-ignore
+{
+  const T = Type.Partial(Type.Union([Type.Literal(1), Type.Object({
+    x: Type.Number()
+  })]))
+  Expect(T).ToStatic<1 | { x?: number }>
+}

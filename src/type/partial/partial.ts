@@ -42,10 +42,11 @@ import { type TRef, Ref } from '../ref/index'
 import { type TBigInt } from '../bigint/index'
 import { type TBoolean } from '../boolean/index'
 import { type TInteger } from '../integer/index'
+import { type TLiteral } from '../literal/index'
+import { type TNull } from '../null/index'
 import { type TNumber } from '../number/index'
 import { type TString } from '../string/index'
 import { type TSymbol } from '../symbol/index'
-import { type TNull } from '../null/index'
 import { type TUndefined } from '../undefined/index'
 
 import { Discard } from '../discard/index'
@@ -138,8 +139,9 @@ function PartialResolve<Type extends TSchema>(type: Type): TPartial<Type> {
     KindGuard.IsBigInt(type) ? type :
     KindGuard.IsBoolean(type) ? type :
     KindGuard.IsInteger(type) ? type :
-    KindGuard.IsNumber(type) ? type :
+    KindGuard.IsLiteral(type) ? type :
     KindGuard.IsNull(type) ? type :
+    KindGuard.IsNumber(type) ? type :
     KindGuard.IsString(type) ? type :
     KindGuard.IsSymbol(type) ? type :
     KindGuard.IsUndefined(type) ? type :
@@ -163,8 +165,9 @@ export type TPartial<Type extends TSchema> = (
   Type extends TBigInt ? Type :
   Type extends TBoolean ? Type :
   Type extends TInteger ? Type :
-  Type extends TNumber ? Type :
+  Type extends TLiteral ? Type :
   Type extends TNull ? Type :
+  Type extends TNumber ? Type :
   Type extends TString ? Type :
   Type extends TSymbol ? Type :
   Type extends TUndefined ? Type :

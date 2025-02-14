@@ -88,4 +88,18 @@ describe('guard/type/TRequired', () => {
     Assert.IsTrue(TypeGuard.IsObject(T.anyOf[1]))
     Assert.IsFalse(TypeGuard.IsOptional(T.anyOf[1].properties.x))
   })
+  it('Should pass through on intrinsic types on union', () => {
+    const T = Type.Required(
+      Type.Union([
+        Type.Literal(1),
+        Type.Object({
+          x: Type.Optional(Type.Number()),
+        }),
+      ]),
+    )
+    Assert.IsTrue(TypeGuard.IsUnion(T))
+    Assert.IsTrue(TypeGuard.IsLiteral(T.anyOf[0]))
+    Assert.IsTrue(TypeGuard.IsObject(T.anyOf[1]))
+    Assert.IsFalse(TypeGuard.IsOptional(T.anyOf[1].properties.x))
+  })
 })
