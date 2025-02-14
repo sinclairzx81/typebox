@@ -134,8 +134,8 @@ function RequiredResolve<Type extends TSchema>(type: Type): TRequired<Type> {
     KindGuard.IsUnion(type) ?  Union(FromRest(type.anyOf)) :
     KindGuard.IsObject(type) ? FromObject(type) :
     // Intrinsic
-    KindGuard.IsBoolean(type) ? type :
     KindGuard.IsBigInt(type) ? type :
+    KindGuard.IsBoolean(type) ? type :
     KindGuard.IsInteger(type) ? type :
     KindGuard.IsNumber(type) ? type :
     KindGuard.IsNull(type) ? type :
@@ -159,8 +159,8 @@ export type TRequired<Type extends TSchema> = (
   Type extends TUnion<infer Types extends TSchema[]> ? TUnion<TFromRest<Types>> :
   Type extends TObject<infer Properties extends TProperties> ? TFromObject<TObject<Properties>> :
   // Intrinsic
-  Type extends TBoolean ? Type :
   Type extends TBigInt ? Type :
+  Type extends TBoolean ? Type :
   Type extends TInteger ? Type :
   Type extends TNumber ? Type :
   Type extends TNull ? Type :

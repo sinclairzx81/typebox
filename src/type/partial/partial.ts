@@ -135,8 +135,8 @@ function PartialResolve<Type extends TSchema>(type: Type): TPartial<Type> {
     KindGuard.IsUnion(type) ? Union(FromRest(type.anyOf)) :
     KindGuard.IsObject(type) ? FromObject(type) :
     // Intrinsic
-    KindGuard.IsBoolean(type) ? type :
     KindGuard.IsBigInt(type) ? type :
+    KindGuard.IsBoolean(type) ? type :
     KindGuard.IsInteger(type) ? type :
     KindGuard.IsNumber(type) ? type :
     KindGuard.IsNull(type) ? type :
@@ -160,8 +160,8 @@ export type TPartial<Type extends TSchema> = (
   Type extends TUnion<infer Types extends TSchema[]> ? TUnion<TFromRest<Types>> :
   Type extends TObject<infer Properties extends TProperties> ? TFromObject<TObject<Properties>> :
   // Intrinsic
-  Type extends TBoolean ? Type :
   Type extends TBigInt ? Type :
+  Type extends TBoolean ? Type :
   Type extends TInteger ? Type :
   Type extends TNumber ? Type :
   Type extends TNull ? Type :

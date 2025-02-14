@@ -73,4 +73,22 @@ describe('guard/type/TPartial', () => {
     Assert.IsEqual(A.title, 'A')
     Assert.IsEqual(B.title, 'B')
   })
+  // ------------------------------------------------------------------
+  // Intrinsic Passthough
+  // https://github.com/sinclairzx81/typebox/issues/1169
+  // ------------------------------------------------------------------
+  it('Should pass through on intrinsic types on union', () => {
+    const T = Type.Partial(
+      Type.Union([
+        Type.Number(),
+        Type.Object({
+          x: Type.Number(),
+        }),
+      ]),
+    )
+    Assert.IsTrue(TypeGuard.IsUnion(T))
+    Assert.IsTrue(TypeGuard.IsNumber(T.anyOf[0]))
+    Assert.IsTrue(TypeGuard.IsObject(T.anyOf[1]))
+    Assert.IsTrue(TypeGuard.IsOptional(T.anyOf[1].properties.x))
+  })
 })
