@@ -87,3 +87,21 @@ import * as Types from '@sinclair/typebox'
     d: Types.TNumber
   }> = Type.Required(T)
 }
+// ------------------------------------------------------------------
+// Intrinsic Passthough
+// https://github.com/sinclairzx81/typebox/issues/1169
+// ------------------------------------------------------------------
+// prettier-ignore
+{
+  const T = Type.Required(Type.Union([Type.Number(), Type.Object({
+    x: Type.Optional(Type.Number())
+  })]))
+  Expect(T).ToStatic<number | { x: number }>
+}
+// prettier-ignore
+{
+  const T = Type.Required(Type.Union([Type.Literal(1), Type.Object({
+    x: Type.Optional(Type.Number())
+  })]))
+  Expect(T).ToStatic<1 | { x: number }>
+}

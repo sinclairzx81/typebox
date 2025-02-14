@@ -39,14 +39,24 @@ import { type TObject, type TProperties, Object } from '../object/index'
 import { type TIntersect, Intersect } from '../intersect/index'
 import { type TUnion, Union } from '../union/index'
 import { type TRef, Ref } from '../ref/index'
+import { type TBigInt } from '../bigint/index'
+import { type TBoolean } from '../boolean/index'
+import { type TInteger } from '../integer/index'
+import { type TLiteral } from '../literal/index'
+import { type TNull } from '../null/index'
+import { type TNumber } from '../number/index'
+import { type TString } from '../string/index'
+import { type TSymbol } from '../symbol/index'
+import { type TUndefined } from '../undefined/index'
+
 import { Discard } from '../discard/index'
 import { TransformKind } from '../symbols/index'
 import { PartialFromMappedResult, type TPartialFromMappedResult } from './partial-from-mapped-result'
 
 // ------------------------------------------------------------------
-// TypeGuard
+// KindGuard
 // ------------------------------------------------------------------
-import { IsMappedResult, IsIntersect, IsUnion, IsObject, IsRef, IsComputed } from '../guard/kind'
+import * as KindGuard from '../guard/kind'
 
 // ------------------------------------------------------------------
 // FromComputed
@@ -95,9 +105,9 @@ type TFromObject<Type extends TObject, Properties extends TProperties = Type['pr
   TFromProperties<Properties>
 )>>
 // prettier-ignore
-function FromObject<Type extends TObject>(T: Type): TFromObject<Type> {
-  const options = Discard(T, [TransformKind, '$id', 'required', 'properties'])
-  const properties = FromProperties(T['properties'])
+function FromObject<Type extends TObject>(type: Type): TFromObject<Type> {
+  const options = Discard(type, [TransformKind, '$id', 'required', 'properties'])
+  const properties = FromProperties(type['properties'])
   return Object(properties, options) as never
 }
 // ------------------------------------------------------------------
@@ -119,11 +129,23 @@ function FromRest<Types extends TSchema[]>(types: [...Types]): TFromRest<Types> 
 // prettier-ignore
 function PartialResolve<Type extends TSchema>(type: Type): TPartial<Type> {
   return (
-    IsComputed(type) ? FromComputed(type.target, type.parameters) :
-    IsRef(type) ? FromRef(type.$ref) :
-    IsIntersect(type) ? Intersect(FromRest(type.allOf)) :
-    IsUnion(type) ? Union(FromRest(type.anyOf)) :
-    IsObject(type) ? FromObject(type) :
+    // Mappable
+    KindGuard.IsComputed(type) ? FromComputed(type.target, type.parameters) :
+    KindGuard.IsRef(type) ? FromRef(type.$ref) :
+    KindGuard.IsIntersect(type) ? Intersect(FromRest(type.allOf)) :
+    KindGuard.IsUnion(type) ? Union(FromRest(type.anyOf)) :
+    KindGuard.IsObject(type) ? FromObject(type) :
+    // Intrinsic
+    KindGuard.IsBigInt(type) ? type :
+    KindGuard.IsBoolean(type) ? type :
+    KindGuard.IsInteger(type) ? type :
+    KindGuard.IsLiteral(type) ? type :
+    KindGuard.IsNull(type) ? type :
+    KindGuard.IsNumber(type) ? type :
+    KindGuard.IsString(type) ? type :
+    KindGuard.IsSymbol(type) ? type :
+    KindGuard.IsUndefined(type) ? type :
+    // Passthrough
     Object({})
   ) as never
 }
@@ -131,13 +153,25 @@ function PartialResolve<Type extends TSchema>(type: Type): TPartial<Type> {
 // TPartial
 // ------------------------------------------------------------------
 // prettier-ignore
-export type TPartial<T extends TSchema> = (
-  T extends TRecursive<infer Type extends TSchema> ? TRecursive<TPartial<Type>> :
-  T extends TComputed<infer Target extends string, infer Parameters extends TSchema[]> ? TFromComputed<Target, Parameters> :
-  T extends TRef<infer Ref extends string> ? TFromRef<Ref> :
-  T extends TIntersect<infer Types extends TSchema[]> ? TIntersect<TFromRest<Types>> :
-  T extends TUnion<infer Types extends TSchema[]> ? TUnion<TFromRest<Types>> :
-  T extends TObject<infer Properties extends TProperties> ? TFromObject<TObject<Properties>> :
+export type TPartial<Type extends TSchema> = (
+  // Mappable
+  Type extends TRecursive<infer Type extends TSchema> ? TRecursive<TPartial<Type>> :
+  Type extends TComputed<infer Target extends string, infer Parameters extends TSchema[]> ? TFromComputed<Target, Parameters> :
+  Type extends TRef<infer Ref extends string> ? TFromRef<Ref> :
+  Type extends TIntersect<infer Types extends TSchema[]> ? TIntersect<TFromRest<Types>> :
+  Type extends TUnion<infer Types extends TSchema[]> ? TUnion<TFromRest<Types>> :
+  Type extends TObject<infer Properties extends TProperties> ? TFromObject<TObject<Properties>> :
+  // Intrinsic
+  Type extends TBigInt ? Type :
+  Type extends TBoolean ? Type :
+  Type extends TInteger ? Type :
+  Type extends TLiteral ? Type :
+  Type extends TNull ? Type :
+  Type extends TNumber ? Type :
+  Type extends TString ? Type :
+  Type extends TSymbol ? Type :
+  Type extends TUndefined ? Type :
+  // Passthrough
   TObject<{}>
 )
 /** `[Json]` Constructs a type where all properties are optional */
@@ -145,8 +179,8 @@ export function Partial<MappedResult extends TMappedResult>(type: MappedResult, 
 /** `[Json]` Constructs a type where all properties are optional */
 export function Partial<Type extends TSchema>(type: Type, options?: SchemaOptions): TPartial<Type>
 /** `[Json]` Constructs a type where all properties are optional */
-export function Partial(type: TSchema, options?: SchemaOptions): any {
-  if (IsMappedResult(type)) {
+export function Partial(type: TSchema, options?: SchemaOptions): unknown {
+  if (KindGuard.IsMappedResult(type)) {
     return PartialFromMappedResult(type, options)
   } else {
     // special: mapping types require overridable options
