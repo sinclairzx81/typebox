@@ -64,7 +64,6 @@ License MIT
 - [Types](#types)
   - [Json](#types-json)
   - [JavaScript](#types-javascript)
-  - [Import](#types-import)
   - [Options](#types-options)
   - [Properties](#types-properties)
   - [Generics](#types-generics)
@@ -97,9 +96,9 @@ License MIT
   - [Mutate](#values-mutate)
   - [Pointer](#values-pointer)
 - [Syntax](#syntax)
-  - [Type](#syntax-type)
-  - [Options](#syntax-options)
+  - [Create](#syntax-create)
   - [Parameters](#syntax-parameters)
+  - [Options](#syntax-options)
   - [Generics](#syntax-generics)
 - [TypeRegistry](#typeregistry)
   - [Type](#typeregistry-type)
@@ -107,6 +106,8 @@ License MIT
 - [TypeCheck](#typecheck)
   - [Ajv](#typecheck-ajv)
   - [TypeCompiler](#typecheck-typecompiler)
+- [TypeMap](#typemap)
+  - [Usage](#typemap-usage)
 - [TypeSystem](#typesystem)
   - [Policies](#typesystem-policies)
 - [Error Function](#error-function)
@@ -638,22 +639,6 @@ TypeBox provides an extended type set that can be used to create schematics for 
 └────────────────────────────────┴─────────────────────────────┴────────────────────────────────┘
 ```
 
-<a name='types-import'></a>
-
-### Import
-
-Import the Type namespace to bring in the full TypeBox type system. This is recommended for most users.
-
-```typescript
-import { Type, type Static } from '@sinclair/typebox'
-```
-
-You can also selectively import types. This enables modern bundlers to tree shake for unused types.
-
-```typescript
-import { Object, Number, String, Boolean, type Static } from '@sinclair/typebox'
-```
-
 <a name='types-options'></a>
 
 ### Options
@@ -739,22 +724,6 @@ const Nullable = <T extends TSchema>(T: T) => {     // type Nullable<T> = T | nu
 }
 
 const T = Nullable(Type.String())                  // type T = Nullable<string>
-```
-
-Generic types can also be created with Argument types
-
-```typescript
-const Vector = Type.Object({                        // type Vector<A_0, A_1, A_2> = {
-  x: Type.Argument(0),                              //   x: A_0,
-  y: Type.Argument(1),                              //   y: A_1,
-  z: Type.Argument(2),                              //   z: A_2
-})                                                  // }
-
-const T = Type.Instantiate(Vector, [                // type T = Vector<
-  Type.Boolean(),                                   //   boolean, 
-  Type.Number(),                                    //   number,
-  Type.String()                                     //   string
-])                                                  // >
 ```
 
 <a name='types-recursive'></a>
@@ -1337,22 +1306,42 @@ ValuePointer.Set(A, '/z', 1)                         // A' = { x: 1, y: 1, z: 1 
 
 ## Syntax Types
 
-TypeBox provides optional support for runtime and type level parsing from TypeScript syntax.
+TypeBox has support for parsing TypeScript syntax at runtime as well as statically in the type system. This feature offers a syntactical frontend to the TypeBox type builder.
+
+Syntax types are available via optional import.
 
 ```typescript
 import { Syntax } from '@sinclair/typebox/syntax'
 ```
 
-<a name='syntax-type'></a>
+<a name='syntax-create'></a>
 
-### Type
+### Create
 
-Use the Syntax function to create TypeBox type from TypeScript syntax.
+Use the Syntax function to create TypeBox types from TypeScript syntax
 
 ```typescript
 const T = Syntax(`{ x: number, y: number }`)        // const T: TObject<{
-                                                    //   x: TNumber
+                                                    //   x: TNumber,
                                                     //   y: TNumber
+                                                    // }>
+```
+
+<a name="syntax-parameters"></a>
+
+### Parameters
+
+Syntax types can be parameterized to receive exterior types.
+
+```typescript
+const T = Syntax(`{ x: number, y: number }`)        // const T: TObject<{
+                                                    //   x: TNumber,
+                                                    //   y: TNumber
+                                                    // }>
+
+const S = Syntax({ T }, `Partial<T>`)               // const S: TObject<{
+                                                    //   x: TOptional<TNumber>,
+                                                    //   y: TOptional<TNumber>
                                                     // }>
 ```
 
@@ -1360,7 +1349,7 @@ const T = Syntax(`{ x: number, y: number }`)        // const T: TObject<{
 
 ### Options
 
-Options can be passed to types on the last parameter
+Options can be passed via the last parameter
 
 ```typescript
 const T = Syntax(`number`, {                      // const T = {
@@ -1370,42 +1359,30 @@ const T = Syntax(`number`, {                      // const T = {
                                                   // }
 ```
 
-<a name="syntax-parameters"></a>
-
-### Parameters
-
-Syntax types can be parameterized to accept exterior types.
-
-```typescript
-const T = Syntax('number')
-
-const S = Syntax({ T }, `{ x: T, y: T, z: T }`)     // const S: TObject<{
-                                                    //   x: TNumber,
-                                                    //   y: TNumber,
-                                                    //   z: TNumber
-                                                    // }>
-```
-
 <a name="syntax-generics"></a>
 
 ### Generics
 
-Generic types can be created using Argument types.
+Generic types can be created using positional argument types ([Example](https://www.typescriptlang.org/play/?moduleResolution=99&module=199&ts=5.8.0-beta#code/JYWwDg9gTgLgBAbzgZQJ4DsYEMAecC+cAZlBCHAOQACAzsOgMYA2WwUA9DKmAKYBGEHOxoZsOCgChQkWIhTYYwBgWKly1OoxZtO3foMkSGEdDXgAVAAxwAvClG4AFBQCCUAOYBXED0wAeSwA+CgBKIxMzOHMARlt7TCdXD29fGD9o4LDjUwsAJji0BJxnNy8ff1zMiXCcuAA1HgYYaAKHYqQrABoo6O7zfPxugAMECTg4HAAuKMtOsbhUaZi58YAvJdyJfCGwmsiAISw6Ggam6BpWosckU+aoAmHR8an6xrv07tm4IJWF6dvoAFur1voFfutXmcoEDvsCwVsdtUuLw4IdjgCoBc7MgFEo-MieBAiKijsATm9zoFxtT2Ow4ASSeiKZi4k9qeyOZyudyeTzadSXkgXiDFrC4BDrIN5ryZbK5ez+eNRULpl9RSCJQ9pfKdbqFXS1tMVWLRV8IbF8Nq9da5fzCEA))
 
 ```typescript
-const Vector = Syntax(`{
-  x: Argument<0>,
-  y: Argument<1>,
-  z: Argument<2>
+const T0 = Syntax('Argument<0>')
+const T1 = Syntax('Argument<1>')
+const T2 = Syntax('Argument<2>')
+
+const Vector = Syntax({ T0, T1, T2 }, `{
+  x: T0,
+  y: T1,
+  z: T2
 }`)
 
-const Basis = Syntax({ Vector }, `{
+const BasisVectors = Syntax({ Vector }, `{
   x: Vector<1, 0, 0>,
   y: Vector<0, 1, 0>,
   z: Vector<0, 0, 1>,
 }`)
 
-type Basis = Static<typeof Basis>                   // type Basis = {
+type BasisVectors = Static<typeof BasisVectors>     // type BasisVectors = {
                                                     //   x: { x: 1, y: 0, z: 0 },
                                                     //   y: { x: 0, y: 1, z: 0 },
                                                     //   z: { x: 0, y: 0, z: 1 }
@@ -1571,6 +1548,44 @@ const C = TypeCompiler.Code(Type.String())           // const C = `return functi
                                                      //     (typeof value === 'string')
                                                      //   )
                                                      // }`
+```
+
+<a name='typemap'></a>
+
+## TypeMap
+
+TypeBox offers an external package for bi-directional mapping between TypeBox, Valibot, and Zod type libraries. It also includes syntax parsing support for Valibot and Zod and supports the Standard Schema specification. For more details on TypeMap, refer to the project repository.
+
+[TypeMap Repository](https://github.com/sinclairzx81/typemap)
+
+<a name='typemap-usage'></a>
+
+### Usage
+
+TypeMap needs to be installed seperately
+
+```bash
+$ npm install @sinclair/typemap
+```
+
+Once installed it offers advanced structural remapping between various runtime type libraries ([Example](https://www.typescriptlang.org/play/?moduleResolution=99&module=199&ts=5.8.0-beta#code/JYWwDg9gTgLgBAbzgFQJ5gKYCEIA8A0cAyqgHYwCGBcAWhACZwC+cAZlBCHAOQACAzsFIBjADYVgUAPQx0GEBTDcAUMuERS-eMjgBeFHJy4AFAAMkuAFxxSAVxAAjDFEKprdx88IAvd-adQzKYAlHBwUlJw6pra1sgA8g4AVhjCMAA8CMphObl5+QWFRcW5ETlWKABy-s4A3NkljU3NBWVhblU1UPUtvX3FbXC+nZ7dDf0TE2VMAHyq0VrEesRklCbIoS1lC-BE1twWfqOuRwE+p87MKmoaiwBKy3T0xkTBAHRgFFD8GMZ2oqJNnltrd4HdrFlJltImEKh4Aj0oU1Bh14XVxkiBjChhcxpjGtMwkA))
+
+```typescript
+import { TypeBox, Syntax, Zod } from '@sinclair/typemap'
+
+const T = TypeBox(`{ x: number, y: number, z: number }`)  // const T: TObject<{
+                                                          //   x: TNumber;
+                                                          //   y: TNumber;
+                                                          //   z: TNumber;
+                                                          // }>
+
+const S = Syntax(T)                // const S: '{ x: number, y: number, z: number }'
+
+const R = Zod(S).parse(null)       // const R: {
+                                   //   x: number;
+                                   //   y: number;
+                                   //   z: number;
+                                   // }                    
 ```
 
 <a name='typesystem'></a>
