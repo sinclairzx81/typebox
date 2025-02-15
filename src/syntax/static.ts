@@ -148,8 +148,8 @@ type Dereference<Context extends t.TProperties, Ref extends string> = (
 // prettier-ignore
 interface GenericReferenceMapping extends Static.IMapping {
   output: this['context'] extends t.TProperties
-    ? this['input'] extends [infer Reference extends string, LAngle, infer Parameters extends t.TSchema[], RAngle]
-      ? t.TInstantiate<Dereference<this['context'], Reference>, [...Parameters]>
+    ? this['input'] extends [infer Reference extends string, LAngle, infer Args extends t.TSchema[], RAngle]
+      ? t.TInstantiate<Dereference<this['context'], Reference>, Args>
       : never
     : never  
 }

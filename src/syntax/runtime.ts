@@ -69,10 +69,17 @@ const Dereference = (context: t.TProperties, key: string): t.TSchema => {
 // GenericReference
 // ------------------------------------------------------------------
 function GenericReferenceMapping(results: unknown[], context: t.TProperties) {
-  const target = Dereference(context, results[0] as string)
-  return t.Instantiate(target, results[2] as t.TSchema[])
+  const type = Dereference(context, results[0] as string)
+  const args = results[2] as t.TSchema[]
+  return t.Instantiate(type, args)
 }
-const GenericReference = Runtime.Tuple([Runtime.Ident(), Runtime.Const(LAngle), Runtime.Ref('Elements'), Runtime.Const(RAngle)], (results, context) => GenericReferenceMapping(results, context))
+// prettier-ignore
+const GenericReference = Runtime.Tuple([
+  Runtime.Ident(), 
+  Runtime.Const(LAngle), 
+  Runtime.Ref('Elements'), 
+  Runtime.Const(RAngle)
+], (results, context) => GenericReferenceMapping(results, context))
 // ------------------------------------------------------------------
 // Reference
 // ------------------------------------------------------------------
