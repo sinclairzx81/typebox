@@ -417,6 +417,6 @@ describe('syntax/Syntax', () => {
     const T = Syntax({ G }, `G<number>`)
     Assert.IsTrue(TypeGuard.IsTuple(T))
     Assert.IsTrue(TypeGuard.IsNumber(T.items![0]))
-    Assert.IsTrue(TypeGuard.IsNever(T.items![1]))
+    Assert.IsTrue(TypeGuard.IsUnknown(T.items![1]))
   })
 })
