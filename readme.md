@@ -1308,7 +1308,7 @@ ValuePointer.Set(A, '/z', 1)                         // A' = { x: 1, y: 1, z: 1 
 
 TypeBox includes support for parsing TypeScript annotation syntax into TypeBox schematics.
 
-Syntax types are provided via optional import.
+This feature is provided via optional import.
 
 ```typescript
 import { Syntax } from '@sinclair/typebox/syntax'
