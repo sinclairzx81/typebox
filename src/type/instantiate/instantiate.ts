@@ -29,7 +29,7 @@ THE SOFTWARE.
 import { CloneType } from '../clone/type'
 import { type TSchema } from '../schema/index'
 import { type TArgument } from '../argument/index'
-import { type TNever, Never } from '../never/index'
+import { type TUnknown, Unknown } from '../unknown/index'
 import { type TReadonlyOptional, ReadonlyOptional } from '../readonly-optional/index'
 import { type TReadonly, Readonly } from '../readonly/index'
 import { type TOptional, Optional } from '../optional/index'
@@ -42,7 +42,7 @@ import { type TArray } from '../array/index'
 import { type TAsyncIterator } from '../async-iterator/index'
 import { type TIterator } from '../iterator/index'
 import { type TPromise } from '../promise/index'
-import { type TObject, type TProperties } from '../object/index'
+import { type TObject, type TProperties, Object } from '../object/index'
 import { type TRecordOrObject, type TRecord, Record, RecordKey, RecordValue } from '../record/index'
 
 import * as ValueGuard from '../guard/value'
@@ -164,12 +164,12 @@ function FromPromise(args: TSchema[], type: TPromise): TPromise {
 // ------------------------------------------------------------------
 // prettier-ignore
 type TFromObject<Args extends TSchema[], Properties extends TProperties,
-  Result extends TObject = TObject<TFromProperties<Args, Properties>>
-> = Result
+  Result extends TProperties = TFromProperties<Args, Properties>
+> = TObject<Result>
 // prettier-ignore
 function FromObject(args: TSchema[], type: TObject): TObject {
-  type.properties = FromProperties(args, type.properties)
-  return type
+  const properties = FromProperties(args, type.properties)
+  return { ...type, ...Object(properties) } // retain options
 }
 // ------------------------------------------------------------------
 // Object
@@ -191,12 +191,12 @@ function FromRecord(args: TSchema[], type: TRecord): TRecord {
 // Argument
 // ------------------------------------------------------------------
 // prettier-ignore
-type TFromArgument<Args extends TSchema[], Index extends number> = (
-  Index extends keyof Args ? Args[Index] : TNever
-)
+type TFromArgument<Args extends TSchema[], Index extends number,
+  Result extends TSchema = Index extends keyof Args[Index] ? Args[Index] : TUnknown
+> = Result
 // prettier-ignore
 function FromArgument(args: TSchema[], argument: TArgument): TSchema {
-  return argument.index in args ? args[argument.index] : Never()
+  return argument.index in args ? args[argument.index] : Unknown() 
 }
 // ------------------------------------------------------------------
 // Property

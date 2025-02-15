@@ -98,8 +98,8 @@ License MIT
 - [Syntax](#syntax)
   - [Create](#syntax-create)
   - [Parameters](#syntax-parameters)
-  - [Options](#syntax-options)
   - [Generics](#syntax-generics)
+  - [Options](#syntax-options)
 - [TypeRegistry](#typeregistry)
   - [Type](#typeregistry-type)
   - [Format](#typeregistry-format)
@@ -1306,9 +1306,9 @@ ValuePointer.Set(A, '/z', 1)                         // A' = { x: 1, y: 1, z: 1 
 
 ## Syntax Types
 
-TypeBox has support for parsing TypeScript syntax at runtime as well as statically in the type system. This feature offers a syntactical frontend to the TypeBox type builder.
+TypeBox includes support for parsing TypeScript annotation syntax into TypeBox schematics.
 
-Syntax types are available via optional import.
+This feature is provided via optional import.
 
 ```typescript
 import { Syntax } from '@sinclair/typebox/syntax'
@@ -1318,20 +1318,25 @@ import { Syntax } from '@sinclair/typebox/syntax'
 
 ### Create
 
-Use the Syntax function to create TypeBox types from TypeScript syntax
+Use the Syntax function to create TypeBox types from TypeScript syntax ([Example](https://www.typescriptlang.org/play/?moduleResolution=99&module=199&ts=5.8.0-beta#code/JYWwDg9gTgLgBAbzgZQJ4DsYEMAecC+cAZlBCHAOQACAzsOgMYA2WwUA9DKmAKYBGEHOxoZsOCgChQkWIhTYYwBgWKly1OoxZtO3foMkSGEdDXgAVOAF4Uo3AAoABkhwAuOOgCuIPjygAaOFR3Lx8-AkcASjgY2Jj2djhjUwt3cwB5PgArHgYYAB4ECTiS0rLyisrYhNi3OHMAOW9fAOKq9o7OuBqY4PqmsKg2rpHR+MT8AD4JCS5eeut5LEUGfLmeCCJ6ybHKmvWFmyLdk86euDrQlv9h07uy876rv1v7t-GCIA))
 
 ```typescript
 const T = Syntax(`{ x: number, y: number }`)        // const T: TObject<{
                                                     //   x: TNumber,
                                                     //   y: TNumber
                                                     // }>
+
+type T = Static<typeof T>                            // type T = {
+                                                     //   x: number,
+                                                     //   y: number
+                                                     // }
 ```
 
 <a name="syntax-parameters"></a>
 
 ### Parameters
 
-Syntax types can be parameterized to receive exterior types.
+Syntax types can be parameterized to receive exterior types ([Example](https://www.typescriptlang.org/play/?moduleResolution=99&module=199&ts=5.8.0-beta#code/JYWwDg9gTgLgBAbzgZQJ4DsYEMAecC+cAZlBCHAOQACAzsOgMYA2WwUA9DKmAKYBGEHOxoZsOCgCgJDCOhrwAKnAC8KUbgAUAAyQ4AXHHQBXEHx5QANHFQHjp8wS0BKOK7ev27ODLmKDCgHk+ACseBhgAHgQJd1i4+ITEpLdPN304BQA5EzNLGOSCwqK4VNcbDOz7KHzi2rqPL3wAPikfeRQVNUxNJCV8Ky0ABSxYYCwmCIUm52LUtvhkfyDQ8Kia+o2C0rh0wLAYYFlxycrcpot1zav47fK9g6OJrJzzFuv3m8amoA))
 
 ```typescript
 const T = Syntax(`{ x: number, y: number }`)        // const T: TObject<{
@@ -1345,35 +1350,19 @@ const S = Syntax({ T }, `Partial<T>`)               // const S: TObject<{
                                                     // }>
 ```
 
-<a name='syntax-options'></a>
 
-### Options
-
-Options can be passed via the last parameter
-
-```typescript
-const T = Syntax(`number`, {                      // const T = {
-  minimum: 0,                                     //   type: 'number',
-  maximum: 10                                     //   minimum: 0,
-})                                                //   maximum: 10
-                                                  // }
-```
 
 <a name="syntax-generics"></a>
 
 ### Generics
 
-Generic types can be created using positional argument types ([Example](https://www.typescriptlang.org/play/?moduleResolution=99&module=199&ts=5.8.0-beta#code/JYWwDg9gTgLgBAbzgZQJ4DsYEMAecC+cAZlBCHAOQACAzsOgMYA2WwUA9DKmAKYBGEHOxoZsOCgChQkWIhTYYwBgWKly1OoxZtO3foMkSGEdDXgAVAAxwAvClG4AFBQCCUAOYBXED0wAeSwA+CgBKIxMzOHMARlt7TCdXD29fGD9o4LDjUwsAJji0BJxnNy8ff1zMiXCcuAA1HgYYaAKHYqQrABoo6O7zfPxugAMECTg4HAAuKMtOsbhUaZi58YAvJdyJfCGwmsiAISw6Ggam6BpWosckU+aoAmHR8an6xrv07tm4IJWF6dvoAFur1voFfutXmcoEDvsCwVsdtUuLw4IdjgCoBc7MgFEo-MieBAiKijsATm9zoFxtT2Ow4ASSeiKZi4k9qeyOZyudyeTzadSXkgXiDFrC4BDrIN5ryZbK5ez+eNRULpl9RSCJQ9pfKdbqFXS1tMVWLRV8IbF8Nq9da5fzCEA))
+Syntax types support generic parameters in the following way ([Example](https://www.typescriptlang.org/play/?moduleResolution=99&module=199&ts=5.8.0-beta#code/JYWwDg9gTgLgBAbzgZQJ4DsYEMAecC+cAZlBCHAOQACAzsOgMYA2WwUA9DKmAKYBGEHOxoZsOCgChQkWIhTYYwBgWKly1OoxZtO3foMkSGEdDXgA1HgxjQ4AXhSjcACgAGAHgAaAGjgBNXwAtAD45CTg4HAAuOB84cLhUGID4iIAvGMD4-FcASgkjEzM4ACEsOhpLa2gae0dMFyQqmygCX1cEBOi4Zuh3AEZfAAZh4O8EpJ6rFvcRuEG4IbGEjKnqqFnh337lnPyJLl5S8uBK6Zq65AUld0OeCCJjit6oGlCIiPZ2ODun05fag5Oh8QaCweCIZCoV8Pt0kN0FpM5qshm0ElCMZisSCYRFJvCYnNJgsUWjseSKeDcXBVgTFr4kb5Vv0COjKezsTD8EA))
 
 ```typescript
-const T0 = Syntax('Argument<0>')
-const T1 = Syntax('Argument<1>')
-const T2 = Syntax('Argument<2>')
-
-const Vector = Syntax({ T0, T1, T2 }, `{
-  x: T0,
-  y: T1,
-  z: T2
+const Vector = Syntax(`<X, Y, Z> { 
+  x: X, 
+  y: Y, 
+  z: Z 
 }`)
 
 const BasisVectors = Syntax({ Vector }, `{
@@ -1386,7 +1375,20 @@ type BasisVectors = Static<typeof BasisVectors>     // type BasisVectors = {
                                                     //   x: { x: 1, y: 0, z: 0 },
                                                     //   y: { x: 0, y: 1, z: 0 },
                                                     //   z: { x: 0, y: 0, z: 1 }
-                                                    // } 
+                                                    // }
+```
+
+<a name='syntax-options'></a>
+
+### Options
+
+Options can be passed via the last parameter
+
+```typescript
+const T = Syntax(`number`, { minimum: 42 })       // const T = {
+                                                  //   type: 'number',
+                                                  //   minimum: 42
+                                                  // }
 ```
 
 <a name='typeregistry'></a>

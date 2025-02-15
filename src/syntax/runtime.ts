@@ -66,6 +66,46 @@ const Dereference = (context: t.TProperties, key: string): t.TSchema => {
   return key in context ? context[key] : t.Ref(key)
 }
 // ------------------------------------------------------------------
+// GenericArgumentList
+// ------------------------------------------------------------------
+// prettier-ignore
+const GenericArgumentListMapping = (results: unknown[]) => {
+  return (
+    results.length === 3 ? [results[0], ...results[2] as unknown[]] :
+    results.length === 2 ? [results[0]] :
+    results.length === 1 ? [results[0]] :
+    []
+  )
+}
+// prettier-ignore
+const GenericArgumentList = Runtime.Union([
+  Runtime.Tuple([Runtime.Ident(), Runtime.Const(Comma), Runtime.Ref('GenericArgumentList')]),
+  Runtime.Tuple([Runtime.Ident(), Runtime.Const(Comma)]),
+  Runtime.Tuple([Runtime.Ident()]),
+  Runtime.Tuple([]),
+], (results) => GenericArgumentListMapping(results))
+// ------------------------------------------------------------------
+// GenericArguments
+// ------------------------------------------------------------------
+// prettier-ignore
+const GenericArgumentsContext = (args: string[]) => {
+  return args.reduce((result, arg, index) => {
+    return { ...result, [arg]: t.Argument(index) }
+  }, {})
+}
+// prettier-ignore
+const GenericArgumentsMapping = (results: unknown[]) => {
+  return results.length === 3
+    ? GenericArgumentsContext(results[1] as string[])
+    : {}
+}
+// prettier-ignore
+const GenericArguments = Runtime.Tuple([
+  Runtime.Const(LAngle),
+  Runtime.Ref('GenericArgumentList'),
+  Runtime.Const(RAngle),
+], results => GenericArgumentsMapping(results))
+// ------------------------------------------------------------------
 // GenericReference
 // ------------------------------------------------------------------
 function GenericReferenceMapping(results: unknown[], context: t.TProperties) {
@@ -657,11 +697,17 @@ const Date = Runtime.Const('Date', Runtime.As(t.Date()))
 // Uint8Array
 // ------------------------------------------------------------------
 const Uint8Array = Runtime.Const('Uint8Array', Runtime.As(t.Uint8Array()))
+
 // ------------------------------------------------------------------
 // Module
 // ------------------------------------------------------------------
 // prettier-ignore
 export const Module = new Runtime.Module({
+  // ----------------------------------------------------------------
+  // Generic Arguments
+  // ----------------------------------------------------------------
+  GenericArgumentList,
+  GenericArguments,
   // ----------------------------------------------------------------
   // Type Expressions
   // ----------------------------------------------------------------
