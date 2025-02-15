@@ -98,8 +98,8 @@ License MIT
 - [Syntax](#syntax)
   - [Create](#syntax-create)
   - [Parameters](#syntax-parameters)
-  - [Options](#syntax-options)
   - [Generics](#syntax-generics)
+  - [Options](#syntax-options)
 - [TypeRegistry](#typeregistry)
   - [Type](#typeregistry-type)
   - [Format](#typeregistry-format)
@@ -1306,9 +1306,9 @@ ValuePointer.Set(A, '/z', 1)                         // A' = { x: 1, y: 1, z: 1 
 
 ## Syntax Types
 
-TypeBox includes support for parsing TypeScript annotation syntax into TypeBox schematics. This feature is designed as a syntactical frontend to the TypeBox API and makes use of advanced symmetric runtime and static type-level parsing.
+TypeBox includes support for parsing TypeScript annotation syntax into TypeBox schematics.
 
-Syntax types are available via optional import.
+Syntax types are provided via optional import.
 
 ```typescript
 import { Syntax } from '@sinclair/typebox/syntax'
