@@ -1363,17 +1363,13 @@ const T = Syntax(`number`, {                      // const T = {
 
 ### Generics
 
-Generic types can be created using positional argument types ([Example](https://www.typescriptlang.org/play/?moduleResolution=99&module=199&ts=5.8.0-beta#code/JYWwDg9gTgLgBAbzgZQJ4DsYEMAecC+cAZlBCHAOQACAzsOgMYA2WwUA9DKmAKYBGEHOxoZsOCgChQkWIhTYYwBgWKly1OoxZtO3foMkSGEdDXgAVAAxwAvClG4AFBQCCUAOYBXED0wAeSwA+CgBKIxMzOHMARlt7TCdXD29fGD9o4LDjUwsAJji0BJxnNy8ff1zMiXCcuAA1HgYYaAKHYqQrABoo6O7zfPxugAMECTg4HAAuKMtOsbhUaZi58YAvJdyJfCGwmsiAISw6Ggam6BpWosckU+aoAmHR8an6xrv07tm4IJWF6dvoAFur1voFfutXmcoEDvsCwVsdtUuLw4IdjgCoBc7MgFEo-MieBAiKijsATm9zoFxtT2Ow4ASSeiKZi4k9qeyOZyudyeTzadSXkgXiDFrC4BDrIN5ryZbK5ez+eNRULpl9RSCJQ9pfKdbqFXS1tMVWLRV8IbF8Nq9da5fzCEA))
+Generic types can be created by prefixing the type with generic argument syntax ([Example](https://www.typescriptlang.org/play/?moduleResolution=99&module=199&ts=5.8.0-beta#code/JYWwDg9gTgLgBAbzgZQJ4DsYEMAecC+cAZlBCHAOQACAzsOgMYA2WwUA9DKmAKYBGEHOxoZsOCgChQkWIhTYYwBgWKly1OoxZtO3foMkSGEdDXgAVAAxwAvClG4AFBQCCUAOYBXED0wAeSwA+CgBKIxMzOHMARlt7TCdXD29fGD9o4LDjUwsAJji0BJxnNy8ff1zMiXCcuAA1HgYYaAKHYqQrABoo6O7zfPxugAMECTg4HAAuKMtOsbhUaZi58YAvJdyJfCGwmsiAISw6Ggam6BpWosckU+aoAmHR8an6xrv07tm4IJWF6dvoAFur1voFfutXmcoEDvsCwVsdtUuLw4IdjgCoBc7MgFEo-MieBAiKijsATm9zoFxtT2Ow4ASSeiKZi4k9qeyOZyudyeTzadSXkgXiDFrC4BDrIN5ryZbK5ez+eNRULpl9RSCJQ9pfKdbqFXS1tMVWLRV8IbF8Nq9da5fzCEA))
 
 ```typescript
-const T0 = Syntax('Argument<0>')
-const T1 = Syntax('Argument<1>')
-const T2 = Syntax('Argument<2>')
-
-const Vector = Syntax({ T0, T1, T2 }, `{
-  x: T0,
-  y: T1,
-  z: T2
+const Vector = Syntax(`<X, Y, Z> { 
+  x: X, 
+  y: Y, 
+  z: Z 
 }`)
 
 const BasisVectors = Syntax({ Vector }, `{
@@ -1386,7 +1382,7 @@ type BasisVectors = Static<typeof BasisVectors>     // type BasisVectors = {
                                                     //   x: { x: 1, y: 0, z: 0 },
                                                     //   y: { x: 0, y: 1, z: 0 },
                                                     //   z: { x: 0, y: 0, z: 1 }
-                                                    // } 
+                                                    // }
 ```
 
 <a name='typeregistry'></a>

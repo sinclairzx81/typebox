@@ -143,6 +143,46 @@ type Dereference<Context extends t.TProperties, Ref extends string> = (
   Ref extends keyof Context ? Context[Ref] : t.TRef<Ref>
 )
 // ------------------------------------------------------------------
+// GenericArgumentList
+// ------------------------------------------------------------------
+// prettier-ignore
+interface GenericArgumentListMapping extends Static.IMapping {
+  output: (
+    this['input'] extends [infer Ident extends string, Comma, infer Rest extends unknown[]] ? [Ident, ...Rest] :
+    this['input'] extends [infer Ident extends string, Comma] ? [Ident] :
+    this['input'] extends [infer Ident extends string] ? [Ident] :
+    []
+  )
+}
+// prettier-ignore
+type GenericArgumentList = Static.Union<[
+  Static.Tuple<[Static.Ident, Static.Const<Comma>, GenericArgumentList]>,
+  Static.Tuple<[Static.Ident, Static.Const<Comma>]>,
+  Static.Tuple<[Static.Ident]>,
+  Static.Tuple<[]>,
+], GenericArgumentListMapping>
+// ------------------------------------------------------------------
+// GenericArguments
+// ------------------------------------------------------------------
+// prettier-ignore
+type GenericArgumentsContext<Args extends string[], Result extends t.TProperties = {}> = (
+  Args extends [...infer Left extends string[], infer Right extends string]
+    ? GenericArgumentsContext<Left, Result & { [_ in Right]: t.TArgument<Left['length']> }>
+    : t.Evaluate<Result>
+)
+// prettier-ignore
+interface GenericArgumentsMapping extends Static.IMapping {
+  output: this['input'] extends [LAngle, infer Args extends string[], RAngle]
+    ? GenericArgumentsContext<Args>
+    : never
+}
+// prettier-ignore
+export type GenericArguments = Static.Tuple<[
+  Static.Const<LAngle>,
+  GenericArgumentList,
+  Static.Const<RAngle>,
+], GenericArgumentsMapping>
+// ------------------------------------------------------------------
 // GenericReference
 // ------------------------------------------------------------------
 // prettier-ignore
