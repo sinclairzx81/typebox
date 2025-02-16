@@ -1396,7 +1396,7 @@ const T = Syntax(`number`, { minimum: 42 })       // const T = {
 
 ### NoInfer
 
-Syntax parsing is a very expensive operation to perform in the type system and can have a significant impact on language service performance. Use the NoInfer function parse syntax at runtime only.
+Syntax parsing is an expensive type level operation and can impact on language service performance. Use the NoInfer function parse syntax at runtime only.
 
 ```typescript
 import { NoInfer } from '@sinclair/typebox/syntax'
