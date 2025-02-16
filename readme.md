@@ -100,6 +100,7 @@ License MIT
   - [Parameters](#syntax-parameters)
   - [Generics](#syntax-generics)
   - [Options](#syntax-options)
+  - [NoInfer](#syntax-no-infer)
 - [TypeRegistry](#typeregistry)
   - [Type](#typeregistry-type)
   - [Format](#typeregistry-format)
@@ -1389,6 +1390,23 @@ const T = Syntax(`number`, { minimum: 42 })       // const T = {
                                                   //   type: 'number',
                                                   //   minimum: 42
                                                   // }
+```
+
+<a name='syntax-no-infer'></a>
+
+### NoInfer
+
+Syntax parse inference is a very expensive operation to perform in the type system which can implicate language service performance. Use the NoInfer function perform runtime parsing only.
+
+```typescript
+import { NoInfer } from '@sinclair/typebox/syntax'
+
+const T = NoInfer(`number | string`)                // const T: TSchema = {
+                                                    //   anyOf: [
+                                                    //     { type: 'number' },
+                                                    //     { type: 'string' }
+                                                    //   ]
+                                                    // }
 ```
 
 <a name='typeregistry'></a>
