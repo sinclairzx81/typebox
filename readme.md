@@ -1307,7 +1307,7 @@ ValuePointer.Set(A, '/z', 1)                         // A' = { x: 1, y: 1, z: 1 
 
 ## Syntax Types
 
-TypeBox includes support for parsing TypeScript annotation syntax into TypeBox schematics.
+TypeBox provides experimental support for parsing TypeScript annotation syntax into TypeBox types.
 
 This feature is provided via optional import.
 
@@ -1396,7 +1396,7 @@ const T = Syntax(`number`, { minimum: 42 })       // const T = {
 
 ### NoInfer
 
-Syntax parse inference is a very expensive operation to perform in the type system which can implicate language service performance. Use the NoInfer function perform runtime parsing only.
+Syntax parsing is a very expensive operation to perform in the type system and can have a significant impact on language service performance. Use the NoInfer function parse syntax at runtime only.
 
 ```typescript
 import { NoInfer } from '@sinclair/typebox/syntax'
