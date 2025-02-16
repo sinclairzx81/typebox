@@ -100,6 +100,7 @@ License MIT
   - [Parameters](#syntax-parameters)
   - [Generics](#syntax-generics)
   - [Options](#syntax-options)
+  - [NoInfer](#syntax-no-infer)
 - [TypeRegistry](#typeregistry)
   - [Type](#typeregistry-type)
   - [Format](#typeregistry-format)
@@ -1306,7 +1307,7 @@ ValuePointer.Set(A, '/z', 1)                         // A' = { x: 1, y: 1, z: 1 
 
 ## Syntax Types
 
-TypeBox includes support for parsing TypeScript annotation syntax into TypeBox schematics.
+TypeBox provides experimental support for parsing TypeScript annotation syntax into TypeBox types.
 
 This feature is provided via optional import.
 
@@ -1389,6 +1390,23 @@ const T = Syntax(`number`, { minimum: 42 })       // const T = {
                                                   //   type: 'number',
                                                   //   minimum: 42
                                                   // }
+```
+
+<a name='syntax-no-infer'></a>
+
+### NoInfer
+
+Syntax parsing is an expensive type level operation and can impact on language service performance. Use the NoInfer function parse syntax at runtime only.
+
+```typescript
+import { NoInfer } from '@sinclair/typebox/syntax'
+
+const T = NoInfer(`number | string`)                // const T: TSchema = {
+                                                    //   anyOf: [
+                                                    //     { type: 'number' },
+                                                    //     { type: 'string' }
+                                                    //   ]
+                                                    // }
 ```
 
 <a name='typeregistry'></a>

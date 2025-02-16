@@ -164,12 +164,13 @@ function FromPromise(args: TSchema[], type: TPromise): TPromise {
 // ------------------------------------------------------------------
 // prettier-ignore
 type TFromObject<Args extends TSchema[], Properties extends TProperties,
-  Result extends TProperties = TFromProperties<Args, Properties>
-> = TObject<Result>
+  MappedProperties extends TProperties = TFromProperties<Args, Properties>,
+  Result extends TObject = TObject<MappedProperties>
+> = Result
 // prettier-ignore
 function FromObject(args: TSchema[], type: TObject): TObject {
-  const properties = FromProperties(args, type.properties)
-  return { ...type, ...Object(properties) } // retain options
+  const mappedProperties = FromProperties(args, type.properties)
+  return { ...type, ...Object(mappedProperties) } // retain options
 }
 // ------------------------------------------------------------------
 // Object
