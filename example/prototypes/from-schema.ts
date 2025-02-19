@@ -41,6 +41,7 @@ const IsSTuple = (value: unknown): value is STuple => Type.ValueGuard.IsObject(v
 const IsSArray = (value: unknown): value is SArray => Type.ValueGuard.IsObject(value) && IsExact(value.type, 'array') && !Type.ValueGuard.IsArray(value.items) && Type.ValueGuard.IsObject(value.items)
 const IsSConst = (value: unknown): value is SConst => Type.ValueGuard.IsObject(value) && Type.ValueGuard.IsObject(value['const'])
 const IsSString = (value: unknown): value is SString => Type.ValueGuard.IsObject(value) && IsExact(value.type, 'string')
+const IsSRef = (value: unknown): value is SRef => Type.ValueGuard.IsObject(value) && Type.ValueGuard.IsString(value.$ref)
 const IsSNumber = (value: unknown): value is SNumber => Type.ValueGuard.IsObject(value) && IsExact(value.type, 'number')
 const IsSInteger = (value: unknown): value is SInteger => Type.ValueGuard.IsObject(value) && IsExact(value.type, 'integer')
 const IsSBoolean = (value: unknown): value is SBoolean => Type.ValueGuard.IsObject(value) && IsExact(value.type, 'boolean')
@@ -58,6 +59,7 @@ type SObject = Readonly<{ type: 'object'; properties: SProperties; required?: re
 type STuple = Readonly<{ type: 'array'; items: readonly unknown[] }>
 type SArray = Readonly<{ type: 'array'; items: unknown }>
 type SConst = Readonly<{ const: SValue }>
+type SRef = Readonly<{ $ref: string }>
 type SString = Readonly<{ type: 'string' }>
 type SNumber = Readonly<{ type: 'number' }>
 type SInteger = Readonly<{ type: 'integer' }>
@@ -174,6 +176,16 @@ function FromConst<T extends SConst>(T: T) {
   return Type.Literal(T.const, T)
 }
 // ------------------------------------------------------------------
+// Ref
+// ------------------------------------------------------------------
+// prettier-ignore
+type TFromRef<T extends SRef> = (
+  Type.Ensure<Type.TRef<T['$ref']>>
+)
+function FromRef<T extends SRef>(T: T) {
+  return Type.Ref(T['$ref'])
+}
+// ------------------------------------------------------------------
 // Object
 // ------------------------------------------------------------------
 type TFromPropertiesIsOptional<K extends PropertyKey, R extends string | unknown> = unknown extends R ? true : K extends R ? false : true
@@ -208,6 +220,7 @@ export type TFromSchema<T> = (
   T extends STuple ? TFromTuple<T> :
   T extends SArray ? TFromArray<T> :
   T extends SConst ? TFromConst<T> :
+  T extends SRef ? TFromRef<T> :
   T extends SString ? Type.TString :
   T extends SNumber ? Type.TNumber :
   T extends SInteger ? Type.TInteger :
@@ -227,6 +240,7 @@ export function FromSchema<T>(T: T): TFromSchema<T> {
     IsSTuple(T) ? FromTuple(T) :
     IsSArray(T) ? FromArray(T) :
     IsSConst(T) ? FromConst(T) :
+    IsSRef(T) ? FromRef(T) :
     IsSString(T) ? Type.String(T) :
     IsSNumber(T) ? Type.Number(T) :
     IsSInteger(T) ? Type.Integer(T) :
