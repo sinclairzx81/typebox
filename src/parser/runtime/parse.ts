@@ -31,55 +31,42 @@ import * as Token from './token'
 import * as Types from './types'
 
 // ------------------------------------------------------------------
-// Tuple
+// Context
 // ------------------------------------------------------------------
-// prettier-ignore
-function ParseTuple<Parsers extends Types.IParser[], Properties extends Types.IModuleProperties>(parsers: [...Parsers], properties: Properties, code: string, context: unknown): [] | [unknown[], string] {
+function ParseContext<ModuleProperties extends Types.IModuleProperties, Parser extends Types.IParser>(moduleProperties: ModuleProperties, left: Parser, right: Parser, code: string, context: unknown): unknown[] {
+  const result = ParseParser(moduleProperties, left, code, context)
+  return result.length === 2 ? ParseParser(moduleProperties, right, result[1], result[0]) : []
+}
+
+// ------------------------------------------------------------------
+// Array
+// ------------------------------------------------------------------
+function ParseArray<ModuleProperties extends Types.IModuleProperties, Parser extends Types.IParser>(moduleProperties: ModuleProperties, parser: Parser, code: string, context: unknown): unknown[] {
   const buffer = [] as unknown[]
   let rest = code
-  for(const parser of parsers) {
-    const result = ParseParser(parser, properties, rest, context)
-    if(result.length === 0) return []
+  while (rest.length > 0) {
+    const result = ParseParser(moduleProperties, parser, rest, context)
+    if (result.length === 0) return [buffer, rest]
     buffer.push(result[0])
     rest = result[1]
   }
   return [buffer, rest]
 }
-// ------------------------------------------------------------------
-// Union
-// ------------------------------------------------------------------
-// prettier-ignore
-function ParseUnion<Parsers extends Types.IParser[], Properties extends Types.IModuleProperties>(parsers: [...Parsers], properties: Properties, code: string, context: unknown): [] | [unknown, string] {
-  for(const parser of parsers) {
-    const result = ParseParser(parser, properties, code, context)
-    if(result.length === 0) continue 
-    return result
-  }
-  return []
-}
+
 // ------------------------------------------------------------------
 // Const
 // ------------------------------------------------------------------
-// prettier-ignore
 function ParseConst<Value extends string>(value: Value, code: string, context: unknown): [] | [Value, string] {
   return Token.Const(value, code) as never
 }
+
 // ------------------------------------------------------------------
-// Ref
+// Ident
 // ------------------------------------------------------------------
-// prettier-ignore
-function ParseRef<Ref extends string, Properties extends Types.IModuleProperties>(ref: Ref, properties: Properties, code: string, context: unknown): [] | [string, string] {
-  const parser = properties[ref]
-  if(!Guard.IsParser(parser))  throw Error(`Cannot dereference parser '${ref}'`)
-  return ParseParser(parser, properties, code, context) as never
+function ParseIdent(code: string, _context: unknown): [] | [string, string] {
+  return Token.Ident(code)
 }
-// ------------------------------------------------------------------
-// String
-// ------------------------------------------------------------------
-// prettier-ignore
-function ParseString(options: string[], code: string, _context: unknown): [] | [string, string] {
-  return Token.String(options, code)
-}
+
 // ------------------------------------------------------------------
 // Number
 // ------------------------------------------------------------------
@@ -87,26 +74,76 @@ function ParseString(options: string[], code: string, _context: unknown): [] | [
 function ParseNumber(code: string, _context: unknown): [] | [string, string] {
   return Token.Number(code)
 }
+
 // ------------------------------------------------------------------
-// Ident
+// Optional
+// ------------------------------------------------------------------
+function ParseOptional<ModuleProperties extends Types.IModuleProperties, Parser extends Types.IParser>(moduleProperties: ModuleProperties, parser: Parser, code: string, context: unknown): [] | [[unknown] | [], unknown] {
+  const result = ParseParser(moduleProperties, parser, code, context)
+  return (result.length === 2 ? [[result[0]], result[1]] : [[], code]) as never
+}
+
+// ------------------------------------------------------------------
+// Ref
+// ------------------------------------------------------------------
+function ParseRef<ModuleProperties extends Types.IModuleProperties, Ref extends string>(moduleProperties: ModuleProperties, ref: Ref, code: string, context: unknown): [] | [string, string] {
+  const parser = moduleProperties[ref]
+  if (!Guard.IsParser(parser)) throw Error(`Cannot dereference Parser '${ref}'`)
+  return ParseParser(moduleProperties, parser, code, context) as never
+}
+
+// ------------------------------------------------------------------
+// String
 // ------------------------------------------------------------------
 // prettier-ignore
-function ParseIdent(code: string, _context: unknown): [] | [string, string] {
-  return Token.Ident(code)
+function ParseString(options: string[], code: string, _context: unknown): [] | [string, string] {
+  return Token.String(options, code)
 }
+
+// ------------------------------------------------------------------
+// Tuple
+// ------------------------------------------------------------------
+function ParseTuple<ModuleProperties extends Types.IModuleProperties, Parsers extends Types.IParser[]>(moduleProperties: ModuleProperties, parsers: [...Parsers], code: string, context: unknown): [] | [unknown[], string] {
+  const buffer = [] as unknown[]
+  let rest = code
+  for (const parser of parsers) {
+    const result = ParseParser(moduleProperties, parser, rest, context)
+    if (result.length === 0) return []
+    buffer.push(result[0])
+    rest = result[1]
+  }
+  return [buffer, rest]
+}
+
+// ------------------------------------------------------------------
+// Union
+// ------------------------------------------------------------------
+// prettier-ignore
+function ParseUnion<ModuleProperties extends Types.IModuleProperties, Parsers extends Types.IParser[]>(moduleProperties: ModuleProperties, parsers: [...Parsers], code: string, context: unknown): [] | [unknown, string] {
+  for(const parser of parsers) {
+    const result = ParseParser(moduleProperties, parser, code, context)
+    if(result.length === 0) continue 
+    return result
+  }
+  return []
+}
+
 // ------------------------------------------------------------------
 // Parser
 // ------------------------------------------------------------------
 // prettier-ignore
-function ParseParser<Parser extends Types.IParser>(parser: Parser, properties: Types.IModuleProperties, code: string, context: unknown): [] | [Types.StaticParser<Parser>, string] {
+function ParseParser<Parser extends Types.IParser>(moduleProperties: Types.IModuleProperties, parser: Parser, code: string, context: unknown): [] | [Types.StaticParser<Parser>, string] {
   const result = (
-    Guard.IsTuple(parser) ? ParseTuple(parser.parsers, properties, code, context) :
-    Guard.IsUnion(parser) ? ParseUnion(parser.parsers, properties, code, context) :
+    Guard.IsContext(parser) ? ParseContext(moduleProperties, parser.left, parser.right, code, context) :
+    Guard.IsArray(parser) ? ParseArray(moduleProperties, parser.parser, code, context) :
     Guard.IsConst(parser) ? ParseConst(parser.value, code, context) :
-    Guard.IsRef(parser) ? ParseRef(parser.ref, properties, code, context) :
-    Guard.IsString(parser) ? ParseString(parser.options, code, context) :
     Guard.IsIdent(parser) ? ParseIdent(code, context) :
     Guard.IsNumber(parser) ? ParseNumber(code, context) :
+    Guard.IsOptional(parser) ? ParseOptional(moduleProperties, parser.parser, code, context) :
+    Guard.IsRef(parser) ? ParseRef(moduleProperties, parser.ref, code, context) :
+    Guard.IsString(parser) ? ParseString(parser.options, code, context) :
+    Guard.IsTuple(parser) ? ParseTuple(moduleProperties, parser.parsers, code, context) :
+    Guard.IsUnion(parser) ? ParseUnion(moduleProperties, parser.parsers, code, context) :
     []
   )
   return (
@@ -115,27 +152,28 @@ function ParseParser<Parser extends Types.IParser>(parser: Parser, properties: T
     : result
   ) as never
 }
+
 // ------------------------------------------------------------------
 // Parse
 // ------------------------------------------------------------------
-/** Parses content using the given parser */
+/** Parses content using the given Parser */
 // prettier-ignore
-export function Parse<Parser extends Types.IParser>(parser: Parser, properties: Types.IModuleProperties, code: string, context: unknown): [] | [Types.StaticParser<Parser>, string]
-/** Parses content using the given parser */
+export function Parse<Parser extends Types.IParser>(moduleProperties: Types.IModuleProperties, parser: Parser, code: string, context: unknown): [] | [Types.StaticParser<Parser>, string]
+/** Parses content using the given Parser */
 // prettier-ignore
-export function Parse<Parser extends Types.IParser>(parser: Parser, properties: Types.IModuleProperties, code: string): [] | [Types.StaticParser<Parser>, string]
-/** Parses content using the given parser */
+export function Parse<Parser extends Types.IParser>(moduleProperties: Types.IModuleProperties, parser: Parser, code: string): [] | [Types.StaticParser<Parser>, string]
+/** Parses content using the given Parser */
 // prettier-ignore
-export function Parse<Parser extends Types.IParser>(parser: Parser, code: string, context: unknown): [] | [Types.StaticParser<Parser>, string]
-/** Parses content using the given parser */
+export function Parse<Parser extends Types.IParser>(parser: Parser, content: string, context: unknown): [] | [Types.StaticParser<Parser>, string]
+/** Parses content using the given Parser */
 // prettier-ignore
-export function Parse<Parser extends Types.IParser>(parser: Parser, code: string): [] | [Types.StaticParser<Parser>, string]
+export function Parse<Parser extends Types.IParser>(parser: Parser, content: string): [] | [Types.StaticParser<Parser>, string]
 /** Parses content using the given parser */
 // prettier-ignore
 export function Parse(...args: any[]): never {
-  const withProperties = typeof args[1] === 'string' ? false : true
-  const [parser, properties, code, context] = withProperties 
+  const withModuleProperties = typeof args[1] === 'string' ? false : true
+  const [moduleProperties, parser, content, context] = withModuleProperties 
     ? [args[0], args[1], args[2], args[3]]
-    : [args[0], {}, args[1], args[2]]
-  return ParseParser(parser, properties, code, context) as never
+    : [{}, args[0], args[1], args[2]]
+  return ParseParser(moduleProperties, parser, content, context) as never
 }

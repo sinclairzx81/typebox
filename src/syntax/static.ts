@@ -165,23 +165,26 @@ type GenericArgumentList = Static.Union<[
 // GenericArguments
 // ------------------------------------------------------------------
 // prettier-ignore
-type GenericArgumentsContext<Args extends string[], Result extends t.TProperties = {}> = (
+type GenericArgumentsContext<Args extends string[], Context extends t.TProperties, Result extends t.TProperties = {}> = (
   Args extends [...infer Left extends string[], infer Right extends string]
-    ? GenericArgumentsContext<Left, Result & { [_ in Right]: t.TArgument<Left['length']> }>
-    : t.Evaluate<Result>
+    ? GenericArgumentsContext<Left, Context, Result & { [_ in Right]: t.TArgument<Left['length']> }>
+    : t.Evaluate<Result & Context>
 )
 // prettier-ignore
 interface GenericArgumentsMapping extends Static.IMapping {
   output: this['input'] extends [LAngle, infer Args extends string[], RAngle]
-    ? GenericArgumentsContext<Args>
+    ? this['context'] extends infer Context extends t.TProperties
+        ? GenericArgumentsContext<Args, Context>
+        : never
     : never
 }
 // prettier-ignore
-export type GenericArguments = Static.Tuple<[
+type GenericArguments = Static.Tuple<[
   Static.Const<LAngle>,
   GenericArgumentList,
   Static.Const<RAngle>,
 ], GenericArgumentsMapping>
+
 // ------------------------------------------------------------------
 // GenericReference
 // ------------------------------------------------------------------
@@ -426,7 +429,11 @@ type Expr = Static.Tuple<[
 // ------------------------------------------------------------------
 // Type
 // ------------------------------------------------------------------
-export type Type = Expr
+// prettier-ignore
+export type Type = Static.Union<[
+  Static.Context<GenericArguments, Expr>, 
+  Expr
+]>
 // ------------------------------------------------------------------
 // Properties
 // ------------------------------------------------------------------

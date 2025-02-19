@@ -88,15 +88,15 @@ const GenericArgumentList = Runtime.Union([
 // GenericArguments
 // ------------------------------------------------------------------
 // prettier-ignore
-const GenericArgumentsContext = (args: string[]) => {
+const GenericArgumentsContext = (args: string[], context: t.TProperties) => {
   return args.reduce((result, arg, index) => {
     return { ...result, [arg]: t.Argument(index) }
-  }, {})
+  }, context)
 }
 // prettier-ignore
-const GenericArgumentsMapping = (results: unknown[]) => {
+const GenericArgumentsMapping = (results: unknown[], context: t.TProperties) => {
   return results.length === 3
-    ? GenericArgumentsContext(results[1] as string[])
+    ? GenericArgumentsContext(results[1] as string[], context)
     : {}
 }
 // prettier-ignore
@@ -104,7 +104,7 @@ const GenericArguments = Runtime.Tuple([
   Runtime.Const(LAngle),
   Runtime.Ref('GenericArgumentList'),
   Runtime.Const(RAngle),
-], results => GenericArgumentsMapping(results))
+], (results, context) => GenericArgumentsMapping(results, context))
 // ------------------------------------------------------------------
 // GenericReference
 // ------------------------------------------------------------------
@@ -326,7 +326,11 @@ const Expr = Runtime.Tuple([
 // ------------------------------------------------------------------
 // Type
 // ------------------------------------------------------------------
-const Type = Runtime.Ref('Expr')
+// prettier-ignore
+const Type = Runtime.Union([
+  Runtime.Context(Runtime.Ref('GenericArguments'), Runtime.Ref('Expr')), 
+  Runtime.Ref('Expr')
+])
 // ------------------------------------------------------------------
 // Properties
 // ------------------------------------------------------------------
@@ -704,12 +708,12 @@ const Uint8Array = Runtime.Const('Uint8Array', Runtime.As(t.Uint8Array()))
 // prettier-ignore
 export const Module = new Runtime.Module({
   // ----------------------------------------------------------------
-  // Generic Arguments
+  // Generics
   // ----------------------------------------------------------------
   GenericArgumentList,
   GenericArguments,
   // ----------------------------------------------------------------
-  // Type Expressions
+  // Type
   // ----------------------------------------------------------------
   Literal,
   Keyword,
@@ -722,7 +726,7 @@ export const Module = new Runtime.Module({
   ExprTerm,
   ExprTail,
   Expr,
-  Type, // Alias for Expr
+  Type,
   PropertyKey,
   Readonly,
   Optional,
