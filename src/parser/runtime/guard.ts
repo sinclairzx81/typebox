@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { IIdent, INumber, IRef, IString, IConst, ITuple, IUnion } from './types'
+import { IArray, IConst, IContext, IIdent, INumber, IOptional, IRef, IString, ITuple, IUnion } from './types'
 
 // ------------------------------------------------------------------
 // Value Guard
@@ -46,51 +46,59 @@ function IsArrayValue(value: unknown): value is unknown[] {
 // ------------------------------------------------------------------
 // Parser Guard
 // ------------------------------------------------------------------
-/** Returns true if the value is a Tuple Parser */
-// prettier-ignore
-export function IsTuple(value: unknown): value is ITuple {
-  return IsObjectValue(value) && HasPropertyKey(value, 'type') && value.type === 'Tuple' && HasPropertyKey(value, 'parsers') && IsArrayValue(value.parsers)
-}
-/** Returns true if the value is a Union Parser */
-// prettier-ignore
-export function IsUnion(value: unknown): value is IUnion {
-  return IsObjectValue(value) && HasPropertyKey(value, 'type') && value.type === 'Union' && HasPropertyKey(value, 'parsers') && IsArrayValue(value.parsers)
+/** Returns true if the value is a Array Parser */
+export function IsArray(value: unknown): value is IArray {
+  return IsObjectValue(value) && HasPropertyKey(value, 'type') && value.type === 'Array' && HasPropertyKey(value, 'parser') && IsObjectValue(value.parser)
 }
 /** Returns true if the value is a Const Parser */
-// prettier-ignore
 export function IsConst(value: unknown): value is IConst {
   return IsObjectValue(value) && HasPropertyKey(value, 'type') && value.type === 'Const' && HasPropertyKey(value, 'value') && typeof value.value === 'string'
 }
+/** Returns true if the value is a Context Parser */
+export function IsContext(value: unknown): value is IContext {
+  return IsObjectValue(value) && HasPropertyKey(value, 'type') && value.type === 'Context' && HasPropertyKey(value, 'left') && IsParser(value.left) && HasPropertyKey(value, 'right') && IsParser(value.right)
+}
 /** Returns true if the value is a Ident Parser */
-// prettier-ignore
 export function IsIdent(value: unknown): value is IIdent {
   return IsObjectValue(value) && HasPropertyKey(value, 'type') && value.type === 'Ident'
 }
 /** Returns true if the value is a Number Parser */
-// prettier-ignore
 export function IsNumber(value: unknown): value is INumber {
   return IsObjectValue(value) && HasPropertyKey(value, 'type') && value.type === 'Number'
 }
+/** Returns true if the value is a Optional Parser */
+export function IsOptional(value: unknown): value is IOptional {
+  return IsObjectValue(value) && HasPropertyKey(value, 'type') && value.type === 'Optional' && HasPropertyKey(value, 'parser') && IsObjectValue(value.parser)
+}
 /** Returns true if the value is a Ref Parser */
-// prettier-ignore
 export function IsRef(value: unknown): value is IRef {
   return IsObjectValue(value) && HasPropertyKey(value, 'type') && value.type === 'Ref' && HasPropertyKey(value, 'ref') && typeof value.ref === 'string'
 }
 /** Returns true if the value is a String Parser */
-// prettier-ignore
 export function IsString(value: unknown): value is IString {
   return IsObjectValue(value) && HasPropertyKey(value, 'type') && value.type === 'String' && HasPropertyKey(value, 'options') && IsArrayValue(value.options)
 }
+/** Returns true if the value is a Tuple Parser */
+export function IsTuple(value: unknown): value is ITuple {
+  return IsObjectValue(value) && HasPropertyKey(value, 'type') && value.type === 'Tuple' && HasPropertyKey(value, 'parsers') && IsArrayValue(value.parsers)
+}
+/** Returns true if the value is a Union Parser */
+export function IsUnion(value: unknown): value is IUnion {
+  return IsObjectValue(value) && HasPropertyKey(value, 'type') && value.type === 'Union' && HasPropertyKey(value, 'parsers') && IsArrayValue(value.parsers)
+}
 /** Returns true if the value is a Parser */
-// prettier-ignore
 export function IsParser(value: unknown) {
+  // prettier-ignore
   return (
-    IsTuple(value) ||
-    IsUnion(value) ||
-    IsConst(value) ||
-    IsIdent(value) ||
-    IsNumber(value) ||
-    IsRef(value) ||
-    IsString(value)
+    IsArray(value) || 
+    IsConst(value) || 
+    IsContext(value) || 
+    IsIdent(value) || 
+    IsNumber(value) || 
+    IsOptional(value) || 
+    IsRef(value) || 
+    IsString(value) || 
+    IsTuple(value) || 
+    IsUnion(value)
   )
 }

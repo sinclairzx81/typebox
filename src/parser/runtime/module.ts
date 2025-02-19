@@ -32,20 +32,21 @@ import { Parse } from './parse'
 // ------------------------------------------------------------------
 // Module
 // ------------------------------------------------------------------
-// prettier-ignore
 export class Module<Properties extends Types.IModuleProperties = Types.IModuleProperties> {
-  constructor(private readonly properties: Properties) { }
-  
+  constructor(private readonly properties: Properties) {}
+
   /** Parses using one of the parsers defined on this instance */
-  public Parse<Key extends keyof Properties>(key: Key, code: string, context: unknown): [] | [Types.StaticParser<Properties[Key]>, string]
+  public Parse<Key extends keyof Properties>(key: Key, content: string, context: unknown): [] | [Types.StaticParser<Properties[Key]>, string]
   /** Parses using one of the parsers defined on this instance */
-  public Parse<Key extends keyof Properties>(key: Key, code: string): [] | [Types.StaticParser<Properties[Key]>, string]
+  public Parse<Key extends keyof Properties>(key: Key, content: string): [] | [Types.StaticParser<Properties[Key]>, string]
   /** Parses using one of the parsers defined on this instance */
   public Parse(...args: any[]): never {
-    const [key, code, context] = 
-      args.length === 3 ? [args[0], args[1], args[2]] :
-      args.length === 2 ? [args[0], args[1], undefined] :
+    // prettier-ignore
+    const [key, content, context] = (
+      args.length === 3 ? [args[0], args[1], args[2]] : 
+      args.length === 2 ? [args[0], args[1], undefined] : 
       (() => { throw Error('Invalid parse arguments') })()
-    return Parse(this.properties[key], this.properties, code, context) as never
+    )
+    return Parse(this.properties, this.properties[key], content, context) as never
   }
 }
