@@ -40,15 +40,13 @@ export class Module<Properties extends Types.IModuleProperties = Types.IModulePr
   /** Parses using one of the parsers defined on this instance */
   public Parse<Key extends keyof Properties>(key: Key, content: string): [] | [Types.StaticParser<Properties[Key]>, string]
   /** Parses using one of the parsers defined on this instance */
+  // prettier-ignore
   public Parse(...args: any[]): never {
-    const [key, content, context] =
-      args.length === 3
-        ? [args[0], args[1], args[2]]
-        : args.length === 2
-        ? [args[0], args[1], undefined]
-        : (() => {
-            throw Error('Invalid parse arguments')
-          })()
+    const [key, content, context] = (
+      args.length === 3 ? [args[0], args[1], args[2]] : 
+      args.length === 2 ? [args[0], args[1], undefined] : 
+      (() => { throw Error('Invalid parse arguments') })()
+    )
     return Parse(this.properties, this.properties[key], content, context) as never
   }
 }
