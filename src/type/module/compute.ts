@@ -51,18 +51,24 @@ import { Partial, TPartial } from '../partial/index'
 import { type TReadonly } from '../readonly/index'
 import { RecordValue, RecordPattern, type TRecordOrObject, type TRecord } from '../record/index'
 import { type TRef } from '../ref/index'
-import { Required, TRequired } from '../required/index'
+import { Required, type TRequired } from '../required/index'
+import { type TTransform } from '../transform/index'
 import { Tuple, type TTuple } from '../tuple/index'
 import { Union, type TUnion, type TUnionEvaluated } from '../union/index'
 
-import { OptionalKind, ReadonlyKind } from '../symbols/index'
+// ------------------------------------------------------------------
+// Symbols
+// ------------------------------------------------------------------
+import { TransformKind, OptionalKind, ReadonlyKind } from '../symbols/index'
+
 // ------------------------------------------------------------------
 // KindGuard
 // ------------------------------------------------------------------
 import * as KindGuard from '../guard/kind'
 
 // ------------------------------------------------------------------
-// DerefParameters
+//
+// DereferenceParameters
 //
 // Dereferences TComputed parameters. It is important to note that
 // dereferencing anything other than these parameters may result
@@ -71,39 +77,47 @@ import * as KindGuard from '../guard/kind'
 //
 // ------------------------------------------------------------------
 // prettier-ignore
-type TDerefParameters<ModuleProperties extends TProperties, Types extends TSchema[], Result extends TSchema[] = []> = (
+type TDereferenceParameters<ModuleProperties extends TProperties, Types extends TSchema[], Result extends TSchema[] = []> = (
   Types extends [infer Left extends TSchema, ...infer Right extends TSchema[]]
     ? Left extends TRef<infer Key extends string>
-      ? TDerefParameters<ModuleProperties, Right, [...Result, TDeref<ModuleProperties, Key>]>
-      : TDerefParameters<ModuleProperties, Right, [...Result, TFromType<ModuleProperties, Left>]>
+      ? TDereferenceParameters<ModuleProperties, Right, [...Result, TDereference<ModuleProperties, Key>]>
+      : TDereferenceParameters<ModuleProperties, Right, [...Result, TFromType<ModuleProperties, Left>]>
     : Result
 )
 // prettier-ignore
-function DerefParameters<ModuleProperties extends TProperties, Types extends TSchema[]>(moduleProperties: ModuleProperties, types: [...Types]): TFromRest<ModuleProperties, Types> {
+function DereferenceParameters<ModuleProperties extends TProperties, Types extends TSchema[]>(moduleProperties: ModuleProperties, types: [...Types]): TSchema[] {
   return types.map((type) => {
     return KindGuard.IsRef(type)
-      ? Deref(moduleProperties, type.$ref)
+      ? Dereference(moduleProperties, type.$ref)
       : FromType(moduleProperties, type)
   }) as never
 }
 // prettier-ignore
-type TDeref<ModuleProperties extends TProperties, Ref extends string, Result extends TSchema = (
+type TDereference<ModuleProperties extends TProperties, Ref extends string, Result extends TSchema = (
   Ref extends keyof ModuleProperties
     ? ModuleProperties[Ref] extends TRef<infer Ref2 extends string> 
-      ? TDeref<ModuleProperties, Ref2>
+      ? TDereference<ModuleProperties, Ref2>
       : TFromType<ModuleProperties, ModuleProperties[Ref]>
     : TNever
 )> = Result
 // prettier-ignore
-function Deref<ModuleProperties extends TProperties, Ref extends string>(moduleProperties: ModuleProperties, ref: Ref): TDeref<ModuleProperties, Ref> {
+function Dereference<ModuleProperties extends TProperties, Ref extends string>(moduleProperties: ModuleProperties, ref: Ref): TSchema {
   return (
     ref in moduleProperties 
       ? KindGuard.IsRef(moduleProperties[ref])
-        ? Deref(moduleProperties, moduleProperties[ref].$ref)
+        ? Dereference(moduleProperties, moduleProperties[ref].$ref)
         : FromType(moduleProperties, moduleProperties[ref])
       : Never()
   ) as never
 }
+
+// ------------------------------------------------------------------
+//
+// TComputed
+//
+// The following types support deferred evaluation
+//
+// ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // Awaited
 // ------------------------------------------------------------------
@@ -193,7 +207,7 @@ function FromRequired<Parameters extends TSchema[]>(parameters: Parameters): TFr
 // ------------------------------------------------------------------
 // prettier-ignore
 type TFromComputed<ModuleProperties extends TProperties, Target extends string, Parameters extends TSchema[],
-  Dereferenced extends TSchema[] = TDerefParameters<ModuleProperties, Parameters>
+  Dereferenced extends TSchema[] = TDereferenceParameters<ModuleProperties, Parameters>
 > = (
   Target extends 'Awaited' ? TFromAwaited<Dereferenced> :
   Target extends 'Index' ? TFromIndex<Dereferenced> :
@@ -206,7 +220,7 @@ type TFromComputed<ModuleProperties extends TProperties, Target extends string, 
 )
 // prettier-ignore
 function FromComputed<ModuleProperties extends TProperties, Target extends string, Parameters extends TSchema[]>(moduleProperties: ModuleProperties, target: Target, parameters: Parameters): TFromComputed<ModuleProperties, Target, Parameters> {
-  const dereferenced = DerefParameters(moduleProperties, parameters)
+  const dereferenced = DereferenceParameters(moduleProperties, parameters)
   return (
     target === 'Awaited' ? FromAwaited(dereferenced) :
     target === 'Index' ? FromIndex(dereferenced) :
@@ -217,6 +231,85 @@ function FromComputed<ModuleProperties extends TProperties, Target extends strin
     target === 'Required' ? FromRequired(dereferenced) :
     Never()
   ) as never
+}
+
+// ------------------------------------------------------------------
+//
+// Standard Types
+//
+// The following are the standard mappable types and structures
+//
+// ------------------------------------------------------------------
+
+// ------------------------------------------------------------------
+// Array
+// ------------------------------------------------------------------
+// prettier-ignore
+type TFromArray<ModuleProperties extends TProperties, Type extends TSchema> = (
+  Ensure<TArray<TFromType<ModuleProperties, Type>>>
+)
+function FromArray<ModuleProperties extends TProperties, Type extends TSchema>(moduleProperties: ModuleProperties, type: Type): TFromArray<ModuleProperties, Type> {
+  return Array(FromType(moduleProperties, type))
+}
+// ------------------------------------------------------------------
+// AsyncIterator
+// ------------------------------------------------------------------
+// prettier-ignore
+type TFromAsyncIterator<ModuleProperties extends TProperties, Type extends TSchema> = (
+  TAsyncIterator<TFromType<ModuleProperties, Type>>
+)
+function FromAsyncIterator<ModuleProperties extends TProperties, Type extends TSchema>(moduleProperties: ModuleProperties, type: Type): TFromAsyncIterator<ModuleProperties, Type> {
+  return AsyncIterator(FromType(moduleProperties, type))
+}
+// ------------------------------------------------------------------
+// Constructor
+// ------------------------------------------------------------------
+// prettier-ignore
+type TFromConstructor<ModuleProperties extends TProperties, Parameters extends TSchema[], InstanceType extends TSchema> = (
+  TConstructor<TFromTypes<ModuleProperties, Parameters>, TFromType<ModuleProperties, InstanceType>>
+)
+// prettier-ignore
+function FromConstructor<ModuleProperties extends TProperties, Parameters extends TSchema[], InstanceType extends TSchema>(
+  moduleProperties: ModuleProperties,
+  parameters: [...Parameters],
+  instanceType: InstanceType,
+): TFromConstructor<ModuleProperties, Parameters, InstanceType> {
+  return Constructor(FromTypes(moduleProperties, parameters as never), FromType(moduleProperties, instanceType) as never) as never
+}
+// ------------------------------------------------------------------
+// Function
+// ------------------------------------------------------------------
+// prettier-ignore
+type TFromFunction<ModuleProperties extends TProperties, Parameters extends TSchema[], ReturnType extends TSchema> = Ensure<
+  Ensure<TFunction<TFromTypes<ModuleProperties, Parameters>, TFromType<ModuleProperties, ReturnType>>>
+>
+// prettier-ignore
+function FromFunction<ModuleProperties extends TProperties, Parameters extends TSchema[], ReturnType extends TSchema>(
+  moduleProperties: ModuleProperties,
+  parameters: [...Parameters],
+  returnType: ReturnType,
+): TFromFunction<ModuleProperties, Parameters, ReturnType> {
+  return FunctionType(FromTypes(moduleProperties, parameters as never), FromType(moduleProperties, returnType) as never) as never
+}
+// ------------------------------------------------------------------
+// Intersect
+// ------------------------------------------------------------------
+// prettier-ignore
+type TFromIntersect<ModuleProperties extends TProperties, Types extends TSchema[]> = (
+  Ensure<TIntersectEvaluated<TFromTypes<ModuleProperties, Types>>>
+)
+function FromIntersect<ModuleProperties extends TProperties, Types extends TSchema[]>(moduleProperties: ModuleProperties, types: [...Types]): TFromIntersect<ModuleProperties, Types> {
+  return Intersect(FromTypes(moduleProperties, types as never)) as never
+}
+// ------------------------------------------------------------------
+// Iterator
+// ------------------------------------------------------------------
+// prettier-ignore
+type TFromIterator<ModuleProperties extends TProperties, Type extends TSchema> = (
+  TIterator<TFromType<ModuleProperties, Type>>
+)
+function FromIterator<ModuleProperties extends TProperties, Type extends TSchema>(moduleProperties: ModuleProperties, type: Type): TFromIterator<ModuleProperties, Type> {
+  return Iterator(FromType(moduleProperties, type))
 }
 // ------------------------------------------------------------------
 // Object
@@ -252,105 +345,50 @@ function FromRecord<ModuleProperties extends TProperties, Type extends TRecord>(
   return result as never
 }
 // ------------------------------------------------------------------
-// Constructor
+// Transform
 // ------------------------------------------------------------------
 // prettier-ignore
-type TFromConstructor<ModuleProperties extends TProperties, Parameters extends TSchema[], InstanceType extends TSchema> = (
-  TConstructor<TFromRest<ModuleProperties, Parameters>, TFromType<ModuleProperties, InstanceType>>
-)
+type TFromTransform<ModuleProperties extends TProperties, Input extends TSchema, Output extends unknown,
+  Result extends TSchema = Input extends TRef<infer Key extends string> 
+    ? TTransform<TDereference<ModuleProperties, Key>, Output>
+    : TTransform<Input, Output> 
+> = Result
 // prettier-ignore
-function FromConstructor<ModuleProperties extends TProperties, Parameters extends TSchema[], InstanceType extends TSchema>(
-  moduleProperties: ModuleProperties,
-  parameters: [...Parameters],
-  instanceType: InstanceType,
-): TFromConstructor<ModuleProperties, Parameters, InstanceType> {
-  return Constructor(FromRest(moduleProperties, parameters as never), FromType(moduleProperties, instanceType) as never) as never
-}
-// ------------------------------------------------------------------
-// Function
-// ------------------------------------------------------------------
-// prettier-ignore
-type TFromFunction<ModuleProperties extends TProperties, Parameters extends TSchema[], ReturnType extends TSchema> = Ensure<
-  Ensure<TFunction<TFromRest<ModuleProperties, Parameters>, TFromType<ModuleProperties, ReturnType>>>
->
-// prettier-ignore
-function FromFunction<ModuleProperties extends TProperties, Parameters extends TSchema[], ReturnType extends TSchema>(
-  moduleProperties: ModuleProperties,
-  parameters: [...Parameters],
-  returnType: ReturnType,
-): TFromFunction<ModuleProperties, Parameters, ReturnType> {
-  return FunctionType(FromRest(moduleProperties, parameters as never), FromType(moduleProperties, returnType) as never) as never
+function FromTransform<ModuleProperties extends TProperties, Transform extends TTransform>(moduleProperties: ModuleProperties, transform: Transform): TSchema {
+  return (KindGuard.IsRef(transform))
+    ? { ...Dereference(moduleProperties, transform.$ref), [TransformKind]: transform[TransformKind] }
+    : transform
 }
 // ------------------------------------------------------------------
 // Tuple
 // ------------------------------------------------------------------
 // prettier-ignore
 type TFromTuple<ModuleProperties extends TProperties, Types extends TSchema[]> = (
-  Ensure<TTuple<TFromRest<ModuleProperties, Types>>>
+  Ensure<TTuple<TFromTypes<ModuleProperties, Types>>>
 )
 function FromTuple<ModuleProperties extends TProperties, Types extends TSchema[]>(moduleProperties: ModuleProperties, types: [...Types]): TFromTuple<ModuleProperties, Types> {
-  return Tuple(FromRest(moduleProperties, types as never)) as never
-}
-// ------------------------------------------------------------------
-// Intersect
-// ------------------------------------------------------------------
-// prettier-ignore
-type TFromIntersect<ModuleProperties extends TProperties, Types extends TSchema[]> = (
-  Ensure<TIntersectEvaluated<TFromRest<ModuleProperties, Types>>>
-)
-function FromIntersect<ModuleProperties extends TProperties, Types extends TSchema[]>(moduleProperties: ModuleProperties, types: [...Types]): TFromIntersect<ModuleProperties, Types> {
-  return Intersect(FromRest(moduleProperties, types as never)) as never
+  return Tuple(FromTypes(moduleProperties, types as never)) as never
 }
 // ------------------------------------------------------------------
 // Union
 // ------------------------------------------------------------------
 // prettier-ignore
 type TFromUnion<ModuleProperties extends TProperties, Types extends TSchema[]> = (
-  Ensure<TUnionEvaluated<TFromRest<ModuleProperties, Types>>>
+  Ensure<TUnionEvaluated<TFromTypes<ModuleProperties, Types>>>
 )
 function FromUnion<ModuleProperties extends TProperties, Types extends TSchema[]>(moduleProperties: ModuleProperties, types: [...Types]): TFromUnion<ModuleProperties, Types> {
-  return Union(FromRest(moduleProperties, types as never)) as never
+  return Union(FromTypes(moduleProperties, types as never)) as never
 }
 // ------------------------------------------------------------------
-// Array
+// Types
 // ------------------------------------------------------------------
 // prettier-ignore
-type TFromArray<ModuleProperties extends TProperties, Type extends TSchema> = (
-  Ensure<TArray<TFromType<ModuleProperties, Type>>>
-)
-function FromArray<ModuleProperties extends TProperties, Type extends TSchema>(moduleProperties: ModuleProperties, type: Type): TFromArray<ModuleProperties, Type> {
-  return Array(FromType(moduleProperties, type))
-}
-// ------------------------------------------------------------------
-// AsyncIterator
-// ------------------------------------------------------------------
-// prettier-ignore
-type TFromAsyncIterator<ModuleProperties extends TProperties, Type extends TSchema> = (
-  TAsyncIterator<TFromType<ModuleProperties, Type>>
-)
-function FromAsyncIterator<ModuleProperties extends TProperties, Type extends TSchema>(moduleProperties: ModuleProperties, type: Type): TFromAsyncIterator<ModuleProperties, Type> {
-  return AsyncIterator(FromType(moduleProperties, type))
-}
-// ------------------------------------------------------------------
-// Iterator
-// ------------------------------------------------------------------
-// prettier-ignore
-type TFromIterator<ModuleProperties extends TProperties, Type extends TSchema> = (
-  TIterator<TFromType<ModuleProperties, Type>>
-)
-function FromIterator<ModuleProperties extends TProperties, Type extends TSchema>(moduleProperties: ModuleProperties, type: Type): TFromIterator<ModuleProperties, Type> {
-  return Iterator(FromType(moduleProperties, type))
-}
-// ------------------------------------------------------------------
-// Rest
-// ------------------------------------------------------------------
-// prettier-ignore
-type TFromRest<ModuleProperties extends TProperties, Types extends TSchema[], Result extends TSchema[] = []> = (
+type TFromTypes<ModuleProperties extends TProperties, Types extends TSchema[], Result extends TSchema[] = []> = (
   Types extends [infer Left extends TSchema, ...infer Right extends TSchema[]]
-    ? TFromRest<ModuleProperties, Right, [...Result, TFromType<ModuleProperties, Left>]>
+    ? TFromTypes<ModuleProperties, Right, [...Result, TFromType<ModuleProperties, Left>]>
     : Result
 )
-function FromRest<ModuleProperties extends TProperties, Types extends TSchema[]>(moduleProperties: ModuleProperties, types: [...Types]): TFromRest<ModuleProperties, Types> {
+function FromTypes<ModuleProperties extends TProperties, Types extends TSchema[]>(moduleProperties: ModuleProperties, types: [...Types]): TFromTypes<ModuleProperties, Types> {
   return types.map((type) => FromType(moduleProperties, type)) as never
 }
 // ------------------------------------------------------------------
@@ -358,10 +396,12 @@ function FromRest<ModuleProperties extends TProperties, Types extends TSchema[]>
 // ------------------------------------------------------------------
 // prettier-ignore
 export type TFromType<ModuleProperties extends TProperties, Type extends TSchema> = (
-  // Modifier Unwrap
+  // Modifier
   Type extends TOptional<infer Type extends TSchema> ? TOptional<TFromType<ModuleProperties, Type>> :
   Type extends TReadonly<infer Type extends TSchema> ? TReadonly<TFromType<ModuleProperties, Type>> :
-  // Traveral
+  // Transform
+  Type extends TTransform<infer Input extends TSchema, infer Output extends unknown> ? TFromTransform<ModuleProperties, Input, Output> :
+  // Types
   Type extends TArray<infer Type extends TSchema> ? TFromArray<ModuleProperties, Type> :
   Type extends TAsyncIterator<infer Type extends TSchema> ? TFromAsyncIterator<ModuleProperties, Type> :
   Type extends TComputed<infer Target extends string, infer Parameters extends TSchema[]> ? TFromComputed<ModuleProperties, Target, Parameters> :
@@ -379,10 +419,12 @@ export type TFromType<ModuleProperties extends TProperties, Type extends TSchema
 // prettier-ignore
 export function FromType<ModuleProperties extends TProperties, Type extends TSchema>(moduleProperties: ModuleProperties, type: Type): TFromType<ModuleProperties, Type> {
   return (
-    // Modifier Unwrap - Reapplied via CreateType Options
+    // Modifiers
     KindGuard.IsOptional(type) ? CreateType(FromType(moduleProperties, Discard(type, [OptionalKind]) as TSchema) as never, type) :
     KindGuard.IsReadonly(type) ? CreateType(FromType(moduleProperties, Discard(type, [ReadonlyKind]) as TSchema) as never, type) :
-    // Traveral
+    // Transform
+    KindGuard.IsTransform(type) ? CreateType(FromTransform(moduleProperties, type), type) :
+    // Types
     KindGuard.IsArray(type) ? CreateType(FromArray(moduleProperties, type.items), type) :
     KindGuard.IsAsyncIterator(type) ? CreateType(FromAsyncIterator(moduleProperties, type.items), type) :
     KindGuard.IsComputed(type) ? CreateType(FromComputed(moduleProperties, type.target, type.parameters)) :

@@ -135,13 +135,13 @@ describe('value/transform/Import', () => {
   const T5 = Type.Transform(Type.Module({ A: Type.Object({ x: Type.String(), y: Type.String() })}).Import('A'))
     .Decode((value) => new Map(Object.entries(value)))
     .Encode((value) => Object.fromEntries(value.entries()) as any)
-  it('should decode map', () => {
+  it('Should decode map', () => {
     const R = Encoder.Decode(T5, { x: 'hello', y: 'world' })
     Assert.IsInstanceOf(R, Map)
     Assert.IsEqual(R.get('x'), 'hello')
     Assert.IsEqual(R.get('y'), 'world')
   })
-  it('should encode map', () => {
+  it('Should encode map', () => {
     const R = Encoder.Encode(
       T5,
       new Map([
@@ -153,5 +153,69 @@ describe('value/transform/Import', () => {
   })
   it('Should throw on map decode', () => {
     Assert.Throws(() => Encoder.Decode(T5, {}))
+  })
+
+  // -------------------------------------------------------------
+  // https://github.com/sinclairzx81/typebox/issues/1178
+  // -------------------------------------------------------------
+  // immediate
+  it('Should transform embedded module codec 1', () => {
+    const T = Type.Module({
+      A: Type.Transform(Type.String())
+        .Decode((value) => parseInt(value))
+        .Encode((value) => value.toString()),
+    }).Import('A')
+
+    const D = Value.Decode(T, '123')
+    const E = Value.Encode(T, 123)
+    Assert.IsEqual(D, 123)
+    Assert.IsEqual(E, '123')
+  })
+  // referential
+  it('Should transform embedded module codec 2', () => {
+    const T = Type.Module({
+      A: Type.Transform(Type.String())
+        .Decode((value) => parseInt(value))
+        .Encode((value) => value.toString()),
+      B: Type.Ref('A'),
+    }).Import('B')
+    const D = Value.Decode(T, '123')
+    const E = Value.Encode(T, 123)
+    Assert.IsEqual(D, 123)
+    Assert.IsEqual(E, '123')
+  })
+  // deep-referential
+  it('Should transform embedded module codec 3', () => {
+    const T = Type.Module({
+      A: Type.Transform(Type.String())
+        .Decode((value) => parseInt(value))
+        .Encode((value) => value.toString()),
+      B: Type.Ref('A'),
+      C: Type.Ref('B'),
+      D: Type.Ref('C'),
+      E: Type.Ref('D'),
+    }).Import('E')
+    const D = Value.Decode(T, '123')
+    const E = Value.Encode(T, 123)
+    Assert.IsEqual(D, 123)
+    Assert.IsEqual(E, '123')
+  })
+  // interior-transform referential
+  it('Should transform embedded module codec 4', () => {
+      const T = Type.Module({
+        A: Type.String(),
+        B: Type.Ref('A'),
+        C: Type.Ref('B'),
+        T: Type.Transform(Type.Ref('C'))
+          .Decode((value) => parseInt(value as string))
+          .Encode((value) => value.toString()),
+        X: Type.Ref('T'),
+        Y: Type.Ref('X'),
+        Z: Type.Ref('Y')
+      }).Import('Z')
+      const D = Value.Decode(T, '123')
+      const E = Value.Encode(T, 123)
+      Assert.IsEqual(D, 123)
+      Assert.IsEqual(E, '123')
   })
 })

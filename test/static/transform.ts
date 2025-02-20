@@ -320,3 +320,57 @@ import { Expect } from './assert'
   const x1 = c1.Decode({})
   const x2 = Value.Decode({} as any, {})
 }
+// -------------------------------------------------------------
+// https://github.com/sinclairzx81/typebox/issues/1178
+// -------------------------------------------------------------
+// immediate
+{
+  const T = Type.Module({
+    A: Type.Transform(Type.String())
+      .Decode((value) => parseInt(value))
+      .Encode((value) => value.toString()),
+  }).Import('A')
+  Expect(T).ToStaticDecode<number>()
+  Expect(T).ToStaticEncode<string>()
+}
+// referential
+{
+  const T = Type.Module({
+    A: Type.Transform(Type.String())
+      .Decode((value) => parseInt(value))
+      .Encode((value) => value.toString()),
+    B: Type.Ref('A'),
+  }).Import('B')
+  Expect(T).ToStaticDecode<number>()
+  Expect(T).ToStaticEncode<string>()
+}
+// deep-referential
+{
+  const T = Type.Module({
+    A: Type.Transform(Type.String())
+      .Decode((value) => parseInt(value))
+      .Encode((value) => value.toString()),
+    B: Type.Ref('A'),
+    C: Type.Ref('B'),
+    D: Type.Ref('C'),
+    E: Type.Ref('D'),
+  }).Import('E')
+  Expect(T).ToStaticDecode<number>()
+  Expect(T).ToStaticEncode<string>()
+}
+// interior-transform referential
+{
+  const T = Type.Module({
+    A: Type.String(),
+    B: Type.Ref('A'),
+    C: Type.Ref('B'),
+    T: Type.Transform(Type.Ref('C'))
+      .Decode((value) => parseInt(value as string))
+      .Encode((value) => value.toString()),
+    X: Type.Ref('T'),
+    Y: Type.Ref('X'),
+    Z: Type.Ref('Y'),
+  }).Import('Z')
+  Expect(T).ToStaticDecode<number>()
+  Expect(T).ToStaticEncode<string>()
+}
