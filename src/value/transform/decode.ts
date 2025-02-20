@@ -118,12 +118,10 @@ function FromIntersect(schema: TIntersect, references: TSchema[], path: string, 
 }
 // prettier-ignore
 function FromImport(schema: TImport, references: TSchema[], path: string, value: unknown): unknown {
-  const definitions = globalThis.Object.values(schema.$defs) as TSchema[]
+  const additional = globalThis.Object.values(schema.$defs) as TSchema[]
   const target = schema.$defs[schema.$ref] as TSchema
-  const transform = schema[TransformKind as never]
-  // Note: we need to re-spec the target as TSchema + [TransformKind]
-  const transformTarget = { [TransformKind]: transform, ...target } as TSchema
-  return Visit(transformTarget as never, [...references, ...definitions], path, value)
+  const result = Visit(target, [...references, ...additional], path, value)
+  return Default(schema, path, result)
 }
 function FromNot(schema: TNot, references: TSchema[], path: string, value: any): unknown {
   return Default(schema, path, Visit(schema.not, references, path, value))
@@ -202,6 +200,7 @@ function FromUnion(schema: TUnion, references: TSchema[], path: string, value: a
   }
   return Default(schema, path, value)
 }
+
 // prettier-ignore
 function Visit(schema: TSchema, references: TSchema[], path: string, value: any): any {
   const references_ = Pushref(schema, references)

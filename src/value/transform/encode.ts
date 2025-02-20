@@ -98,12 +98,10 @@ function FromArray(schema: TArray, references: TSchema[], path: string, value: a
 }
 // prettier-ignore
 function FromImport(schema: TImport, references: TSchema[], path: string, value: unknown): unknown {
-  const definitions = globalThis.Object.values(schema.$defs) as TSchema[]
+  const additional = globalThis.Object.values(schema.$defs) as TSchema[]
   const target = schema.$defs[schema.$ref] as TSchema
-  const transform = schema[TransformKind as never]
-  // Note: we need to re-spec the target as TSchema + [TransformKind]
-  const transformTarget = { [TransformKind]: transform, ...target } as TSchema
-  return Visit(transformTarget as never, [...references, ...definitions], path, value)
+  const result = Default(schema, path, value)
+  return Visit(target, [...references, ...additional], path, result)
 }
 // prettier-ignore
 function FromIntersect(schema: TIntersect, references: TSchema[], path: string, value: any) {

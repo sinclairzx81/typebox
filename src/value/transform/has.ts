@@ -36,6 +36,7 @@ import type { TConstructor } from '../../type/constructor/index'
 import type { TFunction } from '../../type/function/index'
 import type { TIntersect } from '../../type/intersect/index'
 import type { TIterator } from '../../type/iterator/index'
+import type { TImport } from '../../type/module/index'
 import type { TNot } from '../../type/not/index'
 import type { TObject } from '../../type/object/index'
 import type { TPromise } from '../../type/promise/index'
@@ -73,6 +74,12 @@ function FromFunction(schema: TFunction, references: TSchema[]) {
 // prettier-ignore
 function FromIntersect(schema: TIntersect, references: TSchema[]) {
   return IsTransform(schema) || IsTransform(schema.unevaluatedProperties) || schema.allOf.some((schema) => Visit(schema, references))
+}
+// prettier-ignore
+function FromImport(schema: TImport, references: TSchema[]) {
+  const additional = globalThis.Object.getOwnPropertyNames(schema.$defs).reduce((result, key) => [...result, schema.$defs[key as never]], [] as TSchema[])
+  const target = schema.$defs[schema.$ref]
+  return IsTransform(schema) || Visit(target, [...additional, ...references]) 
 }
 // prettier-ignore
 function FromIterator(schema: TIterator, references: TSchema[]) {
@@ -135,6 +142,8 @@ function Visit(schema: TSchema, references: TSchema[]): boolean {
       return FromConstructor(schema_, references_)
     case 'Function':
       return FromFunction(schema_, references_)
+    case 'Import':
+      return FromImport(schema_, references_)
     case 'Intersect':
       return FromIntersect(schema_, references_)
     case 'Iterator':
