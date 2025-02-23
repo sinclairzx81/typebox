@@ -544,7 +544,7 @@ The following table lists the supported Json types. These types are fully compat
 
 ### JavaScript Types
 
-TypeBox provides an extended type set that can be used to create schematics for common JavaScript constructs. These types can not be used with any standard Json Schema validator; but can be used to frame schematics for interfaces that may receive Json validated data. JavaScript types are prefixed with the `[JavaScript]` jsdoc comment for convenience. The following table lists the supported types.
+TypeBox provides an extended type set that can be used to create schematics for common JavaScript constructs. These types can not be used with any standard Json Schema validator; but can be used to frame schematics for interfaces that may receive Json validated data. JavaScript types are prefixed with the `[JavaScript]` JSDoc comment for convenience. The following table lists the supported types.
 
 ```typescript
 ┌────────────────────────────────┬─────────────────────────────┬────────────────────────────────┐
@@ -717,11 +717,11 @@ Object properties can be modified with Readonly and Optional. The following tabl
 
 ### Generic Types
 
-Generic types can be created with generic functions
+Generic types can be created with generic functions.
 
 ```typescript
 const Nullable = <T extends TSchema>(T: T) => {     // type Nullable<T> = T | null
-  return Type.Union([T, Type.Null())
+  return Type.Union([T, Type.Null()])
 }
 
 const T = Nullable(Type.String())                  // type T = Nullable<string>
@@ -731,7 +731,7 @@ const T = Nullable(Type.String())                  // type T = Nullable<string>
 
 ### Recursive Types
 
-Use the Recursive function to create recursive types
+Use the Recursive function to create recursive types.
 
 ```typescript
 const Node = Type.Recursive(This => Type.Object({    // const Node = {
@@ -875,7 +875,7 @@ const C = Type.Index(T, Type.KeyOf(T))               // type C = T[keyof T]
 
 ### Mapped Types
 
-TypeBox supports mapped types with the Mapped function. This function accepts two arguments, the first is a union type typically derived from KeyOf, the second is a mapping function that receives a mapping key `K` that can be used to index properties of a type. The following implements a mapped type that remaps each property to be `T | null`
+TypeBox supports mapped types with the Mapped function. This function accepts two arguments, the first is a union type typically derived from KeyOf, the second is a mapping function that receives a mapping key `K` that can be used to index properties of a type. The following implements a mapped type that remaps each property to be `T | null`.
 
 ```typescript
 const T = Type.Object({                              // type T = {
@@ -1123,7 +1123,7 @@ const Z = Value.Default(T, { x: 1 })                    // const 'Z = { x: 1, y:
 
 ### Cast
 
-Use the Cast function to upcast a value into a target type. This function will retain as much infomation as possible from the original value. The Cast function is intended to be used in data migration scenarios where existing values need to be upgraded to match a modified type.
+Use the Cast function to upcast a value into a target type. This function will retain as much information as possible from the original value. The Cast function is intended to be used in data migration scenarios where existing values need to be upgraded to match a modified type.
 
 ```typescript
 const T = Type.Object({ x: Type.Number(), y: Type.Number() }, { additionalProperties: false })
@@ -1203,7 +1203,7 @@ const R = Value.Equal(                               // const R = true
 
 ### Hash
 
-Use the Hash function to create a [FNV1A-64](https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function) non cryptographic hash of a value.
+Use the Hash function to create a [FNV1A-64](https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function) non-cryptographic hash of a value.
 
 ```typescript
 const A = Value.Hash({ x: 1, y: 2, z: 3 })           // const A = 2910466848807138541n
@@ -1383,7 +1383,7 @@ type BasisVectors = Static<typeof BasisVectors>     // type BasisVectors = {
 
 ### Options
 
-Options can be passed via the last parameter
+Options can be passed via the last parameter.
 
 ```typescript
 const T = Syntax(`number`, { minimum: 42 })       // const T = {
@@ -1455,7 +1455,7 @@ const B = Value.Check(T, 'bar')                      // const B = false
 
 ## TypeCheck
 
-TypeBox types target Json Schema Draft 7 and are compatible with any validator that supports this specification. TypeBox also provides a built in type checking compiler designed specifically for TypeBox types that offers high performance compilation and value checking.
+TypeBox types target Json Schema Draft 7 and are compatible with any validator that supports this specification. TypeBox also provides a built-in type checking compiler designed specifically for TypeBox types that offers high performance compilation and value checking.
 
 The following sections detail using Ajv and the TypeBox compiler infrastructure.
 
@@ -1574,7 +1574,7 @@ const C = TypeCompiler.Code(Type.String())           // const C = `return functi
 
 ## TypeMap
 
-TypeBox offers an external package for bi-directional mapping between TypeBox, Valibot, and Zod type libraries. It also includes syntax parsing support for Valibot and Zod and supports the Standard Schema specification. For more details on TypeMap, refer to the project repository.
+TypeBox offers an external package for bidirectional mapping between TypeBox, Valibot, and Zod type libraries. It also includes syntax parsing support for Valibot and Zod and supports the Standard Schema specification. For more details on TypeMap, refer to the project repository.
 
 [TypeMap Repository](https://github.com/sinclairzx81/typemap)
 
@@ -1582,7 +1582,7 @@ TypeBox offers an external package for bi-directional mapping between TypeBox, V
 
 ### Usage
 
-TypeMap needs to be installed seperately
+TypeMap needs to be installed separately
 
 ```bash
 $ npm install @sinclair/typemap
@@ -1731,11 +1731,11 @@ The following is a list of community packages that offer general tooling, extend
 | [json2typebox](https://github.com/hacxy/json2typebox) | Creating TypeBox code from Json Data |
 | [nominal-typebox](https://github.com/Coder-Spirit/nominal/tree/main/%40coderspirit/nominal-typebox) | Allows devs to integrate nominal types into TypeBox schemas |
 | [openapi-box](https://github.com/geut/openapi-box) | Generate TypeBox types from OpenApi IDL + Http client library |
-| [prismabox](https://github.com/m1212e/prismabox) | Converts a prisma.schema to typebox schema matching the database models |
+| [prismabox](https://github.com/m1212e/prismabox) | Converts a prisma.schema to TypeBox schema matching the database models |
 | [schema2typebox](https://github.com/xddq/schema2typebox)  | Creating TypeBox code from Json Schemas |
 | [sveltekit-superforms](https://github.com/ciscoheat/sveltekit-superforms)  | A comprehensive SvelteKit form library for server and client validation |
 | [ts2typebox](https://github.com/xddq/ts2typebox) | Creating TypeBox code from Typescript types |
-| [typebox-cli](https://github.com/gsuess/typebox-cli) | Generate Schema with typebox from the CLI |
+| [typebox-cli](https://github.com/gsuess/typebox-cli) | Generate Schema with TypeBox from the CLI |
 | [typebox-form-parser](https://github.com/jtlapp/typebox-form-parser) | Parses form and query data based on TypeBox schemas |
 
 
