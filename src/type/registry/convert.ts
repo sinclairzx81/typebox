@@ -27,13 +27,13 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 import { BaseRegistry } from './base'
 
-export type FormatRegistryValidationFunction = (value: string) => boolean
+export type ConvertRegistryFunction<TSchema> = (schema: TSchema, value: unknown, data?: any) => unknown
 
-const FormatRegistry = new BaseRegistry<FormatRegistryValidationFunction>()
+const ConvertRegistry = new BaseRegistry<ConvertRegistryFunction<any>>()
 
-export const Entries = FormatRegistry.Entries
-export const Clear = FormatRegistry.Clear
-export const Delete = FormatRegistry.Delete
-export const Has = FormatRegistry.Has
-export const Set = FormatRegistry.Set
-export const Get = FormatRegistry.Get
+export const Entries = ConvertRegistry.Entries
+export const Clear = ConvertRegistry.Clear
+export const Delete = ConvertRegistry.Delete
+export const Has = ConvertRegistry.Has
+export const Set = ConvertRegistry.Set
+export const Get = ConvertRegistry.Get
