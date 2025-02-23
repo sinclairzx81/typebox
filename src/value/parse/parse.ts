@@ -31,10 +31,11 @@ import { TransformDecode, TransformEncode, HasTransform } from '../transform/ind
 import { TSchema } from '../../type/schema/index'
 import { StaticDecode } from '../../type/static/index'
 import { Assert } from '../assert/index'
-import { Default } from '../default/index'
-import { Convert } from '../convert/index'
+import { Cast } from '../cast/index'
 import { Clean } from '../clean/index'
 import { Clone } from '../clone/index'
+import { Convert } from '../convert/index'
+import { Default } from '../default/index'
 
 // ------------------------------------------------------------------
 // Guards
@@ -53,18 +54,19 @@ export class ParseError extends TypeBoxError {
 // ------------------------------------------------------------------
 // ParseRegistry
 // ------------------------------------------------------------------
-export type TParseOperation = 'Clone' | 'Clean' | 'Default' | 'Convert' | 'Assert' | 'Decode' | 'Encode' | ({} & string)
+export type TParseOperation = 'Assert' | 'Cast' | 'Clean' | 'Clone' | 'Convert' | 'Decode' | 'Default' | 'Encode' | ({} & string)
 export type TParseFunction = (type: TSchema, references: TSchema[], value: unknown) => unknown
 
 // prettier-ignore
 export namespace ParseRegistry {
   const registry = new Map<string, TParseFunction>([
-    ['Clone', (_type, _references, value: unknown) => Clone(value)],
-    ['Clean', (type, references, value: unknown) => Clean(type, references, value)],
-    ['Default', (type, references, value: unknown) => Default(type, references, value)],
-    ['Convert', (type, references, value: unknown) => Convert(type, references, value)],
     ['Assert', (type, references, value: unknown) => { Assert(type, references, value); return value }],
+    ['Cast', (type, references, value: unknown) => Cast(type, references, value)],
+    ['Clean', (type, references, value: unknown) => Clean(type, references, value)],
+    ['Clone', (_type, _references, value: unknown) => Clone(value)],
+    ['Convert', (type, references, value: unknown) => Convert(type, references, value)],
     ['Decode', (type, references, value: unknown) => (HasTransform(type, references) ? TransformDecode(type, references, value) : value)],
+    ['Default', (type, references, value: unknown) => Default(type, references, value)],
     ['Encode', (type, references, value: unknown) => (HasTransform(type, references) ? TransformEncode(type, references, value) : value)],
   ])
   // Deletes an entry from the registry
@@ -81,7 +83,7 @@ export namespace ParseRegistry {
   }
 }
 // ------------------------------------------------------------------
-// Default Parse Sequence
+// Default Parse Pipeline
 // ------------------------------------------------------------------
 // prettier-ignore
 export const ParseDefault = [
