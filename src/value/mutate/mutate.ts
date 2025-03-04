@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { IsObject, IsArray, IsTypedArray, IsValueType, type TypedArrayType } from '../guard/index'
+import { IsObject, IsArray, IsTypedArray, IsValueType, type TypedArrayType } from '../../guard/value/index'
 import { ValuePointer } from '../pointer/index'
 import { Clone } from '../clone/index'
 import { TypeBoxError } from '../../type/error/index'

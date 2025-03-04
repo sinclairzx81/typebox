@@ -37,7 +37,7 @@ import { Kind } from '../symbols/index'
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-import { IsOptional } from '../guard/kind'
+import { IsOptional } from '../../guard/kind/index'
 
 // ------------------------------------------------------------------
 // ObjectStatic

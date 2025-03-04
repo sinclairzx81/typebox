@@ -90,7 +90,7 @@ import {
   IsInteger, 
   IsNull, 
   IsUndefined 
-} from '../value/guard/index'
+} from '../guard/value/index'
 // ------------------------------------------------------------------
 // ValueErrorType
 // ------------------------------------------------------------------

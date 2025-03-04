@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import * as ValueGuard from '../guard/value'
+import * as ValueGuard from '../../guard/value/index'
 
 function ImmutableArray(value: unknown[]) {
   return globalThis.Object.freeze(value as any).map((value: unknown) => Immutable(value as any))

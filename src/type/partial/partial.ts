@@ -56,7 +56,7 @@ import { PartialFromMappedResult, type TPartialFromMappedResult } from './partia
 // ------------------------------------------------------------------
 // KindGuard
 // ------------------------------------------------------------------
-import * as KindGuard from '../guard/kind'
+import * as KindGuard from '../../guard/kind/index'
 
 // ------------------------------------------------------------------
 // FromComputed

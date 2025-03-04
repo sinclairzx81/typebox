@@ -26,6 +26,6 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export * as KindGuard from './kind'
-export * as TypeGuard from './type'
-export * as ValueGuard from './value'
+export * as KindGuard from './kind/index'
+export * as TypeGuard from './type/index'
+export * as ValueGuard from './value/index'

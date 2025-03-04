@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { IsObject, IsArray, IsNumber, IsUndefined } from '../value/guard/index'
+import { IsObject, IsArray, IsNumber, IsUndefined } from '../guard/value/index'
 
 export namespace TypeSystemPolicy {
   // ------------------------------------------------------------------

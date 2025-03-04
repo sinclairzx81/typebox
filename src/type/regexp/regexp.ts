@@ -29,7 +29,7 @@ THE SOFTWARE.
 import { CreateType } from '../create/type'
 import type { SchemaOptions } from '../schema/index'
 import type { TSchema } from '../schema/index'
-import { IsString } from '../guard/value'
+import { IsString } from '../../guard/value/index'
 import { Kind } from '../symbols/index'
 
 export interface RegExpOptions extends SchemaOptions {

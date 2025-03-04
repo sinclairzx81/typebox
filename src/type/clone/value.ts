@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import * as ValueGuard from '../guard/value'
+import * as ValueGuard from '../../guard/value/index'
 
 function ArrayType(value: unknown[]) {
   return (value as any).map((value: unknown) => Visit(value as any))

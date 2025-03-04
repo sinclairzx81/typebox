@@ -64,7 +64,7 @@ import { TransformKind, OptionalKind, ReadonlyKind } from '../symbols/index'
 // ------------------------------------------------------------------
 // KindGuard
 // ------------------------------------------------------------------
-import * as KindGuard from '../guard/kind'
+import * as KindGuard from '../../guard/kind/index'
 
 // ------------------------------------------------------------------
 //

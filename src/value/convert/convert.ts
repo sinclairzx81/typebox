@@ -55,7 +55,7 @@ import type { TUndefined } from '../../type/undefined/index'
 // ------------------------------------------------------------------
 // ValueGuard
 // ------------------------------------------------------------------
-import { IsArray, IsObject, IsDate, IsUndefined, IsString, IsNumber, IsBoolean, IsBigInt, IsSymbol, HasPropertyKey } from '../guard/index'
+import { IsArray, IsObject, IsDate, IsUndefined, IsString, IsNumber, IsBoolean, IsBigInt, IsSymbol, HasPropertyKey } from '../../guard/value/index'
 
 // ------------------------------------------------------------------
 // Conversions

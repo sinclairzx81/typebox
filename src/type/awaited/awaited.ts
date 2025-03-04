@@ -38,7 +38,7 @@ import { Ref, type TRef } from '../ref/index'
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-import { IsIntersect, IsUnion, IsPromise, IsRef, IsComputed } from '../guard/kind'
+import { IsIntersect, IsUnion, IsPromise, IsRef, IsComputed } from '../../guard/kind/index'
 
 // ----------------------------------------------------------------
 // FromComputed

@@ -27,6 +27,7 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import * as t from '../type/index'
+import * as KindGuard from '../guard/kind/index'
 import { Static } from '../parser/index'
 import { Module } from './runtime'
 import { Type } from './static'
@@ -44,7 +45,7 @@ export function NoInfer(...args: any[]): t.TSchema {
   const withContext = typeof args[0] === 'string' ? false : true
   const [context, code, options] = withContext ? [args[0], args[1], args[2] || {}] : [{}, args[0], args[1] || {}]
   const result = Module.Parse('Type', code, context)[0]
-  return t.KindGuard.IsSchema(result) 
+  return KindGuard.IsSchema(result) 
     ? t.CloneType(result, options) 
     : t.Never(options)
 }

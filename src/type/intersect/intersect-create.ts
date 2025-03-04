@@ -34,7 +34,7 @@ import type { TIntersect, IntersectOptions } from './intersect-type'
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-import { IsObject, IsSchema } from '../guard/kind'
+import { IsObject, IsSchema } from '../../guard/kind/index'
 // ------------------------------------------------------------------
 // IntersectCreate
 // ------------------------------------------------------------------

@@ -49,7 +49,7 @@ import { CreateType } from '../create/index'
 // ------------------------------------------------------------------
 // ValueGuard
 // ------------------------------------------------------------------
-import { IsArray, IsNumber, IsBigInt, IsUint8Array, IsDate, IsIterator, IsObject, IsAsyncIterator, IsFunction, IsUndefined, IsNull, IsSymbol, IsBoolean, IsString } from '../guard/value'
+import { IsArray, IsNumber, IsBigInt, IsUint8Array, IsDate, IsIterator, IsObject, IsAsyncIterator, IsFunction, IsUndefined, IsNull, IsSymbol, IsBoolean, IsString } from '../../guard/value/index'
 // ------------------------------------------------------------------
 // FromArray
 // ------------------------------------------------------------------

@@ -75,11 +75,11 @@ import type { TVoid } from '../../type/void/index'
 // ------------------------------------------------------------------
 // ValueGuard
 // ------------------------------------------------------------------
-import { IsArray, IsUint8Array, IsDate, IsPromise, IsFunction, IsAsyncIterator, IsIterator, IsBoolean, IsNumber, IsBigInt, IsString, IsSymbol, IsInteger, IsNull, IsUndefined } from '../guard/index'
+import { IsArray, IsUint8Array, IsDate, IsPromise, IsFunction, IsAsyncIterator, IsIterator, IsBoolean, IsNumber, IsBigInt, IsString, IsSymbol, IsInteger, IsNull, IsUndefined } from '../../guard/value/index'
 // ------------------------------------------------------------------
 // KindGuard
 // ------------------------------------------------------------------
-import { IsSchema } from '../../type/guard/kind'
+import { IsSchema } from '../../guard/kind/index'
 // ------------------------------------------------------------------
 // Errors
 // ------------------------------------------------------------------

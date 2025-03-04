@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { IsObject, IsArray, IsString, IsNumber, IsNull } from '../guard/index'
+import { IsObject, IsArray, IsString, IsNumber, IsNull } from '../../guard/value/index'
 import { TypeBoxError } from '../../type/error/index'
 import { Kind } from '../../type/symbols/index'
 import { Create } from '../create/index'

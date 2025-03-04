@@ -77,11 +77,11 @@ import type { TVoid } from '../type/void/index'
 // ------------------------------------------------------------------
 // ValueGuard
 // ------------------------------------------------------------------
-import { IsArray, IsString, IsNumber, IsBigInt } from '../value/guard/index'
+import { IsArray, IsString, IsNumber, IsBigInt } from '../guard/value/index'
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-import { IsSchema } from '../type/guard/type'
+import { IsSchema } from '../guard/type/index'
 // ------------------------------------------------------------------
 // CheckFunction
 // ------------------------------------------------------------------

@@ -39,7 +39,7 @@ import { SetUnionMany, SetIntersectMany, type TSetUnionMany, type TSetIntersectM
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-import { IsIntersect, IsUnion, IsTuple, IsArray, IsObject, IsRecord } from '../guard/kind'
+import { IsIntersect, IsUnion, IsTuple, IsArray, IsObject, IsRecord } from '../../guard/kind/index'
 // ------------------------------------------------------------------
 // FromRest
 // ------------------------------------------------------------------

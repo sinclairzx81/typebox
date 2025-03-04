@@ -56,7 +56,7 @@ import type { TMappedKey } from './mapped-key'
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-import { IsArray, IsAsyncIterator, IsConstructor, IsFunction, IsIntersect, IsIterator, IsReadonly, IsMappedResult, IsMappedKey, IsObject, IsOptional, IsPromise, IsSchema, IsTuple, IsUnion } from '../guard/kind'
+import { IsArray, IsAsyncIterator, IsConstructor, IsFunction, IsIntersect, IsIterator, IsReadonly, IsMappedResult, IsMappedKey, IsObject, IsOptional, IsPromise, IsSchema, IsTuple, IsUnion } from '../../guard/kind/index'
 // ------------------------------------------------------------------
 // FromMappedResult
 //

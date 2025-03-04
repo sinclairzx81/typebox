@@ -26,8 +26,8 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { HasPropertyKey, IsStandardObject, IsArray, IsTypedArray, IsValueType } from '../guard/index'
-import type { ObjectType, ArrayType, TypedArrayType, ValueType } from '../guard/index'
+import { HasPropertyKey, IsStandardObject, IsArray, IsTypedArray, IsValueType } from '../../guard/value/index'
+import type { ObjectType, ArrayType, TypedArrayType, ValueType } from '../../guard/value/index'
 import type { Static } from '../../type/static/index'
 import { ValuePointer } from '../pointer/index'
 import { Clone } from '../clone/index'
