@@ -56,7 +56,7 @@ import { RequiredFromMappedResult, type TRequiredFromMappedResult } from './requ
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-import * as KindGuard from '../guard/kind'
+import * as KindGuard from '../../guard/kind/index'
 
 // ------------------------------------------------------------------
 // FromComputed

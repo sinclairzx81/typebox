@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { HasPropertyKey } from '../guard/index'
+import { HasPropertyKey } from '../../guard/value/index'
 import { Check } from '../check/index'
 import { Clone } from '../clone/index'
 import { Deref, Pushref } from '../deref/index'
@@ -71,7 +71,7 @@ import type { TUndefined } from '../../type/undefined/index'
 import type { TUint8Array } from '../../type/uint8array/index'
 import type { TVoid } from '../../type/void/index'
 
-import { IsFunction } from '../guard/guard'
+import { IsFunction } from '../../guard/value/index'
 
 // ------------------------------------------------------------------
 // Errors

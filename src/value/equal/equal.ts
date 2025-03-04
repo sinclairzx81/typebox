@@ -26,8 +26,8 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { IsObject, IsDate, IsArray, IsTypedArray, IsValueType } from '../guard/index'
-import type { ObjectType, ArrayType, TypedArrayType, ValueType } from '../guard/index'
+import { IsObject, IsDate, IsArray, IsTypedArray, IsValueType } from '../../guard/value/index'
+import type { ObjectType, ArrayType, TypedArrayType, ValueType } from '../../guard/value/index'
 
 // ------------------------------------------------------------------
 // Equality Checks

@@ -40,7 +40,7 @@ import { Default } from '../default/index'
 // ------------------------------------------------------------------
 // Guards
 // ------------------------------------------------------------------
-import { IsArray, IsUndefined } from '../guard/index'
+import { IsArray, IsUndefined } from '../../guard/value/index'
 
 // ------------------------------------------------------------------
 // Error

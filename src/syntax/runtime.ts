@@ -27,6 +27,9 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import { Runtime } from '../parser/index'
+import * as ValueGuard from '../guard/value/index'
+import * as TypeGuard from '../guard/type/index'
+import * as KindGuard from '../guard/kind/index'
 import * as t from '../type/index'
 
 // ------------------------------------------------------------------
@@ -260,7 +263,7 @@ const FactorExtends = (Type: t.TSchema, Extends: t.TSchema[]) => {
 const FactorIndexArray = (Type: t.TSchema, IndexArray: unknown[]): t.TSchema => {
   const [Left, Right] = DestructureRight(IndexArray) as [unknown[], t.TSchema[]]
   return (
-    !t.ValueGuard.IsUndefined(Right) ? (
+    !ValueGuard.IsUndefined(Right) ? (
       // note: Indexed types require reimplementation to replace `[number]` indexers
       Right.length === 1 ? t.Index(FactorIndexArray(Type, Left), Right[0]) as never :
       Right.length === 0 ? t.Array(FactorIndexArray(Type, Left)) :
@@ -291,12 +294,12 @@ function ExprBinaryMapping(Left: t.TSchema, Rest: unknown[]): t.TSchema {
       const [Operator, Right, Next] = Rest as [string, t.TSchema, unknown[]]
       const Schema = ExprBinaryMapping(Right, Next)
       if (Operator === '&') {
-        return t.TypeGuard.IsIntersect(Schema)
+        return TypeGuard.IsIntersect(Schema)
           ? t.Intersect([Left, ...Schema.allOf])
           : t.Intersect([Left, Schema])
       }
       if (Operator === '|') {
-        return t.TypeGuard.IsUnion(Schema)
+        return TypeGuard.IsUnion(Schema)
           ? t.Union([Left, ...Schema.anyOf])
           : t.Union([Left, Schema])
       }
@@ -539,7 +542,7 @@ const Argument = Runtime.Tuple([
   Runtime.Ref<t.TSchema>('Type'), 
   Runtime.Const(RAngle),
 ], results => {
-  return t.KindGuard.IsLiteralNumber(results[2])
+  return KindGuard.IsLiteralNumber(results[2])
     ? t.Argument(Math.trunc(results[2].const))
     : t.Never()
 })

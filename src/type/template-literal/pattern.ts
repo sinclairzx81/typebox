@@ -35,7 +35,7 @@ import { TypeBoxError } from '../error/index'
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-import { IsTemplateLiteral, IsUnion, IsNumber, IsInteger, IsBigInt, IsString, IsLiteral, IsBoolean } from '../guard/kind'
+import { IsTemplateLiteral, IsUnion, IsNumber, IsInteger, IsBigInt, IsString, IsLiteral, IsBoolean } from '../../guard/kind/index'
 
 // ------------------------------------------------------------------
 // TemplateLiteralPatternError

@@ -42,7 +42,7 @@ import { KeyOfFromMappedResult, type TKeyOfFromMappedResult } from './keyof-from
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-import { IsMappedResult, IsRef, IsComputed } from '../guard/kind'
+import { IsMappedResult, IsRef, IsComputed } from '../../guard/kind/index'
 // ------------------------------------------------------------------
 // FromComputed
 // ------------------------------------------------------------------

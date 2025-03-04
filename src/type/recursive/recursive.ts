@@ -29,7 +29,7 @@ THE SOFTWARE.
 import type { TSchema, SchemaOptions } from '../schema/index'
 import { CloneType } from '../clone/type'
 import { CreateType } from '../create/type'
-import { IsUndefined } from '../guard/value'
+import { IsUndefined } from '../../guard/value/index'
 import { Kind, Hint } from '../symbols/index'
 import { Static } from '../static/index'
 

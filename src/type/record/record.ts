@@ -50,11 +50,11 @@ import { IndexPropertyKeys } from '../indexed/index'
 // ------------------------------------------------------------------
 // ValueGuard
 // ------------------------------------------------------------------
-import { IsUndefined } from '../guard/value'
+import { IsUndefined } from '../../guard/value/index'
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-import { IsInteger, IsLiteral, IsAny, IsBoolean, IsNever, IsNumber, IsString, IsRegExp, IsTemplateLiteral, IsUnion, IsRef, IsComputed } from '../guard/kind'
+import { IsInteger, IsLiteral, IsAny, IsBoolean, IsNever, IsNumber, IsString, IsRegExp, IsTemplateLiteral, IsUnion, IsRef, IsComputed } from '../../guard/kind/index'
 
 // ------------------------------------------------------------------
 // RecordCreateFromPattern

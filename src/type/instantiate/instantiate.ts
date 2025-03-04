@@ -45,8 +45,8 @@ import { type TPromise } from '../promise/index'
 import { type TObject, type TProperties, Object } from '../object/index'
 import { type TRecordOrObject, type TRecord, Record, RecordKey, RecordValue } from '../record/index'
 
-import * as ValueGuard from '../guard/value'
-import * as KindGuard from '../guard/kind'
+import * as ValueGuard from '../../guard/value/index'
+import * as KindGuard from '../../guard/kind/index'
 
 // ------------------------------------------------------------------
 // Constructor
