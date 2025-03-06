@@ -156,7 +156,9 @@ export function DefaultErrorFunction(error: ErrorFunctionParameter) {
     case ValueErrorType.Undefined:
       return 'Expected undefined'
     case ValueErrorType.Union:
-      return 'Expected union value'
+      const unionMembers = error.schema?.anyOf?.map((el: {type: string}) => el.type);
+      const unionMembersSuffix = unionMembers?.length ? ` (${unionMembers?.join(' | ')})` : '';
+      return 'Expected union value' + unionMembersSuffix;
     case ValueErrorType.Void:
       return 'Expected void'
     case ValueErrorType.Kind:
