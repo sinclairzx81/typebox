@@ -52,89 +52,41 @@ type Equals = '='
 
 // ------------------------------------------------------------------
 // Delimit
-//
-// This type is used to perform a partial breadth match for repeated
-// elements in a sequence. It used to mitigate depth+1 traversal for
-// each element which helps prevent reaching instantiation limits. The
-// technique works by infering as wide as possible on the sequence
-// enabling TS to hoist interior matches, but does come at slight
-// inference performance cost. The current (infer=9) is configured
-// to match 64 terminal tuple elements.
-//
-// for the given sequence
-//
-// [a, b, c, d, e, f, g]
-//
-// ------------------------------------------------------------------
-//
-// without breadth mapping (infer=1, depth=6)
-//
-// [infer a,
-//   [infer b,
-//     [infer c,
-//       [infer d,
-//         [infer e,
-//           [infer f,
-//             [infer g,
-//               []]]]]]]]
-//
-// ------------------------------------------------------------------
-//
-// with breadth mapping (infer=4, depth=2)
-//
-// [infer a, infer b, infer c, infer d,
-//   [infer e, infer f, infer g,
-//     []]]
-//
-//
 // ------------------------------------------------------------------
 // prettier-ignore
-interface DelimitTailMapping<_ = unknown> extends Static.IMapping {
-  output: (
-    this['input'] extends [_, infer A, _, infer B, _, infer C, _, infer D, _, infer E, _, infer F, _, infer G, _, infer H, _, infer I, _, infer Rest extends unknown[]] ? [A, B, C, D, E, F, G, H, I, ...Rest] :
-    this['input'] extends [_, infer A, _, infer B, _, infer C, _, infer D, _, infer E, _, infer F, _, infer G, _, infer H, _, infer Rest extends unknown[]] ? [A, B, C, D, E, F, G, H, ...Rest] :
-    this['input'] extends [_, infer A, _, infer B, _, infer C, _, infer D, _, infer E, _, infer F, _, infer G, _, infer Rest extends unknown[]] ? [A, B, C, D, E, F, G, ...Rest] :
-    this['input'] extends [_, infer A, _, infer B, _, infer C, _, infer D, _, infer E, _, infer F, _, infer Rest extends unknown[]] ? [A, B, C, D, E, F, ...Rest] :
-    this['input'] extends [_, infer A, _, infer B, _, infer C, _, infer D, _, infer E, _, infer Rest extends unknown[]] ? [A, B, C, D, E, ...Rest] :
-    this['input'] extends [_, infer A, _, infer B, _, infer C, _, infer D, _,  infer Rest extends unknown[]] ? [A, B, C, D, ...Rest] :
-    this['input'] extends [_, infer A, _, infer B, _, infer C, _, infer Rest extends unknown[]] ? [A, B, C, ...Rest] :
-    this['input'] extends [_, infer A, _, infer B, _, infer Rest extends unknown[]] ? [A, B, ...Rest] :
-    this['input'] extends [_, infer A, _, infer Rest extends unknown[]] ? [A, ...Rest] :
-    this['input'] extends [_, infer Rest extends unknown[]] ? [...Rest] : 
-    this['input'] extends [_] ? [] :
-    []
-  )
+type DelimitHeadReduce<Elements extends unknown[], Result extends unknown[] = []> = (
+  Elements extends [infer Left extends unknown, ...infer Right extends unknown[]]
+    ? Left extends [infer Element, infer _Delimiter]
+      ? DelimitHeadReduce<Right, [...Result, Element]>
+      : DelimitHeadReduce<Right, Result>
+    : Result
+)
+// prettier-ignore
+interface DelimitHeadMapping extends Static.IMapping {
+  output: this['input'] extends unknown[] 
+    ? DelimitHeadReduce<this['input']> 
+    : []
 }
 // prettier-ignore
-type DelimitTail<T extends Static.IParser, _ extends Static.IParser> = Static.Union<[
-  Static.Tuple<[_, T, _, T, _, T, _, T, _, T, _, T, _, T, _, T, _, T, _, Delimit<T, _>]>,
-  Static.Tuple<[_, T, _, T, _, T, _, T, _, T, _, T, _, T, _, T, _, Delimit<T, _>]>,
-  Static.Tuple<[_, T, _, T, _, T, _, T, _, T, _, T, _, T, _, Delimit<T, _>]>,
-  Static.Tuple<[_, T, _, T, _, T, _, T, _, T, _, T, _, Delimit<T, _>]>,
-  Static.Tuple<[_, T, _, T, _, T, _, T, _, T, _, Delimit<T, _>]>,
-  Static.Tuple<[_, T, _, T, _, T, _, T, _, Delimit<T, _>]>,
-  Static.Tuple<[_, T, _, T, _, T, _,Delimit<T, _>]>,
-  Static.Tuple<[_, T, _, T, _, Delimit<T, _>]>,
-  Static.Tuple<[_, T, _, Delimit<T, _>]>,
-  Static.Tuple<[_, Delimit<T, _>]>,
-  Static.Tuple<[_]>,
-  Static.Tuple<[]>
-], DelimitTailMapping>
+type DelimitHead<Element extends Static.IParser, Delimiter extends Static.IParser> = (
+  Static.Array<Static.Tuple<[Element, Delimiter]>, DelimitHeadMapping>
+)
+// prettier-ignore
+type DelimitTail<Element extends Static.IParser> = Static.Union<[
+  Static.Tuple<[Element]>,
+  Static.Tuple<[]>,
+]>
 // prettier-ignore
 interface DelimitMapping extends Static.IMapping {
-  output: (
-    this['input'] extends [infer Element extends unknown, infer Rest extends unknown[]] 
-      ? [Element, ...Rest]
-      : []
-  )
+  output: this['input'] extends [infer Left extends unknown[], infer Right extends unknown[]]
+    ? [...Left, ...Right]
+    : []
 }
 // prettier-ignore
-type Delimit<Parser extends Static.IParser, Delimiter extends Static.IParser> = (
-  Static.Union<[
-    Static.Tuple<[Parser, DelimitTail<Parser, Delimiter>]>,
-    Static.Tuple<[]>
-  ], DelimitMapping>
-)
+type Delimit<Element extends Static.IParser, Delimiter extends Static.IParser> = Static.Tuple<[
+  DelimitHead<Element, Delimiter>,
+  DelimitTail<Element>
+], DelimitMapping>
 // ------------------------------------------------------------------
 // Dereference
 // ------------------------------------------------------------------
@@ -142,25 +94,6 @@ type Delimit<Parser extends Static.IParser, Delimiter extends Static.IParser> = 
 type Dereference<Context extends t.TProperties, Ref extends string> = (
   Ref extends keyof Context ? Context[Ref] : t.TRef<Ref>
 )
-// ------------------------------------------------------------------
-// GenericArgumentList
-// ------------------------------------------------------------------
-// prettier-ignore
-interface GenericArgumentListMapping extends Static.IMapping {
-  output: (
-    this['input'] extends [infer Ident extends string, Comma, infer Rest extends unknown[]] ? [Ident, ...Rest] :
-    this['input'] extends [infer Ident extends string, Comma] ? [Ident] :
-    this['input'] extends [infer Ident extends string] ? [Ident] :
-    []
-  )
-}
-// prettier-ignore
-type GenericArgumentList = Static.Union<[
-  Static.Tuple<[Static.Ident, Static.Const<Comma>, GenericArgumentList]>,
-  Static.Tuple<[Static.Ident, Static.Const<Comma>]>,
-  Static.Tuple<[Static.Ident]>,
-  Static.Tuple<[]>,
-], GenericArgumentListMapping>
 // ------------------------------------------------------------------
 // GenericArguments
 // ------------------------------------------------------------------
@@ -181,7 +114,7 @@ interface GenericArgumentsMapping extends Static.IMapping {
 // prettier-ignore
 type GenericArguments = Static.Tuple<[
   Static.Const<LAngle>,
-  GenericArgumentList,
+  Delimit<Static.Ident, Static.Const<Comma>>,
   Static.Const<RAngle>,
 ], GenericArgumentsMapping>
 
@@ -477,8 +410,8 @@ type PropertyDelimiter = Static.Union<[
 // prettier-ignore
 type PropertiesReduce<PropertiesArray extends t.TProperties[], Result extends t.TProperties = {}> = (
   PropertiesArray extends [infer Left extends t.TProperties, ...infer Right extends t.TProperties[]]
-  ? PropertiesReduce<Right, t.Evaluate<Result & Left>>
-  : Result
+  ? PropertiesReduce<Right, Result & Left>
+  : t.Evaluate<Result>
 )
 // prettier-ignore
 interface PropertiesMapping extends Static.IMapping {
@@ -499,12 +432,17 @@ type Object = Static.Tuple<[
   Static.Const<LBrace>, Properties, Static.Const<RBrace>
 ], ObjectMapping>
 // ------------------------------------------------------------------
-// Tuple
+// Elements
 // ------------------------------------------------------------------
 type Elements = Delimit<Type, Static.Const<Comma>>
+// ------------------------------------------------------------------
+// Tuple
+// ------------------------------------------------------------------
 // prettier-ignore
 interface TupleMapping extends Static.IMapping {
-  output: this['input'] extends [unknown, infer Elements extends t.TSchema[], unknown] ? t.TTuple<Elements> : never
+  output: this['input'] extends [unknown, infer Elements extends t.TSchema[], unknown] 
+    ? t.TTuple<Elements> 
+    : never
 }
 // prettier-ignore
 type Tuple = Static.Tuple<[
