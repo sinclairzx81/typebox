@@ -87,6 +87,7 @@ type Delimit<Element extends Static.IParser, Delimiter extends Static.IParser> =
   DelimitHead<Element, Delimiter>,
   DelimitTail<Element>
 ], DelimitMapping>
+
 // ------------------------------------------------------------------
 // Dereference
 // ------------------------------------------------------------------
@@ -94,6 +95,7 @@ type Delimit<Element extends Static.IParser, Delimiter extends Static.IParser> =
 type Dereference<Context extends t.TProperties, Ref extends string> = (
   Ref extends keyof Context ? Context[Ref] : t.TRef<Ref>
 )
+
 // ------------------------------------------------------------------
 // GenericArguments
 // ------------------------------------------------------------------
@@ -111,10 +113,11 @@ interface GenericArgumentsMapping extends Static.IMapping {
         : never
     : never
 }
+type GenericArgumentsList = Delimit<Static.Ident, Static.Const<Comma>>
 // prettier-ignore
 type GenericArguments = Static.Tuple<[
   Static.Const<LAngle>,
-  Delimit<Static.Ident, Static.Const<Comma>>,
+  GenericArgumentsList,
   Static.Const<RAngle>,
 ], GenericArgumentsMapping>
 
@@ -129,13 +132,15 @@ interface GenericReferenceMapping extends Static.IMapping {
       : never
     : never  
 }
+type GenericReferenceParameters = Delimit<Type, Static.Const<Comma>>
 // prettier-ignore
 type GenericReference = Static.Tuple<[
   Static.Ident,
   Static.Const<LAngle>,
-  Elements,
+  GenericReferenceParameters,
   Static.Const<RAngle>,
 ], GenericReferenceMapping>
+
 // ------------------------------------------------------------------
 // Reference
 // ------------------------------------------------------------------
@@ -148,20 +153,21 @@ interface ReferenceMapping extends Static.IMapping {
     : never  
 }
 type Reference = Static.Ident<ReferenceMapping>
+
 // ------------------------------------------------------------------
 // Literal
 // ------------------------------------------------------------------
 // prettier-ignore
 interface LiteralBooleanMapping extends Static.IMapping {
-  output: this['input'] extends `${infer S extends boolean}` ? t.TLiteral<S> : never
+  output: this['input'] extends `${infer Value extends boolean}` ? t.TLiteral<Value> : never
 }
 // prettier-ignore
 interface LiteralNumberMapping extends Static.IMapping {
-  output: this['input'] extends `${infer S extends number}` ? t.TLiteral<S> : never
+  output: this['input'] extends `${infer Value extends number}` ? t.TLiteral<Value> : never
 }
 // prettier-ignore
 interface LiteralStringMapping extends Static.IMapping {
-  output: this['input'] extends `${infer S extends string}` ? t.TLiteral<S> : never
+  output: this['input'] extends `${infer Value extends string}` ? t.TLiteral<Value> : never
 }
 // prettier-ignore
 type Literal = Static.Union<[
@@ -169,24 +175,26 @@ type Literal = Static.Union<[
   Static.Number<LiteralNumberMapping>,
   Static.String<[DoubleQuote, SingleQuote, Tilde], LiteralStringMapping>,
 ]>
+
 // ------------------------------------------------------------------
 // Keyword
 // ------------------------------------------------------------------
 // prettier-ignore
 type Keyword = Static.Union<[
-  Static.Const<'any', Static.As<t.TAny>>,
-  Static.Const<'bigint', Static.As<t.TBigInt>>,
-  Static.Const<'boolean', Static.As<t.TBoolean>>,
-  Static.Const<'integer', Static.As<t.TInteger>>,
-  Static.Const<'never', Static.As<t.TNever>>,
-  Static.Const<'null', Static.As<t.TNull>>,
-  Static.Const<'number', Static.As<t.TNumber>>,
   Static.Const<'string', Static.As<t.TString>>,
-  Static.Const<'symbol', Static.As<t.TSymbol>>,
+  Static.Const<'number', Static.As<t.TNumber>>,
+  Static.Const<'boolean', Static.As<t.TBoolean>>,
   Static.Const<'undefined', Static.As<t.TUndefined>>,
+  Static.Const<'null', Static.As<t.TNull>>,
+  Static.Const<'integer', Static.As<t.TInteger>>,
+  Static.Const<'bigint', Static.As<t.TBigInt>>,
   Static.Const<'unknown', Static.As<t.TUnknown>>,
+  Static.Const<'any', Static.As<t.TAny>>,
+  Static.Const<'never', Static.As<t.TNever>>,
+  Static.Const<'symbol', Static.As<t.TSymbol>>,
   Static.Const<'void', Static.As<t.TVoid>>,
 ]>
+
 // ------------------------------------------------------------------
 // KeyOf
 // ------------------------------------------------------------------
@@ -199,23 +207,29 @@ type KeyOf = Static.Union<[
   Static.Tuple<[Static.Const<'keyof'>]>,
   Static.Tuple<[]>
 ], KeyOfMapping>
+
 // ------------------------------------------------------------------
 // IndexArray
 // ------------------------------------------------------------------
 // prettier-ignore
+type IndexArrayReduce<Values extends unknown[], Result extends unknown[] = []> = (
+  Values extends [infer Left extends unknown, ...infer Right extends unknown[]]
+    ? Left extends [LBracket, infer Type extends t.TSchema, RBracket] 
+      ? IndexArrayReduce<Right, [...Result, [Type]]>
+      : IndexArrayReduce<Right, [...Result, []]>
+    : Result
+)
+// prettier-ignore
 interface IndexArrayMapping extends Static.IMapping {
-  output: (
-    this['input'] extends [LBracket, infer Type extends t.TSchema, RBracket, infer Rest extends unknown[]] ? [[Type], ...Rest] :
-    this['input'] extends [LBracket, RBracket, infer Rest extends unknown[]] ? [[], ...Rest] :
-    []
-  )
+  output: this['input'] extends unknown[] 
+    ? IndexArrayReduce<this['input']> 
+    : []
 }
 // prettier-ignore
-type IndexArray = Static.Union<[
-  Static.Tuple<[Static.Const<LBracket>, Type, Static.Const<RBracket>, IndexArray]>,
-  Static.Tuple<[Static.Const<LBracket>, Static.Const<RBracket>, IndexArray]>,
-  Static.Tuple<[]>
-], IndexArrayMapping>
+type IndexArray = Static.Array<Static.Union<[
+  Static.Tuple<[Static.Const<LBracket>, Type, Static.Const<RBracket>,]>,
+  Static.Tuple<[Static.Const<LBracket>, Static.Const<RBracket>]>,
+]>, IndexArrayMapping>
 
 // ------------------------------------------------------------------
 // Extends
@@ -231,6 +245,7 @@ type Extends = Static.Union<[
   Static.Tuple<[Static.Const<'extends'>, Type, Static.Const<Question>, Type, Static.Const<Colon>, Type]>,
   Static.Tuple<[]>
 ], ExtendsMapping>
+
 // ------------------------------------------------------------------
 // Base
 // ------------------------------------------------------------------
@@ -238,52 +253,47 @@ type Extends = Static.Union<[
 interface BaseMapping extends Static.IMapping {
   output: (
     this['input'] extends [LParen, infer Type extends t.TSchema, RParen] ? Type :
-    this['input'] extends [infer Type extends t.TSchema] ? Type :
+    this['input'] extends infer Type extends t.TSchema ? Type :
     never
   )
 }
 // prettier-ignore
 type Base = Static.Union<[
-  Static.Tuple<[
-    Static.Const<LParen>, 
-    Type,
-    Static.Const<RParen>
-  ]>,
-  Static.Tuple<[Static.Union<[
-    Literal,
-    Keyword,
-    Object, 
-    Tuple,
-    Function,
-    Constructor,
-    Mapped,
-    AsyncIterator,
-    Iterator,
-    ConstructorParameters,
-    FunctionParameters,
-    Argument,
-    InstanceType,
-    ReturnType,
-    Awaited,
-    Array,
-    Record,
-    Promise,
-    Partial,
-    Required,
-    Pick,
-    Omit,
-    Exclude,
-    Extract,
-    Lowercase,
-    Uppercase,
-    Capitalize,
-    Uncapitalize,
-    Date,
-    Uint8Array,
-    GenericReference,
-    Reference
-  ]>]>
+  Static.Tuple<[Static.Const<LParen>, Type, Static.Const<RParen>]>,
+  Keyword,
+  Object, 
+  Tuple,
+  Literal,
+  Function,
+  Constructor,
+  Mapped,
+  AsyncIterator,
+  Iterator,
+  ConstructorParameters,
+  FunctionParameters,
+  Argument,
+  InstanceType,
+  ReturnType,
+  Awaited,
+  Array,
+  Record,
+  Promise,
+  Partial,
+  Required,
+  Pick,
+  Omit,
+  Exclude,
+  Extract,
+  Lowercase,
+  Uppercase,
+  Capitalize,
+  Uncapitalize,
+  Date,
+  Uint8Array,
+  GenericReference,
+  Reference
 ], BaseMapping>
+
 // ------------------------------------------------------------------
 // Factor
 // ------------------------------------------------------------------
@@ -313,6 +323,7 @@ interface FactorMapping extends Static.IMapping {
 type Factor = Static.Tuple<[
   KeyOf, Base, IndexArray, Extends
 ], FactorMapping>
+
 // ------------------------------------------------------------------
 // Expr
 // ------------------------------------------------------------------
@@ -359,6 +370,7 @@ type ExprTail = Static.Union<[
 type Expr = Static.Tuple<[
   ExprTerm, ExprTail
 ], ExprBinaryMapping>
+
 // ------------------------------------------------------------------
 // Type
 // ------------------------------------------------------------------
@@ -367,8 +379,9 @@ export type Type = Static.Union<[
   Static.Context<GenericArguments, Expr>, 
   Expr
 ]>
+
 // ------------------------------------------------------------------
-// Properties
+// Property
 // ------------------------------------------------------------------
 // prettier-ignore
 interface PropertyKeyStringMapping extends Static.IMapping {
@@ -399,6 +412,10 @@ interface PropertyMapping extends Static.IMapping {
   } : never
 }
 type Property = Static.Tuple<[Readonly, PropertyKey, Optional, Static.Const<Colon>, Type], PropertyMapping>
+
+// ------------------------------------------------------------------
+// PropertyDelimiter
+// ------------------------------------------------------------------
 // prettier-ignore
 type PropertyDelimiter = Static.Union<[
   Static.Tuple<[Static.Const<Comma>, Static.Const<Newline>]>,
@@ -407,49 +424,55 @@ type PropertyDelimiter = Static.Union<[
   Static.Tuple<[Static.Const<SemiColon>]>,
   Static.Tuple<[Static.Const<Newline>]>,
 ]>
-// prettier-ignore
-type PropertiesReduce<PropertiesArray extends t.TProperties[], Result extends t.TProperties = {}> = (
-  PropertiesArray extends [infer Left extends t.TProperties, ...infer Right extends t.TProperties[]]
-  ? PropertiesReduce<Right, Result & Left>
-  : t.Evaluate<Result>
-)
-// prettier-ignore
-interface PropertiesMapping extends Static.IMapping {
-  output: this['input'] extends t.TProperties[] ? PropertiesReduce<this['input']> : never
-}
-type Properties = Static.Union<[Delimit<Property, PropertyDelimiter>], PropertiesMapping>
+
+// ------------------------------------------------------------------
+// PropertyList
+// ------------------------------------------------------------------
+type PropertyList = Delimit<Property, PropertyDelimiter>
+
 // ------------------------------------------------------------------
 // Object
 // ------------------------------------------------------------------
 // prettier-ignore
+type ObjectReduce<PropertiesList extends t.TProperties[], Result extends t.TProperties = {}> = (
+  PropertiesList extends [infer Left extends t.TProperties, ...infer Right extends t.TProperties[]]
+  ? ObjectReduce<Right, Result & Left>
+  : t.Evaluate<Result>
+)
+// prettier-ignore
 interface ObjectMapping extends Static.IMapping {
-  output: this['input'] extends [unknown, infer Properties extends t.TProperties, unknown] 
-    ? t.TObject<Properties> 
+  output: this['input'] extends [LBrace, infer PropertyList extends t.TProperties[], RBrace] 
+    ? t.TObject<ObjectReduce<PropertyList>> 
     : never
 }
 // prettier-ignore
 type Object = Static.Tuple<[
-  Static.Const<LBrace>, Properties, Static.Const<RBrace>
+  Static.Const<LBrace>,
+  PropertyList, 
+  Static.Const<RBrace>
 ], ObjectMapping>
+
 // ------------------------------------------------------------------
-// Elements
+// ElementList
 // ------------------------------------------------------------------
-type Elements = Delimit<Type, Static.Const<Comma>>
+type ElementList = Delimit<Type, Static.Const<Comma>>
+
 // ------------------------------------------------------------------
 // Tuple
 // ------------------------------------------------------------------
 // prettier-ignore
 interface TupleMapping extends Static.IMapping {
-  output: this['input'] extends [unknown, infer Elements extends t.TSchema[], unknown] 
-    ? t.TTuple<Elements> 
+  output: this['input'] extends [unknown, infer ElementList extends t.TSchema[], unknown] 
+    ? t.TTuple<ElementList> 
     : never
 }
 // prettier-ignore
 type Tuple = Static.Tuple<[
-  Static.Const<LBracket>, Elements, Static.Const<RBracket>
+  Static.Const<LBracket>, ElementList, Static.Const<RBracket>
 ], TupleMapping>
+
 // ------------------------------------------------------------------
-// Parameters
+// Parameter
 // ------------------------------------------------------------------
 interface ParameterMapping extends Static.IMapping {
   output: this['input'] extends [string, Colon, infer Type extends t.TSchema] ? Type : never
@@ -459,33 +482,39 @@ type Parameter = Static.Tuple<[
   Static.Ident, Static.Const<Colon>, Type
 ], ParameterMapping>
 
-type Parameters = Delimit<Parameter, Static.Const<Comma>>
+// ------------------------------------------------------------------
+// ParameterList
+// ------------------------------------------------------------------
+type ParameterList = Delimit<Parameter, Static.Const<Comma>>
+
 // ------------------------------------------------------------------
 // Function
 // ------------------------------------------------------------------
 // prettier-ignore
 interface FunctionMapping extends Static.IMapping {
-  output: this['input'] extends [LParen, infer Parameters extends t.TSchema[], RParen, '=>', infer ReturnType extends t.TSchema]
-    ? t.TFunction<Parameters, ReturnType>
+  output: this['input'] extends [LParen, infer ParameterList extends t.TSchema[], RParen, '=>', infer ReturnType extends t.TSchema]
+    ? t.TFunction<ParameterList, ReturnType>
     : never
 }
 // prettier-ignore
 type Function = Static.Tuple<[
-  Static.Const<LParen>, Parameters, Static.Const<RParen>, Static.Const<'=>'>, Type
+  Static.Const<LParen>, ParameterList, Static.Const<RParen>, Static.Const<'=>'>, Type
 ], FunctionMapping>
+
 // ------------------------------------------------------------------
 // Constructor
 // ------------------------------------------------------------------
 // prettier-ignore
 interface ConstructorMapping extends Static.IMapping {
-  output: this['input'] extends ['new', LParen, infer Parameters extends t.TSchema[], RParen, '=>', infer InstanceType extends t.TSchema]
-    ? t.TConstructor<Parameters, InstanceType>
+  output: this['input'] extends ['new', LParen, infer ParameterList extends t.TSchema[], RParen, '=>', infer InstanceType extends t.TSchema]
+    ? t.TConstructor<ParameterList, InstanceType>
     : never
 }
 // prettier-ignore
 type Constructor = Static.Tuple<[
-  Static.Const<'new'>, Static.Const<LParen>, Parameters, Static.Const<RParen>, Static.Const<'=>'>, Type
+  Static.Const<'new'>, Static.Const<LParen>, ParameterList, Static.Const<RParen>, Static.Const<'=>'>, Type
 ], ConstructorMapping>
+
 // ------------------------------------------------------------------
 // Mapped (requires deferred types)
 // ------------------------------------------------------------------
@@ -499,6 +528,7 @@ interface MappedMapping extends Static.IMapping {
 type Mapped = Static.Tuple<[
   Static.Const<LBrace>, Static.Const<LBracket>, Static.Ident, Static.Const<'in'>, Type, Static.Const<RBracket>, Static.Const<Colon>, Type, Static.Const<RBrace>
 ], MappedMapping>
+
 // ------------------------------------------------------------------
 // Array
 // ------------------------------------------------------------------
@@ -512,6 +542,7 @@ interface ArrayMapping extends Static.IMapping {
 type Array = Static.Tuple<[
   Static.Const<'Array'>, Static.Const<LAngle>, Type, Static.Const<RAngle>,
 ], ArrayMapping>
+
 // ------------------------------------------------------------------
 // AsyncIterator
 // ------------------------------------------------------------------
@@ -525,6 +556,7 @@ interface AsyncIteratorMapping extends Static.IMapping {
 type AsyncIterator = Static.Tuple<[
   Static.Const<'AsyncIterator'>, Static.Const<LAngle>, Type, Static.Const<RAngle>,
 ], AsyncIteratorMapping>
+
 // ------------------------------------------------------------------
 // Iterator
 // ------------------------------------------------------------------
@@ -552,6 +584,7 @@ interface ConstructorParametersMapping extends Static.IMapping {
 type ConstructorParameters = Static.Tuple<[
   Static.Const<'ConstructorParameters'>, Static.Const<LAngle>, Type, Static.Const<RAngle>,
 ], ConstructorParametersMapping>
+
 // ------------------------------------------------------------------
 // FunctionParameters
 // ------------------------------------------------------------------
@@ -565,6 +598,7 @@ interface FunctionParametersMapping extends Static.IMapping {
 type FunctionParameters = Static.Tuple<[
   Static.Const<'Parameters'>, Static.Const<LAngle>, Type, Static.Const<RAngle>,
 ], FunctionParametersMapping>
+
 // ------------------------------------------------------------------
 // InstanceType
 // ------------------------------------------------------------------
@@ -578,6 +612,7 @@ interface InstanceTypeMapping extends Static.IMapping {
 type InstanceType = Static.Tuple<[
   Static.Const<'InstanceType'>, Static.Const<LAngle>, Type, Static.Const<RAngle>,
 ], InstanceTypeMapping>
+
 // ------------------------------------------------------------------
 // ReturnType
 // ------------------------------------------------------------------
@@ -591,6 +626,7 @@ interface ReturnTypeMapping extends Static.IMapping {
 type ReturnType = Static.Tuple<[
   Static.Const<'ReturnType'>, Static.Const<LAngle>, Type, Static.Const<RAngle>,
 ], ReturnTypeMapping>
+
 // ------------------------------------------------------------------
 // Argument
 // ------------------------------------------------------------------
@@ -606,6 +642,7 @@ interface ArgumentMapping extends Static.IMapping {
 type Argument = Static.Tuple<[
   Static.Const<'Argument'>, Static.Const<LAngle>, Type, Static.Const<RAngle>,
 ], ArgumentMapping>
+
 // ------------------------------------------------------------------
 // Awaited
 // ------------------------------------------------------------------
@@ -619,6 +656,7 @@ interface AwaitedMapping extends Static.IMapping {
 type Awaited = Static.Tuple<[
   Static.Const<'Awaited'>, Static.Const<LAngle>, Type, Static.Const<RAngle>,
 ], AwaitedMapping>
+
 // ------------------------------------------------------------------
 // Promise
 // ------------------------------------------------------------------
@@ -632,6 +670,7 @@ interface PromiseMapping extends Static.IMapping {
 type Promise = Static.Tuple<[
   Static.Const<'Promise'>, Static.Const<LAngle>, Type, Static.Const<RAngle>,
 ], PromiseMapping>
+
 // ------------------------------------------------------------------
 // Record
 // ------------------------------------------------------------------
@@ -645,6 +684,7 @@ interface RecordMapping extends Static.IMapping {
 type Record = Static.Tuple<[
   Static.Const<'Record'>, Static.Const<LAngle>, Type, Static.Const<Comma>, Type, Static.Const<RAngle>,
 ], RecordMapping>
+
 // ------------------------------------------------------------------
 // Partial
 // ------------------------------------------------------------------
@@ -658,6 +698,7 @@ interface PartialMapping extends Static.IMapping {
 type Partial = Static.Tuple<[
   Static.Const<'Partial'>, Static.Const<LAngle>, Type, Static.Const<RAngle>,
 ], PartialMapping>
+
 // ------------------------------------------------------------------
 // Required
 // ------------------------------------------------------------------
@@ -671,6 +712,7 @@ interface RequiredMapping extends Static.IMapping {
 type Required = Static.Tuple<[
   Static.Const<'Required'>,  Static.Const<LAngle>, Type, Static.Const<RAngle>,
 ], RequiredMapping>
+
 // ------------------------------------------------------------------
 // Pick
 // ------------------------------------------------------------------
@@ -684,6 +726,7 @@ interface PickMapping extends Static.IMapping {
 type Pick = Static.Tuple<[
   Static.Const<'Pick'>, Static.Const<LAngle>, Type, Static.Const<Comma>, Type, Static.Const<RAngle>,
 ], PickMapping>
+
 // ------------------------------------------------------------------
 // Omit
 // ------------------------------------------------------------------
@@ -697,6 +740,7 @@ interface OmitMapping extends Static.IMapping {
 type Omit = Static.Tuple<[
   Static.Const<'Omit'>, Static.Const<LAngle>, Type, Static.Const<Comma>, Type, Static.Const<RAngle>
 ], OmitMapping>
+
 // ------------------------------------------------------------------
 // Exclude
 // ------------------------------------------------------------------
@@ -710,6 +754,7 @@ interface ExcludeMapping extends Static.IMapping {
 type Exclude = Static.Tuple<[
   Static.Const<'Exclude'>, Static.Const<LAngle>, Type, Static.Const<Comma>, Type, Static.Const<RAngle>
 ], ExcludeMapping>
+
 // ------------------------------------------------------------------
 // Extract
 // ------------------------------------------------------------------
@@ -723,6 +768,7 @@ interface ExtractMapping extends Static.IMapping {
 type Extract = Static.Tuple<[
   Static.Const<'Extract'>, Static.Const<LAngle>, Type, Static.Const<Comma>, Type, Static.Const<RAngle>
 ], ExtractMapping>
+
 // ------------------------------------------------------------------
 // Uppercase
 // ------------------------------------------------------------------
@@ -736,6 +782,7 @@ interface UppercaseMapping extends Static.IMapping {
 type Uppercase = Static.Tuple<[
   Static.Const<'Uppercase'>,  Static.Const<LAngle>, Type, Static.Const<RAngle>,
 ], UppercaseMapping>
+
 // ------------------------------------------------------------------
 // Lowercase
 // ------------------------------------------------------------------
@@ -749,6 +796,7 @@ interface LowercaseMapping extends Static.IMapping {
 type Lowercase = Static.Tuple<[
   Static.Const<'Lowercase'>,  Static.Const<LAngle>, Type, Static.Const<RAngle>,
 ], LowercaseMapping>
+
 // ------------------------------------------------------------------
 // Capitalize
 // ------------------------------------------------------------------
@@ -762,6 +810,7 @@ interface CapitalizeMapping extends Static.IMapping {
 type Capitalize = Static.Tuple<[
   Static.Const<'Capitalize'>,  Static.Const<LAngle>, Type, Static.Const<RAngle>,
 ], CapitalizeMapping>
+
 // ------------------------------------------------------------------
 // Uncapitalize
 // ------------------------------------------------------------------
@@ -775,10 +824,12 @@ interface UncapitalizeMapping extends Static.IMapping {
 type Uncapitalize = Static.Tuple<[
   Static.Const<'Uncapitalize'>,  Static.Const<LAngle>, Type, Static.Const<RAngle>,
 ], UncapitalizeMapping>
+
 // ------------------------------------------------------------------
 // Date
 // ------------------------------------------------------------------
 type Date = Static.Const<'Date', Static.As<t.TDate>>
+
 // ------------------------------------------------------------------
 // Uint8Array
 // ------------------------------------------------------------------
