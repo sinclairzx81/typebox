@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { IsArray, IsBoolean, IsBigInt, IsDate, IsNull, IsNumber, IsObject, IsString, IsSymbol, IsUint8Array, IsUndefined } from '../guard/index'
+import { IsArray, IsBoolean, IsBigInt, IsDate, IsNull, IsNumber, IsObject, IsString, IsSymbol, IsUint8Array, IsUndefined } from '../../guard/value/index'
 import { TypeBoxError } from '../../type/error/index'
 
 // ------------------------------------------------------------------

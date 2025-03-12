@@ -33,7 +33,7 @@ import { TransformKind } from '../symbols/index'
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-import { IsTransform } from '../guard/kind'
+import { IsTransform } from '../../guard/kind/index'
 
 // ------------------------------------------------------------------
 // TransformBuilders

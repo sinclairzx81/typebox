@@ -49,11 +49,11 @@ import type { TUnion } from '../../type/union/index'
 // ------------------------------------------------------------------
 // KindGuard
 // ------------------------------------------------------------------
-import { IsTransform, IsSchema } from '../../type/guard/kind'
+import { IsTransform, IsSchema } from '../../guard/kind/index'
 // ------------------------------------------------------------------
 // ValueGuard
 // ------------------------------------------------------------------
-import { IsUndefined } from '../guard/index'
+import { IsUndefined } from '../../guard/value/index'
 
 // prettier-ignore
 function FromArray(schema: TArray, references: TSchema[]): boolean {

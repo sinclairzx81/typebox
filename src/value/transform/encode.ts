@@ -49,11 +49,11 @@ import type { TUnion } from '../../type/union/index'
 // ------------------------------------------------------------------
 // ValueGuard
 // ------------------------------------------------------------------
-import { HasPropertyKey, IsObject, IsArray, IsValueType, IsUndefined as IsUndefinedValue } from '../guard/index'
+import { HasPropertyKey, IsObject, IsArray, IsValueType, IsUndefined as IsUndefinedValue } from '../../guard/value/index'
 // ------------------------------------------------------------------
 // KindGuard
 // ------------------------------------------------------------------
-import { IsTransform, IsSchema, IsUndefined } from '../../type/guard/kind'
+import { IsTransform, IsSchema, IsUndefined } from '../../guard/kind/index'
 // ------------------------------------------------------------------
 // Errors
 // ------------------------------------------------------------------

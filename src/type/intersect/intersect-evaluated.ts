@@ -40,7 +40,7 @@ import { IntersectCreate } from './intersect-create'
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-import { IsOptional, IsTransform } from '../guard/kind'
+import { IsOptional, IsTransform } from '../../guard/kind/index'
 
 // ------------------------------------------------------------------
 // IsIntersectOptional
