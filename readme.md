@@ -1737,6 +1737,7 @@ The following is a list of community packages that offer general tooling, extend
 | [ts2typebox](https://github.com/xddq/ts2typebox) | Creating TypeBox code from Typescript types |
 | [typebox-cli](https://github.com/gsuess/typebox-cli) | Generate Schema with TypeBox from the CLI |
 | [typebox-form-parser](https://github.com/jtlapp/typebox-form-parser) | Parses form and query data based on TypeBox schemas |
+| [@lonli-lokli/fetcher-typebox](https://github.com/Lonli-Lokli/fetcher-ts/tree/master/packages/fetcher-typebox) | A strongly-typed fetch wrapper for TypeScript applications with optional runtime validation using TypeBox |
 
 
 <a name='benchmark'></a>
