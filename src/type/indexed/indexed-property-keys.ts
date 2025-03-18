@@ -36,7 +36,7 @@ import type { TUnion } from '../union/index'
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-import { IsTemplateLiteral, IsUnion, IsLiteral, IsNumber, IsInteger } from '../guard/kind'
+import { IsTemplateLiteral, IsUnion, IsLiteral, IsNumber, IsInteger } from '../../guard/kind/index'
 // ------------------------------------------------------------------
 // FromTemplateLiteral
 // ------------------------------------------------------------------

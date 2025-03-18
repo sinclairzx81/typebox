@@ -31,7 +31,7 @@ import type { TRef } from '../../type/ref/index'
 import type { TThis } from '../../type/recursive/index'
 import { TypeBoxError } from '../../type/error/index'
 import { Kind } from '../../type/symbols/index'
-import { IsString } from '../guard/guard'
+import { IsString } from '../../guard/value/index'
 export class TypeDereferenceError extends TypeBoxError {
   constructor(public readonly schema: TRef | TThis) {
     super(`Unable to dereference schema with $id '${schema.$ref}'`)

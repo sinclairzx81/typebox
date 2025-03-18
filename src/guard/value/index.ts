@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------------
 
-@sinclair/typebox/value
+@sinclair/typebox/type
 
 The MIT License (MIT)
 
@@ -50,11 +50,11 @@ export type TypedArrayType =
 // --------------------------------------------------------------------------
 /** Returns true if this value is an async iterator */
 export function IsAsyncIterator(value: unknown): value is AsyncIterableIterator<any> {
-  return IsObject(value) && globalThis.Symbol.asyncIterator in value
+  return IsObject(value) && !IsArray(value) && !IsUint8Array(value) && Symbol.asyncIterator in value
 }
 /** Returns true if this value is an iterator */
 export function IsIterator(value: unknown): value is IterableIterator<any> {
-  return IsObject(value) && globalThis.Symbol.iterator in value
+  return IsObject(value) && !IsArray(value) && !IsUint8Array(value) && Symbol.iterator in value
 }
 // --------------------------------------------------------------------------
 // Object Instances
@@ -205,3 +205,4 @@ export function IsValueType(value: unknown): value is ValueType {
     IsUndefined(value)
   )
 }
+

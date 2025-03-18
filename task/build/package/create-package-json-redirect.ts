@@ -30,10 +30,11 @@ import * as Fs from 'node:fs'
 
 // prettier-ignore
 function writeRedirect(target: string, submodule: string) {
+  const prefix = '../'.repeat(submodule.split('/').length)
   Fs.mkdirSync(`${target}/${submodule}`, { recursive: true })
   Fs.writeFileSync(`${target}/${submodule}/package.json`,JSON.stringify({
-    main: `../build/cjs/${submodule}/index.js`,
-    types: `../build/cjs/${submodule}/index.d.ts`,
+    main: `${prefix}build/cjs/${submodule}/index.js`,
+    types: `${prefix}build/cjs/${submodule}/index.d.ts`,
   }, null, 2))
 }
 // --------------------------------------------------------------------------------------------------------------------------

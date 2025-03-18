@@ -42,7 +42,7 @@ import { ExcludeFromTemplateLiteral, type TExcludeFromTemplateLiteral } from './
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-import { IsMappedResult, IsTemplateLiteral, IsUnion } from '../guard/kind'
+import { IsMappedResult, IsTemplateLiteral, IsUnion } from '../../guard/kind/index'
 // ------------------------------------------------------------------
 // ExcludeRest
 // ------------------------------------------------------------------

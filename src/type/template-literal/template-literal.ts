@@ -42,7 +42,7 @@ import type { Static } from '../static/index'
 import { TemplateLiteralSyntax, type TTemplateLiteralSyntax } from './syntax'
 import { TemplateLiteralPattern } from './pattern'
 import { EmptyString } from '../helpers/index'
-import { IsString } from '../guard/value'
+import { IsString } from '../../guard/value/index'
 import { Kind } from '../symbols/index'
 
 // ------------------------------------------------------------------

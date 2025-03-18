@@ -34,7 +34,7 @@ import type { TTuple } from '../tuple/index'
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-import { IsIntersect, IsUnion, IsTuple } from '../guard/kind'
+import { IsIntersect, IsUnion, IsTuple } from '../../guard/kind/index'
 // ------------------------------------------------------------------
 // RestResolve
 // ------------------------------------------------------------------

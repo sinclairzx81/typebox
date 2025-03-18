@@ -52,7 +52,7 @@ import { IndexFromMappedResult, type TIndexFromMappedResult } from './indexed-fr
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-import { IsArray, IsIntersect, IsObject, IsMappedKey, IsMappedResult, IsNever, IsSchema, IsTuple, IsUnion, IsRef } from '../guard/kind'
+import { IsArray, IsIntersect, IsObject, IsMappedKey, IsMappedResult, IsNever, IsSchema, IsTuple, IsUnion, IsRef } from '../../guard/kind/index'
 
 // ------------------------------------------------------------------
 // FromRest
