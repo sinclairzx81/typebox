@@ -106,15 +106,15 @@ type TFromUnionKeyLiteralString<Key extends TLiteral<string>, Type extends TSche
 // prettier-ignore
 type TFromUnionKeyLiteralNumber<Key extends TLiteral<number>, Type extends TSchema> = { [_ in Key['const']]: Type }
 // prettier-ignore
-type TFromUnionKeyRest<Keys extends TSchema[], Type extends TSchema> = 
+type TFromUnionKeyVariants<Keys extends TSchema[], Type extends TSchema, Result extends TProperties = {}> = 
   Keys extends [infer Left extends TSchema, ...infer Right extends TSchema[]] ? (
-    Left extends TUnion<infer Types extends TSchema[]> ? TFromUnionKeyRest<Types, Type> & TFromUnionKeyRest<Right, Type> :
-    Left extends TLiteral<string> ? TFromUnionKeyLiteralString<Left, Type> & TFromUnionKeyRest<Right, Type> :
-    Left extends TLiteral<number> ? TFromUnionKeyLiteralNumber<Left, Type> & TFromUnionKeyRest<Right, Type> :
-  {}) : {}
+    Left extends TUnion<infer Types extends TSchema[]> ? TFromUnionKeyVariants<Right, Type, Result & TFromUnionKeyVariants<Types, Type>> :
+    Left extends TLiteral<string> ? TFromUnionKeyVariants<Right, Type, Result & TFromUnionKeyLiteralString<Left, Type>> :
+    Left extends TLiteral<number> ? TFromUnionKeyVariants<Right, Type, Result & TFromUnionKeyLiteralNumber<Left, Type>> :
+  {}) : Result
 // prettier-ignore
-type TFromUnionKey<Key extends TSchema[], Type extends TSchema, P extends TProperties = TFromUnionKeyRest<Key, Type>> = (
-  Ensure<TObject<Evaluate<P>>>
+type TFromUnionKey<Key extends TSchema[], Type extends TSchema, Properties extends TProperties = TFromUnionKeyVariants<Key, Type>> = (
+  Ensure<TObject<Evaluate<Properties>>>
 )
 // prettier-ignore
 function FromUnionKey<Key extends TSchema[], Type extends TSchema>(key: Key, type: Type, options: ObjectOptions): TFromUnionKey<Key, Type> {
