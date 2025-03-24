@@ -31,6 +31,7 @@ import { Check } from '../check/index'
 import { Deref, Pushref } from '../deref/index'
 import { Kind } from '../../type/symbols/index'
 
+import { ConvertRegistry } from '../../type/registry/index'
 import type { TSchema } from '../../type/schema/index'
 import type { TArray } from '../../type/array/index'
 import type { TBigInt } from '../../type/bigint/index'
@@ -165,140 +166,147 @@ function Default(value: unknown): unknown {
 // ------------------------------------------------------------------
 // Convert
 // ------------------------------------------------------------------
-function FromArray(schema: TArray, references: TSchema[], value: any): any {
+function FromArray(schema: TArray, references: TSchema[], value: any, data?: Map<string, any>): any {
   const elements = IsArray(value) ? value : [value]
-  return elements.map((element) => Visit(schema.items, references, element))
+  return elements.map((element) => Visit(schema.items, references, element, data))
 }
-function FromBigInt(schema: TBigInt, references: TSchema[], value: any): unknown {
+function FromBigInt(schema: TBigInt, references: TSchema[], value: any, data?: Map<string, any>): unknown {
   return TryConvertBigInt(value)
 }
-function FromBoolean(schema: TBoolean, references: TSchema[], value: any): unknown {
+function FromBoolean(schema: TBoolean, references: TSchema[], value: any, data?: Map<string, any>): unknown {
   return TryConvertBoolean(value)
 }
-function FromDate(schema: TDate, references: TSchema[], value: any): unknown {
+function FromDate(schema: TDate, references: TSchema[], value: any, data?: Map<string, any>): unknown {
   return TryConvertDate(value)
 }
-function FromImport(schema: TImport, references: TSchema[], value: unknown): unknown {
+function FromImport(schema: TImport, references: TSchema[], value: unknown, data?: Map<string, any>): unknown {
   const definitions = globalThis.Object.values(schema.$defs) as TSchema[]
   const target = schema.$defs[schema.$ref] as TSchema
-  return Visit(target, [...references, ...definitions], value)
+  return Visit(target, [...references, ...definitions], value, data)
 }
-function FromInteger(schema: TInteger, references: TSchema[], value: any): unknown {
+function FromInteger(schema: TInteger, references: TSchema[], value: any, data?: Map<string, any>): unknown {
   return TryConvertInteger(value)
 }
-function FromIntersect(schema: TIntersect, references: TSchema[], value: any): unknown {
-  return schema.allOf.reduce((value, schema) => Visit(schema, references, value), value)
+function FromIntersect(schema: TIntersect, references: TSchema[], value: any, data?: Map<string, any>): unknown {
+  return schema.allOf.reduce((value, schema) => Visit(schema, references, value, data), value)
 }
-function FromLiteral(schema: TLiteral, references: TSchema[], value: any): unknown {
+function FromLiteral(schema: TLiteral, references: TSchema[], value: any, data?: Map<string, any>): unknown {
   return TryConvertLiteral(schema, value)
 }
-function FromNull(schema: TNull, references: TSchema[], value: any): unknown {
+function FromNull(schema: TNull, references: TSchema[], value: any, data?: Map<string, any>): unknown {
   return TryConvertNull(value)
 }
-function FromNumber(schema: TNumber, references: TSchema[], value: any): unknown {
+function FromNumber(schema: TNumber, references: TSchema[], value: any, data?: Map<string, any>): unknown {
   return TryConvertNumber(value)
 }
 // prettier-ignore
-function FromObject(schema: TObject, references: TSchema[], value: any): unknown {
+function FromObject(schema: TObject, references: TSchema[], value: any, data?: Map<string, any>): unknown {
   if(!IsObject(value)) return value
   for(const propertyKey of Object.getOwnPropertyNames(schema.properties)) {
     if(!HasPropertyKey(value, propertyKey)) continue
-    value[propertyKey] = Visit(schema.properties[propertyKey], references, value[propertyKey])
+    value[propertyKey] = Visit(schema.properties[propertyKey], references, value[propertyKey], data)
   }
   return value
 }
-function FromRecord(schema: TRecord, references: TSchema[], value: any): unknown {
+function FromRecord(schema: TRecord, references: TSchema[], value: any, data?: Map<string, any>): unknown {
   const isConvertable = IsObject(value)
   if (!isConvertable) return value
   const propertyKey = Object.getOwnPropertyNames(schema.patternProperties)[0]
   const property = schema.patternProperties[propertyKey]
   for (const [propKey, propValue] of Object.entries(value)) {
-    value[propKey] = Visit(property, references, propValue)
+    value[propKey] = Visit(property, references, propValue, data)
   }
   return value
 }
-function FromRef(schema: TRef, references: TSchema[], value: any): unknown {
-  return Visit(Deref(schema, references), references, value)
+function FromRef(schema: TRef, references: TSchema[], value: any, data?: Map<string, any>): unknown {
+  return Visit(Deref(schema, references), references, value, data)
 }
-function FromString(schema: TString, references: TSchema[], value: any): unknown {
+function FromString(schema: TString, references: TSchema[], value: any, data?: Map<string, any>): unknown {
   return TryConvertString(value)
 }
-function FromSymbol(schema: TSymbol, references: TSchema[], value: any): unknown {
+function FromSymbol(schema: TSymbol, references: TSchema[], value: any, data?: Map<string, any>): unknown {
   return IsString(value) || IsNumber(value) ? Symbol(value) : value
 }
-function FromThis(schema: TThis, references: TSchema[], value: any): unknown {
-  return Visit(Deref(schema, references), references, value)
+function FromThis(schema: TThis, references: TSchema[], value: any, data?: Map<string, any>): unknown {
+  return Visit(Deref(schema, references), references, value, data)
 }
 // prettier-ignore
-function FromTuple(schema: TTuple, references: TSchema[], value: any): unknown {
+function FromTuple(schema: TTuple, references: TSchema[], value: any, data?: Map<string, any>): unknown {
   const isConvertable = IsArray(value) && !IsUndefined(schema.items)
   if(!isConvertable) return value
   return value.map((value, index) => {
     return (index < schema.items!.length)
-      ? Visit(schema.items![index], references, value) 
+      ? Visit(schema.items![index], references, value, data) 
       : value
   })
 }
-function FromUndefined(schema: TUndefined, references: TSchema[], value: any): unknown {
+function FromUndefined(schema: TUndefined, references: TSchema[], value: any, data?: Map<string, any>): unknown {
   return TryConvertUndefined(value)
 }
-function FromUnion(schema: TUnion, references: TSchema[], value: any): unknown {
+function FromUnion(schema: TUnion, references: TSchema[], value: any, data?: Map<string, any>): unknown {
   for (const subschema of schema.anyOf) {
-    const converted = Visit(subschema, references, Clone(value))
+    const converted = Visit(subschema, references, Clone(value), data)
     if (!Check(subschema, references, converted)) continue
     return converted
   }
   return value
 }
-function Visit(schema: TSchema, references: TSchema[], value: any): unknown {
+function FromKind(schema: TSchema, references: TSchema[], value: unknown, data?: Map<string, any>): unknown {
+  if (!ConvertRegistry.Has(schema[Kind])) return Default(value)
+  const func = ConvertRegistry.Get(schema[Kind])!
+  return func(schema, value, data && data.get(schema[Kind]))
+}
+function Visit(schema: TSchema, references: TSchema[], value: any, data?: Map<string, any>): unknown {
   const references_ = Pushref(schema, references)
   const schema_ = schema as any
   switch (schema[Kind]) {
     case 'Array':
-      return FromArray(schema_, references_, value)
+      return FromArray(schema_, references_, value, data)
     case 'BigInt':
-      return FromBigInt(schema_, references_, value)
+      return FromBigInt(schema_, references_, value, data)
     case 'Boolean':
-      return FromBoolean(schema_, references_, value)
+      return FromBoolean(schema_, references_, value, data)
     case 'Date':
-      return FromDate(schema_, references_, value)
+      return FromDate(schema_, references_, value, data)
     case 'Import':
-      return FromImport(schema_, references_, value)
+      return FromImport(schema_, references_, value, data)
     case 'Integer':
-      return FromInteger(schema_, references_, value)
+      return FromInteger(schema_, references_, value, data)
     case 'Intersect':
-      return FromIntersect(schema_, references_, value)
+      return FromIntersect(schema_, references_, value, data)
     case 'Literal':
-      return FromLiteral(schema_, references_, value)
+      return FromLiteral(schema_, references_, value, data)
     case 'Null':
-      return FromNull(schema_, references_, value)
+      return FromNull(schema_, references_, value, data)
     case 'Number':
-      return FromNumber(schema_, references_, value)
+      return FromNumber(schema_, references_, value, data)
     case 'Object':
-      return FromObject(schema_, references_, value)
+      return FromObject(schema_, references_, value, data)
     case 'Record':
-      return FromRecord(schema_, references_, value)
+      return FromRecord(schema_, references_, value, data)
     case 'Ref':
-      return FromRef(schema_, references_, value)
+      return FromRef(schema_, references_, value, data)
     case 'String':
-      return FromString(schema_, references_, value)
+      return FromString(schema_, references_, value, data)
     case 'Symbol':
-      return FromSymbol(schema_, references_, value)
+      return FromSymbol(schema_, references_, value, data)
     case 'This':
-      return FromThis(schema_, references_, value)
+      return FromThis(schema_, references_, value, data)
     case 'Tuple':
-      return FromTuple(schema_, references_, value)
+      return FromTuple(schema_, references_, value, data)
     case 'Undefined':
-      return FromUndefined(schema_, references_, value)
+      return FromUndefined(schema_, references_, value, data)
     case 'Union':
-      return FromUnion(schema_, references_, value)
+      return FromUnion(schema_, references_, value, data)
     default:
-      return Default(value)
+      return FromKind(schema, references_, value, data)
   }
 }
 // ------------------------------------------------------------------
 // Convert
 // ------------------------------------------------------------------
+/** `[Mutable]` Converts any type mismatched values to their target type if a reasonable conversion is possible. */
+export function Convert(schema: TSchema, references: TSchema[], value: unknown, data?: Map<string, any>): unknown
 /** `[Mutable]` Converts any type mismatched values to their target type if a reasonable conversion is possible. */
 export function Convert(schema: TSchema, references: TSchema[], value: unknown): unknown
 /** `[Mutable]` Converts any type mismatched values to their target type if a reasonable conversion is possible. */
@@ -306,5 +314,5 @@ export function Convert(schema: TSchema, value: unknown): unknown
 /** `[Mutable]` Converts any type mismatched values to their target type if a reasonable conversion is possible. */
 // prettier-ignore
 export function Convert(...args: any[]) {
-  return args.length === 3 ? Visit(args[0], args[1], args[2]) : Visit(args[0], [], args[1])
+  return args.length >= 3 ? Visit(args[0], args[1], args[2], args[3]) : Visit(args[0], [], args[1])
 }
