@@ -37,7 +37,7 @@ import { type TMappedKey } from '../mapped/index'
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-import { IsMappedKey, IsTemplateLiteral, IsUnion, IsLiteral } from '../guard/kind'
+import { IsMappedKey, IsTemplateLiteral, IsUnion, IsLiteral } from '../../guard/kind/index'
 // ------------------------------------------------------------------
 // Apply
 // ------------------------------------------------------------------

@@ -30,7 +30,7 @@ import { CreateType } from '../create/type'
 import { type TSchema, type SchemaOptions } from '../schema/index'
 import { type TFunction } from '../function/index'
 import { type TNever, Never } from '../never/index'
-import * as KindGuard from '../guard/kind'
+import * as KindGuard from '../../guard/kind/index'
 
 // prettier-ignore
 export type TReturnType<Type extends TSchema,

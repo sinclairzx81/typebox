@@ -39,7 +39,7 @@ import { ExtendsFromMappedResult, type TExtendsFromMappedResult } from './extend
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-import { IsMappedKey, IsMappedResult } from '../guard/kind'
+import { IsMappedKey, IsMappedResult } from '../../guard/kind/index'
 
 // prettier-ignore
 type TExtendsResolve<L extends TSchema, R extends TSchema, T extends TSchema, U extends TSchema> = (

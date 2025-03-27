@@ -53,14 +53,14 @@ import {
   IsObject, 
   IsArray, 
   IsUndefined 
-} from '../guard/index'
+} from '../../guard/value/index'
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
 // prettier-ignore
 import { 
   IsKind
-} from '../../type/guard/kind'
+} from '../../guard/kind/index'
 
 // ------------------------------------------------------------------
 // IsCheckable

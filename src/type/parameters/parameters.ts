@@ -30,7 +30,7 @@ import type { TSchema, SchemaOptions } from '../schema/index'
 import type { TFunction } from '../function/index'
 import { Tuple, type TTuple } from '../tuple/index'
 import { Never, type TNever } from '../never/index'
-import * as KindGuard from '../guard/kind'
+import * as KindGuard from '../../guard/kind/index'
 
 // ------------------------------------------------------------------
 // Parameters

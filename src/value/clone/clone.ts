@@ -26,12 +26,12 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import type { ObjectType as FromObject, ArrayType as FromArray, TypedArrayType, ValueType } from '../guard/index'
+import type { ObjectType as FromObject, ArrayType as FromArray, TypedArrayType, ValueType } from '../../guard/value/index'
 
 // ------------------------------------------------------------------
 // ValueGuard
 // ------------------------------------------------------------------
-import { IsArray, IsDate, IsMap, IsSet, IsObject, IsTypedArray, IsValueType } from '../guard/index'
+import { IsArray, IsDate, IsMap, IsSet, IsObject, IsTypedArray, IsValueType } from '../../guard/value/index'
 // ------------------------------------------------------------------
 // Clonable
 // ------------------------------------------------------------------

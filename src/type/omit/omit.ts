@@ -50,8 +50,8 @@ import { OmitFromMappedResult, type TOmitFromMappedResult } from './omit-from-ma
 // ------------------------------------------------------------------
 // TypeGuard
 // ------------------------------------------------------------------
-import { IsMappedKey, IsIntersect, IsUnion, IsObject, IsSchema, IsMappedResult, IsLiteralValue, IsRef } from '../guard/kind'
-import { IsArray as IsArrayValue } from '../guard/value'
+import { IsMappedKey, IsIntersect, IsUnion, IsObject, IsSchema, IsMappedResult, IsLiteralValue, IsRef } from '../../guard/kind/index'
+import { IsArray as IsArrayValue } from '../../guard/value/index'
 
 // ------------------------------------------------------------------
 // FromIntersect

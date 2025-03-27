@@ -59,7 +59,8 @@ import { TemplateLiteralToUnion } from '../template-literal/index'
 import { PatternNumberExact, PatternStringExact } from '../patterns/index'
 import { Kind, Hint } from '../symbols/index'
 import { TypeBoxError } from '../error/index'
-import { TypeGuard, ValueGuard } from '../guard/index'
+import * as TypeGuard from '../../guard/type/index'
+import * as ValueGuard from '../../guard/value/index'
 
 export class ExtendsResolverError extends TypeBoxError {}
 
