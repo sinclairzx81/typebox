@@ -288,8 +288,8 @@ export function KeywordMapping(input: unknown, context: unknown) {
 // LiteralString: <String>
 // -------------------------------------------------------------------
 // prettier-ignore
-export type TLiteralStringMapping<Input extends string, Context extends T.TProperties>
-  = T.TLiteral<Input>
+export type TLiteralStringMapping<Input extends string, Context extends T.TProperties> = 
+  Input extends T.TLiteralValue ? T.TLiteral<Input> : never
 // prettier-ignore
 export function LiteralStringMapping(input: string, context: unknown) {
   return T.Literal(input)
@@ -308,8 +308,8 @@ export function LiteralNumberMapping(input: string, context: unknown) {
 // LiteralBoolean: 'true' | 'false'
 // -------------------------------------------------------------------
 // prettier-ignore
-export type TLiteralBooleanMapping<Input extends 'true' | 'false', Context extends T.TProperties>
-  = T.TLiteral<Input extends 'true' ? true : false>
+export type TLiteralBooleanMapping<Input extends 'true' | 'false', Context extends T.TProperties> 
+  = Input extends 'true' ? T.TLiteral<true> : T.TLiteral<false>
 // prettier-ignore
 export function LiteralBooleanMapping(input: 'true' | 'false', context: unknown) {
   return T.Literal(input === 'true')
@@ -791,7 +791,7 @@ export function ArrayMapping(input: [unknown, unknown, unknown, unknown], contex
 // prettier-ignore
 export type TRecordMapping<Input extends [unknown, unknown, unknown, unknown, unknown, unknown], Context extends T.TProperties>
   = Input extends ['Record', '<', infer Key extends T.TSchema, ',', infer Type extends T.TSchema, '>']
-  ? T.TRecord<Key, Type>
+  ? T.TRecordOrObject<Key, Type>
   : never
 // prettier-ignore
 export function RecordMapping(input: [unknown, unknown, unknown, unknown, unknown, unknown], context: unknown) {

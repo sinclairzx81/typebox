@@ -32,11 +32,11 @@ import { Type, TType } from './parser'
 // ------------------------------------------------------------------
 // NoInfer
 // ------------------------------------------------------------------
-/** `[Experimental]` Parses a TypeScript annotation into a TypeBox type but does not infer schematics */
-export function NoInfer<Context extends Record<PropertyKey, t.TSchema>, Code extends string>(context: Context, code: Code, options?: t.SchemaOptions): t.TSchema
-/** `[Experimental]` Parses a TypeScript annotation into a TypeBox type but does not infer schematics */
-export function NoInfer<Code extends string>(code: Code, options?: t.SchemaOptions): t.TSchema
-/** `[Experimental]` Parses a TypeScript annotation into a TypeBox type but does not infer schematics */
+/** `[Experimental]` Parses type expressions into TypeBox types but does not infer */
+export function NoInfer<Context extends Record<PropertyKey, t.TSchema>, Input extends string>(context: Context, input: Input, options?: t.SchemaOptions): t.TSchema
+/** `[Experimental]` Parses type expressions into TypeBox types but does not infer */
+export function NoInfer<Input extends string>(input: Input, options?: t.SchemaOptions): t.TSchema
+/** `[Experimental]` Parses type expressions into TypeBox types but does not infer */
 // prettier-ignore
 export function NoInfer(...args: any[]): t.TSchema {
   const withContext = typeof args[0] === 'string' ? false : true
@@ -47,16 +47,16 @@ export function NoInfer(...args: any[]): t.TSchema {
     : t.Never(options)
 }
 
-/** `[Experimental]` Parses a TypeScript annotation into a TypeBox type */
+/** `[Experimental]` Parses type expressions into TypeBox types */
 // prettier-ignore
 export type TSyntax<Context extends Record<PropertyKey, t.TSchema>, Code extends string> = (
   TType<Code, Context> extends [infer Type extends t.TSchema, string] ? Type : t.TNever
 )
-/** `[Experimental]` Parses a TypeScript annotation into a TypeBox type */
-export function Syntax<Context extends Record<PropertyKey, t.TSchema>, Annotation extends string>(context: Context, annotation: Annotation, options?: t.SchemaOptions): TSyntax<Context, Annotation>
-/** `[Experimental]` Parses a TypeScript annotation into a TypeBox type */
-export function Syntax<Annotation extends string>(annotation: Annotation, options?: t.SchemaOptions): TSyntax<{}, Annotation>
-/** `[Experimental]` Parses a TypeScript annotation into a TypeBox type */
+/** `[Experimental]` Parses type expressions into TypeBox types */
+export function Syntax<Context extends Record<PropertyKey, t.TSchema>, Input extends string>(context: Context, input: Input, options?: t.SchemaOptions): TSyntax<Context, Input>
+/** `[Experimental]` Parses type expressions into TypeBox types */
+export function Syntax<Input extends string>(annotation: Input, options?: t.SchemaOptions): TSyntax<{}, Input>
+/** `[Experimental]` Parses type expressions into TypeBox types */
 export function Syntax(...args: any[]): never {
   return NoInfer.apply(null, args as never) as never
 }
