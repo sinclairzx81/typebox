@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import * as t from '@sinclair/typebox'
+import * as t from '../type/index'
 import { Type, TType } from './parser'
 
 // ------------------------------------------------------------------
