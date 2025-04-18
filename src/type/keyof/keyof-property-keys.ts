@@ -164,11 +164,14 @@ export function KeyOfPropertyKeys<Type extends TSchema>(type: Type): TKeyOfPrope
 // KeyOfPattern
 // ----------------------------------------------------------------
 let includePatternProperties = false
+const escapeRegexSpecialChars = (value: unknown) => {
+  return `${value}`.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
 /** Returns a regular expression pattern derived from the given TSchema */
 export function KeyOfPattern(schema: TSchema): string {
   includePatternProperties = true
   const keys = KeyOfPropertyKeys(schema)
   includePatternProperties = false
-  const pattern = keys.map((key) => `(${key})`)
+  const pattern = keys.map((key) => `(${escapeRegexSpecialChars(key)})`)
   return `^(${pattern.join('|')})$`
 }
