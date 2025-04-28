@@ -9,6 +9,7 @@
       "@sinclair/typebox/compiler": ["src/compiler/index.ts"],
       "@sinclair/typebox/errors": ["src/errors/index.ts"],
       "@sinclair/typebox/parser": ["src/parser/index.ts"],
+      "@sinclair/typebox/serializer": ["src/serializer/index.ts"],
       "@sinclair/typebox/syntax": ["src/syntax/index.ts"],
       "@sinclair/typebox/system": ["src/system/index.ts"],
       "@sinclair/typebox/type": ["src/type/index.ts"],
