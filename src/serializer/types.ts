@@ -64,15 +64,20 @@ export function makeSerializer<
       serializationSchema,
       serializationObject
     ) as object;
+    if (!(serializationObject as any).serializerKind) {
+      (serializationObject as any).serializerKind = serializerKind;
+    }
     const encoded = serializationSchemaCompiled.Encode({
       ...cleaned,
       serializerKind,
     });
+    
     return JSON.stringify(encoded);
   };
 
   const deserializeInternal = (serialized: object) => {
     const parsed = serializationSchemaCompiled.Decode(serialized);
+    delete (parsed as any).serializerKind;
     return deserialize(parsed as any);
   };
 

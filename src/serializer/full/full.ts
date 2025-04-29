@@ -3,6 +3,8 @@ import type { TKind, TSchema } from "src/type/schema";
 import { Kind } from "../../type/symbols/index";
 import type { makeSerializer, SerializerKind } from "../types";
 import { serializerString } from "./serializers/string";
+import { serializerAny } from "./serializers/any";
+import { serializerObject } from "./serializers/object";
 
 type Serializer = ReturnType<typeof makeSerializer<TSchema, TSchema>>;
 
@@ -15,6 +17,8 @@ const register = (s: Serializer) => {
 };
 
 register(serializerString() as any);
+register(serializerAny() as any);
+register(serializerObject() as any);
 
 export function Serialize<T extends TSchema>(schema: T): string {
   const serializer = typepoxKindToSerializer.get(schema[Kind]);

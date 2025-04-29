@@ -1,5 +1,5 @@
 import { Type } from "../../../type";
-import { CommonSchemaOptionsSchema, SerializedFullSchema } from "../types";
+import { CommonSchemaOptionsSchema } from "../types";
 import { makeSerializer, SerializerKind } from "src/serializer/types";
 
 export function serializerString() {
@@ -12,7 +12,6 @@ export function serializerString() {
       contentEncoding: Type.Optional(Type.String()),
       contentMediaType: Type.Optional(Type.String()),
     }),
-    SerializedFullSchema,
     CommonSchemaOptionsSchema,
   ]);
 
@@ -22,12 +21,11 @@ export function serializerString() {
     serializationSchema: SerSchema,
     serialize(schema) {
       return {
-        serializerKind: SerializerKind.String,
         ...schema,
       };
     },
-    deserialize(schema) {
-      return Type.String(schema);
+    deserialize(options) {
+      return Type.String(options);
     },
   });
 }

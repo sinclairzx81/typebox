@@ -34,6 +34,7 @@
     "@sinclair/hammer": "^0.18.0",
     "@types/mocha": "^9.1.1",
     "@types/node": "^22.13.5",
+    "@types/prettier": "^2.7.3",
     "ajv": "^8.12.0",
     "ajv-formats": "^2.1.1",
     "mocha": "^11.1.0",
