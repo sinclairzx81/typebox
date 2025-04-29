@@ -11,6 +11,19 @@ describe("serialize/full/string", () => {
     Assert.IsEqual(serialized, `{"serializerKind":${SerializerKind.String}}`);
   });
 
+  it("Should serialize string with some config options", () => {
+    const T = Type.String({
+      $id: "123",
+      description: "This is a test",
+      pattern: "^[a-z]+$",
+    });
+    const serialized = Serializer.Full.Serialize(T);
+    Assert.IsEqual(
+      serialized,
+      `{"pattern":"^[a-z]+$","$id":"123","description":"This is a test","serializerKind":${SerializerKind.String}}`
+    );
+  });
+
   it("Should deserialize string", () => {
     const serialized = `{"serializerKind":${SerializerKind.String}}`;
     const deserialized = Serializer.Full.Deserialize(serialized);
@@ -22,5 +35,19 @@ describe("serialize/full/string", () => {
       aString: "somestring",
     });
     Assert.IsEqual(passes, true);
+  });
+
+  it("Should deserialize string with some config options", () => {
+    const serialized = `{"pattern":"^[a-z]+$","$id":"123","description":"This is a test","serializerKind":${SerializerKind.String}}`;
+    const deserialized = Serializer.Full.Deserialize(serialized);
+
+    Assert.IsEqual(
+      Type.String({
+        $id: "123",
+        description: "This is a test",
+        pattern: "^[a-z]+$",
+      }),
+      deserialized
+    );
   });
 });
