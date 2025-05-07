@@ -222,4 +222,11 @@ describe('compiler/Intersect', () => {
     )
     Fail(T, { x: 1, y: 2, 0: '', z: 1 })
   })
+
+  it('Should intersect two objects with special characters in their properties', () => {
+    const A = Type.Object({ $x: Type.Number() })
+    const B = Type.Object({ $y: Type.Number() })
+    const T = Type.Intersect([A, B], { unevaluatedProperties: false })
+    Ok(T, { $x: 1, $y: 1 })
+  })
 })
