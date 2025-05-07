@@ -50,9 +50,9 @@ type TFromRest<Types extends TSchema[], Result extends PropertyKey[][] = []> = (
     : Result
 )
 // prettier-ignore
-function FromRest<Types extends TSchema[]>(types: [...Types]): TFromRest<Types> {
+function FromRest<Types extends TSchema[]>(types: [...Types], options?: KeyOfPropertyKeysOptions): TFromRest<Types> {
   const result = [] as PropertyKey[][]
-  for(const L of types) result.push(KeyOfPropertyKeys(L))
+  for(const L of types) result.push(KeyOfPropertyKeys(L, options))
   return result as never
 }
 // ------------------------------------------------------------------
@@ -64,8 +64,8 @@ type TFromIntersect<Types extends TSchema[],
   PropertyKeys extends PropertyKey[] = TSetUnionMany<PropertyKeysArray>
 > = PropertyKeys
 // prettier-ignore
-function FromIntersect<Types extends TSchema[]>(types: [...Types]): TFromIntersect<Types> {
-  const propertyKeysArray = FromRest(types) as PropertyKey[][]
+function FromIntersect<Types extends TSchema[]>(types: [...Types], options?: KeyOfPropertyKeysOptions): TFromIntersect<Types> {
+  const propertyKeysArray = FromRest(types, options) as PropertyKey[][]
   const propertyKeys = SetUnionMany(propertyKeysArray)
   return propertyKeys as never
 }
@@ -78,8 +78,8 @@ type TFromUnion<Types extends TSchema[],
   PropertyKeys extends PropertyKey[] = TSetIntersectMany<PropertyKeysArray>
 > = PropertyKeys
 // prettier-ignore
-function FromUnion<Types extends TSchema[]>(types: [...Types]): TFromUnion<Types> {
-  const propertyKeysArray = FromRest(types) as PropertyKey[][]
+function FromUnion<Types extends TSchema[]>(types: [...Types], options?: KeyOfPropertyKeysOptions): TFromUnion<Types> {
+  const propertyKeysArray = FromRest(types, options) as PropertyKey[][]
   const propertyKeys = SetIntersectMany(propertyKeysArray)
   return propertyKeys as never
 }
@@ -116,17 +116,18 @@ type TFromProperties<Properties extends TProperties> = (
   UnionToTuple<keyof Properties>
 )
 // prettier-ignore
-function FromProperties<Properties extends TProperties>(T: Properties): TFromProperties<Properties> {
-  return (
-    globalThis.Object.getOwnPropertyNames(T)
-  ) as never
+function FromProperties<Properties extends TProperties>(T: Properties, options?: KeyOfPropertyKeysOptions): TFromProperties<Properties> {
+  const propertynames = globalThis.Object.getOwnPropertyNames(T);
+  if(!options?.asPattern) return propertynames as never;
+
+  return propertynames.map(escapeRegexSpecialChars) as never
 }
 // ------------------------------------------------------------------
 // FromPatternProperties
 // ------------------------------------------------------------------
 // prettier-ignore
-function FromPatternProperties(patternProperties: Record<PropertyKey, TSchema>): string[] {
-  if(!includePatternProperties) return []
+function FromPatternProperties(patternProperties: Record<PropertyKey, TSchema>, options?: KeyOfPropertyKeysOptions): string[] {
+  if(!options?.asPattern) return []
   const patternPropertyKeys = globalThis.Object.getOwnPropertyNames(patternProperties)
   return patternPropertyKeys.map(key => {
     return (key[0] === '^' && key[key.length - 1] === '$') 
@@ -147,28 +148,44 @@ export type TKeyOfPropertyKeys<Type extends TSchema> = (
   Type extends TObject<infer Properties extends TProperties> ? TFromProperties<Properties> :
   []
 )
+
+// ------------------------------------------------------------------
+// escapeRegexSpecialChars
+// ------------------------------------------------------------------
+function escapeRegexSpecialChars (value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
+// ------------------------------------------------------------------
+// KeyOfPropertyKeysOptions
+// ------------------------------------------------------------------
+export interface KeyOfPropertyKeysOptions {
+  /** set to true to escape literal properties and include pattern properties */
+  asPattern?: boolean
+}
+
+// ------------------------------------------------------------------
+// KeyOfPropertyKeys
+// ------------------------------------------------------------------
 /** Returns a tuple of PropertyKeys derived from the given TSchema. */
 // prettier-ignore
-export function KeyOfPropertyKeys<Type extends TSchema>(type: Type): TKeyOfPropertyKeys<Type> {
+export function KeyOfPropertyKeys<Type extends TSchema>(type: Type, options?: KeyOfPropertyKeysOptions): TKeyOfPropertyKeys<Type> {
   return (
-    IsIntersect(type) ? FromIntersect(type.allOf) :
-    IsUnion(type) ? FromUnion(type.anyOf) :
+    IsIntersect(type) ? FromIntersect(type.allOf, options) :
+    IsUnion(type) ? FromUnion(type.anyOf, options) :
     IsTuple(type) ? FromTuple(type.items ?? []) :
     IsArray(type) ? FromArray(type.items) :
-    IsObject(type) ? FromProperties(type.properties) :
-    IsRecord(type) ? FromPatternProperties(type.patternProperties) :
+    IsObject(type) ? FromProperties(type.properties, options) :
+    IsRecord(type) ? FromPatternProperties(type.patternProperties, options) :
     []
   ) as never
 }
 // ----------------------------------------------------------------
 // KeyOfPattern
 // ----------------------------------------------------------------
-let includePatternProperties = false
 /** Returns a regular expression pattern derived from the given TSchema */
 export function KeyOfPattern(schema: TSchema): string {
-  includePatternProperties = true
-  const keys = KeyOfPropertyKeys(schema)
-  includePatternProperties = false
+  const keys = KeyOfPropertyKeys(schema, { asPattern: true })
   const pattern = keys.map((key) => `(${key})`)
   return `^(${pattern.join('|')})$`
 }
