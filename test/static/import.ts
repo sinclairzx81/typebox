@@ -130,3 +130,26 @@ import { Type, Static } from '@sinclair/typebox'
     x?: null[],
   }>()
 }
+// ------------------------------------------------------------------
+// Ref inside Recursive
+// ------------------------------------------------------------------
+// prettier-ignore
+{
+  const Module = Type.Module({
+    T: Type.Recursive((_) =>
+      Type.Object({
+        M: Type.Ref("U"),
+      })
+    ),
+    U: Type.Union([
+      Type.Literal("A"),
+      Type.Literal("B")
+    ]),
+  });
+
+  const T = Module.Import("T");
+  type T = Static<typeof T>;
+  Expect(T).ToStatic<{
+    M: 'A'|'B'
+  }>();
+}
