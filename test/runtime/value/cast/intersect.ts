@@ -73,4 +73,31 @@ describe('value/cast/Intersect', () => {
     const V = Value.Cast(T, 2000)
     Assert.IsEqual(V, 2000)
   })
+
+  // ----------------------------------------------------------------
+  // https://github.com/sinclairzx81/typebox/issues/1264
+  // ----------------------------------------------------------------
+  it('Should preserve intersected properties', () => {
+    const T = Type.Intersect([
+      Type.Object({}),
+      Type.Object({
+        name: Type.String(),
+        age: Type.Optional(Type.Number()),
+        location: Type.Object({
+          lat: Type.Number(),
+          long: Type.Number(),
+        }),
+        greeting: Type.String(),
+      }),
+    ])
+    const V0 = Value.Cast(T, { greeting: 'Hello' })
+    const V1 = Value.Cast(T, { location: null, greeting: 'Hello' })
+    const V2 = Value.Cast(T, { location: { lat: 1 }, greeting: 'Hello' })
+    const V3 = Value.Cast(T, { location: { lat: 1, long: 1 }, greeting: 'Hello' })
+
+    Assert.IsEqual(V0, { name: '', location: { lat: 0, long: 0 }, greeting: 'Hello' })
+    Assert.IsEqual(V1, { name: '', location: { lat: 0, long: 0 }, greeting: 'Hello' })
+    Assert.IsEqual(V2, { name: '', location: { lat: 1, long: 0 }, greeting: 'Hello' })
+    Assert.IsEqual(V3, { name: '', location: { lat: 1, long: 1 }, greeting: 'Hello' })
+  })
 })
