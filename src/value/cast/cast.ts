@@ -139,10 +139,24 @@ function FromImport(schema: TImport, references: TSchema[], value: unknown): boo
   const target = schema.$defs[schema.$ref] as TSchema
   return Visit(target, [...references, ...definitions], value)
 }
+
+// ------------------------------------------------------------------
+// Intersect
+// ------------------------------------------------------------------
+function IntersectAssign(correct: unknown, value: unknown) : unknown {
+  // trust correct on mismatch | value on non-object
+  if((IsObject(correct) && !IsObject(value)) || (!IsObject(correct) && IsObject(value))) return correct
+  if(!IsObject(correct) || !IsObject(value)) return value
+  return globalThis.Object.getOwnPropertyNames(correct).reduce((result, key) => {
+    const property = key in value ? IntersectAssign(correct[key], value[key]) : correct[key]
+    return { ...result, [key]: property }
+  }, {})
+}
 function FromIntersect(schema: TIntersect, references: TSchema[], value: any): any {
-  const created = Create(schema, references)
-  const mapped = IsObject(created) && IsObject(value) ? { ...(created as any), ...value } : value
-  return Check(schema, references, mapped) ? mapped : Create(schema, references)
+  if(Check(schema, references, value)) return value
+  const correct = Create(schema, references)
+  const assigned = IntersectAssign(correct, value)
+  return Check(schema, references, assigned) ? assigned : correct
 }
 function FromNever(schema: TNever, references: TSchema[], value: any): any {
   throw new ValueCastError(schema, 'Never types cannot be cast')
