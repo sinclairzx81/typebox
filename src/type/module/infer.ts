@@ -43,6 +43,7 @@ import { TRef } from '../ref/index'
 import { TTuple } from '../tuple/index'
 import { TUnion } from '../union/index'
 import { Static } from '../static/index'
+import { TRecursive } from '../recursive/index'
 
 // ------------------------------------------------------------------
 // Array
@@ -160,6 +161,7 @@ type TInfer<ModuleProperties extends TProperties, Type extends TSchema> = (
   Type extends TTuple<infer Types extends TSchema[]> ? TInferTuple<ModuleProperties, Types> :
   Type extends TEnum<infer _ extends TEnumRecord> ? Static<Type> : // intercept enum before union
   Type extends TUnion<infer Types extends TSchema[]> ? TInferUnion<ModuleProperties, Types> :
+  Type extends TRecursive<infer Schema extends TSchema> ? TInfer<ModuleProperties, Schema> :
   Static<Type>
 )
 // ------------------------------------------------------------------
