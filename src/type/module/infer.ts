@@ -43,7 +43,7 @@ import { TRef } from '../ref/index'
 import { TTuple } from '../tuple/index'
 import { TUnion } from '../union/index'
 import { Static } from '../static/index'
-import { TRecursive } from '../recursive/index'
+import { TRecursive, TThis } from '../recursive/index'
 
 // ------------------------------------------------------------------
 // Array
@@ -104,13 +104,15 @@ type InferPropertiesWithModifiers<Properties extends TProperties, Source extends
   Required<Pick<Source, RequiredPropertyKeys<Properties>>>
 )>
 // prettier-ignore
-type InferProperties<ModuleProperties extends TProperties, Properties extends TProperties> = InferPropertiesWithModifiers<Properties, {
-  [K in keyof Properties]: TInfer<ModuleProperties, Properties[K]>
-}>
-// prettier-ignore
-type TInferObject<ModuleProperties extends TProperties, Properties extends TProperties> = (
-  InferProperties<ModuleProperties, Properties>
-)
+type TInferObject<ModuleProperties extends TProperties, Properties extends TProperties> = InferPropertiesWithModifiers<
+  Properties,
+  {
+    [K in keyof Properties]:
+      Properties[K] extends TArray<TThis> ? Array<TInferObject<ModuleProperties, Properties>> :
+      Properties[K] extends TThis ? TInferObject<ModuleProperties, Properties> :
+      TInfer<ModuleProperties, Properties[K]>
+  }
+>
 // ------------------------------------------------------------------
 // Tuple
 // ------------------------------------------------------------------
