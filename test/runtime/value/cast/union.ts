@@ -161,4 +161,43 @@ describe('value/cast/Union', () => {
     Assert.IsEqual(Value.Cast(RA, [A, B], { type: 'A' }), { type: 'A' })
     Assert.IsEqual(Value.Cast(RB, [A, B], { type: 'A' }), { type: 'A' })
   })
+
+   it('should correctly score nested union types', () => {
+    const result = Value.Cast(
+      Type.Union([
+        Type.Union([
+          Type.Object({
+            type: Type.Literal('a'),
+            name: Type.String(),
+            in: Type.String(),
+          }),
+          Type.Object({
+            type: Type.Literal('b'),
+            description: Type.Optional(Type.String()),
+            nested: Type.Object({
+              a: Type.String(),
+              b: Type.Optional(Type.String()),
+            }),
+          }),
+        ]),
+        Type.Object({
+          $ref: Type.String(),
+          description: Type.Optional(Type.String()),
+        }),
+      ]),
+      {
+        type: 'b',
+        description: 'Hello World',
+        nested: {
+          b: 'hello',
+        },
+      }
+    );
+
+    Assert.IsEqual(result, {
+      type: 'b',
+      description: 'Hello World',
+      nested: { a: '', b: 'hello' },
+    });
+  });
 })
