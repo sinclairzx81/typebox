@@ -77,13 +77,10 @@ function ScoreUnion(schema: TSchema, references: TSchema[], value: any): number 
       return acc + (literal + checks + exists)
     }, 0)
   } else if (schema[Kind] === "Union") {
-    const schemas = schema.anyOf.map((schema: any) =>
+    const schemas = schema.anyOf.map((schema: TUnion) =>
       Deref(schema, references)
-    );
-    return schemas.reduce((acc: number, schema: any) => {
-      const score = ScoreUnion(schema, references, value);
-      return acc + score;
-    }, 0);
+    )
+    return  Math.max(...schemas.map((schema: TUnion) => ScoreUnion(schema, references, value)))
   } else {
     return Check(schema, references, value) ? 1 : 0
   }
