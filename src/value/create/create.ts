@@ -269,14 +269,8 @@ function FromPromise(schema: TPromise, references: TSchema[]): any {
   }
 }
 function FromRecord(schema: TRecord, references: TSchema[]): any {
-  const [keyPattern, valueSchema] = Object.entries(schema.patternProperties)[0]
   if (HasPropertyKey(schema, 'default')) {
     return FromDefault(schema.default)
-  } else if (!(keyPattern === PatternStringExact || keyPattern === PatternNumberExact)) {
-    const propertyKeys = keyPattern.slice(1, keyPattern.length - 1).split('|')
-    const Acc = {} as Record<PropertyKey, unknown>
-    for (const key of propertyKeys) Acc[key] = Visit(valueSchema, references)
-    return Acc
   } else {
     return {}
   }
