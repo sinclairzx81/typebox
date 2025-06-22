@@ -38,6 +38,6 @@
     "ajv-formats": "^2.1.1",
     "mocha": "^11.1.0",
     "prettier": "^2.7.1",
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.3"
   }
 }
