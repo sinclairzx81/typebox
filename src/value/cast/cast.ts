@@ -76,6 +76,11 @@ function ScoreUnion(schema: TSchema, references: TSchema[], value: any): number 
       const exists = keys.includes(key) ? point : 0
       return acc + (literal + checks + exists)
     }, 0)
+  } else if (schema[Kind] === "Union") {
+    const schemas = schema.anyOf.map((schema: TSchema) =>
+      Deref(schema, references)
+    )
+    return  Math.max(...schemas.map((schema: TSchema) => ScoreUnion(schema, references, value)))
   } else {
     return Check(schema, references, value) ? 1 : 0
   }
@@ -127,7 +132,7 @@ function FromArray(schema: TArray, references: TSchema[], value: any): any {
 function FromConstructor(schema: TConstructor, references: TSchema[], value: any): any {
   if (Check(schema, references, value)) return Create(schema, references)
   const required = new Set(schema.returns.required || [])
-  const result = function () {}
+  const result = function () { }
   for (const [key, property] of Object.entries(schema.returns.properties)) {
     if (!required.has(key) && value.prototype[key] === undefined) continue
     result.prototype[key] = Visit(property as TSchema, references, value.prototype[key])
