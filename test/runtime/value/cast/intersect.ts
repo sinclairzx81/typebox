@@ -100,4 +100,13 @@ describe('value/cast/Intersect', () => {
     Assert.IsEqual(V2, { name: '', location: { lat: 1, long: 0 }, greeting: 'Hello' })
     Assert.IsEqual(V3, { name: '', location: { lat: 1, long: 1 }, greeting: 'Hello' })
   })
+
+  // --------------------------------------------------------------------------
+  // https://github.com/sinclairzx81/typebox/issues/1269#issuecomment-2993924180
+  // --------------------------------------------------------------------------
+  it('Should Cast with intersected Record', () => {
+    const T = Type.Intersect([Type.Record(Type.TemplateLiteral('x-${string}'), Type.Unknown()), Type.Object({ name: Type.String() })])
+    const R = Value.Cast(T, {})
+    Assert.IsEqual(R, { name: '' })
+  })
 })
