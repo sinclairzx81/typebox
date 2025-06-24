@@ -166,43 +166,43 @@ describe('value/cast/Union', () => {
   // ref: https://github.com/sinclairzx81/typebox/issues/1268
   // ------------------------------------------------------------------------
   it('should correctly score nested union types #1', () => {
-    const A =
+    const A = Type.Union([
       Type.Union([
-        Type.Union([
-          Type.Object({
-            type: Type.Literal('a'),
-            name: Type.String(),
-            in: Type.String(),
-          }),
-          Type.Object({
-            type: Type.Literal('b'),
-            description: Type.Optional(Type.String()),
-            nested: Type.Object({
-              a: Type.String(),
-              b: Type.Optional(Type.String()),
-            }),
-          }),
-        ]),
         Type.Object({
-          $ref: Type.String(),
-          description: Type.Optional(Type.String()),
+          type: Type.Literal('a'),
+          name: Type.String(),
+          in: Type.String(),
         }),
-      ],
+        Type.Object({
+          type: Type.Literal('b'),
+          description: Type.Optional(Type.String()),
+          nested: Type.Object({
+            a: Type.String(),
+            b: Type.Optional(Type.String()),
+          }),
+        }),
+      ]),
+      Type.Object({
+        $ref: Type.String(),
+        description: Type.Optional(Type.String()),
+      }),
+    ])
 
-      );
-
-    Assert.IsEqual(Value.Cast(A, {
-      type: 'b',
-      description: 'Hello World',
-      nested: {
-        b: 'hello',
+    Assert.IsEqual(
+      Value.Cast(A, {
+        type: 'b',
+        description: 'Hello World',
+        nested: {
+          b: 'hello',
+        },
+      }),
+      {
+        type: 'b',
+        description: 'Hello World',
+        nested: { a: '', b: 'hello' },
       },
-    }), {
-      type: 'b',
-      description: 'Hello World',
-      nested: { a: '', b: 'hello' },
-    });
-  });
+    )
+  })
 
   it('should correctly score nested union types #2', () => {
     const A = Type.Union([
@@ -216,7 +216,7 @@ describe('value/cast/Union', () => {
           prop1: Type.String(),
           prop4: Type.String(),
           prop5: Type.String(),
-        })
+        }),
       ]),
       Type.Union([
         Type.Object({
@@ -233,31 +233,40 @@ describe('value/cast/Union', () => {
     ])
 
     // Picks the first union variant when the score is equal
-    Assert.IsEqual(Value.Cast(A, {
-      prop1: ''
-    }), {
-      prop1: '',
-      prop2: '',
-      prop3: '',
-    });
+    Assert.IsEqual(
+      Value.Cast(A, {
+        prop1: '',
+      }),
+      {
+        prop1: '',
+        prop2: '',
+        prop3: '',
+      },
+    )
 
-    Assert.IsEqual(Value.Cast(A, {
-      prop1: '',
-      prop4: ''
-    }), {
-      prop1: '',
-      prop4: '',
-      prop5: '',
-    });
+    Assert.IsEqual(
+      Value.Cast(A, {
+        prop1: '',
+        prop4: '',
+      }),
+      {
+        prop1: '',
+        prop4: '',
+        prop5: '',
+      },
+    )
 
-    Assert.IsEqual(Value.Cast(A, {
-      prop6: '',
-    }), {
-      prop6: '',
-      prop7: '',
-      prop8: '',
-    });
-  });
+    Assert.IsEqual(
+      Value.Cast(A, {
+        prop6: '',
+      }),
+      {
+        prop6: '',
+        prop7: '',
+        prop8: '',
+      },
+    )
+  })
 
   it('should correctly score nested union types #3', () => {
     const A = Type.Union([
@@ -286,17 +295,20 @@ describe('value/cast/Union', () => {
       ]),
     ])
 
-    Assert.IsEqual(Value.Cast(A, {
-      prop1: '',
-      prop2: '',
-      prop7: ''
-    }), {
-      prop1: '',
-      prop2: '',
-      prop7: '',
-      prop8: '',
-    });
-  });
+    Assert.IsEqual(
+      Value.Cast(A, {
+        prop1: '',
+        prop2: '',
+        prop7: '',
+      }),
+      {
+        prop1: '',
+        prop2: '',
+        prop7: '',
+        prop8: '',
+      },
+    )
+  })
 
   it('should correctly score nested union types #4', () => {
     const A = Type.Union([
@@ -330,21 +342,24 @@ describe('value/cast/Union', () => {
               prop2: Type.String(),
               prop11: Type.String(),
               prop12: Type.String(),
-            })
-          ])
-        ])
+            }),
+          ]),
+        ]),
       ]),
     ])
 
-    Assert.IsEqual(Value.Cast(A, {
-      prop1: '',
-      prop2: '',
-      prop9: ''
-    }), {
-      prop1: '',
-      prop2: '',
-      prop9: '',
-      prop10: '',
-    });
+    Assert.IsEqual(
+      Value.Cast(A, {
+        prop1: '',
+        prop2: '',
+        prop9: '',
+      }),
+      {
+        prop1: '',
+        prop2: '',
+        prop9: '',
+        prop10: '',
+      },
+    )
   })
 })
