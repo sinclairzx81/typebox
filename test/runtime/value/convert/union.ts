@@ -40,4 +40,41 @@ describe('value/convert/Union', () => {
     Assert.IsEqual(B, { b: 1, c: 2 })
     Assert.IsEqual(C, { a: 1, b: '2', c: 3 }) // note: matching on first
   })
+  it('Should preserve number type in string-first union when value already matches', () => {
+    const T = Type.Union([Type.String(), Type.Number()])
+    const numValue = 42
+    const strValue = 'hello'
+
+    const A = Value.Convert(T, numValue)
+    const B = Value.Convert(T, strValue)
+
+    Assert.IsEqual(typeof A, 'number')
+    Assert.IsEqual(typeof B, 'string')
+    Assert.IsEqual(A, 42)
+    Assert.IsEqual(B, 'hello')
+  })
+  // ----------------------------------------------------------------
+  // https://github.com/sinclairzx81/typebox/issues/1281
+  // Union conversion should preserve original type if valid
+  // ----------------------------------------------------------------
+  it('Should preserve original type when value already matches union variant', () => {
+    const T1 = Type.Object({
+      data: Type.Array(Type.Record(Type.String(), Type.Union([Type.String(), Type.Number(), Type.Null()]))),
+    })
+    const T2 = Type.Object({
+      data: Type.Array(Type.Record(Type.String(), Type.Union([Type.Number(), Type.String(), Type.Null()]))),
+    })
+    const testData = {
+      data: [{ key1: 'hello', key2: 42, key3: null }],
+    }
+
+    const A = Value.Convert(T1, testData)
+    const B = Value.Convert(T2, testData)
+
+    // Both should preserve the original number type
+    Assert.IsEqual(typeof (A as any).data[0].key2, 'number')
+    Assert.IsEqual(typeof (B as any).data[0].key2, 'number')
+    Assert.IsEqual((A as any).data[0].key2, 42)
+    Assert.IsEqual((B as any).data[0].key2, 42)
+  })
 })
