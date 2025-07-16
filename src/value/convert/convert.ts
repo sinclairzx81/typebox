@@ -243,6 +243,14 @@ function FromUndefined(schema: TUndefined, references: TSchema[], value: any): u
   return TryConvertUndefined(value)
 }
 function FromUnion(schema: TUnion, references: TSchema[], value: any): unknown {
+  // Check if original value already matches one of the union variants
+  for (const subschema of schema.anyOf) {
+    if (Check(subschema, references, value)) {
+      return value
+    }
+  }
+
+  // Attempt conversion for each variant
   for (const subschema of schema.anyOf) {
     const converted = Visit(subschema, references, Clone(value))
     if (!Check(subschema, references, converted)) continue
