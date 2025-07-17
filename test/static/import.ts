@@ -153,3 +153,52 @@ import { Type, Static } from '@sinclair/typebox'
     M: 'A'|'B'
   }>();
 }
+// ------------------------------------------------------------------
+// Infer circular references
+// ------------------------------------------------------------------
+{
+  const Module = Type.Module({
+    T: Type.Recursive((This) =>
+      Type.Object({
+        a: Type.String(),
+        b: Type.Optional(This),
+        c: This,
+        d: Type.Array(This),
+      }),
+    ),
+  })
+  const T = Module.Import('T')
+  type T = Static<typeof T>
+  Expect(T).ToStatic<{
+    a: string
+    b?: T | undefined
+    c: T
+    d: T[]
+  }>()
+}
+// ------------------------------------------------------------------
+// Infer circular references with modifiers
+// ------------------------------------------------------------------
+{
+  const Module = Type.Module({
+    T: Type.Recursive((This) =>
+      Type.Object({
+        e: Type.ReadonlyOptional(Type.Array(This)),
+        f: Type.Readonly(Type.Array(This)),
+        g: Type.Optional(Type.Array(This)),
+        h: Type.Array(This),
+        i: Type.Union([Type.Ref('T'), Type.Ref('U')]),
+      }),
+    ),
+    U: Type.Union([Type.Literal('A'), Type.Literal('B')]),
+  })
+  const T = Module.Import('T')
+  type T = Static<typeof T>
+  Expect(T).ToStatic<{
+    readonly e?: T[]
+    readonly f: T[]
+    g?: T[]
+    h: T[]
+    i: T | 'A' | 'B'
+  }>()
+}
