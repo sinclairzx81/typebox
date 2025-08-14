@@ -362,4 +362,71 @@ describe('value/cast/Union', () => {
       },
     )
   })
+
+  it('should correctly score object unions with shared properties #1', () => {
+    const schema = Type.Union([
+      Type.Object({
+        summary: Type.Optional(Type.String()),
+        description: Type.Optional(Type.String()),
+        parameters: Type.Optional(Type.Array(Type.Any())),
+        responses: Type.Optional(Type.Record(Type.String(), Type.Any())),
+        requestBody: Type.Optional(Type.Any()),
+      }),
+      Type.Object({
+        $ref: Type.String(),
+        summary: Type.Optional(Type.String()),
+      }),
+    ])
+
+    Assert.IsEqual(
+      Value.Cast(schema, {
+        summary: 'Test Summary',
+        parameters: {},
+      }),
+      {
+        summary: 'Test Summary',
+        parameters: [],
+      },
+    )
+  })
+
+  it('should correctly score object unions with shared properties #2', () => {
+    const A = Type.Union([
+      Type.Object({
+        prop1: Type.String(),
+        prop2: Type.String(),
+        prop3: Type.String(),
+      }),
+      Type.Object({
+        prop1: Type.String(),
+        prop2: Type.String(),
+        prop4: Type.String(),
+        prop5: Type.String(),
+        prop6: Type.String(),
+        prop7: Type.String(),
+        prop8: Type.String(),
+        prop9: Type.String(),
+        prop10: Type.String(),
+      }),
+    ])
+
+    Assert.IsEqual(
+      Value.Cast(A, {
+        prop1: '',
+        prop2: '',
+        prop7: '',
+      }),
+      {
+        prop1: '',
+        prop2: '',
+        prop4: '',
+        prop5: '',
+        prop6: '',
+        prop7: '',
+        prop8: '',
+        prop9: '',
+        prop10: '',
+      },
+    )
+  })
 })
