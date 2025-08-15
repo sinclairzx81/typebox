@@ -363,6 +363,9 @@ describe('value/cast/Union', () => {
     )
   })
 
+  // ------------------------------------------------------------------------
+  // ref: https://github.com/sinclairzx81/typebox/issues/1292
+  // ------------------------------------------------------------------------
   it('should correctly score object unions with shared properties #1', () => {
     const schema = Type.Union([
       Type.Object({
