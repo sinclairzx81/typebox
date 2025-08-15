@@ -94,4 +94,9 @@ describe('value/convert/Union', () => {
     const converted = Value.Convert(T, [{ type: 'A', values: 1 }])
     Assert.IsEqual(converted, [{ type: 'A', values: 1 }])
   })
+  it('Should guard against Array conversion in Record', () => {
+    const T = Type.Union([Type.Record(Type.String({ pattern: '^values$' }), Type.Union([Type.String(), Type.Number()])), Type.Record(Type.String({ pattern: '^type$' }), Type.Union([Type.String(), Type.Number()]))])
+    const converted = Value.Convert(T, [{ type: 'A', values: 1 }])
+    Assert.IsEqual(converted, [{ type: 'A', values: 1 }])
+  })
 })
