@@ -40,7 +40,7 @@ export async function test_typescript() {
     '5.2.2', '5.3.2', '5.3.3', '5.4.3', 
     '5.4.5', '5.5.2', '5.5.3', '5.5.4', 
     '5.6.2', '5.6.3', '5.7.2', '5.7.3', 
-    '5.8.2', 'next', 'latest'
+    '5.8.2', '5.8.3', 'next', 'latest'
   ]) {
     await shell(`npm install typescript@${version} --no-save`)
     await test_static()
