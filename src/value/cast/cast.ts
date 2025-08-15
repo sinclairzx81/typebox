@@ -57,23 +57,21 @@ export class ValueCastError extends TypeBoxError {
   }
 }
 // ------------------------------------------------------------------
-// The following will score a schema against a value. For objects,
-// the score is the tally of points awarded for each property of
-// the value. Property points are (1.0 / propertyCount) to prevent
-// large property counts biasing results. Properties that match
-// literal values are maximally awarded as literals are typically
-// used as union discriminator fields.
+// The following logic assigns a score to a schema based on how well it matches a given value.
+// For object types, the score is calculated by evaluating each property of the value against
+// the schema's properties. To avoid bias towards objects with many properties, each property
+// contributes equally to the total score. Properties that exactly match literal values receive
+// the highest possible score, as literals are often used as discriminators in union types.
 // ------------------------------------------------------------------
 function ScoreUnion(schema: TSchema, references: TSchema[], value: any): number {
   if (schema[Kind] === 'Object' && typeof value === 'object' && !IsNull(value)) {
     const object = schema as TObject
     const keys = Object.getOwnPropertyNames(value)
     const entries = Object.entries(object.properties)
-    const [point, max] = [1 / entries.length, entries.length]
     return entries.reduce((acc, [key, schema]) => {
-      const literal = schema[Kind] === 'Literal' && schema.const === value[key] ? max : 0
-      const checks = Check(schema, references, value[key]) ? point : 0
-      const exists = keys.includes(key) ? point : 0
+      const literal = schema[Kind] === 'Literal' && schema.const === value[key] ? 100 : 0
+      const checks = Check(schema, references, value[key]) ? 10 : 0
+      const exists = keys.includes(key) ? 1 : 0
       return acc + (literal + checks + exists)
     }, 0)
   } else if (schema[Kind] === 'Union') {
