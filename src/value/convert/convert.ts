@@ -200,7 +200,7 @@ function FromNumber(schema: TNumber, references: TSchema[], value: any): unknown
 }
 // prettier-ignore
 function FromObject(schema: TObject, references: TSchema[], value: any): unknown {
-  if(!IsObject(value)) return value
+  if(!IsObject(value) || IsArray(value)) return value
   for(const propertyKey of Object.getOwnPropertyNames(schema.properties)) {
     if(!HasPropertyKey(value, propertyKey)) continue
     value[propertyKey] = Visit(schema.properties[propertyKey], references, value[propertyKey])
@@ -208,7 +208,7 @@ function FromObject(schema: TObject, references: TSchema[], value: any): unknown
   return value
 }
 function FromRecord(schema: TRecord, references: TSchema[], value: any): unknown {
-  const isConvertable = IsObject(value)
+  const isConvertable = IsObject(value) && !IsArray(value)
   if (!isConvertable) return value
   const propertyKey = Object.getOwnPropertyNames(schema.patternProperties)[0]
   const property = schema.patternProperties[propertyKey]

@@ -77,4 +77,21 @@ describe('value/convert/Union', () => {
     Assert.IsEqual((A as any).data[0].key2, 42)
     Assert.IsEqual((B as any).data[0].key2, 42)
   })
+  // ----------------------------------------------------------------
+  // https://github.com/sinclairzx81/typebox/issues/1295
+  // ----------------------------------------------------------------
+  it('Should guard against Array conversion in Object', () => {
+    const T = Type.Union([
+      Type.Object({
+        type: Type.Literal('A'),
+        values: Type.Union([Type.String(), Type.Number()]),
+      }),
+      Type.Object({
+        type: Type.Literal('B'),
+        values: Type.String(),
+      }),
+    ])
+    const converted = Value.Convert(T, [{ type: 'A', values: 1 }])
+    Assert.IsEqual(converted, [{ type: 'A', values: 1 }])
+  })
 })
