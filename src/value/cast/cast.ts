@@ -57,11 +57,13 @@ export class ValueCastError extends TypeBoxError {
   }
 }
 // ------------------------------------------------------------------
-// The following logic assigns a score to a schema based on how well it matches a given value.
-// For object types, the score is calculated by evaluating each property of the value against
-// the schema's properties. To avoid bias towards objects with many properties, each property
-// contributes equally to the total score. Properties that exactly match literal values receive
-// the highest possible score, as literals are often used as discriminators in union types.
+// The following logic assigns a score to a schema based on how well
+// it matches a given value. For object types, the score is calculated
+// by evaluating each property of the value against the schema's
+// properties. To avoid bias towards objects with many properties,
+// each property contributes equally to the total score. Properties
+// that exactly match literal values receive the highest possible
+// score, as literals are often used as discriminators in union types.
 // ------------------------------------------------------------------
 function ScoreUnion(schema: TSchema, references: TSchema[], value: any): number {
   if (schema[Kind] === 'Object' && typeof value === 'object' && !IsNull(value)) {
