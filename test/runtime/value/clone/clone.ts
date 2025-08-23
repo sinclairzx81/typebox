@@ -153,4 +153,10 @@ describe('value/clone/Clone', () => {
     const R = Value.Clone(V)
     Assert.IsEqual(R, V)
   })
+  it('Should handle circular references', () => {
+    const V = { a: 1, b: { c: 2 } } as any
+    V.b.d = V.b
+    const R = Value.Clone(V)
+    Assert.IsEqual(R, V)
+  })
 })
