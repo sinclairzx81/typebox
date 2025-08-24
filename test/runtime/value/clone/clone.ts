@@ -153,10 +153,101 @@ describe('value/clone/Clone', () => {
     const R = Value.Clone(V)
     Assert.IsEqual(R, V)
   })
-  it('Should handle circular references', () => {
+  // ------------------------------------------------------------------------
+  // ref: https://github.com/sinclairzx81/typebox/issues/1300
+  // ------------------------------------------------------------------------
+  it('Should handle circular references #1', () => {
     const V = { a: 1, b: { c: 2 } } as any
     V.b.d = V.b
     const R = Value.Clone(V)
+    Assert.IsEqual(R, V)
+  })
+  it('Should handle circular references #2', () => {
+    const V = { a: {}, b: {} } as any
+    V.a.c = V.b
+    V.b.d = V.a
+    const R = Value.Clone(V)
+    console.log(R)
+    Assert.IsEqual(R, V)
+  })
+  it('Should handle indirect circular references #1', () => {
+    // Create a chain: A -> B -> C -> A
+    const A = { name: 'A' } as any
+    const B = { name: 'B' } as any
+    const C = { name: 'C' } as any
+
+    A.next = B
+    B.next = C
+    C.next = A // Circular reference through chain
+
+    const R = Value.Clone(A)
+    Assert.IsEqual(R.name, 'A')
+    Assert.IsEqual(R.next.name, 'B')
+    Assert.IsEqual(R.next.next.name, 'C')
+    Assert.IsEqual(R.next.next.next, R) // Should reference back to root
+  })
+  it('Should handle indirect circular references #2', () => {
+    // Create a more complex structure with multiple indirect references
+    const root = {
+      data: { value: 1 },
+      children: [],
+      metadata: {},
+    } as any
+
+    const child1 = {
+      id: 1,
+      parent: root,
+      siblings: [],
+    } as any
+
+    const child2 = {
+      id: 2,
+      parent: root,
+      siblings: [],
+    } as any
+
+    // Set up the circular references
+    root.children = [child1, child2]
+    child1.siblings = [child2]
+    child2.siblings = [child1]
+    root.metadata.firstChild = child1
+
+    const R = Value.Clone(root)
+
+    // Verify structure integrity
+    Assert.IsEqual(R.data.value, 1)
+    Assert.IsEqual(R.children.length, 2)
+    Assert.IsEqual(R.children[0].id, 1)
+    Assert.IsEqual(R.children[1].id, 2)
+
+    // Verify circular references are maintained
+    Assert.IsEqual(R.children[0].parent, R)
+    Assert.IsEqual(R.children[1].parent, R)
+    Assert.IsEqual(R.children[0].siblings[0], R.children[1])
+    Assert.IsEqual(R.children[1].siblings[0], R.children[0])
+    Assert.IsEqual(R.metadata.firstChild, R.children[0])
+  })
+  it('Should handle deep indirect circular references', () => {
+    // Create a deeply nested structure with circular reference at the end
+    const V = {
+      level1: {
+        level2: {
+          level3: {
+            level4: {
+              level5: {},
+            },
+          },
+        },
+      },
+    } as any
+
+    // Create circular reference from deep level back to root
+    V.level1.level2.level3.level4.level5.backToRoot = V
+    V.level1.level2.level3.level4.level5.backToLevel2 = V.level1.level2
+
+    const R = Value.Clone(V)
+
+    // Verify the structure and circular references
     Assert.IsEqual(R, V)
   })
 })
