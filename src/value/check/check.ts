@@ -275,18 +275,23 @@ function FromObject(schema: TObject, references: TSchema[], value: any, cache: W
   if (IsDefined<number>(schema.maxProperties) && !(Object.getOwnPropertyNames(value).length <= schema.maxProperties)) {
     return false
   }
+  if (cache.has(value)) return true
+  cache.add(value)
   const knownKeys = Object.getOwnPropertyNames(schema.properties)
   for (const knownKey of knownKeys) {
     const property = schema.properties[knownKey]
     if (schema.required && schema.required.includes(knownKey)) {
       if (!Visit(property, references, value[knownKey], cache)) {
+        cache.delete(value)
         return false
       }
       if ((ExtendsUndefinedCheck(property) || IsAnyOrUnknown(property)) && !(knownKey in value)) {
+        cache.delete(value)
         return false
       }
     } else {
       if (TypeSystemPolicy.IsExactOptionalProperty(value, knownKey) && !Visit(property, references, value[knownKey], cache)) {
+        cache.delete(value)
         return false
       }
     }
@@ -295,14 +300,20 @@ function FromObject(schema: TObject, references: TSchema[], value: any, cache: W
     const valueKeys = Object.getOwnPropertyNames(value)
     // optimization: value is valid if schemaKey length matches the valueKey length
     if (schema.required && schema.required.length === knownKeys.length && valueKeys.length === knownKeys.length) {
+      cache.delete(value)
       return true
     } else {
+      cache.delete(value)
       return valueKeys.every((valueKey) => knownKeys.includes(valueKey))
     }
   } else if (typeof schema.additionalProperties === 'object') {
     const valueKeys = Object.getOwnPropertyNames(value)
-    return valueKeys.every((key) => knownKeys.includes(key) || Visit(schema.additionalProperties as TSchema, references, value[key], cache))
+    const result = valueKeys.every((key) => knownKeys.includes(key) || Visit(schema.additionalProperties as TSchema, references, value[key], cache))
+
+    cache.delete(value)
+    return result
   } else {
+    cache.delete(value)
     return true
   }
 }
