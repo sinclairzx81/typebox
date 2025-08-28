@@ -1,6 +1,6 @@
 {
   "name": "@scalar/typebox",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Json Schema Type Builder with Static Type Resolution for TypeScript",
   "keywords": [
     "typescript",
