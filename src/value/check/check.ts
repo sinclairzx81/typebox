@@ -109,7 +109,7 @@ function FromAny(schema: TAny, references: TSchema[], value: any): boolean {
 function FromArgument(schema: TArgument, references: TSchema[], value: any): boolean {
   return true
 }
-function FromArray(schema: TArray, references: TSchema[], value: any): boolean {
+function FromArray(schema: TArray, references: TSchema[], value: any, cache: WeakSet<object>): boolean {
   if (!IsArray(value)) return false
   if (IsDefined<number>(schema.minItems) && !(value.length >= schema.minItems)) {
     return false
@@ -117,7 +117,9 @@ function FromArray(schema: TArray, references: TSchema[], value: any): boolean {
   if (IsDefined<number>(schema.maxItems) && !(value.length <= schema.maxItems)) {
     return false
   }
-  if (!value.every((value) => Visit(schema.items, references, value))) {
+  if (cache.has(value)) return true
+  cache.add(value)
+  if (!value.every((value) => Visit(schema.items, references, value, cache))) {
     return false
   }
   // prettier-ignore
@@ -129,7 +131,7 @@ function FromArray(schema: TArray, references: TSchema[], value: any): boolean {
     return true // exit
   }
   const containsSchema = IsDefined<TSchema>(schema.contains) ? schema.contains : Never()
-  const containsCount = value.reduce((acc: number, value) => (Visit(containsSchema, references, value) ? acc + 1 : acc), 0)
+  const containsCount = value.reduce((acc: number, value) => (Visit(containsSchema, references, value, cache) ? acc + 1 : acc), 0)
   if (containsCount === 0) {
     return false
   }
@@ -166,8 +168,8 @@ function FromBigInt(schema: TBigInt, references: TSchema[], value: any): boolean
 function FromBoolean(schema: TBoolean, references: TSchema[], value: any): boolean {
   return IsBoolean(value)
 }
-function FromConstructor(schema: TConstructor, references: TSchema[], value: any): boolean {
-  return Visit(schema.returns, references, value.prototype)
+function FromConstructor(schema: TConstructor, references: TSchema[], value: any, cache: WeakSet<object>): boolean {
+  return Visit(schema.returns, references, value.prototype, cache)
 }
 function FromDate(schema: TDate, references: TSchema[], value: any): boolean {
   if (!IsDate(value)) return false
@@ -191,10 +193,10 @@ function FromDate(schema: TDate, references: TSchema[], value: any): boolean {
 function FromFunction(schema: TFunction, references: TSchema[], value: any): boolean {
   return IsFunction(value)
 }
-function FromImport(schema: TImport, references: TSchema[], value: any): boolean {
+function FromImport(schema: TImport, references: TSchema[], value: any, cache: WeakSet<object>): boolean {
   const definitions = globalThis.Object.values(schema.$defs) as TSchema[]
   const target = schema.$defs[schema.$ref] as TSchema
-  return Visit(target, [...references, ...definitions], value)
+  return Visit(target, [...references, ...definitions], value, cache)
 }
 function FromInteger(schema: TInteger, references: TSchema[], value: any): boolean {
   if (!IsInteger(value)) {
@@ -217,15 +219,15 @@ function FromInteger(schema: TInteger, references: TSchema[], value: any): boole
   }
   return true
 }
-function FromIntersect(schema: TIntersect, references: TSchema[], value: any): boolean {
-  const check1 = schema.allOf.every((schema) => Visit(schema, references, value))
+function FromIntersect(schema: TIntersect, references: TSchema[], value: any, cache: WeakSet<object>): boolean {
+  const check1 = schema.allOf.every((schema) => Visit(schema, references, value, cache))
   if (schema.unevaluatedProperties === false) {
     const keyPattern = new RegExp(KeyOfPattern(schema))
     const check2 = Object.getOwnPropertyNames(value).every((key) => keyPattern.test(key))
     return check1 && check2
   } else if (IsSchema(schema.unevaluatedProperties)) {
     const keyCheck = new RegExp(KeyOfPattern(schema))
-    const check2 = Object.getOwnPropertyNames(value).every((key) => keyCheck.test(key) || Visit(schema.unevaluatedProperties as TSchema, references, value[key]))
+    const check2 = Object.getOwnPropertyNames(value).every((key) => keyCheck.test(key) || Visit(schema.unevaluatedProperties as TSchema, references, value[key], cache))
     return check1 && check2
   } else {
     return check1
@@ -240,8 +242,8 @@ function FromLiteral(schema: TLiteral, references: TSchema[], value: any): boole
 function FromNever(schema: TNever, references: TSchema[], value: any): boolean {
   return false
 }
-function FromNot(schema: TNot, references: TSchema[], value: any): boolean {
-  return !Visit(schema.not, references, value)
+function FromNot(schema: TNot, references: TSchema[], value: any, cache: WeakSet<object>): boolean {
+  return !Visit(schema.not, references, value, cache)
 }
 function FromNull(schema: TNull, references: TSchema[], value: any): boolean {
   return IsNull(value)
@@ -265,7 +267,7 @@ function FromNumber(schema: TNumber, references: TSchema[], value: any): boolean
   }
   return true
 }
-function FromObject(schema: TObject, references: TSchema[], value: any): boolean {
+function FromObject(schema: TObject, references: TSchema[], value: any, cache: WeakSet<object>): boolean {
   if (!TypeSystemPolicy.IsObjectLike(value)) return false
   if (IsDefined<number>(schema.minProperties) && !(Object.getOwnPropertyNames(value).length >= schema.minProperties)) {
     return false
@@ -273,18 +275,23 @@ function FromObject(schema: TObject, references: TSchema[], value: any): boolean
   if (IsDefined<number>(schema.maxProperties) && !(Object.getOwnPropertyNames(value).length <= schema.maxProperties)) {
     return false
   }
+  if (cache.has(value)) return true
+  cache.add(value)
   const knownKeys = Object.getOwnPropertyNames(schema.properties)
   for (const knownKey of knownKeys) {
     const property = schema.properties[knownKey]
     if (schema.required && schema.required.includes(knownKey)) {
-      if (!Visit(property, references, value[knownKey])) {
+      if (!Visit(property, references, value[knownKey], cache)) {
+        cache.delete(value)
         return false
       }
       if ((ExtendsUndefinedCheck(property) || IsAnyOrUnknown(property)) && !(knownKey in value)) {
+        cache.delete(value)
         return false
       }
     } else {
-      if (TypeSystemPolicy.IsExactOptionalProperty(value, knownKey) && !Visit(property, references, value[knownKey])) {
+      if (TypeSystemPolicy.IsExactOptionalProperty(value, knownKey) && !Visit(property, references, value[knownKey], cache)) {
+        cache.delete(value)
         return false
       }
     }
@@ -293,21 +300,27 @@ function FromObject(schema: TObject, references: TSchema[], value: any): boolean
     const valueKeys = Object.getOwnPropertyNames(value)
     // optimization: value is valid if schemaKey length matches the valueKey length
     if (schema.required && schema.required.length === knownKeys.length && valueKeys.length === knownKeys.length) {
+      cache.delete(value)
       return true
     } else {
+      cache.delete(value)
       return valueKeys.every((valueKey) => knownKeys.includes(valueKey))
     }
   } else if (typeof schema.additionalProperties === 'object') {
     const valueKeys = Object.getOwnPropertyNames(value)
-    return valueKeys.every((key) => knownKeys.includes(key) || Visit(schema.additionalProperties as TSchema, references, value[key]))
+    const result = valueKeys.every((key) => knownKeys.includes(key) || Visit(schema.additionalProperties as TSchema, references, value[key], cache))
+
+    cache.delete(value)
+    return result
   } else {
+    cache.delete(value)
     return true
   }
 }
 function FromPromise(schema: TPromise, references: TSchema[], value: any): boolean {
   return IsPromise(value)
 }
-function FromRecord(schema: TRecord, references: TSchema[], value: any): boolean {
+function FromRecord(schema: TRecord, references: TSchema[], value: any, cache: WeakSet<object>): boolean {
   if (!TypeSystemPolicy.IsRecordLike(value)) {
     return false
   }
@@ -321,11 +334,11 @@ function FromRecord(schema: TRecord, references: TSchema[], value: any): boolean
   const regex = new RegExp(patternKey)
   // prettier-ignore
   const check1 = Object.entries(value).every(([key, value]) => {
-    return (regex.test(key)) ? Visit(patternSchema, references, value) : true
+    return (regex.test(key)) ? Visit(patternSchema, references, value, cache) : true
   })
   // prettier-ignore
   const check2 = typeof schema.additionalProperties === 'object' ? Object.entries(value).every(([key, value]) => {
-    return (!regex.test(key)) ? Visit(schema.additionalProperties as TSchema, references, value) : true
+    return (!regex.test(key)) ? Visit(schema.additionalProperties as TSchema, references, value, cache) : true
   }) : true
   const check3 =
     schema.additionalProperties === false
@@ -335,8 +348,8 @@ function FromRecord(schema: TRecord, references: TSchema[], value: any): boolean
       : true
   return check1 && check2 && check3
 }
-function FromRef(schema: TRef, references: TSchema[], value: any): boolean {
-  return Visit(Deref(schema, references), references, value)
+function FromRef(schema: TRef, references: TSchema[], value: any, cache: WeakSet<object>): boolean {
+  return Visit(Deref(schema, references), references, value, cache)
 }
 function FromRegExp(schema: TRegExp, references: TSchema[], value: any): boolean {
   const regex = new RegExp(schema.source, schema.flags)
@@ -375,10 +388,10 @@ function FromSymbol(schema: TSymbol, references: TSchema[], value: any): boolean
 function FromTemplateLiteral(schema: TTemplateLiteral, references: TSchema[], value: any): boolean {
   return IsString(value) && new RegExp(schema.pattern).test(value)
 }
-function FromThis(schema: TThis, references: TSchema[], value: any): boolean {
-  return Visit(Deref(schema, references), references, value)
+function FromThis(schema: TThis, references: TSchema[], value: any, cache: WeakSet<object>): boolean {
+  return Visit(Deref(schema, references), references, value, cache)
 }
-function FromTuple(schema: TTuple<any[]>, references: TSchema[], value: any): boolean {
+function FromTuple(schema: TTuple<any[]>, references: TSchema[], value: any, cache: WeakSet<object>): boolean {
   if (!IsArray(value)) {
     return false
   }
@@ -392,15 +405,15 @@ function FromTuple(schema: TTuple<any[]>, references: TSchema[], value: any): bo
     return true
   }
   for (let i = 0; i < schema.items.length; i++) {
-    if (!Visit(schema.items[i], references, value[i])) return false
+    if (!Visit(schema.items[i], references, value[i], cache)) return false
   }
   return true
 }
 function FromUndefined(schema: TUndefined, references: TSchema[], value: any): boolean {
   return IsUndefined(value)
 }
-function FromUnion(schema: TUnion, references: TSchema[], value: any): boolean {
-  return schema.anyOf.some((inner) => Visit(inner, references, value))
+function FromUnion(schema: TUnion, references: TSchema[], value: any, cache: WeakSet<object>): boolean {
+  return schema.anyOf.some((inner) => Visit(inner, references, value, cache))
 }
 function FromUint8Array(schema: TUint8Array, references: TSchema[], value: any): boolean {
   if (!IsUint8Array(value)) {
@@ -425,7 +438,7 @@ function FromKind(schema: TSchema, references: TSchema[], value: unknown): boole
   const func = TypeRegistry.Get(schema[Kind])!
   return func(schema, value)
 }
-function Visit<T extends TSchema>(schema: T, references: TSchema[], value: any): boolean {
+function Visit<T extends TSchema>(schema: T, references: TSchema[], value: any, cache: WeakSet<object>): boolean {
   const references_ = IsDefined<string>(schema.$id) ? Pushref(schema, references) : references
   const schema_ = schema as any
   switch (schema_[Kind]) {
@@ -434,7 +447,7 @@ function Visit<T extends TSchema>(schema: T, references: TSchema[], value: any):
     case 'Argument':
       return FromArgument(schema_, references_, value)
     case 'Array':
-      return FromArray(schema_, references_, value)
+      return FromArray(schema_, references_, value, cache)
     case 'AsyncIterator':
       return FromAsyncIterator(schema_, references_, value)
     case 'BigInt':
@@ -442,17 +455,17 @@ function Visit<T extends TSchema>(schema: T, references: TSchema[], value: any):
     case 'Boolean':
       return FromBoolean(schema_, references_, value)
     case 'Constructor':
-      return FromConstructor(schema_, references_, value)
+      return FromConstructor(schema_, references_, value, cache)
     case 'Date':
       return FromDate(schema_, references_, value)
     case 'Function':
       return FromFunction(schema_, references_, value)
     case 'Import':
-      return FromImport(schema_, references_, value)
+      return FromImport(schema_, references_, value, cache)
     case 'Integer':
       return FromInteger(schema_, references_, value)
     case 'Intersect':
-      return FromIntersect(schema_, references_, value)
+      return FromIntersect(schema_, references_, value, cache)
     case 'Iterator':
       return FromIterator(schema_, references_, value)
     case 'Literal':
@@ -460,19 +473,19 @@ function Visit<T extends TSchema>(schema: T, references: TSchema[], value: any):
     case 'Never':
       return FromNever(schema_, references_, value)
     case 'Not':
-      return FromNot(schema_, references_, value)
+      return FromNot(schema_, references_, value, cache)
     case 'Null':
       return FromNull(schema_, references_, value)
     case 'Number':
       return FromNumber(schema_, references_, value)
     case 'Object':
-      return FromObject(schema_, references_, value)
+      return FromObject(schema_, references_, value, cache)
     case 'Promise':
       return FromPromise(schema_, references_, value)
     case 'Record':
-      return FromRecord(schema_, references_, value)
+      return FromRecord(schema_, references_, value, cache)
     case 'Ref':
-      return FromRef(schema_, references_, value)
+      return FromRef(schema_, references_, value, cache)
     case 'RegExp':
       return FromRegExp(schema_, references_, value)
     case 'String':
@@ -482,13 +495,13 @@ function Visit<T extends TSchema>(schema: T, references: TSchema[], value: any):
     case 'TemplateLiteral':
       return FromTemplateLiteral(schema_, references_, value)
     case 'This':
-      return FromThis(schema_, references_, value)
+      return FromThis(schema_, references_, value, cache)
     case 'Tuple':
-      return FromTuple(schema_, references_, value)
+      return FromTuple(schema_, references_, value, cache)
     case 'Undefined':
       return FromUndefined(schema_, references_, value)
     case 'Union':
-      return FromUnion(schema_, references_, value)
+      return FromUnion(schema_, references_, value, cache)
     case 'Uint8Array':
       return FromUint8Array(schema_, references_, value)
     case 'Unknown':
@@ -504,10 +517,13 @@ function Visit<T extends TSchema>(schema: T, references: TSchema[], value: any):
 // Check
 // --------------------------------------------------------------------------
 /** Returns true if the value matches the given type. */
-export function Check<T extends TSchema>(schema: T, references: TSchema[], value: unknown): value is Static<T>
+export function Check<T extends TSchema>(schema: T, references: TSchema[], value: unknown, cache?: WeakSet<object>): value is Static<T>
 /** Returns true if the value matches the given type. */
-export function Check<T extends TSchema>(schema: T, value: unknown): value is Static<T>
+export function Check<T extends TSchema>(schema: T, value: unknown, cache?: WeakSet<object>): value is Static<T>
 /** Returns true if the value matches the given type. */
 export function Check(...args: any[]) {
-  return args.length === 3 ? Visit(args[0], args[1], args[2]) : Visit(args[0], [], args[1])
+  if (args.length === 2 || (args.length === 3 && args[2] instanceof WeakSet)) {
+    return Visit(args[0], [], args[1], args[2] ?? new WeakSet())
+  }
+  return Visit(args[0], args[1], args[2], args[3] ?? new WeakSet())
 }

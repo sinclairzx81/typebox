@@ -66,4 +66,53 @@ describe('value/check/Recursive', () => {
     const result = Value.Check(T, value)
     Assert.IsEqual(result, false)
   })
+
+  // ------------------------------------------------------------------------
+  // ref: https://github.com/sinclairzx81/typebox/issues/1302
+  // ------------------------------------------------------------------------
+  it('should not break when checking a circular structure #1', () => {
+    const value = {
+      id: '1',
+      nodes: [],
+    }
+
+    // @ts-expect-error
+    value.nodes[0] = value
+
+    const result = Value.Check(T, value)
+    Assert.IsEqual(result, true)
+  })
+
+  it('should not break when checking a circular structure #2', () => {
+    const value = {
+      id: 1,
+      nodes: [],
+    }
+
+    // @ts-expect-error
+    value.nodes[0] = value
+
+    const result = Value.Check(T, value)
+    Assert.IsEqual(result, false)
+  })
+
+  it('should not break when checking a circular structure #3', () => {
+    const value = {
+      a: '',
+    }
+
+    // @ts-expect-error
+    value.b = value
+
+    const T = Type.Recursive((This) =>
+      Type.Object({
+        a: Type.String(),
+        b: This,
+      }),
+    )
+
+    const result = Value.Check(T, value)
+
+    Assert.IsEqual(result, true)
+  })
 })

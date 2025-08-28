@@ -96,12 +96,12 @@ function SelectUnion(union: TUnion, references: TSchema[], value: any): TSchema 
   }
   return select
 }
-function CastUnion(union: TUnion, references: TSchema[], value: any) {
+function CastUnion(union: TUnion, references: TSchema[], value: any, cache: WeakMap<object, unknown>) {
   if ('default' in union) {
     return typeof value === 'function' ? union.default : Clone(union.default)
   } else {
     const schema = SelectUnion(union, references, value)
-    return Cast(schema, references, value)
+    return Cast(schema, references, value, cache)
   }
 }
 
@@ -117,31 +117,31 @@ function Default(schema: TSchema, references: TSchema[], value: any): any {
 // ------------------------------------------------------------------
 // Cast
 // ------------------------------------------------------------------
-function FromArray(schema: TArray, references: TSchema[], value: any): any {
+function FromArray(schema: TArray, references: TSchema[], value: any, cache: WeakMap<object, unknown>): any {
   if (Check(schema, references, value)) return Clone(value)
-  const created = IsArray(value) ? Clone(value) : Create(schema, references)
+  const created = IsArray(value) ? value : Create(schema, references)
   const minimum = IsNumber(schema.minItems) && created.length < schema.minItems ? [...created, ...Array.from({ length: schema.minItems - created.length }, () => null)] : created
   const maximum = IsNumber(schema.maxItems) && minimum.length > schema.maxItems ? minimum.slice(0, schema.maxItems) : minimum
-  const casted = maximum.map((value: unknown) => Visit(schema.items, references, value))
+  const casted = maximum.map((value: unknown) => Visit(schema.items, references, value, cache))
   if (schema.uniqueItems !== true) return casted
   const unique = [...new Set(casted)]
   if (!Check(schema, references, unique)) throw new ValueCastError(schema, 'Array cast produced invalid data due to uniqueItems constraint')
   return unique
 }
-function FromConstructor(schema: TConstructor, references: TSchema[], value: any): any {
+function FromConstructor(schema: TConstructor, references: TSchema[], value: any, cache: WeakMap<object, unknown>): any {
   if (Check(schema, references, value)) return Create(schema, references)
   const required = new Set(schema.returns.required || [])
   const result = function () {}
   for (const [key, property] of Object.entries(schema.returns.properties)) {
     if (!required.has(key) && value.prototype[key] === undefined) continue
-    result.prototype[key] = Visit(property as TSchema, references, value.prototype[key])
+    result.prototype[key] = Visit(property as TSchema, references, value.prototype[key], cache)
   }
   return result
 }
-function FromImport(schema: TImport, references: TSchema[], value: unknown): boolean {
+function FromImport(schema: TImport, references: TSchema[], value: unknown, cache: WeakMap<object, unknown>): boolean {
   const definitions = globalThis.Object.values(schema.$defs) as TSchema[]
   const target = schema.$defs[schema.$ref] as TSchema
-  return Visit(target, [...references, ...definitions], value)
+  return Visit(target, [...references, ...definitions], value, cache)
 }
 
 // ------------------------------------------------------------------
@@ -165,52 +165,54 @@ function FromIntersect(schema: TIntersect, references: TSchema[], value: any): a
 function FromNever(schema: TNever, references: TSchema[], value: any): any {
   throw new ValueCastError(schema, 'Never types cannot be cast')
 }
-function FromObject(schema: TObject, references: TSchema[], value: any): any {
+function FromObject(schema: TObject, references: TSchema[], value: any, cache: WeakMap<object, unknown>): any {
+  if (cache.has(value)) return cache.get(value)
   if (Check(schema, references, value)) return value
   if (value === null || typeof value !== 'object') return Create(schema, references)
   const required = new Set(schema.required || [])
   const result = {} as Record<string, any>
+  cache.set(value, result)
   for (const [key, property] of Object.entries(schema.properties)) {
     if (!required.has(key) && value[key] === undefined) continue
-    result[key] = Visit(property, references, value[key])
+    result[key] = Visit(property, references, value[key], cache)
   }
   // additional schema properties
   if (typeof schema.additionalProperties === 'object') {
     const propertyNames = Object.getOwnPropertyNames(schema.properties)
     for (const propertyName of Object.getOwnPropertyNames(value)) {
       if (propertyNames.includes(propertyName)) continue
-      result[propertyName] = Visit(schema.additionalProperties, references, value[propertyName])
+      result[propertyName] = Visit(schema.additionalProperties, references, value[propertyName], cache)
     }
   }
   return result
 }
-function FromRecord(schema: TRecord, references: TSchema[], value: any): any {
+function FromRecord(schema: TRecord, references: TSchema[], value: any, cache: WeakMap<object, unknown>): any {
   if (Check(schema, references, value)) return Clone(value)
   if (value === null || typeof value !== 'object' || Array.isArray(value) || value instanceof Date) return Create(schema, references)
   const subschemaPropertyName = Object.getOwnPropertyNames(schema.patternProperties)[0]
   const subschema = schema.patternProperties[subschemaPropertyName]
   const result = {} as Record<string, any>
   for (const [propKey, propValue] of Object.entries(value)) {
-    result[propKey] = Visit(subschema, references, propValue)
+    result[propKey] = Visit(subschema, references, propValue, cache)
   }
   return result
 }
-function FromRef(schema: TRef, references: TSchema[], value: any): any {
-  return Visit(Deref(schema, references), references, value)
+function FromRef(schema: TRef, references: TSchema[], value: any, cache: WeakMap<object, unknown>): any {
+  return Visit(Deref(schema, references), references, value, cache)
 }
-function FromThis(schema: TThis, references: TSchema[], value: any): any {
-  return Visit(Deref(schema, references), references, value)
+function FromThis(schema: TThis, references: TSchema[], value: any, cache: WeakMap<object, unknown>): any {
+  return Visit(Deref(schema, references), references, value, cache)
 }
-function FromTuple(schema: TTuple, references: TSchema[], value: any): any {
+function FromTuple(schema: TTuple, references: TSchema[], value: any, cache: WeakMap<object, unknown>): any {
   if (Check(schema, references, value)) return Clone(value)
   if (!IsArray(value)) return Create(schema, references)
   if (schema.items === undefined) return []
-  return schema.items.map((schema, index) => Visit(schema, references, value[index]))
+  return schema.items.map((schema, index) => Visit(schema, references, value[index], cache))
 }
-function FromUnion(schema: TUnion, references: TSchema[], value: any): any {
-  return Check(schema, references, value) ? Clone(value) : CastUnion(schema, references, value)
+function FromUnion(schema: TUnion, references: TSchema[], value: any, cache: WeakMap<object, unknown>): any {
+  return Check(schema, references, value) ? Clone(value) : CastUnion(schema, references, value, cache)
 }
-function Visit(schema: TSchema, references: TSchema[], value: any): any {
+function Visit(schema: TSchema, references: TSchema[], value: any, cache: WeakMap<object, unknown>): any {
   const references_ = IsString(schema.$id) ? Pushref(schema, references) : references
   const schema_ = schema as any
   switch (schema[Kind]) {
@@ -218,27 +220,27 @@ function Visit(schema: TSchema, references: TSchema[], value: any): any {
     // Structural
     // --------------------------------------------------------------
     case 'Array':
-      return FromArray(schema_, references_, value)
+      return FromArray(schema_, references_, value, cache)
     case 'Constructor':
-      return FromConstructor(schema_, references_, value)
+      return FromConstructor(schema_, references_, value, cache)
     case 'Import':
-      return FromImport(schema_, references_, value)
+      return FromImport(schema_, references_, value, cache)
     case 'Intersect':
       return FromIntersect(schema_, references_, value)
     case 'Never':
       return FromNever(schema_, references_, value)
     case 'Object':
-      return FromObject(schema_, references_, value)
+      return FromObject(schema_, references_, value, cache)
     case 'Record':
-      return FromRecord(schema_, references_, value)
+      return FromRecord(schema_, references_, value, cache)
     case 'Ref':
-      return FromRef(schema_, references_, value)
+      return FromRef(schema_, references_, value, cache)
     case 'This':
-      return FromThis(schema_, references_, value)
+      return FromThis(schema_, references_, value, cache)
     case 'Tuple':
-      return FromTuple(schema_, references_, value)
+      return FromTuple(schema_, references_, value, cache)
     case 'Union':
-      return FromUnion(schema_, references_, value)
+      return FromUnion(schema_, references_, value, cache)
     // --------------------------------------------------------------
     // DefaultClone
     // --------------------------------------------------------------
@@ -257,10 +259,13 @@ function Visit(schema: TSchema, references: TSchema[], value: any): any {
 // Cast
 // ------------------------------------------------------------------
 /** Casts a value into a given type and references. The return value will retain as much information of the original value as possible. */
-export function Cast<T extends TSchema>(schema: T, references: TSchema[], value: unknown): Static<T>
+export function Cast<T extends TSchema>(schema: T, references: TSchema[], value: unknown, cache?: WeakMap<object, unknown>): Static<T>
 /** Casts a value into a given type. The return value will retain as much information of the original value as possible. */
-export function Cast<T extends TSchema>(schema: T, value: unknown): Static<T>
+export function Cast<T extends TSchema>(schema: T, value: unknown, cache?: WeakMap<object, unknown>): Static<T>
 /** Casts a value into a given type. The return value will retain as much information of the original value as possible. */
 export function Cast(...args: any[]) {
-  return args.length === 3 ? Visit(args[0], args[1], args[2]) : Visit(args[0], [], args[1])
+  if (args.length === 2 || (args.length === 3 && args[2] instanceof WeakMap)) {
+    return Visit(args[0], [], args[1], args[2] ?? new WeakMap())
+  }
+  return Visit(args[0], args[1], args[2], args[3] ?? new WeakMap())
 }
