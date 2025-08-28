@@ -94,7 +94,7 @@ export async function build_to(remote = 'target/remote', target = 'target/build'
   await folder(target).add('license')
   await shell(`cd ${target} && npm pack`)
   const { version } = JSON.parse(Fs.readFileSync('package.json', 'utf8'))
-  const filename = `${target}/sinclair-typebox-${version}.tgz`
+  const filename = `${target}/scalar-typebox-${version}.tgz`
   await folder(remote).add(filename)
 }
 
@@ -113,7 +113,7 @@ export async function install_local() {
 export async function publish(otp, target = 'target/build') {
   const { version } = JSON.parse(Fs.readFileSync('package.json', 'utf8'))
   if(version.includes('-dev')) throw Error(`package version should not include -dev specifier`)
-  await shell(`cd ${target} && npm publish sinclair-typebox-${version}.tgz --access=public`)
+  await shell(`cd ${target} && npm publish scalar-typebox-${version}.tgz --access=public`)
 }
 
 // -------------------------------------------------------------
@@ -122,5 +122,5 @@ export async function publish(otp, target = 'target/build') {
 export async function publish_dev(otp, target = 'target/build') {
   const { version } = JSON.parse(Fs.readFileSync(`${target}/package.json`, 'utf8'))
   if(!version.includes('-dev')) throw Error(`development package version should include -dev specifier`)
-  await shell(`cd ${target} && npm publish sinclair-typebox-${version}.tgz --access=public --otp ${otp} --tag dev`)
+  await shell(`cd ${target} && npm publish scalar-typebox-${version}.tgz --access=public --otp ${otp} --tag dev`)
 }
