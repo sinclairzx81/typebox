@@ -64,7 +64,7 @@ export async function test(filter = '') {
 // -------------------------------------------------------------------------------
 export async function build_check(target = 'target/build') {
   const { version } = JSON.parse(Fs.readFileSync('package.json', 'utf8'))
-  await shell(`cd ${target} && attw sinclair-typebox-${version}.tgz`)
+  await shell(`cd ${target} && attw scalar-typebox-${version}.tgz`)
 }
 export async function build(target = 'target/build') {
   await test()
