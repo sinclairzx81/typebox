@@ -114,8 +114,6 @@ export async function publish(otp, target = 'target/build') {
   const { version } = JSON.parse(Fs.readFileSync('package.json', 'utf8'))
   if(version.includes('-dev')) throw Error(`package version should not include -dev specifier`)
   await shell(`cd ${target} && npm publish sinclair-typebox-${version}.tgz --access=public`)
-  await shell(`git tag ${version}`)
-  await shell(`git push origin ${version}`)
 }
 
 // -------------------------------------------------------------
