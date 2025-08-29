@@ -34,6 +34,7 @@ export async function compile(target: string) {
     `--outDir ${target}`,
     '--target ES2020',
     '--module ESNext',
+    '--moduleResolution Bundler',
     '--declaration',
   ].join(' ')
   await shell(`tsc -p ./src/tsconfig.json ${options}`)
