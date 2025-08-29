@@ -33,7 +33,8 @@ export async function compile(target: string) {
   const options = [
     `--outDir ${target}`,
     '--target ES2020',
-    '--module CommonJS',
+    '--module Node16',
+    '--moduleResolution Node16',
     '--declaration',
   ].join(' ')
   await shell(`tsc -p ./src/tsconfig.json ${options}`)
