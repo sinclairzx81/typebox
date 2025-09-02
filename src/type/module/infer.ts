@@ -92,9 +92,15 @@ type TInferIntersect<ModuleProperties extends TProperties, Types extends TSchema
 // ------------------------------------------------------------------
 // Object
 // ------------------------------------------------------------------
-type ReadonlyOptionalPropertyKeys<Properties extends TProperties> = { [Key in keyof Properties]: Properties[Key] extends TReadonly<TSchema> ? (Properties[Key] extends TOptional<Properties[Key]> ? Key : never) : never }[keyof Properties]
-type ReadonlyPropertyKeys<Source extends TProperties> = { [Key in keyof Source]: Source[Key] extends TReadonly<TSchema> ? (Source[Key] extends TOptional<Source[Key]> ? never : Key) : never }[keyof Source]
-type OptionalPropertyKeys<Source extends TProperties> = { [Key in keyof Source]: Source[Key] extends TOptional<TSchema> ? (Source[Key] extends TReadonly<Source[Key]> ? never : Key) : never }[keyof Source]
+type ReadonlyOptionalPropertyKeys<Properties extends TProperties> = {
+  [Key in keyof Properties]: Properties[Key] extends TReadonly<TSchema> ? (Properties[Key] extends TOptional<Properties[Key]> ? Key : never) : never
+}[keyof Properties]
+type ReadonlyPropertyKeys<Source extends TProperties> = {
+  [Key in keyof Source]: Source[Key] extends TReadonly<TSchema> ? (Source[Key] extends TOptional<Source[Key]> ? never : Key) : never
+}[keyof Source]
+type OptionalPropertyKeys<Source extends TProperties> = {
+  [Key in keyof Source]: Source[Key] extends TOptional<TSchema> ? (Source[Key] extends TReadonly<Source[Key]> ? never : Key) : never
+}[keyof Source]
 type RequiredPropertyKeys<Source extends TProperties> = keyof Omit<Source, ReadonlyOptionalPropertyKeys<Source> | ReadonlyPropertyKeys<Source> | OptionalPropertyKeys<Source>>
 // prettier-ignore
 type InferPropertiesWithModifiers<Properties extends TProperties, Source extends Record<keyof any, unknown>> = Evaluate<(
@@ -149,6 +155,7 @@ type TInferUnion<ModuleProperties extends TProperties, Types extends TSchema[], 
 // ------------------------------------------------------------------
 // prettier-ignore
 type TInfer<ModuleProperties extends TProperties, Type extends TSchema> = (
+  Type extends TOptional<infer O extends TSchema> ? TInfer<ModuleProperties, O> | undefined :
   Type extends TArray<infer Type extends TSchema> ? TInferArray<ModuleProperties, Type> :
   Type extends TAsyncIterator<infer Type extends TSchema> ? TInferAsyncIterator<ModuleProperties, Type> :
   Type extends TConstructor<infer Parameters extends TSchema[], infer InstanceType extends TSchema> ? TInferConstructor<ModuleProperties, Parameters, InstanceType> :
