@@ -1,0 +1,38 @@
+<h1>Script</h1>
+<p>A TypeScript Engine for JavaScript</p>
+<h2>Overview</h2>
+<p>TypeBox is a runtime type system that uses Json Schema as an AST for runtime type representation. The Script function provides a syntactic frontend to the type system and allows Json Schema to be created using native TypeScript syntax. TypeBox provides full static and runtime type safety for string-encoded types.</p>
+<h3>Example</h3>
+<p>The following uses the Script function to create and transform Json Schema types.</p>
+<pre><code class="language-typescript">import Type from &#39;typebox&#39;
+
+const T = Type.Script(`{ 
+  x: number, 
+  y: number, 
+  z: number 
+}`)                                                 // const T = {
+                                                    //   type: &#39;object&#39;,
+                                                    //   required: [&#39;x&#39;, &#39;y&#39;, &#39;z&#39;],
+                                                    //   properties: {
+                                                    //     x: { type: &#39;number&#39; },
+                                                    //     y: { type: &#39;number&#39; },
+                                                    //     z: { type: &#39;number&#39; }
+                                                    //   }
+                                                    // }
+
+// Mapped Type
+
+const S = Type.Script({ T }, `{
+  [K in keyof T]: T[K] | null
+}`)                                                 // const S: TObject&lt;{
+                                                    //   x: TUnion&lt;[TNumber, TNull]&gt;,
+                                                    //   y: TUnion&lt;[TNumber, TNull]&gt;,
+                                                    //   z: TUnion&lt;[TNumber, TNull]&gt;
+                                                    // }&gt;
+
+type S = Static&lt;typeof S&gt;                           // type S = {
+                                                    //   x: number | null,
+                                                    //   y: number | null,
+                                                    //   z: number | null
+                                                    // }
+</code></pre>

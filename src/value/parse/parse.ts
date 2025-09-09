@@ -1,10 +1,10 @@
 /*--------------------------------------------------------------------------
 
-@sinclair/typebox/value
+TypeBox
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2025 Haydn Paterson (sinclair) <haydn.developer@gmail.com>
+Copyright (c) 2017-2025 Haydn Paterson 
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,105 +26,74 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { TypeBoxError } from '../../type/error/index'
-import { TransformDecode, TransformEncode, HasTransform } from '../transform/index'
-import { TSchema } from '../../type/schema/index'
-import { StaticDecode } from '../../type/static/index'
-import { Assert } from '../assert/index'
-import { Cast } from '../cast/index'
-import { Clean } from '../clean/index'
-import { Clone } from '../clone/index'
-import { Convert } from '../convert/index'
-import { Default } from '../default/index'
+// deno-fmt-ignore-file
+
+import { Arguments } from '../../system/arguments/index.ts'
+import { type TProperties, type TSchema, type StaticParse } from '../../type/index.ts'
+
+import { AssertError } from '../assert/index.ts'
+import { Check } from '../check/index.ts'
+import { Errors } from '../errors/index.ts'
+import { Clean } from '../clean/index.ts'
+import { Clone } from '../clone/index.ts'
+import { Convert } from '../convert/index.ts'
+import { Default } from '../default/index.ts'
+import { Pipeline } from '../pipeline/index.ts'
 
 // ------------------------------------------------------------------
-// Guards
+// Assert
 // ------------------------------------------------------------------
-import { IsArray, IsUndefined } from '../guard/index'
-
-// ------------------------------------------------------------------
-// Error
-// ------------------------------------------------------------------
-export class ParseError extends TypeBoxError {
-  constructor(message: string) {
-    super(message)
+export class ParseError extends AssertError {
+  constructor(value: unknown, errors: object[]) {
+    super('Parse', value, errors)
   }
 }
-
-// ------------------------------------------------------------------
-// ParseRegistry
-// ------------------------------------------------------------------
-export type TParseOperation = 'Assert' | 'Cast' | 'Clean' | 'Clone' | 'Convert' | 'Decode' | 'Default' | 'Encode' | ({} & string)
-export type TParseFunction = (type: TSchema, references: TSchema[], value: unknown) => unknown
-
-// prettier-ignore
-export namespace ParseRegistry {
-  const registry = new Map<string, TParseFunction>([
-    ['Assert', (type, references, value: unknown) => { Assert(type, references, value); return value }],
-    ['Cast', (type, references, value: unknown) => Cast(type, references, value)],
-    ['Clean', (type, references, value: unknown) => Clean(type, references, value)],
-    ['Clone', (_type, _references, value: unknown) => Clone(value)],
-    ['Convert', (type, references, value: unknown) => Convert(type, references, value)],
-    ['Decode', (type, references, value: unknown) => (HasTransform(type, references) ? TransformDecode(type, references, value) : value)],
-    ['Default', (type, references, value: unknown) => Default(type, references, value)],
-    ['Encode', (type, references, value: unknown) => (HasTransform(type, references) ? TransformEncode(type, references, value) : value)],
-  ])
-  // Deletes an entry from the registry
-  export function Delete(key: string): void {
-    registry.delete(key)
-  }
-  // Sets an entry in the registry
-  export function Set(key: string, callback: TParseFunction): void {
-    registry.set(key, callback)
-  }
-  // Gets an entry in the registry
-  export function Get(key: string): TParseFunction | undefined {
-    return registry.get(key)
-  }
+function Assert(context: TProperties, type: TSchema, value: unknown): unknown {
+  if (!Check(context, type, value)) throw new ParseError(value, Errors(context, type, value))
+  return value
 }
 // ------------------------------------------------------------------
-// Default Parse Pipeline
+// Parser
 // ------------------------------------------------------------------
-// prettier-ignore
-export const ParseDefault = [
-  'Clone',
-  'Clean',
-  'Default',
-  'Convert',
-  'Assert',
-  'Decode'
-] as const
+export const Parser = Pipeline([
+  (_context, _type, value) => Clone(value),
+  (context, type, value) => Default(context, type, value),
+  (context, type, value) => Convert(context, type, value),
+  (context, type, value) => Clean(context, type, value),
+  (context, type, value) => Assert(context, type, value)
+])
 
-// ------------------------------------------------------------------
-// ParseValue
-// ------------------------------------------------------------------
-function ParseValue<Type extends TSchema, Result extends StaticDecode<Type> = StaticDecode<Type>>(operations: TParseOperation[], type: Type, references: TSchema[], value: unknown): Result {
-  return operations.reduce((value, operationKey) => {
-    const operation = ParseRegistry.Get(operationKey)
-    if (IsUndefined(operation)) throw new ParseError(`Unable to find Parse operation '${operationKey}'`)
-    return operation(type, references, value)
-  }, value) as Result
-}
+/** 
+ * Parses a value with the given type. The function will Check the value and return
+ * early if it matches the provided type. If the value does not match, it is processed
+ * through a sequence of Clone, Default, Convert, and Clean operations and checked again.
+ * A `ParseError` is thrown if the value fails to match after the processing sequence.
+ */
+export function Parse<const Type extends TSchema, 
+  Result extends unknown = StaticParse<Type>
+>(type: Type, value: unknown): Result
 
-// ------------------------------------------------------------------
-// Parse
-// ------------------------------------------------------------------
-/** Parses a value using the default parse pipeline. Will throws an `AssertError` if invalid. */
-export function Parse<Type extends TSchema, Output = StaticDecode<Type>, Result extends Output = Output>(schema: Type, references: TSchema[], value: unknown): Result
-/** Parses a value using the default parse pipeline. Will throws an `AssertError` if invalid. */
-export function Parse<Type extends TSchema, Output = StaticDecode<Type>, Result extends Output = Output>(schema: Type, value: unknown): Result
-/** Parses a value using the specified operations. */
-export function Parse<Type extends TSchema>(operations: TParseOperation[], schema: Type, references: TSchema[], value: unknown): unknown
-/** Parses a value using the specified operations. */
-export function Parse<Type extends TSchema>(operations: TParseOperation[], schema: Type, value: unknown): unknown
-/** Parses a value */
-export function Parse(...args: any[]): unknown {
-  // prettier-ignore
-  const [operations, schema, references, value] = (
-    args.length === 4 ? [args[0], args[1], args[2], args[3]] :
-    args.length === 3 ? IsArray(args[0]) ? [args[0], args[1], [], args[2]] : [ParseDefault, args[0], args[1], args[2]] :
-    args.length === 2 ? [ParseDefault, args[0], [], args[1]] :
-    (() => { throw new ParseError('Invalid Arguments') })()
-  )
-  return ParseValue(operations, schema, references, value)
+/** 
+ * Parses a value with the given type. The function will Check the value and return
+ * early if it matches the provided type. If the value does not match, it is processed
+ * through a sequence of Clone, Default, Convert, and Clean operations and checked again.
+ * A `ParseError` is thrown if the value fails to match after the processing sequence.
+ */
+export function Parse<Context extends TProperties, const Type extends TSchema, 
+  Result extends unknown = StaticParse<Type, Context>
+>(context: Context, type: Type, value: unknown): Result
+
+/** 
+ * Parses a value with the given type. The function will Check the value and return
+ * early if it matches the provided type. If the value does not match, it is processed
+ * through a sequence of Clone, Default, Convert, and Clean operations and checked again.
+ * A `ParseError` is thrown if the value fails to match after the processing sequence.
+ */
+export function Parse(...args: unknown[]): never {
+  const [context, type, value] = Arguments.Match<[TProperties, TSchema, unknown]>(args, {
+    3: (context, type, value) => [context, type, value],
+    2: (type, value) => [{}, type, value],
+  })
+  const result = Check(context, type, value) ? value : Parser(context, type, value)
+  return result as never
 }

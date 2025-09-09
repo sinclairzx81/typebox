@@ -1,0 +1,38 @@
+<h1>String</h1>
+<p>Creates a String type.</p>
+<h2>Example</h2>
+<p>Example usage is shown below.</p>
+<pre><code class="language-typescript">const T = Type.String()                             // const T = {
+                                                    //   type: &#39;string&#39;
+                                                    // }
+
+type T = Static&lt;typeof T&gt;                           // type T = string
+</code></pre>
+<h2>Guard</h2>
+<p>Use the IsString function to guard values of this type.</p>
+<pre><code class="language-typescript">Type.IsString(value)                                // value is TString
+</code></pre>
+<h2>Options</h2>
+<p>The following options are available for String</p>
+<pre><code class="language-typescript">export interface TStringOptions extends TSchemaOptions {
+  /** 
+   * A string format such as &#39;email&#39;, &#39;uuid&#39; or other registered format.
+   */
+  format?: TFormat
+  /** 
+   * Specifies the minimum number of characters allowed in the string.  
+   * Must be a non-negative integer.
+   */
+  minLength?: number
+  /** 
+   * Specifies the maximum number of characters allowed in the string.  
+   * Must be a non-negative integer.
+   */
+  maxLength?: number
+  /** 
+   * Specifies a regular expression pattern that the string value must match.  
+   * Can be provided as a string (ECMA-262 regex syntax) or a `RegExp` object.
+   */
+  pattern?: string | RegExp
+}
+</code></pre>

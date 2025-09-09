@@ -1,0 +1,24 @@
+<h1>Infer</h1>
+<p>Creates an Infer instruction to extract types in conditional type expression.</p>
+<blockquote>
+<p>⚠️ This function is a Script evalutation action.</p>
+</blockquote>
+<h2>Example</h2>
+<p>Example usage is shown below. </p>
+<pre><code class="language-typescript">const T = Type.Object({
+  x: Type.Literal(1),
+  y: Type.Literal(2)
+})
+
+const S = Type.Conditional(T, Type.Object({         // const S: TTuple&lt;[
+  x: Type.Infer(&#39;X&#39;),                               //   TLiteral&lt;1&gt;,
+  y: Type.Infer(&#39;Y&#39;),                               //   TLiteral&lt;2&gt;
+}), Type.Tuple([                                    // ]&gt;
+  Type.Ref(&#39;X&#39;),
+  Type.Ref(&#39;Y&#39;)
+]), Type.Never())                                   
+</code></pre>
+<h2>Guard</h2>
+<p>Use the IsInfer function to guard values of this type.</p>
+<pre><code class="language-typescript">Type.IsInfer(value)                                 // value is TInfer
+</code></pre>

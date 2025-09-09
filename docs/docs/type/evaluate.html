@@ -1,0 +1,37 @@
+<h1>Evaluate</h1>
+<p>The Evaluate function will evaluate logical type expressions and return the result.</p>
+<h2>Example</h2>
+<p>Example usage is shown below. </p>
+<pre><code class="language-typescript">const T = Type.Intersect([
+  Type.Object({ x: Type.Number() }),
+  Type.Union([  
+    Type.Object({ y: Type.Number() }),
+    Type.Object({ z: Type.Number() }) 
+  ])
+])
+
+const S = Type.Evaluate(T)                          // const S: TUnion&lt;[
+                                                    //   TObject&lt;{
+                                                    //     x: TNumber,
+                                                    //     y: TNumber
+                                                    //   }&gt;,
+                                                    //   TObject&lt;{
+                                                    //     x: TNumber,
+                                                    //     z: TNumber
+                                                    //   }&gt;,
+                                                    // ]&gt;
+</code></pre>
+<h2>Remarks</h2>
+<p>The Evaluate function transforms logical type expressions into normalized forms using set-based evaluation rules. Evaluation is applied to both Union and Intersect types where Union evaluation yields the broadest disjoint types within a set while Intersect yields the narrowest.</p>
+<h3>Union</h3>
+<p>Union evaluation yields the broadest variant.</p>
+<pre><code class="language-typescript">const T = Type.Union([Type.Literal(1), Type.Number()])
+
+const S = Type.Evaluate(T)                          // const S = { type: &#39;number&#39; }
+</code></pre>
+<h3>Intersect</h3>
+<p>Intersect evaluation yields the narrowest constituent</p>
+<pre><code class="language-typescript">const T = Type.Intersect([Type.Literal(1), Type.Number()])
+
+const S = Type.Evaluate(T)                         // const S = { const: 1 }
+</code></pre>

@@ -1,0 +1,27 @@
+<h1>Mapped</h1>
+<p>Applies a Mapped operation to a type.</p>
+<blockquote>
+<p>⚠️ This function is a Script evalutation action.</p>
+</blockquote>
+<h2>Example</h2>
+<p>Example usage is shown below.</p>
+<pre><code class="language-typescript">const T = Type.Object({
+  x: Type.Number(),
+  y: Type.Number(),
+  z: Type.Number()
+})
+
+                                                    // type S = { 
+                                                    //   [K in keyof T]: T[K] | null 
+                                                    // }
+
+const S = Type.Mapped(                              // const S: TObject&lt;{
+  Type.Identifier(&#39;K&#39;),                             //   x: TUnion&lt;[TNumber, TNull]&gt;,
+  Type.KeyOf(T),                                    //   y: TUnion&lt;[TNumber, TNull]&gt;,
+  Type.Ref(&#39;K&#39;),                                    //   z: TUnion&lt;[TNumber, TNull]&gt;,
+  Type.Union([                                      // }&gt;
+    Type.Index(T, Type.Ref(&#39;K&#39;)),
+    Type.Null()
+  ])
+)
+</code></pre>

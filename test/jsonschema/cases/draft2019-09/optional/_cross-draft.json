@@ -1,0 +1,41 @@
+[
+  {
+    "description": "refs to future drafts are processed as future drafts",
+    "schema": {
+      "$schema": "https://json-schema.org/draft/2019-09/schema",
+      "type": "array",
+      "$ref": "http://localhost:1234/draft2020-12/prefixItems.json"
+    },
+    "tests": [
+      {
+        "description": "first item not a string is invalid",
+        "comment": "if the implementation is not processing the $ref as a 2020-12 schema, this test will fail",
+        "data": [1, 2, 3],
+        "valid": false
+      },
+      {
+        "description": "first item is a string is valid",
+        "data": ["a string", 1, 2, 3],
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "refs to historic drafts are processed as historic drafts",
+    "schema": {
+      "type": "object",
+      "allOf": [
+        { "properties": { "foo": true } },
+        { "$ref": "http://localhost:1234/draft7/ignore-dependentRequired.json" }
+      ]
+    },
+    "tests": [
+      {
+        "description": "missing bar is valid",
+        "comment": "if the implementation is not processing the $ref as a draft 7 schema, this test will fail",
+        "data": { "foo": "any value" },
+        "valid": true
+      }
+    ]
+  }
+]

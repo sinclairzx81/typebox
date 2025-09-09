@@ -1,0 +1,21 @@
+<h1>Compile</h1>
+<p>The Compile function returns a new Validator instance.</p>
+<h2>Example</h2>
+<p>The following creates a Validator with Compile.</p>
+<pre><code class="language-typescript">import { Compile } from &#39;typebox/compile&#39;
+
+const C = Compile(Type.Object({                        // const C: Validator&lt;{}, TObject&lt;{
+  x: Type.Number(),                                    //   x: TNumber,
+  y: Type.Number(),                                    //   y: TNumber,
+  z: Type.Number()                                     //   z: TNumber
+}))                                                    // }&gt;&gt;
+</code></pre>
+<p>The following creates a Validator via constructor.</p>
+<pre><code class="language-typescript">import { Validator } from &#39;typebox/compile&#39;
+
+const C = new Validator({}, Type.Object({              // const C: Validator&lt;{}, TObject&lt;{
+  x: Type.Number(),                                    //   x: TNumber,
+  y: Type.Number(),                                    //   y: TNumber,
+  z: Type.Number()                                     //   z: TNumber
+}))                                                    // }&gt;&gt;
+</code></pre>

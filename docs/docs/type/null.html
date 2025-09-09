@@ -1,0 +1,12 @@
+<h1>Null</h1>
+<p>Creates a Null type.</p>
+<h2>Example</h2>
+<p>Example usage is shown below.</p>
+<pre><code class="language-typescript">const T = Type.Null()                               // const T = { type: &#39;null&#39; }
+
+type T = Static&lt;typeof T&gt;                           // type T = null
+</code></pre>
+<h2>Guard</h2>
+<p>Use the IsNull function to guard values of this type.</p>
+<pre><code class="language-typescript">Type.IsNull(value)                                  // value is TNull
+</code></pre>

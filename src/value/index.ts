@@ -1,10 +1,10 @@
 /*--------------------------------------------------------------------------
 
-@sinclair/typebox/value
+TypeBox
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2025 Haydn Paterson (sinclair) <haydn.developer@gmail.com>
+Copyright (c) 2017-2025 Haydn Paterson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -27,34 +27,30 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 // ------------------------------------------------------------------
-// Errors (re-export)
+// Functions
 // ------------------------------------------------------------------
-export { ValueError, ValueErrorType, ValueErrorIterator } from '../errors/index'
+
+export * from './assert/index.ts'
+export * from './check/index.ts'
+export * from './clean/index.ts'
+export * from './clone/index.ts'
+export * from './codec/index.ts'
+export * from './convert/index.ts'
+export * from './create/index.ts'
+export * from './errors/index.ts'
+export * from './default/index.ts'
+export * from './equal/index.ts'
+export * from './hash/index.ts'
+export * from './mutate/index.ts'
+export * from './parse/index.ts'
+export * from './delta/index.ts'
+export * from './pipeline/index.ts'
+export * from './pointer/index.ts'
+export * from './repair/index.ts'
+
 // ------------------------------------------------------------------
-// Guards
+// Default
 // ------------------------------------------------------------------
-export * from './guard/index'
-// ------------------------------------------------------------------
-// Operators
-// ------------------------------------------------------------------
-export * from './assert/index'
-export * from './cast/index'
-export * from './check/index'
-export * from './clean/index'
-export * from './clone/index'
-export * from './convert/index'
-export * from './create/index'
-export * from './decode/index'
-export * from './default/index'
-export * from './delta/index'
-export * from './encode/index'
-export * from './equal/index'
-export * from './hash/index'
-export * from './mutate/index'
-export * from './parse/index'
-export * from './pointer/index'
-export * from './transform/index'
-// ------------------------------------------------------------------
-// Namespace
-// ------------------------------------------------------------------
-export { Value } from './value/index'
+import * as Value from './value.ts'
+export * as Value from './value.ts'
+export default Value

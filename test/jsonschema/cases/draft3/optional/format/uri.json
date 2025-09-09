@@ -1,0 +1,28 @@
+[
+  {
+    "description": "validation of URIs",
+    "schema": { "format": "uri" },
+    "tests": [
+      {
+        "description": "a valid URI",
+        "data": "http://foo.bar/?baz=qux#quux",
+        "valid": true
+      },
+      {
+        "description": "an invalid protocol-relative URI Reference",
+        "data": "//foo.bar/?baz=qux#quux",
+        "valid": false
+      },
+      {
+        "description": "an invalid URI",
+        "data": "\\\\WINDOWS\\fileshare",
+        "valid": false
+      },
+      {
+        "description": "an invalid URI though valid URI reference",
+        "data": "abc",
+        "valid": false
+      }
+    ]
+  }
+]

@@ -1,0 +1,32 @@
+[
+  {
+    "description": "evaluating the same schema location against the same data location twice is not a sign of an infinite loop",
+    "schema": {
+      "definitions": {
+        "int": { "type": "integer" }
+      },
+      "properties": {
+        "foo": {
+          "$ref": "#/definitions/int"
+        }
+      },
+      "extends": {
+        "additionalProperties": {
+          "$ref": "#/definitions/int"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "passing case",
+        "data": { "foo": 1 },
+        "valid": true
+      },
+      {
+        "description": "failing case",
+        "data": { "foo": "a string" },
+        "valid": false
+      }
+    ]
+  }
+]

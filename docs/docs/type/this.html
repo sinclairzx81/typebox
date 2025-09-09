@@ -1,0 +1,21 @@
+<h1>This</h1>
+<p>Creates a This type. </p>
+<blockquote>
+<p>⚠️ The <code>This</code> type is supported for top level Object and Interface types only. The type is represented as a <code>{ $ref: &#39;#&#39; }</code> reference that will always points to the root of the schema. TypeBox does not transform <code>#</code> references when embedding Objects within other Objects so care should be taken when using this type.</p>
+</blockquote>
+<h2>Example</h2>
+<p>Example usage is shown below.</p>
+<pre><code class="language-typescript">const T = Type.Object({                             // const T = {
+  items: Type.Array(Type.This())                    //   type: &#39;object&#39;,
+})                                                  //   required: [&#39;items&#39;],
+                                                    //   properties: {
+                                                    //     items: { $ref: &#39;#&#39; }
+                                                    //   }
+                                                    // }
+
+type T = Static&lt;typeof T&gt;                           // type T = object
+</code></pre>
+<h2>Guard</h2>
+<p>Use the IsThis function to guard values of this type.</p>
+<pre><code class="language-typescript">Type.IsThis(value)                                   // value is TThis
+</code></pre>

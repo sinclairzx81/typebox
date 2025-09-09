@@ -1,0 +1,61 @@
+<h1>Validator</h1>
+<p>Validators provide optimized implementations of the functions available in the Value submodule.</p>
+<h2>Example</h2>
+<p>The following compiles a Validator and calls Check. </p>
+<pre><code class="language-typescript">import { Compile, Validator } from &#39;typebox/compile&#39;
+
+const T = Compile(Type.Object({                     // const T: Validator&lt;{}, TObject&lt;{
+  x: Type.Number(),                                 //   x: TNumber,
+  y: Type.Number(),                                 //   y: TNumber,
+  z: Type.Number(),                                 //   z: TNumber
+}))                                                 // }&gt;&gt;
+
+const R = T.Check({ x: 1, y: 2, z: 3 })             // const R: boolean = true
+
+</code></pre>
+<h2>Functions</h2>
+<p>The following functions are available on Validator instances.</p>
+<h2>Check</h2>
+<p>Checks a value matches a type.</p>
+<pre><code class="language-typescript">const R = C.Check(value)                            // const R: boolean
+</code></pre>
+<h2>Errors</h2>
+<p>Returns a errors for the value or empty if no error.</p>
+<pre><code class="language-typescript">const R = C.Errors(value)                          // const R: ValidationError[]
+</code></pre>
+<h2>Clean</h2>
+<p>Cleans a value</p>
+<pre><code class="language-typescript">const R = C.Clean(value)                          // const R: unknown
+</code></pre>
+<h2>Code</h2>
+<p>Returns generated code for this Validator.</p>
+<pre><code class="language-typescript">const R = C.Code()                                // const R: string
+</code></pre>
+<h2>Convert</h2>
+<p>Converts a value</p>
+<pre><code class="language-typescript">const R = C.Convert(value)                        // const R: unknown
+</code></pre>
+<h2>Create</h2>
+<p>Creates a value of the Validator type</p>
+<pre><code class="language-typescript">const R = C.Create(value)                        // const R: ...
+</code></pre>
+<h2>Decode</h2>
+<p>Decodes a value, running any Decode callbacks if available.</p>
+<pre><code class="language-typescript">const R = C.Decode(value)                       // const R: ...
+</code></pre>
+<h2>Default</h2>
+<p>Creates defaults for the given value</p>
+<pre><code class="language-typescript">const R = C.Default(value)                       // const R: unknown
+</code></pre>
+<h2>Encode</h2>
+<p>Encodes a value, running any Encode callbacks if available.</p>
+<pre><code class="language-typescript">const R = C.Encode(value)                       // const R: ...
+</code></pre>
+<h2>IsEvaluated</h2>
+<p>Returns true if the Validator is using evaluated optimizations.</p>
+<pre><code class="language-typescript">const R = C.IsEvaluated()                      // const R: boolean
+</code></pre>
+<h2>Parse</h2>
+<p>Parses a value to the given type.</p>
+<pre><code class="language-typescript">const R = C.Parse(value)                        // const R: ...
+</code></pre>

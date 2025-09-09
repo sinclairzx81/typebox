@@ -1,0 +1,20 @@
+<h1>Tuple</h1>
+<p>Creates a Tuple type.</p>
+<h2>Example</h2>
+<p>Example usage is shown below.</p>
+<pre><code class="language-typescript">const T = Type.Tuple([                              // const T = {
+  Type.String(),                                    //   type: &#39;array&#39;, 
+  Type.Number(),                                    //   additionalItems: false, 
+])                                                  //   minItems: 2,
+                                                    //   items: [
+                                                    //     { type: &#39;string&#39; },
+                                                    //     { type: &#39;number&#39; },
+                                                    //   ]
+                                                    // }
+
+type T = Static&lt;typeof T&gt;                           // type T = [string, number]
+</code></pre>
+<h2>Guard</h2>
+<p>Use the IsTuple function to guard values of this type.</p>
+<pre><code class="language-typescript">Type.IsTuple(value)                                 // value is TTuple
+</code></pre>

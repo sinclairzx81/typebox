@@ -1,23 +1,26 @@
-name: Build
+name: Test
 on: [push, pull_request]
 jobs:
-  TypeBox:
+  # -----------------------------------------------------------
+  # Deno 
+  # -----------------------------------------------------------
+  Deno:
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
     strategy:
       matrix:
-        node: [16.x, 18.x, 20.x]
-        os: [ubuntu-latest, windows-latest, macOS-latest]
+        node: [20.x]
+        os: [ubuntu-latest, macOS-latest, windows-latest]
     steps:
-      - uses: actions/checkout@v3
-      - name: Install Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node }}
+      - uses: actions/checkout@v4
 
-      - name: Install Packages
-        run: npm install
+      - name: Install Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: canary
+
+      - name: Test Library
+        run: deno task test
 
       - name: Build Library
-        run: npm run build
-      - name: Test Library
-        run: npm run test
+        run: deno task build

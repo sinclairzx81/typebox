@@ -1,0 +1,57 @@
+<h1>Module</h1>
+<p>The Module function is an advanced compositing system for referential types. It performs several normalization passes, including reference inlining, cyclic type resolution, and dead code elimination for unused definitions. Conceptually, Module mirrors how TypeScript handles type references within the context of a TypeScript module.</p>
+<h3>Referencing</h3>
+<p>Module is written in support of order independent type referencing. Consider the following where type <code>A</code> references type <code>B</code> type before definition.</p>
+<pre><code class="language-typescript">type A = 1 | B                                     // type A = 1 | 2
+type B = 2                                         // type B = 2
+</code></pre>
+<p>Attempting the same in JavaScript results in an <code>Access before initialization</code> error</p>
+<pre><code class="language-typescript">const A = Type.Union([Type.Literal(1), B])        // Error: Cannot access &#39;B&#39; before initialization
+const B = Type.Literal(2)
+</code></pre>
+<p>Module offers a scoping mechanism that facilitates order independent referencing.</p>
+<pre><code class="language-typescript">const M = Type.Module({                     
+  A: Type.Union([
+    Type.Literal(1), 
+    Type.Ref(&#39;B&#39;)                                  // Referenced before definition.
+  ]), 
+  B: Type.Literal(2)
+})
+
+M.A                                                // const A: TUnion&lt;TLiteral&lt;1&gt;, TLIteral&lt;2&gt;&gt;
+M.B                                                // const B: TLiteral&lt;2&gt;
+</code></pre>
+<h2>Inline</h2>
+<p>The Module function will automatically inline referenced types. Inlining means the referenced type is cloned directly into the referring type, so the final result is a fully self-contained type without external dependencies.</p>
+<pre><code class="language-typescript">const { A, B, C } = Type.Module({                   // const A: TNumber
+  A: Type.Number(),                                 //
+  B: Type.String(),                                 // const B: TString
+  C: Type.Object({                                  // 
+    a: Type.Ref(&#39;A&#39;),                               // const C: TObject&lt;{
+    b: Type.Ref(&#39;B&#39;)                                //   a: TNumber,  // &lt;-- inlined
+  })                                                //   b: TString   // &lt;-- inlined
+})                                                  // }&gt;
+</code></pre>
+<h2>Cyclic</h2>
+<p>The Module function will automatically detect self-referential types and transform them into instances of TCyclic.</p>
+<pre><code class="language-typescript">const { A } = Type.Module({                         // const A: TCyclic&lt;{
+  A: Type.Object({                                  //   A: TObject&lt;{
+    b: Type.Ref(&#39;B&#39;)                                //     b: TRef&lt;&#39;B&#39;&gt;,
+  }),                                               //   }&gt;,
+  B: Type.Object({                                  //   B: TObject&lt;{
+    a: Type.Ref(&#39;A&#39;)                                //     a: TRef&lt;&#39;A&#39;&gt;
+  })                                                //   }&gt;
+})                                                  // }, &#39;A&#39;&gt;
+</code></pre>
+<h2>Dead Code Elimination</h2>
+<p>Module also performs dead code elimination, ensuring that each definition only includes the types required for itself. In the following example, the <code>C</code> definition is present, but since <code>A</code> and <code>B</code> do not reference it, <code>C</code> is excluded from their referential set.</p>
+<pre><code class="language-typescript">const { A } = Type.Module({                         // const A: TCyclic&lt;{
+  A: Type.Object({                                  //   A: TObject&lt;{
+    b: Type.Ref(&#39;B&#39;)                                //     b: TRef&lt;&#39;B&#39;&gt;,
+  }),                                               //   }&gt;,
+  B: Type.Object({                                  //   B: TObject&lt;{
+    a: Type.Ref(&#39;A&#39;)                                //     a: TRef&lt;&#39;A&#39;&gt;
+  }),                                               //   }&gt;
+  C: Type.String()                                  // }, &#39;A&#39;&gt;
+})                                                  
+</code></pre>

@@ -1,0 +1,30 @@
+<h1>Encode</h1>
+<p>The Encode function will execute Encode callbacks embedded within the provided type.</p>
+<blockquote>
+<p>⚠️ This function may throw an error if the provided value is invalid or if a failure occurs during the eecoding process. It is recommended to wrap this function in a try / catch block.</p>
+</blockquote>
+<h2>Example</h2>
+<p>Example usage is shown below.</p>
+<pre><code class="language-typescript">const Timestamp = Type.Codec(Type.Number())
+  .Decode(value =&gt; new Date(value)) 
+  .Encode(value =&gt; value.getTime())                
+
+const T = Type.Object({
+  date: Timestamp
+})
+ 
+const R = Value.Encode(T, {                         // const R = {
+  date: new Date(&#39;1970-01-01T00:00:12.345Z&#39;)        //   date: 12345
+})                                                  // }
+</code></pre>
+<h2>Pipeline</h2>
+<p>The Encode function uses the following Encoder pipeline.</p>
+<pre><code class="language-typescript">const Encoder = Pipeline([
+  (_context, _type, value) =&gt; Clone(value),
+  (context, type, value) =&gt; Encode(context, type, value),   // &lt;--- Encode First
+  (context, type, value) =&gt; Default(context, type, value),
+  (context, type, value) =&gt; Convert(context, type, value),
+  (context, type, value) =&gt; Clean(context, type, value),
+  (context, type, value) =&gt; Assert(context, type, value),
+])
+</code></pre>

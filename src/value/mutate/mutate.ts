@@ -1,10 +1,10 @@
 /*--------------------------------------------------------------------------
 
-@sinclair/typebox/value
+TypeBox
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2025 Haydn Paterson (sinclair) <haydn.developer@gmail.com>
+Copyright (c) 2017-2025 Haydn Paterson 
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,98 +26,46 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { IsObject, IsArray, IsTypedArray, IsValueType, type TypedArrayType } from '../guard/index'
-import { ValuePointer } from '../pointer/index'
-import { Clone } from '../clone/index'
-import { TypeBoxError } from '../../type/error/index'
+// deno-fmt-ignore-file
 
-// ------------------------------------------------------------------
-// IsStandardObject
-// ------------------------------------------------------------------
-function IsStandardObject(value: unknown): value is Record<PropertyKey, unknown> {
-  return IsObject(value) && !IsArray(value)
-}
-// ------------------------------------------------------------------
-// Errors
-// ------------------------------------------------------------------
-export class ValueMutateError extends TypeBoxError {
-  constructor(message: string) {
-    super(message)
-  }
-}
-// ------------------------------------------------------------------
-// Mutators
-// ------------------------------------------------------------------
-export type Mutable = { [key: string]: unknown } | unknown[]
-function ObjectType(root: Mutable, path: string, current: unknown, next: Record<string, unknown>) {
-  if (!IsStandardObject(current)) {
-    ValuePointer.Set(root, path, Clone(next))
-  } else {
-    const currentKeys = Object.getOwnPropertyNames(current)
-    const nextKeys = Object.getOwnPropertyNames(next)
-    for (const currentKey of currentKeys) {
-      if (!nextKeys.includes(currentKey)) {
-        delete current[currentKey]
-      }
-    }
-    for (const nextKey of nextKeys) {
-      if (!currentKeys.includes(nextKey)) {
-        current[nextKey] = null
-      }
-    }
-    for (const nextKey of nextKeys) {
-      Visit(root, `${path}/${nextKey}`, current[nextKey], next[nextKey])
-    }
-  }
-}
-function ArrayType(root: Mutable, path: string, current: unknown, next: unknown[]) {
-  if (!IsArray(current)) {
-    ValuePointer.Set(root, path, Clone(next))
-  } else {
-    for (let index = 0; index < next.length; index++) {
-      Visit(root, `${path}/${index}`, current[index], next[index])
-    }
-    current.splice(next.length)
-  }
-}
-function TypedArrayType(root: Mutable, path: string, current: unknown, next: TypedArrayType) {
-  if (IsTypedArray(current) && current.length === next.length) {
-    for (let i = 0; i < current.length; i++) {
-      current[i] = next[i]
-    }
-  } else {
-    ValuePointer.Set(root, path, Clone(next))
-  }
-}
-function ValueType(root: Mutable, path: string, current: unknown, next: unknown) {
-  if (current === next) return
-  ValuePointer.Set(root, path, next)
-}
-function Visit(root: Mutable, path: string, current: unknown, next: unknown) {
-  if (IsArray(next)) return ArrayType(root, path, current, next)
-  if (IsTypedArray(next)) return TypedArrayType(root, path, current, next)
-  if (IsStandardObject(next)) return ObjectType(root, path, current, next)
-  if (IsValueType(next)) return ValueType(root, path, current, next)
-}
+import { Guard, GlobalsGuard } from '../../guard/index.ts'
+import { MutateError } from './error.ts'
+import { FromValue } from './from-value.ts'
+
+export type TMutable = { [key: string]: unknown } | unknown[]
+
 // ------------------------------------------------------------------
 // IsNonMutableValue
 // ------------------------------------------------------------------
-function IsNonMutableValue(value: unknown): value is Mutable {
-  return IsTypedArray(value) || IsValueType(value)
+function IsNonMutableValue(value: unknown): value is TMutable {
+  return GlobalsGuard.IsTypeArray(value) 
+    || GlobalsGuard.IsDate(value)
+    || GlobalsGuard.IsMap(value)
+    || GlobalsGuard.IsSet(value)
+    || Guard.IsNumber(value)
+    || Guard.IsString(value)
+    || Guard.IsBoolean(value)
+    || Guard.IsSymbol(value)
 }
-function IsMismatchedValue(current: unknown, next: unknown) {
-  // prettier-ignore
+// ------------------------------------------------------------------
+// IsTrueObject
+// ------------------------------------------------------------------
+function IsMismatchedValue(left: unknown, right: unknown): boolean {
   return (
-    (IsStandardObject(current) && IsArray(next)) || 
-    (IsArray(current) && IsStandardObject(next))
+    (Guard.IsObjectNotArray(left) && Guard.IsArray(right)) || 
+    (Guard.IsArray(left) && Guard.IsObjectNotArray(right))
   )
 }
 // ------------------------------------------------------------------
 // Mutate
 // ------------------------------------------------------------------
-/** `[Mutable]` Performs a deep mutable value assignment while retaining internal references */
-export function Mutate(current: Mutable, next: Mutable): void {
-  if (IsNonMutableValue(current) || IsNonMutableValue(next)) throw new ValueMutateError('Only object and array types can be mutated at the root level')
-  if (IsMismatchedValue(current, next)) throw new ValueMutateError('Cannot assign due type mismatch of assignable values')
-  Visit(current, '', current, next)
+/** 
+ * Performs a deep structural assignment, applying values from next to current while retaining internal references. This function 
+ * is written for use in infrastructure that interprets reference changes as a signal to perform some action (i.e. React redraw), this
+ * function can mitigate this by applying mutable updates deep within a value, ensuring parent references are retained.
+ */
+export function Mutate(current: TMutable, next: TMutable): void {
+  if (IsNonMutableValue(current) || IsNonMutableValue(next)) throw new MutateError('Only object and array types can be mutated at the root level')
+  if (IsMismatchedValue(current, next)) throw new MutateError('Cannot assign due type mismatch of assignable values')
+  FromValue(current, '', current, next)
 }

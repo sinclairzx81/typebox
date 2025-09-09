@@ -1,0 +1,26 @@
+<h1>Rest</h1>
+<p>Creates a Rest type.</p>
+<blockquote>
+<p>⚠️ This function is a Script evalutation action.</p>
+</blockquote>
+<h2>Example</h2>
+<p>Example usage is shown below.</p>
+<pre><code class="language-typescript">const T = Type.Rest(Type.Tuple([                    // const T = {
+  Type.Literal(1),                                  //   type: &quot;rest&quot;,
+  Type.Literal(2)                                   //   items: {
+]))                                                 //     type: &quot;array&quot;,
+                                                    //     additionalItems: false,
+                                                    //     items: [
+                                                    //       { const: 1 }, 
+                                                    //       { const: 2 } 
+                                                    //     ],
+                                                    //     minItems: 2
+                                                    //   }
+                                                    // }
+
+type T = Static&lt;typeof T&gt;                           // type A = [1, 2][]
+</code></pre>
+<h2>Guard</h2>
+<p>Use the IsRest function to guard values of this type.</p>
+<pre><code class="language-typescript">Type.IsRest(value)                                  // value is TRest
+</code></pre>

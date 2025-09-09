@@ -1,0 +1,25 @@
+<h1>Optional</h1>
+<p>The Optional function applies an optional <code>?</code> modifier to a type.</p>
+<h2>Example</h2>
+<p>Example usage is shown below.</p>
+<pre><code class="language-typescript">const T = Type.Object({                             // const T = {
+  x: Type.Optional(Type.Number()),                  //   type: &#39;object&#39;,
+  y: Type.Optional(Type.Number()),                  //   required: [&#39;z&#39;],
+  z: Type.Number()                                  //   properties: {
+})                                                  //     x: { type: &#39;number&#39; },
+                                                    //     y: { type: &#39;number&#39; },
+                                                    //     z: { type: &#39;number&#39; }
+                                                    //   }
+                                                    // }
+
+
+type T = Static&lt;typeof T&gt;                           // type T = {
+                                                    //   x?: number,
+                                                    //   y?: number,
+                                                    //   z: number
+                                                    // }
+</code></pre>
+<h2>Guard</h2>
+<p>Use the IsOptional function to guard values of this type.</p>
+<pre><code class="language-typescript">const checked = Type.IsOptional(value)              // value is TOptional
+</code></pre>

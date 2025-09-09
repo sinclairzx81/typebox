@@ -1,0 +1,31 @@
+<h1>Compile</h1>
+<p>High Performance Runtime Validation</p>
+<h2>Overview</h2>
+<p>The TypeBox Compile module provides functions to convert types into high-performance validators. The compiler is tuned for fast compilation as well as fast validation. This module provides unified support to compile both Json Schema and Standard Schema, however performance optimizations are only possible with Json Schema.</p>
+<p>The Compile module is available via optional import.</p>
+<pre><code class="language-typescript">import { Compile } from &#39;typebox/compile&#39; 
+</code></pre>
+<h3>Example</h3>
+<p>The following uses the Compile module to Check and Parse a value. </p>
+<pre><code class="language-typescript">const C = Compile(Type.Object({                     // const C: Validator&lt;{}, TObject&lt;{
+  x: Type.Number(),                                 //   x: TNumber,
+  y: Type.Number(),                                 //   y: TNumber,
+  z: Type.Number()                                  //   z: TNumber
+}))                                                 // }&gt;&gt;
+
+// Check
+
+const A = C.Check(T, {                             // const A: boolean = true
+  x: 1,                                            
+  y: 2,
+  z: 3
+})
+
+// Parse
+
+const B = C.Parse({                                 // const B: {
+  x: 1,                                             //   x: number,
+  y: 2,                                             //   y: number,
+  z: 3                                              //   z: number
+})                                                  // } = ...
+</code></pre>

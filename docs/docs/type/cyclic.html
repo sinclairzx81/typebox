@@ -1,0 +1,29 @@
+<h1>Cyclic</h1>
+<p>Creates a Cyclic type. </p>
+<h2>Example</h2>
+<p>Example usage is shown below.</p>
+<pre><code class="language-typescript">const T = Type.Cyclic({                             // const T = {
+  A: Type.Object({                                  //   $defs: {
+    x: Type.Array(Type.Ref(&#39;A&#39;)),                   //     A: {
+  }),                                               //       type: &#39;object&#39;,
+}, &#39;A&#39;)                                             //       required: [&#39;x&#39;],
+                                                    //       properties: { 
+                                                    //         x: { 
+                                                    //           type: &#39;array&#39;, 
+                                                    //           items: { 
+                                                    //             $ref: &#39;A&#39; 
+                                                    //           } 
+                                                    //         } 
+                                                    //       },
+                                                    //       &#39;$id&#39;: &#39;A&#39;
+                                                    //     }
+                                                    //   },
+                                                    //   $ref: &#39;A&#39;
+                                                    // }
+
+type T = Static&lt;typeof T&gt;                           // type T = { x: ...[] }
+</code></pre>
+<h2>Guard</h2>
+<p>Use the IsCyclic function to guard values of this type.</p>
+<pre><code class="language-typescript">Type.IsCyclic(value)                                // value is TCyclic
+</code></pre>

@@ -1,0 +1,32 @@
+<h1>Create</h1>
+<p>The Create function will create an instance of the given type.</p>
+<h2>Example</h2>
+<p>Example usage is shown below.</p>
+<pre><code class="language-typescript">const T = Type.Object({
+  x: Type.Number({ default: 42 }),
+  y: Type.Number(),
+  z: Type.Number()
+})
+
+const A = Value.Create(T)                            // const A = { 
+                                                     //   x: 42, 
+                                                     //   y: 0, 
+                                                     //   z: 0 
+                                                     // }
+</code></pre>
+<h2>Ambiguous Constraints</h2>
+<p>The Create function will consider an operation ambiguous if the type being created includes constraints that could produce an invalid value. For example, applying a <code>format</code> constraint to a String type is considered ambiguous, as the Create function cannot determine what kind of format it should generate.</p>
+<pre><code class="language-typescript">const T = Type.String({ 
+  format: &#39;email&#39; 
+})
+
+const A = Value.Create(T)                            // throws CreateError
+</code></pre>
+<p>To fix, apply a <code>default</code> annotation to the type.</p>
+<pre><code class="language-typescript">const T = Type.String({ 
+  format: &#39;email&#39;, 
+  default: &#39;user@domain.com&#39; 
+})
+
+const A = Value.Create(T)                            // const A: string = &#39;user@domain.com&#39;
+</code></pre>

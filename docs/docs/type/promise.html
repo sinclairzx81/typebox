@@ -1,0 +1,18 @@
+<h1>Promise</h1>
+<p>Creates a Promise type. </p>
+<blockquote>
+<p>⚠️ This type is used for interface definitions and cannot be validated.</p>
+</blockquote>
+<h2>Example</h2>
+<p>Example usage is shown below.</p>
+<pre><code class="language-typescript">const T = Type.Promise(Type.Number())               // const T = {
+                                                    //   type: &#39;promise&#39;,
+                                                    //   item: { type: &#39;number&#39; }
+                                                    // }
+
+type T = Static&lt;typeof T&gt;                           // type T = Promise&lt;number&gt;
+</code></pre>
+<h2>Guard</h2>
+<p>Use the IsPromise function to guard values of this type.</p>
+<pre><code class="language-typescript">Type.IsPromise(value)                               // value is TPromise&lt;TSchema&gt;
+</code></pre>

@@ -1,10 +1,10 @@
 /*--------------------------------------------------------------------------
 
-@sinclair/typebox/value
+TypeBox
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2025 Haydn Paterson (sinclair) <haydn.developer@gmail.com>
+Copyright (c) 2017-2025 Haydn Paterson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,4 +26,4 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export * from './parse'
+export * from './parse.ts'

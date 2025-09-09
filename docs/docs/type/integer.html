@@ -1,0 +1,58 @@
+<h1>Integer</h1>
+<p>Creates an Integer type.</p>
+<h2>Example</h2>
+<p>Example usage is shown below. </p>
+<pre><code class="language-typescript">const T = Type.Integer()                            // const T = {
+                                                    //   type: &#39;integer&#39;
+                                                    // }
+
+type T = Static&lt;typeof T&gt;                           // type T = number
+</code></pre>
+<h2>Guard</h2>
+<p>Use the IsInteger function to guard values of this type.</p>
+<pre><code class="language-typescript">Type.IsInteger(value)                               // value is TInteger
+</code></pre>
+<h2>Options</h2>
+<pre><code class="language-typescript">export interface TNumberOptions extends TSchemaOptions {
+  /** 
+   * Specifies an exclusive upper limit for the number (number must be less than this value). 
+   */
+  exclusiveMaximum?: number | bigint
+  /** 
+   * Specifies an exclusive lower limit for the number (number must be greater than this value). 
+   */
+  exclusiveMinimum?: number | bigint
+  /** 
+   * Specifies an inclusive upper limit for the number (number must be less than or equal to this value). 
+   */
+  maximum?: number | bigint
+  /** 
+   * Specifies an inclusive lower limit for the number (number must be greater than or equal to this value). 
+   */
+  minimum?: number | bigint
+  /** 
+   * Specifies that the number must be a multiple of this value. 
+   */
+  multipleOf?: number
+}
+</code></pre>
+<h2>Remarks</h2>
+<p>TypeBox models Integer as a narrower form of Number. All integers are numbers, but not all numbers are integers, so Integer is treated as a subset of number within conditional type expressions. This distinction aligns with Json Schema, which defines Integer as a baseline type, even though TypeScript does not differentiate integers from numbers.</p>
+<pre><code class="language-typescript">type A = &lt;&#39;set-of-all-integers&#39;&gt; extends number ? true : false  // type A = true
+
+type B = number extends &lt;&#39;set-of-all-integers&#39;&gt; ? true : false  // type B = false
+</code></pre>
+<pre><code class="language-typescript">const A = Type.Conditional(                                     // const A = { const: true }
+  Type.Integer(),  
+  Type.Number(),
+  Type.Literal(true), 
+  Type.Literal(false)
+)
+
+const B = Type.Conditional(                                      // const B = { const: false }
+  Type.Number() 
+  Type.Integer(),
+  Type.Literal(true), 
+  Type.Literal(false)
+)
+</code></pre>

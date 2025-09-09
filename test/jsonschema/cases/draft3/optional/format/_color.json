@@ -1,0 +1,38 @@
+[
+  {
+    "description": "validation of CSS colors",
+    "schema": { "format": "color" },
+    "tests": [
+      {
+        "description": "a valid CSS color name",
+        "data": "fuchsia",
+        "valid": true
+      },
+      {
+        "description": "a valid six-digit CSS color code",
+        "data": "#CC8899",
+        "valid": true
+      },
+      {
+        "description": "a valid three-digit CSS color code",
+        "data": "#C89",
+        "valid": true
+      },
+      {
+        "description": "an invalid CSS color code",
+        "data": "#00332520",
+        "valid": false
+      },
+      {
+        "description": "an invalid CSS color name",
+        "data": "puce",
+        "valid": false
+      },
+      {
+        "description": "a CSS color name containing invalid characters",
+        "data": "light_grayish_red-violet",
+        "valid": false
+      }
+    ]
+  }
+]

@@ -1,0 +1,22 @@
+<h1>Parameters</h1>
+<p>Script can accept named type parameters.</p>
+<h2>Example</h2>
+<p>The following passes an external String to Script and makes it nullable.</p>
+<pre><code class="language-typescript">const T = Type.String()
+
+const S = Type.Script({ T }, `T | null`)            // const S: TUnion&lt;[
+                                                    //   TString,
+                                                    //   TNull
+                                                    // ]&gt;
+</code></pre>
+<p>External types are referenced by property name. You can pass many types.</p>
+<pre><code class="language-typescript">const A = Type.Literal(1)
+const B = Type.Literal(2)
+const C = Type.Literal(3)
+
+const T = Type.Script({ A, B, C }, `[A, B, C]`)     // const T: TTuple&lt;[
+                                                    //   TLiteral&lt;1&gt;,
+                                                    //   TLiteral&lt;2&gt;,
+                                                    //   TLiteral&lt;3&gt;
+                                                    // ]&gt;
+</code></pre>

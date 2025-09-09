@@ -1,0 +1,701 @@
+[
+  {
+    "description": "A $dynamicRef to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor",
+    "schema": {
+      "$schema": "https://json-schema.org/draft/next/schema",
+      "$id": "https://test.json-schema.org/dynamicRef-dynamicAnchor-same-schema/root",
+      "type": "array",
+      "items": { "$dynamicRef": "#items" },
+      "$defs": {
+        "foo": {
+          "$dynamicAnchor": "items",
+          "type": "string"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "An array of strings is valid",
+        "data": ["foo", "bar"],
+        "valid": true
+      },
+      {
+        "description": "An array containing non-strings is invalid",
+        "data": ["foo", 42],
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "A $ref to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor",
+    "schema": {
+      "$schema": "https://json-schema.org/draft/next/schema",
+      "$id": "https://test.json-schema.org/ref-dynamicAnchor-same-schema/root",
+      "type": "array",
+      "items": { "$ref": "#items" },
+      "$defs": {
+        "foo": {
+          "$dynamicAnchor": "items",
+          "type": "string"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "An array of strings is valid",
+        "data": ["foo", "bar"],
+        "valid": true
+      },
+      {
+        "description": "An array containing non-strings is invalid",
+        "data": ["foo", 42],
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "A $dynamicRef resolves to the first $dynamicAnchor still in scope that is encountered when the schema is evaluated",
+    "schema": {
+      "$schema": "https://json-schema.org/draft/next/schema",
+      "$id": "https://test.json-schema.org/typical-dynamic-resolution/root",
+      "$ref": "list",
+      "$defs": {
+        "foo": {
+          "$dynamicAnchor": "items",
+          "type": "string"
+        },
+        "list": {
+          "$id": "list",
+          "type": "array",
+          "items": { "$dynamicRef": "#items" }
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "An array of strings is valid",
+        "data": ["foo", "bar"],
+        "valid": true
+      },
+      {
+        "description": "An array containing non-strings is invalid",
+        "data": ["foo", 42],
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "A $dynamicRef with intermediate scopes that don't include a matching $dynamicAnchor does not affect dynamic scope resolution",
+    "schema": {
+      "$schema": "https://json-schema.org/draft/next/schema",
+      "$id": "https://test.json-schema.org/dynamic-resolution-with-intermediate-scopes/root",
+      "$ref": "intermediate-scope",
+      "$defs": {
+        "foo": {
+          "$dynamicAnchor": "items",
+          "type": "string"
+        },
+        "intermediate-scope": {
+          "$id": "intermediate-scope",
+          "$ref": "list"
+        },
+        "list": {
+          "$id": "list",
+          "type": "array",
+          "items": { "$dynamicRef": "#items" }
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "An array of strings is valid",
+        "data": ["foo", "bar"],
+        "valid": true
+      },
+      {
+        "description": "An array containing non-strings is invalid",
+        "data": ["foo", 42],
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "An $anchor with the same name as a $dynamicAnchor is not used for dynamic scope resolution",
+    "schema": {
+      "$schema": "https://json-schema.org/draft/next/schema",
+      "$id": "https://test.json-schema.org/dynamic-resolution-ignores-anchors/root",
+      "$ref": "list",
+      "$defs": {
+        "foo": {
+          "$anchor": "items",
+          "type": "string"
+        },
+        "list": {
+          "$id": "list",
+          "type": "array",
+          "items": { "$dynamicRef": "#items" },
+          "$defs": {
+            "items": {
+              "$dynamicAnchor": "items"
+            }
+          }
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "Any array is valid",
+        "data": ["foo", 42],
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "A $dynamicRef that initially resolves to a schema with a matching $dynamicAnchor resolves to the first $dynamicAnchor in the dynamic scope",
+    "schema": {
+      "$schema": "https://json-schema.org/draft/next/schema",
+      "$id": "https://test.json-schema.org/relative-dynamic-reference/root",
+      "$dynamicAnchor": "meta",
+      "type": "object",
+      "properties": {
+        "foo": { "const": "pass" }
+      },
+      "$ref": "extended",
+      "$defs": {
+        "extended": {
+          "$id": "extended",
+          "$dynamicAnchor": "meta",
+          "type": "object",
+          "properties": {
+            "bar": { "$ref": "bar" }
+          }
+        },
+        "bar": {
+          "$id": "bar",
+          "type": "object",
+          "properties": {
+            "baz": { "$dynamicRef": "extended#meta" }
+          }
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "The recursive part is valid against the root",
+        "data": {
+          "foo": "pass",
+          "bar": {
+            "baz": { "foo": "pass" }
+          }
+        },
+        "valid": true
+      },
+      {
+        "description": "The recursive part is not valid against the root",
+        "data": {
+          "foo": "pass",
+          "bar": {
+            "baz": { "foo": "fail" }
+          }
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "multiple dynamic paths to the $dynamicRef keyword",
+    "schema": {
+      "$schema": "https://json-schema.org/draft/next/schema",
+      "$id": "https://test.json-schema.org/dynamic-ref-with-multiple-paths/main",
+      "propertyDependencies": {
+        "kindOfList": {
+          "numbers": { "$ref": "numberList" },
+          "strings": { "$ref": "stringList" }
+        }
+      },
+      "$defs": {
+        "genericList": {
+          "$id": "genericList",
+          "properties": {
+            "list": {
+              "items": { "$dynamicRef": "#itemType" }
+            }
+          }
+        },
+        "numberList": {
+          "$id": "numberList",
+          "$defs": {
+            "itemType": {
+              "$dynamicAnchor": "itemType",
+              "type": "number"
+            }
+          },
+          "$ref": "genericList"
+        },
+        "stringList": {
+          "$id": "stringList",
+          "$defs": {
+            "itemType": {
+              "$dynamicAnchor": "itemType",
+              "type": "string"
+            }
+          },
+          "$ref": "genericList"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "number list with number values",
+        "data": {
+          "kindOfList": "numbers",
+          "list": [1.1]
+        },
+        "valid": true
+      },
+      {
+        "description": "number list with string values",
+        "data": {
+          "kindOfList": "numbers",
+          "list": ["foo"]
+        },
+        "valid": false
+      },
+      {
+        "description": "string list with number values",
+        "data": {
+          "kindOfList": "strings",
+          "list": [1.1]
+        },
+        "valid": false
+      },
+      {
+        "description": "string list with string values",
+        "data": {
+          "kindOfList": "strings",
+          "list": ["foo"]
+        },
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "after leaving a dynamic scope, it is not used by a $dynamicRef",
+    "schema": {
+      "$schema": "https://json-schema.org/draft/next/schema",
+      "$id": "https://test.json-schema.org/dynamic-ref-leaving-dynamic-scope/main",
+      "if": {
+        "$id": "first_scope",
+        "$defs": {
+          "thingy": {
+            "$comment": "this is first_scope#thingy",
+            "$dynamicAnchor": "thingy",
+            "type": "number"
+          }
+        }
+      },
+      "then": {
+        "$id": "second_scope",
+        "$ref": "start",
+        "$defs": {
+          "thingy": {
+            "$comment": "this is second_scope#thingy, the final destination of the $dynamicRef",
+            "$dynamicAnchor": "thingy",
+            "type": "null"
+          }
+        }
+      },
+      "$defs": {
+        "start": {
+          "$comment": "this is the landing spot from $ref",
+          "$id": "start",
+          "$dynamicRef": "inner_scope#thingy"
+        },
+        "thingy": {
+          "$comment": "this is the first stop for the $dynamicRef",
+          "$id": "inner_scope",
+          "$dynamicAnchor": "thingy",
+          "type": "string"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "string matches /$defs/thingy, but the $dynamicRef does not stop here",
+        "data": "a string",
+        "valid": false
+      },
+      {
+        "description": "first_scope is not in dynamic scope for the $dynamicRef",
+        "data": 42,
+        "valid": false
+      },
+      {
+        "description": "/then/$defs/thingy is the final stop for the $dynamicRef",
+        "data": null,
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "strict-tree schema, guards against misspelled properties",
+    "schema": {
+      "$schema": "https://json-schema.org/draft/next/schema",
+      "$id": "http://localhost:1234/draft-next/strict-tree.json",
+      "$dynamicAnchor": "node",
+
+      "$ref": "tree.json",
+      "unevaluatedProperties": false
+    },
+    "tests": [
+      {
+        "description": "instance with misspelled field",
+        "data": {
+          "children": [{
+            "daat": 1
+          }]
+        },
+        "valid": false
+      },
+      {
+        "description": "instance with correct field",
+        "data": {
+          "children": [{
+            "data": 1
+          }]
+        },
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "tests for implementation dynamic anchor and reference link",
+    "schema": {
+      "$schema": "https://json-schema.org/draft/next/schema",
+      "$id": "http://localhost:1234/draft-next/strict-extendible.json",
+      "$ref": "extendible-dynamic-ref.json",
+      "$defs": {
+        "elements": {
+          "$dynamicAnchor": "elements",
+          "properties": {
+            "a": true
+          },
+          "required": ["a"],
+          "additionalProperties": false
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "incorrect parent schema",
+        "data": {
+          "a": true
+        },
+        "valid": false
+      },
+      {
+        "description": "incorrect extended schema",
+        "data": {
+          "elements": [
+            { "b": 1 }
+          ]
+        },
+        "valid": false
+      },
+      {
+        "description": "correct extended schema",
+        "data": {
+          "elements": [
+            { "a": 1 }
+          ]
+        },
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "$ref and $dynamicAnchor are independent of order - $defs first",
+    "schema": {
+      "$schema": "https://json-schema.org/draft/next/schema",
+      "$id": "http://localhost:1234/draft-next/strict-extendible-allof-defs-first.json",
+      "allOf": [
+        {
+          "$ref": "extendible-dynamic-ref.json"
+        },
+        {
+          "$defs": {
+            "elements": {
+              "$dynamicAnchor": "elements",
+              "properties": {
+                "a": true
+              },
+              "required": ["a"],
+              "additionalProperties": false
+            }
+          }
+        }
+      ]
+    },
+    "tests": [
+      {
+        "description": "incorrect parent schema",
+        "data": {
+          "a": true
+        },
+        "valid": false
+      },
+      {
+        "description": "incorrect extended schema",
+        "data": {
+          "elements": [
+            { "b": 1 }
+          ]
+        },
+        "valid": false
+      },
+      {
+        "description": "correct extended schema",
+        "data": {
+          "elements": [
+            { "a": 1 }
+          ]
+        },
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "$ref and $dynamicAnchor are independent of order - $ref first",
+    "schema": {
+      "$schema": "https://json-schema.org/draft/next/schema",
+      "$id": "http://localhost:1234/draft-next/strict-extendible-allof-ref-first.json",
+      "allOf": [
+        {
+          "$defs": {
+            "elements": {
+              "$dynamicAnchor": "elements",
+              "properties": {
+                "a": true
+              },
+              "required": ["a"],
+              "additionalProperties": false
+            }
+          }
+        },
+        {
+          "$ref": "extendible-dynamic-ref.json"
+        }
+      ]
+    },
+    "tests": [
+      {
+        "description": "incorrect parent schema",
+        "data": {
+          "a": true
+        },
+        "valid": false
+      },
+      {
+        "description": "incorrect extended schema",
+        "data": {
+          "elements": [
+            { "b": 1 }
+          ]
+        },
+        "valid": false
+      },
+      {
+        "description": "correct extended schema",
+        "data": {
+          "elements": [
+            { "a": 1 }
+          ]
+        },
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "$dynamicAnchor inside propertyDependencies",
+    "schema": {
+      "$schema": "https://json-schema.org/draft/next/schema",
+      "$id": "http://localhost:1234/draft-next/dynamicanchor-in-propertydependencies.json",
+      "$defs": {
+        "inner": {
+          "$id": "inner",
+          "$dynamicAnchor": "foo",
+          "type": "object",
+          "properties": {
+            "expectedTypes": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": {
+            "$dynamicRef": "#foo"
+          }
+        }
+      },
+      "propertyDependencies": {
+        "expectedTypes": {
+          "strings": {
+            "$id": "east",
+            "$ref": "inner",
+            "$defs": {
+              "foo": {
+                "$dynamicAnchor": "foo",
+                "type": "string"
+              }
+            }
+          },
+          "integers": {
+            "$id": "west",
+            "$ref": "inner",
+            "$defs": {
+              "foo": {
+                "$dynamicAnchor": "foo",
+                "type": "integer"
+              }
+            }
+          }
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "expected strings - additional property as string is valid",
+        "data": {
+          "expectedTypes": "strings",
+          "anotherProperty": "also a string"
+        },
+        "valid": true
+      },
+      {
+        "description": "expected strings - additional property as not string is invalid",
+        "data": {
+          "expectedTypes": "strings",
+          "anotherProperty": 42
+        },
+        "valid": false
+      },
+      {
+        "description": "expected integers - additional property as integer is valid",
+        "data": {
+          "expectedTypes": "integers",
+          "anotherProperty": 42
+        },
+        "valid": true
+      },
+      {
+        "description": "expected integers - additional property as not integer is invalid",
+        "data": {
+          "expectedTypes": "integers",
+          "anotherProperty": "a string"
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "$ref to $dynamicRef finds detached $dynamicAnchor",
+    "schema": {
+      "$ref": "http://localhost:1234/draft-next/detached-dynamicref.json#/$defs/foo"
+    },
+    "tests": [
+      {
+        "description": "number is valid",
+        "data": 1,
+        "valid": true
+      },
+      {
+        "description": "non-number is invalid",
+        "data": "a",
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "$dynamicRef points to a boolean schema",
+    "schema": {
+      "$schema": "https://json-schema.org/draft/next/schema",
+      "$defs": {
+        "true": true,
+        "false": false
+      },
+      "properties": {
+        "true": {
+          "$dynamicRef": "#/$defs/true"
+        },
+        "false": {
+          "$dynamicRef": "#/$defs/false"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "follow $dynamicRef to a true schema",
+        "data": { "true": 1 },
+        "valid": true
+      },
+      {
+        "description": "follow $dynamicRef to a false schema",
+        "data": { "false": 1 },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "$dynamicRef skips over intermediate resources - direct reference",
+    "schema": {
+      "$schema": "https://json-schema.org/draft/next/schema",
+      "$id": "https://test.json-schema.org/dynamic-ref-skips-intermediate-resource/main",
+      "type": "object",
+      "properties": {
+        "bar-item": {
+          "$ref": "item"
+        }
+      },
+      "$defs": {
+        "bar": {
+          "$id": "bar",
+          "type": "array",
+          "items": {
+            "$ref": "item"
+          },
+          "$defs": {
+            "item": {
+              "$id": "item",
+              "type": "object",
+              "properties": {
+                "content": {
+                  "$dynamicRef": "#content"
+                }
+              },
+              "$defs": {
+                "defaultContent": {
+                  "$dynamicAnchor": "content",
+                  "type": "integer"
+                }
+              }
+            },
+            "content": {
+              "$dynamicAnchor": "content",
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "integer property passes",
+        "data": { "bar-item": { "content": 42 } },
+        "valid": true
+      },
+      {
+        "description": "string property fails",
+        "data": { "bar-item": { "content": "value" } },
+        "valid": false
+      }
+    ]
+  }
+]

@@ -1,0 +1,16 @@
+<h1>Undefined</h1>
+<p>Creates an Undefined type.</p>
+<blockquote>
+<p>⚠️ This is type is cannot be expressed with Json. Do not use if publishing types for other languages to consume.</p>
+</blockquote>
+<h2>Example</h2>
+<p>Example usage is shown below.</p>
+<pre><code class="language-typescript">const T = Type.Undefined()                          // const T = {
+                                                    //   type: &#39;undefined&#39;
+                                                    // }
+
+type T = Static&lt;typeof T&gt;                           // type T = undefined
+</code></pre>
+<h2>Guard</h2>
+<pre><code class="language-typescript">Type.IsUndefined(value)                             // value is TUndefined
+</code></pre>

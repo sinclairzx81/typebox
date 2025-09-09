@@ -1,0 +1,14 @@
+<h1>Ref</h1>
+<p>Creates a Ref type.</p>
+<h2>Example</h2>
+<p>Example usage is shown below.</p>
+<pre><code class="language-typescript">const T = Type.Ref(&#39;A&#39;)                             // const T = {
+                                                    //   $ref: &#39;A&#39;
+                                                    // }
+
+type T = Static&lt;typeof T&gt;                           // type T = unknown
+</code></pre>
+<h2>Guard</h2>
+<p>Use the IsRef function to guard values of this type.</p>
+<pre><code class="language-typescript">Type.IsRef(value)                                   // value is TRef
+</code></pre>
