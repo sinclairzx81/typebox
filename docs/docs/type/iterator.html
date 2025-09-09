@@ -1,0 +1,20 @@
+<h1>Iterator</h1>
+<p>Creates an Iterator type. </p>
+<blockquote>
+<p>⚠️ This type is used for interface definitions and cannot be validated.</p>
+</blockquote>
+<h2>Example</h2>
+<pre><code class="language-typescript">const T = Type.Iterator(Type.Number())              // const T = {
+                                                    //   type: &#39;iterator&#39;,
+                                                    //   iteratorItems: {
+                                                    //     type: &#39;number&#39;
+                                                    //   }
+                                                    // }
+
+type T = Static&lt;typeof T&gt;                           // type T = IterableIterator&lt;number&gt;
+ 
+</code></pre>
+<h2>Guard</h2>
+<p>Use the IsIterator function to guard values of this type.</p>
+<pre><code class="language-typescript">Type.IsIterator(value)                              // value is TIterator
+</code></pre>

@@ -1,0 +1,68 @@
+{
+  "tasks": {
+    "bench": "deno run -A tasks.ts bench",          // Benchmarks
+    "build": "deno run -A tasks.ts build",          // Build Project
+    "clean": "deno run -A tasks.ts clean",          // Clean Build Targets
+    "fast": "deno run -A tasks.ts fast",            // Interactive Tests
+    "format": "deno run -A tasks.ts format",        // Formats Code
+    "local": "deno run -A tasks.ts local",          // Build Local Project
+    "metrics": "deno run -A tasks.ts metrics",      // Compression Metrics
+    "publish": "deno run -A tasks.ts publish",      // Publish Package
+    "report": "deno run -A tasks.ts report",        // Test Converage
+    "range": "deno run -A tasks.ts range",          // TypeScript Compiler Ranges
+    "start": "deno run -A tasks.ts start",          // Run Example
+    "syntax": "deno run -A tasks.ts syntax",        // Build Parsers
+    "test": "deno run -A tasks.ts test",            // Test Project
+    "turing": "deno run -A tasks.ts turing",        // Turing Test
+    "website": "deno run -A tasks.ts website"       // Website Doc Server
+  },
+  "imports": {
+    // --------------------------------------------------------------
+    // Build
+    // --------------------------------------------------------------
+    "tasksmith": "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/index.ts",
+    "parsebox": "https://raw.githubusercontent.com/sinclairzx81/parsebox/0.11.0/src/index.ts",
+    // --------------------------------------------------------------
+    // Test
+    // --------------------------------------------------------------
+    "test": "./test/common/index.ts",
+    // --------------------------------------------------------------
+    // Docs
+    // --------------------------------------------------------------
+    "react-three/fiber" : "npm:@react-three/fiber@9.3.0",
+    "react-router-dom": "npm:react-router-dom@7.8.2",
+    "react-dom" : "npm:react-dom@19.1.1",
+    "react" : "npm:react@19.1.1",
+    "marked": "npm:marked@16.2.1",
+    "prismjs": "npm:prismjs@1.30.0",
+    "three": "npm:three@0.180.0",
+    // --------------------------------------------------------------
+    // Package Entry
+    // --------------------------------------------------------------
+    "typebox/compile": "./src/compile/index.ts",
+    "typebox/errors": "./src/errors/index.ts",
+    "typebox/format": "./src/format/index.ts",
+    "typebox/guard": "./src/guard/index.ts",
+    "typebox/schema": "./src/schema/index.ts",
+    "typebox/system": "./src/system/index.ts",
+    "typebox/value": "./src/value/index.ts",
+    "typebox/type": "./src/type/index.ts",
+    "typebox": "./src/index.ts"
+  },
+  "fmt": {
+    "semiColons": false,
+    "singleQuote": true,
+    "trailingCommas": "never",
+    "lineWidth": 240
+  },
+  "exclude": [
+    "tasks"
+  ],
+  "compilerOptions": {
+    "strict": true,
+    "jsx": "react-jsx",
+    "jsxImportSource": "npm:react",
+    "jsxImportSourceTypes": "npm:@types/react",
+    "lib": ["deno.ns", "dom"]
+  }
+}

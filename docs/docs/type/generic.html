@@ -1,0 +1,31 @@
+<h1>Generic</h1>
+<p>Creates a Generic type. Generic types can be instantiated with Call.</p>
+<blockquote>
+<p>⚠️ This function is a Script evalutation action.</p>
+</blockquote>
+<h2>Example</h2>
+<p>Example usage is shown below. </p>
+<pre><code class="language-typescript">const G = Type.Generic([Type.Parameter(&#39;T&#39;)],       // const G = {
+  Type.Array(Type.Ref(&#39;T&#39;)))                        //   type: &#39;generic&#39;,
+                                                    //   parameters: [{ 
+                                                    //     name: &#39;T&#39;, 
+                                                    //     extends: {}, 
+                                                    //     equals: {}
+                                                    //   }], 
+                                                    //   expression: {
+                                                    //     type: &#39;object&#39;, 
+                                                    //     required: [&#39;x&#39;],
+                                                    //     properties: { 
+                                                    //       x: { 
+                                                    //         &#39;$ref&#39;: &#39;T&#39; 
+                                                    //       } 
+                                                    //     },
+                                                    //   }
+                                                    // }
+
+const S = Type.Call(G, [Type.Number()])             // const S: TArray&lt;TNumber&gt;
+</code></pre>
+<h2>Guard</h2>
+<p>Use the IsGeneric function to guard values of this type.</p>
+<pre><code class="language-typescript">Type.IsGeneric(value)                               // value is TGeneric
+</code></pre>

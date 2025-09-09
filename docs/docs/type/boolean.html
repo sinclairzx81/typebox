@@ -1,0 +1,12 @@
+<h1>Boolean</h1>
+<p>Create a Boolean type.</p>
+<h2>Example</h2>
+<p>Example usage is shown below.</p>
+<pre><code class="language-typescript">const T = Type.Boolean()                            // const T = { type: &#39;boolean&#39; }
+
+type T = Static&lt;typeof T&gt;                           // type T = boolean
+</code></pre>
+<h2>Guard</h2>
+<p>Use the IsBoolean function to guard values of this type.</p>
+<pre><code class="language-typescript">Type.IsBoolean(value)                               // value is TBoolean
+</code></pre>

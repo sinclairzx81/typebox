@@ -1,0 +1,57 @@
+<h1>Advanced</h1>
+<p>Script supports advanced schema transformations using programmable constructs of the TypeScript programming language.</p>
+<h2>Mapped Property Keys</h2>
+<p>The following uses Script to map and rename property keys.</p>
+<pre><code class="language-typescript">const T = Type.Object({
+  x: Type.Number(),
+  y: Type.Number(),
+  z: Type.Number()
+})
+
+const S = Type.Script({ T }, &#39;{ [K in keyof T as `prop${Uppercase&lt;K&gt;}`]: T[K] }&#39;})
+
+                                                    // const S: TObject&lt;{
+                                                    //   propX: TNumber;
+                                                    //   propY: TNumber;
+                                                    //   propZ: TNumber;
+                                                    // }&gt;
+</code></pre>
+<h2>Deep Partial</h2>
+<p>The following uses Script to create a DeepPartial type.</p>
+<pre><code class="language-typescript">const DeepPartial = Type.Script(`&lt;T&gt; = {
+  [K in keyof T]?: T[K] extends object
+    ? DeepPartial&lt;T[K]&gt;
+    : T[K]
+}`)
+
+const Result = Type.Script({ DeepPartial }, `DeepPartial&lt;{
+  x: {
+    y: { 
+      z: 1
+    }
+  }
+}&gt;`)                                                // const Result: TObject&lt;{
+                                                    //   x: TOptional&lt;TObject&lt;{
+                                                    //     y: TOptional&lt;TObject&lt;{
+                                                    //       z: TOptional&lt;TLiteral&lt;1&gt;&gt;
+                                                    //     }&gt;&gt;
+                                                    //   }&gt;&gt;
+                                                    // }&gt;
+</code></pre>
+<h2>Reverse Elements</h2>
+<p>The following uses Script to reverse elements within a Tuple.</p>
+<pre><code class="language-typescript">const Reverse = Type.Script(`&lt;List, Result extends unknown[] = []&gt; = (
+  List extends [infer Head, ...infer Tail extends unknown[]]
+    ? Reverse&lt;Tail, [Head, ...Result]&gt;
+    : Result
+)`)
+
+const Result = Type.Script({ Reverse }, `Reverse&lt;[
+  1, 2, 3, 4
+]&gt;`)                                                // const Result: TTuple&lt;[
+                                                    //   TLiteral&lt;4&gt;,
+                                                    //   TLiteral&lt;3&gt;,
+                                                    //   TLiteral&lt;2&gt;, 
+                                                    //   TLiteral&lt;1&gt;
+                                                    // ]&gt;
+</code></pre>

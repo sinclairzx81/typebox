@@ -1,0 +1,68 @@
+[
+  {
+    "description": "validation of IPv6 addresses",
+    "schema": { "format": "ipv6" },
+    "tests": [
+      {
+        "description": "a valid IPv6 address",
+        "data": "::1",
+        "valid": true
+      },
+      {
+        "description": "an IPv6 address with out-of-range values",
+        "data": "12345::",
+        "valid": false
+      },
+      {
+        "description": "an IPv6 address with too many components",
+        "data": "1:1:1:1:1:1:1:1:1:1:1:1:1:1:1:1",
+        "valid": false
+      },
+      {
+        "description": "an IPv6 address containing illegal characters",
+        "data": "::laptop",
+        "valid": false
+      },
+      {
+        "description": "no digits is valid",
+        "data": "::",
+        "valid": true
+      },
+      {
+        "description": "leading colons is valid",
+        "data": "::1",
+        "valid": true
+      },
+      {
+        "description": "trailing colons is valid",
+        "data": "d6::",
+        "valid": true
+      },
+      {
+        "description": "two sets of double colons is invalid",
+        "data": "1::d6::42",
+        "valid": false
+      },
+      {
+        "description": "mixed format with the ipv4 section as decimal octets",
+        "data": "1::d6:192.168.0.1",
+        "valid": true
+      },
+      {
+        "description": "mixed format with double colons between the sections",
+        "data": "1:2::192.168.0.1",
+        "valid": true
+      },
+      {
+        "description": "mixed format with ipv4 section with octet out of range",
+        "data": "1::2:192.168.256.1",
+        "valid": false
+      },
+      {
+        "description": "mixed format with ipv4 section with a hex octet",
+        "data": "1::2:192.168.ff.1",
+        "valid": false
+      }
+    ]
+  }
+]

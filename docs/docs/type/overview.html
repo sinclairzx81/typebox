@@ -1,0 +1,24 @@
+<h1>Type</h1>
+<p>A Json Schema Type Builder with Static Inference for TypeScript</p>
+<h2>Overview</h2>
+<p>TypeBox provides many functions to build Json Schema. Each function returns a small Json Schema fragment which maps to a corresponding TypeScript type. TypeBox uses function composition to compose schema fragments into higher order types. TypeBox provides a set of types to model Json Schema schematics. It also offers a set of extended schematics to model constructs native to TypeScript and JavaScript.</p>
+<h2>Example</h2>
+<p>The following creates Json Schema and infers with Static.</p>
+<pre><code class="language-typescript">import Type, { type Static } from &#39;typebox&#39;
+
+const T = Type.Object({                             // const T = {
+  x: Type.Number(),                                 //   type: &#39;object&#39;,
+  y: Type.Number(),                                 //   required: [&#39;x&#39;, &#39;y&#39;, &#39;z&#39;],
+  z: Type.Number()                                  //   properties: {
+})                                                  //     x: { type: &#39;number&#39; },
+                                                    //     y: { type: &#39;number&#39; },
+                                                    //     z: { type: &#39;number&#39; }
+                                                    //   }
+                                                    // }
+
+type T = Static&lt;typeof T&gt;                           // type T = {
+                                                    //   x: number,
+                                                    //   y: number,
+                                                    //   z: number
+                                                    // }
+</code></pre>

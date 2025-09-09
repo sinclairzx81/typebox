@@ -1,0 +1,34 @@
+<h1>FormatRegistry</h1>
+<p>User defined formats can be registered with the FormatRegistry</p>
+<h2>Example</h2>
+<p>The following registers a <code>hex-color</code> format.</p>
+<pre><code class="language-typescript">import { FormatRegistry } from &#39;typebox/format&#39;
+
+// ------------------------------------------------------------------
+// Set
+// ------------------------------------------------------------------
+FormatRegistry.Set(&#39;hex-color&#39;, value =&gt; {
+  
+  return /^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})$/.test(value)
+})
+
+// ------------------------------------------------------------------
+// Get
+// ------------------------------------------------------------------
+const IsHexColor = FormatRegistry.Get(&#39;hex-color&#39;)
+
+// ------------------------------------------------------------------
+// Use
+// ------------------------------------------------------------------
+IsHexColor(&#39;#FF5733&#39;)                               // true
+IsHexColor(&#39;#FFF&#39;)                                  // true
+IsHexColor(&#39;blue&#39;)                                  // false
+</code></pre>
+<h2>Validation</h2>
+<p>Registered formats become available to validators using the String <code>format</code> constraint.</p>
+<pre><code class="language-typescript">const T = Type.String({ format: &#39;hex-color&#39; })
+
+const R = Value.Check(T, &#39;#FFFFFF&#39;)                 // true
+
+const R = Value.Check(T, &#39;blue&#39;)                    // false
+</code></pre>

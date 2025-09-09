@@ -1,10 +1,10 @@
 /*--------------------------------------------------------------------------
 
-@sinclair/typebox/value
+TypeBox
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2025 Haydn Paterson (sinclair) <haydn.developer@gmail.com>
+Copyright (c) 2017-2025 Haydn Paterson 
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,54 +26,67 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import type { ObjectType as FromObject, ArrayType as FromArray, TypedArrayType, ValueType } from '../guard/index'
+// deno-fmt-ignore-file
+
+import { Guard, GlobalsGuard } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
-// ValueGuard
+// Object
 // ------------------------------------------------------------------
-import { IsArray, IsDate, IsMap, IsSet, IsObject, IsTypedArray, IsValueType } from '../guard/index'
-// ------------------------------------------------------------------
-// Clonable
-// ------------------------------------------------------------------
-function FromObject(value: FromObject): any {
-  const Acc = {} as Record<PropertyKey, unknown>
+function FromObject(value: Record<PropertyKey, unknown>):  Record<PropertyKey, unknown> {
+  const result = {} as Record<PropertyKey, unknown>
   for (const key of Object.getOwnPropertyNames(value)) {
-    Acc[key] = Clone(value[key])
+    result[key] = Clone(value[key])
   }
   for (const key of Object.getOwnPropertySymbols(value)) {
-    Acc[key] = Clone(value[key])
+    result[key] = Clone(value[key])
   }
-  return Acc
+  return result
 }
-function FromArray(value: FromArray): any {
+// ------------------------------------------------------------------
+// Array
+// ------------------------------------------------------------------
+function FromArray(value: unknown[]): unknown {
   return value.map((element: any) => Clone(element))
 }
-function FromTypedArray(value: TypedArrayType): any {
+// ------------------------------------------------------------------
+// TypeArray
+// ------------------------------------------------------------------
+function FromTypedArray(value: GlobalsGuard.TTypeArray): GlobalsGuard.TTypeArray {
   return value.slice()
 }
-function FromMap(value: Map<unknown, unknown>): any {
+// ------------------------------------------------------------------
+// Map
+// ------------------------------------------------------------------
+function FromMap(value: Map<unknown, unknown>): Map<unknown, unknown> {
   return new Map(Clone([...value.entries()]))
 }
-function FromSet(value: Set<unknown>): any {
-  return new Set(Clone([...value.entries()]))
+// ------------------------------------------------------------------
+// Set
+// ------------------------------------------------------------------
+function FromSet(value: Set<unknown>): Set<unknown> {
+  return new Set(Clone([...value.values()]))
 }
-function FromDate(value: Date): any {
-  return new Date(value.toISOString())
-}
-function FromValue(value: ValueType): any {
+// ------------------------------------------------------------------
+// Value
+// ------------------------------------------------------------------
+function FromValue(value: unknown): unknown {
   return value
 }
 // ------------------------------------------------------------------
 // Clone
 // ------------------------------------------------------------------
-/** Returns a clone of the given value */
-export function Clone<T extends unknown>(value: T): T {
-  if (IsArray(value)) return FromArray(value)
-  if (IsDate(value)) return FromDate(value)
-  if (IsTypedArray(value)) return FromTypedArray(value)
-  if (IsMap(value)) return FromMap(value)
-  if (IsSet(value)) return FromSet(value)
-  if (IsObject(value)) return FromObject(value)
-  if (IsValueType(value)) return FromValue(value)
-  throw new Error('ValueClone: Unable to clone value')
+/** 
+ * Returns a Clone of the given value. This function is similar to structuredClone() 
+ * but also supports deep cloning instances of Map, Set and TypeArray.
+ */
+export function Clone<Value extends unknown>(value: Value): Value {
+  return (
+    GlobalsGuard.IsTypeArray(value) ? FromTypedArray(value) :
+    GlobalsGuard.IsMap(value) ? FromMap(value) :
+    GlobalsGuard.IsSet(value) ? FromSet(value) :
+    Guard.IsArray(value) ? FromArray(value) :
+    Guard.IsObject(value) ? FromObject(value) :
+    FromValue(value)
+  ) as never
 }

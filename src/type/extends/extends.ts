@@ -1,10 +1,10 @@
 /*--------------------------------------------------------------------------
 
-@sinclair/typebox/type
+TypeBox
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2025 Haydn Paterson (sinclair) <haydn.developer@gmail.com>
+Copyright (c) 2017-2025 Haydn Paterson 
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,55 +26,42 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { CreateType } from '../create/type'
-import type { TSchema, SchemaOptions } from '../schema/index'
-import type { Static } from '../static/index'
-import { type TUnion, Union } from '../union/index'
-import { TMappedKey, TMappedResult } from '../mapped/index'
-import { ExtendsCheck, ExtendsResult } from './extends-check'
-import { UnionToTuple } from '../helpers/index'
-import { ExtendsFromMappedKey, type TExtendsFromMappedKey } from './extends-from-mapped-key'
-import { ExtendsFromMappedResult, type TExtendsFromMappedResult } from './extends-from-mapped-result'
+// deno-fmt-ignore-file
+
+import { type TSchema } from '../types/schema.ts'
+import { type TProperties } from '../types/properties.ts'
+import { type TCyclic, IsCyclic } from '../types/cyclic.ts'
+import { type TExtendsLeft, ExtendsLeft } from './extends-left.ts'
+import { type TCyclicExtends, CyclicExtends } from '../engine/cyclic/index.ts'
 
 // ------------------------------------------------------------------
-// TypeGuard
+// Normal
 // ------------------------------------------------------------------
-import { IsMappedKey, IsMappedResult } from '../guard/kind'
-
-// prettier-ignore
-type TExtendsResolve<L extends TSchema, R extends TSchema, T extends TSchema, U extends TSchema> = (
-  (Static<L> extends Static<R> ? T : U) extends infer O extends TSchema ?
-    UnionToTuple<O> extends [infer X extends TSchema, infer Y extends TSchema]
-    ? TUnion<[X, Y]>
-    : O
-    : never
+type TNormal<Type extends TSchema> = (
+  Type extends TCyclic 
+    ? TCyclicExtends<Type> 
+    : Type
 )
-// prettier-ignore
-function ExtendsResolve<L extends TSchema, R extends TSchema, T extends TSchema, U extends TSchema>(left: L, right: R, trueType: T, falseType: U): TExtendsResolve<L, R, T, U> {
-  const R = ExtendsCheck(left, right)
+function Normal<Type extends TSchema>(type: Type): TNormal<Type> {
   return (
-    R === ExtendsResult.Union ? Union([trueType, falseType]) : 
-    R === ExtendsResult.True ? trueType : 
-    falseType
+    IsCyclic(type) 
+      ? CyclicExtends(type) 
+      : type
   ) as never
 }
 // ------------------------------------------------------------------
-// TExtends
+// Extends
 // ------------------------------------------------------------------
-export type TExtends<L extends TSchema, R extends TSchema, T extends TSchema, F extends TSchema> = TExtendsResolve<L, R, T, F>
-
-/** `[Json]` Creates a Conditional type */
-export function Extends<L extends TMappedResult, R extends TSchema, T extends TSchema, F extends TSchema>(L: L, R: R, T: T, F: F, options?: SchemaOptions): TExtendsFromMappedResult<L, R, T, F>
-/** `[Json]` Creates a Conditional type */
-export function Extends<L extends TMappedKey, R extends TSchema, T extends TSchema, F extends TSchema>(L: L, R: R, T: T, F: F, options?: SchemaOptions): TExtendsFromMappedKey<L, R, T, F>
-/** `[Json]` Creates a Conditional type */
-export function Extends<L extends TSchema, R extends TSchema, T extends TSchema, F extends TSchema>(L: L, R: R, T: T, F: F, options?: SchemaOptions): TExtends<L, R, T, F>
-/** `[Json]` Creates a Conditional type */
-export function Extends<L extends TSchema, R extends TSchema, T extends TSchema, F extends TSchema>(L: L, R: R, T: T, F: F, options?: SchemaOptions) {
-  // prettier-ignore
-  return (
-    IsMappedResult(L) ? ExtendsFromMappedResult(L, R, T, F, options) :
-    IsMappedKey(L) ? CreateType(ExtendsFromMappedKey(L, R, T, F, options)) :
-    CreateType(ExtendsResolve(L, R, T, F), options)
-  ) as never
+/** Performs a structural extends check on left and right types and yields inferred types on right if specified. */
+export type TExtends<Inferred extends TProperties, Left extends TSchema, Right extends TSchema,
+  NormalLeft extends TSchema = TNormal<Left>,
+  NormalRight extends TSchema = TNormal<Right>
+> = TExtendsLeft<Inferred, NormalLeft, NormalRight>
+/** Performs a structural extends check on left and right types and yields inferred types on right if specified. */
+export function Extends<Inferred extends TProperties, Left extends TSchema, Right extends TSchema>
+  (inferred: Inferred, left: Left, right: Right): 
+    TExtends<Inferred, Left, Right> {
+  const normalLeft = Normal(left)
+  const normalRight = Normal(right)
+  return ExtendsLeft(inferred, normalLeft, normalRight)
 }

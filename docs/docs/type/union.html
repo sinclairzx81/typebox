@@ -1,0 +1,17 @@
+<h1>Union</h1>
+<p>Creates a Union type. </p>
+<h2>Example</h2>
+<p>Example usage is shown below.</p>
+<pre><code class="language-typescript">const T = Type.Union([                              // const T = {
+  Type.String(),                                    //   anyOf: [
+  Type.Number()                                     //     { type: &#39;string&#39; },
+])                                                  //     { type: &#39;number&#39; }
+                                                    //   ]
+                                                    // }
+
+type T = Static&lt;typeof T&gt;                           // type T = string | number
+</code></pre>
+<h2>Guard</h2>
+<p>Use the IsUnion function to guard values of this type.</p>
+<pre><code class="language-typescript">Type.IsUnion(value)                                 // value is TUnion
+</code></pre>

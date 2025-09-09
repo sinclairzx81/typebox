@@ -1,0 +1,25 @@
+<h2>Options</h2>
+<p>Options can be passed on the last argument of any given type.</p>
+<h2>Example</h2>
+<p>Example usage is shown below.</p>
+<pre><code class="language-typescript">const T = Type.Number({                             // const T = {
+  minimum: 10,                                      //   type: &#39;number&#39;,
+  maximum: 100                                      //   minimum: 10,
+})                                                  //   maximum: 100
+                                                    // }
+
+                                                    // const T: TNumber
+</code></pre>
+<h2>Function</h2>
+<p>Options can also be specified by using the Options function.</p>
+<pre><code class="language-typescript">const T = Type.Options(Type.Number(), {             // const T = {
+  minimum: 10,                                      //   type: &#39;number&#39;,
+  maximum: 100                                      //   minimum: 10,
+})                                                  //   maximum: 100
+                                                    // }
+
+                                                    // const T: TOptions&lt;TNumber, {
+                                                    //   minimum: number;
+                                                    //   maximum: number;
+                                                    // }&gt;
+</code></pre>

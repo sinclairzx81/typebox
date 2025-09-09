@@ -1,0 +1,137 @@
+/*--------------------------------------------------------------------------
+
+TypeBox
+
+The MIT License (MIT)
+
+Copyright (c) 2017-2025 Haydn Paterson
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+---------------------------------------------------------------------------*/
+
+/* ================================================================== 
+  Frontend 
+/* ================================================================ */
+.frontend {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  z-index: 1;
+  /* backdrop-filter: var(--app-blur); */
+}
+/* ================================================================== 
+  Header 
+/* ================================================================ */
+.frontend > .header {
+  background: var(--app-head-background);
+  border-bottom: 1px solid var(--app-edge-color);
+  display: flex;
+  flex-direction: row;
+  flex-shrink: 0; 
+  height: 48px;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  font-size: 18px;
+  box-sizing: border-box;
+}
+/* ================================================================== 
+  Header: Logo
+/* ================================================================ */
+.frontend > .header > .logo a {
+  color: var(--app-navigation-color);
+  font-family: var(--app-font-family-advanced);
+  text-decoration: none;
+  font-size: 22px;
+}
+.frontend > .header > .logo a:hover {
+  opacity: 0.7; /* optional hover effect to match nav links */
+}
+/* ================================================================== 
+  Header: Navigation
+/* ================================================================ */
+.frontend > .header > .navigation {
+  font-family: var(--app-font-family-standard);
+  display: flex;
+  gap: 20px;
+
+}
+.frontend > .header > .navigation > .navigation-link svg {
+  width: 24px;
+  height: 24px;
+}
+.frontend > .header > .navigation > .navigation-link {
+  color: var(--app-navigation-color);
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  font-size: 16px;
+}
+.frontend > .header > .navigation > .navigation-link:hover {
+  opacity: 0.7;
+}
+/* ================================================================== 
+  Header: ThemeToggle
+/* ================================================================ */
+.frontend .header .theme-toggle {
+  background: none;   /* remove white background */
+  border: none;       /* remove default button border */
+  padding: 0;         /* avoid extra spacing */
+  cursor: pointer;    /* keep pointer on hover */
+  color: var(--app-navigation-color); /* icon follows theme color */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.frontend .header .theme-toggle:hover {
+  opacity: 0.7; /* optional hover effect to match your nav links */
+}
+/* ================================================================== 
+  Body 
+/* ================================================================ */
+.frontend > .body {
+  flex: 1; /* fills remaining space between header and footer */
+  width: 100%;
+  overflow-y: auto;
+}
+/* ================================================================== 
+  Footer 
+/* ================================================================ */
+.frontend > .footer {
+  color: var(--app-navigation-color);
+  font-family: var(--app-font-family-advanced);
+  background: var(--app-foot-background);
+  border-top: 1px solid var(--app-edge-color);
+  text-align: center;
+  height: 48px;
+  font-size: 14px;
+  flex-shrink: 0;
+  padding: 0 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+
+}
+
+

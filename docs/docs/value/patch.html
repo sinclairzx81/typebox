@@ -1,0 +1,18 @@
+<h1>Patch</h1>
+<p>The Patch function applies a sequence of Edit commands to a value.</p>
+<h2>Example</h2>
+<p>Example usage is shown below.</p>
+<pre><code class="language-typescript">const L = { x: 1, y: 2, z: 3 }                       // Left
+const R = { y: 4, z: 5, w: 6 }                       // Right
+
+const E = Value.Diff(L, R)                           // const E = [
+                                                     //   { type: &#39;update&#39;, path: &#39;/y&#39;, value: 4 },
+                                                     //   { type: &#39;update&#39;, path: &#39;/z&#39;, value: 5 },
+                                                     //   { type: &#39;insert&#39;, path: &#39;/w&#39;, value: 6 },
+                                                     //   { type: &#39;delete&#39;, path: &#39;/x&#39; }
+                                                     // ]
+
+// Patch Left with Edits
+
+const A = Value.Patch(L, E)                          // const A = { y: 4, z: 5, w: 6 }
+</code></pre>

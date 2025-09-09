@@ -1,0 +1,17 @@
+<h1>Extract</h1>
+<p>The Extract function will extract types from Left that extend Right.</p>
+<h2>Example</h2>
+<p>Example usage is shown below. </p>
+<pre><code class="language-typescript">const L = Type.Union([
+  Type.Literal(&#39;hello&#39;),
+  Type.Literal(&#39;world&#39;),
+  Type.Literal(1),
+  Type.Literal(2)
+])
+const R = Type.String()
+
+const S = Type.Extract(L, R)                        // const S: TUnion&lt;[
+                                                    //   TLiteral&lt;&#39;hello&#39;&gt;,
+                                                    //   TLiteral&lt;&#39;world&#39;&gt;
+                                                    // ]&gt;
+</code></pre>

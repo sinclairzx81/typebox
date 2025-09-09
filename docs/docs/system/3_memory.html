@@ -1,0 +1,33 @@
+<h1>Memory</h1>
+<p>The Memory namespace is used to allocate schematics with enumerable and non-enumerable properties as well as track of allocations made by the type system. </p>
+<h2>Metrics</h2>
+<p>The Memory namespace includes a Metrics property that tracks allocations created within the type system. You can use this property to inspect memory usage, debug, or gain insights into the allocations required during instantiation.</p>
+<pre><code class="language-typescript">const Reverse = Type.Script(`&lt;T, Result extends unknown[] = []&gt; = (
+  T extends [infer L, ...infer R] 
+    ? Reverse&lt;R, [L, ...Result]&gt;
+    : Result
+)`)
+
+const Result = Type.Script({ Reverse }, `Reverse&lt;[
+  1, 2, 3, 4, 5, 6, 7, 8
+]&gt;`)                                          // TTuple&lt;[
+                                              //   TLiteral&lt;8&gt;,
+                                              //   TLiteral&lt;7&gt;,
+                                              //   ...
+                                              //   TLiteral&lt;0&gt;
+                                              // ]&gt;
+
+// --------------------------------------------------------
+// Debug
+// --------------------------------------------------------
+
+import { Memory } from &#39;typebox/system&#39;
+
+console.log(Memory.Metrics)                   // { 
+                                              //   assign: 42, 
+                                              //   create: 459, 
+                                              //   clone: 108, 
+                                              //   discard: 97, 
+                                              //   update: 11 
+                                              // }
+</code></pre>

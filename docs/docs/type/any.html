@@ -1,0 +1,12 @@
+<h1>Any</h1>
+<p>Creates an Any type.</p>
+<h2>Example</h2>
+<p>Example usage is shown below.</p>
+<pre><code class="language-typescript">const T = Type.Any()                                // const T = {}
+
+type T = Static&lt;typeof T&gt;                           // type T = any
+</code></pre>
+<h2>Guard</h2>
+<p>Use the IsAny function to guard values of this type.</p>
+<pre><code class="language-typescript">Type.IsAny(value)                                  // value is TAny
+</code></pre>

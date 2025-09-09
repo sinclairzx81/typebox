@@ -1,0 +1,15 @@
+<h1>Void</h1>
+<p>Creates a Void type.</p>
+<blockquote>
+<p>⚠️ This is type is cannot be expressed with Json. Do not use if publishing types for other languages to consume.</p>
+</blockquote>
+<h2>Example</h2>
+<p>Example usage is shown below.</p>
+<pre><code class="language-typescript">const T = Type.Void()                               // const T = { type: &#39;void&#39; }
+
+type T = Static&lt;typeof T&gt;                           // type T = void
+</code></pre>
+<h2>Guard</h2>
+<p>Use the IsVoid function to guard values of this type.</p>
+<pre><code class="language-typescript">Type.IsVoid(value)                                  // value is TVoid
+</code></pre>

@@ -1,0 +1,16 @@
+<h1>KeyOf</h1>
+<p>Extracts Keys from an Object or Tuple.</p>
+<h2>Example</h2>
+<p>Example usage is shown below. </p>
+<pre><code class="language-typescript">const T = Type.Object({
+  x: Type.Number(),
+  y: Type.Number(),
+  z: Type.Number()
+})
+
+const S = Type.KeyOf(T)                             // const S: TUnion&lt;[
+                                                    //  TLiteral&lt;&#39;x&#39;&gt;,
+                                                    //  TLiteral&lt;&#39;y&#39;&gt;,
+                                                    //  TLiteral&lt;&#39;z&#39;&gt;
+                                                    // ]&gt;
+</code></pre>

@@ -1,0 +1,34 @@
+<h1>Pointer</h1>
+<p>The Pointer namespace is an implementation of <a href="https://datatracker.ietf.org/doc/html/rfc6901">RFC 6901</a> Json Pointer. It provides functions to read and write values using Json Pointers.</p>
+<h2>Get</h2>
+<p>The Get function will return a value at the pointer or undefined.</p>
+<pre><code class="language-typescript">const X = { x: 1 }
+
+const A = Value.Pointer.Get(X, &#39;/x&#39;)                // const A = 1
+
+const B = Value.Pointer.Get(X, &#39;/y&#39;)                // const B = undefined
+</code></pre>
+<h2>Set</h2>
+<p>The Set will update a value at the given pointer. If the path does not exist it is created.</p>
+<pre><code class="language-typescript">const X = { x: 1 }
+
+Value.Pointer.Set(X, &#39;/x&#39;, 100)                     // X&#39; = { x: 100 }
+
+Value.Pointer.Set(X, &#39;/y&#39;, 200)                     // X&#39; = { x: 100, y: 200 }
+</code></pre>
+<h2>Has</h2>
+<p>The Has function will returns true if a value exists at the pointer.</p>
+<pre><code class="language-typescript">const X = { x: 1 }
+
+const A = Value.Pointer.Has(X, &#39;/x&#39;)                // const A = true
+
+const B = Value.Pointer.Has(X, &#39;/y&#39;)                // const B = false
+</code></pre>
+<h2>Delete</h2>
+<p>The Delete function will delete a value at the given path or no action if the path does not exist.</p>
+<pre><code class="language-typescript">const X = { x: 1 }
+
+Value.Pointer.Set(X, &#39;/x&#39;)                          // X&#39; = { }
+
+Value.Pointer.Set(X, &#39;/y&#39;)                          // X&#39; = { } - no-action
+</code></pre>

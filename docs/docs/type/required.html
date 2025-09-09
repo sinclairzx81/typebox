@@ -1,0 +1,19 @@
+<h1>Required</h1>
+<p>Makes all properties of an Object required.</p>
+<h2>Example</h2>
+<p>Example usage is shown below.</p>
+<pre><code class="language-typescript">const T = Type.Object({                             // const T = {
+  x: Type.Optional(Type.Number()),                  //   type: &#39;object&#39;,
+  y: Type.Optional(Type.Number()),                  //   properties: {
+  z: Type.Optional(Type.Number())                   //     x: { type: &#39;number&#39; },
+})                                                  //     y: { type: &#39;number&#39; }, 
+                                                    //     z: { type: &#39;number&#39; }
+                                                    //   }
+                                                    // }
+
+const S = Type.Required(T)                          // const S: TObject&lt;{
+                                                    //   x: TNumber,
+                                                    //   y: TNumber,
+                                                    //   z: TNumber
+                                                    // }&gt;
+</code></pre>

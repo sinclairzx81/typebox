@@ -1,0 +1,11 @@
+<h1>ConstructorParameters</h1>
+<p>The ConstructorParameters function will extract Parameters from a Constructor type.</p>
+<h2>Example</h2>
+<p>Example usage is shown below.</p>
+<pre><code class="language-typescript">const T = Type.Constructor([Type.String(), Type.Number()], Type.Object({}))
+
+const S = Type.ConstructorParameters(T)             // const S: TTuple&lt;[
+                                                    //   TString,
+                                                    //   TNumber
+                                                    // ]&gt;
+</code></pre>

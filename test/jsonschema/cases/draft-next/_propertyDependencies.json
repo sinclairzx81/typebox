@@ -1,0 +1,161 @@
+[
+  {
+    "description": "propertyDependencies doesn't act on non-objects",
+    "schema": {
+      "propertyDependencies": {
+        "foo": { "bar": false }
+      }
+    },
+    "tests": [
+      {
+        "description": "ignores booleans",
+        "data": true,
+        "valid": true
+      },
+      {
+        "description": "ignores integers",
+        "data": 123,
+        "valid": true
+      },
+      {
+        "description": "ignores floats",
+        "data": 1.0,
+        "valid": true
+      },
+      {
+        "description": "ignores strings",
+        "data": "abc",
+        "valid": true
+      },
+      {
+        "description": "ignores arrays",
+        "data": [],
+        "valid": true
+      },
+      {
+        "description": "ignores null",
+        "data": null,
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "propertyDependencies doesn't act on non-string property values",
+    "schema": {
+      "propertyDependencies": {
+        "foo": { "bar": false }
+      }
+    },
+    "tests": [
+      {
+        "description": "ignores booleans",
+        "data": { "foo": false },
+        "valid": true
+      },
+      {
+        "description": "ignores integers",
+        "data": { "foo": 2 },
+        "valid": true
+      },
+      {
+        "description": "ignores floats",
+        "data": { "foo": 1.1 },
+        "valid": true
+      },
+      {
+        "description": "ignores objects",
+        "data": { "foo": {} },
+        "valid": true
+      },
+      {
+        "description": "ignores objects wth a key of the expected value",
+        "data": { "foo": { "bar": "baz" } },
+        "valid": true
+      },
+      {
+        "description": "ignores objects with the expected value nested in structure",
+        "data": { "foo": { "baz": "bar" } },
+        "valid": true
+      },
+      {
+        "description": "ignores arrays",
+        "data": { "foo": [] },
+        "valid": true
+      },
+      {
+        "description": "ignores null",
+        "data": { "foo": null },
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "multiple options selects the right one",
+    "schema": {
+      "propertyDependencies": {
+        "foo": {
+          "bar": {
+            "minProperties": 2,
+            "maxProperties": 2
+          },
+          "baz": { "maxProperties": 1 },
+          "qux": true,
+          "quux": false
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "bar with exactly 2 properties is valid",
+        "data": {
+          "foo": "bar",
+          "other-foo": "other-bar"
+        },
+        "valid": true
+      },
+      {
+        "description": "bar with more than 2 properties is invalid",
+        "data": {
+          "foo": "bar",
+          "other-foo": "other-bar",
+          "too": "many"
+        },
+        "valid": false
+      },
+      {
+        "description": "bar with fewer than 2 properties is invalid",
+        "data": { "foo": "bar" },
+        "valid": false
+      },
+      {
+        "description": "baz alone is valid",
+        "data": { "foo": "baz" },
+        "valid": true
+      },
+      {
+        "description": "baz with other properties is invalid",
+        "data": {
+          "foo": "baz",
+          "other-foo": "other-bar"
+        },
+        "valid": false
+      },
+      {
+        "description": "anything allowed with qux",
+        "data": {
+          "foo": "qux",
+          "blah": ["some other property"],
+          "more": "properties"
+        },
+        "valid": true
+      },
+      {
+        "description": "quux is disallowed",
+        "data": {
+          "foo": "quux"
+        },
+        "valid": false
+      }
+    ]
+  }
+]

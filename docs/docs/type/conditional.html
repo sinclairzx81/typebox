@@ -1,0 +1,15 @@
+<h1>Conditional</h1>
+<p>Creates a conditional type expression.</p>
+<blockquote>
+<p>⚠️ This function is a Script evalutation action.</p>
+</blockquote>
+<h2>Example</h2>
+<p>Example usage is shown below.</p>
+<pre><code class="language-typescript">const L = Type.Literal(1)
+const R = Type.Number()
+
+const T = Type.Conditional(L, R,                    // const T: TLiteral&lt;true&gt;
+  Type.Literal(true),
+  Type.Literal(false)
+)
+</code></pre>

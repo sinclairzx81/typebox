@@ -1,0 +1,49 @@
+<h1>Array</h1>
+<p>Creates an Array type.</p>
+<h2>Example</h2>
+<p>Example usage is shown below.</p>
+<pre><code class="language-typescript">const T = Type.Array(Type.Number())                 // const T = {
+                                                    //   type: &#39;array&#39;,
+                                                    //   items: {
+                                                    //     type: &#39;number&#39;,
+                                                    //   }
+                                                    // }
+
+type T = Static&lt;typeof T&gt;                           // type T = number[]
+</code></pre>
+<h2>Guard</h2>
+<p>Use the IsArray function to guard values of this type.</p>
+<pre><code class="language-typescript">Type.IsArray(value)                                 // value is TArray                                          
+</code></pre>
+<h2>Options</h2>
+<pre><code class="language-typescript">export interface TArrayOptions extends TSchemaOptions {
+  /** 
+   * The minimum number of items allowed in the array. 
+   */
+  minItems?: number
+  /** 
+   * The maximum number of items allowed in the array. 
+   */
+  maxItems?: number
+  /** 
+   * A schema that at least one item in the array must validate against. 
+   */
+  contains?: TSchema
+  /** 
+   * The minimum number of array items that must validate against the `contains` schema. 
+   */
+  minContains?: number
+  /** 
+   * The maximum number of array items that may validate against the `contains` schema. 
+   */
+  maxContains?: number
+  /** 
+   * An array of schemas, where each schema in `prefixItems` validates against items at corresponding positions from the beginning of the array. 
+   */
+  prefixItems?: TSchema[]
+  /** 
+   * If `true`, all items in the array must be unique. 
+   */
+  uniqueItems?: boolean
+}
+</code></pre>

@@ -1,0 +1,38 @@
+<h1>Base</h1>
+<p>The Base type is a base class for creating extended TypeBox schematics. </p>
+<h2>Definition</h2>
+<p>By convention, Base definitions begin with a leading <code>T</code> and should be accompanied by a factory function that creates instances the type. The following creates a DateType definition using Base. </p>
+<pre><code class="language-typescript">export class TDateType extends Type.Base&lt;Date&gt; {
+
+  public override Check(value: unknown): value is Date {
+    return value instanceof Date
+  }
+
+  public override Errors(value: unknown): object[] {
+    return !this.Check(value) ? [{ message: &#39;not a Date&#39;}] : []
+  }
+}
+
+export function DateType(): TDateType {
+  return new TDateType()
+}
+</code></pre>
+<h2>Usage</h2>
+<p>Once created, the type can be used with TypeBox validators.</p>
+<pre><code class="language-typescript">const R = Value.Check(DateType(), new Date())      // const R = true
+
+const E = Value.Errors(DateType(), &#39;x&#39;)            // const E = [{
+                                                   //   keyword: &quot;~standard&quot;,
+                                                   //   schemaPath: &quot;#/~standard&quot;,
+                                                   //   instancePath: &quot;&quot;,
+                                                   //   params: { 
+                                                   //     vendor: &quot;typebox&quot;, 
+                                                   //     issues: [ { message: &quot;not a Date&quot; } ] 
+                                                   //   },
+                                                   //   message: &quot;must match against typebox schema&quot;
+                                                   // }]
+</code></pre>
+<h2>Guard</h2>
+<p>Use the IsBase function to guard values of this type.</p>
+<pre><code class="language-typescript">Type.IsBase(value)                                  // value is Base
+</code></pre>

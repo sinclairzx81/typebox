@@ -1,0 +1,15 @@
+<h1>Omit</h1>
+<p>Omits keys from the given Object type.</p>
+<h2>Example</h2>
+<p>Example usage is shown below.</p>
+<pre><code class="language-typescript">const T = Type.Object({
+  x: Type.Number(),
+  y: Type.Number(),
+  z: Type.Number()
+})
+
+const S = Type.Omit(T, Type.Union([                 // const S: TObject&lt;{
+  Type.Literal(&#39;z&#39;)                                 //   x: TNumber,
+]))                                                 //   y: TNumber
+                                                    // }&gt;
+</code></pre>

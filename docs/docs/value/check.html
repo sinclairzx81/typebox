@@ -1,0 +1,10 @@
+<h1>Check</h1>
+<p>The Check function returns true if the value matches the type. </p>
+<h2>Example</h2>
+<p>Example usage is shown below.</p>
+<pre><code class="language-typescript">const T = Type.Number()
+
+const A = Value.Check(T, 42)                        // const A = true
+
+const B = Value.Check(T, &#39;not-a-number&#39;)            // const B = false
+</code></pre>
