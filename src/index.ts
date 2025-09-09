@@ -1,10 +1,10 @@
 /*--------------------------------------------------------------------------
 
-@sinclair/typebox
+TypeBox
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2025 Haydn Paterson (sinclair) <haydn.developer@gmail.com>
+Copyright (c) 2017-2025 Haydn Paterson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -27,83 +27,17 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 // ------------------------------------------------------------------
-// Infrastructure
+// Standard
 // ------------------------------------------------------------------
-export * from './type/clone/index'
-export * from './type/create/index'
-export * from './type/error/index'
-export * from './type/guard/index'
-export * from './type/helpers/index'
-export * from './type/patterns/index'
-export * from './type/registry/index'
-export * from './type/sets/index'
-export * from './type/symbols/index'
+export * from './type/action/index.ts'
+export * from './type/engine/index.ts'
+export * from './type/extends/index.ts'
+export * from './type/script/index.ts'
+export * from './type/types/index.ts'
 
 // ------------------------------------------------------------------
-// Types
+// TypeBox
 // ------------------------------------------------------------------
-export * from './type/any/index'
-export * from './type/array/index'
-export * from './type/argument/index'
-export * from './type/async-iterator/index'
-export * from './type/awaited/index'
-export * from './type/bigint/index'
-export * from './type/boolean/index'
-export * from './type/composite/index'
-export * from './type/const/index'
-export * from './type/constructor/index'
-export * from './type/constructor-parameters/index'
-export * from './type/date/index'
-export * from './type/enum/index'
-export * from './type/exclude/index'
-export * from './type/extends/index'
-export * from './type/extract/index'
-export * from './type/function/index'
-export * from './type/indexed/index'
-export * from './type/instance-type/index'
-export * from './type/instantiate/index'
-export * from './type/integer/index'
-export * from './type/intersect/index'
-export * from './type/iterator/index'
-export * from './type/intrinsic/index'
-export * from './type/keyof/index'
-export * from './type/literal/index'
-export * from './type/module/index'
-export * from './type/mapped/index'
-export * from './type/never/index'
-export * from './type/not/index'
-export * from './type/null/index'
-export * from './type/number/index'
-export * from './type/object/index'
-export * from './type/omit/index'
-export * from './type/optional/index'
-export * from './type/parameters/index'
-export * from './type/partial/index'
-export * from './type/pick/index'
-export * from './type/promise/index'
-export * from './type/readonly/index'
-export * from './type/readonly-optional/index'
-export * from './type/record/index'
-export * from './type/recursive/index'
-export * from './type/ref/index'
-export * from './type/regexp/index'
-export * from './type/required/index'
-export * from './type/rest/index'
-export * from './type/return-type/index'
-export * from './type/schema/index'
-export * from './type/static/index'
-export * from './type/string/index'
-export * from './type/symbol/index'
-export * from './type/template-literal/index'
-export * from './type/transform/index'
-export * from './type/tuple/index'
-export * from './type/uint8array/index'
-export * from './type/undefined/index'
-export * from './type/union/index'
-export * from './type/unknown/index'
-export * from './type/unsafe/index'
-export * from './type/void/index'
-// ------------------------------------------------------------------
-// Type.*
-// ------------------------------------------------------------------
-export * from './type/type/index'
+export * as Type from './typebox.ts'
+import * as Type from './typebox.ts'
+export default Type

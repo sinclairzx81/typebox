@@ -1,0 +1,31 @@
+<h1>Value</h1>
+<p>Functions to Process JavaScript Values</p>
+<h2>Overview</h2>
+<p>The Value module provides functions to Check and Parse JavaScript values. This module also includes functions that perform structural operations values such as Clone, Repair, Encode, Decode, Diff, Patch and Hash. This module has support for Json Schema and Standard Schema.</p>
+<p>The Value module is available via optional import.</p>
+<pre><code class="language-typescript">import Value from &#39;typebox/value&#39;
+</code></pre>
+<h3>Example</h3>
+<p>The following uses the Value module to Check and Parse a value. </p>
+<pre><code class="language-typescript">const T = Type.Object({
+  x: Type.Number(),
+  y: Type.Number(),
+  z: Type.Number()
+})
+
+// Check
+
+const A = Value.Check(T, {                          // const A: boolean = true
+  x: 1,                                            
+  y: 2,
+  z: 3
+})
+
+// Parse
+
+const B = Value.Parse(T, {                          // const B: {
+  x: 1,                                             //   x: number,
+  y: 2,                                             //   y: number,
+  z: 3                                              //   z: number
+})                                                  // } = ...
+</code></pre>

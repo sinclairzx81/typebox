@@ -1,0 +1,40 @@
+<h1>Intersect</h1>
+<p>Creates an Intersect type.</p>
+<h2>Example</h2>
+<p>Example usage is shown below. </p>
+<pre><code class="language-typescript">const T = Type.Intersect([                          // const T = {
+  Type.Object({ x: Type.Number() }),                //   allOf: [{
+  Type.Object({ y: Type.Number() }),                //     type: &#39;object&#39;,
+])                                                  //     required: [&#39;x&#39;],
+                                                    //     properties: {
+                                                    //       x: { type: &#39;number&#39; }
+                                                    //     }
+                                                    //  }, {
+                                                    //    type: &#39;object&#39;,
+                                                    //    required: [&#39;y&#39;],
+                                                    //    properties: {
+                                                    //      y: { type: &#39;number&#39; }
+                                                    //    }
+                                                    //  }]
+                                                    // }
+
+type T = Static&lt;typeof T&gt;                           // type T = { 
+                                                    //   x: number
+                                                    // } &amp; {
+                                                    //   y: number
+                                                    // }
+</code></pre>
+<h2>Guard</h2>
+<p>Use the IsInteger function to guard values of this type.</p>
+<pre><code class="language-typescript">Type.IsIntersect(value)                             // value is TIntersect
+</code></pre>
+<h2>Options</h2>
+<pre><code class="language-typescript">export interface TIntersectOptions extends TSchemaOptions {
+  /** 
+   * A schema to apply to any properties in the object that were not validated 
+   * by other keywords like `properties`, `patternProperties`, or `additionalProperties`. 
+   * If `false`, no additional properties are allowed. 
+   */
+  unevaluatedProperties?: TSchema | boolean
+}
+</code></pre>

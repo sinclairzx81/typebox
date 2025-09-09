@@ -1,0 +1,20 @@
+<h1>Record</h1>
+<p>Creates a Record type.</p>
+<h2>Example</h2>
+<p>Example usage is shown below.</p>
+<pre><code class="language-typescript">const T = Type.Record(Type.String(), Type.Number()) // const T = {
+                                                    //   type: &#39;object&#39;,
+                                                    //   patternProperties: {
+                                                    //     &quot;^.*$&quot;: {
+                                                    //        type: &#39;number&#39;
+                                                    //     }
+                                                    //   }
+
+type T = Static&lt;typeof T&gt;                           // type T = {
+                                                    //   [x: string]: number
+                                                    // }
+</code></pre>
+<h2>Guard</h2>
+<p>Use the IsRecord function to guard values of this type.</p>
+<pre><code class="language-typescript">Type.IsRecord(value)                                // value is TRecord&lt;string, TSchema&gt;
+</code></pre>

@@ -1,10 +1,10 @@
 /*--------------------------------------------------------------------------
 
-@sinclair/typebox/value
+TypeBox
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2025 Haydn Paterson (sinclair) <haydn.developer@gmail.com>
+Copyright (c) 2017-2025 Haydn Paterson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,169 +26,34 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { KeyOfPropertyKeys } from '../../type/keyof/index'
-import { Check } from '../check/index'
-import { Clone } from '../clone/index'
-import { Deref, Pushref } from '../deref/index'
-import { Kind } from '../../type/symbols/index'
+import { Arguments } from '../../system/arguments/index.ts'
+import type { TProperties, TSchema } from '../../type/index.ts'
+import { FromType } from './from-type.ts'
 
-import type { TSchema } from '../../type/schema/index'
-import type { TArray } from '../../type/array/index'
-import type { TImport } from '../../type/module/index'
-import type { TIntersect } from '../../type/intersect/index'
-import type { TObject } from '../../type/object/index'
-import type { TRecord } from '../../type/record/index'
-import type { TRef } from '../../type/ref/index'
-import type { TThis } from '../../type/recursive/index'
-import type { TTuple } from '../../type/tuple/index'
-import type { TUnion } from '../../type/union/index'
-
-// ------------------------------------------------------------------
-// ValueGuard
-// ------------------------------------------------------------------
-// prettier-ignore
-import { 
-  HasPropertyKey,
-  IsString, 
-  IsObject, 
-  IsArray, 
-  IsUndefined 
-} from '../guard/index'
-// ------------------------------------------------------------------
-// TypeGuard
-// ------------------------------------------------------------------
-// prettier-ignore
-import { 
-  IsKind
-} from '../../type/guard/kind'
-
-// ------------------------------------------------------------------
-// IsCheckable
-// ------------------------------------------------------------------
-function IsCheckable(schema: unknown): boolean {
-  return IsKind(schema) && schema[Kind] !== 'Unsafe'
-}
-// ------------------------------------------------------------------
-// Types
-// ------------------------------------------------------------------
-function FromArray(schema: TArray, references: TSchema[], value: unknown): any {
-  if (!IsArray(value)) return value
-  return value.map((value) => Visit(schema.items, references, value))
-}
-function FromImport(schema: TImport, references: TSchema[], value: unknown): any {
-  const definitions = globalThis.Object.values(schema.$defs) as TSchema[]
-  const target = schema.$defs[schema.$ref] as TSchema
-  return Visit(target, [...references, ...definitions], value)
-}
-function FromIntersect(schema: TIntersect, references: TSchema[], value: unknown): any {
-  const unevaluatedProperties = schema.unevaluatedProperties as TSchema
-  const intersections = schema.allOf.map((schema) => Visit(schema, references, Clone(value)))
-  const composite = intersections.reduce((acc: any, value: any) => (IsObject(value) ? { ...acc, ...value } : value), {})
-  if (!IsObject(value) || !IsObject(composite) || !IsKind(unevaluatedProperties)) return composite
-  const knownkeys = KeyOfPropertyKeys(schema) as string[]
-  for (const key of Object.getOwnPropertyNames(value)) {
-    if (knownkeys.includes(key)) continue
-    if (Check(unevaluatedProperties, references, value[key])) {
-      composite[key] = Visit(unevaluatedProperties, references, value[key])
-    }
-  }
-  return composite
-}
-function FromObject(schema: TObject, references: TSchema[], value: unknown): any {
-  if (!IsObject(value) || IsArray(value)) return value // Check IsArray for AllowArrayObject configuration
-  const additionalProperties = schema.additionalProperties as TSchema
-  for (const key of Object.getOwnPropertyNames(value)) {
-    if (HasPropertyKey(schema.properties, key)) {
-      value[key] = Visit(schema.properties[key], references, value[key])
-      continue
-    }
-    if (IsKind(additionalProperties) && Check(additionalProperties, references, value[key])) {
-      value[key] = Visit(additionalProperties, references, value[key])
-      continue
-    }
-    delete value[key]
-  }
-  return value
-}
-function FromRecord(schema: TRecord, references: TSchema[], value: unknown): any {
-  if (!IsObject(value)) return value
-  const additionalProperties = schema.additionalProperties as TSchema
-  const propertyKeys = Object.getOwnPropertyNames(value)
-  const [propertyKey, propertySchema] = Object.entries(schema.patternProperties)[0]
-  const propertyKeyTest = new RegExp(propertyKey)
-  for (const key of propertyKeys) {
-    if (propertyKeyTest.test(key)) {
-      value[key] = Visit(propertySchema, references, value[key])
-      continue
-    }
-    if (IsKind(additionalProperties) && Check(additionalProperties, references, value[key])) {
-      value[key] = Visit(additionalProperties, references, value[key])
-      continue
-    }
-    delete value[key]
-  }
-  return value
-}
-function FromRef(schema: TRef, references: TSchema[], value: unknown): any {
-  return Visit(Deref(schema, references), references, value)
-}
-function FromThis(schema: TThis, references: TSchema[], value: unknown): any {
-  return Visit(Deref(schema, references), references, value)
-}
-function FromTuple(schema: TTuple, references: TSchema[], value: unknown): any {
-  if (!IsArray(value)) return value
-  if (IsUndefined(schema.items)) return []
-  const length = Math.min(value.length, schema.items.length)
-  for (let i = 0; i < length; i++) {
-    value[i] = Visit(schema.items[i], references, value[i])
-  }
-  // prettier-ignore
-  return value.length > length 
-    ? value.slice(0, length) 
-    : value
-}
-function FromUnion(schema: TUnion, references: TSchema[], value: unknown): any {
-  for (const inner of schema.anyOf) {
-    if (IsCheckable(inner) && Check(inner, references, value)) {
-      return Visit(inner, references, value)
-    }
-  }
-  return value
-}
-function Visit(schema: TSchema, references: TSchema[], value: unknown): unknown {
-  const references_ = IsString(schema.$id) ? Pushref(schema, references) : references
-  const schema_ = schema as any
-  switch (schema_[Kind]) {
-    case 'Array':
-      return FromArray(schema_, references_, value)
-    case 'Import':
-      return FromImport(schema_, references_, value)
-    case 'Intersect':
-      return FromIntersect(schema_, references_, value)
-    case 'Object':
-      return FromObject(schema_, references_, value)
-    case 'Record':
-      return FromRecord(schema_, references_, value)
-    case 'Ref':
-      return FromRef(schema_, references_, value)
-    case 'This':
-      return FromThis(schema_, references_, value)
-    case 'Tuple':
-      return FromTuple(schema_, references_, value)
-    case 'Union':
-      return FromUnion(schema_, references_, value)
-    default:
-      return value
-  }
-}
-// ------------------------------------------------------------------
-// Clean
-// ------------------------------------------------------------------
-/** `[Mutable]` Removes excess properties from a value and returns the result. This function does not check the value and returns an unknown type. You should Check the result before use. Clean is a mutable operation. To avoid mutation, Clone the value first. */
-export function Clean(schema: TSchema, references: TSchema[], value: unknown): unknown
-/** `[Mutable]` Removes excess properties from a value and returns the result. This function does not check the value and returns an unknown type. You should Check the result before use. Clean is a mutable operation. To avoid mutation, Clone the value first. */
-export function Clean(schema: TSchema, value: unknown): unknown
-/** `[Mutable]` Removes excess properties from a value and returns the result. This function does not check the value and returns an unknown type. You should Check the result before use. Clean is a mutable operation. To avoid mutation, Clone the value first. */
-export function Clean(...args: any[]) {
-  return args.length === 3 ? Visit(args[0], args[1], args[2]) : Visit(args[0], [], args[1])
+/**
+ * Cleans a value by removing non-evaluated properties and elements as derived from the provided type.
+ * This function returns unknown so callers should Check the return value before use. This function
+ * mutates the provided value. If mutation is not wanted, you should Clone the value before passing
+ * to this function.
+ */
+export function Clean(type: TSchema, value: unknown): unknown
+/**
+ * Cleans a value by removing non-evaluated properties and elements as derived from the provided type.
+ * This function returns unknown so callers should Check the return value before use. This function
+ * mutates the provided value. If mutation is not wanted, you should Clone the value before passing
+ * to this function.
+ */
+export function Clean(context: TProperties, type: TSchema, value: unknown): unknown
+/**
+ * Cleans a value by removing non-evaluated properties and elements as derived from the provided type.
+ * This function returns unknown so callers should Check the return value before use. This function
+ * mutates the provided value. If mutation is not wanted, you should Clone the value before passing
+ * to this function.
+ */
+export function Clean(...args: unknown[]): unknown {
+  const [context, type, value] = Arguments.Match<[TProperties, TSchema, unknown]>(args, {
+    3: (context, type, value) => [context, type, value],
+    2: (type, value) => [{}, type, value]
+  })
+  return FromType(context, type, value)
 }

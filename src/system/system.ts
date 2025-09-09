@@ -1,10 +1,10 @@
 /*--------------------------------------------------------------------------
 
-@sinclair/typebox/system
+TypeBox
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2025 Haydn Paterson (sinclair) <haydn.developer@gmail.com>
+Copyright (c) 2017-2025 Haydn Paterson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,41 +26,9 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { TypeRegistry, FormatRegistry } from '../type/registry/index'
-import { Unsafe, type TUnsafe } from '../type/unsafe/index'
-import { Kind } from '../type/symbols/index'
-import { TypeBoxError } from '../type/error/index'
-
-// ------------------------------------------------------------------
-// Errors
-// ------------------------------------------------------------------
-export class TypeSystemDuplicateTypeKind extends TypeBoxError {
-  constructor(kind: string) {
-    super(`Duplicate type kind '${kind}' detected`)
-  }
-}
-export class TypeSystemDuplicateFormat extends TypeBoxError {
-  constructor(kind: string) {
-    super(`Duplicate string format '${kind}' detected`)
-  }
-}
-// ------------------------------------------------------------------
-// TypeSystem
-// ------------------------------------------------------------------
-export type TypeFactoryFunction<Type, Options = Record<PropertyKey, unknown>> = (options?: Partial<Options>) => TUnsafe<Type>
-
-/** Creates user defined types and formats and provides overrides for value checking behaviours */
-export namespace TypeSystem {
-  /** Creates a new type */
-  export function Type<Type, Options = Record<PropertyKey, unknown>>(kind: string, check: (options: Options, value: unknown) => boolean): TypeFactoryFunction<Type, Options> {
-    if (TypeRegistry.Has(kind)) throw new TypeSystemDuplicateTypeKind(kind)
-    TypeRegistry.Set(kind, check)
-    return (options: Partial<Options> = {}) => Unsafe<Type>({ ...options, [Kind]: kind })
-  }
-  /** Creates a new string format */
-  export function Format<F extends string>(format: F, check: (value: string) => boolean): F {
-    if (FormatRegistry.Has(format)) throw new TypeSystemDuplicateFormat(format)
-    FormatRegistry.Set(format, check)
-    return format
-  }
-}
+export * from './arguments/index.ts'
+export * from './environment/index.ts'
+export * from './hashing/index.ts'
+export * from './locale/index.ts'
+export * from './settings/index.ts'
+export * from './memory/index.ts'

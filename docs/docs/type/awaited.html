@@ -1,0 +1,8 @@
+<h1>Awaited</h1>
+<p>The Awaited function unwraps a Promise and returns the interior type.</p>
+<h2>Example</h2>
+<p>Example usage is shown below.</p>
+<pre><code class="language-typescript">const T = Type.Promise(Type.String())
+
+const S = Type.Awaited(T)                           // const S: TString
+</code></pre>

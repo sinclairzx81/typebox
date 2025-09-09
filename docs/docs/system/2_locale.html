@@ -1,0 +1,26 @@
+<h1>Locale</h1>
+<p>TypeBox provides error message translation (i18n) support for over 40 languages. </p>
+<h2>Example</h2>
+<p>TypeBox uses ISO 639-1 language region codes for each Locale. They can be set in the following way.</p>
+<pre><code class="language-typescript">import { Locale } from &#39;typebox/system&#39;
+
+Locale.Set(Locale.en_US)                           // English - United States
+
+Locale.Set(Locale.ko_KR)                           // Korean - South Korea
+
+Locate.Set(Locale.fr_FR)                           // French - France
+
+Locale.Set(Locale.zh_Hant)                         // Chinese - Traditional
+</code></pre>
+<h2>Errors</h2>
+<p>Set the Locale immediately before calling Errors to generate messages for that locale.</p>
+<pre><code class="language-typescript">Locale.Set(Locale.fr_FR)                            // French - France
+
+const E = Value.Errors(Type.Number(), &#39;???&#39;)        // const E = [{
+                                                    //   keyword: &quot;type&quot;,
+                                                    //   schemaPath: &quot;#/type&quot;,      
+                                                    //   instancePath: &quot;&quot;,
+                                                    //   params: { type: &quot;number&quot; },
+                                                    //   message: &quot;doit être number&quot;   
+                                                    // }]
+</code></pre>

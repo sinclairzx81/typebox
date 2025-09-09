@@ -1,0 +1,14 @@
+<h1>Interface</h1>
+<p>The Interface function creates an Object with Heritage.</p>
+<h2>Example</h2>
+<p>Example usage is shown below. </p>
+<pre><code class="language-typescript">const A = Type.Interface([], {                      // const A: TObject&lt;{
+  a: Type.Number()                                  //   a: TNumber
+})                                                  // }&gt;
+
+
+const B = Type.Interface([A], {                     // const B: TObject&lt;{
+  b: Type.Number()                                  //   a: TNumber,
+})                                                  //   b: TNumber
+                                                    // }
+</code></pre>

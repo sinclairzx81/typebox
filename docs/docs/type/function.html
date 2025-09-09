@@ -1,0 +1,33 @@
+<h1>Function</h1>
+<p>Creates a Function type. </p>
+<blockquote>
+<p>⚠️ This type is used for interface definitions and cannot be validated.</p>
+</blockquote>
+<h2>Example</h2>
+<p>Example usage is shown below. </p>
+<pre><code class="language-typescript">const T = Type.Function([                           // const T = {
+  Type.String(),                                    //   type: &#39;function&#39;
+  Type.Boolean()                                    //   parameters: [
+], Type.Object({                                    //     { type: &#39;string&#39; },
+  x: Type.Number()                                  //     { type: &#39;boolean&#39; }
+}))                                                 //   ],
+                                                    //   returnType: {
+                                                    //     type: &#39;object&#39;,
+                                                    //     required: [&#39;x&#39;],
+                                                    //     properties: {
+                                                    //       x: { type: &#39;number&#39; }
+                                                    //     }
+                                                    //   }
+                                                    // }
+
+type T = Static&lt;typeof T&gt;                           // type T = (
+                                                    //   args_0: string, 
+                                                    //   args_1: boolean
+                                                    // ) =&gt; { 
+                                                    //   x: number 
+                                                    // }
+</code></pre>
+<h2>Guard</h2>
+<p>Use the IsFunction function to guard values of this type.</p>
+<pre><code class="language-typescript">Type.IsFunction(value)                              // value is TFunction
+</code></pre>

@@ -1,0 +1,16 @@
+<h1>Identifier</h1>
+<p>Creates a named Identifier.</p>
+<blockquote>
+<p>⚠️ This function is a Script evalutation action.</p>
+</blockquote>
+<h2>Example</h2>
+<p>Example usage is shown below. </p>
+<pre><code class="language-typescript">const T = Type.Identifier(&#39;A&#39;)                      // const T = {
+                                                    //  type: &#39;identifier&#39;,
+                                                    //  name: &#39;A&#39;
+                                                    // }
+</code></pre>
+<h2>Guard</h2>
+<p>Use the IsIdentifier function to guard values of this type.</p>
+<pre><code class="language-typescript">Type.IsIdentifier(value)                           // value is TIdentifier
+</code></pre>

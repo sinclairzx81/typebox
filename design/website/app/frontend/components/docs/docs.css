@@ -1,0 +1,236 @@
+/*--------------------------------------------------------------------------
+
+TypeBox
+
+The MIT License (MIT)
+
+Copyright (c) 2017-2025 Haydn Paterson
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+---------------------------------------------------------------------------*/
+
+/* ------------------------------------------------------------------
+   Variables
+   ------------------------------------------------------------------ */
+.docs {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+/* ------------------------------------------------------------------
+   Header
+   ------------------------------------------------------------------ */
+.docs .header {
+  background: var(--docs-head-background-color);
+  font-family: var(--app-font-family-standard);
+  border-bottom: 1px solid var(--app-edge-color);
+  display: flex;
+  flex-shrink: 0;
+  gap: 1rem;
+  padding: 0.5rem 1rem;
+}
+.docs .header button {
+  color: var(--docs-text-color-muted);
+  font-family: var(--app-font-family-standard);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.4rem 0.6rem;
+  border-bottom: 2px solid transparent;
+}
+.docs .header button.active,
+.docs .header button:hover {
+  color: var(--docs-text-color-select);
+  border-bottom-color: var(--docs-text-color-select);
+}
+/* ------------------------------------------------------------------
+   Body
+   ------------------------------------------------------------------ */
+.docs .body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+/* ------------------------------------------------------------------
+   Menu
+   ------------------------------------------------------------------ */
+.docs .body .menu {
+  background: var(--docs-menu-background-color);
+  width: 280px;
+  flex-shrink: 0;
+  border-right: none;
+  padding: 1rem;
+  overflow-y: auto;
+}
+.docs .body .menu button {
+  color: var(--docs-text-color-muted);
+  font-family: var(--app-font-family-standard);
+
+  display: block;
+  outline: none;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 0.4rem 0.6rem;
+  border-radius: 4px;
+  margin-bottom: 0.25rem;
+  cursor: pointer;
+  border-left: 4px solid transparent;
+}
+.docs .body .menu button.active,
+.docs .body .menu button:hover {
+  background-color: var(--docs-menu-background-color-select);
+  color: var(--docs-text-color-select);
+  border-left-color: var(--docs-text-color-select);
+}
+/* ------------------------------------------------------------------
+   Menu
+ ------------------------------------------------------------------ */
+.docs .body .menu .search {
+  margin-bottom: 0.75rem;
+}
+.docs .body .menu .search input {
+  background: var(--docs-search-background);
+  color: var(--docs-text-color);
+  border: 1px solid var(--docs-search-border-color);
+  width: 100%;
+  max-width: 100%;
+  padding: 0.5rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.9rem;
+  outline: none;
+  box-sizing: border-box;
+  /* transition: border-color 0.2s, box-shadow 0.2s; */
+}
+.docs .body .menu .search input::placeholder {
+  color: var(--docs-search-placeholder-color);
+}
+.docs .body .menu .search input:focus {
+  border-color: var(--docs-text-color-select);
+  box-shadow: 0 0 4px var(--docs-text-color-select);
+}
+/* ------------------------------------------------------------------
+   Content
+   ------------------------------------------------------------------ */
+.docs .content {
+  background: var(--docs-body-background-color);
+  color: var(--docs-text-color);
+  flex: 1;
+  padding: 1.2rem;
+  overflow-y: auto;
+  line-height: 1.9;
+}
+.docs .markdown {
+  max-width: 100%;
+  width: 1280px;
+}
+.docs .content h1,
+.docs .content h2,
+.docs .content h3 {
+  color: var(--docs-head-color);
+  font-family: var(--app-font-family-standard);
+  margin-top: 0.5rem;  
+  margin-bottom: 0.5rem; 
+}
+.docs .content h1 {
+  font-size: 1.8rem;
+}
+.docs .content h2 {
+  font-size: 1.5rem;
+}
+.docs .content h3 {
+  font-size: 1.3rem;
+}
+.docs .content p {
+  margin-top: 0.5rem;  
+}
+.docs .content a {
+  text-decoration: none;
+  color: var(--docs-link-color);
+}
+.docs .content blockquote {
+  background: var(--docs-blockquote-background);
+  color: var(--docs-blockquote-color);
+  border: 1px solid var(--docs-blockquote-border-color);
+  padding: 1rem 1.25rem;
+  margin: 1.25rem 0;
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+
+.docs .content blockquote p {
+  margin: 0; /* remove extra spacing inside */
+}
+/* ------------------------------------------------------------------
+   Prism code blocks
+   ------------------------------------------------------------------ */
+.docs .content pre {
+  background: var(--docs-code-background-color);
+  color: var(--docs-text-color);
+  border-left: 2px solid var(--docs-text-color-select);
+  border-right: 1px solid var(--docs-blockquote-border-color);
+  border-top: 1px solid var(--docs-blockquote-border-color);
+  border-bottom: 1px solid var(--docs-blockquote-border-color);
+  padding: 1rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+.docs .content code {
+  background: var(--docs-code-background-color);
+  color: var(--docs-code-text-color);
+  padding: 0.15rem 0.35rem;
+  border-radius: 4px;
+}
+.docs .content p code {
+  font-size: 0.85rem;
+}
+/* Inline code */
+.docs .content p code {
+  padding: 0.15rem 0.35rem;
+}
+/* Code blocks */
+.docs .content pre code {
+  color: var(--docs-code-text-color);
+  padding: 0; 
+  display: block;
+}
+/* ------------------------------------------------------------------
+   PrismJS syntax highlighting
+   ------------------------------------------------------------------ */
+.token.keyword,
+.token.control-flow {
+  color: var(--docs-code-keyword-color);
+  font-weight: bold;
+}
+.token.string {
+  color:var(--docs-code-string-color); 
+}
+.token.keyword {
+  color: var(--docs-code-keyword-color);
+}
+.token.function {
+  color: var(--docs-code-function-color); 
+}
+.token.comment {
+  color: var(--docs-code-comment-color);
+}

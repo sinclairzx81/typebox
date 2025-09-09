@@ -1,0 +1,11 @@
+<h1>Parse</h1>
+<p>The Parse function attempts to parse a value and throws an error if the value is invalid. This function is similar to Decode, but it does not execute Decode callbacks. Parse is considered a faster version of Decode, as operations that transform values are skipped when the value already matches the expected type.</p>
+<blockquote>
+<p>The Parse function first checks a value against the provided type and returns immediately if it matches. If the value does not match, it is processed through a sequence of Clone, Clean, Convert, and Default operations, and then re-checked. If the value remains invalid, a ParseError error is thrown.</p>
+</blockquote>
+<h2>Example</h2>
+<p>Example usage is shown below.</p>
+<pre><code class="language-typescript">const R = Value.Parse(Type.String(), &#39;hello&#39;)      // const R: string = &quot;hello&quot;
+
+const E = Value.Parse(Type.String(), [{ x: 1 }])   // throws ParseError 
+</code></pre>

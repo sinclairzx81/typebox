@@ -1,10 +1,10 @@
 /*--------------------------------------------------------------------------
 
-@sinclair/typebox/value
+TypeBox
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2025 Haydn Paterson (sinclair) <haydn.developer@gmail.com>
+Copyright (c) 2017-2025 Haydn Paterson 
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,31 +26,40 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { TypeBoxError } from '../../type/error/index'
+// deno-fmt-ignore-file
+
+import { Guard } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
 // Errors
 // ------------------------------------------------------------------
-export class ValuePointerRootSetError extends TypeBoxError {
+class ValuePointerRootSetError extends Error {
   constructor(public readonly value: unknown, public readonly path: string, public readonly update: unknown) {
     super('Cannot set root value')
   }
 }
-export class ValuePointerRootDeleteError extends TypeBoxError {
+class ValuePointerRootDeleteError extends Error {
   constructor(public readonly value: unknown, public readonly path: string) {
     super('Cannot delete root value')
   }
 }
 // ------------------------------------------------------------------
+// ObjectLike
+// ------------------------------------------------------------------
+type ObjectLike = Record<PropertyKey, any>
+
+// ------------------------------------------------------------------
 // ValuePointer
 // ------------------------------------------------------------------
 /** Provides functionality to update values through RFC6901 string pointers */
-// prettier-ignore
-function Escape(component: string) {
-  return component.indexOf('~') === -1 ? component : component.replace(/~1/g, '/').replace(/~0/g, '~')
+function Escape(component: string): string {
+  const decoded = decodeURIComponent(component)
+  return decoded.replace(/~1/g, '/').replace(/~0/g, '~')
 }
-/** Formats the given pointer into navigable key components */
-// prettier-ignore
+// ------------------------------------------------------------------
+// Format
+// ------------------------------------------------------------------
+/** Transforms a pointer into navigable key components */
 export function* Format(pointer: string): IterableIterator<string> {
   if (pointer === '') return
   let [start, end] = [0, 0]
@@ -70,53 +79,74 @@ export function* Format(pointer: string): IterableIterator<string> {
   }
   yield Escape(pointer.slice(start))
 }
-/** Sets the value at the given pointer. If the value at the pointer does not exist it is created */
-// prettier-ignore
-export function Set(value: any, pointer: string, update: unknown): void {
+// ------------------------------------------------------------------
+// Set
+// ------------------------------------------------------------------
+/** 
+ * Sets the value at the given pointer and returns the updated value. If the pointer 
+ * path does not exist, the path will be created.
+ */
+export function Set(value: ObjectLike, pointer: string, update: unknown): ObjectLike {
   if (pointer === '') throw new ValuePointerRootSetError(value, pointer, update)
-  let [owner, next, key] = [null as any, value, '']
+  let [owner, next, key] = [null, value, ''] as [unknown, ObjectLike, string]
   for (const component of Format(pointer)) {
-    if (next[component] === undefined) next[component] = {}
+    if (Guard.IsUndefined(next[component])) next[component] = {}
     owner = next
     next = next[component]
     key = component
   }
-  owner[key] = update
+  if(Guard.IsObject(owner)) {
+    owner[key] = update
+  }
+  return value
 }
-/** Deletes a value at the given pointer */
-// prettier-ignore
-export function Delete(value: any, pointer: string): void {
+// ------------------------------------------------------------------
+// Delete
+// ------------------------------------------------------------------
+/** 
+ * Deletes a value at the given pointer and returns the updated value.
+ */
+export function Delete(value: ObjectLike, pointer: string): ObjectLike {
   if (pointer === '') throw new ValuePointerRootDeleteError(value, pointer)
-  let [owner, next, key] = [null as any, value as any, '']
+  let [owner, next, key] = [null, value, ''] as [unknown, ObjectLike, string]
   for (const component of Format(pointer)) {
-    if (next[component] === undefined || next[component] === null) return
+    if (Guard.IsUndefined(next[component]) || Guard.IsNull(next[component])) {
+      return value
+    }
     owner = next
     next = next[component]
     key = component
   }
-  if (Array.isArray(owner)) {
+  if (Guard.IsArray(owner)) {
     const index = parseInt(key)
     owner.splice(index, 1)
-  } else {
+  } else if (Guard.IsObject(owner)) {
     delete owner[key]
   }
+  return value
 }
-/** Returns true if a value exists at the given pointer */
-// prettier-ignore
-export function Has(value: any, pointer: string): boolean {
+// ------------------------------------------------------------------
+// Has
+// ------------------------------------------------------------------
+/** Returns true if a property or element exists at the given pointer */
+export function Has(value: ObjectLike, pointer: string): boolean {
   if (pointer === '') return true
-  let [owner, next, key] = [null as any, value as any, '']
+  let [owner, next, key] = [null, value, ''] as [unknown, ObjectLike, string]
   for (const component of Format(pointer)) {
-    if (next[component] === undefined) return false
+    if (Guard.IsUndefined(next[component]) || Guard.IsNull(next[component])) {
+      return false
+    }
     owner = next
     next = next[component]
     key = component
   }
   return Object.getOwnPropertyNames(owner).includes(key)
 }
-/** Gets the value at the given pointer */
-// prettier-ignore
-export function Get(value: any, pointer: string): any {
+// ------------------------------------------------------------------
+// Get
+// ------------------------------------------------------------------
+/** Gets the value at the given pointer or undefined if not exists. */
+export function Get(value: ObjectLike, pointer: string): unknown | undefined {
   if (pointer === '') return value
   let current = value
   for (const component of Format(pointer)) {

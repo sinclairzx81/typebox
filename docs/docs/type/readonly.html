@@ -1,0 +1,24 @@
+<h1>Readonly</h1>
+<p>The Optional function applies an <code>readonly</code> modifier to a type.</p>
+<h2>Example</h2>
+<p>Example usage is shown below.</p>
+<pre><code class="language-typescript">const T = Type.Object({                             // const T = {
+  x: Type.Readonly(Type.Number()),                  //   type: &#39;object&#39;,
+  y: Type.Readonly(Type.Number()),                  //   required: [&#39;x&#39;, &#39;y&#39;, &#39;z&#39;],
+  z: Type.Number()                                  //   properties: {
+})                                                  //     x: { type: &#39;number&#39;, readOnly: true },
+                                                    //     y: { type: &#39;number&#39;, readOnly: true },
+                                                    //     z: { type: &#39;number&#39; }
+                                                    //   }
+                                                    // }
+
+type T = Static&lt;typeof T&gt;                           // type T = {
+                                                    //   readonly x: number,
+                                                    //   readonly y: number,
+                                                    //   z: number
+                                                    // }
+</code></pre>
+<h2>Guard</h2>
+<p>Use the IsReadonly function to guard values of this type.</p>
+<pre><code class="language-typescript">Type.IsReadonly(value)                              // value is TReadonly
+</code></pre>

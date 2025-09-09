@@ -1,0 +1,20 @@
+<h1>Parameter</h1>
+<p>Creates a Generic Parameter type.</p>
+<blockquote>
+<p>⚠️ This function is a Script evalutation action.</p>
+</blockquote>
+<h2>Example</h2>
+<p>Example usage is shown below.</p>
+<pre><code class="language-typescript">const T = Type.Parameter(&#39;A&#39;,                       // const T = {
+  Type.Number(),                                    //   type: &#39;parameter&#39;,
+  Type.Literal(1)                                   //   name: &#39;A&#39;,
+)                                                   //   extends: { type: &#39;number&#39; },
+                                                    //   equals: { const: 1 }
+                                                    // }
+
+type T = Static&lt;typeof T&gt;                           // type T = unknown
+</code></pre>
+<h2>Guard</h2>
+<p>Use the IsParameter function to guard values of this type.</p>
+<pre><code class="language-typescript">Type.IsParameter(value)                             // value is TParameter
+</code></pre>

@@ -1,0 +1,8 @@
+<h1>NonNullable</h1>
+<p>The NonNullable function will discard variants of Undefined and Null from a Union type.</p>
+<h2>Example</h2>
+<p>Example usage is shown below.</p>
+<pre><code class="language-typescript">const T = Type.Union([Type.String(), Type.Undefined(), Type.Null()])
+
+const S = Type.NonNullable(T)                       // const S: TString
+</code></pre>

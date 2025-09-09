@@ -1,8 +1,7 @@
 {
-    "files.exclude": {
-        "node_modules": true,
-        "package-lock.json": true
-    },
-    "editor.suggest.showStatusBar": false,
-    "typescript.tsdk": "node_modules\\typescript\\lib"
+  "deno.enable": true,
+  "deno.lint": false,
+  "typescript.inlayHints.variableTypes.enabled": false,
+  "editor.lightbulb.enabled": "off",
+  "typescript.experimental.useTsgo": false
 }

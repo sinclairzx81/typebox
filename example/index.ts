@@ -1,49 +1,46 @@
-import { TypeSystem } from '@sinclair/typebox/system'
-import { TypeCompiler } from '@sinclair/typebox/compiler'
-import { Value, ValuePointer } from '@sinclair/typebox/value'
-import { Type, TypeGuard, Kind, Static, TSchema } from '@sinclair/typebox'
-import { Syntax } from '@sinclair/typebox/syntax'
+import Type, { type Static } from 'typebox'
+import Compile from 'typebox/compile'
+import Format from 'typebox/format'
+import Value from 'typebox/value'
 
-// -----------------------------------------------------------
-// Create: Type
-// -----------------------------------------------------------
-
+// ------------------------------------------------------------------
+// Type
+// ------------------------------------------------------------------
 const T = Type.Object({
   x: Type.Number(),
   y: Type.Number(),
-  z: Type.Number(),
+  z: Type.Number()
 })
 
+// ------------------------------------------------------------------
+// Script
+// ------------------------------------------------------------------
+const S = Type.Script({ T }, `{
+  [K in keyof T]: T[K] | null
+}`)
+
+// ------------------------------------------------------------------
+// Infer
+// ------------------------------------------------------------------
 type T = Static<typeof T>
-
-console.log(T)
-
-// -----------------------------------------------------------
-// Syntax: Type
-// -----------------------------------------------------------
-
-const S = Syntax({ T }, `{ x: T, y: T, z: T }`)
-
 type S = Static<typeof S>
 
-// -----------------------------------------------------------
-// Create: Value
-// -----------------------------------------------------------
+// ------------------------------------------------------------------
+// Parse
+// ------------------------------------------------------------------
 
-const V = Value.Create(T)
+const R = Value.Parse(T, { x: 1, y: 2, z: 3 })
 
-console.log(V)
+// ------------------------------------------------------------------
+// Compile
+// ------------------------------------------------------------------
 
-// -----------------------------------------------------------
-// Compile: Type
-// -----------------------------------------------------------
+const C = Compile.Compile(S)
 
-const C = TypeCompiler.Compile(T)
+const X = C.Parse(C)
 
-console.log(C.Code())
+// ------------------------------------------------------------------
+// Format
+// ------------------------------------------------------------------
 
-// -----------------------------------------------------------
-// Check: Value
-// -----------------------------------------------------------
-
-console.log(C.Check(V))
+const E = Format.IsEmail('user@domain.com')

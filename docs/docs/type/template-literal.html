@@ -1,0 +1,15 @@
+<h1>TemplateLiteral</h1>
+<p>Creates a TemplateLiteral type.</p>
+<h2>Example</h2>
+<p>Example usage is shown below.</p>
+<pre><code class="language-typescript">const T = Type.TemplateLiteral(&#39;A${&quot;B&quot;|&quot;C&quot;}&#39;)        // const T = {
+                                                     //   type: &#39;string&#39;,
+                                                     //   pattern: &#39;^A(B|C)$&#39;
+                                                     // }
+
+type T = Static&lt;typeof T&gt;                            // type T = &#39;AB&#39; | &#39;AC&#39;
+</code></pre>
+<h2>Guard</h2>
+<p>Use the IsTemplateLiteral function to guard values of this type.</p>
+<pre><code class="language-typescript">Type.IsTemplateLiteral(value)                       // value is TTemplateLiteral
+</code></pre>

@@ -1,0 +1,15 @@
+<h1>Index</h1>
+<p>The Index function performs a indexed access lookup on a type.</p>
+<h2>Example</h2>
+<p>Example usage is shown below. </p>
+<pre><code class="language-typescript">const T = Type.Object({
+  x: Type.Literal(1),
+  y: Type.Literal(2),
+  z: Type.Literal(3)
+})
+
+const S = Type.Index(T, Type.Union([                // const S: TUnion&lt;[
+  Type.Literal(&#39;x&#39;),                                //   TLiteral&lt;1&gt;,
+  Type.Literal(&#39;y&#39;)                                 //   TLiteral&lt;2&gt;
+]))                                                 // ]&gt;
+</code></pre>

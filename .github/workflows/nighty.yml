@@ -1,0 +1,25 @@
+name: Nightly
+on:
+  schedule:
+    - cron: '0 18 * * *' # 6pm Daily
+jobs:
+  # -----------------------------------------------------------
+  # Deno 
+  # -----------------------------------------------------------
+  Deno:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      matrix:
+        node: [20.x]
+        os: [ubuntu-latest, macOS-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: canary
+
+      - name: Test TypeScript Range
+        run: deno task range

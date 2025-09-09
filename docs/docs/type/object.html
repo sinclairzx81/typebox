@@ -1,0 +1,61 @@
+<h1>Object</h1>
+<p>Creates an Object type.</p>
+<h2>Example</h2>
+<p>Example usage is shown below.</p>
+<pre><code class="language-typescript">const T = Type.Object({                             // const T = {
+  x: Type.Number(),                                 //   type: &#39;object&#39;,
+  y: Type.Number(),                                 //   required: [&#39;x&#39;, &#39;y&#39;, &#39;z&#39;],
+  z: Type.Number()                                  //   properties: {
+})                                                  //     x: { type: &#39;number&#39; },
+                                                    //     y: { type: &#39;number&#39; },
+                                                    //     z: { type: &#39;number&#39; }
+                                                    //   }
+                                                    // }
+
+type T = Static&lt;typeof T&gt;                           // type T = {
+                                                    //   x: number,
+                                                    //   y: number,
+                                                    //   z: number
+                                                    // }
+</code></pre>
+<h2>Guard</h2>
+<p>Use the IsObject function to guard values of this type.</p>
+<pre><code class="language-typescript">Type.IsObject(value)                                // value is TObject
+</code></pre>
+<h2>Options</h2>
+<p>The following options are available for Object</p>
+<pre><code class="language-typescript">export interface TObjectOptions extends TSchemaOptions {
+  /** 
+   * Defines whether additional properties are allowed beyond those explicitly defined in `properties`. 
+   */
+  additionalProperties?: TSchema | boolean
+  /** 
+   * The minimum number of properties required in the object. 
+   */
+  minProperties?: number
+  /** 
+   * The maximum number of properties allowed in the object. 
+   */
+  maxProperties?: number
+  /** 
+   * Defines conditional requirements for properties. 
+   */
+  dependencies?: Record&lt;string, boolean | TSchema | string[]&gt;
+  /** 
+   * Specifies properties that *must* be present if a given property is present. 
+   */
+  dependentRequired?: Record&lt;string, string[]&gt;
+  /** 
+   * Defines schemas that apply if a specific property is present. 
+   */
+  dependentSchemas?: Record&lt;string, TSchema&gt;
+  /** 
+   * Maps regular expressions to schemas properties matching a pattern must validate against the schema. 
+   */
+  patternProperties?: Record&lt;string, TSchema&gt;
+  /** 
+   * A schema that all property names within the object must validate against. 
+   */
+  propertyNames?: TSchema
+}
+</code></pre>

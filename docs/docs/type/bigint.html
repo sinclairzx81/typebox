@@ -1,0 +1,17 @@
+<h1>BigInt</h1>
+<p>Creates a BigInt type. </p>
+<blockquote>
+<p>⚠️ This is type is cannot be expressed with Json. Do not use if publishing types for other languages to consume.</p>
+</blockquote>
+<h2>Example</h2>
+<p>Example usage is shown below.</p>
+<pre><code class="language-typescript">const T = Type.BigInt()                             // const T = {
+                                                    //   type: &#39;bigint&#39;
+                                                    // }
+
+type T = Static&lt;typeof T&gt;                           // type T = bigint
+</code></pre>
+<h2>Guard</h2>
+<p>Use the IsBigInt function to guard values of this type.</p>
+<pre><code class="language-typescript">Type.IsBigInt(value)                                // value is TBigInt
+</code></pre>

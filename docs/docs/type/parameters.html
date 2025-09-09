@@ -1,0 +1,11 @@
+<h1>Parameters</h1>
+<p>The Parameters function will extract Parameters from a Function type.</p>
+<h2>Example</h2>
+<p>Example usage is shown below.</p>
+<pre><code class="language-typescript">const T = Type.Function([Type.String(), Type.Number()], Type.Object({}))
+
+const S = Type.Parameters(T)                        // const S: TTuple&lt;[
+                                                    //   TString,
+                                                    //   TNumber
+                                                    // ]&gt;
+</code></pre>

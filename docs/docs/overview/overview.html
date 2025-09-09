@@ -1,0 +1,68 @@
+<h1>TypeBox</h1>
+<p>A Runtime Type System for JavaScript</p>
+<h2>Overview</h2>
+<p>TypeBox is a runtime type system that creates in-memory Json Schema objects that infer as TypeScript types. The schemas produced by this library are designed to match the static type checking rules of the TypeScript compiler. TypeBox offers a unified type that can be statically checked by TypeScript and runtime checked with Json Schema.</p>
+<p>TypeBox is designed to bring TypeScript level programmability to Json Schema. It is also designed to be a high performance validation solution for JavaScript. It can be used as a simple tool to build up complex schema or integrated into REST and RPC services to help validate data received over the wire.</p>
+<h2>Features</h2>
+<h2>Type</h2>
+<p>The Type namespace creates Json Schema.</p>
+<pre><code class="language-typescript">import Type, { type Static } from &#39;typebox&#39;
+
+const T = Type.Object({                             // const T = {
+  x: Type.Number(),                                 //   type: &#39;object&#39;,
+  y: Type.Number(),                                 //   required: [&#39;x&#39;, &#39;y&#39;, &#39;z&#39;],
+  z: Type.Number()                                  //   properties: {
+})                                                  //     x: { type: &#39;number&#39; },
+                                                    //     y: { type: &#39;number&#39; },
+                                                    //     z: { type: &#39;number&#39; }
+                                                    //   }
+                                                    // }
+
+type T = Static&lt;typeof T&gt;                           // type T = {
+                                                    //   x: number,
+                                                    //   y: number,
+                                                    //   z: number
+                                                    // }
+</code></pre>
+<h2>Script</h2>
+<p>The Script creates Json Schema from TypeScript syntax.</p>
+<pre><code class="language-typescript">import Type, { type Static } from &#39;typebox&#39;
+
+const T = Type.Script(`{
+  x: number
+  y: number
+  z: number
+}`)
+
+type T = Static&lt;typeof T&gt;                           // type T = {
+                                                    //   x: number,
+                                                    //   y: number,
+                                                    //   z: number
+                                                    // }
+
+const S = Type.Script({ T }, `{
+  [K in keyof T]: T[K] | null
+}`)
+
+type S = Static&lt;typeof S&gt;                           // type S = {
+                                                    //   x: number | null,
+                                                    //   y: number | null,
+                                                    //   z: number | null
+                                                    // }
+</code></pre>
+<h2>Compile</h2>
+<p>The Compile module compiles high-performance validators.</p>
+<pre><code class="language-typescript">import { Compile } from &#39;typebox/compile&#39;
+
+const C = Compile(Type.Script(`{
+  x: number
+  y: number
+  z: number
+}`))
+
+const R = C.Parse(...)                              // const R: {
+                                                    //   x: number,
+                                                    //   y: number,
+                                                    //   z: number
+                                                    // } = ...
+</code></pre>

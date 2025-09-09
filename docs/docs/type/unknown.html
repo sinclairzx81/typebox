@@ -1,0 +1,12 @@
+<h1>Unknown</h1>
+<p>Creates an Unknown type.</p>
+<h2>Example</h2>
+<p>Example usage is shown below.</p>
+<pre><code class="language-typescript">const T = Type.Unknown()                            // const T = { }
+
+type T = Static&lt;typeof T&gt;                           // type T = unknown
+</code></pre>
+<h2>Guard</h2>
+<p>Use the IsUnknown function to guard values of this type.</p>
+<pre><code class="language-typescript">Type.IsUnknown(value)                               // value is TUnknown
+</code></pre>

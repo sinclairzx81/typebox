@@ -1,0 +1,10 @@
+<h1>Assert</h1>
+<p>The Assert function throws AssertError if the value does not match the type.</p>
+<h2>Example</h2>
+<p>Example usage is shown below.</p>
+<pre><code class="language-typescript">const T = Type.Number()
+
+Value.Assert(T, 42)                               // OK
+
+Value.Assert(T, &#39;not a number&#39;)                   // throws AssertError
+</code></pre>

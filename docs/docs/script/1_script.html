@@ -1,0 +1,59 @@
+<h1>Script</h1>
+<p>The Script function accepts most TypeScript type expressions.</p>
+<blockquote>
+<p>⚠️ The Script function only supports TypeScript type syntax that would otherwise be erased on TypeScript compilation. This function does not parse JavaScript code.</p>
+</blockquote>
+<h2>Type Expressions</h2>
+<p>The Script function can accept anonymous TypeScript type expressions.</p>
+<pre><code class="language-typescript">const A = Type.Script(&#39;&quot;hello&quot;&#39;)
+
+const B = Type.Script(`{
+  x: number
+  y: number
+  z: number
+}`)
+
+const C = Type.Script(`
+{ x: number } &amp; (
+  { y: number } | 
+  { z: number }
+)`)
+</code></pre>
+<h2>Type Alias and Interface</h2>
+<p>The Script function also accepts <code>type</code> and <code>interface</code> declarations. The return value will be an object containing all embedded declarations.</p>
+<pre><code class="language-typescript">const { Expression, ConstDeclaration, BinaryExpression, ConstExpression } = Type.Script(`
+  type Expression = 
+    | ConstDeclaration
+    | BinaryExpression
+    | ConstExpression
+
+  interface ConstDeclaration {
+    type: &#39;ConstDeclaration&#39;,
+    name: string
+    value: Expression
+  }
+  interface BinaryExpression {
+    type: &#39;BinaryExpression&#39;
+    left: Expression
+    right: Expression
+  }
+  interface ConstExpression {
+    type: &#39;ConstExpression&#39;
+    const: unknown
+  }
+`)
+</code></pre>
+<h1>Unsupported</h1>
+<p>The following constructs are currently unsupported.</p>
+<h3>Template Literal Substring Infer</h3>
+<p>Script does not support substring inference with TemplateLiteral types.</p>
+<pre><code class="language-typescript">type Get&lt;S extends string&gt; = S extends `hello ${infer Name}` ? Name : never
+//                                             ^
+//                                             Substring Infer Not Supported
+</code></pre>
+<h3>Embedded Function with Generic Type Parameter</h3>
+<p>Script does not support embedded function types with generic type parameters.</p>
+<pre><code class="language-typescript">type Foo = { x: &lt;T&gt;(value: T) =&gt; string }
+//              ^ 
+//              Embedded Generic Function Not Supported
+</code></pre>
