@@ -18,7 +18,7 @@ const BuildPackage = (target: string = `target/build`) => Task.build.esm('src', 
   packageJson: {
     name: 'typebox',
     description: 'A Runtime Type System for JavaScript',
-    version: '1.0.0',
+    version: '1.0.1',
     keywords: ['typescript', 'jsonschema'],
     license: 'MIT',
     author: 'sinclairzx81',
