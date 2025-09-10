@@ -42,7 +42,7 @@ export type StaticUnsafe<Type extends unknown> = Type
 /** Represents an Unsafe type. */
 export interface TUnsafe<Type extends unknown = unknown> extends TSchema {
   '~kind': 'Unsafe'
-  '~hint': Type // phantom property
+  '~hint': Type // cached for inference
 }
 // ------------------------------------------------------------------
 // Factory
