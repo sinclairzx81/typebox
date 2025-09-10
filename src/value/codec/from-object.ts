@@ -43,10 +43,7 @@ function Decode(direction: string, context: TProperties, type: TObject, value: u
   // deno-coverage-ignore-stop
 
   for (const key of Guard.Keys(type.properties)) {
-    // deno-coverage-ignore-start - unreachable | checked
-    if(!Guard.HasPropertyKey(value, key)) Unreachable()
-    // deno-coverage-ignore-stop
-
+    if(!Guard.HasPropertyKey(value, key)) continue
     value[key] = FromType(direction, context, type.properties[key], value[key])
   }
   return Callback(direction, context, type, value)

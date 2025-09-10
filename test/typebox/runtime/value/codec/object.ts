@@ -114,5 +114,19 @@ Test('Should Object 7', () => {
   Assert.IsEqual(D, { x: 1, y: 1 })
   Assert.IsEqual(E, { x: 1, y: 1 })
 })
+// ------------------------------------------------------------------
+// Optional
+// ------------------------------------------------------------------
 
-
+// ------------------------------------------------------------------
+// https://github.com/sinclairzx81/typebox/issues/1318
+// ------------------------------------------------------------------
+Test('Should Object 8', () => {
+  const T = Type.Object({
+    x: Type.Optional(Type.Number())
+  })
+  const D = Value.Decode(T, {})
+  const E = Value.Encode(T, {})
+  Assert.IsEqual(D, { })
+  Assert.IsEqual(E, { })
+})
