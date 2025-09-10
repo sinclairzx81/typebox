@@ -9,6 +9,6 @@ const T = Type.Object({
   y: Type.Optional(Type.String())
 })
 Assert.IsExtends<Static<typeof T>, {
-  x?: 12345,
+  x?: 12345
   y?: string
 }>(true)
