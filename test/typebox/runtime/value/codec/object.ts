@@ -115,4 +115,12 @@ Test('Should Object 7', () => {
   Assert.IsEqual(E, { x: 1, y: 1 })
 })
 
+Test("Should Object 8", () => {
+  const Identity = Type.Object({
+    x: Type.Number(),
+    y: Type.Optional(Type.Number()),
+  })
+  const D = Value.Decode(Identity, { x: 1 })
+  Assert.IsEqual(D, { x: 1 })
+})
 
