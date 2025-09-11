@@ -56,6 +56,12 @@ Test('Should validate bigint', () => {
   const T = Type.BigInt()
   Ok(T, BigInt(1))
 })
+Test('Should not validate NaN', () => {
+  Fail(Type.Number(), NaN)
+})
+// ------------------------------------------------------------------
+// Constraints: BigInt
+// ------------------------------------------------------------------
 Test('Should validate minimum', () => {
   const T = Type.BigInt({ minimum: BigInt(10) })
   //Fail(T, BigInt(9))
@@ -76,6 +82,31 @@ Test('Should validate Date exclusiveMaximum', () => {
   Ok(T, BigInt(9))
   Fail(T, BigInt(10))
 })
-Test('Should not validate NaN', () => {
-  Fail(Type.Number(), NaN)
+// ------------------------------------------------------------------
+// Constraints: Number
+// ------------------------------------------------------------------
+Test('Should validate minimum (bigint)', () => {
+  const T = Type.BigInt({ minimum: 10 })
+  Fail(T, BigInt(9))
+  Ok(T, BigInt(10))
+})
+Test('Should validate maximum (bigint)', () => {
+  const T = Type.BigInt({ maximum: 10 })
+  Ok(T, BigInt(10))
+  Fail(T, BigInt(11))
+})
+Test('Should validate exclusiveMinimum (bigint)', () => {
+  const T = Type.BigInt({ exclusiveMinimum: 10 })
+  Fail(T, BigInt(10))
+  Ok(T, BigInt(11))
+})
+Test('Should validate exclusiveMaximum (bigint)', () => {
+  const T = Type.BigInt({ exclusiveMaximum: 10 })
+  Ok(T, BigInt(9))
+  Fail(T, BigInt(10))
+})
+Test('Should validate multipleOf (bigint)', () => {
+  const T = Type.BigInt({ multipleOf: 2 })
+  Ok(T, BigInt(2))
+  Fail(T, BigInt(1))
 })

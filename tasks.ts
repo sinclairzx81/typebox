@@ -8,6 +8,7 @@ import { Range } from './task/range/index.ts'
 import { Metrics } from './task/metrics/index.ts'
 import { Task } from 'tasksmith'
 
+
 // ------------------------------------------------------------------
 // BuildPackage
 // ------------------------------------------------------------------
@@ -18,7 +19,7 @@ const BuildPackage = (target: string = `target/build`) => Task.build.esm('src', 
   packageJson: {
     name: 'typebox',
     description: 'A Runtime Type System for JavaScript',
-    version: '1.0.3',
+    version: '1.0.4',
     keywords: ['typescript', 'jsonschema'],
     license: 'MIT',
     author: 'sinclairzx81',
