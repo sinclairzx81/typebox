@@ -32,13 +32,29 @@ import { Memory } from '../../system/memory/index.ts'
 import { type StaticType, type StaticDirection } from './static.ts'
 import { type TSchema, type TSchemaOptions, IsKind } from './schema.ts'
 import { type TProperties } from './properties.ts'
-import { type StaticTuple } from './tuple.ts'
+import { type TTuple } from './tuple.ts'
+import { type TInstantiate } from '../engine/instantiate.ts'
+
+// ------------------------------------------------------------------
+// StaticInstantiatedParameters
+//
+// Parameters may contain embedded Rest elements. TypeBox does not
+// auto Instantiate Rest on Function and Constructor types as Rest 
+// encodes meaningful information about the signature. The following 
+// performs a deferred Static Instantiate for inference only.
+//
+// ------------------------------------------------------------------
+export type StaticInstantiatedParameters<Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Parameters extends TSchema[], 
+  Evaluated extends TSchema = TInstantiate<Context, TTuple<Parameters>>,
+  Static extends unknown = StaticType<Direction, Context, This, Evaluated>,
+  Result extends unknown[] = Static extends unknown[] ? Static : []
+> = Result
 
 // ------------------------------------------------------------------
 // Static
 // ------------------------------------------------------------------
 export type StaticFunction<Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Parameters extends TSchema[], ReturnType extends TSchema, 
-  StaticParameters extends unknown[] = StaticTuple<Direction, Context, This, Parameters>,
+  StaticParameters extends unknown[] = StaticInstantiatedParameters<Direction, Context, This, Parameters>,
   StaticReturnType extends unknown = StaticType<Direction, Context, This, ReturnType>,
   Result = (...args: StaticParameters) => StaticReturnType
 > = Result

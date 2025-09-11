@@ -23,7 +23,7 @@ import { Assert } from 'test'
   Assert.IsExtendsMutual<T, null>(false)
 }
 
-// ... but not arguments (rest on parameters needs to be fixed)
+// ... as well as rest parameters
 {
   const T = Type.Function([
     Type.Literal(1),
@@ -32,6 +32,6 @@ import { Assert } from 'test'
 
   type T = Static<typeof T>
 
-  Assert.IsExtendsMutual<T, (args_0: 1, args_1: never) => void>(true)
+  Assert.IsExtendsMutual<T, (args_0: 1, args_1: never) => void>(false)
   Assert.IsExtendsMutual<T, null>(false)
 }

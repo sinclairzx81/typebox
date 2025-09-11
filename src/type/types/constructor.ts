@@ -31,14 +31,14 @@ THE SOFTWARE.
 import { Memory } from '../../system/memory/index.ts'
 import { type StaticType, type StaticDirection } from './static.ts'
 import { type TSchema, type TSchemaOptions, IsKind } from './schema.ts'
+import { type StaticInstantiatedParameters } from './function.ts'
 import { type TProperties } from './properties.ts'
-import { type StaticTuple } from './tuple.ts'
 
 // ------------------------------------------------------------------
 // Static
 // ------------------------------------------------------------------
 export type StaticConstructor<Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Parameters extends TSchema[], InstanceType extends TSchema,
-  StaticParameters extends unknown[] = StaticTuple<Direction, Context, This, Parameters>,
+  StaticParameters extends unknown[] = StaticInstantiatedParameters<Direction, Context, This, Parameters>,
   StaticReturnType extends unknown = StaticType<Direction, Context, This, InstanceType>,
   Result = new (...args: StaticParameters) => StaticReturnType
 > = Result
