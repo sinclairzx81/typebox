@@ -13,12 +13,12 @@ import { Task } from 'tasksmith'
 // ------------------------------------------------------------------
 const BuildPackage = (target: string = `target/build`) => Task.build.esm('src', {
   outdir: target,
-  compiler: 'latest',
+  compiler: '5.9.2',
   additional: ['license', 'readme.md'],
   packageJson: {
     name: 'typebox',
     description: 'A Runtime Type System for JavaScript',
-    version: '1.0.2',
+    version: '1.0.3',
     keywords: ['typescript', 'jsonschema'],
     license: 'MIT',
     author: 'sinclairzx81',
