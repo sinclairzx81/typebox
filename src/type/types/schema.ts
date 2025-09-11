@@ -211,7 +211,7 @@ export interface TNumberOptions extends TSchemaOptions {
   /** 
    * Specifies that the number must be a multiple of this value. 
    */
-  multipleOf?: number
+  multipleOf?: number | bigint
 }
 // ------------------------------------------------------------------
 // StringOptions
