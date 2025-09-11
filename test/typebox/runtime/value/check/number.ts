@@ -56,6 +56,9 @@ Test('Should not validate symbol', () => {
   const T = Type.Number()
   Fail(T, Symbol(1))
 })
+// ------------------------------------------------------------------
+// Constraints: Number
+// ------------------------------------------------------------------
 Test('Should validate minimum', () => {
   const T = Type.Number({ minimum: 10 })
   Fail(T, 9)
@@ -66,13 +69,46 @@ Test('Should validate maximum', () => {
   Ok(T, 10)
   Fail(T, 11)
 })
-Test('Should validate Date exclusiveMinimum', () => {
+Test('Should validate exclusiveMinimum', () => {
   const T = Type.Number({ exclusiveMinimum: 10 })
   Fail(T, 10)
   Ok(T, 11)
 })
-Test('Should validate Date exclusiveMaximum', () => {
+Test('Should validate exclusiveMaximum', () => {
   const T = Type.Number({ exclusiveMaximum: 10 })
   Ok(T, 9)
   Fail(T, 10)
+})
+Test('Should validate multipleOf', () => {
+  const T = Type.Number({ multipleOf: 2 })
+  Ok(T, 2)
+  Fail(T, 1)
+})
+// ------------------------------------------------------------------
+// Constraints: BigInt
+// ------------------------------------------------------------------
+Test('Should validate minimum (bigint)', () => {
+  const T = Type.Number({ minimum: BigInt(10) })
+  Fail(T, 9)
+  Ok(T, 10)
+})
+Test('Should validate maximum (bigint)', () => {
+  const T = Type.Number({ maximum: BigInt(10) })
+  Ok(T, 10)
+  Fail(T, 11)
+})
+Test('Should validate exclusiveMinimum (bigint)', () => {
+  const T = Type.Number({ exclusiveMinimum: BigInt(10) })
+  Fail(T, 10)
+  Ok(T, 11)
+})
+Test('Should validate exclusiveMaximum (bigint)', () => {
+  const T = Type.Number({ exclusiveMaximum: BigInt(10) })
+  Ok(T, 9)
+  Fail(T, 10)
+})
+Test('Should validate multipleOf (bigint)', () => {
+  const T = Type.Number({ multipleOf: BigInt(2) })
+  Ok(T, 2)
+  Fail(T, 1)
 })
