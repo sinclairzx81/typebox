@@ -10,6 +10,18 @@ export function Context(context: string): Test {
     Deno.test(`${context}: ${name}`, callback)
   }
 }
+// ------------------------------------------------------------------
+// Undefined
+// ------------------------------------------------------------------
+export function IsDefined(value: unknown): boolean {
+  return value !== undefined
+}
+export function IsUndefined(value: unknown): boolean {
+  return value === undefined
+}
+// ------------------------------------------------------------------
+// Properties
+// ------------------------------------------------------------------
 export function HasPropertyKey<K extends PropertyKey>(value: unknown, key: K): asserts value is Record<K, unknown> {
   if (typeof value === 'object' && value !== null && key in value) return
   throw new Error(`Expected value to have property '${key as string}'`)
@@ -18,6 +30,9 @@ export function NotHasPropertyKey<K extends PropertyKey>(value: unknown, key: K)
   if (typeof value === 'object' && value !== null && !(key in value)) return
   throw new Error(`Expected value not to have property '${key as string}'`)
 }
+// ------------------------------------------------------------------
+// Logic
+// ------------------------------------------------------------------
 export function IsTrue(value: boolean): asserts value is true {
   return assert.strictEqual(value, true)
 }
