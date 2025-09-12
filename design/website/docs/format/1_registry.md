@@ -1,18 +1,18 @@
-# FormatRegistry
+# Registry
 
-User defined formats can be registered with the FormatRegistry
+The Format module includes Get and Set functions which can be used to define custom formats.
 
 ## Example
 
 The following registers a `hex-color` format.
 
 ```typescript
-import { FormatRegistry } from 'typebox/format'
+import Format from 'typebox/format'
 
 // ------------------------------------------------------------------
 // Set
 // ------------------------------------------------------------------
-FormatRegistry.Set('hex-color', value => {
+Format.Set('hex-color', value => {
   
   return /^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})$/.test(value)
 })
@@ -20,7 +20,7 @@ FormatRegistry.Set('hex-color', value => {
 // ------------------------------------------------------------------
 // Get
 // ------------------------------------------------------------------
-const IsHexColor = FormatRegistry.Get('hex-color')
+const IsHexColor = Format.Get('hex-color')
 
 // ------------------------------------------------------------------
 // Use
@@ -33,10 +33,10 @@ IsHexColor('blue')                                  // false
 
 ## Validation
 
-Registered formats become available to validators using the String `format` constraint.
+Registered formats can be used with the `format` keyword when validating schematics.
 
 ```typescript
-const T = Type.String({ format: 'hex-color' })
+const T = Type.String({ format: 'hex-color' })      // const T = { type: 'string', format: 'hex-color' }
 
 const R = Value.Check(T, '#FFFFFF')                 // true
 

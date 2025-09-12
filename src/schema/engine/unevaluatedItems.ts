@@ -73,7 +73,7 @@ export function ErrorUnevaluatedItems(context: ErrorContext, schemaPath: string,
   })
   return isUnevaluatedItems || context.AddError({
     keyword: 'unevaluatedItems',
-    schemaPath: `${schemaPath}/unevaluatedItems`,
+    schemaPath,
     instancePath,
     params: { unevaluatedItems }
   })

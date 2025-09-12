@@ -52,7 +52,7 @@ export function ErrorStandardSchemaV1(context: ErrorContext, schemaPath: string,
   const result = schema['~standard'].validate(value)
   return !G.HasPropertyKey(result, 'issues') || context.AddError({
     keyword: '~standard',
-    schemaPath: `${schemaPath}/~standard`,
+    schemaPath,
     instancePath,
     params: { vendor: schema[`~standard`].vendor, issues: result.issues as object[] },
   })

@@ -50,7 +50,7 @@ export function CheckMultipleOf(context: CheckContext, schema: S.XMultipleOf, va
 export function ErrorMultipleOf(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XMultipleOf, value: number | bigint): boolean {
   return CheckMultipleOf(context, schema, value) || context.AddError({
     keyword: 'multipleOf',
-    schemaPath: `${schemaPath}/multipleOf`,
+    schemaPath,
     instancePath,
     params: { multipleOf: schema.multipleOf }
   })

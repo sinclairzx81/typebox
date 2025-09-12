@@ -73,7 +73,7 @@ export function ErrorUnevaluatedProperties(context: ErrorContext, schemaPath: st
   })
   return isUnevaluatedProperties || context.AddError({
     keyword: 'unevaluatedProperties',
-    schemaPath: `${schemaPath}/unevaluatedProperties`,
+    schemaPath,
     instancePath,
     params: { unevaluatedProperties }
   })

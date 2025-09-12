@@ -65,7 +65,7 @@ export function CheckContains(context: CheckContext, schema: S.XContains, value:
 export function ErrorContains(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XContains, value: unknown[]): boolean {
   return CheckContains(context, schema, value) || context.AddError({
     keyword: 'contains',
-    schemaPath: `${schemaPath}/contains`,
+    schemaPath,
     instancePath,
     params: { minContains: 1 },
   })

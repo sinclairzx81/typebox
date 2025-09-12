@@ -53,7 +53,7 @@ export function CheckPattern(context: CheckContext, schema: S.XPattern, value: s
 export function ErrorPattern(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XPattern, value: string): boolean {
   return CheckPattern(context, schema, value) || context.AddError({
     keyword: 'pattern',
-    schemaPath: `${schemaPath}/pattern`,
+    schemaPath,
     instancePath,
     params: { pattern: schema.pattern }
   })

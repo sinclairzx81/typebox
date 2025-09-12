@@ -56,7 +56,7 @@ export function ErrorRequired(context: ErrorContext, schemaPath: string, instanc
   })
   return isRequired || context.AddError({
     keyword: 'required',
-    schemaPath: `${schemaPath}/required`,
+    schemaPath,
     instancePath,
     params: { requiredProperties }
   })

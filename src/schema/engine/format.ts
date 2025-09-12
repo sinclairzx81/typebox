@@ -51,7 +51,7 @@ export function CheckFormat(context: CheckContext, schema: S.XFormat, value: str
 export function ErrorFormat(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XFormat, value: string): boolean {
   return CheckFormat(context, schema, value) || context.AddError({
     keyword: 'format',
-    schemaPath: `${schemaPath}/format`,
+    schemaPath,
     instancePath,
     params: { format: schema.format },
   })

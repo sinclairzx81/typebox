@@ -63,7 +63,7 @@ export function CheckMinContains(context: CheckContext, schema: S.XMinContains, 
 export function ErrorMinContains(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XMinContains, value: unknown[]): boolean {
   return CheckMinContains(context, schema, value) || context.AddError({
     keyword: 'contains',
-    schemaPath: `${schemaPath}/contains`,
+    schemaPath,
     instancePath,
     params: { minContains: schema.minContains }
   })

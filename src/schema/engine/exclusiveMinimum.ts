@@ -50,7 +50,7 @@ export function CheckExclusiveMinimum(context: CheckContext, schema: S.XExclusiv
 export function ErrorExclusiveMinimum(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XExclusiveMinimum, value: number | bigint): boolean {
   return CheckExclusiveMinimum(context, schema, value) || context.AddError({
     keyword: 'exclusiveMinimum',
-    schemaPath: `${schemaPath}/exclusiveMinimum`,
+    schemaPath,
     instancePath,
     params: { comparison: '>', limit: schema.exclusiveMinimum }
   })

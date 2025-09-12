@@ -49,7 +49,7 @@ export function CheckBooleanSchema(context: CheckContext, schema: boolean, value
 export function ErrorBooleanSchema(context: ErrorContext, schemaPath: string, instancePath: string, schema: boolean, value: unknown): boolean {
   return CheckBooleanSchema(context, schema, value) || context.AddError({
     keyword: 'boolean',
-    schemaPath: `${schemaPath}/${schema}`,
+    schemaPath,
     instancePath,
     params: {}
   })

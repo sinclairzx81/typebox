@@ -66,7 +66,7 @@ export function ErrorMaxContains(context: ErrorContext, schemaPath: string, inst
   const minContains = S.IsMinContains(schema) ? schema.minContains : 1
   return CheckMaxContains(context, schema, value) || context.AddError({
     keyword: 'contains',
-    schemaPath: `${schemaPath}/contains`,
+    schemaPath,
     instancePath,
     params: { minContains, maxContains: schema.maxContains },
   })

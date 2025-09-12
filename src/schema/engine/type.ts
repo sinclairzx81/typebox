@@ -101,7 +101,7 @@ export function ErrorType(context: ErrorContext, schemaPath: string, instancePat
   const isType = G.IsArray(schema.type) ? CheckTypeNames(context, schema.type, schema, value) : CheckTypeName(context, schema.type, schema, value)
   return isType || context.AddError({
     keyword: 'type',
-    schemaPath: `${schemaPath}/type`,
+    schemaPath,
     instancePath,
     params: { type: schema.type }
   })

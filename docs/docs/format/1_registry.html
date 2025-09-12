@@ -1,13 +1,13 @@
-<h1>FormatRegistry</h1>
-<p>User defined formats can be registered with the FormatRegistry</p>
+<h1>Registry</h1>
+<p>The Format module includes Get and Set functions which can be used to define custom formats.</p>
 <h2>Example</h2>
 <p>The following registers a <code>hex-color</code> format.</p>
-<pre><code class="language-typescript">import { FormatRegistry } from &#39;typebox/format&#39;
+<pre><code class="language-typescript">import Format from &#39;typebox/format&#39;
 
 // ------------------------------------------------------------------
 // Set
 // ------------------------------------------------------------------
-FormatRegistry.Set(&#39;hex-color&#39;, value =&gt; {
+Format.Set(&#39;hex-color&#39;, value =&gt; {
   
   return /^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})$/.test(value)
 })
@@ -15,7 +15,7 @@ FormatRegistry.Set(&#39;hex-color&#39;, value =&gt; {
 // ------------------------------------------------------------------
 // Get
 // ------------------------------------------------------------------
-const IsHexColor = FormatRegistry.Get(&#39;hex-color&#39;)
+const IsHexColor = Format.Get(&#39;hex-color&#39;)
 
 // ------------------------------------------------------------------
 // Use
@@ -25,8 +25,8 @@ IsHexColor(&#39;#FFF&#39;)                                  // true
 IsHexColor(&#39;blue&#39;)                                  // false
 </code></pre>
 <h2>Validation</h2>
-<p>Registered formats become available to validators using the String <code>format</code> constraint.</p>
-<pre><code class="language-typescript">const T = Type.String({ format: &#39;hex-color&#39; })
+<p>Registered formats can be used with the <code>format</code> keyword when validating schematics.</p>
+<pre><code class="language-typescript">const T = Type.String({ format: &#39;hex-color&#39; })      // const T = { type: &#39;string&#39;, format: &#39;hex-color&#39; }
 
 const R = Value.Check(T, &#39;#FFFFFF&#39;)                 // true
 

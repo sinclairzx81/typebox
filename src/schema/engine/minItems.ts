@@ -50,7 +50,7 @@ export function CheckMinItems(context: CheckContext, schema: S.XMinItems, value:
 export function ErrorMinItems(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XMinItems, value: unknown[]): boolean {
   return CheckMinItems(context, schema, value) || context.AddError({
     keyword: 'minItems',
-    schemaPath: `${schemaPath}/minItems`,
+    schemaPath,
     instancePath,
     params: { limit: schema.minItems }
   })

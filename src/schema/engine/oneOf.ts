@@ -81,7 +81,7 @@ export function ErrorOneOf(context: ErrorContext, schemaPath: string, instancePa
   if (!isOneOf && G.IsEqual(passingSchemas.length, 0)) failedContexts.forEach(failed => failed.GetErrors().forEach(error => context.AddError(error)))
   return isOneOf || context.AddError({
     keyword: 'oneOf',
-    schemaPath: `${schemaPath}/oneOf`,
+    schemaPath,
     instancePath,
     params: { passingSchemas },
   })

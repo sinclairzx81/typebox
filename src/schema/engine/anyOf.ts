@@ -74,7 +74,7 @@ export function ErrorAnyOf(context: ErrorContext, schemaPath: string, instancePa
   if (!isAnyOf) failedContexts.forEach(failed => failed.GetErrors().forEach(error => context.AddError(error)))
   return isAnyOf || context.AddError({
     keyword: 'anyOf',
-    schemaPath: `${schemaPath}/anyOf`,
+    schemaPath,
     instancePath,
     params: {}
   })

@@ -73,7 +73,7 @@ export function ErrorUniqueItems(context: ErrorContext, schemaPath: string, inst
   const isUniqueItems = G.IsEqual(duplicateItems.length, 0)
   return isUniqueItems || context.AddError({
     keyword: 'uniqueItems',
-    schemaPath: `${schemaPath}/uniqueItems`,
+    schemaPath,
     instancePath,
     params: { duplicateItems },
   })

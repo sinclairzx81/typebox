@@ -50,7 +50,7 @@ export function CheckMaxProperties(context: CheckContext, schema: S.XMaxProperti
 export function ErrorMaxProperties(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XMaxProperties, value: Record<PropertyKey, unknown>): boolean {
   return CheckMaxProperties(context, schema, value) || context.AddError({
     keyword: 'maxProperties',
-    schemaPath: `${schemaPath}/maxProperties`,
+    schemaPath,
     instancePath,
     params: { limit: schema.maxProperties },
   })

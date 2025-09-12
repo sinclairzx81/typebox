@@ -55,7 +55,7 @@ export function CheckConst(context: CheckContext, schema: S.XConst, value: unkno
 export function ErrorConst(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XConst, value: unknown): boolean {
   return CheckConst(context, schema, value) || context.AddError({
     keyword: 'const',
-    schemaPath: `${schemaPath}/const`,
+    schemaPath,
     instancePath,
     params: { allowedValue: schema.const },
   })

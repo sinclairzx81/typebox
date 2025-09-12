@@ -60,7 +60,7 @@ export function ErrorPropertyNames(context: ErrorContext, schemaPath: string, in
   })
   return isPropertyNames || context.AddError({
     keyword: 'propertyNames',
-    schemaPath: `${schemaPath}/propertyNames`,
+    schemaPath,
     instancePath: instancePath,
     params: { propertyNames }
   })

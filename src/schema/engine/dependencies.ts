@@ -73,7 +73,7 @@ export function ErrorDependencies(context: ErrorContext, schemaPath: string, ins
       G.IsArray(schema)
         ? schema.every((dependency) => G.HasPropertyKey(value, dependency) || context.AddError({
           keyword: 'dependencies',
-          schemaPath: `${schemaPath}/dependencies`,
+          schemaPath,
           instancePath,
           params: { property: key, dependencies: schema },
         })) : ErrorSchema(context, nextSchemaPath, instancePath, schema, value)

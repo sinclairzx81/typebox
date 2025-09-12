@@ -50,7 +50,7 @@ export function CheckMinimum(context: CheckContext, schema: S.XMinimum, value: n
 export function ErrorMinimum(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XMinimum, value: number | bigint): boolean {
   return CheckMinimum(context, schema, value) || context.AddError({
     keyword: 'minimum',
-    schemaPath: `${schemaPath}/minimum`,
+    schemaPath,
     instancePath,
     params: { comparison: '>=', limit: schema.minimum }
   })

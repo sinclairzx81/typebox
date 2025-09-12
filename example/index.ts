@@ -1,46 +1,23 @@
 import Type, { type Static } from 'typebox'
-import Compile from 'typebox/compile'
-import Format from 'typebox/format'
 import Value from 'typebox/value'
+import Guard from 'typebox/guard'
 
-// ------------------------------------------------------------------
-// Type
-// ------------------------------------------------------------------
+
 const T = Type.Object({
-  x: Type.Number(),
-  y: Type.Number(),
-  z: Type.Number()
+  x: Type.Intersect([
+    Type.Number({ errorMessage: 'Expected X Component' }),
+  ])
+  // y: Type.Number({ errorMessage: 'Expected Y Component' }),
+  // z: Type.Number({ errorMessage: 'Expected Z Component' })
 })
 
-// ------------------------------------------------------------------
-// Script
-// ------------------------------------------------------------------
-const S = Type.Script({ T }, `{
-  [K in keyof T]: T[K] | null
-}`)
+const E = Value.Errors(T, { x: '0', y: '12', z: '12' })
+const M = E.map(error => {
+  const schema = Value.Pointer.Get(T, error.schemaPath.slice(1))!
+  const message = Guard.HasPropertyKey(schema, 'errorMessage')
+    ? schema.errorMessage
+    : error.message
+  return { ...error, message }
+})
 
-// ------------------------------------------------------------------
-// Infer
-// ------------------------------------------------------------------
-type T = Static<typeof T>
-type S = Static<typeof S>
-
-// ------------------------------------------------------------------
-// Parse
-// ------------------------------------------------------------------
-
-const R = Value.Parse(T, { x: 1, y: 2, z: 3 })
-
-// ------------------------------------------------------------------
-// Compile
-// ------------------------------------------------------------------
-
-const C = Compile.Compile(S)
-
-const X = C.Parse(C)
-
-// ------------------------------------------------------------------
-// Format
-// ------------------------------------------------------------------
-
-const E = Format.IsEmail('user@domain.com')
+console.log(M)

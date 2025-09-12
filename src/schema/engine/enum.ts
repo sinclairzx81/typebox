@@ -57,7 +57,7 @@ export function CheckEnum(context: CheckContext, schema: S.XEnum, value: unknown
 export function ErrorEnum(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XEnum, value: unknown): boolean {
   return CheckEnum(context, schema, value) || context.AddError({
     keyword: 'enum',
-    schemaPath: `${schemaPath}/enum`,
+    schemaPath,
     instancePath,
     params: { allowedValues: schema.enum }
   })
