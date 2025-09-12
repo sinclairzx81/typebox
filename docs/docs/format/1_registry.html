@@ -1,5 +1,5 @@
 <h1>Registry</h1>
-<p>The Format module includes Get and Set functions which can be used to define custom formats.</p>
+<p>Custom string formats are supported with Get and Set.</p>
 <h2>Example</h2>
 <p>The following registers a <code>hex-color</code> format.</p>
 <pre><code class="language-typescript">import Format from &#39;typebox/format&#39;
@@ -25,7 +25,7 @@ IsHexColor(&#39;#FFF&#39;)                                  // true
 IsHexColor(&#39;blue&#39;)                                  // false
 </code></pre>
 <h2>Validation</h2>
-<p>Registered formats can be used with the <code>format</code> keyword when validating schematics.</p>
+<p>Once registered, custom formats become available to validators and can be referenced using the <code>format</code> keyword.</p>
 <pre><code class="language-typescript">const T = Type.String({ format: &#39;hex-color&#39; })      // const T = { type: &#39;string&#39;, format: &#39;hex-color&#39; }
 
 const R = Value.Check(T, &#39;#FFFFFF&#39;)                 // true

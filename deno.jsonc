@@ -40,7 +40,7 @@
     // Package Entry
     // --------------------------------------------------------------
     "typebox/compile": "./src/compile/index.ts",
-    "typebox/errors": "./src/errors/index.ts",
+    "typebox/error": "./src/error/index.ts",
     "typebox/format": "./src/format/index.ts",
     "typebox/guard": "./src/guard/index.ts",
     "typebox/schema": "./src/schema/index.ts",

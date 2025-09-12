@@ -1,6 +1,6 @@
 # Registry
 
-The Format module includes Get and Set functions which can be used to define custom formats.
+Custom string formats are supported with Get and Set.
 
 ## Example
 
@@ -33,7 +33,7 @@ IsHexColor('blue')                                  // false
 
 ## Validation
 
-Registered formats can be used with the `format` keyword when validating schematics.
+Once registered, custom formats become available to validators and can be referenced using the `format` keyword.
 
 ```typescript
 const T = Type.String({ format: 'hex-color' })      // const T = { type: 'string', format: 'hex-color' }
