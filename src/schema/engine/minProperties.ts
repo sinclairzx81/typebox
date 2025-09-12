@@ -50,7 +50,7 @@ export function CheckMinProperties(context: CheckContext, schema: S.XMinProperti
 export function ErrorMinProperties(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XMinProperties, value: Record<PropertyKey, unknown>): boolean {
   return CheckMinProperties(context, schema, value) || context.AddError({
     keyword: 'minProperties',
-    schemaPath: `${schemaPath}/minProperties`,
+    schemaPath,
     instancePath,
     params: { limit: schema.minProperties },
   })

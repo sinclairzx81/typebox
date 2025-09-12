@@ -50,7 +50,7 @@ export function CheckMaxItems(context: CheckContext, schema: S.XMaxItems, value:
 export function ErrorMaxItems(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XMaxItems, value: unknown[]): boolean {
   return CheckMaxItems(context, schema, value) || context.AddError({
     keyword: 'maxItems',
-    schemaPath: `${schemaPath}/maxItems`,
+    schemaPath,
     instancePath,
     params: { limit: schema.maxItems }
   })

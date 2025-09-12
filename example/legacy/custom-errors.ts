@@ -26,31 +26,21 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-fmt-ignore-file
+import { type TLocalizedValidationError } from 'typebox/error'
+import { type TSchema } from 'typebox'
+import Value from 'typebox/value'
+import Guard from 'typebox/guard'
 
-import { EmitGuard as E } from '../../guard/index.ts'
-import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
-
-// ------------------------------------------------------------------
-// Build
-// ------------------------------------------------------------------
-export function BuildBooleanSchema(context: BuildContext, schema: boolean, value: string): string {
-  return schema ? E.Constant(true) : E.Constant(false)
+function ApplyCustomError(schema: TSchema, error: TLocalizedValidationError): TLocalizedValidationError {
+  const subschema = Value.Pointer.Get(schema, error.schemaPath.slice(1))! // trim '#' in URI fragment
+  const errorMessage = Guard.IsObject(subschema)                          // use guard to check for `errorMessage` structures
+    && Guard.HasPropertyKey(subschema, 'errorMessage') 
+    && Guard.IsString(subschema.errorMessage) 
+    ? subschema.errorMessage 
+    : error.message
+  return { ...error, message: errorMessage }
 }
-// ------------------------------------------------------------------
-// Check
-// ------------------------------------------------------------------
-export function CheckBooleanSchema(context: CheckContext, schema: boolean, value: unknown): boolean {
-  return schema
-}
-// ------------------------------------------------------------------
-// Error
-// ------------------------------------------------------------------
-export function ErrorBooleanSchema(context: ErrorContext, schemaPath: string, instancePath: string, schema: boolean, value: unknown): boolean {
-  return CheckBooleanSchema(context, schema, value) || context.AddError({
-    keyword: 'boolean',
-    schemaPath,
-    instancePath,
-    params: {}
-  })
+/** Application Defined Value.Errors() function that supports overriding error messages with a `errorMessage` property   */
+export function CustomErrors(type: TSchema, value: unknown): TLocalizedValidationError[] {
+  return Value.Errors(type, value).map(error => ApplyCustomError(type, error))
 }

@@ -124,7 +124,7 @@ export function ErrorAdditionalProperties(context: ErrorContext, schemaPath: str
   })
   return isAdditionalProperties || context.AddError({
     keyword: 'additionalProperties',
-    schemaPath: `${schemaPath}/additionalProperties`,
+    schemaPath,
     instancePath: instancePath,
     params: { additionalProperties },
   })

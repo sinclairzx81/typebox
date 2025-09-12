@@ -1,6 +1,7 @@
 import { Build, Check, Errors } from 'typebox/schema'
 import { Assert } from 'test'
 import { enumerateTests } from './enumerator.ts'
+import { Pointer } from 'typebox/value'
 
 // ------------------------------------------------------------------
 // Drafts
@@ -87,6 +88,9 @@ function runError(draft: string, path: string): void {
     Test(`${draft} ${test.filename}: ${test.description}`, () => {
       const [result, errors] = Errors({}, test.schema, test.data)
       assertResult({ type: 'Errors', schema: test.schema, data: test.data, description: test.description, valid: test.valid, result, errors })
+      if (result) return
+      // if error, the schemaPath must point to subschema
+      errors.forEach((error) => Assert.IsDefined(Pointer.Get(test.schema, error.schemaPath.slice(1))))
     })
   }
 }

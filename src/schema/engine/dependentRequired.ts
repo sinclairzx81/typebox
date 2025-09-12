@@ -65,7 +65,7 @@ export function ErrorDependentRequired(context: ErrorContext, schemaPath: string
   const isEveryEntry = G.EveryAll(G.Entries(schema.dependentRequired), ([key, keys]) => {
     return !G.HasPropertyKey(value, key) || G.EveryAll(keys, (dependency) => G.HasPropertyKey(value, dependency) || context.AddError({
       keyword: 'dependentRequired',
-      schemaPath: `${schemaPath}/dependentRequired`,
+      schemaPath,
       instancePath,
       params: { property: key, dependencies: keys },
     }))

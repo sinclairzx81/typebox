@@ -53,7 +53,7 @@ export function ErrorRefine(context: ErrorContext, schemaPath: string, instanceP
   return G.EveryAll(schema['~refine'], (refinement, index) => {
     return refinement.callback(value) || context.AddError({
       keyword: '~refine',
-      schemaPath: `${schemaPath}/~refine`,
+      schemaPath,
       instancePath,
       params: { index, message: refinement.message },
     })

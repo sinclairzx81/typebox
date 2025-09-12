@@ -63,13 +63,13 @@ export function ErrorIf(context: ErrorContext, schemaPath: string, instancePath:
   const isIf = ErrorSchema(trueContext, `${schemaPath}/if`, instancePath, schema.if, value)
     ? ErrorSchema(trueContext, `${schemaPath}/then`, instancePath, thenSchema, value) || context.AddError({
       keyword: 'if',
-      schemaPath: `${schemaPath}/if`,
+      schemaPath,
       instancePath,
       params: { failingKeyword: 'then' },
     })
     : ErrorSchema(context, `${schemaPath}/else`, instancePath, elseSchema, value) || context.AddError({
       keyword: 'if',
-      schemaPath: `${schemaPath}/if`,
+      schemaPath,
       instancePath,
       params: { failingKeyword: 'else' },
     })

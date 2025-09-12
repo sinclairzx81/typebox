@@ -50,7 +50,7 @@ export function CheckMaxLength(context: CheckContext, schema: S.XMaxLength, valu
 export function ErrorMaxLength(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XMaxLength, value: string): boolean {
   return CheckMaxLength(context, schema, value) || context.AddError({
     keyword: 'maxLength',
-    schemaPath: `${schemaPath}/maxLength`,
+    schemaPath,
     instancePath,
     params: { limit: schema.maxLength }
   })

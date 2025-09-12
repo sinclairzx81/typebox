@@ -50,7 +50,7 @@ export function CheckExclusiveMaximum(context: CheckContext, schema: S.XExclusiv
 export function ErrorExclusiveMaximum(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XExclusiveMaximum, value: number | bigint): boolean {
   return CheckExclusiveMaximum(context, schema, value) || context.AddError({
     keyword: 'exclusiveMaximum',
-    schemaPath: `${schemaPath}/exclusiveMaximum`,
+    schemaPath,
     instancePath,
     params: { comparison: '<', limit: schema.exclusiveMaximum }
   })

@@ -61,7 +61,7 @@ export function CheckNot(context: CheckContext, schema: S.XNot, value: unknown):
 export function ErrorNot(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XNot, value: unknown): boolean {
   return CheckNot(context, schema, value) || context.AddError({
     keyword: 'not',
-    schemaPath: `${schemaPath}/not`,
+    schemaPath,
     instancePath,
     params: {},
   })

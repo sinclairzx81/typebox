@@ -50,7 +50,7 @@ export function CheckMinLength(context: CheckContext, schema: S.XMinLength, valu
 export function ErrorMinLength(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XMinLength, value: string): boolean {
   return CheckMinLength(context, schema, value) || context.AddError({
     keyword: 'minLength',
-    schemaPath: `${schemaPath}/minLength`,
+    schemaPath,
     instancePath,
     params: { limit: schema.minLength }
   })
