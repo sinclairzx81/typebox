@@ -71,3 +71,11 @@ Test('Should Clone 11', () => {
   const _ = [...B.values()][0].x = 2
   Assert.IsEqual(X, { x: 1 })
 })
+// ------------------------------------------------------------------
+// ClassInstances: No Clone
+// ------------------------------------------------------------------
+Test('Should Clone 12', () => {
+  const A = new Date()
+  const B = Value.Clone(A)
+  Assert.IsTrue(A === B)
+})

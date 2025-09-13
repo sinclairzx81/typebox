@@ -125,6 +125,18 @@ export function IsMultipleOf(dividend: bigint | number, divisor: bigint | number
   return Math.min(Math.abs(mod), Math.abs(mod - divisor)) < tolerance
 }
 // ------------------------------------------------------------------
+// IsClassInstance
+// ------------------------------------------------------------------
+/** Returns true if the value appears to be an instance of a class. */
+export function IsClassInstance(value: unknown): boolean {
+  if (!IsObject(value)) return false
+  const proto = globalThis.Object.getPrototypeOf(value)
+  if (IsNull(proto)) return false
+  return IsEqual(typeof proto.constructor, 'function') &&
+    !(IsEqual(proto.constructor, globalThis.Object) ||
+      IsEqual(proto.constructor.name, 'Object'))
+}
+// ------------------------------------------------------------------
 // IsValueLike
 // ------------------------------------------------------------------
 export function IsValueLike(value: unknown): value is bigint | boolean | null | number | string | undefined {

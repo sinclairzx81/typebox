@@ -28,7 +28,7 @@ const B = Value.Pointer.Has(X, &#39;/y&#39;)                // const B = false
 <p>The Delete function will delete a value at the given path or no action if the path does not exist.</p>
 <pre><code class="language-typescript">const X = { x: 1 }
 
-Value.Pointer.Set(X, &#39;/x&#39;)                          // X&#39; = { }
+Value.Pointer.Delete(X, &#39;/x&#39;)                          // X&#39; = { }
 
-Value.Pointer.Set(X, &#39;/y&#39;)                          // X&#39; = { } - no-action
+Value.Pointer.Delete(X, &#39;/y&#39;)                          // X&#39; = { } - no-action
 </code></pre>

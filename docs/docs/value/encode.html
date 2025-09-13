@@ -20,8 +20,8 @@ const R = Value.Encode(T, {                         // const R = {
 <h2>Pipeline</h2>
 <p>The Encode function uses the following Encoder pipeline.</p>
 <pre><code class="language-typescript">const Encoder = Pipeline([
-  (_context, _type, value) =&gt; Clone(value),
   (context, type, value) =&gt; Encode(context, type, value),   // &lt;--- Encode First
+  (_context, _type, value) =&gt; Clone(value),
   (context, type, value) =&gt; Default(context, type, value),
   (context, type, value) =&gt; Convert(context, type, value),
   (context, type, value) =&gt; Clean(context, type, value),
