@@ -1,0 +1,21 @@
+<h1>Encode</h1>
+<p>The Encode function applies a uni-directional encoding transform to a type.</p>
+<h2>Example</h2>
+<p>The following applies an Encode callback. </p>
+<blockquote>
+<p>⚠️ Encode callbacks will receive a value of type <code>unknown</code>. This is because TypeBox cannot statically derive the Decoded state, only the Encoded state as given by the schematic type. Applications should apply appropriate runtime checks local to the callback and throw if receiving invalid values.</p>
+</blockquote>
+<pre><code class="language-typescript">const T = Type.Encode(Type.Number(),                // const T = {
+  (value: unknown) =&gt; value === &#39;hello&#39;             //   type: &#39;number&#39;,
+     ? 1                                            //   &#39;~codec&#39;: {
+     : 0                                            //      decode: value =&gt; { throw Error(&#39;not implemented&#39;) }, 
+)                                                   //      encode: value =&gt; 0
+                                                    //   }
+                                                    // } 
+
+// Use Value.Encode() to run Encode callbacks.
+
+const D = Value.Decode(T, 12345)                   // throw Error(&#39;not implemented&#39;)
+
+const E = Value.Encode(T, &#39;hello&#39;)                 // const E = 1
+</code></pre>

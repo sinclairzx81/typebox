@@ -1,0 +1,18 @@
+<h1>Decode</h1>
+<p>The Decode function applies a uni-directional decoding transform to a type.</p>
+<h2>Example</h2>
+<p>The following applies a Decode callback that converts a number to a Hex string</p>
+<pre><code class="language-typescript">const Hex = Type.Decode(Type.Number(),              // const T = {
+  value =&gt; value.toString(16).toUpperCase()         //   type: &#39;number&#39;,
+)                                                   //   &#39;~codec&#39;: {
+                                                    //      decode: value =&gt; value.toString(16).toUpperCase() ,
+                                                    //      encode: value =&gt; { throw Error(&#39;not implemented&#39;) },
+                                                    //   }
+                                                    // } 
+
+// Use Value.Decode() to run Decode callbacks.
+
+const D = Value.Decode(Hex, 12345678)               // const D = &#39;BC614E&#39;
+
+const E = Value.Encode(Hex, D)                      // throw Error(&#39;not implemented&#39;)
+</code></pre>

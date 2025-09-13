@@ -45,7 +45,7 @@ The Delete function will delete a value at the given path or no action if the pa
 ```typescript
 const X = { x: 1 }
 
-Value.Pointer.Set(X, '/x')                          // X' = { }
+Value.Pointer.Delete(X, '/x')                          // X' = { }
 
-Value.Pointer.Set(X, '/y')                          // X' = { } - no-action
+Value.Pointer.Delete(X, '/y')                          // X' = { } - no-action
 ```
