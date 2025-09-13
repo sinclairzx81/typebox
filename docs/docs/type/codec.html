@@ -1,0 +1,30 @@
+<h1>Codec</h1>
+<p>The Codec function applies a bi-directional transform codec to a type.</p>
+<h2>Example</h2>
+<p>The following creates a Codec that transforms a timestamp into a Date object.</p>
+<pre><code class="language-typescript">const Timestamp = Type.Codec(Type.Integer())        // const Timestamp = {
+  .Decode(value =&gt; new Date(value))                 //   type: &#39;integer&#39;,
+  .Encode(value =&gt; value.getTime())                 //   &#39;~codec&#39;: {
+                                                    //      decode: value =&gt; new Date(), 
+                                                    //      encode: value =&gt; value.getTime()
+                                                    //   }
+                                                    // } 
+
+// Use Value.Decode() and Value.Encode() to run Decode and Encode callbacks.
+
+const D = Value.Decode(Timestamp, 12345)            // const D = 1970-01-01T00:00:12.345Z
+
+const E = Value.Encode(Timestamp, D)                // const E = 12345
+</code></pre>
+<h2>Static</h2>
+<p>Use the StaticDecode and StaticEncode types that infer the Decoded and Encoded state of a type.</p>
+<pre><code class="language-typescript">import Type, { type StaticEncode, type StaticDecode } from &#39;typebox&#39;
+
+const Timestamp = Type.Codec(Type.Integer())
+  .Decode(value =&gt; new Date(value))
+  .Encode(value =&gt; value.getTime())
+
+type D = StaticDecode&lt;typeof Timestamp&gt;             // type D = Date
+
+type E = StaticEncode&lt;typeof Timestamp&gt;             // type E = number
+</code></pre>

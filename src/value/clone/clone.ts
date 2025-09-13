@@ -31,9 +31,22 @@ THE SOFTWARE.
 import { Guard, GlobalsGuard } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
-// Object
+// ClassInstance
+//
+// TypeBox does not support cloning arbitrary class instances. It treats
+// class instances as atomic values, similar to number, boolean, and
+// string. In the future, an implementation could detect the presence of
+// a .clone() method, but no formal specification for this behavior
+// exists, so we don't.
+//
 // ------------------------------------------------------------------
-function FromObject(value: Record<PropertyKey, unknown>):  Record<PropertyKey, unknown> {
+function FromClassInstance(value: Record<PropertyKey, unknown>): Record<PropertyKey, unknown> {
+  return value // atomic
+}
+// ------------------------------------------------------------------
+// ObjectInstance
+// ------------------------------------------------------------------
+function FromObjectInstance(value: Record<PropertyKey, unknown>): Record<PropertyKey, unknown> {
   const result = {} as Record<PropertyKey, unknown>
   for (const key of Object.getOwnPropertyNames(value)) {
     result[key] = Clone(value[key])
@@ -42,6 +55,16 @@ function FromObject(value: Record<PropertyKey, unknown>):  Record<PropertyKey, u
     result[key] = Clone(value[key])
   }
   return result
+}
+// ------------------------------------------------------------------
+// Object
+// ------------------------------------------------------------------
+function FromObject(value: Record<PropertyKey, unknown>): Record<PropertyKey, unknown> {
+  return (
+    Guard.IsClassInstance(value)
+      ? FromClassInstance(value)
+      : FromObjectInstance(value)
+  )
 }
 // ------------------------------------------------------------------
 // Array

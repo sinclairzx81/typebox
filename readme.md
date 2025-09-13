@@ -33,7 +33,7 @@ import Type, { type Static } from 'typebox'
 const T = Type.Object({                             // const T = {
   x: Type.Number(),                                 //   type: 'object',
   y: Type.Number(),                                 //   required: ['x', 'y', 'z'],
-  z: Type.Number(),                                 //   properties: {
+  z: Type.Number()                                  //   properties: {
 })                                                  //     x: { type: 'number' },
                                                     //     y: { type: 'number' },
                                                     //     z: { type: 'number' }
@@ -49,25 +49,28 @@ type T = Static<typeof T>                           // type T = {
 
 ## Overview
 
-[Documentation](https://sinclairzx81.github.io/typebox/) | [1.0 Migration Guide](https://github.com/sinclairzx81/typebox/blob/main/changelog/1.0.0-migration.md)
+[Documentation](https://sinclairzx81.github.io/typebox/)
 
 TypeBox is a runtime type system that creates in-memory Json Schema objects that infer as TypeScript types. The schematics produced by this library are designed to match the static type checking rules of the TypeScript compiler. TypeBox offers a unified type system that can be statically checked by TypeScript and validated at runtime using standard Json Schema.
 
 This library is designed to allow Json Schema to compose similar to how types compose within TypeScript's type system. It can be used as a simple tool to build up complex schematics or integrated into REST and RPC services to help validate data received over the wire.
 
-
-
 License: MIT
 
 ## Contents
 
+- [Upgrade](#Upgrade)
 - [Type](#Type)
 - [Script](#Script)
 - [Value](#Value)
 - [Compile](#Compile)
 - [Contribute](#Contribute)
 
+## Upgrade
 
+Refer to the following URL for information on upgrading from 0.34.x to 1.0.
+
+[1.0 Migration Guide](https://github.com/sinclairzx81/typebox/blob/main/changelog/1.0.0-migration.md)
 
 <a name="Type"></a>
 

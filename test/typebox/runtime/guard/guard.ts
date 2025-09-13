@@ -263,3 +263,64 @@ Test('Should guard DeepObject: 1', () => {
 Test('Should guard DeepObject: 2', () => {
   Assert.IsEqual(Guard.IsDeepEqual(1, {}), false)
 })
+// ------------------------------------------------------------------
+// Guard.IsClassInstance
+// ------------------------------------------------------------------
+Test('Should IsClassInstance 1', () => {
+  class Person {}
+  const john = new Person()
+  Assert.IsEqual(Guard.IsClassInstance(john), true)
+})
+Test('Should IsClassInstance 2', () => {
+  function Vehicle() {}
+  // @ts-ignore
+  const car = new Vehicle()
+  Assert.IsEqual(Guard.IsClassInstance(car), true)
+})
+Test('Should IsClassInstance 3', () => {
+  const d = new Date()
+  Assert.IsEqual(Guard.IsClassInstance(d), true)
+})
+Test('Should IsClassInstance 4', () => {
+  const arr: unknown[] = []
+  Assert.IsEqual(Guard.IsClassInstance(arr), true)
+})
+Test('Should IsClassInstance 5', () => {
+  const map = new Map()
+  Assert.IsEqual(Guard.IsClassInstance(map), true)
+})
+Test('Should IsClassInstance 6', () => {
+  const set = new Set()
+  Assert.IsEqual(Guard.IsClassInstance(set), true)
+})
+Test('Should IsClassInstance 7', () => {
+  Assert.IsEqual(Guard.IsClassInstance({}), false)
+})
+Test('Should IsClassInstance 8', () => {
+  const obj = Object.create(null)
+  Assert.IsEqual(Guard.IsClassInstance(obj), false)
+})
+Test('Should IsClassInstance 9', () => {
+  Assert.IsEqual(Guard.IsClassInstance(42), false)
+})
+Test('Should IsClassInstance 10', () => {
+  Assert.IsEqual(Guard.IsClassInstance('test'), false)
+})
+Test('Should IsClassInstance 11', () => {
+  Assert.IsEqual(Guard.IsClassInstance(null), false)
+})
+Test('Should IsClassInstance 12', () => {
+  Assert.IsEqual(Guard.IsClassInstance(undefined), false)
+})
+Test('Should IsClassInstance 13', () => {
+  const boolObj = new Boolean(true)
+  Assert.IsEqual(Guard.IsClassInstance(boolObj), true)
+})
+Test('Should IsClassInstance 14', () => {
+  const numObj = new Number(123)
+  Assert.IsEqual(Guard.IsClassInstance(numObj), true)
+})
+Test('Should IsClassInstance 15', () => {
+  const strObj = new String('abc')
+  Assert.IsEqual(Guard.IsClassInstance(strObj), true)
+})

@@ -37,7 +37,7 @@ const R = Value.Parse(T, { x: 1, y: 2, z: 3 })
 
 const C = Compile.Compile(S)
 
-const X = C.Parse(C)
+const X = C.Parse({ x: 1, y: 2, z: 3 })
 
 // ------------------------------------------------------------------
 // Format
