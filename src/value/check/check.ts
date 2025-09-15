@@ -32,17 +32,17 @@ import { Arguments } from '../../system/arguments/index.ts'
 import type { Static, TProperties, TSchema } from '../../type/index.ts'
 import { Check as SchemaCheck } from '../../schema/index.ts'
 
-/** Checks a value matches the provided type. This function returns a TypeScript type predicate and does not throw. */
+/** Checks a value matches the provided type. */
 export function Check<const Type extends TSchema, 
   Result extends unknown = Static<Type>
 >(type: Type, value: unknown): value is Result
 
-/** Checks a value matches the provided type. This function returns a TypeScript type predicate and does not throw. */
+/** Checks a value matches the provided type. */
 export function Check<Context extends TProperties, const Type extends TSchema, 
   Result extends unknown = Static<Type, Context>
 >(context: Context, type: Type, value: unknown): value is Result
 
-/** Checks a value matches the provided type. This function returns a TypeScript type predicate and does not throw. */
+/** Checks a value matches the provided type. */
 export function Check(...args: unknown[]): unknown {
   const [context, type, value] = Arguments.Match<[TProperties, TSchema, unknown]>(args, {
     3: (context, type, value) => [context, type, value],

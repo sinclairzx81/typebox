@@ -130,23 +130,35 @@ Test('Should Compile 12', () => {
   const C = A.Decode('hello')
   Assert.IsEqual(C, 'hello')
 })
+Test('Should Compile 13', () => {
+  const X = Type.Codec(Type.String()).Decode((value) => value).Encode((value) => value)
+  const A = Compile(X)
+  const C = A.Decode('hello')
+  Assert.IsEqual(C, 'hello')
+})
 // ------------------------------------------------------------------
 // Ext: Encode
 // ------------------------------------------------------------------
-Test('Should Compile 13', () => {
+Test('Should Compile 14', () => {
   const A = Compile(Type.String({ default: 'hello' }))
+  const C = A.Encode('hello')
+  Assert.IsEqual(C, 'hello')
+})
+Test('Should Compile 15', () => {
+  const X = Type.Codec(Type.String()).Decode((value) => value).Encode((value) => value)
+  const A = Compile(X)
   const C = A.Encode('hello')
   Assert.IsEqual(C, 'hello')
 })
 // ------------------------------------------------------------------
 // Code
 // ------------------------------------------------------------------
-Test('Should Compile 14', () => {
+Test('Should Compile 16', () => {
   const A = Compile(Type.String({ default: 'hello' }))
   const C = A.Code()
   Assert.IsTrue(typeof C === 'string')
 })
-Test('Should Compile 15', () => {
+Test('Should Compile 17', () => {
   const A = Compile(Type.String({ default: 'hello' }))
   const C = A.IsEvaluated()
   Assert.IsTrue(typeof C === 'boolean')

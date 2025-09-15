@@ -78,6 +78,8 @@ function FromRecord(context: TProperties, type: TRecord): boolean {
 // Ref
 // ------------------------------------------------------------------
 function FromRef(context: TProperties, type: TRef): boolean {
+  if(visited.has(type.$ref)) return false
+  visited.add(type.$ref)
   return IsCodec(type) || (Guard.HasPropertyKey(context, type.$ref) 
     && FromType(context, context[type.$ref]))
 }
@@ -110,6 +112,11 @@ function FromType(context: TProperties, type: TSchema): boolean {
   )
 }
 // ------------------------------------------------------------------
+// Visited
+// ------------------------------------------------------------------
+const visited = new Set<string>()
+
+// ------------------------------------------------------------------
 // HasCodec
 // ------------------------------------------------------------------
 /** Returns true if this type contains a Codec */
@@ -122,5 +129,6 @@ export function HasCodec(...args: unknown[]): boolean {
     2: (context, type) => [context, type],
     1: (type) => [{}, type]
   })
+  visited.clear()
   return FromType(context, type)
 }
