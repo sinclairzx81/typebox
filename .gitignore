@@ -1,8 +1,2 @@
-# Unable to use deno.lock because the LSP keeps breaking it for website builds. 
-# The LSP should NOT update the deno.lock file in any capacity, and if it does, 
-# it should ensure the lock is inconsistent. We use explicit versions in the 
-# deno.jsonc file to work around this issue.
-deno.lock
-
 node_modules
 target

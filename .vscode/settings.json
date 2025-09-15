@@ -1,6 +1,7 @@
 {
   "deno.enable": true,
   "deno.lint": false,
+  "deno.cacheOnSave": false,
   "typescript.inlayHints.variableTypes.enabled": false,
   "editor.lightbulb.enabled": "off",
   "typescript.experimental.useTsgo": false
