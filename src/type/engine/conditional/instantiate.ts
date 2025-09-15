@@ -46,7 +46,7 @@ type TConditionalImmediate<Context extends TProperties, State extends TState, Le
 > = (
   ExtendsResult extends ExtendsResult.TExtendsUnion<infer InferredContext extends TProperties> ? TUnion<[TInstantiateType<InferredContext, State, True>, TInstantiateType<Context, State,False>]> :
   ExtendsResult extends ExtendsResult.TExtendsTrue<infer InferredContext extends TProperties> ? TInstantiateType<InferredContext, State, True> :
-  TInstantiateType<Context, State,False>
+  TInstantiateType<Context, State, False>
 )
 function ConditionalImmediate<Context extends TProperties, State extends TState, Left extends TSchema, Right extends TSchema, True extends TSchema, False extends TSchema>
   (context: Context, state: State, left: Left, right: Right, true_: True, false_: False, options: TSchemaOptions): 

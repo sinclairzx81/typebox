@@ -65,3 +65,25 @@ Test('Should Has 10', () => {
     .Encode(value => value)
   Assert.IsTrue(Value.HasCodec(T))
 })
+// ------------------------------------------------------------------
+// Cyclics
+// ------------------------------------------------------------------
+Test('Should Has 11', () => {
+  const C = Type.Codec(Type.Null()).Decode(value => value).Encode(value => value)
+  const T = Type.Cyclic({
+    A: Type.Object({
+      value: C,
+      nodes: Type.Array(Type.Ref('A'))
+    })
+  }, 'A')
+  Assert.IsTrue(Value.HasCodec(T))
+})
+Test('Should Has 12', () => {
+  const C = Type.Codec(Type.Array(Type.Ref('A'))).Decode(value => value).Encode(value => value)
+  const T = Type.Cyclic({
+    A: Type.Object({
+      nodes: C
+    })
+  }, 'A')
+  Assert.IsTrue(Value.HasCodec(T))
+})

@@ -6,8 +6,6 @@ import { Assert } from 'test'
 
 const Test = Assert.Context('Value.Codec.Cyclic')
 
-
-
 Test('Should Cyclic 1', () => {
   const StringToNumber = Type.Codec(Type.String())
     .Decode(value => parseInt(value))
