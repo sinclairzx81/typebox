@@ -61,8 +61,7 @@
   "compilerOptions": {
     "strict": true,
     "jsx": "react-jsx",
-    "jsxImportSource": "npm:react",
-    "jsxImportSourceTypes": "npm:@types/react",
+    "jsxImportSource": "npm:react@19.1.1",
     "lib": ["deno.ns", "dom"]
   }
 }
