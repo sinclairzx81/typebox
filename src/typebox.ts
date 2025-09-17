@@ -109,7 +109,7 @@ export { IsRecord, Record, RecordKey, RecordPattern as RecordKeyAsPattern, Recor
 export { IsRef, Ref, type TRef } from './type/types/ref.ts'
 export { IsRest, Rest, type TRest } from './type/types/rest.ts'
 export { IsKind, IsSchema, type TArrayOptions, type TFormat, type TIntersectOptions, type TNumberOptions, type TObjectOptions, type TSchema, type TSchemaOptions, type TStringOptions, type TTupleOptions } from './type/types/schema.ts'
-export { type Static } from './type/types/static.ts'
+export { type Static, type StaticDecode, type StaticEncode, type StaticParse } from './type/types/static.ts'
 export { IsString, String, type TString } from './type/types/string.ts'
 export { IsSymbol, Symbol, type TSymbol } from './type/types/symbol.ts'
 export { IsTemplateLiteral, TemplateLiteral, type TTemplateLiteral } from './type/types/template-literal.ts'
