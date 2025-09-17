@@ -70,7 +70,7 @@ License: MIT
 
 Refer to the following URL for information on upgrading from 0.34.x to 1.0.
 
-[1.0 Migration Guide](https://github.com/sinclairzx81/typebox/blob/main/changelog/1.0.0-migration.md)
+[Migration Guide](https://github.com/sinclairzx81/typebox/blob/main/changelog/1.0.0-migration.md)
 
 <a name="Type"></a>
 
