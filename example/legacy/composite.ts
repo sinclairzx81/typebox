@@ -26,17 +26,61 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { type TSchema, type TEvaluateIntersect, EvaluateIntersect } from 'typebox'
+// deno-fmt-ignore-file
+
+import Type from 'typebox'
 
 // ------------------------------------------------------------------
-// Type
+// FromProperties
 // ------------------------------------------------------------------
-export type TComposite<Types extends TSchema[]> = (
-  TEvaluateIntersect<Types>
+type TFromProperties<Left extends Type.TProperties, Right extends Type.TProperties,
+  Select extends Type.TProperties = Omit<Left, keyof Right> & Right,
+  Result extends Type.TProperties = { [K in keyof Select]: Select[K] }
+> = Result
+
+function FromProperties<Left extends Type.TProperties, Right extends Type.TProperties>
+  (left: Left, right: Right): TFromProperties<Left, Right> {
+  return { ...left, ...right } as never
+}
+// ------------------------------------------------------------------
+// FromType
+// ------------------------------------------------------------------
+type TFromType<Type extends Type.TSchema, Result extends Type.TProperties> = (
+  Type extends Type.TObject<infer Properties extends Type.TProperties>
+    ? TFromProperties<Result, Properties>
+    : Result
 )
+function FromType<Type extends Type.TSchema, Result extends Type.TProperties>
+  (type: Type, result: Result): TFromType<Type, Result> {
+  return (
+    Type.IsObject(type) ? FromProperties(result, type.properties) :
+    result
+  ) as never
+}
 // ------------------------------------------------------------------
-// Factory
+// FromTypes
 // ------------------------------------------------------------------
-export function Composite<Types extends TSchema[]>(types: [...Types]): TComposite<Types> {
-  return EvaluateIntersect(types)
+type TFromTypes<Types extends Type.TSchema[], Result extends Type.TProperties = {}> = (
+  Types extends [infer Left extends Type.TSchema, ...infer Right extends Type.TSchema[]]
+    ? TFromTypes<Right, TFromType<Left, Result>>
+    : Result
+)
+function FromTypes<Types extends Type.TSchema[]>(types: [...Types]): TFromTypes<Types> {
+  return types.reduce((result, left) => {
+    return FromType(left, result)
+  }, {}) as never
+}
+// ------------------------------------------------------------------
+// Composite
+// ------------------------------------------------------------------
+/** Fallback for 0.34.x Composite.  */
+export type TComposite<Types extends Type.TObject[], 
+  Properties extends Type.TProperties = TFromTypes<Types>,
+  Result extends Type.TSchema = Type.TObject<Properties>
+> = Result
+/** Fallback for 0.34.x Composite.  */
+export function Composite<Types extends Type.TObject[]>(types: [...Types]): TComposite<Types> {
+  const properties = FromTypes(types)
+  const result = Type.Object(properties)
+  return result as never
 }
