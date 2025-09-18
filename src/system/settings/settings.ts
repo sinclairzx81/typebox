@@ -61,6 +61,17 @@ export interface TSettings {
   useEval: boolean
 
   /**
+   * Enables or disables 'exactOptionalPropertyTypes' check semantics. By default, TypeScript
+   * allows optional properties to be assigned 'undefined'. While this behavior differs from the
+   * common interpretation of 'optional' as meaning 'key may be absent', TypeBox adopts the default
+   * TypeScript semantics to remain consistent with the language. This option is provided to align
+   * runtime check semantics with projects that configure 'exactOptionalPropertyTypes: true' in
+   * tsconfig.json.
+   * @default false
+   */
+  exactOptionalPropertyTypes: boolean
+
+  /**
    * Controls whether internal compositor properties (`~kind`, `~readonly`, `~optional`) are enumerable.
    * @default false
    */
@@ -72,6 +83,7 @@ const settings: TSettings = {
   immutableTypes: false,
   maxErrors: 8,
   useEval: true,
+  exactOptionalPropertyTypes: false,
   enumerableKind: false
 }
 
@@ -80,6 +92,7 @@ export function Reset(): void {
   settings.immutableTypes = false
   settings.maxErrors = 8
   settings.useEval = true
+  settings.exactOptionalPropertyTypes = false
   settings.enumerableKind = false
 }
 

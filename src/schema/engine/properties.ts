@@ -34,6 +34,8 @@ import * as S from '../types/index.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { BuildSchema, CheckSchema, ErrorSchema } from './schema.ts'
 
+import { InexactOptionalCheck, InexactOptionalBuild, IsExactOptional } from './_exact_optional.ts'
+
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
@@ -43,9 +45,38 @@ export function BuildProperties(context: BuildContext, schema: S.XProperties, va
     const notKey = E.Not(E.HasPropertyKey(value, E.Constant(key)))
     const isSchema = BuildSchema(context, schema, E.Member(value, key))
     const addKey = context.AddKey(E.Constant(key))
-    // optimization: E.Or(notKey, E.And(isSchema, addKey))
     const guarded = context.UseUnevaluated() ? E.And(isSchema, addKey) : isSchema
-    return !required.includes(key) ? E.Or(notKey, guarded) : guarded
+    
+    // --------------------------------------------------------------
+    // Optimization
+    //
+    // If a key is required, we can skip the `notKey` check since this
+    // condition is already enforced by Required. This optimization is
+    // only valid when Required is evaluated before Properties.
+    //
+    // --------------------------------------------------------------
+
+    const isProperty = required.includes(key) ? guarded : E.Or(notKey, guarded)
+
+    // --------------------------------------------------------------
+    // ExactOptionalProperties
+    //
+    // By default, TypeScript allows optional properties to be assigned
+    // undefined. This is a bit misleading, since 'optional' is usually
+    // understood to mean 'the key may be absent', not 'the key may be
+    // present with an undefined value'.
+    //
+    // The 'IsExactOptional' check returns false by default, matching
+    // TypeScript's behavior. When exactOptionalPropertyTypes is enabled
+    // in tsconfig.json, TypeBox can be configured to use the stricter 
+    // semantics via System settings:
+    //
+    //   Settings.Set({ exactOptionalPropertyTypes: true })
+    //
+    // --------------------------------------------------------------
+    return IsExactOptional(required, key)
+      ? isProperty
+      : E.Or(isProperty, InexactOptionalBuild(value, key))
   })
   return E.ReduceAnd(everyKey)
 }
@@ -53,9 +84,12 @@ export function BuildProperties(context: BuildContext, schema: S.XProperties, va
 // Check
 // ------------------------------------------------------------------
 export function CheckProperties(context: CheckContext, schema: S.XProperties, value: Record<PropertyKey, unknown>): boolean {
+  const required = S.IsRequired(schema) ? schema.required : []
   const isProperties = G.Every(G.Entries(schema.properties), ([key, schema]) => {
-    return !G.HasPropertyKey(value, key) 
-      || (CheckSchema(context, schema, value[key]) && context.AddKey(key))
+    const isProperty = !G.HasPropertyKey(value, key) || (CheckSchema(context, schema, value[key]) && context.AddKey(key))
+    return IsExactOptional(required, key)
+      ? isProperty
+      : isProperty || InexactOptionalCheck(value, key)
   })
   return isProperties
 }
@@ -63,11 +97,14 @@ export function CheckProperties(context: CheckContext, schema: S.XProperties, va
 // Error
 // ------------------------------------------------------------------
 export function ErrorProperties(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XProperties, value: Record<PropertyKey, unknown>): boolean {
+  const required = S.IsRequired(schema) ? schema.required : []
   const isProperties = G.EveryAll(G.Entries(schema.properties), ([key, schema]) => {
     const nextSchemaPath = `${schemaPath}/properties/${key}`
     const nextInstancePath = `${instancePath}/${key}`
-    return !G.HasPropertyKey(value, key) 
-      || (ErrorSchema(context, nextSchemaPath, nextInstancePath, schema, value[key]) && context.AddKey(key))
+    const isProperty = !G.HasPropertyKey(value, key) || (ErrorSchema(context, nextSchemaPath, nextInstancePath, schema, value[key]) && context.AddKey(key))
+    return IsExactOptional(required, key)
+      ? isProperty
+      : isProperty || InexactOptionalCheck(value, key)
   })
   return isProperties
 }
