@@ -33,6 +33,7 @@ import { Guard } from '../../guard/index.ts'
 import { type TObject, type TProperties } from '../../type/index.ts'
 import { FromType } from './from-type.ts'
 import { Callback } from './callback.ts'
+import { IsOptionalUndefined } from '../shared/index.ts'
 
 // ------------------------------------------------------------------
 // Decode
@@ -43,7 +44,8 @@ function Decode(direction: string, context: TProperties, type: TObject, value: u
   // deno-coverage-ignore-stop
 
   for (const key of Guard.Keys(type.properties)) {
-    if(!Guard.HasPropertyKey(value, key)) continue
+    // Ignore for non-present or optional-undefined
+    if(!Guard.HasPropertyKey(value, key) || IsOptionalUndefined(type.properties[key], key, value)) continue
     value[key] = FromType(direction, context, type.properties[key], value[key])
   }
   return Callback(direction, context, type, value)
@@ -56,7 +58,8 @@ function Encode(direction: string, context: TProperties, type: TObject, value: u
   if (!Guard.IsObjectNotArray(exterior)) return exterior
 
   for (const key of Guard.Keys(type.properties)) {
-    if(!Guard.HasPropertyKey(exterior, key)) continue
+    // Ignore for non-present or optional-undefined
+    if(!Guard.HasPropertyKey(exterior, key) || IsOptionalUndefined(type.properties[key], key, exterior)) continue
     exterior[key] = FromType(direction, context, type.properties[key], exterior[key])
   }
   return exterior

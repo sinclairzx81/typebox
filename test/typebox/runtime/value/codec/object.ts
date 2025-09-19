@@ -158,3 +158,33 @@ Test('Should Object 10', () => {
 
   Settings.Reset()
 })
+
+// ------------------------------------------------------------------
+// IsOptionalUndefined (Codec)
+//
+// https://github.com/sinclairzx81/typebox/issues/1341
+// ------------------------------------------------------------------
+Test('Should Object 11', () => {
+  const X = Type.Codec(Type.String({ pattern: String.raw`^\d+$` }))
+    .Decode((str) => BigInt(str))
+    .Encode((bigint) => bigint.toString())
+  const T = Type.Object({ x: Type.Optional(X) })
+  
+  const A = Value.Encode(T, { x: 100100n })
+  const B = Value.Encode(T, { x: undefined })
+
+  Assert.IsEqual(A, { x: '100100' })
+  Assert.IsEqual(B, { x: undefined })
+})
+Test('Should Object 12', () => {
+  Settings.Set({ exactOptionalPropertyTypes: true })
+  const X = Type.Codec(Type.String({ pattern: String.raw`^\d+$` }))
+    .Decode((str) => BigInt(str))
+    .Encode((bigint) => bigint.toString())
+  const T = Type.Object({ x: Type.Optional(X) })
+  
+  const A = Value.Encode(T, { x: 100100n })
+  Assert.Throws(() => Value.Encode(T, { x: undefined }))
+  Assert.IsEqual(A, { x: '100100' })
+  Settings.Reset()
+})

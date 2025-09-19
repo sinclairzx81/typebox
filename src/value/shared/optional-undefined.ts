@@ -4,7 +4,7 @@ TypeBox
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2025 Haydn Paterson 
+Copyright (c) 2017-2025 Haydn Paterson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,33 +28,19 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { type TSchema, type TObject, type TProperties } from '../../type/index.ts'
 import { Guard } from '../../guard/index.ts'
-import { FromType } from './from-type.ts'
-import { FromAdditionalProperties } from './from-additional.ts'
-import { IsOptionalUndefined } from '../shared/index.ts'
+import { type TSchema, IsOptional } from '../../type/index.ts'
+
 
 // ------------------------------------------------------------------
-// FromProperties
+// IsOptionalUndefined
+//
+// Indicates whether a key should be excluded from processing when it is 
+// defined as optional in the schema and its corresponding value is undefined. 
+// This case cannot be reliably distinguished from an omitted key, and therefore 
+// introduces ambiguity between a key that is not provided and one that is 
+// explicitly assigned an undefined value.
 // ------------------------------------------------------------------
-function FromProperties(context: TProperties, type: TObject, value: Record<PropertyKey, unknown>): unknown {
-  const entries = Guard.EntriesRegExp(type.properties) as [RegExp, TSchema][]
-  const keys = Guard.Keys(value)
-  for(const [regexp, property] of entries) {
-    for(const key of keys) {
-      // Ignore for non-present or optional-undefined
-      if(!regexp.test(key) || IsOptionalUndefined(property, key, value)) continue
-      value[key] = FromType(context, property, value[key])
-    }
-  }
-  return (
-    Guard.HasPropertyKey(type, 'additionalProperties') && Guard.IsObject(type.additionalProperties)
-      ? FromAdditionalProperties(context, entries, type.additionalProperties, value)
-      : value
-  )
-}
-export function FromObject(context: TProperties, type: TObject, value: unknown): unknown {
-  return Guard.IsObjectNotArray(value) 
-    ? FromProperties(context, type, value) 
-    : value
+export function IsOptionalUndefined(property: TSchema, key: PropertyKey, value: Record<PropertyKey, unknown>): boolean {
+  return IsOptional(property) && Guard.IsUndefined(value[key])
 }
