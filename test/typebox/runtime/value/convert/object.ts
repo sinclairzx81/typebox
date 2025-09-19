@@ -33,3 +33,24 @@ Test('Should Convert 4', () => {
   const R = Value.Convert(T, { x: '1', y: 0 })
   Assert.IsEqual(R, { x: 1, y: null })
 })
+// ------------------------------------------------------------------
+// IsOptionalUndefined
+//
+// https://github.com/sinclairzx81/typebox/issues/1336#issuecomment-3312808962 
+//
+// ------------------------------------------------------------------
+Test('Should Convert 5', () => {
+  const T = Type.Object({ x: Type.Optional(Type.Number()) })
+  const R = Value.Convert(T, { x: 1 })
+  Assert.IsEqual(R, { x: 1 })
+})
+Test('Should Convert 6', () => {
+  const T = Type.Object({ x: Type.Optional(Type.Number()) })
+  const R = Value.Convert(T, { x: '1' })
+  Assert.IsEqual(R, { x: 1 })
+})
+Test('Should Convert 7', () => {
+  const T = Type.Object({ x: Type.Optional(Type.Number()) })
+  const R = Value.Convert(T, { x: undefined })
+  Assert.IsEqual(R, { x: undefined })
+})

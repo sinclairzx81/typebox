@@ -28,18 +28,37 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import type { TSchema, TObject, TProperties } from '../../type/index.ts'
+import { type TSchema, type TObject, type TProperties, IsOptional } from '../../type/index.ts'
 import { Guard } from '../../guard/index.ts'
 import { FromType } from './from-type.ts'
+
 import { FromAdditionalProperties } from './from-additional.ts'
 
+// ------------------------------------------------------------------
+// IsOptionalUndefined
+//
+// Determines whether a property should be excluded from conversion
+// because it is both optional and has an undefined value. This case
+// cannot be safely converted, since it introduces ambiguity between
+// an omitted optional property and a property explicitly set to the
+// value undefined.
+// ------------------------------------------------------------------
+function IsOptionalUndefined(property: TSchema, key: PropertyKey, value: Record<PropertyKey, unknown>) {
+  return IsOptional(property) && Guard.IsUndefined(value[key])
+}
+
+// ------------------------------------------------------------------
+// FromProperties
+// ------------------------------------------------------------------
 function FromProperties(context: TProperties, type: TObject, value: Record<PropertyKey, unknown>): unknown {
   const entries = Guard.EntriesRegExp(type.properties) as [RegExp, TSchema][]
   const keys = Guard.Keys(value)
-  for(const [regexp, schema] of entries) {
+  for(const [regexp, property] of entries) {
     for(const key of keys) {
-      if(regexp.test(key)) {
-        value[key] = FromType(context, schema, value[key])
+      // Only convert the property if the value key matches a schema key,
+      // and the property is not optional with an undefined value.
+      if(regexp.test(key) && !IsOptionalUndefined(property, key, value)) {
+        value[key] = FromType(context, property, value[key])
       }
     }
   }
@@ -49,7 +68,6 @@ function FromProperties(context: TProperties, type: TObject, value: Record<Prope
       : value
   )
 }
-
 export function FromObject(context: TProperties, type: TObject, value: unknown): unknown {
   return Guard.IsObjectNotArray(value) 
     ? FromProperties(context, type, value) 
