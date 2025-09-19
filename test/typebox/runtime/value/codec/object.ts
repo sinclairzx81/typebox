@@ -1,5 +1,6 @@
 // deno-fmt-ignore-file
 
+import { Settings } from 'typebox/system'
 import { Value } from 'typebox/value'
 import { Type } from 'typebox'
 import { Assert } from 'test'
@@ -129,4 +130,31 @@ Test('Should Object 8', () => {
   const E = Value.Encode(T, {})
   Assert.IsEqual(D, { })
   Assert.IsEqual(E, { })
+})
+// ------------------------------------------------------------------
+// IsOptionalUndefined (Convert)
+//
+// https://github.com/sinclairzx81/typebox/issues/1336#issuecomment-3312847006
+// ------------------------------------------------------------------
+Test('Should Object 9', () => {
+  const X = Type.Optional(Type.String({ pattern: /^[a-f]+$/ }))
+  const T = Type.Object({ x: X })
+
+  const A = Value.Encode(T, { x: "abcdef" })
+  const B = Value.Encode(T, { x: undefined })
+
+  Assert.IsEqual(A, { x: "abcdef" })
+  Assert.IsEqual(B, { x: undefined })
+})
+Test('Should Object 10', () => {
+  Settings.Set({ exactOptionalPropertyTypes: true })
+  const X = Type.Optional(Type.String({ pattern: /^[a-f]+$/ }))
+  const T = Type.Object({ x: X })
+
+  const A = Value.Encode(T, { x: "abcdef" })
+  Assert.Throws(() => Value.Encode(T, { x: undefined }))
+
+  Assert.IsEqual(A, { x: "abcdef" })
+
+  Settings.Reset()
 })
