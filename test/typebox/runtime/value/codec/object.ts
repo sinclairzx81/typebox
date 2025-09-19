@@ -132,7 +132,6 @@ Test('Should Object 8', () => {
   Assert.IsEqual(E, { })
 })
 // ------------------------------------------------------------------
-//
 // IsOptionalUndefined (Convert)
 //
 // https://github.com/sinclairzx81/typebox/issues/1336#issuecomment-3312847006
