@@ -356,20 +356,56 @@ Test('Should check for required property of unknown (when optional)', () => {
 })
 
 // ------------------------------------------------------------------
-// ExactOptionalPropertyTypes
+// ExactOptionalPropertyTypes: FALSE
 // ------------------------------------------------------------------
-Test('Should use exactOptionalPropertyTypes FALSE', () => {
+Test('Should use exactOptionalPropertyTypes FALSE 1', () => {
   const T = Type.Object({ x: Type.Optional(Type.Undefined()) })
+  Fail(T, { x: true })
   Fail(T, { x: 1 })
-  Ok(T, { x: undefined }) // allowed by default
+  Ok(T, { x: undefined })
   Ok(T, {})
 })
-
-Test('Should use exactOptionalPropertyTypes TRUE', () => {
+Test('Should use exactOptionalPropertyTypes FALSE 2', () => {
+  const T = Type.Object({ x: Type.Optional(Type.Number()) })
+  Fail(T, { x: true })
+  Ok(T, { x: 1 })
+  Ok(T, { x: undefined })
+  Ok(T, {})
+})
+Test('Should use exactOptionalPropertyTypes FALSE 3', () => {
+  const T = Type.Object({ x: Type.Optional(Type.Union([Type.Number(), Type.Undefined()])) })
+  Fail(T, { x: true })
+  Ok(T, { x: 1 })
+  Ok(T, { x: undefined })
+  Ok(T, {})
+})
+// ------------------------------------------------------------------
+// ExactOptionalPropertyTypes: TRUE
+// ------------------------------------------------------------------
+Test('Should use exactOptionalPropertyTypes TRUE 1', () => {
+  Settings.Set({ exactOptionalPropertyTypes: true })
+  const T = Type.Object({ x: Type.Optional(Type.Undefined()) })
+  Fail(T, { x: true })
+  Fail(T, { x: 1 })
+  Ok(T, { x: undefined })
+  Ok(T, {})
+  Settings.Reset()
+})
+Test('Should use exactOptionalPropertyTypes TRUE 2', () => {
   Settings.Set({ exactOptionalPropertyTypes: true })
   const T = Type.Object({ x: Type.Optional(Type.Number()) })
+  Fail(T, { x: true })
   Ok(T, { x: 1 })
   Fail(T, { x: undefined })
+  Ok(T, {})
+  Settings.Reset()
+})
+Test('Should use exactOptionalPropertyTypes TRUE 3', () => {
+  Settings.Set({ exactOptionalPropertyTypes: true })
+  const T = Type.Object({ x: Type.Optional(Type.Union([Type.Number(), Type.Undefined()])) })
+  Fail(T, { x: true })
+  Ok(T, { x: 1 })
+  Ok(T, { x: undefined })
   Ok(T, {})
   Settings.Reset()
 })

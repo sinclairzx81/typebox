@@ -33,7 +33,6 @@ import * as S from '../types/index.ts'
 
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { BuildSchema, CheckSchema, ErrorSchema } from './schema.ts'
-
 import { InexactOptionalCheck, InexactOptionalBuild, IsExactOptional } from './_exact_optional.ts'
 
 // ------------------------------------------------------------------
@@ -76,7 +75,7 @@ export function BuildProperties(context: BuildContext, schema: S.XProperties, va
     // --------------------------------------------------------------
     return IsExactOptional(required, key)
       ? isProperty
-      : E.Or(isProperty, InexactOptionalBuild(value, key))
+      : E.Or(InexactOptionalBuild(value, key), isProperty)
   })
   return E.ReduceAnd(everyKey)
 }
@@ -89,7 +88,7 @@ export function CheckProperties(context: CheckContext, schema: S.XProperties, va
     const isProperty = !G.HasPropertyKey(value, key) || (CheckSchema(context, schema, value[key]) && context.AddKey(key))
     return IsExactOptional(required, key)
       ? isProperty
-      : isProperty || InexactOptionalCheck(value, key)
+      : InexactOptionalCheck(value, key) || isProperty
   })
   return isProperties
 }
@@ -101,10 +100,13 @@ export function ErrorProperties(context: ErrorContext, schemaPath: string, insta
   const isProperties = G.EveryAll(G.Entries(schema.properties), ([key, schema]) => {
     const nextSchemaPath = `${schemaPath}/properties/${key}`
     const nextInstancePath = `${instancePath}/${key}`
-    const isProperty = !G.HasPropertyKey(value, key) || (ErrorSchema(context, nextSchemaPath, nextInstancePath, schema, value[key]) && context.AddKey(key))
+    // Defer error generation for IsExactOptional
+    const isProperty = () => (
+      !G.HasPropertyKey(value, key) || (ErrorSchema(context, nextSchemaPath, nextInstancePath, schema, value[key]) && context.AddKey(key))
+    )
     return IsExactOptional(required, key)
-      ? isProperty
-      : isProperty || InexactOptionalCheck(value, key)
+      ? isProperty()
+      : InexactOptionalCheck(value, key) || isProperty()
   })
   return isProperties
 }

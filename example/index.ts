@@ -3,44 +3,19 @@ import { Compile } from 'typebox/compile'
 import Format from 'typebox/format'
 import Value from 'typebox/value'
 
-// ------------------------------------------------------------------
-// Type
-// ------------------------------------------------------------------
-const T = Type.Object({
-  x: Type.Number(),
-  y: Type.Number(),
-  z: Type.Number()
-})
+// Test('Should use exactOptionalPropertyTypes FALSE 2', () => {
+//   const T = Type.Object({ x: Type.Optional(Type.Number()) })
+//   Ok(T, { x: 1 })
+//   Ok(T, { x: undefined })
+//   Ok(T, {})
+// })
 
-// ------------------------------------------------------------------
-// Script
-// ------------------------------------------------------------------
-const S = Type.Script({ T }, `{
-  [K in keyof T]: T[K] | null
-}`)
+const T = Type.Object({ x: Type.Optional(Type.Number()) })
 
-// ------------------------------------------------------------------
-// Infer
-// ------------------------------------------------------------------
-type T = Static<typeof T>
-type S = Static<typeof S>
+const X = { x: undefined }
 
-// ------------------------------------------------------------------
-// Parse
-// ------------------------------------------------------------------
+const A = Value.Check(T, X)
+const B = Compile(T).Check(X)
+const C = Value.Errors(T, X)
 
-const R = Value.Parse(T, { x: 1, y: 2, z: 3 })
-
-// ------------------------------------------------------------------
-// Compile
-// ------------------------------------------------------------------
-
-const C = Compile(S)
-
-const X = C.Parse({ x: 1, y: 2, z: 3 })
-
-// ------------------------------------------------------------------
-// Format
-// ------------------------------------------------------------------
-
-const E = Format.IsEmail('user@domain.com')
+console.log({ A, B, C })

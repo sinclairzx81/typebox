@@ -39,13 +39,11 @@ export function IsExactOptional(required: string[], key: string): boolean {
 // ExactOptionalBuild
 // ------------------------------------------------------------------
 export function InexactOptionalBuild(value: string, key: string): string {
-  const hasProperty = E.HasPropertyKey(value, E.Constant(key))
-  const isUndefined = E.IsUndefined(E.Member(value, key))
-  return E.And(hasProperty, isUndefined)
+  return E.IsUndefined(E.Member(value, key))
 }
 // ------------------------------------------------------------------
 // ExactOptionalCheck
 // ------------------------------------------------------------------
 export function InexactOptionalCheck(value: Record<PropertyKey, unknown>, key: string): boolean {
-  return G.HasPropertyKey(value, key) && G.IsUndefined(value[key])
+  return G.IsUndefined(value[key])
 }
