@@ -1,6 +1,7 @@
 import { Type } from 'typebox'
 import { Fail, Ok } from './_validate.ts'
 import { Assert } from 'test'
+import { Settings } from 'typebox/system'
 
 const Test = Assert.Context('Value.Check.Object')
 
@@ -325,18 +326,6 @@ Test('Should not check for property key if property type extends undefined and o
   Ok(T, { x: undefined })
   Ok(T, {})
 })
-Test('Should use exactOptionalPropertyTypes semantics 1', () => {
-  const T = Type.Object({ x: Type.Optional(Type.Number()) })
-  Ok(T, { x: 1 })
-  Fail(T, { x: undefined }) // allowed by default
-  Ok(T, {})
-})
-Test('Should use exactOptionalPropertyTypes semantics 2', () => {
-  const T = Type.Object({ x: Type.Optional(Type.Undefined()) })
-  Fail(T, { x: 1 })
-  Ok(T, { x: undefined })
-  Ok(T, {})
-})
 Test('Should check for required property of any', () => {
   const T = Type.Object({ x: Type.Any() })
   Fail(T, {})
@@ -364,4 +353,59 @@ Test('Should check for required property of unknown (when optional)', () => {
   Ok(T, { x: undefined })
   Ok(T, { x: 1 })
   Ok(T, { x: true })
+})
+
+// ------------------------------------------------------------------
+// ExactOptionalPropertyTypes: FALSE
+// ------------------------------------------------------------------
+Test('Should use exactOptionalPropertyTypes FALSE 1', () => {
+  const T = Type.Object({ x: Type.Optional(Type.Undefined()) })
+  Fail(T, { x: true })
+  Fail(T, { x: 1 })
+  Ok(T, { x: undefined })
+  Ok(T, {})
+})
+Test('Should use exactOptionalPropertyTypes FALSE 2', () => {
+  const T = Type.Object({ x: Type.Optional(Type.Number()) })
+  Fail(T, { x: true })
+  Ok(T, { x: 1 })
+  Ok(T, { x: undefined })
+  Ok(T, {})
+})
+Test('Should use exactOptionalPropertyTypes FALSE 3', () => {
+  const T = Type.Object({ x: Type.Optional(Type.Union([Type.Number(), Type.Undefined()])) })
+  Fail(T, { x: true })
+  Ok(T, { x: 1 })
+  Ok(T, { x: undefined })
+  Ok(T, {})
+})
+// ------------------------------------------------------------------
+// ExactOptionalPropertyTypes: TRUE
+// ------------------------------------------------------------------
+Test('Should use exactOptionalPropertyTypes TRUE 1', () => {
+  Settings.Set({ exactOptionalPropertyTypes: true })
+  const T = Type.Object({ x: Type.Optional(Type.Undefined()) })
+  Fail(T, { x: true })
+  Fail(T, { x: 1 })
+  Ok(T, { x: undefined })
+  Ok(T, {})
+  Settings.Reset()
+})
+Test('Should use exactOptionalPropertyTypes TRUE 2', () => {
+  Settings.Set({ exactOptionalPropertyTypes: true })
+  const T = Type.Object({ x: Type.Optional(Type.Number()) })
+  Fail(T, { x: true })
+  Ok(T, { x: 1 })
+  Fail(T, { x: undefined })
+  Ok(T, {})
+  Settings.Reset()
+})
+Test('Should use exactOptionalPropertyTypes TRUE 3', () => {
+  Settings.Set({ exactOptionalPropertyTypes: true })
+  const T = Type.Object({ x: Type.Optional(Type.Union([Type.Number(), Type.Undefined()])) })
+  Fail(T, { x: true })
+  Ok(T, { x: 1 })
+  Ok(T, { x: undefined })
+  Ok(T, {})
+  Settings.Reset()
 })
