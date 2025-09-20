@@ -36,7 +36,7 @@ import { FromType } from './from-type.ts'
 export function FromUnion(context: TProperties, type: TUnion, value: unknown): unknown {
   for (const schema of type.anyOf) {
     const clean = FromType(context, schema, Clone(value))
-    if(Check(context, type, clean)) return clean
+    if(Check(context, schema, clean)) return clean
   }
   return value
 }
