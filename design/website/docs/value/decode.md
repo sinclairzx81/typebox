@@ -33,7 +33,7 @@ const Decoder = Pipeline([
   (context, type, value) => Convert(context, type, value),
   (context, type, value) => Clean(context, type, value),
   (context, type, value) => Assert(context, type, value),
-  (context, type, value) => DecodeUnsafe(context, type, value)
+  (context, type, value) => DecodeUnsafe(context, type, value) // <--- Decode Last
 ])
 ```
 

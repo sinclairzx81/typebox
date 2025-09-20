@@ -25,7 +25,7 @@ const R = Value.Decode(T, { date: 12345 })          // const R = {
   (context, type, value) =&gt; Convert(context, type, value),
   (context, type, value) =&gt; Clean(context, type, value),
   (context, type, value) =&gt; Assert(context, type, value),
-  (context, type, value) =&gt; DecodeUnsafe(context, type, value)
+  (context, type, value) =&gt; DecodeUnsafe(context, type, value) // &lt;--- Decode Last
 ])
 </code></pre>
 <h2>Unsafe</h2>
