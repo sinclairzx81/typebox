@@ -54,6 +54,13 @@ function Assert(context: TProperties, type: TSchema, value: unknown): unknown {
   return value
 }
 // ------------------------------------------------------------------
+// DecodeUnsafe
+// ------------------------------------------------------------------
+/** Executes Decode callbacks only */
+export function DecodeUnsafe(context: TProperties, type: TSchema, value: unknown): unknown {
+  return FromType('Decode', context, type, value)
+}
+// ------------------------------------------------------------------
 // Decoder
 // ------------------------------------------------------------------
 const Decoder = Pipeline([
@@ -62,7 +69,7 @@ const Decoder = Pipeline([
   (context, type, value) => Convert(context, type, value),
   (context, type, value) => Clean(context, type, value),
   (context, type, value) => Assert(context, type, value),
-  (context, type, value) => FromType('Decode', context, type, value)
+  (context, type, value) => DecodeUnsafe(context, type, value)
 ])
 // ------------------------------------------------------------------
 // Decode

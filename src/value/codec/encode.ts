@@ -54,11 +54,18 @@ function Assert(context: TProperties, type: TSchema, value: unknown): unknown {
   return value
 }
 // ------------------------------------------------------------------
+// EncodeUnsafe
+// ------------------------------------------------------------------
+/** Executes Encode callbacks only */
+export function EncodeUnsafe(context: TProperties, type: TSchema, value: unknown): unknown {
+  return FromType('Encode', context, type, value)
+}
+// ------------------------------------------------------------------
 // Encoder
 // ------------------------------------------------------------------
 const Encoder = Pipeline([
   (_context, _type, value) => Clone(value),
-  (context, type, value) => FromType('Encode', context, type, value),
+  (context, type, value) => EncodeUnsafe(context, type, value),
   (context, type, value) => Default(context, type, value),
   (context, type, value) => Convert(context, type, value),
   (context, type, value) => Clean(context, type, value),
@@ -85,3 +92,4 @@ export function Encode(...args: unknown[]): never {
   })
   return Encoder(context, type, value) as never
 }
+
