@@ -1,4 +1,4 @@
-import { Schema } from 'typebox/schema'
+import Schema from 'typebox/schema'
 import { Assert } from 'test'
 import { Guard } from 'typebox/guard'
 

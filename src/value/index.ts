@@ -29,7 +29,6 @@ THE SOFTWARE.
 // ------------------------------------------------------------------
 // Functions
 // ------------------------------------------------------------------
-
 export * from './assert/index.ts'
 export * from './check/index.ts'
 export * from './clean/index.ts'

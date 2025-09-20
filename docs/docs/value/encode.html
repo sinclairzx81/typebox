@@ -21,10 +21,37 @@ const R = Value.Encode(T, {                         // const R = {
 <p>The Encode function uses the following Encoder pipeline.</p>
 <pre><code class="language-typescript">const Encoder = Pipeline([
   (_context, _type, value) =&gt; Clone(value),
-  (context, type, value) =&gt; Encode(context, type, value),   // &lt;--- Encode First
+  (context, type, value) =&gt; EncodeUnsafe(context, type, value), // &lt;--- Encode First
   (context, type, value) =&gt; Default(context, type, value),
   (context, type, value) =&gt; Convert(context, type, value),
   (context, type, value) =&gt; Clean(context, type, value),
   (context, type, value) =&gt; Assert(context, type, value),
 ])
+</code></pre>
+<h2>Unsafe</h2>
+<p>The Encode function runs the full encoder pipeline to ensure Codec callbacks receive validated values. In some cases, applications may require greater control, for example, to optimize performance or integrate with functions beyond what is offered by TypeBox. For these scenarios, the Value module provides the EncodeUnsafe function, which executes Codec callbacks directly without additional processing. </p>
+<blockquote>
+<p> ⚠️ The EncodeUnsafe function returns unknown and provides no assurances the encoded value is valid. Callers must handle validation and inference manually. This is usually achieved by wrapping a pipeline in a generic function constrained by a TypeBox type.</p>
+</blockquote>
+<p>The example below defines a reduced encoder that runs only Assert and Codec callbacks.</p>
+<pre><code class="language-typescript">import { Pipeline, Assert, EncodeUnsafe } from &#39;typebox/value&#39;
+
+// CustomEncoder
+
+const CustomEncoder = Pipeline([
+  (context, type, value) =&gt; EncodeUnsafe(context, type, value),
+  (context, type, value) =&gt; { Assert(context, type, value); return value },
+])
+
+// Type + Encode
+
+const StringToNumber = Type.Encode(Type.Number(), (value: unknown) =&gt; 
+  typeof value === &#39;string&#39;
+    ? parseFloat(value)
+    : 0
+)
+
+// Encode
+
+const Result = CustomEncoder(StringToNumber, &#39;123456&#39;) // const Result: unknown = 123456
 </code></pre>

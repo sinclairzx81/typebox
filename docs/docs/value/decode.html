@@ -25,6 +25,30 @@ const R = Value.Decode(T, { date: 12345 })          // const R = {
   (context, type, value) =&gt; Convert(context, type, value),
   (context, type, value) =&gt; Clean(context, type, value),
   (context, type, value) =&gt; Assert(context, type, value),
-  (context, type, value) =&gt; Decode(context, type, value)   // &lt;--- Decode Last
+  (context, type, value) =&gt; DecodeUnsafe(context, type, value) // &lt;--- Decode Last
 ])
+</code></pre>
+<h2>Unsafe</h2>
+<p>The Decode function runs the full decoder pipeline to ensure Codec callbacks receive validated values. In some cases, applications may require greater control, for example, to optimize performance or integrate with functions beyond what is offered by TypeBox. For these scenarios, the Value module provides the DecodeUnsafe function, which executes Codec callbacks directly without additional processing. </p>
+<blockquote>
+<p> ⚠️ The DecodeUnsafe function returns unknown and provides no assurances the decoded value is valid. Callers must handle validation and inference manually. This is usually achieved by wrapping a pipeline in a generic function constrained by a TypeBox type.</p>
+</blockquote>
+<p>The example below defines a reduced decoder that runs only Assert and Codec callbacks.</p>
+<pre><code class="language-typescript">
+import { Pipeline, Assert, DecodeUnsafe } from &#39;typebox/value&#39;
+
+// CustomDecoder
+
+const CustomDecoder = Pipeline([
+  (context, type, value) =&gt; { Assert(context, type, value); return value },
+  (context, type, value) =&gt; DecodeUnsafe(context, type, value)
+])
+
+// Type + Decode
+
+const NumberToString = Type.Decode(Type.Number(), value =&gt; value.toString())
+
+// Result
+
+const Result = CustomDecoder(NumberToString, 123456) // const Result: unknown = &quot;123456&quot;
 </code></pre>

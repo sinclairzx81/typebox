@@ -188,3 +188,49 @@ Test('Should Object 12', () => {
   Assert.IsEqual(A, { x: '100100' })
   Settings.Reset()
 })
+
+// ------------------------------------------------------------------
+// Clean - Sub Variant Comparison
+//
+// https://github.com/sinclairzx81/typebox/issues/1343
+// ------------------------------------------------------------------
+Test('Should Object 13', () => {
+  const T = Type.Union([
+    Type.Object({ oneof_prop_a: Type.String() }),
+    Type.Object({ oneof_prop_b: Type.Optional(Type.String()) }),
+  ])
+  const D = Value.Decode(T, { oneof_prop_a: 'A' })
+  const E = Value.Encode(T, { oneof_prop_a: 'A' })
+  Assert.IsEqual(D, { oneof_prop_a: 'A' })
+  Assert.IsEqual(E, { oneof_prop_a: 'A' })
+})
+Test('Should Object 14', () => {
+  const T = Type.Union([
+    Type.Object({ oneof_prop_a: Type.String() }),
+    Type.Object({ oneof_prop_b: Type.Optional(Type.String()) }),
+  ])
+  const D = Value.Decode(T, { oneof_prop_b: 'B' })
+  const E = Value.Encode(T, { oneof_prop_b: 'B' })
+  Assert.IsEqual(D, { oneof_prop_b: 'B' })
+  Assert.IsEqual(E, { oneof_prop_b: 'B' })
+})
+Test('Should Object 15', () => {
+  const T = Type.Union([
+    Type.Object({ oneof_prop_a: Type.String() }),
+    Type.Object({ oneof_prop_b: Type.Optional(Type.String()) }),
+  ])
+  const D = Value.Decode(T, { oneof_prop_b: undefined })
+  const E = Value.Encode(T, { oneof_prop_b: undefined })
+  Assert.IsEqual(D, { oneof_prop_b: undefined })
+  Assert.IsEqual(E, { oneof_prop_b: undefined })
+})
+Test('Should Object 16', () => {
+  const T = Type.Union([
+    Type.Object({ oneof_prop_a: Type.String() }),
+    Type.Object({ oneof_prop_b: Type.Optional(Type.String()) }),
+  ])
+  const D = Value.Decode(T, { })
+  const E = Value.Encode(T, { })
+  Assert.IsEqual(D, { })
+  Assert.IsEqual(E, { })
+})

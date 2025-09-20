@@ -132,3 +132,47 @@ Test('Should Clean 17', () => {
   const R = Value.Clean(T, { u: null, y: 1 })
   Assert.IsEqual(R, { u: null, y: 1 })
 })
+
+Test('Should Clean 17', () => {
+  const X = Type.Object({ x: Type.Number() })
+  const Y = Type.Object({ y: Type.Number() }, { additionalProperties: Type.Null() })
+  const T = Type.Union([X, Y])
+  const R = Value.Clean(T, { u: null, y: 1 })
+  Assert.IsEqual(R, { u: null, y: 1 })
+})
+// ------------------------------------------------------------------
+// https://github.com/sinclairzx81/typebox/issues/1343
+// ------------------------------------------------------------------
+Test('Should Clean 18', () => {
+  const T = Type.Union([
+    Type.Object({ oneof_prop_a: Type.String() }),
+    Type.Object({ oneof_prop_b: Type.Optional(Type.String()) }),
+  ])
+  const A = Value.Clean(T, { oneof_prop_a: 'A' })
+  Assert.IsEqual(A, { oneof_prop_a: 'A' })
+})
+Test('Should Clean 19', () => {
+  const T = Type.Union([
+    Type.Object({ oneof_prop_a: Type.String() }),
+    Type.Object({ oneof_prop_b: Type.Optional(Type.String()) }),
+  ])
+  const A = Value.Clean(T, { oneof_prop_b: 'B' })
+  Assert.IsEqual(A, { oneof_prop_b: 'B' })
+})
+Test('Should Clean 20', () => {
+  const T = Type.Union([
+    Type.Object({ oneof_prop_a: Type.String() }),
+    Type.Object({ oneof_prop_b: Type.Optional(Type.String()) }),
+  ])
+  const A = Value.Clean(T, { oneof_prop_b: undefined })
+  Assert.IsEqual(A, { oneof_prop_b: undefined })
+})
+Test('Should Clean 21', () => {
+  const T = Type.Union([
+    Type.Object({ oneof_prop_a: Type.String() }),
+    Type.Object({ oneof_prop_b: Type.Optional(Type.String()) }),
+  ])
+  const A = Value.Clean(T, { })
+  Assert.IsEqual(A, { })
+})
+

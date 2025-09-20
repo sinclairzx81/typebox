@@ -1,5 +1,5 @@
 import { Settings } from 'typebox/system'
-import { Schema } from 'typebox/schema'
+import Schema from 'typebox/schema'
 import { Assert } from 'test'
 
 // ------------------------------------------------------------------

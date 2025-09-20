@@ -35,7 +35,10 @@ interface Manifest {
 export async function BuildDocs(srcDirectory: string, targetDirectory: string): Promise<void> {
   const manifest: Manifest = {};
   async function processDir(srcDir: string, tgtDir: string) {
-    for await (const entry of Deno.readDir(srcDir)) {
+    const entries = [...Deno.readDirSync(srcDir)].sort((a, b) => {
+      return a.name.localeCompare(b.name)
+    })
+    for await (const entry of entries) {
       const srcPath = Task.path.join(srcDir, entry.name);
       const targetPath = Task.path.join(tgtDir, entry.name);
       if (entry.isDirectory) {
