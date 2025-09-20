@@ -27,23 +27,13 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 // ------------------------------------------------------------------
-// Named
-// ------------------------------------------------------------------
-export * as Schema from './schema.ts'
-
-// ------------------------------------------------------------------
 // Barrel
 // ------------------------------------------------------------------
-export * from './engine/index.ts'
-export * from './types/index.ts'
-export * from './build.ts'
-export * from './check.ts'
-export * from './errors.ts'
+
+export * from './schema.ts'
 
 // ------------------------------------------------------------------
 // Default
 // ------------------------------------------------------------------
-import { Build, BuildResult } from './build.ts'
-import { Check } from './check.ts'
-import { Errors } from './errors.ts'
-export default { Build, BuildResult, Check, Errors }
+import * as Schema from './schema.ts'
+export default Schema
