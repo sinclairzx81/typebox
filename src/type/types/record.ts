@@ -36,6 +36,7 @@ import { type StaticType, type StaticDirection } from './static.ts'
 import { type TProperties } from './properties.ts'
 import { type TInteger, Integer, IntegerPattern } from './integer.ts'
 
+import { type TTemplateLiteral } from './template-literal.ts'
 import { type TNumber, Number, NumberPattern } from './number.ts'
 import { type TString, String, StringPattern } from './string.ts'
 
@@ -52,7 +53,7 @@ export type StaticRecord<Direction extends StaticDirection, Context extends TPro
     Key extends TStringKey ? Record<string, StaticValue> :
     Key extends TIntegerKey ? Record<number, StaticValue> :
     Key extends TNumberKey ? Record<number, StaticValue> :
-    Record<PropertyKey, StaticValue>
+    Record<string, StaticValue>
   )
 > = Result
 // -------------------------------------------------------------------

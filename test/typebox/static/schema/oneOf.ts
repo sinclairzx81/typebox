@@ -54,7 +54,6 @@ Assert.IsExtendsMutual<
     }]
   }>
   Assert.IsExtendsMutual<R, { type: 'A' } | { type: 'B' }>(true)
-  Assert.IsExtendsMutual<R, { type: 'A' } | { type: 'B' }>(false)
 }
 // should infer with union of object and number
 {
@@ -74,5 +73,4 @@ Assert.IsExtendsMutual<
     }]
   }>
   Assert.IsExtendsMutual<R, { type: 'A' } | { type: 'B' } | number>(true)
-  Assert.IsExtendsMutual<R, { type: 'A' } | { type: 'B' } | number>(false)
 }

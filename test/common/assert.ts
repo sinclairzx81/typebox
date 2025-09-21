@@ -74,7 +74,8 @@ export function IsExtends<Left extends unknown, Right extends unknown>(_expect: 
 // ------------------------------------------------------------------
 // IsExtendsMutual
 // ------------------------------------------------------------------
-type TExtendsMutualExpect<Left extends unknown, Right extends unknown> = Left extends Right ? Right extends Left ? true : false : false
+type TExtendsMutualExpect<Left extends unknown, Right extends unknown> = (<T>() => T extends Left ? 1 : 2) extends (<T>() => T extends Right ? 1 : 2) ? true
+  : false
 
 export function IsExtendsMutual<Left extends unknown, Right extends unknown>(_expect: TExtendsMutualExpect<Left, Right>) {}
 
