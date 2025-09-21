@@ -35,6 +35,7 @@ import { Errors } from '../errors/index.ts'
 // AssertError
 // ------------------------------------------------------------------
 export class AssertError extends Error {
+  declare readonly cause: { source: string, errors: object[], value: unknown };
   constructor(source: string, value: unknown, errors: object[]) {
     super(source)
     Object.defineProperty(this, 'cause', {
