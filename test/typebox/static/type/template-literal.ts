@@ -22,7 +22,7 @@ import { Assert } from 'test'
   const T = Type.TemplateLiteral('hello ${1 | 2}')
   type T = Static<typeof T>
 
-  Assert.IsExtendsMutual<T, 'hello 1' | 'hello 1'>(true)
+  Assert.IsExtendsMutual<T, 'hello 1' | 'hello 2'>(true)
   Assert.IsExtendsMutual<T, null>(false)
 }
 // ... including bigint
@@ -30,7 +30,7 @@ import { Assert } from 'test'
   const T = Type.TemplateLiteral('hello ${1n | 2n}')
   type T = Static<typeof T>
 
-  Assert.IsExtendsMutual<T, 'hello 1' | 'hello 1'>(true)
+  Assert.IsExtendsMutual<T, 'hello 1' | 'hello 2'>(true)
   Assert.IsExtendsMutual<T, null>(false)
 }
 // ... they also accept exterior unions but require a more verbose API
@@ -99,7 +99,5 @@ import { Assert } from 'test'
   type T = Static<typeof T>
 
   Assert.IsExtendsMutual<T, `hello ${boolean}`>(true)
-  Assert.IsExtendsMutual<T, `hello ${true}`>(true)
-  Assert.IsExtendsMutual<T, `hello ${false}`>(true)
   Assert.IsExtendsMutual<T, null>(false)
 }

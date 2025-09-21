@@ -29,9 +29,9 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Memory } from '../../system/memory/index.ts'
-import { Guard } from '../../guard/index.ts'
 import { type TSchema, type TSchemaOptions, IsKind } from './schema.ts'
-import { type TTSEnumToEnumValues, type TTSEnumLike, TSEnumToEnumValues } from '../engine/enum/typescript-enum-to-enum-values.ts'
+import { type TTypeScriptEnumLike, IsTypeScriptEnumLike } from '../engine/enum/typescript-enum-to-enum-values.ts'
+import { type TTypeScriptEnumToEnumValues, TypeScriptEnumToEnumValues } from '../engine/enum/typescript-enum-to-enum-values.ts'
 
 // ------------------------------------------------------------------
 // Static
@@ -53,12 +53,12 @@ export interface TEnum<Values extends TEnumValue[] = TEnumValue[]> extends TSche
 // Factory
 // ------------------------------------------------------------------
 /** Creates an Enum type. */
-export function Enum<Enum extends TTSEnumLike>(value: Enum, options?: TSchemaOptions): TEnum<TTSEnumToEnumValues<Enum>> 
+export function Enum<Values extends TEnumValue[]>(values: readonly [...Values], options?: TSchemaOptions): TEnum<Values> 
+/** Creates an Enum type from a TypeScript enum declaration. */
+export function Enum<Enum extends TTypeScriptEnumLike>(value: Enum, options?: TSchemaOptions): TEnum<TTypeScriptEnumToEnumValues<Enum>> 
 /** Creates an Enum type. */
-export function Enum<Values extends TEnumValue[]>(values: [...Values], options?: TSchemaOptions): TEnum<Values> 
-/** Creates an Enum type. */
-export function Enum(value: TEnumValue[] | TTSEnumLike, options?: TSchemaOptions): never {
-  const values = Guard.IsArray(value) ? value : TSEnumToEnumValues(value)
+export function Enum(value: readonly TEnumValue[] | TTypeScriptEnumLike, options?: TSchemaOptions): never {
+  const values = IsTypeScriptEnumLike(value) ? TypeScriptEnumToEnumValues(value) : value
   return Memory.Create({ '~kind': 'Enum' }, { enum: values }, options) as never
 }
 // ------------------------------------------------------------------

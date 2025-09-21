@@ -7,7 +7,7 @@ Assert.IsExtendsMutual<
     additionalProperties: { type: 'string' }
   }>,
   {
-    [key: PropertyKey]: string
+    [key: string]: string
   }
 >(true)
 

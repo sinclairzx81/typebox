@@ -32,12 +32,18 @@ import { Guard } from '../../../guard/index.ts'
 import { type TEnumValue } from '../../types/enum.ts'
 import { type TUnionToTuple } from '../helpers/union.ts'
 
-export type TTSEnumLike = Record<PropertyKey, TEnumValue>
+// ------------------------------------------------------------------
+// TypeScriptEnumDeclaration
+// ------------------------------------------------------------------
+export type TTypeScriptEnumLike = Record<PropertyKey, TEnumValue>
 
+export function IsTypeScriptEnumLike(value: unknown): value is TTypeScriptEnumLike {
+  return Guard.IsObjectNotArray(value)
+}
 // ------------------------------------------------------------------
 // ReduceValues
 // ------------------------------------------------------------------
-type TReduceEnumValues<Keys extends string[], Type extends TTSEnumLike, Result extends TEnumValue[] = []> = (
+type TReduceEnumValues<Keys extends string[], Type extends TTypeScriptEnumLike, Result extends TEnumValue[] = []> = (
   Keys extends [infer Left extends string, ...infer Right extends string[]]
     ? TReduceEnumValues<Right, Type, [...Result, Type[Left]]>
     : Result
@@ -45,11 +51,11 @@ type TReduceEnumValues<Keys extends string[], Type extends TTSEnumLike, Result e
 // ------------------------------------------------------------------
 // TypeScriptEnumToEnumValues
 // ------------------------------------------------------------------
-export type TTSEnumToEnumValues<Type extends TTSEnumLike,
+export type TTypeScriptEnumToEnumValues<Type extends TTypeScriptEnumLike,
   EnumKeys extends string[] = TUnionToTuple<Extract<keyof Type, string>>,
   Elements extends TEnumValue[] = TReduceEnumValues<EnumKeys, Type>
 > = Elements
-export function TSEnumToEnumValues<Type extends TTSEnumLike>(type: Type): TTSEnumToEnumValues<Type> {
+export function TypeScriptEnumToEnumValues<Type extends TTypeScriptEnumLike>(type: Type): TTypeScriptEnumToEnumValues<Type> {
   const keys = Guard.Keys(type).filter((key) => isNaN(key as never))
   return keys.reduce((result, key) => [...result, type[key]], [] as TEnumValue[]) as never
 }

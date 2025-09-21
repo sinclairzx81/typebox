@@ -66,8 +66,7 @@ Assert.IsExtendsMutual<
     ]
   }>,
   {
-    x: number
-  } & {
+    x: number // question: can we retain logical intersect? (review)
     y: number
   }
 >(true)
