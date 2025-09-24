@@ -30,6 +30,7 @@ THE SOFTWARE.
 // Extensions
 // ------------------------------------------------------------------
 export * from './_codec.ts'
+export * from './_convert.ts'
 export * from './_optional.ts'
 export * from './_readonly.ts'
 export * from './_refine.ts'
