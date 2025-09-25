@@ -36,8 +36,8 @@ import { type TProperties } from './properties.ts'
 // ------------------------------------------------------------------
 // Static
 // ------------------------------------------------------------------
-export type StaticIterator<Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Type extends TSchema,
-  Result = IterableIterator<StaticType<Direction, Context, This, Type>>
+export type StaticIterator<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Type extends TSchema,
+  Result = IterableIterator<StaticType<Stack, Direction, Context, This, Type>>
 > = Result
 // ------------------------------------------------------------------
 // Type

@@ -44,18 +44,18 @@ import { type TInstantiate } from '../engine/instantiate.ts'
 // performs a deferred Static Instantiate for inference only.
 //
 // ------------------------------------------------------------------
-export type StaticInstantiatedParameters<Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Parameters extends TSchema[], 
+export type StaticInstantiatedParameters<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Parameters extends TSchema[], 
   Evaluated extends TSchema = TInstantiate<Context, TTuple<Parameters>>,
-  Static extends unknown = StaticType<Direction, Context, This, Evaluated>,
+  Static extends unknown = StaticType<Stack, Direction, Context, This, Evaluated>,
   Result extends unknown[] = Static extends unknown[] ? Static : []
 > = Result
 
 // ------------------------------------------------------------------
 // Static
 // ------------------------------------------------------------------
-export type StaticFunction<Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Parameters extends TSchema[], ReturnType extends TSchema, 
-  StaticParameters extends unknown[] = StaticInstantiatedParameters<Direction, Context, This, Parameters>,
-  StaticReturnType extends unknown = StaticType<Direction, Context, This, ReturnType>,
+export type StaticFunction<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Parameters extends TSchema[], ReturnType extends TSchema, 
+  StaticParameters extends unknown[] = StaticInstantiatedParameters<Stack, Direction, Context, This, Parameters>,
+  StaticReturnType extends unknown = StaticType<Stack, Direction, Context, This, ReturnType>,
   Result = (...args: StaticParameters) => StaticReturnType
 > = Result
 // ------------------------------------------------------------------

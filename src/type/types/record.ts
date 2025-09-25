@@ -47,8 +47,8 @@ import { CreateRecord } from '../engine/record/record-create.ts'
 // -------------------------------------------------------------------
 // Static
 // -------------------------------------------------------------------
-export type StaticRecord<Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Key extends string, Value extends TSchema, 
-  StaticValue extends unknown = StaticType<Direction, Context, This, Value>,
+export type StaticRecord<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Key extends string, Value extends TSchema, 
+  StaticValue extends unknown = StaticType<Stack, Direction, Context, This, Value>,
   Result extends Record<PropertyKey, unknown> = (
     Key extends TStringKey ? Record<string, StaticValue> :
     Key extends TIntegerKey ? Record<number, StaticValue> :

@@ -37,10 +37,12 @@ import { type TProperties } from './properties.ts'
 // ------------------------------------------------------------------
 // Static
 // ------------------------------------------------------------------
-export type StaticCyclic<Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Defs extends TProperties, Ref extends string, 
-  Result extends unknown = Ref extends keyof Defs
-  ? StaticType<Direction, Defs, This, Defs[Ref]>
-  : never
+export type StaticCyclic<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Defs extends TProperties, Ref extends string, 
+  Result extends unknown = (
+    Ref extends keyof Defs
+      ? StaticType<[...Stack, Ref], Direction, Defs, This, Defs[Ref]>
+      : never
+  )
 > = Result
 // ------------------------------------------------------------------
 // Type

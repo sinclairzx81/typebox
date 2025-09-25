@@ -56,6 +56,8 @@ function FromObjectInstance(value: Record<PropertyKey, unknown>): Record<Propert
   }
   return result
 }
+
+Object.create({})
 // ------------------------------------------------------------------
 // Object
 // ------------------------------------------------------------------

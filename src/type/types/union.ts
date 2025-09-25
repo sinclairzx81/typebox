@@ -36,9 +36,9 @@ import { type TProperties } from './properties.ts'
 // ------------------------------------------------------------------
 // Static
 // ------------------------------------------------------------------
-export type StaticUnion<Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Types extends TSchema[], Result extends unknown = never> = (
+export type StaticUnion<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Types extends TSchema[], Result extends unknown = never> = (
   Types extends [infer Left extends TSchema, ...infer Right extends TSchema[]]
-    ? StaticUnion<Direction, Context, This, Right, Result | StaticType<Direction, Context, This, Left>>
+    ? StaticUnion<Stack, Direction, Context, This, Right, Result | StaticType<Stack, Direction, Context, This, Left>>
     : Result
 )
 // ------------------------------------------------------------------

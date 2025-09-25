@@ -53,15 +53,15 @@ type StaticPropertiesWithModifiers<Properties extends TProperties, PropertiesWit
 // ----------------------------------------------------------------------------
 // StaticPropertiesWithoutModifiers
 // ----------------------------------------------------------------------------
-type StaticPropertiesWithoutModifiers<Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Properties extends TProperties, 
+type StaticPropertiesWithoutModifiers<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Properties extends TProperties, 
   Result extends Record<PropertyKey, unknown> = { 
-    [Key in keyof Properties]: StaticType<Direction, Context, This, Properties[Key]> 
+    [Key in keyof Properties]: StaticType<Stack, Direction, Context, This, Properties[Key]> 
   }> = Result
 // ----------------------------------------------------------------------------
 // StaticProperties
 // ----------------------------------------------------------------------------
-export type StaticProperties<Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Properties extends TProperties, 
-  PropertiesWithoutModifiers extends Record<PropertyKey, unknown> = StaticPropertiesWithoutModifiers<Direction, Context, This, Properties>,
+export type StaticProperties<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Properties extends TProperties, 
+  PropertiesWithoutModifiers extends Record<PropertyKey, unknown> = StaticPropertiesWithoutModifiers<Stack, Direction, Context, This, Properties>,
   PropertiesWithModifiers extends Record<PropertyKey, unknown> = StaticPropertiesWithModifiers<Properties, PropertiesWithoutModifiers>,
   Result extends Record<PropertyKey, unknown> = { [Key in keyof PropertiesWithModifiers]: PropertiesWithModifiers[Key] }
 > = Result
