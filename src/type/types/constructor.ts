@@ -37,9 +37,9 @@ import { type TProperties } from './properties.ts'
 // ------------------------------------------------------------------
 // Static
 // ------------------------------------------------------------------
-export type StaticConstructor<Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Parameters extends TSchema[], InstanceType extends TSchema,
-  StaticParameters extends unknown[] = StaticInstantiatedParameters<Direction, Context, This, Parameters>,
-  StaticReturnType extends unknown = StaticType<Direction, Context, This, InstanceType>,
+export type StaticConstructor<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Parameters extends TSchema[], InstanceType extends TSchema,
+  StaticParameters extends unknown[] = StaticInstantiatedParameters<Stack, Direction, Context, This, Parameters>,
+  StaticReturnType extends unknown = StaticType<Stack, Direction, Context, This, InstanceType>,
   Result = new (...args: StaticParameters) => StaticReturnType
 > = Result
 // ------------------------------------------------------------------

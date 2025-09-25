@@ -36,8 +36,8 @@ import { type TProperties, type TRequiredArray, type StaticProperties, RequiredA
 // ------------------------------------------------------------------
 // Static
 // ------------------------------------------------------------------
-export type StaticObject<Direction extends StaticDirection, Context extends TProperties, _This extends TProperties, Properties extends TProperties,
-  Result = keyof Properties extends never ? object : StaticProperties<Direction, Context, Properties, Properties>
+export type StaticObject<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, _This extends TProperties, Properties extends TProperties,
+  Result = keyof Properties extends never ? object : StaticProperties<Stack, Direction, Context, Properties, Properties>
 > = Result
 // ------------------------------------------------------------------
 // Schema

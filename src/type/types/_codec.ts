@@ -35,14 +35,14 @@ import { type TProperties } from './properties.ts'
 // ------------------------------------------------------------------
 // Static
 // ------------------------------------------------------------------
-export type StaticCodec<Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Type extends TSchema, Decoded extends unknown> = Direction extends 'Decode' ? Decoded
-  : StaticType<Direction, Context, This, Type>
+export type StaticCodec<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Type extends TSchema, Decoded extends unknown> = Direction extends 'Decode' ? Decoded
+  : StaticType<Stack, Direction, Context, This, Type>
 
 // ------------------------------------------------------------------
 // Type
 // ------------------------------------------------------------------
-export type TDecodeCallback<Type extends TSchema, Decoded = unknown> = (input: StaticType<'Decode', {}, {}, Type>) => Decoded
-export type TEncodeCallback<Type extends TSchema, Decoded = unknown> = (input: Decoded) => StaticType<'Decode', {}, {}, Type>
+export type TDecodeCallback<Type extends TSchema, Decoded = unknown> = (input: StaticType<[], 'Decode', {}, {}, Type>) => Decoded
+export type TEncodeCallback<Type extends TSchema, Decoded = unknown> = (input: Decoded) => StaticType<[], 'Decode', {}, {}, Type>
 export type TCodec<Type extends TSchema = TSchema, Decoded extends unknown = unknown> = Type & {
   '~codec': {
     encode: TDecodeCallback<Type, Decoded>

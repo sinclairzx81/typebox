@@ -36,8 +36,8 @@ import { type TProperties } from './properties.ts'
 // ------------------------------------------------------------------
 // Static
 // ------------------------------------------------------------------
-export type StaticPromise<Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Type extends TSchema, 
-  Result = Promise<StaticType<Direction, Context, This, Type>>
+export type StaticPromise<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Type extends TSchema, 
+  Result = Promise<StaticType<Stack, Direction, Context, This, Type>>
 > = Result
 // ------------------------------------------------------------------
 // Type

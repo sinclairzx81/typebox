@@ -36,9 +36,9 @@ import { type TProperties } from './properties.ts'
 // ------------------------------------------------------------------
 // Static
 // ------------------------------------------------------------------
-export type StaticIntersect<Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Types extends TSchema[], Result extends unknown = unknown> = (
+export type StaticIntersect<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Types extends TSchema[], Result extends unknown = unknown> = (
   Types extends [infer Left extends TSchema, ...infer Right extends TSchema[]]
-    ? StaticIntersect<Direction, Context, This, Right, Result & StaticType<Direction, Context, This, Left>>
+    ? StaticIntersect<Stack, Direction, Context, This, Right, Result & StaticType<Stack, Direction, Context, This, Left>>
     : Result
 )
 // ------------------------------------------------------------------

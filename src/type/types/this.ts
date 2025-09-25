@@ -37,8 +37,8 @@ import { type TProperties } from './properties.ts'
 // ------------------------------------------------------------------
 // Static
 // ------------------------------------------------------------------
-export type StaticThis<Direction extends StaticDirection, Context extends TProperties, This extends TProperties> = (
-  StaticType<Direction, Context, This, TObject<This>> 
+export type StaticThis<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties> = (
+  StaticType<Stack, Direction, Context, This, TObject<This>> 
 )
 // ------------------------------------------------------------------
 // Type

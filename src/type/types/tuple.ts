@@ -48,20 +48,20 @@ import { type TRest } from './rest.ts'
 // unsized Parameter inference at the Tuple level.
 //
 // ------------------------------------------------------------------
-type StaticLast<Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Type extends TSchema, Result extends unknown[]> = (
+type StaticLast<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Type extends TSchema, Result extends unknown[]> = (
   Type extends TRest<infer RestType extends TSchema>
    ? RestType extends TArray<infer ArrayType extends TSchema>
-     ? [...Result, ...TStaticElement<Direction, Context, This, ArrayType>[0][]]
+     ? [...Result, ...TStaticElement<Stack, Direction, Context, This, ArrayType>[0][]]
      : [...Result, never]
-   : [...Result, ...TStaticElement<Direction, Context, This, Type>]
+   : [...Result, ...TStaticElement<Stack, Direction, Context, This, Type>]
 )
 // ------------------------------------------------------------------
 // StaticElement
 // ------------------------------------------------------------------
-type TStaticElement<Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Type extends TSchema,
+type TStaticElement<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Type extends TSchema,
   IsReadonly extends boolean = Type extends TReadonly ? true : false,
   IsOptional extends boolean = Type extends TOptional ? true : false,
-  Inferred extends unknown = StaticType<Direction, Context, This, Type>,
+  Inferred extends unknown = StaticType<Stack, Direction, Context, This, Type>,
   Result extends [unknown?] = (
     [IsReadonly, IsOptional] extends [true, true] ? [Readonly<Inferred>?] :
     [IsReadonly, IsOptional] extends [false, true] ? [Inferred?] :
@@ -72,17 +72,17 @@ type TStaticElement<Direction extends StaticDirection, Context extends TProperti
 // ------------------------------------------------------------------
 // StaticElements
 // ------------------------------------------------------------------
-export type TStaticElements<Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Types extends TSchema[], Result extends unknown[] = []> = (
-  Types extends [infer Last extends TSchema] ? StaticLast<Direction, Context, This, Last, Result> :
+export type TStaticElements<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Types extends TSchema[], Result extends unknown[] = []> = (
+  Types extends [infer Last extends TSchema] ? StaticLast<Stack, Direction, Context, This, Last, Result> :
   Types extends [infer Left extends TSchema, ...infer Right extends TSchema[]]
-    ? TStaticElements<Direction, Context, This, Right, [...Result, ...TStaticElement<Direction, Context, This, Left>]>
+    ? TStaticElements<Stack, Direction, Context, This, Right, [...Result, ...TStaticElement<Stack, Direction, Context, This, Left>]>
     : Result
 )
 // ------------------------------------------------------------------
 // Static
 // ------------------------------------------------------------------
-export type StaticTuple<Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Types extends TSchema[], 
-  Elements extends unknown[] = TStaticElements<Direction, Context, This, Types>,
+export type StaticTuple<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Types extends TSchema[], 
+  Elements extends unknown[] = TStaticElements<Stack, Direction, Context, This, Types>,
   Result extends unknown[] = Elements
 > = Result
 // ------------------------------------------------------------------

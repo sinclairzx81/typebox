@@ -36,8 +36,8 @@ import { type TProperties } from './properties.ts'
 // ------------------------------------------------------------------
 // Static
 // ------------------------------------------------------------------
-export type StaticArray<Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Type extends TSchema,
-  Result = StaticType<Direction, Context, This, Type>[]
+export type StaticArray<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Type extends TSchema,
+  Result extends unknown[] = StaticType<Stack, Direction, Context, This, Type>[]
 > = Result
 // ------------------------------------------------------------------
 // Type

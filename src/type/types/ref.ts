@@ -32,13 +32,62 @@ import { Memory } from '../../system/memory/index.ts'
 import { type StaticType, type StaticDirection } from './static.ts'
 import { type TSchema, type TSchemaOptions, IsKind } from './schema.ts'
 import { type TProperties } from './properties.ts'
+import { type TObject } from './object.ts'
+import { type TUnknown } from './unknown.ts'
 
 // ------------------------------------------------------------------
-// Static
+//
+// CyclicGuard
+//
+// This Guard checks if a given Ref already exists in the Stack,
+// indicating recursion. If recursion is found, it ensures the Stack
+// length remains below a safe threshold. 
+//
+// The purpose is to allow recursive types to instantiate up to a
+// reasonable depth (for user feedback) while preventing unbounded
+// recursion. 
+//
+// Note: This Guard is only needed for non-Object types, since
+// TypeScript automatically defers inference for referential
+// mapped property types.
+//
 // ------------------------------------------------------------------
-export type StaticRef<Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Ref extends string, 
-  Result extends unknown = Ref extends keyof Context ? StaticType<Direction, Context, This, Context[Ref]> : unknown
+type CyclicStackLength<Stack extends unknown[], MaxLength extends number, Buffer extends unknown[] = []> = (
+  Stack extends [infer Left, ...infer Right]
+    ? Buffer['length'] extends MaxLength
+      ? false 
+      : CyclicStackLength<Right, MaxLength, [...Buffer, Left]>
+    : true
+)
+type CyclicGuard<Stack extends unknown[], Ref extends string> = (
+  Ref extends Stack[number] ? CyclicStackLength<Stack, 4> : true
+)
+
+// ------------------------------------------------------------------
+// StaticRef
+//
+// The inference Stack is appended only when encountering a Ref. If the
+// referenced target is a TObject, the Stack is reset, and TypeScript's
+// built-in inference deferral for referential property types applies.
+//
+// In all other cases, the Ref is pushed onto the Stack and checked
+// with CyclicGuard to ensure recursion is terminated based on the
+// CyclicGuard heuristic. Terminated recursion defaults to Any as an
+// approximation of the expansive type.
+//
+// ------------------------------------------------------------------
+type StaticGuardedRef<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Ref extends string, Type extends TSchema> = (
+  CyclicGuard<Stack, Ref> extends true
+    ? StaticType<[...Stack, Ref], Direction, Context, This, Type>
+    : any
+)
+export type StaticRef<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Ref extends string,
+  Target extends TSchema = Ref extends keyof Context ? Context[Ref] : TUnknown,
+  Result extends unknown = Target extends TObject
+    ? StaticType<[/* Reset */], Direction, Context, This, Target>
+    : StaticGuardedRef<Stack, Direction, Context, This, Ref, Target>
 > = Result
+
 // ------------------------------------------------------------------
 // Type
 // ------------------------------------------------------------------
