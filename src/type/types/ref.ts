@@ -60,7 +60,7 @@ type CyclicStackLength<Stack extends unknown[], MaxLength extends number, Buffer
     : true
 )
 type CyclicGuard<Stack extends unknown[], Ref extends string> = (
-  Ref extends Stack[number] ? CyclicStackLength<Stack, 4> : true
+  Ref extends Stack[number] ? CyclicStackLength<Stack, 2> : true
 )
 
 // ------------------------------------------------------------------
