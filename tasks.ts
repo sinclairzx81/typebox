@@ -8,7 +8,7 @@ import { Range } from './task/range/index.ts'
 import { Metrics } from './task/metrics/index.ts'
 import { Task } from 'tasksmith'
 
-const Version = '1.0.17'
+const Version = '1.0.18'
 
 // ------------------------------------------------------------------
 // BuildPackage
@@ -62,7 +62,7 @@ Task.run('publish', (otp: string, target: string = `target/build`) => PublishPac
 // ------------------------------------------------------------------
 // Format
 // ------------------------------------------------------------------
-Task.run('format', () => Task.shell('deno fmt src test/**/*.ts'))
+Task.run('format', () => Task.shell('deno fmt src test/typebox'))
 // ------------------------------------------------------------------
 // Syntax
 // ------------------------------------------------------------------

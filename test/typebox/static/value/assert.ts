@@ -2,9 +2,9 @@ import Value from 'typebox/value'
 import Type from 'typebox'
 
 const T = Type.Array(Type.Union([
-  Type.Literal("A"),
-  Type.Literal("B"),
-  Type.Literal("C"),
+  Type.Literal('A'),
+  Type.Literal('B'),
+  Type.Literal('C')
 ]))
 const R = Type.Ref('T')
 

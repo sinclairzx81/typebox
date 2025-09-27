@@ -26,6 +26,8 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { Guard } from '../guard/index.ts'
+
 // ------------------------------------------------------------------
 // ValidationError
 // ------------------------------------------------------------------
@@ -56,27 +58,44 @@ export type TValidationError =
   | TPatternError
   | TPropertyNamesError
   | TRefineError
-  | TStandardV1Error
   | TRequiredError
+  | TStandardSchemaV1Error
   | TTypeError
   | TUnevaluatedItemsError
   | TUnevaluatedPropertiesError
   | TUniqueItemsError
 
+export function IsValidationError(value: unknown): value is TValidationError {
+  return Guard.IsObject(value) &&
+    Guard.HasPropertyKey(value, 'keyword') &&
+    Guard.HasPropertyKey(value, 'schemaPath') &&
+    Guard.HasPropertyKey(value, 'instancePath') &&
+    Guard.HasPropertyKey(value, 'params') &&
+    Guard.IsString(value.keyword) &&
+    Guard.IsString(value.schemaPath) &&
+    Guard.IsString(value.instancePath) &&
+    Guard.IsObject(value.params)
+}
 // ------------------------------------------------------------------
 // LocalizedValidationError
 // ------------------------------------------------------------------
-export type TLocalizedValidationError = TValidationError & { message: string }
-
+export type TLocalizedValidationError = TValidationError & {
+  message: string
+}
+export function IsLocalizedValidationError(value: unknown): value is TLocalizedValidationError {
+  return IsValidationError(value) &&
+    Guard.HasPropertyKey(value, 'message') &&
+    Guard.IsString(value.message)
+}
 // ------------------------------------------------------------------
 // LocalizedValidationMessageCallback
 // ------------------------------------------------------------------
 export type TLocalizedValidationMessageCallback = (error: TValidationError) => string
 
 // ------------------------------------------------------------------
-// BaseError
+// TValidationErrorBase
 // ------------------------------------------------------------------
-export interface TBaseError {
+export interface TValidationErrorBase {
   keyword: string
   schemaPath: string
   instancePath: string
@@ -85,231 +104,231 @@ export interface TBaseError {
 // ------------------------------------------------------------------
 // AnyOf
 // ------------------------------------------------------------------
-export interface TAdditionalPropertiesError extends TBaseError {
+export interface TAdditionalPropertiesError extends TValidationErrorBase {
   keyword: 'additionalProperties'
   params: { additionalProperties: string[] }
 }
 // ------------------------------------------------------------------
 // AnyOf
 // ------------------------------------------------------------------
-export interface TAnyOfError extends TBaseError {
+export interface TAnyOfError extends TValidationErrorBase {
   keyword: 'anyOf'
   params: {}
 }
 // ------------------------------------------------------------------
 // Boolean
 // ------------------------------------------------------------------
-export interface TBooleanError extends TBaseError {
+export interface TBooleanError extends TValidationErrorBase {
   keyword: 'boolean'
   params: {}
 }
 // ------------------------------------------------------------------
 // Const
 // ------------------------------------------------------------------
-export interface TConstError extends TBaseError {
+export interface TConstError extends TValidationErrorBase {
   keyword: 'const'
   params: { allowedValue: unknown }
 }
 // ------------------------------------------------------------------
 // Contains
 // ------------------------------------------------------------------
-export interface TContainsError extends TBaseError {
+export interface TContainsError extends TValidationErrorBase {
   keyword: 'contains'
   params: { minContains: number; maxContains?: number }
 }
 // ------------------------------------------------------------------
 // Dependencies
 // ------------------------------------------------------------------
-export interface TDependenciesError extends TBaseError {
+export interface TDependenciesError extends TValidationErrorBase {
   keyword: 'dependencies'
   params: { property: string; dependencies: string[] }
 }
 // ------------------------------------------------------------------
 // DependentRequired
 // ------------------------------------------------------------------
-export interface TDependentRequiredError extends TBaseError {
+export interface TDependentRequiredError extends TValidationErrorBase {
   keyword: 'dependentRequired'
   params: { property: string; dependencies: string[] }
 }
 // ------------------------------------------------------------------
 // Enum
 // ------------------------------------------------------------------
-export interface TEnumError extends TBaseError {
+export interface TEnumError extends TValidationErrorBase {
   keyword: 'enum'
   params: { allowedValues: unknown[] }
 }
 // ------------------------------------------------------------------
 // ExclusiveMaximum
 // ------------------------------------------------------------------
-export interface TExclusiveMaximumError extends TBaseError {
+export interface TExclusiveMaximumError extends TValidationErrorBase {
   keyword: 'exclusiveMaximum'
   params: { comparison: '<'; limit: number | bigint }
 }
 // ------------------------------------------------------------------
 // ExclusiveMinimum
 // ------------------------------------------------------------------
-export interface TExclusiveMinimumError extends TBaseError {
+export interface TExclusiveMinimumError extends TValidationErrorBase {
   keyword: 'exclusiveMinimum'
   params: { comparison: '>'; limit: number | bigint }
 }
 // ------------------------------------------------------------------
 // Format
 // ------------------------------------------------------------------
-export interface TFormatError extends TBaseError {
+export interface TFormatError extends TValidationErrorBase {
   keyword: 'format'
   params: { format: string }
 }
 // ------------------------------------------------------------------
 // If
 // ------------------------------------------------------------------
-export interface TIfError extends TBaseError {
+export interface TIfError extends TValidationErrorBase {
   keyword: 'if'
   params: { failingKeyword: 'then' | 'else' }
 }
 // ------------------------------------------------------------------
 // Maximum
 // ------------------------------------------------------------------
-export interface TMaximumError extends TBaseError {
+export interface TMaximumError extends TValidationErrorBase {
   keyword: 'maximum'
   params: { comparison: '<='; limit: number | bigint }
 }
 // ------------------------------------------------------------------
 // MaxItems
 // ------------------------------------------------------------------
-export interface TMaxItemsError extends TBaseError {
+export interface TMaxItemsError extends TValidationErrorBase {
   keyword: 'maxItems'
   params: { limit: number }
 }
 // ------------------------------------------------------------------
 // MaxLength
 // ------------------------------------------------------------------
-export interface TMaxLengthError extends TBaseError {
+export interface TMaxLengthError extends TValidationErrorBase {
   keyword: 'maxLength'
   params: { limit: number }
 }
 // ------------------------------------------------------------------
 // MaxProperties
 // ------------------------------------------------------------------
-export interface TMaxPropertiesError extends TBaseError {
+export interface TMaxPropertiesError extends TValidationErrorBase {
   keyword: 'maxProperties'
   params: { limit: number }
 }
 // ------------------------------------------------------------------
 // Minimum
 // ------------------------------------------------------------------
-export interface TMinimumError extends TBaseError {
+export interface TMinimumError extends TValidationErrorBase {
   keyword: 'minimum'
   params: { comparison: '>='; limit: number | bigint }
 }
 // ------------------------------------------------------------------
 // MinItems
 // ------------------------------------------------------------------
-export interface TMinItemsError extends TBaseError {
+export interface TMinItemsError extends TValidationErrorBase {
   keyword: 'minItems'
   params: { limit: number }
 }
 // ------------------------------------------------------------------
 // MinLength
 // ------------------------------------------------------------------
-export interface TMinLengthError extends TBaseError {
+export interface TMinLengthError extends TValidationErrorBase {
   keyword: 'minLength'
   params: { limit: number }
 }
 // ------------------------------------------------------------------
 // MinProperties
 // ------------------------------------------------------------------
-export interface TMinPropertiesError extends TBaseError {
+export interface TMinPropertiesError extends TValidationErrorBase {
   keyword: 'minProperties'
   params: { limit: number }
 }
 // ------------------------------------------------------------------
 // MultipleOf
 // ------------------------------------------------------------------
-export interface TMultipleOfError extends TBaseError {
+export interface TMultipleOfError extends TValidationErrorBase {
   keyword: 'multipleOf'
   params: { multipleOf: number | bigint }
 }
 // ------------------------------------------------------------------
 // Minimum
 // ------------------------------------------------------------------
-export interface TMinimumError extends TBaseError {
+export interface TMinimumError extends TValidationErrorBase {
   keyword: 'minimum'
   params: { comparison: '>='; limit: number | bigint }
 }
 // ------------------------------------------------------------------
 // Not
 // ------------------------------------------------------------------
-export interface TNotError extends TBaseError {
+export interface TNotError extends TValidationErrorBase {
   keyword: 'not'
   params: {}
 }
 // ------------------------------------------------------------------
 // OneOf
 // ------------------------------------------------------------------
-export interface TOneOfError extends TBaseError {
+export interface TOneOfError extends TValidationErrorBase {
   keyword: 'oneOf'
   params: { passingSchemas: number[] }
 }
 // ------------------------------------------------------------------
 // Pattern
 // ------------------------------------------------------------------
-export interface TPatternError extends TBaseError {
+export interface TPatternError extends TValidationErrorBase {
   keyword: 'pattern'
   params: { pattern: string | RegExp }
 }
 // ------------------------------------------------------------------
 // PropertyNames
 // ------------------------------------------------------------------
-export interface TPropertyNamesError extends TBaseError {
+export interface TPropertyNamesError extends TValidationErrorBase {
   keyword: 'propertyNames'
   params: { propertyNames: string[] }
 }
 // ------------------------------------------------------------------
 // Refine
 // ------------------------------------------------------------------
-export interface TRefineError extends TBaseError {
+export interface TRefineError extends TValidationErrorBase {
   keyword: '~refine'
   params: { index: number; message: string }
 }
 // ------------------------------------------------------------------
 // Required
 // ------------------------------------------------------------------
-export interface TRequiredError extends TBaseError {
+export interface TRequiredError extends TValidationErrorBase {
   keyword: 'required'
   params: { requiredProperties: string[] }
 }
 // ------------------------------------------------------------------
 // StandardV1
 // ------------------------------------------------------------------
-export interface TStandardV1Error extends TBaseError {
+export interface TStandardSchemaV1Error extends TValidationErrorBase {
   keyword: '~standard'
-  params: { vendor: string; issues: object[] }
+  params: { vendor: string; issues: { message: string; path?: string[] }[] }
 }
 // ------------------------------------------------------------------
 // Required
 // ------------------------------------------------------------------
-export interface TTypeError extends TBaseError {
+export interface TTypeError extends TValidationErrorBase {
   keyword: 'type'
   params: { type: string | string[] }
 }
 // ------------------------------------------------------------------
 // UnevaluatedItems
 // ------------------------------------------------------------------
-export interface TUnevaluatedItemsError extends TBaseError {
+export interface TUnevaluatedItemsError extends TValidationErrorBase {
   keyword: 'unevaluatedItems'
   params: { unevaluatedItems: number[] }
 }
 // ------------------------------------------------------------------
 // UnevaluatedProperties
 // ------------------------------------------------------------------
-export interface TUnevaluatedPropertiesError extends TBaseError {
+export interface TUnevaluatedPropertiesError extends TValidationErrorBase {
   keyword: 'unevaluatedProperties'
   params: { unevaluatedProperties: PropertyKey[] }
 }
 // ------------------------------------------------------------------
 // UniqueItems
 // ------------------------------------------------------------------
-export interface TUniqueItemsError extends TBaseError {
+export interface TUniqueItemsError extends TValidationErrorBase {
   keyword: 'uniqueItems'
   params: { duplicateItems: number[] }
 }

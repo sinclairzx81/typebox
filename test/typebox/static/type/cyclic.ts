@@ -1,4 +1,3 @@
-
 import { type Static, Type } from 'typebox'
 import { Assert } from 'test'
 
@@ -15,9 +14,9 @@ import { Assert } from 'test'
   }, 'NonCyclic')
   type NonCyclic = Static<typeof NonCyclic>
   // Invariant
-  Assert.IsExtendsMutual<{ x: 1, y: 2, z: false }, NonCyclic>(false)
+  Assert.IsExtendsMutual<{ x: 1; y: 2; z: false }, NonCyclic>(false)
   // Extends
-  Assert.IsExtendsMutual<{ x: number, y: number, z: number }, NonCyclic>(true)
+  Assert.IsExtendsMutual<{ x: number; y: number; z: number }, NonCyclic>(true)
 }
 
 // ------------------------------------------------------------------
@@ -35,7 +34,7 @@ import { Assert } from 'test'
   // Invariant
   Assert.IsExtends<{ deep: 1 }, Deep>(false)
   Assert.IsExtends<{ deep: { deep: { deep: 1 } } }, Deep>(false)
-  
+
   // Extends
   Assert.IsExtends<{ deep: any }, Deep>(true)
   Assert.IsExtends<{ deep: { deep: { deep: any } } }, Deep>(true)
@@ -53,7 +52,7 @@ import { Assert } from 'test'
       Type.String(),
       Type.Number(),
       Type.Boolean(),
-      Type.Null(),
+      Type.Null()
     ])
   }, 'JsonValue')
 

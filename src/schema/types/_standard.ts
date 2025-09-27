@@ -34,7 +34,7 @@ import type { XSchema } from './schema.ts'
 export interface XStandardValidatorV1 {
   version: 1
   vendor: string
-  validate: (...args: unknown[]) => object // { value: unknown } | { issues: object[] }
+  validate: (...args: unknown[]) => object // { value: unknown } | { issues: { path?: string[], message: string }[] }
 }
 export interface XStandardSchemaV1<Validator extends XStandardValidatorV1 = XStandardValidatorV1> {
   '~standard': Validator

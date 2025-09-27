@@ -55,7 +55,7 @@ import { Assert } from 'test'
   ])
   type T = Static<typeof T>
 
-  Assert.IsExtendsMutual<T, { x: number; } & { x: 1; }>(true)
+  Assert.IsExtendsMutual<T, { x: number } & { x: 1 }>(true)
   Assert.IsExtendsMutual<T, null>(false)
 }
 // narrow sub property 2 (order)
@@ -66,6 +66,6 @@ import { Assert } from 'test'
   ])
   type T = Static<typeof T>
 
-  Assert.IsExtendsMutual<T, { x: 1; } & { x: number; }>(true)
+  Assert.IsExtendsMutual<T, { x: 1 } & { x: number }>(true)
   Assert.IsExtendsMutual<T, null>(false)
 }
