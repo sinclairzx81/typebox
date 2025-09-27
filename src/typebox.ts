@@ -73,6 +73,7 @@ export { type TUppercase, type TUppercaseDeferred, Uppercase } from './type/acti
 // Extension
 // ------------------------------------------------------------------
 export { Codec, Decode, DecodeBuilder, Encode, EncodeBuilder, IsCodec, type TCodec } from './type/types/_codec.ts'
+export { Convert, IsConvert, type TConvert, type TConvertCallback, type TConvertCallbackResult } from './type/types/_convert.ts'
 export { IsOptional, Optional, type TOptional } from './type/types/_optional.ts'
 export { IsReadonly, Readonly, type TReadonly } from './type/types/_readonly.ts'
 export { IsRefine, Refine, type TRefine, type TRefineCallback, type TRefinement } from './type/types/_refine.ts'

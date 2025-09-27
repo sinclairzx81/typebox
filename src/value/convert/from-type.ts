@@ -30,6 +30,7 @@ THE SOFTWARE.
 
 import * as T from '../../type/index.ts'
 
+import { FromConvert } from './from-convert.ts'
 import { FromArray } from './from-array.ts'
 import { FromBase } from './from-base.ts'
 import { FromBigInt } from './from-bigint.ts'
@@ -52,6 +53,13 @@ import { FromUnion } from './from-union.ts'
 import { FromVoid } from './from-void.ts'
 
 export function FromType(context: T.TProperties, type: T.TSchema, value: unknown): unknown {
+  return (
+    T.IsConvert(type) ? FromConvert(context, type, value) : 
+    FromTypeWithoutConvert(context, type, value)
+  )
+}
+
+export function FromTypeWithoutConvert(context: T.TProperties, type: T.TSchema, value: unknown): unknown {
   return (
     T.IsArray(type) ? FromArray(context, type, value) :
     T.IsBase(type) ? FromBase(context, type, value) :
