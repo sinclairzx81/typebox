@@ -163,7 +163,7 @@ function IssuesFromLocalizedError(error: TLocalizedValidationError): StandardSch
 function IssuesFromUnknown(error: object): StandardSchemaV1.Issue[] {
   const path = Guard.HasPropertyKey(error, 'path') && Guard.IsArray(error.path) && error.path.every(segment => Guard.IsString(segment)) ? error.path : []
   const message = Guard.HasPropertyKey(error, 'message') && Guard.IsString(error.message) ? error.message : 'unknown'
-  return [{ path, message }]
+  return [{ path, message } as StandardSchemaV1.Issue]
 }
 // --------------------------------------------------------
 // CreateIssues
