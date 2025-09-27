@@ -36,7 +36,7 @@ Test('Should Convert 4', () => {
 // ------------------------------------------------------------------
 // IsOptionalUndefined
 //
-// https://github.com/sinclairzx81/typebox/issues/1336#issuecomment-3312808962 
+// https://github.com/sinclairzx81/typebox/issues/1336#issuecomment-3312808962
 // ------------------------------------------------------------------
 Test('Should Convert 5', () => {
   const T = Type.Object({ x: Type.Optional(Type.Number()) })

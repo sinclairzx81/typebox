@@ -49,13 +49,13 @@ Test('Should validate Base 6', () => {
       return false
     }
     override Errors(): object[] {
-      return [{ 
+      return [{
         keyword: '~standard',
         schemaPath: '',
         instancePath: '',
         params: { issues: [{ message: '' }] },
         message: ''
-       }]
+      }]
     }
   }
   Fail(new Foo(), [])
@@ -66,13 +66,13 @@ Test('Should validate Base 7', () => {
       return false
     }
     override Errors(): object[] {
-      return [{ 
+      return [{
         keyword: '~standard',
         schemaPath: '',
         instancePath: '',
         params: { issues: [{ message: 1 }] },
         message: ''
-       }]
+      }]
     }
   }
   Fail(new Foo(), [])
@@ -83,13 +83,13 @@ Test('Should validate Base 8', () => {
       return false
     }
     override Errors(): object[] {
-      return [{ 
+      return [{
         keyword: '~standard',
         schemaPath: '',
         instancePath: '',
         params: { issues: null },
         message: ''
-       }]
+      }]
     }
   }
   Fail(new Foo(), [])
@@ -100,12 +100,12 @@ Test('Should validate Base 9', () => {
       return false
     }
     override Errors(): object[] {
-      return [{ 
+      return [{
         keyword: '~standard',
         schemaPath: '',
         instancePath: '',
         params: { issues: [{ message: '', path: [] }] }
-       }]
+      }]
     }
   }
   Fail(new Foo(), [])

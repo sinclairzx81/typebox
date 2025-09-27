@@ -73,7 +73,7 @@ Test('Should Action 13', () => {
   Assert.IsEqual(T.anyOf[0].const, 'x')
   Assert.IsEqual(T.anyOf[1].const, 'y')
 })
-Test('Should Action 14', () => { 
+Test('Should Action 14', () => {
   const T: Type.TLiteral<'hello'> = Type.Script('Lowercase<"HELLO">')
   Assert.IsTrue(Type.IsLiteral(T))
   Assert.IsEqual(T.const, 'hello')

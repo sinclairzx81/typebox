@@ -62,7 +62,7 @@ Task.run('publish', (otp: string, target: string = `target/build`) => PublishPac
 // ------------------------------------------------------------------
 // Format
 // ------------------------------------------------------------------
-Task.run('format', () => Task.shell('deno fmt src test/**/*.ts'))
+Task.run('format', () => Task.shell('deno fmt src test/typebox'))
 // ------------------------------------------------------------------
 // Syntax
 // ------------------------------------------------------------------
