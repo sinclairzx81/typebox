@@ -54,6 +54,6 @@ export function ErrorStandardSchemaV1(context: ErrorContext, schemaPath: string,
     keyword: '~standard',
     schemaPath,
     instancePath,
-    params: { vendor: schema[`~standard`].vendor, issues: result.issues as object[] },
+    params: { vendor: schema[`~standard`].vendor, issues: result.issues as never },
   })
 }
