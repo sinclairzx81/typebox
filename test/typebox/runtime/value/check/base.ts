@@ -41,7 +41,7 @@ Test('Should validate Base 5', () => {
   Fail(T, ['A', 'B', 'C'])
 })
 // ------------------------------------------------------------------
-// Error Mapping: Validation Error
+// Error Mapping: Validation Error | Throw Detection | Coverage
 // ------------------------------------------------------------------
 Test('Should validate Base 6', () => {
   class Foo extends Type.Base {
@@ -111,7 +111,7 @@ Test('Should validate Base 9', () => {
   Fail(new Foo(), [])
 })
 // ------------------------------------------------------------------
-// Error Mapping: Standard Schema
+// Error Mapping: Standard Schema | Throw Detection | Coverage
 // ------------------------------------------------------------------
 Test('Should validate Base 10', () => {
   class Foo extends Type.Base {
