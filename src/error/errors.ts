@@ -58,8 +58,8 @@ export type TValidationError =
   | TPatternError
   | TPropertyNamesError
   | TRefineError
-  | TStandardSchemaV1Error
   | TRequiredError
+  | TStandardSchemaV1Error
   | TTypeError
   | TUnevaluatedItemsError
   | TUnevaluatedPropertiesError

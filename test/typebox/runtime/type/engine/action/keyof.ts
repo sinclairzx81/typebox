@@ -214,7 +214,7 @@ Test('Should KeyOf 17', () => {
     ])
   ])
   const T: Type.TUnion<[
-    Type.TLiteral<'x'>,
+    Type.TLiteral<'x'>, 
     Type.TLiteral<'y'>,
     Type.TLiteral<'z'>,
     Type.TLiteral<'w'>

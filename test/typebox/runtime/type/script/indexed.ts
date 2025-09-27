@@ -51,7 +51,7 @@ Test('Should Indexed 8', () => {
   Assert.IsTrue(Type.IsNumber(T.anyOf[0]))
   Assert.IsTrue(Type.IsString(T.anyOf[1]))
 })
-Test('Should Indexed 9', () => {
+Test('Should Indexed 9', () => { 
   const T: Type.TLiteral<1> = Type.Script('[[1], 2, 3][0][0]')
   Assert.IsTrue(Type.IsLiteral(T))
   Assert.IsEqual(T.const, 1)
