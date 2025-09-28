@@ -45,7 +45,7 @@ import type { XRequired } from './required.ts'
 // ------------------------------------------------------------------
 // XStandardSchemaV1
 // ------------------------------------------------------------------
-export type StaticXStandardSchemaV1<Validator extends XStandardValidatorV1,
+export type XStaticStandardSchemaV1<Validator extends XStandardValidatorV1,
   ValidateResult extends unknown = ReturnType<Validator['validate']>,
   RemoveAsync extends unknown = Exclude<ValidateResult, Promise<any>>,
   RemoveIssue extends unknown = Exclude<RemoveAsync, { issues: any }>,
@@ -54,83 +54,83 @@ export type StaticXStandardSchemaV1<Validator extends XStandardValidatorV1,
 // ------------------------------------------------------------------
 // XAdditionalProperties
 // ------------------------------------------------------------------
-type StaticXAdditionalProperties<Schema extends XSchemaLike,
+type XStaticAdditionalProperties<Schema extends XSchemaLike,
   Result extends Record<PropertyKey, unknown> = (
     Schema extends true ? { [key: string]: unknown } :
     Schema extends false ? {} :
-    { [key: string]: XStatic<Schema> }
+    { [key: string]: XStaticType<Schema> }
   )
 > = Result
 // ------------------------------------------------------------------
 // XAllOf
 // ------------------------------------------------------------------
-type StaticXAllOf<Schemas extends XSchemaLike[], Result extends unknown = unknown> =
+type XStaticAllOf<Schemas extends XSchemaLike[], Result extends unknown = unknown> =
   Schemas extends [infer Left extends XSchemaLike, ...infer Right extends XSchemaLike[]]
-  ? StaticXAllOf<Right, XStatic<Left> & Result>
+  ? XStaticAllOf<Right, XStaticType<Left> & Result>
   : Result
 // ------------------------------------------------------------------
 // XAnyOf
 // ------------------------------------------------------------------
-type StaticXAnyOf<Schemas extends XSchemaLike[], Result extends unknown = never> =
+type XStaticAnyOf<Schemas extends XSchemaLike[], Result extends unknown = never> =
   Schemas extends [infer Left extends XSchemaLike, ...infer Right extends XSchemaLike[]]
-  ? StaticXAnyOf<Right, XStatic<Left> | Result>
+  ? XStaticAnyOf<Right, XStaticType<Left> | Result>
   : Result
 // ------------------------------------------------------------------
 // XConst
 // ------------------------------------------------------------------
-type StaticXConst<Value extends unknown> = Value
+type XStaticConst<Value extends unknown> = Value
 // ------------------------------------------------------------------
 // XEnum
 // ------------------------------------------------------------------
-type StaticXEnum<Values extends unknown[], Result extends unknown = never> =
+type XStaticEnum<Values extends unknown[], Result extends unknown = never> =
   Values extends [infer Left extends unknown, ...infer Right extends unknown[]]
-  ? StaticXEnum<Right, Left | Result>
+  ? XStaticEnum<Right, Left | Result>
   : Result
 // ------------------------------------------------------------------
 // XItems
 // ------------------------------------------------------------------
-type StaticXItemsUnsized<Schema extends XSchemaLike> = XStatic<Schema>[]
-type StaticXItemsSized<Schema extends XSchemaLike[], Result extends unknown[] = []> =
+type XStaticItemsUnsized<Schema extends XSchemaLike> = XStaticType<Schema>[]
+type XStaticItemsSized<Schema extends XSchemaLike[], Result extends unknown[] = []> =
   Schema extends [infer Left extends XSchemaLike, ...infer Right extends XSchemaLike[]]
-  ? StaticXItemsSized<Right, [...Result, XStatic<Left>]>
+  ? XStaticItemsSized<Right, [...Result, XStaticType<Left>]>
   : Result
-type StaticXItems<Schemas extends XSchemaLike[] | XSchemaLike,
+type XStaticItems<Schemas extends XSchemaLike[] | XSchemaLike,
   Result extends unknown = (
-    Schemas extends XSchemaLike[] ? StaticXItemsSized<[...Schemas]> :
-    Schemas extends XSchemaLike ? StaticXItemsUnsized<Schemas> :
+    Schemas extends XSchemaLike[] ? XStaticItemsSized<[...Schemas]> :
+    Schemas extends XSchemaLike ? XStaticItemsUnsized<Schemas> :
     never
   )
 > = Result
 // ------------------------------------------------------------------
 // XOneOf
 // ------------------------------------------------------------------
-type StaticXOneOf<Schemas extends XSchemaLike[], Result extends unknown = never> =
+type XStaticOneOf<Schemas extends XSchemaLike[], Result extends unknown = never> =
   Schemas extends [infer Left extends XSchemaLike, ...infer Right extends XSchemaLike[]]
-  ? StaticXOneOf<Right, XStatic<Left> | Result>
+  ? XStaticOneOf<Right, XStaticType<Left> | Result>
   : Result
 // ------------------------------------------------------------------
 // XPatternProperties
 // ------------------------------------------------------------------
-type StaticXPatternProperties<Properties extends Record<PropertyKey, XSchemaLike> = Record<PropertyKey, XSchemaLike>,
-  InferredProperties extends Record<PropertyKey, unknown> = { [Key in keyof Properties]: XStatic<Properties[Key]> },
+type XStaticPatternProperties<Properties extends Record<PropertyKey, XSchemaLike> = Record<PropertyKey, XSchemaLike>,
+  InferredProperties extends Record<PropertyKey, unknown> = { [Key in keyof Properties]: XStaticType<Properties[Key]> },
   EvaluatedProperties extends unknown = { [key: string]: InferredProperties[keyof InferredProperties] }
 > = EvaluatedProperties
 // ------------------------------------------------------------------
 // XPrefixItems
 // ------------------------------------------------------------------
-type StaticXPrefixItems<Schemas extends XSchemaLike[], Result extends unknown[] = []> =
+type XStaticPrefixItems<Schemas extends XSchemaLike[], Result extends unknown[] = []> =
   Schemas extends [infer Left extends XSchemaLike, ...infer Right extends XSchemaLike[]]
-  ? StaticXPrefixItems<Right, [...Result, XStatic<Left>]>
+  ? XStaticPrefixItems<Right, [...Result, XStaticType<Left>]>
   : Result
 // ------------------------------------------------------------------
 // XProperties
 // ------------------------------------------------------------------
-type StaticXProperties<Properties extends Record<PropertyKey, XSchemaLike>,
+type XStaticProperties<Properties extends Record<PropertyKey, XSchemaLike>,
   Readonly extends Record<PropertyKey, unknown> = {
-    readonly [Key in keyof Properties as Properties[Key] extends { readOnly: true } ? Key : never]?: XStatic<Properties[Key]>
+    readonly [Key in keyof Properties as Properties[Key] extends { readOnly: true } ? Key : never]?: XStaticType<Properties[Key]>
   },
   Standard extends Record<PropertyKey, unknown> = {
-    [Key in keyof Properties as Properties[Key] extends { readOnly: true } ? never : Key]?: XStatic<Properties[Key]>
+    [Key in keyof Properties as Properties[Key] extends { readOnly: true } ? never : Key]?: XStaticType<Properties[Key]>
   },
   Result extends Record<PropertyKey, unknown> = Readonly & Standard
 > = Result
@@ -140,8 +140,8 @@ type StaticXProperties<Properties extends Record<PropertyKey, XSchemaLike>,
 type RequiredSelectProperty<Properties extends Record<PropertyKey, XSchemaLike>, Key extends string, Result extends Record<PropertyKey, unknown> = (
   Key extends keyof Properties
   ? Properties[Key] extends { readOnly: true }
-  ? { readonly [_ in Key]: XStatic<Properties[Key]> }
-  : { [_ in Key]: XStatic<Properties[Key]> }
+    ? { readonly [_ in Key]: XStaticType<Properties[Key]> }
+    : { [_ in Key]: XStaticType<Properties[Key]> }
   : { [_ in Key]: unknown }
 )> = Result
 type RequiredSelectProperties<Properties extends Record<PropertyKey, XSchemaLike>, Keys extends string[], Result extends Record<PropertyKey, unknown> = {}> =
@@ -153,27 +153,25 @@ type RequiredGetProperties<Schema extends XSchemaLike, Result extends Record<Pro
   ? Properties
   : {}
 )> = Result
-type StaticXRequired<Schema extends XSchemaLike, Keys extends string[],
+type XStaticRequired<Schema extends XSchemaLike, Keys extends string[],
   Properties extends Record<PropertyKey, XSchemaLike> = RequiredGetProperties<Schema>,
   Result extends Record<PropertyKey, unknown> = RequiredSelectProperties<Properties, Keys>
 > = Result
 // ------------------------------------------------------------------
 // XStaticKeywords
-//
-// Returns a Tuple where each element is an inferred Keyword. 
 // ------------------------------------------------------------------
-type StaticXKeywords<Schema, Result extends unknown[] = [
-  Schema extends XAdditionalProperties<infer Type extends XSchemaLike> ? StaticXAdditionalProperties<Type> : unknown,
-  Schema extends XAllOf<infer Types extends XSchemaLike[]> ? StaticXAllOf<Types> : unknown,
-  Schema extends XAnyOf<infer Types extends XSchemaLike[]> ? StaticXAnyOf<Types> : unknown,
-  Schema extends XConst<infer Value extends unknown> ? StaticXConst<Value> : unknown,
-  Schema extends XEnum<infer Values extends unknown[]> ? StaticXEnum<Values> : unknown,
-  Schema extends XItems<infer Types extends XSchemaLike[] | XSchemaLike> ? StaticXItems<Types> : unknown,
-  Schema extends XOneOf<infer Types extends XSchemaLike[]> ? StaticXOneOf<Types> : unknown,
-  Schema extends XPatternProperties<infer Properties extends Record<PropertyKey, XSchemaLike>> ? StaticXPatternProperties<Properties> : unknown,
-  Schema extends XPrefixItems<infer Types extends XSchemaLike[]> ? StaticXPrefixItems<Types> : unknown,
-  Schema extends XProperties<infer Properties extends Record<PropertyKey, XSchemaLike>> ? StaticXProperties<Properties> : unknown,
-  Schema extends XRequired<infer Keys extends string[]> ? StaticXRequired<Schema, Keys> : unknown,
+type XStaticKeywords<Schema, Result extends unknown[] = [
+  Schema extends XAdditionalProperties<infer Type extends XSchemaLike> ? XStaticAdditionalProperties<Type> : unknown,
+  Schema extends XAllOf<infer Types extends XSchemaLike[]> ? XStaticAllOf<Types> : unknown,
+  Schema extends XAnyOf<infer Types extends XSchemaLike[]> ? XStaticAnyOf<Types> : unknown,
+  Schema extends XConst<infer Value extends unknown> ? XStaticConst<Value> : unknown,
+  Schema extends XEnum<infer Values extends unknown[]> ? XStaticEnum<Values> : unknown,
+  Schema extends XItems<infer Types extends XSchemaLike[] | XSchemaLike> ? XStaticItems<Types> : unknown,
+  Schema extends XOneOf<infer Types extends XSchemaLike[]> ? XStaticOneOf<Types> : unknown,
+  Schema extends XPatternProperties<infer Properties extends Record<PropertyKey, XSchemaLike>> ? XStaticPatternProperties<Properties> : unknown,
+  Schema extends XPrefixItems<infer Types extends XSchemaLike[]> ? XStaticPrefixItems<Types> : unknown,
+  Schema extends XProperties<infer Properties extends Record<PropertyKey, XSchemaLike>> ? XStaticProperties<Properties> : unknown,
+  Schema extends XRequired<infer Keys extends string[]> ? XStaticRequired<Schema, Keys> : unknown,
   Schema extends { type: 'array' } ? {} : unknown,
   Schema extends { type: 'bigint' } ? bigint : unknown,
   Schema extends { type: 'boolean' } ? boolean : unknown,
@@ -186,53 +184,64 @@ type StaticXKeywords<Schema, Result extends unknown[] = [
   Schema extends { type: 'undefined' } ? undefined : unknown,
 ]> = Result
 // ------------------------------------------------------------------
-// StaticXReduce
+// XStaticKeywordIntersect
 // ------------------------------------------------------------------
-type StaticXReduce<Schemas extends unknown[], Result extends unknown = unknown> = (
+type XStaticKeywordIntersect<Schemas extends unknown[], Result extends unknown = unknown> = (
   Schemas extends [infer Left extends unknown, ...infer Right extends unknown[]]
-  ? StaticXReduce<Right, Result & Left>
+  ? XStaticKeywordIntersect<Right, Result & Left>
   : Result
 )
 // ------------------------------------------------------------------
-// XStaticNonReadonly
+// XStaticEvaluate
 // ------------------------------------------------------------------
-type StaticXNonReadonlyTuple<Schemas extends readonly unknown[]> = (
-  Schemas extends [infer Left, ...infer Right extends unknown[]]
-  ? [StaticXNonReadonly<Left>, ...StaticXNonReadonlyTuple<Right>]
-  : []
-)
-type StaticXNonReadonlyArray<Schema extends unknown,
-  Result extends unknown[] = StaticXNonReadonly<Schema>[]
-> = Result
-type StaticXNonReadonlyObject<Schema extends object, Result extends Record<PropertyKey, unknown> = {
-  -readonly [K in keyof Schema]: StaticXNonReadonly<Schema[K]>
-}> = Result
-type StaticXNonReadonly<Schema> = (
-  Schema extends readonly [...infer Rest extends unknown[]] ? StaticXNonReadonlyTuple<Rest> :
-  Schema extends readonly (infer U)[] ? StaticXNonReadonlyArray<U> :
-  Schema extends object ? StaticXNonReadonlyObject<Schema> :
-  Schema
-)
-// ------------------------------------------------------------------
-// StaticXEvaluate
-// ------------------------------------------------------------------
-type StaticXEvaluate<Schema extends unknown,
+type XStaticEvaluate<Schema extends unknown,
   Result extends unknown = Schema extends object
   ? { [Key in keyof Schema]: Schema[Key] }
   : Schema
 > = Result
-type StaticXSchema<Schema extends unknown,
-  NonReadonly extends unknown = StaticXNonReadonly<Schema>,
-  Keywords extends unknown[] = StaticXKeywords<NonReadonly>,
-  Reduced extends unknown = StaticXReduce<Keywords>,
-  Result extends unknown = StaticXEvaluate<Reduced>
+// ------------------------------------------------------------------
+// XStaticJsonSchema
+// ------------------------------------------------------------------
+type XStaticJsonSchema<Schema extends unknown,
+  Keywords extends unknown[] = XStaticKeywords<Schema>,
+  Intersect extends unknown = XStaticKeywordIntersect<Keywords>,
+  Result extends unknown = XStaticEvaluate<Intersect>
 > = Result
 // ------------------------------------------------------------------
 // XStatic
 // ------------------------------------------------------------------
 /** Statically infers a JSON Schema or Standard Schema */
-export type XStatic<Schema extends XSchemaLike, Result extends unknown = (
+export type XStaticType<Schema extends XSchemaLike, Result extends unknown = (
   Schema extends XStandardSchemaV1<infer Validator extends XStandardValidatorV1>
-  ? StaticXStandardSchemaV1<Validator>
-  : StaticXSchema<Schema>
+  ? XStaticStandardSchemaV1<Validator>
+  : XStaticJsonSchema<Schema>
 )> = Result
+// ------------------------------------------------------------------
+// XStaticMutable: Preflight
+// ------------------------------------------------------------------
+type XStaticMutableTuple<Schemas extends readonly unknown[]> = (
+  Schemas extends [infer Left, ...infer Right extends unknown[]]
+  ? [XStaticMutable<Left>, ...XStaticMutableTuple<Right>]
+  : []
+)
+type XStaticMutableArray<Schema extends unknown,
+  Result extends unknown[] = XStaticMutable<Schema>[]
+> = Result
+type XStaticMutableObject<Schema extends object, Result extends Record<PropertyKey, unknown> = {
+  -readonly [K in keyof Schema]: XStaticMutable<Schema[K]>
+}> = Result
+type XStaticMutable<Schema> = (
+  Schema extends XStandardSchemaV1 ? Schema : // terminate! standard-schema may be sensitive to readonly
+  Schema extends readonly [...infer Schemas extends unknown[]] ? XStaticMutableTuple<Schemas> :
+  Schema extends readonly (infer Schema)[] ? XStaticMutableArray<Schema> :
+  Schema extends object ? XStaticMutableObject<Schema> :
+  Schema
+)
+// ------------------------------------------------------------------
+// XStatic
+// ------------------------------------------------------------------
+/** Statically infers a JSON Schema or Standard Schema */
+export type XStatic<Schema extends XSchemaLike, 
+  Mutable extends XSchemaLike = XStaticMutable<Schema>,
+  Result extends unknown = XStaticType<Mutable>  
+> = Result
