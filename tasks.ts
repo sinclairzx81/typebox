@@ -8,10 +8,10 @@ import { Range } from './task/range/index.ts'
 import { Metrics } from './task/metrics/index.ts'
 import { Task } from 'tasksmith'
 
-const Version = '1.0.20'
+const Version = '1.0.21'
 
 // ------------------------------------------------------------------
-// BuildPackage
+// Build
 // ------------------------------------------------------------------
 const BuildPackage = (target: string = `target/build`) => Task.build.esm('src', {
   outdir: target,
@@ -31,7 +31,7 @@ const BuildPackage = (target: string = `target/build`) => Task.build.esm('src', 
   },
 })
 // ------------------------------------------------------------------
-// PublishPackage
+// Publish
 // ------------------------------------------------------------------
 const PublishPackage = async (target: string = `target/build`) => {
   const { version } = JSON.parse(await Task.file(`${target}/package.json`).read())
@@ -57,7 +57,7 @@ Task.run('local', (target: string = `../build-test/node_modules/typebox`) => Bui
 // ------------------------------------------------------------------
 // Publish
 // ------------------------------------------------------------------
-Task.run('publish', (otp: string, target: string = `target/build`) => PublishPackage(target))
+Task.run('publish', (target: string = `target/build`) => PublishPackage(target))
 // ------------------------------------------------------------------
 // Format
 // ------------------------------------------------------------------
