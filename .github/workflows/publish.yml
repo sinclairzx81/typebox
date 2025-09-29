@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 jobs:
-  publish:
+  Publish:
     runs-on: ubuntu-latest
     steps:
 
