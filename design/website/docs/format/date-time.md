@@ -1,6 +1,6 @@
 # IsDateTime
 
-Returns true if the string is a [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) datetime
+Returns true if the string is a [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339) datetime
 
 ## Function
 
