@@ -33,9 +33,8 @@ const BuildPackage = (target: string = `target/build`) => Task.build.esm('src', 
 // ------------------------------------------------------------------
 // PublishPackage
 // ------------------------------------------------------------------
-const PublishPackage = async (otp: string, target: string = `target/build`) => {
+const PublishPackage = async (target: string = `target/build`) => {
   const { version } = JSON.parse(await Task.file(`${target}/package.json`).read())
-  await Task.shell(`cd ${target} && npm publish typebox-${version}.tgz --access=public --otp ${otp}`)
   await Task.shell(`git tag ${version}`)
   await Task.shell(`git push origin ${version}`)
 }
@@ -58,7 +57,7 @@ Task.run('local', (target: string = `../build-test/node_modules/typebox`) => Bui
 // ------------------------------------------------------------------
 // Publish
 // ------------------------------------------------------------------
-Task.run('publish', (otp: string, target: string = `target/build`) => PublishPackage(otp, target))
+Task.run('publish', (otp: string, target: string = `target/build`) => PublishPackage(target))
 // ------------------------------------------------------------------
 // Format
 // ------------------------------------------------------------------

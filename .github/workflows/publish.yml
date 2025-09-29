@@ -1,0 +1,42 @@
+name: Publish
+
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+**'    # Semver-Tag
+
+permissions:
+  id-token: write                   # Required for OIDC
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+
+      # Checkout
+      - uses: actions/checkout@v4
+
+      # Node
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      # Deno
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.5
+
+      # Update
+      - name: Update
+        run: npm install npm -g
+
+      # Build
+      - name: Build
+        run: deno task build
+
+      # Publish
+      - name: Publish
+        run: npm publish typebox-*.tgz --provenance --access public
+        working-directory: target/build
