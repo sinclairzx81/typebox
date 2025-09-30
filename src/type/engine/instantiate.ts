@@ -45,7 +45,7 @@ import { type TArray, Array, IsArray, ArrayOptions } from '../types/array.ts'
 import { type TAsyncIterator, AsyncIterator, IsAsyncIterator, AsyncIteratorOptions } from '../types/async-iterator.ts'
 import { type TConstructor, Constructor, IsConstructor, ConstructorOptions } from '../types/constructor.ts'
 import { type TDeferred, Deferred, IsDeferred } from '../types/deferred.ts'
-import { type TFunction, Function, IsFunction, FunctionOptions } from '../types/function.ts'
+import { type TFunction, Function as _Function, IsFunction, FunctionOptions } from '../types/function.ts'
 import { type TCall, IsCall } from '../types/call.ts'
 import { type TIdentifier } from '../types/identifier.ts'
 import { type TIntersect, Intersect, IsIntersect, IntersectOptions } from '../types/intersect.ts'
@@ -369,7 +369,7 @@ export function InstantiateType<Context extends TProperties, State extends TStat
     IsCall(type) ? CallInstantiate(context, state, type.target, type.arguments) :
     IsConstructor(type) ? Constructor(InstantiateTypes(context, state, type.parameters), InstantiateType(context, state, type.instanceType) as never, ConstructorOptions(type)) :
     IsDeferred(type) ? InstantiateDeferred(context, state, type.action, type.parameters, type.options) :
-    IsFunction(type) ? Function(InstantiateTypes(context, state, type.parameters), InstantiateType(context, state, type.returnType) as never, FunctionOptions(type)) :
+    IsFunction(type) ? _Function(InstantiateTypes(context, state, type.parameters), InstantiateType(context, state, type.returnType) as never, FunctionOptions(type)) :
     IsIntersect(type) ? Intersect(InstantiateTypes(context, state, type.allOf), IntersectOptions(type)) :
     IsIterator(type) ? Iterator(InstantiateType(context, state, type.iteratorItems), IteratorOptions(type)) :
     IsObject(type) ? Object(InstantiateProperties(context, state, type.properties), ObjectOptions(type)) :
