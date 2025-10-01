@@ -26,8 +26,10 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import type { Static, TProperties, TSchema } from '../../type/index.ts'
 import { Arguments } from '../../system/arguments/index.ts'
+import type { TLocalizedValidationError } from '../../error/index.ts'
+import type { Static, TProperties, TSchema } from '../../type/index.ts'
+
 import { Check } from '../check/index.ts'
 import { Errors } from '../errors/index.ts'
 
@@ -35,8 +37,8 @@ import { Errors } from '../errors/index.ts'
 // AssertError
 // ------------------------------------------------------------------
 export class AssertError extends Error {
-  declare readonly cause: { source: string; errors: object[]; value: unknown }
-  constructor(source: string, value: unknown, errors: object[]) {
+  declare readonly cause: { source: string; errors: TLocalizedValidationError[]; value: unknown }
+  constructor(source: string, value: unknown, errors: TLocalizedValidationError[]) {
     super(source)
     Object.defineProperty(this, 'cause', {
       value: { source, errors, value },
