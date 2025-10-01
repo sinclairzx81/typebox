@@ -4,14 +4,14 @@ A TypeScript Engine for JavaScript
 
 ## Overview
 
-TypeBox is a runtime type system that uses Json Schema as an AST for runtime type representation. The Script function provides a syntactic frontend to the type system and allows Json Schema to be created using native TypeScript syntax. TypeBox provides full static and runtime type safety for string-encoded types.
+TypeBox is a type system designed to use Json Schema as an AST for runtime type representation. The Script function provides a full syntactic frontend to the type system and enables Json Schema to be constructed using native TypeScript syntax. TypeBox provides full static and runtime type safety for string-encoded types.
 
 ### Example
 
-The following uses the Script function to create and transform Json Schema types.
+The following uses Script to construct and map Json Schema.
 
 ```typescript
-import Type from 'typebox'
+import Type, { type Static } from 'typebox'
 
 const T = Type.Script(`{ 
   x: number, 
@@ -27,15 +27,32 @@ const T = Type.Script(`{
                                                     //   }
                                                     // }
 
-// Mapped Type
-
 const S = Type.Script({ T }, `{
   [K in keyof T]: T[K] | null
-}`)                                                 // const S: TObject<{
-                                                    //   x: TUnion<[TNumber, TNull]>,
-                                                    //   y: TUnion<[TNumber, TNull]>,
-                                                    //   z: TUnion<[TNumber, TNull]>
-                                                    // }>
+}`)                                                 // const S = {
+                                                    //   type: 'object',
+                                                    //   required: ['x', 'y', 'z'],
+                                                    //   properties: {
+                                                    //     x: { 
+                                                    //       anyOf: [
+                                                    //         { type: 'number' }, 
+                                                    //         { type: 'null' }
+                                                    //       ] 
+                                                    //     },
+                                                    //     y: { 
+                                                    //       anyOf: [
+                                                    //         { type: 'number' }, 
+                                                    //         { type: 'null' }
+                                                    //       ] 
+                                                    //     },
+                                                    //     z: { 
+                                                    //       anyOf: [
+                                                    //         { type: 'number' }, 
+                                                    //         { type: 'null' }
+                                                    //       ] 
+                                                    //     },
+                                                    //   }
+                                                    // }
 
 type S = Static<typeof S>                           // type S = {
                                                     //   x: number | null,

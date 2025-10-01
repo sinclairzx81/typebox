@@ -62,6 +62,7 @@
     "strict": true,
     "jsx": "react-jsx",
     "jsxImportSource": "npm:react@19.1.1",
+    "types": ["npm:@types/react", "npm:@types/react-dom", "npm:@types/three"],
     "lib": ["deno.ns", "dom"]
   }
 }

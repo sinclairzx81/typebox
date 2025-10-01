@@ -110,13 +110,13 @@ type T = Static<typeof T>                           // type T = {
 
 ## Script
 
-[Documentation](https://sinclairzx81.github.io/typebox/#/docs/script/overview) | [Example](https://www.typescriptlang.org/play/?#code/JYWwDg9gTgLgBAFQJ5gKYBo4G84xauAZRgEMZgBjOAXzgDMoIQ4ByPNAIwgA8WAoPhQgA7AM7wEcALyJ8AOkIUowMDAAUAAxx84cbgC44wgK4gOqKJh1wkhk2YtXdALzunzUOH2oaAlLoDAoOCQ0LCggHoIuCExCWlEAHkOACtUChgAHixrcLz8gsCogINEADl3R1zCmtqi6N1bcsrLarr2guKXQwQKhyg2jqHQ4uoAPgFY8SIE5DQFJRV1HElqTC1rAG0AaThgYTgAa1QkCDpEAF0enYu4AB8jYwAbJ+8-YY-g4qn4Qh7ktIZbKDT6fLp6HoAVWEwBEmU2vRamERLwuY3QINBw3BTQQ0NhwnhiP6yIqqPRmKxHXBrkQ+LhCL6HlJzyeaMpVLqowmfHYBEICWIZEomT5ZyIY05xT5MxkOU5WPBpXsHnujxeGIVoJxbn6apMGo5Ws6DTgtJVFn1rKNxryowEfCAA)
+[Documentation](https://sinclairzx81.github.io/typebox/#/docs/script/overview) | [Example](https://www.typescriptlang.org/play/?moduleResolution=99&target=99&jsx=0&module=199#code/JYWwDg9gTgLgBAFQJ5gKYBo4G84xauAZRgEMZgBjOAXzgDMoIQ4ByPNAIwgA8WAoPhQgA7AM7wEcALyJ8AOkIUowMDAAUAAxx84cbgC44wgK4gOqKJh1wkhk2YtXdALzunzUOH2oaAlLoDAoOCQ0LCggHoIuCExCWlsa3DklNTAqID2VEMWCA4AK1QKGBZ0JLSKyvTo3ShUAEdjYDqAE0MAbRZeTBYkUtZnFgBdMqqxqozdMEY0WGBUUUMscvHVsMmAg2xcfBz7DxYaUbWT0I3dW22svfcLQ+pj06eA87hXK93WfbuaFeeTjbUP7-VYZIGCETiIgJZBoBRKFTqHCSB5wLTWdoAaTgwGEcAA1qgkBA6IghoYEFihnAAD5GYwAGwZ3j8IIB0ViUMICWWbKeG2urDyhWKpWBfMqGzqjWaqDacE63VYfR6gxG4olaQ20wgs3ICyWGs1KVeW20xtBNSCJGESAA8nQOkaLesrcEcIKWN8oPcnC6Jm6gh7Pl7GQz7s7-cFXrpqZGo9Ugg94wndK9LubU6kY3AbfbHQqU6mc7pg2gbg4fUcvFns4HAmXsl8wxHayb63A423kq9k93wq93pn+yEc3mHU6R2cO6WduXm5XfTWp9GZx956Gma2V5EO12d4nAn2Dy8rUCT6ffnwstCZMQyJQADxZElEAB8IIyN+5Ml5F7gGxbN6tL0kyjwnhslzAXSJhgUWCYbO80Ggcy-4AdE1BAA)
 
-TypeBox is a runtime type system that uses Json Schema as an AST for runtime type representation. The Script function provides a syntactic frontend to the type system and allows Json Schema to be created using native TypeScript syntax. TypeBox provides full static and runtime type safety for string-encoded types.
+TypeBox is a type system designed to use Json Schema as an AST for runtime type representation. The Script function provides a full syntactic frontend to the type system and enables Json Schema to be constructed using native TypeScript syntax. TypeBox provides full static and runtime type safety for string-encoded types.
 
 ### Example
 
-The following uses Script to create and map types.
+The following uses Script to construct and map Json Schema.
 
 ```typescript
 import Type, { type Static } from 'typebox'
@@ -125,19 +125,42 @@ const T = Type.Script(`{
   x: number, 
   y: number, 
   z: number 
-}`)                                                 // const T = TObject<{
-                                                    //   x: TNumber,
-                                                    //   y: TNumber,
-                                                    //   z: TNumber
-                                                    // }>
+}`)                                                 // const T = {
+                                                    //   type: 'object',
+                                                    //   required: ['x', 'y', 'z'],
+                                                    //   properties: {
+                                                    //     x: { type: 'number' },
+                                                    //     y: { type: 'number' },
+                                                    //     z: { type: 'number' }
+                                                    //   }
+                                                    // }
 
 const S = Type.Script({ T }, `{
   [K in keyof T]: T[K] | null
-}`)                                                 // const S: TObject<{
-                                                    //   x: TUnion<[TNumber, TNull]>,
-                                                    //   y: TUnion<[TNumber, TNull]>,
-                                                    //   z: TUnion<[TNumber, TNull]>
-                                                    // }>
+}`)                                                 // const S = {
+                                                    //   type: 'object',
+                                                    //   required: ['x', 'y', 'z'],
+                                                    //   properties: {
+                                                    //     x: { 
+                                                    //       anyOf: [
+                                                    //         { type: 'number' }, 
+                                                    //         { type: 'null' }
+                                                    //       ] 
+                                                    //     },
+                                                    //     y: { 
+                                                    //       anyOf: [
+                                                    //         { type: 'number' }, 
+                                                    //         { type: 'null' }
+                                                    //       ] 
+                                                    //     },
+                                                    //     z: { 
+                                                    //       anyOf: [
+                                                    //         { type: 'number' }, 
+                                                    //         { type: 'null' }
+                                                    //       ] 
+                                                    //     },
+                                                    //   }
+                                                    // }
 
 type S = Static<typeof S>                           // type S = {
                                                     //   x: number | null,

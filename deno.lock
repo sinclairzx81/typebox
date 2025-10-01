@@ -413,6 +413,9 @@
   "workspace": {
     "dependencies": [
       "npm:@react-three/fiber@9.3.0",
+      "npm:@types/react-dom@*",
+      "npm:@types/react@*",
+      "npm:@types/three@*",
       "npm:marked@16.2.1",
       "npm:prismjs@1.30.0",
       "npm:react-dom@19.1.1",
