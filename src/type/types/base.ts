@@ -28,8 +28,6 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { type TLocalizedValidationError, type TStandardSchemaV1Error, type TValidationErrorBase, IsLocalizedValidationError } from '../../error/index.ts'
-import { Guard } from '../../guard/index.ts'
 import { type TSchema, IsKind } from './schema.ts'
 
 // ------------------------------------------------------------------
@@ -47,32 +45,8 @@ export class BaseNotImplemented extends Error {
     })
   }
 }
-// ------------------------------------------------------------------------------------
-// BaseValidator
-// ------------------------------------------------------------------------------------
-class BaseValidator<Value extends unknown = unknown> implements StandardSchemaV1.Props<Value> {
-  public readonly vendor = 'typebox'
-  public readonly version = 1
-  constructor(
-    private readonly check: (value: unknown) => boolean,
-    private readonly errors: (value: unknown) => object[]
-  ) { }
-  public readonly validate = (value: unknown): StandardSchemaV1.Result<Value> => {
-    return this.check(value)
-      ? this.Success(value as Value)
-      : this.Failure(this.errors(value))
-  }
-  private Success(value: Value): StandardSchemaV1.SuccessResult<Value> {
-    return { value }
-  }
-  private Failure(errors: object[]): StandardSchemaV1.FailureResult {
-    const issues = errors.reduce<StandardSchemaV1.Issue[]>((result, error) => 
-      [...result, ...CreateIssues(error)], [])
-    return { issues } as never
-  }
-}
 // ------------------------------------------------------------------
-// Type
+// Type.Base<...>
 // ------------------------------------------------------------------
 /** Base class for creating extension types. */
 export class Base<Value extends unknown = unknown> implements TSchema {
@@ -123,58 +97,30 @@ export class Base<Value extends unknown = unknown> implements TSchema {
 export function IsBase(value: unknown): value is Base {
   return IsKind(value, 'Base')
 }
-// --------------------------------------------------------
-// StandardSchema: PathSegments
-// --------------------------------------------------------
-function PathSegments(pointer: string): string[] {
-  if (Guard.IsEqual(pointer.length, 0)) return []
-  return pointer.slice(1).split("/").map(segment => segment.replace(/~1/g, "/").replace(/~0/g, "~"))
-}
-// --------------------------------------------------------
-// IsStandardSchemaV1Error
-// --------------------------------------------------------
-function IsStandardSchemaV1Error(error: TValidationErrorBase): error is TStandardSchemaV1Error {
-  return Guard.IsEqual(error.keyword, '~standard')
-}
-// --------------------------------------------------------
-// IssuesFromLocalizedError
-// --------------------------------------------------------
-function IssuesFromStandardSchemaV1Error(error: TStandardSchemaV1Error): StandardSchemaV1.Issue[] {
-  const leading = PathSegments(error.instancePath)
-  const issues = Guard.IsArray(error.params.issues) ? error.params.issues : []
-  return issues.map(issue => {
-    const message = Guard.IsString(issue.message) ? issue.message : 'unknown'
-    const path = Guard.IsArray(issue.path) ? [...leading, ...issue.path] : leading
-    return { message, path }
-  })
-}
-function IssuesFromRegularError(error: TLocalizedValidationError): StandardSchemaV1.Issue[] {
-  const path = PathSegments(error.instancePath)
-  return [{ path, message: error.message  }]
-}
-function IssuesFromLocalizedError(error: TLocalizedValidationError): StandardSchemaV1.Issue[] {
-  return IsStandardSchemaV1Error(error) 
-    ? IssuesFromStandardSchemaV1Error(error) 
-    : IssuesFromRegularError(error)
-}
-// --------------------------------------------------------
-// IssuesFromUnknown
-// --------------------------------------------------------
-function IssuesFromUnknown(error: object): StandardSchemaV1.Issue[] {
-  const path = Guard.HasPropertyKey(error, 'path') && Guard.IsArray(error.path) && error.path.every(segment => Guard.IsString(segment)) ? error.path : []
-  const message = Guard.HasPropertyKey(error, 'message') && Guard.IsString(error.message) ? error.message : 'unknown'
-  return [{ path, message } as StandardSchemaV1.Issue]
-}
-// --------------------------------------------------------
-// CreateIssues
-// --------------------------------------------------------
-function CreateIssues(error: object): StandardSchemaV1.Issue[] {
-  return IsLocalizedValidationError(error)
-    ? IssuesFromLocalizedError(error)
-    : IssuesFromUnknown(error)
+// ------------------------------------------------------------------
+// BaseValidator
+// ------------------------------------------------------------------
+class BaseValidator<Value extends unknown = unknown> implements StandardSchemaV1.Props<Value> {
+  public readonly vendor = 'typebox'
+  public readonly version = 1
+  constructor(
+    private readonly check: (value: unknown) => value is Value,
+    private readonly errors: (value: unknown) => object[]
+  ) { }
+  public readonly validate = (value: unknown): StandardSchemaV1.Result<Value> => {
+    return this.check(value)
+      ? this.Success(value)
+      : this.Failure(this.errors(value))
+  }
+  private Success(value: Value): StandardSchemaV1.SuccessResult<Value> {
+    return { value }
+  }
+  private Failure(issues: object[]): StandardSchemaV1.FailureResult {
+    return { issues } as never
+  }
 }
 // ------------------------------------------------------------------
-// Standard Schema Interface
+// The Standard Schema V1 Interface
 // ------------------------------------------------------------------
 interface StandardSchemaV1<Input = unknown, Output = Input> {
   readonly '~standard': StandardSchemaV1.Props<Input, Output>
