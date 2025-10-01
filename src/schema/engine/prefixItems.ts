@@ -39,7 +39,7 @@ import { BuildSchema, CheckSchema, ErrorSchema } from './schema.ts'
 export function BuildPrefixItems(context: BuildContext, schema: S.XPrefixItems, value: string): string {
   return E.ReduceAnd(schema.prefixItems.map((schema, index) => {
     const isLength = E.IsGreaterEqualThan(E.Constant(index), E.Member(value, 'length'))
-    const isSchema = BuildSchema(context, schema, `value[${index}]`)
+    const isSchema = BuildSchema(context, schema, `${value}[${index}]`)
     const addIndex = context.AddIndex(E.Constant(index))
     const guarded = context.UseUnevaluated() ? E.And(isSchema, addIndex) : isSchema
     return E.Or(isLength, guarded)

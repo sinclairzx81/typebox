@@ -54,6 +54,7 @@ export class Base<Value extends unknown = unknown> implements TSchema {
   public readonly '~standard': StandardSchemaV1.Props<Value>
   constructor() {
     const validator = new BaseValidator(
+      // @ts-ignore TS 5.0.4 - unable to derive guard type
       (value) => this.Check(value),
       (value) => this.Errors(value)
     )
