@@ -1,3 +1,4 @@
+import Guard from 'typebox/guard'
 import { Type } from 'typebox'
 import { Fail, Ok } from './_validate.ts'
 import { Assert } from 'test'
@@ -156,4 +157,44 @@ Test('Should validate Base 13', () => {
     }
   }
   Fail(new Foo(), [])
+})
+// ------------------------------------------------------------------
+// Base Error | Standard Schema Error
+// ------------------------------------------------------------------
+Test('Should validate Base 14', () => {
+  class Foo extends Type.Base {
+    override Check(value: unknown): value is unknown {
+      return false
+    }
+    override Errors(value: unknown): object[] {
+      return [{ foo: 1, bar: 2, baz: 3 }]
+    }
+  }
+  const F = new Foo()
+  const R = F.Errors(null) as [{ foo: 1; bar: 2; baz: 3 }]
+  Assert.IsTrue(Guard.IsArray(R))
+  const E = R[0]
+  Assert.HasPropertyKey(E, 'foo')
+  Assert.HasPropertyKey(E, 'bar')
+  Assert.HasPropertyKey(E, 'baz')
+})
+
+Test('Should validate Base 15', () => {
+  class Foo extends Type.Base {
+    override Check(value: unknown): value is unknown {
+      return false
+    }
+    override Errors(value: unknown): object[] {
+      return [{ foo: 1, bar: 2, baz: 3 }]
+    }
+  }
+  const F = new Foo()
+  const R = F['~standard'].validate(null) as never as { issues: [{ foo: 1; bar: 2; baz: 3 }] }
+  Assert.IsTrue(Guard.IsObject(R))
+  Assert.HasPropertyKey(R, 'issues')
+
+  const E = R.issues[0]
+  Assert.HasPropertyKey(E, 'foo')
+  Assert.HasPropertyKey(E, 'bar')
+  Assert.HasPropertyKey(E, 'baz')
 })
