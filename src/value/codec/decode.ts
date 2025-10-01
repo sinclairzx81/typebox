@@ -29,6 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Arguments } from '../../system/arguments/index.ts'
+import { type TLocalizedValidationError } from '../../error/errors.ts'
 import { type TProperties, type TSchema, type StaticDecode } from '../../type/index.ts'
 
 import { AssertError } from '../assert/index.ts'
@@ -45,7 +46,7 @@ import { FromType } from './from-type.ts'
 // Assert
 // ------------------------------------------------------------------
 export class DecodeError extends AssertError {
-  constructor(value: unknown, errors: object[]) {
+  constructor(value: unknown, errors: TLocalizedValidationError[]) {
     super('Decode', value, errors)
   }
 }

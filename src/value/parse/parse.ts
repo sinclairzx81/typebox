@@ -29,6 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Arguments } from '../../system/arguments/index.ts'
+import { type TLocalizedValidationError } from '../../error/errors.ts'
 import { type TProperties, type TSchema, type StaticParse } from '../../type/index.ts'
 
 import { AssertError } from '../assert/index.ts'
@@ -44,7 +45,7 @@ import { Pipeline } from '../pipeline/index.ts'
 // Assert
 // ------------------------------------------------------------------
 export class ParseError extends AssertError {
-  constructor(value: unknown, errors: object[]) {
+  constructor(value: unknown, errors: TLocalizedValidationError[]) {
     super('Parse', value, errors)
   }
 }
