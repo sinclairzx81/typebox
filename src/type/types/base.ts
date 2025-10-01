@@ -120,7 +120,7 @@ class BaseValidator<Value extends unknown = unknown> implements StandardSchemaV1
   }
 }
 // ------------------------------------------------------------------
-// The Standard? Schema V1 Interface
+// The Standard Schema V1 Interface
 // ------------------------------------------------------------------
 interface StandardSchemaV1<Input = unknown, Output = Input> {
   readonly '~standard': StandardSchemaV1.Props<Input, Output>
