@@ -51,7 +51,7 @@ export interface XRefine<Refinements extends XRefinement[] = XRefinement[]> {
 export function IsRefine(value: XSchema): value is XRefine {
   return Guard.HasPropertyKey(value, '~refine')
     && Guard.IsArray(value["~refine"])
-    && Guard.Every(value['~refine'], value => Guard.IsObject(value)
+    && Guard.Every(value['~refine'], 0, value => Guard.IsObject(value)
       && Guard.HasPropertyKey(value, 'callback')
       && Guard.HasPropertyKey(value, 'message')
       && Guard.IsFunction(value.callback)

@@ -41,7 +41,7 @@ export function BuildUnevaluatedProperties(context: BuildContext, schema: S.XUne
   const hasKey = E.Call(E.Member('keys', 'has'), ['key'])
   const addKey = E.Call(E.Member('context', 'AddKey'), ['key'])
   const isSchema = BuildSchema(context, schema.unevaluatedProperties, `value`)
-  const isEvery = E.Call(E.Member(E.Entries(value), 'every'), [E.ArrowFunction(['[key, value]'], E.Or(hasKey, E.And(isSchema, addKey)))])
+  const isEvery = E.Every(E.Entries(value), E.Constant(0), ['[key, value]', '_'], E.Or(hasKey, E.And(isSchema, addKey)))
   return E.Call(E.ArrowFunction(['context'], E.Statements([
     E.ConstDeclaration('keys', keys),
     E.Return(isEvery)
@@ -52,7 +52,7 @@ export function BuildUnevaluatedProperties(context: BuildContext, schema: S.XUne
 // ------------------------------------------------------------------
 export function CheckUnevaluatedProperties(context: CheckContext, schema: S.XUnevaluatedProperties, value: Record<PropertyKey, unknown>) {
   const keys = context.GetKeys()
-  return G.Every(G.Entries(value), ([key, value]) => {
+  return G.Every(G.Entries(value), 0, ([key, value]) => {
     return keys.has(key)
       || (CheckSchema(context, schema.unevaluatedProperties, value) && context.AddKey(key))
   })
@@ -63,7 +63,7 @@ export function CheckUnevaluatedProperties(context: CheckContext, schema: S.XUne
 export function ErrorUnevaluatedProperties(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XUnevaluatedProperties, value: Record<PropertyKey, unknown>) {
   const keys = context.GetKeys()
   const unevaluatedProperties: PropertyKey[] = []
-  const isUnevaluatedProperties = G.EveryAll(G.Entries(value), ([key, value]) => {
+  const isUnevaluatedProperties = G.EveryAll(G.Entries(value), 0, ([key, value]) => {
     const nextContext = new AccumulatedErrorContext(context.GetContext(), context.GetSchema())
     const isEvaluatedProperty = keys.has(key)
       || (ErrorSchema(nextContext, schemaPath, instancePath, schema.unevaluatedProperties, value) && context.AddKey(key))

@@ -157,12 +157,15 @@ export function StringGraphemeCount(value: string): number {
 // --------------------------------------------------------------------------
 // Array
 // --------------------------------------------------------------------------
-export function Every<T>(value: T[], callback: (value: T, index: number) => boolean) {
-  return value.every(callback)
+export function Every<T>(value: T[], offset: number, callback: (value: T, index: number) => boolean): boolean {
+  for (let index = offset; index < value.length; index++) {
+    if (!callback(value[index], index)) return false
+  }
+  return true
 }
-export function EveryAll<T>(value: T[], callback: (value: T, index: number) => boolean): boolean {
+export function EveryAll<T>(value: T[], offset: number, callback: (value: T, index: number) => boolean): boolean {
   let result = true
-  for (let index = 0; index < value.length; index++) {
+  for (let index = offset; index < value.length; index++) {
     if (!callback(value[index], index)) result = false
   }
   return result

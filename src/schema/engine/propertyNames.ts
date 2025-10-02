@@ -43,14 +43,14 @@ export function BuildPropertyNames(context: BuildContext, schema: S.XPropertyNam
 // Check
 // ------------------------------------------------------------------
 export function CheckPropertyNames(context: CheckContext, schema: S.XPropertyNames, value: Record<PropertyKey, unknown>): boolean {
-  return G.Every(G.Keys(value), (key) => CheckSchema(context, schema.propertyNames, key))
+  return G.Every(G.Keys(value), 0, (key) => CheckSchema(context, schema.propertyNames, key))
 }
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
 export function ErrorPropertyNames(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XPropertyNames, value: Record<PropertyKey, unknown>): boolean {
   const propertyNames: string[] = []
-  const isPropertyNames = G.EveryAll(G.Keys(value), (key) => {
+  const isPropertyNames = G.EveryAll(G.Keys(value), 0, (key) => {
     const nextInstancePath = `${instancePath}/${key}`
     const nextSchemaPath = `${schemaPath}/propertyNames`
     const nextContext = new AccumulatedErrorContext(context.GetContext(), context.GetSchema())
