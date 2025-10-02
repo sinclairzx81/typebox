@@ -138,6 +138,14 @@ export function StringGraphemeCount(value: string): string {
   return `Guard.StringGraphemeCount(${value})`
 }
 // --------------------------------------------------------------------------
+// Array
+// --------------------------------------------------------------------------
+export function Every(value: string, offset: string, params: [value: string, index: string], expression: string): string {
+  return G.IsEqual(offset, '0')
+    ? `${value}.every((${params[0]}, ${params[1]}) => ${expression})`
+    : `((value, callback) => { for(let index = ${offset}; index < value.length; index++) if (!callback(value[index], index)) return false; return true })(${value}, (${params[0]}, ${params[1]}) => ${expression})`
+}
+// --------------------------------------------------------------------------
 // Objects
 // --------------------------------------------------------------------------
 export function Entries(value: string): string {

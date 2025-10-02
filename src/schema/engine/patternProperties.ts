@@ -44,16 +44,16 @@ export function BuildPatternProperties(context: BuildContext, schema: S.XPattern
     const isSchema = BuildSchema(context, schema, 'value')
     const addKey = context.AddKey('key')
     const guarded = context.UseUnevaluated() ? E.Or(notKey, E.And(isSchema, addKey)) : E.Or(notKey, isSchema)
-    return E.Call(E.Member(E.Entries(value), 'every'), [E.ArrowFunction(['[key, value]'], guarded)])
+    return E.Every(E.Entries(value), E.Constant(0), ['[key, value]', '_'], guarded)
   }))
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
 export function CheckPatternProperties(context: CheckContext, schema: S.XPatternProperties, value: Record<PropertyKey, unknown>): boolean {
-  return G.Every(G.Entries(schema.patternProperties), ([pattern, schema]) => {
+  return G.Every(G.Entries(schema.patternProperties), 0, ([pattern, schema]) => {
     const regexp = new RegExp(pattern)
-    return G.Every(G.Entries(value), ([key, value]) => {
+    return G.Every(G.Entries(value), 0, ([key, value]) => {
       return !regexp.test(key) || CheckSchema(context, schema, value) && context.AddKey(key)
     })
   })
@@ -62,10 +62,10 @@ export function CheckPatternProperties(context: CheckContext, schema: S.XPattern
 // Error
 // ------------------------------------------------------------------
 export function ErrorPatternProperties(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XPatternProperties, value: Record<PropertyKey, unknown>): boolean {
-  return G.EveryAll(G.Entries(schema.patternProperties), ([pattern, schema]) => {
+  return G.EveryAll(G.Entries(schema.patternProperties), 0, ([pattern, schema]) => {
     const nextSchemaPath = `${schemaPath}/patternProperties/${pattern}`
     const regexp = new RegExp(pattern)
-    return G.EveryAll(G.Entries(value), ([key, value]) => {
+    return G.EveryAll(G.Entries(value), 0, ([key, value]) => {
       const nextInstancePath = `${instancePath}/${key}`
       const notKey = !regexp.test(key)
       return notKey || ErrorSchema(context, nextSchemaPath, nextInstancePath, schema, value) && context.AddKey(key)

@@ -53,7 +53,7 @@ export function BuildDependencies(context: BuildContext, schema: S.XDependencies
 // ------------------------------------------------------------------
 export function CheckDependencies(context: CheckContext, schema: S.XDependencies, value: Record<PropertyKey, unknown>): boolean {
   const isLength = G.IsEqual(G.Keys(value).length, 0)
-  const isEvery = G.Every(G.Entries(schema.dependencies), ([key, schema]) => {
+  const isEvery = G.Every(G.Entries(schema.dependencies), 0, ([key, schema]) => {
     return !G.HasPropertyKey(value, key) || (
       G.IsArray(schema)
         ? schema.every((key) => G.HasPropertyKey(value, key))
@@ -67,7 +67,7 @@ export function CheckDependencies(context: CheckContext, schema: S.XDependencies
 // ------------------------------------------------------------------
 export function ErrorDependencies(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XDependencies, value: Record<PropertyKey, unknown>): boolean {
   const isLength = G.IsEqual(G.Keys(value).length, 0)
-  const isEvery = G.EveryAll(G.Entries(schema.dependencies), ([key, schema]) => {
+  const isEvery = G.EveryAll(G.Entries(schema.dependencies), 0, ([key, schema]) => {
     const nextSchemaPath = `${schemaPath}/dependencies/${key}`
     return !G.HasPropertyKey(value, key) || (
       G.IsArray(schema)

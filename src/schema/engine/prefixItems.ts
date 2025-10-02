@@ -49,7 +49,7 @@ export function BuildPrefixItems(context: BuildContext, schema: S.XPrefixItems, 
 // Check
 // ------------------------------------------------------------------
 export function CheckPrefixItems(context: CheckContext, schema: S.XPrefixItems, value: unknown[]): boolean {
-  return G.IsEqual(value.length, 0) || G.Every(schema.prefixItems, (schema, index) => {
+  return G.IsEqual(value.length, 0) || G.Every(schema.prefixItems, 0, (schema, index) => {
     return G.IsGreaterEqualThan(index, value.length) 
       || (CheckSchema(context, schema, value[index]) && context.AddIndex(index))
   })
@@ -58,7 +58,7 @@ export function CheckPrefixItems(context: CheckContext, schema: S.XPrefixItems, 
 // Error
 // ------------------------------------------------------------------
 export function ErrorPrefixItems(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XPrefixItems, value: unknown[]): boolean {
-  return G.IsEqual(value.length, 0) || G.EveryAll(schema.prefixItems, (schema, index) => {
+  return G.IsEqual(value.length, 0) || G.EveryAll(schema.prefixItems, 0, (schema, index) => {
     const nextSchemaPath = `${schemaPath}/prefixItems/${index}`
     const nextInstancePath = `${instancePath}/${index}`
     return G.IsGreaterEqualThan(index, value.length) 

@@ -84,7 +84,7 @@ export function BuildProperties(context: BuildContext, schema: S.XProperties, va
 // ------------------------------------------------------------------
 export function CheckProperties(context: CheckContext, schema: S.XProperties, value: Record<PropertyKey, unknown>): boolean {
   const required = S.IsRequired(schema) ? schema.required : []
-  const isProperties = G.Every(G.Entries(schema.properties), ([key, schema]) => {
+  const isProperties = G.Every(G.Entries(schema.properties), 0, ([key, schema]) => {
     const isProperty = !G.HasPropertyKey(value, key) || (CheckSchema(context, schema, value[key]) && context.AddKey(key))
     return IsExactOptional(required, key)
       ? isProperty
@@ -97,7 +97,7 @@ export function CheckProperties(context: CheckContext, schema: S.XProperties, va
 // ------------------------------------------------------------------
 export function ErrorProperties(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XProperties, value: Record<PropertyKey, unknown>): boolean {
   const required = S.IsRequired(schema) ? schema.required : []
-  const isProperties = G.EveryAll(G.Entries(schema.properties), ([key, schema]) => {
+  const isProperties = G.EveryAll(G.Entries(schema.properties), 0, ([key, schema]) => {
     const nextSchemaPath = `${schemaPath}/properties/${key}`
     const nextInstancePath = `${instancePath}/${key}`
     // Defer error generation for IsExactOptional

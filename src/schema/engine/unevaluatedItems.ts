@@ -41,8 +41,7 @@ export function BuildUnevaluatedItems(context: BuildContext, schema: S.XUnevalua
   const hasIndex = E.Call(E.Member('indices', 'has'), ['index'])
   const isSchema = BuildSchema(context, schema.unevaluatedItems, 'value')
   const addIndex = E.Call(E.Member('context', 'AddIndex'), ['index'])
-  const isEvery = E.Call(E.Member(value, 'every'), [E.ArrowFunction(['value', 'index'], E.And(E.Or(hasIndex, isSchema), addIndex))])
-
+  const isEvery = E.Every(value, E.Constant(0), ['value', 'index'], E.And(E.Or(hasIndex, isSchema), addIndex))
   return E.Call(E.ArrowFunction(['context'], E.Statements([
     E.ConstDeclaration('indices', indices),
     E.Return(isEvery)
@@ -53,7 +52,7 @@ export function BuildUnevaluatedItems(context: BuildContext, schema: S.XUnevalua
 // ------------------------------------------------------------------
 export function CheckUnevaluatedItems(context: CheckContext, schema: S.XUnevaluatedItems, value: unknown[]): boolean {
   const indices = context.GetIndices()
-  return G.Every(value, (value, index) => {
+  return G.Every(value, 0, (value, index) => {
     return (indices.has(index) || CheckSchema(context, schema.unevaluatedItems, value))
       && context.AddIndex(index)
   })
@@ -64,7 +63,7 @@ export function CheckUnevaluatedItems(context: CheckContext, schema: S.XUnevalua
 export function ErrorUnevaluatedItems(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XUnevaluatedItems, value: unknown[]): boolean {
   const indices = context.GetIndices()
   const unevaluatedItems: number[] = []
-  const isUnevaluatedItems = G.EveryAll(value, (value, index) => {
+  const isUnevaluatedItems = G.EveryAll(value, 0, (value, index) => {
     const nextContext = new AccumulatedErrorContext(context.GetContext(), context.GetSchema())
     const isEvaluatedItem = (indices.has(index) || ErrorSchema(nextContext, schemaPath, instancePath, schema.unevaluatedItems, value))
       && context.AddIndex(index)

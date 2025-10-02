@@ -85,7 +85,7 @@ export function BuildAdditionalPropertiesStandard(context: BuildContext, schema:
   const isKey = E.Call(E.Member(regexp, 'test'), ['key'])
   const addKey = context.AddKey('key')
   const guarded = context.UseUnevaluated() ? E.Or(isKey, E.And(isSchema, addKey)) : E.Or(isKey, isSchema)
-  return E.Call(E.Member(E.Keys(value), 'every'), [E.ArrowFunction(['key'], guarded)])
+  return E.Every(E.Keys(value), E.Constant(0), ['key', '_'], guarded)
 }
 // ------------------------------------------------------------------
 // Build
@@ -100,7 +100,7 @@ export function BuildAdditionalProperties(context: BuildContext, schema: S.XAddi
 // ------------------------------------------------------------------
 export function CheckAdditionalProperties(context: CheckContext, schema: S.XAdditionalProperties, value: Record<PropertyKey, unknown>): boolean {
   const regexp = new RegExp(GetPropertiesPattern(schema))
-  const isAdditionalProperties = G.Every(G.Keys(value), (key) => {
+  const isAdditionalProperties = G.Every(G.Keys(value), 0, (key) => {
     return regexp.test(key) || 
       (CheckSchema(context, schema.additionalProperties, value[key]) && context.AddKey(key))
   })
@@ -112,7 +112,7 @@ export function CheckAdditionalProperties(context: CheckContext, schema: S.XAddi
 export function ErrorAdditionalProperties(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XAdditionalProperties, value: Record<PropertyKey, unknown>): boolean {
   const regexp = new RegExp(GetPropertiesPattern(schema))
   const additionalProperties: string[] = []
-  const isAdditionalProperties = G.EveryAll(G.Keys(value), (key) => {
+  const isAdditionalProperties = G.EveryAll(G.Keys(value), 0, (key) => {
     const nextSchemaPath = `${schemaPath}/additionalProperties`
     const nextInstancePath = `${instancePath}/${key}`
     const nextContext = new AccumulatedErrorContext(context.GetContext(), context.GetSchema())

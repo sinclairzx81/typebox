@@ -51,7 +51,7 @@ export function BuildDependentRequired(context: BuildContext, schema: S.XDepende
 // ------------------------------------------------------------------
 export function CheckDependentRequired(context: CheckContext, schema: S.XDependentRequired, value: Record<PropertyKey, unknown>): boolean {
   const isLength = G.IsEqual(G.Keys(value).length, 0)
-  const isEvery = G.Every(G.Entries(schema.dependentRequired), ([key, keys]) => {
+  const isEvery = G.Every(G.Entries(schema.dependentRequired), 0, ([key, keys]) => {
     return !G.HasPropertyKey(value, key) ||
       keys.every((key) => G.HasPropertyKey(value, key))
   })
@@ -62,8 +62,8 @@ export function CheckDependentRequired(context: CheckContext, schema: S.XDepende
 // ------------------------------------------------------------------
 export function ErrorDependentRequired(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XDependentRequired, value: Record<PropertyKey, unknown>): boolean {
   const isLength = G.IsEqual(G.Keys(value).length, 0)
-  const isEveryEntry = G.EveryAll(G.Entries(schema.dependentRequired), ([key, keys]) => {
-    return !G.HasPropertyKey(value, key) || G.EveryAll(keys, (dependency) => G.HasPropertyKey(value, dependency) || context.AddError({
+  const isEveryEntry = G.EveryAll(G.Entries(schema.dependentRequired), 0, ([key, keys]) => {
+    return !G.HasPropertyKey(value, key) || G.EveryAll(keys, 0, (dependency) => G.HasPropertyKey(value, dependency) || context.AddError({
       keyword: 'dependentRequired',
       schemaPath,
       instancePath,

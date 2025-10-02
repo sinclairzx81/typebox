@@ -46,13 +46,13 @@ function BuildItemsSized(context: BuildContext, schema: S.XItemsSized, value: st
   }))
 }
 function CheckItemsSized(context: CheckContext, schema: S.XItemsSized, value: unknown[]): boolean {
-  return G.Every(schema.items, (schema, index) => {
+  return G.Every(schema.items, 0, (schema, index) => {
     return G.IsGreaterEqualThan(index, value.length) 
       || (CheckSchema(context, schema, value[index]) && context.AddIndex(index))
   })
 }
 function ErrorItemsSized(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XItemsSized, value: unknown[]): boolean {
-  return G.EveryAll(schema.items, (schema, index) => {
+  return G.EveryAll(schema.items, 0, (schema, index) => {
     const nextSchemaPath = `${schemaPath}/items/${index}`
     const nextInstancePath = `${instancePath}/${index}`
     return G.IsGreaterEqualThan(index, value.length) 
@@ -63,19 +63,22 @@ function ErrorItemsSized(context: ErrorContext, schemaPath: string, instancePath
 // ItemsUnsized
 // ------------------------------------------------------------------
 function BuildItemsUnsized(context: BuildContext, schema: S.XItemsUnsized, value: string): string {
+  const offset = S.IsPrefixItems(schema) ? schema.prefixItems.length : 0
   const isSchema = BuildSchema(context, schema.items, 'element')
   const addIndex = context.AddIndex('index')
   const guarded = context.UseUnevaluated() ? E.And(isSchema, addIndex) : isSchema
-  return E.Call(E.Member(value, 'every'), [E.ArrowFunction(['element', 'index'], guarded)])
+  return E.Every(value, E.Constant(offset), ['element', 'index'], guarded)
 }
 function CheckItemsUnsized(context: CheckContext, schema: S.XItemsUnsized, value: unknown[]): boolean {
-  return G.Every(value, (element, index) => {
+  const offset = S.IsPrefixItems(schema) ? schema.prefixItems.length : 0
+  return G.Every(value, offset, (element, index) => {
     return CheckSchema(context, schema.items, element) 
       && context.AddIndex(index)
   })
 }
 function ErrorItemsUnsized(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XItemsUnsized, value: unknown[]): boolean {
-  return G.EveryAll(value, (element, index) => {
+  const offset = S.IsPrefixItems(schema) ? schema.prefixItems.length : 0
+  return G.EveryAll(value, offset, (element, index) => {
     const nextSchemaPath = `${schemaPath}/items`
     const nextInstancePath = `${instancePath}/${index}`
     return ErrorSchema(context, nextSchemaPath, nextInstancePath, schema.items, element) 

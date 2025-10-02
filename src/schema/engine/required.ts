@@ -42,14 +42,14 @@ export function BuildRequired(context: BuildContext, schema: S.XRequired, value:
 // Check
 // ------------------------------------------------------------------
 export function CheckRequired(context: CheckContext, schema: S.XRequired, value: Record<PropertyKey, unknown>): boolean {
-  return G.Every(schema.required, (key) => G.HasPropertyKey(value, key))
+  return G.Every(schema.required, 0, (key) => G.HasPropertyKey(value, key))
 }
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
 export function ErrorRequired(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XRequired, value: Record<PropertyKey, unknown>): boolean {
   const requiredProperties: string[] = []
-  const isRequired = G.EveryAll(schema.required, (key) => {
+  const isRequired = G.EveryAll(schema.required, 0, (key) => {
     const hasKey = G.HasPropertyKey(value, key)
     if (!hasKey) requiredProperties.push(key)
     return hasKey
