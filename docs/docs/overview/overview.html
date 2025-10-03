@@ -6,7 +6,7 @@
 <h2>Features</h2>
 <h2>Type</h2>
 <p>The Type namespace creates Json Schema.</p>
-<pre><code class="language-typescript">import Type, { type Static } from &#39;typebox&#39;
+<pre><code class="language-typescript">import Type from &#39;typebox&#39;
 
 const T = Type.Object({                             // const T = {
   x: Type.Number(),                                 //   type: &#39;object&#39;,
@@ -18,7 +18,7 @@ const T = Type.Object({                             // const T = {
                                                     //   }
                                                     // }
 
-type T = Static&lt;typeof T&gt;                           // type T = {
+type T = Type.Static&lt;typeof T&gt;                      // type T = {
                                                     //   x: number,
                                                     //   y: number,
                                                     //   z: number
@@ -26,7 +26,7 @@ type T = Static&lt;typeof T&gt;                           // type T = {
 </code></pre>
 <h2>Script</h2>
 <p>The Script creates Json Schema from TypeScript syntax.</p>
-<pre><code class="language-typescript">import Type, { type Static } from &#39;typebox&#39;
+<pre><code class="language-typescript">import Type from &#39;typebox&#39;
 
 const T = Type.Script(`{
   x: number
@@ -44,7 +44,7 @@ const S = Type.Script({ T }, `{
   [K in keyof T]: T[K] | null
 }`)
 
-type S = Static&lt;typeof S&gt;                           // type S = {
+type S = Type.Static&lt;typeof S&gt;                      // type S = {
                                                     //   x: number | null,
                                                     //   y: number | null,
                                                     //   z: number | null

@@ -4,7 +4,7 @@ Functions to Process JavaScript Values
 
 ## Overview
 
-The TypeBox Value module provides functions to Check and Parse JavaScript values. It also includes functions such as Clone, Repair, Encode, Decode, Diff and Patch which perform various structural operations on JavaScript values. This module provides unified support for both Json Schema and Standard Schema.
+The TypeBox Value module provides functions to Check and Parse JavaScript values. It also includes functions such as Clone, Repair, Encode, Decode, Diff and Patch which perform various structural operations on JavaScript values.
 
 The Value module is available via optional import.
 

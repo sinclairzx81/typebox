@@ -4,7 +4,7 @@ High Performance Runtime Validation
 
 ## Overview
 
-The TypeBox Compile module provides functions to convert types into high-performance validators. The compiler is tuned for fast compilation as well as fast validation. This module provides unified support to compile both Json Schema and Standard Schema, however performance optimizations are only possible with Json Schema.
+The TypeBox Compile module provides functions to convert types into high-performance validators. The compiler is tuned for fast compilation as well as fast validation.
 
 The Compile module is available via optional import.
 
