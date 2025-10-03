@@ -11,7 +11,7 @@ TypeBox includes many functions to create Json Schema types. Each function retur
 The following creates a Json Schema type and infers with Static.
 
 ```typescript
-import Type, { type Static } from 'typebox'
+import Type from 'typebox'
 
 const T = Type.Object({                             // const T = {
   x: Type.Number(),                                 //   type: 'object',
@@ -23,7 +23,7 @@ const T = Type.Object({                             // const T = {
                                                     //   }
                                                     // }
 
-type T = Static<typeof T>                           // type T = {
+type T = Type.Static<typeof T>                      // type T = {
                                                     //   x: number,
                                                     //   y: number,
                                                     //   z: number

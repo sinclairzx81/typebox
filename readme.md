@@ -19,16 +19,14 @@
 ## Install
 
 ```bash
-$ npm install typebox --save                        # 1.0.0
-
-$ npm install @sinclair/typebox --save              # 0.34.x
+$ npm install typebox
 ```
 
 
 ## Usage
 
 ```typescript
-import Type, { type Static } from 'typebox'
+import Type from 'typebox'
 
 const T = Type.Object({                             // const T = {
   x: Type.Number(),                                 //   type: 'object',
@@ -40,7 +38,7 @@ const T = Type.Object({                             // const T = {
                                                     //   }
                                                     // }
 
-type T = Static<typeof T>                           // type T = {
+type T = Type.Static<typeof T>                      // type T = {
                                                     //   x: number,
                                                     //   y: number,
                                                     //   z: number
@@ -68,7 +66,7 @@ License: MIT
 
 ## Upgrade
 
-Refer to the following URL for information on upgrading from 0.34.x to 1.0.
+If upgrading from `@sinclair/typebox` refer to the 1.0 migration guide at the following URL.
 
 [Migration Guide](https://github.com/sinclairzx81/typebox/blob/main/changelog/1.0.0-migration.md)
 
@@ -76,7 +74,7 @@ Refer to the following URL for information on upgrading from 0.34.x to 1.0.
 
 ## Type
 
-[Documentation](https://sinclairzx81.github.io/typebox/#/docs/type/overview) | [Example](https://www.typescriptlang.org/play/?#code/JYWwDg9gTgLgBAFQJ5gKYBo4G84xauAZRgEMZgBjOAXzgDMoIQ4ByPNAIwgA8WAoPhQgA7AM7wEcALyJ8AOgDyHAFaoKMABQ44O3Xv0HDAeiNwhYidOx8d3AFyy0cgHIBXEB1RQNASkyGAwICTXXZUBxYIFTUYFnQbOCQHZCc3Dy9ffyDsoJCdKFQAR1dgAoATBwBtFl5MFiQ41gAvFgBdeJ0m5Pk0z28fHMHAvLgwRjRYYFRRByw+agGhpeW9EdtZ3HwI4Xc+lhoOlaPltcSNsO3dr33qQ+P77NOu7E20S-SoG4SHn+NTHWo31+wJ0IUBfDCiCsxDIlAAPGEIHREAA+EGg0yQyQyObo9EjexwHYfO54n4jJJEq5QUlk+4jZ7EvpAunHMFAA)
+[Documentation](https://sinclairzx81.github.io/typebox/#/docs/type/overview) | [Example](https://www.typescriptlang.org/play/#code/JYWwDg9gTgLgBAFQJ5gKZwGZQiOByGFVAIwgA88AoSgYwgDsBneBOAXkSIDoB5YgK1Q0YACgDecSVOkzZcuAHoFcOkxbs4YypLIAuTmi4A5AK4hiqKCICUAGnkPHspVMJp9eCAKEw8t7XBI+siGpuaWNvZO0Q4uklCoAI4mwAkAJvoA2ngU9nhIfvgAXngAuv6SRcHcYRZW1jGNcnFwYNhosMCojPpaAL4NTUPDisrSeppwbqge9GZ1eHB9FSOrjS2SQZPTs-OWi8sBa8exY1JV20S74VAHRycP0i1994+PLi+U04gaIahcAGUYABDGDAGgAHmmEAwiAAfCcXN9WBwtG90aMpBM5jcVhiHi0tji6nj8ccWhdiZZXmSRh8gA)
 
 TypeBox includes many functions to create Json Schema types. Each function returns a small Json Schema fragment that corresponds to a TypeScript type. TypeBox uses function composition to combine schema fragments into more complex types. It provides a set of functions that are used to model Json Schema schematics as well as a set of functions that model constructs native to JavaScript and TypeScript.
 
@@ -85,7 +83,7 @@ TypeBox includes many functions to create Json Schema types. Each function retur
 The following creates a Json Schema type and infers with Static.
 
 ```typescript
-import Type, { type Static } from 'typebox'
+import Type from 'typebox'
 
 const T = Type.Object({                             // const T = {
   x: Type.Number(),                                 //   type: 'object',
@@ -97,7 +95,7 @@ const T = Type.Object({                             // const T = {
                                                     //   }
                                                     // }
 
-type T = Static<typeof T>                           // type T = {
+type T = Type.Static<typeof T>                      // type T = {
                                                     //   x: number,
                                                     //   y: number,
                                                     //   z: number
@@ -110,16 +108,16 @@ type T = Static<typeof T>                           // type T = {
 
 ## Script
 
-[Documentation](https://sinclairzx81.github.io/typebox/#/docs/script/overview) | [Example](https://www.typescriptlang.org/play/?moduleResolution=99&target=99&jsx=0&module=199#code/JYWwDg9gTgLgBAFQJ5gKYBo4G84xauAZRgEMZgBjOAXzgDMoIQ4ByPNAIwgA8WAoPhQgA7AM7wEcALyJ8AOkIUowMDAAUAAxx84cbgC44wgK4gOqKJh1wkhk2YtXdALzunzUOH2oaAlLoDAoOCQ0LCggHoIuCExCWlsa3DklNTAqID2VEMWCA4AK1QKGBZ0JLSKyvTo3ShUAEdjYDqAE0MAbRZeTBYkUtZnFgBdMqqxqozdMEY0WGBUUUMscvHVsMmAg2xcfBz7DxYaUbWT0I3dW22svfcLQ+pj06eA87hXK93WfbuaFeeTjbUP7-VYZIGCETiIgJZBoBRKFTqHCSB5wLTWdoAaTgwGEcAA1qgkBA6IghoYEFihnAAD5GYwAGwZ3j8IIB0ViUMICWWbKeG2urDyhWKpWBfMqGzqjWaqDacE63VYfR6gxG4olaQ20wgs3ICyWGs1KVeW20xtBNSCJGESAA8nQOkaLesrcEcIKWN8oPcnC6Jm6gh7Pl7GQz7s7-cFXrpqZGo9Ugg94wndK9LubU6kY3AbfbHQqU6mc7pg2gbg4fUcvFns4HAmXsl8wxHayb63A423kq9k93wq93pn+yEc3mHU6R2cO6WduXm5XfTWp9GZx956Gma2V5EO12d4nAn2Dy8rUCT6ffnwstCZMQyJQADxZElEAB8IIyN+5Ml5F7gGxbN6tL0kyjwnhslzAXSJhgUWCYbO80Ggcy-4AdE1BAA)
+[Documentation](https://sinclairzx81.github.io/typebox/#/docs/script/overview) | [Example](https://www.typescriptlang.org/play/?moduleResolution=99&target=99&jsx=0&module=199#code/JYWwDg9gTgLgBAFQJ5gKZwGZQiOByGFVAIwgA88AoSgYwgDsBneBOAXkSIDoBlGqYGBgAKAAYBvOJThwyALjj0AriGKooAGikykC5avVbpcAF56VaqFIC+ogJQzHT5y9dv3zgPSe4dJi3Y4cWMPULDwp29HQjQFPAhiACtUGhg8DRCIrOzInxkoVABHJWACgBMFAG08Ci08JHT8EzwAXQycjpyomTBsNFhgVEYFYM6x8O7HeSC4GNQ4-Us8OGt28fW3SZ0R2aIFi3Vl1cyN07gt0x25-YMoI5Oz9cnrB8exqJfaBmY4HkDkNC8fiCESSVirOASYyVADScGA9DgAGtUEgIBhEC0FAhYS04AAfRRKAA2xMotgcb3GUT8Pz+HFGVI2k2u+ASyVS6VeTOykwKxVKqAqcGqtXwDTqzTa3J5EUmvQg-Rgg2GQRlsrCF2mknVGo8FxkAEN6EgAPIYKq6vWbPKuSSsvCLQ4rIzWjoGxz2vb4ZSk+5urq2px4q0B3LOY5hrIXXQzUNR85BxzGs0WkXxqMemRe2I+g53F3aBOapNOHPzPN+lYZsMekPFksRtYN9wXMxxlv60twFPmy2d1vd7O7XOO-NHV0D1xZmYO33E-1Tlx1otL8NOSNr9fVrfhz5zX7-bg8GCG5U0AA8c3RvwAfE8fAf6Wrd45JtMnVZCfPm7vJrHPwJIlSV-LdJnbQDvxJMlXxkD4gA)
 
-TypeBox is a type system designed to use Json Schema as an AST for runtime type representation. The Script function provides a full syntactic frontend to the type system and enables Json Schema to be constructed using native TypeScript syntax. TypeBox provides full static and runtime type safety for string-encoded types.
+TypeBox can translate TypeScript syntax into Json Schema. The Script function is a fully type-safe, syntactic frontend to the TypeBox type builder API, allowing Json Schema to be constructed and mapped using TypeScript type expressions encoded as strings.
 
 ### Example
 
 The following uses Script to construct and map Json Schema.
 
 ```typescript
-import Type, { type Static } from 'typebox'
+import Type from 'typebox'
 
 const T = Type.Script(`{ 
   x: number, 
@@ -162,7 +160,7 @@ const S = Type.Script({ T }, `{
                                                     //   }
                                                     // }
 
-type S = Static<typeof S>                           // type S = {
+type S = Type.Static<typeof S>                      // type S = {
                                                     //   x: number | null,
                                                     //   y: number | null,
                                                     //   z: number | null
@@ -175,7 +173,7 @@ type S = Static<typeof S>                           // type S = {
 
 [Documentation](https://sinclairzx81.github.io/typebox/#/docs/value/overview) | [Example](https://www.typescriptlang.org/play/?#code/JYWwDg9gTgLgBAFQJ5gKZwGZQiOByGFVAIwgA88AoUSWOANQEMAbAV3Sx30LVLIHoAbi3ZVKAYwgA7AM7wEcALyIiAOgDyxAFapxMABQBvSnDhkAXCrSqAcqxDFUUfQEoANCbhJLya3YdOrh6mAF4+av6Ozi6UAL4xlPz8cADCABa6ANaUEtJycACCSgwiqKrpWfoIbnCGpvUNjU1NSXCSsvAFlqQQzKiMUsUwUOyeFnAAjDXNM7Nzs57ecABMwXBhcADMcQmtAAqMUDKoOe35AELFTGxlB0eoVTV18y+mrWfw55bGpuNTrwDAfVWr9LFJ7FE1ktVkDYS8QV4wRCnGsNps4RjZgiNuCAlAdpjCVjkrFiqpyUA)
 
-The TypeBox Value module provides functions to Check and Parse JavaScript values. It also includes functions such as Clone, Repair, Encode, Decode, Diff and Patch which perform various structural operations on JavaScript values. This module provides unified support for both Json Schema and Standard Schema.
+The TypeBox Value module provides functions to Check and Parse JavaScript values. It also includes functions such as Clone, Repair, Encode, Decode, Diff and Patch which perform various structural operations on JavaScript values.
 
 The Value module is available via optional import.
 
@@ -218,7 +216,7 @@ const B = Value.Parse(T, {                          // const B: {
 
 [Documentation](https://sinclairzx81.github.io/typebox/#/docs/compile/overview) | [Example](https://www.typescriptlang.org/play/?#code/JYWwDg9gTgLgBAbzgYQuYAbApnAvnAMyjTgHIYBPMLAIwgA8B6AYzTEy1IChRJY4AKlRxES5YXXrcurAHYBneMjgBeFGw4AKIdQB0AeRoArLMxiakcK9Zu3bjRnDmKUALjgA1AIYZgAEy8YaAAeBFwAGkFDEzNQrit6dx0sXQA5AFcQGiwoTQBKSLsi4pKrB2tEwQysnPD4uAok4TTM7NyC0s6u8qtGqtba+oAvJr1qtvyuqZKeuBH+mqguXDy86fWNm3LcAD4dri5y5AALUwBrA+d4AEFVFF0T84tNjfKruGv3OghsL1k7mBQdJYeqVACMhReUNs9T6ACY6lZ5gBmZZ5A7lAAKXig8hBMggCngACE7shdNjcVhntDuo53sT3AhQe4IbT2WVHAl3LIBlBEQ13AiOezZn1eYsBSiRaKuXMeXy0TKZds7rp1UA)
 
-The TypeBox Compile module provides functions to convert types into high-performance validators. The compiler is tuned for fast compilation as well as fast validation. This module provides unified support to compile both Json Schema and Standard Schema, however performance optimizations are only possible with Json Schema.
+The TypeBox Compile module provides functions to convert types into high-performance validators. The compiler is tuned for fast compilation as well as fast validation.
 
 The Compile module is available via optional import.
 

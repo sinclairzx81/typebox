@@ -15,7 +15,7 @@ This library is designed to allow Json Schema to compose similar to how types co
 The Type namespace creates Json Schema.
 
 ```typescript
-import Type, { type Static } from 'typebox'
+import Type from 'typebox'
 
 const T = Type.Object({                             // const T = {
   x: Type.Number(),                                 //   type: 'object',
@@ -27,7 +27,7 @@ const T = Type.Object({                             // const T = {
                                                     //   }
                                                     // }
 
-type T = Static<typeof T>                           // type T = {
+type T = Type.Static<typeof T>                      // type T = {
                                                     //   x: number,
                                                     //   y: number,
                                                     //   z: number
@@ -39,7 +39,7 @@ type T = Static<typeof T>                           // type T = {
 The Script creates Json Schema from TypeScript syntax.
 
 ```typescript
-import Type, { type Static } from 'typebox'
+import Type from 'typebox'
 
 const T = Type.Script(`{
   x: number
@@ -57,7 +57,7 @@ const S = Type.Script({ T }, `{
   [K in keyof T]: T[K] | null
 }`)
 
-type S = Static<typeof S>                           // type S = {
+type S = Type.Static<typeof S>                      // type S = {
                                                     //   x: number | null,
                                                     //   y: number | null,
                                                     //   z: number | null

@@ -4,7 +4,7 @@
 <p>TypeBox includes many functions to create Json Schema types. Each function returns a small Json Schema fragment that corresponds to a TypeScript type. TypeBox uses function composition to combine schema fragments into more complex types. It provides a set of functions that are used to model Json Schema schematics as well as a set of functions that model constructs native to JavaScript and TypeScript.</p>
 <h2>Example</h2>
 <p>The following creates a Json Schema type and infers with Static.</p>
-<pre><code class="language-typescript">import Type, { type Static } from &#39;typebox&#39;
+<pre><code class="language-typescript">import Type from &#39;typebox&#39;
 
 const T = Type.Object({                             // const T = {
   x: Type.Number(),                                 //   type: &#39;object&#39;,
@@ -16,7 +16,7 @@ const T = Type.Object({                             // const T = {
                                                     //   }
                                                     // }
 
-type T = Static&lt;typeof T&gt;                           // type T = {
+type T = Type.Static&lt;typeof T&gt;                      // type T = {
                                                     //   x: number,
                                                     //   y: number,
                                                     //   z: number

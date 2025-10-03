@@ -4,14 +4,14 @@ A TypeScript Engine for JavaScript
 
 ## Overview
 
-TypeBox is a type system designed to use Json Schema as an AST for runtime type representation. The Script function provides a full syntactic frontend to the type system and enables Json Schema to be constructed using native TypeScript syntax. TypeBox provides full static and runtime type safety for string-encoded types.
+TypeBox can translate TypeScript syntax into Json Schema. The Script function is a fully type-safe, syntactic frontend to the TypeBox type builder API, allowing Json Schema to be constructed and mapped using TypeScript type expressions encoded as strings.
 
 ### Example
 
 The following uses Script to construct and map Json Schema.
 
 ```typescript
-import Type, { type Static } from 'typebox'
+import Type from 'typebox'
 
 const T = Type.Script(`{ 
   x: number, 
@@ -54,7 +54,7 @@ const S = Type.Script({ T }, `{
                                                     //   }
                                                     // }
 
-type S = Static<typeof S>                           // type S = {
+type S = Type.Static<typeof S>                      // type S = {
                                                     //   x: number | null,
                                                     //   y: number | null,
                                                     //   z: number | null
