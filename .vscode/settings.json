@@ -3,6 +3,6 @@
   "deno.lint": false,
   "deno.cacheOnSave": false,
   "typescript.inlayHints.variableTypes.enabled": false,
-  "editor.lightbulb.enabled": "off",
+  "editor.lightbulb.enabled": "on",
   "typescript.experimental.useTsgo": false
 }

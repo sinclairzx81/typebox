@@ -10,7 +10,7 @@ import { Assert } from 'test'
   Assert.IsExtendsMutual<T, null>(false)
 }
 // ... TypeBox will intercept for any type with a `~kind`, but will fall through
-// to XStatic<T> which handles JSON Schema and Standard Schema inference.
+// to XStatic<T> which handles JSON Schema and Validator inference.
 {
   const T = { type: 'string' } as const // need const
   type T = Static<typeof T>

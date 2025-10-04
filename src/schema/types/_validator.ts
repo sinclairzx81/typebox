@@ -31,29 +31,27 @@ THE SOFTWARE.
 import { Guard } from '../../guard/index.ts'
 import type { XSchema } from './schema.ts'
 
-export interface XStandardValidatorV1 {
-  version: 1
-  vendor: string
-  validate: (...args: unknown[]) => object // { value: unknown } | { issues: { path?: string[], message: string }[] }
+// ------------------------------------------------------------------
+// Type
+// ------------------------------------------------------------------
+export interface XValidatorInterface<Value extends unknown = unknown> {
+  Check(value: unknown): value is Value
+  Errors(value: unknown): object[]
 }
-export interface XStandardSchemaV1<Validator extends XStandardValidatorV1 = XStandardValidatorV1> {
-  '~standard': Validator
+export interface XValidator<Value extends unknown = unknown> {
+  '~validator': XValidatorInterface<Value>
 }
-
 // ------------------------------------------------------------------
 // Guard
 // ------------------------------------------------------------------
-/** 
- * Returns true if the schema contains an '~standard` keyword
- * @specification 'StandardSchema'
- */
-export function IsStandardSchemaV1(value: XSchema): value is XStandardSchemaV1 {
-  return Guard.HasPropertyKey(value, '~standard')
-    && Guard.IsObject(value["~standard"])
-    && Guard.HasPropertyKey(value['~standard'], 'version')
-    && Guard.HasPropertyKey(value['~standard'], 'vendor')
-    && Guard.HasPropertyKey(value['~standard'], 'validate')
-    && Guard.IsEqual(value['~standard'].version, 1)
-    && Guard.IsString(value['~standard'].vendor)
-    && Guard.IsFunction(value['~standard'].validate)
+export function IsValidatorInterface(value: unknown): value is XValidatorInterface {
+  return Guard.IsObject(value)
+    && Guard.HasPropertyKey(value, 'Check')
+    && Guard.HasPropertyKey(value, 'Errors')
+    && Guard.IsFunction(value.Check)
+    && Guard.IsFunction(value.Errors)
+}
+export function IsValidator(value: XSchema): value is XValidator {
+  return Guard.HasPropertyKey(value, '~validator')
+    && IsValidatorInterface(value['~validator'])
 }

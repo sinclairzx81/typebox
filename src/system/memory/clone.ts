@@ -32,12 +32,12 @@ import { Guard } from '../../guard/index.ts'
 import { Metrics } from './metrics.ts'
 
 // ------------------------------------------------------------------
-// StandardSchema
+// Validator
 // ------------------------------------------------------------------
-function IsStandardSchema(value: unknown): value is { '~standard': unknown } {
-  return Guard.IsObject(value) && Guard.HasPropertyKey(value, '~standard')
+function IsValidator(value: unknown): value is { '~validator': unknown } {
+  return Guard.IsObject(value) && Guard.HasPropertyKey(value, '~validator')
 }
-function FromStandardSchema(value: { '~standard': unknown }): unknown {
+function FromValidator(value: { '~validator': unknown }): unknown {
   return value // non-clonable
 }
 // ------------------------------------------------------------------
@@ -78,7 +78,7 @@ function FromUnknown(value: unknown): unknown {
 function FromValue(value: unknown): unknown {
   return (
     value instanceof RegExp ? FromRegExp(value) :
-    IsStandardSchema(value) ? FromStandardSchema(value) :
+    IsValidator(value) ? FromValidator(value) :
     Guard.IsArray(value) ? FromArray(value) : 
     Guard.IsObject(value) ? FromObject(value) : 
     FromUnknown(value)
