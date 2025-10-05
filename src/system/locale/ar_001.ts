@@ -65,7 +65,7 @@ export function ar_001(error: TValidationError): string {
     case 'unevaluatedProperties': return 'يجب ألا يحتوي على خصائص غير مقيمة'
     case 'uniqueItems': return `يجب ألا يحتوي على عناصر مكررة`
     case '~refine': return error.params.message
-    case '~standard': return `يجب أن يتطابق مع مخطط ${error.params.vendor}`
+    case '~base': return `يجب أن يتطابق مع مخطط ${'Base'}`
     default: return 'حدث خطأ غير معروف في التحقق من الصحة'
   }
 }

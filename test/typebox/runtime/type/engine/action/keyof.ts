@@ -210,7 +210,7 @@ Test('Should KeyOf 17', () => {
     ]),
     Type.Intersect([
       Type.Object({ z: Type.Number() }),
-      Type.Object({ w: Type.Number() })
+      Type.Object({ w: Type.Number() }) 
     ])
   ])
   const T: Type.TUnion<[

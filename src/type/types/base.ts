@@ -29,6 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { type TSchema, IsKind } from './schema.ts'
+import { type XBase, type XBaseValidator } from '../../schema/types/index.ts'
 
 // ------------------------------------------------------------------
 // BaseNotImplemented
@@ -49,12 +50,11 @@ export class BaseNotImplemented extends Error {
 // Type.Base<...>
 // ------------------------------------------------------------------
 /** Base class for creating extension types. */
-export class Base<Value extends unknown = unknown> implements TSchema {
+export class Base<Value extends unknown = unknown> implements TSchema, XBase<Value> {
   public readonly '~kind': 'Base'
-  public readonly '~standard': StandardSchemaV1.Props<Value>
+  public readonly '~base': BaseValidator<Value>
   constructor() {
     const validator = new BaseValidator(
-      // @ts-ignore TS 5.0.4 - unable to derive guard type
       (value) => this.Check(value),
       (value) => this.Errors(value)
     )
@@ -64,7 +64,7 @@ export class Base<Value extends unknown = unknown> implements TSchema {
       enumerable: false
     }
     Object.defineProperty(this, '~kind', { ...configuration, value: 'Base' })
-    Object.defineProperty(this, '~standard', { ...configuration, value: validator })
+    Object.defineProperty(this, '~base', { ...configuration, value: validator })
   }
   /** Checks a value or returns false if invalid */
   public Check(value: unknown): value is Value {
@@ -101,64 +101,9 @@ export function IsBase(value: unknown): value is Base {
 // ------------------------------------------------------------------
 // BaseValidator
 // ------------------------------------------------------------------
-class BaseValidator<Value extends unknown = unknown> implements StandardSchemaV1.Props<Value> {
-  public readonly vendor = 'typebox'
-  public readonly version = 1
+class BaseValidator<Value extends unknown = unknown> implements XBaseValidator<Value> {
   constructor(
-    private readonly check: (value: unknown) => value is Value,
-    private readonly errors: (value: unknown) => object[]
+    public readonly check: (value: unknown) => value is Value,
+    public readonly errors: (value: unknown) => object[]
   ) { }
-  public readonly validate = (value: unknown): StandardSchemaV1.Result<Value> => {
-    return this.check(value)
-      ? this.Success(value)
-      : this.Failure(this.errors(value))
-  }
-  private Success(value: Value): StandardSchemaV1.SuccessResult<Value> {
-    return { value }
-  }
-  private Failure(issues: object[]): StandardSchemaV1.FailureResult {
-    return { issues } as never
-  }
-}
-// ------------------------------------------------------------------
-// The Standard Schema V1 Interface
-// ------------------------------------------------------------------
-interface StandardSchemaV1<Input = unknown, Output = Input> {
-  readonly '~standard': StandardSchemaV1.Props<Input, Output>
-}
-declare namespace StandardSchemaV1 {
-  export interface Props<Input = unknown, Output = Input> {
-    readonly version: 1
-    readonly vendor: string
-    readonly validate: (
-      value: unknown
-    ) => Result<Output> | Promise<Result<Output>>
-    readonly types?: Types<Input, Output> | undefined
-  }
-  export type Result<Output> = SuccessResult<Output> | FailureResult
-  export interface SuccessResult<Output> {
-    readonly value: Output
-    readonly issues?: undefined
-  }
-  export interface FailureResult {
-    readonly issues: ReadonlyArray<Issue>
-  }
-  export interface Issue {
-    readonly message: string
-    readonly path?: ReadonlyArray<PropertyKey | PathSegment> | undefined
-  }
-  export interface PathSegment {
-    readonly key: PropertyKey
-  }
-  export interface Types<Input = unknown, Output = Input> {
-    readonly input: Input
-    readonly output: Output
-  }
-  export type InferInput<Schema extends StandardSchemaV1> = NonNullable<
-    Schema['~standard']['types']
-  >['input']
-  export type InferOutput<Schema extends StandardSchemaV1> = NonNullable<
-    Schema['~standard']['types']
-  >['output']
-  export { }
 }

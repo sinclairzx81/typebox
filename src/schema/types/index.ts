@@ -30,7 +30,7 @@ THE SOFTWARE.
 // Extensions
 // ------------------------------------------------------------------
 export * from './_refine.ts'
-export * from './_standard.ts'
+export * from './_base.ts'
 
 // ------------------------------------------------------------------
 // Standard

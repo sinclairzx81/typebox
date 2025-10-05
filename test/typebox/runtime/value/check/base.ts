@@ -51,7 +51,7 @@ Test('Should validate Base 6', () => {
     }
     override Errors(): object[] {
       return [{
-        keyword: '~standard',
+        keyword: '~base',
         schemaPath: '',
         instancePath: '',
         params: { issues: [{ message: '' }] },
@@ -68,7 +68,7 @@ Test('Should validate Base 7', () => {
     }
     override Errors(): object[] {
       return [{
-        keyword: '~standard',
+        keyword: '~base',
         schemaPath: '',
         instancePath: '',
         params: { issues: [{ message: 1 }] },
@@ -85,7 +85,7 @@ Test('Should validate Base 8', () => {
     }
     override Errors(): object[] {
       return [{
-        keyword: '~standard',
+        keyword: '~base',
         schemaPath: '',
         instancePath: '',
         params: { issues: null },
@@ -102,7 +102,7 @@ Test('Should validate Base 9', () => {
     }
     override Errors(): object[] {
       return [{
-        keyword: '~standard',
+        keyword: '~base',
         schemaPath: '',
         instancePath: '',
         params: { issues: [{ message: '', path: [] }] }
@@ -112,7 +112,7 @@ Test('Should validate Base 9', () => {
   Fail(new Foo(), [])
 })
 // ------------------------------------------------------------------
-// Error Mapping: Standard Schema | Throw Detection | Coverage
+// Error Mapping: Validator | Throw Detection | Coverage
 // ------------------------------------------------------------------
 Test('Should validate Base 10', () => {
   class Foo extends Type.Base {
@@ -159,7 +159,7 @@ Test('Should validate Base 13', () => {
   Fail(new Foo(), [])
 })
 // ------------------------------------------------------------------
-// Base Error | Standard Schema Error
+// Base Error | Validator
 // ------------------------------------------------------------------
 Test('Should validate Base 14', () => {
   class Foo extends Type.Base {
@@ -189,11 +189,9 @@ Test('Should validate Base 15', () => {
     }
   }
   const F = new Foo()
-  const R = F['~standard'].validate(null) as never as { issues: [{ foo: 1; bar: 2; baz: 3 }] }
-  Assert.IsTrue(Guard.IsObject(R))
-  Assert.HasPropertyKey(R, 'issues')
-
-  const E = R.issues[0]
+  const R = F['~base'].errors(null)
+  Assert.IsTrue(Guard.IsArray(R))
+  const E = R[0]
   Assert.HasPropertyKey(E, 'foo')
   Assert.HasPropertyKey(E, 'bar')
   Assert.HasPropertyKey(E, 'baz')

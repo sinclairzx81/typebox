@@ -67,7 +67,7 @@ Test('Should Action 12', () => {
   const T: Type.TNull = Type.Script('InstanceType<new (a: string, b: number) => null>')
   Assert.IsTrue(Type.IsNull(T))
 })
-Test('Should Action 13', () => {
+Test('Should Action 13', () => { 
   const T: Type.TUnion<[Type.TLiteral<'x'>, Type.TLiteral<'y'>]> = Type.Script('KeyOf<{ x: 1, y: 2 }>')
   Assert.IsTrue(Type.IsUnion(T))
   Assert.IsEqual(T.anyOf[0].const, 'x')

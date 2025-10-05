@@ -32,8 +32,9 @@ import * as S from '../types/index.ts'
 import { EmitGuard as E, Guard as G } from '../../guard/index.ts'
 
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
-import { BuildStandardSchemaV1, CheckStandardSchemaV1, ErrorStandardSchemaV1 } from './_standard.ts'
 import { BuildRefine, CheckRefine, ErrorRefine } from './_refine.ts'
+import { BuildBase, CheckBase, ErrorBase } from './_base.ts'
+
 import { BuildAdditionalItems, CheckAdditionalItems, ErrorAdditionalItems } from './additionalItems.ts'
 import { BuildAdditionalProperties, CheckAdditionalProperties, ErrorAdditionalProperties } from './additionalProperties.ts'
 import { BuildAllOf, CheckAllOf, ErrorAllOf } from './allOf.ts'
@@ -213,9 +214,9 @@ export function BuildSchema(context: BuildContext, schema: S.XSchemaLike, value:
     conditions.push(HasNumberType(schema) ? reduced : guarded)
   }
   if (S.IsRef(schema)) conditions.push(BuildRef(context, schema, value))
+  if (S.IsBase(schema)) conditions.push(BuildBase(context, schema, value))
   if (S.IsConst(schema)) conditions.push(BuildConst(context, schema, value))
   if (S.IsEnum(schema)) conditions.push(BuildEnum(context, schema, value))
-  if (S.IsStandardSchemaV1(schema)) conditions.push(BuildStandardSchemaV1(context, schema, value))
   if (S.IsIf(schema)) conditions.push(BuildIf(context, schema, value))
   if (S.IsNot(schema)) conditions.push(BuildNot(context, schema, value))
   if (S.IsAllOf(schema)) conditions.push(BuildAllOf(context, schema, value))
@@ -269,9 +270,9 @@ export function CheckSchema(context: CheckContext, schema: S.XSchemaLike, value:
       (!S.IsMultipleOf(schema) || CheckMultipleOf(context, schema, value))
     )) &&
     (!S.IsRef(schema) || CheckRef(context, schema, value)) &&
+    (!S.IsBase(schema) || CheckBase(context, schema, value)) &&
     (!S.IsConst(schema) || CheckConst(context, schema, value)) &&
     (!S.IsEnum(schema) || CheckEnum(context, schema, value)) &&
-    (!S.IsStandardSchemaV1(schema) || CheckStandardSchemaV1(context, schema, value)) &&
     (!S.IsIf(schema) || CheckIf(context, schema, value)) &&
     (!S.IsNot(schema) || CheckNot(context, schema, value)) &&
     (!S.IsAllOf(schema) || CheckAllOf(context, schema, value)) &&
@@ -326,9 +327,9 @@ export function ErrorSchema(context: ErrorContext, schemaPath: string, instanceP
         +(!S.IsMultipleOf(schema) || ErrorMultipleOf(context, schemaPath, instancePath, schema, value))
       )) &
       +(!S.IsRef(schema) || ErrorRef(context, schemaPath, instancePath, schema, value)) &
+      +(!S.IsBase(schema) || ErrorBase(context, schemaPath, instancePath, schema, value)) &
       +(!S.IsConst(schema) || ErrorConst(context, schemaPath, instancePath, schema, value)) &
       +(!S.IsEnum(schema) || ErrorEnum(context, schemaPath, instancePath, schema, value)) &
-      +(!S.IsStandardSchemaV1(schema) || ErrorStandardSchemaV1(context, schemaPath, instancePath, schema, value)) &
       +(!S.IsIf(schema) || ErrorIf(context, schemaPath, instancePath, schema, value)) &
       +(!S.IsNot(schema) || ErrorNot(context, schemaPath, instancePath, schema, value)) &
       +(!S.IsAllOf(schema) || ErrorAllOf(context, schemaPath, instancePath, schema, value)) &

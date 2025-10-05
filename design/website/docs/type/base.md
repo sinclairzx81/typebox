@@ -1,18 +1,16 @@
 # Base
 
-The Base type is a base class for creating extended TypeBox schematics. 
+Base class for building extended types.
 
 ## Definition
 
-By convention, Base definitions begin with a leading `T` and should be accompanied by a factory function that creates instances the type. The following creates a DateType definition using Base. 
+The Base type is a class definition that includes methods which can be overridden. The two primary methods to override are Check and Errors, both of which are invoked by TypeBox validators. By convention, Base type definitions begin with a leading `T` and are paired with a factory function that creates instances of the type. The following example demonstrates how to define a DateType using Base. 
 
 ```typescript
 export class TDateType extends Type.Base<Date> {
-
   public override Check(value: unknown): value is Date {
     return value instanceof Date
   }
-
   public override Errors(value: unknown): object[] {
     return !this.Check(value) ? [{ message: 'not a Date'}] : []
   }
@@ -31,12 +29,11 @@ Once created, the type can be used with TypeBox validators.
 const R = Value.Check(DateType(), new Date())      // const R = true
 
 const E = Value.Errors(DateType(), 'x')            // const E = [{
-                                                   //   keyword: "~standard",
-                                                   //   schemaPath: "#/~standard",
+                                                   //   keyword: "~base",
+                                                   //   schemaPath: "#",
                                                    //   instancePath: "",
                                                    //   params: { 
-                                                   //     vendor: "typebox", 
-                                                   //     issues: [ { message: "not a Date" } ] 
+                                                   //     errors: [ { message: "not a Date" } ] 
                                                    //   },
                                                    //   message: "must match against typebox schema"
                                                    // }]
