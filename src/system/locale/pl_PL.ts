@@ -65,7 +65,7 @@ export function pl_PL(error: TValidationError): string {
     case 'unevaluatedProperties': return 'nie może mieć nieewaluowanych właściwości'
     case 'uniqueItems': return `nie może zawierać zduplikowanych elementów`
     case '~refine': return error.params.message
-    case '~standard': return `musi pasować do schematu ${error.params.vendor}`
+    case '~base': return `musi pasować do schematu ${'validator'}`
     default: return 'wystąpił nieznany błąd walidacji'
   }
 }

@@ -65,7 +65,7 @@ export function sv_SE(error: TValidationError): string {
     case 'unevaluatedProperties': return 'får inte ha oidentifierade egenskaper'
     case 'uniqueItems': return `får inte ha dubbletter`
     case '~refine': return error.params.message
-    case '~standard': return `måste matcha mot ${error.params.vendor} schema`
+    case '~base': return `måste matcha mot ${'validator'} schema`
     default: return 'ett okänt valideringsfel uppstod'
   }
 }

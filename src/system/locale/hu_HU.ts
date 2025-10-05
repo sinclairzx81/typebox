@@ -66,7 +66,7 @@ export function hu_HU(error: TValidationError): string {
     case 'unevaluatedProperties': return 'nem lehetnek nem értékelt tulajdonságai'
     case 'uniqueItems': return `nem lehetnek ismétlődő elemei`
     case '~refine': return error.params.message
-    case '~standard': return `meg kell egyeznie a(z) ${error.params.vendor} sémával`
+    case '~base': return `meg kell egyeznie a(z) ${'validator'} sémával`
     default: return 'ismeretlen validációs hiba történt'
   }
 }

@@ -1,5 +1,6 @@
 import { Compile } from 'typebox/compile'
 import Format from 'typebox/format'
+import Schema from 'typebox/schema'
 import Value from 'typebox/value'
 import Type from 'typebox'
 
@@ -44,3 +45,9 @@ const X = C.Parse({ x: 1, y: 2, z: 3 })
 // ------------------------------------------------------------------
 
 const E = Format.IsEmail('user@domain.com')
+
+// ------------------------------------------------------------------
+// Schema
+// ------------------------------------------------------------------
+
+const D = Schema.Check({ type: 'string' }, 'hello')

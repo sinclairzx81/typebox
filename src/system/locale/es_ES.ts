@@ -65,7 +65,7 @@ export function es_ES(error: TValidationError): string {
     case 'unevaluatedProperties': return 'no debe tener propiedades no evaluadas'
     case 'uniqueItems': return `no debe tener elementos duplicados`
     case '~refine': return error.params.message
-    case '~standard': return `debe coincidir con el esquema de ${error.params.vendor}`
+    case '~base': return `debe coincidir con el esquema de ${'validator'}`
     default: return 'ha ocurrido un error de validación desconocido'
   }
 }

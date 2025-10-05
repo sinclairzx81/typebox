@@ -59,11 +59,11 @@ export type TValidationError =
   | TPropertyNamesError
   | TRefineError
   | TRequiredError
-  | TStandardSchemaV1Error
   | TTypeError
   | TUnevaluatedItemsError
   | TUnevaluatedPropertiesError
   | TUniqueItemsError
+  | TValidatorError
 
 export function IsValidationError(value: unknown): value is TValidationError {
   return Guard.IsObject(value) &&
@@ -298,13 +298,6 @@ export interface TRequiredError extends TValidationErrorBase {
   params: { requiredProperties: string[] }
 }
 // ------------------------------------------------------------------
-// StandardV1
-// ------------------------------------------------------------------
-export interface TStandardSchemaV1Error extends TValidationErrorBase {
-  keyword: '~standard'
-  params: { vendor: string; issues: { message: string; path?: string[] }[] }
-}
-// ------------------------------------------------------------------
 // Required
 // ------------------------------------------------------------------
 export interface TTypeError extends TValidationErrorBase {
@@ -331,4 +324,11 @@ export interface TUnevaluatedPropertiesError extends TValidationErrorBase {
 export interface TUniqueItemsError extends TValidationErrorBase {
   keyword: 'uniqueItems'
   params: { duplicateItems: number[] }
+}
+// ------------------------------------------------------------------
+// Validator
+// ------------------------------------------------------------------
+export interface TValidatorError extends TValidationErrorBase {
+  keyword: '~base'
+  params: { errors: object[] }
 }

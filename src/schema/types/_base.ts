@@ -31,29 +31,27 @@ THE SOFTWARE.
 import { Guard } from '../../guard/index.ts'
 import type { XSchema } from './schema.ts'
 
-export interface XStandardValidatorV1 {
-  version: 1
-  vendor: string
-  validate: (...args: unknown[]) => object // { value: unknown } | { issues: { path?: string[], message: string }[] }
+// ------------------------------------------------------------------
+// Type
+// ------------------------------------------------------------------
+export interface XBaseValidator<Value extends unknown = unknown> {
+  check(value: unknown): value is Value
+  errors(value: unknown): object[]
 }
-export interface XStandardSchemaV1<Validator extends XStandardValidatorV1 = XStandardValidatorV1> {
-  '~standard': Validator
+export interface XBase<Value extends unknown = unknown> {
+  '~base': XBaseValidator<Value>
 }
-
 // ------------------------------------------------------------------
 // Guard
 // ------------------------------------------------------------------
-/** 
- * Returns true if the schema contains an '~standard` keyword
- * @specification 'StandardSchema'
- */
-export function IsStandardSchemaV1(value: XSchema): value is XStandardSchemaV1 {
-  return Guard.HasPropertyKey(value, '~standard')
-    && Guard.IsObject(value["~standard"])
-    && Guard.HasPropertyKey(value['~standard'], 'version')
-    && Guard.HasPropertyKey(value['~standard'], 'vendor')
-    && Guard.HasPropertyKey(value['~standard'], 'validate')
-    && Guard.IsEqual(value['~standard'].version, 1)
-    && Guard.IsString(value['~standard'].vendor)
-    && Guard.IsFunction(value['~standard'].validate)
+export function IsBaseValidator(value: unknown): value is XBaseValidator {
+  return Guard.IsObject(value)
+    && Guard.HasPropertyKey(value, 'check')
+    && Guard.HasPropertyKey(value, 'errors')
+    && Guard.IsFunction(value.check)
+    && Guard.IsFunction(value.errors)
+}
+export function IsBase(value: XSchema): value is XBase {
+  return Guard.HasPropertyKey(value, '~base')
+    && IsBaseValidator(value['~base'])
 }

@@ -65,7 +65,7 @@ export function ms_MY(error: TValidationError): string {
     case 'unevaluatedProperties': return 'tidak boleh mempunyai sifat yang tidak dinilai'
     case 'uniqueItems': return `tidak boleh mempunyai item pendua`
     case '~refine': return error.params.message
-    case '~standard': return `mesti sepadan dengan skema ${error.params.vendor}`
+    case '~base': return `mesti sepadan dengan skema ${'validator'}`
     default: return 'ralat pengesahan yang tidak diketahui berlaku'
   }
 }

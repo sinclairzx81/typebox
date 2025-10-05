@@ -32,12 +32,12 @@ import { Guard } from '../../guard/index.ts'
 import { Metrics } from './metrics.ts'
 
 // ------------------------------------------------------------------
-// StandardSchema
+// Base
 // ------------------------------------------------------------------
-function IsStandardSchema(value: unknown): value is { '~standard': unknown } {
-  return Guard.IsObject(value) && Guard.HasPropertyKey(value, '~standard')
+function IsBase(value: unknown): value is { '~base': unknown } {
+  return Guard.IsObject(value) && Guard.HasPropertyKey(value, '~base')
 }
-function FromStandardSchema(value: { '~standard': unknown }): unknown {
+function FromBase(value: { '~base': unknown }): unknown {
   return value // non-clonable
 }
 // ------------------------------------------------------------------
@@ -78,13 +78,12 @@ function FromUnknown(value: unknown): unknown {
 function FromValue(value: unknown): unknown {
   return (
     value instanceof RegExp ? FromRegExp(value) :
-    IsStandardSchema(value) ? FromStandardSchema(value) :
+    IsBase(value) ? FromBase(value) :
     Guard.IsArray(value) ? FromArray(value) : 
     Guard.IsObject(value) ? FromObject(value) : 
     FromUnknown(value)
   )
 }
-
 /**
  * Clones a value using the TypeBox type cloning strategy. This function preserves non-enumerable 
  * properties from the source value. This is to ensure cloned types retain discriminable 

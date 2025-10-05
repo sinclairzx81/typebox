@@ -28,8 +28,8 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import type { XSchemaLike } from '../types/schema.ts'
-import type { XStandardSchemaV1, XStandardValidatorV1 } from './_standard.ts'
+import type { XBase } from './_base.ts'
+import type { XSchemaLike } from './schema.ts'
 import type { XAdditionalProperties } from './additionalProperties.ts'
 import type { XAnyOf } from './anyOf.ts'
 import type { XAllOf } from './allOf.ts'
@@ -43,14 +43,10 @@ import type { XProperties } from './properties.ts'
 import type { XRequired } from './required.ts'
 
 // ------------------------------------------------------------------
-// XStandardSchemaV1
+// XStaticBase
 // ------------------------------------------------------------------
-export type XStaticStandardSchemaV1<Validator extends XStandardValidatorV1,
-  ValidateResult extends unknown = ReturnType<Validator['validate']>,
-  RemoveAsync extends unknown = Exclude<ValidateResult, Promise<any>>,
-  RemoveIssue extends unknown = Exclude<RemoveAsync, { issues: any }>,
-  Result extends unknown = RemoveIssue extends { value: infer Value } ? Value : unknown
-> = Result
+export type XStaticBase<Value extends unknown> = Value
+
 // ------------------------------------------------------------------
 // XAdditionalProperties
 // ------------------------------------------------------------------
@@ -210,11 +206,9 @@ type XStaticJsonSchema<Schema extends unknown,
 // ------------------------------------------------------------------
 // XStatic
 // ------------------------------------------------------------------
-/** Statically infers a JSON Schema or Standard Schema */
+/** Statically infers a JSON Schema or Validator */
 export type XStaticType<Schema extends XSchemaLike, Result extends unknown = (
-  Schema extends XStandardSchemaV1<infer Validator extends XStandardValidatorV1>
-  ? XStaticStandardSchemaV1<Validator>
-  : XStaticJsonSchema<Schema>
+  Schema extends XBase<infer Value> ? Value : XStaticJsonSchema<Schema>
 )> = Result
 // ------------------------------------------------------------------
 // XStaticMutable: Preflight
@@ -231,7 +225,7 @@ type XStaticMutableObject<Schema extends object, Result extends Record<PropertyK
   -readonly [K in keyof Schema]: XStaticMutable<Schema[K]>
 }> = Result
 type XStaticMutable<Schema> = (
-  Schema extends XStandardSchemaV1 ? Schema : // terminate! standard-schema may be sensitive to readonly
+  Schema extends XBase ? Schema :
   Schema extends readonly [...infer Schemas extends unknown[]] ? XStaticMutableTuple<Schemas> :
   Schema extends readonly (infer Schema)[] ? XStaticMutableArray<Schema> :
   Schema extends object ? XStaticMutableObject<Schema> :
@@ -240,7 +234,7 @@ type XStaticMutable<Schema> = (
 // ------------------------------------------------------------------
 // XStatic
 // ------------------------------------------------------------------
-/** Statically infers a JSON Schema or Standard Schema */
+/** Statically infers a JSON Schema */
 export type XStatic<Schema extends XSchemaLike, 
   Mutable extends XSchemaLike = XStaticMutable<Schema>,
   Result extends unknown = XStaticType<Mutable>  
