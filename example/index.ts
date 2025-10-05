@@ -1,7 +1,7 @@
-import Type, { type Static } from 'typebox'
 import { Compile } from 'typebox/compile'
 import Format from 'typebox/format'
 import Value from 'typebox/value'
+import Type from 'typebox'
 
 // ------------------------------------------------------------------
 // Type
@@ -22,8 +22,8 @@ const S = Type.Script({ T }, `{
 // ------------------------------------------------------------------
 // Infer
 // ------------------------------------------------------------------
-type T = Static<typeof T>
-type S = Static<typeof S>
+type T = Type.Static<typeof T>
+type S = Type.Static<typeof S>
 
 // ------------------------------------------------------------------
 // Parse

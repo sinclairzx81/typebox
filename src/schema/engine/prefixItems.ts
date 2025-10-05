@@ -38,7 +38,7 @@ import { BuildSchema, CheckSchema, ErrorSchema } from './schema.ts'
 // ------------------------------------------------------------------
 export function BuildPrefixItems(context: BuildContext, schema: S.XPrefixItems, value: string): string {
   return E.ReduceAnd(schema.prefixItems.map((schema, index) => {
-    const isLength = E.IsGreaterEqualThan(E.Constant(index), E.Member(value, 'length'))
+    const isLength = E.IsLessEqualThan(E.Member(value, 'length'), E.Constant(index))
     const isSchema = BuildSchema(context, schema, `${value}[${index}]`)
     const addIndex = context.AddIndex(E.Constant(index))
     const guarded = context.UseUnevaluated() ? E.And(isSchema, addIndex) : isSchema
@@ -50,7 +50,7 @@ export function BuildPrefixItems(context: BuildContext, schema: S.XPrefixItems, 
 // ------------------------------------------------------------------
 export function CheckPrefixItems(context: CheckContext, schema: S.XPrefixItems, value: unknown[]): boolean {
   return G.IsEqual(value.length, 0) || G.Every(schema.prefixItems, 0, (schema, index) => {
-    return G.IsGreaterEqualThan(index, value.length) 
+    return G.IsLessEqualThan(value.length, index) 
       || (CheckSchema(context, schema, value[index]) && context.AddIndex(index))
   })
 }
@@ -61,7 +61,7 @@ export function ErrorPrefixItems(context: ErrorContext, schemaPath: string, inst
   return G.IsEqual(value.length, 0) || G.EveryAll(schema.prefixItems, 0, (schema, index) => {
     const nextSchemaPath = `${schemaPath}/prefixItems/${index}`
     const nextInstancePath = `${instancePath}/${index}`
-    return G.IsGreaterEqualThan(index, value.length) 
+    return G.IsLessEqualThan(value.length, index) 
       || (ErrorSchema(context, nextSchemaPath, nextInstancePath, schema, value[index]) && context.AddIndex(index))
   })
 }

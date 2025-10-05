@@ -38,7 +38,7 @@ import { BuildSchema, CheckSchema, ErrorSchema } from './schema.ts'
 // ------------------------------------------------------------------
 function BuildItemsSized(context: BuildContext, schema: S.XItemsSized, value: string): string {
   return E.ReduceAnd(schema.items.map((schema, index) => {
-    const isLength = E.IsGreaterEqualThan(E.Constant(index), E.Member(value, 'length'))
+    const isLength = E.IsLessEqualThan(E.Member(value, 'length'), E.Constant(index))
     const isSchema = BuildSchema(context, schema, `${value}[${index}]`)
     const addIndex = context.AddIndex(E.Constant(index))
     const guarded = context.UseUnevaluated() ? E.And(isSchema, addIndex) : isSchema
@@ -47,7 +47,7 @@ function BuildItemsSized(context: BuildContext, schema: S.XItemsSized, value: st
 }
 function CheckItemsSized(context: CheckContext, schema: S.XItemsSized, value: unknown[]): boolean {
   return G.Every(schema.items, 0, (schema, index) => {
-    return G.IsGreaterEqualThan(index, value.length) 
+    return G.IsLessEqualThan(value.length, index) 
       || (CheckSchema(context, schema, value[index]) && context.AddIndex(index))
   })
 }
@@ -55,7 +55,7 @@ function ErrorItemsSized(context: ErrorContext, schemaPath: string, instancePath
   return G.EveryAll(schema.items, 0, (schema, index) => {
     const nextSchemaPath = `${schemaPath}/items/${index}`
     const nextInstancePath = `${instancePath}/${index}`
-    return G.IsGreaterEqualThan(index, value.length) 
+    return G.IsLessEqualThan(value.length, index) 
       || (ErrorSchema(context, nextSchemaPath, nextInstancePath, schema, value[index]) && context.AddIndex(index))
   })
 }
