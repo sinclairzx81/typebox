@@ -64,7 +64,7 @@ export function en_US(error: TValidationError): string {
     case 'unevaluatedProperties': return 'must not have unevaluated properties'
     case 'uniqueItems': return `must not have duplicate items`
     case '~refine': return error.params.message
-    case '~standard': return `must match against ${error.params.vendor} schema`
+    case '~base': return `must match against ${'Base'} schema`
     // deno-coverage-ignore - unreachable
     default: return 'an unknown validation error occurred'
   }

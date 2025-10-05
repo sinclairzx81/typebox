@@ -65,7 +65,7 @@ export function uk_UA(error: TValidationError): string {
     case 'unevaluatedProperties': return 'не повинно мати неперевірених властивостей'
     case 'uniqueItems': return `не повинно мати повторюваних елементів`
     case '~refine': return error.params.message
-    case '~standard': return `має відповідати схемі ${error.params.vendor}`
+    case '~base': return `має відповідати схемі ${'Base'}`
     default: return 'виникла невідома помилка валідації'
   }
 }

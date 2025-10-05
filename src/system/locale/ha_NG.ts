@@ -65,7 +65,7 @@ export function ha_NG(error: TValidationError): string {
     case 'unevaluatedProperties': return 'kada ya kasance yana da kaddarorin da ba a kimanta su ba'
     case 'uniqueItems': return `kada ya kasance yana da abubuwan da suka yi kama`
     case '~refine': return error.params.message
-    case '~standard': return `dole ne ya dace da tsarin ${error.params.vendor}`
+    case '~base': return `dole ne ya dace da tsarin ${'Base'}`
     default: return 'an sami kuskuren tabbatarwa da ba a sani ba'
   }
 }

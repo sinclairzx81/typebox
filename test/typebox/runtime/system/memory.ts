@@ -31,7 +31,7 @@ Test('Should Clone 4', () => {
   Assert.IsTrue(A === B)
 })
 Test('Should Clone 4', () => {
-  const A = { '~standard': null }
+  const A = { '~base': null }
   const B = Memory.Clone(A)
   Assert.IsEqual(B, A)
   Assert.IsTrue(A === B)

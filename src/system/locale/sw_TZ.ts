@@ -65,7 +65,7 @@ export function sw_TZ(error: TValidationError): string {
     case 'unevaluatedProperties': return 'haipaswi kuwa na sifa zisizotathminiwa'
     case 'uniqueItems': return `haipaswi kuwa na vitu vilivyofanana`
     case '~refine': return error.params.message
-    case '~standard': return `lazima ilingane na schema ya ${error.params.vendor}`
+    case '~base': return `lazima ilingane na schema ya ${'Base'}`
     default: return 'hitilafu isiyojulikana ya uthibitishaji imetokea'
   }
 }

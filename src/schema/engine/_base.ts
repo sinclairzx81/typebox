@@ -30,30 +30,29 @@ THE SOFTWARE.
 
 import * as S from '../types/index.ts'
 import * as V from './_externals.ts'
-import { EmitGuard as E, Guard as G } from '../../guard/index.ts'
+import { EmitGuard as E } from '../../guard/index.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildStandardSchemaV1(context: BuildContext, schema: S.XStandardSchemaV1, value: string): string {
-  return E.Not(E.HasPropertyKey(E.Call(E.Member(E.Member(V.CreateExternalVariable(schema), '~standard'), 'validate'), [value]), E.Constant('issues')))
+export function BuildBase(context: BuildContext, schema: S.XBase, value: string): string {
+  return E.Call(E.Member(E.Member(V.CreateExternalVariable(schema), '~base'), 'check'), [value])
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckStandardSchemaV1(context: CheckContext, schema: S.XStandardSchemaV1, value: unknown): boolean {
-  return !G.HasPropertyKey(schema['~standard'].validate(value), 'issues')
+export function CheckBase(context: CheckContext, schema: S.XBase, value: unknown): boolean {
+  return schema['~base'].check(value)
 }
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorStandardSchemaV1(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XStandardSchemaV1, value: unknown): boolean {
-  const result = schema['~standard'].validate(value)
-  return !G.HasPropertyKey(result, 'issues') || context.AddError({
-    keyword: '~standard',
+export function ErrorBase(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XBase, value: unknown): boolean {
+  return schema['~base'].check(value) || context.AddError({
+    keyword: '~base',
     schemaPath,
     instancePath,
-    params: { vendor: schema[`~standard`].vendor, issues: result.issues as never },
+    params: { errors: schema['~base'].errors(value) },
   })
 }

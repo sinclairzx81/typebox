@@ -65,7 +65,7 @@ export function yo_NG(error: TValidationError): string {
     case 'unevaluatedProperties': return 'ko gbọdọ ni awọn ohun-ini ti ko ṣe iṣiro'
     case 'uniqueItems': return `ko gbọdọ ni awọn ohun elo ẹda`
     case '~refine': return error.params.message
-    case '~standard': return `gbọdọ baramu àlàyé ${error.params.vendor}`
+    case '~base': return `gbọdọ baramu àlàyé ${'Base'}`
     default: return 'aṣiṣe ijẹrisi aimọ waye'
   }
 }

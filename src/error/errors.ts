@@ -34,6 +34,7 @@ import { Guard } from '../guard/index.ts'
 export type TValidationError =
   | TAdditionalPropertiesError
   | TAnyOfError
+  | TBaseError
   | TBooleanError
   | TConstError
   | TContainsError
@@ -59,7 +60,6 @@ export type TValidationError =
   | TPropertyNamesError
   | TRefineError
   | TRequiredError
-  | TStandardSchemaV1Error
   | TTypeError
   | TUnevaluatedItemsError
   | TUnevaluatedPropertiesError
@@ -114,6 +114,13 @@ export interface TAdditionalPropertiesError extends TValidationErrorBase {
 export interface TAnyOfError extends TValidationErrorBase {
   keyword: 'anyOf'
   params: {}
+}
+// ------------------------------------------------------------------
+// Base
+// ------------------------------------------------------------------
+export interface TBaseError extends TValidationErrorBase {
+  keyword: '~base'
+  params: { errors: object[] }
 }
 // ------------------------------------------------------------------
 // Boolean
@@ -296,13 +303,6 @@ export interface TRefineError extends TValidationErrorBase {
 export interface TRequiredError extends TValidationErrorBase {
   keyword: 'required'
   params: { requiredProperties: string[] }
-}
-// ------------------------------------------------------------------
-// StandardV1
-// ------------------------------------------------------------------
-export interface TStandardSchemaV1Error extends TValidationErrorBase {
-  keyword: '~standard'
-  params: { vendor: string; issues: { message: string; path?: string[] }[] }
 }
 // ------------------------------------------------------------------
 // Required
