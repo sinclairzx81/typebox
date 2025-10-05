@@ -65,7 +65,7 @@ export function fa_IR(error: TValidationError): string {
     case 'unevaluatedProperties': return 'نباید ویژگی‌های ارزیابی نشده داشته باشد'
     case 'uniqueItems': return `نباید آیتم‌های تکراری داشته باشد`
     case '~refine': return error.params.message
-    case '~base': return `باید با طرح‌واره ${'validator'} مطابقت داشته باشد`
+    case '~base': return `باید با طرح‌واره ${'Base'} مطابقت داشته باشد`
     default: return 'یک خطای اعتبارسنجی ناشناخته رخ داده است'
   }
 }

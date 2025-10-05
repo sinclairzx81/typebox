@@ -65,7 +65,7 @@ export function fr_FR(error: TValidationError): string {
     case 'unevaluatedProperties': return 'ne doit pas avoir de propriétés non évaluées'
     case 'uniqueItems': return `ne doit pas avoir d'éléments en double`
     case '~refine': return error.params.message
-    case '~base': return `doit correspondre au schéma ${'validator'}`
+    case '~base': return `doit correspondre au schéma ${'Base'}`
     default: return 'une erreur de validation inconnue est survenue'
   }
 }

@@ -65,7 +65,7 @@ export function th_TH(error: TValidationError): string {
     case 'unevaluatedProperties': return 'ต้องไม่มีคุณสมบัติที่ยังไม่ได้ประเมิน'
     case 'uniqueItems': return `ต้องไม่มีรายการที่ซ้ำกัน`
     case '~refine': return error.params.message
-    case '~base': return `ต้องตรงกับ Schema ของ ${'validator'}`
+    case '~base': return `ต้องตรงกับ Schema ของ ${'Base'}`
     default: return 'เกิดข้อผิดพลาดในการตรวจสอบที่ไม่รู้จัก'
   }
 }

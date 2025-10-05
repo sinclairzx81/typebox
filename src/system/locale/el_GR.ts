@@ -65,7 +65,7 @@ export function el_GR(error: TValidationError): string {
     case 'unevaluatedProperties': return 'δεν πρέπει να έχει μη αξιολογημένες ιδιότητες'
     case 'uniqueItems': return `δεν πρέπει να έχει διπλά στοιχεία`
     case '~refine': return error.params.message
-    case '~base': return `πρέπει να ταιριάζει με το σχήμα ${'validator'}`
+    case '~base': return `πρέπει να ταιριάζει με το σχήμα ${'Base'}`
     default: return 'προέκυψε ένα άγνωστο σφάλμα επικύρωσης'
   }
 }

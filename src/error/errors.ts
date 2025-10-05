@@ -34,6 +34,7 @@ import { Guard } from '../guard/index.ts'
 export type TValidationError =
   | TAdditionalPropertiesError
   | TAnyOfError
+  | TBaseError
   | TBooleanError
   | TConstError
   | TContainsError
@@ -63,7 +64,7 @@ export type TValidationError =
   | TUnevaluatedItemsError
   | TUnevaluatedPropertiesError
   | TUniqueItemsError
-  | TValidatorError
+
 
 export function IsValidationError(value: unknown): value is TValidationError {
   return Guard.IsObject(value) &&
@@ -114,6 +115,13 @@ export interface TAdditionalPropertiesError extends TValidationErrorBase {
 export interface TAnyOfError extends TValidationErrorBase {
   keyword: 'anyOf'
   params: {}
+}
+// ------------------------------------------------------------------
+// Base
+// ------------------------------------------------------------------
+export interface TBaseError extends TValidationErrorBase {
+  keyword: '~base'
+  params: { errors: object[] }
 }
 // ------------------------------------------------------------------
 // Boolean
@@ -324,11 +332,4 @@ export interface TUnevaluatedPropertiesError extends TValidationErrorBase {
 export interface TUniqueItemsError extends TValidationErrorBase {
   keyword: 'uniqueItems'
   params: { duplicateItems: number[] }
-}
-// ------------------------------------------------------------------
-// Validator
-// ------------------------------------------------------------------
-export interface TValidatorError extends TValidationErrorBase {
-  keyword: '~base'
-  params: { errors: object[] }
 }

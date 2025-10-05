@@ -65,7 +65,7 @@ export function zh_Hans(error: TValidationError): string {
     case 'unevaluatedProperties': return '不得有未评估的属性'
     case 'uniqueItems': return `不得有重复项`
     case '~refine': return error.params.message
-    case '~base': return `必须匹配 ${'validator'} 模式`
+    case '~base': return `必须匹配 ${'Base'} 模式`
     default: return '发生未知验证错误'
   }
 }

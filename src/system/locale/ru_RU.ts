@@ -65,7 +65,7 @@ export function ru_RU(error: TValidationError): string {
     case 'unevaluatedProperties': return 'не должно быть нерассмотренных свойств'
     case 'uniqueItems': return `не должно быть повторяющихся элементов`
     case '~refine': return error.params.message
-    case '~base': return `должен соответствовать схеме ${'validator'}`
+    case '~base': return `должен соответствовать схеме ${'Base'}`
     default: return 'произошла неизвестная ошибка валидации'
   }
 }
