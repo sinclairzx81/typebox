@@ -29,13 +29,14 @@ THE SOFTWARE.
 import { Guard } from '../../guard/index.ts'
 import { IsJsonPointer, IsUri } from '../../format/index.ts'
 import { Pointer } from '../../value/pointer/index.ts'
-import * as S from '../types/index.ts'
+
+import { IsDefs, IsId, IsSchemaLike, type XRef, type XSchema, type XSchemaLike } from '../types/index.ts'
 
 // ------------------------------------------------------------------
 // Rebase
 // ------------------------------------------------------------------
-export function Rebase(baseUri: string, schema: S.XSchema): string {
-  if (!S.IsId(schema)) return baseUri
+export function Rebase(baseUri: string, schema: XSchema): string {
+  if (!IsId(schema)) return baseUri
   if (IsUri(schema.$id)) return schema.$id
   if (!IsUri(schema.$id) && IsUri(baseUri)) {
     return new URL(schema.$id, baseUri).href
@@ -51,7 +52,7 @@ function IsHashPointer(value: string): boolean {
 function IsHash(value: string): boolean {
   return value.length > 0 && value[0] === '#'
 }
-function Select(schema: S.XSchema, baseUri: string, $ref: string): S.XSchemaLike | undefined {
+function Select(schema: XSchema, baseUri: string, $ref: string): XSchemaLike | undefined {
   if (IsUri(baseUri)) {
     const [base, ref] = [new URL(baseUri), new URL($ref, baseUri)]
     const matched = base.pathname === ref.pathname
@@ -62,18 +63,24 @@ function Select(schema: S.XSchema, baseUri: string, $ref: string): S.XSchemaLike
   }
   if (IsHashPointer($ref)) {
     const target = Pointer.Get(schema, $ref.slice(1))
-    if (S.IsSchemaLike(target)) return target
+    if (IsSchemaLike(target)) return target
   }
   return undefined
 }
 // ------------------------------------------------------------------
 // Traversal
 // ------------------------------------------------------------------
-function FromObject(schema: S.XSchema, baseUrl: string, ref: S.XRef): S.XSchemaLike | undefined {
+function FromObject(schema: XSchema, baseUrl: string, ref: XRef): XSchemaLike | undefined {
   // ----------------------------------------------------------------
-  // TypeBox: Fast TCyclic Deref
+  // TypeBox: Exact
   // ----------------------------------------------------------------
-  if (S.IsDefs(schema) && Guard.HasPropertyKey(schema.$defs, ref.$ref)) {
+  if (IsId(schema) && Guard.IsEqual(schema.$id, ref.$ref)) {
+    return schema
+  }
+  // ----------------------------------------------------------------
+  // TypeBox: Fast Defs
+  // ----------------------------------------------------------------
+  if (IsDefs(schema) && Guard.HasPropertyKey(schema.$defs, ref.$ref)) {
     return schema.$defs[ref.$ref]
   }
   // ----------------------------------------------------------------
@@ -81,18 +88,18 @@ function FromObject(schema: S.XSchema, baseUrl: string, ref: S.XRef): S.XSchemaL
   // ----------------------------------------------------------------
   const rebase = Rebase(baseUrl, schema)
   const target = Select(schema, rebase, ref.$ref)
-  if (S.IsSchemaLike(target)) return target
+  if (IsSchemaLike(target)) return target
 
   // Keep searching ...
-  return Object.values(schema).reduce<S.XSchemaLike | undefined>(
+  return Object.values(schema).reduce<XSchemaLike | undefined>(
     (result, subschema) => result || FromValue(subschema, rebase, ref),
     undefined
   )
 }
-function FromArray(schema: unknown[], baseUri: string, ref: S.XRef): S.XSchemaLike | undefined {
-  return schema.reduce((result, value) => result || FromValue(value, baseUri, ref), undefined) as S.XSchema | undefined
+function FromArray(schema: unknown[], baseUri: string, ref: XRef): XSchemaLike | undefined {
+  return schema.reduce((result, value) => result || FromValue(value, baseUri, ref), undefined) as XSchema | undefined
 }
-function FromValue(schema: unknown, base: string, ref: S.XRef): S.XSchemaLike | undefined {
+function FromValue(schema: unknown, base: string, ref: XRef): XSchemaLike | undefined {
   return (
     (Guard.IsObject(schema) && FromObject(schema, base, ref)) ||
     (Guard.IsArray(schema) && FromArray(schema, base, ref)) ||
@@ -103,6 +110,6 @@ function FromValue(schema: unknown, base: string, ref: S.XRef): S.XSchemaLike | 
 // Deref
 // ------------------------------------------------------------------
 /** Deferences a schema with the given Ref */
-export function Deref(schema: object, ref: S.XRef): unknown | undefined {
+export function Deref(schema: object, ref: XRef): unknown | undefined {
   return FromValue(schema, '', ref)
 }

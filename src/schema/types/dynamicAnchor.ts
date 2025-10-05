@@ -4,7 +4,7 @@ TypeBox
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2025 Haydn Paterson
+Copyright (c) 2017-2025 Haydn Paterson 
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,5 +26,25 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export { Deref } from './deref.ts'
-export { DynamicDeref } from './dynamic_deref.ts'
+// deno-fmt-ignore-file
+
+import { Guard } from '../../guard/index.ts'
+import { type XSchema } from './schema.ts'
+
+// ------------------------------------------------------------------
+// Type
+// ------------------------------------------------------------------
+export interface XDynamicAnchor<Anchor extends string = string> {
+  $dynamicAnchor: Anchor
+}
+// ------------------------------------------------------------------
+// Guard
+// ------------------------------------------------------------------
+/** 
+ * Returns true if the schema contains a valid $dynamicAnchor property
+ * @specification Json Schema 2020-12
+ */
+export function IsDynamicAnchor(schema: XSchema): schema is XDynamicAnchor {
+  return Guard.HasPropertyKey(schema, '$dynamicAnchor') 
+    && Guard.IsString(schema.$dynamicAnchor)
+}

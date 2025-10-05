@@ -26,6 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+export * from './deref/index.ts'
 export * from './engine/index.ts'
 export * from './types/index.ts'
 export * from './build.ts'

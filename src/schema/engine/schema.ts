@@ -44,6 +44,7 @@ import { BuildContains, CheckContains, ErrorContains } from './contains.ts'
 import { BuildDependencies, CheckDependencies, ErrorDependencies } from './dependencies.ts'
 import { BuildDependentRequired, CheckDependentRequired, ErrorDependentRequired } from './dependentRequired.ts'
 import { BuildDependentSchemas, CheckDependentSchemas, ErrorDependentSchemas } from './dependentSchemas.ts'
+import { BuildDynamicRef, CheckDynamicRef, ErrorDynamicRef } from './dynamicRef.ts'
 import { BuildEnum, CheckEnum, ErrorEnum } from './enum.ts'
 import { BuildExclusiveMaximum, CheckExclusiveMaximum, ErrorExclusiveMaximum } from './exclusiveMaximum.ts'
 import { BuildExclusiveMinimum, CheckExclusiveMinimum, ErrorExclusiveMinimum } from './exclusiveMinimum.ts'
@@ -212,6 +213,7 @@ export function BuildSchema(context: BuildContext, schema: S.XSchemaLike, value:
     const guarded =  E.Or(E.Not(E.Or(E.IsNumber(value), E.IsBigInt(value))), reduced)
     conditions.push(HasNumberType(schema) ? reduced : guarded)
   }
+  if (S.IsDynamicRef(schema)) conditions.push(BuildDynamicRef(context, schema, value))
   if (S.IsRef(schema)) conditions.push(BuildRef(context, schema, value))
   if (S.IsConst(schema)) conditions.push(BuildConst(context, schema, value))
   if (S.IsEnum(schema)) conditions.push(BuildEnum(context, schema, value))
@@ -268,6 +270,7 @@ export function CheckSchema(context: CheckContext, schema: S.XSchemaLike, value:
       (!S.IsMinimum(schema) || CheckMinimum(context, schema, value)) &&
       (!S.IsMultipleOf(schema) || CheckMultipleOf(context, schema, value))
     )) &&
+    (!S.IsDynamicRef(schema) || CheckDynamicRef(context, schema, value)) &&
     (!S.IsRef(schema) || CheckRef(context, schema, value)) &&
     (!S.IsConst(schema) || CheckConst(context, schema, value)) &&
     (!S.IsEnum(schema) || CheckEnum(context, schema, value)) &&
@@ -325,6 +328,7 @@ export function ErrorSchema(context: ErrorContext, schemaPath: string, instanceP
         +(!S.IsMinimum(schema) || ErrorMinimum(context, schemaPath, instancePath, schema, value)) &
         +(!S.IsMultipleOf(schema) || ErrorMultipleOf(context, schemaPath, instancePath, schema, value))
       )) &
+      +(!S.IsDynamicRef(schema) || ErrorDynamicRef(context, schemaPath, instancePath, schema, value)) &
       +(!S.IsRef(schema) || ErrorRef(context, schemaPath, instancePath, schema, value)) &
       +(!S.IsConst(schema) || ErrorConst(context, schemaPath, instancePath, schema, value)) &
       +(!S.IsEnum(schema) || ErrorEnum(context, schemaPath, instancePath, schema, value)) &
