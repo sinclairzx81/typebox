@@ -55,7 +55,7 @@ export class Base<Value extends unknown = unknown> implements TSchema, XBase<Val
   public readonly '~base': BaseValidator<Value>
   constructor() {
     const validator = new BaseValidator(
-      (value) => this.Check(value),
+      (value): value is Value => this.Check(value),
       (value) => this.Errors(value)
     )
     const configuration = {
