@@ -217,7 +217,6 @@ export interface TNumberOptions extends TSchemaOptions {
 // StringOptions
 // ------------------------------------------------------------------
 export type TFormat = 
-  | 'base64'
   | 'date-time'
   | 'date'
   | 'duration'
