@@ -20,13 +20,13 @@ export function DateType(): TDateType {
 <pre><code class="language-typescript">const R = Value.Check(DateType(), new Date())      // const R = true
 
 const E = Value.Errors(DateType(), &#39;x&#39;)            // const E = [{
-                                                   //   keyword: &quot;~base&quot;,
+                                                   //   keyword: &quot;~guard&quot;,
                                                    //   schemaPath: &quot;#&quot;,
                                                    //   instancePath: &quot;&quot;,
                                                    //   params: { 
                                                    //     errors: [ { message: &quot;not a Date&quot; } ] 
                                                    //   },
-                                                   //   message: &quot;must match against typebox schema&quot;
+                                                   //   message: &quot;must match check function&quot;
                                                    // }]
 </code></pre>
 <h2>Guard</h2>

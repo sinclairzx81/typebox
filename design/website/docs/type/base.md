@@ -29,13 +29,13 @@ Once created, the type can be used with TypeBox validators.
 const R = Value.Check(DateType(), new Date())      // const R = true
 
 const E = Value.Errors(DateType(), 'x')            // const E = [{
-                                                   //   keyword: "~base",
+                                                   //   keyword: "~guard",
                                                    //   schemaPath: "#",
                                                    //   instancePath: "",
                                                    //   params: { 
                                                    //     errors: [ { message: "not a Date" } ] 
                                                    //   },
-                                                   //   message: "must match against typebox schema"
+                                                   //   message: "must match check function"
                                                    // }]
 ```
 
