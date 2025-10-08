@@ -119,7 +119,7 @@ export interface TAnyOfError extends TValidationErrorBase {
 // Base
 // ------------------------------------------------------------------
 export interface TBaseError extends TValidationErrorBase {
-  keyword: '~base'
+  keyword: '~guard'
   params: { errors: object[] }
 }
 // ------------------------------------------------------------------

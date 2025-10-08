@@ -66,7 +66,7 @@ export function ur_PK(error: TValidationError): string {
     case 'unevaluatedProperties': return 'غیر تشخیص شدہ خصوصیات نہیں ہونی چاہئیں'
     case 'uniqueItems': return `ڈپلیکیٹ آئٹمز نہیں ہونے چاہئیں`
     case '~refine': return error.params.message
-    case '~base': return `${'Base'} اسکیما سے مماثل ہونا چاہیے`
+    case '~guard': return `${'Base'} اسکیما سے مماثل ہونا چاہیے`
     default: return 'تصدیق میں ایک نامعلوم خرابی پیش آئی'
   }
 }

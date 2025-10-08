@@ -65,7 +65,7 @@ export function es_MX(error: TValidationError): string {
     case 'unevaluatedProperties': return 'no debe tener propiedades no evaluadas'
     case 'uniqueItems': return `no debe tener elementos duplicados`
     case '~refine': return error.params.message
-    case '~base': return `debe coincidir con el esquema de ${'Base'}`
+    case '~guard': return `debe coincidir con el esquema de ${'Base'}`
     default: return 'ocurrió un error de validación desconocido'
   }
 }

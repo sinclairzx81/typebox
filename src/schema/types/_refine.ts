@@ -35,7 +35,7 @@ import type { XSchema } from './schema.ts'
 // Type
 // ------------------------------------------------------------------
 export interface XRefinement {
-  callback: (value: unknown) => boolean
+  refine: (value: unknown) => boolean
   message: string
 }
 export interface XRefine<Refinements extends XRefinement[] = XRefinement[]> {
@@ -52,9 +52,9 @@ export function IsRefine(value: XSchema): value is XRefine {
   return Guard.HasPropertyKey(value, '~refine')
     && Guard.IsArray(value["~refine"])
     && Guard.Every(value['~refine'], 0, value => Guard.IsObject(value)
-      && Guard.HasPropertyKey(value, 'callback')
+      && Guard.HasPropertyKey(value, 'refine')
       && Guard.HasPropertyKey(value, 'message')
-      && Guard.IsFunction(value.callback)
+      && Guard.IsFunction(value.refine)
       && Guard.IsString(value.message)
     )
 }

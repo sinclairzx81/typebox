@@ -65,7 +65,7 @@ export function nl_NL(error: TValidationError): string {
     case 'unevaluatedProperties': return 'mag geen onbeoordeelde eigenschappen hebben'
     case 'uniqueItems': return `mag geen dubbele items hebben`
     case '~refine': return error.params.message
-    case '~base': return `moet overeenkomen met ${'Base'} schema`
+    case '~guard': return `moet overeenkomen met ${'Base'} schema`
     default: return 'er is een onbekende validatiefout opgetreden'
   }
 }

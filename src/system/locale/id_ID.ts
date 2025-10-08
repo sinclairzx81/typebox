@@ -65,7 +65,7 @@ export function id_ID(error: TValidationError): string {
     case 'unevaluatedProperties': return 'tidak boleh memiliki properti yang belum dievaluasi'
     case 'uniqueItems': return `tidak boleh memiliki item duplikat`
     case '~refine': return error.params.message
-    case '~base': return `harus cocok dengan skema ${'Base'}`
+    case '~guard': return `harus cocok dengan skema ${'Base'}`
     default: return 'terjadi kesalahan validasi yang tidak diketahui'
   }
 }

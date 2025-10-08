@@ -33,7 +33,7 @@ import { EmitGuard as E, Guard as G } from '../../guard/index.ts'
 
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { BuildRefine, CheckRefine, ErrorRefine } from './_refine.ts'
-import { BuildBase, CheckBase, ErrorBase } from './_base.ts'
+import { BuildGuard, CheckGuard, ErrorGuard } from './_guard.ts'
 
 import { BuildAdditionalItems, CheckAdditionalItems, ErrorAdditionalItems } from './additionalItems.ts'
 import { BuildAdditionalProperties, CheckAdditionalProperties, ErrorAdditionalProperties } from './additionalProperties.ts'
@@ -214,7 +214,7 @@ export function BuildSchema(context: BuildContext, schema: S.XSchemaLike, value:
     conditions.push(HasNumberType(schema) ? reduced : guarded)
   }
   if (S.IsRef(schema)) conditions.push(BuildRef(context, schema, value))
-  if (S.IsBase(schema)) conditions.push(BuildBase(context, schema, value))
+  if (S.IsGuard(schema)) conditions.push(BuildGuard(context, schema, value))
   if (S.IsConst(schema)) conditions.push(BuildConst(context, schema, value))
   if (S.IsEnum(schema)) conditions.push(BuildEnum(context, schema, value))
   if (S.IsIf(schema)) conditions.push(BuildIf(context, schema, value))
@@ -270,7 +270,7 @@ export function CheckSchema(context: CheckContext, schema: S.XSchemaLike, value:
       (!S.IsMultipleOf(schema) || CheckMultipleOf(context, schema, value))
     )) &&
     (!S.IsRef(schema) || CheckRef(context, schema, value)) &&
-    (!S.IsBase(schema) || CheckBase(context, schema, value)) &&
+    (!S.IsGuard(schema) || CheckGuard(context, schema, value)) &&
     (!S.IsConst(schema) || CheckConst(context, schema, value)) &&
     (!S.IsEnum(schema) || CheckEnum(context, schema, value)) &&
     (!S.IsIf(schema) || CheckIf(context, schema, value)) &&
@@ -327,7 +327,7 @@ export function ErrorSchema(context: ErrorContext, schemaPath: string, instanceP
         +(!S.IsMultipleOf(schema) || ErrorMultipleOf(context, schemaPath, instancePath, schema, value))
       )) &
       +(!S.IsRef(schema) || ErrorRef(context, schemaPath, instancePath, schema, value)) &
-      +(!S.IsBase(schema) || ErrorBase(context, schemaPath, instancePath, schema, value)) &
+      +(!S.IsGuard(schema) || ErrorGuard(context, schemaPath, instancePath, schema, value)) &
       +(!S.IsConst(schema) || ErrorConst(context, schemaPath, instancePath, schema, value)) &
       +(!S.IsEnum(schema) || ErrorEnum(context, schemaPath, instancePath, schema, value)) &
       +(!S.IsIf(schema) || ErrorIf(context, schemaPath, instancePath, schema, value)) &

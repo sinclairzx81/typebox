@@ -34,10 +34,10 @@ import { Metrics } from './metrics.ts'
 // ------------------------------------------------------------------
 // Base
 // ------------------------------------------------------------------
-function IsBase(value: unknown): value is { '~base': unknown } {
-  return Guard.IsObject(value) && Guard.HasPropertyKey(value, '~base')
+function IsBase(value: unknown): value is { '~guard': unknown } {
+  return Guard.IsObject(value) && Guard.HasPropertyKey(value, '~guard')
 }
-function FromBase(value: { '~base': unknown }): unknown {
+function FromBase(value: { '~guard': unknown }): unknown {
   return value // non-clonable
 }
 // ------------------------------------------------------------------

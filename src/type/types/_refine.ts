@@ -58,12 +58,12 @@ export type TRefine<Type extends TSchema = TSchema> = (
 export type TRefineCallback<Type extends TSchema> = (value: Static<Type>) => boolean
 
 export interface TRefinement<Type extends TSchema = TSchema> {
-  callback: TRefineCallback<Type>
+  refine: TRefineCallback<Type>
   message: string
 }
 /** Applies a Refine check to the given type. */
-export function Refine<Type extends TSchema>(type: Type, callback: TRefineCallback<Type>, message: string = 'error'): TRefineAdd<Type> {
-  return RefineAdd(type, { callback, message }) as never
+export function Refine<Type extends TSchema>(type: Type, refine: TRefineCallback<Type>, message: string = 'error'): TRefineAdd<Type> {
+  return RefineAdd(type, { refine, message }) as never
 }
 // ------------------------------------------------------------------
 // Guard

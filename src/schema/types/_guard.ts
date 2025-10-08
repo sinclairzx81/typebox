@@ -28,31 +28,30 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import * as S from '../types/index.ts'
-import * as V from './_externals.ts'
-import { EmitGuard as E } from '../../guard/index.ts'
-import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
+import { Guard } from '../../guard/index.ts'
+import type { XSchema } from './schema.ts'
 
 // ------------------------------------------------------------------
-// Build
+// Type
 // ------------------------------------------------------------------
-export function BuildBase(context: BuildContext, schema: S.XBase, value: string): string {
-  return E.Call(E.Member(E.Member(V.CreateExternalVariable(schema), '~base'), 'check'), [value])
+export interface XGuardInterface<Value extends unknown = unknown> {
+  check(value: unknown): value is Value
+  errors(value: unknown): object[]
+}
+export interface XGuard<Value extends unknown = unknown> {
+  '~guard': XGuardInterface<Value>
 }
 // ------------------------------------------------------------------
-// Check
+// Guard
 // ------------------------------------------------------------------
-export function CheckBase(context: CheckContext, schema: S.XBase, value: unknown): boolean {
-  return schema['~base'].check(value)
+export function IsGuardInterface(value: unknown): value is XGuardInterface {
+  return Guard.IsObject(value)
+    && Guard.HasPropertyKey(value, 'check')
+    && Guard.HasPropertyKey(value, 'errors')
+    && Guard.IsFunction(value.check)
+    && Guard.IsFunction(value.errors)
 }
-// ------------------------------------------------------------------
-// Error
-// ------------------------------------------------------------------
-export function ErrorBase(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XBase, value: unknown): boolean {
-  return schema['~base'].check(value) || context.AddError({
-    keyword: '~base',
-    schemaPath,
-    instancePath,
-    params: { errors: schema['~base'].errors(value) },
-  })
+export function IsGuard(value: XSchema): value is XGuard {
+  return Guard.HasPropertyKey(value, '~guard')
+    && IsGuardInterface(value['~guard'])
 }

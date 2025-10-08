@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import type { XBase } from './_base.ts'
+import type { XGuard } from './_guard.ts'
 import type { XSchemaLike } from './schema.ts'
 import type { XAdditionalProperties } from './additionalProperties.ts'
 import type { XAnyOf } from './anyOf.ts'
@@ -208,7 +208,7 @@ type XStaticJsonSchema<Schema extends unknown,
 // ------------------------------------------------------------------
 /** Statically infers a JSON Schema or Validator */
 export type XStaticType<Schema extends XSchemaLike, Result extends unknown = (
-  Schema extends XBase<infer Value> ? Value : XStaticJsonSchema<Schema>
+  Schema extends XGuard<infer Value> ? Value : XStaticJsonSchema<Schema>
 )> = Result
 // ------------------------------------------------------------------
 // XStaticMutable: Preflight
@@ -225,7 +225,7 @@ type XStaticMutableObject<Schema extends object, Result extends Record<PropertyK
   -readonly [K in keyof Schema]: XStaticMutable<Schema[K]>
 }> = Result
 type XStaticMutable<Schema> = (
-  Schema extends XBase ? Schema :
+  Schema extends XGuard ? Schema :
   Schema extends readonly [...infer Schemas extends unknown[]] ? XStaticMutableTuple<Schemas> :
   Schema extends readonly (infer Schema)[] ? XStaticMutableArray<Schema> :
   Schema extends object ? XStaticMutableObject<Schema> :

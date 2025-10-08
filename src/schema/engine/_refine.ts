@@ -38,20 +38,20 @@ import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 // ------------------------------------------------------------------
 export function BuildRefine(context: BuildContext, schema: S.XRefine, value: string): string {
   const refinements = V.CreateExternalVariable(schema['~refine'].map((refinement) => refinement))
-  return E.Every(refinements, E.Constant(0), ['refinement', '_'], E.Call(E.Member('refinement', 'callback'), [value]))
+  return E.Every(refinements, E.Constant(0), ['refinement', '_'], E.Call(E.Member('refinement', 'refine'), [value]))
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
 export function CheckRefine(context: CheckContext, schema: S.XRefine, value: unknown): boolean {
-  return G.Every(schema['~refine'], 0, (refinement, _) => refinement.callback(value))
+  return G.Every(schema['~refine'], 0, (refinement, _) => refinement.refine(value))
 }
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
 export function ErrorRefine(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XRefine, value: unknown): boolean {
   return G.EveryAll(schema['~refine'], 0, (refinement, index) => {
-    return refinement.callback(value) || context.AddError({
+    return refinement.refine(value) || context.AddError({
       keyword: '~refine',
       schemaPath,
       instancePath,

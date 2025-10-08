@@ -28,13 +28,14 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
+import { Settings } from '../../system/settings/index.ts'
 import { type TSchema, IsKind } from './schema.ts'
-import { type XBase, type XBaseValidator } from '../../schema/types/index.ts'
+import { type XGuard, type XGuardInterface } from '../../schema/types/index.ts'
 
 // ------------------------------------------------------------------
-// BaseNotImplemented
+// NotImplemented
 // ------------------------------------------------------------------
-export class BaseNotImplemented extends Error {
+export class NotImplemented extends Error {
   declare readonly cause: { type: Base; method: string }
   constructor(type: Base, method: string) {
     super(`Base type does not implement the '${method}' function`)
@@ -50,21 +51,20 @@ export class BaseNotImplemented extends Error {
 // Type.Base<...>
 // ------------------------------------------------------------------
 /** Base class for creating extension types. */
-export class Base<Value extends unknown = unknown> implements TSchema, XBase<Value> {
+export class Base<Value extends unknown = unknown> implements TSchema, XGuard<Value> {
   public readonly '~kind': 'Base'
-  public readonly '~base': BaseValidator<Value>
+  public readonly '~guard': XGuardInterface<Value>
   constructor() {
-    const validator = new BaseValidator(
-      (value): value is Value => this.Check(value),
-      (value) => this.Errors(value)
-    )
-    const configuration = {
+    Object.defineProperty(this, '~kind', {       
+      enumerable: Settings.Get().enumerableKind,
       writable: false,
       configurable: false,
-      enumerable: false
+      value: 'Base'
+    })
+    this['~guard'] = {
+      check: (value): value is Value => this.Check(value),
+      errors: (value) => this.Errors(value)
     }
-    Object.defineProperty(this, '~kind', { ...configuration, value: 'Base' })
-    Object.defineProperty(this, '~base', { ...configuration, value: validator })
   }
   /** Checks a value or returns false if invalid */
   public Check(value: unknown): value is Value {
@@ -88,7 +88,7 @@ export class Base<Value extends unknown = unknown> implements TSchema, XBase<Val
   }
   /** Creates a new instance of this type */
   public Create(): Value {
-    throw new BaseNotImplemented(this, 'Create')
+    throw new NotImplemented(this, 'Create')
   }
 }
 // ------------------------------------------------------------------
@@ -97,13 +97,4 @@ export class Base<Value extends unknown = unknown> implements TSchema, XBase<Val
 /** Returns true if the given value is a Base type. */
 export function IsBase(value: unknown): value is Base {
   return IsKind(value, 'Base')
-}
-// ------------------------------------------------------------------
-// BaseValidator
-// ------------------------------------------------------------------
-class BaseValidator<Value extends unknown = unknown> implements XBaseValidator<Value> {
-  constructor(
-    public readonly check: (value: unknown) => value is Value,
-    public readonly errors: (value: unknown) => object[]
-  ) { }
 }

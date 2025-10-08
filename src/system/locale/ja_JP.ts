@@ -65,7 +65,7 @@ export function ja_JP(error: TValidationError): string {
     case 'unevaluatedProperties': return '未評価のプロパティを持つことはできません'
     case 'uniqueItems': return `重複するアイテムを持つことはできません`
     case '~refine': return error.params.message
-    case '~base': return `${'Base'} スキーマと一致する必要があります`
+    case '~guard': return `${'Base'} スキーマと一致する必要があります`
     default: return '不明なバリデーションエラーが発生しました'
   }
 }

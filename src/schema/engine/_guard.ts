@@ -28,30 +28,31 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Guard } from '../../guard/index.ts'
-import type { XSchema } from './schema.ts'
+import * as S from '../types/index.ts'
+import * as V from './_externals.ts'
+import { EmitGuard as E } from '../../guard/index.ts'
+import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 
 // ------------------------------------------------------------------
-// Type
+// Build
 // ------------------------------------------------------------------
-export interface XBaseValidator<Value extends unknown = unknown> {
-  check(value: unknown): value is Value
-  errors(value: unknown): object[]
-}
-export interface XBase<Value extends unknown = unknown> {
-  '~base': XBaseValidator<Value>
+export function BuildGuard(context: BuildContext, schema: S.XGuard, value: string): string {
+  return E.Call(E.Member(E.Member(V.CreateExternalVariable(schema), '~guard'), 'check'), [value])
 }
 // ------------------------------------------------------------------
-// Guard
+// Check
 // ------------------------------------------------------------------
-export function IsBaseValidator(value: unknown): value is XBaseValidator {
-  return Guard.IsObject(value)
-    && Guard.HasPropertyKey(value, 'check')
-    && Guard.HasPropertyKey(value, 'errors')
-    && Guard.IsFunction(value.check)
-    && Guard.IsFunction(value.errors)
+export function CheckGuard(context: CheckContext, schema: S.XGuard, value: unknown): boolean {
+  return schema['~guard'].check(value)
 }
-export function IsBase(value: XSchema): value is XBase {
-  return Guard.HasPropertyKey(value, '~base')
-    && IsBaseValidator(value['~base'])
+// ------------------------------------------------------------------
+// Error
+// ------------------------------------------------------------------
+export function ErrorGuard(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XGuard, value: unknown): boolean {
+  return schema['~guard'].check(value) || context.AddError({
+    keyword: '~guard',
+    schemaPath,
+    instancePath,
+    params: { errors: schema['~guard'].errors(value) },
+  })
 }
