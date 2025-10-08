@@ -64,8 +64,8 @@ export function zh_Hant(error: TValidationError): string {
     case 'unevaluatedItems': return '不得有未評估的項目'
     case 'unevaluatedProperties': return '不得有未評估的屬性'
     case 'uniqueItems': return `不得有重複項目`
+    case '~guard': return `必須與檢查函數匹配`
     case '~refine': return error.params.message
-    case '~guard': return `必須匹配 ${'Base'} 模式`
     default: return '發生未知驗證錯誤'
   }
 }

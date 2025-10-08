@@ -4,18 +4,50 @@ import Schema from 'typebox/schema'
 import Value from 'typebox/value'
 import Type from 'typebox'
 
-import Settings from 'typebox/system'
-
-//Settings.Settings.Set({ enumerableKind: true })
-
-class Fail extends Type.Base {
-  override Check(value: unknown): value is unknown {
-    return false
-  }
-}
-
-const A = Type.Object({
-  x: new Fail()
+// ------------------------------------------------------------------
+// Type
+// ------------------------------------------------------------------
+const T = Type.Object({
+  x: Type.Number(),
+  y: Type.Number(),
+  z: Type.Number()
 })
 
-console.log(Value.Errors(A, { x: 1 }))
+// ------------------------------------------------------------------
+// Script
+// ------------------------------------------------------------------
+const S = Type.Script({ T }, `{
+  [K in keyof T]: T[K] | null
+}`)
+
+// ------------------------------------------------------------------
+// Infer
+// ------------------------------------------------------------------
+type T = Type.Static<typeof T>
+type S = Type.Static<typeof S>
+
+// ------------------------------------------------------------------
+// Parse
+// ------------------------------------------------------------------
+
+const R = Value.Parse(T, { x: 1, y: 2, z: 3 })
+
+// ------------------------------------------------------------------
+// Compile
+// ------------------------------------------------------------------
+
+const C = Compile(S)
+
+const X = C.Parse({ x: 1, y: 2, z: 3 })
+
+// ------------------------------------------------------------------
+// Format
+// ------------------------------------------------------------------
+
+const E = Format.IsEmail('user@domain.com')
+
+// ------------------------------------------------------------------
+// Schema
+// ------------------------------------------------------------------
+
+const D = Schema.Check({ type: 'string' }, 'hello')

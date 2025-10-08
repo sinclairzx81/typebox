@@ -64,8 +64,8 @@ export function it_IT(error: TValidationError): string {
     case 'unevaluatedItems': return 'non deve avere elementi non valutati'
     case 'unevaluatedProperties': return 'non deve avere proprietà non valutate'
     case 'uniqueItems': return `non deve avere elementi duplicati`
+    case '~guard': return `deve corrispondere alla funzione di controllo`
     case '~refine': return error.params.message
-    case '~guard': return `deve corrispondere allo schema ${'Base'}`
     default: return 'si è verificato un errore di validazione sconosciuto'
   }
 }

@@ -64,8 +64,8 @@ export function ro_RO(error: TValidationError): string {
     case 'unevaluatedItems': return 'nu trebuie să aibă elemente neevaluate'
     case 'unevaluatedProperties': return 'nu trebuie să aibă proprietăți neevaluate'
     case 'uniqueItems': return `nu trebuie să aibă elemente duplicate`
+    case '~guard': return `trebuie să corespundă funcției de verificare`
     case '~refine': return error.params.message
-    case '~guard': return `trebuie să se potrivească cu schema ${'Base'}`
     default: return 'a apărut o eroare de validare necunoscută'
   }
 }

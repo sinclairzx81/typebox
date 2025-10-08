@@ -64,8 +64,8 @@ export function de_DE(error: TValidationError): string {
     case 'unevaluatedItems': return 'darf keine unbewerteten Elemente haben'
     case 'unevaluatedProperties': return 'darf keine unbewerteten Eigenschaften haben'
     case 'uniqueItems': return `darf keine doppelten Elemente haben`
+    case '~guard': return `muss der Prüffunktion entsprechen`
     case '~refine': return error.params.message
-    case '~guard': return `muss mit dem ${'Base'}-Schema übereinstimmen`
     default: return 'ein unbekannter Validierungsfehler ist aufgetreten'
   }
 }
