@@ -64,8 +64,8 @@ export function vi_VN(error: TValidationError): string {
     case 'unevaluatedItems': return 'không được có các mục chưa được đánh giá'
     case 'unevaluatedProperties': return 'không được có các thuộc tính chưa được đánh giá'
     case 'uniqueItems': return `không được có các mục trùng lặp`
+    case '~guard': return `phải khớp với hàm kiểm tra`
     case '~refine': return error.params.message
-    case '~base': return `phải khớp với schema ${'Base'}`
     default: return 'đã xảy ra lỗi xác thực không xác định'
   }
 }

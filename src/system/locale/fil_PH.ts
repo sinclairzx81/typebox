@@ -64,8 +64,8 @@ export function fil_PH(error: TValidationError): string {
     case 'unevaluatedItems': return 'hindi dapat magkaroon ng mga hindi pa nasusuring item'
     case 'unevaluatedProperties': return 'hindi dapat magkaroon ng mga hindi pa nasusuring katangian'
     case 'uniqueItems': return `hindi dapat magkaroon ng mga duplicate na item`
+    case '~guard': return `dapat tumugma sa function ng pagsusuri`
     case '~refine': return error.params.message
-    case '~base': return `dapat tumugma laban sa ${'Base'} schema`
     default: return 'nagkaroon ng hindi kilalang error sa pagpapatunay'
   }
 }

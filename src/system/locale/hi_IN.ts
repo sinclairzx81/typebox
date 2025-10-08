@@ -64,8 +64,8 @@ export function hi_IN(error: TValidationError): string {
     case 'unevaluatedItems': return 'में अप्रयुक्त आइटम नहीं होने चाहिए'
     case 'unevaluatedProperties': return 'में अप्रयुक्त गुण नहीं होने चाहिए'
     case 'uniqueItems': return `में डुप्लिकेट आइटम नहीं होने चाहिए`
+    case '~guard': return `चेक फ़ंक्शन से मेल खाना चाहिए`
     case '~refine': return error.params.message
-    case '~base': return `${'Base'} स्कीमा के विरुद्ध मेल खाना चाहिए`
     default: return 'एक अज्ञात सत्यापन त्रुटि हुई'
   }
 }

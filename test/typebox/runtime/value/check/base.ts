@@ -51,7 +51,7 @@ Test('Should validate Base 6', () => {
     }
     override Errors(): object[] {
       return [{
-        keyword: '~base',
+        keyword: '~guard',
         schemaPath: '',
         instancePath: '',
         params: { issues: [{ message: '' }] },
@@ -68,7 +68,7 @@ Test('Should validate Base 7', () => {
     }
     override Errors(): object[] {
       return [{
-        keyword: '~base',
+        keyword: '~guard',
         schemaPath: '',
         instancePath: '',
         params: { issues: [{ message: 1 }] },
@@ -85,7 +85,7 @@ Test('Should validate Base 8', () => {
     }
     override Errors(): object[] {
       return [{
-        keyword: '~base',
+        keyword: '~guard',
         schemaPath: '',
         instancePath: '',
         params: { issues: null },
@@ -102,7 +102,7 @@ Test('Should validate Base 9', () => {
     }
     override Errors(): object[] {
       return [{
-        keyword: '~base',
+        keyword: '~guard',
         schemaPath: '',
         instancePath: '',
         params: { issues: [{ message: '', path: [] }] }
@@ -189,7 +189,7 @@ Test('Should validate Base 15', () => {
     }
   }
   const F = new Foo()
-  const R = F['~base'].errors(null)
+  const R = F['~guard'].errors(null)
   Assert.IsTrue(Guard.IsArray(R))
   const E = R[0]
   Assert.HasPropertyKey(E, 'foo')

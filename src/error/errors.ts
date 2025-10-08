@@ -34,7 +34,6 @@ import { Guard } from '../guard/index.ts'
 export type TValidationError =
   | TAdditionalPropertiesError
   | TAnyOfError
-  | TBaseError
   | TBooleanError
   | TConstError
   | TContainsError
@@ -44,6 +43,7 @@ export type TValidationError =
   | TExclusiveMaximumError
   | TExclusiveMinimumError
   | TFormatError
+  | TGuardError
   | TIfError
   | TMaximumError
   | TMaxItemsError
@@ -116,13 +116,6 @@ export interface TAnyOfError extends TValidationErrorBase {
   params: {}
 }
 // ------------------------------------------------------------------
-// Base
-// ------------------------------------------------------------------
-export interface TBaseError extends TValidationErrorBase {
-  keyword: '~base'
-  params: { errors: object[] }
-}
-// ------------------------------------------------------------------
 // Boolean
 // ------------------------------------------------------------------
 export interface TBooleanError extends TValidationErrorBase {
@@ -184,6 +177,13 @@ export interface TExclusiveMinimumError extends TValidationErrorBase {
 export interface TFormatError extends TValidationErrorBase {
   keyword: 'format'
   params: { format: string }
+}
+// ------------------------------------------------------------------
+// Guard
+// ------------------------------------------------------------------
+export interface TGuardError extends TValidationErrorBase {
+  keyword: '~guard'
+  params: { errors: object[] }
 }
 // ------------------------------------------------------------------
 // If

@@ -64,8 +64,8 @@ export function bn_BD(error: TValidationError): string {
     case 'unevaluatedItems': return 'অবমূল্যায়িত আইটেম থাকতে পারবে না'
     case 'unevaluatedProperties': return 'অবমূল্যায়িত বৈশিষ্ট্য থাকতে পারবে না'
     case 'uniqueItems': return `অনুলিপি আইটেম থাকতে পারবে না`
+    case '~guard': return `চেক ফাংশনের সাথে মেলাতে হবে`
     case '~refine': return error.params.message
-    case '~base': return `${'Base'} স্কিমার সাথে মিলতে হবে`
     default: return 'একটি অজানা বৈধকরণ ত্রুটি ঘটেছে'
   }
 }

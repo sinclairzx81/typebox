@@ -37,7 +37,7 @@ export * from './_externals.ts'
 // ------------------------------------------------------------------
 // Schematics
 // ------------------------------------------------------------------
-export * from './_base.ts'
+export * from './_guard.ts'
 export * from './_refine.ts'
 
 export * from './additionalProperties.ts'
