@@ -419,3 +419,37 @@ Test('Should Pick 26', () => {
   Assert.IsTrue(Type.IsNumber(T.properties['x']))
   Assert.IsTrue(Type.IsNumber(T.properties['z']))
 })
+// ------------------------------------------------------------------
+// https://github.com/sinclairzx81/typebox/issues/1391
+//
+// CollapseToObject / Indexable Should take a Union of Overlapping
+// PropertyKeys. We should review this against Evaluate behaviors
+// ------------------------------------------------------------------
+Test('Should Pick 27', () => {
+  // TypeScript
+  type A = { type: 'a'; a: string }
+  type B = { type: 'b'; b: string }
+  type C = { type: 'c'; c: string }
+  type ABC = A | B | C
+  type AB = Pick<ABC, 'type'>
+  Assert.IsExtendsMutual<AB, {
+    type: 'b' | 'a' | 'c' // expect union
+  }>(true)
+  // TypeBox
+  const A = Type.Object({ type: Type.Literal('a'), a: Type.String() })
+  const B = Type.Object({ type: Type.Literal('b'), b: Type.String() })
+  const C = Type.Object({ type: Type.Literal('c'), c: Type.String() })
+  const ABC = Type.Union([A, B, C])
+  const AB: Type.TObject<{
+    type: Type.TUnion<[
+      Type.TLiteral<'a'>,
+      Type.TLiteral<'b'>,
+      Type.TLiteral<'c'>
+    ]>
+  }> = Type.Pick(ABC, Type.Literal('type'))
+  Assert.IsTrue(Type.IsObject(AB))
+  Assert.IsTrue(Type.IsUnion(AB.properties.type))
+  Assert.IsEqual(AB.properties.type.anyOf[0].const, 'a')
+  Assert.IsEqual(AB.properties.type.anyOf[1].const, 'b')
+  Assert.IsEqual(AB.properties.type.anyOf[2].const, 'c')
+})

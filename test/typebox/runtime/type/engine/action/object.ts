@@ -40,13 +40,15 @@ Test('Should CollapseToObject 3', () => {
 })
 Test('Should CollapseToObject 4', () => {
   const A: Type.TObject<{
-    x: Type.TNever
+    x: Type.TUnion<[Type.TNumber, Type.TString]>
   }> = Type.CollapseToObject(Type.Union([
     Type.Object({ x: Type.Number() }),
     Type.Object({ x: Type.String() })
   ]))
   Assert.IsTrue(Type.IsObject(A))
-  Assert.IsTrue(Type.IsNever(A.properties.x))
+  Assert.IsTrue(Type.IsUnion(A.properties.x))
+  Assert.IsTrue(Type.IsNumber(A.properties.x.anyOf[0]))
+  Assert.IsTrue(Type.IsString(A.properties.x.anyOf[1]))
 })
 Test('Should CollapseToObject 5', () => {
   const A: Type.TObject<{
