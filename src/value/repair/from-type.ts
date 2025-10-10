@@ -32,6 +32,7 @@ import { Guard, GlobalsGuard } from '../../guard/index.ts'
 import * as T from '../../type/index.ts'
 
 import { FromArray } from './from-array.ts'
+import { FromBase } from './from-base.ts'
 import { FromEnum } from './from-enum.ts'
 import { FromIntersect } from './from-intersect.ts'
 import { FromObject } from './from-object.ts'
@@ -75,6 +76,9 @@ function AssertRepairableType(context: T.TProperties, type: T.TSchema, value: un
 // FromType
 // ------------------------------------------------------------------
 export function FromType(context: T.TProperties, type: T.TSchema, value: unknown): unknown {
+  // Intercept Base
+  if (T.IsBase(type)) return FromBase(context, type, value)
+  // Standard Repair
   AssertRepairableValue(context, type, value)
   AssertRepairableType(context, type, value)
   return (
