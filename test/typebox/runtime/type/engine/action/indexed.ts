@@ -390,3 +390,32 @@ Test('Should Index 31', () => {
   const T: Type.TNull = Type.Index(A, B)
   Assert.IsTrue(Type.IsNull(T))
 })
+// ------------------------------------------------------------------
+// https://github.com/sinclairzx81/typebox/issues/1391
+//
+// CollapseToObject / Indexable Should take a Union of Overlapping
+// PropertyKeys. We should review this against Evaluate behaviors
+// ------------------------------------------------------------------
+Test('Should Omit 32', () => {
+  // TypeScript
+  type A = { type: 'a'; a: string }
+  type B = { type: 'b'; b: string }
+  type C = { type: 'c'; c: string }
+  type ABC = A | B | C
+  type R = ABC['type']
+  Assert.IsExtendsMutual<R, 'b' | 'a' | 'c'>(true)
+  // TypeBox
+  const A = Type.Object({ type: Type.Literal('a'), a: Type.String() })
+  const B = Type.Object({ type: Type.Literal('b'), b: Type.String() })
+  const C = Type.Object({ type: Type.Literal('c'), c: Type.String() })
+  const ABC = Type.Union([A, B, C])
+  const R: Type.TUnion<[
+    Type.TLiteral<'a'>,
+    Type.TLiteral<'b'>,
+    Type.TLiteral<'c'>
+  ]> = Type.Index(ABC, Type.Literal('type'))
+  Assert.IsTrue(Type.IsUnion(R))
+  Assert.IsEqual(R.anyOf[0].const, 'a')
+  Assert.IsEqual(R.anyOf[1].const, 'b')
+  Assert.IsEqual(R.anyOf[2].const, 'c')
+})
