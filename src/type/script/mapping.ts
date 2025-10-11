@@ -519,7 +519,7 @@ export function ExtendsMapping(input: [unknown, unknown, unknown, unknown, unkno
     : []
 }
 // -------------------------------------------------------------------
-// Base: ['(', Type, ')'] | Keyword | Object | Tuple | TemplateLiteral | Literal | Constructor | Function | Mapped | Options | GenericCall | Reference
+// Base: ['(', Type, ')'] | Keyword | _Object_ | Tuple | TemplateLiteral | Literal | Constructor | Function | Mapped | Options | GenericCall | Reference
 // -------------------------------------------------------------------
 export type TBaseMapping<Input extends [unknown, unknown, unknown] | unknown> = (
   Input extends ['(', infer Type extends T.TSchema, ')'] ? Type :
@@ -881,14 +881,14 @@ export function PropertiesMapping(input: [unknown, unknown, unknown]): unknown {
   return PropertiesReduce(input[1] as T.TProperties[])
 }
 // -------------------------------------------------------------------
-// Object: Properties
+// _Object_: Properties
 // -------------------------------------------------------------------
-export type TObjectMapping<Input extends unknown> = (
+export type T_Object_Mapping<Input extends unknown> = (
   Input extends [infer Properties extends T.TProperties, infer _PatternProperties extends T.TProperties]
   ? T.TObject<Properties>
   : never
 )
-export function ObjectMapping(input: unknown): unknown {
+export function _Object_Mapping(input: unknown): unknown {
   const [properties, patternProperties] = input as [T.TProperties, T.TProperties]
   const options = Guard.IsEqual(Guard.Keys(patternProperties).length, 0) ? {} : { patternProperties }
   return T.Object(properties, options)

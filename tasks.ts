@@ -13,7 +13,7 @@ const Version = '1.0.32'
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-const BuildPackage = (target: string = `target/build`) => Task.build.esm('src', {
+const BuildPackage = (target: string = `target/build`) => Task.build.dual('src', {
   outdir: target,
   compiler: '5.9.2',
   additional: ['license', 'readme.md'],

@@ -3,12 +3,8 @@
   "specifiers": {
     "jsr:@std/media-types@1.1.0": "1.1.0",
     "jsr:@std/path@1.1.0": "1.1.0",
-    "npm:@react-three/fiber@9.3.0": "9.3.0_react@19.1.1_react-dom@19.1.1__react@19.1.1_three@0.180.0_use-sync-external-store@1.5.0__react@19.1.1_@types+react@19.1.13",
+    "npm:@react-three/fiber@9.3.0": "9.3.0_react@19.1.1_react-dom@19.1.1__react@19.1.1_three@0.180.0_use-sync-external-store@1.6.0__react@19.1.1",
     "npm:@sinclair/typebox@*": "0.34.41",
-    "npm:@types/node@*": "24.2.0",
-    "npm:@types/react-dom@*": "19.1.9_@types+react@19.1.13",
-    "npm:@types/react@*": "19.1.13",
-    "npm:@types/three@*": "0.180.0",
     "npm:ajv@*": "8.17.1",
     "npm:marked@16.2.1": "16.2.1",
     "npm:prismjs@1.30.0": "1.30.0",
@@ -29,14 +25,11 @@
     "@babel/runtime@7.28.4": {
       "integrity": "sha512-Q/N6JNWvIvPnLDvjlE1OUBLPQHH6l3CltCEsHIujp45zQUSSh8K+gHnaEX45yAT1nyngnINhvWtzN+Nb9D8RAQ=="
     },
-    "@dimforge/rapier3d-compat@0.12.0": {
-      "integrity": "sha512-uekIGetywIgopfD97oDL5PfeezkFpNhwlzlaEYNOA0N6ghdsOvh/HYjSMek5Q2O1PYvRSDFcqFVJl4r4ZBwOow=="
-    },
-    "@react-three/fiber@9.3.0_react@19.1.1_react-dom@19.1.1__react@19.1.1_three@0.180.0_use-sync-external-store@1.5.0__react@19.1.1": {
+    "@react-three/fiber@9.3.0_react@19.1.1_react-dom@19.1.1__react@19.1.1_three@0.180.0_use-sync-external-store@1.6.0__react@19.1.1": {
       "integrity": "sha512-myPe3YL/C8+Eq939/4qIVEPBW/uxV0iiUbmjfwrs9sGKYDG8ib8Dz3Okq7BQt8P+0k4igedONbjXMQy84aDFmQ==",
       "dependencies": [
         "@babel/runtime",
-        "@types/react-reconciler@0.32.1_@types+react@19.1.13",
+        "@types/react-reconciler@0.32.1_@types+react@19.2.2",
         "@types/webxr",
         "base64-js",
         "buffer",
@@ -49,30 +42,7 @@
         "suspend-react",
         "three",
         "use-sync-external-store",
-        "zustand@5.0.8_react@19.1.1_use-sync-external-store@1.5.0__react@19.1.1"
-      ],
-      "optionalPeers": [
-        "react-dom"
-      ]
-    },
-    "@react-three/fiber@9.3.0_react@19.1.1_react-dom@19.1.1__react@19.1.1_three@0.180.0_use-sync-external-store@1.5.0__react@19.1.1_@types+react@19.1.13": {
-      "integrity": "sha512-myPe3YL/C8+Eq939/4qIVEPBW/uxV0iiUbmjfwrs9sGKYDG8ib8Dz3Okq7BQt8P+0k4igedONbjXMQy84aDFmQ==",
-      "dependencies": [
-        "@babel/runtime",
-        "@types/react-reconciler@0.32.1_@types+react@19.1.13",
-        "@types/webxr",
-        "base64-js",
-        "buffer",
-        "its-fine",
-        "react",
-        "react-dom",
-        "react-reconciler",
-        "react-use-measure",
-        "scheduler@0.25.0",
-        "suspend-react",
-        "three",
-        "use-sync-external-store",
-        "zustand@5.0.8_react@19.1.1_use-sync-external-store@1.5.0__react@19.1.1_@types+react@19.1.13"
+        "zustand"
       ],
       "optionalPeers": [
         "react-dom"
@@ -81,59 +51,26 @@
     "@sinclair/typebox@0.34.41": {
       "integrity": "sha512-6gS8pZzSXdyRHTIqoqSVknxolr1kzfy4/CeDnrzsVz8TTIWUbOBr6gnzOmTYJ3eXQNh4IYHIGi5aIL7sOZ2G/g=="
     },
-    "@tweenjs/tween.js@23.1.3": {
-      "integrity": "sha512-vJmvvwFxYuGnF2axRtPYocag6Clbb5YS7kLL+SO/TeVFzHqDIWrNKYtcsPMibjDx9O+bu+psAy9NKfWklassUA=="
-    },
-    "@types/node@24.2.0": {
-      "integrity": "sha512-3xyG3pMCq3oYCNg7/ZP+E1ooTaGB4cG8JWRsqqOYQdbWNY4zbaV0Ennrd7stjiJEFZCaybcIgpTjJWHRfBSIDw==",
-      "dependencies": [
-        "undici-types"
-      ]
-    },
-    "@types/react-dom@19.1.9_@types+react@19.1.13": {
-      "integrity": "sha512-qXRuZaOsAdXKFyOhRBg6Lqqc0yay13vN7KrIg4L7N4aaHN68ma9OK3NE1BoDFgFOTfM7zg+3/8+2n8rLUH3OKQ==",
-      "dependencies": [
-        "@types/react"
-      ]
-    },
-    "@types/react-reconciler@0.28.9_@types+react@19.1.13": {
+    "@types/react-reconciler@0.28.9_@types+react@19.2.2": {
       "integrity": "sha512-HHM3nxyUZ3zAylX8ZEyrDNd2XZOnQ0D5XfunJF5FLQnZbHHYq4UWvW1QfelQNXv1ICNkwYhfxjwfnqivYB6bFg==",
       "dependencies": [
         "@types/react"
       ]
     },
-    "@types/react-reconciler@0.32.1_@types+react@19.1.13": {
+    "@types/react-reconciler@0.32.1_@types+react@19.2.2": {
       "integrity": "sha512-RsqPttsBQ+6af0nATFXJJpemYQH7kL9+xLNm1z+0MjQFDKBZDM2R6SBrjdvRmHu9i9fM6povACj57Ft+pKRNOA==",
       "dependencies": [
         "@types/react"
       ]
     },
-    "@types/react@19.1.13": {
-      "integrity": "sha512-hHkbU/eoO3EG5/MZkuFSKmYqPbSVk5byPFa3e7y/8TybHiLMACgI8seVYlicwk7H5K/rI2px9xrQp/C+AUDTiQ==",
+    "@types/react@19.2.2": {
+      "integrity": "sha512-6mDvHUFSjyT2B2yeNx2nUgMxh9LtOWvkhIU3uePn2I2oyNymUAX1NIsdgviM4CH+JSrp2D2hsMvJOkxY+0wNRA==",
       "dependencies": [
         "csstype"
       ]
     },
-    "@types/stats.js@0.17.4": {
-      "integrity": "sha512-jIBvWWShCvlBqBNIZt0KAshWpvSjhkwkEu4ZUcASoAvhmrgAUI2t1dXrjSL4xXVLB4FznPrIsX3nKXFl/Dt4vA=="
-    },
-    "@types/three@0.180.0": {
-      "integrity": "sha512-ykFtgCqNnY0IPvDro7h+9ZeLY+qjgUWv+qEvUt84grhenO60Hqd4hScHE7VTB9nOQ/3QM8lkbNE+4vKjEpUxKg==",
-      "dependencies": [
-        "@dimforge/rapier3d-compat",
-        "@tweenjs/tween.js",
-        "@types/stats.js",
-        "@types/webxr",
-        "@webgpu/types",
-        "fflate",
-        "meshoptimizer"
-      ]
-    },
-    "@types/webxr@0.5.23": {
-      "integrity": "sha512-GPe4AsfOSpqWd3xA/0gwoKod13ChcfV67trvxaW2krUbgb9gxQjnCx8zGshzMl8LSHZlNH5gQ8LNScsDuc7nGQ=="
-    },
-    "@webgpu/types@0.1.65": {
-      "integrity": "sha512-cYrHab4d6wuVvDW5tdsfI6/o6vcLMDe6w2Citd1oS51Xxu2ycLCnVo4fqwujfKWijrZMInTJIKcXxteoy21nVA=="
+    "@types/webxr@0.5.24": {
+      "integrity": "sha512-h8fgEd/DpoS9CBrjEQXR+dIDraopAEfu4wYVNY2tEPwk60stPWhvZMf4Foo5FakuQ7HFZoa8WceaWFervK2Ovg=="
     },
     "ajv@8.17.1": {
       "integrity": "sha512-B/gBuNg5SiMTrPkC+A2+cW0RszwxYmn6VYxB/inlBStS5nx6xHIt/ehKRhIMhqusl7a8LjQoZnjCs5vhwxOQ1g==",
@@ -166,16 +103,13 @@
     "fast-uri@3.1.0": {
       "integrity": "sha512-iPeeDKJSWf4IEOasVVrknXpaBV0IApz/gp7S2bb7Z4Lljbl2MGJRqInZiUrQwV16cpzw/D3S5j5Julj/gT52AA=="
     },
-    "fflate@0.8.2": {
-      "integrity": "sha512-cPJU47OaAoCbg0pBvzsgpTPhmhqI5eJjh/JIu8tPj5q+T7iLvW/JAYUqmE7KOB4R1ZyEhzBaIQpQpardBF5z8A=="
-    },
     "ieee754@1.2.1": {
       "integrity": "sha512-dcyqhDvX1C46lXZcVqCpK+FtMRQVdIMN6/Df5js2zouUsqG7I6sFxitIC+7KYK29KdXOLHdu9zL4sFnoVQnqaA=="
     },
     "its-fine@2.0.0_react@19.1.1": {
       "integrity": "sha512-KLViCmWx94zOvpLwSlsx6yOCeMhZYaxrJV87Po5k/FoZzcPSahvK5qJ7fYhS61sZi5ikmh2S3Hz55A2l3U69ng==",
       "dependencies": [
-        "@types/react-reconciler@0.28.9_@types+react@19.1.13",
+        "@types/react-reconciler@0.28.9_@types+react@19.2.2",
         "react"
       ]
     },
@@ -185,9 +119,6 @@
     "marked@16.2.1": {
       "integrity": "sha512-r3UrXED9lMlHF97jJByry90cwrZBBvZmjG1L68oYfuPMW+uDTnuMbyJDymCWwbTE+f+3LhpNDKfpR3a3saFyjA==",
       "bin": true
-    },
-    "meshoptimizer@0.22.0": {
-      "integrity": "sha512-IebiK79sqIy+E4EgOr+CAw+Ke8hAspXKzBd0JdgEmPHiAwmvEj2S4h1rfvo+o/BnfEYd/jAOg5IeeIjzlzSnDg=="
     },
     "prismjs@1.30.0": {
       "integrity": "sha512-DEvV2ZF2r2/63V+tK8hQvrR2ZGn10srHbXviTlcv7Kpzw8jWiNTqbVgjO3IY8RxrrOUF8VPMQQFysYYYv0YZxw=="
@@ -260,35 +191,19 @@
     "three@0.180.0": {
       "integrity": "sha512-o+qycAMZrh+TsE01GqWUxUIKR1AL0S8pq7zDkYOQw8GqfX8b8VoCKYUoHbhiX5j+7hr8XsuHDVU6+gkQJQKg9w=="
     },
-    "undici-types@7.10.0": {
-      "integrity": "sha512-t5Fy/nfn+14LuOc2KNYg75vZqClpAiqscVvMygNnlsHBFpSXdJaYtXMcdNLpl/Qvc3P2cB3s6lOV51nqsFq4ag=="
-    },
-    "use-sync-external-store@1.5.0_react@19.1.1": {
-      "integrity": "sha512-Rb46I4cGGVBmjamjphe8L/UnvJD+uPPtTkNvX5mZgqdbavhI4EbgIWJiIHXJ8bc/i9EQGPRh4DwEURJ552Do0A==",
+    "use-sync-external-store@1.6.0_react@19.1.1": {
+      "integrity": "sha512-Pp6GSwGP/NrPIrxVFAIkOQeyw8lFenOHijQWkUTrDvrF4ALqylP2C/KCkeS9dpUM3KvYRQhna5vt7IL95+ZQ9w==",
       "dependencies": [
         "react"
       ]
     },
-    "zustand@5.0.8_react@19.1.1_use-sync-external-store@1.5.0__react@19.1.1": {
+    "zustand@5.0.8_react@19.1.1_use-sync-external-store@1.6.0__react@19.1.1": {
       "integrity": "sha512-gyPKpIaxY9XcO2vSMrLbiER7QMAMGOQZVRdJ6Zi782jkbzZygq5GI9nG8g+sMgitRtndwaBSl7uiqC49o1SSiw==",
       "dependencies": [
         "react",
         "use-sync-external-store"
       ],
       "optionalPeers": [
-        "react",
-        "use-sync-external-store"
-      ]
-    },
-    "zustand@5.0.8_react@19.1.1_use-sync-external-store@1.5.0__react@19.1.1_@types+react@19.1.13": {
-      "integrity": "sha512-gyPKpIaxY9XcO2vSMrLbiER7QMAMGOQZVRdJ6Zi782jkbzZygq5GI9nG8g+sMgitRtndwaBSl7uiqC49o1SSiw==",
-      "dependencies": [
-        "@types/react",
-        "react",
-        "use-sync-external-store"
-      ],
-      "optionalPeers": [
-        "@types/react",
         "react",
         "use-sync-external-store"
       ]
@@ -354,136 +269,71 @@
     "https://raw.githubusercontent.com/sinclairzx81/parsebox/0.11.0/src/token/string.ts": "853c0646380d60a4dea8739b8603f095159cc9882735ac8d0076c713c6f8e1a0",
     "https://raw.githubusercontent.com/sinclairzx81/parsebox/0.11.0/src/token/until.ts": "ccd0f02ce1d44f119fd7e81886ac696afeda1a338506ffb1036159523be8f525",
     "https://raw.githubusercontent.com/sinclairzx81/parsebox/0.11.0/src/token/until_1.ts": "da0c77a135b5747b43cd73025972be6b38b6e81259b0ab270517c259267935dd",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/attw/attw.ts": "b38274f4ff1e4f0ee5b9b5eba37f90422db7f05472864c2a0659b3e94bc175e5",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/attw/index.ts": "a76b99adbfaee3416ea98f2a5908b76c846e0fbf0768876ed93d1e8aa21a8cff",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/browser/browser.ts": "42b3060763be9ce26b262ddf4a80b570319a1c511be39a5403e1f95b098b5589",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/browser/index.ts": "4f3c2075e4337f76b83b0a60dec0e7df8b35cb4676d459bb49661ba7d4486789",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/browser/open.ts": "21ca30d157f320c3d2523f82a334a9239d2c40f495b8948d2591743fc21ab3cf",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/build/build.ts": "4cdd0a451316cba2daeb250b5b2fe7f51b9ae6d84442c94324cd19f933eceb18",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/build/common/build-additional.ts": "fe002fcf75846eb7b4503d7d10bfbd3d8d1b5b276dde1b5bba67541c334f147f",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/build/common/build-clean.ts": "622b2b852ab3210c6bba4664033719c1cb9222d6d05a009ad0eb558158dc70f6",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/build/common/build-pack.ts": "66ca147340ee33b9e5f5dc16dc6a0469abb6597a190841564a529750a0389436",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/build/dual/build-check.ts": "304f714a1ff14e2f08e70dd222bbab08fec57c1be8dfbe06d4295763cddc7bf0",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/build/dual/build-cjs.ts": "4a0fb1400b127774e1dd607aaa53eb717505c42c2f176abd3cb412fe387409cd",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/build/dual/build-esm.ts": "a6708e42dea7ab61eccf7181f1b9335e7140608e027568ed4f859273de2b1faa",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/build/dual/build-package-json.ts": "b2e71910f94826ce95eb4b92499fd874ded50680dd97c654f020da8b45a1a5f8",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/build/dual/dual.ts": "c525f1020a2d7e479cc9a7d9fce3fd107bfe500a2b107957546ba1f1f3e9d013",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/build/dual/folder.ts": "90576e23137a57677ed7a7dc994e49f1feb0f40a7507b5422168c7f143777cca",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/build/esm/build-check.ts": "eafa882e505886dec2675524c280375947be5c4a79972777951434df19ece111",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/build/esm/build-esm.ts": "416aaba959e185dd98fc2a4fb4dd93e142bef66a22405fbb229466d161d5f6c6",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/build/esm/build-package-json.ts": "9a5e41e78bb358e71735bd104de493b3ccef305633aaa5c89efb2bc6f001abac",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/build/esm/esm.ts": "1cc0988bffac3ae673781dde2a2bc13f2ddfb616a6e56bb19f567f1bbb50a94a",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/build/esm/folder.ts": "90576e23137a57677ed7a7dc994e49f1feb0f40a7507b5422168c7f143777cca",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/build/index.ts": "d0f163948e4e8b56451a0fd1e137bcf1b74440ea213335443c9abd38a6d1f3cb",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/build/options.ts": "3849cd3144e482197b3bcfe5e325340be8cf62abae20b66140b62081d0501648",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/compress/compress.ts": "04389003328eb5a94c32e3044ca45a4bc2730059437464afe732535cbc9424dd",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/compress/format-size.ts": "e05a7e2ed57d4addcbc517dd92ff90d9e1fb7df3c7cc437b7658ff59cf0a36a3",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/compress/gzip-size.ts": "02f15c90b8afebee7f6fc3f7d409238db70544bf509e2359411defc68d07ec7d",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/compress/index.ts": "f644b71cbb6c4b72e00018c25c40fc2b575cf28f2a24d1d23cbac2b5f2c095c4",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/esbuild/esbuild.ts": "11aca47ea1815cf328229243e800029c62a09a0ab55f97b4691116dafeb1bfc4",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/esbuild/index.ts": "9238dbf4eb63926dd9def11010f96636dc875a9175619c2929360ce307f9ee21",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/file/append.ts": "ad45bc669a04e381e28323b7177f2fefbf28bca7e11ddafa5765f34729f9cf51",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/file/create.ts": "4af6c8d6c7e5611df9b137de65da0e3eb23a15e4ad4f00ac886d71c576f96ae3",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/file/delete.ts": "a27567be0020f7463a7a91d99d2be1d2e11d9e3ea8e9f20a2ae684b47540aab4",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/file/file.ts": "b84ee4d26d965554c72e03098af84e0f398ac96d0a7d1c15c9cfdfb76357176a",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/file/index.ts": "3593d9aa518ce79e373daa2d794a44179b74cfabb027f75a202204488b482677",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/file/read.ts": "8a68e6377271ced84462a6ac3ff37d7282dcb164ca5aef383cf3162f3fd6d193",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/file/replace.ts": "2f8caebc51df8c6d1e70125ee08df18a840e2bab95ca8feae3dc67f9b978f2d0",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/file/write.ts": "666a7d38fac527d3259dadb83734eec90acfaf8773184cc4c00dc70e7b833882",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/folder/add.ts": "5020f85ae9f14348ad149c2e96149af63e3599efb6a15bd17591744bc698400c",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/folder/create.ts": "cd3408f58c371cba106d0d73d43c289f174bcf91df7ebdc94deed723f3b335bc",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/folder/delete.ts": "3df9b415ac57a12d847a18f007ac9443ea6c885e990646eff8d70a0a1765b82c",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/folder/folder.ts": "43ccb82e2e76e2e6d972b82a426551f4368a0c8d74ad0a9d099e17cd64f4bdd5",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/folder/index-list.ts": "9c6b2a08534d3651534ae2ad66ed6d6f7f3f88de8a8bdcc53df1729430493e93",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/folder/index.ts": "e72bd528ede06ac325beead47f80efcaa551e2f16e986bde0957944142da2c93",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/index.ts": "69cde5035a9995ecb6ae9c12530367e5c58ca674ad8222d451a98e9089c2922c",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/path/index.ts": "b7086f87edd0ccd26e319c5cbbd83b1cc9a5c4cb6b3e6648fd8065e75d7cc8e2",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/path/path.ts": "0633cd2e7c269733f3f153784eed57040ac2ab4815207b5b3e2dbedb54960de5",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/run/index.ts": "715694d98fdc06702e1fa5cf27a6e86c1f99f8331c038763eced52752a403edb",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/run/run.ts": "180bd2e3fa744dda77c51beccccc4958a9246bc40ddeae874bb13974d22b9a1f",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/serve/debounce.ts": "83f2e3401d66af38646d41634425f51da9bec913e778484e7c7e753c05ba150a",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/serve/index.ts": "5e567c92f580570c4af8d92519f5e18c5cad4efff9106afa68432504dbc1d9c8",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/serve/request.ts": "1b7f2ed95664b0486741fe12dd7ad0f952ddec1f241b9e74fca4084f73b641e1",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/serve/serve.ts": "ea9a025bd01958f5cf401549781c8236ace0c47130ab5c97b1f377548bb94c78",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/serve/socket.ts": "b966f766a784581a68b1bcbd7eb8fcde5cdb1c1f2ef0e5dd1ac65d8a767b0f9b",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/serve/stream.ts": "8544811d3e809f93fe03d1df3faf78b4c391bcd62c14af158953cbab88a445e1",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/settings/index.ts": "b4966703f2736afd29509a05a740c80bdd1fd950a89c65648bf9f1d8676003ae",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/settings/settings.ts": "7c8c5cbc055266b7af45252854f8c3c17abc6d4093e2cc4c779d70cba0a7c2c1",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/shell/index.ts": "e0c82a5e70578d6b9ee8c3d03bc729f87ebc66d219c56336f84a4e33e30e373b",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/shell/shell.ts": "4590fad5c47e1184e3138c545371a7275cc40573754e912c62c6c306b754a4b9",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/task.ts": "7d9c273406b3618330833bfd2475be2968f33942ce99063f76dbc4c67c60069a",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/test/index.ts": "dfa63a9d1deec8e440b752131aa4d253dd02024798a9b8ec1cff31edd3749def",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/test/manifest.ts": "63625b8d3cd42d12936aa7a2845b7ac1d9ec7e92bba3ef1320c0e5802807d7e1",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/test/report.ts": "959d516300c35cf263690060e401e334ea506ae72eda9d7e1e6aa79b016e4592",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/test/run.ts": "e93e8568ffe08642e70f7fbeffa5c6833d384a2005789c95d9e931850d01090a",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/test/test.ts": "894650a3af2f7c0c8e4e4f0930d6f3e7bfc5187c5c66ce869c0429b942a51c2d",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/tsc/index.ts": "ef3fd7538b1f3d85e102f4b6317ad92e2f1dc007df6d7d7cceb283913e71117d",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.1/src/tsc/tsc.ts": "2d84d6b8bf155811eec128a03095dbad9f15feb7602c7fc3c6a9e0c36dc38602",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/attw/attw.ts": "146d4ce8b89c1cced5845ec683de3f483a6297ec4eda1767cacbc71953c3f59b",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/attw/index.ts": "a76b99adbfaee3416ea98f2a5908b76c846e0fbf0768876ed93d1e8aa21a8cff",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/browser/browser.ts": "42b3060763be9ce26b262ddf4a80b570319a1c511be39a5403e1f95b098b5589",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/browser/index.ts": "4f3c2075e4337f76b83b0a60dec0e7df8b35cb4676d459bb49661ba7d4486789",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/browser/open.ts": "21ca30d157f320c3d2523f82a334a9239d2c40f495b8948d2591743fc21ab3cf",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/build/build.ts": "4cdd0a451316cba2daeb250b5b2fe7f51b9ae6d84442c94324cd19f933eceb18",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/build/common/build-additional.ts": "fe002fcf75846eb7b4503d7d10bfbd3d8d1b5b276dde1b5bba67541c334f147f",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/build/common/build-clean.ts": "622b2b852ab3210c6bba4664033719c1cb9222d6d05a009ad0eb558158dc70f6",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/build/common/build-pack.ts": "66ca147340ee33b9e5f5dc16dc6a0469abb6597a190841564a529750a0389436",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/build/dual/build-check.ts": "304f714a1ff14e2f08e70dd222bbab08fec57c1be8dfbe06d4295763cddc7bf0",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/build/dual/build-cjs.ts": "4a0fb1400b127774e1dd607aaa53eb717505c42c2f176abd3cb412fe387409cd",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/build/dual/build-esm.ts": "a6708e42dea7ab61eccf7181f1b9335e7140608e027568ed4f859273de2b1faa",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/build/dual/build-package-json.ts": "b2e71910f94826ce95eb4b92499fd874ded50680dd97c654f020da8b45a1a5f8",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/build/dual/dual.ts": "c525f1020a2d7e479cc9a7d9fce3fd107bfe500a2b107957546ba1f1f3e9d013",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/build/dual/folder.ts": "90576e23137a57677ed7a7dc994e49f1feb0f40a7507b5422168c7f143777cca",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/build/esm/build-check.ts": "31df60caaefda98349c7c1f5c87cd3e4eb05c1ed20f5a6863bebad411ff3e70d",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/build/esm/build-esm.ts": "416aaba959e185dd98fc2a4fb4dd93e142bef66a22405fbb229466d161d5f6c6",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/build/esm/build-package-json.ts": "ee5ca1fd9eb494cd93deec624519d0804a388b868928601f99f12e7f0f664a76",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/build/esm/esm.ts": "1cc0988bffac3ae673781dde2a2bc13f2ddfb616a6e56bb19f567f1bbb50a94a",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/build/esm/folder.ts": "90576e23137a57677ed7a7dc994e49f1feb0f40a7507b5422168c7f143777cca",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/build/index.ts": "d0f163948e4e8b56451a0fd1e137bcf1b74440ea213335443c9abd38a6d1f3cb",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/build/options.ts": "3849cd3144e482197b3bcfe5e325340be8cf62abae20b66140b62081d0501648",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/compress/compress.ts": "04389003328eb5a94c32e3044ca45a4bc2730059437464afe732535cbc9424dd",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/compress/format-size.ts": "e05a7e2ed57d4addcbc517dd92ff90d9e1fb7df3c7cc437b7658ff59cf0a36a3",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/compress/gzip-size.ts": "02f15c90b8afebee7f6fc3f7d409238db70544bf509e2359411defc68d07ec7d",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/compress/index.ts": "f644b71cbb6c4b72e00018c25c40fc2b575cf28f2a24d1d23cbac2b5f2c095c4",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/esbuild/esbuild.ts": "11aca47ea1815cf328229243e800029c62a09a0ab55f97b4691116dafeb1bfc4",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/esbuild/index.ts": "9238dbf4eb63926dd9def11010f96636dc875a9175619c2929360ce307f9ee21",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/file/append.ts": "ad45bc669a04e381e28323b7177f2fefbf28bca7e11ddafa5765f34729f9cf51",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/file/create.ts": "4af6c8d6c7e5611df9b137de65da0e3eb23a15e4ad4f00ac886d71c576f96ae3",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/file/delete.ts": "a27567be0020f7463a7a91d99d2be1d2e11d9e3ea8e9f20a2ae684b47540aab4",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/file/file.ts": "b84ee4d26d965554c72e03098af84e0f398ac96d0a7d1c15c9cfdfb76357176a",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/file/index.ts": "3593d9aa518ce79e373daa2d794a44179b74cfabb027f75a202204488b482677",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/file/read.ts": "8a68e6377271ced84462a6ac3ff37d7282dcb164ca5aef383cf3162f3fd6d193",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/file/replace.ts": "2f8caebc51df8c6d1e70125ee08df18a840e2bab95ca8feae3dc67f9b978f2d0",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/file/write.ts": "666a7d38fac527d3259dadb83734eec90acfaf8773184cc4c00dc70e7b833882",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/folder/add.ts": "5020f85ae9f14348ad149c2e96149af63e3599efb6a15bd17591744bc698400c",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/folder/create.ts": "cd3408f58c371cba106d0d73d43c289f174bcf91df7ebdc94deed723f3b335bc",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/folder/delete.ts": "3df9b415ac57a12d847a18f007ac9443ea6c885e990646eff8d70a0a1765b82c",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/folder/folder.ts": "43ccb82e2e76e2e6d972b82a426551f4368a0c8d74ad0a9d099e17cd64f4bdd5",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/folder/index-list.ts": "9c6b2a08534d3651534ae2ad66ed6d6f7f3f88de8a8bdcc53df1729430493e93",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/folder/index.ts": "e72bd528ede06ac325beead47f80efcaa551e2f16e986bde0957944142da2c93",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/index.ts": "69cde5035a9995ecb6ae9c12530367e5c58ca674ad8222d451a98e9089c2922c",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/path/index.ts": "b7086f87edd0ccd26e319c5cbbd83b1cc9a5c4cb6b3e6648fd8065e75d7cc8e2",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/path/path.ts": "0633cd2e7c269733f3f153784eed57040ac2ab4815207b5b3e2dbedb54960de5",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/run/index.ts": "715694d98fdc06702e1fa5cf27a6e86c1f99f8331c038763eced52752a403edb",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/run/run.ts": "180bd2e3fa744dda77c51beccccc4958a9246bc40ddeae874bb13974d22b9a1f",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/serve/debounce.ts": "83f2e3401d66af38646d41634425f51da9bec913e778484e7c7e753c05ba150a",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/serve/index.ts": "5e567c92f580570c4af8d92519f5e18c5cad4efff9106afa68432504dbc1d9c8",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/serve/request.ts": "1b7f2ed95664b0486741fe12dd7ad0f952ddec1f241b9e74fca4084f73b641e1",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/serve/serve.ts": "ea9a025bd01958f5cf401549781c8236ace0c47130ab5c97b1f377548bb94c78",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/serve/socket.ts": "b966f766a784581a68b1bcbd7eb8fcde5cdb1c1f2ef0e5dd1ac65d8a767b0f9b",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/serve/stream.ts": "8544811d3e809f93fe03d1df3faf78b4c391bcd62c14af158953cbab88a445e1",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/settings/index.ts": "b4966703f2736afd29509a05a740c80bdd1fd950a89c65648bf9f1d8676003ae",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/settings/settings.ts": "7c8c5cbc055266b7af45252854f8c3c17abc6d4093e2cc4c779d70cba0a7c2c1",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/shell/index.ts": "e0c82a5e70578d6b9ee8c3d03bc729f87ebc66d219c56336f84a4e33e30e373b",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/shell/shell.ts": "4590fad5c47e1184e3138c545371a7275cc40573754e912c62c6c306b754a4b9",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/task.ts": "7d9c273406b3618330833bfd2475be2968f33942ce99063f76dbc4c67c60069a",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/test/index.ts": "dfa63a9d1deec8e440b752131aa4d253dd02024798a9b8ec1cff31edd3749def",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/test/manifest.ts": "63625b8d3cd42d12936aa7a2845b7ac1d9ec7e92bba3ef1320c0e5802807d7e1",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/test/report.ts": "959d516300c35cf263690060e401e334ea506ae72eda9d7e1e6aa79b016e4592",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/test/run.ts": "e93e8568ffe08642e70f7fbeffa5c6833d384a2005789c95d9e931850d01090a",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/test/test.ts": "894650a3af2f7c0c8e4e4f0930d6f3e7bfc5187c5c66ce869c0429b942a51c2d",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/tsc/index.ts": "ef3fd7538b1f3d85e102f4b6317ad92e2f1dc007df6d7d7cceb283913e71117d",
-    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.2/src/tsc/tsc.ts": "2d84d6b8bf155811eec128a03095dbad9f15feb7602c7fc3c6a9e0c36dc38602"
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/attw/attw.ts": "146d4ce8b89c1cced5845ec683de3f483a6297ec4eda1767cacbc71953c3f59b",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/attw/index.ts": "a76b99adbfaee3416ea98f2a5908b76c846e0fbf0768876ed93d1e8aa21a8cff",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/browser/browser.ts": "42b3060763be9ce26b262ddf4a80b570319a1c511be39a5403e1f95b098b5589",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/browser/index.ts": "4f3c2075e4337f76b83b0a60dec0e7df8b35cb4676d459bb49661ba7d4486789",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/browser/open.ts": "21ca30d157f320c3d2523f82a334a9239d2c40f495b8948d2591743fc21ab3cf",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/build/build.ts": "4cdd0a451316cba2daeb250b5b2fe7f51b9ae6d84442c94324cd19f933eceb18",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/build/common/build-additional.ts": "fe002fcf75846eb7b4503d7d10bfbd3d8d1b5b276dde1b5bba67541c334f147f",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/build/common/build-clean.ts": "622b2b852ab3210c6bba4664033719c1cb9222d6d05a009ad0eb558158dc70f6",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/build/common/build-pack.ts": "66ca147340ee33b9e5f5dc16dc6a0469abb6597a190841564a529750a0389436",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/build/dual/build-check.ts": "304f714a1ff14e2f08e70dd222bbab08fec57c1be8dfbe06d4295763cddc7bf0",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/build/dual/build-cjs.ts": "4a0fb1400b127774e1dd607aaa53eb717505c42c2f176abd3cb412fe387409cd",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/build/dual/build-esm.ts": "a6708e42dea7ab61eccf7181f1b9335e7140608e027568ed4f859273de2b1faa",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/build/dual/build-package-json.ts": "d28bb8a4d69b0c92337ee42499b9e988c93dde54ba3497627f11e6005897f096",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/build/dual/dual.ts": "c525f1020a2d7e479cc9a7d9fce3fd107bfe500a2b107957546ba1f1f3e9d013",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/build/dual/folder.ts": "90576e23137a57677ed7a7dc994e49f1feb0f40a7507b5422168c7f143777cca",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/build/esm/build-check.ts": "31df60caaefda98349c7c1f5c87cd3e4eb05c1ed20f5a6863bebad411ff3e70d",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/build/esm/build-esm.ts": "416aaba959e185dd98fc2a4fb4dd93e142bef66a22405fbb229466d161d5f6c6",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/build/esm/build-package-json.ts": "8c97cbe8c88b333c871ecfc13961b2d43f5391268d34b740720b8f2b376c5981",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/build/esm/esm.ts": "1cc0988bffac3ae673781dde2a2bc13f2ddfb616a6e56bb19f567f1bbb50a94a",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/build/esm/folder.ts": "90576e23137a57677ed7a7dc994e49f1feb0f40a7507b5422168c7f143777cca",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/build/index.ts": "d0f163948e4e8b56451a0fd1e137bcf1b74440ea213335443c9abd38a6d1f3cb",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/build/options.ts": "3849cd3144e482197b3bcfe5e325340be8cf62abae20b66140b62081d0501648",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/compress/compress.ts": "04389003328eb5a94c32e3044ca45a4bc2730059437464afe732535cbc9424dd",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/compress/format-size.ts": "e05a7e2ed57d4addcbc517dd92ff90d9e1fb7df3c7cc437b7658ff59cf0a36a3",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/compress/gzip-size.ts": "02f15c90b8afebee7f6fc3f7d409238db70544bf509e2359411defc68d07ec7d",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/compress/index.ts": "f644b71cbb6c4b72e00018c25c40fc2b575cf28f2a24d1d23cbac2b5f2c095c4",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/esbuild/esbuild.ts": "11aca47ea1815cf328229243e800029c62a09a0ab55f97b4691116dafeb1bfc4",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/esbuild/index.ts": "9238dbf4eb63926dd9def11010f96636dc875a9175619c2929360ce307f9ee21",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/file/append.ts": "ad45bc669a04e381e28323b7177f2fefbf28bca7e11ddafa5765f34729f9cf51",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/file/create.ts": "4af6c8d6c7e5611df9b137de65da0e3eb23a15e4ad4f00ac886d71c576f96ae3",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/file/delete.ts": "a27567be0020f7463a7a91d99d2be1d2e11d9e3ea8e9f20a2ae684b47540aab4",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/file/file.ts": "b84ee4d26d965554c72e03098af84e0f398ac96d0a7d1c15c9cfdfb76357176a",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/file/index.ts": "3593d9aa518ce79e373daa2d794a44179b74cfabb027f75a202204488b482677",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/file/read.ts": "8a68e6377271ced84462a6ac3ff37d7282dcb164ca5aef383cf3162f3fd6d193",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/file/replace.ts": "2f8caebc51df8c6d1e70125ee08df18a840e2bab95ca8feae3dc67f9b978f2d0",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/file/write.ts": "666a7d38fac527d3259dadb83734eec90acfaf8773184cc4c00dc70e7b833882",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/folder/add.ts": "5020f85ae9f14348ad149c2e96149af63e3599efb6a15bd17591744bc698400c",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/folder/create.ts": "cd3408f58c371cba106d0d73d43c289f174bcf91df7ebdc94deed723f3b335bc",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/folder/delete.ts": "3df9b415ac57a12d847a18f007ac9443ea6c885e990646eff8d70a0a1765b82c",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/folder/folder.ts": "43ccb82e2e76e2e6d972b82a426551f4368a0c8d74ad0a9d099e17cd64f4bdd5",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/folder/index-list.ts": "9c6b2a08534d3651534ae2ad66ed6d6f7f3f88de8a8bdcc53df1729430493e93",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/folder/index.ts": "e72bd528ede06ac325beead47f80efcaa551e2f16e986bde0957944142da2c93",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/index.ts": "69cde5035a9995ecb6ae9c12530367e5c58ca674ad8222d451a98e9089c2922c",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/path/index.ts": "b7086f87edd0ccd26e319c5cbbd83b1cc9a5c4cb6b3e6648fd8065e75d7cc8e2",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/path/path.ts": "0633cd2e7c269733f3f153784eed57040ac2ab4815207b5b3e2dbedb54960de5",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/run/index.ts": "715694d98fdc06702e1fa5cf27a6e86c1f99f8331c038763eced52752a403edb",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/run/run.ts": "180bd2e3fa744dda77c51beccccc4958a9246bc40ddeae874bb13974d22b9a1f",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/serve/debounce.ts": "83f2e3401d66af38646d41634425f51da9bec913e778484e7c7e753c05ba150a",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/serve/index.ts": "5e567c92f580570c4af8d92519f5e18c5cad4efff9106afa68432504dbc1d9c8",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/serve/request.ts": "1b7f2ed95664b0486741fe12dd7ad0f952ddec1f241b9e74fca4084f73b641e1",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/serve/serve.ts": "ea9a025bd01958f5cf401549781c8236ace0c47130ab5c97b1f377548bb94c78",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/serve/socket.ts": "b966f766a784581a68b1bcbd7eb8fcde5cdb1c1f2ef0e5dd1ac65d8a767b0f9b",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/serve/stream.ts": "8544811d3e809f93fe03d1df3faf78b4c391bcd62c14af158953cbab88a445e1",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/settings/index.ts": "b4966703f2736afd29509a05a740c80bdd1fd950a89c65648bf9f1d8676003ae",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/settings/settings.ts": "7c8c5cbc055266b7af45252854f8c3c17abc6d4093e2cc4c779d70cba0a7c2c1",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/shell/index.ts": "e0c82a5e70578d6b9ee8c3d03bc729f87ebc66d219c56336f84a4e33e30e373b",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/shell/shell.ts": "4590fad5c47e1184e3138c545371a7275cc40573754e912c62c6c306b754a4b9",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/task.ts": "7d9c273406b3618330833bfd2475be2968f33942ce99063f76dbc4c67c60069a",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/test/index.ts": "dfa63a9d1deec8e440b752131aa4d253dd02024798a9b8ec1cff31edd3749def",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/test/manifest.ts": "63625b8d3cd42d12936aa7a2845b7ac1d9ec7e92bba3ef1320c0e5802807d7e1",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/test/report.ts": "959d516300c35cf263690060e401e334ea506ae72eda9d7e1e6aa79b016e4592",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/test/run.ts": "e93e8568ffe08642e70f7fbeffa5c6833d384a2005789c95d9e931850d01090a",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/test/test.ts": "894650a3af2f7c0c8e4e4f0930d6f3e7bfc5187c5c66ce869c0429b942a51c2d",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/tsc/index.ts": "ef3fd7538b1f3d85e102f4b6317ad92e2f1dc007df6d7d7cceb283913e71117d",
+    "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/tsc/tsc.ts": "2d84d6b8bf155811eec128a03095dbad9f15feb7602c7fc3c6a9e0c36dc38602"
   },
   "workspace": {
     "dependencies": [

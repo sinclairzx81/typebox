@@ -269,7 +269,7 @@ const Extends = Runtime.Union([
 const Base = Runtime.Union([
   Runtime.Tuple([Runtime.Const(LParen), Runtime.Ref('Type'), Runtime.Const(RParen)]),
   Runtime.Ref('Keyword'),
-  Runtime.Ref('Object'),
+  Runtime.Ref('_Object_'),
   Runtime.Ref('Tuple'),
   Runtime.Ref('TemplateLiteral'),
   Runtime.Ref('Literal'),
@@ -426,7 +426,7 @@ const Properties = Runtime.Tuple([
 // ------------------------------------------------------------------
 // Object
 // ------------------------------------------------------------------
-const Object = Runtime.Ref('Properties')
+const _Object_ = Runtime.Ref('Properties')
 // ------------------------------------------------------------------
 // ElementNamed
 // ------------------------------------------------------------------
@@ -954,7 +954,7 @@ export const SyntaxModule = new Runtime.Module({
   PropertyDelimiter,
   PropertyList,
   Properties,
-  Object,
+  _Object_,
 
   ElementNamed,
   ElementReadonlyOptional,
