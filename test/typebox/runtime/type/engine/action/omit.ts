@@ -432,3 +432,45 @@ Test('Should Omit 28', () => {
   Assert.IsEqual(AB.properties.type.anyOf[1].const, 'b')
   Assert.IsEqual(AB.properties.type.anyOf[2].const, 'c')
 })
+// ------------------------------------------------------------------
+// More Intersect
+// ------------------------------------------------------------------
+Test('Should Omit 29', () => {
+  const X = Type.Object({ x: Type.Number(), z: Type.Literal(1) })
+  const Y = Type.Object({ y: Type.String(), z: Type.Number() })
+  const Z = Type.Intersect([X, Y])
+  const T: Type.TObject<{
+    y: Type.TString
+    z: Type.TLiteral<1>
+  }> = Type.Omit(Z, ['x'])
+  Assert.IsTrue(Type.IsObject(T))
+  Assert.IsTrue(Type.IsString(T.properties.y))
+  Assert.IsEqual(T.properties.z.const, 1)
+  Assert.IsEqual(Guard.Keys(T.properties).length, 2)
+})
+Test('Should Omit 30', () => {
+  const X = Type.Object({ x: Type.Number(), z: Type.Literal(1) })
+  const Y = Type.Object({ y: Type.String(), z: Type.Number() })
+  const Z = Type.Intersect([X, Y])
+  const T: Type.TObject<{
+    x: Type.TNumber
+    z: Type.TLiteral<1>
+  }> = Type.Omit(Z, ['y'])
+  Assert.IsTrue(Type.IsObject(T))
+  Assert.IsTrue(Type.IsNumber(T.properties.x))
+  Assert.IsEqual(T.properties.z.const, 1)
+  Assert.IsEqual(Guard.Keys(T.properties).length, 2)
+})
+Test('Should Omit 31', () => {
+  const X = Type.Object({ x: Type.Number(), z: Type.Literal(1) })
+  const Y = Type.Object({ y: Type.String(), z: Type.Number() })
+  const Z = Type.Intersect([X, Y])
+  const T: Type.TObject<{
+    x: Type.TNumber
+    y: Type.TString
+  }> = Type.Omit(Z, ['z'])
+  Assert.IsTrue(Type.IsObject(T))
+  Assert.IsTrue(Type.IsNumber(T.properties.x))
+  Assert.IsTrue(Type.IsString(T.properties.y))
+  Assert.IsEqual(Guard.Keys(T.properties).length, 2)
+})

@@ -53,11 +53,14 @@ export interface TObject<Properties extends TProperties = TProperties> extends T
 // Factory
 // ------------------------------------------------------------------
 /** Creates an Object type. */
-export function Object<Properties extends TProperties>(properties: Properties, options: TObjectOptions = {}): TObject<Properties> {
+function _Object_<Properties extends TProperties>(properties: Properties, options: TObjectOptions = {}): TObject<Properties> {
   const requiredKeys = RequiredArray(properties) as string[]
   const required = requiredKeys.length > 0 ? { required: requiredKeys } : {}
   return Memory.Create({ '~kind': 'Object' }, { type: 'object', ...required, properties }, options) as never
 }
+/** `[Json]` Creates an Object type */
+export var Object = _Object_ // Required for CommonJS ES Interop
+
 // ------------------------------------------------------------------
 // Guard
 // ------------------------------------------------------------------
@@ -72,3 +75,4 @@ export function IsObject(value: unknown): value is TObject {
 export function ObjectOptions(type: TObject): TObjectOptions {
   return Memory.Discard(type, ['~kind', 'type', 'properties', 'required'])
 }
+
