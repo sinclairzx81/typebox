@@ -8,12 +8,12 @@ import { Range } from './task/range/index.ts'
 import { Metrics } from './task/metrics/index.ts'
 import { Task } from 'tasksmith'
 
-const Version = '1.0.33'
+const Version = '1.0.34'
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-const BuildPackage = (target: string = `target/build`) => Task.build.dual('src', {
+const BuildPackage = (target: string = `target/build`) => Task.build.esm('src', {
   outdir: target,
   compiler: '5.9.2',
   additional: ['license', 'readme.md'],
