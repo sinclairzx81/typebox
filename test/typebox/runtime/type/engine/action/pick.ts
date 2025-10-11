@@ -453,3 +453,40 @@ Test('Should Pick 27', () => {
   Assert.IsEqual(AB.properties.type.anyOf[1].const, 'b')
   Assert.IsEqual(AB.properties.type.anyOf[2].const, 'c')
 })
+// ------------------------------------------------------------------
+// More Intersect
+// ------------------------------------------------------------------
+Test('Should Pick 28', () => {
+  const X = Type.Object({ x: Type.Number(), z: Type.Literal(1) })
+  const Y = Type.Object({ y: Type.String(), z: Type.Number() })
+  const Z = Type.Intersect([X, Y])
+  const T: Type.TObject<{
+    x: Type.TNumber
+  }> = Type.Pick(Z, ['x'])
+  Assert.IsTrue(Type.IsObject(T))
+  Assert.IsTrue(Type.IsNumber(T.properties.x))
+  Assert.IsEqual(Guard.Keys(T.properties).length, 1)
+})
+Test('Should Pick 29', () => {
+  const X = Type.Object({ x: Type.Number(), z: Type.Literal(1) })
+  const Y = Type.Object({ y: Type.String(), z: Type.Number() })
+  const Z = Type.Intersect([X, Y])
+  const T: Type.TObject<{
+    y: Type.TString
+  }> = Type.Pick(Z, ['y'])
+  Assert.IsTrue(Type.IsObject(T))
+  Assert.IsTrue(Type.IsString(T.properties.y))
+  Assert.IsEqual(Guard.Keys(T.properties).length, 1)
+})
+Test('Should Pick 30', () => {
+  const X = Type.Object({ x: Type.Number(), z: Type.Literal(1) })
+  const Y = Type.Object({ y: Type.String(), z: Type.Number() })
+  const Z = Type.Intersect([X, Y])
+  const T: Type.TObject<{
+    z: Type.TLiteral<1>
+  }> = Type.Pick(Z, ['z'])
+  Assert.IsTrue(Type.IsObject(T))
+  Assert.IsTrue(Type.IsLiteral(T.properties.z))
+  Assert.IsEqual(T.properties.z.const, 1)
+  Assert.IsEqual(Guard.Keys(T.properties).length, 1)
+})
