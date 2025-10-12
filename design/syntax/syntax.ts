@@ -145,6 +145,13 @@ const GenericCall = Runtime.Tuple([
   Runtime.Ref('GenericCallArguments'),
 ])
 // ------------------------------------------------------------------
+// OptionalSemiColon
+// ------------------------------------------------------------------
+const OptionalSemiColon = Runtime.Union([
+  Runtime.Tuple([Runtime.Const(SemiColon)]),
+  Runtime.Tuple([])
+])
+// ------------------------------------------------------------------
 // Reference
 // ------------------------------------------------------------------
 const Reference = Runtime.Ident()
@@ -610,7 +617,8 @@ const Mapped = Runtime.Tuple([
   Runtime.Ref('MappedOptional'),
   Runtime.Const(Colon),
   Runtime.Ref('Type'),
-  Runtime.Const(RBrace)
+  Runtime.Ref('OptionalSemiColon'),
+  Runtime.Const(RBrace),
 ])
 // ------------------------------------------------------------------
 // Options
@@ -865,7 +873,8 @@ const ModuleDeclaration = Runtime.Tuple([
     Runtime.Ref('InterfaceDeclaration'),
     Runtime.Ref('TypeAliasDeclarationGeneric'),
     Runtime.Ref('TypeAliasDeclaration'),
-  ])
+  ]),
+  Runtime.Ref('OptionalSemiColon')
 ])
 // ------------------------------------------------------------------
 // Module
@@ -900,6 +909,8 @@ export const SyntaxModule = new Runtime.Module({
   GenericCallArgumentList,
   GenericCallArguments,
   GenericCall,
+
+  OptionalSemiColon,
 
   KeywordString,
   KeywordNumber,

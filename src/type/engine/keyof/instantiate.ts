@@ -31,6 +31,7 @@ THE SOFTWARE.
 import { Memory } from '../../../system/memory/index.ts'
 import { type TSchema, type TSchemaOptions } from '../../types/schema.ts'
 import { type TProperties } from '../../types/properties.ts'
+import { type TAny, IsAny } from '../../types/any.ts'
 import { type TArray, IsArray } from '../../types/array.ts'
 import { type TCyclic, IsCyclic } from '../../types/cyclic.ts'
 import { type TIntersect, IsIntersect } from '../../types/intersect.ts'
@@ -47,7 +48,8 @@ import { type TCollapseToObject, CollapseToObject } from '../object/index.ts'
 // ------------------------------------------------------------------
 // Computed
 // ------------------------------------------------------------------
-import { type TFromArray, FromArray } from "./from-array.ts"
+import { type TFromAny, FromAny } from './from-any.ts'
+import { type TFromArray, FromArray } from './from-array.ts'
 import { type TFromObject, FromObject } from './from-object.ts'
 import { type TFromRecord, FromRecord } from './from-record.ts'
 import { type TFromTuple, FromTuple } from './from-tuple.ts'
@@ -80,17 +82,19 @@ function NormalizeType<Type extends TSchema>(type: Type): TNormalizeType<Type> {
 // Action
 // ------------------------------------------------------------------
 export type TKeyOfAction<Type extends TSchema, 
-  Normalized extends TSchema = TNormalizeType<Type>
+  Normal extends TSchema = TNormalizeType<Type>
 > = (
-  Normalized extends TArray<infer Type extends TSchema> ? TFromArray<Type> :
-  Normalized extends TObject<infer Properties extends TProperties> ? TFromObject<Properties> :
-  Normalized extends TRecord ? TFromRecord<Normalized> :
-  Normalized extends TTuple<infer Types extends TSchema[]> ? TFromTuple<Types> :
+  Normal extends TAny ? TFromAny :
+  Normal extends TArray<infer Type extends TSchema> ? TFromArray<Type> :
+  Normal extends TObject<infer Properties extends TProperties> ? TFromObject<Properties> :
+  Normal extends TRecord ? TFromRecord<Normal> :
+  Normal extends TTuple<infer Types extends TSchema[]> ? TFromTuple<Types> :
   TNever
 )
 export function KeyOfAction<Type extends TSchema>(type: Type): TKeyOfAction<Type> {
   const normal = NormalizeType(type)
   return (
+    IsAny(normal) ? FromAny() :
     IsArray(normal) ? FromArray(normal.items) :
     IsObject(normal) ? FromObject(normal.properties) :
     IsRecord(normal) ? FromRecord(normal) :

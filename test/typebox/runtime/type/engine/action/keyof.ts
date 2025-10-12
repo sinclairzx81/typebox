@@ -261,3 +261,13 @@ Test('Should KeyOf 22', () => {
   Assert.IsTrue(Type.IsLiteral(K))
   Assert.IsEqual(K.const, 'x')
 })
+// ------------------------------------------------------------------
+// Any
+// ------------------------------------------------------------------
+Test('Should KeyOf 23', () => {
+  const T: Type.TUnion<[Type.TNumber, Type.TString, Type.TSymbol]> = Type.KeyOf(Type.Any())
+  Assert.IsTrue(Type.IsUnion(T))
+  Assert.IsTrue(Type.IsNumber(T.anyOf[0]))
+  Assert.IsTrue(Type.IsString(T.anyOf[1]))
+  Assert.IsTrue(Type.IsSymbol(T.anyOf[2]))
+})

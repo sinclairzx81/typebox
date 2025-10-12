@@ -246,6 +246,14 @@ export function GenericCallMapping(input: [unknown, unknown]): unknown {
   return IntrinsicOrCall(input[0] as string, input[1] as T.TSchema[])
 }
 // -------------------------------------------------------------------
+// OptionalSemiColon: [';'] | []
+// -------------------------------------------------------------------
+export type TOptionalSemiColonMapping<Input extends [unknown] | []>
+  = null
+export function OptionalSemiColonMapping(input: [unknown] | []): unknown {
+  return null
+}
+// -------------------------------------------------------------------
 // KeywordString: 'string'
 // -------------------------------------------------------------------
 export type TKeywordStringMapping<Input extends 'string'> = (
@@ -1149,16 +1157,16 @@ export function MappedAsMapping(input: [unknown, unknown] | []): unknown {
   return Guard.IsEqual(input.length, 2) ? [input[1]] : []
 }
 // -------------------------------------------------------------------
-// Mapped: ['{', MappedReadonly, '[', <Ident>, 'in', Type, MappedAs, ']', MappedOptional, ':', Type, '}']
+// Mapped: ['{', MappedReadonly, '[', <Ident>, 'in', Type, MappedAs, ']', MappedOptional, ':', Type, OptionalSemiColon, '}']
 // -------------------------------------------------------------------
-export type TMappedMapping<Input extends [unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown]> = (
-  Input extends ['{', infer Readonly extends TModifierOperation, '[', infer Key extends string, 'in', infer Union extends T.TSchema, infer As extends T.TSchema[], ']', infer Optional extends TModifierOperation, ':', infer Type extends T.TSchema, '}']
+export type TMappedMapping<Input extends [unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown]> = (
+  Input extends ['{', infer Readonly extends TModifierOperation, '[', infer Key extends string, 'in', infer Union extends T.TSchema, infer As extends T.TSchema[], ']', infer Optional extends TModifierOperation, ':', infer Type extends T.TSchema, null, '}']
     ? (As extends [infer As extends T.TSchema]
       ? C.TMappedDeferred<T.TIdentifier<Key>, Union, As, TApplyReadonly<Readonly, TApplyOptional<Optional, Type>>>
       : C.TMappedDeferred<T.TIdentifier<Key>, Union, T.TRef<Key>, TApplyReadonly<Readonly, TApplyOptional<Optional, Type>>>
     ) : never
 )
-export function MappedMapping(input: [unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown]): unknown {
+export function MappedMapping(input: [unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown]): unknown {
   return (
     Guard.IsArray(input[6]) && Guard.IsEqual(input[6].length, 1)
       ? C.MappedDeferred(T.Identifier(input[3] as string), input[5] as T.TSchema, input[6][0] as T.TSchema, ApplyReadonly(input[1] as TModifierOperation, ApplyOptional(input[8] as TModifierOperation, input[10] as T.TSchema)))
@@ -1508,14 +1516,14 @@ export function ModuleDeclarationListMapping(input: [unknown, unknown]): unknown
   return PropertiesReduce(Delimited(input) as never)
 }
 // -------------------------------------------------------------------
-// ModuleDeclaration: [ExportKeyword, InterfaceDeclarationGeneric | InterfaceDeclaration | TypeAliasDeclarationGeneric | TypeAliasDeclaration]
+// ModuleDeclaration: [ExportKeyword, InterfaceDeclarationGeneric | InterfaceDeclaration | TypeAliasDeclarationGeneric | TypeAliasDeclaration, OptionalSemiColon]
 // -------------------------------------------------------------------
-export type TModuleDeclarationMapping<Input extends [unknown, unknown]> = (
-  Input extends [null, infer ModuleDeclaration extends T.TProperties]
+export type TModuleDeclarationMapping<Input extends [unknown, unknown, unknown]> = (
+  Input extends [null, infer ModuleDeclaration extends T.TProperties, null]
     ? ModuleDeclaration
     : never
 )
-export function ModuleDeclarationMapping(input: [unknown, unknown]): unknown {
+export function ModuleDeclarationMapping(input: [unknown, unknown, unknown]): unknown {
   return input[1] as T.TProperties
 }
 // -------------------------------------------------------------------
