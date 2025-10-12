@@ -28,10 +28,12 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { type TSchema } from '../../types/index.ts'
 import { type TNumber, Number } from '../../types/number.ts'
+import { type TString, String } from '../../types/string.ts'
+import { type TSymbol, Symbol } from '../../types/symbol.ts'
+import { type TUnion, Union } from '../../types/union.ts'
 
-export type TFromArray<_Type extends TSchema> = TNumber
-export function FromArray<_Type extends TSchema>(_type: _Type): TFromArray<_Type> {
-  return Number()
+export type TFromAny<Result = TUnion<[TNumber, TString, TSymbol]>> = Result
+export function FromAny(): TFromAny {
+  return Union([Number(), String(), Symbol()])
 }
