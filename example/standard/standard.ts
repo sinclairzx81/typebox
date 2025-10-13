@@ -71,14 +71,14 @@ export class TStandardSchema<Context extends Type.TProperties, Type extends Type
 // ------------------------------------------------------------------
 // Factory
 // ------------------------------------------------------------------
-export function StandardSchema<const Type extends Type.TSchema, 
+export function StandardSchemaV1<const Type extends Type.TSchema, 
   Result = TStandardSchema<{}, Type>
 >(type: Type): Result
-export function StandardSchema<Context extends Type.TProperties, const Type extends Type.TSchema, 
+export function StandardSchemaV1<Context extends Type.TProperties, const Type extends Type.TSchema, 
   Result = TStandardSchema<Context, Type>
 >(context: Context, type: Type): Result
 
-export function StandardSchema(...args: unknown[]): unknown {
+export function StandardSchemaV1(...args: unknown[]): unknown {
   const [context, type] = Arguments.Match<[Type.TProperties, Type.TSchema]>(args, {
     2: (context, type) => [context, type],
     1: (type) => [{}, type]
@@ -89,7 +89,7 @@ export function StandardSchema(...args: unknown[]): unknown {
 // ------------------------------------------------------------------
 // Default
 // ------------------------------------------------------------------
-export default StandardSchema
+export default StandardSchemaV1
 
 // ------------------------------------------------------------------
 // Standard Schema Interface

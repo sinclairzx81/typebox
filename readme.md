@@ -2,7 +2,7 @@
 
 <h1>TypeBox</h1>
 
-<p>A Runtime Type System for JavaScript</p>
+<p>Json Schema Type Builder with Static Type Resolution for TypeScript</p>
 
 <img src="typebox.png" />
 

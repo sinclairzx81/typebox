@@ -1,6 +1,6 @@
 # Script
 
-A TypeScript Engine for JavaScript
+TypeScript Runtime Scripting Engine
 
 ## Overview
 

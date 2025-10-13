@@ -1,6 +1,6 @@
 # TypeBox
 
-A Runtime Type System for JavaScript
+Json Schema Type Builder with Static Type Resolution for TypeScript
 
 ## Overview
 

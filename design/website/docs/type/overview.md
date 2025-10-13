@@ -1,6 +1,6 @@
 # Type
 
-A Json Schema Type Builder with Static Inference for TypeScript
+Json Schema Type Builder with Static Type Resolution for TypeScript
 
 ## Overview
 

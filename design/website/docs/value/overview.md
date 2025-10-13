@@ -1,6 +1,6 @@
 # Value
 
-Functions to Process JavaScript Values
+Check, Decode and Parse JavaScript Values
 
 ## Overview
 
