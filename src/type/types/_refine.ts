@@ -43,7 +43,7 @@ export type TRefineAdd<Type extends TSchema = TSchema> = (
 /** Applies a Refine check to the given type. */
 export function RefineAdd<Type extends TSchema>(type: Type, refinement: TRefinement<Type>): TRefineAdd<Type> {
   const refinements = IsRefine(type) ? [...type['~refine'], refinement] : [refinement]
-  return Memory.Update(type, {  }, { '~refine': refinements }) as never
+  return Memory.Update(type, { '~refine': refinements }, { }) as never
 }
 // ------------------------------------------------------------------
 // Type

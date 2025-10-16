@@ -1,0 +1,28 @@
+<h1>Literal</h1>
+<p>Creates a Literal type. Supported values are BigInt, Boolean, Number and String.</p>
+<h2>Example</h2>
+<p>Example usage is shown below.</p>
+<pre><code class="language-typescript">const A = Type.Literal(1n)                          // const A = {
+                                                    //   type: &#39;bigint&#39;,
+                                                    //   const: 1n
+                                                    // }
+
+const B = Type.Literal(true)                        // const B = {
+                                                    //   type: &#39;boolean&#39;,
+                                                    //   const: true
+                                                    // }
+
+const C = Type.Literal(32)                          // const C = {
+                                                    //   type: &#39;number&#39;,
+                                                    //   const: 32
+                                                    // }
+
+const D = Type.Literal(&#39;hello&#39;)                     // const D = {
+                                                    //   type: &#39;string&#39;,
+                                                    //   const: &#39;hello&#39;
+                                                    // }
+</code></pre>
+<h2>Guard</h2>
+<p>Use the IsLiteral function to guard values of this type.</p>
+<pre><code class="language-typescript">Type.IsLiteral(value)                                // value is TLiteral&lt;TLiteralValue&gt;
+</code></pre>

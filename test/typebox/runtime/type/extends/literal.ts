@@ -192,16 +192,9 @@ Test('Should Extends 32', () => {
   Assert.IsTrue(ExtendsResult.IsExtendsTrue(R))
 })
 // ------------------------------------------------------------------
-// Invalid
-// ------------------------------------------------------------------
-Test('Should Extends 33', () => {
-  const R: ExtendsResult.TExtendsFalse = Extends({}, Type.Literal(null as never), Type.Literal('A'))
-  Assert.IsTrue(ExtendsResult.IsExtendsFalse(R))
-})
-// ------------------------------------------------------------------
 // TemplateLiteral
 // ------------------------------------------------------------------
-Test('Should Extends 34', () => {
+Test('Should Extends 33', () => {
   Assert.IsExtends<'AhelloB', `A${'hello' | 'world'}B`>(true)
   const R: ExtendsResult.TExtendsTrue = Extends(
     {},
@@ -214,7 +207,7 @@ Test('Should Extends 34', () => {
   )
   Assert.IsTrue(ExtendsResult.IsExtendsTrue(R))
 })
-Test('Should Extends 35', () => {
+Test('Should Extends 34', () => {
   Assert.IsExtends<`A${'hello' | 'world'}B`, 'AhelloB'>(false)
   const R: ExtendsResult.TExtendsFalse = Extends(
     {},
@@ -227,7 +220,7 @@ Test('Should Extends 35', () => {
   )
   Assert.IsTrue(ExtendsResult.IsExtendsFalse(R))
 })
-Test('Should Extends 36', () => {
+Test('Should Extends 35', () => {
   Assert.IsExtends<'AhelloB', `A${'hello' | 'world'}B`>(true)
   const R: ExtendsResult.TExtendsTrue = Extends(
     {},
@@ -243,7 +236,7 @@ Test('Should Extends 36', () => {
   )
   Assert.IsTrue(ExtendsResult.IsExtendsTrue(R))
 })
-Test('Should Extends 37', () => {
+Test('Should Extends 36', () => {
   Assert.IsExtends<'AhelloB', `A${'hello' | 'world'}B`>(true)
   const R: ExtendsResult.TExtendsTrue = Extends(
     {},

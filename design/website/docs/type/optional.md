@@ -11,8 +11,8 @@ const T = Type.Object({                             // const T = {
   x: Type.Optional(Type.Number()),                  //   type: 'object',
   y: Type.Optional(Type.Number()),                  //   required: ['z'],
   z: Type.Number()                                  //   properties: {
-})                                                  //     x: { type: 'number' },
-                                                    //     y: { type: 'number' },
+})                                                  //     x: { type: 'number', '~optional': true },
+                                                    //     y: { type: 'number', '~optional': true },
                                                     //     z: { type: 'number' }
                                                     //   }
                                                     // }

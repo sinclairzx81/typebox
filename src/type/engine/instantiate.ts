@@ -34,6 +34,7 @@ import { Guard } from '../../guard/index.ts'
 // ------------------------------------------------------------------
 // Modifiers
 // ------------------------------------------------------------------
+import { type TImmutable, IsImmutable, Immutable } from '../types/_immutable.ts'
 import { type TOptional, IsOptional, OptionalAdd, OptionalRemove, TOptionalAdd, TOptionalRemove } from '../types/_optional.ts'
 import { type TReadonly, IsReadonly, ReadonlyAdd, ReadonlyRemove, TReadonlyAdd, TReadonlyRemove } from '../types/_readonly.ts'
 
@@ -332,6 +333,7 @@ function InstantiateDeferred<Context extends TProperties, State extends TState, 
 // InstantiateType
 // ------------------------------------------------------------------
 export type TInstantiateType<Context extends TProperties, State extends TState, Input extends TSchema,
+  IsImmutable extends boolean = Input extends TImmutable ? true : false,
   ModifierState extends [TSchema, ModifierAction, ModifierAction] = TModifierActions<Input, 
     Input extends TReadonly<Input> ? 'add' : 'none', 
     Input extends TOptional<Input> ? 'add' : 'none'
@@ -354,12 +356,15 @@ export type TInstantiateType<Context extends TProperties, State extends TState, 
     Type extends TTuple<infer Types extends TSchema[]> ? TTuple<TInstantiateElements<Context, State, Types>> :
     Type extends TUnion<infer Types extends TSchema[]> ? TUnion<TInstantiateTypes<Context, State, Types>> :
     Type
-  )
-> = TApplyReadonly<ModifierState[1], TApplyOptional<ModifierState[2], Instantiated>>
+  ),
+  WithImmutable extends TSchema = IsImmutable extends true ? TImmutable<Instantiated> : Instantiated,
+  WithModifiers extends TSchema = TApplyReadonly<ModifierState[1], TApplyOptional<ModifierState[2], WithImmutable>>,
+> = WithModifiers
  
 export function InstantiateType<Context extends TProperties, State extends TState, Type extends TSchema>
   (context: Context, state: State, input: Type): 
     TInstantiateType<Context, State, Type> {
+  const isImmutable = IsImmutable(input)
   const modifierActions = ModifierActions(input, IsReadonly(input) ? 'add' : 'none', IsOptional(input) ? 'add' : 'none')
   const type = modifierActions[0]
   const instantiated = (
@@ -380,7 +385,9 @@ export function InstantiateType<Context extends TProperties, State extends TStat
     IsUnion(type) ? Union(InstantiateTypes(context, state, type.anyOf), UnionOptions(type)) :
     type
   )
-  return ApplyReadonly(modifierActions[1], ApplyOptional(modifierActions[2], instantiated)) as never
+  const withImmutable = isImmutable ? Immutable(instantiated) : instantiated
+  const withModifiers = ApplyReadonly(modifierActions[1], ApplyOptional(modifierActions[2], withImmutable))
+  return withModifiers as never
 }
 // ------------------------------------------------------------------
 // Instantiate

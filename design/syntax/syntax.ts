@@ -315,6 +315,14 @@ const Expr = Runtime.Tuple([
   Runtime.Ref('ExprTerm'),
   Runtime.Ref('ExprTail')
 ])
+
+// ------------------------------------------------------------------
+// ExprReadonly
+// ------------------------------------------------------------------
+const ExprReadonly = Runtime.Tuple([
+  Runtime.Const('readonly'),
+  Runtime.Ref('Expr')
+])
 // ------------------------------------------------------------------
 // ExprPipe
 // ------------------------------------------------------------------
@@ -335,6 +343,7 @@ const InferType = Runtime.Union([
 const Type = Runtime.Union([
   Runtime.Ref('InferType'),
   Runtime.Ref('ExprPipe'),
+  Runtime.Ref('ExprReadonly'),
   Runtime.Ref('Expr')
 ])
 // ------------------------------------------------------------------
@@ -949,6 +958,7 @@ export const SyntaxModule = new Runtime.Module({
   ExprTerm,
   ExprTail,
   Expr,
+  ExprReadonly,
   ExprPipe,
   GenericType,
   InferType,

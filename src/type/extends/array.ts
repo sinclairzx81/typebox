@@ -30,22 +30,53 @@ THE SOFTWARE.
 
 import { type TSchema } from '../types/schema.ts'
 import { type TProperties } from '../types/properties.ts'
-import { type TArray, Array, IsArray } from '../types/array.ts'
-
+import { type TArray, IsArray } from '../types/array.ts'
+import { type TImmutable, IsImmutable } from '../types/_immutable.ts'
 import { type TExtendsRight, ExtendsRight } from './extends-right.ts'
 import { type TExtendsLeft, ExtendsLeft } from './extends-left.ts'
+import * as Result from './result.ts'
 
-export type TExtendsArray<Inferred extends TProperties, Left extends TSchema, Right extends TSchema> = (
-  Right extends TArray<infer Type extends TSchema>
-  ? TExtendsLeft<Inferred, Left, Type>
-  : TExtendsRight<Inferred, TArray<Left>, Right>
-)
-export function ExtendsArray<Inferred extends TProperties, Left extends TSchema, Right extends TSchema>
-  (inferred: Inferred, left: Left, right: Right): 
-    TExtendsArray<Inferred, Left, Right> {
+// ------------------------------------------------------------------
+// ExtendsImmutable
+// ------------------------------------------------------------------
+type TExtendsImmutable<Left extends TSchema, Right extends TSchema,
+  IsImmutableLeft extends boolean = Left extends TImmutable ? true : false,
+  IsImmutableRight extends boolean = Right extends TImmutable ? true : false,
+  Result extends boolean  =
+    [IsImmutableLeft, IsImmutableRight] extends [true, true] ? true :
+    [IsImmutableLeft, IsImmutableRight] extends [false, true] ? true :
+    [IsImmutableLeft, IsImmutableRight] extends [true, false] ? false :
+    true
+> = Result
+function ExtendsImmutable<Left extends TSchema, Right extends TSchema>(left: Left, right: Right): TExtendsImmutable<Left, Right> {
+  const isImmutableLeft = IsImmutable(left)
+  const isImmutableRight = IsImmutable(right)
   return (
-    IsArray(right)
-      ? ExtendsLeft(inferred, left, right.items)
-      : ExtendsRight(inferred, Array(left), right)
+    isImmutableLeft && isImmutableRight ? true :
+    !isImmutableLeft && isImmutableRight ? true :
+    isImmutableLeft && !isImmutableRight ? false :
+    true
   ) as never
 }
+// ------------------------------------------------------------------
+// ExtendsArray
+// ------------------------------------------------------------------
+export type TExtendsArray<Inferred extends TProperties, ArrayLeft extends TSchema, Left extends TSchema, Right extends TSchema> = (
+  Right extends TArray<infer Type extends TSchema>
+    ? TExtendsImmutable<ArrayLeft, Right> extends true
+      ? TExtendsLeft<Inferred, Left, Type>
+      : Result.TExtendsFalse
+    : TExtendsRight<Inferred, ArrayLeft, Right>
+)
+export function ExtendsArray<Inferred extends TProperties, ArrayLeft extends TSchema, Left extends TSchema, Right extends TSchema>
+  (inferred: Inferred, arrayLeft: ArrayLeft, left: Left, right: Right): 
+    TExtendsArray<Inferred, ArrayLeft, Left, Right> {
+  return (
+    IsArray(right)
+      ? ExtendsImmutable(arrayLeft, right)
+        ? ExtendsLeft(inferred, left, right.items)
+        : Result.ExtendsFalse()
+      : ExtendsRight(inferred, arrayLeft, right)
+  ) as never
+}
+

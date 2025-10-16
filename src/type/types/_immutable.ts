@@ -29,46 +29,50 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Memory } from '../../system/memory/index.ts'
-import { type StaticType, type StaticDirection } from './static.ts'
-import { type TSchema, type TArrayOptions, IsKind } from './schema.ts'
-import { type TImmutable } from './_immutable.ts'
-import { type TProperties } from './properties.ts'
+import { Guard } from '../../guard/index.ts'
+import { type TSchema, IsSchema } from './schema.ts'
 
 // ------------------------------------------------------------------
-// Static
+// ImmutableRemove
 // ------------------------------------------------------------------
-export type StaticArray<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Array extends TSchema, Item extends TSchema,
-  Result extends readonly unknown[] = Array extends TImmutable
-    ? readonly StaticType<Stack, Direction, Context, This, Item>[]
-    : StaticType<Stack, Direction, Context, This, Item>[]
+/** Removes Immutable from the given type. */
+export type TImmutableRemove<Type extends TSchema,
+  Result extends TSchema = Type extends TImmutable<infer Type extends TSchema> ? Type : Type
 > = Result
+/** Removes Immutable from the given type. */
+export function ImmutableRemove<Type extends TSchema>(type: Type): TImmutableRemove<Type> {
+  return Memory.Discard(type, ['~immutable']) as never
+}
+// ------------------------------------------------------------------
+// ImmutableAdd
+// ------------------------------------------------------------------
+/** Adds Immutable to the given type. */
+export type TImmutableAdd<Type extends TSchema = TSchema> = (
+  '~immutable' extends keyof Type ? Type : TImmutable<Type>
+)
+/** Adds Immutable to the given type. */
+export function ImmutableAdd<Type extends TSchema>(type: Type): TImmutableAdd<Type> {
+  return Memory.Update(type, { '~immutable': true }, { }) as never
+}
 // ------------------------------------------------------------------
 // Type
 // ------------------------------------------------------------------
-/** Represents an Array type. */
-export interface TArray<Type extends TSchema = TSchema> extends TSchema {
-  '~kind': 'Array'
-  type: 'array'
-  items: Type
-}
+export type TImmutable<Type extends TSchema = TSchema> = (
+  Type & { '~immutable': true }
+)
 // ------------------------------------------------------------------
 // Factory
 // ------------------------------------------------------------------
-/** Creates an Array type. */
-export function Array<Type extends TSchema>(items: Type, options?: TArrayOptions): TArray<Type> {
-  return Memory.Create({ '~kind': 'Array' }, { type: 'array', items }, options) as never
+/** Applies an Immutable modifier to the given type. */
+export function Immutable<Type extends TSchema>(type: Type): TImmutableAdd<Type> {
+  return ImmutableAdd(type) as never
 }
 // ------------------------------------------------------------------
 // Guard
 // ------------------------------------------------------------------
-/** Returns true if the given value is a TArray. */
-export function IsArray(value: unknown): value is TArray {
-  return IsKind(value, 'Array')
+/** Returns true if the given value is a TImmutable */
+export function IsImmutable(value: unknown): value is TImmutable<TSchema> {
+  return IsSchema(value) && Guard.HasPropertyKey(value, '~immutable')
 }
-// ------------------------------------------------------------------
-// Options
-// ------------------------------------------------------------------
-/** Extracts options from a TArray. */
-export function ArrayOptions(type: TArray): TArrayOptions {
-  return Memory.Discard(type, ['~kind', 'type', 'items'])
-}
+
+

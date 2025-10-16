@@ -34,6 +34,7 @@ import { type TSchema, type TTupleOptions, IsKind } from './schema.ts'
 import { type TArray } from './array.ts'
 import { type TOptional } from './_optional.ts'
 import { type TProperties } from './properties.ts'
+import { type TImmutable } from './_immutable.ts'
 import { type TReadonly } from './_readonly.ts'
 import { type TRest } from './rest.ts'
 
@@ -81,9 +82,13 @@ export type TStaticElements<Stack extends string[], Direction extends StaticDire
 // ------------------------------------------------------------------
 // Static
 // ------------------------------------------------------------------
-export type StaticTuple<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Types extends TSchema[], 
-  Elements extends unknown[] = TStaticElements<Stack, Direction, Context, This, Types>,
-  Result extends unknown[] = Elements
+export type StaticTuple<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Tuple extends TSchema, Items extends TSchema[], 
+  Elements extends unknown[] = TStaticElements<Stack, Direction, Context, This, Items>,
+  Result extends readonly unknown[] = (
+    Tuple extends TImmutable 
+      ? readonly [...Elements] 
+      : Elements
+  )
 > = Result
 // ------------------------------------------------------------------
 // Schema
