@@ -1,0 +1,32 @@
+<h1>Immutable</h1>
+<p>The Immutable function applies an <code>~immutable</code> modifier to an Array or Tuple and is used to infer <code>readonly T[]</code> for these types. This modifier is used for type inference and compositing only. It has no effect on validation.</p>
+<h2>Example</h2>
+<p>Example usage is shown below for Array</p>
+<pre><code class="language-typescript">const T = Type.Immutable(                           // const T = {
+  Type.Array(Type.Number())                         //   type: &#39;array&#39;, 
+)                                                   //   items: { type: &#39;number&#39; }, 
+                                                    //   &#39;~immutable&#39;: true
+                                                    // }
+
+type T = Static&lt;typeof T&gt;                           // type T = readonly number[]
+</code></pre>
+<p>.. and for Tuple.</p>
+<pre><code class="language-typescript">const T = Type.Immutable(                           // const T = {
+  Type.Tuple([Type.String(), Type.Number()])        //   type: &#39;array&#39;,
+)                                                   //   additionalItems: false,
+                                                    //   items: [ 
+                                                    //     { type: &#39;string&#39; }, 
+                                                    //     { type: &#39;number&#39; } 
+                                                    //   ],
+                                                    //   minItems: 2,
+                                                    //   &#39;~immutable&#39;: true
+                                                    // }
+
+type T = Type.Static&lt;typeof T&gt;                      // type T = readonly [string, number]
+</code></pre>
+<h2>Remarks</h2>
+<p>A Immutable modifier can be applied to any type, but TypeBox only interprets type inference when the modifier is applied to Array and Tuple only.</p>
+<h2>Guard</h2>
+<p>Use the IsImmutable function to guard values of this type.</p>
+<pre><code class="language-typescript">Type.IsImmutable(value)                         // value is TImmutable
+</code></pre>

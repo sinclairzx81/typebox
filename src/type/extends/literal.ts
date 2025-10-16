@@ -28,6 +28,7 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
+import { TUnreachable, Unreachable } from '../../system/unreachable/unreachable.ts'
 import { Guard } from '../../guard/index.ts'
 
 import { type TSchema } from '../types/schema.ts'
@@ -128,13 +129,17 @@ function ExtendsLiteralString<Inferred extends TProperties, Left extends string,
 }
 // ----------------------------------------------------------------------------
 // ExtendsLiteral
+//
+// deno-coverage-ignore-start
+//
+// We assert that TLiteral is of TLiteralValue so we never reach fallthrough.
 // ----------------------------------------------------------------------------
 export type TExtendsLiteral<Inferred extends TProperties, Left extends TLiteral, Right extends TSchema> = (
   Left extends TLiteral<infer Value extends bigint> ? TExtendsLiteralBigInt<Inferred, Value, Right> :
   Left extends TLiteral<infer Value extends boolean> ? TExtendsLiteralBoolean<Inferred, Value, Right> :
   Left extends TLiteral<infer Value extends number> ? TExtendsLiteralNumber<Inferred, Value, Right> :
   Left extends TLiteral<infer Value extends string> ? TExtendsLiteralString<Inferred, Value, Right> :
-  TExtendsRight<Inferred, Left, Right>
+  TUnreachable // TExtendsRight<Inferred, Left, Right>
 )
 export function ExtendsLiteral<Inferred extends TProperties, Left extends TLiteral, Right extends TSchema>
   (inferred: TProperties, left: Left, right: Right): 
@@ -144,6 +149,7 @@ export function ExtendsLiteral<Inferred extends TProperties, Left extends TLiter
     Guard.IsBoolean(left.const) ? ExtendsLiteralBoolean(inferred, left.const, right) :
     Guard.IsNumber(left.const) ? ExtendsLiteralNumber(inferred, left.const, right) :
     Guard.IsString(left.const) ? ExtendsLiteralString(inferred, left.const, right) :
-    ExtendsRight(inferred, left, right)
+    Unreachable() // ExtendsRight(inferred, left, right)
   ) as never
 }
+// deno-coverage-ignore-stop

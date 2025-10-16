@@ -676,6 +676,17 @@ export function ExprMapping(input: [unknown, unknown]): unknown {
   return ExprBinaryMapping(left, rest)
 }
 // -------------------------------------------------------------------
+// ExprReadonly: ['readonly', Expr]
+// -------------------------------------------------------------------
+export type TExprReadonlyMapping<Input extends [unknown, unknown]> = (
+  Input extends ['readonly', infer Type extends T.TSchema]
+    ? T.TImmutableAdd<Type>
+    : never
+)
+export function ExprReadonlyMapping(input: [unknown, unknown]): unknown {
+  return T.ImmutableAdd(input[1] as T.TSchema)
+}
+// -------------------------------------------------------------------
 // ExprPipe: ['|', Expr]
 // -------------------------------------------------------------------
 export type TExprPipeMapping<Input extends [unknown, unknown]> = (
@@ -715,7 +726,7 @@ export function InferTypeMapping(input: [unknown, unknown, unknown, unknown] | [
 }
 // deno-coverage-ignore-stop
 // -------------------------------------------------------------------
-// Type: InferType | Expr
+// Type: InferType | ExprPipe | ExprReadonly | Expr
 // -------------------------------------------------------------------
 export type TTypeMapping<Input extends unknown> = (
   Input

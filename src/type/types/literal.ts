@@ -33,11 +33,45 @@ import { Guard } from '../../guard/index.ts'
 import { type TSchema, type TSchemaOptions, IsKind } from './schema.ts'
 
 // ------------------------------------------------------------------
+// InvalidLiteralValue
+// ------------------------------------------------------------------
+export class InvalidLiteralValue extends Error {
+  declare readonly cause: { value: unknown }
+  constructor(value: unknown) {
+    super(`Invalid Literal value`)
+    Object.defineProperty(this, 'cause', {
+      value: { value },
+      writable: false,
+      configurable: false,
+      enumerable: false
+    })
+  }
+}
+// ------------------------------------------------------------------
 // Static
 // ------------------------------------------------------------------
 export type StaticLiteral<Value extends TLiteralValue> = (
   Value
 )
+// ------------------------------------------------------------------
+// LiteralTypeName
+// ------------------------------------------------------------------
+export type TLiteralTypeName<Value extends TLiteralValue> = (
+  Value extends bigint ? 'bigint' :
+  Value extends boolean ? 'boolean' :
+  Value extends number ? 'number' :
+  Value extends string ? 'string' :
+  never
+)
+export function LiteralTypeName<Value extends TLiteralValue>(value: Value): TLiteralTypeName<Value> {
+  return (
+    Guard.IsBigInt(value) ? 'bigint' :
+    Guard.IsBoolean(value) ? 'boolean' :
+    Guard.IsNumber(value) ? 'number' :
+    Guard.IsString(value) ? 'string' :
+    (() => { throw new InvalidLiteralValue(value) })()
+  ) as never
+}
 // ------------------------------------------------------------------
 // Type
 // ------------------------------------------------------------------
@@ -46,6 +80,7 @@ export type TLiteralValue = string | number | boolean | bigint
 /** Represents a Literal type. */
 export interface TLiteral<Value extends TLiteralValue = TLiteralValue> extends TSchema {
   '~kind': 'Literal'
+  type: TLiteralTypeName<Value>
   const: Value
 }
 // ------------------------------------------------------------------
@@ -53,7 +88,7 @@ export interface TLiteral<Value extends TLiteralValue = TLiteralValue> extends T
 // ------------------------------------------------------------------
 /** Creates a Literal type. */
 export function Literal<Value extends TLiteralValue>(value: Value, options?: TSchemaOptions): TLiteral<Value> {
-  return Memory.Create({ '~kind': 'Literal' }, { const: value }, options) as never
+  return Memory.Create({ '~kind': 'Literal' }, { type: LiteralTypeName(value), const: value }, options) as never
 }
 // ------------------------------------------------------------------
 // Guards

@@ -41,24 +41,24 @@ export type TReadonlyRemove<Type extends TSchema,
 > = Result
 /** Removes Readaonly from the given type. */
 export function ReadonlyRemove<Type extends TSchema>(type: Type): TReadonlyRemove<Type> {
-  return Memory.Discard(type, ['readOnly']) as never
+  return Memory.Discard(type, ['~readonly']) as never
 }
 // ------------------------------------------------------------------
 // ReadonlyAdd
 // ------------------------------------------------------------------
 /** Adds Readonly to the given type. */
 export type TReadonlyAdd<Type extends TSchema = TSchema> = (
-  'readOnly' extends keyof Type ? Type : TReadonly<Type>
+  '~readonly' extends keyof Type ? Type : TReadonly<Type>
 )
 /** Adds Readonly to the given type. */
 export function ReadonlyAdd<Type extends TSchema>(type: Type): TReadonlyAdd<Type> {
-  return Memory.Update(type, {}, { 'readOnly': true }) as never
+  return Memory.Update(type, { '~readonly': true }, { }) as never
 }
 // ------------------------------------------------------------------
 // Type
 // ------------------------------------------------------------------
 export type TReadonly<Type extends TSchema = TSchema> = (
-  Type & { readOnly: true }
+  Type & { '~readonly': true }
 )
 // ------------------------------------------------------------------
 // Factory
@@ -72,7 +72,7 @@ export function Readonly<Type extends TSchema>(type: Type): TReadonlyAdd<Type> {
 // ------------------------------------------------------------------
 /** Returns true if the given value is a TReadonly */
 export function IsReadonly(value: unknown): value is TReadonly<TSchema> {
-  return IsSchema(value) && Guard.HasPropertyKey(value, 'readOnly')
+  return IsSchema(value) && Guard.HasPropertyKey(value, '~readonly')
 }
 
 

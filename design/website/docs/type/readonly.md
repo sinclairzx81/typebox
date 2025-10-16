@@ -1,6 +1,6 @@
 # Readonly
 
-The Optional function applies an `readonly` modifier to a type.
+The Readonly function applies an `readonly` modifier to an object property. This modifier is used for type inference and compositing only. It has no effect on validation.
 
 ## Example
 
@@ -11,8 +11,8 @@ const T = Type.Object({                             // const T = {
   x: Type.Readonly(Type.Number()),                  //   type: 'object',
   y: Type.Readonly(Type.Number()),                  //   required: ['x', 'y', 'z'],
   z: Type.Number()                                  //   properties: {
-})                                                  //     x: { type: 'number', readOnly: true },
-                                                    //     y: { type: 'number', readOnly: true },
+})                                                  //     x: { type: 'number', '~readonly': true },
+                                                    //     y: { type: 'number', '~readonly': true },
                                                     //     z: { type: 'number' }
                                                     //   }
                                                     // }

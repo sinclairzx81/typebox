@@ -1,8 +1,15 @@
 import { Compile } from 'typebox/compile'
+import System from 'typebox/system'
 import Format from 'typebox/format'
 import Schema from 'typebox/schema'
 import Value from 'typebox/value'
 import Type from 'typebox'
+
+// ------------------------------------------------------------------
+// Settings
+// ------------------------------------------------------------------
+System.Settings.Set({ enumerableKind: false })
+
 
 // ------------------------------------------------------------------
 // Type

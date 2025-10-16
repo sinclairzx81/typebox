@@ -55,16 +55,22 @@ export class Base<Value extends unknown = unknown> implements TSchema, XGuard<Va
   public readonly '~kind': 'Base'
   public readonly '~guard': XGuardInterface<Value>
   constructor() {
-    Object.defineProperty(this, '~kind', {       
+    const configuration = {
       enumerable: Settings.Get().enumerableKind,
       writable: false,
       configurable: false,
+    }
+    globalThis.Object.defineProperty(this, '~kind', {       
+      ...configuration,
       value: 'Base'
     })
-    this['~guard'] = {
-      check: (value): value is Value => this.Check(value),
-      errors: (value) => this.Errors(value)
-    }
+    globalThis.Object.defineProperty(this, '~guard', {       
+      ...configuration,
+      value: {
+        check: (value): value is Value => this.Check(value),
+        errors: (value) => this.Errors(value)
+      } as XGuardInterface<Value>
+    })
   }
   /** Checks a value or returns false if invalid */
   public Check(value: unknown): value is Value {

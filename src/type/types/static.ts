@@ -30,7 +30,6 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import type { StaticCodec, TCodec } from './_codec.ts'
-
 import type { StaticAny, TAny } from './any.ts'
 import type { StaticArray, TArray } from './array.ts'
 import type { StaticAsyncIterator, TAsyncIterator } from './async-iterator.ts'
@@ -82,7 +81,7 @@ export type StaticDirection = 'Encode' | 'Decode'
 export type StaticType<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Type extends TSchema> = (
   Type extends TCodec<infer Type extends TSchema, infer Decoded extends unknown> ? StaticCodec<Stack, Direction, Context, This, Type, Decoded> :
   Type extends TAny ? StaticAny :
-  Type extends TArray<infer Type extends TSchema> ? StaticArray<Stack, Direction, Context, This, Type> :
+  Type extends TArray<infer Items extends TSchema> ? StaticArray<Stack, Direction, Context, This, Type, Items> :
   Type extends TAsyncIterator<infer Type extends TSchema> ? StaticAsyncIterator<Stack, Direction, Context, This, Type> :
   Type extends TBigInt ? StaticBigInt :
   Type extends TBoolean ? StaticBoolean :
@@ -105,7 +104,7 @@ export type StaticType<Stack extends string[], Direction extends StaticDirection
   Type extends TSymbol ? StaticSymbol :
   Type extends TTemplateLiteral<infer Pattern extends string> ? StaticTemplateLiteral<Pattern> :
   Type extends TThis ? StaticThis<Stack, Direction, Context, This> :
-  Type extends TTuple<infer Types extends TSchema[]> ? StaticTuple<Stack, Direction, Context, This, Types> :
+  Type extends TTuple<infer Items extends TSchema[]> ? StaticTuple<Stack, Direction, Context, This, Type, Items> :
   Type extends TUndefined ? StaticUndefined :
   Type extends TUnion<infer Types extends TSchema[]> ? StaticUnion<Stack, Direction, Context, This, Types> :
   Type extends TUnknown ? StaticUnknown :

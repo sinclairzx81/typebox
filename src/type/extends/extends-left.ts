@@ -92,7 +92,7 @@ import * as Result from './result.ts'
 // ----------------------------------------------------------------------------
 export type TExtendsLeft<Inferred extends TProperties, Left extends TSchema, Right extends TSchema> = (
   Left extends TAny ? TExtendsAny<Inferred, Left, Right> :
-  Left extends TArray<infer Type extends TSchema> ? TExtendsArray<Inferred, Type, Right> :
+  Left extends TArray<infer Items extends TSchema> ? TExtendsArray<Inferred, Left, Items, Right> :
   Left extends TAsyncIterator<infer Type extends TSchema> ? TExtendsAsyncIterator<Inferred, Type, Right> :
   Left extends TBigInt ? TExtendsBigInt<Inferred, Left, Right> :
   Left extends TBoolean ? TExtendsBoolean<Inferred, Left, Right> :
@@ -123,7 +123,7 @@ export function ExtendsLeft<Inferred extends TProperties, Left extends TSchema, 
     TExtendsLeft<Inferred, Left, Right> {
   return (
     IsAny(left) ? ExtendsAny(inferred, left, right) :
-    IsArray(left) ? ExtendsArray(inferred, left.items, right) :
+    IsArray(left) ? ExtendsArray(inferred, left, left.items, right) :
     IsAsyncIterator(left) ? ExtendsAsyncIterator(inferred, left.iteratorItems, right) :
     IsBigInt(left) ? ExtendsBigInt(inferred, left, right) :
     IsBoolean(left) ? ExtendsBoolean(inferred, left, right) :

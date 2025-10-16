@@ -91,7 +91,6 @@ Test('Should KeyOf 7', () => {
   const T: Type.TLiteral<'x'> = Type.KeyOf(A)
   Assert.IsEqual(T.const, 'x')
 })
-
 Test('Should KeyOf 8', () => {
   const A = Type.Intersect([
     Type.Object({ x: Type.Number() }),
