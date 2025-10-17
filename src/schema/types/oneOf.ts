@@ -29,12 +29,12 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Guard } from '../../guard/index.ts'
-import { type XSchema, type XSchemaLike, IsSchemaLike } from './schema.ts'
+import { type XSchemaObject, type XSchema, IsSchema } from './schema.ts'
 
 // ------------------------------------------------------------------
 // Type
 // ------------------------------------------------------------------
-export interface XOneOf<OneOf extends XSchemaLike[] = XSchemaLike[]> {
+export interface XOneOf<OneOf extends XSchema[] = XSchema[]> {
   oneOf: OneOf
 }
 // ------------------------------------------------------------------
@@ -44,8 +44,8 @@ export interface XOneOf<OneOf extends XSchemaLike[] = XSchemaLike[]> {
  * Returns true if the schema contains a valid oneOf property
  * @specification Json Schema 7
  */
-export function IsOneOf(schema: XSchema): schema is XOneOf {
+export function IsOneOf(schema: XSchemaObject): schema is XOneOf {
   return Guard.HasPropertyKey(schema, 'oneOf') 
     && Guard.IsArray(schema.oneOf) 
-    && schema.oneOf.every(value => IsSchemaLike(value))
+    && schema.oneOf.every(value => IsSchema(value))
 }

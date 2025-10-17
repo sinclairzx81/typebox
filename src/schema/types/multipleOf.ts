@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Guard } from '../../guard/index.ts'
-import { type XSchema } from './schema.ts'
+import { type XSchemaObject } from './schema.ts'
 
 // ------------------------------------------------------------------
 // Type
@@ -44,7 +44,7 @@ export interface XMultipleOf<MultipleOf extends number | bigint = number | bigin
  * Returns true if the schema contains a valid multipleOf property
  * @specification Json Schema 7
  */
-export function IsMultipleOf(schema: XSchema): schema is XMultipleOf {
+export function IsMultipleOf(schema: XSchemaObject): schema is XMultipleOf {
   return Guard.HasPropertyKey(schema, 'multipleOf') 
     && (Guard.IsNumber(schema.multipleOf) || Guard.IsBigInt(schema.multipleOf))
 }

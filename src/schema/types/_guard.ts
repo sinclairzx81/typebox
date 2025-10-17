@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Guard } from '../../guard/index.ts'
-import type { XSchema } from './schema.ts'
+import type { XSchemaObject } from './schema.ts'
 
 // ------------------------------------------------------------------
 // Type
@@ -51,7 +51,7 @@ export function IsGuardInterface(value: unknown): value is XGuardInterface {
     && Guard.IsFunction(value.check)
     && Guard.IsFunction(value.errors)
 }
-export function IsGuard(value: XSchema): value is XGuard {
+export function IsGuard(value: XSchemaObject): value is XGuard {
   return Guard.HasPropertyKey(value, '~guard')
     && IsGuardInterface(value['~guard'])
 }

@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Guard } from '../../guard/index.ts'
-import { type XSchema } from './schema.ts'
+import { type XSchemaObject } from './schema.ts'
 
 // ------------------------------------------------------------------
 // Type
@@ -44,7 +44,7 @@ export interface XFormat<Format extends string = string> {
  * Returns true if the schema contains a valid format property
  * @specification Json Schema 7
  */
-export function IsFormat(schema: XSchema): schema is XFormat {
+export function IsFormat(schema: XSchemaObject): schema is XFormat {
   return Guard.HasPropertyKey(schema, 'format') 
     && Guard.IsString(schema.format)
 }

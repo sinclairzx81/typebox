@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Guard } from '../../guard/index.ts'
-import { type XSchema } from './schema.ts'
+import { type XSchemaObject } from './schema.ts'
 
 // ------------------------------------------------------------------
 // Type
@@ -44,7 +44,7 @@ export interface XExclusiveMinimum<ExclusiveMinimum extends number | bigint = nu
  * Returns true if the schema contains a valid exclusiveMinimum property
  * @specification Json Schema 7
  */
-export function IsExclusiveMinimum(schema: XSchema): schema is XExclusiveMinimum {
+export function IsExclusiveMinimum(schema: XSchemaObject): schema is XExclusiveMinimum {
   return Guard.HasPropertyKey(schema, 'exclusiveMinimum') 
     && (Guard.IsNumber(schema.exclusiveMinimum) || Guard.IsBigInt(schema.exclusiveMinimum))
 }

@@ -36,7 +36,7 @@ import { Guard } from '../guard/index.ts'
 import { Format } from '../format/index.ts'
 
 import * as Engine from './engine/index.ts'
-import { type XSchemaLike } from './types/index.ts'
+import { type XSchema } from './types/index.ts'
 
 // ------------------------------------------------------------------
 // CreateCode
@@ -88,19 +88,19 @@ export interface EvaluateResult {
 // ------------------------------------------------------------------
 export class BuildResult {
   constructor(
-    private readonly context: Record<PropertyKey, XSchemaLike>,
-    private readonly schema: XSchemaLike,
+    private readonly context: Record<PropertyKey, XSchema>,
+    private readonly schema: XSchema,
     private readonly external: Engine.TExternal,
     private readonly functions: string[],
     private readonly call: string,
     private readonly useUnevaluated: boolean
   ) { }
   /** Returns the Context used for this build */
-  public Context(): Record<PropertyKey, XSchemaLike> {
+  public Context(): Record<PropertyKey, XSchema> {
     return this.context
   }
   /** Returns the Schema used for this build */
-  public Schema(): XSchemaLike {
+  public Schema(): XSchema {
     return this.schema
   }
   /** Returns true if this build requires a Unevaluated context */
@@ -130,12 +130,12 @@ export class BuildResult {
 // Build
 // ------------------------------------------------------------------
 /** Builds a schema into a optimized runtime validator */
-export function Build(schema: XSchemaLike): BuildResult
+export function Build(schema: XSchema): BuildResult
 /** Builds a schema into a optimized runtime validator */
-export function Build(context: Record<PropertyKey, XSchemaLike>, schema: XSchemaLike): BuildResult
+export function Build(context: Record<PropertyKey, XSchema>, schema: XSchema): BuildResult
 /** Builds a schema into a optimized runtime validator */
 export function Build(...args: unknown[]): BuildResult {
-  const [context, schema] = Arguments.Match<[Record<PropertyKey, XSchemaLike>, XSchemaLike]>(args, {
+  const [context, schema] = Arguments.Match<[Record<PropertyKey, XSchema>, XSchema]>(args, {
     2: (context, schema) => [context, schema],
     1: (schema) => [{}, schema]
   })

@@ -67,7 +67,7 @@ import { BuildSchema } from './schema.ts'
 // })()
 //
 // ------------------------------------------------------------------
-export function Reducer(context: BuildContext, schemas: S.XSchemaLike[], value: string, check: string): string {
+export function Reducer(context: BuildContext, schemas: S.XSchema[], value: string, check: string): string {
   const results = E.ConstDeclaration('results', '[]')
   const context_n = schemas.map((_schema, index) => E.ConstDeclaration(`context_${index}`, context.Clone()))
   const condition_n = schemas.map((schema, index) => E.ConstDeclaration(`condition_${index}`, E.Call(E.ArrowFunction(['context'], BuildSchema(context, schema, value)), [`context_${index}`])))

@@ -61,8 +61,8 @@ export function HasUnevaluated(context: Record<PropertyKey, unknown>, schema: un
 // ------------------------------------------------------------------
 export class BaseContext {
   constructor(
-    protected readonly context: Record<PropertyKey, S.XSchemaLike>,
-    protected readonly schema: S.XSchemaLike,
+    protected readonly context: Record<PropertyKey, S.XSchema>,
+    protected readonly schema: S.XSchema,
   ) { }
   public GetContext(): Record<PropertyKey, object | boolean> {
     return this.context
@@ -75,7 +75,7 @@ export class BaseContext {
 // BuildContext
 // ------------------------------------------------------------------
 export class BuildContext extends BaseContext {
-  constructor(context: Record<PropertyKey, S.XSchemaLike>, schema: S.XSchemaLike, private readonly hasUnevaluated: boolean) { 
+  constructor(context: Record<PropertyKey, S.XSchema>, schema: S.XSchema, private readonly hasUnevaluated: boolean) { 
     super(context, schema)
   }
   public UseUnevaluated(): boolean {
@@ -100,7 +100,7 @@ export class BuildContext extends BaseContext {
 export class CheckContext extends BaseContext {
   private readonly indices: Set<number>
   private readonly keys: Set<string>
-  constructor(context: Record<PropertyKey, S.XSchemaLike>, schema: S.XSchemaLike) {
+  constructor(context: Record<PropertyKey, S.XSchema>, schema: S.XSchema) {
     super(context, schema)
     this.indices = new Set()
     this.keys = new Set()
@@ -135,7 +135,7 @@ export class CheckContext extends BaseContext {
 // ------------------------------------------------------------------
 export type ErrorContextCallback = (error: TValidationError) => unknown
 export class ErrorContext extends CheckContext {
-  constructor(context: Record<PropertyKey, S.XSchemaLike>, schema: S.XSchemaLike, private readonly callback: ErrorContextCallback) {
+  constructor(context: Record<PropertyKey, S.XSchema>, schema: S.XSchema, private readonly callback: ErrorContextCallback) {
     super(context, schema)
   }
   public AddError(error: TValidationError): false {
@@ -148,7 +148,7 @@ export class ErrorContext extends CheckContext {
 // ------------------------------------------------------------------
 export class AccumulatedErrorContext extends ErrorContext {
   private readonly errors: TValidationError[]
-  constructor(context: Record<PropertyKey, S.XSchemaLike>, schema: S.XSchemaLike) {
+  constructor(context: Record<PropertyKey, S.XSchema>, schema: S.XSchema) {
     super(context, schema, error => this.errors.push(error))
     this.errors = []
   }

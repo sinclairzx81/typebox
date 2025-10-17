@@ -29,20 +29,20 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Guard } from '../../guard/index.ts'
-import { type XSchema, type XSchemaLike, IsSchemaLike } from './schema.ts'
+import { type XSchemaObject, type XSchema, IsSchema } from './schema.ts'
 
 // ------------------------------------------------------------------
 // Type
 // ------------------------------------------------------------------
-export interface XDefs<Defs extends Record<PropertyKey, XSchemaLike> = Record<PropertyKey, XSchemaLike>> {
+export interface XDefs<Defs extends Record<PropertyKey, XSchema> = Record<PropertyKey, XSchema>> {
   $defs: Defs
 }
 // ------------------------------------------------------------------
 // Guard
 // ------------------------------------------------------------------
 /** Returns true if the schema contains a valid $defs property */
-export function IsDefs(schema: XSchema): schema is XDefs {
+export function IsDefs(schema: XSchemaObject): schema is XDefs {
   return Guard.HasPropertyKey(schema, '$defs') 
     && Guard.IsObject(schema.$defs) 
-    && Object.values(schema.$defs).every(value => IsSchemaLike(value))
+    && Object.values(schema.$defs).every(value => IsSchema(value))
 }

@@ -29,12 +29,12 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Guard } from '../../guard/index.ts'
-import { type XSchema, type XSchemaLike, IsSchemaLike } from './schema.ts'
+import { type XSchemaObject, type XSchema, IsSchema } from './schema.ts'
 
 // ------------------------------------------------------------------
 // Type
 // ------------------------------------------------------------------
-export interface XAdditionalProperties<AdditionalProperties extends XSchemaLike = XSchemaLike> {
+export interface XAdditionalProperties<AdditionalProperties extends XSchema = XSchema> {
   additionalProperties: AdditionalProperties
 }
 // ------------------------------------------------------------------
@@ -44,7 +44,7 @@ export interface XAdditionalProperties<AdditionalProperties extends XSchemaLike 
  * Returns true if the schema contains a valid additionalProperties property
  * @specification Json Schema 7
  */
-export function IsAdditionalProperties(schema: XSchema): schema is XAdditionalProperties {
+export function IsAdditionalProperties(schema: XSchemaObject): schema is XAdditionalProperties {
   return Guard.HasPropertyKey(schema, 'additionalProperties')
-    && IsSchemaLike(schema.additionalProperties)
+    && IsSchema(schema.additionalProperties)
 }

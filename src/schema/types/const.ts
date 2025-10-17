@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Guard } from '../../guard/index.ts'
-import { type XSchema } from './schema.ts'
+import { type XSchemaObject } from './schema.ts'
 
 // ------------------------------------------------------------------
 // Type
@@ -44,6 +44,6 @@ export interface XConst<Const extends unknown = unknown> {
  * Returns true if the schema contains a valid const property
  * @specification Json Schema 7
  */
-export function IsConst(value: XSchema): value is XConst {
+export function IsConst(value: XSchemaObject): value is XConst {
   return Guard.HasPropertyKey(value, 'const')
 }

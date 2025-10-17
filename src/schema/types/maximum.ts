@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Guard } from '../../guard/index.ts'
-import { type XSchema } from './schema.ts'
+import { type XSchemaObject } from './schema.ts'
 
 // ------------------------------------------------------------------
 // Type
@@ -44,7 +44,7 @@ export interface XMaximum<Maximum extends number | bigint = number | bigint> {
  * Returns true if the schema contains a valid maximum property
  * @specification Json Schema 7
  */
-export function IsMaximum(schema: XSchema): schema is XMaximum {
+export function IsMaximum(schema: XSchemaObject): schema is XMaximum {
   return Guard.HasPropertyKey(schema, 'maximum') 
     && (Guard.IsNumber(schema.maximum) || Guard.IsBigInt(schema.maximum))
 }

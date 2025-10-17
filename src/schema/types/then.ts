@@ -29,12 +29,12 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Guard } from '../../guard/index.ts'
-import { type XSchema, type XSchemaLike, IsSchemaLike } from './schema.ts'
+import { type XSchemaObject, type XSchema, IsSchema } from './schema.ts'
 
 // ------------------------------------------------------------------
 // Type
 // ------------------------------------------------------------------
-export interface XThen<Then extends XSchemaLike = XSchemaLike> {
+export interface XThen<Then extends XSchema = XSchema> {
   then: Then
 }
 // ------------------------------------------------------------------
@@ -44,7 +44,7 @@ export interface XThen<Then extends XSchemaLike = XSchemaLike> {
  * Returns true if the schema contains a valid then property
  * @specification Json Schema 7
  */
-export function IsThen(schema: XSchema): schema is XThen {
+export function IsThen(schema: XSchemaObject): schema is XThen {
   return Guard.HasPropertyKey(schema, 'then') 
-    && IsSchemaLike(schema.then)
+    && IsSchema(schema.then)
 }

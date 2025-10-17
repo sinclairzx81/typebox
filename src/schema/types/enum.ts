@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Guard } from '../../guard/index.ts'
-import { type XSchema } from './schema.ts'
+import { type XSchemaObject } from './schema.ts'
 
 // ------------------------------------------------------------------
 // Type
@@ -44,7 +44,7 @@ export interface XEnum<Enum extends unknown[] = unknown[]> {
  * Returns true if the schema contains a valid enum property
  * @specification Json Schema 7
  */
-export function IsEnum(schema: XSchema): schema is XEnum {
+export function IsEnum(schema: XSchemaObject): schema is XEnum {
   return Guard.HasPropertyKey(schema, 'enum')  
     && Guard.IsArray(schema.enum)
 }

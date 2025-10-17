@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Guard } from '../../guard/index.ts'
-import { type XSchema } from './schema.ts'
+import { type XSchemaObject } from './schema.ts'
 
 // ------------------------------------------------------------------
 // Type
@@ -44,6 +44,6 @@ export interface XDefault<Default extends unknown = unknown> {
  * Returns true if the schema contains a valid contentMediaType property
  * @specification Json Schema 7
  */
-export function IsDefault(schema: XSchema): schema is XDefault {
+export function IsDefault(schema: XSchemaObject): schema is XDefault {
   return Guard.HasPropertyKey(schema, 'default')
 }

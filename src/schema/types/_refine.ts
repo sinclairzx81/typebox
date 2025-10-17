@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Guard } from '../../guard/index.ts'
-import type { XSchema } from './schema.ts'
+import type { XSchemaObject } from './schema.ts'
 
 // ------------------------------------------------------------------
 // Type
@@ -48,7 +48,7 @@ export interface XRefine<Refinements extends XRefinement[] = XRefinement[]> {
  * Returns true if the schema contains an '~refine` keyword
  * @specification None
  */
-export function IsRefine(value: XSchema): value is XRefine {
+export function IsRefine(value: XSchemaObject): value is XRefine {
   return Guard.HasPropertyKey(value, '~refine')
     && Guard.IsArray(value["~refine"])
     && Guard.Every(value['~refine'], 0, value => Guard.IsObject(value)

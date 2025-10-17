@@ -36,7 +36,7 @@ import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 // ------------------------------------------------------------------
 // Valid
 // ------------------------------------------------------------------
-function IsValid(schema: S.XUniqueItems): schema is S.XUniqueItems & { uniqueItems: S.XSchemaLike | true } {
+function IsValid(schema: S.XUniqueItems): schema is S.XUniqueItems & { uniqueItems: S.XSchema | true } {
   return !G.IsEqual(schema.uniqueItems, false)
 }
 // ------------------------------------------------------------------

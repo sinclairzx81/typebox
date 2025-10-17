@@ -36,7 +36,7 @@ import { BuildSchema, CheckSchema, ErrorSchema } from './schema.ts'
 // ------------------------------------------------------------------
 // Valid
 // ------------------------------------------------------------------
-function IsValid(schema: S.XSchema): schema is S.XItems & { items: S.XSchemaLike[] } {
+function IsValid(schema: S.XSchemaObject): schema is S.XItems & { items: S.XSchema[] } {
   return S.IsItems(schema) && G.IsArray(schema.items)
 }
 // ------------------------------------------------------------------

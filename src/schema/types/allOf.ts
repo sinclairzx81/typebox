@@ -29,12 +29,12 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Guard } from '../../guard/index.ts'
-import { type XSchema, type XSchemaLike, IsSchemaLike } from './schema.ts'
+import { type XSchemaObject, type XSchema, IsSchema } from './schema.ts'
 
 // ------------------------------------------------------------------
 // Type
 // ------------------------------------------------------------------
-export interface XAllOf<AllOf extends XSchemaLike[] = XSchemaLike[]> {
+export interface XAllOf<AllOf extends XSchema[] = XSchema[]> {
   allOf: AllOf
 }
 // ------------------------------------------------------------------
@@ -44,8 +44,8 @@ export interface XAllOf<AllOf extends XSchemaLike[] = XSchemaLike[]> {
  * Returns true if the schema contains a valid allOf property
  * @specification Json Schema 7
  */
-export function IsAllOf(schema: XSchema): schema is XAllOf {
+export function IsAllOf(schema: XSchemaObject): schema is XAllOf {
   return Guard.HasPropertyKey(schema, 'allOf')
     && Guard.IsArray(schema.allOf)
-    && schema.allOf.every(value => IsSchemaLike(value))
+    && schema.allOf.every(value => IsSchema(value))
 }

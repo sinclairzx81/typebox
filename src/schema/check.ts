@@ -31,18 +31,18 @@ THE SOFTWARE.
 
 import { Arguments } from '../system/arguments/index.ts'
 import { CheckSchema, CheckContext } from './engine/index.ts'
-import { XSchemaLike } from './types/index.ts'
+import { XSchema } from './types/index.ts'
 
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
 /** Checks a value against the provided schema */
-export function Check(schema: XSchemaLike, value: unknown): boolean
+export function Check(schema: XSchema, value: unknown): boolean
 /** Checks a value against the provided schema */
-export function Check(context: Record<PropertyKey, XSchemaLike>, schema: XSchemaLike, value: unknown): boolean
+export function Check(context: Record<PropertyKey, XSchema>, schema: XSchema, value: unknown): boolean
 /** Checks a value against the provided schema */
 export function Check(...args: unknown[]): boolean {
-  const [context, schema, value] = Arguments.Match<[Record<PropertyKey, XSchemaLike>, XSchemaLike, unknown]>(args, {
+  const [context, schema, value] = Arguments.Match<[Record<PropertyKey, XSchema>, XSchema, unknown]>(args, {
     3: (context, schema, value) => [context, schema, value],
     2: (schema, value) => [{}, schema, value]
   })

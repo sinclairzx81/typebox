@@ -1,13 +1,13 @@
 # Setup
 
-TypeBox requires no special configuration to use, but it is recommended to configure tsconfig.json with `strict: true`.
+TypeBox needs TypeScript to be configured with the following settings.
 
 ```typescript
 // file: tsconfig.json
-
 {
   "compilerOptions": {
-    "strict": true
+    "strict": true,              // Required for Type Inference
+    "target": "ES2018",          // Minimum ES Target
   }
 }
 ```

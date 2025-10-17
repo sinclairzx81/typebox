@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Guard } from '../../guard/index.ts'
-import { type XSchema, IsSchemaLike } from './schema.ts'
+import { type XSchemaObject, IsSchema } from './schema.ts'
 
 // ------------------------------------------------------------------
 // Type
@@ -47,10 +47,10 @@ export interface XDependencies<Dependencies extends XDependenciesProperty = XDep
  * Returns true if the schema contains a valid dependencies property
  * @specification Json Schema 7
  */
-export function IsDependencies(schema: XSchema): schema is XDependencies {
+export function IsDependencies(schema: XSchemaObject): schema is XDependencies {
   return Guard.HasPropertyKey(schema, 'dependencies') 
     && Guard.IsObject(schema.dependencies) 
     && Object.values(schema.dependencies).every(value => 
-      IsSchemaLike(value) 
+      IsSchema(value) 
       || Guard.IsArray(value) && value.every(value => Guard.IsString(value)))   
 }

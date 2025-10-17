@@ -29,12 +29,12 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Guard } from '../../guard/index.ts'
-import { type XSchema, type XSchemaLike, IsSchemaLike } from './schema.ts'
+import { type XSchemaObject, type XSchema, IsSchema } from './schema.ts'
 
 // ------------------------------------------------------------------
 // Type
 // ------------------------------------------------------------------
-export interface XUnevaluatedProperties<UnevaluatedProperties extends XSchemaLike = XSchemaLike> {
+export interface XUnevaluatedProperties<UnevaluatedProperties extends XSchema = XSchema> {
   unevaluatedProperties: UnevaluatedProperties
 }
 // ------------------------------------------------------------------
@@ -44,7 +44,7 @@ export interface XUnevaluatedProperties<UnevaluatedProperties extends XSchemaLik
  * Returns true if the schema contains a valid unevaluatedProperties property
  * @specification Json Schema 2019-09
  */
-export function IsUnevaluatedProperties(schema: XSchema): schema is XUnevaluatedProperties {
+export function IsUnevaluatedProperties(schema: XSchemaObject): schema is XUnevaluatedProperties {
   return Guard.HasPropertyKey(schema, 'unevaluatedProperties')
-    && IsSchemaLike(schema.unevaluatedProperties)
+    && IsSchema(schema.unevaluatedProperties)
 }
