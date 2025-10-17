@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Guard } from '../../guard/index.ts'
-import { type XSchema } from './schema.ts'
+import { type XSchemaObject } from './schema.ts'
 
 // ------------------------------------------------------------------
 // Type
@@ -44,7 +44,7 @@ export interface XType<Type extends string | string[] = string | string[]> {
  * Returns true if the schema contains a valid type property
  * @specification Json Schema 7
  */
-export function IsType(schema: XSchema): schema is XType {
+export function IsType(schema: XSchemaObject): schema is XType {
   return Guard.HasPropertyKey(schema, 'type') 
     && (Guard.IsString(schema.type) 
     || (Guard.IsArray(schema.type) 

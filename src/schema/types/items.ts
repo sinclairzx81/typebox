@@ -29,18 +29,18 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Guard } from '../../guard/index.ts'
-import { type XSchema, type XSchemaLike, IsSchemaLike } from './schema.ts'
+import { type XSchemaObject, type XSchema, IsSchema } from './schema.ts'
 
 // ------------------------------------------------------------------
 // Type
 // ------------------------------------------------------------------
-export interface XItemsSized<Items extends XSchemaLike[] = XSchemaLike[]> {
+export interface XItemsSized<Items extends XSchema[] = XSchema[]> {
   items: Items
 }
-export interface XItemsUnsized<Items extends XSchemaLike = XSchemaLike> {
+export interface XItemsUnsized<Items extends XSchema = XSchema> {
   items: Items
 }
-export interface XItems<Items extends (XSchemaLike | XSchemaLike[]) = (XSchemaLike | XSchemaLike[])> {
+export interface XItems<Items extends (XSchema | XSchema[]) = (XSchema | XSchema[])> {
   items: Items
 }
 // ------------------------------------------------------------------
@@ -50,20 +50,20 @@ export interface XItems<Items extends (XSchemaLike | XSchemaLike[]) = (XSchemaLi
  * Returns true if the schema contains a valid items property
  * @specification Json Schema 7
  */
-export function IsItems(schema: XSchema): schema is XItems {
+export function IsItems(schema: XSchemaObject): schema is XItems {
 
   return Guard.HasPropertyKey(schema, 'items') 
-    && (IsSchemaLike(schema.items) 
+    && (IsSchema(schema.items) 
     || (Guard.IsArray(schema.items) 
         && schema.items.every(value => {
-          return IsSchemaLike(value)
+          return IsSchema(value)
 })))
 }
 /** Returns true if this schema is a sized items variant */
-export function IsItemsSized(schema: XSchema): schema is XItemsSized {
+export function IsItemsSized(schema: XSchemaObject): schema is XItemsSized {
   return IsItems(schema) && Guard.IsArray(schema.items)
 }
 /** Returns true if this schema is a unsized items variant */
-export function IsItemsUnsized(schema: XSchema): schema is XItemsUnsized {
+export function IsItemsUnsized(schema: XSchemaObject): schema is XItemsUnsized {
   return IsItems(schema) && !Guard.IsArray(schema.items)
 }

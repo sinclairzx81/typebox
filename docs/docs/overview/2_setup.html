@@ -1,10 +1,10 @@
 <h1>Setup</h1>
-<p>TypeBox requires no special configuration to use, but it is recommended to configure tsconfig.json with <code>strict: true</code>.</p>
+<p>TypeBox needs TypeScript to be configured with the following settings.</p>
 <pre><code class="language-typescript">// file: tsconfig.json
-
 {
   &quot;compilerOptions&quot;: {
-    &quot;strict&quot;: true
+    &quot;strict&quot;: true,              // Required for Type Inference
+    &quot;target&quot;: &quot;ES2018&quot;,          // Minimum ES Target
   }
 }
 </code></pre>

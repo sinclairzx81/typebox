@@ -29,12 +29,12 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Guard } from '../../guard/index.ts'
-import { type XSchema, type XSchemaLike, IsSchemaLike } from './schema.ts'
+import { type XSchemaObject, type XSchema, IsSchema } from './schema.ts'
 
 // ------------------------------------------------------------------
 // Type
 // ------------------------------------------------------------------
-export interface XContains<Contains extends XSchemaLike = XSchemaLike> {
+export interface XContains<Contains extends XSchema = XSchema> {
   contains: Contains
 }
 // ------------------------------------------------------------------
@@ -44,7 +44,7 @@ export interface XContains<Contains extends XSchemaLike = XSchemaLike> {
  * Returns true if the schema contains a valid contains property
  * @specification Json Schema 7
  */
-export function IsContains(schema: XSchema): schema is XContains {
+export function IsContains(schema: XSchemaObject): schema is XContains {
   return Guard.HasPropertyKey(schema, 'contains') 
-    && IsSchemaLike(schema.contains)
+    && IsSchema(schema.contains)
 }

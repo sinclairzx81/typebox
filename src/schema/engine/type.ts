@@ -57,7 +57,7 @@ function BuildTypeName(context: BuildContext, type: string, value: string): stri
     E.Constant(true)
   )
 }
-function CheckTypeName(context: CheckContext, type: string, schema: S.XSchema, value: unknown): boolean {
+function CheckTypeName(context: CheckContext, type: string, schema: S.XSchemaObject, value: unknown): boolean {
   return (
     // jsonschema
     G.IsEqual(type, 'object') ? G.IsObjectNotArray(value) :
@@ -85,7 +85,7 @@ function CheckTypeName(context: CheckContext, type: string, schema: S.XSchema, v
 function BuildTypeNames(context: BuildContext, typenames: string[], value: string): string {
   return E.ReduceOr(typenames.map(type => BuildTypeName(context, type, value)))
 }
-function CheckTypeNames(context: CheckContext, types: string[], schema: S.XSchema, value: unknown): boolean {
+function CheckTypeNames(context: CheckContext, types: string[], schema: S.XSchemaObject, value: unknown): boolean {
   return types.some(type => CheckTypeName(context, type, schema, value))
 }
 // ------------------------------------------------------------------

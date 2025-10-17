@@ -31,16 +31,16 @@ THE SOFTWARE.
 import { Guard } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
-// Schema
+// SchemaObject
 // ------------------------------------------------------------------
-export type XSchema = object
+export type XSchemaObject = object
 
 /** Returns true if this value is object like */
-export function IsSchema(value: unknown): value is XSchema {
+export function IsSchemaObject(value: unknown): value is XSchemaObject {
   return Guard.IsObject(value) && !Guard.IsArray(value)
 }
 // ------------------------------------------------------------------
-// BooleanSchema
+// SchemaBoolean
 // ------------------------------------------------------------------
 export type XSchemaBoolean = boolean 
 
@@ -49,11 +49,11 @@ export function IsBooleanSchema(value: unknown): value is XSchemaBoolean {
   return Guard.IsBoolean(value)
 }
 // ------------------------------------------------------------------
-// SchemaLike
+// XSchema
 // ------------------------------------------------------------------
-export type XSchemaLike = XSchema | XSchemaBoolean 
+export type XSchema = XSchemaObject | XSchemaBoolean 
 
 /** Returns true if this value is schema like */
-export function IsSchemaLike(value: unknown): value is XSchemaLike {
-  return IsSchema(value) || IsBooleanSchema(value)
+export function IsSchema(value: unknown): value is XSchema {
+  return IsSchemaObject(value) || IsBooleanSchema(value)
 }

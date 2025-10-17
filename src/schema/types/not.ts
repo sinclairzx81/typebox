@@ -29,12 +29,12 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Guard } from '../../guard/index.ts'
-import { type XSchema, type XSchemaLike, IsSchemaLike } from './schema.ts'
+import { type XSchemaObject, type XSchema, IsSchema } from './schema.ts'
 
 // ------------------------------------------------------------------
 // Type
 // ------------------------------------------------------------------
-export interface XNot<Not extends XSchemaLike = XSchemaLike> {
+export interface XNot<Not extends XSchema = XSchema> {
   not: Not
 }
 // ------------------------------------------------------------------
@@ -44,7 +44,7 @@ export interface XNot<Not extends XSchemaLike = XSchemaLike> {
  * Returns true if the schema contains a valid not property
  * @specification Json Schema 7
  */
-export function IsNot(schema: XSchema): schema is XNot {
+export function IsNot(schema: XSchemaObject): schema is XNot {
   return Guard.HasPropertyKey(schema, 'not') 
-    && IsSchemaLike(schema.not)
+    && IsSchema(schema.not)
 }

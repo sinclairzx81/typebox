@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Guard } from '../../guard/index.ts'
-import { type XSchema } from './schema.ts'
+import { type XSchemaObject } from './schema.ts'
 
 // ------------------------------------------------------------------
 // Guard
@@ -44,7 +44,7 @@ export interface XRequired<Required extends string[] = string[]> {
  * Returns true if the schema contains a valid required property
  * @specification Json Schema 7
  */
-export function IsRequired(schema: XSchema): schema is XRequired {
+export function IsRequired(schema: XSchemaObject): schema is XRequired {
   return Guard.HasPropertyKey(schema, 'required') 
     && Guard.IsArray(schema.required) 
     && schema.required.every(value => Guard.IsString(value))

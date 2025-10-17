@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Guard } from '../../guard/index.ts'
-import { type XSchema } from './schema.ts'
+import { type XSchemaObject } from './schema.ts'
 
 // ------------------------------------------------------------------
 // Type
@@ -44,7 +44,7 @@ export interface XContentMediaType<ContentMediaType extends string = string> {
  * Returns true if the schema contains a valid contentMediaType property
  * @specification Json Schema 7
  */
-export function IsContentMediaType(schema: XSchema): schema is XContentMediaType {
+export function IsContentMediaType(schema: XSchemaObject): schema is XContentMediaType {
   return Guard.HasPropertyKey(schema, 'contentMediaType') 
     && Guard.IsString(schema.contentMediaType)
 }

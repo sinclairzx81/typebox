@@ -29,12 +29,12 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Guard } from '../../guard/index.ts'
-import { type XSchema, type XSchemaLike, IsSchemaLike } from './schema.ts'
+import { type XSchemaObject, type XSchema, IsSchema } from './schema.ts'
 
 // ------------------------------------------------------------------
 // Type
 // ------------------------------------------------------------------
-export interface XIf<If extends XSchemaLike = XSchemaLike> {
+export interface XIf<If extends XSchema = XSchema> {
   if: If
 }
 // ------------------------------------------------------------------
@@ -44,7 +44,7 @@ export interface XIf<If extends XSchemaLike = XSchemaLike> {
  * Returns true if the schema contains a valid $id property
  * @specification Json Schema 7
  */
-export function IsIf(schema: XSchema): schema is XIf {
+export function IsIf(schema: XSchemaObject): schema is XIf {
   return Guard.HasPropertyKey(schema, 'if') 
-    && IsSchemaLike(schema.if) 
+    && IsSchema(schema.if) 
 }

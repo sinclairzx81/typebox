@@ -33,6 +33,7 @@ import type { StaticCodec, TCodec } from './_codec.ts'
 import type { StaticAny, TAny } from './any.ts'
 import type { StaticArray, TArray } from './array.ts'
 import type { StaticAsyncIterator, TAsyncIterator } from './async-iterator.ts'
+import type { StaticBase, Base } from './base.ts'
 import type { StaticBigInt, TBigInt } from './bigint.ts'
 import type { StaticBoolean, TBoolean } from './boolean.ts'
 import type { StaticConstructor, TConstructor } from './constructor.ts'
@@ -66,13 +67,12 @@ import type { StaticVoid, TVoid } from './void.ts'
 // ------------------------------------------------------------------
 // XStatic
 // ------------------------------------------------------------------
-import type { XStatic } from '../../schema/types/static.ts'
+import type { XStatic } from '../../schema/static/static.ts'
 
 // ------------------------------------------------------------------
 // StaticEvaluate
 // ------------------------------------------------------------------
 export type StaticEvaluate<T> = { [K in keyof T]: T[K] } & {}
-
 export type StaticDirection = 'Encode' | 'Decode'
 
 // ------------------------------------------------------------------
@@ -83,6 +83,7 @@ export type StaticType<Stack extends string[], Direction extends StaticDirection
   Type extends TAny ? StaticAny :
   Type extends TArray<infer Items extends TSchema> ? StaticArray<Stack, Direction, Context, This, Type, Items> :
   Type extends TAsyncIterator<infer Type extends TSchema> ? StaticAsyncIterator<Stack, Direction, Context, This, Type> :
+  Type extends Base<infer Value extends unknown> ? StaticBase<Value> :
   Type extends TBigInt ? StaticBigInt :
   Type extends TBoolean ? StaticBoolean :
   Type extends TConstructor<infer Parameters extends TSchema[], infer ReturnType extends TSchema> ? StaticConstructor<Stack, Direction, Context, This, Parameters, ReturnType> :

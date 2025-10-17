@@ -38,10 +38,10 @@ import { Deref } from '../deref/index.ts'
 // ------------------------------------------------------------------
 // Resolve
 // ------------------------------------------------------------------
-function Resolve(context: BaseContext, schema: S.XRef): S.XSchemaLike {
+function Resolve(context: BaseContext, schema: S.XRef): S.XSchema {
   // note: it is safe to coerce to XSchema here as it wouldn't be possible
   // to enter a ref resolution if the root schema was boolean.
-  const schemaRoot = context.GetSchema() as S.XSchema
+  const schemaRoot = context.GetSchema() as S.XSchemaObject
   // contextual schema
   const schemaContext = context.GetContext()
   if (G.HasPropertyKey(schemaContext, schema.$ref)) {
@@ -49,7 +49,7 @@ function Resolve(context: BaseContext, schema: S.XRef): S.XSchemaLike {
   }
   // inline referential schema
   const dereferenced = Deref(schemaRoot, { $ref: schema.$ref })
-  return S.IsSchemaLike(dereferenced) ? dereferenced : false
+  return S.IsSchema(dereferenced) ? dereferenced : false
 }
 // ------------------------------------------------------------------
 // Build
@@ -63,12 +63,12 @@ export function BuildRef(context: BuildContext, schema: S.XRef, value: string): 
 // ------------------------------------------------------------------
 export function CheckRef(context: CheckContext, schema: S.XRef, value: unknown): boolean {
   const target = Resolve(context, schema)
-  return (S.IsSchemaLike(target) && CheckSchema(context, target, value))
+  return (S.IsSchema(target) && CheckSchema(context, target, value))
 }
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
 export function ErrorRef(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XRef, value: unknown): boolean {
   const target = Resolve(context, schema)
-  return (S.IsSchemaLike(target) && ErrorSchema(context, '#', instancePath, target, value))
+  return (S.IsSchema(target) && ErrorSchema(context, '#', instancePath, target, value))
 }

@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Guard } from '../../guard/index.ts'
-import { type XSchema } from './schema.ts'
+import { type XSchemaObject } from './schema.ts'
 
 // ------------------------------------------------------------------
 // Type
@@ -44,7 +44,7 @@ export interface XPattern<Pattern extends string | RegExp = string | RegExp> {
  * Returns true if the schema contains a valid pattern property
  * @specification Json Schema 7
  */
-export function IsPattern(schema: XSchema): schema is XPattern {
+export function IsPattern(schema: XSchemaObject): schema is XPattern {
   return Guard.HasPropertyKey(schema, 'pattern') 
     && (Guard.IsString(schema.pattern)
     || schema.pattern instanceof RegExp)

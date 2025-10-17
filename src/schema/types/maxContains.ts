@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Guard } from '../../guard/index.ts'
-import { type XSchema } from './schema.ts'
+import { type XSchemaObject } from './schema.ts'
 
 // ------------------------------------------------------------------
 // Type
@@ -44,7 +44,7 @@ export interface XMaxContains<MaxContains extends number = number> {
  * Returns true if the schema contains a valid maxContains property
  * @specification Json Schema 2019-09
  */
-export function IsMaxContains(schema: XSchema): schema is XMaxContains {
+export function IsMaxContains(schema: XSchemaObject): schema is XMaxContains {
   return Guard.HasPropertyKey(schema, 'maxContains') 
     && Guard.IsNumber(schema.maxContains)
 }

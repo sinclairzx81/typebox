@@ -27,6 +27,7 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 export * from './engine/index.ts'
+export * from './static/index.ts'
 export * from './types/index.ts'
 export * from './build.ts'
 export * from './check.ts'

@@ -79,7 +79,7 @@ import { BuildUniqueItems, CheckUniqueItems, ErrorUniqueItems } from './uniqueIt
 // ----------------------------------------------------------------
 // HasTypeName
 // ----------------------------------------------------------------
-function HasTypeName(schema: S.XSchema, typename: string): boolean {
+function HasTypeName(schema: S.XSchemaObject, typename: string): boolean {
   return S.IsType(schema) &&
     (G.IsArray(schema.type) && schema.type.includes(typename) ||
       G.IsEqual(schema.type, typename))
@@ -87,11 +87,11 @@ function HasTypeName(schema: S.XSchema, typename: string): boolean {
 // ----------------------------------------------------------------
 // HasObject
 // ----------------------------------------------------------------
-function HasObjectType(schema: S.XSchema): boolean {
+function HasObjectType(schema: S.XSchemaObject): boolean {
   return HasTypeName(schema, 'object')
 }
-function HasObjectKeywords(schema: S.XSchema): boolean {
-  return S.IsSchema(schema) && (
+function HasObjectKeywords(schema: S.XSchemaObject): boolean {
+  return S.IsSchemaObject(schema) && (
     S.IsAdditionalProperties(schema) ||
     S.IsDependencies(schema) ||
     S.IsDependentRequired(schema) ||
@@ -108,11 +108,11 @@ function HasObjectKeywords(schema: S.XSchema): boolean {
 // ----------------------------------------------------------------
 // HasArray
 // ----------------------------------------------------------------
-function HasArrayType(schema: S.XSchema): boolean {
+function HasArrayType(schema: S.XSchemaObject): boolean {
   return HasTypeName(schema, 'array')
 }
-function HasArrayKeywords(schema: S.XSchema): boolean {
-  return S.IsSchema(schema) && (
+function HasArrayKeywords(schema: S.XSchemaObject): boolean {
+  return S.IsSchemaObject(schema) && (
     S.IsAdditionalItems(schema) ||
     S.IsItems(schema) ||
     S.IsContains(schema) ||
@@ -128,11 +128,11 @@ function HasArrayKeywords(schema: S.XSchema): boolean {
 // ----------------------------------------------------------------
 // HasString
 // ----------------------------------------------------------------
-function HasStringType(schema: S.XSchema): boolean {
+function HasStringType(schema: S.XSchemaObject): boolean {
   return HasTypeName(schema, 'string')
 }
-function HasStringKeywords(schema: S.XSchema): boolean {
-  return S.IsSchema(schema) && (
+function HasStringKeywords(schema: S.XSchemaObject): boolean {
+  return S.IsSchemaObject(schema) && (
     S.IsMinLength(schema) ||
     S.IsMaxLength(schema) ||
     S.IsFormat(schema) ||
@@ -142,11 +142,11 @@ function HasStringKeywords(schema: S.XSchema): boolean {
 // ----------------------------------------------------------------
 // HasNumber
 // ----------------------------------------------------------------
-function HasNumberType(schema: S.XSchema): boolean {
+function HasNumberType(schema: S.XSchemaObject): boolean {
   return HasTypeName(schema, 'number') || HasTypeName(schema, 'bigint') 
 }
-function HasNumberKeywords(schema: S.XSchema): boolean {
-  return S.IsSchema(schema) && (
+function HasNumberKeywords(schema: S.XSchemaObject): boolean {
+  return S.IsSchemaObject(schema) && (
     S.IsMinimum(schema) ||
     S.IsMaximum(schema) ||
     S.IsExclusiveMaximum(schema) ||
@@ -157,7 +157,7 @@ function HasNumberKeywords(schema: S.XSchema): boolean {
 // ----------------------------------------------------------------
 // Build
 // ----------------------------------------------------------------
-export function BuildSchema(context: BuildContext, schema: S.XSchemaLike, value: string): string {
+export function BuildSchema(context: BuildContext, schema: S.XSchema, value: string): string {
   const conditions: string[] = []
   if (S.IsBooleanSchema(schema)) return BuildBooleanSchema(context, schema, value)
   if (S.IsType(schema)) conditions.push(BuildType(context, schema, value))
@@ -230,7 +230,7 @@ export function BuildSchema(context: BuildContext, schema: S.XSchemaLike, value:
 // ----------------------------------------------------------------
 // Check
 // ----------------------------------------------------------------
-export function CheckSchema(context: CheckContext, schema: S.XSchemaLike, value: unknown): boolean {
+export function CheckSchema(context: CheckContext, schema: S.XSchema, value: unknown): boolean {
   return S.IsBooleanSchema(schema) ? CheckBooleanSchema(context, schema, value) : (
     (!S.IsType(schema) || CheckType(context, schema, value)) &&
     (!(G.IsObject(value) && !G.IsArray(value)) || (
@@ -286,7 +286,7 @@ export function CheckSchema(context: CheckContext, schema: S.XSchemaLike, value:
 // ----------------------------------------------------------------
 // Error
 // ----------------------------------------------------------------
-export function ErrorSchema(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XSchemaLike, value: unknown): boolean {
+export function ErrorSchema(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XSchema, value: unknown): boolean {
   return (S.IsBooleanSchema(schema)) ? ErrorBooleanSchema(context, schemaPath, instancePath, schema, value) : (
     !!(
       +(!S.IsType(schema) || ErrorType(context, schemaPath, instancePath, schema, value)) &

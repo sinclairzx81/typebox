@@ -29,12 +29,12 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Guard } from '../../guard/index.ts'
-import { type XSchema, type XSchemaLike, IsSchemaLike } from './schema.ts'
+import { type XSchemaObject, type XSchema, IsSchema } from './schema.ts'
 
 // ------------------------------------------------------------------
 // Type
 // ------------------------------------------------------------------
-export interface XPrefixItems<PrefixItems extends XSchemaLike[] = XSchemaLike[]> {
+export interface XPrefixItems<PrefixItems extends XSchema[] = XSchema[]> {
   prefixItems: PrefixItems
 }
 // ------------------------------------------------------------------
@@ -43,8 +43,8 @@ export interface XPrefixItems<PrefixItems extends XSchemaLike[] = XSchemaLike[]>
 /** 
  * Returns true if the schema contains a valid prefixItems property
  */
-export function IsPrefixItems(schema: XSchema): schema is XPrefixItems {
+export function IsPrefixItems(schema: XSchemaObject): schema is XPrefixItems {
   return Guard.HasPropertyKey(schema, 'prefixItems') 
     && Guard.IsArray(schema.prefixItems)
-    && schema.prefixItems.every(schema => IsSchemaLike(schema))
+    && schema.prefixItems.every(schema => IsSchema(schema))
 }

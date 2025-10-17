@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Guard } from '../../guard/index.ts'
-import { type XSchema } from './schema.ts'
+import { type XSchemaObject } from './schema.ts'
 
 // ------------------------------------------------------------------
 // Type
@@ -44,7 +44,7 @@ export interface XUniqueItems<UniqueItems extends boolean = boolean> {
  * Returns true if the schema contains a valid uniqueItems property
  * @specification Json Schema 7
  */
-export function IsUniqueItems(schema: XSchema): schema is XUniqueItems {
+export function IsUniqueItems(schema: XSchemaObject): schema is XUniqueItems {
   return Guard.HasPropertyKey(schema, 'uniqueItems') 
     && Guard.IsBoolean(schema.uniqueItems)
 }

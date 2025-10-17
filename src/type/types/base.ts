@@ -33,20 +33,10 @@ import { type TSchema, IsKind } from './schema.ts'
 import { type XGuard, type XGuardInterface } from '../../schema/types/index.ts'
 
 // ------------------------------------------------------------------
-// NotImplemented
+// StaticBase
 // ------------------------------------------------------------------
-export class NotImplemented extends Error {
-  declare readonly cause: { type: Base; method: string }
-  constructor(type: Base, method: string) {
-    super(`Base type does not implement the '${method}' function`)
-    Object.defineProperty(this, 'cause', {
-      value: { type, method },
-      writable: false,
-      configurable: false,
-      enumerable: false
-    })
-  }
-}
+export type StaticBase<Value extends unknown> = Value
+
 // ------------------------------------------------------------------
 // Type.Base<...>
 // ------------------------------------------------------------------
@@ -94,7 +84,7 @@ export class Base<Value extends unknown = unknown> implements TSchema, XGuard<Va
   }
   /** Creates a new instance of this type */
   public Create(): Value {
-    throw new NotImplemented(this, 'Create')
+    throw new Error('Create not implemented')
   }
 }
 // ------------------------------------------------------------------

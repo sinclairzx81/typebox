@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Guard } from '../../guard/index.ts'
-import { type XSchema } from './schema.ts'
+import { type XSchemaObject } from './schema.ts'
 
 // ------------------------------------------------------------------
 // Type
@@ -44,7 +44,7 @@ export interface XMinProperties<MinProperties extends number = number> {
  * Returns true if the schema contains a valid minProperties property
  * @specification Json Schema 7
  */
-export function IsMinProperties(schema: XSchema): schema is XMinProperties {
+export function IsMinProperties(schema: XSchemaObject): schema is XMinProperties {
   return Guard.HasPropertyKey(schema, 'minProperties') 
     && Guard.IsNumber(schema.minProperties)
 }

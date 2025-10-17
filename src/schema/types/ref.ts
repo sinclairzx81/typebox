@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Guard } from '../../guard/index.ts'
-import { type XSchema } from './schema.ts'
+import { type XSchemaObject } from './schema.ts'
 
 // ------------------------------------------------------------------
 // Type
@@ -44,7 +44,7 @@ export interface XRef<Ref extends string = string> {
  * Returns true if the schema contains a valid $ref property
  * @specification Json Schema 7
  */
-export function IsRef(schema: XSchema): schema is XRef {
+export function IsRef(schema: XSchemaObject): schema is XRef {
   return Guard.HasPropertyKey(schema, '$ref') 
     && Guard.IsString(schema.$ref)
 }

@@ -34,7 +34,7 @@ import * as S from '../types/index.ts'
 // ------------------------------------------------------------------
 // Rebase
 // ------------------------------------------------------------------
-export function Rebase(baseUri: string, schema: S.XSchema): string {
+export function Rebase(baseUri: string, schema: S.XSchemaObject): string {
   if (!S.IsId(schema)) return baseUri
   if (IsUri(schema.$id)) return schema.$id
   if (!IsUri(schema.$id) && IsUri(baseUri)) {
@@ -51,7 +51,7 @@ function IsHashPointer(value: string): boolean {
 function IsHash(value: string): boolean {
   return value.length > 0 && value[0] === '#'
 }
-function Select(schema: S.XSchema, baseUri: string, $ref: string): S.XSchemaLike | undefined {
+function Select(schema: S.XSchemaObject, baseUri: string, $ref: string): S.XSchema | undefined {
   if (IsUri(baseUri)) {
     const [base, ref] = [new URL(baseUri), new URL($ref, baseUri)]
     const matched = base.pathname === ref.pathname
@@ -62,14 +62,14 @@ function Select(schema: S.XSchema, baseUri: string, $ref: string): S.XSchemaLike
   }
   if (IsHashPointer($ref)) {
     const target = Pointer.Get(schema, $ref.slice(1))
-    if (S.IsSchemaLike(target)) return target
+    if (S.IsSchema(target)) return target
   }
   return undefined
 }
 // ------------------------------------------------------------------
 // Traversal
 // ------------------------------------------------------------------
-function FromObject(schema: S.XSchema, baseUrl: string, ref: S.XRef): S.XSchemaLike | undefined {
+function FromObject(schema: S.XSchemaObject, baseUrl: string, ref: S.XRef): S.XSchema | undefined {
   // ----------------------------------------------------------------
   // TypeBox: Fast TCyclic Deref
   // ----------------------------------------------------------------
@@ -81,18 +81,18 @@ function FromObject(schema: S.XSchema, baseUrl: string, ref: S.XRef): S.XSchemaL
   // ----------------------------------------------------------------
   const rebase = Rebase(baseUrl, schema)
   const target = Select(schema, rebase, ref.$ref)
-  if (S.IsSchemaLike(target)) return target
+  if (S.IsSchema(target)) return target
 
   // Keep searching ...
-  return Object.values(schema).reduce<S.XSchemaLike | undefined>(
+  return Object.values(schema).reduce<S.XSchema | undefined>(
     (result, subschema) => result || FromValue(subschema, rebase, ref),
     undefined
   )
 }
-function FromArray(schema: unknown[], baseUri: string, ref: S.XRef): S.XSchemaLike | undefined {
-  return schema.reduce((result, value) => result || FromValue(value, baseUri, ref), undefined) as S.XSchema | undefined
+function FromArray(schema: unknown[], baseUri: string, ref: S.XRef): S.XSchema | undefined {
+  return schema.reduce((result, value) => result || FromValue(value, baseUri, ref), undefined) as S.XSchemaObject | undefined
 }
-function FromValue(schema: unknown, base: string, ref: S.XRef): S.XSchemaLike | undefined {
+function FromValue(schema: unknown, base: string, ref: S.XRef): S.XSchema | undefined {
   return (
     (Guard.IsObject(schema) && FromObject(schema, base, ref)) ||
     (Guard.IsArray(schema) && FromArray(schema, base, ref)) ||
