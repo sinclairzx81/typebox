@@ -39,7 +39,7 @@ type TFromSized<Schema extends XSchema, Items extends XSchema[]> = (
   XStaticElements<Schema, Items>
 )
 // ------------------------------------------------------------------
-// TFromUnsized: Array
+// TFromUnsized
 // ------------------------------------------------------------------
 type TFromUnsized<Schema extends XSchema> = (
   XStaticSchema<Schema>[]
