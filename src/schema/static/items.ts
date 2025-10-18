@@ -30,28 +30,27 @@ THE SOFTWARE.
 
 import type { XSchema } from '../types/schema.ts'
 import type { XStaticSchema } from './schema.ts'
+import type { XStaticElements } from './~elements.ts'
 
 // ------------------------------------------------------------------
-// TFromUnsized: Array
+// TFromSized
+// ------------------------------------------------------------------
+type TFromSized<Schema extends XSchema, Items extends XSchema[]> = (
+  XStaticElements<Schema, Items>
+)
+// ------------------------------------------------------------------
+// TFromUnsized
 // ------------------------------------------------------------------
 type TFromUnsized<Schema extends XSchema> = (
   XStaticSchema<Schema>[]
 )
 // ------------------------------------------------------------------
-// TFromSized: Tuple
-// ------------------------------------------------------------------
-type TFromSized<Schema extends XSchema[], Result extends unknown[] = []> = (
-  Schema extends [infer Left extends XSchema, ...infer Right extends XSchema[]]
-  ? TFromSized<Right, [...Result, XStaticSchema<Left>]>
-  : Result
-)
-// ------------------------------------------------------------------
 // XStaticItems
 // ------------------------------------------------------------------
-export type XStaticItems<Schemas extends XSchema[] | XSchema,
+export type XStaticItems<Schema extends XSchema, Items extends XSchema[] | XSchema,
   Result extends unknown = (
-    Schemas extends XSchema[] ? TFromSized<[...Schemas]> :
-    Schemas extends XSchema ? TFromUnsized<Schemas> :
+    Items extends XSchema[] ? TFromSized<Schema, [...Items]> :
+    Items extends XSchema ? TFromUnsized<Items> :
     never
   )
 > = Result
