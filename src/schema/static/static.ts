@@ -29,13 +29,12 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import type { XSchema } from '../types/schema.ts'
-import type { XStaticSchema } from './schema.ts'
 import type { XMutable } from './~mutable.ts'
+import type { XStaticSchema } from './schema.ts'
 
 // ------------------------------------------------------------------
 // XStatic
 // ------------------------------------------------------------------
-/** Statically infers a JSON Schema */
 export type XStatic<Value extends unknown,
   Schema extends XSchema = Value extends XSchema ? Value : {},
   Mutable extends XSchema = XMutable<Schema>,

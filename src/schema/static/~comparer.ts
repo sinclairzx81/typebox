@@ -4,7 +4,7 @@ TypeBox
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2025 Haydn Paterson 
+Copyright (c) 2017-2025 Haydn Paterson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,14 +26,25 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-fmt-ignore-file
-
-import type { XSchema } from '../types/schema.ts'
-import type { XStaticElements } from './~elements.ts'
-
 // ------------------------------------------------------------------
-// XStaticPrefixItems
+// CreateTuple
 // ------------------------------------------------------------------
-export type XStaticPrefixItems<Schema extends XSchema, PrefixItems extends XSchema[],
-  Result extends unknown[] = XStaticElements<Schema, PrefixItems>
-> = Result
+type CreateTuple<Size extends number, Tuple extends unknown[] = []> = Tuple['length'] extends Size ? Tuple : CreateTuple<Size, [...Tuple, unknown]>
+// ------------------------------------------------------------------
+// LessThan
+// ------------------------------------------------------------------
+export type XLessThan<Left extends number, Right extends number> = Left extends Right ? false
+  : CreateTuple<Left> extends [...CreateTuple<Right>, ...infer _Rest] ? false
+  : true
+// ------------------------------------------------------------------
+// LessThanEqual
+// ------------------------------------------------------------------
+export type XLessThanEqual<Left extends number, Right extends number> = Left extends Right ? true : XLessThan<Left, Right>
+// ------------------------------------------------------------------
+// GreaterThan
+// ------------------------------------------------------------------
+export type XGreaterThan<Left extends number, Right extends number> = XLessThan<Right, Left>
+// ------------------------------------------------------------------
+// GreaterThanEqual
+// ------------------------------------------------------------------
+export type XGreaterThanEqual<Left extends number, Right extends number> = XLessThanEqual<Right, Left>
