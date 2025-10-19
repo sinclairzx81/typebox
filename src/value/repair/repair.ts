@@ -32,6 +32,8 @@ import { Arguments } from '../../system/arguments/index.ts'
 import type { TProperties, TSchema, Static } from '../../type/index.ts'
 import { FromType } from './from-type.ts'
 import { Assert } from '../assert/index.ts'
+import { Check } from '../check/index.ts'
+import { Create } from '../create/index.ts'
 
 /**
  * Repairs a value to match the provided type. This function is intended for data migration 
@@ -67,7 +69,8 @@ export function Repair(...args: unknown[]): unknown {
     3: (context, type, value) => [context, type, value],
     2: (type, value) => [{}, type, value],
   })
-  const result = FromType(context, type, value)
-  Assert(context, type, result) // ensure correct
-  return result
+  const repaired = FromType(context, type, value)
+  const checked = Check(context, type, repaired) ? repaired : Create(context, type)
+  Assert(context, type, checked) // ensure correct
+  return checked
 }
