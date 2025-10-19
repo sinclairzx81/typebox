@@ -1,5 +1,7 @@
 <h1>Setup</h1>
-<p>TypeBox needs TypeScript to be configured with the following settings.</p>
+<p>The following is general information for setting up TypeBox</p>
+<h2>TsConfig (Required)</h2>
+<p>TypeBox requires the following <code>tsconfig.json</code> configuration</p>
 <pre><code class="language-typescript">// file: tsconfig.json
 {
   &quot;compilerOptions&quot;: {
@@ -7,4 +9,38 @@
     &quot;target&quot;: &quot;ES2018&quot;,          // Minimum ES Target
   }
 }
+</code></pre>
+<h2>Ajv (Optional)</h2>
+<p>The following is the recommended setup if using TypeBox with Ajv</p>
+<pre><code class="language-typescript">import Type from &#39;typebox&#39;
+
+import addFormats from &#39;ajv-formats&#39;
+import Ajv from &#39;ajv&#39;
+
+const ajv = addFormats(new Ajv({}), [
+  &#39;date-time&#39;,
+  &#39;time&#39;,
+  &#39;date&#39;,
+  &#39;email&#39;,
+  &#39;hostname&#39;,
+  &#39;ipv4&#39;,
+  &#39;ipv6&#39;,
+  &#39;uri&#39;,
+  &#39;uri-reference&#39;,
+  &#39;uuid&#39;,
+  &#39;uri-template&#39;,
+  &#39;json-pointer&#39;,
+  &#39;relative-json-pointer&#39;,
+  &#39;regex&#39;
+])
+
+// ...
+
+const check = ajv.compile(Type.Object({
+  x: Type.Number(),
+  y: Type.Number(),
+  z: Type.Number()
+}))
+
+const R = check({ x: 1, y: 2, z: 3 })               // const R = true
 </code></pre>
