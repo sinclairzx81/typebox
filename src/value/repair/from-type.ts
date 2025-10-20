@@ -30,6 +30,8 @@ THE SOFTWARE.
 
 import { Guard, GlobalsGuard } from '../../guard/index.ts'
 import * as T from '../../type/index.ts'
+import { Check } from '../check/index.ts'
+import { Create } from '../create/index.ts'
 
 import { FromArray } from './from-array.ts'
 import { FromBase } from './from-base.ts'
@@ -73,15 +75,35 @@ function AssertRepairableType(context: T.TProperties, type: T.TSchema, value: un
   }
 }
 // ------------------------------------------------------------------
+// FinalizeRepair
+//
+// When a type includes the ~refine modifier, a post-repair validation
+// check must be performed to ensure the repaired value satisfies the
+// refine constraint. This logic is implemented as part of FromType to
+// ensure the post-refine validation check is handled outside of
+// sub-schema constraint checking (i.e., at the top level).
+//
+// ------------------------------------------------------------------
+function FinalizeRepair(context: T.TProperties, type: T.TSchema, repaired: unknown): unknown {
+  return T.IsRefine(type) 
+    ? Check(context, type, repaired) 
+      ? repaired 
+      : Create(context, type) 
+    : repaired
+}
+// ------------------------------------------------------------------
 // FromType
 // ------------------------------------------------------------------
 export function FromType(context: T.TProperties, type: T.TSchema, value: unknown): unknown {
-  // Intercept Base
-  if (T.IsBase(type)) return FromBase(context, type, value)
-  // Standard Repair
+  // Base Repair
+  if (T.IsBase(type)) {
+    const repaired = FromBase(context, type, value)
+    return FinalizeRepair(context, type, repaired)
+  }
+  // Schema Repair
   AssertRepairableValue(context, type, value)
   AssertRepairableType(context, type, value)
-  return (
+  const repaired = (
     T.IsArray(type) ? FromArray(context, type, value) :
     T.IsEnum(type) ? FromEnum(context, type, value) :
     T.IsIntersect(type) ? FromIntersect(context, type, value) :
@@ -93,4 +115,5 @@ export function FromType(context: T.TProperties, type: T.TSchema, value: unknown
     T.IsUnion(type) ? FromUnion(context, type, value) :
     FromUnknown(context, type, value)
   )
+  return FinalizeRepair(context, type, repaired)
 }
