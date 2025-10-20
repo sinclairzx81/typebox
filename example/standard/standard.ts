@@ -112,11 +112,11 @@ export declare namespace StandardSchemaV1 {
     readonly issues?: undefined;
   }
   export interface FailureResult {
-    readonly issues: Immutable<Issue>;
+    readonly issues: ReadonlyArray<Issue>;
   }
   export interface Issue {
     readonly message: string;
-    readonly path?: Immutable<PropertyKey | PathSegment> | undefined;
+    readonly path?: ReadonlyArray<PropertyKey | PathSegment> | undefined;
   }
   export interface PathSegment {
     readonly key: PropertyKey;
