@@ -22,3 +22,25 @@ type T = Type.Static&lt;typeof T&gt;                      // type T = {
                                                     //   z: number
                                                     // }
 </code></pre>
+<p>Constraints and metadata can be passed on the last argument of any given type.</p>
+<pre><code class="language-typescript">const T = Type.Number({                            // const T = {
+  minimum: 0,                                      //   type: &#39;number&#39;,
+  maximum: 100                                     //   minimum: 0,
+})                                                 //   maximum: 100
+                                                   // }
+
+const S = Type.String({                            // const S = {
+  format: &#39;email&#39;                                  //   type: &#39;string&#39;,
+})                                                 //   format: &#39;email&#39;
+                                                   // }
+
+const M = Type.Object({                            // const M = {
+  id: Type.String(),                               //   type: &#39;object&#39;,
+  message: Type.String()                           //   required: [&#39;id&#39;, &#39;message&#39;],
+}, {                                               //   properties: {
+  description: &#39;A protocol message&#39;                //     id: { type: &#39;string&#39; },
+})                                                 //     message: { type: &#39;string&#39; }
+                                                   //   },
+                                                   //   description: &#39;A protocol message&#39;
+                                                   // }
+</code></pre>
