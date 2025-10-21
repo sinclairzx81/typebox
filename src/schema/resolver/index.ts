@@ -26,9 +26,4 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export * from './arguments/index.ts'
-export * from './environment/index.ts'
-export * from './hashing/index.ts'
-export * from './locale/index.ts'
-export * from './memory/index.ts'
-export * from './settings/index.ts'
+export * as Resolver from './resolver.ts'

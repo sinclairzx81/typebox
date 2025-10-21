@@ -69,6 +69,7 @@ import { BuildPatternProperties, CheckPatternProperties, ErrorPatternProperties 
 import { BuildPrefixItems, CheckPrefixItems, ErrorPrefixItems } from './prefixItems.ts'
 import { BuildProperties, CheckProperties, ErrorProperties } from './properties.ts'
 import { BuildPropertyNames, CheckPropertyNames, ErrorPropertyNames } from './propertyNames.ts'
+import { BuildRecursiveRef, CheckRecursiveRef, ErrorRecursiveRef } from './recursiveRef.ts'
 import { BuildRef, CheckRef, ErrorRef } from './ref.ts'
 import { BuildRequired, CheckRequired, ErrorRequired } from './required.ts'
 import { BuildType, CheckType, ErrorType } from './type.ts'
@@ -213,6 +214,7 @@ export function BuildSchema(context: BuildContext, schema: S.XSchema, value: str
     const guarded =  E.Or(E.Not(E.Or(E.IsNumber(value), E.IsBigInt(value))), reduced)
     conditions.push(HasNumberType(schema) ? reduced : guarded)
   }
+  if (S.IsRecursiveRef(schema)) conditions.push(BuildRecursiveRef(context, schema, value))
   if (S.IsRef(schema)) conditions.push(BuildRef(context, schema, value))
   if (S.IsGuard(schema)) conditions.push(BuildGuard(context, schema, value))
   if (S.IsConst(schema)) conditions.push(BuildConst(context, schema, value))
@@ -269,6 +271,7 @@ export function CheckSchema(context: CheckContext, schema: S.XSchema, value: unk
       (!S.IsMinimum(schema) || CheckMinimum(context, schema, value)) &&
       (!S.IsMultipleOf(schema) || CheckMultipleOf(context, schema, value))
     )) &&
+    (!S.IsRecursiveRef(schema) || CheckRecursiveRef(context, schema, value)) &&
     (!S.IsRef(schema) || CheckRef(context, schema, value)) &&
     (!S.IsGuard(schema) || CheckGuard(context, schema, value)) &&
     (!S.IsConst(schema) || CheckConst(context, schema, value)) &&
@@ -326,6 +329,7 @@ export function ErrorSchema(context: ErrorContext, schemaPath: string, instanceP
         +(!S.IsMinimum(schema) || ErrorMinimum(context, schemaPath, instancePath, schema, value)) &
         +(!S.IsMultipleOf(schema) || ErrorMultipleOf(context, schemaPath, instancePath, schema, value))
       )) &
+      +(!S.IsRecursiveRef(schema) || ErrorRecursiveRef(context, schemaPath, instancePath, schema, value)) &
       +(!S.IsRef(schema) || ErrorRef(context, schemaPath, instancePath, schema, value)) &
       +(!S.IsGuard(schema) || ErrorGuard(context, schemaPath, instancePath, schema, value)) &
       +(!S.IsConst(schema) || ErrorConst(context, schemaPath, instancePath, schema, value)) &

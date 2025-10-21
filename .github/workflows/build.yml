@@ -14,7 +14,7 @@ jobs:
       - name: Install Deno
         uses: denoland/setup-deno@v2
         with:
-          deno-version: canary
+          deno-version: 2.5.4
       # Build
       - name: Test Library
         run: deno task test
