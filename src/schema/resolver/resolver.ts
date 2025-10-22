@@ -26,4 +26,5 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export { Deref } from './deref.ts'
+export * from './recursiveRef.ts'
+export * from './ref.ts'

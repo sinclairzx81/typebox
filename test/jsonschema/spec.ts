@@ -18,8 +18,8 @@ run('draft-next', 'test/jsonschema/cases/draft-next')
 // Run
 // ------------------------------------------------------------------
 function run(draft: string, path: string): void {
-  runBuild(draft, path)
   runCheck(draft, path)
+  runBuild(draft, path)
   runError(draft, path)
 }
 // ------------------------------------------------------------------
@@ -45,7 +45,7 @@ function assertResult(op: Operation): void {
   let example: string
   switch (type) {
     case 'Build':
-      example = `Schema.Build(${schemaStr}).Evaluate()(${dataStr})`
+      example = `Schema.Build(${schemaStr}).Evaluate().Check(${dataStr})`
       break
     case 'Check':
       example = `Schema.Check(${schemaStr}, ${dataStr})`

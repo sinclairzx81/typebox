@@ -1,0 +1,45 @@
+[
+  {
+    "description": "ref overrides any sibling keywords",
+    "schema": {
+      "definitions": {
+        "reffed": {
+          "type": "array"
+        }
+      },
+      "properties": {
+        "foo": {
+          "$ref": "#/definitions/reffed",
+          "maxItems": 2
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "ref valid",
+        "data": {
+          "foo": []
+        },
+        "valid": true
+      },
+      {
+        "description": "ref valid, maxItems ignored",
+        "data": {
+          "foo": [
+            1,
+            2,
+            3
+          ]
+        },
+        "valid": true
+      },
+      {
+        "description": "ref invalid",
+        "data": {
+          "foo": "string"
+        },
+        "valid": false
+      }
+    ]
+  }
+]

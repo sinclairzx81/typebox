@@ -29,40 +29,21 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Guard } from '../../guard/index.ts'
-import { type XSchemaObject, type XSchema, IsSchema } from './schema.ts'
+import { type XSchemaObject } from './schema.ts'
 
 // ------------------------------------------------------------------
 // Type
 // ------------------------------------------------------------------
-export interface XItemsSized<Items extends XSchema[] = XSchema[]> {
-  items: Items
-}
-export interface XItemsUnsized<Items extends XSchema = XSchema> {
-  items: Items
-}
-export interface XItems<Items extends (XSchema | XSchema[]) = (XSchema | XSchema[])> {
-  items: Items
+export interface XRecursiveRef<Ref extends string = string> {
+  $recursiveRef: Ref
 }
 // ------------------------------------------------------------------
 // Guard
 // ------------------------------------------------------------------
 /** 
- * Returns true if the schema contains a valid items property
- * @specification Json Schema 7
+ * Returns true if the schema contains a valid $recursiveRef property
  */
-export function IsItems(schema: XSchemaObject): schema is XItems {
-  return Guard.HasPropertyKey(schema, 'items') 
-    && (IsSchema(schema.items) 
-    || (Guard.IsArray(schema.items) 
-        && schema.items.every(value => {
-          return IsSchema(value)
-  })))
-}
-/** Returns true if this schema is a sized items variant */
-export function IsItemsSized(schema: XSchemaObject): schema is XItemsSized {
-  return IsItems(schema) && Guard.IsArray(schema.items)
-}
-/** Returns true if this schema is a unsized items variant */
-export function IsItemsUnsized(schema: XSchemaObject): schema is XItemsUnsized {
-  return IsItems(schema) && !Guard.IsArray(schema.items)
+export function IsRecursiveRef(schema: XSchemaObject): schema is XRecursiveRef {
+  return Guard.HasPropertyKey(schema, '$recursiveRef') 
+    && Guard.IsString(schema.$recursiveRef)
 }

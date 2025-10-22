@@ -183,7 +183,7 @@ export function Constant(value: bigint | boolean | null | number | string | unde
   return G.IsString(value) ? JSON.stringify(value) : `${value}`
 }
 export function Ternary(condition: string, true_: string, false_: string): string {
-  return `${condition} ? ${true_} : ${false_}`
+  return `(${condition} ? ${true_} : ${false_})`
 }
 // ------------------------------------------------------------------
 // Statements
