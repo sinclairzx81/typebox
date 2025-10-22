@@ -160,6 +160,10 @@ Test('Should throw when deleting root', () => {
   const V = {}
   Assert.Throws(() => Schema.Pointer.Delete(V, ''))
 })
+Test('Should throw when setting non-object sub value', () => {
+  const V = { x: 1 }
+  Assert.Throws(() => Schema.Pointer.Set(V, '/x/y', 3))
+})
 //-----------------------------------------------
 // Escapes
 //-----------------------------------------------

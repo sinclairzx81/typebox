@@ -42,7 +42,7 @@ function AssertCanSet(value: unknown): asserts value is Record<string, unknown> 
 // ------------------------------------------------------------------
 // Indices
 // ------------------------------------------------------------------
-function GetIndexRight(indices: string[]): [string[], string] {
+function TakeIndexRight(indices: string[]): [string[], string] {
   return [
     indices.slice(0, indices.length - 1),
     indices.slice(indices.length - 1)[0]
@@ -93,7 +93,7 @@ export function Get(value: unknown, pointer: string): unknown {
 export function Set(value: unknown, pointer: string, next: unknown): unknown {
   const indices = Indices(pointer)
   AssertNotRoot(indices)
-  const [head, index] = GetIndexRight(indices)
+  const [head, index] = TakeIndexRight(indices)
   const parent = GetIndices(head, value)
   AssertCanSet(parent)
   parent[index] = next
@@ -106,7 +106,7 @@ export function Set(value: unknown, pointer: string, next: unknown): unknown {
 export function Delete(value: unknown, pointer: string): unknown {
   const indices = Indices(pointer)
   AssertNotRoot(indices)
-  const [head, index] = GetIndexRight(indices)
+  const [head, index] = TakeIndexRight(indices)
   const parent = GetIndices(head, value)
   AssertCanSet(parent)
   delete parent[index]

@@ -28,8 +28,8 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Pointer } from '../pointer/index.ts'
 import { Guard } from '../../guard/index.ts'
+import { Pointer } from '../pointer/index.ts'
 import * as S from '../types/index.ts'
 
 // ------------------------------------------------------------------
@@ -81,8 +81,8 @@ function Match(value: S.XSchemaObject, base: URL, ref: URL): unknown | undefined
 // ------------------------------------------------------------------
 function FromArray(value: unknown[], base: URL, ref: URL): unknown {
   for (const item of value) {
-    const resolved = FromValue(item, base, ref)
-    if (!Guard.IsUndefined(resolved)) return resolved
+    const result = FromValue(item, base, ref)
+    if (!Guard.IsUndefined(result)) return result
   }
   return undefined
 }
@@ -91,8 +91,8 @@ function FromArray(value: unknown[], base: URL, ref: URL): unknown {
 // ------------------------------------------------------------------
 function FromObject(value: Record<PropertyKey, unknown>, base: URL, ref: URL): unknown {
   for (const key of Guard.Keys(value)) {
-    const resolved = FromValue(value[key], base, ref)
-    if (!Guard.IsUndefined(resolved)) return resolved
+    const result = FromValue(value[key], base, ref)
+    if (!Guard.IsUndefined(result)) return result
   }
   return undefined
 }
@@ -100,10 +100,10 @@ function FromObject(value: Record<PropertyKey, unknown>, base: URL, ref: URL): u
 // FromValue
 // ------------------------------------------------------------------
 function FromValue(value: unknown, base: URL, ref: URL): unknown {
-  const newbase = S.IsSchemaObject(value) && S.IsId(value) ? new URL(value.$id, ref.href) : ref
+  const newbase = S.IsSchemaObject(value) && S.IsId(value) ? new URL(value.$id, ref.href) : base
   if (S.IsSchemaObject(value)) {
-    const matched = Match(value, newbase, ref)
-    if (matched) return matched
+    const result = Match(value, newbase, ref)
+    if (!Guard.IsUndefined(result)) return result
   }
   if (Guard.IsArray(value)) return FromArray(value, newbase, ref)
   if (Guard.IsObject(value)) return FromObject(value, newbase, ref)
