@@ -422,3 +422,14 @@ Test('Should generate no diff for undefined properties of current and next', () 
   const P = Value.Patch(A, D)
   Assert.IsEqual(B, P)
 })
+// ----------------------------------------------------------------
+// https://github.com/sinclairzx81/typebox/issues/1419
+// ----------------------------------------------------------------
+Test('Should not result in sparse arrays', () => {
+  const A = [1, 2, 3]
+  const B = [1, 3]
+  const D = Value.Diff(A, B)
+  const E = Value.Patch(A, D) as unknown[]
+  Assert.IsEqual(B, E)
+  Assert.IsEqual(E.length, B.length)
+})
