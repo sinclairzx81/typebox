@@ -28,40 +28,30 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import * as F from './_functions.ts'
-import * as S from '../types/index.ts'
-import { BaseContext, BuildContext, CheckContext, ErrorContext } from './_context.ts'
+import * as Functions from './_functions.ts'
+import * as Schema from '../types/index.ts'
+import { Stack } from './_stack.ts'
+import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { CheckSchema, ErrorSchema } from './schema.ts'
-import { Resolver } from '../resolver/index.ts'
 
-// ------------------------------------------------------------------
-// Resolve
-// ------------------------------------------------------------------
-function Resolve(context: BaseContext, schema: S.XRecursiveRef): S.XSchema {
-  // note: it is safe to coerce to XSchema here as it wouldn't be possible
-  // to enter a ref resolution if the root schema was boolean.
-  const schemaRoot = context.GetSchema() as S.XSchemaObject
-  const dereferenced = Resolver.RecursiveRef(schemaRoot, schema)
-  return S.IsSchema(dereferenced) ? dereferenced : false
-}
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildRecursiveRef(context: BuildContext, schema: S.XRecursiveRef, value: string): string {
-  const target = Resolve(context, schema)
-  return F.CreateFunction(context, target, value)
+export function BuildRecursiveRef(stack: Stack, context: BuildContext, schema: Schema.XRecursiveRef, value: string): string {
+  const target = stack.RecursiveRef(schema.$recursiveRef) ?? false
+  return Functions.CreateFunction(stack, context, target, value)
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckRecursiveRef(context: CheckContext, schema: S.XRecursiveRef, value: unknown): boolean {
-  const target = Resolve(context, schema)
-  return (S.IsSchema(target) && CheckSchema(context, target, value))
+export function CheckRecursiveRef(stack: Stack, context: CheckContext, schema: Schema.XRecursiveRef, value: unknown): boolean {
+  const target = stack.RecursiveRef(schema.$recursiveRef) ?? false
+  return (Schema.IsSchema(target) && CheckSchema(stack, context, target, value))
 }
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorRecursiveRef(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XRecursiveRef, value: unknown): boolean {
-  const target = Resolve(context, schema)
-  return (S.IsSchema(target) && ErrorSchema(context, '#', instancePath, target, value))
+export function ErrorRecursiveRef(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XRecursiveRef, value: unknown): boolean {
+  const target = stack.RecursiveRef(schema.$recursiveRef) ?? false
+  return (Schema.IsSchema(target) && ErrorSchema(stack, context, '#', instancePath, target, value))
 }

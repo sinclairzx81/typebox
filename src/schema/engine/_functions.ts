@@ -28,18 +28,19 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import * as S from '../types/index.ts'
+import * as Schema from '../types/index.ts'
 import { Hashing } from '../../system/hashing/index.ts'
+import { Stack } from './_stack.ts'
+import { BuildContext } from './_context.ts'
 import { EmitGuard as E } from '../../guard/index.ts'
 import { BuildSchema } from './schema.ts'
-import { BuildContext } from './_context.ts'
 
 const functions: Map<string, string> = new Map()
 
 // ------------------------------------------------------------------
 // CreateCallExpression
 // ------------------------------------------------------------------
-function CreateCallExpression(context: BuildContext, schema: S.XSchema, hash: string, value: string): string {
+function CreateCallExpression(context: BuildContext, schema: Schema.XSchema, hash: string, value: string): string {
   return context.UseUnevaluated()
     ? E.Call(`check_${hash}`, ['context', value])
     : E.Call(`check_${hash}`, [value])
@@ -47,8 +48,8 @@ function CreateCallExpression(context: BuildContext, schema: S.XSchema, hash: st
 // ------------------------------------------------------------------
 // CreateFunctionExpression
 // ------------------------------------------------------------------
-function CreateFunctionExpression(context: BuildContext, schema: S.XSchema, hash: string): string {
-  const expression = BuildSchema(context, schema, 'value')
+function CreateFunctionExpression(stack: Stack, context: BuildContext, schema: Schema.XSchema, hash: string): string {
+  const expression = BuildSchema(stack, context, schema, 'value')
   return context.UseUnevaluated()
     ? E.ConstDeclaration(`check_${hash}`, E.ArrowFunction(['context', 'value'], expression))
     : E.ConstDeclaration(`check_${hash}`, E.ArrowFunction(['value'], expression))
@@ -68,11 +69,11 @@ export function GetFunctions(): string[] {
 // ------------------------------------------------------------------
 // CreateFunction
 // ------------------------------------------------------------------
-export function CreateFunction(context: BuildContext, schema: S.XSchema, value: string): string {
-  const hash = Hashing.Hash(schema)
+export function CreateFunction(stack: Stack, context: BuildContext, schema: Schema.XSchema, value: string): string {
+  const hash = Schema.IsSchemaObject(schema) ? Hashing.Hash({ __baseURL: stack.BaseURL().href, ...schema }) : Hashing.Hash(schema)
   const call = CreateCallExpression(context, schema, hash, value)
   if (functions.has(hash)) return call
   functions.set(hash, '')
-  functions.set(hash, CreateFunctionExpression(context, schema, hash))
+  functions.set(hash, CreateFunctionExpression(stack, context, schema, hash))
   return call
 }

@@ -1,5 +1,3 @@
-// deno-fmt-ignore-file
-
 import { Guard } from 'typebox/guard'
 import { Value } from 'typebox/value'
 import { Type } from 'typebox'
@@ -11,8 +9,12 @@ const Test = Assert.Context('Value.Codec.Union')
 // Nullable
 // ------------------------------------------------------------------
 const NumberToString = Type.Codec(Type.Number())
-  .Decode(value => { return value.toString() })
-  .Encode(value => { return parseFloat(value) })
+  .Decode((value) => {
+    return value.toString()
+  })
+  .Encode((value) => {
+    return parseFloat(value)
+  })
 
 Test('Should Union 1', () => {
   const T = Type.Union([Type.Null(), NumberToString])
@@ -30,8 +32,8 @@ Test('Should Union 2', () => {
 })
 Test('Should Union 3', () => {
   const T = Type.Codec(Type.Union([Type.Null(), NumberToString]))
-  .Decode(value => Guard.IsEqual(value, null) ? 'is null' : value)
-  .Encode(value => Guard.IsEqual(value, 'is null') ? null : value)
+    .Decode((value) => Guard.IsEqual(value, null) ? 'is null' : value)
+    .Encode((value) => Guard.IsEqual(value, 'is null') ? null : value)
   const D = Value.Decode(T, null)
   const E = Value.Encode(T, D)
   Assert.IsEqual(D, 'is null')
@@ -56,8 +58,8 @@ Test('Should Union 5', () => {
 })
 Test('Should Union 6', () => {
   const T = Type.Codec(Type.Union([NumberToString, Type.Null()]))
-  .Decode(value => Guard.IsEqual(value, null) ? 'is null' : value)
-  .Encode(value => Guard.IsEqual(value, 'is null') ? null : value)
+    .Decode((value) => Guard.IsEqual(value, null) ? 'is null' : value)
+    .Encode((value) => Guard.IsEqual(value, 'is null') ? null : value)
   const D = Value.Decode(T, null)
   const E = Value.Encode(T, D)
   Assert.IsEqual(D, 'is null')
@@ -67,17 +69,17 @@ Test('Should Union 6', () => {
 // Multi Variant
 // ------------------------------------------------------------------
 const StringToLiteral = Type.Codec(Type.String())
-  .Decode(value => 'string' as const)
-  .Encode(value => 'string')
+  .Decode((value) => 'string' as const)
+  .Encode((value) => 'string')
 const NumberToLiteral = Type.Codec(Type.Number())
-  .Decode(value => 'number' as const)
-  .Encode(value => 0)
+  .Decode((value) => 'number' as const)
+  .Encode((value) => 0)
 const BooleanToLiteral = Type.Codec(Type.Boolean())
-  .Decode(value => 'boolean' as const)
-  .Encode(value => false)
+  .Decode((value) => 'boolean' as const)
+  .Encode((value) => false)
 
 const MultiVariant = Type.Union([
-  StringToLiteral, // first 
+  StringToLiteral, // first
   NumberToLiteral,
   BooleanToLiteral
 ])
@@ -107,8 +109,8 @@ Test('Should Union 10', () => {
     Type.Literal(1),
     Type.Literal(2)
   ]))
-  .Decode(value => value)
-  .Encode(value => value)
+    .Decode((value) => value)
+    .Encode((value) => value)
   Assert.Throws(() => Value.Decode(Identity, 3))
   Assert.Throws(() => Value.Encode(Identity, 3))
 })

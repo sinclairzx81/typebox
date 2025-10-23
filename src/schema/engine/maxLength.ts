@@ -28,27 +28,28 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import * as S from '../types/index.ts'
-import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
+import * as Schema from '../types/index.ts'
+import { Stack } from './_stack.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
+import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildMaxLength(context: BuildContext, schema: S.XMaxLength, value: string): string {
+export function BuildMaxLength(stack: Stack, context: BuildContext, schema: Schema.XMaxLength, value: string): string {
   return E.IsLessEqualThan(E.StringGraphemeCount(value), E.Constant(schema.maxLength))
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckMaxLength(context: CheckContext, schema: S.XMaxLength, value: string): boolean {
+export function CheckMaxLength(stack: Stack, context: CheckContext, schema: Schema.XMaxLength, value: string): boolean {
   return G.IsLessEqualThan(G.StringGraphemeCount(value), schema.maxLength)
 }
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorMaxLength(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XMaxLength, value: string): boolean {
-  return CheckMaxLength(context, schema, value) || context.AddError({
+export function ErrorMaxLength(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XMaxLength, value: string): boolean {
+  return CheckMaxLength(stack, context, schema, value) || context.AddError({
     keyword: 'maxLength',
     schemaPath,
     instancePath,

@@ -54,9 +54,9 @@ export function ResetExternal(): void {
   resetCount += 1
 }
 // ------------------------------------------------------------------
-// CreateExternalVariable
+// CreateVariable
 // ------------------------------------------------------------------
-export function CreateExternalVariable(value: unknown): string {
+export function CreateVariable(value: unknown): string {
   const call = `${state.identifier}[${state.variables.length}]`
   state.variables.push(value)
   return call

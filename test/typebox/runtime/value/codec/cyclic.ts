@@ -1,5 +1,3 @@
-// deno-fmt-ignore-file
-
 import { Value } from 'typebox/value'
 import { Type } from 'typebox'
 import { Assert } from 'test'
@@ -8,8 +6,8 @@ const Test = Assert.Context('Value.Codec.Cyclic')
 
 Test('Should Cyclic 1', () => {
   const StringToNumber = Type.Codec(Type.String())
-    .Decode(value => parseInt(value))
-    .Encode(value => value.toString())
+    .Decode((value) => parseInt(value))
+    .Encode((value) => value.toString())
 
   const T = Type.Cyclic({
     A: Type.Object({

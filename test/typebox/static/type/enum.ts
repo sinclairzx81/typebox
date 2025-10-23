@@ -1,8 +1,6 @@
 import { type Static, Type } from 'typebox'
 import { Assert } from 'test'
 
-// deno-fmt-ignore-file
-
 // ------------------------------------------------------------------
 // Standard
 // ------------------------------------------------------------------

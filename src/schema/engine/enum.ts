@@ -28,25 +28,26 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import * as S from '../types/index.ts'
-import * as V from './_externals.ts'
-import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
+import * as Schema from '../types/index.ts'
+import * as Externals from './_externals.ts'
+import { Stack } from './_stack.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
+import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildEnum(context: BuildContext, schema: S.XEnum, value: string): string {
+export function BuildEnum(stack: Stack, context: BuildContext, schema: Schema.XEnum, value: string): string {
   return E.ReduceOr(schema.enum.map(option => {
     if (G.IsValueLike(option)) return E.IsEqual(value, E.Constant(option))
-    const variable = V.CreateExternalVariable(option)
+    const variable = Externals.CreateVariable(option)
     return E.IsDeepEqual(value, variable)
   }))
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckEnum(context: CheckContext, schema: S.XEnum, value: unknown): boolean {
+export function CheckEnum(stack: Stack, context: CheckContext, schema: Schema.XEnum, value: unknown): boolean {
   return schema.enum.some(option => G.IsValueLike(option) 
     ? G.IsEqual(value, option) 
     : G.IsDeepEqual(value, option))
@@ -54,8 +55,8 @@ export function CheckEnum(context: CheckContext, schema: S.XEnum, value: unknown
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorEnum(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XEnum, value: unknown): boolean {
-  return CheckEnum(context, schema, value) || context.AddError({
+export function ErrorEnum(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XEnum, value: unknown): boolean {
+  return CheckEnum(stack, context, schema, value) || context.AddError({
     keyword: 'enum',
     schemaPath,
     instancePath,

@@ -13,7 +13,6 @@ run('draft-7', 'test/jsonschema/cases/draft7')
 run('draft-2019', 'test/jsonschema/cases/draft2019-09')
 run('draft-2020', 'test/jsonschema/cases/draft2020-12')
 run('draft-next', 'test/jsonschema/cases/draft-next')
-
 // ------------------------------------------------------------------
 // Run
 // ------------------------------------------------------------------
@@ -45,13 +44,13 @@ function assertResult(op: Operation): void {
   let example: string
   switch (type) {
     case 'Build':
-      example = `Schema.Build(${schemaStr}).Evaluate().Check(${dataStr})`
+      example = `const R = Schema.Build(${schemaStr}).Evaluate().Check(${dataStr})`
       break
     case 'Check':
-      example = `Schema.Check(${schemaStr}, ${dataStr})`
+      example = `const R = Schema.Check(${schemaStr}, ${dataStr})`
       break
     case 'Errors':
-      example = `Schema.Errors(${schemaStr}, ${dataStr})`
+      example = `const R = Schema.Errors(${schemaStr}, ${dataStr})`
       break
   }
   const message = formatMessage(example, description, valid, result)
@@ -94,3 +93,4 @@ function runError(draft: string, path: string): void {
     })
   }
 }
+ 

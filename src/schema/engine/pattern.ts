@@ -28,30 +28,31 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import * as S from '../types/index.ts'
-import * as V from './_externals.ts'
-import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
+import * as Schema from '../types/index.ts'
+import * as Externals from './_externals.ts'
+import { Stack } from './_stack.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
+import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildPattern(context: BuildContext, schema: S.XPattern, value: string): string {
-  const regexp = V.CreateExternalVariable(G.IsString(schema.pattern) ? new RegExp(schema.pattern) : schema.pattern)
+export function BuildPattern(stack: Stack, context: BuildContext, schema: Schema.XPattern, value: string): string {
+  const regexp = Externals.CreateVariable(G.IsString(schema.pattern) ? new RegExp(schema.pattern) : schema.pattern)
   return E.Call(E.Member(regexp, 'test'), [value])
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckPattern(context: CheckContext, schema: S.XPattern, value: string): boolean {
+export function CheckPattern(stack: Stack, context: CheckContext, schema: Schema.XPattern, value: string): boolean {
   const regexp = G.IsString(schema.pattern) ? new RegExp(schema.pattern) : schema.pattern
   return regexp.test(value)
 }
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorPattern(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XPattern, value: string): boolean {
-  return CheckPattern(context, schema, value) || context.AddError({
+export function ErrorPattern(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XPattern, value: string): boolean {
+  return CheckPattern(stack, context, schema, value) || context.AddError({
     keyword: 'pattern',
     schemaPath,
     instancePath,

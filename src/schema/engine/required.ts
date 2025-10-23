@@ -28,26 +28,27 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import * as S from '../types/index.ts'
-import { EmitGuard as E, Guard as G } from '../../guard/index.ts'
+import * as Schema from '../types/index.ts'
+import { Stack } from './_stack.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
+import { EmitGuard as E, Guard as G } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildRequired(context: BuildContext, schema: S.XRequired, value: string): string {
+export function BuildRequired(stack: Stack, context: BuildContext, schema: Schema.XRequired, value: string): string {
   return E.ReduceAnd(schema.required.map((key) => E.HasPropertyKey(value, E.Constant(key))))
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckRequired(context: CheckContext, schema: S.XRequired, value: Record<PropertyKey, unknown>): boolean {
+export function CheckRequired(stack: Stack, context: CheckContext, schema: Schema.XRequired, value: Record<PropertyKey, unknown>): boolean {
   return G.Every(schema.required, 0, (key) => G.HasPropertyKey(value, key))
 }
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorRequired(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XRequired, value: Record<PropertyKey, unknown>): boolean {
+export function ErrorRequired(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XRequired, value: Record<PropertyKey, unknown>): boolean {
   const requiredProperties: string[] = []
   const isRequired = G.EveryAll(schema.required, 0, (key) => {
     const hasKey = G.HasPropertyKey(value, key)

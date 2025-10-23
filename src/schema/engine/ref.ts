@@ -28,47 +28,59 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import * as F from './_functions.ts'
-import * as S from '../types/index.ts'
-import { Guard as G } from '../../guard/index.ts'
-import { BaseContext, BuildContext, CheckContext, ErrorContext } from './_context.ts'
+import * as Functions from './_functions.ts'
+import * as Schema from '../types/index.ts'
+import { Stack } from './_stack.ts'
+import { BuildContext, CheckContext, ErrorContext, AccumulatedErrorContext } from './_context.ts'
+import { EmitGuard as E } from '../../guard/index.ts'
 import { CheckSchema, ErrorSchema } from './schema.ts'
-import { Resolver } from '../resolver/index.ts'
 
 // ------------------------------------------------------------------
-// Resolve
+// BuildRefStandard
 // ------------------------------------------------------------------
-function Resolve(context: BaseContext, schema: S.XRef): S.XSchema {
-  // note: it is safe to coerce to XSchema here as it wouldn't be possible
-  // to enter a ref resolution if the root schema was boolean.
-  const schemaRoot = context.GetSchema() as S.XSchemaObject
-  // contextual schema
-  const schemaContext = context.GetContext()
-  if (G.HasPropertyKey(schemaContext, schema.$ref)) {
-    return schemaContext[schema.$ref]
-  }
-  // referential schema
-  const dereferenced = Resolver.Ref(schemaRoot, schema.$ref)
-  return S.IsSchema(dereferenced) ? dereferenced : false
+function BuildRefStandard(stack: Stack, context: BuildContext, target: Schema.XSchema, value: string): string {
+  const interior = E.ArrowFunction(['context', 'value'], Functions.CreateFunction(stack, context, target, 'value'))
+  const exterior = E.ArrowFunction(['context', 'value'], E.Statements([
+    E.ConstDeclaration('nextContext', E.New('CheckContext', [])),
+    E.ConstDeclaration('result', E.Call(interior, ['nextContext', 'value'])),
+    E.If('result', context.Merge('[nextContext]')),
+    E.Return('result')
+  ]))
+  return E.Call(exterior, ['context', value])
 }
 // ------------------------------------------------------------------
-// Build
+// BuildRefStandard
 // ------------------------------------------------------------------
-export function BuildRef(context: BuildContext, schema: S.XRef, value: string): string {
-  const target = Resolve(context, schema)
-  return F.CreateFunction(context, target, value)
+function BuildRefFast(stack: Stack, context: BuildContext, target: Schema.XSchema, value: string): string {
+  return Functions.CreateFunction(stack, context, target, value)
+}
+// ------------------------------------------------------------------
+// BuildRef
+// ------------------------------------------------------------------
+export function BuildRef(stack: Stack, context: BuildContext, schema: Schema.XRef, value: string): string {
+  const target = stack.Ref(schema.$ref) ?? false
+  return context.UseUnevaluated()
+    ? BuildRefStandard(stack, context, target, value)
+    : BuildRefFast(stack, context, target, value)
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckRef(context: CheckContext, schema: S.XRef, value: unknown): boolean {
-  const target = Resolve(context, schema)
-  return (S.IsSchema(target) && CheckSchema(context, target, value))
+export function CheckRef(stack: Stack, context: CheckContext, schema: Schema.XRef, value: unknown): boolean {
+  const target = stack.Ref(schema.$ref) ?? false
+  const nextContext = new CheckContext()
+  const result = (Schema.IsSchema(target) && CheckSchema(stack, nextContext, target, value))
+  if(result) context.Merge([nextContext])
+  return result
 }
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorRef(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XRef, value: unknown): boolean {
-  const target = Resolve(context, schema)
-  return (S.IsSchema(target) && ErrorSchema(context, '#', instancePath, target, value))
+export function ErrorRef(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XRef, value: unknown): boolean {
+  const target = stack.Ref(schema.$ref) ?? false
+  const nextContext = new AccumulatedErrorContext()
+  const result = (Schema.IsSchema(target) && ErrorSchema(stack, nextContext, '#', instancePath, target, value))
+  if(result) context.Merge([nextContext])
+  if(!result) nextContext.GetErrors().forEach(error => context.AddError(error))
+  return result
 }

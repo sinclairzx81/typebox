@@ -28,27 +28,28 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import * as S from '../types/index.ts'
-import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
+import * as Schema from '../types/index.ts'
+import { Stack } from './_stack.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
+import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildMaxItems(context: BuildContext, schema: S.XMaxItems, value: string): string {
+export function BuildMaxItems(stack: Stack, context: BuildContext, schema: Schema.XMaxItems, value: string): string {
   return E.IsLessEqualThan(E.Member(value, 'length'), E.Constant(schema.maxItems))
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckMaxItems(context: CheckContext, schema: S.XMaxItems, value: unknown[]): boolean {
+export function CheckMaxItems(stack: Stack, context: CheckContext, schema: Schema.XMaxItems, value: unknown[]): boolean {
   return G.IsLessEqualThan(value.length, schema.maxItems)
 }
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorMaxItems(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XMaxItems, value: unknown[]): boolean {
-  return CheckMaxItems(context, schema, value) || context.AddError({
+export function ErrorMaxItems(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XMaxItems, value: unknown[]): boolean {
+  return CheckMaxItems(stack, context, schema, value) || context.AddError({
     keyword: 'maxItems',
     schemaPath,
     instancePath,

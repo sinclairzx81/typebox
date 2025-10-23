@@ -30,21 +30,22 @@ THE SOFTWARE.
 // deno-lint-ignore-file
 
 import { Arguments } from '../system/arguments/index.ts'
-import { CheckSchema, CheckContext } from './engine/index.ts'
-import { XSchema } from './types/index.ts'
+import * as Engine from './engine/index.ts'
+import * as Schema from './types/index.ts'
 
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
 /** Checks a value against the provided schema */
-export function Check(schema: XSchema, value: unknown): boolean
+export function Check(schema: Schema.XSchema, value: unknown): boolean
 /** Checks a value against the provided schema */
-export function Check(context: Record<PropertyKey, XSchema>, schema: XSchema, value: unknown): boolean
+export function Check(context: Record<PropertyKey, Schema.XSchema>, schema: Schema.XSchema, value: unknown): boolean
 /** Checks a value against the provided schema */
 export function Check(...args: unknown[]): boolean {
-  const [context, schema, value] = Arguments.Match<[Record<PropertyKey, XSchema>, XSchema, unknown]>(args, {
+  const [context, schema, value] = Arguments.Match<[Record<PropertyKey, Schema.XSchema>, Schema.XSchema, unknown]>(args, {
     3: (context, schema, value) => [context, schema, value],
     2: (schema, value) => [{}, schema, value]
   })
-  return CheckSchema(new CheckContext(context, schema), schema, value)
+  const stack = new Engine.Stack(context, schema)
+  return Engine.CheckSchema(stack, new Engine.CheckContext(), schema, value)
 }

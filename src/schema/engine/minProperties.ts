@@ -28,27 +28,28 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import * as S from '../types/index.ts'
-import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
+import * as Schema from '../types/index.ts'
+import { Stack } from './_stack.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
+import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildMinProperties(context: BuildContext, schema: S.XMinProperties, value: string): string {
+export function BuildMinProperties(stack: Stack, context: BuildContext, schema: Schema.XMinProperties, value: string): string {
   return E.IsGreaterEqualThan(E.Member(E.Keys(value), 'length'), E.Constant(schema.minProperties))
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckMinProperties(context: CheckContext, schema: S.XMinProperties, value: Record<PropertyKey, unknown>): boolean {
+export function CheckMinProperties(stack: Stack, context: CheckContext, schema: Schema.XMinProperties, value: Record<PropertyKey, unknown>): boolean {
   return G.IsGreaterEqualThan(G.Keys(value).length, schema.minProperties)
 }
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorMinProperties(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XMinProperties, value: Record<PropertyKey, unknown>): boolean {
-  return CheckMinProperties(context, schema, value) || context.AddError({
+export function ErrorMinProperties(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XMinProperties, value: Record<PropertyKey, unknown>): boolean {
+  return CheckMinProperties(stack, context, schema, value) || context.AddError({
     keyword: 'minProperties',
     schemaPath,
     instancePath,

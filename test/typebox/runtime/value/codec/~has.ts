@@ -1,5 +1,3 @@
-// deno-fmt-ignore-file
-
 import { Value } from 'typebox/value'
 import { Type } from 'typebox'
 import { Assert } from 'test'
@@ -7,8 +5,8 @@ import { Assert } from 'test'
 const Test = Assert.Context('Value.Codec.Has')
 
 const Identity = Type.Codec(Type.String())
-  .Decode(value => value)
-  .Encode(value => value)
+  .Decode((value) => value)
+  .Encode((value) => value)
 
 Test('Should Has 1', () => {
   const T = Type.Array(Identity)
@@ -27,7 +25,7 @@ Test('Should Has 2', () => {
 Test('Should Has 3', () => {
   const T = Type.Intersect([
     Type.Object({ y: Type.Null() }),
-    Type.Object({ x: Identity }),
+    Type.Object({ x: Identity })
   ])
   Assert.IsTrue(Value.HasCodec(T))
 })
@@ -55,21 +53,21 @@ Test('Should Has 8', () => {
 Test('Should Has 9', () => {
   const T = Type.Union([
     Type.Object({ y: Type.Null() }),
-    Type.Object({ x: Identity }),
+    Type.Object({ x: Identity })
   ])
   Assert.IsTrue(Value.HasCodec(T))
 })
 Test('Should Has 10', () => {
   const T = Type.Codec(Type.Null())
-    .Decode(value => value)
-    .Encode(value => value)
+    .Decode((value) => value)
+    .Encode((value) => value)
   Assert.IsTrue(Value.HasCodec(T))
 })
 // ------------------------------------------------------------------
 // Cyclics
 // ------------------------------------------------------------------
 Test('Should Has 11', () => {
-  const C = Type.Codec(Type.Null()).Decode(value => value).Encode(value => value)
+  const C = Type.Codec(Type.Null()).Decode((value) => value).Encode((value) => value)
   const T = Type.Cyclic({
     A: Type.Object({
       value: C,
@@ -79,7 +77,7 @@ Test('Should Has 11', () => {
   Assert.IsTrue(Value.HasCodec(T))
 })
 Test('Should Has 12', () => {
-  const C = Type.Codec(Type.Array(Type.Ref('A'))).Decode(value => value).Encode(value => value)
+  const C = Type.Codec(Type.Array(Type.Ref('A'))).Decode((value) => value).Encode((value) => value)
   const T = Type.Cyclic({
     A: Type.Object({
       nodes: C

@@ -28,46 +28,47 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import * as S from '../types/index.ts'
-import { EmitGuard as E } from '../../guard/index.ts'
+import * as Schema from '../types/index.ts'
+import { Stack } from './_stack.ts'
 import { BuildContext, CheckContext, ErrorContext, AccumulatedErrorContext } from './_context.ts'
+import { EmitGuard as E } from '../../guard/index.ts'
 import { BuildSchema, CheckSchema, ErrorSchema } from './schema.ts'
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildIf(context: BuildContext, schema: S.XIf, value: string): string {
-  const thenSchema = S.IsThen(schema) ? schema.then : true
-  const elseSchema = S.IsElse(schema) ? schema.else : true
-  return E.Ternary(BuildSchema(context, schema.if, value), 
-    BuildSchema(context, thenSchema, value), 
-    BuildSchema(context, elseSchema, value))
+export function BuildIf(stack: Stack, context: BuildContext, schema: Schema.XIf, value: string): string {
+  const thenSchema = Schema.IsThen(schema) ? schema.then : true
+  const elseSchema = Schema.IsElse(schema) ? schema.else : true
+  return E.Ternary(BuildSchema(stack, context, schema.if, value), 
+    BuildSchema(stack, context, thenSchema, value), 
+    BuildSchema(stack, context, elseSchema, value))
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckIf(context: CheckContext, schema: S.XIf, value: unknown): boolean {
-  const thenSchema = S.IsThen(schema) ? schema.then : true
-  const elseSchema = S.IsElse(schema) ? schema.else : true
-  return CheckSchema(context, schema.if, value) 
-    ? CheckSchema(context, thenSchema, value) 
-    : CheckSchema(context, elseSchema, value)
+export function CheckIf(stack: Stack, context: CheckContext, schema: Schema.XIf, value: unknown): boolean {
+  const thenSchema = Schema.IsThen(schema) ? schema.then : true
+  const elseSchema = Schema.IsElse(schema) ? schema.else : true
+  return CheckSchema(stack, context, schema.if, value) 
+    ? CheckSchema(stack, context, thenSchema, value) 
+    : CheckSchema(stack, context, elseSchema, value)
 }
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorIf(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XIf, value: unknown): boolean {
-  const thenSchema = S.IsThen(schema) ? schema.then : true
-  const elseSchema = S.IsElse(schema) ? schema.else : true
-  const trueContext = new AccumulatedErrorContext(context.GetContext(), context.GetSchema())
-  const isIf = ErrorSchema(trueContext, `${schemaPath}/if`, instancePath, schema.if, value)
-    ? ErrorSchema(trueContext, `${schemaPath}/then`, instancePath, thenSchema, value) || context.AddError({
+export function ErrorIf(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XIf, value: unknown): boolean {
+  const thenSchema = Schema.IsThen(schema) ? schema.then : true
+  const elseSchema = Schema.IsElse(schema) ? schema.else : true
+  const trueContext = new AccumulatedErrorContext()
+  const isIf = ErrorSchema(stack, trueContext, `${schemaPath}/if`, instancePath, schema.if, value)
+    ? ErrorSchema(stack, trueContext, `${schemaPath}/then`, instancePath, thenSchema, value) || context.AddError({
       keyword: 'if',
       schemaPath,
       instancePath,
       params: { failingKeyword: 'then' },
     })
-    : ErrorSchema(context, `${schemaPath}/else`, instancePath, elseSchema, value) || context.AddError({
+    : ErrorSchema(stack, context, `${schemaPath}/else`, instancePath, elseSchema, value) || context.AddError({
       keyword: 'if',
       schemaPath,
       instancePath,

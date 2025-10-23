@@ -28,27 +28,28 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import * as S from '../types/index.ts'
-import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
+import * as Schema from '../types/index.ts'
+import { Stack } from './_stack.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
+import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildExclusiveMaximum(context: BuildContext, schema: S.XExclusiveMaximum, value: string): string {
+export function BuildExclusiveMaximum(stack: Stack, context: BuildContext, schema: Schema.XExclusiveMaximum, value: string): string {
   return E.IsLessThan(value, E.Constant(schema.exclusiveMaximum))
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckExclusiveMaximum(context: CheckContext, schema: S.XExclusiveMaximum, value: number | bigint): boolean {
+export function CheckExclusiveMaximum(stack: Stack, context: CheckContext, schema: Schema.XExclusiveMaximum, value: number | bigint): boolean {
   return G.IsLessThan(value, schema.exclusiveMaximum)
 }
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorExclusiveMaximum(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XExclusiveMaximum, value: number | bigint): boolean {
-  return CheckExclusiveMaximum(context, schema, value) || context.AddError({
+export function ErrorExclusiveMaximum(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XExclusiveMaximum, value: number | bigint): boolean {
+  return CheckExclusiveMaximum(stack, context, schema, value) || context.AddError({
     keyword: 'exclusiveMaximum',
     schemaPath,
     instancePath,

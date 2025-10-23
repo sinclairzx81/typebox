@@ -30,26 +30,27 @@ THE SOFTWARE.
 
 import * as S from '../types/index.ts'
 import * as V from './_externals.ts'
-import { EmitGuard as E, Guard as G } from '../../guard/index.ts'
+import { Stack } from './_stack.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
+import { EmitGuard as E, Guard as G } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildRefine(context: BuildContext, schema: S.XRefine, value: string): string {
-  const refinements = V.CreateExternalVariable(schema['~refine'].map((refinement) => refinement))
+export function BuildRefine(stack: Stack, context: BuildContext, schema: S.XRefine, value: string): string {
+  const refinements = V.CreateVariable(schema['~refine'].map((refinement) => refinement))
   return E.Every(refinements, E.Constant(0), ['refinement', '_'], E.Call(E.Member('refinement', 'refine'), [value]))
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckRefine(context: CheckContext, schema: S.XRefine, value: unknown): boolean {
+export function CheckRefine(stack: Stack, context: CheckContext, schema: S.XRefine, value: unknown): boolean {
   return G.Every(schema['~refine'], 0, (refinement, _) => refinement.refine(value))
 }
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorRefine(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XRefine, value: unknown): boolean {
+export function ErrorRefine(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XRefine, value: unknown): boolean {
   return G.EveryAll(schema['~refine'], 0, (refinement, index) => {
     return refinement.refine(value) || context.AddError({
       keyword: '~refine',

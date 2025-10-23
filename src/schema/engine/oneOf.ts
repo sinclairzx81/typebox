@@ -28,50 +28,51 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import * as S from '../types/index.ts'
-import { EmitGuard as E, Guard as G } from '../../guard/index.ts'
+import * as Schema from '../types/index.ts'
+import { Stack } from './_stack.ts'
 import { BuildContext, CheckContext, ErrorContext, AccumulatedErrorContext } from './_context.ts'
-import { BuildSchema, CheckSchema, ErrorSchema } from './schema.ts'
 import { Reducer } from './_reducer.ts'
+import { EmitGuard as E, Guard as G } from '../../guard/index.ts'
+import { BuildSchema, CheckSchema, ErrorSchema } from './schema.ts'
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-function BuildOneOfUnevaluated(context: BuildContext, schema: S.XOneOf, value: string): string {
-  return Reducer(context, schema.oneOf, value, E.IsEqual(E.Member('results', 'length'), E.Constant(1)))
+function BuildOneOfUnevaluated(stack: Stack, context: BuildContext, schema: Schema.XOneOf, value: string): string {
+  return Reducer(stack, context, schema.oneOf, value, E.IsEqual(E.Member('results', 'length'), E.Constant(1)))
 }
-function BuildOneOfFast(context: BuildContext, schema: S.XOneOf, value: string): string {
-  const results = E.ArrayLiteral(schema.oneOf.map((schema) => BuildSchema(context, schema, value)))
+function BuildOneOfFast(stack: Stack, context: BuildContext, schema: Schema.XOneOf, value: string): string {
+  const results = E.ArrayLiteral(schema.oneOf.map((schema) => BuildSchema(stack, context, schema, value)))
   const count = E.Call(E.Member(results, 'reduce'), [
     E.ArrowFunction(['count', 'result'], E.Ternary(E.IsEqual('result', E.Constant(true)), E.PrefixIncrement('count'), 'count')),
     E.Constant(0),
   ])
   return E.IsEqual(count, E.Constant(1))
 }
-export function BuildOneOf(context: BuildContext, schema: S.XOneOf, value: string): string {
-  return context.UseUnevaluated() ? BuildOneOfUnevaluated(context, schema, value) : BuildOneOfFast(context, schema, value)
+export function BuildOneOf(stack: Stack, context: BuildContext, schema: Schema.XOneOf, value: string): string {
+  return context.UseUnevaluated() ? BuildOneOfUnevaluated(stack, context, schema, value) : BuildOneOfFast(stack, context, schema, value)
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckOneOf(context: CheckContext, schema: S.XOneOf, value: unknown): boolean {
+export function CheckOneOf(stack: Stack, context: CheckContext, schema: Schema.XOneOf, value: unknown): boolean {
   const passedContexts = schema.oneOf.reduce<CheckContext[]>((result, schema) => {
-    const nextContext = context.Clone()
-    return CheckSchema(nextContext, schema, value) ? [...result, nextContext] : result
+    const nextContext = new CheckContext()
+    return CheckSchema(stack, nextContext, schema, value) ? [...result, nextContext] : result
   }, [])
   return G.IsEqual(passedContexts.length, 1) && context.Merge(passedContexts)
 }
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorOneOf(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XOneOf, value: unknown): boolean {
+export function ErrorOneOf(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XOneOf, value: unknown): boolean {
   const failedContexts: AccumulatedErrorContext[] = []
   const passingSchemas: number[] = []
 
   const passedContexts = schema.oneOf.reduce<AccumulatedErrorContext[]>((result, schema, index) => {
-    const nextContext = new AccumulatedErrorContext(context.GetContext(), context.GetSchema())
+    const nextContext = new AccumulatedErrorContext()
     const nextSchemaPath = `${schemaPath}/oneOf/${index}`
-    const isSchema = ErrorSchema(nextContext, nextSchemaPath, instancePath, schema, value)
+    const isSchema = ErrorSchema(stack, nextContext, nextSchemaPath, instancePath, schema, value)
     if (isSchema) passingSchemas.push(index)
     if (!isSchema) failedContexts.push(nextContext)
     return isSchema ? [...result, nextContext] : result

@@ -1,5 +1,3 @@
-// deno-fmt-ignore-file
-
 import { Assert } from 'test'
 import * as Type from 'typebox'
 import Guard from 'typebox/guard'
@@ -11,8 +9,7 @@ Test('Should not guard Object', () => {
   Assert.IsFalse(Type.IsObject(T))
 })
 Test('Should Create Object 1', () => {
-  const T: Type.TObject<{ x: Type.TNull }> 
-    = Type.Object({ x: Type.Null() })
+  const T: Type.TObject<{ x: Type.TNull }> = Type.Object({ x: Type.Null() })
   Assert.IsTrue(Type.IsObject(T))
   Assert.IsFalse(Type.IsReadonly(T.properties.x))
   Assert.IsFalse(Type.IsOptional(T.properties.x))
@@ -21,8 +18,7 @@ Test('Should Create Object 1', () => {
   Assert.IsEqual(T.required, ['x'])
 })
 Test('Should Create Object with Optional', () => {
-  const T: Type.TObject<{ x: Type.TOptional<Type.TNull> }> 
-    = Type.Object({ x: Type.Optional(Type.Null()) })
+  const T: Type.TObject<{ x: Type.TOptional<Type.TNull> }> = Type.Object({ x: Type.Optional(Type.Null()) })
   Assert.IsTrue(Type.IsObject(T))
   Assert.IsFalse(Type.IsReadonly(T.properties.x))
   Assert.IsTrue(Type.IsOptional(T.properties.x))
@@ -30,8 +26,7 @@ Test('Should Create Object with Optional', () => {
   Assert.IsFalse(Guard.HasPropertyKey(T, 'required'))
 })
 Test('Should Create Object with Readonly', () => {
-  const T: Type.TObject<{ x: Type.TReadonly<Type.TNull> }> 
-    = Type.Object({ x: Type.Readonly(Type.Null()) })
+  const T: Type.TObject<{ x: Type.TReadonly<Type.TNull> }> = Type.Object({ x: Type.Readonly(Type.Null()) })
   Assert.IsTrue(Type.IsObject(T))
   Assert.IsTrue(Type.IsReadonly(T.properties.x))
   Assert.IsFalse(Type.IsOptional(T.properties.x))
@@ -40,7 +35,7 @@ Test('Should Create Object with Readonly', () => {
   Assert.IsEqual(T.required, ['x'])
 })
 Test('Should Create Object with ReadonlyOptional', () => {
-  const T: Type.TObject<{ 
+  const T: Type.TObject<{
     x: Type.TReadonly<Type.TOptional<Type.TNull>>
   }> = Type.Object({ x: Type.Readonly(Type.Optional(Type.Null())) })
   Assert.IsTrue(Type.IsObject(T))

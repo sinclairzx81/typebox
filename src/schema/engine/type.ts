@@ -28,14 +28,15 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import * as S from '../types/index.ts'
-import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
+import * as Schema from '../types/index.ts'
+import { Stack } from './_stack.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
+import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
 // TypeName
 // ------------------------------------------------------------------
-function BuildTypeName(context: BuildContext, type: string, value: string): string {
+function BuildTypeName(stack: Stack, context: BuildContext, type: string, value: string): string {
   return (
     // jsonschema
     G.IsEqual(type, 'object') ? E.IsObjectNotArray(value) :
@@ -57,7 +58,7 @@ function BuildTypeName(context: BuildContext, type: string, value: string): stri
     E.Constant(true)
   )
 }
-function CheckTypeName(context: CheckContext, type: string, schema: S.XSchemaObject, value: unknown): boolean {
+function CheckTypeName(stack: Stack, context: CheckContext, type: string, schema: Schema.XSchemaObject, value: unknown): boolean {
   return (
     // jsonschema
     G.IsEqual(type, 'object') ? G.IsObjectNotArray(value) :
@@ -82,23 +83,23 @@ function CheckTypeName(context: CheckContext, type: string, schema: S.XSchemaObj
 // ------------------------------------------------------------------
 // TypeNames
 // ------------------------------------------------------------------
-function BuildTypeNames(context: BuildContext, typenames: string[], value: string): string {
-  return E.ReduceOr(typenames.map(type => BuildTypeName(context, type, value)))
+function BuildTypeNames(stack: Stack, context: BuildContext, typenames: string[], value: string): string {
+  return E.ReduceOr(typenames.map(type => BuildTypeName(stack, context, type, value)))
 }
-function CheckTypeNames(context: CheckContext, types: string[], schema: S.XSchemaObject, value: unknown): boolean {
-  return types.some(type => CheckTypeName(context, type, schema, value))
+function CheckTypeNames(stack: Stack, context: CheckContext, types: string[], schema: Schema.XSchemaObject, value: unknown): boolean {
+  return types.some(type => CheckTypeName(stack, context, type, schema, value))
 }
 // ------------------------------------------------------------------
 // Type
 // ------------------------------------------------------------------
-export function BuildType(context: BuildContext, schema: S.XType, value: string): string {
-  return G.IsArray(schema.type) ? BuildTypeNames(context, schema.type, value) : BuildTypeName(context, schema.type, value)
+export function BuildType(stack: Stack, context: BuildContext, schema: Schema.XType, value: string): string {
+  return G.IsArray(schema.type) ? BuildTypeNames(stack, context, schema.type, value) : BuildTypeName(stack, context, schema.type, value)
 }
-export function CheckType(context: CheckContext, schema: S.XType, value: unknown): boolean {
-  return G.IsArray(schema.type) ? CheckTypeNames(context, schema.type, schema, value) : CheckTypeName(context, schema.type, schema, value)
+export function CheckType(stack: Stack, context: CheckContext, schema: Schema.XType, value: unknown): boolean {
+  return G.IsArray(schema.type) ? CheckTypeNames(stack, context, schema.type, schema, value) : CheckTypeName(stack, context, schema.type, schema, value)
 }
-export function ErrorType(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XType, value: unknown): boolean {
-  const isType = G.IsArray(schema.type) ? CheckTypeNames(context, schema.type, schema, value) : CheckTypeName(context, schema.type, schema, value)
+export function ErrorType(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XType, value: unknown): boolean {
+  const isType = G.IsArray(schema.type) ? CheckTypeNames(stack, context, schema.type, schema, value) : CheckTypeName(stack, context, schema.type, schema, value)
   return isType || context.AddError({
     keyword: 'type',
     schemaPath,
