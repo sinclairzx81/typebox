@@ -36,7 +36,7 @@ import { Guard } from '../guard/index.ts'
 
 import { type TLocalizedValidationError } from '../error/index.ts'
 import { type XSchema } from './types/index.ts'
-import { ErrorSchema, ErrorContext } from './engine/index.ts'
+import { Stack, ErrorSchema, ErrorContext } from './engine/index.ts'
 
 /** Checks a value and returns validation errors */
 export function Errors(schema: XSchema, value: unknown): [boolean, TLocalizedValidationError[]]
@@ -51,10 +51,10 @@ export function Errors(...args: unknown[]): [boolean, TLocalizedValidationError[
   const settings = Settings.Get()
   const locale = LocaleGet()
   const errors: TLocalizedValidationError[] = []
-  const errorContext = new ErrorContext(context, schema, error => {
+  const errorContext = new ErrorContext(error => {
     if(Guard.IsGreaterEqualThan(errors.length, settings.maxErrors)) return
     return errors.push({ ...error, message: locale(error) })
   }) 
-  const result = ErrorSchema(errorContext, '#', '', schema, value)
+  const result = ErrorSchema(new Stack(context, schema), errorContext, '#', '', schema, value)
   return [result, errors]
 }

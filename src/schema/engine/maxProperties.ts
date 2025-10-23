@@ -29,26 +29,27 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import * as S from '../types/index.ts'
-import { EmitGuard as E, Guard as G } from '../../guard/index.ts'
+import { Stack } from './_stack.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
+import { EmitGuard as E, Guard as G } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildMaxProperties(context: BuildContext, schema: S.XMaxProperties, value: string): string {
+export function BuildMaxProperties(stack: Stack, context: BuildContext, schema: S.XMaxProperties, value: string): string {
   return E.IsLessEqualThan(E.Member(E.Keys(value), 'length'), E.Constant(schema.maxProperties))
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckMaxProperties(context: CheckContext, schema: S.XMaxProperties, value: Record<PropertyKey, unknown>): boolean {
+export function CheckMaxProperties(stack: Stack, context: CheckContext, schema: S.XMaxProperties, value: Record<PropertyKey, unknown>): boolean {
   return G.IsLessEqualThan(G.Keys(value).length, schema.maxProperties)
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function ErrorMaxProperties(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XMaxProperties, value: Record<PropertyKey, unknown>): boolean {
-  return CheckMaxProperties(context, schema, value) || context.AddError({
+export function ErrorMaxProperties(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XMaxProperties, value: Record<PropertyKey, unknown>): boolean {
+  return CheckMaxProperties(stack, context, schema, value) || context.AddError({
     keyword: 'maxProperties',
     schemaPath,
     instancePath,

@@ -60,23 +60,14 @@ export function HasUnevaluated(context: Record<PropertyKey, unknown>, schema: un
 // BaseContext
 // ------------------------------------------------------------------
 export class BaseContext {
-  constructor(
-    protected readonly context: Record<PropertyKey, S.XSchema>,
-    protected readonly schema: S.XSchema,
-  ) { }
-  public GetContext(): Record<PropertyKey, object | boolean> {
-    return this.context
-  }
-  public GetSchema(): object | boolean {
-    return this.schema
-  }
+
 }
 // ------------------------------------------------------------------
 // BuildContext
 // ------------------------------------------------------------------
 export class BuildContext extends BaseContext {
-  constructor(context: Record<PropertyKey, S.XSchema>, schema: S.XSchema, private readonly hasUnevaluated: boolean) { 
-    super(context, schema)
+  constructor(private readonly hasUnevaluated: boolean) { 
+    super()
   }
   public UseUnevaluated(): boolean {
     return this.hasUnevaluated
@@ -86,9 +77,6 @@ export class BuildContext extends BaseContext {
   }
   public AddKey(key: string): string {
     return E.Call(E.Member('context', 'AddKey'), [key])
-  }
-  public Clone(): string {
-    return E.Call(E.Member('context', 'Clone'), [])
   }
   public Merge(results: string): string {
     return E.Call(E.Member('context', 'Merge'), [results])
@@ -100,8 +88,8 @@ export class BuildContext extends BaseContext {
 export class CheckContext extends BaseContext {
   private readonly indices: Set<number>
   private readonly keys: Set<string>
-  constructor(context: Record<PropertyKey, S.XSchema>, schema: S.XSchema) {
-    super(context, schema)
+  constructor() {
+    super()
     this.indices = new Set()
     this.keys = new Set()
   }
@@ -119,9 +107,6 @@ export class CheckContext extends BaseContext {
   public GetKeys(): Set<string> {
     return this.keys
   }
-  public Clone() {
-    return new CheckContext(this.context, this.schema)
-  }
   public Merge(results: CheckContext[]): true {
     for (const context of results) {
       context.indices.forEach(value => this.indices.add(value))
@@ -135,8 +120,8 @@ export class CheckContext extends BaseContext {
 // ------------------------------------------------------------------
 export type ErrorContextCallback = (error: TValidationError) => unknown
 export class ErrorContext extends CheckContext {
-  constructor(context: Record<PropertyKey, S.XSchema>, schema: S.XSchema, private readonly callback: ErrorContextCallback) {
-    super(context, schema)
+  constructor(private readonly callback: ErrorContextCallback) {
+    super()
   }
   public AddError(error: TValidationError): false {
     this.callback(error)
@@ -148,8 +133,8 @@ export class ErrorContext extends CheckContext {
 // ------------------------------------------------------------------
 export class AccumulatedErrorContext extends ErrorContext {
   private readonly errors: TValidationError[]
-  constructor(context: Record<PropertyKey, S.XSchema>, schema: S.XSchema) {
-    super(context, schema, error => this.errors.push(error))
+  constructor() {
+    super(error => this.errors.push(error))
     this.errors = []
   }
   public override AddError(error: TValidationError): false {

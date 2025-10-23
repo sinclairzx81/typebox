@@ -59,8 +59,9 @@ function CreateEvaluatedCheck(build: BuildResult, code: string): CheckFunction {
 // CreateDynamicCheck
 // ------------------------------------------------------------------
 function CreateDynamicCheck(build: BuildResult): CheckFunction {
-  const context = new Engine.CheckContext(build.Context(), build.Schema())
-  return (value: unknown) => Engine.CheckSchema(context, build.Schema(), value)
+  const stack = new Engine.Stack(build.Context(), build.Schema())
+  const context = new Engine.CheckContext()
+  return (value: unknown) => Engine.CheckSchema(stack, context, build.Schema(), value)
 }
 // ------------------------------------------------------------------
 // CreateCheck
@@ -141,8 +142,9 @@ export function Build(...args: unknown[]): BuildResult {
   })
   Engine.ResetExternal()
   Engine.ResetFunctions()
-  const build = new Engine.BuildContext(context, schema, Engine.HasUnevaluated(context, schema))
-  const call = Engine.CreateFunction(build, schema, 'value')
+  const stack = new Engine.Stack(context, schema)
+  const build = new Engine.BuildContext(Engine.HasUnevaluated(context, schema))
+  const call = Engine.CreateFunction(stack, build, schema, 'value')
   const functions = Engine.GetFunctions()
   const externals = Engine.GetExternal()
   return new BuildResult(context, schema, externals, functions, call, build.UseUnevaluated())

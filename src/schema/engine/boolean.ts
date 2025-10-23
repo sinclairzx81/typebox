@@ -28,26 +28,27 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { EmitGuard as E } from '../../guard/index.ts'
+import { Stack } from './_stack.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
+import { EmitGuard as E } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildBooleanSchema(context: BuildContext, schema: boolean, value: string): string {
+export function BuildBooleanSchema(stack: Stack, context: BuildContext, schema: boolean, value: string): string {
   return schema ? E.Constant(true) : E.Constant(false)
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckBooleanSchema(context: CheckContext, schema: boolean, value: unknown): boolean {
+export function CheckBooleanSchema(stack: Stack, context: CheckContext, schema: boolean, value: unknown): boolean {
   return schema
 }
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorBooleanSchema(context: ErrorContext, schemaPath: string, instancePath: string, schema: boolean, value: unknown): boolean {
-  return CheckBooleanSchema(context, schema, value) || context.AddError({
+export function ErrorBooleanSchema(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: boolean, value: unknown): boolean {
+  return CheckBooleanSchema(stack, context, schema, value) || context.AddError({
     keyword: 'boolean',
     schemaPath,
     instancePath,

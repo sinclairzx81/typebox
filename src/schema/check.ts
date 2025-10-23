@@ -30,7 +30,7 @@ THE SOFTWARE.
 // deno-lint-ignore-file
 
 import { Arguments } from '../system/arguments/index.ts'
-import { CheckSchema, CheckContext } from './engine/index.ts'
+import { Stack, CheckSchema, CheckContext } from './engine/index.ts'
 import { XSchema } from './types/index.ts'
 
 // ------------------------------------------------------------------
@@ -46,5 +46,5 @@ export function Check(...args: unknown[]): boolean {
     3: (context, schema, value) => [context, schema, value],
     2: (schema, value) => [{}, schema, value]
   })
-  return CheckSchema(new CheckContext(context, schema), schema, value)
+  return CheckSchema(new Stack(context, schema), new CheckContext(), schema, value)
 }

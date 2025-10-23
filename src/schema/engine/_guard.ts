@@ -30,25 +30,26 @@ THE SOFTWARE.
 
 import * as S from '../types/index.ts'
 import * as V from './_externals.ts'
-import { EmitGuard as E } from '../../guard/index.ts'
+import { Stack } from './_stack.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
+import { EmitGuard as E } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildGuard(context: BuildContext, schema: S.XGuard, value: string): string {
+export function BuildGuard(stack: Stack, context: BuildContext, schema: S.XGuard, value: string): string {
   return E.Call(E.Member(E.Member(V.CreateExternalVariable(schema), '~guard'), 'check'), [value])
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckGuard(context: CheckContext, schema: S.XGuard, value: unknown): boolean {
+export function CheckGuard(stack: Stack, context: CheckContext, schema: S.XGuard, value: unknown): boolean {
   return schema['~guard'].check(value)
 }
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorGuard(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XGuard, value: unknown): boolean {
+export function ErrorGuard(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XGuard, value: unknown): boolean {
   return schema['~guard'].check(value) || context.AddError({
     keyword: '~guard',
     schemaPath,

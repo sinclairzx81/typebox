@@ -28,10 +28,11 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Hashing } from '../../system/hashing/index.ts'
 import * as S from '../types/index.ts'
-import { EmitGuard as E, Guard as G } from '../../guard/index.ts'
+import { Hashing } from '../../system/hashing/index.ts'
+import { Stack } from './_stack.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
+import { EmitGuard as E, Guard as G } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
 // Valid
@@ -42,7 +43,7 @@ function IsValid(schema: S.XUniqueItems): schema is S.XUniqueItems & { uniqueIte
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildUniqueItems(context: BuildContext, schema: S.XUniqueItems, value: string): string {
+export function BuildUniqueItems(stack: Stack, context: BuildContext, schema: S.XUniqueItems, value: string): string {
   if (!IsValid(schema)) return E.Constant(true)
 
   const set = E.Member(E.New('Set', [E.Call(E.Member(value, 'map'), [E.Member('Hashing', 'Hash')])]), 'size')
@@ -52,7 +53,7 @@ export function BuildUniqueItems(context: BuildContext, schema: S.XUniqueItems, 
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckUniqueItems(context: CheckContext, schema: S.XUniqueItems, value: unknown[]): boolean {
+export function CheckUniqueItems(stack: Stack, context: CheckContext, schema: S.XUniqueItems, value: unknown[]): boolean {
   if (!IsValid(schema)) return true
   const set = new Set(value.map(Hashing.Hash)).size
   const isLength = value.length
@@ -61,7 +62,7 @@ export function CheckUniqueItems(context: CheckContext, schema: S.XUniqueItems, 
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorUniqueItems(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XUniqueItems, value: unknown[]): boolean {
+export function ErrorUniqueItems(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XUniqueItems, value: unknown[]): boolean {
   if (!IsValid(schema)) return true
   const set = new Set<string>()
   const duplicateItems = value.reduce<number[]>((result, value, index) => {

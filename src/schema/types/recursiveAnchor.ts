@@ -47,3 +47,10 @@ export function IsRecursiveAnchor(schema: XSchemaObject): schema is XRecursiveAn
   return Guard.HasPropertyKey(schema, '$recursiveAnchor') 
     && Guard.IsBoolean(schema.$recursiveAnchor)
 }
+/** 
+ * Returns true if the schema contains a valid $recursiveAnchor property that is true
+ */
+export function IsRecursiveAnchorTrue(schema: XSchemaObject): schema is XRecursiveAnchor {
+  return IsRecursiveAnchor(schema) 
+    && Guard.IsEqual(schema.$recursiveAnchor, true)
+}

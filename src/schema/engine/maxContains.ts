@@ -29,8 +29,10 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import * as S from '../types/index.ts'
-import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
+import { Stack } from './_stack.ts'
+import { Unique } from './_unique.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
+import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 import { BuildSchema, CheckSchema } from './schema.ts'
 
 // ------------------------------------------------------------------
@@ -39,32 +41,31 @@ import { BuildSchema, CheckSchema } from './schema.ts'
 function IsValid(schema: S.XMaxContains): schema is S.XMaxContains & S.XContains {
   return S.IsContains(schema)
 }
-
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildMaxContains(context: BuildContext, schema: S.XMaxContains, value: string): string {
+export function BuildMaxContains(stack: Stack, context: BuildContext, schema: S.XMaxContains, value: string): string {
   if (!IsValid(schema)) return E.Constant(true)
-
-  const count = E.Call(E.Member(value, 'reduce'), [E.ArrowFunction(['result', 'value'], E.Ternary(BuildSchema(context, schema.contains, 'value'), E.PrefixIncrement('result'), 'result')), E.Constant(0)])
+  const [result, item] = [Unique(), Unique()]
+  const count = E.Call(E.Member(value, 'reduce'), [E.ArrowFunction([result, item], E.Ternary(BuildSchema(stack, context, schema.contains, item), E.PrefixIncrement(result), result)), E.Constant(0)])
   return E.IsLessEqualThan(count, E.Constant(schema.maxContains))
 }
 
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckMaxContains(context: CheckContext, schema: S.XMaxContains, value: unknown[]): boolean {
+export function CheckMaxContains(stack: Stack, context: CheckContext, schema: S.XMaxContains, value: unknown[]): boolean {
   if (!IsValid(schema)) return true
 
-  const count = value.reduce<number>((result, value) => CheckSchema(context, schema.contains, value) ? ++result : result, 0)
+  const count = value.reduce<number>((result, item) => CheckSchema(stack, context, schema.contains, item) ? ++result : result, 0)
   return G.IsLessEqualThan(count, schema.maxContains)
 }
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorMaxContains(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XMaxContains, value: unknown[]): boolean {
+export function ErrorMaxContains(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XMaxContains, value: unknown[]): boolean {
   const minContains = S.IsMinContains(schema) ? schema.minContains : 1
-  return CheckMaxContains(context, schema, value) || context.AddError({
+  return CheckMaxContains(stack, context, schema, value) || context.AddError({
     keyword: 'contains',
     schemaPath,
     instancePath,
