@@ -86,7 +86,7 @@ Test('Should Indices 20', () => {
 //-----------------------------------------------
 // Get
 //-----------------------------------------------
-Test('Should get array #1', () => {
+Test('Should Get 1', () => {
   const V = [0, 1, 2, 3]
   Assert.IsEqual(Schema.Pointer.Get(V, ''), [0, 1, 2, 3])
   Assert.IsEqual(Schema.Pointer.Get(V, '/'), undefined)
@@ -95,8 +95,7 @@ Test('Should get array #1', () => {
   Assert.IsEqual(Schema.Pointer.Get(V, '/2'), 2)
   Assert.IsEqual(Schema.Pointer.Get(V, '/3'), 3)
 })
-
-Test('Should get array #2', () => {
+Test('Should Get 2', () => {
   const V = [{ x: 0 }, { x: 1 }, { x: 2 }, { x: 3 }]
   Assert.IsEqual(Schema.Pointer.Get(V, ''), [{ x: 0 }, { x: 1 }, { x: 2 }, { x: 3 }])
   Assert.IsEqual(Schema.Pointer.Get(V, '/'), undefined)
@@ -112,55 +111,61 @@ Test('Should get array #2', () => {
 //-----------------------------------------------
 // Delete
 //-----------------------------------------------
-Test('Should Delete undefined property', () => {
+Test('Should Delete 1', () => {
   const V = { x: {} }
   const R = Schema.Pointer.Delete(V, '/x/x')
   Assert.IsEqual(R, { x: {} })
 })
-Test('Should Delete property', () => {
+Test('Should Delete 2', () => {
   const V = { x: { x: 1 } }
   const R = Schema.Pointer.Delete(V, '/x/x')
   Assert.IsEqual(R, { x: {} })
 })
+Test('Should Delete 3', () => {
+  const V = [1, 2, 3]
+  const R = Schema.Pointer.Delete(V, '/1')
+  Assert.IsEqual(R, [1, 3])
+})
+Test('Should Delete 3', () => {
+  const V = [1, 2, 3]
+  const R = Schema.Pointer.Delete(V, '/100')
+  Assert.IsEqual(R, [1, 2, 3])
+})
 //-----------------------------------------------
 // Has
 //-----------------------------------------------
-Test('Should return has true for undefined', () => {
+Test('Should Has 1', () => {
   const V: any = undefined
   Assert.IsEqual(Schema.Pointer.Has(V, ''), true)
 })
-
-Test('Should return has true for null', () => {
+Test('Should Has 2', () => {
   const V: any = null
   Assert.IsEqual(Schema.Pointer.Has(V, ''), true)
 })
-Test('Should return has true for object', () => {
+Test('Should Has 3', () => {
   const V = {}
   Assert.IsEqual(Schema.Pointer.Has(V, ''), true)
 })
-Test('Should return true for deep nested property', () => {
+Test('Should Has 4', () => {
   const V = { x: { y: { z: 1 } } }
   Assert.IsEqual(Schema.Pointer.Has(V, '/x/y/z'), true)
 })
-Test('Should return false for undefined for deep nested property', () => {
+Test('Should Has 5', () => {
   const V = { x: { y: {} } }
   Assert.IsEqual(Schema.Pointer.Has(V, '/x/y/z'), false)
 })
 //-----------------------------------------------
-// Set
+// Throw
 //-----------------------------------------------
-Test('Should throw when setting root', () => {
+Test('Should throw 1', () => {
   const V = {}
   Assert.Throws(() => Schema.Pointer.Set(V, '', { x: 1 }))
 })
-//-----------------------------------------------
-// Throw
-//-----------------------------------------------
-Test('Should throw when deleting root', () => {
+Test('Should throw 2', () => {
   const V = {}
   Assert.Throws(() => Schema.Pointer.Delete(V, ''))
 })
-Test('Should throw when setting non-object sub value', () => {
+Test('Should throw 3', () => {
   const V = { x: 1 }
   Assert.Throws(() => Schema.Pointer.Set(V, '/x/y', 3))
 })

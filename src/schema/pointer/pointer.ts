@@ -31,7 +31,7 @@ THE SOFTWARE.
 import { Guard } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
-// Indices
+// Asserts
 // ------------------------------------------------------------------
 function AssertNotRoot(indices: string[]) {
   if(indices.length === 0) throw Error('Cannot set root')
@@ -42,6 +42,9 @@ function AssertCanSet(value: unknown): asserts value is Record<string, unknown> 
 // ------------------------------------------------------------------
 // Indices
 // ------------------------------------------------------------------
+function IsNumericIndex(index: string): boolean {
+  return /^(0|[1-9]\d*)$/.test(index)
+}
 function TakeIndexRight(indices: string[]): [string[], string] {
   return [
     indices.slice(0, indices.length - 1),
@@ -109,6 +112,10 @@ export function Delete(value: unknown, pointer: string): unknown {
   const [head, index] = TakeIndexRight(indices)
   const parent = GetIndices(head, value)
   AssertCanSet(parent)
-  delete parent[index]
+  if(Guard.IsArray(parent) && IsNumericIndex(index)) {
+    parent.splice(+index, 1)
+  } else {
+    delete parent[index]
+  }
   return value
 }
