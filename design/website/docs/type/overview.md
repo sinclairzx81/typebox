@@ -30,7 +30,7 @@ type T = Type.Static<typeof T>                      // type T = {
                                                     // }
 ```
 
-Constraints and metadata can be passed on the last argument of any given type.
+Options and constraints can be passed on the last argument of any given type.
 
 ```typescript
 const T = Type.Number({                            // const T = {
@@ -43,14 +43,4 @@ const S = Type.String({                            // const S = {
   format: 'email'                                  //   type: 'string',
 })                                                 //   format: 'email'
                                                    // }
-
-const M = Type.Object({                            // const M = {
-  id: Type.String(),                               //   type: 'object',
-  message: Type.String()                           //   required: ['id', 'message'],
-}, {                                               //   properties: {
-  description: 'A protocol message'                //     id: { type: 'string' },
-})                                                 //     message: { type: 'string' }
-                                                   //   },
-                                                   //   description: 'A protocol message'
-                                                   // }
-``` 
+```
