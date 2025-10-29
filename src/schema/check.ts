@@ -47,5 +47,6 @@ export function Check(...args: unknown[]): boolean {
     2: (schema, value) => [{}, schema, value]
   })
   const stack = new Engine.Stack(context, schema)
-  return Engine.CheckSchema(stack, new Engine.CheckContext(), schema, value)
+  const checkContext = new Engine.CheckContext()
+  return Engine.CheckSchema(stack, checkContext, schema, value)
 }

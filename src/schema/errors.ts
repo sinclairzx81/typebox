@@ -27,7 +27,6 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 // deno-fmt-ignore-file
-// deno-lint-ignore-file
 
 import { Arguments } from '../system/arguments/index.ts'
 import { Settings } from '../system/settings/index.ts'
@@ -51,11 +50,12 @@ export function Errors(...args: unknown[]): [boolean, TLocalizedValidationError[
   const settings = Settings.Get()
   const locale = LocaleGet()
   const errors: TLocalizedValidationError[] = []
+
+  const stack = new Engine.Stack(context, schema)
   const errorContext = new Engine.ErrorContext(error => {
     if(Guard.IsGreaterEqualThan(errors.length, settings.maxErrors)) return
     return errors.push({ ...error, message: locale(error) })
-  }) 
-  const stack = new Engine.Stack(context, schema)
+  })
   const result = Engine.ErrorSchema(stack, errorContext, '#', '', schema, value)
   return [result, errors]
 }
