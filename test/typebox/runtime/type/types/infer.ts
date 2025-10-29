@@ -1,5 +1,3 @@
-// deno-fmt-ignore-file
-
 import { Assert } from 'test'
 import * as Type from 'typebox'
 

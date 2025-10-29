@@ -28,18 +28,19 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import * as S from '../types/index.ts'
-import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
+import * as Schema from '../types/index.ts'
+import { Stack } from './_stack.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
+import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 import { BuildSchema, CheckSchema, ErrorSchema } from './schema.ts'
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildPrefixItems(context: BuildContext, schema: S.XPrefixItems, value: string): string {
+export function BuildPrefixItems(stack: Stack, context: BuildContext, schema: Schema.XPrefixItems, value: string): string {
   return E.ReduceAnd(schema.prefixItems.map((schema, index) => {
     const isLength = E.IsLessEqualThan(E.Member(value, 'length'), E.Constant(index))
-    const isSchema = BuildSchema(context, schema, `${value}[${index}]`)
+    const isSchema = BuildSchema(stack, context, schema, `${value}[${index}]`)
     const addIndex = context.AddIndex(E.Constant(index))
     const guarded = context.UseUnevaluated() ? E.And(isSchema, addIndex) : isSchema
     return E.Or(isLength, guarded)
@@ -48,20 +49,20 @@ export function BuildPrefixItems(context: BuildContext, schema: S.XPrefixItems, 
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckPrefixItems(context: CheckContext, schema: S.XPrefixItems, value: unknown[]): boolean {
+export function CheckPrefixItems(stack: Stack, context: CheckContext, schema: Schema.XPrefixItems, value: unknown[]): boolean {
   return G.IsEqual(value.length, 0) || G.Every(schema.prefixItems, 0, (schema, index) => {
     return G.IsLessEqualThan(value.length, index) 
-      || (CheckSchema(context, schema, value[index]) && context.AddIndex(index))
+      || (CheckSchema(stack, context, schema, value[index]) && context.AddIndex(index))
   })
 }
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorPrefixItems(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XPrefixItems, value: unknown[]): boolean {
+export function ErrorPrefixItems(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XPrefixItems, value: unknown[]): boolean {
   return G.IsEqual(value.length, 0) || G.EveryAll(schema.prefixItems, 0, (schema, index) => {
     const nextSchemaPath = `${schemaPath}/prefixItems/${index}`
     const nextInstancePath = `${instancePath}/${index}`
     return G.IsLessEqualThan(value.length, index) 
-      || (ErrorSchema(context, nextSchemaPath, nextInstancePath, schema, value[index]) && context.AddIndex(index))
+      || (ErrorSchema(stack, context, nextSchemaPath, nextInstancePath, schema, value[index]) && context.AddIndex(index))
   })
 }

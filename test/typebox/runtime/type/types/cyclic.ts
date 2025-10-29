@@ -1,5 +1,3 @@
-// deno-fmt-ignore-file
-
 import { Assert } from 'test'
 import * as Type from 'typebox'
 
@@ -17,14 +15,14 @@ Test('Should Cyclic 2', () => {
   Assert.IsTrue(Type.IsCyclic(T))
 })
 Test('Should Cyclic 3', () => {
-  const T = Type.Cyclic({ A: Type.String() }, 'A', { a: 1, b: 2})
+  const T = Type.Cyclic({ A: Type.String() }, 'A', { a: 1, b: 2 })
   Assert.HasPropertyKey(T, 'a')
   Assert.HasPropertyKey(T, 'b')
   Assert.IsEqual(T.a, 1)
   Assert.IsEqual(T.b, 2)
 })
 Test('Should Cyclic 4', () => {
-  const T = Type.Cyclic({ A: Type.String() }, 'A', { a: 1, b: 2})
+  const T = Type.Cyclic({ A: Type.String() }, 'A', { a: 1, b: 2 })
   const O = Type.CyclicOptions(T)
   Assert.IsFalse(Type.IsAny(O))
   Assert.HasPropertyKey(O, 'a')

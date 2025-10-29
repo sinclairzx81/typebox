@@ -1,20 +1,20 @@
 {
   "tasks": {
-    "bench": "deno run -A tasks.ts bench",          // Benchmarks
-    "build": "deno run -A tasks.ts build",          // Build Project
-    "clean": "deno run -A tasks.ts clean",          // Clean Build Targets
-    "fast": "deno run -A tasks.ts fast",            // Interactive Tests
-    "format": "deno run -A tasks.ts format",        // Formats Code
-    "local": "deno run -A tasks.ts local",          // Build Local Project
-    "metrics": "deno run -A tasks.ts metrics",      // Compression Metrics
-    "publish": "deno run -A tasks.ts publish",      // Publish Package
-    "report": "deno run -A tasks.ts report",        // Test Converage
-    "range": "deno run -A tasks.ts range",          // TypeScript Compiler Ranges
-    "start": "deno run -A tasks.ts start",          // Run Example
-    "syntax": "deno run -A tasks.ts syntax",        // Build Parsers
-    "test": "deno run -A tasks.ts test",            // Test Project
-    "turing": "deno run -A tasks.ts turing",        // Turing Test
-    "website": "deno run -A tasks.ts website"       // Website Doc Server
+    "bench": "deno run -A tasks.ts bench",           // Benchmarks
+    "build": "deno run -A tasks.ts build",           // Build Project
+    "clean": "deno run -A tasks.ts clean",           // Clean Build Targets
+    "fast": "deno run -A tasks.ts fast",             // Interactive Tests
+    "format": "deno run -A tasks.ts format",         // Formats Code
+    "local": "deno run -A tasks.ts local",           // Build Local Project
+    "metrics": "deno run -A tasks.ts metrics",       // Compression Metrics
+    "publish": "deno run -A tasks.ts publish",       // Publish Package
+    "report": "deno run -A tasks.ts report",         // Test Converage
+    "range": "deno run -A tasks.ts range",           // TypeScript Compiler Ranges
+    "start": "deno run -A tasks.ts start",           // Run Example
+    "syntax": "deno run -A tasks.ts syntax",         // Build Parsers
+    "test": "deno run -A tasks.ts test",             // Test Project
+    "turing": "deno run -A tasks.ts turing",         // Turing Test
+    "website": "deno run -A tasks.ts website"        // Website Doc Server
   },
   "imports": {
     // --------------------------------------------------------------

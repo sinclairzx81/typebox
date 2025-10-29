@@ -26,5 +26,9 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export * from './recursiveRef.ts'
-export * from './ref.ts'
+let index = 0
+
+/** Returns a Unique Variable Name */
+export function Unique(): string {
+  return `var_${index++}`
+}

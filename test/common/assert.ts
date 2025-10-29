@@ -85,3 +85,4 @@ export function IsExtendsMutual<Left extends unknown, Right extends unknown>(_ex
 type TExtendsNever<Type extends unknown> = [Type] extends [never] ? true : false
 
 export function IsExtendsNever<Type extends unknown>(_expect: TExtendsNever<Type>) {}
+ 

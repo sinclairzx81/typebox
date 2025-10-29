@@ -27,7 +27,6 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 // deno-fmt-ignore-file
-// deno-lint-ignore-file
 
 import { Arguments } from '../system/arguments/index.ts'
 import { Settings } from '../system/settings/index.ts'
@@ -35,26 +34,28 @@ import { Get as LocaleGet } from '../system/locale/_config.ts'
 import { Guard } from '../guard/index.ts'
 
 import { type TLocalizedValidationError } from '../error/index.ts'
-import { type XSchema } from './types/index.ts'
-import { ErrorSchema, ErrorContext } from './engine/index.ts'
+import * as Schema from './types/index.ts'
+import * as Engine from './engine/index.ts'
 
 /** Checks a value and returns validation errors */
-export function Errors(schema: XSchema, value: unknown): [boolean, TLocalizedValidationError[]]
+export function Errors(schema: Schema.XSchema, value: unknown): [boolean, TLocalizedValidationError[]]
 /** Checks a value and returns validation errors */
-export function Errors(context: Record<PropertyKey, XSchema>, schema: XSchema, value: unknown): [boolean, TLocalizedValidationError[]]
+export function Errors(context: Record<PropertyKey, Schema.XSchema>, schema: Schema.XSchema, value: unknown): [boolean, TLocalizedValidationError[]]
 /** Checks a value and returns validation errors */
 export function Errors(...args: unknown[]): [boolean, TLocalizedValidationError[]] {
-  const [context, schema, value] = Arguments.Match<[Record<PropertyKey, XSchema>, XSchema, unknown]>(args, {
+  const [context, schema, value] = Arguments.Match<[Record<PropertyKey, Schema.XSchema>, Schema.XSchema, unknown]>(args, {
     3: (context, schema, value) => [context, schema, value],
     2: (schema, value) => [{}, schema, value]
   })
   const settings = Settings.Get()
   const locale = LocaleGet()
   const errors: TLocalizedValidationError[] = []
-  const errorContext = new ErrorContext(context, schema, error => {
+
+  const stack = new Engine.Stack(context, schema)
+  const errorContext = new Engine.ErrorContext(error => {
     if(Guard.IsGreaterEqualThan(errors.length, settings.maxErrors)) return
     return errors.push({ ...error, message: locale(error) })
-  }) 
-  const result = ErrorSchema(errorContext, '#', '', schema, value)
+  })
+  const result = Engine.ErrorSchema(stack, errorContext, '#', '', schema, value)
   return [result, errors]
 }

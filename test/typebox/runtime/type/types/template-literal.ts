@@ -1,5 +1,3 @@
-// deno-fmt-ignore-file
-
 import { Assert } from 'test'
 import * as Type from 'typebox'
 
@@ -10,21 +8,21 @@ Test('Should TemplateLiteral 1', () => {
   Assert.IsFalse(Type.IsTemplateLiteral(T))
 })
 Test('Should TemplateLiteral 2', () => {
-  const T: Type.TTemplateLiteral<"^hello(A|B)$"> = Type.TemplateLiteral([
+  const T: Type.TTemplateLiteral<'^hello(A|B)$'> = Type.TemplateLiteral([
     Type.Literal('hello'),
     Type.Union([
       Type.Literal('A'),
-      Type.Literal('B'),
+      Type.Literal('B')
     ])
   ])
   Assert.IsTrue(Type.IsTemplateLiteral(T))
 })
 Test('Should TemplateLiteral 3', () => {
-  const T: Type.TTemplateLiteral<"^hello(A|B)$"> = Type.TemplateLiteral([
+  const T: Type.TTemplateLiteral<'^hello(A|B)$'> = Type.TemplateLiteral([
     Type.Literal('hello'),
     Type.Union([
       Type.Literal('A'),
-      Type.Literal('B'),
+      Type.Literal('B')
     ])
   ], {
     a: 1,
@@ -39,36 +37,36 @@ Test('Should TemplateLiteral 3', () => {
 // Invalid Template Literal Kinds Are Never
 // ------------------------------------------------------------------
 Test('Should TemplateLiteral 5', () => {
-  const T: Type.TTemplateLiteral<"^(?!)$"> = Type.TemplateLiteral([
+  const T: Type.TTemplateLiteral<'^(?!)$'> = Type.TemplateLiteral([
     Type.Symbol(),
-    Type.Literal('A'),
+    Type.Literal('A')
   ])
   Assert.IsTrue(Type.IsTemplateLiteral(T))
-  Assert.IsEqual(T.pattern, "^(?!)$")
+  Assert.IsEqual(T.pattern, '^(?!)$')
 })
 Test('Should TemplateLiteral 6', () => {
-  const T: Type.TTemplateLiteral<"^(?!)$"> = Type.TemplateLiteral([
+  const T: Type.TTemplateLiteral<'^(?!)$'> = Type.TemplateLiteral([
     Type.Literal('A'),
-    Type.Symbol(),
+    Type.Symbol()
   ])
   Assert.IsTrue(Type.IsTemplateLiteral(T))
-  Assert.IsEqual(T.pattern, "^(?!)$")
+  Assert.IsEqual(T.pattern, '^(?!)$')
 })
 Test('Should TemplateLiteral 7', () => {
-  const T: Type.TTemplateLiteral<"^(A|(?!))$"> = Type.TemplateLiteral([
+  const T: Type.TTemplateLiteral<'^(A|(?!))$'> = Type.TemplateLiteral([
     Type.Union([
       Type.Literal('A'),
-      Type.Symbol(),
+      Type.Symbol()
     ])
   ])
   Assert.IsTrue(Type.IsTemplateLiteral(T))
-  Assert.IsEqual(T.pattern, "^(A|(?!))$")
+  Assert.IsEqual(T.pattern, '^(A|(?!))$')
 })
 // ------------------------------------------------------------------
 // Deep Union
 // ------------------------------------------------------------------
 Test('Should TemplateLiteral 7', () => {
-  const T: Type.TTemplateLiteral<"^(A|(A|(A|(A))))B$"> = Type.TemplateLiteral([
+  const T: Type.TTemplateLiteral<'^(A|(A|(A|(A))))B$'> = Type.TemplateLiteral([
     Type.Union([
       Type.Literal('A'),
       Type.Union([
@@ -76,7 +74,7 @@ Test('Should TemplateLiteral 7', () => {
         Type.Union([
           Type.Literal('A'),
           Type.Union([
-            Type.Literal('A'),
+            Type.Literal('A')
           ])
         ])
       ])
@@ -84,5 +82,5 @@ Test('Should TemplateLiteral 7', () => {
     Type.Literal('B')
   ])
   Assert.IsTrue(Type.IsTemplateLiteral(T))
-  Assert.IsEqual(T.pattern, "^(A|(A|(A|(A))))B$")
+  Assert.IsEqual(T.pattern, '^(A|(A|(A|(A))))B$')
 })

@@ -28,27 +28,28 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import * as S from '../types/index.ts'
-import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
+import * as Schema from '../types/index.ts'
+import { Stack } from './_stack.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
+import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildMaximum(context: BuildContext, schema: S.XMaximum, value: string): string {
+export function BuildMaximum(stack: Stack, context: BuildContext, schema: Schema.XMaximum, value: string): string {
   return E.IsLessEqualThan(value, E.Constant(schema.maximum))
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckMaximum(context: CheckContext, schema: S.XMaximum, value: number | bigint): boolean {
+export function CheckMaximum(stack: Stack, context: CheckContext, schema: Schema.XMaximum, value: number | bigint): boolean {
   return G.IsLessEqualThan(value, schema.maximum)
 }
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorMaximum(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XMaximum, value: number | bigint): boolean {
-  return CheckMaximum(context, schema, value) || context.AddError({
+export function ErrorMaximum(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XMaximum, value: number | bigint): boolean {
+  return CheckMaximum(stack, context, schema, value) || context.AddError({
     keyword: 'maximum',
     schemaPath,
     instancePath,

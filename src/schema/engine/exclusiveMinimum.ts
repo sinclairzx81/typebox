@@ -28,27 +28,28 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import * as S from '../types/index.ts'
-import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
+import * as Schema from '../types/index.ts'
+import { Stack } from './_stack.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
+import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildExclusiveMinimum(context: BuildContext, schema: S.XExclusiveMinimum, value: string): string {
+export function BuildExclusiveMinimum(stack: Stack, context: BuildContext, schema: Schema.XExclusiveMinimum, value: string): string {
   return E.IsGreaterThan(value, E.Constant(schema.exclusiveMinimum))
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckExclusiveMinimum(context: CheckContext, schema: S.XExclusiveMinimum, value: number | bigint): boolean {
+export function CheckExclusiveMinimum(stack: Stack, context: CheckContext, schema: Schema.XExclusiveMinimum, value: number | bigint): boolean {
   return G.IsGreaterThan(value, schema.exclusiveMinimum)
 }
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorExclusiveMinimum(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XExclusiveMinimum, value: number | bigint): boolean {
-  return CheckExclusiveMinimum(context, schema, value) || context.AddError({
+export function ErrorExclusiveMinimum(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XExclusiveMinimum, value: number | bigint): boolean {
+  return CheckExclusiveMinimum(stack, context, schema, value) || context.AddError({
     keyword: 'exclusiveMinimum',
     schemaPath,
     instancePath,

@@ -36,7 +36,7 @@ import { Guard } from '../guard/index.ts'
 import { Format } from '../format/index.ts'
 
 import * as Engine from './engine/index.ts'
-import { type XSchema } from './types/index.ts'
+import * as Schema from './types/index.ts'
 
 // ------------------------------------------------------------------
 // CreateCode
@@ -59,8 +59,9 @@ function CreateEvaluatedCheck(build: BuildResult, code: string): CheckFunction {
 // CreateDynamicCheck
 // ------------------------------------------------------------------
 function CreateDynamicCheck(build: BuildResult): CheckFunction {
-  const context = new Engine.CheckContext(build.Context(), build.Schema())
-  return (value: unknown) => Engine.CheckSchema(context, build.Schema(), value)
+  const stack = new Engine.Stack(build.Context(), build.Schema())
+  const context = new Engine.CheckContext()
+  return (value: unknown) => Engine.CheckSchema(stack, context, build.Schema(), value)
 }
 // ------------------------------------------------------------------
 // CreateCheck
@@ -88,19 +89,19 @@ export interface EvaluateResult {
 // ------------------------------------------------------------------
 export class BuildResult {
   constructor(
-    private readonly context: Record<PropertyKey, XSchema>,
-    private readonly schema: XSchema,
+    private readonly context: Record<PropertyKey, Schema.XSchema>,
+    private readonly schema: Schema.XSchema,
     private readonly external: Engine.TExternal,
     private readonly functions: string[],
     private readonly call: string,
     private readonly useUnevaluated: boolean
   ) { }
   /** Returns the Context used for this build */
-  public Context(): Record<PropertyKey, XSchema> {
+  public Context(): Record<PropertyKey, Schema.XSchema> {
     return this.context
   }
   /** Returns the Schema used for this build */
-  public Schema(): XSchema {
+  public Schema(): Schema.XSchema {
     return this.schema
   }
   /** Returns true if this build requires a Unevaluated context */
@@ -130,19 +131,20 @@ export class BuildResult {
 // Build
 // ------------------------------------------------------------------
 /** Builds a schema into a optimized runtime validator */
-export function Build(schema: XSchema): BuildResult
+export function Build(schema: Schema.XSchema): BuildResult
 /** Builds a schema into a optimized runtime validator */
-export function Build(context: Record<PropertyKey, XSchema>, schema: XSchema): BuildResult
+export function Build(context: Record<PropertyKey, Schema.XSchema>, schema: Schema.XSchema): BuildResult
 /** Builds a schema into a optimized runtime validator */
 export function Build(...args: unknown[]): BuildResult {
-  const [context, schema] = Arguments.Match<[Record<PropertyKey, XSchema>, XSchema]>(args, {
+  const [context, schema] = Arguments.Match<[Record<PropertyKey, Schema.XSchema>, Schema.XSchema]>(args, {
     2: (context, schema) => [context, schema],
     1: (schema) => [{}, schema]
   })
   Engine.ResetExternal()
   Engine.ResetFunctions()
-  const build = new Engine.BuildContext(context, schema, Engine.HasUnevaluated(context, schema))
-  const call = Engine.CreateFunction(build, schema, 'value')
+  const stack = new Engine.Stack(context, schema)
+  const build = new Engine.BuildContext(Engine.HasUnevaluated(context, schema))
+  const call = Engine.CreateFunction(stack, build, schema, 'value')
   const functions = Engine.GetFunctions()
   const externals = Engine.GetExternal()
   return new BuildResult(context, schema, externals, functions, call, build.UseUnevaluated())

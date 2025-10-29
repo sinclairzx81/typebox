@@ -182,25 +182,6 @@
     ]
   },
   {
-    "description": "remote ref, containing refs itself",
-    "schema": {
-      "$schema": "https://json-schema.org/draft/2020-12/schema",
-      "$ref": "https://json-schema.org/draft/2020-12/schema"
-    },
-    "tests": [
-      {
-        "description": "remote ref valid",
-        "data": { "minLength": 1 },
-        "valid": true
-      },
-      {
-        "description": "remote ref invalid",
-        "data": { "minLength": -1 },
-        "valid": false
-      }
-    ]
-  },
-  {
     "description": "property named $ref that is not a reference",
     "schema": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",

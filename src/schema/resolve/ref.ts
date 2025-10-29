@@ -30,89 +30,89 @@ THE SOFTWARE.
 
 import { Guard } from '../../guard/index.ts'
 import { Pointer } from '../pointer/index.ts'
-import * as S from '../types/index.ts'
+import * as Schema from '../types/index.ts'
 
 // ------------------------------------------------------------------
-// MatchId
+// Match: Id
 // ------------------------------------------------------------------
-function MatchId(value: S.XId, base: URL, ref: URL): unknown | undefined {
-  if(value.$id === ref.hash) return value
-  const absoluteId = new URL(value.$id, base.href)
+function MatchId(schema: Schema.XId, base: URL, ref: URL): Schema.XSchema | undefined {
+  if(schema.$id === ref.hash) return schema
+  const absoluteId = new URL(schema.$id, base.href)
   const absoluteRef = new URL(ref.href, base.href)
   if (Guard.IsEqual(absoluteId.pathname, absoluteRef.pathname)) {
-    return ref.hash.startsWith('#') ? MatchHash(value, base, ref) : value
+    return ref.hash.startsWith('#') ? MatchHash(schema, base, ref) : schema
   }
   return undefined
 }
 // ------------------------------------------------------------------
-// MatchAnchor
+// Match: Anchor
 // ------------------------------------------------------------------
-function MatchAnchor(value: S.XAnchor, base: URL, ref: URL): unknown | undefined {
-  const absoluteAnchor = new URL(`#${value.$anchor}`, base.href)
+function MatchAnchor(schema: Schema.XAnchor, base: URL, ref: URL): Schema.XSchema | undefined {
+  const absoluteAnchor = new URL(`#${schema.$anchor}`, base.href)
   const absoluteRef = new URL(ref.href, base.href)
-  if (Guard.IsEqual(absoluteAnchor.href, absoluteRef.href)) return value
+  if (Guard.IsEqual(absoluteAnchor.href, absoluteRef.href)) return schema
   return undefined
 }
 // ------------------------------------------------------------------
-// MatchHash
+// Match: Hash
 // ------------------------------------------------------------------
-function MatchHash(value: S.XSchemaObject, base: URL, ref: URL): unknown | undefined {
-  if(ref.href.endsWith('#')) return value
+function MatchHash(schema: Schema.XSchemaObject, base: URL, ref: URL): Schema.XSchema | undefined {
+  if(ref.href.endsWith('#')) return schema
   return ref.hash.startsWith('#')
-    ? Pointer.Get(value, decodeURIComponent(ref.hash.slice(1)))
+    ? Pointer.Get(schema, decodeURIComponent(ref.hash.slice(1))) as Schema.XSchema | undefined
     : undefined
 }
 // ------------------------------------------------------------------
 // Match
 // ------------------------------------------------------------------
-function Match(value: S.XSchemaObject, base: URL, ref: URL): unknown | undefined {
-  if (S.IsId(value)) {
-    const result = MatchId(value, base, ref)
+function Match(schema: Schema.XSchemaObject, base: URL, ref: URL): Schema.XSchema | undefined {
+  if (Schema.IsId(schema)) {
+    const result = MatchId(schema, base, ref)
     if (!Guard.IsUndefined(result)) return result
   }
-  if (S.IsAnchor(value)) {
-    const result = MatchAnchor(value, base, ref)
+  if (Schema.IsAnchor(schema)) {
+    const result = MatchAnchor(schema, base, ref)
     if (!Guard.IsUndefined(result)) return result
   }
-  return MatchHash(value, base, ref)
+  return MatchHash(schema, base, ref)
 }
 // ------------------------------------------------------------------
 // FromArray
 // ------------------------------------------------------------------
-function FromArray(value: unknown[], base: URL, ref: URL): unknown {
-  for (const item of value) {
-    const result = FromValue(item, base, ref)
-    if (!Guard.IsUndefined(result)) return result
-  }
-  return undefined
+function FromArray(schema: unknown[], base: URL, ref: URL): Schema.XSchema | undefined {
+  return schema.reduce<Schema.XSchema | undefined>((result, item) => {
+    const match = FromValue(item, base, ref)
+    return !Guard.IsUndefined(match) ? match : result
+  }, undefined)
 }
 // ------------------------------------------------------------------
 // FromObject
 // ------------------------------------------------------------------
-function FromObject(value: Record<PropertyKey, unknown>, base: URL, ref: URL): unknown {
-  for (const key of Guard.Keys(value)) {
-    const result = FromValue(value[key], base, ref)
-    if (!Guard.IsUndefined(result)) return result
-  }
-  return undefined
+function FromObject(schema: Record<PropertyKey, unknown>, base: URL, ref: URL): Schema.XSchema | undefined {
+  return Guard.Keys(schema).reduce<Schema.XSchema | undefined>((result, key) => {
+    const match = FromValue(schema[key], base, ref)
+    return !Guard.IsUndefined(match) ? match : result
+  }, undefined)
 }
 // ------------------------------------------------------------------
 // FromValue
 // ------------------------------------------------------------------
-function FromValue(value: unknown, base: URL, ref: URL): unknown {
-  const newbase = S.IsSchemaObject(value) && S.IsId(value) ? new URL(value.$id, ref.href) : base
-  if (S.IsSchemaObject(value)) {
-    const result = Match(value, newbase, ref)
+function FromValue(schema: unknown, base: URL, ref: URL): Schema.XSchema | undefined {
+  base = Schema.IsSchemaObject(schema) && Schema.IsId(schema) ? new URL(schema.$id, base.href) : base
+  if (Schema.IsSchemaObject(schema)) {
+    const result = Match(schema, base, ref)
     if (!Guard.IsUndefined(result)) return result
   }
-  if (Guard.IsArray(value)) return FromArray(value, newbase, ref)
-  if (Guard.IsObject(value)) return FromObject(value, newbase, ref)
+  if (Guard.IsArray(schema)) return FromArray(schema, base, ref)
+  if (Guard.IsObject(schema)) return FromObject(schema, base, ref)
   return undefined
 }
 // ------------------------------------------------------------------
 // Ref
 // ------------------------------------------------------------------
-export function Ref(schema: unknown, ref: string): unknown {
-  const base = new URL('', 'http://domain.com')
-  return FromValue(schema, base, new URL(ref, 'http://domain.com'))
+export function Ref(schema: Schema.XSchemaObject, ref: string): Schema.XSchema | undefined {
+  const defaultBase = new URL('memory://root')
+  const initialBase = Schema.IsId(schema) ? new URL(schema.$id, defaultBase.href) : defaultBase
+  const initialRef = new URL(ref, initialBase.href)
+  return FromValue(schema, initialBase, initialRef)
 }

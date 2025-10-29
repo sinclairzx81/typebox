@@ -28,27 +28,28 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
-import * as S from '../types/index.ts'
+import { Stack } from './_stack.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
+import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
+import * as Schema from '../types/index.ts'
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildMinItems(context: BuildContext, schema: S.XMinItems, value: string): string {
+export function BuildMinItems(stack: Stack, context: BuildContext, schema: Schema.XMinItems, value: string): string {
   return E.IsGreaterEqualThan(E.Member(value, 'length'), E.Constant(schema.minItems))
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckMinItems(context: CheckContext, schema: S.XMinItems, value: unknown[]): boolean {
+export function CheckMinItems(stack: Stack, context: CheckContext, schema: Schema.XMinItems, value: unknown[]): boolean {
   return G.IsGreaterEqualThan(value.length, schema.minItems)
 }
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorMinItems(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XMinItems, value: unknown[]): boolean {
-  return CheckMinItems(context, schema, value) || context.AddError({
+export function ErrorMinItems(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XMinItems, value: unknown[]): boolean {
+  return CheckMinItems(stack, context, schema, value) || context.AddError({
     keyword: 'minItems',
     schemaPath,
     instancePath,

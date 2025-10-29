@@ -28,28 +28,30 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import * as S from '../types/index.ts'
-import { EmitGuard as E } from '../../guard/index.ts'
 import { Format } from '../../format/index.ts'
+import * as Schema from '../types/index.ts'
+import { Stack } from './_stack.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
+import { EmitGuard as E } from '../../guard/index.ts'
+
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildFormat(context: BuildContext, schema: S.XFormat, value: string): string {
+export function BuildFormat(stack: Stack, context: BuildContext, schema: Schema.XFormat, value: string): string {
   return E.Call(E.Member('Format', 'Test'), [E.Constant(schema.format), value])
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckFormat(context: CheckContext, schema: S.XFormat, value: string): boolean {
+export function CheckFormat(stack: Stack, context: CheckContext, schema: Schema.XFormat, value: string): boolean {
   return Format.Test(schema.format, value)
 }
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorFormat(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XFormat, value: string): boolean {
-  return CheckFormat(context, schema, value) || context.AddError({
+export function ErrorFormat(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XFormat, value: string): boolean {
+  return CheckFormat(stack, context, schema, value) || context.AddError({
     keyword: 'format',
     schemaPath,
     instancePath,

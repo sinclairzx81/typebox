@@ -1,5 +1,3 @@
-// deno-fmt-ignore-file
-
 import { Value } from 'typebox/value'
 import { Type } from 'typebox'
 import { Assert } from 'test'
@@ -11,8 +9,8 @@ const Test = Assert.Context('Value.Codec.Record')
 // ------------------------------------------------------------------
 Test('Should Record 1', () => {
   const NumberToString = Type.Codec(Type.Number())
-    .Decode(value => value.toString())
-    .Encode(value => parseFloat(value))
+    .Decode((value) => value.toString())
+    .Encode((value) => parseFloat(value))
   const A = Type.Record(Type.String(), NumberToString)
   const D = Value.Decode(A, { x: 1, y: 2 })
   const E = Value.Encode(A, D)
@@ -24,21 +22,21 @@ Test('Should Record 1', () => {
 // ------------------------------------------------------------------
 Test('Should Record 2', () => {
   const NumberToString = Type.Codec(Type.Number())
-    .Decode(value => value.toString())
-    .Encode(value => parseFloat(value))
+    .Decode((value) => value.toString())
+    .Encode((value) => parseFloat(value))
   const A = Type.Record(Type.Number(), NumberToString)
   const D = Value.Decode(A, { x: 1, y: 2 })
   const E = Value.Encode(A, D)
-  Assert.IsEqual(D, { })
-  Assert.IsEqual(E, { })
+  Assert.IsEqual(D, {})
+  Assert.IsEqual(E, {})
 })
 // ------------------------------------------------------------------
 // Record with Codec
 // ------------------------------------------------------------------
 Test('Should Record 3', () => {
   const Augment = Type.Codec(Type.Record(Type.String(), Type.Number()))
-    .Decode(value => ({ 'foo': 1, ...value }))
-    .Encode(value => {
+    .Decode((value) => ({ 'foo': 1, ...value }))
+    .Encode((value) => {
       const { foo, ...rest } = value
       return rest
     })
@@ -52,8 +50,8 @@ Test('Should Record 3', () => {
 // ------------------------------------------------------------------
 Test('Should Record 4', () => {
   const NumberToString = Type.Codec(Type.Number())
-    .Decode(value => value.toString())
-    .Encode(value => parseFloat(value))
+    .Decode((value) => value.toString())
+    .Encode((value) => parseFloat(value))
 
   const A = Type.Record(Type.Number(), NumberToString)
   const D = Value.Decode(A, { x: 1, y: 2, 0: 3 })
@@ -66,8 +64,8 @@ Test('Should Record 4', () => {
 // ------------------------------------------------------------------
 Test('Should Record 5', () => {
   const NumberToString = Type.Codec(Type.Number())
-    .Decode(value => value.toString())
-    .Encode(value => parseFloat(value))
+    .Decode((value) => value.toString())
+    .Encode((value) => parseFloat(value))
   const A = Type.Record(Type.Number(), NumberToString)
   Assert.Throws(() => Value.Decode(A, null))
   Assert.Throws(() => Value.Encode(A, null))
@@ -77,10 +75,10 @@ Test('Should Record 5', () => {
 // ------------------------------------------------------------------
 Test('Should Record 6', () => {
   const Identity = Type.Codec(Type.Record(Type.Number(), Type.String()))
-    .Decode(value => value)
-    .Encode(value => value)
+    .Decode((value) => value)
+    .Encode((value) => value)
   const D = Value.Decode(Identity, { x: 1 })
   const E = Value.Encode(Identity, { x: 1 })
-  Assert.IsEqual(D, { })
-  Assert.IsEqual(E, { })
+  Assert.IsEqual(D, {})
+  Assert.IsEqual(E, {})
 })

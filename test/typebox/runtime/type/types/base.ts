@@ -1,5 +1,3 @@
-// deno-fmt-ignore-file
-
 import { Assert } from 'test'
 import * as Type from 'typebox'
 
@@ -14,7 +12,7 @@ Test('Should Base 1', () => {
 })
 Test('Should Base 2', () => {
   const T: TStringBase = new Type.Base()
-  Assert.IsEqual(T.Errors(null), [] )
+  Assert.IsEqual(T.Errors(null), [])
 })
 Test('Should Base 3', () => {
   const T: TStringBase = new Type.Base()
@@ -28,7 +26,7 @@ class TStringBase extends Type.Base<string> {
     return typeof value === 'string'
   }
   public override Errors(value: unknown): object[] {
-    return typeof value === 'string' ? [] : [{ message: 'expected string'}] 
+    return typeof value === 'string' ? [] : [{ message: 'expected string' }]
   }
 }
 const StringBase = () => new TStringBase()
@@ -54,5 +52,5 @@ Test('Should Base 7', () => {
 })
 Test('Should Base 8', () => {
   const T: TStringBase = StringBase()
-  Assert.IsEqual(T.Errors(1), [{ message: 'expected string'}] )
+  Assert.IsEqual(T.Errors(1), [{ message: 'expected string' }])
 })

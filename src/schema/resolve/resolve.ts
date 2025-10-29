@@ -4,7 +4,7 @@ TypeBox
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2025 Haydn Paterson 
+Copyright (c) 2017-2025 Haydn Paterson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,27 +26,4 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-fmt-ignore-file
-// deno-lint-ignore-file
-
-import { Arguments } from '../system/arguments/index.ts'
-import * as Engine from './engine/index.ts'
-import * as Schema from './types/index.ts'
-
-// ------------------------------------------------------------------
-// Check
-// ------------------------------------------------------------------
-/** Checks a value against the provided schema */
-export function Check(schema: Schema.XSchema, value: unknown): boolean
-/** Checks a value against the provided schema */
-export function Check(context: Record<PropertyKey, Schema.XSchema>, schema: Schema.XSchema, value: unknown): boolean
-/** Checks a value against the provided schema */
-export function Check(...args: unknown[]): boolean {
-  const [context, schema, value] = Arguments.Match<[Record<PropertyKey, Schema.XSchema>, Schema.XSchema, unknown]>(args, {
-    3: (context, schema, value) => [context, schema, value],
-    2: (schema, value) => [{}, schema, value]
-  })
-  const stack = new Engine.Stack(context, schema)
-  const checkContext = new Engine.CheckContext()
-  return Engine.CheckSchema(stack, checkContext, schema, value)
-}
+export * from './ref.ts'

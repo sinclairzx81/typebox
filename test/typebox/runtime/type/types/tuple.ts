@@ -1,5 +1,3 @@
-// deno-fmt-ignore-file
-
 import { Assert } from 'test'
 import * as Type from 'typebox'
 
@@ -10,12 +8,10 @@ Test('Should not guard Tuple', () => {
   Assert.IsFalse(Type.IsTuple(T))
 })
 Test('Should Create Tuple', () => {
-  const T: Type.TTuple<[Type.TNull, Type.TNumber]> 
-    = Type.Tuple([Type.Null(), Type.Number()])
+  const T: Type.TTuple<[Type.TNull, Type.TNumber]> = Type.Tuple([Type.Null(), Type.Number()])
 })
 Test('Should Create Tuple and Guard 1', () => {
-  const T: Type.TTuple<[Type.TNull, Type.TNumber]> 
-    = Type.Tuple([Type.Null(), Type.Number()])
+  const T: Type.TTuple<[Type.TNull, Type.TNumber]> = Type.Tuple([Type.Null(), Type.Number()])
   Assert.IsTrue(Type.IsTuple(T))
   Assert.IsTrue(Type.IsNull(T.items[0]))
   Assert.IsTrue(Type.IsNumber(T.items[1]))
@@ -32,8 +28,7 @@ Test('Should Create Tuple and Guard 2', () => {
   Assert.IsTrue(T.additionalItems === false)
 })
 Test('Should Create Tuple with options', () => {
-  const T: Type.TTuple<[Type.TNull, Type.TNumber]> 
-    = Type.Tuple([Type.Null(), Type.Number()], { a: 1, b: 2 })
+  const T: Type.TTuple<[Type.TNull, Type.TNumber]> = Type.Tuple([Type.Null(), Type.Number()], { a: 1, b: 2 })
   Assert.HasPropertyKey(T, 'a')
   Assert.HasPropertyKey(T, 'b')
   Assert.IsEqual(T.a, 1)

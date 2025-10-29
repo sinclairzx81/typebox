@@ -27,22 +27,21 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 // deno-fmt-ignore-file
-
-import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
-import * as S from '../types/index.ts'
-
+import * as Schema from '../types/index.ts'
+import { Stack } from './_stack.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
+import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 import { BuildSchema, CheckSchema, ErrorSchema } from './schema.ts'
 import { InexactOptionalCheck, InexactOptionalBuild, IsExactOptional } from './_exact_optional.ts'
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildProperties(context: BuildContext, schema: S.XProperties, value: string): string {
-  const required = S.IsRequired(schema) ? schema.required : []
+export function BuildProperties(stack: Stack, context: BuildContext, schema: Schema.XProperties, value: string): string {
+  const required = Schema.IsRequired(schema) ? schema.required : []
   const everyKey = G.Entries(schema.properties).map(([key, schema]) => {
     const notKey = E.Not(E.HasPropertyKey(value, E.Constant(key)))
-    const isSchema = BuildSchema(context, schema, E.Member(value, key))
+    const isSchema = BuildSchema(stack, context, schema, E.Member(value, key))
     const addKey = context.AddKey(E.Constant(key))
     const guarded = context.UseUnevaluated() ? E.And(isSchema, addKey) : isSchema
     
@@ -82,10 +81,10 @@ export function BuildProperties(context: BuildContext, schema: S.XProperties, va
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckProperties(context: CheckContext, schema: S.XProperties, value: Record<PropertyKey, unknown>): boolean {
-  const required = S.IsRequired(schema) ? schema.required : []
+export function CheckProperties(stack: Stack, context: CheckContext, schema: Schema.XProperties, value: Record<PropertyKey, unknown>): boolean {
+  const required = Schema.IsRequired(schema) ? schema.required : []
   const isProperties = G.Every(G.Entries(schema.properties), 0, ([key, schema]) => {
-    const isProperty = !G.HasPropertyKey(value, key) || (CheckSchema(context, schema, value[key]) && context.AddKey(key))
+    const isProperty = !G.HasPropertyKey(value, key) || (CheckSchema(stack, context, schema, value[key]) && context.AddKey(key))
     return IsExactOptional(required, key)
       ? isProperty
       : InexactOptionalCheck(value, key) || isProperty
@@ -95,14 +94,14 @@ export function CheckProperties(context: CheckContext, schema: S.XProperties, va
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorProperties(context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XProperties, value: Record<PropertyKey, unknown>): boolean {
-  const required = S.IsRequired(schema) ? schema.required : []
+export function ErrorProperties(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XProperties, value: Record<PropertyKey, unknown>): boolean {
+  const required = Schema.IsRequired(schema) ? schema.required : []
   const isProperties = G.EveryAll(G.Entries(schema.properties), 0, ([key, schema]) => {
     const nextSchemaPath = `${schemaPath}/properties/${key}`
     const nextInstancePath = `${instancePath}/${key}`
     // Defer error generation for IsExactOptional
     const isProperty = () => (
-      !G.HasPropertyKey(value, key) || (ErrorSchema(context, nextSchemaPath, nextInstancePath, schema, value[key]) && context.AddKey(key))
+      !G.HasPropertyKey(value, key) || (ErrorSchema(stack, context, nextSchemaPath, nextInstancePath, schema, value[key]) && context.AddKey(key))
     )
     return IsExactOptional(required, key)
       ? isProperty()

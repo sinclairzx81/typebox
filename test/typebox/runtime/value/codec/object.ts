@@ -1,5 +1,3 @@
-// deno-fmt-ignore-file
-
 import { Settings } from 'typebox/system'
 import { Value } from 'typebox/value'
 import { Type } from 'typebox'
@@ -12,8 +10,12 @@ const Test = Assert.Context('Value.Codec.Object')
 // ------------------------------------------------------------------
 Test('Should Object 1', () => {
   const UnknownToBoxed = Type.Codec(Type.Unknown())
-    .Decode(value => { return ({ value }) })
-    .Encode(value => { return value.value })
+    .Decode((value) => {
+      return ({ value })
+    })
+    .Encode((value) => {
+      return value.value
+    })
   const T = Type.Object({
     x: UnknownToBoxed,
     y: UnknownToBoxed
@@ -28,14 +30,18 @@ Test('Should Object 1', () => {
 // ------------------------------------------------------------------
 Test('Should Object 2', () => {
   const UnknownToBoxed = Type.Codec(Type.Unknown())
-    .Decode(value => { return ({ value }) })
-    .Encode(value => { return value.value })
+    .Decode((value) => {
+      return ({ value })
+    })
+    .Encode((value) => {
+      return value.value
+    })
   const ObjectToTuple = Type.Codec(Type.Object({
     x: UnknownToBoxed,
     y: UnknownToBoxed
   }))
-  .Decode(value => [value.x, value.y])
-  .Encode(value => ({ x: value[0], y: value[1] }))
+    .Decode((value) => [value.x, value.y])
+    .Encode((value) => ({ x: value[0], y: value[1] }))
   const D = Value.Decode(ObjectToTuple, { x: 1, y: 2 })
   const E = Value.Encode(ObjectToTuple, D)
   Assert.IsEqual(D, [{ value: 1 }, { value: 2 }])
@@ -46,8 +52,12 @@ Test('Should Object 2', () => {
 // ------------------------------------------------------------------
 Test('Should Object 3', () => {
   const UnknownToBoxed = Type.Codec(Type.Unknown())
-    .Decode(value => { return ({ value }) })
-    .Encode(value => { return value.value })
+    .Decode((value) => {
+      return ({ value })
+    })
+    .Encode((value) => {
+      return value.value
+    })
   const T = Type.Object({
     x: UnknownToBoxed,
     y: UnknownToBoxed
@@ -62,14 +72,18 @@ Test('Should Object 3', () => {
 // ------------------------------------------------------------------
 Test('Should Object 4', () => {
   const UnknownToBoxed = Type.Codec(Type.Unknown())
-    .Decode(value => { return ({ value }) })
-    .Encode(value => { return value.value })
+    .Decode((value) => {
+      return ({ value })
+    })
+    .Encode((value) => {
+      return value.value
+    })
   const ObjectToTuple = Type.Codec(Type.Object({
     x: UnknownToBoxed,
     y: UnknownToBoxed
   }))
-  .Decode(value => [value.x, value.y])
-  .Encode(value => ({ x: value[0], y: value[1] }))
+    .Decode((value) => [value.x, value.y])
+    .Encode((value) => ({ x: value[0], y: value[1] }))
   const D = Value.Decode(ObjectToTuple, { x: 1, y: 2, z: 3 })
   const E = Value.Encode(ObjectToTuple, D)
   Assert.IsEqual(D, [{ value: 1 }, { value: 2 }])
@@ -80,8 +94,12 @@ Test('Should Object 4', () => {
 // ------------------------------------------------------------------
 Test('Should Object 5', () => {
   const UnknownToBoxed = Type.Codec(Type.Unknown())
-    .Decode(value => { return ({ value }) })
-    .Encode(value => { return value.value })
+    .Decode((value) => {
+      return ({ value })
+    })
+    .Encode((value) => {
+      return value.value
+    })
   const T = Type.Object({
     x: UnknownToBoxed,
     y: UnknownToBoxed
@@ -95,10 +113,10 @@ Test('Should Object 5', () => {
 Test('Should Object 6', () => {
   const Identity = Type.Codec(Type.Object({
     x: Type.Number(),
-    y: Type.Number(),
+    y: Type.Number()
   }))
-  .Decode(value => value)
-  .Encode(value => value)
+    .Decode((value) => value)
+    .Encode((value) => value)
   const D = Value.Decode(Identity, { x: 1, y: 2, z: 3 })
   const E = Value.Encode(Identity, { x: 1, y: 2, z: 3 })
   Assert.IsEqual(D, { x: 1, y: 2 })
@@ -107,9 +125,9 @@ Test('Should Object 6', () => {
 Test('Should Object 7', () => {
   const Identity = Type.Codec(Type.Object({
     x: Type.Number(),
-    y: Type.Number({ default: 1 }),
-  })).Decode(value => value)
-     .Encode(value => value)
+    y: Type.Number({ default: 1 })
+  })).Decode((value) => value)
+    .Encode((value) => value)
   const D = Value.Decode(Identity, { x: 1 })
   const E = Value.Encode(Identity, { x: 1 })
   Assert.IsEqual(D, { x: 1, y: 1 })
@@ -128,8 +146,8 @@ Test('Should Object 8', () => {
   })
   const D = Value.Decode(T, {})
   const E = Value.Encode(T, {})
-  Assert.IsEqual(D, { })
-  Assert.IsEqual(E, { })
+  Assert.IsEqual(D, {})
+  Assert.IsEqual(E, {})
 })
 // ------------------------------------------------------------------
 // IsOptionalUndefined (Convert)
@@ -140,10 +158,10 @@ Test('Should Object 9', () => {
   const X = Type.Optional(Type.String({ pattern: /^[a-f]+$/ }))
   const T = Type.Object({ x: X })
 
-  const A = Value.Encode(T, { x: "abcdef" })
+  const A = Value.Encode(T, { x: 'abcdef' })
   const B = Value.Encode(T, { x: undefined })
 
-  Assert.IsEqual(A, { x: "abcdef" })
+  Assert.IsEqual(A, { x: 'abcdef' })
   Assert.IsEqual(B, { x: undefined })
 })
 Test('Should Object 10', () => {
@@ -151,10 +169,10 @@ Test('Should Object 10', () => {
   const X = Type.Optional(Type.String({ pattern: /^[a-f]+$/ }))
   const T = Type.Object({ x: X })
 
-  const A = Value.Encode(T, { x: "abcdef" })
+  const A = Value.Encode(T, { x: 'abcdef' })
   Assert.Throws(() => Value.Encode(T, { x: undefined }))
 
-  Assert.IsEqual(A, { x: "abcdef" })
+  Assert.IsEqual(A, { x: 'abcdef' })
 
   Settings.Reset()
 })
@@ -169,7 +187,7 @@ Test('Should Object 11', () => {
     .Decode((str) => BigInt(str))
     .Encode((bigint) => bigint.toString())
   const T = Type.Object({ x: Type.Optional(X) })
-  
+
   const A = Value.Encode(T, { x: 100100n })
   const B = Value.Encode(T, { x: undefined })
 
@@ -182,7 +200,7 @@ Test('Should Object 12', () => {
     .Decode((str) => BigInt(str))
     .Encode((bigint) => bigint.toString())
   const T = Type.Object({ x: Type.Optional(X) })
-  
+
   const A = Value.Encode(T, { x: 100100n })
   Assert.Throws(() => Value.Encode(T, { x: undefined }))
   Assert.IsEqual(A, { x: '100100' })
@@ -197,7 +215,7 @@ Test('Should Object 12', () => {
 Test('Should Object 13', () => {
   const T = Type.Union([
     Type.Object({ oneof_prop_a: Type.String() }),
-    Type.Object({ oneof_prop_b: Type.Optional(Type.String()) }),
+    Type.Object({ oneof_prop_b: Type.Optional(Type.String()) })
   ])
   const D = Value.Decode(T, { oneof_prop_a: 'A' })
   const E = Value.Encode(T, { oneof_prop_a: 'A' })
@@ -207,7 +225,7 @@ Test('Should Object 13', () => {
 Test('Should Object 14', () => {
   const T = Type.Union([
     Type.Object({ oneof_prop_a: Type.String() }),
-    Type.Object({ oneof_prop_b: Type.Optional(Type.String()) }),
+    Type.Object({ oneof_prop_b: Type.Optional(Type.String()) })
   ])
   const D = Value.Decode(T, { oneof_prop_b: 'B' })
   const E = Value.Encode(T, { oneof_prop_b: 'B' })
@@ -217,7 +235,7 @@ Test('Should Object 14', () => {
 Test('Should Object 15', () => {
   const T = Type.Union([
     Type.Object({ oneof_prop_a: Type.String() }),
-    Type.Object({ oneof_prop_b: Type.Optional(Type.String()) }),
+    Type.Object({ oneof_prop_b: Type.Optional(Type.String()) })
   ])
   const D = Value.Decode(T, { oneof_prop_b: undefined })
   const E = Value.Encode(T, { oneof_prop_b: undefined })
@@ -227,10 +245,10 @@ Test('Should Object 15', () => {
 Test('Should Object 16', () => {
   const T = Type.Union([
     Type.Object({ oneof_prop_a: Type.String() }),
-    Type.Object({ oneof_prop_b: Type.Optional(Type.String()) }),
+    Type.Object({ oneof_prop_b: Type.Optional(Type.String()) })
   ])
-  const D = Value.Decode(T, { })
-  const E = Value.Encode(T, { })
-  Assert.IsEqual(D, { })
-  Assert.IsEqual(E, { })
+  const D = Value.Decode(T, {})
+  const E = Value.Encode(T, {})
+  Assert.IsEqual(D, {})
+  Assert.IsEqual(E, {})
 })
