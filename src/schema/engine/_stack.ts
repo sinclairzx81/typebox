@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 import * as Schema from '../types/index.ts'
 import { Guard as G } from '../../guard/index.ts'
-import { Resolve } from '../resolve/index.ts'
+import { Resolver } from '../resolve/index.ts'
 
 export class Stack {
   private readonly ids: Schema.XId[] = []
@@ -75,8 +75,8 @@ export class Stack {
   }
   private FromRef(ref: string): Schema.XSchema | undefined {
     return !ref.startsWith('#')
-      ? Resolve.Ref(this.schema as Schema.XSchemaObject, ref)
-      : Resolve.Ref(this.Base(), ref) 
+      ? Resolver.Ref(this.schema as Schema.XSchemaObject, ref)
+      : Resolver.Ref(this.Base(), ref) 
   }
   public Ref(ref: string): Schema.XSchema | undefined {
     return this.FromContext(ref) ?? this.FromRef(ref)
@@ -86,8 +86,14 @@ export class Stack {
   // ----------------------------------------------------------------
   public RecursiveRef(recursiveRef: string): Schema.XSchema | undefined {
     if (Schema.IsRecursiveAnchorTrue(this.Base())) {
-      return Resolve.Ref(this.recursiveAnchors[0], recursiveRef)
+      return Resolver.Ref(this.recursiveAnchors[0], recursiveRef)
     }
-    return Resolve.Ref(this.Base(), recursiveRef)
+    return Resolver.Ref(this.Base(), recursiveRef)
+  }
+  // ----------------------------------------------------------------
+  // DynamicRef
+  // ----------------------------------------------------------------
+  public DynamicRef(dynamicRef: string): Schema.XSchema | undefined {
+    return undefined
   }
 }

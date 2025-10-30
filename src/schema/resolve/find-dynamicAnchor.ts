@@ -4,7 +4,7 @@ TypeBox
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2025 Haydn Paterson 
+Copyright (c) 2017-2025 Haydn Paterson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,25 +26,16 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-fmt-ignore-file
-
+import * as Schema from '../types/index.ts'
 import { Guard } from '../../guard/index.ts'
-import { type XSchema } from './schema.ts'
+import { Enumerate } from './enumerate.ts'
 
-// ------------------------------------------------------------------
-// Type
-// ------------------------------------------------------------------
-export interface XAnchor<Anchor extends string = string> {
-  $anchor: Anchor
-}
-// ------------------------------------------------------------------
-// Guard
-// ------------------------------------------------------------------
-/** 
- * Returns true if the schema contains a valid $anchor property
- */
-export function IsAnchor(schema: XSchema): schema is XAnchor {
-  return Guard.IsObject(schema)
-    && Guard.HasPropertyKey(schema, '$anchor') 
-    && Guard.IsString(schema.$anchor)
+export function FindDynamicAnchor(schema: Schema.XSchema, anchor: string): Schema.XSchema | undefined {
+  anchor = anchor.startsWith('#') ? anchor.slice(1) : anchor
+  for (const qualified of Enumerate(schema)) {
+    if (!Schema.IsDynamicAnchor(qualified.schema)) continue
+    if (!Guard.IsEqual(qualified.schema.$dynamicAnchor, anchor)) continue
+    return qualified.schema
+  }
+  return undefined
 }

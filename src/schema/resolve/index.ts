@@ -26,4 +26,4 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export * as Resolve from './resolve.ts'
+export * as Resolver from './resolve.ts'

@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Guard } from '../../guard/index.ts'
-import { type XSchemaObject } from './schema.ts'
+import { type XSchema } from './schema.ts'
 
 // ------------------------------------------------------------------
 // Type
@@ -44,7 +44,8 @@ export interface XId<Id extends string = string> {
  * Returns true if the schema contains a valid $id property
  * @specification Json Schema 7
  */
-export function IsId(schema: XSchemaObject): schema is XId {
-  return Guard.HasPropertyKey(schema, '$id') 
+export function IsId(schema: XSchema): schema is XId {
+  return Guard.IsObject(schema)
+    && Guard.HasPropertyKey(schema, '$id') 
     && Guard.IsString(schema.$id)
 }

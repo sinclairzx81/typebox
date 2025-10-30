@@ -28,23 +28,30 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Guard } from '../../guard/index.ts'
-import { type XSchema } from './schema.ts'
+import * as Functions from './_functions.ts'
+import * as Schema from '../types/index.ts'
+import { Stack } from './_stack.ts'
+import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
+import { CheckSchema, ErrorSchema } from './schema.ts'
 
 // ------------------------------------------------------------------
-// Type
+// Build
 // ------------------------------------------------------------------
-export interface XAnchor<Anchor extends string = string> {
-  $anchor: Anchor
+export function BuildDynamicRef(stack: Stack, context: BuildContext, schema: Schema.XDynamicRef, value: string): string {
+  const target = stack.DynamicRef(schema.$dynamicRef) ?? false
+  return Functions.CreateFunction(stack, context, target, value)
 }
 // ------------------------------------------------------------------
-// Guard
+// Check
 // ------------------------------------------------------------------
-/** 
- * Returns true if the schema contains a valid $anchor property
- */
-export function IsAnchor(schema: XSchema): schema is XAnchor {
-  return Guard.IsObject(schema)
-    && Guard.HasPropertyKey(schema, '$anchor') 
-    && Guard.IsString(schema.$anchor)
+export function CheckDynamicRef(stack: Stack, context: CheckContext, schema: Schema.XDynamicRef, value: unknown): boolean {
+  const target = stack.DynamicRef(schema.$dynamicRef) ?? false
+  return (Schema.IsSchema(target) && CheckSchema(stack, context, target, value))
+}
+// ------------------------------------------------------------------
+// Error
+// ------------------------------------------------------------------
+export function ErrorDynamicRef(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XDynamicRef, value: unknown): boolean {
+  const target = stack.DynamicRef(schema.$dynamicRef) ?? false
+  return (Schema.IsSchema(target) && ErrorSchema(stack, context, '#', instancePath, target, value))
 }

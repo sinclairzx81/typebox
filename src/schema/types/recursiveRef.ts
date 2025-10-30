@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Guard } from '../../guard/index.ts'
-import { type XSchemaObject } from './schema.ts'
+import { type XSchema } from './schema.ts'
 
 // ------------------------------------------------------------------
 // Type
@@ -43,7 +43,8 @@ export interface XRecursiveRef<Ref extends string = string> {
 /** 
  * Returns true if the schema contains a valid $recursiveRef property
  */
-export function IsRecursiveRef(schema: XSchemaObject): schema is XRecursiveRef {
-  return Guard.HasPropertyKey(schema, '$recursiveRef') 
+export function IsRecursiveRef(schema: XSchema): schema is XRecursiveRef {
+  return Guard.IsObject(schema)
+    && Guard.HasPropertyKey(schema, '$recursiveRef') 
     && Guard.IsString(schema.$recursiveRef)
 }

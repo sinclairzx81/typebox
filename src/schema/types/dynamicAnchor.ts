@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Guard } from '../../guard/index.ts'
-import { type XSchemaObject } from './schema.ts'
+import { type XSchema } from './schema.ts'
 
 // ------------------------------------------------------------------
 // Type
@@ -43,7 +43,8 @@ export interface XDynamicAnchor<Anchor extends string = string> {
 /** 
  * Returns true if the schema contains a valid $dynamicAnchor property
  */
-export function IsDynamicAnchor(schema: XSchemaObject): schema is XDynamicAnchor {
-  return Guard.HasPropertyKey(schema, '$dynamicAnchor') 
+export function IsDynamicAnchor(schema: XSchema): schema is XDynamicAnchor {
+  return Guard.IsObject(schema)
+    && Guard.HasPropertyKey(schema, '$dynamicAnchor') 
     && Guard.IsString(schema.$dynamicAnchor)
 }

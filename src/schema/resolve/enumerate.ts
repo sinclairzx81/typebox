@@ -4,7 +4,7 @@ TypeBox
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2025 Haydn Paterson 
+Copyright (c) 2017-2025 Haydn Paterson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,41 +26,49 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-fmt-ignore-file
-
 import { Guard } from '../../guard/index.ts'
+import * as Schema from '../types/index.ts'
 
 // ------------------------------------------------------------------
-// SchemaArray
+// QualifiedSchema
 // ------------------------------------------------------------------
-/** Returns true if this value is object like */
-export function IsSchemaArray(value: unknown): value is XSchema[] {
-  return Guard.IsArray(value) && value.every(value => IsSchema(value))
+export interface QualifiedSchema {
+  url: URL
+  schema: Schema.XSchema
 }
 // ------------------------------------------------------------------
-// SchemaObject
+// FromSchemaArray
 // ------------------------------------------------------------------
-export type XSchemaObject = object
-
-/** Returns true if this value is object like */
-export function IsSchemaObject(value: unknown): value is XSchemaObject {
-  return Guard.IsObject(value) && !Guard.IsArray(value)
+function* FromSchemaArray(schema: Schema.XSchema[], base: URL, path: string): IterableIterator<QualifiedSchema> {
+  for (let i = 0; i < schema.length; i++) {
+    yield* FromSchema(schema[i], base, `${path}${path[i]}`)
+  }
 }
 // ------------------------------------------------------------------
-// SchemaBoolean
+// FromSchemaObject
 // ------------------------------------------------------------------
-export type XSchemaBoolean = boolean 
-
-/** Returns true if this value is a boolean */
-export function IsBooleanSchema(value: unknown): value is XSchemaBoolean {
-  return Guard.IsBoolean(value)
+function* FromSchemaObject(schema: Schema.XSchemaObject, base: URL, path: string): IterableIterator<QualifiedSchema> {
+  if (!Schema.IsSchemaObject(schema)) return
+  for (const [key, value] of Guard.Entries(schema as any)) {
+    if (!Schema.IsSchema(value)) continue
+    yield* FromSchema(value, base, `${path}/${key}`)
+  }
 }
 // ------------------------------------------------------------------
-// XSchema
+// FromSchema
 // ------------------------------------------------------------------
-export type XSchema = XSchemaObject | XSchemaBoolean 
-
-/** Returns true if this value is schema like */
-export function IsSchema(value: unknown): value is XSchema {
-  return IsSchemaObject(value) || IsBooleanSchema(value)
+function* FromSchema(schema: Schema.XSchema, base: URL, path: string): IterableIterator<QualifiedSchema> {
+  const isId = Schema.IsId(schema)
+  base = isId ? new URL(schema.$id, base) : base
+  path = isId ? '' : path
+  const url = Guard.IsEqual(path, '') ? base : new URL(`#${path}`, base)
+  yield { url, schema }
+  if (Schema.IsSchemaArray(schema)) yield* FromSchemaArray(schema, base, path)
+  if (Schema.IsSchemaObject(schema)) yield* FromSchemaObject(schema, base, path)
+}
+// ------------------------------------------------------------------
+// Enumerate
+// ------------------------------------------------------------------
+export function* Enumerate(schema: Schema.XSchema, base: URL = new URL('memory://root')): IterableIterator<QualifiedSchema> {
+  yield* FromSchema(schema, base, '')
 }

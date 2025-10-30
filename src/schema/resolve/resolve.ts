@@ -26,4 +26,9 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+export * from './enumerate-lexical.ts'
+export * from './enumerate.ts'
+export * from './find-anchor.ts'
+export * from './find-dynamicAnchor.ts'
+export * from './find-pointer.ts'
 export * from './ref.ts'

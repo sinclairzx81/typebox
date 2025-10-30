@@ -76,7 +76,19 @@ function runCheck(draft: string, path: string): void {
   const Test = Assert.Context('Schema.Check')
   for (const test of enumerateTests(path)) {
     Test(`${draft} ${test.filename}: ${test.description}`, () => {
-      const result = Check({}, test.schema, test.data)
+      let result: boolean = false
+      try {
+        result = Check({}, test.schema, test.data)
+      } catch(error: any) {
+        const message = [
+          '',
+          '// ------------------------------------------',
+          '// STACKOVERFLOW',
+          '// ------------------------------------------',
+          `const R = Schema.Check(${JSON.stringify(test.schema, null, 2)}, ${JSON.stringify(test.data, null, 2)})`
+        ].join('\n')
+        throw new Error(message)
+      }
       assertResult({ type: 'Check', schema: test.schema, data: test.data, description: test.description, valid: test.valid, result })
     })
   }
