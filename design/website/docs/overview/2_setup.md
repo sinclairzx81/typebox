@@ -28,6 +28,7 @@ import Ajv from 'ajv'
 
 const ajv = addFormats(new Ajv({}), [
   'date-time',
+  'iso-date-time',
   'time',
   'date',
   'email',
