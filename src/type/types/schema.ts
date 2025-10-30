@@ -228,6 +228,7 @@ export type TFormat =
   | 'ipv6'
   | 'iri-reference'
   | 'iri'
+  | 'iso-date-time'
   | 'json-pointer-uri-fragment'
   | 'json-pointer'
   | 'json-string'
@@ -255,6 +256,7 @@ export interface TStringOptions extends TSchemaOptions {
    * - `ipv4` – IPv4 address.
    * - `ipv6` – IPv6 address.
    * - `iri` / `iri-reference` – Internationalized Resource Identifier.
+   * - `iso-date-time` – [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) date-time format with optional timezone.
    * - `json-pointer` / `json-pointer-uri-fragment` – JSON Pointer format.
    * - `json-string` – String containing valid JSON.
    * - `regex` – Regular expression syntax.
