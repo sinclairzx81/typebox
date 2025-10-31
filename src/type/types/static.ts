@@ -50,12 +50,12 @@ import type { StaticNumber, TNumber } from './number.ts'
 import type { StaticObject, TObject } from './object.ts'
 import type { StaticPromise, TPromise } from './promise.ts'
 import type { TProperties } from './properties.ts'
-import type { StaticRecord, TRecord  } from './record.ts'
+import type { StaticRecord, TRecord } from './record.ts'
 import type { StaticRef, TRef } from './ref.ts'
 import type { TSchema } from './schema.ts'
 import type { StaticString, TString } from './string.ts'
 import type { StaticSymbol, TSymbol } from './symbol.ts'
-import type { StaticTemplateLiteral, TTemplateLiteral} from './template-literal.ts'
+import type { StaticTemplateLiteral, TTemplateLiteral } from './template-literal.ts'
 import type { StaticThis, TThis } from './this.ts'
 import type { StaticTuple, TTuple } from './tuple.ts'
 import type { StaticUndefined, TUndefined } from './undefined.ts'
@@ -78,41 +78,43 @@ export type StaticDirection = 'Encode' | 'Decode'
 // ------------------------------------------------------------------
 // StaticType
 // ------------------------------------------------------------------
-export type StaticType<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Type extends TSchema> = (
-  Type extends TCodec<infer Type extends TSchema, infer Decoded extends unknown> ? StaticCodec<Stack, Direction, Context, This, Type, Decoded> :
-  Type extends TAny ? StaticAny :
-  Type extends TArray<infer Items extends TSchema> ? StaticArray<Stack, Direction, Context, This, Type, Items> :
-  Type extends TAsyncIterator<infer Type extends TSchema> ? StaticAsyncIterator<Stack, Direction, Context, This, Type> :
-  Type extends Base<infer Value extends unknown> ? StaticBase<Value> :
-  Type extends TBigInt ? StaticBigInt :
-  Type extends TBoolean ? StaticBoolean :
-  Type extends TConstructor<infer Parameters extends TSchema[], infer ReturnType extends TSchema> ? StaticConstructor<Stack, Direction, Context, This, Parameters, ReturnType> :
-  Type extends TEnum<infer Values extends TEnumValue[]> ? StaticEnum<Values> :
-  Type extends TFunction<infer Parameters extends TSchema[], infer ReturnType extends TSchema> ? StaticFunction<Stack, Direction, Context, This, Parameters, ReturnType> :
-  Type extends TInteger ? StaticInteger :
-  Type extends TIntersect<infer Types extends TSchema[]> ? StaticIntersect<Stack, Direction, Context, This, Types> :
-  Type extends TIterator<infer Types extends TSchema> ? StaticIterator<Stack, Direction, Context, This, Types> :
-  Type extends TLiteral<infer Value extends TLiteralValue> ? StaticLiteral<Value> :
-  Type extends TNever ? StaticNever :
-  Type extends TNull ? StaticNull :
-  Type extends TNumber ? StaticNumber :
-  Type extends TObject<infer Properties extends TProperties> ? StaticObject<Stack, Direction, Context, This, Properties> :
-  Type extends TPromise<infer Type extends TSchema> ? StaticPromise<Stack, Direction, Context, This, Type> :
-  Type extends TRecord<infer Key extends string, infer Value extends TSchema> ? StaticRecord<Stack, Direction, Context, This, Key, Value> :
-  Type extends TCyclic<infer Defs extends TProperties, infer Ref extends string> ? StaticCyclic<Stack, Direction, Context, This, Defs, Ref> :
-  Type extends TRef<infer Ref extends string> ? StaticRef<Stack, Direction, Context, This, Ref> :
-  Type extends TString ? StaticString :
-  Type extends TSymbol ? StaticSymbol :
-  Type extends TTemplateLiteral<infer Pattern extends string> ? StaticTemplateLiteral<Pattern> :
-  Type extends TThis ? StaticThis<Stack, Direction, Context, This> :
-  Type extends TTuple<infer Items extends TSchema[]> ? StaticTuple<Stack, Direction, Context, This, Type, Items> :
-  Type extends TUndefined ? StaticUndefined :
-  Type extends TUnion<infer Types extends TSchema[]> ? StaticUnion<Stack, Direction, Context, This, Types> :
-  Type extends TUnknown ? StaticUnknown :
-  Type extends TUnsafe<infer Type extends unknown> ? StaticUnsafe<Type> :
-  Type extends TVoid ? StaticVoid :
-  XStatic<Type>
-)
+export type StaticType<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Type extends TSchema> =
+  {} extends Type ? unknown : // If we are passed a literal '{}' type, escape early with 'unknown'. This allows the typescript compiler to escape early and skip exhausting all cases below.
+  (
+    Type extends TCodec<infer Type extends TSchema, infer Decoded extends unknown> ? StaticCodec<Stack, Direction, Context, This, Type, Decoded> :
+    Type extends TAny ? StaticAny :
+    Type extends TArray<infer Items extends TSchema> ? StaticArray<Stack, Direction, Context, This, Type, Items> :
+    Type extends TAsyncIterator<infer Type extends TSchema> ? StaticAsyncIterator<Stack, Direction, Context, This, Type> :
+    Type extends Base<infer Value extends unknown> ? StaticBase<Value> :
+    Type extends TBigInt ? StaticBigInt :
+    Type extends TBoolean ? StaticBoolean :
+    Type extends TConstructor<infer Parameters extends TSchema[], infer ReturnType extends TSchema> ? StaticConstructor<Stack, Direction, Context, This, Parameters, ReturnType> :
+    Type extends TEnum<infer Values extends TEnumValue[]> ? StaticEnum<Values> :
+    Type extends TFunction<infer Parameters extends TSchema[], infer ReturnType extends TSchema> ? StaticFunction<Stack, Direction, Context, This, Parameters, ReturnType> :
+    Type extends TInteger ? StaticInteger :
+    Type extends TIntersect<infer Types extends TSchema[]> ? StaticIntersect<Stack, Direction, Context, This, Types> :
+    Type extends TIterator<infer Types extends TSchema> ? StaticIterator<Stack, Direction, Context, This, Types> :
+    Type extends TLiteral<infer Value extends TLiteralValue> ? StaticLiteral<Value> :
+    Type extends TNever ? StaticNever :
+    Type extends TNull ? StaticNull :
+    Type extends TNumber ? StaticNumber :
+    Type extends TObject<infer Properties extends TProperties> ? StaticObject<Stack, Direction, Context, This, Properties> :
+    Type extends TPromise<infer Type extends TSchema> ? StaticPromise<Stack, Direction, Context, This, Type> :
+    Type extends TRecord<infer Key extends string, infer Value extends TSchema> ? StaticRecord<Stack, Direction, Context, This, Key, Value> :
+    Type extends TCyclic<infer Defs extends TProperties, infer Ref extends string> ? StaticCyclic<Stack, Direction, Context, This, Defs, Ref> :
+    Type extends TRef<infer Ref extends string> ? StaticRef<Stack, Direction, Context, This, Ref> :
+    Type extends TString ? StaticString :
+    Type extends TSymbol ? StaticSymbol :
+    Type extends TTemplateLiteral<infer Pattern extends string> ? StaticTemplateLiteral<Pattern> :
+    Type extends TThis ? StaticThis<Stack, Direction, Context, This> :
+    Type extends TTuple<infer Items extends TSchema[]> ? StaticTuple<Stack, Direction, Context, This, Type, Items> :
+    Type extends TUndefined ? StaticUndefined :
+    Type extends TUnion<infer Types extends TSchema[]> ? StaticUnion<Stack, Direction, Context, This, Types> :
+    Type extends TUnknown ? StaticUnknown :
+    Type extends TUnsafe<infer Type extends unknown> ? StaticUnsafe<Type> :
+    Type extends TVoid ? StaticVoid :
+    XStatic<Type>
+  )
 // ------------------------------------------------------------------
 // Statics
 // ------------------------------------------------------------------
