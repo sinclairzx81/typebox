@@ -36,6 +36,7 @@ import { type TDeferred, Deferred } from './deferred.ts'
 import { type TParseTemplateIntoTypes, ParseTemplateIntoTypes } from '../engine/patterns/template.ts'
 import { type TInstantiate, Instantiate } from '../engine/instantiate.ts'
 import { type TTemplateLiteralStatic } from '../engine/template-literal/static.ts'
+import { Memory } from '../../system/system.ts'
 
 // ------------------------------------------------------------------
 // Static
@@ -64,25 +65,36 @@ export function TemplateLiteralDeferred<Types extends TSchema[]>(types: [...Type
   return Deferred('TemplateLiteral', [types], options)
 }
 // ------------------------------------------------------------------
-// Construct
+// TemplateLiteralFromTypes
 // ------------------------------------------------------------------
-export type TTemplateLiteralConstruct<Types extends TSchema[]> = (
-  TInstantiate<{}, TTemplateLiteralDeferred<Types>>
-)
-export function TemplateLiteralConstruct<Types extends TSchema[]>(types: [...Types], options: TSchemaOptions = {}): TTemplateLiteralConstruct<Types> {
-  return Instantiate({}, TemplateLiteralDeferred(types, options))
+export type TTemplateLiteralFromTypes<Types extends TSchema[],
+  Result extends TSchema = TInstantiate<{}, TTemplateLiteralDeferred<Types>>
+> = Result
+export function TemplateLiteralFromTypes<Types extends TSchema[]>(types: [...Types]): TTemplateLiteralFromTypes<Types> {
+  return Instantiate({}, TemplateLiteralDeferred(types, {}))
+}
+// ------------------------------------------------------------------
+// TemplateLiteralFromString
+// ------------------------------------------------------------------
+export type TTemplateLiteralFromString<Template extends string,
+  Types extends TSchema[] = TParseTemplateIntoTypes<Template>,
+  Result extends TSchema = TTemplateLiteralFromTypes<Types>
+> = Result
+export function TemplateLiteralFromString<Template extends string>(template: Template): TTemplateLiteralFromString<Template> {
+  const types = ParseTemplateIntoTypes(template) 
+  return TemplateLiteralFromTypes(types) as never
 }
 // ------------------------------------------------------------------
 // Factory
 // ------------------------------------------------------------------
 /** Creates a TemplateLiteral type. */
-export function TemplateLiteral<Template extends string>(template: Template, options?: TSchemaOptions): TTemplateLiteralConstruct<TParseTemplateIntoTypes<Template>>
+export function TemplateLiteral<Template extends string>(template: Template, options?: TSchemaOptions): TTemplateLiteralFromString<Template>
 /** Creates a TemplateLiteral type. */
-export function TemplateLiteral<Types extends TSchema[]>(types: [...Types], options?: TSchemaOptions): TTemplateLiteralConstruct<Types>
+export function TemplateLiteral<Types extends TSchema[]>(types: [...Types], options?: TSchemaOptions): TTemplateLiteralFromTypes<Types>
 /** Creates a TemplateLiteral type. */
 export function TemplateLiteral(input: TSchema[] | string, options: TSchemaOptions = {}): never {
-  const types = Guard.IsString(input) ? ParseTemplateIntoTypes(input) : input
-  return TemplateLiteralConstruct(types, options) as never
+  const type = Guard.IsString(input) ? TemplateLiteralFromString(input) : TemplateLiteralFromTypes(input)
+  return Memory.Update(type, {}, options) as never
 }
 // ------------------------------------------------------------------
 // Guard
