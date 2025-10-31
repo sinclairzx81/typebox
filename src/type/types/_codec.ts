@@ -26,6 +26,8 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+// deno-fmt-ignore-file
+
 import { Memory } from '../../system/index.ts'
 import { Guard } from '../../guard/index.ts'
 import { type StaticDirection, type StaticType } from './static.ts'
@@ -35,9 +37,11 @@ import { type TProperties } from './properties.ts'
 // ------------------------------------------------------------------
 // Static
 // ------------------------------------------------------------------
-export type StaticCodec<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Type extends TSchema, Decoded extends unknown> = Direction extends 'Decode' ? Decoded
-  : StaticType<Stack, Direction, Context, This, Type>
-
+export type StaticCodec<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Type extends TSchema, Decoded extends unknown> = (
+  Direction extends 'Decode' 
+    ? Decoded
+    : StaticType<Stack, Direction, Context, This, Omit<Type, '~codec'>> // prevent recurrent static
+)
 // ------------------------------------------------------------------
 // Type
 // ------------------------------------------------------------------
