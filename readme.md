@@ -59,7 +59,6 @@ License: MIT
 
 - [Upgrade](#Upgrade)
 - [Type](#Type)
-- [Script](#Script)
 - [Value](#Value)
 - [Compile](#Compile)
 - [Contribute](#Contribute)
@@ -115,70 +114,6 @@ const S = Type.String({                            // const S = {
   format: 'email'                                  //   type: 'string',
 })                                                 //   format: 'email'
                                                    // }
-```
-
-
-<a name="Script"></a>
-
-## Script
-
-[Documentation](https://sinclairzx81.github.io/typebox/#/docs/script/overview) | [Example](https://www.typescriptlang.org/play/?moduleResolution=99&target=99&jsx=0&module=199#code/JYWwDg9gTgLgBAFQJ5gKZwGZQiOByGFVAIwgA88AoSgYwgDsBneBOAXkSIDoBlGqYGBgAKAAYBvOJThwyALjj0AriGKooAGikykC5avVbpcAF56VaqFIC+ogJQzHT5y9dv3zgPSe4dJi3Y4cWMPULDwp29HQjQFPAhiACtUGhg8DRCIrOzInxkoVABHJWACgBMFAG08Ci08JHT8EzwAXQycjpyomTBsNFhgVEYFYM6x8O7HeSC4GNQ4-Us8OGt28fW3SZ0R2aIFi3Vl1cyN07gt0x25-YMoI5Oz9cnrB8exqJfaBmY4HkDkNC8fiCESSVirOASYyVADScGA9DgAGtUEgIBhEC0FAhYS04AAfRRKAA2xMotgcb3GUT8Pz+HFGVI2k2u+ASyVS6VeTOykwKxVKqAqcGqtXwDTqzTa3J5EUmvQg-Rgg2GQRlsrCF2mknVGo8FxkAEN6EgAPIYKq6vWbPKuSSsvCLQ4rIzWjoGxz2vb4ZSk+5urq2px4q0B3LOY5hrIXXQzUNR85BxzGs0WkXxqMemRe2I+g53F3aBOapNOHPzPN+lYZsMekPFksRtYN9wXMxxlv60twFPmy2d1vd7O7XOO-NHV0D1xZmYO33E-1Tlx1otL8NOSNr9fVrfhz5zX7-bg8GCG5U0AA8c3RvwAfE8fAf6Wrd45JtMnVZCfPm7vJrHPwJIlSV-LdJnbQDvxJMlXxkD4gA)
-
-TypeBox can translate TypeScript syntax into Json Schema. The Script function is a fully type-safe, syntactic frontend to the TypeBox type builder API, allowing Json Schema to be constructed and mapped using TypeScript type expressions encoded as strings.
-
-### Example
-
-The following uses Script to construct and map Json Schema.
-
-```typescript
-import Type from 'typebox'
-
-const T = Type.Script(`{ 
-  x: number, 
-  y: number, 
-  z: number 
-}`)                                                 // const T = {
-                                                    //   type: 'object',
-                                                    //   required: ['x', 'y', 'z'],
-                                                    //   properties: {
-                                                    //     x: { type: 'number' },
-                                                    //     y: { type: 'number' },
-                                                    //     z: { type: 'number' }
-                                                    //   }
-                                                    // }
-
-const S = Type.Script({ T }, `{
-  [K in keyof T]: T[K] | null
-}`)                                                 // const S = {
-                                                    //   type: 'object',
-                                                    //   required: ['x', 'y', 'z'],
-                                                    //   properties: {
-                                                    //     x: { 
-                                                    //       anyOf: [
-                                                    //         { type: 'number' }, 
-                                                    //         { type: 'null' }
-                                                    //       ] 
-                                                    //     },
-                                                    //     y: { 
-                                                    //       anyOf: [
-                                                    //         { type: 'number' }, 
-                                                    //         { type: 'null' }
-                                                    //       ] 
-                                                    //     },
-                                                    //     z: { 
-                                                    //       anyOf: [
-                                                    //         { type: 'number' }, 
-                                                    //         { type: 'null' }
-                                                    //       ] 
-                                                    //     },
-                                                    //   }
-                                                    // }
-
-type S = Type.Static<typeof S>                      // type S = {
-                                                    //   x: number | null,
-                                                    //   y: number | null,
-                                                    //   z: number | null
-                                                    // }
 ```
 
 <a name="Value"></a>
