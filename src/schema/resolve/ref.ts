@@ -35,7 +35,6 @@ import * as Schema from '../types/index.ts'
 // ------------------------------------------------------------------
 import { FindRef } from './find-ref.ts'
 
-export function Ref(schema: Schema.XSchema, ref: string): Schema.XSchema | undefined {
-  console.log(ref, schema)
-  return FindRef(schema, ref)
+export function Ref(root: Schema.XSchema, base: URL = new URL('memory://root'), ref: string = '#'): Schema.XSchema | undefined {
+  return FindRef(root, base, ref)
 }

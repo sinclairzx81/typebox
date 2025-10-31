@@ -70,7 +70,7 @@ export function GetFunctions(): string[] {
 // CreateFunction
 // ------------------------------------------------------------------
 export function CreateFunction(stack: Stack, context: BuildContext, schema: Schema.XSchema, value: string): string {
-  const hash = Schema.IsSchemaObject(schema) ? Hashing.Hash({ __baseURL: stack.BaseURL().href, ...schema }) : Hashing.Hash(schema)
+  const hash = Schema.IsSchemaObject(schema) ? Hashing.Hash({ __baseURL: stack.Current().href, ...schema }) : Hashing.Hash(schema)
   const call = CreateCallExpression(context, schema, hash, value)
   if (functions.has(hash)) return call
   functions.set(hash, '')

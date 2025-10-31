@@ -30,17 +30,20 @@ import { Guard } from '../../guard/index.ts'
 import * as Schema from '../types/index.ts'
 import { Enumerate } from './enumerate.ts'
 
-export function FindId(schema: Schema.XSchema, id: string, base: URL): Schema.XSchema | undefined {
+export function FindIdExact(schema: Schema.XSchema, id: string): Schema.XSchema | undefined {
+  for (const qualified of Enumerate(schema)) {
+    if (Schema.IsId(qualified.schema) && Guard.IsEqual(qualified.schema.$id, id)) {
+      return qualified.schema
+    }
+  }
+  return undefined
+}
+export function FindIdQualified(schema: Schema.XSchema, id: string, base: URL): Schema.XSchema | undefined {
   const absoluteRef = new URL(id, base)
   for (const qualified of Enumerate(schema)) {
-    if (!Schema.IsId(qualified.schema)) continue
-    if (Guard.IsEqual(qualified.schema.$id, id)) {
+    if (Schema.IsId(qualified.schema) && Guard.IsEqual(absoluteRef.pathname, qualified.url.pathname)) {
       return qualified.schema
     }
-    if (Guard.IsEqual(absoluteRef.pathname, qualified.url.pathname)) {
-      return qualified.schema
-    }
-    console.log(absoluteRef.href, qualified.url.href)
   }
   return undefined
 }

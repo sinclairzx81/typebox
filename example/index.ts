@@ -4,24 +4,23 @@ import Format from 'typebox/format'
 import Schema from 'typebox/schema'
 import Value from 'typebox/value'
 import Type from 'typebox'
+import { Base } from '../src/typebox.ts'
 
 const R = Schema.Resolver.FindRef({
-  "$id": "http://example.com/ref/absref.json",
-  "definitions": {
-    "a": {
-      "$id": "http://example.com/ref/absref/foobar.json",
-      "type": "number"
-    },
-    "b": {
-      "$id": "http://example.com/absref/foobar.json",
-      "type": "string"
+  "$id": "urn:uuid:deadbeef-1234-ff00-00ff-4321feebdaed",
+  "properties": {
+    "foo": {
+      "$ref": "urn:uuid:deadbeef-1234-ff00-00ff-4321feebdaed#something"
     }
   },
-  "allOf": [
-    {
-      "$ref": "/absref/foobar.json"
+  "definitions": {
+    "bar": {
+      "$id": "#something",
+      "type": "string"
     }
-  ]
-}, "/absref/foobar.json")
+  }
+}, new URL('memory://root'), "urn:uuid:deadbeef-1234-ff00-00ff-4321feebdaed#something")
+
+
 
 console.log(R)

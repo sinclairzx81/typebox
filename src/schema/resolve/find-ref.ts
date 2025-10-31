@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 import * as Schema from '../types/index.ts'
 import { Guard } from '../../guard/index.ts'
-import { FindId } from './find-id.ts'
+import { FindIdQualified, FindIdExact } from './find-id.ts'
 import { FindPointer } from './find-pointer.ts'
 import { FindAnchor } from './find-anchor.ts'
 import { Fragment } from './fragment.ts'
@@ -36,12 +36,12 @@ import { Fragment } from './fragment.ts'
 // ------------------------------------------------------------------
 // FindUriWithFragment
 // ------------------------------------------------------------------
-function FindUriWithFragment(schema: Schema.XSchema, ref: string, base: URL = new URL('memory://root')) {
-  const [target, pointer] = ref.includes('#') ? ref.split('#') : [ref, '']
-  const resolved = FindId(schema, target, base)
-  if (Guard.IsUndefined(resolved)) return resolved
-  if (Guard.IsEqual(pointer, '')) return resolved
-  return FindRef(resolved, `#${pointer}`)
+function FindIdWithFragment(schema: Schema.XSchema, ref: string, base: URL) {
+  const [id, fragment] = ref.includes('#') ? ref.split('#') : [ref, '']
+  const found = FindIdQualified(schema, id, base)
+  if (Guard.IsUndefined(found)) return found
+  if (Guard.IsEqual(fragment, '')) return found
+  return FindFragment(found, `#${fragment}`)
 }
 // ------------------------------------------------------------------
 // FindFragment
@@ -49,13 +49,15 @@ function FindUriWithFragment(schema: Schema.XSchema, ref: string, base: URL = ne
 function FindFragment(schema: Schema.XSchema, ref: string) {
   const fragment = Fragment(ref)
   return (
+    FindIdExact(schema, ref) ??
     FindPointer(schema, fragment) ??
-      FindAnchor(schema, fragment)
+    FindAnchor(schema, fragment)
   )
 }
 // ------------------------------------------------------------------
 // FindRef
 // ------------------------------------------------------------------
-export function FindRef(schema: Schema.XSchema, ref: string, base: URL = new URL('memory://root')): Schema.XSchema | undefined {
-  return FindUriWithFragment(schema, ref, base) ?? FindFragment(schema, ref)
+export function FindRef(root: Schema.XSchema, base: URL, ref: string): Schema.XSchema | undefined {
+  base = Schema.IsId(root) ? new URL(root.$id, base) : base
+  return FindIdWithFragment(root, new URL(ref, base).href, base) ?? FindFragment(root, ref)
 }

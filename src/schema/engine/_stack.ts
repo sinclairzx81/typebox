@@ -44,10 +44,10 @@ export class Stack {
   // ----------------------------------------------------------------
   // Base
   // ----------------------------------------------------------------
-  public BaseURL(): URL {
+  public Current(): URL {
     return this.ids.reduce((result, schema) => new URL(schema.$id, result), new URL('root', 'memory://'))
   }
-  public Base(): Schema.XSchemaObject {
+  public Scope(): Schema.XSchemaObject {
     return this.ids[this.ids.length - 1] ?? this.schema
   }
   // ----------------------------------------------------------------
@@ -74,7 +74,7 @@ export class Stack {
     return G.HasPropertyKey(this.context, ref) ? this.context[ref] : undefined
   }
   private FromRef(ref: string): Schema.XSchema | undefined {
-    return Resolver.Ref(this.schema, ref)
+    return Resolver.Ref(this.schema, this.Current(), ref)
   }
   public Ref(ref: string): Schema.XSchema | undefined {
     return this.FromContext(ref) ?? this.FromRef(ref)
@@ -83,10 +83,10 @@ export class Stack {
   // RecursiveRef
   // ----------------------------------------------------------------
   public RecursiveRef(recursiveRef: string): Schema.XSchema | undefined {
-    if (Schema.IsRecursiveAnchorTrue(this.Base())) {
-      return Resolver.Ref(this.recursiveAnchors[0], recursiveRef)
+    if (Schema.IsRecursiveAnchorTrue(this.Scope())) {
+      return Resolver.Ref(this.recursiveAnchors[0], this.Current(), recursiveRef)
     }
-    return Resolver.Ref(this.Base(), recursiveRef)
+    return Resolver.Ref(this.Scope(), this.Current(), recursiveRef)
   }
   // ----------------------------------------------------------------
   // DynamicRef
