@@ -90,6 +90,7 @@ import { type TOptionsInstantiate, OptionsInstantiate } from './options/instanti
 import { type TParametersInstantiate, ParametersInstantiate } from './parameters/instantiate.ts'
 import { type TPartialInstantiate, PartialInstantiate } from './partial/instantiate.ts'
 import { type TPickInstantiate, PickInstantiate } from './pick/instantiate.ts'
+import { type TReadonlyTypeInstantiate, ReadonlyTypeInstantiate } from './readonly-type/instantiate.ts'
 import { type TRecordInstantiate, RecordInstantiate } from './record/instantiate.ts'
 import { type TRefInstantiate, RefInstantiate } from './ref/instantiate.ts'
 import { type TRequiredInstantiate, RequiredInstantiate } from './required/instantiate.ts'
@@ -288,6 +289,7 @@ type TInstantiateDeferred<Context extends TProperties, State extends TState, Act
   [Action, Parameters] extends ['Parameters', [infer Type extends TSchema]] ? TParametersInstantiate<Context, State, Type> :
   [Action, Parameters] extends ['Partial', [infer Type extends TSchema]] ? TPartialInstantiate<Context, State, Type> :
   [Action, Parameters] extends ['Omit', [infer Type extends TSchema, infer Indexer extends TSchema]] ? TOmitInstantiate<Context, State, Type, Indexer> :
+  [Action, Parameters] extends ['ReadonlyType', [infer Type extends TSchema]] ? TReadonlyTypeInstantiate<Context, State, Type> :
   [Action, Parameters] extends ['Record', [infer Key extends TSchema, infer Value extends TSchema]] ? TRecordInstantiate<Context, State, Key, Value> :
   [Action, Parameters] extends ['Required', [infer Type extends TSchema]] ? TRequiredInstantiate<Context, State, Type> :
   [Action, Parameters] extends ['ReturnType', [infer Type extends TSchema]] ? TReturnTypeInstantiate<Context, State, Type> :
@@ -320,6 +322,7 @@ function InstantiateDeferred<Context extends TProperties, State extends TState, 
     Guard.IsEqual(action, 'Parameters') ? ParametersInstantiate(context, state, parameters[0], options) :
     Guard.IsEqual(action, 'Partial') ? PartialInstantiate(context, state, parameters[0], options) :
     Guard.IsEqual(action, 'Omit') ? OmitInstantiate(context, state, parameters[0], parameters[1], options) :
+    Guard.IsEqual(action, 'ReadonlyType') ? ReadonlyTypeInstantiate(context, state, parameters[0], options) :
     Guard.IsEqual(action, 'Record') ? RecordInstantiate(context, state, parameters[0], parameters[1], options) :
     Guard.IsEqual(action, 'Required') ? RequiredInstantiate(context, state, parameters[0], options) :
     Guard.IsEqual(action, 'ReturnType') ? ReturnTypeInstantiate(context, state, parameters[0], options) :

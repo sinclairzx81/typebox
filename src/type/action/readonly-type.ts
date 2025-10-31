@@ -4,7 +4,7 @@ TypeBox
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2025 Haydn Paterson
+Copyright (c) 2017-2025 Haydn Paterson 
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,41 +26,31 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// ------------------------------------------------------------------
-// Engine: Public
-// ------------------------------------------------------------------
-export { Instantiate, type TInstantiate } from './instantiate.ts'
+// deno-fmt-ignore-file
+
+import { type TSchema, type TSchemaOptions } from '../types/schema.ts'
+import { type TDeferred, Deferred } from '../types/deferred.ts'
+import { type TInstantiate, Instantiate } from '../engine/instantiate.ts'
 
 // ------------------------------------------------------------------
-// Engine: Internals
+// Deferred
 // ------------------------------------------------------------------
-export * from './awaited/index.ts'
-export * from './conditional/index.ts'
-export * from './constructor-parameters/index.ts'
-export * from './cyclic/index.ts'
-export * from './enum/index.ts'
-export * from './evaluate/index.ts'
-export * from './exclude/index.ts'
-export * from './extract/index.ts'
-export * from './helpers/index.ts'
-export * from './indexed/index.ts'
-export * from './instance-type/index.ts'
-export * from './interface/index.ts'
-export * from './intrinsics/index.ts'
-export * from './keyof/index.ts'
-export * from './mapped/index.ts'
-export * from './module/index.ts'
-export * from './non-nullable/index.ts'
-export * from './object/index.ts'
-export * from './omit/index.ts'
-export * from './options/index.ts'
-export * from './parameters/index.ts'
-export * from './patterns/index.ts'
-export * from './partial/index.ts'
-export * from './pick/index.ts'
-export * from './readonly-type/index.ts'
-export * from './record/index.ts'
-export * from './ref/index.ts'
-export * from './required/index.ts'
-export * from './return-type/index.ts'
-export * from './template-literal/index.ts'
+/** Creates a deferred ReadonlyType action. */
+export type TReadonlyTypeDeferred<Type extends TSchema> = (
+  TDeferred<'ReadonlyType', [Type]>
+)
+/** Creates a deferred ReadonlyType action. */
+export function ReadonlyTypeDeferred<Type extends TSchema>(type: Type, options: TSchemaOptions = {}) {
+  return Deferred('ReadonlyType', [type], options)
+}
+// ------------------------------------------------------------------
+// Type
+// ------------------------------------------------------------------
+/** This type is an alias for the TypeScript `Readonly<T>` utility type. */
+export type TReadonlyType<Type extends TSchema> = (
+  TInstantiate<{}, TReadonlyTypeDeferred<Type>>
+)
+/** This type is an alias for the TypeScript `Readonly<T>` utility type. */
+export function ReadonlyType<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TReadonlyType<Type> {
+  return Instantiate({}, ReadonlyTypeDeferred(type, options)) as never
+}

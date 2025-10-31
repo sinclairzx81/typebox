@@ -58,6 +58,7 @@ type TIntrinsicOrCall<Target extends string, Parameters extends T.TSchema[]> = (
   [Target, Parameters] extends ['Parameters', [infer Type extends T.TSchema]] ? C.TParametersDeferred<Type> :
   [Target, Parameters] extends ['Partial', [infer Type extends T.TSchema]] ? C.TPartialDeferred<Type> :
   [Target, Parameters] extends ['Pick', [infer Type extends T.TSchema, infer Indexer extends T.TSchema]] ? C.TPickDeferred<Type, Indexer> :
+  [Target, Parameters] extends ['Readonly', [infer Type extends T.TSchema]] ? C.TReadonlyTypeDeferred<Type> :
   [Target, Parameters] extends ['Record', [infer Key extends T.TSchema, infer Value extends T.TSchema]] ? T.TRecordDeferred<Key, Value> :
   [Target, Parameters] extends ['Required', [infer Type extends T.TSchema]] ? C.TRequiredDeferred<Type> :
   [Target, Parameters] extends ['ReturnType', [infer Type extends T.TSchema]] ? C.TReturnTypeDeferred<Type> :

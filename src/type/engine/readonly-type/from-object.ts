@@ -4,7 +4,7 @@ TypeBox
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2025 Haydn Paterson
+Copyright (c) 2017-2025 Haydn Paterson 
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,31 +25,23 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
-export * from './_optional.ts'
-export * from './_readonly.ts'
 
-export * from './awaited.ts'
-export * from './capitalize.ts'
-export * from './conditional.ts'
-export * from './constructor-parameters.ts'
-export * from './evaluate.ts'
-export * from './exclude.ts'
-export * from './extract.ts'
-export * from './indexed.ts'
-export * from './instance-type.ts'
-export * from './interface.ts'
-export * from './keyof.ts'
-export * from './lowercase.ts'
-export * from './mapped.ts'
-export * from './module.ts'
-export * from './non-nullable.ts'
-export * from './omit.ts'
-export * from './options.ts'
-export * from './parameters.ts'
-export * from './partial.ts'
-export * from './pick.ts'
-export * from './readonly-type.ts'
-export * from './required.ts'
-export * from './return-type.ts'
-export * from './uncapitalize.ts'
-export * from './uppercase.ts'
+// deno-fmt-ignore-file
+
+import { Guard } from '../../../guard/index.ts'
+import { type TSchema } from '../../types/schema.ts'
+import { type TObject, Object } from '../../types/object.ts'
+import { type TReadonlyAdd, Readonly } from '../../types/_readonly.ts'
+import { type TProperties } from '../../types/properties.ts'
+
+export type TFromObject<Properties extends TProperties,
+  Mapped extends TProperties = { [Key in keyof Properties]: TReadonlyAdd<Properties[Key]> },
+  Result extends TSchema = TObject<Mapped>
+> = Result
+export function FromObject<Properties extends TProperties>(properties: Properties): TFromObject<Properties> {
+  const mapped = Guard.Keys(properties).reduce((result, left) => {
+    return { ...result, [left]: Readonly(properties[left]) }
+  }, {} as TProperties)
+  const result = Object(mapped)
+  return result as never
+}

@@ -4,7 +4,7 @@ TypeBox
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2025 Haydn Paterson
+Copyright (c) 2017-2025 Haydn Paterson 
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,31 +25,22 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
-export * from './_optional.ts'
-export * from './_readonly.ts'
 
-export * from './awaited.ts'
-export * from './capitalize.ts'
-export * from './conditional.ts'
-export * from './constructor-parameters.ts'
-export * from './evaluate.ts'
-export * from './exclude.ts'
-export * from './extract.ts'
-export * from './indexed.ts'
-export * from './instance-type.ts'
-export * from './interface.ts'
-export * from './keyof.ts'
-export * from './lowercase.ts'
-export * from './mapped.ts'
-export * from './module.ts'
-export * from './non-nullable.ts'
-export * from './omit.ts'
-export * from './options.ts'
-export * from './parameters.ts'
-export * from './partial.ts'
-export * from './pick.ts'
-export * from './readonly-type.ts'
-export * from './required.ts'
-export * from './return-type.ts'
-export * from './uncapitalize.ts'
-export * from './uppercase.ts'
+// deno-fmt-ignore-file
+
+import { type TSchema } from '../../types/schema.ts'
+import { type TUnion, Union } from '../../types/union.ts'
+import { type TFromType, FromType } from './from-type.ts'
+
+// ------------------------------------------------------------------
+// FromUnion
+// ------------------------------------------------------------------
+export type TFromUnion<Types extends TSchema[], Result extends TSchema[] = []> = (
+  Types extends [infer Left extends TSchema, ...infer Right extends TSchema[]]
+    ? TFromUnion<Right, [...Result, TFromType<Left>]>
+    : TUnion<Result>
+)
+export function FromUnion<Types extends TSchema[]>(types: [...Types]): TFromUnion<Types> {
+  const result = types.map(type => FromType(type))
+  return Union(result) as never
+}
