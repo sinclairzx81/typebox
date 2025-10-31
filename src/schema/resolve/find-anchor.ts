@@ -31,11 +31,12 @@ import { Guard } from '../../guard/index.ts'
 import { Enumerate } from './enumerate.ts'
 
 export function FindAnchor(schema: Schema.XSchema, anchor: string): Schema.XSchema | undefined {
-  anchor = anchor.startsWith('#') ? anchor.slice(1) : anchor
+  // note: we need to enumerate all anchors because duplicate anchors select the last
+  let matched: Schema.XSchema | undefined = undefined
   for (const qualified of Enumerate(schema)) {
     if (!Schema.IsAnchor(qualified.schema)) continue
     if (!Guard.IsEqual(qualified.schema.$anchor, anchor)) continue
-    return qualified.schema
+    matched = qualified.schema
   }
-  return undefined
+  return matched
 }

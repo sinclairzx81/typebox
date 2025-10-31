@@ -26,16 +26,36 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-fmt-ignore-file
-
 import * as Schema from '../types/index.ts'
+import { Guard } from '../../guard/index.ts'
+import { FindId } from './find-id.ts'
+import { FindPointer } from './find-pointer.ts'
+import { FindAnchor } from './find-anchor.ts'
+import { Fragment } from './fragment.ts'
 
 // ------------------------------------------------------------------
-// Ref
+// FindUriWithFragment
 // ------------------------------------------------------------------
-import { FindRef } from './find-ref.ts'
-
-export function Ref(schema: Schema.XSchema, ref: string): Schema.XSchema | undefined {
-  console.log(ref, schema)
-  return FindRef(schema, ref)
+function FindUriWithFragment(schema: Schema.XSchema, ref: string, base: URL = new URL('memory://root')) {
+  const [target, pointer] = ref.includes('#') ? ref.split('#') : [ref, '']
+  const resolved = FindId(schema, target, base)
+  if (Guard.IsUndefined(resolved)) return resolved
+  if (Guard.IsEqual(pointer, '')) return resolved
+  return FindRef(resolved, `#${pointer}`)
+}
+// ------------------------------------------------------------------
+// FindFragment
+// ------------------------------------------------------------------
+function FindFragment(schema: Schema.XSchema, ref: string) {
+  const fragment = Fragment(ref)
+  return (
+    FindPointer(schema, fragment) ??
+      FindAnchor(schema, fragment)
+  )
+}
+// ------------------------------------------------------------------
+// FindRef
+// ------------------------------------------------------------------
+export function FindRef(schema: Schema.XSchema, ref: string, base: URL = new URL('memory://root')): Schema.XSchema | undefined {
+  return FindUriWithFragment(schema, ref, base) ?? FindFragment(schema, ref)
 }

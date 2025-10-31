@@ -26,15 +26,21 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import * as Schema from '../types/index.ts'
 import { Guard } from '../../guard/index.ts'
+import * as Schema from '../types/index.ts'
 import { Enumerate } from './enumerate.ts'
 
-export function FindDynamicAnchor(schema: Schema.XSchema, anchor: string): Schema.XSchema | undefined {
+export function FindId(schema: Schema.XSchema, id: string, base: URL): Schema.XSchema | undefined {
+  const absoluteRef = new URL(id, base)
   for (const qualified of Enumerate(schema)) {
-    if (!Schema.IsDynamicAnchor(qualified.schema)) continue
-    if (!Guard.IsEqual(qualified.schema.$dynamicAnchor, anchor)) continue
-    return qualified.schema
+    if (!Schema.IsId(qualified.schema)) continue
+    if (Guard.IsEqual(qualified.schema.$id, id)) {
+      return qualified.schema
+    }
+    if (Guard.IsEqual(absoluteRef.pathname, qualified.url.pathname)) {
+      return qualified.schema
+    }
+    console.log(absoluteRef.href, qualified.url.href)
   }
   return undefined
 }

@@ -26,15 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import * as Schema from '../types/index.ts'
-import { Guard } from '../../guard/index.ts'
-import { Enumerate } from './enumerate.ts'
-
-export function FindDynamicAnchor(schema: Schema.XSchema, anchor: string): Schema.XSchema | undefined {
-  for (const qualified of Enumerate(schema)) {
-    if (!Schema.IsDynamicAnchor(qualified.schema)) continue
-    if (!Guard.IsEqual(qualified.schema.$dynamicAnchor, anchor)) continue
-    return qualified.schema
-  }
-  return undefined
+export function Fragment(value: string): string {
+  const result = value.startsWith('#') ? value.slice(1) : value
+  return decodeURIComponent(result)
 }

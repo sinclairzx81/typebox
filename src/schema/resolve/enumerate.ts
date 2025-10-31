@@ -39,7 +39,7 @@ export interface QualifiedSchema {
 // ------------------------------------------------------------------
 // FromSchemaArray
 // ------------------------------------------------------------------
-function* FromSchemaArray(schema: Schema.XSchema[], base: URL, path: string): IterableIterator<QualifiedSchema> {
+function* FromSchemaArray(schema: unknown[], base: URL, path: string): IterableIterator<QualifiedSchema> {
   for (let i = 0; i < schema.length; i++) {
     yield* FromSchema(schema[i], base, `${path}${path[i]}`)
   }
@@ -47,22 +47,26 @@ function* FromSchemaArray(schema: Schema.XSchema[], base: URL, path: string): It
 // ------------------------------------------------------------------
 // FromSchemaObject
 // ------------------------------------------------------------------
-function* FromSchemaObject(schema: Schema.XSchemaObject, base: URL, path: string): IterableIterator<QualifiedSchema> {
-  if (!Schema.IsSchemaObject(schema)) return
+function* FromSchemaObject(schema: {}, base: URL, path: string): IterableIterator<QualifiedSchema> {
   for (const [key, value] of Guard.Entries(schema as any)) {
-    if (!Schema.IsSchema(value)) continue
     yield* FromSchema(value, base, `${path}/${key}`)
   }
 }
 // ------------------------------------------------------------------
 // FromSchema
 // ------------------------------------------------------------------
-function* FromSchema(schema: Schema.XSchema, base: URL, path: string): IterableIterator<QualifiedSchema> {
-  const isId = Schema.IsId(schema)
+function* FromSchema(schema: unknown, base: URL, path: string): IterableIterator<QualifiedSchema> {
+  // rebase if schema has an $id
+  const isId = Schema.IsSchemaObject(schema) && Schema.IsId(schema)
   base = isId ? new URL(schema.$id, base) : base
   path = isId ? '' : path
-  const url = Guard.IsEqual(path, '') ? base : new URL(`#${path}`, base)
-  yield { url, schema }
+
+  // the schema is a valid XSchema, then yield
+  if (Schema.IsSchema(schema)) {
+    const url = Guard.IsEqual(path, '') ? base : new URL(`#${path}`, base)
+    yield { url, schema }
+  }
+  // traveral
   if (Schema.IsSchemaArray(schema)) yield* FromSchemaArray(schema, base, path)
   if (Schema.IsSchemaObject(schema)) yield* FromSchemaObject(schema, base, path)
 }

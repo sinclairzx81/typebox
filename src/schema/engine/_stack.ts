@@ -74,9 +74,7 @@ export class Stack {
     return G.HasPropertyKey(this.context, ref) ? this.context[ref] : undefined
   }
   private FromRef(ref: string): Schema.XSchema | undefined {
-    return !ref.startsWith('#')
-      ? Resolver.Ref(this.schema as Schema.XSchemaObject, ref)
-      : Resolver.Ref(this.Base(), ref) 
+    return Resolver.Ref(this.schema, ref)
   }
   public Ref(ref: string): Schema.XSchema | undefined {
     return this.FromContext(ref) ?? this.FromRef(ref)
