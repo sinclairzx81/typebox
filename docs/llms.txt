@@ -1,0 +1,4478 @@
+# Source: docs/overview/overview.md
+
+# TypeBox
+
+A Runtime Type System for JavaScript
+
+## Overview
+
+TypeBox is a runtime type system that creates in-memory Json Schema objects that infer as TypeScript types. The schematics produced by this library are designed to match the static type checking rules of the TypeScript compiler. TypeBox offers a unified type system that can be statically checked by TypeScript and validated at runtime using standard Json Schema.
+
+This library is designed to allow Json Schema to compose similar to how types compose within TypeScript's type system. It can be used as a simple tool to build up complex schematics or integrated into REST and RPC services to help validate data received over the wire.
+
+## Features
+
+## Type
+
+The Type namespace creates Json Schema.
+
+```typescript
+import Type from 'typebox'
+
+const T = Type.Object({                             // const T = {
+  x: Type.Number(),                                 //   type: 'object',
+  y: Type.Number(),                                 //   required: ['x', 'y', 'z'],
+  z: Type.Number()                                  //   properties: {
+})                                                  //     x: { type: 'number' },
+                                                    //     y: { type: 'number' },
+                                                    //     z: { type: 'number' }
+                                                    //   }
+                                                    // }
+
+type T = Type.Static<typeof T>                      // type T = {
+                                                    //   x: number,
+                                                    //   y: number,
+                                                    //   z: number
+                                                    // }
+```
+
+## Script
+
+The Script creates Json Schema from TypeScript syntax.
+
+```typescript
+import Type from 'typebox'
+
+const T = Type.Script(`{
+  x: number
+  y: number
+  z: number
+}`)
+
+type T = Static<typeof T>                           // type T = {
+                                                    //   x: number,
+                                                    //   y: number,
+                                                    //   z: number
+                                                    // }
+
+const S = Type.Script({ T }, `{
+  [K in keyof T]: T[K] | null
+}`)
+
+type S = Type.Static<typeof S>                      // type S = {
+                                                    //   x: number | null,
+                                                    //   y: number | null,
+                                                    //   z: number | null
+                                                    // }
+```
+
+## Compile
+
+The Compile module compiles high-performance validators.
+
+```typescript
+import { Compile } from 'typebox/compile'
+
+const C = Compile(Type.Script(`{
+  x: number
+  y: number
+  z: number
+}`))
+
+const R = C.Parse(...)                              // const R: {
+                                                    //   x: number,
+                                                    //   y: number,
+                                                    //   z: number
+                                                    // } = ...
+```
+
+---
+
+# Source: docs/overview/1_install.md
+
+# Install
+
+TypeBox can be installed via Npm
+
+## Latest
+
+Post-1.0 versions can be installed with the following.
+
+```typescript
+$ npm install typebox --save
+```
+
+## Legacy
+
+Pre-1.0 versions can be installed with the following.
+
+```typescript
+$ npm install @sinclair/typebox --save
+```
+
+---
+
+# Source: docs/overview/2_setup.md
+
+# Setup
+
+TypeBox requires no special configuration to use, but it is recommended to configure tsconfig.json with `strict: true`.
+
+```typescript
+// file: tsconfig.json
+
+{
+  "compilerOptions": {
+    "strict": true
+  }
+}
+```
+
+---
+
+# Source: docs/type/overview.md
+
+# Type
+
+A Json Schema Type Builder with Static Inference for TypeScript
+
+## Overview
+
+TypeBox includes many functions to create Json Schema types. Each function returns a small Json Schema fragment that corresponds to a TypeScript type. TypeBox uses function composition to combine schema fragments into more complex types. It provides a set of functions that are used to model Json Schema schematics as well as a set of functions that model constructs native to JavaScript and TypeScript.
+
+## Example
+
+The following creates a Json Schema type and infers with Static.
+
+```typescript
+import Type from 'typebox'
+
+const T = Type.Object({                             // const T = {
+  x: Type.Number(),                                 //   type: 'object',
+  y: Type.Number(),                                 //   required: ['x', 'y', 'z'],
+  z: Type.Number()                                  //   properties: {
+})                                                  //     x: { type: 'number' },
+                                                    //     y: { type: 'number' },
+                                                    //     z: { type: 'number' }
+                                                    //   }
+                                                    // }
+
+type T = Type.Static<typeof T>                      // type T = {
+                                                    //   x: number,
+                                                    //   y: number,
+                                                    //   z: number
+                                                    // }
+```
+
+---
+
+# Source: docs/type/any.md
+
+# Any
+
+Creates an Any type.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const T = Type.Any()                                // const T = {}
+
+type T = Static<typeof T>                           // type T = any
+```
+
+## Guard
+
+Use the IsAny function to guard values of this type.
+
+```typescript
+Type.IsAny(value)                                  // value is TAny
+```
+
+---
+
+# Source: docs/type/array.md
+
+# Array
+
+Creates an Array type.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const T = Type.Array(Type.Number())                 // const T = {
+                                                    //   type: 'array',
+                                                    //   items: {
+                                                    //     type: 'number',
+                                                    //   }
+                                                    // }
+
+type T = Static<typeof T>                           // type T = number[]
+```
+
+## Guard
+
+Use the IsArray function to guard values of this type.
+
+```typescript
+Type.IsArray(value)                                 // value is TArray                                          
+```
+
+## Options
+
+```typescript
+export interface TArrayOptions extends TSchemaOptions {
+  /** 
+   * The minimum number of items allowed in the array. 
+   */
+  minItems?: number
+  /** 
+   * The maximum number of items allowed in the array. 
+   */
+  maxItems?: number
+  /** 
+   * A schema that at least one item in the array must validate against. 
+   */
+  contains?: TSchema
+  /** 
+   * The minimum number of array items that must validate against the `contains` schema. 
+   */
+  minContains?: number
+  /** 
+   * The maximum number of array items that may validate against the `contains` schema. 
+   */
+  maxContains?: number
+  /** 
+   * An array of schemas, where each schema in `prefixItems` validates against items at corresponding positions from the beginning of the array. 
+   */
+  prefixItems?: TSchema[]
+  /** 
+   * If `true`, all items in the array must be unique. 
+   */
+  uniqueItems?: boolean
+}
+
+```
+
+---
+
+# Source: docs/type/async-iterator.md
+
+# AsyncIterator
+
+Creates an AsyncIterator type. 
+
+> ⚠️ This type is used for interface definitions and cannot be validated.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const T = Type.AsyncIterator(Type.Number())         // const T = {
+                                                    //   type: 'async-iterator',
+                                                    //   iteratorItems: {
+                                                    //     type: 'number'
+                                                    //   }
+                                                    // }
+
+type T = Static<typeof T>                           // type T = AsyncIterableIterator<number>
+ 
+```
+
+## Guard
+
+Use the IsAsyncIterator function to guard values of this type.
+
+```typescript
+Type.IsAsyncIterator(value)                         // value is TAsyncIterator
+```
+
+---
+
+# Source: docs/type/awaited.md
+
+# Awaited
+
+The Awaited function unwraps a Promise and returns the interior type.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const T = Type.Promise(Type.String())
+
+const S = Type.Awaited(T)                           // const S: TString
+```
+
+---
+
+# Source: docs/type/base.md
+
+# Base
+
+Base class for building extended types.
+
+## Definition
+
+The Base type is a class definition that includes methods which can be overridden. The two primary methods to override are Check and Errors, both of which are invoked by TypeBox validators. By convention, Base type definitions begin with a leading `T` and are paired with a factory function that creates instances of the type. The following example demonstrates how to define a DateType using Base. 
+
+```typescript
+export class TDateType extends Type.Base<Date> {
+  public override Check(value: unknown): value is Date {
+    return value instanceof Date
+  }
+  public override Errors(value: unknown): object[] {
+    return !this.Check(value) ? [{ message: 'not a Date'}] : []
+  }
+}
+
+export function DateType(): TDateType {
+  return new TDateType()
+}
+```
+
+## Usage
+
+Once created, the type can be used with TypeBox validators.
+
+```typescript
+const R = Value.Check(DateType(), new Date())      // const R = true
+
+const E = Value.Errors(DateType(), 'x')            // const E = [{
+                                                   //   keyword: "~base",
+                                                   //   schemaPath: "#",
+                                                   //   instancePath: "",
+                                                   //   params: { 
+                                                   //     errors: [ { message: "not a Date" } ] 
+                                                   //   },
+                                                   //   message: "must match against typebox schema"
+                                                   // }]
+```
+
+## Guard
+
+Use the IsBase function to guard values of this type.
+
+```typescript
+Type.IsBase(value)                                  // value is Base
+```
+
+---
+
+# Source: docs/type/bigint.md
+
+# BigInt
+
+Creates a BigInt type. 
+
+> ⚠️ This is type is cannot be expressed with Json. Do not use if publishing types for other languages to consume.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const T = Type.BigInt()                             // const T = {
+                                                    //   type: 'bigint'
+                                                    // }
+
+type T = Static<typeof T>                           // type T = bigint
+```
+
+## Guard
+
+Use the IsBigInt function to guard values of this type.
+
+```typescript
+Type.IsBigInt(value)                                // value is TBigInt
+```
+
+---
+
+# Source: docs/type/boolean.md
+
+# Boolean
+
+Create a Boolean type.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const T = Type.Boolean()                            // const T = { type: 'boolean' }
+
+type T = Static<typeof T>                           // type T = boolean
+```
+
+## Guard
+
+Use the IsBoolean function to guard values of this type.
+
+```typescript
+Type.IsBoolean(value)                               // value is TBoolean
+```
+
+---
+
+# Source: docs/type/call.md
+
+# Call
+
+The Call function invokes Generic type.
+
+> ⚠️ This function is a Script evalutation action.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const G = Type.Generic([
+  Type.Parameter('T')
+], Type.Array(Type.Ref('T')))
+
+const S = Type.Call(G, [Type.Number()])             // const S: TArray<TNumber>
+```
+
+## Guard
+
+Use the IsCall function to guard values of this type.
+
+```typescript
+Type.IsCall(value)                                  // value is TCall
+```
+
+---
+
+# Source: docs/type/capitalize.md
+
+# Capitalize
+
+The Capitalize function will capitalize string literals.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const T = Type.Literal('hello')
+
+const S = Type.Capitalize(T)                        // const S: TLiteral<'Hello'>
+```
+
+---
+
+# Source: docs/type/codec.md
+
+# Codec
+
+The Codec function applies a bi-directional transform codec to a type.
+
+## Example
+
+The following creates a Codec that transforms a timestamp into a Date object.
+
+```typescript
+const Timestamp = Type.Codec(Type.Integer())        // const Timestamp = {
+  .Decode(value => new Date(value))                 //   type: 'integer',
+  .Encode(value => value.getTime())                 //   '~codec': {
+                                                    //      decode: value => new Date(), 
+                                                    //      encode: value => value.getTime()
+                                                    //   }
+                                                    // } 
+
+// Use Value.Decode() and Value.Encode() to run Decode and Encode callbacks.
+
+const D = Value.Decode(Timestamp, 12345)            // const D = 1970-01-01T00:00:12.345Z
+
+const E = Value.Encode(Timestamp, D)                // const E = 12345
+```
+
+## Static
+
+Use the StaticDecode and StaticEncode types that infer the Decoded and Encoded state of a type.
+
+```typescript
+import Type, { type StaticEncode, type StaticDecode } from 'typebox'
+
+const Timestamp = Type.Codec(Type.Integer())
+  .Decode(value => new Date(value))
+  .Encode(value => value.getTime())
+
+type D = StaticDecode<typeof Timestamp>             // type D = Date
+
+type E = StaticEncode<typeof Timestamp>             // type E = number
+```
+
+---
+
+# Source: docs/type/conditional.md
+
+# Conditional
+
+Creates a conditional type expression.
+
+> ⚠️ This function is a Script evalutation action.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const L = Type.Literal(1)
+const R = Type.Number()
+
+const T = Type.Conditional(L, R,                    // const T: TLiteral<true>
+  Type.Literal(true),
+  Type.Literal(false)
+)
+```
+
+---
+
+# Source: docs/type/constructor.md
+
+# Constructor
+
+Creates a Constructor type. 
+
+> ⚠️ This type is used for interface definitions and cannot be validated.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const T = Type.Constructor([                        // const T = {
+  Type.String(),                                    //   type: 'constructor'
+  Type.Boolean(),                                   //   parameters: [
+], Type.Object({                                    //     { type: 'string' },
+  x: Type.Number()                                  //     { type: 'boolean' }
+}))                                                 //   ],
+                                                    //   instanceType: {
+                                                    //     type: 'object',
+                                                    //     required: ['x'],
+                                                    //     properties: {
+                                                    //       x: { type: 'number' }
+                                                    //     }
+                                                    //   }
+                                                    // }
+
+type T = Static<typeof T>                           // type T = new (
+                                                    //   args_0: string, 
+                                                    //   args_1: boolean
+                                                    // ) => { 
+                                                    //   x: number 
+                                                    // }
+```
+## Guard
+
+```typescript
+Type.IsConstructor(value)                           // value is TConstructor<TSchema[], TSchema>
+```
+
+---
+
+# Source: docs/type/constructor-parameters.md
+
+# ConstructorParameters
+
+The ConstructorParameters function will extract Parameters from a Constructor type.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const T = Type.Constructor([Type.String(), Type.Number()], Type.Object({}))
+
+const S = Type.ConstructorParameters(T)             // const S: TTuple<[
+                                                    //   TString,
+                                                    //   TNumber
+                                                    // ]>
+```
+
+---
+
+# Source: docs/type/cyclic.md
+
+# Cyclic
+
+Creates a Cyclic type. 
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const T = Type.Cyclic({                             // const T = {
+  A: Type.Object({                                  //   $defs: {
+    x: Type.Array(Type.Ref('A')),                   //     A: {
+  }),                                               //       type: 'object',
+}, 'A')                                             //       required: ['x'],
+                                                    //       properties: { 
+                                                    //         x: { 
+                                                    //           type: 'array', 
+                                                    //           items: { 
+                                                    //             $ref: 'A' 
+                                                    //           } 
+                                                    //         } 
+                                                    //       },
+                                                    //       '$id': 'A'
+                                                    //     }
+                                                    //   },
+                                                    //   $ref: 'A'
+                                                    // }
+
+type T = Static<typeof T>                           // type T = { x: ...[] }
+
+```
+## Guard
+
+Use the IsCyclic function to guard values of this type.
+
+```typescript
+Type.IsCyclic(value)                                // value is TCyclic
+```
+
+---
+
+# Source: docs/type/decode.md
+
+# Decode
+
+The Decode function applies a uni-directional decoding transform to a type.
+
+## Example
+
+The following applies a Decode callback that converts a number to a Hex string
+
+
+```typescript
+const Hex = Type.Decode(Type.Number(),              // const T = {
+  value => value.toString(16).toUpperCase()         //   type: 'number',
+)                                                   //   '~codec': {
+                                                    //      decode: value => value.toString(16).toUpperCase() ,
+                                                    //      encode: value => { throw Error('not implemented') },
+                                                    //   }
+                                                    // } 
+
+// Use Value.Decode() to run Decode callbacks.
+
+const D = Value.Decode(Hex, 12345678)               // const D = 'BC614E'
+
+const E = Value.Encode(Hex, D)                      // throw Error('not implemented')
+```
+
+---
+
+# Source: docs/type/encode.md
+
+# Encode
+
+The Encode function applies a uni-directional encoding transform to a type.
+
+## Example
+
+The following applies an Encode callback. 
+
+> ⚠️ Encode callbacks will receive a value of type `unknown`. This is because TypeBox cannot statically derive the Decoded state, only the Encoded state as given by the schematic type. Applications should apply appropriate runtime checks local to the callback and throw if receiving invalid values.
+
+```typescript
+const T = Type.Encode(Type.Number(),                // const T = {
+  (value: unknown) => value === 'hello'             //   type: 'number',
+     ? 1                                            //   '~codec': {
+     : 0                                            //      decode: value => { throw Error('not implemented') }, 
+)                                                   //      encode: value => 0
+                                                    //   }
+                                                    // } 
+
+// Use Value.Encode() to run Encode callbacks.
+
+const D = Value.Decode(T, 12345)                   // throw Error('not implemented')
+
+const E = Value.Encode(T, 'hello')                 // const E = 1
+```
+
+---
+
+# Source: docs/type/enum.md
+
+# Enum
+
+Creates an Enum type.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const T = Type.Enum(['A', 'B', 'C'])                // const T = {
+                                                    //   enum: ['A', 'B', 'C']
+                                                    // }
+
+type T = Static<typeof T>                           // type T = 'A' | 'B' | 'C'
+```
+
+## Guard
+
+Use the IsEnum function to guard values of this type.
+
+```typescript
+Type.IsEnum(value)                                  // value is TEnum
+```
+
+---
+
+# Source: docs/type/evaluate.md
+
+# Evaluate
+
+The Evaluate function will evaluate logical type expressions and return the result.
+
+## Example
+
+Example usage is shown below. 
+
+```typescript
+const T = Type.Intersect([
+  Type.Object({ x: Type.Number() }),
+  Type.Union([  
+    Type.Object({ y: Type.Number() }),
+    Type.Object({ z: Type.Number() }) 
+  ])
+])
+
+const S = Type.Evaluate(T)                          // const S: TUnion<[
+                                                    //   TObject<{
+                                                    //     x: TNumber,
+                                                    //     y: TNumber
+                                                    //   }>,
+                                                    //   TObject<{
+                                                    //     x: TNumber,
+                                                    //     z: TNumber
+                                                    //   }>,
+                                                    // ]>
+```
+
+
+
+## Remarks
+
+The Evaluate function transforms logical type expressions into normalized forms using set-based evaluation rules. Evaluation is applied to both Union and Intersect types where Union evaluation yields the broadest disjoint types within a set while Intersect yields the narrowest.
+
+### Union
+
+Union evaluation yields the broadest variant.
+
+```typescript
+const T = Type.Union([Type.Literal(1), Type.Number()])
+
+const S = Type.Evaluate(T)                          // const S = { type: 'number' }
+```
+
+### Intersect
+
+Intersect evaluation yields the narrowest constituent
+
+```typescript
+const T = Type.Intersect([Type.Literal(1), Type.Number()])
+
+const S = Type.Evaluate(T)                         // const S = { const: 1 }
+```
+
+---
+
+# Source: docs/type/exclude.md
+
+# Exclude
+
+The Exclude function will exclude types from Left that extend Right.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const L = Type.Union([
+  Type.Literal('hello'),
+  Type.Literal('world'),
+  Type.Literal(1),
+  Type.Literal(2)
+])
+const R = Type.String()
+
+const S = Type.Exclude(L, R)                        // const S: TUnion<[
+                                                    //   TLiteral<1>,
+                                                    //   TLiteral<2>
+                                                    // ]>
+```
+
+---
+
+# Source: docs/type/extract.md
+
+# Extract
+
+The Extract function will extract types from Left that extend Right.
+
+## Example
+
+Example usage is shown below. 
+
+```typescript
+const L = Type.Union([
+  Type.Literal('hello'),
+  Type.Literal('world'),
+  Type.Literal(1),
+  Type.Literal(2)
+])
+const R = Type.String()
+
+const S = Type.Extract(L, R)                        // const S: TUnion<[
+                                                    //   TLiteral<'hello'>,
+                                                    //   TLiteral<'world'>
+                                                    // ]>
+```
+
+---
+
+# Source: docs/type/function.md
+
+# Function
+
+Creates a Function type. 
+
+> ⚠️ This type is used for interface definitions and cannot be validated.
+
+## Example
+
+Example usage is shown below. 
+
+```typescript
+const T = Type.Function([                           // const T = {
+  Type.String(),                                    //   type: 'function'
+  Type.Boolean()                                    //   parameters: [
+], Type.Object({                                    //     { type: 'string' },
+  x: Type.Number()                                  //     { type: 'boolean' }
+}))                                                 //   ],
+                                                    //   returnType: {
+                                                    //     type: 'object',
+                                                    //     required: ['x'],
+                                                    //     properties: {
+                                                    //       x: { type: 'number' }
+                                                    //     }
+                                                    //   }
+                                                    // }
+
+type T = Static<typeof T>                           // type T = (
+                                                    //   args_0: string, 
+                                                    //   args_1: boolean
+                                                    // ) => { 
+                                                    //   x: number 
+                                                    // }
+```
+
+## Guard
+
+Use the IsFunction function to guard values of this type.
+
+```typescript
+Type.IsFunction(value)                              // value is TFunction
+```
+
+---
+
+# Source: docs/type/generic.md
+
+# Generic
+
+Creates a Generic type. Generic types can be instantiated with Call.
+
+> ⚠️ This function is a Script evalutation action.
+
+## Example
+
+Example usage is shown below. 
+
+```typescript
+const G = Type.Generic([Type.Parameter('T')],       // const G = {
+  Type.Array(Type.Ref('T')))                        //   type: 'generic',
+                                                    //   parameters: [{ 
+                                                    //     name: 'T', 
+                                                    //     extends: {}, 
+                                                    //     equals: {}
+                                                    //   }], 
+                                                    //   expression: {
+                                                    //     type: 'object', 
+                                                    //     required: ['x'],
+                                                    //     properties: { 
+                                                    //       x: { 
+                                                    //         '$ref': 'T' 
+                                                    //       } 
+                                                    //     },
+                                                    //   }
+                                                    // }
+
+const S = Type.Call(G, [Type.Number()])             // const S: TArray<TNumber>
+```
+
+## Guard
+
+Use the IsGeneric function to guard values of this type.
+
+```typescript
+Type.IsGeneric(value)                               // value is TGeneric
+```
+
+---
+
+# Source: docs/type/identifier.md
+
+# Identifier
+
+Creates a named Identifier.
+
+> ⚠️ This function is a Script evalutation action.
+
+## Example
+
+Example usage is shown below. 
+
+```typescript
+const T = Type.Identifier('A')                      // const T = {
+                                                    //  type: 'identifier',
+                                                    //  name: 'A'
+                                                    // }
+```
+
+## Guard
+
+Use the IsIdentifier function to guard values of this type.
+
+```typescript
+Type.IsIdentifier(value)                           // value is TIdentifier
+```
+
+---
+
+# Source: docs/type/indexed.md
+
+# Index
+
+The Index function performs a indexed access lookup on a type.
+
+## Example
+
+Example usage is shown below. 
+
+```typescript
+const T = Type.Object({
+  x: Type.Literal(1),
+  y: Type.Literal(2),
+  z: Type.Literal(3)
+})
+
+const S = Type.Index(T, Type.Union([                // const S: TUnion<[
+  Type.Literal('x'),                                //   TLiteral<1>,
+  Type.Literal('y')                                 //   TLiteral<2>
+]))                                                 // ]>
+```
+
+---
+
+# Source: docs/type/infer.md
+
+# Infer
+
+Creates an Infer instruction to extract types in conditional type expression.
+
+> ⚠️ This function is a Script evalutation action.
+
+## Example
+
+Example usage is shown below. 
+
+```typescript
+const T = Type.Object({
+  x: Type.Literal(1),
+  y: Type.Literal(2)
+})
+
+const S = Type.Conditional(T, Type.Object({         // const S: TTuple<[
+  x: Type.Infer('X'),                               //   TLiteral<1>,
+  y: Type.Infer('Y'),                               //   TLiteral<2>
+}), Type.Tuple([                                    // ]>
+  Type.Ref('X'),
+  Type.Ref('Y')
+]), Type.Never())                                   
+```
+
+## Guard
+
+Use the IsInfer function to guard values of this type.
+
+```typescript
+Type.IsInfer(value)                                 // value is TInfer
+```
+
+---
+
+# Source: docs/type/instance-type.md
+
+# InstanceType
+
+Extracts the InstanceType from a Constructor type.
+
+## Example
+
+Example usage is shown below. 
+
+```typescript
+const T = Type.Constructor([Type.String()], Type.Object({
+  x: Type.Number()
+}))
+
+const S = Type.InstanceType(T)                      // const S: TObject<{
+                                                    //   x: TNumber
+                                                    // }>
+```
+
+---
+
+# Source: docs/type/instantiate.md
+
+# Instantiate
+
+The Instantiate function will instantiate interior references embedded within a type. This function accepts a context object as the first argument which is used to source referenced types.
+
+## Example
+
+The following instantiates embedded Ref types.
+
+```typescript
+const X = Type.Literal(1)
+const Y = Type.Literal(2)
+const Z = Type.Literal(3)
+
+const T = Type.Object({
+  x: Type.Ref('X'),
+  y: Type.Ref('Y'),
+  z: Type.Ref('Z'),
+})
+
+const S = Type.Instantiate({ X, Y, Z }, T)          // const S: TObject<{
+                                                    //   x: TLiteral<1>,
+                                                    //   y: TLiteral<2>,
+                                                    //   z: TLiteral<3>
+                                                    // }>
+```
+
+---
+
+# Source: docs/type/integer.md
+
+# Integer
+
+Creates an Integer type.
+
+## Example
+
+Example usage is shown below. 
+
+```typescript
+const T = Type.Integer()                            // const T = {
+                                                    //   type: 'integer'
+                                                    // }
+
+type T = Static<typeof T>                           // type T = number
+```
+
+## Guard
+
+Use the IsInteger function to guard values of this type.
+
+```typescript
+Type.IsInteger(value)                               // value is TInteger
+```
+
+## Options
+
+```typescript
+export interface TNumberOptions extends TSchemaOptions {
+  /** 
+   * Specifies an exclusive upper limit for the number (number must be less than this value). 
+   */
+  exclusiveMaximum?: number | bigint
+  /** 
+   * Specifies an exclusive lower limit for the number (number must be greater than this value). 
+   */
+  exclusiveMinimum?: number | bigint
+  /** 
+   * Specifies an inclusive upper limit for the number (number must be less than or equal to this value). 
+   */
+  maximum?: number | bigint
+  /** 
+   * Specifies an inclusive lower limit for the number (number must be greater than or equal to this value). 
+   */
+  minimum?: number | bigint
+  /** 
+   * Specifies that the number must be a multiple of this value. 
+   */
+  multipleOf?: number
+}
+```
+
+## Remarks
+
+TypeBox models Integer as a narrower form of Number. All integers are numbers, but not all numbers are integers, so Integer is treated as a subset of number within conditional type expressions. This distinction aligns with Json Schema, which defines Integer as a baseline type, even though TypeScript does not differentiate integers from numbers.
+
+```typescript
+type A = <'set-of-all-integers'> extends number ? true : false  // type A = true
+
+type B = number extends <'set-of-all-integers'> ? true : false  // type B = false
+```
+
+```typescript
+const A = Type.Conditional(                                     // const A = { const: true }
+  Type.Integer(),  
+  Type.Number(),
+  Type.Literal(true), 
+  Type.Literal(false)
+)
+
+const B = Type.Conditional(                                      // const B = { const: false }
+  Type.Number() 
+  Type.Integer(),
+  Type.Literal(true), 
+  Type.Literal(false)
+)
+```
+
+---
+
+# Source: docs/type/interface.md
+
+# Interface
+
+The Interface function creates an Object with Heritage.
+
+## Example
+
+Example usage is shown below. 
+
+```typescript
+const A = Type.Interface([], {                      // const A: TObject<{
+  a: Type.Number()                                  //   a: TNumber
+})                                                  // }>
+
+
+const B = Type.Interface([A], {                     // const B: TObject<{
+  b: Type.Number()                                  //   a: TNumber,
+})                                                  //   b: TNumber
+                                                    // }
+
+```
+
+---
+
+# Source: docs/type/intersect.md
+
+# Intersect
+
+Creates an Intersect type.
+
+## Example
+
+Example usage is shown below. 
+
+```typescript
+const T = Type.Intersect([                          // const T = {
+  Type.Object({ x: Type.Number() }),                //   allOf: [{
+  Type.Object({ y: Type.Number() }),                //     type: 'object',
+])                                                  //     required: ['x'],
+                                                    //     properties: {
+                                                    //       x: { type: 'number' }
+                                                    //     }
+                                                    //  }, {
+                                                    //    type: 'object',
+                                                    //    required: ['y'],
+                                                    //    properties: {
+                                                    //      y: { type: 'number' }
+                                                    //    }
+                                                    //  }]
+                                                    // }
+
+type T = Static<typeof T>                           // type T = { 
+                                                    //   x: number
+                                                    // } & {
+                                                    //   y: number
+                                                    // }
+
+``` 
+
+## Guard
+
+Use the IsInteger function to guard values of this type.
+
+```typescript
+Type.IsIntersect(value)                             // value is TIntersect
+```
+
+## Options
+
+```typescript
+export interface TIntersectOptions extends TSchemaOptions {
+  /** 
+   * A schema to apply to any properties in the object that were not validated 
+   * by other keywords like `properties`, `patternProperties`, or `additionalProperties`. 
+   * If `false`, no additional properties are allowed. 
+   */
+  unevaluatedProperties?: TSchema | boolean
+}
+```
+
+---
+
+# Source: docs/type/iterator.md
+
+# Iterator
+
+Creates an Iterator type. 
+
+> ⚠️ This type is used for interface definitions and cannot be validated.
+
+## Example
+
+```typescript
+const T = Type.Iterator(Type.Number())              // const T = {
+                                                    //   type: 'iterator',
+                                                    //   iteratorItems: {
+                                                    //     type: 'number'
+                                                    //   }
+                                                    // }
+
+type T = Static<typeof T>                           // type T = IterableIterator<number>
+ 
+```
+
+## Guard
+
+Use the IsIterator function to guard values of this type.
+
+```typescript
+Type.IsIterator(value)                              // value is TIterator
+```
+
+---
+
+# Source: docs/type/key-of.md
+
+# KeyOf
+
+Extracts Keys from an Object or Tuple.
+
+## Example
+
+Example usage is shown below. 
+
+```typescript
+const T = Type.Object({
+  x: Type.Number(),
+  y: Type.Number(),
+  z: Type.Number()
+})
+
+const S = Type.KeyOf(T)                             // const S: TUnion<[
+                                                    //  TLiteral<'x'>,
+                                                    //  TLiteral<'y'>,
+                                                    //  TLiteral<'z'>
+                                                    // ]>
+```
+
+---
+
+# Source: docs/type/lowercase.md
+
+# Lowercase
+
+The Lowercase function will lowercase string literals.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const T = Type.Literal('HELLO')
+
+const S = Type.Lowercase(T)                         // const S: TLiteral<'hello'>
+```
+
+---
+
+# Source: docs/type/mapped.md
+
+# Mapped
+
+Applies a Mapped operation to a type.
+
+> ⚠️ This function is a Script evalutation action.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const T = Type.Object({
+  x: Type.Number(),
+  y: Type.Number(),
+  z: Type.Number()
+})
+
+                                                    // type S = { 
+                                                    //   [K in keyof T]: T[K] | null 
+                                                    // }
+
+const S = Type.Mapped(                              // const S: TObject<{
+  Type.Identifier('K'),                             //   x: TUnion<[TNumber, TNull]>,
+  Type.KeyOf(T),                                    //   y: TUnion<[TNumber, TNull]>,
+  Type.Ref('K'),                                    //   z: TUnion<[TNumber, TNull]>,
+  Type.Union([                                      // }>
+    Type.Index(T, Type.Ref('K')),
+    Type.Null()
+  ])
+)
+```
+
+---
+
+# Source: docs/type/module.md
+
+# Module
+
+The Module function is an advanced compositing system for referential types. It performs several normalization passes, including reference inlining, cyclic type resolution, and dead code elimination for unused definitions. Conceptually, Module mirrors how TypeScript handles type references within the context of a TypeScript module.
+
+### Referencing
+
+Module is written in support of order independent type referencing. Consider the following where type `A` references type `B` type before definition.
+
+```typescript
+type A = 1 | B                                     // type A = 1 | 2
+type B = 2                                         // type B = 2
+```
+
+Attempting the same in JavaScript results in an `Access before initialization` error
+
+```typescript
+const A = Type.Union([Type.Literal(1), B])        // Error: Cannot access 'B' before initialization
+const B = Type.Literal(2)
+```
+
+Module offers a scoping mechanism that facilitates order independent referencing.
+
+```typescript
+const M = Type.Module({                     
+  A: Type.Union([
+    Type.Literal(1), 
+    Type.Ref('B')                                  // Referenced before definition.
+  ]), 
+  B: Type.Literal(2)
+})
+
+M.A                                                // const A: TUnion<TLiteral<1>, TLIteral<2>>
+M.B                                                // const B: TLiteral<2>
+```
+
+## Inline
+
+The Module function will automatically inline referenced types. Inlining means the referenced type is cloned directly into the referring type, so the final result is a fully self-contained type without external dependencies.
+
+```typescript
+const { A, B, C } = Type.Module({                   // const A: TNumber
+  A: Type.Number(),                                 //
+  B: Type.String(),                                 // const B: TString
+  C: Type.Object({                                  // 
+    a: Type.Ref('A'),                               // const C: TObject<{
+    b: Type.Ref('B')                                //   a: TNumber,  // <-- inlined
+  })                                                //   b: TString   // <-- inlined
+})                                                  // }>
+```
+
+## Cyclic
+
+The Module function will automatically detect self-referential types and transform them into instances of TCyclic.
+
+```typescript
+const { A } = Type.Module({                         // const A: TCyclic<{
+  A: Type.Object({                                  //   A: TObject<{
+    b: Type.Ref('B')                                //     b: TRef<'B'>,
+  }),                                               //   }>,
+  B: Type.Object({                                  //   B: TObject<{
+    a: Type.Ref('A')                                //     a: TRef<'A'>
+  })                                                //   }>
+})                                                  // }, 'A'>
+
+```
+
+## Dead Code Elimination
+
+Module also performs dead code elimination, ensuring that each definition only includes the types required for itself. In the following example, the `C` definition is present, but since `A` and `B` do not reference it, `C` is excluded from their referential set.
+
+```typescript
+const { A } = Type.Module({                         // const A: TCyclic<{
+  A: Type.Object({                                  //   A: TObject<{
+    b: Type.Ref('B')                                //     b: TRef<'B'>,
+  }),                                               //   }>,
+  B: Type.Object({                                  //   B: TObject<{
+    a: Type.Ref('A')                                //     a: TRef<'A'>
+  }),                                               //   }>
+  C: Type.String()                                  // }, 'A'>
+})                                                  
+
+```
+
+---
+
+# Source: docs/type/never.md
+
+# Never
+
+Creates a Never type.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const T = Type.Never()                              // const T = {
+                                                    //   not: {}
+                                                    // }
+
+type T = Static<typeof T>                           // type T = never
+```
+
+## Guard
+
+Use the IsNever function to guard values of this type.
+
+```typescript
+Type.IsNever(value)                                 // value is TNever
+```
+
+---
+
+# Source: docs/type/non-nullable.md
+
+# NonNullable
+
+The NonNullable function will discard variants of Undefined and Null from a Union type.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const T = Type.Union([Type.String(), Type.Undefined(), Type.Null()])
+
+const S = Type.NonNullable(T)                       // const S: TString
+```
+
+---
+
+# Source: docs/type/null.md
+
+# Null
+
+Creates a Null type.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const T = Type.Null()                               // const T = { type: 'null' }
+
+type T = Static<typeof T>                           // type T = null
+```
+
+## Guard
+
+Use the IsNull function to guard values of this type.
+
+```typescript
+Type.IsNull(value)                                  // value is TNull
+```
+
+---
+
+# Source: docs/type/number.md
+
+# Number
+
+Creates a Number type.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const T = Type.Number()                             // const T = {
+                                                    //   type: 'number'
+                                                    // }
+
+type T = Static<typeof T>                           // type T = number
+```
+
+## Guard
+
+Use the IsNumber function to guard values of this type.
+
+```typescript
+Type.IsNumber(value)                                // value is TNumber
+```
+
+## Options
+
+```typescript
+export interface TNumberOptions extends TSchemaOptions {
+  /** 
+   * Specifies an exclusive upper limit for the number (number must be less than this value). 
+   */
+  exclusiveMaximum?: number | bigint
+  /** 
+   * Specifies an exclusive lower limit for the number (number must be greater than this value). 
+   */
+  exclusiveMinimum?: number | bigint
+  /** 
+   * Specifies an inclusive upper limit for the number (number must be less than or equal to this value). 
+   */
+  maximum?: number | bigint
+  /** 
+   * Specifies an inclusive lower limit for the number (number must be greater than or equal to this value). 
+   */
+  minimum?: number | bigint
+  /** 
+   * Specifies that the number must be a multiple of this value. 
+   */
+  multipleOf?: number
+}
+```
+
+---
+
+# Source: docs/type/object.md
+
+# Object
+
+Creates an Object type.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const T = Type.Object({                             // const T = {
+  x: Type.Number(),                                 //   type: 'object',
+  y: Type.Number(),                                 //   required: ['x', 'y', 'z'],
+  z: Type.Number()                                  //   properties: {
+})                                                  //     x: { type: 'number' },
+                                                    //     y: { type: 'number' },
+                                                    //     z: { type: 'number' }
+                                                    //   }
+                                                    // }
+
+type T = Static<typeof T>                           // type T = {
+                                                    //   x: number,
+                                                    //   y: number,
+                                                    //   z: number
+                                                    // }
+```
+
+## Guard
+
+Use the IsObject function to guard values of this type.
+
+```typescript
+Type.IsObject(value)                                // value is TObject
+```
+
+## Options
+
+The following options are available for Object
+
+```typescript
+export interface TObjectOptions extends TSchemaOptions {
+  /** 
+   * Defines whether additional properties are allowed beyond those explicitly defined in `properties`. 
+   */
+  additionalProperties?: TSchema | boolean
+  /** 
+   * The minimum number of properties required in the object. 
+   */
+  minProperties?: number
+  /** 
+   * The maximum number of properties allowed in the object. 
+   */
+  maxProperties?: number
+  /** 
+   * Defines conditional requirements for properties. 
+   */
+  dependencies?: Record<string, boolean | TSchema | string[]>
+  /** 
+   * Specifies properties that *must* be present if a given property is present. 
+   */
+  dependentRequired?: Record<string, string[]>
+  /** 
+   * Defines schemas that apply if a specific property is present. 
+   */
+  dependentSchemas?: Record<string, TSchema>
+  /** 
+   * Maps regular expressions to schemas properties matching a pattern must validate against the schema. 
+   */
+  patternProperties?: Record<string, TSchema>
+  /** 
+   * A schema that all property names within the object must validate against. 
+   */
+  propertyNames?: TSchema
+}
+```
+
+---
+
+# Source: docs/type/omit.md
+
+# Omit
+
+Omits keys from the given Object type.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const T = Type.Object({
+  x: Type.Number(),
+  y: Type.Number(),
+  z: Type.Number()
+})
+
+const S = Type.Omit(T, Type.Union([                 // const S: TObject<{
+  Type.Literal('z')                                 //   x: TNumber,
+]))                                                 //   y: TNumber
+                                                    // }>
+```
+
+---
+
+# Source: docs/type/optional.md
+
+# Optional
+
+The Optional function applies an optional `?` modifier to a type.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const T = Type.Object({                             // const T = {
+  x: Type.Optional(Type.Number()),                  //   type: 'object',
+  y: Type.Optional(Type.Number()),                  //   required: ['z'],
+  z: Type.Number()                                  //   properties: {
+})                                                  //     x: { type: 'number' },
+                                                    //     y: { type: 'number' },
+                                                    //     z: { type: 'number' }
+                                                    //   }
+                                                    // }
+
+
+type T = Static<typeof T>                           // type T = {
+                                                    //   x?: number,
+                                                    //   y?: number,
+                                                    //   z: number
+                                                    // }
+```
+
+## Guard
+
+Use the IsOptional function to guard values of this type.
+
+```typescript
+const checked = Type.IsOptional(value)              // value is TOptional
+```
+
+---
+
+# Source: docs/type/options.md
+
+## Options
+
+Options can be passed on the last argument of any given type.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const T = Type.Number({                             // const T = {
+  minimum: 10,                                      //   type: 'number',
+  maximum: 100                                      //   minimum: 10,
+})                                                  //   maximum: 100
+                                                    // }
+
+                                                    // const T: TNumber
+```
+
+## Function
+
+Options can also be specified by using the Options function.
+
+```typescript
+const T = Type.Options(Type.Number(), {             // const T = {
+  minimum: 10,                                      //   type: 'number',
+  maximum: 100                                      //   minimum: 10,
+})                                                  //   maximum: 100
+                                                    // }
+
+                                                    // const T: TOptions<TNumber, {
+                                                    //   minimum: number;
+                                                    //   maximum: number;
+                                                    // }>
+```
+
+---
+
+# Source: docs/type/parameter.md
+
+# Parameter
+
+Creates a Generic Parameter type.
+
+> ⚠️ This function is a Script evalutation action.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const T = Type.Parameter('A',                       // const T = {
+  Type.Number(),                                    //   type: 'parameter',
+  Type.Literal(1)                                   //   name: 'A',
+)                                                   //   extends: { type: 'number' },
+                                                    //   equals: { const: 1 }
+                                                    // }
+
+type T = Static<typeof T>                           // type T = unknown
+``` 
+
+## Guard
+
+Use the IsParameter function to guard values of this type.
+
+```typescript
+Type.IsParameter(value)                             // value is TParameter
+```
+
+---
+
+# Source: docs/type/parameters.md
+
+# Parameters
+
+The Parameters function will extract Parameters from a Function type.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const T = Type.Function([Type.String(), Type.Number()], Type.Object({}))
+
+const S = Type.Parameters(T)                        // const S: TTuple<[
+                                                    //   TString,
+                                                    //   TNumber
+                                                    // ]>
+```
+
+---
+
+# Source: docs/type/partial.md
+
+# Partial
+
+Makes all properties of an Object optional.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const T = Type.Object({                             // const T = {
+  x: Type.Number(),                                 //   type: 'object',
+  y: Type.Number(),                                 //   required: ['x', 'y', 'z'],
+  z: Type.Number()                                  //   properties: {
+})                                                  //     x: { type: 'number' },
+                                                    //     y: { type: 'number' },
+                                                    //     z: { type: 'number' }
+                                                    //   }
+                                                    // }
+
+const S = Type.Partial(T)                           // const S: TObject<{
+                                                    //   x: TOptional<TNumber>,
+                                                    //   y: TOptional<TNumber>,
+                                                    //   z: TOptional<TNumber>
+                                                    // }>
+```
+
+---
+
+# Source: docs/type/pick.md
+
+# Pick
+
+Picks property keys from the given Object type.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const T = Type.Object({
+  x: Type.Number(),
+  y: Type.Number(),
+  z: Type.Number()
+})
+
+const S = Type.Pick(T, Type.Union([                 // const S: TObject<{
+  Type.Literal('x')                                 //   x: TNumber,
+  Type.Literal('y')                                 //   y: TNumber
+]))                                                 // }>
+```
+
+---
+
+# Source: docs/type/promise.md
+
+# Promise
+
+Creates a Promise type. 
+
+> ⚠️ This type is used for interface definitions and cannot be validated.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const T = Type.Promise(Type.Number())               // const T = {
+                                                    //   type: 'promise',
+                                                    //   item: { type: 'number' }
+                                                    // }
+
+type T = Static<typeof T>                           // type T = Promise<number>
+```
+
+## Guard
+
+Use the IsPromise function to guard values of this type.
+
+```typescript
+Type.IsPromise(value)                               // value is TPromise<TSchema>
+```
+
+---
+
+# Source: docs/type/readonly.md
+
+# Readonly
+
+The Optional function applies an `readonly` modifier to a type.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const T = Type.Object({                             // const T = {
+  x: Type.Readonly(Type.Number()),                  //   type: 'object',
+  y: Type.Readonly(Type.Number()),                  //   required: ['x', 'y', 'z'],
+  z: Type.Number()                                  //   properties: {
+})                                                  //     x: { type: 'number', readOnly: true },
+                                                    //     y: { type: 'number', readOnly: true },
+                                                    //     z: { type: 'number' }
+                                                    //   }
+                                                    // }
+
+type T = Static<typeof T>                           // type T = {
+                                                    //   readonly x: number,
+                                                    //   readonly y: number,
+                                                    //   z: number
+                                                    // }
+```
+## Guard
+
+Use the IsReadonly function to guard values of this type.
+
+```typescript
+Type.IsReadonly(value)                              // value is TReadonly
+```
+
+---
+
+# Source: docs/type/record.md
+
+# Record
+
+Creates a Record type.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const T = Type.Record(Type.String(), Type.Number()) // const T = {
+                                                    //   type: 'object',
+                                                    //   patternProperties: {
+                                                    //     "^.*$": {
+                                                    //        type: 'number'
+                                                    //     }
+                                                    //   }
+
+type T = Static<typeof T>                           // type T = {
+                                                    //   [x: string]: number
+                                                    // }
+```
+
+## Guard
+
+Use the IsRecord function to guard values of this type.
+
+```typescript
+Type.IsRecord(value)                                // value is TRecord<string, TSchema>
+```
+
+---
+
+# Source: docs/type/ref.md
+
+# Ref
+
+Creates a Ref type.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const T = Type.Ref('A')                             // const T = {
+                                                    //   $ref: 'A'
+                                                    // }
+
+type T = Static<typeof T>                           // type T = unknown
+```
+
+## Guard
+
+Use the IsRef function to guard values of this type.
+
+```typescript
+Type.IsRef(value)                                   // value is TRef
+```
+
+---
+
+# Source: docs/type/refine.md
+
+# Refine
+
+The Refine function applies explicit validation logic to a type. 
+
+> ⚠️ The Refine function will hinder the portability of your type. This is because Refine functions contain implicit rules and logic that cannot be encoded as Json Schema metadata. Refine should only be used if you do not need to share types with other systems.
+
+## Example
+
+The following creates a Refine type that performs cross property value checks.
+
+```typescript
+const T = Type.Refine(Type.Object({                 // const T = {
+  x: Type.Number(),                                 //   type: 'object',
+  y: Type.Number()                                  //   required: ['x', 'y'],
+}), value => {                                      //   properties: {
+  return value.x === value.y                        //     x: { type: 'number' },
+}, 'x and y should be equal')                       //     y: { type: 'number' }
+                                                    //   }
+                                                    //   '~refine': [(value) => { ... }, '...']
+                                                    // }
+
+const E = Value.Errors(T, { x: 1, y: 2 })           // const E = [{
+                                                    //   keyword: "~refine",
+                                                    //   schemaPath: "#/~refine",
+                                                    //   instancePath: "",
+                                                    //   params: { index: 0, message: "x and y should be equal" },
+                                                    //   message: "x and y should be equal"
+                                                    // }]
+```
+
+---
+
+# Source: docs/type/required.md
+
+# Required
+
+Makes all properties of an Object required.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const T = Type.Object({                             // const T = {
+  x: Type.Optional(Type.Number()),                  //   type: 'object',
+  y: Type.Optional(Type.Number()),                  //   properties: {
+  z: Type.Optional(Type.Number())                   //     x: { type: 'number' },
+})                                                  //     y: { type: 'number' }, 
+                                                    //     z: { type: 'number' }
+                                                    //   }
+                                                    // }
+
+const S = Type.Required(T)                          // const S: TObject<{
+                                                    //   x: TNumber,
+                                                    //   y: TNumber,
+                                                    //   z: TNumber
+                                                    // }>
+```
+
+---
+
+# Source: docs/type/rest.md
+
+# Rest
+
+Creates a Rest type.
+
+> ⚠️ This function is a Script evalutation action.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const T = Type.Rest(Type.Tuple([                    // const T = {
+  Type.Literal(1),                                  //   type: "rest",
+  Type.Literal(2)                                   //   items: {
+]))                                                 //     type: "array",
+                                                    //     additionalItems: false,
+                                                    //     items: [
+                                                    //       { const: 1 }, 
+                                                    //       { const: 2 } 
+                                                    //     ],
+                                                    //     minItems: 2
+                                                    //   }
+                                                    // }
+
+type T = Static<typeof T>                           // type A = [1, 2][]
+```
+
+## Guard
+
+Use the IsRest function to guard values of this type.
+
+```typescript
+Type.IsRest(value)                                  // value is TRest
+```
+
+---
+
+# Source: docs/type/return-type.md
+
+# ReturnType
+
+Extracts the ReturnType from a Function.
+
+## Example
+
+Example usage is shown below. 
+
+```typescript
+const T = Type.Function([Type.String()], Type.Object({
+  x: Type.Number()
+}))
+
+const S = Type.ReturnType(T)                        // const S: TObject<{
+                                                    //   x: TNumber
+                                                    // }>
+```
+
+---
+
+# Source: docs/type/static.md
+
+# Static
+
+The Static type infers TypeBox and Json Schema schematics.
+
+```typescript
+const T = Type.Number()
+
+type T = Static<typeof T>                           // type T = number
+```
+
+## Remarks
+
+The Static can be used to infer raw Json Schema.
+
+### Json Schema
+
+```typescript
+const T = { oneOf: [{ const: 1 }, { const: 2 }] } as const
+
+type T = Static<typeof T>                           // type T = 1 | 2
+```
+
+---
+
+# Source: docs/type/string.md
+
+# String
+
+Creates a String type.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const T = Type.String()                             // const T = {
+                                                    //   type: 'string'
+                                                    // }
+
+type T = Static<typeof T>                           // type T = string
+```
+
+## Guard
+
+Use the IsString function to guard values of this type.
+
+```typescript
+Type.IsString(value)                                // value is TString
+
+```
+
+## Options
+
+The following options are available for String
+
+```typescript
+export interface TStringOptions extends TSchemaOptions {
+  /** 
+   * A string format such as 'email', 'uuid' or other registered format.
+   */
+  format?: TFormat
+  /** 
+   * Specifies the minimum number of characters allowed in the string.  
+   * Must be a non-negative integer.
+   */
+  minLength?: number
+  /** 
+   * Specifies the maximum number of characters allowed in the string.  
+   * Must be a non-negative integer.
+   */
+  maxLength?: number
+  /** 
+   * Specifies a regular expression pattern that the string value must match.  
+   * Can be provided as a string (ECMA-262 regex syntax) or a `RegExp` object.
+   */
+  pattern?: string | RegExp
+}
+```
+
+---
+
+# Source: docs/type/symbol.md
+
+# Symbol
+
+Creates a Symbol type. 
+
+> ⚠️ This is type is cannot be expressed with Json. Do not use if publishing types for other languages to consume.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const T = Type.Symbol()                             // const T = {
+                                                    //   type: 'symbol'
+                                                    // }
+
+type T = Static<typeof T>                           // type T = symbol
+```
+
+## Guard
+
+Use the IsSymbol function to guard values of this type.
+
+```typescript
+Type.IsSymbol(value)                                // value is TSymbol
+```
+
+---
+
+# Source: docs/type/template-literal.md
+
+# TemplateLiteral
+
+Creates a TemplateLiteral type.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const T = Type.TemplateLiteral('A${"B"|"C"}')        // const T = {
+                                                     //   type: 'string',
+                                                     //   pattern: '^A(B|C)$'
+                                                     // }
+
+type T = Static<typeof T>                            // type T = 'AB' | 'AC'
+```
+
+## Guard
+
+Use the IsTemplateLiteral function to guard values of this type.
+
+```typescript
+Type.IsTemplateLiteral(value)                       // value is TTemplateLiteral
+```
+
+---
+
+# Source: docs/type/this.md
+
+# This
+
+Creates a This type. 
+
+> ⚠️ The `This` type is supported for top level Object and Interface types only. The type is represented as a `{ $ref: '#' }` reference that will always points to the root of the schema. TypeBox does not transform `#` references when embedding Objects within other Objects so care should be taken when using this type.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const T = Type.Object({                             // const T = {
+  items: Type.Array(Type.This())                    //   type: 'object',
+})                                                  //   required: ['items'],
+                                                    //   properties: {
+                                                    //     items: { $ref: '#' }
+                                                    //   }
+                                                    // }
+
+type T = Static<typeof T>                           // type T = object
+```
+
+## Guard
+
+Use the IsThis function to guard values of this type.
+
+```typescript
+Type.IsThis(value)                                   // value is TThis
+```
+
+---
+
+# Source: docs/type/tuple.md
+
+# Tuple
+
+Creates a Tuple type.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const T = Type.Tuple([                              // const T = {
+  Type.String(),                                    //   type: 'array', 
+  Type.Number(),                                    //   additionalItems: false, 
+])                                                  //   minItems: 2,
+                                                    //   items: [
+                                                    //     { type: 'string' },
+                                                    //     { type: 'number' },
+                                                    //   ]
+                                                    // }
+
+type T = Static<typeof T>                           // type T = [string, number]
+```
+
+## Guard
+
+Use the IsTuple function to guard values of this type.
+
+```typescript
+Type.IsTuple(value)                                 // value is TTuple
+```
+
+---
+
+# Source: docs/type/uncapitalize.md
+
+# Uncapitalize
+
+The Uncapitalize function will uncapitalize string literals.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const T = Type.Literal('HELLO')
+
+const S = Type.Uncapitalize(T)                      // const S: TLiteral<'hELLO'>
+```
+
+---
+
+# Source: docs/type/undefined.md
+
+# Undefined
+
+Creates an Undefined type.
+
+> ⚠️ This is type is cannot be expressed with Json. Do not use if publishing types for other languages to consume.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const T = Type.Undefined()                          // const T = {
+                                                    //   type: 'undefined'
+                                                    // }
+
+type T = Static<typeof T>                           // type T = undefined
+```
+
+## Guard
+
+```typescript
+Type.IsUndefined(value)                             // value is TUndefined
+```
+
+---
+
+# Source: docs/type/union.md
+
+# Union
+
+Creates a Union type. 
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const T = Type.Union([                              // const T = {
+  Type.String(),                                    //   anyOf: [
+  Type.Number()                                     //     { type: 'string' },
+])                                                  //     { type: 'number' }
+                                                    //   ]
+                                                    // }
+
+type T = Static<typeof T>                           // type T = string | number
+``` 
+
+## Guard
+
+Use the IsUnion function to guard values of this type.
+
+```typescript
+Type.IsUnion(value)                                 // value is TUnion
+```
+
+---
+
+# Source: docs/type/unknown.md
+
+# Unknown
+
+Creates an Unknown type.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const T = Type.Unknown()                            // const T = { }
+
+type T = Static<typeof T>                           // type T = unknown
+```
+
+## Guard
+
+Use the IsUnknown function to guard values of this type.
+
+```typescript
+Type.IsUnknown(value)                               // value is TUnknown
+```
+
+---
+
+# Source: docs/type/unsafe.md
+
+# Unsafe
+
+The Unsafe type is used to create user defined schematics with user defined inference rules. The type is named so because it is possible to create schematics that are mismatched to the inferred type. The Unsafe type offers an escape hatch for scenarios when you need schematics not generated by TypeBox.
+
+## Example
+
+The following creates an Unsafe number schema that infers as string.
+
+```typescript
+const T = Type.Unsafe<string>({ type: 'number' })   // const T = { type: 'number' }
+
+type T = Static<typeof T>                           // type T = string
+```
+
+---
+
+# Source: docs/type/uppercase.md
+
+# Uppercase
+
+The Uppercase function will uppercase string literals.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const T = Type.Literal('hello')
+
+const S = Type.Uppercase(T)                         // const S: TLiteral<'HELLO'>
+```
+
+---
+
+# Source: docs/type/void.md
+
+# Void
+
+Creates a Void type.
+
+> ⚠️ This is type is cannot be expressed with Json. Do not use if publishing types for other languages to consume.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const T = Type.Void()                               // const T = { type: 'void' }
+
+type T = Static<typeof T>                           // type T = void
+```
+
+## Guard
+
+Use the IsVoid function to guard values of this type.
+
+```typescript
+Type.IsVoid(value)                                  // value is TVoid
+```
+
+---
+
+# Source: docs/script/overview.md
+
+# Script
+
+A TypeScript Engine for JavaScript
+
+## Overview
+
+TypeBox can translate TypeScript syntax into Json Schema. The Script function is a fully type-safe, syntactic frontend to the TypeBox type builder API, allowing Json Schema to be constructed and mapped using TypeScript type expressions encoded as strings.
+
+### Example
+
+The following uses Script to construct and map Json Schema.
+
+```typescript
+import Type from 'typebox'
+
+const T = Type.Script(`{ 
+  x: number, 
+  y: number, 
+  z: number 
+}`)                                                 // const T = {
+                                                    //   type: 'object',
+                                                    //   required: ['x', 'y', 'z'],
+                                                    //   properties: {
+                                                    //     x: { type: 'number' },
+                                                    //     y: { type: 'number' },
+                                                    //     z: { type: 'number' }
+                                                    //   }
+                                                    // }
+
+const S = Type.Script({ T }, `{
+  [K in keyof T]: T[K] | null
+}`)                                                 // const S = {
+                                                    //   type: 'object',
+                                                    //   required: ['x', 'y', 'z'],
+                                                    //   properties: {
+                                                    //     x: { 
+                                                    //       anyOf: [
+                                                    //         { type: 'number' }, 
+                                                    //         { type: 'null' }
+                                                    //       ] 
+                                                    //     },
+                                                    //     y: { 
+                                                    //       anyOf: [
+                                                    //         { type: 'number' }, 
+                                                    //         { type: 'null' }
+                                                    //       ] 
+                                                    //     },
+                                                    //     z: { 
+                                                    //       anyOf: [
+                                                    //         { type: 'number' }, 
+                                                    //         { type: 'null' }
+                                                    //       ] 
+                                                    //     },
+                                                    //   }
+                                                    // }
+
+type S = Type.Static<typeof S>                      // type S = {
+                                                    //   x: number | null,
+                                                    //   y: number | null,
+                                                    //   z: number | null
+                                                    // }
+```
+
+---
+
+# Source: docs/script/1_script.md
+
+# Script
+
+The Script function will transform TypeScript types into Json Schema schematics.
+
+## Type Expressions
+
+The Script function can accept anonymous TypeScript type expressions.
+
+```typescript
+const A = Type.Script('"hello"')
+
+const B = Type.Script(`{
+  x: number
+  y: number
+  z: number
+}`)
+
+const C = Type.Script(`
+{ x: number } & (
+  { y: number } | 
+  { z: number }
+)`)
+
+```
+
+## Type Alias and Interface
+
+The Script function also accepts `type` and `interface` declarations. The return value will be an object containing all embedded declarations.
+
+```typescript
+const { Expression, ConstDeclaration, BinaryExpression, ConstExpression } = Type.Script(`
+  type Expression = 
+    | ConstDeclaration
+    | BinaryExpression
+    | ConstExpression
+
+  interface ConstDeclaration {
+    type: 'ConstDeclaration',
+    name: string
+    value: Expression
+  }
+  interface BinaryExpression {
+    type: 'BinaryExpression'
+    left: Expression
+    right: Expression
+  }
+  interface ConstExpression {
+    type: 'ConstExpression'
+    const: unknown
+  }
+`)
+
+```
+
+# Unsupported
+
+The following constructs are currently unsupported.
+
+### Template Literal Substring Infer
+
+Script does not support substring inference with TemplateLiteral types.
+
+```typescript
+type Get<S extends string> = S extends `hello ${infer Name}` ? Name : never
+//                                             ^
+//                                             Substring Infer Not Supported
+```
+
+### Embedded Function with Generic Type Parameter
+
+Script does not support embedded function types with generic type parameters.
+
+```typescript
+type Foo = { x: <T>(value: T) => string }
+//              ^ 
+//              Embedded Generic Function Not Supported
+```
+
+---
+
+# Source: docs/script/2_parameters.md
+
+# Parameters
+
+Script can accept named type parameters.
+
+## Example
+
+The following passes an external String to Script and makes it nullable.
+
+```typescript
+const T = Type.String()
+
+const S = Type.Script({ T }, `T | null`)            // const S: TUnion<[
+                                                    //   TString,
+                                                    //   TNull
+                                                    // ]>
+```
+
+External types are referenced by property name. You can pass many types.
+
+```typescript
+const A = Type.Literal(1)
+const B = Type.Literal(2)
+const C = Type.Literal(3)
+
+const T = Type.Script({ A, B, C }, `[A, B, C]`)     // const T: TTuple<[
+                                                    //   TLiteral<1>,
+                                                    //   TLiteral<2>,
+                                                    //   TLiteral<3>
+                                                    // ]>
+```
+
+---
+
+# Source: docs/script/3_options.md
+
+# Options
+
+Script types support options and constraints.
+
+## Function
+
+Script can accept options as the last argument.
+
+```typescript
+const Email = Type.Script('string', {               // const Email = {
+  format: 'email'                                   //   type: 'string',
+})                                                  //   format: 'email'
+                                                    // }
+```
+
+## Embedded Types
+
+Types embedded in Script can be assigned options with the `Options<Type, Json>` generic type.
+
+```typescript
+const Vector = Type.Script(`{
+  x: Options<number, { minimum: 0 }>,
+  y: Options<number, { minimum: 0 }>,
+  z: Options<number, { minimum: 0 }>
+}`)                                                 // const Vector = {
+                                                    //   type: 'object',
+                                                    //   required: ['x', 'y', 'z'],
+                                                    //   properties: {
+                                                    //     x: { type: 'number', minimum: 0 },
+                                                    //     y: { type: 'number', minimum: 0 },
+                                                    //     z: { type: 'number', minimum: 0 }
+                                                    //   }
+                                                    // }               
+```
+
+## TypeScript
+
+The `Options<Type, Json>` can be represented in TypeScript in the following way. This lets you to create types with options in TypeScript, then copy them to Script.
+
+```typescript
+type Options<Type, _Json> = Type                    // Ignore Json
+
+type Vector = {                                     // TypeScript | Copy to Script
+  x: Options<number, { minimum: 0 }>,
+  y: Options<number, { minimum: 0 }>,
+  z: Options<number, { minimum: 0 }>
+} 
+```
+
+---
+
+# Source: docs/script/4_advanced.md
+
+# Advanced
+
+Script supports advanced schema transformations using programmable constructs of the TypeScript programming language.
+
+## Mapped Property Keys
+
+The following uses Script to map and rename property keys.
+
+```typescript
+const T = Type.Object({
+  x: Type.Number(),
+  y: Type.Number(),
+  z: Type.Number()
+})
+
+const S = Type.Script({ T }, '{ [K in keyof T as `prop${Uppercase<K>}`]: T[K] }'})
+
+                                                    // const S: TObject<{
+                                                    //   propX: TNumber;
+                                                    //   propY: TNumber;
+                                                    //   propZ: TNumber;
+                                                    // }>
+```
+
+## Deep Partial
+
+The following uses Script to create a DeepPartial type.
+
+```typescript
+const DeepPartial = Type.Script(`<T> = {
+  [K in keyof T]?: T[K] extends object
+    ? DeepPartial<T[K]>
+    : T[K]
+}`)
+
+const Result = Type.Script({ DeepPartial }, `DeepPartial<{
+  x: {
+    y: { 
+      z: 1
+    }
+  }
+}>`)                                                // const Result: TObject<{
+                                                    //   x: TOptional<TObject<{
+                                                    //     y: TOptional<TObject<{
+                                                    //       z: TOptional<TLiteral<1>>
+                                                    //     }>>
+                                                    //   }>>
+                                                    // }>
+```
+
+## Reverse Elements
+
+The following uses Script to reverse elements within a Tuple.
+
+```typescript
+const Reverse = Type.Script(`<List, Result extends unknown[] = []> = (
+  List extends [infer Head, ...infer Tail extends unknown[]]
+    ? Reverse<Tail, [Head, ...Result]>
+    : Result
+)`)
+
+const Result = Type.Script({ Reverse }, `Reverse<[
+  1, 2, 3, 4
+]>`)                                                // const Result: TTuple<[
+                                                    //   TLiteral<4>,
+                                                    //   TLiteral<3>,
+                                                    //   TLiteral<2>, 
+                                                    //   TLiteral<1>
+                                                    // ]>
+```
+
+---
+
+# Source: docs/script/5_scaling.md
+
+# Scaling
+
+This page details type scaling behaviours for Script
+
+## Wide vs Deep
+
+Script is designed to support wide data structures. These structures leverage TypeScript tail call optimizations to prevent +1 depth per sequence token or element. 
+
+```typescript
+const T = Type.Script(`[   // 1 x depth
+  0, 1, 2, 3, 4, 5, 6, 7,  // 128 x elements  
+  0, 1, 2, 3, 4, 5, 6, 7, 
+  0, 1, 2, 3, 4, 5, 6, 7, 
+  0, 1, 2, 3, 4, 5, 6, 7, 
+  0, 1, 2, 3, 4, 5, 6, 7, 
+  0, 1, 2, 3, 4, 5, 6, 7, 
+  0, 1, 2, 3, 4, 5, 6, 7, 
+  0, 1, 2, 3, 4, 5, 6, 7, 
+  0, 1, 2, 3, 4, 5, 6, 7,
+  0, 1, 2, 3, 4, 5, 6, 7, 
+  0, 1, 2, 3, 4, 5, 6, 7, 
+  0, 1, 2, 3, 4, 5, 6, 7, 
+  0, 1, 2, 3, 4, 5, 6, 7, 
+  0, 1, 2, 3, 4, 5, 6, 7, 
+  0, 1, 2, 3, 4, 5, 6, 7, 
+  0, 1, 2, 3, 4, 5, 6, 7, 
+]`)
+
+```
+
+However deep nested structures will hit TypeScript instantiation depth limits very quickly.
+
+```typescript
+const T = Type.Script(`{          // depth + 1
+  a: {                            // depth + 2
+    b: {                          // depth + 3
+      c: {                        // depth + 4
+        d: {                      // instantiation too deep
+          e: 1
+        }
+      }
+    }
+  }  
+}`)
+```
+
+If you need to represent deep structures with Script consider refactoring in the following way.
+
+```typescript
+const D = Type.Script(`{ e: 1 }`)                   // depth + 1
+const C = Type.Script({ D }, `{ d: D }`)            // depth + 1
+const B = Type.Script({ C }, `{ c: C }`)            // depth + 1
+const A = Type.Script({ B }, `{ b: B }`)            // depth + 1
+
+const T = Type.Script({ A }, `{ a: A }`)            // ok
+
+```
+
+## Excessive Types
+
+Script supports static inference for moderately sized types, but for excessive types, you will likely need to bail out of inference. This can be done by using a `as never` assertion. The Script will parse the type at runtime, but type inference will be lost. 
+
+> ⚠️ For large types it is recommended to use the standard Type API.
+
+```typescript
+const LargeType: TSchema = Type.Script(`{
+  x0: string,
+  x1: string,
+  x2: string,
+  x3: string,
+  // ... excessive properties
+  x999999: string
+}
+` as never)  // bail out!!
+```
+
+---
+
+# Source: docs/value/overview.md
+
+# Value
+
+Functions to Process JavaScript Values
+
+## Overview
+
+The TypeBox Value module provides functions to Check and Parse JavaScript values. It also includes functions such as Clone, Repair, Encode, Decode, Diff and Patch which perform various structural operations on JavaScript values.
+
+The Value module is available via optional import.
+
+```typescript
+import Value from 'typebox/value'
+```
+
+### Example
+
+The following uses the Value module to Check and Parse a value. 
+
+```typescript
+const T = Type.Object({
+  x: Type.Number(),
+  y: Type.Number(),
+  z: Type.Number()
+})
+
+// Check
+
+const A = Value.Check(T, {                          // const A: boolean = true
+  x: 1,                                            
+  y: 2,
+  z: 3
+})
+
+// Parse
+
+const B = Value.Parse(T, {                          // const B: {
+  x: 1,                                             //   x: number,
+  y: 2,                                             //   y: number,
+  z: 3                                              //   z: number
+})                                                  // } = ...
+```
+
+---
+
+# Source: docs/value/assert.md
+
+# Assert
+
+The Assert function throws AssertError if the value does not match the type.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const T = Type.Number()
+
+Value.Assert(T, 42)                               // OK
+
+Value.Assert(T, 'not a number')                   // throws AssertError
+```
+
+---
+
+# Source: docs/value/check.md
+
+# Check
+
+The Check function returns true if the value matches the type. 
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const T = Type.Number()
+
+const A = Value.Check(T, 42)                        // const A = true
+
+const B = Value.Check(T, 'not-a-number')            // const B = false
+```
+
+---
+
+# Source: docs/value/clean.md
+
+# Clean
+
+The Clean function will remove excess properties or elements from a value. 
+
+> ⚠️ The Clean function may return invalid data if the provided value is itself invalid. This function does not perform any checks on the value to ensure the data is correct. The function returns `unknown` and therefore results should be checked before use.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const T = Type.Object({ 
+  x: Type.Number(), 
+  y: Type.Number() 
+})
+
+
+const R = Value.Clean(T, { x: 1, y: 2, z: 3 })        // const R = { x: 1, y: 2 }
+
+```
+
+```typescript
+const T = Type.Tuple([ 
+  Type.Number(), 
+  Type.Number() 
+])
+
+const R = Value.Clean(T, [1, 2, 3])                   // const R = [1, 2]
+```
+
+---
+
+# Source: docs/value/clone.md
+
+# Clone
+
+The Clone function will clone a value. This function is similar to `structuredClone()` but also clones JavaScript collections such as `Map`, `Set` and `TypeArray`.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const A = { x: 1, y: 2, z: 3 }
+
+const B = Value.Clone(A)                            // const B = { x: 1, y: 2, z: 3 }
+```
+
+---
+
+# Source: docs/value/convert.md
+
+# Convert
+
+The Convert function will convert values to match the given type if a reasonable converion is possible. If no conversion is possible, the original value is returned unchanged.
+
+> ⚠️ The Convert function may return invalid data if the provided value is invalid. This function does not perform any checks on the value to ensure the data is correct. This function returns `unknown` and therefore results should be checked before use.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const T = Type.Object({ 
+  x: Type.Number() 
+})
+
+// ...
+
+const A = Value.Convert(T, { x: '3.14' })           // const A = { x: 3.14 }
+
+const B = Value.Convert(T, { x: 'not a number' })   // const B = { x: 'not a number' }
+```
+
+---
+
+# Source: docs/value/create.md
+
+# Create
+
+The Create function will create an instance of the given type.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const T = Type.Object({
+  x: Type.Number({ default: 42 }),
+  y: Type.Number(),
+  z: Type.Number()
+})
+
+const A = Value.Create(T)                            // const A = { 
+                                                     //   x: 42, 
+                                                     //   y: 0, 
+                                                     //   z: 0 
+                                                     // }
+```
+
+
+## Ambiguous Constraints
+
+The Create function will consider an operation ambiguous if the type being created includes constraints that could produce an invalid value. For example, applying a `format` constraint to a String type is considered ambiguous, as the Create function cannot determine what kind of format it should generate.
+
+```typescript
+const T = Type.String({ 
+  format: 'email' 
+})
+
+const A = Value.Create(T)                            // throws CreateError
+```
+
+To fix, apply a `default` annotation to the type.
+
+```typescript
+const T = Type.String({ 
+  format: 'email', 
+  default: 'user@domain.com' 
+})
+
+const A = Value.Create(T)                            // const A: string = 'user@domain.com'
+```
+
+---
+
+# Source: docs/value/decode.md
+
+# Decode
+
+The Decode function will execute Decode callbacks embedded within the provided type. 
+
+> ⚠️ This function may throw an error if the provided value is invalid or if a failure occurs during the decoding process. It is recommended to wrap this function in a try / catch block.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const Timestamp = Type.Codec(Type.Number())
+  .Decode(value => new Date(value))                 
+  .Encode(value => value.getTime())
+
+const T = Type.Object({
+  date: Timestamp
+})
+
+const R = Value.Decode(T, { date: 12345 })          // const R = {
+                                                    //   date: 1970-01-01T00:00:12.345Z
+                                                    // }
+```
+
+## Pipeline
+
+The Decode function uses the following Decoder pipeline.
+
+```typescript
+const Decoder = Pipeline([
+  (_context, _type, value) => Clone(value),
+  (context, type, value) => Default(context, type, value),
+  (context, type, value) => Convert(context, type, value),
+  (context, type, value) => Clean(context, type, value),
+  (context, type, value) => Assert(context, type, value),
+  (context, type, value) => DecodeUnsafe(context, type, value) // <--- Decode Last
+])
+```
+
+## Unsafe
+
+The Decode function runs the full decoder pipeline to ensure Codec callbacks receive validated values. In some cases, applications may require greater control, for example, to optimize performance or integrate with functions beyond what is offered by TypeBox. For these scenarios, the Value module provides the DecodeUnsafe function, which executes Codec callbacks directly without additional processing. 
+
+>  ⚠️ The DecodeUnsafe function returns unknown and provides no assurances the decoded value is valid. Callers must handle validation and inference manually. This is usually achieved by wrapping a pipeline in a generic function constrained by a TypeBox type.
+
+The example below defines a reduced decoder that runs only Assert and Codec callbacks.
+
+```typescript
+
+import { Pipeline, Assert, DecodeUnsafe } from 'typebox/value'
+
+// CustomDecoder
+
+const CustomDecoder = Pipeline([
+  (context, type, value) => { Assert(context, type, value); return value },
+  (context, type, value) => DecodeUnsafe(context, type, value)
+])
+
+// Type + Decode
+
+const NumberToString = Type.Decode(Type.Number(), value => value.toString())
+
+// Result
+
+const Result = CustomDecoder(NumberToString, 123456) // const Result: unknown = "123456"
+```
+
+---
+
+# Source: docs/value/default.md
+
+# Default
+
+The Default function automatically generates values for any missing properties or elements whose type includes a default annotation. If no such annotation exists, the function will not generate a value. This function is most commonly used in HTTP request pipelines to provide reasonable defaults for optional, user-defined properties.
+
+> ⚠️ The Default function may return invalid data if the provided value is itself invalid. This function does not perform any checks on the value to ensure the data is correct. The function returns `unknown` and therefore results should be checked before use.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const Pagination = Type.Object({ 
+  skip: Type.Optional(Type.Number({ default: 0 })), 
+  take: Type.Optional(Type.Number({ default: 10 })) 
+})
+
+const A = Value.Default(Pagination, {})             // const A = { skip: 0, take: 10 }
+
+const B = Value.Default(Pagination, { skip: 10 })   // const B = { skip: 10, take: 10 }
+
+const C = Value.Default(Pagination, { take: 100 })  // const C = { skip: 0, take: 100 }
+```
+
+---
+
+# Source: docs/value/diff.md
+
+# Diff
+
+The Diff function computes a sequence of Edit commands to transform the Left value into the Right value. The resulting Edit commands can be passed to Patch, which executes them in sequence.
+
+This function is used to synchronize large data structures over a network by transmitting only the Edit commands representing state changes. Applications are expected to maintain both the old and new states. The Clone function is commonly used to copy the old state into a mutable new state, and Hash can be used to compute a local hash of the state. This hash can be transmitted along with the Edit commands to verify that the applied edits produced the expected current value.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const L = { x: 1, y: 2, z: 3 }                       // Left
+const R = { y: 4, z: 5, w: 6 }                       // Right
+
+const E = Value.Diff(L, R)                           // const E = [
+                                                     //   { type: 'update', path: '/y', value: 4 },
+                                                     //   { type: 'update', path: '/z', value: 5 },
+                                                     //   { type: 'insert', path: '/w', value: 6 },
+                                                     //   { type: 'delete', path: '/x' }
+                                                     // ]
+```
+
+---
+
+# Source: docs/value/encode.md
+
+# Encode
+
+The Encode function will execute Encode callbacks embedded within the provided type.
+
+> ⚠️ This function may throw an error if the provided value is invalid or if a failure occurs during the eecoding process. It is recommended to wrap this function in a try / catch block.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const Timestamp = Type.Codec(Type.Number())
+  .Decode(value => new Date(value)) 
+  .Encode(value => value.getTime())                
+
+const T = Type.Object({
+  date: Timestamp
+})
+ 
+const R = Value.Encode(T, {                         // const R = {
+  date: new Date('1970-01-01T00:00:12.345Z')        //   date: 12345
+})                                                  // }
+```
+
+## Pipeline
+
+The Encode function uses the following Encoder pipeline.
+
+```typescript
+const Encoder = Pipeline([
+  (_context, _type, value) => Clone(value),
+  (context, type, value) => EncodeUnsafe(context, type, value), // <--- Encode First
+  (context, type, value) => Default(context, type, value),
+  (context, type, value) => Convert(context, type, value),
+  (context, type, value) => Clean(context, type, value),
+  (context, type, value) => Assert(context, type, value),
+])
+```
+
+## Unsafe
+
+The Encode function runs the full encoder pipeline to ensure Codec callbacks receive validated values. In some cases, applications may require greater control, for example, to optimize performance or integrate with functions beyond what is offered by TypeBox. For these scenarios, the Value module provides the EncodeUnsafe function, which executes Codec callbacks directly without additional processing. 
+
+>  ⚠️ The EncodeUnsafe function returns unknown and provides no assurances the encoded value is valid. Callers must handle validation and inference manually. This is usually achieved by wrapping a pipeline in a generic function constrained by a TypeBox type.
+
+The example below defines a reduced encoder that runs only Assert and Codec callbacks.
+
+```typescript
+import { Pipeline, Assert, EncodeUnsafe } from 'typebox/value'
+
+// CustomEncoder
+
+const CustomEncoder = Pipeline([
+  (context, type, value) => EncodeUnsafe(context, type, value),
+  (context, type, value) => { Assert(context, type, value); return value },
+])
+
+// Type + Encode
+
+const StringToNumber = Type.Encode(Type.Number(), (value: unknown) => 
+  typeof value === 'string'
+    ? parseFloat(value)
+    : 0
+)
+
+// Encode
+
+const Result = CustomEncoder(StringToNumber, '123456') // const Result: unknown = 123456
+```
+
+---
+
+# Source: docs/value/equal.md
+
+# Equal
+
+The Equal function performs a structural value comparison against JavaScript values.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const R = Value.Equal(                               // const R = true
+  { x: 1, y: 2, z: 3 },
+  { x: 1, y: 2, z: 3 }
+)
+```
+
+---
+
+# Source: docs/value/errors.md
+
+# Errors
+
+The Errors function returns an array of validation errors for the specified value. If the value contains no errors, an empty array is returned. This function should only be invoked after a failed Check.
+
+> ⚠️ For performance reasons, this function should be called only when a value fails a Check. The function performs an exhaustive recheck of the entire value and returns any errors encountered. Exhaustive validation can be costly for large values, so applications should carefully consider the performance impact of generating errors. For performance-sensitive scenarios, it is recommended to generate errors only in debugging or development environments.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const T = Type.Object({ 
+  x: Type.Number(), 
+  y: Type.Number() 
+})
+
+const value = { x: 'not-a-number' }
+
+const errors = Value.Errors(T, value)               // const errors = [{
+                                                    //   keyword: 'required',     
+                                                    //   schemaPath: '#/required',
+                                                    //   instancePath: '',
+                                                    //   params: { requiredProperties: [ 'y' ] },
+                                                    //   message: 'must have required properties y'
+                                                    // }, {
+                                                    //   keyword: 'type',
+                                                    //   schemaPath: '#/properties/x/type',
+                                                    //   instancePath: '/x',
+                                                    //   params: { type: 'number' },
+                                                    //   message: 'must be number'
+                                                    // }]
+
+// ------------------------------------------------------------------
+//
+// Optional
+//
+// Use Value.Pointer.Get to access invalid values via `instancePath` 
+//
+// ------------------------------------------------------------------
+
+const errorsWithValue = errors.map(error => {
+  return { ...error, 
+    value: Value.Pointer.Get(value, error.instancePath) 
+  }
+})
+```
+
+---
+
+# Source: docs/value/hash.md
+
+# Hash
+
+The Hash function creates a structural hash of a JavaScript value. It returns a padded 64-bit hexadecimal string. Internally, this function computes an accumulated `fnv1a-64` hash across all properties, elements, and embedded values of the input. It is intended to generate fast computed hash codes for arbitrary JavaScript data structures.
+
+⚠️ Applications should not rely on this function to store persistent hashes. The hashing algorithm is specific to TypeBox and is not based on any formal specification. While the algorithm is generally considered stable, it may be replaced with a JavaScript hashing specification should one emerge. This function should only be used to compare two values.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const A = Value.Hash({ x: 1, y: 2, z: 3 })           // const A = '0834a0916e3e4db0'
+
+const B = Value.Hash({ x: 1, y: 4, z: 3 })           // const B = '279c16b78fba6600'
+```
+
+---
+
+# Source: docs/value/mutate.md
+
+# Mutate
+
+The Mutate function mutates a value while preserving interior object and array references.
+
+> ⚠️ The Mutate function is designed to prevent unintended actions in state-aware frameworks such as React. It updates interior non-reference values while retaining object and array references, which can be helpful when optimizing for state-aware systems.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const Y = { z: 1 }                                  // const Y = { z: 1 }
+
+const X = { y: Y }                                  // const X = { y: { z: 1 } }
+
+const Z = { x: X }                                  // const Z = { x: { y: { z: 1 } } }
+
+// Mutation
+
+Value.Mutate(Z, { x: { y: { z: 2 } } })             // Z = { x: { y: { z: 2 } } }
+
+const A = Z.x.y.z === 2                             // const A = true
+
+const B = Z.x.y === Y                               // const B = true
+
+const C = Z.x === X                                 // const C = true
+```
+
+---
+
+# Source: docs/value/parse.md
+
+# Parse
+
+The Parse function attempts to parse a value and throws an error if the value is invalid. This function is similar to Decode, but it does not execute Decode callbacks. Parse is considered a faster version of Decode, as operations that transform values are skipped when the value already matches the expected type.
+
+> The Parse function first checks a value against the provided type and returns immediately if it matches. If the value does not match, it is processed through a sequence of Clone, Clean, Convert, and Default operations, and then re-checked. If the value remains invalid, a ParseError error is thrown.
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const R = Value.Parse(Type.String(), 'hello')      // const R: string = "hello"
+
+const E = Value.Parse(Type.String(), [{ x: 1 }])   // throws ParseError 
+```
+
+---
+
+# Source: docs/value/patch.md
+
+# Patch
+
+The Patch function applies a sequence of Edit commands to a value.
+
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const L = { x: 1, y: 2, z: 3 }                       // Left
+const R = { y: 4, z: 5, w: 6 }                       // Right
+
+const E = Value.Diff(L, R)                           // const E = [
+                                                     //   { type: 'update', path: '/y', value: 4 },
+                                                     //   { type: 'update', path: '/z', value: 5 },
+                                                     //   { type: 'insert', path: '/w', value: 6 },
+                                                     //   { type: 'delete', path: '/x' }
+                                                     // ]
+
+// Patch Left with Edits
+
+const A = Value.Patch(L, E)                          // const A = { y: 4, z: 5, w: 6 }
+```
+
+---
+
+# Source: docs/value/pointer.md
+
+# Pointer
+
+The Pointer namespace is an implementation of [RFC 6901](https://datatracker.ietf.org/doc/html/rfc6901) Json Pointer. It provides functions to read and write values using Json Pointers.
+
+## Get
+
+The Get function will return a value at the pointer or undefined.
+
+```typescript
+const X = { x: 1 }
+
+const A = Value.Pointer.Get(X, '/x')                // const A = 1
+
+const B = Value.Pointer.Get(X, '/y')                // const B = undefined
+```
+
+## Set
+
+The Set will update a value at the given pointer. If the path does not exist it is created.
+
+```typescript
+const X = { x: 1 }
+
+Value.Pointer.Set(X, '/x', 100)                     // X' = { x: 100 }
+
+Value.Pointer.Set(X, '/y', 200)                     // X' = { x: 100, y: 200 }
+```
+
+## Has
+
+The Has function will returns true if a value exists at the pointer.
+
+```typescript
+const X = { x: 1 }
+
+const A = Value.Pointer.Has(X, '/x')                // const A = true
+
+const B = Value.Pointer.Has(X, '/y')                // const B = false
+```
+
+## Delete
+
+The Delete function will delete a value at the given path or no action if the path does not exist.
+
+```typescript
+const X = { x: 1 }
+
+Value.Pointer.Delete(X, '/x')                          // X' = { }
+
+Value.Pointer.Delete(X, '/y')                          // X' = { } - no-action
+```
+
+---
+
+# Source: docs/value/repair.md
+
+# Repair
+
+The Repair function will repair a value to match the provided type. If the value already matches, no action is taken. This function will try to retain as much information as possible from the original value. 
+
+## Example
+
+Example usage is shown below.
+
+```typescript
+const T = Type.Object({ 
+  x: Type.Number(), 
+  y: Type.Number() 
+}, { additionalProperties: false })                 // Tip: Use additionalProperties: false if you want
+                                                    // Repair to remove excess properties. By default,
+                                                    // the Repair function retain excess properties to 
+                                                    // avoid data loss.
+
+// ...
+
+const A = Value.Repair(T, null)                     // const A = { x: 0, y: 0 }
+
+const B = Value.Repair(T, { x: 1 })                 // const B = { x: 1, y: 0 }
+
+const C = Value.Repair(T, { x: 1, y: 2, z: 3 })     // const C = { x: 1, y: 2 }
+
+const D = Value.Repair(T, { x: true, y: '42' })    // const D = { x: 1, y: 42 }
+
+```
+
+---
+
+# Source: docs/compile/overview.md
+
+# Compile
+
+High Performance Runtime Validation
+
+## Overview
+
+The TypeBox Compile module provides functions to convert types into high-performance validators. The compiler is tuned for fast compilation as well as fast validation.
+
+The Compile module is available via optional import.
+
+```typescript
+import { Compile } from 'typebox/compile' 
+```
+
+### Example
+
+The following uses the Compile module to Check and Parse a value. 
+
+```typescript
+const C = Compile(Type.Object({                     // const C: Validator<{}, TObject<{
+  x: Type.Number(),                                 //   x: TNumber,
+  y: Type.Number(),                                 //   y: TNumber,
+  z: Type.Number()                                  //   z: TNumber
+}))                                                 // }>>
+
+// Check
+
+const A = C.Check({                                 // const A: boolean = true
+  x: 1,                                            
+  y: 2,
+  z: 3
+})
+
+// Parse
+
+const B = C.Parse({                                 // const B: {
+  x: 1,                                             //   x: number,
+  y: 2,                                             //   y: number,
+  z: 3                                              //   z: number
+})                                                  // } = ...
+```
+
+---
+
+# Source: docs/compile/0_compile.md
+
+# Compile
+
+The Compile function returns a new Validator instance.
+
+## Example
+
+The following creates a Validator with Compile.
+
+```typescript
+import { Compile } from 'typebox/compile'
+
+const C = Compile(Type.Object({                        // const C: Validator<{}, TObject<{
+  x: Type.Number(),                                    //   x: TNumber,
+  y: Type.Number(),                                    //   y: TNumber,
+  z: Type.Number()                                     //   z: TNumber
+}))                                                    // }>>
+```
+
+The following creates a Validator via constructor.
+
+```typescript
+import { Validator } from 'typebox/compile'
+
+const C = new Validator({}, Type.Object({              // const C: Validator<{}, TObject<{
+  x: Type.Number(),                                    //   x: TNumber,
+  y: Type.Number(),                                    //   y: TNumber,
+  z: Type.Number()                                     //   z: TNumber
+}))                                                    // }>>
+```
+
+---
+
+# Source: docs/compile/1_validator.md
+
+# Validator
+
+Validators provide optimized implementations of the functions available in the Value submodule.
+
+## Example
+
+The following compiles a Validator and calls Check. 
+
+```typescript
+import { Compile, Validator } from 'typebox/compile'
+
+const T = Compile(Type.Object({                     // const T: Validator<{}, TObject<{
+  x: Type.Number(),                                 //   x: TNumber,
+  y: Type.Number(),                                 //   y: TNumber,
+  z: Type.Number(),                                 //   z: TNumber
+}))                                                 // }>>
+
+const R = T.Check({ x: 1, y: 2, z: 3 })             // const R: boolean = true
+
+
+```
+
+## Functions
+
+The following functions are available on Validator instances.
+
+## Check
+
+Checks a value matches a type.
+
+```typescript
+const R = C.Check(value)                            // const R: boolean
+```
+
+## Errors
+
+Returns a errors for the value or empty if no error.
+
+```typescript
+const R = C.Errors(value)                          // const R: ValidationError[]
+```
+
+## Clean
+
+Cleans a value
+
+```typescript
+const R = C.Clean(value)                          // const R: unknown
+```
+
+## Code
+
+Returns generated code for this Validator.
+
+```typescript
+const R = C.Code()                                // const R: string
+```
+
+## Convert
+
+Converts a value
+
+```typescript
+const R = C.Convert(value)                        // const R: unknown
+```
+
+## Create
+
+Creates a value of the Validator type
+
+```typescript
+const R = C.Create(value)                        // const R: ...
+```
+
+## Decode
+
+Decodes a value, running any Decode callbacks if available.
+
+```typescript
+const R = C.Decode(value)                       // const R: ...
+```
+
+## Default
+
+Creates defaults for the given value
+
+```typescript
+const R = C.Default(value)                       // const R: unknown
+```
+
+## Encode
+
+Encodes a value, running any Encode callbacks if available.
+
+```typescript
+const R = C.Encode(value)                       // const R: ...
+```
+
+## IsEvaluated
+
+Returns true if the Validator is using evaluated optimizations.
+
+```typescript
+const R = C.IsEvaluated()                      // const R: boolean
+```
+
+## Parse
+
+Parses a value to the given type.
+
+```typescript
+const R = C.Parse(value)                        // const R: ...
+```
+
+---
+
+# Source: docs/compile/2_code.md
+
+# Code
+
+The Code function is used to create standalone ESM validation modules that can be written to disk and imported as regular JavaScript modules. This function is an alternative to Compile and provides a way to achieve high throughput validation in [Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CSP) restricted environments.
+
+## CodeResult
+
+The Code function returns a CodeResult structure that contains two properties, Code and External.
+
+```typescript
+import { Code } from 'typebox/compile'
+
+const result = Code(Type.String())
+
+console.log(result.Code)                           // export function SetExternal(external) { ... }
+                                                   // 
+                                                   // export function Check(value) { ... }
+
+console.log(result.External)                       // { identifier: '...', variables: [...] }
+```
+
+---
+
+# Source: docs/compile/3_evaluate.md
+
+# Evaluate
+
+TypeBox attains high performance by generating optimized JavaScript code at runtime using schema introspection. This approach is safe, but some environments block runtime code execution (such as `eval` or `new Function`). In these cases, high-performance validation is not possible. One notable environment that does this is Cloudflare workers.
+
+TypeBox implements internal fallbacks for these environments and will downgrade to dynamic checking using the Value.* submodule if it detects a restrictive [Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CSP). 
+
+
+## Example
+
+You can check if the compiler is using Value.* fallbacks with the IsEvaluated function.
+
+ ```typescript
+import { Compile } from 'typebox/compile'
+
+const C = Compile(Type.String())
+
+console.log(C.IsEvaluated())                      // The IsEvaluated function will return false if
+                                                   // the environment does not support runtime code
+                                                   // evaluation.
+```
+
+---
+
+# Source: docs/format/overview.md
+
+# Format
+
+Functions to Validate String Formats
+
+## Overview
+
+The Format module contains functions to validate various string formats referenced in the [Defined Formats 7.3](https://json-schema.org/draft/2020-12/draft-bhutton-json-schema-validation-00#rfc.section.7.3) section of Json Schema specification. 
+
+The Format module is provided via optional import.
+
+```typescript
+import Format from 'typebox/format'
+```
+
+## Example
+
+The following validates an email address.
+
+```typescript
+const isEmail = Format.IsEmail('user@domain.com')
+```
+
+---
+
+# Source: docs/format/1_registry.md
+
+# Registry
+
+Custom string formats are supported with Get and Set.
+
+## Example
+
+The following registers a `hex-color` format.
+
+```typescript
+import Format from 'typebox/format'
+
+// ------------------------------------------------------------------
+// Set
+// ------------------------------------------------------------------
+Format.Set('hex-color', value => {
+  
+  return /^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})$/.test(value)
+})
+
+// ------------------------------------------------------------------
+// Get
+// ------------------------------------------------------------------
+const IsHexColor = Format.Get('hex-color')
+
+// ------------------------------------------------------------------
+// Use
+// ------------------------------------------------------------------
+IsHexColor('#FF5733')                               // true
+IsHexColor('#FFF')                                  // true
+IsHexColor('blue')                                  // false
+
+```
+
+## Validation
+
+Once registered, custom formats become available to validators and can be referenced using the `format` keyword.
+
+```typescript
+const T = Type.String({ format: 'hex-color' })      // const T = { type: 'string', format: 'hex-color' }
+
+const R = Value.Check(T, '#FFFFFF')                 // true
+
+const R = Value.Check(T, 'blue')                    // false
+```
+
+---
+
+# Source: docs/format/date.md
+
+# IsDate
+
+Returns true if the string is a [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339) date component.
+
+## Function
+
+```typescript
+const R = Format.IsDate('2025-08-22')
+```
+
+## Schema 
+
+```typescript 
+{ format: 'date' }
+```
+
+---
+
+# Source: docs/format/date-time.md
+
+# IsDateTime
+
+Returns true if the string is a [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339) datetime
+
+## Function
+
+```typescript
+const R = Format.IsDateTime('2025-08-22T14:30:00Z')
+```
+
+## Schema
+
+```typescript
+{ format: 'date-time' }
+```
+
+---
+
+# Source: docs/format/duration.md
+
+# IsDuration
+
+Returns true if the string is a [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) duration
+
+## Function
+
+```typescript
+const R = Format.IsDuration('PT2H30M')
+```
+
+## Schema 
+
+```typescript
+{ format: 'duration' }
+```
+
+---
+
+# Source: docs/format/email.md
+
+# IsEmail
+
+Returns true if the string is an email
+
+## Function
+
+```typescript
+const R = Format.IsEmail('user@example.com')
+```
+
+## Schema 
+
+```typescript 
+{ format: 'email' }
+```
+
+---
+
+# Source: docs/format/hostname.md
+
+# IsHostname
+
+Returns true if the string is a [RFC 1123](https://www.rfc-editor.org/rfc/rfc1123.html) hostname
+
+## Function
+
+```typescript
+const R = Format.IsHostname('example.com')
+```
+
+## Schema
+
+```typescript 
+{ format: 'hostname' }
+```
+
+---
+
+# Source: docs/format/idn-email.md
+
+# IsIdnEmail
+
+Returns true if the string is an internationalized [RFC 6531](https://datatracker.ietf.org/doc/html/rfc6531) email address
+
+## Function
+
+```typescript
+const R = Format.IsIdnEmail('사용자@예제.회사')
+```
+
+## Schema
+
+```typescript 
+{ format: 'idn-email' }
+```
+
+---
+
+# Source: docs/format/idn-hostname.md
+
+# IsHostname
+
+Returns true if the string is an internationalized [RFC 5890](https://datatracker.ietf.org/doc/html/rfc5890) hostname
+
+## Function
+
+```typescript
+const R = Format.IsHostname('예제.회사')
+```
+
+## Schema
+
+```typescript 
+{ format: 'idn-hostname' }
+```
+
+---
+
+# Source: docs/format/ipv4.md
+
+# IsIPv4
+
+Returns true if the string is an IPv4 address
+
+## Function
+
+```typescript
+const R = Format.IsIPv4('192.168.0.1')
+```
+
+## Schema
+
+```typescript 
+{ format: 'ipv4' }
+```
+
+
+## Remarks
+
+Checks whether the input string is a valid IPv4 address (four decimal octets, 0–255).
+
+---
+
+# Source: docs/format/ipv6.md
+
+# IsIPv6
+
+Returns true if the string is an IPv6 address
+
+## Function
+
+```typescript
+const R = Format.IsIPv6('2001:0db8:85a3:0000:0000:8a2e:0370:7334')
+```
+
+## Schema
+
+```typescript 
+{ format: 'ipv6' }
+```
+
+## Remarks
+
+Checks whether the input string is a valid IPv6 address.
+
+---
+
+# Source: docs/format/iri.md
+
+# IsIri
+
+Returns true if the string is an IRI
+
+## Function
+
+```typescript
+const R = Format.IsIri('https://예제.회사/경로')
+```
+
+## Schema
+
+```typescript 
+{ format: 'iri' }
+```
+
+---
+
+# Source: docs/format/iri-reference.md
+
+# IsIriReference
+
+Returns true if the string is an IRI reference
+
+## Function
+
+```typescript
+const R = Format.IsIriReference('https://예제.회사/경로')
+```
+
+## Schema
+
+```typescript 
+{ format: 'iri-reference' }
+```
+
+---
+
+# Source: docs/format/json-pointer.md
+
+# IsJsonPointer
+
+Returns true if the string is a [RFC 6901](https://datatracker.ietf.org/doc/html/rfc6901) Json Pointer
+
+## Function
+
+```typescript
+const R = Format.IsJsonPointer('/paths/~1users/123')
+```
+
+## Schema
+
+```typescript 
+{ format: 'json-pointer' }
+```
+
+---
+
+# Source: docs/format/json-pointer-uri-fragment.md
+
+# IsJsonPointerUriFragment
+
+Returns true if the string is a [RFC 6901](https://datatracker.ietf.org/doc/html/rfc6901) Json Pointer URI fragment
+
+## Function
+
+```typescript
+const R = Format.IsJsonPointerUriFragment('#/paths/~1users/123')
+```
+
+## Schema
+
+```typescript 
+{ format: 'json-pointer-uri-fragment' }
+```
+
+---
+
+# Source: docs/format/regex.md
+
+# IsRegex
+
+Returns true if the string is a regular expression
+
+## Function
+
+```typescript
+const R = Format.IsRegex('^\\d{3}-\\d{2}-\\d{4}$')
+```
+
+## Schema
+
+```typescript 
+{ format: 'regex' }
+```
+
+---
+
+# Source: docs/format/relative-json-pointer.md
+
+# IsRelativeJsonPointer
+
+Returns true if the string is a relative [RFC 6901](https://datatracker.ietf.org/doc/html/rfc6901) Json Pointer
+
+## Function
+
+```typescript
+const R = Format.IsRelativeJsonPointer('0/name')
+```
+
+## Schema
+
+```typescript 
+{ format: 'relative-json-pointer' }
+```
+
+---
+
+# Source: docs/format/time.md
+
+# IsTime
+
+Returns true if the string is a [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339) time component.
+
+## Function
+
+```typescript
+const R = Format.IsTime('14:30:00Z')
+```
+
+## Schema
+
+```typescript 
+{ format: 'time' }
+```
+
+---
+
+# Source: docs/format/uri.md
+
+# IsUri
+
+Returns true if the string is a [RFC 3986](https://datatracker.ietf.org/doc/html/rfc3986) URI
+
+## Function
+
+```typescript
+const R = Format.IsUri('https://example.com/path')
+```
+
+## Schema
+
+```typescript 
+{ format: 'uri' }
+```
+
+---
+
+# Source: docs/format/uri-reference.md
+
+# IsUriReference
+
+Returns true if the string is a [RFC 3986](https://datatracker.ietf.org/doc/html/rfc3986) URI reference
+
+## Function
+
+```typescript
+const R = Format.IsUriReference('https://example.com/path')
+```
+
+## Schema
+
+```typescript 
+{ format: 'uri-reference' }
+```
+
+---
+
+# Source: docs/format/uri-template.md
+
+# IsUriTemplate
+
+Returns true if the string is a [RFC 6570](https://www.rfc-editor.org/rfc/rfc6570.html) Uri template
+
+## Function
+
+```typescript
+const R = Format.IsUriTemplate('https://example.com/{user}/profile')
+```
+
+## Schema
+
+```typescript 
+{ format: 'uri-template' }
+```
+
+---
+
+# Source: docs/format/url.md
+
+# IsUrl
+
+Returns true if the string is a URL
+
+## Function
+
+```typescript
+const R = Format.IsUrl('https://example.com/path')
+```
+
+## Schema
+
+```typescript 
+{ format: 'url' }
+```
+
+---
+
+# Source: docs/format/uuid.md
+
+# IsUuid
+
+Returns true if the string is a RFC 4122 UUID
+
+## Function
+
+```typescript
+const R = Format.IsUuid('550e8400-e29b-41d4-a716-446655440000')
+```
+
+## Schema
+
+```typescript 
+{ format: 'uuid' }
+```
+
+---
+
+# Source: docs/system/overview.md
+
+# System
+
+Settings and Core Functions
+
+## Overview
+
+The System module contains core logic and configurations for TypeBox. This module can be used to configure the current language, enforce immutable schematics, debug types or interact with the TypeBox memory managment system.
+
+## Example
+
+The following System namespaces are available.
+
+```typescript
+import { Settings, Locale, Memory } from 'typebox/system'
+```
+
+---
+
+# Source: docs/system/1_settings.md
+
+# Settings
+
+The Settings namespace manages type system configurations.
+
+## Example
+
+The following makes compositor properties enumerable.
+
+```typescript
+import { Settings } from 'typebox/system'
+
+Settings.Set({ enumerableKind: true })              // Debug types         
+
+console.log(Type.String())                          // const T = { '~kind': 'String', type: 'string' }
+                                                    //              ^
+                                                    //              enumerable
+```
+
+The following settings are available.
+
+```typescript
+export interface TSettings {
+  /**
+   * Determines whether types should be instantiated as immutable using `Object.freeze(...)`.
+   * This helps prevent unintended schema mutation. Enabling this option introduces a slight
+   * performance overhead during instantiation.
+   * @default false
+   */
+  immutableTypes: boolean
+
+  /**
+   * Specifies the maximum number of errors to buffer during diagnostics collection. TypeBox
+   * performs exhaustive checks to gather diagnostics for invalid values, which can result in
+   * excessive buffering for large or complex types. This setting limits the number of buffered
+   * errors and acts as a safeguard against potential denial-of-service (DoS) attacks.
+   * @default 8
+   */
+  maxErrors: number
+
+  /**
+   * Enables or disables the use of runtime code evaluation to accelerate validation. By default,
+   * TypeBox checks for `unsafe-eval` support in the environment before attempting to evaluate
+   * generated code. If evaluation is not permitted, it falls back to dynamic checking. Setting
+   * this to `false` disables evaluation entirely, which may be desirable in applications that
+   * restrict runtime code evaluation, regardless of Content Security Policy (CSP).
+   * @default true
+   */
+  useEval: boolean
+
+  /**
+   * Enables or disables 'exactOptionalPropertyTypes' check semantics. By default, TypeScript 
+   * allows optional properties to be assigned 'undefined'. While this behavior differs from the 
+   * common interpretation of 'optional' as meaning 'key may be absent', TypeBox adopts the default 
+   * TypeScript semantics to remain consistent with the language. This option is provided to align 
+   * runtime check semantics with projects that configure 'exactOptionalPropertyTypes: true' in 
+   * tsconfig.json.
+   * @default false
+   */
+  exactOptionalPropertyTypes: boolean
+
+  /**
+   * Controls whether internal compositor properties (`~kind`, `~readonly`, `~optional`) are enumerable.
+   * @default false
+   */
+  enumerableKind: boolean
+}
+```
+
+---
+
+# Source: docs/system/2_locale.md
+
+# Locale
+
+TypeBox provides error message translation (i18n) support for over 40 languages. 
+
+## Example
+
+TypeBox uses ISO 639-1 language region codes for each Locale. They can be set in the following way.
+
+```typescript
+import { Locale } from 'typebox/system'
+
+Locale.Set(Locale.en_US)                           // English - United States
+
+Locale.Set(Locale.ko_KR)                           // Korean - South Korea
+
+Locate.Set(Locale.fr_FR)                           // French - France
+
+Locale.Set(Locale.zh_Hant)                         // Chinese - Traditional
+```
+
+
+## Errors
+
+Set the Locale immediately before calling Errors to generate messages for that locale.
+
+```typescript
+Locale.Set(Locale.fr_FR)                            // French - France
+
+const E = Value.Errors(Type.Number(), '???')        // const E = [{
+                                                    //   keyword: "type",
+                                                    //   schemaPath: "#/type",      
+                                                    //   instancePath: "",
+                                                    //   params: { type: "number" },
+                                                    //   message: "doit être number"   
+                                                    // }]
+```
+
+---
+
+# Source: docs/system/3_memory.md
+
+# Memory
+
+The Memory namespace is used to allocate schematics with enumerable and non-enumerable properties as well as track of allocations made by the type system. 
+
+## Metrics
+
+The Memory namespace includes a Metrics property that tracks allocations created within the type system. You can use this property to inspect memory usage, debug, or gain insights into the allocations required during instantiation.
+
+```typescript
+const Reverse = Type.Script(`<T, Result extends unknown[] = []> = (
+  T extends [infer L, ...infer R] 
+    ? Reverse<R, [L, ...Result]>
+    : Result
+)`)
+
+const Result = Type.Script({ Reverse }, `Reverse<[
+  1, 2, 3, 4, 5, 6, 7, 8
+]>`)                                          // TTuple<[
+                                              //   TLiteral<8>,
+                                              //   TLiteral<7>,
+                                              //   ...
+                                              //   TLiteral<0>
+                                              // ]>
+
+// --------------------------------------------------------
+// Debug
+// --------------------------------------------------------
+
+import { Memory } from 'typebox/system'
+
+console.log(Memory.Metrics)                   // { 
+                                              //   assign: 42, 
+                                              //   create: 459, 
+                                              //   clone: 108, 
+                                              //   discard: 97, 
+                                              //   update: 11 
+                                              // }
+```
