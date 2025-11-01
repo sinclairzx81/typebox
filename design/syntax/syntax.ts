@@ -281,7 +281,7 @@ const Base = Runtime.Union([
   Runtime.Ref('TemplateLiteral'),
   Runtime.Ref('Literal'),
   Runtime.Ref('Constructor'),
-  Runtime.Ref('Function'),
+  Runtime.Ref('_Function_'),
   Runtime.Ref('Mapped'),
   Runtime.Ref('Options'),
   Runtime.Ref('GenericCall'),
@@ -577,9 +577,9 @@ const Constructor = Runtime.Tuple([
   Runtime.Ref('Type')
 ])
 // ------------------------------------------------------------------
-// Function
+// _Function_
 // ------------------------------------------------------------------
-const Function = Runtime.Tuple([
+const _Function_ = Runtime.Tuple([
   Runtime.Const(LParen),
   Runtime.Ref('ParameterList'),
   Runtime.Const(RParen),
@@ -993,7 +993,7 @@ export const SyntaxModule = new Runtime.Module({
   ParameterBase,
   Parameter,
   ParameterList,
-  Function,
+  _Function_,
   Constructor,
 
   MappedReadonly,
