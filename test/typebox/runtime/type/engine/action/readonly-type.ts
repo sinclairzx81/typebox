@@ -1,6 +1,5 @@
 import { Assert } from 'test'
 import * as Type from 'typebox'
-import Guard from 'typebox/guard'
 
 const Test = Assert.Context('Type.Engine.ReadonlyType')
 // ------------------------------------------------------------------
@@ -18,9 +17,8 @@ Test('Should ReadonlyType 1', () => {
 // ------------------------------------------------------------------
 Test('Should ReadonlyType 2', () => {
   const A = Type.Number()
-  const T: Type.TObject<{}> = Type.ReadonlyType(A)
-  Assert.IsTrue(Type.IsObject(T))
-  Assert.IsEqual(Guard.Keys(T.properties), [])
+  const T: Type.TNumber = Type.ReadonlyType(A)
+  Assert.IsTrue(Type.IsNumber(T))
 })
 Test('Should ReadonlyType 3', () => {
   const A = Type.Object({

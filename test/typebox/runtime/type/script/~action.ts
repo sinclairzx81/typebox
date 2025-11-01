@@ -68,6 +68,7 @@ Test('Should Action 12', () => {
   Assert.IsTrue(Type.IsNull(T))
 })
 Test('Should Action 13', () => {
+  // DENO_CACHE_ERROR
   const T: Type.TUnion<[Type.TLiteral<'x'>, Type.TLiteral<'y'>]> = Type.Script('KeyOf<{ x: 1, y: 2 }>')
   Assert.IsTrue(Type.IsUnion(T))
   Assert.IsEqual(T.anyOf[0].const, 'x')
