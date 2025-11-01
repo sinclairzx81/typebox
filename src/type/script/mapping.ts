@@ -90,6 +90,7 @@ function IntrinsicOrCall<Ref extends string, Parameters extends T.TSchema[]>(ref
     Guard.IsEqual(ref, 'Parameters') ? C.ParametersDeferred(parameters[0]) :
     Guard.IsEqual(ref, 'Partial') ? C.PartialDeferred(parameters[0]) :
     Guard.IsEqual(ref, 'Pick') ? C.PickDeferred(parameters[0], parameters[1]) :
+    Guard.IsEqual(ref, 'Readonly') ? C.ReadonlyTypeDeferred(parameters[0]) :
     Guard.IsEqual(ref, 'KeyOf') ? C.KeyOfDeferred(parameters[0]) :
     Guard.IsEqual(ref, 'Record') ? T.RecordDeferred(parameters[0], parameters[1]) :
     Guard.IsEqual(ref, 'Required') ? C.RequiredDeferred(parameters[0]) :
