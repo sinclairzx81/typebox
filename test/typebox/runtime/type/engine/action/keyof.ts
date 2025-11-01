@@ -212,6 +212,7 @@ Test('Should KeyOf 17', () => {
       Type.Object({ w: Type.Number() })
     ])
   ])
+  // DENO_CACHE_ERROR
   const T: Type.TUnion<[
     Type.TLiteral<'x'>,
     Type.TLiteral<'y'>,

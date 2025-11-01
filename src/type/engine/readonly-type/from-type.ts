@@ -32,7 +32,7 @@ import { type TSchema } from '../../types/schema.ts'
 import { type TArray, IsArray } from '../../types/array.ts'
 import { type TCyclic, IsCyclic } from '../../types/cyclic.ts'
 import { type TIntersect, IsIntersect } from '../../types/intersect.ts'
-import { type TObject, Object, IsObject } from '../../types/object.ts'
+import { type TObject, IsObject } from '../../types/object.ts'
 import { type TProperties } from '../../types/properties.ts'
 import { type TTuple, IsTuple } from '../../types/tuple.ts'
 import { type TUnion, IsUnion } from '../../types/union.ts'
@@ -51,7 +51,7 @@ export type TFromType<Type extends TSchema> = (
   Type extends TObject<infer Properties extends TProperties> ? TFromObject<Properties> : 
   Type extends TTuple<infer Types extends TSchema[]> ? TFromTuple<Types> :
   Type extends TUnion<infer Types extends TSchema[]> ? TFromUnion<Types> :
-  TObject<{}>
+  Type
 )
 export function FromType<Type extends TSchema>(type: Type): TFromType<Type> {
   return (
@@ -61,6 +61,6 @@ export function FromType<Type extends TSchema>(type: Type): TFromType<Type> {
     IsObject(type) ? FromObject(type.properties) :
     IsTuple(type) ? FromTuple(type.items) :
     IsUnion(type) ? FromUnion(type.anyOf) :
-    Object({})
+    type
   ) as never
 }
