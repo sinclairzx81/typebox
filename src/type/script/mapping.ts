@@ -528,7 +528,7 @@ export function ExtendsMapping(input: [unknown, unknown, unknown, unknown, unkno
     : []
 }
 // -------------------------------------------------------------------
-// Base: ['(', Type, ')'] | Keyword | _Object_ | Tuple | TemplateLiteral | Literal | Constructor | Function | Mapped | Options | GenericCall | Reference
+// Base: ['(', Type, ')'] | Keyword | _Object_ | Tuple | TemplateLiteral | Literal | Constructor | _Function_ | Mapped | Options | GenericCall | Reference
 // -------------------------------------------------------------------
 export type TBaseMapping<Input extends [unknown, unknown, unknown] | unknown> = (
   Input extends ['(', infer Type extends T.TSchema, ')'] ? Type :
@@ -1076,14 +1076,14 @@ export function ParameterListMapping(input: [unknown, unknown]): unknown {
   return Delimited(input)
 }
 // -------------------------------------------------------------------
-// Function: ['(', ParameterList, ')', '=>', Type]
+// _Function_: ['(', ParameterList, ')', '=>', Type]
 // -------------------------------------------------------------------
-export type TFunctionMapping<Input extends [unknown, unknown, unknown, unknown, unknown]> = (
+export type T_Function_Mapping<Input extends [unknown, unknown, unknown, unknown, unknown]> = (
   Input extends ['(', infer ParameterList extends T.TSchema[], ')', '=>', infer ReturnType extends T.TSchema]
     ? T.TFunction<ParameterList, ReturnType>
     : never
 )
-export function FunctionMapping(input: [unknown, unknown, unknown, unknown, unknown]): unknown {
+export function _Function_Mapping(input: [unknown, unknown, unknown, unknown, unknown]): unknown {
   return T.Function(input[1] as T.TSchema[], input[4] as T.TSchema)
 }
 // -------------------------------------------------------------------
