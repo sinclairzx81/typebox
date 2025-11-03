@@ -17,8 +17,8 @@ Test('Should Tuple 1', () => {
     NumberToString,
     NumberToString
   ])
-  const D = Value.Decode(A, [1, 2, 3])
-  const E = Value.Encode(A, D)
+  const D = Value.PipelineDecode(A, [1, 2, 3])
+  const E = Value.PipelineEncode(A, D)
   Assert.IsEqual(D, ['1', '2', '3'])
   Assert.IsEqual(E, [1, 2, 3])
 })
@@ -35,8 +35,8 @@ Test('Should Tuple 2', () => {
     NumberToString,
     NumberToString
   ])
-  const D = Value.Decode(A, [1, 2, 3, 4, 5])
-  const E = Value.Encode(A, D)
+  const D = Value.PipelineDecode(A, [1, 2, 3, 4, 5])
+  const E = Value.PipelineEncode(A, D)
   Assert.IsEqual(D, ['1', '2', '3'])
   Assert.IsEqual(E, [1, 2, 3])
 })
@@ -51,8 +51,8 @@ Test('Should Tuple 3', () => {
   ]))
     .Decode((value) => ({ x: value[0], y: value[1], z: value[2] }))
     .Encode((value) => [value.x, value.y, value.z])
-  const D = Value.Decode(TupleToObject, [1, 2, 3])
-  const E = Value.Encode(TupleToObject, D)
+  const D = Value.PipelineDecode(TupleToObject, [1, 2, 3])
+  const E = Value.PipelineEncode(TupleToObject, D)
   Assert.IsEqual(D, { x: 1, y: 2, z: 3 })
   Assert.IsEqual(E, [1, 2, 3])
 })
@@ -70,8 +70,8 @@ Test('Should Tuple 4', () => {
   ]))
     .Decode((value) => ({ x: value[0], y: value[1], z: value[2] }))
     .Encode((value) => [value.x, value.y, value.z])
-  const D = Value.Decode(TupleToObject, [1, 2, 3])
-  const E = Value.Encode(TupleToObject, D)
+  const D = Value.PipelineDecode(TupleToObject, [1, 2, 3])
+  const E = Value.PipelineEncode(TupleToObject, D)
   Assert.IsEqual(D, { x: '1', y: '2', z: '3' })
   Assert.IsEqual(E, [1, 2, 3])
 })
@@ -86,6 +86,6 @@ Test('Should Tuple 5', () => {
     .Decode((value) => value)
     .Encode((value) => value)
 
-  Assert.Throws(() => Value.Decode(Identity, null))
-  Assert.Throws(() => Value.Encode(Identity, null))
+  Assert.Throws(() => Value.PipelineDecode(Identity, null))
+  Assert.Throws(() => Value.PipelineEncode(Identity, null))
 })

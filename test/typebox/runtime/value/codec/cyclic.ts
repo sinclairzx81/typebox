@@ -19,8 +19,8 @@ Test('Should Cyclic 1', () => {
     })
   }, 'B')
 
-  const D = Value.Decode(T, { x: { x: '12345', y: '54321' } })
-  const E = Value.Encode(T, D)
+  const D = Value.PipelineDecode(T, { x: { x: '12345', y: '54321' } })
+  const E = Value.PipelineEncode(T, D)
   Assert.IsEqual(D, { x: { x: 12345, y: 54321 } })
   Assert.IsEqual(E, { x: { x: '12345', y: '54321' } })
 })

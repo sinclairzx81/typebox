@@ -15,8 +15,8 @@ Test('Should Behaviour 1', () => {
     .Encode((value) => {
       return parseFloat(value)
     })
-  const D = Value.Decode(NumberToString, 12345)
-  const E = Value.Encode(NumberToString, D)
+  const D = Value.PipelineDecode(NumberToString, 12345)
+  const E = Value.PipelineEncode(NumberToString, D)
   Assert.IsEqual(D, '12345')
   Assert.IsEqual(E, 12345)
 })
@@ -28,8 +28,8 @@ Test('Should Behaviour 2', () => {
     .Encode((value) => {
       return value.value
     })
-  const D = Value.Decode(UnknownToBoxed, 1)
-  const E = Value.Encode(UnknownToBoxed, D)
+  const D = Value.PipelineDecode(UnknownToBoxed, 1)
+  const E = Value.PipelineEncode(UnknownToBoxed, D)
   Assert.IsEqual(D, { value: 1 })
   Assert.IsEqual(E, 1)
 })
@@ -59,8 +59,8 @@ Test('Should Behaviour 3', () => {
       return value
     })
 
-  const D = Value.Decode(B, 'hello')
-  const E = Value.Encode(B, D)
+  const D = Value.PipelineDecode(B, 'hello')
+  const E = Value.PipelineEncode(B, D)
   Assert.IsEqual(D, 'hello')
   Assert.IsEqual(E, 'hello')
 
@@ -81,8 +81,8 @@ Test('Should Behaviour 4', () => {
     })
 
   const T = Type.Object({ x: A, y: A })
-  const D: { x: string; y: string } = Value.Decode(T, { x: 1, y: 2 } as never)
-  const E: { x: number; y: number } = Value.Encode(T, D)
+  const D: { x: string; y: string } = Value.PipelineDecode(T, { x: 1, y: 2 } as never)
+  const E: { x: number; y: number } = Value.PipelineEncode(T, D)
   Assert.IsEqual(D, { x: '1', y: '2' })
   Assert.IsEqual(E, { x: 1, y: 2 })
   Assert.IsEqual(DecodeStack, ['A', 'A'])
@@ -112,8 +112,8 @@ Test('Should Behaviour 5', () => {
     })
 
   const T = Type.Object({ x: B, y: B })
-  const D: { x: string; y: string } = Value.Decode(T, { x: 1, y: 2 } as never)
-  const E: { x: number; y: number } = Value.Encode(T, D)
+  const D: { x: string; y: string } = Value.PipelineDecode(T, { x: 1, y: 2 } as never)
+  const E: { x: number; y: number } = Value.PipelineEncode(T, D)
 
   Assert.IsEqual(D, { x: '1', y: '2' })
   Assert.IsEqual(E, { x: 1, y: 2 })
@@ -125,9 +125,9 @@ Test('Should Behaviour 5', () => {
 // ------------------------------------------------------------------
 Test('Should Behaviour 6', () => {
   const A = Type.Decode(Type.Number(), (value) => value)
-  Assert.Throws(() => Value.Encode(A, 1))
+  Assert.Throws(() => Value.PipelineEncode(A, 1))
 })
 Test('Should Behaviour 7', () => {
   const A = Type.Encode(Type.Number(), (value) => 0)
-  Assert.Throws(() => Value.Decode(A, 1))
+  Assert.Throws(() => Value.PipelineDecode(A, 1))
 })

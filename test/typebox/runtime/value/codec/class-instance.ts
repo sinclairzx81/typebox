@@ -14,6 +14,6 @@ Test('Should ClassInstance 1', () => {
 
   const I = 12345
   const D = Value.Decode(T, I)
-  const E = Value.Encode(T, D)
+  const E = Value.PipelineEncode(T, D)
   Assert.IsEqual(I, E)
 })

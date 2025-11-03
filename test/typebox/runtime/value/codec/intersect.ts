@@ -16,8 +16,8 @@ Test('Should Intersect 1', () => {
     Type.Object({ x: NumberToString }),
     Type.Object({ y: NumberToString })
   ])
-  const D = Value.Decode(T, { x: 1, y: 2 })
-  const E = Value.Encode(T, D)
+  const D = Value.PipelineDecode(T, { x: 1, y: 2 })
+  const E = Value.PipelineEncode(T, D)
   Assert.IsEqual(D, { x: '1', y: '2' })
   Assert.IsEqual(E, { x: 1, y: 2 })
 })
@@ -34,8 +34,8 @@ Test('Should Intersect 2', () => {
     Type.Object({ y: NumberToString })
   ])
 
-  const D = Value.Decode(T, { x: 1, y: 2, z: 3 })
-  const E = Value.Encode(T, D)
+  const D = Value.PipelineDecode(T, { x: 1, y: 2, z: 3 })
+  const E = Value.PipelineEncode(T, D)
   Assert.IsEqual(D, { x: '1', y: '2' })
   Assert.IsEqual(E, { x: 1, y: 2 })
 })
@@ -48,8 +48,8 @@ Test('Should Intersect 3', () => {
     .Encode((value) => parseFloat(value))
 
   const T = Type.Intersect([NumberToString, Type.Number()])
-  const D = Value.Decode(T, 1)
-  const E = Value.Encode(T, D)
+  const D = Value.PipelineDecode(T, 1)
+  const E = Value.PipelineEncode(T, D)
   Assert.IsEqual(D, '1')
   Assert.IsEqual(E, 1)
 })
@@ -59,8 +59,8 @@ Test('Should Intersect 3', () => {
     .Encode((value) => parseFloat(value))
 
   const T = Type.Intersect([Type.Number(), NumberToString])
-  const D = Value.Decode(T, 1)
-  const E = Value.Encode(T, D)
+  const D = Value.PipelineDecode(T, 1)
+  const E = Value.PipelineEncode(T, D)
   Assert.IsEqual(D, '1')
   Assert.IsEqual(E, 1)
 })
@@ -69,6 +69,6 @@ Test('Should Intersect 3', () => {
 // ------------------------------------------------------------------
 Test('Should Intersect 4', () => {
   const T = Type.Intersect([Type.Array(Type.Null()), Type.Number()])
-  Assert.Throws(() => Value.Decode(T, 1))
-  Assert.Throws(() => Value.Encode(T, [null]))
+  Assert.Throws(() => Value.PipelineDecode(T, 1))
+  Assert.Throws(() => Value.PipelineEncode(T, [null]))
 })

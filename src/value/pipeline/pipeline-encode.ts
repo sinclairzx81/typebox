@@ -29,40 +29,23 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Arguments } from '../../system/arguments/index.ts'
-import { type TLocalizedValidationError } from '../../error/errors.ts'
-import { type TProperties, type TSchema, type StaticParse } from '../../type/index.ts'
-
-import { AssertError } from '../assert/index.ts'
-import { Check } from '../check/index.ts'
-import { Errors } from '../errors/index.ts'
+import { type TProperties, type TSchema, type StaticEncode } from '../../type/index.ts'
+import { Pipeline } from './pipeline.ts'
 
 // ------------------------------------------------------------------
-// Assert
+// PipelineEncode
 // ------------------------------------------------------------------
-export class ParseError extends AssertError {
-  constructor(value: unknown, errors: TLocalizedValidationError[]) {
-    super('Parse', value, errors)
-  }
-}
-function ParseAssert(context: TProperties, type: TSchema, value: unknown): void {
-  if (!Check(context, type, value)) throw new ParseError(value, Errors(context, type, value))
-}
-/** Parses a value with the given type or throws if invalid. */
-export function Parse<const Type extends TSchema, 
-  Result extends unknown = StaticParse<Type>
->(type: Type, value: unknown): Result
+const PipelineEncodeInterface = Pipeline().Clone().Encode().Default().Convert().Clean().Assert().Build()
 
-/** Parses a value with the given type or throws if invalid. */
-export function Parse<Context extends TProperties, const Type extends TSchema, 
-  Result extends unknown = StaticParse<Type, Context>
->(context: Context, type: Type, value: unknown): Result
-
-/** Parses a value with the given type or throws if invalid. */
-export function Parse(...args: unknown[]): never {
+/** Encodes a value against the given type. */
+export function PipelineEncode<Type extends TSchema, Result extends unknown = StaticEncode<Type>>(type: Type, value: unknown): Result
+/** Encodes a value against the given type. */
+export function PipelineEncode<Context extends TProperties, Type extends TSchema, Result extends unknown = StaticEncode<Type, Context>>(context: Context, type: Type, value: unknown): Result
+/** Encodes a value against the given type. */
+export function PipelineEncode(...args: unknown[]): unknown {
   const [context, type, value] = Arguments.Match<[TProperties, TSchema, unknown]>(args, {
     3: (context, type, value) => [context, type, value],
     2: (type, value) => [{}, type, value],
   })
-  ParseAssert(context, type, value)
-  return value as never
+  return PipelineEncodeInterface(context, type, value)
 }

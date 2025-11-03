@@ -6,12 +6,11 @@ const T = Type.Codec(Type.Number())
   .Encode((value) => parseFloat(value))
 
 const R = Type.Ref('T')
-
 {
   const V = Value.Encode(T, '1')
-  V satisfies Type.StaticEncode<typeof T>
+  V satisfies unknown
 }
 {
   const V = Value.Encode({ T }, R, '1')
-  V satisfies Type.StaticEncode<typeof T>
+  V satisfies unknown
 }

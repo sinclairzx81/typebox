@@ -30,14 +30,14 @@ THE SOFTWARE.
 
 import { Environment } from '../system/environment/index.ts'
 import { type TLocalizedValidationError } from '../error/index.ts'
-import { type StaticDecode, type StaticEncode, type TProperties, type TSchema, Base } from '../type/index.ts'
-import { Errors, Clean, Convert, Create, Default, Decode, Encode, HasCodec, Parser } from '../value/index.ts'
+import { type Static, type TProperties, type TSchema, Base } from '../type/index.ts'
+import { Errors, Clean, Convert, Create, Default, Decode, Encode, HasCodec, AssertError } from '../value/index.ts'
 import { Build } from '../schema/index.ts'
 
 // ------------------------------------------------------------------
 // ValidatorType<...>
 // ------------------------------------------------------------------
-export class Validator<Context extends TProperties = TProperties, Type extends TSchema = TSchema> extends Base<StaticEncode<Type, Context>> {
+export class Validator<Context extends TProperties = TProperties, Type extends TSchema = TSchema> extends Base<Static<Type, Context>> {
   private readonly isEvaluated: boolean
   private readonly hasCodec: boolean
   private readonly code: string
@@ -81,8 +81,13 @@ export class Validator<Context extends TProperties = TProperties, Type extends T
   // ----------------------------------------------------------------
   // Base<...>
   // ----------------------------------------------------------------
+  /** Asserts a value matches the Validator type. */
+  public override Assert(value: unknown): void {
+    if(this.Check(value)) return 
+    throw new AssertError('Validator', value, Errors(this.context, this.type, value))
+  }
   /** Checks a value matches the Validator type. */
-  public override Check(value: unknown): value is StaticEncode<Type, Context> {
+  public override Check(value: unknown): value is Static<Type, Context> {
     return this.check(value)
   }
   /** Returns errors for the given value. */
@@ -99,7 +104,7 @@ export class Validator<Context extends TProperties = TProperties, Type extends T
     return Convert(this.context, this.type, value)
   }
   /** Creates a value using the Validator type. */
-  public override Create(): StaticEncode<Type, Context> {
+  public override Create(): Static<Type, Context> {
     return Create(this.context, this.type)
   }
   /** Creates defaults using the Validator type. */
@@ -107,21 +112,19 @@ export class Validator<Context extends TProperties = TProperties, Type extends T
     return Default(this.context, this.type, value)
   }
   // ----------------------------------------------------------------
-  // Parse | Decode | Encode
+  // Parse
   // ----------------------------------------------------------------
   /** Parses a value */
-  public Parse(value: unknown): StaticDecode<Type, Context> {
-    const result = this.Check(value) ? value : Parser(this.context, this.type, value)
-    return result as never
+  public override Parse(value: unknown): Static<Type, Context> {
+    this.Assert(value)
+    return value as never
   }
   /** Decodes a value */
-  public Decode(value: unknown): StaticDecode<Type, Context> {
-    const result = this.hasCodec ? Decode(this.context, this.type, value) : this.Parse(value)
-    return result as never
+  public override Decode(value: unknown): unknown {
+    return this.hasCodec ? Decode(this.context, this.type, value) : value
   }
   /** Encodes a value */
-  public Encode(value: unknown): StaticEncode<Type, Context> {
-    const result = this.hasCodec ? Encode(this.context, this.type, value) : this.Parse(value)
-    return result as never
+  public override Encode(value: unknown): unknown {
+    return this.hasCodec ? Encode(this.context, this.type, value) : value
   }
 }

@@ -62,29 +62,44 @@ export class Base<Value extends unknown = unknown> implements TSchema, XGuard<Va
       } as XGuardInterface<Value>
     })
   }
+  /** Asserts a value is of the correct type. */
+  public Assert(value: unknown): asserts value is Value {
+  }
   /** Checks a value or returns false if invalid */
   public Check(value: unknown): value is Value {
     return true
   }
-  /** Returns errors for a value. Return an empty array if valid.  */
-  public Errors(value: unknown): object[] {
-    return []
+  /** Cleans a value according to this type */
+  public Clean(value: unknown): unknown {
+    return value
   }
   /** Converts a value into this type */
   public Convert(value: unknown): unknown {
     return value
   }
-  /** Cleans a value according to this type */
-  public Clean(value: unknown): unknown {
+  /** Creates a new instance of this type */
+  public Create(): Value {
+    throw new Error('Create not implemented')
+  }
+  /** Encodes this value */
+  public Decode(value: unknown): unknown {
     return value
   }
   /** Returns a default value for this type */
   public Default(value: unknown): unknown {
     return value
   }
-  /** Creates a new instance of this type */
-  public Create(): Value {
-    throw new Error('Create not implemented')
+  /** Decodes this value */
+  public Encode(value: unknown): unknown {
+    return value
+  }
+  /** Returns errors for a value. Return an empty array if valid.  */
+  public Errors(value: unknown): object[] {
+    return []
+  }
+  /** Parses for the given value or throws if invalid  */
+  public Parse(value: unknown): Value {
+    return value as Value
   }
 }
 // ------------------------------------------------------------------

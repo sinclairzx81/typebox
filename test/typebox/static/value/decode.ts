@@ -8,10 +8,10 @@ const T = Type.Codec(Type.Number())
 const R = Type.Ref('T')
 
 {
-  const V = Value.Decode(T, 1)
+  const V = Value.PipelineDecode(T, 1)
   V satisfies Type.StaticDecode<typeof T>
 }
 {
-  const V = Value.Decode({ T }, R, 1)
+  const V = Value.PipelineDecode({ T }, R, 1)
   V satisfies Type.StaticDecode<typeof T>
 }

@@ -26,4 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+export * from './pipeline-decode.ts'
+export * from './pipeline-encode.ts'
+export * from './pipeline-parse.ts'
 export * from './pipeline.ts'

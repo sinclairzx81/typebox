@@ -32,29 +32,6 @@
     "@dimforge/rapier3d-compat@0.12.0": {
       "integrity": "sha512-uekIGetywIgopfD97oDL5PfeezkFpNhwlzlaEYNOA0N6ghdsOvh/HYjSMek5Q2O1PYvRSDFcqFVJl4r4ZBwOow=="
     },
-    "@react-three/fiber@9.3.0_react@19.1.1_react-dom@19.1.1__react@19.1.1_three@0.180.0_use-sync-external-store@1.6.0__react@19.1.1": {
-      "integrity": "sha512-myPe3YL/C8+Eq939/4qIVEPBW/uxV0iiUbmjfwrs9sGKYDG8ib8Dz3Okq7BQt8P+0k4igedONbjXMQy84aDFmQ==",
-      "dependencies": [
-        "@babel/runtime",
-        "@types/react-reconciler@0.32.1_@types+react@19.2.2",
-        "@types/webxr",
-        "base64-js",
-        "buffer",
-        "its-fine",
-        "react",
-        "react-dom",
-        "react-reconciler",
-        "react-use-measure",
-        "scheduler@0.25.0",
-        "suspend-react",
-        "three",
-        "use-sync-external-store",
-        "zustand@5.0.8_react@19.1.1_use-sync-external-store@1.6.0__react@19.1.1"
-      ],
-      "optionalPeers": [
-        "react-dom"
-      ]
-    },
     "@react-three/fiber@9.3.0_react@19.1.1_react-dom@19.1.1__react@19.1.1_three@0.180.0_use-sync-external-store@1.6.0__react@19.1.1_@types+react@19.2.2": {
       "integrity": "sha512-myPe3YL/C8+Eq939/4qIVEPBW/uxV0iiUbmjfwrs9sGKYDG8ib8Dz3Okq7BQt8P+0k4igedONbjXMQy84aDFmQ==",
       "dependencies": [
@@ -72,7 +49,7 @@
         "suspend-react",
         "three",
         "use-sync-external-store",
-        "zustand@5.0.8_react@19.1.1_use-sync-external-store@1.6.0__react@19.1.1_@types+react@19.2.2"
+        "zustand"
       ],
       "optionalPeers": [
         "react-dom"
@@ -269,17 +246,6 @@
         "react"
       ]
     },
-    "zustand@5.0.8_react@19.1.1_use-sync-external-store@1.6.0__react@19.1.1": {
-      "integrity": "sha512-gyPKpIaxY9XcO2vSMrLbiER7QMAMGOQZVRdJ6Zi782jkbzZygq5GI9nG8g+sMgitRtndwaBSl7uiqC49o1SSiw==",
-      "dependencies": [
-        "react",
-        "use-sync-external-store"
-      ],
-      "optionalPeers": [
-        "react",
-        "use-sync-external-store"
-      ]
-    },
     "zustand@5.0.8_react@19.1.1_use-sync-external-store@1.6.0__react@19.1.1_@types+react@19.2.2": {
       "integrity": "sha512-gyPKpIaxY9XcO2vSMrLbiER7QMAMGOQZVRdJ6Zi782jkbzZygq5GI9nG8g+sMgitRtndwaBSl7uiqC49o1SSiw==",
       "dependencies": [
@@ -432,6 +398,19 @@
       "npm:react-router-dom@7.8.2",
       "npm:react@19.1.1",
       "npm:three@0.180.0"
-    ]
+    ],
+    "packageJson": {
+      "dependencies": [
+        "npm:@arethetypeswrong/cli@~0.13.2",
+        "npm:@sinclair/hammer@0.18",
+        "npm:@types/mocha@^9.1.1",
+        "npm:@types/node@^22.13.5",
+        "npm:ajv-formats@^2.1.1",
+        "npm:ajv@^8.12.0",
+        "npm:mocha@^11.1.0",
+        "npm:prettier@^2.7.1",
+        "npm:typescript@^5.9.2"
+      ]
+    }
   }
 }

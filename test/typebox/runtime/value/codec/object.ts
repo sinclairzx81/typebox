@@ -20,8 +20,8 @@ Test('Should Object 1', () => {
     x: UnknownToBoxed,
     y: UnknownToBoxed
   })
-  const D = Value.Decode(T, { x: 1, y: 2 })
-  const E = Value.Encode(T, D)
+  const D = Value.PipelineDecode(T, { x: 1, y: 2 })
+  const E = Value.PipelineEncode(T, D)
   Assert.IsEqual(D, { x: { value: 1 }, y: { value: 2 } })
   Assert.IsEqual(E, { x: 1, y: 2 })
 })
@@ -42,8 +42,8 @@ Test('Should Object 2', () => {
   }))
     .Decode((value) => [value.x, value.y])
     .Encode((value) => ({ x: value[0], y: value[1] }))
-  const D = Value.Decode(ObjectToTuple, { x: 1, y: 2 })
-  const E = Value.Encode(ObjectToTuple, D)
+  const D = Value.PipelineDecode(ObjectToTuple, { x: 1, y: 2 })
+  const E = Value.PipelineEncode(ObjectToTuple, D)
   Assert.IsEqual(D, [{ value: 1 }, { value: 2 }])
   Assert.IsEqual(E, { x: 1, y: 2 })
 })
@@ -62,8 +62,8 @@ Test('Should Object 3', () => {
     x: UnknownToBoxed,
     y: UnknownToBoxed
   })
-  const D = Value.Decode(T, { x: 1, y: 2, z: 3 })
-  const E = Value.Encode(T, D)
+  const D = Value.PipelineDecode(T, { x: 1, y: 2, z: 3 })
+  const E = Value.PipelineEncode(T, D)
   Assert.IsEqual(D, { x: { value: 1 }, y: { value: 2 } })
   Assert.IsEqual(E, { x: 1, y: 2 })
 })
@@ -84,8 +84,8 @@ Test('Should Object 4', () => {
   }))
     .Decode((value) => [value.x, value.y])
     .Encode((value) => ({ x: value[0], y: value[1] }))
-  const D = Value.Decode(ObjectToTuple, { x: 1, y: 2, z: 3 })
-  const E = Value.Encode(ObjectToTuple, D)
+  const D = Value.PipelineDecode(ObjectToTuple, { x: 1, y: 2, z: 3 })
+  const E = Value.PipelineEncode(ObjectToTuple, D)
   Assert.IsEqual(D, [{ value: 1 }, { value: 2 }])
   Assert.IsEqual(E, { x: 1, y: 2 })
 })
@@ -104,8 +104,8 @@ Test('Should Object 5', () => {
     x: UnknownToBoxed,
     y: UnknownToBoxed
   })
-  Assert.Throws(() => Value.Decode(T, null))
-  Assert.Throws(() => Value.Encode(T, null))
+  Assert.Throws(() => Value.PipelineDecode(T, null))
+  Assert.Throws(() => Value.PipelineEncode(T, null))
 })
 // ------------------------------------------------------------------
 // Coverage
@@ -117,8 +117,8 @@ Test('Should Object 6', () => {
   }))
     .Decode((value) => value)
     .Encode((value) => value)
-  const D = Value.Decode(Identity, { x: 1, y: 2, z: 3 })
-  const E = Value.Encode(Identity, { x: 1, y: 2, z: 3 })
+  const D = Value.PipelineDecode(Identity, { x: 1, y: 2, z: 3 })
+  const E = Value.PipelineEncode(Identity, { x: 1, y: 2, z: 3 })
   Assert.IsEqual(D, { x: 1, y: 2 })
   Assert.IsEqual(E, { x: 1, y: 2 })
 })
@@ -128,8 +128,8 @@ Test('Should Object 7', () => {
     y: Type.Number({ default: 1 })
   })).Decode((value) => value)
     .Encode((value) => value)
-  const D = Value.Decode(Identity, { x: 1 })
-  const E = Value.Encode(Identity, { x: 1 })
+  const D = Value.PipelineDecode(Identity, { x: 1 })
+  const E = Value.PipelineEncode(Identity, { x: 1 })
   Assert.IsEqual(D, { x: 1, y: 1 })
   Assert.IsEqual(E, { x: 1, y: 1 })
 })
@@ -144,8 +144,8 @@ Test('Should Object 8', () => {
   const T = Type.Object({
     x: Type.Optional(Type.Number())
   })
-  const D = Value.Decode(T, {})
-  const E = Value.Encode(T, {})
+  const D = Value.PipelineDecode(T, {})
+  const E = Value.PipelineEncode(T, {})
   Assert.IsEqual(D, {})
   Assert.IsEqual(E, {})
 })
@@ -158,8 +158,8 @@ Test('Should Object 9', () => {
   const X = Type.Optional(Type.String({ pattern: /^[a-f]+$/ }))
   const T = Type.Object({ x: X })
 
-  const A = Value.Encode(T, { x: 'abcdef' })
-  const B = Value.Encode(T, { x: undefined })
+  const A = Value.PipelineEncode(T, { x: 'abcdef' })
+  const B = Value.PipelineEncode(T, { x: undefined })
 
   Assert.IsEqual(A, { x: 'abcdef' })
   Assert.IsEqual(B, { x: undefined })
@@ -169,8 +169,8 @@ Test('Should Object 10', () => {
   const X = Type.Optional(Type.String({ pattern: /^[a-f]+$/ }))
   const T = Type.Object({ x: X })
 
-  const A = Value.Encode(T, { x: 'abcdef' })
-  Assert.Throws(() => Value.Encode(T, { x: undefined }))
+  const A = Value.PipelineEncode(T, { x: 'abcdef' })
+  Assert.Throws(() => Value.PipelineEncode(T, { x: undefined }))
 
   Assert.IsEqual(A, { x: 'abcdef' })
 
@@ -188,8 +188,8 @@ Test('Should Object 11', () => {
     .Encode((bigint) => bigint.toString())
   const T = Type.Object({ x: Type.Optional(X) })
 
-  const A = Value.Encode(T, { x: 100100n })
-  const B = Value.Encode(T, { x: undefined })
+  const A = Value.PipelineEncode(T, { x: 100100n })
+  const B = Value.PipelineEncode(T, { x: undefined })
 
   Assert.IsEqual(A, { x: '100100' })
   Assert.IsEqual(B, { x: undefined })
@@ -201,8 +201,8 @@ Test('Should Object 12', () => {
     .Encode((bigint) => bigint.toString())
   const T = Type.Object({ x: Type.Optional(X) })
 
-  const A = Value.Encode(T, { x: 100100n })
-  Assert.Throws(() => Value.Encode(T, { x: undefined }))
+  const A = Value.PipelineEncode(T, { x: 100100n })
+  Assert.Throws(() => Value.PipelineEncode(T, { x: undefined }))
   Assert.IsEqual(A, { x: '100100' })
   Settings.Reset()
 })
@@ -217,8 +217,8 @@ Test('Should Object 13', () => {
     Type.Object({ oneof_prop_a: Type.String() }),
     Type.Object({ oneof_prop_b: Type.Optional(Type.String()) })
   ])
-  const D = Value.Decode(T, { oneof_prop_a: 'A' })
-  const E = Value.Encode(T, { oneof_prop_a: 'A' })
+  const D = Value.PipelineDecode(T, { oneof_prop_a: 'A' })
+  const E = Value.PipelineEncode(T, { oneof_prop_a: 'A' })
   Assert.IsEqual(D, { oneof_prop_a: 'A' })
   Assert.IsEqual(E, { oneof_prop_a: 'A' })
 })
@@ -227,8 +227,8 @@ Test('Should Object 14', () => {
     Type.Object({ oneof_prop_a: Type.String() }),
     Type.Object({ oneof_prop_b: Type.Optional(Type.String()) })
   ])
-  const D = Value.Decode(T, { oneof_prop_b: 'B' })
-  const E = Value.Encode(T, { oneof_prop_b: 'B' })
+  const D = Value.PipelineDecode(T, { oneof_prop_b: 'B' })
+  const E = Value.PipelineEncode(T, { oneof_prop_b: 'B' })
   Assert.IsEqual(D, { oneof_prop_b: 'B' })
   Assert.IsEqual(E, { oneof_prop_b: 'B' })
 })
@@ -237,8 +237,8 @@ Test('Should Object 15', () => {
     Type.Object({ oneof_prop_a: Type.String() }),
     Type.Object({ oneof_prop_b: Type.Optional(Type.String()) })
   ])
-  const D = Value.Decode(T, { oneof_prop_b: undefined })
-  const E = Value.Encode(T, { oneof_prop_b: undefined })
+  const D = Value.PipelineDecode(T, { oneof_prop_b: undefined })
+  const E = Value.PipelineEncode(T, { oneof_prop_b: undefined })
   Assert.IsEqual(D, { oneof_prop_b: undefined })
   Assert.IsEqual(E, { oneof_prop_b: undefined })
 })
@@ -247,8 +247,8 @@ Test('Should Object 16', () => {
     Type.Object({ oneof_prop_a: Type.String() }),
     Type.Object({ oneof_prop_b: Type.Optional(Type.String()) })
   ])
-  const D = Value.Decode(T, {})
-  const E = Value.Encode(T, {})
+  const D = Value.PipelineDecode(T, {})
+  const E = Value.PipelineEncode(T, {})
   Assert.IsEqual(D, {})
   Assert.IsEqual(E, {})
 })
