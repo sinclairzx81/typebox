@@ -423,9 +423,9 @@ Test('Should Escape Property Keys 1', () => {
 })
 Test('Should Escape Property Keys 2', () => {
   const T = Type.Object({ $foo: Type.String() }, { additionalProperties: false })
-  Ok(T, { $foo: "abc" })
+  Ok(T, { $foo: 'abc' })
 })
 Test('Should Escape Property Keys 3', () => {
   const T = Type.Object({ foo: Type.String() }, { additionalProperties: false })
-  Ok(T, { foo: "abc" })
+  Ok(T, { foo: 'abc' })
 })

@@ -48,12 +48,13 @@ import { BuildSchema, CheckSchema, ErrorSchema } from './schema.ts'
 //
 // ------------------------------------------------------------------
 function GetPropertyKeyAsPattern(key: string): string {
-  return `^${key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`
+  const escaped = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  return `^${escaped}$`
 }
 function GetPropertiesPattern(schema: S.XSchemaObject): string {
-  const patternPropertiesPatterns = S.IsPatternProperties(schema) ? G.Keys(schema.patternProperties) : []
-  const properties = S.IsProperties(schema) ? G.Keys(schema.properties).map(GetPropertyKeyAsPattern) : []
-  const patterns = [...patternPropertiesPatterns, ...properties]
+  const patterns: string[] = []
+  if (S.IsPatternProperties(schema)) patterns.push(...G.Keys(schema.patternProperties))
+  if (S.IsProperties(schema)) patterns.push(...G.Keys(schema.properties).map(GetPropertyKeyAsPattern))
   return G.IsEqual(patterns.length, 0) ? '(?!)' : `(${patterns.join('|')})`
 }
 // ------------------------------------------------------------------
