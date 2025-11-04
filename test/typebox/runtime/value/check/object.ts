@@ -409,3 +409,23 @@ Test('Should use exactOptionalPropertyTypes TRUE 3', () => {
   Ok(T, {})
   Settings.Reset()
 })
+// ------------------------------------------------------------------
+// https://github.com/sinclairzx81/typebox/issues/1442
+//
+// Issue caused by non-escaped properties key on additionalProperties check. The
+// logic builds a regular expression used to test keys, but where the properties
+// should be escaped if they contain regular expression symbols. We should replace
+// this with explicit key comparisons as this may be faster (review)
+// ------------------------------------------------------------------
+Test('Should Escape Property Keys 1', () => {
+  const U = Type.Object({ foo$: Type.String() }, { additionalProperties: false })
+  Ok(U, { foo$: 'abc' })
+})
+Test('Should Escape Property Keys 2', () => {
+  const T = Type.Object({ $foo: Type.String() }, { additionalProperties: false })
+  Ok(T, { $foo: "abc" })
+})
+Test('Should Escape Property Keys 3', () => {
+  const T = Type.Object({ foo: Type.String() }, { additionalProperties: false })
+  Ok(T, { foo: "abc" })
+})

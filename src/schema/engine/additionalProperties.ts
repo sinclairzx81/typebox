@@ -47,10 +47,13 @@ import { BuildSchema, CheckSchema, ErrorSchema } from './schema.ts'
 // matches nothing: '(?!)'.
 //
 // ------------------------------------------------------------------
+function GetPropertyKeyAsPattern(key: string): string {
+  return `^${key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`
+}
 function GetPropertiesPattern(schema: S.XSchemaObject): string {
-  const patterns: string[] = []
-  if (S.IsPatternProperties(schema)) patterns.push(...G.Keys(schema.patternProperties))
-  if (S.IsProperties(schema)) patterns.push(...G.Keys(schema.properties))
+  const patternPropertiesPatterns = S.IsPatternProperties(schema) ? G.Keys(schema.patternProperties) : []
+  const properties = S.IsProperties(schema) ? G.Keys(schema.properties).map(GetPropertyKeyAsPattern) : []
+  const patterns = [...patternPropertiesPatterns, ...properties]
   return G.IsEqual(patterns.length, 0) ? '(?!)' : `(${patterns.join('|')})`
 }
 // ------------------------------------------------------------------
