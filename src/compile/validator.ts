@@ -28,6 +28,7 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
+import { Arguments } from '../system/arguments/index.ts'
 import { Environment } from '../system/environment/index.ts'
 import { type TLocalizedValidationError } from '../error/index.ts'
 import { type StaticDecode, type StaticEncode, type TProperties, type TSchema, Base } from '../type/index.ts'
@@ -38,20 +39,40 @@ import { Build } from '../schema/index.ts'
 // ValidatorType<...>
 // ------------------------------------------------------------------
 export class Validator<Context extends TProperties = TProperties, Type extends TSchema = TSchema> extends Base<StaticEncode<Type, Context>> {
+  private readonly context: Context
+  private readonly type: Type
   private readonly isEvaluated: boolean
   private readonly hasCodec: boolean
   private readonly code: string
   private readonly check: (value: unknown) => boolean
-  constructor(
-    private readonly context: Context,
-    private readonly type: Type,
-  ) {
+  /** Constructs a Validator with the given Context and Type */
+  constructor(context: Context, type: Type)
+  /** Constructs a Validator with the given arguments. */
+  constructor(context: Context, type: Type, isEvaluated: boolean, hasCodec: boolean, code: string, check: (value: unknown) => boolean)
+  /** Constructs a Validator */
+  constructor(...args: unknown[]) {
     super()
-    const result = Build(context, type).Evaluate()
-    this.hasCodec = HasCodec(context, type)
-    this.isEvaluated = result.IsEvaluated
-    this.code = result.Code
-    this.check = result.Check as never
+    const matched: [Context, Type, boolean, boolean, string, (value: unknown) => boolean] | [Context, Type] = Arguments.Match(args, {
+      6: (context, type, isEvalulated, hasCodec, code, check) => [context, type, isEvalulated, hasCodec, code, check],
+      2: (context, type) => [context, type]
+    })
+    if(matched.length === 6) {
+      this.context = matched[0]
+      this.type = matched[1]
+      this.isEvaluated = matched[2]
+      this.hasCodec = matched[3]
+      this.code = matched[4]
+      this.check = matched[5]
+    } else {
+      const [context, type] = matched as [Context, Type]
+      const result = Build(context, type).Evaluate()
+      this.hasCodec = HasCodec(context, type)
+      this.context = context
+      this.type = type
+      this.isEvaluated = result.IsEvaluated
+      this.code = result.Code
+      this.check = result.Check as never
+    }
   }
   // ----------------------------------------------------------------
   // Evaluated
@@ -105,6 +126,17 @@ export class Validator<Context extends TProperties = TProperties, Type extends T
   /** Creates defaults using the Validator type. */
   public override Default(value: unknown): unknown {
     return Default(this.context, this.type, value)
+  }
+  /** Clones this validator. */
+  public override Clone(): Validator<Context, Type> {
+    return new Validator(
+      this.context, 
+      this.type, 
+      this.isEvaluated, 
+      this.hasCodec, 
+      this.code, 
+      this.check
+    ) as never
   }
   // ----------------------------------------------------------------
   // Parse | Decode | Encode

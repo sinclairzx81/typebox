@@ -44,6 +44,7 @@ import { type TReadonly, IsReadonly, ReadonlyAdd, ReadonlyRemove, TReadonlyAdd, 
 import { type TSchema, type TSchemaOptions, IsSchema } from '../types/schema.ts'
 import { type TArray, Array, IsArray, ArrayOptions } from '../types/array.ts'
 import { type TAsyncIterator, AsyncIterator, IsAsyncIterator, AsyncIteratorOptions } from '../types/async-iterator.ts'
+import { IsBase } from '../types/base.ts'
 import { type TConstructor, Constructor, IsConstructor, ConstructorOptions } from '../types/constructor.ts'
 import { type TDeferred, Deferred, IsDeferred } from '../types/deferred.ts'
 import { type TFunction, Function as _Function, IsFunction, FunctionOptions } from '../types/function.ts'
@@ -336,12 +337,14 @@ function InstantiateDeferred<Context extends TProperties, State extends TState, 
 // InstantiateType
 // ------------------------------------------------------------------
 export type TInstantiateType<Context extends TProperties, State extends TState, Input extends TSchema,
-  IsImmutable extends boolean = Input extends TImmutable ? true : false,
-  ModifierState extends [TSchema, ModifierAction, ModifierAction] = TModifierActions<Input, 
-    Input extends TReadonly<Input> ? 'add' : 'none', 
-    Input extends TOptional<Input> ? 'add' : 'none'
-  >, 
-  Type extends TSchema = ModifierState[0],
+  Cloned extends TSchema = Input, // symmetry only
+  Immutable extends boolean = Cloned extends TImmutable ? true : false,
+  Modifiers extends [TSchema, ModifierAction, ModifierAction] = TModifierActions<Cloned, 
+    Cloned extends TReadonly<Cloned> ? 'add' : 'none', 
+    Cloned extends TOptional<Cloned> ? 'add' : 'none'
+  >,
+
+  Type extends TSchema = Modifiers[0],
   Instantiated extends TSchema = (
     Type extends TRef<infer Ref extends string> ? TRefInstantiate<Context, State, Ref> :
     Type extends TArray<infer Type extends TSchema> ? TArray<TInstantiateType<Context, State, Type>> :
@@ -360,16 +363,20 @@ export type TInstantiateType<Context extends TProperties, State extends TState, 
     Type extends TUnion<infer Types extends TSchema[]> ? TUnion<TInstantiateTypes<Context, State, Types>> :
     Type
   ),
-  WithImmutable extends TSchema = IsImmutable extends true ? TImmutable<Instantiated> : Instantiated,
-  WithModifiers extends TSchema = TApplyReadonly<ModifierState[1], TApplyOptional<ModifierState[2], WithImmutable>>,
+  WithImmutable extends TSchema = Immutable extends true ? TImmutable<Instantiated> : Instantiated,
+  WithModifiers extends TSchema = TApplyReadonly<Modifiers[1], TApplyOptional<Modifiers[2], WithImmutable>>,
 > = WithModifiers
  
 export function InstantiateType<Context extends TProperties, State extends TState, Type extends TSchema>
   (context: Context, state: State, input: Type): 
     TInstantiateType<Context, State, Type> {
-  const isImmutable = IsImmutable(input)
-  const modifierActions = ModifierActions(input, IsReadonly(input) ? 'add' : 'none', IsOptional(input) ? 'add' : 'none')
-  const type = modifierActions[0]
+  const cloned = IsBase(input) ? input.Clone() : input
+  const immutable = IsImmutable(cloned)
+  const modifiers = ModifierActions(cloned, 
+    IsReadonly(cloned) ? 'add' : 'none', 
+    IsOptional(cloned) ? 'add' : 'none')
+
+  const type = modifiers[0]
   const instantiated = (
     IsRef(type) ? RefInstantiate(context, state, type.$ref) :
     IsArray(type) ? Array(InstantiateType(context, state, type.items), ArrayOptions(type)) :
@@ -388,8 +395,8 @@ export function InstantiateType<Context extends TProperties, State extends TStat
     IsUnion(type) ? Union(InstantiateTypes(context, state, type.anyOf), UnionOptions(type)) :
     type
   )
-  const withImmutable = isImmutable ? Immutable(instantiated) : instantiated
-  const withModifiers = ApplyReadonly(modifierActions[1], ApplyOptional(modifierActions[2], withImmutable))
+  const withImmutable = immutable ? Immutable(instantiated) : instantiated
+  const withModifiers = ApplyReadonly(modifiers[1], ApplyOptional(modifiers[2], withImmutable))
   return withModifiers as never
 }
 // ------------------------------------------------------------------
