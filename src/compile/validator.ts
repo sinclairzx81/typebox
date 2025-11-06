@@ -36,7 +36,7 @@ import { Errors, Clean, Convert, Create, Default, Decode, Encode, HasCodec, Pars
 import { Build } from '../schema/index.ts'
 
 // ------------------------------------------------------------------
-// ValidatorType<...>
+// Validator<...>
 // ------------------------------------------------------------------
 export class Validator<Context extends TProperties = TProperties, Type extends TSchema = TSchema> extends Base<StaticEncode<Type, Context>> {
   private readonly context: Context
@@ -45,7 +45,7 @@ export class Validator<Context extends TProperties = TProperties, Type extends T
   private readonly hasCodec: boolean
   private readonly code: string
   private readonly check: (value: unknown) => boolean
-  /** Constructs a Validator with the given Context and Type */
+  /** Constructs a Validator with the given Context and Type. */
   constructor(context: Context, type: Type)
   /** Constructs a Validator with the given arguments. */
   constructor(context: Context, type: Type, isEvaluated: boolean, hasCodec: boolean, code: string, check: (value: unknown) => boolean)
@@ -57,12 +57,13 @@ export class Validator<Context extends TProperties = TProperties, Type extends T
       2: (context, type) => [context, type]
     })
     if(matched.length === 6) {
-      this.context = matched[0]
-      this.type = matched[1]
-      this.isEvaluated = matched[2]
-      this.hasCodec = matched[3]
-      this.code = matched[4]
-      this.check = matched[5]
+      const [context, type, isEvaluated, hasCodec, code, check] = matched
+      this.context = context
+      this.type = type
+      this.isEvaluated = isEvaluated
+      this.hasCodec = hasCodec
+      this.code = code
+      this.check = check
     } else {
       const [context, type] = matched as [Context, Type]
       const result = Build(context, type).Evaluate()
