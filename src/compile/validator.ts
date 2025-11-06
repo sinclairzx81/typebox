@@ -49,7 +49,7 @@ export class Validator<Context extends TProperties = TProperties, Type extends T
   constructor(context: Context, type: Type)
   /** Constructs a Validator with the given arguments. */
   constructor(context: Context, type: Type, isEvaluated: boolean, hasCodec: boolean, code: string, check: (value: unknown) => boolean)
-  /** Constructs a Validator */
+  /** Constructs a Validator. */
   constructor(...args: unknown[]) {
     super()
     const matched: [Context, Type, boolean, boolean, string, (value: unknown) => boolean] | [Context, Type] = Arguments.Match(args, {
@@ -76,27 +76,27 @@ export class Validator<Context extends TProperties = TProperties, Type extends T
     }
   }
   // ----------------------------------------------------------------
-  // Evaluated
+  // IsEvaluated
   // ----------------------------------------------------------------
-  /** Returns true if this validator is using runtime eval optimizations */
+  /** Returns true if this validator is using runtime eval optimizations. */
   public IsEvaluated(): boolean {
     return this.isEvaluated
   }
   // ----------------------------------------------------------------
-  // Schema
+  // Context | Type
   // ----------------------------------------------------------------
-  /** Returns the Context for this validator */
+  /** Returns the Context for this validator. */
   public Context(): Context {
     return this.context
   }
-  /** Returns the Type for this validator */
+  /** Returns the Type for this validator. */
   public Type(): Type {
     return this.type
   }
   // ----------------------------------------------------------------
   // Code
   // ----------------------------------------------------------------
-  /** Returns the generated code for this validator */
+  /** Returns the generated code for this validator. */
   public Code(): string {
     return this.code
   }
@@ -130,14 +130,14 @@ export class Validator<Context extends TProperties = TProperties, Type extends T
   }
   /** Clones this validator. */
   public override Clone(): Validator<Context, Type> {
-    return new Validator(
-      this.context, 
+    return new Validator<Context, Type>(
+      this.context,
       this.type, 
       this.isEvaluated, 
       this.hasCodec, 
       this.code, 
       this.check
-    ) as never
+    )
   }
   // ----------------------------------------------------------------
   // Parse | Decode | Encode
