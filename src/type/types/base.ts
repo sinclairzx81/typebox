@@ -40,27 +40,24 @@ export type StaticBase<Value extends unknown> = Value
 // ------------------------------------------------------------------
 // Type.Base<...>
 // ------------------------------------------------------------------
+function BaseProperty<Value>(value: Value): PropertyDescriptor {
+  return {
+    enumerable: Settings.Get().enumerableKind,
+    writable: false,
+    configurable: false,
+    value
+  }
+}
 /** Base class for creating extension types. */
 export class Base<Value extends unknown = unknown> implements TSchema, XGuard<Value> {
   public readonly '~kind': 'Base'
   public readonly '~guard': XGuardInterface<Value>
   constructor() {
-    const configuration = {
-      enumerable: Settings.Get().enumerableKind,
-      writable: false,
-      configurable: false,
-    }
-    globalThis.Object.defineProperty(this, '~kind', {       
-      ...configuration,
-      value: 'Base'
-    })
-    globalThis.Object.defineProperty(this, '~guard', {       
-      ...configuration,
-      value: {
-        check: (value): value is Value => this.Check(value),
-        errors: (value) => this.Errors(value)
-      } as XGuardInterface<Value>
-    })
+    globalThis.Object.defineProperty(this, '~kind', BaseProperty('Base'))
+    globalThis.Object.defineProperty(this, '~guard', BaseProperty<XGuardInterface<Value>>({
+      check: (value): value is Value => this.Check(value),
+      errors: (value) => this.Errors(value)
+    }))
   }
   /** Checks a value or returns false if invalid */
   public Check(value: unknown): value is Value {
@@ -85,6 +82,10 @@ export class Base<Value extends unknown = unknown> implements TSchema, XGuard<Va
   /** Creates a new instance of this type */
   public Create(): Value {
     throw new Error('Create not implemented')
+  }
+  /** Clones this type  */
+  public Clone(): Base {
+    throw Error('Clone not implemented')
   }
 }
 // ------------------------------------------------------------------
