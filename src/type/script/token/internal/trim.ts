@@ -107,6 +107,7 @@ export type TTrim<Input extends string> = (
   Input extends `${OpenComment}${infer Rest extends string}` ? TTrim<TDiscardMultiLineComment<Rest>> :
   Input extends `${LineComment}${infer Rest extends string}` ? TTrim<TDiscardLineComment<Rest>> :
   Input extends `${Char.TNewLine}${infer Rest extends string}` ? TTrim<Rest> :
+  Input extends `${Char.TTabSpace}${infer Rest extends string}` ? TTrim<Rest> :
   Input extends `${W4}${infer Rest extends string}` ? TTrim<Rest> :
   Input extends `${W3}${infer Rest extends string}` ? TTrim<Rest> :
   Input extends `${W1}${infer Rest extends string}` ? TTrim<Rest> :
