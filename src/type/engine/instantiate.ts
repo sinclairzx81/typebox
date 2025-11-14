@@ -337,13 +337,11 @@ function InstantiateDeferred<Context extends TProperties, State extends TState, 
 // InstantiateType
 // ------------------------------------------------------------------
 export type TInstantiateType<Context extends TProperties, State extends TState, Input extends TSchema,
-  Cloned extends TSchema = Input, // symmetry only
-  Immutable extends boolean = Cloned extends TImmutable ? true : false,
-  Modifiers extends [TSchema, ModifierAction, ModifierAction] = TModifierActions<Cloned, 
-    Cloned extends TReadonly<Cloned> ? 'add' : 'none', 
-    Cloned extends TOptional<Cloned> ? 'add' : 'none'
+  Immutable extends boolean = Input extends TImmutable ? true : false,
+  Modifiers extends [TSchema, ModifierAction, ModifierAction] = TModifierActions<Input, 
+    Input extends TReadonly<Input> ? 'add' : 'none', 
+    Input extends TOptional<Input> ? 'add' : 'none'
   >,
-
   Type extends TSchema = Modifiers[0],
   Instantiated extends TSchema = (
     Type extends TRef<infer Ref extends string> ? TRefInstantiate<Context, State, Ref> :
@@ -370,13 +368,11 @@ export type TInstantiateType<Context extends TProperties, State extends TState, 
 export function InstantiateType<Context extends TProperties, State extends TState, Type extends TSchema>
   (context: Context, state: State, input: Type): 
     TInstantiateType<Context, State, Type> {
-  const cloned = IsBase(input) ? input.Clone() : input
-  const immutable = IsImmutable(cloned)
-  const modifiers = ModifierActions(cloned, 
-    IsReadonly(cloned) ? 'add' : 'none', 
-    IsOptional(cloned) ? 'add' : 'none')
-
-  const type = modifiers[0]
+  const immutable = IsImmutable(input)
+  const modifiers = ModifierActions(input, 
+    IsReadonly(input) ? 'add' : 'none', 
+    IsOptional(input) ? 'add' : 'none')
+  const type = IsBase(modifiers[0]) ? modifiers[0].Clone() : modifiers[0]
   const instantiated = (
     IsRef(type) ? RefInstantiate(context, state, type.$ref) :
     IsArray(type) ? Array(InstantiateType(context, state, type.items), ArrayOptions(type)) :

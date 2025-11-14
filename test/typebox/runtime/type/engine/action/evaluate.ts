@@ -778,8 +778,50 @@ Test('Should Evaluate 62', () => {
   Assert.IsTrue(Type.IsNumber(T.properties.x))
 })
 // ------------------------------------------------------------------
-// Evaluate:
+// Base
+//
+// https://github.com/sinclairzx81/typebox/issues/1449
+//
 // ------------------------------------------------------------------
+class Foo extends Type.Base {
+  public override Check(value: unknown): value is unknown {
+    return true
+  }
+  public override Errors(value: unknown): object[] {
+    return []
+  }
+  public override Clone(): Foo {
+    return new Foo()
+  }
+}
 Test('Should Evaluate 63', () => {
-  //..
+  const T = Type.Evaluate(Type.Object({ value: Type.Optional(new Foo()) }))
+  Assert.IsTrue(Type.IsOptional(T.properties.value))
+  Assert.IsTrue(Type.IsBase(T.properties.value))
+  Assert.IsTrue(T.properties.value instanceof Foo)
+})
+Test('Should Evaluate 64', () => {
+  const T = Type.Evaluate(Type.Intersect([
+    Type.Object({ value: Type.Optional(new Foo()) }),
+    Type.Object({ value: Type.Optional(new Foo()) })
+  ]))
+  Assert.IsTrue(Type.IsOptional(T.properties.value))
+  Assert.IsTrue(Type.IsNever(T.properties.value))
+})
+Test('Should Evaluate 65', () => {
+  const T = Type.Evaluate(Type.Intersect([
+    Type.Object({ value: new Foo() }),
+    Type.Object({ value: new Foo() })
+  ]))
+  Assert.IsFalse(Type.IsOptional(T.properties.value))
+  Assert.IsTrue(Type.IsNever(T.properties.value))
+})
+Test('Should Evaluate 66', () => {
+  const T = Type.Evaluate(Type.Intersect([
+    Type.Object({ value: Type.Optional(new Foo()) }),
+    Type.Object({})
+  ]))
+  Assert.IsTrue(Type.IsOptional(T.properties.value))
+  Assert.IsTrue(Type.IsBase(T.properties.value))
+  Assert.IsTrue(T.properties.value instanceof Foo)
 })
