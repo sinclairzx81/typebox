@@ -260,3 +260,26 @@ Test('Should Instantiate 40', () => {
   Assert.IsTrue(Type.IsRef(A))
   Assert.IsEqual(A.$ref, 'A')
 })
+// ------------------------------------------------------------------
+// Base
+//
+// https://github.com/sinclairzx81/typebox/issues/1449
+//
+// ------------------------------------------------------------------
+class Foo extends Type.Base {
+  public override Check(value: unknown): value is unknown {
+    return true
+  }
+  public override Errors(value: unknown): object[] {
+    return []
+  }
+  public override Clone(): Foo {
+    return new Foo()
+  }
+}
+Test('Should Instantiate 41', () => {
+  const T = Type.Instantiate({}, Type.Object({ value: Type.Optional(new Foo()) }))
+  Assert.IsTrue(Type.IsOptional(T.properties.value))
+  Assert.IsTrue(Type.IsBase(T.properties.value))
+  Assert.IsTrue(T.properties.value instanceof Foo)
+})

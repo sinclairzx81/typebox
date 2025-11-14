@@ -50,6 +50,11 @@ function BaseProperty<Value>(value: Value): PropertyDescriptor {
 }
 /** Base class for creating extension types. */
 export class Base<Value extends unknown = unknown> implements TSchema, XGuard<Value> {
+  // Engine Assignable
+  // public '~immutable'?: true
+  // public '~readonly'?: true
+  // public '~optional'?: true
+
   public readonly '~kind': 'Base'
   public readonly '~guard': XGuardInterface<Value>
   constructor() {
