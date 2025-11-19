@@ -42,9 +42,9 @@ type TResolveProperties<Schema extends XSchema, Result extends Record<PropertyKe
 // ------------------------------------------------------------------
 // FromKey
 // ------------------------------------------------------------------
-type TFromKey<Properties extends Record<PropertyKey, XSchema>, Key extends string,
+type TFromKey<Stack extends string[], Root extends XSchema, Properties extends Record<PropertyKey, XSchema>, Key extends string,
   Readonly extends boolean = Key extends keyof Properties ? TIsReadonly<Properties[Key]> : false,
-  Value extends unknown = Key extends keyof Properties ? XStaticSchema<Properties[Key]> : unknown,
+  Value extends unknown = Key extends keyof Properties ? XStaticSchema<Stack, Root, Properties[Key]> : unknown,
   Result extends Record<PropertyKey, unknown> = (
     Readonly extends true
     ? { readonly [_ in Key]: Value }
@@ -53,15 +53,15 @@ type TFromKey<Properties extends Record<PropertyKey, XSchema>, Key extends strin
 // ------------------------------------------------------------------
 // FromKeys
 // ------------------------------------------------------------------
-type TFromKeys<Properties extends Record<PropertyKey, XSchema>, Keys extends string[], Result extends Record<PropertyKey, unknown> = {}> = (
+type TFromKeys<Stack extends string[], Root extends XSchema, Properties extends Record<PropertyKey, XSchema>, Keys extends string[], Result extends Record<PropertyKey, unknown> = {}> = (
   Keys extends [infer Left extends string, ...infer Right extends string[]]
-    ? TFromKeys<Properties, Right, Result & TFromKey<Properties, Left>>
+    ? TFromKeys<Stack, Root, Properties, Right, Result & TFromKey<Stack, Root, Properties, Left>>
     : Result
 )
 // ------------------------------------------------------------------
 // XStaticRequired
 // ------------------------------------------------------------------
-export type XStaticRequired<Schema extends XSchema, Keys extends string[],
+export type XStaticRequired<Stack extends string[], Root extends XSchema, Schema extends XSchema, Keys extends string[],
   Properties extends Record<PropertyKey, XSchema> = TResolveProperties<Schema>,
-  Result extends Record<PropertyKey, unknown> = TFromKeys<Properties, Keys>
+  Result extends Record<PropertyKey, unknown> = TFromKeys<Stack, Root, Properties, Keys>
 > = Result

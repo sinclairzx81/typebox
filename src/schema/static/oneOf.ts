@@ -31,8 +31,8 @@ THE SOFTWARE.
 import type { XSchema } from '../types/schema.ts'
 import type { XStaticSchema } from './schema.ts'
 
-export type XStaticOneOf<Schemas extends XSchema[], Result extends unknown = never> = (
+export type XStaticOneOf<Stack extends string[], Root extends XSchema, Schemas extends XSchema[], Result extends unknown = never> = (
   Schemas extends [infer Left extends XSchema, ...infer Right extends XSchema[]]
-  ? XStaticOneOf<Right, XStaticSchema<Left> | Result>
+  ? XStaticOneOf<Stack, Root, Right, XStaticSchema<Stack, Root, Left> | Result>
   : Result
 )

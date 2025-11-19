@@ -38,5 +38,5 @@ import type { XStaticSchema } from './schema.ts'
 export type XStatic<Value extends unknown,
   Schema extends XSchema = Value extends XSchema ? Value : {},
   Mutable extends XSchema = XMutable<Schema>,
-  Result extends unknown = XStaticSchema<Mutable>  
+  Result extends unknown = XStaticSchema<[], Mutable, Mutable>  
 > = Result
