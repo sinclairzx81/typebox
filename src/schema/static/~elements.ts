@@ -38,9 +38,9 @@ import type { XLessThan } from './~comparer.ts'
 // ------------------------------------------------------------------
 // 1: Elements
 // ------------------------------------------------------------------
-type TElements<Schemas extends XSchema[], Result extends unknown[] = []> = (
+type TElements<Stack extends string[], Root extends XSchema, Schemas extends XSchema[], Result extends unknown[] = []> = (
   Schemas extends [infer Left extends XSchema, ...infer Right extends XSchema[]]
-    ? TElements<Right, [...Result, XStaticSchema<Left>]>
+    ? TElements<Stack, Root, Right, [...Result, XStaticSchema<Stack, Root, Left>]>
     : Result
 )
 // ------------------------------------------------------------------
@@ -81,22 +81,22 @@ type TMinItems<Schema extends XSchema, Values extends unknown[],
 // ------------------------------------------------------------------
 // 5. TAdditionalItems - Append with ...T[]
 // ------------------------------------------------------------------
-type TAdditionalItems<Schema extends XSchema, Elements extends unknown[],
+type TAdditionalItems<Stack extends string[], Root extends XSchema, Schema extends XSchema, Elements extends unknown[],
   Result extends unknown[] = Schema extends XAdditionalItems<infer Schema extends XSchema> ? (
     Schema extends true ? [...Elements, ...unknown[]] :
     Schema extends false ? [...Elements] :
-    [...Elements, ...XStaticSchema<Schema>[]]
+    [...Elements, ...XStaticSchema<Stack, Root, Schema>[]]
   ) : [...Elements, ...unknown[]]
 > = Result
 // ------------------------------------------------------------------
 // XStaticElements
 // ------------------------------------------------------------------
-export type XStaticElements<Schema extends XSchema, PrefixItems extends XSchema[],
-  Elements extends unknown[] = TElements<PrefixItems>,
+export type XStaticElements<Stack extends string[], Root extends XSchema, Schema extends XSchema, PrefixItems extends XSchema[],
+  Elements extends unknown[] = TElements<Stack, Root, PrefixItems>,
   WithMaxItems extends unknown[] = TMaxItems<Schema, Elements>,
   NeedsAdditional extends boolean = TNeedsAdditionalItems<Schema, WithMaxItems>,
   WithMinItems extends unknown[] = TMinItems<Schema, WithMaxItems>,
   WithAdditionalItems extends unknown[] = NeedsAdditional extends true 
-    ? TAdditionalItems<Schema, WithMinItems>
+    ? TAdditionalItems<Stack, Root, Schema, WithMinItems>
     : WithMinItems
 > = WithAdditionalItems

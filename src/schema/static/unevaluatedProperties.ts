@@ -31,10 +31,10 @@ THE SOFTWARE.
 import type { XSchema } from '../types/schema.ts'
 import type { XStaticSchema } from './schema.ts'
 
-export type XStaticUnevaluatedProperties<Schema extends XSchema,
+export type XStaticUnevaluatedProperties<Stack extends string[], Root extends XSchema, Schema extends XSchema,
   Result extends Record<PropertyKey, unknown> = (
     Schema extends true ? { [key: string]: unknown } :
     Schema extends false ? {} :
-    { [key: string]: XStaticSchema<Schema> }
+    { [key: string]: XStaticSchema<Stack, Root, Schema> }
   )
 > = Result

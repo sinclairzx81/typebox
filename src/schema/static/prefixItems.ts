@@ -34,6 +34,6 @@ import type { XStaticElements } from './~elements.ts'
 // ------------------------------------------------------------------
 // XStaticPrefixItems
 // ------------------------------------------------------------------
-export type XStaticPrefixItems<Schema extends XSchema, PrefixItems extends XSchema[],
-  Result extends unknown[] = XStaticElements<Schema, PrefixItems>
+export type XStaticPrefixItems<Stack extends string[], Root extends XSchema, Schema extends XSchema, PrefixItems extends XSchema[],
+  Result extends unknown[] = XStaticElements<Stack, Root, Schema, PrefixItems>
 > = Result

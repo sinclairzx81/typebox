@@ -31,7 +31,7 @@ THE SOFTWARE.
 import type { XSchema } from '../types/schema.ts'
 import type { XStaticSchema } from './schema.ts'
 
-export type XStaticPatternProperties<Properties extends Record<PropertyKey, XSchema> = Record<PropertyKey, XSchema>,
-  InferredProperties extends Record<PropertyKey, unknown> = { [Key in keyof Properties]: XStaticSchema<Properties[Key]> },
+export type XStaticPatternProperties<Stack extends string[], Root extends XSchema, Properties extends Record<PropertyKey, XSchema> = Record<PropertyKey, XSchema>,
+  InferredProperties extends Record<PropertyKey, unknown> = { [Key in keyof Properties]: XStaticSchema<Stack, Root, Properties[Key]> },
   EvaluatedProperties extends unknown = { [key: string]: InferredProperties[keyof InferredProperties] }
 > = EvaluatedProperties

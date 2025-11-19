@@ -38,6 +38,7 @@ import type { XOneOf } from '../types/oneOf.ts'
 import type { XPatternProperties } from '../types/patternProperties.ts'
 import type { XPrefixItems } from '../types/prefixItems.ts'
 import type { XProperties } from '../types/properties.ts'
+import type { XRef } from '../types/ref.ts'
 import type { XRequired } from '../types/required.ts'
 import type { XSchema } from '../types/schema.ts'
 import type { XType } from '../types/type.ts'
@@ -53,6 +54,7 @@ import type { XStaticOneOf } from './oneOf.ts'
 import type { XStaticPatternProperties } from './patternProperties.ts'
 import type { XStaticPrefixItems } from './prefixItems.ts'
 import type { XStaticProperties } from './properties.ts'
+import type { XStaticRef } from './ref.ts'
 import type { XStaticRequired } from './required.ts'
 import type { XStaticType } from './type.ts'
 import type { XStaticUnevaluatedProperties } from './unevaluatedProperties.ts'
@@ -60,20 +62,21 @@ import type { XStaticUnevaluatedProperties } from './unevaluatedProperties.ts'
 // ------------------------------------------------------------------
 // Keywords
 // ------------------------------------------------------------------
-type TFromKeywords<Schema, Result extends unknown[] = [
-  Schema extends XAdditionalProperties<infer Type extends XSchema> ? XStaticAdditionalProperties<Type> : unknown,
-  Schema extends XAllOf<infer Types extends XSchema[]> ? XStaticAllOf<Types> : unknown,
-  Schema extends XAnyOf<infer Types extends XSchema[]> ? XStaticAnyOf<Types> : unknown,
+type TFromKeywords<Stack extends string[], Root extends XSchema, Schema extends XSchema, Result extends unknown[] = [
+  Schema extends XAdditionalProperties<infer Type extends XSchema> ? XStaticAdditionalProperties<Stack, Root, Type> : unknown,
+  Schema extends XAllOf<infer Types extends XSchema[]> ? XStaticAllOf<Stack, Root, Types> : unknown,
+  Schema extends XAnyOf<infer Types extends XSchema[]> ? XStaticAnyOf<Stack, Root, Types> : unknown,
   Schema extends XConst<infer Value extends unknown> ? XStaticConst<Value> : unknown,
   Schema extends XEnum<infer Values extends unknown[]> ? XStaticEnum<Values> : unknown,
-  Schema extends XItems<infer Types extends XSchema[] | XSchema> ? XStaticItems<Schema, Types> : unknown,
-  Schema extends XOneOf<infer Types extends XSchema[]> ? XStaticOneOf<Types> : unknown,
-  Schema extends XPatternProperties<infer Properties extends Record<PropertyKey, XSchema>> ? XStaticPatternProperties<Properties> : unknown,
-  Schema extends XPrefixItems<infer Types extends XSchema[]> ? XStaticPrefixItems<Schema, Types> : unknown,
-  Schema extends XProperties<infer Properties extends Record<PropertyKey, XSchema>> ? XStaticProperties<Properties> : unknown,
-  Schema extends XRequired<infer Keys extends string[]> ? XStaticRequired<Schema, Keys> : unknown,
+  Schema extends XItems<infer Types extends XSchema[] | XSchema> ? XStaticItems<Stack, Root, Schema, Types> : unknown,
+  Schema extends XOneOf<infer Types extends XSchema[]> ? XStaticOneOf<Stack, Root, Types> : unknown,
+  Schema extends XPatternProperties<infer Properties extends Record<PropertyKey, XSchema>> ? XStaticPatternProperties<Stack, Root, Properties> : unknown,
+  Schema extends XPrefixItems<infer Types extends XSchema[]> ? XStaticPrefixItems<Stack, Root, Schema, Types> : unknown,
+  Schema extends XProperties<infer Properties extends Record<PropertyKey, XSchema>> ? XStaticProperties<Stack, Root, Properties> : unknown,
+  Schema extends XRef<infer Ref extends string> ? XStaticRef<Stack, Root, Ref> : unknown,
+  Schema extends XRequired<infer Keys extends string[]> ? XStaticRequired<Stack, Root, Schema, Keys> : unknown,
   Schema extends XType<infer TypeName extends string[] | string> ? XStaticType<TypeName> : unknown,
-  Schema extends XUnevaluatedProperties<infer Type extends XSchema> ? XStaticUnevaluatedProperties<Type> : unknown
+  Schema extends XUnevaluatedProperties<infer Type extends XSchema> ? XStaticUnevaluatedProperties<Stack, Root, Type> : unknown
 ]> = Result
 
 // ------------------------------------------------------------------
@@ -95,8 +98,8 @@ type TKeywordsEvaluated<Schema extends unknown,
 // ------------------------------------------------------------------
 // XStatic
 // ------------------------------------------------------------------
-export type XStaticSchema<Schema extends XSchema, 
-  Keywords extends unknown[] = TFromKeywords<Schema>,
+export type XStaticSchema<Stack extends string[], Root extends XSchema, Schema extends XSchema, 
+  Keywords extends unknown[] = TFromKeywords<Stack, Root, Schema>,
   Intersected extends unknown = TKeywordsIntersected<Keywords>,
   Evaluated extends unknown = TKeywordsEvaluated<Intersected>
 > = Evaluated
