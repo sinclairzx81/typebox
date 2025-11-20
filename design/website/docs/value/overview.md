@@ -1,12 +1,10 @@
 # Value
 
-Check, Decode and Parse JavaScript Values
+Check and Parse JavaScript Values
 
 ## Overview
 
-The TypeBox Value module provides functions to Check and Parse JavaScript values. It also includes functions such as Clone, Repair, Encode, Decode, Diff and Patch which perform various structural operations on JavaScript values.
-
-The Value module is available via optional import.
+The Value module provides functions that perform typed operations on JavaScript values. It includes functions such as Check, Parse, Clone, Encode, Decode and as well as advanced functions to perform structural Diff and Patch on dynamic JavaScript values.
 
 ```typescript
 import Value from 'typebox/value'
@@ -14,7 +12,7 @@ import Value from 'typebox/value'
 
 ### Example
 
-The following uses the Value module to Check and Parse a value. 
+The following uses the Value module to Parse a value. 
 
 ```typescript
 const T = Type.Object({
@@ -23,19 +21,9 @@ const T = Type.Object({
   z: Type.Number()
 })
 
-// Check
-
-const A = Value.Check(T, {                          // const A: boolean = true
-  x: 1,                                            
-  y: 2,
-  z: 3
-})
-
-// Parse
-
-const B = Value.Parse(T, {                          // const B: {
+const A = Value.Parse(T, {                          // const A: {
   x: 1,                                             //   x: number,
-  y: 2,                                             //   y: number,
-  z: 3                                              //   z: number
+  y: 0,                                             //   y: number,
+  z: 0                                              //   z: number
 })                                                  // } = ...
 ```

@@ -4,9 +4,7 @@ High Performance Runtime Validation
 
 ## Overview
 
-The TypeBox Compile module provides functions to convert types into high-performance validators. The compiler is tuned for fast compilation as well as fast validation.
-
-The Compile module is available via optional import.
+The Compile module is a high-performance JIT compiler that transforms types into efficient runtime validators. The compiler is optimized for both fast compilation and validation.
 
 ```typescript
 import { Compile } from 'typebox/compile' 
@@ -14,7 +12,7 @@ import { Compile } from 'typebox/compile'
 
 ### Example
 
-The following uses the Compile module to Check and Parse a value. 
+The following uses the compiler to Compile and Parse a value. 
 
 ```typescript
 const C = Compile(Type.Object({                     // const C: Validator<{}, TObject<{
@@ -23,19 +21,9 @@ const C = Compile(Type.Object({                     // const C: Validator<{}, TO
   z: Type.Number()                                  //   z: TNumber
 }))                                                 // }>>
 
-// Check
-
-const A = C.Check({                                 // const A: boolean = true
-  x: 1,                                            
-  y: 2,
-  z: 3
-})
-
-// Parse
-
-const B = C.Parse({                                 // const B: {
-  x: 1,                                             //   x: number,
-  y: 2,                                             //   y: number,
-  z: 3                                              //   z: number
+const A = C.Parse({                                 // const A: {
+  x: 0,                                             //   x: number,
+  y: 1,                                             //   y: number,
+  z: 0                                              //   z: number
 })                                                  // } = ...
 ```

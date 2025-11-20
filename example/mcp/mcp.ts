@@ -4,7 +4,7 @@ TypeBox
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2025 Haydn Paterson 
+Copyright (c) 2017-2025 Haydn Paterson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,32 +26,22 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import Type from 'typebox'
+import { type Static } from 'typebox'
 
-// ------------------------------------------------------------------
-// Definition
-// ------------------------------------------------------------------
-export class TUint8Array extends Type.Base<globalThis.Uint8Array> {
-  // required: Used by validation
-  public override Check(value: unknown): value is Uint8Array {
-    return value instanceof Uint8Array
-  }
-  // required: Used by validation
-  public override Errors(value: unknown): object[] {
-    return !this.Check(value) ? [{ message: 'not a Uint8Array'}] : []
-  }
-  // required: Used by type compositor
-  public override Clone(): TUint8Array {
-    return new TUint8Array()
-  }
-  // required: Used by value/create
-  public override Create(): globalThis.Uint8Array {
-    return new globalThis.Uint8Array(0)
-  }
+import _2024_11_05 from './2024-11-05.json' with { type: 'json' }
+import _2025_03_26 from './2025-03-26.json' with { type: 'json' }
+import _2025_06_18 from './2025-06-18.json' with { type: 'json' }
+import _Draft from './draft.json' with { type: 'json' }
+type AutoSpec<Defs extends string, Spec extends { [_ in Defs]: Record<string, unknown> }> = {
+  [Key in Extract<keyof Spec[Defs], string>]: Static<Spec & { $ref: `#/${Defs}/${Key}` }>
 }
-// ------------------------------------------------------------------
-// Factory
-// ------------------------------------------------------------------
-export function Uint8Array(): TUint8Array {
-  return new TUint8Array()
-}
+
+type _2024_11_05 = AutoSpec<'definitions', typeof _2024_11_05>
+type _2025_03_26 = AutoSpec<'definitions', typeof _2025_03_26>
+type _2025_06_18 = AutoSpec<'definitions', typeof _2025_06_18>
+type _Draft = AutoSpec<'$defs', typeof _Draft>
+
+export type X2024_11_05 = _2024_11_05
+export type X2025_03_26 = _2025_03_26
+export type X2025_06_18 = _2025_06_18
+export type XDraft = _Draft

@@ -1,55 +1,40 @@
 <h1>Script</h1>
-<p>Parse TypeScript into Json Schema</p>
+<p>TypeScript Scripting Engine</p>
 <h2>Overview</h2>
-<p>TypeBox can parse TypeScript syntax into Json Schema. The Script function is designed to be syntactic frontend to the TypeBox type builder API, enabling Json Schema to be both constructed and mapped using TypeScript type expressions encoded in template literal strings.</p>
-<h3>Example</h3>
-<p>The following uses Script to construct and map Json Schema.</p>
-<pre><code class="language-typescript">import Type from &#39;typebox&#39;
+<p>TypeBox includes a TypeScript scripting engine able to parse TypeScript types directly into Json Schema. The engine uses symmetric runtime and type-level parsing and returns typed safe schematics from TypeScript types (including computed types). The engine is designed for TypeScript 7 native compiler but is supported in TypeScript 5 and above.</p>
+<pre><code class="language-typescript">// Scripted Type
 
 const T = Type.Script(`{ 
   x: number, 
-  y: number, 
-  z: number 
-}`)                                                 // const T = {
-                                                    //   type: &#39;object&#39;,
-                                                    //   required: [&#39;x&#39;, &#39;y&#39;, &#39;z&#39;],
-                                                    //   properties: {
-                                                    //     x: { type: &#39;number&#39; },
-                                                    //     y: { type: &#39;number&#39; },
-                                                    //     z: { type: &#39;number&#39; }
-                                                    //   }
-                                                    // }
+  y: string, 
+  z: boolean 
+}`)                                                 // const T: TObject&lt;{
+                                                    //   x: TNumber,
+                                                    //   y: TString,
+                                                    //   z: TBoolean
+                                                    // }&gt;
+
+// Json Schema Introspection
+
+T.type                                              // &#39;object&#39;
+T.required                                          // [&#39;x&#39;, &#39;y&#39;, &#39;z&#39;]
+T.properties                                        // { x: ..., y: ..., z: ... }
+
+// Scripted Type (Computed)
 
 const S = Type.Script({ T }, `{
   [K in keyof T]: T[K] | null
-}`)                                                 // const S = {
-                                                    //   type: &#39;object&#39;,
-                                                    //   required: [&#39;x&#39;, &#39;y&#39;, &#39;z&#39;],
-                                                    //   properties: {
-                                                    //     x: { 
-                                                    //       anyOf: [
-                                                    //         { type: &#39;number&#39; }, 
-                                                    //         { type: &#39;null&#39; }
-                                                    //       ] 
-                                                    //     },
-                                                    //     y: { 
-                                                    //       anyOf: [
-                                                    //         { type: &#39;number&#39; }, 
-                                                    //         { type: &#39;null&#39; }
-                                                    //       ] 
-                                                    //     },
-                                                    //     z: { 
-                                                    //       anyOf: [
-                                                    //         { type: &#39;number&#39; }, 
-                                                    //         { type: &#39;null&#39; }
-                                                    //       ] 
-                                                    //     },
-                                                    //   }
-                                                    // }
+}`)                                                 // const S: TObject&lt;{
+                                                    //   x: TUnion&lt;[TNumber, TNull]&gt;,
+                                                    //   y: TUnion&lt;[TString, TNull]&gt;,
+                                                    //   z: TUnion&lt;[TBoolean, TNull]&gt;
+                                                    // }&gt;
+
+// Standard Inference
 
 type S = Type.Static&lt;typeof S&gt;                      // type S = {
                                                     //   x: number | null,
-                                                    //   y: number | null,
-                                                    //   z: number | null
+                                                    //   y: string | null,
+                                                    //   z: boolean | null
                                                     // }
 </code></pre>
