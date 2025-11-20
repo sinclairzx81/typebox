@@ -1,10 +1,10 @@
 # Script
 
-Parse TypeScript into Json Schema
+TypeScript Scripting Engine
 
 ## Overview
 
-TypeBox can parse TypeScript syntax into Json Schema. The Script function is designed to be syntactic frontend to the TypeBox type builder API, enabling Json Schema to be both constructed and mapped using TypeScript type expressions encoded in template literal strings.
+TypeBox includes a TypeScript scripting engine that can parse and transform TypeScript types into Json Schema. The engine uses symmetric runtime and type-level parsing, ensuring the Script return type matches the schema generated at runtime. This feature is designed for the upcoming TypeScript 7 native compiler but is supported in TypeScript 5 and later.
 
 ### Example
 

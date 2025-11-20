@@ -61,6 +61,8 @@ License: MIT
 - [Type](#Type)
 - [Value](#Value)
 - [Compile](#Compile)
+- [Schema](#Schema)
+- [Script](#Script)
 - [Contribute](#Contribute)
 
 ## Upgrade
@@ -200,6 +202,110 @@ const B = C.Parse({                                 // const B: {
   z: 3                                              //   z: number
 })                                                  // } = ...
 ```
+
+<a name="Schema"></a>
+
+## Schema
+
+[Example](https://www.typescriptlang.org/play/?#code/JYWwDg9gTgLgBAbzgYQuYAbApnAvnAMyjTgHIYBPMLAIwgA8B6AYzTEy1ICgvWA7AM7xkcALwo2HABQIucOJWoAuMhBoArLMxikANHLhQsARwCuwIwBMVAbVL09ZCo9IAvUgF198sMWqxgLAEVWXl5ehCFKiwVUj5TEBosKFI8bzCKSMUYsnjE5NTcdPlXLOjYvKSUvANcLlwASh5GRhQACy0Aax5+ITgAQTEUADpkDuZOmTDpmdm5+Za4Xvh+lToIbABDPiGYKFMsAwi4AEZdeYvLq9mDTLgAJnTSuABmeqauRYAFTagBQ94EEE8AAQkNkMMfn8sFNrnC5otlnAQSEjiozvDMVjFuEVJVkuk7o8sSTrji4Hd8VAnioXqT6Rdyc8qe8GWzGa18OJhjygA)
+
+TypeBox includes a high-performance compiler that supports direct compilation and inference of Json Schema. The compiler supports Draft 3 through to 2020-12 and uses the official [Json Schema Test Suite](https://github.com/json-schema-org/JSON-Schema-Test-Suite) to assert spec compliance. It offers both high-performance JIT compilation and automatic fallback to interpreted checking if required. The compiler can be used with or without TypeBox types.
+
+```typescript
+const C = Compile({
+  type: 'object',
+  required: ['x', 'y', 'z'],
+  properties: {
+    x: { type: 'number' },
+    y: { type: 'number' },
+    z: { type: 'number' }
+  }
+})
+
+// Check
+
+const A = C.Check({                                 // const A: boolean = true
+  x: 1,                                            
+  y: 2,
+  z: 3
+})
+
+// Parse
+
+const B = C.Parse({                                 // const B: {
+  x: 1,                                             //   x: number,
+  y: 2,                                             //   y: number,
+  z: 3                                              //   z: number
+})                                                  // } = ...
+```
+
+and used to accelerate remote libraries that support Json Schema translation.
+
+```typescript
+const C = Compile(x.toJsonSchema(x.object({
+  x: x.number(),
+  y: x.number(),
+  z: x.number()
+})))
+
+const A = C.Check(...)                              // high performance runtime checking
+```
+
+## Script
+
+[Documentation](https://sinclairzx81.github.io/typebox/#/docs/script/overview) | [Example 1](https://www.typescriptlang.org/play/?#code/JYWwDg9gTgLgBAFQJ5gKZwGZQiOByGFVAIwgA88AoSgYwgDsBneBOAXkSIDoBlGqYGBgAKAAYBvOJThwyALjj0AriGKooAGikykC5avVbpcAF56VaqFIC+ogJQzHT5y9dv3zgPSe4dJi3Y4cWMPULDwp29HQjQFPAhiACtUGhg8DRCIrOzInxkoVABHJWACgBMFAG08Ci08JHT8EzwAXQycjpyomTBsNFhgVEYFYM6x8O7HeSC4GNQ4-Us8OGt28fW3SZ0R2aIFi3Vl1cyN07gt0x25-YMoI5Oz9cnrB8exqJfaBmY4HkDkNC8fiCESSVirOASYyVADScGA9DgAGtUEgIBhEC0FAhYS04AAfRRKAA2xMotgcb3GUT8Pz+HFGVI2k2u+ASyVS6VeTOykwKxVKqAqcGqtXwDTqzTa3J5EUmvQg-Rgg2GQRlsrCF2mknVGo8FxkAEN6EgAPIYKq6vWbPKuSSsvCLQ4rIzWjoGxz2vb4ZSk+5urq2px4q0B3LOY5hrIXXQzUNR85BxzGs0WkXxqMemRe2I+g53F3aBOapNOHPzPN+lYZsMekPFksRtYN9wXMxxlv60twFPmy2d1vd7O7XOO-NHV0D1xZmYO33E-1Tlx1otL8NOSNr9fVrfhz5zX7-bg8GCG5U0AA8c3RvwAfE8fAf6Wrd45JtMnVZCfPm7vJrHPwJIlSV-LdJnbQDvxJMlXxkD4gA) | [Example 2](https://www.typescriptlang.org/play/?#code/JYWwDg9gTgLgBAFQJ5gKZwGZQiOByGFVAIwgA88AoSgehrgAkIA3VKOGAC1QGd0NocYADsMbVMIDG6ABQ9OEAK4AbACZwQAQxiTOHbnB6SowMDFTrCaAJSVUZSLA5E4AMQgQ4AXkREAdADKMNrAkgA8VqgQGG4eAHx2DtDwkXAAQprsPshogcEwoRFE0emZCbT0AMIQYEhwmsLqYJo85ogBzmg8QsIwnjmogcamMDJ+49b1jXAA5qjwxJqSANadqAC0PJpicABSAQDyAHJwAbqoWomO8JIQwq1wAN6xEAA0pewAvt6+uWcmZhkAANKKl3J4fI9KHA4GQAFxwYSKEDENjQuBIBFIlFomEALyxyNRUEon2oqQyWSe6KgqE0qjuyjqAG0ANI9ODLVBIErg+rdACymjAYVZcQAugiAIKqZgNaSqUVxOAAHxebPFpPJLhlcqkFlF3PeADVMsAGjBuj48AANPCq-AATXtarwAC08MqfDJ0QAdIG+gAkjwAqmA0FBJC1UIakHFPkHHqaTBaeJ91qBIDweMBiMpUP7KLZQS4hSLWdyvXAwxGo3wwuiK3V7OZGt08BQ4AB+fCae1wxvcuAtiSqdtIe09vDEfuD5tkVtj-B4yf4SSzmHCVCsEnlIG2OhwA6KGBgE9rbqZfgqJlwWkYfOSYJ59D7Y6nc6XcF+VIwv---9DzwCBiAAK1QJ97TgShvzAbAIwKXgAL-Q9nnhOBxj8d5MQw8Z3gJXC-DgMlv1pABHRRgFpdRkJQ+hmQ7PB3jwCdmJXcUgA)
+
+TypeBox includes a TypeScript scripting engine that can parse and transform TypeScript types into Json Schema. The engine uses symmetric runtime and type-level parsing, ensuring the Script return type matches the schema generated at runtime. This feature is designed for the upcoming TypeScript 7 native compiler but is supported in TypeScript 5 and later.
+
+```typescript
+const T = Type.Script(`{ 
+  x: number, 
+  y: number, 
+  z: number 
+}`)                                                 // const T = {
+                                                    //   type: 'object',
+                                                    //   required: ['x', 'y', 'z'],
+                                                    //   properties: {
+                                                    //     x: { type: 'number' },
+                                                    //     y: { type: 'number' },
+                                                    //     z: { type: 'number' }
+                                                    //   }
+                                                    // }
+
+const S = Type.Script({ T }, `{
+  [K in keyof T]: T[K] | null
+}`)                                                 // const S = {
+                                                    //   type: 'object',
+                                                    //   required: ['x', 'y', 'z'],
+                                                    //   properties: {
+                                                    //     x: { 
+                                                    //       anyOf: [
+                                                    //         { type: 'number' }, 
+                                                    //         { type: 'null' }
+                                                    //       ] 
+                                                    //     },
+                                                    //     y: { 
+                                                    //       anyOf: [
+                                                    //         { type: 'number' }, 
+                                                    //         { type: 'null' }
+                                                    //       ] 
+                                                    //     },
+                                                    //     z: { 
+                                                    //       anyOf: [
+                                                    //         { type: 'number' }, 
+                                                    //         { type: 'null' }
+                                                    //       ] 
+                                                    //     },
+                                                    //   }
+                                                    // }
+
+type S = Type.Static<typeof S>                      // type S = {
+                                                    //   x: number | null,
+                                                    //   y: number | null,
+                                                    //   z: number | null
+                                                    // }
+```
+
 
 ## Contribute
 
