@@ -13,14 +13,14 @@
     "start": "deno run -A tasks.ts start",           // Run Example
     "syntax": "deno run -A tasks.ts syntax",         // Build Parsers
     "test": "deno run -A tasks.ts test",             // Test Project
-    "turing": "deno run -A tasks.ts turing",         // Turing Test
+    "turing": "deno run -A tasks.ts turing",         // Turing Complete Test
     "website": "deno run -A tasks.ts website"        // Website Doc Server
   },
   "imports": {
     // --------------------------------------------------------------
     // Build
     // --------------------------------------------------------------
-    "tasksmith": "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.5/src/index.ts",
+    "tasksmith": "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.6/src/index.ts",
     "parsebox": "https://raw.githubusercontent.com/sinclairzx81/parsebox/0.11.0/src/index.ts",
     // --------------------------------------------------------------
     // Test
