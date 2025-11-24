@@ -29,9 +29,8 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 // deno-lint-ignore-file
 
-import type { TProperties, TObject } from '../../type/index.ts'
+import { type TProperties, type TObject, IsOptional } from '../../type/index.ts'
 import { Guard } from '../../guard/index.ts'
-import { FromDefault } from './from-default.ts'
 import { FromType } from './from-type.ts'
 
 import { IsAdditionalProperties } from '../../schema/types/index.ts'
@@ -46,7 +45,7 @@ export function FromObject(context: TProperties, type: TObject, value: unknown):
     // yielded a non undefined result. Here we interpret an undefined result as
     // a non assignable property and continue.
     const propertyValue = FromType(context, type.properties[key], value[key])
-    if (Guard.IsUndefined(propertyValue)) continue
+    if (Guard.IsUndefined(propertyValue) && (IsOptional(type.properties[key]) || !Guard.HasPropertyKey(type.properties[key], 'default') )) continue
     value[key] = FromType(context, type.properties[key], value[key])
   }
   // return if not additional properties
