@@ -260,3 +260,13 @@ Test('Should Default 22', () => {
   const R = Value.Default(X, { x: 2 })
   Assert.IsEqual(R, { x: 2 })
 })
+Test('Should Default 23', () => {
+  const X = Type.Object({ x: Type.Undefined({ default: undefined }) })
+  const R = Value.Default(X, {})
+  Assert.IsEqual(R, { x: undefined })
+})
+Test('Should Default 24', () => {
+  const X = Type.Object({ x: Type.Optional({ default: undefined }) })
+  const R = Value.Default(X, {})
+  Assert.IsEqual(R, {})
+})
