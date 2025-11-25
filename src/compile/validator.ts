@@ -38,7 +38,10 @@ import { Build } from '../schema/index.ts'
 // ------------------------------------------------------------------
 // Validator<...>
 // ------------------------------------------------------------------
-export class Validator<Context extends TProperties = TProperties, Type extends TSchema = TSchema> extends Base<StaticEncode<Type, Context>> {
+export class Validator<Context extends TProperties = TProperties, Type extends TSchema = TSchema, 
+  Encode extends unknown = StaticEncode<Type, Context>,
+  Decode extends unknown = StaticDecode<Type, Context>,
+> extends Base<Encode> {
   private readonly context: Context
   private readonly type: Type
   private readonly isEvaluated: boolean
@@ -104,7 +107,7 @@ export class Validator<Context extends TProperties = TProperties, Type extends T
   // Base<...>
   // ----------------------------------------------------------------
   /** Checks a value matches the Validator type. */
-  public override Check(value: unknown): value is StaticEncode<Type, Context> {
+  public override Check(value: unknown): value is Encode {
     return this.check(value)
   }
   /** Returns errors for the given value. */
@@ -121,7 +124,7 @@ export class Validator<Context extends TProperties = TProperties, Type extends T
     return Convert(this.context, this.type, value)
   }
   /** Creates a value using the Validator type. */
-  public override Create(): StaticEncode<Type, Context> {
+  public override Create(): Encode {
     return Create(this.context, this.type)
   }
   /** Creates defaults using the Validator type. */
@@ -143,17 +146,17 @@ export class Validator<Context extends TProperties = TProperties, Type extends T
   // Parse | Decode | Encode
   // ----------------------------------------------------------------
   /** Parses a value */
-  public Parse(value: unknown): StaticDecode<Type, Context> {
+  public Parse(value: unknown): Decode {
     const result = this.Check(value) ? value : Parser(this.context, this.type, value)
     return result as never
   }
   /** Decodes a value */
-  public Decode(value: unknown): StaticDecode<Type, Context> {
+  public Decode(value: unknown): Decode {
     const result = this.hasCodec ? Decode(this.context, this.type, value) : this.Parse(value)
     return result as never
   }
   /** Encodes a value */
-  public Encode(value: unknown): StaticEncode<Type, Context> {
+  public Encode(value: unknown): Encode {
     const result = this.hasCodec ? Encode(this.context, this.type, value) : this.Parse(value)
     return result as never
   }

@@ -33,10 +33,14 @@ import { type TProperties, type TSchema } from '../type/index.ts'
 import { Validator } from './validator.ts'
 
 /** Compiles a type into a high performance Validator */
-export function Compile<const Type extends TSchema>(type: Type): Validator<{}, Type>
+export function Compile<const Type extends TSchema,
+  Result extends Validator = Validator<{}, Type>
+>(type: Type): Result
 
 /** Compiles a type into a high performance Validator */
-export function Compile<Context extends TProperties, const Type extends TSchema>(context: Context, type: Type): Validator<Context, Type>
+export function Compile<Context extends TProperties, const Type extends TSchema,
+  Result extends Validator = Validator<{}, Type>
+>(context: Context, type: Type): Result
 
 /** Compiles a type into a high performance Validator */
 export function Compile(...args: unknown[]): Validator {
