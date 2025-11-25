@@ -39,7 +39,7 @@ export function Compile<const Type extends TSchema,
 
 /** Compiles a type into a high performance Validator */
 export function Compile<Context extends TProperties, const Type extends TSchema,
-  Result extends Validator = Validator<{}, Type>
+  Result extends Validator = Validator<Context, Type>
 >(context: Context, type: Type): Result
 
 /** Compiles a type into a high performance Validator */
