@@ -15,7 +15,7 @@ const Version = '1.0.56'
 // ------------------------------------------------------------------
 const BuildPackage = (target: string = `target/build`) => Task.build.esm('src', {
   outdir: target,
-  compiler: '5.9.2',
+  compiler: '5.9.3',
   additional: ['license', 'readme.md'],
   packageJson: {
     name: 'typebox',
@@ -100,5 +100,5 @@ Task.run('metrics', () => Metrics())
 Task.run('range', () => Range([
   '5.0.4', '5.1.3', '5.1.6', '5.2.2', '5.3.2', '5.3.3',
   '5.4.3', '5.4.5', '5.5.2', '5.5.3', '5.5.4', '5.6.2',
-  '5.6.3', '5.7.2', '5.7.3', 'next', 'latest'
+  '5.6.3', '5.7.2', '5.7.3', '5.9.2', 'next', 'latest'
 ]))
