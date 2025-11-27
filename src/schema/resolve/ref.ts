@@ -111,7 +111,7 @@ function FromValue(schema: unknown, base: URL, ref: URL): Schema.XSchema | undef
 // Ref
 // ------------------------------------------------------------------
 export function Ref(schema: Schema.XSchemaObject, ref: string): Schema.XSchema | undefined {
-  const defaultBase = new URL('memory://root')
+  const defaultBase = new URL('http://unknown')
   const initialBase = Schema.IsId(schema) ? new URL(schema.$id, defaultBase.href) : defaultBase
   const initialRef = new URL(ref, initialBase.href)
   return FromValue(schema, initialBase, initialRef)
