@@ -72,3 +72,43 @@ Test('Should Intersect 4', () => {
   Assert.Throws(() => Value.Decode(T, 1))
   Assert.Throws(() => Value.Encode(T, [null]))
 })
+// ------------------------------------------------------------------
+// Duplicate Properties
+// ------------------------------------------------------------------
+Test('Should Intersect 5: Duplicate properties should not run codec twice', () => {
+  let decodeCount = 0
+  let encodeCount = 0
+  
+  const IdCodec = Type.Codec(
+    Type.Object({
+      table: Type.String(),
+      id: Type.String()
+    })
+  )
+    .Decode((encoded) => {
+      decodeCount++
+      return `${encoded.table}:${encoded.id}`
+    })
+    .Encode((decoded) => {
+      encodeCount++
+      const [table, id] = decoded.split(':') as [string, string]
+      return { table, id }
+    })
+
+  const T = Type.Intersect([
+    Type.Object({ id: IdCodec }),
+    Type.Object({ id: IdCodec }),
+  ])
+  
+  // Reset counts
+  decodeCount = 0
+  encodeCount = 0
+  
+  const D = Value.Decode(T, { id: { table: 't', id: 'x' } })
+  Assert.IsEqual(D, { id: 't:x' })
+  Assert.IsEqual(decodeCount, 1) // Should only decode once, not twice
+  
+  const E = Value.Encode(T, D)
+  Assert.IsEqual(E, { id: { table: 't', id: 'x' } })
+  Assert.IsEqual(encodeCount, 1) // Should only encode once, not twice
+})

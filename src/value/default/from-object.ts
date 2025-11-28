@@ -31,7 +31,6 @@ THE SOFTWARE.
 
 import type { TProperties, TObject } from '../../type/index.ts'
 import { Guard } from '../../guard/index.ts'
-import { FromDefault } from './from-default.ts'
 import { FromType } from './from-type.ts'
 
 import { IsAdditionalProperties } from '../../schema/types/index.ts'
