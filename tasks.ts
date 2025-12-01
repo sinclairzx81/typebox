@@ -8,7 +8,7 @@ import { Range } from './task/range/index.ts'
 import { Metrics } from './task/metrics/index.ts'
 import { Task } from 'tasksmith'
 
-const Version = '1.0.58'
+const Version = '1.0.59'
 
 // ------------------------------------------------------------------
 // Build
@@ -100,5 +100,7 @@ Task.run('metrics', () => Metrics())
 Task.run('range', () => Range([
   '5.0.4', '5.1.3', '5.1.6', '5.2.2', '5.3.2', '5.3.3',
   '5.4.3', '5.4.5', '5.5.2', '5.5.3', '5.5.4', '5.6.2',
-  '5.6.3', '5.7.2', '5.7.3', '5.9.2', 'next', 'latest'
+  '5.6.3', '5.7.2', '5.7.3', '5.9.2', 'latest'
+], [
+  'next'
 ]))

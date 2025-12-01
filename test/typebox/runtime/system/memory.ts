@@ -45,7 +45,23 @@ Test('Should Create 1', () => {
   Assert.IsEqual(A.y, 2)
   Assert.IsEqual(A.z, 3)
 })
-Test('Should Create 2', () => {
+// ------------------------------------------------------------------
+// EnumerableKind
+// ------------------------------------------------------------------
+Test('Should Create 3', () => {
+  Settings.Set({ enumerableKind: true })
+  const A: any = Memory.Create({ x: 1 }, { y: 2 }, { z: 3 })
+  Assert.IsEqual(A.x, 1)
+  Assert.IsEqual(A.y, 2)
+  Assert.IsEqual(A.z, 3)
+  A.x = 123
+  Assert.IsEqual(A.x, 123)
+  Settings.Reset()
+})
+// ------------------------------------------------------------------
+// ImmutableTypes
+// ------------------------------------------------------------------
+Test('Should Create 4', () => {
   Settings.Set({ immutableTypes: true })
   const A: any = Memory.Create({ x: 1 }, { y: 2 }, { z: 3 })
   Assert.IsEqual(A.x, 1)

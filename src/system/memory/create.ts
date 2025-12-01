@@ -34,12 +34,19 @@ import { Metrics } from './metrics.ts'
 // deno-lint-ignore no-explicit-any
 type ObjectLike = Record<PropertyKey, any>
 
-function Merge(left: ObjectLike, right: ObjectLike, configuration: PropertyDescriptor = {}): ObjectLike {
-  const descriptor: PropertyDescriptor = { configurable: true, writable: true, enumerable: true, ...configuration }
+function MergeHidden(left: ObjectLike, right: ObjectLike, configuration: PropertyDescriptor = {}): ObjectLike {
   for(const key of Object.keys(right)) {
-    Object.defineProperty(left, key,  { ...descriptor, value: right[key] })
+    Object.defineProperty(left, key, { 
+      configurable: true,
+      writable: true,
+      enumerable: false, 
+      value: right[key] 
+    })
   }
   return left
+}
+function Merge(left: ObjectLike, right: ObjectLike): ObjectLike {
+  return { ...left, ...right }
 }
 /**  
  * Creates an object with hidden, enumerable, and optional property sets. This function 
@@ -49,8 +56,7 @@ function Merge(left: ObjectLike, right: ObjectLike, configuration: PropertyDescr
 export function Create(hidden: ObjectLike, enumerable: ObjectLike, options: ObjectLike = {}): ObjectLike {
   Metrics.create += 1
   const settings = Settings.Get()
-  const withHidden = Merge({}, hidden , { enumerable: settings.enumerableKind }) 
-  const withEnumerable = Merge(withHidden, enumerable)
-  const withOptions = Merge(withEnumerable, options)
-  return settings.immutableTypes ? Object.freeze(withOptions) : withOptions
+  const withOptions = Merge(enumerable, options)
+  const withHidden = settings.enumerableKind ? Merge(withOptions, hidden) : MergeHidden(withOptions, hidden) 
+  return settings.immutableTypes ? Object.freeze(withHidden) : withHidden
 }
