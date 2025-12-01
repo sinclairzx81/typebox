@@ -36,7 +36,12 @@ type ObjectLike = Record<PropertyKey, any>
 
 function MergeHidden(left: ObjectLike, right: ObjectLike, configuration: PropertyDescriptor = {}): ObjectLike {
   for(const key of Object.keys(right)) {
-    Object.defineProperty(left, key,  { enumerable: false, value: right[key] })
+    Object.defineProperty(left, key, { 
+      configurable: true,
+      writable: true,
+      enumerable: false, 
+      value: right[key] 
+    })
   }
   return left
 }
