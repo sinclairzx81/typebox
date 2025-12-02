@@ -41,7 +41,7 @@ export function FromObject(context: TProperties, type: TObject, value: unknown):
   const knownPropertyKeys = Guard.Keys(type.properties)
   // Properties
   for (const key of knownPropertyKeys) {
-    // Resolve: Value from properties.
+    // Resolve Value for Property
     const propertyValue = FromType(context, type.properties[key], value[key])
 
     // Ambiguious Undefined: If the value is undefined, the type is optional there's no default. ignore.

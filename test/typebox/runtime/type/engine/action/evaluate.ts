@@ -806,7 +806,7 @@ Test('Should Evaluate 64', () => {
     Type.Object({ value: Type.Optional(new Foo()) })
   ]))
   Assert.IsTrue(Type.IsOptional(T.properties.value))
-  Assert.IsTrue(Type.IsNever(T.properties.value))
+  Assert.IsTrue(T.properties.value instanceof Foo)
 })
 Test('Should Evaluate 65', () => {
   const T = Type.Evaluate(Type.Intersect([
@@ -814,7 +814,7 @@ Test('Should Evaluate 65', () => {
     Type.Object({ value: new Foo() })
   ]))
   Assert.IsFalse(Type.IsOptional(T.properties.value))
-  Assert.IsTrue(Type.IsNever(T.properties.value))
+  Assert.IsTrue(T.properties.value instanceof Foo)
 })
 Test('Should Evaluate 66', () => {
   const T = Type.Evaluate(Type.Intersect([
