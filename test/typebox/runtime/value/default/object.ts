@@ -260,6 +260,11 @@ Test('Should Default 22', () => {
   const R = Value.Default(X, { x: 2 })
   Assert.IsEqual(R, { x: 2 })
 })
+// ------------------------------------------------------------------
+// Undefined
+//
+// https://github.com/sinclairzx81/typebox/pull/1463
+// ------------------------------------------------------------------
 Test('Should Default 23', () => {
   const X = Type.Object({ x: Type.Undefined({ default: undefined }) })
   const R = Value.Default(X, {})
@@ -269,4 +274,83 @@ Test('Should Default 24', () => {
   const X = Type.Object({ x: Type.Optional({ default: undefined }) })
   const R = Value.Default(X, {})
   Assert.IsEqual(R, {})
+})
+// ------------------------------------------------------------------
+// Additional: Undefined (Union Ordering Left-Right)
+// ------------------------------------------------------------------
+Test('Should Default 25', () => {
+  const T = Type.Object({
+    id: Type.Union([Type.Undefined(), Type.String()], { default: undefined })
+  })
+  const R = Value.Default(T, {})
+  Assert.IsEqual(R, { id: undefined })
+})
+Test('Should Default 26', () => {
+  const T = Type.Object({
+    id: Type.Union([Type.Undefined(), Type.String()], { default: undefined })
+  })
+  const R = Value.Default(T, { id: 'hello' })
+  Assert.IsEqual(R, { id: 'hello' })
+})
+Test('Should Default 27', () => {
+  const T = Type.Object({
+    id: Type.Union([Type.Undefined(), Type.String()], { default: undefined })
+  })
+  const R = Value.Default(T, { id: undefined })
+  Assert.IsEqual(R, { id: undefined })
+})
+Test('Should Default 28', () => {
+  const T = Type.Object({
+    id: Type.Union([Type.Undefined(), Type.String()], { default: undefined })
+  })
+  const R = Value.Default(T, { id: null })
+  Assert.IsEqual(R, { id: null })
+})
+// ------------------------------------------------------------------
+// Additional: Undefined (Union Ordering Right-Left)
+// ------------------------------------------------------------------
+Test('Should Default 29', () => {
+  const T = Type.Object({
+    id: Type.Union([Type.String(), Type.Undefined()], { default: undefined })
+  })
+  const R = Value.Default(T, {})
+  Assert.IsEqual(R, { id: undefined })
+})
+Test('Should Default 30', () => {
+  const T = Type.Object({
+    id: Type.Union([Type.String(), Type.Undefined()], { default: undefined })
+  })
+  const R = Value.Default(T, { id: 'hello' })
+  Assert.IsEqual(R, { id: 'hello' })
+})
+Test('Should Default 31', () => {
+  const T = Type.Object({
+    id: Type.Union([Type.String(), Type.Undefined()], { default: undefined })
+  })
+  const R = Value.Default(T, { id: undefined })
+  Assert.IsEqual(R, { id: undefined })
+})
+Test('Should Default 32', () => {
+  const T = Type.Object({
+    id: Type.Union([Type.String(), Type.Undefined()], { default: undefined })
+  })
+  const R = Value.Default(T, { id: null })
+  Assert.IsEqual(R, { id: null })
+})
+// ------------------------------------------------------------------
+// Sub Schema Resolution Match
+// ------------------------------------------------------------------
+Test('Should Default 31', () => {
+  const T = Type.Object({
+    id: Type.Union([Type.String({ default: 'hello' }), Type.Undefined()], { default: undefined })
+  })
+  const R = Value.Default(T, {})
+  Assert.IsEqual(R, { id: 'hello' }) // pick first union match
+})
+Test('Should Default 32', () => {
+  const T = Type.Object({
+    id: Type.Union([Type.Undefined(), Type.String({ default: 'hello' })], { default: undefined })
+  })
+  const R = Value.Default(T, {})
+  Assert.IsEqual(R, { id: undefined }) // pick first union match
 })
