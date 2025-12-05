@@ -61,8 +61,8 @@ License: MIT
 - [Type](#Type)
 - [Value](#Value)
 - [Compile](#Compile)
-- [Schema](#Schema)
 - [Script](#Script)
+- [Schema](#Schema)
 - [Contribute](#Contribute)
 
 ## Upgrade
@@ -180,48 +180,6 @@ const A = C.Parse({                                 // const A: {
 })                                                  // } = ...
 ```
 
-<a name="Schema"></a>
-
-## Schema
-
-[Example 1](https://www.typescriptlang.org/play/?#code/JYWwDg9gTgLgBAbzgYQuYAbApnAvnAMyjTgHIYBPMLAIwgA8B6AYzTEy1ICgfWA7AM7xkcALwo2HABQIucOJWoAuMhBoArLMxikANHLhQsARwCuwIwBMVAbVL09ZCo9IAvUgF198sMWqxgLAEVWXl5ehCFKiwVUj5TEBosKFI8bzCKSMUYsnjE5NTcdPlXLOjYvKSUvANcLlwASl4IQXgAQTEUADoABQBDKAEsGTDRsfGJycZGOH4hODaQgwi4AAZdSc2t7YnpsJXK5PTMtY2d84uxvfkTw6h00rgARkvXy+u4R7v6hre-95m+HEXRBQA) | [Example 2](https://tsplay.dev/mxrl7w)
-
-TypeBox is built upon a high-performance validation infrastructure that supports the direct compilation and inference of Json Schema schematics. TypeBox implements Draft 3 to 2020-12 and is compliance tested via the official Json Schema [Test Suite](https://github.com/json-schema-org/JSON-Schema-Test-Suite). It offers high-performance JIT compilation with automatic fallback to dynamic checking in JIT restricted environments.
-
-### Example
-
-The following compiles Json Schema. Type inference is supported.
-
-```typescript
-const C = Compile({
-  type: 'object',
-  required: ['x', 'y', 'z'],
-  properties: {
-    x: { type: 'number' },
-    y: { type: 'number' },
-    z: { type: 'number' }
-  }
-})
-
-const A = C.Parse({                                 // const A: {
-  x: 0,                                             //   x: number,
-  y: 0,                                             //   y: number,
-  z: 1                                              //   z: number
-})                                                  // } = ...
-```
-
-It can also be used to accelerate remote libraries via Json Schema translation.
-
-```typescript
-const C = Compile(x.toJsonSchema(x.object({
-  x: x.number(),
-  y: x.number(),
-  z: x.number()
-})))
-
-const A = C.Check(...)                              // high performance runtime checking
-```
-
 ## Script
 
 [Documentation](https://sinclairzx81.github.io/typebox/#/docs/script/overview) | [Example 1](https://www.typescriptlang.org/play/?#code/JYWwDg9gTgLgBAFQJ5gKZwGZQiOByGFVAIwgA88AoSgehrgGUBjKYMGVAE0SOqYgB2AZ3gI4AXh5oAdM1bsAFAAMA3nEpw4ZAFxwBAVxDFUUADTrNSXSNYCA5uY1wAXrtIQANqgCGA9QF8lAEpNULDwiMio6PC6OH5hUV0EAHliACtUJhgAHhUnGMKi4rC4zR1EADlDYzMCkobG0vpLZIYYWwd6pp7ispdkgCEITx8Bbt7JqLj-AD5qOIApIUFGJgALVBBvOABJAQ6IITRs4EFqBGlCNCnb0Li8CAysmCpLqFQAR31gD+47npxADaeAo5jwSDw4OceAAupRLmBsGhYMBUEIAY04moKtI8eYrHA8dJzK4iXi4P4FvQ5GwONxkDcFABhHBgfT0oJ8QQiRgSKSoWQsOkKNRifzmVROIEAaTgwD8AGtUEgIBhELDkrLYXAAD56fQeDyUQIhTF3OIJXkMZJpTLZPITc2TfoVBAAVQEZwEOSBCGqRhM5n9ho8sNmpidzsBLTghI9XsEvoQ7U6weqRvDkejAP6ZIT3uTw1GvnTofDUZzDRm81oNJgvk43ig3H2GBMqAETFQ1Gu6AY-MZgva3hgwCYOT7asYs1ucT7fMk+Src9jFQMgageoNRuzK5dscJNgVdm3Bl3lf3hTzbhGXl8Z9Dl6v0RmQA) | [Example 2](https://www.typescriptlang.org/play/?#code/JYWwDg9gTgLgBAFQJ5gKZwGZQiOByGFVAIwgA88AoSgehrgAkIA3VKOGAC1QGd0NocYADsMbVMIDG6ABQ9OEAK4AbACZwQAQxiTOHbnB6SowMDFTrCaAJSVUZSLA5E4AMQgQ4AXkREAdADKMNrAkgA8VqgQGG4eAHx2DtDwkXAAQprsPshogcEwoRFE0emZCbT0AMIQYEhwmsLqYJo85ogBzmg8QsIwnjmogcamMDJ+49b1jXAA5qjwxJqSANadqAC0PJpicABSAQDyAHJwAbqoWomO8JIQwq1wAN6xEAA0pewAvt6+uWcmZhkAANKKl3J4fI9KHA4GQAFxwYSKEDENjQuBIBFIlFomEALyxyNRUEon2oqQyWSe6KgqE0qjuyjqAG0ANI9ODLVBIErg+rdACymjAYVZcQAugiAIKqZgNaSqUVxOAAHxebPFpPJLhlcqkFlF3PeADVMsAGjBuj48AANPCq-AATXtarwAC08MqfDJ0QAdIG+gAkjwAqmA0FBJC1UIakHFPkHHqaTBaeJ91qBIDweMBiMpUP7KLZQS4hSLWdyvXAwxGo3wwuiK3V7OZGt08BQ4AB+fCae1wxvcuAtiSqdtIe09vDEfuD5tkVtj-B4yf4SSzmHCVCsEnlIG2OhwA6KGBgE9rbqZfgqJlwWkYfOSYJ59D7Y6nc6XcF+VIwv---9DzwCBiAAK1QJ97TgShvzAbAIwKXgAL-Q9nnhOBxj8d5MQw8Z3gJXC-DgMlv1pABHRRgFpdRkJQ+hmQ7PB3jwCdmJXcUgA)
@@ -266,6 +224,47 @@ type S = Type.Static<typeof S>                      // type S = {
                                                     // }
 ```
 
+<a name="Schema"></a>
+
+## Schema
+
+[Documentation](https://sinclairzx81.github.io/typebox/#/docs/schema/overview) | [Example 1](https://www.typescriptlang.org/play/?#code/JYWwDg9gTgLgBAbzgYQuYAbApnAvnAMyjTgHIYBPMLAIwgA8B6AYzTEy1ICgfWA7AM7xkcALwo2HABQIucOJWoAuMhBoArLMxikANHLhQsARwCuwIwBMVAbVL09ZCo9IAvUgF198sMWqxgLAEVWXl5ehCFKiwVUj5TEBosKFI8bzCKSMUYsnjE5NTcdPlXLOjYvKSUvANcLlwASl4IQXgAQTEUADoABQBDKAEsGTDRsfGJycZGOH4hODaQgwi4AAZdSc2t7YnpsJXK5PTMtY2d84uxvfkTw6h00rgARkvXy+u4R7v6hre-95m+HEXRBQA) | [Example 2](https://tsplay.dev/mxrl7w)
+
+TypeBox is built upon a high-performance validation infrastructure that supports the direct compilation and inference of Json Schema schematics. TypeBox implements Draft 3 to 2020-12 and is compliance tested via the official Json Schema [Test Suite](https://github.com/json-schema-org/JSON-Schema-Test-Suite). It offers high-performance JIT compilation with automatic fallback to dynamic checking in JIT restricted environments.
+
+### Example
+
+The following compiles Json Schema. Type inference is supported.
+
+```typescript
+const C = Compile({
+  type: 'object',
+  required: ['x', 'y', 'z'],
+  properties: {
+    x: { type: 'number' },
+    y: { type: 'number' },
+    z: { type: 'number' }
+  }
+})
+
+const A = C.Parse({                                 // const A: {
+  x: 0,                                             //   x: number,
+  y: 0,                                             //   y: number,
+  z: 1                                              //   z: number
+})                                                  // } = ...
+```
+
+It can also be used to accelerate remote libraries via Json Schema translation.
+
+```typescript
+const C = Compile(x.toJsonSchema(x.object({
+  x: x.number(),
+  y: x.number(),
+  z: x.number()
+})))
+
+const A = C.Check(...)                              // high performance runtime checking
+```
 
 ## Contribute
 

@@ -36,6 +36,9 @@
     "2_setup": "docs/overview/2_setup.html",
     "overview": "docs/overview/overview.html"
   },
+  "schema": {
+    "overview": "docs/schema/overview.html"
+  },
   "script": {
     "1_script": "docs/script/1_script.html",
     "2_parameters": "docs/script/2_parameters.html",
