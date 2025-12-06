@@ -28,6 +28,7 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 // deno-lint-ignore-file
+// auto-generated: design/syntax/syntax.ts
 
 import * as S from './mapping.ts'
 import * as Token from './token/index.ts'
