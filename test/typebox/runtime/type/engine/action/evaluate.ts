@@ -806,6 +806,7 @@ Test('Should Evaluate 64', () => {
     Type.Object({ value: Type.Optional(new Foo()) })
   ]))
   Assert.IsTrue(Type.IsOptional(T.properties.value))
+  Assert.IsTrue(Type.IsBase(T.properties.value))
   Assert.IsTrue(T.properties.value instanceof Foo)
 })
 Test('Should Evaluate 65', () => {
@@ -814,6 +815,7 @@ Test('Should Evaluate 65', () => {
     Type.Object({ value: new Foo() })
   ]))
   Assert.IsFalse(Type.IsOptional(T.properties.value))
+  Assert.IsTrue(Type.IsBase(T.properties.value))
   Assert.IsTrue(T.properties.value instanceof Foo)
 })
 Test('Should Evaluate 66', () => {
@@ -824,4 +826,38 @@ Test('Should Evaluate 66', () => {
   Assert.IsTrue(Type.IsOptional(T.properties.value))
   Assert.IsTrue(Type.IsBase(T.properties.value))
   Assert.IsTrue(T.properties.value instanceof Foo)
+})
+class Bar<T extends string> extends Type.Base {
+  public constructor(private kind: T) {
+    super();
+  }
+  public override Check(value: unknown): value is unknown {
+    return true
+  }
+  public override Errors(value: unknown): object[] {
+    return []
+  }
+  public override Clone(): Bar<T> {
+    return new Bar(this.kind)
+  }
+  public override Equals(other: unknown): other is this {
+    return other instanceof Bar && other.kind === this.kind
+  }
+}
+Test('Should Evaluate 67', () => {
+  const T = Type.Evaluate(Type.Intersect([
+    Type.Object({ value: Type.Optional(new Bar('1')) }),
+    Type.Object({ value: Type.Optional(new Bar('1')) })
+  ]))
+  Assert.IsTrue(Type.IsOptional(T.properties.value))
+  Assert.IsTrue(Type.IsBase(T.properties.value))
+  Assert.IsTrue(T.properties.value instanceof Bar)
+})
+Test('Should Evaluate 68', () => {
+  const T = Type.Evaluate(Type.Intersect([
+    Type.Object({ value: Type.Optional(new Bar('1')) }),
+    Type.Object({ value: Type.Optional(new Bar('2')) })
+  ]))
+  Assert.IsTrue(Type.IsOptional(T.properties.value))
+  Assert.IsTrue(Type.IsNever(T.properties.value))
 })
