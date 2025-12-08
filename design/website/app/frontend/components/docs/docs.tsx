@@ -53,6 +53,7 @@ const TOP_LEVEL_ORDER = [
   'value',
   'compile',
   'format',
+  'schema',
   'system',
 ]
 // ------------------------------------------------------------------

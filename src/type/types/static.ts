@@ -118,7 +118,7 @@ export type StaticType<Stack extends string[], Direction extends StaticDirection
 // ------------------------------------------------------------------
 /** Infers a static type from a TypeBox type using Parse logic. */
 export type StaticParse<Type extends TSchema, Context extends TProperties = {},
-  Result extends unknown = StaticType<[], 'Decode', Context, {}, Type>
+  Result extends unknown = StaticType<[], 'Encode', Context, {}, Type>
 > = Result
 /** Infers a static type from a TypeBox type using Decode logic. */
 export type StaticDecode<Type extends TSchema, Context extends TProperties = {},
