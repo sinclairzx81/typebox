@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Memory } from '../../system/memory/index.ts'
-import { type StaticType, type StaticDirection } from './static.ts'
+import { type StaticType } from './static.ts'
 import { type TSchema, type TSchemaOptions, IsKind } from './schema.ts'
 import { type StaticInstantiatedParameters } from './function.ts'
 import { type TProperties } from './properties.ts'
@@ -37,9 +37,9 @@ import { type TProperties } from './properties.ts'
 // ------------------------------------------------------------------
 // Static
 // ------------------------------------------------------------------
-export type StaticConstructor<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Parameters extends TSchema[], InstanceType extends TSchema,
-  StaticParameters extends unknown[] = StaticInstantiatedParameters<Stack, Direction, Context, This, Parameters>,
-  StaticReturnType extends unknown = StaticType<Stack, Direction, Context, This, InstanceType>,
+export type StaticConstructor<Stack extends string[], Context extends TProperties, This extends TProperties, Parameters extends TSchema[], InstanceType extends TSchema,
+  StaticParameters extends unknown[] = StaticInstantiatedParameters<Stack, Context, This, Parameters>,
+  StaticReturnType extends unknown = StaticType<Stack, Context, This, InstanceType>,
   Result = new (...args: StaticParameters) => StaticReturnType
 > = Result
 // ------------------------------------------------------------------

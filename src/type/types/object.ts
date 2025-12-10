@@ -29,15 +29,14 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Memory } from '../../system/memory/index.ts'
-import { type StaticDirection } from './static.ts'
 import { type TSchema, type TObjectOptions, IsKind } from './schema.ts'
 import { type TProperties, type TRequiredArray, type StaticProperties, RequiredArray } from './properties.ts'
 
 // ------------------------------------------------------------------
 // Static
 // ------------------------------------------------------------------
-export type StaticObject<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, _This extends TProperties, Properties extends TProperties,
-  Result = keyof Properties extends never ? object : StaticProperties<Stack, Direction, Context, Properties, Properties>
+export type StaticObject<Stack extends string[], Context extends TProperties, _This extends TProperties, Properties extends TProperties,
+  Result = keyof Properties extends never ? object : StaticProperties<Stack, Context, Properties, Properties>
 > = Result
 // ------------------------------------------------------------------
 // Schema

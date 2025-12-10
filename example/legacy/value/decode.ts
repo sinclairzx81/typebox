@@ -28,19 +28,19 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Arguments } from '../../system/arguments/index.ts'
-import { type TLocalizedValidationError } from '../../error/errors.ts'
-import { type TProperties, type TSchema, type StaticDecode } from '../../type/index.ts'
+import { Arguments } from 'typebox/system'
+import { type TLocalizedValidationError } from 'typebox/error'
+import { type TProperties, type TSchema, type StaticDecode } from 'typebox'
 
-import { AssertError } from '../assert/index.ts'
-import { Check } from '../check/index.ts'
-import { Errors } from '../errors/index.ts'
-import { Clean } from '../clean/index.ts'
-import { Clone } from '../clone/index.ts'
-import { Convert } from '../convert/index.ts'
-import { Default } from '../default/index.ts'
-import { Pipeline } from '../pipeline/index.ts'
-import { FromType } from './from-type.ts'
+import { AssertError } from 'typebox/value'
+import { Check } from 'typebox/value'
+import { Errors } from 'typebox/value'
+import { Clean } from 'typebox/value'
+import { Clone } from 'typebox/value'
+import { Convert } from 'typebox/value'
+import { Default } from 'typebox/value'
+import { Pipeline } from 'typebox/value'
+import { Decode as DecodeUnsafe } from 'typebox/value'
 
 // ------------------------------------------------------------------
 // Assert
@@ -53,13 +53,6 @@ export class DecodeError extends AssertError {
 function Assert(context: TProperties, type: TSchema, value: unknown): unknown {
   if (!Check(context, type, value)) throw new DecodeError(value, Errors(context, type, value))
   return value
-}
-// ------------------------------------------------------------------
-// DecodeUnsafe
-// ------------------------------------------------------------------
-/** Executes Decode callbacks only */
-export function DecodeUnsafe(context: TProperties, type: TSchema, value: unknown): unknown {
-  return FromType('Decode', context, type, value)
 }
 // ------------------------------------------------------------------
 // Decoder

@@ -29,7 +29,6 @@ THE SOFTWARE.
 // ------------------------------------------------------------------
 // Extensions
 // ------------------------------------------------------------------
-export * from './_codec.ts'
 export * from './_immutable.ts'
 export * from './_optional.ts'
 export * from './_readonly.ts'

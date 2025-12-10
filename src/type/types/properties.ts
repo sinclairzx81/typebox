@@ -30,11 +30,10 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Guard } from '../../guard/index.ts'
-import { type StaticType, type StaticDirection, type StaticEvaluate } from './static.ts'
+import { type StaticType, type StaticEvaluate } from './static.ts'
 import { type TSchema } from './schema.ts'
 import { type TOptional, IsOptional } from './_optional.ts'
 import { type TReadonly } from './_readonly.ts'
-
 import { type TUnionToTuple } from '../engine/helpers/union.ts'
 
 // ----------------------------------------------------------------------------
@@ -53,15 +52,15 @@ type StaticPropertiesWithModifiers<Properties extends TProperties, PropertiesWit
 // ----------------------------------------------------------------------------
 // StaticPropertiesWithoutModifiers
 // ----------------------------------------------------------------------------
-type StaticPropertiesWithoutModifiers<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Properties extends TProperties, 
+type StaticPropertiesWithoutModifiers<Stack extends string[], Context extends TProperties, This extends TProperties, Properties extends TProperties, 
   Result extends Record<PropertyKey, unknown> = { 
-    [Key in keyof Properties]: StaticType<Stack, Direction, Context, This, Properties[Key]> 
+    [Key in keyof Properties]: StaticType<Stack, Context, This, Properties[Key]> 
   }> = Result
 // ----------------------------------------------------------------------------
 // StaticProperties
 // ----------------------------------------------------------------------------
-export type StaticProperties<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Properties extends TProperties, 
-  PropertiesWithoutModifiers extends Record<PropertyKey, unknown> = StaticPropertiesWithoutModifiers<Stack, Direction, Context, This, Properties>,
+export type StaticProperties<Stack extends string[], Context extends TProperties, This extends TProperties, Properties extends TProperties, 
+  PropertiesWithoutModifiers extends Record<PropertyKey, unknown> = StaticPropertiesWithoutModifiers<Stack, Context, This, Properties>,
   PropertiesWithModifiers extends Record<PropertyKey, unknown> = StaticPropertiesWithModifiers<Properties, PropertiesWithoutModifiers>,
   Result extends Record<PropertyKey, unknown> = { [Key in keyof PropertiesWithModifiers]: PropertiesWithModifiers[Key] }
 > = Result

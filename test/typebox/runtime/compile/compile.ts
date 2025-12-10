@@ -55,41 +55,6 @@ Test('Should Compile 5', () => {
   Assert.IsTrue(Type.IsString(check.Context().A))
   Assert.IsTrue(Type.IsNumber(check.Type()))
 })
-
-// ------------------------------------------------------------------
-// Nested Validator
-// ------------------------------------------------------------------
-Test('Should Compile 6', () => {
-  const A = Compile(Type.Literal(1))
-  const B = Compile(Type.Literal(2))
-  const C = Compile(Type.Literal(3))
-  const D = Compile(Type.Tuple([A, B, C]))
-  const E = Compile(Type.Object({ x: D }))
-
-  const Value = { x: [1, 2, 3] }
-
-  const checkResult = E.Check(Value)
-  const errorsResult = E.Errors(Value)
-  const parseResult = E.Parse(Value)
-  Assert.IsTrue(checkResult)
-  Assert.IsEqual(errorsResult, [])
-  Assert.IsEqual(parseResult, Value)
-})
-Test('Should Compile 7', () => {
-  const A = Compile(Type.Literal(1))
-  const B = Compile(Type.Literal(2))
-  const C = Compile(Type.Literal(3))
-  const D = Compile(Type.Tuple([A, B, C]))
-  const E = Compile(Type.Object({ x: D }))
-
-  const Value = { x: [1, 2, 5] }
-  const checkResult = E.Check(Value)
-  const errorsResult = E.Errors(Value)
-
-  Assert.IsFalse(checkResult)
-  Assert.IsTrue(errorsResult.length > 0)
-  Assert.Throws(() => E.Parse(Value))
-})
 // ------------------------------------------------------------------
 // Base: Create
 // ------------------------------------------------------------------
@@ -120,34 +85,6 @@ Test('Should Convert 10', () => {
 Test('Should Compile 11', () => {
   const A = Compile(Type.String({ default: 'hello' }))
   const C = A.Default(undefined)
-  Assert.IsEqual(C, 'hello')
-})
-// ------------------------------------------------------------------
-// Ext: Decode
-// ------------------------------------------------------------------
-Test('Should Compile 12', () => {
-  const A = Compile(Type.String({ default: 'hello' }))
-  const C = A.Decode('hello')
-  Assert.IsEqual(C, 'hello')
-})
-Test('Should Compile 13', () => {
-  const X = Type.Codec(Type.String()).Decode((value) => value).Encode((value) => value)
-  const A = Compile(X)
-  const C = A.Decode('hello')
-  Assert.IsEqual(C, 'hello')
-})
-// ------------------------------------------------------------------
-// Ext: Encode
-// ------------------------------------------------------------------
-Test('Should Compile 14', () => {
-  const A = Compile(Type.String({ default: 'hello' }))
-  const C = A.Encode('hello')
-  Assert.IsEqual(C, 'hello')
-})
-Test('Should Compile 15', () => {
-  const X = Type.Codec(Type.String()).Decode((value) => value).Encode((value) => value)
-  const A = Compile(X)
-  const C = A.Encode('hello')
   Assert.IsEqual(C, 'hello')
 })
 // ------------------------------------------------------------------

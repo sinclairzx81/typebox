@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Memory } from '../../system/memory/index.ts'
-import { type StaticType, type StaticDirection } from './static.ts'
+import { type StaticType } from './static.ts'
 import { type TSchema, type TTupleOptions, IsKind } from './schema.ts'
 import { type TArray } from './array.ts'
 import { type TOptional } from './_optional.ts'
@@ -49,20 +49,20 @@ import { type TRest } from './rest.ts'
 // unsized Parameter inference at the Tuple level.
 //
 // ------------------------------------------------------------------
-type StaticLast<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Type extends TSchema, Result extends unknown[]> = (
+type StaticLast<Stack extends string[], Context extends TProperties, This extends TProperties, Type extends TSchema, Result extends unknown[]> = (
   Type extends TRest<infer RestType extends TSchema>
    ? RestType extends TArray<infer ArrayType extends TSchema>
-     ? [...Result, ...TStaticElement<Stack, Direction, Context, This, ArrayType>[0][]]
+     ? [...Result, ...TStaticElement<Stack, Context, This, ArrayType>[0][]]
      : [...Result, never]
-   : [...Result, ...TStaticElement<Stack, Direction, Context, This, Type>]
+   : [...Result, ...TStaticElement<Stack, Context, This, Type>]
 )
 // ------------------------------------------------------------------
 // StaticElement
 // ------------------------------------------------------------------
-type TStaticElement<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Type extends TSchema,
+type TStaticElement<Stack extends string[], Context extends TProperties, This extends TProperties, Type extends TSchema,
   IsReadonly extends boolean = Type extends TReadonly ? true : false,
   IsOptional extends boolean = Type extends TOptional ? true : false,
-  Inferred extends unknown = StaticType<Stack, Direction, Context, This, Type>,
+  Inferred extends unknown = StaticType<Stack, Context, This, Type>,
   Result extends [unknown?] = (
     [IsReadonly, IsOptional] extends [true, true] ? [Readonly<Inferred>?] :
     [IsReadonly, IsOptional] extends [false, true] ? [Inferred?] :
@@ -73,17 +73,17 @@ type TStaticElement<Stack extends string[], Direction extends StaticDirection, C
 // ------------------------------------------------------------------
 // StaticElements
 // ------------------------------------------------------------------
-export type TStaticElements<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Types extends TSchema[], Result extends unknown[] = []> = (
-  Types extends [infer Last extends TSchema] ? StaticLast<Stack, Direction, Context, This, Last, Result> :
+export type TStaticElements<Stack extends string[], Context extends TProperties, This extends TProperties, Types extends TSchema[], Result extends unknown[] = []> = (
+  Types extends [infer Last extends TSchema] ? StaticLast<Stack, Context, This, Last, Result> :
   Types extends [infer Left extends TSchema, ...infer Right extends TSchema[]]
-    ? TStaticElements<Stack, Direction, Context, This, Right, [...Result, ...TStaticElement<Stack, Direction, Context, This, Left>]>
+    ? TStaticElements<Stack, Context, This, Right, [...Result, ...TStaticElement<Stack, Context, This, Left>]>
     : Result
 )
 // ------------------------------------------------------------------
 // Static
 // ------------------------------------------------------------------
-export type StaticTuple<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Tuple extends TSchema, Items extends TSchema[], 
-  Elements extends unknown[] = TStaticElements<Stack, Direction, Context, This, Items>,
+export type StaticTuple<Stack extends string[], Context extends TProperties, This extends TProperties, Tuple extends TSchema, Items extends TSchema[], 
+  Elements extends unknown[] = TStaticElements<Stack, Context, This, Items>,
   Result extends readonly unknown[] = (
     Tuple extends TImmutable 
       ? readonly [...Elements] 

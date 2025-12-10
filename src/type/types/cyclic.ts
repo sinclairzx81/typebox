@@ -30,17 +30,17 @@ THE SOFTWARE.
 
 import { Guard } from '../../guard/index.ts'
 import { Memory } from '../../system/memory/index.ts'
-import { type StaticType, type StaticDirection } from './static.ts'
+import { type StaticType } from './static.ts'
 import { type TSchema, type TSchemaOptions, IsKind } from './schema.ts'
 import { type TProperties } from './properties.ts'
 
 // ------------------------------------------------------------------
 // Static
 // ------------------------------------------------------------------
-export type StaticCyclic<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Defs extends TProperties, Ref extends string, 
+export type StaticCyclic<Stack extends string[], Context extends TProperties, This extends TProperties, Defs extends TProperties, Ref extends string, 
   Result extends unknown = (
     Ref extends keyof Defs
-      ? StaticType<[...Stack, Ref], Direction, Defs, This, Defs[Ref]>
+      ? StaticType<[...Stack, Ref], Defs, This, Defs[Ref]>
       : never
   )
 > = Result

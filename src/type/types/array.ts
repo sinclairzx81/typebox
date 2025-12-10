@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Memory } from '../../system/memory/index.ts'
-import { type StaticType, type StaticDirection } from './static.ts'
+import { type StaticType } from './static.ts'
 import { type TSchema, type TArrayOptions, IsKind } from './schema.ts'
 import { type TImmutable } from './_immutable.ts'
 import { type TProperties } from './properties.ts'
@@ -37,10 +37,10 @@ import { type TProperties } from './properties.ts'
 // ------------------------------------------------------------------
 // Static
 // ------------------------------------------------------------------
-export type StaticArray<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Array extends TSchema, Item extends TSchema,
+export type StaticArray<Stack extends string[], Context extends TProperties, This extends TProperties, Array extends TSchema, Item extends TSchema,
   Result extends readonly unknown[] = Array extends TImmutable
-    ? readonly StaticType<Stack, Direction, Context, This, Item>[]
-    : StaticType<Stack, Direction, Context, This, Item>[]
+    ? readonly StaticType<Stack,Context, This, Item>[]
+    : StaticType<Stack, Context, This, Item>[]
 > = Result
 // ------------------------------------------------------------------
 // Type

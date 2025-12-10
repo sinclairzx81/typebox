@@ -29,16 +29,16 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Memory } from '../../system/memory/index.ts'
-import { type StaticType, type StaticDirection } from './static.ts'
+import { type StaticType } from './static.ts'
 import { type TSchema, type TIntersectOptions, IsKind } from './schema.ts'
 import { type TProperties } from './properties.ts'
 
 // ------------------------------------------------------------------
 // Static
 // ------------------------------------------------------------------
-export type StaticIntersect<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Types extends TSchema[], Result extends unknown = unknown> = (
+export type StaticIntersect<Stack extends string[], Context extends TProperties, This extends TProperties, Types extends TSchema[], Result extends unknown = unknown> = (
   Types extends [infer Left extends TSchema, ...infer Right extends TSchema[]]
-    ? StaticIntersect<Stack, Direction, Context, This, Right, Result & StaticType<Stack, Direction, Context, This, Left>>
+    ? StaticIntersect<Stack, Context, This, Right, Result & StaticType<Stack, Context, This, Left>>
     : Result
 )
 // ------------------------------------------------------------------

@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Memory } from '../../system/memory/index.ts'
-import { type StaticType, type StaticDirection } from './static.ts'
+import { type StaticType } from './static.ts'
 import { type TSchema, type TSchemaOptions, IsKind } from './schema.ts'
 import { type TProperties } from './properties.ts'
 import { type TObject } from './object.ts'
@@ -62,7 +62,6 @@ type CyclicStackLength<Stack extends unknown[], MaxLength extends number, Buffer
 type CyclicGuard<Stack extends unknown[], Ref extends string> = (
   Ref extends Stack[number] ? CyclicStackLength<Stack, 2> : true
 )
-
 // ------------------------------------------------------------------
 // StaticRef
 //
@@ -76,16 +75,16 @@ type CyclicGuard<Stack extends unknown[], Ref extends string> = (
 // approximation of the expansive type.
 //
 // ------------------------------------------------------------------
-type StaticGuardedRef<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Ref extends string, Type extends TSchema> = (
+type StaticGuardedRef<Stack extends string[], Context extends TProperties, This extends TProperties, Ref extends string, Type extends TSchema> = (
   CyclicGuard<Stack, Ref> extends true
-    ? StaticType<[...Stack, Ref], Direction, Context, This, Type>
+    ? StaticType<[...Stack, Ref], Context, This, Type>
     : any
 )
-export type StaticRef<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Ref extends string,
+export type StaticRef<Stack extends string[], Context extends TProperties, This extends TProperties, Ref extends string,
   Target extends TSchema = Ref extends keyof Context ? Context[Ref] : TUnknown,
   Result extends unknown = Target extends TObject
-    ? StaticType<[/* Reset */], Direction, Context, This, Target>
-    : StaticGuardedRef<Stack, Direction, Context, This, Ref, Target>
+    ? StaticType<[/* Reset */], Context, This, Target>
+    : StaticGuardedRef<Stack, Context, This, Ref, Target>
 > = Result
 
 // ------------------------------------------------------------------

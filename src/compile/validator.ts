@@ -28,55 +28,31 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Arguments } from '../system/arguments/index.ts'
 import { Environment } from '../system/environment/index.ts'
 import { type TLocalizedValidationError } from '../error/index.ts'
-import { type StaticDecode, type StaticEncode, type TProperties, type TSchema, Base } from '../type/index.ts'
-import { Errors, Clean, Convert, Create, Default, Decode, Encode, HasCodec, Parser } from '../value/index.ts'
+import { type Static, type TProperties, type TSchema } from '../type/index.ts'
+import { Errors, Clean, Convert, Create, Default, ParseError } from '../value/index.ts'
 import { Build } from '../schema/index.ts'
 
 // ------------------------------------------------------------------
 // Validator<...>
 // ------------------------------------------------------------------
 export class Validator<Context extends TProperties = TProperties, Type extends TSchema = TSchema, 
-  Encode extends unknown = StaticEncode<Type, Context>,
-  Decode extends unknown = StaticDecode<Type, Context>,
-> extends Base<Encode> {
+  Value extends unknown = Static<Type, Context>
+> {
   private readonly context: Context
   private readonly type: Type
   private readonly isEvaluated: boolean
-  private readonly hasCodec: boolean
   private readonly code: string
   private readonly check: (value: unknown) => boolean
   /** Constructs a Validator with the given Context and Type. */
-  constructor(context: Context, type: Type)
-  /** Constructs a Validator with the given arguments. */
-  constructor(context: Context, type: Type, isEvaluated: boolean, hasCodec: boolean, code: string, check: (value: unknown) => boolean)
-  /** Constructs a Validator. */
-  constructor(...args: unknown[]) {
-    super()
-    const matched: [Context, Type, boolean, boolean, string, (value: unknown) => boolean] | [Context, Type] = Arguments.Match(args, {
-      6: (context, type, isEvalulated, hasCodec, code, check) => [context, type, isEvalulated, hasCodec, code, check],
-      2: (context, type) => [context, type]
-    })
-    if(matched.length === 6) {
-      const [context, type, isEvaluated, hasCodec, code, check] = matched
-      this.context = context
-      this.type = type
-      this.isEvaluated = isEvaluated
-      this.hasCodec = hasCodec
-      this.code = code
-      this.check = check
-    } else {
-      const [context, type] = matched as [Context, Type]
-      const result = Build(context, type).Evaluate()
-      this.hasCodec = HasCodec(context, type)
-      this.context = context
-      this.type = type
-      this.isEvaluated = result.IsEvaluated
-      this.code = result.Code
-      this.check = result.Check as never
-    }
+  constructor(context: Context, type: Type) {
+    const result = Build(context, type).Evaluate()
+    this.context = context
+    this.type = type
+    this.isEvaluated = result.IsEvaluated
+    this.code = result.Code
+    this.check = result.Check as never
   }
   // ----------------------------------------------------------------
   // IsEvaluated
@@ -86,7 +62,7 @@ export class Validator<Context extends TProperties = TProperties, Type extends T
     return this.isEvaluated
   }
   // ----------------------------------------------------------------
-  // Context | Type
+  // Reflect
   // ----------------------------------------------------------------
   /** Returns the Context for this validator. */
   public Context(): Context {
@@ -96,68 +72,41 @@ export class Validator<Context extends TProperties = TProperties, Type extends T
   public Type(): Type {
     return this.type
   }
-  // ----------------------------------------------------------------
-  // Code
-  // ----------------------------------------------------------------
   /** Returns the generated code for this validator. */
   public Code(): string {
     return this.code
   }
   // ----------------------------------------------------------------
-  // Base<...>
+  // Value.*
   // ----------------------------------------------------------------
   /** Checks a value matches the Validator type. */
-  public override Check(value: unknown): value is Encode {
+  public Check(value: unknown): value is Value {
     return this.check(value)
   }
   /** Returns errors for the given value. */
-  public override Errors(value: unknown): TLocalizedValidationError[] {
+  public Errors(value: unknown): TLocalizedValidationError[] {
     if (Environment.CanEvaluate() && this.check(value)) return []
     return Errors(this.context, this.type, value)
   }
   /** Cleans a value using the Validator type. */
-  public override Clean(value: unknown): unknown {
+  public Clean(value: unknown): unknown {
     return Clean(this.context, this.type, value)
   }
   /** Converts a value using the Validator type. */
-  public override Convert(value: unknown): unknown {
+  public Convert(value: unknown): unknown {
     return Convert(this.context, this.type, value)
   }
   /** Creates a value using the Validator type. */
-  public override Create(): Encode {
+  public Create(): Value {
     return Create(this.context, this.type)
   }
   /** Creates defaults using the Validator type. */
-  public override Default(value: unknown): unknown {
+  public Default(value: unknown): unknown {
     return Default(this.context, this.type, value)
   }
-  /** Clones this validator. */
-  public override Clone(): Validator<Context, Type> {
-    return new Validator<Context, Type>(
-      this.context,
-      this.type, 
-      this.isEvaluated, 
-      this.hasCodec, 
-      this.code, 
-      this.check
-    )
-  }
-  // ----------------------------------------------------------------
-  // Parse | Decode | Encode
-  // ----------------------------------------------------------------
   /** Parses a value */
-  public Parse(value: unknown): Decode {
-    const result = this.Check(value) ? value : Parser(this.context, this.type, value)
-    return result as never
-  }
-  /** Decodes a value */
-  public Decode(value: unknown): Decode {
-    const result = this.hasCodec ? Decode(this.context, this.type, value) : this.Parse(value)
-    return result as never
-  }
-  /** Encodes a value */
-  public Encode(value: unknown): Encode {
-    const result = this.hasCodec ? Encode(this.context, this.type, value) : this.Parse(value)
-    return result as never
+  public Parse(value: unknown): Value {
+    if(!this.Check(value)) throw new ParseError(value, this.Errors(value))
+    return value as never
   }
 }

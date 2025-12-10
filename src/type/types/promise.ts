@@ -29,15 +29,15 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Memory } from '../../system/memory/index.ts'
-import { type StaticType, type StaticDirection } from './static.ts'
+import { type StaticType } from './static.ts'
 import { type TSchema, type TSchemaOptions, IsKind } from './schema.ts'
 import { type TProperties } from './properties.ts'
 
 // ------------------------------------------------------------------
 // Static
 // ------------------------------------------------------------------
-export type StaticPromise<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Type extends TSchema, 
-  Result = Promise<StaticType<Stack, Direction, Context, This, Type>>
+export type StaticPromise<Stack extends string[], Context extends TProperties, This extends TProperties, Type extends TSchema, 
+  Result = Promise<StaticType<Stack, Context, This, Type>>
 > = Result
 // ------------------------------------------------------------------
 // Type

@@ -29,16 +29,16 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Memory } from '../../system/memory/index.ts'
-import { type StaticType, type StaticDirection } from './static.ts'
+import { type StaticType } from './static.ts'
 import { type TSchema, type TSchemaOptions, IsKind } from './schema.ts'
 import { type TProperties } from './properties.ts'
 
 // ------------------------------------------------------------------
 // Static
 // ------------------------------------------------------------------
-export type StaticUnion<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Types extends TSchema[], Result extends unknown = never> = (
+export type StaticUnion<Stack extends string[], Context extends TProperties, This extends TProperties, Types extends TSchema[], Result extends unknown = never> = (
   Types extends [infer Left extends TSchema, ...infer Right extends TSchema[]]
-    ? StaticUnion<Stack, Direction, Context, This, Right, Result | StaticType<Stack, Direction, Context, This, Left>>
+    ? StaticUnion<Stack, Context, This, Right, Result | StaticType<Stack, Context, This, Left>>
     : Result
 )
 // ------------------------------------------------------------------

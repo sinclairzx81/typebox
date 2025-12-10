@@ -31,12 +31,10 @@ THE SOFTWARE.
 import { Memory } from '../../system/memory/index.ts'
 import { Guard } from '../../guard/index.ts'
 import { type TSchema, type TObjectOptions, IsKind } from './schema.ts'
-import { type StaticType, type StaticDirection } from './static.ts'
+import { type StaticType } from './static.ts'
 
 import { type TProperties } from './properties.ts'
 import { type TInteger, Integer, IntegerPattern } from './integer.ts'
-
-import { type TTemplateLiteral } from './template-literal.ts'
 import { type TNumber, Number, NumberPattern } from './number.ts'
 import { type TString, String, StringPattern } from './string.ts'
 
@@ -47,8 +45,8 @@ import { CreateRecord } from '../engine/record/record-create.ts'
 // -------------------------------------------------------------------
 // Static
 // -------------------------------------------------------------------
-export type StaticRecord<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties, Key extends string, Value extends TSchema, 
-  StaticValue extends unknown = StaticType<Stack, Direction, Context, This, Value>,
+export type StaticRecord<Stack extends string[], Context extends TProperties, This extends TProperties, Key extends string, Value extends TSchema, 
+  StaticValue extends unknown = StaticType<Stack, Context, This, Value>,
   Result extends Record<PropertyKey, unknown> = (
     Key extends TStringKey ? Record<string, StaticValue> :
     Key extends TIntegerKey ? Record<number, StaticValue> :

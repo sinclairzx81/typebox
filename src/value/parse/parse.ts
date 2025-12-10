@@ -30,71 +30,35 @@ THE SOFTWARE.
 
 import { Arguments } from '../../system/arguments/index.ts'
 import { type TLocalizedValidationError } from '../../error/errors.ts'
-import { type TProperties, type TSchema, type StaticParse } from '../../type/index.ts'
-
+import { type TProperties, type TSchema, type Static } from '../../type/index.ts'
 import { AssertError } from '../assert/index.ts'
 import { Check } from '../check/index.ts'
 import { Errors } from '../errors/index.ts'
-import { Clean } from '../clean/index.ts'
-import { Clone } from '../clone/index.ts'
-import { Convert } from '../convert/index.ts'
-import { Default } from '../default/index.ts'
-import { Pipeline } from '../pipeline/index.ts'
 
 // ------------------------------------------------------------------
-// Assert
+// ParseError
 // ------------------------------------------------------------------
 export class ParseError extends AssertError {
   constructor(value: unknown, errors: TLocalizedValidationError[]) {
     super('Parse', value, errors)
   }
 }
-function Assert(context: TProperties, type: TSchema, value: unknown): unknown {
-  if (!Check(context, type, value)) throw new ParseError(value, Errors(context, type, value))
-  return value
-}
-// ------------------------------------------------------------------
-// Parser
-// ------------------------------------------------------------------
-export const Parser = Pipeline([
-  (_context, _type, value) => Clone(value),
-  (context, type, value) => Default(context, type, value),
-  (context, type, value) => Convert(context, type, value),
-  (context, type, value) => Clean(context, type, value),
-  (context, type, value) => Assert(context, type, value)
-])
-
-/** 
- * Parses a value with the given type. The function will Check the value and return
- * early if it matches the provided type. If the value does not match, it is processed
- * through a sequence of Clone, Default, Convert, and Clean operations and checked again.
- * A `ParseError` is thrown if the value fails to match after the processing sequence.
- */
+/** Parses a value with the given type. Will throw if the value is invalid. */
 export function Parse<const Type extends TSchema, 
-  Result extends unknown = StaticParse<Type>
+  Result extends unknown = Static<Type>
 >(type: Type, value: unknown): Result
 
-/** 
- * Parses a value with the given type. The function will Check the value and return
- * early if it matches the provided type. If the value does not match, it is processed
- * through a sequence of Clone, Default, Convert, and Clean operations and checked again.
- * A `ParseError` is thrown if the value fails to match after the processing sequence.
- */
+/** Parses a value with the given type. Will throw if the value is invalid. */
 export function Parse<Context extends TProperties, const Type extends TSchema, 
-  Result extends unknown = StaticParse<Type, Context>
+  Result extends unknown = Static<Type, Context>
 >(context: Context, type: Type, value: unknown): Result
 
-/** 
- * Parses a value with the given type. The function will Check the value and return
- * early if it matches the provided type. If the value does not match, it is processed
- * through a sequence of Clone, Default, Convert, and Clean operations and checked again.
- * A `ParseError` is thrown if the value fails to match after the processing sequence.
- */
+/** Parses a value with the given type. Will throw if the value is invalid. */
 export function Parse(...args: unknown[]): never {
   const [context, type, value] = Arguments.Match<[TProperties, TSchema, unknown]>(args, {
     3: (context, type, value) => [context, type, value],
     2: (type, value) => [{}, type, value],
   })
-  const result = Check(context, type, value) ? value : Parser(context, type, value)
-  return result as never
+  if (Check(context, type, value)) return value as never
+  throw new ParseError(value, Errors(context, type, value))
 }

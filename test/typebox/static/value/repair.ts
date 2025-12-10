@@ -7,7 +7,6 @@ const T = Type.Array(Type.Union([
   Type.Literal('C')
 ]))
 const R = Type.Ref('T')
-
 {
   const V = Value.Repair(T, [])
   V satisfies Type.Static<typeof T>
