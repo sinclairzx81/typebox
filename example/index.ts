@@ -5,9 +5,11 @@ import Schema from 'typebox/schema'
 import Value from 'typebox/value'
 import Type from 'typebox'
 
-const X = Type.Optional(Type.String({ pattern: /^[a-f]+$/ }))
-const T = Type.Object({ x: X })
-const A = Value.Encode(T, { x: 'abcdef' })
+const A = Type.Object({
+  x: Type.Number(),
+  y: Type.String(),
+  z: Type.Boolean()
+})
 
 
-console.log(A)
+

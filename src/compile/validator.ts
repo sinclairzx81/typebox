@@ -32,7 +32,7 @@ import { Environment } from '../system/environment/index.ts'
 import { type TLocalizedValidationError } from '../error/index.ts'
 import { type Static, type TProperties, type TSchema } from '../type/index.ts'
 import { Errors, Clean, Convert, Create, Default, ParseError } from '../value/index.ts'
-import { Build } from '../schema/index.ts'
+import { Build, type EvaluateResult } from '../schema/index.ts'
 
 // ------------------------------------------------------------------
 // Validator<...>
@@ -40,26 +40,16 @@ import { Build } from '../schema/index.ts'
 export class Validator<Context extends TProperties = TProperties, Type extends TSchema = TSchema, 
   Value extends unknown = Static<Type, Context>
 > {
-  private readonly context: Context
-  private readonly type: Type
-  private readonly isEvaluated: boolean
-  private readonly code: string
-  private readonly check: (value: unknown) => boolean
-  /** Constructs a Validator with the given Context and Type. */
-  constructor(context: Context, type: Type) {
-    const result = Build(context, type).Evaluate()
-    this.context = context
-    this.type = type
-    this.isEvaluated = result.IsEvaluated
-    this.code = result.Code
-    this.check = result.Check as never
+  private readonly validator: EvaluateResult
+  constructor(private readonly context: Context, private readonly type: Type) {
+    this.validator = Build(context, type).Evaluate()
   }
   // ----------------------------------------------------------------
   // IsEvaluated
   // ----------------------------------------------------------------
   /** Returns true if this validator is using runtime eval optimizations. */
   public IsEvaluated(): boolean {
-    return this.isEvaluated
+    return this.validator.IsEvaluated
   }
   // ----------------------------------------------------------------
   // Reflect
@@ -74,18 +64,18 @@ export class Validator<Context extends TProperties = TProperties, Type extends T
   }
   /** Returns the generated code for this validator. */
   public Code(): string {
-    return this.code
+    return this.validator.Code
   }
   // ----------------------------------------------------------------
   // Value.*
   // ----------------------------------------------------------------
   /** Checks a value matches the Validator type. */
   public Check(value: unknown): value is Value {
-    return this.check(value)
+    return this.validator.Check(value)
   }
   /** Returns errors for the given value. */
   public Errors(value: unknown): TLocalizedValidationError[] {
-    if (Environment.CanEvaluate() && this.check(value)) return []
+    if (Environment.CanEvaluate() && this.Check(value)) return []
     return Errors(this.context, this.type, value)
   }
   /** Cleans a value using the Validator type. */
