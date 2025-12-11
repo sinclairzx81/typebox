@@ -146,7 +146,7 @@ export class Validator<Context extends TProperties = TProperties, Type extends T
   // Parse | Decode | Encode
   // ----------------------------------------------------------------
   /** Parses a value */
-  public Parse(value: unknown): Decode {
+  public Parse(value: unknown): Encode {
     const result = this.Check(value) ? value : Parser(this.context, this.type, value)
     return result as never
   }

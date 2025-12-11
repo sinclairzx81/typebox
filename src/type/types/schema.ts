@@ -236,6 +236,7 @@ export type TFormat =
   | 'time'
   | 'uri-reference'
   | 'uri-template'
+  | 'uri'
   | 'url'
   | 'uuid'
   | ({} & string)
