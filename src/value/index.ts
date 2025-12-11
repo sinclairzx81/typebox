@@ -39,12 +39,10 @@ export * from './errors/index.ts'
 export * from './default/index.ts'
 export * from './equal/index.ts'
 export * from './hash/index.ts'
-export * from './mutate/index.ts'
 export * from './parse/index.ts'
 export * from './delta/index.ts'
 export * from './pipeline/index.ts'
 export * from './pointer/index.ts'
-export * from './repair/index.ts'
 
 // ------------------------------------------------------------------
 // Default

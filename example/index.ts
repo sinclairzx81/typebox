@@ -5,11 +5,11 @@ import Schema from 'typebox/schema'
 import Value from 'typebox/value'
 import Type from 'typebox'
 
-const A = Type.Object({
+const X = Type.Object({
   x: Type.Number(),
-  y: Type.String(),
-  z: Type.Boolean()
+  y: Type.Number()
 })
 
-
-
+function test(value: Type.Static<typeof X>) {
+  
+}
