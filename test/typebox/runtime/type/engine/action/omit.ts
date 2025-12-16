@@ -5,6 +5,34 @@ import Guard from 'typebox/guard'
 const Test = Assert.Context('Type.Engine.Omit')
 
 // ------------------------------------------------------------------
+// Overload
+// ------------------------------------------------------------------
+Test('Should Omit Overload 1', () => {
+  const A = Type.Object({
+    x: Type.Number(),
+    y: Type.Number(),
+    z: Type.Number()
+  })
+  const K = ['x', 'y'] as const
+  const R: Type.TObject<{
+    z: Type.TNumber
+  }> = Type.Omit(A, K)
+  Assert.IsTrue(Type.IsObject(R))
+  Assert.IsTrue(Type.IsNumber(R.properties.z))
+})
+Test('Should Omit Overload 2', () => {
+  const A = Type.Object({
+    x: Type.Number(),
+    y: Type.Number(),
+    z: Type.Number()
+  })
+  const R: Type.TObject<{
+    z: Type.TNumber
+  }> = Type.Omit(A, ['x', 'y'])
+  Assert.IsTrue(Type.IsObject(R))
+  Assert.IsTrue(Type.IsNumber(R.properties.z))
+})
+// ------------------------------------------------------------------
 // Deferred
 // ------------------------------------------------------------------
 Test('Should Omit 1', () => {
