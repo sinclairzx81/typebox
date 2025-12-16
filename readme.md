@@ -254,18 +254,6 @@ const A = C.Parse({                                 // const A: {
 })                                                  // } = ...
 ```
 
-It can also be used to accelerate remote libraries via Json Schema translation.
-
-```typescript
-const C = Compile(x.toJsonSchema(x.object({
-  x: x.number(),
-  y: x.number(),
-  z: x.number()
-})))
-
-const A = C.Check(...)                              // high performance runtime checking
-```
-
 ## Contribute
 
 TypeBox is open to community contribution. Please ensure you submit an issue before submitting a pull request. The TypeBox project prefers open community discussion before accepting new features.

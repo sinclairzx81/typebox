@@ -155,7 +155,7 @@ export function Keys(value: string): string {
   return `Object.getOwnPropertyNames(${value})`
 }
 export function HasPropertyKey(value: string, key: string): string {
-  const isProtoField = G.IsEqual(key, '"__proto__"') || G.IsEqual(key, '"toString"') || G.IsEqual(key, '"constructor"')
+  const isProtoField = G.IsEqual(key, '"__proto__"') || G.IsEqual(key, '"constructor"')
   return isProtoField ? `Object.prototype.hasOwnProperty.call(${value}, ${key})` : `${key} in ${value}`
 }
 export function IsDeepEqual(left: string, right: string): string {

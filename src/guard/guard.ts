@@ -175,7 +175,8 @@ export function EveryAll<T>(value: T[], offset: number, callback: (value: T, ind
 // --------------------------------------------------------------------------
 /** Returns true if this value has this property key */
 export function HasPropertyKey<Key extends PropertyKey>(value: object, key: Key): value is { [_ in Key]: unknown } {
-  return Object.prototype.hasOwnProperty.call(value, key)
+  const isProtoField = IsEqual(key, '__proto__') || IsEqual(key, 'constructor')
+  return isProtoField ? Object.prototype.hasOwnProperty.call(value, key) : key in value
 }
 /** Returns object entries as `[RegExp, Value][]` */
 export function EntriesRegExp<Value extends unknown = unknown>(value: Record<PropertyKey, Value>): [RegExp, Value][] {
