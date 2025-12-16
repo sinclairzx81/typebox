@@ -7,7 +7,9 @@ import Type from 'typebox'
 
 // Remove Encode/Decode
 // Remove Base on Validator
+// Remove Mutate
 // Rename ReadonlyType to ReadonlyObject
+
 
 const X = Type.ReadonlyObject(Type.Object({
   x: Type.Number(),
