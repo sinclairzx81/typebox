@@ -53,7 +53,7 @@ export type TOmit<Type extends TSchema, Indexer extends TSchema> = (
   TInstantiate<{}, TOmitDeferred<Type, Indexer>>
 )
 /** Applies a Omit action using the given types. */
-export function Omit<Type extends TSchema, Indexer extends PropertyKey[]>(type: Type, indexer: [...Indexer], options?: TSchemaOptions): TOmit<Type, TKeysToIndexer<Indexer>>
+export function Omit<Type extends TSchema, Indexer extends PropertyKey[]>(type: Type, indexer: readonly [...Indexer], options?: TSchemaOptions): TOmit<Type, TKeysToIndexer<Indexer>>
 /** Applies a Omit action using the given types. */
 export function Omit<Type extends TSchema, Indexer extends TSchema>(type: Type, indexer: Indexer, options?: TSchemaOptions): TOmit<Type, Indexer> 
 /** Applies a Omit action using the given types. */

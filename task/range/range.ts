@@ -28,13 +28,15 @@ THE SOFTWARE.
 
 import { Task } from 'tasksmith'
 
-export async function Range(legacy: string[], modern: string[]) {
-  for(const version of legacy) {
+export async function Legacy(versions: string[]) {
+  for(const version of versions) {
     console.log('checking ...', version)
     await Task.tsc(version)
       .run('src/index.ts --target ES2020 --strict --noEmit --allowImportingTsExtensions')
   }
-  for(const version of modern) {
+}
+export async function Modern(versions: string[]) {
+  for(const version of versions) {
     console.log('checking ...', version)
     await Task.tsc(version)
       .run('src/index.ts --target ES2020 --strict --noEmit --allowImportingTsExtensions --ignoreConfig')
