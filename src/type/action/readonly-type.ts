@@ -35,22 +35,22 @@ import { type TInstantiate, Instantiate } from '../engine/instantiate.ts'
 // ------------------------------------------------------------------
 // Deferred
 // ------------------------------------------------------------------
-/** Creates a deferred ReadonlyType action. */
-export type TReadonlyTypeDeferred<Type extends TSchema> = (
-  TDeferred<'ReadonlyType', [Type]>
+/** Creates a deferred ReadonlyObject action. */
+export type TReadonlyObjectDeferred<Type extends TSchema> = (
+  TDeferred<'ReadonlyObject', [Type]>
 )
-/** Creates a deferred ReadonlyType action. */
-export function ReadonlyTypeDeferred<Type extends TSchema>(type: Type, options: TSchemaOptions = {}) {
-  return Deferred('ReadonlyType', [type], options)
+/** Creates a deferred ReadonlyObject action. */
+export function ReadonlyObjectDeferred<Type extends TSchema>(type: Type, options: TSchemaOptions = {}) {
+  return Deferred('ReadonlyObject', [type], options)
 }
 // ------------------------------------------------------------------
 // Type
 // ------------------------------------------------------------------
 /** This type is an alias for the TypeScript `Readonly<T>` utility type. */
-export type TReadonlyType<Type extends TSchema> = (
-  TInstantiate<{}, TReadonlyTypeDeferred<Type>>
+export type TReadonlyObject<Type extends TSchema> = (
+  TInstantiate<{}, TReadonlyObjectDeferred<Type>>
 )
 /** This type is an alias for the TypeScript `Readonly<T>` utility type. */
-export function ReadonlyType<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TReadonlyType<Type> {
-  return Instantiate({}, ReadonlyTypeDeferred(type, options)) as never
+export function ReadonlyObject<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TReadonlyObject<Type> {
+  return Instantiate({}, ReadonlyObjectDeferred(type, options)) as never
 }
