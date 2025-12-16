@@ -5,6 +5,38 @@ import Guard from 'typebox/guard'
 const Test = Assert.Context('Type.Engine.Pick')
 
 // ------------------------------------------------------------------
+// Overload
+// ------------------------------------------------------------------
+Test('Should Pick Overload 1', () => {
+  const A = Type.Object({
+    x: Type.Number(),
+    y: Type.Number(),
+    z: Type.Number()
+  })
+  const K = ['x', 'y'] as const
+  const R: Type.TObject<{
+    x: Type.TNumber
+    y: Type.TNumber
+  }> = Type.Pick(A, K)
+  Assert.IsTrue(Type.IsObject(R))
+  Assert.IsTrue(Type.IsNumber(R.properties.x))
+  Assert.IsTrue(Type.IsNumber(R.properties.y))
+})
+Test('Should Pick Overload 2', () => {
+  const A = Type.Object({
+    x: Type.Number(),
+    y: Type.Number(),
+    z: Type.Number()
+  })
+  const R: Type.TObject<{
+    x: Type.TNumber
+    y: Type.TNumber
+  }> = Type.Pick(A, ['x', 'y'])
+  Assert.IsTrue(Type.IsObject(R))
+  Assert.IsTrue(Type.IsNumber(R.properties.x))
+  Assert.IsTrue(Type.IsNumber(R.properties.y))
+})
+// ------------------------------------------------------------------
 // Deferred
 // ------------------------------------------------------------------
 Test('Should Pick 1', () => {

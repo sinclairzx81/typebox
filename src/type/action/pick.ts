@@ -53,7 +53,7 @@ export type TPick<Type extends TSchema, Indexer extends TSchema> = (
   TInstantiate<{}, TPickDeferred<Type, Indexer>>
 )
 /** Applies a Pick action using the given types. */
-export function Pick<Type extends TSchema, Indexer extends PropertyKey[]>(type: Type, indexer: [...Indexer], options?: TSchemaOptions): TPick<Type, TKeysToIndexer<Indexer>>
+export function Pick<Type extends TSchema, Indexer extends PropertyKey[]>(type: Type, indexer: readonly [...Indexer], options?: TSchemaOptions): TPick<Type, TKeysToIndexer<Indexer>>
 /** Applies a Pick action using the given types. */
 export function Pick<Type extends TSchema, Indexer extends TSchema>(type: Type, indexer: Indexer, options?: TSchemaOptions): TPick<Type, Indexer> 
 /** Applies a Pick action using the given types. */

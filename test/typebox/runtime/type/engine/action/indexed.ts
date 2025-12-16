@@ -4,6 +4,32 @@ import * as Type from 'typebox'
 const Test = Assert.Context('Type.Engine.Index')
 
 // ------------------------------------------------------------------
+// Overload
+// ------------------------------------------------------------------
+Test('Should Index Overload 1', () => {
+  const A = Type.Object({
+    x: Type.Number(),
+    y: Type.String(),
+    z: Type.Boolean()
+  })
+  const K = ['x', 'y'] as const
+  const R: Type.TUnion<[Type.TNumber, Type.TString]> = Type.Index(A, K)
+  Assert.IsTrue(Type.IsUnion(R))
+  Assert.IsTrue(Type.IsNumber(R.anyOf[0]))
+  Assert.IsTrue(Type.IsString(R.anyOf[1]))
+})
+Test('Should Index Overload 2', () => {
+  const A = Type.Object({
+    x: Type.Number(),
+    y: Type.String(),
+    z: Type.Boolean()
+  })
+  const R: Type.TUnion<[Type.TNumber, Type.TString]> = Type.Index(A, ['x', 'y'])
+  Assert.IsTrue(Type.IsUnion(R))
+  Assert.IsTrue(Type.IsNumber(R.anyOf[0]))
+  Assert.IsTrue(Type.IsString(R.anyOf[1]))
+})
+// ------------------------------------------------------------------
 // Deferred
 // ------------------------------------------------------------------
 Test('Should defer Index 1', () => {

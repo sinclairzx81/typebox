@@ -53,7 +53,7 @@ export type TIndex<Type extends TSchema, Indexer extends TSchema> = (
   TInstantiate<{}, TIndexDeferred<Type, Indexer>>
 )
 /** Applies a Index action using the given types. */
-export function Index<Type extends TSchema, Indexer extends PropertyKey[]>(type: Type, indexer: [...Indexer], options?: TSchemaOptions): TIndex<Type, TKeysToIndexer<Indexer>>
+export function Index<Type extends TSchema, Indexer extends PropertyKey[]>(type: Type, indexer: readonly [...Indexer], options?: TSchemaOptions): TIndex<Type, TKeysToIndexer<Indexer>>
 /** Applies a Index action using the given types. */
 export function Index<Type extends TSchema, Indexer extends TSchema>(type: Type, indexer: Indexer, options?: TSchemaOptions): TIndex<Type, Indexer> 
 /** Applies a Index action using the given types. */
