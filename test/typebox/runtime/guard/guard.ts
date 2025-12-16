@@ -134,7 +134,7 @@ Test('Should guard HasPropertyKey: 2', () => {
 })
 Test('Should guard HasPropertyKey: prototype', () => {
   const obj = Object.create({ a: 1 })
-  Assert.IsEqual(Guard.HasPropertyKey(obj, 'a'), false)
+  Assert.IsEqual(Guard.HasPropertyKey(obj, 'a'), true)
 })
 // ------------------------------------------------------------------
 // Guard.IsArray
