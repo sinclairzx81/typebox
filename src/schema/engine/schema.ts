@@ -32,8 +32,6 @@ import * as Schema from '../types/index.ts'
 import { Stack } from './_stack.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { BuildRefine, CheckRefine, ErrorRefine } from './_refine.ts'
-import { BuildGuard, CheckGuard, ErrorGuard } from './_guard.ts'
-
 import { EmitGuard as E, Guard as G } from '../../guard/index.ts'
 
 import { BuildAdditionalItems, CheckAdditionalItems, ErrorAdditionalItems } from './additionalItems.ts'
@@ -218,7 +216,6 @@ export function BuildSchema(stack: Stack, context: BuildContext, schema: Schema.
   }
   if (Schema.IsRecursiveRef(schema)) conditions.push(BuildRecursiveRef(stack, context, schema, value))
   if (Schema.IsRef(schema)) conditions.push(BuildRef(stack, context, schema, value))
-  if (Schema.IsGuard(schema)) conditions.push(BuildGuard(stack, context, schema, value))
   if (Schema.IsConst(schema)) conditions.push(BuildConst(stack, context, schema, value))
   if (Schema.IsEnum(schema)) conditions.push(BuildEnum(stack, context, schema, value))
   if (Schema.IsIf(schema)) conditions.push(BuildIf(stack, context, schema, value))
@@ -278,7 +275,6 @@ export function CheckSchema(stack: Stack, context: CheckContext, schema: Schema.
     )) &&
     (!Schema.IsRecursiveRef(schema) || CheckRecursiveRef(stack, context, schema, value)) &&
     (!Schema.IsRef(schema) || CheckRef(stack, context, schema, value)) &&
-    (!Schema.IsGuard(schema) || CheckGuard(stack, context, schema, value)) &&
     (!Schema.IsConst(schema) || CheckConst(stack, context, schema, value)) &&
     (!Schema.IsEnum(schema) || CheckEnum(stack, context, schema, value)) &&
     (!Schema.IsIf(schema) || CheckIf(stack, context, schema, value)) &&
@@ -339,7 +335,6 @@ export function ErrorSchema(stack: Stack, context: ErrorContext, schemaPath: str
       )) &
       +(!Schema.IsRecursiveRef(schema) || ErrorRecursiveRef(stack, context, schemaPath, instancePath, schema, value)) &
       +(!Schema.IsRef(schema) || ErrorRef(stack, context, schemaPath, instancePath, schema, value)) &
-      +(!Schema.IsGuard(schema) || ErrorGuard(stack, context, schemaPath, instancePath, schema, value)) &
       +(!Schema.IsConst(schema) || ErrorConst(stack, context, schemaPath, instancePath, schema, value)) &
       +(!Schema.IsEnum(schema) || ErrorEnum(stack, context, schemaPath, instancePath, schema, value)) &
       +(!Schema.IsIf(schema) || ErrorIf(stack, context, schemaPath, instancePath, schema, value)) &

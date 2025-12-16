@@ -84,7 +84,6 @@ export { IsRefine, Refine, type TRefine, type TRefineCallback, type TRefinement 
 export { Any, IsAny, type TAny } from './type/types/any.ts'
 export { Array, IsArray, type TArray } from './type/types/array.ts'
 export { AsyncIterator, IsAsyncIterator, type TAsyncIterator } from './type/types/async-iterator.ts'
-export { Base, IsBase } from './type/types/base.ts'
 export { BigInt, IsBigInt, type TBigInt } from './type/types/bigint.ts'
 export { Boolean, IsBoolean, type TBoolean } from './type/types/boolean.ts'
 export { Call, IsCall, type TCall } from './type/types/call.ts'

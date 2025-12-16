@@ -33,7 +33,6 @@ import { IsDefault } from '../../schema/index.ts'
 
 import * as T from '../../type/index.ts'
 import { FromArray } from './from-array.ts'
-import { FromBase } from './from-base.ts'
 import { FromCyclic } from './from-cyclic.ts'
 import { FromDefault } from './from-default.ts'
 import { FromIntersect } from './from-intersect.ts'
@@ -47,7 +46,6 @@ export function FromType(context: T.TProperties, type: T.TSchema, value: unknown
   const defaulted = IsDefault(type) ? FromDefault(type, value) : value
   return (
     T.IsArray(type) ? FromArray(context, type, defaulted) :
-    T.IsBase(type) ? FromBase(context, type, defaulted) :
     T.IsCyclic(type) ? FromCyclic(context, type, defaulted) :
     T.IsIntersect(type) ? FromIntersect(context, type, defaulted) :
     T.IsObject(type) ? FromObject(context, type, defaulted) :
