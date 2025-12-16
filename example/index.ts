@@ -14,7 +14,7 @@ const X = Type.ReadonlyObject(Type.Object({
   y: Type.Number()
 }))
 
-const A = Type.ReadonlyObject
+
 
 function test(value: Type.Static<typeof X>) {
   
