@@ -52,7 +52,7 @@ export function FromObject(context: TProperties, type: TObject, value: unknown):
     value[key] = FromType(context, type.properties[key], value[key])
   }
   // return if not additional properties
-  if (!IsAdditionalProperties(type)) return value
+  if (!IsAdditionalProperties(type) || Guard.IsBoolean(type.additionalProperties)) return value
   
   // AdditionalProperties
   for (const key of Guard.Keys(value)) {
