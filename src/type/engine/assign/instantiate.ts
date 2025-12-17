@@ -32,35 +32,35 @@ import { Memory } from '../../../system/memory/index.ts'
 import { type TProperties } from '../../types/properties.ts'
 import { type TSchema } from '../../types/schema.ts'
 import { type TState, type TInstantiateType, CanInstantiate, InstantiateType, TCanInstantiate } from '../instantiate.ts'
-import { type TOptionsDeferred, type TOptions, OptionsDeferred } from '../../action/options.ts'
+import { type TAssignDeferred, type TAssign, AssignDeferred } from '../../action/assign.ts'
 
 // ------------------------------------------------------------------
 // Immediate
 // ------------------------------------------------------------------
-type TOptionsImmediate<Context extends TProperties, State extends TState, Type extends TSchema, Options extends TSchema,
+type TAssignImmediate<Context extends TProperties, State extends TState, Type extends TSchema, Json extends TSchema,
   InstantiatedType extends TSchema = TInstantiateType<Context, State, Type>,
-  Result extends TSchema = TOptions<InstantiatedType, Options>
+  Result extends TSchema = TAssign<InstantiatedType, Json>
 > = Result
-function OptionsImmediate<Context extends TProperties, State extends TState, Type extends TSchema, Options extends TSchema>
-  (context: Context, state: State, type: Type, options: Options): 
-    TOptionsImmediate<Context, State, Type, Options> {
+function AssignImmediate<Context extends TProperties, State extends TState, Type extends TSchema, Json extends TSchema>
+  (context: Context, state: State, type: Type, json: Json): 
+    TAssignImmediate<Context, State, Type, Json> {
   const instaniatedType = InstantiateType(context, state, type)
-  return Memory.Update(instaniatedType, {}, options) as never
+  return Memory.Update(instaniatedType, {}, json) as never
 }
 // ------------------------------------------------------------------
 // Instantiate
 // ------------------------------------------------------------------
-export type TOptionsInstantiate<Context extends TProperties, State extends TState, Type extends TSchema, Options extends TSchema>
+export type TAssignInstantiate<Context extends TProperties, State extends TState, Type extends TSchema, Json extends TSchema>
   = TCanInstantiate<Context, [Type]> extends true
-    ? TOptionsImmediate<Context, State, Type, Options>
-    : TOptionsDeferred<Type, Options>
+    ? TAssignImmediate<Context, State, Type, Json>
+    : TAssignDeferred<Type, Json>
 
-export function OptionsInstantiate<Context extends TProperties, State extends TState, Type extends TSchema, Options extends TSchema>
-  (context: Context, state: State, type: Type, options: Options): 
-    TOptionsInstantiate<Context, State, Type, Options> {
+export function AssignInstantiate<Context extends TProperties, State extends TState, Type extends TSchema, Json extends TSchema>
+  (context: Context, state: State, type: Type, json: Json): 
+    TAssignInstantiate<Context, State, Type, Json> {
   return (
     CanInstantiate(context, [type])
-      ? OptionsImmediate(context, state, type, options)
-      : OptionsDeferred(type, options)
+      ? AssignImmediate(context, state, type, json)
+      : AssignDeferred(type, json)
   ) as never
 }

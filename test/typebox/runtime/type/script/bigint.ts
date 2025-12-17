@@ -12,7 +12,7 @@ Test('Should BigInt 2', () => {
   Assert.IsTrue(Type.IsBigInt(T))
 })
 Test('Should BigInt 3', () => {
-  const T: Type.TBigInt = Type.Script('Options<bigint, { a: 1, b: 2 }>')
+  const T: Type.TBigInt = Type.Script('Assign<bigint, { a: 1, b: 2 }>')
   Assert.HasPropertyKey(T, 'a')
   Assert.HasPropertyKey(T, 'b')
   Assert.IsEqual(T.a, 1)

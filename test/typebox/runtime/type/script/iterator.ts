@@ -13,14 +13,14 @@ Test('Should Iterator 2', () => {
   Assert.IsTrue(Type.IsNull(T.iteratorItems))
 })
 Test('Should Iterator 3', () => {
-  const T: Type.TIterator<Type.TNull> = Type.Script('Options<Iterator<null>, { a: 1, b: 2 }>')
+  const T: Type.TIterator<Type.TNull> = Type.Script('Assign<Iterator<null>, { a: 1, b: 2 }>')
   Assert.HasPropertyKey(T, 'a')
   Assert.HasPropertyKey(T, 'b')
   Assert.IsEqual(T.a, 1)
   Assert.IsEqual(T.b, 2)
 })
 Test('Should Iterator 4', () => {
-  const T: Type.TIterator<Type.TNull> = Type.Script('Options<Iterator<null>, { a: 1, b: 2 }>')
+  const T: Type.TIterator<Type.TNull> = Type.Script('Assign<Iterator<null>, { a: 1, b: 2 }>')
   const O = Type.IteratorOptions(T)
   Assert.IsFalse(Type.IsIterator(O))
   Assert.HasPropertyKey(O, 'a')

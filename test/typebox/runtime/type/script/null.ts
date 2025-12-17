@@ -12,7 +12,7 @@ Test('Should Null 2', () => {
   Assert.IsTrue(Type.IsNull(T))
 })
 Test('Should Null 3', () => {
-  const T: Type.TNull = Type.Script('Options<null, { a: 1, b: 2 }>')
+  const T: Type.TNull = Type.Script('Assign<null, { a: 1, b: 2 }>')
   Assert.HasPropertyKey(T, 'a')
   Assert.HasPropertyKey(T, 'b')
   Assert.IsEqual(T.a, 1)

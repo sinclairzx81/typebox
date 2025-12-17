@@ -20,14 +20,14 @@ Test('Should Function 3', () => {
   Assert.IsTrue(Type.IsNull(T.returnType))
 })
 Test('Should Function 4', () => {
-  const T: Type.TFunction<[Type.TNull], Type.TNull> = Type.Script('Options<(x: null) => null, { a: 1, b: 2 }>')
+  const T: Type.TFunction<[Type.TNull], Type.TNull> = Type.Script('Assign<(x: null) => null, { a: 1, b: 2 }>')
   Assert.HasPropertyKey(T, 'a')
   Assert.HasPropertyKey(T, 'b')
   Assert.IsEqual(T.a, 1)
   Assert.IsEqual(T.b, 2)
 })
 Test('Should Function 5', () => {
-  const T: Type.TFunction<[Type.TNull], Type.TNull> = Type.Script('Options<(x: null) => null, { a: 1, b: 2 }>')
+  const T: Type.TFunction<[Type.TNull], Type.TNull> = Type.Script('Assign<(x: null) => null, { a: 1, b: 2 }>')
   const O = Type.FunctionOptions(T)
   Assert.IsFalse(Type.IsFunction(O))
   Assert.HasPropertyKey(O, 'a')

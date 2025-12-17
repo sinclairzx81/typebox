@@ -39,6 +39,7 @@ import * as T from '../types/index.ts'
 // ------------------------------------------------------------------
 type TIntrinsicOrCall<Target extends string, Parameters extends T.TSchema[]> = (
   [Target, Parameters] extends ['Array', [infer Type extends T.TSchema]] ? T.TArray<Type> :
+  [Target, Parameters] extends ['Assign', [infer Type extends T.TSchema, infer Json extends T.TSchema]] ? C.TAssignDeferred<Type, Json> :
   [Target, Parameters] extends ['AsyncIterator', [infer Type extends T.TSchema]] ? T.TAsyncIterator<Type> :
   [Target, Parameters] extends ['Promise', [infer Type extends T.TSchema]] ? T.TPromise<Type> :
   [Target, Parameters] extends ['Iterator', [infer Type extends T.TSchema]] ? T.TIterator<Type> :
@@ -54,7 +55,6 @@ type TIntrinsicOrCall<Target extends string, Parameters extends T.TSchema[]> = (
   [Target, Parameters] extends ['Lowercase', [infer Type extends T.TSchema]] ? C.TLowercaseDeferred<Type> :
   [Target, Parameters] extends ['NonNullable', [infer Type extends T.TSchema]] ? C.TNonNullableDeferred<Type> :
   [Target, Parameters] extends ['Omit', [infer Type extends T.TSchema, infer Indexer extends T.TSchema]] ? C.TOmitDeferred<Type, Indexer> :
-  [Target, Parameters] extends ['Options', [infer Type extends T.TSchema, infer Options extends T.TSchema]] ? C.TOptionsDeferred<Type, Options> :
   [Target, Parameters] extends ['Parameters', [infer Type extends T.TSchema]] ? C.TParametersDeferred<Type> :
   [Target, Parameters] extends ['Partial', [infer Type extends T.TSchema]] ? C.TPartialDeferred<Type> :
   [Target, Parameters] extends ['Pick', [infer Type extends T.TSchema, infer Indexer extends T.TSchema]] ? C.TPickDeferred<Type, Indexer> :
@@ -72,6 +72,7 @@ function IntrinsicOrCall<Ref extends string, Parameters extends T.TSchema[]>(ref
   // Have extensively tested but reports show no Omit coverage (review)
   return (
     Guard.IsEqual(ref, 'Array') ? T.Array(parameters[0]) :
+    Guard.IsEqual(ref, 'Assign') ? C.AssignDeferred(parameters[0], parameters[1]) :
     Guard.IsEqual(ref, 'AsyncIterator') ? T.AsyncIterator(parameters[0]) :
     Guard.IsEqual(ref, 'Iterator') ? T.Iterator(parameters[0]) :
     Guard.IsEqual(ref, 'Promise') ? T.Promise(parameters[0]) :
@@ -86,7 +87,6 @@ function IntrinsicOrCall<Ref extends string, Parameters extends T.TSchema[]>(ref
     Guard.IsEqual(ref, 'Lowercase') ? C.LowercaseDeferred(parameters[0]) :
     Guard.IsEqual(ref, 'NonNullable') ? C.NonNullableDeferred(parameters[0]) :
     Guard.IsEqual(ref, 'Omit') ? C.OmitDeferred(parameters[0], parameters[1]) :
-    Guard.IsEqual(ref, 'Options') ? C.OptionsDeferred(parameters[0], parameters[1]) :
     Guard.IsEqual(ref, 'Parameters') ? C.ParametersDeferred(parameters[0]) :
     Guard.IsEqual(ref, 'Partial') ? C.PartialDeferred(parameters[0]) :
     Guard.IsEqual(ref, 'Pick') ? C.PickDeferred(parameters[0], parameters[1]) :
@@ -1196,15 +1196,15 @@ export function ReferenceMapping(input: string): unknown {
   return T.Ref(input)
 }
 // -------------------------------------------------------------------
-// Options: ['Options', '<', Type, ',', JsonObject, '>']
+// Assign: ['Assign', '<', Type, ',', JsonObject, '>']
 // -------------------------------------------------------------------
-export type TOptionsMapping<Input extends [unknown, unknown, unknown, unknown, unknown, unknown]> = (
-  Input extends ['Options', '<', infer Type extends T.TSchema, ',', infer Options extends T.TSchemaOptions, '>']
-    ? C.TOptionsDeferred<Type, Options>
+export type TAssignMapping<Input extends [unknown, unknown, unknown, unknown, unknown, unknown]> = (
+  Input extends ['Assign', '<', infer Type extends T.TSchema, ',', infer Json extends T.TSchemaOptions, '>']
+    ? C.TAssignDeferred<Type, Json>
     : never
 )
-export function OptionsMapping(input: [unknown, unknown, unknown, unknown, unknown, unknown]): unknown {
-  return C.OptionsDeferred(input[2] as T.TSchema, input[4] as T.TSchema)
+export function AssignMapping(input: [unknown, unknown, unknown, unknown, unknown, unknown]): unknown {
+  return C.AssignDeferred(input[2] as T.TSchema, input[4] as T.TSchema)
 }
 // -------------------------------------------------------------------
 // JsonNumber: <Number>

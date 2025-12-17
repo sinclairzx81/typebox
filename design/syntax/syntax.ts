@@ -283,7 +283,7 @@ const Base = Runtime.Union([
   Runtime.Ref('Constructor'),
   Runtime.Ref('_Function_'),
   Runtime.Ref('Mapped'),
-  Runtime.Ref('Options'),
+  Runtime.Ref('Assign'),
   Runtime.Ref('GenericCall'),
   Runtime.Ref('Reference')
 ])
@@ -630,10 +630,10 @@ const Mapped = Runtime.Tuple([
   Runtime.Const(RBrace),
 ])
 // ------------------------------------------------------------------
-// Options
+// Assign
 // ------------------------------------------------------------------
-const Options = Runtime.Tuple([
-  Runtime.Const('Options'),
+const Assign = Runtime.Tuple([
+  Runtime.Const('Assign'),
   Runtime.Const(LAngle),
   Runtime.Ref('Type'),
   Runtime.Const(Comma),
@@ -1001,8 +1001,10 @@ export const SyntaxModule = new Runtime.Module({
   MappedAs,
   Mapped,
   Reference,
-  Options,
-
+  // ----------------------------------------------------------------
+  // Assign
+  // ----------------------------------------------------------------
+  Assign,
   // ----------------------------------------------------------------
   // Json
   // ----------------------------------------------------------------
@@ -1016,7 +1018,6 @@ export const SyntaxModule = new Runtime.Module({
   JsonElementList,
   JsonArray,
   Json,
-
   // ----------------------------------------------------------------
   // Pattern
   // ----------------------------------------------------------------

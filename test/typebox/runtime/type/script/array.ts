@@ -12,14 +12,14 @@ Test('Should Array 2', () => {
   Assert.IsTrue(Type.IsArray(T))
 })
 Test('Should Array 3', () => {
-  const T: Type.TArray<Type.TNull> = Type.Script('Options<null[],  { a: 1, b: 2 }>')
+  const T: Type.TArray<Type.TNull> = Type.Script('Assign<null[],  { a: 1, b: 2 }>')
   Assert.HasPropertyKey(T, 'a')
   Assert.HasPropertyKey(T, 'b')
   Assert.IsEqual(T.a, 1)
   Assert.IsEqual(T.b, 2)
 })
 Test('Should Array 4', () => {
-  const T: Type.TArray<Type.TNull> = Type.Script('Options<null[],  { a: 1, b: 2 }>')
+  const T: Type.TArray<Type.TNull> = Type.Script('Assign<null[],  { a: 1, b: 2 }>')
   const O = Type.ArrayOptions(T)
   Assert.IsFalse(Type.IsArray(O))
   Assert.HasPropertyKey(O, 'a')

@@ -34,6 +34,7 @@ export { Instantiate, type TInstantiate } from './instantiate.ts'
 // ------------------------------------------------------------------
 // Engine: Internals
 // ------------------------------------------------------------------
+export * from './assign/index.ts'
 export * from './awaited/index.ts'
 export * from './conditional/index.ts'
 export * from './constructor-parameters/index.ts'
@@ -53,7 +54,6 @@ export * from './module/index.ts'
 export * from './non-nullable/index.ts'
 export * from './object/index.ts'
 export * from './omit/index.ts'
-export * from './options/index.ts'
 export * from './parameters/index.ts'
 export * from './patterns/index.ts'
 export * from './partial/index.ts'

@@ -8,7 +8,7 @@
                                                     // }
 </code></pre>
 <h2>Embedded Types</h2>
-<p>Types embedded in Script can be assigned options with the <code>Options&lt;Type, Json&gt;</code> generic type.</p>
+<p>Types embedded in Script can be assigned options with the <code>Assign&lt;Type, Json&gt;</code> generic type.</p>
 <pre><code class="language-typescript">const Vector = Type.Script(`{
   x: Options&lt;number, { minimum: 0 }&gt;,
   y: Options&lt;number, { minimum: 0 }&gt;,
@@ -24,7 +24,7 @@
                                                     // }               
 </code></pre>
 <h2>TypeScript</h2>
-<p>The <code>Options&lt;Type, Json&gt;</code> can be represented in TypeScript in the following way. This lets you to create types with options in TypeScript, then copy them to Script.</p>
+<p>The <code>Assign&lt;Type, Json&gt;</code> can be represented in TypeScript in the following way. This lets you to create types with options in TypeScript, then copy them to Script.</p>
 <pre><code class="language-typescript">type Options&lt;Type, _Json&gt; = Type                    // Ignore Json
 
 type Vector = {                                     // TypeScript | Copy to Script

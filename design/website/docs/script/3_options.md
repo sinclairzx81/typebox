@@ -15,7 +15,7 @@ const Email = Type.Script('string', {               // const Email = {
 
 ## Embedded Types
 
-Types embedded in Script can be assigned options with the `Options<Type, Json>` generic type.
+Types embedded in Script can be assigned options with the `Assign<Type, Json>` generic type.
 
 ```typescript
 const Vector = Type.Script(`{
@@ -35,7 +35,7 @@ const Vector = Type.Script(`{
 
 ## TypeScript
 
-The `Options<Type, Json>` can be represented in TypeScript in the following way. This lets you to create types with options in TypeScript, then copy them to Script.
+The `Assign<Type, Json>` can be represented in TypeScript in the following way. This lets you to create types with options in TypeScript, then copy them to Script.
 
 ```typescript
 type Options<Type, _Json> = Type                    // Ignore Json

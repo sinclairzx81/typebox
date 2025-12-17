@@ -3,7 +3,7 @@ import System from 'typebox/system'
 import Format from 'typebox/format'
 import Schema from 'typebox/schema'
 import Value from 'typebox/value'
-import * as Type from 'typebox'
+import Type from 'typebox'
 import { TSchema, TUnion } from 'typebox'
 import Guard from 'typebox/guard'
 import { TLiteral } from '../src/typebox.ts'
@@ -14,8 +14,23 @@ import { TLiteral } from '../src/typebox.ts'
 // Remove Base
 // Remove Mutate
 // Rename ReadonlyType to ReadonlyObject
+// Rename TOptions to TAssign
 
 // Todo: Distribute Parameters on TCall
 //       Rename extension keywords to `x-`
 //       Support { [key: string]: number }
 //       Support { [T, ...unknown[]] }
+
+const A = Type.Script(`{
+  x: Assign<string, { 
+    minLength: 100,
+    maxLength: 200
+  }>  
+}`)
+
+console.log(A)
+
+
+
+
+

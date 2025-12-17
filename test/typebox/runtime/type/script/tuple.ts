@@ -27,14 +27,14 @@ Test('Should Tuple 4', () => {
   Assert.IsTrue(T.additionalItems === false)
 })
 Test('Should Tuple 5', () => {
-  const T: Type.TTuple<[Type.TNull, Type.TNumber]> = Type.Script('Options<[null, number], { a: 1, b: 2 }>')
+  const T: Type.TTuple<[Type.TNull, Type.TNumber]> = Type.Script('Assign<[null, number], { a: 1, b: 2 }>')
   Assert.HasPropertyKey(T, 'a')
   Assert.HasPropertyKey(T, 'b')
   Assert.IsEqual(T.a, 1)
   Assert.IsEqual(T.b, 2)
 })
 Test('Should Tuple 6', () => {
-  const T = Type.Script('Options<[null, number], { a: 1, b: 2 }>')
+  const T = Type.Script('Assign<[null, number], { a: 1, b: 2 }>')
   const O = Type.TupleOptions(T)
   Assert.IsFalse(Type.IsTuple(O))
   Assert.HasPropertyKey(O, 'a')

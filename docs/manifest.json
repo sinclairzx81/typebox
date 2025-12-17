@@ -56,6 +56,7 @@
   "type": {
     "any": "docs/type/any.html",
     "array": "docs/type/array.html",
+    "assign": "docs/type/assign.html",
     "async-iterator": "docs/type/async-iterator.html",
     "awaited": "docs/type/awaited.html",
     "base": "docs/type/base.html",

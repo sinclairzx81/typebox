@@ -13,10 +13,10 @@ Test('Should Ref 2', () => {
 })
 // deferral
 Test('Should Ref 3', () => {
-  const T: Type.TOptionsDeferred<Type.TRef<'A'>, {
+  const T: Type.TAssignDeferred<Type.TRef<'A'>, {
     a: 1
     b: 2
-  }> = Type.Script('Options<A, { a: 1, b: 2 }>')
+  }> = Type.Script('Assign<A, { a: 1, b: 2 }>')
   Assert.HasPropertyKey(T.parameters[1], 'a')
   Assert.HasPropertyKey(T.parameters[1], 'b')
   Assert.IsEqual(T.parameters[1].a, 1)

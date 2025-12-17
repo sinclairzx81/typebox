@@ -12,7 +12,7 @@ Test('Should Unknown 2', () => {
   Assert.IsTrue(Type.IsUnknown(T))
 })
 Test('Should Unknown 3', () => {
-  const T: Type.TUnknown = Type.Script('Options<unknown, { a: 1, b: 2 }>')
+  const T: Type.TUnknown = Type.Script('Assign<unknown, { a: 1, b: 2 }>')
   Assert.HasPropertyKey(T, 'a')
   Assert.HasPropertyKey(T, 'b')
   Assert.IsEqual(T.a, 1)

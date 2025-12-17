@@ -12,7 +12,7 @@ Test('Should Undefined 2', () => {
   Assert.IsTrue(Type.IsUndefined(T))
 })
 Test('Should Undefined 3', () => {
-  const T: Type.TUndefined = Type.Script('Options<undefined, { a: 1, b: 2 }>')
+  const T: Type.TUndefined = Type.Script('Assign<undefined, { a: 1, b: 2 }>')
   Assert.HasPropertyKey(T, 'a')
   Assert.HasPropertyKey(T, 'b')
   Assert.IsEqual(T.a, 1)

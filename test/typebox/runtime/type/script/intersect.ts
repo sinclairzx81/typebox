@@ -14,14 +14,14 @@ Test('Should Intersect 2', () => {
   Assert.IsTrue(Type.IsNumber(T.allOf[1]))
 })
 Test('Should Intersect 3', () => {
-  const T: Type.TIntersect<[Type.TNull, Type.TNumber]> = Type.Script('Options<null & number, { a: 1, b: 2 }>')
+  const T: Type.TIntersect<[Type.TNull, Type.TNumber]> = Type.Script('Assign<null & number, { a: 1, b: 2 }>')
   Assert.HasPropertyKey(T, 'a')
   Assert.HasPropertyKey(T, 'b')
   Assert.IsEqual(T.a, 1)
   Assert.IsEqual(T.b, 2)
 })
 Test('Should Intersect 4', () => {
-  const T: Type.TIntersect<[Type.TNull, Type.TNumber]> = Type.Script('Options<null & number, { a: 1, b: 2 }>')
+  const T: Type.TIntersect<[Type.TNull, Type.TNumber]> = Type.Script('Assign<null & number, { a: 1, b: 2 }>')
   const O = Type.IntersectOptions(T)
   Assert.IsFalse(Type.IsIntersect(O))
   Assert.HasPropertyKey(O, 'a')

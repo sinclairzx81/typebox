@@ -92,9 +92,9 @@ Test('Should Action 16', () => {
   Assert.NotHasPropertyKey(T.properties, 'x')
 })
 Test('Should Action 17', () => {
-  const T: Type.TOptions<Type.TNull, {
+  const T: Type.TAssign<Type.TNull, {
     x: 1
-  }> = Type.Script('Options<null, { x: 1 }>')
+  }> = Type.Script('Assign<null, { x: 1 }>')
   Assert.IsTrue(Type.IsNull(T))
   Assert.IsEqual(T.x, 1)
 })

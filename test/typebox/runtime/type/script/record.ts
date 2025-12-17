@@ -52,17 +52,17 @@ Test('Should Record 9', () => {
   Assert.IsTrue(Type.IsString(Type.RecordKey(T)))
 })
 Test('Should Record 10', () => {
-  const T: Type.TOptions<Type.TRecord<typeof Type.StringKey, Type.TNull>, {
+  const T: Type.TAssign<Type.TRecord<typeof Type.StringKey, Type.TNull>, {
     a: 1
     b: 2
-  }> = Type.Script('Options<Record<string, null>, { a: 1, b: 2 }>')
+  }> = Type.Script('Assign<Record<string, null>, { a: 1, b: 2 }>')
   Assert.HasPropertyKey(T, 'a')
   Assert.HasPropertyKey(T, 'b')
   Assert.IsEqual(T.a, 1)
   Assert.IsEqual(T.b, 2)
 })
 Test('Should Record 11', () => {
-  const T = Type.Script('Options<Record<string, null>, { a: 1, b: 2 }>')
+  const T = Type.Script('Assign<Record<string, null>, { a: 1, b: 2 }>')
   const O = Type.RecordOptions(T)
   Assert.IsFalse(Type.IsRecord(O))
   Assert.HasPropertyKey(O, 'a')

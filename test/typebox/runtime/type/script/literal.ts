@@ -12,7 +12,7 @@ Test('Should Literal 2', () => {
   Assert.IsTrue(Type.IsLiteral(T))
 })
 Test('Should Literal 3', () => {
-  const T: Type.TLiteral<1> = Type.Script('Options<1, { a: 1, b: 2 }>')
+  const T: Type.TLiteral<1> = Type.Script('Assign<1, { a: 1, b: 2 }>')
   Assert.HasPropertyKey(T, 'a')
   Assert.HasPropertyKey(T, 'b')
   Assert.IsEqual(T.a, 1)

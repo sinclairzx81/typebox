@@ -14,14 +14,14 @@ Test('Should Union 1', () => {
   Assert.IsTrue(Type.IsNumber(T.anyOf[1]))
 })
 Test('Should Union 2', () => {
-  const T: Type.TUnion<[Type.TNull, Type.TNumber]> = Type.Script('Options<null | number, { a: 1, b: 2 }>')
+  const T: Type.TUnion<[Type.TNull, Type.TNumber]> = Type.Script('Assign<null | number, { a: 1, b: 2 }>')
   Assert.HasPropertyKey(T, 'a')
   Assert.HasPropertyKey(T, 'b')
   Assert.IsEqual(T.a, 1)
   Assert.IsEqual(T.b, 2)
 })
 Test('Should Union 3', () => {
-  const T = Type.Script('Options<null | number, { a: 1, b: 2 }>')
+  const T = Type.Script('Assign<null | number, { a: 1, b: 2 }>')
   const O = Type.UnionOptions(T)
   Assert.IsFalse(Type.IsUnion(O))
   Assert.HasPropertyKey(O, 'a')

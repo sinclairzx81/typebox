@@ -12,7 +12,7 @@ Test('Should Number 2', () => {
   Assert.IsTrue(Type.IsNumber(T))
 })
 Test('Should Number 3', () => {
-  const T: Type.TNumber = Type.Script('Options<number, { a: 1, b: 2 }>')
+  const T: Type.TNumber = Type.Script('Assign<number, { a: 1, b: 2 }>')
   Assert.HasPropertyKey(T, 'a')
   Assert.HasPropertyKey(T, 'b')
   Assert.IsEqual(T.a, 1)

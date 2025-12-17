@@ -12,7 +12,7 @@ Test('Should Any 2', () => {
   Assert.IsTrue(Type.IsAny(T))
 })
 Test('Should Any 3', () => {
-  const T: Type.TAny = Type.Script(`Options<any, { a: 1, b: 2 }>`)
+  const T: Type.TAny = Type.Script(`Assign<any, { a: 1, b: 2 }>`)
   Assert.HasPropertyKey(T, 'a')
   Assert.HasPropertyKey(T, 'b')
   Assert.IsEqual(T.a, 1)

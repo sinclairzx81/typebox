@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { type TProperties, type TSchema, type TIntersect, Evaluate, IsObject, Options } from '../../type/index.ts'
+import { type TProperties, type TSchema, type TIntersect, Evaluate, IsObject, Assign } from '../../type/index.ts'
 import { Guard } from '../../guard/index.ts'
 import { FromType } from './from-type.ts'
 
@@ -43,7 +43,7 @@ function EvaluateIntersection(type: TIntersect): TSchema {
       : {}
   const evaluated = Evaluate(type)
   return IsObject(evaluated)
-    ? Options(evaluated, additionalProperties)
+    ? Assign(evaluated, additionalProperties)
     : evaluated
 }
 // ------------------------------------------------------------------

@@ -12,7 +12,7 @@ Test('Should Boolean 2', () => {
   Assert.IsTrue(Type.IsBoolean(T))
 })
 Test('Should Boolean 3', () => {
-  const T: Type.TBoolean = Type.Script('Options<boolean, { a: 1, b: 2 }>')
+  const T: Type.TBoolean = Type.Script('Assign<boolean, { a: 1, b: 2 }>')
   Assert.HasPropertyKey(T, 'a')
   Assert.HasPropertyKey(T, 'b')
   Assert.IsEqual(T.a, 1)

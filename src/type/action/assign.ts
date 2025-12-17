@@ -36,27 +36,27 @@ import { type TInstantiate, Instantiate } from '../engine/instantiate.ts'
 // Deferred
 // ------------------------------------------------------------------
 /** Creates a deferred Options action. */
-export type TOptionsDeferred<Type extends TSchema, Options extends TSchema> = (
-  TDeferred<'Options', [Type, Options]>
+export type TAssignDeferred<Type extends TSchema, Json extends TSchema> = (
+  TDeferred<'Assign', [Type, Json]>
 )
 /** Creates a deferred Options action. */
-export function OptionsDeferred<Type extends TSchema, Options extends TSchema>(type: Type, options: Options): TOptionsDeferred<Type, Options> {
-  return Deferred('Options', [type, options], {})
+export function AssignDeferred<Type extends TSchema, Json extends TSchema>(type: Type, json: Json): TAssignDeferred<Type, Json> {
+  return Deferred('Assign', [type, json], {})
 }
 // ------------------------------------------------------------------
 // Construct
 // ------------------------------------------------------------------
-export type TOptionsConstruct<Type extends TSchema, Options extends TSchema> = (
-  TInstantiate<{}, TOptionsDeferred<Type, Options>>
+export type TAssignConstruct<Type extends TSchema, Json extends TSchema> = (
+  TInstantiate<{}, TAssignDeferred<Type, Json>>
 )
 // ------------------------------------------------------------------
 // Type
 // ------------------------------------------------------------------
-/** Applies an Options action to the given type. */
-export type TOptions<Type extends TSchema, Options extends TSchema> = (
-  Type & Options
+/** Assigns Json to the given Type.  */
+export type TAssign<Type extends TSchema, Json extends TSchema> = (
+  Type & Json
 )
-/** Applies an Options action to the given type. */
-export function Options<Type extends TSchema, Options extends TSchema>(type: Type, options: Options): TOptionsConstruct<Type, Options> {
-  return Instantiate({}, OptionsDeferred(type, options)) as never
+/** Assigns Json to the given Type.  */
+export function Assign<Type extends TSchema, Json extends TSchema>(type: Type, json: Json): TAssignConstruct<Type, Json> {
+  return Instantiate({}, AssignDeferred(type, json)) as never
 }

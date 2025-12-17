@@ -1,0 +1,19 @@
+<h2>Assign</h2>
+<p>Assigns additional option properties to a schema. This function is similar to passing options via last argument on types, but allows options to be assigned after type creation. </p>
+<h2>Example</h2>
+<pre><code class="language-typescript">const T = Type.Number()                             // const T = {
+                                                    //   type: &#39;number&#39;
+                                                    // }
+
+const S = Type.Assign(T, {                          // const S = {
+  minimum: 10,                                      //   type: &#39;number&#39;,
+  maximum: 100                                      //   minimum: 10,
+})                                                  //   maximum: 100
+                                                    // }
+</code></pre>
+<p>Assign can be used with Script where it enables TS types to be augmented.</p>
+<pre><code class="language-typescript">const User = Type.Script(`{
+  userId: Assign&lt;string, { format: &#39;uuid&#39; }&gt;,
+  email: Assign&lt;string, { format: &#39;email&#39; }&gt;
+}`)
+</code></pre>

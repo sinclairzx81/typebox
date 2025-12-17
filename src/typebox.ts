@@ -44,6 +44,7 @@ export { Script, type TScript } from './type/script/index.ts'
 // ------------------------------------------------------------------
 // Actions
 // ------------------------------------------------------------------
+export { Assign, type TAssign } from './type/action/assign.ts'
 export { Awaited, type AwaitedDeferred, type TAwaited } from './type/action/awaited.ts'
 export { Capitalize, type TCapitalize, type TCapitalizeDeferred } from './type/action/capitalize.ts'
 export { Conditional, type TConditional, type TConditionalDeferred } from './type/action/conditional.ts'
@@ -60,7 +61,6 @@ export { Mapped, type TMapped, type TMappedDeferred } from './type/action/mapped
 export { Module, type TModule, type TModuleDeferred } from './type/action/module.ts'
 export { NonNullable, type TNonNullable, type TNonNullableDeferred } from './type/action/non-nullable.ts'
 export { Omit, type TOmit, type TOmitDeferred } from './type/action/omit.ts'
-export { Options, type TOptions } from './type/action/options.ts'
 export { Parameters, type TParameters, type TParametersDeferred } from './type/action/parameters.ts'
 export { Partial, type TPartial, type TPartialDeferred } from './type/action/partial.ts'
 export { Pick, type TPick, type TPickDeferred } from './type/action/pick.ts'

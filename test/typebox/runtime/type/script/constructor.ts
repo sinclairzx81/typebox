@@ -20,14 +20,14 @@ Test('Should Constructor 3', () => {
   Assert.IsTrue(Type.IsNull(T.instanceType))
 })
 Test('Should Constructor 4', () => {
-  const T: Type.TConstructor<[Type.TNull], Type.TNull> = Type.Script('Options<new (x: null) => null, { a: 1, b: 2 }>')
+  const T: Type.TConstructor<[Type.TNull], Type.TNull> = Type.Script('Assign<new (x: null) => null, { a: 1, b: 2 }>')
   Assert.HasPropertyKey(T, 'a')
   Assert.HasPropertyKey(T, 'b')
   Assert.IsEqual(T.a, 1)
   Assert.IsEqual(T.b, 2)
 })
 Test('Should Constructor 5', () => {
-  const T: Type.TConstructor<[Type.TNull], Type.TNull> = Type.Script('Options<new (x: null) => null, { a: 1, b: 2 }>')
+  const T: Type.TConstructor<[Type.TNull], Type.TNull> = Type.Script('Assign<new (x: null) => null, { a: 1, b: 2 }>')
 
   const O = Type.ConstructorOptions(T)
   Assert.IsFalse(Type.IsConstructor(O))

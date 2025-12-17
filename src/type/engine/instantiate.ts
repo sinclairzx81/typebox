@@ -69,6 +69,7 @@ import { type TOptionalAddAction, type TOptionalRemoveAction, IsOptionalAddActio
 // ------------------------------------------------------------------
 // Instantiate
 // ------------------------------------------------------------------
+import { type TAssignInstantiate, AssignInstantiate } from './assign/instantiate.ts'
 import { type TAwaitedInstantiate, AwaitedInstantiate } from './awaited/instantiate.ts'
 import { type TCallInstantiate, CallInstantiate } from './call/instantiate.ts'
 import { type TCapitalizeInstantiate, CapitalizeInstantiate } from './intrinsics/instantiate.ts'
@@ -86,7 +87,6 @@ import { type TMappedInstantiate, MappedInstantiate } from './mapped/instantiate
 import { type TModuleInstantiate, ModuleInstantiate } from './module/instantiate.ts'
 import { type TNonNullableInstantiate, NonNullableInstantiate } from './non-nullable/instantiate.ts'
 import { type TOmitInstantiate, OmitInstantiate } from './omit/instantiate.ts'
-import { type TOptionsInstantiate, OptionsInstantiate } from './options/instantiate.ts'
 import { type TParametersInstantiate, ParametersInstantiate } from './parameters/instantiate.ts'
 import { type TPartialInstantiate, PartialInstantiate } from './partial/instantiate.ts'
 import { type TPickInstantiate, PickInstantiate } from './pick/instantiate.ts'
@@ -269,6 +269,7 @@ export function InstantiateTypes<Context extends TProperties, State extends TSta
 // InstantiateDeferred
 // ------------------------------------------------------------------
 type TInstantiateDeferred<Context extends TProperties, State extends TState, Action extends string, Parameters extends TSchema[]> = (
+  [Action, Parameters] extends ['Assign', [infer Type extends TSchema, infer Json extends TSchema]] ? TAssignInstantiate<Context, State, Type, Json> :
   [Action, Parameters] extends ['Awaited', [infer Type extends TSchema]] ? TAwaitedInstantiate<Context, State, Type> :
   [Action, Parameters] extends ['Capitalize', [infer Type extends TSchema]] ? TCapitalizeInstantiate<Context, State, Type> :
   [Action, Parameters] extends ['Conditional', [infer Left extends TSchema, infer Right extends TSchema, infer True extends TSchema, infer False extends TSchema]] ? TConditionalInstantiate<Context, State,Left, Right, True, False> :
@@ -285,7 +286,6 @@ type TInstantiateDeferred<Context extends TProperties, State extends TState, Act
   [Action, Parameters] extends ['Module', [infer Properties extends TProperties]] ? TModuleInstantiate<Context, State, Properties> :
   [Action, Parameters] extends ['NonNullable', [infer Type extends TSchema]] ? TNonNullableInstantiate<Context, State, Type> :
   [Action, Parameters] extends ['Pick', [infer Type extends TSchema, infer Indexer extends TSchema]] ? TPickInstantiate<Context, State, Type, Indexer> :
-  [Action, Parameters] extends ['Options', [infer Type extends TSchema, infer Options extends TSchema]] ? TOptionsInstantiate<Context, State, Type, Options> :
   [Action, Parameters] extends ['Parameters', [infer Type extends TSchema]] ? TParametersInstantiate<Context, State, Type> :
   [Action, Parameters] extends ['Partial', [infer Type extends TSchema]] ? TPartialInstantiate<Context, State, Type> :
   [Action, Parameters] extends ['Omit', [infer Type extends TSchema, infer Indexer extends TSchema]] ? TOmitInstantiate<Context, State, Type, Indexer> :
@@ -302,6 +302,7 @@ function InstantiateDeferred<Context extends TProperties, State extends TState, 
   (context: Context, state: State, action: Action, parameters: [...Parameters], options: TSchemaOptions): 
     TInstantiateDeferred<Context, State, Action, Parameters> {
   return (
+    Guard.IsEqual(action, 'Assign') ? AssignInstantiate(context, state, parameters[0], parameters[1]) as never :
     Guard.IsEqual(action, 'Awaited') ? AwaitedInstantiate(context, state, parameters[0], options) :
     Guard.IsEqual(action, 'Capitalize') ? CapitalizeInstantiate(context, state, parameters[0], options) :
     Guard.IsEqual(action, 'Conditional') ? ConditionalInstantiate(context, state, parameters[0], parameters[1], parameters[2], parameters[3], options) :
@@ -318,7 +319,6 @@ function InstantiateDeferred<Context extends TProperties, State extends TState, 
     Guard.IsEqual(action, 'Module') ? ModuleInstantiate(context, state, parameters[0] as TProperties, options) :
     Guard.IsEqual(action, 'NonNullable') ? NonNullableInstantiate(context, state, parameters[0], options) as never :
     Guard.IsEqual(action, 'Pick') ? PickInstantiate(context, state, parameters[0], parameters[1], options) :
-    Guard.IsEqual(action, 'Options') ? OptionsInstantiate(context, state, parameters[0], parameters[1]) as never :
     Guard.IsEqual(action, 'Parameters') ? ParametersInstantiate(context, state, parameters[0], options) :
     Guard.IsEqual(action, 'Partial') ? PartialInstantiate(context, state, parameters[0], options) :
     Guard.IsEqual(action, 'Omit') ? OmitInstantiate(context, state, parameters[0], parameters[1], options) :

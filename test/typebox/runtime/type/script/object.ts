@@ -45,14 +45,14 @@ Test('Should Object 5', () => {
   Assert.IsFalse(Guard.HasPropertyKey(T, 'required'))
 })
 Test('Should Object 6', () => {
-  const T: Type.TObject<{ x: Type.TNull }> = Type.Script('Options<{ x: null }, { a: 1, b: 2 }>')
+  const T: Type.TObject<{ x: Type.TNull }> = Type.Script('Assign<{ x: null }, { a: 1, b: 2 }>')
   Assert.HasPropertyKey(T, 'a')
   Assert.HasPropertyKey(T, 'b')
   Assert.IsEqual(T.a, 1)
   Assert.IsEqual(T.b, 2)
 })
 Test('Should Object 7', () => {
-  const T: Type.TObject<{ x: Type.TNull }> = Type.Script('Options<{ x: null }, { a: 1, b: 2 }>')
+  const T: Type.TObject<{ x: Type.TNull }> = Type.Script('Assign<{ x: null }, { a: 1, b: 2 }>')
   const O = Type.ObjectOptions(T)
   Assert.IsFalse(Type.IsObject(O))
   Assert.HasPropertyKey(O, 'a')
