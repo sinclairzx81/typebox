@@ -11,12 +11,4 @@ import Guard from 'typebox/guard'
 // Remove Mutate
 // Rename ReadonlyType to ReadonlyObject
 
-const A = Type.Object({
-  getTime: Type.Function([], Type.Number())
-})
 
-const M = new Date()
-const R = Value.Check(A, M)
-
-console.log(1, Guard.HasPropertyKey(M, 'getTime'))
-console.log(R)

@@ -46,7 +46,7 @@ import { type TInstantiate } from '../engine/instantiate.ts'
 // ------------------------------------------------------------------
 export type StaticInstantiatedParameters<Stack extends string[], Context extends TProperties, This extends TProperties, Parameters extends TSchema[], 
   Evaluated extends TSchema = TInstantiate<Context, TTuple<Parameters>>,
-  Static extends unknown = StaticType<Stack,Context, This, Evaluated>,
+  Static extends unknown = StaticType<Stack, Context, This, Evaluated>,
   Result extends unknown[] = Static extends unknown[] ? Static : []
 > = Result
 
