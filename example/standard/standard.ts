@@ -41,7 +41,7 @@ function PathSegments(pointer: string): string[] {
 }
 function Issue(error: TLocalizedValidationError): StandardSchemaV1.Issue {
   const path = PathSegments(error.instancePath)
-  return { path, message: error.message  }
+  return { path, message: error.message }
 }
 // ------------------------------------------------------------------
 // TStandardSchemaProps
@@ -61,7 +61,7 @@ export class StandardSchemaProps<Value> implements StandardSchemaV1.Props<Value,
     }
   }
   public validate(value: unknown): StandardSchemaV1.Result<Value> | Promise<StandardSchemaV1.Result<Value>> {
-    if(this.validator.Check(value)) return { value } as never
+    if (this.validator.Check(value)) return { value } as never
     const errors = this.validator.Errors(value)
     const issues = errors.map(error => Issue(error))
     return { issues }
@@ -79,12 +79,12 @@ export class StandardSchema<Context extends Type.TProperties, Type extends Type.
 // Factory
 // ------------------------------------------------------------------
 /** Returns an implementation of Standard Schema + Standard JSON Schema */
-export function StandardSchemaV1<const Type extends Type.TSchema, 
+export function StandardSchemaV1<const Type extends Type.TSchema,
   Result = StandardSchema<{}, Type>
 >(type: Type): Result
 
 /** Returns an implementation of Standard Schema + Standard JSON Schema */
-export function StandardSchemaV1<Context extends Type.TProperties, const Type extends Type.TSchema, 
+export function StandardSchemaV1<Context extends Type.TProperties, const Type extends Type.TSchema,
   Result = StandardSchema<Context, Type>
 >(context: Context, type: Type): Result
 
@@ -200,7 +200,7 @@ export declare namespace StandardSchemaV1 {
 
   /** The Standard types interface. */
   export interface Types<Input = unknown, Output = Input>
-    extends StandardTypedV1.Types<Input, Output> {}
+    extends StandardTypedV1.Types<Input, Output> { }
 
   /** Infers the input type of a Standard. */
   export type InferInput<Schema extends StandardTypedV1> =
@@ -266,7 +266,7 @@ export declare namespace StandardJSONSchemaV1 {
 
   /** The Standard types interface. */
   export interface Types<Input = unknown, Output = Input>
-    extends StandardTypedV1.Types<Input, Output> {}
+    extends StandardTypedV1.Types<Input, Output> { }
 
   /** Infers the input type of a Standard. */
   export type InferInput<Schema extends StandardTypedV1> =
