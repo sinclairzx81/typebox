@@ -33,6 +33,7 @@ import type { XAnyOf } from '../types/anyOf.ts'
 import type { XAllOf } from '../types/allOf.ts'
 import type { XConst } from '../types/const.ts'
 import type { XEnum } from '../types/enum.ts'
+import type { XIf } from '../types/if.ts'
 import type { XItems } from '../types/items.ts'
 import type { XOneOf } from '../types/oneOf.ts'
 import type { XPatternProperties } from '../types/patternProperties.ts'
@@ -49,6 +50,7 @@ import type { XStaticAllOf } from './allOf.ts'
 import type { XStaticAnyOf } from './anyOf.ts'
 import type { XStaticConst } from './const.ts'
 import type { XStaticEnum } from './enum.ts'
+import type { XStaticIf } from './if.ts'
 import type { XStaticItems } from './items.ts'
 import type { XStaticOneOf } from './oneOf.ts'
 import type { XStaticPatternProperties } from './patternProperties.ts'
@@ -67,6 +69,7 @@ type TFromKeywords<Stack extends string[], Root extends XSchema, Schema extends 
   Schema extends XAllOf<infer Types extends XSchema[]> ? XStaticAllOf<Stack, Root, Types> : unknown,
   Schema extends XAnyOf<infer Types extends XSchema[]> ? XStaticAnyOf<Stack, Root, Types> : unknown,
   Schema extends XConst<infer Value extends unknown> ? XStaticConst<Value> : unknown,
+  Schema extends XIf<infer Type extends XSchema> ? XStaticIf<Stack, Root, Schema, Type> :
   Schema extends XEnum<infer Values extends unknown[]> ? XStaticEnum<Values> : unknown,
   Schema extends XItems<infer Types extends XSchema[] | XSchema> ? XStaticItems<Stack, Root, Schema, Types> : unknown,
   Schema extends XOneOf<infer Types extends XSchema[]> ? XStaticOneOf<Stack, Root, Types> : unknown,
@@ -78,7 +81,6 @@ type TFromKeywords<Stack extends string[], Root extends XSchema, Schema extends 
   Schema extends XType<infer TypeName extends string[] | string> ? XStaticType<TypeName> : unknown,
   Schema extends XUnevaluatedProperties<infer Type extends XSchema> ? XStaticUnevaluatedProperties<Stack, Root, Type> : unknown
 ]> = Result
-
 // ------------------------------------------------------------------
 // TIntersectKeywords
 // ------------------------------------------------------------------

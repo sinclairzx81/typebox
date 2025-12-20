@@ -100,3 +100,12 @@ Assert.IsExtendsMutual<
   }>,
   undefined
 >(true)
+// ------------------------------------------------------------------
+// Multiple
+// ------------------------------------------------------------------
+Assert.IsExtendsMutual<
+  XStatic<{
+    type: ['string', 'number', 'boolean']
+  }>,
+  string | number | boolean
+>(true)
