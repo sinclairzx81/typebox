@@ -25,7 +25,7 @@ $ npm install typebox
 
 ## Usage
 
-TypeBox is a Runtime TypeScript Engine for Json Schema [Reference](https://tsplay.dev/wQaoGw)
+A TypeScript Engine for Json Schema [Reference](https://tsplay.dev/wQaoGw)
 
 ```typescript
 import Type from 'typebox'
