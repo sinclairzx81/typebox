@@ -4,7 +4,7 @@ Json Schema Type Builder with Static Type Resolution for TypeScript
 
 ## Overview
 
-TypeBox includes many functions to create Json Schema types. Each function returns a small Json Schema fragment that corresponds to a TypeScript type. TypeBox uses function composition to combine schema fragments into more complex types. It provides a set of functions that are used to model Json Schema schematics as well as a set of functions that model constructs native to JavaScript and TypeScript.
+TypeBox provides many functions to create Json Schema types. Each function returns a small Json Schema fragment that can be composed into more complex types. TypeBox includes a set of functions that are used to construct Json Schema compliant schematics as well as a set of extended functions that return schematics for constructs native to JavaScript.
 
 ## Example
 

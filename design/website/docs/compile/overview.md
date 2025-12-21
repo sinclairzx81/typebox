@@ -4,7 +4,7 @@ High Performance Runtime Validation
 
 ## Overview
 
-The Compile module is a high-performance JIT compiler that transforms types into efficient runtime validators. The compiler is optimized for both fast compilation and validation.
+The Compile submodule is a high-performance Json Schema compliant JIT compiler that compiles schematics into efficient runtime validators. The compiler is optimized for fast compilation and validation and is known to be one of the fastest validation solutions available for JavaScript.
 
 ```typescript
 import { Compile } from 'typebox/compile' 
