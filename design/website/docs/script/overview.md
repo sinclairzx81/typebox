@@ -4,7 +4,8 @@ TypeScript Scripting Engine
 
 ## Overview
 
-TypeBox includes a TypeScript scripting engine able to parse TypeScript types directly into Json Schema. The engine uses symmetric runtime and type-level parsing and returns typed safe schematics from TypeScript types (including computed types). The engine is designed for TypeScript 7 native compiler but is supported in TypeScript 5 and above.
+TypeBox is a runtime TypeScript DSL engine that can create, transform, and compute Json Schema using native TypeScript syntax. The engine is implemented symmetrically at runtime and within the TypeScript type system, and is intended for use with the TypeScript 7 native compiler and above.
+
 
 ```typescript
 // Scripted Type
