@@ -150,9 +150,29 @@ export function IsValueLike(value: unknown): value is bigint | boolean | null | 
 // --------------------------------------------------------------------------
 // String
 // --------------------------------------------------------------------------
+function IsComplexGraphemeCodeUnit(value: number): boolean {
+  return (
+    (value >= 0xd800 && value <= 0xdbff) || // High surrogate - part of surrogate pair
+    (value >= 0x0300 && value <= 0x036f) || // Combining diacritical marks (U+0300–U+036F)
+    (value === 0x200d) // Zero-width joiner (U+200D)
+  )
+}
+const segmenter = new Intl.Segmenter(undefined, { granularity: 'grapheme' })
+function StringGraphemeCountIntl(value: string): number {
+  const iterator = segmenter.segment(value)[Symbol.iterator]()
+  let length = 0
+  while (!iterator.next().done) length++
+  return length
+}
 /** Returns the number of Unicode Grapheme Clusters */
 export function StringGraphemeCount(value: string): number {
-  return Array.from(value).length
+  let length = 0
+  for (let i = 0; i < value.length; i++) {
+    const c = value.charCodeAt(i)
+    if (IsComplexGraphemeCodeUnit(c)) return StringGraphemeCountIntl(value)
+    length++
+  }
+  return length
 }
 // --------------------------------------------------------------------------
 // Array
