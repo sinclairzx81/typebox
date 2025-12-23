@@ -210,7 +210,6 @@ export function IsDeepEqual(left: unknown, right: unknown): boolean {
     IsArray(left) ? DeepEqualArray(left, right) : IsObject(left) ? DeepEqualObject(left, right) : IsEqual(left, right)
   )
 }
-
 // --------------------------------------------------------------------------
 // StringGraphemeCountIntl - Intl.Segmenter Polyfill
 // --------------------------------------------------------------------------
@@ -222,7 +221,8 @@ export function IsDeepEqual(left: unknown, right: unknown): boolean {
 //   while (!iterator.next().done) length++
 //   return length
 // }
-
+//
+// --------------------------------------------------------------------------
 function IsRegionalIndicator(value: number): boolean {
   return value >= 0x1F1E6 && value <= 0x1F1FF
 }
