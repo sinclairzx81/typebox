@@ -37,13 +37,13 @@ import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 // Build
 // ------------------------------------------------------------------
 export function BuildMinLength(stack: Stack, context: BuildContext, schema: Schema.XMinLength, value: string): string {
-  return E.IsGreaterEqualThan(E.StringGraphemeCount(value), E.Constant(schema.minLength))
+  return E.IsMinLength(value, E.Constant(schema.minLength))
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
 export function CheckMinLength(stack: Stack, context: CheckContext, schema: Schema.XMinLength, value: string): boolean {
-  return G.IsGreaterEqualThan(G.StringGraphemeCount(value), schema.minLength)
+  return G.IsMinLength(value, schema.minLength)
 }
 // ------------------------------------------------------------------
 // Error
