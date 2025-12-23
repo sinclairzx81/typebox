@@ -148,13 +148,6 @@ export function IsValueLike(value: unknown): value is bigint | boolean | null | 
     IsUndefined(value)
 }
 // --------------------------------------------------------------------------
-// String
-// --------------------------------------------------------------------------
-/** Returns the number of Unicode Grapheme Clusters */
-export function StringGraphemeCount(value: string): number {
-  return Array.from(value).length
-}
-// --------------------------------------------------------------------------
 // Array
 // --------------------------------------------------------------------------
 export function Every<T>(value: T[], offset: number, callback: (value: T, index: number) => boolean): boolean {
@@ -216,4 +209,87 @@ export function IsDeepEqual(left: unknown, right: unknown): boolean {
   return (
     IsArray(left) ? DeepEqualArray(left, right) : IsObject(left) ? DeepEqualObject(left, right) : IsEqual(left, right)
   )
+}
+// --------------------------------------------------------------------------
+// StringGraphemeCountIntl - Intl.Segmenter Polyfill
+// --------------------------------------------------------------------------
+//
+// const segmenter = new Intl.Segmenter(undefined, { granularity: 'grapheme' })
+// function StringGraphemeCountIntl(value: string): number {
+//   const iterator = segmenter.segment(value)[Symbol.iterator]()
+//   let length = 0
+//   while (!iterator.next().done) length++
+//   return length
+// }
+//
+// --------------------------------------------------------------------------
+function IsRegionalIndicator(value: number): boolean {
+  return value >= 0x1F1E6 && value <= 0x1F1FF
+}
+function IsVariationSelector(value: number): boolean {
+  return value >= 0xFE00 && value <= 0xFE0F
+}
+function IsCombiningMark(value: number): boolean {
+  return (
+    (value >= 0x0300 && value <= 0x036F) ||
+    (value >= 0x1AB0 && value <= 0x1AFF) ||
+    (value >= 0x1DC0 && value <= 0x1DFF) ||
+    (value >= 0xFE20 && value <= 0xFE2F)
+  )
+}
+function CodePointLength(value: number) {
+  return value > 0xFFFF ? 2 : 1
+}
+function StringGraphemeCountIntl(value: string): number {
+  let count = 0
+  let index = 0
+  while (index < value.length) {
+    const start = value.codePointAt(index)!
+    let clusterEnd = index + CodePointLength(start)
+    // Combining marks & variation selectors
+    while (clusterEnd < value.length) {
+      const next = value.codePointAt(clusterEnd)!
+      if (IsCombiningMark(next) || IsVariationSelector(next)) {
+        clusterEnd += CodePointLength(next)
+      } else {
+        break
+      }
+    }
+    // ZWJ sequences
+    while (clusterEnd < value.length - 1 && value[clusterEnd] === '\u200D') {
+      const next = value.codePointAt(clusterEnd + 1)!
+      clusterEnd += 1 + CodePointLength(next)
+    }
+    // Regional indicator pairs (flags)
+    const first = IsRegionalIndicator(start)
+    const second = clusterEnd < value.length && IsRegionalIndicator(value.codePointAt(clusterEnd)!)
+    if (first && second) {
+      const next = value.codePointAt(clusterEnd)!
+      clusterEnd += CodePointLength(next)
+    }
+    count++
+    index = clusterEnd
+  }
+  return count
+}
+// --------------------------------------------------------------------------
+// StringGraphemeCount
+// --------------------------------------------------------------------------
+function IsComplexGraphemeCodeUnit(value: number): boolean {
+  return (
+    (value >= 0xD800 && value <= 0xDBFF) || // High surrogate
+    (value >= 0x0300 && value <= 0x036F) || // Combining diacritical marks
+    (value === 0x200D) // Zero-width joiner
+  )
+}
+/** Returns the number of Unicode Grapheme Clusters */
+export function StringGraphemeCount(value: string): number {
+  let count = 0
+  for (let index = 0; index < value.length; index++) {
+    if (IsComplexGraphemeCodeUnit(value.charCodeAt(index))) {
+      return StringGraphemeCountIntl(value)
+    }
+    count++
+  }
+  return count
 }
