@@ -134,8 +134,11 @@ export function IsGreaterEqualThan(left: string, right: string): string {
 // --------------------------------------------------------------------------
 // String
 // --------------------------------------------------------------------------
-export function StringGraphemeCount(value: string): string {
-  return `Guard.StringGraphemeCount(${value})`
+export function IsMinLength(value: string, length: string): string {
+  return `Guard.IsMinLength(${value}, ${length})`
+}
+export function IsMaxLength(value: string, length: string): string {
+  return `Guard.IsMaxLength(${value}, ${length})`
 }
 // --------------------------------------------------------------------------
 // Array
@@ -211,7 +214,7 @@ export function ReduceOr(operands: string[]): string {
   return G.IsEqual(operands.length, 0) ? 'false' : operands.reduce((left, right) => Or(left, right))
 }
 // --------------------------------------------------------------------------
-// Arithmatic
+// Arithmetic
 // --------------------------------------------------------------------------
 export function PrefixIncrement(expression: string): string {
   return `++${expression}`

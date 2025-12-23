@@ -25,12 +25,12 @@ $ npm install typebox
 
 ## Usage
 
-A TypeScript Engine for Json Schema [Reference](https://tsplay.dev/wQaoGw)
+A TypeScript engine for Json Schema [Reference](https://tsplay.dev/wOyMRm)
 
 ```typescript
 import Type from 'typebox'
 
-// Json Schema Builder
+// Json Schema
 
 const T = Type.Object({                             // const T = {
   x: Type.Number(),                                 //   type: 'object',
@@ -48,7 +48,7 @@ type T = Type.Static<typeof T>                      // type T = {
                                                     //   z: number
                                                     // }
 
-// TypeScript Engine
+// TypeScript
 
 const { S } = Type.Script({ T }, `
   type RenameKey<K> = 

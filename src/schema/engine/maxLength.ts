@@ -37,13 +37,13 @@ import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 // Build
 // ------------------------------------------------------------------
 export function BuildMaxLength(stack: Stack, context: BuildContext, schema: Schema.XMaxLength, value: string): string {
-  return E.IsLessEqualThan(E.StringGraphemeCount(value), E.Constant(schema.maxLength))
+  return E.IsMaxLength(value, E.Constant(schema.maxLength))
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
 export function CheckMaxLength(stack: Stack, context: CheckContext, schema: Schema.XMaxLength, value: string): boolean {
-  return G.IsLessEqualThan(G.StringGraphemeCount(value), schema.maxLength)
+  return G.IsMaxLength(value, schema.maxLength)
 }
 // ------------------------------------------------------------------
 // Error
