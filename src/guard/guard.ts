@@ -293,8 +293,8 @@ function IsComplexGraphemeCodeUnit(value: number): boolean {
 /** Returns the number of Unicode Grapheme Clusters */
 export function StringGraphemeCount(value: string): number {
   let count = 0
-  for (let i = 0; i < value.length; i++) {
-    if (IsComplexGraphemeCodeUnit(value.charCodeAt(i))) {
+  for (let index = 0; index < value.length; index++) {
+    if (IsComplexGraphemeCodeUnit(value.charCodeAt(index))) {
       return StringGraphemeCountIntl(value)
     }
     count++
