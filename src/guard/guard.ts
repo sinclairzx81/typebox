@@ -212,17 +212,8 @@ export function IsDeepEqual(left: unknown, right: unknown): boolean {
 }
 
 // --------------------------------------------------------------------------
-//
-// Internal: StringGraphemeCountIntl(...)
-//
-// The Intl.Segmenter (for grapheme segmentation) only became available
-// from April 2024 so may not be available in all environments. The
-// code below is a polyfill for segmentation, but we should swap
-// to Intl.* once this API has been around for a while.
-//
+// StringGraphemeCountIntl - Intl.Segmenter Polyfill
 // --------------------------------------------------------------------------
-
-// Future:
 //
 // const segmenter = new Intl.Segmenter(undefined, { granularity: 'grapheme' })
 // function StringGraphemeCountIntl(value: string): number {
@@ -231,6 +222,7 @@ export function IsDeepEqual(left: unknown, right: unknown): boolean {
 //   while (!iterator.next().done) length++
 //   return length
 // }
+
 function IsRegionalIndicator(value: number): boolean {
   return value >= 0x1F1E6 && value <= 0x1F1FF
 }
