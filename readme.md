@@ -81,19 +81,15 @@ License: MIT
 
 ## Contents
 
-- [Upgrade](#Upgrade)
+
 - [Type](#Type)
 - [Value](#Value)
 - [Compile](#Compile)
 - [Script](#Script)
 - [Schema](#Schema)
+- [Legacy](#Legacy)
 - [Contribute](#Contribute)
 
-## Upgrade
-
-If upgrading from `@sinclair/typebox` refer to the 1.0 migration guide at the following URL.
-
-[Migration Guide](https://github.com/sinclairzx81/typebox/blob/main/changelog/1.0.0-migration.md)
 
 <a name="Type"></a>
 
@@ -277,6 +273,62 @@ const A = C.Parse({                                 // const A: {
   z: 1                                              //   z: number
 })                                                  // } = ...
 ```
+
+## Legacy
+
+If upgrading from `@sinclair/typebox` 0.34.x refer to the 1.0 migration guide at the following URL.
+
+[Migration Guide](https://github.com/sinclairzx81/typebox/blob/main/changelog/1.0.0-migration.md)
+
+Most types created with 0.34.x are compatible with V1, and it is possible to run both `typebox` and `@sinclair/typebox` packages side by side. 
+
+[Compatibility](https://tsplay.dev/Wzr2rW)
+
+```typescript
+import { Type } from '@sinclair/typebox'       // TB: 0.34.x
+import { Static } from 'typebox'               // TB: 1.0.0
+
+// Legacy Types
+
+const A = Type.Object({
+  x: Type.Number(),
+  y: Type.Number(),
+  z: Type.Number()
+})
+
+const B = Type.Object({
+  a: Type.Number(),
+  b: Type.Number(),
+  c: Type.Number()
+})
+
+const C = Type.Composite([A, B])
+
+// Future Inference
+
+type C = Static<typeof C>     // type C = {
+                              //   x: number;
+                              //   y: number;
+                              //   z: number;
+                              //   a: number;
+                              //   b: number;
+                              //   c: number;
+                              // }
+
+// Future Compile
+
+import { Compile } from 'typebox/compile'
+
+const T = Compile(C)
+
+const R = T.Parse(null)
+```
+
+Support for 0.34.x is still actively maintained at the following URL.
+
+[TypeBox Legacy](https://github.com/sinclairzx81/typebox-legacy)
+
+Please submit all 0.34.x related issues to the above repository.
 
 ## Contribute
 
