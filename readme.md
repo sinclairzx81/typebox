@@ -179,7 +179,7 @@ const A = Value.Parse(T, {                          // const A: {
 The Compile submodule is a high-performance Json Schema compliant JIT compiler that compiles schematics into efficient runtime validators. The compiler is optimized for fast compilation and validation and is known to be one of the fastest validation solutions available for JavaScript.
 
 ```typescript
-import { Compile } from 'typebox/compile' 
+import Compile from 'typebox/compile' 
 ```
 
 ### Example
@@ -304,7 +304,7 @@ const B = Type.Object({
 
 const C = Type.Composite([A, B])
 
-// Future Inference
+// Modern Inference
 
 type C = Static<typeof C>     // type C = {
                               //   x: number;
@@ -315,13 +315,11 @@ type C = Static<typeof C>     // type C = {
                               //   c: number;
                               // }
 
-// Future Compile
+// Modern Compile
 
-import { Compile } from 'typebox/compile'
+import Compile from 'typebox/compile'
 
-const T = Compile(C)
-
-const R = T.Parse(null)
+const Result = Compile(C).Check({ ... })
 ```
 
 Support for 0.34.x is still actively maintained at the following URL.
