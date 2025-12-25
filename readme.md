@@ -2,7 +2,7 @@
 
 <h1>TypeBox</h1>
 
-<p>Json Schema Type Builder with Static Type Resolution for TypeScript</p>
+<p>JSON Schema Type Builder with Static Type Resolution for TypeScript</p>
 
 <img src="typebox.png" />
 
@@ -25,12 +25,12 @@ $ npm install typebox
 
 ## Usage
 
-A TypeScript engine for Json Schema [Reference](https://tsplay.dev/wOyMRm)
+A TypeScript engine for JSON Schema [Reference](https://tsplay.dev/wOyMRm)
 
 ```typescript
 import Type from 'typebox'
 
-// Json Schema
+// JSON Schema
 
 const T = Type.Object({                             // const T = {
   x: Type.Number(),                                 //   type: 'object',
@@ -73,9 +73,9 @@ type S = Type.Static<typeof S>                    // type S = {
 
 [Documentation](https://sinclairzx81.github.io/typebox/)
 
-TypeBox is a runtime type system that creates in-memory Json Schema objects that infer as TypeScript types. The schematics produced by this library are designed to match the static type checking rules of the TypeScript compiler. TypeBox offers a unified type system that can be statically checked by TypeScript and validated at runtime using standard Json Schema.
+TypeBox is a runtime type system that creates in-memory JSON Schema objects that infer as TypeScript types. The schematics produced by this library are designed to match the static type checking rules of the TypeScript compiler. TypeBox offers a unified type system that can be statically checked by TypeScript and validated at runtime using standard JSON Schema.
 
-This library is designed to allow Json Schema to compose similar to how types compose within TypeScript's type system. It can be used as a simple tool to build up complex schematics or integrated into REST and RPC services to help validate data received over the wire.
+This library is designed to allow JSON Schema to compose similar to how types compose within TypeScript's type system. It can be used as a simple tool to build up complex schematics or integrated into REST and RPC services to help validate data received over the wire.
 
 License: MIT
 
@@ -97,11 +97,11 @@ License: MIT
 
 [Documentation](https://sinclairzx81.github.io/typebox/#/docs/type/overview) | [Example](https://tsplay.dev/NaMoBN)
 
-TypeBox provides many functions to create Json Schema types. Each function returns a small Json Schema fragment that can be composed into more complex types. TypeBox includes a set of functions that are used to construct Json Schema compliant schematics as well as a set of extended functions that return schematics for constructs native to JavaScript.
+TypeBox provides many functions to create JSON Schema types. Each function returns a small JSON Schema fragment that can be composed into more complex types. TypeBox includes a set of functions that are used to construct JSON Schema compliant schematics as well as a set of extended functions that return schematics for constructs native to JavaScript.
 
 ## Example
 
-The following creates a Json Schema type and infers with Static.
+The following creates a JSON Schema type and infers with Static.
 
 ```typescript
 import Type from 'typebox'
@@ -176,7 +176,7 @@ const A = Value.Parse(T, {                          // const A: {
 
 [Documentation](https://sinclairzx81.github.io/typebox/#/docs/compile/overview) | [Example](https://tsplay.dev/WyraZw)
 
-The Compile submodule is a high-performance Json Schema compliant JIT compiler that compiles schematics into efficient runtime validators. The compiler is optimized for fast compilation and validation and is known to be one of the fastest validation solutions available for JavaScript.
+The Compile submodule is a high-performance JSON Schema compliant JIT compiler that compiles schematics into efficient runtime validators. The compiler is optimized for fast compilation and validation and is known to be one of the fastest validation solutions available for JavaScript.
 
 ```typescript
 import Compile from 'typebox/compile' 
@@ -204,7 +204,7 @@ const A = C.Parse({                                 // const A: {
 
 [Documentation](https://sinclairzx81.github.io/typebox/#/docs/script/overview) | [Example 1](https://tsplay.dev/Wk6L1m) | [Example 2](https://tsplay.dev/NnrJoN)
 
-TypeBox is a runtime TypeScript DSL engine that can create, transform, and compute Json Schema using native TypeScript syntax. The engine is implemented symmetrically at runtime and within the TypeScript type system, and is intended for use with the TypeScript 7 native compiler and above.
+TypeBox is a runtime TypeScript DSL engine that can create, transform, and compute JSON Schema using native TypeScript syntax. The engine is implemented symmetrically at runtime and within the TypeScript type system, and is intended for use with the TypeScript 7 native compiler and above.
 
 ```typescript
 // Scripted Type
@@ -219,7 +219,7 @@ const T = Type.Script(`{
                                                     //   z: TBoolean
                                                     // }>
 
-// Json Schema Introspection
+// JSON Schema Introspection
 
 T.type                                              // 'object'
 T.required                                          // ['x', 'y', 'z']
@@ -250,11 +250,11 @@ type S = Type.Static<typeof S>                      // type S = {
 
 [Documentation](https://sinclairzx81.github.io/typebox/#/docs/schema/overview) | [Example 1](https://tsplay.dev/Wvrv3W) | [Example 2](https://tsplay.dev/m3g0ym)
 
-TypeBox is built upon a high-performance validation infrastructure that supports the direct compilation and inference of Json Schema schematics. TypeBox implements Draft 3 to 2020-12 and is compliance tested via the official Json Schema [Test Suite](https://github.com/json-schema-org/JSON-Schema-Test-Suite). It offers high-performance JIT compilation with automatic fallback to dynamic checking in JIT restricted environments.
+TypeBox is built upon a high-performance validation infrastructure that supports the direct compilation and inference of JSON Schema schematics. TypeBox implements Draft 3 to 2020-12 and is compliance tested via the official JSON Schema [Test Suite](https://github.com/JSON-schema-org/JSON-Schema-Test-Suite). It offers high-performance JIT compilation with automatic fallback to dynamic checking in JIT restricted environments.
 
 ### Example
 
-The following compiles Json Schema. Type inference is supported.
+The following compiles JSON Schema. Type inference is supported.
 
 ```typescript
 const C = Compile({
