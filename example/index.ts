@@ -1,4 +1,4 @@
-import { Compile } from 'typebox/compile'
+import Compile from 'typebox/compile'
 import System from 'typebox/system'
 import Guard from 'typebox/guard'
 import Format from 'typebox/format'

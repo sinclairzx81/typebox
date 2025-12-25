@@ -9,17 +9,16 @@
     "noEmit": true,
     "allowImportingTsExtensions": true,
     "exactOptionalPropertyTypes": true,
-    "baseUrl": ".",
     "paths": {
-      "typebox/compile": ["src/compile/index.ts"],
-      "typebox/errors": ["src/errors/index.ts"],
-      "typebox/format": ["src/format/index.ts"],
-      "typebox/guard": ["src/guard/index.ts"],
-      "typebox/schema": ["src/schema/index.ts"],
-      "typebox/system": ["src/system/index.ts"],
-      "typebox/type": ["src/type/index.ts"],
-      "typebox/value": ["src/value/index.ts"],
-      "typebox": ["src/index.ts"]
+      "typebox/compile": ["./src/compile/index.ts"],
+      "typebox/errors": ["./src/errors/index.ts"],
+      "typebox/format": ["./src/format/index.ts"],
+      "typebox/guard": ["./src/guard/index.ts"],
+      "typebox/schema": ["./src/schema/index.ts"],
+      "typebox/system": ["./src/system/index.ts"],
+      "typebox/type": ["./src/type/index.ts"],
+      "typebox/value": ["./src/value/index.ts"],
+      "typebox": ["./src/index.ts"]
     }
   }
 }

@@ -39,4 +39,5 @@ export * from './validator.ts'
 import { Code } from './code.ts'
 import { Compile } from './compile.ts'
 import { Validator } from './validator.ts'
-export default { Code, Compile, Validator }
+export { Code, Compile, Validator }
+export default Compile
