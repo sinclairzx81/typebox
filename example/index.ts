@@ -6,7 +6,6 @@ import Schema from 'typebox/schema'
 import Value from 'typebox/value'
 import Type from 'typebox'
 import { TSchema, TUnion } from 'typebox'
-import Guard from 'typebox/guard'
 import { TLiteral } from '../src/typebox.ts'
 
 // TypeBox 1.1
