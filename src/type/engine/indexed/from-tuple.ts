@@ -59,7 +59,7 @@ function IndexElementsWithIndexer<Types extends TSchema[], Indexer extends TSche
 type TFromTupleWithIndexer<Types extends TSchema[], Indexer extends TSchema,
   ArrayIndexer extends TSchema = TFormatArrayIndexer<Indexer>,
   Elements extends TSchema[] = TIndexElementsWithIndexer<Types, ArrayIndexer>,
-  Result extends TSchema = TEvaluateUnionFast<Elements> // expensive
+  Result extends TSchema = TEvaluateUnionFast<Elements>
 > = Result
 function FromTupleWithIndexer<Types extends TSchema[], Indexer extends TSchema>(types: [...Types], indexer: Indexer): TFromTupleWithIndexer<Types, Indexer> {
   const formattedArrayIndexer = FormatArrayIndexer(indexer)
@@ -70,7 +70,7 @@ function FromTupleWithIndexer<Types extends TSchema[], Indexer extends TSchema>(
 // FromTupleNoIndexer
 // ------------------------------------------------------------------
 type TFromTupleWithoutIndexer<Types extends TSchema[],
-  Result extends TSchema = TEvaluateUnionFast<Types> // expensive
+  Result extends TSchema = TEvaluateUnionFast<Types>
 > = Result
 function FromTupleWithoutIndexer<Types extends TSchema[]>(types: [...Types]): TFromTupleWithoutIndexer<Types> {
   return EvaluateUnionFast(types) as never
