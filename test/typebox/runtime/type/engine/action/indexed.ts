@@ -422,7 +422,7 @@ Test('Should Index 31', () => {
 // CollapseToObject / Indexable Should take a Union of Overlapping
 // PropertyKeys. We should review this against Evaluate behaviors
 // ------------------------------------------------------------------
-Test('Should Omit 32', () => {
+Test('Should Index 32', () => {
   // TypeScript
   type A = { type: 'a'; a: string }
   type B = { type: 'b'; b: string }
@@ -446,28 +446,27 @@ Test('Should Omit 32', () => {
   Assert.IsEqual(R.anyOf[2].const, 'c')
 })
 // ------------------------------------------------------------------
-// EvaluateFast
+// EvaluateUnionFast
 // ------------------------------------------------------------------
-Test('Should Omit 33', () => {
-  const A = Type.Object({})
-  const B: Type.TNever = Type.Index(A, Type.KeyOf(A))
-  Assert.IsTrue(Type.IsNever(B))
+Test('Should Index 33', () => {
+  const T = Type.Object({})
+  const K: Type.TNever = Type.Index(T, Type.KeyOf(T))
+  Assert.IsTrue(Type.IsNever(K))
 })
-Test('Should Omit 34', () => {
-  const A = Type.Object({
-    x: Type.Null(),
-    y: Type.Null()
+Test('Should Index 34', () => {
+  const T = Type.Object({
+    x: Type.Number()
   })
-  const B: Type.TNull = Type.Index(A, Type.KeyOf(A))
-  Assert.IsTrue(Type.IsNull(B))
+  const K: Type.TNumber = Type.Index(T, Type.KeyOf(T))
+  Assert.IsTrue(Type.IsNumber(K))
 })
-Test('Should Omit 35', () => {
-  const A = Type.Object({
-    x: Type.Null(),
+Test('Should Index 35', () => {
+  const T = Type.Object({
+    x: Type.Number(),
     y: Type.String()
   })
-  const B: Type.TUnion<[Type.TNull, Type.TString]> = Type.Index(A, Type.KeyOf(A))
-  Assert.IsTrue(Type.IsUnion(B))
-  Assert.IsTrue(Type.IsNull(B.anyOf[0]))
-  Assert.IsTrue(Type.IsString(B.anyOf[1]))
+  const K: Type.TUnion<[Type.TNumber, Type.TString]> = Type.Index(T, Type.KeyOf(T))
+  Assert.IsTrue(Type.IsUnion(K))
+  Assert.IsTrue(Type.IsNumber(K.anyOf[0]))
+  Assert.IsTrue(Type.IsString(K.anyOf[1]))
 })

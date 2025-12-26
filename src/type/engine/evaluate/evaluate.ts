@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import * as Guard from '../../../guard/guard.ts'
+import { Guard } from '../../../guard/index.ts'
 import { type TSchema } from '../../types/schema.ts'
 import { type TIntersect, IsIntersect } from '../../types/intersect.ts'
 import { type TDistribute, Distribute } from './distribute.ts'
