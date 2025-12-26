@@ -276,3 +276,29 @@ Test('Should KeyOf 23', () => {
   Assert.IsTrue(Type.IsString(T.anyOf[1]))
   Assert.IsTrue(Type.IsSymbol(T.anyOf[2]))
 })
+// ------------------------------------------------------------------
+// EvaluateUnionFast
+// ------------------------------------------------------------------
+Test('Should KeyOf 24', () => {
+  const T = Type.Object({})
+  const K: Type.TNever = Type.KeyOf(T)
+  Assert.IsTrue(Type.IsNever(K))
+})
+Test('Should KeyOf 25', () => {
+  const T = Type.Object({
+    x: Type.Number()
+  })
+  const K: Type.TLiteral<'x'> = Type.KeyOf(T)
+  Assert.IsEqual(K.const, 'x')
+})
+Test('Should KeyOf 26', () => {
+  const T = Type.Object({
+    x: Type.Number(),
+    y: Type.String()
+  })
+  // DENO_CACHE_ERROR | EDIT FILE AND RE-RUN TEST
+  const K: Type.TUnion<[Type.TLiteral<'x'>, Type.TLiteral<'y'>]> = Type.KeyOf(T)
+  Assert.IsTrue(Type.IsUnion(K))
+  Assert.IsEqual(K.anyOf[0].const, 'x')
+  Assert.IsEqual(K.anyOf[1].const, 'y')
+})
