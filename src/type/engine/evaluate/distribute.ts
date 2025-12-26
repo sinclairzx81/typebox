@@ -37,9 +37,9 @@ import { type TObject, IsObject } from '../../types/object.ts'
 import { type TTuple, IsTuple } from '../../types/tuple.ts'
 import { type TComposite, Composite } from './composite.ts'
 import { type TNarrow, Narrow } from './narrow.ts'
-import { type TEvaluateType, EvaluateType } from "./evaluate.ts"
+import { type TEvaluateType, EvaluateType } from './evaluate.ts'
 
-import { type TEvaluateIntersect, EvaluateIntersect } from "./evaluate.ts"
+import { type TEvaluateIntersect, EvaluateIntersect } from './evaluate.ts'
 
 // -----------------------------------------------------------------------------------------
 // CanDistribute

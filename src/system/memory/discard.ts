@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Metrics } from "./metrics.ts"
+import { Metrics } from './metrics.ts'
 import { Clone } from './clone.ts'
 
 type ObjectLike = Record<PropertyKey, any>

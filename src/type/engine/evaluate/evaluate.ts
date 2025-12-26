@@ -28,11 +28,13 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
+import * as Guard from '../../../guard/guard.ts'
 import { type TSchema } from '../../types/schema.ts'
 import { type TIntersect, IsIntersect } from '../../types/intersect.ts'
-import { type TUnion, IsUnion } from '../../types/union.ts'
 import { type TDistribute, Distribute } from './distribute.ts'
 import { type TBroaden, Broaden } from './broaden.ts'
+import { type TUnion, Union, IsUnion } from '../../types/union.ts'
+import { type TNever, Never } from '../../types/never.ts'
 
 // ------------------------------------------------------------------
 // EvaluateIntersect
@@ -72,4 +74,28 @@ export function EvaluateType<Type extends TSchema>(type: Type): TEvaluateType<Ty
     IsUnion(type) ? EvaluateUnion(type.anyOf) :
     type
   ) as never
+}
+// ------------------------------------------------------------------
+// EvaluateUnionFast
+//
+// Evaluates a union using a fast path. This evaluation assumes
+// all constituent types are already distinct and therefore skips
+// any broadening or deduplication steps. This assumption holds
+// for property keys in TProperties and tuple indices of TTuple.
+//
+// ------------------------------------------------------------------
+export type TEvaluateUnionFast<Types extends TSchema[],
+  Result extends TSchema = (
+    Types extends [infer Type extends TSchema] ? Type :
+    Types extends [] ? TNever :
+    TUnion<Types>
+  )
+> = Result
+export function EvaluateUnionFast<Types extends TSchema[]>(types: [...Types]): TEvaluateUnionFast<Types> {
+  const result = (
+    Guard.IsEqual(types.length, 1) ? types[0] :
+    Guard.IsEqual(types.length, 0) ? Never() :
+    Union(types)
+  )
+  return result as never
 }

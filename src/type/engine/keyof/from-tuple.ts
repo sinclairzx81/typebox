@@ -30,13 +30,13 @@ THE SOFTWARE.
 
 import { type TSchema } from '../../types/index.ts'
 import { type TLiteral, Literal } from '../../types/literal.ts'
-import { type TEvaluateUnion, EvaluateUnion } from '../evaluate/evaluate.ts'
+import { type TEvaluateUnionFast, EvaluateUnionFast } from '../evaluate/evaluate.ts'
 export type TFromTuple<Types extends TSchema[], Result extends TSchema[] = []> = (
   Types extends [...infer Left extends TSchema[], infer _ extends TSchema]
     ? TFromTuple<Left, [TLiteral<Left['length']>, ...Result]>
-    : TEvaluateUnion<Result>
+    : TEvaluateUnionFast<Result>
 )
 export function FromTuple<Types extends TSchema[]>(types: [...Types]): TFromTuple<Types> {
   const result = types.map((_, index) => Literal(index))
-  return EvaluateUnion(result) as never
+  return EvaluateUnionFast(result) as never
 }

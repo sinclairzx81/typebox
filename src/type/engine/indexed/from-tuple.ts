@@ -33,7 +33,7 @@ import { type TLiteral, Literal } from '../../types/literal.ts'
 import { type TNumber, IsNumber } from '../../types/number.ts'
 import { type TInteger, IsInteger } from '../../types/integer.ts'
 
-import { type TEvaluateUnion, EvaluateUnion } from '../evaluate/evaluate.ts'
+import { type TEvaluateUnionFast, EvaluateUnionFast } from '../evaluate/evaluate.ts'
 import { type TExtends, Extends, ExtendsResult } from '../../extends/index.ts'
 import { type TFormatArrayIndexer, FormatArrayIndexer } from './array-indexer.ts'
 
@@ -59,21 +59,21 @@ function IndexElementsWithIndexer<Types extends TSchema[], Indexer extends TSche
 type TFromTupleWithIndexer<Types extends TSchema[], Indexer extends TSchema,
   ArrayIndexer extends TSchema = TFormatArrayIndexer<Indexer>,
   Elements extends TSchema[] = TIndexElementsWithIndexer<Types, ArrayIndexer>,
-  Result extends TSchema = TEvaluateUnion<Elements> // expensive
+  Result extends TSchema = TEvaluateUnionFast<Elements> // expensive
 > = Result
 function FromTupleWithIndexer<Types extends TSchema[], Indexer extends TSchema>(types: [...Types], indexer: Indexer): TFromTupleWithIndexer<Types, Indexer> {
   const formattedArrayIndexer = FormatArrayIndexer(indexer)
   const elements = IndexElementsWithIndexer(types, formattedArrayIndexer) as TSchema[]
-  return EvaluateUnion(elements) as never 
+  return EvaluateUnionFast(elements) as never 
 }
 // ------------------------------------------------------------------
 // FromTupleNoIndexer
 // ------------------------------------------------------------------
 type TFromTupleWithoutIndexer<Types extends TSchema[],
-  Result extends TSchema = TEvaluateUnion<Types> // expensive
+  Result extends TSchema = TEvaluateUnionFast<Types> // expensive
 > = Result
 function FromTupleWithoutIndexer<Types extends TSchema[]>(types: [...Types]): TFromTupleWithoutIndexer<Types> {
-  return EvaluateUnion(types) as never
+  return EvaluateUnionFast(types) as never
 }
 // ------------------------------------------------------------------
 // FromTuple

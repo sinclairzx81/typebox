@@ -445,3 +445,29 @@ Test('Should Omit 32', () => {
   Assert.IsEqual(R.anyOf[1].const, 'b')
   Assert.IsEqual(R.anyOf[2].const, 'c')
 })
+// ------------------------------------------------------------------
+// EvaluateFast
+// ------------------------------------------------------------------
+Test('Should Omit 33', () => {
+  const A = Type.Object({})
+  const B: Type.TNever = Type.Index(A, Type.KeyOf(A))
+  Assert.IsTrue(Type.IsNever(B))
+})
+Test('Should Omit 34', () => {
+  const A = Type.Object({
+    x: Type.Null(),
+    y: Type.Null()
+  })
+  const B: Type.TNull = Type.Index(A, Type.KeyOf(A))
+  Assert.IsTrue(Type.IsNull(B))
+})
+Test('Should Omit 35', () => {
+  const A = Type.Object({
+    x: Type.Null(),
+    y: Type.String()
+  })
+  const B: Type.TUnion<[Type.TNull, Type.TString]> = Type.Index(A, Type.KeyOf(A))
+  Assert.IsTrue(Type.IsUnion(B))
+  Assert.IsTrue(Type.IsNull(B.anyOf[0]))
+  Assert.IsTrue(Type.IsString(B.anyOf[1]))
+})

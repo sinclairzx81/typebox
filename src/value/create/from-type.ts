@@ -45,7 +45,7 @@ import { FromFunction } from './from-function.ts'
 import { FromInteger } from './from-integer.ts'
 import { FromIntersect } from './from-intersect.ts'
 import { FromIterator } from './from-iterator.ts'
-import { FromLiteral } from "./from-literal.ts"
+import { FromLiteral } from './from-literal.ts'
 import { FromNever } from './from-never.ts'
 import { FromNull } from './from-null.ts'
 import { FromNumber } from './from-number.ts'

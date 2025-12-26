@@ -30,8 +30,8 @@ THE SOFTWARE.
 
 import { Guard } from '../../../guard/index.ts'
 import { TSchema } from '../../types/schema.ts'
-import { TNever, Never } from "../../types/never.ts"
-import { TCompare, TCompareResult, Compare, ResultLeftInside, ResultRightInside, ResultEqual } from "./compare.ts"
+import { TNever, Never } from '../../types/never.ts'
+import { TCompare, TCompareResult, Compare, ResultLeftInside, ResultRightInside, ResultEqual } from './compare.ts'
 
 // ------------------------------------------------------------------
 // Narrow
