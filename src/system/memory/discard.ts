@@ -30,14 +30,16 @@ THE SOFTWARE.
 
 import { Metrics } from './metrics.ts'
 import { Clone } from './clone.ts'
+import { IsBase } from '../../type/types/base.ts'
 
 type ObjectLike = Record<PropertyKey, any>
 
 /** Discards multiple property keys from the given object value */
 export function Discard(value: ObjectLike, propertyKeys: PropertyKey[]): ObjectLike {
   Metrics.discard += 1
-  const result: ObjectLike = {}
-  const descriptors = Object.getOwnPropertyDescriptors(Clone(value))
+  const clone = Clone(value)
+  const result: ObjectLike = IsBase(value) ? clone : {}
+  const descriptors = Object.getOwnPropertyDescriptors(clone)
   const keysToDiscard = new Set(propertyKeys)
   for (const key of Object.keys(descriptors)) {
     if (keysToDiscard.has(key)) continue

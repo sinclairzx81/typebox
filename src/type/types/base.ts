@@ -92,6 +92,15 @@ export class Base<Value extends unknown = unknown> implements TSchema, XGuard<Va
   public Clone(): Base {
     throw Error('Clone not implemented')
   }
+  /** Checks if this type equals another instance. Override for custom equality. */
+  public Equals(other: unknown): other is this {
+    return (
+      other !== null &&
+      typeof other === 'object' &&
+      'constructor' in other &&
+      this.constructor === other.constructor
+    )
+  }
 }
 // ------------------------------------------------------------------
 // Guard
