@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Settings } from '../settings/index.ts'
-import { Metrics } from "./metrics.ts"
+import { Metrics } from './metrics.ts'
 import { Clone } from './clone.ts'
 
 // deno-lint-ignore no-explicit-any

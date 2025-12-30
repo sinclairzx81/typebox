@@ -412,19 +412,6 @@
       "npm:react-router-dom@7.8.2",
       "npm:react@19.1.1",
       "npm:three@0.180.0"
-    ],
-    "packageJson": {
-      "dependencies": [
-        "npm:@arethetypeswrong/cli@~0.13.2",
-        "npm:@sinclair/hammer@0.18",
-        "npm:@types/mocha@^9.1.1",
-        "npm:@types/node@^22.13.5",
-        "npm:ajv-formats@^2.1.1",
-        "npm:ajv@^8.12.0",
-        "npm:mocha@^11.1.0",
-        "npm:prettier@^2.7.1",
-        "npm:typescript@^5.9.2"
-      ]
-    }
+    ]
   }
 }

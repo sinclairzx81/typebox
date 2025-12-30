@@ -43,7 +43,53 @@ import { Assert } from 'test'
   const T = Type.Record(Type.TemplateLiteral("${'x' | 'y' | 'z'}${string}"), Type.Number())
   type T = Static<typeof T>
   Assert.IsExtendsMutual<T, {
-    [x: string]: number
+    [x: `x${string}`]: number
+    [x: `y${string}`]: number
+    [x: `z${string}`]: number
   }>(true)
   Assert.IsExtendsMutual<T, null>(false)
+}
+// ... with additional inference
+{
+  const T = Type.Record(Type.TemplateLiteral('A${string}'), Type.Number())
+  type T = Static<typeof T>
+  Assert.IsExtendsMutual<T, {
+    [x: `A${string}`]: number
+  }>(true)
+}
+{
+  const T = Type.Record(Type.TemplateLiteral('A${number}'), Type.Number())
+  type T = Static<typeof T>
+  Assert.IsExtendsMutual<T, {
+    [x: `A${number}`]: number
+  }>(true)
+}
+{
+  const T = Type.Record(Type.TemplateLiteral('A${integer}'), Type.Number())
+  type T = Static<typeof T>
+  Assert.IsExtendsMutual<T, {
+    [x: `A${number}`]: number
+  }>(true)
+}
+{
+  const T = Type.Record(Type.TemplateLiteral('A${boolean}'), Type.Number())
+  type T = Static<typeof T>
+  Assert.IsExtendsMutual<T, {
+    Afalse: number
+    Atrue: number
+  }>(true)
+}
+{
+  const T = Type.Record(Type.TemplateLiteral('A${true}'), Type.Number())
+  type T = Static<typeof T>
+  Assert.IsExtendsMutual<T, {
+    Atrue: number
+  }>(true)
+}
+{
+  const T = Type.Record(Type.TemplateLiteral('A${false}'), Type.Number())
+  type T = Static<typeof T>
+  Assert.IsExtendsMutual<T, {
+    Afalse: number
+  }>(true)
 }

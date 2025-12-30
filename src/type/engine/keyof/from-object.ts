@@ -37,7 +37,7 @@ import { type TProperties } from '../../types/properties.ts'
 import { type TLiteral, type TLiteralValue, Literal, IsLiteralValue } from '../../types/literal.ts'
 import { ConvertToIntegerKey } from '../helpers/keys.ts'
 
-import { type TEvaluateUnion, EvaluateUnion } from '../evaluate/evaluate.ts'
+import { type TEvaluateUnionFast, EvaluateUnionFast } from '../evaluate/evaluate.ts'
 
 // ------------------------------------------------------------------
 // Keys
@@ -81,12 +81,12 @@ function FromPropertyKeys<Keys extends PropertyKey[]>(keys: [...Keys]): TFromPro
 export type TFromObject<Properties extends TProperties,
   PropertyKeys extends PropertyKey[] = TUnionToTuple<keyof Properties>,
   Variants extends TSchema [] = TFromPropertyKeys<PropertyKeys>,
-  Result extends TSchema = TEvaluateUnion<Variants>
+  Result extends TSchema = TEvaluateUnionFast<Variants>
 > =  Result
 
 export function FromObject<Properties extends TProperties>(properties: Properties): TFromObject<Properties> {
   const propertyKeys = Guard.Keys(properties)
   const variants = FromPropertyKeys(propertyKeys) as TSchema[]
-  const result = EvaluateUnion(variants)
+  const result = EvaluateUnionFast(variants)
   return result as never
 }

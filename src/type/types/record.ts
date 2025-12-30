@@ -32,28 +32,30 @@ import { Memory } from '../../system/memory/index.ts'
 import { Guard } from '../../guard/index.ts'
 import { type TSchema, type TObjectOptions, IsKind } from './schema.ts'
 import { type StaticType } from './static.ts'
-
 import { type TProperties } from './properties.ts'
 import { type TInteger, Integer, IntegerPattern } from './integer.ts'
 import { type TNumber, Number, NumberPattern } from './number.ts'
 import { type TString, String, StringPattern } from './string.ts'
-
 import { type TDeferred, Deferred } from './deferred.ts'
+
 import { type TInstantiate, Instantiate } from '../engine/instantiate.ts'
+import { type TTemplateLiteralStatic } from '../engine/template-literal/index.ts'
 import { CreateRecord } from '../engine/record/record-create.ts'
 
 // -------------------------------------------------------------------
 // Static
 // -------------------------------------------------------------------
+type StaticPropertyKey<Key extends string, Result extends PropertyKey = (
+  Key extends TStringKey ? string :
+  Key extends TIntegerKey ? number :
+  Key extends TNumberKey ? number :
+  Key extends `^${string}$` ? TTemplateLiteralStatic<Key> : 
+  string
+)> = Result
 export type StaticRecord<Stack extends string[], Context extends TProperties, This extends TProperties, Key extends string, Value extends TSchema, 
+  StaticKey extends PropertyKey = StaticPropertyKey<Key>,  
   StaticValue extends unknown = StaticType<Stack, Context, This, Value>,
-  Result extends Record<PropertyKey, unknown> = (
-    Key extends TStringKey ? Record<string, StaticValue> :
-    Key extends TIntegerKey ? Record<number, StaticValue> :
-    Key extends TNumberKey ? Record<number, StaticValue> :
-    Record<string, StaticValue>
-  )
-> = Result
+> = Record<StaticKey, StaticValue>
 // -------------------------------------------------------------------
 // Keys
 // -------------------------------------------------------------------
