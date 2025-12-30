@@ -98,10 +98,24 @@ type TKeywordsEvaluated<Schema extends unknown,
   : Schema
 > = Result
 // ------------------------------------------------------------------
-// XStatic
+// XStaticObject
 // ------------------------------------------------------------------
-export type XStaticSchema<Stack extends string[], Root extends XSchema, Schema extends XSchema, 
+export type XStaticObject<Stack extends string[], Root extends XSchema, Schema extends XSchema, 
   Keywords extends unknown[] = TFromKeywords<Stack, Root, Schema>,
   Intersected extends unknown = TKeywordsIntersected<Keywords>,
   Evaluated extends unknown = TKeywordsEvaluated<Intersected>
 > = Evaluated
+// ------------------------------------------------------------------
+// XStaticBoolean
+// ------------------------------------------------------------------
+export type XStaticBoolean<Schema extends boolean, 
+  Result extends unknown = Schema extends false ? never : unknown
+> = Result
+// ------------------------------------------------------------------
+// XStaticSchema
+// ------------------------------------------------------------------
+export type XStaticSchema<Stack extends string[], Root extends XSchema, Schema extends XSchema, 
+  Result extends unknown = Schema extends boolean 
+    ? XStaticBoolean<Schema> 
+    : XStaticObject<Stack, Root, Schema>
+> = Result
