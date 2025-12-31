@@ -16,7 +16,8 @@ System.Settings.Set({ enumerableKind: false })
 // Guard
 // ------------------------------------------------------------------
 
-console.log(Guard.GraphemeCount('📦'))
+const A = Guard.GraphemeCount('type-📦')      // 6
+const B = Guard.HasPropertyKey({ x: 1 }, 'x') // true
 
 // ------------------------------------------------------------------
 // Type

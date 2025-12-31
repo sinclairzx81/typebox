@@ -30,25 +30,25 @@ THE SOFTWARE.
 
 import type { XSchema } from '../types/schema.ts'
 import type { XStaticSchema } from './schema.ts'
-import type { TIsReadonly } from './~readonly.ts'
+import type { XIsReadonly } from './~readonly.ts'
 
 // ------------------------------------------------------------------
 // ReadonlyOptionalProperties
 // ------------------------------------------------------------------
-type TReadonlyOptionalProperties<Stack extends string[], Root extends XSchema, Properties extends Record<PropertyKey, XSchema>> = {
-  readonly [Key in keyof Properties as TIsReadonly<Properties[Key]> extends true ? Key : never]?: XStaticSchema<Stack, Root, Properties[Key]>
+type XReadonlyOptionalProperties<Stack extends string[], Root extends XSchema, Properties extends Record<PropertyKey, XSchema>> = {
+  readonly [Key in keyof Properties as XIsReadonly<Properties[Key]> extends true ? Key : never]?: XStaticSchema<Stack, Root, Properties[Key]>
 }
 // ------------------------------------------------------------------
 // OptionalProperties
 // ------------------------------------------------------------------
-type TOptionalProperties<Stack extends string[], Root extends XSchema, Properties extends Record<PropertyKey, XSchema>> = {
-  [Key in keyof Properties as TIsReadonly<Properties[Key]> extends true ? never : Key]?: XStaticSchema<Stack, Root, Properties[Key]>
+type XOptionalProperties<Stack extends string[], Root extends XSchema, Properties extends Record<PropertyKey, XSchema>> = {
+  [Key in keyof Properties as XIsReadonly<Properties[Key]> extends true ? never : Key]?: XStaticSchema<Stack, Root, Properties[Key]>
 }
 // ------------------------------------------------------------------
 // XStaticProperties
 // ------------------------------------------------------------------
 export type XStaticProperties<Stack extends string[], Root extends XSchema, Properties extends Record<PropertyKey, XSchema>,
-  ReadonlyOptional extends Record<PropertyKey, unknown> = TReadonlyOptionalProperties<Stack, Root, Properties>,
-  Optional extends Record<PropertyKey, unknown> = TOptionalProperties<Stack, Root, Properties>,
+  ReadonlyOptional extends Record<PropertyKey, unknown> = XReadonlyOptionalProperties<Stack, Root, Properties>,
+  Optional extends Record<PropertyKey, unknown> = XOptionalProperties<Stack, Root, Properties>,
   Result extends Record<PropertyKey, unknown> = ReadonlyOptional & Optional
 > = Result
