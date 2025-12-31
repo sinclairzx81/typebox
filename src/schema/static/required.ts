@@ -30,20 +30,20 @@ THE SOFTWARE.
 
 import type { XSchema } from '../types/schema.ts'
 import type { XProperties } from '../types/properties.ts'
-import type { TIsReadonly } from './~readonly.ts'
+import type { XIsReadonly } from './~readonly.ts'
 import type { XStaticSchema } from './schema.ts'
 
 // ------------------------------------------------------------------
 // ResolveProperties
 // ------------------------------------------------------------------
-type TResolveProperties<Schema extends XSchema, Result extends Record<PropertyKey, XSchema> = (
+type XResolveProperties<Schema extends XSchema, Result extends Record<PropertyKey, XSchema> = (
   Schema extends XProperties<infer Properties extends Record<PropertyKey, XSchema>> ? Properties : {}
 )> = Result
 // ------------------------------------------------------------------
 // FromKey
 // ------------------------------------------------------------------
-type TFromKey<Stack extends string[], Root extends XSchema, Properties extends Record<PropertyKey, XSchema>, Key extends string,
-  Readonly extends boolean = Key extends keyof Properties ? TIsReadonly<Properties[Key]> : false,
+type XFromKey<Stack extends string[], Root extends XSchema, Properties extends Record<PropertyKey, XSchema>, Key extends string,
+  Readonly extends boolean = Key extends keyof Properties ? XIsReadonly<Properties[Key]> : false,
   Value extends unknown = Key extends keyof Properties ? XStaticSchema<Stack, Root, Properties[Key]> : unknown,
   Result extends Record<PropertyKey, unknown> = (
     Readonly extends true
@@ -53,15 +53,15 @@ type TFromKey<Stack extends string[], Root extends XSchema, Properties extends R
 // ------------------------------------------------------------------
 // FromKeys
 // ------------------------------------------------------------------
-type TFromKeys<Stack extends string[], Root extends XSchema, Properties extends Record<PropertyKey, XSchema>, Keys extends string[], Result extends Record<PropertyKey, unknown> = {}> = (
+type XFromKeys<Stack extends string[], Root extends XSchema, Properties extends Record<PropertyKey, XSchema>, Keys extends string[], Result extends Record<PropertyKey, unknown> = {}> = (
   Keys extends [infer Left extends string, ...infer Right extends string[]]
-    ? TFromKeys<Stack, Root, Properties, Right, Result & TFromKey<Stack, Root, Properties, Left>>
+    ? XFromKeys<Stack, Root, Properties, Right, Result & XFromKey<Stack, Root, Properties, Left>>
     : Result
 )
 // ------------------------------------------------------------------
 // XStaticRequired
 // ------------------------------------------------------------------
 export type XStaticRequired<Stack extends string[], Root extends XSchema, Schema extends XSchema, Keys extends string[],
-  Properties extends Record<PropertyKey, XSchema> = TResolveProperties<Schema>,
-  Result extends Record<PropertyKey, unknown> = TFromKeys<Stack, Root, Properties, Keys>
+  Properties extends Record<PropertyKey, XSchema> = XResolveProperties<Schema>,
+  Result extends Record<PropertyKey, unknown> = XFromKeys<Stack, Root, Properties, Keys>
 > = Result

@@ -31,32 +31,40 @@ THE SOFTWARE.
 // ------------------------------------------------------------------
 // FromTypeNames
 // ------------------------------------------------------------------
-type TFromTypeNames<TypeNames extends string[], Result extends unknown = never> = (
+type XFromTypeNames<TypeNames extends string[], Result extends unknown = never> = (
   TypeNames extends readonly [infer Left extends string, ...infer Right extends string[]]
-    ? TFromTypeNames<Right, Result | TFromTypeName<Left>>
+    ? XFromTypeNames<Right, Result | XFromTypeName<Left>>
     : Result
 )
 // ------------------------------------------------------------------
 // FromTypeName
 // ------------------------------------------------------------------
-type TFromTypeName<TypeName extends string> = (
+type XFromTypeName<TypeName extends string> = (
+  // jsonschema
+  TypeName extends 'object' ? object :
   TypeName extends 'array' ? {} :
-  TypeName extends 'bigint' ? bigint :
   TypeName extends 'boolean' ? boolean :
   TypeName extends 'integer' ? number :
-  TypeName extends 'object' ? object :
-  TypeName extends 'null' ? null :
   TypeName extends 'number' ? number :
+  TypeName extends 'null' ? null :
   TypeName extends 'string' ? string :
+  // xschema
+  TypeName extends 'bigint' ? bigint :
   TypeName extends 'symbol' ? symbol :
   TypeName extends 'undefined' ? undefined : 
+  TypeName extends 'void' ? void :
+  // xschema - structural objects
+  TypeName extends 'asyncIterator' ? {} :
+  TypeName extends 'constructor' ? {} :
+  TypeName extends 'function' ? {} :
+  TypeName extends 'iterator' ? {} :
   unknown
 )
 // ------------------------------------------------------------------
 // XStaticType
 // ------------------------------------------------------------------
 export type XStaticType<TypeName extends string[] | string> = (
-  TypeName extends string[] ? TFromTypeNames<TypeName> :
-  TypeName extends string ? TFromTypeName<TypeName> :
+  TypeName extends string[] ? XFromTypeNames<TypeName> :
+  TypeName extends string ? XFromTypeName<TypeName> :
   unknown
 )

@@ -31,29 +31,29 @@ THE SOFTWARE.
 // ------------------------------------------------------------------
 // Tuple
 // ------------------------------------------------------------------
-type TFromTuple<Value extends readonly unknown[]> = (
+type XFromTuple<Value extends readonly unknown[]> = (
   Value extends [infer Left, ...infer Right extends unknown[]] 
-    ? [XMutable<Left>, ...TFromTuple<Right>]
+    ? [XNonReadonly<Left>, ...XFromTuple<Right>]
     : []
 )
 // ------------------------------------------------------------------
 // Array
 // ------------------------------------------------------------------
-type TFromArray<Value extends unknown, 
-  Result extends unknown[] = XMutable<Value>[]
+type XFromArray<Value extends unknown, 
+  Result extends unknown[] = XNonReadonly<Value>[]
 > = Result
 // ------------------------------------------------------------------
 // Object
 // ------------------------------------------------------------------
-type TFromObject< Value extends object, Result extends Record<PropertyKey, unknown> = {
-  -readonly [K in keyof Value]: XMutable<Value[K]>
+type XFromObject< Value extends object, Result extends Record<PropertyKey, unknown> = {
+  -readonly [K in keyof Value]: XNonReadonly<Value[K]>
 }> = Result
 // ------------------------------------------------------------------
 // Mutable
 // ------------------------------------------------------------------
-export type XMutable<Value extends unknown> = (
-  Value extends readonly [...infer Schemas extends unknown[]] ? TFromTuple<Schemas> : 
-  Value extends readonly (infer Schema)[] ? TFromArray<Schema> : 
-  Value extends object ? TFromObject<Value> : 
+export type XNonReadonly<Value extends unknown> = (
+  Value extends readonly [...infer Schemas extends unknown[]] ? XFromTuple<Schemas> : 
+  Value extends readonly (infer Schema)[] ? XFromArray<Schema> : 
+  Value extends object ? XFromObject<Value> : 
   Value
 )
