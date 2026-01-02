@@ -64,7 +64,7 @@ import type { XStaticUnevaluatedProperties } from './unevaluatedProperties.ts'
 // ------------------------------------------------------------------
 // Keywords
 // ------------------------------------------------------------------
-type TFromKeywords<Stack extends string[], Root extends XSchema, Schema extends XSchema, Result extends unknown[] = [
+type XFromKeywords<Stack extends string[], Root extends XSchema, Schema extends XSchema, Result extends unknown[] = [
   Schema extends XAdditionalProperties<infer Type extends XSchema> ? XStaticAdditionalProperties<Stack, Root, Type> : unknown,
   Schema extends XAllOf<infer Types extends XSchema[]> ? XStaticAllOf<Stack, Root, Types> : unknown,
   Schema extends XAnyOf<infer Types extends XSchema[]> ? XStaticAnyOf<Stack, Root, Types> : unknown,
@@ -84,15 +84,15 @@ type TFromKeywords<Stack extends string[], Root extends XSchema, Schema extends 
 // ------------------------------------------------------------------
 // TIntersectKeywords
 // ------------------------------------------------------------------
-type TKeywordsIntersected<Schemas extends unknown[], Result extends unknown = unknown> = (
+type XKeywordsIntersected<Schemas extends unknown[], Result extends unknown = unknown> = (
   Schemas extends [infer Left extends unknown, ...infer Right extends unknown[]]
-  ? TKeywordsIntersected<Right, Result & Left>
+  ? XKeywordsIntersected<Right, Result & Left>
   : Result
 )
 // ------------------------------------------------------------------
 // XStaticEvaluate
 // ------------------------------------------------------------------
-type TKeywordsEvaluated<Schema extends unknown,
+type XKeywordsEvaluated<Schema extends unknown,
   Result extends unknown = Schema extends object
   ? { [Key in keyof Schema]: Schema[Key] }
   : Schema
@@ -101,9 +101,9 @@ type TKeywordsEvaluated<Schema extends unknown,
 // XStaticObject
 // ------------------------------------------------------------------
 export type XStaticObject<Stack extends string[], Root extends XSchema, Schema extends XSchema, 
-  Keywords extends unknown[] = TFromKeywords<Stack, Root, Schema>,
-  Intersected extends unknown = TKeywordsIntersected<Keywords>,
-  Evaluated extends unknown = TKeywordsEvaluated<Intersected>
+  Keywords extends unknown[] = XFromKeywords<Stack, Root, Schema>,
+  Intersected extends unknown = XKeywordsIntersected<Keywords>,
+  Evaluated extends unknown = XKeywordsEvaluated<Intersected>
 > = Evaluated
 // ------------------------------------------------------------------
 // XStaticBoolean

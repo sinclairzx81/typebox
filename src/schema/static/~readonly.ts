@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 import type { XSchema } from '../types/schema.ts'
 
-export type TIsReadonly<Schema extends XSchema> = (
+export type XIsReadonly<Schema extends XSchema> = (
   Schema extends { readOnly: true } ? true :
   Schema extends { '~readonly': true } ? true :
   false

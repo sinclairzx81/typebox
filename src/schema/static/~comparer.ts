@@ -26,25 +26,37 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+// deno-fmt-ignore-file
+
 // ------------------------------------------------------------------
-// CreateTuple
+// XBuildTuple
 // ------------------------------------------------------------------
-type CreateTuple<Size extends number, Tuple extends unknown[] = []> = Tuple['length'] extends Size ? Tuple : CreateTuple<Size, [...Tuple, unknown]>
+type XBuildTuple<Size extends number, Tuple extends unknown[] = []> = (
+  Tuple['length'] extends Size 
+    ? Tuple 
+    : XBuildTuple<Size, [...Tuple, unknown]>
+)
 // ------------------------------------------------------------------
 // LessThan
 // ------------------------------------------------------------------
 export type XLessThan<Left extends number, Right extends number> = Left extends Right ? false
-  : CreateTuple<Left> extends [...CreateTuple<Right>, ...infer _Rest] ? false
+  : XBuildTuple<Left> extends [...XBuildTuple<Right>, ...infer _Rest] ? false
   : true
 // ------------------------------------------------------------------
 // LessThanEqual
 // ------------------------------------------------------------------
-export type XLessThanEqual<Left extends number, Right extends number> = Left extends Right ? true : XLessThan<Left, Right>
+export type XLessThanEqual<Left extends number, Right extends number> = (
+  Left extends Right ? true : XLessThan<Left, Right>
+)
 // ------------------------------------------------------------------
 // GreaterThan
 // ------------------------------------------------------------------
-export type XGreaterThan<Left extends number, Right extends number> = XLessThan<Right, Left>
+export type XGreaterThan<Left extends number, Right extends number> = (
+  XLessThan<Right, Left>
+)
 // ------------------------------------------------------------------
 // GreaterThanEqual
 // ------------------------------------------------------------------
-export type XGreaterThanEqual<Left extends number, Right extends number> = XLessThanEqual<Right, Left>
+export type XGreaterThanEqual<Left extends number, Right extends number> = (
+  XLessThanEqual<Right, Left>
+)

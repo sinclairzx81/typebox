@@ -33,15 +33,15 @@ import type { XStaticSchema } from './schema.ts'
 import type { XStaticElements } from './~elements.ts'
 
 // ------------------------------------------------------------------
-// TFromSized
+// XFromSized
 // ------------------------------------------------------------------
-type TFromSized<Stack extends string[], Root extends XSchema, Schema extends XSchema, Items extends XSchema[]> = (
+type XFromSized<Stack extends string[], Root extends XSchema, Schema extends XSchema, Items extends XSchema[]> = (
   XStaticElements<Stack, Root, Schema, Items>
 )
 // ------------------------------------------------------------------
-// TFromUnsized
+// XFromUnsized
 // ------------------------------------------------------------------
-type TFromUnsized<Stack extends string[], Root extends XSchema, Schema extends XSchema> = (
+type XFromUnsized<Stack extends string[], Root extends XSchema, Schema extends XSchema> = (
   XStaticSchema<Stack, Root, Schema>[]
 )
 // ------------------------------------------------------------------
@@ -49,8 +49,8 @@ type TFromUnsized<Stack extends string[], Root extends XSchema, Schema extends X
 // ------------------------------------------------------------------
 export type XStaticItems<Stack extends string[], Root extends XSchema, Schema extends XSchema, Items extends XSchema[] | XSchema,
   Result extends unknown = (
-    Items extends XSchema[] ? TFromSized<Stack, Root, Schema, [...Items]> :
-    Items extends XSchema ? TFromUnsized<Stack, Root, Items> :
+    Items extends XSchema[] ? XFromSized<Stack, Root, Schema, [...Items]> :
+    Items extends XSchema ? XFromUnsized<Stack, Root, Items> :
     never
   )
 > = Result

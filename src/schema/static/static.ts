@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import type { XSchema } from '../types/schema.ts'
-import type { XMutable } from './~mutable.ts'
+import type { XNonReadonly } from './~non-readonly.ts'
 import type { XStaticSchema } from './schema.ts'
 
 // ------------------------------------------------------------------
@@ -37,6 +37,6 @@ import type { XStaticSchema } from './schema.ts'
 // ------------------------------------------------------------------
 export type XStatic<Value extends unknown,
   Schema extends XSchema = Value extends XSchema ? Value : {},
-  Mutable extends XSchema = XMutable<Schema>,
-  Result extends unknown = XStaticSchema<[], Mutable, Mutable>  
+  NonReadonly extends XSchema = XNonReadonly<Schema>,
+  Result extends unknown = XStaticSchema<[], NonReadonly, NonReadonly>  
 > = Result
