@@ -31,7 +31,6 @@ THE SOFTWARE.
 
 import type { StaticAny, TAny } from './any.ts'
 import type { StaticArray, TArray } from './array.ts'
-import type { StaticAsyncIterator, TAsyncIterator } from './async-iterator.ts'
 import type { StaticBigInt, TBigInt } from './bigint.ts'
 import type { StaticBoolean, TBoolean } from './boolean.ts'
 import type { StaticConstructor, TConstructor } from './constructor.ts'
@@ -40,13 +39,11 @@ import type { StaticEnum, TEnum, TEnumValue } from './enum.ts'
 import type { StaticFunction, TFunction } from './function.ts'
 import type { StaticInteger, TInteger } from './integer.ts'
 import type { StaticIntersect, TIntersect } from './intersect.ts'
-import type { StaticIterator, TIterator } from './iterator.ts'
 import type { StaticLiteral, TLiteral, TLiteralValue } from './literal.ts'
 import type { StaticNever, TNever } from './never.ts'
 import type { StaticNull, TNull, } from './null.ts'
 import type { StaticNumber, TNumber } from './number.ts'
 import type { StaticObject, TObject } from './object.ts'
-import type { StaticPromise, TPromise } from './promise.ts'
 import type { TProperties } from './properties.ts'
 import type { StaticRecord, TRecord  } from './record.ts'
 import type { StaticRef, TRef } from './ref.ts'
@@ -78,7 +75,6 @@ export type StaticEvaluate<T> = { [K in keyof T]: T[K] } & {}
 export type StaticType<Stack extends string[], Context extends TProperties, This extends TProperties, Type extends TSchema> = (
   Type extends TAny ? StaticAny :
   Type extends TArray<infer Items extends TSchema> ? StaticArray<Stack, Context, This, Type, Items> :
-  Type extends TAsyncIterator<infer Type extends TSchema> ? StaticAsyncIterator<Stack, Context, This, Type> :
   Type extends TBigInt ? StaticBigInt :
   Type extends TBoolean ? StaticBoolean :
   Type extends TConstructor<infer Parameters extends TSchema[], infer ReturnType extends TSchema> ? StaticConstructor<Stack, Context, This, Parameters, ReturnType> :
@@ -86,13 +82,11 @@ export type StaticType<Stack extends string[], Context extends TProperties, This
   Type extends TFunction<infer Parameters extends TSchema[], infer ReturnType extends TSchema> ? StaticFunction<Stack, Context, This, Parameters, ReturnType> :
   Type extends TInteger ? StaticInteger :
   Type extends TIntersect<infer Types extends TSchema[]> ? StaticIntersect<Stack, Context, This, Types> :
-  Type extends TIterator<infer Types extends TSchema> ? StaticIterator<Stack, Context, This, Types> :
   Type extends TLiteral<infer Value extends TLiteralValue> ? StaticLiteral<Value> :
   Type extends TNever ? StaticNever :
   Type extends TNull ? StaticNull :
   Type extends TNumber ? StaticNumber :
   Type extends TObject<infer Properties extends TProperties> ? StaticObject<Stack, Context, This, Properties> :
-  Type extends TPromise<infer Type extends TSchema> ? StaticPromise<Stack, Context, This, Type> :
   Type extends TRecord<infer Key extends string, infer Value extends TSchema> ? StaticRecord<Stack, Context, This, Key, Value> :
   Type extends TCyclic<infer Defs extends TProperties, infer Ref extends string> ? StaticCyclic<Stack, Context, This, Defs, Ref> :
   Type extends TRef<infer Ref extends string> ? StaticRef<Stack, Context, This, Ref> :

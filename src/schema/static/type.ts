@@ -54,10 +54,8 @@ type XFromTypeName<TypeName extends string> = (
   TypeName extends 'undefined' ? undefined : 
   TypeName extends 'void' ? void :
   // xschema - structural objects
-  TypeName extends 'asyncIterator' ? {} :
   TypeName extends 'constructor' ? {} :
   TypeName extends 'function' ? {} :
-  TypeName extends 'iterator' ? {} :
   unknown
 )
 // ------------------------------------------------------------------

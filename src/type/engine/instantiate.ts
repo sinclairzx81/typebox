@@ -43,16 +43,13 @@ import { type TReadonly, IsReadonly, ReadonlyAdd, ReadonlyRemove, TReadonlyAdd, 
 // ------------------------------------------------------------------
 import { type TSchema, type TSchemaOptions, IsSchema } from '../types/schema.ts'
 import { type TArray, Array, IsArray, ArrayOptions } from '../types/array.ts'
-import { type TAsyncIterator, AsyncIterator, IsAsyncIterator, AsyncIteratorOptions } from '../types/async-iterator.ts'
 import { type TConstructor, Constructor, IsConstructor, ConstructorOptions } from '../types/constructor.ts'
 import { type TDeferred, Deferred, IsDeferred } from '../types/deferred.ts'
 import { type TFunction, Function as _Function, IsFunction, FunctionOptions } from '../types/function.ts'
 import { type TCall, IsCall } from '../types/call.ts'
 import { type TIdentifier } from '../types/identifier.ts'
 import { type TIntersect, Intersect, IsIntersect, IntersectOptions } from '../types/intersect.ts'
-import { type TIterator, Iterator, IsIterator, IteratorOptions } from '../types/iterator.ts'
 import { type TObject, Object, IsObject, ObjectOptions } from '../types/object.ts'
-import { type TPromise, Promise, IsPromise, PromiseOptions } from '../types/promise.ts'
 import { type TProperties } from '../types/properties.ts'
 import { type TRecord, RecordFromPattern, IsRecord, RecordPattern, RecordValue } from '../types/record.ts'
 import { type TTuple, Tuple, IsTuple, TupleOptions } from '../types/tuple.ts'
@@ -70,7 +67,6 @@ import { type TOptionalAddAction, type TOptionalRemoveAction, IsOptionalAddActio
 // Instantiate
 // ------------------------------------------------------------------
 import { type TAssignInstantiate, AssignInstantiate } from './assign/instantiate.ts'
-import { type TAwaitedInstantiate, AwaitedInstantiate } from './awaited/instantiate.ts'
 import { type TCallInstantiate, CallInstantiate } from './call/instantiate.ts'
 import { type TCapitalizeInstantiate, CapitalizeInstantiate } from './intrinsics/instantiate.ts'
 import { type TConditionalInstantiate, ConditionalInstantiate } from './conditional/index.ts'
@@ -90,7 +86,7 @@ import { type TOmitInstantiate, OmitInstantiate } from './omit/instantiate.ts'
 import { type TParametersInstantiate, ParametersInstantiate } from './parameters/instantiate.ts'
 import { type TPartialInstantiate, PartialInstantiate } from './partial/instantiate.ts'
 import { type TPickInstantiate, PickInstantiate } from './pick/instantiate.ts'
-import { type TReadonlyObjectInstantiate, ReadonlyObjectInstantiate } from './readonly-type/instantiate.ts'
+import { type TReadonlyObjectInstantiate, ReadonlyObjectInstantiate } from './readonly-object/instantiate.ts'
 import { type TRecordInstantiate, RecordInstantiate } from './record/instantiate.ts'
 import { type TRefInstantiate, RefInstantiate } from './ref/instantiate.ts'
 import { type TRequiredInstantiate, RequiredInstantiate } from './required/instantiate.ts'
@@ -270,7 +266,6 @@ export function InstantiateTypes<Context extends TProperties, State extends TSta
 // ------------------------------------------------------------------
 type TInstantiateDeferred<Context extends TProperties, State extends TState, Action extends string, Parameters extends TSchema[]> = (
   [Action, Parameters] extends ['Assign', [infer Type extends TSchema, infer Json extends TSchema]] ? TAssignInstantiate<Context, State, Type, Json> :
-  [Action, Parameters] extends ['Awaited', [infer Type extends TSchema]] ? TAwaitedInstantiate<Context, State, Type> :
   [Action, Parameters] extends ['Capitalize', [infer Type extends TSchema]] ? TCapitalizeInstantiate<Context, State, Type> :
   [Action, Parameters] extends ['Conditional', [infer Left extends TSchema, infer Right extends TSchema, infer True extends TSchema, infer False extends TSchema]] ? TConditionalInstantiate<Context, State,Left, Right, True, False> :
   [Action, Parameters] extends ['ConstructorParameters', [infer Type extends TSchema]] ? TConstructorParametersInstantiate<Context, State, Type> :
@@ -303,7 +298,6 @@ function InstantiateDeferred<Context extends TProperties, State extends TState, 
     TInstantiateDeferred<Context, State, Action, Parameters> {
   return (
     Guard.IsEqual(action, 'Assign') ? AssignInstantiate(context, state, parameters[0], parameters[1]) as never :
-    Guard.IsEqual(action, 'Awaited') ? AwaitedInstantiate(context, state, parameters[0], options) :
     Guard.IsEqual(action, 'Capitalize') ? CapitalizeInstantiate(context, state, parameters[0], options) :
     Guard.IsEqual(action, 'Conditional') ? ConditionalInstantiate(context, state, parameters[0], parameters[1], parameters[2], parameters[3], options) :
     Guard.IsEqual(action, 'ConstructorParameters') ? ConstructorParametersInstantiate(context, state, parameters[0], options) :
@@ -345,15 +339,12 @@ export type TInstantiateType<Context extends TProperties, State extends TState, 
   Instantiated extends TSchema = (
     Type extends TRef<infer Ref extends string> ? TRefInstantiate<Context, State, Ref> :
     Type extends TArray<infer Type extends TSchema> ? TArray<TInstantiateType<Context, State, Type>> :
-    Type extends TAsyncIterator<infer Type extends TSchema> ? TAsyncIterator<TInstantiateType<Context, State, Type>> :
     Type extends TCall<infer Target extends TSchema, infer Parameters extends TSchema[]> ? TCallInstantiate<Context, State, Target, Parameters> :
     Type extends TConstructor<infer Parameters extends TSchema[], infer InstanceType extends TSchema> ? TConstructor<TInstantiateTypes<Context, State,Parameters>, TInstantiateType<Context, State,InstanceType>> :
     Type extends TDeferred<infer Action extends string, infer Types extends TSchema[]> ? TInstantiateDeferred<Context, State, Action, Types> :
     Type extends TFunction<infer Parameters extends TSchema[], infer ReturnType extends TSchema> ? TFunction<TInstantiateTypes<Context, State, Parameters>, TInstantiateType<Context, State,ReturnType>> :
     Type extends TIntersect<infer Types extends TSchema[]> ? TIntersect<TInstantiateTypes<Context, State, Types>> :
-    Type extends TIterator<infer Type extends TSchema> ? TIterator<TInstantiateType<Context, State, Type>> :
     Type extends TObject<infer Properties extends TProperties> ? TObject<TInstantiateProperties<Context, State, Properties>> :
-    Type extends TPromise<infer Type extends TSchema> ? TPromise<TInstantiateType<Context, State, Type>> :
     Type extends TRecord<infer Key extends string, infer Type extends TSchema> ? TRecord<Key, TInstantiateType<Context, State, Type>> :
     Type extends TRest<infer Type extends TSchema> ? TRest<TInstantiateType<Context, State, Type>> :
     Type extends TTuple<infer Types extends TSchema[]> ? TTuple<TInstantiateElements<Context, State, Types>> :
@@ -375,15 +366,12 @@ export function InstantiateType<Context extends TProperties, State extends TStat
   const instantiated = (
     IsRef(type) ? RefInstantiate(context, state, type.$ref) :
     IsArray(type) ? Array(InstantiateType(context, state, type.items), ArrayOptions(type)) :
-    IsAsyncIterator(type) ? AsyncIterator(InstantiateType(context, state, type.iteratorItems), AsyncIteratorOptions(type)) :
     IsCall(type) ? CallInstantiate(context, state, type.target, type.arguments) :
     IsConstructor(type) ? Constructor(InstantiateTypes(context, state, type.parameters), InstantiateType(context, state, type.instanceType) as never, ConstructorOptions(type)) :
     IsDeferred(type) ? InstantiateDeferred(context, state, type.action, type.parameters, type.options) :
     IsFunction(type) ? _Function(InstantiateTypes(context, state, type.parameters), InstantiateType(context, state, type.returnType) as never, FunctionOptions(type)) :
     IsIntersect(type) ? Intersect(InstantiateTypes(context, state, type.allOf), IntersectOptions(type)) :
-    IsIterator(type) ? Iterator(InstantiateType(context, state, type.iteratorItems), IteratorOptions(type)) :
     IsObject(type) ? Object(InstantiateProperties(context, state, type.properties), ObjectOptions(type)) :
-    IsPromise(type) ? Promise(InstantiateType(context, state, type.item), PromiseOptions(type)) :
     IsRecord(type) ? RecordFromPattern(RecordPattern(type), InstantiateType(context, state, RecordValue(type))) :
     IsRest(type) ? Rest(InstantiateType(context, state, type.items)) :
     IsTuple(type) ? Tuple(InstantiateElements(context, state, type.items), TupleOptions(type)) :

@@ -13,25 +13,25 @@ Test('Should Action 1', () => {
   Assert.IsTrue(Type.IsArray(T))
   Assert.IsTrue(Type.IsNull(T.items))
 })
-Test('Should Action 2', () => {
-  const T: Type.TAsyncIterator<Type.TNull> = Type.Script('AsyncIterator<null>')
-  Assert.IsTrue(Type.IsAsyncIterator(T))
-  Assert.IsTrue(Type.IsNull(T.iteratorItems))
-})
-Test('Should Action 3', () => {
-  const T: Type.TPromise<Type.TNull> = Type.Script('Promise<null>')
-  Assert.IsTrue(Type.IsPromise(T))
-  Assert.IsTrue(Type.IsNull(T.item))
-})
-Test('Should Action 4', () => {
-  const T: Type.TIterator<Type.TNull> = Type.Script('Iterator<null>')
-  Assert.IsTrue(Type.IsIterator(T))
-  Assert.IsTrue(Type.IsNull(T.iteratorItems))
-})
-Test('Should Action 5', () => {
-  const T: Type.TNull = Type.Script('Awaited<Promise<null>>')
-  Assert.IsTrue(Type.IsNull(T))
-})
+// Test('Should Action 2', () => {
+//   const T: Type.TAsyncIterator<Type.TNull> = Type.Script('AsyncIterator<null>')
+//   Assert.IsTrue(Type.IsAsyncIterator(T))
+//   Assert.IsTrue(Type.IsNull(T.iteratorItems))
+// })
+// Test('Should Action 3', () => {
+//   const T: Type.TPromise<Type.TNull> = Type.Script('Promise<null>')
+//   Assert.IsTrue(Type.IsPromise(T))
+//   Assert.IsTrue(Type.IsNull(T.item))
+// })
+// Test('Should Action 4', () => {
+//   const T: Type.TIterator<Type.TNull> = Type.Script('Iterator<null>')
+//   Assert.IsTrue(Type.IsIterator(T))
+//   Assert.IsTrue(Type.IsNull(T.iteratorItems))
+// })
+// Test('Should Action 5', () => {
+//   const T: Type.TNull = Type.Script('Awaited<Promise<null>>')
+//   Assert.IsTrue(Type.IsNull(T))
+// })
 Test('Should Action 6', () => {
   const T: Type.TLiteral<'Hello'> = Type.Script('Capitalize<"hello">')
   Assert.IsTrue(Type.IsLiteral(T))

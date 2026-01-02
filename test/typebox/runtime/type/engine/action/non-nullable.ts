@@ -12,11 +12,11 @@ Test('Should NonNullable 1', () => {
   Assert.IsEqual(T.action, 'NonNullable')
   Assert.IsEqual(T.parameters[0].$ref, 'A')
 })
-Test('Should NonNullable 2', () => {
-  const T: Type.TPromise<Type.TRef<'A'>> = Type.NonNullable(Type.Promise(Type.Ref('A')))
-  Assert.IsTrue(Type.IsPromise(T))
-  Assert.IsEqual(T.item.$ref, 'A')
-})
+// Test('Should NonNullable 2', () => {
+//   const T: Type.TPromise<Type.TRef<'A'>> = Type.NonNullable(Type.Promise(Type.Ref('A')))
+//   Assert.IsTrue(Type.IsPromise(T))
+//   Assert.IsEqual(T.item.$ref, 'A')
+// })
 // ------------------------------------------------------------------
 // Expression
 // ------------------------------------------------------------------

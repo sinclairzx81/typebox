@@ -11,11 +11,11 @@ Test('Should Instantiate 1', () => {
   Assert.IsTrue(Type.IsArray(A))
   Assert.IsTrue(Type.IsNumber(A.items))
 })
-Test('Should Instantiate 2', () => {
-  const A = Type.Instantiate({ A: Type.Number() }, Type.AsyncIterator(Type.Ref('A')))
-  Assert.IsTrue(Type.IsAsyncIterator(A))
-  Assert.IsTrue(Type.IsNumber(A.iteratorItems))
-})
+// Test('Should Instantiate 2', () => {
+//   const A = Type.Instantiate({ A: Type.Number() }, Type.AsyncIterator(Type.Ref('A')))
+//   Assert.IsTrue(Type.IsAsyncIterator(A))
+//   Assert.IsTrue(Type.IsNumber(A.iteratorItems))
+// })
 Test('Should Instantiate 3', () => {
   const A: Type.TConstructor<[Type.TNumber], Type.TNumber> = Type.Instantiate({ A: Type.Number() }, Type.Constructor([Type.Ref('A')], Type.Ref('A')))
   Assert.IsTrue(Type.IsConstructor(A))
@@ -42,21 +42,21 @@ Test('Should Instantiate 7', () => {
   Assert.IsTrue(Type.IsNull(A.allOf[0]))
   Assert.IsTrue(Type.IsNumber(A.allOf[1]))
 })
-Test('Should Instantiate 8', () => {
-  const A: Type.TIterator<Type.TNumber> = Type.Instantiate({ A: Type.Number() }, Type.Iterator(Type.Ref('A')))
-  Assert.IsTrue(Type.IsIterator(A))
-  Assert.IsTrue(Type.IsNumber(A.iteratorItems))
-})
+// Test('Should Instantiate 8', () => {
+//   const A: Type.TIterator<Type.TNumber> = Type.Instantiate({ A: Type.Number() }, Type.Iterator(Type.Ref('A')))
+//   Assert.IsTrue(Type.IsIterator(A))
+//   Assert.IsTrue(Type.IsNumber(A.iteratorItems))
+// })
 Test('Should Instantiate 9', () => {
   const A: Type.TObject<{ x: Type.TNumber }> = Type.Instantiate({ A: Type.Number() }, Type.Object({ x: Type.Ref('A') }))
   Assert.IsTrue(Type.IsObject(A))
   Assert.IsTrue(Type.IsNumber(A.properties.x))
 })
-Test('Should Instantiate 10', () => {
-  const A: Type.TPromise<Type.TNumber> = Type.Instantiate({ A: Type.Number() }, Type.Promise(Type.Ref('A')))
-  Assert.IsTrue(Type.IsPromise(A))
-  Assert.IsTrue(Type.IsNumber(A.item))
-})
+// Test('Should Instantiate 10', () => {
+//   const A: Type.TPromise<Type.TNumber> = Type.Instantiate({ A: Type.Number() }, Type.Promise(Type.Ref('A')))
+//   Assert.IsTrue(Type.IsPromise(A))
+//   Assert.IsTrue(Type.IsNumber(A.item))
+// })
 Test('Should Instantiate 11', () => {
   const A: Type.TRecord<'^.*$', Type.TNumber> = Type.Instantiate({ A: Type.Number() }, Type.Record(Type.String(), Type.Ref('A')))
   Assert.IsTrue(Type.IsRecord(A))
@@ -88,12 +88,12 @@ Test('Should Instantiate 15', () => {
   Assert.IsTrue(Type.IsRef(A.items))
   Assert.IsEqual(A.items.$ref, 'A')
 })
-Test('Should Instantiate 16', () => {
-  const A: Type.TAsyncIterator<Type.TRef<'A'>> = Type.Instantiate({}, Type.AsyncIterator(Type.Ref('A')))
-  Assert.IsTrue(Type.IsAsyncIterator(A))
-  Assert.IsTrue(Type.IsRef(A.iteratorItems))
-  Assert.IsEqual(A.iteratorItems.$ref, 'A')
-})
+// Test('Should Instantiate 16', () => {
+//   const A: Type.TAsyncIterator<Type.TRef<'A'>> = Type.Instantiate({}, Type.AsyncIterator(Type.Ref('A')))
+//   Assert.IsTrue(Type.IsAsyncIterator(A))
+//   Assert.IsTrue(Type.IsRef(A.iteratorItems))
+//   Assert.IsEqual(A.iteratorItems.$ref, 'A')
+// })
 Test('Should Instantiate 17', () => {
   const A: Type.TConstructor<[Type.TRef<'A'>], Type.TRef<'A'>> = Type.Instantiate({}, Type.Constructor([Type.Ref('A')], Type.Ref('A')))
   Assert.IsTrue(Type.IsConstructor(A))
@@ -129,24 +129,24 @@ Test('Should Instantiate 21', () => {
   Assert.IsTrue(Type.IsRef(A.allOf[1]))
   Assert.IsEqual(A.allOf[1].$ref, 'A')
 })
-Test('Should Instantiate 22', () => {
-  const A: Type.TIterator<Type.TRef<'A'>> = Type.Instantiate({}, Type.Iterator(Type.Ref('A')))
-  Assert.IsTrue(Type.IsIterator(A))
-  Assert.IsTrue(Type.IsRef(A.iteratorItems))
-  Assert.IsEqual(A.iteratorItems.$ref, 'A')
-})
+// Test('Should Instantiate 22', () => {
+//   const A: Type.TIterator<Type.TRef<'A'>> = Type.Instantiate({}, Type.Iterator(Type.Ref('A')))
+//   Assert.IsTrue(Type.IsIterator(A))
+//   Assert.IsTrue(Type.IsRef(A.iteratorItems))
+//   Assert.IsEqual(A.iteratorItems.$ref, 'A')
+// })
 Test('Should Instantiate 23', () => {
   const A: Type.TObject<{ x: Type.TRef<'A'> }> = Type.Instantiate({}, Type.Object({ x: Type.Ref('A') }))
   Assert.IsTrue(Type.IsObject(A))
   Assert.IsTrue(Type.IsRef(A.properties.x))
   Assert.IsEqual(A.properties.x.$ref, 'A')
 })
-Test('Should Instantiate 24', () => {
-  const A: Type.TPromise<Type.TRef<'A'>> = Type.Instantiate({}, Type.Promise(Type.Ref('A')))
-  Assert.IsTrue(Type.IsPromise(A))
-  Assert.IsTrue(Type.IsRef(A.item))
-  Assert.IsEqual(A.item.$ref, 'A')
-})
+// Test('Should Instantiate 24', () => {
+//   const A: Type.TPromise<Type.TRef<'A'>> = Type.Instantiate({}, Type.Promise(Type.Ref('A')))
+//   Assert.IsTrue(Type.IsPromise(A))
+//   Assert.IsTrue(Type.IsRef(A.item))
+//   Assert.IsEqual(A.item.$ref, 'A')
+// })
 Test('Should Instantiate 25', () => {
   const A: Type.TRecordDeferred<Type.TRef<'A'>, Type.TRef<'A'>> = Type.Instantiate({}, Type.Record(Type.Ref('A'), Type.Ref('A')))
   Assert.IsTrue(Type.IsDeferred(A))

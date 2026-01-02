@@ -13,6 +13,10 @@ import { TLiteral } from '../src/typebox.ts'
 // Remove Encode / Decode
 // Remove Base
 // Remove Mutate
+// Remove AsyncIterator
+// Remove Iterator
+// Remove Promise
+// Remove Awaited
 // Rename ReadonlyType to ReadonlyObject
 // Rename TOptions to TAssign
 
@@ -28,9 +32,12 @@ const A = Type.Script(`{
   }>  
 }`)
 
-console.log(A)
+const M = Type.Script('string | number[]')
 
 
+const S = Type.Interface([], {
+  x: Type.String()
+})
 
 
 

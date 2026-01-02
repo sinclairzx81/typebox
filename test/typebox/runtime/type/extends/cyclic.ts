@@ -63,13 +63,13 @@ Test('Should CyclicExtends 2', () => {
   const R: ExtendsResult.TExtendsTrue = Extends({}, L, Type.Unknown())
   Assert.IsTrue(ExtendsResult.IsExtendsTrue(R))
 })
-Test('Should CyclicExtends 3', () => {
-  Assert.IsExtends<string, any>(true)
-  const A = Type.AsyncIterator(Type.Ref('A'))
-  const L = Type.Cyclic({ A }, 'A')
-  const R: ExtendsResult.TExtendsTrue = Extends({}, L, Type.Unknown())
-  Assert.IsTrue(ExtendsResult.IsExtendsTrue(R))
-})
+// Test('Should CyclicExtends 3', () => {
+//   Assert.IsExtends<string, any>(true)
+//   const A = Type.AsyncIterator(Type.Ref('A'))
+//   const L = Type.Cyclic({ A }, 'A')
+//   const R: ExtendsResult.TExtendsTrue = Extends({}, L, Type.Unknown())
+//   Assert.IsTrue(ExtendsResult.IsExtendsTrue(R))
+// })
 Test('Should CyclicExtends 4', () => {
   Assert.IsExtends<string, any>(true)
   const A = Type.Constructor([Type.Ref('A')], Type.Ref('A'))
@@ -91,13 +91,13 @@ Test('Should CyclicExtends 6', () => {
   const R: ExtendsResult.TExtendsTrue = Extends({}, L, Type.Unknown())
   Assert.IsTrue(ExtendsResult.IsExtendsTrue(R))
 })
-Test('Should CyclicExtends 7', () => {
-  Assert.IsExtends<string, any>(true)
-  const A = Type.Iterator(Type.Ref('A'))
-  const L = Type.Cyclic({ A }, 'A')
-  const R: ExtendsResult.TExtendsTrue = Extends({}, L, Type.Unknown())
-  Assert.IsTrue(ExtendsResult.IsExtendsTrue(R))
-})
+// Test('Should CyclicExtends 7', () => {
+//   Assert.IsExtends<string, any>(true)
+//   const A = Type.Iterator(Type.Ref('A'))
+//   const L = Type.Cyclic({ A }, 'A')
+//   const R: ExtendsResult.TExtendsTrue = Extends({}, L, Type.Unknown())
+//   Assert.IsTrue(ExtendsResult.IsExtendsTrue(R))
+// })
 Test('Should CyclicExtends 8', () => {
   Assert.IsExtends<string, any>(true)
   const A = Type.Object({ x: Type.Ref('A') })
@@ -105,13 +105,13 @@ Test('Should CyclicExtends 8', () => {
   const R: ExtendsResult.TExtendsTrue = Extends({}, L, Type.Unknown())
   Assert.IsTrue(ExtendsResult.IsExtendsTrue(R))
 })
-Test('Should CyclicExtends 9', () => {
-  Assert.IsExtends<string, any>(true)
-  const A = Type.Promise(Type.Ref('A'))
-  const L = Type.Cyclic({ A }, 'A')
-  const R: ExtendsResult.TExtendsTrue = Extends({}, L, Type.Unknown())
-  Assert.IsTrue(ExtendsResult.IsExtendsTrue(R))
-})
+// Test('Should CyclicExtends 9', () => {
+//   Assert.IsExtends<string, any>(true)
+//   const A = Type.Promise(Type.Ref('A'))
+//   const L = Type.Cyclic({ A }, 'A')
+//   const R: ExtendsResult.TExtendsTrue = Extends({}, L, Type.Unknown())
+//   Assert.IsTrue(ExtendsResult.IsExtendsTrue(R))
+// })
 Test('Should CyclicExtends 10', () => {
   // note: revisit implementing Record extends tests
   Assert.IsExtends<string, any>(true)

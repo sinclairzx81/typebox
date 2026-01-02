@@ -40,10 +40,6 @@ import * as T from '../types/index.ts'
 type TIntrinsicOrCall<Target extends string, Parameters extends T.TSchema[]> = (
   [Target, Parameters] extends ['Array', [infer Type extends T.TSchema]] ? T.TArray<Type> :
   [Target, Parameters] extends ['Assign', [infer Type extends T.TSchema, infer Json extends T.TSchema]] ? C.TAssignDeferred<Type, Json> :
-  [Target, Parameters] extends ['AsyncIterator', [infer Type extends T.TSchema]] ? T.TAsyncIterator<Type> :
-  [Target, Parameters] extends ['Promise', [infer Type extends T.TSchema]] ? T.TPromise<Type> :
-  [Target, Parameters] extends ['Iterator', [infer Type extends T.TSchema]] ? T.TIterator<Type> :
-  [Target, Parameters] extends ['Awaited', [infer Type extends T.TSchema]] ? C.TAwaitedDeferred<Type> :
   [Target, Parameters] extends ['Capitalize', [infer Type extends T.TSchema]] ? C.TCapitalizeDeferred<Type> :
   [Target, Parameters] extends ['ConstructorParameters', [infer Type extends T.TSchema]] ? C.TConstructorParametersDeferred<Type> :
   [Target, Parameters] extends ['Evaluate', [infer Type extends T.TSchema]] ? C.TEvaluateDeferred<Type> :
@@ -73,10 +69,6 @@ function IntrinsicOrCall<Ref extends string, Parameters extends T.TSchema[]>(ref
   return (
     Guard.IsEqual(ref, 'Array') ? T.Array(parameters[0]) :
     Guard.IsEqual(ref, 'Assign') ? C.AssignDeferred(parameters[0], parameters[1]) :
-    Guard.IsEqual(ref, 'AsyncIterator') ? T.AsyncIterator(parameters[0]) :
-    Guard.IsEqual(ref, 'Iterator') ? T.Iterator(parameters[0]) :
-    Guard.IsEqual(ref, 'Promise') ? T.Promise(parameters[0]) :
-    Guard.IsEqual(ref, 'Awaited') ? C.AwaitedDeferred(parameters[0]) :
     Guard.IsEqual(ref, 'Capitalize') ? C.CapitalizeDeferred(parameters[0]) :
     Guard.IsEqual(ref, 'ConstructorParameters') ? C.ConstructorParametersDeferred(parameters[0]) :
     Guard.IsEqual(ref, 'Evaluate') ? C.EvaluateDeferred(parameters[0]) :

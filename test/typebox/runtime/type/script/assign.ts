@@ -1,7 +1,7 @@
 import { Assert } from 'test'
 import * as Type from 'typebox'
 
-const Test = Assert.Context('Type.Script.Options')
+const Test = Assert.Context('Type.Script.Assign')
 
 // ------------------------------------------------------------------
 // Options | Overloads

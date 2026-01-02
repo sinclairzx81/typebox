@@ -132,17 +132,17 @@ Test('Should Module 9', () => {
   Assert.IsTrue(Type.IsCyclic(A.A))
   Assert.IsTrue(Type.IsArray(A.A.$defs.A))
 })
-Test('Should Module 10', () => {
-  const A: {
-    A: Type.TCyclic<{
-      A: Type.TAsyncIterator<Type.TRef<'A'>>
-    }, 'A'>
-  } = Type.Module({
-    A: Type.AsyncIterator(Type.Ref('A'))
-  })
-  Assert.IsTrue(Type.IsCyclic(A.A))
-  Assert.IsTrue(Type.IsAsyncIterator(A.A.$defs.A))
-})
+// Test('Should Module 10', () => {
+//   const A: {
+//     A: Type.TCyclic<{
+//       A: Type.TAsyncIterator<Type.TRef<'A'>>
+//     }, 'A'>
+//   } = Type.Module({
+//     A: Type.AsyncIterator(Type.Ref('A'))
+//   })
+//   Assert.IsTrue(Type.IsCyclic(A.A))
+//   Assert.IsTrue(Type.IsAsyncIterator(A.A.$defs.A))
+// })
 Test('Should Module 11', () => {
   const A: {
     A: Type.TCyclic<{
@@ -205,17 +205,17 @@ Test('Should Module 15', () => {
   Assert.IsTrue(Type.IsRef(A.A.$defs.A.properties.x))
   Assert.IsTrue(Type.IsString(A.A.$defs.A.properties.y))
 })
-Test('Should Module 16', () => {
-  const A: {
-    A: Type.TCyclic<{
-      A: Type.TPromise<Type.TRef<'A'>>
-    }, 'A'>
-  } = Type.Module({
-    A: Type.Promise(Type.Ref('A'))
-  })
-  Assert.IsTrue(Type.IsCyclic(A.A))
-  Assert.IsTrue(Type.IsPromise(A.A.$defs.A))
-})
+// Test('Should Module 16', () => {
+//   const A: {
+//     A: Type.TCyclic<{
+//       A: Type.TPromise<Type.TRef<'A'>>
+//     }, 'A'>
+//   } = Type.Module({
+//     A: Type.Promise(Type.Ref('A'))
+//   })
+//   Assert.IsTrue(Type.IsCyclic(A.A))
+//   Assert.IsTrue(Type.IsPromise(A.A.$defs.A))
+// })
 Test('Should Module 17', () => {
   const A: {
     A: Type.TCyclic<{

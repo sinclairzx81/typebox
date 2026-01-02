@@ -30,7 +30,6 @@ THE SOFTWARE.
 
 import { type TExtendsAny, ExtendsAny } from './any.ts'
 import { type TExtendsArray, ExtendsArray } from './array.ts'
-import { type TExtendsAsyncIterator, ExtendsAsyncIterator } from './async-iterator.ts'
 import { type TExtendsBigInt, ExtendsBigInt } from './bigint.ts'
 import { type TExtendsBoolean, ExtendsBoolean } from './boolean.ts'
 import { type TExtendsConstructor, ExtendsConstructor } from './constructor.ts'
@@ -38,13 +37,11 @@ import { type TExtendsEnum, ExtendsEnum } from './enum.ts'
 import { type TExtendsFunction, ExtendsFunction } from './function.ts'
 import { type TExtendsInteger, ExtendsInteger } from './integer.ts'
 import { type TExtendsIntersect, ExtendsIntersect } from './intersect.ts'
-import { type TExtendsIterator, ExtendsIterator } from './iterator.ts'
 import { type TExtendsLiteral, ExtendsLiteral } from './literal.ts'
 import { type TExtendsNever, ExtendsNever } from './never.ts'
 import { type TExtendsNull, ExtendsNull } from './null.ts'
 import { type TExtendsNumber, ExtendsNumber } from './number.ts'
 import { type TExtendsObject, ExtendsObject } from './object.ts'
-import { type TExtendsPromise, ExtendsPromise } from './promise.ts'
 import { type TExtendsString, ExtendsString } from './string.ts'
 import { type TExtendsSymbol, ExtendsSymbol } from './symbol.ts'
 import { type TExtendsTemplateLiteral, ExtendsTemplateLiteral } from './template-literal.ts'
@@ -59,7 +56,6 @@ import { type TExtendsVoid, ExtendsVoid } from './void.ts'
 // ----------------------------------------------------------------------------
 import { type TAny, IsAny } from '../types/any.ts'
 import { type TArray, IsArray } from '../types/array.ts'
-import { type TAsyncIterator, IsAsyncIterator } from '../types/async-iterator.ts'
 import { type TBigInt, IsBigInt } from '../types/bigint.ts'
 import { type TBoolean, IsBoolean  } from '../types/boolean.ts'
 import { type TConstructor, IsConstructor } from '../types/constructor.ts'
@@ -67,13 +63,11 @@ import { type TEnum, type TEnumValue, IsEnum } from '../types/enum.ts'
 import { type TFunction, IsFunction } from '../types/function.ts'
 import { type TInteger, IsInteger } from '../types/integer.ts'
 import { type TIntersect, IsIntersect } from '../types/intersect.ts'
-import { type TIterator, IsIterator } from '../types/iterator.ts'
 import { type TLiteral, IsLiteral } from '../types/literal.ts'
 import { type TNever, IsNever } from '../types/never.ts'
 import { type TNull, IsNull } from '../types/null.ts'
 import { type TNumber, IsNumber } from '../types/number.ts'
 import { type TObject, IsObject } from '../types/object.ts'
-import { type TPromise, IsPromise } from '../types/promise.ts'
 import { type TSchema } from '../types/schema.ts'
 import { type TString, IsString } from '../types/string.ts'
 import { type TSymbol, IsSymbol } from '../types/symbol.ts'
@@ -93,7 +87,6 @@ import * as Result from './result.ts'
 export type TExtendsLeft<Inferred extends TProperties, Left extends TSchema, Right extends TSchema> = (
   Left extends TAny ? TExtendsAny<Inferred, Left, Right> :
   Left extends TArray<infer Items extends TSchema> ? TExtendsArray<Inferred, Left, Items, Right> :
-  Left extends TAsyncIterator<infer Type extends TSchema> ? TExtendsAsyncIterator<Inferred, Type, Right> :
   Left extends TBigInt ? TExtendsBigInt<Inferred, Left, Right> :
   Left extends TBoolean ? TExtendsBoolean<Inferred, Left, Right> :
   Left extends TConstructor<infer Parameters extends TSchema[], infer InstanceType extends TSchema> ? TExtendsConstructor<Inferred, Parameters, InstanceType, Right> :
@@ -101,13 +94,11 @@ export type TExtendsLeft<Inferred extends TProperties, Left extends TSchema, Rig
   Left extends TFunction<infer Parameters extends TSchema[], infer ReturnType extends TSchema> ? TExtendsFunction<Inferred, Parameters, ReturnType, Right> :
   Left extends TInteger ? TExtendsInteger<Inferred, Left, Right> :
   Left extends TIntersect<infer Types extends TSchema[]> ? TExtendsIntersect<Inferred, Types, Right> :
-  Left extends TIterator<infer Type extends TSchema> ? TExtendsIterator<Inferred, Type, Right> :
   Left extends TLiteral ? TExtendsLiteral<Inferred, Left, Right> :
   Left extends TNever ? TExtendsNever<Inferred, Left, Right> :
   Left extends TNull ? TExtendsNull<Inferred, Left, Right> :
   Left extends TNumber ? TExtendsNumber<Inferred, Left, Right> :
   Left extends TObject<infer Properties extends TProperties> ? TExtendsObject<Inferred, Properties, Right> :
-  Left extends TPromise<infer Type extends TSchema> ? TExtendsPromise<Inferred, Type, Right> :
   Left extends TString ? TExtendsString<Inferred, Left, Right> :
   Left extends TSymbol ? TExtendsSymbol<Inferred, Left, Right> :
   Left extends TTemplateLiteral<infer Pattern extends string> ? TExtendsTemplateLiteral<Inferred, Pattern, Right> :
@@ -124,7 +115,6 @@ export function ExtendsLeft<Inferred extends TProperties, Left extends TSchema, 
   return (
     IsAny(left) ? ExtendsAny(inferred, left, right) :
     IsArray(left) ? ExtendsArray(inferred, left, left.items, right) :
-    IsAsyncIterator(left) ? ExtendsAsyncIterator(inferred, left.iteratorItems, right) :
     IsBigInt(left) ? ExtendsBigInt(inferred, left, right) :
     IsBoolean(left) ? ExtendsBoolean(inferred, left, right) :
     IsConstructor(left) ? ExtendsConstructor(inferred, left.parameters, left.instanceType, right) :
@@ -132,13 +122,11 @@ export function ExtendsLeft<Inferred extends TProperties, Left extends TSchema, 
     IsFunction(left) ? ExtendsFunction(inferred, left.parameters, left.returnType, right) :
     IsInteger(left) ? ExtendsInteger(inferred, left, right) :
     IsIntersect(left) ? ExtendsIntersect(inferred, left.allOf, right) :
-    IsIterator(left) ? ExtendsIterator(inferred, left.iteratorItems, right) :
     IsLiteral(left) ? ExtendsLiteral(inferred, left, right) :
     IsNever(left) ? ExtendsNever(inferred, left, right) :
     IsNull(left) ? ExtendsNull(inferred, left, right) :
     IsNumber(left) ? ExtendsNumber(inferred, left, right) :
     IsObject(left) ? ExtendsObject(inferred, left.properties, right) :
-    IsPromise(left) ? ExtendsPromise(inferred, left.item, right) :
     IsString(left) ? ExtendsString(inferred, left, right) :
     IsSymbol(left) ? ExtendsSymbol(inferred, left, right) :
     IsTemplateLiteral(left) ? ExtendsTemplateLiteral(inferred, left.pattern, right) :
