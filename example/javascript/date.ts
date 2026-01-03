@@ -31,8 +31,8 @@ import Type from 'typebox'
 // ------------------------------------------------------------------
 // Factory
 // ------------------------------------------------------------------
-export const Date = () => Type.Object({
-  [Symbol.toPrimitive]: Type.Never(),
+export const Date = () => Type.Unsafe({} as globalThis.Date, Type.Object({
+  // [Symbol.toPrimitive]: Type.Never(),
   /** Returns a string representation of a date. The format of the string depends on the locale. */
   toString: Type.Function([], Type.String()),
   /** Returns a date as a string value. */
@@ -182,4 +182,4 @@ export const Date = () => Type.Object({
   toISOString: Type.Function([], Type.String()),
   /** Used by the JSON.stringify method to enable the transformation of an object's data for JavaScript Object Notation (JSON) serialization. */
   toJSON: Type.Function([Type.Optional(Type.String())], Type.String()),
-})
+}))

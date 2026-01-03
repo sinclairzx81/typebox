@@ -26,35 +26,46 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-fmt-ignore-file
-// deno-lint-ignore-file 
-
-import { Guard } from '../../guard/index.ts'
-import { Memory } from '../../system/memory/index.ts'
-import { type TSchema, IsSchema } from './schema.ts'
+import Type from 'typebox'
 
 // ------------------------------------------------------------------
-// Static
+// ThenFunction<T>
 // ------------------------------------------------------------------
-export type StaticUnsafe<Type extends unknown, _Schema extends TSchema> = Type
-// ------------------------------------------------------------------
-// Type
-// ------------------------------------------------------------------
-/** Represents an Unsafe type. */
-export type TUnsafe<Type extends unknown = unknown, Schema extends TSchema = TSchema> = Schema & {
-  '~unsafe': Type
+type TThenFunction<Type extends Type.TSchema> = (
+  Type.TFunction<[
+    Type.TFunction<[Type], Type.TUnknown>
+  ], Type.TUnknown>
+)
+function ThenFunction<Type extends Type.TSchema>(type: Type): TThenFunction<Type> {
+  return Type.Function([
+    Type.Function([type], Type.Unknown())
+  ], Type.Unknown())
 }
 // ------------------------------------------------------------------
-// Factory
+// CatchFunction
 // ------------------------------------------------------------------
-/** Creates a Unsafe type. */
-export function Unsafe<Type extends unknown, Schema extends TSchema>(type: Type, schema: Schema): TUnsafe<Type, Schema> {
-  return Memory.Create({ '~unsafe': type }, schema, {}) as never
+type TCatchFunction = (
+  Type.TFunction<[
+    Type.TFunction<[Type.TObject<{}>], Type.TUnknown>
+  ], Type.TUnknown>
+)
+function CatchFunction(): TCatchFunction {
+  return Type.Function([
+    Type.Function([Type.Object({})], Type.Unknown())
+  ], Type.Unknown())
 }
 // ------------------------------------------------------------------
-// Guard
+// Promise
 // ------------------------------------------------------------------
-/** Returns true if the given value is TUnsafe. */
-export function IsUnsafe(value: unknown): value is TUnsafe {
-  return IsSchema(value) && Guard.HasPropertyKey(value, '~unsafe')
+export type TPromise<Type extends Type.TSchema> = (
+  Type.TUnsafe<Promise<Type.Static<Type>>, Type.TObject<{
+    then: TThenFunction<Type>,
+    catch: TCatchFunction
+  }>>
+)
+export function Promise<Type extends Type.TSchema>(type: Type): TPromise<Type> {
+  return Type.Unsafe({} as unknown, Type.Object({
+    then: ThenFunction(type),
+    catch: CatchFunction()
+  })) as never
 }

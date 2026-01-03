@@ -5,7 +5,7 @@ import { Assert } from 'test'
 // https://github.com/sinclairzx81/typebox/issues/1314
 // ------------------------------------------------------------------
 const T = Type.Object({
-  x: Type.Optional(Type.Unsafe<12345>(Type.String())),
+  x: Type.Optional(Type.Unsafe({} as 12345, Type.String())),
   y: Type.Optional(Type.String())
 })
 Assert.IsExtends<Static<typeof T>, {

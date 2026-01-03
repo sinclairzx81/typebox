@@ -8,11 +8,11 @@ Test('Should not guard Any', () => {
   Assert.IsFalse(Type.IsUnsafe(T))
 })
 Test('Should Create Any 1', () => {
-  const T: Type.TUnsafe = Type.Unsafe({ foo: 1 })
+  const T: Type.TUnsafe = Type.Unsafe({} as unknown, { foo: 1 })
   Assert.IsTrue(Type.IsUnsafe(T))
 })
 Test('Should Create Any with options', () => {
-  const T: Type.TUnsafe = Type.Unsafe({ foo: 1, a: 1, b: 2 })
+  const T: Type.TUnsafe = Type.Unsafe({} as unknown, { foo: 1, a: 1, b: 2 })
   Assert.HasPropertyKey(T, 'foo')
   Assert.HasPropertyKey(T, 'a')
   Assert.HasPropertyKey(T, 'b')

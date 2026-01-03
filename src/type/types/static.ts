@@ -73,6 +73,9 @@ export type StaticEvaluate<T> = { [K in keyof T]: T[K] } & {}
 // StaticType
 // ------------------------------------------------------------------
 export type StaticType<Stack extends string[], Context extends TProperties, This extends TProperties, Type extends TSchema> = (
+  // Unsafe
+  Type extends TUnsafe<infer Type extends unknown, infer Schema extends TSchema> ? StaticUnsafe<Type, Schema> :
+  // Standard
   Type extends TAny ? StaticAny :
   Type extends TArray<infer Items extends TSchema> ? StaticArray<Stack, Context, This, Type, Items> :
   Type extends TBigInt ? StaticBigInt :
@@ -98,7 +101,6 @@ export type StaticType<Stack extends string[], Context extends TProperties, This
   Type extends TUndefined ? StaticUndefined :
   Type extends TUnion<infer Types extends TSchema[]> ? StaticUnion<Stack, Context, This, Types> :
   Type extends TUnknown ? StaticUnknown :
-  Type extends TUnsafe<infer Type extends unknown> ? StaticUnsafe<Type> :
   Type extends TVoid ? StaticVoid :
   XStatic<Type>
 )
