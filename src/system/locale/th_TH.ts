@@ -64,8 +64,6 @@ export function th_TH(error: TValidationError): string {
     case 'unevaluatedItems': return 'ต้องไม่มีรายการที่ยังไม่ได้ประเมิน'
     case 'unevaluatedProperties': return 'ต้องไม่มีคุณสมบัติที่ยังไม่ได้ประเมิน'
     case 'uniqueItems': return `ต้องไม่มีรายการที่ซ้ำกัน`
-    case '~guard': return `ต้องตรงกับฟังก์ชันตรวจสอบ`
-    case '~refine': return error.params.message
     default: return 'เกิดข้อผิดพลาดในการตรวจสอบที่ไม่รู้จัก'
   }
 }

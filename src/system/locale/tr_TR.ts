@@ -64,8 +64,6 @@ export function tr_TR(error: TValidationError): string {
     case 'unevaluatedItems': return 'değerlendirilmemiş öğelere sahip olmamalıdır'
     case 'unevaluatedProperties': return 'değerlendirilmemiş özelliklere sahip olmamalıdır'
     case 'uniqueItems': return `yinelenen öğelere sahip olmamalıdır`
-    case '~guard': return `kontrol fonksiyonuyla eşleşmelidir`
-    case '~refine': return error.params.message
     default: return 'bilinmeyen bir doğrulama hatası oluştu'
   }
 }

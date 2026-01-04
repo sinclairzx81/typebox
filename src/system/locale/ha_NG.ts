@@ -64,8 +64,6 @@ export function ha_NG(error: TValidationError): string {
     case 'unevaluatedItems': return 'kada ya kasance yana da abubuwan da ba a kimanta su ba'
     case 'unevaluatedProperties': return 'kada ya kasance yana da kaddarorin da ba a kimanta su ba'
     case 'uniqueItems': return `kada ya kasance yana da abubuwan da suka yi kama`
-    case '~guard': return `dole ne ya dace da aikin duba`
-    case '~refine': return error.params.message
     default: return 'an sami kuskuren tabbatarwa da ba a sani ba'
   }
 }

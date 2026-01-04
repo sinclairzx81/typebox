@@ -64,8 +64,6 @@ export function nl_NL(error: TValidationError): string {
     case 'unevaluatedItems': return 'mag geen onbeoordeelde items hebben'
     case 'unevaluatedProperties': return 'mag geen onbeoordeelde eigenschappen hebben'
     case 'uniqueItems': return `mag geen dubbele items hebben`
-    case '~guard': return `moet overeenkomen met de controlefunctie`
-    case '~refine': return error.params.message
     default: return 'er is een onbekende validatiefout opgetreden'
   }
 }

@@ -64,8 +64,6 @@ export function sw_TZ(error: TValidationError): string {
     case 'unevaluatedItems': return 'haipaswi kuwa na vitu visivyotathminiwa'
     case 'unevaluatedProperties': return 'haipaswi kuwa na sifa zisizotathminiwa'
     case 'uniqueItems': return `haipaswi kuwa na vitu vilivyofanana`
-    case '~guard': return `inapaswa kulingana na kipengele cha ukaguzi`
-    case '~refine': return error.params.message
     default: return 'hitilafu isiyojulikana ya uthibitishaji imetokea'
   }
 }

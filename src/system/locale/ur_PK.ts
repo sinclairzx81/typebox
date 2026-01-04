@@ -65,8 +65,6 @@ export function ur_PK(error: TValidationError): string {
     case 'unevaluatedItems': return 'غیر تشخیص شدہ آئٹمز نہیں ہونے چاہئیں'
     case 'unevaluatedProperties': return 'غیر تشخیص شدہ خصوصیات نہیں ہونی چاہئیں'
     case 'uniqueItems': return `ڈپلیکیٹ آئٹمز نہیں ہونے چاہئیں`
-    case '~guard': return `چیک فنکشن سے مطابقت ہونی چاہیے`
-    case '~refine': return error.params.message
     default: return 'تصدیق میں ایک نامعلوم خرابی پیش آئی'
   }
 }

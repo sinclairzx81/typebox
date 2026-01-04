@@ -64,8 +64,6 @@ export function yo_NG(error: TValidationError): string {
     case 'unevaluatedItems': return 'ko gbọdọ ni awọn ohun ti ko ṣe iṣiro'
     case 'unevaluatedProperties': return 'ko gbọdọ ni awọn ohun-ini ti ko ṣe iṣiro'
     case 'uniqueItems': return `ko gbọdọ ni awọn ohun elo ẹda`
-    case '~guard': return `gbogbo yẹ ki o ba iṣẹ́ ṣàyẹ̀wò mu`
-    case '~refine': return error.params.message
     default: return 'aṣiṣe ijẹrisi aimọ waye'
   }
 }

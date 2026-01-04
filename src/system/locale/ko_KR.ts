@@ -64,8 +64,6 @@ export function ko_KR(error: TValidationError): string {
     case 'unevaluatedItems': return '평가되지 않은 항목을 가질 수 없습니다'
     case 'unevaluatedProperties': return '평가되지 않은 속성을 가질 수 없습니다'
     case 'uniqueItems': return `중복 항목을 가질 수 없습니다`
-    case '~guard': return `체크 함수와 일치해야 합니다`
-    case '~refine': return error.params.message
     default: return '알 수 없는 유효성 검사 오류가 발생했습니다'
   }
 }

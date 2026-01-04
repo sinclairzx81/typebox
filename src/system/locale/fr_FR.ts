@@ -64,8 +64,6 @@ export function fr_FR(error: TValidationError): string {
     case 'unevaluatedItems': return 'ne doit pas avoir d\'éléments non évalués'
     case 'unevaluatedProperties': return 'ne doit pas avoir de propriétés non évaluées'
     case 'uniqueItems': return `ne doit pas avoir d'éléments en double`
-    case '~guard': return `doit correspondre à la fonction de vérification`
-    case '~refine': return error.params.message
     default: return 'une erreur de validation inconnue est survenue'
   }
 }

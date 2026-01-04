@@ -32,7 +32,6 @@ THE SOFTWARE.
 export * from './_immutable.ts'
 export * from './_optional.ts'
 export * from './_readonly.ts'
-export * from './_refine.ts'
 
 // ------------------------------------------------------------------
 // Standard

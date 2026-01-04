@@ -64,8 +64,6 @@ export function cs_CZ(error: TValidationError): string {
     case 'unevaluatedItems': return 'nesmí mít nevyhodnocené položky'
     case 'unevaluatedProperties': return 'nesmí mít nevyhodnocené vlastnosti'
     case 'uniqueItems': return `nesmí mít duplicitní položky`
-    case '~guard': return `musí odpovídat kontrolní funkci`
-    case '~refine': return error.params.message
     default: return 'došlo k neznámé chybě ověření'
   }
 }

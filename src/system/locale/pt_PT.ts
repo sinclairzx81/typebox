@@ -64,8 +64,6 @@ export function pt_PT(error: TValidationError): string {
     case 'unevaluatedItems': return 'não deve ter itens não avaliados'
     case 'unevaluatedProperties': return 'não deve ter propriedades não avaliadas'
     case 'uniqueItems': return `não deve ter itens duplicados`
-    case '~guard': return `deve corresponder à função de verificação`
-    case '~refine': return error.params.message
     default: return 'ocorreu um erro de validação desconhecido'
   }
 }

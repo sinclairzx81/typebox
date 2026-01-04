@@ -31,7 +31,6 @@ THE SOFTWARE.
 import * as Schema from '../types/index.ts'
 import { Stack } from './_stack.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
-import { BuildRefine, CheckRefine, ErrorRefine } from './_refine.ts'
 import { EmitGuard as E, Guard as G } from '../../guard/index.ts'
 
 import { BuildAdditionalItems, CheckAdditionalItems, ErrorAdditionalItems } from './additionalItems.ts'
@@ -225,7 +224,6 @@ export function BuildSchema(stack: Stack, context: BuildContext, schema: Schema.
   if (Schema.IsOneOf(schema)) conditions.push(BuildOneOf(stack, context, schema, value))
   if (Schema.IsUnevaluatedItems(schema)) conditions.push(E.Or(E.Not(E.IsArray(value)), BuildUnevaluatedItems(stack, context, schema, value)))
   if (Schema.IsUnevaluatedProperties(schema)) conditions.push(E.Or(E.Not(E.IsObject(value)), BuildUnevaluatedProperties(stack, context, schema, value)))
-  if (Schema.IsRefine(schema)) conditions.push(BuildRefine(stack, context, schema, value))
   const result = E.ReduceAnd(conditions)
   stack.Pop(schema)
   return result
@@ -283,8 +281,7 @@ export function CheckSchema(stack: Stack, context: CheckContext, schema: Schema.
     (!Schema.IsAnyOf(schema) || CheckAnyOf(stack, context, schema, value)) &&
     (!Schema.IsOneOf(schema) || CheckOneOf(stack, context, schema, value)) &&
     (!Schema.IsUnevaluatedItems(schema) || (!G.IsArray(value) || CheckUnevaluatedItems(stack, context, schema, value))) &&
-    (!Schema.IsUnevaluatedProperties(schema) || (!G.IsObject(value) || CheckUnevaluatedProperties(stack, context, schema, value))) &&
-    (!Schema.IsRefine(schema) || CheckRefine(stack, context, schema, value))
+    (!Schema.IsUnevaluatedProperties(schema) || (!G.IsObject(value) || CheckUnevaluatedProperties(stack, context, schema, value)))
   )
   stack.Pop(schema)
   return result
@@ -344,8 +341,7 @@ export function ErrorSchema(stack: Stack, context: ErrorContext, schemaPath: str
       +(!Schema.IsOneOf(schema) || ErrorOneOf(stack, context, schemaPath, instancePath, schema, value)) &
       +(!Schema.IsUnevaluatedItems(schema) || (!G.IsArray(value) || ErrorUnevaluatedItems(stack, context, schemaPath, instancePath, schema, value))) &
       +(!Schema.IsUnevaluatedProperties(schema) || (!G.IsObject(value) || ErrorUnevaluatedProperties(stack, context, schemaPath, instancePath, schema, value)))
-    ) &&
-    (!Schema.IsRefine(schema) || ErrorRefine(stack, context, schemaPath, instancePath, schema, value))
+    )
   )
   stack.Pop(schema)
   return result
