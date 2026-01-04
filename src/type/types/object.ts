@@ -57,8 +57,7 @@ function _Object_<Properties extends TProperties>(properties: Properties, option
   const required = requiredKeys.length > 0 ? { required: requiredKeys } : {}
   return Memory.Create({ '~kind': 'Object' }, { type: 'object', ...required, properties }, options) as never
 }
-/** `[Json]` Creates an Object type */
-export var Object = _Object_ // Required for CommonJS ES Interop
+export { _Object_ as Object } // Required for CommonJS ES Interop
 
 // ------------------------------------------------------------------
 // Guard
