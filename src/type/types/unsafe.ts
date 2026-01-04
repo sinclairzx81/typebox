@@ -49,7 +49,7 @@ export type TUnsafe<Type extends unknown = unknown, Schema extends TSchema = TSc
 // ------------------------------------------------------------------
 /** Creates a Unsafe type. */
 export function Unsafe<Type extends unknown, Schema extends TSchema>(type: Type, schema: Schema): TUnsafe<Type, Schema> {
-  return Memory.Create({ '~unsafe': type }, schema, {}) as never
+  return Memory.Update(schema, { '~unsafe': type }, {}) as never
 }
 // ------------------------------------------------------------------
 // Guard

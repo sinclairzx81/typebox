@@ -34,22 +34,32 @@ import Type, { Static, TSchema } from 'typebox'
 //   }>  
 // }`)
 
-import { Date, Promise } from './javascript/index.ts'
+import { Promise, TPromise } from './javascript/index.ts'
 
 type TAwaited<Schema extends TSchema> = (
   Type.TConditional<Schema, Type.TObject<{
-    then: Type.TFunction<[Type.TFunction<[Type.TInfer<'Value'>], Type.TUnknown>], Type.TUnknown>
+    then: Type.TFunction<[Type.TFunction<[Type.TInfer<'Value'>], Type.TUnknown>], Type.TUnknown>,
   }>, Type.TRef<'Value'>, Schema>
 )
-function Awaited<Type extends TSchema>(type: Type): TAwaited<Type> {
+function Awaited<Type extends TSchema>(type: Type) {
   return Type.Conditional(type, Type.Object({
     then: Type.Function([Type.Function([Type.Infer('Value')], Type.Unknown())], Type.Unknown())
-  }), Type.Ref('Value'), type) as never
+  }), Type.Ref('Value'), type)
 }
 
-const A = Promise(Type.String())
+
+type S = Type.TString
+type A = TPromise<S>
+type B = TAwaited<A>
+
+
+const S = Type.String()
+const A = Promise(S)
 const B = Awaited(A)
+console.log(A)
 console.log(B)
+
+
 
 
 
