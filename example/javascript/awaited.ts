@@ -29,43 +29,24 @@ THE SOFTWARE.
 import Type from 'typebox'
 
 // ------------------------------------------------------------------
-// ThenFunction<T>
+// Factory | Type Level Generic Expression (Future)
 // ------------------------------------------------------------------
-type TThenFunction<Type extends Type.TSchema> = (
-  Type.TFunction<[
-    Type.TFunction<[Type], Type.TUnknown>
-  ], Type.TUnknown>
-)
-function ThenFunction<Type extends Type.TSchema>(type: Type): TThenFunction<Type> {
-  return Type.Function([
-    Type.Function([type], Type.Unknown())
-  ], Type.Unknown())
-}
-// ------------------------------------------------------------------
-// CatchFunction
-// ------------------------------------------------------------------
-type TCatchFunction = (
-  Type.TFunction<[
-    Type.TFunction<[Type.TObject<{}>], Type.TUnknown>
-  ], Type.TUnknown>
-)
-function CatchFunction(): TCatchFunction {
-  return Type.Function([
-    Type.Function([Type.Object({})], Type.Unknown())
-  ], Type.Unknown())
-}
+// const Awaited = Type.Generic([Type.Parameter('Type')], Type.Conditional(Type.Ref('Type'), Type.Object({
+//   then: Type.Function([Type.Function([Type.Infer('Value')], Type.Unknown())], Type.Unknown())
+// }), Type.Ref('Value'), Type.Ref('Type')))
+
 // ------------------------------------------------------------------
 // Factory
 // ------------------------------------------------------------------
-export type TPromise<Type extends Type.TSchema> = (
-  Type.TUnsafe<Promise<Type.Static<Type>>, Type.TObject<{
-    then: TThenFunction<Type>,
-    catch: TCatchFunction
-  }>>
+export type TAwaited<PromiseLike extends Type.TSchema> = (
+  Type.TConditional<PromiseLike, Type.TObject<{
+    then: Type.TFunction<[Type.TFunction<[Type.TInfer<'Value', Type.TUnknown>], Type.TUnknown>], Type.TUnknown>,
+  }>, Type.TRef<'Value'>, PromiseLike>
 )
-export function Promise<Type extends Type.TSchema>(type: Type): TPromise<Type> {
-  return Type.Unsafe({} as unknown, Type.Object({
-    then: ThenFunction(type),
-    catch: CatchFunction()
-  })) as never
+export function Awaited<PromiseLike extends Type.TSchema>(type: PromiseLike): TAwaited<PromiseLike> {
+  return Type.Conditional(type, Type.Object({
+    then: Type.Function([Type.Function([Type.Infer('Value', Type.Unknown())], Type.Unknown())], Type.Unknown())
+  }), Type.Ref('Value'), type) as never
 }
+
+

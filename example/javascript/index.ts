@@ -26,5 +26,6 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+export * from './awaited.ts'
 export * from './date.ts'
 export * from './promise.ts'
