@@ -52,7 +52,7 @@ export interface TObject<Properties extends TProperties = TProperties> extends T
 // Factory
 // ------------------------------------------------------------------
 /** Creates an Object type. */
-function _Object_<Properties extends TProperties>(properties: Properties, options: TObjectOptions = {}): TObject<Properties> {
+export function _Object_<Properties extends TProperties>(properties: Properties, options: TObjectOptions = {}): TObject<Properties> {
   const requiredKeys = RequiredArray(properties) as string[]
   const required = requiredKeys.length > 0 ? { required: requiredKeys } : {}
   return Memory.Create({ '~kind': 'Object' }, { type: 'object', ...required, properties }, options) as never

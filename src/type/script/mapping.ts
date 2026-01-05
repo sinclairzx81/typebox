@@ -1077,7 +1077,7 @@ export type T_Function_Mapping<Input extends [unknown, unknown, unknown, unknown
     : never
 )
 export function _Function_Mapping(input: [unknown, unknown, unknown, unknown, unknown]): unknown {
-  return T.Function(input[1] as T.TSchema[], input[4] as T.TSchema)
+  return T._Function_(input[1] as T.TSchema[], input[4] as T.TSchema)
 }
 // -------------------------------------------------------------------
 // Constructor: ['new', '(', ParameterList, ')', '=>', Type]
