@@ -72,9 +72,10 @@ export interface TFunction<Parameters extends TSchema[] = TSchema[], ReturnType 
 // Factory
 // ------------------------------------------------------------------
 /** Creates a Function type. */
-export function Function<Parameters extends TSchema[], ReturnType extends TSchema>(parameters: [...Parameters], returnType: ReturnType, options: TSchemaOptions = {}): TFunction<Parameters, ReturnType> {
+export function _Function_<Parameters extends TSchema[], ReturnType extends TSchema>(parameters: [...Parameters], returnType: ReturnType, options: TSchemaOptions = {}): TFunction<Parameters, ReturnType> {
   return Memory.Create({ ['~kind']: 'Function' }, { type: 'function', parameters, returnType }, options) as never
 }
+export { _Function_ as Function }
 // ------------------------------------------------------------------
 // Guard
 // ------------------------------------------------------------------
