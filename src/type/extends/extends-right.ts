@@ -32,6 +32,7 @@ import { Memory } from '../../system/memory/index.ts'
 import { type TSchema, IsSchema } from '../types/schema.ts'
 import { type TProperties } from '../types/properties.ts'
 import { type TAny, IsAny } from '../types/any.ts'
+import { type Base, IsBase } from '../types/base.ts'
 import { type TEnum, type TEnumValue, IsEnum } from '../types/enum.ts'
 import { type TInfer, IsInfer } from '../types/infer.ts'
 import { type TIntersect, IsIntersect } from '../types/intersect.ts'
@@ -83,6 +84,28 @@ function ExtendsRightAny<Inferred extends TProperties, Left extends TSchema>
   (inferred: Inferred, left: Left): 
     TExtendsRightAny<Inferred, Left> {
   return Result.ExtendsTrue(inferred)
+}
+// ----------------------------------------------------------------------------
+// ExtendsRightBase
+// ----------------------------------------------------------------------------
+type TExtendsRightBase<Inferred extends TProperties, Left extends TSchema, Right extends Base> = (
+  Left extends Base
+  ? Left extends Right
+    ? Result.TExtendsTrue<Inferred>
+    : Result.TExtendsFalse
+  : Result.TExtendsFalse
+)
+function ExtendsRightBase<Inferred extends TProperties, Left extends TSchema, Right extends Base>
+  (inferred: Inferred, left: Left, right: Right): 
+    TExtendsRightBase<Inferred, Left, Right> {
+  return (
+    IsBase(left)
+      // Use Equals method for checking equality between Base instances
+      ? (right.Equals(left)
+          ? Result.ExtendsTrue(inferred)
+          : Result.ExtendsFalse())
+      : Result.ExtendsFalse()
+  ) as never
 }
 // ----------------------------------------------------------------------------
 // ExtendsRightEnum
@@ -159,6 +182,7 @@ function ExtendsRightUnion<Inferred extends TProperties, Left extends TSchema, R
 // ----------------------------------------------------------------------------
 export type TExtendsRight<Inferred extends TProperties, Left extends TSchema, Right extends TSchema> = (
   Right extends TAny ? TExtendsRightAny<Inferred, Left> :
+  Right extends Base ? TExtendsRightBase<Inferred, Left, Right> :
   Right extends TEnum<infer Values extends TEnumValue[]> ? TExtendsRightEnum<Inferred, Left, Values> :
   Right extends TInfer<infer Name extends string, infer Type extends TSchema> ? TExtendsRightInfer<Inferred, Name, Left, Type> :
   Right extends TTemplateLiteral<infer Pattern extends string> ? TExtendsRightTemplateLiteral<Inferred, Left, Pattern> :
@@ -172,6 +196,7 @@ export function ExtendsRight<Inferred extends TProperties, Left extends TSchema,
     TExtendsRight<Inferred, Left, Right> {
   return (
     IsAny(right) ? ExtendsRightAny(inferred, left) :
+    IsBase(right) ? ExtendsRightBase(inferred, left, right) :
     IsEnum(right) ? ExtendsRightEnum(inferred, left, right.enum) :
     IsInfer(right) ? ExtendsRightInfer(inferred, right.name, left, right.extends) :
     IsIntersect(right) ? ExtendsRightIntersect(inferred, left, right.allOf) :

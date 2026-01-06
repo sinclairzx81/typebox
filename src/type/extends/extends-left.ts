@@ -31,6 +31,7 @@ THE SOFTWARE.
 import { type TExtendsAny, ExtendsAny } from './any.ts'
 import { type TExtendsArray, ExtendsArray } from './array.ts'
 import { type TExtendsAsyncIterator, ExtendsAsyncIterator } from './async-iterator.ts'
+import { type TExtendsBase, ExtendsBase } from './base.ts'
 import { type TExtendsBigInt, ExtendsBigInt } from './bigint.ts'
 import { type TExtendsBoolean, ExtendsBoolean } from './boolean.ts'
 import { type TExtendsConstructor, ExtendsConstructor } from './constructor.ts'
@@ -60,6 +61,7 @@ import { type TExtendsVoid, ExtendsVoid } from './void.ts'
 import { type TAny, IsAny } from '../types/any.ts'
 import { type TArray, IsArray } from '../types/array.ts'
 import { type TAsyncIterator, IsAsyncIterator } from '../types/async-iterator.ts'
+import { type Base, IsBase } from '../types/base.ts'
 import { type TBigInt, IsBigInt } from '../types/bigint.ts'
 import { type TBoolean, IsBoolean  } from '../types/boolean.ts'
 import { type TConstructor, IsConstructor } from '../types/constructor.ts'
@@ -94,6 +96,7 @@ export type TExtendsLeft<Inferred extends TProperties, Left extends TSchema, Rig
   Left extends TAny ? TExtendsAny<Inferred, Left, Right> :
   Left extends TArray<infer Items extends TSchema> ? TExtendsArray<Inferred, Left, Items, Right> :
   Left extends TAsyncIterator<infer Type extends TSchema> ? TExtendsAsyncIterator<Inferred, Type, Right> :
+  Left extends Base ? TExtendsBase<Inferred, Left, Right> :
   Left extends TBigInt ? TExtendsBigInt<Inferred, Left, Right> :
   Left extends TBoolean ? TExtendsBoolean<Inferred, Left, Right> :
   Left extends TConstructor<infer Parameters extends TSchema[], infer InstanceType extends TSchema> ? TExtendsConstructor<Inferred, Parameters, InstanceType, Right> :
@@ -125,6 +128,7 @@ export function ExtendsLeft<Inferred extends TProperties, Left extends TSchema, 
     IsAny(left) ? ExtendsAny(inferred, left, right) :
     IsArray(left) ? ExtendsArray(inferred, left, left.items, right) :
     IsAsyncIterator(left) ? ExtendsAsyncIterator(inferred, left.iteratorItems, right) :
+    IsBase(left) ? ExtendsBase(inferred, left, right) :
     IsBigInt(left) ? ExtendsBigInt(inferred, left, right) :
     IsBoolean(left) ? ExtendsBoolean(inferred, left, right) :
     IsConstructor(left) ? ExtendsConstructor(inferred, left.parameters, left.instanceType, right) :

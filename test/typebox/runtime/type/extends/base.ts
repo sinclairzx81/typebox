@@ -14,15 +14,13 @@ export class TBase extends Type.Base<unknown> {
 
 const Base = new TBase()
 // ------------------------------------------------------------------
-// Identity: Note, it's not obvious to how to handle Base checks
-// without relying on nominal typing, while technically possible
-// to check for the constructor, bundlers and downlevel targets
-// make this a unreliable check. For now, Base is considered a
-// distinct type of itself.
+// Identity: Base types extend each other if they are instances
+// of the same class (constructor check). This models TypeScript's
+// structural type checking at runtime.
 // ------------------------------------------------------------------
 Test('Should Extends 0', () => {
-  const R: ExtendsResult.TExtendsFalse = Extends({}, Base, Base)
-  Assert.IsTrue(ExtendsResult.IsExtendsFalse(R))
+  const R: ExtendsResult.TExtendsTrue<{}> = Extends({}, Base, Base)
+  Assert.IsTrue(ExtendsResult.IsExtendsTrue(R))
 })
 // ------------------------------------------------------------------
 // Invariant
