@@ -91,11 +91,11 @@ type TDistributeOperation<Left extends TSchema, Right extends TSchema,
 function DistributeOperation<Left extends TSchema, Right extends TSchema>(left: Left, right: Right): TDistributeOperation<Left, Right> {
   const evaluatedLeft = EvaluateType(left)
   const evaluatedRight = EvaluateType(right)
-  const needsEvaluate = IsUnionOperand(evaluatedLeft, evaluatedRight)
+  const isUnionOperand = IsUnionOperand(evaluatedLeft, evaluatedRight)
   const isObjectLeft = IsObjectLike(evaluatedLeft)
   const IsObjectRight = IsObjectLike(evaluatedRight)
   const result = (
-    needsEvaluate ? EvaluateIntersect([evaluatedLeft, evaluatedRight]) :
+    isUnionOperand ? EvaluateIntersect([evaluatedLeft, evaluatedRight]) :
     isObjectLeft && IsObjectRight ? Composite(evaluatedLeft, evaluatedRight) :
     isObjectLeft && !IsObjectRight ? evaluatedLeft :
     !isObjectLeft && IsObjectRight ? evaluatedRight :

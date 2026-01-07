@@ -357,7 +357,10 @@ Test('Should Clean 30', () => {
       Type.Object({ c: Type.Number() })
     ])
   ])
-  const value = { x: 1, a: 2, c: 3 }
-  const clean = Value.Clean(T, value)
-  Assert.IsEqual(value, clean)
+  const V1 = { a: 2, x: 1, c: 3 } // Evaluated[0]
+  const V2 = { b: 2, x: 1, c: 3 } // Evaluated[1]
+  const R1 = Value.Clean(T, V1)
+  const R2 = Value.Clean(T, V2)
+  Assert.IsEqual(V1, R1)
+  Assert.IsEqual(V2, R2)
 })
