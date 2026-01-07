@@ -825,3 +825,40 @@ Test('Should Evaluate 66', () => {
   Assert.IsTrue(Type.IsBase(T.properties.value))
   Assert.IsTrue(T.properties.value instanceof Foo)
 })
+
+// ------------------------------------------------------------------
+// https://github.com/sinclairzx81/typebox/issues/1506
+// ------------------------------------------------------------------
+Test('Should Evaluate 67', () => {
+  const T = Type.Intersect([
+    Type.Intersect([
+      Type.Object({ c: Type.Number() }),
+      Type.Union([
+        Type.Object({ a: Type.Number() }),
+        Type.Object({ b: Type.Number() })
+      ])
+    ]),
+    Type.Object({ x: Type.Number() })
+  ])
+  const S: Type.TUnion<[
+    Type.TObject<{
+      x: Type.TNumber
+      c: Type.TNumber
+      a: Type.TNumber
+    }>,
+    Type.TObject<{
+      x: Type.TNumber
+      c: Type.TNumber
+      b: Type.TNumber
+    }>
+  ]> = Type.Evaluate(T)
+  Assert.IsTrue(Type.IsUnion(S))
+  Assert.IsTrue(Type.IsObject(S.anyOf[0]))
+  Assert.IsTrue(Type.IsNumber(S.anyOf[0].properties.a))
+  Assert.IsTrue(Type.IsNumber(S.anyOf[0].properties.c))
+  Assert.IsTrue(Type.IsNumber(S.anyOf[0].properties.x))
+  Assert.IsTrue(Type.IsObject(S.anyOf[1]))
+  Assert.IsTrue(Type.IsNumber(S.anyOf[1].properties.b))
+  Assert.IsTrue(Type.IsNumber(S.anyOf[1].properties.c))
+  Assert.IsTrue(Type.IsNumber(S.anyOf[1].properties.x))
+})

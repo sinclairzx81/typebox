@@ -31,83 +31,75 @@ THE SOFTWARE.
 
 import { Guard } from '../../../guard/index.ts'
 import { type TSchema, IsSchema } from '../../types/schema.ts'
-import { type TIntersect, IsIntersect } from '../../types/intersect.ts'
 import { type TUnion, IsUnion } from '../../types/union.ts'
 import { type TObject, IsObject } from '../../types/object.ts'
 import { type TTuple, IsTuple } from '../../types/tuple.ts'
 import { type TComposite, Composite } from './composite.ts'
 import { type TNarrow, Narrow } from './narrow.ts'
-import { type TEvaluateType, EvaluateType } from './evaluate.ts'
 
+import { type TEvaluateType, EvaluateType } from './evaluate.ts'
 import { type TEvaluateIntersect, EvaluateIntersect } from './evaluate.ts'
 
-// -----------------------------------------------------------------------------------------
-// CanDistribute
-// -----------------------------------------------------------------------------------------
-type TCanDistribute<Type extends TSchema> 
+// ------------------------------------------------------------------
+// IsObjectLike
+// ------------------------------------------------------------------
+type TIsObjectLike<Type extends TSchema> 
   = Type extends TObject | TTuple ? true : false
-function CanDistribute<Type extends TSchema>(type: Type) {
+function IsObjectLike<Type extends TSchema>(type: Type) {
   return IsObject(type) || IsTuple(type)
 }
-// -----------------------------------------------------------------------------------------
-//
-// DistributeNormalize
-//
-// Distribute operands may be intersections, this function forces a conditional 
-// sub-evaluation of an intersection to give either a TTObject | scalar. This 
-// preflight mapping is used prior to running the logic for the DistributeOperation.
-//
-// -----------------------------------------------------------------------------------------
-type TDistributeNormalize<Type extends TSchema> = 
-  Type extends TIntersect<infer Types extends TSchema[]> 
-    ? TEvaluateIntersect<Types> 
-    : Type
-
-function DistributeNormalize<Type extends TSchema>(type: Type): TDistributeNormalize<Type> {
+// ------------------------------------------------------------------
+// IsUnionOperand
+// ------------------------------------------------------------------
+type TIsUnionOperand<Left extends TSchema, Right extends TSchema,
+  IsUnionLeft extends boolean = Left extends TUnion ? true : false,
+  IsUnionRight extends boolean = Right extends TUnion ? true : false,
+  Result extends boolean = (
+    [IsUnionLeft, IsUnionRight] extends [true, true] ? true :
+    [IsUnionLeft, IsUnionRight] extends [false, true] ? true :
+    [IsUnionLeft, IsUnionRight] extends [true, false] ? true :
+    false
+  )
+> = Result
+function IsUnionOperand<Left extends TSchema, Right extends TSchema>(left: Left, right: Right): TIsUnionOperand<Left, Right> {
+  const isUnionLeft = IsUnion(left)
+  const isUnionRight = IsUnion(right)
   return (
-    IsIntersect(type) 
-      ? EvaluateIntersect(type.allOf) 
-      : type
+    isUnionLeft && isUnionRight ? true :
+    !isUnionLeft && isUnionRight ? true :
+    isUnionLeft && !isUnionRight ? true :
+    false
   ) as never
 }
 // -----------------------------------------------------------------------------------------
-//
 // DistributeOperation
-//
-// This function is crucial for type distribution and evaluation. Unlike TypeScript, 
-// TypeBox does not distribute scalar types (e.g., numbers, strings) against object 
-// types. When an object is encountered, the distribution shifts from scalar to 
-// composite, with no option to revert to scalar distribution.
-//
-// This behavior is similar to TypeScript, where a number distributed against an object 
-// is composited with the number's built-in methods. However, in TypeBox, numbers lack 
-// methods and are treated as symbolic types. Discarding them is effectively the same 
-// as compositing an empty `{}`. The empty object distribution for symbolic scalar 
-// types is the rationale behind the following logic.
-//
 // -----------------------------------------------------------------------------------------
 type TDistributeOperation<Left extends TSchema, Right extends TSchema,
-  NormalLeft extends TSchema = TDistributeNormalize<Left>,
-  NormalRight extends TSchema = TDistributeNormalize<Right>,
-  IsObjectLeft extends boolean = TCanDistribute<NormalLeft>,
-  IsObjectRight extends boolean = TCanDistribute<NormalRight>,
+  EvaluatedLeft extends TSchema = TEvaluateType<Left>,
+  EvaluatedRight extends TSchema = TEvaluateType<Right>,
+  IsUnionOperand extends boolean = TIsUnionOperand<EvaluatedLeft, EvaluatedRight>,
+  IsObjectLeft extends boolean = TIsObjectLike<EvaluatedLeft>,
+  IsObjectRight extends boolean = TIsObjectLike<EvaluatedRight>,
   Result extends TSchema = (
-    [IsObjectLeft, IsObjectRight] extends [true, true] ? TComposite<TEvaluateType<NormalLeft>, NormalRight> :
-    [IsObjectLeft, IsObjectRight] extends [true, false] ? TEvaluateType<NormalLeft> :
-    [IsObjectLeft, IsObjectRight] extends [false, true] ? NormalRight :
-    TNarrow<TEvaluateType<NormalLeft>, NormalRight>
+    [IsUnionOperand] extends [true] ? TEvaluateIntersect<[EvaluatedLeft, EvaluatedRight]> :
+    [IsObjectLeft, IsObjectRight] extends [true, true] ? TComposite<EvaluatedLeft, EvaluatedRight> :
+    [IsObjectLeft, IsObjectRight] extends [true, false] ? EvaluatedLeft :
+    [IsObjectLeft, IsObjectRight] extends [false, true] ? EvaluatedRight :
+    TNarrow<EvaluatedLeft, EvaluatedRight>
   )
 > = Result
 function DistributeOperation<Left extends TSchema, Right extends TSchema>(left: Left, right: Right): TDistributeOperation<Left, Right> {
-  const normalLeft = DistributeNormalize(left)
-  const normalRight = DistributeNormalize(right)
-  const isObjectLeft = CanDistribute(normalLeft)
-  const IsObjectRight = CanDistribute(normalRight)
+  const evaluatedLeft = EvaluateType(left)
+  const evaluatedRight = EvaluateType(right)
+  const isUnionOperand = IsUnionOperand(evaluatedLeft, evaluatedRight)
+  const isObjectLeft = IsObjectLike(evaluatedLeft)
+  const IsObjectRight = IsObjectLike(evaluatedRight)
   const result = (
-    isObjectLeft && IsObjectRight ? Composite(EvaluateType(normalLeft), normalRight) :
-    isObjectLeft && !IsObjectRight ? EvaluateType(normalLeft) :
-    !isObjectLeft && IsObjectRight ? normalRight :
-    Narrow(EvaluateType(normalLeft), normalRight)
+    isUnionOperand ? EvaluateIntersect([evaluatedLeft, evaluatedRight]) :
+    isObjectLeft && IsObjectRight ? Composite(evaluatedLeft, evaluatedRight) :
+    isObjectLeft && !IsObjectRight ? evaluatedLeft :
+    !isObjectLeft && IsObjectRight ? evaluatedRight :
+    Narrow(evaluatedLeft, evaluatedRight)
   )
   return result as never
 }
