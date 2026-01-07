@@ -343,3 +343,21 @@ Test('Should Clean 29', () => {
   const R = Value.Clean(T, { u: null, x: 1 })
   Assert.IsEqual(R, { x: 1 })
 })
+// ------------------------------------------------------------------
+// https://github.com/sinclairzx81/typebox/issues/1506
+// ------------------------------------------------------------------
+Test('Should Clean 30', () => {
+  const T = Type.Intersect([
+    Type.Object({ x: Type.Number() }),
+    Type.Intersect([
+      Type.Union([
+        Type.Object({ a: Type.Number() }),
+        Type.Object({ b: Type.Number() })
+      ]),
+      Type.Object({ c: Type.Number() })
+    ])
+  ])
+  const value = { x: 1, a: 2, c: 3 }
+  const clean = Value.Clean(T, value)
+  Assert.IsEqual(value, clean)
+})
