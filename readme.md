@@ -25,7 +25,7 @@ $ npm install typebox
 
 ## Usage
 
-A TypeScript first validation engine for JSON Schema [Example](https://tsplay.dev/mZMOeN)
+A TypeScript engine for JSON Schema [Example](https://tsplay.dev/mZMOeN)
 
 ```typescript
 import Type from 'typebox'
@@ -212,7 +212,7 @@ type S = Type.Static<typeof S>                      // type S = {
 
 [Documentation](https://sinclairzx81.github.io/typebox/#/docs/compile/overview) | [Example](https://tsplay.dev/WyraZw)
 
-The Compile submodule is a high-performance JSON Schema compliant JIT compiler that compiles schematics into efficient runtime validators. The compiler is optimized for fast compilation and validation and is known to be one of the fastest validation solutions available for JavaScript.
+The Compile submodule is a high-performance, JSON Schema compliant JIT compiler that transforms schematics into efficient runtime validators. It is optimized for fast, dynamic schema compilation and delivers extremely high data-validation throughput.
 
 ```typescript
 import Compile from 'typebox/compile' 
