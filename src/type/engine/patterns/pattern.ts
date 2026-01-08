@@ -28,33 +28,23 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { type TUnreachable, Unreachable } from '../../../system/unreachable/index.ts'
-
 import { Guard } from '../../../guard/index.ts'
 import { type TSchema } from '../../types/schema.ts'
 import { type TPattern, Pattern } from '../../script/parser.ts'
 
-// ------------------------------------------------------------------
-// deno-coverage-ignore-start - symmetric unreachable
-//
-// Parser is parsing regular expression for strings and will return 
-// at least 1 TLiteral at a minumum.
-//
-// ------------------------------------------------------------------
 /** Parses a Pattern into a sequence of TemplateLiteral types */
 export type TParsePatternIntoTypes<Pattern extends string,
   Parsed extends [TSchema[], string] | [] = TPattern<Pattern>,
   Result extends TSchema[] = Parsed extends [infer Types extends TSchema[], string] 
     ? Types 
-    : TUnreachable // []
+    : [] // not a valid patterh
 > = Result
 /** Parses a Pattern into a sequence of TemplateLiteral types */
 export function ParsePatternIntoTypes<Pattern extends string>(pattern: Pattern): TParsePatternIntoTypes<Pattern> {
   const parsed = Pattern(pattern)
   const result = Guard.IsEqual(parsed.length, 2) 
     ? parsed[0] 
-    : Unreachable() // []
+    : [] // not a valid patterh
   return result as never
 }
-// deno-coverage-ignore-stop
 

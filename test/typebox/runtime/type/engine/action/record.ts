@@ -366,7 +366,7 @@ Test('Should Record 24', () => {
   )
   Assert.IsEqual(Type.RecordPattern(T), '^(A|B).*$')
   Assert.IsTrue(Type.IsRecord(T))
-  Assert.IsTrue(Type.IsString(Type.RecordKey(T))) // observed as string
+  Assert.IsTrue(Type.IsTemplateLiteral(Type.RecordKey(T)))
   Assert.IsTrue(Type.IsNull(Type.RecordValue(T)))
 })
 // ------------------------------------------------------------------

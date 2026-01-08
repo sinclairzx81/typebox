@@ -4,7 +4,7 @@ import Guard from 'typebox/guard'
 import Format from 'typebox/format'
 import Schema from 'typebox/schema'
 import Value from 'typebox/value'
-import Type from 'typebox'
+import { Type, TemplateLiteralDecode, RecordKey } from 'typebox'
 
 // ------------------------------------------------------------------
 // Settings
@@ -12,59 +12,10 @@ import Type from 'typebox'
 
 System.Settings.Set({ enumerableKind: false })
 
-// ------------------------------------------------------------------
-// Guard
-// ------------------------------------------------------------------
+const A = Type.TemplateLiteral('x-${string}')
+const B = TemplateLiteralDecode("^x-.*$")
+const R = Type.Record(Type.String(), Type.String())
+const X = RecordKey(R)
 
-const A = Guard.GraphemeCount('type-📦')      // 6
-const B = Guard.HasPropertyKey({ x: 1 }, 'x') // true
+console.log(R)
 
-// ------------------------------------------------------------------
-// Type
-// ------------------------------------------------------------------
-
-const T = Type.Object({
-  x: Type.Number(),
-  y: Type.Number(),
-  z: Type.Number()
-})
-
-// ------------------------------------------------------------------
-// Script
-// ------------------------------------------------------------------
-
-const S = Type.Script({ T }, `{
-  [K in keyof T]: T[K] | null
-}`)
-
-// ------------------------------------------------------------------
-// Infer
-// ------------------------------------------------------------------
-
-type T = Type.Static<typeof T>
-type S = Type.Static<typeof S>
-
-// ------------------------------------------------------------------
-// Parse
-// ------------------------------------------------------------------
-
-const R = Value.Parse(T, { x: 1, y: 2, z: 3 })
-
-// ------------------------------------------------------------------
-// Compile
-// ------------------------------------------------------------------
-const C = Compile(S)
-
-const X = C.Parse({ x: 1, y: 2, z: 3 })
-
-// ------------------------------------------------------------------
-// Format
-// ------------------------------------------------------------------
-
-const E = Format.IsEmail('user@domain.com')
-
-// ------------------------------------------------------------------
-// Schema
-// ------------------------------------------------------------------
-
-const D = Schema.Check({ type: 'string' }, 'hello')
