@@ -32,19 +32,19 @@ import { Guard } from '../../../guard/index.ts'
 import { type TSchema } from '../../types/schema.ts'
 import { type TPattern, Pattern } from '../../script/parser.ts'
 
-/** Parses a Pattern into a sequence of TemplateLiteral types */
+/** Parses a Pattern into a sequence of TemplateLiteral types. A result of [] indicates failure to parse. */
 export type TParsePatternIntoTypes<Pattern extends string,
   Parsed extends [TSchema[], string] | [] = TPattern<Pattern>,
   Result extends TSchema[] = Parsed extends [infer Types extends TSchema[], string] 
     ? Types 
-    : [] // not a valid patterh
+    : [] // Failed to Parse
 > = Result
-/** Parses a Pattern into a sequence of TemplateLiteral types */
+/** Parses a Pattern into a sequence of TemplateLiteral types. A result of [] indicates failure to parse. */
 export function ParsePatternIntoTypes<Pattern extends string>(pattern: Pattern): TParsePatternIntoTypes<Pattern> {
   const parsed = Pattern(pattern)
   const result = Guard.IsEqual(parsed.length, 2) 
     ? parsed[0] 
-    : [] // not a valid patterh
+    : [] // Failed to Parse
   return result as never
 }
 

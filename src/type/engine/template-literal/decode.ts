@@ -179,7 +179,7 @@ function DecodeTypes<Types extends TSchema[]>(types: [...Types]): TDecodeTypes<T
 export type TTemplateLiteralDecode<Pattern extends string,
   Types extends TSchema[] = TParsePatternIntoTypes<Pattern>,
   Result extends TSchema = (
-    Types extends [] // failed to parse, assume arbitary expression
+    Types extends []                            // Failed to Parse
       ? TString
       : TTemplateLiteralFinite<Types> extends true
         ? TDecodeTypes<Types>
@@ -189,9 +189,9 @@ export type TTemplateLiteralDecode<Pattern extends string,
 /** Decodes a TemplateLiteral into a Type. If the TemplateLiteral yields a non-finite set, the return value is TString */
 export function TemplateLiteralDecode<Pattern extends string>(pattern: Pattern): TTemplateLiteralDecode<Pattern> {
   const types = ParsePatternIntoTypes(pattern)
-  const result = Guard.IsEqual(types.length, 0)
-    ? String({ pattern })
-    : TemplateLiteralFinite(types)
+  const result = Guard.IsEqual(types.length, 0) // Failed to Parse
+    ? String()                                  // ... Pattern cannot be typed, so discard
+    : TemplateLiteralFinite(types)              
       ? DecodeTypes(types)
       : TemplateLiteralCreate(pattern)
   return result as never
