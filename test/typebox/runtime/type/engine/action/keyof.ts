@@ -1,5 +1,6 @@
 import { Assert } from 'test'
 import * as Type from 'typebox'
+import Guard from 'typebox/guard'
 
 const Test = Assert.Context('Type.Engine.KeyOf')
 
@@ -301,4 +302,20 @@ Test('Should KeyOf 26', () => {
   Assert.IsTrue(Type.IsUnion(K))
   Assert.IsEqual(K.anyOf[0].const, 'x')
   Assert.IsEqual(K.anyOf[1].const, 'y')
+})
+// ------------------------------------------------------------------
+// Record with TemplateLiteral Key
+// ------------------------------------------------------------------
+Test('Should KeyOf 27', () => {
+  const K = Type.Record(Type.TemplateLiteral('x-${string}'), Type.Null())
+  const T: Type.TTemplateLiteral<'^x-.*$'> = Type.KeyOf(K)
+  Assert.IsTrue(Type.IsTemplateLiteral(T))
+  Assert.IsTrue(Guard.IsEqual(T.pattern, '^x-.*$'))
+})
+Test('Should KeyOf 28', () => {
+  const K = Type.Record(Type.TemplateLiteral('x-${1|2}'), Type.Null())
+  const T: Type.TUnion<[Type.TLiteral<'x-1'>, Type.TLiteral<'x-2'>]> = Type.KeyOf(K)
+  Assert.IsTrue(Type.IsUnion(T))
+  Assert.IsTrue(Guard.IsEqual(T.anyOf[0].const, 'x-1'))
+  Assert.IsTrue(Guard.IsEqual(T.anyOf[1].const, 'x-2'))
 })

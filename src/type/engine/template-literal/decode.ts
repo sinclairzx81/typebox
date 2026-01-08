@@ -31,13 +31,15 @@ THE SOFTWARE.
 import { TUnreachable, Unreachable } from '../../../system/unreachable/index.ts'
 import { Guard } from '../../../guard/index.ts'
 
-import { type TSchema, IsSchema } from '../../types/schema.ts'
-import { type TUnion, Union, IsUnion } from '../../types/union.ts'
-import { type TString, String } from '../../types/string.ts'
 import { type TLiteral, type TLiteralValue, Literal, IsLiteral } from '../../types/literal.ts'
+import { type TSchema, IsSchema } from '../../types/schema.ts'
+import { type TString, String } from '../../types/string.ts'
+import { type TTemplateLiteral } from '../../types/template-literal.ts'
+import { type TUnion, Union, IsUnion } from '../../types/union.ts'
 
 import { type TParsePatternIntoTypes, ParsePatternIntoTypes } from '../patterns/pattern.ts'
 import { type TTemplateLiteralFinite, TemplateLiteralFinite } from './finite.ts'
+import { TemplateLiteralCreate } from './create.ts'
 
 // ------------------------------------------------------------------
 // FromLiteral
@@ -176,19 +178,21 @@ function DecodeTypes<Types extends TSchema[]>(types: [...Types]): TDecodeTypes<T
 /** Decodes a TemplateLiteral into a Type. If the TemplateLiteral yields a non-finite set, the return value is TString */
 export type TTemplateLiteralDecode<Pattern extends string,
   Types extends TSchema[] = TParsePatternIntoTypes<Pattern>,
-  Finite extends boolean = TTemplateLiteralFinite<Types>,
   Result extends TSchema = (
-    Finite extends true 
-      ? TDecodeTypes<Types> 
-      : TString
+    Types extends []                            // Failed to Parse
+      ? TString
+      : TTemplateLiteralFinite<Types> extends true
+        ? TDecodeTypes<Types>
+        : TTemplateLiteral<Pattern>
   )
 > = Result
 /** Decodes a TemplateLiteral into a Type. If the TemplateLiteral yields a non-finite set, the return value is TString */
 export function TemplateLiteralDecode<Pattern extends string>(pattern: Pattern): TTemplateLiteralDecode<Pattern> {
   const types = ParsePatternIntoTypes(pattern)
-  const finite = TemplateLiteralFinite(types)
-  const result = finite 
-    ? DecodeTypes(types) 
-    : String()
+  const result = Guard.IsEqual(types.length, 0) // Failed to Parse
+    ? String()                                  // ... Pattern cannot be typed, so discard
+    : TemplateLiteralFinite(types)              
+      ? DecodeTypes(types)
+      : TemplateLiteralCreate(pattern)
   return result as never
 }

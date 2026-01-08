@@ -54,22 +54,13 @@ function IsObjectLike<Type extends TSchema>(type: Type) {
 type TIsUnionOperand<Left extends TSchema, Right extends TSchema,
   IsUnionLeft extends boolean = Left extends TUnion ? true : false,
   IsUnionRight extends boolean = Right extends TUnion ? true : false,
-  Result extends boolean = (
-    [IsUnionLeft, IsUnionRight] extends [true, true] ? true :
-    [IsUnionLeft, IsUnionRight] extends [false, true] ? true :
-    [IsUnionLeft, IsUnionRight] extends [true, false] ? true :
-    false
-  )
+  Result extends boolean = IsUnionLeft extends true ? true : IsUnionRight extends true ? true : false
 > = Result
 function IsUnionOperand<Left extends TSchema, Right extends TSchema>(left: Left, right: Right): TIsUnionOperand<Left, Right> {
   const isUnionLeft = IsUnion(left)
   const isUnionRight = IsUnion(right)
-  return (
-    isUnionLeft && isUnionRight ? true :
-    !isUnionLeft && isUnionRight ? true :
-    isUnionLeft && !isUnionRight ? true :
-    false
-  ) as never
+  const result = isUnionLeft || isUnionRight
+  return result as never
 }
 // -----------------------------------------------------------------------------------------
 // DistributeOperation

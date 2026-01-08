@@ -40,6 +40,8 @@ import { type TDeferred, Deferred } from './deferred.ts'
 
 import { type TInstantiate, Instantiate } from '../engine/instantiate.ts'
 import { type TTemplateLiteralStatic } from '../engine/template-literal/index.ts'
+import { type TTemplateLiteralDecode, TemplateLiteralDecode } from '../engine/template-literal/decode.ts'
+
 import { CreateRecord } from '../engine/record/record-create.ts'
 
 // -------------------------------------------------------------------
@@ -127,18 +129,20 @@ export function RecordPattern<Type extends TRecord>(type: Type): TRecordPattern<
 export type TRecordKey<Type extends TRecord,
   Pattern extends string = TRecordPattern<Type>,
   Result extends TSchema = (
+    Pattern extends typeof StringKey ? TString :
     Pattern extends typeof IntegerKey ? TInteger :
     Pattern extends typeof NumberKey ? TNumber :
-    TString
+    TTemplateLiteralDecode<Pattern>
   )
 > = Result
 /** Returns the Record key as a TypeBox type  */
 export function RecordKey<Type extends TRecord>(type: Type): TRecordKey<Type> {
   const pattern = RecordPattern(type)
   const result = (
+    Guard.IsEqual(pattern, StringKey) ? String() :
     Guard.IsEqual(pattern, IntegerKey) ? Integer() :
     Guard.IsEqual(pattern, NumberKey) ? Number() :
-    String()
+    TemplateLiteralDecode(pattern)
   )
   return result as never
 }

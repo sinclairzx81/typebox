@@ -825,7 +825,6 @@ Test('Should Evaluate 66', () => {
   Assert.IsTrue(Type.IsBase(T.properties.value))
   Assert.IsTrue(T.properties.value instanceof Foo)
 })
-
 // ------------------------------------------------------------------
 // https://github.com/sinclairzx81/typebox/issues/1506
 // ------------------------------------------------------------------
