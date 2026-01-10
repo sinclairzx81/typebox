@@ -57,25 +57,25 @@ Test('Should TemplateLiteralDecode 5', () => {
 // ------------------------------------------------------------------
 // Coverage: TemplateLiteralDecodeUnsafe
 // ------------------------------------------------------------------
-Test('Should TemplateLiteralDecode 1', () => {
+Test('Should TemplateLiteralDecodeUnsafe 1', () => {
   const A: Type.TString = Type.TemplateLiteralDecodeUnsafe('')
   Assert.IsTrue(Type.IsString(A))
   Assert.IsFalse(Guard.HasPropertyKey(A, 'pattern')) // non-representable patterns are discarded
 })
-Test('Should TemplateLiteralDecode 2', () => {
+Test('Should TemplateLiteralDecodeUnsafe 2', () => {
   const A: Type.TString = Type.TemplateLiteralDecodeUnsafe('x-.*$')
   Assert.IsTrue(Type.IsString(A))
 })
-Test('Should TemplateLiteralDecode 3', () => {
+Test('Should TemplateLiteralDecodeUnsafe 3', () => {
   const A: Type.TString = Type.TemplateLiteralDecodeUnsafe('^x-.*')
   Assert.IsTrue(Type.IsString(A))
 })
-Test('Should TemplateLiteralDecode 4', () => {
+Test('Should TemplateLiteralDecodeUnsafe 4', () => {
   const A: Type.TTemplateLiteral<'^x-.*$'> = Type.TemplateLiteralDecodeUnsafe('^x-.*$')
   Assert.IsTrue(Type.IsTemplateLiteral(A))
   Assert.IsTrue(Guard.IsEqual(A.pattern, '^x-.*$'))
 })
-Test('Should TemplateLiteralDecode 5', () => {
+Test('Should TemplateLiteralDecodeUnsafe 5', () => {
   const A: Type.TUnion<[
     Type.TLiteral<'x-1'>,
     Type.TLiteral<'x-2'>
