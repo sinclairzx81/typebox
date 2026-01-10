@@ -32,6 +32,7 @@ import { Guard } from '../../../guard/index.ts'
 import { type TSchema, IsSchema } from '../../types/schema.ts'
 import { type TLiteral, type TLiteralValue, IsLiteral } from '../../types/literal.ts'
 import { type TUnion, IsUnion } from '../../types/union.ts'
+import { type TTemplateLiteralDecode, TemplateLiteralDecode } from './decode.ts'
 
 // ------------------------------------------------------------------
 // FromLiteral
@@ -82,14 +83,14 @@ function FromType<Type extends TSchema>(type: Type): TFromType<Type> {
   ) as never
 }
 // ------------------------------------------------------------------
-// TemplateLiteralFinite
+// IsIsTemplateLiteralFinite
 // ------------------------------------------------------------------
 /** Returns true if the given TemplateLiteral types yields a finite variant set */
-export type TTemplateLiteralFinite<Types extends TSchema[],
+export type TIsTemplateLiteralFinite<Types extends TSchema[],
   Result extends boolean = TFromTypes<Types>
 > = Result
 /** Returns true if the given TemplateLiteral types yields a finite variant set */
-export function TemplateLiteralFinite<Types extends TSchema[]>(types: [...Types]): TTemplateLiteralFinite<Types> {
+export function IsTemplateLiteralFinite<Types extends TSchema[]>(types: [...Types]): TIsTemplateLiteralFinite<Types> {
   const result = FromTypes(types)
   return result as never
 }

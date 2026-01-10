@@ -15,3 +15,13 @@ Test('Should Convert 1', () => {
   Assert.IsEqual(R2, '3')
   Assert.IsEqual(R3, 4)
 })
+// ------------------------------------------------------------------
+// https://github.com/sinclairzx81/typebox/issues/1510
+// ------------------------------------------------------------------
+Test('Should Convert 2', () => {
+  const T = Type.Object({
+    test: Type.TemplateLiteral('${number}${"a"|"b"|"c"}')
+  })
+  const R0 = Value.Convert(T, { test: '123b' })
+  Assert.IsEqual(R0, { test: '123b' })
+})
