@@ -34,11 +34,11 @@ import { Guard } from '../../../guard/index.ts'
 import { type TLiteral, type TLiteralValue, Literal, IsLiteral } from '../../types/literal.ts'
 import { type TSchema, IsSchema } from '../../types/schema.ts'
 import { type TString, String } from '../../types/string.ts'
-import { type TTemplateLiteral } from '../../types/template-literal.ts'
+import { type TTemplateLiteral, IsTemplateLiteral } from '../../types/template-literal.ts'
 import { type TUnion, Union, IsUnion } from '../../types/union.ts'
 
 import { type TParsePatternIntoTypes, ParsePatternIntoTypes } from '../patterns/pattern.ts'
-import { type TTemplateLiteralFinite, TemplateLiteralFinite } from './finite.ts'
+import { type TIsTemplateLiteralFinite, IsTemplateLiteralFinite } from './is-finite.ts'
 import { TemplateLiteralCreate } from './create.ts'
 
 // ------------------------------------------------------------------
@@ -170,29 +170,45 @@ function DecodeTypes<Types extends TSchema[]>(types: [...Types]): TDecodeTypes<T
 } 
 // deno-coverage-ignore-stop
 // ------------------------------------------------------------------
-// TemplateLiteralDecode
-//
-// Decodes a TemplateLiteral pattern as a normalized type.
-//
+// TemplateLiteralDecodeUnsafe
 // ------------------------------------------------------------------
-/** Decodes a TemplateLiteral into a Type. If the TemplateLiteral yields a non-finite set, the return value is TString */
-export type TTemplateLiteralDecode<Pattern extends string,
+/** Decodes a TemplateLiteral into a Type. */
+export type TTemplateLiteralDecodeUnsafe<Pattern extends string,
   Types extends TSchema[] = TParsePatternIntoTypes<Pattern>,
   Result extends TSchema = (
-    Types extends []                            // Failed to Parse
+    Types extends []                            // Failed to Parse | IsTemplateLiteralPattern
       ? TString
-      : TTemplateLiteralFinite<Types> extends true
+      : TIsTemplateLiteralFinite<Types> extends true
         ? TDecodeTypes<Types>
         : TTemplateLiteral<Pattern>
   )
 > = Result
-/** Decodes a TemplateLiteral into a Type. If the TemplateLiteral yields a non-finite set, the return value is TString */
-export function TemplateLiteralDecode<Pattern extends string>(pattern: Pattern): TTemplateLiteralDecode<Pattern> {
+/**
+ * (Internal) Decodes a TemplateLiteral pattern into a Type. This function is unsafe. Decoding a non-finite 
+ * TemplateLiteral pattern may produce another TemplateLiteral pattern. During enumeration, this 
+ * TemplateLiteral -> TemplateLiteral behavior can cause a StackOverflow. A better in-flight template-literal 
+ * decoding algorithm is needed. (for review)
+ */
+export function TemplateLiteralDecodeUnsafe<Pattern extends string>(pattern: Pattern): TTemplateLiteralDecodeUnsafe<Pattern> {
   const types = ParsePatternIntoTypes(pattern)
-  const result = Guard.IsEqual(types.length, 0) // Failed to Parse
+  const result = Guard.IsEqual(types.length, 0) // Failed to Parse | IsTemplateLiteralPattern
     ? String()                                  // ... Pattern cannot be typed, so discard
-    : TemplateLiteralFinite(types)              
+    : IsTemplateLiteralFinite(types)              
       ? DecodeTypes(types)
       : TemplateLiteralCreate(pattern)
+  return result as never
+}
+// ------------------------------------------------------------------
+// TemplateLiteralDecode
+// ------------------------------------------------------------------
+/** Decodes a TemplateLiteral pattern but returns TString if the pattern in non-finite. */
+export type TTemplateLiteralDecode<Pattern extends string,
+  Decoded extends TSchema = TTemplateLiteralDecodeUnsafe<Pattern>,
+  Result extends TSchema = Decoded extends TTemplateLiteral ? TString : Decoded
+> = Result
+/** Decodes a TemplateLiteral pattern but returns TString if the pattern in non-finite. */
+export function TemplateLiteralDecode<Pattern extends string>(pattern: Pattern): TTemplateLiteralDecode<Pattern> {
+  const decoded = TemplateLiteralDecodeUnsafe(pattern)
+  const result = IsTemplateLiteral(decoded) ? String() : decoded
   return result as never
 }

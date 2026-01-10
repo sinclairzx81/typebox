@@ -29,5 +29,6 @@ THE SOFTWARE.
 export * from './create.ts'
 export * from './decode.ts'
 export * from './encode.ts'
-export * from './finite.ts'
 export * from './static.ts'
+export * from './is-finite.ts'
+export * from './is-pattern.ts'
