@@ -28,23 +28,18 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
+import { Guard } from '../../../guard/index.ts'
 import { type TSchema } from '../../types/schema.ts'
-import { type TRecord } from '../../types/record.ts'
-import { type TFromKey, FromKey } from './from-key.ts'
-
 import { type TParsePatternIntoTypes, ParsePatternIntoTypes } from '../patterns/pattern.ts'
-import { type TIsTemplateLiteralFinite, IsTemplateLiteralFinite } from '../template-literal/is-finite.ts'
-import { type TTemplateLiteralDecode, TemplateLiteralDecode } from '../template-literal/decode.ts'
-import { CreateRecord } from './record-create.ts'
 
-export type TFromTemplateKey<Pattern extends string, Value extends TSchema,
+/** Returns true if this pattern is a valid Template Literal regular expression */
+export type TIsTemplateLiteralPattern<Pattern extends string,
   Types extends TSchema[] = TParsePatternIntoTypes<Pattern>,
-  Finite extends boolean = TIsTemplateLiteralFinite<Types>,
-  Result extends TSchema = Finite extends true ? TFromKey<TTemplateLiteralDecode<Pattern>, Value> : TRecord<Pattern, Value>
+  Result extends boolean = Types extends [] ? false : true
 > = Result
-export function FromTemplateKey<Pattern extends string, Value extends TSchema>(pattern: Pattern, value: Value): TFromTemplateKey<Pattern, Value> {
+/** Returns true if this pattern is a valid Template Literal regular expression */
+export function IsTemplateLiteralPattern<Pattern extends string>(pattern: Pattern): TIsTemplateLiteralPattern<Pattern> {
   const types = ParsePatternIntoTypes(pattern)
-  const finite = IsTemplateLiteralFinite(types)
-  const result = finite ? FromKey(TemplateLiteralDecode(pattern), value) : CreateRecord(pattern, value)
+  const result = Guard.IsEqual(types.length, 0) ? false : true
   return result as never
 }

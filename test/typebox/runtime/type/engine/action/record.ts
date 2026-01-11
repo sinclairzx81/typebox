@@ -31,17 +31,17 @@ Test('Should Record 3', () => {
   Assert.IsEqual(Type.RecordPattern(T), '^.*$')
   Assert.IsTrue(Type.IsString(Type.RecordKey(T)))
 })
-Test('Should Record 3', () => {
+Test('Should Record 4', () => {
   const T: Type.TRecord<'^-?(?:0|[1-9][0-9]*)$', Type.TNull> = Type.Record(Type.Integer(), Type.Null())
   Assert.IsEqual(Type.RecordPattern(T), '^-?(?:0|[1-9][0-9]*)$')
   Assert.IsTrue(Type.IsInteger(Type.RecordKey(T)))
 })
-Test('Should Record 3', () => {
+Test('Should Record 5', () => {
   const T: Type.TRecord<'^-?(?:0|[1-9][0-9]*)(?:.[0-9]+)?$', Type.TNull> = Type.Record(Type.Number(), Type.Null())
   Assert.IsEqual(Type.RecordPattern(T), '^-?(?:0|[1-9][0-9]*)(?:.[0-9]+)?$')
   Assert.IsTrue(Type.IsNumber(Type.RecordKey(T)))
 })
-Test('Should Record 3', () => {
+Test('Should Record 6', () => {
   const T: Type.TRecord<'^.*$', Type.TNull> = Type.Record(Type.String({ pattern: 'foo' }), Type.Null())
   Assert.IsEqual(Type.RecordPattern(T), 'foo')
   Assert.IsTrue(Type.IsString(Type.RecordKey(T)))
@@ -49,7 +49,7 @@ Test('Should Record 3', () => {
 // ------------------------------------------------------------------
 // RecordValue
 // ------------------------------------------------------------------
-Test('Should Record 3', () => {
+Test('Should Record 7', () => {
   const T: Type.TRecord<'^.*$', Type.TLiteral<12345>> = Type.Record(Type.String(), Type.Literal(12345))
   Assert.IsEqual(Type.RecordPattern(T), '^.*$')
   Assert.IsEqual(Type.RecordValue(T).const, 12345)
@@ -57,7 +57,7 @@ Test('Should Record 3', () => {
 // ------------------------------------------------------------------
 //  Key: Any
 // ------------------------------------------------------------------
-Test('Should Record 3', () => {
+Test('Should Record 8', () => {
   const T: Type.TRecord<'^.*$', Type.TNull> = Type.Record(Type.Any(), Type.Null())
   Assert.IsEqual(Type.RecordPattern(T), '^.*$')
 
@@ -68,7 +68,7 @@ Test('Should Record 3', () => {
 // ------------------------------------------------------------------
 //  Key: Boolean
 // ------------------------------------------------------------------
-Test('Should Record 4', () => {
+Test('Should Record 9', () => {
   const T: Type.TObject<{
     true: Type.TNull
     false: Type.TNull
@@ -80,7 +80,7 @@ Test('Should Record 4', () => {
 // ------------------------------------------------------------------
 //  Key: Enum
 // ------------------------------------------------------------------
-Test('Should Record 5', () => {
+Test('Should Record 10', () => {
   const T: Type.TObject<{
     A: Type.TNull
     B: Type.TNull
@@ -92,14 +92,14 @@ Test('Should Record 5', () => {
 // ------------------------------------------------------------------
 //  Key: Intersect
 // ------------------------------------------------------------------
-Test('Should Record 6', () => {
+Test('Should Record 11', () => {
   const T: Type.TObject<{
     A: Type.TNull
   }> = Type.Record(Type.Intersect([Type.Literal('A')]), Type.Null())
   Assert.IsTrue(Type.IsObject(T))
   Assert.IsTrue(Type.IsNull(T.properties.A))
 })
-Test('Should Record 7', () => {
+Test('Should Record 12', () => {
   const T: Type.TObject<{}> = Type.Record(
     Type.Intersect([
       Type.Union([Type.Literal('A'), Type.Literal('B')]),
@@ -110,7 +110,7 @@ Test('Should Record 7', () => {
   Assert.IsTrue(Type.IsObject(T))
   Assert.IsEqual(Guard.Keys(T.properties).length, 0)
 })
-Test('Should Record 8', () => {
+Test('Should Record 13', () => {
   const T: Type.TObject<{
     A: Type.TNull
     B: Type.TNull
@@ -125,7 +125,7 @@ Test('Should Record 8', () => {
   Assert.IsTrue(Type.IsNull(T.properties.A))
   Assert.IsTrue(Type.IsNull(T.properties.B))
 })
-Test('Should Record 9', () => {
+Test('Should Record 14', () => {
   const T: Type.TObject<{
     A: Type.TNull
   }> = Type.Record(
@@ -141,35 +141,35 @@ Test('Should Record 9', () => {
 // ------------------------------------------------------------------
 //  Key: Literal
 // ------------------------------------------------------------------
-Test('Should Record 9', () => {
+Test('Should Record 15', () => {
   const T: Type.TObject<{
     A: Type.TNull
   }> = Type.Record(Type.Literal('A'), Type.Null())
   Assert.IsTrue(Type.IsObject(T))
   Assert.IsTrue(Type.IsNull(T.properties.A))
 })
-Test('Should Record 10', () => {
+Test('Should Record 16', () => {
   const T: Type.TObject<{
     1: Type.TNull
   }> = Type.Record(Type.Literal(1), Type.Null())
   Assert.IsTrue(Type.IsObject(T))
   Assert.IsTrue(Type.IsNull(T.properties[1]))
 })
-Test('Should Record 11', () => {
+Test('Should Record 17', () => {
   const T: Type.TObject<{
     true: Type.TNull
   }> = Type.Record(Type.Literal(true), Type.Null())
   Assert.IsTrue(Type.IsObject(T))
   Assert.IsTrue(Type.IsNull(T.properties.true))
 })
-Test('Should Record 12', () => {
+Test('Should Record 18', () => {
   const T: Type.TObject<{
     false: Type.TNull
   }> = Type.Record(Type.Literal(false), Type.Null())
   Assert.IsTrue(Type.IsObject(T))
   Assert.IsTrue(Type.IsNull(T.properties.false))
 })
-Test('Should Record 13', () => {
+Test('Should Record 19', () => {
   const T: Type.TObject<{}> = Type.Record(Type.Literal(100n), Type.Null())
   Assert.IsTrue(Type.IsObject(T))
   Assert.IsEqual(Guard.Keys(T.properties).length, 0)
@@ -177,7 +177,7 @@ Test('Should Record 13', () => {
 // ------------------------------------------------------------------
 //  Key: String
 // ------------------------------------------------------------------
-Test('Should Record 14', () => {
+Test('Should Record 20', () => {
   const T: Type.TRecord<'^.*$', Type.TNull> = Type.Record(Type.String(), Type.Null())
   Assert.IsEqual(Type.RecordPattern(T), '^.*$')
 
@@ -188,7 +188,7 @@ Test('Should Record 14', () => {
 // ------------------------------------------------------------------
 //  Key: Number
 // ------------------------------------------------------------------
-Test('Should Record 15', () => {
+Test('Should Record 21', () => {
   const T: Type.TRecord<'^-?(?:0|[1-9][0-9]*)(?:.[0-9]+)?$', Type.TNull> = Type.Record(Type.Number(), Type.Null())
   Assert.IsEqual(Type.RecordPattern(T), '^-?(?:0|[1-9][0-9]*)(?:.[0-9]+)?$')
 
@@ -199,7 +199,7 @@ Test('Should Record 15', () => {
 // ------------------------------------------------------------------
 //  Key: Integer
 // ------------------------------------------------------------------
-Test('Should Record 16', () => {
+Test('Should Record 22', () => {
   const T: Type.TRecord<'^-?(?:0|[1-9][0-9]*)$', Type.TNull> = Type.Record(Type.Integer(), Type.Null())
   Assert.IsEqual(Type.RecordPattern(T), '^-?(?:0|[1-9][0-9]*)$')
   Assert.IsTrue(Type.IsRecord(T))
@@ -209,7 +209,7 @@ Test('Should Record 16', () => {
 // ------------------------------------------------------------------
 //  Key: Union
 // ------------------------------------------------------------------
-Test('Should Record 16', () => {
+Test('Should Record 23', () => {
   const T: Type.TObject<{
     A: Type.TNull
     B: Type.TNull
@@ -224,7 +224,7 @@ Test('Should Record 16', () => {
   Assert.IsTrue(Type.IsNull(T.properties.A))
   Assert.IsTrue(Type.IsNull(T.properties.B))
 })
-Test('Should Record 17', () => {
+Test('Should Record 24', () => {
   // The presence of TString causes collapse to TRecord despite TLiteral
   const T: Type.TRecord<'^.*$', Type.TNull> = Type.Record(
     Type.Union([
@@ -238,7 +238,7 @@ Test('Should Record 17', () => {
   Assert.IsTrue(Type.IsString(Type.RecordKey(T)))
   Assert.IsTrue(Type.IsNull(Type.RecordValue(T)))
 })
-Test('Should Record 18', () => {
+Test('Should Record 25', () => {
   // The presence of TNumber causes collapse to TRecord despite TLiteral<string>
   const T: Type.TRecord<'^.*$', Type.TNull> = Type.Record(
     Type.Union([
@@ -252,7 +252,7 @@ Test('Should Record 18', () => {
   Assert.IsTrue(Type.IsString(Type.RecordKey(T)))
   Assert.IsTrue(Type.IsNull(Type.RecordValue(T)))
 })
-Test('Should Record 19', () => {
+Test('Should Record 26', () => {
   // The presence of TNumber causes collapse to TRecord despite TLiteral<number>
   const T: Type.TRecord<'^.*$', Type.TNull> = Type.Record(
     Type.Union([
@@ -266,7 +266,7 @@ Test('Should Record 19', () => {
   Assert.IsTrue(Type.IsString(Type.RecordKey(T)))
   Assert.IsTrue(Type.IsNull(Type.RecordValue(T)))
 })
-Test('Should Record 18', () => {
+Test('Should Record 27', () => {
   // Reverse: The presence of TNumber causes collapse to TRecord despite TLiteral<string>
   const T: Type.TRecord<'^.*$', Type.TNull> = Type.Record(
     Type.Union([
@@ -280,7 +280,7 @@ Test('Should Record 18', () => {
   Assert.IsTrue(Type.IsString(Type.RecordKey(T)))
   Assert.IsTrue(Type.IsNull(Type.RecordValue(T)))
 })
-Test('Should Record 19', () => {
+Test('Should Record 28', () => {
   // Reverse: The presence of TNumber causes collapse to TRecord despite TLiteral<number>
   const T: Type.TRecord<'^.*$', Type.TNull> = Type.Record(
     Type.Union([
@@ -294,7 +294,7 @@ Test('Should Record 19', () => {
   Assert.IsTrue(Type.IsString(Type.RecordKey(T)))
   Assert.IsTrue(Type.IsNull(Type.RecordValue(T)))
 })
-Test('Should Record 20', () => {
+Test('Should Record 29', () => {
   const T: Type.TObject<{
     1: Type.TNull
   }> = Type.Record(
@@ -306,7 +306,7 @@ Test('Should Record 20', () => {
   Assert.IsTrue(Type.IsObject(T))
   Assert.IsTrue(Type.IsNull(T.properties[1]))
 })
-Test('Should Record 21', () => {
+Test('Should Record 30', () => {
   // Invalid keys are filtered.
   const T: Type.TObject<{
     A: Type.TString
@@ -320,7 +320,7 @@ Test('Should Record 21', () => {
   Assert.IsTrue(Type.IsObject(T))
   Assert.IsTrue(Type.IsString(T.properties.A))
 })
-Test('Should Record 22', () => {
+Test('Should Record 31', () => {
   // Invalid keys filtered. The presence of TString causes collapse to TRecord despite having Literal key.
   const T: Type.TRecord<'^.*$', Type.TNull> = Type.Record(
     Type.Union([
@@ -338,7 +338,7 @@ Test('Should Record 22', () => {
 // ------------------------------------------------------------------
 //  Key: TemplateLiteral
 // ------------------------------------------------------------------
-Test('Should Record 23', () => {
+Test('Should Record 32', () => {
   const T: Type.TObject<{
     A: Type.TNull
     B: Type.TNull
@@ -353,7 +353,7 @@ Test('Should Record 23', () => {
   Assert.IsTrue(Type.IsNull(T.properties.A))
   Assert.IsTrue(Type.IsNull(T.properties.B))
 })
-Test('Should Record 24', () => {
+Test('Should Record 33', () => {
   const T: Type.TRecord<'^(A|B).*$', Type.TNull> = Type.Record(
     Type.TemplateLiteral([
       Type.Union([
@@ -372,7 +372,7 @@ Test('Should Record 24', () => {
 // ------------------------------------------------------------------
 //  Key: Fall-Through
 // ------------------------------------------------------------------
-Test('Should Record 25', () => {
+Test('Should Record 34', () => {
   const T: Type.TObject<{}> = Type.Record(Type.BigInt(), Type.Null())
   Assert.IsTrue(Type.IsObject(T))
   Assert.IsEqual(Guard.Keys(T.properties).length, 0)
