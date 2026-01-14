@@ -128,3 +128,37 @@ Assert.IsExtendsMutual<
   }>,
   2
 >(true)
+// should be distributive over union
+Assert.IsExtendsMutual<
+  XStatic<{
+    type: 'object'
+    required: ['x']
+    properties: {
+      x: { type: 'number' }
+    }
+    if: {
+      properties: {
+        x: { const: 1 }
+      }
+    }
+    then: {
+      required: ['y']
+      properties: {
+        y: { const: 2 }
+      }
+    }
+    else: {
+      required: ['z']
+      properties: {
+        z: { const: 3 }
+      }
+    }
+  }>,
+  {
+    z: 3
+    x: number
+  } | {
+    x: 1
+    y: 2
+  }
+>(true)
