@@ -29,17 +29,61 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Guard } from '../../guard/index.ts'
-import { type TIntersect, type TProperties } from '../../type/index.ts'
+import { type TIntersect, type TProperties, type TSchema, IsObject, IsOptional } from '../../type/index.ts'
 import { FromType } from './from-type.ts'
 import { Callback } from './callback.ts'
 
 // ------------------------------------------------------------------
+// ProcessIntersectSchemas
+// ------------------------------------------------------------------
+// Processes intersection schemas while tracking which properties have been
+// handled to prevent duplicate codec execution. When the same property appears
+// in multiple schemas within an intersection, only the first occurrence is
+// processed to avoid running codecs multiple times.
+function ProcessIntersectSchemas(
+  direction: string, 
+  context: TProperties, 
+  schemas: TSchema[], 
+  value: unknown
+): unknown {
+  const nonProcessedKeys = new Set<string>()
+
+  // make sure we don't process optional undefined values
+  for (const schema of schemas) {
+    if (!IsObject(schema) || !Guard.IsObjectNotArray(value)) continue;
+    for (const key of Guard.Keys(schema.properties)) {
+      if (nonProcessedKeys.has(key)) continue
+      if (!Guard.IsUndefined(value[key]) || !IsOptional(schema.properties[key])) {
+        nonProcessedKeys.add(key)
+      }
+    }
+  }
+  
+  for (const schema of schemas) {
+    if (IsObject(schema)) {
+      // For object schemas, manually process properties that haven't been seen yet
+      if (!Guard.IsObjectNotArray(value)) continue
+      
+      for (const key of Guard.Keys(schema.properties)) {
+        if (nonProcessedKeys.has(key) && Guard.HasPropertyKey(value, key)) {
+          // Process this property through its codec
+          value[key] = FromType(direction, context, schema.properties[key], value[key])
+          nonProcessedKeys.delete(key)
+        }
+      }
+    } else {
+      // For non-object schemas, process the entire value
+      value = FromType(direction, context, schema, value)
+    }
+  }
+  
+  return value
+}
+// ------------------------------------------------------------------
 // Decode
 // ------------------------------------------------------------------
 function Decode(direction: string, context: TProperties, type: TIntersect, value: unknown): unknown {
-  for (const schema of type.allOf) {
-    value = FromType(direction, context, schema, value)
-  }
+  value = ProcessIntersectSchemas(direction, context, type.allOf, value)
   return Callback(direction, context, type, value)
 }
 // ------------------------------------------------------------------
@@ -47,9 +91,7 @@ function Decode(direction: string, context: TProperties, type: TIntersect, value
 // ------------------------------------------------------------------
 function Encode(direction: string, context: TProperties, type: TIntersect, value: unknown): unknown {
   let exterior = Callback(direction, context, type, value)
-  for (const schema of type.allOf) {
-    exterior = FromType(direction, context, schema, exterior)
-  }
+  exterior = ProcessIntersectSchemas(direction, context, type.allOf, exterior)
   return exterior
 }
 export function FromIntersect(direction: string, context: TProperties, type: TIntersect, value: unknown): unknown {
