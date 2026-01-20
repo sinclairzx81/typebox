@@ -127,6 +127,7 @@ export function GraphemeCount(value: string): number {
 // --------------------------------------------------------------------------
 /** Checks if a string has at least a minimum number of grapheme clusters */
 export function IsMinLength(value: string, minLength: number): boolean {
+  if (minLength === 0) return true // 0-length
   let count = 0
   let index = 0
   while (index < value.length) {
@@ -155,6 +156,7 @@ export function IsMaxLength(value: string, maxLength: number): boolean {
 // --------------------------------------------------------------------------
 /** Fast check for minimum grapheme length, falls back to full check if needed */
 export function IsMinLengthFast(value: string, minLength: number): boolean {
+  if (minLength === 0) return true // 0-length
   let index = 0
   while (index < value.length) {
     if (IsGraphemeCodePoint(value.charCodeAt(index))) {
