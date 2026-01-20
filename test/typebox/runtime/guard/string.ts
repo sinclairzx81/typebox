@@ -159,6 +159,9 @@ Test('Should GraphemeCount 50', () => {
 // ------------------------------------------------------------------
 // Guard.IsMinLength
 // ------------------------------------------------------------------
+Test('Should IsMinLength 0', () => {
+  Assert.IsTrue(Guard.IsMinLength('', 0))
+})
 Test('Should IsMinLength 1', () => {
   Assert.IsTrue(Guard.IsMinLength('a', 1))
 })
