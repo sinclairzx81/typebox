@@ -32,7 +32,7 @@ import { Memory } from '../../system/memory/index.ts'
 import { type StaticType, type StaticDirection } from './static.ts'
 import { type TSchema, type TTupleOptions, IsKind } from './schema.ts'
 import { type TArray } from './array.ts'
-import { type TOptional } from './_optional.ts'
+import { type TOptional, IsOptional } from './_optional.ts'
 import { type TProperties } from './properties.ts'
 import { type TImmutable } from './_immutable.ts'
 import { type TReadonly } from './_readonly.ts'
@@ -104,9 +104,17 @@ export interface TTuple<Types extends TSchema[] = TSchema[]> extends TSchema {
 // ------------------------------------------------------------------
 // Factory
 // ------------------------------------------------------------------
+/** Counts the number of non-optional elements in a tuple array at runtime. */
+function countNonOptional<Types extends TSchema[]>(types: Types): number {
+  const i = types.findIndex(IsOptional)
+  if (i >= 0 && types.slice(i).some(t => !IsOptional(t)))
+    throw new Error('Tuple optional elements must be at the end')
+  return i < 0 ? types.length : i
+}
+
 /** Creates a Tuple type. */
 export function Tuple<Types extends TSchema[]>(types: [...Types], options: TTupleOptions = {}): TTuple<Types> {
-const [items, minItems, additionalItems] = [types, types.length, false]
+  const [items, minItems, additionalItems] = [types, countNonOptional(types), false]
   return Memory.Create({ ['~kind']: 'Tuple' }, { type: 'array', additionalItems, items, minItems }, options) as never
 }
 // ------------------------------------------------------------------

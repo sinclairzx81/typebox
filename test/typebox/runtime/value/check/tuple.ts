@@ -63,3 +63,44 @@ Test('Should use optimization logic for prefix items', () => {
   Ok(T, [1, 2])
   Fail(T, [1, 2, 3])
 })
+// ------------------------------------------------------------------
+// Optional Elements
+// ------------------------------------------------------------------
+Test('Should validate tuple with optional elements at end - minimum items', () => {
+  const T = Type.Tuple([
+    Type.String(),
+    Type.Number(),
+    Type.Optional(Type.Boolean()),
+    Type.Optional(Type.Null()),
+  ])
+  Ok(T, ['hello', 42]) // Only required items
+  Ok(T, ['hello', 42, true]) // With one optional
+  Ok(T, ['hello', 42, true, null]) // With all optional
+})
+Test('Should not validate tuple with optional elements when below minimum', () => {
+  const T = Type.Tuple([
+    Type.String(),
+    Type.Number(),
+    Type.Optional(Type.Boolean()),
+    Type.Optional(Type.Null()),
+  ])
+  Fail(T, ['hello']) // Missing required item
+  Fail(T, []) // Empty
+})
+Test('Should validate tuple with all optional elements', () => {
+  const T = Type.Tuple([
+    Type.Optional(Type.String()),
+    Type.Optional(Type.Number()),
+  ])
+  Ok(T, []) // Empty is valid
+  Ok(T, ['hello']) // One item
+  Ok(T, ['hello', 42]) // All items
+})
+Test('Should not validate tuple with optional elements when exceeding max items', () => {
+  const T = Type.Tuple([
+    Type.String(),
+    Type.Number(),
+    Type.Optional(Type.Boolean()),
+  ])
+  Fail(T, ['hello', 42, true, 'extra']) // Too many items
+})

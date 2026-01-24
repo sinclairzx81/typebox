@@ -43,3 +43,55 @@ Test('Should Create Tuple with options then extract', () => {
   Assert.IsEqual(O.a, 1)
   Assert.IsEqual(O.b, 2)
 })
+// ------------------------------------------------------------------
+// Optional Elements
+// ------------------------------------------------------------------
+Test('Should Create Tuple with optional elements at the end', () => {
+  const T = Type.Tuple([
+    Type.String(),
+    Type.Number(),
+    Type.Optional(Type.Boolean()),
+    Type.Optional(Type.Null()),
+  ])
+  Assert.IsTrue(Type.IsTuple(T))
+  Assert.IsEqual(T.items.length, 4)
+  Assert.IsEqual(T.minItems, 2) // Only first two are non-optional
+})
+Test('Should Create Tuple with all required elements', () => {
+  const T = Type.Tuple([
+    Type.String(),
+    Type.Number(),
+    Type.Boolean(),
+  ])
+  Assert.IsTrue(Type.IsTuple(T))
+  Assert.IsEqual(T.items.length, 3)
+  Assert.IsEqual(T.minItems, 3) // All are required
+})
+Test('Should Create Tuple with all optional elements', () => {
+  const T = Type.Tuple([
+    Type.Optional(Type.String()),
+    Type.Optional(Type.Number()),
+  ])
+  Assert.IsTrue(Type.IsTuple(T))
+  Assert.IsEqual(T.items.length, 2)
+  Assert.IsEqual(T.minItems, 0) // All are optional
+})
+Test('Should throw error when optional element is in the middle', () => {
+  Assert.Throws(() => {
+    Type.Tuple([
+      Type.String(),
+      Type.Optional(Type.Number()),
+      Type.Boolean(), // Non-optional after optional - should error
+    ])
+  })
+})
+Test('Should throw error when optional element is followed by non-optional', () => {
+  Assert.Throws(() => {
+    Type.Tuple([
+      Type.String(),
+      Type.Optional(Type.Number()),
+      Type.Optional(Type.Boolean()),
+      Type.String(), // Non-optional after optional - should error
+    ])
+  })
+})
