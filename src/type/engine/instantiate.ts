@@ -344,7 +344,7 @@ export type TInstantiateType<Context extends TProperties, State extends TState, 
   >,
   Type extends TSchema = Modifiers[0],
   Instantiated extends TSchema = (
-    Type extends TRef<infer Ref extends string> ? TRefInstantiate<Context, State, Ref> :
+    Type extends TRef<infer Ref extends string> ? TRefInstantiate<Context, State, Type, Ref> :
     Type extends TArray<infer Type extends TSchema> ? TArray<TInstantiateType<Context, State, Type>> :
     Type extends TAsyncIterator<infer Type extends TSchema> ? TAsyncIterator<TInstantiateType<Context, State, Type>> :
     Type extends TCall<infer Target extends TSchema, infer Parameters extends TSchema[]> ? TCallInstantiate<Context, State, Target, Parameters> :
@@ -374,7 +374,7 @@ export function InstantiateType<Context extends TProperties, State extends TStat
     IsOptional(input) ? 'add' : 'none')
   const type = IsBase(modifiers[0]) ? modifiers[0].Clone() : modifiers[0]
   const instantiated = (
-    IsRef(type) ? RefInstantiate(context, state, type.$ref) :
+    IsRef(type) ? RefInstantiate(context, state, type, type.$ref) :
     IsArray(type) ? Array(InstantiateType(context, state, type.items), ArrayOptions(type)) :
     IsAsyncIterator(type) ? AsyncIterator(InstantiateType(context, state, type.iteratorItems), AsyncIteratorOptions(type)) :
     IsCall(type) ? CallInstantiate(context, state, type.target, type.arguments) :
