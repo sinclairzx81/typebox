@@ -29,28 +29,28 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { TProperties } from '../../types/properties.ts'
-import { type TRef, Ref } from '../../types/ref.ts'
 import { type TState, type TInstantiateType, InstantiateType } from '../instantiate.ts'
 import { type TCyclicCheck, CyclicCheck } from '../cyclic/check.ts'
+import { type TRef } from '../../types/ref.ts'
 
 // ------------------------------------------------------------------
 // Instantiate
 // ------------------------------------------------------------------
-export type TRefInstantiate<Context extends TProperties, State extends TState, Ref extends string> = (
+export type TRefInstantiate<Context extends TProperties, State extends TState, Type extends TRef, Ref extends string> = (
   Ref extends keyof Context
     ? TCyclicCheck<[Ref], Context, Context[Ref]> extends true
-      ? TRef<Ref>
+      ? Type
       : TInstantiateType<Context, State, Context[Ref]>
-    : TRef<Ref>
+    : Type
 )
-export function RefInstantiate<Context extends TProperties, State extends TState, Ref extends string>
-  (context: Context, state: State, ref: Ref): 
-    TRefInstantiate<Context, State, Ref> {
+export function RefInstantiate<Context extends TProperties, State extends TState, Type extends TRef, Ref extends string>
+  (context: Context, state: State, type: Type, ref: Ref): 
+    TRefInstantiate<Context, State, Type, Ref> {
   return (
     ref in context
       ? CyclicCheck([ref], context, context[ref])
-        ? Ref(ref)
+        ? type
         : InstantiateType(context, state, context[ref])
-      : Ref(ref)
+      : type
   ) as never
 }
