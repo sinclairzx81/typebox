@@ -337,7 +337,7 @@ export type TInstantiateType<Context extends TProperties, State extends TState, 
   >,
   Type extends TSchema = Modifiers[0],
   Instantiated extends TSchema = (
-    Type extends TRef<infer Ref extends string> ? TRefInstantiate<Context, State, Ref> :
+    Type extends TRef<infer Ref extends string> ? TRefInstantiate<Context, State, Type, Ref> :
     Type extends TArray<infer Type extends TSchema> ? TArray<TInstantiateType<Context, State, Type>> :
     Type extends TCall<infer Target extends TSchema, infer Parameters extends TSchema[]> ? TCallInstantiate<Context, State, Target, Parameters> :
     Type extends TConstructor<infer Parameters extends TSchema[], infer InstanceType extends TSchema> ? TConstructor<TInstantiateTypes<Context, State,Parameters>, TInstantiateType<Context, State,InstanceType>> :
@@ -364,7 +364,7 @@ export function InstantiateType<Context extends TProperties, State extends TStat
     IsOptional(input) ? 'add' : 'none')
   const type = modifiers[0]
   const instantiated = (
-    IsRef(type) ? RefInstantiate(context, state, type.$ref) :
+    IsRef(type) ? RefInstantiate(context, state, type, type.$ref) :
     IsArray(type) ? Array(InstantiateType(context, state, type.items), ArrayOptions(type)) :
     IsCall(type) ? CallInstantiate(context, state, type.target, type.arguments) :
     IsConstructor(type) ? Constructor(InstantiateTypes(context, state, type.parameters), InstantiateType(context, state, type.instanceType) as never, ConstructorOptions(type)) :
