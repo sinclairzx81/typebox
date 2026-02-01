@@ -28,10 +28,11 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { type TIntersect, type TProperties, Evaluate } from '../../type/index.ts'
+import { type TIntersect, type TProperties, Evaluate, Instantiate } from '../../type/index.ts'
 import { FromType } from './from-type.ts'
 
 export function FromIntersect(context: TProperties, type: TIntersect, value: unknown): unknown {
-  const evaluatedType = Evaluate(type)
-  return FromType(context, evaluatedType, value)
+  const instantiated = Instantiate(context, type)
+  const evaluated = Evaluate(instantiated)
+  return FromType(context, evaluated, value)
 }

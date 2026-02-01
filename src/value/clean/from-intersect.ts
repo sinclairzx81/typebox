@@ -28,20 +28,21 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { type TProperties, type TSchema, type TIntersect, Evaluate, IsObject, Assign } from '../../type/index.ts'
+import { type TProperties, type TSchema, type TIntersect, Evaluate, Instantiate, IsObject, Assign } from '../../type/index.ts'
 import { Guard } from '../../guard/index.ts'
 import { FromType } from './from-type.ts'
 
 // ------------------------------------------------------------------
 // EvaluateIntersection
 // ------------------------------------------------------------------
-function EvaluateIntersection(type: TIntersect): TSchema {
+function EvaluateIntersection(context: TProperties, type: TIntersect): TSchema {
   // Note: reinterpret unevaluatedProperties as additionalProperties
   const additionalProperties = 
     Guard.HasPropertyKey(type, 'unevaluatedProperties')
       ? { additionalProperties: type.unevaluatedProperties }
       : {}
-  const evaluated = Evaluate(type)
+  const instantiated = Instantiate(context, type)
+  const evaluated = Evaluate(instantiated)
   return IsObject(evaluated)
     ? Assign(evaluated, additionalProperties)
     : evaluated
@@ -51,7 +52,7 @@ function EvaluateIntersection(type: TIntersect): TSchema {
 // ------------------------------------------------------------------
 export function FromIntersect(context: TProperties, type: TIntersect, value: unknown): unknown {
   // Note: Evaluate and route back to FromType in evaluated form (likely an Object)
-  const evaluated = EvaluateIntersection(type)
+  const evaluated = EvaluateIntersection(context, type)
   return FromType(context, evaluated, value)
 }
 
