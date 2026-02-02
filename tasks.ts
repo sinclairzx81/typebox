@@ -95,6 +95,11 @@ Task.run('report', () => Task.test.report(['test/jsonschema', 'test/typebox']))
 // ------------------------------------------------------------------
 Task.run('metrics', () => Metrics())
 // ------------------------------------------------------------------
+// Native
+// ------------------------------------------------------------------
+Task.run('native', (target: string = `target/build`) => Task.tsgo('latest')
+  .run('src/index.ts --target ESNext --module ESNext --strict --noEmit --ignoreConfig --allowImportingTsExtensions'))
+// ------------------------------------------------------------------
 // Range
 // ------------------------------------------------------------------
 Task.run('range', async () => {

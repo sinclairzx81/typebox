@@ -18,6 +18,9 @@ jobs:
         uses: denoland/setup-deno@v2
         with:
           deno-version: canary
-      # Range
+      # TypeScript Compiler Range
       - name: Range
         run: deno task range
+      # TypeScript Native Latest
+      - name: Range
+        run: deno task native
