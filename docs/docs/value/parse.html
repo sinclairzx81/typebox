@@ -1,11 +1,30 @@
 <h1>Parse</h1>
-<p>The Parse function attempts to parse a value and throws an error if the value is invalid. This function is similar to Decode, but it does not execute Decode callbacks. Parse is considered a faster version of Decode, as operations that transform values are skipped when the value already matches the expected type.</p>
-<blockquote>
-<p>The Parse function first checks a value against the provided type and returns immediately if it matches. If the value does not match, it is processed through a sequence of Clone, Clean, Convert, and Default operations, and then re-checked. If the value remains invalid, a ParseError error is thrown.</p>
-</blockquote>
+<p>The Parse function validates and returns a value that conforms to a given type. If the value does not satisfy the type, a parse error is thrown.</p>
 <h2>Example</h2>
 <p>Example usage is shown below.</p>
 <pre><code class="language-typescript">const R = Value.Parse(Type.String(), &#39;hello&#39;)      // const R: string = &quot;hello&quot;
 
-const E = Value.Parse(Type.String(), [{ x: 1 }])   // throws ParseError 
+const E = Value.Parse(Type.String(), 12345)        // throws ParseError 
+</code></pre>
+<h2>Corrective Parse</h2>
+<p>TypeBox provides an optional corrective parsing mode that attempts to repair invalid values before failing. When enabled, the parser runs a pipeline consisting of Convert, Default, and Clean, then re-asserts the value after processing. This feature can be useful when parsing environment variables into target types.</p>
+<blockquote>
+<p>⚠️ This feature can impact performance. It is not recommended for use in high throughput applications.</p>
+</blockquote>
+<p>This feature can be enabled as follows:</p>
+<pre><code class="language-typescript">import { Settings } from &#39;typebox/system&#39;
+
+// Corrective Parse: Enable
+
+Settings.Set({ correctiveParse: true })
+
+// Corrective Parse: Convert Value into the target type if reasonable conversion is possible.
+
+const R = Value.Parse(Type.String(), &#39;hello&#39;)      // const R: string = &quot;hello&quot;
+
+const S = Value.Parse(Type.String(), 12345)        // const S: string = &quot;12345&quot;
+
+// Corrective Parse: Reset (optional)
+
+Settings.Reset()
 </code></pre>

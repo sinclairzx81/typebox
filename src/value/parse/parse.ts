@@ -28,6 +28,7 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
+import { Settings } from '../../system/system.ts'
 import { Arguments } from '../../system/arguments/index.ts'
 import { type TLocalizedValidationError } from '../../error/errors.ts'
 import { type TProperties, type TSchema, type StaticParse } from '../../type/index.ts'
@@ -63,38 +64,24 @@ export const Parser = Pipeline([
   (context, type, value) => Clean(context, type, value),
   (context, type, value) => Assert(context, type, value)
 ])
-
-/** 
- * Parses a value with the given type. The function will Check the value and return
- * early if it matches the provided type. If the value does not match, it is processed
- * through a sequence of Clone, Default, Convert, and Clean operations and checked again.
- * A `ParseError` is thrown if the value fails to match after the processing sequence.
- */
+/**  Parses a value with the given type. */
 export function Parse<const Type extends TSchema, 
   Result extends unknown = StaticParse<Type>
 >(type: Type, value: unknown): Result
 
-/** 
- * Parses a value with the given type. The function will Check the value and return
- * early if it matches the provided type. If the value does not match, it is processed
- * through a sequence of Clone, Default, Convert, and Clean operations and checked again.
- * A `ParseError` is thrown if the value fails to match after the processing sequence.
- */
+/**  Parses a value with the given type. */
 export function Parse<Context extends TProperties, const Type extends TSchema, 
   Result extends unknown = StaticParse<Type, Context>
 >(context: Context, type: Type, value: unknown): Result
 
-/** 
- * Parses a value with the given type. The function will Check the value and return
- * early if it matches the provided type. If the value does not match, it is processed
- * through a sequence of Clone, Default, Convert, and Clean operations and checked again.
- * A `ParseError` is thrown if the value fails to match after the processing sequence.
- */
+/**  Parses a value with the given type. */
 export function Parse(...args: unknown[]): never {
   const [context, type, value] = Arguments.Match<[TProperties, TSchema, unknown]>(args, {
     3: (context, type, value) => [context, type, value],
     2: (type, value) => [{}, type, value],
   })
-  const result = Check(context, type, value) ? value : Parser(context, type, value)
-  return result as never
+  const checked = Check(context, type, value)
+  if(checked) return value as never
+  if(Settings.Get().correctiveParse) return Parser(context, type, value) as never
+  throw new ParseError(value, Errors(context, type, value))
 }

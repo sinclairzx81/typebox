@@ -76,6 +76,16 @@ export interface TSettings {
    * @default false
    */
   enumerableKind: boolean
+
+  /**
+   * Controls whether TypeBox uses corrective Parse. When enabled, TypeBox will attempt to recover invalid
+   * values during Parse by running a sequence of `Value.*` operations to `Convert`, `Default`, and `Clean`
+   * the value, followed by a subsequent `Assert`. Enabling this option may incur significant performance
+   * overhead for invalid values. It is recommended to keep this disabled in performance-sensitive
+   * applications.
+   * @default false
+   */
+  correctiveParse: boolean
 }
 
 // Internal mutable state
@@ -84,7 +94,8 @@ const settings: TSettings = {
   maxErrors: 8,
   useEval: true,
   exactOptionalPropertyTypes: false,
-  enumerableKind: false
+  enumerableKind: false,
+  correctiveParse: false
 }
 
 /** Resets system settings to defaults */
@@ -94,6 +105,7 @@ export function Reset(): void {
   settings.useEval = true
   settings.exactOptionalPropertyTypes = false
   settings.enumerableKind = false
+  settings.correctiveParse = false
 }
 
 /** Sets system settings */
