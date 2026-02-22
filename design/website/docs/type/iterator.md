@@ -1,4 +1,4 @@
-# Iterator
+# Type.Iterator
 
 Creates an Iterator type. 
 

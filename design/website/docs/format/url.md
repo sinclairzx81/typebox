@@ -1,4 +1,4 @@
-# IsUrl
+# Format.IsUrl
 
 Returns true if the string is a URL
 

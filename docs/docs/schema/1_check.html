@@ -1,0 +1,29 @@
+<h1>Schema.Check</h1>
+<p>The <code>Check(...)</code> function returns true if the value matches the schema.</p>
+<h2>Example</h2>
+<pre><code class="language-typescript">import Schema from &#39;typebox/schema&#39;
+
+// ------------------------------------------------------------------
+// Schema
+// ------------------------------------------------------------------
+
+const T = { 
+  type: &#39;object&#39;,
+  required: [&#39;x&#39;, &#39;y&#39;, &#39;z&#39;],
+  properties: {
+    x: { type: &#39;number&#39; },
+    y: { type: &#39;number&#39; },
+    z: { type: &#39;number&#39; }
+  }
+} as const
+
+// ------------------------------------------------------------------
+// Check
+// ------------------------------------------------------------------
+
+const R = Schema.Check(T, { x: 1, y: 2, z: 3 })     // const R: value is {
+                                                    //   x: number,
+                                                    //   y: number,
+                                                    //   z: number
+                                                    // }
+</code></pre>

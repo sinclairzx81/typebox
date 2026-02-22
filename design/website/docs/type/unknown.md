@@ -1,4 +1,4 @@
-# Unknown
+# Type.Unknown
 
 Creates an Unknown type.
 

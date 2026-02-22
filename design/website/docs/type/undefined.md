@@ -1,4 +1,4 @@
-# Undefined
+# Type.Undefined
 
 Creates an Undefined type.
 

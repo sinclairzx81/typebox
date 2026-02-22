@@ -1,4 +1,4 @@
-# Partial
+# Type.Partial
 
 This type is an alias for the `Partial<T>` TypeScript utility type. It makes all properties of an Object optional.
 

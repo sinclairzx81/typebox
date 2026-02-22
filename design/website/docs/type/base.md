@@ -1,4 +1,4 @@
-# Base
+# Type.Base
 
 Base class for building extended types.
 

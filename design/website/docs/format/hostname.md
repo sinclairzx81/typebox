@@ -1,4 +1,4 @@
-# IsHostname
+# Format.IsHostname
 
 Returns true if the string is a [RFC 1123](https://www.rfc-editor.org/rfc/rfc1123.html) hostname
 

@@ -1,4 +1,4 @@
-# Module
+# Type.Module
 
 The Module function is an advanced compositing system for referential types. It performs several normalization passes, including reference inlining, cyclic type resolution, and dead code elimination for unused definitions. Conceptually, Module mirrors how TypeScript handles type references within the context of a TypeScript module.
 

@@ -1,43 +1,38 @@
 # Script
 
-TypeScript Scripting Engine
+TypeScript DSL Engine
 
 ## Overview
 
-TypeBox is a runtime TypeScript DSL engine that can create, transform, and compute Json Schema using native TypeScript syntax. The engine is implemented symmetrically at runtime and within the TypeScript type system, and is intended for use with the TypeScript 7 native compiler and above.
-
+TypeBox includes a runtime TypeScript DSL engine that can transform TypeScript syntax into JSON Schema. The engine is implemented at runtime and within the TypeScript type system.
 
 ```typescript
-// Scripted Type
-
+// ----------------------------------------------------------
+// Script
+// ----------------------------------------------------------
 const T = Type.Script(`{ 
   x: number, 
   y: string, 
   z: boolean 
-}`)                                                 // const T: TObject<{
-                                                    //   x: TNumber,
-                                                    //   y: TString,
-                                                    //   z: TBoolean
-                                                    // }>
+}`)
 
-// Json Schema Introspection
-
+// ----------------------------------------------------------
+// Reflect
+// ----------------------------------------------------------
 T.type                                              // 'object'
 T.required                                          // ['x', 'y', 'z']
 T.properties                                        // { x: ..., y: ..., z: ... }
 
-// Scripted Type (Computed)
-
+// ----------------------------------------------------------
+// Computed
+// ----------------------------------------------------------
 const S = Type.Script({ T }, `{
   [K in keyof T]: T[K] | null
-}`)                                                 // const S: TObject<{
-                                                    //   x: TUnion<[TNumber, TNull]>,
-                                                    //   y: TUnion<[TString, TNull]>,
-                                                    //   z: TUnion<[TBoolean, TNull]>
-                                                    // }>
+}`)
 
-// Standard Inference
-
+// ----------------------------------------------------------
+// Inference
+// ----------------------------------------------------------
 type S = Type.Static<typeof S>                      // type S = {
                                                     //   x: number | null,
                                                     //   y: string | null,

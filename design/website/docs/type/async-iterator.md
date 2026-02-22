@@ -1,4 +1,4 @@
-# AsyncIterator
+# Type.AsyncIterator
 
 Creates an AsyncIterator type. 
 

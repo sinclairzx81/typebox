@@ -1,4 +1,4 @@
-# Capitalize
+# Type.Capitalize
 
 The Capitalize function will capitalize string literals.
 

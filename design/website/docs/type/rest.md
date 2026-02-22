@@ -1,4 +1,4 @@
-# Rest
+# Type.Rest
 
 Creates a Rest type.
 

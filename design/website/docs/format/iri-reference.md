@@ -1,4 +1,4 @@
-# IsIriReference
+# Format.IsIriReference
 
 Returns true if the string is an IRI reference
 

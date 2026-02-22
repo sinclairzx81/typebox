@@ -1,4 +1,4 @@
-# Encode
+# Type.Encode
 
 The Encode function applies a uni-directional encoding transform to a type.
 

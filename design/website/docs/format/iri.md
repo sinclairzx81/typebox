@@ -1,4 +1,4 @@
-# IsIri
+# Format.IsIri
 
 Returns true if the string is an IRI
 

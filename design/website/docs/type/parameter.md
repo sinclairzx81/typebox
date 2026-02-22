@@ -1,4 +1,4 @@
-# Parameter
+# Type.Parameter
 
 Creates a Generic Parameter type.
 

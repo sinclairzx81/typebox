@@ -1,4 +1,4 @@
-# Promise
+# Type.Promise
 
 Creates a Promise type. 
 

@@ -1,4 +1,4 @@
-# Readonly
+# Type.Readonly
 
 The Readonly function applies an `readonly` modifier to an object property. This modifier is used for type inference and compositing only. It has no effect on validation.
 

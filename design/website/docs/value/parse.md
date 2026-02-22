@@ -1,4 +1,4 @@
-# Parse
+# Value.Parse
 
 The Parse function validates and returns a value that conforms to a given type. If the value does not satisfy the type, a parse error is thrown.
 

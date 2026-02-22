@@ -1,0 +1,45 @@
+<h1>Value.Pipeline</h1>
+<p>Value functions are commonly used to pre-process data before running Check or Parse operations. When multiple value functions are executed in sequence, this process is called a pipeline. TypeBox provides a Pipeline utility that allows you to compose multiple Value operations into a single callable function that follows the standard <code>Value.*</code> signature.</p>
+<h2>Example</h2>
+<p>Example usage is shown below.</p>
+<pre><code class="language-typescript">import Value, { Pipeline } from &#39;typebox/value&#39;
+import Type from &#39;typebox&#39;
+
+// -------------------------------------------------------
+// Pipeline: Definition
+//
+// The following is a custom Parse pre-processing pipeline 
+// that runs a sequence of operations on a value before
+// attempting to Parse. These operations can be run in
+// any order. User defined pre-processing logic can 
+// also be added as pipeline stages if necessary.
+//
+// -------------------------------------------------------
+const ParsePipeline = Pipeline([
+  (_context, _type, value) =&gt; Value.Clone(value),
+  (context, type, value) =&gt; Value.Default(context, type, value),
+  (context, type, value) =&gt; Value.Convert(context, type, value),
+  (context, type, value) =&gt; Value.Clean(context, type, value),
+  (context, type, value) =&gt; Value.Parse(context, type, value)
+])
+// -------------------------------------------------------
+// Pipeline: Inference
+//
+// Pipelines return type `unknown` as it is not possible to 
+// determine the last operation of the pipeline returned a
+// correct value. As we know the Parse operation will assert
+// the value, we can wrap calls to pipeline in a function
+// which provides type type inference for the pipeline.
+//
+// -------------------------------------------------------
+export function Parse&lt;Type extends Type.TSchema&gt;(type: Type, value: unknown): Type.Static&lt;Type&gt; {
+  return ParsePipeline(type, value) as never
+}
+
+// -------------------------------------------------------
+// Usage
+// -------------------------------------------------------
+const result = Parse(Type.String(), 1234)
+
+console.log(result)
+</code></pre>

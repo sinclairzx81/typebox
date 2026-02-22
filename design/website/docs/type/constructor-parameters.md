@@ -1,4 +1,4 @@
-# ConstructorParameters
+# Type.ConstructorParameters
 
 The ConstructorParameters function will extract Parameters from a Constructor type.
 

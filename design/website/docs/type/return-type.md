@@ -1,4 +1,4 @@
-# ReturnType
+# Type.ReturnType
 
 Extracts the ReturnType from a Function.
 

@@ -1,4 +1,4 @@
-# BigInt
+# Type.BigInt
 
 Creates a BigInt type. 
 
