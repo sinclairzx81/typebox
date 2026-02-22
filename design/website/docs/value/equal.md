@@ -1,4 +1,4 @@
-# Equal
+# Value.Equal
 
 The Equal function performs a structural value comparison against JavaScript values.
 

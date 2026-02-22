@@ -37,10 +37,15 @@
     "overview": "docs/overview/overview.html"
   },
   "schema": {
+    "1_check": "docs/schema/1_check.html",
+    "2_errors": "docs/schema/2_errors.html",
+    "3_parse": "docs/schema/3_parse.html",
+    "4_compile": "docs/schema/4_compile.html",
+    "5_advanced": "docs/schema/5_advanced.html",
     "overview": "docs/schema/overview.html"
   },
   "script": {
-    "1_script": "docs/script/1_script.html",
+    "1_syntax": "docs/script/1_syntax.html",
     "2_parameters": "docs/script/2_parameters.html",
     "3_options": "docs/script/3_options.html",
     "4_advanced": "docs/script/4_advanced.html",
@@ -145,6 +150,7 @@
     "overview": "docs/value/overview.html",
     "parse": "docs/value/parse.html",
     "patch": "docs/value/patch.html",
+    "pipeline": "docs/value/pipeline.html",
     "pointer": "docs/value/pointer.html",
     "repair": "docs/value/repair.html"
   }

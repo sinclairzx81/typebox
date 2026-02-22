@@ -1,4 +1,4 @@
-# Infer
+# Type.Infer
 
 Creates an Infer instruction to extract types in conditional type expression.
 

@@ -1,4 +1,4 @@
-# Advanced
+# Script.Advanced
 
 Script supports advanced schema transformations using programmable constructs of the TypeScript programming language.
 

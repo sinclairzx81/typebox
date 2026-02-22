@@ -1,4 +1,4 @@
-# IsRegex
+# Format.IsRegex
 
 Returns true if the string is a regular expression
 

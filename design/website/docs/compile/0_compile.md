@@ -1,4 +1,4 @@
-# Compile
+# Compile.Compile
 
 The Compile function returns a new Validator instance.
 

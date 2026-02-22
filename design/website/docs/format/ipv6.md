@@ -1,4 +1,4 @@
-# IsIPv6
+# Format.IsIPv6
 
 Returns true if the string is an IPv6 address
 

@@ -1,4 +1,4 @@
-# Call
+# Type.Call
 
 The Call function invokes Generic type.
 

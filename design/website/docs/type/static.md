@@ -1,4 +1,4 @@
-# Static
+# Type.Static
 
 The Static type infers TypeBox and Json Schema schematics.
 

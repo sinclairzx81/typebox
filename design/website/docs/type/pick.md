@@ -1,4 +1,4 @@
-# Pick
+# Type.Pick
 
 Picks property keys from the given Object type.
 

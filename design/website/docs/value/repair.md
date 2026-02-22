@@ -1,4 +1,4 @@
-# Repair
+# Value.Repair
 
 The Repair function will repair a value to match the provided type. If the value already matches, no action is taken. This function will try to retain as much information as possible from the original value. 
 

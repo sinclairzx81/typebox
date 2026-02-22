@@ -1,4 +1,4 @@
-# Encode
+# Value.Encode
 
 The Encode function will execute Encode callbacks embedded within the provided type.
 

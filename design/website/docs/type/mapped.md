@@ -1,4 +1,4 @@
-# Mapped
+# Type.Mapped
 
 Applies a Mapped operation to a type.
 

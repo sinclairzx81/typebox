@@ -1,4 +1,4 @@
-# Uncapitalize
+# Type.Uncapitalize
 
 The Uncapitalize function will uncapitalize string literals.
 

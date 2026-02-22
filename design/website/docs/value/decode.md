@@ -1,4 +1,4 @@
-# Decode
+# Value.Decode
 
 The Decode function will execute Decode callbacks embedded within the provided type. 
 

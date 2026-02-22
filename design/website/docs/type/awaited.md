@@ -1,4 +1,4 @@
-# Awaited
+# Type.Awaited
 
 The Awaited function unwraps a Promise and returns the interior type.
 

@@ -1,4 +1,4 @@
-# Object
+# Type.Object
 
 Creates an Object type.
 

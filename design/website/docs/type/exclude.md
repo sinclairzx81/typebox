@@ -1,4 +1,4 @@
-# Exclude
+# Type.Exclude
 
 The Exclude function will exclude types from Left that extend Right.
 

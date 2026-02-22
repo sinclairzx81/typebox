@@ -1,4 +1,4 @@
-import { Check } from 'typebox/schema'
+import * as Schema from 'typebox/schema'
 import * as Type from 'typebox'
 
 const T = Type.Object({
@@ -11,5 +11,5 @@ const T = Type.Object({
     Type.Undefined() 
   ])
 })
-const A = Check(T, { x: 1, y: '', z: false })
+const A = Schema.Parse(T, { x: 1, y: '', z: false })
 console.log(A)

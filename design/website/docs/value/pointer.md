@@ -1,4 +1,4 @@
-# Pointer
+# Value.Pointer
 
 The Pointer namespace is an implementation of [RFC 6901](https://datatracker.ietf.org/doc/html/rfc6901) Json Pointer. It provides functions to read and write values using Json Pointers.
 
