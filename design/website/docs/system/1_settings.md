@@ -48,11 +48,11 @@ export interface TSettings {
   useEval: boolean
 
   /**
-   * Enables or disables 'exactOptionalPropertyTypes' check semantics. By default, TypeScript 
-   * allows optional properties to be assigned 'undefined'. While this behavior differs from the 
-   * common interpretation of 'optional' as meaning 'key may be absent', TypeBox adopts the default 
-   * TypeScript semantics to remain consistent with the language. This option is provided to align 
-   * runtime check semantics with projects that configure 'exactOptionalPropertyTypes: true' in 
+   * Enables or disables 'exactOptionalPropertyTypes' check semantics. By default, TypeScript
+   * allows optional properties to be assigned 'undefined'. While this behavior differs from the
+   * common interpretation of 'optional' as meaning 'key may be absent', TypeBox adopts the default
+   * TypeScript semantics to remain consistent with the language. This option is provided to align
+   * runtime check semantics with projects that configure 'exactOptionalPropertyTypes: true' in
    * tsconfig.json.
    * @default false
    */
@@ -63,5 +63,15 @@ export interface TSettings {
    * @default false
    */
   enumerableKind: boolean
+  
+  /**
+   * Controls whether TypeBox uses corrective Parse. When enabled, TypeBox will attempt to recover invalid
+   * values during Parse by running a sequence of `Value.*` operations to `Convert`, `Default`, and `Clean`
+   * the value, followed by a subsequent `Assert`. Enabling this option may incur significant performance
+   * overhead for invalid values. It is recommended to keep this disabled in performance-sensitive
+   * applications.
+   * @default false
+   */
+  correctiveParse: boolean
 }
 ```

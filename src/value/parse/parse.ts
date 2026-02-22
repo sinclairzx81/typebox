@@ -28,12 +28,18 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
+import { Settings } from '../../system/system.ts'
 import { Arguments } from '../../system/arguments/index.ts'
 import { type TLocalizedValidationError } from '../../error/errors.ts'
 import { type TProperties, type TSchema, type Static } from '../../type/index.ts'
 import { AssertError } from '../assert/index.ts'
 import { Check } from '../check/index.ts'
+import { Clone } from '../clone/index.ts'
+import { Default } from '../default/index.ts'
+import { Convert } from '../convert/index.ts'
+import { Clean } from '../clean/index.ts'
 import { Errors } from '../errors/index.ts'
+import { Pipeline } from '../pipeline/index.ts'
 
 // ------------------------------------------------------------------
 // ParseError
@@ -43,22 +49,41 @@ export class ParseError extends AssertError {
     super('Parse', value, errors)
   }
 }
-/** Parses a value with the given type. Will throw if the value is invalid. */
+function Assert(context: TProperties, type: TSchema, value: unknown): unknown {
+  if (!Check(context, type, value)) throw new ParseError(value, Errors(context, type, value))
+  return value
+}
+// ------------------------------------------------------------------
+// CorrectiveParse
+// ------------------------------------------------------------------
+export const CorrectiveParse = Pipeline([
+  (_context, _type, value) => Clone(value),
+  (context, type, value) => Default(context, type, value),
+  (context, type, value) => Convert(context, type, value),
+  (context, type, value) => Clean(context, type, value),
+  (context, type, value) => Assert(context, type, value)
+])
+// ------------------------------------------------------------------
+// Parse
+// ------------------------------------------------------------------
+/**  Parses a value with the given type. */
 export function Parse<const Type extends TSchema, 
   Result extends unknown = Static<Type>
 >(type: Type, value: unknown): Result
 
-/** Parses a value with the given type. Will throw if the value is invalid. */
+/**  Parses a value with the given type. */
 export function Parse<Context extends TProperties, const Type extends TSchema, 
   Result extends unknown = Static<Type, Context>
 >(context: Context, type: Type, value: unknown): Result
 
-/** Parses a value with the given type. Will throw if the value is invalid. */
+/**  Parses a value with the given type. */
 export function Parse(...args: unknown[]): never {
   const [context, type, value] = Arguments.Match<[TProperties, TSchema, unknown]>(args, {
     3: (context, type, value) => [context, type, value],
     2: (type, value) => [{}, type, value],
   })
-  if (Check(context, type, value)) return value as never
+  const checked = Check(context, type, value)
+  if(checked) return value as never
+  if(Settings.Get().correctiveParse) return CorrectiveParse(context, type, value) as never
   throw new ParseError(value, Errors(context, type, value))
 }

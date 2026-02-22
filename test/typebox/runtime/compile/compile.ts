@@ -1,5 +1,5 @@
-import { Compile } from 'typebox/compile'
-import { Settings } from 'typebox/system'
+import System from 'typebox/system'
+import Compile from 'typebox/compile'
 import { Type } from 'typebox'
 import { Assert } from 'test'
 
@@ -38,14 +38,14 @@ Test('Should Compile 3', () => {
 // Disable Eval
 // ------------------------------------------------------------------
 Test('Should Compile 4', () => {
-  Settings.Set({ useEval: false })
+  System.Settings.Set({ useEval: false })
   const check = Compile({ A: Type.String() }, Type.Ref('A'))
   const checkResult = check.Check(1)
   const errorsResult = check.Errors(1)
   Assert.Throws(() => check.Parse({}))
   Assert.IsFalse(checkResult)
   Assert.IsTrue(errorsResult.length > 0)
-  Settings.Reset()
+  System.Settings.Reset()
 })
 // ------------------------------------------------------------------
 // Context | Schema
@@ -99,4 +99,91 @@ Test('Should Compile 17', () => {
   const A = Compile(Type.String({ default: 'hello' }))
   const C = A.IsEvaluated()
   Assert.IsTrue(typeof C === 'boolean')
+})
+// ------------------------------------------------------------------
+// Default Parse
+// ------------------------------------------------------------------
+Test('Should Parse Default 0', () => {
+  const T = Compile(Type.Number())
+  const output = T.Parse(1)
+  Assert.IsEqual(output, 1)
+})
+Test('Should Parse Default 1', () => {
+  const T = Compile(Type.Number())
+  Assert.Throws(() => T.Parse('1'))
+})
+// ------------------------------------------------------------------
+// Corrective Parse
+// ------------------------------------------------------------------
+Test('Should Parse Corrective 0 (Additional)', () => {
+  System.Settings.Set({ correctiveParse: true })
+  const T = Compile(Type.Object({
+    x: Type.Number(),
+    y: Type.Number()
+  }))
+  const input = { x: 1, y: 2, z: 3 }
+  const output = T.Parse(input)
+  Assert.IsEqual(output.x, 1)
+  Assert.IsEqual(output.y, 2)
+  Assert.HasPropertyKey(output, 'z')
+  System.Settings.Reset()
+})
+Test('Should Parse Corrective 1 (No Additional)', () => {
+  System.Settings.Set({ correctiveParse: true })
+  const T = Compile(Type.Object({
+    x: Type.Number(),
+    y: Type.Number()
+  }, { additionalProperties: false }))
+  const input = { x: 1, y: 2, z: 3 }
+  const output = T.Parse(input)
+  Assert.IsEqual(output.x, 1)
+  Assert.IsEqual(output.y, 2)
+  Assert.NotHasPropertyKey(output, 'z')
+  System.Settings.Reset()
+})
+Test('Should Parse Corrective 2 (Default)', () => {
+  System.Settings.Set({ correctiveParse: true })
+  const T = Compile(Type.Object({
+    x: Type.Number({ default: 1 }),
+    y: Type.Number({ default: 2 })
+  }))
+  const input = {}
+  const output = T.Parse(input)
+  Assert.IsEqual(output.x, 1)
+  Assert.IsEqual(output.y, 2)
+  System.Settings.Reset()
+})
+Test('Should Parse Corrective 3 (Default)', () => {
+  System.Settings.Set({ correctiveParse: true })
+  const T = Compile(Type.Object({
+    x: Type.Number({ default: 1 }),
+    y: Type.Number({ default: 2 })
+  }))
+  const input = { x: 3, y: 4 }
+  const output = T.Parse(input)
+  Assert.IsEqual(output.x, 3)
+  Assert.IsEqual(output.y, 4)
+  System.Settings.Reset()
+})
+Test('Should Parse Corrective 4 (Convert)', () => {
+  System.Settings.Set({ correctiveParse: true })
+  const T = Compile(Type.Object({
+    x: Type.Number({ default: 1 }),
+    y: Type.Number({ default: 2 })
+  }))
+  const input = { x: '3', y: '4' }
+  const output = T.Parse(input)
+  Assert.IsEqual(output.x, 3)
+  Assert.IsEqual(output.y, 4)
+  System.Settings.Reset()
+})
+Test('Should Parse Corrective 5 (Assert)', () => {
+  System.Settings.Set({ correctiveParse: true })
+  const T = Compile(Type.Object({
+    x: Type.Number({ default: 1 }),
+    y: Type.Number({ default: 2 })
+  }))
+  const input = undefined
+  Assert.Throws(() => T.Parse(input))
+  System.Settings.Reset()
 })

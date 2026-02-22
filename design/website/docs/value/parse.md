@@ -1,8 +1,6 @@
 # Parse
 
-The Parse function attempts to parse a value and throws an error if the value is invalid. This function is similar to Decode, but it does not execute Decode callbacks. Parse is considered a faster version of Decode, as operations that transform values are skipped when the value already matches the expected type.
-
-> The Parse function first checks a value against the provided type and returns immediately if it matches. If the value does not match, it is processed through a sequence of Clone, Clean, Convert, and Default operations, and then re-checked. If the value remains invalid, a ParseError error is thrown.
+The Parse function validates and returns a value that conforms to a given type. If the value does not satisfy the type, a parse error is thrown.
 
 ## Example
 
@@ -11,5 +9,31 @@ Example usage is shown below.
 ```typescript
 const R = Value.Parse(Type.String(), 'hello')      // const R: string = "hello"
 
-const E = Value.Parse(Type.String(), [{ x: 1 }])   // throws ParseError 
+const E = Value.Parse(Type.String(), 12345)        // throws ParseError 
+```
+
+## Corrective Parse
+
+TypeBox provides an optional corrective parsing mode that attempts to repair invalid values before failing. When enabled, the parser runs a pipeline consisting of Convert, Default, and Clean, then re-asserts the value after processing. This feature can be useful when parsing environment variables into target types.
+
+> ⚠️ This feature can impact performance. It is not recommended for use in high throughput applications.
+
+This feature can be enabled as follows:
+
+```typescript
+import { Settings } from 'typebox/system'
+
+// Corrective Parse: Enable
+
+Settings.Set({ correctiveParse: true })
+
+// Corrective Parse: Convert Value into the target type if reasonable conversion is possible.
+
+const R = Value.Parse(Type.String(), 'hello')      // const R: string = "hello"
+
+const S = Value.Parse(Type.String(), 12345)        // const S: string = "12345"
+
+// Corrective Parse: Reset (optional)
+
+Settings.Reset()
 ```

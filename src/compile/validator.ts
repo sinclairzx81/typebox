@@ -28,11 +28,12 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
+import { Settings } from '../system/settings/index.ts'
 import { Environment } from '../system/environment/index.ts'
 import { type TLocalizedValidationError } from '../error/index.ts'
-import { type Static, type TProperties, type TSchema } from '../type/index.ts'
-import { Errors, Clean, Convert, Create, Default, ParseError } from '../value/index.ts'
-import { Build, type EvaluateResult } from '../schema/index.ts'
+import { type TProperties, type TSchema, type Static } from '../type/index.ts'
+import { Errors, Clean, Convert, Create, Default, ParseError, CorrectiveParse } from '../value/index.ts'
+import { Build, EvaluateResult } from '../schema/index.ts'
 
 // ------------------------------------------------------------------
 // Validator<...>
@@ -96,7 +97,9 @@ export class Validator<Context extends TProperties = TProperties, Type extends T
   }
   /** Parses a value */
   public Parse(value: unknown): Value {
-    if(!this.Check(value)) throw new ParseError(value, this.Errors(value))
-    return value as never
+    const checked = this.Check(value)
+    if(checked) return value as never
+    if(Settings.Get().correctiveParse) return CorrectiveParse(this.context, this.type, value) as never
+    throw new ParseError(value, this.Errors(value))
   }
 }
