@@ -1,4 +1,4 @@
-# Script
+# Script.Syntax
 
 The Script function will transform TypeScript types into Json Schema schematics.
 

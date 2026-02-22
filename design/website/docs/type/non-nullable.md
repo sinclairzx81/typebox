@@ -1,4 +1,4 @@
-# NonNullable
+# Type.NonNullable
 
 The NonNullable function will discard variants of Undefined and Null from a Union type.
 

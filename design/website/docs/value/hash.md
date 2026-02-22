@@ -1,4 +1,4 @@
-# Hash
+# Value.Hash
 
 The Hash function creates a structural hash of a JavaScript value. It returns a padded 64-bit hexadecimal string. Internally, this function computes an accumulated `fnv1a-64` hash across all properties, elements, and embedded values of the input. It is intended to generate fast computed hash codes for arbitrary JavaScript data structures.
 

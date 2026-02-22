@@ -1,4 +1,4 @@
-# Conditional
+# Type.Conditional
 
 Creates a conditional type expression.
 

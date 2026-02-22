@@ -1,4 +1,4 @@
-# Literal
+# Type.Literal
 
 Creates a Literal type. Supported values are BigInt, Boolean, Number and String.
 

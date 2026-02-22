@@ -1,4 +1,4 @@
-# IsJsonPointer
+# Format.IsJsonPointer
 
 Returns true if the string is a [RFC 6901](https://datatracker.ietf.org/doc/html/rfc6901) Json Pointer
 

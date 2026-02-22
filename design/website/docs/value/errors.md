@@ -1,4 +1,4 @@
-# Errors
+# Value.Errors
 
 The Errors function returns an array of validation errors for the specified value. If the value contains no errors, an empty array is returned. This function should only be invoked after a failed Check.
 

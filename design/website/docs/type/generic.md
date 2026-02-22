@@ -1,4 +1,4 @@
-# Generic
+# Type.Generic
 
 Creates a Generic type. Generic types can be instantiated with Call.
 

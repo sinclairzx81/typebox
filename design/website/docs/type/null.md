@@ -1,4 +1,4 @@
-# Null
+# Type.Null
 
 Creates a Null type.
 

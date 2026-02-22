@@ -1,4 +1,4 @@
-# Lowercase
+# Type.Lowercase
 
 The Lowercase function will lowercase string literals.
 

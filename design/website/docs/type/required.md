@@ -1,4 +1,4 @@
-# Required
+# Type.Required
 
 Makes all properties of an Object required.
 

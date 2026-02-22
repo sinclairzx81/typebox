@@ -1,0 +1,28 @@
+<h1>Schema.Parse</h1>
+<p>The <code>Parse(...)</code> function returns the value if match, otherwise throw.</p>
+<h2>Example</h2>
+<pre><code class="language-typescript">import Schema from &#39;typebox/schema&#39;
+
+// ------------------------------------------------------------------
+// Schema
+// ------------------------------------------------------------------
+
+const T = { 
+  type: &#39;object&#39;,
+  required: [&#39;x&#39;, &#39;y&#39;, &#39;z&#39;],
+  properties: {
+    x: { type: &#39;number&#39; },
+    y: { type: &#39;number&#39; },
+    z: { type: &#39;number&#39; }
+  }
+} as const
+
+// ------------------------------------------------------------------
+// Parse
+// ------------------------------------------------------------------
+
+const R = Schema.Parse(T, { x: 1, y: 2 })           // const R: {
+                                                    //   x: number,
+                                                    //   y: number
+                                                    // } = ...
+</code></pre>

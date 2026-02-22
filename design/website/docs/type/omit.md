@@ -1,4 +1,4 @@
-# Omit
+# Type.Omit
 
 Omits keys from the given Object type.
 

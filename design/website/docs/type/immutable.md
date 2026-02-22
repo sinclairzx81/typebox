@@ -1,4 +1,4 @@
-# Immutable
+# Type.Immutable
 
 The Immutable function applies an `~immutable` modifier to an Array or Tuple and is used to infer `readonly T[]` for these types. This modifier is used for type inference and compositing only. It has no effect on validation.
 

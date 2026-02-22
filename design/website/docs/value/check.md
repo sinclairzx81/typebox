@@ -1,4 +1,4 @@
-# Check
+# Value.Check
 
 The Check function returns true if the value matches the type. 
 

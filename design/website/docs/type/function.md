@@ -1,4 +1,4 @@
-# Function
+# Type.Function
 
 Creates a Function type. 
 

@@ -1,4 +1,4 @@
-# Registry
+# Format.Registry
 
 Custom string formats are supported with Get and Set.
 

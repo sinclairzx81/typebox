@@ -1,4 +1,4 @@
-# Symbol
+# Type.Symbol
 
 Creates a Symbol type. 
 

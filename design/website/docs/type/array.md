@@ -1,4 +1,4 @@
-# Array
+# Type.Array
 
 Creates an Array type.
 

@@ -1,4 +1,4 @@
-# Scaling
+# Script.Scaling
 
 This page details type scaling behaviours for Script
 

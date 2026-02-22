@@ -1,4 +1,4 @@
-# Number
+# Type.Number
 
 Creates a Number type.
 

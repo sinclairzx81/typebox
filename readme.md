@@ -25,12 +25,8 @@ $ npm install typebox
 
 ## Usage
 
-A TypeScript engine for JSON Schema [Example](https://tsplay.dev/mZMOeN)
-
 ```typescript
 import Type from 'typebox'
-
-// JSON Schema
 
 const T = Type.Object({                             // const T = {
   x: Type.Number(),                                 //   type: 'object',
@@ -46,20 +42,6 @@ type T = Type.Static<typeof T>                      // type T = {
                                                     //   x: number,
                                                     //   y: number,
                                                     //   z: number
-                                                    // }
-
-// TypeScript
-
-const { S } = Type.Script({ T }, `
-  type S = {
-    readonly [K in keyof T as Uppercase<K>]: string
-  }
-`)
-
-type S = Type.Static<typeof S>                      // type S = {
-                                                    //   readonly X: string,
-                                                    //   readonly Y: string,
-                                                    //   readonly Z: string
                                                     // }
 ```
 
@@ -79,7 +61,6 @@ License: MIT
 - [Type](#Type)
 - [Value](#Value)
 - [Script](#Script)
-- [Compile](#Compile)
 - [Schema](#Schema)
 - [Legacy](#Legacy)
 - [Contribute](#Contribute)
@@ -164,41 +145,37 @@ const A = Value.Parse(T, {                          // const A: {
 
 ## Script
 
-[Documentation](https://sinclairzx81.github.io/typebox/#/docs/script/overview) | [Example 1](https://tsplay.dev/Wk6L1m) | [Example 2](https://tsplay.dev/NnrJoN)
+[Documentation](https://sinclairzx81.github.io/typebox/#/docs/script/overview) | [Example 1](https://tsplay.dev/N9rQ8m) | [Example 2](https://tsplay.dev/NnrJoN)
 
-TypeBox is a runtime TypeScript DSL engine that can create, transform, and compute JSON Schema using native TypeScript syntax. The engine is implemented symmetrically at runtime and within the TypeScript type system, and is intended for use with the TypeScript 7 native compiler and above.
+TypeBox includes a runtime TypeScript DSL engine that can transform TypeScript syntax into JSON Schema. The engine is implemented at runtime and within the TypeScript type system.
 
 ```typescript
-// Scripted Type
-
+// ----------------------------------------------------------
+// Script
+// ----------------------------------------------------------
 const T = Type.Script(`{ 
   x: number, 
   y: string, 
   z: boolean 
-}`)                                                 // const T: TObject<{
-                                                    //   x: TNumber,
-                                                    //   y: TString,
-                                                    //   z: TBoolean
-                                                    // }>
+}`)
 
-// JSON Schema Introspection
-
+// ----------------------------------------------------------
+// Reflect
+// ----------------------------------------------------------
 T.type                                              // 'object'
 T.required                                          // ['x', 'y', 'z']
 T.properties                                        // { x: ..., y: ..., z: ... }
 
-// Scripted Type (Computed)
-
+// ----------------------------------------------------------
+// Computed
+// ----------------------------------------------------------
 const S = Type.Script({ T }, `{
   [K in keyof T]: T[K] | null
-}`)                                                 // const S: TObject<{
-                                                    //   x: TUnion<[TNumber, TNull]>,
-                                                    //   y: TUnion<[TString, TNull]>,
-                                                    //   z: TUnion<[TBoolean, TNull]>
-                                                    // }>
+}`)
 
-// Standard Inference
-
+// ----------------------------------------------------------
+// Inference
+// ----------------------------------------------------------
 type S = Type.Static<typeof S>                      // type S = {
                                                     //   x: number | null,
                                                     //   y: string | null,
@@ -206,50 +183,27 @@ type S = Type.Static<typeof S>                      // type S = {
                                                     // }
 ```
 
-<a name="Compile"></a>
-
-## Compile
-
-[Documentation](https://sinclairzx81.github.io/typebox/#/docs/compile/overview) | [Example](https://tsplay.dev/WyraZw)
-
-The Compile submodule is a high-performance, JSON Schema compliant JIT compiler that transforms schematics into efficient runtime validators. It is optimized for fast, dynamic schema compilation and delivers extremely high data-validation throughput.
-
-```typescript
-import Compile from 'typebox/compile' 
-```
-
-### Example
-
-The following uses the compiler to Compile and Parse a value. 
-
-```typescript
-const C = Compile(Type.Object({                     // const C: Validator<{}, TObject<{
-  x: Type.Number(),                                 //   x: TNumber,
-  y: Type.Number(),                                 //   y: TNumber,
-  z: Type.Number()                                  //   z: TNumber
-}))                                                 // }>>
-
-const A = C.Parse({                                 // const A: {
-  x: 0,                                             //   x: number,
-  y: 1,                                             //   y: number,
-  z: 0                                              //   z: number
-})                                                  // } = ...
-```
-
 <a name="Schema"></a>
 
 ## Schema
 
-[Documentation](https://sinclairzx81.github.io/typebox/#/docs/schema/overview) | [Example 1](https://tsplay.dev/Wvrv3W) | [Example 2](https://tsplay.dev/m3g0ym)
+[Documentation](https://sinclairzx81.github.io/typebox/#/docs/schema/overview)
 
-TypeBox is built upon a high-performance validation infrastructure that supports the direct compilation and inference of JSON Schema schematics. TypeBox implements Draft 3 to 2020-12 and is compliance tested via the official JSON Schema [Test Suite](https://github.com/JSON-schema-org/JSON-Schema-Test-Suite). It offers high-performance JIT compilation with automatic fallback to dynamic checking in JIT restricted environments.
+```typescript
+import Schema from 'typebox/schema'
+```
+
+The Value submodule is developed over a more low level JSON Schema spec compliant validation system that supports Drafts 3 through to 2020-12. This validation system is entirely decoupled from both Type and Value submodules and is designed to be a ultra lightweight, high performance alternative to Ajv.
 
 ### Example
 
-The following compiles JSON Schema. Type inference is supported.
+The following uses the Schema submodule to compile and parse from JSON Schema.
 
 ```typescript
-const C = Compile({
+// ----------------------------------------------------------
+// Compile
+// ----------------------------------------------------------
+const C = Schema.Compile({
   type: 'object',
   required: ['x', 'y', 'z'],
   properties: {
@@ -259,11 +213,14 @@ const C = Compile({
   }
 })
 
-const A = C.Parse({                                 // const A: {
-  x: 0,                                             //   x: number,
-  y: 0,                                             //   y: number,
-  z: 1                                              //   z: number
-})                                                  // } = ...
+// ----------------------------------------------------------
+// Parse
+// ----------------------------------------------------------
+const R = C.Parse({  x: 0, y: 0, z: 0 })            // const R: {
+                                                    //   x: number,
+                                                    //   y: number,
+                                                    //   z: number
+                                                    // } = ...
 ```
 
 ## Legacy
@@ -280,8 +237,9 @@ Most types created with 0.34.x are compatible with V1, and it is possible to run
 import { Type } from '@sinclair/typebox'            // TB: 0.34.x
 import { Static } from 'typebox'                    // TB: 1.0.0
 
+// ----------------------------------------------------------
 // Legacy Types
-
+// ----------------------------------------------------------
 const A = Type.Object({
   x: Type.Number(),
   y: Type.Number(),
@@ -296,8 +254,9 @@ const B = Type.Object({
 
 const C = Type.Composite([A, B])
 
+// ----------------------------------------------------------
 // Modern Inference
-
+// ----------------------------------------------------------
 type C = Static<typeof C>                           // type C = {
                                                     //   x: number;
                                                     //   y: number;
@@ -307,11 +266,12 @@ type C = Static<typeof C>                           // type C = {
                                                     //   c: number;
                                                     // }
 
+// ----------------------------------------------------------
 // Modern Compile
+// ----------------------------------------------------------
+import Schema from 'typebox/schema'
 
-import Compile from 'typebox/compile'
-
-const Result = Compile(C).Check({ ... })
+const R = Schema.Compile(C).Check({ ... })
 ```
 
 Revision 0.34.x is actively maintained at the following URL.
