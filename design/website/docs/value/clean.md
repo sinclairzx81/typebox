@@ -1,4 +1,4 @@
-# Clean
+# Value.Clean
 
 The Clean function will remove excess properties or elements from a value. 
 

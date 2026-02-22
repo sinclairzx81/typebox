@@ -1,4 +1,4 @@
-# Constructor
+# Type.Constructor
 
 Creates a Constructor type. 
 

@@ -1,4 +1,4 @@
-# Parameters
+# Script.Parameters
 
 Script can accept named type parameters.
 

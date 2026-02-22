@@ -1,4 +1,4 @@
-# Enum
+# Type.Enum
 
 Creates an Enum type.
 

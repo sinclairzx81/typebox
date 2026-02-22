@@ -1,4 +1,4 @@
-# Interface
+# Type.Interface
 
 The Interface function creates an Object with Heritage.
 

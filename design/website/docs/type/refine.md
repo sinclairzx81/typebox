@@ -1,4 +1,4 @@
-# Refine
+# Type.Refine
 
 The Refine function applies explicit validation logic to a type. 
 

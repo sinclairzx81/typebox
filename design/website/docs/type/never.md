@@ -1,4 +1,4 @@
-# Never
+# Type.Never
 
 Creates a Never type.
 

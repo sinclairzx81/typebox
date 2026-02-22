@@ -1,4 +1,4 @@
-<h1>Evaluate</h1>
+<h1>Compile.Evaluate</h1>
 <p>TypeBox attains high performance by generating optimized JavaScript code at runtime using schema introspection. This approach is safe, but some environments block runtime code execution (such as <code>eval</code> or <code>new Function</code>). In these cases, high-performance validation is not possible. One notable environment that does this is Cloudflare workers.</p>
 <p>TypeBox implements internal fallbacks for these environments and will downgrade to dynamic checking using the Value.* submodule if it detects a restrictive <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CSP">Content Security Policy</a>. </p>
 <h2>Example</h2>

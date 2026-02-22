@@ -1,4 +1,4 @@
-# Union
+# Type.Union
 
 Creates a Union type. 
 

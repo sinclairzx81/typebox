@@ -1,4 +1,4 @@
-# Intersect
+# Type.Intersect
 
 Creates an Intersect type.
 

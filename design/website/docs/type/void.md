@@ -1,4 +1,4 @@
-# Void
+# Type.Void
 
 Creates a Void type.
 

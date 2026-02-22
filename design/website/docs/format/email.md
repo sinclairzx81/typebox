@@ -1,4 +1,4 @@
-# IsEmail
+# Format.IsEmail
 
 Returns true if the string is an email
 

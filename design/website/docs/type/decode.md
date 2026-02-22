@@ -1,4 +1,4 @@
-# Decode
+# Type.Decode
 
 The Decode function applies a uni-directional decoding transform to a type.
 

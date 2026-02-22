@@ -1,4 +1,4 @@
-# Instantiate
+# Type.Instantiate
 
 The Instantiate function will instantiate interior references embedded within a type. This function accepts a context object as the first argument which is used to source referenced types.
 

@@ -1,4 +1,4 @@
-# Record
+# Type.Record
 
 Creates a Record type.
 

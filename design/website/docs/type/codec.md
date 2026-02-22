@@ -1,4 +1,4 @@
-# Codec
+# Type.Codec
 
 The Codec function applies a bi-directional transform codec to a type.
 

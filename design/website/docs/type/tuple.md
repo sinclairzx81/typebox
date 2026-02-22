@@ -1,4 +1,4 @@
-# Tuple
+# Type.Tuple
 
 Creates a Tuple type.
 

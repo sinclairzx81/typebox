@@ -1,4 +1,4 @@
-# Uppercase
+# Type.Uppercase
 
 The Uppercase function will uppercase string literals.
 

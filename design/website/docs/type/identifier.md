@@ -1,4 +1,4 @@
-# Identifier
+# Type.Identifier
 
 Creates a named Identifier.
 

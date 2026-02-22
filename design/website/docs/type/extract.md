@@ -1,4 +1,4 @@
-# Extract
+# Type.Extract
 
 The Extract function will extract types from Left that extend Right.
 

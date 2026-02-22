@@ -1,4 +1,4 @@
-# Validator
+# Compile.Validator
 
 Validators provide optimized implementations of the functions available in the Value submodule.
 
