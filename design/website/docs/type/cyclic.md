@@ -1,4 +1,4 @@
-# Cyclic
+# Type.Cyclic
 
 Creates a Cyclic type. 
 

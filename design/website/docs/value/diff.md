@@ -1,4 +1,4 @@
-# Diff
+# Value.Diff
 
 The Diff function computes a sequence of Edit commands to transform the Left value into the Right value. The resulting Edit commands can be passed to Patch, which executes them in sequence.
 

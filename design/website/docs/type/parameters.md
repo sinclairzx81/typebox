@@ -1,4 +1,4 @@
-# Parameters
+# Type.Parameters
 
 The Parameters function will extract Parameters from a Function type.
 

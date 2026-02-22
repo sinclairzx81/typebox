@@ -1,4 +1,4 @@
-# IsHostname
+# Format.IsHostname
 
 Returns true if the string is an internationalized [RFC 5890](https://datatracker.ietf.org/doc/html/rfc5890) hostname
 

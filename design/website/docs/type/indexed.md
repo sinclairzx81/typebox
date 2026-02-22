@@ -1,4 +1,4 @@
-# Index
+# Type.Index
 
 The Index function performs a indexed access lookup on a type.
 

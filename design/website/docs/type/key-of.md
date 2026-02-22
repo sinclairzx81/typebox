@@ -1,4 +1,4 @@
-# KeyOf
+# Type.KeyOf
 
 Extracts Keys from an Object or Tuple.
 

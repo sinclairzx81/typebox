@@ -1,4 +1,4 @@
-# IsUuid
+# Format.IsUuid
 
 Returns true if the string is a RFC 4122 UUID
 

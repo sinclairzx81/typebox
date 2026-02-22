@@ -1,0 +1,46 @@
+<h1>Schema.Errors</h1>
+<p>The <code>Errors(...)</code> function returns a validation result containing a boolean success value, and an array of validation errors.</p>
+<h2>Example</h2>
+<pre><code class="language-typescript">import Schema from &#39;typebox/schema&#39;
+
+// ------------------------------------------------------------------
+// Schema
+// ------------------------------------------------------------------
+const T = { 
+  type: &#39;object&#39;,
+  required: [&#39;x&#39;, &#39;y&#39;, &#39;z&#39;],
+  properties: {
+    x: { type: &#39;number&#39; },
+    y: { type: &#39;number&#39; },
+    z: { type: &#39;number&#39; }
+  }
+} as const
+
+// ------------------------------------------------------------------
+// Errors
+// ------------------------------------------------------------------
+
+// where E is: [success: boolean, errors: TLocalizedValidationError[]]
+
+const E = Schema.Errors(T, { x: null })             // const E = [
+                                                    //   false,
+                                                    //   [
+                                                    //     {
+                                                    //       keyword: &quot;required&quot;,
+                                                    //       schemaPath: &quot;#&quot;,
+                                                    //       instancePath: &quot;&quot;,
+                                                    //       params: { requiredProperties: [ &quot;y&quot;, &quot;z&quot; ] },
+                                                    //       message: &quot;must have required properties y, z&quot;
+                                                    //     },
+                                                    //     {
+                                                    //       keyword: &quot;type&quot;,
+                                                    //       schemaPath: &quot;#/properties/x&quot;,
+                                                    //       instancePath: &quot;/x&quot;,
+                                                    //       params: { type: &quot;number&quot; },
+                                                    //       message: &quot;must be number&quot;
+                                                    //     }
+                                                    //   ]
+                                                    // ]
+
+console.log(errors)
+</code></pre>

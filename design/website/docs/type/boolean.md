@@ -1,4 +1,4 @@
-# Boolean
+# Type.Boolean
 
 Create a Boolean type.
 

@@ -1,4 +1,4 @@
-# Integer
+# Type.Integer
 
 Creates an Integer type.
 

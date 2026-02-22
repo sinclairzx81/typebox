@@ -1,4 +1,4 @@
-# String
+# Type.String
 
 Creates a String type.
 

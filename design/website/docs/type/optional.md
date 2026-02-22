@@ -1,4 +1,4 @@
-# Optional
+# Type.Optional
 
 The Optional function applies an optional `?` modifier to a type.
 

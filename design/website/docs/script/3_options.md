@@ -1,4 +1,4 @@
-# Options
+# Script.Options
 
 Script types support options and constraints.
 

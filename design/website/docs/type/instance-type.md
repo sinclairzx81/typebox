@@ -1,4 +1,4 @@
-# InstanceType
+# Type.InstanceType
 
 Extracts the InstanceType from a Constructor type.
 

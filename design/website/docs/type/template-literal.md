@@ -1,4 +1,4 @@
-# TemplateLiteral
+# Type.TemplateLiteral
 
 Creates a TemplateLiteral type.
 

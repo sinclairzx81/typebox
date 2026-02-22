@@ -1,4 +1,4 @@
-# IsIdnEmail
+# Format.IsIdnEmail
 
 Returns true if the string is an internationalized [RFC 6531](https://datatracker.ietf.org/doc/html/rfc6531) email address
 

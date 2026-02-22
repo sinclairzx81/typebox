@@ -1,4 +1,4 @@
-# Evaluate
+# Type.Evaluate
 
 The Evaluate function will evaluate logical type expressions and return the result.
 
