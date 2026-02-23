@@ -27,10 +27,10 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import { TLocalizedValidationError } from 'typebox/error'
-import { Validator } from 'typebox/compile'
+import { Validator } from 'typebox/schema'
 import { Arguments } from 'typebox/system'
-import Guard from 'typebox/guard'
-import Type from 'typebox'
+import { Guard } from 'typebox/guard'
+import * as Type from 'typebox'
 
 // ------------------------------------------------------------------
 // Error to Issue
@@ -49,20 +49,19 @@ function Issue(error: TLocalizedValidationError): StandardSchemaV1.Issue {
 export class StandardSchemaProps<Value> implements StandardSchemaV1.Props<Value, Value>, StandardJSONSchemaV1.Props<Value, Value> {
   public readonly vendor = 'typebox'
   public readonly version = 1
-  public readonly validator: Validator
+  public readonly validator: Validator<{}, {}>
   public types?: StandardTypedV1.Types<Value, Value> | undefined
   public jsonSchema: StandardJSONSchemaV1.Converter
   constructor(context: Type.TProperties, type: Type.TSchema) {
     this.validator = new Validator(context, type)
-    const schema = Type.Instantiate(context, type) as Record<string, unknown>
     this.jsonSchema = {
-      output: () => schema,
-      input: () => schema
+      output: () => Type.Instantiate(context, type) as Record<string, unknown>,
+      input: () => Type.Instantiate(context, type) as Record<string, unknown>,
     }
   }
   public validate(value: unknown): StandardSchemaV1.Result<Value> | Promise<StandardSchemaV1.Result<Value>> {
     if (this.validator.Check(value)) return { value } as never
-    const errors = this.validator.Errors(value)
+    const [_result, errors] = this.validator.Errors(value)
     const issues = errors.map(error => Issue(error))
     return { issues }
   }
