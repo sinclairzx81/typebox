@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 # ReadonlyObject
-=======
-# Type.ReadonlyType
->>>>>>> main
 
 This type is an alias for the `Readonly<T>` TypeScript utility type. It makes all properties of an Object `readonly` or marks an Array or Tuple as immutable `readonly T[]`.
 
