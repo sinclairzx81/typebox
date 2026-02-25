@@ -45,7 +45,7 @@ export interface TSettings {
    * restrict runtime code evaluation, regardless of Content Security Policy (CSP).
    * @default true
    */
-  useEval: boolean
+  useAcceleration: boolean
 
   /**
    * Enables or disables 'exactOptionalPropertyTypes' check semantics. By default, TypeScript

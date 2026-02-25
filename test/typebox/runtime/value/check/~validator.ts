@@ -67,7 +67,7 @@ Test('Should validate Validator 8', () => {
   Assert.IsEqual(A.Code(), B.Code())
   Assert.IsEqual(A.Type(), B.Type())
   Assert.IsEqual(A.Context(), B.Context())
-  Assert.IsEqual(A.IsEvaluated(), B.IsEvaluated())
+  Assert.IsEqual(A.IsAccelerated(), B.IsAccelerated())
   // check function cannot be cloned so we expect references to be equal
   Assert.IsTrue((A as any).check === (B as any).check)
 })

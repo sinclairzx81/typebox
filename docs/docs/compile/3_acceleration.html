@@ -1,0 +1,24 @@
+<h1>Compile.Acceleration</h1>
+<p>TypeBox achieves high performance by generating optimized JavaScript validation code derived from JSON schematics. This generated code is runtime evaluated within the environment, a technique known as JIT compile. This approach is safe, however some environments do block runtime code evaluation (such as <code>eval</code> or <code>new Function</code>). In these cases, acceleration will not be possible. One notable environment where evaluation is restricted is Cloudflare workers.</p>
+<p>TypeBox implements internal fallbacks for these environments and will downgrade to interpretted dynamic checking using the Value.* submodule if it detects a restrictive <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CSP">Content Security Policy</a>. </p>
+<h2>IsAccelerated</h2>
+<p>You can check if the validator is using interpretted fallbacks with the IsAccelerated function.</p>
+<pre><code class="language-typescript">import { Compile } from &#39;typebox/compile&#39;
+
+const C = Compile(Type.String())
+
+console.log(C.IsAccelerated()) // true if accelerated
+</code></pre>
+<h2>Disable Acceleration</h2>
+<p>It is possible to disable acceleration irrespective of Content Security Policy.</p>
+<pre><code class="language-typescript">import System from &#39;typebox/system&#39;
+
+System.Settings.Set({ useAcceleration: false })
+
+// ...
+
+const C = Compile(Type.String())
+
+console.log(C.IsAccelerated()) // will be false
+
+</code></pre>
