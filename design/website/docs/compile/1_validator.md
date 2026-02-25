@@ -101,7 +101,7 @@ const R = C.Encode(value)                       // const R: ...
 Returns true if the Validator is using evaluated optimizations.
 
 ```typescript
-const R = C.IsEvaluated()                      // const R: boolean
+const R = C.IsAccelerated()                      // const R: boolean
 ```
 
 ## Parse

@@ -3,7 +3,7 @@
     "0_compile": "docs/compile/0_compile.html",
     "1_validator": "docs/compile/1_validator.html",
     "2_code": "docs/compile/2_code.html",
-    "3_evaluate": "docs/compile/3_evaluate.html",
+    "3_accelerate": "docs/compile/3_accelerate.html",
     "overview": "docs/compile/overview.html"
   },
   "format": {

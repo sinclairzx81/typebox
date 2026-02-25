@@ -1,8 +1,22 @@
+import System from 'typebox/system'
 import Schema from 'typebox/schema'
 import { Assert } from 'test'
 
 const Test = Assert.Context('Schema.Compile')
 
+// ------------------------------------------------------------------
+// IsAccelerated
+// ------------------------------------------------------------------
+Test('Should IsAccelerated 1', () => {
+  const validator = Schema.Compile({ type: 'string' })
+  Assert.IsTrue(validator.IsAccelerated())
+})
+Test('Should IsAccelerated 2', () => {
+  System.Settings.Set({ useAcceleration: false })
+  const validator = Schema.Compile({ type: 'string' })
+  Assert.IsFalse(validator.IsAccelerated())
+  System.Settings.Reset()
+})
 // ------------------------------------------------------------------
 // Without Context
 // ------------------------------------------------------------------

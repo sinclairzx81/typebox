@@ -194,9 +194,9 @@ export function BuildSchema(stack: Stack, context: BuildContext, schema: Schema.
   }
   if (HasStringKeywords(schema)) {
     const constraints = []
-    if (Schema.IsFormat(schema)) constraints.push(BuildFormat(stack, context, schema, value))
     if (Schema.IsMaxLength(schema)) constraints.push(BuildMaxLength(stack, context, schema, value))
     if (Schema.IsMinLength(schema)) constraints.push(BuildMinLength(stack, context, schema, value))
+    if (Schema.IsFormat(schema)) constraints.push(BuildFormat(stack, context, schema, value))
     if (Schema.IsPattern(schema)) constraints.push(BuildPattern(stack, context, schema, value))
     const reduced = E.ReduceAnd(constraints)
     const guarded = E.Or(E.Not(E.IsString(value)), reduced)
@@ -259,9 +259,9 @@ export function CheckSchema(stack: Stack, context: CheckContext, schema: Schema.
       (!Schema.IsUniqueItems(schema) || CheckUniqueItems(stack, context, schema, value))
     )) &&
     (!G.IsString(value) || (
-      (!Schema.IsFormat(schema) || CheckFormat(stack, context, schema, value)) &&
       (!Schema.IsMaxLength(schema) || CheckMaxLength(stack, context, schema, value)) &&
       (!Schema.IsMinLength(schema) || CheckMinLength(stack, context, schema, value)) &&
+      (!Schema.IsFormat(schema) || CheckFormat(stack, context, schema, value)) &&
       (!Schema.IsPattern(schema) || CheckPattern(stack, context, schema, value))
     )) &&
     (!(G.IsNumber(value) || G.IsBigInt(value)) || (
@@ -318,9 +318,9 @@ export function ErrorSchema(stack: Stack, context: ErrorContext, schemaPath: str
         +(!Schema.IsUniqueItems(schema) || ErrorUniqueItems(stack, context, schemaPath, instancePath, schema, value))
       )) &
       +(!G.IsString(value) || !!(
-        +(!Schema.IsFormat(schema) || ErrorFormat(stack, context, schemaPath, instancePath, schema, value)) &
         +(!Schema.IsMaxLength(schema) || ErrorMaxLength(stack, context, schemaPath, instancePath, schema, value)) &
         +(!Schema.IsMinLength(schema) || ErrorMinLength(stack, context, schemaPath, instancePath, schema, value)) &
+        +(!Schema.IsFormat(schema) || ErrorFormat(stack, context, schemaPath, instancePath, schema, value)) &
         +(!Schema.IsPattern(schema) || ErrorPattern(stack, context, schemaPath, instancePath, schema, value))
       )) &
       +(!(G.IsNumber(value) || G.IsBigInt(value)) || !!(

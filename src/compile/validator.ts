@@ -46,11 +46,11 @@ export class Validator<Context extends TProperties = TProperties, Type extends T
     this.validator = Build(context, type).Evaluate()
   }
   // ----------------------------------------------------------------
-  // IsEvaluated
+  // IsAccelerated
   // ----------------------------------------------------------------
   /** Returns true if this validator is using runtime eval optimizations. */
-  public IsEvaluated(): boolean {
-    return this.validator.IsEvaluated
+  public IsAccelerated(): boolean {
+    return this.validator.IsAccelerated
   }
   // ----------------------------------------------------------------
   // Reflect
@@ -76,7 +76,7 @@ export class Validator<Context extends TProperties = TProperties, Type extends T
   }
   /** Returns errors for the given value. */
   public Errors(value: unknown): TLocalizedValidationError[] {
-    if (Environment.CanEvaluate() && this.Check(value)) return []
+    if (Environment.CanAccelerate() && this.Check(value)) return []
     return Errors(this.context, this.type, value)
   }
   /** Cleans a value using the Validator type. */

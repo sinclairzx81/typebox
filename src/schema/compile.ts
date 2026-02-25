@@ -47,6 +47,10 @@ export class Validator<Schema extends Schema.XSchema, Value extends unknown = St
     this.build = Build.Build(context, schema)
     this.result = this.build.Evaluate()
   }
+  /** Returns true if this Validator is using JIT acceleration. */
+  public IsAccelerated(): boolean {
+    return this.result.IsAccelerated
+  }
   /** Checks this value is valid */
   public Check(value: unknown): value is Value {
     return this.result.Check(value)
@@ -55,7 +59,7 @@ export class Validator<Schema extends Schema.XSchema, Value extends unknown = St
   public Parse(value: unknown): Value {
     if(this.result.Check(value)) return value as never
     const [_result, errors] = Errors(this.build.Context(), this.build.Schema(), value)
-    throw new ParseError(this.build.Context(), this.build.Schema(), errors)
+    throw new ParseError(this.build.Schema(), value, errors)
   }
   /** Returns errors for the given value */
   public Errors(value: unknown): [result: boolean, errors: TLocalizedValidationError[]] {

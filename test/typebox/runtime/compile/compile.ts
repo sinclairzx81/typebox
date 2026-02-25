@@ -38,7 +38,7 @@ Test('Should Compile 3', () => {
 // Disable Eval
 // ------------------------------------------------------------------
 Test('Should Compile 4', () => {
-  System.Settings.Set({ useEval: false })
+  System.Settings.Set({ useAcceleration: false })
   const check = Compile({ A: Type.String() }, Type.Ref('A'))
   const checkResult = check.Check(1)
   const errorsResult = check.Errors(1)
@@ -97,7 +97,7 @@ Test('Should Compile 16', () => {
 })
 Test('Should Compile 17', () => {
   const A = Compile(Type.String({ default: 'hello' }))
-  const C = A.IsEvaluated()
+  const C = A.IsAccelerated()
   Assert.IsTrue(typeof C === 'boolean')
 })
 // ------------------------------------------------------------------
