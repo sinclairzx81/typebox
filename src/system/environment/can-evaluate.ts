@@ -48,7 +48,7 @@ function TryEval(): boolean {
 // CanEvaluate
 // ------------------------------------------------------------------
 /** Returns true if the environment supports dynamic JavaScript evaluation */
-export function CanEvaluate(): boolean {
+export function CanAccelerate(): boolean {
   if (Guard.IsUndefined(supported)) supported = TryEval()
-  return supported && Settings.Get().useEval
+  return supported && Settings.Get().useAcceleration
 }

@@ -58,7 +58,7 @@ export interface TSettings {
    * restrict runtime code evaluation, regardless of Content Security Policy (CSP).
    * @default true
    */
-  useEval: boolean
+  useAcceleration: boolean
 
   /**
    * Enables or disables 'exactOptionalPropertyTypes' check semantics. By default, TypeScript
@@ -92,7 +92,7 @@ export interface TSettings {
 const settings: TSettings = {
   immutableTypes: false,
   maxErrors: 8,
-  useEval: true,
+  useAcceleration: true,
   exactOptionalPropertyTypes: false,
   enumerableKind: false,
   correctiveParse: false
@@ -102,7 +102,7 @@ const settings: TSettings = {
 export function Reset(): void {
   settings.immutableTypes = false
   settings.maxErrors = 8
-  settings.useEval = true
+  settings.useAcceleration = true
   settings.exactOptionalPropertyTypes = false
   settings.enumerableKind = false
   settings.correctiveParse = false

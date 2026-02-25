@@ -67,7 +67,7 @@ function CreateDynamicCheck(build: BuildResult): CheckFunction {
 // CreateCheck
 // ------------------------------------------------------------------
 function CreateCheck(build: BuildResult, code: string): CheckFunction {
-  return Environment.CanEvaluate()
+  return Environment.CanAccelerate()
     ? CreateEvaluatedCheck(build, code)
     : CreateDynamicCheck(build)
 }
@@ -80,7 +80,7 @@ export type CheckFunction = (value: unknown) => boolean
 // EvaluateResult
 // ------------------------------------------------------------------
 export interface EvaluateResult {
-  IsEvaluated: boolean
+  IsAccelerated: boolean
   Code: string
   Check: CheckFunction
 }
@@ -124,7 +124,7 @@ export class BuildResult {
   public Evaluate(): EvaluateResult {
     const Code = CreateCode(this)
     const Check = CreateCheck(this, Code)
-    return { IsEvaluated: Environment.CanEvaluate(), Code, Check }
+    return { IsAccelerated: Environment.CanAccelerate(), Code, Check }
   }
 }
 // ------------------------------------------------------------------

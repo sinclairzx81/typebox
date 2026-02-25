@@ -47,6 +47,10 @@ export class Validator<Schema extends Schema.XSchema, Value extends unknown = St
     this.build = Build.Build(context, schema)
     this.result = this.build.Evaluate()
   }
+  /** Returns true if this Validator is using JIT acceleration. */
+  public IsAccelerated(): boolean {
+    return this.result.IsAccelerated
+  }
   /** Checks this value is valid */
   public Check(value: unknown): value is Value {
     return this.result.Check(value)

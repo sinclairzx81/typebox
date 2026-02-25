@@ -45,7 +45,7 @@ export class Validator<Context extends TProperties = TProperties, Type extends T
 > extends Base<Encode> {
   private readonly context: Context
   private readonly type: Type
-  private readonly isEvaluated: boolean
+  private readonly isAccelerated: boolean
   private readonly hasCodec: boolean
   private readonly code: string
   private readonly check: (value: unknown) => boolean
@@ -64,7 +64,7 @@ export class Validator<Context extends TProperties = TProperties, Type extends T
       const [context, type, isEvaluated, hasCodec, code, check] = matched
       this.context = context
       this.type = type
-      this.isEvaluated = isEvaluated
+      this.isAccelerated = isEvaluated
       this.hasCodec = hasCodec
       this.code = code
       this.check = check
@@ -74,17 +74,17 @@ export class Validator<Context extends TProperties = TProperties, Type extends T
       this.hasCodec = HasCodec(context, type)
       this.context = context
       this.type = type
-      this.isEvaluated = result.IsEvaluated
+      this.isAccelerated = result.IsAccelerated
       this.code = result.Code
       this.check = result.Check as never
     }
   }
   // ----------------------------------------------------------------
-  // IsEvaluated
+  // IsAccelerated
   // ----------------------------------------------------------------
-  /** Returns true if this validator is using runtime eval optimizations. */
-  public IsEvaluated(): boolean {
-    return this.isEvaluated
+  /** Returns true if this Validator is using JIT acceleration. */
+  public IsAccelerated(): boolean {
+    return this.isAccelerated
   }
   // ----------------------------------------------------------------
   // Context | Type
@@ -113,7 +113,7 @@ export class Validator<Context extends TProperties = TProperties, Type extends T
   }
   /** Returns errors for the given value. */
   public override Errors(value: unknown): TLocalizedValidationError[] {
-    if (Environment.CanEvaluate() && this.check(value)) return []
+    if (Environment.CanAccelerate() && this.check(value)) return []
     return Errors(this.context, this.type, value)
   }
   /** Cleans a value using the Validator type. */
@@ -137,7 +137,7 @@ export class Validator<Context extends TProperties = TProperties, Type extends T
     return new Validator<Context, Type>(
       this.context,
       this.type, 
-      this.isEvaluated, 
+      this.isAccelerated, 
       this.hasCodec, 
       this.code, 
       this.check
