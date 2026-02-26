@@ -40,7 +40,9 @@ import { ParseError } from './parse.ts'
 // ------------------------------------------------------------------
 // Validator
 // ------------------------------------------------------------------
-export class Validator<Schema extends Schema.XSchema, Value extends unknown = Static.XStatic<Schema>>  {
+export class Validator<Schema extends Schema.XSchema = Schema.XSchema, 
+  Value extends unknown = Static.XStatic<Schema>
+>  {
   private readonly build: Build.BuildResult
   private readonly result: Build.EvaluateResult
   constructor(context: Record<string, Schema.XSchema>, schema: Schema) {
