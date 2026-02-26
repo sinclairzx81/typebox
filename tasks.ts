@@ -8,7 +8,7 @@ import { Range } from './task/range/index.ts'
 import { Metrics } from './task/metrics/index.ts'
 import { Task } from 'tasksmith'
 
-const Version = '1.1.3'
+const Version = '1.1.4'
 
 // ------------------------------------------------------------------
 // Build
