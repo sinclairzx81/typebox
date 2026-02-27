@@ -59,7 +59,7 @@ export class Validator<Context extends TProperties = TProperties, Type extends T
   public Context(): Context {
     return this.context
   }
-  /** Returns the Type for this validator. */
+  /** Returns the underlying Type used to construct this Validator. */
   public Type(): Type {
     return this.type
   }
@@ -70,11 +70,11 @@ export class Validator<Context extends TProperties = TProperties, Type extends T
   // ----------------------------------------------------------------
   // Value.*
   // ----------------------------------------------------------------
-  /** Checks a value matches the Validator type. */
+  /** Performs a type-guard check on the provided value. */
   public Check(value: unknown): value is Value {
     return this.validator.Check(value)
   }
-  /** Returns errors for the given value. */
+  /** Inspects a value and returns a detailed list of validation errors. */
   public Errors(value: unknown): TLocalizedValidationError[] {
     if (Environment.CanAccelerate() && this.Check(value)) return []
     return Errors(this.context, this.type, value)
