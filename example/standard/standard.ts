@@ -26,78 +26,69 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { type Static, type TProperties, type TSchema } from 'typebox'
+import { type Static, type TSchema } from 'typebox'
 import { TLocalizedValidationError } from 'typebox/error'
 import { Validator } from 'typebox/schema'
-import { Arguments } from 'typebox/system'
 import { Guard } from 'typebox/guard'
 
 // ------------------------------------------------------------------
-// Error to Issue
+// ErrorToIssue
 // ------------------------------------------------------------------
 function PathSegments(pointer: string): string[] {
   if (Guard.IsEqual(pointer.length, 0)) return []
   return pointer.slice(1).split('/').map((segment) => segment.replace(/~1/g, '/').replace(/~0/g, '~'))
 }
-function Issue(error: TLocalizedValidationError): StandardSchemaV1.Issue {
+function ErrorToIssue(error: TLocalizedValidationError): StandardSchemaV1.Issue {
   const path = PathSegments(error.instancePath)
   return { path, message: error.message }
 }
 // ------------------------------------------------------------------
-// TStandardSchemaProps
+// StandardSchemaProps
 // ------------------------------------------------------------------
 export class StandardSchemaProps<Value> implements StandardSchemaV1.Props<Value, Value>, StandardJSONSchemaV1.Props<Value, Value> {
-  public readonly validator: Validator
   public readonly vendor = 'typebox'
   public readonly version = 1
+  readonly #validator: Validator
   public types?: StandardTypedV1.Types<Value, Value> | undefined
   public jsonSchema: StandardJSONSchemaV1.Converter
-  constructor(context: TProperties, type: TSchema) {
-    this.validator = new Validator(context, type)
+  constructor(type: TSchema) {
+    this.#validator = new Validator({}, type)
     this.jsonSchema = {
-      output: () => this.validator.Schema() as Record<string, unknown>,
-      input: () => this.validator.Schema() as Record<string, unknown>
+      output: () => this.#validator.Schema() as Record<string, unknown>,
+      input: () => this.#validator.Schema() as Record<string, unknown>
     }
   }
-  public validate(value: unknown): StandardSchemaV1.Result<Value> | Promise<StandardSchemaV1.Result<Value>> {
-    if (this.validator.Check(value)) return { value } as never
-    const [_result, errors] = this.validator.Errors(value)
-    const issues = errors.map((error) => Issue(error))
+  public validate = (value: unknown): StandardSchemaV1.Result<Value> | Promise<StandardSchemaV1.Result<Value>> => {
+    if (this.#validator.Check(value)) return { value } as never
+    const [_result, errors] = this.#validator.Errors(value)
+    const issues = errors.map((error) => ErrorToIssue(error))
     return { issues }
   }
 }
-export class StandardSchema<Context extends TProperties, Type extends TSchema, out Value extends unknown = Static<Type, Context>> implements StandardSchemaV1<Value>, StandardJSONSchemaV1<Value> {
+// ------------------------------------------------------------------
+// StandardSchema
+// ------------------------------------------------------------------
+export class StandardSchema<Type extends TSchema, out Value extends unknown = Static<Type>> implements StandardSchemaV1<Value>, StandardJSONSchemaV1<Value> {
   '~standard': StandardSchemaV1.Props<Value, Value> & StandardJSONSchemaV1.Props<Value, Value>
-  constructor(context: Context, type: Type) {
-    this['~standard'] = new StandardSchemaProps(context, type)
+  constructor(type: Type) {
+    this['~standard'] = new StandardSchemaProps(type)
   }
 }
 // ------------------------------------------------------------------
 // Factory
 // ------------------------------------------------------------------
 /** Returns an implementation of Standard Schema + Standard JSON Schema */
-export function StandardSchemaV1<const Type extends TSchema, Result = StandardSchema<{}, Type>>(type: Type): Result
-/** Returns an implementation of Standard Schema + Standard JSON Schema */
-export function StandardSchemaV1<Context extends TProperties, const Type extends TSchema, Result = StandardSchema<Context, Type>>(context: Context, type: Type): Result
-/** Returns an implementation of Standard Schema + Standard JSON Schema */
-export function StandardSchemaV1(...args: unknown[]): unknown {
-  const [context, type] = Arguments.Match<[TProperties, TSchema]>(args, {
-    2: (context, type) => [context, type],
-    1: (type) => [{}, type]
-  })
-  return new StandardSchema(context, type)
+export function StandardSchemaV1<const Type extends TSchema>(type: Type): StandardSchema<Type> {
+  return new StandardSchema(type)
 }
-
-// #########################
-// ###   Standard Typed  ###
-// #########################
-
+// ------------------------------------------------------------------
+// Standard Typed
+// ------------------------------------------------------------------
 /** The Standard Typed interface. This is a base type extended by other specs. */
 export interface StandardTypedV1<Input = unknown, Output = Input> {
   /** The Standard properties. */
   readonly '~standard': StandardTypedV1.Props<Input, Output>
 }
-
 export declare namespace StandardTypedV1 {
   /** The Standard Typed properties interface. */
   export interface Props<Input = unknown, Output = Input> {
@@ -108,7 +99,6 @@ export declare namespace StandardTypedV1 {
     /** Inferred types associated with the schema. */
     readonly types?: Types<Input, Output> | undefined
   }
-
   /** The Standard Typed types interface. */
   export interface Types<Input = unknown, Output = Input> {
     /** The input type of the schema. */
@@ -116,28 +106,23 @@ export declare namespace StandardTypedV1 {
     /** The output type of the schema. */
     readonly output: Output
   }
-
   /** Infers the input type of a Standard Typed. */
   export type InferInput<Schema extends StandardTypedV1> = NonNullable<
     Schema['~standard']['types']
   >['input']
-
   /** Infers the output type of a Standard Typed. */
   export type InferOutput<Schema extends StandardTypedV1> = NonNullable<
     Schema['~standard']['types']
   >['output']
 }
-
-// ##########################
-// ###   Standard Schema  ###
-// ##########################
-
+// ------------------------------------------------------------------
+// Standard Schema
+// ------------------------------------------------------------------
 /** The Standard Schema interface. */
 export interface StandardSchemaV1<Input = unknown, Output = Input> {
   /** The Standard Schema properties. */
   readonly '~standard': StandardSchemaV1.Props<Input, Output>
 }
-
 export declare namespace StandardSchemaV1 {
   /** The Standard Schema properties interface. */
   export interface Props<Input = unknown, Output = Input> extends StandardTypedV1.Props<Input, Output> {
@@ -184,11 +169,9 @@ export declare namespace StandardSchemaV1 {
   /** Infers the output type of a Standard. */
   export type InferOutput<Schema extends StandardTypedV1> = StandardTypedV1.InferOutput<Schema>
 }
-
-// ###############################
-// ###   Standard JSON Schema  ###
-// ###############################
-
+// ------------------------------------------------------------------
+// Standard JSON Schema
+// ------------------------------------------------------------------
 /** The Standard JSON Schema interface. */
 export interface StandardJSONSchemaV1<Input = unknown, Output = Input> {
   /** The Standard JSON Schema properties. */
@@ -200,7 +183,6 @@ export declare namespace StandardJSONSchemaV1 {
     /** Methods for generating the input/output JSON Schema. */
     readonly jsonSchema: StandardJSONSchemaV1.Converter
   }
-
   /** The Standard JSON Schema converter interface. */
   export interface Converter {
     /** Converts the input type to JSON Schema. May throw if conversion is not supported. */
@@ -212,7 +194,6 @@ export declare namespace StandardJSONSchemaV1 {
       options: StandardJSONSchemaV1.Options
     ) => Record<string, unknown>
   }
-
   /**
    * The target version of the generated JSON Schema.
    *
@@ -231,17 +212,13 @@ export declare namespace StandardJSONSchemaV1 {
   export interface Options {
     /** Specifies the target version of the generated JSON Schema. Support for all versions is on a best-effort basis. If a given version is not supported, the library should throw. */
     readonly target: Target
-
     /** Explicit support for additional vendor-specific parameters, if needed. */
     readonly libraryOptions?: Record<string, unknown> | undefined
   }
-
   /** The Standard types interface. */
   export interface Types<Input = unknown, Output = Input> extends StandardTypedV1.Types<Input, Output> {}
-
   /** Infers the input type of a Standard. */
   export type InferInput<Schema extends StandardTypedV1> = StandardTypedV1.InferInput<Schema>
-
   /** Infers the output type of a Standard. */
   export type InferOutput<Schema extends StandardTypedV1> = StandardTypedV1.InferOutput<Schema>
 }
