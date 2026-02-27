@@ -5,6 +5,13 @@ import { Assert } from 'test'
 const Test = Assert.Context('Schema.Compile')
 
 // ------------------------------------------------------------------
+// Schema
+// ------------------------------------------------------------------
+Test('Should Schema 1', () => {
+  const validator = Schema.Compile({ type: 'string' })
+  Assert.IsEqual(validator.Schema(), { type: 'string' })
+})
+// ------------------------------------------------------------------
 // IsAccelerated
 // ------------------------------------------------------------------
 Test('Should IsAccelerated 1', () => {

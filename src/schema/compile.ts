@@ -53,17 +53,21 @@ export class Validator<Schema extends Schema.XSchema = Schema.XSchema,
   public IsAccelerated(): boolean {
     return this.result.IsAccelerated
   }
-  /** Checks this value is valid */
+  /** Returns the underlying Schema used to construct this Validator. */
+  public Schema(): Schema {
+    return this.build.Schema() as never
+  }
+  /** Performs a type-guard check on the provided value. */
   public Check(value: unknown): value is Value {
     return this.result.Check(value)
   }
-  /** Parses this value and throw if invalid */
+  /** Validates a value and returns it. Will throw if invalid. */
   public Parse(value: unknown): Value {
     if(this.result.Check(value)) return value as never
     const [_result, errors] = Errors(this.build.Context(), this.build.Schema(), value)
     throw new ParseError(this.build.Schema(), value, errors)
   }
-  /** Returns errors for the given value */
+  /** Inspects a value and returns a detailed list of validation errors. */
   public Errors(value: unknown): [result: boolean, errors: TLocalizedValidationError[]] {
     return Errors(this.build.Context(), this.build.Schema(), value)
   }
