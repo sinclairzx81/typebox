@@ -41,7 +41,7 @@ import { Build } from '../schema/index.ts'
 // ------------------------------------------------------------------
 export class Validator<Context extends TProperties = TProperties, Type extends TSchema = TSchema, 
   Encode extends unknown = StaticEncode<Type, Context>,
-  Decode extends unknown = StaticDecode<Type, Context>,
+  Decode extends unknown = StaticDecode<Type, Context>
 > extends Base<Encode> {
   private readonly context: Context
   private readonly type: Type
@@ -93,7 +93,7 @@ export class Validator<Context extends TProperties = TProperties, Type extends T
   public Context(): Context {
     return this.context
   }
-  /** Returns the Type for this validator. */
+  /** Returns the underlying Type used to construct this Validator. */
   public Type(): Type {
     return this.type
   }
@@ -107,11 +107,11 @@ export class Validator<Context extends TProperties = TProperties, Type extends T
   // ----------------------------------------------------------------
   // Base<...>
   // ----------------------------------------------------------------
-  /** Checks a value matches the Validator type. */
+  /** Performs a type-guard check on the provided value. */
   public override Check(value: unknown): value is Encode {
     return this.check(value)
   }
-  /** Returns errors for the given value. */
+  /** Inspects a value and returns a detailed list of validation errors. */
   public override Errors(value: unknown): TLocalizedValidationError[] {
     if (Environment.CanAccelerate() && this.check(value)) return []
     return Errors(this.context, this.type, value)
@@ -143,7 +143,7 @@ export class Validator<Context extends TProperties = TProperties, Type extends T
       this.check
     )
   }
-  /** Parses a value */
+  /** Validates a value and returns it. Will throw if invalid. */
   public Parse(value: unknown): Encode {
     const checked = this.Check(value)
     if(checked) return value as never
