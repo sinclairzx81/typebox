@@ -465,8 +465,8 @@ Test('Should Index 35', () => {
     x: Type.Number(),
     y: Type.String()
   })
-  // DENO_CACHE_ERROR | EDIT FILE AND RE-RUN TEST
-  const K: Type.TUnion<[Type.TNumber, Type.TString]> = Type.Index(T, Type.KeyOf(T))
+  // CACHE | TYPESCRIPT TYPE ID ORDER ISSUE
+  const K /*: Type.TUnion<[Type.TNumber, Type.TString]> */ = Type.Index(T, Type.KeyOf(T))
   Assert.IsTrue(Type.IsUnion(K))
   Assert.IsTrue(Type.IsNumber(K.anyOf[0]))
   Assert.IsTrue(Type.IsString(K.anyOf[1]))

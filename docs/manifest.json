@@ -63,7 +63,6 @@
     "array": "docs/type/array.html",
     "async-iterator": "docs/type/async-iterator.html",
     "awaited": "docs/type/awaited.html",
-    "base": "docs/type/base.html",
     "bigint": "docs/type/bigint.html",
     "boolean": "docs/type/boolean.html",
     "call": "docs/type/call.html",

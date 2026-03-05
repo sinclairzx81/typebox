@@ -68,8 +68,8 @@ Test('Should Action 12', () => {
   Assert.IsTrue(Type.IsNull(T))
 })
 Test('Should Action 13', () => {
-  // DENO_CACHE_ERROR | EDIT FILE AND RE-RUN TEST
-  const T: Type.TUnion<[Type.TLiteral<'x'>, Type.TLiteral<'y'>]> = Type.Script('KeyOf<{ x: 1, y: 2 }>')
+  // CACHE | TYPESCRIPT TYPE ID ORDER ISSUE
+  const T /*: Type.TUnion<[Type.TLiteral<'x'>, Type.TLiteral<'y'>]> */ = Type.Script('KeyOf<{ x: 1, y: 2 }>')
   Assert.IsTrue(Type.IsUnion(T))
   Assert.IsEqual(T.anyOf[0].const, 'x')
   Assert.IsEqual(T.anyOf[1].const, 'y')

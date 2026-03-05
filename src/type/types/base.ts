@@ -48,7 +48,32 @@ function BaseProperty<Value>(value: Value): PropertyDescriptor {
     value
   }
 }
-/** Base class for creating extension types. */
+/** 
+ * @deprecated Use Type.Refine() + Type.Unsafe() instead.
+ * 
+ *
+ * **Reason:** It is noted that JavaScript class instances do not behave like 
+ * plain objects during structural clone or when the TB compositor needs to
+ * assign dynamic modifier properties (such as '~optional'). 
+ * 
+ * Because the TypeBox compositor needs to transform schematics via object clone /
+ * property spread, these operations can result in class instance types losing 
+ * methods on the prototype (via clone), which can lead to unexpected structures being 
+ * returned. This has led to special-case (non-clone) handling for Base which needs 
+ * to be removed as it has proven orthogonal to the TypeBox 1.x design.
+ * 
+ * The Base type was introduced in 1.x to try integrate / embed Standard Schema into JSON 
+ * Schema; however, support for integrated Standard Schema embedding will not be continued 
+ * in TypeBox. This type will be removed in the next minor revision of TypeBox.
+ * 
+ * ```typescript
+ * // (Deprecated)
+ * class DateType extends Type.Base<Date> { Check(value) { return value instanceof Date } }
+ * 
+ * // (Future)
+ * const DateType = Type.Refine(Type.Unsafe<Date>({}), value => value instanceof Date)
+ * ```
+ */
 export class Base<Value extends unknown = unknown> implements TSchema, XGuard<Value> {
   // Engine Assignable
   // public '~immutable'?: true

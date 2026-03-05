@@ -46,8 +46,8 @@ Test('Should Indexed 8', () => {
     x: Type.TNumber
     y: Type.TString
   }> = Type.Script('{ x: number, y: string }')
-  // DENO_CACHE_ERROR | EDIT FILE AND RE-RUN TEST
-  const T: Type.TUnion<[Type.TNumber, Type.TString]> = Type.Script({ A }, 'A[keyof A]')
+  // CACHE | TYPESCRIPT TYPE ID ORDER ISSUE
+  const T /*: Type.TUnion<[Type.TNumber, Type.TString]> */ = Type.Script({ A }, 'A[keyof A]')
   Assert.IsTrue(Type.IsUnion(T))
   Assert.IsTrue(Type.IsNumber(T.anyOf[0]))
   Assert.IsTrue(Type.IsString(T.anyOf[1]))
