@@ -46,7 +46,7 @@ Test('Should Indexed 8', () => {
     x: Type.TNumber
     y: Type.TString
   }> = Type.Script('{ x: number, y: string }')
-  // TYPESCRIPT TYPE ORDERING ISSUE
+  // CACHE | TYPESCRIPT TYPE ID ORDER ISSUE
   const T /*: Type.TUnion<[Type.TNumber, Type.TString]> */ = Type.Script({ A }, 'A[keyof A]')
   Assert.IsTrue(Type.IsUnion(T))
   Assert.IsTrue(Type.IsNumber(T.anyOf[0]))
