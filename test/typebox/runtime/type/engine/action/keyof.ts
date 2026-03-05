@@ -23,12 +23,12 @@ Test('Should KeyOf 2', () => {
     y: Type.Number(),
     z: Type.Number()
   })
-  // DENO_CACHE_ERROR | EDIT FILE AND RE-RUN TEST
-  const T: Type.TUnion<[
+  // TYPESCRIPT TYPE ORDERING ISSUE
+  const T /* : Type.TUnion<[
     Type.TLiteral<'x'>,
     Type.TLiteral<'y'>,
     Type.TLiteral<'z'>
-  ]> = Type.KeyOf(A)
+  ]> */ = Type.KeyOf(A)
   Assert.IsTrue(Type.IsUnion(T))
   Assert.IsEqual(T.anyOf[0].const, 'x')
   Assert.IsEqual(T.anyOf[1].const, 'y')
@@ -61,12 +61,12 @@ Test('Should KeyOf 5', () => {
     Type.Object({ y: Type.Number() }),
     Type.Object({ z: Type.Number() })
   ])
-  // DENO_CACHE_ERROR | EDIT FILE AND RE-RUN TEST
-  const T: Type.TUnion<[
+  // TYPESCRIPT TYPE ORDERING ISSUE
+  const T /*: Type.TUnion<[
     Type.TLiteral<'x'>,
     Type.TLiteral<'y'>,
     Type.TLiteral<'z'>
-  ]> = Type.KeyOf(A)
+  ]> */ = Type.KeyOf(A)
   Assert.IsTrue(Type.IsUnion(T))
   Assert.IsEqual(T.anyOf[0].const, 'x')
   Assert.IsEqual(T.anyOf[1].const, 'y')
@@ -103,8 +103,8 @@ Test('Should KeyOf 8', () => {
       Type.Object({ z: Type.Number() })
     ])
   ])
-  // DENO_CACHE_ERROR | EDIT FILE AND RE-RUN TEST
-  const T: Type.TUnion<[Type.TLiteral<'x'>, Type.TLiteral<'b'>]> = Type.KeyOf(A)
+  // TYPESCRIPT TYPE ORDERING ISSUE
+  const T /*: Type.TUnion<[Type.TLiteral<'x'>, Type.TLiteral<'b'>]> */ = Type.KeyOf(A)
   Assert.IsTrue(Type.IsUnion(T))
   Assert.IsEqual(T.anyOf[0].const, 'x')
   Assert.IsEqual(T.anyOf[1].const, 'b')
@@ -118,8 +118,8 @@ Test('Should KeyOf 9', () => {
       Type.Object({ z: Type.Number() })
     ])
   ]))
-  // DENO_CACHE_ERROR | EDIT FILE AND RE-RUN TEST
-  const T: Type.TUnion<[Type.TLiteral<'x'>, Type.TLiteral<'b'>]> = Type.KeyOf(A)
+  // TYPESCRIPT TYPE ORDERING ISSUE
+  const T /*: Type.TUnion<[Type.TLiteral<'x'>, Type.TLiteral<'b'>]> */ = Type.KeyOf(A)
   Assert.IsTrue(Type.IsUnion(T))
   Assert.IsEqual(T.anyOf[0].const, 'x')
   Assert.IsEqual(T.anyOf[1].const, 'b')
@@ -178,8 +178,8 @@ Test('Should KeyOf 12', () => {
     Type.Object({ x: Type.Number(), y: Type.String() }),
     Type.Object({ x: Type.Number(), y: Type.String() })
   ]))
-  // DENO_CACHE_ERROR | EDIT FILE AND RE-RUN TEST
-  const T: Type.TUnion<[Type.TLiteral<'x'>, Type.TLiteral<'y'>]> = Type.KeyOf(A)
+  // TYPESCRIPT TYPE ORDERING ISSUE
+  const T /*: Type.TUnion<[Type.TLiteral<'x'>, Type.TLiteral<'y'>]> */ = Type.KeyOf(A)
   Assert.IsTrue(Type.IsUnion(T))
   Assert.IsEqual(T.anyOf[0].const, 'x')
   Assert.IsEqual(T.anyOf[1].const, 'y')
@@ -218,13 +218,13 @@ Test('Should KeyOf 17', () => {
       Type.Object({ w: Type.Number() })
     ])
   ])
-  // DENO_CACHE_ERROR | EDIT FILE AND RE-RUN TEST
-  const T: Type.TUnion<[
+  // TYPESCRIPT TYPE ORDERING ISSUE
+  const T /*: Type.TUnion<[
     Type.TLiteral<'x'>,
     Type.TLiteral<'y'>,
     Type.TLiteral<'z'>,
     Type.TLiteral<'w'>
-  ]> = Type.KeyOf(A)
+  ]> */ = Type.KeyOf(A)
   Assert.IsTrue(Type.IsUnion(T))
   Assert.IsEqual(T.anyOf[0].const, 'x')
   Assert.IsEqual(T.anyOf[1].const, 'y')
@@ -297,7 +297,7 @@ Test('Should KeyOf 26', () => {
     x: Type.Number(),
     y: Type.String()
   })
-  // DENO_CACHE_ERROR | EDIT FILE AND RE-RUN TEST
+  // TYPESCRIPT TYPE ORDERING ISSUE
   const K: Type.TUnion<[Type.TLiteral<'x'>, Type.TLiteral<'y'>]> = Type.KeyOf(T)
   Assert.IsTrue(Type.IsUnion(K))
   Assert.IsEqual(K.anyOf[0].const, 'x')
