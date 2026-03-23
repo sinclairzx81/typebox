@@ -2,8 +2,6 @@
 
 This example demonstrates using TypeBox to infer to MCP protocol types directly from the core protocol definitions. The implementation is an advanced usage of TypeBox's Json Schema inference infrastructure and shows that high-fidelity types can be derived directly from schematics without requiring to code generation or explicit TS type duplication.
 
-[Example Reference Link](https://tsplay.dev/WKYeyN)
-
 ## Specifications
 
 - https://github.com/modelcontextprotocol/modelcontextprotocol/blob/main/schema/2024-11-05/schema.json

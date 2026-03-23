@@ -70,7 +70,7 @@ License: MIT
 
 ## Type
 
-[Documentation](https://sinclairzx81.github.io/typebox/#/docs/type/overview) | [Example](https://tsplay.dev/NaMoBN)
+[Documentation](https://sinclairzx81.github.io/typebox/#/docs/type/overview)
 
 TypeBox provides many functions to create JSON Schema types. Each function returns a small JSON Schema fragment that can be composed into more complex types. TypeBox includes a set of functions that are used to construct JSON Schema compliant schematics as well as a set of extended functions that return schematics for constructs native to JavaScript.
 
@@ -117,7 +117,7 @@ const S = Type.Number({                             // const S = {
 
 ## Value
 
-[Documentation](https://sinclairzx81.github.io/typebox/#/docs/value/overview) | [Example](https://tsplay.dev/W4YE1w)
+[Documentation](https://sinclairzx81.github.io/typebox/#/docs/value/overview)
 
 The Value submodule provides functions for validation and other typed operations on JavaScript values. It includes functions such as Check, Parse, Clone, Encode, and Decode, as well as advanced functions for performing structural Diff and Patch operations on dynamic JavaScript values.
 
@@ -145,7 +145,7 @@ const A = Value.Parse(T, {                          // const A: {
 
 ## Script
 
-[Documentation](https://sinclairzx81.github.io/typebox/#/docs/script/overview) | [Example 1](https://tsplay.dev/N9rQ8m) | [Example 2](https://tsplay.dev/NnrJoN)
+[Documentation](https://sinclairzx81.github.io/typebox/#/docs/script/overview)
 
 TypeBox includes a runtime TypeScript DSL engine that can transform TypeScript syntax into JSON Schema. The engine is implemented at runtime and within the TypeScript type system.
 
@@ -230,8 +230,6 @@ If upgrading from `@sinclair/typebox` 0.34.x refer to the 1.0 migration guide at
 [Migration Guide](https://github.com/sinclairzx81/typebox/blob/main/changelog/1.0.0-migration.md)
 
 Most types created with 0.34.x are compatible with V1, and it is possible to run both `typebox` and `@sinclair/typebox` packages side by side. 
-
-[Compatibility](https://tsplay.dev/Wzr2rW)
 
 ```typescript
 import { Type } from '@sinclair/typebox'            // TB: 0.34.x
