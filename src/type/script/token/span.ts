@@ -4,7 +4,7 @@ ParseBox
 
 The MIT License (MIT)
 
-Copyright (c) 2024-2025 Haydn Paterson
+Copyright (c) 2024-2026 Haydn Paterson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,62 +29,53 @@ THE SOFTWARE.
 // deno-coverage-ignore-start - parsebox tested
 // deno-fmt-ignore-file
 
-import { IsResult } from './internal/result.ts'
+import { Match } from './internal/match.ts'
 import { type TTrim, Trim } from './internal/trim.ts'
 import { type TNewLine, NewLine } from './internal/char.ts'
+import { type TTake, Take } from './internal/take.ts'
 import { type TUntil, Until } from './until.ts'
 
 // ------------------------------------------------------------------
 // MultiLine
 // ------------------------------------------------------------------
 type TMultiLine<Start extends string, End extends string, Input extends string> = (
-  Input extends `${Start}${infer Rest extends string}`
+  TTake<[Start], Input> extends [infer _, infer Rest extends string]
     ? TUntil<[End], Rest> extends [infer Until extends string, infer UntilRest extends string]
-      ? UntilRest extends `${End}${infer Rest extends string}`
+      ? TTake<[End], UntilRest> extends [infer _ extends string, infer Rest extends string]
         ? [`${Until}`, Rest]
         : [] // fail: did not match End
       : [] // fail: did not match Until
     : [] // fail: did not match Start
 )
-function MultiLine<Start extends string, End extends string, Input extends string>
-  (start: Start, end: End, input: Input): 
-    TMultiLine<Start, End, Input> {
-  return (
-    input.startsWith(start) ? (() => {
-      const until = Until([end], input.slice(start.length))
-      return IsResult(until) ? (() => {
-        return until[1].startsWith(end)
-          ? [`${until[0]}`, until[1].slice(end.length)]
-          : [] // fail: did not match End
-        })() : [] // fail: did not match Until
-    })() : [] // fail: did not match Start
-  ) as never
+function MultiLine<Start extends string, End extends string, Input extends string>(start: Start, end: End, input: Input): TMultiLine<Start, End, Input> {
+  return Match(Take([start], input), (_, Rest) => 
+    Match(Until([end], Rest), (Until, UntilRest) => 
+      Match(Take([end], UntilRest), (_, Rest) => 
+        [`${Until}`, Rest], 
+        () => []), // fail: did not match End
+      () => []), // fail: did not match Until
+    () => []) as never // fail: did not match Start
 }
 // ------------------------------------------------------------------
 // SingleLine
 // ------------------------------------------------------------------
 type TSingleLine<Start extends string, End extends string, Input extends string> = (
-  Input extends `${Start}${infer Rest extends string}`
+  TTake<[Start], Input> extends [infer _ extends string, infer Rest extends string]
     ? TUntil<[TNewLine, End], Rest> extends [infer Until extends string, infer UntilRest extends string]
-      ? UntilRest extends `${End}${infer EndRest extends string}`
+      ? TTake<[End], UntilRest> extends [infer _ extends string, infer EndRest extends string]
         ? [`${Until}`, EndRest]
         : [] // fail: did not match End
       : [] // fail: did not match Until
     : [] // fail: not match Start
 )
-function SingleLine<Start extends string, End extends string, Input extends string>
-  (start: Start, end: End, input: Input): 
-    TSingleLine<Start, End, Input> {
-  return (
-    input.startsWith(start) ? (() => {
-      const until = Until([NewLine, end], input.slice(start.length))
-      return IsResult(until) ? (() => {
-        return until[1].startsWith(end) 
-          ? [`${until[0]}`, until[1].slice(end.length)] 
-          : []  // fail: did not match End
-      })() : [] // fail: did not match Until
-    })() : [] // fail: not match Start
-  ) as never
+function SingleLine<Start extends string, End extends string, Input extends string>(start: Start, end: End, input: Input): TSingleLine<Start, End, Input> {
+  return Match(Take([start], input), (_, Rest) => 
+    Match(Until([NewLine, end], Rest), (Until, UntilRest) => 
+      Match(Take([end], UntilRest), (_, EndRest) => 
+        [`${Until}`, EndRest], 
+        () => []), // fail: did not match End
+      () => []), // fail: did not match Until
+    () => []) as never // fail: not match Start
 }
 // ------------------------------------------------------------------
 // Span

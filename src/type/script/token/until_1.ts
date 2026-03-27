@@ -4,7 +4,7 @@ ParseBox
 
 The MIT License (MIT)
 
-Copyright (c) 2024-2025 Haydn Paterson
+Copyright (c) 2024-2026 Haydn Paterson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -30,7 +30,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { IsEqual } from './internal/guard.ts'
-import { IsResult } from './internal/result.ts'
+import { Match } from './internal/match.ts'
 import { type TUntil, Until } from './until.ts'
 
 // ------------------------------------------------------------------
@@ -45,16 +45,11 @@ export type TUntil_1<End extends string[], Input extends string> = (
     : [] // fail: did not match Until
 )
 /** Match Input until but not including End. No match if End not found or match is zero-length. */
-export function Until_1<End extends string[], Input extends string>
-  (end: [...End], input: Input): 
-    TUntil_1<End, Input> {
-  const until = Until(end, input)
-  return (
-    IsResult(until) 
-      ? IsEqual(until[0], '') 
-        ? [] // fail: match has no characters
-        : until 
-      : [] // fail: did not match Until
-  ) as never
+export function Until_1<End extends string[], Input extends string>(end: [...End], input: Input): TUntil_1<End, Input> {
+  return Match(Until(end, input), (Until, UntilRest) => 
+    IsEqual(Until, '')
+      ? [] // fail: match has no characters
+      : [Until, UntilRest],
+    () => []) as never // fail: did not match Until
 }
 // deno-coverage-ignore-stop
