@@ -4,7 +4,7 @@ ParseBox
 
 The MIT License (MIT)
 
-Copyright (c) 2024-2025 Haydn Paterson
+Copyright (c) 2024-2026 Haydn Paterson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-coverage-ignore-start - parsebox tested
 // deno-fmt-ignore-file
 
-import { IsResult } from './internal/result.ts'
+import { Match } from './internal/match.ts'
 import { type TTake, Take } from './internal/take.ts'
 import { type TInteger, Integer } from './integer.ts'
 
@@ -38,21 +38,17 @@ import { type TInteger, Integer } from './integer.ts'
 // ------------------------------------------------------------------
 type TTakeBigInt<Input extends string> = (
   TInteger<Input> extends [infer Integer extends string, infer IntegerRest extends string]
-    ? TTake<['n'], IntegerRest> extends [infer N extends string, infer NRest extends string]
+    ? TTake<['n'], IntegerRest> extends [infer _N extends string, infer NRest extends string]
       ? [`${Integer}`, NRest]
       : [] // fail: did not match 'n'
     : [] // fail: did not match Integer
 )
 function TakeBigInt<Input extends string>(input: Input): TTakeBigInt<Input> {
-  const integer = Integer(input)
-  return (
-    IsResult(integer) ? (() => {
-      const n = Take(['n'], integer[1])
-      return IsResult(n)
-        ? [`${integer[0]}`, n[1]]
-        : [] // fail: did not match 'n'
-    })() : [] // fail: did not match Integer
-  ) as never
+  return Match(Integer(input), (Integer, IntegerRest) => 
+    Match(Take(['n'], IntegerRest), (_N, NRest) => 
+      [`${Integer}`, NRest], 
+      () => []), // fail: did not match 'n'
+    () => []) as never // fail: did not match Integer
 }
 // ------------------------------------------------------------------
 // BigInt

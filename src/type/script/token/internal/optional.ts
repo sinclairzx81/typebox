@@ -4,7 +4,7 @@ ParseBox
 
 The MIT License (MIT)
 
-Copyright (c) 2024-2025 Haydn Paterson
+Copyright (c) 2024-2026 Haydn Paterson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-coverage-ignore-start - parsebox tested
 // deno-fmt-ignore-file
 
-import { IsResult } from './result.ts'
+import { Match } from './match.ts'
 import { type TTake, Take } from './take.ts'
 
 /** Matches the given Value or empty string if no match. This function never fails */
@@ -39,13 +39,9 @@ export type TOptional<Value extends string, Input extends string> = (
     : ['', Input]
 )
 /** Matches the given Value or empty string if no match. This function never fails */
-export function Optional<Value extends string, Input extends string>
-  (value: Value, input: Input): TOptional<Value, Value> {
-  const result = Take([value], input)
-  return (
-    IsResult(result) 
-      ? result 
-      : ['', input]
-  ) as never
+export function Optional<Value extends string, Input extends string>(value: Value, input: Input): TOptional<Value, Value> {
+  return Match(Take([value], input), (Optional, Rest) => 
+    [Optional, Rest],
+    () => ['', input]) as never
 }
 // deno-coverage-ignore-stop

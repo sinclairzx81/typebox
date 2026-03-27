@@ -4,7 +4,7 @@ ParseBox
 
 The MIT License (MIT)
 
-Copyright (c) 2024-2025 Haydn Paterson
+Copyright (c) 2024-2026 Haydn Paterson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-coverage-ignore-start - parsebox tested
 // deno-fmt-ignore-file
 
-import { IsResult } from './internal/result.ts'
+import { Match } from './internal/match.ts'
 import { type TTake, Take } from './internal/take.ts'
 import { type TTrim, Trim } from './internal/trim.ts'
 import { type TSpan, Span } from './span.ts'
@@ -61,12 +61,9 @@ type TTakeString<Quotes extends string[], Input extends string> = (
     : [] // fail: did not match Initial
 )
 function TakeString<Quotes extends string[], Input extends string>(quotes: [...Quotes], input: Input): TTakeString<Quotes, Input> {
-  const initial = TakeInitial(quotes, input) as [string, string]
-  return (
-    IsResult(initial)
-      ? TakeSpan(initial[0], `${initial[0]}${initial[1]}`)
-      : [] // fail: did not match Initial
-  ) as never
+  return Match(TakeInitial(quotes, input), (Initial, InitialRest) => 
+    TakeSpan(Initial, `${Initial}${InitialRest}`),
+    () => []) as never // fail: did not match Initial
 }
 /** Matches a literal String with the given quotes */
 export type TString<Quotes extends string[], Input extends string> = (

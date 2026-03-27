@@ -4,7 +4,7 @@ ParseBox
 
 The MIT License (MIT)
 
-Copyright (c) 2024-2025 Haydn Paterson
+Copyright (c) 2024-2026 Haydn Paterson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,17 +29,12 @@ THE SOFTWARE.
 // deno-coverage-ignore-start - parsebox tested
 // deno-fmt-ignore-file
 
-import { IsResult } from './internal/result.ts'
+import { Match } from './internal/match.ts'
 import { type TTrim, Trim } from './internal/trim.ts'
-import { type TTake, Take } from './internal/take.ts'
-import { type TMany, Many } from './internal/many.ts'
 import { type TOptional, Optional } from './internal/optional.ts'
-
-import { type TDigit, Digit } from './internal/char.ts'
 import { type THyphen, Hyphen } from './internal/char.ts'
-import { type TZero, Zero } from './internal/char.ts'
-import { type TNonZero, NonZero } from './internal/char.ts'
-import { type TUnderScore, UnderScore } from './internal/char.ts'
+
+import { type TUnsignedInteger, UnsignedInteger } from './unsigned_integer.ts'
 
 // ------------------------------------------------------------------
 // TakeSign
@@ -51,69 +46,31 @@ function TakeSign<Input extends string>(input: Input): TTakeSign<Input> {
   return Optional(Hyphen, input) as never
 }
 // ------------------------------------------------------------------
-// TakeNonZero
+// TakeSignedInteger
 // ------------------------------------------------------------------
-type TTakeNonZero<Input extends string> = (
-  TTake<TNonZero, Input>
-)
-function TakeNonZero<Input extends string>(input: Input): TTakeNonZero<Input> {
-  return Take(NonZero, input)
-}
-// ------------------------------------------------------------------
-// TakeDigits
-// ------------------------------------------------------------------
-type TAllowedDigits = [...TDigit, TUnderScore]
-const AllowedDigits = [...Digit, UnderScore] as TAllowedDigits
-// ...
-type TTakeDigits<Input extends string> = (
-  TMany<TAllowedDigits, [TUnderScore], Input> 
-)
-function TakeDigits<Input extends string>(input: Input): TTakeDigits<Input> {
-  return Many(AllowedDigits, [UnderScore], input) as never
-}
-// ------------------------------------------------------------------
-// TakeInteger
-// ------------------------------------------------------------------
-type TTakeInteger<Input extends string> = (
+type TTakeSignedInteger<Input extends string> = (
   TTakeSign<Input> extends [infer Sign extends string, infer SignRest extends string]
-    ? TTake<[TZero], SignRest> extends [infer Zero extends string, infer ZeroRest extends string]
-      ? [`${Sign}${Zero}`, ZeroRest]
-      : TTakeNonZero<SignRest> extends [infer NonZero extends string, infer NonZeroRest extends string]
-        ? TTakeDigits<NonZeroRest> extends [infer Digits extends string, infer DigitsRest extends string]
-          ? [`${Sign}${NonZero}${Digits}`, DigitsRest]
-          : [] // fail: did not match Digits
-        : [] // fail: did not match NonZero
+    ? TUnsignedInteger<SignRest> extends [infer UnsignedInteger extends string, infer UnsignedIntegerRest extends string]
+      ? [`${Sign}${UnsignedInteger}`, UnsignedIntegerRest]
+      : [] // fail: did not match unsigned integer
     : [] // fail: did not match Sign
 )
-function TakeInteger<Input extends string>(input: Input): TTakeInteger<Input> {
-  const sign = TakeSign(input)
-  return (
-    IsResult(sign) ? (() => {
-      const zero = Take([Zero], sign[1])
-      return IsResult(zero)
-        ? [`${sign[0]}${zero[0]}`, zero[1]] 
-        : (() => {
-          const nonZero = TakeNonZero(sign[1])
-          return IsResult(nonZero) ? (() => {
-            const digits = TakeDigits(nonZero[1])
-            return IsResult(digits)
-              ? [`${sign[0]}${nonZero[0]}${digits[0]}`, digits[1]]
-              : [] // fail: did not match Digits
-          })() : [] // fail: did not match NonZero
-        })()
-    })() : [] // fail: did not match Sign
-  ) as never
+function TakeSignedInteger<Input extends string>(input: Input): TTakeSignedInteger<Input> {
+  return Match(TakeSign(input), (Sign, SignRest) => 
+    Match(UnsignedInteger(SignRest), (UnsignedInteger, UnsignedIntegerRest) => 
+      [`${Sign}${UnsignedInteger}`, UnsignedIntegerRest],
+      () => []), // fail: did not match unsigned integer
+    () => []) as never // fail: did not match Sign
 }
 // ------------------------------------------------------------------
 // Integer
 // ------------------------------------------------------------------
-/** Matches if next is a Integer */
+/** Matches if next is a signed or unsigned Integer */
 export type TInteger<Input extends string> = (
-  TTakeInteger<TTrim<Input>>
+  TTakeSignedInteger<TTrim<Input>>
 )
-/** Matches if next is a Integer */
+/** Matches if next is a signed or unsigned Integer */
 export function Integer<Input extends string>(input: Input): TInteger<Input> {
-  return TakeInteger(Trim(input)) as never
+  return TakeSignedInteger(Trim(input)) as never
 }
 // deno-coverage-ignore-stop
-

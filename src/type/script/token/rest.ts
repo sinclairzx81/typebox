@@ -4,7 +4,7 @@ ParseBox
 
 The MIT License (MIT)
 
-Copyright (c) 2024-2025 Haydn Paterson
+Copyright (c) 2024-2026 Haydn Paterson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -27,11 +27,20 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 // deno-coverage-ignore-start - parsebox tested
+// deno-fmt-ignore-file
 
-import { IsArray, IsEqual } from './guard.ts'
+import { IsEqual } from './internal/guard.ts'
 
-/** Checks the value is a Tuple-2 [string, string] result */
-export function IsResult(value: unknown): value is [string, string] {
-  return IsArray(value) && IsEqual(value.length, 2)
+// ------------------------------------------------------------------
+// Rest
+// ------------------------------------------------------------------
+/** Match remaining characters in the buffer until end. If no characters are in buffer, no match */
+export type TRest<Input extends string> = (
+  Input extends '' ? [] : [Input, '']
+)
+/** Match remaining characters in the buffer until end. If no characters are in buffer, no match */
+export function Rest<Input extends string>(input: Input): TRest<Input> {
+  const result = IsEqual(input, '') ? [] : [input, '']
+  return result as never
 }
 // deno-coverage-ignore-stop

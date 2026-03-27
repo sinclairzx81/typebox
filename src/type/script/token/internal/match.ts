@@ -26,15 +26,18 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export * from './bigint.ts'
-export * from './const.ts'
-export * from './ident.ts'
-export * from './integer.ts'
-export * from './number.ts'
-export * from './rest.ts'
-export * from './span.ts'
-export * from './string.ts'
-export * from './unsigned_integer.ts'
-export * from './unsigned_number.ts'
-export * from './until_1.ts'
-export * from './until.ts'
+// deno-coverage-ignore-start - parsebox tested
+
+import { IsEqual } from './guard.ts'
+
+type TResult = [string, string] | []
+
+/** Checks the value is a Tuple-2 [string, string] result */
+export function IsMatch(value: TResult): value is [string, string] {
+  return IsEqual(value.length, 2)
+}
+/** Matches on a result and dispatches either left or right arm */
+export function Match(input: TResult, ok: (value: string, rest: string) => TResult, fail: () => TResult): TResult {
+  return IsMatch(input) ? ok(input[0], input[1]) : fail()
+}
+// deno-coverage-ignore-stop

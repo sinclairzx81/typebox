@@ -4,7 +4,7 @@ ParseBox
 
 The MIT License (MIT)
 
-Copyright (c) 2024-2025 Haydn Paterson
+Copyright (c) 2024-2026 Haydn Paterson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-coverage-ignore-start - parsebox tested
 // deno-fmt-ignore-file
 
-import { IsResult } from './result.ts'
+import { Match } from './match.ts'
 import { type TTake, Take } from './take.ts'
 
 // ------------------------------------------------------------------
@@ -59,16 +59,11 @@ export type TMany<Allowed extends string[], Discard extends string[], Input exte
     : [Result, Input]
 )
 /** Takes characters from the Input until no-match. The Discard set is used to omit characters from the match */
-export function Many<Allowed extends string[], Discard extends string[], Input extends string>
-  (allowed: [...Allowed], discard: [...Discard], input: Input, result: string = ''): 
-    TMany<Allowed, Discard, Input> {
-  const takeResult = Take(allowed, input) as [string, string]
-  return (
-    IsResult(takeResult)
-      ? IsDiscard(discard, takeResult[0])
-        ? Many(allowed, discard, takeResult[1], result)
-        : Many(allowed, discard, takeResult[1], `${result}${takeResult[0]}`)
-      : [result, input]
-  ) as never
+export function Many<Allowed extends string[], Discard extends string[], Input extends string>(allowed: [...Allowed], discard: [...Discard], input: Input, result: string = ''): TMany<Allowed, Discard, Input> {
+  return Match(Take(allowed, input), (Char, Rest) => 
+    IsDiscard(discard, Char)
+      ? Many(allowed, discard, Rest, result)
+      : Many(allowed, discard, Rest, `${result}${Char}`), 
+    () => [result, input]) as never
 }
 // deno-coverage-ignore-stop
