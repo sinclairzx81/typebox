@@ -298,7 +298,7 @@ Test('Should KeyOf 26', () => {
     y: Type.String()
   })
   // CACHE | TYPESCRIPT TYPE ID ORDER ISSUE
-  const K: Type.TUnion<[Type.TLiteral<'x'>, Type.TLiteral<'y'>]> = Type.KeyOf(T)
+  const K /*: Type.TUnion<[Type.TLiteral<'x'>, Type.TLiteral<'y'>]> */ = Type.KeyOf(T)
   Assert.IsTrue(Type.IsUnion(K))
   Assert.IsEqual(K.anyOf[0].const, 'x')
   Assert.IsEqual(K.anyOf[1].const, 'y')
