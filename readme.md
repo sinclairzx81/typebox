@@ -57,12 +57,11 @@ License: MIT
 
 ## Contents
 
-
 - [Type](#Type)
 - [Value](#Value)
 - [Script](#Script)
 - [Schema](#Schema)
-- [Legacy](#Legacy)
+- [Versions](#Versions)
 - [Contribute](#Contribute)
 
 
@@ -223,60 +222,31 @@ const R = C.Parse({  x: 0, y: 0, z: 0 })            // const R: {
                                                     // } = ...
 ```
 
-## Legacy
+<a name="Versions"></a>
 
-If upgrading from `@sinclair/typebox` 0.34.x refer to the 1.0 migration guide at the following URL.
+## Versions
 
-[Migration Guide](https://github.com/sinclairzx81/typebox/blob/main/changelog/1.0.0-migration.md)
+TypeBox provides two distinct versions that span two generations of the TypeScript compiler.
 
-Most types created with 0.34.x are compatible with V1, and it is possible to run both `typebox` and `@sinclair/typebox` packages side by side. 
+### Version 0.x
 
-```typescript
-import { Type } from '@sinclair/typebox'            // TB: 0.34.x
-import { Static } from 'typebox'                    // TB: 1.0.0
-
-// ----------------------------------------------------------
-// Legacy Types
-// ----------------------------------------------------------
-const A = Type.Object({
-  x: Type.Number(),
-  y: Type.Number(),
-  z: Type.Number()
-})
-
-const B = Type.Object({
-  a: Type.Number(),
-  b: Type.Number(),
-  c: Type.Number()
-})
-
-const C = Type.Composite([A, B])
-
-// ----------------------------------------------------------
-// Modern Inference
-// ----------------------------------------------------------
-type C = Static<typeof C>                           // type C = {
-                                                    //   x: number;
-                                                    //   y: number;
-                                                    //   z: number;
-                                                    //   a: number;
-                                                    //   b: number;
-                                                    //   c: number;
-                                                    // }
-
-// ----------------------------------------------------------
-// Modern Compile
-// ----------------------------------------------------------
-import Schema from 'typebox/schema'
-
-const R = Schema.Compile(C).Check({ ... })
+```bash
+$ npm install @sinclair/typebox                     # 0.x - LTS    | TS 4-6
 ```
 
-Revision 0.34.x is actively maintained at the following URL.
+Developed against TypeScript 4-6 and maintained under Long Term Support (LTS) for existing infrastructure on the 0.x revision line. ESM and CJS compatible.
 
-[TypeBox 0.34.x](https://github.com/sinclairzx81/typebox-legacy)
+### Version 1.x
 
-Please submit non-1.0 issues to this repository.
+```bash
+$ npm install typebox                               # 1.x - Latest | TS 7 Native
+```
+
+Developed against the TypeScript 7 native compiler with advanced type inference and JSON Schema 2020-12 compliant validation, with backwards compatibility for `0.x` types. ESM only.
+
+### Additional
+
+The `1.x` version is recommended for most new projects and is the active development line that targets optimizations enabled by the TypeScript 7 native compiler. The `0.x` version is maintained under LTS for environments requiring CJS and ESM compatibility as well as support for older TypeScript compiler versions. For issues relating to `0.x` please submit them to the [TypeBox 0.x](https://github.com/sinclairzx81/sinclair-typebox) repository.
 
 ## Contribute
 

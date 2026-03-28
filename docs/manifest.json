@@ -34,6 +34,7 @@
   "overview": {
     "1_install": "docs/overview/1_install.html",
     "2_setup": "docs/overview/2_setup.html",
+    "3_versions": "docs/overview/3_versions.html",
     "overview": "docs/overview/overview.html"
   },
   "schema": {
