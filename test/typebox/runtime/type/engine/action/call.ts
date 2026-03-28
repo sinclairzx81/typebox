@@ -188,3 +188,45 @@ Test('Should Call 11', () => {
   const G = Type.Generic([Type.Parameter('T', Type.Number())], Type.String())
   Assert.Throws(() => Type.Call(G, [Type.String()]))
 })
+// ------------------------------------------------------------------
+// Distributed Conditional Generics
+// ------------------------------------------------------------------
+Test('Should Call 12', () => {
+  //
+  // Expect Union to Distribute For T
+  //
+  // type G<T> = (
+  //   T extends 1 ? 'one' :
+  //   T extends 2 ? 'two' :
+  //   T
+  // )
+  // type T = G<1 | 2 | 3>
+  //
+  const G = Type.Generic(
+    [Type.Parameter('T')],
+    Type.Conditional(
+      Type.Ref('T'),
+      Type.Literal(1),
+      Type.Literal('one'),
+      Type.Conditional(
+        Type.Ref('T'),
+        Type.Literal(2),
+        Type.Literal('two'),
+        Type.Ref('T')
+      )
+    )
+  )
+  const T: Type.TUnion<[
+    Type.TLiteral<'one'>,
+    Type.TLiteral<'two'>,
+    Type.TLiteral<3>
+  ]> = Type.Call(G, [Type.Union([
+    Type.Literal(1),
+    Type.Literal(2),
+    Type.Literal(3)
+  ])])
+  Assert.IsTrue(Type.IsUnion(T))
+  Assert.IsEqual(T.anyOf[0].const, 'one')
+  Assert.IsEqual(T.anyOf[1].const, 'two')
+  Assert.IsEqual(T.anyOf[2].const, 3)
+})
