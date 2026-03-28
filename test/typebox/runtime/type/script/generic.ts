@@ -370,3 +370,27 @@ Test('Should Generic 22', () => {
   `)
   )
 })
+// ------------------------------------------------------------------
+// Distributed Conditional Generics
+// ------------------------------------------------------------------
+Test('Should Generic 23', () => {
+  const T: Type.TUnion<[
+    Type.TTuple<[Type.TLiteral<0>, Type.TLiteral<0>]>,
+    Type.TTuple<[Type.TLiteral<1>, Type.TLiteral<0>]>,
+    Type.TTuple<[Type.TLiteral<0>, Type.TLiteral<1>]>,
+    Type.TTuple<[Type.TLiteral<1>, Type.TLiteral<1>]>
+  ]> = Type.Script(`
+    type Bit = 0 | 1
+    type Bin<A, B> = A extends Bit ? [A, B] : never
+    type Result = Bin<Bit, Bit>
+  `).Result
+  Assert.IsTrue(Type.IsUnion(T))
+  Assert.IsEqual(T.anyOf[0].items[0].const, 0)
+  Assert.IsEqual(T.anyOf[0].items[1].const, 0)
+  Assert.IsEqual(T.anyOf[1].items[0].const, 1)
+  Assert.IsEqual(T.anyOf[1].items[1].const, 0)
+  Assert.IsEqual(T.anyOf[2].items[0].const, 0)
+  Assert.IsEqual(T.anyOf[2].items[1].const, 1)
+  Assert.IsEqual(T.anyOf[3].items[0].const, 1)
+  Assert.IsEqual(T.anyOf[3].items[1].const, 1)
+})

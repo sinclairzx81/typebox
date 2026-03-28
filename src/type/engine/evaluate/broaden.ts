@@ -29,9 +29,9 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Guard } from '../../../guard/index.ts'
-import { type TSchema, IsSchema } from '../../types/schema.ts'
+import { type TSchema } from '../../types/schema.ts'
 import { type TAny, IsAny } from '../../types/any.ts'
-import { type TNever, Never } from '../../types/never.ts'
+import { type TNever, Never, IsNever } from '../../types/never.ts'
 import { type TObject, IsObject } from '../../types/object.ts'
 import { type TUnion, Union } from '../../types/union.ts'
 import { type TCompare, type TCompareResult, Compare, ResultRightInside, ResultLeftInside, ResultEqual } from './compare.ts'
@@ -85,8 +85,7 @@ function IsBroadestType(type: TSchema, types: TSchema[]): boolean {
 //
 // This function attempts to push the given Type into the broadest
 // set if the type is either disjoint, or more broad than an existing
-// element in the set. This function is not called for TObject types,
-// see special catch in TBroadenTypes.
+// element in the set.
 //
 // ------------------------------------------------------------------
 type TBroadenType<Type extends TSchema, Types extends TSchema[],
@@ -110,27 +109,32 @@ function BroadenType<Type extends TSchema, Types extends TSchema[]>(type: Type, 
 // ------------------------------------------------------------------
 // BroadenTypes
 //
-// This function attempts to broaden an array of types. We only 
-// broaden for logical and scalar types, but not Object types. 
-// TypeScript doesn't appear to do this, so we don't either.
+// Note: We consider TObject types too expensive to apply a broaden
+// operation to (currently) so we just push the TObject into the
+// set on assumption that it is 'probably' distinct. TypeScript 
+// seems to do the same in some contexts. We should revise this 
+// code and revisit the TIsBroadestType, but expect we need 
+// TExtends optimizations first.
+//
+// (revise-candidate-fast-path-property-sets)
 //
 // ------------------------------------------------------------------
 type TBroadenTypes<Types extends TSchema[], Result extends TSchema[] = []> = (
   Types extends [infer Left extends TSchema, ...infer Right extends TSchema[]]
-    ? Left extends TObject
-      ? TBroadenTypes<Right, [...Result, Left]> // special: push object types
-      : TBroadenTypes<Right, TBroadenType<Left, Result>>
-    : Result
+    ? (
+      Left extends TObject ? TBroadenTypes<Right, [...Result, Left]> : // push
+      Left extends TNever ? TBroadenTypes<Right, Result> : // ignore
+      TBroadenTypes<Right, TBroadenType<Left, Result>> // broaden
+    ) : Result
 )
 function BroadenTypes<Types extends TSchema[]>(types: [...Types], result: TSchema[] = []): TBroadenTypes<Types> {
-  const [left, ...right] = types
-  return (
-    IsSchema(left)
-      ? IsObject(left)
-        ? BroadenTypes(right, [...result, left]) // special: push object type
-        : BroadenTypes(right, BroadenType(left, result))
-      : result
-    ) as never
+  return types.reduce<TSchema[]>((result, left) => {
+    return (
+      IsObject(left) ? [...result, left] : // push
+      IsNever(left) ? result : // ignore
+      BroadenType(left, result) // broaden
+    )
+  }, []) as never
 }
 // ------------------------------------------------------------------
 // Broaden
