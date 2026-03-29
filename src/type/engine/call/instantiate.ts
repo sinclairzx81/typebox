@@ -44,7 +44,7 @@ import { type TInstantiateTypes, InstantiateTypes } from '../instantiate.ts'
 // ------------------------------------------------------------------
 // Infrastructure
 // ------------------------------------------------------------------
-import { type TDistributeArguments, DistributedArguments } from './distribute-arguments.ts'
+import { type TDistributeArguments, DistributeArguments } from './distribute-arguments.ts'
 import { type TResolveTarget, ResolveTarget } from './resolve-target.ts'
 import { type TResolveArgumentsContext, ResolveArgumentsContext } from './resolve-arguments.ts'
 
@@ -134,14 +134,14 @@ function CallDistributed<Context extends TProperties, State extends TState, Targ
 // Immediate
 // ------------------------------------------------------------------
 type TCallImmediate<Context extends TProperties, State extends TState, Target extends TRef, Parameters extends TParameter[], Expression extends TSchema, InstantiatedArguments extends TSchema[],
-  DistributedArguments extends TSchema[][] = TDistributeArguments<InstantiatedArguments, Expression>,
+  DistributedArguments extends TSchema[][] = TDistributeArguments<Parameters, InstantiatedArguments, Expression>,
   ReturnTypes extends TSchema[] = TCallDistributed<Context, State, Target, Parameters, Expression, DistributedArguments>,
   Result extends TSchema = ReturnTypes['length'] extends 1 ? ReturnTypes[0] : TEvaluateUnion<ReturnTypes>
 > = Result
 function CallImmediate<Context extends TProperties, State extends TState, Target extends TRef, Parameters extends TParameter[], Expression extends TSchema, InstantiatedArguments extends TSchema[]>
   (context: Context, state: State, target: Target, parameters: [...Parameters], expression: Expression, arguments_: [...InstantiatedArguments]):
     TCallImmediate<Context, State, Target, Parameters, Expression, InstantiatedArguments> {
-  const distributedArguments = DistributedArguments(arguments_, expression) as TSchema[][]
+  const distributedArguments = DistributeArguments(parameters, arguments_, expression) as TSchema[][]
   const returnTypes = CallDistributed(context, state, target, parameters, expression, distributedArguments) as TSchema[]
   const result = returnTypes.length === 1 ? returnTypes[0] : EvaluateUnion(returnTypes)
   return result as never

@@ -371,20 +371,41 @@ Test('Should Generic 22', () => {
   )
 })
 // ------------------------------------------------------------------
-// Distributed Conditional Generics
+// Distributed Conditional Types
 // ------------------------------------------------------------------
 Test('Should Generic 23', () => {
+  const T: Type.TUnion<[
+    Type.TTuple<[
+      Type.TLiteral<0>,
+      Type.TUnion<[Type.TLiteral<0>, Type.TLiteral<1>]>
+    ]>,
+    Type.TTuple<[
+      Type.TLiteral<1>,
+      Type.TUnion<[Type.TLiteral<0>, Type.TLiteral<1>]>
+    ]>
+  ]> = Type.Script(`
+    type Bin<A, B> = A extends number ? [A, B] : never
+    type T = Bin<0 | 1, 0 | 1>
+  `).T
+  Assert.IsTrue(Type.IsUnion(T))
+  Assert.IsEqual(T.anyOf.length, 2)
+  Assert.IsEqual(T.anyOf[0].items[0].const, 0)
+  Assert.IsTrue(Type.IsUnion(T.anyOf[0].items[1]))
+  Assert.IsEqual(T.anyOf[1].items[0].const, 1)
+  Assert.IsTrue(Type.IsUnion(T.anyOf[1].items[1]))
+})
+Test('Should Generic 24', () => {
   const T: Type.TUnion<[
     Type.TTuple<[Type.TLiteral<0>, Type.TLiteral<0>]>,
     Type.TTuple<[Type.TLiteral<1>, Type.TLiteral<0>]>,
     Type.TTuple<[Type.TLiteral<0>, Type.TLiteral<1>]>,
     Type.TTuple<[Type.TLiteral<1>, Type.TLiteral<1>]>
   ]> = Type.Script(`
-    type Bit = 0 | 1
-    type Bin<A, B> = A extends Bit ? [A, B] : never
-    type Result = Bin<Bit, Bit>
-  `).Result
+    type Bin<A, B> = A extends number ? B extends number ? [A, B] : never : never
+    type T = Bin<0 | 1, 0 | 1>
+  `).T
   Assert.IsTrue(Type.IsUnion(T))
+  Assert.IsEqual(T.anyOf.length, 4)
   Assert.IsEqual(T.anyOf[0].items[0].const, 0)
   Assert.IsEqual(T.anyOf[0].items[1].const, 0)
   Assert.IsEqual(T.anyOf[1].items[0].const, 1)
@@ -393,4 +414,21 @@ Test('Should Generic 23', () => {
   Assert.IsEqual(T.anyOf[2].items[1].const, 1)
   Assert.IsEqual(T.anyOf[3].items[0].const, 1)
   Assert.IsEqual(T.anyOf[3].items[1].const, 1)
+})
+Test('Should Generic 25', () => {
+  const T: Type.TLiteral<'yes'> = Type.Script(`
+    type Bin<A, B, C> = A extends number ? "yes" : C extends number ? [A, B, C] : never
+    type T = Bin<0 | 1, 0 | 1, 0 | 1>
+  `).T
+  Assert.IsFalse(Type.IsUnion(T))
+  Assert.IsEqual(T.const, 'yes')
+})
+Test('Should Generic 26', () => {
+  const T: Type.TTuple<[Type.TUnion<[Type.TLiteral<0>, Type.TLiteral<1>]>, Type.TUnion<[Type.TLiteral<0>, Type.TLiteral<1>]>]> = Type.Script(`
+    type Bin<A, B> = [A] extends [number] ? [A, B] : never
+    type Result = Bin<0 | 1, 0 | 1>
+  `).Result
+  Assert.IsFalse(Type.IsUnion(T))
+  Assert.IsTrue(Type.IsUnion(T.items[0])) // A passthrough
+  Assert.IsTrue(Type.IsUnion(T.items[1])) // B passthrough
 })
