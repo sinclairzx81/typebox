@@ -43,9 +43,9 @@ import { IsCall } from '../../types/call.ts'
 // ------------------------------------------------------------------
 function AssertArgumentExtends<Name extends string, Type extends TSchema, Extends extends TSchema>(name: Name, type: Type, extends_: Extends): void {
   if (IsInfer(type) || IsCall(type) || ExtendsResult.IsExtendsTrueLike(Extends({}, type, extends_))) return
-  const cause = { parameter: name, extends: extends_, received: type }
+  const cause = { parameter: name, expect: extends_, actual: type }
   // @ts-ignore - no definition for { cause } options 
-  throw new Error('Generic argument does not satify constraint', { cause })
+  throw new Error(`Argument for parameter ${name} does not satisfy constraint`, { cause })
 }
 // ------------------------------------------------------------------
 // BindArgument
