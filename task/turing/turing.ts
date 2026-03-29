@@ -28,24 +28,26 @@ THE SOFTWARE.
 
 import Type from 'typebox'
 
-// ----------------------------------------------------------------------------
-//
-// TypeBox: Brainf**k Interpreter Test
-//
-// Reference: https://en.wikipedia.org/wiki/Brainf**k
-//
-// ----------------------------------------------------------------------------
-//
-// This module serves as a Turing complete assertion test. It works by 
-// simulating the Brainf**k programming language using only TypeBox 
-// type expressions.
-//
-// Brainf**k is a turing complete esoteric programming language created 
-// in 1993 by Swiss programmer Urban Müller. It is deliberately 
-// minimalistic, consisting of only eight commands, a data pointer, and 
-// an instruction pointer.
-//
-// ----------------------------------------------------------------------------
+// ┌────────────────────────────────────────────────────────────────────────────┐
+// │                                                                            │
+// │  TypeBox - Brainfuck Interpreter Test                                      │
+// │                                                                            │
+// │  Reference: https://en.wikipedia.org/wiki/Brainfuck                        │
+// │                                                                            │
+// ├────────────────────────────────────────────────────────────────────────────┤
+// │                                                                            │
+// │  This module asserts Turing completeness by implementing a Brainfuck       │
+// │  interpreter using only TypeBox type expressions. It is designed to        │
+// │  push type instantiation throughput, assert that advanced conditional      │
+// │  type expressions remain correct across updates to TypeBox's generic       │
+// │  call and module infrastructure, and to push the extents of TypeBox        │
+// │  itself.                                                                   │
+// │                                                                            │
+// │  Brainfuck is a Turing complete esoteric programming language created      │
+// │  in 1993 by Urban Müller, consisting of only eight commands, a data        │
+// │  pointer, and an instruction pointer.                                      │
+// │                                                                            │
+// └────────────────────────────────────────────────────────────────────────────┘
 
 // { output: "Hello, World!" }
 //

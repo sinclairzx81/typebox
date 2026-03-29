@@ -432,3 +432,124 @@ Test('Should Generic 26', () => {
   Assert.IsTrue(Type.IsUnion(T.items[0])) // A passthrough
   Assert.IsTrue(Type.IsUnion(T.items[1])) // B passthrough
 })
+
+Test('Should Generic 27', () => {
+  const T: Type.TUnion<[
+    Type.TTuple<[Type.TLiteral<0>, Type.TLiteral<0>, Type.TLiteral<0>]>,
+    Type.TTuple<[Type.TLiteral<1>, Type.TLiteral<0>, Type.TLiteral<0>]>,
+    Type.TTuple<[Type.TLiteral<0>, Type.TLiteral<1>, Type.TLiteral<0>]>,
+    Type.TTuple<[Type.TLiteral<1>, Type.TLiteral<1>, Type.TLiteral<0>]>,
+    Type.TTuple<[Type.TLiteral<0>, Type.TLiteral<0>, Type.TLiteral<1>]>,
+    Type.TTuple<[Type.TLiteral<1>, Type.TLiteral<0>, Type.TLiteral<1>]>,
+    Type.TTuple<[Type.TLiteral<0>, Type.TLiteral<1>, Type.TLiteral<1>]>,
+    Type.TTuple<[Type.TLiteral<1>, Type.TLiteral<1>, Type.TLiteral<1>]>
+  ]> = Type.Script(`
+    type T<A, B, C> = A extends number ? B extends number ? C extends number ? [A, B, C] : never : never : never
+    type R = T<0 | 1, 0 | 1, 0 | 1>
+  `).R
+  Assert.IsTrue(Type.IsUnion(T))
+  Assert.IsEqual(T.anyOf.length, 8)
+  Assert.IsEqual(T.anyOf[0].items[0].const, 0)
+  Assert.IsEqual(T.anyOf[0].items[1].const, 0)
+  Assert.IsEqual(T.anyOf[0].items[2].const, 0)
+  Assert.IsEqual(T.anyOf[1].items[0].const, 1)
+  Assert.IsEqual(T.anyOf[1].items[1].const, 0)
+  Assert.IsEqual(T.anyOf[1].items[2].const, 0)
+  Assert.IsEqual(T.anyOf[2].items[0].const, 0)
+  Assert.IsEqual(T.anyOf[2].items[1].const, 1)
+  Assert.IsEqual(T.anyOf[2].items[2].const, 0)
+  Assert.IsEqual(T.anyOf[3].items[0].const, 1)
+  Assert.IsEqual(T.anyOf[3].items[1].const, 1)
+  Assert.IsEqual(T.anyOf[3].items[2].const, 0)
+  Assert.IsEqual(T.anyOf[4].items[0].const, 0)
+  Assert.IsEqual(T.anyOf[4].items[1].const, 0)
+  Assert.IsEqual(T.anyOf[4].items[2].const, 1)
+  Assert.IsEqual(T.anyOf[5].items[0].const, 1)
+  Assert.IsEqual(T.anyOf[5].items[1].const, 0)
+  Assert.IsEqual(T.anyOf[5].items[2].const, 1)
+  Assert.IsEqual(T.anyOf[6].items[0].const, 0)
+  Assert.IsEqual(T.anyOf[6].items[1].const, 1)
+  Assert.IsEqual(T.anyOf[6].items[2].const, 1)
+  Assert.IsEqual(T.anyOf[7].items[0].const, 1)
+  Assert.IsEqual(T.anyOf[7].items[1].const, 1)
+  Assert.IsEqual(T.anyOf[7].items[2].const, 1)
+})
+Test('Should Generic 28', () => {
+  const T: Type.TTuple<[
+    Type.TLiteral<0>,
+    Type.TLiteral<1>
+  ]> = Type.Script(`
+    type T<A, B> = A extends number ? [A, B] : never
+    type R = T<0, 1>
+  `).R
+  Assert.IsTrue(Type.IsTuple(T))
+  Assert.IsEqual(T.items[0].const, 0)
+  Assert.IsEqual(T.items[1].const, 1)
+})
+Test('Should Generic 29', () => {
+  const T: Type.TNever = Type.Script(`
+    type T<A> = A extends string ? [A] : never
+    type R = T<0 | 1>
+  `).R
+  Assert.IsTrue(Type.IsNever(T))
+})
+Test('Should Generic 30', () => {
+  const T: Type.TUnion<[
+    Type.TTuple<[Type.TLiteral<0>, Type.TLiteral<0>]>,
+    Type.TTuple<[Type.TLiteral<1>, Type.TLiteral<0>]>
+  ]> = Type.Script(`
+    type T<A, B> = A extends number ? [A, B] : never
+    type R = T<0 | 1, 0>
+  `).R
+  Assert.IsTrue(Type.IsUnion(T))
+  Assert.IsEqual(T.anyOf.length, 2)
+  Assert.IsEqual(T.anyOf[0].items[0].const, 0)
+  Assert.IsEqual(T.anyOf[0].items[1].const, 0)
+  Assert.IsEqual(T.anyOf[1].items[0].const, 1)
+  Assert.IsEqual(T.anyOf[1].items[1].const, 0)
+})
+Test('Should Generic 31', () => {
+  const T: Type.TUnion<[
+    Type.TTuple<[Type.TLiteral<'a'>]>,
+    Type.TTuple<[Type.TLiteral<'b'>]>
+  ]> = Type.Script(`
+    type T<A> = A extends string ? [A] : never
+    type R = T<'a' | 'b'>
+  `).R
+  Assert.IsTrue(Type.IsUnion(T))
+  Assert.IsEqual(T.anyOf.length, 2)
+  Assert.IsEqual(T.anyOf[0].items[0].const, 'a')
+  Assert.IsEqual(T.anyOf[1].items[0].const, 'b')
+})
+Test('Should Generic 32', () => {
+  const T: Type.TLiteral<'yes'> = Type.Script(`
+    type T<A, B> = A extends number ? 'yes' : [A, B]
+    type R = T<0 | 1, 0 | 1>
+  `).R
+  Assert.IsTrue(Type.IsLiteral(T))
+  Assert.IsEqual(T.const, 'yes')
+})
+Test('Should Generic 33', () => {
+  const T: Type.TTuple<[
+    Type.TLiteral<0>,
+    Type.TLiteral<1>
+  ]> = Type.Script(`
+    type T<A, B> = A extends number ? [A, B] : never
+    type R = T<0 | never, 1>
+  `).R
+  Assert.IsTrue(Type.IsTuple(T))
+  Assert.IsEqual(T.items[0].const, 0)
+  Assert.IsEqual(T.items[1].const, 1)
+})
+// ------------------------------------------------------------------
+// Distributed Conditional Types (Coverage)
+// ------------------------------------------------------------------
+Test('Should Generic 34', () => {
+  // more arguments than generic
+  const T: Type.TTuple<[Type.TLiteral<0>]> = Type.Script(`
+    type T<A> = A extends number ? [A] : never
+    type R = T<0, 1, 2>
+  `).R
+  Assert.IsTrue(Type.IsTuple(T))
+  Assert.IsEqual(T.items[0].const, 0)
+})

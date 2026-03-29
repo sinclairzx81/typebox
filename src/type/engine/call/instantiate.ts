@@ -37,9 +37,9 @@ import { type TGeneric, IsGeneric } from '../../types/generic.ts'
 import { type TProperties } from '../../types/properties.ts'
 
 import { type TEvaluateUnion, EvaluateUnion } from '../evaluate/index.ts'
-import { type TState } from '../instantiate.ts'
 import { type TInstantiateType, InstantiateType } from '../instantiate.ts'
 import { type TInstantiateTypes, InstantiateTypes } from '../instantiate.ts'
+import { type TState } from '../instantiate.ts'
 
 // ------------------------------------------------------------------
 // Infrastructure
@@ -61,12 +61,11 @@ function Peek<State extends TState>(state: State): TPeek<State> {
 // ------------------------------------------------------------------
 // IsTailCall
 //
-// Inspects if the target Name matches the top element in the 
-// CallStack. If so, this indicates that the generic type is 
-// tail-self recursive. In these cases, the CallInstantiate 
-// function will bounce back a CallDeferred with 
-// InstantiatedArguments only which are trampolined back to
-// the CallDispatch for subsequent instantiation.
+// Returns true if Name matches the top of the CallStack, indicating
+// the generic is directly self-recursive at the tail position.
+// CallInstantiate will then return a CallDeferred carrying only the
+// InstantiatedArguments, which CallDispatch trampolines on the
+// next iteration rather than recursing immediately.
 //
 // ------------------------------------------------------------------
 type TIsTailCall<State extends TState, Name extends string,
@@ -76,22 +75,17 @@ function IsTailCall<State extends TState, Name extends string>(state: State, nam
   const result = Guard.IsEqual(Peek(state), name)
   return result as never
 }
-// -------------------------------------------------------------------
-// Dispatch
+// ------------------------------------------------------------------
+// CallDispatch
 //
-// The Dispatch performs Argument to Parameter bind and stores 
-// parameter names in the ArgumentsContext. We expect parameter
-// names to shadow exterior names Context via the following
-// assignment expression.
-// 
-//   Omit<Left, keyof Right> & Right
-// 
-// We expect the ReturnType to either be the Result of the 
-// instantiated Generic expression, or a CallDeferred if 
-// bounced via IsTailCall, noting that the TailCall will
-// have its ArgumentsInstantiated prior to bounce.
+// Binds Arguments to Parameters via ResolveArgumentsContext, then
+// instantiates the Expression under that context with the target
+// pushed onto the CallStack. The resulting ReturnType is either a
+// fully instantiated type or a CallDeferred if IsTailCall fired,
+// which is then re-instantiated under the original Context to
+// resolve any exterior bindings.
 //
-// -------------------------------------------------------------------
+// ------------------------------------------------------------------
 type TCallDispatch<Context extends TProperties, State extends TState, Target extends TRef, Parameters extends TParameter[], Expression extends TSchema, Arguments extends TSchema[],
   ArgumentsContext extends TProperties = TResolveArgumentsContext<Context, State, Parameters, Arguments>,
   ReturnType extends TSchema = TInstantiateType<ArgumentsContext, { callstack: [...State['callstack'], Target['$ref']] }, Expression>,
@@ -104,16 +98,13 @@ function CallDispatch<Context extends TProperties, State extends TState, Target 
   return InstantiateType(context, state, returnType) as never
 }
 // ------------------------------------------------------------------
-// Distributed
+// CallDistributed
 //
-// Distributed will call the Generic type for as many variants 
-// set derived from the TDistributeArguments call. The logic here
-// is a bit sketchy, as we're up against stack comparison limits.
-//
-// There isn't much else going on here other than the eager 
-// evaluation on the Dispatch to hoist the ReturnType before 
-// making the next call, but we should be mindful that we are
-// stretching stack limits here (review)
+// Calls CallDispatch once per variant derived from DistributeArguments,
+// accumulating results into a TSchema[]. The logic here is a bit
+// sketchy as we're up against TypeScript's stack depth limits, so we
+// eagerly hoist the ReturnType via `extends infer` before each
+// recursive call. We are stretching stack limits here (review).
 //
 // ------------------------------------------------------------------
 type TCallDistributed<Context extends TProperties, State extends TState, Target extends TRef, Parameters extends TParameter[], Expression extends TSchema, DistributedArguments extends TSchema[][], Result extends TSchema[] = []> = (

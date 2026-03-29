@@ -39,9 +39,10 @@ import { type TParameter } from '../../types/parameter.ts'
 // ------------------------------------------------------------------
 // CollectDistributiveNames
 //
-// This function recursively collects all TRef in LHS position
-// in Conditional expressions. We only consider Conditional for
-// distribution and terminate on any non-Conditional arm.
+// Recursively collects the names of all TRef types appearing in the
+// Left (checked) position of nested Conditional expressions. Only
+// Conditional nodes are traversed; any other expression terminates
+// the recursion and returns the accumulated result.
 //
 // ------------------------------------------------------------------
 type TCollectDistributionNames<Expression extends TSchema, Result extends string[] = []> = (
@@ -63,9 +64,9 @@ function CollectDistributionNames<Expression extends TSchema>(expression: Expres
 // ------------------------------------------------------------------
 // BuildDistributionArray
 //
-// This function constructs a boolean[] Array for each Name derived
-// from CollectDistributionNames and sets the positional element to
-// True if the the Name exists in the Parameter List.
+// Constructs a boolean[] with one entry per parameter, where each
+// element is true if that parameter's name appears in Names (i.e.
+// was collected as a distributive TRef), and false otherwise.
 //
 // ------------------------------------------------------------------
 type TBuildDistributionArray<Parameters extends TParameter[], Names extends string[], Result extends boolean[] = []> = (
@@ -84,10 +85,10 @@ function BuildDistributionArray<Parameters extends TParameter[], Names extends s
 // ------------------------------------------------------------------
 // ZipDistributionArray
 //
-// This function zips the DistributionArray and Arguments into a
-// [boolean, TSchema][]. We only zip for as many Arguments as 
-// provided and expect the ResolveArguments to be able to length
-// mismatched Arguments via the Parameter/Context binding phase.
+// Zips Arguments and DistributionArray into paired [boolean, TSchema]
+// tuples, terminating if either array is exhausted. Length mismatches
+// are handled downstream by ResolveArguments during the
+// Parameter/Context binding phase.
 //
 // ------------------------------------------------------------------
 type TZipDistributionArray<Arguments extends TSchema[], DistributionArray extends boolean[], Result extends [boolean, TSchema][] = []> = (
@@ -103,8 +104,8 @@ function ZipDistributionArray<Arguments extends TSchema[], DistributionArray ext
   const [argumentLeft, ...argumentRight] = arguments_
   const [booleanLeft, ...booleanRight] = distributionArray
   return (
-    arguments_.length > 0
-    ? distributionArray.length > 0
+    Guard.IsGreaterThan(arguments_.length, 0)
+    ? Guard.IsGreaterThan(distributionArray.length, 0)
       ? ZipDistributionArray(argumentRight as never, booleanRight as never, [...result, [booleanLeft, argumentLeft]])
       : result
     : result
@@ -167,7 +168,7 @@ function Distribute<ZippedArguments extends [boolean, TSchema][]>
   (zipped: [...ZippedArguments]): 
     TDistribute<ZippedArguments> {
   return zipped.reduce((result, left) => {
-    return left[0]
+    return Guard.IsEqual(left[0], true)
       ? Cross(result, Expand(left[1]))
       : Cross(result, [left[1]]) // - no-expansion
   }, [[]] as TSchema[][]) as never
