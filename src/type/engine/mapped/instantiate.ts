@@ -34,127 +34,122 @@ import { type TLiteral, IsLiteralNumber, IsLiteralString } from '../../types/lit
 import { type TObject, Object } from '../../types/object.ts'
 import { type TProperties } from '../../types/properties.ts'
 import { type TIdentifier } from '../../types/identifier.ts'
-import { type TMappedKeys, MappedKeys } from './mapped-keys.ts'
 import { type TTemplateLiteral, IsTemplateLiteral } from '../../types/template-literal.ts'
 import { type TMappedDeferred, MappedDeferred } from '../../action/mapped.ts'
 import { type TTemplateLiteralDecode, TemplateLiteralDecode } from '../template-literal/decode.ts'
 
 import { type TState, type TInstantiateType, type TCanInstantiate, InstantiateType, CanInstantiate } from '../instantiate.ts'
+import { type TMappedVariants, MappedVariants } from './mapped-variants.ts'
+import { type TEvaluateIntersect, EvaluateIntersect } from '../evaluate/index.ts'
 
 // ------------------------------------------------------------------
-// InstantiateKeyAs
+// CanonicalAs
 // ------------------------------------------------------------------
-type TInstantiateKeyAs<Context extends TProperties, State extends TState, Identifier extends TIdentifier, Key extends TSchema, As extends TSchema,
-  ContextWithKey extends TProperties = Memory.TAssign<Context, { [_ in Identifier['name']]: Key }>,
-  InstantiatedKeyAs extends TSchema = TInstantiateType<ContextWithKey, State, As>,
-  Result extends TSchema = InstantiatedKeyAs extends TTemplateLiteral<infer Pattern extends string> ? TTemplateLiteralDecode<Pattern> : InstantiatedKeyAs
+type TCanonicalAs<InstantiatedAs extends TSchema,
+  Result extends TSchema = InstantiatedAs extends TTemplateLiteral<infer Pattern extends string> 
+    ? TTemplateLiteralDecode<Pattern> 
+    : InstantiatedAs
 > = Result
-
-function InstantiateKeyAs<Context extends TProperties, State extends TState, Identifier extends TIdentifier, Key extends TSchema, As extends TSchema>
-  (context: Context, state: State, identifier: Identifier, key: Key, as: As): 
-    TInstantiateKeyAs<Context, State, Identifier, Key, As> {
-  const contextWithKey = Memory.Assign(context, { [identifier['name']]: key })
-  const instantiatedKeyAs = InstantiateType(contextWithKey, state, as)
-  const result = IsTemplateLiteral(instantiatedKeyAs) ? TemplateLiteralDecode(instantiatedKeyAs.pattern): instantiatedKeyAs
+function CanonicalAs<InstantiatedAs extends TSchema>(instantiatedAs: InstantiatedAs): TCanonicalAs<InstantiatedAs> {
+  const result = IsTemplateLiteral(instantiatedAs) ? TemplateLiteralDecode(instantiatedAs.pattern): instantiatedAs
   return result as never
 }
 // ------------------------------------------------------------------
-// InstantiateProperty
+// MappedVariant
 // ------------------------------------------------------------------
-type TInstantiateProperty<Context extends TProperties, State extends TState, Identifier extends TIdentifier, Key extends TSchema, Property extends TSchema,
-  ContextWithKey extends TProperties = Memory.TAssign<Context, { [_ in Identifier['name']]: Key }>,
-  InstantiatedProperty extends TSchema = TInstantiateType<ContextWithKey, State, Property>
-> = InstantiatedProperty
-
-function InstantiateProperty<Context extends TProperties, State extends TState, Identifier extends TIdentifier, Key extends TSchema, Property extends TSchema>
-  (context: Context, state: State, identifier: Identifier, key: Key, property: Property): 
-    TInstantiateProperty<Context, State, Identifier, Key, Property> {
-  const contextWithKey = Memory.Assign(context, { [identifier['name']]: key })
-  const instantiatedProperty = InstantiateType(contextWithKey, state, property)
-  return instantiatedProperty as never
-}
-// ------------------------------------------------------------------
-// MappedProperty
-// ------------------------------------------------------------------
-type TMappedProperty<Context extends TProperties, State extends TState, Identifier extends TIdentifier, Key extends TSchema, As extends TSchema, Property extends TSchema,
-  InstantiatedProperty extends TSchema = TInstantiateProperty<Context, State, Identifier, Key, Property>,
-  InstantiatedKeyAs extends TSchema = TInstantiateKeyAs<Context, State, Identifier, Key, As>,
-  Result extends TProperties = (
-    InstantiatedKeyAs extends TLiteral<string | number> 
-      ? { [_ in InstantiatedKeyAs['const']]: InstantiatedProperty }
-      : {}
-  )
+type TMappedVariant<Context extends TProperties, State extends TState, Identifier extends TIdentifier, Variant extends TSchema, As extends TSchema, Property extends TSchema,
+  VariantContext extends TProperties = Memory.TAssign<Context, { [_ in Identifier['name']]: Variant }>,
+  InstantiatedAs extends TSchema = TInstantiateType<VariantContext, State, As>,
+  CanonicalAs extends TSchema = TCanonicalAs<InstantiatedAs>,
+  InstantiatedProperty extends TSchema = TInstantiateType<VariantContext, State, Property>,
+  Result extends TProperties = CanonicalAs extends TLiteral<string | number>
+    ? { [_ in CanonicalAs['const']]: InstantiatedProperty }
+    : {}
 > = Result
-function MappedProperty<Context extends TProperties, State extends TState, Identifier extends TIdentifier, Key extends TSchema, As extends TSchema, Property extends TSchema>
-  (context: Context, state: State, identifier: Identifier, key: Key, as: As, property: Property): 
-    TMappedProperty<Context, State, Identifier, Key, As, Property> {
-  const instantiatedProperty = InstantiateProperty(context, state, identifier, key, property) as TSchema
-  const instantiatedKeyAs = InstantiateKeyAs(context, state, identifier, key, as) as TSchema
-  return (
-     IsLiteralString(instantiatedKeyAs) || IsLiteralNumber(instantiatedKeyAs) 
-      ? { [instantiatedKeyAs.const]: instantiatedProperty }
-      : {}
-  ) as never
+function MappedVariant<Context extends TProperties, State extends TState, Identifier extends TIdentifier, Variant extends TSchema, As extends TSchema, Property extends TSchema>
+  (context: Context, state: State, identifier: Identifier, variant: Variant, as: As, property: Property): 
+    TMappedVariant<Context, State, Identifier, Variant, As, Property> {
+  const variantContext = Memory.Assign(context, { [identifier['name']]: variant })
+  const instantiatedAs = InstantiateType(variantContext, state, as)
+  const canonicalAs = CanonicalAs(instantiatedAs)
+  const instantiatedProperty = InstantiateType(variantContext, state, property)
+  return (IsLiteralNumber(canonicalAs) || IsLiteralString(canonicalAs)
+    ? { [canonicalAs.const]: instantiatedProperty }
+    : {}) as never
 }
 // ------------------------------------------------------------------
 // MappedProperties
 // ------------------------------------------------------------------
-type TMappedProperties<Context extends TProperties, State extends TState, Identifier extends TIdentifier, Keys extends TSchema[], As extends TSchema, Type extends TSchema, Result extends TProperties = {}> = (
-  Keys extends [infer Left extends TSchema, ...infer Right extends TSchema[]]
-    ? TMappedProperties<Context, State, Identifier, Right, As, Type, Result & TMappedProperty<Context, State, Identifier, Left, As, Type>>
+type TMappedProperties<Context extends TProperties, State extends TState, Identifier extends TIdentifier, Variants extends TSchema[], As extends TSchema, Property extends TSchema, Result extends TProperties[] = []> = (
+  Variants extends [infer Left extends TSchema, ...infer Right extends TSchema[]]
+    ? TMappedProperties<Context, State, Identifier, Right, As, Property, [...Result, TMappedVariant<Context, State, Identifier, Left, As, Property>]>
     : Result
 )
-function MappedProperties<Context extends TProperties, State extends TState, Identifier extends TIdentifier, Keys extends TSchema[], As extends TSchema, Type extends TSchema>
-  (context: Context, state: State, identifier: Identifier, keys: [...Keys], as: As, type: Type): 
-    TMappedProperties<Context, State, Identifier, Keys, As, Type> {
-  return keys.reduce((result, left) => {
-    return { ...result, ...MappedProperty(context, state, identifier, left, as, type) }
-  }, {} as TProperties) as never
+function MappedProperties<Context extends TProperties, State extends TState, Identifier extends TIdentifier, Variants extends TSchema[], As extends TSchema, Property extends TSchema>
+  (context: Context, state: State, identifier: Identifier, variants: [...Variants], as: As, property: Property): 
+    TMappedProperties<Context, State, Identifier, Variants, As, Property> {
+  return variants.reduce((result, left) => {
+    return [...result, MappedVariant(context, state, identifier, left, as, property) ]
+  }, [] as TProperties[]) as never
 }
 // ------------------------------------------------------------------
-// Action
+// MappedObjects
 // ------------------------------------------------------------------
-type TMappedAction<Context extends TProperties, State extends TState, Identifier extends TIdentifier, Key extends TSchema, As extends TSchema, Property extends TSchema,
-  Keys extends TSchema[] = TMappedKeys<Key>,
-  Mapped extends TProperties = TMappedProperties<Context, State, Identifier, Keys, As, Property>,
-  Result extends TSchema = TObject<{[Key in keyof Mapped]: Mapped[Key]}>
+type TReduceProperties<Properties extends TProperties[], Result extends TSchema[] = []> = (
+  Properties extends [infer Left extends TProperties, ...infer Right extends TProperties[]]
+    ? TReduceProperties<Right, [...Result, TObject<Left>]>
+    : Result
+)
+function MappedObjects<Properties extends TProperties[]>(properties: [...Properties]): TReduceProperties<Properties> {
+  return properties.reduce<TSchema[]>((result, left) => {
+    return [...result, Object(left)]
+  }, []) as never
+}
+// ------------------------------------------------------------------
+// MappedAction
+// ------------------------------------------------------------------
+type TMappedAction<Context extends TProperties, State extends TState, Identifier extends TIdentifier, Type extends TSchema, As extends TSchema, Property extends TSchema,
+  Variants extends TSchema[] = TMappedVariants<Type>,
+  MappedProperties extends TProperties[] = TMappedProperties<Context, State, Identifier, Variants, As, Property>,
+  MappedObjects extends TSchema[] = TReduceProperties<MappedProperties>,
+  Result extends TSchema = TEvaluateIntersect<MappedObjects>
 > = Result
-
-function MappedAction<Context extends TProperties, State extends TState, Identifier extends TIdentifier, Key extends TSchema, As extends TSchema, Property extends TSchema>
-  (context: Context, state: State, identifier: Identifier, key: Key, as: As, type: Property): 
-    TMappedAction<Context, State, Identifier, Key, As, Property> {
-  const keys = MappedKeys(key) as TSchema[]
-  const mapped = MappedProperties(context, state, identifier, keys, as, type)
-  const result = Object(mapped)
+function MappedAction<Context extends TProperties, State extends TState, Identifier extends TIdentifier, Type extends TSchema, As extends TSchema, Property extends TSchema>
+  (context: Context, state: State, identifier: Identifier, type: Type, as: As, property: Property): 
+    TMappedAction<Context, State, Identifier, Type, As, Property> {
+  const variants = MappedVariants(type) as TSchema[]
+  const mappedProperties = MappedProperties(context, state, identifier, variants, as, property) as TProperties[]
+  const mappedObjects = MappedObjects(mappedProperties) as TSchema[]
+  const result = EvaluateIntersect(mappedObjects)
   return result as never
 }
 // ------------------------------------------------------------------
 // Immediate
 // ------------------------------------------------------------------
-type TMappedImmediate<Context extends TProperties, State extends TState, Identifier extends TIdentifier, Key extends TSchema, As extends TSchema, Property extends TSchema,
-  InstantiatedKey extends TSchema = TInstantiateType<Context, State, Key>,
-> = TMappedAction<Context, State, Identifier, InstantiatedKey, As, Property>
+type TMappedImmediate<Context extends TProperties, State extends TState, Identifier extends TIdentifier, Type extends TSchema, As extends TSchema, Property extends TSchema,
+  InstantiatedType extends TSchema = TInstantiateType<Context, State, Type>,
+> = TMappedAction<Context, State, Identifier, InstantiatedType, As, Property>
 
-function MappedImmediate<Context extends TProperties, State extends TState, Identifier extends TIdentifier, Key extends TSchema, As extends TSchema, Property extends TSchema>
-  (context: Context, state: State, identifier: Identifier, key: Key, as: As, property: Property, options: TSchemaOptions): 
-    TMappedImmediate<Context, State, Identifier, Key, As, Property> {
-  const instantiatedKey = InstantiateType(context, state, key)
-  return Memory.Update(MappedAction(context, state, identifier, instantiatedKey, as, property), {}, options) as never
+function MappedImmediate<Context extends TProperties, State extends TState, Identifier extends TIdentifier, Type extends TSchema, As extends TSchema, Property extends TSchema>
+  (context: Context, state: State, identifier: Identifier, type: Type, as: As, property: Property, options: TSchemaOptions): 
+    TMappedImmediate<Context, State, Identifier, Type, As, Property> {
+  const instantiatedType = InstantiateType(context, state, type)
+  return Memory.Update(MappedAction(context, state, identifier, instantiatedType, as, property), {}, options) as never
 }
 // ------------------------------------------------------------------
 // Instantiate
 // ------------------------------------------------------------------
-export type TMappedInstantiate<Context extends TProperties, State extends TState, Identifier extends TIdentifier, Key extends TSchema, As extends TSchema, Property extends TSchema> 
-  = TCanInstantiate<Context, [Key]> extends true
-    ? TMappedImmediate<Context, State, Identifier, Key, As, Property>
-    : TMappedDeferred<Identifier, Key, As, Property>
+export type TMappedInstantiate<Context extends TProperties, State extends TState, Identifier extends TIdentifier, Type extends TSchema, As extends TSchema, Property extends TSchema> 
+  = TCanInstantiate<Context, [Type]> extends true
+    ? TMappedImmediate<Context, State, Identifier, Type, As, Property>
+    : TMappedDeferred<Identifier, Type, As, Property>
 
-export function MappedInstantiate<Context extends TProperties, State extends TState, Identifier extends TIdentifier, Key extends TSchema, As extends TSchema, Property extends TSchema>
-  (context: Context, state: State, identifier: Identifier, key: Key, as: As, property: Property, options: TSchemaOptions): 
-    TMappedInstantiate<Context, State,Identifier, Key, As, Property> {
+export function MappedInstantiate<Context extends TProperties, State extends TState, Identifier extends TIdentifier, Type extends TSchema, As extends TSchema, Property extends TSchema>
+  (context: Context, state: State, identifier: Identifier, type: Type, as: As, property: Property, options: TSchemaOptions): 
+    TMappedInstantiate<Context, State,Identifier, Type, As, Property> {
   return (
-    CanInstantiate(context, [key])
-      ? MappedImmediate(context, state, identifier, key, as, property, options)
-      : MappedDeferred(identifier, key, as, property, options)
+    CanInstantiate(context, [type])
+      ? MappedImmediate(context, state, identifier, type, as, property, options)
+      : MappedDeferred(identifier, type, as, property, options)
   ) as never
 }

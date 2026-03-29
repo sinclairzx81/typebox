@@ -1173,10 +1173,10 @@ export function MappedAsMapping(input: [unknown, unknown] | []): unknown {
 // Mapped: ['{', MappedReadonly, '[', <Ident>, 'in', Type, MappedAs, ']', MappedOptional, ':', Type, OptionalSemiColon, '}']
 // -------------------------------------------------------------------
 export type TMappedMapping<Input extends [unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown]> = (
-  Input extends ['{', infer Readonly extends TModifierOperation, '[', infer Key extends string, 'in', infer Union extends T.TSchema, infer As extends T.TSchema[], ']', infer Optional extends TModifierOperation, ':', infer Type extends T.TSchema, null, '}']
+  Input extends ['{', infer Readonly extends TModifierOperation, '[', infer Key extends string, 'in', infer Type extends T.TSchema, infer As extends T.TSchema[], ']', infer Optional extends TModifierOperation, ':', infer Property extends T.TSchema, null, '}']
     ? (As extends [infer As extends T.TSchema]
-      ? C.TMappedDeferred<T.TIdentifier<Key>, Union, As, TApplyReadonly<Readonly, TApplyOptional<Optional, Type>>>
-      : C.TMappedDeferred<T.TIdentifier<Key>, Union, T.TRef<Key>, TApplyReadonly<Readonly, TApplyOptional<Optional, Type>>>
+      ? C.TMappedDeferred<T.TIdentifier<Key>, Type, As, TApplyReadonly<Readonly, TApplyOptional<Optional, Property>>>
+      : C.TMappedDeferred<T.TIdentifier<Key>, Type, T.TRef<Key>, TApplyReadonly<Readonly, TApplyOptional<Optional, Property>>>
     ) : never
 )
 export function MappedMapping(input: [unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown]): unknown {

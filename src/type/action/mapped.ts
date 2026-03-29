@@ -37,21 +37,21 @@ import { type TInstantiate, Instantiate } from '../engine/instantiate.ts'
 // Deferred
 // ------------------------------------------------------------------
 /** Creates a deferred Mapped action. */
-export type TMappedDeferred<Identifier extends TIdentifier, Key extends TSchema, As extends TSchema, Property extends TSchema> = (
-  TDeferred<'Mapped', [Identifier, Key, As, Property]>
+export type TMappedDeferred<Identifier extends TIdentifier, Type extends TSchema, As extends TSchema, Property extends TSchema> = (
+  TDeferred<'Mapped', [Identifier, Type, As, Property]>
 )
 /** Creates a deferred Mapped action. */
-export function MappedDeferred<Identifier extends TIdentifier, Key extends TSchema, As extends TSchema, Property extends TSchema>(identifier: Identifier, key: Key, as: As, property: Property, options: TSchemaOptions = {}): TMappedDeferred<Identifier, Key, As, Property> {
-  return Deferred('Mapped', [identifier, key, as, property], options)
+export function MappedDeferred<Identifier extends TIdentifier, Type extends TSchema, As extends TSchema, Property extends TSchema>(identifier: Identifier, type: Type, as: As, property: Property, options: TSchemaOptions = {}): TMappedDeferred<Identifier, Type, As, Property> {
+  return Deferred('Mapped', [identifier, type, as, property], options)
 }
 // ------------------------------------------------------------------
 // Type
 // ------------------------------------------------------------------
 /** Applies a Mapped action using the given types. */
-export type TMapped<Identifier extends TIdentifier, Key extends TSchema, As extends TSchema, Property extends TSchema> = (
-  TInstantiate<{}, TMappedDeferred<Identifier, Key, As, Property>>
+export type TMapped<Identifier extends TIdentifier, Type extends TSchema, As extends TSchema, Property extends TSchema> = (
+  TInstantiate<{}, TMappedDeferred<Identifier, Type, As, Property>>
 )
 /** Applies a Mapped action using the given types. */
-export function Mapped<Identifier extends TIdentifier, Key extends TSchema, As extends TSchema, Property extends TSchema>(identifier: Identifier, key: Key, as: As, property: Property, options: TSchemaOptions = {}): TMapped<Identifier, Key, As, Property> {
-  return Instantiate({}, MappedDeferred(identifier, key, as, property, options)) as never
+export function Mapped<Identifier extends TIdentifier, Type extends TSchema, As extends TSchema, Property extends TSchema>(identifier: Identifier, type: Type, as: As, property: Property, options: TSchemaOptions = {}): TMapped<Identifier, Type, As, Property> {
+  return Instantiate({}, MappedDeferred(identifier, type, as, property, options)) as never
 }
