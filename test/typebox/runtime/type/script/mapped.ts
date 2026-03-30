@@ -380,3 +380,193 @@ Test('Should Mapped 23', () => {
   Assert.IsTrue(Type.IsNumber(S.properties.x1))
   Assert.IsTrue(Type.IsNumber(S.properties.x2))
 })
+// ------------------------------------------------------------------
+// Mapped: Variant Mapping (Phase 2 - March 2026)
+// ------------------------------------------------------------------
+Test('Should Mapped 24', () => {
+  const S: Type.TObject<{
+    foo: Type.TUnion<[
+      Type.TObject<{
+        type: Type.TLiteral<'foo'>
+      }>,
+      Type.TObject<{
+        type: Type.TLiteral<'bar'>
+      }>,
+      Type.TObject<{
+        type: Type.TLiteral<'baz'>
+      }>
+    ]>
+    bar: Type.TUnion<[
+      Type.TObject<{
+        type: Type.TLiteral<'foo'>
+      }>,
+      Type.TObject<{
+        type: Type.TLiteral<'bar'>
+      }>,
+      Type.TObject<{
+        type: Type.TLiteral<'baz'>
+      }>
+    ]>
+    baz: Type.TUnion<[
+      Type.TObject<{
+        type: Type.TLiteral<'foo'>
+      }>,
+      Type.TObject<{
+        type: Type.TLiteral<'bar'>
+      }>,
+      Type.TObject<{
+        type: Type.TLiteral<'baz'>
+      }>
+    ]>
+  }> = Type.Script(`
+    type Map<T extends { type: string }> = {
+      [K in T as K['type']]: T
+    }
+    type T = { type: 'foo' } | { type: 'bar' } | { type: 'baz'  }
+
+    type S = Map<T>
+  `).S
+  Assert.IsTrue(Type.IsObject(S))
+  Assert.IsEqual(S.properties.foo.anyOf[0].properties.type.const, 'foo')
+  Assert.IsEqual(S.properties.foo.anyOf[1].properties.type.const, 'bar')
+  Assert.IsEqual(S.properties.foo.anyOf[2].properties.type.const, 'baz')
+  Assert.IsEqual(S.properties.bar.anyOf[0].properties.type.const, 'foo')
+  Assert.IsEqual(S.properties.bar.anyOf[1].properties.type.const, 'bar')
+  Assert.IsEqual(S.properties.bar.anyOf[2].properties.type.const, 'baz')
+  Assert.IsEqual(S.properties.baz.anyOf[0].properties.type.const, 'foo')
+  Assert.IsEqual(S.properties.baz.anyOf[1].properties.type.const, 'bar')
+  Assert.IsEqual(S.properties.baz.anyOf[2].properties.type.const, 'baz')
+})
+Test('Should Mapped 25', () => {
+  const S: Type.TObject<{
+    foo: Type.TObject<{
+      type: Type.TLiteral<'foo'>
+    }>
+    bar: Type.TObject<{
+      type: Type.TLiteral<'bar'>
+    }>
+    baz: Type.TObject<{
+      type: Type.TLiteral<'baz'>
+    }>
+  }> = Type.Script(`
+    type Map<T extends { type: string }> = {
+      [K in T as K['type']]: K
+    }
+    type T = { type: 'foo' } | { type: 'bar' } | { type: 'baz'  }
+
+    type S = Map<T>
+  `).S
+  Assert.IsTrue(Type.IsObject(S))
+  Assert.IsEqual(S.properties.foo.properties.type.const, 'foo')
+  Assert.IsEqual(S.properties.bar.properties.type.const, 'bar')
+  Assert.IsEqual(S.properties.baz.properties.type.const, 'baz')
+})
+Test('Should Mapped 26', () => {
+  // Multiple properties per member, value is K
+  const S: Type.TObject<{
+    user: Type.TObject<{
+      type: Type.TLiteral<'user'>
+      id: Type.TNumber
+      name: Type.TString
+    }>
+    post: Type.TObject<{
+      type: Type.TLiteral<'post'>
+      id: Type.TNumber
+      title: Type.TString
+    }>
+  }> = Type.Script(`
+    type Map<T extends { type: string }> = {
+      [K in T as K['type']]: K
+    }
+    type T =
+      | { type: 'user'; id: number; name: string }
+      | { type: 'post'; id: number; title: string }
+    type S = Map<T>
+  `).S
+  Assert.IsTrue(Type.IsObject(S))
+  Assert.IsEqual(S.properties.user.properties.type.const, 'user')
+  Assert.IsEqual(S.properties.user.properties.id.type, 'number')
+  Assert.IsEqual(S.properties.user.properties.name.type, 'string')
+  Assert.IsEqual(S.properties.post.properties.type.const, 'post')
+  Assert.IsEqual(S.properties.post.properties.id.type, 'number')
+  Assert.IsEqual(S.properties.post.properties.title.type, 'string')
+})
+Test('Should Mapped 27', () => {
+  const S: Type.TObject<{
+    circle: Type.TObject<{
+      type: Type.TLiteral<'circle'>
+      radius: Type.TNumber
+    }>
+    rect: Type.TObject<{
+      type: Type.TLiteral<'rect'>
+      width: Type.TNumber
+      height: Type.TNumber
+    }>
+  }> = Type.Script(`
+    type Map<T extends { type: string }> = {
+      [K in T as K['type']]: K
+    }
+    type S = Map<
+      | { type: 'circle'; radius: number }
+      | { type: 'rect'; width: number; height: number }
+    >
+  `).S
+  Assert.IsTrue(Type.IsObject(S))
+  Assert.IsEqual(S.properties.circle.properties.type.const, 'circle')
+  Assert.IsEqual(S.properties.circle.properties.radius.type, 'number')
+  Assert.IsEqual(S.properties.rect.properties.type.const, 'rect')
+  Assert.IsEqual(S.properties.rect.properties.width.type, 'number')
+  Assert.IsEqual(S.properties.rect.properties.height.type, 'number')
+})
+Test('Should Mapped 28', () => {
+  const S: Type.TObject<{
+    admin: Type.TObject<{
+      type: Type.TLiteral<'admin'>
+      role: Type.TUnion<[Type.TLiteral<'superadmin'>, Type.TLiteral<'moderator'>]>
+    }>
+    guest: Type.TObject<{
+      type: Type.TLiteral<'guest'>
+      role: Type.TLiteral<'readonly'>
+    }>
+  }> = Type.Script(`
+    type Map<T extends { type: string }> = {
+      [K in T as K['type']]: K
+    }
+    type T =
+      | { type: 'admin'; role: 'superadmin' | 'moderator' }
+      | { type: 'guest'; role: 'readonly' }
+    type S = Map<T>
+  `).S
+  Assert.IsTrue(Type.IsObject(S))
+  Assert.IsEqual(S.properties.admin.properties.type.const, 'admin')
+  Assert.IsEqual(S.properties.admin.properties.role.anyOf[0].const, 'superadmin')
+  Assert.IsEqual(S.properties.admin.properties.role.anyOf[1].const, 'moderator')
+  Assert.IsEqual(S.properties.guest.properties.type.const, 'guest')
+  Assert.IsEqual(S.properties.guest.properties.role.const, 'readonly')
+})
+Test('Should Mapped 29', () => {
+  const S: Type.TUnion<[
+    Type.TObject<{
+      x: Type.TLiteral<'qux'>
+    }>,
+    Type.TObject<{
+      x: Type.TLiteral<'foo'>
+      y: Type.TLiteral<'bar'>
+      z: Type.TLiteral<'baz'>
+    }>
+  ]> = Type.Script(`
+    type Map<T> = {
+      [K in keyof T]: T[K]
+    }
+    type S = Map<{ x: 'qux' } | {
+      x: 'foo'
+      y: 'bar'
+      z: 'baz'
+    }>
+  `).S
+  Assert.IsTrue(Type.IsUnion(S))
+  Assert.IsEqual(S.anyOf[0].properties.x.const, 'qux')
+  Assert.IsEqual(S.anyOf[1].properties.x.const, 'foo')
+  Assert.IsEqual(S.anyOf[1].properties.y.const, 'bar')
+  Assert.IsEqual(S.anyOf[1].properties.z.const, 'baz')
+})

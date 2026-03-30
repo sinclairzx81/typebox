@@ -42,7 +42,7 @@ import { type TTemplateLiteralDecode, TemplateLiteralDecode } from '../template-
 // ------------------------------------------------------------------
 type TFromTemplateLiteral<Pattern extends string,
   Decoded extends TSchema = TTemplateLiteralDecode<Pattern>,
-  Result extends TSchema = TFromType<Decoded>
+  Result extends TSchema[] = TFromType<Decoded>
 > = Result
 
 function FromTemplateLiteral<Pattern extends string>(pattern: Pattern): TFromTemplateLiteral<Pattern> {
@@ -72,7 +72,7 @@ type TFromType<Type extends TSchema,
     Type extends TLiteral<string | number> ? [Type] :
     Type extends TTemplateLiteral<infer Pattern extends string> ? TFromTemplateLiteral<Pattern> :
     Type extends TUnion<infer Types extends TSchema[]> ? TFromUnion<Types> :
-    []
+    [Type]
   )
 > = Result
 function FromType<Type extends TSchema>(type: Type): TFromType<Type> {
@@ -81,19 +81,17 @@ function FromType<Type extends TSchema>(type: Type): TFromType<Type> {
     IsLiteralString(type) || IsLiteralNumber(type) ? [type] :
     IsTemplateLiteral(type) ? FromTemplateLiteral(type.pattern) :
     IsUnion(type) ? FromUnion(type.anyOf) :
-    []
+    [type]
   )
   return result as never
 }
 // ------------------------------------------------------------------
-// MappedKeys
+// MappedVariants
 // ------------------------------------------------------------------
-export type TMappedKeys<Type extends TSchema, 
+export type TMappedVariants<Type extends TSchema, 
   Result extends TSchema[] = TFromType<Type>
 > = Result
-
-export function MappedKeys<Type extends TSchema>(type: Type): TMappedKeys<Type> {
+export function MappedVariants<Type extends TSchema>(type: Type): TMappedVariants<Type> {
   const result = FromType(type)
   return result
 }
-

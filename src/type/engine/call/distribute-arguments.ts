@@ -37,28 +37,41 @@ import { type TRef, IsRef } from '../../types/ref.ts'
 import { type TParameter } from '../../types/parameter.ts'
 
 // ------------------------------------------------------------------
-// CollectDistributiveNames
+// CollectDistributionNames
 //
-// Recursively collects the names of all TRef types appearing in the
-// Left (checked) position of nested Conditional expressions. Only
-// Conditional nodes are traversed; any other expression terminates
-// the recursion and returns the accumulated result.
+// Extracts TRef names from distributive positions:
+//
+// 1. Conditional: The 'Left' operand (recursing into both branches).
+// 2. Mapped: The 'Key' position, specifically when the type is a 
+//    Deferred<'KeyOf'> expression.
 //
 // ------------------------------------------------------------------
 type TCollectDistributionNames<Expression extends TSchema, Result extends string[] = []> = (
+  // Conditional
   Expression extends TDeferred<'Conditional', [infer Left extends TSchema, infer _Right extends TSchema, infer True extends TSchema, infer False extends TSchema]>
     ? Left extends TRef<infer Name extends string>
       ? TCollectDistributionNames<True, TCollectDistributionNames<False, [...Result, Name]>>
       : TCollectDistributionNames<True, TCollectDistributionNames<False, Result>>
-    : Result
+  // Mapped
+  : Expression extends TDeferred<'Mapped', [infer _Identifier extends TSchema, infer Type extends TSchema, infer _As extends TSchema, infer _Property extends TSchema]>
+    ? (
+      Type extends TDeferred<'KeyOf', [infer Ref extends TRef]> ? [...Result, Ref['$ref']] :
+      Result
+    ) : Result
 )
 function CollectDistributionNames<Expression extends TSchema>(expression: Expression, result: string[] = []): TCollectDistributionNames<Expression> {
   return (
-    IsDeferred(expression) && Guard.IsEqual(expression.action, 'Conditional') 
-    ? IsRef(expression.parameters[0])
-      ? CollectDistributionNames(expression.parameters[2], CollectDistributionNames(expression.parameters[3], [...result, expression.parameters[0].$ref]))
-      : CollectDistributionNames(expression.parameters[2], CollectDistributionNames(expression.parameters[3], result))
-    : result 
+    // Conditional
+    IsDeferred(expression) && Guard.IsEqual(expression.action, 'Conditional')
+      ? IsRef(expression.parameters[0])
+        ? CollectDistributionNames(expression.parameters[2], CollectDistributionNames(expression.parameters[3], [...result, expression.parameters[0].$ref]))
+        : CollectDistributionNames(expression.parameters[2], CollectDistributionNames(expression.parameters[3], result))
+    // Mapped
+    : IsDeferred(expression) && Guard.IsEqual(expression.action, 'Mapped')
+      ? (
+        IsDeferred(expression.parameters[1]) && Guard.IsEqual(expression.parameters[1].action, 'KeyOf') && IsRef(expression.parameters[1].parameters[0]) ? [...result, expression.parameters[1].parameters[0]['$ref']] :
+        result
+      ) : result
   ) as never
 }
 // ------------------------------------------------------------------
@@ -71,16 +84,16 @@ function CollectDistributionNames<Expression extends TSchema>(expression: Expres
 // ------------------------------------------------------------------
 type TBuildDistributionArray<Parameters extends TParameter[], Names extends string[], Result extends boolean[] = []> = (
   Parameters extends [infer Left extends TParameter, ...infer Right extends TParameter[]]
-    ? Left['name'] extends Names[number]
-      ? TBuildDistributionArray<Right, Names, [...Result, true]>
-      : TBuildDistributionArray<Right, Names, [...Result, false]>
-    : Result
+  ? Left['name'] extends Names[number]
+  ? TBuildDistributionArray<Right, Names, [...Result, true]>
+  : TBuildDistributionArray<Right, Names, [...Result, false]>
+  : Result
 )
 function BuildDistributionArray<Parameters extends TParameter[], Names extends string[]>
   (parameters: [...Parameters], names: [...Names]): TBuildDistributionArray<Parameters, Names> {
-  return parameters.reduce((result, left) => 
+  return parameters.reduce((result, left) =>
     [...result, names.includes(left.name)]
-  , [] as boolean[]) as never
+    , [] as boolean[]) as never
 }
 // ------------------------------------------------------------------
 // ZipDistributionArray
@@ -99,16 +112,16 @@ type TZipDistributionArray<Arguments extends TSchema[], DistributionArray extend
     : Result
 )
 function ZipDistributionArray<Arguments extends TSchema[], DistributionArray extends boolean[]>
-  (arguments_: [...Arguments], distributionArray: [...DistributionArray], result: [boolean, TSchema][] = []): 
-    TZipDistributionArray<Arguments, DistributionArray> {
+  (arguments_: [...Arguments], distributionArray: [...DistributionArray], result: [boolean, TSchema][] = []):
+  TZipDistributionArray<Arguments, DistributionArray> {
   const [argumentLeft, ...argumentRight] = arguments_
   const [booleanLeft, ...booleanRight] = distributionArray
   return (
     Guard.IsGreaterThan(arguments_.length, 0)
-    ? Guard.IsGreaterThan(distributionArray.length, 0)
-      ? ZipDistributionArray(argumentRight as never, booleanRight as never, [...result, [booleanLeft, argumentLeft]])
+      ? Guard.IsGreaterThan(distributionArray.length, 0)
+        ? ZipDistributionArray(argumentRight as never, booleanRight as never, [...result, [booleanLeft, argumentLeft]])
+        : result
       : result
-    : result
   ) as never
 }
 // ------------------------------------------------------------------
@@ -116,8 +129,8 @@ function ZipDistributionArray<Arguments extends TSchema[], DistributionArray ext
 // ------------------------------------------------------------------
 type TExpand<Type extends TSchema> = (
   Type extends TUnion<infer Types extends TSchema[]>
-    ? [...Types]
-    : [Type]
+  ? [...Types]
+  : [Type]
 )
 function Expand<Argument extends TSchema>(type: Argument): TExpand<Argument> {
   return (
@@ -131,8 +144,8 @@ function Expand<Argument extends TSchema>(type: Argument): TExpand<Argument> {
 // ------------------------------------------------------------------
 type TAppend<Current extends TSchema[][], Type extends TSchema, Result extends TSchema[][] = []> = (
   Current extends [infer Left extends TSchema[], ...infer Right extends TSchema[][]]
-    ? TAppend<Right, Type, [...Result, [...Left, Type]]>
-    : Result
+  ? TAppend<Right, Type, [...Result, [...Left, Type]]>
+  : Result
 )
 function Append<Current extends TSchema[][], Type extends TSchema>(current: [...Current], type: Type): TAppend<Current, Type> {
   return current.reduce((result, left) =>
@@ -144,12 +157,12 @@ function Append<Current extends TSchema[][], Type extends TSchema>(current: [...
 // ------------------------------------------------------------------
 type TCross<Current extends TSchema[][], Variants extends TSchema[], Result extends TSchema[][] = []> = (
   Variants extends [infer Left extends TSchema, ...infer Right extends TSchema[]]
-    ? TCross<Current, Right, [...Result, ...TAppend<Current, Left>]>
-    : Result
+  ? TCross<Current, Right, [...Result, ...TAppend<Current, Left>]>
+  : Result
 )
 function Cross<Current extends TSchema[][], Variants extends TSchema[]>
-  (current: [...Current], variants: [...Variants]): 
-    TCross<Current, Variants> {
+  (current: [...Current], variants: [...Variants]):
+  TCross<Current, Variants> {
   return variants.reduce((result, left) => {
     return [...result, ...Append(current, left)]
   }, [] as TSchema[][]) as never
@@ -159,14 +172,14 @@ function Cross<Current extends TSchema[][], Variants extends TSchema[]>
 // -----------------------------------------------------------------------
 type TDistribute<ZippedArguments extends [boolean, TSchema][], Result extends TSchema[][] = [[]]> = (
   ZippedArguments extends [infer Left extends [boolean, TSchema], ...infer Right extends [boolean, TSchema][]]
-    ? Left[0] extends true
-      ? TDistribute<Right, TCross<Result, TExpand<Left[1]>>>
-      : TDistribute<Right, TCross<Result, [Left[1]]>> // - no-expansion
-    : Result
+  ? Left[0] extends true
+  ? TDistribute<Right, TCross<Result, TExpand<Left[1]>>>
+  : TDistribute<Right, TCross<Result, [Left[1]]>> // - no-expansion
+  : Result
 )
 function Distribute<ZippedArguments extends [boolean, TSchema][]>
-  (zipped: [...ZippedArguments]): 
-    TDistribute<ZippedArguments> {
+  (zipped: [...ZippedArguments]):
+  TDistribute<ZippedArguments> {
   return zipped.reduce((result, left) => {
     return Guard.IsEqual(left[0], true)
       ? Cross(result, Expand(left[1]))
@@ -180,10 +193,13 @@ export type TDistributeArguments<Parameters extends TParameter[], Arguments exte
   DistributionNames extends string[] = TCollectDistributionNames<Expression>,
   DistributionArray extends boolean[] = TBuildDistributionArray<Parameters, DistributionNames>,
   ZippedArguments extends [boolean, TSchema][] = TZipDistributionArray<Arguments, DistributionArray>,
-  Result extends TSchema[][] = Expression extends TDeferred<'Conditional', TSchema[]>
-  ? TDistribute<ZippedArguments>
-  : [Arguments]
-> = Result
+  Result extends TSchema[][] = (
+    Expression extends TDeferred<'Conditional', TSchema[]>
+      ? TDistribute<ZippedArguments>
+      : Expression extends TDeferred<'Mapped', TSchema[]>
+        ? TDistribute<ZippedArguments>
+        : [Arguments]
+  )> = Result
 export function DistributeArguments<Parameters extends TParameter[], Arguments extends TSchema[], Expression extends TSchema>
   (parameters: [...Parameters], arguments_: [...Arguments], expression: Expression):
   TDistributeArguments<Parameters, Arguments, Expression> {
@@ -193,6 +209,8 @@ export function DistributeArguments<Parameters extends TParameter[], Arguments e
   return (
     IsDeferred(expression) && Guard.IsEqual(expression.action, 'Conditional')
       ? Distribute(zippedArguments)
-      : [arguments_]
+      : IsDeferred(expression) && Guard.IsEqual(expression.action, 'Mapped')
+        ? Distribute(zippedArguments)
+        : [arguments_]
   ) as never
 }
