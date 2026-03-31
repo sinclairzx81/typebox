@@ -28,8 +28,9 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
+import { Guard } from '../../../guard/index.ts'
 import { type TSchema } from '../../types/schema.ts'
-import { type TLiteral, Literal } from '../../types/literal.ts'
+import { type TLiteral, Literal, IsLiteral } from '../../types/literal.ts'
 import { type TNumber, IsNumber } from '../../types/number.ts'
 import { type TInteger, IsInteger } from '../../types/integer.ts'
 
@@ -80,16 +81,23 @@ function FromTupleWithoutIndexer<Types extends TSchema[]>(types: [...Types]): TF
 // ------------------------------------------------------------------
 export type TFromTuple<Types extends TSchema[], Indexer extends TSchema,
   Result extends TSchema = (
-    Indexer extends TNumber | TInteger
-      ? TFromTupleWithoutIndexer<Types>
-      : TFromTupleWithIndexer<Types, Indexer>
+    // length (special-case)
+    Indexer extends TLiteral<infer _ extends 'length'>
+      ? TLiteral<Types['length']>
+      // indexer
+      : Indexer extends TNumber | TInteger
+        ? TFromTupleWithoutIndexer<Types>
+        : TFromTupleWithIndexer<Types, Indexer>
   )
 > = Result
 export function FromTuple<Types extends TSchema[], Indexer extends TSchema>(types: [...Types], indexer: Indexer): TFromTuple<Types, Indexer> {
-  
   return (
-    IsNumber(indexer) || IsInteger(indexer)
-      ? FromTupleWithoutIndexer(types)
-      : FromTupleWithIndexer(types, indexer)
+    // length (special-case)
+    IsLiteral(indexer) && Guard.IsEqual(indexer.const, 'length')
+      ? Literal(types.length)
+      // indexer
+      : IsNumber(indexer) || IsInteger(indexer)
+        ? FromTupleWithoutIndexer(types)
+        : FromTupleWithIndexer(types, indexer)
   ) as never
 }

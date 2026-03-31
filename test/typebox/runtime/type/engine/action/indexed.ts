@@ -471,3 +471,21 @@ Test('Should Index 35', () => {
   Assert.IsTrue(Type.IsNumber(K.anyOf[0]))
   Assert.IsTrue(Type.IsString(K.anyOf[1]))
 })
+// ------------------------------------------------------------------
+// Length
+// ------------------------------------------------------------------
+Test('Should Index 36', () => {
+  const T = Type.Tuple([
+    Type.Literal(1),
+    Type.Literal(2),
+    Type.Literal(3)
+  ])
+  const S: Type.TLiteral<3> = Type.Index(T, Type.Literal('length'))
+  Assert.IsTrue(Type.IsLiteral(S))
+  Assert.IsEqual(S.const, 3)
+})
+Test('Should Index 37', () => {
+  const T = Type.Array(Type.String())
+  const S: Type.TNumber = Type.Index(T, Type.Literal('length'))
+  Assert.IsTrue(Type.IsNumber(S))
+})

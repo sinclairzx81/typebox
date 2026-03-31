@@ -62,3 +62,17 @@ Test('Should Indexed 10', () => {
   const T: Type.TNumber = Type.Instantiate({ A: Type.Script(`{ x: number }`) }, R)
   Assert.IsTrue(Type.IsNumber(T))
 })
+// ------------------------------------------------------------------
+// Length
+// ------------------------------------------------------------------
+Test('Should Indexed 11', () => {
+  const T = Type.Script(`[1, 2, 3]`)
+  const S: Type.TLiteral<3> = Type.Script({ T }, `T['length']`)
+  Assert.IsTrue(Type.IsLiteral(S))
+  Assert.IsEqual(S.const, 3)
+})
+Test('Should Indexed 12', () => {
+  const T = Type.Script(`string[]`)
+  const S: Type.TNumber = Type.Script({ T }, `T['length']`)
+  Assert.IsTrue(Type.IsNumber(S))
+})
