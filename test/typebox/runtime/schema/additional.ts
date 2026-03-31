@@ -34,7 +34,7 @@ Test('Should Coverage 2', () => {
 })
 
 // Test 3: Verifies behavior when maxErrors is set to 0.
-// This disables error accumulation entirely—no errors are collected,
+// This disables error accumulation entirely - no errors are collected,
 // even if validation fails. This scenario isn't covered by the test suite.
 Test('Should Coverage 3', () => {
   const T = { type: 'string' }

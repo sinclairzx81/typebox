@@ -33,7 +33,6 @@ function IsValidAdjacentForKatakanaMiddleDot(cp: number): boolean {
     (cp >= 0x4E00 && cp <= 0x9FFF) // Han (CJK Unified Ideographs)
   )
 }
-
 /**
  * Returns true if the value is an IDN Hostname
  * @specification Json Schema 2020-12
@@ -83,7 +82,7 @@ export function IsIdnHostname(value: string): boolean {
         const next = label.codePointAt(i + 1) ?? 0
         if ((prev !== 108 && prev !== 76) || (next !== 108 && next !== 76)) return false
       }
-      // KATAKANA MIDDLE DOT (U+30FB) — U+30FB is below U+FFFF so stride is always 1
+      // KATAKANA MIDDLE DOT (U+30FB) | U+30FB is below U+FFFF so stride is always 1
       if (cp === 0x30FB) {
         if (label.length === 1) return false
         if (i === 0) {
@@ -98,7 +97,7 @@ export function IsIdnHostname(value: string): boolean {
           if (!IsValidAdjacentForKatakanaMiddleDot(prev) || !IsValidAdjacentForKatakanaMiddleDot(next)) return false
         }
       }
-      // Greek KERAIA (U+0375) — U+0375 is below U+FFFF so stride is always 1
+      // Greek KERAIA (U+0375) | U+0375 is below U+FFFF so stride is always 1
       if (cp === 0x0375) {
         if (i === label.length - 1) return false
         // deno-coverage-ignore
