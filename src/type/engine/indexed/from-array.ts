@@ -28,6 +28,7 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
+import { Guard } from '../../../guard/index.ts'
 import { type TSchema } from '../../types/schema.ts'
 import { type TIntersect, Intersect, IsIntersect  } from '../../types/intersect.ts'
 import { type TUnion, Union, IsUnion } from '../../types/union.ts'
@@ -83,12 +84,27 @@ export function NormalizeIndexer<Type extends TSchema>(type: Type): TNormalizeIn
 export type TFromArray<Type extends TSchema, Indexer extends TSchema,
   NormalizedIndexer extends TSchema = TNormalizeIndexer<Indexer>,
   Check extends ExtendsResult.TResult = TExtends<{}, NormalizedIndexer, TNumber>,
-  Result extends TSchema = Check extends ExtendsResult.TExtendsTrueLike ? Type : TNever
-> = Result
+  Result extends TSchema = (
+    // indexer
+    Check extends ExtendsResult.TExtendsTrueLike 
+      ? Type
+      // length (intrinsic)
+      : Indexer extends TLiteral<infer _ extends 'length'>
+        ? TNumber
+        : TNever
+  )> = Result
 export function FromArray<Type extends TSchema, Indexer extends TSchema>(type: Type, indexer: Indexer): TFromArray<Type, Indexer> {
   const normalizedIndexer = NormalizeIndexer(indexer)
   const check = Extends({}, normalizedIndexer, Number())
-  const result = ExtendsResult.IsExtendsTrueLike(check) ? type : Never()
+  const result = (
+    // indexer
+    ExtendsResult.IsExtendsTrueLike(check) 
+      ? type
+      // length (intrinsic)
+      : IsLiteral(indexer) && Guard.IsEqual(indexer.const, 'length')
+        ? Number()
+        : Never()
+  )
   return result as never
 }
 
