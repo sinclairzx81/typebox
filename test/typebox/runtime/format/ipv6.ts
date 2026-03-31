@@ -84,3 +84,8 @@ Test('Should IsIPv6 16', () => {
   // Segment contains a space
   Assert.IsFalse(Format.IsIPv6('2001:db8:85a3:0: 0:8a2e:0370:7334'))
 })
+
+Test('Should IsIPv6 17', () => {
+  // Segment contains a space
+  Assert.IsFalse(Format.IsIPv6(''))
+})
