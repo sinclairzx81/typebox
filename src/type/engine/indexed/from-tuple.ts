@@ -81,7 +81,7 @@ function FromTupleWithoutIndexer<Types extends TSchema[]>(types: [...Types]): TF
 // ------------------------------------------------------------------
 export type TFromTuple<Types extends TSchema[], Indexer extends TSchema,
   Result extends TSchema = (
-    // length (special-case)
+    // length (intrinsic)
     Indexer extends TLiteral<infer _ extends 'length'>
       ? TLiteral<Types['length']>
       // indexer
@@ -92,7 +92,7 @@ export type TFromTuple<Types extends TSchema[], Indexer extends TSchema,
 > = Result
 export function FromTuple<Types extends TSchema[], Indexer extends TSchema>(types: [...Types], indexer: Indexer): TFromTuple<Types, Indexer> {
   return (
-    // length (special-case)
+    // length (intrinsic)
     IsLiteral(indexer) && Guard.IsEqual(indexer.const, 'length')
       ? Literal(types.length)
       // indexer

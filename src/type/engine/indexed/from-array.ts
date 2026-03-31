@@ -88,7 +88,7 @@ export type TFromArray<Type extends TSchema, Indexer extends TSchema,
     // indexer
     Check extends ExtendsResult.TExtendsTrueLike 
       ? Type
-      // length
+      // length (intrinsic)
       : Indexer extends TLiteral<infer _ extends 'length'>
         ? TNumber
         : TNever
@@ -100,7 +100,7 @@ export function FromArray<Type extends TSchema, Indexer extends TSchema>(type: T
     // indexer
     ExtendsResult.IsExtendsTrueLike(check) 
       ? type
-      // length (special-case)
+      // length (intrinsic)
       : IsLiteral(indexer) && Guard.IsEqual(indexer.const, 'length')
         ? Number()
         : Never()
