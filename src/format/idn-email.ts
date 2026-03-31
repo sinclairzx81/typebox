@@ -26,9 +26,12 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-const IdnEmail = /^(?!.*\.\.)[\p{L}\p{N}!#$%&'*+/=?^_`{|}~-]+(?:\.[\p{L}\p{N}!#$%&'*+/=?^_`{|}~-]+)*@[\p{L}\p{N}](?:[\p{L}\p{N}-]{0,61}[\p{L}\p{N}])?(?:\.[\p{L}\p{N}](?:[\p{L}\p{N}-]{0,61}[\p{L}\p{N}])?)*$/iu
+import { IsEmail } from './email.ts'
 
-/** Returns true if the value is a Idn Email */
+/**
+ * Returns true if the value is an IdnEmail
+ * @specification Json Schema 2020-12
+ */
 export function IsIdnEmail(value: string): boolean {
-  return IdnEmail.test(value)
+  return IsEmail(value)
 }

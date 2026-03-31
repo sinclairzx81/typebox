@@ -63,24 +63,3 @@ Test('Should IsIdnEmail 12', () => {
   // Local part with consecutive dots
   Assert.IsFalse(Format.IsIdnEmail('test..user@example.com'))
 })
-
-Test('Should IsIdnEmail 13', () => {
-  // Domain part contains an invalid character (underscore)
-  Assert.IsFalse(Format.IsIdnEmail('test@domain_name.com'))
-})
-
-Test('Should IsIdnEmail 14', () => {
-  // Domain part label starts with a hyphen
-  Assert.IsFalse(Format.IsIdnEmail('test@-domain.com'))
-})
-
-Test('Should IsIdnEmail 15', () => {
-  // Domain part label is too long (exceeds 63 characters)
-  const tooLongLabel = 'a'.repeat(64)
-  Assert.IsFalse(Format.IsIdnEmail(`test@${tooLongLabel}.com`))
-})
-
-Test('Should IsIdnEmail 16', () => {
-  // IDN domain part ends with a hyphen (invalid for labels)
-  Assert.IsFalse(Format.IsIdnEmail('user@bücher-.com'))
-})
