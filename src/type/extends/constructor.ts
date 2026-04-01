@@ -30,7 +30,9 @@ THE SOFTWARE.
 
 import { type TSchema } from '../types/schema.ts'
 import { type TProperties } from '../types/properties.ts'
+import { type TAny, IsAny } from '../types/any.ts'
 import { type TConstructor, IsConstructor } from '../types/constructor.ts'
+import { type TUnknown, IsUnknown } from '../types/unknown.ts'
 import * as Result from './result.ts'
 
 // ------------------------------------------------------------------
@@ -43,9 +45,11 @@ import { type TExtendsReturnType, ExtendsReturnType } from './return-type.ts'
 // ExtendsConstructor
 // ------------------------------------------------------------------ 
 export type TExtendsConstructor<Inferred extends TProperties, Parameters extends TSchema[], InstanceType extends TSchema, Right extends TSchema> = (  
-  Right extends TConstructor<infer RightParamters extends TSchema[], infer RightInstanceType extends TSchema>
-    ? TExtendsParameters<Inferred, Parameters, RightParamters> extends Result.TExtendsTrueLike<infer Inferred extends TProperties>
-      ? TExtendsReturnType<Inferred, InstanceType, RightInstanceType>
+  Right extends TAny ? Result.TExtendsTrue :
+  Right extends TUnknown ? Result.TExtendsTrue :
+  Right extends TConstructor
+    ? TExtendsParameters<Inferred, Parameters, Right['parameters']> extends Result.TExtendsTrueLike<infer Inferred extends TProperties>
+      ? TExtendsReturnType<Inferred, InstanceType, Right['instanceType']>
       : Result.TExtendsFalse // 'not-a-parameter-match'
     : Result.TExtendsFalse // 'not-a-constructor'
 )
@@ -53,11 +57,11 @@ export function ExtendsConstructor<Inferred extends TProperties, Parameters exte
   (inferred: Inferred, parameters: [...Parameters], returnType: InstanceType, right: Right): 
     TExtendsConstructor<Inferred, Parameters, InstanceType, Right> {
   return (
-    IsConstructor(right) ? (() => {
-      const check = ExtendsParameters(inferred, parameters, right.parameters)
-      return Result.IsExtendsTrueLike(check)
-        ? ExtendsReturnType(check.inferred, returnType, right.instanceType)
-        : Result.ExtendsFalse()
-    })(): Result.ExtendsFalse()
+    IsAny(right) ? Result.ExtendsTrue(inferred) :
+    IsUnknown(right) ? Result.ExtendsTrue(inferred) :
+    IsConstructor(right) ? Result.Match(ExtendsParameters(inferred, parameters, right['parameters']), 
+      inferred => ExtendsReturnType(inferred, returnType, right['instanceType']), 
+      () => Result.ExtendsFalse()) // 'not-a-parameter-match'
+    : Result.ExtendsFalse() // 'not-a-constructor'
   ) as never
 }

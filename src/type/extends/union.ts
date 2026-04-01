@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { type TProperties } from '../types/properties.ts'
-import { type TSchema, IsSchema } from '../types/schema.ts'
+import { type TSchema } from '../types/schema.ts'
 import { type TUnion, IsUnion } from '../types/union.ts'
 import { type TExtendsLeft, ExtendsLeft } from './extends-left.ts'
 import * as Result from './result.ts'
@@ -56,15 +56,11 @@ type TExtendsUnionSome<Inferred extends TProperties, Type extends TSchema, Union
 function ExtendsUnionSome<Inferred extends TProperties, Type extends TSchema, UnionTypes extends TSchema[]>
   (inferred: Inferred, type: Type, unionTypes: [...UnionTypes]): 
     TExtendsUnionSome<Inferred, Type, UnionTypes> {
-  const [head, ...tail] = unionTypes
-  return (
-    IsSchema(head) ? (() => {
-      const check = ExtendsLeft(inferred, type, head)
-      return Result.IsExtendsTrueLike(check)
-        ? Result.ExtendsTrue(check.inferred)
-        : ExtendsUnionSome(inferred, type, tail)
-    })() : Result.ExtendsFalse()
-  ) as never
+  return Result.TakeLeft(unionTypes, (head, tail) => 
+    Result.Match(ExtendsLeft(inferred, type, head), inferred => 
+      Result.ExtendsTrue(inferred),
+      () => ExtendsUnionSome(inferred, type, tail)),
+    () => Result.ExtendsFalse()) as never
 }
 // ----------------------------------------------------------------------------
 // ExtendsUnionLeft
@@ -77,15 +73,11 @@ type TExtendsUnionLeft<Inferred extends TProperties, Left extends TSchema[], Rig
   : Result.TExtendsTrue<Inferred>
 )
 function ExtendsUnionLeft<Inferred extends TProperties, Left extends TSchema[], Right extends TSchema[]>(inferred: Inferred, left: [...Left], right: [...Right]): TExtendsUnionLeft<Inferred, Left, Right> {
-  const [head, ...tail] = left
-  return (
-    IsSchema(head) ? (() => {
-      const check = ExtendsUnionSome(inferred, head, right)
-      return Result.IsExtendsTrueLike(check)
-        ? ExtendsUnionLeft(check.inferred, tail, right)
-        : Result.ExtendsFalse()
-    })() : Result.ExtendsTrue(inferred)
-  ) as never
+  return Result.TakeLeft(left, (head, tail) => 
+    Result.Match(ExtendsUnionSome(inferred, head, right), inferred => 
+      ExtendsUnionLeft(inferred, tail, right),
+      () => Result.ExtendsFalse()),
+    () => Result.ExtendsTrue(inferred)) as never
 }
 // ----------------------------------------------------------------------------
 // ExtendsUnion

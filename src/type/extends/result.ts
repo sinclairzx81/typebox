@@ -91,3 +91,20 @@ export type TExtendsTrueLike<Inferred extends TProperties = TProperties> =
 export function IsExtendsTrueLike(value: unknown): value is TExtendsTrueLike {
   return IsExtendsUnion(value) || IsExtendsTrue(value)
 }
+
+// ------------------------------------------------------------------
+// Match
+// ------------------------------------------------------------------
+export type MatchTrueLike = (inferred: TProperties) => unknown
+export type MatchFalse = () => unknown
+export function Match(result: TResult, true_: MatchTrueLike, false_: MatchFalse): unknown {
+  return IsExtendsTrueLike(result) ? true_(result.inferred) : false_()
+}
+// ------------------------------------------------------------------
+// TakeLeft
+// ------------------------------------------------------------------
+export type TakeLeftTrue<T> = (left: T, right: T[]) => unknown
+export type TakeLeftFalse = () => unknown
+export function TakeLeft<T>(array: T[], true_: TakeLeftTrue<T>, false_: TakeLeftFalse): unknown {
+  return Guard.IsEqual(array.length, 0) ? false_() : true_(array[0], array.slice(1))
+}

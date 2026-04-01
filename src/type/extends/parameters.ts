@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { type TInfer, IsInfer } from '../types/infer.ts'
-import { type TSchema, IsSchema } from '../types/schema.ts'
+import { type TSchema } from '../types/schema.ts'
 import { type TOptional, IsOptional } from '../types/_optional.ts'
 import { type TProperties } from '../types/properties.ts'
 import { type TExtendsLeft, ExtendsLeft } from './extends-left.ts'
@@ -62,10 +62,10 @@ function ParameterCompare<Inferred extends TProperties, Left extends TSchema, Le
   const check = ExtendsLeft(inferred, checkLeft, checkRight)
   return (
     !isLeftOptional && isRightOptional
-      ? Result.ExtendsFalse()
+      ? Result.ExtendsFalse() // 'fail: left-required-but-right-is-optional'
       : Result.IsExtendsTrueLike(check)
         ? ExtendsParameters(check.inferred, leftRest, rightRest)
-        : Result.ExtendsFalse()
+        : Result.ExtendsFalse() // 'fail: left-and-right-did-not-match'
   ) as never
 }
 // ------------------------------------------------------------------
@@ -79,16 +79,13 @@ type TParameterRight<Inferred extends TProperties, Left extends TSchema, LeftRes
     : Result.TExtendsFalse              // 'fail: left was required'
 )
 function ParameterRight<Inferred extends TProperties, Left extends TSchema, LeftRest extends TSchema[], RightRest extends TSchema[]>
-  (inferred: Inferred, left: Left, leftRest: LeftRest, rightRest: RightRest): 
-    TParameterRight<Inferred, Left, LeftRest, RightRest> {
-  const [head, ...tail] = rightRest
-  return (
-    IsSchema(head)
-      ? ParameterCompare(inferred, left, leftRest, head, tail)
-      : IsOptional(left)                 // 'right-did-not-have-enough-elements'
-        ? Result.ExtendsTrue(inferred)   // 'ok: left was optional'
-        : Result.ExtendsFalse()          // 'fail: left was required'
-  ) as never
+  (inferred: Inferred, left: Left, leftRest: LeftRest, rightRest: RightRest):
+  TParameterRight<Inferred, Left, LeftRest, RightRest> {
+  return Result.TakeLeft(rightRest, (head, tail) =>
+    ParameterCompare(inferred, left, leftRest, head, tail),
+    () => IsOptional(left)                // 'right-did-not-have-enough-elements'
+      ? Result.ExtendsTrue(inferred)      // 'ok: left was optional'
+      : Result.ExtendsFalse()) as never   // 'fail: left was required'
 }
 // ------------------------------------------------------------------
 // ParameterLeft
@@ -101,12 +98,9 @@ type TParameterLeft<Inferred extends TProperties, LeftRest extends TSchema[], Ri
 function ParametersLeft<Inferred extends TProperties, Left extends TSchema[], Right extends TSchema[]>
   (inferred: Inferred, left: Left, rightRest: Right): 
     TParameterLeft<Inferred, Left, Right> {
-  const [head, ...tail] = left
-  return (
-    IsSchema(head)
-      ? ParameterRight(inferred, head, tail, rightRest)
-      : Result.ExtendsTrue(inferred)
-  ) as never
+  return Result.TakeLeft(left, (head, tail) => 
+    ParameterRight(inferred, head, tail, rightRest),
+    () => Result.ExtendsTrue(inferred)) as never // 'ok: no-more-elements-in-left'
 }
 // ------------------------------------------------------------------
 // ExtendsParameters

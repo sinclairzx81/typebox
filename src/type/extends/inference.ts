@@ -36,7 +36,7 @@ import { Guard } from '../../guard/index.ts'
 // ----------------------------------------------------------------------------
 // Schematics
 // ----------------------------------------------------------------------------
-import { type TSchema, IsSchema } from '../types/schema.ts'
+import { type TSchema } from '../types/schema.ts'
 import { type TArray, IsArray } from '../types/array.ts'
 import { type TUnknown, IsUnknown } from '../types/unknown.ts'
 import { type TProperties } from '../types/properties.ts'
@@ -139,22 +139,17 @@ export function TryInferable<Type extends TSchema>(type: Type): TTryInferable<Ty
 // ----------------------------------------------------------------------------
 type TryInferResults<Rest extends TSchema[], Right extends TSchema, Result extends TSchema[] = []> = (
   Rest extends [infer Head extends TSchema, ...infer Tail extends TSchema[]]
-    ? TExtendsLeft<{}, Head, Right> extends Result.TExtendsTrueLike<TProperties>
+    ? TExtendsLeft<{}, Head, Right> extends Result.TExtendsTrueLike
       ? TryInferResults<Tail, Right, [...Result, Head]>
       : undefined
     : Result
 )
 function TryInferResults<Rest extends TSchema[], Right extends TSchema>(rest: [...Rest], right: Right, result: TSchema[] = []): TryInferResults<Rest, Right> {
-  const [head, ...tail] = rest
-  return (
-    IsSchema(head)
-    ? (() => {
-      const check = ExtendsLeft({}, head, right) 
-      return Result.IsExtendsTrueLike(check)
-        ? TryInferResults(tail, right, [...result, head])
-        : undefined
-    })() : result
-  ) as never
+  return Result.TakeLeft(rest, (head, tail) =>
+    Result.Match(ExtendsLeft({}, head, right),
+      () => TryInferResults(tail, right, [...result, head]),
+      () => undefined),
+    () => result) as never
 }
 // ----------------------------------------------------------------------------
 // InferAsTuple

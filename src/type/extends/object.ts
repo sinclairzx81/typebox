@@ -70,8 +70,9 @@ function ExtendsPropertyOptional<Inferred extends TProperties, Left extends TSch
 // ----------------------------------------------------------------------------
 type TExtendsProperty<Inferred extends TProperties, Left extends TSchema, Right extends TSchema> = (
   // Right TInfer<TNever> is TExtendsFalse
-  Right extends TInfer<string, TNever> ? Result.TExtendsFalse : 
-    TExtendsLeft<Inferred, Left, Right> extends Result.TExtendsTrueLike<infer Inferred extends TProperties>
+  Right extends TInfer<string, TNever> 
+    ? Result.TExtendsFalse 
+    : TExtendsLeft<Inferred, Left, Right> extends Result.TExtendsTrueLike<infer Inferred extends TProperties>
       ? TExtendsPropertyOptional<Inferred, Left, Right>
       : Result.TExtendsFalse
 )
@@ -80,14 +81,11 @@ function ExtendsProperty<Inferred extends TProperties, Left extends TSchema, Rig
     TExtendsProperty<Inferred, Left, Right> {
   return (
     // Right TInfer<TNever> is TExtendsFalse
-    IsInfer(right) && IsNever(right.extends) ? Result.ExtendsFalse() : (() => { 
-      const check = ExtendsLeft(inferred, left, right) as unknown
-      return (
-        Result.IsExtendsTrueLike(check)
-          ? ExtendsPropertyOptional(check.inferred, left, right)
-          : Result.ExtendsFalse()
-      ) as never
-    })()
+    (IsInfer(right) && IsNever(right.extends))
+      ? Result.ExtendsFalse()
+      : Result.Match(ExtendsLeft(inferred, left, right), inferred => 
+        ExtendsPropertyOptional(inferred, left, right),
+        () => Result.ExtendsFalse())
   ) as never
 }
 // ----------------------------------------------------------------------------
