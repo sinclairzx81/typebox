@@ -76,3 +76,51 @@ Test('Should Indexed 12', () => {
   const S: Type.TNumber = Type.Script({ T }, `T['length']`)
   Assert.IsTrue(Type.IsNumber(S))
 })
+Test('Should Indexed 13', () => {
+  const T = Type.Script(`[1, 2, 3]['length']`)
+  const S: Type.TLiteral<3> = T
+  Assert.IsTrue(Type.IsLiteral(S))
+  Assert.IsEqual(S.const, 3)
+})
+Test('Should Indexed 14', () => {
+  const T = Type.Script(`[1, 2, 3][]['length']`)
+  const S: Type.TNumber = T
+  Assert.IsTrue(Type.IsNumber(S))
+})
+Test('Should Indexed 15', () => {
+  const T = Type.Script(`[1, 2, 3, 4, 5]['length']`)
+  const S: Type.TLiteral<5> = T
+  Assert.IsTrue(Type.IsLiteral(S))
+  Assert.IsEqual(S.const, 5)
+})
+Test('Should Indexed 16', () => {
+  const T = Type.Script(`[1, 2, 3, 4, 5][]['length']`)
+  const S: Type.TNumber = T
+  Assert.IsTrue(Type.IsNumber(S))
+})
+Test('Should Indexed 17', () => {
+  const T = Type.Script(`string[][][]['length']`)
+  const S: Type.TNumber = T
+  Assert.IsTrue(Type.IsNumber(S))
+})
+Test('Should Indexed 18', () => {
+  const T = Type.Script(`[1, 2, 3][][number]`)
+  const S: Type.TTuple<[Type.TLiteral<1>, Type.TLiteral<2>, Type.TLiteral<3>]> = T
+  Assert.IsTrue(Type.IsTuple(S))
+  Assert.IsEqual(S.items[0].const, 1)
+  Assert.IsEqual(S.items[1].const, 2)
+  Assert.IsEqual(S.items[2].const, 3)
+})
+Test('Should Indexed 19', () => {
+  const T = Type.Script(`[1, 2, 3]['length'][]`)
+  const S: Type.TArray<Type.TLiteral<3>> = T
+  Assert.IsTrue(Type.IsArray(S))
+  Assert.IsTrue(Type.IsLiteral(S.items))
+  Assert.IsEqual(S.items.const, 3)
+})
+Test('Should Indexed 20', () => {
+  const T = Type.Script(`[1, 2, 3][]['length'][]`)
+  const S: Type.TArray<Type.TNumber> = T
+  Assert.IsTrue(Type.IsArray(S))
+  Assert.IsTrue(Type.IsNumber(S.items))
+})
