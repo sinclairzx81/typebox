@@ -30,7 +30,9 @@ THE SOFTWARE.
 
 import { type TSchema } from '../types/schema.ts'
 import { type TProperties } from '../types/properties.ts'
+import { type TAny, IsAny } from '../types/any.ts'
 import { type TFunction, IsFunction } from '../types/function.ts'
+import { type TUnknown, IsUnknown } from '../types/unknown.ts'
 import * as Result from './result.ts'
 
 // ------------------------------------------------------------------
@@ -43,19 +45,21 @@ import { type TExtendsReturnType, ExtendsReturnType } from './return-type.ts'
 // ExtendsFunction
 // ------------------------------------------------------------------ 
 export type TExtendsFunction<Inferred extends TProperties, Parameters extends TSchema[], ReturnType extends TSchema, Right extends TSchema> = (  
-  Right extends TFunction<infer RightParamters extends TSchema[], infer RightReturnType extends TSchema>
-    ? TExtendsParameters<Inferred, Parameters, RightParamters> extends Result.TExtendsTrueLike<infer Inferred extends TProperties>
-      ? TExtendsReturnType<Inferred, ReturnType, RightReturnType>
+  Right extends TAny ? Result.TExtendsTrue :
+  Right extends TUnknown ? Result.TExtendsTrue :
+  Right extends TFunction
+    ? TExtendsParameters<Inferred, Parameters, Right['parameters']> extends Result.TExtendsTrueLike<infer Inferred extends TProperties>
+      ? TExtendsReturnType<Inferred, ReturnType, Right['returnType']>
       : Result.TExtendsFalse // 'not-a-parameter-match'
     : Result.TExtendsFalse // 'not-a-function'
 )
 export function ExtendsFunction<Inferred extends TProperties, Parameters extends TSchema[], ReturnType extends TSchema, Right extends TSchema>(inferred: Inferred, parameters: [...Parameters], returnType: ReturnType, right: Right): TExtendsFunction<Inferred, Parameters, ReturnType, Right> {
   return (
-    IsFunction(right) ? (() => {
-      const check = ExtendsParameters(inferred, parameters, right.parameters)
-      return Result.IsExtendsTrueLike(check)
-        ? ExtendsReturnType(check.inferred, returnType, right.returnType)
-        : Result.ExtendsFalse()
-    })(): Result.ExtendsFalse()
+    IsAny(right) ? Result.ExtendsTrue(inferred) :
+    IsUnknown(right) ? Result.ExtendsTrue(inferred) :
+    IsFunction(right) ? Result.Match(ExtendsParameters(inferred, parameters, right['parameters']), 
+      inferred => ExtendsReturnType(inferred, returnType, right['returnType']), 
+      () => Result.ExtendsFalse()) // 'not-a-parameter-match'
+    : Result.ExtendsFalse() // 'not-a-function'
   ) as never
 }

@@ -139,8 +139,8 @@ type TElementsLeft<Inferred extends TProperties, Reversed extends boolean, LeftR
   Inferable extends TInferable | undefined = TTryRestInferable<Right>
 > = (
   // Rest Inferrable Right Means we delegate to TInferTupleResult to Generate a Result
-  Inferable extends TInferable<infer Name extends string, infer Type extends TSchema> 
-    ? TInferTupleResult<Inferred, Name, TApplyReverse<LeftRest, Reversed>, Type> 
+  Inferable extends TInferable
+    ? TInferTupleResult<Inferred, Inferable['name'], TApplyReverse<LeftRest, Reversed>, Inferable['type']> 
     : LeftRest extends [infer Head extends TSchema, ...infer Tail extends TSchema[]]
       ? TElementsCompare<Inferred, Reversed, Head, Tail, Right, RightRest>
       : Result.TExtendsFalse // 'left-was-empty'
@@ -150,14 +150,12 @@ function ElementsLeft<Inferred extends TProperties, Reversed extends boolean, Le
     TElementsLeft<Inferred, Reversed, LeftRest, Right, RightRest> {
   const inferable = TryRestInferable(right) as unknown
   return (
+    // Rest Inferrable Right Means we delegate to TInferTupleResult to Generate a Result
     IsInferable(inferable)
-      ? InferTupleResult(inferred, inferable.name, ApplyReverse(leftRest, reversed), inferable.type)
-      : (() => {
-        const [head, ...tail] = leftRest
-        return IsSchema(head)
-          ? ElementsCompare(inferred, reversed, head, tail, right, rightRest)
-          : Result.ExtendsFalse()
-      })()
+      ? InferTupleResult(inferred, inferable['name'], ApplyReverse(leftRest, reversed), inferable['type'])
+      : Result.TakeLeft(leftRest, (head, tail) => 
+        ElementsCompare(inferred, reversed, head, tail, right, rightRest),
+        () => Result.ExtendsFalse())
   ) as never
 }
 // ------------------------------------------------------------------
@@ -185,15 +183,12 @@ type TElementsRight<Inferred extends TProperties, Reversed extends boolean, Left
 )
 function ElementsRight<Inferred extends TProperties, Reversed extends boolean, LeftRest extends TSchema[], RightRest extends TSchema[]>
   (inferred: Inferred, reversed: Reversed, leftRest: [...LeftRest], rightRest: [...RightRest]):
-    TElementsRight<Inferred, Reversed, LeftRest, RightRest> {
-  const [head, ...tail] = rightRest
-  return (
-    IsSchema(head)
-      ? ElementsLeft(inferred, reversed, leftRest, head, tail)
-      : Guard.IsEqual(leftRest.length, 0)
-        ? Result.ExtendsTrue(inferred) // 'Ok: right-empty-and-left-empty'
-        : Result.ExtendsFalse()        // 'Fail: right-empty-and-left-not-empty'
-  ) as never
+  TElementsRight<Inferred, Reversed, LeftRest, RightRest> {
+  return Result.TakeLeft(rightRest, (head, tail) =>
+    ElementsLeft(inferred, reversed, leftRest, head, tail),
+    () => Guard.IsEqual(leftRest.length, 0)
+      ? Result.ExtendsTrue(inferred)     // 'Ok: right-empty-and-left-empty'
+      : Result.ExtendsFalse()) as never  // 'Fail: right-empty-and-left-not-empty'
 }
 // ------------------------------------------------------------------
 // Elements
@@ -226,8 +221,8 @@ function ExtendsTupleToTuple<Inferred extends TProperties, Left extends TSchema[
 type TExtendsTupleToArray<Inferred extends TProperties, Left extends TSchema[], Right extends TSchema,
   Inferrable extends TInferable | undefined = TTryInferable<Right>
 > = (
-  Inferrable extends TInferable<infer Name extends string, infer Type extends TSchema>
-    ? TInferUnionResult<Inferred, Name, Left, Type>
+  Inferrable extends TInferable
+    ? TInferUnionResult<Inferred, Inferrable['name'], Left, Inferrable['type']>
   : Left extends [infer Head extends TSchema, ...infer Tail extends TSchema[]]
     ? TExtendsLeft<Inferred, Head, Right> extends Result.TExtendsTrueLike<infer Inferred extends TProperties>
       ? TExtendsTupleToArray<Inferred, Tail, Right>
@@ -237,22 +232,15 @@ type TExtendsTupleToArray<Inferred extends TProperties, Left extends TSchema[], 
 function ExtendsTupleToArray<Inferred extends TProperties, Left extends TSchema[], Right extends TSchema>
   (inferred: Inferred, left: [...Left], right: Right): 
     TExtendsTupleToArray<Inferred, Left, Right> {
-  const inferrable = TryInferable(right) as unknown
+  const inferrable = TryInferable(right)
   return (
     IsInferable(inferrable)
-      // @ts-ignore 4.9.5 fails to see `type` property on inferrable
-      ? InferUnionResult(inferred, inferrable.name, left, inferrable.type)
-      : (() => {
-        const [head, ...tail] = left
-        return IsSchema(head)
-          ? (() => {
-            const check = ExtendsLeft(inferred, head, right)
-            return Result.IsExtendsTrueLike(check)
-              ? ExtendsTupleToArray(check.inferred, tail, right)
-              : Result.ExtendsFalse()
-          })()
-          : Result.ExtendsTrue(inferred)
-      })()
+      ? InferUnionResult(inferred, inferrable['name'], left, inferrable['type'])
+      : Result.TakeLeft(left, (head, tail) => 
+        Result.Match(ExtendsLeft(inferred, head, right), inferred => 
+          ExtendsTupleToArray(inferred, tail, right),
+          () => Result.ExtendsFalse()),
+        () => Result.ExtendsTrue(inferred))
   ) as never
 }
 // ----------------------------------------------------------------------------

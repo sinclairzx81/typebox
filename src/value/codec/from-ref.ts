@@ -33,9 +33,30 @@ import { type TProperties, type TRef } from '../../type/index.ts'
 import { FromType } from './from-type.ts'
 import { Callback } from './callback.ts'
 
-export function FromRef(direction: string, context: TProperties, type: TRef, value: unknown): unknown {
-  value = Guard.HasPropertyKey(context, type.$ref)
-    ? FromType(direction, context, context[type.$ref], value) 
+// ------------------------------------------------------------------
+// ResolveRef
+// ------------------------------------------------------------------
+function ResolveRef(direction: string, context: TProperties, type: TRef, value: unknown): unknown {
+  return Guard.HasPropertyKey(context, type.$ref)
+    ? FromType(direction, context, context[type.$ref], value)
     : value
-  return Callback(direction, context, type, value)
+}
+// ------------------------------------------------------------------
+// FromRef
+//
+// Decode and Encode apply the Callback and the referenced type's
+// codec pipeline in opposite orders, since the two operations are
+// inverses of each other.
+//
+// Decode: referenced type resolves first, Callback runs after.
+//   wire value -> resolve $ref -> Callback -> decoded value
+//
+// Encode: Callback runs first, referenced type resolves after.
+//   encoded value -> Callback -> resolve $ref -> wire value
+//
+// ------------------------------------------------------------------
+export function FromRef(direction: string, context: TProperties, type: TRef, value: unknown): unknown {
+  return Guard.IsEqual(direction, 'Decode')
+    ? Callback(direction, context, type, ResolveRef(direction, context, type, value))
+    : ResolveRef(direction, context, type, Callback(direction, context, type, value))
 }

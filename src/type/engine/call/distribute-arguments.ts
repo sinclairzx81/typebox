@@ -42,15 +42,15 @@ import { type TParameter } from '../../types/parameter.ts'
 // Extracts TRef names from distributive positions:
 //
 // 1. Conditional: The 'Left' operand (recursing into both branches).
-// 2. Mapped: The 'Key' position, specifically when the type is a 
-//    Deferred<'KeyOf'> expression.
+// 2. Mapped: The 'Type' position, specifically when the type is a 
+//    Deferred<'KeyOf', TRef<'...'>> expression.
 //
 // ------------------------------------------------------------------
 type TCollectDistributionNames<Expression extends TSchema, Result extends string[] = []> = (
   // Conditional
   Expression extends TDeferred<'Conditional', [infer Left extends TSchema, infer _Right extends TSchema, infer True extends TSchema, infer False extends TSchema]>
-    ? Left extends TRef<infer Name extends string>
-      ? TCollectDistributionNames<True, TCollectDistributionNames<False, [...Result, Name]>>
+    ? Left extends TRef
+      ? TCollectDistributionNames<True, TCollectDistributionNames<False, [...Result, Left['$ref']]>>
       : TCollectDistributionNames<True, TCollectDistributionNames<False, Result>>
   // Mapped
   : Expression extends TDeferred<'Mapped', [infer _Identifier extends TSchema, infer Type extends TSchema, infer _As extends TSchema, infer _Property extends TSchema]>
@@ -64,7 +64,7 @@ function CollectDistributionNames<Expression extends TSchema>(expression: Expres
     // Conditional
     IsDeferred(expression) && Guard.IsEqual(expression.action, 'Conditional')
       ? IsRef(expression.parameters[0])
-        ? CollectDistributionNames(expression.parameters[2], CollectDistributionNames(expression.parameters[3], [...result, expression.parameters[0].$ref]))
+        ? CollectDistributionNames(expression.parameters[2], CollectDistributionNames(expression.parameters[3], [...result, expression.parameters[0]['$ref']]))
         : CollectDistributionNames(expression.parameters[2], CollectDistributionNames(expression.parameters[3], result))
     // Mapped
     : IsDeferred(expression) && Guard.IsEqual(expression.action, 'Mapped')

@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Memory } from '../../system/memory/index.ts'
-import { type TSchema, IsSchema } from '../types/schema.ts'
+import { type TSchema } from '../types/schema.ts'
 import { type TProperties } from '../types/properties.ts'
 import { type TAny, IsAny } from '../types/any.ts'
 import { type TEnum, type TEnumValue, IsEnum } from '../types/enum.ts'
@@ -109,15 +109,11 @@ type TExtendsRightIntersect<Inferred extends TProperties, Left extends TSchema, 
 function ExtendsRightIntersect<Inferred extends TProperties, Left extends TSchema, Right extends TSchema[]>
   (inferred: Inferred, left: Left, right: Right): 
     TExtendsRightIntersect<Inferred, Left, Right> {
-  const [head, ...tail] = right
-  return (
-    IsSchema(head) ? (() => {
-      const check = ExtendsLeft(inferred, left, head)
-      return Result.IsExtendsTrueLike(check)
-        ? ExtendsRightIntersect(check.inferred, left, tail)
-        : Result.ExtendsFalse()
-    })() : Result.ExtendsTrue(inferred)
-  ) as never
+  return Result.TakeLeft(right, (head, tail) => 
+    Result.Match(ExtendsLeft(inferred, left, head),
+      inferred => ExtendsRightIntersect(inferred, left, tail),
+      () => Result.ExtendsFalse()),
+    () => Result.ExtendsTrue(inferred)) as never
 }
 // ----------------------------------------------------------------------------
 // ExtendsRightTemplateLiteral
@@ -142,17 +138,13 @@ type TExtendsRightUnion<Inferred extends TProperties, Left extends TSchema, Righ
     : Result.TExtendsFalse
 )
 function ExtendsRightUnion<Inferred extends TProperties, Left extends TSchema, Right extends TSchema[]>
-  (inferred: Inferred, left: Left, right: Right): 
-    TExtendsRightUnion<Inferred, Left, Right> {
-  const [head, ...tail] = right
-  return (
-    IsSchema(head) ? (() => {
-      const check = ExtendsLeft(inferred, left, head)
-      return Result.IsExtendsTrueLike(check)
-        ? Result.ExtendsTrue(check.inferred)
-        : ExtendsRightUnion(inferred, left, tail)
-    })() : Result.ExtendsFalse()
-  ) as never
+  (inferred: Inferred, left: Left, right: Right):
+  TExtendsRightUnion<Inferred, Left, Right> {
+  return Result.TakeLeft(right, (head, tail) =>
+    Result.Match(ExtendsLeft(inferred, left, head),
+      inferred => Result.ExtendsTrue(inferred),
+      () => ExtendsRightUnion(inferred, left, tail)),
+    () => Result.ExtendsFalse()) as never
 }
 // ----------------------------------------------------------------------------
 // ExtendsRight

@@ -545,9 +545,9 @@ export function BaseMapping(input: [unknown, unknown, unknown] | unknown): unkno
 // Factor: [KeyOf, Base, IndexArray, Extends]
 // -------------------------------------------------------------------
 type TFactorIndexArray<Type extends T.TSchema, IndexArray extends unknown[]> = (
-  IndexArray extends [...infer Left extends unknown[], infer Right extends T.TSchema[]] ? (
-    Right extends [infer Indexer extends T.TSchema] ? C.TIndexDeferred<TFactorIndexArray<Type, Left>, Indexer> :
-    Right extends [] ? T.TArray<TFactorIndexArray<Type, Left>> :
+  IndexArray extends [infer Left extends T.TSchema[], ...infer Right extends unknown[]] ? (
+    Left extends [infer Indexer extends T.TSchema] ? TFactorIndexArray<C.TIndexDeferred<Type, Indexer>, Right> :
+    Left extends [] ? TFactorIndexArray<T.TArray<Type>, Right> :
     T.TNever
   ) : Type
 )
@@ -566,11 +566,11 @@ export type TFactorMapping<Input extends [unknown, unknown, unknown, unknown]> =
 // deno-coverage-ignore-start
 // ...
 const FactorIndexArray = (Type: T.TSchema, indexArray: unknown[]): T.TSchema => {
-  return indexArray.reduceRight<T.TSchema>((result, right) => {
-    const _right = right as T.TSchema[]
+  return indexArray.reduce<T.TSchema>((result, left) => {
+    const _left = left as T.TSchema[]
     return (
-      Guard.IsEqual(_right.length, 1) ? C.IndexDeferred(result, _right[0]) :
-      Guard.IsEqual(_right.length, 0) ? T.Array(result) :
+      Guard.IsEqual(_left.length, 1) ? C.IndexDeferred(result, _left[0]) :
+      Guard.IsEqual(_left.length, 0) ? T.Array(result) :
       Unreachable()
     )
   }, Type)
