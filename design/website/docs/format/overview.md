@@ -1,6 +1,6 @@
 # Format
 
-Functions to Validate String Formats
+String Format Validation
 
 ## Overview
 

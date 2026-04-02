@@ -1,6 +1,6 @@
 # Value
 
-Check and Parse JavaScript Values
+Functions to Process Dynamic JavaScript Values
 
 ## Overview
 

@@ -1,41 +1,81 @@
 # Script
 
-TypeScript DSL Engine
+TypeScript Syntax Engine
 
 ## Overview
 
-TypeBox includes a runtime TypeScript DSL engine that can transform TypeScript syntax into JSON Schema. The engine is implemented at runtime and within the TypeScript type system.
+TypeBox can transform TypeScript definitions into JSON Schema. The Script function provides an optional programmatic syntax to rapidly convert type definitions into JSON Schema, or serve more generally as an alternative to Type.* builders. The Script function is designed to handle a wide array of complex TypeScript type-level expressions.
+
+### Example
+
+The following uses the Script to parse interfaces into JSON Schema.
 
 ```typescript
-// ----------------------------------------------------------
+import Type from 'typebox'
+
+// -------------------------------------------------------------------------------
 // Script
-// ----------------------------------------------------------
-const T = Type.Script(`{ 
-  x: number, 
-  y: string, 
-  z: boolean 
-}`)
+// -------------------------------------------------------------------------------
 
-// ----------------------------------------------------------
+const { User, UserUpdate } = Type.Script(`
+
+ interface Entity {
+  id: string
+ }
+
+ interface User extends Entity { 
+   name: string, 
+   email: string 
+ }
+
+ type UserUpdate = Evaluate<
+   Pick<User, keyof Entity> & 
+   Partial<Omit<User, keyof Entity>>
+ >
+`)
+
+// -------------------------------------------------------------------------------
 // Reflect
-// ----------------------------------------------------------
-T.type                                              // 'object'
-T.required                                          // ['x', 'y', 'z']
-T.properties                                        // { x: ..., y: ..., z: ... }
+// -------------------------------------------------------------------------------
 
-// ----------------------------------------------------------
-// Computed
-// ----------------------------------------------------------
-const S = Type.Script({ T }, `{
-  [K in keyof T]: T[K] | null
-}`)
+console.log(User)                                // {
+                                                 //   type: 'object',
+                                                 //   properties: {
+                                                 //     id: { type: 'string' },
+                                                 //     name: { type: 'string' },
+                                                 //     email: { type: 'string' }
+                                                 //   },
+                                                 //   required: [
+                                                 //     'id', 
+                                                 //     'name', 
+                                                 //     'email'
+                                                 //   ]
+                                                 // }
 
-// ----------------------------------------------------------
-// Inference
-// ----------------------------------------------------------
-type S = Type.Static<typeof S>                      // type S = {
-                                                    //   x: number | null,
-                                                    //   y: string | null,
-                                                    //   z: boolean | null
-                                                    // }
+console.log(UserUpdate)                          // {
+                                                 //   type: 'object',
+                                                 //   properties: {
+                                                 //     id: { type: 'string' },
+                                                 //     name: { type: 'string' },
+                                                 //     email: { type: 'string' }
+                                                 //   },
+                                                 //   required: ['id']
+                                                 // }
+
+// -------------------------------------------------------------------------------
+// Static
+// -------------------------------------------------------------------------------
+
+type User = Type.Static<typeof User>              // type User = {
+                                                  //   id: string,
+                                                  //   name: string,
+                                                  //   email: string
+                                                  // }
+
+type UserUpdate = Type.Static<typeof UserUpdate>  // type UserUpdate = {
+                                                  //   id: string,
+                                                  //   name?: string,
+                                                  //   email?: string
+                                                  // }
+
 ```

@@ -45,8 +45,8 @@ import { type TExtendsReturnType, ExtendsReturnType } from './return-type.ts'
 // ExtendsFunction
 // ------------------------------------------------------------------ 
 export type TExtendsFunction<Inferred extends TProperties, Parameters extends TSchema[], ReturnType extends TSchema, Right extends TSchema> = (  
-  Right extends TAny ? Result.TExtendsTrue :
-  Right extends TUnknown ? Result.TExtendsTrue :
+  Right extends TAny ? Result.TExtendsTrue<Inferred> :
+  Right extends TUnknown ? Result.TExtendsTrue<Inferred> :
   Right extends TFunction
     ? TExtendsParameters<Inferred, Parameters, Right['parameters']> extends Result.TExtendsTrueLike<infer Inferred extends TProperties>
       ? TExtendsReturnType<Inferred, ReturnType, Right['returnType']>

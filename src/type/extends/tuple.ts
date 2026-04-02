@@ -114,14 +114,11 @@ type TElementsCompare<Inferred extends TProperties, Reversed extends boolean, Le
     : Result.TExtendsFalse // 'left-and-right-not-compared'
 )
 function ElementsCompare<Inferred extends TProperties, Reversed extends boolean, Left extends TSchema, LeftRest extends TSchema[], Right extends TSchema, RightRest extends TSchema[]>
-  (inferred: Inferred, reversed: Reversed, left: Left, leftRest: [...LeftRest], right: Right, rightRest: [...RightRest]): 
-    TElementsCompare<Inferred, Reversed, Left, LeftRest, Right, RightRest> {
-  const check = ExtendsLeft(inferred, left, right) as unknown
-  return (
-    Result.IsExtendsTrueLike(check)
-      ? Elements(check.inferred, reversed, leftRest, rightRest)
-      : Result.ExtendsFalse() // 'left-and-right-not-compared'
-  ) as never
+  (inferred: Inferred, reversed: Reversed, left: Left, leftRest: [...LeftRest], right: Right, rightRest: [...RightRest]):
+  TElementsCompare<Inferred, Reversed, Left, LeftRest, Right, RightRest> {
+  return Result.Match(ExtendsLeft(inferred, left, right), checkInferred =>
+    Elements(checkInferred, reversed, leftRest, rightRest),
+    () => Result.ExtendsFalse()) as never // 'left-and-right-not-compared'
 }
 // ------------------------------------------------------------------
 // ElementsLeft

@@ -1,26 +1,41 @@
 <h1>Type</h1>
-<p>Json Schema Type Builder with Static Type Resolution for TypeScript</p>
+<p>JSON Schema Type Builder with Static Type Resolution for TypeScript</p>
 <h2>Overview</h2>
-<p>TypeBox provides many functions to create Json Schema types. Each function returns a small Json Schema fragment that can be composed into more complex types. TypeBox includes a set of functions that are used to construct Json Schema compliant schematics as well as a set of extended functions that return schematics for constructs native to JavaScript.</p>
+<p>TypeBox types are JSON Schema fragments that can compose into more complex types. The library offers a set of types used to construct JSON Schema compliant schematics as well as a set of extended types used to model constructs native to the JavaScript language. The schematics produced by TypeBox can be passed directly to any JSON Schema compliant validator.</p>
 <h2>Example</h2>
-<p>The following creates a Json Schema type and infers with Static.</p>
+<p>The following creates a User type and infers with Static.</p>
 <pre><code class="language-typescript">import Type from &#39;typebox&#39;
 
-const T = Type.Object({                             // const T = {
-  x: Type.Number(),                                 //   type: &#39;object&#39;,
-  y: Type.Number(),                                 //   required: [&#39;x&#39;, &#39;y&#39;, &#39;z&#39;],
-  z: Type.Number()                                  //   properties: {
-})                                                  //     x: { type: &#39;number&#39; },
-                                                    //     y: { type: &#39;number&#39; },
-                                                    //     z: { type: &#39;number&#39; }
-                                                    //   }
-                                                    // }
+// -------------------------------------------------------------------------------
+// Type
+// -------------------------------------------------------------------------------
 
-type T = Type.Static&lt;typeof T&gt;                      // type T = {
-                                                    //   x: number,
-                                                    //   y: number,
-                                                    //   z: number
-                                                    // }
+const User = Type.Object({                       // const User = {
+  id: Type.String(),                             //   type: &#39;object&#39;,
+  name: Type.String(),                           //   properties: {
+  email: Type.String({ format: &#39;email&#39; })        //     id: { type: &#39;string&#39; },
+})                                               //     name: { type: &#39;string&#39; },
+                                                 //     email: { 
+                                                 //       type: &#39;string&#39;, 
+                                                 //       format: &#39;email&#39; 
+                                                 //     }
+                                                 //   }
+                                                 //   required: [
+                                                 //     &#39;id&#39;, 
+                                                 //     &#39;name&#39;, 
+                                                 //     &#39;email&#39;
+                                                 //   ]
+                                                 // }
+
+// -------------------------------------------------------------------------------
+// Static
+// -------------------------------------------------------------------------------
+
+type User = Type.Static&lt;typeof User&gt;              // type User = {
+                                                  //   id: string,
+                                                  //   name: string,
+                                                  //   email: string
+                                                  // }
 </code></pre>
 <p>Options and constraints can be passed on the last argument of any given type.</p>
 <pre><code class="language-typescript">const T = Type.Number({                            // const T = {
