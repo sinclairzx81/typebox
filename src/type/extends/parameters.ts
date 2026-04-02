@@ -52,20 +52,19 @@ type TParameterCompare<Inferred extends TProperties, Left extends TSchema, LeftR
         : Result.TExtendsFalse // 'fail: left-and-right-did-not-match'
   )
 function ParameterCompare<Inferred extends TProperties, Left extends TSchema, LeftRest extends TSchema[], Right extends TSchema, RightRest extends TSchema[]>
-  (inferred: Inferred, left: Left, leftRest: LeftRest, right: Right, rightRest: RightRest): 
-    TParameterCompare<Inferred, Left, LeftRest, Right, RightRest> {
+  (inferred: Inferred, left: Left, leftRest: LeftRest, right: Right, rightRest: RightRest):
+  TParameterCompare<Inferred, Left, LeftRest, Right, RightRest> {
   // Parameter extends Right on Left, except when infer Right  
   const checkLeft = IsInfer(right) ? left : right
   const checkRight = IsInfer(right) ? right : left
   const isLeftOptional = IsOptional(left)
   const isRightOptional = IsOptional(right)
-  const check = ExtendsLeft(inferred, checkLeft, checkRight)
   return (
-    !isLeftOptional && isRightOptional
+    (!isLeftOptional && isRightOptional)
       ? Result.ExtendsFalse() // 'fail: left-required-but-right-is-optional'
-      : Result.IsExtendsTrueLike(check)
-        ? ExtendsParameters(check.inferred, leftRest, rightRest)
-        : Result.ExtendsFalse() // 'fail: left-and-right-did-not-match'
+      : Result.Match(ExtendsLeft(inferred, checkLeft, checkRight), inferred =>
+        ExtendsParameters(inferred, leftRest, rightRest),
+        () => Result.ExtendsFalse()) // 'fail: left-and-right-did-not-match'
   ) as never
 }
 // ------------------------------------------------------------------
@@ -113,4 +112,3 @@ export function ExtendsParameters<Inferred extends TProperties, Left extends TSc
     TExtendsParameters<Inferred, Left, Right> {
   return ParametersLeft(inferred, left, right)
 }
-

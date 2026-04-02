@@ -28,21 +28,21 @@ $ npm install typebox
 ```typescript
 import Type from 'typebox'
 
-const T = Type.Object({                             // const T = {
-  x: Type.Number(),                                 //   type: 'object',
-  y: Type.Number(),                                 //   required: ['x', 'y', 'z'],
-  z: Type.Number()                                  //   properties: {
-})                                                  //     x: { type: 'number' },
-                                                    //     y: { type: 'number' },
-                                                    //     z: { type: 'number' }
-                                                    //   }
-                                                    // }
+const T = Type.Object({                     // const T = {
+  x: Type.Number(),                         //   type: 'object',
+  y: Type.Number(),                         //   properties: {
+  z: Type.Number()                          //     x: { type: 'number' },
+})                                          //     y: { type: 'number' },
+                                            //     z: { type: 'number' }
+                                            //   },
+                                            //   required: ['x', 'y', 'z']
+                                            // }
 
-type T = Type.Static<typeof T>                      // type T = {
-                                                    //   x: number,
-                                                    //   y: number,
-                                                    //   z: number
-                                                    // }
+type T = Type.Static<typeof T>              // type T = {
+                                            //   x: number,
+                                            //   y: number,
+                                            //   z: number
+                                            // }
 ```
 
 ## Overview
@@ -58,7 +58,6 @@ License: MIT
 ## Contents
 
 - [Type](#Type)
-- [Value](#Value)
 - [Script](#Script)
 - [Schema](#Schema)
 - [Versions](#Versions)
@@ -69,157 +68,164 @@ License: MIT
 
 ## Type
 
-[Documentation](https://sinclairzx81.github.io/typebox/#/docs/type/overview)
+[Documentation](https://sinclairzx81.github.io/typebox/#/docs/type/overview) | [Example](https://www.typescriptlang.org/play/?#code/JYWwDg9gTgLgBAFQJ5gKZwGZQiOByGFVAIwgA88AoSgehrgFonmXW32POvueHb7kafo16ix4ic2oBjCADsAzvACqC1FDgBeREQB0AeWIArVNJgAKAN5wbtu-Yc26cWYpVqN2y5RvAAJgBcOmi6AMowUMByAObmAJQANI7JKfbONoRoQXgQxqYweAk+cHIAhiCoQYKoYRFRsYmpTQ7pcGDYaLDAqApB3jaoIKXAADZVeuGRMVaY0EMw2YPDI3hwAL5xya2+gXDWmZX4SlPRq2tFG81X11v0dmUVfXAH2cf1Z0U3X99w23BLoyexR+INSfwyRFedRihTgwNBCLSd3sGDmpQW+ABKzhiNxdj+a3heIRrUJxLxrSgqAAjgBXYBU3YAbSJ5J+fzw-lhrLZXw5D1Q3N5JORNjwWKowtBrQAujypc1nIThJJVWr1XxnOF0cBpCqNQbDZxqAc4Kp1FpgjVtTBdQAeA4QDBmjwAPmuzlN5s8e3lCqarX8QTeMU+-u+rQFweh0TD4ZurSx0ZOfvjjiVQA)
 
-TypeBox provides many functions to create JSON Schema types. Each function returns a small JSON Schema fragment that can be composed into more complex types. TypeBox includes a set of functions that are used to construct JSON Schema compliant schematics as well as a set of extended functions that return schematics for constructs native to JavaScript.
+TypeBox types are JSON Schema fragments that can compose into more complex types. The library offers a set of types used to construct JSON Schema compliant schematics as well as a set of extended types used to model constructs native to the JavaScript language. The schematics produced by TypeBox can be passed directly to any JSON Schema compliant validator.
 
 ## Example
 
-The following creates a JSON Schema type and infers with Static.
+The following creates a User type and infers with Static.
 
 ```typescript
 import Type from 'typebox'
 
-const T = Type.Object({                             // const T = {
-  x: Type.Number(),                                 //   type: 'object',
-  y: Type.Number(),                                 //   required: ['x', 'y', 'z'],
-  z: Type.Number()                                  //   properties: {
-})                                                  //     x: { type: 'number' },
-                                                    //     y: { type: 'number' },
-                                                    //     z: { type: 'number' }
-                                                    //   }
-                                                    // }
+// -------------------------------------------------------------------------------
+// Type
+// -------------------------------------------------------------------------------
 
-type T = Type.Static<typeof T>                      // type T = {
-                                                    //   x: number,
-                                                    //   y: number,
-                                                    //   z: number
-                                                    // }
-```
+const User = Type.Object({                       // const User = {
+  id: Type.String(),                             //   type: 'object',
+  name: Type.String(),                           //   properties: {
+  email: Type.String({ format: 'email' })        //     id: { type: 'string' },
+})                                               //     name: { type: 'string' },
+                                                 //     email: { 
+                                                 //       type: 'string', 
+                                                 //       format: 'email' 
+                                                 //     }
+                                                 //   }
+                                                 //   required: [
+                                                 //     'id', 
+                                                 //     'name', 
+                                                 //     'email'
+                                                 //   ]
+                                                 // }
 
-Schema options can be passed on the last argument of any given type.
+// -------------------------------------------------------------------------------
+// Static
+// -------------------------------------------------------------------------------
 
-```typescript
-const T = Type.String({                             // const T = {
-  format: 'email'                                   //   type: 'string',
-})                                                  //   format: 'email'
-                                                    // }
-
-const S = Type.Number({                             // const S = {
-  minimum: 0,                                       //   type: 'number',
-  maximum: 100                                      //   minimum: 0,
-})                                                  //   maximum: 100
-                                                    // }
-```
-
-<a name="Value"></a>
-
-## Value
-
-[Documentation](https://sinclairzx81.github.io/typebox/#/docs/value/overview)
-
-The Value submodule provides functions for validation and other typed operations on JavaScript values. It includes functions such as Check, Parse, Clone, Encode, and Decode, as well as advanced functions for performing structural Diff and Patch operations on dynamic JavaScript values.
-
-```typescript
-import Value from 'typebox/value'
-```
-
-### Example
-
-The following uses the Value module to Parse a value. 
-
-```typescript
-const T = Type.Object({
-  x: Type.Number(),
-  y: Type.Number(),
-  z: Type.Number()
-})
-
-const A = Value.Parse(T, {                          // const A: {
-  x: 1,                                             //   x: number,
-  y: 0,                                             //   y: number,
-  z: 0                                              //   z: number
-})                                                  // } = ...
+type User = Type.Static<typeof User>              // type User = {
+                                                  //   id: string,
+                                                  //   name: string,
+                                                  //   email: string
+                                                  // }
 ```
 
 ## Script
 
-[Documentation](https://sinclairzx81.github.io/typebox/#/docs/script/overview)
+[Documentation](https://sinclairzx81.github.io/typebox/#/docs/script/overview) | [Example 1](https://www.typescriptlang.org/play/#code/JYWwDg9gTgLgBAFQJ5gKZwGZQiOByGFVAIwgA88AoSgehrgFonmXW32POvueHb6AygGMowMDH6Ne0mbLnNqQiADsAzvADecAKqrUUADQ69UbWAAmAQxjoAvnAC8iIgDpho8QAoABtThxgZRsoDEshdABRIOBCOA1Kf39gcwAuOHVRZQBzBLhbPwCg-VDw4304VDIbZXNVOCiYGKQ4uFz-ZUsQVDSMwKyjNoqQS2AAGx6YTKzW-3zcwjQy0wtrdCcIgDdLUYBXVYAeQYAFYCEAa33dfSMz1CQIDHrowgA+OAAyGcSjy1hgbf2AHkQDFLiYbncHk9Gq8Xrk4ZRvABKah0KTyDGYzGSABKqAwo1QQgkaKxZPJvEUKlUEEJLlGECyniuUCRiXZHM5XK5aPi3P5AsFgrR-gW3XwEGIACsiTA8AZBkKlcrOSK4GBsGg-qhVGk+SqDYa1UlUi0xWk8L1sng8grDfblca4B0unq4Ob8FasjbbHaHf7+U7UMMxm6PZbJn0fYqA7G4GrfTG4-61VBUABHHbANOmgDaSeT9qdeGS8q+hdjxZdqDLBYrKuLwZGoyo9cr9H8AF0622hWi5ko1LTUPTGcyTGYrDY2YXeT3ewK1eHJTLifL5wvuWqNRAtY0dXqN5vVR3Eskw0QLV6fX7jw3T+1OuKtOHr7aj3fEkGQ+MzZfPZG1p5B+n7xqeiagY6p5ppm2aoHmJbmHg3aQUq-aovQFJYdhLCSAIMDWKckg4SRFLUGKSyOM4aBuARjRCPsYpQiybxofQFEslR+qocKp7nukgH9CBoFqtWExTLePGBqeTahgJUzCZ+6GUBxE4rDYVHIDR+GEQxTGPCyk6rKxaKqfoRkaU43FSVufGml6kk2SeiTVgA-OJfSOU57JqrJozufJfSKXe6FAA) | [Example 2](https://www.typescriptlang.org/play/#code/JYWwDg9gTgLgBAFQJ5gKZwGZQiOByGFVAIwgA88AoSgehrgFonmXW32POvnb7k1ejbsJGj21AMYQAdgGd4AUWkxghOAF5ERAHQBJZaigYAhhNQAKANoBdADRwA3pThxgAEwBcWtNoDKMKGBpAHNzAEpKAF8Iyik5eABVWUMNb1Q9AyNTC0slFUI7R2c4aWMQVC9+dP9AkPDbYtQQY2AAG0qdGqDQiOjJGXk4JMMEsDdjGHRNKu0FADdjVoBXCYsZ-UmoZIkYK2KZgAVgCQBrc2GoexmAaVQkAHkMczzVJDCwhpdD41hgRfMZvcQKpzslLmltLcHk8XoR3hFrO9qHQhGI0eiMdxBAAlVAYVqoHaCTEk0mY-pyCAE7StCChC5hFxM5ks1lslkopzs7k83m8lEuQhoLx4CDEABWhJgeE+fLl8u5ArgYGwaF+qFkXi5Cp1uqVLncWrgQoq+HktWCeDgkVlurtfP1JTKpocxqIIvN3StNuK9r97MdTRa7UcbuFZoCXutvv9saZSp9caTLiVUFQAEclsA0544JYY8m-Y68O4ZXAC4W7cXSuUyxXKzri0G2lQG-6ldZ6225SjIhTZFT0rT6WDRuNJozk5yu93+fRBe78GLJTsZTPZ4r58rVYYVBqteuN2zHYbQyaPZGQt7bUee1uXDWXWHTXhPVfrTfb3OWc2Q67zxGFreoeX7xluiagQ6W5ppm2aoLmlglm4eCdpBUHRsSZJYdhnCCP4EzHJhOHEcR1AmkMYKpDM+EqBIAA8JoQBgFGGAAfPKKLkRcqTamhPJKqeb7BJ+fGskqj5eEJImicySq-pJl7BCBaG9mRRAsVAY6rFRnQwAR9GMcxFxaZM7FwJx6nGWM2maLxMliVugmKdJ9nmVuj4APwKRaLn2XJzRtF5cBCcpkG9kAA)
 
-TypeBox includes a runtime TypeScript DSL engine that can transform TypeScript syntax into JSON Schema. The engine is implemented at runtime and within the TypeScript type system.
+TypeBox can transform TypeScript definitions into JSON Schema. The Script function provides an optional programmatic syntax to rapidly convert type definitions into JSON Schema, or serve more generally as an alternative to Type.* builders. The Script function is designed to handle a wide array of complex TypeScript type-level expressions.
+
+### Example
+
+The following uses the Script function to parse TypeScript interfaces into JSON Schema.
 
 ```typescript
-// ----------------------------------------------------------
+import Type from 'typebox'
+
+// -------------------------------------------------------------------------------
 // Script
-// ----------------------------------------------------------
-const T = Type.Script(`{ 
-  x: number, 
-  y: string, 
-  z: boolean 
-}`)
+// -------------------------------------------------------------------------------
 
-// ----------------------------------------------------------
+const { User, UserUpdate } = Type.Script(`
+
+  interface Entity {
+    id: string
+  }
+
+  interface User extends Entity { 
+    name: string, 
+    email: string 
+  }
+
+  type UserUpdate = Evaluate<
+    Pick<User, keyof Entity> & 
+    Partial<Omit<User, keyof Entity>>
+  >
+
+`)
+
+// -------------------------------------------------------------------------------
 // Reflect
-// ----------------------------------------------------------
-T.type                                              // 'object'
-T.required                                          // ['x', 'y', 'z']
-T.properties                                        // { x: ..., y: ..., z: ... }
+// -------------------------------------------------------------------------------
 
-// ----------------------------------------------------------
-// Computed
-// ----------------------------------------------------------
-const S = Type.Script({ T }, `{
-  [K in keyof T]: T[K] | null
-}`)
+console.log(User)                                // {
+                                                 //   type: 'object',
+                                                 //   properties: {
+                                                 //     id: { type: 'string' },
+                                                 //     name: { type: 'string' },
+                                                 //     email: { type: 'string' }
+                                                 //   },
+                                                 //   required: [
+                                                 //     'id', 
+                                                 //     'name', 
+                                                 //     'email'
+                                                 //   ]
+                                                 // }
 
-// ----------------------------------------------------------
-// Inference
-// ----------------------------------------------------------
-type S = Type.Static<typeof S>                      // type S = {
-                                                    //   x: number | null,
-                                                    //   y: string | null,
-                                                    //   z: boolean | null
-                                                    // }
+console.log(UserUpdate)                          // {
+                                                 //   type: 'object',
+                                                 //   properties: {
+                                                 //     id: { type: 'string' },
+                                                 //     name: { type: 'string' },
+                                                 //     email: { type: 'string' }
+                                                 //   },
+                                                 //   required: ['id']
+                                                 // }
+
+// -------------------------------------------------------------------------------
+// Static
+// -------------------------------------------------------------------------------
+
+type User = Type.Static<typeof User>              // type User = {
+                                                  //   id: string,
+                                                  //   name: string,
+                                                  //   email: string
+                                                  // }
+
+type UserUpdate = Type.Static<typeof UserUpdate>  // type UserUpdate = {
+                                                  //   id: string,
+                                                  //   name?: string,
+                                                  //   email?: string
+                                                  // }
+
 ```
 
 <a name="Schema"></a>
 
 ## Schema
 
-[Documentation](https://sinclairzx81.github.io/typebox/#/docs/schema/overview)
+[Documentation](https://sinclairzx81.github.io/typebox/#/docs/schema/overview) | [Example 1](https://www.typescriptlang.org/play/?#code/JYWwDg9gTgLgBAZQMYAsCmICGcBmUIhwDkMAnmGgEYQAeA9AM6oaZEBQokscAKuWrnyES-ajXZs6dOAFo58hYqXKVqteo0zJ0gMIEwwADZptszeYuWr8tmyQQAdg3gBVBmihwAvImZYAdHrgRmgAFHwU-gDylABWaEgwoQDebHBwwAAmAFy8-P4IMFDADgDmoQCUADRpcA6YIGi5EWgFRSXl1bUsRs35hcVlKbjQWDC5RD2GRHAAvhVs8wum1qtr61pScAAKmFDuKxtHx6q29k7wAK7unj5uHv67+2HJ6W-vH5-vW+fOcNceXKpdJZCYANgArDgAIyYABMlAAzEgACyZCFoME4ADsmAAHJQAJxIAAMmWhRCqX2pcC2IJycGcg1KNXS9UaEwBUEpNN5fO+0jZDSajPaZVZcCmnJuAAFMgRMCV-PYQDN+by6ZKsL1RczFhV1YajR8trNvHB-JagA) | [Example 2](https://www.typescriptlang.org/play/?#code/JYWwDg9gTgLgBAZQMYAsCmICGcBmUIhwDkMAnmGgEYQAeA9AM6oaZEBQbddcAtH-wMFDhI0WPESenbgGECYYABs003pPUbNW-hyQQAdg3gBVBmihwAvImZYAdHPBK0ACgDebOHDIUAXMQhKACs0JBgiABpPODB8ClhgNAZ-Dy8vYAATFO9yNH8iIyhgfQBzIjgAXyi0uH1MEDy4Nxy-YkLissrqtJYlbJ9Ggpgi0vKK6KroqDQARwBXYGmsuABtaK8iTMi4deI6hu3dol7Fdi8AXTYKgEoOLjVtR6en1QAFTCgzVWef38ldAxGOBzMwWaymcx2d6fVzNGrwhGIuD3PSGeAg8wpaKZfIANgArDgAIyYABMlAAzEgACwZfFoXE4ADsmAAHJQAJxIAAMGSJ2yRiPu6WW7VK3X2gwxUAFgrl8q8wtq9UaYpK3RO+WlAAEMgRMMU7HoQOUFXKlZq4GqrtczXb7fD7hUrHA7G6gA)
 
-The Schema submodule is a low level JSON Schema spec compliant validation system that supports Drafts 3 through to 2020-12. This validation system is decoupled from both Type.* and Value.* submodules and is designed to be an ultra lightweight, high performance alternative to Ajv for compiling and validating with native JSON Schema.
-
-```typescript
-import Schema from 'typebox/schema'
-```
+TypeBox includes a high performance validation compiler for JSON Schema. The compiler supports both TypeBox and native JSON Schema schematics, and will convert them into optimized runtime validation routines. The compiler is designed to be a lightweight 2020-12 spec compliant alternative to Ajv for high-throughput applications.
 
 ### Example
 
-The following uses the Schema submodule to compile and parse from JSON Schema.
+The following uses the Schema submodule to compile a TypeBox type.
 
 ```typescript
-// ----------------------------------------------------------
-// Compile
-// ----------------------------------------------------------
-const C = Schema.Compile({
-  type: 'object',
-  required: ['x', 'y', 'z'],
-  properties: {
-    x: { type: 'number' },
-    y: { type: 'number' },
-    z: { type: 'number' }
-  }
-})
+import Schema from 'typebox/schema'
 
-// ----------------------------------------------------------
+// -------------------------------------------------------------------------------
+// Compile
+// -------------------------------------------------------------------------------
+
+const User = Schema.Compile(Type.Object({
+  id: Type.String(),
+  name: Type.String(),
+  email: Type.String({ format: 'email' })
+}))
+
+// -------------------------------------------------------------------------------
 // Parse
-// ----------------------------------------------------------
-const R = C.Parse({  x: 0, y: 0, z: 0 })            // const R: {
-                                                    //   x: number,
-                                                    //   y: number,
-                                                    //   z: number
-                                                    // } = ...
+// -------------------------------------------------------------------------------
+
+const user = User.Parse({                        // const user: {
+  id: '65f1a2b3c4d5e6f7a8b9c0d1',                //   id: string,
+  name: 'user',                                  //   name: string,
+  email: 'user@domain.com'                       //   email: string
+})                                               // } = ...
 ```
 
 <a name="Versions"></a>
@@ -228,25 +234,10 @@ const R = C.Parse({  x: 0, y: 0, z: 0 })            // const R: {
 
 TypeBox provides two distinct versions that span two generations of the TypeScript compiler.
 
-### Version 0.x
-
-```bash
-$ npm install @sinclair/typebox                     # 0.x - LTS    | TS 4-6
-```
-
-Developed against TypeScript 4-6 and maintained under Long Term Support (LTS) for existing infrastructure on the 0.x revision line. ESM and CJS compatible.
-
-### Version 1.x
-
-```bash
-$ npm install typebox                               # 1.x - Latest | TS 7 Native
-```
-
-Developed against the TypeScript 7 native compiler with advanced type inference and JSON Schema 2020-12 compliant validation, with backwards compatibility for `0.x` types. ESM only.
-
-### Additional
-
-The `1.x` version is recommended for most new projects and is the active development line that targets optimizations enabled by the TypeScript 7 native compiler. The `0.x` version is maintained under LTS for environments requiring CJS and ESM compatibility as well as support for older TypeScript compiler versions. For issues relating to `0.x` please submit them to the [TypeBox 0.x](https://github.com/sinclairzx81/sinclair-typebox) repository.
+| TypeBox | TypeScript | Description |
+| :--- | :--- | :--- |
+| 1.x | 6.0 - 7.0+ | **Latest.** Developed against the TypeScript 7 native compiler. Provides advanced type inference and native JSON Schema 2020-12 support. Includes backwards compatibility with `0.x` types. **ESM only.** |
+| 0.x | 5.0 - 6.0 | **LTS.** Developed against older TypeScript versions and actively maintained under Long Term Support. Compatible with both **ESM and CJS**. Issues should be submitted to the [Sinclair TypeBox](https://github.com/sinclairzx81/sinclair-typebox) repository. |
 
 ## Contribute
 

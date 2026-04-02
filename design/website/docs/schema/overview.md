@@ -1,38 +1,35 @@
 # Schema
 
-Native JSON Schema Validation and Inference
+High Performance JSON Schema Validator
 
 ## Overview
 
-The Schema submodule is a low level JSON Schema spec compliant validation system that supports Drafts 3 through to 2020-12. This validation system is decoupled from both Type.* and Value.* submodules and is designed to be an ultra lightweight, high performance alternative to Ajv for compiling and validating with native JSON Schema.
-
-```typescript
-import Schema from 'typebox/schema'
-```
+TypeBox includes a high performance validation compiler for JSON Schema. The compiler supports both TypeBox and native JSON Schema schematics, and will convert them into optimized runtime validation routines. The compiler is designed to be a lightweight 2020-12 spec compliant alternative to Ajv for high-throughput applications.
 
 ### Example
 
-The following uses the Schema submodule to compile and parse from JSON Schema.
+The following uses the Schema submodule to compile a TypeBox type.
 
 ```typescript
-// ----------------------------------------------------------
-// Compile
-// ----------------------------------------------------------
-const C = Schema.Compile({
-  type: 'object',
-  required: ['x', 'y', 'z'],
-  properties: {
-    x: { type: 'number' },
-    y: { type: 'number' },
-    z: { type: 'number' }
-  }
-})
+import Schema from 'typebox/schema'
 
-// ----------------------------------------------------------
+// -------------------------------------------------------------------------------
+// Compile
+// -------------------------------------------------------------------------------
+
+const User = Schema.Compile(Type.Object({
+  id: Type.String(),
+  name: Type.String(),
+  email: Type.String({ format: 'email' })
+}))
+
+// -------------------------------------------------------------------------------
 // Parse
-// ----------------------------------------------------------
-const R = C.Parse({  x: 0, y: 0, z: 0 })            // const R: {
-                                                    //   x: number,
-                                                    //   y: number,
-                                                    //   z: number
-                                                    // } = ...
+// -------------------------------------------------------------------------------
+
+const user = User.Parse({                        // const user: {
+  id: '65f1a2b3c4d5e6f7a8b9c0d1',                //   id: string,
+  name: 'user',                                  //   name: string,
+  email: 'user@domain.com'                       //   email: string
+})                                               // } = ...
+```
