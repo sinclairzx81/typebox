@@ -4,6 +4,8 @@ High Performance Runtime Validation
 
 ## Overview
 
+> ⚠️ Notice: The `typebox/compile` submodule is being phased out in 1.x in favor of the more versatile `typebox/schema` compiler. While `typebox/compile` will be maintained throughout the 1.x release cycle, future development will focus on enhancing the `schema` submodule with advanced code generation and custom emit capabilities. Users are encouraged to migrate to `typebox/schema` and provide feedback regarding feature parity or functional requirements.
+
 The Compile submodule is a high-performance, JSON Schema compliant JIT compiler that transforms schematics into efficient runtime validators. It is optimized for fast, dynamic schema compilation and delivers extremely high data-validation throughput.
 
 ```typescript

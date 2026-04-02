@@ -1,33 +1,48 @@
 # Type
 
-Json Schema Type Builder with Static Type Resolution for TypeScript
+JSON Schema Type Builder with Static Type Resolution for TypeScript
 
 ## Overview
 
-TypeBox provides many functions to create Json Schema types. Each function returns a small Json Schema fragment that can be composed into more complex types. TypeBox includes a set of functions that are used to construct Json Schema compliant schematics as well as a set of extended functions that return schematics for constructs native to JavaScript.
+TypeBox types are JSON Schema fragments that compose into more complex types. The library offers a set of types used to construct JSON Schema compliant schematics as well as a set of extended types used to model constructs native to the JavaScript language. The schematics produced by TypeBox can be passed directly to any JSON Schema compliant validator.
 
 ## Example
 
-The following creates a Json Schema type and infers with Static.
+The following creates a User type and infers with Static.
 
 ```typescript
 import Type from 'typebox'
 
-const T = Type.Object({                             // const T = {
-  x: Type.Number(),                                 //   type: 'object',
-  y: Type.Number(),                                 //   required: ['x', 'y', 'z'],
-  z: Type.Number()                                  //   properties: {
-})                                                  //     x: { type: 'number' },
-                                                    //     y: { type: 'number' },
-                                                    //     z: { type: 'number' }
-                                                    //   }
-                                                    // }
+// -------------------------------------------------------------------------------
+// Type
+// -------------------------------------------------------------------------------
 
-type T = Type.Static<typeof T>                      // type T = {
-                                                    //   x: number,
-                                                    //   y: number,
-                                                    //   z: number
-                                                    // }
+const User = Type.Object({                       // const User = {
+  id: Type.String(),                             //   type: 'object',
+  name: Type.String(),                           //   properties: {
+  email: Type.String({ format: 'email' })        //     id: { type: 'string' },
+})                                               //     name: { type: 'string' },
+                                                 //     email: { 
+                                                 //       type: 'string', 
+                                                 //       format: 'email' 
+                                                 //     }
+                                                 //   }
+                                                 //   required: [
+                                                 //     'id', 
+                                                 //     'name', 
+                                                 //     'email'
+                                                 //   ]
+                                                 // }
+
+// -------------------------------------------------------------------------------
+// Static
+// -------------------------------------------------------------------------------
+
+type User = Type.Static<typeof User>              // type User = {
+                                                  //   id: string,
+                                                  //   name: string,
+                                                  //   email: string
+                                                  // }
 ```
 
 Options and constraints can be passed on the last argument of any given type.
