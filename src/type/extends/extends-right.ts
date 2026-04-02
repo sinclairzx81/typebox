@@ -64,14 +64,11 @@ type TExtendsRightInfer<Inferred extends TProperties, Name extends string, Left 
   )
 > = Result
 function ExtendsRightInfer<Inferred extends TProperties, Name extends string, Left extends TSchema, Right extends TSchema>
-  (inferred: Inferred, name: Name, left: Left, right: Right): 
-    TExtendsRightInfer<Inferred, Name, Left, Right> {
-  const check = ExtendsLeft(inferred, left, right)
-  return (
-    Result.IsExtendsTrueLike(check)
-      ? Result.ExtendsTrue(Memory.Assign(Memory.Assign(inferred, check.inferred), { [name]: left }))
-      : Result.ExtendsFalse()
-  ) as never
+  (inferred: Inferred, name: Name, left: Left, right: Right):
+  TExtendsRightInfer<Inferred, Name, Left, Right> {
+  return Result.Match(ExtendsLeft(inferred, left, right), checkInferred =>
+    Result.ExtendsTrue(Memory.Assign(Memory.Assign(inferred, checkInferred), { [name]: left })),
+    () => Result.ExtendsFalse()) as never
 }
 // ----------------------------------------------------------------------------
 // ExtendsRightAny
