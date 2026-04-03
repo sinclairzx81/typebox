@@ -1,7 +1,9 @@
 [
   {
     "description": "email format",
-    "schema": { "format": "email" },
+    "schema": {
+      "format": "email"
+    },
     "tests": [
       {
         "description": "all string formats ignore integers",
@@ -37,7 +39,9 @@
   },
   {
     "description": "ipv4 format",
-    "schema": { "format": "ipv4" },
+    "schema": {
+      "format": "ipv4"
+    },
     "tests": [
       {
         "description": "all string formats ignore integers",
@@ -73,7 +77,9 @@
   },
   {
     "description": "ipv6 format",
-    "schema": { "format": "ipv6" },
+    "schema": {
+      "format": "ipv6"
+    },
     "tests": [
       {
         "description": "all string formats ignore integers",
@@ -109,7 +115,9 @@
   },
   {
     "description": "hostname format",
-    "schema": { "format": "hostname" },
+    "schema": {
+      "format": "hostname"
+    },
     "tests": [
       {
         "description": "all string formats ignore integers",
@@ -145,7 +153,9 @@
   },
   {
     "description": "date-time format",
-    "schema": { "format": "date-time" },
+    "schema": {
+      "format": "date-time"
+    },
     "tests": [
       {
         "description": "all string formats ignore integers",
@@ -181,7 +191,9 @@
   },
   {
     "description": "json-pointer format",
-    "schema": { "format": "json-pointer" },
+    "schema": {
+      "format": "json-pointer"
+    },
     "tests": [
       {
         "description": "all string formats ignore integers",
@@ -217,7 +229,9 @@
   },
   {
     "description": "uri format",
-    "schema": { "format": "uri" },
+    "schema": {
+      "format": "uri"
+    },
     "tests": [
       {
         "description": "all string formats ignore integers",
@@ -253,7 +267,9 @@
   },
   {
     "description": "uri-reference format",
-    "schema": { "format": "uri-reference" },
+    "schema": {
+      "format": "uri-reference"
+    },
     "tests": [
       {
         "description": "all string formats ignore integers",
@@ -289,7 +305,9 @@
   },
   {
     "description": "uri-template format",
-    "schema": { "format": "uri-template" },
+    "schema": {
+      "format": "uri-template"
+    },
     "tests": [
       {
         "description": "all string formats ignore integers",

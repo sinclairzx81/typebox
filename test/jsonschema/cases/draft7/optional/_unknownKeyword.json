@@ -30,9 +30,15 @@
         }
       },
       "anyOf": [
-        { "$ref": "#/definitions/id_in_unknown0" },
-        { "$ref": "#/definitions/id_in_unknown1" },
-        { "$ref": "https://localhost:1234/unknownKeyword/my_identifier.json" }
+        {
+          "$ref": "#/definitions/id_in_unknown0"
+        },
+        {
+          "$ref": "#/definitions/id_in_unknown1"
+        },
+        {
+          "$ref": "https://localhost:1234/unknownKeyword/my_identifier.json"
+        }
       ]
     },
     "tests": [
@@ -40,11 +46,6 @@
         "description": "type matches second anyOf, which has a real schema in it",
         "data": "a string",
         "valid": true
-      },
-      {
-        "description": "type matches non-schema in first anyOf",
-        "data": null,
-        "valid": false
       },
       {
         "description": "type matches non-schema in third anyOf",

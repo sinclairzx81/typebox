@@ -1,0 +1,210 @@
+[
+  {
+    "description": "unevaluatedItems with $dynamicRef",
+    "schema": {
+      "$schema": "https://json-schema.org/v1",
+      "$id": "https://example.com/unevaluated-items-with-dynamic-ref/derived",
+      "$ref": "./baseSchema",
+      "$defs": {
+        "derived": {
+          "$dynamicAnchor": "addons",
+          "prefixItems": [
+            true,
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "baseSchema": {
+          "$id": "./baseSchema",
+          "$comment": "unevaluatedItems comes first so it's more likely to catch bugs with implementations that are sensitive to keyword ordering",
+          "unevaluatedItems": false,
+          "type": "array",
+          "prefixItems": [
+            {
+              "type": "string"
+            }
+          ],
+          "$dynamicRef": "#addons"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "with no unevaluated items",
+        "data": [
+          "foo",
+          "bar"
+        ],
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "unevaluatedItems depends on adjacent contains",
+    "schema": {
+      "$schema": "https://json-schema.org/v1",
+      "prefixItems": [
+        true
+      ],
+      "contains": {
+        "type": "string"
+      },
+      "unevaluatedItems": false
+    },
+    "tests": [
+      {
+        "description": "second item is evaluated by contains",
+        "data": [
+          1,
+          "foo"
+        ],
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "unevaluatedItems depends on multiple nested contains",
+    "schema": {
+      "$schema": "https://json-schema.org/v1",
+      "allOf": [
+        {
+          "contains": {
+            "multipleOf": 2
+          }
+        },
+        {
+          "contains": {
+            "multipleOf": 3
+          }
+        }
+      ],
+      "unevaluatedItems": {
+        "multipleOf": 5
+      }
+    },
+    "tests": [
+      {
+        "description": "5 not evaluated, passes unevaluatedItems",
+        "data": [
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "unevaluatedItems and contains interact to control item dependency relationship",
+    "schema": {
+      "$schema": "https://json-schema.org/v1",
+      "if": {
+        "contains": {
+          "const": "a"
+        }
+      },
+      "then": {
+        "if": {
+          "contains": {
+            "const": "b"
+          }
+        },
+        "then": {
+          "if": {
+            "contains": {
+              "const": "c"
+            }
+          }
+        }
+      },
+      "unevaluatedItems": false
+    },
+    "tests": [
+      {
+        "description": "only a's are valid",
+        "data": [
+          "a",
+          "a"
+        ],
+        "valid": true
+      },
+      {
+        "description": "a's and b's are valid",
+        "data": [
+          "a",
+          "b",
+          "a",
+          "b",
+          "a"
+        ],
+        "valid": true
+      },
+      {
+        "description": "a's, b's and c's are valid",
+        "data": [
+          "c",
+          "a",
+          "c",
+          "c",
+          "b",
+          "a"
+        ],
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "unevaluatedItems with minContains = 0",
+    "schema": {
+      "$schema": "https://json-schema.org/v1",
+      "contains": {
+        "type": "string"
+      },
+      "minContains": 0,
+      "unevaluatedItems": false
+    },
+    "tests": [
+      {
+        "description": "all items evaluated by contains",
+        "data": [
+          "foo",
+          "bar"
+        ],
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "Evaluated items collection needs to consider instance location",
+    "schema": {
+      "$schema": "https://json-schema.org/v1",
+      "prefixItems": [
+        {
+          "prefixItems": [
+            true,
+            {
+              "type": "string"
+            }
+          ]
+        }
+      ],
+      "unevaluatedItems": false
+    },
+    "tests": [
+      {
+        "description": "with an unevaluated item that exists at another location",
+        "data": [
+          [
+            "foo",
+            "bar"
+          ],
+          "bar"
+        ],
+        "valid": false
+      }
+    ]
+  }
+]

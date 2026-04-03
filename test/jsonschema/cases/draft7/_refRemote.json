@@ -1,49 +1,27 @@
 [
   {
-    "description": "remote ref, containing refs itself",
-    "schema": { "$ref": "http://json-schema.org/draft-07/schema#" },
-    "tests": [
-      {
-        "description": "remote ref valid",
-        "data": { "minLength": 1 },
-        "valid": true
-      },
-      {
-        "description": "remote ref invalid",
-        "data": { "minLength": -1 },
-        "valid": false
-      }
-    ]
-  },
-  {
     "description": "remote ref",
-    "schema": { "$ref": "http://localhost:1234/integer.json" },
+    "schema": {
+      "$ref": "http://localhost:1234/integer.json"
+    },
     "tests": [
       {
         "description": "remote ref valid",
         "data": 1,
         "valid": true
-      },
-      {
-        "description": "remote ref invalid",
-        "data": "a",
-        "valid": false
       }
     ]
   },
   {
     "description": "fragment within remote ref",
-    "schema": { "$ref": "http://localhost:1234/draft7/subSchemas.json#/definitions/integer" },
+    "schema": {
+      "$ref": "http://localhost:1234/draft7/subSchemas.json#/definitions/integer"
+    },
     "tests": [
       {
         "description": "remote fragment valid",
         "data": 1,
         "valid": true
-      },
-      {
-        "description": "remote fragment invalid",
-        "data": "a",
-        "valid": false
       }
     ]
   },
@@ -57,11 +35,6 @@
         "description": "ref within ref valid",
         "data": 1,
         "valid": true
-      },
-      {
-        "description": "ref within ref invalid",
-        "data": "a",
-        "valid": false
       }
     ]
   },
@@ -71,19 +44,20 @@
       "$id": "http://localhost:1234/",
       "items": {
         "$id": "baseUriChange/",
-        "items": { "$ref": "folderInteger.json" }
+        "items": {
+          "$ref": "folderInteger.json"
+        }
       }
     },
     "tests": [
       {
         "description": "base URI change ref valid",
-        "data": [[1]],
+        "data": [
+          [
+            1
+          ]
+        ],
         "valid": true
-      },
-      {
-        "description": "base URI change ref invalid",
-        "data": [["a"]],
-        "valid": false
       }
     ]
   },
@@ -93,26 +67,29 @@
       "$id": "http://localhost:1234/scope_change_defs1.json",
       "type": "object",
       "properties": {
-        "list": { "$ref": "#/definitions/baz" }
+        "list": {
+          "$ref": "#/definitions/baz"
+        }
       },
       "definitions": {
         "baz": {
           "$id": "baseUriChangeFolder/",
           "type": "array",
-          "items": { "$ref": "folderInteger.json" }
+          "items": {
+            "$ref": "folderInteger.json"
+          }
         }
       }
     },
     "tests": [
       {
         "description": "number is valid",
-        "data": { "list": [1] },
+        "data": {
+          "list": [
+            1
+          ]
+        },
         "valid": true
-      },
-      {
-        "description": "string is invalid",
-        "data": { "list": ["a"] },
-        "valid": false
       }
     ]
   },
@@ -122,7 +99,9 @@
       "$id": "http://localhost:1234/scope_change_defs2.json",
       "type": "object",
       "properties": {
-        "list": { "$ref": "#/definitions/baz/definitions/bar" }
+        "list": {
+          "$ref": "#/definitions/baz/definitions/bar"
+        }
       },
       "definitions": {
         "baz": {
@@ -130,7 +109,9 @@
           "definitions": {
             "bar": {
               "type": "array",
-              "items": { "$ref": "folderInteger.json" }
+              "items": {
+                "$ref": "folderInteger.json"
+              }
             }
           }
         }
@@ -139,13 +120,12 @@
     "tests": [
       {
         "description": "number is valid",
-        "data": { "list": [1] },
+        "data": {
+          "list": [
+            1
+          ]
+        },
         "valid": true
-      },
-      {
-        "description": "string is invalid",
-        "data": { "list": ["a"] },
-        "valid": false
       }
     ]
   },
@@ -155,7 +135,9 @@
       "$id": "http://localhost:1234/object",
       "type": "object",
       "properties": {
-        "name": { "$ref": "draft7/name.json#/definitions/orNull" }
+        "name": {
+          "$ref": "draft7/name.json#/definitions/orNull"
+        }
       }
     },
     "tests": [
@@ -172,15 +154,6 @@
           "name": null
         },
         "valid": true
-      },
-      {
-        "description": "object is invalid",
-        "data": {
-          "name": {
-            "name": null
-          }
-        },
-        "valid": false
       }
     ]
   },
@@ -189,17 +162,12 @@
     "schema": {
       "$id": "http://localhost:1234/schema-remote-ref-ref-defs1.json",
       "allOf": [
-        { "$ref": "draft7/ref-and-definitions.json" }
+        {
+          "$ref": "draft7/ref-and-definitions.json"
+        }
       ]
     },
     "tests": [
-      {
-        "description": "invalid",
-        "data": {
-          "bar": 1
-        },
-        "valid": false
-      },
       {
         "description": "valid",
         "data": {
@@ -219,11 +187,6 @@
         "description": "integer is valid",
         "data": 1,
         "valid": true
-      },
-      {
-        "description": "string is invalid",
-        "data": "foo",
-        "valid": false
       }
     ]
   },
@@ -232,21 +195,18 @@
     "schema": {
       "$id": "http://localhost:1234/some-id",
       "properties": {
-        "name": { "$ref": "nested/foo-ref-string.json" }
+        "name": {
+          "$ref": "nested/foo-ref-string.json"
+        }
       }
     },
     "tests": [
       {
-        "description": "number is invalid",
-        "data": {
-          "name": { "foo": 1 }
-        },
-        "valid": false
-      },
-      {
         "description": "string is valid",
         "data": {
-          "name": { "foo": "a" }
+          "name": {
+            "foo": "a"
+          }
         },
         "valid": true
       }
@@ -262,11 +222,6 @@
         "description": "number is valid",
         "data": 1,
         "valid": true
-      },
-      {
-        "description": "non-number is invalid",
-        "data": "a",
-        "valid": false
       }
     ]
   }

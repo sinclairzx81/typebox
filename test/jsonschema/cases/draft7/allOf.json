@@ -5,37 +5,55 @@
       "allOf": [
         {
           "properties": {
-            "bar": { "type": "integer" }
+            "bar": {
+              "type": "integer"
+            }
           },
-          "required": ["bar"]
+          "required": [
+            "bar"
+          ]
         },
         {
           "properties": {
-            "foo": { "type": "string" }
+            "foo": {
+              "type": "string"
+            }
           },
-          "required": ["foo"]
+          "required": [
+            "foo"
+          ]
         }
       ]
     },
     "tests": [
       {
         "description": "allOf",
-        "data": { "foo": "baz", "bar": 2 },
+        "data": {
+          "foo": "baz",
+          "bar": 2
+        },
         "valid": true
       },
       {
         "description": "mismatch second",
-        "data": { "foo": "baz" },
+        "data": {
+          "foo": "baz"
+        },
         "valid": false
       },
       {
         "description": "mismatch first",
-        "data": { "bar": 2 },
+        "data": {
+          "bar": 2
+        },
         "valid": false
       },
       {
         "description": "wrong type",
-        "data": { "foo": "baz", "bar": "quux" },
+        "data": {
+          "foo": "baz",
+          "bar": "quux"
+        },
         "valid": false
       }
     ]
@@ -43,47 +61,76 @@
   {
     "description": "allOf with base schema",
     "schema": {
-      "properties": { "bar": { "type": "integer" } },
-      "required": ["bar"],
+      "properties": {
+        "bar": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "bar"
+      ],
       "allOf": [
         {
           "properties": {
-            "foo": { "type": "string" }
+            "foo": {
+              "type": "string"
+            }
           },
-          "required": ["foo"]
+          "required": [
+            "foo"
+          ]
         },
         {
           "properties": {
-            "baz": { "type": "null" }
+            "baz": {
+              "type": "null"
+            }
           },
-          "required": ["baz"]
+          "required": [
+            "baz"
+          ]
         }
       ]
     },
     "tests": [
       {
         "description": "valid",
-        "data": { "foo": "quux", "bar": 2, "baz": null },
+        "data": {
+          "foo": "quux",
+          "bar": 2,
+          "baz": null
+        },
         "valid": true
       },
       {
         "description": "mismatch base schema",
-        "data": { "foo": "quux", "baz": null },
+        "data": {
+          "foo": "quux",
+          "baz": null
+        },
         "valid": false
       },
       {
         "description": "mismatch first allOf",
-        "data": { "bar": 2, "baz": null },
+        "data": {
+          "bar": 2,
+          "baz": null
+        },
         "valid": false
       },
       {
         "description": "mismatch second allOf",
-        "data": { "foo": "quux", "bar": 2 },
+        "data": {
+          "foo": "quux",
+          "bar": 2
+        },
         "valid": false
       },
       {
         "description": "mismatch both",
-        "data": { "bar": 2 },
+        "data": {
+          "bar": 2
+        },
         "valid": false
       }
     ]
@@ -92,8 +139,12 @@
     "description": "allOf simple types",
     "schema": {
       "allOf": [
-        { "maximum": 30 },
-        { "minimum": 20 }
+        {
+          "maximum": 30
+        },
+        {
+          "minimum": 20
+        }
       ]
     },
     "tests": [
@@ -111,7 +162,12 @@
   },
   {
     "description": "allOf with boolean schemas, all true",
-    "schema": { "allOf": [true, true] },
+    "schema": {
+      "allOf": [
+        true,
+        true
+      ]
+    },
     "tests": [
       {
         "description": "any value is valid",
@@ -122,7 +178,12 @@
   },
   {
     "description": "allOf with boolean schemas, some false",
-    "schema": { "allOf": [true, false] },
+    "schema": {
+      "allOf": [
+        true,
+        false
+      ]
+    },
     "tests": [
       {
         "description": "any value is invalid",
@@ -133,7 +194,12 @@
   },
   {
     "description": "allOf with boolean schemas, all false",
-    "schema": { "allOf": [false, false] },
+    "schema": {
+      "allOf": [
+        false,
+        false
+      ]
+    },
     "tests": [
       {
         "description": "any value is invalid",
@@ -178,7 +244,9 @@
     "schema": {
       "allOf": [
         {},
-        { "type": "number" }
+        {
+          "type": "number"
+        }
       ]
     },
     "tests": [
@@ -198,7 +266,9 @@
     "description": "allOf with the last empty schema",
     "schema": {
       "allOf": [
-        { "type": "number" },
+        {
+          "type": "number"
+        },
         {}
       ]
     },
@@ -244,9 +314,21 @@
   {
     "description": "allOf combined with anyOf, oneOf",
     "schema": {
-      "allOf": [{ "multipleOf": 2 }],
-      "anyOf": [{ "multipleOf": 3 }],
-      "oneOf": [{ "multipleOf": 5 }]
+      "allOf": [
+        {
+          "multipleOf": 2
+        }
+      ],
+      "anyOf": [
+        {
+          "multipleOf": 3
+        }
+      ],
+      "oneOf": [
+        {
+          "multipleOf": 5
+        }
+      ]
     },
     "tests": [
       {

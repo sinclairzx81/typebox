@@ -1,0 +1,53 @@
+[
+  {
+    "description": "multiple options selects the right one",
+    "schema": {
+      "propertyDependencies": {
+        "foo": {
+          "bar": {
+            "minProperties": 2,
+            "maxProperties": 2
+          },
+          "baz": {
+            "maxProperties": 1
+          },
+          "qux": true,
+          "quux": false
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "bar with more than 2 properties is invalid",
+        "data": {
+          "foo": "bar",
+          "other-foo": "other-bar",
+          "too": "many"
+        },
+        "valid": false
+      },
+      {
+        "description": "bar with fewer than 2 properties is invalid",
+        "data": {
+          "foo": "bar"
+        },
+        "valid": false
+      },
+      {
+        "description": "baz with other properties is invalid",
+        "data": {
+          "foo": "baz",
+          "other-foo": "other-bar"
+        },
+        "valid": false
+      },
+      {
+        "description": "quux is disallowed",
+        "data": {
+          "foo": "quux"
+        },
+        "valid": false
+      }
+    ]
+  }
+]

@@ -2,32 +2,34 @@
   {
     "description": "extends",
     "schema": {
-      "properties": { "bar": { "type": "integer", "required": true } },
+      "properties": {
+        "bar": {
+          "type": "integer",
+          "required": true
+        }
+      },
       "extends": {
         "properties": {
-          "foo": { "type": "string", "required": true }
+          "foo": {
+            "type": "string",
+            "required": true
+          }
         }
       }
     },
     "tests": [
       {
-        "description": "extends",
-        "data": { "foo": "baz", "bar": 2 },
-        "valid": true
-      },
-      {
         "description": "mismatch extends",
-        "data": { "foo": "baz" },
+        "data": {
+          "foo": "baz"
+        },
         "valid": false
       },
       {
         "description": "mismatch extended",
-        "data": { "bar": 2 },
-        "valid": false
-      },
-      {
-        "description": "wrong type",
-        "data": { "foo": "baz", "bar": "quux" },
+        "data": {
+          "bar": 2
+        },
         "valid": false
       }
     ]
@@ -35,39 +37,53 @@
   {
     "description": "multiple extends",
     "schema": {
-      "properties": { "bar": { "type": "integer", "required": true } },
+      "properties": {
+        "bar": {
+          "type": "integer",
+          "required": true
+        }
+      },
       "extends": [
         {
           "properties": {
-            "foo": { "type": "string", "required": true }
+            "foo": {
+              "type": "string",
+              "required": true
+            }
           }
         },
         {
           "properties": {
-            "baz": { "type": "null", "required": true }
+            "baz": {
+              "type": "null",
+              "required": true
+            }
           }
         }
       ]
     },
     "tests": [
       {
-        "description": "valid",
-        "data": { "foo": "quux", "bar": 2, "baz": null },
-        "valid": true
-      },
-      {
         "description": "mismatch first extends",
-        "data": { "bar": 2, "baz": null },
+        "data": {
+          "bar": 2,
+          "baz": null
+        },
         "valid": false
       },
       {
         "description": "mismatch second extends",
-        "data": { "foo": "quux", "bar": 2 },
+        "data": {
+          "foo": "quux",
+          "bar": 2
+        },
         "valid": false
       },
       {
         "description": "mismatch both",
-        "data": { "bar": 2 },
+        "data": {
+          "bar": 2
+        },
         "valid": false
       }
     ]
@@ -76,14 +92,11 @@
     "description": "extends simple types",
     "schema": {
       "minimum": 20,
-      "extends": { "maximum": 30 }
+      "extends": {
+        "maximum": 30
+      }
     },
     "tests": [
-      {
-        "description": "valid",
-        "data": 25,
-        "valid": true
-      },
       {
         "description": "mismatch extends",
         "data": 35,

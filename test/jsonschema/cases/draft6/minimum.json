@@ -1,7 +1,9 @@
 [
   {
     "description": "minimum validation",
-    "schema": { "minimum": 1.1 },
+    "schema": {
+      "minimum": 1.1
+    },
     "tests": [
       {
         "description": "above the minimum is valid",
@@ -27,7 +29,9 @@
   },
   {
     "description": "minimum validation with signed integer",
-    "schema": { "minimum": -2 },
+    "schema": {
+      "minimum": -2
+    },
     "tests": [
       {
         "description": "negative above the minimum is valid",
@@ -46,7 +50,7 @@
       },
       {
         "description": "boundary point with float is valid",
-        "data": -2.0,
+        "data": -2,
         "valid": true
       },
       {

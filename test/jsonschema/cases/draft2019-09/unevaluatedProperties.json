@@ -81,7 +81,9 @@
       "$schema": "https://json-schema.org/draft/2019-09/schema",
       "type": "object",
       "properties": {
-        "foo": { "type": "string" }
+        "foo": {
+          "type": "string"
+        }
       },
       "unevaluatedProperties": false
     },
@@ -109,7 +111,9 @@
       "$schema": "https://json-schema.org/draft/2019-09/schema",
       "type": "object",
       "patternProperties": {
-        "^foo": { "type": "string" }
+        "^foo": {
+          "type": "string"
+        }
       },
       "unevaluatedProperties": false
     },
@@ -132,14 +136,49 @@
     ]
   },
   {
-    "description": "unevaluatedProperties with adjacent additionalProperties",
+    "description": "unevaluatedProperties with adjacent bool additionalProperties",
     "schema": {
       "$schema": "https://json-schema.org/draft/2019-09/schema",
       "type": "object",
       "properties": {
-        "foo": { "type": "string" }
+        "foo": {
+          "type": "string"
+        }
       },
       "additionalProperties": true,
+      "unevaluatedProperties": false
+    },
+    "tests": [
+      {
+        "description": "with no additional properties",
+        "data": {
+          "foo": "foo"
+        },
+        "valid": true
+      },
+      {
+        "description": "with additional properties",
+        "data": {
+          "foo": "foo",
+          "bar": "bar"
+        },
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "unevaluatedProperties with adjacent non-bool additionalProperties",
+    "schema": {
+      "$schema": "https://json-schema.org/draft/2019-09/schema",
+      "type": "object",
+      "properties": {
+        "foo": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {
+        "type": "string"
+      },
       "unevaluatedProperties": false
     },
     "tests": [
@@ -166,12 +205,16 @@
       "$schema": "https://json-schema.org/draft/2019-09/schema",
       "type": "object",
       "properties": {
-        "foo": { "type": "string" }
+        "foo": {
+          "type": "string"
+        }
       },
       "allOf": [
         {
           "properties": {
-            "bar": { "type": "string" }
+            "bar": {
+              "type": "string"
+            }
           }
         }
       ],
@@ -203,12 +246,16 @@
       "$schema": "https://json-schema.org/draft/2019-09/schema",
       "type": "object",
       "properties": {
-        "foo": { "type": "string" }
+        "foo": {
+          "type": "string"
+        }
       },
       "allOf": [
         {
           "patternProperties": {
-            "^bar": { "type": "string" }
+            "^bar": {
+              "type": "string"
+            }
           }
         }
       ],
@@ -240,7 +287,9 @@
       "$schema": "https://json-schema.org/draft/2019-09/schema",
       "type": "object",
       "properties": {
-        "foo": { "type": "string" }
+        "foo": {
+          "type": "string"
+        }
       },
       "allOf": [
         {
@@ -273,7 +322,9 @@
       "$schema": "https://json-schema.org/draft/2019-09/schema",
       "type": "object",
       "properties": {
-        "foo": { "type": "string" }
+        "foo": {
+          "type": "string"
+        }
       },
       "allOf": [
         {
@@ -309,26 +360,40 @@
       "$schema": "https://json-schema.org/draft/2019-09/schema",
       "type": "object",
       "properties": {
-        "foo": { "type": "string" }
+        "foo": {
+          "type": "string"
+        }
       },
       "anyOf": [
         {
           "properties": {
-            "bar": { "const": "bar" }
+            "bar": {
+              "const": "bar"
+            }
           },
-          "required": ["bar"]
+          "required": [
+            "bar"
+          ]
         },
         {
           "properties": {
-            "baz": { "const": "baz" }
+            "baz": {
+              "const": "baz"
+            }
           },
-          "required": ["baz"]
+          "required": [
+            "baz"
+          ]
         },
         {
           "properties": {
-            "quux": { "const": "quux" }
+            "quux": {
+              "const": "quux"
+            }
           },
-          "required": ["quux"]
+          "required": [
+            "quux"
+          ]
         }
       ],
       "unevaluatedProperties": false
@@ -378,20 +443,30 @@
       "$schema": "https://json-schema.org/draft/2019-09/schema",
       "type": "object",
       "properties": {
-        "foo": { "type": "string" }
+        "foo": {
+          "type": "string"
+        }
       },
       "oneOf": [
         {
           "properties": {
-            "bar": { "const": "bar" }
+            "bar": {
+              "const": "bar"
+            }
           },
-          "required": ["bar"]
+          "required": [
+            "bar"
+          ]
         },
         {
           "properties": {
-            "baz": { "const": "baz" }
+            "baz": {
+              "const": "baz"
+            }
           },
-          "required": ["baz"]
+          "required": [
+            "baz"
+          ]
         }
       ],
       "unevaluatedProperties": false
@@ -422,14 +497,20 @@
       "$schema": "https://json-schema.org/draft/2019-09/schema",
       "type": "object",
       "properties": {
-        "foo": { "type": "string" }
+        "foo": {
+          "type": "string"
+        }
       },
       "not": {
         "not": {
           "properties": {
-            "bar": { "const": "bar" }
+            "bar": {
+              "const": "bar"
+            }
           },
-          "required": ["bar"]
+          "required": [
+            "bar"
+          ]
         }
       },
       "unevaluatedProperties": false
@@ -452,21 +533,33 @@
       "type": "object",
       "if": {
         "properties": {
-          "foo": { "const": "then" }
+          "foo": {
+            "const": "then"
+          }
         },
-        "required": ["foo"]
+        "required": [
+          "foo"
+        ]
       },
       "then": {
         "properties": {
-          "bar": { "type": "string" }
+          "bar": {
+            "type": "string"
+          }
         },
-        "required": ["bar"]
+        "required": [
+          "bar"
+        ]
       },
       "else": {
         "properties": {
-          "baz": { "type": "string" }
+          "baz": {
+            "type": "string"
+          }
         },
-        "required": ["baz"]
+        "required": [
+          "baz"
+        ]
       },
       "unevaluatedProperties": false
     },
@@ -512,15 +605,23 @@
       "type": "object",
       "if": {
         "properties": {
-          "foo": { "const": "then" }
+          "foo": {
+            "const": "then"
+          }
         },
-        "required": ["foo"]
+        "required": [
+          "foo"
+        ]
       },
       "else": {
         "properties": {
-          "baz": { "type": "string" }
+          "baz": {
+            "type": "string"
+          }
         },
-        "required": ["baz"]
+        "required": [
+          "baz"
+        ]
       },
       "unevaluatedProperties": false
     },
@@ -528,17 +629,15 @@
       {
         "description": "when if is true and has no unevaluated properties",
         "data": {
-          "foo": "then",
-          "bar": "bar"
+          "foo": "then"
         },
-        "valid": false
+        "valid": true
       },
       {
         "description": "when if is true and has unevaluated properties",
         "data": {
           "foo": "then",
-          "bar": "bar",
-          "baz": "baz"
+          "bar": "bar"
         },
         "valid": false
       },
@@ -566,15 +665,23 @@
       "type": "object",
       "if": {
         "properties": {
-          "foo": { "const": "then" }
+          "foo": {
+            "const": "then"
+          }
         },
-        "required": ["foo"]
+        "required": [
+          "foo"
+        ]
       },
       "then": {
         "properties": {
-          "bar": { "type": "string" }
+          "bar": {
+            "type": "string"
+          }
         },
-        "required": ["bar"]
+        "required": [
+          "bar"
+        ]
       },
       "unevaluatedProperties": false
     },
@@ -619,14 +726,20 @@
       "$schema": "https://json-schema.org/draft/2019-09/schema",
       "type": "object",
       "properties": {
-        "foo": { "type": "string" }
+        "foo": {
+          "type": "string"
+        }
       },
       "dependentSchemas": {
         "foo": {
           "properties": {
-            "bar": { "const": "bar" }
+            "bar": {
+              "const": "bar"
+            }
           },
-          "required": ["bar"]
+          "required": [
+            "bar"
+          ]
         }
       },
       "unevaluatedProperties": false
@@ -655,9 +768,13 @@
       "$schema": "https://json-schema.org/draft/2019-09/schema",
       "type": "object",
       "properties": {
-        "foo": { "type": "string" }
+        "foo": {
+          "type": "string"
+        }
       },
-      "allOf": [true],
+      "allOf": [
+        true
+      ],
       "unevaluatedProperties": false
     },
     "tests": [
@@ -684,13 +801,17 @@
       "type": "object",
       "$ref": "#/$defs/bar",
       "properties": {
-        "foo": { "type": "string" }
+        "foo": {
+          "type": "string"
+        }
       },
       "unevaluatedProperties": false,
       "$defs": {
         "bar": {
           "properties": {
-            "bar": { "type": "string" }
+            "bar": {
+              "type": "string"
+            }
           }
         }
       }
@@ -722,13 +843,17 @@
       "type": "object",
       "unevaluatedProperties": false,
       "properties": {
-        "foo": { "type": "string" }
+        "foo": {
+          "type": "string"
+        }
       },
       "$ref": "#/$defs/bar",
       "$defs": {
         "bar": {
           "properties": {
-            "bar": { "type": "string" }
+            "bar": {
+              "type": "string"
+            }
           }
         }
       }
@@ -758,19 +883,17 @@
     "schema": {
       "$schema": "https://json-schema.org/draft/2019-09/schema",
       "$id": "https://example.com/unevaluated-properties-with-recursive-ref/extended-tree",
-
       "$recursiveAnchor": true,
-
       "$ref": "./tree",
       "properties": {
-        "name": { "type": "string" }
+        "name": {
+          "type": "string"
+        }
       },
-
       "$defs": {
         "tree": {
           "$id": "./tree",
           "$recursiveAnchor": true,
-
           "type": "object",
           "properties": {
             "node": true,
@@ -780,7 +903,9 @@
               "$recursiveRef": "#"
             }
           },
-          "required": ["node"]
+          "required": [
+            "node"
+          ]
         }
       }
     },
@@ -867,7 +992,9 @@
       "$schema": "https://json-schema.org/draft/2019-09/schema",
       "type": "object",
       "properties": {
-        "foo": { "type": "string" }
+        "foo": {
+          "type": "string"
+        }
       },
       "allOf": [
         {
@@ -902,7 +1029,9 @@
       "allOf": [
         {
           "properties": {
-            "foo": { "type": "string" }
+            "foo": {
+              "type": "string"
+            }
           },
           "unevaluatedProperties": true
         }
@@ -933,7 +1062,9 @@
       "$schema": "https://json-schema.org/draft/2019-09/schema",
       "type": "object",
       "properties": {
-        "foo": { "type": "string" }
+        "foo": {
+          "type": "string"
+        }
       },
       "allOf": [
         {
@@ -968,7 +1099,9 @@
       "allOf": [
         {
           "properties": {
-            "foo": { "type": "string" }
+            "foo": {
+              "type": "string"
+            }
           },
           "unevaluatedProperties": false
         }
@@ -1001,7 +1134,9 @@
       "allOf": [
         {
           "properties": {
-            "foo": { "type": "string" }
+            "foo": {
+              "type": "string"
+            }
           },
           "unevaluatedProperties": true
         },
@@ -1039,7 +1174,9 @@
         },
         {
           "properties": {
-            "foo": { "type": "string" }
+            "foo": {
+              "type": "string"
+            }
           },
           "unevaluatedProperties": false
         }
@@ -1214,7 +1351,9 @@
       "$schema": "https://json-schema.org/draft/2019-09/schema",
       "type": "object",
       "properties": {
-        "x": { "$ref": "#" }
+        "x": {
+          "$ref": "#"
+        }
       },
       "unevaluatedProperties": false
     },
@@ -1226,32 +1365,59 @@
       },
       {
         "description": "Single is valid",
-        "data": { "x": {} },
+        "data": {
+          "x": {}
+        },
         "valid": true
       },
       {
         "description": "Unevaluated on 1st level is invalid",
-        "data": { "x": {}, "y": {} },
+        "data": {
+          "x": {},
+          "y": {}
+        },
         "valid": false
       },
       {
         "description": "Nested is valid",
-        "data": { "x": { "x": {} } },
+        "data": {
+          "x": {
+            "x": {}
+          }
+        },
         "valid": true
       },
       {
         "description": "Unevaluated on 2nd level is invalid",
-        "data": { "x": { "x": {}, "y": {} } },
+        "data": {
+          "x": {
+            "x": {},
+            "y": {}
+          }
+        },
         "valid": false
       },
       {
         "description": "Deep nested is valid",
-        "data": { "x": { "x": { "x": {} } } },
+        "data": {
+          "x": {
+            "x": {
+              "x": {}
+            }
+          }
+        },
         "valid": true
       },
       {
         "description": "Unevaluated on 3rd level is invalid",
-        "data": { "x": { "x": { "x": {}, "y": {} } } },
+        "data": {
+          "x": {
+            "x": {
+              "x": {},
+              "y": {}
+            }
+          }
+        },
         "valid": false
       }
     ]
@@ -1262,22 +1428,40 @@
       "$schema": "https://json-schema.org/draft/2019-09/schema",
       "$defs": {
         "one": {
-          "properties": { "a": true }
+          "properties": {
+            "a": true
+          }
         },
         "two": {
-          "required": ["x"],
-          "properties": { "x": true }
+          "required": [
+            "x"
+          ],
+          "properties": {
+            "x": true
+          }
         }
       },
       "allOf": [
-        { "$ref": "#/$defs/one" },
-        { "properties": { "b": true } },
+        {
+          "$ref": "#/$defs/one"
+        },
+        {
+          "properties": {
+            "b": true
+          }
+        },
         {
           "oneOf": [
-            { "$ref": "#/$defs/two" },
             {
-              "required": ["y"],
-              "properties": { "y": true }
+              "$ref": "#/$defs/two"
+            },
+            {
+              "required": [
+                "y"
+              ],
+              "properties": {
+                "y": true
+              }
             }
           ]
         }
@@ -1292,37 +1476,62 @@
       },
       {
         "description": "a and b are invalid (no x or y)",
-        "data": { "a": 1, "b": 1 },
+        "data": {
+          "a": 1,
+          "b": 1
+        },
         "valid": false
       },
       {
         "description": "x and y are invalid",
-        "data": { "x": 1, "y": 1 },
+        "data": {
+          "x": 1,
+          "y": 1
+        },
         "valid": false
       },
       {
         "description": "a and x are valid",
-        "data": { "a": 1, "x": 1 },
+        "data": {
+          "a": 1,
+          "x": 1
+        },
         "valid": true
       },
       {
         "description": "a and y are valid",
-        "data": { "a": 1, "y": 1 },
+        "data": {
+          "a": 1,
+          "y": 1
+        },
         "valid": true
       },
       {
         "description": "a and b and x are valid",
-        "data": { "a": 1, "b": 1, "x": 1 },
+        "data": {
+          "a": 1,
+          "b": 1,
+          "x": 1
+        },
         "valid": true
       },
       {
         "description": "a and b and y are valid",
-        "data": { "a": 1, "b": 1, "y": 1 },
+        "data": {
+          "a": 1,
+          "b": 1,
+          "y": 1
+        },
         "valid": true
       },
       {
         "description": "a and b and x and y are invalid",
-        "data": { "a": 1, "b": 1, "x": 1, "y": 1 },
+        "data": {
+          "a": 1,
+          "b": 1,
+          "x": 1,
+          "y": 1
+        },
         "valid": false
       }
     ]
@@ -1334,22 +1543,66 @@
       "$defs": {
         "one": {
           "oneOf": [
-            { "$ref": "#/$defs/two" },
-            { "required": ["b"], "properties": { "b": true } },
-            { "required": ["xx"], "patternProperties": { "x": true } },
-            { "required": ["all"], "unevaluatedProperties": true }
+            {
+              "$ref": "#/$defs/two"
+            },
+            {
+              "required": [
+                "b"
+              ],
+              "properties": {
+                "b": true
+              }
+            },
+            {
+              "required": [
+                "xx"
+              ],
+              "patternProperties": {
+                "x": true
+              }
+            },
+            {
+              "required": [
+                "all"
+              ],
+              "unevaluatedProperties": true
+            }
           ]
         },
         "two": {
           "oneOf": [
-            { "required": ["c"], "properties": { "c": true } },
-            { "required": ["d"], "properties": { "d": true } }
+            {
+              "required": [
+                "c"
+              ],
+              "properties": {
+                "c": true
+              }
+            },
+            {
+              "required": [
+                "d"
+              ],
+              "properties": {
+                "d": true
+              }
+            }
           ]
         }
       },
       "oneOf": [
-        { "$ref": "#/$defs/one" },
-        { "required": ["a"], "properties": { "a": true } }
+        {
+          "$ref": "#/$defs/one"
+        },
+        {
+          "required": [
+            "a"
+          ],
+          "properties": {
+            "a": true
+          }
+        }
       ],
       "unevaluatedProperties": false
     },
@@ -1361,102 +1614,156 @@
       },
       {
         "description": "a is valid",
-        "data": { "a": 1 },
+        "data": {
+          "a": 1
+        },
         "valid": true
       },
       {
         "description": "b is valid",
-        "data": { "b": 1 },
+        "data": {
+          "b": 1
+        },
         "valid": true
       },
       {
         "description": "c is valid",
-        "data": { "c": 1 },
+        "data": {
+          "c": 1
+        },
         "valid": true
       },
       {
         "description": "d is valid",
-        "data": { "d": 1 },
+        "data": {
+          "d": 1
+        },
         "valid": true
       },
       {
         "description": "a + b is invalid",
-        "data": { "a": 1, "b": 1 },
+        "data": {
+          "a": 1,
+          "b": 1
+        },
         "valid": false
       },
       {
         "description": "a + c is invalid",
-        "data": { "a": 1, "c": 1 },
+        "data": {
+          "a": 1,
+          "c": 1
+        },
         "valid": false
       },
       {
         "description": "a + d is invalid",
-        "data": { "a": 1, "d": 1 },
+        "data": {
+          "a": 1,
+          "d": 1
+        },
         "valid": false
       },
       {
         "description": "b + c is invalid",
-        "data": { "b": 1, "c": 1 },
+        "data": {
+          "b": 1,
+          "c": 1
+        },
         "valid": false
       },
       {
         "description": "b + d is invalid",
-        "data": { "b": 1, "d": 1 },
+        "data": {
+          "b": 1,
+          "d": 1
+        },
         "valid": false
       },
       {
         "description": "c + d is invalid",
-        "data": { "c": 1, "d": 1 },
+        "data": {
+          "c": 1,
+          "d": 1
+        },
         "valid": false
       },
       {
         "description": "xx is valid",
-        "data": { "xx": 1 },
+        "data": {
+          "xx": 1
+        },
         "valid": true
       },
       {
         "description": "xx + foox is valid",
-        "data": { "xx": 1, "foox": 1 },
+        "data": {
+          "xx": 1,
+          "foox": 1
+        },
         "valid": true
       },
       {
         "description": "xx + foo is invalid",
-        "data": { "xx": 1, "foo": 1 },
+        "data": {
+          "xx": 1,
+          "foo": 1
+        },
         "valid": false
       },
       {
         "description": "xx + a is invalid",
-        "data": { "xx": 1, "a": 1 },
+        "data": {
+          "xx": 1,
+          "a": 1
+        },
         "valid": false
       },
       {
         "description": "xx + b is invalid",
-        "data": { "xx": 1, "b": 1 },
+        "data": {
+          "xx": 1,
+          "b": 1
+        },
         "valid": false
       },
       {
         "description": "xx + c is invalid",
-        "data": { "xx": 1, "c": 1 },
+        "data": {
+          "xx": 1,
+          "c": 1
+        },
         "valid": false
       },
       {
         "description": "xx + d is invalid",
-        "data": { "xx": 1, "d": 1 },
+        "data": {
+          "xx": 1,
+          "d": 1
+        },
         "valid": false
       },
       {
         "description": "all is valid",
-        "data": { "all": 1 },
+        "data": {
+          "all": 1
+        },
         "valid": true
       },
       {
         "description": "all + foo is valid",
-        "data": { "all": 1, "foo": 1 },
+        "data": {
+          "all": 1,
+          "foo": 1
+        },
         "valid": true
       },
       {
         "description": "all + a is invalid",
-        "data": { "all": 1, "a": 1 },
+        "data": {
+          "all": 1,
+          "a": 1
+        },
         "valid": false
       }
     ]
@@ -1480,7 +1787,7 @@
       },
       {
         "description": "ignores floats",
-        "data": 1.0,
+        "data": 1,
         "valid": true
       },
       {
@@ -1511,7 +1818,9 @@
     "tests": [
       {
         "description": "allows null valued properties",
-        "data": { "foo": null },
+        "data": {
+          "foo": null
+        },
         "valid": true
       }
     ]
@@ -1520,7 +1829,9 @@
     "description": "unevaluatedProperties not affected by propertyNames",
     "schema": {
       "$schema": "https://json-schema.org/draft/2019-09/schema",
-      "propertyNames": { "maxLength": 1 },
+      "propertyNames": {
+        "maxLength": 1
+      },
       "unevaluatedProperties": {
         "type": "number"
       }
@@ -1528,12 +1839,16 @@
     "tests": [
       {
         "description": "allows only number properties",
-        "data": { "a": 1 },
+        "data": {
+          "a": 1
+        },
         "valid": true
       },
       {
         "description": "string property is invalid",
-        "data": { "a": "b" },
+        "data": {
+          "a": "b"
+        },
         "valid": false
       }
     ]
@@ -1572,7 +1887,9 @@
     "description": "dependentSchemas with unevaluatedProperties",
     "schema": {
       "$schema": "https://json-schema.org/draft/2019-09/schema",
-      "properties": { "foo2": {} },
+      "properties": {
+        "foo2": {}
+      },
       "dependentSchemas": {
         "foo": {},
         "foo2": {
@@ -1586,17 +1903,24 @@
     "tests": [
       {
         "description": "unevaluatedProperties doesn't consider dependentSchemas",
-        "data": { "foo": "" },
+        "data": {
+          "foo": ""
+        },
         "valid": false
       },
       {
         "description": "unevaluatedProperties doesn't see bar when foo2 is absent",
-        "data": { "bar": "" },
+        "data": {
+          "bar": ""
+        },
         "valid": false
       },
       {
         "description": "unevaluatedProperties sees bar when foo2 is present",
-        "data": { "foo2": "", "bar": "" },
+        "data": {
+          "foo2": "",
+          "bar": ""
+        },
         "valid": true
       }
     ]

@@ -3,27 +3,46 @@
     "description": "contains keyword validation",
     "schema": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
-      "contains": { "minimum": 5 }
+      "contains": {
+        "minimum": 5
+      }
     },
     "tests": [
       {
         "description": "array with item matching schema (5) is valid",
-        "data": [3, 4, 5],
+        "data": [
+          3,
+          4,
+          5
+        ],
         "valid": true
       },
       {
         "description": "array with item matching schema (6) is valid",
-        "data": [3, 4, 6],
+        "data": [
+          3,
+          4,
+          6
+        ],
         "valid": true
       },
       {
         "description": "array with two items matching schema (5, 6) is valid",
-        "data": [3, 4, 5, 6],
+        "data": [
+          3,
+          4,
+          5,
+          6
+        ],
         "valid": true
       },
       {
         "description": "array without items matching schema is invalid",
-        "data": [2, 3, 4],
+        "data": [
+          2,
+          3,
+          4
+        ],
         "valid": false
       },
       {
@@ -42,22 +61,38 @@
     "description": "contains keyword with const keyword",
     "schema": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
-      "contains": { "const": 5 }
+      "contains": {
+        "const": 5
+      }
     },
     "tests": [
       {
         "description": "array with item 5 is valid",
-        "data": [3, 4, 5],
+        "data": [
+          3,
+          4,
+          5
+        ],
         "valid": true
       },
       {
         "description": "array with two items 5 is valid",
-        "data": [3, 4, 5, 5],
+        "data": [
+          3,
+          4,
+          5,
+          5
+        ],
         "valid": true
       },
       {
         "description": "array without item 5 is invalid",
-        "data": [1, 2, 3, 4],
+        "data": [
+          1,
+          2,
+          3,
+          4
+        ],
         "valid": false
       }
     ]
@@ -71,7 +106,9 @@
     "tests": [
       {
         "description": "any non-empty array is valid",
-        "data": ["foo"],
+        "data": [
+          "foo"
+        ],
         "valid": true
       },
       {
@@ -90,7 +127,9 @@
     "tests": [
       {
         "description": "any non-empty array is invalid",
-        "data": ["foo"],
+        "data": [
+          "foo"
+        ],
         "valid": false
       },
       {
@@ -109,28 +148,46 @@
     "description": "items + contains",
     "schema": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
-      "items": { "multipleOf": 2 },
-      "contains": { "multipleOf": 3 }
+      "items": {
+        "multipleOf": 2
+      },
+      "contains": {
+        "multipleOf": 3
+      }
     },
     "tests": [
       {
         "description": "matches items, does not match contains",
-        "data": [2, 4, 8],
+        "data": [
+          2,
+          4,
+          8
+        ],
         "valid": false
       },
       {
         "description": "does not match items, matches contains",
-        "data": [3, 6, 9],
+        "data": [
+          3,
+          6,
+          9
+        ],
         "valid": false
       },
       {
         "description": "matches both items and contains",
-        "data": [6, 12],
+        "data": [
+          6,
+          12
+        ],
         "valid": true
       },
       {
         "description": "matches neither items nor contains",
-        "data": [1, 5],
+        "data": [
+          1,
+          5
+        ],
         "valid": false
       }
     ]
@@ -147,7 +204,9 @@
     "tests": [
       {
         "description": "any non-empty array is valid",
-        "data": ["foo"],
+        "data": [
+          "foo"
+        ],
         "valid": true
       },
       {
@@ -168,7 +227,9 @@
     "tests": [
       {
         "description": "allows null items",
-        "data": [null],
+        "data": [
+          null
+        ],
         "valid": true
       }
     ]

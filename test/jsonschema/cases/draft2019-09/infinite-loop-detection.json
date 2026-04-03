@@ -4,7 +4,9 @@
     "schema": {
       "$schema": "https://json-schema.org/draft/2019-09/schema",
       "$defs": {
-        "int": { "type": "integer" }
+        "int": {
+          "type": "integer"
+        }
       },
       "allOf": [
         {
@@ -24,12 +26,16 @@
     "tests": [
       {
         "description": "passing case",
-        "data": { "foo": 1 },
+        "data": {
+          "foo": 1
+        },
         "valid": true
       },
       {
         "description": "failing case",
-        "data": { "foo": "a string" },
+        "data": {
+          "foo": "a string"
+        },
         "valid": false
       }
     ]

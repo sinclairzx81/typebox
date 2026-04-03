@@ -1,0 +1,21 @@
+[
+  {
+    "description": "validation of URI References",
+    "schema": {
+      "$schema": "https://json-schema.org/draft/2019-09/schema",
+      "format": "uri-reference"
+    },
+    "tests": [
+      {
+        "description": "unescaped non US-ASCII characters",
+        "data": "/foobar®.txt",
+        "valid": false
+      },
+      {
+        "description": "invalid backslash character",
+        "data": "https://example.org/foobar\\.txt",
+        "valid": false
+      }
+    ]
+  }
+]

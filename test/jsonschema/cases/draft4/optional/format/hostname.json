@@ -1,7 +1,9 @@
 [
   {
     "description": "validation of host names",
-    "schema": { "format": "hostname" },
+    "schema": {
+      "format": "hostname"
+    },
     "tests": [
       {
         "description": "all string formats ignore integers",
@@ -41,6 +43,11 @@
       {
         "description": "a valid punycoded IDN hostname",
         "data": "xn--4gbwdl.xn--wgbh1c",
+        "valid": true
+      },
+      {
+        "description": "hostname with consecutive hyphens (RFC1123)",
+        "data": "ab--cd.example",
         "valid": true
       },
       {
@@ -121,6 +128,16 @@
       {
         "description": "single dot",
         "data": ".",
+        "valid": false
+      },
+      {
+        "description": "leading dot",
+        "data": ".example",
+        "valid": false
+      },
+      {
+        "description": "IDN label separator",
+        "data": "example．com",
         "valid": false
       }
     ]

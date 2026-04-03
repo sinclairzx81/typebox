@@ -1,0 +1,22 @@
+[
+  {
+    "description": "validation of duration strings",
+    "comment": "RFC 3339 Appendix A defines the ABNF grammar for ISO-8601 durations used by JSON Schema format 'duration'. These tests enforce only the syntax defined by that grammar.",
+    "schema": {
+      "$schema": "https://json-schema.org/v1",
+      "format": "duration"
+    },
+    "tests": [
+      {
+        "description": "years and days cannot appear without months",
+        "data": "P1Y2D",
+        "valid": false
+      },
+      {
+        "description": "hours and seconds cannot appear without minutes",
+        "data": "PT1H2S",
+        "valid": false
+      }
+    ]
+  }
+]

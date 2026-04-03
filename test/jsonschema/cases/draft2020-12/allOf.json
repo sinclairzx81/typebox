@@ -6,37 +6,55 @@
       "allOf": [
         {
           "properties": {
-            "bar": { "type": "integer" }
+            "bar": {
+              "type": "integer"
+            }
           },
-          "required": ["bar"]
+          "required": [
+            "bar"
+          ]
         },
         {
           "properties": {
-            "foo": { "type": "string" }
+            "foo": {
+              "type": "string"
+            }
           },
-          "required": ["foo"]
+          "required": [
+            "foo"
+          ]
         }
       ]
     },
     "tests": [
       {
         "description": "allOf",
-        "data": { "foo": "baz", "bar": 2 },
+        "data": {
+          "foo": "baz",
+          "bar": 2
+        },
         "valid": true
       },
       {
         "description": "mismatch second",
-        "data": { "foo": "baz" },
+        "data": {
+          "foo": "baz"
+        },
         "valid": false
       },
       {
         "description": "mismatch first",
-        "data": { "bar": 2 },
+        "data": {
+          "bar": 2
+        },
         "valid": false
       },
       {
         "description": "wrong type",
-        "data": { "foo": "baz", "bar": "quux" },
+        "data": {
+          "foo": "baz",
+          "bar": "quux"
+        },
         "valid": false
       }
     ]
@@ -45,47 +63,76 @@
     "description": "allOf with base schema",
     "schema": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
-      "properties": { "bar": { "type": "integer" } },
-      "required": ["bar"],
+      "properties": {
+        "bar": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "bar"
+      ],
       "allOf": [
         {
           "properties": {
-            "foo": { "type": "string" }
+            "foo": {
+              "type": "string"
+            }
           },
-          "required": ["foo"]
+          "required": [
+            "foo"
+          ]
         },
         {
           "properties": {
-            "baz": { "type": "null" }
+            "baz": {
+              "type": "null"
+            }
           },
-          "required": ["baz"]
+          "required": [
+            "baz"
+          ]
         }
       ]
     },
     "tests": [
       {
         "description": "valid",
-        "data": { "foo": "quux", "bar": 2, "baz": null },
+        "data": {
+          "foo": "quux",
+          "bar": 2,
+          "baz": null
+        },
         "valid": true
       },
       {
         "description": "mismatch base schema",
-        "data": { "foo": "quux", "baz": null },
+        "data": {
+          "foo": "quux",
+          "baz": null
+        },
         "valid": false
       },
       {
         "description": "mismatch first allOf",
-        "data": { "bar": 2, "baz": null },
+        "data": {
+          "bar": 2,
+          "baz": null
+        },
         "valid": false
       },
       {
         "description": "mismatch second allOf",
-        "data": { "foo": "quux", "bar": 2 },
+        "data": {
+          "foo": "quux",
+          "bar": 2
+        },
         "valid": false
       },
       {
         "description": "mismatch both",
-        "data": { "bar": 2 },
+        "data": {
+          "bar": 2
+        },
         "valid": false
       }
     ]
@@ -95,8 +142,12 @@
     "schema": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "allOf": [
-        { "maximum": 30 },
-        { "minimum": 20 }
+        {
+          "maximum": 30
+        },
+        {
+          "minimum": 20
+        }
       ]
     },
     "tests": [
@@ -116,7 +167,10 @@
     "description": "allOf with boolean schemas, all true",
     "schema": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
-      "allOf": [true, true]
+      "allOf": [
+        true,
+        true
+      ]
     },
     "tests": [
       {
@@ -130,7 +184,10 @@
     "description": "allOf with boolean schemas, some false",
     "schema": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
-      "allOf": [true, false]
+      "allOf": [
+        true,
+        false
+      ]
     },
     "tests": [
       {
@@ -144,7 +201,10 @@
     "description": "allOf with boolean schemas, all false",
     "schema": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
-      "allOf": [false, false]
+      "allOf": [
+        false,
+        false
+      ]
     },
     "tests": [
       {
@@ -193,7 +253,9 @@
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "allOf": [
         {},
-        { "type": "number" }
+        {
+          "type": "number"
+        }
       ]
     },
     "tests": [
@@ -214,7 +276,9 @@
     "schema": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "allOf": [
-        { "type": "number" },
+        {
+          "type": "number"
+        },
         {}
       ]
     },
@@ -262,9 +326,21 @@
     "description": "allOf combined with anyOf, oneOf",
     "schema": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
-      "allOf": [{ "multipleOf": 2 }],
-      "anyOf": [{ "multipleOf": 3 }],
-      "oneOf": [{ "multipleOf": 5 }]
+      "allOf": [
+        {
+          "multipleOf": 2
+        }
+      ],
+      "anyOf": [
+        {
+          "multipleOf": 3
+        }
+      ],
+      "oneOf": [
+        {
+          "multipleOf": 5
+        }
+      ]
     },
     "tests": [
       {

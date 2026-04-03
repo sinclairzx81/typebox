@@ -1,11 +1,14 @@
 [
   {
     "description": "all integers are multiples of 0.5, if overflow is handled",
-    "schema": { "type": "integer", "multipleOf": 0.5 },
+    "schema": {
+      "type": "integer",
+      "multipleOf": 0.5
+    },
     "tests": [
       {
         "description": "valid if optional overflow handling is implemented",
-        "data": 1e308,
+        "data": 1e+308,
         "valid": true
       }
     ]

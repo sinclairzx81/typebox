@@ -2,7 +2,11 @@
   {
     "description": "dependencies",
     "schema": {
-      "dependencies": { "bar": ["foo"] }
+      "dependencies": {
+        "bar": [
+          "foo"
+        ]
+      }
     },
     "tests": [
       {
@@ -12,22 +16,31 @@
       },
       {
         "description": "nondependant",
-        "data": { "foo": 1 },
+        "data": {
+          "foo": 1
+        },
         "valid": true
       },
       {
         "description": "with dependency",
-        "data": { "foo": 1, "bar": 2 },
+        "data": {
+          "foo": 1,
+          "bar": 2
+        },
         "valid": true
       },
       {
         "description": "missing dependency",
-        "data": { "bar": 2 },
+        "data": {
+          "bar": 2
+        },
         "valid": false
       },
       {
         "description": "ignores arrays",
-        "data": ["bar"],
+        "data": [
+          "bar"
+        ],
         "valid": true
       },
       {
@@ -45,7 +58,12 @@
   {
     "description": "multiple dependencies",
     "schema": {
-      "dependencies": { "quux": ["foo", "bar"] }
+      "dependencies": {
+        "quux": [
+          "foo",
+          "bar"
+        ]
+      }
     },
     "tests": [
       {
@@ -55,27 +73,42 @@
       },
       {
         "description": "nondependants",
-        "data": { "foo": 1, "bar": 2 },
+        "data": {
+          "foo": 1,
+          "bar": 2
+        },
         "valid": true
       },
       {
         "description": "with dependencies",
-        "data": { "foo": 1, "bar": 2, "quux": 3 },
+        "data": {
+          "foo": 1,
+          "bar": 2,
+          "quux": 3
+        },
         "valid": true
       },
       {
         "description": "missing dependency",
-        "data": { "foo": 1, "quux": 2 },
+        "data": {
+          "foo": 1,
+          "quux": 2
+        },
         "valid": false
       },
       {
         "description": "missing other dependency",
-        "data": { "bar": 1, "quux": 2 },
+        "data": {
+          "bar": 1,
+          "quux": 2
+        },
         "valid": false
       },
       {
         "description": "missing both dependencies",
-        "data": { "quux": 1 },
+        "data": {
+          "quux": 1
+        },
         "valid": false
       }
     ]
@@ -86,8 +119,12 @@
       "dependencies": {
         "bar": {
           "properties": {
-            "foo": { "type": "integer" },
-            "bar": { "type": "integer" }
+            "foo": {
+              "type": "integer"
+            },
+            "bar": {
+              "type": "integer"
+            }
           }
         }
       }
@@ -95,27 +132,41 @@
     "tests": [
       {
         "description": "valid",
-        "data": { "foo": 1, "bar": 2 },
+        "data": {
+          "foo": 1,
+          "bar": 2
+        },
         "valid": true
       },
       {
         "description": "no dependency",
-        "data": { "foo": "quux" },
+        "data": {
+          "foo": "quux"
+        },
         "valid": true
       },
       {
         "description": "wrong type",
-        "data": { "foo": "quux", "bar": 2 },
+        "data": {
+          "foo": "quux",
+          "bar": 2
+        },
         "valid": false
       },
       {
         "description": "wrong type other",
-        "data": { "foo": 2, "bar": "quux" },
+        "data": {
+          "foo": 2,
+          "bar": "quux"
+        },
         "valid": false
       },
       {
         "description": "wrong type both",
-        "data": { "foo": "quux", "bar": "quux" },
+        "data": {
+          "foo": "quux",
+          "bar": "quux"
+        },
         "valid": false
       }
     ]
@@ -124,12 +175,20 @@
     "description": "dependencies with escaped characters",
     "schema": {
       "dependencies": {
-        "foo\nbar": ["foo\rbar"],
+        "foo\nbar": [
+          "foo\rbar"
+        ],
         "foo\tbar": {
           "minProperties": 4
         },
-        "foo'bar": { "required": ["foo\"bar"] },
-        "foo\"bar": ["foo'bar"]
+        "foo'bar": {
+          "required": [
+            "foo\"bar"
+          ]
+        },
+        "foo\"bar": [
+          "foo'bar"
+        ]
       }
     },
     "tests": [
@@ -209,22 +268,31 @@
     "tests": [
       {
         "description": "matches root",
-        "data": { "foo": 1 },
+        "data": {
+          "foo": 1
+        },
         "valid": false
       },
       {
         "description": "matches dependency",
-        "data": { "bar": 1 },
+        "data": {
+          "bar": 1
+        },
         "valid": true
       },
       {
         "description": "matches both",
-        "data": { "foo": 1, "bar": 2 },
+        "data": {
+          "foo": 1,
+          "bar": 2
+        },
         "valid": false
       },
       {
         "description": "no dependency",
-        "data": { "baz": 1 },
+        "data": {
+          "baz": 1
+        },
         "valid": true
       }
     ]

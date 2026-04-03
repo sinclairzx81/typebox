@@ -1,0 +1,162 @@
+[
+  {
+    "description": "validation of host names",
+    "schema": {
+      "$schema": "https://json-schema.org/draft/2019-09/schema",
+      "format": "hostname"
+    },
+    "tests": [
+      {
+        "description": "trailing dot",
+        "data": "example.",
+        "valid": false
+      },
+      {
+        "description": "contains \"--\" in the 3rd and 4th position",
+        "comment": "https://tools.ietf.org/html/rfc5891#section-4.2.3.1 https://tools.ietf.org/html/rfc5890#section-2.3.2.1",
+        "data": "XN--aa---o47jg78q",
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "validation of A-label (punycode) host names",
+    "schema": {
+      "$schema": "https://json-schema.org/draft/2019-09/schema",
+      "format": "hostname"
+    },
+    "tests": [
+      {
+        "description": "invalid Punycode",
+        "comment": "https://tools.ietf.org/html/rfc5891#section-4.4 https://tools.ietf.org/html/rfc5890#section-2.3.2.1",
+        "data": "xn--X",
+        "valid": false
+      },
+      {
+        "description": "contains illegal char U+302E Hangul single dot tone mark",
+        "data": "xn--07jt112bpxg.xn--9t4b11yi5a",
+        "valid": false
+      },
+      {
+        "description": "Begins with a Spacing Combining Mark",
+        "comment": "https://tools.ietf.org/html/rfc5891#section-4.2.3.2",
+        "data": "xn--hello-txk",
+        "valid": false
+      },
+      {
+        "description": "Begins with a Nonspacing Mark",
+        "comment": "https://tools.ietf.org/html/rfc5891#section-4.2.3.2",
+        "data": "xn--hello-zed",
+        "valid": false
+      },
+      {
+        "description": "Begins with an Enclosing Mark",
+        "comment": "https://tools.ietf.org/html/rfc5891#section-4.2.3.2",
+        "data": "xn--hello-6bf",
+        "valid": false
+      },
+      {
+        "description": "Exceptions that are DISALLOWED, right-to-left chars",
+        "comment": "https://tools.ietf.org/html/rfc5891#section-4.2.2 https://tools.ietf.org/html/rfc5892#section-2.6",
+        "data": "xn--chb89f",
+        "valid": false
+      },
+      {
+        "description": "Exceptions that are DISALLOWED, left-to-right chars",
+        "comment": "https://tools.ietf.org/html/rfc5891#section-4.2.2 https://tools.ietf.org/html/rfc5892#section-2.6 Note: The two combining marks (U+302E and U+302F) are in the middle and not at the start",
+        "data": "xn--07jceefgh4c",
+        "valid": false
+      },
+      {
+        "description": "MIDDLE DOT with no preceding 'l'",
+        "comment": "https://tools.ietf.org/html/rfc5891#section-4.2.3.3 https://tools.ietf.org/html/rfc5892#appendix-A.3",
+        "data": "xn--al-0ea",
+        "valid": false
+      },
+      {
+        "description": "MIDDLE DOT with nothing preceding",
+        "comment": "https://tools.ietf.org/html/rfc5891#section-4.2.3.3 https://tools.ietf.org/html/rfc5892#appendix-A.3",
+        "data": "xn--l-fda",
+        "valid": false
+      },
+      {
+        "description": "MIDDLE DOT with no following 'l'",
+        "comment": "https://tools.ietf.org/html/rfc5891#section-4.2.3.3 https://tools.ietf.org/html/rfc5892#appendix-A.3",
+        "data": "xn--la-0ea",
+        "valid": false
+      },
+      {
+        "description": "MIDDLE DOT with nothing following",
+        "comment": "https://tools.ietf.org/html/rfc5891#section-4.2.3.3 https://tools.ietf.org/html/rfc5892#appendix-A.3",
+        "data": "xn--l-gda",
+        "valid": false
+      },
+      {
+        "description": "Greek KERAIA not followed by Greek",
+        "comment": "https://tools.ietf.org/html/rfc5891#section-4.2.3.3 https://tools.ietf.org/html/rfc5892#appendix-A.4",
+        "data": "xn--S-jib3p",
+        "valid": false
+      },
+      {
+        "description": "Greek KERAIA not followed by anything",
+        "comment": "https://tools.ietf.org/html/rfc5891#section-4.2.3.3 https://tools.ietf.org/html/rfc5892#appendix-A.4",
+        "data": "xn--wva3j",
+        "valid": false
+      },
+      {
+        "description": "Hebrew GERESH not preceded by Hebrew",
+        "comment": "https://tools.ietf.org/html/rfc5891#section-4.2.3.3 https://tools.ietf.org/html/rfc5892#appendix-A.5",
+        "data": "xn--A-2hc5h",
+        "valid": false
+      },
+      {
+        "description": "Hebrew GERESH not preceded by anything",
+        "comment": "https://tools.ietf.org/html/rfc5891#section-4.2.3.3 https://tools.ietf.org/html/rfc5892#appendix-A.5",
+        "data": "xn--5db1e",
+        "valid": false
+      },
+      {
+        "description": "Hebrew GERSHAYIM not preceded by Hebrew",
+        "comment": "https://tools.ietf.org/html/rfc5891#section-4.2.3.3 https://tools.ietf.org/html/rfc5892#appendix-A.6",
+        "data": "xn--A-2hc8h",
+        "valid": false
+      },
+      {
+        "description": "Hebrew GERSHAYIM not preceded by anything",
+        "comment": "https://tools.ietf.org/html/rfc5891#section-4.2.3.3 https://tools.ietf.org/html/rfc5892#appendix-A.6",
+        "data": "xn--5db3e",
+        "valid": false
+      },
+      {
+        "description": "KATAKANA MIDDLE DOT with no Hiragana, Katakana, or Han",
+        "comment": "https://tools.ietf.org/html/rfc5891#section-4.2.3.3 https://tools.ietf.org/html/rfc5892#appendix-A.7",
+        "data": "xn--defabc-k64e",
+        "valid": false
+      },
+      {
+        "description": "KATAKANA MIDDLE DOT with no other characters",
+        "comment": "https://tools.ietf.org/html/rfc5891#section-4.2.3.3 https://tools.ietf.org/html/rfc5892#appendix-A.7",
+        "data": "xn--vek",
+        "valid": false
+      },
+      {
+        "description": "Arabic-Indic digits mixed with Extended Arabic-Indic digits",
+        "comment": "https://tools.ietf.org/html/rfc5891#section-4.2.3.3 https://tools.ietf.org/html/rfc5892#appendix-A.8",
+        "data": "xn--ngb6iyr",
+        "valid": false
+      },
+      {
+        "description": "ZERO WIDTH JOINER not preceded by Virama",
+        "comment": "https://tools.ietf.org/html/rfc5891#section-4.2.3.3 https://tools.ietf.org/html/rfc5892#appendix-A.2 https://www.unicode.org/review/pr-37.pdf",
+        "data": "xn--11b2er09f",
+        "valid": false
+      },
+      {
+        "description": "ZERO WIDTH JOINER not preceded by anything",
+        "comment": "https://tools.ietf.org/html/rfc5891#section-4.2.3.3 https://tools.ietf.org/html/rfc5892#appendix-A.2 https://www.unicode.org/review/pr-37.pdf",
+        "data": "xn--02b508i",
+        "valid": false
+      }
+    ]
+  }
+]

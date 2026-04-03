@@ -71,37 +71,55 @@
       "anyOf": [
         {
           "properties": {
-            "bar": { "type": "integer" }
+            "bar": {
+              "type": "integer"
+            }
           },
-          "required": ["bar"]
+          "required": [
+            "bar"
+          ]
         },
         {
           "properties": {
-            "foo": { "type": "string" }
+            "foo": {
+              "type": "string"
+            }
           },
-          "required": ["foo"]
+          "required": [
+            "foo"
+          ]
         }
       ]
     },
     "tests": [
       {
         "description": "first anyOf valid (complex)",
-        "data": { "bar": 2 },
+        "data": {
+          "bar": 2
+        },
         "valid": true
       },
       {
         "description": "second anyOf valid (complex)",
-        "data": { "foo": "baz" },
+        "data": {
+          "foo": "baz"
+        },
         "valid": true
       },
       {
         "description": "both anyOf valid (complex)",
-        "data": { "foo": "baz", "bar": 2 },
+        "data": {
+          "foo": "baz",
+          "bar": 2
+        },
         "valid": true
       },
       {
         "description": "neither anyOf valid (complex)",
-        "data": { "foo": 2, "bar": "quux" },
+        "data": {
+          "foo": 2,
+          "bar": "quux"
+        },
         "valid": false
       }
     ]
@@ -110,7 +128,9 @@
     "description": "anyOf with one empty schema",
     "schema": {
       "anyOf": [
-        { "type": "number" },
+        {
+          "type": "number"
+        },
         {}
       ]
     },

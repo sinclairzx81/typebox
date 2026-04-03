@@ -1,0 +1,63 @@
+[
+  {
+    "description": "unevaluatedProperties can see inside propertyDependencies",
+    "schema": {
+      "$schema": "https://json-schema.org/v1",
+      "properties": {
+        "foo": {
+          "type": "string"
+        }
+      },
+      "propertyDependencies": {
+        "foo": {
+          "foo1": {
+            "properties": {
+              "bar": true
+            }
+          }
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "tests": [
+      {
+        "description": "allows bar if foo = foo1",
+        "data": {
+          "foo": "foo1",
+          "bar": 42
+        },
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "propertyDependencies with unevaluatedProperties",
+    "schema": {
+      "$schema": "https://json-schema.org/v1",
+      "properties": {
+        "foo2": {}
+      },
+      "propertyDependencies": {
+        "foo": {},
+        "foo2": {
+          "bar": {
+            "properties": {
+              "buz": {}
+            }
+          }
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "tests": [
+      {
+        "description": "unevaluatedProperties sees buz when foo2 is present",
+        "data": {
+          "foo2": "bar",
+          "buz": ""
+        },
+        "valid": true
+      }
+    ]
+  }
+]

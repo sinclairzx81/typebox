@@ -9,7 +9,7 @@
     "tests": [
       {
         "description": "valid if optional overflow handling is implemented",
-        "data": 1e308,
+        "data": 1e+308,
         "valid": true
       }
     ]

@@ -2,22 +2,33 @@
   {
     "description": "a schema given for items",
     "schema": {
-      "items": { "type": "integer" }
+      "items": {
+        "type": "integer"
+      }
     },
     "tests": [
       {
         "description": "valid items",
-        "data": [1, 2, 3],
+        "data": [
+          1,
+          2,
+          3
+        ],
         "valid": true
       },
       {
         "description": "wrong type of items",
-        "data": [1, "x"],
+        "data": [
+          1,
+          "x"
+        ],
         "valid": false
       },
       {
         "description": "ignores non-arrays",
-        "data": { "foo": "bar" },
+        "data": {
+          "foo": "bar"
+        },
         "valid": true
       },
       {
@@ -34,29 +45,45 @@
     "description": "an array of schemas for items",
     "schema": {
       "items": [
-        { "type": "integer" },
-        { "type": "string" }
+        {
+          "type": "integer"
+        },
+        {
+          "type": "string"
+        }
       ]
     },
     "tests": [
       {
         "description": "correct types",
-        "data": [1, "foo"],
+        "data": [
+          1,
+          "foo"
+        ],
         "valid": true
       },
       {
         "description": "wrong types",
-        "data": ["foo", 1],
+        "data": [
+          "foo",
+          1
+        ],
         "valid": false
       },
       {
         "description": "incomplete array of items",
-        "data": [1],
+        "data": [
+          1
+        ],
         "valid": true
       },
       {
         "description": "array with additional items",
-        "data": [1, "foo", true],
+        "data": [
+          1,
+          "foo",
+          true
+        ],
         "valid": true
       },
       {
@@ -83,75 +110,203 @@
           "type": "array",
           "additionalItems": false,
           "items": [
-            { "$ref": "#/definitions/sub-item" },
-            { "$ref": "#/definitions/sub-item" }
+            {
+              "$ref": "#/definitions/sub-item"
+            },
+            {
+              "$ref": "#/definitions/sub-item"
+            }
           ]
         },
         "sub-item": {
           "type": "object",
-          "required": ["foo"]
+          "required": [
+            "foo"
+          ]
         }
       },
       "type": "array",
       "additionalItems": false,
       "items": [
-        { "$ref": "#/definitions/item" },
-        { "$ref": "#/definitions/item" },
-        { "$ref": "#/definitions/item" }
+        {
+          "$ref": "#/definitions/item"
+        },
+        {
+          "$ref": "#/definitions/item"
+        },
+        {
+          "$ref": "#/definitions/item"
+        }
       ]
     },
     "tests": [
       {
         "description": "valid items",
         "data": [
-          [{ "foo": null }, { "foo": null }],
-          [{ "foo": null }, { "foo": null }],
-          [{ "foo": null }, { "foo": null }]
+          [
+            {
+              "foo": null
+            },
+            {
+              "foo": null
+            }
+          ],
+          [
+            {
+              "foo": null
+            },
+            {
+              "foo": null
+            }
+          ],
+          [
+            {
+              "foo": null
+            },
+            {
+              "foo": null
+            }
+          ]
         ],
         "valid": true
       },
       {
         "description": "too many items",
         "data": [
-          [{ "foo": null }, { "foo": null }],
-          [{ "foo": null }, { "foo": null }],
-          [{ "foo": null }, { "foo": null }],
-          [{ "foo": null }, { "foo": null }]
+          [
+            {
+              "foo": null
+            },
+            {
+              "foo": null
+            }
+          ],
+          [
+            {
+              "foo": null
+            },
+            {
+              "foo": null
+            }
+          ],
+          [
+            {
+              "foo": null
+            },
+            {
+              "foo": null
+            }
+          ],
+          [
+            {
+              "foo": null
+            },
+            {
+              "foo": null
+            }
+          ]
         ],
         "valid": false
       },
       {
         "description": "too many sub-items",
         "data": [
-          [{ "foo": null }, { "foo": null }, { "foo": null }],
-          [{ "foo": null }, { "foo": null }],
-          [{ "foo": null }, { "foo": null }]
+          [
+            {
+              "foo": null
+            },
+            {
+              "foo": null
+            },
+            {
+              "foo": null
+            }
+          ],
+          [
+            {
+              "foo": null
+            },
+            {
+              "foo": null
+            }
+          ],
+          [
+            {
+              "foo": null
+            },
+            {
+              "foo": null
+            }
+          ]
         ],
         "valid": false
       },
       {
         "description": "wrong item",
         "data": [
-          { "foo": null },
-          [{ "foo": null }, { "foo": null }],
-          [{ "foo": null }, { "foo": null }]
+          {
+            "foo": null
+          },
+          [
+            {
+              "foo": null
+            },
+            {
+              "foo": null
+            }
+          ],
+          [
+            {
+              "foo": null
+            },
+            {
+              "foo": null
+            }
+          ]
         ],
         "valid": false
       },
       {
         "description": "wrong sub-item",
         "data": [
-          [{}, { "foo": null }],
-          [{ "foo": null }, { "foo": null }],
-          [{ "foo": null }, { "foo": null }]
+          [
+            {},
+            {
+              "foo": null
+            }
+          ],
+          [
+            {
+              "foo": null
+            },
+            {
+              "foo": null
+            }
+          ],
+          [
+            {
+              "foo": null
+            },
+            {
+              "foo": null
+            }
+          ]
         ],
         "valid": false
       },
       {
         "description": "fewer items is valid",
         "data": [
-          [{ "foo": null }],
-          [{ "foo": null }]
+          [
+            {
+              "foo": null
+            }
+          ],
+          [
+            {
+              "foo": null
+            }
+          ]
         ],
         "valid": true
       }
@@ -177,17 +332,98 @@
     "tests": [
       {
         "description": "valid nested array",
-        "data": [[[[1]], [[2], [3]]], [[[4], [5], [6]]]],
+        "data": [
+          [
+            [
+              [
+                1
+              ]
+            ],
+            [
+              [
+                2
+              ],
+              [
+                3
+              ]
+            ]
+          ],
+          [
+            [
+              [
+                4
+              ],
+              [
+                5
+              ],
+              [
+                6
+              ]
+            ]
+          ]
+        ],
         "valid": true
       },
       {
         "description": "nested array with invalid type",
-        "data": [[[["1"]], [[2], [3]]], [[[4], [5], [6]]]],
+        "data": [
+          [
+            [
+              [
+                "1"
+              ]
+            ],
+            [
+              [
+                2
+              ],
+              [
+                3
+              ]
+            ]
+          ],
+          [
+            [
+              [
+                4
+              ],
+              [
+                5
+              ],
+              [
+                6
+              ]
+            ]
+          ]
+        ],
         "valid": false
       },
       {
         "description": "not deep enough",
-        "data": [[[1], [2], [3]], [[4], [5], [6]]],
+        "data": [
+          [
+            [
+              1
+            ],
+            [
+              2
+            ],
+            [
+              3
+            ]
+          ],
+          [
+            [
+              4
+            ],
+            [
+              5
+            ],
+            [
+              6
+            ]
+          ]
+        ],
         "valid": false
       }
     ]
@@ -202,7 +438,9 @@
     "tests": [
       {
         "description": "allows null elements",
-        "data": [null],
+        "data": [
+          null
+        ],
         "valid": true
       }
     ]
@@ -219,7 +457,9 @@
     "tests": [
       {
         "description": "allows null elements",
-        "data": [null],
+        "data": [
+          null
+        ],
         "valid": true
       }
     ]

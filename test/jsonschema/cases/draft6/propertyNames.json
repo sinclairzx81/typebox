@@ -2,7 +2,9 @@
   {
     "description": "propertyNames validation",
     "schema": {
-      "propertyNames": { "maxLength": 3 }
+      "propertyNames": {
+        "maxLength": 3
+      }
     },
     "tests": [
       {
@@ -28,7 +30,12 @@
       },
       {
         "description": "ignores arrays",
-        "data": [1, 2, 3, 4],
+        "data": [
+          1,
+          2,
+          3,
+          4
+        ],
         "valid": true
       },
       {
@@ -46,7 +53,9 @@
   {
     "description": "propertyNames validation with pattern",
     "schema": {
-      "propertyNames": { "pattern": "^a+$" }
+      "propertyNames": {
+        "pattern": "^a+$"
+      }
     },
     "tests": [
       {
@@ -74,11 +83,15 @@
   },
   {
     "description": "propertyNames with boolean schema true",
-    "schema": { "propertyNames": true },
+    "schema": {
+      "propertyNames": true
+    },
     "tests": [
       {
         "description": "object with any properties is valid",
-        "data": { "foo": 1 },
+        "data": {
+          "foo": 1
+        },
         "valid": true
       },
       {
@@ -90,11 +103,15 @@
   },
   {
     "description": "propertyNames with boolean schema false",
-    "schema": { "propertyNames": false },
+    "schema": {
+      "propertyNames": false
+    },
     "tests": [
       {
         "description": "object with any properties is invalid",
-        "data": { "foo": 1 },
+        "data": {
+          "foo": 1
+        },
         "valid": false
       },
       {
@@ -106,16 +123,24 @@
   },
   {
     "description": "propertyNames with const",
-    "schema": { "propertyNames": { "const": "foo" } },
+    "schema": {
+      "propertyNames": {
+        "const": "foo"
+      }
+    },
     "tests": [
       {
         "description": "object with property foo is valid",
-        "data": { "foo": 1 },
+        "data": {
+          "foo": 1
+        },
         "valid": true
       },
       {
         "description": "object with any other property is invalid",
-        "data": { "bar": 1 },
+        "data": {
+          "bar": 1
+        },
         "valid": false
       },
       {
@@ -127,21 +152,35 @@
   },
   {
     "description": "propertyNames with enum",
-    "schema": { "propertyNames": { "enum": ["foo", "bar"] } },
+    "schema": {
+      "propertyNames": {
+        "enum": [
+          "foo",
+          "bar"
+        ]
+      }
+    },
     "tests": [
       {
         "description": "object with property foo is valid",
-        "data": { "foo": 1 },
+        "data": {
+          "foo": 1
+        },
         "valid": true
       },
       {
         "description": "object with property foo and bar is valid",
-        "data": { "foo": 1, "bar": 1 },
+        "data": {
+          "foo": 1,
+          "bar": 1
+        },
         "valid": true
       },
       {
         "description": "object with any other property is invalid",
-        "data": { "baz": 1 },
+        "data": {
+          "baz": 1
+        },
         "valid": false
       },
       {

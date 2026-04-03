@@ -1,0 +1,22 @@
+[
+  {
+    "description": "refs to future drafts are processed as future drafts",
+    "schema": {
+      "$schema": "https://json-schema.org/draft/2019-09/schema",
+      "type": "array",
+      "$ref": "http://localhost:1234/draft2020-12/prefixItems.json"
+    },
+    "tests": [
+      {
+        "description": "first item not a string is invalid",
+        "comment": "if the implementation is not processing the $ref as a 2020-12 schema, this test will fail",
+        "data": [
+          1,
+          2,
+          3
+        ],
+        "valid": false
+      }
+    ]
+  }
+]

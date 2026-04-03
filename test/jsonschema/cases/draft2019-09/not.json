@@ -3,7 +3,9 @@
     "description": "not",
     "schema": {
       "$schema": "https://json-schema.org/draft/2019-09/schema",
-      "not": { "type": "integer" }
+      "not": {
+        "type": "integer"
+      }
     },
     "tests": [
       {
@@ -22,7 +24,12 @@
     "description": "not multiple types",
     "schema": {
       "$schema": "https://json-schema.org/draft/2019-09/schema",
-      "not": { "type": ["integer", "boolean"] }
+      "not": {
+        "type": [
+          "integer",
+          "boolean"
+        ]
+      }
     },
     "tests": [
       {
@@ -63,12 +70,16 @@
       },
       {
         "description": "other match",
-        "data": { "foo": 1 },
+        "data": {
+          "foo": 1
+        },
         "valid": true
       },
       {
         "description": "mismatch",
-        "data": { "foo": "bar" },
+        "data": {
+          "foo": "bar"
+        },
         "valid": false
       }
     ]
@@ -86,12 +97,18 @@
     "tests": [
       {
         "description": "property present",
-        "data": { "foo": 1, "bar": 2 },
+        "data": {
+          "foo": 1,
+          "bar": 2
+        },
         "valid": false
       },
       {
         "description": "property absent",
-        "data": { "bar": 1, "baz": 2 },
+        "data": {
+          "bar": 1,
+          "baz": 2
+        },
         "valid": true
       }
     ]
@@ -130,7 +147,9 @@
       },
       {
         "description": "object is invalid",
-        "data": { "foo": "bar" },
+        "data": {
+          "foo": "bar"
+        },
         "valid": false
       },
       {
@@ -140,7 +159,9 @@
       },
       {
         "description": "array is invalid",
-        "data": ["foo"],
+        "data": [
+          "foo"
+        ],
         "valid": false
       },
       {
@@ -184,7 +205,9 @@
       },
       {
         "description": "object is invalid",
-        "data": { "foo": "bar" },
+        "data": {
+          "foo": "bar"
+        },
         "valid": false
       },
       {
@@ -194,7 +217,9 @@
       },
       {
         "description": "array is invalid",
-        "data": ["foo"],
+        "data": [
+          "foo"
+        ],
         "valid": false
       },
       {
@@ -238,7 +263,9 @@
       },
       {
         "description": "object is valid",
-        "data": { "foo": "bar" },
+        "data": {
+          "foo": "bar"
+        },
         "valid": true
       },
       {
@@ -248,7 +275,9 @@
       },
       {
         "description": "array is valid",
-        "data": ["foo"],
+        "data": [
+          "foo"
+        ],
         "valid": true
       },
       {
@@ -262,7 +291,9 @@
     "description": "double negation",
     "schema": {
       "$schema": "https://json-schema.org/draft/2019-09/schema",
-      "not": { "not": {} }
+      "not": {
+        "not": {}
+      }
     },
     "tests": [
       {
@@ -280,7 +311,11 @@
         "$comment": "this subschema must still produce annotations internally, even though the 'not' will ultimately discard them",
         "anyOf": [
           true,
-          { "properties": { "foo": true } }
+          {
+            "properties": {
+              "foo": true
+            }
+          }
         ],
         "unevaluatedProperties": false
       }
@@ -288,12 +323,16 @@
     "tests": [
       {
         "description": "unevaluated property",
-        "data": { "bar": 1 },
+        "data": {
+          "bar": 1
+        },
         "valid": true
       },
       {
         "description": "annotations are still collected inside a 'not'",
-        "data": { "foo": 1 },
+        "data": {
+          "foo": 1
+        },
         "valid": false
       }
     ]

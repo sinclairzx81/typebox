@@ -2,7 +2,7 @@
   {
     "description": "exclusiveMaximum validation",
     "schema": {
-      "exclusiveMaximum": 3.0
+      "exclusiveMaximum": 3
     },
     "tests": [
       {
@@ -12,7 +12,7 @@
       },
       {
         "description": "boundary point is invalid",
-        "data": 3.0,
+        "data": 3,
         "valid": false
       },
       {

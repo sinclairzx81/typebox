@@ -97,6 +97,21 @@
         "valid": false
       },
       {
+        "description": "an invalid hour in date-time string",
+        "data": "1990-12-31T24:00:00Z",
+        "valid": false
+      },
+      {
+        "description": "an invalid minute in date-time string",
+        "data": "1990-12-31T15:60:00Z",
+        "valid": false
+      },
+      {
+        "description": "an invalid offset minute in date-time string",
+        "data": "1990-12-31T10:00:00+10:60",
+        "valid": false
+      },
+      {
         "description": "an invalid date-time string",
         "data": "06/19/1963 08:30:06 PST",
         "valid": false
@@ -107,7 +122,7 @@
         "valid": true
       },
       {
-        "description": "only RFC3339 not all of [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) are valid",
+        "description": "only RFC3339 not all of ISO 8601 are valid",
         "data": "2013-350T01:01:01",
         "valid": false
       },
@@ -129,6 +144,11 @@
       {
         "description": "invalid non-ASCII '৪' (a Bengali 4) in time portion",
         "data": "1963-06-11T0৪:00:00Z",
+        "valid": false
+      },
+      {
+        "description": "invalid extended year",
+        "data": "+11963-06-19T08:30:06.283185Z",
         "valid": false
       }
     ]

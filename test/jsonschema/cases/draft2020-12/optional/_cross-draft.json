@@ -10,7 +10,11 @@
       {
         "description": "first item not a string is valid",
         "comment": "if the implementation is not processing the $ref as a 2019-09 schema, this test will fail",
-        "data": [1, 2, 3],
+        "data": [
+          1,
+          2,
+          3
+        ],
         "valid": true
       }
     ]

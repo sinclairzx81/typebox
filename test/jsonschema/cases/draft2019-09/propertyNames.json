@@ -3,7 +3,9 @@
     "description": "propertyNames validation",
     "schema": {
       "$schema": "https://json-schema.org/draft/2019-09/schema",
-      "propertyNames": { "maxLength": 3 }
+      "propertyNames": {
+        "maxLength": 3
+      }
     },
     "tests": [
       {
@@ -29,7 +31,12 @@
       },
       {
         "description": "ignores arrays",
-        "data": [1, 2, 3, 4],
+        "data": [
+          1,
+          2,
+          3,
+          4
+        ],
         "valid": true
       },
       {
@@ -48,7 +55,9 @@
     "description": "propertyNames validation with pattern",
     "schema": {
       "$schema": "https://json-schema.org/draft/2019-09/schema",
-      "propertyNames": { "pattern": "^a+$" }
+      "propertyNames": {
+        "pattern": "^a+$"
+      }
     },
     "tests": [
       {
@@ -83,7 +92,9 @@
     "tests": [
       {
         "description": "object with any properties is valid",
-        "data": { "foo": 1 },
+        "data": {
+          "foo": 1
+        },
         "valid": true
       },
       {
@@ -102,7 +113,9 @@
     "tests": [
       {
         "description": "object with any properties is invalid",
-        "data": { "foo": 1 },
+        "data": {
+          "foo": 1
+        },
         "valid": false
       },
       {
@@ -116,17 +129,23 @@
     "description": "propertyNames with const",
     "schema": {
       "$schema": "https://json-schema.org/draft/2019-09/schema",
-      "propertyNames": { "const": "foo" }
+      "propertyNames": {
+        "const": "foo"
+      }
     },
     "tests": [
       {
         "description": "object with property foo is valid",
-        "data": { "foo": 1 },
+        "data": {
+          "foo": 1
+        },
         "valid": true
       },
       {
         "description": "object with any other property is invalid",
-        "data": { "bar": 1 },
+        "data": {
+          "bar": 1
+        },
         "valid": false
       },
       {
@@ -140,22 +159,34 @@
     "description": "propertyNames with enum",
     "schema": {
       "$schema": "https://json-schema.org/draft/2019-09/schema",
-      "propertyNames": { "enum": ["foo", "bar"] }
+      "propertyNames": {
+        "enum": [
+          "foo",
+          "bar"
+        ]
+      }
     },
     "tests": [
       {
         "description": "object with property foo is valid",
-        "data": { "foo": 1 },
+        "data": {
+          "foo": 1
+        },
         "valid": true
       },
       {
         "description": "object with property foo and bar is valid",
-        "data": { "foo": 1, "bar": 1 },
+        "data": {
+          "foo": 1,
+          "bar": 1
+        },
         "valid": true
       },
       {
         "description": "object with any other property is invalid",
-        "data": { "baz": 1 },
+        "data": {
+          "baz": 1
+        },
         "valid": false
       },
       {

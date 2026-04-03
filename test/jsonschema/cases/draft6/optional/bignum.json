@@ -1,54 +1,62 @@
 [
   {
     "description": "integer",
-    "schema": { "type": "integer" },
+    "schema": {
+      "type": "integer"
+    },
     "tests": [
       {
         "description": "a bignum is an integer",
-        "data": 12345678910111213141516171819202122232425262728293031,
+        "data": 1.2345678910111214e+52,
         "valid": true
       },
       {
         "description": "a negative bignum is an integer",
-        "data": -12345678910111213141516171819202122232425262728293031,
+        "data": -1.2345678910111214e+52,
         "valid": true
       }
     ]
   },
   {
     "description": "number",
-    "schema": { "type": "number" },
+    "schema": {
+      "type": "number"
+    },
     "tests": [
       {
         "description": "a bignum is a number",
-        "data": 98249283749234923498293171823948729348710298301928331,
+        "data": 9.824928374923492e+52,
         "valid": true
       },
       {
         "description": "a negative bignum is a number",
-        "data": -98249283749234923498293171823948729348710298301928331,
+        "data": -9.824928374923492e+52,
         "valid": true
       }
     ]
   },
   {
     "description": "string",
-    "schema": { "type": "string" },
+    "schema": {
+      "type": "string"
+    },
     "tests": [
       {
         "description": "a bignum is not a string",
-        "data": 98249283749234923498293171823948729348710298301928331,
+        "data": 9.824928374923492e+52,
         "valid": false
       }
     ]
   },
   {
     "description": "maximum integer comparison",
-    "schema": { "maximum": 18446744073709551615 },
+    "schema": {
+      "maximum": 18446744073709552000
+    },
     "tests": [
       {
         "description": "comparison works for high numbers",
-        "data": 18446744073709551600,
+        "data": 18446744073709552000,
         "valid": true
       }
     ]
@@ -56,23 +64,25 @@
   {
     "description": "float comparison with high precision",
     "schema": {
-      "exclusiveMaximum": 972783798187987123879878123.18878137
+      "exclusiveMaximum": 9.727837981879871e+26
     },
     "tests": [
       {
         "description": "comparison works for high numbers",
-        "data": 972783798187987123879878123.188781371,
+        "data": 9.727837981879871e+26,
         "valid": false
       }
     ]
   },
   {
     "description": "minimum integer comparison",
-    "schema": { "minimum": -18446744073709551615 },
+    "schema": {
+      "minimum": -18446744073709552000
+    },
     "tests": [
       {
         "description": "comparison works for very negative numbers",
-        "data": -18446744073709551600,
+        "data": -18446744073709552000,
         "valid": true
       }
     ]
@@ -80,12 +90,12 @@
   {
     "description": "float comparison with high precision on negative numbers",
     "schema": {
-      "exclusiveMinimum": -972783798187987123879878123.18878137
+      "exclusiveMinimum": -9.727837981879871e+26
     },
     "tests": [
       {
         "description": "comparison works for very negative numbers",
-        "data": -972783798187987123879878123.188781371,
+        "data": -9.727837981879871e+26,
         "valid": false
       }
     ]

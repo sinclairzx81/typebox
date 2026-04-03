@@ -1,27 +1,47 @@
 [
   {
     "description": "additionalProperties being false does not allow other properties",
-    "specification": [{ "core": "10.3.2.3", "quote": "The value of \"additionalProperties\" MUST be a valid JSON Schema. Boolean \"false\" forbids everything." }],
+    "specification": [
+      {
+        "core": "10.3.2.3",
+        "quote": "The value of \"additionalProperties\" MUST be a valid JSON Schema. Boolean \"false\" forbids everything."
+      }
+    ],
     "schema": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
-      "properties": { "foo": {}, "bar": {} },
-      "patternProperties": { "^v": {} },
+      "properties": {
+        "foo": {},
+        "bar": {}
+      },
+      "patternProperties": {
+        "^v": {}
+      },
       "additionalProperties": false
     },
     "tests": [
       {
         "description": "no additional properties is valid",
-        "data": { "foo": 1 },
+        "data": {
+          "foo": 1
+        },
         "valid": true
       },
       {
         "description": "an additional property is invalid",
-        "data": { "foo": 1, "bar": 2, "quux": "boom" },
+        "data": {
+          "foo": 1,
+          "bar": 2,
+          "quux": "boom"
+        },
         "valid": false
       },
       {
         "description": "ignores arrays",
-        "data": [1, 2, 3],
+        "data": [
+          1,
+          2,
+          3
+        ],
         "valid": true
       },
       {
@@ -36,114 +56,188 @@
       },
       {
         "description": "patternProperties are not additional properties",
-        "data": { "foo": 1, "vroom": 2 },
+        "data": {
+          "foo": 1,
+          "vroom": 2
+        },
         "valid": true
       }
     ]
   },
   {
     "description": "non-ASCII pattern with additionalProperties",
-    "specification": [{ "core": "10.3.2.3" }],
+    "specification": [
+      {
+        "core": "10.3.2.3"
+      }
+    ],
     "schema": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
-      "patternProperties": { "^á": {} },
+      "patternProperties": {
+        "^á": {}
+      },
       "additionalProperties": false
     },
     "tests": [
       {
         "description": "matching the pattern is valid",
-        "data": { "ármányos": 2 },
+        "data": {
+          "ármányos": 2
+        },
         "valid": true
       },
       {
         "description": "not matching the pattern is invalid",
-        "data": { "élmény": 2 },
+        "data": {
+          "élmény": 2
+        },
         "valid": false
       }
     ]
   },
   {
     "description": "additionalProperties with schema",
-    "specification": [{ "core": "10.3.2.3", "quote": "The value of \"additionalProperties\" MUST be a valid JSON Schema." }],
+    "specification": [
+      {
+        "core": "10.3.2.3",
+        "quote": "The value of \"additionalProperties\" MUST be a valid JSON Schema."
+      }
+    ],
     "schema": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
-      "properties": { "foo": {}, "bar": {} },
-      "additionalProperties": { "type": "boolean" }
+      "properties": {
+        "foo": {},
+        "bar": {}
+      },
+      "additionalProperties": {
+        "type": "boolean"
+      }
     },
     "tests": [
       {
         "description": "no additional properties is valid",
-        "data": { "foo": 1 },
+        "data": {
+          "foo": 1
+        },
         "valid": true
       },
       {
         "description": "an additional valid property is valid",
-        "data": { "foo": 1, "bar": 2, "quux": true },
+        "data": {
+          "foo": 1,
+          "bar": 2,
+          "quux": true
+        },
         "valid": true
       },
       {
         "description": "an additional invalid property is invalid",
-        "data": { "foo": 1, "bar": 2, "quux": 12 },
+        "data": {
+          "foo": 1,
+          "bar": 2,
+          "quux": 12
+        },
         "valid": false
       }
     ]
   },
   {
     "description": "additionalProperties can exist by itself",
-    "specification": [{ "core": "10.3.2.3", "quote": "With no other applicator applying to object instances. This validates all the instance values irrespective of their property names" }],
+    "specification": [
+      {
+        "core": "10.3.2.3",
+        "quote": "With no other applicator applying to object instances. This validates all the instance values irrespective of their property names"
+      }
+    ],
     "schema": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
-      "additionalProperties": { "type": "boolean" }
+      "additionalProperties": {
+        "type": "boolean"
+      }
     },
     "tests": [
       {
         "description": "an additional valid property is valid",
-        "data": { "foo": true },
+        "data": {
+          "foo": true
+        },
         "valid": true
       },
       {
         "description": "an additional invalid property is invalid",
-        "data": { "foo": 1 },
+        "data": {
+          "foo": 1
+        },
         "valid": false
       }
     ]
   },
   {
     "description": "additionalProperties are allowed by default",
-    "specification": [{ "core": "10.3.2.3", "quote": "Omitting this keyword has the same assertion behavior as an empty schema." }],
+    "specification": [
+      {
+        "core": "10.3.2.3",
+        "quote": "Omitting this keyword has the same assertion behavior as an empty schema."
+      }
+    ],
     "schema": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
-      "properties": { "foo": {}, "bar": {} }
+      "properties": {
+        "foo": {},
+        "bar": {}
+      }
     },
     "tests": [
       {
         "description": "additional properties are allowed",
-        "data": { "foo": 1, "bar": 2, "quux": true },
+        "data": {
+          "foo": 1,
+          "bar": 2,
+          "quux": true
+        },
         "valid": true
       }
     ]
   },
   {
     "description": "additionalProperties does not look in applicators",
-    "specification": [{ "core": "10.2", "quote": "Subschemas of applicator keywords evaluate the instance completely independently such that the results of one such subschema MUST NOT impact the results of sibling subschemas." }],
+    "specification": [
+      {
+        "core": "10.2",
+        "quote": "Subschemas of applicator keywords evaluate the instance completely independently such that the results of one such subschema MUST NOT impact the results of sibling subschemas."
+      }
+    ],
     "schema": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "allOf": [
-        { "properties": { "foo": {} } }
+        {
+          "properties": {
+            "foo": {}
+          }
+        }
       ],
-      "additionalProperties": { "type": "boolean" }
+      "additionalProperties": {
+        "type": "boolean"
+      }
     },
     "tests": [
       {
         "description": "properties defined in allOf are not examined",
-        "data": { "foo": 1, "bar": true },
+        "data": {
+          "foo": 1,
+          "bar": true
+        },
         "valid": false
       }
     ]
   },
   {
     "description": "additionalProperties with null valued instance properties",
-    "specification": [{ "core": "10.3.2.3" }],
+    "specification": [
+      {
+        "core": "10.3.2.3"
+      }
+    ],
     "schema": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "additionalProperties": {
@@ -153,7 +247,9 @@
     "tests": [
       {
         "description": "allows null values",
-        "data": { "foo": null },
+        "data": {
+          "foo": null
+        },
         "valid": true
       }
     ]
@@ -172,12 +268,17 @@
     "tests": [
       {
         "description": "Valid against both keywords",
-        "data": { "apple": 4 },
+        "data": {
+          "apple": 4
+        },
         "valid": true
       },
       {
         "description": "Valid against propertyNames, but not additionalProperties",
-        "data": { "fig": 2, "pear": "available" },
+        "data": {
+          "fig": 2,
+          "pear": "available"
+        },
         "valid": false
       }
     ]
@@ -186,7 +287,9 @@
     "description": "dependentSchemas with additionalProperties",
     "schema": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
-      "properties": { "foo2": {} },
+      "properties": {
+        "foo2": {}
+      },
       "dependentSchemas": {
         "foo": {},
         "foo2": {
@@ -200,17 +303,24 @@
     "tests": [
       {
         "description": "additionalProperties doesn't consider dependentSchemas",
-        "data": { "foo": "" },
+        "data": {
+          "foo": ""
+        },
         "valid": false
       },
       {
         "description": "additionalProperties can't see bar",
-        "data": { "bar": "" },
+        "data": {
+          "bar": ""
+        },
         "valid": false
       },
       {
         "description": "additionalProperties can't see bar even when foo2 is present",
-        "data": { "foo2": "", "bar": "" },
+        "data": {
+          "foo2": "",
+          "bar": ""
+        },
         "valid": false
       }
     ]

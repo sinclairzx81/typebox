@@ -3,22 +3,33 @@
     "description": "a schema given for items",
     "schema": {
       "$schema": "https://json-schema.org/draft/2019-09/schema",
-      "items": { "type": "integer" }
+      "items": {
+        "type": "integer"
+      }
     },
     "tests": [
       {
         "description": "valid items",
-        "data": [1, 2, 3],
+        "data": [
+          1,
+          2,
+          3
+        ],
         "valid": true
       },
       {
         "description": "wrong type of items",
-        "data": [1, "x"],
+        "data": [
+          1,
+          "x"
+        ],
         "valid": false
       },
       {
         "description": "ignores non-arrays",
-        "data": { "foo": "bar" },
+        "data": {
+          "foo": "bar"
+        },
         "valid": true
       },
       {
@@ -36,29 +47,45 @@
     "schema": {
       "$schema": "https://json-schema.org/draft/2019-09/schema",
       "items": [
-        { "type": "integer" },
-        { "type": "string" }
+        {
+          "type": "integer"
+        },
+        {
+          "type": "string"
+        }
       ]
     },
     "tests": [
       {
         "description": "correct types",
-        "data": [1, "foo"],
+        "data": [
+          1,
+          "foo"
+        ],
         "valid": true
       },
       {
         "description": "wrong types",
-        "data": ["foo", 1],
+        "data": [
+          "foo",
+          1
+        ],
         "valid": false
       },
       {
         "description": "incomplete array of items",
-        "data": [1],
+        "data": [
+          1
+        ],
         "valid": true
       },
       {
         "description": "array with additional items",
-        "data": [1, "foo", true],
+        "data": [
+          1,
+          "foo",
+          true
+        ],
         "valid": true
       },
       {
@@ -86,7 +113,11 @@
     "tests": [
       {
         "description": "any array is valid",
-        "data": [1, "foo", true],
+        "data": [
+          1,
+          "foo",
+          true
+        ],
         "valid": true
       },
       {
@@ -105,7 +136,11 @@
     "tests": [
       {
         "description": "any non-empty array is invalid",
-        "data": [1, "foo", true],
+        "data": [
+          1,
+          "foo",
+          true
+        ],
         "valid": false
       },
       {
@@ -119,17 +154,25 @@
     "description": "items with boolean schemas",
     "schema": {
       "$schema": "https://json-schema.org/draft/2019-09/schema",
-      "items": [true, false]
+      "items": [
+        true,
+        false
+      ]
     },
     "tests": [
       {
         "description": "array with one item is valid",
-        "data": [1],
+        "data": [
+          1
+        ],
         "valid": true
       },
       {
         "description": "array with two items is invalid",
-        "data": [1, "foo"],
+        "data": [
+          1,
+          "foo"
+        ],
         "valid": false
       },
       {
@@ -148,75 +191,203 @@
           "type": "array",
           "additionalItems": false,
           "items": [
-            { "$ref": "#/$defs/sub-item" },
-            { "$ref": "#/$defs/sub-item" }
+            {
+              "$ref": "#/$defs/sub-item"
+            },
+            {
+              "$ref": "#/$defs/sub-item"
+            }
           ]
         },
         "sub-item": {
           "type": "object",
-          "required": ["foo"]
+          "required": [
+            "foo"
+          ]
         }
       },
       "type": "array",
       "additionalItems": false,
       "items": [
-        { "$ref": "#/$defs/item" },
-        { "$ref": "#/$defs/item" },
-        { "$ref": "#/$defs/item" }
+        {
+          "$ref": "#/$defs/item"
+        },
+        {
+          "$ref": "#/$defs/item"
+        },
+        {
+          "$ref": "#/$defs/item"
+        }
       ]
     },
     "tests": [
       {
         "description": "valid items",
         "data": [
-          [{ "foo": null }, { "foo": null }],
-          [{ "foo": null }, { "foo": null }],
-          [{ "foo": null }, { "foo": null }]
+          [
+            {
+              "foo": null
+            },
+            {
+              "foo": null
+            }
+          ],
+          [
+            {
+              "foo": null
+            },
+            {
+              "foo": null
+            }
+          ],
+          [
+            {
+              "foo": null
+            },
+            {
+              "foo": null
+            }
+          ]
         ],
         "valid": true
       },
       {
         "description": "too many items",
         "data": [
-          [{ "foo": null }, { "foo": null }],
-          [{ "foo": null }, { "foo": null }],
-          [{ "foo": null }, { "foo": null }],
-          [{ "foo": null }, { "foo": null }]
+          [
+            {
+              "foo": null
+            },
+            {
+              "foo": null
+            }
+          ],
+          [
+            {
+              "foo": null
+            },
+            {
+              "foo": null
+            }
+          ],
+          [
+            {
+              "foo": null
+            },
+            {
+              "foo": null
+            }
+          ],
+          [
+            {
+              "foo": null
+            },
+            {
+              "foo": null
+            }
+          ]
         ],
         "valid": false
       },
       {
         "description": "too many sub-items",
         "data": [
-          [{ "foo": null }, { "foo": null }, { "foo": null }],
-          [{ "foo": null }, { "foo": null }],
-          [{ "foo": null }, { "foo": null }]
+          [
+            {
+              "foo": null
+            },
+            {
+              "foo": null
+            },
+            {
+              "foo": null
+            }
+          ],
+          [
+            {
+              "foo": null
+            },
+            {
+              "foo": null
+            }
+          ],
+          [
+            {
+              "foo": null
+            },
+            {
+              "foo": null
+            }
+          ]
         ],
         "valid": false
       },
       {
         "description": "wrong item",
         "data": [
-          { "foo": null },
-          [{ "foo": null }, { "foo": null }],
-          [{ "foo": null }, { "foo": null }]
+          {
+            "foo": null
+          },
+          [
+            {
+              "foo": null
+            },
+            {
+              "foo": null
+            }
+          ],
+          [
+            {
+              "foo": null
+            },
+            {
+              "foo": null
+            }
+          ]
         ],
         "valid": false
       },
       {
         "description": "wrong sub-item",
         "data": [
-          [{}, { "foo": null }],
-          [{ "foo": null }, { "foo": null }],
-          [{ "foo": null }, { "foo": null }]
+          [
+            {},
+            {
+              "foo": null
+            }
+          ],
+          [
+            {
+              "foo": null
+            },
+            {
+              "foo": null
+            }
+          ],
+          [
+            {
+              "foo": null
+            },
+            {
+              "foo": null
+            }
+          ]
         ],
         "valid": false
       },
       {
         "description": "fewer items is valid",
         "data": [
-          [{ "foo": null }],
-          [{ "foo": null }]
+          [
+            {
+              "foo": null
+            }
+          ],
+          [
+            {
+              "foo": null
+            }
+          ]
         ],
         "valid": true
       }
@@ -243,17 +414,98 @@
     "tests": [
       {
         "description": "valid nested array",
-        "data": [[[[1]], [[2], [3]]], [[[4], [5], [6]]]],
+        "data": [
+          [
+            [
+              [
+                1
+              ]
+            ],
+            [
+              [
+                2
+              ],
+              [
+                3
+              ]
+            ]
+          ],
+          [
+            [
+              [
+                4
+              ],
+              [
+                5
+              ],
+              [
+                6
+              ]
+            ]
+          ]
+        ],
         "valid": true
       },
       {
         "description": "nested array with invalid type",
-        "data": [[[["1"]], [[2], [3]]], [[[4], [5], [6]]]],
+        "data": [
+          [
+            [
+              [
+                "1"
+              ]
+            ],
+            [
+              [
+                2
+              ],
+              [
+                3
+              ]
+            ]
+          ],
+          [
+            [
+              [
+                4
+              ],
+              [
+                5
+              ],
+              [
+                6
+              ]
+            ]
+          ]
+        ],
         "valid": false
       },
       {
         "description": "not deep enough",
-        "data": [[[1], [2], [3]], [[4], [5], [6]]],
+        "data": [
+          [
+            [
+              1
+            ],
+            [
+              2
+            ],
+            [
+              3
+            ]
+          ],
+          [
+            [
+              4
+            ],
+            [
+              5
+            ],
+            [
+              6
+            ]
+          ]
+        ],
         "valid": false
       }
     ]
@@ -269,7 +521,9 @@
     "tests": [
       {
         "description": "allows null elements",
-        "data": [null],
+        "data": [
+          null
+        ],
         "valid": true
       }
     ]
@@ -287,7 +541,9 @@
     "tests": [
       {
         "description": "allows null elements",
-        "data": [null],
+        "data": [
+          null
+        ],
         "valid": true
       }
     ]

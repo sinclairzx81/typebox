@@ -30,7 +30,9 @@
       },
       {
         "description": "object is valid",
-        "data": { "foo": "bar" },
+        "data": {
+          "foo": "bar"
+        },
         "valid": true
       },
       {
@@ -40,7 +42,9 @@
       },
       {
         "description": "array is valid",
-        "data": ["foo"],
+        "data": [
+          "foo"
+        ],
         "valid": true
       },
       {
@@ -81,7 +85,9 @@
       },
       {
         "description": "object is invalid",
-        "data": { "foo": "bar" },
+        "data": {
+          "foo": "bar"
+        },
         "valid": false
       },
       {
@@ -91,7 +97,9 @@
       },
       {
         "description": "array is invalid",
-        "data": ["foo"],
+        "data": [
+          "foo"
+        ],
         "valid": false
       },
       {

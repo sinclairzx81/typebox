@@ -1,16 +1,23 @@
 [
   {
     "description": "minItems validation",
-    "schema": { "minItems": 1 },
+    "schema": {
+      "minItems": 1
+    },
     "tests": [
       {
         "description": "longer is valid",
-        "data": [1, 2],
+        "data": [
+          1,
+          2
+        ],
         "valid": true
       },
       {
         "description": "exact length is valid",
-        "data": [1],
+        "data": [
+          1
+        ],
         "valid": true
       },
       {

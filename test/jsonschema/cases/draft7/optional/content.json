@@ -1,0 +1,57 @@
+[
+  {
+    "description": "validation of string-encoded content based on media type",
+    "schema": {
+      "contentMediaType": "application/json"
+    },
+    "tests": [
+      {
+        "description": "a valid JSON document",
+        "data": "{\"foo\": \"bar\"}",
+        "valid": true
+      },
+      {
+        "description": "ignores non-strings",
+        "data": 100,
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "validation of binary string-encoding",
+    "schema": {
+      "contentEncoding": "base64"
+    },
+    "tests": [
+      {
+        "description": "a valid base64 string",
+        "data": "eyJmb28iOiAiYmFyIn0K",
+        "valid": true
+      },
+      {
+        "description": "ignores non-strings",
+        "data": 100,
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "validation of binary-encoded media type documents",
+    "schema": {
+      "contentMediaType": "application/json",
+      "contentEncoding": "base64"
+    },
+    "tests": [
+      {
+        "description": "a valid base64-encoded JSON document",
+        "data": "eyJmb28iOiAiYmFyIn0K",
+        "valid": true
+      },
+      {
+        "description": "ignores non-strings",
+        "data": 100,
+        "valid": true
+      }
+    ]
+  }
+]

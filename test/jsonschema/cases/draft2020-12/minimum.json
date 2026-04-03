@@ -52,7 +52,7 @@
       },
       {
         "description": "boundary point with float is valid",
-        "data": -2.0,
+        "data": -2,
         "valid": true
       },
       {

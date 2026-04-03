@@ -1,0 +1,137 @@
+[
+  {
+    "description": "multiple dynamic paths to the $dynamicRef keyword",
+    "schema": {
+      "$schema": "https://json-schema.org/v1",
+      "$id": "https://test.json-schema.org/dynamic-ref-with-multiple-paths/main",
+      "propertyDependencies": {
+        "kindOfList": {
+          "numbers": {
+            "$ref": "numberList"
+          },
+          "strings": {
+            "$ref": "stringList"
+          }
+        }
+      },
+      "$defs": {
+        "genericList": {
+          "$id": "genericList",
+          "properties": {
+            "list": {
+              "items": {
+                "$dynamicRef": "#itemType"
+              }
+            }
+          }
+        },
+        "numberList": {
+          "$id": "numberList",
+          "$defs": {
+            "itemType": {
+              "$dynamicAnchor": "itemType",
+              "type": "number"
+            }
+          },
+          "$ref": "genericList"
+        },
+        "stringList": {
+          "$id": "stringList",
+          "$defs": {
+            "itemType": {
+              "$dynamicAnchor": "itemType",
+              "type": "string"
+            }
+          },
+          "$ref": "genericList"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "number list with string values",
+        "data": {
+          "kindOfList": "numbers",
+          "list": [
+            "foo"
+          ]
+        },
+        "valid": false
+      },
+      {
+        "description": "string list with number values",
+        "data": {
+          "kindOfList": "strings",
+          "list": [
+            1.1
+          ]
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "$dynamicAnchor inside propertyDependencies",
+    "schema": {
+      "$schema": "https://json-schema.org/v1",
+      "$id": "http://localhost:1234/v1/dynamicanchor-in-propertydependencies.json",
+      "$defs": {
+        "inner": {
+          "$id": "inner",
+          "$dynamicAnchor": "foo",
+          "type": "object",
+          "properties": {
+            "expectedTypes": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": {
+            "$dynamicRef": "#foo"
+          }
+        }
+      },
+      "propertyDependencies": {
+        "expectedTypes": {
+          "strings": {
+            "$id": "east",
+            "$ref": "inner",
+            "$defs": {
+              "foo": {
+                "$dynamicAnchor": "foo",
+                "type": "string"
+              }
+            }
+          },
+          "integers": {
+            "$id": "west",
+            "$ref": "inner",
+            "$defs": {
+              "foo": {
+                "$dynamicAnchor": "foo",
+                "type": "integer"
+              }
+            }
+          }
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "expected strings - additional property as not string is invalid",
+        "data": {
+          "expectedTypes": "strings",
+          "anotherProperty": 42
+        },
+        "valid": false
+      },
+      {
+        "description": "expected integers - additional property as not integer is invalid",
+        "data": {
+          "expectedTypes": "integers",
+          "anotherProperty": "a string"
+        },
+        "valid": false
+      }
+    ]
+  }
+]
