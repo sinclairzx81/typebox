@@ -3,7 +3,7 @@
     "description": "maximum validation",
     "schema": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
-      "maximum": 3.0
+      "maximum": 3
     },
     "tests": [
       {
@@ -13,7 +13,7 @@
       },
       {
         "description": "boundary point is valid",
-        "data": 3.0,
+        "data": 3,
         "valid": true
       },
       {
@@ -36,7 +36,7 @@
     },
     "tests": [
       {
-        "description": "below the maximum is invalid",
+        "description": "below the maximum is valid",
         "data": 299.97,
         "valid": true
       },
@@ -47,7 +47,7 @@
       },
       {
         "description": "boundary point float is valid",
-        "data": 300.00,
+        "data": 300,
         "valid": true
       },
       {

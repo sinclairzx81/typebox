@@ -42,7 +42,7 @@
         "valid": true
       },
       {
-        "description": "an invalid idn e-mail address",
+        "description": "an invalid e-mail/idn e-mail address",
         "data": "2962",
         "valid": false
       },
@@ -50,11 +50,6 @@
         "description": "a valid e-mail address",
         "data": "joe.bloggs@example.com",
         "valid": true
-      },
-      {
-        "description": "an invalid e-mail address",
-        "data": "2962",
-        "valid": false
       }
     ]
   }

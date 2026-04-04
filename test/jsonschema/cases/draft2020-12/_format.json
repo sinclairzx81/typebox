@@ -7,36 +7,6 @@
     },
     "tests": [
       {
-        "description": "all string formats ignore integers",
-        "data": 12,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore floats",
-        "data": 13.7,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore objects",
-        "data": {},
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore arrays",
-        "data": [],
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore booleans",
-        "data": false,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore nulls",
-        "data": null,
-        "valid": true
-      },
-      {
         "description": "invalid email string is only an annotation by default",
         "data": "2962",
         "valid": true
@@ -50,36 +20,6 @@
       "format": "idn-email"
     },
     "tests": [
-      {
-        "description": "all string formats ignore integers",
-        "data": 12,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore floats",
-        "data": 13.7,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore objects",
-        "data": {},
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore arrays",
-        "data": [],
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore booleans",
-        "data": false,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore nulls",
-        "data": null,
-        "valid": true
-      },
       {
         "description": "invalid idn-email string is only an annotation by default",
         "data": "2962",
@@ -95,36 +35,6 @@
     },
     "tests": [
       {
-        "description": "all string formats ignore integers",
-        "data": 12,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore floats",
-        "data": 13.7,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore objects",
-        "data": {},
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore arrays",
-        "data": [],
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore booleans",
-        "data": false,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore nulls",
-        "data": null,
-        "valid": true
-      },
-      {
         "description": "invalid regex string is only an annotation by default",
         "data": "^(abc]",
         "valid": true
@@ -138,36 +48,6 @@
       "format": "ipv4"
     },
     "tests": [
-      {
-        "description": "all string formats ignore integers",
-        "data": 12,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore floats",
-        "data": 13.7,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore objects",
-        "data": {},
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore arrays",
-        "data": [],
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore booleans",
-        "data": false,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore nulls",
-        "data": null,
-        "valid": true
-      },
       {
         "description": "invalid ipv4 string is only an annotation by default",
         "data": "127.0.0.0.1",
@@ -183,36 +63,6 @@
     },
     "tests": [
       {
-        "description": "all string formats ignore integers",
-        "data": 12,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore floats",
-        "data": 13.7,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore objects",
-        "data": {},
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore arrays",
-        "data": [],
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore booleans",
-        "data": false,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore nulls",
-        "data": null,
-        "valid": true
-      },
-      {
         "description": "invalid ipv6 string is only an annotation by default",
         "data": "12345::",
         "valid": true
@@ -226,36 +76,6 @@
       "format": "idn-hostname"
     },
     "tests": [
-      {
-        "description": "all string formats ignore integers",
-        "data": 12,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore floats",
-        "data": 13.7,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore objects",
-        "data": {},
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore arrays",
-        "data": [],
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore booleans",
-        "data": false,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore nulls",
-        "data": null,
-        "valid": true
-      },
       {
         "description": "invalid idn-hostname string is only an annotation by default",
         "data": "〮실례.테스트",
@@ -271,36 +91,6 @@
     },
     "tests": [
       {
-        "description": "all string formats ignore integers",
-        "data": 12,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore floats",
-        "data": 13.7,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore objects",
-        "data": {},
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore arrays",
-        "data": [],
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore booleans",
-        "data": false,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore nulls",
-        "data": null,
-        "valid": true
-      },
-      {
         "description": "invalid hostname string is only an annotation by default",
         "data": "-a-host-name-that-starts-with--",
         "valid": true
@@ -314,36 +104,6 @@
       "format": "date"
     },
     "tests": [
-      {
-        "description": "all string formats ignore integers",
-        "data": 12,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore floats",
-        "data": 13.7,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore objects",
-        "data": {},
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore arrays",
-        "data": [],
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore booleans",
-        "data": false,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore nulls",
-        "data": null,
-        "valid": true
-      },
       {
         "description": "invalid date string is only an annotation by default",
         "data": "06/19/1963",
@@ -359,36 +119,6 @@
     },
     "tests": [
       {
-        "description": "all string formats ignore integers",
-        "data": 12,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore floats",
-        "data": 13.7,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore objects",
-        "data": {},
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore arrays",
-        "data": [],
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore booleans",
-        "data": false,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore nulls",
-        "data": null,
-        "valid": true
-      },
-      {
         "description": "invalid date-time string is only an annotation by default",
         "data": "1990-02-31T15:59:60.123-08:00",
         "valid": true
@@ -402,36 +132,6 @@
       "format": "time"
     },
     "tests": [
-      {
-        "description": "all string formats ignore integers",
-        "data": 12,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore floats",
-        "data": 13.7,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore objects",
-        "data": {},
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore arrays",
-        "data": [],
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore booleans",
-        "data": false,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore nulls",
-        "data": null,
-        "valid": true
-      },
       {
         "description": "invalid time string is only an annotation by default",
         "data": "08:30:06 PST",
@@ -447,36 +147,6 @@
     },
     "tests": [
       {
-        "description": "all string formats ignore integers",
-        "data": 12,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore floats",
-        "data": 13.7,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore objects",
-        "data": {},
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore arrays",
-        "data": [],
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore booleans",
-        "data": false,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore nulls",
-        "data": null,
-        "valid": true
-      },
-      {
         "description": "invalid json-pointer string is only an annotation by default",
         "data": "/foo/bar~",
         "valid": true
@@ -490,36 +160,6 @@
       "format": "relative-json-pointer"
     },
     "tests": [
-      {
-        "description": "all string formats ignore integers",
-        "data": 12,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore floats",
-        "data": 13.7,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore objects",
-        "data": {},
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore arrays",
-        "data": [],
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore booleans",
-        "data": false,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore nulls",
-        "data": null,
-        "valid": true
-      },
       {
         "description": "invalid relative-json-pointer string is only an annotation by default",
         "data": "/foo/bar",
@@ -535,36 +175,6 @@
     },
     "tests": [
       {
-        "description": "all string formats ignore integers",
-        "data": 12,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore floats",
-        "data": 13.7,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore objects",
-        "data": {},
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore arrays",
-        "data": [],
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore booleans",
-        "data": false,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore nulls",
-        "data": null,
-        "valid": true
-      },
-      {
         "description": "invalid iri string is only an annotation by default",
         "data": "http://2001:0db8:85a3:0000:0000:8a2e:0370:7334",
         "valid": true
@@ -578,36 +188,6 @@
       "format": "iri-reference"
     },
     "tests": [
-      {
-        "description": "all string formats ignore integers",
-        "data": 12,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore floats",
-        "data": 13.7,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore objects",
-        "data": {},
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore arrays",
-        "data": [],
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore booleans",
-        "data": false,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore nulls",
-        "data": null,
-        "valid": true
-      },
       {
         "description": "invalid iri-reference string is only an annotation by default",
         "data": "\\\\WINDOWS\\filëßåré",
@@ -623,36 +203,6 @@
     },
     "tests": [
       {
-        "description": "all string formats ignore integers",
-        "data": 12,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore floats",
-        "data": 13.7,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore objects",
-        "data": {},
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore arrays",
-        "data": [],
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore booleans",
-        "data": false,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore nulls",
-        "data": null,
-        "valid": true
-      },
-      {
         "description": "invalid uri string is only an annotation by default",
         "data": "//foo.bar/?baz=qux#quux",
         "valid": true
@@ -666,36 +216,6 @@
       "format": "uri-reference"
     },
     "tests": [
-      {
-        "description": "all string formats ignore integers",
-        "data": 12,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore floats",
-        "data": 13.7,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore objects",
-        "data": {},
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore arrays",
-        "data": [],
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore booleans",
-        "data": false,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore nulls",
-        "data": null,
-        "valid": true
-      },
       {
         "description": "invalid uri-reference string is only an annotation by default",
         "data": "\\\\WINDOWS\\fileshare",
@@ -711,36 +231,6 @@
     },
     "tests": [
       {
-        "description": "all string formats ignore integers",
-        "data": 12,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore floats",
-        "data": 13.7,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore objects",
-        "data": {},
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore arrays",
-        "data": [],
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore booleans",
-        "data": false,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore nulls",
-        "data": null,
-        "valid": true
-      },
-      {
         "description": "invalid uri-template string is only an annotation by default",
         "data": "http://example.com/dictionary/{term:1}/{term",
         "valid": true
@@ -755,36 +245,6 @@
     },
     "tests": [
       {
-        "description": "all string formats ignore integers",
-        "data": 12,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore floats",
-        "data": 13.7,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore objects",
-        "data": {},
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore arrays",
-        "data": [],
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore booleans",
-        "data": false,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore nulls",
-        "data": null,
-        "valid": true
-      },
-      {
         "description": "invalid uuid string is only an annotation by default",
         "data": "2eb8aa08-aa98-11ea-b4aa-73b441d1638",
         "valid": true
@@ -798,36 +258,6 @@
       "format": "duration"
     },
     "tests": [
-      {
-        "description": "all string formats ignore integers",
-        "data": 12,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore floats",
-        "data": 13.7,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore objects",
-        "data": {},
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore arrays",
-        "data": [],
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore booleans",
-        "data": false,
-        "valid": true
-      },
-      {
-        "description": "all string formats ignore nulls",
-        "data": null,
-        "valid": true
-      },
       {
         "description": "invalid duration string is only an annotation by default",
         "data": "PT1D",

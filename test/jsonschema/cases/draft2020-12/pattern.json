@@ -28,7 +28,7 @@
       },
       {
         "description": "ignores floats",
-        "data": 1.0,
+        "data": 1,
         "valid": true
       },
       {
@@ -59,6 +59,21 @@
         "description": "matches a substring",
         "data": "xxaayy",
         "valid": true
+      }
+    ]
+  },
+  {
+    "description": "pattern with Unicode property escape requires unicode mode",
+    "schema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "string",
+      "pattern": "^\\p{Letter}+$"
+    },
+    "tests": [
+      {
+        "description": "Digits do not match",
+        "data": "123",
+        "valid": false
       }
     ]
   }

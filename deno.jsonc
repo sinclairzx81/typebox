@@ -11,6 +11,7 @@
     "publish": "deno run -A tasks.ts publish",       // Publish Package
     "report": "deno run -A tasks.ts report",         // Test Converage
     "range": "deno run -A tasks.ts range",           // TypeScript Compiler Ranges
+    "spec": "deno run -A tasks.ts spec",             // Refresh JSON Schema Spec
     "start": "deno run -A tasks.ts start",           // Run Example
     "syntax": "deno run -A tasks.ts syntax",         // Build Parsers
     "test": "deno run -A tasks.ts test",             // Test Project

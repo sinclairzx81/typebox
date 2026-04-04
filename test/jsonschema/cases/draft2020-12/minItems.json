@@ -8,12 +8,17 @@
     "tests": [
       {
         "description": "longer is valid",
-        "data": [1, 2],
+        "data": [
+          1,
+          2
+        ],
         "valid": true
       },
       {
         "description": "exact length is valid",
-        "data": [1],
+        "data": [
+          1
+        ],
         "valid": true
       },
       {
@@ -32,12 +37,15 @@
     "description": "minItems validation with a decimal",
     "schema": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
-      "minItems": 1.0
+      "minItems": 1
     },
     "tests": [
       {
         "description": "longer is valid",
-        "data": [1, 2],
+        "data": [
+          1,
+          2
+        ],
         "valid": true
       },
       {

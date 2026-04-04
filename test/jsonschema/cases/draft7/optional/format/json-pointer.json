@@ -1,7 +1,9 @@
 [
   {
     "description": "validation of JSON-pointers (JSON String Representation)",
-    "schema": { "format": "json-pointer" },
+    "schema": {
+      "format": "json-pointer"
+    },
     "tests": [
       {
         "description": "all string formats ignore integers",
@@ -54,62 +56,62 @@
         "valid": true
       },
       {
-        "description": "valid JSON-pointer as stated in [RFC 6901](https://datatracker.ietf.org/doc/html/rfc6901) #1",
+        "description": "valid JSON-pointer as stated in RFC 6901 #1",
         "data": "",
         "valid": true
       },
       {
-        "description": "valid JSON-pointer as stated in [RFC 6901](https://datatracker.ietf.org/doc/html/rfc6901) #2",
+        "description": "valid JSON-pointer as stated in RFC 6901 #2",
         "data": "/foo",
         "valid": true
       },
       {
-        "description": "valid JSON-pointer as stated in [RFC 6901](https://datatracker.ietf.org/doc/html/rfc6901) #3",
+        "description": "valid JSON-pointer as stated in RFC 6901 #3",
         "data": "/foo/0",
         "valid": true
       },
       {
-        "description": "valid JSON-pointer as stated in [RFC 6901](https://datatracker.ietf.org/doc/html/rfc6901) #4",
+        "description": "valid JSON-pointer as stated in RFC 6901 #4",
         "data": "/",
         "valid": true
       },
       {
-        "description": "valid JSON-pointer as stated in [RFC 6901](https://datatracker.ietf.org/doc/html/rfc6901) #5",
+        "description": "valid JSON-pointer as stated in RFC 6901 #5",
         "data": "/a~1b",
         "valid": true
       },
       {
-        "description": "valid JSON-pointer as stated in [RFC 6901](https://datatracker.ietf.org/doc/html/rfc6901) #6",
+        "description": "valid JSON-pointer as stated in RFC 6901 #6",
         "data": "/c%d",
         "valid": true
       },
       {
-        "description": "valid JSON-pointer as stated in [RFC 6901](https://datatracker.ietf.org/doc/html/rfc6901) #7",
+        "description": "valid JSON-pointer as stated in RFC 6901 #7",
         "data": "/e^f",
         "valid": true
       },
       {
-        "description": "valid JSON-pointer as stated in [RFC 6901](https://datatracker.ietf.org/doc/html/rfc6901) #8",
+        "description": "valid JSON-pointer as stated in RFC 6901 #8",
         "data": "/g|h",
         "valid": true
       },
       {
-        "description": "valid JSON-pointer as stated in [RFC 6901](https://datatracker.ietf.org/doc/html/rfc6901) #9",
+        "description": "valid JSON-pointer as stated in RFC 6901 #9",
         "data": "/i\\j",
         "valid": true
       },
       {
-        "description": "valid JSON-pointer as stated in [RFC 6901](https://datatracker.ietf.org/doc/html/rfc6901) #10",
+        "description": "valid JSON-pointer as stated in RFC 6901 #10",
         "data": "/k\"l",
         "valid": true
       },
       {
-        "description": "valid JSON-pointer as stated in [RFC 6901](https://datatracker.ietf.org/doc/html/rfc6901) #11",
+        "description": "valid JSON-pointer as stated in RFC 6901 #11",
         "data": "/ ",
         "valid": true
       },
       {
-        "description": "valid JSON-pointer as stated in [RFC 6901](https://datatracker.ietf.org/doc/html/rfc6901) #12",
+        "description": "valid JSON-pointer as stated in RFC 6901 #12",
         "data": "/m~0n",
         "valid": true
       },
@@ -192,6 +194,16 @@
         "description": "not a valid JSON-pointer (isn't empty nor starts with /) #3",
         "data": "a/a",
         "valid": false
+      },
+      {
+        "description": "valid JSON-pointer (Unicode characters allowed by RFC 6901)",
+        "data": "/foo/bar/😎",
+        "valid": true
+      },
+      {
+        "description": "valid JSON-pointer (control characters allowed after JSON unescaping)",
+        "data": "/foo\u0000bar\n\tbaz",
+        "valid": true
       }
     ]
   }

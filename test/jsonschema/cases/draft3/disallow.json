@@ -1,0 +1,61 @@
+[
+  {
+    "description": "disallow",
+    "schema": {
+      "disallow": "integer"
+    },
+    "tests": [
+      {
+        "description": "allowed",
+        "data": "foo",
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "multiple disallow",
+    "schema": {
+      "disallow": [
+        "integer",
+        "boolean"
+      ]
+    },
+    "tests": [
+      {
+        "description": "valid",
+        "data": "foo",
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "multiple disallow subschema",
+    "schema": {
+      "disallow": [
+        "string",
+        {
+          "type": "object",
+          "properties": {
+            "foo": {
+              "type": "string"
+            }
+          }
+        }
+      ]
+    },
+    "tests": [
+      {
+        "description": "match",
+        "data": 1,
+        "valid": true
+      },
+      {
+        "description": "other match",
+        "data": {
+          "foo": 1
+        },
+        "valid": true
+      }
+    ]
+  }
+]

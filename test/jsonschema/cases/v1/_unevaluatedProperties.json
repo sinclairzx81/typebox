@@ -1,0 +1,70 @@
+[
+  {
+    "description": "unevaluatedProperties with $dynamicRef",
+    "schema": {
+      "$schema": "https://json-schema.org/v1",
+      "$id": "https://example.com/unevaluated-properties-with-dynamic-ref/derived",
+      "$ref": "./baseSchema",
+      "$defs": {
+        "derived": {
+          "$dynamicAnchor": "addons",
+          "properties": {
+            "bar": {
+              "type": "string"
+            }
+          }
+        },
+        "baseSchema": {
+          "$id": "./baseSchema",
+          "$comment": "unevaluatedProperties comes first so it's more likely to catch bugs with implementations that are sensitive to keyword ordering",
+          "unevaluatedProperties": false,
+          "type": "object",
+          "properties": {
+            "foo": {
+              "type": "string"
+            }
+          },
+          "$dynamicRef": "#addons"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "with no unevaluated properties",
+        "data": {
+          "foo": "foo",
+          "bar": "bar"
+        },
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "Evaluated properties collection needs to consider instance location",
+    "schema": {
+      "$schema": "https://json-schema.org/v1",
+      "properties": {
+        "foo": {
+          "properties": {
+            "bar": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "tests": [
+      {
+        "description": "with an unevaluated property that exists at another location",
+        "data": {
+          "foo": {
+            "bar": "foo"
+          },
+          "bar": "bar"
+        },
+        "valid": false
+      }
+    ]
+  }
+]

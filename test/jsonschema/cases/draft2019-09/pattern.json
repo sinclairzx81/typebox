@@ -28,7 +28,7 @@
       },
       {
         "description": "ignores floats",
-        "data": 1.0,
+        "data": 1,
         "valid": true
       },
       {

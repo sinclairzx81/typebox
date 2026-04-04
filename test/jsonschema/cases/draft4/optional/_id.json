@@ -24,28 +24,19 @@
         }
       },
       "anyOf": [
-        { "$ref": "#/definitions/id_in_enum" },
-        { "$ref": "https://localhost:1234/my_identifier.json" }
+        {
+          "$ref": "#/definitions/id_in_enum"
+        },
+        {
+          "$ref": "https://localhost:1234/my_identifier.json"
+        }
       ]
     },
     "tests": [
       {
-        "description": "exact match to enum, and type matches",
-        "data": {
-          "id": "https://localhost:1234/my_identifier.json",
-          "type": "null"
-        },
-        "valid": true
-      },
-      {
         "description": "match $ref to id",
         "data": "a string to match #/definitions/id_in_enum",
         "valid": true
-      },
-      {
-        "description": "no match on enum or $ref to id",
-        "data": 1,
-        "valid": false
       }
     ]
   }

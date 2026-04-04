@@ -3,7 +3,9 @@
     "description": "evaluating the same schema location against the same data location twice is not a sign of an infinite loop",
     "schema": {
       "definitions": {
-        "int": { "type": "integer" }
+        "int": {
+          "type": "integer"
+        }
       },
       "allOf": [
         {
@@ -23,12 +25,16 @@
     "tests": [
       {
         "description": "passing case",
-        "data": { "foo": 1 },
+        "data": {
+          "foo": 1
+        },
         "valid": true
       },
       {
         "description": "failing case",
-        "data": { "foo": "a string" },
+        "data": {
+          "foo": "a string"
+        },
         "valid": false
       }
     ]

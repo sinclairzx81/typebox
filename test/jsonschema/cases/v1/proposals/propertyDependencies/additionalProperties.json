@@ -1,0 +1,46 @@
+[
+  {
+    "description": "propertyDependencies with additionalProperties",
+    "schema": {
+      "$schema": "https://json-schema.org/v1",
+      "properties": {
+        "foo2": {}
+      },
+      "propertyDependencies": {
+        "foo": {},
+        "foo2": {
+          "bar": {
+            "properties": {
+              "buz": {}
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "tests": [
+      {
+        "description": "additionalProperties doesn't consider propertyDependencies properties",
+        "data": {
+          "foo": ""
+        },
+        "valid": false
+      },
+      {
+        "description": "additionalProperties can't see buz even when foo2 is present",
+        "data": {
+          "foo2": "bar",
+          "buz": ""
+        },
+        "valid": false
+      },
+      {
+        "description": "additionalProperties can't see buz",
+        "data": {
+          "buz": ""
+        },
+        "valid": false
+      }
+    ]
+  }
+]

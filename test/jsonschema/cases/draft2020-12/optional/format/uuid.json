@@ -92,6 +92,11 @@
         "valid": false
       },
       {
+        "description": "shifted dashes",
+        "data": "2eb8aa0-8aa98-11e-ab4aa7-3b441d16380",
+        "valid": false
+      },
+      {
         "description": "valid version 4",
         "data": "98d80576-482e-427f-8434-7f86890ab222",
         "valid": true

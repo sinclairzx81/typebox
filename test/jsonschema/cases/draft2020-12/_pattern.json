@@ -1,0 +1,22 @@
+[
+  {
+    "description": "pattern with Unicode property escape requires unicode mode",
+    "schema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "string",
+      "pattern": "^\\p{Letter}+$"
+    },
+    "tests": [
+      {
+        "description": "ASCII letters match",
+        "data": "Hello",
+        "valid": true
+      },
+      {
+        "description": "Non-ASCII letters match",
+        "data": "π",
+        "valid": true
+      }
+    ]
+  }
+]

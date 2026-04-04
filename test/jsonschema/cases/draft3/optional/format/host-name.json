@@ -1,0 +1,20 @@
+[
+  {
+    "description": "validation of host names",
+    "schema": {
+      "format": "host-name"
+    },
+    "tests": [
+      {
+        "description": "a valid host name",
+        "data": "www.example.com",
+        "valid": true
+      },
+      {
+        "description": "maximum label length",
+        "data": "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijk.com",
+        "valid": true
+      }
+    ]
+  }
+]

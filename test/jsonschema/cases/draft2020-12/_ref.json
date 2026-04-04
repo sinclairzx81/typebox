@@ -1,0 +1,46 @@
+[
+  {
+    "description": "remote ref, containing refs itself",
+    "schema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$ref": "https://json-schema.org/draft/2020-12/schema"
+    },
+    "tests": [
+      {
+        "description": "remote ref valid",
+        "data": {
+          "minLength": 1
+        },
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "order of evaluation: $id and $ref on nested schema",
+    "schema": {
+      "$comment": "$id must be evaluated before $ref to get the proper $ref destination",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://example.com/draft2020-12/ref-and-id3/base.json",
+      "$ref": "nested/foo.json",
+      "$defs": {
+        "foo": {
+          "$comment": "canonical uri: https://example.com/draft2020-12/ref-and-id3/nested/foo.json",
+          "$id": "nested/foo.json",
+          "$ref": "./bar.json"
+        },
+        "bar": {
+          "$comment": "canonical uri: https://example.com/draft2020-12/ref-and-id3/nested/bar.json",
+          "$id": "nested/bar.json",
+          "type": "number"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "data is valid against nested sibling",
+        "data": 5,
+        "valid": true
+      }
+    ]
+  }
+]

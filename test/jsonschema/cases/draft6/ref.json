@@ -3,29 +3,43 @@
     "description": "root pointer ref",
     "schema": {
       "properties": {
-        "foo": { "$ref": "#" }
+        "foo": {
+          "$ref": "#"
+        }
       },
       "additionalProperties": false
     },
     "tests": [
       {
         "description": "match",
-        "data": { "foo": false },
+        "data": {
+          "foo": false
+        },
         "valid": true
       },
       {
         "description": "recursive match",
-        "data": { "foo": { "foo": false } },
+        "data": {
+          "foo": {
+            "foo": false
+          }
+        },
         "valid": true
       },
       {
         "description": "mismatch",
-        "data": { "bar": false },
+        "data": {
+          "bar": false
+        },
         "valid": false
       },
       {
         "description": "recursive mismatch",
-        "data": { "foo": { "bar": false } },
+        "data": {
+          "foo": {
+            "bar": false
+          }
+        },
         "valid": false
       }
     ]
@@ -34,19 +48,27 @@
     "description": "relative pointer ref to object",
     "schema": {
       "properties": {
-        "foo": { "type": "integer" },
-        "bar": { "$ref": "#/properties/foo" }
+        "foo": {
+          "type": "integer"
+        },
+        "bar": {
+          "$ref": "#/properties/foo"
+        }
       }
     },
     "tests": [
       {
         "description": "match",
-        "data": { "bar": 3 },
+        "data": {
+          "bar": 3
+        },
         "valid": true
       },
       {
         "description": "mismatch",
-        "data": { "bar": true },
+        "data": {
+          "bar": true
+        },
         "valid": false
       }
     ]
@@ -55,19 +77,29 @@
     "description": "relative pointer ref to array",
     "schema": {
       "items": [
-        { "type": "integer" },
-        { "$ref": "#/items/0" }
+        {
+          "type": "integer"
+        },
+        {
+          "$ref": "#/items/0"
+        }
       ]
     },
     "tests": [
       {
         "description": "match array",
-        "data": [1, 2],
+        "data": [
+          1,
+          2
+        ],
         "valid": true
       },
       {
         "description": "mismatch array",
-        "data": [1, "foo"],
+        "data": [
+          1,
+          "foo"
+        ],
         "valid": false
       }
     ]
@@ -76,45 +108,69 @@
     "description": "escaped pointer ref",
     "schema": {
       "definitions": {
-        "tilde~field": { "type": "integer" },
-        "slash/field": { "type": "integer" },
-        "percent%field": { "type": "integer" }
+        "tilde~field": {
+          "type": "integer"
+        },
+        "slash/field": {
+          "type": "integer"
+        },
+        "percent%field": {
+          "type": "integer"
+        }
       },
       "properties": {
-        "tilde": { "$ref": "#/definitions/tilde~0field" },
-        "slash": { "$ref": "#/definitions/slash~1field" },
-        "percent": { "$ref": "#/definitions/percent%25field" }
+        "tilde": {
+          "$ref": "#/definitions/tilde~0field"
+        },
+        "slash": {
+          "$ref": "#/definitions/slash~1field"
+        },
+        "percent": {
+          "$ref": "#/definitions/percent%25field"
+        }
       }
     },
     "tests": [
       {
         "description": "slash invalid",
-        "data": { "slash": "aoeu" },
+        "data": {
+          "slash": "aoeu"
+        },
         "valid": false
       },
       {
         "description": "tilde invalid",
-        "data": { "tilde": "aoeu" },
+        "data": {
+          "tilde": "aoeu"
+        },
         "valid": false
       },
       {
         "description": "percent invalid",
-        "data": { "percent": "aoeu" },
+        "data": {
+          "percent": "aoeu"
+        },
         "valid": false
       },
       {
         "description": "slash valid",
-        "data": { "slash": 123 },
+        "data": {
+          "slash": 123
+        },
         "valid": true
       },
       {
         "description": "tilde valid",
-        "data": { "tilde": 123 },
+        "data": {
+          "tilde": 123
+        },
         "valid": true
       },
       {
         "description": "percent valid",
-        "data": { "percent": 123 },
+        "data": {
+          "percent": 123
+        },
         "valid": true
       }
     ]
@@ -123,11 +179,21 @@
     "description": "nested refs",
     "schema": {
       "definitions": {
-        "a": { "type": "integer" },
-        "b": { "$ref": "#/definitions/a" },
-        "c": { "$ref": "#/definitions/b" }
+        "a": {
+          "type": "integer"
+        },
+        "b": {
+          "$ref": "#/definitions/a"
+        },
+        "c": {
+          "$ref": "#/definitions/b"
+        }
       },
-      "allOf": [{ "$ref": "#/definitions/c" }]
+      "allOf": [
+        {
+          "$ref": "#/definitions/c"
+        }
+      ]
     },
     "tests": [
       {
@@ -138,6 +204,38 @@
       {
         "description": "nested ref invalid",
         "data": "a",
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "ref overrides any sibling keywords",
+    "schema": {
+      "definitions": {
+        "reffed": {
+          "type": "array"
+        }
+      },
+      "properties": {
+        "foo": {
+          "$ref": "#/definitions/reffed",
+          "maxItems": 2
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "ref valid",
+        "data": {
+          "foo": []
+        },
+        "valid": true
+      },
+      {
+        "description": "ref invalid",
+        "data": {
+          "foo": "string"
+        },
         "valid": false
       }
     ]
@@ -182,18 +280,24 @@
     "description": "property named $ref that is not a reference",
     "schema": {
       "properties": {
-        "$ref": { "type": "string" }
+        "$ref": {
+          "type": "string"
+        }
       }
     },
     "tests": [
       {
         "description": "property named $ref valid",
-        "data": { "$ref": "a" },
+        "data": {
+          "$ref": "a"
+        },
         "valid": true
       },
       {
         "description": "property named $ref invalid",
-        "data": { "$ref": 2 },
+        "data": {
+          "$ref": 2
+        },
         "valid": false
       }
     ]
@@ -202,7 +306,9 @@
     "description": "property named $ref, containing an actual $ref",
     "schema": {
       "properties": {
-        "$ref": { "$ref": "#/definitions/is-string" }
+        "$ref": {
+          "$ref": "#/definitions/is-string"
+        }
       },
       "definitions": {
         "is-string": {
@@ -213,12 +319,16 @@
     "tests": [
       {
         "description": "property named $ref valid",
-        "data": { "$ref": "a" },
+        "data": {
+          "$ref": "a"
+        },
         "valid": true
       },
       {
         "description": "property named $ref invalid",
-        "data": { "$ref": 2 },
+        "data": {
+          "$ref": 2
+        },
         "valid": false
       }
     ]
@@ -226,7 +336,11 @@
   {
     "description": "$ref to boolean schema true",
     "schema": {
-      "allOf": [{ "$ref": "#/definitions/bool" }],
+      "allOf": [
+        {
+          "$ref": "#/definitions/bool"
+        }
+      ],
       "definitions": {
         "bool": true
       }
@@ -242,7 +356,11 @@
   {
     "description": "$ref to boolean schema false",
     "schema": {
-      "allOf": [{ "$ref": "#/definitions/bool" }],
+      "allOf": [
+        {
+          "$ref": "#/definitions/bool"
+        }
+      ],
       "definitions": {
         "bool": false
       }
@@ -262,23 +380,36 @@
       "description": "tree of nodes",
       "type": "object",
       "properties": {
-        "meta": { "type": "string" },
+        "meta": {
+          "type": "string"
+        },
         "nodes": {
           "type": "array",
-          "items": { "$ref": "node" }
+          "items": {
+            "$ref": "node"
+          }
         }
       },
-      "required": ["meta", "nodes"],
+      "required": [
+        "meta",
+        "nodes"
+      ],
       "definitions": {
         "node": {
           "$id": "http://localhost:1234/node",
           "description": "node",
           "type": "object",
           "properties": {
-            "value": { "type": "number" },
-            "subtree": { "$ref": "tree" }
+            "value": {
+              "type": "number"
+            },
+            "subtree": {
+              "$ref": "tree"
+            }
           },
-          "required": ["value"]
+          "required": [
+            "value"
+          ]
         }
       }
     },
@@ -293,8 +424,12 @@
               "subtree": {
                 "meta": "child",
                 "nodes": [
-                  { "value": 1.1 },
-                  { "value": 1.2 }
+                  {
+                    "value": 1.1
+                  },
+                  {
+                    "value": 1.2
+                  }
                 ]
               }
             },
@@ -303,8 +438,12 @@
               "subtree": {
                 "meta": "child",
                 "nodes": [
-                  { "value": 2.1 },
-                  { "value": 2.2 }
+                  {
+                    "value": 2.1
+                  },
+                  {
+                    "value": 2.2
+                  }
                 ]
               }
             }
@@ -322,8 +461,12 @@
               "subtree": {
                 "meta": "child",
                 "nodes": [
-                  { "value": "string is invalid" },
-                  { "value": 1.2 }
+                  {
+                    "value": "string is invalid"
+                  },
+                  {
+                    "value": 1.2
+                  }
                 ]
               }
             },
@@ -332,8 +475,12 @@
               "subtree": {
                 "meta": "child",
                 "nodes": [
-                  { "value": 2.1 },
-                  { "value": 2.2 }
+                  {
+                    "value": 2.1
+                  },
+                  {
+                    "value": 2.2
+                  }
                 ]
               }
             }
@@ -347,10 +494,14 @@
     "description": "refs with quote",
     "schema": {
       "properties": {
-        "foo\"bar": { "$ref": "#/definitions/foo%22bar" }
+        "foo\"bar": {
+          "$ref": "#/definitions/foo%22bar"
+        }
       },
       "definitions": {
-        "foo\"bar": { "type": "number" }
+        "foo\"bar": {
+          "type": "number"
+        }
       }
     },
     "tests": [
@@ -373,9 +524,11 @@
   {
     "description": "Location-independent identifier",
     "schema": {
-      "allOf": [{
-        "$ref": "#foo"
-      }],
+      "allOf": [
+        {
+          "$ref": "#foo"
+        }
+      ],
       "definitions": {
         "A": {
           "$id": "#foo",
@@ -400,9 +553,11 @@
     "description": "Reference an anchor with a non-relative URI",
     "schema": {
       "$id": "https://example.com/schema-with-anchor",
-      "allOf": [{
-        "$ref": "https://example.com/schema-with-anchor#foo"
-      }],
+      "allOf": [
+        {
+          "$ref": "https://example.com/schema-with-anchor#foo"
+        }
+      ],
       "definitions": {
         "A": {
           "$id": "#foo",
@@ -427,9 +582,11 @@
     "description": "Location-independent identifier with base URI change in subschema",
     "schema": {
       "$id": "http://localhost:1234/root",
-      "allOf": [{
-        "$ref": "http://localhost:1234/nested.json#foo"
-      }],
+      "allOf": [
+        {
+          "$ref": "http://localhost:1234/nested.json#foo"
+        }
+      ],
       "definitions": {
         "A": {
           "$id": "nested.json",
@@ -459,10 +616,14 @@
     "description": "naive replacement of $ref with its destination is not correct",
     "schema": {
       "definitions": {
-        "a_string": { "type": "string" }
+        "a_string": {
+          "type": "string"
+        }
       },
       "enum": [
-        { "$ref": "#/definitions/a_string" }
+        {
+          "$ref": "#/definitions/a_string"
+        }
       ]
     },
     "tests": [
@@ -473,12 +634,16 @@
       },
       {
         "description": "do not evaluate the $ref inside the enum, definition exact match",
-        "data": { "type": "string" },
+        "data": {
+          "type": "string"
+        },
         "valid": false
       },
       {
         "description": "match the enum exactly",
-        "data": { "$ref": "#/definitions/a_string" },
+        "data": {
+          "$ref": "#/definitions/a_string"
+        },
         "valid": true
       }
     ]
@@ -493,14 +658,24 @@
           "definitions": {
             "inner": {
               "properties": {
-                "bar": { "type": "string" }
+                "bar": {
+                  "type": "string"
+                }
               }
             }
           },
-          "allOf": [{ "$ref": "#/definitions/inner" }]
+          "allOf": [
+            {
+              "$ref": "#/definitions/inner"
+            }
+          ]
         }
       },
-      "allOf": [{ "$ref": "schema-relative-uri-defs2.json" }]
+      "allOf": [
+        {
+          "$ref": "schema-relative-uri-defs2.json"
+        }
+      ]
     },
     "tests": [
       {
@@ -545,14 +720,24 @@
           "definitions": {
             "inner": {
               "properties": {
-                "bar": { "type": "string" }
+                "bar": {
+                  "type": "string"
+                }
               }
             }
           },
-          "allOf": [{ "$ref": "#/definitions/inner" }]
+          "allOf": [
+            {
+              "$ref": "#/definitions/inner"
+            }
+          ]
         }
       },
-      "allOf": [{ "$ref": "schema-refs-absolute-uris-defs2.json" }]
+      "allOf": [
+        {
+          "$ref": "schema-refs-absolute-uris-defs2.json"
+        }
+      ]
     },
     "tests": [
       {
@@ -594,18 +779,24 @@
       "$id": "urn:uuid:deadbeef-1234-ffff-ffff-4321feebdaed",
       "minimum": 30,
       "properties": {
-        "foo": { "$ref": "urn:uuid:deadbeef-1234-ffff-ffff-4321feebdaed" }
+        "foo": {
+          "$ref": "urn:uuid:deadbeef-1234-ffff-ffff-4321feebdaed"
+        }
       }
     },
     "tests": [
       {
         "description": "valid under the URN IDed schema",
-        "data": { "foo": 37 },
+        "data": {
+          "foo": 37
+        },
         "valid": true
       },
       {
         "description": "invalid under the URN IDed schema",
-        "data": { "foo": 12 },
+        "data": {
+          "foo": 12
+        },
         "valid": false
       }
     ]
@@ -616,21 +807,29 @@
       "$comment": "URIs do not have to have HTTP(s) schemes",
       "$id": "urn:uuid:deadbeef-1234-00ff-ff00-4321feebdaed",
       "properties": {
-        "foo": { "$ref": "#/definitions/bar" }
+        "foo": {
+          "$ref": "#/definitions/bar"
+        }
       },
       "definitions": {
-        "bar": { "type": "string" }
+        "bar": {
+          "type": "string"
+        }
       }
     },
     "tests": [
       {
         "description": "a string is valid",
-        "data": { "foo": "bar" },
+        "data": {
+          "foo": "bar"
+        },
         "valid": true
       },
       {
         "description": "a non-string is invalid",
-        "data": { "foo": 12 },
+        "data": {
+          "foo": 12
+        },
         "valid": false
       }
     ]
@@ -641,21 +840,29 @@
       "$comment": "RFC 8141 §2.2",
       "$id": "urn:example:1/406/47452/2",
       "properties": {
-        "foo": { "$ref": "#/definitions/bar" }
+        "foo": {
+          "$ref": "#/definitions/bar"
+        }
       },
       "definitions": {
-        "bar": { "type": "string" }
+        "bar": {
+          "type": "string"
+        }
       }
     },
     "tests": [
       {
         "description": "a string is valid",
-        "data": { "foo": "bar" },
+        "data": {
+          "foo": "bar"
+        },
         "valid": true
       },
       {
         "description": "a non-string is invalid",
-        "data": { "foo": 12 },
+        "data": {
+          "foo": 12
+        },
         "valid": false
       }
     ]
@@ -666,21 +873,29 @@
       "$comment": "RFC 8141 §2.3.1",
       "$id": "urn:example:foo-bar-baz-qux?+CCResolve:cc=uk",
       "properties": {
-        "foo": { "$ref": "#/definitions/bar" }
+        "foo": {
+          "$ref": "#/definitions/bar"
+        }
       },
       "definitions": {
-        "bar": { "type": "string" }
+        "bar": {
+          "type": "string"
+        }
       }
     },
     "tests": [
       {
         "description": "a string is valid",
-        "data": { "foo": "bar" },
+        "data": {
+          "foo": "bar"
+        },
         "valid": true
       },
       {
         "description": "a non-string is invalid",
-        "data": { "foo": 12 },
+        "data": {
+          "foo": 12
+        },
         "valid": false
       }
     ]
@@ -691,21 +906,29 @@
       "$comment": "RFC 8141 §2.3.2",
       "$id": "urn:example:weather?=op=map&lat=39.56&lon=-104.85&datetime=1969-07-21T02:56:15Z",
       "properties": {
-        "foo": { "$ref": "#/definitions/bar" }
+        "foo": {
+          "$ref": "#/definitions/bar"
+        }
       },
       "definitions": {
-        "bar": { "type": "string" }
+        "bar": {
+          "type": "string"
+        }
       }
     },
     "tests": [
       {
         "description": "a string is valid",
-        "data": { "foo": "bar" },
+        "data": {
+          "foo": "bar"
+        },
         "valid": true
       },
       {
         "description": "a non-string is invalid",
-        "data": { "foo": 12 },
+        "data": {
+          "foo": 12
+        },
         "valid": false
       }
     ]
@@ -715,21 +938,29 @@
     "schema": {
       "$id": "urn:uuid:deadbeef-1234-0000-0000-4321feebdaed",
       "properties": {
-        "foo": { "$ref": "urn:uuid:deadbeef-1234-0000-0000-4321feebdaed#/definitions/bar" }
+        "foo": {
+          "$ref": "urn:uuid:deadbeef-1234-0000-0000-4321feebdaed#/definitions/bar"
+        }
       },
       "definitions": {
-        "bar": { "type": "string" }
+        "bar": {
+          "type": "string"
+        }
       }
     },
     "tests": [
       {
         "description": "a string is valid",
-        "data": { "foo": "bar" },
+        "data": {
+          "foo": "bar"
+        },
         "valid": true
       },
       {
         "description": "a non-string is invalid",
-        "data": { "foo": 12 },
+        "data": {
+          "foo": 12
+        },
         "valid": false
       }
     ]
@@ -739,7 +970,9 @@
     "schema": {
       "$id": "urn:uuid:deadbeef-1234-ff00-00ff-4321feebdaed",
       "properties": {
-        "foo": { "$ref": "urn:uuid:deadbeef-1234-ff00-00ff-4321feebdaed#something" }
+        "foo": {
+          "$ref": "urn:uuid:deadbeef-1234-ff00-00ff-4321feebdaed#something"
+        }
       },
       "definitions": {
         "bar": {
@@ -751,12 +984,16 @@
     "tests": [
       {
         "description": "a string is valid",
-        "data": { "foo": "bar" },
+        "data": {
+          "foo": "bar"
+        },
         "valid": true
       },
       {
         "description": "a non-string is invalid",
-        "data": { "foo": 12 },
+        "data": {
+          "foo": 12
+        },
         "valid": false
       }
     ]
@@ -776,7 +1013,9 @@
         }
       },
       "allOf": [
-        { "$ref": "/absref/foobar.json" }
+        {
+          "$ref": "/absref/foobar.json"
+        }
       ]
     },
     "tests": [
@@ -854,7 +1093,9 @@
       "definitions": {
         "": {
           "definitions": {
-            "": { "type": "number" }
+            "": {
+              "type": "number"
+            }
           }
         }
       },

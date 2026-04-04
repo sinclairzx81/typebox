@@ -83,7 +83,17 @@
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "contentMediaType": "application/json",
       "contentEncoding": "base64",
-      "contentSchema": { "type": "object", "required": ["foo"], "properties": { "foo": { "type": "string" } } }
+      "contentSchema": {
+        "type": "object",
+        "required": [
+          "foo"
+        ],
+        "properties": {
+          "foo": {
+            "type": "string"
+          }
+        }
+      }
     },
     "tests": [
       {

@@ -25,28 +25,19 @@
         }
       },
       "anyOf": [
-        { "$ref": "#/$defs/id_in_enum" },
-        { "$ref": "https://localhost:1234/draft2019-09/id/my_identifier.json" }
+        {
+          "$ref": "#/$defs/id_in_enum"
+        },
+        {
+          "$ref": "https://localhost:1234/draft2019-09/id/my_identifier.json"
+        }
       ]
     },
     "tests": [
       {
-        "description": "exact match to enum, and type matches",
-        "data": {
-          "$id": "https://localhost:1234/draft2019-09/id/my_identifier.json",
-          "type": "null"
-        },
-        "valid": true
-      },
-      {
         "description": "match $ref to $id",
         "data": "a string to match #/$defs/id_in_enum",
         "valid": true
-      },
-      {
-        "description": "no match on enum or $ref to $id",
-        "data": 1,
-        "valid": false
       }
     ]
   }

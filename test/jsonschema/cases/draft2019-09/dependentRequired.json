@@ -3,7 +3,11 @@
     "description": "single dependency",
     "schema": {
       "$schema": "https://json-schema.org/draft/2019-09/schema",
-      "dependentRequired": { "bar": ["foo"] }
+      "dependentRequired": {
+        "bar": [
+          "foo"
+        ]
+      }
     },
     "tests": [
       {
@@ -13,22 +17,31 @@
       },
       {
         "description": "nondependant",
-        "data": { "foo": 1 },
+        "data": {
+          "foo": 1
+        },
         "valid": true
       },
       {
         "description": "with dependency",
-        "data": { "foo": 1, "bar": 2 },
+        "data": {
+          "foo": 1,
+          "bar": 2
+        },
         "valid": true
       },
       {
         "description": "missing dependency",
-        "data": { "bar": 2 },
+        "data": {
+          "bar": 2
+        },
         "valid": false
       },
       {
         "description": "ignores arrays",
-        "data": ["bar"],
+        "data": [
+          "bar"
+        ],
         "valid": true
       },
       {
@@ -47,7 +60,9 @@
     "description": "empty dependents",
     "schema": {
       "$schema": "https://json-schema.org/draft/2019-09/schema",
-      "dependentRequired": { "bar": [] }
+      "dependentRequired": {
+        "bar": []
+      }
     },
     "tests": [
       {
@@ -57,7 +72,9 @@
       },
       {
         "description": "object with one property",
-        "data": { "bar": 2 },
+        "data": {
+          "bar": 2
+        },
         "valid": true
       },
       {
@@ -71,7 +88,12 @@
     "description": "multiple dependents required",
     "schema": {
       "$schema": "https://json-schema.org/draft/2019-09/schema",
-      "dependentRequired": { "quux": ["foo", "bar"] }
+      "dependentRequired": {
+        "quux": [
+          "foo",
+          "bar"
+        ]
+      }
     },
     "tests": [
       {
@@ -81,27 +103,42 @@
       },
       {
         "description": "nondependants",
-        "data": { "foo": 1, "bar": 2 },
+        "data": {
+          "foo": 1,
+          "bar": 2
+        },
         "valid": true
       },
       {
         "description": "with dependencies",
-        "data": { "foo": 1, "bar": 2, "quux": 3 },
+        "data": {
+          "foo": 1,
+          "bar": 2,
+          "quux": 3
+        },
         "valid": true
       },
       {
         "description": "missing dependency",
-        "data": { "foo": 1, "quux": 2 },
+        "data": {
+          "foo": 1,
+          "quux": 2
+        },
         "valid": false
       },
       {
         "description": "missing other dependency",
-        "data": { "bar": 1, "quux": 2 },
+        "data": {
+          "bar": 1,
+          "quux": 2
+        },
         "valid": false
       },
       {
         "description": "missing both dependencies",
-        "data": { "quux": 1 },
+        "data": {
+          "quux": 1
+        },
         "valid": false
       }
     ]
@@ -111,8 +148,12 @@
     "schema": {
       "$schema": "https://json-schema.org/draft/2019-09/schema",
       "dependentRequired": {
-        "foo\nbar": ["foo\rbar"],
-        "foo\"bar": ["foo'bar"]
+        "foo\nbar": [
+          "foo\rbar"
+        ],
+        "foo\"bar": [
+          "foo'bar"
+        ]
       }
     },
     "tests": [

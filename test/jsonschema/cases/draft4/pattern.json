@@ -1,7 +1,9 @@
 [
   {
     "description": "pattern validation",
-    "schema": { "pattern": "^a*$" },
+    "schema": {
+      "pattern": "^a*$"
+    },
     "tests": [
       {
         "description": "a matching pattern is valid",
@@ -25,7 +27,7 @@
       },
       {
         "description": "ignores floats",
-        "data": 1.0,
+        "data": 1,
         "valid": true
       },
       {
@@ -47,7 +49,9 @@
   },
   {
     "description": "pattern is not anchored",
-    "schema": { "pattern": "a+" },
+    "schema": {
+      "pattern": "a+"
+    },
     "tests": [
       {
         "description": "matches a substring",

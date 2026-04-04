@@ -1,7 +1,9 @@
 [
   {
     "description": "format: uri-template",
-    "schema": { "format": "uri-template" },
+    "schema": {
+      "format": "uri-template"
+    },
     "tests": [
       {
         "description": "all string formats ignore integers",

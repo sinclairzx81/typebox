@@ -1,0 +1,22 @@
+[
+  {
+    "description": "pattern with Unicode property escape",
+    "schema": {
+      "$schema": "https://json-schema.org/v1",
+      "type": "string",
+      "pattern": "^\\p{Letter}+$"
+    },
+    "tests": [
+      {
+        "description": "a valid case with a Unicode letter",
+        "data": "π",
+        "valid": true
+      },
+      {
+        "description": "another valid case with multiple Unicode letters",
+        "data": "πλ",
+        "valid": true
+      }
+    ]
+  }
+]

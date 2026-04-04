@@ -71,7 +71,11 @@
     "description": "oneOf with boolean schemas, all true",
     "schema": {
       "$schema": "https://json-schema.org/draft/2019-09/schema",
-      "oneOf": [true, true, true]
+      "oneOf": [
+        true,
+        true,
+        true
+      ]
     },
     "tests": [
       {
@@ -85,7 +89,11 @@
     "description": "oneOf with boolean schemas, one true",
     "schema": {
       "$schema": "https://json-schema.org/draft/2019-09/schema",
-      "oneOf": [true, false, false]
+      "oneOf": [
+        true,
+        false,
+        false
+      ]
     },
     "tests": [
       {
@@ -99,7 +107,11 @@
     "description": "oneOf with boolean schemas, more than one true",
     "schema": {
       "$schema": "https://json-schema.org/draft/2019-09/schema",
-      "oneOf": [true, true, false]
+      "oneOf": [
+        true,
+        true,
+        false
+      ]
     },
     "tests": [
       {
@@ -113,7 +125,11 @@
     "description": "oneOf with boolean schemas, all false",
     "schema": {
       "$schema": "https://json-schema.org/draft/2019-09/schema",
-      "oneOf": [false, false, false]
+      "oneOf": [
+        false,
+        false,
+        false
+      ]
     },
     "tests": [
       {
@@ -130,37 +146,55 @@
       "oneOf": [
         {
           "properties": {
-            "bar": { "type": "integer" }
+            "bar": {
+              "type": "integer"
+            }
           },
-          "required": ["bar"]
+          "required": [
+            "bar"
+          ]
         },
         {
           "properties": {
-            "foo": { "type": "string" }
+            "foo": {
+              "type": "string"
+            }
           },
-          "required": ["foo"]
+          "required": [
+            "foo"
+          ]
         }
       ]
     },
     "tests": [
       {
         "description": "first oneOf valid (complex)",
-        "data": { "bar": 2 },
+        "data": {
+          "bar": 2
+        },
         "valid": true
       },
       {
         "description": "second oneOf valid (complex)",
-        "data": { "foo": "baz" },
+        "data": {
+          "foo": "baz"
+        },
         "valid": true
       },
       {
         "description": "both oneOf valid (complex)",
-        "data": { "foo": "baz", "bar": 2 },
+        "data": {
+          "foo": "baz",
+          "bar": 2
+        },
         "valid": false
       },
       {
         "description": "neither oneOf valid (complex)",
-        "data": { "foo": 2, "bar": "quux" },
+        "data": {
+          "foo": 2,
+          "bar": "quux"
+        },
         "valid": false
       }
     ]
@@ -170,7 +204,9 @@
     "schema": {
       "$schema": "https://json-schema.org/draft/2019-09/schema",
       "oneOf": [
-        { "type": "number" },
+        {
+          "type": "number"
+        },
         {}
       ]
     },
@@ -193,29 +229,51 @@
       "$schema": "https://json-schema.org/draft/2019-09/schema",
       "type": "object",
       "oneOf": [
-        { "required": ["foo", "bar"] },
-        { "required": ["foo", "baz"] }
+        {
+          "required": [
+            "foo",
+            "bar"
+          ]
+        },
+        {
+          "required": [
+            "foo",
+            "baz"
+          ]
+        }
       ]
     },
     "tests": [
       {
         "description": "both invalid - invalid",
-        "data": { "bar": 2 },
+        "data": {
+          "bar": 2
+        },
         "valid": false
       },
       {
         "description": "first valid - valid",
-        "data": { "foo": 1, "bar": 2 },
+        "data": {
+          "foo": 1,
+          "bar": 2
+        },
         "valid": true
       },
       {
         "description": "second valid - valid",
-        "data": { "foo": 1, "baz": 3 },
+        "data": {
+          "foo": 1,
+          "baz": 3
+        },
         "valid": true
       },
       {
         "description": "both valid - invalid",
-        "data": { "foo": 1, "bar": 2, "baz": 3 },
+        "data": {
+          "foo": 1,
+          "bar": 2,
+          "baz": 3
+        },
         "valid": false
       }
     ]
@@ -230,35 +288,48 @@
             "bar": true,
             "baz": true
           },
-          "required": ["bar"]
+          "required": [
+            "bar"
+          ]
         },
         {
           "properties": {
             "foo": true
           },
-          "required": ["foo"]
+          "required": [
+            "foo"
+          ]
         }
       ]
     },
     "tests": [
       {
         "description": "first oneOf valid",
-        "data": { "bar": 8 },
+        "data": {
+          "bar": 8
+        },
         "valid": true
       },
       {
         "description": "second oneOf valid",
-        "data": { "foo": "foo" },
+        "data": {
+          "foo": "foo"
+        },
         "valid": true
       },
       {
         "description": "both oneOf valid",
-        "data": { "foo": "foo", "bar": 8 },
+        "data": {
+          "foo": "foo",
+          "bar": 8
+        },
         "valid": false
       },
       {
         "description": "neither oneOf valid",
-        "data": { "baz": "quux" },
+        "data": {
+          "baz": "quux"
+        },
         "valid": false
       }
     ]

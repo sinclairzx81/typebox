@@ -1,7 +1,9 @@
 [
   {
     "description": "unknown format",
-    "schema": { "format": "unknown" },
+    "schema": {
+      "format": "unknown"
+    },
     "tests": [
       {
         "description": "unknown formats ignore integers",

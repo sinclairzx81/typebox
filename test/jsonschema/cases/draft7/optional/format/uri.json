@@ -1,7 +1,9 @@
 [
   {
     "description": "validation of URIs",
-    "schema": { "format": "uri" },
+    "schema": {
+      "format": "uri"
+    },
     "tests": [
       {
         "description": "all string formats ignore integers",
@@ -74,7 +76,7 @@
         "valid": true
       },
       {
-        "description": "a valid URL ",
+        "description": "a valid URL",
         "data": "ldap://[2001:db8::7]/c=GB?objectClass?one",
         "valid": true
       },
@@ -131,6 +133,98 @@
       {
         "description": "an invalid URI with comma in scheme",
         "data": "bar,baz:foo",
+        "valid": false
+      },
+      {
+        "description": "invalid userinfo",
+        "data": "https://[@example.org/test.txt",
+        "valid": false
+      },
+      {
+        "description": "unescaped non US-ASCII characters",
+        "data": "https://example.org/foobar®.txt",
+        "valid": false
+      },
+      {
+        "description": "invalid backslash character",
+        "data": "https://example.org/foobar\\.txt",
+        "valid": false
+      },
+      {
+        "description": "invalid \" character",
+        "data": "https://example.org/foobar\".txt",
+        "valid": false
+      },
+      {
+        "description": "invalid <> characters",
+        "data": "https://example.org/foobar<>.txt",
+        "valid": false
+      },
+      {
+        "description": "invalid {} characters",
+        "data": "https://example.org/foobar{}.txt",
+        "valid": false
+      },
+      {
+        "description": "invalid ^ character",
+        "data": "https://example.org/foobar^.txt",
+        "valid": false
+      },
+      {
+        "description": "invalid ` character",
+        "data": "https://example.org/foobar`.txt",
+        "valid": false
+      },
+      {
+        "description": "invalid SPACE character",
+        "data": "https://example.org/foo bar.txt",
+        "valid": false
+      },
+      {
+        "description": "invalid | character",
+        "data": "https://example.org/foobar|.txt",
+        "valid": false
+      },
+      {
+        "description": "URI with leading-zero IPv4 is structurally valid as a reg-name",
+        "comment": "RFC 3986, Section 3.2.2: If an IP literal fails strict IPv4address parsing, it falls back to reg-name. A string of digits and dots is valid under unreserved characters. JSON Schema format asserts syntax, not scheme-specific DNS semantics.",
+        "data": "http://087.10.0.1/",
+        "valid": true
+      },
+      {
+        "description": "URI with out-of-bounds IPv4 is structurally valid as a reg-name",
+        "comment": "RFC 3986, Section 3.2.2: Fallback to reg-name allows digits and dots.",
+        "data": "http://999.999.999.999/",
+        "valid": true
+      },
+      {
+        "description": "invalid percent-encoding with non-hex digits",
+        "data": "http://example.com/%6G",
+        "valid": false
+      },
+      {
+        "description": "incomplete percent-encoding triplet",
+        "data": "http://example.com/%A",
+        "valid": false
+      },
+      {
+        "description": "lone percent sign is invalid",
+        "data": "http://example.com/%",
+        "valid": false
+      },
+      {
+        "description": "scheme must start with a letter",
+        "data": "1http://example.com",
+        "valid": false
+      },
+      {
+        "description": "invalid character in scheme",
+        "data": "ht_tp://example.com",
+        "valid": false
+      },
+      {
+        "description": "non-numeric port is invalid",
+        "data": "http://example.com:abc/path",
         "valid": false
       }
     ]

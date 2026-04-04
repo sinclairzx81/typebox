@@ -1,0 +1,79 @@
+[
+  {
+    "description": "Proper UTF-16 surrogate pair handling: pattern",
+    "comment": "Optional because .Net doesn't correctly handle 32-bit Unicode characters",
+    "schema": {
+      "$schema": "https://json-schema.org/draft/2019-09/schema",
+      "pattern": "^🐲*$"
+    },
+    "tests": [
+      {
+        "description": "matches single",
+        "data": "🐲",
+        "valid": true
+      },
+      {
+        "description": "doesn't match one",
+        "data": "🐉",
+        "valid": false
+      },
+      {
+        "description": "doesn't match two",
+        "data": "🐉🐉",
+        "valid": false
+      },
+      {
+        "description": "doesn't match one ASCII",
+        "data": "D",
+        "valid": false
+      },
+      {
+        "description": "doesn't match two ASCII",
+        "data": "DD",
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "Proper UTF-16 surrogate pair handling: patternProperties",
+    "comment": "Optional because .Net doesn't correctly handle 32-bit Unicode characters",
+    "schema": {
+      "$schema": "https://json-schema.org/draft/2019-09/schema",
+      "patternProperties": {
+        "^🐲*$": {
+          "type": "integer"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "matches empty",
+        "data": {
+          "": 1
+        },
+        "valid": true
+      },
+      {
+        "description": "matches single",
+        "data": {
+          "🐲": 1
+        },
+        "valid": true
+      },
+      {
+        "description": "matches two",
+        "data": {
+          "🐲🐲": 1
+        },
+        "valid": true
+      },
+      {
+        "description": "doesn't match one",
+        "data": {
+          "🐲": "hello"
+        },
+        "valid": false
+      }
+    ]
+  }
+]

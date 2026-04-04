@@ -8,7 +8,9 @@
     "tests": [
       {
         "description": "one item valid against lone minContains",
-        "data": [1],
+        "data": [
+          1
+        ],
         "valid": true
       },
       {
@@ -22,7 +24,9 @@
     "description": "minContains=1 with contains",
     "schema": {
       "$schema": "https://json-schema.org/draft/2019-09/schema",
-      "contains": { "const": 1 },
+      "contains": {
+        "const": 1
+      },
       "minContains": 1
     },
     "tests": [
@@ -33,22 +37,32 @@
       },
       {
         "description": "no elements match",
-        "data": [2],
+        "data": [
+          2
+        ],
         "valid": false
       },
       {
         "description": "single element matches, valid minContains",
-        "data": [1],
+        "data": [
+          1
+        ],
         "valid": true
       },
       {
         "description": "some elements match, valid minContains",
-        "data": [1, 2],
+        "data": [
+          1,
+          2
+        ],
         "valid": true
       },
       {
         "description": "all elements match, valid minContains",
-        "data": [1, 1],
+        "data": [
+          1,
+          1
+        ],
         "valid": true
       }
     ]
@@ -57,7 +71,9 @@
     "description": "minContains=2 with contains",
     "schema": {
       "$schema": "https://json-schema.org/draft/2019-09/schema",
-      "contains": { "const": 1 },
+      "contains": {
+        "const": 1
+      },
       "minContains": 2
     },
     "tests": [
@@ -68,27 +84,43 @@
       },
       {
         "description": "all elements match, invalid minContains",
-        "data": [1],
+        "data": [
+          1
+        ],
         "valid": false
       },
       {
         "description": "some elements match, invalid minContains",
-        "data": [1, 2],
+        "data": [
+          1,
+          2
+        ],
         "valid": false
       },
       {
         "description": "all elements match, valid minContains (exactly as needed)",
-        "data": [1, 1],
+        "data": [
+          1,
+          1
+        ],
         "valid": true
       },
       {
         "description": "all elements match, valid minContains (more than needed)",
-        "data": [1, 1, 1],
+        "data": [
+          1,
+          1,
+          1
+        ],
         "valid": true
       },
       {
         "description": "some elements match, valid minContains",
-        "data": [1, 2, 1],
+        "data": [
+          1,
+          2,
+          1
+        ],
         "valid": true
       }
     ]
@@ -97,18 +129,25 @@
     "description": "minContains=2 with contains with a decimal value",
     "schema": {
       "$schema": "https://json-schema.org/draft/2019-09/schema",
-      "contains": { "const": 1 },
-      "minContains": 2.0
+      "contains": {
+        "const": 1
+      },
+      "minContains": 2
     },
     "tests": [
       {
         "description": "one element matches, invalid minContains",
-        "data": [1],
+        "data": [
+          1
+        ],
         "valid": false
       },
       {
         "description": "both elements match, valid minContains",
-        "data": [1, 1],
+        "data": [
+          1,
+          1
+        ],
         "valid": true
       }
     ]
@@ -117,7 +156,9 @@
     "description": "maxContains = minContains",
     "schema": {
       "$schema": "https://json-schema.org/draft/2019-09/schema",
-      "contains": { "const": 1 },
+      "contains": {
+        "const": 1
+      },
       "maxContains": 2,
       "minContains": 2
     },
@@ -129,17 +170,26 @@
       },
       {
         "description": "all elements match, invalid minContains",
-        "data": [1],
+        "data": [
+          1
+        ],
         "valid": false
       },
       {
         "description": "all elements match, invalid maxContains",
-        "data": [1, 1, 1],
+        "data": [
+          1,
+          1,
+          1
+        ],
         "valid": false
       },
       {
         "description": "all elements match, valid maxContains and minContains",
-        "data": [1, 1],
+        "data": [
+          1,
+          1
+        ],
         "valid": true
       }
     ]
@@ -148,7 +198,9 @@
     "description": "maxContains < minContains",
     "schema": {
       "$schema": "https://json-schema.org/draft/2019-09/schema",
-      "contains": { "const": 1 },
+      "contains": {
+        "const": 1
+      },
       "maxContains": 1,
       "minContains": 3
     },
@@ -160,17 +212,26 @@
       },
       {
         "description": "invalid minContains",
-        "data": [1],
+        "data": [
+          1
+        ],
         "valid": false
       },
       {
         "description": "invalid maxContains",
-        "data": [1, 1, 1],
+        "data": [
+          1,
+          1,
+          1
+        ],
         "valid": false
       },
       {
         "description": "invalid maxContains and minContains",
-        "data": [1, 1],
+        "data": [
+          1,
+          1
+        ],
         "valid": false
       }
     ]
@@ -179,7 +240,9 @@
     "description": "minContains = 0 with no maxContains",
     "schema": {
       "$schema": "https://json-schema.org/draft/2019-09/schema",
-      "contains": { "const": 1 },
+      "contains": {
+        "const": 1
+      },
       "minContains": 0
     },
     "tests": [
@@ -190,7 +253,9 @@
       },
       {
         "description": "minContains = 0 makes contains always pass",
-        "data": [2],
+        "data": [
+          2
+        ],
         "valid": true
       }
     ]
@@ -199,7 +264,9 @@
     "description": "minContains = 0 with maxContains",
     "schema": {
       "$schema": "https://json-schema.org/draft/2019-09/schema",
-      "contains": { "const": 1 },
+      "contains": {
+        "const": 1
+      },
       "minContains": 0,
       "maxContains": 1
     },
@@ -211,12 +278,17 @@
       },
       {
         "description": "not more than maxContains",
-        "data": [1],
+        "data": [
+          1
+        ],
         "valid": true
       },
       {
         "description": "too many",
-        "data": [1, 1],
+        "data": [
+          1,
+          1
+        ],
         "valid": false
       }
     ]

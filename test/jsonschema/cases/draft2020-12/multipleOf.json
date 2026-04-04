@@ -76,7 +76,7 @@
     "tests": [
       {
         "description": "always invalid, but naive implementations may raise an overflow error",
-        "data": 1e308,
+        "data": 1e+308,
         "valid": false
       }
     ]

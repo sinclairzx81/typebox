@@ -27,27 +27,41 @@
     "description": "const with object",
     "schema": {
       "$schema": "https://json-schema.org/draft/2019-09/schema",
-      "const": { "foo": "bar", "baz": "bax" }
+      "const": {
+        "foo": "bar",
+        "baz": "bax"
+      }
     },
     "tests": [
       {
         "description": "same object is valid",
-        "data": { "foo": "bar", "baz": "bax" },
+        "data": {
+          "foo": "bar",
+          "baz": "bax"
+        },
         "valid": true
       },
       {
         "description": "same object with different property order is valid",
-        "data": { "baz": "bax", "foo": "bar" },
+        "data": {
+          "baz": "bax",
+          "foo": "bar"
+        },
         "valid": true
       },
       {
         "description": "another object is invalid",
-        "data": { "foo": "bar" },
+        "data": {
+          "foo": "bar"
+        },
         "valid": false
       },
       {
         "description": "another type is invalid",
-        "data": [1, 2],
+        "data": [
+          1,
+          2
+        ],
         "valid": false
       }
     ]
@@ -56,22 +70,36 @@
     "description": "const with array",
     "schema": {
       "$schema": "https://json-schema.org/draft/2019-09/schema",
-      "const": [{ "foo": "bar" }]
+      "const": [
+        {
+          "foo": "bar"
+        }
+      ]
     },
     "tests": [
       {
         "description": "same array is valid",
-        "data": [{ "foo": "bar" }],
+        "data": [
+          {
+            "foo": "bar"
+          }
+        ],
         "valid": true
       },
       {
         "description": "another array item is invalid",
-        "data": [2],
+        "data": [
+          2
+        ],
         "valid": false
       },
       {
         "description": "array with additional items is invalid",
-        "data": [1, 2, 3],
+        "data": [
+          1,
+          2,
+          3
+        ],
         "valid": false
       }
     ]
@@ -114,7 +142,7 @@
       },
       {
         "description": "float zero is invalid",
-        "data": 0.0,
+        "data": 0,
         "valid": false
       }
     ]
@@ -138,7 +166,7 @@
       },
       {
         "description": "float one is invalid",
-        "data": 1.0,
+        "data": 1,
         "valid": false
       }
     ]
@@ -147,22 +175,30 @@
     "description": "const with [false] does not match [0]",
     "schema": {
       "$schema": "https://json-schema.org/draft/2019-09/schema",
-      "const": [false]
+      "const": [
+        false
+      ]
     },
     "tests": [
       {
         "description": "[false] is valid",
-        "data": [false],
+        "data": [
+          false
+        ],
         "valid": true
       },
       {
         "description": "[0] is invalid",
-        "data": [0],
+        "data": [
+          0
+        ],
         "valid": false
       },
       {
         "description": "[0.0] is invalid",
-        "data": [0.0],
+        "data": [
+          0
+        ],
         "valid": false
       }
     ]
@@ -171,22 +207,30 @@
     "description": "const with [true] does not match [1]",
     "schema": {
       "$schema": "https://json-schema.org/draft/2019-09/schema",
-      "const": [true]
+      "const": [
+        true
+      ]
     },
     "tests": [
       {
         "description": "[true] is valid",
-        "data": [true],
+        "data": [
+          true
+        ],
         "valid": true
       },
       {
         "description": "[1] is invalid",
-        "data": [1],
+        "data": [
+          1
+        ],
         "valid": false
       },
       {
         "description": "[1.0] is invalid",
-        "data": [1.0],
+        "data": [
+          1
+        ],
         "valid": false
       }
     ]
@@ -195,22 +239,30 @@
     "description": "const with {\"a\": false} does not match {\"a\": 0}",
     "schema": {
       "$schema": "https://json-schema.org/draft/2019-09/schema",
-      "const": { "a": false }
+      "const": {
+        "a": false
+      }
     },
     "tests": [
       {
         "description": "{\"a\": false} is valid",
-        "data": { "a": false },
+        "data": {
+          "a": false
+        },
         "valid": true
       },
       {
         "description": "{\"a\": 0} is invalid",
-        "data": { "a": 0 },
+        "data": {
+          "a": 0
+        },
         "valid": false
       },
       {
         "description": "{\"a\": 0.0} is invalid",
-        "data": { "a": 0.0 },
+        "data": {
+          "a": 0
+        },
         "valid": false
       }
     ]
@@ -219,22 +271,30 @@
     "description": "const with {\"a\": true} does not match {\"a\": 1}",
     "schema": {
       "$schema": "https://json-schema.org/draft/2019-09/schema",
-      "const": { "a": true }
+      "const": {
+        "a": true
+      }
     },
     "tests": [
       {
         "description": "{\"a\": true} is valid",
-        "data": { "a": true },
+        "data": {
+          "a": true
+        },
         "valid": true
       },
       {
         "description": "{\"a\": 1} is invalid",
-        "data": { "a": 1 },
+        "data": {
+          "a": 1
+        },
         "valid": false
       },
       {
         "description": "{\"a\": 1.0} is invalid",
-        "data": { "a": 1.0 },
+        "data": {
+          "a": 1
+        },
         "valid": false
       }
     ]
@@ -258,7 +318,7 @@
       },
       {
         "description": "float zero is valid",
-        "data": 0.0,
+        "data": 0,
         "valid": true
       },
       {
@@ -297,7 +357,7 @@
       },
       {
         "description": "float one is valid",
-        "data": 1.0,
+        "data": 1,
         "valid": true
       }
     ]
@@ -306,7 +366,7 @@
     "description": "const with -2.0 matches integer and float types",
     "schema": {
       "$schema": "https://json-schema.org/draft/2019-09/schema",
-      "const": -2.0
+      "const": -2
     },
     "tests": [
       {
@@ -321,12 +381,12 @@
       },
       {
         "description": "float -2.0 is valid",
-        "data": -2.0,
+        "data": -2,
         "valid": true
       },
       {
         "description": "float 2.0 is invalid",
-        "data": 2.0,
+        "data": 2,
         "valid": false
       },
       {
@@ -355,12 +415,12 @@
       },
       {
         "description": "float is valid",
-        "data": 9007199254740992.0,
+        "data": 9007199254740992,
         "valid": true
       },
       {
         "description": "float minus one is invalid",
-        "data": 9007199254740991.0,
+        "data": 9007199254740991,
         "valid": false
       }
     ]
@@ -380,6 +440,50 @@
       {
         "description": "do not match string lacking nul",
         "data": "hellothere",
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "characters with the same visual representation but different codepoint",
+    "schema": {
+      "$schema": "https://json-schema.org/draft/2019-09/schema",
+      "const": "μ",
+      "$comment": "U+03BC"
+    },
+    "tests": [
+      {
+        "description": "character uses the same codepoint",
+        "data": "μ",
+        "comment": "U+03BC",
+        "valid": true
+      },
+      {
+        "description": "character looks the same but uses a different codepoint",
+        "data": "µ",
+        "comment": "U+00B5",
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "characters with the same visual representation, but different number of codepoints",
+    "schema": {
+      "$schema": "https://json-schema.org/draft/2019-09/schema",
+      "const": "ä",
+      "$comment": "U+00E4"
+    },
+    "tests": [
+      {
+        "description": "character uses the same codepoint",
+        "data": "ä",
+        "comment": "U+00E4",
+        "valid": true
+      },
+      {
+        "description": "character looks the same but uses combining marks",
+        "data": "ä",
+        "comment": "a, U+0308",
         "valid": false
       }
     ]

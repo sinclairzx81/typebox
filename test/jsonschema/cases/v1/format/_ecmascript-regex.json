@@ -1,0 +1,16 @@
+[
+  {
+    "description": "\\a is not an ECMA 262 control escape",
+    "schema": {
+      "$schema": "https://json-schema.org/v1",
+      "format": "regex"
+    },
+    "tests": [
+      {
+        "description": "when used as a pattern",
+        "data": "\\a",
+        "valid": false
+      }
+    ]
+  }
+]

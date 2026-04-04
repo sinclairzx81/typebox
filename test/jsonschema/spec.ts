@@ -12,7 +12,8 @@ run('draft-6', 'test/jsonschema/cases/draft6')
 run('draft-7', 'test/jsonschema/cases/draft7')
 run('draft-2019', 'test/jsonschema/cases/draft2019-09')
 run('draft-2020', 'test/jsonschema/cases/draft2020-12')
-run('draft-next', 'test/jsonschema/cases/draft-next')
+run('v1', 'test/jsonschema/cases/v1')
+
 // ------------------------------------------------------------------
 // Run
 // ------------------------------------------------------------------

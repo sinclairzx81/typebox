@@ -43,6 +43,7 @@
     "3_parse": "docs/schema/3_parse.html",
     "4_compile": "docs/schema/4_compile.html",
     "5_advanced": "docs/schema/5_advanced.html",
+    "6_specification": "docs/schema/6_specification.html",
     "overview": "docs/schema/overview.html"
   },
   "script": {

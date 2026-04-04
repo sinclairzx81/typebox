@@ -1,0 +1,291 @@
+[
+  {
+    "description": "remote ref",
+    "schema": {
+      "$schema": "https://json-schema.org/v1",
+      "$ref": "http://localhost:1234/v1/integer.json"
+    },
+    "tests": [
+      {
+        "description": "remote ref valid",
+        "data": 1,
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "fragment within remote ref",
+    "schema": {
+      "$schema": "https://json-schema.org/v1",
+      "$ref": "http://localhost:1234/v1/subSchemas.json#/$defs/integer"
+    },
+    "tests": [
+      {
+        "description": "remote fragment valid",
+        "data": 1,
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "anchor within remote ref",
+    "schema": {
+      "$schema": "https://json-schema.org/v1",
+      "$ref": "http://localhost:1234/v1/locationIndependentIdentifier.json#foo"
+    },
+    "tests": [
+      {
+        "description": "remote anchor valid",
+        "data": 1,
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "ref within remote ref",
+    "schema": {
+      "$schema": "https://json-schema.org/v1",
+      "$ref": "http://localhost:1234/v1/subSchemas.json#/$defs/refToInteger"
+    },
+    "tests": [
+      {
+        "description": "ref within ref valid",
+        "data": 1,
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "base URI change",
+    "schema": {
+      "$schema": "https://json-schema.org/v1",
+      "$id": "http://localhost:1234/v1/",
+      "items": {
+        "$id": "baseUriChange/",
+        "items": {
+          "$ref": "folderInteger.json"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "base URI change ref valid",
+        "data": [
+          [
+            1
+          ]
+        ],
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "base URI change - change folder",
+    "schema": {
+      "$schema": "https://json-schema.org/v1",
+      "$id": "http://localhost:1234/v1/scope_change_defs1.json",
+      "type": "object",
+      "properties": {
+        "list": {
+          "$ref": "baseUriChangeFolder/"
+        }
+      },
+      "$defs": {
+        "baz": {
+          "$id": "baseUriChangeFolder/",
+          "type": "array",
+          "items": {
+            "$ref": "folderInteger.json"
+          }
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "number is valid",
+        "data": {
+          "list": [
+            1
+          ]
+        },
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "base URI change - change folder in subschema",
+    "schema": {
+      "$schema": "https://json-schema.org/v1",
+      "$id": "http://localhost:1234/v1/scope_change_defs2.json",
+      "type": "object",
+      "properties": {
+        "list": {
+          "$ref": "baseUriChangeFolderInSubschema/#/$defs/bar"
+        }
+      },
+      "$defs": {
+        "baz": {
+          "$id": "baseUriChangeFolderInSubschema/",
+          "$defs": {
+            "bar": {
+              "type": "array",
+              "items": {
+                "$ref": "folderInteger.json"
+              }
+            }
+          }
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "number is valid",
+        "data": {
+          "list": [
+            1
+          ]
+        },
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "root ref in remote ref",
+    "schema": {
+      "$schema": "https://json-schema.org/v1",
+      "$id": "http://localhost:1234/v1/object",
+      "type": "object",
+      "properties": {
+        "name": {
+          "$ref": "name-defs.json#/$defs/orNull"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "string is valid",
+        "data": {
+          "name": "foo"
+        },
+        "valid": true
+      },
+      {
+        "description": "null is valid",
+        "data": {
+          "name": null
+        },
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "remote ref with ref to defs",
+    "schema": {
+      "$schema": "https://json-schema.org/v1",
+      "$id": "http://localhost:1234/v1/schema-remote-ref-ref-defs1.json",
+      "$ref": "ref-and-defs.json"
+    },
+    "tests": [
+      {
+        "description": "valid",
+        "data": {
+          "bar": "a"
+        },
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "Location-independent identifier in remote ref",
+    "schema": {
+      "$schema": "https://json-schema.org/v1",
+      "$ref": "http://localhost:1234/v1/locationIndependentIdentifier.json#/$defs/refToInteger"
+    },
+    "tests": [
+      {
+        "description": "integer is valid",
+        "data": 1,
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "retrieved nested refs resolve relative to their URI not $id",
+    "schema": {
+      "$schema": "https://json-schema.org/v1",
+      "$id": "http://localhost:1234/v1/some-id",
+      "properties": {
+        "name": {
+          "$ref": "nested/foo-ref-string.json"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "string is valid",
+        "data": {
+          "name": {
+            "foo": "a"
+          }
+        },
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "remote HTTP ref with different $id",
+    "schema": {
+      "$schema": "https://json-schema.org/v1",
+      "$ref": "http://localhost:1234/v1/different-id-ref-string.json"
+    },
+    "tests": [
+      {
+        "description": "string is valid",
+        "data": "foo",
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "remote HTTP ref with different URN $id",
+    "schema": {
+      "$schema": "https://json-schema.org/v1",
+      "$ref": "http://localhost:1234/v1/urn-ref-string.json"
+    },
+    "tests": [
+      {
+        "description": "string is valid",
+        "data": "foo",
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "remote HTTP ref with nested absolute ref",
+    "schema": {
+      "$schema": "https://json-schema.org/v1",
+      "$ref": "http://localhost:1234/v1/nested-absolute-ref-to-string.json"
+    },
+    "tests": [
+      {
+        "description": "string is valid",
+        "data": "foo",
+        "valid": true
+      }
+    ]
+  },
+  {
+    "description": "$ref to $ref finds detached $anchor",
+    "schema": {
+      "$schema": "https://json-schema.org/v1",
+      "$ref": "http://localhost:1234/v1/detached-ref.json#/$defs/foo"
+    },
+    "tests": [
+      {
+        "description": "number is valid",
+        "data": 1,
+        "valid": true
+      }
+    ]
+  }
+]

@@ -8,17 +8,26 @@
     "tests": [
       {
         "description": "shorter is valid",
-        "data": [1],
+        "data": [
+          1
+        ],
         "valid": true
       },
       {
         "description": "exact length is valid",
-        "data": [1, 2],
+        "data": [
+          1,
+          2
+        ],
         "valid": true
       },
       {
         "description": "too long is invalid",
-        "data": [1, 2, 3],
+        "data": [
+          1,
+          2,
+          3
+        ],
         "valid": false
       },
       {
@@ -32,17 +41,23 @@
     "description": "maxItems validation with a decimal",
     "schema": {
       "$schema": "https://json-schema.org/draft/2019-09/schema",
-      "maxItems": 2.0
+      "maxItems": 2
     },
     "tests": [
       {
         "description": "shorter is valid",
-        "data": [1],
+        "data": [
+          1
+        ],
         "valid": true
       },
       {
         "description": "too long is invalid",
-        "data": [1, 2, 3],
+        "data": [
+          1,
+          2,
+          3
+        ],
         "valid": false
       }
     ]

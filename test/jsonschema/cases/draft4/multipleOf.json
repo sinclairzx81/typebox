@@ -1,7 +1,9 @@
 [
   {
     "description": "by int",
-    "schema": { "multipleOf": 2 },
+    "schema": {
+      "multipleOf": 2
+    },
     "tests": [
       {
         "description": "int by int",
@@ -22,7 +24,9 @@
   },
   {
     "description": "by number",
-    "schema": { "multipleOf": 1.5 },
+    "schema": {
+      "multipleOf": 1.5
+    },
     "tests": [
       {
         "description": "zero is multiple of anything",
@@ -43,7 +47,9 @@
   },
   {
     "description": "by small number",
-    "schema": { "multipleOf": 0.0001 },
+    "schema": {
+      "multipleOf": 0.0001
+    },
     "tests": [
       {
         "description": "0.0075 is multiple of 0.0001",
@@ -59,18 +65,24 @@
   },
   {
     "description": "float division = inf",
-    "schema": { "type": "integer", "multipleOf": 0.123456789 },
+    "schema": {
+      "type": "integer",
+      "multipleOf": 0.123456789
+    },
     "tests": [
       {
         "description": "invalid, but naive implementations may raise an overflow error",
-        "data": 1e308,
+        "data": 1e+308,
         "valid": false
       }
     ]
   },
   {
     "description": "small multiple of large integer",
-    "schema": { "type": "integer", "multipleOf": 1e-8 },
+    "schema": {
+      "type": "integer",
+      "multipleOf": 1e-8
+    },
     "tests": [
       {
         "description": "any integer is a multiple of 1e-8",

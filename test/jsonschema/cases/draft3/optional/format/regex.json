@@ -1,7 +1,9 @@
 [
   {
     "description": "validation of regular expressions",
-    "schema": { "format": "regex" },
+    "schema": {
+      "format": "regex"
+    },
     "tests": [
       {
         "description": "a valid regular expression",

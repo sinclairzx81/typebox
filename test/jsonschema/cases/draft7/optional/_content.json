@@ -6,19 +6,9 @@
     },
     "tests": [
       {
-        "description": "a valid JSON document",
-        "data": "{\"foo\": \"bar\"}",
-        "valid": true
-      },
-      {
         "description": "an invalid JSON document",
         "data": "{:}",
         "valid": false
-      },
-      {
-        "description": "ignores non-strings",
-        "data": 100,
-        "valid": true
       }
     ]
   },
@@ -29,19 +19,9 @@
     },
     "tests": [
       {
-        "description": "a valid base64 string",
-        "data": "eyJmb28iOiAiYmFyIn0K",
-        "valid": true
-      },
-      {
         "description": "an invalid base64 string (% is not a valid character)",
         "data": "eyJmb28iOi%iYmFyIn0K",
         "valid": false
-      },
-      {
-        "description": "ignores non-strings",
-        "data": 100,
-        "valid": true
       }
     ]
   },
@@ -53,11 +33,6 @@
     },
     "tests": [
       {
-        "description": "a valid base64-encoded JSON document",
-        "data": "eyJmb28iOiAiYmFyIn0K",
-        "valid": true
-      },
-      {
         "description": "a validly-encoded invalid JSON document",
         "data": "ezp9Cg==",
         "valid": false
@@ -66,11 +41,6 @@
         "description": "an invalid base64 string that is valid JSON",
         "data": "{}",
         "valid": false
-      },
-      {
-        "description": "ignores non-strings",
-        "data": 100,
-        "valid": true
       }
     ]
   }

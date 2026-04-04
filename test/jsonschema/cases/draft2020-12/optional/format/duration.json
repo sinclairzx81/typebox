@@ -1,6 +1,7 @@
 [
   {
     "description": "validation of duration strings",
+    "comment": "RFC 3339 Appendix A defines the ABNF grammar for ISO-8601 durations used by JSON Schema format 'duration'. These tests enforce only the syntax defined by that grammar.",
     "schema": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",
       "format": "duration"
@@ -135,6 +136,77 @@
         "description": "element without unit",
         "data": "P1",
         "valid": false
+      },
+      {
+        "description": "all date and time components",
+        "data": "P1Y2M3DT4H5M6S",
+        "valid": true
+      },
+      {
+        "description": "date components only",
+        "data": "P1Y2M3D",
+        "valid": true
+      },
+      {
+        "description": "time components only",
+        "data": "PT1H2M3S",
+        "valid": true
+      },
+      {
+        "description": "month and day",
+        "data": "P1M2D",
+        "valid": true
+      },
+      {
+        "description": "hour and minute",
+        "data": "PT1H30M",
+        "valid": true
+      },
+      {
+        "description": "multi-digit values in all components",
+        "data": "P10Y10M10DT10H10M10S",
+        "valid": true
+      },
+      {
+        "description": "fractional duration is not allowed by RFC 3339 ABNF",
+        "comment": "numeric components use 1*DIGIT where DIGIT = %x30-39; '.' is not allowed",
+        "data": "PT0.5S",
+        "valid": false
+      },
+      {
+        "description": "leading whitespace is invalid",
+        "data": " P1D",
+        "valid": false
+      },
+      {
+        "description": "trailing whitespace is invalid",
+        "data": "P1D ",
+        "valid": false
+      },
+      {
+        "description": "empty string is invalid",
+        "data": "",
+        "valid": false
+      },
+      {
+        "description": "years and months can appear without days",
+        "data": "P1Y2M",
+        "valid": true
+      },
+      {
+        "description": "months and days can appear without years",
+        "data": "P1M2D",
+        "valid": true
+      },
+      {
+        "description": "hours and minutes can appear without seconds",
+        "data": "PT1H2M",
+        "valid": true
+      },
+      {
+        "description": "minutes and seconds can appear without hour",
+        "data": "PT1M2S",
+        "valid": true
       }
     ]
   }

@@ -12,7 +12,9 @@
     "tests": [
       {
         "description": "valid when property is specified",
-        "data": { "foo": 13 },
+        "data": {
+          "foo": 13
+        },
         "valid": true
       },
       {
@@ -36,7 +38,9 @@
     "tests": [
       {
         "description": "valid when property is specified",
-        "data": { "bar": "good" },
+        "data": {
+          "bar": "good"
+        },
         "valid": true
       },
       {
@@ -61,12 +65,16 @@
     "tests": [
       {
         "description": "an explicit property value is checked against maximum (passing)",
-        "data": { "alpha": 1 },
+        "data": {
+          "alpha": 1
+        },
         "valid": true
       },
       {
         "description": "an explicit property value is checked against maximum (failing)",
-        "data": { "alpha": 5 },
+        "data": {
+          "alpha": 5
+        },
         "valid": false
       },
       {

@@ -3,29 +3,44 @@
     "description": "object properties validation",
     "schema": {
       "properties": {
-        "foo": { "type": "integer" },
-        "bar": { "type": "string" }
+        "foo": {
+          "type": "integer"
+        },
+        "bar": {
+          "type": "string"
+        }
       }
     },
     "tests": [
       {
         "description": "both properties present and valid is valid",
-        "data": { "foo": 1, "bar": "baz" },
+        "data": {
+          "foo": 1,
+          "bar": "baz"
+        },
         "valid": true
       },
       {
         "description": "one property invalid is invalid",
-        "data": { "foo": 1, "bar": {} },
+        "data": {
+          "foo": 1,
+          "bar": {}
+        },
         "valid": false
       },
       {
         "description": "both properties invalid is invalid",
-        "data": { "foo": [], "bar": {} },
+        "data": {
+          "foo": [],
+          "bar": {}
+        },
         "valid": false
       },
       {
         "description": "doesn't invalidate other properties",
-        "data": { "quux": [] },
+        "data": {
+          "quux": []
+        },
         "valid": true
       },
       {
@@ -44,51 +59,89 @@
     "description": "properties, patternProperties, additionalProperties interaction",
     "schema": {
       "properties": {
-        "foo": { "type": "array", "maxItems": 3 },
-        "bar": { "type": "array" }
+        "foo": {
+          "type": "array",
+          "maxItems": 3
+        },
+        "bar": {
+          "type": "array"
+        }
       },
-      "patternProperties": { "f.o": { "minItems": 2 } },
-      "additionalProperties": { "type": "integer" }
+      "patternProperties": {
+        "f.o": {
+          "minItems": 2
+        }
+      },
+      "additionalProperties": {
+        "type": "integer"
+      }
     },
     "tests": [
       {
         "description": "property validates property",
-        "data": { "foo": [1, 2] },
+        "data": {
+          "foo": [
+            1,
+            2
+          ]
+        },
         "valid": true
       },
       {
         "description": "property invalidates property",
-        "data": { "foo": [1, 2, 3, 4] },
+        "data": {
+          "foo": [
+            1,
+            2,
+            3,
+            4
+          ]
+        },
         "valid": false
       },
       {
         "description": "patternProperty invalidates property",
-        "data": { "foo": [] },
+        "data": {
+          "foo": []
+        },
         "valid": false
       },
       {
         "description": "patternProperty validates nonproperty",
-        "data": { "fxo": [1, 2] },
+        "data": {
+          "fxo": [
+            1,
+            2
+          ]
+        },
         "valid": true
       },
       {
         "description": "patternProperty invalidates nonproperty",
-        "data": { "fxo": [] },
+        "data": {
+          "fxo": []
+        },
         "valid": false
       },
       {
         "description": "additionalProperty ignores property",
-        "data": { "bar": [] },
+        "data": {
+          "bar": []
+        },
         "valid": true
       },
       {
         "description": "additionalProperty validates others",
-        "data": { "quux": 3 },
+        "data": {
+          "quux": 3
+        },
         "valid": true
       },
       {
         "description": "additionalProperty invalidates others",
-        "data": { "quux": "foo" },
+        "data": {
+          "quux": "foo"
+        },
         "valid": false
       }
     ]
@@ -97,12 +150,24 @@
     "description": "properties with escaped characters",
     "schema": {
       "properties": {
-        "foo\nbar": { "type": "number" },
-        "foo\"bar": { "type": "number" },
-        "foo\\bar": { "type": "number" },
-        "foo\rbar": { "type": "number" },
-        "foo\tbar": { "type": "number" },
-        "foo\fbar": { "type": "number" }
+        "foo\nbar": {
+          "type": "number"
+        },
+        "foo\"bar": {
+          "type": "number"
+        },
+        "foo\\bar": {
+          "type": "number"
+        },
+        "foo\rbar": {
+          "type": "number"
+        },
+        "foo\tbar": {
+          "type": "number"
+        },
+        "foo\fbar": {
+          "type": "number"
+        }
       }
     },
     "tests": [
@@ -136,13 +201,17 @@
     "description": "properties with null valued instance properties",
     "schema": {
       "properties": {
-        "foo": { "type": "null" }
+        "foo": {
+          "type": "null"
+        }
       }
     },
     "tests": [
       {
         "description": "allows null values",
-        "data": { "foo": null },
+        "data": {
+          "foo": null
+        },
         "valid": true
       }
     ]
@@ -152,11 +221,19 @@
     "comment": "Ensure JS implementations don't universally consider e.g. __proto__ to always be present in an object.",
     "schema": {
       "properties": {
-        "__proto__": { "type": "number" },
-        "toString": {
-          "properties": { "length": { "type": "string" } }
+        "__proto__": {
+          "type": "number"
         },
-        "constructor": { "type": "number" }
+        "toString": {
+          "properties": {
+            "length": {
+              "type": "string"
+            }
+          }
+        },
+        "constructor": {
+          "type": "number"
+        }
       }
     },
     "tests": [
@@ -177,24 +254,36 @@
       },
       {
         "description": "__proto__ not valid",
-        "data": { "__proto__": "foo" },
+        "data": {
+          "__proto__": "foo"
+        },
         "valid": false
       },
       {
         "description": "toString not valid",
-        "data": { "toString": { "length": 37 } },
+        "data": {
+          "toString": {
+            "length": 37
+          }
+        },
         "valid": false
       },
       {
         "description": "constructor not valid",
-        "data": { "constructor": { "length": 37 } },
+        "data": {
+          "constructor": {
+            "length": 37
+          }
+        },
         "valid": false
       },
       {
         "description": "all present and valid",
         "data": {
           "__proto__": 12,
-          "toString": { "length": "foo" },
+          "toString": {
+            "length": "foo"
+          },
           "constructor": 37
         },
         "valid": true

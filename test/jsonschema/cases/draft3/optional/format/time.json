@@ -1,0 +1,20 @@
+[
+  {
+    "description": "validation of time strings",
+    "schema": {
+      "format": "time"
+    },
+    "tests": [
+      {
+        "description": "an invalid time string",
+        "data": "8:30 AM",
+        "valid": false
+      },
+      {
+        "description": "an invalid time string in date-time format",
+        "data": "2020-11-28T23:55:45Z",
+        "valid": false
+      }
+    ]
+  }
+]

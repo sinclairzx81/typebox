@@ -42,7 +42,7 @@
         "valid": true
       },
       {
-        "description": "an IPv6 address with out-of-range values",
+        "description": "a group with 5 hex digits is invalid",
         "data": "12345::",
         "valid": false
       },

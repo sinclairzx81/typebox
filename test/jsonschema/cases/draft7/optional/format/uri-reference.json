@@ -1,7 +1,9 @@
 [
   {
     "description": "validation of URI References",
-    "schema": { "format": "uri-reference" },
+    "schema": {
+      "format": "uri-reference"
+    },
     "tests": [
       {
         "description": "all string formats ignore integers",
@@ -67,6 +69,18 @@
         "description": "an invalid URI fragment",
         "data": "#frag\\ment",
         "valid": false
+      },
+      {
+        "description": "URI with leading-zero IPv4 is structurally valid as a reg-name",
+        "comment": "RFC 3986, Section 3.2.2: If an IP literal fails strict IPv4address parsing, it falls back to reg-name. A string of digits and dots is valid under unreserved characters. JSON Schema format asserts syntax, not scheme-specific DNS semantics.",
+        "data": "http://087.10.0.1/",
+        "valid": true
+      },
+      {
+        "description": "URI with out-of-bounds IPv4 is structurally valid as a reg-name",
+        "comment": "RFC 3986, Section 3.2.2: Fallback to reg-name allows digits and dots.",
+        "data": "http://999.999.999.999/",
+        "valid": true
       }
     ]
   }

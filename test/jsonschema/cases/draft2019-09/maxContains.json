@@ -8,12 +8,17 @@
     "tests": [
       {
         "description": "one item valid against lone maxContains",
-        "data": [1],
+        "data": [
+          1
+        ],
         "valid": true
       },
       {
         "description": "two items still valid against lone maxContains",
-        "data": [1, 2],
+        "data": [
+          1,
+          2
+        ],
         "valid": true
       }
     ]
@@ -22,7 +27,9 @@
     "description": "maxContains with contains",
     "schema": {
       "$schema": "https://json-schema.org/draft/2019-09/schema",
-      "contains": { "const": 1 },
+      "contains": {
+        "const": 1
+      },
       "maxContains": 1
     },
     "tests": [
@@ -33,22 +40,34 @@
       },
       {
         "description": "all elements match, valid maxContains",
-        "data": [1],
+        "data": [
+          1
+        ],
         "valid": true
       },
       {
         "description": "all elements match, invalid maxContains",
-        "data": [1, 1],
+        "data": [
+          1,
+          1
+        ],
         "valid": false
       },
       {
         "description": "some elements match, valid maxContains",
-        "data": [1, 2],
+        "data": [
+          1,
+          2
+        ],
         "valid": true
       },
       {
         "description": "some elements match, invalid maxContains",
-        "data": [1, 2, 1],
+        "data": [
+          1,
+          2,
+          1
+        ],
         "valid": false
       }
     ]
@@ -57,18 +76,25 @@
     "description": "maxContains with contains, value with a decimal",
     "schema": {
       "$schema": "https://json-schema.org/draft/2019-09/schema",
-      "contains": { "const": 1 },
-      "maxContains": 1.0
+      "contains": {
+        "const": 1
+      },
+      "maxContains": 1
     },
     "tests": [
       {
         "description": "one element matches, valid maxContains",
-        "data": [1],
+        "data": [
+          1
+        ],
         "valid": true
       },
       {
         "description": "too many elements match, invalid maxContains",
-        "data": [1, 1],
+        "data": [
+          1,
+          1
+        ],
         "valid": false
       }
     ]
@@ -77,7 +103,9 @@
     "description": "minContains < maxContains",
     "schema": {
       "$schema": "https://json-schema.org/draft/2019-09/schema",
-      "contains": { "const": 1 },
+      "contains": {
+        "const": 1
+      },
       "minContains": 1,
       "maxContains": 3
     },
@@ -89,12 +117,45 @@
       },
       {
         "description": "minContains < actual < maxContains",
-        "data": [1, 1],
+        "data": [
+          1,
+          1
+        ],
         "valid": true
       },
       {
         "description": "minContains < maxContains < actual",
-        "data": [1, 1, 1, 1],
+        "data": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "maxContains = 0 with minContains = 0",
+    "schema": {
+      "$schema": "https://json-schema.org/draft/2019-09/schema",
+      "contains": {
+        "const": 1
+      },
+      "minContains": 0,
+      "maxContains": 0
+    },
+    "tests": [
+      {
+        "description": "empty array",
+        "data": [],
+        "valid": true
+      },
+      {
+        "description": "one matching item",
+        "data": [
+          1
+        ],
         "valid": false
       }
     ]

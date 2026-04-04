@@ -2,7 +2,9 @@
   {
     "description": "not",
     "schema": {
-      "not": { "type": "integer" }
+      "not": {
+        "type": "integer"
+      }
     },
     "tests": [
       {
@@ -20,7 +22,12 @@
   {
     "description": "not multiple types",
     "schema": {
-      "not": { "type": ["integer", "boolean"] }
+      "not": {
+        "type": [
+          "integer",
+          "boolean"
+        ]
+      }
     },
     "tests": [
       {
@@ -60,12 +67,16 @@
       },
       {
         "description": "other match",
-        "data": { "foo": 1 },
+        "data": {
+          "foo": 1
+        },
         "valid": true
       },
       {
         "description": "mismatch",
-        "data": { "foo": "bar" },
+        "data": {
+          "foo": "bar"
+        },
         "valid": false
       }
     ]
@@ -82,19 +93,27 @@
     "tests": [
       {
         "description": "property present",
-        "data": { "foo": 1, "bar": 2 },
+        "data": {
+          "foo": 1,
+          "bar": 2
+        },
         "valid": false
       },
       {
         "description": "property absent",
-        "data": { "bar": 1, "baz": 2 },
+        "data": {
+          "bar": 1,
+          "baz": 2
+        },
         "valid": true
       }
     ]
   },
   {
     "description": "forbid everything with empty schema",
-    "schema": { "not": {} },
+    "schema": {
+      "not": {}
+    },
     "tests": [
       {
         "description": "number is invalid",
@@ -123,7 +142,9 @@
       },
       {
         "description": "object is invalid",
-        "data": { "foo": "bar" },
+        "data": {
+          "foo": "bar"
+        },
         "valid": false
       },
       {
@@ -133,7 +154,9 @@
       },
       {
         "description": "array is invalid",
-        "data": ["foo"],
+        "data": [
+          "foo"
+        ],
         "valid": false
       },
       {
@@ -145,7 +168,11 @@
   },
   {
     "description": "double negation",
-    "schema": { "not": { "not": {} } },
+    "schema": {
+      "not": {
+        "not": {}
+      }
+    },
     "tests": [
       {
         "description": "any value is valid",

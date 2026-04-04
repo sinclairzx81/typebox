@@ -6,6 +6,7 @@ import { Bench } from './task/bench/index.ts'
 import { Turing } from './task/turing/index.ts'
 import { Range } from './task/range/index.ts'
 import { Metrics } from './task/metrics/index.ts'
+import { Spec } from './task/spec/index.ts'
 import { Task } from 'tasksmith'
 
 const Version = '1.1.14'
@@ -61,7 +62,11 @@ Task.run('publish', (target: string = `target/build`) => PublishPackage(target))
 // ------------------------------------------------------------------
 // Format
 // ------------------------------------------------------------------
-Task.run('format', () => Task.shell('deno fmt src test/typebox'))
+Task.run('format', () => Task.shell('deno fmt src test/typebox task/spec'))
+// ------------------------------------------------------------------
+// Spec
+// ------------------------------------------------------------------
+Task.run('spec', () => Spec.refresh('test/jsonschema/cases'))
 // ------------------------------------------------------------------
 // Syntax
 // ------------------------------------------------------------------

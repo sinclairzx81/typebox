@@ -1,0 +1,15 @@
+[
+  {
+    "description": "validation of host names",
+    "schema": {
+      "format": "hostname"
+    },
+    "tests": [
+      {
+        "description": "trailing dot",
+        "data": "example.",
+        "valid": false
+      }
+    ]
+  }
+]
