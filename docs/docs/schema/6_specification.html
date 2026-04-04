@@ -1,0 +1,927 @@
+<h1>Schema.Specification</h1>
+<p>TypeBox aims for full specification compliance with the latest JSON Schema drafts as well as broad support for previous draft versions. It employs a progressive keyword adoption strategy where it implements keyword semantics as defined by newer drafts, and where keyword backwards  compatibility is supported if the keyword can be implemented without conflict on newer versions.</p>
+<blockquote>
+<p>⚠️ Specification alignment is a ongoing effort. While TypeBox tests in excess of 95% + of the Required Keyword suite, keywords such as <code>$dynamicRef</code>, <code>$dynamicAnchor</code> are yet to be implemented by the compiler. TypeBox aims to support these along with additional <code>v1</code> keywords while retaining broad compatibility for Draft 7.</p>
+</blockquote>
+<h2>Required Keywords</h2>
+<p>These keywords form the core of TypeBox&#39;s compliance target. A ✅ indicates full passage of all test cases for that keyword under the given draft. Fractional values (e.g. 37/45) indicate the number of passing cases out of the total available for that keyword and draft combination. A dash indicates the keyword was not defined in that draft.</p>
+<table>
+<thead>
+<tr>
+<th align="left">Spec</th>
+<th align="left">3</th>
+<th align="left">4</th>
+<th align="left">6</th>
+<th align="left">7</th>
+<th align="left">2019-09</th>
+<th align="left">2020-12</th>
+<th align="left">v1</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">additionalItems</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td align="left">additionalProperties</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">allOf</td>
+<td align="left">-</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">anchor</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">anyOf</td>
+<td align="left">-</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">boolean_schema</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">const</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">contains</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">content</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">default</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">dependencies</td>
+<td align="left">17/18</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td align="left">dependentRequired</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">dependentSchemas</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">enum</td>
+<td align="left">14/16</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">exclusiveMaximum</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">exclusiveMinimum</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">format</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">114/133</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td align="left">if-then-else</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">infinite-loop-detection</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">items</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">maxContains</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">maximum</td>
+<td align="left">13/14</td>
+<td align="left">13/14</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">maxItems</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">maxLength</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">maxProperties</td>
+<td align="left">-</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">minContains</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">minimum</td>
+<td align="left">12/13</td>
+<td align="left">16/17</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">minItems</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">minLength</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">minProperties</td>
+<td align="left">-</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">multipleOf</td>
+<td align="left">-</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">not</td>
+<td align="left">-</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">oneOf</td>
+<td align="left">-</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">pattern</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">10/12</td>
+<td align="left">10/12</td>
+</tr>
+<tr>
+<td align="left">patternProperties</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">25/26</td>
+</tr>
+<tr>
+<td align="left">prefixItems</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">properties</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">propertyNames</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">recursiveRef</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">✅</td>
+<td align="left">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td align="left">ref</td>
+<td align="left">23/27</td>
+<td align="left">37/45</td>
+<td align="left">67/70</td>
+<td align="left">75/78</td>
+<td align="left">79/81</td>
+<td align="left">77/79</td>
+<td align="left">77/79</td>
+</tr>
+<tr>
+<td align="left">required</td>
+<td align="left">3/4</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">type</td>
+<td align="left">73/80</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">unevaluatedItems</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">55/56</td>
+<td align="left">63/71</td>
+<td align="left">63/71</td>
+</tr>
+<tr>
+<td align="left">unevaluatedProperties</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">124/125</td>
+<td align="left">123/125</td>
+<td align="left">123/125</td>
+</tr>
+<tr>
+<td align="left">uniqueItems</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+</tbody></table>
+<h2>Optional Keywords and Proposals</h2>
+<p>Optional test suites cover supplementary keywords, format validators, and proposals that are not required for core compliance. Support is included where it can be provided without conflicting with required keyword semantics. Items prefixed with format/ are format-assertion tests for the corresponding string format.</p>
+<table>
+<thead>
+<tr>
+<th align="left">Spec</th>
+<th align="left">3</th>
+<th align="left">4</th>
+<th align="left">6</th>
+<th align="left">7</th>
+<th align="left">2019-09</th>
+<th align="left">2020-12</th>
+<th align="left">v1</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">anchor</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">3/4</td>
+<td align="left">3/4</td>
+<td align="left">3/4</td>
+</tr>
+<tr>
+<td align="left">bignum</td>
+<td align="left">7/9</td>
+<td align="left">7/9</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">content</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">6/10</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td align="left">cross-draft</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">1/2</td>
+<td align="left">1/3</td>
+<td align="left">0/1</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td align="left">dependencies-compatibility</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">dynamicRef</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">1/2</td>
+<td align="left">1/2</td>
+</tr>
+<tr>
+<td align="left">ecmascript-regex</td>
+<td align="left">-</td>
+<td align="left">64/74</td>
+<td align="left">64/74</td>
+<td align="left">64/74</td>
+<td align="left">64/74</td>
+<td align="left">64/74</td>
+<td align="left">64/74</td>
+</tr>
+<tr>
+<td align="left">float-overflow</td>
+<td align="left">-</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">format-annotation</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">114/133</td>
+</tr>
+<tr>
+<td align="left">format-assertion</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">✅</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td align="left">format/color</td>
+<td align="left">3/6</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td align="left">format/date</td>
+<td align="left">✅</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">format/date-time</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">format/duration</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">40/42</td>
+<td align="left">40/42</td>
+<td align="left">40/42</td>
+</tr>
+<tr>
+<td align="left">format/ecmascript-regex</td>
+<td align="left">1/2</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">0/1</td>
+<td align="left">0/1</td>
+</tr>
+<tr>
+<td align="left">format/email</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">format/host-name</td>
+<td align="left">2/12</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td align="left">format/hostname</td>
+<td align="left">-</td>
+<td align="left">27/28</td>
+<td align="left">27/28</td>
+<td align="left">37/61</td>
+<td align="left">37/61</td>
+<td align="left">37/61</td>
+<td align="left">37/61</td>
+</tr>
+<tr>
+<td align="left">format/idn-email</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">format/idn-hostname</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">format/ip-address</td>
+<td align="left">1/3</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td align="left">format/ipv4</td>
+<td align="left">-</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">format/ipv6</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">format/iri</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">format/iri-reference</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">format/json-pointer</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">format/regex</td>
+<td align="left">✅</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">format/relative-json-pointer</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">format/time</td>
+<td align="left">2/3</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">format/unknown</td>
+<td align="left">-</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td align="left">format/uri</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">format/uri-reference</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">15/17</td>
+<td align="left">15/17</td>
+<td align="left">15/17</td>
+<td align="left">15/17</td>
+<td align="left">15/17</td>
+</tr>
+<tr>
+<td align="left">format/uri-template</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">format/uuid</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">id</td>
+<td align="left">-</td>
+<td align="left">2/3</td>
+<td align="left">6/7</td>
+<td align="left">6/7</td>
+<td align="left">2/3</td>
+<td align="left">2/3</td>
+<td align="left">2/3</td>
+</tr>
+<tr>
+<td align="left">no-schema</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td align="left">non-bmp-regex</td>
+<td align="left">9/12</td>
+<td align="left">9/12</td>
+<td align="left">9/12</td>
+<td align="left">9/12</td>
+<td align="left">9/12</td>
+<td align="left">9/12</td>
+<td align="left">9/12</td>
+</tr>
+<tr>
+<td align="left">proposals/propertyDependencies/additionalProperties</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">proposals/propertyDependencies/dynamicRef</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">4/8</td>
+</tr>
+<tr>
+<td align="left">proposals/propertyDependencies/propertyDependencies</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">17/21</td>
+</tr>
+<tr>
+<td align="left">proposals/propertyDependencies/unevaluatedProperties</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">4/6</td>
+</tr>
+<tr>
+<td align="left">refOfUnknownKeyword</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+<td align="left">✅</td>
+</tr>
+<tr>
+<td align="left">unknownKeyword</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">1/3</td>
+<td align="left">1/3</td>
+<td align="left">1/3</td>
+<td align="left">1/3</td>
+<td align="left">1/3</td>
+</tr>
+<tr>
+<td align="left">zeroTerminatedFloats</td>
+<td align="left">0/1</td>
+<td align="left">0/1</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+<td align="left">-</td>
+</tr>
+</tbody></table>

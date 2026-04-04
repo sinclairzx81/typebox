@@ -215,6 +215,67 @@ THE SOFTWARE.
   display: block;
 }
 /* ------------------------------------------------------------------
+   TABLE LAYOUT
+   ------------------------------------------------------------------ */
+.docs .content .docs-table-wrap {
+  overflow-x: auto;
+  margin: 1.25rem 0;
+}
+.docs .content table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  font-family: var(--app-font-family-standard);
+  table-layout: auto;
+}
+.docs .content table thead tr {
+  background: var(--docs-menu-background-color);
+  border-bottom: 2px solid var(--docs-search-border-color);
+}
+.docs .content table thead th {
+  color: var(--docs-text-color-muted);
+  font-weight: 500;
+  text-align: left;
+  padding: 0.6rem 1rem;
+  white-space: nowrap;
+  font-size: 0.78rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+.docs .content table thead th:first-child {
+  border-left: 4px solid var(--docs-text-color-select);
+}
+.docs .content table tbody tr {
+  border-bottom: 1px solid var(--docs-blockquote-border-color);
+}
+.docs .content table tbody tr:last-child {
+  border-bottom: none;
+}
+.docs .content table tbody tr:hover {
+  background: var(--docs-menu-background-color);
+}
+.docs .content table tbody td {
+  padding: 0.6rem 1rem;
+  color: var(--docs-text-color);
+  vertical-align: middle;
+  line-height: 1.6;
+}
+.docs .content table tbody td:first-child {
+  border-left: 4px solid transparent;
+}
+.docs .content table tbody tr:hover td:first-child {
+  border-left-color: var(--docs-text-color-select);
+}
+.docs .content table tfoot tr {
+  border-top: 1px solid var(--docs-search-border-color);
+  background: var(--docs-menu-background-color);
+}
+.docs .content table tfoot td {
+  padding: 0.5rem 1rem;
+  font-size: 0.78rem;
+  color: var(--docs-text-color-muted);
+}
+/* ------------------------------------------------------------------
    PrismJS syntax highlighting
    ------------------------------------------------------------------ */
 .token.keyword,
