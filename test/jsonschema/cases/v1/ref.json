@@ -257,7 +257,7 @@
     "description": "remote ref, containing refs itself",
     "schema": {
       "$schema": "https://json-schema.org/v1",
-      "$ref": "http://localhost:1234/v1/ref-and-defs"
+      "$ref": "http://localhost:1234/v1/ref-and-defs.json"
     },
     "tests": [
       {
