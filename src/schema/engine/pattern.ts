@@ -38,14 +38,14 @@ import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 // Build
 // ------------------------------------------------------------------
 export function BuildPattern(stack: Stack, context: BuildContext, schema: Schema.XPattern, value: string): string {
-  const regexp = Externals.CreateVariable(G.IsString(schema.pattern) ? new RegExp(schema.pattern) : schema.pattern)
+  const regexp = Externals.CreateVariable(G.IsString(schema.pattern) ? new RegExp(schema.pattern, 'u') : schema.pattern)
   return E.Call(E.Member(regexp, 'test'), [value])
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
 export function CheckPattern(stack: Stack, context: CheckContext, schema: Schema.XPattern, value: string): boolean {
-  const regexp = G.IsString(schema.pattern) ? new RegExp(schema.pattern) : schema.pattern
+  const regexp = G.IsString(schema.pattern) ? new RegExp(schema.pattern, 'u') : schema.pattern
   return regexp.test(value)
 }
 // ------------------------------------------------------------------

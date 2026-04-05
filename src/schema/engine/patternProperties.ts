@@ -43,7 +43,7 @@ import { BuildSchema, CheckSchema, ErrorSchema } from './schema.ts'
 export function BuildPatternProperties(stack: Stack, context: BuildContext, schema: Schema.XPatternProperties, value: string): string {
   return E.ReduceAnd(G.Entries(schema.patternProperties).map(([pattern, schema]) => {
     const [key, prop] = [Unique(), Unique()]
-    const regexp = Externals.CreateVariable(new RegExp(pattern))
+    const regexp = Externals.CreateVariable(new RegExp(pattern, 'u'))
     const notKey = E.Not(E.Call(E.Member(regexp, 'test'), [key]))
     const isSchema = BuildSchema(stack, context, schema, prop)
     const addKey = context.AddKey(key)
@@ -56,7 +56,7 @@ export function BuildPatternProperties(stack: Stack, context: BuildContext, sche
 // ------------------------------------------------------------------
 export function CheckPatternProperties(stack: Stack, context: CheckContext, schema: Schema.XPatternProperties, value: Record<PropertyKey, unknown>): boolean {
   return G.Every(G.Entries(schema.patternProperties), 0, ([pattern, schema]) => {
-    const regexp = new RegExp(pattern)
+    const regexp = new RegExp(pattern, 'u')
     return G.Every(G.Entries(value), 0, ([key, prop]) => {
       return !regexp.test(key) || CheckSchema(stack, context, schema, prop) && context.AddKey(key)
     })
@@ -68,7 +68,7 @@ export function CheckPatternProperties(stack: Stack, context: CheckContext, sche
 export function ErrorPatternProperties(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XPatternProperties, value: Record<PropertyKey, unknown>): boolean {
   return G.EveryAll(G.Entries(schema.patternProperties), 0, ([pattern, schema]) => {
     const nextSchemaPath = `${schemaPath}/patternProperties/${pattern}`
-    const regexp = new RegExp(pattern)
+    const regexp = new RegExp(pattern, 'u')
     return G.EveryAll(G.Entries(value), 0, ([key, value]) => {
       const nextInstancePath = `${instancePath}/${key}`
       const notKey = !regexp.test(key)

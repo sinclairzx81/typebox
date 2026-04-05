@@ -68,19 +68,17 @@ function report(suite: JSONSchemaTestSuite): void {
   const requiredTable = Report.reportRequired(suite, {
     ignore: ['defs', 'definitions', 'divisibleBy', 'disallow', 'dynamicRef', 'extends', 'refRemote', 'vocabulary']
   })
+  console.log('')
+  console.log('## Required Keywords')
+  console.log('')
+  console.log(requiredTable)
+  console.log('')
   const optionalTable = Report.reportOptional(suite, {
     ignore: []
   })
-  console.log('--------------------------------------------------------')
-  console.log('OPTIONAL')
-  console.log('--------------------------------------------------------')
-  console.log()
+  console.log('## Optional Keywords and Proposals')
+  console.log('')
   console.log(optionalTable)
-  console.log('--------------------------------------------------------')
-  console.log('REQUIRED')
-  console.log('--------------------------------------------------------')
-  console.log()
-  console.log(requiredTable)
 }
 // ------------------------------------------------------------------
 // Write

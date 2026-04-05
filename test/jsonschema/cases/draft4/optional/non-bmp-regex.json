@@ -7,8 +7,18 @@
     },
     "tests": [
       {
+        "description": "matches empty",
+        "data": "",
+        "valid": true
+      },
+      {
         "description": "matches single",
         "data": "🐲",
+        "valid": true
+      },
+      {
+        "description": "matches two",
+        "data": "🐲🐲",
         "valid": true
       },
       {
@@ -69,6 +79,13 @@
         "description": "doesn't match one",
         "data": {
           "🐲": "hello"
+        },
+        "valid": false
+      },
+      {
+        "description": "doesn't match two",
+        "data": {
+          "🐲🐲": "hello"
         },
         "valid": false
       }

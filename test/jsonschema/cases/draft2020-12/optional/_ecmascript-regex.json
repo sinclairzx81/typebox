@@ -1,48 +1,5 @@
 [
   {
-    "description": "patterns always use unicode semantics with pattern",
-    "schema": {
-      "$schema": "https://json-schema.org/draft/2020-12/schema",
-      "pattern": "\\p{Letter}cole"
-    },
-    "tests": [
-      {
-        "description": "ascii character in json string",
-        "data": "Les hivers de mon enfance etaient des saisons longues, longues. Nous vivions en trois lieux: l'ecole, l'eglise et la patinoire; mais la vraie vie etait sur la patinoire.",
-        "valid": true
-      },
-      {
-        "description": "literal unicode character in json string",
-        "data": "Les hivers de mon enfance étaient des saisons longues, longues. Nous vivions en trois lieux: l'école, l'église et la patinoire; mais la vraie vie était sur la patinoire.",
-        "valid": true
-      },
-      {
-        "description": "unicode character in hex format in string",
-        "data": "Les hivers de mon enfance étaient des saisons longues, longues. Nous vivions en trois lieux: l'école, l'église et la patinoire; mais la vraie vie était sur la patinoire.",
-        "valid": true
-      }
-    ]
-  },
-  {
-    "description": "pattern with non-ASCII digits",
-    "schema": {
-      "$schema": "https://json-schema.org/draft/2020-12/schema",
-      "pattern": "^\\p{digit}+$"
-    },
-    "tests": [
-      {
-        "description": "ascii digits",
-        "data": "42",
-        "valid": true
-      },
-      {
-        "description": "non-ascii digits (BENGALI DIGIT FOUR, BENGALI DIGIT TWO)",
-        "data": "৪২",
-        "valid": true
-      }
-    ]
-  },
-  {
     "description": "patterns always use unicode semantics with patternProperties",
     "schema": {
       "$schema": "https://json-schema.org/draft/2020-12/schema",

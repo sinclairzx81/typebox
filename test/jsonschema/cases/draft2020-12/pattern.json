@@ -71,6 +71,16 @@
     },
     "tests": [
       {
+        "description": "ASCII letters match",
+        "data": "Hello",
+        "valid": true
+      },
+      {
+        "description": "Non-ASCII letters match",
+        "data": "π",
+        "valid": true
+      },
+      {
         "description": "Digits do not match",
         "data": "123",
         "valid": false
