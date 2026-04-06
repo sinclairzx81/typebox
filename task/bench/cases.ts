@@ -79,7 +79,7 @@ export const Cases = {
 // ------------------------------------------------------------------
 // Tests
 // ------------------------------------------------------------------
-export const Tests = Object.getOwnPropertyNames(Cases).reduce<{
+export const Tests = () => Object.getOwnPropertyNames(Cases).reduce<{
   name: string
   type: TSchema,
   value: unknown

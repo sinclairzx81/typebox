@@ -29,41 +29,30 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 export interface TExternal {
-  /** The name of the variable that holds external variables in generated code */
-  identifier: string
-  /** An array of external variables */
+  identifier: 'External'
   variables: unknown[]
 }
-const identifier = 'external_'
-let resetCount = 0
 const state: TExternal = {
-  identifier: `${identifier}${resetCount}`,
+  identifier: 'External',
   variables: []
-}
-// ------------------------------------------------------------------
-// ResetExternals
-//
-// Each reset results in a new external group identifier. This is done 
-// to prevent variable name overlap when generating and evaluating
-// multiple types in the same scope.
-//
-// ------------------------------------------------------------------
-export function ResetExternal(): void {
-  state.identifier = `${identifier}${resetCount}`
-  state.variables = []
-  resetCount += 1
 }
 // ------------------------------------------------------------------
 // CreateVariable
 // ------------------------------------------------------------------
 export function CreateVariable(value: unknown): string {
-  const call = `${state.identifier}[${state.variables.length}]`
+  const call = `External[${state.variables.length}]`
   state.variables.push(value)
   return call
+}
+// ------------------------------------------------------------------
+// ResetExternal
+// ------------------------------------------------------------------
+export function ResetExternal(): void {
+  state.variables = []
 }
 // ------------------------------------------------------------------
 // GetExternals
 // ------------------------------------------------------------------
 export function GetExternal(): TExternal {
-  return state
+  return { ... state }
 }

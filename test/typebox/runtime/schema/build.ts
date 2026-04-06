@@ -27,3 +27,30 @@ Test('Should Build 4', () => {
   const build = Schema.Build({ A: { type: 'string' } }, { $ref: 'A' })
   Assert.IsTrue(Guard.IsArray(build.Functions()))
 })
+// ------------------------------------------------------------------
+// Extern: Support Multiple Non-Ordered Deferred Build
+// ------------------------------------------------------------------
+Test('Should Build 5', () => {
+  const A = Schema.Build({ pattern: /^a$/ })
+  const B = Schema.Build({ pattern: /^b$/ })
+  const C = Schema.Build({ pattern: /^c$/ })
+  // Non-Ordered
+  const C_ = C.Evaluate().Check('c')
+  const B_ = B.Evaluate().Check('b')
+  const A_ = A.Evaluate().Check('a')
+  Assert.IsTrue(C_)
+  Assert.IsTrue(B_)
+  Assert.IsTrue(A_)
+})
+Test('Should Build 6', () => {
+  const A = Schema.Build({ pattern: /^a$/ })
+  const B = Schema.Build({ pattern: /^b$/ })
+  const C = Schema.Build({ pattern: /^c$/ })
+  // Non-Ordered: Invariant
+  const C_ = C.Evaluate().Check('b')
+  const B_ = B.Evaluate().Check('a')
+  const A_ = A.Evaluate().Check('c')
+  Assert.IsFalse(C_)
+  Assert.IsFalse(B_)
+  Assert.IsFalse(A_)
+})

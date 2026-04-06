@@ -6,13 +6,14 @@ import Ajv from 'npm:ajv'
 import { Benchmark } from './benchmark/index.ts'
 import { Cases } from './cases.ts'
 
-const ajv = new Ajv.Ajv()
+const ajv8 = new Ajv.Ajv()
 const benchmarks: Record<string, any> = {}
 for(const key of Object.getOwnPropertyNames(Cases)) {
   const test = Cases[key as never] as () => TSchema
   benchmarks[test.name] = {
-    'TypeBox': () => Compile(test()),
-    'Ajv': () =>  ajv.compile(test())
+    'TB0x': () => TypeCompiler.Compile(test()),
+    'TB1x': () => Compile(test()),
+    'AJV8': () => ajv8.compile(test())
   }
 }
 /** Runs Compile Benchmarks */
