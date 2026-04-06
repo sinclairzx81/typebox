@@ -53,27 +53,27 @@ function Adapt(delta: number, numPoints: number, firstTime: boolean): number {
 // ------------------------------------------------------------------
 // Decode
 // ------------------------------------------------------------------
-export function Decode(input: string): string {
+export function Decode(value: string): string {
   const output: number[] = []
   let n = PUNYCODE_INITIAL_N
   let i = 0
   let bias = PUNYCODE_INITIAL_BIAS
-  const delimIdx = input.lastIndexOf('-')
+  const delimIdx = value.lastIndexOf('-')
   if (delimIdx > 0) {
     for (let j = 0; j < delimIdx; j++) {
-      const cp = input.charCodeAt(j)
+      const cp = value.charCodeAt(j)
       if (cp >= 128) throw new Error('Invalid punycode: non-basic before delimiter')
       output.push(cp)
     }
   }
   let inIdx = delimIdx < 0 ? 0 : delimIdx + 1
-  while (inIdx < input.length) {
+  while (inIdx < value.length) {
     const oldi = i
     let w = 1
     let k = PUNYCODE_BASE
     while (true) {
-      if (inIdx >= input.length) throw new Error('Invalid punycode: unexpected end of input')
-      const ch = input.charCodeAt(inIdx++)
+      if (inIdx >= value.length) throw new Error('Invalid punycode: unexpected end of input')
+      const ch = value.charCodeAt(inIdx++)
       let digit: number
       if (ch >= 0x61 && ch <= 0x7a) digit = ch - 0x61 // a-z => 0-25
       else if (ch >= 0x30 && ch <= 0x39) digit = ch - 0x30 + 26 // 0-9 => 26-35
