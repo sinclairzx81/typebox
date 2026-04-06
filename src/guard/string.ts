@@ -126,8 +126,15 @@ export function GraphemeCount(value: string): number {
 // IsMinLength
 // --------------------------------------------------------------------------
 /** Checks if a string has at least a minimum number of grapheme clusters */
-export function IsMinLength(value: string, minLength: number): boolean {
+function IsMinLength(value: string, minLength: number): boolean {
+  // ----------------------------------------------------------------
+  // Inaccessible via public interface (review)
+  //
+  // deno-coverage-ignore-start
+  // ----------------------------------------------------------------
   if (minLength === 0) return true // 0-length
+  // deno-coverage-ignore-stop
+
   let count = 0
   let index = 0
   while (index < value.length) {
@@ -141,7 +148,7 @@ export function IsMinLength(value: string, minLength: number): boolean {
 // IsMaxLength
 // --------------------------------------------------------------------------
 /** Checks if a string has at most a maximum number of grapheme clusters */
-export function IsMaxLength(value: string, maxLength: number): boolean {
+function IsMaxLength(value: string, maxLength: number): boolean {
   let count = 0
   let index = 0
   while (index < value.length) {

@@ -31,7 +31,7 @@ import * as Schema from '../types/index.ts'
 import { Stack } from './_stack.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
-import { BuildSchema, CheckSchema, ErrorSchema } from './schema.ts'
+import { BuildSchemaPushStack, CheckSchemaPushStack, ErrorSchemaPushStack } from './schema.ts'
 import { InexactOptionalCheck, InexactOptionalBuild, IsExactOptional } from './_exact_optional.ts'
 
 // ------------------------------------------------------------------
@@ -41,7 +41,7 @@ export function BuildProperties(stack: Stack, context: BuildContext, schema: Sch
   const required = Schema.IsRequired(schema) ? schema.required : []
   const everyKey = G.Entries(schema.properties).map(([key, schema]) => {
     const notKey = E.Not(E.HasPropertyKey(value, E.Constant(key)))
-    const isSchema = BuildSchema(stack, context, schema, E.Member(value, key))
+    const isSchema = BuildSchemaPushStack(stack, context, schema, E.Member(value, key))
     const addKey = context.AddKey(E.Constant(key))
     const guarded = context.UseUnevaluated() ? E.And(isSchema, addKey) : isSchema
     
@@ -84,7 +84,7 @@ export function BuildProperties(stack: Stack, context: BuildContext, schema: Sch
 export function CheckProperties(stack: Stack, context: CheckContext, schema: Schema.XProperties, value: Record<PropertyKey, unknown>): boolean {
   const required = Schema.IsRequired(schema) ? schema.required : []
   const isProperties = G.Every(G.Entries(schema.properties), 0, ([key, schema]) => {
-    const isProperty = !G.HasPropertyKey(value, key) || (CheckSchema(stack, context, schema, value[key]) && context.AddKey(key))
+    const isProperty = !G.HasPropertyKey(value, key) || (CheckSchemaPushStack(stack, context, schema, value[key]) && context.AddKey(key))
     return IsExactOptional(required, key)
       ? isProperty
       : InexactOptionalCheck(value, key) || isProperty
@@ -101,7 +101,7 @@ export function ErrorProperties(stack: Stack, context: ErrorContext, schemaPath:
     const nextInstancePath = `${instancePath}/${key}`
     // Defer error generation for IsExactOptional
     const isProperty = () => (
-      !G.HasPropertyKey(value, key) || (ErrorSchema(stack, context, nextSchemaPath, nextInstancePath, schema, value[key]) && context.AddKey(key))
+      !G.HasPropertyKey(value, key) || (ErrorSchemaPushStack(stack, context, nextSchemaPath, nextInstancePath, schema, value[key]) && context.AddKey(key))
     )
     return IsExactOptional(required, key)
       ? isProperty()

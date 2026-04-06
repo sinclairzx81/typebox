@@ -35,7 +35,7 @@ import { Unique } from './_unique.ts'
 
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
-import { BuildSchema, CheckSchema, ErrorSchema } from './schema.ts'
+import { BuildSchemaPushStack, CheckSchemaPushStack, ErrorSchemaPushStack } from './schema.ts'
 
 // ------------------------------------------------------------------
 // Build
@@ -45,7 +45,7 @@ export function BuildPatternProperties(stack: Stack, context: BuildContext, sche
     const [key, prop] = [Unique(), Unique()]
     const regexp = Externals.CreateVariable(new RegExp(pattern, 'u'))
     const notKey = E.Not(E.Call(E.Member(regexp, 'test'), [key]))
-    const isSchema = BuildSchema(stack, context, schema, prop)
+    const isSchema = BuildSchemaPushStack(stack, context, schema, prop)
     const addKey = context.AddKey(key)
     const guarded = context.UseUnevaluated() ? E.Or(notKey, E.And(isSchema, addKey)) : E.Or(notKey, isSchema)
     return E.Every(E.Entries(value), E.Constant(0), [`[${key}, ${prop}]`, '_'], guarded)
@@ -58,7 +58,7 @@ export function CheckPatternProperties(stack: Stack, context: CheckContext, sche
   return G.Every(G.Entries(schema.patternProperties), 0, ([pattern, schema]) => {
     const regexp = new RegExp(pattern, 'u')
     return G.Every(G.Entries(value), 0, ([key, prop]) => {
-      return !regexp.test(key) || CheckSchema(stack, context, schema, prop) && context.AddKey(key)
+      return !regexp.test(key) || CheckSchemaPushStack(stack, context, schema, prop) && context.AddKey(key)
     })
   })
 }
@@ -72,7 +72,7 @@ export function ErrorPatternProperties(stack: Stack, context: ErrorContext, sche
     return G.EveryAll(G.Entries(value), 0, ([key, value]) => {
       const nextInstancePath = `${instancePath}/${key}`
       const notKey = !regexp.test(key)
-      return notKey || ErrorSchema(stack, context, nextSchemaPath, nextInstancePath, schema, value) && context.AddKey(key)
+      return notKey || ErrorSchemaPushStack(stack, context, nextSchemaPath, nextInstancePath, schema, value) && context.AddKey(key)
     })
   })
 }

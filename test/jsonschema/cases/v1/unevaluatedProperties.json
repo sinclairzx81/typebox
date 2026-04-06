@@ -1907,5 +1907,33 @@
         "valid": true
       }
     ]
+  },
+  {
+    "description": "Evaluated properties collection needs to consider instance location",
+    "schema": {
+      "$schema": "https://json-schema.org/v1",
+      "properties": {
+        "foo": {
+          "properties": {
+            "bar": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "tests": [
+      {
+        "description": "with an unevaluated property that exists at another location",
+        "data": {
+          "foo": {
+            "bar": "foo"
+          },
+          "bar": "bar"
+        },
+        "valid": false
+      }
+    ]
   }
 ]

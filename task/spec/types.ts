@@ -38,7 +38,7 @@ export interface JSONSchemaTestCase {
   valid: boolean
 }
 
-// A single file to be written — either a passing or failing file.
+// A single file to be written (either a passing or failing file)
 // Failing files are _-prefixed, e.g. "draft7/_additionalProperties.json"
 export interface JSONSchemaTestFile {
   path: string // absolute path to write to

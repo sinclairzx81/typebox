@@ -33,7 +33,7 @@ import { Stack } from './_stack.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { Unique } from './_unique.ts'
 import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
-import { BuildSchema, CheckSchema, ErrorSchema } from './schema.ts'
+import { BuildSchemaPushStack, CheckSchemaPushStack, ErrorSchemaPushStack } from './schema.ts'
 
 // ------------------------------------------------------------------
 // Valid
@@ -47,7 +47,7 @@ function IsValid(schema: Schema.XSchemaObject): schema is Schema.XItems & { item
 export function BuildAdditionalItems(stack: Stack, context: BuildContext, schema: Schema.XAdditionalItems, value: string): string {
   if (!IsValid(schema)) return E.Constant(true)
   const [item, index] = [Unique(), Unique()]
-  const isSchema = BuildSchema(stack, context, schema.additionalItems, item)
+  const isSchema = BuildSchemaPushStack(stack, context, schema.additionalItems, item)
   const isLength = E.IsLessThan(index, E.Constant(schema.items.length))
   const addIndex = context.AddIndex(index)
   const guarded = context.UseUnevaluated() ? E.Or(isLength, E.And(isSchema, addIndex)) : E.Or(isLength, isSchema)
@@ -60,7 +60,7 @@ export function CheckAdditionalItems(stack: Stack, context: CheckContext, schema
   if (!IsValid(schema)) return true
   const isAdditionalItems = value.every((item, index) => {
     return G.IsLessThan(index, schema.items.length) 
-      || (CheckSchema(stack, context, schema.additionalItems, item) && context.AddIndex(index))
+      || (CheckSchemaPushStack(stack, context, schema.additionalItems, item) && context.AddIndex(index))
   })
   return isAdditionalItems
 }
@@ -73,7 +73,7 @@ export function ErrorAdditionalItems(stack: Stack, context: ErrorContext, schema
     const nextSchemaPath = `${schemaPath}/additionalItems`
     const nextInstancePath = `${instancePath}/${index}`
     return G.IsLessThan(index, schema.items.length) || 
-      (ErrorSchema(stack, context, nextSchemaPath, nextInstancePath, schema.additionalItems, item) && context.AddIndex(index))
+      (ErrorSchemaPushStack(stack, context, nextSchemaPath, nextInstancePath, schema.additionalItems, item) && context.AddIndex(index))
   })
   return isAdditionalItems
 }
