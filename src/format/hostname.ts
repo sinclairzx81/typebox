@@ -36,10 +36,8 @@ import * as Idna from './_idna.ts'
  */
 export function IsHostname(value: string): boolean {
   if (value.length === 0 || value.length > 253) return false
-  // Trailing dot is invalid
   if (value.charCodeAt(value.length - 1) === 46) return false
-  const labels = value.split('.')
-  for (const label of labels) {
+  for (const label of value.split('.')) {
     if (!Idna.IsLabel(label)) return false
   }
   return true

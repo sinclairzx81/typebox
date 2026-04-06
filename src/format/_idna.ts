@@ -29,17 +29,14 @@ THE SOFTWARE.
 import * as Puny from './_puny.ts'
 
 // ------------------------------------------------------------------
-// Unicode General Category helpers (targeted for RFC 5892)
+// Unicode General Category Helper (RFC 5892)
 // ------------------------------------------------------------------
-/** Returns true if the code point is a non-spacing combining mark (Unicode Category Mn) */
 function IsNonspacingMark(cp: number): boolean {
   return /\p{Mn}/u.test(String.fromCodePoint(cp))
 }
-/** Returns true if the code point is a spacing combining mark (Unicode Category Mc) */
 function IsSpacingCombiningMark(cp: number): boolean {
   return /\p{Mc}/u.test(String.fromCodePoint(cp))
 }
-/** Returns true if the code point is an enclosing combining mark (Unicode Category Me) */
 function IsEnclosingMark(cp: number): boolean {
   return /\p{Me}/u.test(String.fromCodePoint(cp))
 }
@@ -103,7 +100,7 @@ const VIRAMA_CPS = new Set<number>([
   0x11d45
 ])
 // ------------------------------------------------------------------
-// Script helpers for CONTEXTO rules (RFC 5892 Appendix A)
+// Guards for CONTEXTO rules (RFC 5892 Appendix A)
 // ------------------------------------------------------------------
 function IsGreek(cp: number): boolean {
   return /\p{Script=Greek}/u.test(String.fromCodePoint(cp))
@@ -130,17 +127,17 @@ function IsVirama(cp: number): boolean {
   return VIRAMA_CPS.has(cp)
 }
 // ------------------------------------------------------------------
-// IsUnicodeLabel (RFC 5891 §4 + RFC 5892)
+// IsUnicodeLabel
 // ------------------------------------------------------------------
-export function IsUnicodeLabel(label: string): boolean {
-  if (label.length === 0) return false
+function IsUnicodeLabel(value: string): boolean {
+  if (value.length === 0) return false
   // Use spread to handle surrogate pairs and provide O(1) neighbor access
-  const cps = [...label].map((c) => c.codePointAt(0)!)
+  const cps = [...value].map((c) => c.codePointAt(0)!)
   const len = cps.length
   // RFC 5891 §4.2.3.2: Hyphen rules
   if (cps[0] === 0x2d || cps[len - 1] === 0x2d) return false
   if (len >= 4 && cps[2] === 0x2d && cps[3] === 0x2d) return false
-  // RFC 5891 §4.2.3.2 – Must not begin with a combining mark
+  // RFC 5891 §4.2.3.2 - Must not begin with a combining mark
   if (IsCombiningMark(cps[0])) return false
   let hasJapanese = false
   let hasArabicIndic = false
@@ -175,36 +172,22 @@ export function IsUnicodeLabel(label: string): boolean {
   }
   // 4. Global Context Validations (Post-loop)
   // RFC 5892 Appendix A.7 - Katakana Middle Dot requirement
-  if (label.includes('\u30fb') && !hasJapanese) return false
+  if (value.includes('\u30fb') && !hasJapanese) return false
   // RFC 5892 Appendix A.8/A.9 - Mixing Arabic Digits
   if (hasArabicIndic && hasExtendedArabicIndic) return false
-
   return true
 }
 // ------------------------------------------------------------------
-// IsLabel
+// IsAsciiLabel
 // ------------------------------------------------------------------
-export function IsLabel(label: string): boolean {
-  if (label.length === 0 || label.length > 63) return false
-  const lower = label.toLowerCase()
-  if (lower.startsWith('xn--')) {
-    // A-label: decode punycode then validate the resulting Unicode label
-    let decoded: string
-    try {
-      decoded = Puny.Decode(lower.slice(4))
-    } catch {
-      return false // invalid punycode encoding
-    }
-    return IsUnicodeLabel(decoded)
-  }
-  // Plain ASCII label (RFC 1123)
+function IsAsciiLabel(value: string): boolean {
   // Must not start or end with a hyphen
-  if (label.charCodeAt(0) === 45 || label.charCodeAt(label.length - 1) === 45) return false
+  if (value.charCodeAt(0) === 45 || value.charCodeAt(value.length - 1) === 45) return false
   // RFC 5891 §4.2.3.1 : "--" at positions 3-4 is reserved for A-labels only
-  if (label.length >= 4 && label.charCodeAt(2) === 45 && label.charCodeAt(3) === 45) return false
+  if (value.length >= 4 && value.charCodeAt(2) === 45 && value.charCodeAt(3) === 45) return false
   // All characters must be alphanumeric or hyphen
-  for (let i = 0; i < label.length; i++) {
-    const ch = label.charCodeAt(i)
+  for (let i = 0; i < value.length; i++) {
+    const ch = value.charCodeAt(i)
     if (
       !(
         (ch >= 97 && ch <= 122) || // a-z
@@ -218,30 +201,29 @@ export function IsLabel(label: string): boolean {
   return true
 }
 // ------------------------------------------------------------------
-// IsIdnLabel - validates a single IDNA label (A-label or U-label)
+// IsPunyLabel
 // ------------------------------------------------------------------
-/**
- * Returns true if the label is a valid IDNA label according to RFC 5891/5892.
- * This includes:
- *   - A‑labels (starting with "xn--") after decoding and validating the Unicode result.
- *   - U‑labels (raw Unicode) validated directly.
- *   - Plain ASCII labels (RFC 1123) – because IsUnicodeLabel accepts ASCII letters/digits/hyphen.
- *
- * @specification https://tools.ietf.org/html/rfc5891
- * @specification https://tools.ietf.org/html/rfc5892
- */
-export function IsIdnLabel(label: string): boolean {
-  if (label.length === 0 || label.length > 63) return false
-  const lower = label.toLowerCase()
-  if (lower.startsWith('xn--')) {
-    let decoded: string
-    try {
-      decoded = Puny.Decode(lower.slice(4))
-    } catch {
-      return false
-    }
-    return IsUnicodeLabel(decoded)
+function IsPuny(value: string): boolean {
+  return value.toLowerCase().startsWith('xn--')
+}
+function IsPunyLabel(value: string): boolean {
+  try {
+    return IsUnicodeLabel(Puny.Decode(value.slice(4)))
+  } catch {
+    return false // invalid punycode encoding
   }
-  // For non‑A‑labels, validate as a U‑label (which handles ASCII as well)
-  return IsUnicodeLabel(label)
+}
+// ------------------------------------------------------------------
+// IsIdnLabel
+// ------------------------------------------------------------------
+export function IsIdnLabel(value: string): boolean {
+  if (value.length === 0 || value.length > 63) return false
+  return IsPuny(value) ? IsPunyLabel(value) : IsUnicodeLabel(value)
+}
+// ------------------------------------------------------------------
+// IsLabel
+// ------------------------------------------------------------------
+export function IsLabel(value: string): boolean {
+  if (value.length === 0 || value.length > 63) return false
+  return IsPuny(value) ? IsPunyLabel(value) : IsAsciiLabel(value)
 }

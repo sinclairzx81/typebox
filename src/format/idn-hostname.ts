@@ -28,8 +28,6 @@ THE SOFTWARE.
 
 import { IsIdnLabel } from './_idna.ts'
 
-const LABEL_SEPARATORS = /[\u002E\u3002\uFF0E\uFF61]/g
-
 /**
  * Returns true if the value is a valid internationalized (IDN) hostname.
  * @specification https://tools.ietf.org/html/rfc3490
@@ -38,10 +36,9 @@ const LABEL_SEPARATORS = /[\u002E\u3002\uFF0E\uFF61]/g
  */
 export function IsIdnHostname(value: string): boolean {
   if (value.length === 0 || value.includes(' ')) return false
-  const normalized = value.normalize('NFC').replace(LABEL_SEPARATORS, '.')
-  if (normalized.length > 253) return false
-  const labels = normalized.split('.')
-  for (const label of labels) {
+  const canonical = value.normalize('NFC').replace(/[\u002E\u3002\uFF0E\uFF61]/g, '.')
+  if (canonical.length > 253) return false
+  for (const label of canonical.split('.')) {
     if (!IsIdnLabel(label)) return false
   }
   return true

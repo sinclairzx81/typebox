@@ -77,9 +77,7 @@ export function Decode(input: string): string {
       let digit: number
       if (ch >= 0x61 && ch <= 0x7a) digit = ch - 0x61 // a-z => 0-25
       else if (ch >= 0x30 && ch <= 0x39) digit = ch - 0x30 + 26 // 0-9 => 26-35
-      // deno-coverage-ignore-start - unable to trigger uppercase range via IsHostname
       else if (ch >= 0x41 && ch <= 0x5a) digit = ch - 0x41 // A-Z => 0-25
-      // deno-coverage-ignore-stop
       else throw new Error('Invalid punycode: bad digit character')
       i += digit * w
       const t = k <= bias ? PUNYCODE_TMIN : k >= bias + PUNYCODE_TMAX ? PUNYCODE_TMAX : k - bias
