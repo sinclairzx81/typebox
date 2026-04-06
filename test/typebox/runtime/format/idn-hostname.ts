@@ -82,7 +82,9 @@ Test('Should IsIdnHostname 15', () => {
 })
 
 Test('Should IsIdnHostname 16', () => {
-  Assert.IsTrue(Format.IsIdnHostname('xn--a--b.com')) // Represents a--b.com
+  // The label "xn--a--b" decodes to U+0081 (a control character),
+  // which is not permitted in any IDNA label. Therefore the hostname is invalid.
+  Assert.IsFalse(Format.IsIdnHostname('xn--a--b.com'))
 })
 
 // --- Additional coverage tests for IsIdnHostname ---

@@ -26,7 +26,6 @@ These keywords form the core of TypeBox's compliance target. A ✅ indicates ful
 | enum | 14/16 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | exclusiveMaximum | - | - | ✅ | ✅ | ✅ | ✅ | ✅ |
 | exclusiveMinimum | - | - | ✅ | ✅ | ✅ | ✅ | ✅ |
-| format | ✅ | ✅ | ✅ | ✅ | ✅ | 114/133 | - |
 | if-then-else | - | - | - | ✅ | ✅ | ✅ | ✅ |
 | infinite-loop-detection | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | items | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -52,8 +51,8 @@ These keywords form the core of TypeBox's compliance target. A ✅ indicates ful
 | ref | 23/27 | 37/45 | 67/70 | 75/78 | 79/81 | 77/79 | 77/79 |
 | required | 3/4 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | type | 73/80 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| unevaluatedItems | - | - | - | - | 55/56 | 63/71 | 63/71 |
-| unevaluatedProperties | - | - | - | - | 124/125 | 123/125 | 123/125 |
+| unevaluatedItems | - | - | - | - | ✅ | 64/71 | 64/71 |
+| unevaluatedProperties | - | - | - | - | ✅ | 124/125 | 124/125 |
 | uniqueItems | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 
 ## Optional Keywords and Proposals
@@ -75,11 +74,11 @@ Optional test suites cover supplementary keywords, format validators, and propos
 | format/color | 3/6 | - | - | - | - | - | - |
 | format/date | ✅ | - | - | ✅ | ✅ | ✅ | ✅ |
 | format/date-time | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| format/duration | - | - | - | - | 40/42 | 40/42 | 40/42 |
+| format/duration | - | - | - | - | ✅ | ✅ | ✅ |
 | format/ecmascript-regex | 1/2 | - | - | - | - | 0/1 | 0/1 |
 | format/email | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | format/host-name | 2/12 | - | - | - | - | - | - |
-| format/hostname | - | 27/28 | 27/28 | 37/61 | 37/61 | 37/61 | 37/61 |
+| format/hostname | - | 27/28 | 27/28 | ✅ | ✅ | ✅ | ✅ |
 | format/idn-email | - | - | - | ✅ | ✅ | ✅ | ✅ |
 | format/idn-hostname | - | - | - | ✅ | ✅ | ✅ | ✅ |
 | format/ip-address | 1/3 | - | - | - | - | - | - |
@@ -93,7 +92,7 @@ Optional test suites cover supplementary keywords, format validators, and propos
 | format/time | 2/3 | - | - | ✅ | ✅ | ✅ | ✅ |
 | format/unknown | - | ✅ | ✅ | ✅ | ✅ | ✅ | - |
 | format/uri | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| format/uri-reference | - | - | 15/17 | 15/17 | 15/17 | 15/17 | 15/17 |
+| format/uri-reference | - | - | ✅ | ✅ | ✅ | ✅ | ✅ |
 | format/uri-template | - | - | ✅ | ✅ | ✅ | ✅ | ✅ |
 | format/uuid | - | - | - | - | ✅ | ✅ | ✅ |
 | id | - | 2/3 | 6/7 | 6/7 | 2/3 | 2/3 | 2/3 |

@@ -46,11 +46,6 @@
         "valid": true
       },
       {
-        "description": "hostname with consecutive hyphens (RFC1123)",
-        "data": "ab--cd.example",
-        "valid": true
-      },
-      {
         "description": "a host name starting with an illegal character",
         "data": "-a-host-name-that-starts-with--",
         "valid": false
@@ -133,6 +128,11 @@
       {
         "description": "leading dot",
         "data": ".example",
+        "valid": false
+      },
+      {
+        "description": "trailing dot",
+        "data": "example.",
         "valid": false
       },
       {

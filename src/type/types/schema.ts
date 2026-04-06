@@ -242,30 +242,7 @@ export type TFormat =
   | ({} & string)
 export interface TStringOptions extends TSchemaOptions {
   /** 
-   * Specifies the expected string format. 
-   * 
-   * Common values include:
-   * - `base64` – Base64-encoded string.
-   * - `date-time` – [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) date-time format.
-   * - `date` – [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) date (YYYY-MM-DD).
-   * - `duration` – [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) duration format.
-   * - `email` – RFC 5321/5322 compliant email address.
-   * - `hostname` – RFC 1034/1035 compliant host name.
-   * - `idn-email` – Internationalized email address.
-   * - `idn-hostname` – Internationalized host name.
-   * - `ipv4` – IPv4 address.
-   * - `ipv6` – IPv6 address.
-   * - `iri` / `iri-reference` – Internationalized Resource Identifier.
-   * - `json-pointer` / `json-pointer-uri-fragment` – JSON Pointer format.
-   * - `json-string` – String containing valid JSON.
-   * - `regex` – Regular expression syntax.
-   * - `relative-json-pointer` – Relative JSON Pointer format.
-   * - `time` – [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) time (HH:MM:SS).
-   * - `uri-reference` / `uri-template` – URI reference or template.
-   * - `url` – Web URL format.
-   * - `uuid` – RFC 4122 UUID string.
-   * 
-   * May also be a custom format string.
+   * Specifies the expected string format. May also be a custom format string.
    */
   format?: TFormat
   /** 

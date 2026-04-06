@@ -72,6 +72,16 @@
         "valid": false
       },
       {
+        "description": "unescaped non US-ASCII characters",
+        "data": "/foobar®.txt",
+        "valid": false
+      },
+      {
+        "description": "invalid backslash character",
+        "data": "https://example.org/foobar\\.txt",
+        "valid": false
+      },
+      {
         "description": "URI with leading-zero IPv4 is structurally valid as a reg-name",
         "comment": "RFC 3986, Section 3.2.2: If an IP literal fails strict IPv4address parsing, it falls back to reg-name. A string of digits and dots is valid under unreserved characters. JSON Schema format asserts syntax, not scheme-specific DNS semantics.",
         "data": "http://087.10.0.1/",

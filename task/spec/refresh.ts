@@ -66,7 +66,7 @@ function process(): JSONSchemaTestSuite {
 // ------------------------------------------------------------------
 function report(suite: JSONSchemaTestSuite): void {
   const requiredTable = Report.reportRequired(suite, {
-    ignore: ['defs', 'definitions', 'divisibleBy', 'disallow', 'dynamicRef', 'extends', 'refRemote', 'vocabulary']
+    ignore: ['defs', 'definitions', 'divisibleBy', 'disallow', 'dynamicRef', 'extends', 'format', 'refRemote', 'vocabulary']
   })
   console.log('')
   console.log('## Required Keywords')

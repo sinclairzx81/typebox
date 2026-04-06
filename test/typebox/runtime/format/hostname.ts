@@ -35,7 +35,7 @@ Test('Should IsHostname 6', () => {
 
 Test('Should IsHostname 7', () => {
   // Should validate a fully qualified domain name (FQDN) with a trailing dot
-  Assert.IsTrue(Format.IsHostname('example.com.'))
+  Assert.IsFalse(Format.IsHostname('example.com.'))
 })
 
 Test('Should IsHostname 8', () => {
@@ -60,11 +60,11 @@ Test('Should IsHostname 11', () => {
 })
 
 Test('Should IsHostname 12', () => {
-  // Should validate a hostname with total length near max (244 chars, with trailing dot).
-  // Regex (?=.{1,253}\.?) allows max 254 with dot.
+  // Hostname with trailing dot. invalid per JSON Schema "hostname" format
+  // (even though DNS FQDNs may allow it, the spec disallows it).
   const longHostname = 'a'.repeat(60) + '.' + 'b'.repeat(60) + '.' + 'c'.repeat(60) + '.' + 'd'.repeat(60) + '.'
   Assert.IsTrue(longHostname.length === 244) // Confirm generated length
-  Assert.IsTrue(Format.IsHostname(longHostname))
+  Assert.IsFalse(Format.IsHostname(longHostname))
 })
 
 Test('Should IsHostname 13', () => {
@@ -199,4 +199,65 @@ Test('Should IsHostname 38', () => {
 
 Test('Should IsHostname 39', () => {
   Assert.IsTrue(Format.IsHostname('example.123'))
+})
+Test('Should IsHostname 40', () => {
+  // Hostname at maximum allowed length (253 characters) without trailing dot.
+  // The implementation enforces max total length of 253 (RFC 1034/1123 + JSON Schema).
+  const adjustedLabels = ['a'.repeat(63), 'b'.repeat(63), 'c'.repeat(63), 'd'.repeat(61)]
+  const maxHostname = adjustedLabels.join('.')
+  Assert.IsTrue(maxHostname.length === 253)
+  Assert.IsTrue(Format.IsHostname(maxHostname))
+})
+Test('Should IsHostname 41', () => {
+  // Should invalidate labels with hyphens in the 3rd and 4th positions
+  // (Reserved for A-labels/Punycode, but missing the 'xn' prefix)
+  Assert.IsFalse(Format.IsHostname('aa--bb.com'))
+})
+Test('Should IsHostname 42', () => {
+  // Should invalidate even if it's the only label
+  Assert.IsFalse(Format.IsHostname('ab--c'))
+})
+Test('Should IsHostname 43', () => {
+  // Should invalidate if the reserved hyphen pattern is in a sub-label
+  Assert.IsFalse(Format.IsHostname('example.hi--there.com'))
+})
+Test('Should IsHostname 44', () => {
+  // Should validate valid Punycode labels (these start with xn-- so they
+  // bypass the "Internal Dash" restriction)
+  Assert.IsTrue(Format.IsHostname('xn--7ca.com'))
+})
+// ------------------------------------------------------------------
+// PunyCode Coverage
+// ------------------------------------------------------------------
+Test('Should IsHostname 45', () => {
+  // This triggers: if (cp >= 128) throw new Error(...)
+  // The 'é' (0xE9) is >= 128.
+  // Even though 'xn--' labels usually don't have these, the decoder must catch them if they appear before the '-'
+  Assert.IsFalse(Format.IsHostname('xn--abcé-stack.com'))
+})
+Test('Should IsHostname 46', () => {
+  // This triggers: if (ch >= 0x61 && ch <= 0x7a)
+  // 'xn--mca' decodes to 'α'
+  Assert.IsTrue(Format.IsHostname('xn--mca.com'))
+})
+Test('Should IsHostname 47', () => {
+  // This triggers: else if (ch >= 0x41 && ch <= 0x5a)
+  // Punycode is case-insensitive. 'xn--MCA' is the same as 'xn--mca'
+  Assert.IsTrue(Format.IsHostname('xn--MCA.com'))
+})
+Test('Should IsHostname 48', () => {
+  // This triggers: else if (ch >= 0x30 && ch <= 0x39)
+  // Numbers are used for higher-value transitions in the variable-length integers
+  Assert.IsTrue(Format.IsHostname('xn--4ca.com'))
+})
+Test('Should IsHostname 49', () => {
+  // This triggers: else throw new Error('Invalid punycode: bad digit character')
+  // Note: IsHostname usually filters out non-alphanumerics,
+  // but if a character like '_' or '%' somehow reached the decoder:
+  Assert.IsFalse(Format.IsHostname('xn--abc_def.com'))
+})
+Test('Should IsHostname 50', () => {
+  // This triggers: throw new Error('Invalid punycode: unexpected end of input')
+  // Truncated punycode where the variable-length integer is incomplete
+  Assert.IsFalse(Format.IsHostname('xn--m.com'))
 })

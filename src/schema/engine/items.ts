@@ -32,7 +32,7 @@ import * as Schema from '../types/index.ts'
 import { Stack } from './_stack.ts'
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
 import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
-import { BuildSchema, CheckSchema, ErrorSchema } from './schema.ts'
+import { BuildSchemaPushStack, CheckSchemaPushStack, ErrorSchemaPushStack } from './schema.ts'
 
 // ------------------------------------------------------------------
 // ItemsSized
@@ -40,7 +40,7 @@ import { BuildSchema, CheckSchema, ErrorSchema } from './schema.ts'
 function BuildItemsSized(stack: Stack, context: BuildContext, schema: Schema.XItemsSized, value: string): string {
   return E.ReduceAnd(schema.items.map((schema, index) => {
     const isLength = E.IsLessEqualThan(E.Member(value, 'length'), E.Constant(index))
-    const isSchema = BuildSchema(stack, context, schema, `${value}[${index}]`)
+    const isSchema = BuildSchemaPushStack(stack, context, schema, `${value}[${index}]`)
     const addIndex = context.AddIndex(E.Constant(index))
     const guarded = context.UseUnevaluated() ? E.And(isSchema, addIndex) : isSchema
     return E.Or(isLength, guarded)
@@ -49,7 +49,7 @@ function BuildItemsSized(stack: Stack, context: BuildContext, schema: Schema.XIt
 function CheckItemsSized(stack: Stack, context: CheckContext, schema: Schema.XItemsSized, value: unknown[]): boolean {
   return G.Every(schema.items, 0, (schema, index) => {
     return G.IsLessEqualThan(value.length, index) 
-      || (CheckSchema(stack, context, schema, value[index]) && context.AddIndex(index))
+      || (CheckSchemaPushStack(stack, context, schema, value[index]) && context.AddIndex(index))
   })
 }
 function ErrorItemsSized(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XItemsSized, value: unknown[]): boolean {
@@ -57,7 +57,7 @@ function ErrorItemsSized(stack: Stack, context: ErrorContext, schemaPath: string
     const nextSchemaPath = `${schemaPath}/items/${index}`
     const nextInstancePath = `${instancePath}/${index}`
     return G.IsLessEqualThan(value.length, index) 
-      || (ErrorSchema(stack, context, nextSchemaPath, nextInstancePath, schema, value[index]) && context.AddIndex(index))
+      || (ErrorSchemaPushStack(stack, context, nextSchemaPath, nextInstancePath, schema, value[index]) && context.AddIndex(index))
   })
 }
 // ------------------------------------------------------------------
@@ -65,7 +65,7 @@ function ErrorItemsSized(stack: Stack, context: ErrorContext, schemaPath: string
 // ------------------------------------------------------------------
 function BuildItemsUnsized(stack: Stack, context: BuildContext, schema: Schema.XItemsUnsized, value: string): string {
   const offset = Schema.IsPrefixItems(schema) ? schema.prefixItems.length : 0
-  const isSchema = BuildSchema(stack, context, schema.items, 'element')
+  const isSchema = BuildSchemaPushStack(stack, context, schema.items, 'element')
   const addIndex = context.AddIndex('index')
   const guarded = context.UseUnevaluated() ? E.And(isSchema, addIndex) : isSchema
   return E.Every(value, E.Constant(offset), ['element', 'index'], guarded)
@@ -73,7 +73,7 @@ function BuildItemsUnsized(stack: Stack, context: BuildContext, schema: Schema.X
 function CheckItemsUnsized(stack: Stack, context: CheckContext, schema: Schema.XItemsUnsized, value: unknown[]): boolean {
   const offset = Schema.IsPrefixItems(schema) ? schema.prefixItems.length : 0
   return G.Every(value, offset, (element, index) => {
-    return CheckSchema(stack, context, schema.items, element) 
+    return CheckSchemaPushStack(stack, context, schema.items, element) 
       && context.AddIndex(index)
   })
 }
@@ -82,7 +82,7 @@ function ErrorItemsUnsized(stack: Stack, context: ErrorContext, schemaPath: stri
   return G.EveryAll(value, offset, (element, index) => {
     const nextSchemaPath = `${schemaPath}/items`
     const nextInstancePath = `${instancePath}/${index}`
-    return ErrorSchema(stack, context, nextSchemaPath, nextInstancePath, schema.items, element) 
+    return ErrorSchemaPushStack(stack, context, nextSchemaPath, nextInstancePath, schema.items, element) 
       && context.AddIndex(index)
   })
 }

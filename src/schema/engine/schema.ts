@@ -159,6 +159,11 @@ function HasNumberKeywords(schema: Schema.XSchemaObject): boolean {
 // ----------------------------------------------------------------
 // Build
 // ----------------------------------------------------------------
+export function BuildSchemaPushStack(stack: Stack, context: BuildContext, schema: Schema.XSchema, value: string) {
+  return context.UseUnevaluated()
+    ? E.And(E.And(context.Push(), BuildSchema(stack, context, schema, value)), context.Pop())
+    : BuildSchema(stack, context, schema, value)
+}
 export function BuildSchema(stack: Stack, context: BuildContext, schema: Schema.XSchema, value: string): string {
   stack.Push(schema)
   const conditions: string[] = []
@@ -236,6 +241,9 @@ export function BuildSchema(stack: Stack, context: BuildContext, schema: Schema.
 // ----------------------------------------------------------------
 // Check
 // ----------------------------------------------------------------
+export function CheckSchemaPushStack(stack: Stack, context: CheckContext, schema: Schema.XSchema, value: unknown): boolean {
+  return (context.Push() && CheckSchema(stack, context, schema, value)) && context.Pop()
+}
 export function CheckSchema(stack: Stack, context: CheckContext, schema: Schema.XSchema, value: unknown): boolean {
   stack.Push(schema)
   const result = Schema.IsBooleanSchema(schema) ? CheckBooleanSchema(stack, context, schema, value) : (
@@ -296,6 +304,9 @@ export function CheckSchema(stack: Stack, context: CheckContext, schema: Schema.
 // ----------------------------------------------------------------
 // Error
 // ----------------------------------------------------------------
+export function ErrorSchemaPushStack(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XSchema, value: unknown): boolean {
+  return (context.Push() && ErrorSchema(stack, context, schemaPath, instancePath, schema, value)) && context.Pop()
+}
 export function ErrorSchema(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XSchema, value: unknown): boolean {
   stack.Push(schema)
   const result = (Schema.IsBooleanSchema(schema)) ? ErrorBooleanSchema(stack, context, schemaPath, instancePath, schema, value) : (

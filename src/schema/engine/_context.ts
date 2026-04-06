@@ -63,6 +63,18 @@ export class BuildContext {
   public UseUnevaluated(): boolean {
     return this.hasUnevaluated
   }
+  // ----------------------------------------------------------------
+  // Stack
+  // ----------------------------------------------------------------
+  public Push(): string {
+    return E.Call(E.Member('context', 'Push'), [])
+  }
+  public Pop(): string {
+    return E.Call(E.Member('context', 'Pop'), [])
+  }
+  // ----------------------------------------------------------------
+  // Top
+  // ----------------------------------------------------------------
   public AddIndex(index: string): string {
     return E.Call(E.Member('context', 'AddIndex'), [index])
   }
@@ -77,30 +89,51 @@ export class BuildContext {
 // CheckContext
 // ------------------------------------------------------------------
 export class CheckContext {
-  private readonly indices: Set<number>
-  private readonly keys: Set<string>
+  private readonly stack: {
+    indices: Set<number>,
+    keys: Set<string>
+  }[]
   constructor() {
-    this.indices = new Set()
-    this.keys = new Set()
+    const indices = new Set<number>()
+    const keys = new Set<string>()
+    this.stack = [{ indices, keys }]
   }
+  // ----------------------------------------------------------------
+  // Stack
+  // ----------------------------------------------------------------
+  public Push(): true {
+    const indices = new Set<number>()
+    const keys = new Set<string>()
+    this.stack.push({ indices, keys })
+    return true
+  }
+  public Pop(): true {
+    this.stack.pop()
+    return true
+  }
+  // ----------------------------------------------------------------
+  // Top
+  // ----------------------------------------------------------------
   public AddIndex(index: number): true {
-    this.indices.add(index)
+    this.GetIndices().add(index)
     return true
   }
   public AddKey(key: string): true {
-    this.keys.add(key)
+    this.GetKeys().add(key)
     return true
   }
   public GetIndices(): Set<number> {
-    return this.indices
+    const top = this.stack[this.stack.length - 1]
+    return top.indices
   }
   public GetKeys(): Set<string> {
-    return this.keys
+    const top = this.stack[this.stack.length - 1]
+    return top.keys
   }
   public Merge(results: CheckContext[]): true {
     for (const context of results) {
-      context.indices.forEach(value => this.indices.add(value))
-      context.keys.forEach(value => this.keys.add(value))
+      context.GetIndices().forEach(value => this.GetIndices().add(value))
+      context.GetKeys().forEach(value => this.GetKeys().add(value))
     }
     return true
   }

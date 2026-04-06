@@ -44,23 +44,11 @@ const DRAFT_LABELS: Record<string, string> = {
 
 // ------------------------------------------------------------------
 // Normalize keyword
-//
-// Aligns keywords across drafts that restructured their directories.
-// Edit this function if upstream developers change the layout again.
-//
-// Rules:
-//   format/<x>          -> optional/format/<x>    (v1 moved optional/format/* to format/*)
-//   proposals/<x>/...   -> proposals/<x>/...      (pass through)
-//   optional/<x>        -> optional/<x>           (pass through)
-//   <x>                 -> <x>                    (pass through — required keyword)
 // ------------------------------------------------------------------
-
 function normalizeKeyword(keyword: string): string {
-  // v1 puts format files directly under the draft root — normalize to optional/format/*
   if (/^format\//.test(keyword)) return `optional/${keyword}`
   return keyword
 }
-
 // ------------------------------------------------------------------
 // Cell value: '✅' | 'X/Y' | '-'
 // ------------------------------------------------------------------

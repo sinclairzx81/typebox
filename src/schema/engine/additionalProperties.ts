@@ -34,7 +34,7 @@ import { Stack } from './_stack.ts'
 import { Unique } from './_unique.ts'
 import { BuildContext, CheckContext, ErrorContext, AccumulatedErrorContext } from './_context.ts'
 import { EmitGuard as E, Guard as G } from '../../guard/index.ts'
-import { BuildSchema, CheckSchema, ErrorSchema } from './schema.ts'
+import { BuildSchemaPushStack, CheckSchemaPushStack, ErrorSchemaPushStack } from './schema.ts'
 
 // ------------------------------------------------------------------
 // Common: GetPropertiesPattern
@@ -88,7 +88,7 @@ export function BuildAdditionalPropertiesFast(context: BuildContext, schema: S.X
 export function BuildAdditionalPropertiesStandard(stack: Stack, context: BuildContext, schema: S.XAdditionalProperties, value: string): string {
   const [key, _index] = [Unique(), Unique()]
   const regexp = V.CreateVariable(new RegExp(GetPropertiesPattern(schema)))
-  const isSchema = BuildSchema(stack, context, schema.additionalProperties, `${value}[${key}]`)
+  const isSchema = BuildSchemaPushStack(stack, context, schema.additionalProperties, `${value}[${key}]`)
   const isKey = E.Call(E.Member(regexp, 'test'), [key])
   const addKey = context.AddKey(key)
   const guarded = context.UseUnevaluated() ? E.Or(isKey, E.And(isSchema, addKey)) : E.Or(isKey, isSchema)
@@ -110,7 +110,7 @@ export function CheckAdditionalProperties(stack: Stack, context: CheckContext, s
   const regexp = new RegExp(GetPropertiesPattern(schema))
   const isAdditionalProperties = G.Every(G.Keys(value), 0, (key, _index) => {
     return regexp.test(key) || 
-      (CheckSchema(stack, context, schema.additionalProperties, value[key]) && context.AddKey(key))
+      (CheckSchemaPushStack(stack, context, schema.additionalProperties, value[key]) && context.AddKey(key))
   })
   return isAdditionalProperties
 }
@@ -125,7 +125,7 @@ export function ErrorAdditionalProperties(stack: Stack, context: ErrorContext, s
     const nextInstancePath = `${instancePath}/${key}`
     const nextContext = new AccumulatedErrorContext()
     const isAdditionalProperty = regexp.test(key) || 
-      (ErrorSchema(stack, nextContext, nextSchemaPath, nextInstancePath, schema.additionalProperties, value[key]) && context.AddKey(key))    
+      (ErrorSchemaPushStack(stack, nextContext, nextSchemaPath, nextInstancePath, schema.additionalProperties, value[key]) && context.AddKey(key))    
 
     if (!isAdditionalProperty) additionalProperties.push(key)
     return isAdditionalProperty

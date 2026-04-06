@@ -6,9 +6,9 @@
     },
     "tests": [
       {
-        "description": "trailing dot",
-        "data": "example.",
-        "valid": false
+        "description": "hostname with consecutive hyphens (RFC1123)",
+        "data": "ab--cd.example",
+        "valid": true
       }
     ]
   }

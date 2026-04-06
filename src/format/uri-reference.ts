@@ -26,12 +26,11 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-const UriReference = /^(?:(?:[a-z][a-z0-9+\-.]*:)?\/?\/)?(?:[^\\\s#][^\s#]*)?(?:#[^\\\s]*)?$/i
+const UriReference = /^(?!.*[^\x00-\x7F])(?!.*\\)(?:(?:[a-z][a-z0-9+\-.]*:)?(?:\/\/[^\s[\]{}<>^`|]*)?|[^\s[\]{}<>^`|]*)(?:\?[^\s[\]{}<>^`|]*)?(?:#[^\s[\]{}<>^`|]*)?$/i
 
 /**
- * Returns true if the value is a uri reference
- * @specification
- * @source ajv-formats
+ * Returns true if the value is a valid URI Reference.
+ * @specification https://tools.ietf.org/html/rfc3986
  */
 export function IsUriReference(value: string): boolean {
   return UriReference.test(value)

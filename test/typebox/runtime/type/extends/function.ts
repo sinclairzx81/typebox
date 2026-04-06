@@ -270,3 +270,13 @@ Test('Should Extends 28', () => {
   const R: ExtendsResult.TExtendsTrue = Extends({}, Type.Function([Type.Number(), Type.Optional(Type.Number())], Type.Void()), Type.Function([Type.Number()], Type.Void()))
   Assert.IsTrue(ExtendsResult.IsExtendsTrue(R))
 })
+Test('Should Extends 29', () => {
+  Assert.IsExtends<(a: number, b?: number) => void, (a: number) => void>(true)
+  const R: Type.ExtendsResult.TExtendsTrue<{}> = Extends({}, Type.Function([Type.Number()], Type.Void()), Type.Any())
+  Assert.IsTrue(ExtendsResult.IsExtendsTrue(R))
+})
+Test('Should Extends 30', () => {
+  Assert.IsExtends<(a: number, b?: number) => void, (a: number) => void>(true)
+  const R: Type.ExtendsResult.TExtendsTrue<{}> = Extends({}, Type.Function([Type.Number()], Type.Void()), Type.Unknown())
+  Assert.IsTrue(ExtendsResult.IsExtendsTrue(R))
+})

@@ -1052,5 +1052,35 @@
         "valid": false
       }
     ]
+  },
+  {
+    "description": "Evaluated items collection needs to consider instance location",
+    "schema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "prefixItems": [
+        {
+          "prefixItems": [
+            true,
+            {
+              "type": "string"
+            }
+          ]
+        }
+      ],
+      "unevaluatedItems": false
+    },
+    "tests": [
+      {
+        "description": "with an unevaluated item that exists at another location",
+        "data": [
+          [
+            "foo",
+            "bar"
+          ],
+          "bar"
+        ],
+        "valid": false
+      }
+    ]
   }
 ]

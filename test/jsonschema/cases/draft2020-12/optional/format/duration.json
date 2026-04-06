@@ -194,6 +194,11 @@
         "valid": true
       },
       {
+        "description": "years and days cannot appear without months",
+        "data": "P1Y2D",
+        "valid": false
+      },
+      {
         "description": "months and days can appear without years",
         "data": "P1M2D",
         "valid": true
@@ -202,6 +207,11 @@
         "description": "hours and minutes can appear without seconds",
         "data": "PT1H2M",
         "valid": true
+      },
+      {
+        "description": "hours and seconds cannot appear without minutes",
+        "data": "PT1H2S",
+        "valid": false
       },
       {
         "description": "minutes and seconds can appear without hour",
