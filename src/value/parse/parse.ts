@@ -65,15 +65,9 @@ export const Parser = Pipeline([
   (context, type, value) => Assert(context, type, value)
 ])
 /**  Parses a value with the given type. */
-export function Parse<const Type extends TSchema, 
-  Result extends unknown = StaticParse<Type>
->(type: Type, value: unknown): Result
-
+export function Parse<const Type extends TSchema>(type: Type, value: unknown): StaticParse<Type>
 /**  Parses a value with the given type. */
-export function Parse<Context extends TProperties, const Type extends TSchema, 
-  Result extends unknown = StaticParse<Type, Context>
->(context: Context, type: Type, value: unknown): Result
-
+export function Parse<Context extends TProperties, const Type extends TSchema>(context: Context, type: Type, value: unknown): StaticParse<Type, Context>
 /**  Parses a value with the given type. */
 export function Parse(...args: unknown[]): never {
   const [context, type, value] = Arguments.Match<[TProperties, TSchema, unknown]>(args, {

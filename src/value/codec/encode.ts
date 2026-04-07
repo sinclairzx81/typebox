@@ -75,17 +75,11 @@ const Encoder = Pipeline([
 // ------------------------------------------------------------------
 // Encode
 // ------------------------------------------------------------------
-/** Encodes a value. */
-export function Encode<const Type extends TSchema, 
-  Result extends unknown = StaticEncode<Type>
->(type: Type, value: unknown): Result
-
-/** Encodes a value. */
-export function Encode<Context extends TProperties, const Type extends TSchema, 
-  Result extends unknown = StaticEncode<Type, Context>
-> (context: Context, type: Type, value: unknown): Result
-
-/** Encodes a value. */
+/** Encodes a value with the given type. */
+export function Encode<const Type extends TSchema>(type: Type, value: unknown): StaticEncode<Type>
+/** Encodes a value with the given type. */
+export function Encode<Context extends TProperties, const Type extends TSchema>(context: Context, type: Type, value: unknown): StaticEncode<Type, Context>
+/** Encodes a value with the given type. */
 export function Encode(...args: unknown[]): never {
   const [context, type, value] = Arguments.Match<[TProperties, TSchema, unknown]>(args, {
     3: (context, type, value) => [context, type, value],

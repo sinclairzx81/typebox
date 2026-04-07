@@ -33,15 +33,9 @@ import type { TProperties, TSchema, Static } from '../../type/index.ts'
 import { FromType } from './from-type.ts'
 
 /** Creates a value from the provided type. This function will use `default` annotations if present. */
-export function Create<const Type extends TSchema, 
-  Result extends unknown = Static<Type>
->(type: Type): Result
-
+export function Create<const Type extends TSchema>(type: Type): Static<Type>
 /** Creates a value from the provided type. This function will use `default` annotations if present. */
-export function Create<const Context extends TProperties, Type extends TSchema, 
-  Result extends unknown = Static<Type, Context>
->(context: Context, type: Type): Result
-
+export function Create<const Context extends TProperties, Type extends TSchema>(context: Context, type: Type): Static<Type, Context>
 /** Creates a value from the provided type. This function will use `default` annotations if present. */
 export function Create(...args: any[]): unknown {
   const [context, type] = Arguments.Match<[TProperties, TSchema]>(args, {
