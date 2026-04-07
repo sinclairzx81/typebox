@@ -26,6 +26,8 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+// deno-fmt-ignore-file
+
 import { Arguments } from '../../system/arguments/index.ts'
 import type { TLocalizedValidationError } from '../../error/index.ts'
 import type { Static, TProperties, TSchema } from '../../type/index.ts'
@@ -49,11 +51,9 @@ export class AssertError extends Error {
   }
 }
 /** Asserts the a value matches the given type. This function returns a TypeScript type asserts predicate and will throw AssertError if value does not match. */
-export function Assert<Context extends TProperties, const Type extends TSchema, Result extends unknown = Static<Type, Context>>(context: Context, type: Type, value: unknown): asserts value is Result
-
+export function Assert<const Type extends TSchema>(type: Type, value: unknown): asserts value is Static<Type>
 /** Asserts the a value matches the given type. This function returns a TypeScript type asserts predicate and will throw AssertError if value does not match. */
-export function Assert<const Type extends TSchema, Result extends unknown = Static<Type>>(type: Type, value: unknown): asserts value is Result
-
+export function Assert<Context extends TProperties, const Type extends TSchema>(context: Context, type: Type, value: unknown): asserts value is Static<Type, Context>
 /** Asserts the a value matches the given type. This function returns a TypeScript type asserts predicate and will throw AssertError if value does not match. */
 export function Assert(...args: unknown[]): void {
   const [context, type, value] = Arguments.Match<[TProperties, TSchema, unknown]>(args, {

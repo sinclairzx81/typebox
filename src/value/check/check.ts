@@ -33,15 +33,9 @@ import type { Static, TProperties, TSchema } from '../../type/index.ts'
 import { Check as SchemaCheck } from '../../schema/index.ts'
 
 /** Checks a value matches the provided type. */
-export function Check<const Type extends TSchema, 
-  Result extends unknown = Static<Type>
->(type: Type, value: unknown): value is Result
-
+export function Check<const Type extends TSchema>(type: Type, value: unknown): value is Static<Type>
 /** Checks a value matches the provided type. */
-export function Check<Context extends TProperties, const Type extends TSchema, 
-  Result extends unknown = Static<Type, Context>
->(context: Context, type: Type, value: unknown): value is Result
-
+export function Check<Context extends TProperties, const Type extends TSchema>(context: Context, type: Type, value: unknown): value is Static<Type, Context>
 /** Checks a value matches the provided type. */
 export function Check(...args: unknown[]): unknown {
   const [context, type, value] = Arguments.Match<[TProperties, TSchema, unknown]>(args, {

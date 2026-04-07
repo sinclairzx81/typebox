@@ -75,32 +75,11 @@ const Decoder = Pipeline([
 // ------------------------------------------------------------------
 // Decode
 // ------------------------------------------------------------------
-/**
- * Decodes a value against the given type by applying a sequence of Clone,
- * Default, Convert, and Clone operations, then executing any embedded Decode
- * callbacks. If the processing sequence fails to produce a value matching the 
- * provided type, a DecodeError is thrown.
- */
-export function Decode<const Type extends TSchema, 
-  Result extends unknown = StaticDecode<Type>
->(type: Type, value: unknown): Result
-
-/**
- * Decodes a value against the given type by applying a sequence of Clone,
- * Default, Convert, and Clone operations, then executing any embedded Decode
- * callbacks. If the processing sequence fails to produce a value matching the 
- * provided type, a DecodeError is thrown.
- */
-export function Decode<Context extends TProperties, const Type extends TSchema, 
-  Result extends unknown = StaticDecode<Type, Context>
->(context: Context, type: Type, value: unknown): Result
-
-/**
- * Decodes a value against the given type by applying a sequence of Clone,
- * Default, Convert, and Clone operations, then executing any embedded Decode
- * callbacks. If the processing sequence fails to produce a value matching the 
- * provided type, a DecodeError is thrown.
- */
+/** Decodes a value with the given type. */
+export function Decode<const Type extends TSchema>(type: Type, value: unknown): StaticDecode<Type>
+/** Decodes a value with the given type. */
+export function Decode<Context extends TProperties, const Type extends TSchema>(context: Context, type: Type, value: unknown): StaticDecode<Type, Context>
+/** Decodes a value with the given type. */
 export function Decode(...args: unknown[]): never {
   const [context, type, value] = Arguments.Match<[TProperties, TSchema, unknown]>(args, {
     3: (context, type, value) => [context, type, value],

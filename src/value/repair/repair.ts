@@ -40,10 +40,7 @@ import { Assert } from '../assert/index.ts'
  * default structures derived from the type. If the value already conforms to the type, no 
  * action is performed.
  */
-export function Repair<const Type extends TSchema, 
-  Result extends unknown = Static<Type>
->(type: Type, value: unknown): Result
-
+export function Repair<const Type extends TSchema>(type: Type, value: unknown): Static<Type>
 /**
  * Repairs a value to match the provided type. This function is intended for data migration 
  * scenarios where existing values need to be migrating to an updated type. This function will
@@ -51,10 +48,7 @@ export function Repair<const Type extends TSchema,
  * default structures derived from the type. If the value already conforms to the type, no 
  * action is performed.
  */
-export function Repair<Context extends TProperties, const Type extends TSchema, 
-  Result extends unknown = Static<Type, Context>
->(context: Context, type: Type, value: unknown): Result
-
+export function Repair<Context extends TProperties, const Type extends TSchema>(context: Context, type: Type, value: unknown): Static<Type, Context>
 /**
  * Repairs a value to match the provided type. This function is intended for data migration 
  * scenarios where existing values need to be migrating to an updated type. This function will
