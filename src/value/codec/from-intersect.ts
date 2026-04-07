@@ -32,28 +32,53 @@ import { Guard } from '../../guard/index.ts'
 import { type TIntersect, type TProperties } from '../../type/index.ts'
 import { FromType } from './from-type.ts'
 import { Callback } from './callback.ts'
+import { Clone } from '../clone/index.ts'
+import { Clean } from '../clean/index.ts'
 
+// ------------------------------------------------------------------
+// MergeInteriors
+//
+// Merges all interior operand results into a single object. Each
+// subsequent operand's properties override those of prior operands.
+//
+// ------------------------------------------------------------------
+function MergeInteriors(interiors: Record<PropertyKey, unknown>[]): unknown {
+  return interiors.reduce((results, interior) => ({ ...results, ...interior }), {})
+}
+// ------------------------------------------------------------------
+// NonMatchingInterior
+//
+// Used when Intersect operands do not all produce Objects. Returns
+// the first interior result that differs from the original value,
+// indicating a Codec has transformed the data. If no operand
+// produced a change, defaults to the first interior result.
+//
+// ------------------------------------------------------------------
+function NonMatchingInterior(value: unknown, interiors: unknown[]) {
+  for (const interior of interiors) if (!Guard.IsDeepEqual(value, interior)) return interior
+  return value // value-unchanged
+}
 // ------------------------------------------------------------------
 // Decode
 // ------------------------------------------------------------------
 function Decode(direction: string, context: TProperties, type: TIntersect, value: unknown): unknown {
-  for (const schema of type.allOf) {
-    value = FromType(direction, context, schema, value)
-  }
-  return Callback(direction, context, type, value)
+  if (Guard.IsEqual(type.allOf.length, 0)) return Callback(direction, context, type, value)
+  const interiors = type.allOf.map((schema) => FromType(direction, context, schema, Clean(schema, Clone(value))))
+  const structural = interiors.every((result) => Guard.IsObject(result))
+  const exterior = structural ? MergeInteriors(interiors) : NonMatchingInterior(value, interiors)
+  return Callback(direction, context, type, exterior)
 }
 // ------------------------------------------------------------------
 // Encode
 // ------------------------------------------------------------------
 function Encode(direction: string, context: TProperties, type: TIntersect, value: unknown): unknown {
-  let exterior = Callback(direction, context, type, value)
-  for (const schema of type.allOf) {
-    exterior = FromType(direction, context, schema, exterior)
-  }
-  return exterior
+  if (Guard.IsEqual(type.allOf.length, 0)) return Callback(direction, context, type, value)
+  const exterior = Callback(direction, context, type, value)
+  const interiors = type.allOf.map((schema) => FromType(direction, context, schema, Clean(schema, Clone(exterior))))
+  const structural = interiors.every((result) => Guard.IsObject(result))
+  if (structural) return MergeInteriors(interiors)
+  return NonMatchingInterior(exterior, interiors)
 }
 export function FromIntersect(direction: string, context: TProperties, type: TIntersect, value: unknown): unknown {
-  return Guard.IsEqual(direction, 'Decode')
-    ? Decode(direction, context, type, value)
-    : Encode(direction, context, type, value)
+  return Guard.IsEqual(direction, 'Decode') ? Decode(direction, context, type, value) : Encode(direction, context, type, value)
 }
