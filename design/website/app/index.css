@@ -33,7 +33,7 @@ Variables
 */
 :root {
   /* App */
-  --app-font-family-standard: 'Segoe UI', sans-serif;
+  --app-font-family-standard: system-ui, -apple-system, sans-serif;
   --app-font-family-advanced: 'conthrax', sans-serif;
   --app-head-background: #171c25dd;
   --app-foot-background: #171c25dd;

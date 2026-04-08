@@ -1,12 +1,10 @@
 # Schema.Specification
 
-TypeBox aims for full specification compliance with the latest JSON Schema drafts as well as broad support for previous draft versions. It employs a progressive keyword adoption strategy where it implements keyword semantics as defined by newer drafts, and where keyword backwards  compatibility is supported if the keyword can be implemented without conflict on newer versions.
+TypeBox is tested heavily against the [Official JSON Schema Test Suite](https://github.com/json-schema-org/JSON-Schema-Test-Suite) for compliance against all major specification drafts.
 
-> ⚠️ Specification alignment is a ongoing effort. While TypeBox tests in excess of 95% + of the Required Keyword suite, keywords such as `$dynamicRef`, `$dynamicAnchor` are yet to be implemented by the compiler. TypeBox aims to support these along with additional `v1` keywords while retaining broad compatibility for Draft 7.
+## Supported Keywords
 
-## Required Keywords
-
-These keywords form the core of TypeBox's compliance target. A ✅ indicates full passage of all test cases for that keyword under the given draft. Fractional values (e.g. 37/45) indicate the number of passing cases out of the total available for that keyword and draft combination. A dash indicates the keyword was not defined in that draft.
+The following keywords are supported
 
 | Spec | 3 | 4 | 6 | 7 | 2019-09 | 2020-12 | v1 |
 |:-----|:--|:--|:--|:--|:--|:--|:--|
@@ -55,9 +53,9 @@ These keywords form the core of TypeBox's compliance target. A ✅ indicates ful
 | unevaluatedProperties | - | - | - | - | ✅ | 124/125 | 124/125 |
 | uniqueItems | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 
-## Optional Keywords and Proposals
+## Optional Keywords, Formats and Proposals
 
-Optional test suites cover supplementary keywords, format validators, and proposals that are not required for core compliance. Support is included where it can be provided without conflicting with required keyword semantics. Items prefixed with format/ are format-assertion tests for the corresponding string format.
+The following optional keywords, formats and proposals are also supported.
 
 | Spec | 3 | 4 | 6 | 7 | 2019-09 | 2020-12 | v1 |
 |:-----|:--|:--|:--|:--|:--|:--|:--|

@@ -42,7 +42,7 @@ export function Backend() {
     <div className='backend'>
       <Fiber.Canvas>
         <Camera />
-        <Ground color='#080b10' width={32} height={32} />
+        <Ground color='#000000' width={32} height={32} />
         <Light color='#9ca7b9' />
       </Fiber.Canvas>
     </div>
