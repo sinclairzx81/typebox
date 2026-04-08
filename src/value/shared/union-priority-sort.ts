@@ -29,42 +29,41 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Guard } from '../../guard/index.ts'
-import { type TProperties, type TUnion } from '../../type/index.ts'
-import { Callback } from './callback.ts'
-import { FromType } from './from-type.ts'
-import { Clone } from '../clone/index.ts'
-import { Check } from '../check/index.ts'
-
-import { UnionPrioritySort } from '../shared/union-priority-sort.ts'
+import { Compare, type TSchema } from '../../type/index.ts'
 
 // ------------------------------------------------------------------
-// Decode
+// DeterministicCompare
+//
+// Provides a deterministic tie-break for schemas. This is used when
+// schemas are structurally disjoint or mutually inclusive. While
+// JSON serialization incurs a performance overhead, it serves as a
+// reliable mechanism to ensure stable ordering and preserves the
+// alphabetical alignment of named constants.
+//
 // ------------------------------------------------------------------
-function Decode(direction: string, context: TProperties, type: TUnion, value: unknown): unknown {
-  for (const schema of UnionPrioritySort(type.anyOf, 1)) {
-    if(!Check(context, schema, value)) continue
-    const variant = FromType(direction, context, schema, value)
-    return Callback(direction, context, type, variant)
-  }
-  return value
+function DeterministicCompare(left: TSchema, right: TSchema): number {
+  return JSON.stringify(left).localeCompare(JSON.stringify(right))
 }
 // ------------------------------------------------------------------
-// Encode
+// UnionPrioritySort
+//
+// Performs a deterministic sort on Union members. By default, this
+// function ensures that narrow (more specific) types precede broader
+// types in the resulting array. The order can be reversed by setting
+// the order property to -1 which will reverse unions from broader
+// to more narrow.
+//
 // ------------------------------------------------------------------
-function Encode(direction: string, context: TProperties, type: TUnion, value: unknown): unknown {
-  let exterior = Callback(direction, context, type, value)
-  for (const schema of UnionPrioritySort(type.anyOf, -1)) {
-    const variant = FromType(direction, context, schema, Clone(exterior))
-    if(!Check(context, schema, variant)) continue
-    return variant
-  }
-  return exterior
-}
-// ------------------------------------------------------------------
-// FromUnion
-// ------------------------------------------------------------------
-export function FromUnion(direction: string, context: TProperties, type: TUnion, value: unknown): unknown {
-  return Guard.IsEqual(direction, 'Decode')
-    ? Decode(direction, context, type, value)
-    : Encode(direction, context, type, value)
+
+/** Deterministically sorts schemas by structural relationship (narrow to broad) */
+export function UnionPrioritySort(types: TSchema[], order: number = 1): TSchema[] {
+  return types.sort((left, right) => {
+    const result = Compare(left, right) as string
+    return (
+      Guard.IsEqual(result, 'disjoint') ? DeterministicCompare(left, right) : 
+      Guard.IsEqual(result, 'right-inside') ? 1 : 
+      Guard.IsEqual(result, 'left-inside') ? -1 : 
+      DeterministicCompare(left, right)
+    ) * order
+  })
 }

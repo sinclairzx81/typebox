@@ -32,7 +32,8 @@ import { type TSchema, type TObject, type TProperties } from '../../type/index.t
 import { Guard } from '../../guard/index.ts'
 import { FromType } from './from-type.ts'
 import { FromAdditionalProperties } from './from-additional.ts'
-import { IsOptionalUndefined } from '../shared/index.ts'
+
+import { IsOptionalUndefined } from '../shared/optional-undefined.ts'
 
 // ------------------------------------------------------------------
 // FromProperties
