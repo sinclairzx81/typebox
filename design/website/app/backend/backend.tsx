@@ -46,7 +46,7 @@ export function Backend() {
         <fogExp2 attach="fog" args={['#000000', 0.02]} />
         <Flash color="#7a839b" minInterval={2} maxInterval={6} peakIntensity={40} />
         <Cubes color="#e0c285" count={32} bounds={[65, 14, 65]} minSize={2} maxSize={4}  />
-        <Cubes color="#000000" count={1200} bounds={[128, 0, 128]} minSize={4} maxSize={8}  />
+        <Cubes color="#000000" count={512} bounds={[128, 0, 128]} minSize={4} maxSize={8}  />
         <Ground color='#000000' width={32} height={32} />
         <Light color='#555e6d' />
       </Fiber.Canvas>
