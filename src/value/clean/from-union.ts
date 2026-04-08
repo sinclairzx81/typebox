@@ -33,8 +33,10 @@ import { Check } from '../check/index.ts'
 import { Clone } from '../clone/index.ts'
 import { FromType } from './from-type.ts'
 
+import { UnionPrioritySort } from '../shared/union-priority-sort.ts'
+
 export function FromUnion(context: TProperties, type: TUnion, value: unknown): unknown {
-  for (const schema of type.anyOf) {
+  for (const schema of UnionPrioritySort(type.anyOf)) {
     const clean = FromType(context, schema, Clone(value))
     if(Check(context, schema, clean)) return clean
   }

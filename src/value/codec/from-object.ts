@@ -33,7 +33,8 @@ import { Guard } from '../../guard/index.ts'
 import { type TObject, type TProperties } from '../../type/index.ts'
 import { FromType } from './from-type.ts'
 import { Callback } from './callback.ts'
-import { IsOptionalUndefined } from '../shared/index.ts'
+
+import { IsOptionalUndefined } from '../shared/optional-undefined.ts'
 
 // ------------------------------------------------------------------
 // Decode

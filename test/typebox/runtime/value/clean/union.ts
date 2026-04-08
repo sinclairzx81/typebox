@@ -175,3 +175,43 @@ Test('Should Clean 21', () => {
   const A = Value.Clean(T, {})
   Assert.IsEqual(A, {})
 })
+// ------------------------------------------------------------------
+// Support Order Independent Union Variants
+//
+// https://github.com/sinclairzx81/typebox/issues/1515
+// ------------------------------------------------------------------
+Test('Should Clean 22', () => {
+  const VariantA = Type.Object({
+    x: Type.Number(),
+    y: Type.Number()
+  })
+  const VariantB = Type.Object({
+    x: Type.Number(),
+    y: Type.Number(),
+    z: Type.Number()
+  })
+  const OrderA = Type.Object({
+    value: Type.Union([VariantB, VariantA])
+  })
+  const OrderB = Type.Object({
+    value: Type.Union([VariantA, VariantB])
+  })
+  const A = Value.Clean(OrderA, {
+    value: {
+      x: 1,
+      y: 2,
+      z: 3,
+      w: 4
+    }
+  })
+  const B = Value.Clean(OrderB, {
+    value: {
+      x: 1,
+      y: 2,
+      z: 3,
+      w: 4
+    }
+  })
+  Assert.IsEqual(A, { value: { x: 1, y: 2, z: 3 } })
+  Assert.IsEqual(B, { value: { x: 1, y: 2, z: 3 } })
+})

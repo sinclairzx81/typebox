@@ -31,7 +31,6 @@ THE SOFTWARE.
 import { Guard } from '../../guard/index.ts'
 import { type TSchema, IsOptional } from '../../type/index.ts'
 
-
 // ------------------------------------------------------------------
 // IsOptionalUndefined
 //
