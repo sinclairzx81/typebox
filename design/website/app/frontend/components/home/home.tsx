@@ -89,8 +89,8 @@ export function Home() {
           stepDelayMs={20}
           messages={[
             'JSON Schema Type Builder with Static Type Resolution for TypeScript',
-            'Runtime TypeScript Emulation using JSON Schema',
-            'High Performance JSON Schema Validation'
+            'High Performance Validation for JSON Schema',
+            'Runtime TypeScript Emulation with JSON Schema',
           ]}
         />
       </div>

@@ -33,17 +33,22 @@ import * as Fiber from 'react-three/fiber'
 import { Camera } from './components/camera.tsx'
 import { Light } from './components/light.tsx'
 import { Ground } from './components/ground.tsx'
-
+import { Cubes } from './components/cubes.tsx'
+import { Flash } from './components/flash.tsx'
 // ------------------------------------------------------------------
 // Backend
 // ------------------------------------------------------------------
 export function Backend() {
   return (
     <div className='backend'>
-      <Fiber.Canvas>
+      <Fiber.Canvas shadows>
         <Camera />
+        <fogExp2 attach="fog" args={['#000000', 0.02]} />
+        <Flash color="#7a839b" minInterval={2} maxInterval={6} peakIntensity={40} />
+        <Cubes color="#e0c285" count={32} bounds={[65, 14, 65]} minSize={2} maxSize={4}  />
+        <Cubes color="#000000" count={512} bounds={[128, 0, 128]} minSize={4} maxSize={8}  />
         <Ground color='#000000' width={32} height={32} />
-        <Light color='#9ca7b9' />
+        <Light color='#555e6d' />
       </Fiber.Canvas>
     </div>
   )

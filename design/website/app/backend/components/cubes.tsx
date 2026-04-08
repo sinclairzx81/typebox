@@ -4,7 +4,7 @@ TypeBox
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2026 Haydn Paterson
+Copyright (c) 2017-2026 Haydn Paterson 
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -30,59 +30,76 @@ import React from 'react'
 import * as Three from 'three'
 
 // ------------------------------------------------------------------
-// CreateTiles
+// CreateRandomCubes
 // ------------------------------------------------------------------
-export type TileData = {
+export type CubeData = {
   position: [number, number, number]
   scale: [number, number, number]
+  rotation: [number, number, number]
 }
-export function CreateTiles(width: number, height: number): TileData[] {
-  let scale = 8
-  const hw = width / 2
-  const hh = width / 2
-  const tiles: TileData[] = []
-  for(let x = 0; x < width; x++) {
-    for(let z = 0; z < height; z++) {
-      const px = (-hw + x) * scale
-      const pz = (-hh + z) * scale
-      const py = -10
 
-      const s = 0.996
-      const sx = scale * s
-      const sz = scale * s
-      const sy = 1
-      tiles.push({
-        position: [px, py, pz],
-        scale: [sx, sy, sz],
-      })
-    }
+export function CreateRandomCubes(
+  count: number,
+  bounds: [number, number, number],
+  minSize: number,
+  maxSize: number,
+): CubeData[] {
+  const [bx, by, bz] = bounds
+  const hx = bx / 2
+  const hy = by / 2
+  const hz = bz / 2
+  const cubes: CubeData[] = []
+
+  for (let i = 0; i < count; i++) {
+    const px = (Math.random() * 2 - 1) * hx
+    const py = (Math.random() * 2 - 1) * hy
+    const pz = (Math.random() * 2 - 1) * hz
+
+    const s = minSize + Math.random() * (maxSize - minSize)
+    const rx = Math.random() * Math.PI * 2
+    const ry = Math.random() * Math.PI * 2
+    const rz = Math.random() * Math.PI * 2
+    cubes.push({
+      position: [px, py, pz],
+      scale: [s, s, s],
+      rotation: [rx, ry, rz],
+    })
   }
-  return tiles
+
+  return cubes
 }
 // ------------------------------------------------------------------
-// Boxes
+// Cubes
 // ------------------------------------------------------------------
-export interface GroundProperties {
+export interface CubesProperties {
   color: string
-  width: number
-  height: number
+  count?: number
+  bounds?: [number, number, number]
+  minSize?: number
+  maxSize?: number
 }
-export function Ground(props: GroundProperties) {
-  const instances = React.useRef<TileData[]>(CreateTiles(props.width, props.height))
-  const meshRef = React.useRef<Three.InstancedMesh>(null!)
-  const dummy = new Three.Object3D()
+export function Cubes(props: CubesProperties) {
+  const count   = props.count   ?? 1024
+  const bounds  = props.bounds  ?? [100, 100, 100]
+  const minSize = props.minSize ?? 0.5
+  const maxSize = props.maxSize ?? 2.0
+
+  const instances = React.useRef<CubeData[]>(CreateRandomCubes(count, bounds, minSize, maxSize))
+  const meshRef   = React.useRef<Three.InstancedMesh>(null!)
+  const dummy     = new Three.Object3D()
   React.useEffect(() => {
     instances.current.forEach((cube, index) => {
       dummy.position.set(...cube.position)
       dummy.scale.set(...cube.scale)
+    // dummy.rotation.set(...cube.rotation)
       dummy.updateMatrix()
       meshRef.current.setMatrixAt(index, dummy.matrix)
     })
     meshRef.current.instanceMatrix.needsUpdate = true
   }, [])
-  const count = props.width * props.height
+
   return (
-    <instancedMesh receiveShadow={true} castShadow={true} ref={meshRef} args={[undefined, undefined, count]} frustumCulled={false}>
+    <instancedMesh castShadow={true} receiveShadow={true} ref={meshRef} args={[undefined, undefined, count]} frustumCulled={false}>
       <boxGeometry args={[1, 1, 1]} />
       <meshStandardMaterial color={props.color} metalness={0.6} roughness={0.4} />
     </instancedMesh>
