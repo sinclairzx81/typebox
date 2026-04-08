@@ -1,18 +1,18 @@
 # TypeBox
 
-Json Schema Type Builder with Static Type Resolution for TypeScript
+JSON Schema Type Builder with Static Type Resolution for TypeScript
 
 ## Overview
 
-TypeBox is a runtime type system that creates in-memory Json Schema objects that infer as TypeScript types. The schematics produced by this library are designed to match the static type checking rules of the TypeScript compiler. TypeBox offers a unified type system that can be statically checked by TypeScript and validated at runtime using standard Json Schema.
+TypeBox is a runtime type system that creates in-memory JSON Schema objects that infer as TypeScript types. The schematics produced by this library are designed to match the static type checking rules of the TypeScript compiler. TypeBox offers a unified type system that can be statically checked by TypeScript and validated at runtime using standard JSON Schema.
 
-This library is designed to allow Json Schema to compose similar to how types compose within TypeScript's type system. It can be used as a simple tool to build up complex schematics or integrated into REST and RPC services to help validate data received over the wire.
+This library is designed to allow JSON Schema to compose similar to how types compose within TypeScript's type system. It can be used as a simple tool to build up complex schematics or integrated into REST and RPC services to help validate data received over the wire.
 
 ## Features
 
 ## Type
 
-The Type namespace creates Json Schema.
+The Type namespace creates JSON Schema.
 
 ```typescript
 import Type from 'typebox'
@@ -36,7 +36,7 @@ type T = Type.Static<typeof T>                      // type T = {
 
 ## Script
 
-The Script creates Json Schema from TypeScript syntax.
+The Script creates JSON Schema from TypeScript syntax.
 
 ```typescript
 import Type from 'typebox'

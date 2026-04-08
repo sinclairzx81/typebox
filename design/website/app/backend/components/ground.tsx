@@ -82,7 +82,7 @@ export function Ground(props: GroundProperties) {
   }, [])
   const count = props.width * props.height
   return (
-    <instancedMesh ref={meshRef} args={[undefined, undefined, count]} frustumCulled={false}>
+    <instancedMesh receiveShadow={true} castShadow={true} ref={meshRef} args={[undefined, undefined, count]} frustumCulled={false}>
       <boxGeometry args={[1, 1, 1]} />
       <meshStandardMaterial color={props.color} metalness={0.6} roughness={0.4} />
     </instancedMesh>

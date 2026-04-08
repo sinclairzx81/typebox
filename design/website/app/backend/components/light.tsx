@@ -33,8 +33,8 @@ import * as Three from 'three'
 export interface LightProperties {
   color: string
 }
-const minimum = 20
-const maximum = 40
+const minimum = 15
+const maximum = 15
 export function Light({ color }: LightProperties) {
   const lightRef = React.useRef<Three.DirectionalLight>(null)
   const [isLightMode, setIsLightMode] = React.useState(
@@ -42,10 +42,10 @@ export function Light({ color }: LightProperties) {
   )
 
   // Track the start intensity and start time for smooth transition
-  const startIntensityRef = React.useRef(2)
+  const startIntensityRef = React.useRef(0)
   const targetIntensityRef = React.useRef(isLightMode ? maximum : minimum)
   const startTimeRef = React.useRef(performance.now() / 1000)
-  const duration = 0.5 // seconds
+  const duration = 1.5 // seconds
 
   React.useEffect(() => {
     const observer = new MutationObserver(() => {
@@ -78,9 +78,20 @@ export function Light({ color }: LightProperties) {
   return (
     <directionalLight
       ref={lightRef}
-      position={[0, 1, 0]}
+      position={[0, 100, 0]}
       color={color}
       intensity={isLightMode ? maximum : minimum}
+
+      castShadow
+      shadow-mapSize-width={256}
+      shadow-mapSize-height={256}
+      shadow-camera-near={0.5}
+      shadow-camera-far={500}
+      shadow-camera-left={-100}
+      shadow-camera-right={100}
+      shadow-camera-top={100}
+      shadow-camera-bottom={-100}
+      shadow-bias={-0.0005}
     />
   )
 }

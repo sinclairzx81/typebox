@@ -1,11 +1,11 @@
 <h1>TypeBox</h1>
-<p>Json Schema Type Builder with Static Type Resolution for TypeScript</p>
+<p>JSON Schema Type Builder with Static Type Resolution for TypeScript</p>
 <h2>Overview</h2>
-<p>TypeBox is a runtime type system that creates in-memory Json Schema objects that infer as TypeScript types. The schematics produced by this library are designed to match the static type checking rules of the TypeScript compiler. TypeBox offers a unified type system that can be statically checked by TypeScript and validated at runtime using standard Json Schema.</p>
-<p>This library is designed to allow Json Schema to compose similar to how types compose within TypeScript&#39;s type system. It can be used as a simple tool to build up complex schematics or integrated into REST and RPC services to help validate data received over the wire.</p>
+<p>TypeBox is a runtime type system that creates in-memory JSON Schema objects that infer as TypeScript types. The schematics produced by this library are designed to match the static type checking rules of the TypeScript compiler. TypeBox offers a unified type system that can be statically checked by TypeScript and validated at runtime using standard JSON Schema.</p>
+<p>This library is designed to allow JSON Schema to compose similar to how types compose within TypeScript&#39;s type system. It can be used as a simple tool to build up complex schematics or integrated into REST and RPC services to help validate data received over the wire.</p>
 <h2>Features</h2>
 <h2>Type</h2>
-<p>The Type namespace creates Json Schema.</p>
+<p>The Type namespace creates JSON Schema.</p>
 <pre><code class="language-typescript">import Type from &#39;typebox&#39;
 
 const T = Type.Object({                             // const T = {
@@ -25,7 +25,7 @@ type T = Type.Static&lt;typeof T&gt;                      // type T = {
                                                     // }
 </code></pre>
 <h2>Script</h2>
-<p>The Script creates Json Schema from TypeScript syntax.</p>
+<p>The Script creates JSON Schema from TypeScript syntax.</p>
 <pre><code class="language-typescript">import Type from &#39;typebox&#39;
 
 const T = Type.Script(`{

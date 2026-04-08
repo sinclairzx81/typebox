@@ -74,7 +74,7 @@ function Header() {
       </div>
       <nav className='navigation'>
         <ReactRouter.Link to='/docs' className='navigation-link'>Docs</ReactRouter.Link>
-        <LightSwitch onClick={toggleTheme} />
+        {/* <LightSwitch onClick={toggleTheme} /> */}
         <GithubLink url={repositoryUrl} />
       </nav>
     </div>
