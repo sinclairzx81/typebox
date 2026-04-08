@@ -43,7 +43,7 @@ function IsValid(schema: Schema.XUniqueItems): schema is Schema.XUniqueItems & {
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildUniqueItems(stack: Stack, context: BuildContext, schema: Schema.XUniqueItems, value: string): string {
+export function BuildUniqueItems(_stack: Stack, _context: BuildContext, schema: Schema.XUniqueItems, value: string): string {
   if (!IsValid(schema)) return E.Constant(true)
 
   const set = E.Member(E.New('Set', [E.Call(E.Member(value, 'map'), [E.Member('Hashing', 'Hash')])]), 'size')
@@ -53,7 +53,7 @@ export function BuildUniqueItems(stack: Stack, context: BuildContext, schema: Sc
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckUniqueItems(stack: Stack, context: CheckContext, schema: Schema.XUniqueItems, value: unknown[]): boolean {
+export function CheckUniqueItems(_stack: Stack, _context: CheckContext, schema: Schema.XUniqueItems, value: unknown[]): boolean {
   if (!IsValid(schema)) return true
   const set = new Set(value.map(Hashing.Hash)).size
   const isLength = value.length
@@ -62,7 +62,7 @@ export function CheckUniqueItems(stack: Stack, context: CheckContext, schema: Sc
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorUniqueItems(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XUniqueItems, value: unknown[]): boolean {
+export function ErrorUniqueItems(_stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XUniqueItems, value: unknown[]): boolean {
   if (!IsValid(schema)) return true
   const set = new Set<string>()
   const duplicateItems = value.reduce<number[]>((result, value, index) => {

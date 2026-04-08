@@ -52,7 +52,7 @@ function Decode(direction: string, context: TProperties, type: TUnion, value: un
 // Encode
 // ------------------------------------------------------------------
 function Encode(direction: string, context: TProperties, type: TUnion, value: unknown): unknown {
-  let exterior = Callback(direction, context, type, value)
+  const exterior = Callback(direction, context, type, value)
   for (const schema of UnionPrioritySort(type.anyOf, -1)) {
     const variant = FromType(direction, context, schema, Clone(exterior))
     if(!Check(context, schema, variant)) continue

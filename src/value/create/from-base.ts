@@ -30,6 +30,6 @@ THE SOFTWARE.
 
 import type { TProperties, Base } from '../../type/index.ts'
 
-export function FromBase(context: TProperties, type: Base): unknown {
+export function FromBase(_context: TProperties, type: Base): unknown {
   return type.Create()
 }

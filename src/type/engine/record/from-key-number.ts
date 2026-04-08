@@ -36,7 +36,7 @@ import { CreateRecord } from './record-create.ts'
 export type TFromNumberKey<Key extends TNumber, Value extends TSchema,
   Result extends TSchema = TRecord<typeof NumberKey, Value>
 > = Result
-export function FromNumberKey<Key extends TNumber, Value extends TSchema>(key: Key, value: Value): TFromNumberKey<Key, Value> {
+export function FromNumberKey<Key extends TNumber, Value extends TSchema>(_key: Key, value: Value): TFromNumberKey<Key, Value> {
   const result = CreateRecord(NumberKey, value) 
   return result as never
 }

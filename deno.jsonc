@@ -5,6 +5,7 @@
     "clean": "deno run -A tasks.ts clean",           // Clean Build Targets
     "fast": "deno run -A tasks.ts fast",             // Interactive Tests
     "format": "deno run -A tasks.ts format",         // Formats Code
+    "lint": "deno run -A tasks.ts lint",             // Lints Code
     "local": "deno run -A tasks.ts local",           // Build Local Project
     "metrics": "deno run -A tasks.ts metrics",       // Compression Metrics
     "native": "deno run -A tasks.ts native",         // Build Project With TypeScript Native

@@ -30,6 +30,6 @@ THE SOFTWARE.
 
 import type { TProperties, TUndefined } from '../../type/index.ts'
 
-export function FromUndefined(context: TProperties, type: TUndefined): unknown {
+export function FromUndefined(_context: TProperties, _type: TUndefined): unknown {
   return undefined
 }

@@ -31,6 +31,6 @@ THE SOFTWARE.
 import type { TProperties, TNever } from '../../type/index.ts'
 import { CreateError } from './error.ts'
 
-export function FromNever(context: TProperties, type: TNever): unknown {
+export function FromNever(_context: TProperties, type: TNever): unknown {
   throw new CreateError(type, 'Cannot create TNever types')
 }

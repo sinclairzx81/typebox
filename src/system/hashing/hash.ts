@@ -144,7 +144,7 @@ function FromDate(value: Date): void {
 // ------------------------------------------------------------------
 // Function
 // ------------------------------------------------------------------
-function FromFunction(value: Function): void {
+function FromFunction(value: globalThis.Function): void {
   FNV1A64_OP(ByteMarker.Function)
   FromValue(value.toString())
 }

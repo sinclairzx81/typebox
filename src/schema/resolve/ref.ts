@@ -56,7 +56,7 @@ function MatchAnchor(schema: Schema.XAnchor, base: URL, ref: URL): Schema.XSchem
 // ------------------------------------------------------------------
 // Match: Hash
 // ------------------------------------------------------------------
-function MatchHash(schema: Schema.XSchemaObject, base: URL, ref: URL): Schema.XSchema | undefined {
+function MatchHash(schema: Schema.XSchemaObject, _base: URL, ref: URL): Schema.XSchema | undefined {
   if(ref.href.endsWith('#')) return schema
   return ref.hash.startsWith('#')
     ? Pointer.Get(schema, decodeURIComponent(ref.hash.slice(1))) as Schema.XSchema | undefined

@@ -37,19 +37,19 @@ import { EmitGuard as E } from '../../guard/index.ts'
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildGuard(stack: Stack, context: BuildContext, schema: Schema.XGuard, value: string): string {
+export function BuildGuard(_stack: Stack, _context: BuildContext, schema: Schema.XGuard, value: string): string {
   return E.Call(E.Member(E.Member(Externals.CreateVariable(schema), '~guard'), 'check'), [value])
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckGuard(stack: Stack, context: CheckContext, schema: Schema.XGuard, value: unknown): boolean {
+export function CheckGuard(_stack: Stack, _context: CheckContext, schema: Schema.XGuard, value: unknown): boolean {
   return schema['~guard'].check(value)
 }
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorGuard(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XGuard, value: unknown): boolean {
+export function ErrorGuard(_stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XGuard, value: unknown): boolean {
   return schema['~guard'].check(value) || context.AddError({
     keyword: '~guard',
     schemaPath,

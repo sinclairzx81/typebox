@@ -26,11 +26,11 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+// deno-lint-ignore-file ban-types no-explicit-any
 // deno-fmt-ignore-file
 
 import { Metrics } from './metrics.ts'
 
-// deno-lint-ignore no-explicit-any
 type ObjectLike = Record<PropertyKey, any>
 
 /** 

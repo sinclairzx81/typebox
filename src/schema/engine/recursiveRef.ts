@@ -51,7 +51,7 @@ export function CheckRecursiveRef(stack: Stack, context: CheckContext, schema: S
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorRecursiveRef(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XRecursiveRef, value: unknown): boolean {
+export function ErrorRecursiveRef(stack: Stack, context: ErrorContext, _schemaPath: string, instancePath: string, schema: Schema.XRecursiveRef, value: unknown): boolean {
   const target = stack.RecursiveRef(schema.$recursiveRef) ?? false
   return (Schema.IsSchema(target) && ErrorSchema(stack, context, '#', instancePath, target, value))
 }

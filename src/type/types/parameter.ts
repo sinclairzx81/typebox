@@ -53,7 +53,7 @@ export function Parameter<Name extends string, Extends extends TSchema, Equals e
 /** Creates a Parameter type. */
 export function Parameter<Name extends string>(name: Name): TParameter<Name, TUnknown, TUnknown>
 /** Creates a Parameter type. */
-export function Parameter(...args: unknown[]): any {
+export function Parameter(...args: unknown[]): unknown {
   const [name, extends_, equals] = Arguments.Match<[string, TSchema, TSchema]>(args, {
     3: (name, extends_, equals) => [name, extends_, equals],
     2: (name, extends_) => [name, extends_, extends_],

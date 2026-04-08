@@ -32,13 +32,12 @@ import { Guard } from '../../../guard/index.ts'
 import { type TSchema, IsSchema } from '../../types/schema.ts'
 import { type TLiteral, type TLiteralValue, IsLiteral } from '../../types/literal.ts'
 import { type TUnion, IsUnion } from '../../types/union.ts'
-import { type TTemplateLiteralDecode, TemplateLiteralDecode } from './decode.ts'
 
 // ------------------------------------------------------------------
 // FromLiteral
 // ------------------------------------------------------------------
 type TFromLiteral<_Value extends TLiteralValue> = true
-function FromLiteral<Value extends TLiteralValue>(value: Value): TFromLiteral<Value> {
+function FromLiteral<Value extends TLiteralValue>(_value: Value): TFromLiteral<Value> {
   return true
 }
 // ------------------------------------------------------------------

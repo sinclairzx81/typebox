@@ -26,6 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+// deno-lint-ignore-file ban-types no-explicit-any
 // deno-fmt-ignore-file
 
 import type { XSchema } from '../types/schema.ts'

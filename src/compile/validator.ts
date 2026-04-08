@@ -113,7 +113,7 @@ export class Validator<Context extends TProperties = TProperties, Type extends T
   }
   /** Inspects a value and returns a detailed list of validation errors. */
   public override Errors(value: unknown): TLocalizedValidationError[] {
-    if (Environment.CanAccelerate() && this.check(value)) return []
+    if (Environment.CanEvaluate() && this.check(value)) return []
     return Errors(this.context, this.type, value)
   }
   /** Cleans a value using the Validator type. */

@@ -32,7 +32,7 @@ import { Guard } from '../../guard/index.ts'
 import type { TProperties, TInteger } from '../../type/index.ts'
 import { IsExclusiveMinimum, IsMinimum } from '../../schema/types/index.ts'
 
-export function FromInteger(context: TProperties, type: TInteger): unknown {
+export function FromInteger(_context: TProperties, type: TInteger): unknown {
   return (
     (IsExclusiveMinimum(type) && Guard.IsNumber(type.exclusiveMinimum)) ? type.exclusiveMinimum + 1 :
     IsMinimum(type) ? type.minimum :

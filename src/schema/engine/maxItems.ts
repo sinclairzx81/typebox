@@ -36,13 +36,13 @@ import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildMaxItems(stack: Stack, context: BuildContext, schema: Schema.XMaxItems, value: string): string {
+export function BuildMaxItems(_stack: Stack, _context: BuildContext, schema: Schema.XMaxItems, value: string): string {
   return E.IsLessEqualThan(E.Member(value, 'length'), E.Constant(schema.maxItems))
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckMaxItems(stack: Stack, context: CheckContext, schema: Schema.XMaxItems, value: unknown[]): boolean {
+export function CheckMaxItems(_stack: Stack, _context: CheckContext, schema: Schema.XMaxItems, value: unknown[]): boolean {
   return G.IsLessEqualThan(value.length, schema.maxItems)
 }
 // ------------------------------------------------------------------

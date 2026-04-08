@@ -127,7 +127,7 @@ type TBroadenTypes<Types extends TSchema[], Result extends TSchema[] = []> = (
       TBroadenTypes<Right, TBroadenType<Left, Result>> // broaden
     ) : Result
 )
-function BroadenTypes<Types extends TSchema[]>(types: [...Types], result: TSchema[] = []): TBroadenTypes<Types> {
+function BroadenTypes<Types extends TSchema[]>(types: [...Types]): TBroadenTypes<Types> {
   return types.reduce<TSchema[]>((result, left) => {
     return (
       IsObject(left) ? [...result, left] : // push

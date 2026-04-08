@@ -32,11 +32,11 @@ import { Guard } from '../../../guard/index.ts'
 
 import { type TSchema } from '../../types/schema.ts'
 import { type TAny, Any } from '../../types/any.ts'
-import { type TArray, Array, IsArray, ArrayOptions } from '../../types/array.ts'
+import { type TArray, Array as _Array_, IsArray, ArrayOptions } from '../../types/array.ts'
 import { type TAsyncIterator, AsyncIterator, IsAsyncIterator } from '../../types/async-iterator.ts'
 import { type TConstructor, Constructor, IsConstructor } from '../../types/constructor.ts'
 import { type TCyclic } from '../../types/cyclic.ts'
-import { type TFunction, Function as _Function, IsFunction } from '../../types/function.ts'
+import { type TFunction, Function as _Function_, IsFunction } from '../../types/function.ts'
 import { type TIntersect, Intersect, IsIntersect } from '../../types/intersect.ts'
 import { type TIterator, Iterator, IsIterator } from '../../types/iterator.ts'
 import { type TObject, Object, IsObject } from '../../types/object.ts'
@@ -103,10 +103,10 @@ type TFromType<Type extends TSchema> = (
 function FromType<Type extends TSchema>(type: Type): TFromType<Type> {
   return (
     IsRef(type) ? FromRef(type.$ref) :
-    IsArray(type) ? Array(FromType(type.items), ArrayOptions(type)) :
+    IsArray(type) ? _Array_(FromType(type.items), ArrayOptions(type)) :
     IsAsyncIterator(type) ? AsyncIterator(FromType(type.iteratorItems)) :
     IsConstructor(type) ? Constructor(FromTypes(type.parameters), FromType(type.instanceType)) :
-    IsFunction(type) ? _Function(FromTypes(type.parameters), FromType(type.returnType)) :
+    IsFunction(type) ? _Function_(FromTypes(type.parameters), FromType(type.returnType)) :
     IsIntersect(type) ? Intersect(FromTypes(type.allOf)) :
     IsIterator(type) ? Iterator(FromType(type.iteratorItems)) :
     IsObject(type) ? Object(FromProperties(type.properties)) :

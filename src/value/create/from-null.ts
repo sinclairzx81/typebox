@@ -30,6 +30,6 @@ THE SOFTWARE.
 
 import type { TProperties, TNull } from '../../type/index.ts'
 
-export function FromNull(context: TProperties, type: TNull): unknown {
+export function FromNull(_context: TProperties, _type: TNull): unknown {
   return null
 }

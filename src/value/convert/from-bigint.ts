@@ -32,7 +32,7 @@ import { Guard } from '../../guard/index.ts'
 import type { TBigInt, TProperties } from '../../type/index.ts'
 import { Try } from './try/index.ts'
 
-export function FromBigInt(context: TProperties, type: TBigInt, value: unknown): unknown {
+export function FromBigInt(_context: TProperties, _type: TBigInt, value: unknown): unknown {
   if(Guard.IsBigInt(value)) return value
   const result = Try.TryBigInt(value)
   return Try.IsOk(result) ? result.value : value

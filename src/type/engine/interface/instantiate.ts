@@ -49,7 +49,7 @@ type TInterfaceImmediate<Context extends TProperties, State extends TState, Heri
 > = EvaluatedInterface
 
 function InterfaceImmediate<Context extends TProperties, State extends TState, Heritage extends TSchema[], Properties extends TProperties>
-  (context: Context, state: State, heritage: [...Heritage], properties: Properties, options: TSchemaOptions): 
+  (context: Context, _state: State, heritage: [...Heritage], properties: Properties, options: TSchemaOptions): 
     TInterfaceImmediate<Context, State, Heritage, Properties> {
   const instantiatedHeritage = InstantiateTypes(context, { callstack: [] }, heritage) as TSchema[]
   const instantiatedProperties = InstantiateProperties(context, { callstack: [] }, properties) as TProperties

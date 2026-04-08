@@ -72,7 +72,7 @@ function FromObject(value: Record<PropertyKey, unknown>): Record<PropertyKey, un
 // Array
 // ------------------------------------------------------------------
 function FromArray(value: unknown[]): unknown {
-  return value.map((element: any) => Clone(element))
+  return value.map((element) => Clone(element))
 }
 // ------------------------------------------------------------------
 // TypeArray

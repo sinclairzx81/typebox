@@ -27,6 +27,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+// deno-lint-ignore-file ban-types
 // deno-fmt-ignore-file
 
 import { type TUnreachable, Unreachable } from '../../system/unreachable/index.ts'

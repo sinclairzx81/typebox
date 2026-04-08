@@ -26,7 +26,6 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-lint-ignore-file no-array-constructor
 // deno-fmt-ignore-file
 
 import { Guard } from '../../guard/index.ts'

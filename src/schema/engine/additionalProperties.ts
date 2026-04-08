@@ -72,14 +72,14 @@ function GetPropertiesPattern(schema: S.XSchemaObject): string {
 // we can generate a simplified and efficient runtime check.
 //
 // ------------------------------------------------------------------
-export function CanAdditionalPropertiesFast(context: BuildContext, schema: S.XAdditionalProperties, value: string): schema is S.XAdditionalProperties & S.XRequired {
+export function CanAdditionalPropertiesFast(_context: BuildContext, schema: S.XAdditionalProperties, _value: string): schema is S.XAdditionalProperties & S.XRequired {
   return S.IsRequired(schema)
     && S.IsProperties(schema)
     && !S.IsPatternProperties(schema)
     && G.IsEqual(schema.additionalProperties, false)
     && G.IsEqual(G.Keys(schema.properties).length, schema.required.length)
 }
-export function BuildAdditionalPropertiesFast(context: BuildContext, schema: S.XAdditionalProperties & S.XRequired, value: string): string {
+export function BuildAdditionalPropertiesFast(_context: BuildContext, schema: S.XAdditionalProperties & S.XRequired, value: string): string {
   return E.IsEqual(E.Member(E.Call(E.Member('Object', 'getOwnPropertyNames'), [value]), 'length'), E.Constant(schema.required.length))
 }
 // ------------------------------------------------------------------

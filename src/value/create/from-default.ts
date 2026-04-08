@@ -33,7 +33,7 @@ import { type XDefault } from '../../schema/types/index.ts'
 import { Guard } from '../../guard/index.ts'
 import { Clone } from '../clone/index.ts'
 
-export function FromDefault(context: TProperties, schema: XDefault): unknown {
+export function FromDefault(_context: TProperties, schema: XDefault): unknown {
   return Guard.IsFunction(schema.default) 
     ? schema.default(schema) 
     : Guard.IsObject(schema.default) 

@@ -32,7 +32,7 @@ import type { TProperties, TRecord } from '../../type/index.ts'
 import { IsMinProperties, IsDefault } from '../../schema/types/index.ts'
 import { CreateError } from './error.ts'
 
-export function FromRecord(context: TProperties, type: TRecord): unknown {
+export function FromRecord(_context: TProperties, type: TRecord): unknown {
   if(IsMinProperties(type) && !IsDefault(type)) throw new CreateError(type, 'Record with the minProperties constraint must have a default annotation')
   return {}
 }

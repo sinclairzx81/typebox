@@ -38,13 +38,13 @@ import { EmitGuard as E } from '../../guard/index.ts'
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildFormat(stack: Stack, context: BuildContext, schema: Schema.XFormat, value: string): string {
+export function BuildFormat(_stack: Stack, _context: BuildContext, schema: Schema.XFormat, value: string): string {
   return E.Call(E.Member('Format', 'Test'), [E.Constant(schema.format), value])
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckFormat(stack: Stack, context: CheckContext, schema: Schema.XFormat, value: string): boolean {
+export function CheckFormat(_stack: Stack, _context: CheckContext, schema: Schema.XFormat, value: string): boolean {
   return Format.Test(schema.format, value)
 }
 // ------------------------------------------------------------------

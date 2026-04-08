@@ -76,7 +76,7 @@ export function CheckRef(stack: Stack, context: CheckContext, schema: Schema.XRe
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorRef(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XRef, value: unknown): boolean {
+export function ErrorRef(stack: Stack, context: ErrorContext, _schemaPath: string, instancePath: string, schema: Schema.XRef, value: unknown): boolean {
   const target = stack.Ref(schema.$ref) ?? false
   const nextContext = new AccumulatedErrorContext()
   const result = (Schema.IsSchema(target) && ErrorSchema(stack, nextContext, '#', instancePath, target, value))

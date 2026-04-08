@@ -30,6 +30,6 @@ THE SOFTWARE.
 
 import type { Base, TProperties } from '../../type/index.ts'
 
-export function FromBase(context: TProperties, type: Base, value: unknown): unknown {
+export function FromBase(_context: TProperties, type: Base, value: unknown): unknown {
   return type.Convert(value)
 }

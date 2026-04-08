@@ -40,7 +40,7 @@ const functions: Map<string, string> = new Map()
 // ------------------------------------------------------------------
 // CreateCallExpression
 // ------------------------------------------------------------------
-function CreateCallExpression(context: BuildContext, schema: Schema.XSchema, hash: string, value: string): string {
+function CreateCallExpression(context: BuildContext, _schema: Schema.XSchema, hash: string, value: string): string {
   return context.UseUnevaluated()
     ? E.Call(`check_${hash}`, ['context', value])
     : E.Call(`check_${hash}`, [value])

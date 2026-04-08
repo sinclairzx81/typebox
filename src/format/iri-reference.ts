@@ -26,6 +26,8 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+// deno-lint-ignore-file no-control-regex
+
 // deno-coverage-ignore-start
 function TryUrl(value: string): boolean {
   try {

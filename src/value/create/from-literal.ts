@@ -30,6 +30,6 @@ THE SOFTWARE.
 
 import type { TProperties, TLiteral } from '../../type/index.ts'
 
-export function FromLiteral(context: TProperties, type: TLiteral): unknown {
+export function FromLiteral(_context: TProperties, type: TLiteral): unknown {
   return type.const
 }

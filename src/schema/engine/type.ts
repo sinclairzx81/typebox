@@ -36,7 +36,7 @@ import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 // ------------------------------------------------------------------
 // TypeName
 // ------------------------------------------------------------------
-function BuildTypeName(stack: Stack, context: BuildContext, type: string, value: string): string {
+function BuildTypeName(_stack: Stack, _context: BuildContext, type: string, value: string): string {
   return (
     // jsonschema
     G.IsEqual(type, 'object') ? E.IsObjectNotArray(value) :
@@ -58,7 +58,7 @@ function BuildTypeName(stack: Stack, context: BuildContext, type: string, value:
     E.Constant(true)
   )
 }
-function CheckTypeName(stack: Stack, context: CheckContext, type: string, schema: Schema.XSchemaObject, value: unknown): boolean {
+function CheckTypeName(_stack: Stack, _context: CheckContext, type: string, _schema: Schema.XSchemaObject, value: unknown): boolean {
   return (
     // jsonschema
     G.IsEqual(type, 'object') ? G.IsObjectNotArray(value) :

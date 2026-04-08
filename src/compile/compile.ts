@@ -26,6 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+// deno-lint-ignore-file ban-types
 // deno-fmt-ignore-file
 
 import { Arguments } from '../system/arguments/index.ts'

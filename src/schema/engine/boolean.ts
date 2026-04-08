@@ -35,13 +35,13 @@ import { EmitGuard as E } from '../../guard/index.ts'
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildBooleanSchema(stack: Stack, context: BuildContext, schema: boolean, value: string): string {
+export function BuildBooleanSchema(_stack: Stack, _context: BuildContext, schema: boolean, _value: string): string {
   return schema ? E.Constant(true) : E.Constant(false)
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckBooleanSchema(stack: Stack, context: CheckContext, schema: boolean, value: unknown): boolean {
+export function CheckBooleanSchema(_stack: Stack, _context: CheckContext, schema: boolean, _value: unknown): boolean {
   return schema
 }
 // ------------------------------------------------------------------

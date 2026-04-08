@@ -157,7 +157,7 @@ type TEncodeEnum<Types extends TEnumValue[], Right extends TSchema[], Pattern ex
   Variants extends TSchema[] = TEnumValuesToVariants<Types>
 > = TEncodeUnion<Variants, Right, Pattern>
 function EncodeEnum<Types extends TEnumValue[], Right extends TSchema[], Pattern extends string>
-  (types: [...Types], right: Right, pattern: Pattern, result: string[] = []): 
+  (types: [...Types], right: Right, pattern: Pattern): 
     TEncodeEnum<Types, Right, Pattern> {
   const variants = EnumValuesToVariants(types) as TSchema[]
   return EncodeUnion(variants, right, pattern) as never

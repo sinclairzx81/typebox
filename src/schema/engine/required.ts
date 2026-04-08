@@ -36,19 +36,19 @@ import { EmitGuard as E, Guard as G } from '../../guard/index.ts'
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildRequired(stack: Stack, context: BuildContext, schema: Schema.XRequired, value: string): string {
+export function BuildRequired(_stack: Stack, _context: BuildContext, schema: Schema.XRequired, value: string): string {
   return E.ReduceAnd(schema.required.map((key) => E.HasPropertyKey(value, E.Constant(key))))
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckRequired(stack: Stack, context: CheckContext, schema: Schema.XRequired, value: Record<PropertyKey, unknown>): boolean {
+export function CheckRequired(_stack: Stack, _context: CheckContext, schema: Schema.XRequired, value: Record<PropertyKey, unknown>): boolean {
   return G.Every(schema.required, 0, (key) => G.HasPropertyKey(value, key))
 }
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorRequired(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XRequired, value: Record<PropertyKey, unknown>): boolean {
+export function ErrorRequired(_stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XRequired, value: Record<PropertyKey, unknown>): boolean {
   const requiredProperties: string[] = []
   const isRequired = G.EveryAll(schema.required, 0, (key) => {
     const hasKey = G.HasPropertyKey(value, key)

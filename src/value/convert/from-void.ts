@@ -32,7 +32,7 @@ import type { TVoid, TProperties } from '../../type/index.ts'
 import { Guard } from '../../guard/index.ts'
 import { Try } from './try/index.ts'
 
-export function FromVoid(context: TProperties, type: TVoid, value: unknown): unknown {
+export function FromVoid(_context: TProperties, _type: TVoid, value: unknown): unknown {
   if(Guard.IsUndefined(value)) return value
   const result = Try.TryUndefined(value)
   return Try.IsOk(result) ? (void 0) : value

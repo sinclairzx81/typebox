@@ -28,8 +28,6 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { type TUnreachable, Unreachable } from '../../../system/unreachable/index.ts'
-
 import { type TSchema } from '../../types/schema.ts'
 import { type TLiteral, type TLiteralValue, IsLiteral } from '../../types/literal.ts'
 import { type TTemplateLiteral, IsTemplateLiteral } from '../../types/template-literal.ts'

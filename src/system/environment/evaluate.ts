@@ -32,23 +32,35 @@ import { Guard } from '../../guard/index.ts'
 let supported: boolean | undefined = undefined
 
 // ------------------------------------------------------------------
-// TryEval
+// TryEvaluate
 // ------------------------------------------------------------------
-// deno-coverage-ignore-start - catch is environment dependent
-function TryEval(): boolean {
+function TryEvaluate(): boolean {
   try {
-    new globalThis.Function('null')()
+    Evaluate('null')()
     return true
-  } catch {
+  } // deno-coverage-ignore-start -
+  catch {
     return false
   }
+  // deno-coverage-ignore-stop
 }
-// deno-coverage-ignore-stop
 // ------------------------------------------------------------------
 // CanEvaluate
 // ------------------------------------------------------------------
 /** Returns true if the environment supports dynamic JavaScript evaluation */
-export function CanAccelerate(): boolean {
-  if (Guard.IsUndefined(supported)) supported = TryEval()
+export function CanEvaluate(): boolean {
+  if (Guard.IsUndefined(supported)) supported = TryEvaluate()
   return supported && Settings.Get().useAcceleration
+}
+// ------------------------------------------------------------------
+// Evaluate
+// ------------------------------------------------------------------
+/**
+ * Evaluates code in the current environment. This function will throw if the
+ * environment Content-Security-Policy does not support `unsafe-eval`. Use the
+ * Environment.CanEvaluate() to determine if the environment supports Evaluate
+ * before calling this function.
+ */
+export function Evaluate(...args: string[]): globalThis.Function {
+  return new globalThis.Function(...args)
 }

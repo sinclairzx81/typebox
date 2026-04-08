@@ -37,7 +37,7 @@ import { EmitGuard as E, Guard as G } from '../../guard/index.ts'
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildConst(stack: Stack, context: BuildContext, schema: Schema.XConst, value: string): string {
+export function BuildConst(_stack: Stack, _context: BuildContext, schema: Schema.XConst, value: string): string {
   return G.IsValueLike(schema.const)
     ? E.IsEqual(value, E.Constant(schema.const))
     : E.IsDeepEqual(value, Externals.CreateVariable(schema.const))
@@ -45,7 +45,7 @@ export function BuildConst(stack: Stack, context: BuildContext, schema: Schema.X
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckConst(stack: Stack, context: CheckContext, schema: Schema.XConst, value: unknown): boolean {
+export function CheckConst(_stack: Stack, _context: CheckContext, schema: Schema.XConst, value: unknown): boolean {
   return G.IsValueLike(schema.const)
     ? G.IsEqual(value, schema.const)
     : G.IsDeepEqual(value, schema.const)
