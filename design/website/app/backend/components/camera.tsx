@@ -6,25 +6,26 @@ import * as Three from 'three'
 
 export function Camera() {
   const [direction, setDirection] = React.useState(() => randomDirection())
-  const speed = 0.5
+  const speed = -0.25
   const reset = 40
-  const offset = 8
-  const height = 16
+  const offset = 10
+  const height = 17
   const { camera } = Fiber.useThree()
-
+  
   function randomDirection() {
-    const angle = 45 / 180 * 3.14
+    // 45 degrees
+    const angle = (15 / 180 * Math.PI)
     const dx = Math.cos(angle)
     const dz = Math.sin(angle)
     const dy = 0
     return new Three.Vector3(dx, dy, dz).normalize()
   }
-  function shouldReset(camera: Three.PerspectiveCamera) {
-     const distance = Math.sqrt(camera.position.x ** 2 + camera.position.z ** 2)
+  function shouldReset(cam: Three.PerspectiveCamera) {
+     const distance = Math.sqrt(cam.position.x ** 2 + cam.position.z ** 2)
      return distance >= reset
   }
   Fiber.useFrame((_, delta) => {
-    if (shouldReset(camera)) {
+    if (shouldReset(camera as Three.PerspectiveCamera)) {
       camera.position.set(0, height, 0)
       setDirection(randomDirection())
     }

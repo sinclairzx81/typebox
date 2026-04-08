@@ -1,10 +1,7 @@
 <h1>Schema.Specification</h1>
-<p>TypeBox aims for full specification compliance with the latest JSON Schema drafts as well as broad support for previous draft versions. It employs a progressive keyword adoption strategy where it implements keyword semantics as defined by newer drafts, and where keyword backwards  compatibility is supported if the keyword can be implemented without conflict on newer versions.</p>
-<blockquote>
-<p>⚠️ Specification alignment is a ongoing effort. While TypeBox tests in excess of 95% + of the Required Keyword suite, keywords such as <code>$dynamicRef</code>, <code>$dynamicAnchor</code> are yet to be implemented by the compiler. TypeBox aims to support these along with additional <code>v1</code> keywords while retaining broad compatibility for Draft 7.</p>
-</blockquote>
-<h2>Required Keywords</h2>
-<p>These keywords form the core of TypeBox&#39;s compliance target. A ✅ indicates full passage of all test cases for that keyword under the given draft. Fractional values (e.g. 37/45) indicate the number of passing cases out of the total available for that keyword and draft combination. A dash indicates the keyword was not defined in that draft.</p>
+<p>TypeBox is tested heavily against the <a href="https://github.com/json-schema-org/JSON-Schema-Test-Suite">Official JSON Schema Test Suite</a> for compliance against all major specification drafts.</p>
+<h2>Supported Keywords</h2>
+<p>The following keywords are supported</p>
 <table>
 <thead>
 <tr>
@@ -459,8 +456,8 @@
 <td align="left">✅</td>
 </tr>
 </tbody></table>
-<h2>Optional Keywords and Proposals</h2>
-<p>Optional test suites cover supplementary keywords, format validators, and proposals that are not required for core compliance. Support is included where it can be provided without conflicting with required keyword semantics. Items prefixed with format/ are format-assertion tests for the corresponding string format.</p>
+<h2>Optional Keywords, Formats and Proposals</h2>
+<p>The following optional keywords, formats and proposals are also supported.</p>
 <table>
 <thead>
 <tr>

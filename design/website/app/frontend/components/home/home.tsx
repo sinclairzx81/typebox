@@ -87,7 +87,12 @@ export function Home() {
         <AnimatedSubHeading
           intervalMs={5000}
           stepDelayMs={20}
-          messages={['A Runtime Type System for JavaScript']}
+          messages={[
+            'JSON Schema Type Builder with Static Type Resolution for TypeScript',
+            'Runtime TypeScript Emulation with JSON Schema',
+            'High Performance Validation for JSON Schema',
+            'Programmable Runtime Type System'
+          ]}
         />
       </div>
       <div className='actions'>

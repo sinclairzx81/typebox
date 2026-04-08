@@ -33,10 +33,10 @@ Variables
 */
 :root {
   /* App */
-  --app-font-family-standard: 'Segoe UI', sans-serif;
+  --app-font-family-standard: system-ui, -apple-system, sans-serif;
   --app-font-family-advanced: 'conthrax', sans-serif;
-  --app-head-background: #171c25dd;
-  --app-foot-background: #171c25dd;
+  --app-head-background: #0b0d11dd;
+  --app-foot-background: #0b0d11dd;
   --app-navigation-color: #ffffff;
   --app-scrollbar-thumb-color: #867450;
   --app-scrollbar-track-color: #0d121a;
@@ -47,12 +47,12 @@ Variables
   --app-blur: blur(0px);
   /* Home */
   --home-text-color: #ffffff;
-  --home-text-shadow-color: #42587b;
-  --home-text-shadow-metrics: 0 0 12px var(--home-text-shadow-color); 
-  --home-button-background: #171c25dd;
+  --home-text-shadow-color: #000000;
+  --home-text-shadow-metrics: 0 0 12px var(--home-text-shadow-color);
+  --home-button-background: #0b0d11dd;
   --home-button-color: #ffffff;
-  --home-button-hover-background: #b3bdcf;
-  --home-button-hover-color: black;
+  --home-button-hover-background: #313741;
+  --home-button-hover-color: #e0c285;
   /* Docs */
   --docs-head-background-color: #171c25dd;
   --docs-menu-background-color-select: #121822;
@@ -76,56 +76,7 @@ Variables
   --docs-text-color-select: #e0c285;
   --docs-link-color: #e0c285; 
 }
-body.light-mode {
-  /* App */
-  --app-head-background: #3e4556e6;     
-  --app-foot-background: #3e4556e6;        
-  --app-navigation-color: #e6e7ed;        
-  --app-scrollbar-thumb-color: #708090;    
-  --app-scrollbar-track-color: #dadada;    
-  --app-scrollbar-border-color: #dadada;
-  --app-edge-color: #c1cad9;               
-  --app-background: #070a0e;
-  --app-color: #3a3a3a;
-  --app-blur: blur(1px);
-  /* Home */
-  --home-text-color: #ffffff;
-  --home-text-shadow-color: #42587b;
-  --home-text-shadow-metrics: 0 0 12px var(--home-text-shadow-color);
-  --home-button-background: #f1f2f5;   
-  --home-button-color: #22262f;
-  --home-button-hover-background: #42587b;
-  --home-button-hover-color: #ffffff;
-  /* Docs */
-  --docs-head-background-color: #b0b1b4;    
-  --docs-menu-background-color-select: #c5c8ce;
-  --docs-menu-background-color: #d5d6dd;        
-  --docs-body-background-color: #d5d6dd;
-  --docs-code-background-color: #dcdcdc;
-
-  --docs-code-text-color: #000000;
-  --docs-code-string-color: #1b365e; 
-  --docs-code-comment-color: #101519;
-  --docs-code-keyword-color: #1b365e;
-  --docs-code-function-color: #1b365e;
-  --docs-search-background: #b3b6ba; 
-  --docs-search-border-color: #7083a5;
-  --docs-search-placeholder-color: #777777; 
-  --docs-blockquote-border-color: #777777;
-  --docs-blockquote-background:  #c4cad0; 
-  --docs-blockquote-color: #121822;
-  --docs-head-color: #42587b;                 
-  --docs-text-color: #080b0f;
-  --docs-text-color-muted: #555555;         
-  --docs-text-color-select: #202b3d;
-  --docs-link-color: #0f3c89; 
-}
-* {
-  transition: 
-    background-color 0.5s ease, 
-    color 0.5s ease, 
-    border-color 0.5s ease;
-}
+/* Ensure .content snaps instantly (removes any inherited transitions) */
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
