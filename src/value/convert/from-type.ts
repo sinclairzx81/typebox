@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import * as T from '../../type/index.ts'
+import * as Type from '../../type/index.ts'
 
 import { FromArray } from './from-array.ts'
 import { FromBase } from './from-base.ts'
@@ -51,28 +51,28 @@ import { FromUndefined } from './from-undefined.ts'
 import { FromUnion } from './from-union.ts'
 import { FromVoid } from './from-void.ts'
 
-export function FromType(context: T.TProperties, type: T.TSchema, value: unknown): unknown {
+export function FromType(context: Type.TProperties, type: Type.TSchema, value: unknown): unknown {
   return (
-    T.IsArray(type) ? FromArray(context, type, value) :
-    T.IsBase(type) ? FromBase(context, type, value) :
-    T.IsBigInt(type) ? FromBigInt(context, type, value) :
-    T.IsBoolean(type) ? FromBoolean(context, type, value) :
-    T.IsCyclic(type) ? FromCyclic(context, type, value) :
-    T.IsEnum(type) ? FromEnum(context, type, value) :
-    T.IsInteger(type) ? FromInteger(context, type, value) :
-    T.IsIntersect(type) ? FromIntersect(context, type, value) :
-    T.IsLiteral(type) ? FromLiteral(context, type, value) :
-    T.IsNull(type) ? FromNull(context, type, value) :
-    T.IsNumber(type) ? FromNumber(context, type, value) :
-    T.IsObject(type) ? FromObject(context, type, value) :
-    T.IsRecord(type) ? FromRecord(context, type, value) :
-    T.IsRef(type) ? FromRef(context, type, value) :
-    T.IsString(type) ? FromString(context, type, value) :
-    T.IsTemplateLiteral(type) ? FromTemplateLiteral(context, type, value) :
-    T.IsTuple(type) ? FromTuple(context, type, value) :
-    T.IsUndefined(type) ? FromUndefined(context, type, value) :
-    T.IsUnion(type) ? FromUnion(context, type, value) : 
-    T.IsVoid(type) ? FromVoid(context, type, value) :
+    Type.IsArray(type) ? FromArray(context, type, value) :
+    Type.IsBase(type) ? FromBase(context, type, value) :
+    Type.IsBigInt(type) ? FromBigInt(context, type, value) :
+    Type.IsBoolean(type) ? FromBoolean(context, type, value) :
+    Type.IsCyclic(type) ? FromCyclic(context, type, value) :
+    Type.IsEnum(type) ? FromEnum(context, type, value) :
+    Type.IsInteger(type) ? FromInteger(context, type, value) :
+    Type.IsIntersect(type) ? FromIntersect(context, type, value) :
+    Type.IsLiteral(type) ? FromLiteral(context, type, value) :
+    Type.IsNull(type) ? FromNull(context, type, value) :
+    Type.IsNumber(type) ? FromNumber(context, type, value) :
+    Type.IsObject(type) ? FromObject(context, type, value) :
+    Type.IsRecord(type) ? FromRecord(context, type, value) :
+    Type.IsRef(type) ? FromRef(context, type, value) :
+    Type.IsString(type) ? FromString(context, type, value) :
+    Type.IsTemplateLiteral(type) ? FromTemplateLiteral(context, type, value) :
+    Type.IsTuple(type) ? FromTuple(context, type, value) :
+    Type.IsUndefined(type) ? FromUndefined(context, type, value) :
+    Type.IsUnion(type) ? FromUnion(context, type, value) : 
+    Type.IsVoid(type) ? FromVoid(context, type, value) :
     value
   )
 }

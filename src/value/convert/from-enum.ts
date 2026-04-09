@@ -30,7 +30,6 @@ THE SOFTWARE.
 
 import { type TEnum, type TProperties } from '../../type/index.ts'
 import { EnumToUnion } from '../../type/engine/enum/index.ts'
-
 import { FromUnion } from './from-union.ts'
 
 export function FromEnum(context: TProperties, type: TEnum, value: unknown): unknown {

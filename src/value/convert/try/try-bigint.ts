@@ -27,36 +27,15 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 // deno-fmt-ignore-file
-// deno-lint-ignore-file
 
 import { Guard } from '../../../guard/index.ts'
 import { TResult, Ok, Fail } from './try-result.ts'
 
 // ------------------------------------------------------------------
-// BigInt
-// ------------------------------------------------------------------
-// deno-coverage-ignore-start - unreachable | guarded
-function FromBigInt(value: bigint): TResult<bigint> {
-   return Ok(value)
-}
-// deno-coverage-ignore-stop
-// ------------------------------------------------------------------
 // Boolean
 // ------------------------------------------------------------------
 function FromBoolean(value: boolean): TResult<bigint> {
   return Guard.IsEqual(value, true) ? Ok(BigInt(1)) : Ok(BigInt(0))
-}
-// ------------------------------------------------------------------
-// Number
-// ------------------------------------------------------------------
-function FromNumber(value: number): TResult<bigint> { 
-  return Ok(BigInt(Math.trunc(value)))
-}
-// ------------------------------------------------------------------
-// Null
-// ------------------------------------------------------------------
-function FromNull(value: null): TResult<bigint> { 
-  return Ok(BigInt(0))
 }
 // ------------------------------------------------------------------
 // String
@@ -85,24 +64,16 @@ function FromString(value: string): TResult<bigint> {
   )
 }
 // ------------------------------------------------------------------
-// Undefined
-// ------------------------------------------------------------------
-function FromUndefined(value: undefined): TResult<bigint> { 
-  return Ok(BigInt(0))
-}
-// ------------------------------------------------------------------
 // Try
 // ------------------------------------------------------------------
-// deno-coverage-ignore-start - unreachable | guarded
 export function TryBigInt(value: unknown): TResult<bigint> {
   return (
-    Guard.IsBigInt(value) ? FromBigInt(value) :
+    Guard.IsBigInt(value) ? Ok(value) :
     Guard.IsBoolean(value) ? FromBoolean(value) :
-    Guard.IsNumber(value) ? FromNumber(value) :
-    Guard.IsNull(value) ? FromNull(value) :
+    Guard.IsNumber(value) ? Ok(BigInt(Math.trunc(value))) :
+    Guard.IsNull(value) ? Ok(BigInt(0)) :
     Guard.IsString(value) ? FromString(value) :
-    Guard.IsUndefined(value) ? FromUndefined(value) :
+    Guard.IsUndefined(value) ? Ok(BigInt(0)) :
     Fail()
   )
 }
-// deno-coverage-ignore-stop

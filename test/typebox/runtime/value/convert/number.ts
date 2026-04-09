@@ -130,3 +130,8 @@ Test('Should Convert 19', () => {
   const R = Value.Convert(T, undefined)
   Assert.IsEqual(R, 0)
 })
+Test('Should Convert 20', () => {
+  const T = Type.Number()
+  const R = Value.Convert(T, `90071992547409910n`) // trailing 0 too large
+  Assert.IsEqual(R, '90071992547409910n')
+})

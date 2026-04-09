@@ -27,7 +27,6 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 // deno-fmt-ignore-file
-// deno-lint-ignore-file
 
 import { Guard } from '../../../guard/index.ts'
 import { TResult, Ok, Fail } from './try-result.ts'
@@ -51,12 +50,6 @@ function FromNumber(value: number): TResult<undefined> {
   return Guard.IsEqual(value, 0) ? Ok(undefined) : Fail()
 }
 // ------------------------------------------------------------------
-// Null
-// ------------------------------------------------------------------
-function FromNull(value: null): TResult<undefined> { 
-  return Ok(undefined)
-}
-// ------------------------------------------------------------------
 // String
 // ------------------------------------------------------------------
 function FromString(value: string): TResult<undefined> {
@@ -68,27 +61,16 @@ function FromString(value: string): TResult<undefined> {
   return predicate ? Ok(undefined) : Fail()
 }
 // ------------------------------------------------------------------
-// Undefined
-// ------------------------------------------------------------------
-// deno-coverage-ignore-start - unreachable | guarded
-function FromUndefined(value: undefined): TResult<undefined> { 
-  return Ok(undefined)
-}
-// deno-coverage-ignore-stop
-
-// ------------------------------------------------------------------
 // Try
 // ------------------------------------------------------------------
-// deno-coverage-ignore-start - unreachable | guarded
 export function TryUndefined(value: unknown): TResult<undefined> {
   return (
     Guard.IsBigInt(value) ? FromBigInt(value) :
     Guard.IsBoolean(value) ? FromBoolean(value) :
     Guard.IsNumber(value) ? FromNumber(value) :
-    Guard.IsNull(value) ? FromNull(value) :
+    Guard.IsNull(value) ? Ok(undefined) :
     Guard.IsString(value) ? FromString(value) :
-    Guard.IsUndefined(value) ? FromUndefined(value) :
+    Guard.IsUndefined(value) ? Ok(value) :
     Fail()
   )
 }
-// deno-coverage-ignore-stop

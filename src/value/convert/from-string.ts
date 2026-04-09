@@ -29,11 +29,9 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import type { TString, TProperties } from '../../type/index.ts'
-import { Guard } from '../../guard/index.ts'
 import { Try } from './try/index.ts'
 
 export function FromString(_context: TProperties, _type: TString, value: unknown): unknown {
-  if(Guard.IsString(value)) return value
   const result = Try.TryString(value)
   return Try.IsOk(result) ? result.value : value
 }

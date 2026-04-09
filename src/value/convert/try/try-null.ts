@@ -27,7 +27,6 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 // deno-fmt-ignore-file
-// deno-lint-ignore-file
 
 import { Guard } from '../../../guard/index.ts'
 import { TResult, Ok, Fail } from './try-result.ts'
@@ -36,7 +35,7 @@ import { TResult, Ok, Fail } from './try-result.ts'
 // BigInt
 // ------------------------------------------------------------------
 function FromBigInt(value: bigint): TResult<null> {
-   return Guard.IsEqual(value, BigInt(0)) ? Ok(null) : Fail()
+  return Guard.IsEqual(value, BigInt(0)) ? Ok(null) : Fail()
 }
 // ------------------------------------------------------------------
 // Boolean
@@ -47,17 +46,9 @@ function FromBoolean(value: boolean): TResult<null> {
 // ------------------------------------------------------------------
 // Number
 // ------------------------------------------------------------------
-function FromNumber(value: number): TResult<null> { 
+function FromNumber(value: number): TResult<null> {
   return Guard.IsEqual(value, 0) ? Ok(null) : Fail()
 }
-// ------------------------------------------------------------------
-// Null
-// ------------------------------------------------------------------
-// deno-coverage-ignore-start - unreachable | guarded
-function FromNull(value: null): TResult<null> { 
-  return Ok(null)
-}
-// deno-coverage-ignore-stop
 // ------------------------------------------------------------------
 // String
 // ------------------------------------------------------------------
@@ -70,24 +61,16 @@ function FromString(value: string): TResult<null> {
   return predicate ? Ok(null) : Fail()
 }
 // ------------------------------------------------------------------
-// Undefined
-// ------------------------------------------------------------------
-function FromUndefined(value: undefined): TResult<null> { 
-  return Ok(null)
-}
-// ------------------------------------------------------------------
 // Try
 // ------------------------------------------------------------------
-// deno-coverage-ignore-start - unreachable | guarded
 export function TryNull(value: unknown): TResult<null> {
   return (
     Guard.IsBigInt(value) ? FromBigInt(value) :
     Guard.IsBoolean(value) ? FromBoolean(value) :
     Guard.IsNumber(value) ? FromNumber(value) :
-    Guard.IsNull(value) ? FromNull(value) :
+    Guard.IsNull(value) ? Ok(null) :
     Guard.IsString(value) ? FromString(value) :
-    Guard.IsUndefined(value) ? FromUndefined(value) :
+    Guard.IsUndefined(value) ? Ok(null) :
     Fail()
   )
 }
-// deno-coverage-ignore-stop

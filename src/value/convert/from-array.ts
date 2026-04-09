@@ -30,10 +30,9 @@ THE SOFTWARE.
 
 import type { TArray, TProperties } from '../../type/index.ts'
 import { FromType } from './from-type.ts'
-import { Guard } from '../../guard/index.ts'
+import { Try } from './try/index.ts'
 
 export function FromArray(context: TProperties, type: TArray, value: unknown): unknown {
-  return Guard.IsArray(value)
-    ? value.map(value => FromType(context, type.items, value))
-    : value
+  const result = Try.TryArray(value)
+  return result.value.map(value => FromType(context, type.items, value))
 }

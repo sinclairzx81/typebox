@@ -27,7 +27,6 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 // deno-fmt-ignore-file
-// deno-lint-ignore-file
 
 import { Guard } from '../../../guard/index.ts'
 import { TResult, Ok, Fail } from './try-result.ts'
@@ -37,66 +36,44 @@ import { TResult, Ok, Fail } from './try-result.ts'
 // ------------------------------------------------------------------
 function FromBigInt(value: bigint): TResult<boolean> {
   return (
-    Guard.IsEqual(value, BigInt(0)) ? Ok(false) : 
+    Guard.IsEqual(value, BigInt(0)) ? Ok(false) :
     Guard.IsEqual(value, BigInt(1)) ? Ok(true) :
     Fail()
   )
 }
 // ------------------------------------------------------------------
-// Boolean
-// ------------------------------------------------------------------
-// deno-coverage-ignore-start - unreachable | guarded
-function FromBoolean(value: boolean): TResult<boolean> {
-  return Ok(value)
-}
-// deno-coverage-ignore-stop
-// ------------------------------------------------------------------
 // Number
 // ------------------------------------------------------------------
-function FromNumber(value: number): TResult<boolean> { 
+function FromNumber(value: number): TResult<boolean> {
   return (
-    Guard.IsEqual(value, 0) ? Ok(false) : 
-    Guard.IsEqual(value, 1) ? Ok(true) : 
+    Guard.IsEqual(value, 0) ? Ok(false) :
+    Guard.IsEqual(value, 1) ? Ok(true) :
     Fail()
   )
-}
-// ------------------------------------------------------------------
-// Null
-// ------------------------------------------------------------------
-function FromNull(value: null): TResult<boolean> { 
-  return Ok(false) 
 }
 // ------------------------------------------------------------------
 // String
 // ------------------------------------------------------------------
 function FromString(value: string): TResult<boolean> {
   return (
-    Guard.IsEqual(value.toLowerCase(), 'false') ? Ok(false) : 
-    Guard.IsEqual(value.toLowerCase(), 'true') ? Ok(true) : 
-    Guard.IsEqual(value, '0') ? Ok(false) : 
-    Guard.IsEqual(value, '1') ? Ok(true) : 
+    Guard.IsEqual(value.toLowerCase(), 'false') ? Ok(false) :
+    Guard.IsEqual(value.toLowerCase(), 'true') ? Ok(true) :
+    Guard.IsEqual(value, '0') ? Ok(false) :
+    Guard.IsEqual(value, '1') ? Ok(true) :
     Fail()
   )
-}
-// ------------------------------------------------------------------
-// Undefined
-// ------------------------------------------------------------------
-function FromUndefined(value: undefined): TResult<boolean> { 
-  return Ok(false) 
 }
 // ------------------------------------------------------------------
 // Try
 // ------------------------------------------------------------------
-// deno-coverage-ignore-start - unreachable | guarded
 export function TryBoolean(value: unknown): TResult<boolean> {
   return (
     Guard.IsBigInt(value) ? FromBigInt(value) :
-    Guard.IsBoolean(value) ? FromBoolean(value) :
+    Guard.IsBoolean(value) ? Ok(value) :
     Guard.IsNumber(value) ? FromNumber(value) :
-    Guard.IsNull(value) ? FromNull(value) :
+    Guard.IsNull(value) ? Ok(false) :
     Guard.IsString(value) ? FromString(value) :
-    Guard.IsUndefined(value) ? FromUndefined(value) :
+    Guard.IsUndefined(value) ? Ok(false) :
     Fail()
   )
 }
-// deno-coverage-ignore-stop
