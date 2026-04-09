@@ -74,7 +74,7 @@ The following optional keywords, formats and proposals are also supported.
 | format/date-time | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | format/duration | - | - | - | - | ✅ | ✅ | ✅ |
 | format/ecmascript-regex | 1/2 | - | - | - | - | 0/1 | 0/1 |
-| format/email | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| format/email | ✅ | ✅ | ✅ | ✅ | ✅ | 22/27 | 22/27 |
 | format/host-name | 2/12 | - | - | - | - | - | - |
 | format/hostname | - | 27/28 | 27/28 | ✅ | ✅ | ✅ | ✅ |
 | format/idn-email | - | - | - | ✅ | ✅ | ✅ | ✅ |
