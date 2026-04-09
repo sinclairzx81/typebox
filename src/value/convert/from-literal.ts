@@ -36,28 +36,28 @@ import { Try } from './try/index.ts'
 // ------------------------------------------------------------------
 // BigInt
 // ------------------------------------------------------------------
-function FromLiteralBigInt(context: TProperties, type: TLiteral<bigint>, value: unknown): unknown {
+function FromLiteralBigInt(_context: TProperties, type: TLiteral<bigint>, value: unknown): unknown {
   const result = Try.TryBigInt(value)
   return Try.IsOk(result) && Guard.IsEqual(type.const, result.value) ? result.value : value
 }
 // ------------------------------------------------------------------
 // Boolean
 // ------------------------------------------------------------------
-function FromLiteralBoolean(context: TProperties, type: TLiteral<boolean>, value: unknown): unknown {
+function FromLiteralBoolean(_context: TProperties, type: TLiteral<boolean>, value: unknown): unknown {
   const result = Try.TryBoolean(value)
   return Try.IsOk(result) && Guard.IsEqual(type.const, result.value) ? result.value : value
 }
 // ------------------------------------------------------------------
 // Number
 // ------------------------------------------------------------------
-function FromLiteralNumber(context: TProperties, type: TLiteral<number>, value: unknown): unknown {
+function FromLiteralNumber(_context: TProperties, type: TLiteral<number>, value: unknown): unknown {
   const result = Try.TryNumber(value)
   return Try.IsOk(result) && Guard.IsEqual(type.const, result.value) ? result.value : value
 }
 // ------------------------------------------------------------------
 // String
 // ------------------------------------------------------------------
-function FromLiteralString(context: TProperties, type: TLiteral<string>, value: unknown): unknown {
+function FromLiteralString(_context: TProperties, type: TLiteral<string>, value: unknown): unknown {
   const result = Try.TryString(value)
   return Try.IsOk(result) && Guard.IsEqual(type.const, result.value) ? result.value : value
 }

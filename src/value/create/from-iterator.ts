@@ -32,6 +32,6 @@ import type { TProperties, TIterator } from '../../type/index.ts'
 
 function * CreateIterator() {}
 
-export function FromIterator(context: TProperties, type: TIterator): unknown {
+export function FromIterator(_context: TProperties, _type: TIterator): unknown {
   return CreateIterator()
 }

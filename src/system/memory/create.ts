@@ -26,15 +26,16 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+// deno-lint-ignore-file no-explicit-any
 // deno-fmt-ignore-file
 
 import { Settings } from '../settings/index.ts'
 import { Metrics } from './metrics.ts'
 
-// deno-lint-ignore no-explicit-any
+
 type ObjectLike = Record<PropertyKey, any>
 
-function MergeHidden(left: ObjectLike, right: ObjectLike, configuration: PropertyDescriptor = {}): ObjectLike {
+function MergeHidden(left: ObjectLike, right: ObjectLike): ObjectLike {
   for(const key of Object.keys(right)) {
     Object.defineProperty(left, key, { 
       configurable: true,

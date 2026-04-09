@@ -73,11 +73,11 @@ function ExtendsRightInfer<Inferred extends TProperties, Name extends string, Le
 // ----------------------------------------------------------------------------
 // ExtendsRightAny
 // ----------------------------------------------------------------------------
-type TExtendsRightAny<Inferred extends TProperties, Left extends TSchema,
+type TExtendsRightAny<Inferred extends TProperties, _Left extends TSchema,
   Result extends Result.TResult = Result.TExtendsTrue<Inferred>
 > = Result
 function ExtendsRightAny<Inferred extends TProperties, Left extends TSchema>
-  (inferred: Inferred, left: Left): 
+  (inferred: Inferred, _left: Left): 
     TExtendsRightAny<Inferred, Left> {
   return Result.ExtendsTrue(inferred)
 }

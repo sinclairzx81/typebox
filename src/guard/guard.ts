@@ -56,7 +56,7 @@ export function IsConstructor(value: unknown): value is new (...args: never[]) =
   return false
 }
 /** Returns true if this value is a function */
-export function IsFunction(value: unknown): value is Function {
+export function IsFunction(value: unknown): value is globalThis.Function {
   return IsEqual(typeof value, 'function')
 }
 /** Returns true if this value is integer */

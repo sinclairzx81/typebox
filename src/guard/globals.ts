@@ -29,13 +29,13 @@ THE SOFTWARE.
 // --------------------------------------------------------------------------
 // Primitives
 // --------------------------------------------------------------------------
-export function IsBoolean(value: unknown): value is Boolean {
+export function IsBoolean(value: unknown): value is globalThis.Boolean {
   return value instanceof Boolean
 }
-export function IsNumber(value: unknown): value is Number {
+export function IsNumber(value: unknown): value is globalThis.Number {
   return value instanceof Number
 }
-export function IsString(value: unknown): value is String {
+export function IsString(value: unknown): value is globalThis.String {
   return value instanceof String
 }
 // ------------------------------------------------------------------

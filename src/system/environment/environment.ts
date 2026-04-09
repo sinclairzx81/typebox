@@ -26,4 +26,4 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export * from './can-evaluate.ts'
+export * from './evaluate.ts'

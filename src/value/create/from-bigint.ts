@@ -31,7 +31,7 @@ THE SOFTWARE.
 import type { TProperties, TBigInt } from '../../type/index.ts'
 import { IsExclusiveMinimum, IsMinimum } from '../../schema/types/index.ts'
 
-export function FromBigInt(context: TProperties, type: TBigInt): unknown {
+export function FromBigInt(_context: TProperties, type: TBigInt): unknown {
   return (
     IsExclusiveMinimum(type) ? BigInt(type.exclusiveMinimum) + BigInt(1) :
     IsMinimum(type) ? BigInt(type.minimum) :

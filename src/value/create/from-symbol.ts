@@ -30,6 +30,6 @@ THE SOFTWARE.
 
 import type { TProperties, TSymbol } from '../../type/index.ts'
 
-export function FromSymbol(context: TProperties, type: TSymbol): unknown {
+export function FromSymbol(_context: TProperties, _type: TSymbol): unknown {
   return Symbol()
 }

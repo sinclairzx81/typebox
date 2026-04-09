@@ -90,11 +90,11 @@ export class Base<Value extends unknown = unknown> implements TSchema, XGuard<Va
     }))
   }
   /** Checks a value or returns false if invalid */
-  public Check(value: unknown): value is Value {
+  public Check(_value: unknown): _value is Value {
     return true
   }
   /** Returns errors for a value. Return an empty array if valid.  */
-  public Errors(value: unknown): object[] {
+  public Errors(_value: unknown): object[] {
     return []
   }
   /** Converts a value into this type */

@@ -31,7 +31,7 @@ THE SOFTWARE.
 import type { TProperties, TString } from '../../type/index.ts'
 import { IsPattern, IsFormat, IsDefault, IsMinLength } from '../../schema/types/index.ts'
 
-export function FromString(context: TProperties, type: TString): unknown {
+export function FromString(_context: TProperties, type: TString): unknown {
   const needsDefault = (IsPattern(type) || IsFormat(type)) && !IsDefault(type)
   if(needsDefault) throw Error('Strings with format or pattern constraints must specify default')
 

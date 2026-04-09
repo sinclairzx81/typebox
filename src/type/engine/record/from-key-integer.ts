@@ -33,10 +33,10 @@ import { type TInteger } from '../../types/integer.ts'
 import { type TRecord, IntegerKey } from '../../types/record.ts'
 import { CreateRecord } from './record-create.ts'
 
-export type TFromIntegerKey<Key extends TInteger, Value extends TSchema,
+export type TFromIntegerKey<_Key extends TInteger, Value extends TSchema,
   Result extends TSchema = TRecord<typeof IntegerKey, Value>
 > = Result
-export function FromIntegerKey<Key extends TInteger, Value extends TSchema>(key: Key, value: Value): TFromIntegerKey<Key, Value> {
+export function FromIntegerKey<Key extends TInteger, Value extends TSchema>(_key: Key, value: Value): TFromIntegerKey<Key, Value> {
   const result = CreateRecord(IntegerKey, value) 
   return result as never
 }

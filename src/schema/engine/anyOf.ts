@@ -53,7 +53,7 @@ export function BuildAnyOf(stack: Stack, context: BuildContext, schema: Schema.X
 // Check
 // ------------------------------------------------------------------
 export function CheckAnyOf(stack: Stack, context: CheckContext, schema: Schema.XAnyOf, value: unknown): boolean {
-  const results = schema.anyOf.reduce<CheckContext[]>((result, schema, index) => {
+  const results = schema.anyOf.reduce<CheckContext[]>((result, schema) => {
     const nextContext = new CheckContext()
     return CheckSchema(stack, nextContext, schema, value) ? [...result, nextContext] : result
   }, [])

@@ -37,7 +37,7 @@ export function Create<const Type extends TSchema>(type: Type): Static<Type>
 /** Creates a value from the provided type. This function will use `default` annotations if present. */
 export function Create<const Context extends TProperties, Type extends TSchema>(context: Context, type: Type): Static<Type, Context>
 /** Creates a value from the provided type. This function will use `default` annotations if present. */
-export function Create(...args: any[]): unknown {
+export function Create(...args: unknown[]): unknown {
   const [context, type] = Arguments.Match<[TProperties, TSchema]>(args, {
     2: (context, type) => [context, type],
     1: (type) => [{}, type],

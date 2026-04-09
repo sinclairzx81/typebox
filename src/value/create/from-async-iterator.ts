@@ -32,6 +32,6 @@ import type { TProperties, TAsyncIterator } from '../../type/index.ts'
 
 async function * CreateAsyncIterator() {}
 
-export function FromAsyncIterator(context: TProperties, type: TAsyncIterator): unknown {
+export function FromAsyncIterator(_context: TProperties, _type: TAsyncIterator): unknown {
   return CreateAsyncIterator()
 }

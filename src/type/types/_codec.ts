@@ -26,6 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+// deno-lint-ignore-file ban-types
 // deno-fmt-ignore-file
 
 import { Memory } from '../../system/index.ts'
@@ -57,7 +58,7 @@ export type TCodec<Type extends TSchema = TSchema, Decoded extends unknown = unk
 // Factory
 // ------------------------------------------------------------------
 export class EncodeBuilder<Type extends TSchema, Decoded extends unknown> {
-  constructor(private readonly type: Type, private readonly decode: Function) {}
+  constructor(private readonly type: Type, private readonly decode: globalThis.Function) {}
   public Encode<Callback extends TEncodeCallback<Type, Decoded>>(callback: Callback): TCodec<Type, Decoded> {
     const type = this.type
     const decode = IsCodec(type) ? (value: unknown) => this.decode(type['~codec'].decode(value)) : this.decode

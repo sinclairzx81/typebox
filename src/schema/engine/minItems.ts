@@ -36,13 +36,13 @@ import * as Schema from '../types/index.ts'
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildMinItems(stack: Stack, context: BuildContext, schema: Schema.XMinItems, value: string): string {
+export function BuildMinItems(_stack: Stack, _context: BuildContext, schema: Schema.XMinItems, value: string): string {
   return E.IsGreaterEqualThan(E.Member(value, 'length'), E.Constant(schema.minItems))
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckMinItems(stack: Stack, context: CheckContext, schema: Schema.XMinItems, value: unknown[]): boolean {
+export function CheckMinItems(_stack: Stack, _context: CheckContext, schema: Schema.XMinItems, value: unknown[]): boolean {
   return G.IsGreaterEqualThan(value.length, schema.minItems)
 }
 // ------------------------------------------------------------------

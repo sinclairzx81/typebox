@@ -32,7 +32,7 @@ import { Guard } from '../../guard/index.ts'
 import type { TNull, TProperties } from '../../type/index.ts'
 import { Try } from './try/index.ts'
 
-export function FromNull(context: TProperties, type: TNull, value: unknown): unknown {
+export function FromNull(_context: TProperties, _type: TNull, value: unknown): unknown {
   if(Guard.IsNull(value)) return value
   const result = Try.TryNull(value)
   return Try.IsOk(result) ? result.value : value

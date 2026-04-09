@@ -36,13 +36,13 @@ import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildMultipleOf(stack: Stack, context: BuildContext, schema: Schema.XMultipleOf, value: string): string {
+export function BuildMultipleOf(_stack: Stack, _context: BuildContext, schema: Schema.XMultipleOf, value: string): string {
   return E.MultipleOf(value, E.Constant(schema.multipleOf))
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckMultipleOf(stack: Stack, context: CheckContext, schema: Schema.XMultipleOf, value: number | bigint): boolean {
+export function CheckMultipleOf(_stack: Stack, _context: CheckContext, schema: Schema.XMultipleOf, value: number | bigint): boolean {
   return G.IsMultipleOf(value, schema.multipleOf)
 }
 // ------------------------------------------------------------------

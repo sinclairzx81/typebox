@@ -30,6 +30,6 @@ THE SOFTWARE.
 
 import type { TProperties, TBoolean } from '../../type/index.ts'
 
-export function FromBoolean(context: TProperties, type: TBoolean): unknown {
+export function FromBoolean(_context: TProperties, _type: TBoolean): unknown {
   return false
 }

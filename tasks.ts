@@ -9,7 +9,7 @@ import { Metrics } from './task/metrics/index.ts'
 import { Spec } from './task/spec/index.ts'
 import { Task } from 'tasksmith'
 
-const Version = '1.1.20'
+const Version = '1.1.21'
 
 // ------------------------------------------------------------------
 // Build
@@ -64,6 +64,10 @@ Task.run('publish', (target: string = `target/build`) => PublishPackage(target))
 // ------------------------------------------------------------------
 Task.run('format', () => Task.shell('deno fmt src test/typebox task/spec'))
 // ------------------------------------------------------------------
+// Lint
+// ------------------------------------------------------------------
+Task.run('lint', () => Task.shell('deno lint src'))
+// ------------------------------------------------------------------
 // Spec
 // ------------------------------------------------------------------
 Task.run('spec', () => Spec.refresh('test/jsonschema/cases'))
@@ -78,7 +82,10 @@ Task.run('start', () => Task.shell('deno run -A --watch --no-check example/index
 // ------------------------------------------------------------------
 // Test
 // ------------------------------------------------------------------
-Task.run('test', (filter: string = '') => Task.test.run(['test/jsonschema', 'test/typebox'], { filter }))
+Task.run('test', async (filter: string = '') => 
+  Task.shell('deno lint src').catch(() => null).then(() => 
+    Task.test.run(['test/jsonschema', 'test/typebox'], { filter }))
+)
 // ------------------------------------------------------------------
 // Fast
 // ------------------------------------------------------------------

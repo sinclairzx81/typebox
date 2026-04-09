@@ -49,7 +49,7 @@ export function IsEqual(actual: unknown, expect: unknown) {
 export function NotEqual(actual: unknown, expect: unknown) {
   return assert.notEqual(actual, expect)
 }
-export function Throws(callback: Function) {
+export function Throws(callback: globalThis.Function) {
   try {
     callback()
   } catch {

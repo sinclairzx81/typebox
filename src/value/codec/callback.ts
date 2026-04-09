@@ -34,13 +34,13 @@ import { IsCodec, type TCodec, type TProperties, type TSchema } from '../../type
 // ------------------------------------------------------------------
 // Decode
 // ------------------------------------------------------------------
-function Decode(context: TProperties, type: TCodec, value: unknown): unknown {
+function Decode(_context: TProperties, type: TCodec, value: unknown): unknown {
   return type['~codec'].decode(value)
 }
 // ------------------------------------------------------------------
 // Encode
 // ------------------------------------------------------------------
-function Encode(context: TProperties, type: TCodec, value: unknown): unknown {
+function Encode(_context: TProperties, type: TCodec, value: unknown): unknown {
   return type['~codec'].encode(value)
 }
 // ------------------------------------------------------------------

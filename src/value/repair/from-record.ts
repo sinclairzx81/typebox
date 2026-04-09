@@ -43,7 +43,7 @@ export function FromRecord(context: TProperties, type: TRecord, value: unknown):
   const recordValue = RecordValue(type)
   const evaluatedKeys = new Set<string>()
   // PatternProperties
-  const result = {} as Record<string, any>
+  const result = {} as Record<string, unknown>
   for (const [key, value_] of Guard.Entries(value)) {
     if(!recordKey.test(key)) continue
     result[key] = FromType(context, recordValue, value_)

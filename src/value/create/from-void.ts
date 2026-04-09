@@ -30,6 +30,6 @@ THE SOFTWARE.
 
 import type { TProperties, TVoid } from '../../type/index.ts'
 
-export function FromVoid(context: TProperties, type: TVoid): unknown {
+export function FromVoid(_context: TProperties, _type: TVoid): unknown {
   return void 0
 }

@@ -36,13 +36,13 @@ import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildExclusiveMinimum(stack: Stack, context: BuildContext, schema: Schema.XExclusiveMinimum, value: string): string {
+export function BuildExclusiveMinimum(_stack: Stack, _context: BuildContext, schema: Schema.XExclusiveMinimum, value: string): string {
   return E.IsGreaterThan(value, E.Constant(schema.exclusiveMinimum))
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckExclusiveMinimum(stack: Stack, context: CheckContext, schema: Schema.XExclusiveMinimum, value: number | bigint): boolean {
+export function CheckExclusiveMinimum(_stack: Stack, _context: CheckContext, schema: Schema.XExclusiveMinimum, value: number | bigint): boolean {
   return G.IsGreaterThan(value, schema.exclusiveMinimum)
 }
 // ------------------------------------------------------------------

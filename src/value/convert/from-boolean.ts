@@ -32,7 +32,7 @@ import { Guard } from '../../guard/index.ts'
 import type { TBoolean, TProperties } from '../../type/index.ts'
 import { Try } from './try/index.ts'
 
-export function FromBoolean(context: TProperties, type: TBoolean, value: unknown): unknown {
+export function FromBoolean(_context: TProperties, _type: TBoolean, value: unknown): unknown {
   if(Guard.IsBoolean(value)) return value
   const result = Try.TryBoolean(value)
   return Try.IsOk(result) ? result.value : value

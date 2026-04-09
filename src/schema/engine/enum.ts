@@ -37,7 +37,7 @@ import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildEnum(stack: Stack, context: BuildContext, schema: Schema.XEnum, value: string): string {
+export function BuildEnum(_stack: Stack, _context: BuildContext, schema: Schema.XEnum, value: string): string {
   return E.ReduceOr(schema.enum.map(option => {
     if (G.IsValueLike(option)) return E.IsEqual(value, E.Constant(option))
     const variable = Externals.CreateVariable(option)
@@ -47,7 +47,7 @@ export function BuildEnum(stack: Stack, context: BuildContext, schema: Schema.XE
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckEnum(stack: Stack, context: CheckContext, schema: Schema.XEnum, value: unknown): boolean {
+export function CheckEnum(_stack: Stack, _context: CheckContext, schema: Schema.XEnum, value: unknown): boolean {
   return schema.enum.some(option => G.IsValueLike(option) 
     ? G.IsEqual(value, option) 
     : G.IsDeepEqual(value, option))

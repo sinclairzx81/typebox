@@ -52,7 +52,7 @@ function CreateCode(build: BuildResult): string {
 // CreateEvaluatedCheck
 // ------------------------------------------------------------------
 function CreateEvaluatedCheck(build: BuildResult, code: string): CheckFunction {
-  const factory = new globalThis.Function('CheckContext', 'Guard', 'Format', 'Hashing', build.External().identifier, code)
+  const factory = Environment.Evaluate('CheckContext', 'Guard', 'Format', 'Hashing', build.External().identifier, code)
   return factory(Engine.CheckContext, Guard, Format, Hashing, build.External().variables)
 }
 // ------------------------------------------------------------------
@@ -67,7 +67,7 @@ function CreateDynamicCheck(build: BuildResult): CheckFunction {
 // CreateCheck
 // ------------------------------------------------------------------
 function CreateCheck(build: BuildResult, code: string): CheckFunction {
-  return Environment.CanAccelerate()
+  return Environment.CanEvaluate()
     ? CreateEvaluatedCheck(build, code)
     : CreateDynamicCheck(build)
 }
@@ -124,7 +124,7 @@ export class BuildResult {
   public Evaluate(): EvaluateResult {
     const Code = CreateCode(this)
     const Check = CreateCheck(this, Code)
-    return { IsAccelerated: Environment.CanAccelerate(), Code, Check }
+    return { IsAccelerated: Environment.CanEvaluate(), Code, Check }
   }
 }
 // ------------------------------------------------------------------
