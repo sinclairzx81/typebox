@@ -38,7 +38,7 @@ function TryEvaluate(): boolean {
   try {
     Evaluate('null')()
     return true
-  } // deno-coverage-ignore-start -
+  } // deno-coverage-ignore-start - unreachable in test-suite
   catch {
     return false
   }
