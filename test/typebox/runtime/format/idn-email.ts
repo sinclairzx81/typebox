@@ -63,3 +63,76 @@ Test('Should IsIdnEmail 12', () => {
   // Local part with consecutive dots
   Assert.IsFalse(Format.IsIdnEmail('test..user@example.com'))
 })
+// ------------------------------------------------------------------
+// IdnEmail: Valid
+//
+// https://github.com/sinclairzx81/typebox/issues/1574
+// ------------------------------------------------------------------
+Test('Should IsIdnEmail 13', () => {
+  Assert.IsTrue(Format.IsIdnEmail('test@example.com'))
+})
+Test('Should IsIdnEmail 14', () => {
+  Assert.IsTrue(Format.IsIdnEmail('user.name+tag@domain.co.uk'))
+})
+Test('Should IsIdnEmail 15', () => {
+  Assert.IsTrue(Format.IsIdnEmail('a@b.cd'))
+})
+Test('Should IsIdnEmail 16', () => {
+  Assert.IsTrue(Format.IsIdnEmail('user@sub.domain.com'))
+})
+Test('Should IsIdnEmail 17', () => {
+  Assert.IsTrue(Format.IsIdnEmail('first.last@example.org'))
+})
+Test('Should IsIdnEmail 18', () => {
+  Assert.IsTrue(Format.IsIdnEmail('test@例子.测试'))
+})
+Test('Should IsIdnEmail 19', () => {
+  Assert.IsTrue(Format.IsIdnEmail('user@müller.example.com'))
+})
+Test('Should IsIdnEmail 20', () => {
+  Assert.IsTrue(Format.IsIdnEmail('test@스타벅스.코리아'))
+})
+Test('Should IsIdnEmail 21', () => {
+  Assert.IsTrue(Format.IsIdnEmail('user@παράδειγμα.δοκιμή'))
+})
+Test('Should IsIdnEmail 22', () => {
+  Assert.IsTrue(Format.IsIdnEmail('test@россия.рф'))
+})
+Test('Should IsIdnEmail 23', () => {
+  Assert.IsTrue(Format.IsIdnEmail('user@東京.jp'))
+})
+Test('Should IsIdnEmail 24', () => {
+  Assert.IsTrue(Format.IsIdnEmail('test@fußball.example.com'))
+})
+Test('Should IsIdnEmail 25', () => {
+  Assert.IsTrue(Format.IsIdnEmail('user@café.fr'))
+})
+Test('Should IsIdnEmail 26', () => {
+  Assert.IsTrue(Format.IsIdnEmail('test@bücher.example.com'))
+})
+Test('Should IsIdnEmail 27', () => {
+  Assert.IsTrue(Format.IsIdnEmail('user@example.com'))
+})
+Test('Should IsIdnEmail 28', () => {
+  Assert.IsTrue(Format.IsIdnEmail('user@例子.测试'))
+})
+// ------------------------------------------------------------------
+// IdnEmail: Invalid
+//
+// https://github.com/sinclairzx81/typebox/issues/1574
+// ------------------------------------------------------------------
+Test('Should IsIdnEmail 29', () => {
+  Assert.IsFalse(Format.IsIdnEmail('test@'))
+})
+Test('Should IsIdnEmail 30', () => {
+  Assert.IsFalse(Format.IsIdnEmail('@domain.com'))
+})
+Test('Should IsIdnEmail 31', () => {
+  Assert.IsFalse(Format.IsIdnEmail('user@domain..com'))
+})
+Test('Should IsIdnEmail 32', () => {
+  Assert.IsFalse(Format.IsIdnEmail('@例子.测试'))
+})
+Test('Should IsIdnEmail 33', () => {
+  Assert.IsFalse(Format.IsIdnEmail('user@..例子.测试'))
+})
