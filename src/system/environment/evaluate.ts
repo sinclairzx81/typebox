@@ -62,5 +62,5 @@ export function CanEvaluate(): boolean {
  * before calling this function.
  */
 export function Evaluate(...args: string[]): globalThis.Function {
-  return new globalThis.Function(...args)
+  return new (globalThis.Function)(...args)
 }

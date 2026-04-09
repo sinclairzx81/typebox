@@ -28,16 +28,9 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import type { TUnion, TProperties } from '../../type/index.ts'
-import { Guard } from '../../guard/index.ts'
-import { Check } from '../check/index.ts'
-import { Clone } from '../clone/index.ts'
-import { FromType } from './from-type.ts'
+import { Guard } from '../../../guard/index.ts'
+import { Ok, type TOk } from './try-result.ts'
 
-export function FromUnion(context: TProperties, type: TUnion, value: unknown): unknown {
-  const matched = type.anyOf.some(type => Check(context, type, value))
-  if(matched) return value
-  const candidates = type.anyOf.map(type => FromType(context, type, Clone(value)))
-  const selected = candidates.find(value => Check(context, type, value))
-  return Guard.IsUndefined(selected) ? value : selected
+export function TryArray(value: unknown): TOk<unknown[]> {
+  return Guard.IsArray(value) ? Ok(value) : Ok([value])
 }

@@ -29,11 +29,9 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import type { TInteger, TProperties } from '../../type/index.ts'
-import { Guard } from '../../guard/index.ts'
 import { Try } from './try/index.ts'
 
 export function FromInteger(_context: TProperties, _type: TInteger, value: unknown): unknown {
-  if(Guard.IsInteger(value)) return value
   const result = Try.TryNumber(value)
   return Try.IsOk(result) ? Math.trunc(result.value as number) : value
 }

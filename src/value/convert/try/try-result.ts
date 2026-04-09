@@ -27,7 +27,6 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 // deno-fmt-ignore-file
-// deno-lint-ignore-file
 
 import { Guard } from '../../../guard/index.ts'
 
@@ -42,21 +41,18 @@ export type TResult<Value extends unknown = unknown> =
 // Fail
 // ------------------------------------------------------------------
 export type TFail = undefined
-
 // ------------------------------------------------------------------
 // Ok
 // ------------------------------------------------------------------
 export type TOk<Value extends unknown = unknown> = {
   value: Value
 }
-
 // ------------------------------------------------------------------
 // Guard
 // ------------------------------------------------------------------
 export function IsOk<Result extends TResult>(value: Result): value is Exclude<Result, TFail> {
   return Guard.IsObject(value) && Guard.HasPropertyKey(value, 'value')
 }
-
 // ------------------------------------------------------------------
 // Factory
 // ------------------------------------------------------------------

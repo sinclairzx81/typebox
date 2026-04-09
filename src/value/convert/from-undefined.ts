@@ -29,11 +29,9 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import type { TUndefined, TProperties } from '../../type/index.ts'
-import { Guard } from '../../guard/index.ts'
 import { Try } from './try/index.ts'
 
 export function FromUndefined(_context: TProperties, _type: TUndefined, value: unknown): unknown {
-  if(Guard.IsUndefined(value)) return value
   const result = Try.TryUndefined(value)
   return Try.IsOk(result) ? result.value : value
 }

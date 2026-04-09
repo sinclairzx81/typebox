@@ -26,6 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+export * from './try-array.ts'
 export * from './try-bigint.ts'
 export * from './try-boolean.ts'
 export * from './try-null.ts'
