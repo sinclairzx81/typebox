@@ -4,7 +4,7 @@ TypeScript Syntax Engine
 
 ## Overview
 
-TypeBox can transform TypeScript definitions into JSON Schema. The Script function provides an optional programmatic syntax to rapidly convert type definitions into JSON Schema, or serve more generally as an alternative to Type.* builders. The Script function is designed to handle a wide array of complex TypeScript type-level expressions.
+The TypeBox Script function is a micro DSL for constructing JSON Schema from TypeScript syntax. It offers a full syntactic frontend to Type.* with broad support for type-level expressions including Conditional, Mapped, Infer, Generic, Distributive types and more. This feature is implemented symmetrically at both runtime and in the type system.
 
 ### Example
 

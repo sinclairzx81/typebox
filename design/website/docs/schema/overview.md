@@ -4,7 +4,7 @@ High Performance JSON Schema Validator
 
 ## Overview
 
-TypeBox includes a JSON Schema compiler designed for high-performance JIT validation. It also provides automatic fallback to dynamic interpreted checking for JIT restrictive environments such as Cloudflare Workers. The compiler is designed to be a lightweight, spec compliant alternative to Ajv for high-throughput applications based on the JSON Schema standard.
+TypeBox includes a high-performance JSON Schema compiler supporting drafts 3 to 2020-12. It is written to be a lightweight alternative to Ajv with improved compilation and validation performance, and automatic fallback to dynamic checking in JIT-restricted environments such as Cloudflare Workers.
 
 ### Example
 

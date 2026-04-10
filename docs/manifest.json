@@ -38,12 +38,12 @@
     "overview": "docs/overview/overview.html"
   },
   "schema": {
-    "1_check": "docs/schema/1_check.html",
-    "2_errors": "docs/schema/2_errors.html",
-    "3_parse": "docs/schema/3_parse.html",
+    "1_spec": "docs/schema/1_spec.html",
+    "2_check": "docs/schema/2_check.html",
+    "3_errors": "docs/schema/3_errors.html",
     "4_compile": "docs/schema/4_compile.html",
     "5_advanced": "docs/schema/5_advanced.html",
-    "6_specification": "docs/schema/6_specification.html",
+    "6_parse": "docs/schema/6_parse.html",
     "overview": "docs/schema/overview.html"
   },
   "script": {

@@ -35,8 +35,8 @@ Variables
   /* App */
   --app-font-family-standard: system-ui, -apple-system, sans-serif;
   --app-font-family-advanced: 'conthrax', sans-serif;
-  --app-head-background: #0b0d11dd;
-  --app-foot-background: #0b0d11dd;
+  --app-head-background: #0a0c0fdd;
+  --app-foot-background: #0a0c0fdd;
   --app-navigation-color: #ffffff;
   --app-scrollbar-thumb-color: #867450;
   --app-scrollbar-track-color: #0d121a;
@@ -49,7 +49,7 @@ Variables
   --home-text-color: #ffffff;
   --home-text-shadow-color: #000000;
   --home-text-shadow-metrics: 0 0 12px var(--home-text-shadow-color);
-  --home-button-background: #0b0d11dd;
+  --home-button-background: #0a0c0fdd;
   --home-button-color: #ffffff;
   --home-button-hover-background: #313741;
   --home-button-hover-color: #e0c285;

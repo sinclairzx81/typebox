@@ -27,113 +27,152 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 /* ================================================================== 
+  Scale variables
+/* ================================================================ */
+.home {
+  --home-scale: 1;               /* master scale — controls ALL elements  */
+  --home-logo-scale: 0.85;       /* logo scale (1 = 256px)                */
+  --home-logo-gap: 0.5em;        /* gap between logo and h1               */
+  --home-h1-size: 2.4em;         /* h1 font size                          */
+  --home-h2-size: 1em;           /* h2 font size                          */
+  --home-h1-h2-gap: 1.25em;      /* gap between h1 and subheading         */
+  --home-subheading-gap: 4.5em;  /* gap between subheading and buttons    */
+  --home-button-scale: 0.85;     /* button scale                          */
+}
+/* ================================================================== 
   Home
 /* ================================================================ */
 .home {
+  overflow: hidden;
   width: 100%;
   height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  text-align: center; 
+  display: grid;
+  place-items: center;
 }
 /* ================================================================== 
-  Logo: Svg 
+  Card: the centered, scalable content container
 /* ================================================================ */
-.home .title .logo {
-  width: 256px;
-  height: 256px;
+.home .home-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0;
+  font-size: calc(16px * var(--home-scale));
+}
+/* ================================================================== 
+  Logo wrapper
+/* ================================================================ */
+.home .home-card .logo-wrapper {
+  zoom: calc(var(--home-logo-scale) * var(--home-scale));
   color: var(--home-text-color);
   filter: drop-shadow(0 0 2px var(--home-text-shadow-color));
 }
 /* ================================================================== 
   Headers 
 /* ================================================================ */
-.home .title h1 {
+.home .home-card h1 {
   font-family: var(--app-font-family-advanced);
   text-shadow: var(--home-text-shadow-metrics);
   color: var(--home-text-color);
-  padding-top: 24px;
-  font-size: 48px;
-  margin: 0;
+  font-size: var(--home-h1-size);
+  margin: var(--home-logo-gap) 0 0;
+  user-select: none;
 }
-.home .title h2 {
+/* ================================================================== 
+  Subheading anchor
+/* ================================================================ */
+.home .home-card .subheading-anchor {
+  height: 0;
+  width: 0;
+  overflow: visible;
+  display: flex;
+  justify-content: center;
+}
+.home .home-card h2 {
   font-family: var(--app-font-family-standard);
   text-shadow: var(--home-text-shadow-metrics);
   color: var(--home-text-color);
-  font-size: 20px;
+  font-size: var(--home-h2-size);
   font-weight: normal;
-  margin-top: 12px;
+  margin-top: var(--home-h1-h2-gap);
   margin-bottom: 0;
+  white-space: nowrap;
+  user-select: none;
 }
+
 /* ================================================================== 
   Actions 
 /* ================================================================ */
-.home .actions {
+.home .home-card .actions {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 32px auto 0;
-  gap: 16px;
+  margin-top: var(--home-subheading-gap);
+  gap: 0.5em;
+  flex-wrap: nowrap;
+}
+/* ================================================================== 
+  Button wrapper
+/* ================================================================ */
+.home .home-card .actions .button-wrapper {
+  zoom: calc(var(--home-button-scale) * var(--home-scale));
 }
 /* ================================================================== 
   Install 
 /* ================================================================ */
-.home .actions .install {
+.home .home-card .actions .install {
   color: var(--home-button-color);
   background-color: var(--home-button-background);
   box-shadow: var(--home-text-shadow-metrics);
   border: 1px solid var(--app-edge-color);
-
-  border-radius: 8px;
-  padding: 16px 24px;
+  border-radius: 0.5em;
+  padding: 1em 1.5em;
   display: flex;
   font-family: monospace;
-
-  font-size: 16px;
+  font-size: 1em;
   align-items: center;
   justify-content: space-between;
 }
-.home .actions .install span {
+.home .home-card .actions .install span {
   flex: 1;
   white-space: nowrap;
 }
-.home .actions .install .copy-btn {
+.home .home-card .actions .install .copy-btn {
   color: var(--home-button-hover-background);
   background: none;
   border: none;
-  margin-left: 16px;
+  margin-left: 1em;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   transition: color 0.2s, transform 0.2s;
 }
-.home .actions .install .copy-btn:hover {
+.home .home-card .actions .install .copy-btn:hover {
   color: var(--color-accent);
   transform: scale(1.1);
 }
-.home .actions .install .copy-btn svg {
+.home .home-card .actions .install .copy-btn svg {
   padding-top: 2px;
-  width: 16px;
-  height: 16px;
+  width: 1em;
+  height: 1em;
 }
 /* ================================================================== 
   Docs 
 /* ================================================================ */
-.home .actions .documentation {
+.home .home-card .actions .documentation {
   color: var(--home-button-color);
   background-color: var(--home-button-background);
   box-shadow: var(--home-text-shadow-metrics);
   border: 1px solid var(--app-edge-color);
   font-family: var(--app-font-family-standard);
   display: flex;
-  
-  font-size: 16px;
+  font-size: 1em;
   text-decoration: none;
-  padding: 16px 24px;
-  border-radius: 8px;
+  padding: 1em 1.5em;
+  border-radius: 0.5em;
 }
-.home .actions .documentation:hover {
+.home .home-card .actions .documentation:hover {
   background-color: var(--home-button-hover-background);
   color: var(--home-button-hover-color);
 }

@@ -1,4 +1,4 @@
-# Schema.Specification
+# Schema.Spec
 
 TypeBox is tested heavily against the [Official JSON Schema Test Suite](https://github.com/json-schema-org/JSON-Schema-Test-Suite) for compliance against all major specification drafts.
 

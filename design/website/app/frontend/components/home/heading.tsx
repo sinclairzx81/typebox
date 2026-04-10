@@ -188,6 +188,7 @@ export function AnimatedSubHeading(props: AnimatedSubHeadingProperties) {
       transformRef.current?.cancel()
     }
   }, [props.messages, props.intervalMs, props.stepDelayMs])
-
-  return <h2>{text}</h2>
+  return <div className='subheading-anchor'>
+    <h2>{text}</h2>
+  </div>
 }
