@@ -37,21 +37,21 @@ import { CheckSchema, ErrorSchema } from './schema.ts'
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-export function BuildRecursiveRef(stack: Stack, context: BuildContext, schema: Schema.XRecursiveRef, value: string): string {
-  const target = stack.RecursiveRef(schema) ?? false
+export function BuildDynamicRef(stack: Stack, context: BuildContext, schema: Schema.XDynamicRef, value: string): string {
+  const target = stack.DynamicRef(schema) ?? false
   return Functions.CreateFunction(stack, context, target, value)
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
-export function CheckRecursiveRef(stack: Stack, context: CheckContext, schema: Schema.XRecursiveRef, value: unknown): boolean {
-  const target = stack.RecursiveRef(schema) ?? false
+export function CheckDynamicRef(stack: Stack, context: CheckContext, schema: Schema.XDynamicRef, value: unknown): boolean {
+  const target = stack.DynamicRef(schema) ?? false
   return (Schema.IsSchema(target) && CheckSchema(stack, context, target, value))
 }
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorRecursiveRef(stack: Stack, context: ErrorContext, _schemaPath: string, instancePath: string, schema: Schema.XRecursiveRef, value: unknown): boolean {
-  const target = stack.RecursiveRef(schema) ?? false
+export function ErrorDynamicRef(stack: Stack, context: ErrorContext, _schemaPath: string, instancePath: string, schema: Schema.XDynamicRef, value: unknown): boolean {
+  const target = stack.DynamicRef(schema) ?? false
   return (Schema.IsSchema(target) && ErrorSchema(stack, context, '#', instancePath, target, value))
 }

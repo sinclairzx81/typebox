@@ -11,8 +11,8 @@ const benchmarks: Record<string, any> = {}
 for(const key of Object.getOwnPropertyNames(Cases)) {
   const test = Cases[key as never] as () => TSchema
   benchmarks[test.name] = {
-    'TB0x': () => TypeCompiler.Compile(test()),
-    'TB1x': () => Compile(test()),
+    //'TB0X': () => TypeCompiler.Compile(test()),
+    'TB1X': () => Compile(test()),
     'AJV8': () => ajv8.compile(test())
   }
 }
