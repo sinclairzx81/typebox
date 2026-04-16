@@ -19,13 +19,12 @@ export function ValidateTest() {
       // 'Ajv': () => ajvCompiled(test.value),
       // 'Dynamic v1': () => Value.Check(test.type, test.value),
       // 'Dynamic v2': () => Check(test.type, test.value),
-      'TB0x': () => tb0x.Check(test.value),
-      'TB1x': () => tb1x.Check(test.value),
+      // 'TB0X': () => tb0x.Check(test.value),
+      'TB1X': () => tb1x.Check(test.value),
       'AJV8': () => ajv8(test.value),
-      // 'Dynamic': () => Check(test.type, test.value),
     }
   }
-  const result = Benchmark.Run(10_000_000, benchmarks)
+  const result = Benchmark.Run(5_000_000, benchmarks)
   Benchmark.Print(result, {
     units: 'OperationsPerSecond',
     formatResults: true

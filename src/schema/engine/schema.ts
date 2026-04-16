@@ -46,6 +46,7 @@ import { BuildContains, CheckContains, ErrorContains } from './contains.ts'
 import { BuildDependencies, CheckDependencies, ErrorDependencies } from './dependencies.ts'
 import { BuildDependentRequired, CheckDependentRequired, ErrorDependentRequired } from './dependentRequired.ts'
 import { BuildDependentSchemas, CheckDependentSchemas, ErrorDependentSchemas } from './dependentSchemas.ts'
+import { BuildDynamicRef, CheckDynamicRef, ErrorDynamicRef } from './dynamicRef.ts'
 import { BuildEnum, CheckEnum, ErrorEnum } from './enum.ts'
 import { BuildExclusiveMaximum, CheckExclusiveMaximum, ErrorExclusiveMaximum } from './exclusiveMaximum.ts'
 import { BuildExclusiveMinimum, CheckExclusiveMinimum, ErrorExclusiveMinimum } from './exclusiveMinimum.ts'
@@ -221,8 +222,10 @@ export function BuildSchema(stack: Stack, context: BuildContext, schema: Schema.
     const guarded = E.Or(E.Not(E.Or(E.IsNumber(value), E.IsBigInt(value))), reduced)
     conditions.push(HasNumberType(schema) ? reduced : guarded)
   }
-  if (Schema.IsRecursiveRef(schema)) conditions.push(BuildRecursiveRef(stack, context, schema, value))
+  
   if (Schema.IsRef(schema)) conditions.push(BuildRef(stack, context, schema, value))
+  if (Schema.IsRecursiveRef(schema)) conditions.push(BuildRecursiveRef(stack, context, schema, value))
+  if (Schema.IsDynamicRef(schema)) conditions.push(BuildDynamicRef(stack, context, schema, value))
   if (Schema.IsGuard(schema)) conditions.push(BuildGuard(stack, context, schema, value))
   if (Schema.IsConst(schema)) conditions.push(BuildConst(stack, context, schema, value))
   if (Schema.IsEnum(schema)) conditions.push(BuildEnum(stack, context, schema, value))
@@ -284,8 +287,10 @@ export function CheckSchema(stack: Stack, context: CheckContext, schema: Schema.
       (!Schema.IsMinimum(schema) || CheckMinimum(stack, context, schema, value)) &&
       (!Schema.IsMultipleOf(schema) || CheckMultipleOf(stack, context, schema, value))
     )) &&
-    (!Schema.IsRecursiveRef(schema) || CheckRecursiveRef(stack, context, schema, value)) &&
+    
     (!Schema.IsRef(schema) || CheckRef(stack, context, schema, value)) &&
+    (!Schema.IsRecursiveRef(schema) || CheckRecursiveRef(stack, context, schema, value)) &&
+    (!Schema.IsDynamicRef(schema) || CheckDynamicRef(stack, context, schema, value)) &&
     (!Schema.IsGuard(schema) || CheckGuard(stack, context, schema, value)) &&
     (!Schema.IsConst(schema) || CheckConst(stack, context, schema, value)) &&
     (!Schema.IsEnum(schema) || CheckEnum(stack, context, schema, value)) &&
@@ -348,8 +353,9 @@ export function ErrorSchema(stack: Stack, context: ErrorContext, schemaPath: str
         +(!Schema.IsMinimum(schema) || ErrorMinimum(stack, context, schemaPath, instancePath, schema, value)) &
         +(!Schema.IsMultipleOf(schema) || ErrorMultipleOf(stack, context, schemaPath, instancePath, schema, value))
       )) &
-      +(!Schema.IsRecursiveRef(schema) || ErrorRecursiveRef(stack, context, schemaPath, instancePath, schema, value)) &
       +(!Schema.IsRef(schema) || ErrorRef(stack, context, schemaPath, instancePath, schema, value)) &
+      +(!Schema.IsRecursiveRef(schema) || ErrorRecursiveRef(stack, context, schemaPath, instancePath, schema, value)) &
+      +(!Schema.IsDynamicRef(schema) || ErrorDynamicRef(stack, context, schemaPath, instancePath, schema, value)) &
       +(!Schema.IsGuard(schema) || ErrorGuard(stack, context, schemaPath, instancePath, schema, value)) &
       +(!Schema.IsConst(schema) || ErrorConst(stack, context, schemaPath, instancePath, schema, value)) &
       +(!Schema.IsEnum(schema) || ErrorEnum(stack, context, schemaPath, instancePath, schema, value)) &

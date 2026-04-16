@@ -4,7 +4,7 @@ TypeBox is tested heavily against the [Official JSON Schema Test Suite](https://
 
 ## Supported Keywords
 
-The following keywords are supported
+The following table is specification coverage implemented by TypeBox
 
 | Spec | 3 | 4 | 6 | 7 | 2019-09 | 2020-12 | v1 |
 |:-----|:--|:--|:--|:--|:--|:--|:--|
@@ -21,6 +21,7 @@ The following keywords are supported
 | dependencies | 17/18 | ✅ | ✅ | ✅ | - | - | - |
 | dependentRequired | - | - | - | - | ✅ | ✅ | ✅ |
 | dependentSchemas | - | - | - | - | ✅ | ✅ | ✅ |
+| dynamicRef | - | - | - | - | - | 38/44 | 19/27 |
 | enum | 14/16 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | exclusiveMaximum | - | - | ✅ | ✅ | ✅ | ✅ | ✅ |
 | exclusiveMinimum | - | - | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -49,8 +50,8 @@ The following keywords are supported
 | ref | 23/27 | 37/45 | 67/70 | 75/78 | 79/81 | 77/79 | 77/79 |
 | required | 3/4 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | type | 73/80 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| unevaluatedItems | - | - | - | - | ✅ | 64/71 | 64/71 |
-| unevaluatedProperties | - | - | - | - | ✅ | 124/125 | 124/125 |
+| unevaluatedItems | - | - | - | - | ✅ | 65/71 | 64/71 |
+| unevaluatedProperties | - | - | - | - | ✅ | ✅ | 124/125 |
 | uniqueItems | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 
 ## Optional Keywords, Formats and Proposals
@@ -64,7 +65,7 @@ The following optional keywords, formats and proposals are also supported.
 | content | - | - | - | 6/10 | - | - | - |
 | cross-draft | - | - | - | 1/2 | 1/3 | 0/1 | - |
 | dependencies-compatibility | - | - | - | - | ✅ | ✅ | ✅ |
-| dynamicRef | - | - | - | - | - | 1/2 | 1/2 |
+| dynamicRef | - | - | - | - | - | ✅ | ✅ |
 | ecmascript-regex | - | 69/74 | 69/74 | 69/74 | 69/74 | 69/74 | 69/74 |
 | float-overflow | - | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | format-annotation | - | - | - | - | - | - | 114/133 |

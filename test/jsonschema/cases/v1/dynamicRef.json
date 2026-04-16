@@ -23,6 +23,14 @@
           "bar"
         ],
         "valid": true
+      },
+      {
+        "description": "An array containing non-strings is invalid",
+        "data": [
+          "foo",
+          42
+        ],
+        "valid": false
       }
     ]
   },
@@ -48,12 +56,12 @@
     },
     "tests": [
       {
-        "description": "An array of strings is valid",
+        "description": "An array containing non-strings is invalid",
         "data": [
           "foo",
-          "bar"
+          42
         ],
-        "valid": true
+        "valid": false
       }
     ]
   },
@@ -83,12 +91,12 @@
     },
     "tests": [
       {
-        "description": "An array of strings is valid",
+        "description": "An array containing non-strings is invalid",
         "data": [
           "foo",
-          "bar"
+          42
         ],
-        "valid": true
+        "valid": false
       }
     ]
   },
@@ -173,6 +181,16 @@
       }
     },
     "tests": [
+      {
+        "description": "string matches /$defs/thingy, but the $dynamicRef does not stop here",
+        "data": "a string",
+        "valid": false
+      },
+      {
+        "description": "first_scope is not in dynamic scope for the $dynamicRef",
+        "data": 42,
+        "valid": false
+      },
       {
         "description": "/then/$defs/thingy is the final stop for the $dynamicRef",
         "data": null,
@@ -399,6 +417,15 @@
           }
         },
         "valid": true
+      },
+      {
+        "description": "string property fails",
+        "data": {
+          "bar-item": {
+            "content": "value"
+          }
+        },
+        "valid": false
       }
     ]
   },
@@ -449,9 +476,9 @@
     },
     "tests": [
       {
-        "description": "data is sufficient for schema at second#/$defs/length",
-        "data": "hi",
-        "valid": true
+        "description": "data is not sufficient for schema at second#/$defs/length",
+        "data": "hey",
+        "valid": false
       }
     ]
   }

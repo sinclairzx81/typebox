@@ -23,6 +23,14 @@
           "bar"
         ],
         "valid": true
+      },
+      {
+        "description": "An array containing non-strings is invalid",
+        "data": [
+          "foo",
+          42
+        ],
+        "valid": false
       }
     ]
   },
@@ -50,6 +58,49 @@
           "bar"
         ],
         "valid": true
+      },
+      {
+        "description": "An array containing non-strings is invalid",
+        "data": [
+          "foo",
+          42
+        ],
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "A $ref to a $dynamicAnchor in the same schema resource behaves like a normal $ref to an $anchor",
+    "schema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://test.json-schema.org/ref-dynamicAnchor-same-schema/root",
+      "type": "array",
+      "items": {
+        "$ref": "#items"
+      },
+      "$defs": {
+        "foo": {
+          "$dynamicAnchor": "items",
+          "type": "string"
+        }
+      }
+    },
+    "tests": [
+      {
+        "description": "An array of strings is valid",
+        "data": [
+          "foo",
+          "bar"
+        ],
+        "valid": true
+      },
+      {
+        "description": "An array containing non-strings is invalid",
+        "data": [
+          "foo",
+          42
+        ],
+        "valid": false
       }
     ]
   },
@@ -87,6 +138,14 @@
           "bar"
         ],
         "valid": true
+      },
+      {
+        "description": "An array containing non-strings is invalid",
+        "data": [
+          "foo",
+          42
+        ],
+        "valid": false
       }
     ]
   },
@@ -118,6 +177,14 @@
       }
     },
     "tests": [
+      {
+        "description": "An array of strings is invalid",
+        "data": [
+          "foo",
+          "bar"
+        ],
+        "valid": false
+      },
       {
         "description": "An array of numbers is valid",
         "data": [
@@ -166,6 +233,14 @@
           "bar"
         ],
         "valid": true
+      },
+      {
+        "description": "An array containing non-strings is invalid",
+        "data": [
+          "foo",
+          42
+        ],
+        "valid": false
       }
     ]
   },
@@ -328,6 +403,18 @@
           }
         },
         "valid": true
+      },
+      {
+        "description": "The recursive part is not valid against the root",
+        "data": {
+          "foo": "pass",
+          "bar": {
+            "baz": {
+              "foo": "fail"
+            }
+          }
+        },
+        "valid": false
       }
     ]
   },
@@ -453,6 +540,26 @@
         "valid": true
       },
       {
+        "description": "number list with string values",
+        "data": {
+          "kindOfList": "numbers",
+          "list": [
+            "foo"
+          ]
+        },
+        "valid": false
+      },
+      {
+        "description": "string list with number values",
+        "data": {
+          "kindOfList": "strings",
+          "list": [
+            1.1
+          ]
+        },
+        "valid": false
+      },
+      {
         "description": "string list with string values",
         "data": {
           "kindOfList": "strings",
@@ -505,6 +612,16 @@
       }
     },
     "tests": [
+      {
+        "description": "string matches /$defs/thingy, but the $dynamicRef does not stop here",
+        "data": "a string",
+        "valid": false
+      },
+      {
+        "description": "first_scope is not in dynamic scope for the $dynamicRef",
+        "data": 42,
+        "valid": false
+      },
       {
         "description": "/then/$defs/thingy is the final stop for the $dynamicRef",
         "data": null,
@@ -704,6 +821,13 @@
           "true": 1
         },
         "valid": true
+      },
+      {
+        "description": "follow $dynamicRef to a false schema",
+        "data": {
+          "false": 1
+        },
+        "valid": false
       }
     ]
   },
@@ -758,6 +882,15 @@
           }
         },
         "valid": true
+      },
+      {
+        "description": "string property fails",
+        "data": {
+          "bar-item": {
+            "content": "value"
+          }
+        },
+        "valid": false
       }
     ]
   },
@@ -808,9 +941,9 @@
     },
     "tests": [
       {
-        "description": "data is sufficient for schema at second#/$defs/length",
-        "data": "hi",
-        "valid": true
+        "description": "data is not sufficient for schema at second#/$defs/length",
+        "data": "hey",
+        "valid": false
       }
     ]
   }

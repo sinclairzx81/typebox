@@ -40,10 +40,10 @@
   "schema": {
     "1_spec": "docs/schema/1_spec.html",
     "2_check": "docs/schema/2_check.html",
-    "3_errors": "docs/schema/3_errors.html",
-    "4_compile": "docs/schema/4_compile.html",
-    "5_advanced": "docs/schema/5_advanced.html",
-    "6_parse": "docs/schema/6_parse.html",
+    "3_parse": "docs/schema/3_parse.html",
+    "4_errors": "docs/schema/4_errors.html",
+    "5_compile": "docs/schema/5_compile.html",
+    "6_advanced": "docs/schema/6_advanced.html",
     "overview": "docs/schema/overview.html"
   },
   "script": {
