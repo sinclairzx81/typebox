@@ -225,77 +225,9 @@ const user = User.Parse({                        // const user: {
 
 ```
 
-### Compile
-
-The TypeBox compiler is tuned for high performance compilation for improved application start up. The following is compilation throughput for various JSON Schema structures using AJV8 as the baseline.
-
-```python
-┌──────────────────────┬─────────────┬─────────────┐
-│ Test                 │ TB1X        │ AJV8        │
-├──────────────────────┼─────────────┼─────────────┤
-│ Boolean              │ 28.4K ops/s │    7K ops/s │
-│ Number               │ 21.8K ops/s │  7.7K ops/s │
-│ String               │ 47.8K ops/s │  7.3K ops/s │
-│ Null                 │ 35.6K ops/s │  7.8K ops/s │
-│ Literal_String       │ 28.6K ops/s │  6.3K ops/s │
-│ Literal_Number       │ 46.6K ops/s │  6.2K ops/s │
-│ Literal_Boolean      │ 40.8K ops/s │  6.6K ops/s │
-│ Pattern              │ 29.7K ops/s │  4.9K ops/s │
-│ Object_Open          │  6.8K ops/s │  1.1K ops/s │
-│ Object_Close         │  7.4K ops/s │   833 ops/s │
-│ Object_Vector3       │ 19.4K ops/s │  2.1K ops/s │
-│ Object_Basis3        │    6K ops/s │   895 ops/s │
-│ Intersect_And        │   12K ops/s │  3.5K ops/s │
-│ Intersect_Structural │  8.4K ops/s │  1.1K ops/s │
-│ Union_Or             │ 18.2K ops/s │  2.5K ops/s │
-│ Union_Structural     │ 10.9K ops/s │  1.3K ops/s │
-│ Tuple_Values         │  7.3K ops/s │  1.6K ops/s │
-│ Tuple_Objects        │  1.9K ops/s │   339 ops/s │
-│ Array_Numbers_4      │ 29.9K ops/s │  3.4K ops/s │
-│ Array_Numbers_8      │ 20.3K ops/s │  3.4K ops/s │
-│ Array_Numbers_16     │ 29.4K ops/s │  3.3K ops/s │
-│ Array_Objects_Open   │  6.3K ops/s │   684 ops/s │
-│ Array_Objects_Close  │  7.3K ops/s │   762 ops/s │
-└──────────────────────┴─────────────┴─────────────┘
-```
-
-### Validate
-
-The TypeBox compiler produces engine-optimizable validation logic. The following is the validation throughput for various JSON Schema structures using AJV8 as the baseline.
-
-```python
-┌──────────────────────┬──────────────┬──────────────┐
-│ Test                 │ TB1X         │ AJV8         │
-├──────────────────────┼──────────────┼──────────────┤
-│ Boolean              │ 164.1M ops/s │ 181.5M ops/s │
-│ Number               │   107M ops/s │  50.2M ops/s │
-│ String               │ 102.2M ops/s │  61.9M ops/s │
-│ Null                 │ 112.1M ops/s │  48.2M ops/s │
-│ Literal_String       │ 102.8M ops/s │  61.5M ops/s │
-│ Literal_Number       │ 109.1M ops/s │  46.4M ops/s │
-│ Literal_Boolean      │ 109.6M ops/s │  63.3M ops/s │
-│ Pattern              │  24.7M ops/s │  20.3M ops/s │
-│ Object_Open          │  75.4M ops/s │  37.3M ops/s │
-│ Object_Close         │  35.9M ops/s │  21.9M ops/s │
-│ Object_Vector3       │  77.6M ops/s │  47.4M ops/s │
-│ Object_Basis3        │    37M ops/s │  24.3M ops/s │
-│ Intersect_And        │  93.3M ops/s │  61.1M ops/s │
-│ Intersect_Structural │    83M ops/s │  36.4M ops/s │
-│ Union_Or             │  99.7M ops/s │   8.6M ops/s │
-│ Union_Structural     │  81.3M ops/s │  43.5M ops/s │
-│ Tuple_Values         │  72.4M ops/s │  41.7M ops/s │
-│ Tuple_Objects        │  32.6M ops/s │  22.4M ops/s │
-│ Array_Numbers_4      │  94.1M ops/s │  42.8M ops/s │
-│ Array_Numbers_8      │  90.6M ops/s │  42.3M ops/s │
-│ Array_Numbers_16     │  77.5M ops/s │  40.2M ops/s │
-│ Array_Objects_Open   │  26.3M ops/s │  19.6M ops/s │
-│ Array_Objects_Close  │   9.1M ops/s │    10M ops/s │
-└──────────────────────┴──────────────┴──────────────┘
-```
-
 ### Specification
 
-The TypeBox compiler is tested against the [Official JSON Schema Test Suite](https://github.com/json-schema-org/JSON-Schema-Test-Suite). The following table shows TypeBox spec coverage spanning drafts 3 to the V1 candidate.
+TypeBox tests against the official JSON Schema [test suite](https://github.com/json-schema-org/JSON-Schema-Test-Suite). The following table shows specification coverage across drafts 3 to the v1 candidate.
 
 | Spec | 3 | 4 | 6 | 7 | 2019-09 | 2020-12 | v1 |
 |:-----|:--|:--|:--|:--|:--|:--|:--|
@@ -346,6 +278,73 @@ The TypeBox compiler is tested against the [Official JSON Schema Test Suite](htt
 | uniqueItems | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 
 
+### Performance
+
+The following is compilation throughput for various JSON Schema structures using AJV8 as the baseline.
+
+```python
+┌──────────────────────┬─────────────┬─────────────┐
+│ Compile              │ TB1X        │ AJV8        │
+├──────────────────────┼─────────────┼─────────────┤
+│ Boolean              │ 28.4K ops/s │    7K ops/s │
+│ Number               │ 21.8K ops/s │  7.7K ops/s │
+│ String               │ 47.8K ops/s │  7.3K ops/s │
+│ Null                 │ 35.6K ops/s │  7.8K ops/s │
+│ Literal_String       │ 28.6K ops/s │  6.3K ops/s │
+│ Literal_Number       │ 46.6K ops/s │  6.2K ops/s │
+│ Literal_Boolean      │ 40.8K ops/s │  6.6K ops/s │
+│ Pattern              │ 29.7K ops/s │  4.9K ops/s │
+│ Object_Open          │  6.8K ops/s │  1.1K ops/s │
+│ Object_Close         │  7.4K ops/s │   833 ops/s │
+│ Object_Vector3       │ 19.4K ops/s │  2.1K ops/s │
+│ Object_Basis3        │    6K ops/s │   895 ops/s │
+│ Intersect_And        │   12K ops/s │  3.5K ops/s │
+│ Intersect_Structural │  8.4K ops/s │  1.1K ops/s │
+│ Union_Or             │ 18.2K ops/s │  2.5K ops/s │
+│ Union_Structural     │ 10.9K ops/s │  1.3K ops/s │
+│ Tuple_Values         │  7.3K ops/s │  1.6K ops/s │
+│ Tuple_Objects        │  1.9K ops/s │   339 ops/s │
+│ Array_Numbers_4      │ 29.9K ops/s │  3.4K ops/s │
+│ Array_Numbers_8      │ 20.3K ops/s │  3.4K ops/s │
+│ Array_Numbers_16     │ 29.4K ops/s │  3.3K ops/s │
+│ Array_Objects_Open   │  6.3K ops/s │   684 ops/s │
+│ Array_Objects_Close  │  7.3K ops/s │   762 ops/s │
+└──────────────────────┴─────────────┴─────────────┘
+```
+
+
+The following is the validation throughput for various JSON Schema structures using AJV8 as the baseline.
+
+```python
+┌──────────────────────┬──────────────┬──────────────┐
+│ Validate             │ TB1X         │ AJV8         │
+├──────────────────────┼──────────────┼──────────────┤
+│ Boolean              │ 164.1M ops/s │ 181.5M ops/s │
+│ Number               │   107M ops/s │  50.2M ops/s │
+│ String               │ 102.2M ops/s │  61.9M ops/s │
+│ Null                 │ 112.1M ops/s │  48.2M ops/s │
+│ Literal_String       │ 102.8M ops/s │  61.5M ops/s │
+│ Literal_Number       │ 109.1M ops/s │  46.4M ops/s │
+│ Literal_Boolean      │ 109.6M ops/s │  63.3M ops/s │
+│ Pattern              │  24.7M ops/s │  20.3M ops/s │
+│ Object_Open          │  75.4M ops/s │  37.3M ops/s │
+│ Object_Close         │  35.9M ops/s │  21.9M ops/s │
+│ Object_Vector3       │  77.6M ops/s │  47.4M ops/s │
+│ Object_Basis3        │    37M ops/s │  24.3M ops/s │
+│ Intersect_And        │  93.3M ops/s │  61.1M ops/s │
+│ Intersect_Structural │    83M ops/s │  36.4M ops/s │
+│ Union_Or             │  99.7M ops/s │   8.6M ops/s │
+│ Union_Structural     │  81.3M ops/s │  43.5M ops/s │
+│ Tuple_Values         │  72.4M ops/s │  41.7M ops/s │
+│ Tuple_Objects        │  32.6M ops/s │  22.4M ops/s │
+│ Array_Numbers_4      │  94.1M ops/s │  42.8M ops/s │
+│ Array_Numbers_8      │  90.6M ops/s │  42.3M ops/s │
+│ Array_Numbers_16     │  77.5M ops/s │  40.2M ops/s │
+│ Array_Objects_Open   │  26.3M ops/s │  19.6M ops/s │
+│ Array_Objects_Close  │   9.1M ops/s │    10M ops/s │
+└──────────────────────┴──────────────┴──────────────┘
+```
+
 <a name="Versions"></a>
 
 ## Versions
@@ -356,8 +355,6 @@ TypeBox ships two distinct versions that span two generations of the TypeScript 
 | :--- | :--- | :--- |
 | 1.x | 6.0 - 7.0+ | **Latest.** Developed against the TypeScript 7 native compiler. Provides advanced type inference and native JSON Schema 2020-12 support. Includes backwards compatibility with `0.x` types. **ESM only.** |
 | 0.x | 5.0 - 6.0 | **LTS.** Developed against older TypeScript versions and actively maintained under Long Term Support. Compatible with both **ESM and CJS**. Issues should be submitted to the [Sinclair TypeBox](https://github.com/sinclairzx81/sinclair-typebox) repository. |
-
-New applications should use 1.x. The 0.x version is maintained under LTS support for existing users.
 
 ## Contribute
 
