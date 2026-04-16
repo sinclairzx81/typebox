@@ -50,6 +50,15 @@
           }
         },
         "valid": true
+      },
+      {
+        "description": "string property fails",
+        "data": {
+          "bar-item": {
+            "content": "value"
+          }
+        },
+        "valid": false
       }
     ]
   }

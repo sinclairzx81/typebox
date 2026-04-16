@@ -58,7 +58,7 @@ function BuildRefFast(stack: Stack, context: BuildContext, target: Schema.XSchem
 // BuildRef
 // ------------------------------------------------------------------
 export function BuildRef(stack: Stack, context: BuildContext, schema: Schema.XRef, value: string): string {
-  const target = stack.Ref(schema.$ref) ?? false
+  const target = stack.Ref(schema) ?? false
   return context.UseUnevaluated()
     ? BuildRefStandard(stack, context, target, value)
     : BuildRefFast(stack, context, target, value)
@@ -67,7 +67,7 @@ export function BuildRef(stack: Stack, context: BuildContext, schema: Schema.XRe
 // Check
 // ------------------------------------------------------------------
 export function CheckRef(stack: Stack, context: CheckContext, schema: Schema.XRef, value: unknown): boolean {
-  const target = stack.Ref(schema.$ref) ?? false
+  const target = stack.Ref(schema) ?? false
   const nextContext = new CheckContext()
   const result = (Schema.IsSchema(target) && CheckSchema(stack, nextContext, target, value))
   if(result) context.Merge([nextContext])
@@ -77,7 +77,7 @@ export function CheckRef(stack: Stack, context: CheckContext, schema: Schema.XRe
 // Error
 // ------------------------------------------------------------------
 export function ErrorRef(stack: Stack, context: ErrorContext, _schemaPath: string, instancePath: string, schema: Schema.XRef, value: unknown): boolean {
-  const target = stack.Ref(schema.$ref) ?? false
+  const target = stack.Ref(schema) ?? false
   const nextContext = new AccumulatedErrorContext()
   const result = (Schema.IsSchema(target) && ErrorSchema(stack, nextContext, '#', instancePath, target, value))
   if(result) context.Merge([nextContext])

@@ -40,7 +40,7 @@ export class Stack {
   constructor(
     private readonly context: Record<PropertyKey, Schema.XSchema>,
     private readonly schema: Schema.XSchema
-  ) {}
+  ) { }
   // ----------------------------------------------------------------
   // Base
   // ----------------------------------------------------------------
@@ -55,39 +55,67 @@ export class Stack {
   // ----------------------------------------------------------------
   public Push(schema: Schema.XSchema) {
     if (!Schema.IsSchemaObject(schema)) return
-    if (Schema.IsId(schema)) this.ids.push(schema)
+    if (Schema.IsId(schema)) { this.ids.push(schema); this.#PushResourceAnchors(schema); }
     if (Schema.IsAnchor(schema)) this.anchors.push(schema)
     if (Schema.IsRecursiveAnchorTrue(schema)) this.recursiveAnchors.push(schema)
     if (Schema.IsDynamicAnchor(schema)) this.dynamicAnchors.push(schema)
   }
   public Pop(schema: Schema.XSchema) {
     if (!Schema.IsSchemaObject(schema)) return
-    if (Schema.IsId(schema)) this.ids.pop()
+    if (Schema.IsId(schema)) { this.ids.pop(); this.#PopResourceAnchors(schema); }
     if (Schema.IsAnchor(schema)) this.anchors.pop()
     if (Schema.IsRecursiveAnchorTrue(schema)) this.recursiveAnchors.pop()
     if (Schema.IsDynamicAnchor(schema)) this.dynamicAnchors.pop()
   }
   // ----------------------------------------------------------------
+  // Stack: ResourceAnchors
+  //
+  // We push dynamicAnchors that are down of the current base such
+  // that DynamicRef can resolve them. We push only as far as the
+  // current scope.
+  // ----------------------------------------------------------------
+  #PushResourceAnchors(schema: Schema.XSchema, isRoot: boolean = true): void {
+    if (!Schema.IsSchemaObject(schema)) return
+    const current = schema as Record<PropertyKey, Schema.XSchema>
+    if (!isRoot && Schema.IsId(current)) return
+    if (!isRoot && Schema.IsDynamicAnchor(current)) this.dynamicAnchors.push(current)
+    for (const key of G.Keys(current)) this.#PushResourceAnchors(current[key], false)
+  }
+  #PopResourceAnchors(schema: Schema.XSchema, isRoot: boolean = true): void {
+    if (!Schema.IsSchemaObject(schema)) return
+    const current = schema as Record<PropertyKey, Schema.XSchema>
+    if (!isRoot && Schema.IsId(current)) return
+    if (!isRoot && Schema.IsDynamicAnchor(current)) this.dynamicAnchors.pop()
+    for (const key of G.Keys(current)) this.#PopResourceAnchors(current[key], false)
+  }
+  // ----------------------------------------------------------------
   // Ref
   // ----------------------------------------------------------------
-  private FromContext(ref: string): Schema.XSchema | undefined {
-    return G.HasPropertyKey(this.context, ref) ? this.context[ref] : undefined
+  #FromContext(ref: Schema.XRef): Schema.XSchema | undefined {
+    return G.HasPropertyKey(this.context, ref.$ref) ? this.context[ref.$ref] : undefined
   }
-  private FromRef(ref: string): Schema.XSchema | undefined {
-    return !ref.startsWith('#')
-      ? Resolve.Ref(this.schema as Schema.XSchemaObject, ref)
-      : Resolve.Ref(this.Base(), ref) 
+  #FromRef(ref: Schema.XRef): Schema.XSchema | undefined {
+    const root = this.schema as Schema.XSchemaObject
+    return !ref.$ref.startsWith('#')
+      ? Resolve.Ref(root, ref.$ref)
+      : Resolve.Ref(this.Base(), ref.$ref)
   }
-  public Ref(ref: string): Schema.XSchema | undefined {
-    return this.FromContext(ref) ?? this.FromRef(ref)
+  public Ref(ref: Schema.XRef): Schema.XSchema | undefined {
+    return this.#FromContext(ref) ?? this.#FromRef(ref)
   }
   // ----------------------------------------------------------------
   // RecursiveRef
   // ----------------------------------------------------------------
-  public RecursiveRef(recursiveRef: string): Schema.XSchema | undefined {
-    if (Schema.IsRecursiveAnchorTrue(this.Base())) {
-      return Resolve.Ref(this.recursiveAnchors[0], recursiveRef)
-    }
-    return Resolve.Ref(this.Base(), recursiveRef)
+  public RecursiveRef(recursiveRef: Schema.XRecursiveRef): Schema.XSchema | undefined {
+    return Schema.IsRecursiveAnchorTrue(this.Base())
+      ? Resolve.Ref(this.recursiveAnchors[0], recursiveRef.$recursiveRef)
+      : Resolve.Ref(this.Base(), recursiveRef.$recursiveRef)
+  }
+  // ----------------------------------------------------------------
+  // DynamicRef
+  // ----------------------------------------------------------------
+  public DynamicRef(dynamicRef: Schema.XDynamicRef): Schema.XSchema | undefined {
+    const root = this.schema as Schema.XSchemaObject
+    return Resolve.DynamicRef(root, this.Base(), dynamicRef, this.dynamicAnchors)
   }
 }

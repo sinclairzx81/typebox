@@ -80,9 +80,8 @@ The following creates a User type and infers with Static.
 ```typescript
 import Type from 'typebox'
 
-// -------------------------------------------------------------------------------
+
 // Type
-// -------------------------------------------------------------------------------
 
 const User = Type.Object({                       // const User = {
   id: Type.String(),                             //   type: 'object',
@@ -101,9 +100,8 @@ const User = Type.Object({                       // const User = {
                                                  //   ]
                                                  // }
 
-// -------------------------------------------------------------------------------
+
 // Static
-// -------------------------------------------------------------------------------
 
 type User = Type.Static<typeof User>              // type User = {
                                                   //   id: string,
@@ -126,9 +124,8 @@ The following uses the Script function to parse TypeScript interfaces into JSON 
 ```typescript
 import Type from 'typebox'
 
-// -------------------------------------------------------------------------------
+
 // Script
-// -------------------------------------------------------------------------------
 
 const { User, UserUpdate } = Type.Script(`
 
@@ -148,9 +145,8 @@ const { User, UserUpdate } = Type.Script(`
 
 `)
 
-// -------------------------------------------------------------------------------
+
 // Reflect
-// -------------------------------------------------------------------------------
 
 console.log(User)                                // {
                                                  //   type: 'object',
@@ -176,9 +172,8 @@ console.log(UserUpdate)                          // {
                                                  //   required: ['id']
                                                  // }
 
-// -------------------------------------------------------------------------------
+
 // Static
-// -------------------------------------------------------------------------------
 
 type User = Type.Static<typeof User>              // type User = {
                                                   //   id: string,
@@ -201,7 +196,7 @@ type UserUpdate = Type.Static<typeof UserUpdate>  // type UserUpdate = {
 
 [Documentation](https://sinclairzx81.github.io/typebox/#/docs/schema/overview) | [Example 1](https://www.typescriptlang.org/play/?#code/JYWwDg9gTgLgBAZQMYAsCmICGcBmUIhwDkMAnmGgEYQAeA9AM6oaZEBQokscAKuWrnyES-ajXZs6dOAFo58hYqXKVqteo0zJ0gMIEwwADZptszeYuWr8tmyQQAdg3gBVBmihwAvImZYAdHrgRmgAFHwU-gDylABWaEgwoQDebHBwwAAmAFy8-P4IMFDADgDmoQCUADRpcA6YIGi5EWgFRSXl1bUsRs35hcVlKbjQWDC5RD2GRHAAvhVs8wum1qtr61pScAAKmFDuKxtHx6q29k7wAK7unj5uHv67+2HJ6W-vH5-vW+fOcNceXKpdJZCYANgArDgAIyYABMlAAzEgACyZCFoME4ADsmAAHJQAJxIAAMmWhRCqX2pcC2IJycGcg1KNXS9UaEwBUEpNN5fO+0jZDSajPaZVZcCmnJuAAFMgRMCV-PYQDN+by6ZKsL1RczFhV1YajR8trNvHB-JagA) | [Example 2](https://www.typescriptlang.org/play/#code/JYWwDg9gTgLgBAZQMYAsCmICGcBmUIhwDkMAnmGgEYQAeA9AM6oaZEBQbddcAtH-wMFDhI0WPESenbgGECYYABs003pPUbNW-hyQQAdg3gBVBmihwAvImZYAdHPBK0ACgDebOHDIUAXMQhKACs0JBgiABpPODB8ClhgNAZ-Dy8vYAATFO9yNH8iIyhgfQBzIjgAXyi0uH1MEDy4Nxy-YkLissrqtJYlbJ9Ggpgi0sjcaCwYfN7FcoroquioNABHAFdgZay4AG1oryJMsf3iOobjmqIZ9i8AXTYKgEoOLjVtd4+P1QAFTCgzVSfIHAyS6AxGOBrMwWaymcx2X7-VzNGqotHouCvPSGeBQ8wpaKZfIANgArDgAIyYABMlAAzEgACwZUloYk4ADsmAAHJQAJxIAAMGQpYwx6Ne6W27VK3TOgzxUDF4pVqq8ktq9UaMpK3Rm+UVAAEMgRMMU7HoQOU1SqNfq4DqHo8bS7XajXhUrHA7D6gA) | [Specification](https://sinclairzx81.github.io/typebox/#/docs/schema/1_spec)
 
-TypeBox includes a high-performance JSON Schema compiler supporting drafts 3 to 2020-12. It is written to be a lightweight alternative to Ajv with improved compilation and validation performance, and automatic fallback to dynamic checking in JIT-restricted environments such as Cloudflare Workers.
+TypeBox has a high-performance JSON Schema compiler that supports drafts 3 to 2020-12. The compiler is designed to be an industry-grade alternative to Ajv and offers improved compilation and validation performance. It also offers automatic fallback to dynamic checking in JIT-restricted environments such as Cloudflare Workers.
 
 ### Example
 
@@ -210,19 +205,17 @@ The following uses the Schema submodule to compile a TypeBox type.
 ```typescript
 import Schema from 'typebox/schema'
 
-// -------------------------------------------------------------------------------
+
 // Compile
-// -------------------------------------------------------------------------------
 
-const User = Schema.Compile(Type.Object({
-  id: Type.String(),
-  name: Type.String(),
-  email: Type.String({ format: 'email' })
-}))
+const User = Schema.Compile(Type.Object({        // const User = Validator<Type.TObject<{
+  id: Type.String(),                             //   id: Type.TString;
+  name: Type.String(),                           //   name: Type.TString;
+  email: Type.String({ format: 'email' })        //   email: Type.TString;
+}))                                              // }>, { ... }>
 
-// -------------------------------------------------------------------------------
+
 // Parse
-// -------------------------------------------------------------------------------
 
 const user = User.Parse({                        // const user: {
   id: '65f1a2b3c4d5e6f7a8b9c0d1',                //   id: string,
@@ -232,11 +225,131 @@ const user = User.Parse({                        // const user: {
 
 ```
 
+### Specification
+
+TypeBox tests against the official JSON Schema [test suite](https://github.com/json-schema-org/JSON-Schema-Test-Suite). The following table shows specification coverage across drafts 3 to the v1 candidate.
+
+| Spec | 3 | 4 | 6 | 7 | 2019-09 | 2020-12 | v1 |
+|:-----|:--|:--|:--|:--|:--|:--|:--|
+| additionalItems | ✅ | ✅ | ✅ | ✅ | ✅ | - | - |
+| additionalProperties | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| allOf | - | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| anchor | - | - | - | - | ✅ | ✅ | ✅ |
+| anyOf | - | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| boolean_schema | - | - | ✅ | ✅ | ✅ | ✅ | ✅ |
+| const | - | - | ✅ | ✅ | ✅ | ✅ | ✅ |
+| contains | - | - | ✅ | ✅ | ✅ | ✅ | ✅ |
+| content | - | - | - | - | ✅ | ✅ | ✅ |
+| default | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| dependencies | 17/18 | ✅ | ✅ | ✅ | - | - | - |
+| dependentRequired | - | - | - | - | ✅ | ✅ | ✅ |
+| dependentSchemas | - | - | - | - | ✅ | ✅ | ✅ |
+| dynamicRef | - | - | - | - | - | 38/44 | 19/27 |
+| enum | 14/16 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| exclusiveMaximum | - | - | ✅ | ✅ | ✅ | ✅ | ✅ |
+| exclusiveMinimum | - | - | ✅ | ✅ | ✅ | ✅ | ✅ |
+| if-then-else | - | - | - | ✅ | ✅ | ✅ | ✅ |
+| infinite-loop-detection | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| items | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| maxContains | - | - | - | - | ✅ | ✅ | ✅ |
+| maximum | 13/14 | 13/14 | ✅ | ✅ | ✅ | ✅ | ✅ |
+| maxItems | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| maxLength | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| maxProperties | - | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| minContains | - | - | - | - | ✅ | ✅ | ✅ |
+| minimum | 12/13 | 16/17 | ✅ | ✅ | ✅ | ✅ | ✅ |
+| minItems | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| minLength | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| minProperties | - | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| multipleOf | - | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| not | - | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| oneOf | - | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| pattern | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| patternProperties | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| prefixItems | - | - | - | - | - | ✅ | ✅ |
+| properties | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| propertyNames | - | - | ✅ | ✅ | ✅ | ✅ | ✅ |
+| recursiveRef | - | - | - | - | ✅ | - | - |
+| ref | 23/27 | 37/45 | 67/70 | 75/78 | 79/81 | 77/79 | 77/79 |
+| required | 3/4 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| type | 73/80 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| unevaluatedItems | - | - | - | - | ✅ | 65/71 | 64/71 |
+| unevaluatedProperties | - | - | - | - | ✅ | ✅ | 124/125 |
+| uniqueItems | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+
+
+### Performance
+
+The following is compilation throughput for various JSON Schema structures using AJV8 as the baseline.
+
+```python
+┌──────────────────────┬─────────────┬─────────────┐
+│ Compile              │ TB1X        │ AJV8        │
+├──────────────────────┼─────────────┼─────────────┤
+│ Boolean              │ 28.4K ops/s │    7K ops/s │
+│ Number               │ 21.8K ops/s │  7.7K ops/s │
+│ String               │ 47.8K ops/s │  7.3K ops/s │
+│ Null                 │ 35.6K ops/s │  7.8K ops/s │
+│ Literal_String       │ 28.6K ops/s │  6.3K ops/s │
+│ Literal_Number       │ 46.6K ops/s │  6.2K ops/s │
+│ Literal_Boolean      │ 40.8K ops/s │  6.6K ops/s │
+│ Pattern              │ 29.7K ops/s │  4.9K ops/s │
+│ Object_Open          │  6.8K ops/s │  1.1K ops/s │
+│ Object_Close         │  7.4K ops/s │   833 ops/s │
+│ Object_Vector3       │ 19.4K ops/s │  2.1K ops/s │
+│ Object_Basis3        │    6K ops/s │   895 ops/s │
+│ Intersect_And        │   12K ops/s │  3.5K ops/s │
+│ Intersect_Structural │  8.4K ops/s │  1.1K ops/s │
+│ Union_Or             │ 18.2K ops/s │  2.5K ops/s │
+│ Union_Structural     │ 10.9K ops/s │  1.3K ops/s │
+│ Tuple_Values         │  7.3K ops/s │  1.6K ops/s │
+│ Tuple_Objects        │  1.9K ops/s │   339 ops/s │
+│ Array_Numbers_4      │ 29.9K ops/s │  3.4K ops/s │
+│ Array_Numbers_8      │ 20.3K ops/s │  3.4K ops/s │
+│ Array_Numbers_16     │ 29.4K ops/s │  3.3K ops/s │
+│ Array_Objects_Open   │  6.3K ops/s │   684 ops/s │
+│ Array_Objects_Close  │  7.3K ops/s │   762 ops/s │
+└──────────────────────┴─────────────┴─────────────┘
+```
+
+
+The following is the validation throughput for various JSON Schema structures using AJV8 as the baseline.
+
+```python
+┌──────────────────────┬──────────────┬──────────────┐
+│ Validate             │ TB1X         │ AJV8         │
+├──────────────────────┼──────────────┼──────────────┤
+│ Boolean              │ 164.1M ops/s │ 181.5M ops/s │
+│ Number               │   107M ops/s │  50.2M ops/s │
+│ String               │ 102.2M ops/s │  61.9M ops/s │
+│ Null                 │ 112.1M ops/s │  48.2M ops/s │
+│ Literal_String       │ 102.8M ops/s │  61.5M ops/s │
+│ Literal_Number       │ 109.1M ops/s │  46.4M ops/s │
+│ Literal_Boolean      │ 109.6M ops/s │  63.3M ops/s │
+│ Pattern              │  24.7M ops/s │  20.3M ops/s │
+│ Object_Open          │  75.4M ops/s │  37.3M ops/s │
+│ Object_Close         │  35.9M ops/s │  21.9M ops/s │
+│ Object_Vector3       │  77.6M ops/s │  47.4M ops/s │
+│ Object_Basis3        │    37M ops/s │  24.3M ops/s │
+│ Intersect_And        │  93.3M ops/s │  61.1M ops/s │
+│ Intersect_Structural │    83M ops/s │  36.4M ops/s │
+│ Union_Or             │  99.7M ops/s │   8.6M ops/s │
+│ Union_Structural     │  81.3M ops/s │  43.5M ops/s │
+│ Tuple_Values         │  72.4M ops/s │  41.7M ops/s │
+│ Tuple_Objects        │  32.6M ops/s │  22.4M ops/s │
+│ Array_Numbers_4      │  94.1M ops/s │  42.8M ops/s │
+│ Array_Numbers_8      │  90.6M ops/s │  42.3M ops/s │
+│ Array_Numbers_16     │  77.5M ops/s │  40.2M ops/s │
+│ Array_Objects_Open   │  26.3M ops/s │  19.6M ops/s │
+│ Array_Objects_Close  │   9.1M ops/s │    10M ops/s │
+└──────────────────────┴──────────────┴──────────────┘
+```
+
 <a name="Versions"></a>
 
 ## Versions
 
-TypeBox provides two distinct versions that span two generations of the TypeScript compiler.
+TypeBox ships two distinct versions that span two generations of the TypeScript compiler. 
 
 | TypeBox | TypeScript | Description |
 | :--- | :--- | :--- |
