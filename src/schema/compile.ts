@@ -31,17 +31,17 @@ THE SOFTWARE.
 
 import { Arguments } from '../system/arguments/index.ts'
 import { type TLocalizedValidationError } from '../error/index.ts'
+import { type Static } from '../type/types/static.ts'
 import * as Build from './build.ts'
 import * as Schema from './types/index.ts'
-import * as Static from './static/index.ts'
 import { Errors } from './errors.ts'
 import { ParseError } from './parse.ts'
 
 // ------------------------------------------------------------------
 // Validator
 // ------------------------------------------------------------------
-export class Validator<Schema extends Schema.XSchema = Schema.XSchema, 
-  Value extends unknown = Static.XStatic<Schema>
+export class Validator<const Schema extends Schema.XSchema = Schema.XSchema, 
+  Value extends unknown = Static<Schema>
 >  {
   private readonly build: Build.BuildResult
   private readonly result: Build.EvaluateResult

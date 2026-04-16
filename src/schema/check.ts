@@ -30,17 +30,16 @@ THE SOFTWARE.
 // deno-lint-ignore-file
 
 import { Arguments } from '../system/arguments/index.ts'
+import { type Static } from '../type/types/static.ts'
 import * as Engine from './engine/index.ts'
 import * as Schema from './types/index.ts'
-import * as Static from './static/index.ts'
-
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
 /** Checks a value against the provided schema */
-export function Check<const Schema extends Schema.XSchema>(schema: Schema, value: unknown): value is Static.XStatic<Schema>
+export function Check<const Schema extends Schema.XSchema>(schema: Schema, value: unknown): value is Static<Schema>
 /** Checks a value against the provided schema */
-export function Check<const Schema extends Schema.XSchema>(context: Record<PropertyKey, Schema.XSchema>, schema: Schema, value: unknown):  value is Static.XStatic<Schema>
+export function Check<const Schema extends Schema.XSchema>(context: Record<PropertyKey, Schema.XSchema>, schema: Schema, value: unknown):  value is Static<Schema>
 /** Checks a value against the provided schema */
 export function Check(...args: unknown[]): boolean {
   const [context, schema, value] = Arguments.Match<[Record<PropertyKey, Schema.XSchema>, Schema.XSchema, unknown]>(args, {

@@ -31,10 +31,10 @@ THE SOFTWARE.
 
 import { Arguments } from '../system/arguments/index.ts'
 import { type TLocalizedValidationError } from '../error/index.ts'
+import { type Static } from '../type/types/static.ts'
 import { Check } from './check.ts'
 import { Errors } from './errors.ts'
 import * as Schema from './types/index.ts'
-import * as Static from './static/index.ts'
 
 // ------------------------------------------------------------------
 // ParseError
@@ -50,9 +50,9 @@ export class ParseError {
 // Parse
 // ------------------------------------------------------------------
 /** Parses a value against the provided schema */
-export function Parse<const Schema extends Schema.XSchema>(schema: Schema, value: unknown): Static.XStatic<Schema>
+export function Parse<const Schema extends Schema.XSchema>(schema: Schema, value: unknown): Static<Schema>
 /** Parses a value against the provided schema */
-export function Parse<const Schema extends Schema.XSchema>(context: Record<PropertyKey, Schema.XSchema>, schema: Schema, value: unknown): Static.XStatic<Schema>
+export function Parse<const Schema extends Schema.XSchema>(context: Record<PropertyKey, Schema.XSchema>, schema: Schema, value: unknown): Static<Schema>
 /** Parses a value against the provided schema */
 export function Parse(...args: unknown[]): unknown {
   const [context, schema, value] = Arguments.Match<[Record<PropertyKey, Schema.XSchema>, Schema.XSchema, unknown]>(args, {
