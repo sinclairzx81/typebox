@@ -56,9 +56,9 @@ import type { XStaticPatternProperties } from './patternProperties.ts'
 import type { XStaticPrefixItems } from './prefixItems.ts'
 import type { XStaticProperties } from './properties.ts'
 import type { XStaticRef } from './ref.ts'
+import type { XStaticRequired } from './required.ts'
 import type { XStaticType } from './type.ts'
 import type { XStaticUnevaluatedProperties } from './unevaluatedProperties.ts'
-import { XStaticRequired } from './required.ts'
 
 // ------------------------------------------------------------------
 // Keywords
