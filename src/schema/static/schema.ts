@@ -76,7 +76,7 @@ type XFromKeywords<Stack extends string[], Root extends XSchema, Schema extends 
   Schema extends XPrefixItems<infer Types extends XSchema[]> ? XStaticPrefixItems<Stack, Root, Schema, Types> : unknown,
   Schema extends XProperties<infer Properties extends Record<PropertyKey, XSchema>> ? XStaticProperties<Stack, Root, Schema,Properties> : unknown,
   Schema extends XRef<infer Ref extends string> ? XStaticRef<Stack, Root, Ref> : unknown,
-  Schema extends XRequired<infer Keys extends string[]> ? XStaticRequired<Stack, Root, Schema, Keys> :
+  Schema extends XRequired<infer Keys extends string[]> ? XStaticRequired<Stack, Root, Schema, Keys> : unknown,
   Schema extends XType<infer TypeName extends string[] | string> ? XStaticType<TypeName> : unknown,
   Schema extends XUnevaluatedProperties<infer Type extends XSchema> ? XStaticUnevaluatedProperties<Stack, Root, Type> : unknown
 ]> = Result

@@ -67,4 +67,4 @@ const E = Format.IsEmail('user@domain.com')
 // Schema
 // ------------------------------------------------------------------
 
-const D = Schema.Check({ type: 'string' }, 'hello')
+const D = Schema.Parse({ const: 'hello' }, 'hello')
