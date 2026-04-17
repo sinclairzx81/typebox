@@ -111,7 +111,7 @@
     "partial": "docs/type/partial.html",
     "pick": "docs/type/pick.html",
     "promise": "docs/type/promise.html",
-    "readonly-type": "docs/type/readonly-type.html",
+    "readonly-object": "docs/type/readonly-object.html",
     "readonly": "docs/type/readonly.html",
     "record": "docs/type/record.html",
     "ref": "docs/type/ref.html",

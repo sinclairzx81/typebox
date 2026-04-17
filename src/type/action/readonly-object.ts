@@ -26,32 +26,32 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-lint-ignore-file ban-types
 // deno-fmt-ignore-file
 
 import { type TSchema, type TSchemaOptions } from '../types/schema.ts'
 import { type TDeferred, Deferred } from '../types/deferred.ts'
-import { type TInstantiate, Instantiate } from '../engine/instantiate.ts'
+import { type TReadonlyObjectAction, ReadonlyObjectAction } from '../engine/readonly-object/instantiate.ts'
 
 // ------------------------------------------------------------------
 // Deferred
 // ------------------------------------------------------------------
 /** Creates a deferred ReadonlyType action. */
-export type TReadonlyTypeDeferred<Type extends TSchema> = (
-  TDeferred<'ReadonlyType', [Type]>
+export type TReadonlyObjectDeferred<Type extends TSchema> = (
+  TDeferred<'ReadonlyObject', [Type]>
 )
 /** Creates a deferred ReadonlyType action. */
-export function ReadonlyTypeDeferred<Type extends TSchema>(type: Type, options: TSchemaOptions = {}) {
-  return Deferred('ReadonlyType', [type], options)
+export function ReadonlyObjectDeferred<Type extends TSchema>(type: Type, options: TSchemaOptions = {}) {
+  return Deferred('ReadonlyObject', [type], options)
 }
 // ------------------------------------------------------------------
 // Type
 // ------------------------------------------------------------------
-/** This type is an alias for the TypeScript `Readonly<T>` utility type. */
-export type TReadonlyType<Type extends TSchema> = (
-  TInstantiate<{}, TReadonlyTypeDeferred<Type>>
-)
-/** This type is an alias for the TypeScript `Readonly<T>` utility type. */
-export function ReadonlyType<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TReadonlyType<Type> {
-  return Instantiate({}, ReadonlyTypeDeferred(type, options)) as never
+/** This type is an alias for TypeScript's `Readonly<T>` utility type. It will make all properties of a TObject readonly or marks an TArray or TTuple as immutable `readonly T[]`. */
+export function ReadonlyObject<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TReadonlyObjectAction<Type> {
+  return ReadonlyObjectAction(type, options) as never
 }
+/** 
+ * This type has been renamed to ReadonlyObject.
+ * @deprecated
+*/
+export const ReadonlyType = ReadonlyObject

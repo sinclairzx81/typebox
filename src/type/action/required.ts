@@ -26,12 +26,11 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-lint-ignore-file ban-types
 // deno-fmt-ignore-file
 
 import { type TSchema, type TSchemaOptions } from '../types/schema.ts'
 import { type TDeferred, Deferred } from '../types/deferred.ts'
-import { type TInstantiate, Instantiate } from '../engine/instantiate.ts'
+import { type TRequiredAction, RequiredAction } from '../engine/required/instantiate.ts'
 
 // ------------------------------------------------------------------
 // Deferred
@@ -48,10 +47,6 @@ export function RequiredDeferred<Type extends TSchema>(type: Type, options: TSch
 // Type
 // ------------------------------------------------------------------
 /** Applies a Required action to the given type. */
-export type TRequired<Type extends TSchema> = (
-  TInstantiate<{}, TRequiredDeferred<Type>>
-)
-/** Applies a Required action to the given type. */
-export function Required<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TRequired<Type> {
-  return Instantiate({}, RequiredDeferred(type, options)) as never
+export function Required<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TRequiredAction<Type> {
+  return RequiredAction(type, options)
 }

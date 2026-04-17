@@ -50,6 +50,7 @@ Test('Should Parameters 3', () => {
 // ------------------------------------------------------------------
 Test('Should Parameters 4', () => {
   const A = Type.Null()
-  const T: Type.TNever = Type.Parameters(A)
-  Assert.IsTrue(Type.IsNever(T))
+  const T: Type.TTuple<[]> = Type.Parameters(A)
+  Assert.IsTrue(Type.IsTuple(T))
+  Assert.IsEqual(T.items.length, 0)
 })

@@ -26,7 +26,6 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-lint-ignore-file ban-types
 // deno-fmt-ignore-file
 
 import { Memory } from '../../../system/memory/index.ts'
@@ -35,50 +34,47 @@ import { type TProperties } from '../../types/properties.ts'
 import { type TNull, Null } from '../../types/null.ts'
 import { type TUndefined, Undefined } from '../../types/undefined.ts'
 import { type TUnion, Union } from '../../types/union.ts'
-import { type TExcludeInstantiate, ExcludeInstantiate } from '../exclude/instantiate.ts'
+import { type TExcludeAction, ExcludeAction } from '../exclude/instantiate.ts'
 import { type TNonNullableDeferred, NonNullableDeferred } from '../../action/non-nullable.ts'
-
 import { type TState, type TInstantiateType, type TCanInstantiate, InstantiateType, CanInstantiate } from '../instantiate.ts'
 
 // ------------------------------------------------------------------
-// Action
+// Operation
 // ------------------------------------------------------------------
-type TNonNullableAction<Type extends TSchema,
+type TNonNullableOperation<Type extends TSchema,
   Excluded extends TSchema = TUnion<[TNull, TUndefined]>,
-> = TExcludeInstantiate<{}, { callstack: [] }, Type, Excluded>
+> = TExcludeAction<Type, Excluded>
 
-function NonNullableAction<Type extends TSchema>(type: Type): TNonNullableAction<Type> {
+function NonNullableOperation<Type extends TSchema>(type: Type): TNonNullableOperation<Type> {
   const excluded = Union([Null(), Undefined()])
-  return ExcludeInstantiate({}, { callstack: [] }, type, excluded, {}) as never
+  return ExcludeAction(type, excluded, {}) as never
 }
 // ------------------------------------------------------------------
-// Immediate
+// Action
 // ------------------------------------------------------------------
-type TNonNullableImmediate<Context extends TProperties, State extends TState, Type extends TSchema,
-  InstantiatedType extends TSchema = TInstantiateType<Context, State, Type>,
-  Result extends TSchema = TNonNullableAction<InstantiatedType>
+export type TNonNullableAction<Type extends TSchema,
+  Result extends TSchema = TCanInstantiate<[Type]> extends true
+    ? TNonNullableOperation<Type>
+    : TNonNullableDeferred<Type>
 > = Result
 
-function NonNullableImmediate<Context extends TProperties, State extends TState, Type extends TSchema>
-  (context: Context, state: State, type: Type, options: TSchemaOptions): 
-    TNonNullableImmediate<Context, State, Type> {
-  const instantiatedType = InstantiateType(context, state, type)
-  return Memory.Update(NonNullableAction(instantiatedType), {}, options) as never
+export function NonNullableAction<Type extends TSchema>
+  (type: Type, options: TSchemaOptions): 
+    TNonNullableAction<Type> {
+  const result = CanInstantiate([type])
+    ? Memory.Update(NonNullableOperation(type), {}, options)
+    : NonNullableDeferred(type, options)
+  return result as never
 }
 // ------------------------------------------------------------------
 // Instantiate
 // ------------------------------------------------------------------
-export type TNonNullableInstantiate<Context extends TProperties, State extends TState, Type extends TSchema> 
-  = TCanInstantiate<Context, [Type]> extends true 
-    ? TNonNullableImmediate<Context, State, Type>
-    : TNonNullableDeferred<Type>
-
+export type TNonNullableInstantiate<Context extends TProperties, State extends TState, Type extends TSchema,
+  InstantiatedType extends TSchema = TInstantiateType<Context, State, Type>,
+> = TNonNullableAction<InstantiatedType>
 export function NonNullableInstantiate<Context extends TProperties, State extends TState, Type extends TSchema>
   (context: Context, state: State, type: Type, options: TSchemaOptions): 
     TNonNullableInstantiate<Context, State, Type> {
-  return (
-    CanInstantiate(context, [type])
-      ? NonNullableImmediate(context, state, type, options)
-      : NonNullableDeferred(type, options)
-  ) as never
+  const instantiatedType = InstantiateType(context, state, type) 
+  return NonNullableAction(instantiatedType, options)
 }

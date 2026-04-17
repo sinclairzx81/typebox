@@ -26,12 +26,11 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-lint-ignore-file ban-types
 // deno-fmt-ignore-file
 
 import { type TSchema } from '../types/schema.ts'
 import { type TDeferred, Deferred } from '../types/deferred.ts'
-import { type TInstantiate, Instantiate } from '../engine/instantiate.ts'
+import { type TOptionsAction, OptionsAction } from '../engine/options/instantiate.ts'
 
 // ------------------------------------------------------------------
 // Deferred
@@ -45,19 +44,13 @@ export function OptionsDeferred<Type extends TSchema, Options extends TSchema>(t
   return Deferred('Options', [type, options], {})
 }
 // ------------------------------------------------------------------
-// Construct
-// ------------------------------------------------------------------
-export type TOptionsConstruct<Type extends TSchema, Options extends TSchema> = (
-  TInstantiate<{}, TOptionsDeferred<Type, Options>>
-)
-// ------------------------------------------------------------------
 // Type
 // ------------------------------------------------------------------
-/** Applies an Options action to the given type. */
+/** Applies an immediate Options action to the given type. */
 export type TOptions<Type extends TSchema, Options extends TSchema> = (
   Type & Options
 )
-/** Applies an Options action to the given type. */
-export function Options<Type extends TSchema, Options extends TSchema>(type: Type, options: Options): TOptionsConstruct<Type, Options> {
-  return Instantiate({}, OptionsDeferred(type, options)) as never
+/** Applies an immediate Options action to the given type. */
+export function Options<Type extends TSchema, const Options extends TSchema>(type: Type, options: Options): TOptionsAction<Type, Options> {
+  return OptionsAction(type, options) as never
 }

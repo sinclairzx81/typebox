@@ -31,36 +31,35 @@ THE SOFTWARE.
 import { Memory } from '../../../system/memory/index.ts'
 import { type TProperties } from '../../types/properties.ts'
 import { type TSchema } from '../../types/schema.ts'
-import { type TState, type TInstantiateType, CanInstantiate, InstantiateType, TCanInstantiate } from '../instantiate.ts'
+import { type TState, type TInstantiateType, InstantiateType, type TCanInstantiate, CanInstantiate } from '../instantiate.ts'
 import { type TOptionsDeferred, type TOptions, OptionsDeferred } from '../../action/options.ts'
 
 // ------------------------------------------------------------------
-// Immediate
+// Action
 // ------------------------------------------------------------------
-type TOptionsImmediate<Context extends TProperties, State extends TState, Type extends TSchema, Options extends TSchema,
-  InstantiatedType extends TSchema = TInstantiateType<Context, State, Type>,
-  Result extends TSchema = TOptions<InstantiatedType, Options>
+export type TOptionsAction<Type extends TSchema, Options extends TSchema,
+  Result extends TSchema = TCanInstantiate<[Type]> extends true
+    ? TOptions<Type, Options>
+    : TOptionsDeferred<Type, Options> 
 > = Result
-function OptionsImmediate<Context extends TProperties, State extends TState, Type extends TSchema, Options extends TSchema>
-  (context: Context, state: State, type: Type, options: Options): 
-    TOptionsImmediate<Context, State, Type, Options> {
-  const instaniatedType = InstantiateType(context, state, type)
-  return Memory.Update(instaniatedType, {}, options) as never
+export function OptionsAction<Type extends TSchema, Options extends TSchema>
+  (type: Type, options: Options): 
+    TOptionsAction<Type, Options> {
+  const result = CanInstantiate([type])
+    ? Memory.Update(type, {}, options)
+    : OptionsDeferred(type, options)
+  return result as never
 }
 // ------------------------------------------------------------------
 // Instantiate
 // ------------------------------------------------------------------
-export type TOptionsInstantiate<Context extends TProperties, State extends TState, Type extends TSchema, Options extends TSchema>
-  = TCanInstantiate<Context, [Type]> extends true
-    ? TOptionsImmediate<Context, State, Type, Options>
-    : TOptionsDeferred<Type, Options>
+export type TOptionsInstantiate<Context extends TProperties, State extends TState, Type extends TSchema, Options extends TSchema,
+  InstantiatedType extends TSchema = TInstantiateType<Context, State, Type>
+> = TOptionsAction<InstantiatedType, Options>
 
 export function OptionsInstantiate<Context extends TProperties, State extends TState, Type extends TSchema, Options extends TSchema>
   (context: Context, state: State, type: Type, options: Options): 
     TOptionsInstantiate<Context, State, Type, Options> {
-  return (
-    CanInstantiate(context, [type])
-      ? OptionsImmediate(context, state, type, options)
-      : OptionsDeferred(type, options)
-  ) as never
+  const instaniatedType = InstantiateType(context, state, type)
+  return OptionsAction(instaniatedType, options) as never
 }

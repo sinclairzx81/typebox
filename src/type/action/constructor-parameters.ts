@@ -26,12 +26,11 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-lint-ignore-file ban-types
 // deno-fmt-ignore-file
 
 import { type TSchema, type TSchemaOptions } from '../types/schema.ts'
 import { type TDeferred, Deferred } from '../types/deferred.ts'
-import { type TInstantiate, Instantiate } from '../engine/instantiate.ts'
+import { type TConstructorParametersAction, ConstructorParametersAction } from '../engine/constructor-parameters/instantiate.ts'
 
 // ------------------------------------------------------------------
 // Deferred
@@ -48,10 +47,6 @@ export function ConstructorParametersDeferred<Type extends TSchema>(type: Type, 
 // Type
 // ------------------------------------------------------------------
 /** Applies a ConstructorParameters action to a type. */
-export type TConstructorParameters<Type extends TSchema> = (
-  TInstantiate<{}, TConstructorParametersDeferred<Type>>
-)
-/** Applies a ConstructorParameters action to a type. */
-export function ConstructorParameters<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TConstructorParameters<Type> {
-  return Instantiate({}, ConstructorParametersDeferred(type, options)) as never
+export function ConstructorParameters<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TConstructorParametersAction<Type> {
+  return ConstructorParametersAction(type, options) as never
 }

@@ -26,12 +26,11 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-lint-ignore-file ban-types
 // deno-fmt-ignore-file
 
 import { type TSchema, type TSchemaOptions } from '../types/schema.ts'
 import { type TDeferred, Deferred } from '../types/deferred.ts'
-import { type TInstantiate, Instantiate } from '../engine/instantiate.ts'
+import { type TInstanceTypeAction, InstanceTypeAction } from '../engine/instance-type/instantiate.ts'
 
 // ------------------------------------------------------------------
 // Deferred
@@ -48,10 +47,6 @@ export function InstanceTypeDeferred<Type extends TSchema>(type: Type, options: 
 // Type
 // ------------------------------------------------------------------
 /** Applies a InstanceType action to the given type. */
-export type TInstanceType<Type extends TSchema> = (
-  TInstantiate<{}, TInstanceTypeDeferred<Type>>
-)
-/** Applies a InstanceType action to the given type. */
-export function InstanceType<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TInstanceType<Type> {
-  return Instantiate({}, InstanceTypeDeferred(type, options)) as never
+export function InstanceType<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TInstanceTypeAction<Type> {
+  return InstanceTypeAction(type, options) as never
 }

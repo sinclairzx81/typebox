@@ -26,12 +26,11 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-lint-ignore-file ban-types
 // deno-fmt-ignore-file
 
 import { type TSchema, type TSchemaOptions } from '../types/schema.ts'
 import { type TDeferred, Deferred } from '../types/deferred.ts'
-import { type TInstantiate, Instantiate } from '../engine/instantiate.ts'
+import { type TPartialAction, PartialAction } from '../engine/partial/instantiate.ts'
 
 // ------------------------------------------------------------------
 // Deferred
@@ -41,17 +40,13 @@ export type TPartialDeferred<Type extends TSchema> = (
   TDeferred<'Partial', [Type]>
 )
 /** Creates a deferred Partial action. */
-export function PartialDeferred<Type extends TSchema>(type: Type, options: TSchemaOptions = {}) {
+export function PartialDeferred<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TPartialDeferred<Type> {
   return Deferred('Partial', [type], options)
 }
 // ------------------------------------------------------------------
 // Type
 // ------------------------------------------------------------------
 /** Applies a Partial action to the given type. */
-export type TPartial<Type extends TSchema> = (
-  TInstantiate<{}, TPartialDeferred<Type>>
-)
-/** Applies a Partial action to the given type. */
-export function Partial<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TPartial<Type> {
-  return Instantiate({}, PartialDeferred(type, options)) as never
+export function Partial<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TPartialAction<Type> {
+  return PartialAction(type, options)
 }

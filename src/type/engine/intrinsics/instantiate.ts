@@ -41,7 +41,7 @@ import { type TUncapitalizeDeferred, UncapitalizeDeferred } from '../../action/u
 import { type TUppercaseDeferred, UppercaseDeferred } from '../../action/uppercase.ts'
 
 // ------------------------------------------------------------------
-// Mappings
+// Mapping
 // ------------------------------------------------------------------
 interface TCapitalizeMapping extends TMappingType { output: Capitalize<this['input']> }
 interface TLowercaseMapping extends TMappingType { output: Lowercase<this['input']> }
@@ -54,102 +54,102 @@ const UncapitalizeMapping = (input: string) => input[0].toLowerCase() + input.sl
 const UppercaseMapping = (input: string) => input.toUpperCase()
 
 // ------------------------------------------------------------------
-// Capitalize
+// Action
 // ------------------------------------------------------------------
-type TCapitalizeImmediate<Context extends TProperties, State extends TState, Type extends TSchema,
-  InstantiatedType extends TSchema = TInstantiateType<Context, State, Type>
-> = TFromType<TCapitalizeMapping, InstantiatedType>
-function CapitalizeImmediate<Context extends TProperties, State extends TState, Type extends TSchema>
-  (context: Context, state: State, type: Type, options: TSchemaOptions):
-    TCapitalizeImmediate<Context, State, Type> {
-  const instantiatedType = InstantiateType(context, state, type)
-  return Memory.Update(FromType(CapitalizeMapping, instantiatedType), {}, options) as never
-}
-export type TCapitalizeInstantiate<Context extends TProperties, State extends TState, Type extends TSchema> 
-  = TCanInstantiate<Context, [Type]> extends true
-    ? TCapitalizeImmediate<Context, State, Type>
+export type TCapitalizeAction<Type extends TSchema,
+  Result extends TSchema = TCanInstantiate<[Type]> extends true
+    ? TFromType<TCapitalizeMapping, Type>
     : TCapitalizeDeferred<Type>
-export function CapitalizeInstantiate<Context extends TProperties, State extends TState, Type extends TSchema>
-  (context: Context, state: State, type: Type, options: TSchemaOptions): 
-    TCapitalizeInstantiate<Context, State, Type> {
-  return (
-    CanInstantiate(context, [type])
-      ? CapitalizeImmediate(context, state, type, options)
-      : CapitalizeDeferred(type, options)
-  ) as never
+> = Result
+export function CapitalizeAction<Type extends TSchema>
+  (type: Type, options: TSchemaOptions):
+  TCapitalizeAction<Type> {
+  const result = CanInstantiate([type])
+    ? Memory.Update(FromType(CapitalizeMapping, type), {}, options)
+    : CapitalizeDeferred(type, options)
+  return result as never
 }
-// ------------------------------------------------------------------
-// Lowercase
-// ------------------------------------------------------------------
-type TLowercaseImmediate<Context extends TProperties, State extends TState, Type extends TSchema,
-  InstantiatedType extends TSchema = TInstantiateType<Context, State, Type>
-> = TFromType<TLowercaseMapping, InstantiatedType>
-function LowercaseImmediate<Context extends TProperties, State extends TState, Type extends TSchema>
-  (context: Context, state: State, type: Type, options: TSchemaOptions)
-    : TLowercaseImmediate<Context, State, Type> {
-  const instantiatedType = InstantiateType(context, state, type)
-  return Memory.Update(FromType(LowercaseMapping, instantiatedType), {}, options) as never
-}
-export type TLowercaseInstantiate<Context extends TProperties, State extends TState, Type extends TSchema> 
-  = TCanInstantiate<Context, [Type]> extends true
-    ? TLowercaseImmediate<Context, State, Type>
-    : TLowercaseDeferred<Type>
-export function LowercaseInstantiate<Context extends TProperties, State extends TState, Type extends TSchema>
-  (context: Context, state: State, type: Type, options: TSchemaOptions): 
-    TLowercaseInstantiate<Context, State, Type> {
-  return (
-    CanInstantiate(context, [type])
-      ? LowercaseImmediate(context, state, type, options) as never
-      : LowercaseDeferred(type, options)
-  ) as never
-}
-// ------------------------------------------------------------------
-// Uncapitalize
-// ------------------------------------------------------------------
-type TUncapitalizeImmediate<Context extends TProperties, State extends TState, Type extends TSchema,
-  InstantiatedType extends TSchema = TInstantiateType<Context, State, Type>
-> = TFromType<TUncapitalizeMapping, InstantiatedType>
-function UncapitalizeImmediate<Context extends TProperties, State extends TState, Type extends TSchema>
-  (context: Context, state: State, type: Type, options: TSchemaOptions) {
-  const instantiatedType = InstantiateType(context, state, type)
-  return Memory.Update(FromType(UncapitalizeMapping, instantiatedType), {}, options) as never
-}
-export type TUncapitalizeInstantiate<Context extends TProperties, State extends TState, Type extends TSchema> 
-  = TCanInstantiate<Context, [Type]> extends true
-    ? TUncapitalizeImmediate<Context, State, Type>
-    : TUncapitalizeDeferred<Type>
-export function UncapitalizeInstantiate<Context extends TProperties, State extends TState, Type extends TSchema>
-  (context: Context, state: State, type: Type, options: TSchemaOptions): 
-    TUncapitalizeInstantiate<Context, State, Type> {
-  return (
-    CanInstantiate(context, [type])
-      ? UncapitalizeImmediate(context, state, type, options)
-      : UncapitalizeDeferred(type, options)
-  ) as never
-}
-// ------------------------------------------------------------------
-// Uppercase
-// ------------------------------------------------------------------
-type TUppercaseImmediate<Context extends TProperties, State extends TState, Type extends TSchema,
-  InstantiatedType extends TSchema = TInstantiateType<Context, State, Type>
-> = TFromType<TUppercaseMapping, InstantiatedType>
-function UppercaseImmediate<Context extends TProperties, State extends TState, Type extends TSchema>
-  (context: Context, state: State, type: Type, options: TSchemaOptions):
-    TUppercaseImmediate<Context, State, Type> {
-  const instantiatedType = InstantiateType(context, state, type)
-  return Memory.Update(FromType(UppercaseMapping, instantiatedType), {}, options) as never
-}
-export type TUppercaseInstantiate<Context extends TProperties, State extends TState, Type extends TSchema> 
-  = TCanInstantiate<Context, [Type]> extends true
-    ? TUppercaseImmediate<Context, State, Type>
-    : TUppercaseDeferred<Type>
 
+export type TLowercaseAction<Type extends TSchema,
+  Result extends TSchema = TCanInstantiate<[Type]> extends true
+    ? TFromType<TLowercaseMapping, Type>
+    : TLowercaseDeferred<Type>
+> = Result
+export function LowercaseAction<Type extends TSchema>
+  (type: Type, options: TSchemaOptions):
+  TLowercaseAction<Type> {
+  const result = CanInstantiate([type])
+    ? Memory.Update(FromType(LowercaseMapping, type), {}, options)
+    : LowercaseDeferred(type, options)
+  return result as never
+}
+
+export type TUncapitalizeAction<Type extends TSchema,
+  Result extends TSchema = TCanInstantiate<[Type]> extends true
+    ? TFromType<TUncapitalizeMapping, Type>
+    : TUncapitalizeDeferred<Type>
+> = Result
+export function UncapitalizeAction<Type extends TSchema>
+  (type: Type, options: TSchemaOptions):
+  TUncapitalizeAction<Type> {
+  const result = CanInstantiate([type])
+    ? Memory.Update(FromType(UncapitalizeMapping, type), {}, options)
+    : UncapitalizeDeferred(type, options)
+  return result as never
+}
+
+export type TUppercaseAction<Type extends TSchema,
+  Result extends TSchema = TCanInstantiate<[Type]> extends true
+    ? TFromType<TUppercaseMapping, Type>
+    : TUppercaseDeferred<Type>
+> = Result
+export function UppercaseAction<Type extends TSchema>
+  (type: Type, options: TSchemaOptions):
+  TUppercaseAction<Type> {
+  const result = CanInstantiate([type])
+    ? Memory.Update(FromType(UppercaseMapping, type), {}, options)
+    : UppercaseDeferred(type, options)
+  return result as never
+}
+// ------------------------------------------------------------------
+// Instantiate
+// ------------------------------------------------------------------
+export type TCapitalizeInstantiate<Context extends TProperties, State extends TState, Type extends TSchema,
+  InstantiatedType extends TSchema = TInstantiateType<Context, State, Type>
+> = TCapitalizeAction<InstantiatedType>
+export function CapitalizeInstantiate<Context extends TProperties, State extends TState, Type extends TSchema>
+  (context: Context, state: State, type: Type, options: TSchemaOptions):
+    TCapitalizeInstantiate<Context, State, Type> {
+  const instantiatedType = InstantiateType(context, state, type)
+  return CapitalizeAction(instantiatedType, options)
+}
+
+export type TLowercaseInstantiate<Context extends TProperties, State extends TState, Type extends TSchema,
+  InstantiatedType extends TSchema = TInstantiateType<Context, State, Type>
+> = TLowercaseAction<InstantiatedType>
+export function LowercaseInstantiate<Context extends TProperties, State extends TState, Type extends TSchema>
+  (context: Context, state: State, type: Type, options: TSchemaOptions):
+    TLowercaseInstantiate<Context, State, Type> {
+  const instantiatedType = InstantiateType(context, state, type)
+  return LowercaseAction(instantiatedType, options)
+}
+
+export type TUncapitalizeInstantiate<Context extends TProperties, State extends TState, Type extends TSchema,
+  InstantiatedType extends TSchema = TInstantiateType<Context, State, Type>
+> = TUncapitalizeAction<InstantiatedType>
+export function UncapitalizeInstantiate<Context extends TProperties, State extends TState, Type extends TSchema>
+  (context: Context, state: State, type: Type, options: TSchemaOptions):
+    TUncapitalizeInstantiate<Context, State, Type> {
+  const instantiatedType = InstantiateType(context, state, type)
+  return UncapitalizeAction(instantiatedType, options)
+}
+
+export type TUppercaseInstantiate<Context extends TProperties, State extends TState, Type extends TSchema,
+  InstantiatedType extends TSchema = TInstantiateType<Context, State, Type>
+> = TUppercaseAction<InstantiatedType>
 export function UppercaseInstantiate<Context extends TProperties, State extends TState, Type extends TSchema>
-  (context: Context, state: State, type: Type, options: TSchemaOptions): 
+  (context: Context, state: State, type: Type, options: TSchemaOptions):
     TUppercaseInstantiate<Context, State, Type> {
-  return (
-    CanInstantiate(context, [type])
-      ? UppercaseImmediate(context, state, type, options)
-      : UppercaseDeferred(type, options)
-  ) as never
+  const instantiatedType = InstantiateType(context, state, type)
+  return UppercaseAction(instantiatedType, options)
 }

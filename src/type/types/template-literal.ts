@@ -29,14 +29,14 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 // deno-lint-ignore-file
 
+import { Memory } from '../../system/system.ts'
 import { Guard } from '../../guard/index.ts'
-import { type TSchema, type TSchemaOptions, IsKind } from './schema.ts'
+import { IsSchema, type TSchema, type TSchemaOptions, IsKind } from './schema.ts'
 import { type TDeferred, Deferred } from './deferred.ts'
 
 import { type TParseTemplateIntoTypes, ParseTemplateIntoTypes } from '../engine/patterns/template.ts'
-import { type TInstantiate, Instantiate } from '../engine/instantiate.ts'
 import { type TTemplateLiteralStatic } from '../engine/template-literal/static.ts'
-import { Memory } from '../../system/system.ts'
+import { type TTemplateLiteralAction, TemplateLiteralAction } from '../engine/template-literal/instantiate.ts'
 
 // ------------------------------------------------------------------
 // Static
@@ -57,21 +57,27 @@ export interface TTemplateLiteral<Pattern extends string = string> extends TSche
 // Deferred
 // -------------------------------------------------------------------
 /** Creates a deferred TemplateLiteral action. */
-export type TTemplateLiteralDeferred<Types extends TSchema[]> = (
+export type TTemplateLiteralDeferred<Types extends TSchema[] = TSchema[]> = (
   TDeferred<'TemplateLiteral', [Types]>
 )
 /** Creates a deferred TemplateLiteral action. */
 export function TemplateLiteralDeferred<Types extends TSchema[]>(types: [...Types], options: TSchemaOptions = {}): TTemplateLiteralDeferred<Types> {
   return Deferred('TemplateLiteral', [types], options)
 }
+/** Returns true if this value is a deferred Interface action. */
+export function IsTemplateLiteralDeferred(value: unknown): value is TTemplateLiteralDeferred {
+  return IsSchema(value)
+    && Guard.HasPropertyKey(value, 'action')
+    && Guard.IsEqual(value.action, 'TemplateLiteral')
+}
 // ------------------------------------------------------------------
 // TemplateLiteralFromTypes
 // ------------------------------------------------------------------
 export type TTemplateLiteralFromTypes<Types extends TSchema[],
-  Result extends TSchema = TInstantiate<{}, TTemplateLiteralDeferred<Types>>
+  Result extends TSchema = TTemplateLiteralAction<Types>
 > = Result
 export function TemplateLiteralFromTypes<Types extends TSchema[]>(types: [...Types]): TTemplateLiteralFromTypes<Types> {
-  return Instantiate({}, TemplateLiteralDeferred(types, {}))
+  return TemplateLiteralAction(types, {})
 }
 // ------------------------------------------------------------------
 // TemplateLiteralFromString
@@ -81,7 +87,7 @@ export type TTemplateLiteralFromString<Template extends string,
   Result extends TSchema = TTemplateLiteralFromTypes<Types>
 > = Result
 export function TemplateLiteralFromString<Template extends string>(template: Template): TTemplateLiteralFromString<Template> {
-  const types = ParseTemplateIntoTypes(template) 
+  const types = ParseTemplateIntoTypes(template)
   return TemplateLiteralFromTypes(types) as never
 }
 // ------------------------------------------------------------------

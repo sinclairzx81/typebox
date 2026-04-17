@@ -35,38 +35,32 @@ import { type TState, type TInstantiateType, InstantiateType } from '../instanti
 import { type TEvaluateType, EvaluateType } from './evaluate.ts'
 
 // ------------------------------------------------------------------
-// Immediate
+// Action
+//
+// [instantiation-rule]
+//
+// Evaluate instantiation should never defer on instantiate as the caller is specifically 
+// requesting that the type be evaluated in whatever context is available. However, actions 
+// embedded in the Evaluate call may defer local to themselves.
 // ------------------------------------------------------------------
-type TEvaluateImmediate<Context extends TProperties, State extends TState, Type extends TSchema,
-  InstantiatedType extends TSchema = TInstantiateType<Context, State, Type>
-> = TEvaluateType<InstantiatedType>
-
-function EvaluateImmediate<Context extends TProperties, State extends TState, Type extends TSchema>
-  (context: Context, state: State, type: Type, options: TSchemaOptions): 
-    TEvaluateImmediate<Context, State, Type> {
-  const instantiatedType = InstantiateType(context, state, type)
-  return Memory.Update(EvaluateType(instantiatedType), {}, options) as never
+export type TEvaluateAction<Type extends TSchema,
+  Result extends TSchema = TEvaluateType<Type>
+> = Result
+export function EvaluateAction<Type extends TSchema>
+  (type: Type, options: TSchemaOptions): 
+    TEvaluateAction<Type> {
+  const result = Memory.Update(EvaluateType(type), {}, options)
+  return result as never
 }
 // ------------------------------------------------------------------
 // Instantiate
 // ------------------------------------------------------------------
-export type TEvaluateInstantiate<Context extends TProperties, State extends TState, Type extends TSchema> = 
-  // [instantiation-rule]
-  //
-  // Evaluate instantiation should never defer on instantiate as the caller is specifically 
-  // requesting that the type be evaluated in whatever context is available. However, actions 
-  // embedded in the Evaluate call may defer local to themselves.
-  TEvaluateImmediate<Context, State, Type>
-
+export type TEvaluateInstantiate<Context extends TProperties, State extends TState, Type extends TSchema,
+  InstantiatedType extends TSchema = TInstantiateType<Context, State, Type>
+> = TEvaluateAction<InstantiatedType>
 export function EvaluateInstantiate<Context extends TProperties, State extends TState, Type extends TSchema>
   (context: Context, state: State, type: Type, options: TSchemaOptions): 
     TEvaluateInstantiate<Context, State, Type> {
-  return (
-    // [instantiation-rule]
-    //
-    // Evaluate instantiation should never defer on instantiate as the caller is specifically 
-    // requesting that the type be evaluated in whatever context is available. However, actions 
-    // embedded in the Evaluate call may defer local to themselves.
-    EvaluateImmediate(context, state, type, options)
-  ) as never
+  const instantiatedType = InstantiateType(context, state, type)
+  return EvaluateAction(instantiatedType, options) as never
 }

@@ -33,37 +33,34 @@ import { type TSchema, type TSchemaOptions } from '../../types/schema.ts'
 import { type TProperties } from '../../types/properties.ts'
 import { type TTemplateLiteralDeferred, TemplateLiteralDeferred } from '../../types/template-literal.ts'
 import { type TTemplateLiteralEncode, TemplateLiteralEncode } from './encode.ts'
-
 import { type TState, type TInstantiateTypes, type TCanInstantiate, InstantiateTypes, CanInstantiate } from '../instantiate.ts'
 
 // ------------------------------------------------------------------
-// Immediate
+// Action
 // ------------------------------------------------------------------
-type TTemplateLiteralImmediate<Context extends TProperties, State extends TState, Types extends TSchema[],
-  InstantiatedTypes extends TSchema[] = TInstantiateTypes<Context, State, Types>,
-  Result extends TSchema = TTemplateLiteralEncode<InstantiatedTypes>
+export type TTemplateLiteralAction<Types extends TSchema[],
+  Result extends TSchema = TCanInstantiate<Types> extends true
+    ? TTemplateLiteralEncode<Types>
+    : TTemplateLiteralDeferred<Types>
 > = Result
-
-function TemplateLiteralImmediate<Context extends TProperties, State extends TState, Types extends TSchema[]>
-  (context: Context, state: State, types: [...Types], options: TSchemaOptions): 
-    TTemplateLiteralImmediate<Context, State, Types> {
-  const instaniatedTypes = InstantiateTypes(context, state, types) as TSchema[]
-  return Memory.Update(TemplateLiteralEncode(instaniatedTypes), {}, options) as never
+export function TemplateLiteralAction<Types extends TSchema[]>
+  (types: [...Types], options: TSchemaOptions): 
+    TTemplateLiteralAction<Types> {
+  const result = CanInstantiate(types)
+    ? Memory.Update(TemplateLiteralEncode(types), {}, options)
+    : TemplateLiteralDeferred(types, options)
+  return result as never
 }
 // ------------------------------------------------------------------
 // Instantiate
 // ------------------------------------------------------------------
-export type TTemplateLiteralInstantiate<Context extends TProperties, State extends TState, Types extends TSchema[]> 
-  = TCanInstantiate<Context, Types> extends true
-    ? TTemplateLiteralImmediate<Context, State, Types>
-    : TTemplateLiteralDeferred<Types>
+export type TTemplateLiteralInstantiate<Context extends TProperties, State extends TState, Types extends TSchema[],
+  InstantiatedTypes extends TSchema[] = TInstantiateTypes<Context, State, Types>
+> = TTemplateLiteralAction<InstantiatedTypes>
 
 export function TemplateLiteralInstantiate<Context extends TProperties, State extends TState, Types extends TSchema[]>
   (context: Context, state: State, types: [...Types], options: TSchemaOptions): 
     TTemplateLiteralInstantiate<Context, State, Types> {
-  return (
-    CanInstantiate(context, types)
-      ? TemplateLiteralImmediate(context, state, types, options)
-      : TemplateLiteralDeferred(types, options)
-  ) as never
+  const instantiatedTypes = InstantiateTypes(context, state, types) as TSchema[]
+  return TemplateLiteralAction(instantiatedTypes, options) as never
 }

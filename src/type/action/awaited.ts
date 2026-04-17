@@ -26,12 +26,11 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-lint-ignore-file ban-types
 // deno-fmt-ignore-file
 
 import { type TSchema, type TSchemaOptions } from '../types/schema.ts'
 import { type TDeferred, Deferred } from '../types/deferred.ts'
-import { type TInstantiate, Instantiate } from '../engine/instantiate.ts'
+import { type TAwaitedAction, AwaitedAction } from '../engine/awaited/instantiate.ts'
 
 // ------------------------------------------------------------------
 // Deferred
@@ -48,10 +47,6 @@ export function AwaitedDeferred<Type extends TSchema>(type: Type, options: TSche
 // Type
 // ------------------------------------------------------------------
 /** Applies an Awaited action to a type. */
-export type TAwaited<Type extends TSchema> = (
-  TInstantiate<{}, TAwaitedDeferred<Type>>
-)
-/** Applies an Awaited action to a type. */
-export function Awaited<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TAwaited<Type> {
-  return Instantiate({}, AwaitedDeferred(type, options)) as never
+export function Awaited<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TAwaitedAction<Type> {
+  return AwaitedAction(type, options)
 }

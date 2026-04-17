@@ -28,38 +28,42 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Memory } from '../../../system/memory/index.ts'
-import { type TSchema, type TSchemaOptions } from '../../types/schema.ts'
+import { type TSchema } from '../../types/schema.ts'
 import { type TProperties } from '../../types/properties.ts'
-import { type TFromType, FromType } from './from-type.ts'
-import { type TRequiredDeferred, RequiredDeferred } from '../../action/required.ts'
-import { type TState, type TInstantiateType, InstantiateType, type TCanInstantiate, CanInstantiate } from '../instantiate.ts'
+import { type TAny, IsAny } from '../../types/any.ts'
+import { type TArray, IsArray } from '../../types/array.ts'
+import { type TNever, Never } from '../../types/never.ts'
+import { type TObject, IsObject } from '../../types/object.ts'
+import { type TRecord, IsRecord } from '../../types/record.ts'
+import { type TTuple, IsTuple } from '../../types/tuple.ts'
+
+// ------------------------------------------------------------------
+// Computed
+// ------------------------------------------------------------------
+import { type TFromAny, FromAny } from './from-any.ts'
+import { type TFromArray, FromArray } from './from-array.ts'
+import { type TFromObject, FromObject } from './from-object.ts'
+import { type TFromRecord, FromRecord } from './from-record.ts'
+import { type TFromTuple, FromTuple } from './from-tuple.ts'
 
 // ------------------------------------------------------------------
 // Action
 // ------------------------------------------------------------------
-export type TRequiredAction<Type extends TSchema,
-  Result extends TSchema = TCanInstantiate<[Type]> extends true
-    ? TFromType<Type>
-    : TRequiredDeferred<Type> 
-> = Result
-export function RequiredAction<Type extends TSchema>
-  (type: Type, options: TSchemaOptions): 
-    TRequiredAction<Type> {
-  const result = CanInstantiate([type])
-    ? Memory.Update(FromType(type), {}, options)
-    : RequiredDeferred(type, options)
-  return result as never
-}
-// ------------------------------------------------------------------
-// Instantiate
-// ------------------------------------------------------------------
-export type TRequiredInstantiate<Context extends TProperties, State extends TState, Type extends TSchema,
-  InstantiatedType extends TSchema = TInstantiateType<Context, State, Type>
-> = TRequiredAction<InstantiatedType>
-export function RequiredInstantiate<Context extends TProperties, State extends TState, Type extends TSchema>
-  (context: Context, state: State, type: Type, options: TSchemaOptions): 
-    TRequiredInstantiate<Context, State, Type> {
-  const instaniatedType = InstantiateType(context, state, type)
-  return RequiredAction(instaniatedType, options) as never
+export type TFromType<Type extends TSchema> = (
+  Type extends TAny ? TFromAny :
+  Type extends TArray<infer Type extends TSchema> ? TFromArray<Type> :
+  Type extends TObject<infer Properties extends TProperties> ? TFromObject<Properties> :
+  Type extends TRecord ? TFromRecord<Type> :
+  Type extends TTuple<infer Types extends TSchema[]> ? TFromTuple<Types> :
+  TNever
+)
+export function FromType<Type extends TSchema>(type: Type): TFromType<Type> {
+  return (
+    IsAny(type) ? FromAny() :
+    IsArray(type) ? FromArray(type.items) :
+    IsObject(type) ? FromObject(type.properties) :
+    IsRecord(type) ? FromRecord(type) :
+    IsTuple(type) ? FromTuple(type.items) :
+    Never()
+  ) as never
 }

@@ -34,39 +34,36 @@ import { type TSchema, type TSchemaOptions } from '../../types/schema.ts'
 import { type TProperties } from '../../types/properties.ts'
 import { type TRecordDeferred, RecordDeferred } from '../../types/record.ts'
 import { type TFromKey, FromKey } from './from-key.ts'
-
 import { type TState, type TInstantiateType, type TCanInstantiate, InstantiateType, CanInstantiate } from '../instantiate.ts'
 
 // ------------------------------------------------------------------
-// Immediate
+// Action
 // ------------------------------------------------------------------
-type TRecordImmediate<Context extends TProperties, State extends TState, Key extends TSchema, Value extends TSchema,
-  InstantatedKey extends TSchema = TInstantiateType<Context, State, Key>,
-  InstantiatedValue extends TSchema = TInstantiateType<Context, State, Value>,
-  Result extends TSchema = TFromKey<InstantatedKey, InstantiatedValue>
+export type TRecordAction<Key extends TSchema, Value extends TSchema,
+  Result extends TSchema = TCanInstantiate<[Key]> extends true
+    ? TFromKey<Key, Value>
+    : TRecordDeferred<Key, Value>
 > = Result
-
-function RecordImmediate<Context extends TProperties, State extends TState, Key extends TSchema, Value extends TSchema>
-  (context: Context, state: State, key: Key, value: Value, options: TSchemaOptions): 
-    TRecordImmediate<Context, State, Key, Value> {
-  const instanstiatedKey = InstantiateType(context, state, key)
-  const instantiatedValue = InstantiateType(context, state, value)
-  return Memory.Update(FromKey(instanstiatedKey, instantiatedValue), {}, options) as never
+export function RecordAction<Key extends TSchema, Value extends TSchema>
+  (key: Key, value: Value, options: TSchemaOptions): 
+    TRecordAction<Key, Value> {
+  const result = CanInstantiate([key])
+    ? Memory.Update(FromKey(key, value), {}, options)
+    : RecordDeferred(key, value, options)
+  return result as never
 }
 // ------------------------------------------------------------------
 // Instantiate
 // ------------------------------------------------------------------
-export type TRecordInstantiate<Context extends TProperties, State extends TState, Key extends TSchema, Value extends TSchema> 
-  = TCanInstantiate<Context, [Key]> extends true
-    ? TRecordImmediate<Context, State, Key, Value>
-    : TRecordDeferred<Key, Value>
+export type TRecordInstantiate<Context extends TProperties, State extends TState, Key extends TSchema, Value extends TSchema,
+  InstantiatedKey extends TSchema = TInstantiateType<Context, State, Key>,
+  InstantiatedValue extends TSchema = TInstantiateType<Context, State, Value>,
+> = TRecordAction<InstantiatedKey, InstantiatedValue>
 
 export function RecordInstantiate<Context extends TProperties, State extends TState, Key extends TSchema, Value extends TSchema>
   (context: Context, state: State, key: Key, value: Value, options: TSchemaOptions): 
     TRecordInstantiate<Context, State, Key, Value> {
-  return (
-    CanInstantiate(context, [key])
-      ? RecordImmediate(context, state, key, value, options)
-      : RecordDeferred(key, value, options)
-  ) as never
+  const instantiatedKey = InstantiateType(context, state, key)
+  const instantiatedValue = InstantiateType(context, state, value)
+  return RecordAction(instantiatedKey, instantiatedValue, options)
 }

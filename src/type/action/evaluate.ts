@@ -26,12 +26,11 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-lint-ignore-file ban-types
 // deno-fmt-ignore-file
 
 import { type TSchema, type TSchemaOptions } from '../types/schema.ts'
 import { type TDeferred, Deferred } from '../types/deferred.ts'
-import { type TInstantiate, Instantiate } from '../engine/instantiate.ts'
+import { type TEvaluateAction, EvaluateAction } from '../engine/evaluate/instantiate.ts'
 
 // ------------------------------------------------------------------
 // Deferred
@@ -48,10 +47,6 @@ export function EvaluateDeferred<Type extends TSchema>(type: Type, options: TSch
 // Type
 // ------------------------------------------------------------------
 /** Applies an Evaluate action to a type. */
-export type TEvaluate<Type extends TSchema> = (
-  TInstantiate<{}, TEvaluateDeferred<Type>>
-)
-/** Applies an Evaluate action to a type. */
-export function Evaluate<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TEvaluate<Type> {
-  return Instantiate({}, EvaluateDeferred(type, options)) as never
+export function Evaluate<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TEvaluateAction<Type> {
+  return EvaluateAction(type, options) as never
 }

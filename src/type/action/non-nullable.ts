@@ -26,12 +26,11 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-lint-ignore-file ban-types
 // deno-fmt-ignore-file
 
 import { type TSchema, type TSchemaOptions } from '../types/schema.ts'
 import { type TDeferred, Deferred } from '../types/deferred.ts'
-import { type TInstantiate, Instantiate } from '../engine/instantiate.ts'
+import { type TNonNullableAction, NonNullableAction } from '../engine/non-nullable/instantiate.ts'
 
 // ------------------------------------------------------------------
 // Deferred
@@ -48,10 +47,6 @@ export function NonNullableDeferred<Type extends TSchema>(type: Type, options: T
 // Type
 // ------------------------------------------------------------------
 /** Applies a NonNullable action to the given type. */
-export type TNonNullable<Type extends TSchema> = (
-  TInstantiate<{}, TNonNullableDeferred<Type>>
-)
-/** Applies a NonNullable action to the given type. */
-export function NonNullable<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TNonNullable<Type> {
-  return Instantiate({}, NonNullableDeferred(type, options)) as never
+export function NonNullable<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TNonNullableAction<Type> {
+  return NonNullableAction(type, options) as never
 }

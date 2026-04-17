@@ -26,12 +26,11 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-lint-ignore-file ban-types
 // deno-fmt-ignore-file
 
 import { type TSchema, type TSchemaOptions } from '../types/schema.ts'
 import { type TDeferred, Deferred } from '../types/deferred.ts'
-import { type TInstantiate, Instantiate } from '../engine/instantiate.ts'
+import { type TReturnTypeAction, ReturnTypeAction } from '../engine/return-type/instantiate.ts'
 
 // ------------------------------------------------------------------
 // Deferred
@@ -48,10 +47,6 @@ export function ReturnTypeDeferred<Type extends TSchema>(type: Type, options: TS
 // Type
 // ------------------------------------------------------------------
 /** Applies a ReturnType action to the given type. */
-export type TReturnType<Type extends TSchema> = (
-  TInstantiate<{}, TReturnTypeDeferred<Type>>
-)
-/** Applies a ReturnType action to the given type. */
-export function ReturnType<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TReturnType<Type> {
-  return Instantiate({}, ReturnTypeDeferred(type, options)) as never
+export function ReturnType<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TReturnTypeAction<Type> {
+  return ReturnTypeAction(type, options) as never
 }

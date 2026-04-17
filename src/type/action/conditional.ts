@@ -31,7 +31,7 @@ THE SOFTWARE.
 
 import { type TSchema, type TSchemaOptions } from '../types/schema.ts'
 import { type TDeferred, Deferred } from '../types/deferred.ts'
-import { type TInstantiate, Instantiate } from '../engine/instantiate.ts'
+import { type TConditionalAction, ConditionalAction } from '../engine/conditional/instantiate.ts'
 
 // ------------------------------------------------------------------
 // Deferred
@@ -41,17 +41,17 @@ export type TConditionalDeferred<Left extends TSchema, Right extends TSchema, Tr
   TDeferred<'Conditional', [Left, Right, True, False]> 
 )
 /** Creates a deferred Conditional action. */
-export function ConditionalDeferred<Left extends TSchema, Right extends TSchema, True extends TSchema, False extends TSchema>(left: Left, right: Right, true_: True, false_: False, options: TSchemaOptions = {}): TConditionalDeferred<Left, Right, True, False> {
+export function ConditionalDeferred<Left extends TSchema, Right extends TSchema, True extends TSchema, False extends TSchema>
+  (left: Left, right: Right, true_: True, false_: False, options: TSchemaOptions = {}): 
+    TConditionalDeferred<Left, Right, True, False> {
   return Deferred('Conditional', [left, right, true_, false_], options) as never
 }
 // ------------------------------------------------------------------
 // Type
 // ------------------------------------------------------------------
 /** Applies a Conditional action to the given types. */
-export type TConditional<Left extends TSchema, Right extends TSchema, True extends TSchema, False extends TSchema> = (
-  TInstantiate<{}, TConditionalDeferred<Left, Right, True, False>>
-)
-/** Applies a Conditional action to the given types. */
-export function Conditional<Left extends TSchema, Right extends TSchema, True extends TSchema, False extends TSchema>(left: Left, right: Right, true_: True, false_: False, options: TSchemaOptions = {}): TConditional<Left, Right, True, False> {
-  return Instantiate({}, ConditionalDeferred(left, right, true_, false_, options)) as never
+export function Conditional<Left extends TSchema, Right extends TSchema, True extends TSchema, False extends TSchema>
+  (left: Left, right: Right, true_: True, false_: False, options: TSchemaOptions = {}): 
+    TConditionalAction<{}, { callstack: [] }, Left, Right, True, False> {
+  return ConditionalAction({}, { callstack: [] }, left, right, true_, false_, options) as never
 }

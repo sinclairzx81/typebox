@@ -26,14 +26,13 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-lint-ignore-file ban-types
 // deno-fmt-ignore-file
 
 import { Guard } from '../../guard/index.ts'
 import { type TSchema, type TSchemaOptions } from '../types/schema.ts'
 import { type TDeferred, Deferred } from '../types/deferred.ts'
 import { type TKeysToIndexer, KeysToIndexer } from '../engine/helpers/keys-to-indexer.ts'
-import { type TInstantiate, Instantiate } from '../engine/instantiate.ts'
+import { type TIndexAction, IndexAction } from '../engine/indexed/instantiate.ts'
 
 // ------------------------------------------------------------------
 // Deferred
@@ -50,15 +49,11 @@ export function IndexDeferred<Type extends TSchema, Indexer extends TSchema>(typ
 // Index
 // ------------------------------------------------------------------
 /** Applies a Index action using the given types. */
-export type TIndex<Type extends TSchema, Indexer extends TSchema> = (
-  TInstantiate<{}, TIndexDeferred<Type, Indexer>>
-)
+export function Index<Type extends TSchema, Indexer extends PropertyKey[]>(type: Type, indexer: readonly [...Indexer], options?: TSchemaOptions): TIndexAction<Type, TKeysToIndexer<Indexer>>
 /** Applies a Index action using the given types. */
-export function Index<Type extends TSchema, Indexer extends PropertyKey[]>(type: Type, indexer: readonly [...Indexer], options?: TSchemaOptions): TIndex<Type, TKeysToIndexer<Indexer>>
-/** Applies a Index action using the given types. */
-export function Index<Type extends TSchema, Indexer extends TSchema>(type: Type, indexer: Indexer, options?: TSchemaOptions): TIndex<Type, Indexer> 
+export function Index<Type extends TSchema, Indexer extends TSchema>(type: Type, indexer: Indexer, options?: TSchemaOptions): TIndexAction<Type, Indexer> 
 /** Applies a Index action using the given types. */
 export function Index(type: TSchema, indexer_or_keys: PropertyKey[] | TSchema, options: TSchemaOptions = {}): never {
   const indexer = Guard.IsArray(indexer_or_keys) ? KeysToIndexer(indexer_or_keys as PropertyKey[]) : indexer_or_keys
-  return Instantiate({}, IndexDeferred(type, indexer, options)) as never
+  return IndexAction(type, indexer, options) as never
 }

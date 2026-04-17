@@ -26,12 +26,11 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-lint-ignore-file ban-types
 // deno-fmt-ignore-file
 
 import { type TSchema, type TSchemaOptions } from '../types/schema.ts'
 import { type TDeferred, Deferred } from '../types/deferred.ts'
-import { type TInstantiate, Instantiate } from '../engine/instantiate.ts'
+import { type TUppercaseAction, UppercaseAction } from '../engine/intrinsics/instantiate.ts'
 
 // ------------------------------------------------------------------
 // Deferred
@@ -48,10 +47,6 @@ export function UppercaseDeferred<Type extends TSchema>(type: Type, options: TSc
 // Type
 // ------------------------------------------------------------------
 /** Applies a Uppercase action to the given type. */
-export type TUppercase<Type extends TSchema> = (
-  TInstantiate<{}, TUppercaseDeferred<Type>>
-)
-/** Applies a Uppercase action to the given type. */
-export function Uppercase<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TUppercase<Type> {
-  return Instantiate({}, UppercaseDeferred(type, options)) as never
+export function Uppercase<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TUppercaseAction<Type> {
+  return UppercaseAction(type, options) as never
 }

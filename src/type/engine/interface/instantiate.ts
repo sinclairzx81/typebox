@@ -35,41 +35,49 @@ import { type TObject, Object } from '../../types/object.ts'
 import { type TEvaluateIntersect, EvaluateIntersect } from '../evaluate/evaluate.ts'
 import { type TInterfaceDeferred, InterfaceDeferred } from '../../action/index.ts'
 import { type TState, type TCanInstantiate, CanInstantiate } from '../instantiate.ts'
-
 import { type TInstantiateProperties, InstantiateProperties } from '../instantiate.ts'
 import { type TInstantiateTypes, InstantiateTypes } from '../instantiate.ts'
 
 // ------------------------------------------------------------------
-// Immediate
+// Operation
 // ------------------------------------------------------------------
-type TInterfaceImmediate<Context extends TProperties, State extends TState, Heritage extends TSchema[], Properties extends TProperties,
-  InstantiatedHeritage extends TSchema[] = TInstantiateTypes<Context, { callstack: [] }, Heritage>,  
-  instantiatedProperties extends TProperties = TInstantiateProperties<Context, { callstack: [] }, Properties>,
-  EvaluatedInterface extends TSchema = TEvaluateIntersect<[...InstantiatedHeritage, TObject<instantiatedProperties>]>
-> = EvaluatedInterface
-
-function InterfaceImmediate<Context extends TProperties, State extends TState, Heritage extends TSchema[], Properties extends TProperties>
-  (context: Context, _state: State, heritage: [...Heritage], properties: Properties, options: TSchemaOptions): 
-    TInterfaceImmediate<Context, State, Heritage, Properties> {
-  const instantiatedHeritage = InstantiateTypes(context, { callstack: [] }, heritage) as TSchema[]
-  const instantiatedProperties = InstantiateProperties(context, { callstack: [] }, properties) as TProperties
-  const evaluatedInterface = EvaluateIntersect([...instantiatedHeritage, Object(instantiatedProperties)])
-  return Memory.Update(evaluatedInterface, {}, options) as never
+type TInterfaceOperation<Heritage extends TSchema[], Properties extends TProperties,
+  Result extends TSchema = TEvaluateIntersect<[...Heritage, TObject<Properties>]>
+> = Result
+function InterfaceOperation<Heritage extends TSchema[], Properties extends TProperties>
+  (heritage: [...Heritage], properties: Properties):
+    TInterfaceOperation<Heritage, Properties> {
+  const result = EvaluateIntersect([...heritage, Object(properties)])
+  return result as never
+}
+// ------------------------------------------------------------------
+// Action
+// ------------------------------------------------------------------
+export type TInterfaceAction<Heritage extends TSchema[], Properties extends TProperties,
+  Result extends TSchema = TCanInstantiate<Heritage> extends true
+  ? TInterfaceOperation<Heritage, Properties>
+  : TInterfaceDeferred<Heritage, Properties>
+> = Result
+export function InterfaceAction<Heritage extends TSchema[], Properties extends TProperties>
+  (heritage: [...Heritage], properties: Properties, options: TSchemaOptions):
+    TInterfaceAction<Heritage, Properties> {
+  const result = CanInstantiate(heritage)
+    ? Memory.Update(InterfaceOperation(heritage, properties), {}, options)
+    : InterfaceDeferred(heritage, properties, options)
+  return result as never
 }
 // ------------------------------------------------------------------
 // Instantiate
 // ------------------------------------------------------------------
-export type TInterfaceInstantiate<Context extends TProperties, State extends TState, Heritage extends TSchema[], Properties extends TProperties> 
-  = TCanInstantiate<Context, Heritage> extends true
-    ? TInterfaceImmediate<Context, State, Heritage, Properties>
-    : TInterfaceDeferred<Heritage, Properties>
+export type TInterfaceInstantiate<Context extends TProperties, State extends TState, Heritage extends TSchema[], Properties extends TProperties,
+  InstantiatedHeritage extends TSchema[] = TInstantiateTypes<Context, { callstack: [] }, Heritage>,
+  InstantiatedProperties extends TProperties = TInstantiateProperties<Context, { callstack: [] }, Properties>,
+> = TInterfaceAction<InstantiatedHeritage, InstantiatedProperties>
 
 export function InterfaceInstantiate<Context extends TProperties, State extends TState, Heritage extends TSchema[], Properties extends TProperties>
-  (context: Context, state: State, heritage: [...Heritage], properties: Properties, options: TSchemaOptions): 
+  (context: Context, state: State, heritage: [...Heritage], properties: Properties, options: TSchemaOptions):
     TInterfaceInstantiate<Context, State, Heritage, Properties> {
-  return (
-    CanInstantiate(context, heritage)
-      ? InterfaceImmediate(context, state, heritage, properties, options) as never
-      : InterfaceDeferred(heritage, properties, options)
-  ) as never
+  const instantiatedHeritage = InstantiateTypes(context, state, heritage) as TSchema[]
+  const instantiatedProperties = InstantiateProperties(context, state, properties) as TProperties
+  return InterfaceAction(instantiatedHeritage, instantiatedProperties, options) as never
 }
