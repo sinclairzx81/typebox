@@ -68,7 +68,7 @@ type XFromKeywords<Stack extends string[], Root extends XSchema, Schema extends 
   Schema extends XAllOf<infer Types extends XSchema[]> ? XStaticAllOf<Stack, Root, Types> : unknown,
   Schema extends XAnyOf<infer Types extends XSchema[]> ? XStaticAnyOf<Stack, Root, Types> : unknown,
   Schema extends XConst<infer Value extends unknown> ? XStaticConst<Value> : unknown,
-  Schema extends XIf<infer Type extends XSchema> ? XStaticIf<Stack, Root, Schema, Type> :
+  Schema extends XIf<infer Type extends XSchema> ? XStaticIf<Stack, Root, Schema, Type> : unknown,
   Schema extends XEnum<infer Values extends unknown[]> ? XStaticEnum<Values> : unknown,
   Schema extends XItems<infer Types extends XSchema[] | XSchema> ? XStaticItems<Stack, Root, Schema, Types> : unknown,
   Schema extends XOneOf<infer Types extends XSchema[]> ? XStaticOneOf<Stack, Root, Types> : unknown,
