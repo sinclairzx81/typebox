@@ -29,31 +29,32 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 // ------------------------------------------------------------------
-// Tuple
+// CanonicalTuple
 // ------------------------------------------------------------------
-type XFromTuple<Value extends readonly unknown[]> = (
+type XCanonicalTuple<Value extends readonly unknown[]> = (
   Value extends [infer Left, ...infer Right extends unknown[]] 
-    ? [XNonReadonly<Left>, ...XFromTuple<Right>]
+    ? [XCanonical<Left>, ...XCanonicalTuple<Right>]
     : []
 )
 // ------------------------------------------------------------------
-// Array
+// CanonicalArray
 // ------------------------------------------------------------------
-type XFromArray<Value extends unknown, 
-  Result extends unknown[] = XNonReadonly<Value>[]
+type XCanonicalArray<Value extends unknown, 
+  Result extends unknown[] = XCanonical<Value>[]
 > = Result
 // ------------------------------------------------------------------
-// Object
+// CanonicalObject
 // ------------------------------------------------------------------
-type XFromObject< Value extends object, Result extends Record<PropertyKey, unknown> = {
-  -readonly [K in keyof Value]: XNonReadonly<Value[K]>
+type XCanonicalObject< Value extends object, Result extends Record<PropertyKey, unknown> = {
+  -readonly [Key in keyof Value]: XCanonical<Value[Key]>
 }> = Result
+
 // ------------------------------------------------------------------
-// Mutable
+// Canonical (i.e. Non-Readonly)
 // ------------------------------------------------------------------
-export type XNonReadonly<Value extends unknown> = (
-  Value extends readonly [...infer Schemas extends unknown[]] ? XFromTuple<Schemas> : 
-  Value extends readonly (infer Schema)[] ? XFromArray<Schema> : 
-  Value extends object ? XFromObject<Value> : 
-  Value
+export type XCanonical<Schema extends unknown> = (
+  Schema extends readonly [...infer Schemas extends unknown[]] ? XCanonicalTuple<Schemas> : 
+  Schema extends readonly (infer Schema)[] ? XCanonicalArray<Schema> : 
+  Schema extends object ? XCanonicalObject<Schema> : 
+  Schema
 )

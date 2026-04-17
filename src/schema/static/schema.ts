@@ -44,7 +44,6 @@ import type { XRequired } from '../types/required.ts'
 import type { XSchema } from '../types/schema.ts'
 import type { XType } from '../types/type.ts'
 import type { XUnevaluatedProperties } from '../types/unevaluatedProperties.ts'
-
 import type { XStaticAdditionalProperties } from './additionalProperties.ts'
 import type { XStaticAllOf } from './allOf.ts'
 import type { XStaticAnyOf } from './anyOf.ts'
@@ -69,13 +68,13 @@ type XFromKeywords<Stack extends string[], Root extends XSchema, Schema extends 
   Schema extends XAllOf<infer Types extends XSchema[]> ? XStaticAllOf<Stack, Root, Types> : unknown,
   Schema extends XAnyOf<infer Types extends XSchema[]> ? XStaticAnyOf<Stack, Root, Types> : unknown,
   Schema extends XConst<infer Value extends unknown> ? XStaticConst<Value> : unknown,
-  Schema extends XIf<infer Type extends XSchema> ? XStaticIf<Stack, Root, Schema, Type> :
+  Schema extends XIf<infer Type extends XSchema> ? XStaticIf<Stack, Root, Schema, Type> : unknown,
   Schema extends XEnum<infer Values extends unknown[]> ? XStaticEnum<Values> : unknown,
   Schema extends XItems<infer Types extends XSchema[] | XSchema> ? XStaticItems<Stack, Root, Schema, Types> : unknown,
   Schema extends XOneOf<infer Types extends XSchema[]> ? XStaticOneOf<Stack, Root, Types> : unknown,
   Schema extends XPatternProperties<infer Properties extends Record<PropertyKey, XSchema>> ? XStaticPatternProperties<Stack, Root, Properties> : unknown,
   Schema extends XPrefixItems<infer Types extends XSchema[]> ? XStaticPrefixItems<Stack, Root, Schema, Types> : unknown,
-  Schema extends XProperties<infer Properties extends Record<PropertyKey, XSchema>> ? XStaticProperties<Stack, Root, Properties> : unknown,
+  Schema extends XProperties<infer Properties extends Record<PropertyKey, XSchema>> ? XStaticProperties<Stack, Root, Schema, Properties> : unknown,
   Schema extends XRef<infer Ref extends string> ? XStaticRef<Stack, Root, Ref> : unknown,
   Schema extends XRequired<infer Keys extends string[]> ? XStaticRequired<Stack, Root, Schema, Keys> : unknown,
   Schema extends XType<infer TypeName extends string[] | string> ? XStaticType<TypeName> : unknown,
