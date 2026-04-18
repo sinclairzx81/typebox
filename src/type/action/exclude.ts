@@ -26,12 +26,11 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-lint-ignore-file ban-types
 // deno-fmt-ignore-file
 
 import { type TSchema, type TSchemaOptions } from '../types/schema.ts'
 import { type TDeferred, Deferred } from '../types/deferred.ts'
-import { type TInstantiate, Instantiate } from '../engine/instantiate.ts'
+import { type TExcludeAction, ExcludeAction } from '../engine/exclude/instantiate.ts'
 
 // ------------------------------------------------------------------
 // Deferred
@@ -49,9 +48,9 @@ export function ExcludeDeferred<Left extends TSchema, Right extends TSchema>(lef
 // ------------------------------------------------------------------
 /** Applies a Exclude action using the given types */
 export type TExclude<Left extends TSchema, Right extends TSchema> = (
-  TInstantiate<{}, TExcludeDeferred<Left, Right>>
+  TExcludeAction<Left, Right>
 )
 /** Applies a Exclude action using the given types */
 export function Exclude<Left extends TSchema, Right extends TSchema>(left: Left, right: Right, options: TSchemaOptions = {}): TExclude<Left, Right> {
-  return Instantiate({}, ExcludeDeferred(left, right, options)) as never
+  return ExcludeAction(left, right, options)
 }

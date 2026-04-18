@@ -34,51 +34,46 @@ import { type TProperties } from '../../types/properties.ts'
 import { type TConstructor, IsConstructor } from '../../types/constructor.ts'
 import { type TNever, Never } from '../../types/never.ts'
 import { type TInstanceTypeDeferred, InstanceTypeDeferred } from '../../action/instance-type.ts'
-
 import { type TState, type TInstantiateType, type TCanInstantiate, InstantiateType, CanInstantiate } from '../instantiate.ts'
 
 // ------------------------------------------------------------------
-// Action
+// Operation
 // ------------------------------------------------------------------
-type TInstanceTypeAction<Type extends TSchema> = (
-  Type extends TConstructor<infer _Parameters extends TSchema[], infer InstanceType extends TSchema> 
-    ? InstanceType
+type TInstanceTypeOperation<Type extends TSchema> = (
+  Type extends TConstructor
+    ? Type['instanceType']
     : TNever
 )
-function InstanceTypeAction<Type extends TSchema>(type: Type): TInstanceTypeAction<Type> {
+function InstanceTypeOperation<Type extends TSchema>(type: Type): TInstanceTypeAction<Type> {
   return (
-    IsConstructor(type) 
-      ? type.instanceType
+    IsConstructor(type)
+      ? type['instanceType']
       : Never()
   ) as never
 }
 // ------------------------------------------------------------------
-// Immediate
+// Action
 // ------------------------------------------------------------------
-export type TInstanceTypeImmediate<Context extends TProperties, State extends TState, Type extends TSchema,
-  InstantiatedType extends TSchema = TInstantiateType<Context, State, Type>
-> = TInstanceTypeAction<InstantiatedType>
-
-export function InstanceTypeImmediate<Context extends TProperties, State extends TState, Type extends TSchema>
-  (context: Context, state: State, type: Type, options: TSchemaOptions): 
-    TInstanceTypeImmediate<Context, State, Type> {
-  const instantiatedType = InstantiateType(context, state, type)
-  return Memory.Update(InstanceTypeAction(instantiatedType), {}, options) as never
+export type TInstanceTypeAction<Type extends TSchema,
+  Result extends TSchema = TCanInstantiate<[Type]> extends true
+    ? TInstanceTypeOperation<Type>
+    : TInstanceTypeDeferred<Type>
+> = Result
+export function InstanceTypeAction<Type extends TSchema>(type: Type, options: TSchemaOptions): TInstanceTypeAction<Type> {
+  const result = CanInstantiate([type])
+    ? Memory.Update(InstanceTypeOperation(type), {}, options)
+    : InstanceTypeDeferred(type, options)
+  return result as never
 }
 // ------------------------------------------------------------------
 // Instantiate
 // ------------------------------------------------------------------
-export type TInstanceTypeInstantiate<Context extends TProperties, State extends TState, Type extends TSchema> 
-  = TCanInstantiate<Context, [Type]> extends true
-    ? TInstanceTypeImmediate<Context, State, Type>
-    : TInstanceTypeDeferred<Type>
-
+export type TInstanceTypeInstantiate<Context extends TProperties, State extends TState, Type extends TSchema,
+  InstantiatedType extends TSchema = TInstantiateType<Context, State, Type>
+> = TInstanceTypeAction<InstantiatedType>
 export function InstanceTypeInstantiate<Context extends TProperties, State extends TState, Type extends TSchema>
   (context: Context, state: State, type: Type, options: TSchemaOptions = {}): 
     TInstanceTypeInstantiate<Context, State, Type> {
-  return (
-    CanInstantiate(context, [type])
-      ? InstanceTypeImmediate(context, state, type, options)
-      : InstanceTypeDeferred(type, options)
-  ) as never
+  const instantiatedType = InstantiateType(context, state, type)
+  return InstanceTypeAction(instantiatedType, options)
 }

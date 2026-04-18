@@ -33,54 +33,57 @@ import { Memory } from '../../../system/memory/index.ts'
 import { type TSchema, type TSchemaOptions } from '../../types/schema.ts'
 import { type TProperties } from '../../types/properties.ts'
 import { type TConstructor, IsConstructor } from '../../types/constructor.ts'
-import { type TNever, Never } from '../../types/never.ts'
 import { type TTuple, Tuple } from '../../types/tuple.ts'
 import { type TConstructorParametersDeferred, ConstructorParametersDeferred } from '../../action/constructor-parameters.ts'
+import { type TState, type TInstantiateType, InstantiateType, type TCanInstantiate, CanInstantiate } from '../instantiate.ts'
 
-import { type TState, type TInstantiateType, type TCanInstantiate, InstantiateType, CanInstantiate } from '../instantiate.ts'
+import { type TInstantiateElements, InstantiateElements } from '../instantiate.ts'
 
+// ------------------------------------------------------------------
+// Operation
+//
+// We need to push Parameters through an Instantiate call to ensure
+// Rest elements are spread on the resulting Tuple. This is likely
+// best handled another way, but will keep until additional work
+// is done to handle unsized Tuple.
+//
+// ------------------------------------------------------------------
+type TConstructorParametersOperation<Type extends TSchema,
+  Parameters extends TSchema[] = Type extends TConstructor ? Type['parameters'] : [],
+  InstantiatedParameters extends TSchema[] = TInstantiateElements<{}, { callstack: [] }, Parameters>,
+  Result extends TSchema = TTuple<InstantiatedParameters>
+> = Result
+function ConstructorParametersOperation<Type extends TSchema>(type: Type): TConstructorParametersOperation<Type> {
+  const parameters = IsConstructor(type) ? type['parameters'] : []
+  const instantiatedParameters = InstantiateElements({}, { callstack: [] }, parameters)
+  const result = Tuple(instantiatedParameters)
+  return result as never
+}
 // ------------------------------------------------------------------
 // Action
 // ------------------------------------------------------------------
-type TConstructorParametersAction<Type extends TSchema> = (
-  Type extends TConstructor<infer Parameters extends TSchema[], infer _ extends TSchema> 
-    ? TInstantiateType<{}, { callstack: [] }, TTuple<Parameters>>
-    : TNever
-)
-function ConstructorParametersAction<Type extends TSchema>(type: Type): TConstructorParametersAction<Type> {
-  return (
-    IsConstructor(type)
-      ? InstantiateType({}, { callstack: [] }, Tuple(type.parameters))
-      : Never()
-  ) as never
-}
-// ------------------------------------------------------------------
-// Immediate
-// ------------------------------------------------------------------
-type TConstructorParametersImmediate<Context extends TProperties, State extends TState, Type extends TSchema,
-  InstantiatedType extends TSchema = TInstantiateType<Context, State, Type>
-> = TConstructorParametersAction<InstantiatedType>
-
-function ConstructorParametersImmediate<Context extends TProperties, State extends TState, Type extends TSchema>
-  (context: Context, state: State, type: Type, options: TSchemaOptions): 
-    TConstructorParametersImmediate<Context, State, Type> {
-  const instantiatedType = InstantiateType(context, state, type)
-  return Memory.Update(ConstructorParametersAction(instantiatedType), {}, options) as never
+export type TConstructorParametersAction<Type extends TSchema,
+  Result extends TSchema = TCanInstantiate<[Type]> extends true
+    ? TConstructorParametersOperation<Type>
+    : TConstructorParametersDeferred<Type>
+> = Result
+export function ConstructorParametersAction<Type extends TSchema>
+  (type: Type, options: TSchemaOptions): 
+    TConstructorParametersAction<Type> {
+  const result = CanInstantiate([type])
+      ? Memory.Update(ConstructorParametersOperation(type), {}, options)
+      : ConstructorParametersDeferred(type, options)
+  return result as never
 }
 // ------------------------------------------------------------------
 // Instantiate
 // ------------------------------------------------------------------
-export type TConstructorParametersInstantiate<Context extends TProperties, State extends TState, Type extends TSchema> 
-  = TCanInstantiate<Context, [Type]> extends true
-    ? TConstructorParametersImmediate<Context, State, Type>
-    : TConstructorParametersDeferred<Type>
-
+export type TConstructorParametersInstantiate<Context extends TProperties, State extends TState, Type extends TSchema,
+  InstantiatedType extends TSchema = TInstantiateType<Context, State, Type>
+> = TConstructorParametersAction<InstantiatedType>
 export function ConstructorParametersInstantiate<Context extends TProperties, State extends TState, Type extends TSchema>
   (context: Context, state: State, type: Type, options: TSchemaOptions): 
     TConstructorParametersInstantiate<Context, State, Type> {
-  return (
-    CanInstantiate(context, [type])
-    ? ConstructorParametersImmediate(context, state, type, options)
-    : ConstructorParametersDeferred(type, options)
-  ) as never
+  const instantiatedType = InstantiateType(context, state, type)
+  return ConstructorParametersAction(instantiatedType, options)
 }

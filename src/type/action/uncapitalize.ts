@@ -26,12 +26,11 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-lint-ignore-file ban-types
 // deno-fmt-ignore-file
 
 import { type TSchema, type TSchemaOptions } from '../types/schema.ts'
 import { type TDeferred, Deferred } from '../types/deferred.ts'
-import { type TInstantiate, Instantiate } from '../engine/instantiate.ts'
+import { type TUncapitalizeAction, UncapitalizeAction } from '../engine/intrinsics/instantiate.ts'
 
 // ------------------------------------------------------------------
 // Deferred
@@ -49,9 +48,9 @@ export function UncapitalizeDeferred<Type extends TSchema>(type: Type, options: 
 // ------------------------------------------------------------------
 /** Applies a Uncapitalize action to the given type. */
 export type TUncapitalize<Type extends TSchema> = (
-  TInstantiate<{}, TUncapitalizeDeferred<Type>>
+  TUncapitalizeAction<Type>
 )
 /** Applies a Uncapitalize action to the given type. */
 export function Uncapitalize<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TUncapitalize<Type> {
-  return Instantiate({}, UncapitalizeDeferred(type, options)) as never
+  return UncapitalizeAction(type, options)
 }

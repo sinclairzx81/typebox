@@ -224,10 +224,10 @@ Test('Should Instantiate 35', () => {
   Assert.IsTrue(Type.IsRef(Type.RecordValue(A)))
 })
 Test('Should Instantiate 36', () => {
-  const A: Type.TRecordDeferred<Type.TRef<'B'>, Type.TRef<'A'>> = Type.Instantiate({ A: Type.Number() }, Type.Record(Type.Ref('B'), Type.Ref('A')))
+  const A: Type.TRecordDeferred<Type.TRef<'B'>, Type.TNumber> = Type.Instantiate({ A: Type.Number() }, Type.Record(Type.Ref('B'), Type.Ref('A')))
   Assert.IsTrue(Type.IsDeferred(A))
   Assert.IsTrue(Type.IsRef(A.parameters[0]))
-  Assert.IsTrue(Type.IsRef(A.parameters[1]))
+  Assert.IsTrue(Type.IsNumber(A.parameters[1]))
 })
 Test('Should Instantiate 37', () => {
   const A: Type.TTuple<[Type.TNumber, Type.TRef<'B'>]> = Type.Instantiate({ A: Type.Number() }, Type.Tuple([Type.Ref('A'), Type.Ref('B')]))

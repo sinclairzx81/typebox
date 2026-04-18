@@ -52,7 +52,7 @@ export type TParseTemplateIntoTypes<Template extends string,
 export function ParseTemplateIntoTypes<Template extends string>(template: Template): TParseTemplateIntoTypes<Template> {
   const parsed = TemplateLiteralTypes(`\`${template}\``)
   const result = Guard.IsEqual(parsed.length, 2) 
-    ? parsed[0] 
+    ? parsed[0]
     : Unreachable() // []
   return result as never
 }

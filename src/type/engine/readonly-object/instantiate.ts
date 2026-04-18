@@ -31,37 +31,36 @@ THE SOFTWARE.
 import { Memory } from '../../../system/memory/index.ts'
 import { type TSchema, type TSchemaOptions } from '../../types/schema.ts'
 import { type TProperties } from '../../types/properties.ts'
-import { type TReadonlyTypeDeferred, ReadonlyTypeDeferred } from '../../action/readonly-type.ts'
+import { type TReadonlyObjectDeferred, ReadonlyObjectDeferred } from '../../action/readonly-object.ts'
 import { type TFromType, FromType } from './from-type.ts'
 import { type TState, type TInstantiateType, InstantiateType, type TCanInstantiate, CanInstantiate } from '../instantiate.ts'
 
 // ------------------------------------------------------------------
-// Immediate
+// Action
 // ------------------------------------------------------------------
-type TReadonlyTypeImmediate<Context extends TProperties, State extends TState, Type extends TSchema,
-  InstantiatedType extends TSchema = TInstantiateType<Context, State, Type>
-> = TFromType<InstantiatedType>
-
-function ReadonlyTypeImmediate<Context extends TProperties, State extends TState, Type extends TSchema>
-  (context: Context, state: State, type: Type, options: TSchemaOptions): 
-    TReadonlyTypeImmediate<Context, State, Type> {
-  const instantiatedType = InstantiateType(context, state, type)
-  return Memory.Update(FromType(instantiatedType), {}, options) as never
+export type TReadonlyObjectAction<Type extends TSchema,
+  Result extends TSchema = TCanInstantiate<[Type]> extends true
+    ? TFromType<Type>
+    : TReadonlyObjectDeferred<Type>
+> = Result
+export function ReadonlyObjectAction<Type extends TSchema>
+  (type: Type, options: TSchemaOptions): 
+    TReadonlyObjectAction<Type> {
+  const result = CanInstantiate([type])
+    ? Memory.Update(FromType(type), {}, options)
+    : ReadonlyObjectDeferred(type)
+  return result as never
 }
+
 // ------------------------------------------------------------------
 // Instantiate
 // ------------------------------------------------------------------
-export type TReadonlyTypeInstantiate<Context extends TProperties, State extends TState, Type extends TSchema> 
-  = TCanInstantiate<Context, [Type]> extends true
-    ? TReadonlyTypeImmediate<Context, State, Type>
-    : TReadonlyTypeDeferred<Type>
-
-export function ReadonlyTypeInstantiate<Context extends TProperties, State extends TState, Type extends TSchema>
+export type TReadonlyObjectInstantiate<Context extends TProperties, State extends TState, Type extends TSchema,
+  InstantiateType extends TSchema = TInstantiateType<Context, State, Type>
+> = TReadonlyObjectAction<InstantiateType>
+export function ReadonlyObjectInstantiate<Context extends TProperties, State extends TState, Type extends TSchema>
   (context: Context, state: State, type: Type, options: TSchemaOptions): 
-    TReadonlyTypeInstantiate<Context, State, Type> {
-  return (
-    CanInstantiate(context, [type])
-      ? ReadonlyTypeImmediate(context, state, type, options)
-      : ReadonlyTypeDeferred(type, options)
-  ) as never
+    TReadonlyObjectInstantiate<Context, State, Type> {
+  const instantiatedType = InstantiateType(context, state, type)
+  return ReadonlyObjectAction(instantiatedType, options)
 }

@@ -32,7 +32,7 @@ THE SOFTWARE.
 import { type TSchema, type TSchemaOptions } from '../types/schema.ts'
 import { type TIdentifier } from '../types/identifier.ts'
 import { type TDeferred, Deferred } from '../types/deferred.ts'
-import { type TInstantiate, Instantiate } from '../engine/instantiate.ts'
+import { type TMappedAction, MappedAction } from '../engine/mapped/instantiate.ts'
 
 // ------------------------------------------------------------------
 // Deferred
@@ -50,9 +50,11 @@ export function MappedDeferred<Identifier extends TIdentifier, Type extends TSch
 // ------------------------------------------------------------------
 /** Applies a Mapped action using the given types. */
 export type TMapped<Identifier extends TIdentifier, Type extends TSchema, As extends TSchema, Property extends TSchema> = (
-  TInstantiate<{}, TMappedDeferred<Identifier, Type, As, Property>>
+  TMappedAction<{}, { callstack: [] }, Identifier, Type, As, Property>
 )
 /** Applies a Mapped action using the given types. */
-export function Mapped<Identifier extends TIdentifier, Type extends TSchema, As extends TSchema, Property extends TSchema>(identifier: Identifier, type: Type, as: As, property: Property, options: TSchemaOptions = {}): TMapped<Identifier, Type, As, Property> {
-  return Instantiate({}, MappedDeferred(identifier, type, as, property, options)) as never
+export function Mapped<Identifier extends TIdentifier, Type extends TSchema, As extends TSchema, Property extends TSchema>
+  (identifier: Identifier, type: Type, as: As, property: Property, options: TSchemaOptions = {}):
+  TMapped<Identifier, Type, As, Property> {
+  return MappedAction({}, { callstack: [] }, identifier, type, as, property, options)
 }

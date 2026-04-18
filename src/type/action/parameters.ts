@@ -26,12 +26,11 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-lint-ignore-file ban-types
 // deno-fmt-ignore-file
 
 import { type TSchema, type TSchemaOptions } from '../types/schema.ts'
 import { type TDeferred, Deferred } from '../types/deferred.ts'
-import { type TInstantiate, Instantiate } from '../engine/instantiate.ts'
+import { type TParametersAction, ParametersAction } from '../engine/parameters/instantiate.ts'
 
 // ------------------------------------------------------------------
 // Deferred
@@ -49,9 +48,9 @@ export function ParametersDeferred<Type extends TSchema>(type: Type, options: TS
 // ------------------------------------------------------------------
 /** Applies a Parameters action to the given type. */
 export type TParameters<Type extends TSchema> = (
-  TInstantiate<{}, TParametersDeferred<Type>>
+  TParametersAction<Type>
 )
 /** Applies a Parameters action to the given type. */
 export function Parameters<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TParameters<Type> {
-  return Instantiate({}, ParametersDeferred(type, options)) as never
+  return ParametersAction(type, options)
 }

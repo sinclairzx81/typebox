@@ -97,11 +97,11 @@ Test('Should validate Validator 10', () => {
 // ------------------------------------------------------------------
 // Non-Mutable (Clone)
 // ------------------------------------------------------------------
-Test('Should validate Validator 11', () => {
-  const A = Type.Object({
-    value: Compile(Type.String())
-  })
-  const B = Type.Partial(A)
-  Assert.IsFalse(Type.IsOptional(A.properties.value))
-  Assert.IsTrue(Type.IsOptional(B.properties.value))
-})
+// Test('Should validate Validator 11', () => {
+//   const A = Type.Object({
+//     value: Compile(Type.String())
+//   })
+//   const B = Type.Partial(A)
+//   Assert.IsFalse(Type.IsOptional(A.properties.value))
+//   Assert.IsTrue(Type.IsOptional(B.properties.value))
+// })

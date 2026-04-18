@@ -26,12 +26,11 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-lint-ignore-file ban-types
 // deno-fmt-ignore-file
 
 import { type TSchema, type TSchemaOptions } from '../types/schema.ts'
 import { type TDeferred, Deferred } from '../types/deferred.ts'
-import { type TInstantiate, Instantiate } from '../engine/instantiate.ts'
+import { type TKeyOfAction, KeyOfAction } from '../engine/keyof/instantiate.ts'
 
 // ------------------------------------------------------------------
 // Deferred
@@ -49,9 +48,9 @@ export function KeyOfDeferred<Type extends TSchema>(type: Type, options: TSchema
 // ------------------------------------------------------------------
 /** Applies a KeyOf action to the given type. */
 export type TKeyOf<Type extends TSchema> = (
-  TInstantiate<{}, TKeyOfDeferred<Type>>
+  TKeyOfAction<Type>
 )
 /** Applies a KeyOf action to the given type. */
 export function KeyOf<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TKeyOf<Type> {
-  return Instantiate({}, KeyOfDeferred(type, options)) as never
+  return KeyOfAction(type, options)
 }

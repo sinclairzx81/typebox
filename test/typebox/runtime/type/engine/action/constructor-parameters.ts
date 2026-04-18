@@ -52,6 +52,7 @@ Test('Should ConstructorParameters 3', () => {
 // ------------------------------------------------------------------
 Test('Should ConstructorParameters 3', () => {
   const A = Type.Null()
-  const T: Type.TNever = Type.ConstructorParameters(A)
-  Assert.IsTrue(Type.IsNever(T))
+  const T: Type.TTuple<[]> = Type.ConstructorParameters(A)
+  Assert.IsTrue(Type.IsTuple(T))
+  Assert.IsEqual(T.items.length, 0)
 })

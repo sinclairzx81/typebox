@@ -93,5 +93,5 @@ export type TMappedVariants<Type extends TSchema,
 > = Result
 export function MappedVariants<Type extends TSchema>(type: Type): TMappedVariants<Type> {
   const result = FromType(type)
-  return result
+  return result as never
 }

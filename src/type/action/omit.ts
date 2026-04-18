@@ -26,14 +26,13 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-lint-ignore-file ban-types
 // deno-fmt-ignore-file
 
 import { Guard } from '../../guard/index.ts'
 import { type TSchema, type TSchemaOptions } from '../types/schema.ts'
 import { type TDeferred, Deferred } from '../types/deferred.ts'
 import { type TKeysToIndexer, KeysToIndexer } from '../engine/helpers/keys-to-indexer.ts'
-import { type TInstantiate, Instantiate } from '../engine/instantiate.ts'
+import { type TOmitAction, OmitAction } from '../engine/omit/instantiate.ts'
 
 // ------------------------------------------------------------------
 // Deferred
@@ -51,14 +50,14 @@ export function OmitDeferred<Type extends TSchema, Indexer extends TSchema>(type
 // ------------------------------------------------------------------
 /** Applies a Omit action using the given types. */
 export type TOmit<Type extends TSchema, Indexer extends TSchema> = (
-  TInstantiate<{}, TOmitDeferred<Type, Indexer>>
+  TOmitAction<Type, Indexer>
 )
 /** Applies a Omit action using the given types. */
 export function Omit<Type extends TSchema, Indexer extends PropertyKey[]>(type: Type, indexer: readonly [...Indexer], options?: TSchemaOptions): TOmit<Type, TKeysToIndexer<Indexer>>
 /** Applies a Omit action using the given types. */
-export function Omit<Type extends TSchema, Indexer extends TSchema>(type: Type, indexer: Indexer, options?: TSchemaOptions): TOmit<Type, Indexer> 
+export function Omit<Type extends TSchema, Indexer extends TSchema>(type: Type, indexer: Indexer, options?: TSchemaOptions): TOmit<Type, Indexer>
 /** Applies a Omit action using the given types. */
 export function Omit(type: TSchema, indexer_or_keys: PropertyKey[] | TSchema, options: TSchemaOptions = {}): never {
   const indexer = Guard.IsArray(indexer_or_keys) ? KeysToIndexer(indexer_or_keys as PropertyKey[]) : indexer_or_keys
-  return Instantiate({}, OmitDeferred(type, indexer, options)) as never
+  return OmitAction(type, indexer, options) as never
 }

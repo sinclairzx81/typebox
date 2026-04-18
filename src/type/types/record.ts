@@ -26,24 +26,23 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-lint-ignore-file ban-types
 // deno-fmt-ignore-file
 
 import { Memory } from '../../system/memory/index.ts'
 import { Guard } from '../../guard/index.ts'
-import { type TSchema, type TObjectOptions, IsKind } from './schema.ts'
+import { type TSchema, type TObjectOptions, IsKind, IsSchema } from './schema.ts'
 import { type StaticType, type StaticDirection } from './static.ts'
 import { type TProperties } from './properties.ts'
 import { type TInteger, Integer, IntegerPattern } from './integer.ts'
 import { type TNumber, Number, NumberPattern } from './number.ts'
 import { type TString, String, StringPattern } from './string.ts'
 import { type TDeferred, Deferred } from './deferred.ts'
-
-import { type TInstantiate, Instantiate } from '../engine/instantiate.ts'
 import { type TTemplateLiteralStatic } from '../engine/template-literal/index.ts'
 import { type TTemplateLiteralDecodeUnsafe, TemplateLiteralDecodeUnsafe } from '../engine/template-literal/decode.ts'
 
 import { CreateRecord } from '../engine/record/record-create.ts'
+
+import { type TRecordAction, RecordAction } from '../engine/record/instantiate.ts'
 
 // -------------------------------------------------------------------
 // Static
@@ -83,28 +82,28 @@ export interface TRecord<Key extends string = string, Value extends TSchema = TS
 // Deferred
 // -------------------------------------------------------------------
 /** Represents a deferred Record action. */
-export type TRecordDeferred<Key extends TSchema, Value extends TSchema> = (
+export type TRecordDeferred<Key extends TSchema = TSchema, Value extends TSchema = TSchema> = (
   TDeferred<'Record', [Key, Value]>
 )
 /** Represents a deferred Record action. */
 export function RecordDeferred<Key extends TSchema, Value extends TSchema>(key: Key, value: Value, options: TObjectOptions = {}): TRecordDeferred<Key, Value> {
   return Deferred('Record', [key, value], options)
 }
-// -------------------------------------------------------------------
-// Construct
-// -------------------------------------------------------------------
-export type TRecordConstruct<Key extends TSchema, Value extends TSchema> = (
-  TInstantiate<{}, TRecordDeferred<Key, Value>>
-)
-export function RecordConstruct<Key extends TSchema, Value extends TSchema>(key: Key, value: Value, options: TObjectOptions = {}): TRecordConstruct<Key, Value> {
-  return Instantiate({}, RecordDeferred(key, value, options)) as never
+// ------------------------------------------------------------------
+// Guard
+// ------------------------------------------------------------------
+/** Returns true if this value is a deferred Interface action. */
+export function IsRecordDeferred(value: unknown): value is TRecordDeferred {
+  return IsSchema(value)
+    && Guard.HasPropertyKey(value, 'action')
+    && Guard.IsEqual(value.action, 'Record')
 }
 // -------------------------------------------------------------------
 // Factory
 // -------------------------------------------------------------------
 /** Creates a Record type. */
-export function Record<Key extends TSchema, Value extends TSchema>(key: Key, value: Value, options: TObjectOptions = {}): TRecordConstruct<Key, Value> {
-  return RecordConstruct(key, value, options) as never
+export function Record<Key extends TSchema, Value extends TSchema>(key: Key, value: Value, options: TObjectOptions = {}): TRecordAction<Key, Value> {
+  return RecordAction(key, value, options) as never
 }
 // -------------------------------------------------------------------
 // FromPattern

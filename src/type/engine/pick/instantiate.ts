@@ -26,90 +26,43 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-lint-ignore-file ban-types
 // deno-fmt-ignore-file
 
 import { Memory } from '../../../system/memory/index.ts'
-import { Guard } from '../../../guard/index.ts'
 import { type TSchema, type TSchemaOptions } from '../../types/schema.ts'
 import { type TProperties } from '../../types/properties.ts'
-import { type TObject, Object } from '../../types/object.ts'
-import { type TToIndexableKeys, ToIndexableKeys } from '../indexable/to-indexable-keys.ts'
-import { type TToIndexable, ToIndexable } from '../indexable/to-indexable.ts'
-
 import { type TPickDeferred, PickDeferred } from '../../action/pick.ts'
 import { type TState, type TInstantiateType, type TCanInstantiate, InstantiateType, CanInstantiate } from '../instantiate.ts'
+import { type TFromType, FromType } from './from-type.ts'
 
-// ------------------------------------------------------------------
-// TComparable
-// ------------------------------------------------------------------
-// Pick requires a special comparer for the extends key check. We 
-// convert the propertyKey into a string representation as the
-// indexer is assured to be of type string[]
-type TComparable<Indexable extends TProperties> = keyof Indexable extends string | number ? `${keyof Indexable}` : never
-// ------------------------------------------------------------------
-// FromKeys
-// ------------------------------------------------------------------
-type TFromKeys<Indexable extends TProperties, Keys extends string[], Result extends TProperties = {}> = (
-  Keys extends [infer Left extends string, ...infer Right extends string[]]
-    ? Left extends TComparable<Indexable>
-      ? TFromKeys<Indexable, Right, Memory.TAssign<Result, { [_ in Left]: Indexable[Left] }>>
-      : TFromKeys<Indexable, Right, Result>
-    : Result
-)
-function FromKeys<Indexable extends TProperties, Keys extends string[]>(properties: Indexable, keys: Keys): TFromKeys<Indexable, Keys> {
-  const result = Guard.Keys(properties).reduce((result, key) => {
-    return keys.includes(key) ? Memory.Assign(result, { [key]: properties[key] }) : result
-  }, {} as TProperties)
-  return result as never
-}
 // ------------------------------------------------------------------
 // Action
 // ------------------------------------------------------------------
-type TPickAction<Type extends TSchema, Indexer extends TSchema, 
-  Indexable extends TProperties = TToIndexable<Type>,
-  Keys extends string[] = TToIndexableKeys<Indexer>,
-  Applied extends TProperties = TFromKeys<Indexable, Keys>,
-  Result extends TSchema = TObject<Applied>
+export type TPickAction<Type extends TSchema, Indexer extends TSchema,
+  Result extends TSchema = TCanInstantiate<[Type, Indexer]> extends true
+    ? TFromType<Type, Indexer>
+    : TPickDeferred<Type, Indexer>
 > = Result
-function PickAction<Type extends TSchema, Indexer extends TSchema>
-  (type: Type, indexer: Indexer): 
+export function PickAction<Type extends TSchema, Indexer extends TSchema>
+  (type: Type, indexer: Indexer, options: TSchemaOptions): 
     TPickAction<Type, Indexer> {
-  const indexable = ToIndexable(type) as TProperties
-  const keys = ToIndexableKeys(indexer)
-  const applied = FromKeys(indexable, keys)
-  const result = Object(applied)
+  const result = CanInstantiate([type, indexer])
+    ? Memory.Update(FromType(type, indexer), {}, options)
+    : PickDeferred(type, indexer, options)
   return result as never
 }
 // ------------------------------------------------------------------
-// Immediate
+// Instantiate
 // ------------------------------------------------------------------
-type TPickImmediate<Context extends TProperties, State extends TState, Type extends TSchema, Indexer extends TSchema, 
+export type TPickInstantiate<Context extends TProperties, State extends TState, Type extends TSchema, Indexer extends TSchema,
   InstantiatedType extends TSchema = TInstantiateType<Context, State, Type>,
   InstantiatedIndexer extends TSchema = TInstantiateType<Context, State, Indexer>,
 > = TPickAction<InstantiatedType, InstantiatedIndexer>
 
-function PickImmediate<Context extends TProperties, State extends TState, Type extends TSchema, Indexer extends TSchema>
-  (context: Context, state: State, type: Type, indexer: Indexer, options: TSchemaOptions): 
-    TPickImmediate<Context, State, Type, Indexer> {
-  const instantiatedType = InstantiateType(context, state, type)
-  const instantiatedIndexer = InstantiateType(context, state, indexer)
-  return Memory.Update(PickAction(instantiatedType, instantiatedIndexer), {}, options) as never
-}
-// ------------------------------------------------------------------
-// PickInstantiate
-// ------------------------------------------------------------------
-export type TPickInstantiate<Context extends TProperties, State extends TState, Type extends TSchema, Indexer extends TSchema> 
-  = TCanInstantiate<Context, [Type, Indexer]> extends true
-    ? TPickImmediate<Context, State, Type, Indexer>
-    : TPickDeferred<Type, Indexer>
-
 export function PickInstantiate<Context extends TProperties, State extends TState, Type extends TSchema, Indexer extends TSchema>
   (context: Context, state: State, type: Type, indexer: Indexer, options: TSchemaOptions): 
     TPickInstantiate<Context, State, Type, Indexer> {
-  return (
-    CanInstantiate(context, [type, indexer])
-      ? PickImmediate(context, state, type, indexer, options)
-      : PickDeferred(type, indexer, options)
-  ) as never
+  const instantiatedType = InstantiateType(context, state, type)
+  const instantiatedIndexer = InstantiateType(context, state, indexer)
+  return PickAction(instantiatedType, instantiatedIndexer, options)
 }

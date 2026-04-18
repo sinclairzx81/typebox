@@ -34,46 +34,46 @@ import { type TProperties } from '../../types/properties.ts'
 import { type TFunction, IsFunction } from '../../types/function.ts'
 import { type TNever, Never } from '../../types/never.ts'
 import { type TReturnTypeDeferred, ReturnTypeDeferred } from '../../action/return-type.ts'
-
 import { type TState, type TInstantiateType, type TCanInstantiate, InstantiateType, CanInstantiate } from '../instantiate.ts'
 
 // ------------------------------------------------------------------
-// Action
+// Operation
 // ------------------------------------------------------------------
-type TReturnTypeAction<Type extends TSchema> = 
-  Type extends TFunction<TSchema[], infer ReturnType extends TSchema> 
-    ? ReturnType 
+type TReturnTypeOperation<Type extends TSchema> = (
+  Type extends TFunction
+    ? Type['returnType']
     : TNever
-function ReturnTypeAction<Type extends TSchema>(type: Type): TReturnTypeAction<Type> {
-  return (IsFunction(type) ? type.returnType : Never()) as never
+)
+function ReturnTypeOperation<Type extends TSchema>(type: Type): TReturnTypeAction<Type> {
+  return (
+    IsFunction(type)
+      ? type['returnType']
+      : Never()
+  ) as never
 }
 // ------------------------------------------------------------------
-// Immediate
+// Action
 // ------------------------------------------------------------------
-type TReturnTypeImmediate<Context extends TProperties, State extends TState, Type extends TSchema,
-  InstantiatedType extends TSchema = TInstantiateType<Context, State, Type>,
-> = TReturnTypeAction<InstantiatedType>
-
-function ReturnTypeImmediate<Context extends TProperties, State extends TState, Type extends TSchema>
-  (context: Context, state: State, type: Type, options: TSchemaOptions): 
-    TReturnTypeImmediate<Context, State, Type> {
-  const instantiatedType = InstantiateType(context, state, type)
-  return Memory.Update(ReturnTypeAction(instantiatedType), {}, options) as never
+export type TReturnTypeAction<Type extends TSchema,
+  Result extends TSchema = TCanInstantiate<[Type]> extends true
+    ? TReturnTypeOperation<Type>
+    : TReturnTypeDeferred<Type>
+> = Result
+export function ReturnTypeAction<Type extends TSchema>(type: Type, options: TSchemaOptions): TReturnTypeAction<Type> {
+  const result = CanInstantiate([type])
+    ? Memory.Update(ReturnTypeOperation(type), {}, options)
+    : ReturnTypeDeferred(type, options)
+  return result as never
 }
 // ------------------------------------------------------------------
 // Instantiate
 // ------------------------------------------------------------------
-export type TReturnTypeInstantiate<Context extends TProperties, State extends TState, Type extends TSchema> 
-  = TCanInstantiate<Context, [Type]> extends true
-    ? TReturnTypeImmediate<Context, State, Type>
-    : TReturnTypeDeferred<Type>
-
+export type TReturnTypeInstantiate<Context extends TProperties, State extends TState, Type extends TSchema,
+  InstantiatedType extends TSchema = TInstantiateType<Context, State, Type>
+> = TReturnTypeAction<InstantiatedType>
 export function ReturnTypeInstantiate<Context extends TProperties, State extends TState, Type extends TSchema>
-  (context: Context, state: State, type: Type, options: TSchemaOptions): 
+  (context: Context, state: State, type: Type, options: TSchemaOptions = {}): 
     TReturnTypeInstantiate<Context, State, Type> {
-  return (
-    CanInstantiate(context, [type])
-      ? ReturnTypeImmediate(context, state, type, options)
-      : ReturnTypeDeferred(type, options)
-  ) as never
+  const instantiatedType = InstantiateType(context, state, type)
+  return ReturnTypeAction(instantiatedType, options)
 }

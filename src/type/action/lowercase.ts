@@ -26,12 +26,11 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-lint-ignore-file ban-types
 // deno-fmt-ignore-file
 
 import { type TSchema, type TSchemaOptions } from '../types/schema.ts'
 import { type TDeferred, Deferred } from '../types/deferred.ts'
-import { type TInstantiate, Instantiate } from '../engine/instantiate.ts'
+import { type TLowercaseAction, LowercaseAction } from '../engine/intrinsics/instantiate.ts'
 
 // ------------------------------------------------------------------
 // Deferred
@@ -44,15 +43,14 @@ export type TLowercaseDeferred<Type extends TSchema> = (
 export function LowercaseDeferred<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TLowercaseDeferred<Type> {
   return Deferred('Lowercase', [type], options)
 }
-
 // ------------------------------------------------------------------
 // Type
 // ------------------------------------------------------------------
 /** Applies a Lowercase action to the given type. */
 export type TLowercase<Type extends TSchema> = (
-  TInstantiate<{}, TLowercaseDeferred<Type>>
+  TLowercaseAction<Type>
 )
 /** Applies a Lowercase action to the given type. */
 export function Lowercase<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TLowercase<Type> {
-  return Instantiate({}, LowercaseDeferred(type, options)) as never
+  return LowercaseAction(type, options)
 }

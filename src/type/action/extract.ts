@@ -26,12 +26,11 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-lint-ignore-file ban-types
 // deno-fmt-ignore-file
 
 import { type TSchema, type TSchemaOptions } from '../types/schema.ts'
 import { type TDeferred, Deferred } from '../types/deferred.ts'
-import { type TInstantiate, Instantiate } from '../engine/instantiate.ts'
+import { type TExtractAction, ExtractAction } from '../engine/extract/instantiate.ts'
 
 // ------------------------------------------------------------------
 // Deferred
@@ -49,9 +48,9 @@ export function ExtractDeferred<Left extends TSchema, Right extends TSchema>(lef
 // ------------------------------------------------------------------
 /** Applies an Extract action using the given types. */
 export type TExtract<Left extends TSchema, Right extends TSchema> = (
-  TInstantiate<{}, TExtractDeferred<Left, Right>>
+  TExtractAction<Left, Right>
 )
 /** Applies an Extract action using the given types. */
 export function Extract<Left extends TSchema, Right extends TSchema>(left: Left, right: Right, options: TSchemaOptions = {}): TExtract<Left, Right> {
-  return Instantiate({}, ExtractDeferred(left, right, options)) as never
+  return ExtractAction(left, right, options)
 }

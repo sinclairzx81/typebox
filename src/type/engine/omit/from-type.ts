@@ -28,52 +28,51 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Memory } from '../../../system/memory/index.ts'
-import { type TSchema, type TSchemaOptions } from '../../types/schema.ts'
+import { Guard } from '../../../guard/index.ts'
+import { type TSchema } from '../../types/schema.ts'
 import { type TProperties } from '../../types/properties.ts'
-import { type TPromise, IsPromise } from '../../types/promise.ts'
-import { type TAwaitedDeferred, AwaitedDeferred } from '../../action/awaited.ts'
-import { type TState, type TInstantiateType, InstantiateType, type TCanInstantiate, CanInstantiate } from '../instantiate.ts'
+import { type TObject, Object } from '../../types/object.ts'
+import { type TToIndexableKeys, ToIndexableKeys } from '../indexable/to-indexable-keys.ts'
+import { type TToIndexable, ToIndexable } from '../indexable/to-indexable.ts'
 
 // ------------------------------------------------------------------
-// Operation
+// NormalKeys
 // ------------------------------------------------------------------
-type TAwaitedOperation<Type extends TSchema> = (
-  Type extends TPromise<infer Type extends TSchema> 
-    ? TAwaitedOperation<Type> 
-    : Type
-)
-function AwaitedOperation<Type extends TSchema>(type: Type): TAwaitedOperation<Type> {
-  return (
-    IsPromise(type)
-      ? AwaitedOperation(type.item) 
-      : type
-  ) as never
+type TNormalKeys<Keys extends string[],
+ UnionKeys extends string = Keys[number],
+ Result extends string | number = (
+    UnionKeys extends `${infer Value extends number}` 
+      ? UnionKeys | Value 
+      : UnionKeys
+ )
+> = Result
+// ------------------------------------------------------------------
+// FromKeys
+// ------------------------------------------------------------------
+type TFromKeys<Properties extends TProperties, Keys extends string[],
+  Omitted extends TProperties = Omit<Properties, TNormalKeys<Keys>>,
+  Result extends TProperties = { [Key in keyof Omitted]: Omitted[Key] }
+> = Result
+
+function FromKeys<Properties extends TProperties, Keys extends string[]>(properties: Properties, keys: Keys): TFromKeys<Properties, Keys> {
+  const result = Guard.Keys(properties).reduce((result, key) => {
+    return keys.includes(key) ? result : { ...result, [key]: properties[key] }
+  }, {} as TProperties)
+  return result as never
 }
 // ------------------------------------------------------------------
 // Action
 // ------------------------------------------------------------------
-export type TAwaitedAction<Type extends TSchema,
-  Result extends TSchema = TCanInstantiate<[Type]> extends true
-    ? TAwaitedOperation<Type>
-    : TAwaitedDeferred<Type>
+export type TFromType<Type extends TSchema, Indexer extends TSchema, 
+  Indexable extends TProperties = TToIndexable<Type>,
+  IndexableKeys extends string[] = TToIndexableKeys<Indexer>,
+  Omitted extends TProperties = TFromKeys<Indexable, IndexableKeys>,
+  Result extends TSchema = TObject<Omitted>
 > = Result
-export function AwaitedAction<Type extends TSchema>(type: Type, options: TSchemaOptions): TAwaitedAction<Type> {
-  const result = CanInstantiate([type])
-    ? Memory.Update(AwaitedOperation(type), {}, options)
-    : AwaitedDeferred(type, options)
+export function FromType<Type extends TSchema, Indexer extends TSchema>(type: Type, indexer: Indexer): TFromType<Type, Indexer> {
+  const indexable = ToIndexable(type) as TProperties
+  const indexableKeys = ToIndexableKeys(indexer)
+  const omitted = FromKeys(indexable, indexableKeys)
+  const result = Object(omitted)
   return result as never
-}
-// ------------------------------------------------------------------
-// Instantiate
-// ------------------------------------------------------------------
-export type TAwaitedInstantiate<Context extends TProperties, State extends TState, Type extends TSchema,
-  InstantiateType extends TSchema = TInstantiateType<Context, State, Type>
-> = TAwaitedAction<InstantiateType>
-
-export function AwaitedInstantiate<Context extends TProperties, State extends TState, Type extends TSchema>
-  (context: Context, state: State, type: Type, options: TSchemaOptions): 
-    TAwaitedInstantiate<Context, State, Type> {
-  const instantiatedType = InstantiateType(context, state, type)
-  return AwaitedAction(instantiatedType, options)
 }

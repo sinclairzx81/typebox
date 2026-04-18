@@ -33,36 +33,33 @@ import { type TSchema, type TSchemaOptions } from '../../types/schema.ts'
 import { type TProperties } from '../../types/properties.ts'
 import { type TFromType, FromType } from './from-type.ts'
 import { type TRequiredDeferred, RequiredDeferred } from '../../action/required.ts'
-
-import { type TState, type TInstantiateType, type TCanInstantiate, InstantiateType, CanInstantiate } from '../instantiate.ts'
+import { type TState, type TInstantiateType, InstantiateType, type TCanInstantiate, CanInstantiate } from '../instantiate.ts'
 
 // ------------------------------------------------------------------
-// Immediate
+// Action
 // ------------------------------------------------------------------
-type TRequiredImmediate<Context extends TProperties, State extends TState, Type extends TSchema,
-  InstantiatedType extends TSchema = TInstantiateType<Context, State, Type>
-> = TFromType<InstantiatedType>
-
-function RequiredImmediate<Context extends TProperties, State extends TState, Type extends TSchema>
-  (context: Context, state: State, type: Type, options: TSchemaOptions): 
-    TRequiredImmediate<Context, State, Type> {
-  const instaniatedType = InstantiateType(context, state, type)
-  return Memory.Update(FromType(instaniatedType), {}, options) as never
+export type TRequiredAction<Type extends TSchema,
+  Result extends TSchema = TCanInstantiate<[Type]> extends true
+    ? TFromType<Type>
+    : TRequiredDeferred<Type> 
+> = Result
+export function RequiredAction<Type extends TSchema>
+  (type: Type, options: TSchemaOptions): 
+    TRequiredAction<Type> {
+  const result = CanInstantiate([type])
+    ? Memory.Update(FromType(type), {}, options)
+    : RequiredDeferred(type, options)
+  return result as never
 }
 // ------------------------------------------------------------------
 // Instantiate
 // ------------------------------------------------------------------
-export type TRequiredInstantiate<Context extends TProperties, State extends TState, Type extends TSchema> 
-  = TCanInstantiate<Context, [Type]> extends true
-    ? TRequiredImmediate<Context, State, Type>
-    : TRequiredDeferred<Type>
-
+export type TRequiredInstantiate<Context extends TProperties, State extends TState, Type extends TSchema,
+  InstantiatedType extends TSchema = TInstantiateType<Context, State, Type>
+> = TRequiredAction<InstantiatedType>
 export function RequiredInstantiate<Context extends TProperties, State extends TState, Type extends TSchema>
   (context: Context, state: State, type: Type, options: TSchemaOptions): 
     TRequiredInstantiate<Context, State, Type> {
-  return (
-    CanInstantiate(context, [type]) 
-    ? RequiredImmediate(context, state, type, options)
-    : RequiredDeferred(type, options)
-  ) as never
+  const instaniatedType = InstantiateType(context, state, type)
+  return RequiredAction(instaniatedType, options)
 }

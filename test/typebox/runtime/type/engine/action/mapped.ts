@@ -14,7 +14,7 @@ Test('Should Mapped 1', () => {
   const B = Type.Ref('X')
   const C = Type.Ref('K')
   const D = Type.Number()
-  const T: Type.TMapped<Type.TIdentifier<'K'>, Type.TRef<'X'>, Type.TRef<'K'>, Type.TNumber> = Type.Mapped(K, B, C, D)
+  const T: Type.TMappedDeferred<Type.TIdentifier<'K'>, Type.TRef<'X'>, Type.TRef<'K'>, Type.TNumber> = Type.Mapped(K, B, C, D)
   Assert.IsTrue(Type.IsDeferred(T))
 })
 Test('Should Mapped 2', () => {

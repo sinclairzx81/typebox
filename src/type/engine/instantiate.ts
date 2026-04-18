@@ -41,10 +41,10 @@ import { type TReadonly, IsReadonly, ReadonlyAdd, ReadonlyRemove, TReadonlyAdd, 
 // ------------------------------------------------------------------
 // Types
 // ------------------------------------------------------------------
+import { IsBase } from '../types/base.ts'
 import { type TSchema, type TSchemaOptions, IsSchema } from '../types/schema.ts'
 import { type TArray, Array, IsArray, ArrayOptions } from '../types/array.ts'
 import { type TAsyncIterator, AsyncIterator, IsAsyncIterator, AsyncIteratorOptions } from '../types/async-iterator.ts'
-import { IsBase } from '../types/base.ts'
 import { type TConstructor, Constructor, IsConstructor, ConstructorOptions } from '../types/constructor.ts'
 import { type TDeferred, Deferred, IsDeferred } from '../types/deferred.ts'
 import { type TFunction, _Function_, IsFunction, FunctionOptions } from '../types/function.ts'
@@ -53,7 +53,7 @@ import { type TIdentifier } from '../types/identifier.ts'
 import { type TIntersect, Intersect, IsIntersect, IntersectOptions } from '../types/intersect.ts'
 import { type TIterator, Iterator, IsIterator, IteratorOptions } from '../types/iterator.ts'
 import { type TObject, Object, IsObject, ObjectOptions } from '../types/object.ts'
-import { type TPromise, Promise, IsPromise, PromiseOptions } from '../types/promise.ts'
+import { type TPromise, _Promise_, IsPromise, PromiseOptions } from '../types/promise.ts'
 import { type TProperties } from '../types/properties.ts'
 import { type TRecord, RecordFromPattern, IsRecord, RecordPattern, RecordValue } from '../types/record.ts'
 import { type TTuple, Tuple, IsTuple, TupleOptions } from '../types/tuple.ts'
@@ -91,7 +91,7 @@ import { type TOptionsInstantiate, OptionsInstantiate } from './options/instanti
 import { type TParametersInstantiate, ParametersInstantiate } from './parameters/instantiate.ts'
 import { type TPartialInstantiate, PartialInstantiate } from './partial/instantiate.ts'
 import { type TPickInstantiate, PickInstantiate } from './pick/instantiate.ts'
-import { type TReadonlyTypeInstantiate, ReadonlyTypeInstantiate } from './readonly-type/instantiate.ts'
+import { type TReadonlyObjectInstantiate, ReadonlyObjectInstantiate } from './readonly-object/instantiate.ts'
 import { type TRecordInstantiate, RecordInstantiate } from './record/instantiate.ts'
 import { type TRefInstantiate, RefInstantiate } from './ref/instantiate.ts'
 import { type TRequiredInstantiate, RequiredInstantiate } from './required/instantiate.ts'
@@ -109,62 +109,21 @@ export interface TState {
   callstack: string[]
 }
 // ------------------------------------------------------------------
-// CanInstantiateRef
-// ------------------------------------------------------------------
-type TCanInstantiateRef<Context extends TProperties, Ref extends string> = (
-  Ref extends keyof Context 
-    ? true
-    : false
-)
-function CanInstantiateRef<Context extends TProperties, Ref extends string>(context: Context, ref: Ref): TCanInstantiateRef<Context, Ref> {
-  return (
-    ref in context 
-  ) as never
-}
-// ------------------------------------------------------------------
-// TCanInstantiateType
-//
-// Intersect and Union types are tested to ensure their constituents
-// do not contain unresolvable TRef values. This is required because
-// other instantiators may call TEvaluate<...> to instantiate themselves.
-// All other parameterized types may instantiate even if they contain
-// potentially unresolvable references.
-//
-// ------------------------------------------------------------------
-type TCanInstantiateType<Context extends TProperties, Type extends TSchema> = (
-  Type extends TIntersect<infer Types extends TSchema[]> ? TCanInstantiate<Context, Types> :
-  Type extends TUnion<infer Types extends TSchema[]> ? TCanInstantiate<Context, Types> :
-  Type extends TRef<infer Ref extends string> ? TCanInstantiateRef<Context, Ref> :
-  true
-)
-function CanInstantiateType<Context extends TProperties, Type extends TSchema>
-  (context: Context, type: Type): 
-    TCanInstantiateType<Context, Type> {
-  return (
-    IsIntersect(type) ? CanInstantiate(context, type.allOf) :
-    IsUnion(type) ? CanInstantiate(context, type.anyOf) :
-    IsRef(type) ? CanInstantiateRef(context, type.$ref) :
-    true
-  ) as never
-}
-// ------------------------------------------------------------------
 // CanInstantiate
 // ------------------------------------------------------------------
-export type TCanInstantiate<Context extends TProperties, Types extends TSchema[]> = 
+export type TCanInstantiate<Types extends TSchema[]> = 
   Types extends [infer Left extends TSchema, ...infer Right extends TSchema[]]
-    ? TCanInstantiateType<Context, Left> extends true
-      ? TCanInstantiate<Context, Right>
-      : false
+    ? Left extends TRef
+      ? false
+      : TCanInstantiate<Right>
     : true
-export function CanInstantiate<Context extends TProperties, Types extends TSchema[]>
-  (context: Context, types: [...Types]): 
-    TCanInstantiate<Context, Types> {
+export function CanInstantiate<Types extends TSchema[]>(types: [...Types]): TCanInstantiate<Types> {
   const [left, ...right] = types
   return (
     IsSchema(left)
-      ? CanInstantiateType(context, left)
-        ? CanInstantiate(context, right)
-        : false
+      ? IsRef(left)
+        ? false
+        : CanInstantiate(right)
       : true 
   ) as never
 }
@@ -290,7 +249,7 @@ type TInstantiateDeferred<Context extends TProperties, State extends TState, Act
   [Action, Parameters] extends ['Parameters', [infer Type extends TSchema]] ? TParametersInstantiate<Context, State, Type> :
   [Action, Parameters] extends ['Partial', [infer Type extends TSchema]] ? TPartialInstantiate<Context, State, Type> :
   [Action, Parameters] extends ['Omit', [infer Type extends TSchema, infer Indexer extends TSchema]] ? TOmitInstantiate<Context, State, Type, Indexer> :
-  [Action, Parameters] extends ['ReadonlyType', [infer Type extends TSchema]] ? TReadonlyTypeInstantiate<Context, State, Type> :
+  [Action, Parameters] extends ['ReadonlyObject', [infer Type extends TSchema]] ? TReadonlyObjectInstantiate<Context, State, Type> :
   [Action, Parameters] extends ['Record', [infer Key extends TSchema, infer Value extends TSchema]] ? TRecordInstantiate<Context, State, Key, Value> :
   [Action, Parameters] extends ['Required', [infer Type extends TSchema]] ? TRequiredInstantiate<Context, State, Type> :
   [Action, Parameters] extends ['ReturnType', [infer Type extends TSchema]] ? TReturnTypeInstantiate<Context, State, Type> :
@@ -323,7 +282,7 @@ function InstantiateDeferred<Context extends TProperties, State extends TState, 
     Guard.IsEqual(action, 'Parameters') ? ParametersInstantiate(context, state, parameters[0], options) :
     Guard.IsEqual(action, 'Partial') ? PartialInstantiate(context, state, parameters[0], options) :
     Guard.IsEqual(action, 'Omit') ? OmitInstantiate(context, state, parameters[0], parameters[1], options) :
-    Guard.IsEqual(action, 'ReadonlyType') ? ReadonlyTypeInstantiate(context, state, parameters[0], options) :
+    Guard.IsEqual(action, 'ReadonlyObject') ? ReadonlyObjectInstantiate(context, state, parameters[0], options) :
     Guard.IsEqual(action, 'Record') ? RecordInstantiate(context, state, parameters[0], parameters[1], options) :
     Guard.IsEqual(action, 'Required') ? RequiredInstantiate(context, state, parameters[0], options) :
     Guard.IsEqual(action, 'ReturnType') ? ReturnTypeInstantiate(context, state, parameters[0], options) :
@@ -384,7 +343,7 @@ export function InstantiateType<Context extends TProperties, State extends TStat
     IsIntersect(type) ? Intersect(InstantiateTypes(context, state, type.allOf), IntersectOptions(type)) :
     IsIterator(type) ? Iterator(InstantiateType(context, state, type.iteratorItems), IteratorOptions(type)) :
     IsObject(type) ? Object(InstantiateProperties(context, state, type.properties), ObjectOptions(type)) :
-    IsPromise(type) ? Promise(InstantiateType(context, state, type.item), PromiseOptions(type)) :
+    IsPromise(type) ? _Promise_(InstantiateType(context, state, type.item), PromiseOptions(type)) :
     IsRecord(type) ? RecordFromPattern(RecordPattern(type), InstantiateType(context, state, RecordValue(type))) :
     IsRest(type) ? Rest(InstantiateType(context, state, type.items)) :
     IsTuple(type) ? Tuple(InstantiateElements(context, state, type.items), TupleOptions(type)) :

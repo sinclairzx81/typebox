@@ -32,7 +32,7 @@ import { type TSchema, IsSchema } from '../../types/schema.ts'
 import { type TEnum, type TEnumValue, IsEnum } from '../../types/enum.ts'
 import { type TLiteral, type TLiteralValue, Literal, IsLiteral } from '../../types/literal.ts'
 import { type TUnion, Union, IsUnion } from '../../types/union.ts'
-import { type TTemplateLiteral, IsTemplateLiteral } from '../../types/template-literal.ts'
+import { type TTemplateLiteral, IsTemplateLiteral, TTemplateLiteralDeferred, IsTemplateLiteralDeferred } from '../../types/template-literal.ts'
 import { type TBigInt, IsBigInt, BigIntPattern } from '../../types/bigint.ts'
 import { type TString, IsString, StringPattern } from '../../types/string.ts'
 import { type TNumber, IsNumber, NumberPattern } from '../../types/number.ts'
@@ -42,6 +42,8 @@ import { NeverPattern } from '../../types/never.ts'
 import { TemplateLiteralCreate } from './create.ts'
 
 import { type TEnumValuesToVariants, EnumValuesToVariants } from '../enum/enum-to-union.ts'
+
+import { type TTemplateLiteralAction, TemplateLiteralAction } from './instantiate.ts'
 
 // ------------------------------------------------------------------
 // JoinString
@@ -151,6 +153,20 @@ function EncodeTemplateLiteral<TemplatePattern extends string, Right extends TSc
   return EncodeTypes(right, `${pattern}${UnwrapTemplateLiteralPattern(templatePattern)}`) as never
 }
 // ------------------------------------------------------------------
+// FromTemplateLiteralDeferred
+// ------------------------------------------------------------------
+type TEncodeTemplateLiteralDeferred<Types extends TSchema[], Right extends TSchema[], Pattern extends string,
+  TemplateLiteral extends TSchema = TTemplateLiteralAction<Types>,
+  Result extends TSchema = TEncodeType<TemplateLiteral, Right, Pattern>
+> = Result
+function EncodeTemplateLiteralDeferred<Types extends TSchema[], Right extends TSchema[], Pattern extends string>
+  (types: [...Types], right: [...Right], pattern: Pattern): 
+    TEncodeTemplateLiteralDeferred<Types, Right, Pattern> {
+  const templateLiteral = TemplateLiteralAction(types, {})
+  const result = EncodeType(templateLiteral, right, pattern)
+  return result as never
+}
+// ------------------------------------------------------------------
 // EncodeEnum
 // ------------------------------------------------------------------
 type TEncodeEnum<Types extends TEnumValue[], Right extends TSchema[], Pattern extends string,
@@ -191,6 +207,7 @@ type TEncodeType<Type extends TSchema, Right extends TSchema[], Pattern extends 
   Type extends TNumber ? TEncodeNumber<Right, Pattern> :
   Type extends TString ? TEncodeString<Right, Pattern> :
   Type extends TTemplateLiteral<infer TemplatePattern extends string> ? TEncodeTemplateLiteral<TemplatePattern, Right, Pattern> :
+  Type extends TTemplateLiteralDeferred<infer Types extends TSchema[]> ? TEncodeTemplateLiteralDeferred<Types, Right, Pattern> :
   Type extends TUnion<infer Types extends TSchema[]> ? TEncodeUnion<Types, Right, Pattern> :
   typeof NeverPattern
 )
@@ -206,6 +223,7 @@ function EncodeType<Type extends TSchema, Right extends TSchema[], Pattern exten
     IsNumber(type) ? EncodeNumber(right, pattern) :
     IsString(type) ? EncodeString(right, pattern) :
     IsTemplateLiteral(type) ? EncodeTemplateLiteral(type.pattern, right, pattern) :
+    IsTemplateLiteralDeferred(type) ? EncodeTemplateLiteralDeferred(type.parameters[0], right, pattern) :
     IsUnion(type) ? EncodeUnion(type.anyOf, right, pattern) :
     NeverPattern
   ) as never

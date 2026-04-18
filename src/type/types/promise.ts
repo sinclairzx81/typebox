@@ -52,9 +52,10 @@ export interface TPromise<Type extends TSchema = TSchema> extends TSchema {
 // Factory
 // ------------------------------------------------------------------
 /** Creates a Promise type. */
-export function Promise<Type extends TSchema>(item: Type, options?: TSchemaOptions): TPromise<Type> {
+export function _Promise_<Type extends TSchema>(item: Type, options?: TSchemaOptions): TPromise<Type> {
   return Memory.Create({ ['~kind']: 'Promise' }, { type: 'promise', item }, options) as never
 }
+export { _Promise_ as Promise }
 // ------------------------------------------------------------------
 // Guard
 // ------------------------------------------------------------------
