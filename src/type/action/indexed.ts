@@ -49,9 +49,13 @@ export function IndexDeferred<Type extends TSchema, Indexer extends TSchema>(typ
 // Index
 // ------------------------------------------------------------------
 /** Applies a Index action using the given types. */
-export function Index<Type extends TSchema, Indexer extends PropertyKey[]>(type: Type, indexer: readonly [...Indexer], options?: TSchemaOptions): TIndexAction<Type, TKeysToIndexer<Indexer>>
+export type TIndex<Type extends TSchema, Indexer extends TSchema> = (
+  TIndexAction<Type, Indexer>
+)
 /** Applies a Index action using the given types. */
-export function Index<Type extends TSchema, Indexer extends TSchema>(type: Type, indexer: Indexer, options?: TSchemaOptions): TIndexAction<Type, Indexer> 
+export function Index<Type extends TSchema, Indexer extends PropertyKey[]>(type: Type, indexer: readonly [...Indexer], options?: TSchemaOptions): TIndex<Type, TKeysToIndexer<Indexer>>
+/** Applies a Index action using the given types. */
+export function Index<Type extends TSchema, Indexer extends TSchema>(type: Type, indexer: Indexer, options?: TSchemaOptions): TIndex<Type, Indexer>
 /** Applies a Index action using the given types. */
 export function Index(type: TSchema, indexer_or_keys: PropertyKey[] | TSchema, options: TSchemaOptions = {}): never {
   const indexer = Guard.IsArray(indexer_or_keys) ? KeysToIndexer(indexer_or_keys as PropertyKey[]) : indexer_or_keys

@@ -47,6 +47,10 @@ export function CapitalizeDeferred<Type extends TSchema>(type: Type, options: TS
 // Type
 // ------------------------------------------------------------------
 /** Applies a Capitalize action to the given type. */
-export function Capitalize<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TCapitalizeAction<Type> {
+export type TCapitalize<Type extends TSchema> = (
+  TCapitalizeAction<Type>
+)
+/** Applies a Capitalize action to the given type. */
+export function Capitalize<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TCapitalize<Type> {
   return CapitalizeAction(type, options) as never
 }

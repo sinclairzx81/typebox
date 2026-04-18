@@ -47,6 +47,10 @@ export function NonNullableDeferred<Type extends TSchema>(type: Type, options: T
 // Type
 // ------------------------------------------------------------------
 /** Applies a NonNullable action to the given type. */
-export function NonNullable<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TNonNullableAction<Type> {
+export type TNonNullable<Type extends TSchema> = (
+  TNonNullableAction<Type>
+)
+/** Applies a NonNullable action to the given type. */
+export function NonNullable<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TNonNullable<Type> {
   return NonNullableAction(type, options) as never
 }

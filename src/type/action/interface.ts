@@ -60,8 +60,12 @@ export function IsInterfaceDeferred(value: unknown): value is TInterfaceDeferred
 // Factory
 // ------------------------------------------------------------------
 /** Creates an Interface using the given heritage and properties. */
+export type TInterface<Heritage extends TSchema[], Properties extends TProperties> = (
+  TInterfaceAction<Heritage, Properties>
+)
+/** Creates an Interface using the given heritage and properties. */
 export function Interface<Heritage extends TSchema[], Properties extends TProperties>
   (heritage: [...Heritage], properties: Properties, options: TSchemaOptions = {}):
-    TInterfaceAction<Heritage, Properties> {
+  TInterface<Heritage, Properties> {
   return InterfaceAction(heritage, properties, options) as never
 }

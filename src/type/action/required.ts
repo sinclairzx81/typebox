@@ -47,6 +47,10 @@ export function RequiredDeferred<Type extends TSchema>(type: Type, options: TSch
 // Type
 // ------------------------------------------------------------------
 /** Applies a Required action to the given type. */
-export function Required<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TRequiredAction<Type> {
+export type TRequired<Type extends TSchema> = (
+  TRequiredAction<Type>
+)
+/** Applies a Required action to the given type. */
+export function Required<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TRequired<Type> {
   return RequiredAction(type, options)
 }

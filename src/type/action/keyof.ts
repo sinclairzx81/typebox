@@ -47,6 +47,10 @@ export function KeyOfDeferred<Type extends TSchema>(type: Type, options: TSchema
 // Type
 // ------------------------------------------------------------------
 /** Applies a KeyOf action to the given type. */
-export function KeyOf<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TKeyOfAction<Type> {
+export type TKeyOf<Type extends TSchema> = (
+  TKeyOfAction<Type>
+)
+/** Applies a KeyOf action to the given type. */
+export function KeyOf<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TKeyOf<Type> {
   return KeyOfAction(type, options)
 }

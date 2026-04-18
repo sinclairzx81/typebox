@@ -47,6 +47,10 @@ export function ExtractDeferred<Left extends TSchema, Right extends TSchema>(lef
 // Type
 // ------------------------------------------------------------------
 /** Applies an Extract action using the given types. */
-export function Extract<Left extends TSchema, Right extends TSchema>(left: Left, right: Right, options: TSchemaOptions = {}): TExtractAction<Left, Right> {
+export type TExtract<Left extends TSchema, Right extends TSchema> = (
+  TExtractAction<Left, Right>
+)
+/** Applies an Extract action using the given types. */
+export function Extract<Left extends TSchema, Right extends TSchema>(left: Left, right: Right, options: TSchemaOptions = {}): TExtract<Left, Right> {
   return ExtractAction(left, right, options) as never
 }

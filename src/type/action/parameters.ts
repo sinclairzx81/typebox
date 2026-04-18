@@ -47,6 +47,10 @@ export function ParametersDeferred<Type extends TSchema>(type: Type, options: TS
 // Type
 // ------------------------------------------------------------------
 /** Applies a Parameters action to the given type. */
-export function Parameters<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TParametersAction<Type> {
+export type TParameters<Type extends TSchema> = (
+  TParametersAction<Type>
+)
+/** Applies a Parameters action to the given type. */
+export function Parameters<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TParameters<Type> {
   return ParametersAction(type, options)
 }

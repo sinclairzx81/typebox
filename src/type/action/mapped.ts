@@ -49,8 +49,12 @@ export function MappedDeferred<Identifier extends TIdentifier, Type extends TSch
 // Type
 // ------------------------------------------------------------------
 /** Applies a Mapped action using the given types. */
+export type TMapped<Identifier extends TIdentifier, Type extends TSchema, As extends TSchema, Property extends TSchema> = (
+  TMappedAction<{}, { callstack: [] }, Identifier, Type, As, Property>
+)
+/** Applies a Mapped action using the given types. */
 export function Mapped<Identifier extends TIdentifier, Type extends TSchema, As extends TSchema, Property extends TSchema>
-  (identifier: Identifier, type: Type, as: As, property: Property, options: TSchemaOptions = {}): 
-    TMappedAction<{}, { callstack: [] }, Identifier, Type, As, Property> {
+  (identifier: Identifier, type: Type, as: As, property: Property, options: TSchemaOptions = {}):
+  TMapped<Identifier, Type, As, Property> {
   return MappedAction({}, { callstack: [] }, identifier, type, as, property, options)
 }

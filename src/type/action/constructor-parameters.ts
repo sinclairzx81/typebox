@@ -47,6 +47,10 @@ export function ConstructorParametersDeferred<Type extends TSchema>(type: Type, 
 // Type
 // ------------------------------------------------------------------
 /** Applies a ConstructorParameters action to a type. */
-export function ConstructorParameters<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TConstructorParametersAction<Type> {
+export type TConstructorParameters<Type extends TSchema> = (
+  TConstructorParametersAction<Type>
+)
+/** Applies a ConstructorParameters action to a type. */
+export function ConstructorParameters<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TConstructorParameters<Type> {
   return ConstructorParametersAction(type, options) as never
 }

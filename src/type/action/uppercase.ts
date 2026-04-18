@@ -47,6 +47,10 @@ export function UppercaseDeferred<Type extends TSchema>(type: Type, options: TSc
 // Type
 // ------------------------------------------------------------------
 /** Applies a Uppercase action to the given type. */
-export function Uppercase<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TUppercaseAction<Type> {
+export type TUppercase<Type extends TSchema> = (
+  TUppercaseAction<Type>
+)
+/** Applies a Uppercase action to the given type. */
+export function Uppercase<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TUppercase<Type> {
   return UppercaseAction(type, options) as never
 }

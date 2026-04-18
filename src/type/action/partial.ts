@@ -47,6 +47,10 @@ export function PartialDeferred<Type extends TSchema>(type: Type, options: TSche
 // Type
 // ------------------------------------------------------------------
 /** Applies a Partial action to the given type. */
-export function Partial<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TPartialAction<Type> {
+export type TPartial<Type extends TSchema> = (
+  TPartialAction<Type>
+)
+/** Applies a Partial action to the given type. */
+export function Partial<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TPartial<Type> {
   return PartialAction(type, options)
 }

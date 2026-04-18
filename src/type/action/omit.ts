@@ -49,9 +49,13 @@ export function OmitDeferred<Type extends TSchema, Indexer extends TSchema>(type
 // Type
 // ------------------------------------------------------------------
 /** Applies a Omit action using the given types. */
-export function Omit<Type extends TSchema, Indexer extends PropertyKey[]>(type: Type, indexer: readonly [...Indexer], options?: TSchemaOptions): TOmitAction<Type, TKeysToIndexer<Indexer>>
+export type TOmit<Type extends TSchema, Indexer extends TSchema> = (
+  TOmitAction<Type, Indexer>
+)
 /** Applies a Omit action using the given types. */
-export function Omit<Type extends TSchema, Indexer extends TSchema>(type: Type, indexer: Indexer, options?: TSchemaOptions): TOmitAction<Type, Indexer> 
+export function Omit<Type extends TSchema, Indexer extends PropertyKey[]>(type: Type, indexer: readonly [...Indexer], options?: TSchemaOptions): TOmit<Type, TKeysToIndexer<Indexer>>
+/** Applies a Omit action using the given types. */
+export function Omit<Type extends TSchema, Indexer extends TSchema>(type: Type, indexer: Indexer, options?: TSchemaOptions): TOmit<Type, Indexer>
 /** Applies a Omit action using the given types. */
 export function Omit(type: TSchema, indexer_or_keys: PropertyKey[] | TSchema, options: TSchemaOptions = {}): never {
   const indexer = Guard.IsArray(indexer_or_keys) ? KeysToIndexer(indexer_or_keys as PropertyKey[]) : indexer_or_keys

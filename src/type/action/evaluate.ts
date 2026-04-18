@@ -47,6 +47,10 @@ export function EvaluateDeferred<Type extends TSchema>(type: Type, options: TSch
 // Type
 // ------------------------------------------------------------------
 /** Applies an Evaluate action to a type. */
-export function Evaluate<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TEvaluateAction<Type> {
+export type TEvaluate<Type extends TSchema> = (
+  TEvaluateAction<Type>
+)
+/** Applies an Evaluate action to a type. */
+export function Evaluate<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TEvaluate<Type> {
   return EvaluateAction(type, options) as never
 }

@@ -47,6 +47,10 @@ export function LowercaseDeferred<Type extends TSchema>(type: Type, options: TSc
 // Type
 // ------------------------------------------------------------------
 /** Applies a Lowercase action to the given type. */
-export function Lowercase<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TLowercaseAction<Type> {
+export type TLowercase<Type extends TSchema> = (
+  TLowercaseAction<Type>
+)
+/** Applies a Lowercase action to the given type. */
+export function Lowercase<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TLowercase<Type> {
   return LowercaseAction(type, options) as never
 }

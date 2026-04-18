@@ -48,7 +48,7 @@ export function OptionsDeferred<Type extends TSchema, Options extends TSchema>(t
 // ------------------------------------------------------------------
 /** Applies an immediate Options action to the given type. */
 export type TOptions<Type extends TSchema, Options extends TSchema> = (
-  Type & Options
+  Type & Options // note: kept here for presentation of TOptions<T, {...}>
 )
 /** Applies an immediate Options action to the given type. */
 export function Options<Type extends TSchema, const Options extends TSchema>(type: Type, options: Options): TOptionsAction<Type, Options> {

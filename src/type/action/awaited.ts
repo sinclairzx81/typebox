@@ -47,6 +47,10 @@ export function AwaitedDeferred<Type extends TSchema>(type: Type, options: TSche
 // Type
 // ------------------------------------------------------------------
 /** Applies an Awaited action to a type. */
-export function Awaited<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TAwaitedAction<Type> {
+export type TAwaited<Type extends TSchema> = (
+  TAwaitedAction<Type>
+)
+/** Applies an Awaited action to a type. */
+export function Awaited<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TAwaited<Type> {
   return AwaitedAction(type, options)
 }

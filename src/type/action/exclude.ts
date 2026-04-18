@@ -47,6 +47,10 @@ export function ExcludeDeferred<Left extends TSchema, Right extends TSchema>(lef
 // Type
 // ------------------------------------------------------------------
 /** Applies a Exclude action using the given types */
-export function Exclude<Left extends TSchema, Right extends TSchema>(left: Left, right: Right, options: TSchemaOptions = {}): TExcludeAction<Left, Right> {
+export type TExclude<Left extends TSchema, Right extends TSchema> = (
+  TExcludeAction<Left, Right>
+)
+/** Applies a Exclude action using the given types */
+export function Exclude<Left extends TSchema, Right extends TSchema>(left: Left, right: Right, options: TSchemaOptions = {}): TExclude<Left, Right> {
   return ExcludeAction(left, right, options) as never
 }

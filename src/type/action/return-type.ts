@@ -47,6 +47,10 @@ export function ReturnTypeDeferred<Type extends TSchema>(type: Type, options: TS
 // Type
 // ------------------------------------------------------------------
 /** Applies a ReturnType action to the given type. */
-export function ReturnType<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TReturnTypeAction<Type> {
+export type TReturnType<Type extends TSchema> = (
+  TReturnTypeAction<Type>
+)
+/** Applies a ReturnType action to the given type. */
+export function ReturnType<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TReturnType<Type> {
   return ReturnTypeAction(type, options) as never
 }

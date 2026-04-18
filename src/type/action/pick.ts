@@ -49,9 +49,13 @@ export function PickDeferred<Type extends TSchema, Indexer extends TSchema>(type
 // Pick
 // ------------------------------------------------------------------
 /** Applies a Pick action using the given types. */
-export function Pick<Type extends TSchema, Indexer extends PropertyKey[]>(type: Type, indexer: readonly [...Indexer], options?: TSchemaOptions): TPickAction<Type, TKeysToIndexer<Indexer>>
+export type TPick<Type extends TSchema, Indexer extends TSchema> = (
+  TPickAction<Type, Indexer>
+)
 /** Applies a Pick action using the given types. */
-export function Pick<Type extends TSchema, Indexer extends TSchema>(type: Type, indexer: Indexer, options?: TSchemaOptions): TPickAction<Type, Indexer> 
+export function Pick<Type extends TSchema, Indexer extends PropertyKey[]>(type: Type, indexer: readonly [...Indexer], options?: TSchemaOptions): TPick<Type, TKeysToIndexer<Indexer>>
+/** Applies a Pick action using the given types. */
+export function Pick<Type extends TSchema, Indexer extends TSchema>(type: Type, indexer: Indexer, options?: TSchemaOptions): TPick<Type, Indexer> 
 /** Applies a Pick action using the given types. */
 export function Pick(type: TSchema, indexer_or_keys: PropertyKey[] | TSchema, options: TSchemaOptions = {}): never {
   const indexer = Guard.IsArray(indexer_or_keys) ? KeysToIndexer(indexer_or_keys as PropertyKey[]) : indexer_or_keys

@@ -50,8 +50,12 @@ export function ConditionalDeferred<Left extends TSchema, Right extends TSchema,
 // Type
 // ------------------------------------------------------------------
 /** Applies a Conditional action to the given types. */
+export type TConditional<Left extends TSchema, Right extends TSchema, True extends TSchema, False extends TSchema> = (
+  TConditionalAction<{}, { callstack: [] }, Left, Right, True, False>
+)
+/** Applies a Conditional action to the given types. */
 export function Conditional<Left extends TSchema, Right extends TSchema, True extends TSchema, False extends TSchema>
-  (left: Left, right: Right, true_: True, false_: False, options: TSchemaOptions = {}): 
-    TConditionalAction<{}, { callstack: [] }, Left, Right, True, False> {
+  (left: Left, right: Right, true_: True, false_: False, options: TSchemaOptions = {}):
+  TConditional<Left, Right, True, False> {
   return ConditionalAction({}, { callstack: [] }, left, right, true_, false_, options) as never
 }
