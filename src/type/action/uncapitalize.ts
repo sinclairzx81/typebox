@@ -52,5 +52,5 @@ export type TUncapitalize<Type extends TSchema> = (
 )
 /** Applies a Uncapitalize action to the given type. */
 export function Uncapitalize<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TUncapitalize<Type> {
-  return UncapitalizeAction(type, options) as never
+  return UncapitalizeAction(type, options)
 }

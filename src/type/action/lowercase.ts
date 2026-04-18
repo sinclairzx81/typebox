@@ -52,5 +52,5 @@ export type TLowercase<Type extends TSchema> = (
 )
 /** Applies a Lowercase action to the given type. */
 export function Lowercase<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TLowercase<Type> {
-  return LowercaseAction(type, options) as never
+  return LowercaseAction(type, options)
 }

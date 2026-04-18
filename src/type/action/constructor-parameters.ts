@@ -52,5 +52,5 @@ export type TConstructorParameters<Type extends TSchema> = (
 )
 /** Applies a ConstructorParameters action to a type. */
 export function ConstructorParameters<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TConstructorParameters<Type> {
-  return ConstructorParametersAction(type, options) as never
+  return ConstructorParametersAction(type, options)
 }

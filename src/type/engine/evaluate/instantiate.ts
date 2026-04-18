@@ -62,5 +62,5 @@ export function EvaluateInstantiate<Context extends TProperties, State extends T
   (context: Context, state: State, type: Type, options: TSchemaOptions): 
     TEvaluateInstantiate<Context, State, Type> {
   const instantiatedType = InstantiateType(context, state, type)
-  return EvaluateAction(instantiatedType, options) as never
+  return EvaluateAction(instantiatedType, options)
 }

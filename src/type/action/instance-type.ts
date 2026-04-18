@@ -52,5 +52,5 @@ export type TInstanceType<Type extends TSchema> = (
 )
 /** Applies a InstanceType action to the given type. */
 export function InstanceType<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TInstanceType<Type> {
-  return InstanceTypeAction(type, options) as never
+  return InstanceTypeAction(type, options)
 }

@@ -52,5 +52,5 @@ export type TEvaluate<Type extends TSchema> = (
 )
 /** Applies an Evaluate action to a type. */
 export function Evaluate<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TEvaluate<Type> {
-  return EvaluateAction(type, options) as never
+  return EvaluateAction(type, options)
 }

@@ -61,5 +61,5 @@ export function RequiredInstantiate<Context extends TProperties, State extends T
   (context: Context, state: State, type: Type, options: TSchemaOptions): 
     TRequiredInstantiate<Context, State, Type> {
   const instaniatedType = InstantiateType(context, state, type)
-  return RequiredAction(instaniatedType, options) as never
+  return RequiredAction(instaniatedType, options)
 }

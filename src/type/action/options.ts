@@ -52,5 +52,5 @@ export type TOptions<Type extends TSchema, Options extends TSchema> = (
 )
 /** Applies an immediate Options action to the given type. */
 export function Options<Type extends TSchema, const Options extends TSchema>(type: Type, options: Options): TOptionsAction<Type, Options> {
-  return OptionsAction(type, options) as never
+  return OptionsAction(type, options)
 }

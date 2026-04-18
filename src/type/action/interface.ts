@@ -67,5 +67,5 @@ export type TInterface<Heritage extends TSchema[], Properties extends TPropertie
 export function Interface<Heritage extends TSchema[], Properties extends TProperties>
   (heritage: [...Heritage], properties: Properties, options: TSchemaOptions = {}):
   TInterface<Heritage, Properties> {
-  return InterfaceAction(heritage, properties, options) as never
+  return InterfaceAction(heritage, properties, options)
 }

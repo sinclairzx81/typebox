@@ -52,5 +52,5 @@ export type TNonNullable<Type extends TSchema> = (
 )
 /** Applies a NonNullable action to the given type. */
 export function NonNullable<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TNonNullable<Type> {
-  return NonNullableAction(type, options) as never
+  return NonNullableAction(type, options)
 }

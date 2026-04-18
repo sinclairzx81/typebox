@@ -61,5 +61,5 @@ export function OptionsInstantiate<Context extends TProperties, State extends TS
   (context: Context, state: State, type: Type, options: Options): 
     TOptionsInstantiate<Context, State, Type, Options> {
   const instaniatedType = InstantiateType(context, state, type)
-  return OptionsAction(instaniatedType, options) as never
+  return OptionsAction(instaniatedType, options)
 }

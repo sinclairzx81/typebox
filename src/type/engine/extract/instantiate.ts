@@ -62,5 +62,5 @@ export function ExtractInstantiate<Context extends TProperties, State extends TS
     TExtractInstantiate<Context, State,Left, Right> {
   const instantiatedLeft = InstantiateType(context, state, left)
   const instantiatedRight = InstantiateType(context, state, right)
-  return ExtractAction(instantiatedLeft, instantiatedRight, options) as never
+  return ExtractAction(instantiatedLeft, instantiatedRight, options)
 }

@@ -52,7 +52,7 @@ export type TReadonlyObject<Type extends TSchema> = (
 )
 /** This type is an alias for TypeScript's `Readonly<T>` utility type. It will make all properties of a TObject readonly or marks an TArray or TTuple as immutable `readonly T[]`. */
 export function ReadonlyObject<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TReadonlyObject<Type> {
-  return ReadonlyObjectAction(type, options) as never
+  return ReadonlyObjectAction(type, options)
 }
 /** 
  * This type has been renamed to ReadonlyObject.

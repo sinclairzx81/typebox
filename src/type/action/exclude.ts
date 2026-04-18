@@ -52,5 +52,5 @@ export type TExclude<Left extends TSchema, Right extends TSchema> = (
 )
 /** Applies a Exclude action using the given types */
 export function Exclude<Left extends TSchema, Right extends TSchema>(left: Left, right: Right, options: TSchemaOptions = {}): TExclude<Left, Right> {
-  return ExcludeAction(left, right, options) as never
+  return ExcludeAction(left, right, options)
 }

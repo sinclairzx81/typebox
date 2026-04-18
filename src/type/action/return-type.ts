@@ -52,5 +52,5 @@ export type TReturnType<Type extends TSchema> = (
 )
 /** Applies a ReturnType action to the given type. */
 export function ReturnType<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TReturnType<Type> {
-  return ReturnTypeAction(type, options) as never
+  return ReturnTypeAction(type, options)
 }

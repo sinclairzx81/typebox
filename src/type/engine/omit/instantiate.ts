@@ -60,8 +60,8 @@ export type TOmitInstantiate<Context extends TProperties, State extends TState, 
 > = TOmitAction<InstantiatedType, InstantiatedIndexer>
 
 export function OmitInstantiate<Context extends TProperties, State extends TState, Type extends TSchema, Indexer extends TSchema>
-  (context: Context, state: State, type: Type, indexer: Indexer, options: TSchemaOptions): 
-    TOmitInstantiate<Context, State, Type, Indexer> {
+  (context: Context, state: State, type: Type, indexer: Indexer, options: TSchemaOptions):
+  TOmitInstantiate<Context, State, Type, Indexer> {
   const instantiatedType = InstantiateType(context, state, type)
   const instantiatedIndexer = InstantiateType(context, state, indexer)
   return OmitAction(instantiatedType, instantiatedIndexer, options)

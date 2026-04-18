@@ -78,6 +78,6 @@ export function InterfaceInstantiate<Context extends TProperties, State extends 
   (context: Context, state: State, heritage: [...Heritage], properties: Properties, options: TSchemaOptions):
     TInterfaceInstantiate<Context, State, Heritage, Properties> {
   const instantiatedHeritage = InstantiateTypes(context, state, heritage) as TSchema[]
-  const instantiatedProperties = InstantiateProperties(context, state, properties) as TProperties
+  const instantiatedProperties = InstantiateProperties(context, state, properties)
   return InterfaceAction(instantiatedHeritage, instantiatedProperties, options) as never
 }

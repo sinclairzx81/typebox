@@ -62,5 +62,5 @@ export function PartialInstantiate<Context extends TProperties, State extends TS
   (context: Context, state: State, type: Type, options: TSchemaOptions): 
     TPartialInstantiate<Context, State, Type> {
   const instantiatedType = InstantiateType(context, state, type)
-  return PartialAction(instantiatedType, options) as never
+  return PartialAction(instantiatedType, options)
 }

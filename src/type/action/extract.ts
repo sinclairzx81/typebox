@@ -52,5 +52,5 @@ export type TExtract<Left extends TSchema, Right extends TSchema> = (
 )
 /** Applies an Extract action using the given types. */
 export function Extract<Left extends TSchema, Right extends TSchema>(left: Left, right: Right, options: TSchemaOptions = {}): TExtract<Left, Right> {
-  return ExtractAction(left, right, options) as never
+  return ExtractAction(left, right, options)
 }
