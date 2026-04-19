@@ -31,7 +31,6 @@ THE SOFTWARE.
 // ------------------------------------------------------------------
 export * from './_context.ts'
 export * from './_externals.ts'
-export * from './_guard.ts'
 export * from './_functions.ts'
 export * from './_reducer.ts'
 export * from './_refine.ts'

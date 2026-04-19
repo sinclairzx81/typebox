@@ -30,12 +30,6 @@ Test('Should Clone 4', () => {
   Assert.IsEqual(B, A)
   Assert.IsTrue(A === B)
 })
-Test('Should Clone 4', () => {
-  const A = { '~guard': null }
-  const B = Memory.Clone(A)
-  Assert.IsEqual(B, A)
-  Assert.IsTrue(A === B)
-})
 // ------------------------------------------------------------------
 // Create
 // ------------------------------------------------------------------

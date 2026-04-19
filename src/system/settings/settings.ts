@@ -72,20 +72,20 @@ export interface TSettings {
   exactOptionalPropertyTypes: boolean
 
   /**
+   * Controls the behavior when a Codec is discarded due to a type operation. Operations such as
+   * Mapped, Partial, Required, Pick, Omit, and ReadonlyObject will structurally transform an Object
+   * type in ways that may invalidate transform logic applied to the Codec. In these instances,
+   * TypeBox will discard the Codec on the resulting type. This setting determines how TypeBox
+   * notifies when this occurs.
+   * @default `'warn'`
+   */
+  destructiveCodec: 'warn' | 'throw' | 'ignore'
+
+  /**
    * Controls whether internal compositor properties (`~kind`, `~readonly`, `~optional`) are enumerable.
    * @default false
    */
   enumerableKind: boolean
-
-  /**
-   * Controls whether TypeBox uses corrective Parse. When enabled, TypeBox will attempt to recover invalid
-   * values during Parse by running a sequence of `Value.*` operations to `Convert`, `Default`, and `Clean`
-   * the value, followed by a subsequent `Assert`. Enabling this option may incur significant performance
-   * overhead for invalid values. It is recommended to keep this disabled in performance-sensitive
-   * applications.
-   * @default false
-   */
-  correctiveParse: boolean
 }
 
 // Internal mutable state
@@ -94,8 +94,8 @@ const settings: TSettings = {
   maxErrors: 8,
   useAcceleration: true,
   exactOptionalPropertyTypes: false,
-  enumerableKind: false,
-  correctiveParse: false
+  destructiveCodec: 'warn',
+  enumerableKind: false
 }
 
 /** Resets system settings to defaults */
@@ -104,8 +104,8 @@ export function Reset(): void {
   settings.maxErrors = 8
   settings.useAcceleration = true
   settings.exactOptionalPropertyTypes = false
+  settings.destructiveCodec = 'warn'
   settings.enumerableKind = false
-  settings.correctiveParse = false
 }
 
 /** Sets system settings */

@@ -1,6 +1,6 @@
 import { TypeCompiler } from 'npm:@sinclair/typebox/compiler'
 import { TSchema } from 'npm:@sinclair/typebox'
-import { Compile } from 'typebox/compile'
+import { Compile } from 'typebox/value'
 import Ajv from 'npm:ajv'
 
 import { Benchmark } from './benchmark/index.ts'

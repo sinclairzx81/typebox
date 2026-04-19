@@ -29,29 +29,9 @@ THE SOFTWARE.
 import Type from 'typebox'
 
 // ------------------------------------------------------------------
-// Definition
+// Date: 0.34.x
 // ------------------------------------------------------------------
-export class TDate extends Type.Base<globalThis.Date> {
-  // required: Used by validation
-  public override Check(value: unknown): value is globalThis.Date {
-    return value instanceof globalThis.Date
-  }
-  // required: Used by validation
-  public override Errors(value: unknown): object[] {
-    return this.Check(value) ? [] : [{ message: 'must be Date' }]
-  }
-  // required: Used by type compositor
-  public override Clone(): TDate {
-    return new TDate()
-  }
-  // required: Used by value/create
-  public override Create(): globalThis.Date {
-    return new globalThis.Date(0)
-  }
-}
-// ------------------------------------------------------------------
-// Factory
-// ------------------------------------------------------------------
-export function Date(): TDate {
-  return new TDate()
-}
+export const Date = (options: Type.TSchemaOptions = {}) => 
+  Type.Unsafe<globalThis.Date>(Type.Refine(options, 
+    value => value instanceof globalThis.Date,
+    () => `Must be instance of Date`))

@@ -74,7 +74,7 @@ Test('Should Algorithm 3', () => {
 // Reverse: Destructure Left
 // ------------------------------------------------------------------
 Test('Should Algorithm 4', () => {
-  const T = Type.Script(`
+  const T: Type.TTuple<[Type.TLiteral<4>, Type.TLiteral<3>, Type.TLiteral<2>, Type.TLiteral<1>]> = Type.Script(`
     type Reverse<T, A extends unknown[] = []> = (
       T extends [...infer L extends unknown[], infer R]
         ? Reverse<L, [...A, R]>
@@ -90,7 +90,7 @@ Test('Should Algorithm 4', () => {
   Assert.IsEqual(T.items[3].const, 1)
 })
 Test('Should Algorithm 5', () => {
-  const T = Type.Script(`
+  const T: Type.TTuple<[Type.TLiteral<4>, Type.TLiteral<3>, Type.TLiteral<2>, Type.TLiteral<1>]> = Type.Script(`
     type Reverse<T, A = []> = (
       T extends [...infer L, infer R]
         ? Reverse<L, [...A, R]>
@@ -107,8 +107,8 @@ Test('Should Algorithm 5', () => {
 // ------------------------------------------------------------------
 // Reverse: Destructure Right
 // ------------------------------------------------------------------
-Test('Should Algorithm 2', () => {
-  const T = Type.Script(`
+Test('Should Algorithm 6', () => {
+  const T: Type.TTuple<[Type.TLiteral<4>, Type.TLiteral<3>, Type.TLiteral<2>, Type.TLiteral<1>]> = Type.Script(`
     type Reverse<T, A extends unknown[] = []> = (
       T extends [infer L, ...infer R extends unknown[]]
         ? Reverse<R, [L, ...A]>
@@ -123,8 +123,8 @@ Test('Should Algorithm 2', () => {
   Assert.IsEqual(T.items[2].const, 2)
   Assert.IsEqual(T.items[3].const, 1)
 })
-Test('Should Algorithm 3', () => {
-  const T = Type.Script(`
+Test('Should Algorithm 7', () => {
+  const T: Type.TTuple<[Type.TLiteral<4>, Type.TLiteral<3>, Type.TLiteral<2>, Type.TLiteral<1>]> = Type.Script(`
     type Reverse<T, A = []> = (
       T extends [infer L, ...infer R]
         ? Reverse<R, [L, ...A]>
@@ -137,4 +137,32 @@ Test('Should Algorithm 3', () => {
   Assert.IsEqual(T.items[1].const, 3)
   Assert.IsEqual(T.items[2].const, 2)
   Assert.IsEqual(T.items[3].const, 1)
+})
+// ------------------------------------------------------------------
+// Advanced
+// ------------------------------------------------------------------
+Test('Should Algorithm 8', () => {
+  const T = Type.Script(`
+    type Values = [3, 2, 6, 1, 7, 3, 10, 4]
+    type TupleToIndexValueUnion<T extends unknown[]> = {
+      [K in keyof T]: [K, T[K]]
+    }[number]
+
+    type FindIndex<
+      T extends unknown[],
+      V,
+    > = Extract<TupleToIndexValueUnion<T>, [string, V]>[0]
+
+    type X = FindIndex<Values, 7>
+    //   ^? "4"
+    type Y = FindIndex<Values, 3>
+    //   ^? "0" | "5"
+  `)
+  const X: Type.TLiteral<'4'> = T.X
+  const Y: Type.TUnion<[Type.TLiteral<'0'>, Type.TLiteral<'5'>]> = T.Y
+  Assert.IsTrue(Type.IsLiteral(X))
+  Assert.IsEqual(X.const, '4')
+  Assert.IsTrue(Type.IsUnion(Y))
+  Assert.IsEqual(Y.anyOf[0].const, '0')
+  Assert.IsEqual(Y.anyOf[1].const, '5')
 })

@@ -489,3 +489,32 @@ Test('Should Index 37', () => {
   const S: Type.TNumber = Type.Index(T, Type.Literal('length'))
   Assert.IsTrue(Type.IsNumber(S))
 })
+// ------------------------------------------------------------------
+// NumericIndex: TPropertyKeys returns both Number and String keys
+// ------------------------------------------------------------------
+Test('Should Index 38', () => {
+  const T = Type.Object({
+    x: Type.Literal(1),
+    0: Type.Literal(2),
+    y: Type.Literal(3),
+    1: Type.Literal(4)
+  })
+  const S: Type.TUnion<[Type.TLiteral<2>, Type.TLiteral<4>]> = Type.Index(T, Type.Number())
+  Assert.IsTrue(Type.IsUnion(S))
+  Assert.IsEqual(S.anyOf.length, 2)
+  Assert.IsEqual(S.anyOf[0].const, 2)
+  Assert.IsEqual(S.anyOf[1].const, 4)
+})
+Test('Should Index 39', () => {
+  const T = Type.Object({
+    'x': Type.Literal(1),
+    '0': Type.Literal(2),
+    'y': Type.Literal(3),
+    '1': Type.Literal(4)
+  })
+  const S: Type.TUnion<[Type.TLiteral<2>, Type.TLiteral<4>]> = Type.Index(T, Type.Number())
+  Assert.IsTrue(Type.IsUnion(S))
+  Assert.IsEqual(S.anyOf.length, 2)
+  Assert.IsEqual(S.anyOf[0].const, 2)
+  Assert.IsEqual(S.anyOf[1].const, 4)
+})

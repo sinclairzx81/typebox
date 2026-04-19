@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Arguments } from '../../system/arguments/index.ts'
+import { ValueArguments } from '../shared/value-arguments.ts'
 import type { TProperties, TSchema, Static } from '../../type/index.ts'
 import { FromType } from './from-type.ts'
 import { Assert } from '../assert/index.ts'
@@ -57,10 +57,7 @@ export function Repair<Context extends TProperties, const Type extends TSchema>(
  * action is performed.
  */
 export function Repair(...args: unknown[]): unknown {
-  const [context, type, value] = Arguments.Match<[TProperties, TSchema, unknown]>(args, {
-    3: (context, type, value) => [context, type, value],
-    2: (type, value) => [{}, type, value],
-  })
+  const [context, type, value] = ValueArguments(args)
   const repaired = FromType(context, type, value)
   Assert(context, type, repaired)
   return repaired

@@ -28,6 +28,8 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
+import { DestructiveCodecCheck } from '../codec/destructive-codec-check.ts'
+
 import { Memory } from '../../../system/memory/index.ts'
 import { type TSchema, type TSchemaOptions } from '../../types/schema.ts'
 import { type TProperties } from '../../types/properties.ts'
@@ -49,6 +51,7 @@ export type TEvaluateAction<Type extends TSchema,
 export function EvaluateAction<Type extends TSchema>
   (type: Type, options: TSchemaOptions): 
     TEvaluateAction<Type> {
+  DestructiveCodecCheck(type)
   const result = Memory.Update(EvaluateType(type), {}, options)
   return result as never
 }

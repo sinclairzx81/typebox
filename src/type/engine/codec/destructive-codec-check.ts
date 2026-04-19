@@ -1,0 +1,56 @@
+/*--------------------------------------------------------------------------
+
+TypeBox
+
+The MIT License (MIT)
+
+Copyright (c) 2017-2026 Haydn Paterson
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+---------------------------------------------------------------------------*/
+
+import { Settings, Warn } from '../../../system/index.ts'
+import { Guard } from '../../../guard/index.ts'
+import { IsArray, IsAsyncIterator, IsCall, IsDeferred, IsFunction, IsIntersect, IsIterator, IsObject, IsPromise, IsRecord, IsRest, IsTuple, IsUnion, type TSchema } from '../../types/index.ts'
+
+function IsDestructiveCodec(type: TSchema): boolean {
+  return Guard.HasPropertyKey(type, '~codec') && (
+    IsArray(type) ||
+    IsAsyncIterator(type) ||
+    IsCall(type) ||
+    IsDeferred(type) ||
+    IsFunction(type) ||
+    IsIntersect(type) ||
+    IsIterator(type) ||
+    IsObject(type) ||
+    IsPromise(type) ||
+    IsRecord(type) ||
+    IsRest(type) ||
+    IsTuple(type) ||
+    IsUnion(type)
+  )
+}
+export function DestructiveCodecCheck(type: TSchema): void {
+  const setting = Settings.Get().destructiveCodec
+  if (setting === 'ignore' || !IsDestructiveCodec(type)) return
+  const warning = `A codec was discarded due to type instantiation`
+  if (setting === 'throw') throw new Error(warning)
+  Warn(warning)
+}

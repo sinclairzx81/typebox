@@ -1,6 +1,5 @@
 import { Arguments } from 'typebox/system'
-import { Compile } from 'typebox/compile'
-import { Value } from 'typebox/value'
+import { Check, Compile, Errors } from 'typebox/value'
 import { type TProperties, type TSchema } from 'typebox'
 
 // -------------------------------------------------------------------------
@@ -14,8 +13,8 @@ export function Ok(...args: unknown[]): void {
     2: (type, value) => [{}, type, value]
   })
   const result_1 = Compile(context, type).Check(value)
-  const result_2 = Value.Check(context, type, value)
-  const errors = Value.Errors(context, type, value)
+  const result_2 = Check(context, type, value)
+  const errors = Errors(context, type, value)
   const result_3 = errors.length === 0
   if ((result_1 !== result_2)) throw Error('Compile | Value Check mismatch')
   if ((result_1 !== result_3)) throw Error('Compile | Error Check mismatch')
@@ -52,8 +51,8 @@ export function Fail(...args: unknown[]): void {
     2: (type, value) => [{}, type, value]
   })
   const result_1 = Compile(context, type).Check(value)
-  const result_2 = Value.Check(context, type, value)
-  const errors = Value.Errors(context, type, value)
+  const result_2 = Check(context, type, value)
+  const errors = Errors(context, type, value)
   const result_3 = errors.length === 0
   if ((result_1 !== result_2)) throw Error('Compile | Value Check mismatch')
   if ((result_1 !== result_3)) throw Error('Compile | Error Check mismatch')

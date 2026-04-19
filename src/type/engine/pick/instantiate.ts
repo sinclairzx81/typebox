@@ -28,6 +28,8 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
+import { DestructiveCodecCheck } from '../codec/destructive-codec-check.ts'
+
 import { Memory } from '../../../system/memory/index.ts'
 import { type TSchema, type TSchemaOptions } from '../../types/schema.ts'
 import { type TProperties } from '../../types/properties.ts'
@@ -46,6 +48,7 @@ export type TPickAction<Type extends TSchema, Indexer extends TSchema,
 export function PickAction<Type extends TSchema, Indexer extends TSchema>
   (type: Type, indexer: Indexer, options: TSchemaOptions): 
     TPickAction<Type, Indexer> {
+  DestructiveCodecCheck(type)
   const result = CanInstantiate([type, indexer])
     ? Memory.Update(FromType(type, indexer), {}, options)
     : PickDeferred(type, indexer, options)

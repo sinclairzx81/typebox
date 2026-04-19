@@ -28,10 +28,9 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Arguments } from '../../system/arguments/index.ts'
 import type { TLocalizedValidationError } from '../../error/index.ts'
 import type { Static, TProperties, TSchema } from '../../type/index.ts'
-
+import { ValueArguments } from '../shared/value-arguments.ts'
 import { Check } from '../check/index.ts'
 import { Errors } from '../errors/index.ts'
 
@@ -42,7 +41,7 @@ export class AssertError extends Error {
   declare readonly cause: { source: string; errors: TLocalizedValidationError[]; value: unknown }
   constructor(source: string, value: unknown, errors: TLocalizedValidationError[]) {
     super(source)
-    Object.defineProperty(this, 'cause', {
+    globalThis.Object.defineProperty(this, 'cause', {
       value: { source, errors, value },
       writable: false,
       configurable: false,
@@ -56,10 +55,7 @@ export function Assert<const Type extends TSchema>(type: Type, value: unknown): 
 export function Assert<Context extends TProperties, const Type extends TSchema>(context: Context, type: Type, value: unknown): asserts value is Static<Type, Context>
 /** Asserts the a value matches the given type. This function returns a TypeScript type asserts predicate and will throw AssertError if value does not match. */
 export function Assert(...args: unknown[]): void {
-  const [context, type, value] = Arguments.Match<[TProperties, TSchema, unknown]>(args, {
-    3: (context, type, value) => [context, type, value],
-    2: (type, value) => [{}, type, value]
-  })
+  const [context, type, value] = ValueArguments(args)
   const check = Check(context, type, value)
   if (!check) throw new AssertError('Assert', value, Errors(context, type, value))
 }

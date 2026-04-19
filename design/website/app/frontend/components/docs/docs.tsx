@@ -49,11 +49,10 @@ interface Manifest {
 const TOP_LEVEL_ORDER = [
   'overview',
   'type',
-  'script',
-  'schema',
   'value',
+  'schema',
   'format',
-  'compile',
+  'script',
   'system',
 ]
 // ------------------------------------------------------------------

@@ -28,6 +28,8 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
+import { DestructiveCodecCheck } from '../codec/destructive-codec-check.ts'
+
 import { Memory } from '../../../system/memory/index.ts'
 import { type TSchema, type TSchemaOptions } from '../../types/schema.ts'
 import { type TProperties } from '../../types/properties.ts'
@@ -47,6 +49,7 @@ export type TMappedAction<Context extends TProperties, State extends TState, Ide
 export function MappedAction<Context extends TProperties, State extends TState, Identifier extends TIdentifier, Type extends TSchema, As extends TSchema, Property extends TSchema>
   (context: Context, state: State, identifier: Identifier, type: Type, as: As, property: Property, options: TSchemaOptions): 
     TMappedAction<Context, State, Identifier, Type, As, Property> {
+  DestructiveCodecCheck(type)
   const result = CanInstantiate([type])
     ? Memory.Update(MappedOperation(context, state, identifier, type, as, property), {}, options)
     : MappedDeferred(identifier, type, as, property, options)

@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Arguments } from '../../system/arguments/index.ts'
+import { ValuelessArguments } from '../shared/value-arguments.ts'
 import type { TProperties, TSchema, Static } from '../../type/index.ts'
 import { FromType } from './from-type.ts'
 
@@ -38,9 +38,6 @@ export function Create<const Type extends TSchema>(type: Type): Static<Type>
 export function Create<const Context extends TProperties, Type extends TSchema>(context: Context, type: Type): Static<Type, Context>
 /** Creates a value from the provided type. This function will use `default` annotations if present. */
 export function Create(...args: unknown[]): unknown {
-  const [context, type] = Arguments.Match<[TProperties, TSchema]>(args, {
-    2: (context, type) => [context, type],
-    1: (type) => [{}, type],
-  })
+  const [context, type] = ValuelessArguments(args)
   return FromType(context, type) as never
 }

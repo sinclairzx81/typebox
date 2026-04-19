@@ -90,9 +90,13 @@ export function RequiredArray<Properties extends TProperties>(properties: Proper
 // ------------------------------------------------------------------
 // PropertyKeys
 // ------------------------------------------------------------------
+type TKeyLike = number | string
+type TPropertyKeyToString<Key extends TKeyLike> = `${Key}`
 /** Extracts a tuple of keys from a TProperties value. */
 export type TPropertyKeys<Properties extends TProperties,
-  Result extends string[] = TUnionToTuple<Extract<keyof Properties, string>>
+  Extracted extends TKeyLike = Extract<keyof Properties, TKeyLike>,
+  Normalized extends string = TPropertyKeyToString<Extracted>,
+  Result extends string[] = TUnionToTuple<Normalized>
 > = Result
 /** Extracts a tuple of keys from a TProperties value. */
 export function PropertyKeys<Properties extends TProperties>(properties: Properties): TPropertyKeys<Properties> {

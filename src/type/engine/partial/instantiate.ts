@@ -28,6 +28,8 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
+import { DestructiveCodecCheck } from '../codec/destructive-codec-check.ts'
+
 import { Memory } from '../../../system/memory/index.ts'
 import { type TSchema, type TSchemaOptions } from '../../types/schema.ts'
 import { type TProperties } from '../../types/properties.ts'
@@ -46,6 +48,7 @@ export type TPartialAction<Type extends TSchema,
 export function PartialAction<Type extends TSchema>
   (type: Type, options: TSchemaOptions): 
     TPartialAction<Type> {
+  DestructiveCodecCheck(type)
   const result = CanInstantiate([type])
     ? Memory.Update(FromType(type), {}, options) 
     : PartialDeferred(type, options)

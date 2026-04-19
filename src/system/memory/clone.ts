@@ -32,15 +32,6 @@ import { Guard } from '../../guard/index.ts'
 import { Metrics } from './metrics.ts'
 
 // ------------------------------------------------------------------
-// Guard
-// ------------------------------------------------------------------
-function IsGuard(value: unknown): value is { '~guard': unknown } {
-  return Guard.IsObject(value) && Guard.HasPropertyKey(value, '~guard')
-}
-function FromGuard(value: { '~guard': unknown }): unknown {
-  return value // non-clonable
-}
-// ------------------------------------------------------------------
 // Array
 // ------------------------------------------------------------------
 function FromArray(value: unknown[]): unknown[] {
@@ -78,7 +69,6 @@ function FromUnknown(value: unknown): unknown {
 function FromValue(value: unknown): unknown {
   return (
     value instanceof RegExp ? FromRegExp(value) :
-    IsGuard(value) ? FromGuard(value) :
     Guard.IsArray(value) ? FromArray(value) : 
     Guard.IsObject(value) ? FromObject(value) : 
     FromUnknown(value)

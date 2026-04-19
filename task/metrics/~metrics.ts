@@ -3,7 +3,6 @@ import { Task } from 'tasksmith'
 export async function Metrics() {
   await Task.esbuild.metrics([
     'task/metrics/all.ts',
-    'task/metrics/compile-all.ts',
     'task/metrics/schema-all.ts',
     'task/metrics/schema-check.ts',
     'task/metrics/schema-compile.ts',
@@ -23,7 +22,6 @@ export async function Metrics() {
     'task/metrics/value-convert.ts',
     'task/metrics/value-create.ts',
     'task/metrics/value-hash.ts',
-    'task/metrics/value-mutate.ts',
     'task/metrics/value-pointer.ts',
     'task/metrics/value-repair.ts',
   ])

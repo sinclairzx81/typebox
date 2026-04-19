@@ -6,25 +6,3 @@
 
 const E = Value.Parse(Type.String(), 12345)        // throws ParseError 
 </code></pre>
-<h2>Corrective Parse</h2>
-<p>TypeBox provides an optional corrective parsing mode that attempts to repair invalid values before failing. When enabled, the parser runs a pipeline consisting of Convert, Default, and Clean, then re-asserts the value after processing. This feature can be useful when parsing environment variables into target types.</p>
-<blockquote>
-<p>⚠️ This feature can impact performance. It is not recommended for use in high throughput applications.</p>
-</blockquote>
-<p>This feature can be enabled as follows:</p>
-<pre><code class="language-typescript">import { Settings } from &#39;typebox/system&#39;
-
-// Corrective Parse: Enable
-
-Settings.Set({ correctiveParse: true })
-
-// Corrective Parse: Convert Value into the target type if reasonable conversion is possible.
-
-const R = Value.Parse(Type.String(), &#39;hello&#39;)      // const R: string = &quot;hello&quot;
-
-const S = Value.Parse(Type.String(), 12345)        // const S: string = &quot;12345&quot;
-
-// Corrective Parse: Reset (optional)
-
-Settings.Reset()
-</code></pre>

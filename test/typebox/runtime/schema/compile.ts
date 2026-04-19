@@ -29,8 +29,7 @@ Test('Should IsAccelerated 2', () => {
 // ------------------------------------------------------------------
 Test('Should Compile 1', () => {
   const validator = Schema.Compile({ type: 'string' })
-  const [result, errors] = validator.Errors(1)
-  Assert.IsFalse(result)
+  const errors = validator.Errors(1)
   Assert.IsTrue(errors.length > 0)
 })
 Test('Should Compile 2', () => {
@@ -50,8 +49,7 @@ Test('Should Compile 4', () => {
 // ------------------------------------------------------------------
 Test('Should Compile 5', () => {
   const validator = Schema.Compile({ A: { type: 'string' } }, { $ref: 'A' })
-  const [result, errors] = validator.Errors(1)
-  Assert.IsFalse(result)
+  const errors = validator.Errors(1)
   Assert.IsTrue(errors.length > 0)
 })
 Test('Should Compile 6', () => {

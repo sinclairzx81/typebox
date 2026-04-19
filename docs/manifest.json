@@ -1,11 +1,4 @@
 {
-  "compile": {
-    "0_compile": "docs/compile/0_compile.html",
-    "1_validator": "docs/compile/1_validator.html",
-    "2_code": "docs/compile/2_code.html",
-    "3_accelerate": "docs/compile/3_accelerate.html",
-    "overview": "docs/compile/overview.html"
-  },
   "format": {
     "1_registry": "docs/format/1_registry.html",
     "date-time": "docs/format/date-time.html",
@@ -44,6 +37,7 @@
     "4_errors": "docs/schema/4_errors.html",
     "5_compile": "docs/schema/5_compile.html",
     "6_advanced": "docs/schema/6_advanced.html",
+    "7_accelerate": "docs/schema/7_accelerate.html",
     "overview": "docs/schema/overview.html"
   },
   "script": {
@@ -147,7 +141,6 @@
     "equal": "docs/value/equal.html",
     "errors": "docs/value/errors.html",
     "hash": "docs/value/hash.html",
-    "mutate": "docs/value/mutate.html",
     "overview": "docs/value/overview.html",
     "parse": "docs/value/parse.html",
     "patch": "docs/value/patch.html",

@@ -38,22 +38,19 @@ const S = C.Parse({ x: 1, y: 2, z: 3 })             // const S: {
 // Errors
 // ------------------------------------------------------------------
 const E = C.Errors(T, { x: null })                  // const E = [
-                                                    //   false,
-                                                    //   [
-                                                    //     {
-                                                    //       keyword: &quot;required&quot;,
-                                                    //       schemaPath: &quot;#&quot;,
-                                                    //       instancePath: &quot;&quot;,
-                                                    //       params: { requiredProperties: [ &quot;y&quot;, &quot;z&quot; ] },
-                                                    //       message: &quot;must have required properties y, z&quot;
-                                                    //     },
-                                                    //     {
-                                                    //       keyword: &quot;type&quot;,
-                                                    //       schemaPath: &quot;#/properties/x&quot;,
-                                                    //       instancePath: &quot;/x&quot;,
-                                                    //       params: { type: &quot;number&quot; },
-                                                    //       message: &quot;must be number&quot;
-                                                    //     }
-                                                    //   ]
+                                                    //   {
+                                                    //     keyword: &quot;required&quot;,
+                                                    //     schemaPath: &quot;#&quot;,
+                                                    //     instancePath: &quot;&quot;,
+                                                    //     params: { requiredProperties: [ &quot;y&quot;, &quot;z&quot; ] },
+                                                    //     message: &quot;must have required properties y, z&quot;
+                                                    //   },
+                                                    //   {
+                                                    //     keyword: &quot;type&quot;,
+                                                    //     schemaPath: &quot;#/properties/x&quot;,
+                                                    //     instancePath: &quot;/x&quot;,
+                                                    //     params: { type: &quot;number&quot; },
+                                                    //     message: &quot;must be number&quot;
+                                                    //   }
                                                     // ]
 </code></pre>

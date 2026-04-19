@@ -28,8 +28,8 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Arguments } from '../../system/arguments/index.ts'
 import type { TProperties, TSchema } from '../../type/index.ts'
+import { ValueArguments } from '../shared/value-arguments.ts'
 import { FromType } from './from-type.ts'
 
 /** 
@@ -50,9 +50,6 @@ export function Convert(type: TSchema, value: unknown): unknown
  * provided value. If mutation is not wanted, you should Clone the value before passing to this function.
  */
 export function Convert(...args: unknown[]): unknown {
-  const [context, type, value] = Arguments.Match<[TProperties, TSchema, unknown]>(args, {
-    3: (context, type, value) => [context, type, value],
-    2: (type, value) => [{}, type, value],
-  })
+  const [context, type, value] = ValueArguments(args)
   return FromType(context, type, value)
 }

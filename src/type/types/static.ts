@@ -33,7 +33,6 @@ import type { StaticCodec, TCodec } from './_codec.ts'
 import type { StaticAny, TAny } from './any.ts'
 import type { StaticArray, TArray } from './array.ts'
 import type { StaticAsyncIterator, TAsyncIterator } from './async-iterator.ts'
-import type { StaticBase, Base } from './base.ts'
 import type { StaticBigInt, TBigInt } from './bigint.ts'
 import type { StaticBoolean, TBoolean } from './boolean.ts'
 import type { StaticConstructor, TConstructor } from './constructor.ts'
@@ -83,7 +82,6 @@ export type StaticType<Stack extends string[], Direction extends StaticDirection
   Type extends TAny ? StaticAny :
   Type extends TArray<infer Items extends TSchema> ? StaticArray<Stack, Direction, Context, This, Type, Items> :
   Type extends TAsyncIterator<infer Type extends TSchema> ? StaticAsyncIterator<Stack, Direction, Context, This, Type> :
-  Type extends Base<infer Value extends unknown> ? StaticBase<Value> :
   Type extends TBigInt ? StaticBigInt :
   Type extends TBoolean ? StaticBoolean :
   Type extends TConstructor<infer Parameters extends TSchema[], infer ReturnType extends TSchema> ? StaticConstructor<Stack, Direction, Context, This, Parameters, ReturnType> :
@@ -116,10 +114,6 @@ export type StaticType<Stack extends string[], Direction extends StaticDirection
 // ------------------------------------------------------------------
 // Statics
 // ------------------------------------------------------------------
-/** Infers a static type from a TypeBox type using Parse logic. */
-export type StaticParse<Type extends TSchema, Context extends TProperties = {},
-  Result extends unknown = StaticType<[], 'Encode', Context, {}, Type>
-> = Result
 /** Infers a static type from a TypeBox type using Decode logic. */
 export type StaticDecode<Type extends TSchema, Context extends TProperties = {},
   Result extends unknown = StaticType<[], 'Decode', Context, {}, Type>

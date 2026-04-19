@@ -1,70 +1,63 @@
-import Compile from 'typebox/compile'
-import System from 'typebox/system'
-import Guard from 'typebox/guard'
-import Format from 'typebox/format'
-import Schema from 'typebox/schema'
-import Value from 'typebox/value'
+
+// ------------------------------------------------------------------
+// Next
+// ------------------------------------------------------------------
+// Add Pipeline
+// Add Match
+// Update Refine - Error Callback
+// DestructiveCodecCheck --- Need to find these
+// Break Decode, Encode
+// Compile Moved to Value
+// Add Const Types
+// Rename ReadonlyType to ReadonlyObject
+// Remove Type.Base
+// Remove Compiler.Code
+// Remove Value.Mutate
+// Remove DecodeUnsafe, EncodeUnsafe
+
+// TODO: Document Compile on Value and Schema
+
 import Type from 'typebox'
 
-// ------------------------------------------------------------------
-// Settings
-// ------------------------------------------------------------------
-
-System.Settings.Set({ enumerableKind: false })
-
-// ------------------------------------------------------------------
-// Guard
-// ------------------------------------------------------------------
-
-const A = Guard.GraphemeCount('type-📦')      // 6
-const B = Guard.HasPropertyKey({ x: 1 }, 'x') // true
-
-// ------------------------------------------------------------------
-// Type
-// ------------------------------------------------------------------
-
-const T = Type.Object({
-  x: Type.Number(),
-  y: Type.Number(),
-  z: Type.Number()
+const S = Type.Object({
+  0: Type.Literal(1),
+  x: Type.Literal(2),
+  1: Type.Literal(3),
+  y: Type.Literal(4)
 })
 
-// ------------------------------------------------------------------
-// Script
-// ------------------------------------------------------------------
+const Ms = Type.Index(S, Type.Number())
 
-const S = Type.Script({ T }, `{
-  [K in keyof T]: T[K] | null
-}`)
+console.log({ Ms })
 
-// ------------------------------------------------------------------
-// Infer
-// ------------------------------------------------------------------
+const { X, Y, M } = Type.Script(`
 
-type T = Type.Static<typeof T>
-type S = Type.Static<typeof S>
+  type Values = [3, 2, 6, 1, 7, 3, 10, 4];
 
-// ------------------------------------------------------------------
-// Parse
-// ------------------------------------------------------------------
+  type M = TupleToIndexValueUnion<Values>
 
-const R = Value.Parse(T, { x: 1, y: 2, z: 3 })
+  type TupleToIndexValueUnion<T extends unknown[]> = {
+    [K in keyof T]: [K, T[K]]
+  }[number]
 
-// ------------------------------------------------------------------
-// Compile
-// ------------------------------------------------------------------
-const C = Compile(S)
+  type FindIndex<
+    T extends unknown[],
+    V,
+  > = Extract<TupleToIndexValueUnion<T>, [string, V]>[0];
 
-const X = C.Parse({ x: 1, y: 2, z: 3 })
+  type X = FindIndex<Values, 7>
+  //   ^? "4"
+  type Y = FindIndex<Values, 3>
+  //   ^? "0" | "5"
+`)
 
-// ------------------------------------------------------------------
-// Format
-// ------------------------------------------------------------------
-
-const E = Format.IsEmail('user@domain.com')
-
-// ------------------------------------------------------------------
-// Schema
-// ------------------------------------------------------------------
-
-const D = Schema.Parse({ const: 'hello' }, 'hello')
+// console.log({ X, Y })
+// // console.log({ X, Y }) // {
+// //                       //   X: { type: "number", const: 4 },
+// //                       //   Y: {
+// //                       //     anyOf: [
+// //                       //      { type: "number", const: 0 }, 
+// //                       //      { type: "number", const: 5 } 
+// //                       //     ]
+// //                       //   }
+// //                       // }

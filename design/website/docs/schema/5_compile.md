@@ -42,22 +42,19 @@ const S = C.Parse({ x: 1, y: 2, z: 3 })             // const S: {
 // Errors
 // ------------------------------------------------------------------
 const E = C.Errors(T, { x: null })                  // const E = [
-                                                    //   false,
-                                                    //   [
-                                                    //     {
-                                                    //       keyword: "required",
-                                                    //       schemaPath: "#",
-                                                    //       instancePath: "",
-                                                    //       params: { requiredProperties: [ "y", "z" ] },
-                                                    //       message: "must have required properties y, z"
-                                                    //     },
-                                                    //     {
-                                                    //       keyword: "type",
-                                                    //       schemaPath: "#/properties/x",
-                                                    //       instancePath: "/x",
-                                                    //       params: { type: "number" },
-                                                    //       message: "must be number"
-                                                    //     }
-                                                    //   ]
+                                                    //   {
+                                                    //     keyword: "required",
+                                                    //     schemaPath: "#",
+                                                    //     instancePath: "",
+                                                    //     params: { requiredProperties: [ "y", "z" ] },
+                                                    //     message: "must have required properties y, z"
+                                                    //   },
+                                                    //   {
+                                                    //     keyword: "type",
+                                                    //     schemaPath: "#/properties/x",
+                                                    //     instancePath: "/x",
+                                                    //     params: { type: "number" },
+                                                    //     message: "must be number"
+                                                    //   }
                                                     // ]
 ```

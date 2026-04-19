@@ -97,7 +97,7 @@ export function Home() {
     <div className='home'>
       <div className='home-card'>
         <TypeBoxLogo />
-        <h1>TypeBox</h1>
+        <h1>TypeBox<sup style={{ marginLeft: '0.4em', color: '#e0c285', fontSize: '0.6em' }}>2</sup></h1>
         <AnimatedSubHeading
           intervalMs={5000}
           stepDelayMs={25}

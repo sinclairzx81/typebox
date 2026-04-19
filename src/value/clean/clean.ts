@@ -26,8 +26,8 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { Arguments } from '../../system/arguments/index.ts'
 import type { TProperties, TSchema } from '../../type/index.ts'
+import { ValueArguments } from '../shared/value-arguments.ts'
 import { FromType } from './from-type.ts'
 
 /**
@@ -51,9 +51,6 @@ export function Clean(context: TProperties, type: TSchema, value: unknown): unkn
  * to this function.
  */
 export function Clean(...args: unknown[]): unknown {
-  const [context, type, value] = Arguments.Match<[TProperties, TSchema, unknown]>(args, {
-    3: (context, type, value) => [context, type, value],
-    2: (type, value) => [{}, type, value]
-  })
+  const [context, type, value] = ValueArguments(args)
   return FromType(context, type, value)
 }
