@@ -35,7 +35,6 @@ import { FromDefault } from './from-default.ts'
 
 import { FromArray } from './from-array.ts'
 import { FromAsyncIterator } from './from-async-iterator.ts'
-import { FromBase } from './from-base.ts'
 import { FromBigInt } from './from-bigint.ts'
 import { FromBoolean } from './from-boolean.ts'
 import { FromConstructor } from './from-constructor.ts'
@@ -72,7 +71,6 @@ export function FromType(context: T.TProperties, type: T.TSchema): unknown {
     // -----------------------------------------------------
     T.IsArray(type) ? FromArray(context, type) :
     T.IsAsyncIterator(type) ? FromAsyncIterator(context, type) :
-    T.IsBase(type) ? FromBase(context, type) :
     T.IsBigInt(type) ? FromBigInt(context, type) :
     T.IsBoolean(type) ? FromBoolean(context, type) :
     T.IsConstructor(type) ? FromConstructor(context, type) :

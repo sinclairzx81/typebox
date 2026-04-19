@@ -29,61 +29,21 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Arguments } from '../../system/arguments/index.ts'
-import { type TLocalizedValidationError } from '../../error/errors.ts'
-import { type TProperties, type TSchema, type StaticDecode } from '../../type/index.ts'
-
-import { AssertError } from '../assert/index.ts'
-import { Check } from '../check/index.ts'
-import { Errors } from '../errors/index.ts'
-import { Clean } from '../clean/index.ts'
-import { Clone } from '../clone/index.ts'
-import { Convert } from '../convert/index.ts'
-import { Default } from '../default/index.ts'
-import { Pipeline } from '../pipeline/index.ts'
+import { type TProperties, type TSchema } from '../../type/index.ts'
 import { FromType } from './from-type.ts'
 
-// ------------------------------------------------------------------
-// Assert
-// ------------------------------------------------------------------
-export class DecodeError extends AssertError {
-  constructor(value: unknown, errors: TLocalizedValidationError[]) {
-    super('Decode', value, errors)
-  }
-}
-function Assert(context: TProperties, type: TSchema, value: unknown): unknown {
-  if (!Check(context, type, value)) throw new DecodeError(value, Errors(context, type, value))
-  return value
-}
-// ------------------------------------------------------------------
-// DecodeUnsafe
-// ------------------------------------------------------------------
-/** Executes Decode callbacks only */
-export function DecodeUnsafe(context: TProperties, type: TSchema, value: unknown): unknown {
-  return FromType('Decode', context, type, value)
-}
-// ------------------------------------------------------------------
-// Decoder
-// ------------------------------------------------------------------
-const Decoder = Pipeline([
-  (_context, _type, value) => Clone(value),
-  (context, type, value) => Default(context, type, value),
-  (context, type, value) => Convert(context, type, value),
-  (context, type, value) => Clean(context, type, value),
-  (context, type, value) => Assert(context, type, value),
-  (context, type, value) => DecodeUnsafe(context, type, value)
-])
 // ------------------------------------------------------------------
 // Decode
 // ------------------------------------------------------------------
 /** Decodes a value with the given type. */
-export function Decode<const Type extends TSchema>(type: Type, value: unknown): StaticDecode<Type>
+export function Decode<const Type extends TSchema>(type: Type, value: unknown): unknown
 /** Decodes a value with the given type. */
-export function Decode<Context extends TProperties, const Type extends TSchema>(context: Context, type: Type, value: unknown): StaticDecode<Type, Context>
+export function Decode<Context extends TProperties, const Type extends TSchema>(context: Context, type: Type, value: unknown): unknown
 /** Decodes a value with the given type. */
-export function Decode(...args: unknown[]): never {
+export function Decode(...args: unknown[]): unknown {
   const [context, type, value] = Arguments.Match<[TProperties, TSchema, unknown]>(args, {
     3: (context, type, value) => [context, type, value],
     2: (type, value) => [{}, type, value],
   })
-  return Decoder(context, type, value) as never
+  return FromType('Decode', context, type, value)
 }

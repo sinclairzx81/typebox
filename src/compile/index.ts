@@ -29,15 +29,13 @@ THE SOFTWARE.
 // ------------------------------------------------------------------
 // Barrel
 // ------------------------------------------------------------------
-export * from './code.ts'
 export * from './compile.ts'
 export * from './validator.ts'
 
 // ------------------------------------------------------------------
 // Default
 // ------------------------------------------------------------------
-import { Code } from './code.ts'
 import { Compile } from './compile.ts'
 import { Validator } from './validator.ts'
-export { Code, Compile, Validator }
+export { Compile, Validator }
 export default Compile

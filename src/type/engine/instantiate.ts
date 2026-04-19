@@ -41,7 +41,6 @@ import { type TReadonly, IsReadonly, ReadonlyAdd, ReadonlyRemove, TReadonlyAdd, 
 // ------------------------------------------------------------------
 // Types
 // ------------------------------------------------------------------
-import { IsBase } from '../types/base.ts'
 import { type TSchema, type TSchemaOptions, IsSchema } from '../types/schema.ts'
 import { type TArray, Array, IsArray, ArrayOptions } from '../types/array.ts'
 import { type TAsyncIterator, AsyncIterator, IsAsyncIterator, AsyncIteratorOptions } from '../types/async-iterator.ts'
@@ -331,7 +330,7 @@ export function InstantiateType<Context extends TProperties, State extends TStat
   const modifiers = ModifierActions(input, 
     IsReadonly(input) ? 'add' : 'none', 
     IsOptional(input) ? 'add' : 'none')
-  const type = IsBase(modifiers[0]) ? modifiers[0].Clone() : modifiers[0]
+  const type = modifiers[0]
   const instantiated = (
     IsRef(type) ? RefInstantiate(context, state, type, type.$ref) :
     IsArray(type) ? Array(InstantiateType(context, state, type.items), ArrayOptions(type)) :

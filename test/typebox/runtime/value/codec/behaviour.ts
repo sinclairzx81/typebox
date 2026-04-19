@@ -81,8 +81,8 @@ Test('Should Behaviour 4', () => {
     })
 
   const T = Type.Object({ x: A, y: A })
-  const D: { x: string; y: string } = Value.Decode(T, { x: 1, y: 2 } as never)
-  const E: { x: number; y: number } = Value.Encode(T, D)
+  const D = Value.Decode(T, { x: 1, y: 2 } as never)
+  const E = Value.Encode(T, D)
   Assert.IsEqual(D, { x: '1', y: '2' })
   Assert.IsEqual(E, { x: 1, y: 2 })
   Assert.IsEqual(DecodeStack, ['A', 'A'])
@@ -112,8 +112,8 @@ Test('Should Behaviour 5', () => {
     })
 
   const T = Type.Object({ x: B, y: B })
-  const D: { x: string; y: string } = Value.Decode(T, { x: 1, y: 2 } as never)
-  const E: { x: number; y: number } = Value.Encode(T, D)
+  const D = Value.Decode(T, { x: 1, y: 2 } as never)
+  const E = Value.Encode(T, D)
 
   Assert.IsEqual(D, { x: '1', y: '2' })
   Assert.IsEqual(E, { x: 1, y: 2 })

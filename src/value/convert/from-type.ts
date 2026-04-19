@@ -31,7 +31,6 @@ THE SOFTWARE.
 import * as Type from '../../type/index.ts'
 
 import { FromArray } from './from-array.ts'
-import { FromBase } from './from-base.ts'
 import { FromBigInt } from './from-bigint.ts'
 import { FromBoolean } from './from-boolean.ts'
 import { FromCyclic } from './from-cyclic.ts'
@@ -54,7 +53,6 @@ import { FromVoid } from './from-void.ts'
 export function FromType(context: Type.TProperties, type: Type.TSchema, value: unknown): unknown {
   return (
     Type.IsArray(type) ? FromArray(context, type, value) :
-    Type.IsBase(type) ? FromBase(context, type, value) :
     Type.IsBigInt(type) ? FromBigInt(context, type, value) :
     Type.IsBoolean(type) ? FromBoolean(context, type, value) :
     Type.IsCyclic(type) ? FromCyclic(context, type, value) :

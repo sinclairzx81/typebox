@@ -34,7 +34,6 @@ import { Check } from '../check/index.ts'
 import { Create } from '../create/index.ts'
 
 import { FromArray } from './from-array.ts'
-import { FromBase } from './from-base.ts'
 import { FromEnum } from './from-enum.ts'
 import { FromIntersect } from './from-intersect.ts'
 import { FromObject } from './from-object.ts'
@@ -95,11 +94,6 @@ function FinalizeRepair(context: T.TProperties, type: T.TSchema, repaired: unkno
 // FromType
 // ------------------------------------------------------------------
 export function FromType(context: T.TProperties, type: T.TSchema, value: unknown): unknown {
-  // Base Repair
-  if (T.IsBase(type)) {
-    const repaired = FromBase(context, type, value)
-    return FinalizeRepair(context, type, repaired)
-  }
   // Schema Repair
   AssertRepairableValue(context, type, value)
   AssertRepairableType(context, type, value)

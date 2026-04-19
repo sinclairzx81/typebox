@@ -268,18 +268,3 @@ Test('Should Union 7', () => {
     Assert.IsEqual(E, { type: 'Vector1', x: 1 })
   })
 }
-// ------------------------------------------------------------------
-// Coverage: DecodeUnsafe
-// ------------------------------------------------------------------
-import { DecodeUnsafe } from 'typebox/value'
-
-Test('Should Union 20', () => {
-  const T = Type.Union([Type.Literal(1), Type.Literal(2)])
-  const R = DecodeUnsafe({}, T, 1)
-  Assert.IsEqual(R, 1)
-})
-Test('Should Union 21', () => {
-  const T = Type.Union([Type.Literal(1), Type.Literal(2)])
-  const R = DecodeUnsafe({}, T, 3)
-  Assert.IsEqual(R, 3)
-})

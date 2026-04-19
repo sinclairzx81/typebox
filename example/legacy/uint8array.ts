@@ -28,30 +28,30 @@ THE SOFTWARE.
 
 import Type from 'typebox'
 
-// ------------------------------------------------------------------
-// Definition
-// ------------------------------------------------------------------
-export class TUint8Array extends Type.Base<globalThis.Uint8Array> {
-  // required: Used by validation
-  public override Check(value: unknown): value is Uint8Array {
-    return value instanceof Uint8Array
-  }
-  // required: Used by validation
-  public override Errors(value: unknown): object[] {
-    return !this.Check(value) ? [{ message: 'not a Uint8Array'}] : []
-  }
-  // required: Used by type compositor
-  public override Clone(): TUint8Array {
-    return new TUint8Array()
-  }
-  // required: Used by value/create
-  public override Create(): globalThis.Uint8Array {
-    return new globalThis.Uint8Array(0)
-  }
-}
-// ------------------------------------------------------------------
-// Factory
-// ------------------------------------------------------------------
-export function Uint8Array(): TUint8Array {
-  return new TUint8Array()
-}
+// // ------------------------------------------------------------------
+// // Definition
+// // ------------------------------------------------------------------
+// export class TUint8Array extends Type.Base<globalThis.Uint8Array> {
+//   // required: Used by validation
+//   public override Check(value: unknown): value is Uint8Array {
+//     return value instanceof Uint8Array
+//   }
+//   // required: Used by validation
+//   public override Errors(value: unknown): object[] {
+//     return !this.Check(value) ? [{ message: 'not a Uint8Array'}] : []
+//   }
+//   // required: Used by type compositor
+//   public override Clone(): TUint8Array {
+//     return new TUint8Array()
+//   }
+//   // required: Used by value/create
+//   public override Create(): globalThis.Uint8Array {
+//     return new globalThis.Uint8Array(0)
+//   }
+// }
+// // ------------------------------------------------------------------
+// // Factory
+// // ------------------------------------------------------------------
+// export function Uint8Array(): TUint8Array {
+//   return new TUint8Array()
+// }

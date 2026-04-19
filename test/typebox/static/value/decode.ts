@@ -9,9 +9,9 @@ const R = Type.Ref('T')
 
 {
   const V = Value.Decode(T, 1)
-  V satisfies Type.StaticDecode<typeof T>
+  V satisfies unknown
 }
 {
   const V = Value.Decode({ T }, R, 1)
-  V satisfies Type.StaticDecode<typeof T>
+  V satisfies unknown
 }
