@@ -139,9 +139,31 @@ Test('Should Algorithm 7', () => {
   Assert.IsEqual(T.items[3].const, 1)
 })
 // ------------------------------------------------------------------
-// Advanced
+// Advanced: Find Indices (Key Mismatch on 8)
 // ------------------------------------------------------------------
 Test('Should Algorithm 8', () => {
+  const T = Type.Script(`
+    type Values = [3, 2, 6, 1, 7, 3, 10, 4];
+
+    type FindIndex<
+      T extends unknown[],
+      V,
+    > = keyof {[K in keyof T as T[K] extends V ? K : never]: '📦'};
+
+    type X = FindIndex<Values, 7>
+    type Y = FindIndex<Values, 3>
+  `)
+  const X: Type.TLiteral<'4'> = T.X
+  // CACHE | TYPESCRIPT TYPE ID ORDER ISSUE
+  const Y /*: Type.TUnion<[Type.TLiteral<'0'>, Type.TLiteral<'5'>]> */ = T.Y
+  Assert.IsTrue(Type.IsLiteral(X))
+  Assert.IsEqual(X.const, 4) // mismatch
+  Assert.IsTrue(Type.IsUnion(Y))
+  Assert.IsEqual(Y.anyOf[0].const, 0) // mismatch
+  Assert.IsEqual(Y.anyOf[1].const, 5) // mismatch
+})
+
+Test('Should Algorithm 9', () => {
   const T = Type.Script(`
     type Values = [3, 2, 6, 1, 7, 3, 10, 4]
     type TupleToIndexValueUnion<T extends unknown[]> = {
@@ -154,15 +176,61 @@ Test('Should Algorithm 8', () => {
     > = Extract<TupleToIndexValueUnion<T>, [string, V]>[0]
 
     type X = FindIndex<Values, 7>
-    //   ^? "4"
     type Y = FindIndex<Values, 3>
-    //   ^? "0" | "5"
   `)
   const X: Type.TLiteral<'4'> = T.X
-  const Y: Type.TUnion<[Type.TLiteral<'0'>, Type.TLiteral<'5'>]> = T.Y
+  // CACHE | TYPESCRIPT TYPE ID ORDER ISSUE
+  const Y /*: Type.TUnion<[Type.TLiteral<'0'>, Type.TLiteral<'5'>]> */ = T.Y
   Assert.IsTrue(Type.IsLiteral(X))
   Assert.IsEqual(X.const, '4')
   Assert.IsTrue(Type.IsUnion(Y))
   Assert.IsEqual(Y.anyOf[0].const, '0')
   Assert.IsEqual(Y.anyOf[1].const, '5')
+})
+Test('Should Algorithm 10', () => {
+  const T = Type.Script(`
+    type Values = [3, 2, 6, 1, 7, 3, 10, 4]
+    
+    type FindIndex<T extends unknown[], V, Result extends number = never> = (
+      T extends [...infer Left, infer Right]
+        ? Right extends V
+          ? FindIndex<Left, V, Result | Left['length']>
+          : FindIndex<Left, V, Result>
+        : Evaluate<Result>
+    )
+
+    type X = FindIndex<Values, 7>
+    type Y = FindIndex<Values, 3>
+  `)
+  const X: Type.TLiteral<4> = T.X
+  const Y: Type.TUnion<[Type.TLiteral<5>, Type.TLiteral<0>]> = T.Y
+  Assert.IsTrue(Type.IsLiteral(X))
+  Assert.IsEqual(X.const, 4)
+  Assert.IsTrue(Type.IsUnion(Y))
+  Assert.IsEqual(Y.anyOf[0].const, 5)
+  Assert.IsEqual(Y.anyOf[1].const, 0)
+})
+Test('Should Algorithm 11', () => {
+  const T = Type.Script(`
+    type Values = [3, 2, 6, 1, 7, 3, 10, 4]
+    
+    type WithIndex<T extends unknown[]> = {
+      [K in keyof T]: [K, T[K]]
+    }[number]
+
+    type FindIndices<T extends unknown[], V> =
+      Extract<WithIndex<T>, [string, V]>[0]
+
+    type X = FindIndices<Values, 7>
+    type Y = FindIndices<Values, 1 | 3>
+  `)
+  const X: Type.TLiteral<'4'> = T.X
+  // CACHE | TYPESCRIPT TYPE ID ORDER ISSUE
+  const Y /*: Type.TUnion<[Type.TLiteral<"0">, Type.TLiteral<"3">, Type.TLiteral<"5">]> */ = T.Y
+  Assert.IsTrue(Type.IsLiteral(X))
+  Assert.IsEqual(X.const, '4')
+  Assert.IsTrue(Type.IsUnion(Y))
+  Assert.IsEqual(Y.anyOf[0].const, '0')
+  Assert.IsEqual(Y.anyOf[1].const, '3')
+  Assert.IsEqual(Y.anyOf[2].const, '5')
 })
