@@ -31,22 +31,24 @@ THE SOFTWARE.
 import { type TSchema } from '../types/schema.ts'
 import { type TProperties } from '../types/properties.ts'
 import { type TCyclic, IsCyclic } from '../types/cyclic.ts'
+import { type TUnknown, Unknown } from '../types/unknown.ts'
+import { type TUnsafe, IsUnsafe } from '../types/unsafe.ts'
 import { type TExtendsLeft, ExtendsLeft } from './extends-left.ts'
 import { type TCyclicExtends, CyclicExtends } from '../engine/cyclic/index.ts'
 
 // ------------------------------------------------------------------
-// Normal
+// Canonical: Preflight
 // ------------------------------------------------------------------
-type TNormal<Type extends TSchema> = (
-  Type extends TCyclic 
-    ? TCyclicExtends<Type> 
-    : Type
+type TCanonical<Type extends TSchema> = (
+  Type extends TCyclic ? TCyclicExtends<Type> : 
+  Type extends TUnsafe ? TUnknown : 
+  Type
 )
-function Normal<Type extends TSchema>(type: Type): TNormal<Type> {
+function Canonical<Type extends TSchema>(type: Type): TCanonical<Type> {
   return (
-    IsCyclic(type) 
-      ? CyclicExtends(type) 
-      : type
+    IsCyclic(type) ? CyclicExtends(type) : 
+    IsUnsafe(type) ? Unknown() : 
+    type
   ) as never
 }
 // ------------------------------------------------------------------
@@ -54,14 +56,14 @@ function Normal<Type extends TSchema>(type: Type): TNormal<Type> {
 // ------------------------------------------------------------------
 /** Performs a structural extends check on left and right types and yields inferred types on right if specified. */
 export type TExtends<Inferred extends TProperties, Left extends TSchema, Right extends TSchema,
-  NormalLeft extends TSchema = TNormal<Left>,
-  NormalRight extends TSchema = TNormal<Right>
-> = TExtendsLeft<Inferred, NormalLeft, NormalRight>
+  CanonicalLeft extends TSchema = TCanonical<Left>,
+  CanonicalRight extends TSchema = TCanonical<Right>
+> = TExtendsLeft<Inferred, CanonicalLeft, CanonicalRight>
 /** Performs a structural extends check on left and right types and yields inferred types on right if specified. */
 export function Extends<Inferred extends TProperties, Left extends TSchema, Right extends TSchema>
   (inferred: Inferred, left: Left, right: Right): 
     TExtends<Inferred, Left, Right> {
-  const normalLeft = Normal(left)
-  const normalRight = Normal(right)
-  return ExtendsLeft(inferred, normalLeft, normalRight)
+  const canonicalLeft = Canonical(left)
+  const canonicalRight = Canonical(right)
+  return ExtendsLeft(inferred, canonicalLeft, canonicalRight)
 }
