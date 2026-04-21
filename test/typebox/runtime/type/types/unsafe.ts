@@ -20,3 +20,16 @@ Test('Should Create Any with options', () => {
   Assert.IsEqual(T.a, 1)
   Assert.IsEqual(T.b, 2)
 })
+// ------------------------------------------------------------------
+// Unsafe/Refine
+// ------------------------------------------------------------------
+Test('Should Unsafe/Refine', () => {
+  const A = Type.Unsafe<Date>(Type.Refine({}, (value) => value instanceof Date))
+  Assert.IsTrue(Type.IsRefine(A))
+  Assert.IsTrue(Type.IsUnsafe(A))
+})
+Test('Should Unsafe/Refine (Reverse)', () => {
+  const A = Type.Refine(Type.Unsafe<Date>({}), (value) => value instanceof Date)
+  Assert.IsTrue(Type.IsRefine(A))
+  Assert.IsTrue(Type.IsUnsafe(A))
+})

@@ -237,6 +237,13 @@ type DecrementMap = [
 ]` as never) as never as Type.TProperties
 
 // --------------------------------------------------------------------------
+// MemoryUsage
+// --------------------------------------------------------------------------
+export function MemoryUsage() {
+  const toMB = (bytes: number) => (bytes / 1024 / 1024).toFixed(2) + ' MB'
+  return Object.fromEntries(Object.entries(process.memoryUsage()).map(([k, v]) => [k, toMB(v)]))
+}
+// --------------------------------------------------------------------------
 // Compile
 // --------------------------------------------------------------------------
 function Compile(input: string): Type.TTuple<Type.TLiteral[]> {
@@ -256,6 +263,7 @@ export function Run(): void {
   const output = program.properties.output.properties.items.items.map((item: any) => String.fromCharCode(item.const)).join('')
   console.log({ output })
 }
+
 // --------------------------------------------------------------------------
 // Debug
 // --------------------------------------------------------------------------
@@ -277,7 +285,8 @@ export function Debug(): void {
     const current = program.properties.instruction.properties.next.items[0]
     const next = program.properties.instruction.properties.next.items.map((type: Type.TLiteral) => type.const).join(' ')
     const prev = program.properties.instruction.properties.prev.items.map((type: Type.TLiteral) => type.const).join(' ')
-    console.log('Program', { step, input, output, memory, current, next, prev })
+    const usage = MemoryUsage()
+    console.log('Program', { step, input, output, memory, current, next, prev, usage })
     if(program.properties.instruction.properties.next.items.length === 0) break
     program = Type.Script({ ...Interpretter, State: program }, `ProgramStep<State>`)
     step += 1

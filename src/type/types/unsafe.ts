@@ -57,7 +57,7 @@ export function Unsafe<Type extends unknown>(schema: TSchema): TUnsafe<Type> {
 // ------------------------------------------------------------------
 /** Returns true if the given value is TUnsafe. */
 export function IsUnsafe(value: unknown): value is TUnsafe {
-  return Guard.IsObjectNotArray(value) 
-    && Guard.HasPropertyKey(value, '~unsafe') 
+  return Guard.IsObjectNotArray(value)
+    && Guard.HasPropertyKey(value, '~unsafe')
     && Guard.IsNull(value['~unsafe'])
 }

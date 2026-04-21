@@ -28,35 +28,46 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import * as S from '../types/index.ts'
-import * as V from './_externals.ts'
-import { Stack } from './_stack.ts'
-import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
-import { EmitGuard as E, Guard as G } from '../../guard/index.ts'
+import { Guard, GlobalsGuard } from '../../guard/index.ts'
+import { MutateError } from './error.ts'
+import { FromValue } from './from-value.ts'
+
+export type TMutable = { [key: string]: unknown } | unknown[]
 
 // ------------------------------------------------------------------
-// Build
+// IsNonMutableValue
 // ------------------------------------------------------------------
-export function BuildRefine(_stack: Stack, _context: BuildContext, schema: S.XRefine, value: string): string {
-  const refinements = V.CreateVariable(schema['~refine'].map((refinement) => refinement))
-  return E.Every(refinements, E.Constant(0), ['refinement', '_'], E.Call(E.Member('refinement', 'check'), [value]))
+function IsNonMutableValue(value: unknown): value is TMutable {
+  return GlobalsGuard.IsTypeArray(value) 
+    || GlobalsGuard.IsDate(value)
+    || GlobalsGuard.IsMap(value)
+    || GlobalsGuard.IsSet(value)
+    || Guard.IsNumber(value)
+    || Guard.IsString(value)
+    || Guard.IsBoolean(value)
+    || Guard.IsSymbol(value)
 }
 // ------------------------------------------------------------------
-// Check
+// IsTrueObject
 // ------------------------------------------------------------------
-export function CheckRefine(_stack: Stack, _context: CheckContext, schema: S.XRefine, value: unknown): boolean {
-  return G.Every(schema['~refine'], 0, (refinement, _) => refinement.check(value))
+function IsMismatchedValue(left: unknown, right: unknown): boolean {
+  return (
+    (Guard.IsObjectNotArray(left) && Guard.IsArray(right)) || 
+    (Guard.IsArray(left) && Guard.IsObjectNotArray(right))
+  )
 }
 // ------------------------------------------------------------------
-// Error
+// Mutate
 // ------------------------------------------------------------------
-export function ErrorRefine(_stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XRefine, value: unknown): boolean {
-  return G.EveryAll(schema['~refine'], 0, (refinement, index) => {
-    return refinement.check(value) || context.AddError({
-      keyword: '~refine',
-      schemaPath,
-      instancePath,
-      params: { index, message: refinement.error(value) },
-    })
-  })
+/** 
+ * Performs a deep structural assignment, applying values from next to current while retaining internal references. This function 
+ * is written for use in infrastructure that interprets reference changes as a signal to perform some action (i.e. React redraw), this
+ * function can mitigate this by applying mutable updates deep within a value, ensuring parent references are retained.
+ * 
+ * @deprecated This function is being removed in the next version but will be retained as a reference under examples.
+ */
+export function Mutate(current: TMutable, next: TMutable): void {
+  if (IsNonMutableValue(current) || IsNonMutableValue(next)) throw new MutateError('Only object and array types can be mutated at the root level')
+  if (IsMismatchedValue(current, next)) throw new MutateError('Cannot assign due type mismatch of assignable values')
+  FromValue(current, '', current, next)
 }

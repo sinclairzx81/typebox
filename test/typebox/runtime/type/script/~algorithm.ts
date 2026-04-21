@@ -108,7 +108,7 @@ Test('Should Algorithm 5', () => {
 // Reverse: Destructure Right
 // ------------------------------------------------------------------
 Test('Should Algorithm 6', () => {
-  const T: Type.TTuple<[Type.TLiteral<4>, Type.TLiteral<3>, Type.TLiteral<2>, Type.TLiteral<1>]> = Type.Script(`
+  const T = Type.Script(`
     type Reverse<T, A extends unknown[] = []> = (
       T extends [infer L, ...infer R extends unknown[]]
         ? Reverse<R, [L, ...A]>
@@ -124,7 +124,7 @@ Test('Should Algorithm 6', () => {
   Assert.IsEqual(T.items[3].const, 1)
 })
 Test('Should Algorithm 7', () => {
-  const T: Type.TTuple<[Type.TLiteral<4>, Type.TLiteral<3>, Type.TLiteral<2>, Type.TLiteral<1>]> = Type.Script(`
+  const T = Type.Script(`
     type Reverse<T, A = []> = (
       T extends [infer L, ...infer R]
         ? Reverse<R, [L, ...A]>
