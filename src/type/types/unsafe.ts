@@ -29,8 +29,9 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 // deno-lint-ignore-file 
 
+import { Guard } from '../../guard/index.ts'
 import { Memory } from '../../system/memory/index.ts'
-import { type TSchema, IsKind } from './schema.ts'
+import { type TSchema } from './schema.ts'
 
 // ------------------------------------------------------------------
 // Static
@@ -41,20 +42,21 @@ export type StaticUnsafe<Type extends unknown> = Type
 // ------------------------------------------------------------------
 /** Represents an Unsafe type. */
 export interface TUnsafe<Type extends unknown = unknown> extends TSchema {
-  '~kind': 'Unsafe'
-  '~hint': Type // cached for inference
+  '~unsafe': Type // cached for inference
 }
 // ------------------------------------------------------------------
 // Factory
 // ------------------------------------------------------------------
 /** Creates a Unsafe type. */
 export function Unsafe<Type extends unknown>(schema: TSchema): TUnsafe<Type> {
-  return Memory.Create({ ['~kind']: 'Unsafe' }, {}, schema) as never
+  return Memory.Update(schema, { ['~unsafe']: null }, {}) as never
 }
 // ------------------------------------------------------------------
 // Guard
 // ------------------------------------------------------------------
 /** Returns true if the given value is TUnsafe. */
 export function IsUnsafe(value: unknown): value is TUnsafe {
-  return IsKind(value, 'Unsafe')
+  return Guard.IsObjectNotArray(value)
+    && Guard.HasPropertyKey(value, '~unsafe')
+    && Guard.IsNull(value['~unsafe'])
 }

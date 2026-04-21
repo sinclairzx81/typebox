@@ -28,8 +28,9 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
+import { Guard } from '../../../guard/index.ts'
 import { type TSchema } from '../../types/index.ts'
-import { type TLiteral, IsLiteralNumber, IsLiteralString } from '../../types/literal.ts'
+import { type TLiteral, type TLiteralValue, Literal, IsLiteral } from '../../types/literal.ts'
 import { type TEnum, type TEnumValue, IsEnum } from '../../types/enum.ts'
 import { type TTemplateLiteral, IsTemplateLiteral } from '../../types/template-literal.ts'
 import { type TUnion, IsUnion } from '../../types/union.ts'
@@ -64,12 +65,22 @@ function FromUnion<Types extends TSchema[]>(types: [...Types]): TFromUnion<Types
   }, [] as TSchema[]) as never
 }
 // ------------------------------------------------------------------
+// FromLiteral
+// ------------------------------------------------------------------
+type TFromLiteral<Value extends TLiteralValue, 
+  Result extends TSchema[] = Value extends number ? [TLiteral<`${Value}`>] : [TLiteral<Value>]
+> = Result
+function FromLiteral<Value extends TLiteralValue>(value: Value): TFromLiteral<Value> {
+  const result = Guard.IsNumber(value) ? [Literal(`${value}`)] : [Literal(value)]
+  return result as never
+}
+// ------------------------------------------------------------------
 // FromType
 // ------------------------------------------------------------------
 type TFromType<Type extends TSchema,
   Result extends TSchema[] = (
     Type extends TEnum<infer Values extends TEnumValue[]> ? TFromUnion<TEnumValuesToVariants<Values>> :
-    Type extends TLiteral<string | number> ? [Type] :
+    Type extends TLiteral<infer Value extends number> ? TFromLiteral<Value> :
     Type extends TTemplateLiteral<infer Pattern extends string> ? TFromTemplateLiteral<Pattern> :
     Type extends TUnion<infer Types extends TSchema[]> ? TFromUnion<Types> :
     [Type]
@@ -78,7 +89,7 @@ type TFromType<Type extends TSchema,
 function FromType<Type extends TSchema>(type: Type): TFromType<Type> {
   const result = (
     IsEnum(type) ? FromUnion(EnumValuesToVariants(type.enum)) :
-    IsLiteralString(type) || IsLiteralNumber(type) ? [type] :
+    IsLiteral(type) ? FromLiteral(type.const) :
     IsTemplateLiteral(type) ? FromTemplateLiteral(type.pattern) :
     IsUnion(type) ? FromUnion(type.anyOf) :
     [type]
