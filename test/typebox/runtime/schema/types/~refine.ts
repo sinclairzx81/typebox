@@ -10,7 +10,7 @@ Test('Should Guard 1', () => {
 })
 Test('Should Guard 2', () => {
   Assert.IsTrue(Schema.IsRefine({
-    '~refine': [{ refine: (value: unknown) => true, message: 'fail' }]
+    '~refine': [{ check: (value: unknown) => true, error: () => 'fail' }]
   }))
 })
 Test('Should Guard 3', () => {

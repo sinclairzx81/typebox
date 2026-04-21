@@ -107,3 +107,20 @@ Test('Should validate Refine 8', () => {
   Assert.IsFalse(R)
   Assert.IsEqual(buffer, [0])
 })
+// ------------------------------------------------------------------
+// Unsafe/Refine
+// ------------------------------------------------------------------
+Test('Should validate Refine 8', () => {
+  const T = Type.Unsafe<Date>(Type.Refine({}, (value) => value instanceof Date))
+  const A = Check(T, new Date())
+  const B = Check(T, {})
+  Assert.IsTrue(A)
+  Assert.IsFalse(B)
+})
+Test('Should validate Refine 9', () => {
+  const T = Type.Refine(Type.Unsafe<Date>({}), (value) => value instanceof Date)
+  const A = Check(T, new Date())
+  const B = Check(T, {})
+  Assert.IsTrue(A)
+  Assert.IsFalse(B)
+})

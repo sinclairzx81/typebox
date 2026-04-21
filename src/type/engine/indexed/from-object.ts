@@ -30,44 +30,97 @@ THE SOFTWARE.
 
 import { type TProperties } from '../../types/properties.ts'
 import { type TSchema } from '../../types/schema.ts'
+import { type TNumber, IsNumber } from '../../types/number.ts'
+import { type TPropertyKeys, PropertyKeys } from '../../types/properties.ts'
 import { type TEvaluateUnion, EvaluateUnion } from '../evaluate/evaluate.ts'
 import { type TToIndexableKeys, ToIndexableKeys } from '../indexable/to-indexable-keys.ts'
+
+import { IntegerKey } from '../../types/record.ts'
 
 // ------------------------------------------------------------------
 // SelectProperty
 // ------------------------------------------------------------------
 type TSelectProperty<Properties extends TProperties, Key extends string,
-  PropertyKey extends string = keyof Properties extends string | number ? `${keyof Properties}` : never,
-  Result extends TSchema[] = Key extends PropertyKey ? [Properties[Key]] : []
+  // note: we are trying to normalize the key to support numeric lookup via string (revise)
+  CanonicalKey extends string = keyof Properties extends string | number ? `${keyof Properties}` : never,
+  Result extends TSchema[] = Key extends CanonicalKey ? [Properties[Key]] : []
 > = Result
-function SelectProperty<Properties extends TProperties, Indexer extends string>(properties: Properties, indexer: Indexer): TSelectProperty<Properties, Indexer> {
-  const result = indexer in properties ? [properties[indexer]] : []
+function SelectProperty<Properties extends TProperties, Key extends string>
+  (properties: Properties, key: Key): 
+    TSelectProperty<Properties, Key> {
+  const result = key in properties ? [properties[key]] : []
   return result as never
 }
-// ------------------------------------------------------------------
-// SelectProperties
-// ------------------------------------------------------------------
 type TSelectProperties<Properties extends TProperties, Keys extends string[], Result extends TSchema[] = []> = (
   Keys extends [infer Left extends string, ...infer Right extends string[]]
     ? TSelectProperties<Properties, Right, [...Result, ...TSelectProperty<Properties, Left>]>
     : Result
 )
-function SelectProperties<Properties extends TProperties, Keys extends string[]>(properties: Properties, indexer: [...Keys]): TSelectProperties<Properties, Keys> {
-  return indexer.reduce((result, left) => {
+function SelectProperties<Properties extends TProperties, Keys extends string[]>
+  (properties: Properties, keys: [...Keys]): 
+    TSelectProperties<Properties, Keys> {
+  return keys.reduce((result, left) => {
     return [...result, ...SelectProperty(properties, left)]
   }, [] as TSchema[]) as never
+}
+// ------------------------------------------------------------------
+// FromIndexer
+// ------------------------------------------------------------------
+type TFromIndexer<Properties extends TProperties, Indexer extends TSchema,
+  Keys extends string[] = TToIndexableKeys<Indexer>,
+  Variants extends TSchema[] = TSelectProperties<Properties, Keys>,
+  Result extends TSchema = TEvaluateUnion<Variants>
+> = Result
+function FromIndexer<Properties extends TProperties, Indexer extends TSchema>(properties: Properties, indexer: Indexer): TFromIndexer<Properties, Indexer> {
+  const keys = ToIndexableKeys(indexer) as string[]
+  const variants = SelectProperties(properties, keys)
+  const result = EvaluateUnion(variants)
+  return result as never
+}
+// ------------------------------------------------------------------
+// FromIndexerNumber
+//
+// A TTuple will collapse to TObject in the context of a TMapped
+// type expression so we need to support [number] indexing on
+// a TObject type. This satisfies the following case.
+//
+//  type Map<T extends unknown[]> = { 
+//    [K in keyof T]: K 
+//  }[number] <-- here
+//
+// ------------------------------------------------------------------
+type TNumericKeys<Keys extends string[], Result extends string[] = []> = (
+  Keys extends [infer Left extends string, ...infer Right extends string[]]
+    ? Left extends `${infer _ extends number}` 
+      ? TNumericKeys<Right, [...Result, Left]> 
+      : TNumericKeys<Right, Result> 
+    : Result
+)
+const NumericKeyPattern = new RegExp(IntegerKey)
+function NumericKeys<Keys extends string[]>(keys: [...Keys]): TNumericKeys<Keys> {
+  const result = keys.filter(key => NumericKeyPattern.test(key))
+  return result as never
+}
+type TFromIndexerNumber<Properties extends TProperties,
+  Keys extends string[] = TPropertyKeys<Properties>,
+  NumericKeys extends string[] = TNumericKeys<Keys>,
+  Variants extends TSchema[] = TSelectProperties<Properties, NumericKeys>,
+  Result extends TSchema = TEvaluateUnion<Variants>
+> = Result
+function FromIndexerNumber<Properties extends TProperties>(properties: Properties): TFromIndexerNumber<Properties> {
+  const keys = PropertyKeys(properties) as string[]
+  const numericKeys = NumericKeys(keys)
+  const variants = SelectProperties(properties, numericKeys)
+  const result = EvaluateUnion(variants)
+  return result as never
 }
 // ------------------------------------------------------------------
 // FromObject
 // ------------------------------------------------------------------
 export type TFromObject<Properties extends TProperties, Indexer extends TSchema,
-  Keys extends string[] = TToIndexableKeys<Indexer>,
-  Variants extends TSchema[] = TSelectProperties<Properties, Keys>,
-  Result extends TSchema = TEvaluateUnion<Variants>
+  Result extends TSchema = Indexer extends TNumber ? TFromIndexerNumber<Properties> : TFromIndexer<Properties, Indexer>
 > = Result
 export function FromObject<Properties extends TProperties, Indexer extends TSchema>(properties: Properties, indexer: Indexer): TFromObject<Properties, Indexer> {
-  const keys = ToIndexableKeys(indexer) as string[]
-  const variants = SelectProperties(properties, keys)
-  const result = EvaluateUnion(variants)
+  const result = IsNumber(indexer) ? FromIndexerNumber(properties) : FromIndexer(properties, indexer)
   return result as never
 }

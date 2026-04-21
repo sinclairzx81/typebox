@@ -28,6 +28,9 @@ class TStringBase extends Type.Base<string> {
   public override Errors(value: unknown): object[] {
     return typeof value === 'string' ? [] : [{ message: 'expected string' }]
   }
+  public override Clone(): Type.Base {
+    return new TStringBase()
+  }
 }
 const StringBase = () => new TStringBase()
 Test('Should Base 3', () => {
@@ -53,6 +56,19 @@ Test('Should Base 7', () => {
 Test('Should Base 8', () => {
   const T: TStringBase = StringBase()
   Assert.IsEqual(T.Errors(1), [{ message: 'expected string' }])
+})
+// ------------------------------------------------------------------
+// Clone - Coverage
+// ------------------------------------------------------------------
+Test('Should Base 9', () => {
+  const T: TStringBase = StringBase()
+  const S = T.Clone()
+  Assert.IsEqual(S.Errors(1), [{ message: 'expected string' }])
+})
+
+Test('Should Base 10', () => {
+  const T = new Type.Base()
+  Assert.Throws(() => T.Clone())
 })
 // ------------------------------------------------------------------
 // Clone - Compositor
