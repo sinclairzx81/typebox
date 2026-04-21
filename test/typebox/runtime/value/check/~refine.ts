@@ -117,7 +117,7 @@ Test('Should validate Refine 8', () => {
   Assert.IsTrue(A)
   Assert.IsFalse(B)
 })
-Test('Should validate Refine 8', () => {
+Test('Should validate Refine 9', () => {
   const T = Type.Refine(Type.Unsafe<Date>({}), (value) => value instanceof Date)
   const A = Check(T, new Date())
   const B = Check(T, {})
