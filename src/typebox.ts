@@ -77,7 +77,7 @@ export { Codec, Decode, DecodeBuilder, Encode, EncodeBuilder, IsCodec, type TCod
 export { Immutable, IsImmutable, type TImmutable } from './type/types/_immutable.ts'
 export { IsOptional, Optional, type TOptional } from './type/types/_optional.ts'
 export { IsReadonly, Readonly, type TReadonly } from './type/types/_readonly.ts'
-export { IsRefine, Refine, type TRefine, type TRefineCallback, type TRefinement } from './type/types/_refine.ts'
+export { IsRefine, Refine, type TRefine, type TRefineCheckCallback, type TRefineErrorCallback, type TRefinement } from './type/types/_refine.ts'
 
 // ------------------------------------------------------------------
 // Standard

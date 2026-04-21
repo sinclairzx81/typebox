@@ -28,6 +28,7 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
+import { Arguments } from '../../system/arguments/index.ts'
 import { Memory } from '../../system/memory/index.ts'
 import { Guard } from '../../guard/index.ts'
 import { type TSchema, IsSchema } from './schema.ts'
@@ -55,22 +56,45 @@ export type TRefine<Type extends TSchema = TSchema> = (
 // ------------------------------------------------------------------
 // Factory
 // ------------------------------------------------------------------
-export type TRefineCallback<Type extends TSchema> = (value: Static<Type>) => boolean
+export type TRefineCheckCallback<Type extends TSchema = TSchema> = (value: Static<Type>) => boolean
+export type TRefineErrorCallback<Type extends TSchema = TSchema> = (value: Static<Type>) => string
 
 export interface TRefinement<Type extends TSchema = TSchema> {
-  refine: TRefineCallback<Type>
-  message: string
+  check: TRefineCheckCallback<Type>
+  error: TRefineErrorCallback<Type>
 }
-/** Applies a Refine check to the given type. */
-export function Refine<Type extends TSchema>(type: Type, refine: TRefineCallback<Type>, message: string = 'error'): TRefineAdd<Type> {
-  return RefineAdd(type, { refine, message }) as never
+
+/** Refines a type with an explicit check */
+export function Refine<Type extends TSchema>(type: Type, check: TRefineCheckCallback<Type>, error: TRefineErrorCallback<Type>): TRefineAdd<Type>
+/** Refines a type with an explicit check */
+export function Refine<Type extends TSchema>(type: Type, check: TRefineCheckCallback<Type>): TRefineAdd<Type>
+/** @deprecated Use the error callback signature to generate error message. This overload will be removed in the next version  */
+export function Refine<Type extends TSchema>(type: Type, check: TRefineCheckCallback<Type>, message: string): TRefineAdd<Type>
+/** Refines a type with an explicit check */
+export function Refine(...args: unknown[]): unknown {
+  const [type, check, error_or_message] = Arguments.Match<[TSchema, TRefineCheckCallback, TRefineErrorCallback | string]>(args, {
+    3: (type, check, error) => [type, check, error],
+    2: (type, check) => [type, check, () => 'Refine Error'],
+  })
+  const error = Guard.IsString(error_or_message) ? () => error_or_message : error_or_message
+  return RefineAdd(type, { check, error }) as never
 }
 // ------------------------------------------------------------------
 // Guard
 // ------------------------------------------------------------------
-/** Returns true if the given value is a TRefine. */
-export function IsRefine(value: unknown): value is TRefine<TSchema> {
-  return IsSchema(value) && Guard.HasPropertyKey(value, '~refine')
+/** Returns true if the given value is a TRefinement. */
+export function IsRefinement(value: unknown): value is TRefinement {
+  return Guard.IsObjectNotArray(value)
+    && Guard.HasPropertyKey(value, 'check')
+    && Guard.HasPropertyKey(value, 'error')
+    && Guard.IsFunction(value.check)
+    && Guard.IsFunction(value.error)
 }
-
+/** Returns true if the given value is a TRefine. */
+export function IsRefine(value: unknown): value is TRefine {
+  return IsSchema(value) 
+    && Guard.HasPropertyKey(value, '~refine') 
+    && Guard.IsArray(value['~refine'])
+    && Guard.Every(value['~refine'], 0, value => IsRefinement(value))
+}
 

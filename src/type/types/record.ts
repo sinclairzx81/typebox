@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 import { Memory } from '../../system/memory/index.ts'
 import { Guard } from '../../guard/index.ts'
-import { type TSchema, type TObjectOptions, IsKind, IsSchema } from './schema.ts'
+import { type TSchema, type TObjectOptions, IsKind } from './schema.ts'
 import { type StaticType, type StaticDirection } from './static.ts'
 import { type TProperties } from './properties.ts'
 import { type TInteger, Integer, IntegerPattern } from './integer.ts'
@@ -88,15 +88,6 @@ export type TRecordDeferred<Key extends TSchema = TSchema, Value extends TSchema
 /** Represents a deferred Record action. */
 export function RecordDeferred<Key extends TSchema, Value extends TSchema>(key: Key, value: Value, options: TObjectOptions = {}): TRecordDeferred<Key, Value> {
   return Deferred('Record', [key, value], options)
-}
-// ------------------------------------------------------------------
-// Guard
-// ------------------------------------------------------------------
-/** Returns true if this value is a deferred Interface action. */
-export function IsRecordDeferred(value: unknown): value is TRecordDeferred {
-  return IsSchema(value)
-    && Guard.HasPropertyKey(value, 'action')
-    && Guard.IsEqual(value.action, 'Record')
 }
 // -------------------------------------------------------------------
 // Factory

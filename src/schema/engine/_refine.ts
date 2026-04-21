@@ -39,24 +39,24 @@ import { EmitGuard as E, Guard as G } from '../../guard/index.ts'
 // ------------------------------------------------------------------
 export function BuildRefine(_stack: Stack, _context: BuildContext, schema: S.XRefine, value: string): string {
   const refinements = V.CreateVariable(schema['~refine'].map((refinement) => refinement))
-  return E.Every(refinements, E.Constant(0), ['refinement', '_'], E.Call(E.Member('refinement', 'refine'), [value]))
+  return E.Every(refinements, E.Constant(0), ['refinement', '_'], E.Call(E.Member('refinement', 'check'), [value]))
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
 export function CheckRefine(_stack: Stack, _context: CheckContext, schema: S.XRefine, value: unknown): boolean {
-  return G.Every(schema['~refine'], 0, (refinement, _) => refinement.refine(value))
+  return G.Every(schema['~refine'], 0, (refinement, _) => refinement.check(value))
 }
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
 export function ErrorRefine(_stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XRefine, value: unknown): boolean {
   return G.EveryAll(schema['~refine'], 0, (refinement, index) => {
-    return refinement.refine(value) || context.AddError({
+    return refinement.check(value) || context.AddError({
       keyword: '~refine',
       schemaPath,
       instancePath,
-      params: { index, message: refinement.message },
+      params: { index, message: refinement.error(value) },
     })
   })
 }
