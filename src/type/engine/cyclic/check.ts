@@ -30,13 +30,10 @@ THE SOFTWARE.
 
 import { type TSchema, IsSchema } from '../../types/schema.ts'
 import { type TArray, IsArray } from '../../types/array.ts'
-import { type TAsyncIterator, IsAsyncIterator } from '../../types/async-iterator.ts'
 import { type TConstructor, IsConstructor } from '../../types/constructor.ts'
 import { type TFunction, IsFunction } from '../../types/function.ts'
 import { type TIntersect, IsIntersect } from '../../types/intersect.ts'
-import { type TIterator, IsIterator } from '../../types/iterator.ts'
 import { type TObject, IsObject } from '../../types/object.ts'
-import { type TPromise, IsPromise } from '../../types/promise.ts'
 import { type TProperties, type TPropertyValues, PropertyValues } from '../../types/properties.ts'
 import { type TRecord, IsRecord, RecordValue } from '../../types/record.ts'
 import { type TTuple, IsTuple } from '../../types/tuple.ts'
@@ -103,14 +100,11 @@ function FromTypes<Stack extends string[], Context extends TProperties, Types ex
 type TFromType<Stack extends string[], Context extends TProperties, Type extends TSchema> = (
   Type extends TRef<infer Ref extends string> ? TFromRef<Stack, Context, Ref> :
   Type extends TArray<infer Type extends TSchema> ? TFromType<Stack, Context, Type> :
-  Type extends TAsyncIterator<infer Type extends TSchema> ? TFromType<Stack, Context, Type> :
   Type extends TConstructor<infer Parameters extends TSchema[], infer InstanceType extends TSchema> ? TFromTypes<Stack, Context, [...Parameters, InstanceType]> :
   Type extends TFunction<infer Parameters extends TSchema[], infer ReturnType extends TSchema> ? TFromTypes<Stack, Context, [...Parameters, ReturnType]> :
   Type extends TInterfaceDeferred<TSchema[], infer Properties extends TProperties> ? TFromProperties<Stack, Context, Properties> :
   Type extends TIntersect<infer Types extends TSchema[]> ? TFromTypes<Stack, Context, Types> :
-  Type extends TIterator<infer Type extends TSchema> ? TFromType<Stack, Context, Type> :
   Type extends TObject<infer Properties extends TProperties> ? TFromProperties<Stack, Context, Properties> :
-  Type extends TPromise<infer Type extends TSchema> ? TFromType<Stack, Context, Type> :
   Type extends TUnion<infer Types extends TSchema[]> ? TFromTypes<Stack, Context, Types> :
   Type extends TTuple<infer Types extends TSchema[]> ? TFromTypes<Stack, Context, Types> :
   Type extends TRecord<string, infer Type extends TSchema> ? TFromType<Stack, Context, Type> :
@@ -122,14 +116,11 @@ function FromType<Stack extends string[], Context extends TProperties, Type exte
   return (
     IsRef(type) ? FromRef(stack, context, type.$ref) :
     IsArray(type) ? FromType(stack, context, type.items) :
-    IsAsyncIterator(type) ? FromType(stack, context, type.iteratorItems) :
     IsConstructor(type) ? FromTypes(stack, context, [...type.parameters, type.instanceType]) :
     IsFunction(type) ? FromTypes(stack, context, [...type.parameters, type.returnType]) :
     IsInterfaceDeferred(type) ? FromProperties(stack, context, type.parameters[1]) :
     IsIntersect(type) ? FromTypes(stack, context, type.allOf) :
-    IsIterator(type) ? FromType(stack, context, type.iteratorItems) :
     IsObject(type) ? FromProperties(stack, context, type.properties) :
-    IsPromise(type) ? FromType(stack, context, type.item) :
     IsUnion(type) ? FromTypes(stack, context, type.anyOf) :
     IsTuple(type) ? FromTypes(stack, context, type.items) :
     IsRecord(type) ? FromType(stack, context, RecordValue(type)) :

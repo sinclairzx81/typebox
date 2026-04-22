@@ -69,8 +69,6 @@ function ConditionalReadonly<Type extends Type.TSchema, Root extends boolean>(T:
 // FromValue
 // ------------------------------------------------------------------
 type FromValue<Value, Root extends boolean> = 
-  Value extends AsyncIterableIterator<unknown> ? TConditionalReadonly<Type.TAny, Root> : 
-  Value extends IterableIterator<unknown> ? TConditionalReadonly<Type.TAny, Root> : 
   Value extends readonly unknown[] ? Type.TReadonly<Type.TTuple<TFromArray<Value>>> :
   Value extends Record<PropertyKey, unknown> ? TConditionalReadonly<Type.TObject<TFromProperties<Value>>, Root> :
   Value extends Function ? TConditionalReadonly<Type.TFunction<[], Type.TUnknown>, Root> : 
@@ -85,8 +83,6 @@ type FromValue<Value, Root extends boolean> =
 
 function FromValue<Value, Root extends boolean>(value: Value, root: Root): FromValue<Value, Root> {
   return (
-    Guard.IsAsyncIterator(value) ? ConditionalReadonly(Type.Any(), root) :
-    Guard.IsIterator(value) ? ConditionalReadonly(Type.Any(), root) :
     Guard.IsArray(value) ? Type.Readonly(Type.Tuple(FromArray(value))) :
     Guard.IsObject(value) ? ConditionalReadonly(Type.Object(FromProperties(value)), root) :
     Guard.IsFunction(value) ? ConditionalReadonly(Type.Function([], Type.Unknown()), root) :

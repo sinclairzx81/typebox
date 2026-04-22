@@ -464,57 +464,10 @@ Test('Should Module 24', () => {
   Assert.IsTrue(Type.IsArray(A.$defs.A.properties.x))
   Assert.IsEqual(A.$defs.A.properties.x.items.$ref, 'A')
 })
-Test('Should Module 25', () => {
-  const A: Type.TCyclic<{
-    A: Type.TObject<{
-      x: Type.TArray<Type.TPromise<Type.TRef<'A'>>>
-    }>
-  }, 'A'> = Type.Script(`
-    type A = { x: Promise<A>[] }
-  `).A
-  Assert.IsTrue(Type.IsCyclic(A))
-  Assert.IsEqual(A.$ref, 'A')
-  Assert.IsTrue(Type.IsObject(A.$defs.A))
-  Assert.IsTrue(Type.IsArray(A.$defs.A.properties.x))
-  Assert.IsTrue(Type.IsPromise(A.$defs.A.properties.x.items))
-  Assert.IsEqual(A.$defs.A.properties.x.items.item.$ref, 'A')
-})
-Test('Should Module 26', () => {
-  const A: Type.TCyclic<{
-    A: Type.TObject<{
-      x: Type.TPromise<Type.TArray<Type.TRef<'A'>>>
-    }>
-  }, 'A'> = Type.Script(`
-    type A = { x: Promise<A[]> }
-  `).A
-  Assert.IsTrue(Type.IsCyclic(A))
-  Assert.IsEqual(A.$ref, 'A')
-  Assert.IsTrue(Type.IsObject(A.$defs.A))
-  Assert.IsTrue(Type.IsPromise(A.$defs.A.properties.x))
-  Assert.IsTrue(Type.IsArray(A.$defs.A.properties.x.item))
-  Assert.IsEqual(A.$defs.A.properties.x.item.items.$ref, 'A')
-})
-Test('Should Module 27', () => {
-  const A: Type.TCyclic<{
-    A: Type.TObject<{
-      x: Type.TPromise<Type.TUnion<[Type.TRef<'A'>, Type.TRef<'B'>]>>
-    }>
-    B: Type.TLiteral<1>
-  }, 'A'> = Type.Script(`
-    type B = 1
-    type A = { x: Promise<A | B> }
-  `).A
-  Assert.IsTrue(Type.IsCyclic(A))
-  Assert.IsTrue(Type.IsObject(A.$defs.A))
-  Assert.IsTrue(Type.IsPromise(A.$defs.A.properties.x))
-  Assert.IsTrue(Type.IsUnion(A.$defs.A.properties.x.item))
-  Assert.IsEqual(A.$defs.A.properties.x.item.anyOf[0].$ref, 'A')
-  Assert.IsEqual(A.$defs.A.properties.x.item.anyOf[1].$ref, 'B')
-})
 // ------------------------------------------------------------------
 // Cyclic: Mutual Recursive
 // ------------------------------------------------------------------
-Test('Should Module 28', () => {
+Test('Should Module 25', () => {
   const BinaryExpression: Type.TCyclic<{
     BinaryExpression: Type.TObject<{
       left: Type.TRef<'BinaryExpression'>
@@ -533,7 +486,7 @@ Test('Should Module 28', () => {
   Assert.IsEqual(BinaryExpression.$defs.BinaryExpression.properties.left.$ref, 'BinaryExpression')
   Assert.IsEqual(BinaryExpression.$defs.BinaryExpression.properties.right.$ref, 'BinaryExpression')
 })
-Test('Should Module 29', () => {
+Test('Should Module 26', () => {
   const X: {
     ConstExpression: Type.TObject<{
       value: Type.TLiteral<1>
@@ -604,7 +557,7 @@ Test('Should Module 29', () => {
 // ------------------------------------------------------------------
 // Module: Tail Call Sub Expressions
 // ------------------------------------------------------------------
-Test('Should Module 30', () => {
+Test('Should Module 27', () => {
   const A: Type.TTuple<[Type.TTuple<[Type.TString, Type.TNumber]>, Type.TTuple<[Type.TString, Type.TNumber]>]> = Type.Script(`
     type Map<T> = [T, T]
     type Reverse<List, Result extends unknown[] = []> = (
@@ -623,7 +576,7 @@ Test('Should Module 30', () => {
 // ------------------------------------------------------------------
 // Module: Deep CallStack
 // ------------------------------------------------------------------
-Test('Should Module 31', () => {
+Test('Should Module 28', () => {
   // Pathological type that tests deep calls in a variety of contexts.
   const Remote = Type.Script('<S> = Capitalize<`prop${Capitalize<S>}`>')
   const Result: Type.TObject<{
@@ -665,66 +618,48 @@ Test('Should Module 31', () => {
 // ------------------------------------------------------------------
 // ExtendsCheck: Coverage
 // ------------------------------------------------------------------
-Test('Should Module 32', () => {
+Test('Should Module 29', () => {
   const T: Type.TCyclic<{
     X: Type.TIntersect<[Type.TRef<'X'>, Type.TRef<'X'>]>
   }, 'X'> = Type.Script(`type X = X & X`).X
   Assert.IsEqual(T.$defs.X.allOf[0].$ref, 'X')
   Assert.IsEqual(T.$defs.X.allOf[1].$ref, 'X')
 })
-Test('Should Module 33', () => {
+Test('Should Module 30', () => {
   const T: Type.TCyclic<{
     X: Type.TUnion<[Type.TRef<'X'>, Type.TRef<'X'>]>
   }, 'X'> = Type.Script(`type X = X | X`).X
   Assert.IsEqual(T.$defs.X.anyOf[0].$ref, 'X')
   Assert.IsEqual(T.$defs.X.anyOf[1].$ref, 'X')
 })
-Test('Should Module 34', () => {
+Test('Should Module 31', () => {
   const T: Type.TCyclic<{
     X: Type.TTuple<[Type.TRef<'X'>, Type.TRef<'X'>]>
   }, 'X'> = Type.Script(`type X = [X, X]`).X
   Assert.IsEqual(T.$defs.X.items[0].$ref, 'X')
   Assert.IsEqual(T.$defs.X.items[1].$ref, 'X')
 })
-Test('Should Module 35', () => {
+Test('Should Module 32', () => {
   const T: Type.TCyclic<{
     X: Type.TArray<Type.TRef<'X'>>
   }, 'X'> = Type.Script(`type X = X[]`).X
   Assert.IsEqual(T.$defs.X.items.$ref, 'X')
 })
-Test('Should Module 36', () => {
+Test('Should Module 33', () => {
   const T: Type.TCyclic<{
     X: Type.TConstructor<[Type.TRef<'X'>], Type.TRef<'X'>>
   }, 'X'> = Type.Script(`type X = new (x: X) => X`).X
   Assert.IsEqual(T.$defs.X.parameters[0].$ref, 'X')
   Assert.IsEqual(T.$defs.X.instanceType.$ref, 'X')
 })
-Test('Should Module 37', () => {
+Test('Should Module 34', () => {
   const T: Type.TCyclic<{
     X: Type.TFunction<[Type.TRef<'X'>], Type.TRef<'X'>>
   }, 'X'> = Type.Script(`type X = (x: X) => X`).X
   Assert.IsEqual(T.$defs.X.parameters[0].$ref, 'X')
   Assert.IsEqual(T.$defs.X.returnType.$ref, 'X')
 })
-Test('Should Module 38', () => {
-  const T: Type.TCyclic<{
-    X: Type.TAsyncIterator<Type.TRef<'X'>>
-  }, 'X'> = Type.Script(`type X = AsyncIterator<X>`).X
-  Assert.IsEqual(T.$defs.X.iteratorItems.$ref, 'X')
-})
-Test('Should Module 39', () => {
-  const T: Type.TCyclic<{
-    X: Type.TIterator<Type.TRef<'X'>>
-  }, 'X'> = Type.Script(`type X = Iterator<X>`).X
-  Assert.IsEqual(T.$defs.X.iteratorItems.$ref, 'X')
-})
-Test('Should Module 40', () => {
-  const T: Type.TCyclic<{
-    X: Type.TPromise<Type.TRef<'X'>>
-  }, 'X'> = Type.Script(`type X = Promise<X>`).X
-  Assert.IsEqual(T.$defs.X.item.$ref, 'X')
-})
-Test('Should Module 41', () => {
+Test('Should Module 35', () => {
   const T: Type.TCyclic<{
     X: Type.TObject<{
       x: Type.TRef<'X'>
@@ -732,6 +667,6 @@ Test('Should Module 41', () => {
   }, 'X'> = Type.Script(`type X = { x: X }`).X
   Assert.IsEqual(T.$defs.X.properties.x.$ref, 'X')
 })
-Test('Should Module 42', () => {
+Test('Should Module 36', () => {
   Assert.Throws(() => Type.Script(`type X = Record<string, X>`))
 })

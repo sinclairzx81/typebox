@@ -26,31 +26,13 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-fmt-ignore-file
-
-import { type TSchema, type TSchemaOptions } from '../types/schema.ts'
-import { type TDeferred, Deferred } from '../types/deferred.ts'
-import { type TAwaitedAction, AwaitedAction } from '../engine/awaited/instantiate.ts'
+import Type from 'typebox'
 
 // ------------------------------------------------------------------
-// Deferred
+// Promise
 // ------------------------------------------------------------------
-/** Creates a deferred Awaited action. */
-export type TAwaitedDeferred<Type extends TSchema> = (
-  TDeferred<'Awaited', [Type]>
-)
-/** Creates a deferred Awaited action. */
-export function AwaitedDeferred<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TAwaitedDeferred<Type> {
-  return Deferred('Awaited', [type], options)
-}
-// ------------------------------------------------------------------
-// Type
-// ------------------------------------------------------------------
-/** Applies an Awaited action to a type. */
-export type TAwaited<Type extends TSchema> = (
-  TAwaitedAction<Type>
-)
-/** Applies an Awaited action to a type. */
-export function Awaited<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TAwaited<Type> {
-  return AwaitedAction(type, options)
+export function Promise<Type extends Type.TSchema>(_type: Type): Type.TUnsafe<globalThis.Promise<Type.Static<Type>>> {
+  return Type.Refine(Type.Object({}), 
+    value => value instanceof globalThis.Promise,
+    () => `Expected Promise`) as never
 }

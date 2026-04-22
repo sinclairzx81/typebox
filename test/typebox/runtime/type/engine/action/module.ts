@@ -135,17 +135,6 @@ Test('Should Module 9', () => {
 Test('Should Module 10', () => {
   const A: {
     A: Type.TCyclic<{
-      A: Type.TAsyncIterator<Type.TRef<'A'>>
-    }, 'A'>
-  } = Type.Module({
-    A: Type.AsyncIterator(Type.Ref('A'))
-  })
-  Assert.IsTrue(Type.IsCyclic(A.A))
-  Assert.IsTrue(Type.IsAsyncIterator(A.A.$defs.A))
-})
-Test('Should Module 11', () => {
-  const A: {
-    A: Type.TCyclic<{
       A: Type.TConstructor<[Type.TRef<'A'>], Type.TRef<'A'>>
     }, 'A'>
   } = Type.Module({
@@ -154,7 +143,7 @@ Test('Should Module 11', () => {
   Assert.IsTrue(Type.IsCyclic(A.A))
   Assert.IsTrue(Type.IsConstructor(A.A.$defs.A))
 })
-Test('Should Module 12', () => {
+Test('Should Module 11', () => {
   const A: {
     A: Type.TCyclic<{
       A: Type.TFunction<[Type.TRef<'A'>], Type.TRef<'A'>>
@@ -165,7 +154,7 @@ Test('Should Module 12', () => {
   Assert.IsTrue(Type.IsCyclic(A.A))
   Assert.IsTrue(Type.IsFunction(A.A.$defs.A))
 })
-Test('Should Module 13', () => {
+Test('Should Module 12', () => {
   const A: {
     A: Type.TCyclic<{
       A: Type.TIntersect<[Type.TRef<'A'>, Type.TRef<'A'>]>
@@ -176,7 +165,7 @@ Test('Should Module 13', () => {
   Assert.IsTrue(Type.IsCyclic(A.A))
   Assert.IsTrue(Type.IsIntersect(A.A.$defs.A))
 })
-Test('Should Module 14', () => {
+Test('Should Module 13', () => {
   const A: {
     A: Type.TCyclic<{
       A: Type.TObject<{
@@ -189,7 +178,7 @@ Test('Should Module 14', () => {
   Assert.IsTrue(Type.IsCyclic(A.A))
   Assert.IsTrue(Type.IsObject(A.A.$defs.A))
 })
-Test('Should Module 15', () => {
+Test('Should Module 14', () => {
   const A: {
     A: Type.TCyclic<{
       A: Type.TObject<{
@@ -205,18 +194,8 @@ Test('Should Module 15', () => {
   Assert.IsTrue(Type.IsRef(A.A.$defs.A.properties.x))
   Assert.IsTrue(Type.IsString(A.A.$defs.A.properties.y))
 })
-Test('Should Module 16', () => {
-  const A: {
-    A: Type.TCyclic<{
-      A: Type.TPromise<Type.TRef<'A'>>
-    }, 'A'>
-  } = Type.Module({
-    A: Type.Promise(Type.Ref('A'))
-  })
-  Assert.IsTrue(Type.IsCyclic(A.A))
-  Assert.IsTrue(Type.IsPromise(A.A.$defs.A))
-})
-Test('Should Module 17', () => {
+
+Test('Should Module 15', () => {
   const A: {
     A: Type.TCyclic<{
       A: Type.TUnion<[Type.TRef<'A'>, Type.TRef<'A'>]>
@@ -227,7 +206,7 @@ Test('Should Module 17', () => {
   Assert.IsTrue(Type.IsCyclic(A.A))
   Assert.IsTrue(Type.IsUnion(A.A.$defs.A))
 })
-Test('Should Module 18', () => {
+Test('Should Module 16', () => {
   const A: {
     A: Type.TCyclic<{
       A: Type.TTuple<[Type.TRef<'A'>, Type.TRef<'A'>]>
@@ -238,7 +217,7 @@ Test('Should Module 18', () => {
   Assert.IsTrue(Type.IsCyclic(A.A))
   Assert.IsTrue(Type.IsTuple(A.A.$defs.A))
 })
-Test('Should Module 19', () => {
+Test('Should Module 17', () => {
   const A: {
     A: Type.TCyclic<{
       A: Type.TRecord<'^.*$', Type.TRef<'A'>>
@@ -252,14 +231,7 @@ Test('Should Module 19', () => {
 // ------------------------------------------------------------------
 // Cyclic: Dependencies | Key Linear Ordering
 // ------------------------------------------------------------------
-function IsSetEqual(actual: string[], expected: string[]): boolean {
-  const a = new Set(actual)
-  const b = new Set(expected)
-  if (a.size !== b.size) return false
-  for (const key of a) if (!b.has(key)) return false
-  return true
-}
-Test('Should Module 20', () => {
+Test('Should Module 18', () => {
   type A1 = { x: A2; y: A3 }
   type A2 = { x: A5; y: A6 }
   type A3 = { x: A4; y: A3 }
@@ -294,7 +266,7 @@ Test('Should Module 20', () => {
   Assert.IsEqual(Guard.Keys(A.A5.$defs), ['A1', 'A2', 'A3', 'A4', 'A5', 'A6'])
   Assert.IsEqual(Guard.Keys(A.A6.$defs), ['A1', 'A2', 'A3', 'A4', 'A5', 'A6'])
 })
-Test('Should Module 21', () => {
+Test('Should Module 19', () => {
   type A1 = { x: A2; y: A3 }
   type A2 = { x: A5; y: A6 }
   type A3 = { y: A3 }

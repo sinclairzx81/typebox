@@ -4,7 +4,7 @@ TypeBox
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2026 Haydn Paterson
+Copyright (c) 2017-2026 Haydn Paterson 
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,4 +26,14 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export * from './instantiate.ts'
+
+import Type from 'typebox'
+
+// ------------------------------------------------------------------
+// Iterator
+// ------------------------------------------------------------------
+export function Iterator<Type extends Type.TSchema>(_type: Type): Type.TUnsafe<globalThis.IterableIterator<Type.Static<Type>>> {
+  return Type.Refine(Type.Object({}), 
+    value => Symbol.iterator in value,
+    () => `Expected Iterator`) as never
+}

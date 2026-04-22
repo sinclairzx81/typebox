@@ -26,26 +26,13 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-fmt-ignore-file
+import Type from 'typebox'
 
-import { type TSchema } from '../types/schema.ts'
-import { type TProperties } from '../types/properties.ts'
-import { type TIterator, Iterator, IsIterator } from '../types/iterator.ts'
-
-import { type TExtendsRight, ExtendsRight } from './extends-right.ts'
-import { type TExtendsLeft, ExtendsLeft } from './extends-left.ts'
-
-export type TExtendsIterator<Inferred extends TProperties, Left extends TSchema, Right extends TSchema> = (
-  Right extends TIterator<infer Type extends TSchema>
-  ? TExtendsLeft<Inferred, Left, Type>
-  : TExtendsRight<Inferred, TIterator<Left>, Right>
-)
-export function ExtendsIterator<Inferred extends TProperties, Left extends TSchema, Right extends TSchema>
-  (inferred: Inferred, left: Left, right: Right): 
-    TExtendsIterator<Inferred, Left, Right> {
-  return (
-    IsIterator(right)
-      ? ExtendsLeft(inferred, left, right.iteratorItems)
-      : ExtendsRight(inferred, Iterator(left), right)
-  ) as never
+// ------------------------------------------------------------------
+// AsyncIterator
+// ------------------------------------------------------------------
+export function AsyncIterator<Type extends Type.TSchema>(_type: Type): Type.TUnsafe<globalThis.AsyncIterableIterator<Type.Static<Type>>> {
+  return Type.Refine(Type.Object({}), 
+    value => Symbol.asyncIterator in value,
+    () => `Expected AsyncIterator`) as never
 }

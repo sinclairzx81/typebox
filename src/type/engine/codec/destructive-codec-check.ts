@@ -28,19 +28,16 @@ THE SOFTWARE.
 
 import { Settings, Warn } from '../../../system/index.ts'
 import { Guard } from '../../../guard/index.ts'
-import { IsArray, IsAsyncIterator, IsCall, IsDeferred, IsFunction, IsIntersect, IsIterator, IsObject, IsPromise, IsRecord, IsRest, IsTuple, IsUnion, type TSchema } from '../../types/index.ts'
+import { IsArray, IsCall, IsDeferred, IsFunction, IsIntersect, IsObject, IsRecord, IsRest, IsTuple, IsUnion, type TSchema } from '../../types/index.ts'
 
 function IsDestructiveCodec(type: TSchema): boolean {
   return Guard.HasPropertyKey(type, '~codec') && (
     IsArray(type) ||
-    IsAsyncIterator(type) ||
     IsCall(type) ||
     IsDeferred(type) ||
     IsFunction(type) ||
     IsIntersect(type) ||
-    IsIterator(type) ||
     IsObject(type) ||
-    IsPromise(type) ||
     IsRecord(type) ||
     IsRest(type) ||
     IsTuple(type) ||

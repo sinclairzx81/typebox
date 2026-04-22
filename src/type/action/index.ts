@@ -28,7 +28,6 @@ THE SOFTWARE.
 export * from './_optional.ts'
 export * from './_readonly.ts'
 
-export * from './awaited.ts'
 export * from './capitalize.ts'
 export * from './conditional.ts'
 export * from './constructor-parameters.ts'

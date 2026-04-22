@@ -63,12 +63,10 @@ function AssertRepairableValue(context: T.TProperties, type: T.TSchema, value: u
 // AssertRepairableType
 // ------------------------------------------------------------------
 function AssertRepairableType(context: T.TProperties, type: T.TSchema, value: unknown): void {
-  const unsupported = T.IsAsyncIterator(type)
-    || T.IsIterator(type)
-    || T.IsConstructor(type)
+  const unsupported =
+    T.IsConstructor(type)
     || T.IsFunction(type)
     || T.IsNever(type)
-    || T.IsPromise(type)
   if(unsupported) {
     throw new RepairError(context, type, value, 'Type is not repairable')
   }

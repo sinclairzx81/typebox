@@ -35,10 +35,6 @@ import * as String from './string.ts'
 export function IsArray(value: unknown): value is unknown[] {
   return Array.isArray(value)
 }
-/** Returns true if this value is an async iterator */
-export function IsAsyncIterator(value: unknown): value is AsyncIterableIterator<unknown> {
-  return IsObject(value) && Symbol.asyncIterator in value
-}
 /** Returns true if this value is bigint */
 export function IsBigInt(value: unknown): value is bigint {
   return IsEqual(typeof value, 'bigint')
@@ -62,10 +58,6 @@ export function IsFunction(value: unknown): value is globalThis.Function {
 /** Returns true if this value is integer */
 export function IsInteger(value: unknown): value is number {
   return Number.isInteger(value)
-}
-/** Returns true if this value is an iterator */
-export function IsIterator(value: unknown): value is IterableIterator<unknown> {
-  return IsObject(value) && Symbol.iterator in value
 }
 /** Returns true if this value is null */
 export function IsNull(value: unknown): value is null {

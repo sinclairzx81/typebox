@@ -124,7 +124,7 @@ Test('Should Indexed 20', () => {
   Assert.IsTrue(Type.IsArray(S))
   Assert.IsTrue(Type.IsNumber(S.items))
 })
-Test('Should Indexed 20', () => {
+Test('Should Indexed 21', () => {
   const T = Type.Script(`[1, 2, 3][]['length'][]`)
   const S: Type.TArray<Type.TNumber> = T
   Assert.IsTrue(Type.IsArray(S))
@@ -133,7 +133,7 @@ Test('Should Indexed 20', () => {
 // ------------------------------------------------------------------
 // Indexed This
 // ------------------------------------------------------------------
-Test('Should Indexed 21', () => {
+Test('Should Indexed 22', () => {
   const T = Type.Script(`
     export interface A{ a: 42, self: this }
     export type B = A['self']['a']
@@ -142,7 +142,7 @@ Test('Should Indexed 21', () => {
   Assert.IsTrue(Type.IsLiteral(B))
   Assert.IsEqual(B.const, 42)
 })
-Test('Should Indexed 22', () => {
+Test('Should Indexed 23', () => {
   const T = Type.Script(`
     export interface A{ value: 42, self: this }
     export type B = A['self']['value' | 'self']
@@ -161,7 +161,7 @@ Test('Should Indexed 22', () => {
   Assert.IsTrue(Type.IsLiteral(B.anyOf[1].properties.value))
   Assert.IsTrue(Type.IsThis(B.anyOf[1].properties.self))
 })
-Test('Should Indexed 23', () => {
+Test('Should Indexed 24', () => {
   const T = Type.Script(`
     export interface A { value: 42, self: this }
     export type B = A['self']['self']['value']
@@ -170,7 +170,7 @@ Test('Should Indexed 23', () => {
   Assert.IsTrue(Type.IsLiteral(B))
   Assert.IsEqual(B.const, 42)
 })
-Test('Should Indexed 24', () => {
+Test('Should Indexed 25', () => {
   const T = Type.Script(`
     export interface A { nested: { x: 42 }, self: this }
     export type B = A['self']['nested']
@@ -180,7 +180,7 @@ Test('Should Indexed 24', () => {
   Assert.IsTrue(Type.IsLiteral(B.properties.x))
   Assert.IsEqual(B.properties.x.const, 42)
 })
-Test('Should Indexed 25', () => {
+Test('Should Indexed 26', () => {
   const T = Type.Script(`
     export interface A { tag: 'hello', self: this }
     export type B = A['self']['self']['tag']
@@ -189,7 +189,7 @@ Test('Should Indexed 25', () => {
   Assert.IsTrue(Type.IsLiteral(B))
   Assert.IsEqual(B.const, 'hello')
 })
-Test('Should Indexed 26', () => {
+Test('Should Indexed 27', () => {
   const T = Type.Script(`
     export interface A { a: 1, b: 2, self: this }
     export type B = A['self']['self']['a' | 'b']
@@ -201,7 +201,7 @@ Test('Should Indexed 26', () => {
   Assert.IsTrue(Type.IsLiteral(B.anyOf[1]))
   Assert.IsEqual(B.anyOf[1].const, 2)
 })
-Test('Should Indexed 27', () => {
+Test('Should Indexed 28', () => {
   const T = Type.Script(`
     export interface A { value: 42 | 43, self: this }
     export type B = A['self']['value']
@@ -213,7 +213,7 @@ Test('Should Indexed 27', () => {
   Assert.IsTrue(Type.IsLiteral(B.anyOf[1]))
   Assert.IsEqual(B.anyOf[1].const, 43)
 })
-Test('Should Indexed 28', () => {
+Test('Should Indexed 29', () => {
   const T = Type.Script(`
     export interface A { items: number[], self: this }
     export type B = A['self']['items']
@@ -222,7 +222,7 @@ Test('Should Indexed 28', () => {
   Assert.IsTrue(Type.IsArray(B))
   Assert.IsTrue(Type.IsNumber(B.items))
 })
-Test('Should Indexed 29', () => {
+Test('Should Indexed 30', () => {
   const T = Type.Script(`
     export interface A { value: 1, b: B }
     export interface B { value: 2, self: this }
@@ -232,7 +232,7 @@ Test('Should Indexed 29', () => {
   Assert.IsTrue(Type.IsLiteral(C))
   Assert.IsEqual(C.const, 2)
 })
-Test('Should Indexed 30', () => {
+Test('Should Indexed 31', () => {
   const T = Type.Script(`
     export interface A { value: 42, self: this }
     export type B = A['self']
@@ -249,7 +249,7 @@ Test('Should Indexed 30', () => {
 // ------------------------------------------------------------------
 // Indexed Expand This
 // ------------------------------------------------------------------
-Test('Should Indexed 31', () => {
+Test('Should Indexed 32', () => {
   const T = Type.Script(`
     export interface A { self: this, items: this[] }
     export type B = A['items']
@@ -264,7 +264,7 @@ Test('Should Indexed 31', () => {
   Assert.IsTrue(Type.IsObject(B.items))
   Assert.IsTrue(Type.IsThis(B.items.properties.self))
 })
-Test('Should Indexed 32', () => {
+Test('Should Indexed 33', () => {
   const T = Type.Script(`
     export interface A { self: this, pair: [this, this] }
     export type B = A['pair']
@@ -279,7 +279,7 @@ Test('Should Indexed 32', () => {
   Assert.IsTrue(Type.IsThis(B.items[0].properties.self))
   Assert.IsTrue(Type.IsThis(B.items[1].properties.self))
 })
-Test('Should Indexed 33', () => {
+Test('Should Indexed 34', () => {
   const T = Type.Script(`
     export interface A { self: this, value: this | string }
     export type B = A['value']
@@ -293,7 +293,7 @@ Test('Should Indexed 33', () => {
   Assert.IsTrue(Type.IsThis(B.anyOf[0].properties.self))
   Assert.IsTrue(Type.IsString(B.anyOf[1]))
 })
-Test('Should Indexed 34', () => {
+Test('Should Indexed 35', () => {
   const T = Type.Script(`
     export interface A { self: this, value: this & { x: 1 } }
     export type B = A['value']
@@ -315,21 +315,6 @@ Test('Should Indexed 34', () => {
   Assert.IsTrue(Type.IsObject(B.properties.value.allOf[1]))
   Assert.IsTrue(Type.IsLiteral(B.properties.x))
   Assert.IsEqual(B.properties.x.const, 1)
-})
-Test('Should Indexed 35', () => {
-  const T = Type.Script(`
-    export interface A { self: this, value: Promise<this> }
-    export type B = A['value']
-  `)
-  const B: Type.TPromise<
-    Type.TObject<{
-      self: Type.TThis
-      value: Type.TPromise<Type.TThis>
-    }>
-  > = T.B
-  Assert.IsTrue(Type.IsPromise(B))
-  Assert.IsTrue(Type.IsObject(B.item))
-  Assert.IsTrue(Type.IsThis(B.item.properties.self))
 })
 Test('Should Indexed 36', () => {
   const T = Type.Script(`
@@ -376,34 +361,4 @@ Test('Should Indexed 37', () => {
   Assert.IsTrue(Type.IsThis(B.parameters[0].properties.self))
   Assert.IsTrue(Type.IsObject(B.instanceType))
   Assert.IsTrue(Type.IsThis(B.instanceType.properties.self))
-})
-Test('Should Indexed 38', () => {
-  const T = Type.Script(`
-    export interface A { self: this, value: AsyncIterator<this> }
-    export type B = A['value']
-  `)
-  const B: Type.TAsyncIterator<
-    Type.TObject<{
-      self: Type.TThis
-      value: Type.TAsyncIterator<Type.TThis>
-    }>
-  > = T.B
-  Assert.IsTrue(Type.IsAsyncIterator(B))
-  Assert.IsTrue(Type.IsObject(B.iteratorItems))
-  Assert.IsTrue(Type.IsThis(B.iteratorItems.properties.self))
-})
-Test('Should Indexed 39', () => {
-  const T = Type.Script(`
-    export interface A { self: this, value: Iterator<this> }
-    export type B = A['value']
-  `)
-  const B: Type.TIterator<
-    Type.TObject<{
-      self: Type.TThis
-      value: Type.TIterator<Type.TThis>
-    }>
-  > = T.B
-  Assert.IsTrue(Type.IsIterator(B))
-  Assert.IsTrue(Type.IsObject(B.iteratorItems))
-  Assert.IsTrue(Type.IsThis(B.iteratorItems.properties.self))
 })

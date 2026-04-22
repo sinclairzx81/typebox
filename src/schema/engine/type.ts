@@ -47,11 +47,9 @@ function BuildTypeName(_stack: Stack, _context: BuildContext, type: string, valu
     G.IsEqual(type, 'null') ? E.IsNull(value) :
     G.IsEqual(type, 'string') ? E.IsString(value) :
     // xschema
-    G.IsEqual(type, 'asyncIterator') ? E.IsAsyncIterator(value) : 
     G.IsEqual(type, 'bigint') ? E.IsBigInt(value) :
     G.IsEqual(type, 'constructor') ? E.IsConstructor(value) :
     G.IsEqual(type, 'function') ? E.IsFunction(value) :
-    G.IsEqual(type, 'iterator') ? E.IsIterator(value) :
     G.IsEqual(type, 'symbol') ? E.IsSymbol(value) :
     G.IsEqual(type, 'undefined') ? E.IsUndefined(value) :
     G.IsEqual(type, 'void') ? E.IsUndefined(value) :
@@ -69,11 +67,9 @@ function CheckTypeName(_stack: Stack, _context: CheckContext, type: string, _sch
     G.IsEqual(type, 'null') ? G.IsNull(value) :
     G.IsEqual(type, 'string') ? G.IsString(value) :
     // xschema
-    G.IsEqual(type, 'asyncIterator') ? G.IsAsyncIterator(value) :
     G.IsEqual(type, 'bigint') ? G.IsBigInt(value) :
     G.IsEqual(type, 'constructor') ? G.IsConstructor(value) :
     G.IsEqual(type, 'function') ? G.IsFunction(value) :
-    G.IsEqual(type, 'iterator') ? G.IsIterator(value) :
     G.IsEqual(type, 'symbol') ? G.IsSymbol(value) :
     G.IsEqual(type, 'undefined') ? G.IsUndefined(value) :
     G.IsEqual(type, 'void') ? G.IsUndefined(value) :

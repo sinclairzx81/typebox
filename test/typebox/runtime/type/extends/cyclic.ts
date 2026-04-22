@@ -65,54 +65,33 @@ Test('Should CyclicExtends 2', () => {
 })
 Test('Should CyclicExtends 3', () => {
   Assert.IsExtends<string, any>(true)
-  const A = Type.AsyncIterator(Type.Ref('A'))
-  const L = Type.Cyclic({ A }, 'A')
-  const R: ExtendsResult.TExtendsTrue = Extends({}, L, Type.Unknown())
-  Assert.IsTrue(ExtendsResult.IsExtendsTrue(R))
-})
-Test('Should CyclicExtends 4', () => {
-  Assert.IsExtends<string, any>(true)
   const A = Type.Constructor([Type.Ref('A')], Type.Ref('A'))
   const L = Type.Cyclic({ A }, 'A')
   const R: Type.ExtendsResult.TExtendsTrue = Extends({}, L, Type.Unknown())
   Assert.IsTrue(ExtendsResult.IsExtendsTrue(R))
 })
-Test('Should CyclicExtends 5', () => {
+Test('Should CyclicExtends 4', () => {
   Assert.IsExtends<string, any>(true)
   const A = Type.Function([Type.Ref('A')], Type.Ref('A'))
   const L = Type.Cyclic({ A }, 'A')
   const R: Type.ExtendsResult.TExtendsTrue = Extends({}, L, Type.Unknown())
   Assert.IsTrue(ExtendsResult.IsExtendsTrue(R))
 })
-Test('Should CyclicExtends 6', () => {
+Test('Should CyclicExtends 5', () => {
   Assert.IsExtends<string, any>(true)
   const A = Type.Intersect([Type.Ref('A'), Type.Ref('A')])
   const L = Type.Cyclic({ A }, 'A')
   const R: ExtendsResult.TExtendsTrue = Extends({}, L, Type.Unknown())
   Assert.IsTrue(ExtendsResult.IsExtendsTrue(R))
 })
-Test('Should CyclicExtends 7', () => {
-  Assert.IsExtends<string, any>(true)
-  const A = Type.Iterator(Type.Ref('A'))
-  const L = Type.Cyclic({ A }, 'A')
-  const R: ExtendsResult.TExtendsTrue = Extends({}, L, Type.Unknown())
-  Assert.IsTrue(ExtendsResult.IsExtendsTrue(R))
-})
-Test('Should CyclicExtends 8', () => {
+Test('Should CyclicExtends 6', () => {
   Assert.IsExtends<string, any>(true)
   const A = Type.Object({ x: Type.Ref('A') })
   const L = Type.Cyclic({ A }, 'A')
   const R: ExtendsResult.TExtendsTrue = Extends({}, L, Type.Unknown())
   Assert.IsTrue(ExtendsResult.IsExtendsTrue(R))
 })
-Test('Should CyclicExtends 9', () => {
-  Assert.IsExtends<string, any>(true)
-  const A = Type.Promise(Type.Ref('A'))
-  const L = Type.Cyclic({ A }, 'A')
-  const R: ExtendsResult.TExtendsTrue = Extends({}, L, Type.Unknown())
-  Assert.IsTrue(ExtendsResult.IsExtendsTrue(R))
-})
-Test('Should CyclicExtends 10', () => {
+Test('Should CyclicExtends 7', () => {
   // note: revisit implementing Record extends tests
   Assert.IsExtends<string, any>(true)
   const A = Type.Record(Type.String(), Type.Ref('A'))
@@ -120,14 +99,14 @@ Test('Should CyclicExtends 10', () => {
   const R: ExtendsResult.TExtendsFalse = Extends({}, L, Type.Unknown())
   Assert.IsTrue(ExtendsResult.IsExtendsFalse(R))
 })
-Test('Should CyclicExtends 11', () => {
+Test('Should CyclicExtends 8', () => {
   Assert.IsExtends<string, any>(true)
   const A = Type.Union([Type.Ref('A'), Type.Ref('A')])
   const L = Type.Cyclic({ A }, 'A')
   const R: ExtendsResult.TExtendsTrue = Extends({}, L, Type.Unknown())
   Assert.IsTrue(ExtendsResult.IsExtendsTrue(R))
 })
-Test('Should CyclicExtends 12', () => {
+Test('Should CyclicExtends 9', () => {
   Assert.IsExtends<string, any>(true)
   const A = Type.Tuple([Type.Ref('A')])
   const L = Type.Cyclic({ A }, 'A')
@@ -138,7 +117,7 @@ Test('Should CyclicExtends 12', () => {
 // Infer: Cyclic References are Transformed to TAny, but can still
 // partial infer on Right side.
 // ------------------------------------------------------------------
-Test('Should CyclicExtends 13', () => {
+Test('Should CyclicExtends 10', () => {
   const L = Type.Cyclic({ A: Type.Object({ x: Type.Ref('A') }) }, 'A')
   const R = Type.Object({ x: Type.Infer('A') })
   const X: Type.ExtendsResult.TExtendsTrue<{
@@ -147,7 +126,7 @@ Test('Should CyclicExtends 13', () => {
   Assert.IsTrue(ExtendsResult.IsExtendsTrue(X))
   Assert.IsTrue(Type.IsAny(X.inferred.A))
 })
-Test('Should CyclicExtends 14', () => {
+Test('Should CyclicExtends 11', () => {
   const L = Type.Object({ x: Type.String() })
   const R = Type.Cyclic({ A: Type.Object({ x: Type.Infer('A') }) }, 'A')
   const X: Type.ExtendsResult.TExtendsTrue<{
