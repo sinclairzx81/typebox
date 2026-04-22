@@ -499,7 +499,8 @@ Test('Should Index 38', () => {
     y: Type.Literal(3),
     1: Type.Literal(4)
   })
-  const S: Type.TUnion<[Type.TLiteral<2>, Type.TLiteral<4>]> = Type.Index(T, Type.Number())
+  // CACHE | TYPESCRIPT TYPE ID ORDER ISSUE
+  const S /*: Type.TUnion<[Type.TLiteral<2>, Type.TLiteral<4>]> */ = Type.Index(T, Type.Number())
   Assert.IsTrue(Type.IsUnion(S))
   Assert.IsEqual(S.anyOf.length, 2)
   Assert.IsEqual(S.anyOf[0].const, 2)
@@ -512,9 +513,42 @@ Test('Should Index 39', () => {
     'y': Type.Literal(3),
     '1': Type.Literal(4)
   })
-  const S: Type.TUnion<[Type.TLiteral<2>, Type.TLiteral<4>]> = Type.Index(T, Type.Number())
+  // CACHE | TYPESCRIPT TYPE ID ORDER ISSUE
+  const S /*: Type.TUnion<[Type.TLiteral<2>, Type.TLiteral<4>]> */ = Type.Index(T, Type.Number())
   Assert.IsTrue(Type.IsUnion(S))
   Assert.IsEqual(S.anyOf.length, 2)
   Assert.IsEqual(S.anyOf[0].const, 2)
   Assert.IsEqual(S.anyOf[1].const, 4)
+})
+// ------------------------------------------------------------------
+// This
+// ------------------------------------------------------------------
+Test('Should Index 40', () => {
+  const T = Type.Object({
+    self: Type.This()
+  })
+  const S: Type.TObject<{
+    self: Type.TThis
+  }> = Type.Index(T, Type.Literal('self'))
+  Assert.IsTrue(Type.IsObject(S))
+  Assert.IsTrue(Type.IsThis(S.properties.self))
+})
+Test('Should Index 41', () => {
+  const T = Type.Object({
+    self: Type.This()
+  })
+  const S: Type.TObject<{
+    self: Type.TThis
+  }> = Type.Index(Type.Index(Type.Index(T, Type.Literal('self')), Type.Literal('self')), Type.Literal('self'))
+  Assert.IsTrue(Type.IsObject(S))
+  Assert.IsTrue(Type.IsThis(S.properties.self))
+})
+Test('Should Index 42', () => {
+  const T = Type.Object({
+    value: Type.Literal(42),
+    self: Type.This()
+  })
+  const S: Type.TLiteral<42> = Type.Index(Type.Index(T, Type.Literal('self')), Type.Literal('value'))
+  Assert.IsTrue(Type.IsLiteral(S))
+  Assert.IsEqual(S.const, 42)
 })
