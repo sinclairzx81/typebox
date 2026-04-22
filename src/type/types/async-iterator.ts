@@ -51,7 +51,11 @@ export interface TAsyncIterator<Type extends TSchema = TSchema> extends TSchema 
 // ------------------------------------------------------------------
 // Factory
 // ------------------------------------------------------------------
-/** Creates a AsyncIterator type. */
+/** 
+ * Creates a AsyncIterator type. 
+ * 
+ * @deprecated This type is being removed in the next version of TypeBox. A fallback will be provided under examples.
+ */
 export function AsyncIterator<Type extends TSchema>(iteratorItems: Type, options?: TSchemaOptions): TAsyncIterator<Type> {
   return Memory.Create({ '~kind': 'AsyncIterator' }, { type: 'asyncIterator', iteratorItems }, options) as never
 }

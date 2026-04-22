@@ -51,7 +51,11 @@ export interface TPromise<Type extends TSchema = TSchema> extends TSchema {
 // ------------------------------------------------------------------
 // Factory
 // ------------------------------------------------------------------
-/** Creates a Promise type. */
+/** 
+ * Creates a Promise type. 
+ * 
+ * @deprecated This type is being removed in the next version of TypeBox. A fallback will be provided under examples.
+ */
 export function _Promise_<Type extends TSchema>(item: Type, options?: TSchemaOptions): TPromise<Type> {
   return Memory.Create({ ['~kind']: 'Promise' }, { type: 'promise', item }, options) as never
 }
