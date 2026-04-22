@@ -60,7 +60,6 @@ License: MIT
 
 - [Type](#Type)
 - [Value](#Value)
-- [Script](#Script)
 - [Schema](#Schema)
 - [Versions](#Versions)
 - [Contribute](#Contribute)
@@ -110,43 +109,7 @@ type User = Type.Static<typeof User>              // type User = {
 
 ```
 
-<a name="Value"></a>
-
-## Value
-
-[Documentation](https://sinclairzx81.github.io/typebox/#/docs/type/overview) | [Example](https://www.typescriptlang.org/play/?#code/JYWwDg9gTgLgBAFQJ5gKZwGZQiOByGFVAIwgA88AoSgehrgFonmXW32POvueHb7kafo16ix4ic2oBjCADsAzvACqC1FDgBeREQB0AeWIArVNJgAKAN5wbtu-Yc26cWYpVqN2y5RvAAJgBcOmi6AMowUMByAObmAJQANI7JKfbONoRoQXgQxqYweAk+cHIAhiCoQYKoYRFRsYmpTQ7pcGDYaLDAqApB3jaoIKXAADZVeuGRMVaY0EMw2YPDI3hwAL5xya2+gXDWmZX4SlPRq2tFG81X11v0dmUVfXAH2cf1Z0U3X99w23BLoyexR+INSfwyRFedRihTgwNBCLSd3sGDmpQW+ABKzhiNxdj+a3heIRrUJxLxrSgqAAjgBXYBU3YAbSJ5J+fzw-lhrLZXw5D1Q3N5JORNjwWKowtBrQAujypc1nIThJJVWr1XxnOF0cBpCqNQbDZxqAc4Kp1FpgjVtTBdQAeA4QDBmjwAPmuzlN5s8e3lCqarX8QTeMU+-u+rQFweh0TD4ZurSx0ZOfvjjiVQA)
-
-TypeBox provides a suite of functions for processing dynamic JavaScript data. Functions include Clone, Clean, Convert, Repair, Hash, Diff, Patch and more. Functions can be arranged into processing pipelines. 
-
-## Example
-
-The following parses a Vector with Parse, and a Parse Pipeline.  
-
-```typescript
-import Value from 'typebox/value'
-
-// Type
-
-const Vector = Type.Object({
-  x: Type.Number(),
-  y: Type.Number(),
-  z: Type.Number()
-}))
-
-// Parse
-
-const result = Value.Parse(Vector, input)
-
-// Parse + Pipeline
-
-const Pipeline = Value.Pipeline(Value.Clone, Value.Convert, Value.Default)
-
-const result = Value.Parse(Vector, Pipeline(input))
-
-```
-
-
-## Script
+### Script
 
 [Documentation](https://sinclairzx81.github.io/typebox/#/docs/script/overview) | [Example 1](https://www.typescriptlang.org/play/#code/JYWwDg9gTgLgBAFQJ5gKZwGZQiOByGFVAIwgA88AoSgehrgFonmXW32POvueHb6AygGMowMDH6Ne0mbLnNqQiADsAzvADecAKqrUUADQ69UbWAAmAQxjoAvnAC8iIgDpho8QAoABtThxgZRsoDEshdABRIOBCOA1Kf39gcwAuOHVRZQBzBLhbPwCg-VDw4304VDIbZXNVOCiYGKQ4uFz-ZUsQVDSMwKyjNoqQS2AAGx6YTKzW-3zcwjQy0wtrdCcIgDdLUYBXVYAeQYAFYCEAa33dfSMz1CQIDHrowgA+OAAyGcSjy1hgbf2AHkQDFLiYbncHk9Gq8Xrk4ZRvABKah0KTyDGYzGSABKqAwo1QQgkaKxZPJvEUKlUEEJLlGECyniuUCRiXZHM5XK5aPi3P5AsFgrR-gW3XwEGIACsiTA8AZBkKlcrOSK4GBsGg-qhVGk+SqDYa1UlUi0xWk8L1sng8grDfblca4B0unq4Ob8FasjbbHaHf7+U7UMMxm6PZbJn0fYqA7G4GrfTG4-61VBUABHHbANOmgDaSeT9qdeGS8q+hdjxZdqDLBYrKuLwZGoyo9cr9H8AF0622hWi5ko1LTUPTGcyTGYrDY2YXeT3ewK1eHJTLifL5wvuWqNRAtY0dXqN5vVR3Eskw0QLV6fX7jw3T+1OuKtOHr7aj3fEkGQ+MzZfPZG1p5B+n7xqeiagY6p5ppm2aoHmJbmHg3aQUq-aovQFJYdhLCSAIMDWKckg4SRFLUGKSyOM4aBuARjRCPsYpQiybxofQFEslR+qocKp7nukgH9CBoFqtWExTLePGBqeTahgJUzCZ+6GUBxE4rDYVHIDR+GEQxTGPCyk6rKxaKqfoRkaU43FSVufGml6kk2SeiTVgA-OJfSOU57JqrJozufJfSKXe6FAA) | [Example 2](https://www.typescriptlang.org/play/#code/JYWwDg9gTgLgBAFQJ5gKZwGZQiOByGFVAIwgA88AoSgehrgFonmXW32POvnb7k1ejbsJGj21AMYQAdgGd4AUWkxghOAF5ERAHQBJZaigYAhhNQAKANoBdADRwA3pThxgAEwBcWtNoDKMKGBpAHNzAEpKAF8Iyik5eABVWUMNb1Q9AyNTC0slFUI7R2c4aWMQVC9+dP9AkPDbYtQQY2AAG0qdGqDQiOjJGXk4JMMEsDdjGHRNKu0FADdjVoBXCYsZ-UmoZIkYK2KZgAVgCQBrc2GoexmAaVQkAHkMczzVJDCwhpdD41hgRfMZvcQKpzslLmltLcHk8XoR3hFrO9qHQhGI0eiMdxBAAlVAYVqoHaCTEk0mY-pyCAE7StCChC5hFxM5ks1lslkopzs7k83m8lEuQhoLx4CDEABWhJgeE+fLl8u5ArgYGwaF+qFkXi5Cp1uqVLncWrgQoq+HktWCeDgkVlurtfP1JTKpocxqIIvN3StNuK9r97MdTRa7UcbuFZoCXutvv9saZSp9caTLiVUFQAEclsA0544JYY8m-Y68O4ZXAC4W7cXSuUyxXKzri0G2lQG-6ldZ6225SjIhTZFT0rT6WDRuNJozk5yu93+fRBe78GLJTsZTPZ4r58rVYYVBqteuN2zHYbQyaPZGQt7bUee1uXDWXWHTXhPVfrTfb3OWc2Q67zxGFreoeX7xluiagQ6W5ppm2aoLmlglm4eCdpBUHRsSZJYdhnCCP4EzHJhOHEcR1AmkMYKpDM+EqBIAA8JoQBgFGGAAfPKKLkRcqTamhPJKqeb7BJ+fGskqj5eEJImicySq-pJl7BCBaG9mRRAsVAY6rFRnQwAR9GMcxFxaZM7FwJx6nGWM2maLxMliVugmKdJ9nmVuj4APwKRaLn2XJzRtF5cBCcpkG9kAA)
 
@@ -221,6 +184,65 @@ type UserUpdate = Type.Static<typeof UserUpdate>  // type UserUpdate = {
 
 
 ```
+
+
+<a name="Value"></a>
+
+## Value
+
+TypeBox includes a suite of functions for processing dynamic JavaScript data against typed schematics. Functions include Clone, Clean, Convert, Encode, Decode, Repair, Hash, Diff, Patch and more. Functions can be arranged into processing pipelines. 
+
+### Example
+
+The following parses a Vector with Parse, and a Parse Pipeline.  
+
+```typescript
+import Value from 'typebox/value'
+
+const Vector = Type.Object({
+  x: Type.Number(),
+  y: Type.Number(),
+  z: Type.Number()
+}))
+
+const Pipeline = Value.Pipeline(
+  Value.Clone,                        // Clone Value
+  Value.Convert,                      // Convert Values
+  Value.Default,                      // Create Defaults
+  Value.Clean                         // Remove Extra Properties
+)
+
+const result1 = Value.Parse(Vector, input)
+
+const result2 = Value.Parse(Vector, Pipeline(input))
+
+```
+
+### Functions
+
+The following functions are available. Each function has varying mutability and return signatures based on the kind of operation, and whether TypeBox can safely derive a type. For mutable operations, callers are recommended to Clone a value before applying the operation.
+
+| Function      | Immutable | Returns    | Description                                          |
+| :--           | :--       | :--        | :--                                                  |
+| [Compile](#)  | --        | Validator  | Compiles a JSON Schema into a Validator              |
+| [Pipeline](#) | --        | Function   | Creates a Value processing Pipeline                  |
+| [Equal](#)    | ✅        | Boolean    | Checks deep structural equality                      |
+| [Hash](#)     | ✅        | String     | Computes a FNV1A non-cryptographic Hash of a Value   |
+| [Assert](#)   | ✅        | Infer      | Asserts a value matches a type or throws             |
+| [Check](#)    | ✅        | Boolean    | Checks a value matches a type and returns boolean    |
+| [Create](#)   | ✅        | Infer      | Creates a value from a Type                          |
+| [Errors](#)   | ✅        | Error[]    | Returns errors for a value                           |
+| [Parse](#)    | ✅        | Infer      | Checks a value and returns if valid, otherwise throws |
+| [Diff](#)     | ✅        | Edit[]     | Compares two JavaScript values and returns Edits     |
+| [Clone](#)    | ✅        | Infer      | Structurally Clones a value                          |
+| [Repair](#)   | ⚠️        | Infer      | Attempts to Repair a value to match a target type    |
+| [Clean](#)    | ⚠️        | Unknown    | Removes Excess Properties from a value               |
+| [Decode](#)   | ⚠️        | Unknown    | Runs Decode Functions applied to a Type              |
+| [Encode](#)   | ⚠️        | Unknown    | Runs Encode Functions applied to a Type              |
+| [Convert](#)  | ⚠️        | Unknown    | Converts mismatched Values to a target Type          |
+| [Default](#)  | ⚠️        | Unknown    | Applies default annotations to a value               |
+| [Patch](#)    | ⚠️        | Unknown    | Patches Edits to a JavaScript value                  |
+| [Pointer](#)  | ⚠️        | Unknown    | Gets and Sets values via JSON Pointer                |
 
 <a name="Schema"></a>
 
