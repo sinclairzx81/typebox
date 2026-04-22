@@ -16,7 +16,7 @@ const Version = '1.1.30'
 // ------------------------------------------------------------------
 const BuildPackage = (target: string = `target/build`) => Task.build.esm('src', {
   outdir: target,
-  compiler: '6.0.2',
+  compiler: '6.0.3',
   additional: ['license', 'readme.md'],
   packageJson: {
     name: 'typebox',
@@ -121,6 +121,6 @@ Task.run('range', async () => {
     '5.6.3', '5.7.2', '5.7.3', '5.9.2', '5.9.3', 
   ])
   await Range.Modern([
-    '6.0.2', 'next', 'latest', 
+    '6.0.2', '6.0.3', 'next', 'latest', 
   ])
 })
