@@ -39,6 +39,11 @@
         "valid": true
       },
       {
+        "description": "-4.5 is multiple of 1.5",
+        "data": -4.5,
+        "valid": true
+      },
+      {
         "description": "35 is not multiple of 1.5",
         "data": 35,
         "valid": false
