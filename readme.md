@@ -80,7 +80,6 @@ The following creates a User type and infers with Static.
 ```typescript
 import Type from 'typebox'
 
-
 // Type
 
 const User = Type.Object({                       // const User = {
@@ -99,7 +98,6 @@ const User = Type.Object({                       // const User = {
                                                  //     'email'
                                                  //   ]
                                                  // }
-
 
 // Static
 
@@ -124,7 +122,6 @@ The following uses the Script function to parse TypeScript interfaces into JSON 
 ```typescript
 import Type from 'typebox'
 
-
 // Script
 
 const { User, UserUpdate } = Type.Script(`
@@ -144,7 +141,6 @@ const { User, UserUpdate } = Type.Script(`
   >
 
 `)
-
 
 // Reflect
 
@@ -171,7 +167,6 @@ console.log(UserUpdate)                          // {
                                                  //   },
                                                  //   required: ['id']
                                                  // }
-
 
 // Static
 
@@ -205,7 +200,6 @@ The following uses the Schema submodule to compile a TypeBox type.
 ```typescript
 import Schema from 'typebox/schema'
 
-
 // Compile
 
 const User = Schema.Compile(Type.Object({        // const User = Validator<Type.TObject<{
@@ -213,7 +207,6 @@ const User = Schema.Compile(Type.Object({        // const User = Validator<Type.
   name: Type.String(),                           //   name: Type.TString;
   email: Type.String({ format: 'email' })        //   email: Type.TString;
 }))                                              // }>, { ... }>
-
 
 // Parse
 
