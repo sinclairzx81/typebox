@@ -59,6 +59,7 @@ License: MIT
 ## Contents
 
 - [Type](#Type)
+- [Value](#Value)
 - [Script](#Script)
 - [Schema](#Schema)
 - [Versions](#Versions)
@@ -108,6 +109,42 @@ type User = Type.Static<typeof User>              // type User = {
                                                   // }
 
 ```
+
+<a name="Value"></a>
+
+## Value
+
+[Documentation](https://sinclairzx81.github.io/typebox/#/docs/type/overview) | [Example](https://www.typescriptlang.org/play/?#code/JYWwDg9gTgLgBAFQJ5gKZwGZQiOByGFVAIwgA88AoSgehrgFonmXW32POvueHb7kafo16ix4ic2oBjCADsAzvACqC1FDgBeREQB0AeWIArVNJgAKAN5wbtu-Yc26cWYpVqN2y5RvAAJgBcOmi6AMowUMByAObmAJQANI7JKfbONoRoQXgQxqYweAk+cHIAhiCoQYKoYRFRsYmpTQ7pcGDYaLDAqApB3jaoIKXAADZVeuGRMVaY0EMw2YPDI3hwAL5xya2+gXDWmZX4SlPRq2tFG81X11v0dmUVfXAH2cf1Z0U3X99w23BLoyexR+INSfwyRFedRihTgwNBCLSd3sGDmpQW+ABKzhiNxdj+a3heIRrUJxLxrSgqAAjgBXYBU3YAbSJ5J+fzw-lhrLZXw5D1Q3N5JORNjwWKowtBrQAujypc1nIThJJVWr1XxnOF0cBpCqNQbDZxqAc4Kp1FpgjVtTBdQAeA4QDBmjwAPmuzlN5s8e3lCqarX8QTeMU+-u+rQFweh0TD4ZurSx0ZOfvjjiVQA)
+
+TypeBox provides a suite of functions for processing dynamic JavaScript data. Functions include Clone, Clean, Convert, Repair, Hash, Diff, Patch and more. Functions can be arranged into processing pipelines. 
+
+## Example
+
+The following parses a Vector with Parse, and a Parse Pipeline.  
+
+```typescript
+import Value from 'typebox/value'
+
+// Type
+
+const Vector = Type.Object({
+  x: Type.Number(),
+  y: Type.Number(),
+  z: Type.Number()
+}))
+
+// Parse
+
+const result = Value.Parse(Vector, input)
+
+// Parse + Pipeline
+
+const Pipeline = Value.Pipeline(Value.Clone, Value.Convert, Value.Default)
+
+const result = Value.Parse(Vector, Pipeline(input))
+
+```
+
 
 ## Script
 
