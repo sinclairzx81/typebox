@@ -50,7 +50,11 @@ export function AwaitedDeferred<Type extends TSchema>(type: Type, options: TSche
 export type TAwaited<Type extends TSchema> = (
   TAwaitedAction<Type>
 )
-/** Applies an Awaited action to a type. */
+/** 
+ * Applies an Awaited action to a type. 
+ * 
+ * @deprecated This action is being removed in the next version of TypeBox.
+ */
 export function Awaited<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TAwaited<Type> {
   return AwaitedAction(type, options)
 }

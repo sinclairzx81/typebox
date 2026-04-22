@@ -51,7 +51,11 @@ export interface TIterator<Type extends TSchema = TSchema> extends TSchema {
 // ------------------------------------------------------------------
 // Factory
 // ------------------------------------------------------------------
-/** Creates a Iterator type. */
+/** 
+ * Creates a Iterator type. 
+ * 
+ * @deprecated This type is being removed in the next version of TypeBox. A fallback will be provided under examples.
+ */
 export function Iterator<Type extends TSchema>(iteratorItems: Type, options?: TSchemaOptions): TIterator<Type> {
   return Memory.Create({ '~kind': 'Iterator' }, { type: 'iterator', iteratorItems }, options) as never
 }
