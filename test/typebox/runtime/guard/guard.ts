@@ -324,3 +324,25 @@ Test('Should IsClassInstance 15', () => {
   const strObj = new String('abc')
   Assert.IsEqual(Guard.IsClassInstance(strObj), true)
 })
+
+// ------------------------------------------------------------------
+// Guard.TakeLeft
+// ------------------------------------------------------------------
+Test('Should TakeLeft 1', () => {
+  const result: any = Guard.TakeLeft([], (left, right) => ({ left, right }), () => 'empty')
+  Assert.IsEqual(result, 'empty')
+})
+Test('Should TakeLeft 2', () => {
+  const result: string | {
+    left: number
+    right: number[]
+  } = Guard.TakeLeft([1, 2, 3], (left, right) => ({ left, right }), () => 'empty')
+  Assert.IsEqual(result, { left: 1, right: [2, 3] })
+})
+Test('Should TakeLeft 3', () => {
+  const result: string | {
+    left: number
+    right: number[]
+  } = Guard.TakeLeft([42], (left, right) => ({ left, right }), () => 'empty')
+  Assert.IsEqual(result, { left: 42, right: [] })
+})

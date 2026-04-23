@@ -150,7 +150,7 @@ function ElementsLeft<Inferred extends TProperties, Reversed extends boolean, Le
     // Rest Inferrable Right Means we delegate to TInferTupleResult to Generate a Result
     IsInferable(inferable)
       ? InferTupleResult(inferred, inferable['name'], ApplyReverse(leftRest, reversed), inferable['type'])
-      : Result.TakeLeft(leftRest, (head, tail) => 
+      : Guard.TakeLeft(leftRest, (head, tail) => 
         ElementsCompare(inferred, reversed, head, tail, right, rightRest),
         () => Result.ExtendsFalse())
   ) as never
@@ -181,7 +181,7 @@ type TElementsRight<Inferred extends TProperties, Reversed extends boolean, Left
 function ElementsRight<Inferred extends TProperties, Reversed extends boolean, LeftRest extends TSchema[], RightRest extends TSchema[]>
   (inferred: Inferred, reversed: Reversed, leftRest: [...LeftRest], rightRest: [...RightRest]):
   TElementsRight<Inferred, Reversed, LeftRest, RightRest> {
-  return Result.TakeLeft(rightRest, (head, tail) =>
+  return Guard.TakeLeft(rightRest, (head, tail) =>
     ElementsLeft(inferred, reversed, leftRest, head, tail),
     () => Guard.IsEqual(leftRest.length, 0)
       ? Result.ExtendsTrue(inferred)     // 'Ok: right-empty-and-left-empty'
@@ -233,7 +233,7 @@ function ExtendsTupleToArray<Inferred extends TProperties, Left extends TSchema[
   return (
     IsInferable(inferrable)
       ? InferUnionResult(inferred, inferrable['name'], left, inferrable['type'])
-      : Result.TakeLeft(left, (head, tail) => 
+      : Guard.TakeLeft(left, (head, tail) => 
         Result.Match(ExtendsLeft(inferred, head, right), inferred => 
           ExtendsTupleToArray(inferred, tail, right),
           () => Result.ExtendsFalse()),

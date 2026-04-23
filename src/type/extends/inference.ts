@@ -146,7 +146,7 @@ type TryInferResults<Rest extends TSchema[], Right extends TSchema, Result exten
     : Result
 )
 function TryInferResults<Rest extends TSchema[], Right extends TSchema>(rest: [...Rest], right: Right, result: TSchema[] = []): TryInferResults<Rest, Right> {
-  return Result.TakeLeft(rest, (head, tail) =>
+  return Guard.TakeLeft(rest, (head, tail) =>
     Result.Match(ExtendsLeft({}, head, right),
       () => TryInferResults(tail, right, [...result, head]),
       () => undefined),

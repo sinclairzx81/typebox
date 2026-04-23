@@ -28,9 +28,9 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { type TUnreachable, Unreachable } from '../../../system/unreachable/index.ts'
 import { Guard } from '../../../guard/index.ts'
-import { type TSchema, IsSchema } from '../../types/schema.ts'
+import { type TUnreachable, Unreachable } from '../../../system/unreachable/index.ts'
+import { type TSchema } from '../../types/schema.ts'
 import { type TProperties } from '../../types/properties.ts'
 import { type TEvaluateUnion, EvaluateUnion } from '../evaluate/evaluate.ts'
 import { type TFromType, FromType } from './from-type.ts'
@@ -45,8 +45,8 @@ type TCollapseUnionProperties<Left extends TProperties, Right extends TPropertie
   }
 > = Result
 function CollapseUnionProperties<Left extends TProperties, Right extends TProperties>
-  (left: Left, right: Right): 
-    TCollapseUnionProperties<Left, Right> {
+  (left: Left, right: Right):
+  TCollapseUnionProperties<Left, Right> {
   const sharedKeys = Guard.Keys(left).filter((key) => key in right)
   const result = sharedKeys.reduce((result, key) => {
     return { ...result, [key]: EvaluateUnion([left[key], right[key]]) }
@@ -63,13 +63,10 @@ type TReduceVariants<Types extends TSchema[], Result extends TProperties> = (
 )
 function ReduceVariants<Types extends TSchema[], Result extends TProperties>
   (types: [...Types], result: Result):
-    TReduceVariants<Types, Result> {
-  const [left, ...right] = types
-  return (
-    IsSchema(left)
-      ? ReduceVariants(right, CollapseUnionProperties(result, FromType(left)))
-      : result
-  ) as never
+  TReduceVariants<Types, Result> {
+  return Guard.TakeLeft(types, (left, right) =>
+    ReduceVariants(right, CollapseUnionProperties(result, FromType(left))),
+    () => result) as never
 }
 // ------------------------------------------------------------------
 // FromUnion
@@ -86,13 +83,10 @@ export type TFromUnion<Types extends TSchema[]> = (
   : TUnreachable
 )
 export function FromUnion<Types extends TSchema[]>
-  (types: [...Types]): 
-    TFromUnion<Types> {
-  const [left, ...right] = types
-  return (
-    IsSchema(left)
-      ? ReduceVariants(right, FromType(left))
-      : Unreachable()
-  ) as never
+  (types: [...Types]):
+  TFromUnion<Types> {
+  return Guard.TakeLeft(types, (left, right) =>
+    ReduceVariants(right, FromType(left)),
+    () => Unreachable()) as never
 }
 // deno-coverage-ignore-stop

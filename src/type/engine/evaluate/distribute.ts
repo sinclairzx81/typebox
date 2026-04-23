@@ -30,7 +30,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Guard } from '../../../guard/index.ts'
-import { type TSchema, IsSchema } from '../../types/schema.ts'
+import { type TSchema } from '../../types/schema.ts'
 import { type TUnion, IsUnion } from '../../types/union.ts'
 import { type TObject, IsObject } from '../../types/object.ts'
 import { type TTuple, IsTuple } from '../../types/tuple.ts'
@@ -105,14 +105,11 @@ type TDistributeType<Type extends TSchema, Distribution extends TSchema[], Resul
       : Result
 )
 function DistributeType<Type extends TSchema, Distribution extends TSchema[]>(type: Type, types: [...Distribution], result: TSchema[] = []): TDistributeType<Type, Distribution> {
-  const [left, ...right]  = types
-  return (
-    !Guard.IsUndefined(left) // TSchema[]
-      ? DistributeType(type, right, [...result, DistributeOperation(type, left)])
-      : result.length === 0
-        ? [type]
-        : result
-  ) as never
+  return Guard.TakeLeft(types, (left, right) => 
+    DistributeType(type, right, [...result, DistributeOperation(type, left)]),
+    () => Guard.IsEqual(result.length, 0)
+      ? [type]
+      : result) as never
 }
 // -----------------------------------------------------------------------------------------
 // DistributeUnion
@@ -123,12 +120,9 @@ type TDistributeUnion<Types extends TSchema[], Distribution extends TSchema[], R
    : Result
 )
 function DistributeUnion<Types extends TSchema[], Distribution extends TSchema[]>(types: [...Types], distribution: [...Distribution], result: TSchema[] = []): TDistributeUnion<Types, Distribution> {
-  const [left, ...right] = types
-  return (
-    IsSchema(left)
-      ? DistributeUnion(right, distribution, [...result, ...Distribute([left], distribution)])
-      : result
-  ) as never
+  return Guard.TakeLeft(types, (left, right) => 
+    DistributeUnion(right, distribution, [...result, ...Distribute([left], distribution)]),
+    () => result) as never
 }
 // -----------------------------------------------------------------------------------------
 // Distribute
@@ -141,12 +135,9 @@ export type TDistribute<Types extends TSchema[], Result extends TSchema[] = []> 
     : Result
 )
 export function Distribute<Types extends TSchema[]>(types: [...Types], result: TSchema[] = []): TDistribute<Types> {
-  const [left, ...right] = types
-  return (
-    IsSchema(left)
-      ? IsUnion(left) 
-        ? Distribute(right, DistributeUnion(left.anyOf, result))
-        : Distribute(right, DistributeType(left, result))
-      : result
-  ) as never
+  return Guard.TakeLeft(types, (left, right) => 
+    IsUnion(left)
+      ? Distribute(right, DistributeUnion(left.anyOf, result))
+      : Distribute(right, DistributeType(left, result)),
+    () => result) as never
 }
