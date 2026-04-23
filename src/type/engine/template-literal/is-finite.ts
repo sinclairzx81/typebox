@@ -74,8 +74,8 @@ type TFromType<Type extends TSchema> =
 function FromType<Type extends TSchema>(type: Type): TFromType<Type> {
   return (
     IsUnion(type) ? FromTypes(type.anyOf) :
-      IsLiteral(type) ? FromLiteral(type.const) :
-        false
+    IsLiteral(type) ? FromLiteral(type.const) :
+    false
   ) as never
 }
 // ------------------------------------------------------------------
