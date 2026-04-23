@@ -28,8 +28,9 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
+import { Guard } from '../../../guard/index.ts'
 import { Memory } from '../../../system/memory/index.ts'
-import { type TSchema, IsSchema } from '../../types/schema.ts'
+import { type TSchema } from '../../types/schema.ts'
 import { type TParameter } from '../../types/parameter.ts'
 import { type TProperties } from '../../types/properties.ts'
 import { type TState, type TInstantiateType, InstantiateType } from '../instantiate.ts'
@@ -76,11 +77,9 @@ function BindArguments<Context extends TProperties, State extends TState, Parame
     TBindArguments<Context, State, ParameterLeft, ParameterRight, Arguments> {
   const instantiatedExtends = InstantiateType(context, state, parameterLeft.extends)
   const instantiatedEquals = InstantiateType(context, state, parameterLeft.equals)
-  const [left, ...right] = arguments_
-  return (
-    IsSchema(left)
-      ? BindParameters(BindArgument(context, state, parameterLeft['name'], instantiatedExtends, left), state, parameterRight, right)
-      : BindParameters(BindArgument(context, state, parameterLeft['name'], instantiatedExtends, instantiatedEquals), state, parameterRight, [])
+  return Guard.TakeLeft(arguments_, (left, right) => 
+    BindParameters(BindArgument(context, state, parameterLeft['name'], instantiatedExtends, left), state, parameterRight, right),
+    () => BindParameters(BindArgument(context, state, parameterLeft['name'], instantiatedExtends, instantiatedEquals), state, parameterRight, [])
   ) as never
 }
 // ------------------------------------------------------------------
@@ -94,11 +93,9 @@ type TBindParameters<Context extends TProperties, State extends TState, Paramete
 function BindParameters<Context extends TProperties, State extends TState, Parameters extends TParameter[], Arguments extends TSchema[]>
   (context: Context, state: State, parameters: [...Parameters], arguments_: [...Arguments]):
     TBindParameters<Context, State, Parameters, Arguments> {
-  const [left, ...right] = parameters
-  return (
-    IsSchema(left)
-      ? BindArguments(context, state, left, right, arguments_)
-      : context
+  return Guard.TakeLeft(parameters, (left, right) => 
+    BindArguments(context, state, left, right, arguments_),
+    () => context
   ) as never
 }
 // ------------------------------------------------------------------

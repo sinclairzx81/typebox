@@ -167,18 +167,24 @@ export function IsMinLength(value: string, length: number): boolean {
 // --------------------------------------------------------------------------
 // Array
 // --------------------------------------------------------------------------
+/** Returns true if all elements from offset satisfy the callback, short-circuiting on the first failure */
 export function Every<T>(value: T[], offset: number, callback: (value: T, index: number) => boolean): boolean {
   for (let index = offset; index < value.length; index++) {
     if (!callback(value[index], index)) return false
   }
   return true
 }
+/** Returns true if all elements from offset satisfy the callback, visiting every element regardless of failure */
 export function EveryAll<T>(value: T[], offset: number, callback: (value: T, index: number) => boolean): boolean {
   let result = true
   for (let index = offset; index < value.length; index++) {
     if (!callback(value[index], index)) result = false
   }
   return result
+}
+/** Takes the left-most element from an array and dispatches to the true arm, or the false arm if empty */
+export function TakeLeft<T, True extends (left: T, right: T[]) => unknown, False extends () => unknown>(array: T[], true_: True, false_: False): ReturnType<True> | ReturnType<False> {
+  return (IsEqual(array.length, 0) ? false_() : true_(array[0], array.slice(1))) as never
 }
 // --------------------------------------------------------------------------
 // Object
