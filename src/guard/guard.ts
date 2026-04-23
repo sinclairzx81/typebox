@@ -183,9 +183,7 @@ export function EveryAll<T>(value: T[], offset: number, callback: (value: T, ind
 // ------------------------------------------------------------------
 // TakeLeft
 // ------------------------------------------------------------------
-export type TakeLeftTrue<T> = (left: T, right: T[]) => unknown
-export type TakeLeftFalse = () => unknown
-export function TakeLeft<T, True extends TakeLeftTrue<T>, False extends TakeLeftFalse>(array: T[], true_: True, false_: False): ReturnType<True> | ReturnType<False> {
+export function TakeLeft<T, True extends (left: T, right: T[]) => unknown, False extends () => unknown>(array: T[], true_: True, false_: False): ReturnType<True> | ReturnType<False> {
   return (IsEqual(array.length, 0) ? false_() : true_(array[0], array.slice(1))) as never
 }
 // --------------------------------------------------------------------------

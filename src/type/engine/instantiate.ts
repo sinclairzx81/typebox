@@ -118,8 +118,8 @@ export type TCanInstantiate<Types extends TSchema[]> =
       : TCanInstantiate<Right>
     : true
 export function CanInstantiate<Types extends TSchema[]>(types: [...Types]): TCanInstantiate<Types> {
-  return Guard.TakeLeft(types,
-    (left, right) => IsRef(left) 
+  return Guard.TakeLeft(types, (left, right) => 
+    IsRef(left) 
       ? false 
       : CanInstantiate(right),
     () => true
