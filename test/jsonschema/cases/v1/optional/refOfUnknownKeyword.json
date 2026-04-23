@@ -95,7 +95,6 @@
     "description": "reference internals of known non-applicator",
     "schema": {
       "$schema": "https://json-schema.org/v1",
-      "$id": "/base",
       "examples": [
         {
           "type": "string"

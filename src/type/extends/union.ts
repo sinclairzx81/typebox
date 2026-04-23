@@ -28,6 +28,7 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
+import { Guard } from '../../guard/index.ts'
 import { type TProperties } from '../types/properties.ts'
 import { type TSchema } from '../types/schema.ts'
 import { type TUnion, IsUnion } from '../types/union.ts'
@@ -56,7 +57,7 @@ type TExtendsUnionSome<Inferred extends TProperties, Type extends TSchema, Union
 function ExtendsUnionSome<Inferred extends TProperties, Type extends TSchema, UnionTypes extends TSchema[]>
   (inferred: Inferred, type: Type, unionTypes: [...UnionTypes]): 
     TExtendsUnionSome<Inferred, Type, UnionTypes> {
-  return Result.TakeLeft(unionTypes, (head, tail) => 
+  return Guard.TakeLeft(unionTypes, (head, tail) => 
     Result.Match(ExtendsLeft(inferred, type, head), inferred => 
       Result.ExtendsTrue(inferred),
       () => ExtendsUnionSome(inferred, type, tail)),
@@ -73,7 +74,7 @@ type TExtendsUnionLeft<Inferred extends TProperties, Left extends TSchema[], Rig
   : Result.TExtendsTrue<Inferred>
 )
 function ExtendsUnionLeft<Inferred extends TProperties, Left extends TSchema[], Right extends TSchema[]>(inferred: Inferred, left: [...Left], right: [...Right]): TExtendsUnionLeft<Inferred, Left, Right> {
-  return Result.TakeLeft(left, (head, tail) => 
+  return Guard.TakeLeft(left, (head, tail) => 
     Result.Match(ExtendsUnionSome(inferred, head, right), inferred => 
       ExtendsUnionLeft(inferred, tail, right),
       () => Result.ExtendsFalse()),

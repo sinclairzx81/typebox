@@ -28,7 +28,8 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { type TSchema, IsSchema } from '../../types/schema.ts'
+import { Guard } from '../../../guard/index.ts'
+import { type TSchema } from '../../types/schema.ts'
 import { type TArray, IsArray } from '../../types/array.ts'
 import { type TConstructor, IsConstructor } from '../../types/constructor.ts'
 import { type TFunction, IsFunction } from '../../types/function.ts'
@@ -78,21 +79,20 @@ function FromProperties<Stack extends string[], Context extends TProperties, Pro
 type TFromTypes<Stack extends string[], Context extends TProperties, Types extends TSchema[]> =
   Types extends [infer Left extends TSchema, ...infer Right extends TSchema[]]
   ? TFromType<Stack, Context, Left> extends true
-  ? true
-  : TFromTypes<Stack, Context, Right>
+    ? true
+    : TFromTypes<Stack, Context, Right>
   : false
 
 function FromTypes<Stack extends string[], Context extends TProperties, Types extends TSchema[]>
   (stack: [...Stack], context: Context, types: [...Types]):
   TFromTypes<Stack, Context, Types> {
-  const [left, ...right] = types
-  return (
-    IsSchema(left)
-      ? FromType(stack, context, left)
-        ? true
-        : FromTypes(stack, context, right)
-      : false
+  return Guard.TakeLeft(types, (left, right) => 
+    FromType(stack, context, left)
+      ? true
+      : FromTypes(stack, context, right),
+    () => false
   ) as never
+
 }
 // ------------------------------------------------------------------
 // Type

@@ -28,11 +28,11 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { TUnreachable, Unreachable } from '../../../system/unreachable/index.ts'
 import { Guard } from '../../../guard/index.ts'
+import { TUnreachable, Unreachable } from '../../../system/unreachable/index.ts'
 
+import { type TSchema } from '../../types/schema.ts'
 import { type TLiteral, type TLiteralValue, Literal, IsLiteral } from '../../types/literal.ts'
-import { type TSchema, IsSchema } from '../../types/schema.ts'
 import { type TString, String } from '../../types/string.ts'
 import { type TTemplateLiteral, IsTemplateLiteral } from '../../types/template-literal.ts'
 import { type TUnion, Union, IsUnion } from '../../types/union.ts'
@@ -44,14 +44,15 @@ import { TemplateLiteralCreate } from './create.ts'
 // ------------------------------------------------------------------
 // FromLiteral
 // ------------------------------------------------------------------
-type TFromLiteralPush<Variants extends string[], Value extends TLiteralValue, Result extends string[] = []> = 
+type TFromLiteralPush<Variants extends string[], Value extends TLiteralValue, Result extends string[] = []> =
   Variants extends [infer Left extends string, ...infer Right extends string[]]
-    ? TFromLiteralPush<Right, Value, [...Result, `${Left}${Value}`]>
-    : Result
+  ? TFromLiteralPush<Right, Value, [...Result, `${Left}${Value}`]>
+  : Result
 
 function FromLiteralPush<Variants extends string[], Value extends TLiteralValue>(variants: [...Variants], value: Value, result: string[] = []): TFromLiteralPush<Variants, Value> {
-  const [left, ...right] = variants
-  return (Guard.IsString(left) ? FromLiteralPush(right, value, [...result, `${left}${value}`]): result) as never
+  return Guard.TakeLeft(variants, (left, right) =>
+    FromLiteralPush(right, value, [...result, `${left}${value}`]),
+    () => result) as never
 }
 type TFromLiteral<Variants extends string[], Value extends TLiteralValue> =
   Variants extends [] ? [`${Value}`] : TFromLiteralPush<Variants, Value>
@@ -64,14 +65,12 @@ function FromLiteral<Variants extends string[], Value extends TLiteralValue>(var
 // ------------------------------------------------------------------
 type TFromUnion<Variants extends string[], Types extends TSchema[], Result extends string[] = []> =
   Types extends [infer Left extends TSchema, ...infer Right extends TSchema[]]
-    ? TFromUnion<Variants, Right, [...Result, ...TFromType<Variants, Left>]>
-    : Result
+  ? TFromUnion<Variants, Right, [...Result, ...TFromType<Variants, Left>]>
+  : Result
 function FromUnion<Variants extends string[], Types extends TSchema[]>(variants: [...Variants], types: [...Types], result: string[] = []): TFromUnion<Variants, Types> {
-  const [left, ...right] = types
-  return (
-    IsSchema(left) 
-      ? FromUnion(variants, right, [...result, ...FromType(variants, left)])
-      : result
+  return Guard.TakeLeft(types, (left, right) =>
+    FromUnion(variants, right, [...result, ...FromType(variants, left)]),
+    () => result
   ) as never
 }
 // ------------------------------------------------------------------
@@ -106,23 +105,22 @@ function FromType<Variants extends string[], Type extends TSchema>(variants: [..
 // ------------------------------------------------------------------
 // FromSpan
 // ------------------------------------------------------------------
-type TDecodeFromSpan<Variants extends string[], Types extends TSchema[]> = 
+type TDecodeFromSpan<Variants extends string[], Types extends TSchema[]> =
   Types extends [infer Left extends TSchema, ...infer Right extends TSchema[]]
-    ? TDecodeFromSpan<TFromType<Variants, Left>, Right>
-    : Variants
+  ? TDecodeFromSpan<TFromType<Variants, Left>, Right>
+  : Variants
 function DecodeFromSpan<Variants extends string[], Types extends TSchema[]>(variants: [...Variants], types: [...Types]): TDecodeFromSpan<Variants, Types> {
-  const [left, ...right] = types
-  return (
-    IsSchema(left) ? DecodeFromSpan(FromType(variants, left) as string[], right) : variants
-  ) as never
+  return Guard.TakeLeft(types, (left, right) =>
+    DecodeFromSpan(FromType(variants, left) as string[], right),
+    () => variants) as never
 }
 // ------------------------------------------------------------------
 // VariantsToLiterals
 // ------------------------------------------------------------------
-type TVariantsToLiterals<Variants extends string[], Result extends TSchema[] = []> = 
+type TVariantsToLiterals<Variants extends string[], Result extends TSchema[] = []> =
   Variants extends [infer Left extends string, ...infer Right extends string[]]
-    ? TVariantsToLiterals<Right, [...Result, TLiteral<Left>]>
-    : Result
+  ? TVariantsToLiterals<Right, [...Result, TLiteral<Left>]>
+  : Result
 function VariantsToLiterals<Variants extends string[]>(variants: [...Variants]): TVariantsToLiterals<Variants> {
   return variants.map(variant => Literal(variant)) as never
 }
@@ -167,7 +165,7 @@ function DecodeTypes<Types extends TSchema[]>(types: [...Types]): TDecodeTypes<T
     Guard.IsEqual(types.length, 1) && IsLiteral(types[0]) ? types[0] :
     DecodeTypesAsUnion(types)
   ) as never
-} 
+}
 // deno-coverage-ignore-stop
 // ------------------------------------------------------------------
 // TemplateLiteralDecodeUnsafe
@@ -177,10 +175,10 @@ export type TTemplateLiteralDecodeUnsafe<Pattern extends string,
   Types extends TSchema[] = TParsePatternIntoTypes<Pattern>,
   Result extends TSchema = (
     Types extends []                            // Failed to Parse | IsTemplateLiteralPattern
-      ? TString
-      : TIsTemplateLiteralFinite<Types> extends true
-        ? TDecodeTypes<Types>
-        : TTemplateLiteral<Pattern>
+    ? TString
+    : TIsTemplateLiteralFinite<Types> extends true
+    ? TDecodeTypes<Types>
+    : TTemplateLiteral<Pattern>
   )
 > = Result
 /**
@@ -193,7 +191,7 @@ export function TemplateLiteralDecodeUnsafe<Pattern extends string>(pattern: Pat
   const types = ParsePatternIntoTypes(pattern)
   const result = Guard.IsEqual(types.length, 0) // Failed to Parse | IsTemplateLiteralPattern
     ? String()                                  // ... Pattern cannot be typed, so discard
-    : IsTemplateLiteralFinite(types)              
+    : IsTemplateLiteralFinite(types)
       ? DecodeTypes(types)
       : TemplateLiteralCreate(pattern)
   return result as never

@@ -28,7 +28,8 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { type TSchema, IsSchema } from '../../types/schema.ts'
+import { Guard } from '../../../guard/index.ts'
+import { type TSchema } from '../../types/schema.ts'
 import { type TEnum, type TEnumValue, IsEnum } from '../../types/enum.ts'
 import { type TLiteral, type TLiteralValue, Literal, IsLiteral } from '../../types/literal.ts'
 import { type TUnion, Union, IsUnion } from '../../types/union.ts'
@@ -42,7 +43,6 @@ import { NeverPattern } from '../../types/never.ts'
 import { TemplateLiteralCreate } from './create.ts'
 
 import { type TEnumValuesToVariants, EnumValuesToVariants } from '../enum/enum-to-union.ts'
-
 import { type TTemplateLiteralAction, TemplateLiteralAction } from './instantiate.ts'
 
 // ------------------------------------------------------------------
@@ -188,12 +188,9 @@ type TEncodeUnion<Types extends TSchema[], Right extends TSchema[], Pattern exte
 function EncodeUnion<Types extends TSchema[], Right extends TSchema[], Pattern extends string>
   (types: [...Types], right: Right, pattern: Pattern, result: string[] = []): 
     TEncodeUnion<Types, Right, Pattern> {
-  const [head, ...tail] = types
-  return (
-    IsSchema(head)
-      ? EncodeUnion(tail, right, pattern, [...result, EncodeType(head, [], '')])
-      : EncodeTypes(right, `${pattern}(${JoinString(result)})`)
-  ) as never
+  return Guard.TakeLeft(types, (head, tail) => 
+    EncodeUnion(tail, right, pattern, [...result, EncodeType(head, [], '')]),
+    () => EncodeTypes(right, `${pattern}(${JoinString(result)})`)) as never
 }
 // ------------------------------------------------------------------
 // EncodeType
@@ -238,12 +235,9 @@ type TEncodeTypes<Types extends TSchema[], Pattern extends string> = (
 )
 function EncodeTypes<Types extends TSchema[], Pattern extends string>
   (types: [...Types], pattern: Pattern): TEncodeTypes<Types, Pattern> {
-  const [left, ...right] = types
-  return (
-    IsSchema(left)
-      ? EncodeType(left, right, pattern)
-      : pattern
-  ) as never
+  return Guard.TakeLeft(types, (left, right) => 
+    EncodeType(left, right, pattern),
+    () => pattern) as never
 }
 // ------------------------------------------------------------------
 // EncodePattern

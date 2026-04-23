@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Guard } from '../../../guard/index.ts'
-import { type TSchema, IsSchema } from '../../types/schema.ts'
+import { type TSchema } from '../../types/schema.ts'
 import { type TLiteral, type TLiteralValue, IsLiteral } from '../../types/literal.ts'
 import { type TUnion, IsUnion } from '../../types/union.ts'
 
@@ -45,20 +45,17 @@ function FromLiteral<Value extends TLiteralValue>(_value: Value): TFromLiteral<V
 // ------------------------------------------------------------------
 type TFromTypesReduce<Types extends TSchema[]> = (
   Types extends [infer Left extends TSchema, ...infer Right extends TSchema[]]
-    ? TFromType<Left> extends true
-      ? TFromTypesReduce<Right>
-      : false
-    : true
+  ? TFromType<Left> extends true
+    ? TFromTypesReduce<Right>
+    : false
+  : true
 )
 function FromTypesReduce<Types extends TSchema[]>(types: [...Types]): TFromTypesReduce<Types> {
-  const [left, ...right] = types
-  return (
-    IsSchema(left)
-      ? FromType(left)
-        ? FromTypesReduce(right)
-        : false
-      : true
-  ) as never
+  return Guard.TakeLeft(types, (left, right) =>
+    FromType(left)
+      ? FromTypesReduce(right)
+      : false,
+    () => true) as never
 }
 type TFromTypes<Types extends TSchema[],
   Result extends boolean = Types extends [] ? false : TFromTypesReduce<Types>
@@ -72,7 +69,7 @@ function FromTypes<Types extends TSchema[]>(types: [...Types]): TFromTypes<Types
 // ------------------------------------------------------------------
 type TFromType<Type extends TSchema> =
   Type extends TUnion<infer Types extends TSchema[]> ? TFromTypes<Types> :
-  Type extends TLiteral<infer Value extends TLiteralValue> ? TFromLiteral<Value> : 
+  Type extends TLiteral<infer Value extends TLiteralValue> ? TFromLiteral<Value> :
   false
 function FromType<Type extends TSchema>(type: Type): TFromType<Type> {
   return (
