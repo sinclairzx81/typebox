@@ -29,9 +29,9 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Guard } from '../../../guard/index.ts'
-import { TSchema } from '../../types/schema.ts'
-import { TNever, Never } from '../../types/never.ts'
-import { TCompare, TCompareResult, Compare, ResultLeftInside, ResultRightInside, ResultEqual } from './compare.ts'
+import { type TSchema } from '../../types/schema.ts'
+import { type TNever, Never } from '../../types/never.ts'
+import { type TCompare, type TCompareResult, Compare, ResultLeftInside, ResultRightInside, ResultEqual } from './compare.ts'
 
 // ------------------------------------------------------------------
 // Narrow

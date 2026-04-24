@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 // deno-coverage-ignore-start
 
-import { TValidationError } from '../../error/index.ts'
+import { type TValidationError } from '../../error/index.ts'
 
 /** Italian (Italy) - ISO 639-1 language code 'it' with ISO 3166-1 alpha-2 country code 'IT' for Italy. */
 export function it_IT(error: TValidationError): string {

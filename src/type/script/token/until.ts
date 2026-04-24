@@ -30,7 +30,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Match } from './internal/match.ts'
-import { IsEqual, IsString } from './internal/guard.ts'
+import { IsEqual, TakeLeft } from './internal/guard.ts'
 
 // ------------------------------------------------------------------
 // TakeOne
@@ -55,16 +55,12 @@ type TIsInputMatchSentinal<End extends string[], Input extends string> = (
     : false
 )
 function IsInputMatchSentinal<End extends string[], Input extends string>(end: [...End], input: Input): TIsInputMatchSentinal<End, Input> {
-  const [left, ...right] = end
-  return (
-    IsString(left) 
-      ? input.startsWith(left) 
-        ? true 
-        : IsInputMatchSentinal(right, input) 
-      : false
-  ) as never
+  return TakeLeft(end, (left, right) => 
+    input.startsWith(left)
+      ? true
+      : IsInputMatchSentinal(right, input),
+    () => false) as never
 }
-
 // ------------------------------------------------------------------
 // Until
 //

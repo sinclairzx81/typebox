@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 // deno-coverage-ignore-start
 
-import { TValidationError } from '../../error/index.ts'
+import { type TValidationError } from '../../error/index.ts'
 
 /**  Spanish (Mexico) - ISO 639-1 language code 'es' with ISO 3166-1 alpha-2 country code 'MX' for Mexico. */
 export function es_MX(error: TValidationError): string {

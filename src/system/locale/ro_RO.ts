@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 // deno-coverage-ignore-start
 
-import { TValidationError } from '../../error/index.ts'
+import { type TValidationError } from '../../error/index.ts'
 
 /** Romanian (Romania) - ISO 639-1 language code 'ro' with ISO 3166-1 alpha-2 country code 'RO' for Romania. */
 export function ro_RO(error: TValidationError): string {

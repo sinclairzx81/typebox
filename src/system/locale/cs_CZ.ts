@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 // deno-coverage-ignore-start
 
-import { TValidationError } from '../../error/index.ts'
+import { type TValidationError } from '../../error/index.ts'
 
 /** Czech (Czech Republic) - ISO 639-1 language code 'cs' with ISO 3166-1 alpha-2 country code 'CZ' for Czech Republic. */
 export function cs_CZ(error: TValidationError): string {

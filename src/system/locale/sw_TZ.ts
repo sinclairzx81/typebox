@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 // deno-coverage-ignore-start
 
-import { TValidationError } from '../../error/index.ts'
+import { type TValidationError } from '../../error/index.ts'
 
 /** Swahili (Tanzania) - ISO 639-1 language code 'sw' with ISO 3166-1 alpha-2 country code 'TZ' for Tanzania (as a common representative). */
 export function sw_TZ(error: TValidationError): string {

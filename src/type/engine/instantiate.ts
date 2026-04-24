@@ -37,14 +37,14 @@ import { DestructiveCodecCheck } from './codec/destructive-codec-check.ts'
 // Modifiers
 // ------------------------------------------------------------------
 import { type TImmutable, IsImmutable, Immutable } from '../types/_immutable.ts'
-import { type TOptional, IsOptional, OptionalAdd, OptionalRemove, TOptionalAdd, TOptionalRemove } from '../types/_optional.ts'
-import { type TReadonly, IsReadonly, ReadonlyAdd, ReadonlyRemove, TReadonlyAdd, TReadonlyRemove } from '../types/_readonly.ts'
+import { type TOptional, IsOptional, OptionalAdd, OptionalRemove, type TOptionalAdd, type TOptionalRemove } from '../types/_optional.ts'
+import { type TReadonly, IsReadonly, ReadonlyAdd, ReadonlyRemove, type TReadonlyAdd, type TReadonlyRemove } from '../types/_readonly.ts'
 
 // ------------------------------------------------------------------
 // Types
 // ------------------------------------------------------------------
 import { type TSchema, type TSchemaOptions, IsSchema } from '../types/schema.ts'
-import { type TArray, Array, IsArray, ArrayOptions } from '../types/array.ts'
+import { type TArray, _Array_, IsArray, ArrayOptions } from '../types/array.ts'
 import { type TConstructor, Constructor, IsConstructor, ConstructorOptions } from '../types/constructor.ts'
 import { type TDeferred, Deferred, IsDeferred } from '../types/deferred.ts'
 import { type TFunction, _Function_, IsFunction, FunctionOptions } from '../types/function.ts'
@@ -325,7 +325,7 @@ export function InstantiateType<Context extends TProperties, State extends TStat
   DestructiveCodecCheck(type)
   const instantiated = (
     IsRef(type) ? RefInstantiate(context, state, type, type.$ref) :
-    IsArray(type) ? Array(InstantiateType(context, state, type.items), ArrayOptions(type)) :
+    IsArray(type) ? _Array_(InstantiateType(context, state, type.items), ArrayOptions(type)) :
     IsCall(type) ? CallInstantiate(context, state, type.target, type.arguments) :
     IsConstructor(type) ? Constructor(InstantiateTypes(context, state, type.parameters), InstantiateType(context, state, type.instanceType) as never, ConstructorOptions(type)) :
     IsDeferred(type) ? InstantiateDeferred(context, state, type.action, type.parameters, type.options) :

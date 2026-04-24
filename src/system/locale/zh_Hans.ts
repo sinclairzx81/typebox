@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 // deno-coverage-ignore-start
 
-import { TValidationError } from '../../error/index.ts'
+import { type TValidationError } from '../../error/index.ts'
 
 /** Chinese (Simplified) - ISO 639-1 language code 'zh' with script code 'Hans' for Simplified Chinese. */
 export function zh_Hans(error: TValidationError): string {

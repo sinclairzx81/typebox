@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 // deno-coverage-ignore-start
 
-import { TValidationError } from '../../error/index.ts'
+import { type TValidationError } from '../../error/index.ts'
 
 /** Arabic (World) - ISO 639-1 language code 'ar' with UN M.49 region code '001' for World. */
 export function ar_001(error: TValidationError): string {
