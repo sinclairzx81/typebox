@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 // deno-coverage-ignore-start
 
-import { TValidationError } from '../../error/index.ts'
+import { type TValidationError } from '../../error/index.ts'
 
 /** Vietnamese (Vietnam) - ISO 639-1 language code 'vi' with ISO 3166-1 alpha-2 country code 'VN' for Vietnam. */
 export function vi_VN(error: TValidationError): string {

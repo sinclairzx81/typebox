@@ -28,13 +28,13 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { type TArray, IsArray, Array } from '../../types/array.ts'
+import { type TArray, IsArray, _Array_ } from '../../types/array.ts'
 import { type TAsyncIterator, IsAsyncIterator, AsyncIterator } from '../../types/async-iterator.ts'
 import { type TConstructor, IsConstructor, Constructor } from '../../types/constructor.ts'
-import { type TFunction, IsFunction, Function } from '../../types/function.ts'
+import { type TFunction, IsFunction, _Function_ } from '../../types/function.ts'
 import { type TIterator, IsIterator, Iterator } from '../../types/iterator.ts'
 import { type TIntersect, IsIntersect, Intersect } from '../../types/intersect.ts'
-import { type TObject, Object } from '../../types/object.ts'
+import { type TObject, _Object_ } from '../../types/object.ts'
 import { type TProperties } from '../../types/properties.ts'
 import { type TSchema } from '../../types/schema.ts'
 import { type TPromise, IsPromise, Promise } from '../../types/promise.ts'
@@ -71,16 +71,16 @@ export type TFromType<Properties extends TProperties, Type extends TSchema> = (
 )
 export function FromType<Properties extends TProperties, Type extends TSchema>(properties: Properties, type: Type): TFromType<Properties, Type> {
   return (
-    IsArray(type) ? Array(FromType(properties, type.items)) :
+    IsArray(type) ? _Array_(FromType(properties, type.items)) :
     IsAsyncIterator(type) ? AsyncIterator(FromType(properties, type.iteratorItems)) :
     IsConstructor(type) ? Constructor(FromTypes(properties, type.parameters), FromType(properties, type.instanceType)) :
-    IsFunction(type) ? Function(FromTypes(properties, type.parameters), FromType(properties, type.returnType)) :
+    IsFunction(type) ? _Function_(FromTypes(properties, type.parameters), FromType(properties, type.returnType)) :
     IsIterator(type) ? Iterator(FromType(properties, type.iteratorItems)) :
     IsPromise(type) ? Promise(FromType(properties, type.item)) :
     IsTuple(type) ? Tuple(FromTypes(properties, type.items)) :
     IsUnion(type) ? Union(FromTypes(properties, type.anyOf)) :
     IsIntersect(type) ? Intersect(FromTypes(properties, type.allOf)) :
-    IsThis(type) ? Object(properties) :
+    IsThis(type) ? _Object_(properties) :
     type
   ) as never
 }

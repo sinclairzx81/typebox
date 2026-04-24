@@ -58,7 +58,7 @@ export function _Object_<Properties extends TProperties>(properties: Properties,
   const required = requiredKeys.length > 0 ? { required: requiredKeys } : {}
   return Memory.Create({ '~kind': 'Object' }, { type: 'object', ...required, properties }, options) as never
 }
-export { _Object_ as Object } // Required for CommonJS ES Interop
+export { _Object_ as Object } // Prevent Collision With Global Scope
 
 // ------------------------------------------------------------------
 // Guard

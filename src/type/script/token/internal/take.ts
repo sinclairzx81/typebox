@@ -63,15 +63,11 @@ export function Take<Variants extends string[], Input extends string>(variants: 
   // ----------------------------------------------------------------
   // Symmetric
   // ----------------------------------------------------------------
-  // const [left, ...right] = variants
-  // return (
-  //   IsString(left)
-  //     ? (() => {
-  //       const result = TakeVariant(left, input)
-  //       return IsEqual(result.length, 2) ? result : Take(right, input)
-  //     })()
-  //     : []
-  // ) as never
+  // return Guard.TakeLeft(variants, (valueLeft, valueRight) => 
+  //   Match(TakeVariant(valueLeft, input), (take, rest) => 
+  //     [take, rest],
+  //     () => Take(valueRight, input)),
+  //   () => []) as never
   // ----------------------------------------------------------------
   // Inline
   // ----------------------------------------------------------------

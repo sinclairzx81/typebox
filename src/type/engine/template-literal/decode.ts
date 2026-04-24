@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Guard } from '../../../guard/index.ts'
-import { TUnreachable, Unreachable } from '../../../system/unreachable/index.ts'
+import { type TUnreachable, Unreachable } from '../../../system/unreachable/index.ts'
 
 import { type TSchema } from '../../types/schema.ts'
 import { type TLiteral, type TLiteralValue, Literal, IsLiteral } from '../../types/literal.ts'

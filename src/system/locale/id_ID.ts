@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 // deno-coverage-ignore-start
 
-import { TValidationError } from '../../error/index.ts'
+import { type TValidationError } from '../../error/index.ts'
 
 /** Indonesian (Indonesia) - ISO 639-1 language code 'id' with ISO 3166-1 alpha-2 country code 'ID' for Indonesia. */
 export function id_ID(error: TValidationError): string {

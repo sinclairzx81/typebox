@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 // deno-coverage-ignore-start
 
-import { TValidationError } from '../../error/index.ts'
+import { type TValidationError } from '../../error/index.ts'
 
 /** French (France) - ISO 639-1 language code 'fr' with ISO 3166-1 alpha-2 country code 'FR' for France. */
 export function fr_FR(error: TValidationError): string {

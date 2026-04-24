@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 // deno-coverage-ignore-start
 
-import { TValidationError } from '../../error/index.ts'
+import { type TValidationError } from '../../error/index.ts'
 
 /** Spanish (Latin America) - ISO 639-1 language code 'es' with UN M.49 region code '419' for Latin America and the Caribbean. */
 export function es_419(error: TValidationError): string {

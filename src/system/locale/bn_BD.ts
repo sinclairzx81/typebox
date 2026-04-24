@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 // deno-coverage-ignore-start
 
-import { TValidationError } from '../../error/index.ts'
+import { type TValidationError } from '../../error/index.ts'
 
 /** Bengali (Bangladesh) - ISO 639-1 language code 'bn' with ISO 3166-1 alpha-2 country code 'BD' for Bangladesh. */
 export function bn_BD(error: TValidationError): string {

@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 // deno-coverage-ignore-start
 
-import { TValidationError } from '../../error/index.ts'
+import { type TValidationError } from '../../error/index.ts'
 
 /** Filipino (Philippines) - ISO 639-1 language code 'fil' with ISO 3166-1  */
 export function fil_PH(error: TValidationError): string {

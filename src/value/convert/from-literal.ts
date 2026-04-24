@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 import { Unreachable } from '../../system/unreachable/index.ts'
 import { Guard } from '../../guard/index.ts'
-import { TLiteral, TProperties, IsLiteralBigInt, IsLiteralBoolean, IsLiteralNumber, IsLiteralString } from '../../type/index.ts'
+import { type TLiteral, type TProperties, IsLiteralBigInt, IsLiteralBoolean, IsLiteralNumber, IsLiteralString } from '../../type/index.ts'
 import { Try } from './try/index.ts'
 
 // ------------------------------------------------------------------

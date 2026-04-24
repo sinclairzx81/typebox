@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { TLocalizedValidationMessageCallback } from '../../error/index.ts'
+import { type TLocalizedValidationMessageCallback } from '../../error/index.ts'
 import { en_US } from './en_US.ts'
 
 let locale: TLocalizedValidationMessageCallback = en_US

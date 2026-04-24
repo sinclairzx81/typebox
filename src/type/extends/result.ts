@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 import { Guard } from '../../guard/index.ts'
 import { Memory } from '../../system/memory/index.ts'
-import { TProperties } from '../types/properties.ts'
+import { type TProperties } from '../types/properties.ts'
 
 export type TResult =
   | TExtendsUnion
