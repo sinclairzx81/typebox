@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { type TUnreachable, Unreachable } from '../../../system/unreachable/index.ts'
-import { type TProperties, TPropertyKeys, PropertyKeys } from '../../types/properties.ts'
+import { type TProperties, type TPropertyKeys, PropertyKeys } from '../../types/properties.ts'
 import { type TCyclicCheck, CyclicCheck } from './check.ts'
 
 // ------------------------------------------------------------------

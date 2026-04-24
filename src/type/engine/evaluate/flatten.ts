@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { TSchema } from '../../types/schema.ts'
+import { type TSchema } from '../../types/schema.ts'
 import { type TUnion, IsUnion } from '../../types/union.ts'
 
 // ------------------------------------------------------------------

@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { TProperties } from '../../types/properties.ts'
+import { type TProperties } from '../../types/properties.ts'
 import { type TState, type TInstantiateType, InstantiateType } from '../instantiate.ts'
 import { type TCyclicCheck, CyclicCheck } from '../cyclic/check.ts'
 import { type TRef } from '../../types/ref.ts'

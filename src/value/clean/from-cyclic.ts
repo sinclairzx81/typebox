@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { type TProperties, TCyclic, Ref } from '../../type/index.ts'
+import { type TProperties, type TCyclic, Ref } from '../../type/index.ts'
 import { FromType } from './from-type.ts'
 
 export function FromCyclic(context: TProperties, type: TCyclic, value: unknown): unknown {

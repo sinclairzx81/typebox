@@ -37,12 +37,12 @@ import { type TProperties } from '../../types/properties.ts'
 import { type TTemplateLiteral, IsTemplateLiteral } from '../../types/template-literal.ts'
 import { type TUnion, IsUnion } from '../../types/union.ts'
 
-import { TFromCyclic, FromCyclic } from './from-cyclic.ts'
-import { TFromEnum, FromEnum } from './from-enum.ts'
-import { TFromIntersect, FromIntersect } from './from-intersect.ts'
-import { TFromLiteral, FromLiteral } from './from-literal.ts'
-import { TFromTemplateLiteral, FromTemplateLiteral } from './from-template-literal.ts'
-import { TFromUnion, FromUnion } from './from-union.ts'
+import { type TFromCyclic, FromCyclic } from './from-cyclic.ts'
+import { type TFromEnum, FromEnum } from './from-enum.ts'
+import { type TFromIntersect, FromIntersect } from './from-intersect.ts'
+import { type TFromLiteral, FromLiteral } from './from-literal.ts'
+import { type TFromTemplateLiteral, FromTemplateLiteral } from './from-template-literal.ts'
+import { type TFromUnion, FromUnion } from './from-union.ts'
 
 export type TFromType<Indexer extends TSchema,
   Result extends string[] = (

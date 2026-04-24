@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 // deno-coverage-ignore-start
 
-import { TValidationError } from '../../error/index.ts'
+import { type TValidationError } from '../../error/index.ts'
 
 /** Swedish (Sweden) - ISO 639-1 language code 'sv' with ISO 3166-1 alpha-2 country code 'SE' for Sweden. */
 export function sv_SE(error: TValidationError): string {

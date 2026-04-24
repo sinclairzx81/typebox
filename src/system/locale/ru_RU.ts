@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 // deno-coverage-ignore-start
 
-import { TValidationError } from '../../error/index.ts'
+import { type TValidationError } from '../../error/index.ts'
 
 /** Russian (Russia) - ISO 639-1 language code 'ru' with ISO 3166-1 alpha-2 country code 'RU' for Russia. */
 export function ru_RU(error: TValidationError): string {

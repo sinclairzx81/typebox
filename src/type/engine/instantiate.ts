@@ -35,15 +35,15 @@ import { Guard } from '../../guard/index.ts'
 // Modifiers
 // ------------------------------------------------------------------
 import { type TImmutable, IsImmutable, Immutable } from '../types/_immutable.ts'
-import { type TOptional, IsOptional, OptionalAdd, OptionalRemove, TOptionalAdd, TOptionalRemove } from '../types/_optional.ts'
-import { type TReadonly, IsReadonly, ReadonlyAdd, ReadonlyRemove, TReadonlyAdd, TReadonlyRemove } from '../types/_readonly.ts'
+import { type TOptional, IsOptional, OptionalAdd, OptionalRemove, type TOptionalAdd, type TOptionalRemove } from '../types/_optional.ts'
+import { type TReadonly, IsReadonly, ReadonlyAdd, ReadonlyRemove, type TReadonlyAdd, type TReadonlyRemove } from '../types/_readonly.ts'
 
 // ------------------------------------------------------------------
 // Types
 // ------------------------------------------------------------------
 import { IsBase } from '../types/base.ts'
-import { type TSchema, type TSchemaOptions, IsSchema } from '../types/schema.ts'
-import { type TArray, Array, IsArray, ArrayOptions } from '../types/array.ts'
+import { type TSchema, type TSchemaOptions } from '../types/schema.ts'
+import { type TArray, _Array_, IsArray, ArrayOptions } from '../types/array.ts'
 import { type TAsyncIterator, AsyncIterator, IsAsyncIterator, AsyncIteratorOptions } from '../types/async-iterator.ts'
 import { type TConstructor, Constructor, IsConstructor, ConstructorOptions } from '../types/constructor.ts'
 import { type TDeferred, Deferred, IsDeferred } from '../types/deferred.ts'
@@ -332,7 +332,7 @@ export function InstantiateType<Context extends TProperties, State extends TStat
   const type = IsBase(modifiers[0]) ? modifiers[0].Clone() : modifiers[0]
   const instantiated = (
     IsRef(type) ? RefInstantiate(context, state, type, type.$ref) :
-    IsArray(type) ? Array(InstantiateType(context, state, type.items), ArrayOptions(type)) :
+    IsArray(type) ? _Array_(InstantiateType(context, state, type.items), ArrayOptions(type)) :
     IsAsyncIterator(type) ? AsyncIterator(InstantiateType(context, state, type.iteratorItems), AsyncIteratorOptions(type)) :
     IsCall(type) ? CallInstantiate(context, state, type.target, type.arguments) :
     IsConstructor(type) ? Constructor(InstantiateTypes(context, state, type.parameters), InstantiateType(context, state, type.instanceType) as never, ConstructorOptions(type)) :

@@ -55,9 +55,11 @@ export interface TArray<Type extends TSchema = TSchema> extends TSchema {
 // Factory
 // ------------------------------------------------------------------
 /** Creates an Array type. */
-export function Array<Type extends TSchema>(items: Type, options?: TArrayOptions): TArray<Type> {
+export function _Array_<Type extends TSchema>(items: Type, options?: TArrayOptions): TArray<Type> {
   return Memory.Create({ '~kind': 'Array' }, { type: 'array', items }, options) as never
 }
+export { _Array_ as Array } // Prevent Collision With Global Scope
+
 // ------------------------------------------------------------------
 // Guard
 // ------------------------------------------------------------------

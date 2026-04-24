@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Guard } from '../../../guard/index.ts'
-import { TResult, Ok, Fail, IsOk } from './try-result.ts'
+import { type TResult, Ok, Fail, IsOk } from './try-result.ts'
 import { TryBigInt } from './try-bigint.ts'
 
 // ------------------------------------------------------------------

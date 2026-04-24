@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 // deno-lint-ignore-file
 
-import { TProperties, TIntersect, Evaluate, Instantiate } from '../../type/index.ts'
+import { type TProperties, type TIntersect, Evaluate, Instantiate } from '../../type/index.ts'
 import { FromType } from './from-type.ts'
 
 export function FromIntersect(context: TProperties, type: TIntersect, value: unknown): unknown {

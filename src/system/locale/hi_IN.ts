@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 // deno-coverage-ignore-start
 
-import { TValidationError } from '../../error/index.ts'
+import { type TValidationError } from '../../error/index.ts'
 
 /** Hindi (India) - ISO 639-1 language code 'hi' with ISO 3166-1 alpha-2 country code 'IN' for India. */
 export function hi_IN(error: TValidationError): string {

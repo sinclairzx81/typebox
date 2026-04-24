@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { TLiteralValue } from '../../types/literal.ts'
+import { type TLiteralValue } from '../../types/literal.ts'
 
 export type TFromLiteral<Value extends TLiteralValue,
   Result extends string[] = [`${Value}`]

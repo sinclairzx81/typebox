@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 // deno-coverage-ignore-start
 
-import { TValidationError } from '../../error/index.ts'
+import { type TValidationError } from '../../error/index.ts'
 
 /** Korean (South Korea) - ISO 639-1 language code 'ko' with ISO 3166-1 alpha-2 country code 'KR' for South Korea. */
 export function ko_KR(error: TValidationError): string {

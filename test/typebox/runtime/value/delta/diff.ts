@@ -1,4 +1,4 @@
-import { TEdit, Value } from 'typebox/value'
+import { type TEdit, Value } from 'typebox/value'
 import { Assert } from 'test'
 
 const Test = Assert.Context('Value.Diff')
