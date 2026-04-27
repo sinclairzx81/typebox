@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 import type { XSchema } from '../types/schema.ts'
 import type { XStaticSchema } from './schema.ts'
-import type { XStaticElements } from './~elements.ts'
+import type { XStaticElements } from './_elements.ts'
 
 // ------------------------------------------------------------------
 // XFromSized

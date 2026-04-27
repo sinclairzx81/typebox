@@ -26,7 +26,14 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+<<<<<<<< HEAD:example/javascript/promise.ts
 import Type from 'typebox'
+========
+// deno-fmt-ignore-file
+
+import type { TProperties, Base } from '../../type/index.ts'
+import { FromUnknown } from './from_unknown.ts'
+>>>>>>>> main:src/value/repair/from_base.ts
 
 // ------------------------------------------------------------------
 // Promise

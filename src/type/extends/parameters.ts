@@ -33,7 +33,7 @@ import { type TInfer, IsInfer } from '../types/infer.ts'
 import { type TSchema } from '../types/schema.ts'
 import { type TOptional, IsOptional } from '../types/_optional.ts'
 import { type TProperties } from '../types/properties.ts'
-import { type TExtendsLeft, ExtendsLeft } from './extends-left.ts'
+import { type TExtendsLeft, ExtendsLeft } from './extends_left.ts'
 import * as Result from './result.ts'
 
 // ------------------------------------------------------------------

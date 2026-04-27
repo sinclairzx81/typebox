@@ -33,7 +33,7 @@ import { type TProperties } from '../types/properties.ts'
 import { type TNever } from '../types/never.ts'
 
 import { type TInfer, IsInfer } from '../types/infer.ts'
-import { type TExtendsRight, ExtendsRight } from './extends-right.ts'
+import { type TExtendsRight, ExtendsRight } from './extends_right.ts'
 
 import * as Result from './result.ts'
 

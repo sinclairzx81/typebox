@@ -1,5 +1,5 @@
 import { Type } from 'typebox'
-import { Ok } from './_validate.ts'
+import { Ok } from './~validate.ts'
 import { Assert } from 'test'
 
 const Test = Assert.Context('Value.Check.Any')

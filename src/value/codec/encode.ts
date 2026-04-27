@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 import { type TProperties, type TSchema } from '../../type/index.ts'
 import { ValueArguments } from '../shared/value-arguments.ts'
-import { FromType } from './from-type.ts'
+import { FromType } from './from_type.ts'
 
 // ------------------------------------------------------------------
 // Encode

@@ -38,7 +38,7 @@ import { type TBigInt, IsBigInt } from '../types/bigint.ts'
 import { type TBoolean, IsBoolean } from '../types/boolean.ts'
 import { type TNumber, IsNumber } from '../types/number.ts'
 import { type TString, IsString } from '../types/string.ts'
-import { type TExtendsRight, ExtendsRight } from './extends-right.ts'
+import { type TExtendsRight, ExtendsRight } from './extends_right.ts'
 
 import * as Result from './result.ts'
 

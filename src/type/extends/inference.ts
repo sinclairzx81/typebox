@@ -42,7 +42,7 @@ import { type TArray, IsArray } from '../types/array.ts'
 import { type TUnknown, IsUnknown } from '../types/unknown.ts'
 import { type TProperties } from '../types/properties.ts'
 import { type TTuple, Tuple } from '../types/tuple.ts'
-import { type TExtendsLeft, ExtendsLeft } from './extends-left.ts'
+import { type TExtendsLeft, ExtendsLeft } from './extends_left.ts'
 import { type TUnion, Union } from '../types/union.ts'
 
 // ----------------------------------------------------------------------------

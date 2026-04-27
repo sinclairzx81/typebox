@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 import type { TProperties, TSchema } from '../../type/index.ts'
 import { ValueArguments } from '../shared/value-arguments.ts'
-import { FromType } from './from-type.ts'
+import { FromType } from './from_type.ts'
 
 /**
  * Patches missing properties on the value using default annotations specified on the provided type. This 

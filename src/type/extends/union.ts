@@ -32,7 +32,7 @@ import { Guard } from '../../guard/index.ts'
 import { type TProperties } from '../types/properties.ts'
 import { type TSchema } from '../types/schema.ts'
 import { type TUnion, IsUnion } from '../types/union.ts'
-import { type TExtendsLeft, ExtendsLeft } from './extends-left.ts'
+import { type TExtendsLeft, ExtendsLeft } from './extends_left.ts'
 import * as Result from './result.ts'
 
 // ----------------------------------------------------------------------------

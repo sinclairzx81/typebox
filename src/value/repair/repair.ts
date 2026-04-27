@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 import { ValueArguments } from '../shared/value-arguments.ts'
 import type { TProperties, TSchema, Static } from '../../type/index.ts'
-import { FromType } from './from-type.ts'
+import { FromType } from './from_type.ts'
 import { Assert } from '../assert/index.ts'
 
 /**

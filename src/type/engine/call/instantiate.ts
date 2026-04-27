@@ -44,9 +44,9 @@ import { type TState } from '../instantiate.ts'
 // ------------------------------------------------------------------
 // Infrastructure
 // ------------------------------------------------------------------
-import { type TDistributeArguments, DistributeArguments } from './distribute-arguments.ts'
-import { type TResolveTarget, ResolveTarget } from './resolve-target.ts'
-import { type TResolveArgumentsContext, ResolveArgumentsContext } from './resolve-arguments.ts'
+import { type TDistributeArguments, DistributeArguments } from './distribute_arguments.ts'
+import { type TResolveTarget, ResolveTarget } from './resolve_target.ts'
+import { type TResolveArgumentsContext, ResolveArgumentsContext } from './resolve_arguments.ts'
 
 // ------------------------------------------------------------------
 // Peek: Top Element in the Stack or Empty

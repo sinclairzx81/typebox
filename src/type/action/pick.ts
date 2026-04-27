@@ -31,7 +31,7 @@ THE SOFTWARE.
 import { Guard } from '../../guard/index.ts'
 import { type TSchema, type TSchemaOptions } from '../types/schema.ts'
 import { type TDeferred, Deferred } from '../types/deferred.ts'
-import { type TKeysToIndexer, KeysToIndexer } from '../engine/helpers/keys-to-indexer.ts'
+import { type TKeysToIndexer, KeysToIndexer } from '../engine/helpers/keys_to_indexer.ts'
 import { type TPickAction, PickAction } from '../engine/pick/instantiate.ts'
 
 // ------------------------------------------------------------------

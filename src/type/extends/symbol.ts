@@ -32,7 +32,7 @@ import { type TSchema } from '../types/schema.ts'
 import { type TProperties } from '../types/properties.ts'
 import { type TSymbol, IsSymbol } from '../types/symbol.ts'
 
-import { type TExtendsRight, ExtendsRight } from './extends-right.ts'
+import { type TExtendsRight, ExtendsRight } from './extends_right.ts'
 import * as Result from './result.ts'
 
 export type TExtendsSymbol<Inferred extends TProperties, Left extends TSymbol, Right extends TSchema> = (

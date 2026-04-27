@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 import type { TProperties, TSchema } from '../../type/index.ts'
 import { ValueArguments } from '../shared/value-arguments.ts'
-import { FromType } from './from-type.ts'
+import { FromType } from './from_type.ts'
 
 /**
  * Cleans a value by removing non-evaluated properties and elements as derived from the provided type.
