@@ -39,7 +39,7 @@ import { type TState, type TInstantiateType, type TCanInstantiate, InstantiateTy
 import { type TIndexDeferred, IndexDeferred } from '../../action/indexed.ts'
 import { type TCollapseToObject, CollapseToObject } from '../object/index.ts'
 
-import { type TFromType, FromType } from './from-type.ts'
+import { type TFromType, FromType } from './from_type.ts'
 
 // ------------------------------------------------------------------
 //

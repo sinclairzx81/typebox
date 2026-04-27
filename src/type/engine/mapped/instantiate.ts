@@ -34,7 +34,7 @@ import { type TProperties } from '../../types/properties.ts'
 import { type TIdentifier } from '../../types/identifier.ts'
 import { type TMappedDeferred, MappedDeferred } from '../../action/mapped.ts'
 import { type TState, type TInstantiateType, type TCanInstantiate, InstantiateType, CanInstantiate } from '../instantiate.ts'
-import { type TMappedOperation, MappedOperation } from './mapped-operation.ts'
+import { type TMappedOperation, MappedOperation } from './mapped_operation.ts'
 
 // ------------------------------------------------------------------
 // MappedAction

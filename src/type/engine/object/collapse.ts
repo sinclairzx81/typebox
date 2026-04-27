@@ -31,7 +31,7 @@ THE SOFTWARE.
 import { type TSchema } from '../../types/schema.ts'
 import { type TProperties } from '../../types/properties.ts'
 import { type TObject, Object } from '../../types/object.ts'
-import { type TFromType, FromType } from './from-type.ts'
+import { type TFromType, FromType } from './from_type.ts'
 
 export type TCollapseToObject<Type extends TSchema,
   Properties extends TProperties = TFromType<Type>,

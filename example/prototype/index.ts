@@ -26,4 +26,4 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export * from './reverse-static.ts'
+export * from './reverse_static.ts'

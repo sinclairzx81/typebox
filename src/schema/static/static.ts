@@ -30,7 +30,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import type { XSchema } from '../types/schema.ts'
-import type { XCanonical } from './~canonical.ts'
+import type { XCanonical } from './_canonical.ts'
 import type { XStaticSchema } from './schema.ts'
 
 // ------------------------------------------------------------------

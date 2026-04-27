@@ -31,7 +31,7 @@ THE SOFTWARE.
 import { Memory } from '../../../system/memory/index.ts'
 import { type TSchema, type TSchemaOptions } from '../../types/schema.ts'
 import { type TProperties } from '../../types/properties.ts'
-import { type TFromType, FromType } from './from-type.ts'
+import { type TFromType, FromType } from './from_type.ts'
 import { type TRequiredDeferred, RequiredDeferred } from '../../action/required.ts'
 import { type TState, type TInstantiateType, InstantiateType, type TCanInstantiate, CanInstantiate } from '../instantiate.ts'
 

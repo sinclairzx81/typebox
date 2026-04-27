@@ -40,7 +40,7 @@ import { Clone } from '../clone/index.ts'
 import { Convert } from '../convert/index.ts'
 import { Default } from '../default/index.ts'
 import { Pipeline } from '../pipeline/index.ts'
-import { FromType } from './from-type.ts'
+import { FromType } from './from_type.ts'
 
 // ------------------------------------------------------------------
 // Assert
@@ -87,4 +87,3 @@ export function Encode(...args: unknown[]): never {
   })
   return Encoder(context, type, value) as never
 }
-

@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 import { Arguments } from '../../system/arguments/index.ts'
 import type { TProperties, TSchema } from '../../type/index.ts'
-import { FromType } from './from-type.ts'
+import { FromType } from './from_type.ts'
 
 /** 
  * Converts a value to the given type, coercing interior values if a reasonable conversion is possible. This 

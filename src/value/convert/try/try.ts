@@ -26,11 +26,11 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export * from './try-array.ts'
-export * from './try-bigint.ts'
-export * from './try-boolean.ts'
-export * from './try-null.ts'
-export * from './try-number.ts'
-export * from './try-result.ts'
-export * from './try-string.ts'
-export * from './try-undefined.ts'
+export * from './try_array.ts'
+export * from './try_bigint.ts'
+export * from './try_boolean.ts'
+export * from './try_null.ts'
+export * from './try_number.ts'
+export * from './try_result.ts'
+export * from './try_string.ts'
+export * from './try_undefined.ts'

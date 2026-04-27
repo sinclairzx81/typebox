@@ -31,8 +31,8 @@ THE SOFTWARE.
 import { type TSchema } from '../types/schema.ts'
 import { type TProperties } from '../types/properties.ts'
 import { type TPromise, Promise, IsPromise } from '../types/promise.ts'
-import { type TExtendsRight, ExtendsRight } from './extends-right.ts'
-import { type TExtendsLeft, ExtendsLeft } from './extends-left.ts'
+import { type TExtendsRight, ExtendsRight } from './extends_right.ts'
+import { type TExtendsLeft, ExtendsLeft } from './extends_left.ts'
 
 export type TExtendsPromise<Inferred extends TProperties, Left extends TSchema, Right extends TSchema> = (
   Right extends TPromise<infer Type extends TSchema>

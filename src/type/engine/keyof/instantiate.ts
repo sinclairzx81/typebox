@@ -41,7 +41,7 @@ import { type TCollapseToObject, CollapseToObject } from '../object/index.ts'
 // ------------------------------------------------------------------
 // Computed
 // ------------------------------------------------------------------
-import { type TFromType, FromType } from './from-type.ts'
+import { type TFromType, FromType } from './from_type.ts'
 
 // ------------------------------------------------------------------
 //

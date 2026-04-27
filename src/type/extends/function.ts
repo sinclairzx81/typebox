@@ -39,7 +39,7 @@ import * as Result from './result.ts'
 // Parameters | ReturnType
 // ------------------------------------------------------------------ 
 import { type TExtendsParameters, ExtendsParameters } from './parameters.ts'
-import { type TExtendsReturnType, ExtendsReturnType } from './return-type.ts'
+import { type TExtendsReturnType, ExtendsReturnType } from './return_type.ts'
 
 // ------------------------------------------------------------------
 // ExtendsFunction

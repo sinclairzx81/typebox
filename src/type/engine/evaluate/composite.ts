@@ -41,7 +41,7 @@ import { type TObject, Object, IsObject } from '../../types/object.ts'
 import { type TNever, Never } from '../../types/never.ts'
 import { type TTuple, IsTuple } from '../../types/tuple.ts'
 
-import { type TTupleElementsToProperties, TupleElementsToProperties } from '../tuple/to-object.ts'
+import { type TTupleElementsToProperties, TupleElementsToProperties } from '../tuple/to_object.ts'
 import { type TEvaluateIntersect, EvaluateIntersect } from './evaluate.ts'
 
 // ----------------------------------------------------------------------------

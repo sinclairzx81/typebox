@@ -33,7 +33,7 @@ import { type TProperties } from '../types/properties.ts'
 import { type TInfer, IsInfer } from '../types/infer.ts'
 import { type TAny, IsAny } from '../types/any.ts'
 import { type TUnknown, IsUnknown } from '../types/unknown.ts'
-import { type TExtendsRight, ExtendsRight } from './extends-right.ts'
+import { type TExtendsRight, ExtendsRight } from './extends_right.ts'
 import * as Result from './result.ts'
 
 export type TExtendsAny<Inferred extends TProperties, Left extends TAny, Right extends TSchema> = (

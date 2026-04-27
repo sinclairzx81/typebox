@@ -26,5 +26,5 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export * from './enum-to-union.ts'
-export * from './typescript-enum-to-enum-values.ts'
+export * from './enum_to_union.ts'
+export * from './typescript_enum_to_enum_values.ts'

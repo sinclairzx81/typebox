@@ -32,7 +32,7 @@ import { type TUnreachable, Unreachable } from '../../../system/unreachable/inde
 
 import { type TSchema } from '../../types/schema.ts'
 import { type TArray, IsArray } from '../../types/array.ts'
-import { type TAsyncIterator, IsAsyncIterator } from '../../types/async-iterator.ts'
+import { type TAsyncIterator, IsAsyncIterator } from '../../types/async_iterator.ts'
 import { type TConstructor, IsConstructor } from '../../types/constructor.ts'
 import { type TFunction, IsFunction } from '../../types/function.ts'
 import { type TIntersect, IsIntersect } from '../../types/intersect.ts'

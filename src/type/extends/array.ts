@@ -32,8 +32,8 @@ import { type TSchema } from '../types/schema.ts'
 import { type TProperties } from '../types/properties.ts'
 import { type TArray, IsArray } from '../types/array.ts'
 import { type TImmutable, IsImmutable } from '../types/_immutable.ts'
-import { type TExtendsRight, ExtendsRight } from './extends-right.ts'
-import { type TExtendsLeft, ExtendsLeft } from './extends-left.ts'
+import { type TExtendsRight, ExtendsRight } from './extends_right.ts'
+import { type TExtendsLeft, ExtendsLeft } from './extends_left.ts'
 import * as Result from './result.ts'
 
 // ------------------------------------------------------------------
@@ -79,4 +79,3 @@ export function ExtendsArray<Inferred extends TProperties, ArrayLeft extends TSc
       : ExtendsRight(inferred, arrayLeft, right)
   ) as never
 }
-

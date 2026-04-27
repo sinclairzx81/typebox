@@ -29,7 +29,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import type { XSchema } from '../types/schema.ts'
-import type { XStaticElements } from './~elements.ts'
+import type { XStaticElements } from './_elements.ts'
 
 // ------------------------------------------------------------------
 // XStaticPrefixItems

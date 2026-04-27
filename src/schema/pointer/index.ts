@@ -26,5 +26,5 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export * from './pointer-get.ts'
+export * from './pointer_get.ts'
 export * as Pointer from './pointer.ts'
