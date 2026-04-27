@@ -1,6 +1,6 @@
 import Guard from 'typebox/guard'
 import { Type } from 'typebox'
-import { Fail, Ok } from './_validate.ts'
+import { Fail, Ok } from './~validate.ts'
 import { Assert } from 'test'
 
 const Test = Assert.Context('Value.Check.Base')
