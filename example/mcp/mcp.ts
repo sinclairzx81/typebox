@@ -28,9 +28,9 @@ THE SOFTWARE.
 
 import { type Static } from 'typebox'
 
-import _2024_11_05 from './2024_11_05.json' with { type: 'json' }
-import _2025_03_26 from './2025_03_26.json' with { type: 'json' }
-import _2025_06_18 from './2025_06_18.json' with { type: 'json' }
+import _2024_11_05 from './2024-11-05.json' with { type: 'json' }
+import _2025_03_26 from './2025-03-26.json' with { type: 'json' }
+import _2025_06_18 from './2025-06-18.json' with { type: 'json' }
 import _Draft from './draft.json' with { type: 'json' }
 type AutoSpec<Defs extends string, Spec extends { [_ in Defs]: Record<string, unknown> }> = {
   [Key in Extract<keyof Spec[Defs], string>]: Static<Spec & { $ref: `#/${Defs}/${Key}` }>
