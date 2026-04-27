@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 import { Guard, GlobalsGuard } from '../../guard/index.ts'
 import { MutateError } from './error.ts'
-import { FromValue } from './from-value.ts'
+import { FromValue } from './from_value.ts'
 
 export type TMutable = { [key: string]: unknown } | unknown[]
 

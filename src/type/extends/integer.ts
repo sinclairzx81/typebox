@@ -33,7 +33,7 @@ import { type TProperties } from '../types/properties.ts'
 import { type TInteger, IsInteger } from '../types/integer.ts'
 import { type TNumber, IsNumber } from '../types/number.ts'
 
-import { type TExtendsRight, ExtendsRight } from './extends-right.ts'
+import { type TExtendsRight, ExtendsRight } from './extends_right.ts'
 
 import * as Result from './result.ts'
 

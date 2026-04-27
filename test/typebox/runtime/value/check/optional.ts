@@ -1,6 +1,6 @@
 import { Assert } from 'test'
 import { Type } from 'typebox'
-import { Ok } from './_validate.ts'
+import { Ok } from './~validate.ts'
 
 const Test = Assert.Context('Value.Check.Optional')
 

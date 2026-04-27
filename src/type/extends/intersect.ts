@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 import { type TProperties } from '../types/properties.ts'
 import { type TSchema } from '../types/schema.ts'
-import { type TExtendsLeft, ExtendsLeft } from './extends-left.ts'
+import { type TExtendsLeft, ExtendsLeft } from './extends_left.ts'
 
 // ----------------------------------------------------------------------------
 // ExtendsIntersect

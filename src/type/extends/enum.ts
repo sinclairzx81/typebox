@@ -31,7 +31,7 @@ THE SOFTWARE.
 import { type TSchema } from '../types/schema.ts'
 import { type TProperties } from '../types/properties.ts'
 import { type TEnum } from '../types/enum.ts'
-import { type TExtendsLeft, ExtendsLeft } from './extends-left.ts'
+import { type TExtendsLeft, ExtendsLeft } from './extends_left.ts'
 import { type TEnumToUnion, EnumToUnion } from '../engine/enum/index.ts'
 
 // ----------------------------------------------------------------------------

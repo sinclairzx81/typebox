@@ -30,7 +30,7 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import type { XSchema } from '../types/schema.ts'
-import type { XPointerGet } from '../pointer/pointer-get.ts'
+import type { XPointerGet } from '../pointer/pointer_get.ts'
 import type { XStaticSchema } from './schema.ts'
 
 // ------------------------------------------------------------------

@@ -28,6 +28,6 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-export * from './optional-undefined.ts'
-export * from './union-priority-sort.ts'
-export * from './union-score-select.ts'
+export * from './optional_undefined.ts'
+export * from './union_priority_sort.ts'
+export * from './union_score_select.ts'

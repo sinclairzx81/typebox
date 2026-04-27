@@ -33,7 +33,7 @@ import { type TSchema, type TSchemaOptions } from '../../types/schema.ts'
 import { type TProperties } from '../../types/properties.ts'
 import { type TPickDeferred, PickDeferred } from '../../action/pick.ts'
 import { type TState, type TInstantiateType, type TCanInstantiate, InstantiateType, CanInstantiate } from '../instantiate.ts'
-import { type TFromType, FromType } from './from-type.ts'
+import { type TFromType, FromType } from './from_type.ts'
 
 // ------------------------------------------------------------------
 // Action

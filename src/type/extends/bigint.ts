@@ -31,7 +31,7 @@ THE SOFTWARE.
 import { type TSchema } from '../types/schema.ts'
 import { type TProperties } from '../types/properties.ts'
 import { type TBigInt, IsBigInt } from '../types/bigint.ts'
-import { type TExtendsRight, ExtendsRight } from './extends-right.ts'
+import { type TExtendsRight, ExtendsRight } from './extends_right.ts'
 import * as Result from './result.ts'
 
 export type TExtendsBigInt<Inferred extends TProperties, Left extends TBigInt, Right extends TSchema> = (

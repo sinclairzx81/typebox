@@ -33,7 +33,7 @@ import { Memory } from '../../../system/memory/index.ts'
 import { type TSchema, type TSchemaOptions } from '../../types/schema.ts'
 import { type TProperties } from '../../types/properties.ts'
 import { type TRecordDeferred, RecordDeferred } from '../../types/record.ts'
-import { type TFromKey, FromKey } from './from-key.ts'
+import { type TFromKey, FromKey } from './from_key.ts'
 import { type TState, type TInstantiateType, type TCanInstantiate, InstantiateType, CanInstantiate } from '../instantiate.ts'
 
 // ------------------------------------------------------------------

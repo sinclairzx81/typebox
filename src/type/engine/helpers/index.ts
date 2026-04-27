@@ -26,6 +26,6 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export * from './keys-to-indexer.ts'
+export * from './keys_to_indexer.ts'
 export * from './keys.ts'
 export * from './union.ts'

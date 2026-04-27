@@ -33,7 +33,7 @@ import { type TProperties } from '../types/properties.ts'
 import { type TCyclic, IsCyclic } from '../types/cyclic.ts'
 import { type TUnknown, Unknown } from '../types/unknown.ts'
 import { type TUnsafe, IsUnsafe } from '../types/unsafe.ts'
-import { type TExtendsLeft, ExtendsLeft } from './extends-left.ts'
+import { type TExtendsLeft, ExtendsLeft } from './extends_left.ts'
 import { type TCyclicExtends, CyclicExtends } from '../engine/cyclic/index.ts'
 
 // ------------------------------------------------------------------

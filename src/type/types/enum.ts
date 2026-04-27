@@ -30,8 +30,8 @@ THE SOFTWARE.
 
 import { Memory } from '../../system/memory/index.ts'
 import { type TSchema, type TSchemaOptions, IsKind } from './schema.ts'
-import { type TTypeScriptEnumLike, IsTypeScriptEnumLike } from '../engine/enum/typescript-enum-to-enum-values.ts'
-import { type TTypeScriptEnumToEnumValues, TypeScriptEnumToEnumValues } from '../engine/enum/typescript-enum-to-enum-values.ts'
+import { type TTypeScriptEnumLike, IsTypeScriptEnumLike } from '../engine/enum/typescript_enum_to_enum_values.ts'
+import { type TTypeScriptEnumToEnumValues, TypeScriptEnumToEnumValues } from '../engine/enum/typescript_enum_to_enum_values.ts'
 
 // ------------------------------------------------------------------
 // Static

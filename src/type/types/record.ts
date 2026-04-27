@@ -37,10 +37,10 @@ import { type TInteger, Integer, IntegerPattern } from './integer.ts'
 import { type TNumber, Number, NumberPattern } from './number.ts'
 import { type TString, String, StringPattern } from './string.ts'
 import { type TDeferred, Deferred } from './deferred.ts'
-import { type TTemplateLiteralStatic } from '../engine/template-literal/index.ts'
-import { type TTemplateLiteralDecodeUnsafe, TemplateLiteralDecodeUnsafe } from '../engine/template-literal/decode.ts'
+import { type TTemplateLiteralStatic } from '../engine/template_literal/index.ts'
+import { type TTemplateLiteralDecodeUnsafe, TemplateLiteralDecodeUnsafe } from '../engine/template_literal/decode.ts'
 
-import { CreateRecord } from '../engine/record/record-create.ts'
+import { CreateRecord } from '../engine/record/record_create.ts'
 
 import { type TRecordAction, RecordAction } from '../engine/record/instantiate.ts'
 

@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 import { Arguments } from '../../system/arguments/index.ts'
 import type { TProperties, TSchema, Static } from '../../type/index.ts'
-import { FromType } from './from-type.ts'
+import { FromType } from './from_type.ts'
 
 /** Creates a value from the provided type. This function will use `default` annotations if present. */
 export function Create<const Type extends TSchema>(type: Type): Static<Type>

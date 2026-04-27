@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 import { Arguments } from '../../system/arguments/index.ts'
 import type { TProperties, TSchema, Static } from '../../type/index.ts'
-import { FromType } from './from-type.ts'
+import { FromType } from './from_type.ts'
 import { Assert } from '../assert/index.ts'
 
 /**
