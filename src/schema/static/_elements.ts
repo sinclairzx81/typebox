@@ -103,4 +103,3 @@ export type XStaticElements<Stack extends string[], Root extends XSchema, Schema
     ? XWithAdditionalItems<Stack, Root, Schema, WithMinItems>
     : WithMinItems
 > = WithAdditionalItems
-
