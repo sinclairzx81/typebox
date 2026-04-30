@@ -61,8 +61,11 @@ type XWithMaxItems<Schema extends XSchema, Elements extends unknown[],
 // 3. XNeedsAdditionalItems - Does MaxItems constrain all Elements?
 // ------------------------------------------------------------------
 type XNeedsAdditionalItems<Schema extends XSchema, Elements extends unknown[],
-  MaxItems extends number | null = Schema extends XMaxItems<infer MaxItems extends number> ? MaxItems : null,
-  Result extends boolean = MaxItems extends number ? XLessThan<Elements['length'], MaxItems> : true
+  Result extends boolean = (
+    Schema extends XMaxItems<infer MaxItems extends number> 
+      ? XLessThan<Elements['length'], MaxItems> 
+      : true
+  )
 > = Result
 // ------------------------------------------------------------------
 // 4. XWithMinItems - Optional Indices > MinItems
@@ -100,3 +103,4 @@ export type XStaticElements<Stack extends string[], Root extends XSchema, Schema
     ? XWithAdditionalItems<Stack, Root, Schema, WithMinItems>
     : WithMinItems
 > = WithAdditionalItems
+
