@@ -181,10 +181,13 @@ export function TakeLeft<T, True extends (left: T, right: T[]) => unknown, False
 // --------------------------------------------------------------------------
 // Object
 // --------------------------------------------------------------------------
+/** Returns true if the PropertyKey is Unsafe (ref: prototype-pollution). */
+export function IsUnsafePropertyKey(key: PropertyKey): boolean {
+  return IsEqual(key, '__proto__') || IsEqual(key, 'constructor') || IsEqual(key, 'prototype')
+}
 /** Returns true if this value has this property key */
 export function HasPropertyKey<Key extends PropertyKey>(value: object, key: Key): value is { [_ in Key]: unknown } {
-  const isProtoField = IsEqual(key, '__proto__') || IsEqual(key, 'constructor')
-  return isProtoField ? Object.prototype.hasOwnProperty.call(value, key) : key in value
+  return IsUnsafePropertyKey(key) ? Object.prototype.hasOwnProperty.call(value, key) : key in value
 }
 /** Returns object entries as `[RegExp, Value][]` */
 export function EntriesRegExp<Value extends unknown = unknown>(value: Record<PropertyKey, Value>): [RegExp, Value][] {
@@ -194,7 +197,7 @@ export function EntriesRegExp<Value extends unknown = unknown>(value: Record<Pro
 export function Entries<Value extends unknown = unknown>(value: Record<PropertyKey, Value>): [string, Value][] {
   return Object.entries(value)
 }
-/** Returns the property keys for this object via `Object.getOwnPropertyKeys({ ... })` */
+/** Returns property keys for this object via `Object.getOwnPropertyKeys({ ... })` */
 export function Keys(value: Record<PropertyKey, unknown>): string[] {
   return Object.getOwnPropertyNames(value)
 }

@@ -79,3 +79,41 @@ Test('Should Clone 12', () => {
   const B = Value.Clone(A)
   Assert.IsTrue(A === B)
 })
+// ----------------------------------------------------------------
+// Pollution Guards: Ensure No Unsafe Property is Cloned
+//
+// https://github.com/sinclairzx81/typebox/pull/1593
+// ----------------------------------------------------------------
+Test('Should Clone 13', () => {
+  const A = { value: 1, constructor: 2 }
+  const B = Value.Clone(A)
+  Assert.IsEqual(B, { value: 1 })
+})
+Test('Should Clone 14', () => {
+  const A = { value: 1, prototype: 2 }
+  const B = Value.Clone(A)
+  Assert.IsEqual(B, { value: 1 })
+})
+Test('Should Clone 15', () => {
+  const A = { value: 1 }
+  Object.defineProperty(A, '__proto__', { value: 2, enumerable: true })
+  const B = Value.Clone(A)
+  Assert.IsEqual(B, { value: 1 })
+})
+// Nested
+Test('Should Clone 16', () => {
+  const A = { outer: { value: 1, constructor: 2 } }
+  const B = Value.Clone(A)
+  Assert.IsEqual(B, { outer: { value: 1 } })
+})
+Test('Should Clone 17', () => {
+  const A = { outer: { value: 1, prototype: 2 } }
+  const B = Value.Clone(A)
+  Assert.IsEqual(B, { outer: { value: 1 } })
+})
+Test('Should Clone 18', () => {
+  const A = { outer: { value: 1 } }
+  Object.defineProperty(A.outer, '__proto__', { value: 2, enumerable: true })
+  const B = Value.Clone(A)
+  Assert.IsEqual(B, { outer: { value: 1 } })
+})
