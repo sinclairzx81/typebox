@@ -35,7 +35,10 @@ import type { XProperties } from '../types/properties.ts'
 // ------------------------------------------------------------------
 // XStaticRequired
 // ------------------------------------------------------------------
-export type XStaticRequired<Stack extends string[], Root extends XSchema, Schema extends XSchema, Keys extends string[],
-  // note: We only produce an property set if 'required' is present without 'properties'
+export type XStaticRequired<_Stack extends string[], _Root extends XSchema, Schema extends XSchema, Keys extends string[],
+  // If the 'properties' keyword is present, we return {} and trust the 'Properties' inference 
+  // path to resolve the 'required' keyword. If 'properties' is absent, we generate an object 
+  // where each key is assigned an 'unknown' type, as 'required' without 'properties' 
+  // still implies that the keys should exist on the object.
   Result extends Record<PropertyKey, unknown> = Schema extends XProperties ? {} : Record<Keys[number], unknown>
 > = Result

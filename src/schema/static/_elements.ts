@@ -54,8 +54,9 @@ type XWithMaxItemsRemap<Elements extends unknown[], MaxItems extends number, Res
   : Result
 )
 type XWithMaxItems<Schema extends XSchema, Elements extends unknown[],
-  MaxItems extends number | null = Schema extends XMaxItems<infer MaxItems extends number> ? MaxItems : null,
-  Result extends unknown[] = MaxItems extends number ? XWithMaxItemsRemap<Elements, MaxItems> : Elements
+  Result extends unknown[] = Schema extends XMaxItems<infer MaxItems extends number> 
+    ? XWithMaxItemsRemap<Elements, MaxItems> 
+    : Elements
 > = Result
 // ------------------------------------------------------------------
 // 3. XNeedsAdditionalItems - Does MaxItems constrain all Elements?
