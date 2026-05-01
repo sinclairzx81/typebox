@@ -394,3 +394,61 @@ Test('Should generate no diff for undefined properties of current and next', () 
   const E = [] as any
   Assert.IsEqual(D, E)
 })
+// ----------------------------------------------------------------
+// Pollution Guards: Ensure Unsafe Properties produce no Edits
+//
+// https://github.com/sinclairzx81/typebox/pull/1593
+// ----------------------------------------------------------------
+Test('Should not generate edits for unsafe properties on INSERT', () => {
+  const A = {}
+  const B = {
+    value: 1,
+    '__proto__': 1,
+    'constructor': 1,
+    'prototype': 1
+  }
+  const C = Value.Diff(A, B)
+  Assert.IsEqual(C, [{ type: 'insert', path: '/value', value: 1 }])
+})
+Test('Should not generate edits for unsafe properties on UPDATE', () => {
+  const A = {
+    value: 1,
+    '__proto__': 1,
+    'constructor': 1,
+    'prototype': 1
+  }
+  const B = {
+    value: 2,
+    '__proto__': 2,
+    'constructor': 2,
+    'prototype': 2
+  }
+  const C = Value.Diff(A, B)
+  Assert.IsEqual(C, [{ type: 'update', path: '/value', value: 2 }])
+})
+Test('Should not generate edits for nested unsafe properties on DELETE', () => {
+  const A = {
+    outer: {
+      value: 1,
+      '__proto__': 1,
+      'constructor': 1,
+      'prototype': 1
+    }
+  }
+  const B = { outer: {} }
+  const C = Value.Diff(A, B)
+  Assert.IsEqual(C, [{ type: 'delete', path: '/outer/value' }])
+})
+Test('Should not generate edits for nested unsafe properties on INSERT', () => {
+  const A = { outer: {} }
+  const B = {
+    outer: {
+      value: 1,
+      '__proto__': 1,
+      'constructor': 1,
+      'prototype': 1
+    }
+  }
+  const C = Value.Diff(A, B)
+  Assert.IsEqual(C, [{ type: 'insert', path: '/outer/value', value: 1 }])
+})

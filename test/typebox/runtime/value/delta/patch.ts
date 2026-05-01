@@ -433,3 +433,207 @@ Test('Should not result in sparse arrays', () => {
   Assert.IsEqual(B, E)
   Assert.IsEqual(E.length, B.length)
 })
+// ----------------------------------------------------------------
+// Pollution Guards: Ensure No Unsafe Property is Written
+//
+// https://github.com/sinclairzx81/typebox/pull/1593
+// ----------------------------------------------------------------
+Test('Should should throw if attempting to INSERT Unsafe properties', () => {
+  Assert.IsEqual(
+    Value.Patch({}, [
+      { type: 'insert', path: '/value', value: 1 }
+    ]),
+    { value: 1 }
+  )
+  Assert.Throws(() =>
+    Value.Patch({}, [
+      { type: 'insert', path: '/constructor', value: 1 }
+    ])
+  )
+  Assert.Throws(() =>
+    Value.Patch({}, [
+      { type: 'insert', path: '/prototype', value: 1 }
+    ])
+  )
+  Assert.Throws(() =>
+    Value.Patch({}, [
+      { type: 'insert', path: '/__proto__', value: 1 }
+    ])
+  )
+})
+Test('Should should throw if attempting to DELETE Unsafe properties', () => {
+  Assert.IsEqual(
+    Value.Patch({ value: 1 }, [
+      { type: 'delete', path: '/value' }
+    ]),
+    {}
+  )
+  Assert.Throws(() =>
+    Value.Patch({ constructor: 1 }, [
+      { type: 'delete', path: '/constructor' }
+    ])
+  )
+  Assert.Throws(() =>
+    Value.Patch({ prototype: 1 }, [
+      { type: 'delete', path: '/prototype' }
+    ])
+  )
+  Assert.Throws(() =>
+    Value.Patch({ __proto__: 1 }, [
+      { type: 'delete', path: '/__proto__' }
+    ])
+  )
+})
+Test('Should should throw if attempting to UPDATE Unsafe properties', () => {
+  Assert.IsEqual(
+    Value.Patch({ value: 1 }, [
+      { type: 'update', path: '/value', value: 2 }
+    ]),
+    { value: 2 }
+  )
+  Assert.Throws(() =>
+    Value.Patch({ constructor: 1 }, [
+      { type: 'update', path: '/constructor', value: 2 }
+    ])
+  )
+  Assert.Throws(() =>
+    Value.Patch({ prototype: 1 }, [
+      { type: 'update', path: '/prototype', value: 2 }
+    ])
+  )
+  Assert.Throws(() =>
+    Value.Patch({ __proto__: 1 }, [
+      { type: 'update', path: '/__proto__', value: 2 }
+    ])
+  )
+})
+// ----------------------------------------------------------------
+// Pollution Guards: Ensure No Unsafe Property is Written (Nested)
+// ----------------------------------------------------------------
+Test('Should should throw if attempting to INSERT Unsafe properties', () => {
+  Assert.IsEqual(
+    Value.Patch({ value: {} }, [
+      { type: 'insert', path: '/value/x', value: 1 }
+    ]),
+    { value: { x: 1 } }
+  )
+  Assert.Throws(() =>
+    Value.Patch({ constructor: {} }, [
+      { type: 'insert', path: '/constructor/x', value: 1 }
+    ])
+  )
+  Assert.Throws(() =>
+    Value.Patch({ prototype: {} }, [
+      { type: 'insert', path: '/prototype/x', value: 1 }
+    ])
+  )
+  Assert.Throws(() =>
+    Value.Patch({ __proto__: {} }, [
+      { type: 'insert', path: '/__proto__/x', value: 1 }
+    ])
+  )
+})
+Test('Should should throw if attempting to DELETE Unsafe properties', () => {
+  Assert.IsEqual(
+    Value.Patch({ value: { x: 1 } }, [
+      { type: 'delete', path: '/value/x' }
+    ]),
+    { value: {} }
+  ) // {} not undefined
+  Assert.Throws(() =>
+    Value.Patch({ constructor: { x: 1 } }, [
+      { type: 'delete', path: '/constructor/x' }
+    ])
+  )
+  Assert.Throws(() =>
+    Value.Patch({ prototype: { x: 1 } }, [
+      { type: 'delete', path: '/prototype/x' }
+    ])
+  )
+  Assert.Throws(() =>
+    Value.Patch({ __proto__: { x: 1 } }, [
+      { type: 'delete', path: '/__proto__/x' }
+    ])
+  )
+})
+Test('Should should throw if attempting to UPDATE Unsafe properties', () => {
+  Assert.IsEqual(
+    Value.Patch({ value: { x: 1 } }, [
+      { type: 'update', path: '/value/x', value: 2 }
+    ]),
+    { value: { x: 2 } }
+  )
+  Assert.Throws(() =>
+    Value.Patch({ constructor: { x: 1 } }, [
+      { type: 'update', path: '/constructor/x', value: 2 }
+    ])
+  )
+  Assert.Throws(() =>
+    Value.Patch({ prototype: { x: 1 } }, [
+      { type: 'update', path: '/prototype/x', value: 2 }
+    ])
+  )
+  Assert.Throws(() =>
+    Value.Patch({ __proto__: { x: 1 } }, [
+      { type: 'update', path: '/__proto__/x', value: 2 }
+    ])
+  )
+})
+// ----------------------------------------------------------------
+// Pollution Guards: Edge Cases
+// ----------------------------------------------------------------
+Test('Should throw if attempting to INSERT Unsafe properties at deep nested paths', () => {
+  Assert.IsEqual(
+    Value.Patch({ a: { b: {} } }, [
+      { type: 'insert', path: '/a/b/x', value: 1 }
+    ]),
+    { a: { b: { x: 1 } } }
+  )
+  Assert.Throws(() =>
+    Value.Patch({ a: { constructor: {} } }, [
+      { type: 'insert', path: '/a/constructor/x', value: 1 }
+    ])
+  )
+  Assert.Throws(() =>
+    Value.Patch({ a: { prototype: {} } }, [
+      { type: 'insert', path: '/a/prototype/x', value: 1 }
+    ])
+  )
+  Assert.Throws(() =>
+    Value.Patch({ a: { __proto__: {} } }, [
+      { type: 'insert', path: '/a/__proto__/x', value: 1 }
+    ])
+  )
+})
+Test('Should throw if path contains multiple Unsafe segments', () => {
+  Assert.Throws(() =>
+    Value.Patch({}, [
+      { type: 'insert', path: '/constructor/prototype', value: 1 }
+    ])
+  )
+  Assert.Throws(() =>
+    Value.Patch({}, [
+      { type: 'insert', path: '/__proto__/constructor', value: 1 }
+    ])
+  )
+})
+Test('Should not throw for property names that contain but do not equal Unsafe names', () => {
+  Assert.IsEqual(
+    Value.Patch({}, [
+      { type: 'insert', path: '/my_constructor', value: 1 }
+    ]),
+    { my_constructor: 1 }
+  )
+  Assert.IsEqual(
+    Value.Patch({}, [
+      { type: 'insert', path: '/prototypes', value: 1 }
+    ]),
+    { prototypes: 1 }
+  )
+  Assert.IsEqual(
+    Value.Patch({}, [
+      { type: 'insert', path: '/not__proto__', value: 1 }
+    ]),
+    { not__proto__: 1 }
+  )
+})

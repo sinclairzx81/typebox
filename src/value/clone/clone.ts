@@ -48,16 +48,15 @@ function FromClassInstance(value: Record<PropertyKey, unknown>): Record<Property
 // ------------------------------------------------------------------
 function FromObjectInstance(value: Record<PropertyKey, unknown>): Record<PropertyKey, unknown> {
   const result = {} as Record<PropertyKey, unknown>
-  for (const key of Object.getOwnPropertyNames(value)) {
+  for (const key of Guard.Keys(value)) {
+    if (Guard.IsUnsafePropertyKey(key)) continue // (ignore: prototype-pollution)
     result[key] = Clone(value[key])
   }
-  for (const key of Object.getOwnPropertySymbols(value)) {
+  for (const key of Guard.Symbols(value)) {
     result[key] = Clone(value[key])
   }
   return result
 }
-
-Object.create({})
 // ------------------------------------------------------------------
 // Object
 // ------------------------------------------------------------------

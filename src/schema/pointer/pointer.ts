@@ -33,11 +33,17 @@ import { Guard } from '../../guard/index.ts'
 // ------------------------------------------------------------------
 // Asserts
 // ------------------------------------------------------------------
-function AssertNotRoot(indices: string[]) {
-  if(indices.length === 0) throw Error('Cannot set root')
+function AssertNotRoot(indices: string[]): void {
+  if (indices.length === 0) throw Error('Cannot set root')
 }
 function AssertCanSet(value: unknown): asserts value is Record<string, unknown> {
-  if(!Guard.IsObject(value)) throw Error('Cannot set value')
+  if (!Guard.IsObject(value)) throw Error('Cannot set value')
+}
+function AssertIndex(index: string): void {
+  if (Guard.IsUnsafePropertyKey(index)) throw Error('Pointer contains unsafe property key')
+}
+function AssertIndices(indices: string[]): void {
+  for (const index of indices) AssertIndex(index)
 }
 // ------------------------------------------------------------------
 // Indices
@@ -55,7 +61,7 @@ function HasIndex(index: string, value: unknown): value is Record<string, unknow
   return Guard.IsObject(value) && Guard.HasPropertyKey(value, index)
 }
 function GetIndex(index: string, value: unknown): unknown {
-  return Guard.IsObject(value) ? value[index] : undefined
+  return Guard.IsObject(value) && !Guard.IsUnsafePropertyKey(index) ? value[index] : undefined
 }
 function GetIndices(indices: string[], value: unknown): unknown {
   return indices.reduce((value, index) => GetIndex(index, value), value)
@@ -76,7 +82,7 @@ export function Indices(pointer: string): string[] {
 export function Has(value: unknown, pointer: string): unknown {
   let current = value
   return Indices(pointer).every(index => {
-    if(!HasIndex(index, current)) return false
+    if (!HasIndex(index, current)) return false
     current = current[index]
     return true
   })
@@ -96,6 +102,7 @@ export function Get(value: unknown, pointer: string): unknown {
 export function Set(value: unknown, pointer: string, next: unknown): unknown {
   const indices = Indices(pointer)
   AssertNotRoot(indices)
+  AssertIndices(indices)
   const [head, index] = TakeIndexRight(indices)
   const parent = GetIndices(head, value)
   AssertCanSet(parent)
@@ -109,10 +116,11 @@ export function Set(value: unknown, pointer: string, next: unknown): unknown {
 export function Delete(value: unknown, pointer: string): unknown {
   const indices = Indices(pointer)
   AssertNotRoot(indices)
+  AssertIndices(indices)
   const [head, index] = TakeIndexRight(indices)
   const parent = GetIndices(head, value)
   AssertCanSet(parent)
-  if(Guard.IsArray(parent) && IsNumericIndex(index)) {
+  if (Guard.IsArray(parent) && IsNumericIndex(index)) {
     parent.splice(+index, 1)
   } else {
     delete parent[index]

@@ -83,9 +83,9 @@ Test('Should Indices 20', () => {
   const R = [...Schema.Pointer.Indices('/x/a~1b///')]
   Assert.IsEqual(R, ['x', 'a/b', '', '', ''])
 })
-//-----------------------------------------------
+//-------------------------------------------------------------------
 // Get
-//-----------------------------------------------
+//-------------------------------------------------------------------
 Test('Should Get 1', () => {
   const V = [0, 1, 2, 3]
   Assert.IsEqual(Schema.Pointer.Get(V, ''), [0, 1, 2, 3])
@@ -108,9 +108,9 @@ Test('Should Get 2', () => {
   Assert.IsEqual(Schema.Pointer.Get(V, '/2/x'), 2)
   Assert.IsEqual(Schema.Pointer.Get(V, '/3/x'), 3)
 })
-//-----------------------------------------------
+//-------------------------------------------------------------------
 // Delete
-//-----------------------------------------------
+//-------------------------------------------------------------------
 Test('Should Delete 1', () => {
   const V = { x: {} }
   const R = Schema.Pointer.Delete(V, '/x/x')
@@ -131,9 +131,9 @@ Test('Should Delete 3', () => {
   const R = Schema.Pointer.Delete(V, '/100')
   Assert.IsEqual(R, [1, 2, 3])
 })
-//-----------------------------------------------
+//-------------------------------------------------------------------
 // Has
-//-----------------------------------------------
+//-------------------------------------------------------------------
 Test('Should Has 1', () => {
   const V: any = undefined
   Assert.IsEqual(Schema.Pointer.Has(V, ''), true)
@@ -154,9 +154,9 @@ Test('Should Has 5', () => {
   const V = { x: { y: {} } }
   Assert.IsEqual(Schema.Pointer.Has(V, '/x/y/z'), false)
 })
-//-----------------------------------------------
+//-------------------------------------------------------------------
 // Throw
-//-----------------------------------------------
+//-------------------------------------------------------------------
 Test('Should throw 1', () => {
   const V = {}
   Assert.Throws(() => Schema.Pointer.Set(V, '', { x: 1 }))
@@ -169,9 +169,9 @@ Test('Should throw 3', () => {
   const V = { x: 1 }
   Assert.Throws(() => Schema.Pointer.Set(V, '/x/y', 3))
 })
-//-----------------------------------------------
+//-------------------------------------------------------------------
 // Escapes
-//-----------------------------------------------
+//-------------------------------------------------------------------
 Test('Should support get ~0 Schema.Pointer escape', () => {
   const V = {
     x: { '~': { x: 1 } }
@@ -184,4 +184,52 @@ Test('Should support get ~1 Schema.Pointer escape', () => {
     x: { '/': { x: 1 } }
   }
   Assert.IsEqual(Schema.Pointer.Get(V, '/x/~1'), { x: 1 })
+})
+//-------------------------------------------------------------------
+// Unsafe Property Keys
+//-------------------------------------------------------------------
+Test('Should return undefined if attempting to Get an unsafe property key', () => {
+  Assert.IsEqual(Schema.Pointer.Get({}, '/__proto__'), undefined)
+  Assert.IsEqual(Schema.Pointer.Get({}, '/constructor'), undefined)
+  Assert.IsEqual(Schema.Pointer.Get({}, '/prototype'), undefined)
+})
+Test('Should return undefined if attempting to Get a nested unsafe property key', () => {
+  Assert.IsEqual(Schema.Pointer.Get({ a: {} }, '/a/__proto__'), undefined)
+  Assert.IsEqual(Schema.Pointer.Get({ a: {} }, '/a/constructor'), undefined)
+  Assert.IsEqual(Schema.Pointer.Get({ a: {} }, '/a/prototype'), undefined)
+})
+Test('Should return false if attempting to Has an unsafe property key', () => {
+  Assert.IsEqual(Schema.Pointer.Has({}, '/__proto__'), false)
+  Assert.IsEqual(Schema.Pointer.Has({}, '/constructor'), false)
+  Assert.IsEqual(Schema.Pointer.Has({}, '/prototype'), false)
+})
+Test('Should return false if attempting to Has a nested unsafe property key', () => {
+  Assert.IsEqual(Schema.Pointer.Has({ a: {} }, '/a/__proto__'), false)
+  Assert.IsEqual(Schema.Pointer.Has({ a: {} }, '/a/constructor'), false)
+  Assert.IsEqual(Schema.Pointer.Has({ a: {} }, '/a/prototype'), false)
+})
+Test('Should throw if attempting to Set an unsafe property key', () => {
+  Assert.Throws(() => Schema.Pointer.Set({}, '/__proto__', 1))
+  Assert.Throws(() => Schema.Pointer.Set({}, '/constructor', 1))
+  Assert.Throws(() => Schema.Pointer.Set({}, '/prototype', 1))
+})
+Test('Should throw if attempting to Set a nested unsafe property key', () => {
+  Assert.Throws(() => Schema.Pointer.Set({ a: {} }, '/a/__proto__', 1))
+  Assert.Throws(() => Schema.Pointer.Set({ a: {} }, '/a/constructor', 1))
+  Assert.Throws(() => Schema.Pointer.Set({ a: {} }, '/a/prototype', 1))
+})
+Test('Should throw if attempting to Delete an unsafe property key', () => {
+  Assert.Throws(() => Schema.Pointer.Delete({}, '/__proto__'))
+  Assert.Throws(() => Schema.Pointer.Delete({}, '/constructor'))
+  Assert.Throws(() => Schema.Pointer.Delete({}, '/prototype'))
+})
+Test('Should throw if attempting to Delete a nested unsafe property key', () => {
+  Assert.Throws(() => Schema.Pointer.Delete({ a: {} }, '/a/__proto__'))
+  Assert.Throws(() => Schema.Pointer.Delete({ a: {} }, '/a/constructor'))
+  Assert.Throws(() => Schema.Pointer.Delete({ a: {} }, '/a/prototype'))
+})
+Test('Should not throw for property names that contain but do not equal unsafe names', () => {
+  Assert.IsEqual(Schema.Pointer.Get({ my_constructor: 1 }, '/my_constructor'), 1)
+  Assert.IsEqual(Schema.Pointer.Get({ prototypes: 1 }, '/prototypes'), 1)
+  Assert.IsEqual(Schema.Pointer.Get({ not__proto__: 1 }, '/not__proto__'), 1)
 })
