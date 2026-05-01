@@ -49,10 +49,10 @@ function FromClassInstance(value: Record<PropertyKey, unknown>): Record<Property
 function FromObjectInstance(value: Record<PropertyKey, unknown>): Record<PropertyKey, unknown> {
   const result = {} as Record<PropertyKey, unknown>
   for (const key of Object.getOwnPropertyNames(value)) {
-    result[key] = Clone(value[key])
+    Object.defineProperty(result, key, { value: Clone(value[key]), writable: true, enumerable: true, configurable: true })
   }
   for (const key of Object.getOwnPropertySymbols(value)) {
-    result[key] = Clone(value[key])
+    Object.defineProperty(result, key, { value: Clone(value[key]), writable: true, enumerable: true, configurable: true })
   }
   return result
 }

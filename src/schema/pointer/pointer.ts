@@ -40,6 +40,12 @@ function AssertCanSet(value: unknown): asserts value is Record<string, unknown> 
   if(!Guard.IsObject(value)) throw Error('Cannot set value')
 }
 // ------------------------------------------------------------------
+// Security
+// ------------------------------------------------------------------
+function IsDangerousSegment(segment: string): boolean {
+  return segment === '__proto__' || segment === 'constructor' || segment === 'prototype'
+}
+// ------------------------------------------------------------------
 // Indices
 // ------------------------------------------------------------------
 function IsNumericIndex(index: string): boolean {
@@ -55,6 +61,7 @@ function HasIndex(index: string, value: unknown): value is Record<string, unknow
   return Guard.IsObject(value) && Guard.HasPropertyKey(value, index)
 }
 function GetIndex(index: string, value: unknown): unknown {
+  if (IsDangerousSegment(index)) return undefined
   return Guard.IsObject(value) ? value[index] : undefined
 }
 function GetIndices(indices: string[], value: unknown): unknown {
@@ -97,6 +104,7 @@ export function Set(value: unknown, pointer: string, next: unknown): unknown {
   const indices = Indices(pointer)
   AssertNotRoot(indices)
   const [head, index] = TakeIndexRight(indices)
+  if (IsDangerousSegment(index)) return value
   const parent = GetIndices(head, value)
   AssertCanSet(parent)
   parent[index] = next
@@ -110,6 +118,7 @@ export function Delete(value: unknown, pointer: string): unknown {
   const indices = Indices(pointer)
   AssertNotRoot(indices)
   const [head, index] = TakeIndexRight(indices)
+  if (IsDangerousSegment(index)) return value
   const parent = GetIndices(head, value)
   AssertCanSet(parent)
   if(Guard.IsArray(parent) && IsNumericIndex(index)) {

@@ -46,6 +46,12 @@ function CreateDelete(path: string): TDelete {
 }
 
 // ------------------------------------------------------------------
+// RFC 6901
+// ------------------------------------------------------------------
+function EscapePointerSegment(segment: string): string {
+  return segment.replace(/~/g, '~0').replace(/\//g, '~1')
+}
+// ------------------------------------------------------------------
 // Assert
 // ------------------------------------------------------------------
 function AssertCanDiffObject(value: unknown): asserts value is Record<string | number, unknown> {
@@ -66,7 +72,7 @@ function* FromObject(path: string, left: Record<PropertyKey, unknown>, right: un
   // ----------------------------------------------------------------
   for (const key of rightKeys) {
     if (Guard.HasPropertyKey(left, key)) continue
-    yield CreateInsert(`${path}/${key}`, right[key])
+    yield CreateInsert(`${path}/${EscapePointerSegment(key)}`, right[key])
   }
   // ----------------------------------------------------------------
   // Update
@@ -74,14 +80,14 @@ function* FromObject(path: string, left: Record<PropertyKey, unknown>, right: un
   for (const key of leftKeys) {
     if (!Guard.HasPropertyKey(right, key)) continue
     if (Equal(left, right)) continue
-    yield* FromValue(`${path}/${key}`, left[key], right[key])
+    yield* FromValue(`${path}/${EscapePointerSegment(key)}`, left[key], right[key])
   }
   // ----------------------------------------------------------------
   // Delete
   // ----------------------------------------------------------------
   for (const key of leftKeys) {
     if (Guard.HasPropertyKey(right, key)) continue
-    yield CreateDelete(`${path}/${key}`)
+    yield CreateDelete(`${path}/${EscapePointerSegment(key)}`)
   }
 }
 // ------------------------------------------------------------------

@@ -35,6 +35,10 @@ import { Clone } from '../clone/index.ts'
 import { type TMutable } from './mutate.ts'
 import { FromValue } from './from_value.ts'
 
+function EscapePointerSegment(segment: string): string {
+  return segment.replace(/~/g, '~0').replace(/\//g, '~1')
+}
+
 export function FromObject(root: TMutable, path: string, current: unknown, next: Record<string, unknown>): void {
   if (!Guard.IsObjectNotArray(current)) {
     Pointer.Set(root, path, Clone(next))
@@ -52,7 +56,7 @@ export function FromObject(root: TMutable, path: string, current: unknown, next:
       }
     }
     for (const nextKey of nextKeys) {
-      FromValue(root, `${path}/${nextKey}`, current[nextKey], next[nextKey])
+      FromValue(root, `${path}/${EscapePointerSegment(nextKey)}`, current[nextKey], next[nextKey])
     }
   }
 }
