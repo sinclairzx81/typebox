@@ -1,5 +1,6 @@
 import { Value } from 'typebox/value'
 import { Assert } from 'test'
+import type { prototype } from 'node:events'
 
 const Test = Assert.Context('Value.Mutate')
 
@@ -126,4 +127,27 @@ Test('Should Mutate 19', () => {
   const A = { x: 1, y: 2, z: 3 }
   Value.Mutate(A, { x: 4, y: 5, z: 4, w: 5 })
   Assert.IsEqual(A, { x: 4, y: 5, z: 4, w: 5 })
+})
+// ----------------------------------------------------------------
+// Pollution Guards: Should ignore and throw on unsafe key.
+//
+// https://github.com/sinclairzx81/typebox/pull/1593
+// ----------------------------------------------------------------
+Test('Should Clone 20', () => {
+  const A = { x: 1 } // basis
+  Value.Mutate(A, { x: 1, y: 1 })
+  Assert.IsEqual(A, { x: 1, y: 1 })
+})
+Test('Should Clone 21', () => {
+  const A = { x: 1, y: 1 }
+  Value.Mutate(A, { x: 1, y: 1, __proto__: 1 })
+  Assert.IsEqual(A, { x: 1, y: 1 })
+})
+Test('Should Clone 22', () => {
+  const A = { x: 1 }
+  Assert.Throws(() => Value.Mutate(A, { x: 1, constructor: 1 }))
+})
+Test('Should Clone 23', () => {
+  const A = { x: 1 }
+  Assert.Throws(() => Value.Mutate(A, { x: 1, prototype: 1 }))
 })

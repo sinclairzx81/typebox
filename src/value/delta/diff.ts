@@ -66,6 +66,7 @@ function* FromObject(path: string, left: Record<PropertyKey, unknown>, right: un
   // ----------------------------------------------------------------
   for (const key of rightKeys) {
     if (Guard.HasPropertyKey(left, key)) continue
+    if (Guard.IsUnsafePropertyKey(key)) continue
     yield CreateInsert(`${path}/${key}`, right[key])
   }
   // ----------------------------------------------------------------
@@ -73,6 +74,7 @@ function* FromObject(path: string, left: Record<PropertyKey, unknown>, right: un
   // ----------------------------------------------------------------
   for (const key of leftKeys) {
     if (!Guard.HasPropertyKey(right, key)) continue
+    if (Guard.IsUnsafePropertyKey(key)) continue
     if (Equal(left, right)) continue
     yield* FromValue(`${path}/${key}`, left[key], right[key])
   }
@@ -81,6 +83,7 @@ function* FromObject(path: string, left: Record<PropertyKey, unknown>, right: un
   // ----------------------------------------------------------------
   for (const key of leftKeys) {
     if (Guard.HasPropertyKey(right, key)) continue
+    if (Guard.IsUnsafePropertyKey(key)) continue
     yield CreateDelete(`${path}/${key}`)
   }
 }
@@ -107,10 +110,10 @@ function* FromArray(path: string, left: unknown[], right: unknown): IterableIter
 function* FromTypedArray(path: string, left: GlobalsGuard.TTypeArray, right: unknown): IterableIterator<TEdit> {
   const typeLeft = globalThis.Object.getPrototypeOf(left).constructor.name
   const typeRight = globalThis.Object.getPrototypeOf(right).constructor.name
-  const predicate = GlobalsGuard.IsTypeArray(right) 
+  const predicate = GlobalsGuard.IsTypeArray(right)
     && Guard.IsEqual(left.length, right.length)
     && Guard.IsEqual(typeLeft, typeRight)
-  if(predicate) {
+  if (predicate) {
     for (let index = 0; index < Math.min(left.length, right.length); index++) {
       yield* FromValue(`${path}/${index}`, left[index], right[index])
     }
@@ -131,9 +134,9 @@ function* FromUnknown(path: string, left: unknown, right: unknown): IterableIter
 function* FromValue(path: string, left: unknown, right: unknown): IterableIterator<TEdit> {
   return (
     GlobalsGuard.IsTypeArray(left) ? yield* FromTypedArray(path, left, right) :
-    Guard.IsArray(left) ? yield* FromArray(path, left, right) :
-    Guard.IsObject(left) ?  yield* FromObject(path, left, right) :
-    yield* FromUnknown(path, left, right)
+      Guard.IsArray(left) ? yield* FromArray(path, left, right) :
+        Guard.IsObject(left) ? yield* FromObject(path, left, right) :
+          yield* FromUnknown(path, left, right)
   )
 }
 // ------------------------------------------------------------------

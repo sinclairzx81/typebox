@@ -35,6 +35,15 @@ import { Clone } from '../clone/index.ts'
 import { type TMutable } from './mutate.ts'
 import { FromValue } from './from_value.ts'
 
+// ------------------------------------------------------------------
+// AssertKey
+// ------------------------------------------------------------------
+function AssertKey(key: string): void {
+  if(Guard.IsUnsafePropertyKey(key)) throw Error('Attempted to Mutate with unsafe property key')
+}
+// ------------------------------------------------------------------
+// AssertKey
+// ------------------------------------------------------------------
 export function FromObject(root: TMutable, path: string, current: unknown, next: Record<string, unknown>): void {
   if (!Guard.IsObjectNotArray(current)) {
     Pointer.Set(root, path, Clone(next))
@@ -42,16 +51,19 @@ export function FromObject(root: TMutable, path: string, current: unknown, next:
     const currentKeys = Guard.Keys(current)
     const nextKeys = Guard.Keys(next)
     for (const currentKey of currentKeys) {
+      AssertKey(currentKey)
       if (!nextKeys.includes(currentKey)) {
         delete current[currentKey]
       }
     }
     for (const nextKey of nextKeys) {
+      AssertKey(nextKey)
       if (!currentKeys.includes(nextKey)) {
         current[nextKey] = next[nextKey]
       }
     }
     for (const nextKey of nextKeys) {
+      AssertKey(nextKey)
       FromValue(root, `${path}/${nextKey}`, current[nextKey], next[nextKey])
     }
   }
