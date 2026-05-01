@@ -134,9 +134,9 @@ function* FromUnknown(path: string, left: unknown, right: unknown): IterableIter
 function* FromValue(path: string, left: unknown, right: unknown): IterableIterator<TEdit> {
   return (
     GlobalsGuard.IsTypeArray(left) ? yield* FromTypedArray(path, left, right) :
-      Guard.IsArray(left) ? yield* FromArray(path, left, right) :
-        Guard.IsObject(left) ? yield* FromObject(path, left, right) :
-          yield* FromUnknown(path, left, right)
+    Guard.IsArray(left) ? yield* FromArray(path, left, right) :
+    Guard.IsObject(left) ? yield* FromObject(path, left, right) :
+    yield* FromUnknown(path, left, right)
   )
 }
 // ------------------------------------------------------------------

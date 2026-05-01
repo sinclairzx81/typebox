@@ -1,6 +1,5 @@
 import { Value } from 'typebox/value'
 import { Assert } from 'test'
-import type { prototype } from 'node:events'
 
 const Test = Assert.Context('Value.Mutate')
 
