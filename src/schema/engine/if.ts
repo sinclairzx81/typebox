@@ -40,8 +40,8 @@ import { BuildSchema, CheckSchema, ErrorSchema } from './schema.ts'
 export function BuildIf(stack: Stack, context: BuildContext, schema: Schema.XIf, value: string): string {
   const thenSchema = Schema.IsThen(schema) ? schema.then : true
   const elseSchema = Schema.IsElse(schema) ? schema.else : true
-  return E.Ternary(BuildSchema(stack, context, schema.if, value), 
-    BuildSchema(stack, context, thenSchema, value), 
+  return E.Ternary(BuildSchema(stack, context, schema.if, value),
+    BuildSchema(stack, context, thenSchema, value),
     BuildSchema(stack, context, elseSchema, value))
 }
 // ------------------------------------------------------------------
@@ -50,8 +50,8 @@ export function BuildIf(stack: Stack, context: BuildContext, schema: Schema.XIf,
 export function CheckIf(stack: Stack, context: CheckContext, schema: Schema.XIf, value: unknown): boolean {
   const thenSchema = Schema.IsThen(schema) ? schema.then : true
   const elseSchema = Schema.IsElse(schema) ? schema.else : true
-  return CheckSchema(stack, context, schema.if, value) 
-    ? CheckSchema(stack, context, thenSchema, value) 
+  return CheckSchema(stack, context, schema.if, value)
+    ? CheckSchema(stack, context, thenSchema, value)
     : CheckSchema(stack, context, elseSchema, value)
 }
 // ------------------------------------------------------------------

@@ -44,8 +44,8 @@ import * as Schema from './types/index.ts'
 function CreateCode(build: BuildResult): string {
   const functions = build.Functions().join(';\n')
   const statements = build.UseUnevaluated()
-    ? ['const context = new CheckContext({}, {})', `return ${build.Call()}`]
-    : [`return ${build.Call()}`]
+    ? ['const context = new CheckContext({}, {})', `return ${build.Entry()}`]
+    : [`return ${build.Entry()}`]
   return `${functions}; return (value) => { ${statements.join('; ')} }`
 }
 // ------------------------------------------------------------------
@@ -79,10 +79,21 @@ export type CheckFunction = (value: unknown) => boolean
 // ------------------------------------------------------------------
 // EvaluateResult
 // ------------------------------------------------------------------
-export interface EvaluateResult {
-  IsAccelerated: boolean
-  Code: string
-  Check: CheckFunction
+export class EvaluateResult {
+  constructor(
+    private readonly isAccelerated: boolean,
+    private readonly code: string,
+    private readonly check: CheckFunction
+  ) {}
+  public IsAccelerated() {
+    return this.isAccelerated
+  }
+  public Code(): string {
+    return this.code
+  }
+  public Check(value: unknown): boolean {
+    return this.check(value)
+  }
 }
 // ------------------------------------------------------------------
 // BuildResult
@@ -93,7 +104,7 @@ export class BuildResult {
     private readonly schema: Schema.XSchema,
     private readonly external: Engine.TExternal,
     private readonly functions: string[],
-    private readonly call: string,
+    private readonly entry: string,
     private readonly useUnevaluated: boolean
   ) { }
   /** Returns the Context used for this build */
@@ -117,14 +128,14 @@ export class BuildResult {
     return this.functions
   }
   /** Return entry function call. */
-  public Call(): string {
-    return this.call
+  public Entry(): string {
+    return this.entry
   }
   /** Evaluates the build into a validation function */
   public Evaluate(): EvaluateResult {
-    const Code = CreateCode(this)
-    const Check = CreateCheck(this, Code)
-    return { IsAccelerated: Environment.CanEvaluate(), Code, Check }
+    const code = CreateCode(this)
+    const check = CreateCheck(this, code)
+    return new EvaluateResult(Environment.CanEvaluate(), code, check)
   }
 }
 // ------------------------------------------------------------------

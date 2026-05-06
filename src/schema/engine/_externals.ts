@@ -54,5 +54,5 @@ export function ResetExternal(): void {
 // GetExternals
 // ------------------------------------------------------------------
 export function GetExternal(): TExternal {
-  return { ... state }
+  return { ...state }
 }

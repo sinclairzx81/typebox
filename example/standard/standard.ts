@@ -27,7 +27,7 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 import { type Static, type TSchema } from 'typebox'
-import { TLocalizedValidationError } from 'typebox/error'
+import { type TLocalizedValidationError } from 'typebox/error'
 import { Validator } from 'typebox/schema'
 import { Guard } from 'typebox/guard'
 

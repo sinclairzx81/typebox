@@ -61,7 +61,7 @@ export function CheckDependentRequired(_stack: Stack, _context: CheckContext, sc
 // ------------------------------------------------------------------
 // Error
 // ------------------------------------------------------------------
-export function ErrorDependentRequired(_stack:  Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XDependentRequired, value: Record<PropertyKey, unknown>): boolean {
+export function ErrorDependentRequired(_stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XDependentRequired, value: Record<PropertyKey, unknown>): boolean {
   const isLength = G.IsEqual(G.Keys(value).length, 0)
   const isEveryEntry = G.EveryAll(G.Entries(schema.dependentRequired), 0, ([key, keys]) => {
     return !G.HasPropertyKey(value, key) || G.EveryAll(keys, 0, (dependency) => G.HasPropertyKey(value, dependency) || context.AddError({

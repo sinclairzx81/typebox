@@ -59,7 +59,7 @@ export function BuildAdditionalItems(stack: Stack, context: BuildContext, schema
 export function CheckAdditionalItems(stack: Stack, context: CheckContext, schema: Schema.XAdditionalItems, value: unknown[]): boolean {
   if (!IsValid(schema)) return true
   const isAdditionalItems = value.every((item, index) => {
-    return G.IsLessThan(index, schema.items.length) 
+    return G.IsLessThan(index, schema.items.length)
       || (CheckSchemaPushStack(stack, context, schema.additionalItems, item) && context.AddIndex(index))
   })
   return isAdditionalItems
@@ -72,7 +72,7 @@ export function ErrorAdditionalItems(stack: Stack, context: ErrorContext, schema
   const isAdditionalItems = value.every((item, index) => {
     const nextSchemaPath = `${schemaPath}/additionalItems`
     const nextInstancePath = `${instancePath}/${index}`
-    return G.IsLessThan(index, schema.items.length) || 
+    return G.IsLessThan(index, schema.items.length) ||
       (ErrorSchemaPushStack(stack, context, nextSchemaPath, nextInstancePath, schema.additionalItems, item) && context.AddIndex(index))
   })
   return isAdditionalItems

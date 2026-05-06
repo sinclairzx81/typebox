@@ -70,7 +70,7 @@ export function CheckRef(stack: Stack, context: CheckContext, schema: Schema.XRe
   const target = stack.Ref(schema) ?? false
   const nextContext = new CheckContext()
   const result = (Schema.IsSchema(target) && CheckSchema(stack, nextContext, target, value))
-  if(result) context.Merge([nextContext])
+  if (result) context.Merge([nextContext])
   return result
 }
 // ------------------------------------------------------------------
@@ -80,7 +80,7 @@ export function ErrorRef(stack: Stack, context: ErrorContext, _schemaPath: strin
   const target = stack.Ref(schema) ?? false
   const nextContext = new AccumulatedErrorContext()
   const result = (Schema.IsSchema(target) && ErrorSchema(stack, nextContext, '#', instancePath, target, value))
-  if(result) context.Merge([nextContext])
-  if(!result) nextContext.GetErrors().forEach(error => context.AddError(error))
+  if (result) context.Merge([nextContext])
+  if (!result) nextContext.GetErrors().forEach(error => context.AddError(error))
   return result
 }

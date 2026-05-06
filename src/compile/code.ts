@@ -76,8 +76,8 @@ function FunctionSection(build: BuildResult): string[] {
 // ------------------------------------------------------------------
 function ExportSection(build: BuildResult): string[] {
   const body = build.UseUnevaluated() 
-    ? `const context = new CheckContext({}, {}); return ${build.Call()}` 
-    : `return ${build.Call()}`
+    ? `const context = new CheckContext({}, {}); return ${build.Entry()}` 
+    : `return ${build.Entry()}`
   return [
     Separator(),
     TsIgnore(),

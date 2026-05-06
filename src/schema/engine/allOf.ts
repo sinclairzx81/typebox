@@ -45,8 +45,8 @@ function BuildAllOfFast(stack: Stack, context: BuildContext, schema: Schema.XAll
   return E.ReduceAnd(schema.allOf.map((schema) => BuildSchema(stack, context, schema, value)))
 }
 export function BuildAllOf(stack: Stack, context: BuildContext, schema: Schema.XAllOf, value: string): string {
-  return context.UseUnevaluated() 
-    ? BuildAllOfStandard(stack, context, schema, value) 
+  return context.UseUnevaluated()
+    ? BuildAllOfStandard(stack, context, schema, value)
     : BuildAllOfFast(stack, context, schema, value)
 }
 // ------------------------------------------------------------------
