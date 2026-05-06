@@ -279,7 +279,7 @@ The following table shows compile performance for various JSON Schema structures
 
 ```python
 ┌──────────────────────┬─────────────┬─────────────┐
-│ Test                 │ TB1X        │ AJV8        │
+│ Compile              │ TB1X        │ AJV8        │
 ├──────────────────────┼─────────────┼─────────────┤
 │ Boolean              │ 29.2K ops/s │  7.1K ops/s │
 │ Number               │ 34.5K ops/s │  7.6K ops/s │
@@ -312,7 +312,7 @@ The following tables shows validation performance for various JSON Schema struct
 
 ```python
 ┌──────────────────────┬──────────────┬──────────────┐
-│ Test                 │ TB1X         │ AJV8         │
+│ Validate             │ TB1X         │ AJV8         │
 ├──────────────────────┼──────────────┼──────────────┤
 │ Boolean              │ 192.2M ops/s │ 189.5M ops/s │
 │ Number               │ 112.4M ops/s │    61M ops/s │
