@@ -57,9 +57,9 @@ export class Validator<Context extends TProperties = TProperties, Type extends T
       2: (context, type) => [context, type]
     })
     // Note: The Base type requires this Validator to be Clone, but where we cannot safely clone
-    // the BuildResult or the EvaluateResult. For now we need pass the Validator constructor a 
-    // cloned instance of BuildResult and EvaluateResult such that the Validator clone shares 
-    // the same pre-compiled fields. We should remove this overload when Base is removed.
+    // the BuildResult or the EvaluateResult. For now we pass the Validator constructor a shared 
+    // reference of BuildResult and EvaluateResult to mitigate re-compile on Clone. We must remove 
+    // this overload when Base is removed (memory-gc-ref)
     if(matched.length === 3 && matched[1] instanceof BuildResult && matched[2] instanceof EvaluateResult) {
       const [hasCodec, buildResult, evaluateResult] = matched
       this.hasCodec = hasCodec
