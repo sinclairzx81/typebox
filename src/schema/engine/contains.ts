@@ -57,7 +57,7 @@ export function BuildContains(stack: Stack, context: BuildContext, schema: Schem
 // ------------------------------------------------------------------
 export function CheckContains(stack: Stack, context: CheckContext, schema: Schema.XContains, value: unknown[]): boolean {
   if (!IsValid(schema)) return true
-  return !G.IsEqual(value.length, 0) && 
+  return !G.IsEqual(value.length, 0) &&
     value.some((item) => CheckSchema(stack, context, schema.contains, item))
 }
 // ------------------------------------------------------------------

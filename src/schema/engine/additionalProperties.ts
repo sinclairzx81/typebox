@@ -92,7 +92,7 @@ export function BuildAdditionalPropertiesStandard(stack: Stack, context: BuildCo
   const isKey = E.Call(E.Member(regexp, 'test'), [key])
   const addKey = context.AddKey(key)
   const guarded = context.UseUnevaluated() ? E.Or(isKey, E.And(isSchema, addKey)) : E.Or(isKey, isSchema)
-  const result =  E.Every(E.Keys(value), E.Constant(0), [key, _index], guarded)
+  const result = E.Every(E.Keys(value), E.Constant(0), [key, _index], guarded)
   return result
 }
 // ------------------------------------------------------------------
@@ -109,7 +109,7 @@ export function BuildAdditionalProperties(stack: Stack, context: BuildContext, s
 export function CheckAdditionalProperties(stack: Stack, context: CheckContext, schema: S.XAdditionalProperties, value: Record<PropertyKey, unknown>): boolean {
   const regexp = new RegExp(GetPropertiesPattern(schema))
   const isAdditionalProperties = G.Every(G.Keys(value), 0, (key, _index) => {
-    return regexp.test(key) || 
+    return regexp.test(key) ||
       (CheckSchemaPushStack(stack, context, schema.additionalProperties, value[key]) && context.AddKey(key))
   })
   return isAdditionalProperties
@@ -124,8 +124,8 @@ export function ErrorAdditionalProperties(stack: Stack, context: ErrorContext, s
     const nextSchemaPath = `${schemaPath}/additionalProperties`
     const nextInstancePath = `${instancePath}/${key}`
     const nextContext = new AccumulatedErrorContext()
-    const isAdditionalProperty = regexp.test(key) || 
-      (ErrorSchemaPushStack(stack, nextContext, nextSchemaPath, nextInstancePath, schema.additionalProperties, value[key]) && context.AddKey(key))    
+    const isAdditionalProperty = regexp.test(key) ||
+      (ErrorSchemaPushStack(stack, nextContext, nextSchemaPath, nextInstancePath, schema.additionalProperties, value[key]) && context.AddKey(key))
 
     if (!isAdditionalProperty) additionalProperties.push(key)
     return isAdditionalProperty
@@ -133,7 +133,7 @@ export function ErrorAdditionalProperties(stack: Stack, context: ErrorContext, s
   return isAdditionalProperties || context.AddError({
     keyword: 'additionalProperties',
     schemaPath,
-    instancePath: instancePath,
+    instancePath,
     params: { additionalProperties },
   })
 }

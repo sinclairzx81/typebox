@@ -10,18 +10,18 @@ import { Guard } from 'typebox/guard'
 const Test = Assert.Context('Schema.Build:Result')
 
 Test('Should Build 1', () => {
-  const build = Schema.Build({ A: { type: 'string' } }, { $ref: 'A' })
-  Assert.IsTrue(Guard.IsBoolean(build.UseUnevaluated()))
+  const buildResult = Schema.Build({ A: { type: 'string' } }, { $ref: 'A' })
+  Assert.IsTrue(Guard.IsBoolean(buildResult.UseUnevaluated()))
 })
 Test('Should Build 2', () => {
-  const build = Schema.Build({ type: 'string' })
-  Assert.IsTrue(Guard.IsString(build.Call()))
+  const buildResult = Schema.Build({ type: 'string' })
+  Assert.IsTrue(Guard.IsString(buildResult.Entry()))
 })
 Test('Should Build 3', () => {
-  const build = Schema.Build({ type: 'string' })
-  const variables = build.External()
-  Assert.HasPropertyKey(variables, 'identifier')
-  Assert.HasPropertyKey(variables, 'variables')
+  const buildResult = Schema.Build({ type: 'string' })
+  const external = buildResult.External()
+  Assert.HasPropertyKey(external, 'identifier')
+  Assert.HasPropertyKey(external, 'variables')
 })
 Test('Should Build 4', () => {
   const build = Schema.Build({ A: { type: 'string' } }, { $ref: 'A' })

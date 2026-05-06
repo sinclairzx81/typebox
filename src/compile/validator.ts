@@ -30,11 +30,10 @@ THE SOFTWARE.
 
 import { Settings } from '../system/settings/index.ts'
 import { Arguments } from '../system/arguments/index.ts'
-import { Environment } from '../system/environment/index.ts'
 import { type TLocalizedValidationError } from '../error/index.ts'
 import { type StaticDecode, type StaticEncode, type TProperties, type TSchema, Base } from '../type/index.ts'
 import { Errors, Clean, Convert, Create, Default, Decode, Encode, HasCodec, Parser, ParseError } from '../value/index.ts'
-import { Build } from '../schema/index.ts'
+import { Build, BuildResult, EvaluateResult } from '../schema/index.ts'
 
 // ------------------------------------------------------------------
 // Validator<...>
@@ -43,40 +42,34 @@ export class Validator<Context extends TProperties = TProperties, Type extends T
   Encode extends unknown = StaticEncode<Type, Context>,
   Decode extends unknown = StaticDecode<Type, Context>
 > extends Base<Encode> {
-  private readonly context: Context
-  private readonly type: Type
-  private readonly isAccelerated: boolean
   private readonly hasCodec: boolean
-  private readonly code: string
-  private readonly check: (value: unknown) => boolean
+  private readonly buildResult: BuildResult
+  private readonly evaluateResult: EvaluateResult
   /** Constructs a Validator with the given Context and Type. */
   constructor(context: Context, type: Type)
   /** Constructs a Validator with the given arguments. */
-  constructor(context: Context, type: Type, isEvaluated: boolean, hasCodec: boolean, code: string, check: (value: unknown) => boolean)
+  constructor(hasCodec: boolean, buildResult: BuildResult, evaluateResult: EvaluateResult)
   /** Constructs a Validator. */
   constructor(...args: unknown[]) {
     super()
-    const matched: [Context, Type, boolean, boolean, string, (value: unknown) => boolean] | [Context, Type] = Arguments.Match(args, {
-      6: (context, type, isEvalulated, hasCodec, code, check) => [context, type, isEvalulated, hasCodec, code, check],
+    const matched: [boolean, BuildResult, EvaluateResult] | [Context, Type] = Arguments.Match(args, {
+      3: (hasCodec, buildResult, evaluateResult) => [hasCodec, buildResult, evaluateResult],
       2: (context, type) => [context, type]
     })
-    if(matched.length === 6) {
-      const [context, type, isEvaluated, hasCodec, code, check] = matched
-      this.context = context
-      this.type = type
-      this.isAccelerated = isEvaluated
+    // Note: The Base type requires this Validator to be Clone, but where we cannot safely clone
+    // the BuildResult or the EvaluateResult. For now we need pass the Validator constructor a 
+    // cloned instance of BuildResult and EvaluateResult such that the Validator clone shares 
+    // the same pre-compiled fields. We should remove this overload when Base is removed.
+    if(matched.length === 3 && matched[1] instanceof BuildResult && matched[2] instanceof EvaluateResult) {
+      const [hasCodec, buildResult, evaluateResult] = matched
       this.hasCodec = hasCodec
-      this.code = code
-      this.check = check
+      this.buildResult = buildResult
+      this.evaluateResult = evaluateResult
     } else {
       const [context, type] = matched as [Context, Type]
-      const result = Build(context, type).Evaluate()
       this.hasCodec = HasCodec(context, type)
-      this.context = context
-      this.type = type
-      this.isAccelerated = result.IsAccelerated
-      this.code = result.Code
-      this.check = result.Check as never
+      this.buildResult = Build(context, type)
+      this.evaluateResult = this.buildResult.Evaluate()
     }
   }
   // ----------------------------------------------------------------
@@ -84,80 +77,82 @@ export class Validator<Context extends TProperties = TProperties, Type extends T
   // ----------------------------------------------------------------
   /** Returns true if this Validator is using JIT acceleration. */
   public IsAccelerated(): boolean {
-    return this.isAccelerated
+    return this.evaluateResult.IsAccelerated()
   }
   // ----------------------------------------------------------------
-  // Context | Type
+  // Context & Type
   // ----------------------------------------------------------------
   /** Returns the Context for this validator. */
   public Context(): Context {
-    return this.context
+    return this.buildResult.Context() as never
   }
   /** Returns the underlying Type used to construct this Validator. */
   public Type(): Type {
-    return this.type
+    return this.buildResult.Schema() as never
   }
   // ----------------------------------------------------------------
   // Code
   // ----------------------------------------------------------------
   /** Returns the generated code for this validator. */
   public Code(): string {
-    return this.code
+    return this.evaluateResult.Code()
   }
   // ----------------------------------------------------------------
-  // Base<...>
+  // Standard Validator
   // ----------------------------------------------------------------
   /** Performs a type-guard check on the provided value. */
   public override Check(value: unknown): value is Encode {
-    return this.check(value)
-  }
-  /** Inspects a value and returns a detailed list of validation errors. */
-  public override Errors(value: unknown): TLocalizedValidationError[] {
-    if (Environment.CanEvaluate() && this.check(value)) return []
-    return Errors(this.context, this.type, value)
-  }
-  /** Cleans a value using the Validator type. */
-  public override Clean(value: unknown): unknown {
-    return Clean(this.context, this.type, value)
-  }
-  /** Converts a value using the Validator type. */
-  public override Convert(value: unknown): unknown {
-    return Convert(this.context, this.type, value)
-  }
-  /** Creates a value using the Validator type. */
-  public override Create(): Encode {
-    return Create(this.context, this.type)
-  }
-  /** Creates defaults using the Validator type. */
-  public override Default(value: unknown): unknown {
-    return Default(this.context, this.type, value)
-  }
-  /** Clones this validator. */
-  public override Clone(): Validator<Context, Type> {
-    return new Validator<Context, Type>(
-      this.context,
-      this.type, 
-      this.isAccelerated, 
-      this.hasCodec, 
-      this.code, 
-      this.check
-    )
+    return this.evaluateResult.Check(value)
   }
   /** Validates a value and returns it. Will throw if invalid. */
   public Parse(value: unknown): Encode {
     const checked = this.Check(value)
     if(checked) return value as never
-    if(Settings.Get().correctiveParse) return Parser(this.context, this.type, value) as never
+    if(Settings.Get().correctiveParse) return Parser(this.Context(), this.Type(), value) as never
     throw new ParseError(value, this.Errors(value))
+  }
+  /** Inspects a value and returns a detailed list of validation errors. */
+  public override Errors(value: unknown): TLocalizedValidationError[] {
+    if (this.IsAccelerated() && this.Check(value)) return []
+    return Errors(this.Context(), this.Type(), value)
+  }
+  // ----------------------------------------------------------------
+  // Value.* Operations
+  // ----------------------------------------------------------------
+  /** Cleans a value using the Validator type. */
+  public override Clean(value: unknown): unknown {
+    return Clean(this.Context(), this.Type(), value)
+  }
+  /** Converts a value using the Validator type. */
+  public override Convert(value: unknown): unknown {
+    return Convert(this.Context(), this.Type(), value)
+  }
+  /** Creates a value using the Validator type. */
+  public override Create(): Encode {
+    return Create(this.Context(), this.Type())
+  }
+  /** Creates defaults using the Validator type. */
+  public override Default(value: unknown): unknown {
+    return Default(this.Context(), this.Type(), value)
   }
   /** Decodes a value */
   public Decode(value: unknown): Decode {
-    const result = this.hasCodec ? Decode(this.context, this.type, value) : this.Parse(value)
+    const result = this.hasCodec ? Decode(this.Context(), this.Type(), value) : this.Parse(value)
     return result as never
   }
   /** Encodes a value */
   public Encode(value: unknown): Encode {
-    const result = this.hasCodec ? Encode(this.context, this.type, value) : this.Parse(value)
+    const result = this.hasCodec ? Encode(this.Context(), this.Type(), value) : this.Parse(value)
     return result as never
+  }
+  // ----------------------------------------------------------------
+  // Deprecations
+  // ----------------------------------------------------------------
+  /** 
+   * @deprecated Validator instances should not support Clone because they are owners of JIT evaluated functions. This function will be 
+   * removed in the next version of TypeBox (relates to Type.Base deprecation)
+   */
+  public override Clone(): Validator<Context, Type> {
+    return new Validator<Context, Type>(this.hasCodec, this.buildResult, this.evaluateResult)
   }
 }

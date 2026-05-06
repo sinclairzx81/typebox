@@ -279,31 +279,31 @@ The following table shows compile performance for various JSON Schema structures
 
 ```python
 ┌──────────────────────┬─────────────┬─────────────┐
-│ Compile              │ TB1X        │ AJV8        │
+│ Test                 │ TB1X        │ AJV8        │
 ├──────────────────────┼─────────────┼─────────────┤
-│ Boolean              │ 28.4K ops/s │    7K ops/s │
-│ Number               │ 21.8K ops/s │  7.7K ops/s │
-│ String               │ 47.8K ops/s │  7.3K ops/s │
-│ Null                 │ 35.6K ops/s │  7.8K ops/s │
-│ Literal_String       │ 28.6K ops/s │  6.3K ops/s │
-│ Literal_Number       │ 46.6K ops/s │  6.2K ops/s │
-│ Literal_Boolean      │ 40.8K ops/s │  6.6K ops/s │
-│ Pattern              │ 29.7K ops/s │  4.9K ops/s │
-│ Object_Open          │  6.8K ops/s │  1.1K ops/s │
-│ Object_Close         │  7.4K ops/s │   833 ops/s │
-│ Object_Vector3       │ 19.4K ops/s │  2.1K ops/s │
-│ Object_Basis3        │    6K ops/s │   895 ops/s │
-│ Intersect_And        │   12K ops/s │  3.5K ops/s │
-│ Intersect_Structural │  8.4K ops/s │  1.1K ops/s │
-│ Union_Or             │ 18.2K ops/s │  2.5K ops/s │
-│ Union_Structural     │ 10.9K ops/s │  1.3K ops/s │
-│ Tuple_Values         │  7.3K ops/s │  1.6K ops/s │
-│ Tuple_Objects        │  1.9K ops/s │   339 ops/s │
-│ Array_Numbers_4      │ 29.9K ops/s │  3.4K ops/s │
-│ Array_Numbers_8      │ 20.3K ops/s │  3.4K ops/s │
-│ Array_Numbers_16     │ 29.4K ops/s │  3.3K ops/s │
-│ Array_Objects_Open   │  6.3K ops/s │   684 ops/s │
-│ Array_Objects_Close  │  7.3K ops/s │   762 ops/s │
+│ Boolean              │ 29.2K ops/s │  7.1K ops/s │
+│ Number               │ 34.5K ops/s │  7.6K ops/s │
+│ String               │ 48.9K ops/s │  8.7K ops/s │
+│ Null                 │ 39.6K ops/s │  7.6K ops/s │
+│ Literal_String       │ 46.8K ops/s │  6.8K ops/s │
+│ Literal_Number       │ 48.3K ops/s │  7.4K ops/s │
+│ Literal_Boolean      │ 48.8K ops/s │  7.3K ops/s │
+│ Pattern              │ 32.5K ops/s │  6.1K ops/s │
+│ Object_Open          │  6.6K ops/s │  1.4K ops/s │
+│ Object_Close         │  7.6K ops/s │    1K ops/s │
+│ Object_Vector3       │ 20.8K ops/s │  2.8K ops/s │
+│ Object_Basis3        │  7.5K ops/s │    1K ops/s │
+│ Intersect_And        │   23K ops/s │  3.9K ops/s │
+│ Intersect_Structural │  8.7K ops/s │  1.2K ops/s │
+│ Union_Or             │ 17.9K ops/s │  3.4K ops/s │
+│ Union_Structural     │ 11.3K ops/s │  2.1K ops/s │
+│ Tuple_Values         │  9.6K ops/s │  2.1K ops/s │
+│ Tuple_Objects        │  2.1K ops/s │   350 ops/s │
+│ Array_Numbers_4      │ 33.6K ops/s │  4.2K ops/s │
+│ Array_Numbers_8      │   39K ops/s │  3.7K ops/s │
+│ Array_Numbers_16     │ 29.6K ops/s │  3.8K ops/s │
+│ Array_Objects_Open   │  7.7K ops/s │   833 ops/s │
+│ Array_Objects_Close  │  7.6K ops/s │   860 ops/s │
 └──────────────────────┴─────────────┴─────────────┘
 ```
 
@@ -312,31 +312,31 @@ The following tables shows validation performance for various JSON Schema struct
 
 ```python
 ┌──────────────────────┬──────────────┬──────────────┐
-│ Validate             │ TB1X         │ AJV8         │
+│ Test                 │ TB1X         │ AJV8         │
 ├──────────────────────┼──────────────┼──────────────┤
-│ Boolean              │ 164.1M ops/s │ 181.5M ops/s │
-│ Number               │   107M ops/s │  50.2M ops/s │
-│ String               │ 102.2M ops/s │  61.9M ops/s │
-│ Null                 │ 112.1M ops/s │  48.2M ops/s │
-│ Literal_String       │ 102.8M ops/s │  61.5M ops/s │
-│ Literal_Number       │ 109.1M ops/s │  46.4M ops/s │
-│ Literal_Boolean      │ 109.6M ops/s │  63.3M ops/s │
-│ Pattern              │  24.7M ops/s │  20.3M ops/s │
-│ Object_Open          │  75.4M ops/s │  37.3M ops/s │
-│ Object_Close         │  35.9M ops/s │  21.9M ops/s │
-│ Object_Vector3       │  77.6M ops/s │  47.4M ops/s │
-│ Object_Basis3        │    37M ops/s │  24.3M ops/s │
-│ Intersect_And        │  93.3M ops/s │  61.1M ops/s │
-│ Intersect_Structural │    83M ops/s │  36.4M ops/s │
-│ Union_Or             │  99.7M ops/s │   8.6M ops/s │
-│ Union_Structural     │  81.3M ops/s │  43.5M ops/s │
-│ Tuple_Values         │  72.4M ops/s │  41.7M ops/s │
-│ Tuple_Objects        │  32.6M ops/s │  22.4M ops/s │
-│ Array_Numbers_4      │  94.1M ops/s │  42.8M ops/s │
-│ Array_Numbers_8      │  90.6M ops/s │  42.3M ops/s │
-│ Array_Numbers_16     │  77.5M ops/s │  40.2M ops/s │
-│ Array_Objects_Open   │  26.3M ops/s │  19.6M ops/s │
-│ Array_Objects_Close  │   9.1M ops/s │    10M ops/s │
+│ Boolean              │ 192.2M ops/s │ 189.5M ops/s │
+│ Number               │ 112.4M ops/s │    61M ops/s │
+│ String               │ 113.7M ops/s │  64.1M ops/s │
+│ Null                 │ 112.8M ops/s │  64.9M ops/s │
+│ Literal_String       │   108M ops/s │  62.9M ops/s │
+│ Literal_Number       │ 113.5M ops/s │  63.2M ops/s │
+│ Literal_Boolean      │ 109.2M ops/s │  64.1M ops/s │
+│ Pattern              │  26.5M ops/s │  22.4M ops/s │
+│ Object_Open          │    78M ops/s │  47.2M ops/s │
+│ Object_Close         │  38.6M ops/s │  27.6M ops/s │
+│ Object_Vector3       │    91M ops/s │  51.3M ops/s │
+│ Object_Basis3        │  41.1M ops/s │  27.4M ops/s │
+│ Intersect_And        │ 107.6M ops/s │  59.9M ops/s │
+│ Intersect_Structural │  83.6M ops/s │  46.3M ops/s │
+│ Union_Or             │    95M ops/s │   7.9M ops/s │
+│ Union_Structural     │  84.5M ops/s │  52.3M ops/s │
+│ Tuple_Values         │  74.7M ops/s │    53M ops/s │
+│ Tuple_Objects        │  32.9M ops/s │  22.3M ops/s │
+│ Array_Numbers_4      │  93.3M ops/s │  55.1M ops/s │
+│ Array_Numbers_8      │  90.3M ops/s │  50.8M ops/s │
+│ Array_Numbers_16     │  76.8M ops/s │  39.6M ops/s │
+│ Array_Objects_Open   │  28.7M ops/s │  20.4M ops/s │
+│ Array_Objects_Close  │  10.3M ops/s │  10.8M ops/s │
 └──────────────────────┴──────────────┴──────────────┘
 ```
 

@@ -47,7 +47,7 @@ function BuildTypeName(_stack: Stack, _context: BuildContext, type: string, valu
     G.IsEqual(type, 'null') ? E.IsNull(value) :
     G.IsEqual(type, 'string') ? E.IsString(value) :
     // xschema
-    G.IsEqual(type, 'asyncIterator') ? E.IsAsyncIterator(value) : 
+    G.IsEqual(type, 'asyncIterator') ? E.IsAsyncIterator(value) :
     G.IsEqual(type, 'bigint') ? E.IsBigInt(value) :
     G.IsEqual(type, 'constructor') ? E.IsConstructor(value) :
     G.IsEqual(type, 'function') ? E.IsFunction(value) :

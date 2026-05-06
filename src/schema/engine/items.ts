@@ -48,7 +48,7 @@ function BuildItemsSized(stack: Stack, context: BuildContext, schema: Schema.XIt
 }
 function CheckItemsSized(stack: Stack, context: CheckContext, schema: Schema.XItemsSized, value: unknown[]): boolean {
   return G.Every(schema.items, 0, (schema, index) => {
-    return G.IsLessEqualThan(value.length, index) 
+    return G.IsLessEqualThan(value.length, index)
       || (CheckSchemaPushStack(stack, context, schema, value[index]) && context.AddIndex(index))
   })
 }
@@ -56,7 +56,7 @@ function ErrorItemsSized(stack: Stack, context: ErrorContext, schemaPath: string
   return G.EveryAll(schema.items, 0, (schema, index) => {
     const nextSchemaPath = `${schemaPath}/items/${index}`
     const nextInstancePath = `${instancePath}/${index}`
-    return G.IsLessEqualThan(value.length, index) 
+    return G.IsLessEqualThan(value.length, index)
       || (ErrorSchemaPushStack(stack, context, nextSchemaPath, nextInstancePath, schema, value[index]) && context.AddIndex(index))
   })
 }
@@ -73,7 +73,7 @@ function BuildItemsUnsized(stack: Stack, context: BuildContext, schema: Schema.X
 function CheckItemsUnsized(stack: Stack, context: CheckContext, schema: Schema.XItemsUnsized, value: unknown[]): boolean {
   const offset = Schema.IsPrefixItems(schema) ? schema.prefixItems.length : 0
   return G.Every(value, offset, (element, index) => {
-    return CheckSchemaPushStack(stack, context, schema.items, element) 
+    return CheckSchemaPushStack(stack, context, schema.items, element)
       && context.AddIndex(index)
   })
 }
@@ -82,7 +82,7 @@ function ErrorItemsUnsized(stack: Stack, context: ErrorContext, schemaPath: stri
   return G.EveryAll(value, offset, (element, index) => {
     const nextSchemaPath = `${schemaPath}/items`
     const nextInstancePath = `${instancePath}/${index}`
-    return ErrorSchemaPushStack(stack, context, nextSchemaPath, nextInstancePath, schema.items, element) 
+    return ErrorSchemaPushStack(stack, context, nextSchemaPath, nextInstancePath, schema.items, element)
       && context.AddIndex(index)
   })
 }

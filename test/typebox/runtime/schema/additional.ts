@@ -13,13 +13,13 @@ const Test = Assert.Context('Schema.Additional')
 // When unevaluatedItems is present, prefixItems should register their indices.
 // This behavior is used for build-time optimization only.
 Test('Should Coverage 1', () => {
-  const check = Schema.Build({
+  const evaluateResult = Schema.Build({
     prefixItems: [{ const: 1 }, { const: 2 }],
     unevaluatedItems: false
-  }).Evaluate().Check
+  }).Evaluate()
 
-  Assert.IsTrue(check([1, 2]))
-  Assert.IsFalse(check([1, 2, 3]))
+  Assert.IsTrue(evaluateResult.Check([1, 2]))
+  Assert.IsFalse(evaluateResult.Check([1, 2, 3]))
 })
 
 // Test 2: Ensures unknown type values are handled correctly.

@@ -45,8 +45,8 @@ function BuildAnyOfFast(stack: Stack, context: BuildContext, schema: Schema.XAny
   return E.ReduceOr(schema.anyOf.map((schema) => BuildSchema(stack, context, schema, value)))
 }
 export function BuildAnyOf(stack: Stack, context: BuildContext, schema: Schema.XAnyOf, value: string): string {
-  return context.UseUnevaluated() 
-    ? BuildAnyOfStandard(stack, context, schema, value) 
+  return context.UseUnevaluated()
+    ? BuildAnyOfStandard(stack, context, schema, value)
     : BuildAnyOfFast(stack, context, schema, value)
 }
 // ------------------------------------------------------------------

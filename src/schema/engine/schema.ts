@@ -222,7 +222,6 @@ export function BuildSchema(stack: Stack, context: BuildContext, schema: Schema.
     const guarded = E.Or(E.Not(E.Or(E.IsNumber(value), E.IsBigInt(value))), reduced)
     conditions.push(HasNumberType(schema) ? reduced : guarded)
   }
-  
   if (Schema.IsRef(schema)) conditions.push(BuildRef(stack, context, schema, value))
   if (Schema.IsRecursiveRef(schema)) conditions.push(BuildRecursiveRef(stack, context, schema, value))
   if (Schema.IsDynamicRef(schema)) conditions.push(BuildDynamicRef(stack, context, schema, value))
@@ -287,7 +286,6 @@ export function CheckSchema(stack: Stack, context: CheckContext, schema: Schema.
       (!Schema.IsMinimum(schema) || CheckMinimum(stack, context, schema, value)) &&
       (!Schema.IsMultipleOf(schema) || CheckMultipleOf(stack, context, schema, value))
     )) &&
-    
     (!Schema.IsRef(schema) || CheckRef(stack, context, schema, value)) &&
     (!Schema.IsRecursiveRef(schema) || CheckRecursiveRef(stack, context, schema, value)) &&
     (!Schema.IsDynamicRef(schema) || CheckDynamicRef(stack, context, schema, value)) &&
