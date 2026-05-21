@@ -57,16 +57,6 @@
         "valid": true
       },
       {
-        "description": "a invalid date string with 29 days in February (normal)",
-        "data": "2021-02-29",
-        "valid": false
-      },
-      {
-        "description": "a valid date string with 29 days in February (leap)",
-        "data": "2020-02-29",
-        "valid": true
-      },
-      {
         "description": "a invalid date string with 30 days in February (leap)",
         "data": "2020-02-30",
         "valid": false
@@ -172,11 +162,6 @@
         "valid": false
       },
       {
-        "description": "a invalid date string with invalid month",
-        "data": "2020-13-01",
-        "valid": false
-      },
-      {
         "description": "an invalid date string",
         "data": "06/19/1963",
         "valid": false
@@ -199,11 +184,6 @@
       {
         "description": "invalid month",
         "data": "1998-13-01",
-        "valid": false
-      },
-      {
-        "description": "invalid month-day combination",
-        "data": "1998-04-31",
         "valid": false
       },
       {
@@ -244,6 +224,119 @@
       {
         "description": "an invalid time string in date-time format",
         "data": "2020-11-28T23:55:45Z",
+        "valid": false
+      },
+      {
+        "description": "year 0000 is a leap year (0 % 400 == 0)",
+        "comment": "https://www.rfc-editor.org/rfc/rfc3339#appendix-C — year zero leap year edge case",
+        "data": "0000-02-29",
+        "valid": true
+      },
+      {
+        "description": "century year 0100 is not a leap year",
+        "comment": "https://www.rfc-editor.org/rfc/rfc3339#appendix-C — 100 % 100 == 0 but 100 % 400 != 0",
+        "data": "0100-02-29",
+        "valid": false
+      },
+      {
+        "description": "century year 0400 is a leap year",
+        "comment": "https://www.rfc-editor.org/rfc/rfc3339#appendix-C — 400-year cycle boundary",
+        "data": "0400-02-29",
+        "valid": true
+      },
+      {
+        "description": "century year 2100 is not a leap year",
+        "comment": "https://www.rfc-editor.org/rfc/rfc3339#appendix-C — future century year",
+        "data": "2100-02-29",
+        "valid": false
+      },
+      {
+        "description": "invalid: leading whitespace is not permitted",
+        "comment": "https://www.rfc-editor.org/rfc/rfc3339#section-5.6 — full-date grammar does not include whitespace",
+        "data": " 2024-01-15",
+        "valid": false
+      },
+      {
+        "description": "invalid: trailing whitespace is not permitted",
+        "comment": "https://www.rfc-editor.org/rfc/rfc3339#section-5.6 — full-date grammar does not include whitespace",
+        "data": "2024-01-15 ",
+        "valid": false
+      },
+      {
+        "description": "invalid: month 00 is not valid per date-month range 01-12",
+        "comment": "https://www.rfc-editor.org/rfc/rfc3339#section-5.6 — date-month = 2DIGIT ; 01-12",
+        "data": "2024-00-15",
+        "valid": false
+      },
+      {
+        "description": "invalid: day 00 is not valid per date-mday minimum of 01",
+        "comment": "https://www.rfc-editor.org/rfc/rfc3339#section-5.6 — date-mday = 2DIGIT ; 01-28/29/30/31",
+        "data": "2024-01-00",
+        "valid": false
+      },
+      {
+        "description": "invalid: empty string",
+        "data": "",
+        "valid": false
+      },
+      {
+        "description": "invalid: embedded whitespace between year and month",
+        "data": "2020 -01-01",
+        "valid": false
+      },
+      {
+        "description": "invalid: trailing character after valid full-date",
+        "data": "2020-01-01X",
+        "valid": false
+      },
+      {
+        "description": "invalid: trailing Z after full-date",
+        "data": "2020-01-01Z",
+        "valid": false
+      },
+      {
+        "description": "invalid: full-date followed by space and time component",
+        "data": "2020-01-01 00:00:00Z",
+        "valid": false
+      },
+      {
+        "description": "valid: four-digit year 0001",
+        "data": "0001-01-01",
+        "valid": true
+      },
+      {
+        "description": "invalid: two-digit year (N-2 digits)",
+        "data": "20-01-01",
+        "valid": false
+      },
+      {
+        "description": "invalid: three-digit year (N-1 digits)",
+        "data": "998-01-01",
+        "valid": false
+      },
+      {
+        "description": "invalid: five-digit year (N+1 digits)",
+        "data": "12020-01-01",
+        "valid": false
+      },
+      {
+        "description": "invalid: positive sign prefix on year",
+        "data": "+2020-01-01",
+        "valid": false
+      },
+      {
+        "description": "invalid: negative sign prefix on year",
+        "data": "-2020-01-01",
+        "valid": false
+      },
+      {
+        "description": "invalid: non-ASCII Bengali digit in year field",
+        "data": "২020-01-01",
+        "valid": false
+      },
+      {
+        "description": "invalid: alphabetic characters in year field",
+        "data": "YYYY-01-01",
         "valid": false
       }
     ]

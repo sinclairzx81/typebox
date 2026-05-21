@@ -1,5 +1,31 @@
 [
   {
+    "description": "nested refs",
+    "schema": {
+      "definitions": {
+        "a": {
+          "type": "integer"
+        },
+        "b": {
+          "$ref": "#/definitions/a"
+        },
+        "c": {
+          "$ref": "#/definitions/b"
+        }
+      },
+      "extends": {
+        "$ref": "#/definitions/c"
+      }
+    },
+    "tests": [
+      {
+        "description": "nested ref invalid",
+        "data": "a",
+        "valid": false
+      }
+    ]
+  },
+  {
     "description": "ref overrides any sibling keywords",
     "schema": {
       "definitions": {

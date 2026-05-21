@@ -189,18 +189,15 @@
           "$ref": "#/definitions/b"
         }
       },
-      "$ref": "#/definitions/c"
+      "extends": {
+        "$ref": "#/definitions/c"
+      }
     },
     "tests": [
       {
         "description": "nested ref valid",
         "data": 5,
         "valid": true
-      },
-      {
-        "description": "nested ref invalid",
-        "data": "a",
-        "valid": false
       }
     ]
   },

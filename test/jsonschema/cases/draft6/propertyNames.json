@@ -47,6 +47,16 @@
         "description": "ignores other non-objects",
         "data": 12,
         "valid": true
+      },
+      {
+        "description": "ignores null",
+        "data": null,
+        "valid": true
+      },
+      {
+        "description": "ignores booleans",
+        "data": true,
+        "valid": true
       }
     ]
   },
