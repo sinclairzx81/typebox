@@ -25,32 +25,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
-export * from './_optional.ts'
-export * from './_readonly.ts'
 
-export * from './awaited.ts'
-export * from './capitalize.ts'
-export * from './conditional.ts'
-export * from './constructor_parameters.ts'
-export * from './evaluate.ts'
-export * from './exclude.ts'
-export * from './extract.ts'
-export * from './indexed.ts'
-export * from './instance_type.ts'
-export * from './interface.ts'
-export * from './keyof.ts'
-export * from './lowercase.ts'
-export * from './mapped.ts'
-export * from './module.ts'
-export * from './non_nullable.ts'
-export * from './nullable.ts'
-export * from './omit.ts'
-export * from './options.ts'
-export * from './parameters.ts'
-export * from './partial.ts'
-export * from './pick.ts'
-export * from './readonly_object.ts'
-export * from './required.ts'
-export * from './return_type.ts'
-export * from './uncapitalize.ts'
-export * from './uppercase.ts'
+// deno-fmt-ignore-file
+
+import { type TSchema, type TSchemaOptions } from '../types/schema.ts'
+import { type TDeferred, Deferred } from '../types/deferred.ts'
+import { type TNullableAction, NullableAction } from '../engine/nullable/instantiate.ts'
+
+export type TNullableDeferred<Type extends TSchema> = TDeferred<'Nullable', [Type]>
+export function NullableDeferred<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TNullableDeferred<Type> {
+  return Deferred('Nullable', [type], options)
+}
+
+export type TNullable<Type extends TSchema> = TNullableAction<Type>
+/** Creates a union of the given type and null. */
+export function Nullable<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TNullable<Type> {
+  return NullableAction(type, options)
+}

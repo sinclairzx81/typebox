@@ -59,6 +59,7 @@ export { Lowercase, type TLowercase, type TLowercaseDeferred } from './type/acti
 export { Mapped, type TMapped, type TMappedDeferred } from './type/action/mapped.ts'
 export { Module, type TModule, type TModuleDeferred } from './type/action/module.ts'
 export { NonNullable, type TNonNullable, type TNonNullableDeferred } from './type/action/non_nullable.ts'
+export { Nullable, type TNullable, type TNullableDeferred } from './type/action/nullable.ts'
 export { Omit, type TOmit, type TOmitDeferred } from './type/action/omit.ts'
 export { Options, type TOptions } from './type/action/options.ts'
 export { Parameters, type TParameters, type TParametersDeferred } from './type/action/parameters.ts'

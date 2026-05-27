@@ -86,6 +86,7 @@ import { type TLowercaseInstantiate, LowercaseInstantiate } from './intrinsics/i
 import { type TMappedInstantiate, MappedInstantiate } from './mapped/instantiate.ts'
 import { type TModuleInstantiate, ModuleInstantiate } from './module/instantiate.ts'
 import { type TNonNullableInstantiate, NonNullableInstantiate } from './non_nullable/instantiate.ts'
+import { type TNullableInstantiate, NullableInstantiate } from './nullable/instantiate.ts'
 import { type TOmitInstantiate, OmitInstantiate } from './omit/instantiate.ts'
 import { type TOptionsInstantiate, OptionsInstantiate } from './options/instantiate.ts'
 import { type TParametersInstantiate, ParametersInstantiate } from './parameters/instantiate.ts'
@@ -242,6 +243,7 @@ type TInstantiateDeferred<Context extends TProperties, State extends TState, Act
   [Action, Parameters] extends ['Mapped', [infer Name extends TIdentifier, infer Key extends TSchema, infer As extends TSchema, infer Property extends TSchema]] ? TMappedInstantiate<Context, State,Name, Key, As, Property> :
   [Action, Parameters] extends ['Module', [infer Properties extends TProperties]] ? TModuleInstantiate<Context, State, Properties> :
   [Action, Parameters] extends ['NonNullable', [infer Type extends TSchema]] ? TNonNullableInstantiate<Context, State, Type> :
+  [Action, Parameters] extends ['Nullable', [infer Type extends TSchema]] ? TNullableInstantiate<Context, State, Type> :
   [Action, Parameters] extends ['Pick', [infer Type extends TSchema, infer Indexer extends TSchema]] ? TPickInstantiate<Context, State, Type, Indexer> :
   [Action, Parameters] extends ['Options', [infer Type extends TSchema, infer Options extends TSchema]] ? TOptionsInstantiate<Context, State, Type, Options> :
   [Action, Parameters] extends ['Parameters', [infer Type extends TSchema]] ? TParametersInstantiate<Context, State, Type> :
@@ -275,6 +277,7 @@ function InstantiateDeferred<Context extends TProperties, State extends TState, 
     Guard.IsEqual(action, 'Mapped') ? MappedInstantiate(context, state, parameters[0] as TIdentifier, parameters[1], parameters[2], parameters[3], options) :
     Guard.IsEqual(action, 'Module') ? ModuleInstantiate(context, state, parameters[0] as TProperties, options) :
     Guard.IsEqual(action, 'NonNullable') ? NonNullableInstantiate(context, state, parameters[0], options) as never :
+    Guard.IsEqual(action, 'Nullable') ? NullableInstantiate(context, state, parameters[0], options) as never :
     Guard.IsEqual(action, 'Pick') ? PickInstantiate(context, state, parameters[0], parameters[1], options) :
     Guard.IsEqual(action, 'Options') ? OptionsInstantiate(context, state, parameters[0], parameters[1]) as never :
     Guard.IsEqual(action, 'Parameters') ? ParametersInstantiate(context, state, parameters[0], options) :
