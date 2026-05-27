@@ -542,7 +542,18 @@ export function BaseMapping(input: [unknown, unknown, unknown] | unknown): unkno
     : input as T.TSchema
 }
 // -------------------------------------------------------------------
-// Factor: [KeyOf, Base, IndexArray, Extends]
+// With: ['with', JsonObject] | []
+// -------------------------------------------------------------------
+export type TWithMapping<Input extends [unknown, unknown] | []> = (
+  Input extends ['with', infer Options extends Record<PropertyKey, unknown>]
+    ? Options
+    : []
+)
+export function WithMapping(input: [unknown, unknown] | []): unknown {
+  return Guard.IsEqual(input.length, 2) ? input[1] : []
+}
+// -------------------------------------------------------------------
+// Factor: [KeyOf, Base, IndexArray, Extends, With]
 // -------------------------------------------------------------------
 type TFactorIndexArray<Type extends T.TSchema, IndexArray extends unknown[]> = (
   IndexArray extends [infer Left extends T.TSchema[], ...infer Right extends unknown[]] ? (
@@ -556,16 +567,21 @@ type TFactorExtends<Type extends T.TSchema, Extends extends unknown[]> = (
   ? C.TConditionalDeferred<Type, Right, True, False>
   : Type
 )
-export type TFactorMapping<Input extends [unknown, unknown, unknown, unknown]> = (
-  Input extends [infer KeyOf extends boolean, infer Type extends T.TSchema, infer IndexArray extends unknown[], infer Extend extends unknown[]]
-    ? KeyOf extends true
-      ? TFactorExtends<C.TKeyOfDeferred<TFactorIndexArray<Type, IndexArray>>, Extend>
-      : TFactorExtends<TFactorIndexArray<Type, IndexArray>, Extend>
+type TFactorWith<Type extends T.TSchema, With extends unknown> = (
+  With extends Record<PropertyKey, unknown>
+    ? C.TOptionsDeferred<Type, With>
+    : Type
+)
+export type TFactorMapping<Input extends [unknown, unknown, unknown, unknown, unknown]> = (
+  Input extends [infer KeyOf extends boolean, infer Type extends T.TSchema, infer IndexArray extends unknown[], infer Extend extends unknown[], infer WithClause extends unknown]
+    ? TFactorWith<KeyOf extends true
+        ? TFactorExtends<C.TKeyOfDeferred<TFactorIndexArray<Type, IndexArray>>, Extend>
+        : TFactorExtends<TFactorIndexArray<Type, IndexArray>, Extend>
+      , WithClause>
     : never
 )
 // deno-coverage-ignore-start
-// ...
-const FactorIndexArray = (Type: T.TSchema, indexArray: unknown[]): T.TSchema => {
+function FactorIndexArray(Type: T.TSchema, indexArray: unknown[]): T.TSchema {
   return indexArray.reduce<T.TSchema>((result, left) => {
     const _left = left as T.TSchema[]
     return (
@@ -576,16 +592,21 @@ const FactorIndexArray = (Type: T.TSchema, indexArray: unknown[]): T.TSchema => 
   }, Type)
 }
 // deno-coverage-ignore-stop
-const FactorExtends = (type: T.TSchema, extend: T.TSchema[]) => {
+function FactorExtends(type: T.TSchema, extend: T.TSchema[]): T.TSchema {
   return Guard.IsEqual(extend.length, 3)
     ? C.ConditionalDeferred(type, extend[0], extend[1], extend[2])
     : type
 }
-export function FactorMapping(input: [unknown, unknown, unknown, unknown]): unknown {
-  const [keyOf, type, indexArray, extend] = input as [boolean, T.TSchema, unknown[], T.TSchema[]]
-  return keyOf
+function FactorWith(type: T.TSchema, withClause: unknown): T.TSchema {
+  return Guard.IsArray(withClause) && Guard.IsEqual(withClause.length, 0)
+    ? type
+    : C.OptionsDeferred(type, withClause as T.TSchema)
+}
+export function FactorMapping(input: [unknown, unknown, unknown, unknown, unknown]): unknown {
+  const [keyOf, type, indexArray, extend, withClause] = input as [boolean, T.TSchema, unknown[], T.TSchema[], unknown]
+  return FactorWith(keyOf
     ? FactorExtends(C.KeyOfDeferred(FactorIndexArray(type, indexArray)), extend)
-    : FactorExtends(FactorIndexArray(type, indexArray), extend)
+    : FactorExtends(FactorIndexArray(type, indexArray), extend), withClause)
 }
 // ------------------------------------------------------------------
 //

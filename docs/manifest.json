@@ -48,8 +48,8 @@
   },
   "script": {
     "1_syntax": "docs/script/1_syntax.html",
-    "2_parameters": "docs/script/2_parameters.html",
-    "3_options": "docs/script/3_options.html",
+    "2_options": "docs/script/2_options.html",
+    "3_parameters": "docs/script/3_parameters.html",
     "4_advanced": "docs/script/4_advanced.html",
     "5_scaling": "docs/script/5_scaling.html",
     "overview": "docs/script/overview.html"

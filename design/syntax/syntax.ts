@@ -288,13 +288,21 @@ const Base = Runtime.Union([
   Runtime.Ref('Reference')
 ])
 // ------------------------------------------------------------------
+// With
+// ------------------------------------------------------------------
+const With = Runtime.Union([
+  Runtime.Tuple([Runtime.Const('with'), Runtime.Ref('JsonObject')]),
+  Runtime.Tuple([])
+])
+// ------------------------------------------------------------------
 // Factor
 // ------------------------------------------------------------------
 const Factor = Runtime.Tuple([
   Runtime.Ref('KeyOf'),
   Runtime.Ref('Base'),
   Runtime.Ref('IndexArray'),
-  Runtime.Ref('Extends')
+  Runtime.Ref('Extends'),
+  Runtime.Ref('With')
 ])
 // ------------------------------------------------------------------
 // Expr
@@ -649,7 +657,6 @@ const Options = Runtime.Tuple([
 // Options generic type, and thus span multiple parsing contexts
 // 
 // ------------------------------------------------------------------
-
 // ------------------------------------------------------------------
 // JsonNumber
 // ------------------------------------------------------------------
@@ -953,6 +960,7 @@ export const SyntaxModule = new Runtime.Module({
   IndexArray,
   Extends,
   Base,
+  With,
   Factor,
   ExprTermTail,
   ExprTerm,

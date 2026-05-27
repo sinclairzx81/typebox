@@ -1,29 +1,190 @@
 # Script.Syntax
 
-The Script function will transform TypeScript types into Json Schema schematics.
+The Script function is designed to evaluate most TypeScript type expressions, including raw types, interfaces, type aliases, conditional and mapped expressions, and generics. The Script function returns TypeBox types which are themselves JSON Schema, thus Script can be thought of as a TypeScript-based programmable DSL for the JSON Schema specification.
+
+## Types
+
+Script has support for most TypeScript types and structural constructs. Each type will map into its corresponding TypeBox representation, which can be serialized as JSON Schema or compiled into a validator.
+
+```typescript
+// ------------------------------------------------------------------
+// Literal
+// ------------------------------------------------------------------
+const T0 = Type.Script('1')                             // TLiteral<1>
+const T1 = Type.Script('true')                          // TLiteral<true>
+const T2 = Type.Script('"hello"')                       // TLiteral<"hello">
+const T3 = Type.Script('10000n')                        // TLiteral<10000n>
+
+// ------------------------------------------------------------------
+// TemplateLiteral
+// ------------------------------------------------------------------
+const T4 = Type.Script('`hello${1|2}`')                 // TTemplateLiteral<'^hello(1|2)$'>
+
+// ------------------------------------------------------------------
+// JsonSchema
+// ------------------------------------------------------------------
+const T5  = Type.Script('any')                          // TAny
+const T6  = Type.Script('unknown')                      // TUnknown
+const T7  = Type.Script('never')                        // TNever
+const T8  = Type.Script('boolean')                      // TBoolean
+const T9  = Type.Script('integer')                      // TInteger
+const T10 = Type.Script('number')                       // TNumber
+const T11 = Type.Script('string')                       // TString
+const T12 = Type.Script('null')                         // TNull
+
+// ------------------------------------------------------------------
+// JavaScript
+// ------------------------------------------------------------------
+const T13 = Type.Script('bigint')                        // TBigInt
+const T14 = Type.Script('symbol')                        // TSymbol 
+const T15 = Type.Script('undefined')                     // TUndefined
+const T16 = Type.Script('void')                          // TVoid
+
+// ------------------------------------------------------------------
+// Structural
+// ------------------------------------------------------------------
+const T17 = Type.Script('{ x: number }')                 // TObject<{ x: TNumber }>
+const T18 = Type.Script('[1, 2]')                        // TTuple<[TLiteral<1>, TLiteral<2>]>
+const T19 = Type.Script('number[]')                      // TArray<TNumber>
+
+// ------------------------------------------------------------------
+// Intersect
+// ------------------------------------------------------------------
+const T20 = Type.Script('{ x: 1 } & { y: 2 }')           // TIntersect<[
+                                                         //   TObject<{
+                                                         //     x: TLiteral<1>
+                                                         //   }>,
+                                                         //   TObject<{
+                                                         //     y: TLiteral<2>
+                                                         //   }>,
+                                                         // ]>
+
+// ------------------------------------------------------------------
+// Union
+// ------------------------------------------------------------------
+const T21 = Type.Script('{ x: 1 } | { y: 2 }')           // TUnion<[
+                                                         //   TObject<{
+                                                         //     x: TLiteral<1>
+                                                         //   }>,
+                                                         //   TObject<{
+                                                         //     y: TLiteral<2>
+                                                         //   }>,
+                                                         // ]>
+
+// ------------------------------------------------------------------
+// Function
+// ------------------------------------------------------------------
+const T22 = Type.Script(`(a: number, b: number) => number`)
+
+                                                        // TFunction<[TNumber, TNumber], TNumber>
+
+// ------------------------------------------------------------------
+// Constructor
+// ------------------------------------------------------------------
+const T23 = Type.Script(`new (a: number, b: number) => { 
+  foo: (x: string) => void
+  bar: (x: string) => void
+  baz: (x: string) => void
+}`)                                                      // TConstructor<[TNumber, TNumber], TObject<{
+                                                         //   foo: TFunction<[TString], TVoid>
+                                                         //   bar: TFunction<[TString], TVoid>
+                                                         //   baz: TFunction<[TString], TVoid>
+                                                         // }>>
+```
 
 ## Type Expressions
 
-The Script function can accept anonymous TypeScript type expressions.
+Script provides support for most TypeScript type-level expressions.
 
 ```typescript
-const A = Type.Script('"hello"')
+// ------------------------------------------------------------------
+// Conditional
+// ------------------------------------------------------------------
+const T0 = Type.Script(`1 extends 2 ? true : false`)     // TFalse
+const T1 = Type.Script('1 extends infer A ? [A]: never') // TTuple<[TLiteral<1>]>
 
-const B = Type.Script(`{
-  x: number
-  y: number
-  z: number
-}`)
+// ------------------------------------------------------------------
+// Mapped
+// ------------------------------------------------------------------
+const T2 = Type.Script(`{
+  [K in keyof 'x' | 'y' | 'z']: number
+}`)                                                      // TObject<{
+                                                         //   x: TNumber,
+                                                         //   y: TNumber,
+                                                         //   z: TNumber
+                                                         // }>
 
-const C = Type.Script(`
-{ x: number } & (
-  { y: number } | 
-  { z: number }
-)`)
+const T3 = Type.Script(`{
+  [K in keyof 'x' | 'y' | 'z' as Uppercase<K>]?: number
+}`)                                                      // TObject<{
+                                                         //   X: TOptional<TNumber>,
+                                                         //   Y: TOptional<TNumber>,
+                                                         //   Z: TOptional<TNumber>
+                                                         // }>
 
+// ------------------------------------------------------------------
+// KeyOf
+// ------------------------------------------------------------------
+const T4 = Type.Script(`keyof { x: number, y: number }`) // TUnion<[
+                                                         //   TLiteral<'x'>,
+                                                         //   TLiteral<'y'>
+                                                         // ]>
+
+// ------------------------------------------------------------------
+// Indexed
+// ------------------------------------------------------------------
+const T5 = Type.Script(`[1, 2, 3][2]`)                   // TLiteral<3>
+const T6 = Type.Script(`{ x: number }['x']`)             // TNumber
+
+// ------------------------------------------------------------------
+// Generic + Invoke
+// ------------------------------------------------------------------
+const T7 = Type.Script(`<T> = [T, T, T]`)                // TGeneric<...>
+
+const T8 = Type.Script({ T7 }, `T7<1>`)                  // TTuple<[
+                                                         //   TLiteral<1>,
+                                                         //   TLiteral<1>,
+                                                         //   TLiteral<1>,
+                                                         // ]>
 ```
 
-## Type Alias and Interface
+## Type Utilities
+
+Script includes support for most TypeScript utility and intrinsic types.
+
+```typescript
+// ------------------------------------------------------------------
+// Utility Types 
+// ------------------------------------------------------------------
+const T0  = Type.Script(`Partial<{ x: number }>`)
+const T1  = Type.Script(`Required<{ x: number }>`)
+const T2  = Type.Script(`Readonly<{ x: number }>`)
+const T3  = Type.Script(`Pick<{ x: number, y: number }, 'x'>`)
+const T4  = Type.Script(`Omit<{ x: number, y: number }, 'x'>`)
+const T5  = Type.Script(`NonNullable<string | null>`)
+const T6  = Type.Script('Exclude<1 | 2 | 3, 1 | 2>')
+const T7  = Type.Script('Extract<1 | 2 | 3, 1 | 2>')
+const T8  = Type.Script('ConstructorParameters<new (x: number) => {}>')
+const T9  = Type.Script('Parameters<(x: number) => number>')
+const T10 = Type.Script('ReturnType<(x: number) => number>')
+const T11 = Type.Script('InstanceType<(x: number) => number>')
+
+// ------------------------------------------------------------------
+// Intrinsic String Manipulation
+// ------------------------------------------------------------------
+const T12 = Type.Script('Uppercase<"hello">')
+const T13 = Type.Script('Lowercase<"hello">')
+const T14 = Type.Script('Capitalize<"hello">')
+const T15 = Type.Script('Uncapitalize<"hello">')
+
+// ------------------------------------------------------------------
+// Extension Types
+// ------------------------------------------------------------------
+const T16 = Type.Script('Evaluate<{ x: number } & { y: number }>')
+const T17 = Type.Script('Options<{ x: number }, { additionalProperties: false }>')
+```
+
+## Type Modules
 
 The Script function also accepts `type` and `interface` declarations. The return value will be an object containing all embedded declarations.
 
@@ -35,7 +196,7 @@ const { Expression, ConstDeclaration, BinaryExpression, ConstExpression } = Type
     | ConstExpression
 
   interface ConstDeclaration {
-    type: 'ConstDeclaration',
+    type: 'ConstDeclaration'
     name: string
     value: Expression
   }
@@ -49,21 +210,20 @@ const { Expression, ConstDeclaration, BinaryExpression, ConstExpression } = Type
     const: unknown
   }
 `)
-
 ```
 
-# Unsupported
+## Unsupported
 
 The following constructs are currently unsupported.
 
 ### Template Literal Substring Infer
 
-Script does not support substring inference with TemplateLiteral types.
+Script does not support substring inference with `TemplateLiteral` types.
 
 ```typescript
 type Get<S extends string> = S extends `hello ${infer Name}` ? Name : never
 //                                             ^
-//                                             Substring Infer Not Supported
+//                                             Substring infer not supported
 ```
 
 ### Embedded Function with Generic Type Parameter
@@ -73,5 +233,5 @@ Script does not support embedded function types with generic type parameters.
 ```typescript
 type Foo = { x: <T>(value: T) => string }
 //              ^ 
-//              Embedded Generic Function Not Supported
+//              Embedded generic function not supported
 ```
