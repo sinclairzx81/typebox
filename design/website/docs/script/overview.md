@@ -1,6 +1,6 @@
 # Script
 
-TypeScript Syntax Engine
+Runtime TypeScript Engine For JSON Schema
 
 ## Overview
 
