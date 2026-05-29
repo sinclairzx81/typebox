@@ -283,6 +283,7 @@ const Base = Runtime.Union([
   Runtime.Ref('Constructor'),
   Runtime.Ref('_Function_'),
   Runtime.Ref('Mapped'),
+  Runtime.Ref('_If_'),
   Runtime.Ref('Options'),
   Runtime.Ref('GenericCall'),
   Runtime.Ref('Reference')
@@ -636,6 +637,14 @@ const Mapped = Runtime.Tuple([
   Runtime.Ref('Type'),
   Runtime.Ref('OptionalSemiColon'),
   Runtime.Const(RBrace),
+])
+// ------------------------------------------------------------------
+// If
+// ------------------------------------------------------------------
+const _If_ = Runtime.Union([
+  Runtime.Tuple([Runtime.Const('if'), Runtime.Ref('Type'), Runtime.Const('then'), Runtime.Ref('Type'), Runtime.Const('else'), Runtime.Ref('Type')]),
+  Runtime.Tuple([Runtime.Const('if'), Runtime.Ref('Type'), Runtime.Const('then'), Runtime.Ref('Type')]),
+  Runtime.Tuple([Runtime.Const('if'), Runtime.Ref('Type'), Runtime.Const('else'), Runtime.Ref('Type')])
 ])
 // ------------------------------------------------------------------
 // Options
@@ -1008,6 +1017,9 @@ export const SyntaxModule = new Runtime.Module({
   MappedOptional,
   MappedAs,
   Mapped,
+
+  _If_,
+
   Reference,
   Options,
 
