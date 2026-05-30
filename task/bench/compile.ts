@@ -1,5 +1,5 @@
 import { TypeCompiler } from 'npm:@sinclair/typebox/compiler'
-import { TSchema } from 'npm:@sinclair/typebox'
+import { type TSchema } from 'npm:@sinclair/typebox'
 import { Compile } from 'typebox/compile'
 import Ajv from 'npm:ajv'
 

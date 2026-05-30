@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { BenchmarkResult, PrintOptions, Units } from './common.ts'
+import type { BenchmarkResult, PrintOptions, Units } from './common.ts'
 
 function FormatResults(
   benchmark: BenchmarkResult,

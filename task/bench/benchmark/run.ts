@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { BenchmarkResult, TestResultsRaw } from './common.ts'
+import type { BenchmarkResult, TestResultsRaw } from './common.ts'
 
 // ------------------------------------------------------------------
 // Iterations

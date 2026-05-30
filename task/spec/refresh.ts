@@ -33,7 +33,6 @@ import * as Schema from 'typebox/schema'
 import * as Process from './process.ts'
 import * as Report from './report.ts'
 import type { JSONSchemaTestSuite } from './types.ts'
-import { Folder } from 'https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.9/src/build/dual/folder.ts'
 
 // ------------------------------------------------------------------
 // Clone

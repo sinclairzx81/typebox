@@ -1918,5 +1918,77 @@
         "valid": false
       }
     ]
+  },
+  {
+    "description": "Evaluated properties collection needs to consider instance location with patternProperties",
+    "schema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "properties": {
+        "foo": {
+          "patternProperties": {
+            "^bar$": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "tests": [
+      {
+        "description": "with only the nested evaluated property",
+        "data": {
+          "foo": {
+            "bar": "foo"
+          }
+        },
+        "valid": true
+      },
+      {
+        "description": "with an unevaluated property that exists at another location",
+        "data": {
+          "foo": {
+            "bar": "foo"
+          },
+          "bar": "bar"
+        },
+        "valid": false
+      }
+    ]
+  },
+  {
+    "description": "Evaluated properties collection needs to consider instance location with additionalProperties",
+    "schema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "properties": {
+        "foo": {
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "tests": [
+      {
+        "description": "with only the nested evaluated property",
+        "data": {
+          "foo": {
+            "bar": "foo"
+          }
+        },
+        "valid": true
+      },
+      {
+        "description": "with an unevaluated property that exists at another location",
+        "data": {
+          "foo": {
+            "bar": "foo"
+          },
+          "bar": "bar"
+        },
+        "valid": false
+      }
+    ]
   }
 ]
