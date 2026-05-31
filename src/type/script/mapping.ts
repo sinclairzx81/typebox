@@ -1208,22 +1208,19 @@ export function MappedMapping(input: [unknown, unknown, unknown, unknown, unknow
   )
 }
 // -------------------------------------------------------------------
-// _If_: ['if', Type, 'then', Type, 'else', Type] | ['if', Type, 'then', Type] | ['if', Type, 'else', Type]
+// IfThenElse: ['if', Type, 'then', Type, 'else', Type] | ['if', Type, 'then', Type]
 // -------------------------------------------------------------------
-export type T_If_Mapping<Input extends [unknown, unknown, unknown, unknown, unknown, unknown] | [unknown, unknown, unknown, unknown]> = (
+export type TIfThenElseMapping<Input extends [unknown, unknown, unknown, unknown, unknown, unknown] | [unknown, unknown, unknown, unknown]> = (
   Input extends ['if', infer If extends T.TSchema, 'then', infer Then extends T.TSchema, 'else', infer Else extends T.TSchema]
-    ? T.TIf<If, Then, Else> :
+    ? T.TIfThenElse<If, Then, Else> :
   Input extends ['if', infer If extends T.TSchema, 'then', infer Then extends T.TSchema]
-    ? T.TIf<If, Then, T.TUnknown> :
-  Input extends ['if', infer If extends T.TSchema, 'else', infer Else extends T.TSchema]
-    ? T.TIf<If, T.TUnknown, Else> :
+    ? T.TIfThenElse<If, Then, T.TUnknown> :
   never
 )
-export function _If_Mapping(input: [unknown, unknown, unknown, unknown, unknown, unknown] | [unknown, unknown, unknown, unknown]): unknown {
+export function IfThenElseMapping(input: [unknown, unknown, unknown, unknown, unknown, unknown] | [unknown, unknown, unknown, unknown]): unknown {
   return (
-    Guard.IsEqual(input.length, 6) ? T.If(input[1] as T.TSchema, input[3] as T.TSchema, input[5] as T.TSchema) :
-    Guard.IsEqual(input[2], 'then') ? T.If(input[1] as T.TSchema, input[3] as T.TSchema, T.Unknown()) :
-    T.If(input[1] as T.TSchema, T.Unknown(), input[3] as T.TSchema)
+    Guard.IsEqual(input.length, 6) ? T.IfThenElse(input[1] as T.TSchema, input[3] as T.TSchema, input[5] as T.TSchema) :
+    T.IfThenElse(input[1] as T.TSchema, input[3] as T.TSchema, T.Unknown())
   )
 }
 // -------------------------------------------------------------------

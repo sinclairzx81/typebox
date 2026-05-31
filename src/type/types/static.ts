@@ -41,7 +41,7 @@ import type { StaticCyclic, TCyclic } from './cyclic.ts'
 import type { StaticEnum, TEnum, TEnumValue } from './enum.ts'
 import type { StaticFunction, TFunction } from './function.ts'
 import type { StaticInteger, TInteger } from './integer.ts'
-import type { StaticIf, TIf } from './if.ts'
+import type { StaticIfThenElse, TIfThenElse } from './if_then_else.ts'
 import type { StaticIntersect, TIntersect } from './intersect.ts'
 import type { StaticIterator, TIterator } from './iterator.ts'
 import type { StaticLiteral, TLiteral, TLiteralValue } from './literal.ts'
@@ -90,7 +90,7 @@ export type StaticType<Stack extends string[], Direction extends StaticDirection
   Type extends TConstructor<infer Parameters extends TSchema[], infer ReturnType extends TSchema> ? StaticConstructor<Stack, Direction, Context, This, Parameters, ReturnType> :
   Type extends TEnum<infer Values extends TEnumValue[]> ? StaticEnum<Values> :
   Type extends TFunction<infer Parameters extends TSchema[], infer ReturnType extends TSchema> ? StaticFunction<Stack, Direction, Context, This, Parameters, ReturnType> :
-  Type extends TIf<infer If extends TSchema, infer Then extends TSchema, infer Else extends TSchema> ? StaticIf<Stack, Direction, Context, This, If, Then, Else> :
+  Type extends TIfThenElse<infer If extends TSchema, infer Then extends TSchema, infer Else extends TSchema> ? StaticIfThenElse<Stack, Direction, Context, This, If, Then, Else> :
   Type extends TInteger ? StaticInteger :
   Type extends TIntersect<infer Types extends TSchema[]> ? StaticIntersect<Stack, Direction, Context, This, Types> :
   Type extends TIterator<infer Types extends TSchema> ? StaticIterator<Stack, Direction, Context, This, Types> :

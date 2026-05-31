@@ -36,7 +36,7 @@ import { type TProperties } from './properties.ts'
 // ------------------------------------------------------------------
 // Static
 // ------------------------------------------------------------------
-export type StaticIf<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties, If extends TSchema, Then extends TSchema, Else extends TSchema,
+export type StaticIfThenElse<Stack extends string[], Direction extends StaticDirection, Context extends TProperties, This extends TProperties, If extends TSchema, Then extends TSchema, Else extends TSchema,
   StaticIf extends unknown = StaticType<Stack, Direction, Context, This, If>,
   StaticThen extends unknown = StaticType<Stack, Direction, Context, This, Then>,
   StaticElse extends unknown = StaticType<Stack, Direction, Context, This, Else>,
@@ -46,8 +46,8 @@ export type StaticIf<Stack extends string[], Direction extends StaticDirection, 
 // Type
 // ------------------------------------------------------------------
 /** Represents a Conditionally Dependent If Type */
-export interface TIf<If extends TSchema = TSchema, Then extends TSchema = TSchema, Else extends TSchema = TSchema> extends TSchema {
-  '~kind': 'If'
+export interface TIfThenElse<If extends TSchema = TSchema, Then extends TSchema = TSchema, Else extends TSchema = TSchema> extends TSchema {
+  '~kind': 'IfThenElse'
   if: If
   then: Then
   else: Else
@@ -55,22 +55,22 @@ export interface TIf<If extends TSchema = TSchema, Then extends TSchema = TSchem
 // ------------------------------------------------------------------
 // Factory
 // ------------------------------------------------------------------
-/** Creates a Conditionally Dependent If Type */
-export function If<If extends TSchema, Then extends TSchema, Else extends TSchema>(if_: If, then_: Then, else_: Else, options: TSchemaOptions = {}): TIf<If, Then, Else> {
-  return Memory.Create({ '~kind': 'If' }, { if: if_, then: then_, else: else_ }, options) as never
+/** Creates a IfThenElse type */
+export function IfThenElse<If extends TSchema, Then extends TSchema, Else extends TSchema>(if_: If, then_: Then, else_: Else, options: TSchemaOptions = {}): TIfThenElse<If, Then, Else> {
+  return Memory.Create({ '~kind': 'IfThenElse' }, { if: if_, then: then_, else: else_ }, options) as never
 }
 // ------------------------------------------------------------------
 // Guard
 // ------------------------------------------------------------------
-/** Returns true if the given value is TIf. */
-export function IsIf(value: unknown): value is TIf {
-  return IsKind(value, 'If')
+/** Returns true if the given value is IsIfThenElse. */
+export function IsIfThenElse(value: unknown): value is TIfThenElse {
+  return IsKind(value, 'IfThenElse')
 }
 
 // ------------------------------------------------------------------
 // Options
 // ------------------------------------------------------------------
-/** Extracts options from a TIf. */
-export function IfOptions(type: TIf): TSchemaOptions {
+/** Extracts options from a IsIfThenElse. */
+export function IfThenElseOptions(type: TIfThenElse): TSchemaOptions {
   return Memory.Discard(type, ['~kind', 'if', 'then', 'else'])
 }

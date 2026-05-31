@@ -30,12 +30,30 @@ THE SOFTWARE.
 
 import { Guard } from '../../../guard/index.ts'
 import { type TSchema } from '../../types/schema.ts'
+import { type TIfThenElse, IsIfThenElse } from '../../types/if_then_else.ts'
 import { type TIntersect, IsIntersect } from '../../types/intersect.ts'
-import { type TDistribute, Distribute } from './distribute.ts'
-import { type TBroaden, Broaden } from './broaden.ts'
 import { type TUnion, Union, IsUnion } from '../../types/union.ts'
 import { type TNever, Never } from '../../types/never.ts'
 
+import { type TDistribute, Distribute } from './distribute.ts'
+import { type TBroaden, Broaden } from './broaden.ts'
+import { type TExcludeAction, ExcludeAction } from '../exclude/index.ts'
+
+// ------------------------------------------------------------------
+// EvaluateIfThenElse
+// ------------------------------------------------------------------
+export type TEvaluateIfThenElse<If extends TSchema, Then extends TSchema, Else extends TSchema,
+  Left extends TSchema = TEvaluateIntersect<[If, Then]>,
+  Right extends TSchema = TEvaluateType<TExcludeAction<Else, Left>>,
+  Result extends TSchema = TEvaluateUnion<[Left, Right]>
+> = Result
+export function EvaluateIfThenElse<If extends TSchema, Then extends TSchema, Else extends TSchema>
+  (if_: If, then_: Then, else_: Else): TEvaluateIfThenElse<If, Then, Else> {
+  const left = EvaluateIntersect([if_, then_])
+  const right = EvaluateType(ExcludeAction(else_, left, {}))
+  const result = EvaluateUnion([left, right])
+  return result as never
+}
 // ------------------------------------------------------------------
 // EvaluateIntersect
 // ------------------------------------------------------------------
@@ -63,6 +81,7 @@ export function EvaluateUnion<Types extends TSchema[]>(types: [...Types]): TEval
 // ------------------------------------------------------------------
 export type TEvaluateType<Type extends TSchema,
   Result extends TSchema = (
+    Type extends TIfThenElse<infer If extends TSchema, infer Then extends TSchema, infer Else extends TSchema> ? TEvaluateIfThenElse<If, Then, Else> :
     Type extends TIntersect<infer Types extends TSchema[]> ? TEvaluateIntersect<Types> :
     Type extends TUnion<infer Types extends TSchema[]> ? TEvaluateUnion<Types> :
     Type
@@ -70,6 +89,7 @@ export type TEvaluateType<Type extends TSchema,
 > = Result
 export function EvaluateType<Type extends TSchema>(type: Type): TEvaluateType<Type> {
   return (
+    IsIfThenElse(type) ? EvaluateIfThenElse(type.if, type.then, type.else) :
     IsIntersect(type) ? EvaluateIntersect(type.allOf) :
     IsUnion(type) ? EvaluateUnion(type.anyOf) :
     type

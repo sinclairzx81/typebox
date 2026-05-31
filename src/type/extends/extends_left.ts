@@ -36,6 +36,7 @@ import { type TExtendsBoolean, ExtendsBoolean } from './boolean.ts'
 import { type TExtendsConstructor, ExtendsConstructor } from './constructor.ts'
 import { type TExtendsEnum, ExtendsEnum } from './enum.ts'
 import { type TExtendsFunction, ExtendsFunction } from './function.ts'
+import { type TExtendsIfThenElse, ExtendsIfThenElse } from './if_then_else.ts'
 import { type TExtendsInteger, ExtendsInteger } from './integer.ts'
 import { type TExtendsIntersect, ExtendsIntersect } from './intersect.ts'
 import { type TExtendsIterator, ExtendsIterator } from './iterator.ts'
@@ -65,6 +66,7 @@ import { type TBoolean, IsBoolean  } from '../types/boolean.ts'
 import { type TConstructor, IsConstructor } from '../types/constructor.ts'
 import { type TEnum, type TEnumValue, IsEnum } from '../types/enum.ts'
 import { type TFunction, IsFunction } from '../types/function.ts'
+import { type TIfThenElse, IsIfThenElse } from '../types/if_then_else.ts'
 import { type TInteger, IsInteger } from '../types/integer.ts'
 import { type TIntersect, IsIntersect } from '../types/intersect.ts'
 import { type TIterator, IsIterator } from '../types/iterator.ts'
@@ -99,6 +101,7 @@ export type TExtendsLeft<Inferred extends TProperties, Left extends TSchema, Rig
   Left extends TConstructor<infer Parameters extends TSchema[], infer InstanceType extends TSchema> ? TExtendsConstructor<Inferred, Parameters, InstanceType, Right> :
   Left extends TEnum<infer Values extends TEnumValue[]> ? TExtendsEnum<Inferred, TEnum<Values>, Right> :
   Left extends TFunction<infer Parameters extends TSchema[], infer ReturnType extends TSchema> ? TExtendsFunction<Inferred, Parameters, ReturnType, Right> :
+  Left extends TIfThenElse<infer If extends TSchema, infer Then extends TSchema, infer Else extends TSchema> ? TExtendsIfThenElse<Inferred, If, Then, Else, Right> :
   Left extends TInteger ? TExtendsInteger<Inferred, Left, Right> :
   Left extends TIntersect<infer Types extends TSchema[]> ? TExtendsIntersect<Inferred, Types, Right> :
   Left extends TIterator<infer Type extends TSchema> ? TExtendsIterator<Inferred, Type, Right> :
@@ -130,6 +133,7 @@ export function ExtendsLeft<Inferred extends TProperties, Left extends TSchema, 
     IsConstructor(left) ? ExtendsConstructor(inferred, left.parameters, left.instanceType, right) :
     IsEnum(left) ? ExtendsEnum(inferred, left, right) :
     IsFunction(left) ? ExtendsFunction(inferred, left.parameters, left.returnType, right) :
+    IsIfThenElse(left) ? ExtendsIfThenElse(inferred, left.if, left.then, left.else, right) :
     IsInteger(left) ? ExtendsInteger(inferred, left, right) :
     IsIntersect(left) ? ExtendsIntersect(inferred, left.allOf, right) :
     IsIterator(left) ? ExtendsIterator(inferred, left.iteratorItems, right) :

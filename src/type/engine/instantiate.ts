@@ -50,7 +50,7 @@ import { type TDeferred, Deferred, IsDeferred } from '../types/deferred.ts'
 import { type TFunction, _Function_, IsFunction, FunctionOptions } from '../types/function.ts'
 import { type TCall, IsCall } from '../types/call.ts'
 import { type TIdentifier } from '../types/identifier.ts'
-import { type TIf, If, IsIf, IfOptions } from '../types/if.ts'
+import { type TIfThenElse, IfThenElse, IsIfThenElse, IfThenElseOptions } from '../types/if_then_else.ts'
 import { type TIntersect, Intersect, IsIntersect, IntersectOptions } from '../types/intersect.ts'
 import { type TIterator, Iterator, IsIterator, IteratorOptions } from '../types/iterator.ts'
 import { type TObject, Object, IsObject, ObjectOptions } from '../types/object.ts'
@@ -309,7 +309,7 @@ export type TInstantiateType<Context extends TProperties, State extends TState, 
     Type extends TConstructor<infer Parameters extends TSchema[], infer InstanceType extends TSchema> ? TConstructor<TInstantiateTypes<Context, State,Parameters>, TInstantiateType<Context, State, InstanceType>> :
     Type extends TDeferred<infer Action extends string, infer Types extends TSchema[]> ? TInstantiateDeferred<Context, State, Action, Types> :
     Type extends TFunction<infer Parameters extends TSchema[], infer ReturnType extends TSchema> ? TFunction<TInstantiateTypes<Context, State, Parameters>, TInstantiateType<Context, State,ReturnType>> :
-    Type extends TIf<infer If extends TSchema, infer Then extends TSchema, infer Else extends TSchema> ? TIf<TInstantiateType<Context, State, If>, TInstantiateType<Context, State, Then>, TInstantiateType<Context, State, Else>> :
+    Type extends TIfThenElse<infer If extends TSchema, infer Then extends TSchema, infer Else extends TSchema> ? TIfThenElse<TInstantiateType<Context, State, If>, TInstantiateType<Context, State, Then>, TInstantiateType<Context, State, Else>> :
     Type extends TIntersect<infer Types extends TSchema[]> ? TIntersect<TInstantiateTypes<Context, State, Types>> :
     Type extends TIterator<infer Type extends TSchema> ? TIterator<TInstantiateType<Context, State, Type>> :
     Type extends TObject<infer Properties extends TProperties> ? TObject<TInstantiateProperties<Context, State, Properties>> :
@@ -340,7 +340,7 @@ export function InstantiateType<Context extends TProperties, State extends TStat
     IsConstructor(type) ? Constructor(InstantiateTypes(context, state, type.parameters), InstantiateType(context, state, type.instanceType) as never, ConstructorOptions(type)) :
     IsDeferred(type) ? InstantiateDeferred(context, state, type.action, type.parameters, type.options) :
     IsFunction(type) ? _Function_(InstantiateTypes(context, state, type.parameters), InstantiateType(context, state, type.returnType) as never, FunctionOptions(type)) :
-    IsIf(type) ? If(InstantiateType(context, state, type.if), InstantiateType(context, state, type.then), InstantiateType(context, state, type.else), IfOptions(type)) :
+    IsIfThenElse(type) ? IfThenElse(InstantiateType(context, state, type.if), InstantiateType(context, state, type.then), InstantiateType(context, state, type.else), IfThenElseOptions(type)) :
     IsIntersect(type) ? Intersect(InstantiateTypes(context, state, type.allOf), IntersectOptions(type)) :
     IsIterator(type) ? Iterator(InstantiateType(context, state, type.iteratorItems), IteratorOptions(type)) :
     IsObject(type) ? Object(InstantiateProperties(context, state, type.properties), ObjectOptions(type)) :
