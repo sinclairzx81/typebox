@@ -45,7 +45,6 @@ export type TExtendsDependent<Inferred extends TProperties, If extends TSchema, 
 export function ExtendsDependent<Inferred extends TProperties, If extends TSchema, Then extends TSchema, Else extends TSchema, Right extends TSchema>
   (inferred: Inferred, if_: If, then_: Then, else_: Else, right: Right):
   TExtendsDependent<Inferred, If, Then, Else, Right> {
-    console.log(else_, right)
   return Result.Match(ExtendsLeft(inferred, if_, right), () =>
       ExtendsLeft(inferred, then_, right),
       () => ExtendsLeft(inferred, else_, right)) as never
