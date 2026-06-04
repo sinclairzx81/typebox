@@ -27,7 +27,10 @@ Test('Should TemplateLiteral 3', () => {
   Assert.IsEqual(T.pattern, '^hello$')
 })
 Test('Should TemplateLiteral 4', () => {
-  const T: Type.TTemplateLiteral<'^hello$'> = Type.Script('Options<`hello`, { a: 1, b: 2 }>')
+  const T: Type.TWith<Type.TTemplateLiteral<'^hello$'>, {
+    a: 1
+    b: 2
+  }> = Type.Script('`hello` with { a: 1, b: 2 }')
   Assert.HasPropertyKey(T, 'a')
   Assert.HasPropertyKey(T, 'b')
   Assert.IsEqual(T.a, 1)

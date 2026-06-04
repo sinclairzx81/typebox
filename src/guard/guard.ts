@@ -205,11 +205,11 @@ export function EntriesRegExp<Value extends unknown = unknown>(value: Record<Pro
 export function Entries<Value extends unknown = unknown>(value: Record<PropertyKey, Value>): [string, Value][] {
   return Object.entries(value)
 }
-/** Returns property keys for this object via `Object.getOwnPropertyKeys({ ... })` */
+/** Returns property keys for this object via `Object.getOwnPropertyNames({ ... })` */
 export function Keys(value: Record<PropertyKey, unknown>): string[] {
   return Object.getOwnPropertyNames(value)
 }
-/** Returns the property keys for this object via `Object.getOwnPropertyKeys({ ... })` */
+/** Returns the property keys for this object via `Object.getOwnPropertySymbols({ ... })` */
 export function Symbols(value: Record<PropertyKey, unknown>): symbol[] {
   return Object.getOwnPropertySymbols(value)
 }

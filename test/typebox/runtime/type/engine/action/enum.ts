@@ -23,11 +23,14 @@ Test('Should Enum 2', () => {
   Assert.IsTrue(Type.IsString(R.anyOf[1]))
 })
 // ------------------------------------------------------------------
-// Enum to Union
+// Evaluation of Invalid Enum Value Causes Throw
 // ------------------------------------------------------------------
 Test('Should Enum 3', () => {
-  // we use a index which transforms the enum into a union
-  const E = Type.Enum([1, null, 'hello', {} as never])
+  const E = Type.Enum([1, 2, 'hello', {} as never])
+  Assert.Throws(() => Type.Evaluate(E))
+})
+Test('Should Enum 4', () => {
+  const E = Type.Enum([1, 2, 'hello', {} as never])
   const T = Type.Object({})
-  const R = Type.Index(T, E)
+  Assert.Throws(() => Type.Index(T, E))
 })

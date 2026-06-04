@@ -33,6 +33,8 @@ const T = Type.Object({
 // Script
 // ------------------------------------------------------------------
 
+const U = Type.Script(`string with { format: 'email' }`)
+
 const S = Type.Script({ T }, `{
   [K in keyof T]: T[K] | null
 }`)
@@ -41,6 +43,7 @@ const S = Type.Script({ T }, `{
 // Infer
 // ------------------------------------------------------------------
 
+type U = Type.Static<typeof U>
 type T = Type.Static<typeof T>
 type S = Type.Static<typeof S>
 

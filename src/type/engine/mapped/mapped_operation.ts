@@ -36,9 +36,9 @@ import { type TObject, Object } from '../../types/object.ts'
 import { type TProperties } from '../../types/properties.ts'
 import { type TIdentifier } from '../../types/identifier.ts'
 import { type TTemplateLiteral, IsTemplateLiteral } from '../../types/template_literal.ts'
-import { type TTemplateLiteralDecode, TemplateLiteralDecode } from '../template_literal/decode.ts'
-import { type TState, type TInstantiateType, InstantiateType } from '../instantiate.ts'
-import { type TEvaluateIntersect, EvaluateIntersect } from '../evaluate/index.ts'
+import { type TInstantiateType, InstantiateType, type TState } from '../instantiate.ts'
+import { type TEvaluateIntersect, EvaluateIntersect } from '../evaluate/evaluate.ts'
+import { type TEvaluateTemplateLiteral, EvaluateTemplateLiteral } from '../evaluate/evaluate.ts'
 
 import { type TMappedVariants, MappedVariants } from './mapped_variants.ts'
 
@@ -47,12 +47,12 @@ import { type TMappedVariants, MappedVariants } from './mapped_variants.ts'
 // ------------------------------------------------------------------
 type TCanonicalAs<InstantiatedAs extends TSchema,
   Result extends TSchema = InstantiatedAs extends TTemplateLiteral<infer Pattern extends string> 
-    ? TTemplateLiteralDecode<Pattern> 
+    ? TEvaluateTemplateLiteral<Pattern> 
     : InstantiatedAs
 > = Result
 function CanonicalAs<InstantiatedAs extends TSchema>(instantiatedAs: InstantiatedAs): TCanonicalAs<InstantiatedAs> {
   const result = IsTemplateLiteral(instantiatedAs) 
-    ? TemplateLiteralDecode(instantiatedAs.pattern)
+    ? EvaluateTemplateLiteral(instantiatedAs.pattern)
     : instantiatedAs
   return result as never
 }

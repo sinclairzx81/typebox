@@ -34,6 +34,7 @@ import { type TExtendsAsyncIterator, ExtendsAsyncIterator } from './async_iterat
 import { type TExtendsBigInt, ExtendsBigInt } from './bigint.ts'
 import { type TExtendsBoolean, ExtendsBoolean } from './boolean.ts'
 import { type TExtendsConstructor, ExtendsConstructor } from './constructor.ts'
+import { type TExtendsDependent, ExtendsDependent } from './dependent.ts'
 import { type TExtendsEnum, ExtendsEnum } from './enum.ts'
 import { type TExtendsFunction, ExtendsFunction } from './function.ts'
 import { type TExtendsInteger, ExtendsInteger } from './integer.ts'
@@ -63,6 +64,7 @@ import { type TAsyncIterator, IsAsyncIterator } from '../types/async_iterator.ts
 import { type TBigInt, IsBigInt } from '../types/bigint.ts'
 import { type TBoolean, IsBoolean  } from '../types/boolean.ts'
 import { type TConstructor, IsConstructor } from '../types/constructor.ts'
+import { type TDependent, IsDependent } from '../types/dependent.ts'
 import { type TEnum, type TEnumValue, IsEnum } from '../types/enum.ts'
 import { type TFunction, IsFunction } from '../types/function.ts'
 import { type TInteger, IsInteger } from '../types/integer.ts'
@@ -97,7 +99,8 @@ export type TExtendsLeft<Inferred extends TProperties, Left extends TSchema, Rig
   Left extends TBigInt ? TExtendsBigInt<Inferred, Left, Right> :
   Left extends TBoolean ? TExtendsBoolean<Inferred, Left, Right> :
   Left extends TConstructor<infer Parameters extends TSchema[], infer InstanceType extends TSchema> ? TExtendsConstructor<Inferred, Parameters, InstanceType, Right> :
-  Left extends TEnum<infer Values extends TEnumValue[]> ? TExtendsEnum<Inferred, TEnum<Values>, Right> :
+  Left extends TDependent<infer If extends TSchema, infer Then extends TSchema, infer Else extends TSchema> ? TExtendsDependent<Inferred, If, Then, Else, Right> :
+  Left extends TEnum<infer Values extends TEnumValue[]> ? TExtendsEnum<Inferred, Values, Right> :
   Left extends TFunction<infer Parameters extends TSchema[], infer ReturnType extends TSchema> ? TExtendsFunction<Inferred, Parameters, ReturnType, Right> :
   Left extends TInteger ? TExtendsInteger<Inferred, Left, Right> :
   Left extends TIntersect<infer Types extends TSchema[]> ? TExtendsIntersect<Inferred, Types, Right> :
@@ -128,7 +131,8 @@ export function ExtendsLeft<Inferred extends TProperties, Left extends TSchema, 
     IsBigInt(left) ? ExtendsBigInt(inferred, left, right) :
     IsBoolean(left) ? ExtendsBoolean(inferred, left, right) :
     IsConstructor(left) ? ExtendsConstructor(inferred, left.parameters, left.instanceType, right) :
-    IsEnum(left) ? ExtendsEnum(inferred, left, right) :
+    IsDependent(left) ? ExtendsDependent(inferred, left.if, left.then, left.else, right) :
+    IsEnum(left) ? ExtendsEnum(inferred, left.enum, right) :
     IsFunction(left) ? ExtendsFunction(inferred, left.parameters, left.returnType, right) :
     IsInteger(left) ? ExtendsInteger(inferred, left, right) :
     IsIntersect(left) ? ExtendsIntersect(inferred, left.allOf, right) :

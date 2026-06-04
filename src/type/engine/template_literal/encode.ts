@@ -42,7 +42,7 @@ import { type TBoolean, IsBoolean } from '../../types/boolean.ts'
 import { NeverPattern } from '../../types/never.ts'
 import { TemplateLiteralCreate } from './create.ts'
 
-import { type TEnumValuesToVariants, EnumValuesToVariants } from '../enum/enum_to_union.ts'
+import { type TEvaluateEnum, EvaluateEnum } from '../evaluate/evaluate.ts'
 import { type TTemplateLiteralAction, TemplateLiteralAction } from './instantiate.ts'
 
 // ------------------------------------------------------------------
@@ -169,14 +169,14 @@ function EncodeTemplateLiteralDeferred<Types extends TSchema[], Right extends TS
 // ------------------------------------------------------------------
 // EncodeEnum
 // ------------------------------------------------------------------
-type TEncodeEnum<Types extends TEnumValue[], Right extends TSchema[], Pattern extends string,
-  Variants extends TSchema[] = TEnumValuesToVariants<Types>
-> = TEncodeUnion<Variants, Right, Pattern>
-function EncodeEnum<Types extends TEnumValue[], Right extends TSchema[], Pattern extends string>
-  (types: [...Types], right: Right, pattern: Pattern): 
-    TEncodeEnum<Types, Right, Pattern> {
-  const variants = EnumValuesToVariants(types) as TSchema[]
-  return EncodeUnion(variants, right, pattern) as never
+type TEncodeEnum<Values extends TEnumValue[], Right extends TSchema[], Pattern extends string,
+  Evaluated extends TSchema = TEvaluateEnum<Values>
+> = TEncodeType<Evaluated, Right, Pattern>
+function EncodeEnum<Values extends TEnumValue[], Right extends TSchema[], Pattern extends string>
+  (values: [...Values], right: Right, pattern: Pattern): 
+    TEncodeEnum<Values, Right, Pattern> {
+  const evaluated = EvaluateEnum(values)
+  return EncodeType(evaluated, right, pattern) as never
 }
 // ------------------------------------------------------------------
 // EncodeUnion

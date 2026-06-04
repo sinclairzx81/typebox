@@ -1,0 +1,22 @@
+<h1>Type.With</h1>
+<p>An action that augments a type with additional constraints and annotations. This action is similar to options, but where the option data is statically introspectable on the schema.</p>
+<blockquote>
+<p>⚠️ This action is used to express the Script <code>with</code> keyword.</p>
+</blockquote>
+<h2>Syntax</h2>
+<p>This type is a IR target for the following syntax</p>
+<pre><code class="language-typescript">type T = string with { format: &#39;email&#39; }
+</code></pre>
+<h2>Example</h2>
+<p>Example usage is shown below.</p>
+<pre><code class="language-typescript">const T = Type.With(Type.Number(), {                // const T = {
+  minimum: 10,                                      //   type: &#39;number&#39;,
+  maximum: 100                                      //   minimum: 10,
+})                                                  //   maximum: 100
+                                                    // }
+
+                                                    // const T: TWith&lt;TNumber, {
+                                                    //   minimum: number;
+                                                    //   maximum: number;
+                                                    // }&gt;
+</code></pre>

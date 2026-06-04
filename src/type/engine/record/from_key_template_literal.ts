@@ -34,17 +34,17 @@ import { type TFromKey, FromKey } from './from_key.ts'
 
 import { type TParsePatternIntoTypes, ParsePatternIntoTypes } from '../patterns/pattern.ts'
 import { type TIsTemplateLiteralFinite, IsTemplateLiteralFinite } from '../template_literal/is_finite.ts'
-import { type TTemplateLiteralDecode, TemplateLiteralDecode } from '../template_literal/decode.ts'
+import { type TEvaluateTemplateLiteral, EvaluateTemplateLiteral } from '../evaluate/evaluate.ts'
 import { CreateRecord } from './record_create.ts'
 
 export type TFromTemplateKey<Pattern extends string, Value extends TSchema,
   Types extends TSchema[] = TParsePatternIntoTypes<Pattern>,
   Finite extends boolean = TIsTemplateLiteralFinite<Types>,
-  Result extends TSchema = Finite extends true ? TFromKey<TTemplateLiteralDecode<Pattern>, Value> : TRecord<Pattern, Value>
+  Result extends TSchema = Finite extends true ? TFromKey<TEvaluateTemplateLiteral<Pattern>, Value> : TRecord<Pattern, Value>
 > = Result
 export function FromTemplateKey<Pattern extends string, Value extends TSchema>(pattern: Pattern, value: Value): TFromTemplateKey<Pattern, Value> {
   const types = ParsePatternIntoTypes(pattern)
   const finite = IsTemplateLiteralFinite(types)
-  const result = finite ? FromKey(TemplateLiteralDecode(pattern), value) : CreateRecord(pattern, value)
+  const result = finite ? FromKey(EvaluateTemplateLiteral(pattern), value) : CreateRecord(pattern, value)
   return result as never
 }

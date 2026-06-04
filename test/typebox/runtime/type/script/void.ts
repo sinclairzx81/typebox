@@ -12,7 +12,10 @@ Test('Should Void 2', () => {
   Assert.IsTrue(Type.IsVoid(T))
 })
 Test('Should Void 3', () => {
-  const T: Type.TVoid = Type.Script('Options<void, { a: 1, b: 2 }>')
+  const T: Type.TWith<Type.TVoid, {
+    a: 1
+    b: 2
+  }> = Type.Script('void with { a: 1, b: 2 }')
   Assert.HasPropertyKey(T, 'a')
   Assert.HasPropertyKey(T, 'b')
   Assert.IsEqual(T.a, 1)

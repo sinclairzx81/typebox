@@ -12,7 +12,10 @@ Test('Should Integer 2', () => {
   Assert.IsTrue(Type.IsInteger(T))
 })
 Test('Should Integer 3', () => {
-  const T: Type.TInteger = Type.Script('Options<integer, { a: 1, b: 2 }>')
+  const T: Type.TWith<Type.TInteger, {
+    a: 1
+    b: 2
+  }> = Type.Script('integer with { a: 1, b: 2 }')
   Assert.HasPropertyKey(T, 'a')
   Assert.HasPropertyKey(T, 'b')
   Assert.IsEqual(T.a, 1)

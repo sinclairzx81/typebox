@@ -283,7 +283,7 @@ const Base = Runtime.Union([
   Runtime.Ref('Constructor'),
   Runtime.Ref('_Function_'),
   Runtime.Ref('Mapped'),
-  Runtime.Ref('Options'),
+  Runtime.Ref('Dependent'),
   Runtime.Ref('GenericCall'),
   Runtime.Ref('Reference')
 ])
@@ -638,15 +638,11 @@ const Mapped = Runtime.Tuple([
   Runtime.Const(RBrace),
 ])
 // ------------------------------------------------------------------
-// Options
+// Dependent
 // ------------------------------------------------------------------
-const Options = Runtime.Tuple([
-  Runtime.Const('Options'),
-  Runtime.Const(LAngle),
-  Runtime.Ref('Type'),
-  Runtime.Const(Comma),
-  Runtime.Ref('JsonObject'),
-  Runtime.Const(RAngle),
+const Dependent = Runtime.Union([
+  Runtime.Tuple([Runtime.Const('if'), Runtime.Ref('Type'), Runtime.Const('then'), Runtime.Ref('Type'), Runtime.Const('else'), Runtime.Ref('Type')]),
+  Runtime.Tuple([Runtime.Const('if'), Runtime.Ref('Type'), Runtime.Const('then'), Runtime.Ref('Type')])
 ])
 // ------------------------------------------------------------------
 //
@@ -1008,9 +1004,11 @@ export const SyntaxModule = new Runtime.Module({
   MappedOptional,
   MappedAs,
   Mapped,
-  Reference,
-  Options,
 
+  Dependent,
+
+  Reference,
+  
   // ----------------------------------------------------------------
   // Json
   // ----------------------------------------------------------------

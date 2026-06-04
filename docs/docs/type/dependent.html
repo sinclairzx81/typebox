@@ -1,0 +1,43 @@
+<h1>Type.Dependent</h1>
+<p>Creates a Dependent type.</p>
+<blockquote>
+<p>⚠️ This type is an experimental syntax extension used to express Dependent Conditional Type semantics via JSON Schema <code>if/then/else</code>. TypeScript doesn&#39;t currently provide a means to express the semantics of this type, but may in the future. Users of <code>Dependent</code> should therefore be mindful that should TypeScript introduce Dependent Types in future, TypeBox may need to amend its implementation in line with TypeScript.</p>
+</blockquote>
+<h2>Example</h2>
+<p>Example usage is shown below.</p>
+<pre><code class="language-typescript">const T = Type.Dependent([                          // const T = {
+  Type.Number(),                                    //   if: { type: &#39;number&#39; },
+  Type.Literal(1),                                  //   then: { type: &#39;number&#39;, const: 1 },
+  Type.String()                                     //   else: { type: &#39;string&#39; }
+])                                                  // }
+
+
+type T = Static&lt;typeof T&gt;                           // type T = 1 | string
+</code></pre>
+<h2>Syntax</h2>
+<p>This type is a IR target for the following syntax</p>
+<pre><code class="language-typescript">type T = if number then 1 else string
+</code></pre>
+<h2>Lowering</h2>
+<p>As Dependent typing is not a feature of TypeScript, TypeBox uses the following lowering expression for type inference.</p>
+<pre><code class="language-typescript">type Dependent&lt;If, Then, Else&gt; = (If &amp; Then) | Exclude&lt;Else, If&gt;
+</code></pre>
+<p>Where immediate inference is resolved via the following.</p>
+<pre><code class="language-typescript">// type T = if number then 1 else string
+
+// Dependent&lt;number, 1, string&gt;
+// = (number &amp; 1) | Exclude&lt;string, number&gt;
+// = (1)          | Exclude&lt;string, number&gt;   -- intersection
+// = (1)          | (string)                  -- negation
+
+type T = 1 | string // result
+</code></pre>
+<p>Some further examples:</p>
+<pre><code class="language-typescript">type A = Dependent&lt;number, 1, string&gt;   // 1 | string
+type B = Dependent&lt;number, 1, never&gt;    // 1
+type C = Dependent&lt;number, 1, unknown&gt;  // unknown
+</code></pre>
+<h2>Guard</h2>
+<p>Use the <code>IsDependent</code> function to guard values of this type.</p>
+<pre><code class="language-typescript">Value.IsDependent(value)                            // value is TDependent
+</code></pre>

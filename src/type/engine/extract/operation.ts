@@ -30,54 +30,50 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { type TSchema } from '../../types/schema.ts'
-import { type TEnum, type TEnumValue, IsEnum } from '../../types/enum.ts'
 import { type TUnion, IsUnion } from '../../types/union.ts'
 import { type TExtends, Extends, ExtendsResult } from '../../extends/index.ts'
-import { type TEnumValuesToVariants, EnumValuesToVariants } from '../enum/index.ts'
-import { type TEvaluateUnion, type TFlatten, EvaluateUnion, Flatten } from '../evaluate/index.ts'
+
+import { type TEvaluateType, EvaluateType } from '../evaluate/evaluate.ts'
+import { type TEvaluateUnion, EvaluateUnion } from '../evaluate/evaluate.ts'
 
 // ------------------------------------------------------------------
-// ExtractUnionLeft
+// ExtractType
 // ------------------------------------------------------------------
-type TExtractUnionLeft<Types extends TSchema[], Right extends TSchema, Result extends TSchema[] = []> = (
-  Types extends [infer Head extends TSchema, ...infer Tail extends TSchema[]]
-    ? TExtractUnionLeft<Tail, Right, [...Result, ...TExtractTypeLeft<Head, Right>]>
-    : Result
-)
-function ExtractUnionLeft<Types extends TSchema[], Right extends TSchema>(types: [...Types], right: Right): TExtractUnionLeft<Types, Right> {
-  return types.reduce((result, head) => {
-    return [...result, ...ExtractTypeLeft(head, right)]
-  }, [] as TSchema[]) as never
-}
-// ------------------------------------------------------------------
-// ExtractTypeLeft
-// ------------------------------------------------------------------
-type TExtractTypeLeft<Left extends TSchema, Right extends TSchema,
+type TExtractType<Left extends TSchema, Right extends TSchema,
   Check extends ExtendsResult.TResult = TExtends<{}, Left, Right>,
-  Result extends TSchema[] = Check extends ExtendsResult.TExtendsTrueLike<infer _> ? [Left] : []
+  Result extends TSchema[] = Check extends ExtendsResult.TExtendsTrueLike ? [Left] : []
 > = Result
-function ExtractTypeLeft<Left extends TSchema, Right extends TSchema>(left: Left, right: Right): TExtractTypeLeft<Left, Right> {
+function ExtractType<Left extends TSchema, Right extends TSchema>(left: Left, right: Right): TExtractType<Left, Right> {
   const check = Extends({}, left, right)
   const result = ExtendsResult.IsExtendsTrueLike(check) ? [left] : []
   return result as never
 }
 // ------------------------------------------------------------------
+// ExtractUnion
+// ------------------------------------------------------------------
+type TExtractUnion<Types extends TSchema[], Right extends TSchema, Result extends TSchema[] = []> = (
+  Types extends [infer Head extends TSchema, ...infer Tail extends TSchema[]]
+    ? TExtractUnion<Tail, Right, [...Result, ...TExtractType<Head, Right>]>
+    : Result
+)
+function ExtractUnion<Types extends TSchema[], Right extends TSchema>(types: [...Types], right: Right): TExtractUnion<Types, Right> {
+  return types.reduce((result, head) => {
+    return [...result, ...ExtractType(head, right)]
+  }, [] as TSchema[]) as never
+}
+// ------------------------------------------------------------------
 // Operation
 // ------------------------------------------------------------------
 export type TExtractOperation<Left extends TSchema, Right extends TSchema,
-  Remaining extends TSchema[] = (
-    Left extends TEnum<infer Values extends TEnumValue[]> ? TExtractUnionLeft<TEnumValuesToVariants<Values>, Right> : 
-    Left extends TUnion<infer Types extends TSchema[]> ? TExtractUnionLeft<TFlatten<Types>, Right> : 
-    TExtractTypeLeft<Left, Right>
-  ),
+  Evaluated extends TSchema = TEvaluateType<Left>,
+  Canonical extends TSchema[] = Evaluated extends TUnion<infer Types extends TSchema[]> ? Types : [Evaluated],
+  Remaining extends TSchema[] = TExtractUnion<Canonical, Right>,
   Result extends TSchema = TEvaluateUnion<Remaining>
 > = Result
 export function ExtractOperation<Left extends TSchema, Right extends TSchema>(left: Left, right: Right): TExtractOperation<Left, Right> {
-  const remaining = (
-    IsEnum(left) ? ExtractUnionLeft(EnumValuesToVariants(left.enum), right) :
-    IsUnion(left) ? ExtractUnionLeft(Flatten(left.anyOf), right) :
-    ExtractTypeLeft(left, right)
-  ) as TSchema[]
+  const evaluated = EvaluateType(left)
+  const canonical = IsUnion(evaluated) ? evaluated.anyOf : [evaluated]
+  const remaining = ExtractUnion(canonical, right)
   const result = EvaluateUnion(remaining)
   return result as never
 }

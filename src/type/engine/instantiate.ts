@@ -50,6 +50,7 @@ import { type TDeferred, Deferred, IsDeferred } from '../types/deferred.ts'
 import { type TFunction, _Function_, IsFunction, FunctionOptions } from '../types/function.ts'
 import { type TCall, IsCall } from '../types/call.ts'
 import { type TIdentifier } from '../types/identifier.ts'
+import { type TDependent, Dependent, IsDependent, DependentOptions } from '../types/dependent.ts'
 import { type TIntersect, Intersect, IsIntersect, IntersectOptions } from '../types/intersect.ts'
 import { type TIterator, Iterator, IsIterator, IteratorOptions } from '../types/iterator.ts'
 import { type TObject, Object, IsObject, ObjectOptions } from '../types/object.ts'
@@ -87,7 +88,6 @@ import { type TMappedInstantiate, MappedInstantiate } from './mapped/instantiate
 import { type TModuleInstantiate, ModuleInstantiate } from './module/instantiate.ts'
 import { type TNonNullableInstantiate, NonNullableInstantiate } from './non_nullable/instantiate.ts'
 import { type TOmitInstantiate, OmitInstantiate } from './omit/instantiate.ts'
-import { type TOptionsInstantiate, OptionsInstantiate } from './options/instantiate.ts'
 import { type TParametersInstantiate, ParametersInstantiate } from './parameters/instantiate.ts'
 import { type TPartialInstantiate, PartialInstantiate } from './partial/instantiate.ts'
 import { type TPickInstantiate, PickInstantiate } from './pick/instantiate.ts'
@@ -99,6 +99,7 @@ import { type TReturnTypeInstantiate, ReturnTypeInstantiate } from './return_typ
 import { type TTemplateLiteralInstantiate, TemplateLiteralInstantiate } from './template_literal/instantiate.ts'
 import { type TUncapitalizeInstantiate, UncapitalizeInstantiate } from './intrinsics/instantiate.ts'
 import { type TUppercaseInstantiate, UppercaseInstantiate } from './intrinsics/instantiate.ts'
+import { type TWithInstantiate, WithInstantiate } from './with/instantiate.ts'
 
 import { type TRestSpread, RestSpread } from './rest/index.ts'
 
@@ -243,7 +244,6 @@ type TInstantiateDeferred<Context extends TProperties, State extends TState, Act
   [Action, Parameters] extends ['Module', [infer Properties extends TProperties]] ? TModuleInstantiate<Context, State, Properties> :
   [Action, Parameters] extends ['NonNullable', [infer Type extends TSchema]] ? TNonNullableInstantiate<Context, State, Type> :
   [Action, Parameters] extends ['Pick', [infer Type extends TSchema, infer Indexer extends TSchema]] ? TPickInstantiate<Context, State, Type, Indexer> :
-  [Action, Parameters] extends ['Options', [infer Type extends TSchema, infer Options extends TSchema]] ? TOptionsInstantiate<Context, State, Type, Options> :
   [Action, Parameters] extends ['Parameters', [infer Type extends TSchema]] ? TParametersInstantiate<Context, State, Type> :
   [Action, Parameters] extends ['Partial', [infer Type extends TSchema]] ? TPartialInstantiate<Context, State, Type> :
   [Action, Parameters] extends ['Omit', [infer Type extends TSchema, infer Indexer extends TSchema]] ? TOmitInstantiate<Context, State, Type, Indexer> :
@@ -254,6 +254,7 @@ type TInstantiateDeferred<Context extends TProperties, State extends TState, Act
   [Action, Parameters] extends ['TemplateLiteral', [infer Types extends TSchema[]]] ? TTemplateLiteralInstantiate<Context, State, Types> :
   [Action, Parameters] extends ['Uncapitalize', [infer Type extends TSchema]] ? TUncapitalizeInstantiate<Context, State, Type> :
   [Action, Parameters] extends ['Uppercase', [infer Type extends TSchema]] ? TUppercaseInstantiate<Context, State, Type> :
+  [Action, Parameters] extends ['With', [infer Type extends TSchema, infer Options extends TSchema]] ? TWithInstantiate<Context, State, Type, Options> :
   TDeferred<Action, Parameters>
 )
 function InstantiateDeferred<Context extends TProperties, State extends TState, Action extends string, Parameters extends TSchema[]>
@@ -276,7 +277,6 @@ function InstantiateDeferred<Context extends TProperties, State extends TState, 
     Guard.IsEqual(action, 'Module') ? ModuleInstantiate(context, state, parameters[0] as TProperties, options) :
     Guard.IsEqual(action, 'NonNullable') ? NonNullableInstantiate(context, state, parameters[0], options) as never :
     Guard.IsEqual(action, 'Pick') ? PickInstantiate(context, state, parameters[0], parameters[1], options) :
-    Guard.IsEqual(action, 'Options') ? OptionsInstantiate(context, state, parameters[0], parameters[1]) as never :
     Guard.IsEqual(action, 'Parameters') ? ParametersInstantiate(context, state, parameters[0], options) :
     Guard.IsEqual(action, 'Partial') ? PartialInstantiate(context, state, parameters[0], options) :
     Guard.IsEqual(action, 'Omit') ? OmitInstantiate(context, state, parameters[0], parameters[1], options) :
@@ -287,6 +287,7 @@ function InstantiateDeferred<Context extends TProperties, State extends TState, 
     Guard.IsEqual(action, 'TemplateLiteral') ? TemplateLiteralInstantiate(context, state, parameters[0] as TSchema[], options) :
     Guard.IsEqual(action, 'Uncapitalize') ? UncapitalizeInstantiate(context, state, parameters[0], options) :
     Guard.IsEqual(action, 'Uppercase') ? UppercaseInstantiate(context, state, parameters[0], options) :
+    Guard.IsEqual(action, 'With') ? WithInstantiate(context, state, parameters[0], parameters[1]) as never :
     Deferred(action, parameters, options)
   ) as never
 }
@@ -305,9 +306,10 @@ export type TInstantiateType<Context extends TProperties, State extends TState, 
     Type extends TArray<infer Type extends TSchema> ? TArray<TInstantiateType<Context, State, Type>> :
     Type extends TAsyncIterator<infer Type extends TSchema> ? TAsyncIterator<TInstantiateType<Context, State, Type>> :
     Type extends TCall<infer Target extends TSchema, infer Parameters extends TSchema[]> ? TCallInstantiate<Context, State, Target, Parameters> :
-    Type extends TConstructor<infer Parameters extends TSchema[], infer InstanceType extends TSchema> ? TConstructor<TInstantiateTypes<Context, State,Parameters>, TInstantiateType<Context, State,InstanceType>> :
+    Type extends TConstructor<infer Parameters extends TSchema[], infer InstanceType extends TSchema> ? TConstructor<TInstantiateTypes<Context, State,Parameters>, TInstantiateType<Context, State, InstanceType>> :
     Type extends TDeferred<infer Action extends string, infer Types extends TSchema[]> ? TInstantiateDeferred<Context, State, Action, Types> :
     Type extends TFunction<infer Parameters extends TSchema[], infer ReturnType extends TSchema> ? TFunction<TInstantiateTypes<Context, State, Parameters>, TInstantiateType<Context, State,ReturnType>> :
+    Type extends TDependent<infer If extends TSchema, infer Then extends TSchema, infer Else extends TSchema> ? TDependent<TInstantiateType<Context, State, If>, TInstantiateType<Context, State, Then>, TInstantiateType<Context, State, Else>> :
     Type extends TIntersect<infer Types extends TSchema[]> ? TIntersect<TInstantiateTypes<Context, State, Types>> :
     Type extends TIterator<infer Type extends TSchema> ? TIterator<TInstantiateType<Context, State, Type>> :
     Type extends TObject<infer Properties extends TProperties> ? TObject<TInstantiateProperties<Context, State, Properties>> :
@@ -338,6 +340,7 @@ export function InstantiateType<Context extends TProperties, State extends TStat
     IsConstructor(type) ? Constructor(InstantiateTypes(context, state, type.parameters), InstantiateType(context, state, type.instanceType) as never, ConstructorOptions(type)) :
     IsDeferred(type) ? InstantiateDeferred(context, state, type.action, type.parameters, type.options) :
     IsFunction(type) ? _Function_(InstantiateTypes(context, state, type.parameters), InstantiateType(context, state, type.returnType) as never, FunctionOptions(type)) :
+    IsDependent(type) ? Dependent(InstantiateType(context, state, type.if), InstantiateType(context, state, type.then), InstantiateType(context, state, type.else), DependentOptions(type)) :
     IsIntersect(type) ? Intersect(InstantiateTypes(context, state, type.allOf), IntersectOptions(type)) :
     IsIterator(type) ? Iterator(InstantiateType(context, state, type.iteratorItems), IteratorOptions(type)) :
     IsObject(type) ? Object(InstantiateProperties(context, state, type.properties), ObjectOptions(type)) :

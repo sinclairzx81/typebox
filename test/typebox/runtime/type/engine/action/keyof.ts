@@ -319,3 +319,23 @@ Test('Should KeyOf 28', () => {
   Assert.IsTrue(Guard.IsEqual(T.anyOf[0].const, 'x-1'))
   Assert.IsTrue(Guard.IsEqual(T.anyOf[1].const, 'x-2'))
 })
+// ------------------------------------------------------------------
+// Dependent
+// ------------------------------------------------------------------
+Test('Should KeyOf 29', () => {
+  const A = Type.Dependent(
+    Type.Object({ x: Type.Number() }),
+    Type.Dependent(
+      Type.Object({ y: Type.Number() }),
+      Type.Object({ z: Type.Number() }),
+      Type.Never()
+    ),
+    Type.Never()
+  )
+  // CACHE | TYPESCRIPT TYPE ID ORDER ISSUE
+  const T /*: Type.TUnion<[Type.TLiteral<'x'>, Type.TLiteral<'y'>, Type.TLiteral<'z'>]> */ = Type.KeyOf(A)
+  Assert.IsTrue(Type.IsUnion(T))
+  Assert.IsTrue(Guard.IsEqual(T.anyOf[0].const, 'x'))
+  Assert.IsTrue(Guard.IsEqual(T.anyOf[1].const, 'y'))
+  Assert.IsTrue(Guard.IsEqual(T.anyOf[2].const, 'z'))
+})

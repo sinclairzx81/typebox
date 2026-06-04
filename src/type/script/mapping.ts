@@ -54,7 +54,6 @@ type TIntrinsicOrCall<Target extends string, Parameters extends T.TSchema[]> = (
   [Target, Parameters] extends ['Lowercase', [infer Type extends T.TSchema]] ? C.TLowercaseDeferred<Type> :
   [Target, Parameters] extends ['NonNullable', [infer Type extends T.TSchema]] ? C.TNonNullableDeferred<Type> :
   [Target, Parameters] extends ['Omit', [infer Type extends T.TSchema, infer Indexer extends T.TSchema]] ? C.TOmitDeferred<Type, Indexer> :
-  [Target, Parameters] extends ['Options', [infer Type extends T.TSchema, infer Options extends T.TSchema]] ? C.TOptionsDeferred<Type, Options> :
   [Target, Parameters] extends ['Parameters', [infer Type extends T.TSchema]] ? C.TParametersDeferred<Type> :
   [Target, Parameters] extends ['Partial', [infer Type extends T.TSchema]] ? C.TPartialDeferred<Type> :
   [Target, Parameters] extends ['Pick', [infer Type extends T.TSchema, infer Indexer extends T.TSchema]] ? C.TPickDeferred<Type, Indexer> :
@@ -86,7 +85,6 @@ function IntrinsicOrCall<Ref extends string, Parameters extends T.TSchema[]>(ref
     Guard.IsEqual(ref, 'Lowercase') ? C.LowercaseDeferred(parameters[0]) :
     Guard.IsEqual(ref, 'NonNullable') ? C.NonNullableDeferred(parameters[0]) :
     Guard.IsEqual(ref, 'Omit') ? C.OmitDeferred(parameters[0], parameters[1]) :
-    Guard.IsEqual(ref, 'Options') ? C.OptionsDeferred(parameters[0], parameters[1]) :
     Guard.IsEqual(ref, 'Parameters') ? C.ParametersDeferred(parameters[0]) :
     Guard.IsEqual(ref, 'Partial') ? C.PartialDeferred(parameters[0]) :
     Guard.IsEqual(ref, 'Pick') ? C.PickDeferred(parameters[0], parameters[1]) :
@@ -529,7 +527,7 @@ export function ExtendsMapping(input: [unknown, unknown, unknown, unknown, unkno
     : []
 }
 // -------------------------------------------------------------------
-// Base: ['(', Type, ')'] | Keyword | _Object_ | Tuple | TemplateLiteral | Literal | Constructor | _Function_ | Mapped | Options | GenericCall | Reference
+// Base: ['(', Type, ')'] | Keyword | _Object_ | Tuple | TemplateLiteral | Literal | Constructor | _Function_ | Mapped | GenericCall | Reference
 // -------------------------------------------------------------------
 export type TBaseMapping<Input extends [unknown, unknown, unknown] | unknown> = (
   Input extends ['(', infer Type extends T.TSchema, ')'] ? Type :
@@ -545,8 +543,8 @@ export function BaseMapping(input: [unknown, unknown, unknown] | unknown): unkno
 // With: ['with', JsonObject] | []
 // -------------------------------------------------------------------
 export type TWithMapping<Input extends [unknown, unknown] | []> = (
-  Input extends ['with', infer Options extends Record<PropertyKey, unknown>]
-    ? Options
+  Input extends ['with', infer JsonObject extends Record<PropertyKey, unknown>]
+    ? JsonObject
     : []
 )
 export function WithMapping(input: [unknown, unknown] | []): unknown {
@@ -569,7 +567,7 @@ type TFactorExtends<Type extends T.TSchema, Extends extends unknown[]> = (
 )
 type TFactorWith<Type extends T.TSchema, With extends unknown> = (
   With extends Record<PropertyKey, unknown>
-    ? C.TOptionsDeferred<Type, With>
+    ? C.TWithDeferred<Type, With>
     : Type
 )
 export type TFactorMapping<Input extends [unknown, unknown, unknown, unknown, unknown]> = (
@@ -600,7 +598,7 @@ function FactorExtends(type: T.TSchema, extend: T.TSchema[]): T.TSchema {
 function FactorWith(type: T.TSchema, withClause: unknown): T.TSchema {
   return Guard.IsArray(withClause) && Guard.IsEqual(withClause.length, 0)
     ? type
-    : C.OptionsDeferred(type, withClause as T.TSchema)
+    : C.WithDeferred(type, withClause as T.TSchema)
 }
 export function FactorMapping(input: [unknown, unknown, unknown, unknown, unknown]): unknown {
   const [keyOf, type, indexArray, extend, withClause] = input as [boolean, T.TSchema, unknown[], T.TSchema[], unknown]
@@ -1208,6 +1206,22 @@ export function MappedMapping(input: [unknown, unknown, unknown, unknown, unknow
   )
 }
 // -------------------------------------------------------------------
+// Dependent: ['if', Type, 'then', Type, 'else', Type] | ['if', Type, 'then', Type]
+// -------------------------------------------------------------------
+export type TDependentMapping<Input extends [unknown, unknown, unknown, unknown, unknown, unknown] | [unknown, unknown, unknown, unknown]> = (
+  Input extends ['if', infer If extends T.TSchema, 'then', infer Then extends T.TSchema, 'else', infer Else extends T.TSchema]
+    ? T.TDependent<If, Then, Else> :
+  Input extends ['if', infer If extends T.TSchema, 'then', infer Then extends T.TSchema]
+    ? T.TDependent<If, Then, T.TUnknown> :
+  never
+)
+export function DependentMapping(input: [unknown, unknown, unknown, unknown, unknown, unknown] | [unknown, unknown, unknown, unknown]): unknown {
+  return (
+    Guard.IsEqual(input.length, 6) ? T.Dependent(input[1] as T.TSchema, input[3] as T.TSchema, input[5] as T.TSchema) :
+    T.Dependent(input[1] as T.TSchema, input[3] as T.TSchema, T.Unknown())
+  )
+}
+// -------------------------------------------------------------------
 // Reference: <Ident>
 // -------------------------------------------------------------------
 export type TReferenceMapping<Input extends string,
@@ -1215,17 +1229,6 @@ export type TReferenceMapping<Input extends string,
 > = Result
 export function ReferenceMapping(input: string): unknown {
   return T.Ref(input)
-}
-// -------------------------------------------------------------------
-// Options: ['Options', '<', Type, ',', JsonObject, '>']
-// -------------------------------------------------------------------
-export type TOptionsMapping<Input extends [unknown, unknown, unknown, unknown, unknown, unknown]> = (
-  Input extends ['Options', '<', infer Type extends T.TSchema, ',', infer Options extends T.TSchemaOptions, '>']
-    ? C.TOptionsDeferred<Type, Options>
-    : never
-)
-export function OptionsMapping(input: [unknown, unknown, unknown, unknown, unknown, unknown]): unknown {
-  return C.OptionsDeferred(input[2] as T.TSchema, input[4] as T.TSchema)
 }
 // -------------------------------------------------------------------
 // JsonNumber: <Number>

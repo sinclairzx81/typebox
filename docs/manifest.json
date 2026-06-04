@@ -75,6 +75,7 @@
     "constructor": "docs/type/constructor.html",
     "cyclic": "docs/type/cyclic.html",
     "decode": "docs/type/decode.html",
+    "dependent": "docs/type/dependent.html",
     "encode": "docs/type/encode.html",
     "enum": "docs/type/enum.html",
     "evaluate": "docs/type/evaluate.html",
@@ -131,7 +132,8 @@
     "unknown": "docs/type/unknown.html",
     "unsafe": "docs/type/unsafe.html",
     "uppercase": "docs/type/uppercase.html",
-    "void": "docs/type/void.html"
+    "void": "docs/type/void.html",
+    "with": "docs/type/with.html"
   },
   "value": {
     "assert": "docs/value/assert.html",

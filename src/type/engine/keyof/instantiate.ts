@@ -32,6 +32,7 @@ import { Memory } from '../../../system/memory/index.ts'
 import { type TSchema, type TSchemaOptions } from '../../types/schema.ts'
 import { type TProperties } from '../../types/properties.ts'
 import { type TCyclic, IsCyclic } from '../../types/cyclic.ts'
+import { type TDependent, IsDependent } from '../../types/dependent.ts'
 import { type TIntersect, IsIntersect } from '../../types/intersect.ts'
 import { type TUnion, IsUnion } from '../../types/union.ts'
 import { type TKeyOfDeferred, KeyOfDeferred } from '../../action/keyof.ts'
@@ -56,10 +57,10 @@ import { type TFromType, FromType } from './from_type.ts'
 //
 // ------------------------------------------------------------------
 type TNormalizeType<Type extends TSchema,
-  Result extends TSchema = (Type extends TCyclic | TIntersect | TUnion ? TCollapseToObject<Type> : Type)
+  Result extends TSchema = (Type extends TCyclic | TDependent | TIntersect | TUnion ? TCollapseToObject<Type> : Type)
 > = Result
 function NormalizeType<Type extends TSchema>(type: Type): TNormalizeType<Type> {
-  const result = (IsCyclic(type) || IsIntersect(type) || IsUnion(type) ? CollapseToObject(type) : type)
+  const result = (IsCyclic(type) || IsDependent(type) || IsIntersect(type) || IsUnion(type) ? CollapseToObject(type) : type)
   return result as never
 }
 // ------------------------------------------------------------------

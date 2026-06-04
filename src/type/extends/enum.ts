@@ -30,18 +30,20 @@ THE SOFTWARE.
 
 import { type TSchema } from '../types/schema.ts'
 import { type TProperties } from '../types/properties.ts'
-import { type TEnum } from '../types/enum.ts'
+import { type TEnumValue } from '../types/enum.ts'
 import { type TExtendsLeft, ExtendsLeft } from './extends_left.ts'
-import { type TEnumToUnion, EnumToUnion } from '../engine/enum/index.ts'
+
+import { type TEvaluateEnum, EvaluateEnum } from '../engine/evaluate/evaluate.ts'
 
 // ----------------------------------------------------------------------------
 // ExtendsEnum
 // ----------------------------------------------------------------------------
-export type TExtendsEnum<Inferred extends TProperties, Left extends TEnum, Right extends TSchema> = (
-  TExtendsLeft<Inferred, TEnumToUnion<Left>, Right>
-)
-export function ExtendsEnum<Inferred extends TProperties, Left extends TEnum, Right extends TSchema>
+export type TExtendsEnum<Inferred extends TProperties, Left extends TEnumValue[], Right extends TSchema,
+  Evaluated extends TSchema = TEvaluateEnum<Left>
+> = TExtendsLeft<Inferred, Evaluated, Right>
+export function ExtendsEnum<Inferred extends TProperties, Left extends TEnumValue[], Right extends TSchema>
   (inferred: Inferred, left: Left, right: Right): 
     TExtendsEnum<Inferred, Left, Right> {
-  return ExtendsLeft(inferred, EnumToUnion(left), right) as never
+  const evaluated = EvaluateEnum(left)
+  return ExtendsLeft(inferred, evaluated, right) as never
 }

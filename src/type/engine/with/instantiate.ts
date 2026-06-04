@@ -32,34 +32,34 @@ import { Memory } from '../../../system/memory/index.ts'
 import { type TProperties } from '../../types/properties.ts'
 import { type TSchema } from '../../types/schema.ts'
 import { type TState, type TInstantiateType, InstantiateType, type TCanInstantiate, CanInstantiate } from '../instantiate.ts'
-import { type TOptionsDeferred, type TOptions, OptionsDeferred } from '../../action/options.ts'
+import { type TWithDeferred, type TWith, WithDeferred } from '../../action/with.ts'
 
 // ------------------------------------------------------------------
 // Action
 // ------------------------------------------------------------------
-export type TOptionsAction<Type extends TSchema, Options extends TSchema,
+export type TWithAction<Type extends TSchema, Options extends TSchema,
   Result extends TSchema = TCanInstantiate<[Type]> extends true
-    ? TOptions<Type, Options>
-    : TOptionsDeferred<Type, Options> 
+    ? TWith<Type, Options>
+    : TWithDeferred<Type, Options> 
 > = Result
-export function OptionsAction<Type extends TSchema, Options extends TSchema>
+export function WithAction<Type extends TSchema, Options extends TSchema>
   (type: Type, options: Options): 
-    TOptionsAction<Type, Options> {
+    TWithAction<Type, Options> {
   const result = CanInstantiate([type])
     ? Memory.Update(type, {}, options)
-    : OptionsDeferred(type, options)
+    : WithDeferred(type, options)
   return result as never
 }
 // ------------------------------------------------------------------
 // Instantiate
 // ------------------------------------------------------------------
-export type TOptionsInstantiate<Context extends TProperties, State extends TState, Type extends TSchema, Options extends TSchema,
+export type TWithInstantiate<Context extends TProperties, State extends TState, Type extends TSchema, Options extends TSchema,
   InstantiatedType extends TSchema = TInstantiateType<Context, State, Type>
-> = TOptionsAction<InstantiatedType, Options>
+> = TWithAction<InstantiatedType, Options>
 
-export function OptionsInstantiate<Context extends TProperties, State extends TState, Type extends TSchema, Options extends TSchema>
+export function WithInstantiate<Context extends TProperties, State extends TState, Type extends TSchema, Options extends TSchema>
   (context: Context, state: State, type: Type, options: Options): 
-    TOptionsInstantiate<Context, State, Type, Options> {
+    TWithInstantiate<Context, State, Type, Options> {
   const instaniatedType = InstantiateType(context, state, type)
-  return OptionsAction(instaniatedType, options)
+  return WithAction(instaniatedType, options)
 }

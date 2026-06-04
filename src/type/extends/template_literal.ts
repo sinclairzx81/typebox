@@ -31,7 +31,7 @@ THE SOFTWARE.
 import { type TSchema } from '../types/schema.ts'
 import { type TProperties } from '../types/properties.ts'
 import { type TExtendsLeft, ExtendsLeft } from './extends_left.ts'
-import { type TTemplateLiteralDecode, TemplateLiteralDecode } from '../engine/template_literal/decode.ts'
+import { type TEvaluateTemplateLiteral, EvaluateTemplateLiteral } from '../engine/evaluate/evaluate.ts'
 
 // Note: We currently do not support patterned extends checks. To support them, TypeBox
 // would need to implement sub string comparison checks for patterned sub expressions; and 
@@ -39,13 +39,13 @@ import { type TTemplateLiteralDecode, TemplateLiteralDecode } from '../engine/te
 // template literal pattern decode system which will given either a Union or String depending 
 // finite tests, this is re-routed back into extends check as the decoded type.
 
-export type TExtendsTemplateLiteral<Inferred extends TProperties, Left extends string, Right extends TSchema,
-  Decoded extends TSchema = TTemplateLiteralDecode<Left>
-> = TExtendsLeft<Inferred, Decoded, Right>
+export type TExtendsTemplateLiteral<Inferred extends TProperties, Pattern extends string, Right extends TSchema,
+  Evaluated extends TSchema = TEvaluateTemplateLiteral<Pattern>
+> = TExtendsLeft<Inferred, Evaluated, Right>
 
-export function ExtendsTemplateLiteral<Inferred extends TProperties, Left extends string, Right extends TSchema>
-  (inferred: Inferred, left: Left, right: Right): 
-    TExtendsTemplateLiteral<Inferred, Left, Right> {
-  const decoded = TemplateLiteralDecode(left)
-  return ExtendsLeft(inferred, decoded, right)
+export function ExtendsTemplateLiteral<Inferred extends TProperties, Pattern extends string, Right extends TSchema>
+  (inferred: Inferred, left: Pattern, right: Right): 
+    TExtendsTemplateLiteral<Inferred, Pattern, Right> {
+  const evaluated = EvaluateTemplateLiteral(left)
+  return ExtendsLeft(inferred, evaluated, right)
 }

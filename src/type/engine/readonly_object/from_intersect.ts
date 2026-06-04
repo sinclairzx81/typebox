@@ -32,12 +32,12 @@ import { type TSchema } from '../../types/schema.ts'
 import { type TFromType, FromType } from './from_type.ts'
 import { type TEvaluateIntersect, EvaluateIntersect } from '../evaluate/evaluate.ts'
 
-export type TFromIntersect<Types extends TSchema[], Result extends TSchema[] = []> = (
-  Types extends [infer Left extends TSchema, ...infer Right extends TSchema[]]
-    ? TFromIntersect<Right, [...Result, TFromType<Left>]>
-    : TEvaluateIntersect<Result>
-)
+export type TFromIntersect<Types extends TSchema[],
+  Evaluated extends TSchema = TEvaluateIntersect<Types>,
+  Result extends TSchema = TFromType<Evaluated>
+> = Result
 export function FromIntersect<Types extends TSchema[]>(types: [...Types]): TFromIntersect<Types> {
-  const result = types.map(type => FromType(type))
-  return EvaluateIntersect(result) as never
+  const evaluated = EvaluateIntersect(types)
+  const result = FromType(evaluated)
+  return result as never
 }

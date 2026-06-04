@@ -861,3 +861,354 @@ Test('Should Evaluate 67', () => {
   Assert.IsTrue(Type.IsNumber(S.anyOf[1].properties.c))
   Assert.IsTrue(Type.IsNumber(S.anyOf[1].properties.x))
 })
+// ------------------------------------------------------------------
+// Dependent
+// ------------------------------------------------------------------
+Test('Should Evaluate 65', () => {
+  const T: Type.TUnion<[Type.TLiteral<1>, Type.TString]> = Type.Evaluate(Type.Dependent(Type.Number(), Type.Literal(1), Type.String()))
+  Assert.IsTrue(Type.IsUnion(T))
+  Assert.IsTrue(Type.IsLiteral(T.anyOf[0]))
+  Assert.IsEqual(T.anyOf[0].const, 1)
+  Assert.IsTrue(Type.IsString(T.anyOf[1]))
+})
+Test('Should Evaluate 66', () => {
+  const T: Type.TLiteral<1> = Type.Evaluate(Type.Dependent(Type.Number(), Type.Literal(1), Type.Literal(2)))
+  Assert.IsTrue(Type.IsLiteral(T))
+  Assert.IsEqual(T.const, 1)
+})
+Test('Should Evaluate 67', () => {
+  const T: Type.TNever = Type.Evaluate(Type.Dependent(Type.Number(), Type.String(), Type.Literal(2)))
+  Assert.IsTrue(Type.IsNever(T))
+})
+Test('Should Evaluate 68', () => {
+  const T: Type.TUnknown = Type.Evaluate(Type.Dependent(Type.Number(), Type.String(), Type.Unknown()))
+  Assert.IsTrue(Type.IsUnknown(T))
+})
+Test('Should Evaluate 69', () => {
+  const T: Type.TNumber = Type.Evaluate(Type.Dependent(Type.Number(), Type.Unknown(), Type.Literal(1)))
+  Assert.IsTrue(Type.IsNumber(T))
+})
+Test('Should Evaluate 70', () => {
+  const T: Type.TNever = Type.Evaluate(Type.Dependent(Type.Number(), Type.Never(), Type.Literal(1)))
+  Assert.IsTrue(Type.IsNever(T))
+})
+Test('Should Evaluate 71', () => {
+  const T: Type.TLiteral<'hello'> = Type.Evaluate(Type.Dependent(Type.Number(), Type.Never(), Type.Literal('hello')))
+  Assert.IsTrue(Type.IsLiteral(T))
+  Assert.IsEqual(T.const, 'hello')
+})
+Test('Should Evaluate 72', () => {
+  const T: Type.TObject<{ a: Type.TNumber; b: Type.TString }> = Type.Evaluate(
+    Type.Dependent(Type.Object({ a: Type.Number() }), Type.Object({ b: Type.String() }), Type.Never())
+  )
+  Assert.IsTrue(Type.IsObject(T))
+  Assert.IsTrue(Type.IsNumber(T.properties.a))
+  Assert.IsTrue(Type.IsString(T.properties.b))
+})
+Test('Should Evaluate 73', () => {
+  const T: Type.TUnion<[Type.TObject<{ a: Type.TNumber }>, Type.TString]> = Type.Evaluate(
+    Type.Dependent(Type.Object({ a: Type.Number() }), Type.Never(), Type.String())
+  )
+  Assert.IsTrue(Type.IsUnion(T))
+  Assert.IsTrue(Type.IsObject(T.anyOf[0]))
+  Assert.IsTrue(Type.IsNumber(T.anyOf[0].properties.a))
+  Assert.IsTrue(Type.IsString(T.anyOf[1]))
+})
+Test('Should Evaluate 74', () => {
+  const T: Type.TObject<{ a: Type.TNumber }> = Type.Evaluate(
+    Type.Dependent(Type.Object({ a: Type.Number() }), Type.Unknown(), Type.Never())
+  )
+  Assert.IsTrue(Type.IsObject(T))
+  Assert.IsTrue(Type.IsNumber(T.properties.a))
+})
+Test('Should Evaluate 75', () => {
+  const T: Type.TUnion<[Type.TObject<{ a: Type.TNumber; b: Type.TString }>, Type.TNumber]> = Type.Evaluate(
+    Type.Dependent(Type.Object({ a: Type.Number() }), Type.Object({ b: Type.String() }), Type.Number())
+  )
+  Assert.IsTrue(Type.IsUnion(T))
+  Assert.IsTrue(Type.IsObject(T.anyOf[0]))
+  Assert.IsTrue(Type.IsNumber(T.anyOf[0].properties.a))
+  Assert.IsTrue(Type.IsString(T.anyOf[0].properties.b))
+  Assert.IsTrue(Type.IsNumber(T.anyOf[1]))
+})
+Test('Should Evaluate 76', () => {
+  const T: Type.TObject<{ 0: Type.TNever }> = Type.Evaluate(
+    Type.Dependent(Type.Tuple([Type.Number()]), Type.Tuple([Type.String()]), Type.Never())
+  )
+  Assert.IsTrue(Type.IsObject(T))
+  Assert.IsTrue(Type.IsNever(T.properties[0]))
+})
+Test('Should Evaluate 77', () => {
+  const T: Type.TUnion<[Type.TTuple<[Type.TNumber]>, Type.TString]> = Type.Evaluate(
+    Type.Dependent(Type.Tuple([Type.Number()]), Type.Never(), Type.String())
+  )
+  Assert.IsTrue(Type.IsUnion(T))
+  Assert.IsTrue(Type.IsTuple(T.anyOf[0]))
+  Assert.IsTrue(Type.IsNumber(T.anyOf[0].items![0]))
+  Assert.IsTrue(Type.IsString(T.anyOf[1]))
+})
+Test('Should Evaluate 78', () => {
+  const T: Type.TTuple<[Type.TNumber, Type.TString]> = Type.Evaluate(
+    Type.Dependent(Type.Tuple([Type.Number(), Type.String()]), Type.Unknown(), Type.Never())
+  )
+  Assert.IsTrue(Type.IsTuple(T))
+  Assert.IsTrue(Type.IsNumber(T.items![0]))
+  Assert.IsTrue(Type.IsString(T.items![1]))
+})
+Test('Should Evaluate 79', () => {
+  const T: Type.TUnion<[Type.TObject<{ 0: Type.TNever }>, Type.TNumber]> = Type.Evaluate(
+    Type.Dependent(Type.Tuple([Type.Number()]), Type.Tuple([Type.String()]), Type.Number())
+  )
+  Assert.IsTrue(Type.IsUnion(T))
+  Assert.IsTrue(Type.IsObject(T.anyOf[0]))
+  Assert.IsTrue(Type.IsNever(T.anyOf[0].properties[0]))
+  Assert.IsTrue(Type.IsNumber(T.anyOf[1]))
+})
+Test('Should Evaluate 80', () => {
+  const T: Type.TTuple<[Type.TNumber]> = Type.Evaluate(
+    Type.Dependent(Type.Tuple([Type.Number()]), Type.Literal(1), Type.Never())
+  )
+  Assert.IsTrue(Type.IsTuple(T))
+  Assert.IsTrue(Type.IsNumber(T.items![0]))
+})
+Test('Should Evaluate 81', () => {
+  const T: Type.TLiteral<1> = Type.Evaluate(
+    Type.Dependent(Type.Union([Type.Number(), Type.String()]), Type.Literal(1), Type.Never())
+  )
+  Assert.IsTrue(Type.IsLiteral(T))
+  Assert.IsEqual(T.const, 1)
+})
+Test('Should Evaluate 82', () => {
+  const T: Type.TNever = Type.Evaluate(
+    Type.Dependent(Type.Union([Type.Number(), Type.String()]), Type.Never(), Type.Literal(1))
+  )
+  Assert.IsTrue(Type.IsNever(T))
+})
+Test('Should Evaluate 83', () => {
+  const T: Type.TUnion<[Type.TNumber, Type.TString]> = Type.Evaluate(
+    Type.Dependent(Type.Union([Type.Number(), Type.String()]), Type.Unknown(), Type.Never())
+  )
+  Assert.IsTrue(Type.IsUnion(T))
+  Assert.IsTrue(Type.IsNumber(T.anyOf[0]))
+  Assert.IsTrue(Type.IsString(T.anyOf[1]))
+})
+Test('Should Evaluate 84', () => {
+  const T: Type.TUnion<[Type.TNumber, Type.TString, Type.TBoolean]> = Type.Evaluate(
+    Type.Dependent(Type.Union([Type.Number(), Type.String()]), Type.Unknown(), Type.Boolean())
+  )
+  Assert.IsTrue(Type.IsUnion(T))
+  Assert.IsTrue(Type.IsNumber(T.anyOf[0]))
+  Assert.IsTrue(Type.IsString(T.anyOf[1]))
+  Assert.IsTrue(Type.IsBoolean(T.anyOf[2]))
+})
+Test('Should Evaluate 85', () => {
+  const T: Type.TUnion<[Type.TLiteral<1>, Type.TLiteral<2>]> = Type.Evaluate(
+    Type.Dependent(Type.Number(), Type.Union([Type.Literal(1), Type.Literal(2)]), Type.Never())
+  )
+  Assert.IsTrue(Type.IsUnion(T))
+  Assert.IsTrue(Type.IsLiteral(T.anyOf[0]))
+  Assert.IsEqual(T.anyOf[0].const, 1)
+  Assert.IsTrue(Type.IsLiteral(T.anyOf[1]))
+  Assert.IsEqual(T.anyOf[1].const, 2)
+})
+Test('Should Evaluate 86', () => {
+  const T: Type.TNever = Type.Evaluate(
+    Type.Dependent(Type.Number(), Type.Union([Type.String(), Type.Boolean()]), Type.Literal(1))
+  )
+  Assert.IsTrue(Type.IsNever(T))
+})
+Test('Should Evaluate 87', () => {
+  const T: Type.TNull = Type.Evaluate(
+    Type.Dependent(Type.Number(), Type.Union([Type.String(), Type.Boolean()]), Type.Null())
+  )
+  Assert.IsTrue(Type.IsNull(T))
+})
+Test('Should Evaluate 88', () => {
+  const T: Type.TUnion<[Type.TLiteral<1>, Type.TBoolean]> = Type.Evaluate(
+    Type.Dependent(Type.Number(), Type.Union([Type.Literal(1), Type.String()]), Type.Boolean())
+  )
+  Assert.IsTrue(Type.IsUnion(T))
+  Assert.IsTrue(Type.IsLiteral(T.anyOf[0]))
+  Assert.IsEqual(T.anyOf[0].const, 1)
+  Assert.IsTrue(Type.IsBoolean(T.anyOf[1]))
+})
+Test('Should Evaluate 89', () => {
+  const T: Type.TUnion<[Type.TLiteral<1>, Type.TString, Type.TBoolean]> = Type.Evaluate(
+    Type.Dependent(Type.Number(), Type.Literal(1), Type.Union([Type.String(), Type.Boolean()]))
+  )
+  Assert.IsTrue(Type.IsUnion(T))
+  Assert.IsTrue(Type.IsLiteral(T.anyOf[0]))
+  Assert.IsEqual(T.anyOf[0].const, 1)
+  Assert.IsTrue(Type.IsString(T.anyOf[1]))
+  Assert.IsTrue(Type.IsBoolean(T.anyOf[2]))
+})
+Test('Should Evaluate 90', () => {
+  const T: Type.TUnion<[Type.TLiteral<1>, Type.TString]> = Type.Evaluate(
+    Type.Dependent(Type.Number(), Type.Literal(1), Type.Union([Type.Number(), Type.String()]))
+  )
+  Assert.IsTrue(Type.IsUnion(T))
+  Assert.IsTrue(Type.IsLiteral(T.anyOf[0]))
+  Assert.IsEqual(T.anyOf[0].const, 1)
+  Assert.IsTrue(Type.IsString(T.anyOf[1]))
+})
+Test('Should Evaluate 91', () => {
+  const T: Type.TUnion<[Type.TLiteral<'a'>, Type.TNumber, Type.TBoolean]> = Type.Evaluate(
+    Type.Dependent(Type.String(), Type.Literal('a'), Type.Union([Type.Number(), Type.Boolean()]))
+  )
+  Assert.IsTrue(Type.IsUnion(T))
+  Assert.IsTrue(Type.IsLiteral(T.anyOf[0]))
+  Assert.IsEqual(T.anyOf[0].const, 'a')
+  Assert.IsTrue(Type.IsNumber(T.anyOf[1]))
+  Assert.IsTrue(Type.IsBoolean(T.anyOf[2]))
+})
+Test('Should Evaluate 92', () => {
+  const T: Type.TNever = Type.Evaluate(
+    Type.Dependent(Type.Intersect([Type.Number(), Type.String()]), Type.Literal(1), Type.Never())
+  )
+  Assert.IsTrue(Type.IsNever(T))
+})
+Test('Should Evaluate 93', () => {
+  const T: Type.TBoolean = Type.Evaluate(
+    Type.Dependent(Type.Intersect([Type.Number(), Type.String()]), Type.Never(), Type.Boolean())
+  )
+  Assert.IsTrue(Type.IsBoolean(T))
+})
+Test('Should Evaluate 94', () => {
+  const T: Type.TNever = Type.Evaluate(
+    Type.Dependent(Type.Intersect([Type.Number(), Type.String()]), Type.Unknown(), Type.Never())
+  )
+  Assert.IsTrue(Type.IsNever(T))
+})
+Test('Should Evaluate 95', () => {
+  const T: Type.TNever = Type.Evaluate(
+    Type.Dependent(Type.Number(), Type.Intersect([Type.String(), Type.Boolean()]), Type.Never())
+  )
+  Assert.IsTrue(Type.IsNever(T))
+})
+Test('Should Evaluate 96', () => {
+  const T: Type.TNever = Type.Evaluate(
+    Type.Dependent(Type.Number(), Type.Intersect([Type.String(), Type.Boolean()]), Type.Literal(1))
+  )
+  Assert.IsTrue(Type.IsNever(T))
+})
+Test('Should Evaluate 97', () => {
+  const T: Type.TBoolean = Type.Evaluate(
+    Type.Dependent(Type.Number(), Type.Intersect([Type.Literal(1), Type.Literal(2)]), Type.Boolean())
+  )
+  Assert.IsTrue(Type.IsBoolean(T))
+})
+Test('Should Evaluate 98', () => {
+  const T: Type.TLiteral<1> = Type.Evaluate(
+    Type.Dependent(Type.Number(), Type.Literal(1), Type.Intersect([Type.String(), Type.Boolean()]))
+  )
+  Assert.IsTrue(Type.IsLiteral(T))
+  Assert.IsEqual(T.const, 1)
+})
+Test('Should Evaluate 99', () => {
+  const T: Type.TString = Type.Evaluate(
+    Type.Dependent(Type.String(), Type.Unknown(), Type.Intersect([Type.Number(), Type.Boolean()]))
+  )
+  Assert.IsTrue(Type.IsString(T))
+})
+Test('Should Evaluate 100', () => {
+  const T: Type.TObject<{ a: Type.TNumber; 0: Type.TString }> = Type.Evaluate(
+    Type.Dependent(Type.Object({ a: Type.Number() }), Type.Tuple([Type.String()]), Type.Never())
+  )
+  Assert.IsTrue(Type.IsObject(T))
+  Assert.IsTrue(Type.IsNumber(T.properties.a))
+  Assert.IsTrue(Type.IsString(T.properties[0]))
+})
+Test('Should Evaluate 101', () => {
+  const T: Type.TObject<{ 0: Type.TNumber; b: Type.TString }> = Type.Evaluate(
+    Type.Dependent(Type.Tuple([Type.Number()]), Type.Object({ b: Type.String() }), Type.Never())
+  )
+  Assert.IsTrue(Type.IsObject(T))
+  Assert.IsTrue(Type.IsNumber(T.properties[0]))
+  Assert.IsTrue(Type.IsString(T.properties.b))
+})
+Test('Should Evaluate 102', () => {
+  const T: Type.TUnion<[Type.TObject<{ a: Type.TNumber }>, Type.TTuple<[Type.TNumber, Type.TString]>]> = Type.Evaluate(
+    Type.Dependent(Type.Object({ a: Type.Number() }), Type.Never(), Type.Tuple([Type.Number(), Type.String()]))
+  )
+  Assert.IsTrue(Type.IsUnion(T))
+  Assert.IsTrue(Type.IsObject(T.anyOf[0]))
+  Assert.IsTrue(Type.IsNumber(T.anyOf[0].properties.a))
+  Assert.IsTrue(Type.IsTuple(T.anyOf[1]))
+  Assert.IsTrue(Type.IsNumber(T.anyOf[1].items![0]))
+  Assert.IsTrue(Type.IsString(T.anyOf[1].items![1]))
+})
+Test('Should Evaluate 103', () => {
+  const T: Type.TUnion<[Type.TTuple<[Type.TNumber]>, Type.TObject<{ x: Type.TBoolean }>]> = Type.Evaluate(
+    Type.Dependent(Type.Tuple([Type.Number()]), Type.Never(), Type.Object({ x: Type.Boolean() }))
+  )
+  Assert.IsTrue(Type.IsUnion(T))
+  Assert.IsTrue(Type.IsTuple(T.anyOf[0]))
+  Assert.IsTrue(Type.IsNumber(T.anyOf[0].items![0]))
+  Assert.IsTrue(Type.IsObject(T.anyOf[1]))
+  Assert.IsTrue(Type.IsBoolean(T.anyOf[1].properties.x))
+})
+Test('Should Evaluate 104', () => {
+  const T: Type.TUnion<[Type.TObject<{ x: Type.TNumber; y: Type.TNumber }>, Type.TObject<{ x: Type.TNumber; z: Type.TNumber }>]> = Type.Evaluate(
+    Type.Dependent(
+      Type.Object({ x: Type.Number() }),
+      Type.Union([
+        Type.Object({ y: Type.Number() }),
+        Type.Object({ z: Type.Number() })
+      ]),
+      Type.Never()
+    )
+  )
+  Assert.IsTrue(Type.IsUnion(T))
+  Assert.IsTrue(Type.IsObject(T.anyOf[0]))
+  Assert.IsTrue(Type.IsNumber(T.anyOf[0].properties.x))
+  Assert.IsTrue(Type.IsNumber(T.anyOf[0].properties.y))
+  Assert.IsTrue(Type.IsObject(T.anyOf[1]))
+  Assert.IsTrue(Type.IsNumber(T.anyOf[1].properties.x))
+  Assert.IsTrue(Type.IsNumber(T.anyOf[1].properties.z))
+})
+Test('Should Evaluate 105', () => {
+  const T: Type.TUnion<[Type.TObject<{ x: Type.TNumber; y: Type.TNumber }>, Type.TObject<{ x: Type.TNumber; z: Type.TNumber }>, Type.TBoolean]> = Type.Evaluate(
+    Type.Dependent(
+      Type.Object({ x: Type.Number() }),
+      Type.Union([
+        Type.Object({ y: Type.Number() }),
+        Type.Object({ z: Type.Number() })
+      ]),
+      Type.Boolean()
+    )
+  )
+  Assert.IsTrue(Type.IsUnion(T))
+  Assert.IsTrue(Type.IsObject(T.anyOf[0]))
+  Assert.IsTrue(Type.IsNumber(T.anyOf[0].properties.x))
+  Assert.IsTrue(Type.IsNumber(T.anyOf[0].properties.y))
+  Assert.IsTrue(Type.IsObject(T.anyOf[1]))
+  Assert.IsTrue(Type.IsNumber(T.anyOf[1].properties.x))
+  Assert.IsTrue(Type.IsNumber(T.anyOf[1].properties.z))
+  Assert.IsTrue(Type.IsBoolean(T.anyOf[2]))
+})
+// ------------------------------------------------------------------
+// Enum
+// ------------------------------------------------------------------
+Test('Should Evaluate 106', () => {
+  const T: Type.TUnion<[Type.TLiteral<1>, Type.TLiteral<'hello'>]> = Type.Evaluate(Type.Enum([1, 'hello']))
+  Assert.IsTrue(Type.IsUnion(T))
+  Assert.IsEqual(T.anyOf[0].const, 1)
+  Assert.IsEqual(T.anyOf[1].const, 'hello')
+})
+Test('Should Evaluate 107', () => {
+  const T: Type.TLiteral<1> = Type.Evaluate(Type.Enum([1, 1, 1]))
+  Assert.IsEqual(T.const, 1)
+})
+// ------------------------------------------------------------------
+// TemplateLiteral
+// ------------------------------------------------------------------
+Test('Should Evaluate 108', () => {
+  const T: Type.TUnion<[Type.TLiteral<'hello1'>, Type.TLiteral<'hello2'>]> = Type.Evaluate(Type.TemplateLiteral('hello${1|2}'))
+  Assert.IsTrue(Type.IsUnion(T))
+  Assert.IsEqual(T.anyOf[0].const, 'hello1')
+  Assert.IsEqual(T.anyOf[1].const, 'hello2')
+})
+Test('Should Evaluate 109', () => {
+  const T: Type.TString = Type.Evaluate(Type.TemplateLiteral('hello${string}'))
+  Assert.IsTrue(Type.IsString(T))
+})

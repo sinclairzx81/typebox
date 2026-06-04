@@ -29,15 +29,15 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { type TSchema } from '../../types/schema.ts'
-import { type TTemplateLiteralDecode, TemplateLiteralDecode } from '../template_literal/decode.ts'
 import { type TFromType, FromType } from './from_type.ts'
+import { type TEvaluateTemplateLiteral, EvaluateTemplateLiteral } from '../evaluate/evaluate.ts'
 
 export type TFromTemplateLiteral<Pattern extends string,
-  Decoded extends TSchema = TTemplateLiteralDecode<Pattern>,
-  Result extends string[] = TFromType<Decoded>
+  Evaluated extends TSchema = TEvaluateTemplateLiteral<Pattern>,
+  Result extends string[] = TFromType<Evaluated>
 > = Result
 export function FromTemplateLiteral<Pattern extends string>(pattern: Pattern): TFromTemplateLiteral<Pattern> {
-  const decoded = TemplateLiteralDecode(pattern)
-  const result = FromType(decoded)
+  const evaluated = EvaluateTemplateLiteral(pattern)
+  const result = FromType(evaluated)
   return result as never
 }

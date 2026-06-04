@@ -12,7 +12,10 @@ Test('Should Never 2', () => {
   Assert.IsTrue(Type.IsNever(T))
 })
 Test('Should Never 3', () => {
-  const T: Type.TNever = Type.Script('Options<never, { a: 1, b: 2 }>')
+  const T: Type.TWith<Type.TNever, {
+    a: 1
+    b: 2
+  }> = Type.Script('never with { a: 1, b: 2 }')
   Assert.HasPropertyKey(T, 'a')
   Assert.HasPropertyKey(T, 'b')
   Assert.IsEqual(T.a, 1)

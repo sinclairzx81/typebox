@@ -28,11 +28,9 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { type TProperties, type TEnum } from '../../type/index.ts'
-import { EnumToUnion } from '../../type/engine/enum/index.ts'
+import { type TProperties, type TEnum, Evaluate } from '../../type/index.ts'
 import { FromType } from './from_type.ts'
 
 export function FromEnum(context: TProperties, type: TEnum, value: unknown): unknown {
-  const union = EnumToUnion(type)
-  return FromType(context, union, value)
+  return FromType(context, Evaluate(type), value)
 }
