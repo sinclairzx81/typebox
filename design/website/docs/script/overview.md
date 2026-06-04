@@ -4,7 +4,7 @@ Runtime TypeScript Engine For JSON Schema
 
 ## Overview
 
-TypeBox includes a TypeScript-based DSL for composing JSON Schema via TypeScript syntax. The DSL offers a full syntactic frontend to Type.* and supports advanced type-level expressions such as Conditional, Mapped, Infer, Generic, Distributive types and more. This feature is implemented at runtime as well as statically via TypeScript Template Literal types.
+TypeBox includes a micro DSL for composing JSON Schema with TypeScript syntax. The DSL offers a full syntactic frontend to Type.* and supports many advanced type-level constructs such as Conditional, Mapped, Indexed, Infer, Generics, Distributed types and more. This feature is implemented symmetrically at runtime and statically via TypeScript Template Literal types.
 
 ### Example
 

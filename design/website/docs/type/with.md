@@ -1,8 +1,16 @@
 # Type.With
 
-An action that assigns a type additional annotation metadata. This action achieves the same effect as passing options, but where the options are statically observable to TypeScripts type system.
+An action that augments a type with additional constraints and annotations. This action is similar to options, but where the option data is statically introspectable on the schema.
 
 > ⚠️ This action is used to express the Script `with` keyword.
+
+## Syntax
+
+This type is a IR target for the following syntax
+
+```typescript
+type T = string with { format: 'email' }
+```
 
 ## Example
 
