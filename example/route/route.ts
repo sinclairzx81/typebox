@@ -44,7 +44,7 @@ export type RouteHandler<Request extends TSchema, Response extends TSchema> =
 // ------------------------------------------------------------------
 // RouteOptions
 // ------------------------------------------------------------------
-export interface RouteWith<
+export interface RouteOptions<
   Request extends TSchema = TSchema,
   Response extends TSchema = TSchema
 > {
