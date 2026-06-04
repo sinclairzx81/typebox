@@ -1,28 +1,41 @@
 <h1>Schema</h1>
 <p>High Performance Validation for JSON Schema </p>
 <h2>Overview</h2>
-<p>TypeBox includes a high-performance JSON Schema compiler supporting drafts 3 to 2020-12. It is written to be a lightweight alternative to Ajv with improved compilation and validation performance, and automatic fallback to dynamic checking in JIT-restricted environments such as Cloudflare Workers.</p>
+<p>TypeBox includes a high-performance JSON Schema compiler with support for drafts 3 through to 2020-12. It is designed to be a lightweight industry-grade alternative to Ajv with improved compilation and validation performance.</p>
+<p>The compiler is standalone and can be paired with either TypeBox types, native JSON Schema or used with other schema producing libraries. It is designed specifically for high throughput validation via JIT compilation, but also supports automatic fallback to dynamic validation in JIT-restricted environments such as Cloudflare Workers.</p>
 <h3>Example</h3>
-<p>The following uses the Schema submodule to compile a TypeBox type.</p>
-<pre><code class="language-typescript">import Schema from &#39;typebox/schema&#39;
+<p>The following uses the Schema submodule to compile and validate with JSON Schema.</p>
+<pre><code class="language-typescript">// Compile JSON Schema
 
-// -------------------------------------------------------------------------------
-// Compile
-// -------------------------------------------------------------------------------
+const User = Schema.Compile({
+  type: &#39;object&#39;,
+  required: [&#39;id&#39;, &#39;name&#39;, &#39;email&#39;],
+  properties: {
+    id: { type: &#39;string&#39; },
+    name: { type: &#39;string&#39; },
+    email: { type: &#39;string&#39;, format: &#39;email&#39; }
+  }
+})
 
-const User = Schema.Compile(Type.Object({
+// Parse
+
+const result = User.Parse({                              // type result: {
+  id: &#39;65f1a2b3c4d5e6f7a8b9c0d1&#39;,                        //   id: string
+  name: &#39;user&#39;,                                          //   name: string
+  email: &#39;user@domain.com&#39;                               //   email: string
+})                                                       // }
+</code></pre>
+<p>TypeBox types are JSON Schema</p>
+<pre><code class="language-typescript">const User = Schema.Compile(Type.Object({
   id: Type.String(),
   name: Type.String(),
   email: Type.String({ format: &#39;email&#39; })
 }))
-
-// -------------------------------------------------------------------------------
-// Parse
-// -------------------------------------------------------------------------------
-
-const user = User.Parse({                        // const user: {
-  id: &#39;65f1a2b3c4d5e6f7a8b9c0d1&#39;,                //   id: string,
-  name: &#39;user&#39;,                                  //   name: string,
-  email: &#39;user@domain.com&#39;                       //   email: string
-})                                               // } = ...
+</code></pre>
+<p>TypeBox Script types are also JSON Schema</p>
+<pre><code class="language-typescript">const User = Schema.Compile(Type.Script(`{
+  id: string
+  name: string
+  email: string with { format: &#39;email&#39; }
+}`))
 </code></pre>

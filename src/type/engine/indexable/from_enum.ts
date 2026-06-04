@@ -30,15 +30,16 @@ THE SOFTWARE.
 
 import { type TSchema } from '../../types/schema.ts'
 import { type TEnumValue } from '../../types/enum.ts'
-import { type TEnumValuesToVariants, EnumValuesToVariants } from '../enum/enum_to_union.ts'
-import { type TFromUnion, FromUnion } from './from_union.ts'
+import { type TFromType, FromType } from './from_type.ts'
+
+import { type TEvaluateEnum, EvaluateEnum } from '../evaluate/evaluate.ts'
 
 export type TFromEnum<Values extends TEnumValue[],
-  Variants extends TSchema[] = TEnumValuesToVariants<Values>,
-  Result extends string[] = TFromUnion<Variants>
+  Evaluated extends TSchema = TEvaluateEnum<Values>,
+  Result extends string[] = TFromType<Evaluated>
 > = Result
 export function FromEnum<Values extends TEnumValue[]>(values: [...Values]): TFromEnum<Values> {
-  const variants = EnumValuesToVariants(values) as TSchema[]
-  const result = FromUnion(variants)
+  const evaluated = EvaluateEnum(values)
+  const result = FromType(evaluated)
   return result as never
 }

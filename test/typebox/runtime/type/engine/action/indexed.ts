@@ -552,3 +552,58 @@ Test('Should Index 42', () => {
   Assert.IsTrue(Type.IsLiteral(S))
   Assert.IsEqual(S.const, 42)
 })
+// ------------------------------------------------------------------
+// Dependent
+// ------------------------------------------------------------------
+Test('Should Index 43', () => {
+  const A = Type.Dependent(
+    Type.Object({ x: Type.Number() }),
+    Type.Dependent(
+      Type.Object({ y: Type.String() }),
+      Type.Object({ z: Type.Boolean() }),
+      Type.Never()
+    ),
+    Type.Never()
+  )
+  const T: Type.TUnion<[Type.TNumber, Type.TString]> = Type.Index(
+    A,
+    Type.Union([
+      Type.Literal('x'),
+      Type.Literal('y')
+    ])
+  )
+  Assert.IsTrue(Type.IsUnion(T))
+  Assert.IsTrue(Type.IsNumber(T.anyOf[0]))
+  Assert.IsTrue(Type.IsString(T.anyOf[1]))
+})
+// ------------------------------------------------------------------
+// Dependent Indexer
+// ------------------------------------------------------------------
+Test('Should Index 43', () => {
+  const L = Type.Object({
+    x: Type.Number(),
+    0: Type.String()
+  })
+  const R = Type.Dependent(
+    Type.String(),
+    Type.Literal('x'),
+    Type.Literal(0)
+  )
+  const T: Type.TUnion<[Type.TNumber, Type.TString]> = Type.Index(L, R)
+  Assert.IsTrue(Type.IsUnion(T))
+  Assert.IsTrue(Type.IsNumber(T.anyOf[0]))
+  Assert.IsTrue(Type.IsString(T.anyOf[1]))
+})
+Test('Should Index 44', () => {
+  const L = Type.Object({
+    x: Type.Number(),
+    0: Type.String()
+  })
+  const R = Type.Dependent(
+    Type.String(),
+    Type.Literal('x'),
+    Type.Literal('y')
+  )
+  const T: Type.TNumber = Type.Index(L, R)
+  Assert.IsTrue(Type.IsNumber(T))
+})

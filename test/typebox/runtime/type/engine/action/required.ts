@@ -88,3 +88,30 @@ Test('Should Required 5', () => {
   Assert.IsFalse(Type.IsOptional(T.anyOf[1].properties.y))
   Assert.IsFalse(Type.IsOptional(T.anyOf[2].properties.z))
 })
+// ------------------------------------------------------------------
+// Dependent
+// ------------------------------------------------------------------
+Test('Should Partial 6', () => {
+  const A = Type.Dependent(
+    Type.Object({ x: Type.Optional(Type.Number()) }),
+    Type.Dependent(
+      Type.Object({ y: Type.Optional(Type.Number()) }),
+      Type.Object({ z: Type.Optional(Type.Number()) }),
+      Type.Never()
+    ),
+    Type.Never()
+  )
+  const T: Type.TObject<{
+    x: Type.TNumber
+    y: Type.TNumber
+    z: Type.TNumber
+  }> = Type.Required(A)
+
+  Assert.IsTrue(Type.IsObject(T))
+  Assert.IsTrue(Type.IsNumber(T.properties.x))
+  Assert.IsTrue(Type.IsNumber(T.properties.y))
+  Assert.IsTrue(Type.IsNumber(T.properties.z))
+  Assert.IsFalse(Type.IsOptional(T.properties.x))
+  Assert.IsFalse(Type.IsOptional(T.properties.y))
+  Assert.IsFalse(Type.IsOptional(T.properties.z))
+})

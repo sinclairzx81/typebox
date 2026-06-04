@@ -4,25 +4,80 @@ import * as Type from 'typebox'
 const Test = Assert.Context('Type.Script.With')
 
 // ------------------------------------------------------------------
-// Annotations
+// Options | Overloads
 // ------------------------------------------------------------------
 Test('Should With 1', () => {
-  const Result: Type.TOptions<Type.TString, { value: 1 }> = Type.Script('string with { value: 1 }')
+  const T = Type.Script('string', { x: 1 })
+  Assert.IsTrue(Type.IsString(T))
+  Assert.HasPropertyKey(T, 'x')
+  Assert.IsEqual(T.x, 1)
+})
+Test('Should With 2', () => {
+  const A = Type.String()
+  const T = Type.Script({ A }, 'A', { x: 1 })
+  Assert.IsTrue(Type.IsString(T))
+  Assert.HasPropertyKey(T, 'x')
+  Assert.IsEqual(T.x, 1)
+})
+// ------------------------------------------------------------------
+// Options | Json Parse
+// ------------------------------------------------------------------
+Test('Should With 3', () => {
+  const T: Type.TWith<Type.TNull, {
+    x: 1
+  }> = Type.Script('null with { x: 1 }')
+  Assert.IsEqual(T.x, 1)
+})
+Test('Should With 4', () => {
+  const T: Type.TWith<Type.TNull, {
+    x: true
+  }> = Type.Script('null with { x: true }')
+  Assert.IsEqual(T.x, true)
+})
+Test('Should With 5', () => {
+  const T: Type.TWith<Type.TNull, {
+    x: [1, 2, 3]
+  }> = Type.Script('null with { x: [1, 2, 3] }')
+  Assert.IsEqual(T.x, [1, 2, 3])
+})
+Test('Should With 6', () => {
+  const T: Type.TWith<Type.TNull, {
+    x: { x: 1 }
+  }> = Type.Script('null with { x: { x: 1 } }')
+  Assert.IsEqual(T.x, { x: 1 })
+})
+Test('Should With 7', () => {
+  const T: Type.TWith<Type.TNull, {
+    x: null
+  }> = Type.Script('null with { x: null }')
+  Assert.IsEqual(T.x, null)
+})
+Test('Should With 8', () => {
+  const T: Type.TWith<Type.TNull, {
+    x: 'hello'
+  }> = Type.Script('null with { x: "hello" }')
+  Assert.IsEqual(T.x, 'hello')
+})
+// ------------------------------------------------------------------
+// Annotations
+// ------------------------------------------------------------------
+Test('Should With 9', () => {
+  const Result: Type.TWith<Type.TString, { value: 1 }> = Type.Script('string with { value: 1 }')
   Assert.IsTrue(Type.IsString(Result))
   Assert.IsEqual(Result.value, 1)
 })
-Test('Should With 2', () => {
-  const Result: Type.TOptions<Type.TNumber, { minimum: 0 }> = Type.Script('number with { minimum: 0 }')
+Test('Should With 10', () => {
+  const Result: Type.TWith<Type.TNumber, { minimum: 0 }> = Type.Script('number with { minimum: 0 }')
   Assert.IsTrue(Type.IsNumber(Result))
   Assert.IsEqual(Result.minimum, 0)
 })
-Test('Should With 3', () => {
-  const Result: Type.TOptions<Type.TBoolean, { description: 'description' }> = Type.Script("boolean with { description: 'description' }")
+Test('Should With 11', () => {
+  const Result: Type.TWith<Type.TBoolean, { description: 'description' }> = Type.Script("boolean with { description: 'description' }")
   Assert.IsTrue(Type.IsBoolean(Result))
   Assert.IsEqual(Result.description, 'description')
 })
-Test('Should With 4', () => {
-  const Result: Type.TOptions<Type.TNumber, { minimum: 0; maximum: 1; description: 'description'; title: 'title' }> = Type.Script("number with { minimum: 0, maximum: 1, description: 'description', title: 'title' }")
+Test('Should With 12', () => {
+  const Result: Type.TWith<Type.TNumber, { minimum: 0; maximum: 1; description: 'description'; title: 'title' }> = Type.Script("number with { minimum: 0, maximum: 1, description: 'description', title: 'title' }")
   Assert.IsTrue(Type.IsNumber(Result))
   Assert.IsEqual(Result.minimum, 0)
   Assert.IsEqual(Result.maximum, 1)
@@ -32,18 +87,18 @@ Test('Should With 4', () => {
 // ------------------------------------------------------------------
 // Object
 // ------------------------------------------------------------------
-Test('Should With 5', () => {
-  const Result: Type.TOptions<
+Test('Should With 13', () => {
+  const Result: Type.TWith<
     Type.TObject<{
-      x: Type.TOptions<Type.TNumber, {
+      x: Type.TWith<Type.TNumber, {
         minimum: 1
         description: 'X'
       }>
-      y: Type.TOptions<Type.TNumber, {
+      y: Type.TWith<Type.TNumber, {
         minimum: 2
         description: 'Y'
       }>
-      z: Type.TOptions<Type.TNumber, {
+      z: Type.TWith<Type.TNumber, {
         minimum: 3
         description: 'Z'
       }>
@@ -70,8 +125,8 @@ Test('Should With 5', () => {
   Assert.IsEqual(Result.properties.z.minimum, 3)
   Assert.IsEqual(Result.properties.z.description, 'Z')
 })
-Test('Should With 6', () => {
-  const T: Type.TOptions<
+Test('Should With 14', () => {
+  const T: Type.TWith<
     Type.TObject<{
       x: Type.TNumber
       y: Type.TNumber
@@ -87,7 +142,7 @@ Test('Should With 6', () => {
   Assert.IsTrue(Type.IsNumber(T.properties.x))
   Assert.IsTrue(Type.IsNumber(T.properties.y))
 })
-Test('Should With 7', () => {
+Test('Should With 15', () => {
   const T = Type.Script(`{
     value: string with { minLength: 1, maxLength: 100 }
   }`)
@@ -96,11 +151,11 @@ Test('Should With 7', () => {
   Assert.IsEqual(T.properties.value.minLength, 1)
   Assert.IsEqual(T.properties.value.maxLength, 100)
 })
-Test('Should With 8', () => {
+Test('Should With 16', () => {
   const T: Type.TObject<{
-    meta: Type.TOptions<
+    meta: Type.TWith<
       Type.TObject<{
-        title: Type.TOptions<Type.TString, {
+        title: Type.TWith<Type.TString, {
           minLength: 1
         }>
       }>,
@@ -120,19 +175,19 @@ Test('Should With 8', () => {
 // ------------------------------------------------------------------
 // Logical
 // ------------------------------------------------------------------
-Test('Should With 9', () => {
-  const T: Type.TUnion<[Type.TString, Type.TOptions<Type.TNumber, { foo: 1 }>]> = Type.Script('string | number with { foo: 1 }')
+Test('Should With 17', () => {
+  const T: Type.TUnion<[Type.TString, Type.TWith<Type.TNumber, { foo: 1 }>]> = Type.Script('string | number with { foo: 1 }')
   Assert.IsTrue(Type.IsUnion(T))
   Assert.IsEqual(T.anyOf.length, 2)
   Assert.IsTrue(Type.IsString(T.anyOf[0]))
   Assert.IsTrue(Type.IsNumber(T.anyOf[1]))
-  Assert.IsEqual((T.anyOf[1] as Type.TOptions<Type.TNumber, { foo: 1 }>).foo, 1)
+  Assert.IsEqual((T.anyOf[1] as Type.TWith<Type.TNumber, { foo: 1 }>).foo, 1)
 })
-Test('Should With 10', () => {
+Test('Should With 18', () => {
   const T: Type.TUnion<[
     Type.TString,
     Type.TBoolean,
-    Type.TOptions<Type.TNumber, {
+    Type.TWith<Type.TNumber, {
       minimum: 0
     }>
   ]> = Type.Script('string | boolean | number with { minimum: 0 }')
@@ -143,8 +198,8 @@ Test('Should With 10', () => {
   Assert.IsTrue(Type.IsNumber(T.anyOf[2]))
   Assert.IsEqual(T.anyOf[2].minimum, 0)
 })
-Test('Should With 11', () => {
-  const T: Type.TOptions<Type.TUnion<[Type.TString, Type.TNumber]>, { foo: 1 }> = Type.Script('(string | number) with { foo: 1 }')
+Test('Should With 19', () => {
+  const T: Type.TWith<Type.TUnion<[Type.TString, Type.TNumber]>, { foo: 1 }> = Type.Script('(string | number) with { foo: 1 }')
   Assert.IsTrue(Type.IsUnion(T))
   Assert.IsEqual(T.foo, 1)
   Assert.IsTrue(Type.IsString(T.anyOf[0]))
@@ -153,12 +208,12 @@ Test('Should With 11', () => {
 // ------------------------------------------------------------------
 // Constituents
 // ------------------------------------------------------------------
-Test('Should With 12', () => {
+Test('Should With 20', () => {
   const Result: Type.TUnion<[
-    Type.TOptions<Type.TString, {
+    Type.TWith<Type.TString, {
       minLength: 1
     }>,
-    Type.TOptions<Type.TNumber, {
+    Type.TWith<Type.TNumber, {
       minimum: 0
     }>
   ]> = Type.Script(`(string with { minLength: 1 }) | (number with { minimum: 0 })`)
@@ -172,17 +227,17 @@ Test('Should With 12', () => {
 // ------------------------------------------------------------------
 // Generic
 // ------------------------------------------------------------------
-Test('Should With 13', () => {
+Test('Should With 21', () => {
   const Result: Type.TObject<{
-    x: Type.TOptions<Type.TNumber, {
+    x: Type.TWith<Type.TNumber, {
       minimum: 0
       maximum: 1
     }>
-    y: Type.TOptions<Type.TNumber, {
+    y: Type.TWith<Type.TNumber, {
       minimum: 0
       maximum: 1
     }>
-    z: Type.TOptions<Type.TNumber, {
+    z: Type.TWith<Type.TNumber, {
       minimum: 0
       maximum: 1
     }>
@@ -208,12 +263,12 @@ Test('Should With 13', () => {
   Assert.IsEqual(Result.properties.z.minimum, 0)
   Assert.IsEqual(Result.properties.z.maximum, 1)
 })
-Test('Should With 14', () => {
+Test('Should With 22', () => {
   const Result: Type.TObject<{
-    a: Type.TOptions<Type.TString, {
+    a: Type.TWith<Type.TString, {
       description: 'description'
     }>
-    b: Type.TOptions<Type.TString, {
+    b: Type.TWith<Type.TString, {
       description: 'description'
     }>
   }> = Type.Script(`
@@ -232,8 +287,8 @@ Test('Should With 14', () => {
 // ------------------------------------------------------------------
 // Generic: Conditional
 // ------------------------------------------------------------------
-Test('Should With 15', () => {
-  const Result: Type.TOptions<Type.TNumber, {
+Test('Should With 23', () => {
+  const Result: Type.TWith<Type.TNumber, {
     minimum: 0
   }> = Type.Script(`
     type Wrap<V> = V extends number ? V with { minimum: 0 } : V
@@ -242,7 +297,7 @@ Test('Should With 15', () => {
   Assert.IsTrue(Type.IsNumber(Result))
   Assert.IsEqual(Result.minimum, 0)
 })
-Test('Should With 16', () => {
+Test('Should With 24', () => {
   const Result: Type.TString = Type.Script(`
     type Wrap<V> = V extends number ? V with { minimum: 0 } : V
     type Result = Wrap<string>
@@ -253,8 +308,8 @@ Test('Should With 16', () => {
 // ------------------------------------------------------------------
 // Intersection
 // ------------------------------------------------------------------
-Test('Should With 17', () => {
-  const Result: Type.TOptions<
+Test('Should With 25', () => {
+  const Result: Type.TWith<
     Type.TIntersect<[
       Type.TObject<{
         x: Type.TNumber
@@ -270,9 +325,9 @@ Test('Should With 17', () => {
   Assert.IsTrue(Type.IsIntersect(Result))
   Assert.IsEqual(Result.description, 'description')
 })
-Test('Should With 18', () => {
+Test('Should With 26', () => {
   const Result: Type.TIntersect<[
-    Type.TOptions<
+    Type.TWith<
       Type.TObject<{
         x: Type.TNumber
       }>,
@@ -280,7 +335,7 @@ Test('Should With 18', () => {
         description: 'X'
       }
     >,
-    Type.TOptions<
+    Type.TWith<
       Type.TObject<{
         y: Type.TNumber
       }>,
@@ -298,12 +353,12 @@ Test('Should With 18', () => {
 // ------------------------------------------------------------------
 // Tuple
 // ------------------------------------------------------------------
-Test('Should With 19', () => {
+Test('Should With 27', () => {
   const Result: Type.TTuple<[
-    Type.TOptions<Type.TNumber, {
+    Type.TWith<Type.TNumber, {
       minimum: 0
     }>,
-    Type.TOptions<Type.TString, {
+    Type.TWith<Type.TString, {
       minLength: 1
     }>
   ]> = Type.Script(`[number with { minimum: 0 }, string with { minLength: 1 }]`)
@@ -313,8 +368,8 @@ Test('Should With 19', () => {
   Assert.IsTrue(Type.IsString(Result.items[1]))
   Assert.IsEqual(Result.items[1].minLength, 1)
 })
-Test('Should With 20', () => {
-  const Result: Type.TOptions<Type.TTuple<[Type.TNumber, Type.TString]>, {
+Test('Should With 28', () => {
+  const Result: Type.TWith<Type.TTuple<[Type.TNumber, Type.TString]>, {
     description: 'description'
   }> = Type.Script(`[number, string] with { description: 'description' }`)
   Assert.IsTrue(Type.IsTuple(Result))
@@ -326,9 +381,9 @@ Test('Should With 20', () => {
 // ------------------------------------------------------------------
 // Array
 // ------------------------------------------------------------------
-Test('Should With 21', () => {
+Test('Should With 29', () => {
   const Result: Type.TArray<
-    Type.TOptions<Type.TNumber, {
+    Type.TWith<Type.TNumber, {
       minimum: 0
     }>
   > = Type.Script(`Array<number with { minimum: 0 }>`)
@@ -336,8 +391,8 @@ Test('Should With 21', () => {
   Assert.IsTrue(Type.IsNumber(Result.items))
   Assert.IsEqual(Result.items.minimum, 0)
 })
-Test('Should With 22', () => {
-  const Result: Type.TOptions<Type.TArray<Type.TNumber>, {
+Test('Should With 30', () => {
+  const Result: Type.TWith<Type.TArray<Type.TNumber>, {
     description: 'description'
     minItems: 1
   }> = Type.Script(`number[] with { description: 'description', minItems: 1 }`)
@@ -350,16 +405,16 @@ Test('Should With 22', () => {
 // ------------------------------------------------------------------
 // Literal
 // ------------------------------------------------------------------
-Test('Should With 23', () => {
-  const Result: Type.TOptions<Type.TLiteral<'hello'>, {
+Test('Should With 31', () => {
+  const Result: Type.TWith<Type.TLiteral<'hello'>, {
     description: 'description'
   }> = Type.Script(`'hello' with { description: 'description' }`)
   Assert.IsTrue(Type.IsLiteral(Result))
   Assert.IsEqual(Result.const, 'hello')
   Assert.IsEqual(Result.description, 'description')
 })
-Test('Should With 24', () => {
-  const Result: Type.TOptions<Type.TLiteral<42>, {
+Test('Should With 32', () => {
+  const Result: Type.TWith<Type.TLiteral<42>, {
     description: 'description'
   }> = Type.Script(`42 with { description: 'description' }`)
   Assert.IsTrue(Type.IsLiteral(Result))
@@ -369,10 +424,10 @@ Test('Should With 24', () => {
 // ------------------------------------------------------------------
 // Optional
 // ------------------------------------------------------------------
-Test('Should With 25', () => {
+Test('Should With 33', () => {
   const Result: Type.TObject<{
     label: Type.TOptional<
-      Type.TOptions<Type.TString, {
+      Type.TWith<Type.TString, {
         minLength: 1
       }>
     >
@@ -384,10 +439,10 @@ Test('Should With 25', () => {
 // ------------------------------------------------------------------
 // Readonly
 // ------------------------------------------------------------------
-Test('Should With 26', () => {
+Test('Should With 34', () => {
   const Result: Type.TObject<{
     id: Type.TReadonly<
-      Type.TOptions<Type.TString, {
+      Type.TWith<Type.TString, {
         minLength: 1
       }>
     >
@@ -399,15 +454,15 @@ Test('Should With 26', () => {
 // ------------------------------------------------------------------
 // Mapped
 // ------------------------------------------------------------------
-Test('Should With 27', () => {
+Test('Should With 35', () => {
   const Result: Type.TObject<{
     name: Type.TOptional<
-      Type.TOptions<Type.TString, {
+      Type.TWith<Type.TString, {
         description: 'description'
       }>
     >
     age: Type.TOptional<
-      Type.TOptions<Type.TNumber, {
+      Type.TWith<Type.TNumber, {
         description: 'description'
       }>
     >
@@ -424,7 +479,7 @@ Test('Should With 27', () => {
   Assert.IsTrue(Type.IsOptional(Result.properties.age))
   Assert.IsEqual(Result.properties.age.description, 'description')
 })
-Test('Should With 28', () => {
+Test('Should With 36', () => {
   const Result = Type.Script(`
     type Constrain<T> = {
       [K in keyof T]: T[K] with { minimum: 0 }
@@ -440,7 +495,7 @@ Test('Should With 28', () => {
   Assert.IsTrue(Type.IsObject(Result.anyOf[1]))
   Assert.IsEqual(Result.anyOf[1].properties.y.minimum, 0)
 })
-Test('Should With 29', () => {
+Test('Should With 37', () => {
   const Result = Type.Script(`
     type Constrain<T> = {
       [K in keyof T]: T[K] with { minimum: 0 }
@@ -459,10 +514,10 @@ Test('Should With 29', () => {
 // ------------------------------------------------------------------
 // Evaluate
 // ------------------------------------------------------------------
-Test('Should With 30', () => {
+Test('Should With 38', () => {
   const Result: Type.TObject<{
-    x: Type.TOptions<Type.TNumber, { minimum: 0 }>
-    y: Type.TOptions<Type.TNumber, { minimum: 0 }>
+    x: Type.TWith<Type.TNumber, { minimum: 0 }>
+    y: Type.TWith<Type.TNumber, { minimum: 0 }>
   }> = Type.Script(`
     type Constrain<T> = {
       [K in keyof T]: T[K] with { minimum: 0 }
@@ -480,75 +535,75 @@ Test('Should With 30', () => {
 // ------------------------------------------------------------------
 // Deferred
 // ------------------------------------------------------------------
-Test('Should With 31', () => {
-  const Result: Type.TOptionsDeferred<Type.TRef<'R'>, { value: 1 }> = Type.Script(`R with { value: 1 }`)
+Test('Should With 39', () => {
+  const Result: Type.TWithDeferred<Type.TRef<'R'>, { value: 1 }> = Type.Script(`R with { value: 1 }`)
   Assert.IsTrue(Type.IsDeferred(Result))
-  Assert.IsEqual(Result.action, 'Options')
+  Assert.IsEqual(Result.action, 'With')
   Assert.IsTrue(Type.IsRef(Result.parameters[0]))
   Assert.IsEqual(Result.parameters[1], { value: 1 })
 })
-Test('Should With 32', () => {
-  const Result: Type.TOptions<Type.TString, { value: 1 }> = Type.Script({ R: Type.String() }, `R with { value: 1 }`)
+Test('Should With 40', () => {
+  const Result: Type.TWith<Type.TString, { value: 1 }> = Type.Script({ R: Type.String() }, `R with { value: 1 }`)
   Assert.IsTrue(Type.IsString(Result))
   Assert.IsEqual(Result.value, 1)
 })
 // ------------------------------------------------------------------
 // Syntax With Variation
 // ------------------------------------------------------------------
-Test('Should With 33', () => {
+Test('Should With 41', () => {
   const Result: Type.TString = Type.Script('string with 1')
   Assert.IsTrue(Type.IsString(Result))
 })
-Test('Should With 34', () => {
+Test('Should With 42', () => {
   const Result: Type.TString = Type.Script('string with []')
   Assert.IsTrue(Type.IsString(Result))
 })
-Test('Should With 35', () => {
+Test('Should With 43', () => {
   const Result: Type.TNever = Type.Script('{ x: string with 1 }')
   Assert.IsTrue(Type.IsNever(Result))
 })
-Test('Should With 36', () => {
+Test('Should With 44', () => {
   const Result: Type.TNever = Type.Script('{ x: string with [] }')
   Assert.IsTrue(Type.IsNever(Result))
 })
-Test('Should With 37', () => {
-  const Result: Type.TOptions<Type.TString, {
+Test('Should With 45', () => {
+  const Result: Type.TWith<Type.TString, {
     value: 1
   }> = Type.Script('string with { value: 1 }')
   Assert.IsEqual(Result.value, 1)
 })
-Test('Should With 38', () => {
-  const Result: Type.TOptions<Type.TString, {
+Test('Should With 46', () => {
+  const Result: Type.TWith<Type.TString, {
     value: {
       x: 1
     }
   }> = Type.Script('string with { value: { x: 1 } }')
   Assert.IsEqual(Result.value, { x: 1 })
 })
-Test('Should With 39', () => {
-  const Result: Type.TOptions<Type.TString, {
+Test('Should With 47', () => {
+  const Result: Type.TWith<Type.TString, {
     value: [1, null, true, 'hello']
   }> = Type.Script('string with { value: [1, null, true, "hello"] }')
   Assert.IsEqual(Result.value, [1, null, true, 'hello'])
 })
-Test('Should With 40', () => {
-  const Result: Type.TOptions<Type.TString, {
+Test('Should With 48', () => {
+  const Result: Type.TWith<Type.TString, {
     value: {
       x: [1, null, true, 'hello']
     }
   }> = Type.Script('string with { value: { x: [1, null, true, "hello"] } }')
   Assert.IsEqual(Result.value, { x: [1, null, true, 'hello'] })
 })
-Test('Should With 41', () => {
-  const Result: Type.TOptions<Type.TString, {
+Test('Should With 49', () => {
+  const Result: Type.TWith<Type.TString, {
     value: [{
       x: 1
     }]
   }> = Type.Script('string with { value: [{ x: 1 }] }')
   Assert.IsEqual(Result.value, [{ x: 1 }])
 })
-Test('Should With 42', () => {
-  const Result: Type.TOptions<Type.TString, {
+Test('Should With 50', () => {
+  const Result: Type.TWith<Type.TString, {
     value: null
   }> = Type.Script('string with { value: null }')
   Assert.IsEqual(Result.value, null)

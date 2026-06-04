@@ -1,0 +1,18 @@
+<h1>Type.With</h1>
+<p>An action that assigns a type additional annotation metadata. This action achieves the same effect as passing options, but where the options are statically observable to TypeScripts type system.</p>
+<blockquote>
+<p>⚠️ This action is used to express the Script <code>with</code> keyword.</p>
+</blockquote>
+<h2>Example</h2>
+<p>Example usage is shown below.</p>
+<pre><code class="language-typescript">const T = Type.With(Type.Number(), {                // const T = {
+  minimum: 10,                                      //   type: &#39;number&#39;,
+  maximum: 100                                      //   minimum: 10,
+})                                                  //   maximum: 100
+                                                    // }
+
+                                                    // const T: TWith&lt;TNumber, {
+                                                    //   minimum: number;
+                                                    //   maximum: number;
+                                                    // }&gt;
+</code></pre>

@@ -82,58 +82,58 @@ Test('Should Extends 7', () => {
 // Variant types
 // ------------------------------------------------------------------
 Test('Should Extends 8', () => {
-  Assert.IsExtends<0 | null | 'X', 0 | null | 'X'>(true)
-  const R: ExtendsResult.TExtendsTrue = Extends({}, Type.Enum([0, null, 'X']), Type.Enum([0, null, 'X']))
+  Assert.IsExtends<0 | 1 | 'X', 0 | 1 | 'X'>(true)
+  const R: ExtendsResult.TExtendsTrue = Extends({}, Type.Enum([0, 1, 'X']), Type.Enum([0, 1, 'X']))
   Assert.IsTrue(ExtendsResult.IsExtendsTrue(R))
 })
 Test('Should Extends 8', () => {
-  Assert.IsExtends<0 | null, 0 | null | 'X'>(true)
-  const R: ExtendsResult.TExtendsTrue = Extends({}, Type.Enum([0, null]), Type.Enum([0, null, 'X']))
+  Assert.IsExtends<0 | 1, 0 | 1 | 'X'>(true)
+  const R: ExtendsResult.TExtendsTrue = Extends({}, Type.Enum([0, 1]), Type.Enum([0, 1, 'X']))
   Assert.IsTrue(ExtendsResult.IsExtendsTrue(R))
 })
 Test('Should Extends 9', () => {
-  type _X = 0 | null | 'X' extends 0 | null ? true : false // false
-  Assert.IsExtends<0 | null | 'X', 0 | null>(true)
-  Assert.IsExtends<0 | null | 'X', 0 | null>(false) // we use _X here
-  const R: ExtendsResult.TExtendsFalse = Extends({}, Type.Enum([0, null, 'X']), Type.Enum([0, null]))
+  type _X = 0 | 1 | 'X' extends 0 | 1 ? true : false // false
+  Assert.IsExtends<0 | 1 | 'X', 0 | 1>(true)
+  Assert.IsExtends<0 | 1 | 'X', 0 | 1>(false) // we use _X here
+  const R: ExtendsResult.TExtendsFalse = Extends({}, Type.Enum([0, 1, 'X']), Type.Enum([0, 1]))
   Assert.IsTrue(ExtendsResult.IsExtendsFalse(R))
 })
 // ------------------------------------------------------------------
 // Variant Types + Union
 // ------------------------------------------------------------------
 Test('Should Extends 10', () => {
-  Assert.IsExtends<0 | null | 'X', 0 | null | 'X'>(true)
+  Assert.IsExtends<0 | 1 | 'X', 0 | 1 | 'X'>(true)
   const R: ExtendsResult.TExtendsTrue = Extends(
     {},
-    Type.Enum([0, null, 'X']),
+    Type.Enum([0, 1, 'X']),
     Type.Union([
       Type.Literal(0),
-      Type.Null(),
+      Type.Literal(1),
       Type.Literal('X')
     ])
   )
   Assert.IsTrue(ExtendsResult.IsExtendsTrue(R))
 })
 Test('Should Extends 11', () => {
-  Assert.IsExtends<0 | null, 0 | null | 'X'>(true)
+  Assert.IsExtends<0 | 1, 0 | 1 | 'X'>(true)
   const R: ExtendsResult.TExtendsTrue = Extends(
     {},
-    Type.Enum([0, null]),
+    Type.Enum([0, 1]),
     Type.Union([
       Type.Literal(0),
-      Type.Null(),
+      Type.Literal(1),
       Type.Literal('X')
     ])
   )
   Assert.IsTrue(ExtendsResult.IsExtendsTrue(R))
 })
 Test('Should Extends 12', () => {
-  type _X = 0 | null | 'X' extends 0 | null ? true : false // false
-  Assert.IsExtends<0 | null | 'X', 0 | null>(true)
-  Assert.IsExtends<0 | null | 'X', 0 | null>(false) // use _X
+  type _X = 0 | 'X' extends 0 | null ? true : false // false
+  Assert.IsExtends<0 | 'X', 0 | null>(true)
+  Assert.IsExtends<0 | 'X', 0 | null>(false) // use _X
   const R: ExtendsResult.TExtendsFalse = Extends(
     {},
-    Type.Enum([0, null, 'X']),
+    Type.Enum([0, 'X']),
     Type.Union([
       Type.Literal(0),
       Type.Null()

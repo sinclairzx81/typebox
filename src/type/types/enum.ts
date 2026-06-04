@@ -42,7 +42,7 @@ export type StaticEnum<Values extends TEnumValue[]> = (
 // ------------------------------------------------------------------
 // Type
 // ------------------------------------------------------------------
-export type TEnumValue = string | number | null
+export type TEnumValue = string | number
 
 /** Represents an Enum type. */
 export interface TEnum<Values extends TEnumValue[] = TEnumValue[]> extends TSchema {

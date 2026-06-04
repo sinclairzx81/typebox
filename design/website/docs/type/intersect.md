@@ -33,7 +33,7 @@ type T = Static<typeof T>                           // type T = {
 
 ## Guard
 
-Use the IsInteger function to guard values of this type.
+Use the IsIntersect function to guard values of this type.
 
 ```typescript
 Type.IsIntersect(value)                             // value is TIntersect

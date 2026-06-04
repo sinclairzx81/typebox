@@ -1,5 +1,6 @@
 import { Value } from 'typebox/value'
 import { Assert } from 'test'
+import { Type } from 'typebox'
 
 const Test = Assert.Context('Value.Clone')
 
@@ -116,4 +117,19 @@ Test('Should Clone 18', () => {
   Object.defineProperty(A.outer, '__proto__', { value: 2, enumerable: true })
   const B = Value.Clone(A)
   Assert.IsEqual(B, { outer: { value: 1 } })
+})
+// ------------------------------------------------------------------
+// Type Instance
+// ------------------------------------------------------------------
+Test('Should Clone 19', () => {
+  const A = Type.String()
+  const B = Value.Clone(A)
+
+  Assert.HasPropertyKey(B, '~kind')
+  Assert.HasPropertyKey(B, 'type')
+  Assert.IsEqual(B.type, 'string')
+
+  const isEnumerableA = Object.prototype.propertyIsEnumerable.call(A, '~kind')
+  const isEnumerableB = Object.prototype.propertyIsEnumerable.call(B, '~kind')
+  Assert.IsEqual(isEnumerableA, isEnumerableB)
 })

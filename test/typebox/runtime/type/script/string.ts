@@ -12,7 +12,10 @@ Test('Should String 2', () => {
   Assert.IsTrue(Type.IsString(T))
 })
 Test('Should String 3', () => {
-  const T: Type.TString = Type.Script('Options<string, { a: 1, b: 2 }>')
+  const T: Type.TWith<Type.TString, {
+    a: 1
+    b: 2
+  }> = Type.Script('string with { a: 1, b: 2 }')
   Assert.HasPropertyKey(T, 'a')
   Assert.HasPropertyKey(T, 'b')
   Assert.IsEqual(T.a, 1)

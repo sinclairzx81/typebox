@@ -1,6 +1,6 @@
 # Schema.Spec
 
-TypeBox is tested heavily against the [Official JSON Schema Test Suite](https://github.com/json-schema-org/JSON-Schema-Test-Suite) for compliance against all major specification drafts.
+TypeBox has broad support for all major JSON Schema drafts and asserts for specification compliance using the [Official JSON Schema Test Suite](https://github.com/json-schema-org/JSON-Schema-Test-Suite). TypeBox tracks specification coverage as JSON Schema moves closer to ECMA and IETF standardization. 
 
 ## Supported Keywords
 

@@ -30,54 +30,50 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { type TSchema } from '../../types/schema.ts'
-import { type TEnum, type TEnumValue, IsEnum } from '../../types/enum.ts'
 import { type TUnion, IsUnion } from '../../types/union.ts'
 import { type TExtends, Extends, ExtendsResult } from '../../extends/index.ts'
-import { type TEnumValuesToVariants, EnumValuesToVariants } from '../enum/index.ts'
-import { type TEvaluateUnion, type TFlatten, EvaluateUnion, Flatten } from '../evaluate/index.ts'
+
+import { type TEvaluateType, EvaluateType } from '../evaluate/evaluate.ts'
+import { type TEvaluateUnion, EvaluateUnion } from '../evaluate/evaluate.ts'
 
 // ------------------------------------------------------------------
-// ExcludeUnionLeft
+// ExcludeType
 // ------------------------------------------------------------------
-type TExcludeUnionLeft<Types extends TSchema[], Right extends TSchema, Result extends TSchema[] = []> = (
-  Types extends [infer Head extends TSchema, ...infer Tail extends TSchema[]]
-    ? TExcludeUnionLeft<Tail, Right, [...Result, ...TExcludeTypeLeft<Head, Right>]>
-    : Result
-)
-function ExcludeUnionLeft<Types extends TSchema[], Right extends TSchema>(types: [...Types], right: Right): TExcludeUnionLeft<Types, Right> {
-  return types.reduce((result, head) => {
-    return [...result, ...ExcludeTypeLeft(head, right)]
-  }, [] as TSchema[]) as never
-}
-// ------------------------------------------------------------------
-// ExcludeTypeLeft
-// ------------------------------------------------------------------
-type TExcludeTypeLeft<Left extends TSchema, Right extends TSchema,
+type TExcludeType<Left extends TSchema, Right extends TSchema,
   Check extends ExtendsResult.TResult = TExtends<{}, Left, Right>,
-  Result extends TSchema[] = Check extends ExtendsResult.TExtendsTrueLike<infer _> ? [] : [Left]
+  Result extends TSchema[] = Check extends ExtendsResult.TExtendsTrueLike ? [] : [Left]
 > = Result
-function ExcludeTypeLeft<Left extends TSchema, Right extends TSchema>(left: Left, right: Right): TExcludeTypeLeft<Left, Right> {
+function ExcludeType<Left extends TSchema, Right extends TSchema>(left: Left, right: Right): TExcludeType<Left, Right> {
   const check = Extends({}, left, right)
   const result = ExtendsResult.IsExtendsTrueLike(check) ? [] : [left]
   return result as never
 }
 // ------------------------------------------------------------------
+// ExcludeUnion
+// ------------------------------------------------------------------
+type TExcludeUnion<Left extends TSchema[], Right extends TSchema, Result extends TSchema[] = []> = (
+  Left extends [infer Head extends TSchema, ...infer Tail extends TSchema[]]
+    ? TExcludeUnion<Tail, Right, [...Result, ...TExcludeType<Head, Right>]>
+    : Result
+)
+function ExcludeUnion<Left extends TSchema[], Right extends TSchema>(types: [...Left], right: Right): TExcludeUnion<Left, Right> {
+  return types.reduce((result, head) => {
+    return [...result, ...ExcludeType(head, right)]
+  }, [] as TSchema[]) as never
+}
+// ------------------------------------------------------------------
 // Operation
 // ------------------------------------------------------------------
 export type TExcludeOperation<Left extends TSchema, Right extends TSchema,
-  Remaining extends TSchema[] = (
-    Left extends TEnum<infer Values extends TEnumValue[]> ? TExcludeUnionLeft<TEnumValuesToVariants<Values>, Right> : 
-    Left extends TUnion<infer Types extends TSchema[]> ? TExcludeUnionLeft<TFlatten<Types>, Right> : 
-    TExcludeTypeLeft<Left, Right>
-  ),
+  Evaluated extends TSchema = TEvaluateType<Left>,
+  Canonical extends TSchema[] = Evaluated extends TUnion<infer Types extends TSchema[]> ? Types : [Evaluated],
+  Remaining extends TSchema[] = TExcludeUnion<Canonical, Right>,
   Result extends TSchema = TEvaluateUnion<Remaining>
 > = Result
 export function ExcludeOperation<Left extends TSchema, Right extends TSchema>(left: Left, right: Right): TExcludeOperation<Left, Right> {
-  const remaining = (
-    IsEnum(left) ? ExcludeUnionLeft(EnumValuesToVariants(left.enum), right) :
-    IsUnion(left) ? ExcludeUnionLeft(Flatten(left.anyOf), right) :
-    ExcludeTypeLeft(left, right)
-  ) as TSchema[]
+  const evaluated = EvaluateType(left)
+  const canonical = IsUnion(evaluated) ? evaluated.anyOf : [evaluated]
+  const remaining = ExcludeUnion(canonical, right)
   const result = EvaluateUnion(remaining)
   return result as never
 }

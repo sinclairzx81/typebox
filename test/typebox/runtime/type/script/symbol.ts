@@ -12,7 +12,10 @@ Test('Should Symbol 2', () => {
   Assert.IsTrue(Type.IsSymbol(T))
 })
 Test('Should Symbol 3', () => {
-  const T: Type.TSymbol = Type.Script('Options<symbol, { a: 1, b: 2 }>')
+  const T: Type.TWith<Type.TSymbol, {
+    a: 1
+    b: 2
+  }> = Type.Script('symbol with { a: 1, b: 2 }')
   Assert.HasPropertyKey(T, 'a')
   Assert.HasPropertyKey(T, 'b')
   Assert.IsEqual(T.a, 1)

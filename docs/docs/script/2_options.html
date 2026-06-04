@@ -1,85 +1,32 @@
 <h1>Script.Options</h1>
-<p>Annotations and data can be assigned to Script types in several ways.</p>
-<h2>Options&lt;Type, Json&gt;</h2>
-<p>Script provides a specialized <code>Options&lt;Type, Json&gt;</code> generic type. This type is available to both <code>Type.*</code> and Script via a generic call. <code>Options&lt;Type, Json&gt;</code> is designed to allow type definitions to be shared between TypeScript and TypeBox, while also allowing options and annotations to be assigned to embedded Script types.</p>
-<h3>Type Sharing</h3>
-<p><code>Options&lt;Type, Json&gt;</code> enables definitions to be shared between TypeScript and TypeBox scripting environments.</p>
-<pre><code class="language-typescript">// Add this to a TypeScript Module
-type Options &lt;Type, _&gt; = Type 
+<p>Script types can be assigned options via the <code>with</code> keyword.</p>
+<h2>The <code>with</code> Keyword</h2>
+<p>You can assign a script type options using the following</p>
+<pre><code class="language-typescript">const Email = Type.Script(`string with { format: &#39;email&#39; }`)
 
-// Type Is Now Sharable Between TypeBox and TypeScript
-type Vector = Options&lt;{
-  x: Options&lt;number, { minimum: 0, maximum: 1 }&gt;,
-  y: Options&lt;number, { minimum: 0, maximum: 1 }&gt;,
-}, { additionalProperties: false }&gt;
+// Produces
+
+const Email = { type: &#39;string&#39;, format: &#39;email&#39; }
 </code></pre>
-<h3>Usage</h3>
-<p>The following shows the usage of <code>Options&lt;Type, Json&gt;</code>.</p>
-<pre><code class="language-typescript">// ----------------------------------------------------------------------------
-// Options 
-// ----------------------------------------------------------------------------
-const VectorA = Type.Options(Type.Object({
-  x: Type.Options(Type.Number(), { minimum: 0, maximum: 1 }),
-  y: Type.Options(Type.Number(), { minimum: 0, maximum: 1 })
-}), { additionalProperties: false })
-
-// ----------------------------------------------------------------------------
-// Options via Script
-// ----------------------------------------------------------------------------
-const VectorB = Type.Script(`Options&lt;{
-  x: Options&lt;number, { minimum: 0, maximum: 1 }&gt;,
-  y: Options&lt;number, { minimum: 0, maximum: 1 }&gt;,
-}, { additionalProperties: false }&gt;`)
-
-// ----------------------------------------------------------------------------
-// Options via With Keyword (Experimental)
-//
-// TypeBox provides an experimental syntax extension for options. The `with`
-// keyword enables annotations to be inlined and co-located with a type,
-// but comes at the cost of portability between TypeScript.
-//
-// IMPORTANT NOTE!!:
-//
-// The `with` keyword is considered experimental and could be replaced  
-// with a formal TypeScript annotation or refinement syntax in the future.
-// Future revisions of TypeBox will opt to break the `with` syntax if it
-// ever comes into conflict with the TypeScript language. Users are advised to 
-// use the wrapping `Options&lt;Type, Json&gt;` generic call if in doubt.
-// 
-// ----------------------------------------------------------------------------
-const VectorC = Type.Script(`{
-  x: number with { minimum: 0, maximum: 1 }
-  y: number with { minimum: 0, maximum: 1 }
+<p>The <code>with</code> keyword allows to assigned to embedded types.</p>
+<pre><code class="language-typescript">const Vector = Type.Script(`{
+  x: number with { minimum: 0, maximum: 1 },
+  y: number with { minimum: 0, maximum: 1 },
+  z: number with { minimum: 0, maximum: 1 },
 } with { additionalProperties: false }`)
 </code></pre>
-<p>The above <code>VectorA</code>, <code>VectorB</code>, and <code>VectorC</code> types all produce the following JSON Schema:</p>
-<pre><code class="language-typescript">const Vector = {
-  type: &#39;object&#39;,
-  required: [&#39;x&#39;, &#39;y&#39;],
-  properties: {
-    x: { type: &#39;number&#39;, minimum: 0, maximum: 1 },
-    y: { type: &#39;number&#39;, minimum: 0, maximum: 1 }
-  },
-  additionalProperties: false
-}
-</code></pre>
-<h2>Options</h2>
-<p>The Script function is a member of the <code>Type.*</code> family of types and will accept Options via the last argument. </p>
-<pre><code class="language-typescript">// ----------------------------------------------------------------------------
-// Without Script 
-// ----------------------------------------------------------------------------
-const A = Type.Number({                  // type A = {
-  minimum: 0                             //   type: &#39;number&#39;,
-  maximum: 1                             //   minimum: 0,
-})                                       //   maximum: 1
-                                         // }
+<p>They can also be applied in generic type expressions</p>
+<pre><code class="language-typescript">const { Vector, ClampedVector } = Type.Script(`
+  type Vector = {
+    x: number
+    y: number
+    z: number
+  }
+  
+  type Clamp&lt;T&gt; = {
+    [K in keyof T]: T[K] with { minimum: 0, maximum: 1 }
+  } with { additionalProperties: false }
 
-// ----------------------------------------------------------------------------
-// With Script 
-// ----------------------------------------------------------------------------
-const B = Type.Script(&#39;number&#39;, {        // type B = {
-  minimum: 0                             //   type: &#39;number&#39;,
-  maximum: 1                             //   minimum: 0,
-})                                       //   maximum: 1
-                                         // }
+  type ClampedVector = Clamp&lt;Vector&gt;
+`)
 </code></pre>

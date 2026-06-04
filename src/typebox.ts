@@ -60,7 +60,6 @@ export { Mapped, type TMapped, type TMappedDeferred } from './type/action/mapped
 export { Module, type TModule, type TModuleDeferred } from './type/action/module.ts'
 export { NonNullable, type TNonNullable, type TNonNullableDeferred } from './type/action/non_nullable.ts'
 export { Omit, type TOmit, type TOmitDeferred } from './type/action/omit.ts'
-export { Options, type TOptions } from './type/action/options.ts'
 export { Parameters, type TParameters, type TParametersDeferred } from './type/action/parameters.ts'
 export { Partial, type TPartial, type TPartialDeferred } from './type/action/partial.ts'
 export { Pick, type TPick, type TPickDeferred } from './type/action/pick.ts'
@@ -69,6 +68,7 @@ export { Required, type TRequired, type TRequiredDeferred } from './type/action/
 export { ReturnType, type TReturnType, type TReturnTypeDeferred } from './type/action/return_type.ts'
 export { type TUncapitalize, type TUncapitalizeDeferred, Uncapitalize } from './type/action/uncapitalize.ts'
 export { type TUppercase, type TUppercaseDeferred, Uppercase } from './type/action/uppercase.ts'
+export { Options, type TOptions, type TWith, With } from './type/action/with.ts'
 
 // ------------------------------------------------------------------
 // Extension
@@ -95,6 +95,7 @@ export { Enum, IsEnum, type TEnum, type TEnumValue } from './type/types/enum.ts'
 export { Function, IsFunction, type TFunction } from './type/types/function.ts'
 export { Generic, IsGeneric, type TGeneric } from './type/types/generic.ts'
 export { Identifier, IsIdentifier, type TIdentifier } from './type/types/identifier.ts'
+export { Dependent, IsDependent, type TDependent } from './type/types/dependent.ts'
 export { Infer, IsInfer, type TInfer } from './type/types/infer.ts'
 export { Integer, IsInteger, type TInteger } from './type/types/integer.ts'
 export { Intersect, IsIntersect, type TIntersect } from './type/types/intersect.ts'

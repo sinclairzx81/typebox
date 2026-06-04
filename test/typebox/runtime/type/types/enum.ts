@@ -8,11 +8,11 @@ Test('Should not guard Enum', () => {
   Assert.IsFalse(Type.IsEnum(T))
 })
 Test('Should Create Enum 1', () => {
-  const T: Type.TEnum<[1, 'hello', null]> = Type.Enum([1, 'hello', null])
+  const T: Type.TEnum<[1, 'hello']> = Type.Enum([1, 'hello'])
   Assert.IsTrue(Type.IsEnum(T))
 })
 Test('Should Create Enum with options', () => {
-  const T: Type.TEnum<[1, 'hello', null]> = Type.Enum([1, 'hello', null], { a: 1, b: 2 })
+  const T: Type.TEnum<[1, 'hello']> = Type.Enum([1, 'hello'], { a: 1, b: 2 })
   Assert.HasPropertyKey(T, 'a')
   Assert.HasPropertyKey(T, 'b')
   Assert.IsEqual(T.a, 1)

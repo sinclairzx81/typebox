@@ -28,11 +28,9 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import type { TTemplateLiteral, TProperties } from '../../type/index.ts'
-import { TemplateLiteralDecode } from '../../type/engine/template_literal/index.ts'
+import { type TTemplateLiteral, type TProperties, Evaluate } from '../../type/index.ts'
 import { FromType } from './from_type.ts'
 
 export function FromTemplateLiteral(context: TProperties, type: TTemplateLiteral, value: unknown): unknown {
-  const decoded = TemplateLiteralDecode(type.pattern)
-  return FromType(context, decoded, value)
+  return FromType(context, Evaluate(type), value)
 }

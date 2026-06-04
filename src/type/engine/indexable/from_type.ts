@@ -30,6 +30,7 @@ THE SOFTWARE.
 
 import { type TSchema } from '../../types/schema.ts'
 import { type TCyclic, IsCyclic } from '../../types/cyclic.ts'
+import { type TDependent, IsDependent } from '../../types/dependent.ts'
 import { type TEnum, type TEnumValue, IsEnum } from '../../types/enum.ts'
 import { type TIntersect, IsIntersect } from '../../types/intersect.ts'
 import { type TLiteral, type TLiteralValue, IsLiteral } from '../../types/literal.ts'
@@ -38,6 +39,7 @@ import { type TTemplateLiteral, IsTemplateLiteral } from '../../types/template_l
 import { type TUnion, IsUnion } from '../../types/union.ts'
 
 import { type TFromCyclic, FromCyclic } from './from_cyclic.ts'
+import { type TFromDependent, FromDependent } from './from_dependent.ts'
 import { type TFromEnum, FromEnum } from './from_enum.ts'
 import { type TFromIntersect, FromIntersect } from './from_intersect.ts'
 import { type TFromLiteral, FromLiteral } from './from_literal.ts'
@@ -47,6 +49,7 @@ import { type TFromUnion, FromUnion } from './from_union.ts'
 export type TFromType<Indexer extends TSchema,
   Result extends string[] = (
     Indexer extends TCyclic<infer Defs extends TProperties, infer Ref extends string> ? TFromCyclic<Defs, Ref> :
+    Indexer extends TDependent<infer If extends TSchema, infer Then extends TSchema, infer Else extends TSchema> ? TFromDependent<If, Then, Else> :
     Indexer extends TEnum<infer Values extends TEnumValue[]> ? TFromEnum<Values> :
     Indexer extends TIntersect<infer Types extends TSchema[]> ? TFromIntersect<Types> :
     Indexer extends TLiteral<infer Value extends TLiteralValue> ? TFromLiteral<Value> :
@@ -58,6 +61,7 @@ export type TFromType<Indexer extends TSchema,
 export function FromType<Indexer extends TSchema>(type: Indexer): TFromType<Indexer> {
   return (
     IsCyclic(type) ? FromCyclic(type.$defs, type.$ref) :
+    IsDependent(type) ? FromDependent(type.if, type.then, type.else) :
     IsEnum(type) ? FromEnum(type.enum) :
     IsIntersect(type) ? FromIntersect(type.allOf) :
     IsLiteral(type) ? FromLiteral(type.const) :

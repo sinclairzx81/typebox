@@ -1,11 +1,11 @@
 import { Assert } from 'test'
 import * as Type from 'typebox'
 
-const Test = Assert.Context('Type.Engine.ReadonlyType')
+const Test = Assert.Context('Type.Engine.ReadonlyObject')
 // ------------------------------------------------------------------
 // Deferred
 // ------------------------------------------------------------------
-Test('Should ReadonlyType 1', () => {
+Test('Should ReadonlyObject 1', () => {
   const R = Type.Ref('B')
   const T: Type.TReadonlyObjectDeferred<Type.TRef<'B'>> = Type.ReadonlyObject(R)
   Assert.IsTrue(Type.IsDeferred(T))
@@ -15,12 +15,12 @@ Test('Should ReadonlyType 1', () => {
 // ------------------------------------------------------------------
 // Actions
 // ------------------------------------------------------------------
-Test('Should ReadonlyType 2', () => {
+Test('Should ReadonlyObject 2', () => {
   const A = Type.Number()
   const T: Type.TNumber = Type.ReadonlyObject(A)
   Assert.IsTrue(Type.IsNumber(T))
 })
-Test('Should ReadonlyType 3', () => {
+Test('Should ReadonlyObject 3', () => {
   const A = Type.Object({
     x: Type.Number(),
     y: Type.Number(),
@@ -39,7 +39,7 @@ Test('Should ReadonlyType 3', () => {
   Assert.IsTrue(Type.IsReadonly(T.properties.y))
   Assert.IsTrue(Type.IsReadonly(T.properties.z))
 })
-Test('Should ReadonlyType 4', () => {
+Test('Should ReadonlyObject 4', () => {
   const A = Type.Intersect([
     Type.Object({ x: Type.Number() }),
     Type.Object({ y: Type.Number() }),
@@ -58,7 +58,7 @@ Test('Should ReadonlyType 4', () => {
   Assert.IsTrue(Type.IsReadonly(T.properties.y))
   Assert.IsTrue(Type.IsReadonly(T.properties.z))
 })
-Test('Should ReadonlyType 5', () => {
+Test('Should ReadonlyObject 5', () => {
   const A = Type.Union([
     Type.Object({ x: Type.Number() }),
     Type.Object({ y: Type.Number() }),
@@ -91,13 +91,13 @@ Test('Should ReadonlyType 5', () => {
 // ------------------------------------------------------------------
 // Immutable
 // ------------------------------------------------------------------
-Test('Should ReadonlyType 6', () => {
+Test('Should ReadonlyObject 6', () => {
   const A = Type.Array(Type.Number())
   const T: Type.TArray<Type.TNumber> = Type.ReadonlyObject(A)
   Assert.IsTrue(Type.IsArray(T))
   Assert.IsTrue(Type.IsImmutable(T))
 })
-Test('Should ReadonlyType 7', () => {
+Test('Should ReadonlyObject 7', () => {
   const A = Type.Tuple([Type.Number(), Type.String()])
   const T: Type.TImmutable<Type.TTuple<[Type.TNumber, Type.TString]>> = Type.ReadonlyObject(A)
   Assert.IsTrue(Type.IsTuple(T))
@@ -106,7 +106,7 @@ Test('Should ReadonlyType 7', () => {
 // ------------------------------------------------------------------
 // Cyclic
 // ------------------------------------------------------------------
-Test('Should ReadonlyType 8', () => {
+Test('Should ReadonlyObject 8', () => {
   const A = Type.Cyclic({
     X: Type.Tuple([Type.Number(), Type.String()])
   }, 'X')
@@ -117,7 +117,7 @@ Test('Should ReadonlyType 8', () => {
   Assert.IsTrue(Type.IsTuple(T.$defs.X))
   Assert.IsTrue(Type.IsImmutable(T.$defs.X))
 })
-Test('Should ReadonlyType 9', () => {
+Test('Should ReadonlyObject 9', () => {
   const A = Type.Cyclic({
     X: Type.Object({
       x: Type.Number()
@@ -131,4 +131,31 @@ Test('Should ReadonlyType 9', () => {
   Assert.IsTrue(Type.IsCyclic(T))
   Assert.IsTrue(Type.IsObject(T.$defs.X))
   Assert.IsTrue(Type.IsReadonly(T.$defs.X.properties.x))
+})
+// ------------------------------------------------------------------
+// Dependent
+// ------------------------------------------------------------------
+Test('Should ReadonlyObject 10', () => {
+  const A = Type.Dependent(
+    Type.Object({ x: Type.Number() }),
+    Type.Dependent(
+      Type.Object({ y: Type.Number() }),
+      Type.Object({ z: Type.Number() }),
+      Type.Never()
+    ),
+    Type.Never()
+  )
+  const T: Type.TObject<{
+    x: Type.TNumber
+    y: Type.TNumber
+    z: Type.TNumber
+  }> = Type.ReadonlyObject(A)
+
+  Assert.IsTrue(Type.IsObject(T))
+  Assert.IsTrue(Type.IsNumber(T.properties.x))
+  Assert.IsTrue(Type.IsNumber(T.properties.y))
+  Assert.IsTrue(Type.IsNumber(T.properties.z))
+  Assert.IsTrue(Type.IsReadonly(T.properties.x))
+  Assert.IsTrue(Type.IsReadonly(T.properties.y))
+  Assert.IsTrue(Type.IsReadonly(T.properties.z))
 })

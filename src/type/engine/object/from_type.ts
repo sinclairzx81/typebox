@@ -31,6 +31,7 @@ THE SOFTWARE.
 
 import { type TSchema } from '../../types/schema.ts'
 import { type TCyclic, IsCyclic } from '../../types/cyclic.ts'
+import { type TDependent, IsDependent } from '../../types/dependent.ts'
 import { type TIntersect, IsIntersect } from '../../types/intersect.ts'
 import { type TProperties } from '../../types/properties.ts'
 import { type TObject, IsObject } from '../../types/object.ts'
@@ -38,6 +39,7 @@ import { type TTuple, IsTuple } from '../../types/tuple.ts'
 import { type TUnion, IsUnion } from '../../types/union.ts'
 
 import { type TFromCyclic, FromCyclic } from './from_cyclic.ts'
+import { type TFromDependent, FromDependent } from './from_dependent.ts'
 import { type TFromIntersect, FromIntersect } from './from_intersect.ts'
 import { type TFromObject, FromObject } from './from_object.ts'
 import { type TFromTuple, FromTuple } from './from_tuple.ts'
@@ -46,6 +48,7 @@ import { type TFromUnion, FromUnion } from './from_union.ts'
 export type TFromType<Type extends TSchema,
   Result extends TProperties = (
     Type extends TCyclic<infer Defs extends TProperties, infer Ref extends string> ? TFromCyclic<Defs, Ref> :
+    Type extends TDependent<infer If extends TSchema, infer Then extends TSchema, infer Else extends TSchema> ? TFromDependent<If, Then, Else> :
     Type extends TIntersect<infer Types extends TSchema[]> ? TFromIntersect<Types> :
     Type extends TUnion<infer Types extends TSchema[]> ? TFromUnion<Types> :
     Type extends TTuple<infer Types extends TSchema[]> ? TFromTuple<Types> :
@@ -56,6 +59,7 @@ export type TFromType<Type extends TSchema,
 export function FromType<Type extends TSchema>(type: Type): TFromType<Type> {
   return (
     IsCyclic(type) ? FromCyclic(type.$defs, type.$ref) :
+    IsDependent(type) ? FromDependent(type.if, type.then, type.else) :
     IsIntersect(type) ? FromIntersect(type.allOf) :
     IsUnion(type) ? FromUnion(type.anyOf) :
     IsTuple(type) ? FromTuple(type.items) :

@@ -5,21 +5,21 @@ import { Assert } from 'test'
 // Standard
 // ------------------------------------------------------------------
 {
-  const T = Type.Enum([1, 'A', null])
+  const T = Type.Enum([1, 'A'])
   type T = Static<typeof T>
 
-  Assert.IsExtendsMutual<T, 1 | 'A' | null>(true)
+  Assert.IsExtendsMutual<T, 1 | 'A'>(true)
   Assert.IsExtendsMutual<T, null>(false)
 }
 // ------------------------------------------------------------------
 // Exterior Readonly
 // ------------------------------------------------------------------
 {
-  const X = [1, 'A', null] as const
+  const X = [1, 'A'] as const
   const T = Type.Enum(X)
   type T = Static<typeof T>
 
-  Assert.IsExtendsMutual<T, 1 | 'A' | null>(true)
+  Assert.IsExtendsMutual<T, 1 | 'A'>(true)
   Assert.IsExtendsMutual<T, null>(false)
 }
 // ------------------------------------------------------------------
@@ -29,13 +29,12 @@ import { Assert } from 'test'
   const T = Type.Enum(
     {
       A: 1,
-      B: 'A',
-      C: null
+      B: 'A'
     } as const
   )
   type T = Static<typeof T>
 
-  Assert.IsExtendsMutual<T, 1 | 'A' | null>(true)
+  Assert.IsExtendsMutual<T, 1 | 'A'>(true)
   Assert.IsExtendsMutual<T, null>(false)
 }
 // ------------------------------------------------------------------

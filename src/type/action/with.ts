@@ -30,27 +30,45 @@ THE SOFTWARE.
 
 import { type TSchema } from '../types/schema.ts'
 import { type TDeferred, Deferred } from '../types/deferred.ts'
-import { type TOptionsAction, OptionsAction } from '../engine/options/instantiate.ts'
+import { type TWithAction, WithAction } from '../engine/with/instantiate.ts'
 
 // ------------------------------------------------------------------
 // Deferred
 // ------------------------------------------------------------------
-/** Creates a deferred Options action. */
-export type TOptionsDeferred<Type extends TSchema, Options extends TSchema> = (
-  TDeferred<'Options', [Type, Options]>
+/** Creates a deferred With action. */
+export type TWithDeferred<Type extends TSchema, Options extends TSchema> = (
+  TDeferred<'With', [Type, Options]>
 )
-/** Creates a deferred Options action. */
-export function OptionsDeferred<Type extends TSchema, Options extends TSchema>(type: Type, options: Options): TOptionsDeferred<Type, Options> {
-  return Deferred('Options', [type, options], {})
+/** Creates a deferred With action. */
+export function WithDeferred<Type extends TSchema, Options extends TSchema>(type: Type, options: Options): TWithDeferred<Type, Options> {
+  return Deferred('With', [type, options], {})
 }
 // ------------------------------------------------------------------
 // Type
 // ------------------------------------------------------------------
-/** Applies an immediate Options action to the given type. */
-export type TOptions<Type extends TSchema, Options extends TSchema> = (
-  Type & Options // note: kept here for presentation of TOptions<T, {...}>
+/** Applies annotation options to the given type. */
+export type TWith<Type extends TSchema, Options extends TSchema> = (
+  Type & Options
 )
-/** Applies an immediate Options action to the given type. */
-export function Options<Type extends TSchema, const Options extends TSchema>(type: Type, options: Options): TOptionsAction<Type, Options> {
-  return OptionsAction(type, options)
+/** Applies annotation options to the given type. */
+export function With<Type extends TSchema, const Options extends TSchema>(type: Type, options: Options): TWithAction<Type, Options> {
+  return WithAction(type, options)
 }
+
+// deno-coverage-ignore-start
+// ------------------------------------------------------------------
+// Deprecation
+// ------------------------------------------------------------------
+/** 
+ * @deprecated Type.TOptions\<T\> has been renamed to Type.TWith\<T\>. This type will be removed in the
+ * next version of TypeBox.
+ */
+export type TOptions<Type extends TSchema, Options extends TSchema> = TWith<Type, Options>
+/** 
+ * @deprecated Type.Options\<T\> has been renamed to Type.With\<T\>. This type will be removed in the
+ * next version of TypeBox.
+ */
+export function Options<Type extends TSchema, const Options extends TSchema>(type: Type, options: Options): TOptions<Type, Options> {
+  return With(type, options) as never
+}
+// deno-coverage-ignore-stop

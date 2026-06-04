@@ -29,6 +29,8 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Guard, GlobalsGuard } from '../../guard/index.ts'
+import { Clone as SystemClone } from '../../system/memory/clone.ts'
+
 
 // ------------------------------------------------------------------
 // ClassInstance
@@ -42,6 +44,19 @@ import { Guard, GlobalsGuard } from '../../guard/index.ts'
 // ------------------------------------------------------------------
 function FromClassInstance(value: Record<PropertyKey, unknown>): Record<PropertyKey, unknown> {
   return value // atomic
+}
+// ------------------------------------------------------------------
+// TypeInstance
+//
+// TypeBox types have non-enumerable properties that should be
+// retained on Clone. We need to use a SystemClone for this
+// to ensure the non-enumerable properties are preserved.
+// ------------------------------------------------------------------
+function IsTypeInstance(value: Record<PropertyKey, unknown>): boolean {
+  return Guard.HasPropertyKey(value, '~kind')
+}
+function FromTypeInstance(value: Record<PropertyKey, unknown>): Record<PropertyKey, unknown> {
+  return SystemClone(value)
 }
 // ------------------------------------------------------------------
 // ObjectInstance
@@ -62,9 +77,9 @@ function FromObjectInstance(value: Record<PropertyKey, unknown>): Record<Propert
 // ------------------------------------------------------------------
 function FromObject(value: Record<PropertyKey, unknown>): Record<PropertyKey, unknown> {
   return (
-    Guard.IsClassInstance(value)
-      ? FromClassInstance(value)
-      : FromObjectInstance(value)
+    Guard.IsClassInstance(value) ? FromClassInstance(value) :
+    IsTypeInstance(value) ? FromTypeInstance(value) :
+    FromObjectInstance(value)
   )
 }
 // ------------------------------------------------------------------

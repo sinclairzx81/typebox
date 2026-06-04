@@ -1,5 +1,6 @@
 <h1>Script.Syntax</h1>
-<p>The Script function is designed to evaluate most TypeScript type expressions, including raw types, interfaces, type aliases, conditional and mapped expressions, and generics. The Script function returns TypeBox types which are themselves JSON Schema, thus Script can be thought of as a TypeScript-based programmable DSL for the JSON Schema specification.</p>
+<p>The Script function will evaluate the majority of TypeScript type level expressions. It has support for Interfaces, Type Aliases, Conditional, Mapped, Indexed, Generics as well as features such as Distribution under Union. The Script functions plain TypeBox types which can be inferred via Static. </p>
+<p>Script can be thought of as a programmable DSL for the JSON Schema specification.</p>
 <h2>Types</h2>
 <p>Script has support for most TypeScript types and structural constructs. Each type will map into its corresponding TypeBox representation, which can be serialized as JSON Schema or compiled into a validator.</p>
 <pre><code class="language-typescript">// ------------------------------------------------------------------
@@ -28,7 +29,7 @@ const T11 = Type.Script(&#39;string&#39;)                       // TString
 const T12 = Type.Script(&#39;null&#39;)                         // TNull
 
 // ------------------------------------------------------------------
-// JavaScript
+// JsonSchema Extensions
 // ------------------------------------------------------------------
 const T13 = Type.Script(&#39;bigint&#39;)                        // TBigInt
 const T14 = Type.Script(&#39;symbol&#39;)                        // TSymbol 
@@ -94,6 +95,7 @@ const T23 = Type.Script(`new (a: number, b: number) =&gt; {
 const T0 = Type.Script(`1 extends 2 ? true : false`)     // TFalse
 const T1 = Type.Script(&#39;1 extends infer A ? [A]: never&#39;) // TTuple&lt;[TLiteral&lt;1&gt;]&gt;
 
+
 // ------------------------------------------------------------------
 // Mapped
 // ------------------------------------------------------------------
@@ -137,9 +139,77 @@ const T8 = Type.Script({ T7 }, `T7&lt;1&gt;`)                  // TTuple&lt;[
                                                          //   TLiteral&lt;1&gt;,
                                                          //   TLiteral&lt;1&gt;,
                                                          // ]&gt;
+
+// ------------------------------------------------------------------
+// Dependent
+// ------------------------------------------------------------------
+const T9 = Type.Script(`if number then 1`)               // TDependent&lt;
+                                                         //   TNumber,
+                                                         //   TLiteral&lt;1&gt;,
+                                                         //   TUnknown
+                                                         // &gt;
+
+const T10 = Type.Script(`if number then 1 else string`)  // TDependent&lt;
+                                                         //   TNumber,
+                                                         //   TLiteral&lt;1&gt;,
+                                                         //   TString
+                                                         // &gt;
+const T11 = Type.Script(`{
+  x: number
+  y: number
+} &amp; if { x: 1 } then { y: 1 }`)                          // TIntersect&lt;[
+                                                         //   TObject&lt;{
+                                                         //     x: TNumber,
+                                                         //     y: TNumber,
+                                                         //   }&gt;, 
+                                                         //   TDependent&lt;
+                                                         //     TObject&lt;{
+                                                         //       x: TLiteral&lt;1&gt;,
+                                                         //     }&gt;,
+                                                         //     TObject&lt;{
+                                                         //       y: TLiteral&lt;2&gt;,
+                                                         //     }&gt;,
+                                                         //     TUnknown
+                                                         //   &gt;
+                                                         // ]&gt;
 </code></pre>
-<h2>Type Utilities</h2>
-<p>Script includes support for most TypeScript utility and intrinsic types.</p>
+<h2>Type Augmentation</h2>
+<p>Script support extended syntax to augment types with constraints and annotations.</p>
+<pre><code class="language-typescript">// ------------------------------------------------------------------
+// With Types 
+// ------------------------------------------------------------------
+const T0 = Type.Script(`string with {
+  format: &#39;email&#39;
+  description: &#39;An email address&#39; 
+}`)                                                      // TWith&lt;TString, {
+                                                         //   format: &#39;email&#39;,
+                                                         //   description: &#39;An email address&#39;,
+                                                         // }&gt;
+
+
+const T1 = Type.Script(`{ 
+  x: number with { minimum: 0, maximum: 1 },
+  y: number with { minimum: 0, maximum: 1 },
+  z: number with { minimum: 0, maximum: 1 },
+} with { additionalProperties: false }`)                 // TWith&lt;TObject&lt;{
+                                                         //   x: TWith&lt;TNumber, {
+                                                         //     minimum: 0;
+                                                         //     maximum: 1;
+                                                         //   }&gt;;
+                                                         //   y: TWith&lt;TNumber, {
+                                                         //     minimum: 0;
+                                                         //     maximum: 1;
+                                                         //   }&gt;;
+                                                         //   z: TWith&lt;TNumber, {
+                                                         //     minimum: 0;
+                                                         //     maximum: 1;
+                                                         //   }&gt;;
+                                                         // }&gt;, {
+                                                         //   additionalProperties: false;
+                                                         // }&gt;
+</code></pre>
+<h2>Built In Types</h2>
+<p>Script includes support for most TypeScript utility types and intrinsics.</p>
 <pre><code class="language-typescript">// ------------------------------------------------------------------
 // Utility Types 
 // ------------------------------------------------------------------
@@ -168,7 +238,6 @@ const T15 = Type.Script(&#39;Uncapitalize&lt;&quot;hello&quot;&gt;&#39;)
 // Extension Types
 // ------------------------------------------------------------------
 const T16 = Type.Script(&#39;Evaluate&lt;{ x: number } &amp; { y: number }&gt;&#39;)
-const T17 = Type.Script(&#39;Options&lt;{ x: number }, { additionalProperties: false }&gt;&#39;)
 </code></pre>
 <h2>Type Modules</h2>
 <p>The Script function also accepts <code>type</code> and <code>interface</code> declarations. The return value will be an object containing all embedded declarations.</p>

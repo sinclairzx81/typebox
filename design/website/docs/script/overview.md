@@ -4,11 +4,11 @@ Runtime TypeScript Engine For JSON Schema
 
 ## Overview
 
-The TypeBox Script function is a micro DSL for constructing JSON Schema from TypeScript syntax. It offers a full syntactic frontend to Type.* with broad support for type-level expressions including Conditional, Mapped, Infer, Generic, Distributive types and more. This feature is implemented symmetrically at both runtime and in the type system.
+TypeBox includes a TypeScript-based DSL for composing JSON Schema via TypeScript syntax. The DSL offers a full syntactic frontend to Type.* and supports advanced type-level expressions such as Conditional, Mapped, Infer, Generic, Distributive types and more. This feature is implemented at runtime as well as statically via TypeScript Template Literal types.
 
 ### Example
 
-The following uses the Script to parse interfaces into JSON Schema.
+The following uses Script to parse a TypeScript definition module into JSON Schema.
 
 ```typescript
 import Type from 'typebox'

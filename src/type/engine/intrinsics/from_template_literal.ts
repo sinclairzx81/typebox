@@ -30,15 +30,15 @@ THE SOFTWARE.
 
 import { type TSchema } from '../../types/schema.ts'
 import { type TMappingType, type TMappingFunc } from './mapping.ts'
-import { type TTemplateLiteralDecode, TemplateLiteralDecode } from '../template_literal/decode.ts'
 import { type TFromType, FromType } from './from_type.ts'
+import { type TEvaluateTemplateLiteral, EvaluateTemplateLiteral } from '../evaluate/index.ts'
 
 export type TFromTemplateLiteral<Mapping extends TMappingType, Pattern extends string,
- Decoded extends TSchema = TTemplateLiteralDecode<Pattern>,
- Result extends TSchema = TFromType<Mapping, Decoded>
+  Evaluated extends TSchema = TEvaluateTemplateLiteral<Pattern>,
+  Result extends TSchema = TFromType<Mapping, Evaluated>
 > = Result
 export function FromTemplateLiteral(mapping: TMappingFunc, pattern: string): TSchema {
-  const decoded = TemplateLiteralDecode(pattern) as TSchema
-  const result = FromType(mapping, decoded)
+  const evaluated = EvaluateTemplateLiteral(pattern)
+  const result = FromType(mapping, evaluated)
   return result as never
 }
