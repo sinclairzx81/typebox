@@ -108,9 +108,9 @@ Test('Should Record 15', () => {
   Assert.IsEqual(Type.RecordPattern(T), '^-?(?:0|[1-9][0-9]*)$')
 })
 Test('Should Record 16', () => {
-  const T: Type.TRecord<'^-?(?:0|[1-9][0-9]*)(?:.[0-9]+)?$', Type.TString> = Type.Script('Record<`${number}`, string>')
+  const T: Type.TRecord<'^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?$', Type.TString> = Type.Script('Record<`${number}`, string>')
   Assert.IsTrue(Type.IsRecord(T))
-  Assert.IsEqual(Type.RecordPattern(T), '^-?(?:0|[1-9][0-9]*)(?:.[0-9]+)?$')
+  Assert.IsEqual(Type.RecordPattern(T), '^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?$')
 })
 Test('Should Record 17', () => {
   const T: Type.TRecord<'^(?!)$', Type.TString> = Type.Script('Record<`${never}`, string>')

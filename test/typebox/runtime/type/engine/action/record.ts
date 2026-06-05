@@ -37,8 +37,8 @@ Test('Should Record 4', () => {
   Assert.IsTrue(Type.IsInteger(Type.RecordKey(T)))
 })
 Test('Should Record 5', () => {
-  const T: Type.TRecord<'^-?(?:0|[1-9][0-9]*)(?:.[0-9]+)?$', Type.TNull> = Type.Record(Type.Number(), Type.Null())
-  Assert.IsEqual(Type.RecordPattern(T), '^-?(?:0|[1-9][0-9]*)(?:.[0-9]+)?$')
+  const T: Type.TRecord<'^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?$', Type.TNull> = Type.Record(Type.Number(), Type.Null())
+  Assert.IsEqual(Type.RecordPattern(T), '^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?$')
   Assert.IsTrue(Type.IsNumber(Type.RecordKey(T)))
 })
 Test('Should Record 6', () => {
@@ -189,8 +189,8 @@ Test('Should Record 20', () => {
 //  Key: Number
 // ------------------------------------------------------------------
 Test('Should Record 21', () => {
-  const T: Type.TRecord<'^-?(?:0|[1-9][0-9]*)(?:.[0-9]+)?$', Type.TNull> = Type.Record(Type.Number(), Type.Null())
-  Assert.IsEqual(Type.RecordPattern(T), '^-?(?:0|[1-9][0-9]*)(?:.[0-9]+)?$')
+  const T: Type.TRecord<'^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?$', Type.TNull> = Type.Record(Type.Number(), Type.Null())
+  Assert.IsEqual(Type.RecordPattern(T), '^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?$')
 
   Assert.IsTrue(Type.IsRecord(T))
   Assert.IsTrue(Type.IsNumber(Type.RecordKey(T)))

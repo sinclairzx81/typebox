@@ -58,9 +58,9 @@ Test('Should TemplateLiteral 7', () => {
 // Embedded Infinite
 // ------------------------------------------------------------------
 Test('Should TemplateLiteral 8', () => {
-  const T: Type.TTemplateLiteral<'^hello -?(?:0|[1-9][0-9]*)(?:.[0-9]+)?$'> = Type.Script('`hello ${number}`')
+  const T: Type.TTemplateLiteral<'^hello -?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?$'> = Type.Script('`hello ${number}`')
   Assert.IsTrue(Type.IsTemplateLiteral(T))
-  Assert.IsEqual(T.pattern, '^hello -?(?:0|[1-9][0-9]*)(?:.[0-9]+)?$')
+  Assert.IsEqual(T.pattern, '^hello -?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?$')
 })
 Test('Should TemplateLiteral 9', () => {
   const T: Type.TTemplateLiteral<'^hello .*$'> = Type.Script('`hello ${string}`')

@@ -323,3 +323,121 @@ Test('Should validate for never keys', () => {
     1: null
   })
 })
+// ------------------------------------------------------------------
+// NumericPattern
+// ------------------------------------------------------------------
+Test('Should handle NumericPattern 1', () => {
+  const T = Type.Record(Type.Number(), Type.Null(), {
+    additionalProperties: false
+  })
+  Ok(T, { 0: null })
+  Fail(T, { '0x1': null })
+})
+Test('Should handle NumericPattern 2', () => {
+  const T = Type.Record(Type.Number(), Type.Null(), {
+    additionalProperties: false
+  })
+  Ok(T, { 1: null })
+  Fail(T, { '1x5': null })
+})
+Test('Should handle NumericPattern 3', () => {
+  const T = Type.Record(Type.Number(), Type.Null(), {
+    additionalProperties: false
+  })
+  Ok(T, { '-1': null })
+  Fail(T, { '-1x': null })
+})
+Test('Should handle NumericPattern 4', () => {
+  const T = Type.Record(Type.Number(), Type.Null(), {
+    additionalProperties: false
+  })
+  Ok(T, { '1.5': null })
+  Fail(T, { '1x5': null })
+})
+Test('Should handle NumericPattern 5', () => {
+  const T = Type.Record(Type.Number(), Type.Null(), {
+    additionalProperties: false
+  })
+  Ok(T, { '-1.5': null })
+  Fail(T, { '1.': null })
+})
+// ------------------------------------------------------------------
+// IntegerPattern
+// ------------------------------------------------------------------
+Test('Should handle IntegerPattern 1', () => {
+  const T = Type.Record(Type.Integer(), Type.Null(), {
+    additionalProperties: false
+  })
+  Ok(T, { 0: null })
+  Fail(T, { '0x1': null })
+})
+
+Test('Should handle IntegerPattern 2', () => {
+  const T = Type.Record(Type.Integer(), Type.Null(), {
+    additionalProperties: false
+  })
+  Ok(T, { 1: null })
+  Fail(T, { '1x5': null })
+})
+
+Test('Should handle IntegerPattern 3', () => {
+  const T = Type.Record(Type.Integer(), Type.Null(), {
+    additionalProperties: false
+  })
+  Ok(T, { '-1': null })
+  Fail(T, { '-1x': null })
+})
+
+Test('Should handle IntegerPattern 4', () => {
+  const T = Type.Record(Type.Integer(), Type.Null(), {
+    additionalProperties: false
+  })
+  Ok(T, { 100: null })
+  Fail(T, { '1.5': null })
+})
+
+Test('Should handle IntegerPattern 5', () => {
+  const T = Type.Record(Type.Integer(), Type.Null(), {
+    additionalProperties: false
+  })
+  Ok(T, { '-100': null })
+  Fail(T, { '01': null })
+})
+// ------------------------------------------------------------------
+// StringPattern (^.*$)
+// ------------------------------------------------------------------
+Test('Should handle StringPattern 1', () => {
+  const T = Type.Record(Type.String(), Type.Null(), {
+    additionalProperties: false
+  })
+  Ok(T, { '': null })
+  Ok(T, { 'hello': null })
+})
+Test('Should handle StringPattern 2', () => {
+  const T = Type.Record(Type.String(), Type.Null(), {
+    additionalProperties: false
+  })
+  Ok(T, { ' ': null })
+  Ok(T, { 'hello world': null })
+})
+Test('Should handle StringPattern 3', () => {
+  const T = Type.Record(Type.String(), Type.Null(), {
+    additionalProperties: false
+  })
+  Ok(T, { '🎉': null })
+  Ok(T, { '🎉🎉🎉': null })
+})
+Test('Should handle StringPattern 4', () => {
+  const T = Type.Record(Type.String(), Type.Null(), {
+    additionalProperties: false
+  })
+  Ok(T, { '123': null })
+  Ok(T, { '!@#$%^&*()': null })
+})
+Test('Should handle StringPattern 5', () => {
+  const T = Type.Record(Type.String(), Type.Null(), {
+    additionalProperties: false
+  })
+  Ok(T, { 'hello 🌍': null })
+  Ok(T, { 'mixed 123 !@# 🎉': null })
+})
