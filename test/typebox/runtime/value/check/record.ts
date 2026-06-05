@@ -323,3 +323,259 @@ Test('Should validate for never keys', () => {
     1: null
   })
 })
+// ------------------------------------------------------------------
+// NumericPattern via TemplateLiteral
+// ------------------------------------------------------------------
+Test('Should handle NumericPattern 1', () => {
+  const T = Type.Record(Type.TemplateLiteral('${number}'), Type.Null(), {
+    additionalProperties: false
+  })
+  Ok(T, { 0: null })
+  Fail(T, { '0x1': null })
+})
+Test('Should handle NumericPattern 2', () => {
+  const T = Type.Record(Type.TemplateLiteral('${number}'), Type.Null(), {
+    additionalProperties: false
+  })
+  Ok(T, { 1: null })
+  Fail(T, { '1x5': null })
+})
+Test('Should handle NumericPattern 3', () => {
+  const T = Type.Record(Type.TemplateLiteral('${number}'), Type.Null(), {
+    additionalProperties: false
+  })
+  Ok(T, { '-1': null })
+  Fail(T, { '-1x': null })
+})
+Test('Should handle NumericPattern 4', () => {
+  const T = Type.Record(Type.TemplateLiteral('${number}'), Type.Null(), {
+    additionalProperties: false
+  })
+  Ok(T, { '1.5': null })
+  Fail(T, { '1x5': null })
+})
+Test('Should handle NumericPattern 5', () => {
+  const T = Type.Record(Type.TemplateLiteral('${number}'), Type.Null(), {
+    additionalProperties: false
+  })
+  Ok(T, { '-1.5': null })
+  Fail(T, { '1.': null })
+})
+// ------------------------------------------------------------------
+// NumericPattern via TemplateLiteral (Prefix)
+// ------------------------------------------------------------------
+Test('Should handle TemplateLiteral Prefix 1', () => {
+  const T = Type.Record(Type.TemplateLiteral('A${number}'), Type.Null(), {
+    additionalProperties: false
+  })
+  Ok(T, { 'A0': null })
+  Fail(T, { 'A0x1': null })
+})
+Test('Should handle TemplateLiteral Prefix 2', () => {
+  const T = Type.Record(Type.TemplateLiteral('A${number}'), Type.Null(), {
+    additionalProperties: false
+  })
+  Ok(T, { 'A1': null })
+  Fail(T, { 'A1x5': null })
+})
+Test('Should handle TemplateLiteral Prefix 3', () => {
+  const T = Type.Record(Type.TemplateLiteral('A${number}'), Type.Null(), {
+    additionalProperties: false
+  })
+  Ok(T, { 'A-1': null })
+  Fail(T, { 'A-1x': null })
+})
+Test('Should handle TemplateLiteral Prefix 4', () => {
+  const T = Type.Record(Type.TemplateLiteral('A${number}'), Type.Null(), {
+    additionalProperties: false
+  })
+  Ok(T, { 'A1.5': null })
+  Fail(T, { 'A1x5': null })
+})
+Test('Should handle TemplateLiteral Prefix 5', () => {
+  const T = Type.Record(Type.TemplateLiteral('A${number}'), Type.Null(), {
+    additionalProperties: false
+  })
+  Ok(T, { 'A-1.5': null })
+  Fail(T, { 'A1.': null })
+})
+// ------------------------------------------------------------------
+// NumericPattern via TemplateLiteral (Postfix)
+// ------------------------------------------------------------------
+Test('Should handle TemplateLiteral Postfix 1', () => {
+  const T = Type.Record(Type.TemplateLiteral('${number}Z'), Type.Null(), {
+    additionalProperties: false
+  })
+  Ok(T, { '0Z': null })
+  Fail(T, { '0x1Z': null })
+})
+Test('Should handle TemplateLiteral Postfix 2', () => {
+  const T = Type.Record(Type.TemplateLiteral('${number}Z'), Type.Null(), {
+    additionalProperties: false
+  })
+  Ok(T, { '1Z': null })
+  Fail(T, { '1x5Z': null })
+})
+Test('Should handle TemplateLiteral Postfix 3', () => {
+  const T = Type.Record(Type.TemplateLiteral('${number}Z'), Type.Null(), {
+    additionalProperties: false
+  })
+  Ok(T, { '-1Z': null })
+  Fail(T, { '-1xZ': null })
+})
+Test('Should handle TemplateLiteral Postfix 4', () => {
+  const T = Type.Record(Type.TemplateLiteral('${number}Z'), Type.Null(), {
+    additionalProperties: false
+  })
+  Ok(T, { '1.5Z': null })
+  Fail(T, { '1x5Z': null })
+})
+Test('Should handle TemplateLiteral Postfix 5', () => {
+  const T = Type.Record(Type.TemplateLiteral('${number}Z'), Type.Null(), {
+    additionalProperties: false
+  })
+  Ok(T, { '-1.5Z': null })
+  Fail(T, { '1.Z': null })
+})
+// ------------------------------------------------------------------
+// NumericPattern via TemplateLiteral (Prefix + Postfix)
+// ------------------------------------------------------------------
+Test('Should handle TemplateLiteral Prefix + Postfix 1', () => {
+  const T = Type.Record(Type.TemplateLiteral('A${number}Z'), Type.Null(), {
+    additionalProperties: false
+  })
+  Ok(T, { 'A0Z': null })
+  Fail(T, { 'A0x1Z': null })
+})
+Test('Should handle TemplateLiteral Prefix + Postfix 2', () => {
+  const T = Type.Record(Type.TemplateLiteral('A${number}Z'), Type.Null(), {
+    additionalProperties: false
+  })
+  Ok(T, { 'A1Z': null })
+  Fail(T, { 'A1x5Z': null })
+})
+Test('Should handle TemplateLiteral Prefix + Postfix 3', () => {
+  const T = Type.Record(Type.TemplateLiteral('A${number}Z'), Type.Null(), {
+    additionalProperties: false
+  })
+  Ok(T, { 'A-1Z': null })
+  Fail(T, { 'A-1xZ': null })
+})
+Test('Should handle TemplateLiteral Prefix + Postfix 4', () => {
+  const T = Type.Record(Type.TemplateLiteral('A${number}Z'), Type.Null(), {
+    additionalProperties: false
+  })
+  Ok(T, { 'A1.5Z': null })
+  Fail(T, { 'A1x5Z': null })
+})
+Test('Should handle TemplateLiteral Prefix + Postfix 5', () => {
+  const T = Type.Record(Type.TemplateLiteral('A${number}Z'), Type.Null(), {
+    additionalProperties: false
+  })
+  Ok(T, { 'A-1.5Z': null })
+  Fail(T, { 'A1.Z': null })
+})
+// ------------------------------------------------------------------
+// NumericPattern
+// ------------------------------------------------------------------
+Test('Should handle NumericPattern 1', () => {
+  const T = Type.Record(Type.Number(), Type.Null(), {
+    additionalProperties: false
+  })
+  Ok(T, { 0: null })
+  Fail(T, { '0x1': null })
+})
+Test('Should handle NumericPattern 2', () => {
+  const T = Type.Record(Type.Number(), Type.Null(), {
+    additionalProperties: false
+  })
+  Ok(T, { 1: null })
+  Fail(T, { '1x5': null })
+})
+Test('Should handle NumericPattern 3', () => {
+  const T = Type.Record(Type.Number(), Type.Null(), {
+    additionalProperties: false
+  })
+  Ok(T, { '-1': null })
+  Fail(T, { '-1x': null })
+})
+Test('Should handle NumericPattern 4', () => {
+  const T = Type.Record(Type.Number(), Type.Null(), {
+    additionalProperties: false
+  })
+  Ok(T, { '1.5': null })
+  Fail(T, { '1x5': null })
+})
+Test('Should handle NumericPattern 5', () => {
+  const T = Type.Record(Type.Number(), Type.Null(), {
+    additionalProperties: false
+  })
+  Ok(T, { '-1.5': null })
+  Fail(T, { '1.': null })
+})
+// ------------------------------------------------------------------
+// IntegerPattern
+// ------------------------------------------------------------------
+Test('Should handle IntegerPattern 1', () => {
+  const T = Type.Record(Type.Integer(), Type.Null(), {
+    additionalProperties: false
+  })
+  Ok(T, { 0: null })
+  Fail(T, { '0x1': null })
+})
+
+Test('Should handle IntegerPattern 2', () => {
+  const T = Type.Record(Type.Integer(), Type.Null(), {
+    additionalProperties: false
+  })
+  Ok(T, { 1: null })
+  Fail(T, { '1x5': null })
+})
+
+Test('Should handle IntegerPattern 3', () => {
+  const T = Type.Record(Type.Integer(), Type.Null(), {
+    additionalProperties: false
+  })
+  Ok(T, { '-1': null })
+  Fail(T, { '-1x': null })
+})
+
+Test('Should handle IntegerPattern 4', () => {
+  const T = Type.Record(Type.Integer(), Type.Null(), {
+    additionalProperties: false
+  })
+  Ok(T, { 100: null })
+  Fail(T, { '1.5': null })
+})
+
+Test('Should handle IntegerPattern 5', () => {
+  const T = Type.Record(Type.Integer(), Type.Null(), {
+    additionalProperties: false
+  })
+  Ok(T, { '-100': null })
+  Fail(T, { '01': null })
+})
+// ------------------------------------------------------------------
+// StringPattern (^.*$)
+// ------------------------------------------------------------------
+Test('Should handle StringPattern 1', () => {
+  const T = Type.Record(Type.String(), Type.Null(), {
+    additionalProperties: false
+  })
+  Ok(T, { '': null })
+  Ok(T, { 'hello': null })
+})
+Test('Should handle StringPattern 2', () => {
+  const T = Type.Record(Type.String(), Type.Null(), {
+    additionalProperties: false
+  })
+  Ok(T, { ' ': null })
+  Ok(T, { 'hello world': null })
+})
+Test('Should handle StringPattern 3', () => {
+  const T = Type.Record(Type.String(), Type.Null(), {
+    additionalProperties: false
+  })
+  Ok(T, { '🎉': null })
+  Ok(T, { '🎉🎉🎉': null })
+})

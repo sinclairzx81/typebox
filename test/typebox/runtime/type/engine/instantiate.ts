@@ -218,7 +218,7 @@ Test('Should Instantiate 34', () => {
   Assert.IsEqual(A.properties.y.$ref, 'B')
 })
 Test('Should Instantiate 35', () => {
-  const A: Type.TRecord<'^-?(?:0|[1-9][0-9]*)(?:.[0-9]+)?$', Type.TRef<'B'>> = Type.Instantiate({ A: Type.Number() }, Type.Record(Type.Ref('A'), Type.Ref('B')))
+  const A: Type.TRecord<'^-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?$', Type.TRef<'B'>> = Type.Instantiate({ A: Type.Number() }, Type.Record(Type.Ref('A'), Type.Ref('B')))
   Assert.IsTrue(Type.IsRecord(A))
   Assert.IsTrue(Type.IsNumber(Type.RecordKey(A)))
   Assert.IsTrue(Type.IsRef(Type.RecordValue(A)))

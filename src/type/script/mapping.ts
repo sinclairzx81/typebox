@@ -1356,12 +1356,12 @@ export function PatternStringMapping(input: '.*'): unknown {
   return T.String()
 }
 // -------------------------------------------------------------------
-// PatternNumber: '-?(?:0|[1-9][0-9]*)(?:.[0-9]+)?'
+// PatternNumber: '-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?'
 // -------------------------------------------------------------------
-export type TPatternNumberMapping<Input extends '-?(?:0|[1-9][0-9]*)(?:.[0-9]+)?'> = (
+export type TPatternNumberMapping<Input extends '-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?'> = (
   T.TNumber
 )
-export function PatternNumberMapping(input: '-?(?:0|[1-9][0-9]*)(?:.[0-9]+)?'): unknown {
+export function PatternNumberMapping(input: '-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?'): unknown {
   return T.Number()
 }
 // -------------------------------------------------------------------
