@@ -156,6 +156,30 @@ const OptionalSemiColon = Runtime.Union([
 // ------------------------------------------------------------------
 const Reference = Runtime.Ident()
 // ------------------------------------------------------------------
+// Literal
+// ------------------------------------------------------------------
+const LiteralBigInt = Runtime.BigInt()
+const LiteralBoolean = Runtime.Union([Runtime.Const('true'), Runtime.Const('false')])
+const LiteralNumber = Runtime.Number()
+const LiteralString = Runtime.String([SingleQuote, DoubleQuote])
+// ------------------------------------------------------------------
+// Keyword
+// ------------------------------------------------------------------
+const KeywordString = Runtime.Const('string')
+const KeywordNumber = Runtime.Const('number')
+const KeywordBoolean = Runtime.Const('boolean')
+const KeywordUndefined = Runtime.Const('undefined')
+const KeywordNull = Runtime.Const('null')
+const KeywordInteger = Runtime.Const('integer')
+const KeywordBigInt = Runtime.Const('bigint')
+const KeywordUnknown = Runtime.Const('unknown')
+const KeywordAny = Runtime.Const('any')
+const KeywordObject = Runtime.Const('object')
+const KeywordNever = Runtime.Const('never')
+const KeywordSymbol = Runtime.Const('symbol')
+const KeywordVoid = Runtime.Const('void')
+const KeywordThis = Runtime.Const('this')
+// ------------------------------------------------------------------
 // TemplateSpan
 // ------------------------------------------------------------------
 const TemplateSpan = Runtime.Until(['${', '`'])
@@ -197,50 +221,11 @@ const TemplateLiteralTypes = Runtime.Tuple([
 // ------------------------------------------------------------------
 const TemplateLiteral = Runtime.Ref('TemplateLiteralTypes')
 // ------------------------------------------------------------------
-// Literal
+// Dependent
 // ------------------------------------------------------------------
-const LiteralBigInt = Runtime.BigInt()
-const LiteralBoolean = Runtime.Union([Runtime.Const('true'), Runtime.Const('false')])
-const LiteralNumber = Runtime.Number()
-const LiteralString = Runtime.String([SingleQuote, DoubleQuote])
-const Literal = Runtime.Union([
-  Runtime.Ref('LiteralBigInt'),
-  Runtime.Ref('LiteralBoolean'),
-  Runtime.Ref('LiteralNumber'),
-  Runtime.Ref('LiteralString'),
-])
-// ------------------------------------------------------------------
-// Keyword
-// ------------------------------------------------------------------
-const KeywordString = Runtime.Const('string')
-const KeywordNumber = Runtime.Const('number')
-const KeywordBoolean = Runtime.Const('boolean')
-const KeywordUndefined = Runtime.Const('undefined')
-const KeywordNull = Runtime.Const('null')
-const KeywordInteger = Runtime.Const('integer')
-const KeywordBigInt = Runtime.Const('bigint')
-const KeywordUnknown = Runtime.Const('unknown')
-const KeywordAny = Runtime.Const('any')
-const KeywordObject = Runtime.Const('object')
-const KeywordNever = Runtime.Const('never')
-const KeywordSymbol = Runtime.Const('symbol')
-const KeywordVoid = Runtime.Const('void')
-const KeywordThis = Runtime.Const('this')
-const Keyword = Runtime.Union([
-  Runtime.Ref('KeywordString'),
-  Runtime.Ref('KeywordNumber'),
-  Runtime.Ref('KeywordBoolean'),
-  Runtime.Ref('KeywordUndefined'),
-  Runtime.Ref('KeywordNull'),
-  Runtime.Ref('KeywordInteger'),
-  Runtime.Ref('KeywordBigInt'),
-  Runtime.Ref('KeywordUnknown'),
-  Runtime.Ref('KeywordAny'),
-  Runtime.Ref('KeywordObject'),
-  Runtime.Ref('KeywordNever'),
-  Runtime.Ref('KeywordSymbol'),
-  Runtime.Ref('KeywordVoid'),
-  Runtime.Ref('KeywordThis')
+const Dependent = Runtime.Union([
+  Runtime.Tuple([Runtime.Const('if'), Runtime.Ref('Type'), Runtime.Const('then'), Runtime.Ref('Type'), Runtime.Const('else'), Runtime.Ref('Type')]),
+  Runtime.Tuple([Runtime.Const('if'), Runtime.Ref('Type'), Runtime.Const('then'), Runtime.Ref('Type')])
 ])
 // ------------------------------------------------------------------
 // KeyOf
@@ -275,15 +260,36 @@ const Extends = Runtime.Union([
 // ------------------------------------------------------------------
 const Base = Runtime.Union([
   Runtime.Tuple([Runtime.Const(LParen), Runtime.Ref('Type'), Runtime.Const(RParen)]),
-  Runtime.Ref('Keyword'),
-  Runtime.Ref('_Object_'),
-  Runtime.Ref('Tuple'),
+  
+  Runtime.Ref('KeywordString'),
+  Runtime.Ref('KeywordNumber'),
+  Runtime.Ref('KeywordBoolean'),
+  Runtime.Ref('KeywordUndefined'),
+  Runtime.Ref('KeywordNull'),
+  Runtime.Ref('KeywordInteger'),
+  Runtime.Ref('KeywordBigInt'),
+  Runtime.Ref('KeywordUnknown'),
+  Runtime.Ref('KeywordAny'),
+  Runtime.Ref('KeywordObject'),
+  Runtime.Ref('KeywordNever'),
+  Runtime.Ref('KeywordSymbol'),
+  Runtime.Ref('KeywordVoid'),
+  Runtime.Ref('KeywordThis'),
+  
+  Runtime.Ref('LiteralBigInt'),
+  Runtime.Ref('LiteralBoolean'),
+  Runtime.Ref('LiteralNumber'),
+  Runtime.Ref('LiteralString'),
+
   Runtime.Ref('TemplateLiteral'),
-  Runtime.Ref('Literal'),
-  Runtime.Ref('Constructor'),
-  Runtime.Ref('_Function_'),
-  Runtime.Ref('Mapped'),
   Runtime.Ref('Dependent'),
+  
+  Runtime.Ref('_Object_'),
+  Runtime.Ref('_Tuple_'),
+  Runtime.Ref('_Constructor_'),
+  Runtime.Ref('_Function_'),
+  Runtime.Ref('_Mapped_'),
+
   Runtime.Ref('GenericCall'),
   Runtime.Ref('Reference')
 ])
@@ -509,7 +515,7 @@ const ElementList = Delimit(
 // ------------------------------------------------------------------
 // Tuple
 // ------------------------------------------------------------------
-const Tuple = Runtime.Tuple([
+const _Tuple_ = Runtime.Tuple([
   Runtime.Const(LBracket),
   Runtime.Ref('ElementList'),
   Runtime.Const(RBracket)
@@ -574,9 +580,9 @@ const ParameterList = Delimit(
   Runtime.Const(Comma)
 )
 // ------------------------------------------------------------------
-// Constructor
+// _Constructor_
 // ------------------------------------------------------------------
-const Constructor = Runtime.Tuple([
+const _Constructor_ = Runtime.Tuple([
   Runtime.Const('new'),
   Runtime.Const(LParen),
   Runtime.Ref('ParameterList'),
@@ -622,7 +628,7 @@ const MappedAs = Runtime.Union([
 // ------------------------------------------------------------------
 // Mapped
 // ------------------------------------------------------------------
-const Mapped = Runtime.Tuple([
+const _Mapped_ = Runtime.Tuple([
   Runtime.Const(LBrace),
   Runtime.Ref('MappedReadonly'),
   Runtime.Const(LBracket),
@@ -636,13 +642,6 @@ const Mapped = Runtime.Tuple([
   Runtime.Ref('Type'),
   Runtime.Ref('OptionalSemiColon'),
   Runtime.Const(RBrace),
-])
-// ------------------------------------------------------------------
-// Dependent
-// ------------------------------------------------------------------
-const Dependent = Runtime.Union([
-  Runtime.Tuple([Runtime.Const('if'), Runtime.Ref('Type'), Runtime.Const('then'), Runtime.Ref('Type'), Runtime.Const('else'), Runtime.Ref('Type')]),
-  Runtime.Tuple([Runtime.Const('if'), Runtime.Ref('Type'), Runtime.Const('then'), Runtime.Ref('Type')])
 ])
 // ------------------------------------------------------------------
 //
@@ -918,12 +917,18 @@ export const SyntaxModule = new Runtime.Module({
   GenericParameterList,
   GenericParameters,
 
+  // ----------------------------------------------------------------
+  // GenericCall
+  // ----------------------------------------------------------------
   GenericCallArgumentList,
   GenericCallArguments,
   GenericCall,
 
   OptionalSemiColon,
 
+  // ----------------------------------------------------------------
+  // Keyword
+  // ----------------------------------------------------------------
   KeywordString,
   KeywordNumber,
   KeywordBoolean,
@@ -938,20 +943,32 @@ export const SyntaxModule = new Runtime.Module({
   KeywordSymbol,
   KeywordVoid,
   KeywordThis,
-  Keyword,
 
+  // ----------------------------------------------------------------
+  // TemplateLiteral
+  // ----------------------------------------------------------------
   TemplateInterpolate,
   TemplateSpan,
   TemplateBody,
   TemplateLiteralTypes,
   TemplateLiteral,
 
+  // ----------------------------------------------------------------
+  // Dependent
+  // ----------------------------------------------------------------
+  Dependent,
+
+  // ----------------------------------------------------------------
+  // Literal
+  // ----------------------------------------------------------------
   LiteralBigInt,
   LiteralBoolean,
   LiteralNumber,
   LiteralString,
-  Literal,
-
+  
+  // ----------------------------------------------------------------
+  // Type
+  // ----------------------------------------------------------------
   KeyOf,
   IndexArray,
   Extends,
@@ -968,6 +985,9 @@ export const SyntaxModule = new Runtime.Module({
   InferType,
   Type,
 
+  // ----------------------------------------------------------------
+  // _Object_
+  // ----------------------------------------------------------------
   PropertyKeyNumber,
   PropertyKeyIdent,
   PropertyKeyQuoted,
@@ -981,6 +1001,9 @@ export const SyntaxModule = new Runtime.Module({
   Properties,
   _Object_,
 
+  // ----------------------------------------------------------------
+  // _Tuple_
+  // ----------------------------------------------------------------
   ElementNamed,
   ElementReadonlyOptional,
   ElementReadonly,
@@ -988,8 +1011,11 @@ export const SyntaxModule = new Runtime.Module({
   ElementBase,
   Element,
   ElementList,
-  Tuple,
+   _Tuple_,
 
+  // ----------------------------------------------------------------
+  // _Function_ & _Constructor_
+  // ----------------------------------------------------------------
   ParameterReadonlyOptional,
   ParameterReadonly,
   ParameterOptional,
@@ -998,17 +1024,21 @@ export const SyntaxModule = new Runtime.Module({
   Parameter,
   ParameterList,
   _Function_,
-  Constructor,
+  _Constructor_,
 
+  // ----------------------------------------------------------------
+  // _Mapped_
+  // ----------------------------------------------------------------
   MappedReadonly,
   MappedOptional,
   MappedAs,
-  Mapped,
+  _Mapped_,
 
-  Dependent,
-
+  // ----------------------------------------------------------------
+  // Reference
+  // ----------------------------------------------------------------
   Reference,
-  
+
   // ----------------------------------------------------------------
   // Json
   // ----------------------------------------------------------------

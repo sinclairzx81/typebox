@@ -380,12 +380,40 @@ export function KeywordThisMapping(input: 'this'): unknown {
   return T.This()
 }
 // -------------------------------------------------------------------
-// Keyword: KeywordString | KeywordNumber | KeywordBoolean | KeywordUndefined | KeywordNull | KeywordInteger | KeywordBigInt | KeywordUnknown | KeywordAny | KeywordObject | KeywordNever | KeywordSymbol | KeywordVoid | KeywordThis
+// LiteralBigInt: <BigInt>
 // -------------------------------------------------------------------
-export type TKeywordMapping<Input extends unknown>
-  = Input
-export function KeywordMapping(input: unknown): unknown {
-  return input
+export type TLiteralBigIntMapping<Input extends string> = (
+  Input extends `${infer Value extends bigint}` ? T.TLiteral<Value> : never
+)
+export function LiteralBigIntMapping(input: string): unknown {
+  return T.Literal(BigInt(input))
+}
+// -------------------------------------------------------------------
+// LiteralBoolean: 'true' | 'false'
+// -------------------------------------------------------------------
+export type TLiteralBooleanMapping<Input extends 'true' | 'false'> = (
+  Input extends 'true' ? T.TLiteral<true> : T.TLiteral<false>
+)
+export function LiteralBooleanMapping(input: 'true' | 'false'): unknown {
+  return T.Literal(Guard.IsEqual(input, 'true'))
+}
+// -------------------------------------------------------------------
+// LiteralNumber: <Number>
+// -------------------------------------------------------------------
+export type TLiteralNumberMapping<Input extends string> = (
+  Input extends `${infer Value extends number}` ? T.TLiteral<Value> : never
+)
+export function LiteralNumberMapping(input: string): unknown {
+  return T.Literal(parseFloat(input))
+}
+// -------------------------------------------------------------------
+// LiteralString: <String>
+// -------------------------------------------------------------------
+export type TLiteralStringMapping<Input extends string> = (
+  Input extends T.TLiteralValue ? T.TLiteral<Input> : never
+)
+export function LiteralStringMapping(input: string): unknown {
+  return T.Literal(input)
 }
 // -------------------------------------------------------------------
 // TemplateInterpolate: ['${', Type, '}']
@@ -438,49 +466,20 @@ export function TemplateLiteralMapping(input: unknown): unknown {
   return T.TemplateLiteralDeferred(input as T.TSchema[])
 }
 // -------------------------------------------------------------------
-// LiteralBigInt: <BigInt>
+// Dependent: ['if', Type, 'then', Type, 'else', Type] | ['if', Type, 'then', Type]
 // -------------------------------------------------------------------
-export type TLiteralBigIntMapping<Input extends string> = (
-  Input extends `${infer Value extends bigint}` ? T.TLiteral<Value> : never
+export type TDependentMapping<Input extends [unknown, unknown, unknown, unknown, unknown, unknown] | [unknown, unknown, unknown, unknown]> = (
+  Input extends ['if', infer If extends T.TSchema, 'then', infer Then extends T.TSchema, 'else', infer Else extends T.TSchema]
+    ? T.TDependent<If, Then, Else> :
+  Input extends ['if', infer If extends T.TSchema, 'then', infer Then extends T.TSchema]
+    ? T.TDependent<If, Then, T.TUnknown> :
+  never
 )
-export function LiteralBigIntMapping(input: string): unknown {
-  return T.Literal(BigInt(input))
-}
-// -------------------------------------------------------------------
-// LiteralBoolean: 'true' | 'false'
-// -------------------------------------------------------------------
-export type TLiteralBooleanMapping<Input extends 'true' | 'false'> = (
-  Input extends 'true' ? T.TLiteral<true> : T.TLiteral<false>
-)
-export function LiteralBooleanMapping(input: 'true' | 'false'): unknown {
-  return T.Literal(Guard.IsEqual(input, 'true'))
-}
-// -------------------------------------------------------------------
-// LiteralNumber: <Number>
-// -------------------------------------------------------------------
-export type TLiteralNumberMapping<Input extends string> = (
-  Input extends `${infer Value extends number}` ? T.TLiteral<Value> : never
-)
-export function LiteralNumberMapping(input: string): unknown {
-  return T.Literal(parseFloat(input))
-}
-// -------------------------------------------------------------------
-// LiteralString: <String>
-// -------------------------------------------------------------------
-export type TLiteralStringMapping<Input extends string> = (
-  Input extends T.TLiteralValue ? T.TLiteral<Input> : never
-)
-export function LiteralStringMapping(input: string): unknown {
-  return T.Literal(input)
-}
-// -------------------------------------------------------------------
-// Literal: LiteralBigInt | LiteralBoolean | LiteralNumber | LiteralString
-// -------------------------------------------------------------------
-export type TLiteralMapping<Input extends unknown> = (
-  Input
-)
-export function LiteralMapping(input: unknown): unknown {
-  return input
+export function DependentMapping(input: [unknown, unknown, unknown, unknown, unknown, unknown] | [unknown, unknown, unknown, unknown]): unknown {
+  return (
+    Guard.IsEqual(input.length, 6) ? T.Dependent(input[1] as T.TSchema, input[3] as T.TSchema, input[5] as T.TSchema) :
+    T.Dependent(input[1] as T.TSchema, input[3] as T.TSchema, T.Unknown())
+  )
 }
 // -------------------------------------------------------------------
 // KeyOf: ['keyof'] | []
@@ -527,7 +526,7 @@ export function ExtendsMapping(input: [unknown, unknown, unknown, unknown, unkno
     : []
 }
 // -------------------------------------------------------------------
-// Base: ['(', Type, ')'] | Keyword | _Object_ | Tuple | TemplateLiteral | Literal | Constructor | _Function_ | Mapped | GenericCall | Reference
+// Base: ['(', Type, ')'] | KeywordString | KeywordNumber | KeywordBoolean | KeywordUndefined | KeywordNull | KeywordInteger | KeywordBigInt | KeywordUnknown | KeywordAny | KeywordObject | KeywordNever | KeywordSymbol | KeywordVoid | KeywordThis | LiteralBigInt | LiteralBoolean | LiteralNumber | LiteralString | TemplateLiteral | Dependent | _Object_ | _Tuple_ | _Constructor_ | _Function_ | _Mapped_ | GenericCall | Reference
 // -------------------------------------------------------------------
 export type TBaseMapping<Input extends [unknown, unknown, unknown] | unknown> = (
   Input extends ['(', infer Type extends T.TSchema, ')'] ? Type :
@@ -1016,12 +1015,12 @@ export function ElementListMapping(input: [unknown, unknown]): unknown {
   return Delimited(input)
 }
 // -------------------------------------------------------------------
-// Tuple: ['[', ElementList, ']']
+// _Tuple_: ['[', ElementList, ']']
 // -------------------------------------------------------------------
-export type TTupleMapping<Input extends [unknown, unknown, unknown]> = (
+export type T_Tuple_Mapping<Input extends [unknown, unknown, unknown]> = (
   Input extends ['[', infer Types extends T.TSchema[], ']'] ? T.TTuple<Types> : never
 )
-export function TupleMapping(input: [unknown, unknown, unknown]): unknown {
+export function _Tuple_Mapping(input: [unknown, unknown, unknown]): unknown {
   return T.Tuple(input[1] as T.TSchema[])
 }
 // -------------------------------------------------------------------
@@ -1109,12 +1108,12 @@ export function _Function_Mapping(input: [unknown, unknown, unknown, unknown, un
 // -------------------------------------------------------------------
 // Constructor: ['new', '(', ParameterList, ')', '=>', Type]
 // -------------------------------------------------------------------
-export type TConstructorMapping<Input extends [unknown, unknown, unknown, unknown, unknown, unknown]> = (
+export type T_Constructor_Mapping<Input extends [unknown, unknown, unknown, unknown, unknown, unknown]> = (
   Input extends ['new', '(', infer ParameterList extends T.TSchema[], ')', '=>', infer InstanceType extends T.TSchema]
     ? T.TConstructor<ParameterList, InstanceType>
     : never
 )
-export function ConstructorMapping(input: [unknown, unknown, unknown, unknown, unknown, unknown]): unknown {
+export function _Constructor_Mapping(input: [unknown, unknown, unknown, unknown, unknown, unknown]): unknown {
   return T.Constructor(input[2] as T.TSchema[], input[5] as T.TSchema)
 }
 // -------------------------------------------------------------------
@@ -1191,34 +1190,18 @@ export function MappedAsMapping(input: [unknown, unknown] | []): unknown {
 // -------------------------------------------------------------------
 // Mapped: ['{', MappedReadonly, '[', <Ident>, 'in', Type, MappedAs, ']', MappedOptional, ':', Type, OptionalSemiColon, '}']
 // -------------------------------------------------------------------
-export type TMappedMapping<Input extends [unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown]> = (
+export type T_Mapped_Mapping<Input extends [unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown]> = (
   Input extends ['{', infer Readonly extends TModifierOperation, '[', infer Key extends string, 'in', infer Type extends T.TSchema, infer As extends T.TSchema[], ']', infer Optional extends TModifierOperation, ':', infer Property extends T.TSchema, null, '}']
     ? (As extends [infer As extends T.TSchema]
       ? C.TMappedDeferred<T.TIdentifier<Key>, Type, As, TApplyReadonly<Readonly, TApplyOptional<Optional, Property>>>
       : C.TMappedDeferred<T.TIdentifier<Key>, Type, T.TRef<Key>, TApplyReadonly<Readonly, TApplyOptional<Optional, Property>>>
     ) : never
 )
-export function MappedMapping(input: [unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown]): unknown {
+export function _Mapped_Mapping(input: [unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown]): unknown {
   return (
     Guard.IsArray(input[6]) && Guard.IsEqual(input[6].length, 1)
       ? C.MappedDeferred(T.Identifier(input[3] as string), input[5] as T.TSchema, input[6][0] as T.TSchema, ApplyReadonly(input[1] as TModifierOperation, ApplyOptional(input[8] as TModifierOperation, input[10] as T.TSchema)))
       : C.MappedDeferred(T.Identifier(input[3] as string), input[5] as T.TSchema, T.Ref(input[3] as string), ApplyReadonly(input[1] as TModifierOperation, ApplyOptional(input[8] as TModifierOperation, input[10] as T.TSchema)))
-  )
-}
-// -------------------------------------------------------------------
-// Dependent: ['if', Type, 'then', Type, 'else', Type] | ['if', Type, 'then', Type]
-// -------------------------------------------------------------------
-export type TDependentMapping<Input extends [unknown, unknown, unknown, unknown, unknown, unknown] | [unknown, unknown, unknown, unknown]> = (
-  Input extends ['if', infer If extends T.TSchema, 'then', infer Then extends T.TSchema, 'else', infer Else extends T.TSchema]
-    ? T.TDependent<If, Then, Else> :
-  Input extends ['if', infer If extends T.TSchema, 'then', infer Then extends T.TSchema]
-    ? T.TDependent<If, Then, T.TUnknown> :
-  never
-)
-export function DependentMapping(input: [unknown, unknown, unknown, unknown, unknown, unknown] | [unknown, unknown, unknown, unknown]): unknown {
-  return (
-    Guard.IsEqual(input.length, 6) ? T.Dependent(input[1] as T.TSchema, input[3] as T.TSchema, input[5] as T.TSchema) :
-    T.Dependent(input[1] as T.TSchema, input[3] as T.TSchema, T.Unknown())
   )
 }
 // -------------------------------------------------------------------
