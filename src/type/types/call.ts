@@ -32,6 +32,7 @@ THE SOFTWARE.
 import { Memory } from '../../system/memory/index.ts'
 import { type TSchema, IsKind } from './schema.ts'
 import { type TCallInstantiate, CallInstantiate } from '../engine/call/instantiate.ts'
+import { type TState, State } from '../engine/instantiate.ts'
 
 // ------------------------------------------------------------------
 // Type
@@ -39,6 +40,7 @@ import { type TCallInstantiate, CallInstantiate } from '../engine/call/instantia
 /** Represents a deferred generic Call */
 export interface TCall<Target extends TSchema = TSchema, Arguments extends TSchema[] = TSchema[]> extends TSchema {
   '~kind': 'Call'
+  type: 'call',
   target: Target
   arguments: Arguments
 }
@@ -51,7 +53,7 @@ export type TCallConstruct<Target extends TSchema, Arguments extends TSchema[],
 
 export function CallConstruct<Target extends TSchema, Arguments extends TSchema[]>
   (target: Target, arguments_: [...Arguments]): TCallConstruct<Target, Arguments> {
-  return Memory.Create({ ['~kind']: 'Call' }, { target, arguments: arguments_ }, {}) as never
+  return Memory.Create({ ['~kind']: 'Call' }, { type: 'call', target, arguments: arguments_ }, {}) as never
 }
 // ------------------------------------------------------------------
 // Factory
@@ -59,8 +61,8 @@ export function CallConstruct<Target extends TSchema, Arguments extends TSchema[
 /** Creates a Call type. */
 export function Call<Target extends TSchema, Arguments extends TSchema[]>
   (target: Target, arguments_: [...Arguments]): 
-    TCallInstantiate<{}, { callstack: [] }, Target, Arguments> {
-  return CallInstantiate({}, { callstack: [] }, target, arguments_) as never
+    TCallInstantiate<{}, TState<[], []>, Target, Arguments> {
+  return CallInstantiate({}, State([], []), target, arguments_) as never
 }
 // ------------------------------------------------------------------
 // Guard

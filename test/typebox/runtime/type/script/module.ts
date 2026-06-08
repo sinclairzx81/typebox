@@ -733,5 +733,9 @@ Test('Should Module 41', () => {
   Assert.IsEqual(T.$defs.X.properties.x.$ref, 'X')
 })
 Test('Should Module 42', () => {
-  Assert.Throws(() => Type.Script(`type X = Record<string, X>`))
+  const T: Type.TRecord<'^.*$', Type.TRecord<'^.*$', Type.TRef<'X'>>> = Type.Script(`type X = Record<string, X>`).X
+  Assert.IsTrue(Type.IsRecord(T))
+  Assert.IsTrue(Type.IsRecord(Type.RecordValue(T)))
+  Assert.IsTrue(Type.IsRef(Type.RecordValue(Type.RecordValue(T))))
+  Assert.IsEqual(T.patternProperties['^.*$'].patternProperties['^.*$'].$ref, 'X')
 })

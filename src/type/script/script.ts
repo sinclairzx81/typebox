@@ -33,8 +33,9 @@ import { Arguments } from '../../system/arguments/index.ts'
 import { Memory } from '../../system/memory/index.ts'
 import { Guard } from '../../guard/index.ts'
 import type { TArrayOptions, TIntersectOptions, TNumberOptions, TObjectOptions, TStringOptions, TTupleOptions } from '../../type/index.ts'
-import { type TInstantiateType, InstantiateType } from '../engine/instantiate.ts'
 import { type TNever, type TSchema, type TProperties, Never } from '../types/index.ts'
+import { type TInstantiateType, InstantiateType } from '../engine/instantiate.ts'
+import { type TState, State } from '../engine/instantiate.ts'
 
 import * as Parser from './parser.ts'
 
@@ -49,7 +50,7 @@ export type TScriptOptions = TArrayOptions | TIntersectOptions | TNumberOptions 
 /** Parses a string-based TypeScript type expression into a TypeBox type. */
 export type TScript<Context extends TProperties, Input extends string> = (
   Parser.TScript<Input> extends [infer Type extends TSchema, string]
-  ? TInstantiateType<Context, { callstack: [] }, Type>
+  ? TInstantiateType<Context, TState<[], []>, Type>
   : TNever
 )
 // ------------------------------------------------------------------
@@ -72,7 +73,7 @@ export function Script(...args: unknown[]): never {
   })
   const result = Parser.Script(input)
   const parsed = Guard.IsArray(result) && Guard.IsEqual(result.length, 2)
-    ? InstantiateType(context, { callstack: [] }, result[0] as never)
+    ? InstantiateType(context, State([], []), result[0] as never)
     : Never()
   return Memory.Update(parsed, {}, options) as never
 }

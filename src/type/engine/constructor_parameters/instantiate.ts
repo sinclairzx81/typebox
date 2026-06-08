@@ -35,9 +35,9 @@ import { type TProperties } from '../../types/properties.ts'
 import { type TConstructor, IsConstructor } from '../../types/constructor.ts'
 import { type TTuple, Tuple } from '../../types/tuple.ts'
 import { type TConstructorParametersDeferred, ConstructorParametersDeferred } from '../../action/constructor_parameters.ts'
-import { type TState, type TInstantiateType, InstantiateType, type TCanInstantiate, CanInstantiate } from '../instantiate.ts'
-
+import { type TInstantiateType, InstantiateType, type TCanInstantiate, CanInstantiate } from '../instantiate.ts'
 import { type TInstantiateElements, InstantiateElements } from '../instantiate.ts'
+import { type TState, State } from '../instantiate.ts'
 
 // ------------------------------------------------------------------
 // Operation
@@ -50,12 +50,12 @@ import { type TInstantiateElements, InstantiateElements } from '../instantiate.t
 // ------------------------------------------------------------------
 type TConstructorParametersOperation<Type extends TSchema,
   Parameters extends TSchema[] = Type extends TConstructor ? Type['parameters'] : [],
-  InstantiatedParameters extends TSchema[] = TInstantiateElements<{}, { callstack: [] }, Parameters>,
+  InstantiatedParameters extends TSchema[] = TInstantiateElements<{}, TState<[], []>, Parameters>,
   Result extends TSchema = TTuple<InstantiatedParameters>
 > = Result
 function ConstructorParametersOperation<Type extends TSchema>(type: Type): TConstructorParametersOperation<Type> {
   const parameters = IsConstructor(type) ? type['parameters'] : []
-  const instantiatedParameters = InstantiateElements({}, { callstack: [] }, parameters)
+  const instantiatedParameters = InstantiateElements({}, State([], []), parameters)
   const result = Tuple(instantiatedParameters)
   return result as never
 }

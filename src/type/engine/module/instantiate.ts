@@ -33,7 +33,7 @@ import { Guard } from '../../../guard/index.ts'
 import { Memory } from '../../../system/memory/index.ts'
 import { type TSchemaOptions } from '../../types/schema.ts'
 import { type TProperties } from '../../types/properties.ts'
-import { type TState } from '../instantiate.ts'
+import { type TState, State } from '../instantiate.ts'
 
 // ------------------------------------------------------------------
 // Module: Instantiation Infrastructure
@@ -60,14 +60,14 @@ function InstantiateCyclics<Context extends TProperties, CyclicKeys extends stri
 // InstantiateNonCyclics
 // ------------------------------------------------------------------
 type TInstantiateNonCyclics<Context extends TProperties, CyclicKeys extends string[], Result extends TProperties = {
-  [Key in Exclude<keyof Context, CyclicKeys[number]>]: TInstantiateType<Context, { callstack: [] }, Context[Key]>
+  [Key in Exclude<keyof Context, CyclicKeys[number]>]: TInstantiateType<Context, TState<[], []>, Context[Key]>
 }> = Result
 function InstantiateNonCyclics<Context extends TProperties, CyclicKeys extends string[]>
   (context: Context, cyclicKeys: [...CyclicKeys]):
   TInstantiateCyclics<Context, CyclicKeys> {
   const keys = Guard.Keys(context).filter(key => !cyclicKeys.includes(key))
   return keys.reduce((result, key) => {
-    return { ...result, [key]: InstantiateType(context, { callstack: [] }, context[key]) }
+    return { ...result, [key]: InstantiateType(context, State([], []), context[key]) }
   }, {}) as never
 }
 // ------------------------------------------------------------------

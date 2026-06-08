@@ -106,8 +106,12 @@ import { type TRestSpread, RestSpread } from './rest/index.ts'
 // ------------------------------------------------------------------
 // InstantiateState
 // ------------------------------------------------------------------
-export interface TState {
-  callstack: string[]
+export interface TState<CallStack extends string[] = string[], Visited extends string[] = string[]> {
+  callstack: CallStack
+  visited: Visited
+}
+export function State<CallStack extends string[], Visited extends string[]>(callstack: CallStack, visited: Visited): TState<CallStack, Visited> {
+  return { callstack, visited }
 }
 // ------------------------------------------------------------------
 // CanInstantiate
@@ -360,11 +364,11 @@ export function InstantiateType<Context extends TProperties, State extends TStat
 // ------------------------------------------------------------------
 /** Instantiates computed schematics using the given context and type. */
 export type TInstantiate<Context extends TProperties, Type extends TSchema> = (
-  TInstantiateType<Context, { callstack: [] }, Type>
+  TInstantiateType<Context, TState<[], []>, Type>
 )
 /** Instantiates computed schematics using the given context and type. */
 export function Instantiate<Context extends TProperties, Type extends TSchema>
   (context: Context, type: Type):
     TInstantiate<Context, Type> {
-  return InstantiateType(context, { callstack: [] }, type) as never
+  return InstantiateType(context, State([], []), type) as never
 }
