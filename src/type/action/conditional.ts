@@ -32,6 +32,7 @@ THE SOFTWARE.
 import { type TSchema, type TSchemaOptions } from '../types/schema.ts'
 import { type TDeferred, Deferred } from '../types/deferred.ts'
 import { type TConditionalAction, ConditionalAction } from '../engine/conditional/instantiate.ts'
+import { type TState, State } from '../engine/instantiate.ts'
 
 // ------------------------------------------------------------------
 // Deferred
@@ -51,11 +52,11 @@ export function ConditionalDeferred<Left extends TSchema, Right extends TSchema,
 // ------------------------------------------------------------------
 /** Applies a Conditional action to the given types. */
 export type TConditional<Left extends TSchema, Right extends TSchema, True extends TSchema, False extends TSchema> = (
-  TConditionalAction<{}, { callstack: [] }, Left, Right, True, False>
+  TConditionalAction<{}, TState<[], []>, Left, Right, True, False>
 )
 /** Applies a Conditional action to the given types. */
 export function Conditional<Left extends TSchema, Right extends TSchema, True extends TSchema, False extends TSchema>
   (left: Left, right: Right, true_: True, false_: False, options: TSchemaOptions = {}):
   TConditional<Left, Right, True, False> {
-  return ConditionalAction({}, { callstack: [] }, left, right, true_, false_, options)
+  return ConditionalAction({}, State([], []), left, right, true_, false_, options)
 }

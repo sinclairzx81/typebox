@@ -29,28 +29,32 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { type TProperties } from '../../types/properties.ts'
-import { type TState, type TInstantiateType, InstantiateType } from '../instantiate.ts'
-import { type TCyclicCheck, CyclicCheck } from '../cyclic/check.ts'
+import { type TInstantiateType, InstantiateType } from '../instantiate.ts'
 import { type TRef } from '../../types/ref.ts'
+import { type TState, State } from '../instantiate.ts'
 
 // ------------------------------------------------------------------
 // Instantiate
+//
+// Note: We pass the owner TRef here because we need to ensure that
+// the Options are retained in cases where the Ref could not resolve.
+//
 // ------------------------------------------------------------------
 export type TRefInstantiate<Context extends TProperties, State extends TState, Type extends TRef, Ref extends string> = (
-  Ref extends keyof Context
-    ? TCyclicCheck<[Ref], Context, Context[Ref]> extends true
-      ? Type
-      : TInstantiateType<Context, State, Context[Ref]>
-    : Type
+  Ref extends State['visited'][number]
+    ? Type
+    : Ref extends keyof Context
+      ? TInstantiateType<Context, TState<State['callstack'], [...State['visited'], Ref]>, Context[Ref]>
+      : Type
 )
 export function RefInstantiate<Context extends TProperties, State extends TState, Type extends TRef, Ref extends string>
   (context: Context, state: State, type: Type, ref: Ref): 
     TRefInstantiate<Context, State, Type, Ref> {
   return (
-    ref in context
-      ? CyclicCheck([ref], context, context[ref])
-        ? type
-        : InstantiateType(context, state, context[ref])
-      : type
+    state.visited.includes(ref)
+      ? type
+      : ref in context
+        ? InstantiateType(context, State(state['callstack'], [...state['visited'], ref]), context[ref])
+        : type
   ) as never
 }

@@ -39,7 +39,7 @@ import { type TProperties } from '../../types/properties.ts'
 import { type TEvaluateUnion, EvaluateUnion } from '../evaluate/index.ts'
 import { type TInstantiateType, InstantiateType } from '../instantiate.ts'
 import { type TInstantiateTypes, InstantiateTypes } from '../instantiate.ts'
-import { type TState } from '../instantiate.ts'
+import { type TState, State } from '../instantiate.ts'
 
 // ------------------------------------------------------------------
 // Infrastructure
@@ -88,14 +88,14 @@ function IsTailCall<State extends TState, Name extends string>(state: State, nam
 // ------------------------------------------------------------------
 type TCallDispatch<Context extends TProperties, State extends TState, Target extends TRef, Parameters extends TParameter[], Expression extends TSchema, Arguments extends TSchema[],
   ArgumentsContext extends TProperties = TResolveArgumentsContext<Context, State, Parameters, Arguments>,
-  ReturnType extends TSchema = TInstantiateType<ArgumentsContext, { callstack: [...State['callstack'], Target['$ref']] }, Expression>,
-> = TInstantiateType<Context, State, ReturnType>
+  ReturnType extends TSchema = TInstantiateType<ArgumentsContext, TState<[...State['callstack'], Target['$ref']], State['visited']>, Expression>,
+> = TInstantiateType<ArgumentsContext, TState<[], []>, ReturnType>
 function CallDispatch<Context extends TProperties, State extends TState, Target extends TRef, Parameters extends TParameter[], Expression extends TSchema, Arguments extends TSchema[]>
   (context: Context, state: State, target: Target, parameters: [...Parameters], expression: Expression, arguments_: [...Arguments]):
     TCallDispatch<Context, State, Target, Parameters, Expression, Arguments> {
   const argumentsContext = ResolveArgumentsContext(context, state, parameters, arguments_) as TProperties
-  const returnType = InstantiateType(argumentsContext, { callstack: [...state.callstack, target.$ref] }, expression) as TSchema
-  return InstantiateType(context, state, returnType) as never
+  const returnType = InstantiateType(argumentsContext, State([...state['callstack'], target['$ref']], state['visited']), expression) as TSchema
+  return InstantiateType(argumentsContext, State([], []), returnType) as never
 }
 // ------------------------------------------------------------------
 // CallDistributed

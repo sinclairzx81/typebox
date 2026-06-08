@@ -35,8 +35,11 @@ import { type TProperties } from '../../types/properties.ts'
 import { type TFunction, IsFunction } from '../../types/function.ts'
 import { type TTuple, Tuple } from '../../types/tuple.ts'
 import { type TParametersDeferred, ParametersDeferred } from '../../action/parameters.ts'
-import { type TState, type TInstantiateType, InstantiateType, type TCanInstantiate, CanInstantiate } from '../instantiate.ts'
+import { type TInstantiateType, InstantiateType, type TCanInstantiate, CanInstantiate } from '../instantiate.ts'
 import { type TInstantiateElements, InstantiateElements } from '../instantiate.ts'
+
+import { type TState, State } from '../instantiate.ts'
+
 
 // ------------------------------------------------------------------
 // Operation
@@ -49,12 +52,12 @@ import { type TInstantiateElements, InstantiateElements } from '../instantiate.t
 // ------------------------------------------------------------------
 type TParametersOperation<Type extends TSchema,
   Parameters extends TSchema[] = Type extends TFunction ? Type['parameters'] : [],
-  InstantiatedParameters extends TSchema[] = TInstantiateElements<{}, { callstack: [] }, Parameters>,
+  InstantiatedParameters extends TSchema[] = TInstantiateElements<{}, TState<[], []>, Parameters>,
   Result extends TSchema = TTuple<InstantiatedParameters>
 > = Result
 function ParametersOperation<Type extends TSchema>(type: Type): TParametersOperation<Type> {
   const parameters = IsFunction(type) ? type['parameters'] : []
-  const instantiatedParameters = InstantiateElements({}, { callstack: [] }, parameters)
+  const instantiatedParameters = InstantiateElements({}, State([], []), parameters)
   const result = Tuple(instantiatedParameters)
   return result as never
 }

@@ -34,9 +34,10 @@ import { type TProperties } from '../../types/properties.ts'
 import { type TObject, Object } from '../../types/object.ts'
 import { type TEvaluateIntersect, EvaluateIntersect } from '../evaluate/evaluate.ts'
 import { type TInterfaceDeferred, InterfaceDeferred } from '../../action/index.ts'
-import { type TState, type TCanInstantiate, CanInstantiate } from '../instantiate.ts'
+import { type TCanInstantiate, CanInstantiate } from '../instantiate.ts'
 import { type TInstantiateProperties, InstantiateProperties } from '../instantiate.ts'
 import { type TInstantiateTypes, InstantiateTypes } from '../instantiate.ts'
+import { type TState } from '../instantiate.ts'
 
 // ------------------------------------------------------------------
 // Operation
@@ -70,8 +71,8 @@ export function InterfaceAction<Heritage extends TSchema[], Properties extends T
 // Instantiate
 // ------------------------------------------------------------------
 export type TInterfaceInstantiate<Context extends TProperties, State extends TState, Heritage extends TSchema[], Properties extends TProperties,
-  InstantiatedHeritage extends TSchema[] = TInstantiateTypes<Context, { callstack: [] }, Heritage>,
-  InstantiatedProperties extends TProperties = TInstantiateProperties<Context, { callstack: [] }, Properties>,
+  InstantiatedHeritage extends TSchema[] = TInstantiateTypes<Context, State, Heritage>,
+  InstantiatedProperties extends TProperties = TInstantiateProperties<Context, State, Properties>,
 > = TInterfaceAction<InstantiatedHeritage, InstantiatedProperties>
 
 export function InterfaceInstantiate<Context extends TProperties, State extends TState, Heritage extends TSchema[], Properties extends TProperties>

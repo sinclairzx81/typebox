@@ -39,6 +39,8 @@ import { type TCyclicDependencies, CyclicDependencies } from '../cyclic/dependen
 import { type TInterfaceDeferred, IsInterfaceDeferred } from '../../action/index.ts'
 import { type TInstantiateProperties, InstantiateProperties } from '../instantiate.ts'
 import { type TInstantiateTypes, InstantiateTypes } from '../instantiate.ts'
+import { type TState, State } from '../instantiate.ts'
+
 import { type TEvaluateIntersect, EvaluateIntersect } from '../evaluate/evaluate.ts'
 
 // ------------------------------------------------------------------
@@ -55,16 +57,16 @@ import { type TEvaluateIntersect, EvaluateIntersect } from '../evaluate/evaluate
 //
 // ------------------------------------------------------------------
 type TCyclicInterface<Context extends TProperties, Heritage extends TSchema[], Properties extends TProperties,
-  InstantiatedHeritage extends TSchema[] = TInstantiateTypes<Context, { callstack: [] }, Heritage>,
-  instantiatedProperties extends TProperties = TInstantiateProperties<{}, { callstack: [] }, Properties>,
+  InstantiatedHeritage extends TSchema[] = TInstantiateTypes<Context, TState<[], []>, Heritage>,
+  instantiatedProperties extends TProperties = TInstantiateProperties<{}, TState<[], []>, Properties>,
   EvaluatedInterface extends TSchema = TEvaluateIntersect<[...InstantiatedHeritage, TObject<instantiatedProperties>]>
 > = EvaluatedInterface
 
 function CyclicInterface<Context extends TProperties, Heritage extends TSchema[], Properties extends TProperties>
   (context: Context, heritage: [...Heritage], properties: Properties): 
     TCyclicInterface<Context, Heritage, Properties> {
-  const instantiatedHeritage = InstantiateTypes(context, { callstack: [] }, heritage) as TSchema[]
-  const instantiatedProperties = InstantiateProperties({}, { callstack: [] }, properties)
+  const instantiatedHeritage = InstantiateTypes(context, State([], []), heritage) as TSchema[]
+  const instantiatedProperties = InstantiateProperties({}, State([], []), properties)
   const evaluatedInterface = EvaluateIntersect([...instantiatedHeritage, Object(instantiatedProperties)])
   return evaluatedInterface as never
 }

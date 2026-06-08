@@ -38,6 +38,7 @@ import { type TExtendsRight, ExtendsRight } from './extends_right.ts'
 import * as Result from './result.ts'
 
 import { type TInstantiateElements, InstantiateElements } from '../engine/instantiate.ts'
+import { type TState, State } from '../engine/instantiate.ts'
 
 // ----------------------------------------------------------------------------
 // Inference
@@ -201,14 +202,14 @@ function Elements<Inferred extends TProperties, Reversed extends boolean, LeftRe
 // ExtendsTupleToTuple
 // ----------------------------------------------------------------------------
 type TExtendsTupleToTuple<Inferred extends TProperties, Left extends TSchema[], Right extends TSchema[],
-  InstantiatedRight extends TSchema[] = TInstantiateElements<Inferred, { callstack: [] }, Right>,
+  InstantiatedRight extends TSchema[] = TInstantiateElements<Inferred, TState<[], []>, Right>,
   Reversed extends boolean = TReversed<InstantiatedRight>,
 > =  TElements<Inferred, Reversed, TApplyReverse<Left, Reversed>, TApplyReverse<InstantiatedRight, Reversed>>
 
 function ExtendsTupleToTuple<Inferred extends TProperties, Left extends TSchema[], Right extends TSchema[]>
   (inferred: Inferred, left: [...Left], right: [...Right]): 
     TExtendsTupleToTuple<Inferred, Left, Right> {
-  const instantiatedRight = InstantiateElements(inferred, { callstack: [] }, right) as TSchema[]
+  const instantiatedRight = InstantiateElements(inferred, State([], []), right) as TSchema[]
   const reversed = Reversed(instantiatedRight)
   return Elements(inferred, reversed, ApplyReverse(left, reversed), ApplyReverse(instantiatedRight, reversed)) as never
 }
@@ -244,14 +245,14 @@ function ExtendsTupleToArray<Inferred extends TProperties, Left extends TSchema[
 // ExtendsTuple
 // ----------------------------------------------------------------------------
 export type TExtendsTuple<Inferred extends TProperties, Left extends TSchema[], Right extends TSchema,
-  InstantiatedLeft extends TSchema[] = TInstantiateElements<Inferred, { callstack: [] }, Left>
+  InstantiatedLeft extends TSchema[] = TInstantiateElements<Inferred, TState<[], []>, Left>
 > = (
   Right extends TTuple<infer Types extends TSchema[]> ? TExtendsTupleToTuple<Inferred, InstantiatedLeft, Types> :
   Right extends TArray<infer Type extends TSchema> ? TExtendsTupleToArray<Inferred, InstantiatedLeft, Type> :
   TExtendsRight<Inferred, TTuple<InstantiatedLeft>, Right>
 )
 export function ExtendsTuple<Inferred extends TProperties, Left extends TSchema[], Right extends TSchema>(inferred: Inferred, left: Left, right: Right): TExtendsTuple<Inferred, Left, Right> {
-  const instantiatedLeft = InstantiateElements(inferred, { callstack: [] }, left)
+  const instantiatedLeft = InstantiateElements(inferred, State([], []), left)
   return (
     IsTuple(right) ? ExtendsTupleToTuple(inferred, instantiatedLeft, right.items) :
     IsArray(right) ? ExtendsTupleToArray(inferred, instantiatedLeft, right.items) :
