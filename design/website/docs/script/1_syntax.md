@@ -1,8 +1,8 @@
 # Script.Syntax
 
-The Script function will evaluate the majority of TypeScript type level expressions. It has support for Interfaces, Type Aliases, Conditional, Mapped, Indexed, Generics as well as features such as Distribution under Union. The Script functions plain TypeBox types which can be inferred via Static. 
+TypeBox is designed to be a programmable DSL for the JSON Schema specification. It uses JSON Schema as an intermediate representation for TypeScript types (tentatively named Type IR), and evaluates it using the type semantics of the TypeScript language.
 
-Script can be thought of as a programmable DSL for the JSON Schema specification.
+The TypeBox Script function is the DSL interface. It accepts TypeScript type-level expressions and resolves them to their TypeBox equivalents. It supports interfaces, type aliases, conditional types, mapped types, indexed access, generics, and union distribution. The Script function returns parsed TypeBox types that can be inferred with `Static<T>`
 
 ## Types
 
@@ -186,7 +186,7 @@ const T11 = Type.Script(`{
 
 ## Type Augmentation
 
-Script support extended syntax to augment types with constraints and annotations.
+Script supports extended syntax to augment types with constraints and annotations.
 
 ```typescript
 // ------------------------------------------------------------------
