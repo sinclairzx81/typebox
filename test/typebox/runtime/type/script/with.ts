@@ -608,3 +608,49 @@ Test('Should With 50', () => {
   }> = Type.Script('string with { value: null }')
   Assert.IsEqual(Result.value, null)
 })
+// ------------------------------------------------------------------
+// BigInt
+// ------------------------------------------------------------------
+Test('Should With 51', () => {
+  const Result: Type.TWith<Type.TUnknown, {
+    value: 100n
+  }> = Type.Script('unknown with { value: 100n }')
+  Assert.IsEqual(Result.value, 100n)
+})
+Test('Should With 52', () => {
+  const Result: Type.TWith<Type.TUnknown, {
+    value: 100n
+  }> = Type.Script('unknown with { value: 1_00n }')
+  Assert.IsEqual(Result.value, 100n)
+})
+Test('Should With 52', () => {
+  const Result: Type.TWith<Type.TUnknown, {
+    value: [100n]
+  }> = Type.Script('unknown with { value: [100n] }')
+  Assert.IsEqual(Result.value, [100n])
+})
+Test('Should With 54', () => {
+  const Result: Type.TWith<Type.TUnknown, {
+    value: {
+      x: 100n
+    }
+  }> = Type.Script('unknown with { value: { x: 100n } }')
+  Assert.IsEqual(Result.value, { x: 100n })
+})
+// ------------------------------------------------------------------
+// Undefined
+// ------------------------------------------------------------------
+Test('Should With 55', () => {
+  const Result: Type.TWith<Type.TUnknown, {
+    value: undefined
+  }> = Type.Script('unknown with { value: undefined }')
+  Assert.IsEqual(Result.value, undefined)
+})
+Test('Should With 56', () => {
+  const Result: Type.TWith<Type.TUnknown, {
+    value: {
+      x: undefined
+    }
+  }> = Type.Script('unknown with { value: { x: undefined } }')
+  Assert.IsEqual(Result.value, { x: undefined })
+})

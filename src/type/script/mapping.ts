@@ -539,11 +539,11 @@ export function BaseMapping(input: [unknown, unknown, unknown] | unknown): unkno
     : input as T.TSchema
 }
 // -------------------------------------------------------------------
-// With: ['with', JsonObject] | []
+// With: ['with', WithObject] | []
 // -------------------------------------------------------------------
 export type TWithMapping<Input extends [unknown, unknown] | []> = (
-  Input extends ['with', infer JsonObject extends Record<PropertyKey, unknown>]
-    ? JsonObject
+  Input extends ['with', infer WithObject extends Record<PropertyKey, unknown>]
+    ? WithObject
     : []
 )
 export function WithMapping(input: [unknown, unknown] | []): unknown {
@@ -1214,110 +1214,127 @@ export function ReferenceMapping(input: string): unknown {
   return T.Ref(input)
 }
 // -------------------------------------------------------------------
-// JsonNumber: <Number>
+// WithBigInt: <BigInt>
 // -------------------------------------------------------------------
-export type TJsonNumberMapping<Input extends string> = (
+export type TWithBigIntMapping<Input extends string> = (
+  Input extends `${infer Value extends bigint}` ? Value : never
+)
+export function WithBigIntMapping(input: string): unknown {
+  return BigInt(input)
+}
+// -------------------------------------------------------------------
+// WithNumber: <Number>
+// -------------------------------------------------------------------
+export type TWithNumberMapping<Input extends string> = (
   Input extends `${infer Value extends number}` ? Value : never
 )
-export function JsonNumberMapping(input: string): unknown {
+export function WithNumberMapping(input: string): unknown {
   return parseFloat(input)
 }
 // -------------------------------------------------------------------
-// JsonBoolean: 'true' | 'false'
+// WithBoolean: 'true' | 'false'
 // -------------------------------------------------------------------
-export type TJsonBooleanMapping<Input extends 'true' | 'false'> = (
+export type TWithBooleanMapping<Input extends 'true' | 'false'> = (
   Input extends 'true' ? true : false
 )
-export function JsonBooleanMapping(input: 'true' | 'false'): unknown {
+export function WithBooleanMapping(input: 'true' | 'false'): unknown {
   return Guard.IsEqual(input, 'true')
 }
 // -------------------------------------------------------------------
-// JsonString: <String>
+// WithString: <String>
 // -------------------------------------------------------------------
-export type TJsonStringMapping<Input extends string> = (
+export type TWithStringMapping<Input extends string> = (
   Input
 )
-export function JsonStringMapping(input: string): unknown {
+export function WithStringMapping(input: string): unknown {
   return input
 }
 // -------------------------------------------------------------------
-// JsonNull: 'null'
+// WithNull: 'null'
 // -------------------------------------------------------------------
-export type TJsonNullMapping<Input extends 'null'> = (
+export type TWithNullMapping<Input extends 'null'> = (
   null
 )
-export function JsonNullMapping(input: 'null'): unknown {
+export function WithNullMapping(input: 'null'): unknown {
   return null
 }
 // -------------------------------------------------------------------
-// JsonProperty: [PropertyKey, ':', Json]
+// WithUndefined: 'undefined'
 // -------------------------------------------------------------------
-export type TJsonPropertyMapping<Input extends [unknown, unknown, unknown]> = (
+export type TWithUndefinedMapping<Input extends 'undefined'>
+  = undefined
+export function WithUndefinedMapping(input: 'undefined'): unknown {
+  return undefined
+}
+// -------------------------------------------------------------------
+// WithProperty: [PropertyKey, ':', Json]
+// -------------------------------------------------------------------
+export type TWithPropertyMapping<Input extends [unknown, unknown, unknown]> = (
   Input extends [infer Key extends string, ':', infer Value extends unknown]
     ? { [_ in Key]: Value }
     : never
 )
-export function JsonPropertyMapping(input: [unknown, unknown, unknown]): unknown {
+export function WithPropertyMapping(input: [unknown, unknown, unknown]): unknown {
   return { [input[0] as string]: input[2] as unknown }
 }
 // -------------------------------------------------------------------
-// JsonPropertyList: [[JsonProperty, PropertyDelimiter][], [JsonProperty] | []]
+// WithPropertyList: [[WithProperty, PropertyDelimiter][], [WithProperty] | []]
 // -------------------------------------------------------------------
-export type TJsonPropertyListMapping<Input extends [unknown, unknown]> = (
+export type TWithPropertyListMapping<Input extends [unknown, unknown]> = (
   TDelimited<Input>
 )
-export function JsonPropertyListMapping(input: [unknown, unknown]): unknown {
+export function WithPropertyListMapping(input: [unknown, unknown]): unknown {
   return Delimited(input)
 }
 // -------------------------------------------------------------------
-// JsonObject: ['{', JsonPropertyList, '}']
+// WithObject: ['{', WithPropertyList, '}']
 // -------------------------------------------------------------------
-type TJsonObjectMappingReduce<PropertyList extends Record<PropertyKey, unknown>[], Result extends Record<PropertyKey, unknown> = {}> = (
+type TWithObjectMappingReduce<PropertyList extends Record<PropertyKey, unknown>[], Result extends Record<PropertyKey, unknown> = {}> = (
   PropertyList extends [infer Left extends Record<PropertyKey, unknown>, ...infer Right extends Record<PropertyKey, unknown>[]]
-    ? TJsonObjectMappingReduce<Right, Memory.TAssign<Result, Left>>
+    ? TWithObjectMappingReduce<Right, Memory.TAssign<Result, Left>>
     : { [Key in keyof Result]: Result[Key] }
 )
-function JsonObjectMappingReduce<PropertyList extends Record<PropertyKey, unknown>[]>(propertyList: [...PropertyList]): TJsonObjectMappingReduce<PropertyList> {
+function WithObjectMappingReduce<PropertyList extends Record<PropertyKey, unknown>[]>(propertyList: [...PropertyList]): TWithObjectMappingReduce<PropertyList> {
   return propertyList.reduce((result, left) => {
     return Memory.Assign(result, left)
   }, {} as T.TProperties) as never
 }
 // ...
-export type TJsonObjectMapping<Input extends [unknown, unknown, unknown]> = (
+export type TWithObjectMapping<Input extends [unknown, unknown, unknown]> = (
   Input extends ['{', infer PropertyList extends Record<PropertyKey, unknown>[], '}']
-    ? TJsonObjectMappingReduce<PropertyList>
+    ? TWithObjectMappingReduce<PropertyList>
     : {}
 )
-export function JsonObjectMapping(input: [unknown, unknown, unknown]): unknown {
-  return JsonObjectMappingReduce(input[1] as Record<PropertyKey, unknown>[])
+export function WithObjectMapping(input: [unknown, unknown, unknown]): unknown {
+  return WithObjectMappingReduce(input[1] as Record<PropertyKey, unknown>[])
 }
 // -------------------------------------------------------------------
-// JsonElementList: [[Json, ','][], [Json] | []]
+// WithElementList: [[Json, ','][], [Json] | []]
 // -------------------------------------------------------------------
-export type TJsonElementListMapping<Input extends [unknown, unknown]> = (
+export type TWithElementListMapping<Input extends [unknown, unknown]> = (
   TDelimited<Input>
 )
-export function JsonElementListMapping(input: [unknown, unknown]): unknown {
+export function WithElementListMapping(input: [unknown, unknown]): unknown {
   return Delimited(input)
 }
 // -------------------------------------------------------------------
-// JsonArray: ['[', JsonElementList, ']']
+// WithArray: ['[', WithElementList, ']']
 // -------------------------------------------------------------------
-export type TJsonArrayMapping<Input extends [unknown, unknown, unknown]> = (
+export type TWithArrayMapping<Input extends [unknown, unknown, unknown]> = (
   Input extends ['[', infer Elements extends unknown[], ']']
     ? Elements
     : never
 )
-export function JsonArrayMapping(input: [unknown, unknown, unknown]): unknown {
+export function WithArrayMapping(input: [unknown, unknown, unknown]): unknown {
   return input[1] as unknown[]
 }
 // -------------------------------------------------------------------
-// Json: JsonNumber | JsonBoolean | JsonString | JsonNull | JsonObject | JsonArray
+// WithValue: WithBigInt | WithNumber | WithBoolean | WithString | WithNull | WithUndefined | WithObject | WithArray
 // -------------------------------------------------------------------
-export type TJsonMapping<Input extends unknown> = (
+export type TWithValueMapping<Input extends unknown> = (
   Input
 )
-export function JsonMapping(input: unknown): unknown {
+export function WithValueMapping(input: unknown): unknown {
   return input
 }
 // -------------------------------------------------------------------

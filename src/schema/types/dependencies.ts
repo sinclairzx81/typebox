@@ -52,5 +52,5 @@ export function IsDependencies(schema: XSchemaObject): schema is XDependencies {
     && Guard.IsObject(schema.dependencies) 
     && Object.values(schema.dependencies).every(value => 
       IsSchema(value) 
-      || Guard.IsArray(value) && value.every(value => Guard.IsString(value)))   
+      || (Guard.IsArray(value) && value.every(value => Guard.IsString(value)))) 
 }
