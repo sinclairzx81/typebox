@@ -27,10 +27,10 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 export * from './_add_immutable.ts'
-export * from './_remove_immutable.ts'
 export * from './_add_readonly.ts'
-export * from './_remove_readonly.ts'
 export * from './_add_optional.ts'
+export * from './_remove_immutable.ts'
+export * from './_remove_readonly.ts'
 export * from './_remove_optional.ts'
 
 export * from './awaited.ts'
