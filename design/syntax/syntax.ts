@@ -644,15 +644,6 @@ const _Mapped_ = Runtime.Tuple([
   Runtime.Const(RBrace),
 ])
 // ------------------------------------------------------------------
-//
-// Json
-//
-// These combinators parse Json strings into constant JavaScript
-// structures. These combinators are used in tandem with the
-// Options generic type, and thus span multiple parsing contexts
-// 
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // WithBigInt
 // ------------------------------------------------------------------
 const WithBigInt = Runtime.BigInt()
