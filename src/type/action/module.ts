@@ -32,27 +32,28 @@ THE SOFTWARE.
 import { type TSchemaOptions } from '../types/schema.ts'
 import { type TProperties } from '../types/properties.ts'
 import { type TDeferred, Deferred } from '../types/deferred.ts'
-import { type TInstantiate, Instantiate } from '../engine/instantiate.ts'
+import { type TState, State } from '../engine/instantiate.ts'
+import { type TModuleInstantiate, ModuleInstantiate } from '../engine/module/instantiate.ts'
 
 // ------------------------------------------------------------------
 // Deferred
 // ------------------------------------------------------------------
 /** Creates a deferred Module action. */
-export type TModuleDeferred<Context extends TProperties> = (
-  TDeferred<'Module', [Context]>
+export type TModuleDeferred<Declarations extends TProperties> = (
+  TDeferred<'Module', [Declarations]>
 )
 /** Creates a deferred Module action. */
-export function ModuleDeferred<Context extends TProperties>(context: Context, options: TSchemaOptions = {}): TModuleDeferred<Context> {
-  return Deferred('Module', [context], options)
+export function ModuleDeferred<Declarations extends TProperties>(declarations: Declarations, options: TSchemaOptions = {}): TModuleDeferred<Declarations> {
+  return Deferred('Module', [declarations], options)
 }
 // ------------------------------------------------------------------
 // Type
 // ------------------------------------------------------------------
-/** Applies a Module transformation action to the embedded property types. */
-export type TModule<Context extends TProperties> = (
-  TInstantiate<{}, TModuleDeferred<Context>>
+/** Creates a Module with the given declarations */
+export type TModule<Declarations extends TProperties> = (
+  TModuleInstantiate<{}, TState<[], []>, Declarations>
 )
-/** Applies a Module transformation action to the embedded property types. */
-export function Module<Context extends TProperties>(context: Context, options: TSchemaOptions = {}): TModule<Context> {
-  return Instantiate({}, ModuleDeferred(context, options)) as never
+/** Creates a Module with the given declarations */
+export function Module<Declarations extends TProperties>(declarations: Declarations, options: TSchemaOptions = {}): TModule<Declarations> {
+  return ModuleInstantiate({}, State([], []), declarations, options) as never
 }

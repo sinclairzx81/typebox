@@ -328,3 +328,25 @@ Test('Should Module 21', () => {
   Assert.IsEqual(Guard.Keys(A.A5.$defs), ['A1', 'A2', 'A3', 'A5', 'A6'])
   Assert.IsEqual(Guard.Keys(A.A6.$defs), ['A1', 'A2', 'A3', 'A5', 'A6'])
 })
+// ------------------------------------------------------------------
+// Should Only Export Declarations, (Not Parameters)
+// ------------------------------------------------------------------
+Test('Should Module 22', () => {
+  const A = Type.String()
+  const B = Type.Number()
+  const C: {
+    C: Type.TUnion<[Type.TString, Type.TNumber]>
+  } = Type.Script(
+    { A, B },
+    `
+    type C = A | B  
+  `
+  )
+  Assert.NotHasPropertyKey(C, 'A')
+  Assert.NotHasPropertyKey(C, 'B')
+  Assert.HasPropertyKey(C, 'C')
+  Assert.IsTrue(Type.IsUnion(C.C))
+  Assert.IsTrue(Type.IsString(C.C.anyOf[0]))
+  Assert.IsTrue(Type.IsNumber(C.C.anyOf[1]))
+  Assert.IsEqual(Object.keys(C).length, 1)
+})
