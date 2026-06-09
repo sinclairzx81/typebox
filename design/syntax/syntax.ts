@@ -297,7 +297,7 @@ const Base = Runtime.Union([
 // With
 // ------------------------------------------------------------------
 const With = Runtime.Union([
-  Runtime.Tuple([Runtime.Const('with'), Runtime.Ref('JsonObject')]),
+  Runtime.Tuple([Runtime.Const('with'), Runtime.Ref('WithObject')]),
   Runtime.Tuple([])
 ])
 // ------------------------------------------------------------------
@@ -653,72 +653,82 @@ const _Mapped_ = Runtime.Tuple([
 // 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-// JsonNumber
+// WithBigInt
 // ------------------------------------------------------------------
-const JsonNumber = Runtime.Number()
+const WithBigInt = Runtime.BigInt()
 // ------------------------------------------------------------------
-// JsonString
+// WithNumber
 // ------------------------------------------------------------------
-const JsonString = Runtime.String(['"', "'"])
+const WithNumber = Runtime.Number()
 // ------------------------------------------------------------------
-// JsonBoolean
+// WithString
 // ------------------------------------------------------------------
-const JsonBoolean = Runtime.Union([
+const WithString = Runtime.String(['"', "'"])
+// ------------------------------------------------------------------
+// WithBoolean
+// ------------------------------------------------------------------
+const WithBoolean = Runtime.Union([
   Runtime.Const('true'),
   Runtime.Const('false'),
 ])
 // ------------------------------------------------------------------
-// JsonNull
+// WithNull
 // ------------------------------------------------------------------
-const JsonNull = Runtime.Const('null')
+const WithNull = Runtime.Const('null')
 // ------------------------------------------------------------------
-// JsonProperty
+// WithUndefined
 // ------------------------------------------------------------------
-const JsonProperty = Runtime.Tuple([
+const WithUndefined = Runtime.Const('undefined')
+// ------------------------------------------------------------------
+// WithProperty
+// ------------------------------------------------------------------
+const WithProperty = Runtime.Tuple([
   Runtime.Ref('PropertyKey'),
   Runtime.Const(':'),
-  Runtime.Ref('Json')
+  Runtime.Ref('WithValue')
 ])
 // ------------------------------------------------------------------
-// JsonPropertyList
+// WithPropertyList
 // ------------------------------------------------------------------
-const JsonPropertyList = Delimit(
-  Runtime.Ref('JsonProperty'),
+const WithPropertyList = Delimit(
+  Runtime.Ref('WithProperty'),
   Runtime.Ref('PropertyDelimiter')
 )
 // ------------------------------------------------------------------
-// JsonObject
+// WithObject
 // ------------------------------------------------------------------
-const JsonObject = Runtime.Tuple([
+const WithObject = Runtime.Tuple([
   Runtime.Const(LBrace),
-  Runtime.Ref('JsonPropertyList'),
+  Runtime.Ref('WithPropertyList'),
   Runtime.Const(RBrace)
 ])
 // ------------------------------------------------------------------
-// JsonElementList
+// WithElementList
 // ------------------------------------------------------------------
-const JsonElementList = Delimit(
-  Runtime.Ref('Json'),
+const WithElementList = Delimit(
+  Runtime.Ref('WithValue'),
   Runtime.Const(Comma)
 )
 // ------------------------------------------------------------------
-// JsonArray
+// WithArray
 // ------------------------------------------------------------------
-const JsonArray = Runtime.Tuple([
+const WithArray = Runtime.Tuple([
   Runtime.Const(LBracket),
-  Runtime.Ref('JsonElementList'),
+  Runtime.Ref('WithElementList'),
   Runtime.Const(RBracket)
 ])
 // ------------------------------------------------------------------
 // Json
 // ------------------------------------------------------------------
-const Json = Runtime.Union([
-  Runtime.Ref('JsonNumber'),
-  Runtime.Ref('JsonBoolean'),
-  Runtime.Ref('JsonString'),
-  Runtime.Ref('JsonNull'),
-  Runtime.Ref('JsonObject'),
-  Runtime.Ref('JsonArray')
+const WithValue = Runtime.Union([
+  Runtime.Ref('WithBigInt'),
+  Runtime.Ref('WithNumber'),
+  Runtime.Ref('WithBoolean'),
+  Runtime.Ref('WithString'),
+  Runtime.Ref('WithNull'),
+  Runtime.Ref('WithUndefined'),
+  Runtime.Ref('WithObject'),
+  Runtime.Ref('WithArray')
 ])
 // ------------------------------------------------------------------
 //
@@ -1040,18 +1050,20 @@ export const SyntaxModule = new Runtime.Module({
   Reference,
 
   // ----------------------------------------------------------------
-  // Json
+  // With
   // ----------------------------------------------------------------
-  JsonNumber,
-  JsonBoolean,
-  JsonString,
-  JsonNull,
-  JsonProperty,
-  JsonPropertyList,
-  JsonObject,
-  JsonElementList,
-  JsonArray,
-  Json,
+  WithBigInt,
+  WithNumber,
+  WithBoolean,
+  WithString,
+  WithNull,
+  WithUndefined,
+  WithProperty,
+  WithPropertyList,
+  WithObject,
+  WithElementList,
+  WithArray,
+  WithValue,
 
   // ----------------------------------------------------------------
   // Pattern
