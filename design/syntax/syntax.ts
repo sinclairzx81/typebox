@@ -709,7 +709,7 @@ const WithArray = Runtime.Tuple([
   Runtime.Const(RBracket)
 ])
 // ------------------------------------------------------------------
-// Json
+// WithValue
 // ------------------------------------------------------------------
 const WithValue = Runtime.Union([
   Runtime.Ref('WithBigInt'),
