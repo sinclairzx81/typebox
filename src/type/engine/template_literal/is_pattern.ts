@@ -32,6 +32,8 @@ import { Guard } from '../../../guard/index.ts'
 import { type TSchema } from '../../types/schema.ts'
 import { type TParsePatternIntoTypes, ParsePatternIntoTypes } from '../patterns/pattern.ts'
 
+// deno-coverage-ignore-start - unused, but useful for future work, keep
+
 /** Returns true if this pattern is a valid Template Literal regular expression */
 export type TIsTemplateLiteralPattern<Pattern extends string,
   Types extends TSchema[] = TParsePatternIntoTypes<Pattern>,
@@ -43,3 +45,4 @@ export function IsTemplateLiteralPattern<Pattern extends string>(pattern: Patter
   const result = Guard.IsEqual(types.length, 0) ? false : true
   return result as never
 }
+// deno-coverage-ignore-stop
