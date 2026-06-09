@@ -62,5 +62,5 @@ export function ReadonlyObjectInstantiate<Context extends TProperties, State ext
   (context: Context, state: State, type: Type, options: TSchemaOptions): 
     TReadonlyObjectInstantiate<Context, State, Type> {
   const instantiatedType = InstantiateType(context, state, type)
-  return ReadonlyObjectAction(instantiatedType, options)
+  return ReadonlyObjectAction(instantiatedType, options) as never
 }

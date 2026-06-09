@@ -17,7 +17,7 @@ Test('Should Create Immutable 1', () => {
 })
 Test('Should Create Immutable and Unwrap', () => {
   const T: Type.TImmutable<Type.TArray<Type.TNull>> = Type.Immutable(Type.Array(Type.Null()))
-  const U: Type.TArray<Type.TNull> = Type.ImmutableRemove(T)
+  const U: Type.TArray<Type.TNull> = Type.RemoveImmutable(T)
   Assert.IsFalse(Type.IsImmutable(U))
   Assert.IsTrue(Type.IsArray(U))
   Assert.IsTrue(Type.IsNull(U.items))

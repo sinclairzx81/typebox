@@ -75,5 +75,5 @@ export function InstanceTypeInstantiate<Context extends TProperties, State exten
   (context: Context, state: State, type: Type, options: TSchemaOptions = {}): 
     TInstanceTypeInstantiate<Context, State, Type> {
   const instantiatedType = InstantiateType(context, state, type)
-  return InstanceTypeAction(instantiatedType, options)
+  return InstanceTypeAction(instantiatedType, options) as never
 }

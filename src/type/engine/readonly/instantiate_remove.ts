@@ -31,36 +31,38 @@ THE SOFTWARE.
 import { Memory } from '../../../system/memory/index.ts'
 import { type TSchema, type TSchemaOptions } from '../../types/schema.ts'
 import { type TProperties } from '../../types/properties.ts'
-import { type TPartialDeferred, PartialDeferred } from '../../action/partial.ts'
-import { type TFromType, FromType } from './from_type.ts'
-import { type TState, type TInstantiateType, InstantiateType, type TCanInstantiate, CanInstantiate } from '../instantiate.ts'
+import { type TReadonly } from '../../types/_readonly.ts'
+import { type TState, type TInstantiateType, InstantiateType } from '../instantiate.ts'
 
+// ------------------------------------------------------------------
+// Operation
+// ------------------------------------------------------------------
+type TRemoveReadonlyOperation<Type extends TSchema,
+  Result extends TSchema = Type extends TReadonly<infer Type  extends TSchema> ? Type : Type
+> = Result
+function RemoveReadonlyOperation<Type extends TSchema>(type: Type): TRemoveReadonlyOperation<Type> {
+  return Memory.Discard(type, ['~readonly']) as never
+}
 // ------------------------------------------------------------------
 // Action
 // ------------------------------------------------------------------
-export type TPartialAction<Type extends TSchema,
-  Result extends TSchema = TCanInstantiate<[Type]> extends true
-    ? TFromType<Type>
-    : TPartialDeferred<Type>
+export type TRemoveReadonlyAction<Type extends TSchema,
+  Result extends TSchema = TRemoveReadonlyOperation<Type>
 > = Result
-export function PartialAction<Type extends TSchema>
-  (type: Type, options: TSchemaOptions): 
-    TPartialAction<Type> {
-  const result = CanInstantiate([type])
-    ? Memory.Update(FromType(type), {}, options) 
-    : PartialDeferred(type, options)
+export function RemoveReadonlyAction<Type extends TSchema>(type: Type, options: TSchemaOptions): TRemoveReadonlyAction<Type> {
+  const result = Memory.Update(RemoveReadonlyOperation(type), {}, options)
   return result as never
 }
 // ------------------------------------------------------------------
 // Instantiate
 // ------------------------------------------------------------------
-export type TPartialInstantiate<Context extends TProperties, State extends TState, Type extends TSchema,
-  InstantiatedType extends TSchema = TInstantiateType<Context, State, Type>
-> = TPartialAction<InstantiatedType>
+export type TRemoveReadonlyInstantiate<Context extends TProperties, State extends TState, Type extends TSchema,
+  InstantiateType extends TSchema = TInstantiateType<Context, State, Type>
+> = TRemoveReadonlyAction<InstantiateType>
 
-export function PartialInstantiate<Context extends TProperties, State extends TState, Type extends TSchema>
+export function RemoveReadonlyInstantiate<Context extends TProperties, State extends TState, Type extends TSchema>
   (context: Context, state: State, type: Type, options: TSchemaOptions): 
-    TPartialInstantiate<Context, State, Type> {
+    TRemoveReadonlyInstantiate<Context, State, Type> {
   const instantiatedType = InstantiateType(context, state, type)
-  return PartialAction(instantiatedType, options) as never
+  return RemoveReadonlyAction(instantiatedType, options) as never
 }

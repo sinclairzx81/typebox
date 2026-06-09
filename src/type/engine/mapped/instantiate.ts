@@ -62,5 +62,5 @@ export function MappedInstantiate<Context extends TProperties, State extends TSt
   (context: Context, state: State, identifier: Identifier, type: Type, as: As, property: Property, options: TSchemaOptions): 
     TMappedInstantiate<Context, State,Identifier, Type, As, Property> {
   const instantiatedType = InstantiateType(context, state, type)
-  return MappedAction(context, state, identifier, instantiatedType, as, property, options)
+  return MappedAction(context, state, identifier, instantiatedType, as, property, options) as never
 }

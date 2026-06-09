@@ -15,7 +15,7 @@ Test('Should Create Readonly 1', () => {
 })
 Test('Should Create Readonly and Unwrap', () => {
   const T: Type.TReadonly<Type.TNull> = Type.Readonly(Type.Null())
-  const U = Type.ReadonlyRemove(T)
+  const U = Type.RemoveReadonly(T)
   Assert.IsFalse(Type.IsReadonly(U))
   Assert.IsTrue(Type.IsNull(U))
 })

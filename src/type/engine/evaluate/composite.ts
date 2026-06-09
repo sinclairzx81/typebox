@@ -32,14 +32,19 @@ THE SOFTWARE.
 import { type TUnreachable, Unreachable } from '../../../system/unreachable/index.ts'
 import { Guard } from '../../../guard/index.ts'
 
-import { type TReadonly, type TReadonlyAdd, type TReadonlyRemove, ReadonlyAdd, ReadonlyRemove, IsReadonly } from '../../types/_readonly.ts'
-import { type TOptional, type TOptionalAdd, type TOptionalRemove, OptionalAdd, OptionalRemove, IsOptional } from '../../types/_optional.ts'
+import { type TReadonly, IsReadonly } from '../../types/_readonly.ts'
+import { type TOptional, IsOptional } from '../../types/_optional.ts'
 
 import { type TSchema } from '../../types/schema.ts'
 import { type TProperties } from '../../types/properties.ts'
 import { type TObject, Object, IsObject } from '../../types/object.ts'
 import { type TNever, Never } from '../../types/never.ts'
 import { type TTuple, IsTuple } from '../../types/tuple.ts'
+
+import { type TAddReadonly, AddReadonly } from '../../action/_add_readonly.ts'
+import { type TAddOptional, AddOptional } from '../../action/_add_optional.ts'
+import { type TRemoveReadonly, RemoveReadonly } from '../../action/_remove_readonly.ts'
+import { type TRemoveOptional, RemoveOptional } from '../../action/_remove_optional.ts'
 
 import { type TTupleElementsToProperties, TupleElementsToProperties } from '../tuple/to_object.ts'
 import { type TEvaluateIntersect, EvaluateIntersect } from './evaluate.ts'
@@ -70,11 +75,11 @@ type TCompositeProperty<Left extends TSchema, Right extends TSchema,
   IsOptional extends boolean = TIsOptionalProperty<Left, Right>,
   Evaluated extends TSchema = TEvaluateIntersect<[Left, Right]>,
   // Modifiers need to be discarded and re-applied
-  Property extends TSchema = TReadonlyRemove<TOptionalRemove<Evaluated>>
+  Property extends TSchema = TRemoveReadonly<TRemoveOptional<Evaluated>>
 > = (
-  [IsReadonly, IsOptional] extends [true, true] ? TReadonlyAdd<TOptionalAdd<Property>> :
-  [IsReadonly, IsOptional] extends [true, false] ? TReadonlyAdd<Property> :
-  [IsReadonly, IsOptional] extends [false, true] ? TOptionalAdd<Property> :
+  [IsReadonly, IsOptional] extends [true, true] ? TAddReadonly<TAddOptional<Property>> :
+  [IsReadonly, IsOptional] extends [true, false] ? TAddReadonly<Property> :
+  [IsReadonly, IsOptional] extends [false, true] ? TAddOptional<Property> :
   Property
 )
 function CompositeProperty<Left extends TSchema, Right extends TSchema>(left: Left, right: Right): TCompositeProperty<Left, Right> {
@@ -82,11 +87,11 @@ function CompositeProperty<Left extends TSchema, Right extends TSchema>(left: Le
   const isOptional = IsOptionalProperty(left, right)
   const evaluated = EvaluateIntersect([left, right]) as TSchema
   // Modifiers need to be discarded and re-applied
-  const property = ReadonlyRemove(OptionalRemove(evaluated))
+  const property = RemoveReadonly(RemoveOptional(evaluated))
   return (
-    isReadonly && isOptional ? ReadonlyAdd(OptionalAdd(property)) :
-    isReadonly && !isOptional ? ReadonlyAdd(property) :
-    !isReadonly && isOptional ? OptionalAdd(property) :
+    isReadonly && isOptional ? AddReadonly(AddOptional(property)) :
+    isReadonly && !isOptional ? AddReadonly(property) :
+    !isReadonly && isOptional ? AddOptional(property) :
     property
   ) as never
 }

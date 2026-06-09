@@ -90,7 +90,7 @@ Test('Should Mapped 8', () => {
   const K = Type.Identifier('K')
   const B = Type.KeyOf(S)
   const C = Type.Ref('K')
-  const D = Type.OptionalRemoveAction(Type.Index(S, Type.Ref('K')))
+  const D = Type.RemoveOptionalDeferred(Type.Index(S, Type.Ref('K')))
   const T: Type.TObject<{
     x: Type.TNumber
     y: Type.TString
@@ -110,7 +110,7 @@ Test('Should Mapped 9', () => {
   const K = Type.Identifier('K')
   const B = Type.KeyOf(S)
   const C = Type.Ref('K')
-  const D = Type.ReadonlyRemoveAction(Type.Index(S, Type.Ref('K')))
+  const D = Type.RemoveReadonlyDeferred(Type.Index(S, Type.Ref('K')))
   const T: Type.TObject<{
     x: Type.TNumber
     y: Type.TString
@@ -130,7 +130,7 @@ Test('Should Mapped 10', () => {
   const K = Type.Identifier('K')
   const B = Type.KeyOf(S)
   const C = Type.Ref('K')
-  const D = Type.ReadonlyAddAction(Type.Index(S, Type.Ref('K')))
+  const D = Type.AddReadonlyDeferred(Type.Index(S, Type.Ref('K')))
   const T: Type.TObject<{
     x: Type.TReadonly<Type.TNumber>
     y: Type.TReadonly<Type.TString>
@@ -150,7 +150,7 @@ Test('Should Mapped 11', () => {
   const K = Type.Identifier('K')
   const B = Type.KeyOf(S)
   const C = Type.Ref('K')
-  const D = Type.OptionalAddAction(Type.Index(S, Type.Ref('K')))
+  const D = Type.AddOptionalDeferred(Type.Index(S, Type.Ref('K')))
   const T: Type.TObject<{
     x: Type.TOptional<Type.TNumber>
     y: Type.TOptional<Type.TString>

@@ -11,6 +11,7 @@ Test('Should not guard Call', () => {
 Test('Should Create Call 1', () => {
   const T: Type.TCall<Type.TRef<'A'>, [Type.TString, Type.TNumber]> = Type.Call(Type.Ref('A'), [Type.String(), Type.Number()])
   Assert.IsTrue(Type.IsCall(T))
+  Assert.IsEqual(T.type, 'call')
   Assert.IsTrue(Type.IsString(T.arguments[0]))
   Assert.IsTrue(Type.IsNumber(T.arguments[1]))
 })

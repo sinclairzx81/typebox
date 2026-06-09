@@ -32,13 +32,6 @@ THE SOFTWARE.
 import { Guard } from '../../guard/index.ts'
 
 // ------------------------------------------------------------------
-// Modifiers
-// ------------------------------------------------------------------
-import { type TImmutable, IsImmutable, Immutable } from '../types/_immutable.ts'
-import { type TOptional, IsOptional, OptionalAdd, OptionalRemove, type TOptionalAdd, type TOptionalRemove } from '../types/_optional.ts'
-import { type TReadonly, IsReadonly, ReadonlyAdd, ReadonlyRemove, type TReadonlyAdd, type TReadonlyRemove } from '../types/_readonly.ts'
-
-// ------------------------------------------------------------------
 // Types
 // ------------------------------------------------------------------
 import { IsBase } from '../types/base.ts'
@@ -63,10 +56,17 @@ import { type TRef, IsRef } from '../types/ref.ts'
 import { type TRest, Rest, IsRest } from '../types/rest.ts'
 
 // ------------------------------------------------------------------
-// Modifier Actions
+// Modifier Instantiate
 // ------------------------------------------------------------------
-import { type TReadonlyAddAction, type TReadonlyRemoveAction, IsReadonlyAddAction, IsReadonlyRemoveAction } from '../action/_readonly.ts'
-import { type TOptionalAddAction, type TOptionalRemoveAction, IsOptionalAddAction, IsOptionalRemoveAction } from '../action/_optional.ts'
+import { type TAddImmutableInstantiate, AddImmutableInstantiate } from './immutable/instantiate_add.ts'
+import { type TRemoveImmutableInstantiate, RemoveImmutableInstantiate } from './immutable/instantiate_remove.ts'
+import { type TAddReadonlyInstantiate, AddReadonlyInstantiate } from './readonly/instantiate_add.ts'
+import { type TRemoveReadonlyInstantiate, RemoveReadonlyInstantiate } from './readonly/instantiate_remove.ts'
+import { type TAddOptionalInstantiate, AddOptionalInstantiate } from './optional/instantiate_add.ts'
+import { type TRemoveOptionalInstantiate, RemoveOptionalInstantiate } from './optional/instantiate_remove.ts'
+import { type TOptional, Optional, IsOptional } from '../types/_optional.ts'
+import { type TImmutable, Immutable, IsImmutable } from '../types/_immutable.ts'
+import { type TReadonly, Readonly, IsReadonly } from '../types/_readonly.ts'
 
 // ------------------------------------------------------------------
 // Instantiate
@@ -116,75 +116,18 @@ export function State<CallStack extends string[], Visited extends string[]>(call
 // ------------------------------------------------------------------
 // CanInstantiate
 // ------------------------------------------------------------------
-export type TCanInstantiate<Types extends TSchema[]> = 
+export type TCanInstantiate<Types extends TSchema[]> =
   Types extends [infer Left extends TSchema, ...infer Right extends TSchema[]]
-    ? Left extends TRef
-      ? false
-      : TCanInstantiate<Right>
-    : true
+  ? Left extends TRef
+  ? false
+  : TCanInstantiate<Right>
+  : true
 export function CanInstantiate<Types extends TSchema[]>(types: [...Types]): TCanInstantiate<Types> {
-  return Guard.TakeLeft(types, (left, right) => 
-    IsRef(left) 
-      ? false 
+  return Guard.TakeLeft(types, (left, right) =>
+    IsRef(left)
+      ? false
       : CanInstantiate(right),
     () => true
-  ) as never
-}
-// ------------------------------------------------------------------
-// ModifierActions
-// ------------------------------------------------------------------
-type ModifierAction = 'add' | 'remove' | 'none'
-
-type TModifierActions<Type extends TSchema, Readonly extends ModifierAction, Optional extends ModifierAction> = (
-  Type extends TReadonlyRemoveAction<infer Type extends TSchema> ? TModifierActions<Type, 'remove', Optional> :
-  Type extends TOptionalRemoveAction<infer Type extends TSchema> ? TModifierActions<Type, Readonly, 'remove'> :
-  Type extends TReadonlyAddAction<infer Type extends TSchema> ? TModifierActions<Type, 'add', Optional> :
-  Type extends TOptionalAddAction<infer Type extends TSchema> ? TModifierActions<Type, Readonly, 'add'> :
-  [Type, Readonly, Optional]
-)
-function ModifierActions<Type extends TSchema, Readonly extends ModifierAction, Optional extends ModifierAction>
-  (type: Type, readonly: Readonly, optional: Optional): 
-    TModifierActions<Type, Readonly, Optional> {
-  return (
-    IsReadonlyRemoveAction(type) ? ModifierActions(type.type, 'remove', optional) :
-    IsOptionalRemoveAction(type) ? ModifierActions(type.type, readonly, 'remove') :
-    IsReadonlyAddAction(type) ? ModifierActions(type.type, 'add', optional) :
-    IsOptionalAddAction(type) ? ModifierActions(type.type, readonly, 'add') :
-    [type, readonly, optional]
-  ) as never
-}
-// ------------------------------------------------------------------
-// ApplyReadonly
-// ------------------------------------------------------------------
-type TApplyReadonly<Action extends ModifierAction, Type extends TSchema> = (
-  Action extends 'remove' ? TReadonlyRemove<Type> :
-  Action extends 'add' ? TReadonlyAdd<Type> : 
-  Type
-)
-function ApplyReadonly<Action extends ModifierAction, Type extends TSchema>
-  (action: Action, type: Type): 
-    TApplyReadonly<Action, Type> {
-  return (
-    Guard.IsEqual(action, 'remove') ? ReadonlyRemove(type) :
-    Guard.IsEqual(action, 'add') ? ReadonlyAdd(type) :
-    type
-  ) as never
-}
-// ------------------------------------------------------------------
-// ApplyOptional
-// ------------------------------------------------------------------
-type TApplyOptional<Action extends ModifierAction, Type extends TSchema> = (
-  Action extends 'remove' ? TOptionalRemove<Type> :
-  Action extends 'add' ? TOptionalAdd<Type> : 
-  Type
-)
-function ApplyOptional<Action extends ModifierAction, Type extends TSchema>
-  (action: Action, type: Type): 
-    TApplyOptional<Action, Type> {
-  return (
-    Guard.IsEqual(action, 'remove') ? OptionalRemove(type) :
-    Guard.IsEqual(action, 'add') ? OptionalAdd(type) :
-    type
   ) as never
 }
 // ------------------------------------------------------------------
@@ -196,8 +139,8 @@ export type TInstantiateProperties<Context extends TProperties, State extends TS
   }
 > = Result
 export function InstantiateProperties<Context extends TProperties, State extends TState, Properties extends TProperties>
-  (context: Context, state: State, properties: TProperties): 
-    TInstantiateProperties<Context, State,Properties> {
+  (context: Context, state: State, properties: TProperties):
+  TInstantiateProperties<Context, State, Properties> {
   return Guard.Keys(properties).reduce((result, key) => {
     return { ...result, [key]: InstantiateType(context, state, properties[key] as never) as never }
   }, {}) as never
@@ -220,31 +163,39 @@ export function InstantiateElements<Context extends TProperties, State extends T
 // ------------------------------------------------------------------
 export type TInstantiateTypes<Context extends TProperties, State extends TState, Types extends TSchema[], Result extends TSchema[] = []> = (
   Types extends [infer Left extends TSchema, ...infer Right extends TSchema[]]
-    ? TInstantiateTypes<Context, State, Right, [...Result, TInstantiateType<Context, State, Left>]>
-    : Result
+  ? TInstantiateTypes<Context, State, Right, [...Result, TInstantiateType<Context, State, Left>]>
+  : Result
 )
 export function InstantiateTypes<Context extends TProperties, State extends TState, Types extends TSchema[]>
-  (context: Context, state: State, types: [...Types]): 
-    TInstantiateTypes<Context, State, Types> {
+  (context: Context, state: State, types: [...Types]):
+  TInstantiateTypes<Context, State, Types> {
   return types.map(type => InstantiateType(context, state, type) as never) as never
 }
 // ------------------------------------------------------------------
 // InstantiateDeferred
 // ------------------------------------------------------------------
 type TInstantiateDeferred<Context extends TProperties, State extends TState, Action extends string, Parameters extends TSchema[]> = (
+  // Modifier Actions
+  [Action, Parameters] extends ['AddImmutable', [infer Type extends TSchema]] ? TAddImmutableInstantiate<Context, State, Type> :
+  [Action, Parameters] extends ['RemoveImmutable', [infer Type extends TSchema]] ? TRemoveImmutableInstantiate<Context, State, Type> :
+  [Action, Parameters] extends ['AddReadonly', [infer Type extends TSchema]] ? TAddReadonlyInstantiate<Context, State, Type> :
+  [Action, Parameters] extends ['RemoveReadonly', [infer Type extends TSchema]] ? TRemoveReadonlyInstantiate<Context, State, Type> :
+  [Action, Parameters] extends ['AddOptional', [infer Type extends TSchema]] ? TAddOptionalInstantiate<Context, State, Type> :
+  [Action, Parameters] extends ['RemoveOptional', [infer Type extends TSchema]] ? TRemoveOptionalInstantiate<Context, State, Type> :
+  // Actions
   [Action, Parameters] extends ['Awaited', [infer Type extends TSchema]] ? TAwaitedInstantiate<Context, State, Type> :
   [Action, Parameters] extends ['Capitalize', [infer Type extends TSchema]] ? TCapitalizeInstantiate<Context, State, Type> :
-  [Action, Parameters] extends ['Conditional', [infer Left extends TSchema, infer Right extends TSchema, infer True extends TSchema, infer False extends TSchema]] ? TConditionalInstantiate<Context, State,Left, Right, True, False> :
+  [Action, Parameters] extends ['Conditional', [infer Left extends TSchema, infer Right extends TSchema, infer True extends TSchema, infer False extends TSchema]] ? TConditionalInstantiate<Context, State, Left, Right, True, False> :
   [Action, Parameters] extends ['ConstructorParameters', [infer Type extends TSchema]] ? TConstructorParametersInstantiate<Context, State, Type> :
   [Action, Parameters] extends ['Evaluate', [infer Type extends TSchema]] ? TEvaluateInstantiate<Context, State, Type> :
-  [Action, Parameters] extends ['Exclude', [infer Left extends TSchema, infer Right extends TSchema]] ? TExcludeInstantiate<Context, State,Left, Right> :
-  [Action, Parameters] extends ['Extract', [infer Left extends TSchema, infer Right extends TSchema]] ? TExtractInstantiate<Context, State,Left, Right> :
+  [Action, Parameters] extends ['Exclude', [infer Left extends TSchema, infer Right extends TSchema]] ? TExcludeInstantiate<Context, State, Left, Right> :
+  [Action, Parameters] extends ['Extract', [infer Left extends TSchema, infer Right extends TSchema]] ? TExtractInstantiate<Context, State, Left, Right> :
   [Action, Parameters] extends ['Index', [infer Type extends TSchema, infer Indexer extends TSchema]] ? TIndexInstantiate<Context, State, Type, Indexer> :
   [Action, Parameters] extends ['InstanceType', [infer Type extends TSchema]] ? TInstanceTypeInstantiate<Context, State, Type> :
   [Action, Parameters] extends ['Interface', [infer Heritage extends TSchema[], infer Properties extends TProperties]] ? TInterfaceInstantiate<Context, State, Heritage, Properties> :
   [Action, Parameters] extends ['KeyOf', [infer Type extends TSchema]] ? TKeyOfInstantiate<Context, State, Type> :
   [Action, Parameters] extends ['Lowercase', [infer Type extends TSchema]] ? TLowercaseInstantiate<Context, State, Type> :
-  [Action, Parameters] extends ['Mapped', [infer Name extends TIdentifier, infer Key extends TSchema, infer As extends TSchema, infer Property extends TSchema]] ? TMappedInstantiate<Context, State,Name, Key, As, Property> :
+  [Action, Parameters] extends ['Mapped', [infer Name extends TIdentifier, infer Key extends TSchema, infer As extends TSchema, infer Property extends TSchema]] ? TMappedInstantiate<Context, State, Name, Key, As, Property> :
   [Action, Parameters] extends ['Module', [infer Properties extends TProperties]] ? TModuleInstantiate<Context, State, Properties> :
   [Action, Parameters] extends ['NonNullable', [infer Type extends TSchema]] ? TNonNullableInstantiate<Context, State, Type> :
   [Action, Parameters] extends ['Pick', [infer Type extends TSchema, infer Indexer extends TSchema]] ? TPickInstantiate<Context, State, Type, Indexer> :
@@ -262,9 +213,17 @@ type TInstantiateDeferred<Context extends TProperties, State extends TState, Act
   TDeferred<Action, Parameters>
 )
 function InstantiateDeferred<Context extends TProperties, State extends TState, Action extends string, Parameters extends TSchema[]>
-  (context: Context, state: State, action: Action, parameters: [...Parameters], options: TSchemaOptions): 
-    TInstantiateDeferred<Context, State, Action, Parameters> {
+  (context: Context, state: State, action: Action, parameters: [...Parameters], options: TSchemaOptions):
+  TInstantiateDeferred<Context, State, Action, Parameters> {
   return (
+    // Modifier Actions
+    Guard.IsEqual(action, 'AddImmutable') ? AddImmutableInstantiate(context, state, parameters[0], options) :
+    Guard.IsEqual(action, 'RemoveImmutable') ? RemoveImmutableInstantiate(context, state, parameters[0], options) :
+    Guard.IsEqual(action, 'AddReadonly') ? AddReadonlyInstantiate(context, state, parameters[0], options) :
+    Guard.IsEqual(action, 'RemoveReadonly') ? RemoveReadonlyInstantiate(context, state, parameters[0], options) :
+    Guard.IsEqual(action, 'AddOptional') ? AddOptionalInstantiate(context, state, parameters[0], options) :
+    Guard.IsEqual(action, 'RemoveOptional') ? RemoveOptionalInstantiate(context, state, parameters[0], options) :
+    // Actions
     Guard.IsEqual(action, 'Awaited') ? AwaitedInstantiate(context, state, parameters[0], options) :
     Guard.IsEqual(action, 'Capitalize') ? CapitalizeInstantiate(context, state, parameters[0], options) :
     Guard.IsEqual(action, 'Conditional') ? ConditionalInstantiate(context, state, parameters[0], parameters[1], parameters[2], parameters[3], options) :
@@ -296,23 +255,17 @@ function InstantiateDeferred<Context extends TProperties, State extends TState, 
   ) as never
 }
 // ------------------------------------------------------------------
-// InstantiateType
+// InstantiateImmediate
 // ------------------------------------------------------------------
-export type TInstantiateType<Context extends TProperties, State extends TState, Input extends TSchema,
-  Immutable extends boolean = Input extends TImmutable ? true : false,
-  Modifiers extends [TSchema, ModifierAction, ModifierAction] = TModifierActions<Input, 
-    Input extends TReadonly<Input> ? 'add' : 'none', 
-    Input extends TOptional<Input> ? 'add' : 'none'
-  >,
-  Type extends TSchema = Modifiers[0],
-  Instantiated extends TSchema = (
+export type TInstantiateImmediate<Context extends TProperties, State extends TState, Type extends TSchema,
+  Result extends TSchema = (
     Type extends TRef<infer Ref extends string> ? TRefInstantiate<Context, State, Type, Ref> :
     Type extends TArray<infer Type extends TSchema> ? TArray<TInstantiateType<Context, State, Type>> :
     Type extends TAsyncIterator<infer Type extends TSchema> ? TAsyncIterator<TInstantiateType<Context, State, Type>> :
     Type extends TCall<infer Target extends TSchema, infer Parameters extends TSchema[]> ? TCallInstantiate<Context, State, Target, Parameters> :
-    Type extends TConstructor<infer Parameters extends TSchema[], infer InstanceType extends TSchema> ? TConstructor<TInstantiateTypes<Context, State,Parameters>, TInstantiateType<Context, State, InstanceType>> :
+    Type extends TConstructor<infer Parameters extends TSchema[], infer InstanceType extends TSchema> ? TConstructor<TInstantiateTypes<Context, State, Parameters>, TInstantiateType<Context, State, InstanceType>> :
     Type extends TDeferred<infer Action extends string, infer Types extends TSchema[]> ? TInstantiateDeferred<Context, State, Action, Types> :
-    Type extends TFunction<infer Parameters extends TSchema[], infer ReturnType extends TSchema> ? TFunction<TInstantiateTypes<Context, State, Parameters>, TInstantiateType<Context, State,ReturnType>> :
+    Type extends TFunction<infer Parameters extends TSchema[], infer ReturnType extends TSchema> ? TFunction<TInstantiateTypes<Context, State, Parameters>, TInstantiateType<Context, State, ReturnType>> :
     Type extends TDependent<infer If extends TSchema, infer Then extends TSchema, infer Else extends TSchema> ? TDependent<TInstantiateType<Context, State, If>, TInstantiateType<Context, State, Then>, TInstantiateType<Context, State, Else>> :
     Type extends TIntersect<infer Types extends TSchema[]> ? TIntersect<TInstantiateTypes<Context, State, Types>> :
     Type extends TIterator<infer Type extends TSchema> ? TIterator<TInstantiateType<Context, State, Type>> :
@@ -323,20 +276,13 @@ export type TInstantiateType<Context extends TProperties, State extends TState, 
     Type extends TTuple<infer Types extends TSchema[]> ? TTuple<TInstantiateElements<Context, State, Types>> :
     Type extends TUnion<infer Types extends TSchema[]> ? TUnion<TInstantiateTypes<Context, State, Types>> :
     Type
-  ),
-  WithImmutable extends TSchema = Immutable extends true ? TImmutable<Instantiated> : Instantiated,
-  WithModifiers extends TSchema = TApplyReadonly<Modifiers[1], TApplyOptional<Modifiers[2], WithImmutable>>,
-> = WithModifiers
- 
-export function InstantiateType<Context extends TProperties, State extends TState, Type extends TSchema>
-  (context: Context, state: State, input: Type): 
-    TInstantiateType<Context, State, Type> {
-  const immutable = IsImmutable(input)
-  const modifiers = ModifierActions(input, 
-    IsReadonly(input) ? 'add' : 'none', 
-    IsOptional(input) ? 'add' : 'none')
-  const type = IsBase(modifiers[0]) ? modifiers[0].Clone() : modifiers[0]
-  const instantiated = (
+  )
+> = Result
+export function InstantiateImmediate<Context extends TProperties, State extends TState, Type extends TSchema>
+  (context: Context, state: State, type: Type):
+    TInstantiateImmediate<Context, State, Type> {
+  type = (IsBase(type) ? type.Clone() : type) as Type
+  const result = (
     IsRef(type) ? RefInstantiate(context, state, type, type.$ref) :
     IsArray(type) ? _Array_(InstantiateType(context, state, type.items), ArrayOptions(type)) :
     IsAsyncIterator(type) ? AsyncIterator(InstantiateType(context, state, type.iteratorItems), AsyncIteratorOptions(type)) :
@@ -355,8 +301,33 @@ export function InstantiateType<Context extends TProperties, State extends TStat
     IsUnion(type) ? Union(InstantiateTypes(context, state, type.anyOf), UnionOptions(type)) :
     type
   )
-  const withImmutable = immutable ? Immutable(instantiated) : instantiated
-  const withModifiers = ApplyReadonly(modifiers[1], ApplyOptional(modifiers[2], withImmutable))
+  return result as never
+}
+// ------------------------------------------------------------------
+// WithModifiers
+// ------------------------------------------------------------------
+type TWithModifiers<Type extends TSchema, InstantiatedType extends TSchema,
+  WithImmutable extends TSchema = Type extends TImmutable ? TImmutable<InstantiatedType> : InstantiatedType,
+  WithReadonly extends TSchema = Type extends TReadonly ? TReadonly<WithImmutable> : WithImmutable,
+  WithOptional extends TSchema = Type extends TOptional ? TOptional<WithReadonly> : WithReadonly
+> = WithOptional
+function WithModifiers<Type extends TSchema, InstantiatedType extends TSchema>(type: Type, instantiatedType: InstantiatedType) {
+  const withImmutable = IsImmutable(type) ? Immutable(instantiatedType) : instantiatedType
+  const withReadonly = IsReadonly(type) ? Readonly(withImmutable) : withImmutable
+  const withOptional = IsOptional(type) ? Optional(withReadonly) : withReadonly
+  return withOptional as never
+}
+// ------------------------------------------------------------------
+// InstantiateType
+// ------------------------------------------------------------------
+export type TInstantiateType<Context extends TProperties, State extends TState, Type extends TSchema,
+  InstantiatedType extends TSchema = TInstantiateImmediate<Context, State, Type>,
+  WithModifiers extends TSchema = Type extends TDeferred ? InstantiatedType : TWithModifiers<Type, InstantiatedType>
+> = WithModifiers
+export function InstantiateType<Context extends TProperties, State extends TState, Type extends TSchema>
+  (context: TProperties, state: TState, type: Type): TInstantiateType<Context, State, Type> {
+  const instantiatedType = InstantiateImmediate(context, state, type)
+  const withModifiers = IsDeferred(type) ? instantiatedType : WithModifiers(type, instantiatedType)
   return withModifiers as never
 }
 // ------------------------------------------------------------------
@@ -369,6 +340,6 @@ export type TInstantiate<Context extends TProperties, Type extends TSchema> = (
 /** Instantiates computed schematics using the given context and type. */
 export function Instantiate<Context extends TProperties, Type extends TSchema>
   (context: Context, type: Type):
-    TInstantiate<Context, Type> {
+  TInstantiate<Context, Type> {
   return InstantiateType(context, State([], []), type) as never
 }

@@ -30,12 +30,12 @@ THE SOFTWARE.
 
 import { type TSchema } from '../../types/schema.ts'
 import { type TArray, Array } from '../../types/array.ts'
-import { type TImmutableAdd, Immutable } from '../../types/_immutable.ts'
+import { type TAddImmutable, AddImmutable } from '../../action/_add_immutable.ts'
 
 export type TFromArray<Type extends TSchema,
-  Result extends TSchema = TImmutableAdd<TArray<Type>>,
+  Result extends TSchema = TAddImmutable<TArray<Type>>,
 > = Result
 export function FromArray<Type extends TSchema>(type: Type): TFromArray<Type> {
-  const result = Immutable(Array(type))
+  const result = AddImmutable(Array(type))
   return result as never
 }

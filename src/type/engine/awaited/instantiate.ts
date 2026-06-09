@@ -75,5 +75,5 @@ export function AwaitedInstantiate<Context extends TProperties, State extends TS
   (context: Context, state: State, type: Type, options: TSchemaOptions): 
     TAwaitedInstantiate<Context, State, Type> {
   const instantiatedType = InstantiateType(context, state, type)
-  return AwaitedAction(instantiatedType, options)
+  return AwaitedAction(instantiatedType, options) as never
 }

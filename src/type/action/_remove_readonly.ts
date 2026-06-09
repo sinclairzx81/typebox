@@ -28,27 +28,29 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Guard } from '../../guard/index.ts'
-import { type TSchema, IsSchema } from './schema.ts'
-import { type TAddReadonly, AddReadonly } from '../action/_add_readonly.ts'
+import { type TSchema, type TSchemaOptions } from '../types/schema.ts'
+import { type TDeferred, Deferred } from '../types/deferred.ts'
+import { type TRemoveReadonlyAction, RemoveReadonlyAction } from '../engine/readonly/instantiate_remove.ts'
 
+// ------------------------------------------------------------------
+// Deferred
+// ------------------------------------------------------------------
+/** Creates a deferred RemoveReadonly action. */
+export type TRemoveReadonlyDeferred<Type extends TSchema> = (
+  TDeferred<'RemoveReadonly', [Type]>
+)
+/** Creates a deferred RemoveReadonly action. */
+export function RemoveReadonlyDeferred<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TRemoveReadonlyDeferred<Type> {
+  return Deferred('RemoveReadonly', [type], options)
+}
 // ------------------------------------------------------------------
 // Type
 // ------------------------------------------------------------------
-export type TReadonly<Type extends TSchema = TSchema> = (
-  Type & { '~readonly': true }
+/** Applies an RemoveReadonly action to a type. */
+export type TRemoveReadonly<Type extends TSchema> = (
+  TRemoveReadonlyAction<Type>
 )
-// ------------------------------------------------------------------
-// Factory
-// ------------------------------------------------------------------
-/** Applies an Readonly property modifier to the given type. */
-export function Readonly<Type extends TSchema>(type: Type): TAddReadonly<Type> {
-  return AddReadonly(type) as never
-}
-// ------------------------------------------------------------------
-// Guard
-// ------------------------------------------------------------------
-/** Returns true if the given value is a TReadonly */
-export function IsReadonly(value: unknown): value is TReadonly<TSchema> {
-  return IsSchema(value) && Guard.HasPropertyKey(value, '~readonly')
+/** Applies an RemoveReadonly action to a type. */
+export function RemoveReadonly<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TRemoveReadonly<Type> {
+  return RemoveReadonlyAction(type, options)
 }

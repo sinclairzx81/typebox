@@ -121,7 +121,7 @@ export function CapitalizeInstantiate<Context extends TProperties, State extends
   (context: Context, state: State, type: Type, options: TSchemaOptions):
     TCapitalizeInstantiate<Context, State, Type> {
   const instantiatedType = InstantiateType(context, state, type)
-  return CapitalizeAction(instantiatedType, options)
+  return CapitalizeAction(instantiatedType, options) as never
 }
 
 export type TLowercaseInstantiate<Context extends TProperties, State extends TState, Type extends TSchema,
@@ -131,7 +131,7 @@ export function LowercaseInstantiate<Context extends TProperties, State extends 
   (context: Context, state: State, type: Type, options: TSchemaOptions):
     TLowercaseInstantiate<Context, State, Type> {
   const instantiatedType = InstantiateType(context, state, type)
-  return LowercaseAction(instantiatedType, options)
+  return LowercaseAction(instantiatedType, options) as never
 }
 
 export type TUncapitalizeInstantiate<Context extends TProperties, State extends TState, Type extends TSchema,
@@ -141,7 +141,7 @@ export function UncapitalizeInstantiate<Context extends TProperties, State exten
   (context: Context, state: State, type: Type, options: TSchemaOptions):
     TUncapitalizeInstantiate<Context, State, Type> {
   const instantiatedType = InstantiateType(context, state, type)
-  return UncapitalizeAction(instantiatedType, options)
+  return UncapitalizeAction(instantiatedType, options) as never
 }
 
 export type TUppercaseInstantiate<Context extends TProperties, State extends TState, Type extends TSchema,
@@ -151,5 +151,5 @@ export function UppercaseInstantiate<Context extends TProperties, State extends 
   (context: Context, state: State, type: Type, options: TSchemaOptions):
     TUppercaseInstantiate<Context, State, Type> {
   const instantiatedType = InstantiateType(context, state, type)
-  return UppercaseAction(instantiatedType, options)
+  return UppercaseAction(instantiatedType, options) as never
 }

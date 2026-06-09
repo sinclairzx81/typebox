@@ -94,5 +94,5 @@ export function IndexInstantiate<Context extends TProperties, State extends TSta
     TIndexInstantiate<Context, State, Type, Indexer> {
   const instantiatedType = InstantiateType(context, state, type)
   const instantiatedIndexer = InstantiateType(context, state, indexer)
-  return IndexAction(instantiatedType, instantiatedIndexer, options)
+  return IndexAction(instantiatedType, instantiatedIndexer, options) as never
 }

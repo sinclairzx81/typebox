@@ -65,5 +65,5 @@ export function RecordInstantiate<Context extends TProperties, State extends TSt
     TRecordInstantiate<Context, State, Key, Value> {
   const instantiatedKey = InstantiateType(context, state, key)
   const instantiatedValue = InstantiateType(context, state, value)
-  return RecordAction(instantiatedKey, instantiatedValue, options)
+  return RecordAction(instantiatedKey, instantiatedValue, options) as never
 }

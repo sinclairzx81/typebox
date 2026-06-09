@@ -25,8 +25,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
-export * from './_optional.ts'
-export * from './_readonly.ts'
+
+export * from './_add_immutable.ts'
+export * from './_remove_immutable.ts'
+export * from './_add_readonly.ts'
+export * from './_remove_readonly.ts'
+export * from './_add_optional.ts'
+export * from './_remove_optional.ts'
 
 export * from './awaited.ts'
 export * from './capitalize.ts'

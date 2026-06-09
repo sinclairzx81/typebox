@@ -31,36 +31,38 @@ THE SOFTWARE.
 import { Memory } from '../../../system/memory/index.ts'
 import { type TSchema, type TSchemaOptions } from '../../types/schema.ts'
 import { type TProperties } from '../../types/properties.ts'
-import { type TPartialDeferred, PartialDeferred } from '../../action/partial.ts'
-import { type TFromType, FromType } from './from_type.ts'
-import { type TState, type TInstantiateType, InstantiateType, type TCanInstantiate, CanInstantiate } from '../instantiate.ts'
+import { type TOptional } from '../../types/_optional.ts'
+import { type TState, type TInstantiateType, InstantiateType } from '../instantiate.ts'
 
+// ------------------------------------------------------------------
+// Operation
+// ------------------------------------------------------------------
+type TRemoveOptionalOperation<Type extends TSchema,
+  Result extends TSchema = Type extends TOptional<infer Type extends TSchema> ? Type : Type
+> = Result
+function RemoveOptionalOperation<Type extends TSchema>(type: Type): TRemoveOptionalOperation<Type> {
+  return Memory.Discard(type, ['~optional']) as never
+}
 // ------------------------------------------------------------------
 // Action
 // ------------------------------------------------------------------
-export type TPartialAction<Type extends TSchema,
-  Result extends TSchema = TCanInstantiate<[Type]> extends true
-    ? TFromType<Type>
-    : TPartialDeferred<Type>
+export type TRemoveOptionalAction<Type extends TSchema,
+  Result extends TSchema = TRemoveOptionalOperation<Type>
 > = Result
-export function PartialAction<Type extends TSchema>
-  (type: Type, options: TSchemaOptions): 
-    TPartialAction<Type> {
-  const result = CanInstantiate([type])
-    ? Memory.Update(FromType(type), {}, options) 
-    : PartialDeferred(type, options)
+export function RemoveOptionalAction<Type extends TSchema>(type: Type, options: TSchemaOptions): TRemoveOptionalAction<Type> {
+  const result = Memory.Update(RemoveOptionalOperation(type), {}, options)
   return result as never
 }
 // ------------------------------------------------------------------
 // Instantiate
 // ------------------------------------------------------------------
-export type TPartialInstantiate<Context extends TProperties, State extends TState, Type extends TSchema,
-  InstantiatedType extends TSchema = TInstantiateType<Context, State, Type>
-> = TPartialAction<InstantiatedType>
+export type TRemoveOptionalInstantiate<Context extends TProperties, State extends TState, Type extends TSchema,
+  InstantiateType extends TSchema = TInstantiateType<Context, State, Type>
+> = TRemoveOptionalAction<InstantiateType>
 
-export function PartialInstantiate<Context extends TProperties, State extends TState, Type extends TSchema>
+export function RemoveOptionalInstantiate<Context extends TProperties, State extends TState, Type extends TSchema>
   (context: Context, state: State, type: Type, options: TSchemaOptions): 
-    TPartialInstantiate<Context, State, Type> {
+    TRemoveOptionalInstantiate<Context, State, Type> {
   const instantiatedType = InstantiateType(context, state, type)
-  return PartialAction(instantiatedType, options) as never
+  return RemoveOptionalAction(instantiatedType, options) as never
 }

@@ -64,5 +64,5 @@ export function OmitInstantiate<Context extends TProperties, State extends TStat
   TOmitInstantiate<Context, State, Type, Indexer> {
   const instantiatedType = InstantiateType(context, state, type)
   const instantiatedIndexer = InstantiateType(context, state, indexer)
-  return OmitAction(instantiatedType, instantiatedIndexer, options)
+  return OmitAction(instantiatedType, instantiatedIndexer, options) as never
 }

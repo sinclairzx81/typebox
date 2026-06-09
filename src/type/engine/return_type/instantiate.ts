@@ -75,5 +75,5 @@ export function ReturnTypeInstantiate<Context extends TProperties, State extends
   (context: Context, state: State, type: Type, options: TSchemaOptions = {}): 
     TReturnTypeInstantiate<Context, State, Type> {
   const instantiatedType = InstantiateType(context, state, type)
-  return ReturnTypeAction(instantiatedType, options)
+  return ReturnTypeAction(instantiatedType, options) as never
 }

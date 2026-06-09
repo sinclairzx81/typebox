@@ -85,5 +85,5 @@ export function ConstructorParametersInstantiate<Context extends TProperties, St
   (context: Context, state: State, type: Type, options: TSchemaOptions): 
     TConstructorParametersInstantiate<Context, State, Type> {
   const instantiatedType = InstantiateType(context, state, type)
-  return ConstructorParametersAction(instantiatedType, options)
+  return ConstructorParametersAction(instantiatedType, options) as never
 }

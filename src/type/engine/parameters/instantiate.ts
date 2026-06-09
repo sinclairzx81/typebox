@@ -87,5 +87,5 @@ export function ParametersInstantiate<Context extends TProperties, State extends
   (context: Context, state: State, type: Type, options: TSchemaOptions): 
     TParametersInstantiate<Context, State, Type> {
   const instantiatedType = InstantiateType(context, state, type)
-  return ParametersAction(instantiatedType, options)
+  return ParametersAction(instantiatedType, options) as never
 }
