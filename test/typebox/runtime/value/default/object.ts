@@ -354,3 +354,40 @@ Test('Should Default 32', () => {
   const R = Value.Default(T, {})
   Assert.IsEqual(R, { id: undefined }) // pick first union match
 })
+// ------------------------------------------------------------------
+// Factory Default: Should be called exactly once per absent property
+// ------------------------------------------------------------------
+Test('Should Default 33', () => {
+  let calls = 0
+  const T = Type.Object({
+    x: Type.String({
+      default: () => {
+        calls++
+        return `v${calls}`
+      }
+    })
+  })
+  const R = Value.Default(T, {})
+  Assert.IsEqual(calls, 1)
+  Assert.IsEqual(R, { x: 'v1' })
+})
+Test('Should Default 34', () => {
+  let calls = 0
+  const T = Type.Object({
+    x: Type.String({
+      default: () => {
+        calls++
+        return `v${calls}`
+      }
+    }),
+    y: Type.Number({
+      default: () => {
+        calls++
+        return calls
+      }
+    })
+  })
+  const R = Value.Default(T, {})
+  Assert.IsEqual(calls, 2)
+  Assert.IsEqual(R, { x: 'v1', y: 2 })
+})

@@ -49,7 +49,7 @@ export function FromObject(context: TProperties, type: TObject, value: unknown):
     if (isUnassignableUndefined) continue
 
     // Assign
-    value[key] = FromType(context, type.properties[key], value[key])
+    value[key] = propertyValue
   }
   // return if not additional properties
   if (!IsAdditionalProperties(type) || Guard.IsBoolean(type.additionalProperties)) return value
