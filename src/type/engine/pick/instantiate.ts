@@ -64,5 +64,5 @@ export function PickInstantiate<Context extends TProperties, State extends TStat
     TPickInstantiate<Context, State, Type, Indexer> {
   const instantiatedType = InstantiateType(context, state, type)
   const instantiatedIndexer = InstantiateType(context, state, indexer)
-  return PickAction(instantiatedType, instantiatedIndexer, options)
+  return PickAction(instantiatedType, instantiatedIndexer, options) as never
 }

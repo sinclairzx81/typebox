@@ -28,32 +28,10 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Memory } from '../../system/memory/index.ts'
 import { Guard } from '../../guard/index.ts'
 import { type TSchema, IsSchema } from './schema.ts'
+import { type TAddImmutable, AddImmutable } from '../action/_add_immutable.ts'
 
-// ------------------------------------------------------------------
-// ImmutableRemove
-// ------------------------------------------------------------------
-/** Removes Immutable from the given type. */
-export type TImmutableRemove<Type extends TSchema,
-  Result extends TSchema = Type extends TImmutable<infer Type extends TSchema> ? Type : Type
-> = Result
-/** Removes Immutable from the given type. */
-export function ImmutableRemove<Type extends TSchema>(type: Type): TImmutableRemove<Type> {
-  return Memory.Discard(type, ['~immutable']) as never
-}
-// ------------------------------------------------------------------
-// ImmutableAdd
-// ------------------------------------------------------------------
-/** Adds Immutable to the given type. */
-export type TImmutableAdd<Type extends TSchema = TSchema> = (
-  '~immutable' extends keyof Type ? Type : TImmutable<Type>
-)
-/** Adds Immutable to the given type. */
-export function ImmutableAdd<Type extends TSchema>(type: Type): TImmutableAdd<Type> {
-  return Memory.Update(type, { '~immutable': true }, { }) as never
-}
 // ------------------------------------------------------------------
 // Type
 // ------------------------------------------------------------------
@@ -64,8 +42,8 @@ export type TImmutable<Type extends TSchema = TSchema> = (
 // Factory
 // ------------------------------------------------------------------
 /** Applies an Immutable modifier to the given type. */
-export function Immutable<Type extends TSchema>(type: Type): TImmutableAdd<Type> {
-  return ImmutableAdd(type) as never
+export function Immutable<Type extends TSchema>(type: Type): TAddImmutable<Type> {
+  return AddImmutable(type) as never
 }
 // ------------------------------------------------------------------
 // Guard

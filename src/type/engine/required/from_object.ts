@@ -31,16 +31,16 @@ THE SOFTWARE.
 import { Guard } from '../../../guard/index.ts'
 import { type TSchema } from '../../types/schema.ts'
 import { type TObject, Object } from '../../types/object.ts'
-import { type TOptionalRemove, OptionalRemove } from '../../types/_optional.ts'
+import { type TRemoveOptional, RemoveOptional } from '../../action/_remove_optional.ts'
 import { type TProperties } from '../../types/properties.ts'
 
 export type TFromObject<Properties extends TProperties,
-  Mapped extends TProperties = { [Key in keyof Properties]: TOptionalRemove<Properties[Key]> },
+  Mapped extends TProperties = { [Key in keyof Properties]: TRemoveOptional<Properties[Key]> },
   Result extends TSchema = TObject<Mapped>
 > = Result
 export function FromObject<Properties extends TProperties>(properties: Properties): TFromObject<Properties> {
   const mapped = Guard.Keys(properties).reduce((result, left) => {
-    return { ...result, [left]: OptionalRemove(properties[left]) }
+    return { ...result, [left]: RemoveOptional(properties[left]) }
   }, {} as TProperties)
   const result = Object(mapped)
   return result as never

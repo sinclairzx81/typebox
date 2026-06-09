@@ -28,27 +28,29 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Guard } from '../../guard/index.ts'
-import { type TSchema, IsSchema } from './schema.ts'
-import { type TAddReadonly, AddReadonly } from '../action/_add_readonly.ts'
+import { type TSchema, type TSchemaOptions } from '../types/schema.ts'
+import { type TDeferred, Deferred } from '../types/deferred.ts'
+import { type TRemoveImmutableAction, RemoveImmutableAction } from '../engine/immutable/instantiate_remove.ts'
 
+// ------------------------------------------------------------------
+// Deferred
+// ------------------------------------------------------------------
+/** Creates a deferred RemoveImmutable action. */
+export type TRemoveImmutableDeferred<Type extends TSchema> = (
+  TDeferred<'RemoveImmutable', [Type]>
+)
+/** Creates a deferred RemoveImmutable action. */
+export function RemoveImmutableDeferred<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TRemoveImmutableDeferred<Type> {
+  return Deferred('RemoveImmutable', [type], options)
+}
 // ------------------------------------------------------------------
 // Type
 // ------------------------------------------------------------------
-export type TReadonly<Type extends TSchema = TSchema> = (
-  Type & { '~readonly': true }
+/** Applies an RemoveImmutable action to a type. */
+export type TRemoveImmutable<Type extends TSchema> = (
+  TRemoveImmutableAction<Type>
 )
-// ------------------------------------------------------------------
-// Factory
-// ------------------------------------------------------------------
-/** Applies an Readonly property modifier to the given type. */
-export function Readonly<Type extends TSchema>(type: Type): TAddReadonly<Type> {
-  return AddReadonly(type) as never
-}
-// ------------------------------------------------------------------
-// Guard
-// ------------------------------------------------------------------
-/** Returns true if the given value is a TReadonly */
-export function IsReadonly(value: unknown): value is TReadonly<TSchema> {
-  return IsSchema(value) && Guard.HasPropertyKey(value, '~readonly')
+/** Applies an RemoveImmutable action to a type. */
+export function RemoveImmutable<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TRemoveImmutable<Type> {
+  return RemoveImmutableAction(type, options)
 }

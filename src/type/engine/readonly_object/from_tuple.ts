@@ -30,12 +30,12 @@ THE SOFTWARE.
 
 import { type TSchema } from '../../types/schema.ts'
 import { type TTuple, Tuple } from '../../types/tuple.ts'
-import { type TImmutableAdd, Immutable } from '../../types/_immutable.ts'
+import { type TAddImmutable, AddImmutable } from '../../action/_add_immutable.ts'
 
 export type TFromTuple<Types extends TSchema[],
-  Result extends TSchema = TImmutableAdd<TTuple<Types>>,
+  Result extends TSchema = TAddImmutable<TTuple<Types>>,
 > = Result
 export function FromTuple<Types extends TSchema[]>(types: [...Types]): TFromTuple<Types> {
-  const result = Immutable(Tuple(types))
+  const result = AddImmutable(Tuple(types))
   return result as never
 }

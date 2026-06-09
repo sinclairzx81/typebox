@@ -31,8 +31,8 @@ THE SOFTWARE.
 
 import { Memory } from '../../system/memory/index.ts'
 import { Guard } from '../../guard/index.ts'
-import * as C from '../action/index.ts'
 import * as T from '../types/index.ts'
+import * as S from '../action/index.ts'
 
 // ------------------------------------------------------------------
 // IntrinsicOrCall
@@ -42,27 +42,27 @@ type TIntrinsicOrCall<Target extends string, Parameters extends T.TSchema[]> = (
   [Target, Parameters] extends ['AsyncIterator', [infer Type extends T.TSchema]] ? T.TAsyncIterator<Type> :
   [Target, Parameters] extends ['Promise', [infer Type extends T.TSchema]] ? T.TPromise<Type> :
   [Target, Parameters] extends ['Iterator', [infer Type extends T.TSchema]] ? T.TIterator<Type> :
-  [Target, Parameters] extends ['Awaited', [infer Type extends T.TSchema]] ? C.TAwaitedDeferred<Type> :
-  [Target, Parameters] extends ['Capitalize', [infer Type extends T.TSchema]] ? C.TCapitalizeDeferred<Type> :
-  [Target, Parameters] extends ['ConstructorParameters', [infer Type extends T.TSchema]] ? C.TConstructorParametersDeferred<Type> :
-  [Target, Parameters] extends ['Evaluate', [infer Type extends T.TSchema]] ? C.TEvaluateDeferred<Type> :
-  [Target, Parameters] extends ['Exclude', [infer Left extends T.TSchema, infer Right extends T.TSchema]] ? C.TExcludeDeferred<Left, Right> :
-  [Target, Parameters] extends ['Extract', [infer Left extends T.TSchema, infer Right extends T.TSchema]] ? C.TExtractDeferred<Left, Right> :
-  [Target, Parameters] extends ['Index', [infer Type extends T.TSchema, infer Indexer extends T.TSchema]] ? C.TIndexDeferred<Type, Indexer> :
-  [Target, Parameters] extends ['InstanceType', [infer Type extends T.TSchema]] ? C.TInstanceTypeDeferred<Type> :
-  [Target, Parameters] extends ['KeyOf', [infer Type extends T.TSchema]] ? C.TKeyOfDeferred<Type> :
-  [Target, Parameters] extends ['Lowercase', [infer Type extends T.TSchema]] ? C.TLowercaseDeferred<Type> :
-  [Target, Parameters] extends ['NonNullable', [infer Type extends T.TSchema]] ? C.TNonNullableDeferred<Type> :
-  [Target, Parameters] extends ['Omit', [infer Type extends T.TSchema, infer Indexer extends T.TSchema]] ? C.TOmitDeferred<Type, Indexer> :
-  [Target, Parameters] extends ['Parameters', [infer Type extends T.TSchema]] ? C.TParametersDeferred<Type> :
-  [Target, Parameters] extends ['Partial', [infer Type extends T.TSchema]] ? C.TPartialDeferred<Type> :
-  [Target, Parameters] extends ['Pick', [infer Type extends T.TSchema, infer Indexer extends T.TSchema]] ? C.TPickDeferred<Type, Indexer> :
-  [Target, Parameters] extends ['Readonly', [infer Type extends T.TSchema]] ? C.TReadonlyObjectDeferred<Type> :
+  [Target, Parameters] extends ['Awaited', [infer Type extends T.TSchema]] ? S.TAwaitedDeferred<Type> :
+  [Target, Parameters] extends ['Capitalize', [infer Type extends T.TSchema]] ? S.TCapitalizeDeferred<Type> :
+  [Target, Parameters] extends ['ConstructorParameters', [infer Type extends T.TSchema]] ? S.TConstructorParametersDeferred<Type> :
+  [Target, Parameters] extends ['Evaluate', [infer Type extends T.TSchema]] ? S.TEvaluateDeferred<Type> :
+  [Target, Parameters] extends ['Exclude', [infer Left extends T.TSchema, infer Right extends T.TSchema]] ? S.TExcludeDeferred<Left, Right> :
+  [Target, Parameters] extends ['Extract', [infer Left extends T.TSchema, infer Right extends T.TSchema]] ? S.TExtractDeferred<Left, Right> :
+  [Target, Parameters] extends ['Index', [infer Type extends T.TSchema, infer Indexer extends T.TSchema]] ? S.TIndexDeferred<Type, Indexer> :
+  [Target, Parameters] extends ['InstanceType', [infer Type extends T.TSchema]] ? S.TInstanceTypeDeferred<Type> :
+  [Target, Parameters] extends ['KeyOf', [infer Type extends T.TSchema]] ? S.TKeyOfDeferred<Type> :
+  [Target, Parameters] extends ['Lowercase', [infer Type extends T.TSchema]] ? S.TLowercaseDeferred<Type> :
+  [Target, Parameters] extends ['NonNullable', [infer Type extends T.TSchema]] ? S.TNonNullableDeferred<Type> :
+  [Target, Parameters] extends ['Omit', [infer Type extends T.TSchema, infer Indexer extends T.TSchema]] ? S.TOmitDeferred<Type, Indexer> :
+  [Target, Parameters] extends ['Parameters', [infer Type extends T.TSchema]] ? S.TParametersDeferred<Type> :
+  [Target, Parameters] extends ['Partial', [infer Type extends T.TSchema]] ? S.TPartialDeferred<Type> :
+  [Target, Parameters] extends ['Pick', [infer Type extends T.TSchema, infer Indexer extends T.TSchema]] ? S.TPickDeferred<Type, Indexer> :
+  [Target, Parameters] extends ['Readonly', [infer Type extends T.TSchema]] ? S.TReadonlyObjectDeferred<Type> :
   [Target, Parameters] extends ['Record', [infer Key extends T.TSchema, infer Value extends T.TSchema]] ? T.TRecordDeferred<Key, Value> :
-  [Target, Parameters] extends ['Required', [infer Type extends T.TSchema]] ? C.TRequiredDeferred<Type> :
-  [Target, Parameters] extends ['ReturnType', [infer Type extends T.TSchema]] ? C.TReturnTypeDeferred<Type> :
-  [Target, Parameters] extends ['Uncapitalize', [infer Type extends T.TSchema]] ? C.TUncapitalizeDeferred<Type> :
-  [Target, Parameters] extends ['Uppercase', [infer Type extends T.TSchema]] ? C.TUppercaseDeferred<Type> :
+  [Target, Parameters] extends ['Required', [infer Type extends T.TSchema]] ? S.TRequiredDeferred<Type> :
+  [Target, Parameters] extends ['ReturnType', [infer Type extends T.TSchema]] ? S.TReturnTypeDeferred<Type> :
+  [Target, Parameters] extends ['Uncapitalize', [infer Type extends T.TSchema]] ? S.TUncapitalizeDeferred<Type> :
+  [Target, Parameters] extends ['Uppercase', [infer Type extends T.TSchema]] ? S.TUppercaseDeferred<Type> :
   T.TCallConstruct<T.TRef<Target>, Parameters>
 )
 function IntrinsicOrCall<Ref extends string, Parameters extends T.TSchema[]>(ref: Ref, parameters: [...Parameters]): TIntrinsicOrCall<Ref, Parameters> {
@@ -74,27 +74,27 @@ function IntrinsicOrCall<Ref extends string, Parameters extends T.TSchema[]>(ref
     Guard.IsEqual(ref, 'AsyncIterator') ? T.AsyncIterator(parameters[0]) :
     Guard.IsEqual(ref, 'Iterator') ? T.Iterator(parameters[0]) :
     Guard.IsEqual(ref, 'Promise') ? T.Promise(parameters[0]) :
-    Guard.IsEqual(ref, 'Awaited') ? C.AwaitedDeferred(parameters[0]) :
-    Guard.IsEqual(ref, 'Capitalize') ? C.CapitalizeDeferred(parameters[0]) :
-    Guard.IsEqual(ref, 'ConstructorParameters') ? C.ConstructorParametersDeferred(parameters[0]) :
-    Guard.IsEqual(ref, 'Evaluate') ? C.EvaluateDeferred(parameters[0]) :
-    Guard.IsEqual(ref, 'Exclude') ? C.ExcludeDeferred(parameters[0], parameters[1]) :
-    Guard.IsEqual(ref, 'Extract') ? C.ExtractDeferred(parameters[0], parameters[1]) :
-    Guard.IsEqual(ref, 'Index') ? C.IndexDeferred(parameters[0], parameters[1]) :
-    Guard.IsEqual(ref, 'InstanceType') ? C.InstanceTypeDeferred(parameters[0]) :
-    Guard.IsEqual(ref, 'Lowercase') ? C.LowercaseDeferred(parameters[0]) :
-    Guard.IsEqual(ref, 'NonNullable') ? C.NonNullableDeferred(parameters[0]) :
-    Guard.IsEqual(ref, 'Omit') ? C.OmitDeferred(parameters[0], parameters[1]) :
-    Guard.IsEqual(ref, 'Parameters') ? C.ParametersDeferred(parameters[0]) :
-    Guard.IsEqual(ref, 'Partial') ? C.PartialDeferred(parameters[0]) :
-    Guard.IsEqual(ref, 'Pick') ? C.PickDeferred(parameters[0], parameters[1]) :
-    Guard.IsEqual(ref, 'Readonly') ? C.ReadonlyObjectDeferred(parameters[0]) :
-    Guard.IsEqual(ref, 'KeyOf') ? C.KeyOfDeferred(parameters[0]) :
+    Guard.IsEqual(ref, 'Awaited') ? S.AwaitedDeferred(parameters[0]) :
+    Guard.IsEqual(ref, 'Capitalize') ? S.CapitalizeDeferred(parameters[0]) :
+    Guard.IsEqual(ref, 'ConstructorParameters') ? S.ConstructorParametersDeferred(parameters[0]) :
+    Guard.IsEqual(ref, 'Evaluate') ? S.EvaluateDeferred(parameters[0]) :
+    Guard.IsEqual(ref, 'Exclude') ? S.ExcludeDeferred(parameters[0], parameters[1]) :
+    Guard.IsEqual(ref, 'Extract') ? S.ExtractDeferred(parameters[0], parameters[1]) :
+    Guard.IsEqual(ref, 'Index') ? S.IndexDeferred(parameters[0], parameters[1]) :
+    Guard.IsEqual(ref, 'InstanceType') ? S.InstanceTypeDeferred(parameters[0]) :
+    Guard.IsEqual(ref, 'Lowercase') ? S.LowercaseDeferred(parameters[0]) :
+    Guard.IsEqual(ref, 'NonNullable') ? S.NonNullableDeferred(parameters[0]) :
+    Guard.IsEqual(ref, 'Omit') ? S.OmitDeferred(parameters[0], parameters[1]) :
+    Guard.IsEqual(ref, 'Parameters') ? S.ParametersDeferred(parameters[0]) :
+    Guard.IsEqual(ref, 'Partial') ? S.PartialDeferred(parameters[0]) :
+    Guard.IsEqual(ref, 'Pick') ? S.PickDeferred(parameters[0], parameters[1]) :
+    Guard.IsEqual(ref, 'Readonly') ? S.ReadonlyObjectDeferred(parameters[0]) :
+    Guard.IsEqual(ref, 'KeyOf') ? S.KeyOfDeferred(parameters[0]) :
     Guard.IsEqual(ref, 'Record') ? T.RecordDeferred(parameters[0], parameters[1]) :
-    Guard.IsEqual(ref, 'Required') ? C.RequiredDeferred(parameters[0]) :
-    Guard.IsEqual(ref, 'ReturnType') ? C.ReturnTypeDeferred(parameters[0]) :
-    Guard.IsEqual(ref, 'Uncapitalize') ? C.UncapitalizeDeferred(parameters[0]) :
-    Guard.IsEqual(ref, 'Uppercase') ? C.UppercaseDeferred(parameters[0]) :
+    Guard.IsEqual(ref, 'Required') ? S.RequiredDeferred(parameters[0]) :
+    Guard.IsEqual(ref, 'ReturnType') ? S.ReturnTypeDeferred(parameters[0]) :
+    Guard.IsEqual(ref, 'Uncapitalize') ? S.UncapitalizeDeferred(parameters[0]) :
+    Guard.IsEqual(ref, 'Uppercase') ? S.UppercaseDeferred(parameters[0]) :
     T.CallConstruct(T.Ref(ref), parameters)
   ) as never
   // deno-coverage-ignore-stop
@@ -554,25 +554,25 @@ export function WithMapping(input: [unknown, unknown] | []): unknown {
 // -------------------------------------------------------------------
 type TFactorIndexArray<Type extends T.TSchema, IndexArray extends unknown[]> = (
   IndexArray extends [infer Left extends T.TSchema[], ...infer Right extends unknown[]] ? (
-    Left extends [infer Indexer extends T.TSchema] ? TFactorIndexArray<C.TIndexDeferred<Type, Indexer>, Right> :
+    Left extends [infer Indexer extends T.TSchema] ? TFactorIndexArray<S.TIndexDeferred<Type, Indexer>, Right> :
     Left extends [] ? TFactorIndexArray<T.TArray<Type>, Right> :
     T.TNever
   ) : Type
 )
 type TFactorExtends<Type extends T.TSchema, Extends extends unknown[]> = (
   Extends extends [infer Right extends T.TSchema, infer True extends T.TSchema, infer False extends T.TSchema]
-  ? C.TConditionalDeferred<Type, Right, True, False>
+  ? S.TConditionalDeferred<Type, Right, True, False>
   : Type
 )
 type TFactorWith<Type extends T.TSchema, With extends unknown> = (
   With extends Record<PropertyKey, unknown>
-    ? C.TWithDeferred<Type, With>
+    ? S.TWithDeferred<Type, With>
     : Type
 )
 export type TFactorMapping<Input extends [unknown, unknown, unknown, unknown, unknown]> = (
   Input extends [infer KeyOf extends boolean, infer Type extends T.TSchema, infer IndexArray extends unknown[], infer Extend extends unknown[], infer WithClause extends unknown]
     ? TFactorWith<KeyOf extends true
-        ? TFactorExtends<C.TKeyOfDeferred<TFactorIndexArray<Type, IndexArray>>, Extend>
+        ? TFactorExtends<S.TKeyOfDeferred<TFactorIndexArray<Type, IndexArray>>, Extend>
         : TFactorExtends<TFactorIndexArray<Type, IndexArray>, Extend>
       , WithClause>
     : never
@@ -582,7 +582,7 @@ function FactorIndexArray(Type: T.TSchema, indexArray: unknown[]): T.TSchema {
   return indexArray.reduce<T.TSchema>((result, left) => {
     const _left = left as T.TSchema[]
     return (
-      Guard.IsEqual(_left.length, 1) ? C.IndexDeferred(result, _left[0]) :
+      Guard.IsEqual(_left.length, 1) ? S.IndexDeferred(result, _left[0]) :
       Guard.IsEqual(_left.length, 0) ? T.Array(result) :
       Unreachable()
     )
@@ -591,18 +591,18 @@ function FactorIndexArray(Type: T.TSchema, indexArray: unknown[]): T.TSchema {
 // deno-coverage-ignore-stop
 function FactorExtends(type: T.TSchema, extend: T.TSchema[]): T.TSchema {
   return Guard.IsEqual(extend.length, 3)
-    ? C.ConditionalDeferred(type, extend[0], extend[1], extend[2])
+    ? S.ConditionalDeferred(type, extend[0], extend[1], extend[2])
     : type
 }
 function FactorWith(type: T.TSchema, withClause: unknown): T.TSchema {
   return Guard.IsArray(withClause) && Guard.IsEqual(withClause.length, 0)
     ? type
-    : C.WithDeferred(type, withClause as T.TSchema)
+    : S.WithDeferred(type, withClause as T.TSchema)
 }
 export function FactorMapping(input: [unknown, unknown, unknown, unknown, unknown]): unknown {
   const [keyOf, type, indexArray, extend, withClause] = input as [boolean, T.TSchema, unknown[], T.TSchema[], unknown]
   return FactorWith(keyOf
-    ? FactorExtends(C.KeyOfDeferred(FactorIndexArray(type, indexArray)), extend)
+    ? FactorExtends(S.KeyOfDeferred(FactorIndexArray(type, indexArray)), extend)
     : FactorExtends(FactorIndexArray(type, indexArray), extend), withClause)
 }
 // ------------------------------------------------------------------
@@ -700,11 +700,11 @@ export function ExprMapping(input: [unknown, unknown]): unknown {
 // -------------------------------------------------------------------
 export type TExprReadonlyMapping<Input extends [unknown, unknown]> = (
   Input extends ['readonly', infer Type extends T.TSchema]
-    ? T.TImmutableAdd<Type>
+    ? S.TAddImmutableDeferred<Type>
     : never
 )
 export function ExprReadonlyMapping(input: [unknown, unknown]): unknown {
-  return T.ImmutableAdd(input[1] as T.TSchema)
+  return S.AddImmutableDeferred(input[1] as T.TSchema)
 }
 // -------------------------------------------------------------------
 // ExprPipe: ['|', Expr]
@@ -835,9 +835,9 @@ export function OptionalMapping(input: [unknown] | []): unknown {
 export type TPropertyMapping<Input extends [unknown, unknown, unknown, unknown, unknown]> = (
   Input extends [infer IsReadonly extends boolean, infer Key extends string, infer IsOptional extends boolean, string, infer Type extends T.TSchema] ? {
     [_ in Key]: (
-      [IsReadonly, IsOptional] extends [true, true] ? T.TReadonlyAdd<T.TOptionalAdd<Type>> :
-      [IsReadonly, IsOptional] extends [true, false] ? T.TReadonlyAdd<Type> :
-      [IsReadonly, IsOptional] extends [false, true] ? T.TOptionalAdd<Type> :
+      [IsReadonly, IsOptional] extends [true, true] ? S.TAddReadonlyDeferred<S.TAddOptionalDeferred<Type>> :
+      [IsReadonly, IsOptional] extends [true, false] ? S.TAddReadonlyDeferred<Type> :
+      [IsReadonly, IsOptional] extends [false, true] ? S.TAddOptionalDeferred<Type> :
       Type
     )
   } : never
@@ -846,9 +846,9 @@ export function PropertyMapping(input: [unknown, unknown, unknown, unknown, unkn
   const [isReadonly, key, isOptional, _colon, type] = input as [boolean, string, boolean, ':', T.TSchema]
   return {
     [key]: (
-      isReadonly && isOptional ? T.ReadonlyAdd(T.OptionalAdd(type)) :
-      isReadonly && !isOptional ? T.ReadonlyAdd(type) :
-      !isReadonly && isOptional ? T.OptionalAdd(type) :
+      isReadonly && isOptional ? S.AddReadonlyDeferred(S.AddOptionalDeferred(type)) :
+      isReadonly && !isOptional ? S.AddReadonlyDeferred(type) :
+      !isReadonly && isOptional ? S.AddOptionalDeferred(type) :
       type
     )
   }
@@ -936,18 +936,18 @@ export function _Object_Mapping(input: unknown): unknown {
 // ElementNamed: [<Ident>, '?', ':', 'readonly', Type] | [<Ident>, ':', 'readonly', Type] | [<Ident>, '?', ':', Type] | [<Ident>, ':', Type]
 // -------------------------------------------------------------------
 export type TElementNamedMapping<Input extends [unknown, unknown, unknown, unknown, unknown] | [unknown, unknown, unknown, unknown] | [unknown, unknown, unknown]> = (
-  Input extends [string, '?', ':', 'readonly', infer Type extends T.TSchema] ? T.TReadonlyAdd<T.TOptionalAdd<Type>> :
-  Input extends [string, /**/ ':', 'readonly', infer Type extends T.TSchema] ? T.TReadonlyAdd<Type> :
-  Input extends [string, '?', ':', /*      */  infer Type extends T.TSchema] ? T.TOptionalAdd<Type> :
+  Input extends [string, '?', ':', 'readonly', infer Type extends T.TSchema] ? S.TAddReadonlyDeferred<S.TAddOptionalDeferred<Type>> :
+  Input extends [string, /**/ ':', 'readonly', infer Type extends T.TSchema] ? S.TAddReadonlyDeferred<Type> :
+  Input extends [string, '?', ':', /*      */  infer Type extends T.TSchema] ? S.TAddOptionalDeferred<Type> :
   Input extends [string, /**/ ':', /*      */  infer Type extends T.TSchema] ? Type :
   never
 )
 // deno-coverage-ignore-start
 export function ElementNamedMapping(input: [unknown, unknown, unknown, unknown, unknown] | [unknown, unknown, unknown, unknown] | [unknown, unknown, unknown]): unknown {
   return (
-    Guard.IsEqual(input.length, 5) ? T.ReadonlyAdd(T.OptionalAdd(input[4] as T.TSchema)) :
+    Guard.IsEqual(input.length, 5) ? S.AddReadonlyDeferred(S.AddOptionalDeferred(input[4] as T.TSchema)) :
     Guard.IsEqual(input.length, 3) ? input[2] as T.TSchema :
-    Guard.IsEqual(input.length, 4) ? (Guard.IsEqual(input[2], 'readonly') ? T.ReadonlyAdd(input[3] as T.TSchema) : T.OptionalAdd(input[3] as T.TSchema)) :
+    Guard.IsEqual(input.length, 4) ? (Guard.IsEqual(input[2], 'readonly') ? S.AddReadonlyDeferred(input[3] as T.TSchema) : S.AddOptionalDeferred(input[3] as T.TSchema)) :
     Unreachable()
   )
 }
@@ -956,28 +956,28 @@ export function ElementNamedMapping(input: [unknown, unknown, unknown, unknown, 
 // ElementReadonlyOptional: ['readonly', Type, '?']
 // -------------------------------------------------------------------
 export type TElementReadonlyOptionalMapping<Input extends [unknown, unknown, unknown]> = (
-  Input extends ['readonly', infer Type extends T.TSchema, '?'] ? T.TReadonlyAdd<T.TOptionalAdd<Type>> : never
+  Input extends ['readonly', infer Type extends T.TSchema, '?'] ? S.TAddReadonlyDeferred<S.TAddOptionalDeferred<Type>> : never
 )
 export function ElementReadonlyOptionalMapping(input: [unknown, unknown, unknown]): unknown {
-  return T.ReadonlyAdd(T.OptionalAdd(input[1] as T.TSchema))
+  return S.AddReadonlyDeferred(S.AddOptionalDeferred(input[1] as T.TSchema))
 }
 // -------------------------------------------------------------------
 // ElementReadonly: ['readonly', Type]
 // -------------------------------------------------------------------
 export type TElementReadonlyMapping<Input extends [unknown, unknown]> = (
-  Input extends ['readonly', infer Type extends T.TSchema] ? T.TReadonlyAdd<Type> : never
+  Input extends ['readonly', infer Type extends T.TSchema] ? S.TAddReadonlyDeferred<Type> : never
 )
 export function ElementReadonlyMapping(input: [unknown, unknown]): unknown {
-  return T.ReadonlyAdd(input[1] as T.TSchema)
+  return S.AddReadonlyDeferred(input[1] as T.TSchema)
 }
 // -------------------------------------------------------------------
 // ElementOptional: [Type, '?']
 // -------------------------------------------------------------------
 export type TElementOptionalMapping<Input extends [unknown, unknown]> = (
-  Input extends [infer Type extends T.TSchema, '?'] ? T.TOptionalAdd<Type> : never
+  Input extends [infer Type extends T.TSchema, '?'] ? S.TAddOptionalDeferred<Type> : never
 )
 export function ElementOptionalMapping(input: [unknown, unknown]): unknown {
-  return T.OptionalAdd(input[0] as T.TSchema)
+  return S.AddOptionalDeferred(input[0] as T.TSchema)
 }
 // -------------------------------------------------------------------
 // ElementBase: ElementNamed | ElementReadonlyOptional | ElementReadonly | ElementOptional | Type
@@ -1027,28 +1027,28 @@ export function _Tuple_Mapping(input: [unknown, unknown, unknown]): unknown {
 // ParameterReadonlyOptional: [<Ident>, '?', ':', 'readonly', Type]
 // -------------------------------------------------------------------
 export type TParameterReadonlyOptionalMapping<Input extends [unknown, unknown, unknown, unknown, unknown]> = (
-  Input extends [string, '?', ':', 'readonly', infer Type extends T.TSchema] ? T.TReadonlyAdd<T.TOptionalAdd<Type>> : never
+  Input extends [string, '?', ':', 'readonly', infer Type extends T.TSchema] ? S.TAddReadonlyDeferred<S.TAddOptionalDeferred<Type>> : never
 )
 export function ParameterReadonlyOptionalMapping(input: [unknown, unknown, unknown, unknown, unknown]): unknown {
-  return T.ReadonlyAdd(T.OptionalAdd(input[4] as T.TSchema))
+  return S.AddReadonlyDeferred(S.AddOptionalDeferred(input[4] as T.TSchema))
 }
 // -------------------------------------------------------------------
 // ParameterReadonly: [<Ident>, ':', 'readonly', Type]
 // -------------------------------------------------------------------
 export type TParameterReadonlyMapping<Input extends [unknown, unknown, unknown, unknown]> = (
-  Input extends [string, ':', 'readonly', infer Type extends T.TSchema] ? T.TReadonlyAdd<Type> : never
+  Input extends [string, ':', 'readonly', infer Type extends T.TSchema] ? S.TAddReadonlyDeferred<Type> : never
 )
 export function ParameterReadonlyMapping(input: [unknown, unknown, unknown, unknown]): unknown {
-  return T.ReadonlyAdd(input[3] as T.TSchema)
+  return S.AddReadonlyDeferred(input[3] as T.TSchema)
 }
 // -------------------------------------------------------------------
 // ParameterOptional: [<Ident>, '?', ':', Type]
 // -------------------------------------------------------------------
 export type TParameterOptionalMapping<Input extends [unknown, unknown, unknown, unknown]> = (
-  Input extends [string, '?', ':', infer Type extends T.TSchema] ? T.TOptionalAdd<Type> : never
+  Input extends [string, '?', ':', infer Type extends T.TSchema] ? S.TAddOptionalDeferred<Type> : never
 )
 export function ParameterOptionalMapping(input: [unknown, unknown, unknown, unknown]): unknown {
-  return T.OptionalAdd(input[3] as T.TSchema)
+  return S.AddOptionalDeferred(input[3] as T.TSchema)
 }
 // -------------------------------------------------------------------
 // ParameterType: [<Ident>, ':', Type]
@@ -1124,14 +1124,14 @@ type TModifierOperation = 'add' | 'remove' | 'none'
 // MappedReadonly: ['+', 'readonly'] | ['-', 'readonly'] | ['readonly'] | []
 // -------------------------------------------------------------------
 type TApplyReadonly<Readonly extends TModifierOperation, Type extends T.TSchema> = (
-  Readonly extends 'remove' ? C.TReadonlyRemoveAction<Type> :
-  Readonly extends 'add' ? C.TReadonlyAddAction<Type> :
+  Readonly extends 'remove' ? S.TRemoveReadonlyDeferred<Type> :
+  Readonly extends 'add' ? S.TAddReadonlyDeferred<Type> :
   Type
 )
 function ApplyReadonly(state: TModifierOperation, type: T.TSchema) {
   return (
-    Guard.IsEqual(state, 'remove') ? C.ReadonlyRemoveAction(type) :
-    Guard.IsEqual(state, 'add') ? C.ReadonlyAddAction(type) :
+    Guard.IsEqual(state, 'remove') ? S.RemoveReadonlyDeferred(type) :
+    Guard.IsEqual(state, 'add') ? S.AddReadonlyDeferred(type) :
     type
   )
 }
@@ -1153,14 +1153,14 @@ export function MappedReadonlyMapping(input: [unknown, unknown] | [unknown] | []
 // MappedOptional: ['+', '?'] | ['-', '?'] | ['?'] | []
 // -------------------------------------------------------------------
 type TApplyOptional<Optional extends TModifierOperation, Type extends T.TSchema> = (
-  Optional extends 'remove' ? C.TOptionalRemoveAction<Type> :
-  Optional extends 'add' ? C.TOptionalAddAction<Type> :
+  Optional extends 'remove' ? S.TRemoveOptionalDeferred<Type> :
+  Optional extends 'add' ? S.TAddOptionalDeferred<Type> :
   Type
 )
 function ApplyOptional(state: TModifierOperation, type: T.TSchema) {
   return (
-    Guard.IsEqual(state, 'remove') ? C.OptionalRemoveAction(type) :
-    Guard.IsEqual(state, 'add') ? C.OptionalAddAction(type) :
+    Guard.IsEqual(state, 'remove') ? S.RemoveOptionalDeferred(type) :
+    Guard.IsEqual(state, 'add') ? S.AddOptionalDeferred(type) :
     type
   )
 }
@@ -1193,15 +1193,15 @@ export function MappedAsMapping(input: [unknown, unknown] | []): unknown {
 export type T_Mapped_Mapping<Input extends [unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown]> = (
   Input extends ['{', infer Readonly extends TModifierOperation, '[', infer Key extends string, 'in', infer Type extends T.TSchema, infer As extends T.TSchema[], ']', infer Optional extends TModifierOperation, ':', infer Property extends T.TSchema, null, '}']
     ? (As extends [infer As extends T.TSchema]
-      ? C.TMappedDeferred<T.TIdentifier<Key>, Type, As, TApplyReadonly<Readonly, TApplyOptional<Optional, Property>>>
-      : C.TMappedDeferred<T.TIdentifier<Key>, Type, T.TRef<Key>, TApplyReadonly<Readonly, TApplyOptional<Optional, Property>>>
+      ? S.TMappedDeferred<T.TIdentifier<Key>, Type, As, TApplyReadonly<Readonly, TApplyOptional<Optional, Property>>>
+      : S.TMappedDeferred<T.TIdentifier<Key>, Type, T.TRef<Key>, TApplyReadonly<Readonly, TApplyOptional<Optional, Property>>>
     ) : never
 )
 export function _Mapped_Mapping(input: [unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown]): unknown {
   return (
     Guard.IsArray(input[6]) && Guard.IsEqual(input[6].length, 1)
-      ? C.MappedDeferred(T.Identifier(input[3] as string), input[5] as T.TSchema, input[6][0] as T.TSchema, ApplyReadonly(input[1] as TModifierOperation, ApplyOptional(input[8] as TModifierOperation, input[10] as T.TSchema)))
-      : C.MappedDeferred(T.Identifier(input[3] as string), input[5] as T.TSchema, T.Ref(input[3] as string), ApplyReadonly(input[1] as TModifierOperation, ApplyOptional(input[8] as TModifierOperation, input[10] as T.TSchema)))
+      ? S.MappedDeferred(T.Identifier(input[3] as string), input[5] as T.TSchema, input[6][0] as T.TSchema, ApplyReadonly(input[1] as TModifierOperation, ApplyOptional(input[8] as TModifierOperation, input[10] as T.TSchema)))
+      : S.MappedDeferred(T.Identifier(input[3] as string), input[5] as T.TSchema, T.Ref(input[3] as string), ApplyReadonly(input[1] as TModifierOperation, ApplyOptional(input[8] as TModifierOperation, input[10] as T.TSchema)))
   )
 }
 // -------------------------------------------------------------------
@@ -1461,7 +1461,7 @@ export function InterfaceDeclarationHeritageMapping(input: [unknown, unknown] | 
 // -------------------------------------------------------------------
 export type TInterfaceDeclarationGenericMapping<Input extends [unknown, unknown, unknown, unknown, unknown]> = (
   Input extends ['interface', infer Name extends string, infer Parameters extends T.TParameter[], infer Heritage extends T.TSchema[], infer Properties extends [T.TProperties, T.TProperties]]
-    ? { [_ in Name]: T.TGeneric<Parameters, C.TInterfaceDeferred<Heritage, Properties[0]>> }
+    ? { [_ in Name]: T.TGeneric<Parameters, S.TInterfaceDeferred<Heritage, Properties[0]>> }
     : never
 )
 export function InterfaceDeclarationGenericMapping(input: [unknown, unknown, unknown, unknown, unknown]): unknown {
@@ -1469,21 +1469,21 @@ export function InterfaceDeclarationGenericMapping(input: [unknown, unknown, unk
   const heritage = input[3] as T.TSchema[]
   const [properties, patternProperties] = input[4] as [T.TProperties, T.TProperties]
   const options = Guard.IsEqual(Guard.Keys(patternProperties).length, 0) ? {} : { patternProperties }
-  return { [input[1] as string]: T.Generic(parameters, C.InterfaceDeferred(heritage, properties, options)) }
+  return { [input[1] as string]: T.Generic(parameters, S.InterfaceDeferred(heritage, properties, options)) }
 }
 // -------------------------------------------------------------------
 // InterfaceDeclaration: ['interface', <Ident>, InterfaceDeclarationHeritage, Properties]
 // -------------------------------------------------------------------
 export type TInterfaceDeclarationMapping<Input extends [unknown, unknown, unknown, unknown]> = (
   Input extends ['interface', infer Name extends string, infer Heritage extends T.TSchema[], infer Properties extends [T.TProperties, T.TProperties]]
-  ? { [_ in Name]: C.TInterfaceDeferred<Heritage, Properties[0]> }
+  ? { [_ in Name]: S.TInterfaceDeferred<Heritage, Properties[0]> }
   : never
 )
 export function InterfaceDeclarationMapping(input: [unknown, unknown, unknown, unknown]): unknown {
   const heritage = input[2] as T.TSchema[]
   const [properties, patternProperties] =  input[3] as [T.TProperties, T.TProperties]
   const options = Guard.IsEqual(Guard.Keys(patternProperties).length, 0) ? {} : { patternProperties }
-  return { [input[1] as string]: C.InterfaceDeferred(heritage, properties, options) }
+  return { [input[1] as string]: S.InterfaceDeferred(heritage, properties, options) }
 }
 // -------------------------------------------------------------------
 // TypeAliasDeclarationGeneric: ['type', <Ident>, GenericParameters, '=', Type]
@@ -1551,13 +1551,13 @@ export function ModuleDeclarationMapping(input: [unknown, unknown, unknown]): un
 // -------------------------------------------------------------------
 export type TModuleMapping<Input extends [unknown, unknown]> = (
   Input extends [infer ModuleDeclaration extends T.TProperties, infer ModuleDeclarationList extends [T.TProperties, T.TProperties]]
-    ? C.TModuleDeferred<Memory.TAssign<ModuleDeclaration, ModuleDeclarationList[0]>>
+    ? S.TModuleDeferred<Memory.TAssign<ModuleDeclaration, ModuleDeclarationList[0]>>
     : never
 )
 export function ModuleMapping(input: [unknown, unknown]): unknown {
   const moduleDeclaration = input[0] as T.TProperties
   const moduleDeclarationList = input[1] as [T.TProperties, T.TProperties]
-  return C.ModuleDeferred(Memory.Assign(moduleDeclaration, moduleDeclarationList[0]))
+  return S.ModuleDeferred(Memory.Assign(moduleDeclaration, moduleDeclarationList[0]))
 }
 // -------------------------------------------------------------------
 // Script: Module | GenericType | Type

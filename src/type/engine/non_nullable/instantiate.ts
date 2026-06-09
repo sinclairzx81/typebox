@@ -76,5 +76,5 @@ export function NonNullableInstantiate<Context extends TProperties, State extend
   (context: Context, state: State, type: Type, options: TSchemaOptions): 
     TNonNullableInstantiate<Context, State, Type> {
   const instantiatedType = InstantiateType(context, state, type) 
-  return NonNullableAction(instantiatedType, options)
+  return NonNullableAction(instantiatedType, options) as never
 }

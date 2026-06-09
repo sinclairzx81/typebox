@@ -28,27 +28,29 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Guard } from '../../guard/index.ts'
-import { type TSchema, IsSchema } from './schema.ts'
-import { type TAddReadonly, AddReadonly } from '../action/_add_readonly.ts'
+import { type TSchema, type TSchemaOptions } from '../types/schema.ts'
+import { type TDeferred, Deferred } from '../types/deferred.ts'
+import { type TRemoveOptionalAction, RemoveOptionalAction } from '../engine/optional/instantiate_remove.ts'
 
+// ------------------------------------------------------------------
+// Deferred
+// ------------------------------------------------------------------
+/** Creates a deferred RemoveOptional action. */
+export type TRemoveOptionalDeferred<Type extends TSchema> = (
+  TDeferred<'RemoveOptional', [Type]>
+)
+/** Creates a deferred RemoveOptional action. */
+export function RemoveOptionalDeferred<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TRemoveOptionalDeferred<Type> {
+  return Deferred('RemoveOptional', [type], options)
+}
 // ------------------------------------------------------------------
 // Type
 // ------------------------------------------------------------------
-export type TReadonly<Type extends TSchema = TSchema> = (
-  Type & { '~readonly': true }
+/** Applies an RemoveOptional action to a type. */
+export type TRemoveOptional<Type extends TSchema> = (
+  TRemoveOptionalAction<Type>
 )
-// ------------------------------------------------------------------
-// Factory
-// ------------------------------------------------------------------
-/** Applies an Readonly property modifier to the given type. */
-export function Readonly<Type extends TSchema>(type: Type): TAddReadonly<Type> {
-  return AddReadonly(type) as never
-}
-// ------------------------------------------------------------------
-// Guard
-// ------------------------------------------------------------------
-/** Returns true if the given value is a TReadonly */
-export function IsReadonly(value: unknown): value is TReadonly<TSchema> {
-  return IsSchema(value) && Guard.HasPropertyKey(value, '~readonly')
+/** Applies an RemoveOptional action to a type. */
+export function RemoveOptional<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TRemoveOptional<Type> {
+  return RemoveOptionalAction(type, options)
 }

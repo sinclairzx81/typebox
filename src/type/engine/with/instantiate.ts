@@ -61,5 +61,5 @@ export function WithInstantiate<Context extends TProperties, State extends TStat
   (context: Context, state: State, type: Type, options: Options): 
     TWithInstantiate<Context, State, Type, Options> {
   const instaniatedType = InstantiateType(context, state, type)
-  return WithAction(instaniatedType, options)
+  return WithAction(instaniatedType, options) as never
 }

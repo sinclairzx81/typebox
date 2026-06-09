@@ -35,6 +35,7 @@ import { IsKind, type TSchema, type TSchemaOptions } from './schema.ts'
 /** Represents a deferred action. */
 export interface TDeferred<Action extends string = string, Types extends TSchema[] = TSchema[]> extends TSchema {
   '~kind': 'Deferred'
+  type: 'deferred'
   action: Action
   parameters: Types
   options: TSchemaOptions
@@ -44,7 +45,7 @@ export interface TDeferred<Action extends string = string, Types extends TSchema
 // ------------------------------------------------------------------
 /** Creates a Deferred action. */
 export function Deferred<Action extends string, Types extends TSchema[]>(action: Action, parameters: [...Types], options: TSchemaOptions): TDeferred<Action, Types> {
-  return Memory.Create({ '~kind': 'Deferred' }, { action, parameters, options }, {}) as never
+  return Memory.Create({ '~kind': 'Deferred' }, { type: 'deferred', action, parameters, options }, {}) as never
 }
 // ------------------------------------------------------------------
 // Guard

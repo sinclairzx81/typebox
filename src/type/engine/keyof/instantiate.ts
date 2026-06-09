@@ -88,5 +88,5 @@ export function KeyOfInstantiate<Context extends TProperties, State extends TSta
   (context: Context, state: State, type: Type, options: TSchemaOptions): 
     TKeyOfInstantiate<Context, State, Type> {
   const instantiatedType = InstantiateType(context, state, type)
-  return KeyOfAction(instantiatedType, options)
+  return KeyOfAction(instantiatedType, options) as never
 }

@@ -31,36 +31,38 @@ THE SOFTWARE.
 import { Memory } from '../../../system/memory/index.ts'
 import { type TSchema, type TSchemaOptions } from '../../types/schema.ts'
 import { type TProperties } from '../../types/properties.ts'
-import { type TPartialDeferred, PartialDeferred } from '../../action/partial.ts'
-import { type TFromType, FromType } from './from_type.ts'
-import { type TState, type TInstantiateType, InstantiateType, type TCanInstantiate, CanInstantiate } from '../instantiate.ts'
+import { type TImmutable } from '../../types/_immutable.ts'
+import { type TState, type TInstantiateType, InstantiateType } from '../instantiate.ts'
 
+// ------------------------------------------------------------------
+// Operation
+// ------------------------------------------------------------------
+type TAddImmutableOperation<Type extends TSchema,
+  Result extends TSchema = '~immutable' extends keyof Type ? Type : TImmutable<Type>
+> = Result
+function AddImmutableOperation<Type extends TSchema>(type: Type): TAddImmutableOperation<Type> {
+  return Memory.Update(type, { '~immutable': true }, { }) as never
+}
 // ------------------------------------------------------------------
 // Action
 // ------------------------------------------------------------------
-export type TPartialAction<Type extends TSchema,
-  Result extends TSchema = TCanInstantiate<[Type]> extends true
-    ? TFromType<Type>
-    : TPartialDeferred<Type>
+export type TAddImmutableAction<Type extends TSchema,
+  Result extends TSchema = TAddImmutableOperation<Type>
 > = Result
-export function PartialAction<Type extends TSchema>
-  (type: Type, options: TSchemaOptions): 
-    TPartialAction<Type> {
-  const result = CanInstantiate([type])
-    ? Memory.Update(FromType(type), {}, options) 
-    : PartialDeferred(type, options)
+export function AddImmutableAction<Type extends TSchema>(type: Type, options: TSchemaOptions): TAddImmutableAction<Type> {
+  const result = Memory.Update(AddImmutableOperation(type), {}, options)
   return result as never
 }
 // ------------------------------------------------------------------
 // Instantiate
 // ------------------------------------------------------------------
-export type TPartialInstantiate<Context extends TProperties, State extends TState, Type extends TSchema,
-  InstantiatedType extends TSchema = TInstantiateType<Context, State, Type>
-> = TPartialAction<InstantiatedType>
+export type TAddImmutableInstantiate<Context extends TProperties, State extends TState, Type extends TSchema,
+  InstantiateType extends TSchema = TInstantiateType<Context, State, Type>
+> = TAddImmutableAction<InstantiateType>
 
-export function PartialInstantiate<Context extends TProperties, State extends TState, Type extends TSchema>
+export function AddImmutableInstantiate<Context extends TProperties, State extends TState, Type extends TSchema>
   (context: Context, state: State, type: Type, options: TSchemaOptions): 
-    TPartialInstantiate<Context, State, Type> {
+    TAddImmutableInstantiate<Context, State, Type> {
   const instantiatedType = InstantiateType(context, state, type)
-  return PartialAction(instantiatedType, options) as never
+  return AddImmutableAction(instantiatedType, options) as never
 }

@@ -29,32 +29,9 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Guard } from '../../guard/index.ts'
-import { Memory } from '../../system/memory/index.ts'
 import { type TSchema, IsSchema } from './schema.ts'
+import { type TAddOptional, AddOptional } from '../action/_add_optional.ts'
 
-// ------------------------------------------------------------------
-// OptionalRemove
-// ------------------------------------------------------------------
-/** Removes Optional from the given type. */
-export type TOptionalRemove<Type extends TSchema,
-  Result extends TSchema = Type extends TOptional<infer Type extends TSchema> ? Type : Type
-> = Result
-/** Removes Optional from the given type. */
-export function OptionalRemove<Type extends TSchema>(type: Type): TOptionalRemove<Type> {
-  const result = Memory.Discard(type, ['~optional'])
-  return result as never
-}
-// ------------------------------------------------------------------
-// OptionalAdd
-// ------------------------------------------------------------------
-/** Adds Optional to the given type. */
-export type TOptionalAdd<Type extends TSchema = TSchema,
-  Result extends TSchema = '~optional' extends keyof Type ? Type : TOptional<Type>
-> = Result
-/** Adds Optional to the given type. */
-export function OptionalAdd<Type extends TSchema>(type: Type): TOptionalAdd<Type> {
-  return Memory.Update(type, { '~optional': true }, {}) as never
-}
 // ------------------------------------------------------------------
 // Type
 // ------------------------------------------------------------------
@@ -65,8 +42,8 @@ export type TOptional<Type extends TSchema = TSchema> = (
 // Factory
 // ------------------------------------------------------------------
 /** Applies an Optional modifier to the given type. */
-export function Optional<Type extends TSchema>(type: Type): TOptionalAdd<Type> {
-  return OptionalAdd(type) 
+export function Optional<Type extends TSchema>(type: Type): TAddOptional<Type> {
+  return AddOptional(type) as never
 }
 // ------------------------------------------------------------------
 // Guard

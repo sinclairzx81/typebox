@@ -15,7 +15,7 @@ Test('Should Create Optional 1', () => {
 })
 Test('Should Create Optional and Unwrap', () => {
   const T: Type.TOptional<Type.TNull> = Type.Optional(Type.Null())
-  const U = Type.OptionalRemove(T)
+  const U = Type.RemoveOptional(T)
   Assert.IsFalse(Type.IsOptional(U))
   Assert.IsTrue(Type.IsNull(U))
 })

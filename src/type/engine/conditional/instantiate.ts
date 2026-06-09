@@ -85,5 +85,5 @@ export function ConditionalInstantiate<Context extends TProperties, State extend
     TConditionalInstantiate<Context, State, Left, Right, True, False> {
   const instantiatedLeft = InstantiateType(context, state, left)
   const instantiatedRight = InstantiateType(context, state, right)
-  return ConditionalAction(context, state, instantiatedLeft, instantiatedRight, true_, false_, options)
+  return ConditionalAction(context, state, instantiatedLeft, instantiatedRight, true_, false_, options) as never
 }

@@ -62,5 +62,5 @@ export function ExcludeInstantiate<Context extends TProperties, State extends TS
     TExcludeInstantiate<Context, State, Left, Right> {
   const instantiatedLeft = InstantiateType(context, state, left)
   const instantiatedRight = InstantiateType(context, state, right)
-  return ExcludeAction(instantiatedLeft, instantiatedRight, options)
+  return ExcludeAction(instantiatedLeft, instantiatedRight, options) as never
 }

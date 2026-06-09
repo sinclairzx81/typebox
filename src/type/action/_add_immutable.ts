@@ -28,20 +28,29 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Guard } from '../../../guard/index.ts'
-import { type TSchema } from '../../types/schema.ts'
-import { type TObject, Object } from '../../types/object.ts'
-import { type TAddReadonly, AddReadonly } from '../../action/_add_readonly.ts'
-import { type TProperties } from '../../types/properties.ts'
+import { type TSchema, type TSchemaOptions } from '../types/schema.ts'
+import { type TDeferred, Deferred } from '../types/deferred.ts'
+import { type TAddImmutableAction, AddImmutableAction } from '../engine/immutable/instantiate_add.ts'
 
-export type TFromObject<Properties extends TProperties,
-  Mapped extends TProperties = { [Key in keyof Properties]: TAddReadonly<Properties[Key]> },
-  Result extends TSchema = TObject<Mapped>
-> = Result
-export function FromObject<Properties extends TProperties>(properties: Properties): TFromObject<Properties> {
-  const mapped = Guard.Keys(properties).reduce((result, left) => {
-    return { ...result, [left]: AddReadonly(properties[left]) }
-  }, {} as TProperties)
-  const result = Object(mapped)
-  return result as never
+// ------------------------------------------------------------------
+// Deferred
+// ------------------------------------------------------------------
+/** Creates a deferred AddImmutable action. */
+export type TAddImmutableDeferred<Type extends TSchema> = (
+  TDeferred<'AddImmutable', [Type]>
+)
+/** Creates a deferred AddImmutable action. */
+export function AddImmutableDeferred<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TAddImmutableDeferred<Type> {
+  return Deferred('AddImmutable', [type], options)
+}
+// ------------------------------------------------------------------
+// Type
+// ------------------------------------------------------------------
+/** Applies an AddImmutable action to a type. */
+export type TAddImmutable<Type extends TSchema> = (
+  TAddImmutableAction<Type>
+)
+/** Applies an AddImmutable action to a type. */
+export function AddImmutable<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TAddImmutable<Type> {
+  return AddImmutableAction(type, options)
 }
