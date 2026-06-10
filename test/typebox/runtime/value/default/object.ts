@@ -371,6 +371,9 @@ Test('Should Default 33', () => {
   Assert.IsEqual(calls, 1)
   Assert.IsEqual(R, { x: 'v1' })
 })
+// ------------------------------------------------------------------
+// Default As Function Behavior
+// ------------------------------------------------------------------
 Test('Should Default 34', () => {
   let calls = 0
   const T = Type.Object({
