@@ -202,6 +202,11 @@
         "valid": false
       },
       {
+        "description": "invalid: non-ASCII Bengali digit in month field",
+        "data": "2020-0৪-01",
+        "valid": false
+      },
+      {
         "description": "ISO8601 / non-RFC3339: YYYYMMDD without dashes (2023-03-28)",
         "data": "20230328",
         "valid": false
@@ -337,6 +342,26 @@
       {
         "description": "invalid: alphabetic characters in year field",
         "data": "YYYY-01-01",
+        "valid": false
+      },
+      {
+        "description": "invalid: three-digit month (N+1 digits)",
+        "data": "2020-001-01",
+        "valid": false
+      },
+      {
+        "description": "invalid: alphabetic characters in month field",
+        "data": "2020-MM-01",
+        "valid": false
+      },
+      {
+        "description": "invalid: three-digit day (N+1 digits)",
+        "data": "2020-01-001",
+        "valid": false
+      },
+      {
+        "description": "invalid: alphabetic characters in day field",
+        "data": "2020-01-DD",
         "valid": false
       }
     ]

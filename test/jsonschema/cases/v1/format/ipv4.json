@@ -58,6 +58,16 @@
         "valid": false
       },
       {
+        "description": "a 2-part address resolving to a routable IP (inet_aton shorthand)",
+        "data": "127.1",
+        "valid": false
+      },
+      {
+        "description": "a 3-part address resolving to a routable IP (inet_aton shorthand)",
+        "data": "127.0.1",
+        "valid": false
+      },
+      {
         "description": "an IP address as an integer",
         "data": "0x7f000001",
         "valid": false
@@ -70,6 +80,16 @@
       {
         "description": "invalid non-ASCII '২' (a Bengali 2)",
         "data": "1২7.0.0.1",
+        "valid": false
+      },
+      {
+        "description": "invalid fullwidth digits (non-ASCII)",
+        "data": "１９２.１６８.１.１",
+        "valid": false
+      },
+      {
+        "description": "invalid mathematical bold digits (non-ASCII)",
+        "data": "𝟏𝟗𝟐.𝟏𝟔𝟖.𝟏.𝟏",
         "valid": false
       },
       {
@@ -160,6 +180,11 @@
       {
         "description": "tab character is invalid",
         "data": "192.168.0.1\t",
+        "valid": false
+      },
+      {
+        "description": "additional content after an embedded NUL byte",
+        "data": "192.168.0.1\u0000.evil.com",
         "valid": false
       },
       {

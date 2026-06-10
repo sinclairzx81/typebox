@@ -1,0 +1,16 @@
+[
+  {
+    "description": "uuid format",
+    "schema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "format": "uuid"
+    },
+    "tests": [
+      {
+        "description": "URN prefixed UUID is invalid",
+        "data": "urn:uuid:2eb8aa08-aa98-11ea-b4aa-73b441d16380",
+        "valid": false
+      }
+    ]
+  }
+]
