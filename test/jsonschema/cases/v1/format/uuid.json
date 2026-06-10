@@ -115,6 +115,11 @@
         "description": "hypothetical version 15",
         "data": "99c17cbb-656f-f64a-940f-1a4568f03487",
         "valid": true
+      },
+      {
+        "description": "URN prefixed UUID is invalid",
+        "data": "urn:uuid:2eb8aa08-aa98-11ea-b4aa-73b441d16380",
+        "valid": false
       }
     ]
   }
