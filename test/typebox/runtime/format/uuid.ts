@@ -15,8 +15,13 @@ Test('Should Uuid 3', () => {
   Assert.IsTrue(Format.IsUuid('123E4567-E89B-12D3-A456-426614174000')) // uppercase
 })
 
+// ------------------------------------------------------------------
+// Uuid with URN Prefix is Invalid
+//
+// https://github.com/json-schema-org/JSON-Schema-Test-Suite/pull/913
+// ------------------------------------------------------------------
 Test('Should Uuid 4', () => {
-  Assert.IsTrue(Format.IsUuid('urn:uuid:123e4567-e89b-12d3-a456-426614174000'))
+  Assert.IsFalse(Format.IsUuid('urn:uuid:123e4567-e89b-12d3-a456-426614174000'))
 })
 
 Test('Should Uuid 5', () => {
