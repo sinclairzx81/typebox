@@ -355,7 +355,9 @@ Test('Should Default 32', () => {
   Assert.IsEqual(R, { id: undefined }) // pick first union match
 })
 // ------------------------------------------------------------------
-// Factory Default: Should be called exactly once per absent property
+// Default As Function Behavior
+//
+// Ref: https://github.com/sinclairzx81/typebox/pull/1612
 // ------------------------------------------------------------------
 Test('Should Default 33', () => {
   let calls = 0
@@ -371,9 +373,6 @@ Test('Should Default 33', () => {
   Assert.IsEqual(calls, 1)
   Assert.IsEqual(R, { x: 'v1' })
 })
-// ------------------------------------------------------------------
-// Default As Function Behavior
-// ------------------------------------------------------------------
 Test('Should Default 34', () => {
   let calls = 0
   const T = Type.Object({
