@@ -1,74 +1,51 @@
 <h1>Script</h1>
-<p>Runtime TypeScript Engine For JSON Schema</p>
+<p>TypeScript Syntax Engine For JSON Schema</p>
 <h2>Overview</h2>
-<p>TypeBox includes a micro DSL for composing JSON Schema with TypeScript syntax. The DSL offers a full syntactic frontend to Type.* and supports many advanced type-level constructs such as Conditional, Mapped, Indexed, Infer, Generics, Distributed types and more. This feature is implemented symmetrically at runtime and statically via TypeScript Template Literal types.</p>
+<p>TypeBox includes a syntax engine to transform TypeScript definitions into JSON Schema. The DSL offers a full syntactic frontend to Type.* and supports many advanced type-level constructs such as Conditional, Mapped, Indexed, Infer, Generics, Distributed types and more. This feature is implemented symmetrically at runtime and statically via TypeScript Template Literal types.</p>
 <h3>Example</h3>
-<p>The following uses Script to parse a TypeScript definition module into JSON Schema.</p>
+<p>The following uses Script to parse TypeScript declarations into JSON Schema.</p>
 <pre><code class="language-typescript">import Type from &#39;typebox&#39;
 
-// -------------------------------------------------------------------------------
-// Script
-// -------------------------------------------------------------------------------
-
-const { User, UserUpdate } = Type.Script(`
-
-  interface Entity {
-    id: string
+const { Mesh } = Type.Script(`
+  type Vector2 = { x: number, y: number }
+  type Vector3 = Evaluate&lt;Vector2 &amp; { z: number }&gt;
+  type Vector4 = Evaluate&lt;Vector3 &amp; { w: number }&gt;
+  
+  type Vertex = {
+    position: Vector4,
+    normal: Vector3,
+    uv: Vector2
   }
-
-  interface User extends Entity { 
-    name: string, 
-    email: string 
+  type Geometry = {
+    vertices: Vertex[],
+    indices: number[]
   }
-
-  type UserUpdate = Evaluate&lt;
-    Pick&lt;User, keyof Entity&gt; &amp; 
-    Partial&lt;Omit&lt;User, keyof Entity&gt;&gt;
-  &gt;
-
+  type Material = {
+    ambient: Vector4
+    diffuse: Vector4
+    specular: Vector4
+  }
+  type Mesh = {
+    geometry: Geometry
+    material: Material
+  }
 `)
 
-// -------------------------------------------------------------------------------
-// Reflect
-// -------------------------------------------------------------------------------
+// Runtime Reflection
+Mesh.properties.geometry.properties.vertices.items.properties.position.properties.x
+Mesh.properties.geometry.properties.vertices.items.properties.normal.properties.x
+Mesh.properties.geometry.properties.vertices.items.properties.uv.properties.x
+Mesh.properties.material.properties.diffuse.properties.x
+Mesh.properties.material.properties.ambient.properties.x
+Mesh.properties.material.properties.specular.properties.x
 
-console.log(User)                                // {
-                                                 //   type: &#39;object&#39;,
-                                                 //   properties: {
-                                                 //     id: { type: &#39;string&#39; },
-                                                 //     name: { type: &#39;string&#39; },
-                                                 //     email: { type: &#39;string&#39; }
-                                                 //   },
-                                                 //   required: [
-                                                 //     &#39;id&#39;, 
-                                                 //     &#39;name&#39;, 
-                                                 //     &#39;email&#39;
-                                                 //   ]
-                                                 // }
-
-console.log(UserUpdate)                          // {
-                                                 //   type: &#39;object&#39;,
-                                                 //   properties: {
-                                                 //     id: { type: &#39;string&#39; },
-                                                 //     name: { type: &#39;string&#39; },
-                                                 //     email: { type: &#39;string&#39; }
-                                                 //   },
-                                                 //   required: [&#39;id&#39;]
-                                                 // }
-
-// -------------------------------------------------------------------------------
-// Static
-// -------------------------------------------------------------------------------
-
-type User = Type.Static&lt;typeof User&gt;              // type User = {
-                                                  //   id: string,
-                                                  //   name: string,
-                                                  //   email: string
-                                                  // }
-
-type UserUpdate = Type.Static&lt;typeof UserUpdate&gt;  // type UserUpdate = {
-                                                  //   id: string,
-                                                  //   name?: string,
-                                                  //   email?: string
-                                                  // }
+// Static Inference
+function render(mesh: Type.Static&lt;typeof Mesh&gt;) {
+  mesh.geometry.vertices[0].position.x
+  mesh.geometry.vertices[0].normal.x
+  mesh.geometry.vertices[0].uv.x
+  mesh.material.diffuse.x
+  mesh.material.ambient.x
+  mesh.material.specular.x
+}
 </code></pre>

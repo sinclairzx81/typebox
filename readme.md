@@ -111,78 +111,59 @@ type User = Type.Static<typeof User>              // type User = {
 
 ## Script
 
-[Documentation](https://sinclairzx81.github.io/typebox/#/docs/script/overview) | [Example 1](https://www.typescriptlang.org/play/#code/JYWwDg9gTgLgBAFQJ5gKZwGZQiOByGFVAIwgA88AoSgehrgFonmXW32POvueHb6AygGMowMDH6Ne0mbLnNqQiADsAzvADecAKqrUUADQ69UbWAAmAQxjoAvnAC8iIgDpho8QAoABtThxgZRsoDEshdABRIOBCOA1Kf39gcwAuOHVRZQBzBLhbPwCg-VDw4304VDIbZXNVOCiYGKQ4uFz-ZUsQVDSMwKyjNoqQS2AAGx6YTKzW-3zcwjQy0wtrdCcIgDdLUYBXVYAeQYAFYCEAa33dfSMz1CQIDHrowgA+OAAyGcSjy1hgbf2AHkQDFLiYbncHk9Gq8Xrk4ZRvABKah0KTyDGYzGSABKqAwo1QQgkaKxZPJvEUKlUEEJLlGECyniuUCRiXZHM5XK5aPi3P5AsFgrR-gW3XwEGIACsiTA8AZBkKlcrOSK4GBsGg-qhVGk+SqDYa1UlUi0xWk8L1sng8grDfblca4B0unq4Ob8FasjbbHaHf7+U7UMMxm6PZbJn0fYqA7G4GrfTG4-61VBUABHHbANOmgDaSeT9qdeGS8q+hdjxZdqDLBYrKuLwZGoyo9cr9H8AF0622hWi5ko1LTUPTGcyTGYrDY2YXeT3ewK1eHJTLifL5wvuWqNRAtY0dXqN5vVR3Eskw0QLV6fX7jw3T+1OuKtOHr7aj3fEkGQ+MzZfPZG1p5B+n7xqeiagY6p5ppm2aoHmJbmHg3aQUq-aovQFJYdhLCSAIMDWKckg4SRFLUGKSyOM4aBuARjRCPsYpQiybxofQFEslR+qocKp7nukgH9CBoFqtWExTLePGBqeTahgJUzCZ+6GUBxE4rDYVHIDR+GEQxTGPCyk6rKxaKqfoRkaU43FSVufGml6kk2SeiTVgA-OJfSOU57JqrJozufJfSKXe6FAA) | [Example 2](https://www.typescriptlang.org/play/#code/JYWwDg9gTgLgBAFQJ5gKZwGZQiOByGFVAIwgA88AoSgehrgFonmXW32POvnb7k1ejbsJGj21AMYQAdgGd4AUWkxghOAF5ERAHQBJZaigYAhhNQAKANoBdADRwA3pThxgAEwBcWtNoDKMKGBpAHNzAEpKAF8Iyik5eABVWUMNb1Q9AyNTC0slFUI7R2c4aWMQVC9+dP9AkPDbYtQQY2AAG0qdGqDQiOjJGXk4JMMEsDdjGHRNKu0FADdjVoBXCYsZ-UmoZIkYK2KZgAVgCQBrc2GoexmAaVQkAHkMczzVJDCwhpdD41hgRfMZvcQKpzslLmltLcHk8XoR3hFrO9qHQhGI0eiMdxBAAlVAYVqoHaCTEk0mY-pyCAE7StCChC5hFxM5ks1lslkopzs7k83m8lEuQhoLx4CDEABWhJgeE+fLl8u5ArgYGwaF+qFkXi5Cp1uqVLncWrgQoq+HktWCeDgkVlurtfP1JTKpocxqIIvN3StNuK9r97MdTRa7UcbuFZoCXutvv9saZSp9caTLiVUFQAEclsA0544JYY8m-Y68O4ZXAC4W7cXSuUyxXKzri0G2lQG-6ldZ6225SjIhTZFT0rT6WDRuNJozk5yu93+fRBe78GLJTsZTPZ4r58rVYYVBqteuN2zHYbQyaPZGQt7bUee1uXDWXWHTXhPVfrTfb3OWc2Q67zxGFreoeX7xluiagQ6W5ppm2aoLmlglm4eCdpBUHRsSZJYdhnCCP4EzHJhOHEcR1AmkMYKpDM+EqBIAA8JoQBgFGGAAfPKKLkRcqTamhPJKqeb7BJ+fGskqj5eEJImicySq-pJl7BCBaG9mRRAsVAY6rFRnQwAR9GMcxFxaZM7FwJx6nGWM2maLxMliVugmKdJ9nmVuj4APwKRaLn2XJzRtF5cBCcpkG9kAA)
+[Documentation](https://sinclairzx81.github.io/typebox/#/docs/script/overview) | [Example 1](https://www.typescriptlang.org/play/?target=99&module=7#code/JYWwDg9gTgLgBAFQJ5gKZwGZQiOByGFVAIwgA88AoSgYwgDsBneAbzgFlVGALOAXzgBeREQB0AZRpRgYGAAoABpThxCaOADVUNGNABMQuGzIAuOPQCuIYqigAaOEjOXrt-stVFN23VADMhgCiAG4AhgA2FqEwqAA8Wjr6cABkRnAAXs5WNlD8AHweaugJvgAsQWGR0XEl0AGpbADuWa65fAUqhV5asKhkhiweKpCMwDDADGa1UKV2Q+bQIBFTPnVzKioWwSuJUHoefF3qAOKoOKgwUEgD88G24zRcK71kANoAuusbwPQAJsCPRgtHIfA5HdDsarSCI3DZwULWYCoegwHZleb-DAYCyMVBo6CleaMNA0CzhUJQfEzMEqIocLi8YSDOEAczOIAuVzMp3OlyQ8yWMWh4TMkKFwAiYIUAEpqAB6OVwABKFhRoHQStQGHCPgm9EonB4ojA2DQsCRjFEbN5V2NpvuFtEd3NgNEY1QIEtJogZvGXGNEFG4wYdp9Dv9ZANDNDvsd1o5fJj4ctzoe-vdnqT5v99EWESzfstkcN3ALcfZnKQZf9qYB6Zime9sf9W2rRajRqbydEgtsEvCbdEmOxuMHxejXezlt7wsHCOISJRY47pcnhZ7UP7g+J2jJFOXlAVcHEMGiALgAEl6BhbMjHpRsfQdHq4FBkb9bHIOTwzMg0BJTweWIiggDB6R4PJpSMDxv1LeNKydB1AVeAAGd4AyDPVREjFRYKtCtE1rZC0NEXMoCWAccLgPD4MIpCuFQ9DWyovCZy3YccVQbCYOjNj83nRcYG43DeM3fMd1JckoG4vggA) | [Example 2](https://www.typescriptlang.org/play/?target=99&module=7#code/JYWwDg9gTgLgBAFQJ5gKZwGZQiOByGFVAIwgA88AoSgehrgFonmXW32POv3b7k0AdACpejbuImTu1SgGMIAOwDO8AGqpZMaACY4AXkREBAeWIArDTAAUAbzhkAXIcEA5AK4hiqKFYCUAGjgkJ35UAXdPbz84AF9fOUUVOHVNaABmfWcwgFEANwBDABs3fJhUK1CBAEkFMqglSysAbRStKG1AytMLTVs4AC8QowivH19Y3wBdX3j5ZTVLaAAWTMq8opKyiqMauobelsWoNM6jbsa7AHch1w9R6Ljp+IT55O8yslWz8wvKODhIEpgDBgIonK1lv4-nAFNAQEVwUcTtC3LlEal2pQ4i8kgBxVA4VAwKBIL6Cc69GzQ3LvYCyVBKG5hACCUCg+SQVnUsFQZAC0OACgAJnSGUyBKz2ZzKiMojMsbNEvAALKlbzAIpksIU6xU-75TzAVC1dFtJZQ-4ijAYNwNU2Q6FKNCyNyFfJQe1QJYKnEqhkACy1Jh+lOhAHMCSAiSSnPjCcSkBa4PC6hrCk5Vamij7RAAlNy1UDoXOoDCFSyghSUZUBgRgbBoWBGpQCCPxkl1hu0hkCGlN+kt4GoEAt+sQRsgnuA4GVzvj7stsjV2tjifN1uR6NIOdrnt9kEDgRDkc7hcCWFQeGFU9NntLmtKf03yctttRhPP9f70WDson1dnqin53suj7AS2KbqkU4ECFaNoNDB94rl2t4QWqUBpjBBrEEatSIaBT4AahAiQRh0FES+AhOhorruvhogAMowKUdJwDUGDeMa9KUDaCiaJWcBQMaQpRFGj7ikxLGyAAPIQaAQBgcAPv6AB84x6smtZvluva0gOTQAAyTHWEBAiCigCEu-xiU+2kft++lGeecLQVZmlgXZHYOQyhnGUBbk2SR6GYXBtphAFtakZh2G4TAlnQoFUXQdRLpulA8UxEAA)
 
-TypeBox includes a micro DSL for composing JSON Schema with TypeScript syntax. The DSL offers a full syntactic frontend to Type.* and supports many advanced type-level constructs such as Conditional, Mapped, Indexed, Infer, Generics, Distributed types and more. This feature is implemented symmetrically at runtime and statically via TypeScript Template Literal types.
+TypeBox includes a syntax engine to transform TypeScript definitions into JSON Schema. The DSL offers a full syntactic frontend to Type.* and supports many advanced type-level constructs such as Conditional, Mapped, Indexed, Infer, Generics, Distributed types and more. This feature is implemented symmetrically at runtime and statically via TypeScript Template Literal types.
 
 ### Example
 
-The following uses Script to parse a TypeScript definition module into JSON Schema.
+The following uses Script to parse TypeScript declarations into JSON Schema.
 
 ```typescript
 import Type from 'typebox'
 
-// Script
-
-const { User, UserUpdate } = Type.Script(`
-
-  interface Entity {
-    id: string
+const { Mesh } = Type.Script(`
+  type Vector2 = { x: number, y: number }
+  type Vector3 = Evaluate<Vector2 & { z: number }>
+  type Vector4 = Evaluate<Vector3 & { w: number }>
+  
+  type Vertex = {
+    position: Vector4,
+    normal: Vector3,
+    uv: Vector2
   }
-
-  interface User extends Entity { 
-    name: string, 
-    email: string 
+  type Geometry = {
+    vertices: Vertex[],
+    indices: number[]
   }
-
-  type UserUpdate = Evaluate<
-    Pick<User, keyof Entity> & 
-    Partial<Omit<User, keyof Entity>>
-  >
-
+  type Material = {
+    ambient: Vector4
+    diffuse: Vector4
+    specular: Vector4
+  }
+  type Mesh = {
+    geometry: Geometry
+    material: Material
+  }
 `)
 
-// Reflect
+// Runtime Reflection
+Mesh.properties.geometry.properties.vertices.items.properties.position.properties.x
+Mesh.properties.geometry.properties.vertices.items.properties.normal.properties.x
+Mesh.properties.geometry.properties.vertices.items.properties.uv.properties.x
+Mesh.properties.material.properties.diffuse.properties.x
+Mesh.properties.material.properties.ambient.properties.x
+Mesh.properties.material.properties.specular.properties.x
 
-console.log(User)                                // {
-                                                 //   type: 'object',
-                                                 //   properties: {
-                                                 //     id: { type: 'string' },
-                                                 //     name: { type: 'string' },
-                                                 //     email: { type: 'string' }
-                                                 //   },
-                                                 //   required: [
-                                                 //     'id', 
-                                                 //     'name', 
-                                                 //     'email'
-                                                 //   ]
-                                                 // }
-
-console.log(UserUpdate)                          // {
-                                                 //   type: 'object',
-                                                 //   properties: {
-                                                 //     id: { type: 'string' },
-                                                 //     name: { type: 'string' },
-                                                 //     email: { type: 'string' }
-                                                 //   },
-                                                 //   required: ['id']
-                                                 // }
-
-// Static
-
-type User = Type.Static<typeof User>              // type User = {
-                                                  //   id: string,
-                                                  //   name: string,
-                                                  //   email: string
-                                                  // }
-
-type UserUpdate = Type.Static<typeof UserUpdate>  // type UserUpdate = {
-                                                  //   id: string,
-                                                  //   name?: string,
-                                                  //   email?: string
-                                                  // }
-
-
+// Static Inference
+function render(mesh: Type.Static<typeof Mesh>) {
+  mesh.geometry.vertices[0].position.x
+  mesh.geometry.vertices[0].normal.x
+  mesh.geometry.vertices[0].uv.x
+  mesh.material.diffuse.x
+  mesh.material.ambient.x
+  mesh.material.specular.x
+}
 ```
 
 <a name="Schema"></a>
