@@ -1,16 +1,18 @@
 <h1>Script</h1>
 <p>TypeScript Syntax Engine For JSON Schema</p>
 <h2>Overview</h2>
-<p>TypeBox includes a syntax engine to transform TypeScript definitions into JSON Schema. The DSL offers a full syntactic frontend to Type.* and supports many advanced type-level constructs such as Conditional, Mapped, Indexed, Infer, Generics, Distributed types and more. This feature is implemented symmetrically at runtime and statically via TypeScript Template Literal types.</p>
+<p>TypeBox includes a syntax engine that can transform TypeScript declarations into JSON Schema. The engine is a full syntactic frontend to Type.* and supports many advanced type-level constructs such as Conditional, Mapped, Indexed, Infer, Generics, Distributed types and more. This feature is implemented symmetrically at runtime and statically via TypeScript Template Literal types.</p>
 <h3>Example</h3>
 <p>The following uses Script to parse TypeScript declarations into JSON Schema.</p>
-<pre><code class="language-typescript">import Type from &#39;typebox&#39;
-
-const { Mesh } = Type.Script(`
+<pre><code class="language-typescript">// Namespace
+const Math = Type.Script(`
   type Vector2 = { x: number, y: number }
   type Vector3 = Evaluate&lt;Vector2 &amp; { z: number }&gt;
   type Vector4 = Evaluate&lt;Vector3 &amp; { w: number }&gt;
-  
+`)
+
+// Dependent Namespace
+const { Mesh } = Type.Script({ ...Math }, `  
   type Vertex = {
     position: Vector4,
     normal: Vector3,
@@ -21,12 +23,12 @@ const { Mesh } = Type.Script(`
     indices: number[]
   }
   type Material = {
-    ambient: Vector4
-    diffuse: Vector4
+    ambient: Vector4,
+    diffuse: Vector4,
     specular: Vector4
   }
   type Mesh = {
-    geometry: Geometry
+    geometry: Geometry,
     material: Material
   }
 `)

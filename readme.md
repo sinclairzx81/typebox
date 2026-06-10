@@ -73,7 +73,7 @@ License: MIT
 
 TypeBox types are JSON Schema fragments that compose into more complex types. The library offers a set of types used to construct JSON Schema compliant schematics as well as a set of extended types used to model constructs native to the JavaScript language. The schematics produced by TypeBox can be passed directly to any JSON Schema compliant validator.
 
-## Example
+### Example
 
 The following creates a User type and infers with Static.
 
@@ -111,22 +111,24 @@ type User = Type.Static<typeof User>              // type User = {
 
 ## Script
 
-[Documentation](https://sinclairzx81.github.io/typebox/#/docs/script/overview) | [Example 1](https://www.typescriptlang.org/play/?target=99&module=7#code/JYWwDg9gTgLgBAFQJ5gKZwGZQiOByGFVAIwgA88AoSgYwgDsBneAbzgFlVGALOAXzgBeREQB0AZRpRgYGAAoABpThxCaOADVUNGNABMQuGzIAuOPQCuIYqigAaOEjOXrt-stVFN23VADMhgCiAG4AhgA2FqEwqAA8Wjr6cABkRnAAXs5WNlD8AHweaugJvgAsQWGR0XEl0AGpbADuWa65fAUqhV5asKhkhiweKpCMwDDADGa1UKV2Q+bQIBFTPnVzKioWwSuJUHoefF3qAOKoOKgwUEgD88G24zRcK71kANoAuusbwPQAJsCPRgtHIfA5HdDsarSCI3DZwULWYCoegwHZleb-DAYCyMVBo6CleaMNA0CzhUJQfEzMEqIocLi8YSDOEAczOIAuVzMp3OlyQ8yWMWh4TMkKFwAiYIUAEpqAB6OVwABKFhRoHQStQGHCPgm9EonB4ojA2DQsCRjFEbN5V2NpvuFtEd3NgNEY1QIEtJogZvGXGNEFG4wYdp9Dv9ZANDNDvsd1o5fJj4ctzoe-vdnqT5v99EWESzfstkcN3ALcfZnKQZf9qYB6Zime9sf9W2rRajRqbydEgtsEvCbdEmOxuMHxejXezlt7wsHCOISJRY47pcnhZ7UP7g+J2jJFOXlAVcHEMGiALgAEl6BhbMjHpRsfQdHq4FBkb9bHIOTwzMg0BJTweWIiggDB6R4PJpSMDxv1LeNKydB1AVeAAGd4AyDPVREjFRYKtCtE1rZC0NEXMoCWAccLgPD4MIpCuFQ9DWyovCZy3YccVQbCYOjNj83nRcYG43DeM3fMd1JckoG4vggA) | [Example 2](https://www.typescriptlang.org/play/?target=99&module=7#code/JYWwDg9gTgLgBAFQJ5gKZwGZQiOByGFVAIwgA88AoSgehrgFonmXW32POv3b7k0AdACpejbuImTu1SgGMIAOwDO8AGqpZMaACY4AXkREBAeWIArDTAAUAbzhkAXIcEA5AK4hiqKFYCUAGjgkJ35UAXdPbz84AF9fOUUVOHVNaABmfWcwgFEANwBDABs3fJhUK1CBAEkFMqglSysAbRStKG1AytMLTVs4AC8QowivH19Y3wBdX3j5ZTVLaAAWTMq8opKyiqMauobelsWoNM6jbsa7AHch1w9R6Ljp+IT55O8yslWz8wvKODhIEpgDBgIonK1lv4-nAFNAQEVwUcTtC3LlEal2pQ4i8kgBxVA4VAwKBIL6Cc69GzQ3LvYCyVBKG5hACCUCg+SQVnUsFQZAC0OACgAJnSGUyBKz2ZzKiMojMsbNEvAALKlbzAIpksIU6xU-75TzAVC1dFtJZQ-4ijAYNwNU2Q6FKNCyNyFfJQe1QJYKnEqhkACy1Jh+lOhAHMCSAiSSnPjCcSkBa4PC6hrCk5Vamij7RAAlNy1UDoXOoDCFSyghSUZUBgRgbBoWBGpQCCPxkl1hu0hkCGlN+kt4GoEAt+sQRsgnuA4GVzvj7stsjV2tjifN1uR6NIOdrnt9kEDgRDkc7hcCWFQeGFU9NntLmtKf03yctttRhPP9f70WDson1dnqin53suj7AS2KbqkU4ECFaNoNDB94rl2t4QWqUBpjBBrEEatSIaBT4AahAiQRh0FES+AhOhorruvhogAMowKUdJwDUGDeMa9KUDaCiaJWcBQMaQpRFGj7ikxLGyAAPIQaAQBgcAPv6AB84x6smtZvluva0gOTQAAyTHWEBAiCigCEu-xiU+2kft++lGeecLQVZmlgXZHYOQyhnGUBbk2SR6GYXBtphAFtakZh2G4TAlnQoFUXQdRLpulA8UxEAA)
+[Documentation](https://sinclairzx81.github.io/typebox/#/docs/script/overview) | [Example 1](https://www.typescriptlang.org/play/?target=99&module=7#code/JYWwDg9gTgLgBAFQJ5gKZwGZQiOByGFVAIwgA88AoSgehrgFonmXW32POv3b7k0AdAGUAxlGBgYACjwC5eAJS9G3VWvXdqdOADkAhiFQBnMHpGpKIiADsj8ALJ6YACzgBeREWFiJ0gAaUcHCEaHAAaqgiMNAATO5wAN5wZABccNYAriDEqFAANHBIaZnZuXAAvoHBROGR0VAAzPEAogBuegA2GU6oADwRUbFwAGSJcABexVk5UBUAfFUh6AP1ACwt7V09-XXQTaNJAO5TpbPlC35KygAiqGjWACao1vD6hiZmFla28En2xq5yvF+KhvOJJFIknIBI4XBUCn4gosahFYKgyPEElUgpAjMAYMAbGkVtBVnlseloCBOsTdo1yUEghlWrTBlAYlVKkElnAAOKoHCoGBQJCYimtXIE8xGWlosgAbQAugzGcBHsBpScZkrOcjQrDcsBOmLGXADMRgM8YKy1iqgg9gBgMBkjKgbaS7XATJEMh09FB3VBVrruTV-kZXB4saaAOYCwzCop8+NCkWe6kwQ00uAG8SdXWXLT0ABKGReoHQxdQGA6dUJ1ko4ecAjA2DQsEtRgEccFiZbbclnYEEo70oE+NQIC7rYg7YJxhbEDxBJs-dng4XZEbALXc6HPYTIt3G67I6lC4nU+PHYX1ipnWv867W6bj-3Kb7M73C7PGovmavL8TwEZk303bcIzArsMyzDooIEB0nRdUEgJvZ8IObVCnwEGC8zgrCh3NS0Xngl8dwIhdcKNfCBzQgRvREX1-VIos4CEGAnA1OAAElrAwXJnnMShnWsKJ6zgKBnieKApHeZw0hBYQOKlXolggDAcwBOYFESKo5O7D8j1-aV5QABkVRdl3rAQtyCfSD1TJBh0HEzzIEO8oGpODbLgezDKc4zjDMizQJ8-SqIfRDnVdGy9J3CK4KIq1Yrs+Kejw+i0EYv0oFi8ogA) | [Example 2](https://www.typescriptlang.org/play/?target=99&module=7#code/JYWwDg9gTgLgBAFQJ5gKZwGZQiOByGFVAIwgA88AoSgehrgFonmXW32POv3b7k0AdACpejbuImTu1OnAByAQxCoAzmAUBjVJQB2S1eq1wAsgpgALOAG9KcOKjKRYcDRB0r4ANVQaY0AExwALyIRAIA8sQAVj4wABRWcGQAXKGCcgCuIMSoUHEAlAA0cEip-KgCmdm5BXAAvvm29o7Q8K7uXrHQAMzBaRUAogBuCgA2GWaoceUCAJI6MLkqsXEA2t6+AcUzkTG+CXAAXmVhVTl5+fX5ALr5jXYOTm1uHnAbflAALH0zw2MTi2mYXmiygy326y6UG62zCuxWiQA7id0llzrUGrdGnUZPQACKoNA6AAmqAW8n0ak02nar28sAcPzh0QRTUgKmAMGAblSpgsAne0E+hSaOmgIDGvLM5gFUJhTQyQyl-MFUH8lAalFp8AA4qgcKgYFAkEzBPD9jY7ENclytCoURUAIJQKAKJBxemLMhFJrAEnAO0OgTO13umZnGp3DWNbUmSZQYBjU0Vc3xS1wJTEYBkmDKmWq4VNYnADAYDLLPOyzZfEV2NQ+DKjBRQSsF6Nal7wYyqSwhHYsi1NADm+uURtKcD1BvHtbgEtBidGytyi-bogAShkFqB0OvUBhRrFuTpKN2VDKwNg0LBsyoBCPp8aBJeINeuaoBNab3aBJzUCA7xfN9b2fCAOS5NxnyvG0QLIU8eyg18YI-B8xyfIDkLvL9bQ-P8AMQ4CPzFKAJVGAjMIEOCzwvaCbxQ0dDXQ2j3ywmCfzwwDmJAxVyLou8qIQjC+IEecVzGXiWIEYtS3LCohMkgTzwkkDRITcT5JAzNswWZSP0UmikOE1TF10u96w0Rtm1MyjcTgABlGAzADOB5gwXIyS0Sgyx0XxjzgKAyVJPJlHPIMHKcjQAB5CDQCAMBMHsAD5LnTEKZVQxikE-NjVFWAAGa5QPA48bLsNL7wY8dsu-XKCoEYjSNKucEIyqrsIDWrCp4uCyoQ4zxOkstlia8r+rIrScxGvr4xM8zLKgGy6iAA)
 
-TypeBox includes a syntax engine to transform TypeScript definitions into JSON Schema. The DSL offers a full syntactic frontend to Type.* and supports many advanced type-level constructs such as Conditional, Mapped, Indexed, Infer, Generics, Distributed types and more. This feature is implemented symmetrically at runtime and statically via TypeScript Template Literal types.
+TypeBox includes a syntax engine that can transform TypeScript declarations into JSON Schema. The engine is a full syntactic frontend to Type.* and supports many advanced type-level constructs such as Conditional, Mapped, Indexed, Infer, Generics, Distributed types and more. This feature is implemented symmetrically at runtime and statically via TypeScript Template Literal types.
 
 ### Example
 
 The following uses Script to parse TypeScript declarations into JSON Schema.
 
 ```typescript
-import Type from 'typebox'
-
-const { Mesh } = Type.Script(`
+// Namespace
+const Math = Type.Script(`
   type Vector2 = { x: number, y: number }
   type Vector3 = Evaluate<Vector2 & { z: number }>
   type Vector4 = Evaluate<Vector3 & { w: number }>
-  
+`)
+
+// Dependent Namespace
+const { Mesh } = Type.Script({ ...Math }, `  
   type Vertex = {
     position: Vector4,
     normal: Vector3,
@@ -137,12 +139,12 @@ const { Mesh } = Type.Script(`
     indices: number[]
   }
   type Material = {
-    ambient: Vector4
-    diffuse: Vector4
+    ambient: Vector4,
+    diffuse: Vector4,
     specular: Vector4
   }
   type Mesh = {
-    geometry: Geometry
+    geometry: Geometry,
     material: Material
   }
 `)

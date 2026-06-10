@@ -104,7 +104,7 @@ export function Home() {
           messages={[
             H, H,
             'High Performance Validation for JSON Schema',
-            'Runtime TypeScript Engine For JSON Schema'
+            'Runtime TypeScript Engine for JSON Schema'
           ]}
         />
         <div className='actions'>
