@@ -114,8 +114,8 @@ type TZipDistributionArray<Arguments extends TSchema[], DistributionArray extend
 function ZipDistributionArray<Arguments extends TSchema[], DistributionArray extends boolean[]>
   (arguments_: [...Arguments], distributionArray: [...DistributionArray], result: [boolean, TSchema][] = []):
   TZipDistributionArray<Arguments, DistributionArray> {
-  return Guard.TakeLeft(arguments_, (argumentLeft, argumentRight) => 
-    Guard.TakeLeft(distributionArray, (booleanLeft, booleanRight) => 
+  return Guard.ShiftLeft(arguments_, (argumentLeft, argumentRight) => 
+    Guard.ShiftLeft(distributionArray, (booleanLeft, booleanRight) => 
       ZipDistributionArray(argumentRight as never, booleanRight as never, [...result, [booleanLeft, argumentLeft]]),
       () => result),
     () => result) as never

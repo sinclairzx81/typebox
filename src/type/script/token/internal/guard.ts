@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 // deno-coverage-ignore-start - parsebox tested
 
-export { IsArray, IsEqual, IsString, TakeLeft } from '../../../../guard/guard.ts'
+export { IsArray, IsEqual, IsString, ShiftLeft } from '../../../../guard/guard.ts'
 
 // ------------------------------------------------------------------
 // Internal Guards to ensure Token is portable.

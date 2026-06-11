@@ -26,60 +26,40 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// ------------------------------------------------------------------
-// Extensions
-// ------------------------------------------------------------------
-export * from './_codec.ts'
-export * from './_immutable.ts'
-export * from './_key_value.ts'
-export * from './_optional.ts'
-export * from './_readonly.ts'
-export * from './_refine.ts'
+// deno-fmt-ignore-file
+
+import { type TSchema } from '../../types/schema.ts'
+import { type TProperties } from '../../types/properties.ts'
+import { type TKeyValue } from '../../types/_key_value.ts'
+import { type TKeyValues, KeyValues } from './key_values.ts'
 
 // ------------------------------------------------------------------
-// Standard
+// KeyValuesToValues
 // ------------------------------------------------------------------
-export * from './any.ts'
-export * from './array.ts'
-export * from './async_iterator.ts'
-export * from './base.ts'
-export * from './bigint.ts'
-export * from './boolean.ts'
-export * from './call.ts'
-export * from './constructor.ts'
-export * from './cyclic.ts'
-export * from './deferred.ts'
-export * from './enum.ts'
-export * from './function.ts'
-export * from './generic.ts'
-export * from './identifier.ts'
-export * from './dependent.ts'
-export * from './infer.ts'
-export * from './integer.ts'
-export * from './intersect.ts'
-export * from './iterator.ts'
-export * from './literal.ts'
-export * from './never.ts'
-export * from './null.ts'
-export * from './number.ts'
-export * from './unknown.ts'
-export * from './symbol.ts'
-export * from './object.ts'
-export * from './parameter.ts'
-export * from './promise.ts'
-export * from './properties.ts'
-export * from './record.ts'
-export * from './ref.ts'
-export * from './rest.ts'
-export * from './schema.ts'
-export * from './static.ts'
-export * from './string.ts'
-export * from './symbol.ts'
-export * from './template_literal.ts'
-export * from './this.ts'
-export * from './tuple.ts'
-export * from './undefined.ts'
-export * from './union.ts'
-export * from './unknown.ts'
-export * from './unsafe.ts'
-export * from './void.ts'
+type TKeyValuesToValues<KeyValues extends TKeyValue[], Result extends TSchema[] = []> = (
+  KeyValues extends [infer Left extends TKeyValue, ...infer Right extends TKeyValue[]]
+    ? TKeyValuesToValues<Right, [...Result, Left['value']]>
+    : Result
+)
+function KeyValuesToValues<KeyValues extends TKeyValue[]>
+  (keyValues: [...KeyValues]): TKeyValuesToValues<KeyValues> {
+  return keyValues.map(keyValue => keyValue.value) as never
+}
+// ------------------------------------------------------------------
+// Values
+// ------------------------------------------------------------------
+/** (Internal) Extracts Values from the given Type */
+export type TValues<Context extends TProperties, Type extends TSchema,
+  KeyValues extends TKeyValue[] = TKeyValues<Context, Type>,
+  Result extends TSchema[] = TKeyValuesToValues<KeyValues>
+>  = Result
+/** (Internal) Extracts Values from the given Type */
+export function Values<Context extends TProperties, Type extends TSchema>
+  (context: Context, type: Type): TValues<Context, Type> {
+  const keyValues = KeyValues(context, type) as TKeyValue[]
+  const result = KeyValuesToValues(keyValues)
+  return result as never
+}
+
+
+

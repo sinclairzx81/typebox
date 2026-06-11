@@ -28,12 +28,23 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { type TSchema } from '../../types/index.ts'
-import { type TRecordPatternToType, RecordPatternToType } from '../../types/record.ts'
+import { type TSchema } from '../../types/schema.ts'
+import { type TProperties } from '../../types/properties.ts'
+import { type TKeyValue } from '../../types/_key_value.ts'
 
-export type TFromRecord<Pattern extends string,
-  Result extends TSchema = TRecordPatternToType<Pattern>
+import { type TCyclicTarget, CyclicTarget } from '../cyclic/target.ts'
+import { type TFromType, FromType } from './from_type.ts'
+
+// ------------------------------------------------------------------
+// FromCyclic
+// ------------------------------------------------------------------
+export type TFromCyclic<Context extends TProperties, Defs extends TProperties, Ref extends string,
+  Target extends TSchema = TCyclicTarget<Defs, Ref>,
+  Result extends TKeyValue[] = TFromType<Context, Target>
 > = Result
-export function FromRecord<Pattern extends string>(pattern: Pattern): TFromRecord<Pattern> {
- return RecordPatternToType(pattern)
+export function FromCyclic<Context extends TProperties, Defs extends TProperties, Ref extends string>
+  (context: Context, defs: Defs, ref: Ref): TFromCyclic<Context, Defs, Ref> {
+  const target = CyclicTarget(defs, ref)
+  const result = FromType(context, target)
+  return result as never
 }

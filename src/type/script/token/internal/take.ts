@@ -63,7 +63,7 @@ export function Take<Variants extends string[], Input extends string>(variants: 
   // ----------------------------------------------------------------
   // Symmetric
   // ----------------------------------------------------------------
-  // return Guard.TakeLeft(variants, (valueLeft, valueRight) => 
+  // return Guard.ShiftLeft(variants, (valueLeft, valueRight) => 
   //   Match(TakeVariant(valueLeft, input), (take, rest) => 
   //     [take, rest],
   //     () => Take(valueRight, input)),

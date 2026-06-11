@@ -34,7 +34,7 @@ import { type TAny, IsAny } from '../../types/any.ts'
 import { type TArray, IsArray } from '../../types/array.ts'
 import { type TNever, Never } from '../../types/never.ts'
 import { type TObject, IsObject } from '../../types/object.ts'
-import { type TRecord, IsRecord } from '../../types/record.ts'
+import { type TRecord, IsRecord, RecordPattern } from '../../types/record.ts'
 import { type TTuple, IsTuple } from '../../types/tuple.ts'
 
 // ------------------------------------------------------------------
@@ -53,7 +53,7 @@ export type TFromType<Type extends TSchema> = (
   Type extends TAny ? TFromAny :
   Type extends TArray<infer Type extends TSchema> ? TFromArray<Type> :
   Type extends TObject<infer Properties extends TProperties> ? TFromObject<Properties> :
-  Type extends TRecord ? TFromRecord<Type> :
+  Type extends TRecord<infer Pattern extends string> ? TFromRecord<Pattern> :
   Type extends TTuple<infer Types extends TSchema[]> ? TFromTuple<Types> :
   TNever
 )
@@ -62,7 +62,7 @@ export function FromType<Type extends TSchema>(type: Type): TFromType<Type> {
     IsAny(type) ? FromAny() :
     IsArray(type) ? FromArray(type.items) :
     IsObject(type) ? FromObject(type.properties) :
-    IsRecord(type) ? FromRecord(type) :
+    IsRecord(type) ? FromRecord(RecordPattern(type)) :
     IsTuple(type) ? FromTuple(type.items) :
     Never()
   ) as never

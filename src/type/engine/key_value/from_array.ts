@@ -4,7 +4,7 @@ TypeBox
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2026 Haydn Paterson 
+Copyright (c) 2017-2026 Haydn Paterson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,12 +28,15 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { type TSchema } from '../../types/index.ts'
-import { type TRecordPatternToType, RecordPatternToType } from '../../types/record.ts'
+import { type TSchema } from '../../types/schema.ts'
+import { type TProperties } from '../../types/properties.ts'
+import { KeyValue, type TKeyValue } from '../../types/_key_value.ts'
+import { Number, type TNumber } from '../../types/number.ts'
 
-export type TFromRecord<Pattern extends string,
-  Result extends TSchema = TRecordPatternToType<Pattern>
+export type TFromArray<Context extends TProperties, Type extends TSchema, 
+  Result extends TKeyValue[] = [TKeyValue<TNumber, Type>]
 > = Result
-export function FromRecord<Pattern extends string>(pattern: Pattern): TFromRecord<Pattern> {
- return RecordPatternToType(pattern)
+export function FromArray<Context extends TProperties, Type extends TSchema>
+  (_context: Context, type: Type): TFromArray<Context, Type> {
+  return [KeyValue(Number(), type)] as never
 }

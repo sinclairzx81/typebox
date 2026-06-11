@@ -89,7 +89,7 @@ type TFromTypes<Stack extends string[], Context extends TProperties, Types exten
 function FromTypes<Stack extends string[], Context extends TProperties, Types extends TSchema[]>
   (stack: [...Stack], context: Context, types: [...Types]):
   TFromTypes<Stack, Context, Types> {
-  return Guard.TakeLeft(types, (left, right) => 
+  return Guard.ShiftLeft(types, (left, right) => 
     FromType(stack, context, left)
       ? true
       : FromTypes(stack, context, right),

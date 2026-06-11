@@ -4,7 +4,7 @@ TypeBox
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2026 Haydn Paterson 
+Copyright (c) 2017-2026 Haydn Paterson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,12 +28,20 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { type TSchema } from '../../types/index.ts'
-import { type TRecordPatternToType, RecordPatternToType } from '../../types/record.ts'
+import { type TSchema } from '../../types/schema.ts'
+import { type TProperties } from '../../types/properties.ts'
+import { type TKeyValue } from '../../types/_key_value.ts'
+import { type TUnion, Union } from '../../types/union.ts'
+import { CollapseToObject, type TCollapseToObject } from '../object/index.ts'
+import { FromType, type TFromType } from './from_type.ts'
 
-export type TFromRecord<Pattern extends string,
-  Result extends TSchema = TRecordPatternToType<Pattern>
+export type TFromUnion<Context extends TProperties, Types extends TSchema[],
+  Collapsed extends TSchema = TCollapseToObject<TUnion<Types>>, 
+  Result extends TKeyValue[] = TFromType<Context, Collapsed>
 > = Result
-export function FromRecord<Pattern extends string>(pattern: Pattern): TFromRecord<Pattern> {
- return RecordPatternToType(pattern)
+export function FromUnion<Context extends TProperties, Types extends TSchema[]>
+  (context: Context, types: [...Types]): TFromUnion<Context, Types> {
+  const collapsed = CollapseToObject(Union(types))
+  const result = FromType(context, collapsed)
+  return result
 }

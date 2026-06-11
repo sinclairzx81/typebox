@@ -4,7 +4,7 @@ TypeBox
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2026 Haydn Paterson 
+Copyright (c) 2017-2026 Haydn Paterson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,12 +28,23 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { type TSchema } from '../../types/index.ts'
-import { type TRecordPatternToType, RecordPatternToType } from '../../types/record.ts'
+import { Guard } from '../../../guard/index.ts'
+import { type TProperties } from '../../types/properties.ts'
+import { type TKeyValue } from '../../types/_key_value.ts'
+import { type TFromType, FromType } from './from_type.ts'
 
-export type TFromRecord<Pattern extends string,
-  Result extends TSchema = TRecordPatternToType<Pattern>
+// ------------------------------------------------------------------
+// Record
+// ------------------------------------------------------------------
+export type TFromRef<Context extends TProperties, Ref extends string, 
+  Result extends TKeyValue[] = Ref extends keyof Context
+    ? TFromType<Context, Context[Ref]>
+    : []
 > = Result
-export function FromRecord<Pattern extends string>(pattern: Pattern): TFromRecord<Pattern> {
- return RecordPatternToType(pattern)
+export function FromRef<Context extends TProperties, Ref extends string>
+  (context: Context, ref: Ref): TFromRef<Context, Ref> {
+  const result = Guard.HasPropertyKey(context, ref)
+    ? FromType(context, context[ref])
+    : []
+  return result as never
 }

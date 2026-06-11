@@ -326,23 +326,23 @@ Test('Should IsClassInstance 15', () => {
 })
 
 // ------------------------------------------------------------------
-// Guard.TakeLeft
+// Guard.ShiftLeft
 // ------------------------------------------------------------------
-Test('Should TakeLeft 1', () => {
-  const result: any = Guard.TakeLeft([], (left, right) => ({ left, right }), () => 'empty')
+Test('Should ShiftLeft 1', () => {
+  const result: any = Guard.ShiftLeft([], (left, right) => ({ left, right }), () => 'empty')
   Assert.IsEqual(result, 'empty')
 })
-Test('Should TakeLeft 2', () => {
+Test('Should ShiftLeft 2', () => {
   const result: string | {
     left: number
     right: number[]
-  } = Guard.TakeLeft([1, 2, 3], (left, right) => ({ left, right }), () => 'empty')
+  } = Guard.ShiftLeft([1, 2, 3], (left, right) => ({ left, right }), () => 'empty')
   Assert.IsEqual(result, { left: 1, right: [2, 3] })
 })
-Test('Should TakeLeft 3', () => {
+Test('Should ShiftLeft 3', () => {
   const result: string | {
     left: number
     right: number[]
-  } = Guard.TakeLeft([42], (left, right) => ({ left, right }), () => 'empty')
+  } = Guard.ShiftLeft([42], (left, right) => ({ left, right }), () => 'empty')
   Assert.IsEqual(result, { left: 42, right: [] })
 })

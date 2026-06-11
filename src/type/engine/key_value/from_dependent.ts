@@ -28,12 +28,19 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { type TSchema } from '../../types/index.ts'
-import { type TRecordPatternToType, RecordPatternToType } from '../../types/record.ts'
+import { type TSchema } from '../../types/schema.ts'
+import { type TProperties } from '../../types/properties.ts'
+import { type TKeyValue } from '../../types/_key_value.ts'
+import { type TEvaluateDependent, EvaluateDependent } from '../evaluate/evaluate.ts'
+import { type TFromType, FromType } from './from_type.ts'
 
-export type TFromRecord<Pattern extends string,
-  Result extends TSchema = TRecordPatternToType<Pattern>
+export type TFromDependent<Context extends TProperties, If extends TSchema, Then extends TSchema, Else extends TSchema,
+  Evaluated extends TSchema = TEvaluateDependent<If, Then, Else>,
+  Result extends TKeyValue[] = TFromType<Context, Evaluated>
 > = Result
-export function FromRecord<Pattern extends string>(pattern: Pattern): TFromRecord<Pattern> {
- return RecordPatternToType(pattern)
+export function FromDependent<Context extends TProperties, If extends TSchema, Then extends TSchema, Else extends TSchema>
+  (context: Context, if_: If, then_: Then, else_: Else): TFromDependent<Context, If, Then, Else> {
+  const evaluated = EvaluateDependent(if_, then_, else_)
+  const result = FromType(context, evaluated)
+  return result as never
 }
