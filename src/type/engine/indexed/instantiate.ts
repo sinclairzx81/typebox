@@ -27,44 +27,52 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 // deno-fmt-ignore-file
+// deno-lint-ignore-file ban-types
 
 import { Memory } from '../../../system/memory/index.ts'
 import { type TSchema, type TSchemaOptions } from '../../types/schema.ts'
-import { type TCyclic, IsCyclic } from '../../types/cyclic.ts'
-import { type TDependent, IsDependent } from '../../types/dependent.ts'
-import { type TIntersect, IsIntersect } from '../../types/intersect.ts'
 import { type TProperties } from '../../types/properties.ts'
-import { type TUnion, IsUnion } from '../../types/union.ts'
+import { type TKeyValue } from '../../types/_key_value.ts'
+
+import { type TIndexDeferred, IndexDeferred } from '../../action/indexed.ts'
 
 import { type TState, type TInstantiateType, type TCanInstantiate, InstantiateType, CanInstantiate } from '../instantiate.ts'
-import { type TIndexDeferred, IndexDeferred } from '../../action/indexed.ts'
-import { type TCollapseToObject, CollapseToObject } from '../object/index.ts'
-
-import { type TFromType, FromType } from './from_type.ts'
+import { type TExtends, Extends, ExtendsResult } from '../../extends/index.ts'
+import { type TEvaluateUnionFast, EvaluateUnionFast } from '../evaluate/evaluate.ts'
+import { type TKeyValues, KeyValues } from '../key_value/key_values.ts'
 
 // ------------------------------------------------------------------
-//
-// NormalizeType: TObject<{}> TCyclic | TIntersect | TUnion Only
-//
-// Note: We do not include TTuple in KeyOf normalization because
-// we cannot rely on TypeScript to seqeuence collapsed keys in
-// the correct order. Instead we use Tuple-length destructuring
-// to yield TUnion ordering (review)
-//
-// Relates: TKeyOf | TIndex
-//
+// FromKeyValues
 // ------------------------------------------------------------------
-type TNormalizeType<Type extends TSchema, 
-  Result extends TSchema = (
-    Type extends TCyclic | TDependent | TIntersect | TUnion ? TCollapseToObject<Type> :
-    Type
-  )
+type TFromKeyValues<KeyValues extends TKeyValue[], Indexer extends TSchema, Result extends TSchema[] = []> = (
+  KeyValues extends [infer Left extends TKeyValue, ...infer Right extends TKeyValue[]]
+    ? TExtends<{}, Left['key'], Indexer> extends ExtendsResult.TExtendsTrueLike
+      ? TFromKeyValues<Right, Indexer, [...Result, Left['value']]>
+      : TFromKeyValues<Right, Indexer, Result> 
+    : Result
+)
+function FromKeyValues<KeyValues extends TKeyValue[], Indexer extends TSchema>
+  (keyValues: [...KeyValues], indexer: Indexer): TFromKeyValues<KeyValues, Indexer> {
+  return keyValues.reduce<TSchema[]>((result, left) => {
+    return ExtendsResult.Match(Extends({}, left['key'], indexer), () => 
+      [...result, left['value']] as TSchema[],
+      () => result) as TSchema[]
+  }, []) as never
+}
+// ------------------------------------------------------------------
+// Operation
+// ------------------------------------------------------------------
+type TIndexOperation<Type extends TSchema, Indexer extends TSchema,
+  KeyValues extends TKeyValue[] = TKeyValues<{}, Type>,
+  Indexed extends TSchema[] = TFromKeyValues<KeyValues, Indexer>,
+  Result extends TSchema = TEvaluateUnionFast<Indexed>
 > = Result
-function NormalizeType<Type extends TSchema>(type: Type): TNormalizeType<Type> {
-  const result = (
-    IsCyclic(type) || IsDependent(type) || IsIntersect(type) || IsUnion(type) ? CollapseToObject(type) :
-    type
-  )
+
+function IndexOperation<Type extends TSchema, Indexer extends TSchema>
+  (type: Type, indexer: Indexer): TIndexOperation<Type, Indexer> {
+  const keyValues = KeyValues({}, type) as TKeyValue[]
+  const indexed = FromKeyValues(keyValues, indexer)
+  const result = EvaluateUnionFast(indexed)
   return result as never
 }
 // ------------------------------------------------------------------
@@ -72,12 +80,12 @@ function NormalizeType<Type extends TSchema>(type: Type): TNormalizeType<Type> {
 // ------------------------------------------------------------------
 export type TIndexAction<Type extends TSchema, Indexer extends TSchema, 
   Result extends TSchema = TCanInstantiate<[Type, Indexer]> extends true 
-    ? TFromType<TNormalizeType<Type>, Indexer>
+    ? TIndexOperation<Type, Indexer>
     : TIndexDeferred<Type, Indexer>
 > = Result
 export function IndexAction<Type extends TSchema, Indexer extends TSchema>(type: Type, indexer: Indexer, options: TSchemaOptions): TIndexAction<Type, Indexer> {
   const result = CanInstantiate([type, indexer])
-    ? Memory.Update(FromType(NormalizeType(type), indexer), {}, options)
+    ? Memory.Update(IndexOperation(type, indexer), {}, options)
     : IndexDeferred(type, indexer, options)
   return result as never
 }

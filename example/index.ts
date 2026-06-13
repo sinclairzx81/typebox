@@ -12,10 +12,10 @@ import { Memory  } from 'typebox/system'
 
 const X = Type.Object({
   0: Type.Number(),
-  'x': Type.String()
+  x: Type.String()
 })
 
-const K = Type.KeyOf(X)
+const K = Type.Index(X, Type.Literal('x'))
 
 console.log(K)
 
