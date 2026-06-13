@@ -1212,3 +1212,61 @@ Test('Should Evaluate 109', () => {
   const T: Type.TString = Type.Evaluate(Type.TemplateLiteral('hello${string}'))
   Assert.IsTrue(Type.IsString(T))
 })
+// ------------------------------------------------------------------
+// With
+// ------------------------------------------------------------------
+Test('Should Evaluate 110', () => {
+  const A: Type.TWith<
+    Type.TObject<{
+      a: Type.TNumber
+      b: Type.TNumber
+    }>,
+    {
+      readonly foo: 1
+    }
+  > = Type.With(Type.Object({ a: Type.Number(), b: Type.Number() }), { foo: 1 })
+
+  const B: Type.TWith<
+    Type.TObject<{
+      c: Type.TNumber
+      d: Type.TNumber
+    }>,
+    {
+      readonly bar: 1
+    }
+  > = Type.With(Type.Object({ c: Type.Number(), d: Type.Number() }), { bar: 1 })
+
+  const C: Type.TWith<
+    Type.TObject<{
+      a: Type.TNumber
+      b: Type.TNumber
+      c: Type.TNumber
+      d: Type.TNumber
+    }>,
+    {
+      readonly baz: 1
+    }
+  > = Type.With(Type.Evaluate(Type.Intersect([A, B])), { baz: 1 })
+
+  Assert.IsTrue(Type.IsObject(A))
+  Assert.IsTrue(Type.IsNumber(A.properties.a))
+  Assert.IsTrue(Type.IsNumber(A.properties.b))
+  Assert.HasPropertyKey(A, 'foo')
+  Assert.IsEqual(A.foo, 1)
+
+  Assert.IsTrue(Type.IsObject(B))
+  Assert.IsTrue(Type.IsNumber(B.properties.c))
+  Assert.IsTrue(Type.IsNumber(B.properties.d))
+  Assert.HasPropertyKey(B, 'bar')
+  Assert.IsEqual(B.bar, 1)
+
+  Assert.IsTrue(Type.IsObject(C))
+  Assert.IsTrue(Type.IsNumber(C.properties.a))
+  Assert.IsTrue(Type.IsNumber(C.properties.b))
+  Assert.IsTrue(Type.IsNumber(C.properties.c))
+  Assert.IsTrue(Type.IsNumber(C.properties.d))
+  Assert.NotHasPropertyKey(C, 'foo')
+  Assert.NotHasPropertyKey(C, 'bar')
+  Assert.HasPropertyKey(C, 'baz')
+  Assert.IsEqual(C.baz, 1)
+})
