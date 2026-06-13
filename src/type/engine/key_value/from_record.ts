@@ -37,7 +37,7 @@ import { RecordPatternToType, type TRecordPatternToType } from '../../types/reco
 // Record
 // ------------------------------------------------------------------
 export type TFromRecord<Context extends TProperties, Pattern extends string, Value extends TSchema, 
-  Key extends TSchema = TRecordPatternToType<Pattern>, 
+  Key extends TSchema = TRecordPatternToType<Pattern>,
   Result extends TKeyValue[] = [TKeyValue<Key, Value>]
 > = Result
 export function FromRecord<Context extends TProperties, Pattern extends string, Value extends TSchema>

@@ -27,40 +27,32 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 // deno-fmt-ignore-file
+// deno-lint-ignore-file ban-types
 
 import { Memory } from '../../../system/memory/index.ts'
 import { type TSchema, type TSchemaOptions } from '../../types/schema.ts'
 import { type TProperties } from '../../types/properties.ts'
-import { type TCyclic, IsCyclic } from '../../types/cyclic.ts'
-import { type TDependent, IsDependent } from '../../types/dependent.ts'
-import { type TIntersect, IsIntersect } from '../../types/intersect.ts'
-import { type TUnion, IsUnion } from '../../types/union.ts'
 import { type TKeyOfDeferred, KeyOfDeferred } from '../../action/keyof.ts'
 import { type TState, type TInstantiateType, type TCanInstantiate, InstantiateType, CanInstantiate } from '../instantiate.ts'
-import { type TCollapseToObject, CollapseToObject } from '../object/index.ts'
+
+import { type TKeys, Keys } from '../key_value/keys.ts'
+import { type TEvaluateUnionFast, EvaluateUnionFast } from '../evaluate/evaluate.ts'
 
 // ------------------------------------------------------------------
-// Computed
-// ------------------------------------------------------------------
-import { type TFromType, FromType } from './from_type.ts'
-
-// ------------------------------------------------------------------
-//
-// NormalizeType: TObject<{}> TCyclic | TIntersect | TUnion Only
-//
-// Note: We do not include TTuple in KeyOf normalization because
-// we cannot rely on TypeScript to seqeuence collapsed keys in
-// the correct order. Instead we use Tuple-length destructuring
-// to yield TUnion ordering (review)
-//
-// Relates: TKeyOf | TIndex
+// Operation
+// 
+// KeyOf<T> is typically applied to types with structurally known
+// keys, so the resulting key set is already presumed distinct. We
+// use EvaluateUnionFast to skip type de-duplication.
 //
 // ------------------------------------------------------------------
-type TNormalizeType<Type extends TSchema,
-  Result extends TSchema = (Type extends TCyclic | TDependent | TIntersect | TUnion ? TCollapseToObject<Type> : Type)
+type TKeyOfOperation<Type extends TSchema,
+  Keys extends TSchema[] = TKeys<{}, Type>,
+  Result extends TSchema = TEvaluateUnionFast<Keys>
 > = Result
-function NormalizeType<Type extends TSchema>(type: Type): TNormalizeType<Type> {
-  const result = (IsCyclic(type) || IsDependent(type) || IsIntersect(type) || IsUnion(type) ? CollapseToObject(type) : type)
+function KeyOfOperation<Type extends TSchema>(type: Type): TKeyOfOperation<Type> {
+  const keys = Keys({}, type) as TSchema[]
+  const result = EvaluateUnionFast(keys)
   return result as never
 }
 // ------------------------------------------------------------------
@@ -68,13 +60,13 @@ function NormalizeType<Type extends TSchema>(type: Type): TNormalizeType<Type> {
 // ------------------------------------------------------------------
 export type TKeyOfAction<Type extends TSchema, 
   Result extends TSchema = TCanInstantiate<[Type]> extends true
-    ? TFromType<TNormalizeType<Type>>
+    ? TKeyOfOperation<Type>
     : TKeyOfDeferred<Type>
 > = Result
 export function KeyOfAction<Type extends TSchema>(type: Type, options: TSchemaOptions): TKeyOfAction<Type> {
   return (
     CanInstantiate([type])
-    ? Memory.Update(FromType(NormalizeType(type)), {}, options)
+    ? Memory.Update(KeyOfOperation(type), {}, options)
     : KeyOfDeferred(type, options)
   ) as never
 }

@@ -33,6 +33,7 @@ import { type TProperties } from '../../types/properties.ts'
 import { KeyValue, type TKeyValue } from '../../types/_key_value.ts'
 import { Literal, type TLiteral, type TLiteralValue } from '../../types/literal.ts'
 import type { TUnionToTuple } from '../helpers/union.ts'
+import { ConvertToIntegerKey } from '../helpers/keys.ts'
 
 // ------------------------------------------------------------------
 // Properties
@@ -48,7 +49,7 @@ function FromProperties<Context extends TProperties, Properties extends TPropert
   (_context: Context, properties: Properties, keys: [...Keys]): TFromProperties<Context, Properties, Keys> {
   return keys.reduce<TKeyValue[]>((result, left) => {
     return Guard.HasPropertyKey(properties, left as keyof Properties) 
-      ? [...result, KeyValue(Literal(left), properties[left as keyof Properties])] 
+      ? [...result, KeyValue(Literal(ConvertToIntegerKey(left)), properties[left as keyof Properties])] 
       : result
   }, []) as never
 }

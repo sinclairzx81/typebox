@@ -31,6 +31,8 @@ THE SOFTWARE.
 import { type TSchema } from '../../types/schema.ts'
 import { type TProperties } from '../../types/properties.ts'
 import { type TKeyValue } from '../../types/_key_value.ts'
+
+import { IsAny, type TAny } from '../../types/any.ts'
 import { IsArray, type TArray } from '../../types/array.ts'
 import { IsCyclic, type TCyclic } from '../../types/cyclic.ts'
 import { IsDependent, type TDependent } from '../../types/dependent.ts'
@@ -41,6 +43,8 @@ import { IsRef, type TRef } from '../../types/ref.ts'
 import { IsTuple, type TTuple } from '../../types/tuple.ts'
 import { IsUnion, type TUnion } from '../../types/union.ts'
 
+
+import { FromAny, type TFromAny } from './from_any.ts'
 import { FromArray, type TFromArray } from './from_array.ts'
 import { FromCyclic, type TFromCyclic } from './from_cyclic.ts'
 import { FromDependent, type TFromDependent } from './from_dependent.ts'
@@ -55,6 +59,7 @@ import { FromUnion, type TFromUnion } from './from_union.ts'
 // FromType
 // ------------------------------------------------------------------
 export type TFromType<Context extends TProperties, Type extends TSchema, Result extends TKeyValue[] = (
+  Type extends TAny ? TFromAny<Context> :
   Type extends TArray<infer Type extends TSchema>  ? TFromArray<Context, Type> : 
   Type extends TCyclic<infer Defs extends TProperties, infer Ref extends string> ? TFromCyclic<Context, Defs, Ref> :
   Type extends TDependent<infer If extends TSchema, infer Then extends TSchema, infer Else extends TSchema> ? TFromDependent<Context, If, Then, Else> :
@@ -69,6 +74,7 @@ export type TFromType<Context extends TProperties, Type extends TSchema, Result 
 export function FromType<Context extends TProperties, Type extends TSchema>
   (context: Context, type: Type): TFromType<Context, Type> {
   return (
+    IsAny(type) ? FromAny(context) :
     IsArray(type) ? FromArray(context, type.items) : 
     IsCyclic(type) ? FromCyclic(context, type.$defs, type.$ref) :
     IsDependent(type) ? FromDependent(context, type.if, type.then, type.else) :

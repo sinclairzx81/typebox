@@ -4,7 +4,7 @@ TypeBox
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2026 Haydn Paterson 
+Copyright (c) 2017-2026 Haydn Paterson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,12 +28,26 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { type TSchema } from '../../types/index.ts'
-import { type TRecordPatternToType, RecordPatternToType } from '../../types/record.ts'
+import { type TSchema } from '../../types/schema.ts'
+import { type TProperties } from '../../types/properties.ts'
+import { KeyValue, type TKeyValue } from '../../types/_key_value.ts'
+import { Number, type TNumber } from '../../types/number.ts'
+import { String, type TString } from '../../types/string.ts'
+import { Symbol, type TSymbol } from '../../types/symbol.ts'
+import { Unknown, type TUnknown } from '../../types/unknown.ts'
 
-export type TFromRecord<Pattern extends string,
-  Result extends TSchema = TRecordPatternToType<Pattern>
+export type TFromAny<_Context extends TProperties, 
+  Result extends TKeyValue[] = [
+    TKeyValue<TNumber, TUnknown>,
+    TKeyValue<TString, TUnknown>,
+    TKeyValue<TSymbol, TUnknown>,
+  ]
 > = Result
-export function FromRecord<Pattern extends string>(pattern: Pattern): TFromRecord<Pattern> {
- return RecordPatternToType(pattern)
+export function FromAny<Context extends TProperties, Type extends TSchema>
+  (_context: Context): TFromAny<Context> {
+  return [
+    KeyValue(Number(), Unknown()),
+    KeyValue(String(), Unknown()),
+    KeyValue(Symbol(), Unknown())
+  ] as never
 }

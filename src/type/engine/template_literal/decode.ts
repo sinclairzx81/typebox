@@ -177,8 +177,8 @@ export type TTemplateLiteralDecodeUnsafe<Pattern extends string,
     Types extends []                            // Failed to Parse | IsTemplateLiteralPattern
     ? TString
     : TIsTemplateLiteralFinite<Types> extends true
-    ? TDecodeTypes<Types>
-    : TTemplateLiteral<Pattern>
+      ? TDecodeTypes<Types>
+      : TTemplateLiteral<Pattern>
   )
 > = Result
 /**
