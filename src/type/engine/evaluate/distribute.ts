@@ -31,6 +31,7 @@ THE SOFTWARE.
 
 import { Guard } from '../../../guard/index.ts'
 import { type TSchema } from '../../types/schema.ts'
+import { type TProperties } from '../../types/properties.ts'
 import { type TUnion, IsUnion } from '../../types/union.ts'
 import { type TObject, IsObject } from '../../types/object.ts'
 import { type TTuple, IsTuple } from '../../types/tuple.ts'
@@ -41,10 +42,14 @@ import { type TEvaluateType, EvaluateType } from './evaluate.ts'
 import { type TEvaluateIntersect, EvaluateIntersect } from './evaluate.ts'
 
 // ------------------------------------------------------------------
-// IsObjectLike
+// IsObjectLike (We need explicit destructuring here to ensure
+// that wrapped TWith<T..> types can be observed as ObjectLike)
 // ------------------------------------------------------------------
-type TIsObjectLike<Type extends TSchema> 
-  = Type extends TObject | TTuple ? true : false
+type TIsObjectLike<Type extends TSchema> = (
+  Type extends TObject<infer _ extends TProperties> ? true :
+  Type extends TTuple<infer _ extends TSchema[]> ? true : 
+  false
+)
 function IsObjectLike<Type extends TSchema>(type: Type) {
   return IsObject(type) || IsTuple(type)
 }
