@@ -29,19 +29,33 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { Guard } from '../../../guard/index.ts'
+import { type TSchema } from '../../types/schema.ts'
 import { type TProperties } from '../../types/properties.ts'
 import { KeyValue, type TKeyValue } from '../../types/_key_value.ts'
 import { Literal, type TLiteral, type TLiteralValue } from '../../types/literal.ts'
 import type { TUnionToTuple } from '../helpers/union.ts'
 import { ConvertToIntegerKey } from '../helpers/keys.ts'
 
+import { type TExpandThis, ExpandThis } from '../this/expand_this.ts'
+
+// ------------------------------------------------------------------
+// Property
+// ------------------------------------------------------------------
+type TFromProperty<Properties extends TProperties, Type extends TSchema,
+  Result extends TSchema = TExpandThis<Properties, Type>
+> = Result
+function FromProperty<Properties extends TProperties, Type extends TSchema>
+  (properties: Properties, type: Type): TFromProperty<Properties, Type> {
+  const result = ExpandThis(properties, type)
+  return result as never
+}
 // ------------------------------------------------------------------
 // Properties
 // ------------------------------------------------------------------
 type TFromProperties<Context extends TProperties, Properties extends TProperties, Keys extends TLiteralValue[], Result extends TKeyValue[] = []> = (
   Keys extends [infer Left extends TLiteralValue, ...infer Right extends TLiteralValue[]]
     ? Left extends keyof Properties 
-      ? TFromProperties<Context, Properties, Right, [...Result, TKeyValue<TLiteral<Left>, Properties[Left]>]>
+      ? TFromProperties<Context, Properties, Right, [...Result, TKeyValue<TLiteral<Left>, TFromProperty<Properties, Properties[Left]>>]>
       : TFromProperties<Context, Properties, Right, Result>
   : Result
 )
@@ -49,7 +63,7 @@ function FromProperties<Context extends TProperties, Properties extends TPropert
   (_context: Context, properties: Properties, keys: [...Keys]): TFromProperties<Context, Properties, Keys> {
   return keys.reduce<TKeyValue[]>((result, left) => {
     return Guard.HasPropertyKey(properties, left as keyof Properties) 
-      ? [...result, KeyValue(Literal(ConvertToIntegerKey(left)), properties[left as keyof Properties])] 
+      ? [...result, KeyValue(Literal(ConvertToIntegerKey(left)), FromProperty(properties, properties[left as keyof Properties]))] 
       : result
   }, []) as never
 }

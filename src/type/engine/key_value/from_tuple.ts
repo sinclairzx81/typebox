@@ -50,11 +50,11 @@ function FromElements<Context extends TProperties, Types extends TSchema[]>
 // ------------------------------------------------------------------
 // Tuple
 // ------------------------------------------------------------------
-export type TFromTuple<Context extends TProperties, Types extends TSchema[], 
+export type TFromTuple<Context extends TProperties, Types extends TSchema[],
   Result extends TKeyValue[] = TFromElements<Context, Types>
 > = Result
 export function FromTuple<Context extends TProperties, Types extends TSchema[]>
   (context: Context, types: [...Types]): TFromTuple<Context, Types> {
   const result = FromElements(context, types)
-  return result
+  return result as never
 }

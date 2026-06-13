@@ -38,5 +38,6 @@ export type TFromArray<Context extends TProperties, Type extends TSchema,
 > = Result
 export function FromArray<Context extends TProperties, Type extends TSchema>
   (_context: Context, type: Type): TFromArray<Context, Type> {
-  return [KeyValue(Number(), type)] as never
+  const result = [KeyValue(Number(), type)]
+  return result as never
 }

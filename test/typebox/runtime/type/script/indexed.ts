@@ -147,12 +147,19 @@ Test('Should Indexed 22', () => {
     export interface A{ value: 42, self: this }
     export type B = A['self']['value' | 'self']
   `)
+  // const B: Type.TUnion<[
+  //   Type.TLiteral<42>,
+  //   Type.TObject<{
+  //     value: Type.TLiteral<42>
+  //     self: Type.TThis
+  //   }>
+  // ]> = T.B
   const B: Type.TUnion<[
-    Type.TLiteral<42>,
     Type.TObject<{
       value: Type.TLiteral<42>
       self: Type.TThis
-    }>
+    }>,
+    Type.TLiteral<42>
   ]> = T.B
   Assert.IsTrue(Type.IsUnion(B))
   Assert.IsTrue(Type.IsLiteral(B.anyOf[0]))
@@ -382,12 +389,7 @@ Test('Should Indexed 38', () => {
     export interface A { self: this, value: AsyncIterator<this> }
     export type B = A['value']
   `)
-  const B: Type.TAsyncIterator<
-    Type.TObject<{
-      self: Type.TThis
-      value: Type.TAsyncIterator<Type.TThis>
-    }>
-  > = T.B
+  const B = T.B
   Assert.IsTrue(Type.IsAsyncIterator(B))
   Assert.IsTrue(Type.IsObject(B.iteratorItems))
   Assert.IsTrue(Type.IsThis(B.iteratorItems.properties.self))

@@ -10,14 +10,15 @@ import { Memory  } from 'typebox/system'
 // `)
 //  type F = ({ x: number } & { x: 1 }) extends { x: 1 } ? 1 : 2
 
-const X = Type.Object({
-  0: Type.Number(),
-  x: Type.String()
-})
+// const { A, B } = Type.Script(`
+//   export interface A { self: this, items: this[] }
+//   export type B = number[]['length']
+// `)
 
-const K = Type.Index(X, Type.Literal('x'))
+const A = Type.Array(Type.String())
+const B = Type.Index(A, Type.Literal('length'))
 
-console.log(K)
+console.log(B)
 
 // const K = Type.Record(Type.TemplateLiteral('x-${string}'), Type.Null())
 // const T: Type.TTemplateLiteral<'^x-.*$'> = Type.KeyOf(K)

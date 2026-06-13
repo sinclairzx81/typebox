@@ -32,7 +32,11 @@ THE SOFTWARE.
 import { Memory } from '../../../system/memory/index.ts'
 import { type TSchema, type TSchemaOptions } from '../../types/schema.ts'
 import { type TProperties } from '../../types/properties.ts'
-import { type TKeyValue } from '../../types/_key_value.ts'
+import { type TNumber, Number } from '../../types/number.ts'
+import { type TArray, IsArray } from '../../types/array.ts'
+import { type TTuple, IsTuple } from '../../types/tuple.ts'
+import { type TLiteral, Literal } from '../../types/literal.ts'
+import { type TKeyValue, KeyValue } from '../../types/_key_value.ts'
 
 import { type TIndexDeferred, IndexDeferred } from '../../action/indexed.ts'
 
@@ -42,17 +46,17 @@ import { type TEvaluateUnionFast, EvaluateUnionFast } from '../evaluate/evaluate
 import { type TKeyValues, KeyValues } from '../key_value/key_values.ts'
 
 // ------------------------------------------------------------------
-// FromKeyValues
+// IndexFromKeyValues
 // ------------------------------------------------------------------
-type TFromKeyValues<KeyValues extends TKeyValue[], Indexer extends TSchema, Result extends TSchema[] = []> = (
+type TIndexFromKeyValues<KeyValues extends TKeyValue[], Indexer extends TSchema, Result extends TSchema[] = []> = (
   KeyValues extends [infer Left extends TKeyValue, ...infer Right extends TKeyValue[]]
     ? TExtends<{}, Left['key'], Indexer> extends ExtendsResult.TExtendsTrueLike
-      ? TFromKeyValues<Right, Indexer, [...Result, Left['value']]>
-      : TFromKeyValues<Right, Indexer, Result> 
+      ? TIndexFromKeyValues<Right, Indexer, [...Result, Left['value']]>
+      : TIndexFromKeyValues<Right, Indexer, Result> 
     : Result
 )
-function FromKeyValues<KeyValues extends TKeyValue[], Indexer extends TSchema>
-  (keyValues: [...KeyValues], indexer: Indexer): TFromKeyValues<KeyValues, Indexer> {
+function IndexFromKeyValues<KeyValues extends TKeyValue[], Indexer extends TSchema>
+  (keyValues: [...KeyValues], indexer: Indexer): TIndexFromKeyValues<KeyValues, Indexer> {
   return keyValues.reduce<TSchema[]>((result, left) => {
     return ExtendsResult.Match(Extends({}, left['key'], indexer), () => 
       [...result, left['value']] as TSchema[],
@@ -60,18 +64,34 @@ function FromKeyValues<KeyValues extends TKeyValue[], Indexer extends TSchema>
   }, []) as never
 }
 // ------------------------------------------------------------------
+// AdditionalKeyValues
+// ------------------------------------------------------------------
+type TAdditionalKeyValues<Type extends TSchema, Result extends TKeyValue[] = (
+  Type extends TArray<TSchema> ? [TKeyValue<TLiteral<'length'>, TNumber>] :
+  Type extends TTuple<TSchema[]> ? [TKeyValue<TLiteral<'length'>, TLiteral<Type['items']['length']>>] :
+  []
+)> = Result
+function AdditionalKeyValues<Type extends TSchema>(type: Type): TAdditionalKeyValues<Type> {
+  return (
+    IsArray(type) ? [KeyValue(Literal('length'), Number())] :
+    IsTuple(type) ? [KeyValue(Literal('length'), Literal(type['items']['length']))] :
+    []
+  ) as never
+}
+// ------------------------------------------------------------------
 // Operation
 // ------------------------------------------------------------------
 type TIndexOperation<Type extends TSchema, Indexer extends TSchema,
   KeyValues extends TKeyValue[] = TKeyValues<{}, Type>,
-  Indexed extends TSchema[] = TFromKeyValues<KeyValues, Indexer>,
+  AdditionalKeyValues extends TKeyValue[] = TAdditionalKeyValues<Type>,
+  Indexed extends TSchema[] = TIndexFromKeyValues<[...KeyValues, ...AdditionalKeyValues], Indexer>,
   Result extends TSchema = TEvaluateUnionFast<Indexed>
 > = Result
-
 function IndexOperation<Type extends TSchema, Indexer extends TSchema>
   (type: Type, indexer: Indexer): TIndexOperation<Type, Indexer> {
   const keyValues = KeyValues({}, type) as TKeyValue[]
-  const indexed = FromKeyValues(keyValues, indexer)
+  const additionalKeyValues = AdditionalKeyValues(type) as TKeyValue[]
+  const indexed = IndexFromKeyValues([...keyValues, ...additionalKeyValues], indexer)
   const result = EvaluateUnionFast(indexed)
   return result as never
 }
@@ -96,7 +116,6 @@ export type TIndexInstantiate<Context extends TProperties, State extends TState,
   InstantiatedType extends TSchema = TInstantiateType<Context, State, Type>,
   InstantiatedIndexer extends TSchema = TInstantiateType<Context, State, Indexer>,
 > = TIndexAction<InstantiatedType, InstantiatedIndexer>
-
 export function IndexInstantiate<Context extends TProperties, State extends TState, Type extends TSchema, Indexer extends TSchema>
   (context: Context, state: State, type: Type, indexer: Indexer, options: TSchemaOptions): 
     TIndexInstantiate<Context, State, Type, Indexer> {
