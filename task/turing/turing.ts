@@ -267,6 +267,8 @@ export function Run(): void {
 // --------------------------------------------------------------------------
 // Debug
 // --------------------------------------------------------------------------
+import { Memory } from 'typebox/system'
+
 export function Debug(): void {
   let step = 0
   let program = Type.Script({ ...Interpretter, Code: Compile(SourceCode) }, `Program<
@@ -285,8 +287,9 @@ export function Debug(): void {
     const current = program.properties.instruction.properties.next.items[0]
     const next = program.properties.instruction.properties.next.items.map((type: Type.TLiteral) => type.const).join(' ')
     const prev = program.properties.instruction.properties.prev.items.map((type: Type.TLiteral) => type.const).join(' ')
-    const usage = MemoryUsage()
-    console.log('Program', { step, input, output, memory, current, next, prev, usage })
+    const gc = MemoryUsage()
+    const tb = Memory.Metrics
+    console.log('Program', { gc, tb, step, input, output, memory, current, next, prev })
     if(program.properties.instruction.properties.next.items.length === 0) break
     program = Type.Script({ ...Interpretter, State: program }, `ProgramStep<State>`)
     step += 1
