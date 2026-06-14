@@ -49,14 +49,13 @@ import { type TInterfaceDeferred, IsInterfaceDeferred } from '../../action/inter
 // ------------------------------------------------------------------
 // FromRef
 // ------------------------------------------------------------------
-type TFromRef<Stack extends string[], Context extends TProperties, Ref extends string> =
+type TFromRef<Stack extends (keyof Context)[], Context extends TProperties, Ref extends (keyof Context)> =
   Ref extends Stack[number]
-  ? true
-  : TFromType<[...Stack, Ref], Context, Context[Ref]>
+    ? true
+    : TFromType<[...Stack, Ref], Context, Context[Ref]>
 
-function FromRef<Stack extends string[], Context extends TProperties, Ref extends string>
-  (stack: [...Stack], context: Context, ref: Ref):
-  TFromRef<Stack, Context, Ref> {
+function FromRef<Stack extends (keyof Context)[], Context extends TProperties, Ref extends (keyof Context)>
+  (stack: [...Stack], context: Context, ref: Ref): TFromRef<Stack, Context, Ref> {
   return (
     stack.includes(ref)
       ? true
@@ -66,11 +65,11 @@ function FromRef<Stack extends string[], Context extends TProperties, Ref extend
 // ------------------------------------------------------------------
 // Properties
 // ------------------------------------------------------------------
-type TFromProperties<Stack extends string[], Context extends TProperties, Properties extends TProperties,
+type TFromProperties<Stack extends (keyof Context)[], Context extends TProperties, Properties extends TProperties,
   Types extends TSchema[] = TPropertyValues<Properties>,
 > = TFromTypes<Stack, Context, Types>
 
-function FromProperties<Stack extends string[], Context extends TProperties, Properties extends TProperties>
+function FromProperties<Stack extends (keyof Context)[], Context extends TProperties, Properties extends TProperties>
   (stack: [...Stack], context: Context, properties: Properties):
   TFromProperties<Stack, Context, Properties> {
   const types = PropertyValues(properties) as TSchema[]
@@ -79,28 +78,27 @@ function FromProperties<Stack extends string[], Context extends TProperties, Pro
 // ------------------------------------------------------------------
 // Types
 // ------------------------------------------------------------------
-type TFromTypes<Stack extends string[], Context extends TProperties, Types extends TSchema[]> =
+type TFromTypes<Stack extends (keyof Context)[], Context extends TProperties, Types extends TSchema[]> =
   Types extends [infer Left extends TSchema, ...infer Right extends TSchema[]]
   ? TFromType<Stack, Context, Left> extends true
     ? true
     : TFromTypes<Stack, Context, Right>
   : false
 
-function FromTypes<Stack extends string[], Context extends TProperties, Types extends TSchema[]>
+function FromTypes<Stack extends (keyof Context)[], Context extends TProperties, Types extends TSchema[]>
   (stack: [...Stack], context: Context, types: [...Types]):
-  TFromTypes<Stack, Context, Types> {
+    TFromTypes<Stack, Context, Types> {
   return Guard.TakeLeft(types, (left, right) => 
     FromType(stack, context, left)
       ? true
       : FromTypes(stack, context, right),
     () => false
   ) as never
-
 }
 // ------------------------------------------------------------------
 // Type
 // ------------------------------------------------------------------
-type TFromType<Stack extends string[], Context extends TProperties, Type extends TSchema> = (
+type TFromType<Stack extends (keyof Context)[], Context extends TProperties, Type extends TSchema> = (
   Type extends TRef<infer Ref extends string> ? TFromRef<Stack, Context, Ref> :
   Type extends TArray<infer Type extends TSchema> ? TFromType<Stack, Context, Type> :
   Type extends TAsyncIterator<infer Type extends TSchema> ? TFromType<Stack, Context, Type> :
@@ -116,9 +114,9 @@ type TFromType<Stack extends string[], Context extends TProperties, Type extends
   Type extends TRecord<string, infer Type extends TSchema> ? TFromType<Stack, Context, Type> :
   false
 )
-function FromType<Stack extends string[], Context extends TProperties, Type extends TSchema>
+function FromType<Stack extends (keyof Context)[], Context extends TProperties, Type extends TSchema>
   (stack: [...Stack], context: Context, type: Type):
-  TFromType<Stack, Context, Type> {
+    TFromType<Stack, Context, Type> {
   return (
     IsRef(type) ? FromRef(stack, context, type.$ref) :
     IsArray(type) ? FromType(stack, context, type.items) :
@@ -140,14 +138,14 @@ function FromType<Stack extends string[], Context extends TProperties, Type exte
 // CyclicCheck
 // ------------------------------------------------------------------
 /** Performs a cyclic check on the given type. Initial key stack can be empty, but faster if specified */
-export type TCyclicCheck<Stack extends string[], Context extends TProperties, Type extends TSchema,
+export type TCyclicCheck<Stack extends (keyof Context)[], Context extends TProperties, Type extends TSchema,
   Result extends boolean = TFromType<Stack, Context, Type>
 > = Result
 
 /** Performs a cyclic check on the given type. Initial key stack can be empty, but faster if specified */
-export function CyclicCheck<Stack extends string[], Context extends TProperties, Type extends TSchema>
+export function CyclicCheck<Stack extends (keyof Context)[], Context extends TProperties, Type extends TSchema>
   (stack: [...Stack], context: Context, type: Type):
-  TCyclicCheck<Stack, Context, Type> {
+    TCyclicCheck<Stack, Context, Type> {
   const result = FromType(stack, context, type)
   return result as never
 }

@@ -28,44 +28,35 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { type TUnreachable, Unreachable } from '../../../system/unreachable/index.ts'
 import { type TProperties, type TPropertyKeys, PropertyKeys } from '../../types/properties.ts'
 import { type TCyclicCheck, CyclicCheck } from './check.ts'
 
 // ------------------------------------------------------------------
 // ResolveCandidateKeys
-//
-// deno-coverage-ignore-start - symmetric unreachable | internal
-//
-// This function will always receive keys in Context.
-//
 // ------------------------------------------------------------------
-type TResolveCandidateKeys<Context extends TProperties, Keys extends string[], Result extends string[] = []> = (
-  Keys extends [infer Left extends string, ...infer Right extends string[]]
-    ? Left extends keyof Context
-      ? TCyclicCheck<[Left], Context, Context[Left]> extends true
-        ? TResolveCandidateKeys<Context, Right, [...Result, Left]>
-        : TResolveCandidateKeys<Context, Right, Result>
-    : TUnreachable
+type TResolveCandidateKeys<Context extends TProperties, Keys extends (keyof Context)[], Result extends (keyof Context)[] = []> = (
+  Keys extends [infer Left extends keyof Context, ...infer Right extends (keyof Context)[]]
+    ? TCyclicCheck<[Left], Context, Context[Left]> extends true
+      ? TResolveCandidateKeys<Context, Right, [...Result, Left]>
+      : TResolveCandidateKeys<Context, Right, Result>
   : Result
 )
-function ResolveCandidateKeys<Context extends TProperties, Keys extends string[]>(context: Context, keys: [...Keys]): TResolveCandidateKeys<Context, Keys> {
-  return keys.reduce<string[]>((result, left) => {
-    return left in context
-      ? CyclicCheck([left], context, context[left])
-        ? [...result, left]
-        : result
-      : Unreachable()
+function ResolveCandidateKeys<Context extends TProperties, Keys extends (keyof Context)[]>
+  (context: Context, keys: [...Keys]): 
+    TResolveCandidateKeys<Context, Keys> {
+  return keys.reduce<(keyof Context)[]>((result, left) => {
+    return CyclicCheck([left], context, context[left])
+      ? [...result, left]
+      : result
   }, []) as never
 }
-// deno-coverage-ignore-stop
 // ------------------------------------------------------------------
 // CyclicCandidates
 // ------------------------------------------------------------------
 /** Returns keys for context types that need to be transformed to TCyclic. */
 export type TCyclicCandidates<Context extends TProperties,
-  Keys extends string[] = TPropertyKeys<Context>,
-  Result extends string[] = TResolveCandidateKeys<Context, Keys>
+  Keys extends (keyof Context)[] = TPropertyKeys<Context>,
+  Result extends (keyof Context)[] = TResolveCandidateKeys<Context, Keys>
 > = Result
 
 /** Returns keys for context types that need to be transformed to TCyclic. */
