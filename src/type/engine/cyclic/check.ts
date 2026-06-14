@@ -55,7 +55,8 @@ type TFromRef<Stack extends (keyof Context)[], Context extends TProperties, Ref 
     : TFromType<[...Stack, Ref], Context, Context[Ref]>
 
 function FromRef<Stack extends (keyof Context)[], Context extends TProperties, Ref extends (keyof Context)>
-  (stack: [...Stack], context: Context, ref: Ref): TFromRef<Stack, Context, Ref> {
+  (stack: [...Stack], context: Context, ref: Ref): 
+    TFromRef<Stack, Context, Ref> {
   return (
     stack.includes(ref)
       ? true
