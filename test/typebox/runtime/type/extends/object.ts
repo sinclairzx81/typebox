@@ -1,6 +1,5 @@
 import Type, { Extends, ExtendsResult } from 'typebox'
 import { Assert } from 'test'
-import { stringify } from 'node:querystring'
 
 const Test = Assert.Context('Extends.Object')
 
@@ -131,4 +130,59 @@ Test('Should Extends 20', () => {
   Assert.IsTrue(ExtendsResult.IsExtendsTrue(R))
   Assert.IsTrue(Type.IsUnknown(R.inferred.A))
   Assert.IsTrue(Type.IsNumber(R.inferred.B))
+})
+// ------------------------------------------------------------------
+// ExtendsRecord
+// ------------------------------------------------------------------
+Test('Should Extends 21', () => {
+  const L = Type.Object({ x: Type.Literal(1), y: Type.Literal(2) })
+  const R = Type.Record(Type.String(), Type.Number())
+  const T: Type.ExtendsResult.TExtendsTrue<{}> = Extends({}, L, R)
+  Assert.IsTrue(ExtendsResult.IsExtendsTrue(T))
+})
+Test('Should Extends 22', () => {
+  const L = Type.Object({ x: Type.Literal(1), y: Type.Literal(2) })
+  const R = Type.Record(Type.String(), Type.String())
+  const T: Type.ExtendsResult.TExtendsFalse = Extends({}, L, R)
+  Assert.IsTrue(ExtendsResult.IsExtendsFalse(T))
+})
+Test('Should Extends 23', () => {
+  const L = Type.Object({ x: Type.Literal(1), y: Type.Literal(2) })
+  const R = Type.Record(Type.String(), Type.Infer('X'))
+  const T: Type.ExtendsResult.TExtendsTrue<{
+    X: Type.TUnion<[Type.TLiteral<1>, Type.TLiteral<2>]>
+  }> = Extends({}, L, R)
+  Assert.IsTrue(ExtendsResult.IsExtendsTrue(T))
+  Assert.IsTrue(Type.IsUnion(T.inferred.X))
+  Assert.IsEqual(T.inferred.X.anyOf[0].const, 1)
+  Assert.IsEqual(T.inferred.X.anyOf[1].const, 2)
+})
+Test('Should Extends 24', () => {
+  const L = Type.Object({ x: Type.Literal(1), y: Type.Literal(2) })
+  const R = Type.Record(Type.String(), Type.Infer('X', Type.Number()))
+  const T: Type.ExtendsResult.TExtendsTrue<{
+    X: Type.TUnion<[Type.TLiteral<1>, Type.TLiteral<2>]>
+  }> = Extends({}, L, R)
+  Assert.IsTrue(ExtendsResult.IsExtendsTrue(T))
+  Assert.IsTrue(Type.IsUnion(T.inferred.X))
+  Assert.IsEqual(T.inferred.X.anyOf[0].const, 1)
+  Assert.IsEqual(T.inferred.X.anyOf[1].const, 2)
+})
+Test('Should Extends 25', () => {
+  const L = Type.Object({ x: Type.Literal(1), y: Type.Literal(2), z: Type.Literal(3) })
+  const R = Type.Record(Type.String(), Type.Infer('X', Type.Number()))
+  const T: Type.ExtendsResult.TExtendsTrue<{
+    X: Type.TUnion<[Type.TLiteral<1>, Type.TLiteral<2>, Type.TLiteral<3>]>
+  }> = Extends({}, L, R)
+  Assert.IsTrue(ExtendsResult.IsExtendsTrue(T))
+  Assert.IsTrue(Type.IsUnion(T.inferred.X))
+  Assert.IsEqual(T.inferred.X.anyOf[0].const, 1)
+  Assert.IsEqual(T.inferred.X.anyOf[1].const, 2)
+  Assert.IsEqual(T.inferred.X.anyOf[2].const, 3)
+})
+Test('Should Extends 26', () => {
+  const L = Type.Object({ x: Type.Literal(1), y: Type.Literal(2) })
+  const R = Type.Record(Type.String(), Type.Infer('X', Type.String()))
+  const T: Type.ExtendsResult.TExtendsFalse = Extends({}, L, R)
+  Assert.IsTrue(ExtendsResult.IsExtendsFalse(T))
 })

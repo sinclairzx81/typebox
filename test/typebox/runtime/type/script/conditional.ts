@@ -8,7 +8,6 @@ Test('Should Conditional 1', () => {
   Assert.IsTrue(Type.IsLiteral(T))
   Assert.IsEqual(T.const, true)
 })
-
 Test('Should Conditional 2', () => {
   const T: Type.TString = Type.Script('string extends infer S ? S : false')
   Assert.IsTrue(Type.IsString(T))
@@ -48,4 +47,14 @@ Test('Should Conditional 5', () => {
   Assert.IsEqual(T.items[0].const, 3)
   Assert.IsEqual(T.items[1].const, 2)
   Assert.IsEqual(T.items[2].const, 1)
+})
+// ------------------------------------------------------------------
+// Record Inference
+// ------------------------------------------------------------------
+Test('Should Conditional 6', () => {
+  const T: Type.TUnion<[Type.TLiteral<1>, Type.TLiteral<2>, Type.TLiteral<3>]> = Type.Script('{ x: 1, y: 2, z: 3 } extends Record<string, infer K> ? K : never')
+  Assert.IsTrue(Type.IsUnion(T))
+  Assert.IsEqual(T.anyOf[0].const, 1)
+  Assert.IsEqual(T.anyOf[1].const, 2)
+  Assert.IsEqual(T.anyOf[2].const, 3)
 })

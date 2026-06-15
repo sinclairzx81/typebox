@@ -131,7 +131,7 @@ type TExtendsRightIntersect<Inferred extends TProperties, Left extends TSchema, 
 function ExtendsRightIntersect<Inferred extends TProperties, Left extends TSchema, Right extends TSchema[]>
   (inferred: Inferred, left: Left, right: Right): 
     TExtendsRightIntersect<Inferred, Left, Right> {
-  return Guard.TakeLeft(right, (head, tail) => 
+  return Guard.ShiftLeft(right, (head, tail) => 
     Result.Match(ExtendsLeft(inferred, left, head),
       inferred => ExtendsRightIntersect(inferred, left, tail),
       () => Result.ExtendsFalse()),
@@ -162,7 +162,7 @@ type TExtendsRightUnion<Inferred extends TProperties, Left extends TSchema, Righ
 function ExtendsRightUnion<Inferred extends TProperties, Left extends TSchema, Right extends TSchema[]>
   (inferred: Inferred, left: Left, right: Right):
   TExtendsRightUnion<Inferred, Left, Right> {
-  return Guard.TakeLeft(right, (head, tail) =>
+  return Guard.ShiftLeft(right, (head, tail) =>
     Result.Match(ExtendsLeft(inferred, left, head),
       inferred => Result.ExtendsTrue(inferred),
       () => ExtendsRightUnion(inferred, left, tail)),

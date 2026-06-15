@@ -164,7 +164,13 @@ Test('Should UnionPrioritySort 24', () => {
   const A = Type.Object({ a: Type.String() })
   const B = Type.Record(Type.String(), Type.Any())
   const R = UnionPrioritySort([B, A])
-  Assert.IsEqual(R, [B, A]) // Review on Extends Check for Record
+  Assert.IsEqual(R, [A, B])
+})
+Test('Should UnionPrioritySort 24.1', () => {
+  const A = Type.Object({ a: Type.String() })
+  const B = Type.Record(Type.String(), Type.Any())
+  const R = UnionPrioritySort([A, B])
+  Assert.IsEqual(R, [A, B])
 })
 // ------------------------------------------------------------------
 // Reverse

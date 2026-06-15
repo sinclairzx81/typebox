@@ -81,7 +81,7 @@ type TParameterRight<Inferred extends TProperties, Left extends TSchema, LeftRes
 function ParameterRight<Inferred extends TProperties, Left extends TSchema, LeftRest extends TSchema[], RightRest extends TSchema[]>
   (inferred: Inferred, left: Left, leftRest: LeftRest, rightRest: RightRest):
   TParameterRight<Inferred, Left, LeftRest, RightRest> {
-  return Guard.TakeLeft(rightRest, (head, tail) =>
+  return Guard.ShiftLeft(rightRest, (head, tail) =>
     ParameterCompare(inferred, left, leftRest, head, tail),
     () => IsOptional(left)                // 'right-did-not-have-enough-elements'
       ? Result.ExtendsTrue(inferred)      // 'ok: left was optional'
@@ -98,7 +98,7 @@ type TParameterLeft<Inferred extends TProperties, LeftRest extends TSchema[], Ri
 function ParametersLeft<Inferred extends TProperties, Left extends TSchema[], Right extends TSchema[]>
   (inferred: Inferred, left: Left, rightRest: Right): 
     TParameterLeft<Inferred, Left, Right> {
-  return Guard.TakeLeft(left, (head, tail) => 
+  return Guard.ShiftLeft(left, (head, tail) => 
     ParameterRight(inferred, head, tail, rightRest),
     () => Result.ExtendsTrue(inferred)) as never // 'ok: no-more-elements-in-left'
 }

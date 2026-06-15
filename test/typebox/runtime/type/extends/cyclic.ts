@@ -117,8 +117,8 @@ Test('Should CyclicExtends 10', () => {
   Assert.IsExtends<string, any>(true)
   const A = Type.Record(Type.String(), Type.Ref('A'))
   const L = Type.Cyclic({ A }, 'A')
-  const R: ExtendsResult.TExtendsFalse = Extends({}, L, Type.Unknown())
-  Assert.IsTrue(ExtendsResult.IsExtendsFalse(R))
+  const R: ExtendsResult.TExtendsTrue = Extends({}, L, Type.Unknown())
+  Assert.IsTrue(ExtendsResult.IsExtendsTrue(R))
 })
 Test('Should CyclicExtends 11', () => {
   Assert.IsExtends<string, any>(true)

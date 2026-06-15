@@ -51,7 +51,7 @@ type TFromTypesReduce<Types extends TSchema[]> = (
   : true
 )
 function FromTypesReduce<Types extends TSchema[]>(types: [...Types]): TFromTypesReduce<Types> {
-  return Guard.TakeLeft(types, (left, right) =>
+  return Guard.ShiftLeft(types, (left, right) =>
     FromType(left)
       ? FromTypesReduce(right)
       : false,

@@ -50,7 +50,7 @@ type TFromLiteralPush<Variants extends string[], Value extends TLiteralValue, Re
   : Result
 
 function FromLiteralPush<Variants extends string[], Value extends TLiteralValue>(variants: [...Variants], value: Value, result: string[] = []): TFromLiteralPush<Variants, Value> {
-  return Guard.TakeLeft(variants, (left, right) =>
+  return Guard.ShiftLeft(variants, (left, right) =>
     FromLiteralPush(right, value, [...result, `${left}${value}`]),
     () => result) as never
 }
@@ -68,7 +68,7 @@ type TFromUnion<Variants extends string[], Types extends TSchema[], Result exten
   ? TFromUnion<Variants, Right, [...Result, ...TFromType<Variants, Left>]>
   : Result
 function FromUnion<Variants extends string[], Types extends TSchema[]>(variants: [...Variants], types: [...Types], result: string[] = []): TFromUnion<Variants, Types> {
-  return Guard.TakeLeft(types, (left, right) =>
+  return Guard.ShiftLeft(types, (left, right) =>
     FromUnion(variants, right, [...result, ...FromType(variants, left)]),
     () => result
   ) as never
@@ -110,7 +110,7 @@ type TDecodeFromSpan<Variants extends string[], Types extends TSchema[]> =
   ? TDecodeFromSpan<TFromType<Variants, Left>, Right>
   : Variants
 function DecodeFromSpan<Variants extends string[], Types extends TSchema[]>(variants: [...Variants], types: [...Types]): TDecodeFromSpan<Variants, Types> {
-  return Guard.TakeLeft(types, (left, right) =>
+  return Guard.ShiftLeft(types, (left, right) =>
     DecodeFromSpan(FromType(variants, left) as string[], right),
     () => variants) as never
 }
