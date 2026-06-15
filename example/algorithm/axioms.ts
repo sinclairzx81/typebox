@@ -1,24 +1,38 @@
+/*--------------------------------------------------------------------------
+
+TypeBox
+
+The MIT License (MIT)
+
+Copyright (c) 2017-2026 Haydn Paterson 
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+---------------------------------------------------------------------------*/
+
 // ------------------------------------------------------------------
 //
-//   Peano Arithmetic: Formal Proofs via TypeBox Type.Script
+// Peano Axioms via Type.Script(...)
 //
-//   Proves properties of the natural numbers using only
-//   type-level computation. All propositions are verified at
-//   runtime by TypeBox's Script engine. A result of
-//   { type: "string", const: "QED" } means every proof holds.
+// https://en.wikipedia.org/wiki/Peano_axioms
 //
-//   Covers:
-//     - Basic arithmetic: Add, Mul, Exp
-//     - Predecessor and truncated subtraction (monus)
-//     - Order relations: Lte, Gt
-//     - Commutativity of Add and Mul (concrete witnesses)
-//     - Add and Sub are inverses
-//     - Associativity (concrete witnesses)
-//     - Exponentiation laws
-//     - Divisibility via explicit witnesses
-//     - Order properties of Exp
-//
-//   Completes in around 30 seconds
+// Compute Time: 30 seconds approx
 //
 // ------------------------------------------------------------------
 
@@ -137,7 +151,7 @@ const { Result } = Type.Script(`
       : false
 
   // --------------------------------------------------------------
-  // Chapter 1: Basic arithmetic
+  // Basic arithmetic
   // --------------------------------------------------------------
 
   type P1  = Equal<Add<N2, N2>, N4>          // 2 + 2 = 4
@@ -147,7 +161,7 @@ const { Result } = Type.Script(`
   type P5  = Equal<Exp<N3, N3>, N27>         // 3^3 = 27
 
   // --------------------------------------------------------------
-  // Chapter 2: Identity elements
+  // Identity elements
   // --------------------------------------------------------------
 
   type P6  = Equal<Add<N0, N3>, N3>          // 0 + 3 = 3
@@ -156,14 +170,14 @@ const { Result } = Type.Script(`
   type P9  = Equal<Exp<N3, N0>, N1>          // 3^0 = 1
 
   // --------------------------------------------------------------
-  // Chapter 3: Commutativity (concrete witnesses)
+  // Commutativity (concrete witnesses)
   // --------------------------------------------------------------
 
   type P10 = Equal<Add<N1, N2>, Add<N2, N1>> // 1+2 = 2+1
   type P11 = Equal<Mul<N2, N3>, Mul<N3, N2>> // 2*3 = 3*2
 
   // --------------------------------------------------------------
-  // Chapter 4: Associativity (concrete witnesses)
+  // Associativity (concrete witnesses)
   // --------------------------------------------------------------
 
   // (1 + 2) + 3 = 1 + (2 + 3)
@@ -179,7 +193,7 @@ const { Result } = Type.Script(`
   >
 
   // --------------------------------------------------------------
-  // Chapter 5: Predecessor and subtraction
+  // Predecessor and subtraction
   // --------------------------------------------------------------
 
   type P14 = Equal<Pred<N4>, N3>             // Pred(4) = 3
@@ -188,7 +202,7 @@ const { Result } = Type.Script(`
   type P17 = Equal<Sub<N3, N5>, N0>          // 3 - 5 = 0 (monus)
 
   // --------------------------------------------------------------
-  // Chapter 6: Add and Sub are inverses
+  // Add and Sub are inverses
   // --------------------------------------------------------------
 
   // (3 + 4) - 4 = 3
@@ -199,7 +213,7 @@ const { Result } = Type.Script(`
   type P20 = Equal<Add<Sub<N7, N3>, N3>, N7>
 
   // --------------------------------------------------------------
-  // Chapter 7: Order relations
+  // Order relations
   // --------------------------------------------------------------
 
   type P21 = Lte<N2, N5>                     // 2 <= 5
@@ -210,7 +224,7 @@ const { Result } = Type.Script(`
   type P26 = Gt<Mul<N2, N3>, N4>             // 6 > 4
 
   // --------------------------------------------------------------
-  // Chapter 8: Exponentiation laws
+  // Exponentiation laws
   // --------------------------------------------------------------
 
   // 2^2 * 2^2 = 2^4   (A^M * A^N = A^(M+N))
@@ -227,7 +241,7 @@ const { Result } = Type.Script(`
   type P31 = Lte<Exp<N2, N4>, Exp<N3, N3>>  // 16 < 27
 
   // --------------------------------------------------------------
-  // Chapter 9: Divisibility witnesses
+  // Divisibility witnesses
   // --------------------------------------------------------------
 
   type P32 = Divides<N3, N3, N9>             // 3 | 9
@@ -237,7 +251,7 @@ const { Result } = Type.Script(`
   type P36 = Divides<N2, N8, N16>            // 2 | 16
 
   // --------------------------------------------------------------
-  // Conjunction of all proofs
+  // Results
   // --------------------------------------------------------------
 
   type All =

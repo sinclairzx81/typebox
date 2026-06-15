@@ -39,6 +39,9 @@ import { type TOptional, IsOptional } from '../types/_optional.ts'
 import { type TInfer, IsInfer } from '../types/infer.ts'
 import { type TNever, IsNever } from '../types/never.ts'
 import { type TObject, IsObject, Object } from '../types/object.ts'
+import { type TRecord, IsRecord, RecordPattern, RecordValue } from '../types/record.ts'
+import { type TUnion, Union, IsUnion } from '../types/union.ts'
+
 import { type TExtendsLeft, ExtendsLeft } from './extends_left.ts'
 import { type TExtendsRight, ExtendsRight } from './extends_right.ts'
 import { type TUnionToTuple } from '../engine/helpers/union.ts'
@@ -51,8 +54,8 @@ import * as Result from './result.ts'
 type TExtendsPropertyOptional<Inferred extends TProperties, Left extends TSchema, Right extends TSchema> = (
   Left extends TOptional<Left>
   ? Right extends TOptional<Right>
-  ? Result.TExtendsTrue<Inferred>
-  : Result.TExtendsFalse
+    ? Result.TExtendsTrue<Inferred>
+    : Result.TExtendsFalse
   : Result.TExtendsTrue<Inferred>
 )
 function ExtendsPropertyOptional<Inferred extends TProperties, Left extends TSchema, Right extends TSchema>
@@ -248,23 +251,90 @@ function ExtendsObjectToObject<Inferred extends TProperties, Left extends TPrope
     TExtendsObjectToObject<Inferred, Left, Right> {
   return ExtendsProperties(inferred, left, right) as never
 }
+
 // ----------------------------------------------------------------------------
-// ExtendsObjectToObject
+// ObjectToRecord
 //
-// todo: Tuples can be inferred as Object. We can Transform Tuple to Object
-// to perform this check.
+// It should be possible to unify this logic, specifically the property
+// level extends checks and inferred merge logic. To be honest, this
+// entire module needs to be cleaned up. Consider computing a forward
+// "Entries" data structure that can be uniformly compared for both
+// Object and Record comparisons. This also has some cross over with
+// Indexed and KeyOf operators which could also benefit from unified
+// 'Entry' enumeration. (review)
+//
+// ----------------------------------------------------------------------------
+
+// ----------------------------------------------------------------------------
+// RecordMergeInferred
+// ----------------------------------------------------------------------------
+type TRecordMergeInferred<Left extends TProperties, Right extends TProperties,
+  Result extends TProperties = {
+    [Key in keyof Right]: Key extends keyof Left
+      ? Left[Key] extends TUnion<infer Types extends TSchema[]>
+        ? TUnion<[...Types, Right[Key]]>
+        : TUnion<[Left[Key], Right[Key]]>
+      : Right[Key]
+}> = Result
+function RecordMergeInferred<Left extends TProperties, Right extends TProperties>
+  (left: Left, right: Right): TRecordMergeInferred<Left, Right> {
+  return Guard.Keys(right).reduce<TProperties>((result, key) => {
+    return {
+      ...result, [key]: Guard.HasPropertyKey(left, key)
+        ? IsUnion(result[key])
+          // @ts-ignore 5.0.4 cannot see `.anyOf`
+          ? Union([...result[key].anyOf, right[key]])
+          : Union([left[key], right[key]])
+        : right[key]
+    }
+  }, left) as never
+}
+// ----------------------------------------------------------------------------
+// ExtendsRecordComparer
+// ----------------------------------------------------------------------------
+type TExtendsRecordComparer<Properties extends TProperties, Keys extends (keyof Properties)[], Type extends TSchema, Result extends TProperties> = (
+  Keys extends [infer Left extends (keyof Properties), ...infer Right extends (keyof Properties)[]]
+    ? TExtendsLeft<{}, Properties[Left], Type> extends Result.TExtendsTrueLike<infer Inferred extends TProperties>
+      ? TExtendsRecordComparer<Properties, Right, Type, TRecordMergeInferred<Result, Inferred>> 
+      : Result.TExtendsFalse
+    : Result.TExtendsTrue<Result>
+)
+function ExtendsRecordComparer<Properties extends TProperties, Keys extends (keyof Properties)[], Type extends TSchema, Result extends TProperties>
+ (properties: Properties, keys: Keys, type: Type, result: Result): TExtendsRecordComparer<Properties, Keys, Type, Result> {
+  return Guard.ShiftLeft(keys, (left, right) => 
+    Result.Match(ExtendsLeft({}, properties[left], type), inferred => 
+      ExtendsRecordComparer(properties, right, type, RecordMergeInferred(result, inferred)),
+      () => Result.ExtendsFalse()),
+    () => Result.ExtendsTrue(result)) as never
+}
+// ----------------------------------------------------------------------------
+// ExtendsObjectToRecord
+// ----------------------------------------------------------------------------
+type TExtendsObjectToRecord<Inferred extends TProperties, Properties extends TProperties, _Pattern extends string, Value extends TSchema,
+  Keys extends (keyof Properties)[] = TUnionToTuple<keyof Properties>,
+  Result extends  Result.TResult = TExtendsRecordComparer<Properties, Keys, Value, Inferred>
+> = Result
+function ExtendsObjectToRecord<Inferred extends TProperties, Properties extends TProperties, Pattern extends string, Value extends TSchema>
+  (inferred: Inferred, properties: Properties, _pattern: Pattern, value: Value):
+    TExtendsObjectToRecord<Inferred, Properties, Pattern, Value> {
+  const keys = Guard.Keys(properties)
+  const result = ExtendsRecordComparer(properties, keys, value, inferred)
+  return result as never
+}
+// ----------------------------------------------------------------------------
+// ExtendsObject
 // ----------------------------------------------------------------------------
 export type TExtendsObject<Inferred extends TProperties, Left extends TProperties, Right extends TSchema> = (
-  Right extends TObject<infer Properties extends TProperties>
-  ? TExtendsObjectToObject<Inferred, Left, Properties>
-  : TExtendsRight<Inferred, TObject<Left>, Right>
+  Right extends TRecord<infer Pattern extends string, infer Value extends TSchema> ? TExtendsObjectToRecord<Inferred, Left, Pattern, Value> : 
+  Right extends TObject<infer Properties extends TProperties> ? TExtendsObjectToObject<Inferred, Left, Properties> : 
+  TExtendsRight<Inferred, TObject<Left>, Right>
 )
 export function ExtendsObject<Inferred extends TProperties, Left extends TProperties, Right extends TSchema>
   (inferred: Inferred, left: Left, right: Right): 
     TExtendsObject<Inferred, Left, Right> {
   return (
-    IsObject(right)
-      ? ExtendsObjectToObject(inferred, left, right.properties)
-      : ExtendsRight(inferred, Object(left), right)
+    IsRecord(right) ? ExtendsObjectToRecord(inferred, left, RecordPattern(right), RecordValue(right)) : 
+    IsObject(right) ? ExtendsObjectToObject(inferred, left, right.properties) : 
+    ExtendsRight(inferred, Object(left), right)
   ) as never
 }

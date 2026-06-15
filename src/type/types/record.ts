@@ -104,22 +104,10 @@ export function RecordFromPattern<Pattern extends string, Value extends TSchema>
   return CreateRecord(key, value)
 }
 // -------------------------------------------------------------------
-// RecordPattern
+// RecordPatternToType
 // -------------------------------------------------------------------
-/** Returns the raw string pattern used for the Record key  */
-export type TRecordPattern<Type extends TRecord,
-  Result extends string = Extract<keyof Type['patternProperties'], string>
-> = Result
-/** Returns the raw string pattern used for the Record key  */
-export function RecordPattern<Type extends TRecord>(type: Type): TRecordPattern<Type> {
-  return Guard.Keys(type.patternProperties)[0] as never
-}
-// -------------------------------------------------------------------
-// RecordKey
-// -------------------------------------------------------------------
-/** Returns the Record key as a TypeBox type  */
-export type TRecordKey<Type extends TRecord,
-  Pattern extends string = TRecordPattern<Type>,
+/** Transforms a Record Pattern to a Type */
+export type TRecordPatternToType<Pattern extends string,
   Result extends TSchema = (
     Pattern extends typeof StringKey ? TString :
     Pattern extends typeof IntegerKey ? TInteger :
@@ -127,9 +115,8 @@ export type TRecordKey<Type extends TRecord,
     TTemplateLiteralDecodeUnsafe<Pattern>
   )
 > = Result
-/** Returns the Record key as a TypeBox type  */
-export function RecordKey<Type extends TRecord>(type: Type): TRecordKey<Type> {
-  const pattern = RecordPattern(type)
+/** Transforms a Record Pattern to a Type */
+export function RecordPatternToType<Pattern extends string>(pattern: Pattern): TRecordPatternToType<Pattern> {
   const result = (
     Guard.IsEqual(pattern, StringKey) ? String() :
     Guard.IsEqual(pattern, IntegerKey) ? Integer() :
@@ -139,11 +126,38 @@ export function RecordKey<Type extends TRecord>(type: Type): TRecordKey<Type> {
   return result as never
 }
 // -------------------------------------------------------------------
+// RecordPattern
+// -------------------------------------------------------------------
+/** Extracts the Pattern from a Record type */
+export type TRecordPattern<Type extends TRecord,
+  Result extends string = Extract<keyof Type['patternProperties'], string>
+> = Result
+/** Extracts the Pattern from a Record type */
+export function RecordPattern<Type extends TRecord>(type: Type): TRecordPattern<Type> {
+  return Guard.Keys(type.patternProperties)[0] as never
+}
+// -------------------------------------------------------------------
+// RecordKey
+// -------------------------------------------------------------------
+/** Extracts the Key from a Record type */
+export type TRecordKey<Type extends TRecord,
+  Pattern extends string = TRecordPattern<Type>,
+  Result extends TSchema = TRecordPatternToType<Pattern>
+> = Result
+/** Extracts the Key from a Record type */
+export function RecordKey<Type extends TRecord>(type: Type): TRecordKey<Type> {
+  const pattern = RecordPattern(type)
+  const result = RecordPatternToType(pattern)
+  return result as never
+}
+// -------------------------------------------------------------------
 // RecordValue
 // -------------------------------------------------------------------
+/** Extracts the Value from a Record type */
 export type TRecordValue<Type extends TRecord,
   Result extends TSchema = Type['patternProperties'][TRecordPattern<Type>]
 > = Result
+/** Extracts the Value from a Record type */
 export function RecordValue<Type extends TRecord>(type: Type): TRecordValue<Type> {
   return type.patternProperties[RecordPattern(type)] as never
 }

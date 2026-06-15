@@ -188,7 +188,7 @@ type TEncodeUnion<Types extends TSchema[], Right extends TSchema[], Pattern exte
 function EncodeUnion<Types extends TSchema[], Right extends TSchema[], Pattern extends string>
   (types: [...Types], right: Right, pattern: Pattern, result: string[] = []): 
     TEncodeUnion<Types, Right, Pattern> {
-  return Guard.TakeLeft(types, (head, tail) => 
+  return Guard.ShiftLeft(types, (head, tail) => 
     EncodeUnion(tail, right, pattern, [...result, EncodeType(head, [], '')]),
     () => EncodeTypes(right, `${pattern}(${JoinString(result)})`)) as never
 }
@@ -235,7 +235,7 @@ type TEncodeTypes<Types extends TSchema[], Pattern extends string> = (
 )
 function EncodeTypes<Types extends TSchema[], Pattern extends string>
   (types: [...Types], pattern: Pattern): TEncodeTypes<Types, Pattern> {
-  return Guard.TakeLeft(types, (left, right) => 
+  return Guard.ShiftLeft(types, (left, right) => 
     EncodeType(left, right, pattern),
     () => pattern) as never
 }

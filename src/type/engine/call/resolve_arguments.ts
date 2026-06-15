@@ -77,7 +77,7 @@ function BindArguments<Context extends TProperties, State extends TState, Parame
     TBindArguments<Context, State, ParameterLeft, ParameterRight, Arguments> {
   const instantiatedExtends = InstantiateType(context, state, parameterLeft.extends)
   const instantiatedEquals = InstantiateType(context, state, parameterLeft.equals)
-  return Guard.TakeLeft(arguments_, (left, right) => 
+  return Guard.ShiftLeft(arguments_, (left, right) => 
     BindParameters(BindArgument(context, state, parameterLeft['name'], instantiatedExtends, left), state, parameterRight, right),
     () => BindParameters(BindArgument(context, state, parameterLeft['name'], instantiatedExtends, instantiatedEquals), state, parameterRight, [])
   ) as never
@@ -93,7 +93,7 @@ type TBindParameters<Context extends TProperties, State extends TState, Paramete
 function BindParameters<Context extends TProperties, State extends TState, Parameters extends TParameter[], Arguments extends TSchema[]>
   (context: Context, state: State, parameters: [...Parameters], arguments_: [...Arguments]):
     TBindParameters<Context, State, Parameters, Arguments> {
-  return Guard.TakeLeft(parameters, (left, right) => 
+  return Guard.ShiftLeft(parameters, (left, right) => 
     BindArguments(context, state, left, right, arguments_),
     () => context
   ) as never

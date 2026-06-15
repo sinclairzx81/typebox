@@ -110,7 +110,7 @@ type TDistributeType<Type extends TSchema, Distribution extends TSchema[], Resul
       : Result
 )
 function DistributeType<Type extends TSchema, Distribution extends TSchema[]>(type: Type, types: [...Distribution], result: TSchema[] = []): TDistributeType<Type, Distribution> {
-  return Guard.TakeLeft(types, (left, right) => 
+  return Guard.ShiftLeft(types, (left, right) => 
     DistributeType(type, right, [...result, DistributeOperation(type, left)]),
     () => Guard.IsEqual(result.length, 0)
       ? [type]
@@ -125,7 +125,7 @@ type TDistributeUnion<Types extends TSchema[], Distribution extends TSchema[], R
    : Result
 )
 function DistributeUnion<Types extends TSchema[], Distribution extends TSchema[]>(types: [...Types], distribution: [...Distribution], result: TSchema[] = []): TDistributeUnion<Types, Distribution> {
-  return Guard.TakeLeft(types, (left, right) => 
+  return Guard.ShiftLeft(types, (left, right) => 
     DistributeUnion(right, distribution, [...result, ...Distribute([left], distribution)]),
     () => result) as never
 }
@@ -140,7 +140,7 @@ export type TDistribute<Types extends TSchema[], Result extends TSchema[] = []> 
     : Result
 )
 export function Distribute<Types extends TSchema[]>(types: [...Types], result: TSchema[] = []): TDistribute<Types> {
-  return Guard.TakeLeft(types, (left, right) => 
+  return Guard.ShiftLeft(types, (left, right) => 
     IsUnion(left)
       ? Distribute(right, DistributeUnion(left.anyOf, result))
       : Distribute(right, DistributeType(left, result)),

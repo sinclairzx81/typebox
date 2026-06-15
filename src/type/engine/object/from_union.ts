@@ -64,7 +64,7 @@ type TReduceVariants<Types extends TSchema[], Result extends TProperties> = (
 function ReduceVariants<Types extends TSchema[], Result extends TProperties>
   (types: [...Types], result: Result):
   TReduceVariants<Types, Result> {
-  return Guard.TakeLeft(types, (left, right) =>
+  return Guard.ShiftLeft(types, (left, right) =>
     ReduceVariants(right, CollapseUnionProperties(result, FromType(left))),
     () => result) as never
 }
@@ -85,7 +85,7 @@ export type TFromUnion<Types extends TSchema[]> = (
 export function FromUnion<Types extends TSchema[]>
   (types: [...Types]):
   TFromUnion<Types> {
-  return Guard.TakeLeft(types, (left, right) =>
+  return Guard.ShiftLeft(types, (left, right) =>
     ReduceVariants(right, FromType(left)),
     () => Unreachable()) as never
 }
