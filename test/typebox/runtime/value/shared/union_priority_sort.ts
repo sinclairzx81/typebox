@@ -183,3 +183,17 @@ Test('Should UnionPrioritySort 25', () => {
   const R = UnionPrioritySort([A, B, C, D], -1)
   Assert.IsEqual(R, [A, C, B, D])
 })
+// ------------------------------------------------------------------
+// UnionPrioritySort Should not Mutate Source Array
+//
+// https://github.com/sinclairzx81/typebox/issues/1620
+// ------------------------------------------------------------------
+Test('Should UnionPrioritySort 26', () => {
+  const A = [
+    Type.Object({ x: Type.Number() }),
+    Type.Object({ x: Type.Number(), y: Type.Number() })
+  ]
+  const B = [...A]
+  UnionPrioritySort(A) // Priority Sort (A)
+  Assert.IsEqual(A, B) // Expect Equal
+})
