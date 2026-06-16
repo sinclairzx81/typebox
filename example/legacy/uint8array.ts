@@ -28,30 +28,10 @@ THE SOFTWARE.
 
 import Type from 'typebox'
 
-// ------------------------------------------------------------------
-// Definition
-// ------------------------------------------------------------------
-export class TUint8Array extends Type.Base<globalThis.Uint8Array> {
-  // required: Used by validation
-  public override Check(value: unknown): value is Uint8Array {
-    return value instanceof Uint8Array
-  }
-  // required: Used by validation
-  public override Errors(value: unknown): object[] {
-    return !this.Check(value) ? [{ message: 'not a Uint8Array'}] : []
-  }
-  // required: Used by type compositor
-  public override Clone(): TUint8Array {
-    return new TUint8Array()
-  }
-  // required: Used by value/create
-  public override Create(): globalThis.Uint8Array {
-    return new globalThis.Uint8Array(0)
-  }
-}
-// ------------------------------------------------------------------
-// Factory
-// ------------------------------------------------------------------
+export type TUint8Array = Type.TUnsafe<globalThis.Uint8Array>
+
 export function Uint8Array(): TUint8Array {
-  return new TUint8Array()
+  return Type.Refine(Type.Unsafe<globalThis.Uint8Array>({ type: 'Uint8Array' }), 
+    value => value instanceof globalThis.Uint8Array,
+    _value => 'Expected Uint8Array')
 }

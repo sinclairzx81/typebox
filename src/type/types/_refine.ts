@@ -51,25 +51,25 @@ export function RefineAdd<Type extends TSchema>(type: Type, refinement: TRefinem
 // ------------------------------------------------------------------
 /** Represents a type with embedded Refine check. */
 export type TRefine<Type extends TSchema = TSchema> = (
-  Type & { '~refine': TRefinement<Type>[] }
+  Type & { '~refine': TRefinement<unknown>[] }
 )
 // ------------------------------------------------------------------
 // Factory
 // ------------------------------------------------------------------
-export type TRefineCheckCallback<Type extends TSchema = TSchema> = (value: Static<Type>) => boolean
-export type TRefineErrorCallback<Type extends TSchema = TSchema> = (value: Static<Type>) => string
+export type TRefineCheckCallback<Value extends unknown = unknown> = (value: Value) => boolean
+export type TRefineErrorCallback<Value extends unknown = unknown> = (value: Value) => string
 
-export interface TRefinement<Type extends TSchema = TSchema> {
-  check: TRefineCheckCallback<Type>
-  error: TRefineErrorCallback<Type>
+export interface TRefinement<Value extends unknown = unknown> {
+  check: TRefineCheckCallback<Value>
+  error: TRefineErrorCallback<Value>
 }
 
 /** Refines a type with an explicit check */
-export function Refine<Type extends TSchema>(type: Type, check: TRefineCheckCallback<Type>, error: TRefineErrorCallback<Type>): TRefineAdd<Type>
+export function Refine<Type extends TSchema, Value = Static<Type>>(type: Type, check: TRefineCheckCallback<Value>, error: TRefineErrorCallback<Value>): TRefineAdd<Type>
 /** Refines a type with an explicit check */
-export function Refine<Type extends TSchema>(type: Type, check: TRefineCheckCallback<Type>): TRefineAdd<Type>
+export function Refine<Type extends TSchema, Value = Static<Type>>(type: Type, check: TRefineCheckCallback<Value>): TRefineAdd<Type>
 /** @deprecated Use the error callback signature to generate error message. This overload will be removed in the next version  */
-export function Refine<Type extends TSchema>(type: Type, check: TRefineCheckCallback<Type>, message: string): TRefineAdd<Type>
+export function Refine<Type extends TSchema, Value = Static<Type>>(type: Type, check: TRefineCheckCallback<Value>, message: string): TRefineAdd<Type>
 /** Refines a type with an explicit check */
 export function Refine(...args: unknown[]): unknown {
   const [type, check, error_or_message] = Arguments.Match<[TSchema, TRefineCheckCallback, TRefineErrorCallback | string]>(args, {
