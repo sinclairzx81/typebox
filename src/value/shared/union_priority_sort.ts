@@ -45,6 +45,20 @@ function DeterministicCompare(left: TSchema, right: TSchema): number {
   return JSON.stringify(left).localeCompare(JSON.stringify(right))
 }
 // ------------------------------------------------------------------
+// Sort
+// ------------------------------------------------------------------
+function Sort(types: TSchema[], order: number): TSchema[] {
+  return [...types].sort((left, right) => {
+    const result = Compare(left, right) as string
+    return (
+      Guard.IsEqual(result, 'disjoint') ? DeterministicCompare(left, right) :
+      Guard.IsEqual(result, 'right-inside') ? 1 :
+      Guard.IsEqual(result, 'left-inside') ? -1 :
+      DeterministicCompare(left, right)
+    ) * order
+  })
+}
+// ------------------------------------------------------------------
 // UnionPrioritySort
 //
 // Performs a deterministic sort on Union members. By default, this
@@ -53,17 +67,28 @@ function DeterministicCompare(left: TSchema, right: TSchema): number {
 // the order property to -1 which will reverse unions from broader
 // to more narrow.
 //
+// The sort order is a pure function of the (static) member schemas, so the
+// result is memoized per source array and order. This avoids re-running the
+// DeterministicCompare (JSON.stringify) comparator on every call, which is
+// significant when Codec Decode/Encode or Value.Clean process large arrays of
+// union-bearing values (the comparator otherwise serializes member schemas on
+// every value). A fresh array is returned on each call, so the source array is
+// never mutated (see #1620) and callers never observe a shared array.
+//
 // ------------------------------------------------------------------
+const memo = new WeakMap<TSchema[], Map<number, TSchema[]>>()
 
 /** Deterministically sorts schemas by structural relationship (narrow to broad) */
 export function UnionPrioritySort(types: TSchema[], order: number = 1): TSchema[] {
-  return [...types].sort((left, right) => {
-    const result = Compare(left, right) as string
-    return (
-      Guard.IsEqual(result, 'disjoint') ? DeterministicCompare(left, right) : 
-      Guard.IsEqual(result, 'right-inside') ? 1 : 
-      Guard.IsEqual(result, 'left-inside') ? -1 : 
-      DeterministicCompare(left, right)
-    ) * order
-  })
+  let byOrder = memo.get(types)
+  if (Guard.IsUndefined(byOrder)) {
+    byOrder = new Map<number, TSchema[]>()
+    memo.set(types, byOrder)
+  }
+  let sorted = byOrder.get(order)
+  if (Guard.IsUndefined(sorted)) {
+    sorted = Sort(types, order)
+    byOrder.set(order, sorted)
+  }
+  return [...sorted]
 }

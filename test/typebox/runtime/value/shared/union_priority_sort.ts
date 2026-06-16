@@ -197,3 +197,20 @@ Test('Should UnionPrioritySort 26', () => {
   UnionPrioritySort(A) // Priority Sort (A)
   Assert.IsEqual(A, B) // Expect Equal
 })
+// ------------------------------------------------------------------
+// Memoized result is stable and returned as a fresh array per call
+// ------------------------------------------------------------------
+Test('Should UnionPrioritySort 27', () => {
+  const A = [Type.Number(), Type.Literal(1)]
+  const R1 = UnionPrioritySort(A)
+  const R2 = UnionPrioritySort(A)
+  Assert.IsEqual(R1, R2) // stable order across calls
+  Assert.IsTrue(R1 !== R2) // distinct array per call (callers never share)
+})
+Test('Should UnionPrioritySort 28', () => {
+  const A = [Type.Number(), Type.Literal(1)]
+  const R1 = UnionPrioritySort(A)
+  R1.push(Type.String()) // mutating a returned array must not affect later calls
+  const R2 = UnionPrioritySort(A)
+  Assert.IsEqual(R2, [Type.Literal(1), Type.Number()])
+})
