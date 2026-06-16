@@ -57,7 +57,7 @@ function DeterministicCompare(left: TSchema, right: TSchema): number {
 
 /** Deterministically sorts schemas by structural relationship (narrow to broad) */
 export function UnionPrioritySort(types: TSchema[], order: number = 1): TSchema[] {
-  return types.sort((left, right) => {
+  return [...types].sort((left, right) => {
     const result = Compare(left, right) as string
     return (
       Guard.IsEqual(result, 'disjoint') ? DeterministicCompare(left, right) : 
