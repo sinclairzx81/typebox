@@ -1,3 +1,4 @@
+import { Settings } from 'typebox/system'
 import { Guard } from 'typebox/guard'
 import { Value } from 'typebox/value'
 import { Type } from 'typebox'
@@ -285,3 +286,37 @@ Test('Should Union 21', () => {
   const R = DecodeUnsafe({}, T, 3)
   Assert.IsEqual(R, 3)
 })
+// ------------------------------------------------------------------
+// UnionPrioritySort
+// ------------------------------------------------------------------
+{
+  const Vector1 = Type.Codec(Type.Object({ x: Type.Number() }, { additionalProperties: false }))
+    .Decode((value) => 'Vector1')
+    .Encode((value) => (value === 'Vector1' ? { x: 1 } : null) as never)
+  const Vector2 = Type.Codec(Type.Object({ x: Type.Number(), y: Type.Number() }, { additionalProperties: false }))
+    .Decode((value) => 'Vector2')
+    .Encode((value) => (value === 'Vector2' ? { x: 1, y: 2 } : null) as never)
+  const Vector3 = Type.Codec(Type.Object({ x: Type.Number(), y: Type.Number(), z: Type.Number() }, { additionalProperties: false }))
+    .Decode((value) => 'Vector3')
+    .Encode((value) => (value === 'Vector3' ? { x: 1, y: 2, z: 3 } : null) as never)
+  const Union = Type.Union([
+    Vector1,
+    Vector2,
+    Vector3
+  ])
+  Test('Should Union 20', () => {
+    Settings.Set({ unionPrioritySort: false })
+    const D = Value.Decode(Union, { x: 1, y: 2 })
+    const E = Value.Encode(Union, D)
+    Assert.IsEqual(D, 'Vector1')
+    Assert.IsEqual(E, { x: 1 })
+    Settings.Reset()
+  })
+  Test('Should Union 21', () => {
+    // matching on Vector 3
+    const D = Value.Decode(Union, { x: 1, y: 2 })
+    const E = Value.Encode(Union, D)
+    Assert.IsEqual(D, 'Vector2')
+    Assert.IsEqual(E, { x: 1, y: 2 })
+  })
+}
