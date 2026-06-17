@@ -9,7 +9,7 @@ const Test = Assert.Context('Value.Codec.DecodeUnsafe')
 // ------------------------------------------------------------------
 Test('Should DecodeUnsafe 1', () => {
   const T = Type.Object({
-    x: Type.Optional(Type.Number())
+    x: Type.Number()
   })
   const D = DecodeUnsafe({}, T, undefined)
   Assert.IsEqual(D, undefined)
