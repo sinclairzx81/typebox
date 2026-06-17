@@ -35,13 +35,11 @@ import { FromType } from './from_type.ts'
 import { Clone } from '../clone/index.ts'
 import { Check } from '../check/index.ts'
 
-import { UnionPrioritySort } from '../shared/union_priority_sort.ts'
-
 // ------------------------------------------------------------------
 // Decode
 // ------------------------------------------------------------------
 function Decode(direction: string, context: TProperties, type: TUnion, value: unknown): unknown {
-  for (const schema of UnionPrioritySort(type.anyOf, 1)) {
+  for (const schema of type.anyOf) {
     if(!Check(context, schema, value)) continue
     const variant = FromType(direction, context, schema, value)
     return Callback(direction, context, type, variant)
@@ -53,7 +51,7 @@ function Decode(direction: string, context: TProperties, type: TUnion, value: un
 // ------------------------------------------------------------------
 function Encode(direction: string, context: TProperties, type: TUnion, value: unknown): unknown {
   const exterior = Callback(direction, context, type, value)
-  for (const schema of UnionPrioritySort(type.anyOf, -1)) {
+  for (const schema of type.anyOf) {
     const variant = FromType(direction, context, schema, Clone(exterior))
     if(!Check(context, schema, variant)) continue
     return variant

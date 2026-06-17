@@ -26,9 +26,11 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { Arguments } from '../../system/arguments/index.ts'
+import { Arguments, Settings } from '../../system/index.ts'
 import type { TProperties, TSchema } from '../../type/index.ts'
 import { FromType } from './from_type.ts'
+
+import { UnionPrioritySort } from '../shared/union_priority_sort.ts'
 
 /**
  * Cleans a value by removing non-evaluated properties and elements as derived from the provided type.
@@ -55,5 +57,6 @@ export function Clean(...args: unknown[]): unknown {
     3: (context, type, value) => [context, type, value],
     2: (type, value) => [{}, type, value]
   })
-  return FromType(context, type, value)
+  const sorted = Settings.Get().unionPrioritySort ? UnionPrioritySort(type) : type
+  return FromType(context, sorted, value)
 }

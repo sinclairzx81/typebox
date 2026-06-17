@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Arguments } from '../../system/arguments/index.ts'
+import { Arguments, Settings } from '../../system/index.ts'
 import { type TLocalizedValidationError } from '../../error/errors.ts'
 import { type TProperties, type TSchema, type StaticDecode } from '../../type/index.ts'
 
@@ -41,6 +41,8 @@ import { Convert } from '../convert/index.ts'
 import { Default } from '../default/index.ts'
 import { Pipeline } from '../pipeline/index.ts'
 import { FromType } from './from_type.ts'
+
+import { UnionPrioritySort } from '../shared/union_priority_sort.ts'
 
 // ------------------------------------------------------------------
 // Assert
@@ -59,7 +61,8 @@ function Assert(context: TProperties, type: TSchema, value: unknown): unknown {
 // ------------------------------------------------------------------
 /** Executes Decode callbacks only */
 export function DecodeUnsafe(context: TProperties, type: TSchema, value: unknown): unknown {
-  return FromType('Decode', context, type, value)
+  const sorted = Settings.Get().unionPrioritySort ? UnionPrioritySort(type) : type
+  return FromType('Decode', context, sorted, value)
 }
 // ------------------------------------------------------------------
 // Decoder

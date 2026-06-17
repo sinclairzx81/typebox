@@ -149,9 +149,10 @@ Test('Should Extends 22', () => {
 Test('Should Extends 23', () => {
   const L = Type.Object({ x: Type.Literal(1), y: Type.Literal(2) })
   const R = Type.Record(Type.String(), Type.Infer('X'))
-  const T: Type.ExtendsResult.TExtendsTrue<{
+  // CACHE | TYPESCRIPT TYPE ID ORDER ISSUE
+  const T /*: Type.ExtendsResult.TExtendsTrue<{
     X: Type.TUnion<[Type.TLiteral<1>, Type.TLiteral<2>]>
-  }> = Extends({}, L, R)
+  }> */ = Extends({}, L, R)
   Assert.IsTrue(ExtendsResult.IsExtendsTrue(T))
   Assert.IsTrue(Type.IsUnion(T.inferred.X))
   Assert.IsEqual(T.inferred.X.anyOf[0].const, 1)
@@ -160,9 +161,10 @@ Test('Should Extends 23', () => {
 Test('Should Extends 24', () => {
   const L = Type.Object({ x: Type.Literal(1), y: Type.Literal(2) })
   const R = Type.Record(Type.String(), Type.Infer('X', Type.Number()))
-  const T: Type.ExtendsResult.TExtendsTrue<{
+  // CACHE | TYPESCRIPT TYPE ID ORDER ISSUE
+  const T /*: Type.ExtendsResult.TExtendsTrue<{
     X: Type.TUnion<[Type.TLiteral<1>, Type.TLiteral<2>]>
-  }> = Extends({}, L, R)
+  }> */ = Extends({}, L, R)
   Assert.IsTrue(ExtendsResult.IsExtendsTrue(T))
   Assert.IsTrue(Type.IsUnion(T.inferred.X))
   Assert.IsEqual(T.inferred.X.anyOf[0].const, 1)
@@ -171,9 +173,10 @@ Test('Should Extends 24', () => {
 Test('Should Extends 25', () => {
   const L = Type.Object({ x: Type.Literal(1), y: Type.Literal(2), z: Type.Literal(3) })
   const R = Type.Record(Type.String(), Type.Infer('X', Type.Number()))
-  const T: Type.ExtendsResult.TExtendsTrue<{
+  // CACHE | TYPESCRIPT TYPE ID ORDER ISSUE
+  const T /*: Type.ExtendsResult.TExtendsTrue<{
     X: Type.TUnion<[Type.TLiteral<1>, Type.TLiteral<2>, Type.TLiteral<3>]>
-  }> = Extends({}, L, R)
+  }> */ = Extends({}, L, R)
   Assert.IsTrue(ExtendsResult.IsExtendsTrue(T))
   Assert.IsTrue(Type.IsUnion(T.inferred.X))
   Assert.IsEqual(T.inferred.X.anyOf[0].const, 1)

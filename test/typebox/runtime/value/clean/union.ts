@@ -1,3 +1,4 @@
+import { Settings } from 'typebox/system'
 import { Value } from 'typebox/value'
 import { Type } from 'typebox'
 import { Assert } from 'test'
@@ -214,4 +215,27 @@ Test('Should Clean 22', () => {
   })
   Assert.IsEqual(A, { value: { x: 1, y: 2, z: 3 } })
   Assert.IsEqual(B, { value: { x: 1, y: 2, z: 3 } })
+})
+// ------------------------------------------------------------------
+// UnionPrioritySort
+// ------------------------------------------------------------------
+Test('Should Clean 23', () => {
+  Settings.Set({ unionPrioritySort: false })
+  const A = Type.Union([
+    Type.Object({ x: Type.Number() }),
+    Type.Object({ x: Type.Number(), y: Type.Number() })
+  ])
+  // matched on first variant
+  const R = Value.Clean(A, { x: 1, y: 2, w: 4 })
+  Assert.IsEqual(R, { x: 1 })
+  Settings.Reset()
+})
+Test('Should Clean 24', () => {
+  const A = Type.Union([
+    Type.Object({ x: Type.Number() }),
+    Type.Object({ x: Type.Number(), y: Type.Number() })
+  ])
+  // matched on second variant
+  const R = Value.Clean(A, { x: 1, y: 2, w: 4 })
+  Assert.IsEqual(R, { x: 1, y: 2 })
 })
