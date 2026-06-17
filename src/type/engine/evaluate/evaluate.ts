@@ -75,11 +75,13 @@ export function EvaluateEnum<Values extends TEnumValue[]>(values: [...Values]): 
 // ------------------------------------------------------------------
 export type TEvaluateIntersect<Types extends TSchema[],
   Distribution extends TSchema[] = TDistribute<Types>,
-  Result extends TSchema = TBroaden<Distribution>
+  Broadend extends TSchema[] = TBroaden<Distribution>,
+  Result extends TSchema = TEvaluateUnionFast<Broadend>
 > = Result
 export function EvaluateIntersect<Types extends TSchema[]>(types: [...Types]): TEvaluateIntersect<Types> {
   const distribution = Distribute(types) as TSchema[]
-  const result = Broaden(distribution)
+  const broadend = Broaden(distribution) as TSchema[]
+  const result = EvaluateUnionFast(broadend)
   return result as never
 }
 // ------------------------------------------------------------------
@@ -98,11 +100,13 @@ export function EvaluateTemplateLiteral<Pattern extends string>(pattern: Pattern
 // EvaluateUnion
 // ------------------------------------------------------------------
 export type TEvaluateUnion<Types extends TSchema[],
-  Result extends TSchema = TBroaden<Types>
+  Broadend extends TSchema[] = TBroaden<Types>,
+  Result extends TSchema = TEvaluateUnionFast<Broadend>
 > = Result
 export function EvaluateUnion<Types extends TSchema[]>(types: [...Types]): TEvaluateUnion<Types> {
-  const result = Broaden(types)
-  return result
+  const broadend = Broaden(types) as TSchema[]
+  const result = EvaluateUnionFast(broadend)
+  return result as never
 }
 // ------------------------------------------------------------------
 // EvaluateType
@@ -143,11 +147,12 @@ export type TEvaluateUnionFast<Types extends TSchema[],
     TUnion<Types>
   )
 > = Result
-export function EvaluateUnionFast<Types extends TSchema[]>(types: [...Types]): TEvaluateUnionFast<Types> {
+export function EvaluateUnionFast<Types extends TSchema[]>
+  (types: [...Types]): TEvaluateUnionFast<Types> {
   const result = (
     Guard.IsEqual(types.length, 1) ? types[0] :
-      Guard.IsEqual(types.length, 0) ? Never() :
-        Union(types)
+    Guard.IsEqual(types.length, 0) ? Never() :
+    Union(types)
   )
   return result as never
 }

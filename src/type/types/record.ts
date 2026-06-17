@@ -97,11 +97,11 @@ export function Record<Key extends TSchema, Value extends TSchema>(key: Key, val
   return RecordAction(key, value, options) as never
 }
 // -------------------------------------------------------------------
-// FromPattern
+// RecordFromPattern
 // -------------------------------------------------------------------
 /** Creates a Record type from regular expression pattern. */
-export function RecordFromPattern<Pattern extends string, Value extends TSchema>(key: Pattern, value: Value) {
-  return CreateRecord(key, value)
+export function RecordFromPattern<Pattern extends string, Value extends TSchema>(pattern: Pattern, value: Value) {
+  return CreateRecord(pattern, value)
 }
 // -------------------------------------------------------------------
 // RecordPatternToType

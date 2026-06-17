@@ -4,7 +4,7 @@ TypeBox
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2026 Haydn Paterson 
+Copyright (c) 2017-2026 Haydn Paterson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,17 +26,4 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-fmt-ignore-file
-
-import { type TProperties, type TUnion } from '../../type/index.ts'
-import { Check } from '../check/index.ts'
-import { Clone } from '../clone/index.ts'
-import { FromType } from './from_type.ts'
-
-export function FromUnion(context: TProperties, type: TUnion, value: unknown): unknown {
-  for (const schema of type.anyOf) {
-    const clean = FromType(context, schema, Clone(value))
-    if(Check(context, schema, clean)) return clean
-  }
-  return value
-}
+export * from './priority.ts'

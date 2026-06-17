@@ -117,7 +117,9 @@ Test('Should Union 7', () => {
   })
 }
 // ------------------------------------------------------------------
-// Structural, Use Broadest on Decode
+// Ambigious Encode: We match on { x, y, z } in all cases because
+// Encode uses the same sequence order as Decode which is priority
+// sorted.
 // ------------------------------------------------------------------
 {
   const Vector1 = Type.Codec(Type.Object({ x: Type.Number() }))
@@ -139,19 +141,19 @@ Test('Should Union 7', () => {
     const D = Value.Decode(Union, { x: 1, y: 2, z: 3 })
     const E = Value.Encode(Union, D)
     Assert.IsEqual(D, 'Vector3')
-    Assert.IsEqual(E, { x: 1 })
+    Assert.IsEqual(E, { x: 1, y: 2, z: 3 })
   })
   Test('Should Union 12', () => {
     const D = Value.Decode(Union, { x: 1, y: 2 })
     const E = Value.Encode(Union, D)
     Assert.IsEqual(D, 'Vector2')
-    Assert.IsEqual(E, { x: 1 })
+    Assert.IsEqual(E, { x: 1, y: 2, z: 3 })
   })
   Test('Should Union 13', () => {
     const D = Value.Decode(Union, { x: 1 })
     const E = Value.Encode(Union, D)
     Assert.IsEqual(D, 'Vector1')
-    Assert.IsEqual(E, { x: 1 })
+    Assert.IsEqual(E, { x: 1, y: 2, z: 3 })
   })
 }
 // ------------------------------------------------------------------

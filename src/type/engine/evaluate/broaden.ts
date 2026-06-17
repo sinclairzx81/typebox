@@ -31,12 +31,10 @@ THE SOFTWARE.
 import { Guard } from '../../../guard/index.ts'
 import { type TSchema } from '../../types/schema.ts'
 import { type TAny, IsAny } from '../../types/any.ts'
-import { type TNever, Never, IsNever } from '../../types/never.ts'
+import { type TNever, IsNever } from '../../types/never.ts'
 import { type TObject, IsObject } from '../../types/object.ts'
-import { type TUnion, Union } from '../../types/union.ts'
 import { type TCompare, type TCompareResult, Compare, ResultRightInside, ResultLeftInside, ResultEqual } from './compare.ts'
 import { type TFlatten, Flatten } from './flatten.ts'
-
 import { type TEvaluateType, EvaluateType } from './evaluate.ts'
 
 // ------------------------------------------------------------------
@@ -142,21 +140,11 @@ function BroadenTypes<Types extends TSchema[]>(types: [...Types]): TBroadenTypes
 export type TBroaden<Types extends TSchema[],
   Broadened extends TSchema[] = TBroadenTypes<Types>,
   Flattened extends TSchema[] = TFlatten<Broadened>,
-  Result extends TSchema = ( 
-    Flattened extends [] ? TNever :
-    Flattened extends [infer Type extends TSchema] ? Type :
-    TUnion<Flattened>
-  )
-> = Result
+> = Flattened
 /** Broadens a set of types and returns either the most broad type, or union or disjoint types. */
 export function Broaden<Types extends TSchema[]>(types: [...Types]): TBroaden<Types> {
   const broadened = BroadenTypes(types) as TSchema[]
   const flattened = Flatten(broadened) as TSchema[]
-  const result = (
-    flattened.length === 0 ? Never() :
-    flattened.length === 1 ? flattened[0] :
-    Union(flattened)
-  )
-  return result as never
+  return flattened as never
 }
 
