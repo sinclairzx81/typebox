@@ -28,7 +28,6 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Unreachable } from '../../system/unreachable/index.ts'
 import { Guard } from '../../guard/index.ts'
 import { type TObject, type TProperties } from '../../type/index.ts'
 import { FromType } from './from_type.ts'
@@ -40,10 +39,8 @@ import { IsOptionalUndefined } from '../shared/optional_undefined.ts'
 // Decode
 // ------------------------------------------------------------------
 function Decode(direction: string, context: TProperties, type: TObject, value: unknown): unknown {
-  // deno-coverage-ignore-start - unreachable | checked
-  if (!Guard.IsObjectNotArray(value)) return Unreachable()
-  // deno-coverage-ignore-stop
-
+  if (!Guard.IsObjectNotArray(value)) return value
+  
   for (const key of Guard.Keys(type.properties)) {
     // Ignore for non-present or optional-undefined
     if(!Guard.HasPropertyKey(value, key) || IsOptionalUndefined(type.properties[key], key, value)) continue

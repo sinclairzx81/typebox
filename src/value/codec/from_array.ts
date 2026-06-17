@@ -28,7 +28,6 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Unreachable } from '../../system/unreachable/index.ts'
 import { Guard } from '../../guard/index.ts'
 import { type TArray, type TProperties } from '../../type/index.ts'
 import { FromType } from './from_type.ts'
@@ -38,9 +37,7 @@ import { Callback } from './callback.ts'
 // Decode
 // ------------------------------------------------------------------
 function Decode(direction: string, context: TProperties, type: TArray, value: unknown): unknown {
-  // deno-coverage-ignore-start - unreachable | checked
-  if(!Guard.IsArray(value)) return Unreachable()
-  // deno-coverage-ignore-stop
+  if(!Guard.IsArray(value)) return value
 
   for(let i = 0; i < value.length; i++) {
     value[i] = FromType(direction, context, type.items, value[i])

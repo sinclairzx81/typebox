@@ -28,7 +28,6 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Unreachable } from '../../system/unreachable/index.ts'
 import { Guard } from '../../guard/index.ts'
 import { RecordPattern, RecordValue, type TProperties, type TRecord } from '../../type/index.ts'
 import { FromType } from './from_type.ts'
@@ -39,15 +38,10 @@ import { Callback } from './callback.ts'
 // Decode
 // ------------------------------------------------------------------
 function Decode(direction: string, context: TProperties, type: TRecord, value: unknown): unknown {
-  // deno-coverage-ignore-start - unreachable | checked
-  if (!Guard.IsObjectNotArray(value)) return Unreachable()
-  // deno-coverage-ignore-stop
+  if (!Guard.IsObjectNotArray(value)) return value
   const regexp = new RegExp(RecordPattern(type))
   for (const key of Guard.Keys(value)) {
-
-    // deno-coverage-ignore-start - unreachable | checked
-    if (!regexp.test(key)) Unreachable()
-    // deno-coverage-ignore-stop
+    if (!regexp.test(key)) continue
 
     value[key] = FromType(direction, context, RecordValue(type), value[key])
   }
