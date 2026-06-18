@@ -43,6 +43,7 @@ import { Pipeline } from '../pipeline/index.ts'
 import { FromType } from './from_type.ts'
 
 import { UnionPrioritySort } from '../shared/union_priority_sort.ts'
+import { StripToCodec } from './strip.ts'
 
 // ------------------------------------------------------------------
 // Assert
@@ -61,7 +62,11 @@ function Assert(context: TProperties, type: TSchema, value: unknown): unknown {
 // ------------------------------------------------------------------
 /** Executes Encode callbacks only */
 export function EncodeUnsafe(context: TProperties, type: TSchema, value: unknown): unknown {
-  const sorted = Settings.Get().unionPrioritySort ? UnionPrioritySort(type) : type
+  // Strip to codec-bearing paths first, then sort only what survives — the sort
+  // (UnionPrioritySort) rebuilds the whole schema, so running it on the pruned
+  // schema is cheaper.
+  const stripped = StripToCodec(context, type)
+  const sorted = Settings.Get().unionPrioritySort ? UnionPrioritySort(stripped) : stripped
   return FromType('Encode', context, sorted, value)
 }
 // ------------------------------------------------------------------
