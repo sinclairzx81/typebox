@@ -9,7 +9,7 @@ import { Metrics } from './task/metrics/index.ts'
 import { Spec } from './task/spec/index.ts'
 import { Task } from 'tasksmith'
 
-const Version = '1.2.16'
+const Version = '1.2.17'
 
 // ------------------------------------------------------------------
 // Build
@@ -85,6 +85,12 @@ Task.run('start', () => Task.shell('deno run -A --watch --no-check example/index
 Task.run('test', async (filter: string = '') => 
   Task.shell('deno lint src').catch(() => null).then(() => 
     Task.test.run(['test/jsonschema', 'test/typebox'], { filter }))
+)
+// ------------------------------------------------------------------
+// Challenge
+// ------------------------------------------------------------------
+Task.run('challenge', async (filter: string = '') => 
+  Task.test.run(['test/typescript'], { filter })
 )
 // ------------------------------------------------------------------
 // Fast
