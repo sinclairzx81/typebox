@@ -1,6 +1,6 @@
 # Type Challenges
 
-TypeBox compatibility with [Type Challenge](https://github.com/type-challenges/type-challenges) solutions
+TypeBox solutions for [Type Challenges](https://github.com/type-challenges/type-challenges)
 
 | Challenge                                                                                                                                     | Solution      |
 | :--                                                                                                                                           | :--           |
