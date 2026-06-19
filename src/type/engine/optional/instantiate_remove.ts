@@ -38,7 +38,9 @@ import { type TState, type TInstantiateType, InstantiateType } from '../instanti
 // Operation
 // ------------------------------------------------------------------
 type TRemoveOptionalOperation<Type extends TSchema,
-  Result extends TSchema = Type extends TOptional<infer Type extends TSchema> ? Type : Type
+  Result extends TSchema = Type extends TOptional<infer Type extends TSchema> 
+    ? TRemoveOptionalOperation<Type> 
+    : Type
 > = Result
 function RemoveOptionalOperation<Type extends TSchema>(type: Type): TRemoveOptionalOperation<Type> {
   return Memory.Discard(type, ['~optional']) as never

@@ -38,7 +38,9 @@ import { type TState, type TInstantiateType, InstantiateType } from '../instanti
 // Operation
 // ------------------------------------------------------------------
 type TRemoveImmutableOperation<Type extends TSchema,
-  Result extends TSchema = Type extends TImmutable<infer Type extends TSchema> ? Type : Type
+  Result extends TSchema = Type extends TImmutable<infer Type extends TSchema> 
+    ? TRemoveImmutableOperation<Type>
+    : Type
 > = Result
 function RemoveImmutableOperation<Type extends TSchema>(type: Type): TRemoveImmutableOperation<Type> {
   return Memory.Discard(type, ['~immutable']) as never

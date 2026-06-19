@@ -87,6 +87,12 @@ Task.run('test', async (filter: string = '') =>
     Task.test.run(['test/jsonschema', 'test/typebox'], { filter }))
 )
 // ------------------------------------------------------------------
+// Challenge
+// ------------------------------------------------------------------
+Task.run('challenge', async (filter: string = '') => 
+  Task.test.run(['test/typescript'], { filter })
+)
+// ------------------------------------------------------------------
 // Fast
 // ------------------------------------------------------------------
 Task.run('fast', (filter: string = '') => Task.test.run(['test/jsonschema', 'test/typebox'], { watch: true, noCheck: true, filter }))

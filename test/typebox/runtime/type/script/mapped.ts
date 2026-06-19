@@ -570,3 +570,94 @@ Test('Should Mapped 29', () => {
   Assert.IsEqual(S.anyOf[1].properties.y.const, 'bar')
   Assert.IsEqual(S.anyOf[1].properties.z.const, 'baz')
 })
+// ------------------------------------------------------------------
+// Modifiers
+// ------------------------------------------------------------------
+Test('Should Mapped 30', () => {
+  const M = Type.Script(`
+    type Input = {
+      a?: number
+      b?: number
+    }
+    type Remove<T> = {
+      [K in keyof T]-?: T[K]
+    }
+    type Output = Remove<Input>
+  `)
+  const Input: Type.TObject<{
+    a: Type.TOptional<Type.TNumber>
+    b: Type.TOptional<Type.TNumber>
+  }> = M.Input
+  const Output: Type.TObject<{
+    b: Type.TNumber
+    a: Type.TNumber
+  }> = M.Output
+
+  Assert.IsTrue(Type.IsObject(Input))
+  Assert.IsTrue(Type.IsOptional(Input.properties.a))
+  Assert.IsTrue(Type.IsOptional(Input.properties.b))
+
+  Assert.IsTrue(Type.IsObject(Output))
+  Assert.IsFalse(Type.IsOptional(Output.properties.a))
+  Assert.IsFalse(Type.IsOptional(Output.properties.b))
+})
+
+Test('Should Mapped 31', () => {
+  const M = Type.Script(`
+    type Input = {
+      readonly a: number
+      readonly b: number
+    }
+    type Remove<T> = {
+      -readonly [K in keyof T]: T[K]
+    }
+    type Output = Remove<Input>
+  `)
+  const Input: Type.TObject<{
+    a: Type.TReadonly<Type.TNumber>
+    b: Type.TReadonly<Type.TNumber>
+  }> = M.Input
+  const Output: Type.TObject<{
+    b: Type.TNumber
+    a: Type.TNumber
+  }> = M.Output
+
+  Assert.IsTrue(Type.IsObject(Input))
+  Assert.IsTrue(Type.IsReadonly(Input.properties.a))
+  Assert.IsTrue(Type.IsReadonly(Input.properties.b))
+  Assert.IsTrue(Type.IsObject(Output))
+  Assert.IsFalse(Type.IsReadonly(Output.properties.a))
+  Assert.IsFalse(Type.IsReadonly(Output.properties.b))
+})
+Test('Should Mapped 32', () => {
+  const M = Type.Script(`
+    type Input = {
+      readonly a?: number
+      readonly b?: number
+    }
+    type Remove<T> = {
+      -readonly [K in keyof T]-?: T[K]
+    }
+    type Output = Remove<Input>
+  `)
+  const Input: Type.TObject<{
+    a: Type.TReadonly<Type.TOptional<Type.TNumber>>
+    b: Type.TReadonly<Type.TOptional<Type.TNumber>>
+  }> = M.Input
+  const Output: Type.TObject<{
+    b: Type.TNumber
+    a: Type.TNumber
+  }> = M.Output
+
+  Assert.IsTrue(Type.IsObject(Input))
+  Assert.IsTrue(Type.IsOptional(Input.properties.a))
+  Assert.IsTrue(Type.IsOptional(Input.properties.b))
+  Assert.IsTrue(Type.IsReadonly(Input.properties.a))
+  Assert.IsTrue(Type.IsReadonly(Input.properties.b))
+
+  Assert.IsTrue(Type.IsObject(Output))
+  Assert.IsFalse(Type.IsOptional(Output.properties.a))
+  Assert.IsFalse(Type.IsOptional(Output.properties.b))
+  Assert.IsFalse(Type.IsReadonly(Output.properties.a))
+  Assert.IsFalse(Type.IsReadonly(Output.properties.b))
+})

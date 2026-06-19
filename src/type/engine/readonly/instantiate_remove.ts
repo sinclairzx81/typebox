@@ -38,7 +38,9 @@ import { type TState, type TInstantiateType, InstantiateType } from '../instanti
 // Operation
 // ------------------------------------------------------------------
 type TRemoveReadonlyOperation<Type extends TSchema,
-  Result extends TSchema = Type extends TReadonly<infer Type  extends TSchema> ? Type : Type
+  Result extends TSchema = Type extends TReadonly<infer Type extends TSchema> 
+    ? TRemoveReadonlyOperation<Type>
+    : Type
 > = Result
 function RemoveReadonlyOperation<Type extends TSchema>(type: Type): TRemoveReadonlyOperation<Type> {
   return Memory.Discard(type, ['~readonly']) as never
