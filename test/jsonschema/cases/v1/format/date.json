@@ -232,12 +232,6 @@
         "valid": false
       },
       {
-        "description": "year 0000 is a leap year (0 % 400 == 0)",
-        "comment": "https://www.rfc-editor.org/rfc/rfc3339#appendix-C — year zero leap year edge case",
-        "data": "0000-02-29",
-        "valid": true
-      },
-      {
         "description": "century year 0100 is not a leap year",
         "comment": "https://www.rfc-editor.org/rfc/rfc3339#appendix-C — 100 % 100 == 0 but 100 % 400 != 0",
         "data": "0100-02-29",

@@ -208,9 +208,27 @@ function IsPuny(value: string): boolean {
 }
 function IsPunyLabel(value: string): boolean {
   try {
-    return IsUnicodeLabel(Puny.Decode(value.slice(4)))
+    const payload = value.slice(4).toLowerCase()
+    // 1. Structural Validation (RFC 3492 syntax)
+    //
+    // If the payload contains a hyphen, it MUST be a delimiter separating basic
+    // ASCII characters from the variable-length integers. A payload consisting
+    // of ONLY a hyphen or starting with multiple hyphens without basic ASCII
+    // characters (like "-9uc") is fundamentally malformed.
+    //
+    const lastHyphen = payload.lastIndexOf('-')
+    if (lastHyphen === 0) {
+      // Catches "-9uc" right here because the delimiter is at index 0, meaning 0
+      // basic ASCII characters preceded it, which is non-canonical.
+      return false
+    }
+    // 2. Decode the payload
+    const decoded = Puny.Decode(payload)
+    if (!decoded) return false
+    // 3. Validate the output rules against RFC 5892
+    return IsUnicodeLabel(decoded)
   } catch {
-    return false // invalid punycode encoding
+    return false
   }
 }
 // ------------------------------------------------------------------

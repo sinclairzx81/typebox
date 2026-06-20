@@ -120,6 +120,11 @@
         "description": "URN prefixed UUID is invalid",
         "data": "urn:uuid:2eb8aa08-aa98-11ea-b4aa-73b441d16380",
         "valid": false
+      },
+      {
+        "description": "trailing hyphen after a complete UUID is invalid",
+        "data": "2eb8aa08-aa98-11ea-b4aa-73b441d16380-",
+        "valid": false
       }
     ]
   }
