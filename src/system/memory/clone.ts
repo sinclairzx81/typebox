@@ -28,31 +28,34 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Guard } from '../../guard/index.ts'
+import { Guard, GlobalsGuard } from '../../guard/index.ts'
 import { Metrics } from './metrics.ts'
 
 // ------------------------------------------------------------------
-// Guard
+// ClassInstance
+//
+// TypeBox does not clone arbitrary class instances. Class instances
+// cannot be safely cloned without potentially breaking private
+// members of the instance.
+//
 // ------------------------------------------------------------------
-function IsGuard(value: unknown): value is { '~guard': unknown } {
-  return Guard.IsObject(value) && Guard.HasPropertyKey(value, '~guard')
-}
-function FromGuard(value: { '~guard': unknown }): unknown {
-  return value // non-clonable
-}
-// ------------------------------------------------------------------
-// Array
-// ------------------------------------------------------------------
-function FromArray(value: unknown[]): unknown[] {
-  return value.map((value) => FromValue(value))
+function FromClassInstance(value: Record<PropertyKey, unknown>): Record<PropertyKey, unknown> {
+  return value // atomic
 }
 // ------------------------------------------------------------------
-// Object
+// KindedObject
+//
+// Types have non-enumerable properties that MUST be preserved on Clone. 
+// The following is the optimal path for TypeBox types.
 // ------------------------------------------------------------------
-function FromObject(value: Record<PropertyKey, unknown>): object {
+function IsKindedObject(value: Record<PropertyKey, unknown>): boolean {
+  return Guard.HasPropertyKey(value, '~kind')
+}
+function FromKindedObject(value: Record<PropertyKey, unknown>): Record<PropertyKey, unknown> {
   const result = {} as Record<PropertyKey, unknown>
   const descriptors = Object.getOwnPropertyDescriptors(value)
   for (const key of Object.keys(descriptors)) {
+    if (Guard.IsUnsafePropertyKey(key)) continue // (ignore: prototype-pollution)
     const descriptor = descriptors[key]
     if (Guard.HasPropertyKey(descriptor, 'value')) {
       Object.defineProperty(result, key, { ...descriptor, value: FromValue(descriptor.value) })
@@ -61,33 +64,76 @@ function FromObject(value: Record<PropertyKey, unknown>): object {
   return result
 }
 // ------------------------------------------------------------------
+// PlainObject
+// ------------------------------------------------------------------
+function FromPlainObject(value: Record<PropertyKey, unknown>): Record<PropertyKey, unknown> {
+  const result = {} as Record<PropertyKey, unknown>
+  for (const key of Guard.Keys(value)) {
+    if (Guard.IsUnsafePropertyKey(key)) continue // (ignore: prototype-pollution)
+    result[key] = FromValue(value[key])
+  }
+  for (const key of Guard.Symbols(value)) {
+    result[key] = FromValue(value[key])
+  }
+  return result
+}
+// ------------------------------------------------------------------
+// Object
+// ------------------------------------------------------------------
+function FromObject(value: Record<PropertyKey, unknown>): Record<PropertyKey, unknown> {
+  return (
+    Guard.IsClassInstance(value) ? FromClassInstance(value) :
+    IsKindedObject(value) ? FromKindedObject(value) :
+    FromPlainObject(value)
+  )
+}
+// ------------------------------------------------------------------
+// Array
+// ------------------------------------------------------------------
+function FromArray(value: unknown[]): unknown {
+  return value.map((element) => FromValue(element))
+}
+// ------------------------------------------------------------------
+// TypeArray
+// ------------------------------------------------------------------
+function FromTypedArray(value: GlobalsGuard.TTypeArray): GlobalsGuard.TTypeArray {
+  return value.slice()
+}
+// ------------------------------------------------------------------
 // RegExp
 // ------------------------------------------------------------------
 function FromRegExp(value: RegExp): RegExp {
   return new RegExp(value.source, value.flags)
 }
 // ------------------------------------------------------------------
-// RegExp
+// Map
 // ------------------------------------------------------------------
-function FromUnknown(value: unknown): unknown {
-  return value
+function FromMap(value: Map<unknown, unknown>): Map<unknown, unknown> {
+  return new Map(FromValue([...value.entries()]) as never)
 }
 // ------------------------------------------------------------------
-// Value
+// Set
 // ------------------------------------------------------------------
+function FromSet(value: Set<unknown>): Set<unknown> {
+  return new Set(FromValue([...value.values()]) as never)
+}
 function FromValue(value: unknown): unknown {
   return (
-    value instanceof RegExp ? FromRegExp(value) :
-    IsGuard(value) ? FromGuard(value) :
-    Guard.IsArray(value) ? FromArray(value) : 
-    Guard.IsObject(value) ? FromObject(value) : 
-    FromUnknown(value)
-  )
+    GlobalsGuard.IsTypeArray(value) ? FromTypedArray(value) :
+    GlobalsGuard.IsRegExp(value) ? FromRegExp(value) :
+    GlobalsGuard.IsMap(value) ? FromMap(value) :
+    GlobalsGuard.IsSet(value) ? FromSet(value) :
+    Guard.IsArray(value) ? FromArray(value) :
+    Guard.IsObject(value) ? FromObject(value) :
+    value
+  ) as never
 }
-/**
- * Clones a value using the TypeBox type cloning strategy. This function preserves non-enumerable 
- * properties from the source value. This is to ensure cloned types retain discriminable 
- * hidden properties.
+// ------------------------------------------------------------------
+// Clone
+// ------------------------------------------------------------------
+/** 
+ * Returns a Clone of the given value. This function is similar to structuredClone() 
+ * but also supports deep cloning instances of Map, Set and TypeArray.
  */
 export function Clone<Value extends unknown = unknown>(value: Value): Value {
   Metrics.clone += 1

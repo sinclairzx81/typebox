@@ -34,7 +34,6 @@ export { Instantiate, type TInstantiate } from './instantiate.ts'
 // ------------------------------------------------------------------
 // Engine: Internals
 // ------------------------------------------------------------------
-export * from './awaited/index.ts'
 export * from './conditional/index.ts'
 export * from './constructor_parameters/index.ts'
 export * from './cyclic/index.ts'

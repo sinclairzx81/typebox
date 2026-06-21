@@ -56,10 +56,6 @@ export function Not(expr: string): string {
 export function IsArray(value: string): string {
   return `Array.isArray(${value})`
 }
-/** Returns true if this value is an async iterator */
-export function IsAsyncIterator(value: unknown): string {
-  return `Guard.IsAsyncIterator(${value})`
-}
 /** Returns true if this value is bigint */
 export function IsBigInt(value: string): string {
   return `typeof ${value} === "bigint"`
@@ -71,10 +67,6 @@ export function IsBoolean(value: string): string {
 /** Returns true if this value is integer */
 export function IsInteger(value: string): string {
   return `Number.isInteger(${value})`
-}
-/** Returns true if this value is an iterator */
-export function IsIterator(value: unknown): string {
-  return `Guard.IsIterator(${value})`
 }
 /** Returns true if this value is null */
 export function IsNull(value: string): string {

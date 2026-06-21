@@ -64,7 +64,6 @@ export function es_419(error: TValidationError): string {
     case 'unevaluatedItems': return 'no debe tener elementos no evaluados'
     case 'unevaluatedProperties': return 'no debe tener propiedades no evaluadas'
     case 'uniqueItems': return `no debe tener elementos duplicados`
-    case '~guard': return `debe coincidir con la función de verificación`
     case '~refine': return error.params.message
     default: return 'ocurrió un error de validación desconocido'
   }

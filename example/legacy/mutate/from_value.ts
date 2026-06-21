@@ -28,9 +28,15 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import type { TProperties, TPromise } from '../../type/index.ts'
-import { FromType } from './from_type.ts'
+import { Guard } from 'typebox/guard'
 
-export function FromPromise(context: TProperties, type: TPromise): unknown {
-  return Promise.resolve(FromType(context, type.item))
+import { type TMutable } from './mutate.ts'
+import { FromArray } from './from_array.ts'
+import { FromObject } from './from_object.ts'
+import { FromUnknown } from './from_unknown.ts'
+
+export function FromValue(root: TMutable, path: string, current: unknown, next: unknown): void {
+  if (Guard.IsArray(next)) return FromArray(root, path, current, next)
+  if (Guard.IsObject(next)) return FromObject(root, path, current, next)
+  return FromUnknown(root, path, current, next)
 }

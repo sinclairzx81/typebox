@@ -31,7 +31,6 @@ THE SOFTWARE.
 import * as T from '../../type/index.ts'
 
 import { FromArray } from './from_array.ts'
-import { FromBase } from './from_base.ts'
 import { FromCyclic } from './from_cyclic.ts'
 import { FromIntersect } from './from_intersect.ts'
 import { FromObject } from './from_object.ts'
@@ -43,7 +42,6 @@ import { FromUnion } from './from_union.ts'
 export function FromType(context: T.TProperties, type: T.TSchema, value: unknown): unknown {
   return (
     T.IsArray(type) ? FromArray(context, type, value) :
-    T.IsBase(type) ? FromBase(context, type, value) :
     T.IsCyclic(type) ? FromCyclic(context, type, value) :
     T.IsIntersect(type) ? FromIntersect(context, type, value) :
     T.IsObject(type) ? FromObject(context, type, value) :

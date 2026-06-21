@@ -30,12 +30,6 @@ Test('Should Clone 4', () => {
   Assert.IsEqual(B, A)
   Assert.IsTrue(A === B)
 })
-Test('Should Clone 4', () => {
-  const A = { '~guard': null }
-  const B = Memory.Clone(A)
-  Assert.IsEqual(B, A)
-  Assert.IsTrue(A === B)
-})
 // ------------------------------------------------------------------
 // Create
 // ------------------------------------------------------------------
@@ -71,4 +65,25 @@ Test('Should Create 4', () => {
     A.x = 123
   })
   Settings.Reset()
+})
+// ------------------------------------------------------------------
+// UnsafePropertyKey
+// ------------------------------------------------------------------
+Test('Should Create 5', () => {
+  const A = { '__proto__': 1, '~kind': 'test' }
+  const B = Memory.Clone(A)
+  Assert.NotHasPropertyKey(B, '__proto__')
+  Assert.HasPropertyKey(B, '~kind')
+})
+Test('Should Create 6', () => {
+  const A = { 'constructor': 1, '~kind': 'test' }
+  const B = Memory.Clone(A)
+  Assert.NotHasPropertyKey(B, '__proto__')
+  Assert.HasPropertyKey(B, '~kind')
+})
+Test('Should Create 7', () => {
+  const A = { 'prototype': 1, '~kind': 'test' }
+  const B = Memory.Clone(A)
+  Assert.NotHasPropertyKey(B, '__proto__')
+  Assert.HasPropertyKey(B, '~kind')
 })

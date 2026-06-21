@@ -68,15 +68,12 @@ export interface TRefinement<Value extends unknown = unknown> {
 export function Refine<Type extends TSchema, Value = Static<Type>>(type: Type, check: TRefineCheckCallback<Value>, error: TRefineErrorCallback<Value>): TRefineAdd<Type>
 /** Refines a type with an explicit check */
 export function Refine<Type extends TSchema, Value = Static<Type>>(type: Type, check: TRefineCheckCallback<Value>): TRefineAdd<Type>
-/** @deprecated Use the error callback signature to generate error message. This overload will be removed in the next version  */
-export function Refine<Type extends TSchema, Value = Static<Type>>(type: Type, check: TRefineCheckCallback<Value>, message: string): TRefineAdd<Type>
 /** Refines a type with an explicit check */
 export function Refine(...args: unknown[]): unknown {
-  const [type, check, error_or_message] = Arguments.Match<[TSchema, TRefineCheckCallback, TRefineErrorCallback | string]>(args, {
+  const [type, check, error] = Arguments.Match<[TSchema, TRefineCheckCallback, TRefineErrorCallback]>(args, {
     3: (type, check, error) => [type, check, error],
     2: (type, check) => [type, check, () => 'Refine Error'],
   })
-  const error = Guard.IsString(error_or_message) ? () => error_or_message : error_or_message
   return RefineAdd(type, { check, error }) as never
 }
 // ------------------------------------------------------------------

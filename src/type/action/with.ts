@@ -54,21 +54,3 @@ export type TWith<Type extends TSchema, Options extends TSchema> = (
 export function With<Type extends TSchema, const Options extends TSchema>(type: Type, options: Options): TWithAction<Type, Options> {
   return WithAction(type, options)
 }
-
-// deno-coverage-ignore-start
-// ------------------------------------------------------------------
-// Deprecation
-// ------------------------------------------------------------------
-/** 
- * @deprecated Type.TOptions\<T\> has been renamed to Type.TWith\<T\>. This type will be removed in the
- * next version of TypeBox.
- */
-export type TOptions<Type extends TSchema, Options extends TSchema> = TWith<Type, Options>
-/** 
- * @deprecated Type.Options\<T\> has been renamed to Type.With\<T\>. This type will be removed in the
- * next version of TypeBox.
- */
-export function Options<Type extends TSchema, const Options extends TSchema>(type: Type, options: Options): TOptions<Type, Options> {
-  return With(type, options) as never
-}
-// deno-coverage-ignore-stop

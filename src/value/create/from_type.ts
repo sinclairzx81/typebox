@@ -34,8 +34,6 @@ import * as S from '../../schema/types/index.ts'
 import { FromDefault } from './from_default.ts'
 
 import { FromArray } from './from_array.ts'
-import { FromAsyncIterator } from './from_async_iterator.ts'
-import { FromBase } from './from_base.ts'
 import { FromBigInt } from './from_bigint.ts'
 import { FromBoolean } from './from_boolean.ts'
 import { FromConstructor } from './from_constructor.ts'
@@ -44,13 +42,11 @@ import { FromEnum } from './from_enum.ts'
 import { FromFunction } from './from_function.ts'
 import { FromInteger } from './from_integer.ts'
 import { FromIntersect } from './from_intersect.ts'
-import { FromIterator } from './from_iterator.ts'
 import { FromLiteral } from './from_literal.ts'
 import { FromNever } from './from_never.ts'
 import { FromNull } from './from_null.ts'
 import { FromNumber } from './from_number.ts'
 import { FromObject } from './from_object.ts'
-import { FromPromise } from './from_promise.ts'
 import { FromRecord } from './from_record.ts'
 import { FromRef } from './from_ref.ts'
 import { FromString } from './from_string.ts'
@@ -71,8 +67,6 @@ export function FromType(context: T.TProperties, type: T.TSchema): unknown {
     // Types
     // -----------------------------------------------------
     T.IsArray(type) ? FromArray(context, type) :
-    T.IsAsyncIterator(type) ? FromAsyncIterator(context, type) :
-    T.IsBase(type) ? FromBase(context, type) :
     T.IsBigInt(type) ? FromBigInt(context, type) :
     T.IsBoolean(type) ? FromBoolean(context, type) :
     T.IsConstructor(type) ? FromConstructor(context, type) :
@@ -81,13 +75,11 @@ export function FromType(context: T.TProperties, type: T.TSchema): unknown {
     T.IsFunction(type) ? FromFunction(context, type) :
     T.IsInteger(type) ? FromInteger(context, type) :
     T.IsIntersect(type) ? FromIntersect(context, type) :
-    T.IsIterator(type) ? FromIterator(context, type) :
     T.IsLiteral(type) ? FromLiteral(context, type) :
     T.IsNever(type) ? FromNever(context, type) :
     T.IsNull(type) ? FromNull(context, type) :
     T.IsNumber(type) ? FromNumber(context, type) :
     T.IsObject(type) ? FromObject(context, type) :
-    T.IsPromise(type) ? FromPromise(context, type) :
     T.IsRecord(type) ? FromRecord(context, type) :
     T.IsRef(type) ? FromRef(context, type) :
     T.IsString(type) ? FromString(context, type) :

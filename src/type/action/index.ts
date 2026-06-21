@@ -33,7 +33,6 @@ export * from './_remove_immutable.ts'
 export * from './_remove_readonly.ts'
 export * from './_remove_optional.ts'
 
-export * from './awaited.ts'
 export * from './capitalize.ts'
 export * from './conditional.ts'
 export * from './constructor_parameters.ts'
