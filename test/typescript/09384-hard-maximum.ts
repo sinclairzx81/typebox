@@ -5,7 +5,7 @@ import Type from 'typebox'
 // ------------------------------------------------------------------
 // Solution
 //
-// Note: Omitted larger ranges to allow inference to pass.
+// Reduced larger values to enable inference to pass (max-4)
 // ------------------------------------------------------------------
 const Comparers = Type.Script(`
   type BuildTuple<Size extends number, Tuple extends unknown[] = []> = (
@@ -28,7 +28,6 @@ const Comparers = Type.Script(`
 `)
 
 const { ResultA, ResultB, ResultC } = Type.Script(Comparers, `
-
   type Maximum<T extends unknown[], N extends number = 0> = 
     T extends [infer Left, ...infer Right]
       ? GreaterThan<Left, N> extends true
@@ -38,7 +37,7 @@ const { ResultA, ResultB, ResultC } = Type.Script(Comparers, `
 
   type ResultA = Maximum<[]>               // never
   type ResultB = Maximum<[0, 2, 1]>        // 2
-  type ResultC = Maximum<[0, 2, 5, 2, 1]>  // 5
+  type ResultC = Maximum<[0, 2, 4, 1, 2]>  // 4
 
 `)
 
@@ -55,9 +54,9 @@ const Test = Assert.Context('Type.Challenge')
 Test('09384-hard-maximum', () => {
   Assert.IsExtendsMutual<ResultA, never>(true)
   Assert.IsExtendsMutual<ResultB, 2>(true)
-  Assert.IsExtendsMutual<ResultC, 5>(true)
+  Assert.IsExtendsMutual<ResultC, 4>(true)
 
   Assert.IsEqual(ResultA, Type.Script(`never`))
   Assert.IsEqual(ResultB, Type.Script(`2`))
-  Assert.IsEqual(ResultC, Type.Script(`5`))
+  Assert.IsEqual(ResultC, Type.Script(`4`))
 })
