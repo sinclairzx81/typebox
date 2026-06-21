@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Guard, GlobalsGuard } from '../../guard/index.ts'
+import { Guard, GlobalsGuard } from 'typebox/guard'
 import { MutateError } from './error.ts'
 import { FromValue } from './from_value.ts'
 

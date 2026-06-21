@@ -34,7 +34,6 @@ import { Check } from '../check/index.ts'
 import { Create } from '../create/index.ts'
 
 import { FromArray } from './from_array.ts'
-import { FromBase } from './from_base.ts'
 import { FromEnum } from './from_enum.ts'
 import { FromIntersect } from './from_intersect.ts'
 import { FromObject } from './from_object.ts'
@@ -64,12 +63,9 @@ function AssertRepairableValue(context: T.TProperties, type: T.TSchema, value: u
 // AssertRepairableType
 // ------------------------------------------------------------------
 function AssertRepairableType(context: T.TProperties, type: T.TSchema, value: unknown): void {
-  const unsupported = T.IsAsyncIterator(type)
-    || T.IsIterator(type)
-    || T.IsConstructor(type)
+  const unsupported = T.IsConstructor(type)
     || T.IsFunction(type)
     || T.IsNever(type)
-    || T.IsPromise(type)
   if(unsupported) {
     throw new RepairError(context, type, value, 'Type is not repairable')
   }
@@ -95,12 +91,6 @@ function FinalizeRepair(context: T.TProperties, type: T.TSchema, repaired: unkno
 // FromType
 // ------------------------------------------------------------------
 export function FromType(context: T.TProperties, type: T.TSchema, value: unknown): unknown {
-  // Base Repair
-  if (T.IsBase(type)) {
-    const repaired = FromBase(context, type, value)
-    return FinalizeRepair(context, type, repaired)
-  }
-  // Schema Repair
   AssertRepairableValue(context, type, value)
   AssertRepairableType(context, type, value)
   const repaired = (

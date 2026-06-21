@@ -28,33 +28,43 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { type TSchema, type TSchemaOptions } from '../types/schema.ts'
-import { type TDeferred, Deferred } from '../types/deferred.ts'
-import { type TAwaitedAction, AwaitedAction } from '../engine/awaited/instantiate.ts'
+import { Guard } from 'typebox/guard'
+import { Clone } from 'typebox/value'
+import { Pointer } from 'typebox/value'
+
+import { type TMutable } from './mutate.ts'
+import { FromValue } from './from_value.ts'
 
 // ------------------------------------------------------------------
-// Deferred
+// AssertKey
 // ------------------------------------------------------------------
-/** Creates a deferred Awaited action. */
-export type TAwaitedDeferred<Type extends TSchema> = (
-  TDeferred<'Awaited', [Type]>
-)
-/** Creates a deferred Awaited action. */
-export function AwaitedDeferred<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TAwaitedDeferred<Type> {
-  return Deferred('Awaited', [type], options)
+function AssertKey(key: string): void {
+  if(Guard.IsUnsafePropertyKey(key)) throw Error('Attempted to Mutate with unsafe property key')
 }
 // ------------------------------------------------------------------
-// Type
+// AssertKey
 // ------------------------------------------------------------------
-/** Applies an Awaited action to a type. */
-export type TAwaited<Type extends TSchema> = (
-  TAwaitedAction<Type>
-)
-/** 
- * Applies an Awaited action to a type. 
- * 
- * @deprecated This action is being removed in the next version of TypeBox.
- */
-export function Awaited<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TAwaited<Type> {
-  return AwaitedAction(type, options)
+export function FromObject(root: TMutable, path: string, current: unknown, next: Record<string, unknown>): void {
+  if (!Guard.IsObjectNotArray(current)) {
+    Pointer.Set(root, path, Clone(next))
+  } else {
+    const currentKeys = Guard.Keys(current)
+    const nextKeys = Guard.Keys(next)
+    for (const currentKey of currentKeys) {
+      AssertKey(currentKey)
+      if (!nextKeys.includes(currentKey)) {
+        delete current[currentKey]
+      }
+    }
+    for (const nextKey of nextKeys) {
+      AssertKey(nextKey)
+      if (!currentKeys.includes(nextKey)) {
+        current[nextKey] = next[nextKey]
+      }
+    }
+    for (const nextKey of nextKeys) {
+      AssertKey(nextKey)
+      FromValue(root, `${path}/${nextKey}`, current[nextKey], next[nextKey])
+    }
+  }
 }

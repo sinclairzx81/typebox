@@ -27,10 +27,21 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 // deno-fmt-ignore-file
-// deno-lint-ignore-file 
 
-import type { TProperties, Base } from '../../type/index.ts'
+import { Guard } from 'typebox/guard'
+import { Clone } from 'typebox/value'
+import { Pointer } from 'typebox/value'
 
-export function FromBase(context: TProperties, type: Base, value: unknown): unknown {
-  return type.Default(value)
+import { type TMutable } from './mutate.ts'
+import { FromValue } from './from_value.ts'
+
+export function FromArray(root: TMutable, path: string, current: unknown, next: unknown[]): void {
+  if (!Guard.IsArray(current)) {
+    Pointer.Set(root, path, Clone(next))
+  } else {
+    for (let index = 0; index < next.length; index++) {
+      FromValue(root, `${path}/${index}`, current[index], next[index])
+    }
+    current.splice(next.length)
+  }
 }

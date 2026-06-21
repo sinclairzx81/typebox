@@ -39,10 +39,6 @@ import * as S from '../action/index.ts'
 // ------------------------------------------------------------------
 type TIntrinsicOrCall<Target extends string, Parameters extends T.TSchema[]> = (
   [Target, Parameters] extends ['Array', [infer Type extends T.TSchema]] ? T.TArray<Type> :
-  [Target, Parameters] extends ['AsyncIterator', [infer Type extends T.TSchema]] ? T.TAsyncIterator<Type> :
-  [Target, Parameters] extends ['Promise', [infer Type extends T.TSchema]] ? T.TPromise<Type> :
-  [Target, Parameters] extends ['Iterator', [infer Type extends T.TSchema]] ? T.TIterator<Type> :
-  [Target, Parameters] extends ['Awaited', [infer Type extends T.TSchema]] ? S.TAwaitedDeferred<Type> :
   [Target, Parameters] extends ['Capitalize', [infer Type extends T.TSchema]] ? S.TCapitalizeDeferred<Type> :
   [Target, Parameters] extends ['ConstructorParameters', [infer Type extends T.TSchema]] ? S.TConstructorParametersDeferred<Type> :
   [Target, Parameters] extends ['Evaluate', [infer Type extends T.TSchema]] ? S.TEvaluateDeferred<Type> :
@@ -71,10 +67,6 @@ function IntrinsicOrCall<Ref extends string, Parameters extends T.TSchema[]>(ref
   // Have extensively tested but reports show no Omit coverage (review)
   return (
     Guard.IsEqual(ref, 'Array') ? T.Array(parameters[0]) :
-    Guard.IsEqual(ref, 'AsyncIterator') ? T.AsyncIterator(parameters[0]) :
-    Guard.IsEqual(ref, 'Iterator') ? T.Iterator(parameters[0]) :
-    Guard.IsEqual(ref, 'Promise') ? T.Promise(parameters[0]) :
-    Guard.IsEqual(ref, 'Awaited') ? S.AwaitedDeferred(parameters[0]) :
     Guard.IsEqual(ref, 'Capitalize') ? S.CapitalizeDeferred(parameters[0]) :
     Guard.IsEqual(ref, 'ConstructorParameters') ? S.ConstructorParametersDeferred(parameters[0]) :
     Guard.IsEqual(ref, 'Evaluate') ? S.EvaluateDeferred(parameters[0]) :

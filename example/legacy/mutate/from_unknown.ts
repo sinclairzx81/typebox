@@ -28,8 +28,10 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import type { TProperties, Base } from '../../type/index.ts'
+import { Pointer } from 'typebox/value'
+import { type TMutable } from './mutate.ts'
 
-export function FromBase(_context: TProperties, type: Base): unknown {
-  return type.Create()
+export function FromUnknown(root: TMutable, path: string, current: unknown, next: unknown): void {
+  if (current === next) return
+  Pointer.Set(root, path, next)
 }

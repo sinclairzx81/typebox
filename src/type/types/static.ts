@@ -32,8 +32,6 @@ THE SOFTWARE.
 import type { StaticCodec, TCodec } from './_codec.ts'
 import type { StaticAny, TAny } from './any.ts'
 import type { StaticArray, TArray } from './array.ts'
-import type { StaticAsyncIterator, TAsyncIterator } from './async_iterator.ts'
-import type { StaticBase, Base } from './base.ts'
 import type { StaticBigInt, TBigInt } from './bigint.ts'
 import type { StaticBoolean, TBoolean } from './boolean.ts'
 import type { StaticConstructor, TConstructor } from './constructor.ts'
@@ -43,13 +41,11 @@ import type { StaticFunction, TFunction } from './function.ts'
 import type { StaticInteger, TInteger } from './integer.ts'
 import type { StaticDependent, TDependent } from './dependent.ts'
 import type { StaticIntersect, TIntersect } from './intersect.ts'
-import type { StaticIterator, TIterator } from './iterator.ts'
 import type { StaticLiteral, TLiteral, TLiteralValue } from './literal.ts'
 import type { StaticNever, TNever } from './never.ts'
 import type { StaticNull, TNull, } from './null.ts'
 import type { StaticNumber, TNumber } from './number.ts'
 import type { StaticObject, TObject } from './object.ts'
-import type { StaticPromise, TPromise } from './promise.ts'
 import type { TProperties } from './properties.ts'
 import type { StaticRecord, TRecord  } from './record.ts'
 import type { StaticRef, TRef } from './ref.ts'
@@ -83,8 +79,6 @@ export type StaticType<Stack extends string[], Direction extends StaticDirection
   Type extends TCodec<infer Type extends TSchema, infer Decoded extends unknown> ? StaticCodec<Stack, Direction, Context, This, Type, Decoded> :
   Type extends TAny ? StaticAny :
   Type extends TArray<infer Items extends TSchema> ? StaticArray<Stack, Direction, Context, This, Type, Items> :
-  Type extends TAsyncIterator<infer Type extends TSchema> ? StaticAsyncIterator<Stack, Direction, Context, This, Type> :
-  Type extends Base<infer Value extends unknown> ? StaticBase<Value> :
   Type extends TBigInt ? StaticBigInt :
   Type extends TBoolean ? StaticBoolean :
   Type extends TConstructor<infer Parameters extends TSchema[], infer ReturnType extends TSchema> ? StaticConstructor<Stack, Direction, Context, This, Parameters, ReturnType> :
@@ -93,13 +87,11 @@ export type StaticType<Stack extends string[], Direction extends StaticDirection
   Type extends TDependent<infer If extends TSchema, infer Then extends TSchema, infer Else extends TSchema> ? StaticDependent<Stack, Direction, Context, This, If, Then, Else> :
   Type extends TInteger ? StaticInteger :
   Type extends TIntersect<infer Types extends TSchema[]> ? StaticIntersect<Stack, Direction, Context, This, Types> :
-  Type extends TIterator<infer Types extends TSchema> ? StaticIterator<Stack, Direction, Context, This, Types> :
   Type extends TLiteral<infer Value extends TLiteralValue> ? StaticLiteral<Value> :
   Type extends TNever ? StaticNever :
   Type extends TNull ? StaticNull :
   Type extends TNumber ? StaticNumber :
   Type extends TObject<infer Properties extends TProperties> ? StaticObject<Stack, Direction, Context, This, Properties> :
-  Type extends TPromise<infer Type extends TSchema> ? StaticPromise<Stack, Direction, Context, This, Type> :
   Type extends TRecord<infer Key extends string, infer Value extends TSchema> ? StaticRecord<Stack, Direction, Context, This, Key, Value> :
   Type extends TCyclic<infer Defs extends TProperties, infer Ref extends string> ? StaticCyclic<Stack, Direction, Context, This, Defs, Ref> :
   Type extends TRef<infer Ref extends string> ? StaticRef<Stack, Direction, Context, This, Ref> :

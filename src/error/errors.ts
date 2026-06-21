@@ -45,7 +45,6 @@ export type TValidationError =
   | TExclusiveMaximumError
   | TExclusiveMinimumError
   | TFormatError
-  | TGuardError
   | TIfError
   | TMaximumError
   | TMaxItemsError
@@ -179,13 +178,6 @@ export interface TExclusiveMinimumError extends TValidationErrorBase {
 export interface TFormatError extends TValidationErrorBase {
   keyword: 'format'
   params: { format: string }
-}
-// ------------------------------------------------------------------
-// Guard
-// ------------------------------------------------------------------
-export interface TGuardError extends TValidationErrorBase {
-  keyword: '~guard'
-  params: { errors: object[] }
 }
 // ------------------------------------------------------------------
 // If

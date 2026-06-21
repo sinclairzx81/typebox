@@ -44,7 +44,6 @@ export { Script, type TScript } from './type/script/index.ts'
 // ------------------------------------------------------------------
 // Actions
 // ------------------------------------------------------------------
-export { Awaited, type TAwaited, type TAwaitedDeferred } from './type/action/awaited.ts'
 export { Capitalize, type TCapitalize, type TCapitalizeDeferred } from './type/action/capitalize.ts'
 export { Conditional, type TConditional, type TConditionalDeferred } from './type/action/conditional.ts'
 export { ConstructorParameters, type TConstructorParameters, type TConstructorParametersDeferred } from './type/action/constructor_parameters.ts'
@@ -63,12 +62,12 @@ export { Omit, type TOmit, type TOmitDeferred } from './type/action/omit.ts'
 export { Parameters, type TParameters, type TParametersDeferred } from './type/action/parameters.ts'
 export { Partial, type TPartial, type TPartialDeferred } from './type/action/partial.ts'
 export { Pick, type TPick, type TPickDeferred } from './type/action/pick.ts'
-export { ReadonlyObject, ReadonlyType, type TReadonlyObject, type TReadonlyObjectDeferred } from './type/action/readonly_object.ts'
+export { ReadonlyObject, type TReadonlyObject, type TReadonlyObjectDeferred } from './type/action/readonly_object.ts'
 export { Required, type TRequired, type TRequiredDeferred } from './type/action/required.ts'
 export { ReturnType, type TReturnType, type TReturnTypeDeferred } from './type/action/return_type.ts'
 export { type TUncapitalize, type TUncapitalizeDeferred, Uncapitalize } from './type/action/uncapitalize.ts'
 export { type TUppercase, type TUppercaseDeferred, Uppercase } from './type/action/uppercase.ts'
-export { Options, type TOptions, type TWith, With } from './type/action/with.ts'
+export { type TWith, With } from './type/action/with.ts'
 
 // ------------------------------------------------------------------
 // Extension
@@ -84,8 +83,6 @@ export { IsRefine, Refine, type TRefine, type TRefineCheckCallback, type TRefine
 // ------------------------------------------------------------------
 export { Any, IsAny, type TAny } from './type/types/any.ts'
 export { Array, IsArray, type TArray } from './type/types/array.ts'
-export { AsyncIterator, IsAsyncIterator, type TAsyncIterator } from './type/types/async_iterator.ts'
-export { Base, IsBase } from './type/types/base.ts'
 export { BigInt, IsBigInt, type TBigInt } from './type/types/bigint.ts'
 export { Boolean, IsBoolean, type TBoolean } from './type/types/boolean.ts'
 export { Call, IsCall, type TCall } from './type/types/call.ts'
@@ -99,14 +96,12 @@ export { Dependent, IsDependent, type TDependent } from './type/types/dependent.
 export { Infer, IsInfer, type TInfer } from './type/types/infer.ts'
 export { Integer, IsInteger, type TInteger } from './type/types/integer.ts'
 export { Intersect, IsIntersect, type TIntersect } from './type/types/intersect.ts'
-export { IsIterator, Iterator, type TIterator } from './type/types/iterator.ts'
 export { IsLiteral, Literal, type TLiteral, type TLiteralValue } from './type/types/literal.ts'
 export { IsNever, Never, type TNever } from './type/types/never.ts'
 export { IsNull, Null, type TNull } from './type/types/null.ts'
 export { IsNumber, Number, type TNumber } from './type/types/number.ts'
 export { IsObject, Object, type TObject } from './type/types/object.ts'
 export { IsParameter, Parameter, type TParameter } from './type/types/parameter.ts'
-export { IsPromise, Promise, type TPromise } from './type/types/promise.ts'
 export { type TProperties, type TRequiredArray } from './type/types/properties.ts'
 export { IsRecord, Record, RecordKey, RecordPattern, RecordValue, type TRecord, type TRecordKey, type TRecordPattern, type TRecordValue } from './type/types/record.ts'
 export { IsRef, Ref, type TRef } from './type/types/ref.ts'

@@ -28,90 +28,8 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { Guard, GlobalsGuard } from '../../guard/index.ts'
 import { Clone as SystemClone } from '../../system/memory/clone.ts'
 
-
-// ------------------------------------------------------------------
-// ClassInstance
-//
-// TypeBox does not support cloning arbitrary class instances. It treats
-// class instances as atomic values, similar to number, boolean, and
-// string. In the future, an implementation could detect the presence of
-// a .clone() method, but no formal specification for this behavior
-// exists, so we don't.
-//
-// ------------------------------------------------------------------
-function FromClassInstance(value: Record<PropertyKey, unknown>): Record<PropertyKey, unknown> {
-  return value // atomic
-}
-// ------------------------------------------------------------------
-// TypeInstance
-//
-// TypeBox types have non-enumerable properties that should be
-// retained on Clone. We need to use a SystemClone for this
-// to ensure the non-enumerable properties are preserved.
-// ------------------------------------------------------------------
-function IsTypeInstance(value: Record<PropertyKey, unknown>): boolean {
-  return Guard.HasPropertyKey(value, '~kind')
-}
-function FromTypeInstance(value: Record<PropertyKey, unknown>): Record<PropertyKey, unknown> {
-  return SystemClone(value)
-}
-// ------------------------------------------------------------------
-// ObjectInstance
-// ------------------------------------------------------------------
-function FromObjectInstance(value: Record<PropertyKey, unknown>): Record<PropertyKey, unknown> {
-  const result = {} as Record<PropertyKey, unknown>
-  for (const key of Guard.Keys(value)) {
-    if (Guard.IsUnsafePropertyKey(key)) continue // (ignore: prototype-pollution)
-    result[key] = Clone(value[key])
-  }
-  for (const key of Guard.Symbols(value)) {
-    result[key] = Clone(value[key])
-  }
-  return result
-}
-// ------------------------------------------------------------------
-// Object
-// ------------------------------------------------------------------
-function FromObject(value: Record<PropertyKey, unknown>): Record<PropertyKey, unknown> {
-  return (
-    Guard.IsClassInstance(value) ? FromClassInstance(value) :
-    IsTypeInstance(value) ? FromTypeInstance(value) :
-    FromObjectInstance(value)
-  )
-}
-// ------------------------------------------------------------------
-// Array
-// ------------------------------------------------------------------
-function FromArray(value: unknown[]): unknown {
-  return value.map((element) => Clone(element))
-}
-// ------------------------------------------------------------------
-// TypeArray
-// ------------------------------------------------------------------
-function FromTypedArray(value: GlobalsGuard.TTypeArray): GlobalsGuard.TTypeArray {
-  return value.slice()
-}
-// ------------------------------------------------------------------
-// Map
-// ------------------------------------------------------------------
-function FromMap(value: Map<unknown, unknown>): Map<unknown, unknown> {
-  return new Map(Clone([...value.entries()]))
-}
-// ------------------------------------------------------------------
-// Set
-// ------------------------------------------------------------------
-function FromSet(value: Set<unknown>): Set<unknown> {
-  return new Set(Clone([...value.values()]))
-}
-// ------------------------------------------------------------------
-// Value
-// ------------------------------------------------------------------
-function FromValue(value: unknown): unknown {
-  return value
-}
 // ------------------------------------------------------------------
 // Clone
 // ------------------------------------------------------------------
@@ -120,12 +38,5 @@ function FromValue(value: unknown): unknown {
  * but also supports deep cloning instances of Map, Set and TypeArray.
  */
 export function Clone<Value extends unknown>(value: Value): Value {
-  return (
-    GlobalsGuard.IsTypeArray(value) ? FromTypedArray(value) :
-    GlobalsGuard.IsMap(value) ? FromMap(value) :
-    GlobalsGuard.IsSet(value) ? FromSet(value) :
-    Guard.IsArray(value) ? FromArray(value) :
-    Guard.IsObject(value) ? FromObject(value) :
-    FromValue(value)
-  ) as never
+  return SystemClone(value) as Value
 }

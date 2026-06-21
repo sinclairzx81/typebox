@@ -75,21 +75,6 @@ Test('Should Compile 6', () => {
   Assert.IsEqual(errorsResult, [])
   Assert.IsEqual(parseResult, Value)
 })
-Test('Should Compile 7', () => {
-  const A = Compile(Type.Literal(1))
-  const B = Compile(Type.Literal(2))
-  const C = Compile(Type.Literal(3))
-  const D = Compile(Type.Tuple([A, B, C]))
-  const E = Compile(Type.Object({ x: D }))
-
-  const Value = { x: [1, 2, 5] }
-  const checkResult = E.Check(Value)
-  const errorsResult = E.Errors(Value)
-
-  Assert.IsFalse(checkResult)
-  Assert.IsTrue(errorsResult.length > 0)
-  Assert.Throws(() => E.Parse(Value))
-})
 // ------------------------------------------------------------------
 // Base: Create
 // ------------------------------------------------------------------

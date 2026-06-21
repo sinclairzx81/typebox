@@ -318,18 +318,18 @@ Test('Should Indexed 34', () => {
 })
 Test('Should Indexed 35', () => {
   const T = Type.Script(`
-    export interface A { self: this, value: Promise<this> }
+    export interface A { self: this, value: Array<this> }
     export type B = A['value']
   `)
-  const B: Type.TPromise<
+  const B: Type.TArray<
     Type.TObject<{
       self: Type.TThis
-      value: Type.TPromise<Type.TThis>
+      value: Type.TArray<Type.TThis>
     }>
   > = T.B
-  Assert.IsTrue(Type.IsPromise(B))
-  Assert.IsTrue(Type.IsObject(B.item))
-  Assert.IsTrue(Type.IsThis(B.item.properties.self))
+  Assert.IsTrue(Type.IsArray(B))
+  Assert.IsTrue(Type.IsObject(B.items))
+  Assert.IsTrue(Type.IsThis(B.items.properties.self))
 })
 Test('Should Indexed 36', () => {
   const T = Type.Script(`
@@ -379,31 +379,31 @@ Test('Should Indexed 37', () => {
 })
 Test('Should Indexed 38', () => {
   const T = Type.Script(`
-    export interface A { self: this, value: AsyncIterator<this> }
+    export interface A { self: this, value: Array<this> }
     export type B = A['value']
   `)
-  const B: Type.TAsyncIterator<
+  const B: Type.TArray<
     Type.TObject<{
       self: Type.TThis
-      value: Type.TAsyncIterator<Type.TThis>
+      value: Type.TArray<Type.TThis>
     }>
   > = T.B
-  Assert.IsTrue(Type.IsAsyncIterator(B))
-  Assert.IsTrue(Type.IsObject(B.iteratorItems))
-  Assert.IsTrue(Type.IsThis(B.iteratorItems.properties.self))
+  Assert.IsTrue(Type.IsArray(B))
+  Assert.IsTrue(Type.IsObject(B.items))
+  Assert.IsTrue(Type.IsThis(B.items.properties.self))
 })
 Test('Should Indexed 39', () => {
   const T = Type.Script(`
-    export interface A { self: this, value: Iterator<this> }
+    export interface A { self: this, value: Array<this> }
     export type B = A['value']
   `)
-  const B: Type.TIterator<
+  const B: Type.TArray<
     Type.TObject<{
       self: Type.TThis
-      value: Type.TIterator<Type.TThis>
+      value: Type.TArray<Type.TThis>
     }>
   > = T.B
-  Assert.IsTrue(Type.IsIterator(B))
-  Assert.IsTrue(Type.IsObject(B.iteratorItems))
-  Assert.IsTrue(Type.IsThis(B.iteratorItems.properties.self))
+  Assert.IsTrue(Type.IsArray(B))
+  Assert.IsTrue(Type.IsObject(B.items))
+  Assert.IsTrue(Type.IsThis(B.items.properties.self))
 })
