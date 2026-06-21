@@ -58,5 +58,5 @@ export type TConditional<Left extends TSchema, Right extends TSchema, True exten
 export function Conditional<Left extends TSchema, Right extends TSchema, True extends TSchema, False extends TSchema>
   (left: Left, right: Right, true_: True, false_: False, options: TSchemaOptions = {}):
   TConditional<Left, Right, True, False> {
-  return ConditionalAction({}, State([], []), left, right, true_, false_, options)
+  return ConditionalAction({}, State([], []), left, right, true_, false_, options) as never
 }

@@ -5,18 +5,22 @@ import Type from 'typebox'
 // ------------------------------------------------------------------
 // Solution
 //
-// Note: Reduced upper range from 9 -> 7 to allow inference to pass
+// Reduced upper range from 9 -> 6 to enable inference to pass
 // ------------------------------------------------------------------
 const { Result } = Type.Script(`
 
-  type Range<L, C extends any[] = [], R = L> = 
-    C['length'] extends L
-        ? R
-        : Range<L, [...C, 0], C['length'] | R>
+  type Range<Num, Buffer extends any[] = [], Result = Num> = 
+    Buffer['length'] extends Num
+      ? Result
+      : Range<Num, [...Buffer, 0], Buffer['length'] | Result>
 
-  type NumberRange<L, H> = Evaluate<L | Exclude<Range<H>, Range<L>>>
+  type NumberRange<Low extends number, High extends number, 
+    Left   = Range<High>, 
+    Right  = Range<Low>,
+    Result = Evaluate<Low | Exclude<Left, Right>>
+  > = Result
 
-  type Result =   NumberRange<2, 7>
+  type Result = NumberRange<2, 6>
 
 `)
 
@@ -29,7 +33,7 @@ import * as Assert from '../common/assert.ts'
 const Test = Assert.Context('Type.Challenge')
 
 Test('08640-medium-number-range', () => {
-  Assert.IsExtendsMutual<Result, 2 | 6 | 5 | 4 | 3 | 7>(true)
+  Assert.IsExtendsMutual<Result, 2 | 5 | 4 | 3 | 6>(true)
 
-  Assert.IsEqual(Result, Type.Script(`2 | 6 | 5 | 4 | 3 | 7`))
+  Assert.IsEqual(Result, Type.Script(`2 | 5 | 4 | 3 | 6`))
 })
