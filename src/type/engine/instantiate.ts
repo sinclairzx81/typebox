@@ -277,7 +277,7 @@ function InstantiateDeferred<Context extends TProperties, State extends TState, 
 // ------------------------------------------------------------------
 // InstantiateImmediate
 // ------------------------------------------------------------------
-export type TInstantiateImmediate<Context extends TProperties, State extends TState, Type extends TSchema,
+type TInstantiateImmediate<Context extends TProperties, State extends TState, Type extends TSchema,
   InstantiatedType extends TSchema = (
     Type extends TRef<infer Ref extends string> ? TRefInstantiate<Context, State, Type, Ref> :
     Type extends TArray<infer Type extends TSchema> ? TArray<TInstantiateType<Context, State, Type>> :
@@ -298,7 +298,7 @@ export type TInstantiateImmediate<Context extends TProperties, State extends TSt
   ),
   WithModifiers extends TSchema = TWithModifiers<Type, InstantiatedType>
 > = WithModifiers
-export function InstantiateImmediate<Context extends TProperties, State extends TState, Type extends TSchema>
+function InstantiateImmediate<Context extends TProperties, State extends TState, Type extends TSchema>
   (context: Context, state: State, type: Type): TInstantiateImmediate<Context, State, Type> {
   const instantiatedType = (
     IsRef(type) ? RefInstantiate(context, state, type, type.$ref) :
