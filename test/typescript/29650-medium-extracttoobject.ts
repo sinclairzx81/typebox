@@ -1,4 +1,11 @@
+// ------------------------------------------------------------------
+//
 // https://github.com/type-challenges/type-challenges/blob/main/questions/29650-medium-extracttoobject/README.md
+//
+// Implement a type that extract prop value to the interface. The type takes the two arguments. The output should 
+// be an object with the prop values. Prop value is object.
+//
+// ------------------------------------------------------------------
 
 import Type from 'typebox'
 
@@ -15,7 +22,7 @@ const { Result } = Type.Script(`
 type Result = Type.Static<typeof Result>
 
 // ------------------------------------------------------------------
-// Assertion
+// Assert
 // ------------------------------------------------------------------
 import * as Assert from '../common/assert.ts'
 const Test = Assert.Context('Type.Challenge')

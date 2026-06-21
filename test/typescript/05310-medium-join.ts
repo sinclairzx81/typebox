@@ -1,4 +1,11 @@
+// ------------------------------------------------------------------
+//
 // https://github.com/type-challenges/type-challenges/blob/main/questions/05310-medium-join/README.md
+//
+// Implement the type version of Array.join, Join<T, U> takes an Array T, string or number U and returns 
+// the Array T with U stitching up.
+//
+// ------------------------------------------------------------------
 
 import Type from 'typebox'
 
@@ -24,7 +31,7 @@ type ResultC = Type.Static<typeof ResultC>
 type ResultD = Type.Static<typeof ResultD>
 
 // ------------------------------------------------------------------
-// Assertion
+// Assert
 // ------------------------------------------------------------------
 import * as Assert from '../common/assert.ts'
 const Test = Assert.Context('Type.Challenge')

@@ -1,4 +1,11 @@
+// ------------------------------------------------------------------
+//
 // https://github.com/type-challenges/type-challenges/blob/main/questions/00268-easy-if/README.md
+//
+// Implement the util type If<C, T, F> which accepts condition C, a truthy value T, and a falsy 
+// value F. C is expected to be either true or false while T and F can be any type.
+//
+// ------------------------------------------------------------------
 
 import Type from 'typebox'
 
@@ -19,7 +26,7 @@ const { Result } = Type.Script(`
 type Result = Type.Static<typeof Result>
 
 // ------------------------------------------------------------------
-// Assertion
+// Assert
 // ------------------------------------------------------------------
 import * as Assert from '../common/assert.ts'
 const Test = Assert.Context('Type.Challenge')

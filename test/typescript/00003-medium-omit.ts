@@ -1,4 +1,12 @@
+// ------------------------------------------------------------------
+//
 // https://github.com/type-challenges/type-challenges/blob/main/questions/00003-medium-omit/README.md
+//
+// Implement the built-in Omit<T, K> generic without using it. 
+// 
+// Constructs a type by picking all properties from T and then removing K.
+//
+// ------------------------------------------------------------------
 
 import Type from 'typebox'
 
@@ -21,7 +29,7 @@ export const { Result } = Type.Script(`
 type Result = Type.Static<typeof Result>
 
 // ------------------------------------------------------------------
-// Assertion
+// Assert
 // ------------------------------------------------------------------
 import * as Assert from '../common/assert.ts'
 const Test = Assert.Context('Type.Challenge')

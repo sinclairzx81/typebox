@@ -1,4 +1,13 @@
+// ------------------------------------------------------------------
+//
 // https://github.com/type-challenges/type-challenges/blob/main/questions/04518-medium-fill/README.md
+//
+// Fill, a common JavaScript function, now let us implement it with types. Fill<T, N, Start?, End?>, as 
+// you can see,Fill accepts four types of parameters, of which T and N are required parameters, and Start 
+// and End are optional parameters. The requirements for these parameters are: T must be a tuple, N can 
+// be any type of value, Start and End must be integers greater than or equal to 0.
+//
+// ------------------------------------------------------------------
 
 import Type from 'typebox'
 
@@ -47,7 +56,7 @@ type ResultC = Type.Static<typeof ResultC>
 type ResultD = Type.Static<typeof ResultD>
 
 // ------------------------------------------------------------------
-// Assertion
+// Assert
 // ------------------------------------------------------------------
 import * as Assert from '../common/assert.ts'
 const Test = Assert.Context('Type.Challenge')

@@ -1,4 +1,10 @@
+// ------------------------------------------------------------------
+//
 // https://github.com/type-challenges/type-challenges/blob/main/questions/30301-medium-isodd/README.md
+//
+// Return true is a number is odd
+//
+// ------------------------------------------------------------------
 
 import Type from 'typebox'
 
@@ -30,7 +36,7 @@ type ResultA = Type.Static<typeof ResultA>
 type ResultB = Type.Static<typeof ResultB>
 
 // ------------------------------------------------------------------
-// Assertion
+// Assert
 // ------------------------------------------------------------------
 import * as Assert from '../common/assert.ts'
 const Test = Assert.Context('Type.Challenge')

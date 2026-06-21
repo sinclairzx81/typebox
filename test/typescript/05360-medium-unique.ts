@@ -1,4 +1,11 @@
+// ------------------------------------------------------------------
+//
 // https://github.com/type-challenges/type-challenges/blob/main/questions/05360-medium-unique/README.md
+//
+// Implement the type version of Lodash.uniq, Unique takes an Array T, returns the Array T without repeated 
+// values.
+//
+// ------------------------------------------------------------------
 
 import Type from 'typebox'
 
@@ -35,7 +42,7 @@ type ResultD = Type.Static<typeof ResultD>
 type ResultE = Type.Static<typeof ResultE>
 
 // ------------------------------------------------------------------
-// Assertion
+// Assert
 // ------------------------------------------------------------------
 import * as Assert from '../common/assert.ts'
 const Test = Assert.Context('Type.Challenge')

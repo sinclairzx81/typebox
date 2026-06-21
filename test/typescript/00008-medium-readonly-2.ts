@@ -1,4 +1,13 @@
+// ------------------------------------------------------------------
+//
 // https://github.com/type-challenges/type-challenges/blob/main/questions/00008-medium-readonly-2/README.md
+//
+// Implement a generic MyReadonly2<T, K> which takes two type argument T and K.
+//
+// K specify the set of properties of T that should set to Readonly. When K is not provided, it should make 
+// all properties readonly just like the normal Readonly<T>.
+//
+// ------------------------------------------------------------------
 
 import Type from 'typebox'
 
@@ -7,7 +16,6 @@ import Type from 'typebox'
 // ------------------------------------------------------------------
 const { Result } = Type.Script(`
 
-  
   type MyReadonly2<T, K extends keyof T = keyof T> = Evaluate<
     Omit<T, K> &
     Readonly<Pick<T, K>>
@@ -25,7 +33,7 @@ const { Result } = Type.Script(`
 type Result = Type.Static<typeof Result>
 
 // ------------------------------------------------------------------
-// Assertion
+// Assert
 // ------------------------------------------------------------------
 import * as Assert from '../common/assert.ts'
 const Test = Assert.Context('Type.Challenge')

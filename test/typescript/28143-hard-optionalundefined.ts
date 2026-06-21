@@ -1,4 +1,12 @@
+// ------------------------------------------------------------------
+//
 // https://github.com/type-challenges/type-challenges/blob/main/questions/28143-hard-optionalundefined/README.md
+//
+// Implement the util type OptionalUndefined<T, Props> that turns all the properties of T that can be undefined, 
+// into optional properties. In addition, a second -optional- generic Props can be passed to restrict the properties 
+// that can be altered.
+//
+// ------------------------------------------------------------------
 
 import Type from 'typebox'
 
@@ -7,7 +15,6 @@ import Type from 'typebox'
 // ------------------------------------------------------------------
 const { ResultA, ResultB } = Type.Script(`
 
-  
   type OptionalUndefined<T, Props extends keyof T = keyof T> = Omit<
     Omit<T, Props> & {
       [K in Props as undefined extends T[K] ? K : never]?: T[K];
@@ -28,7 +35,7 @@ type ResultA = Type.Static<typeof ResultA>
 type ResultB = Type.Static<typeof ResultB>
 
 // ------------------------------------------------------------------
-// Assertion
+// Assert
 // ------------------------------------------------------------------
 import * as Assert from '../common/assert.ts'
 const Test = Assert.Context('Type.Challenge')

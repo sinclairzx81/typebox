@@ -1,4 +1,10 @@
+// ------------------------------------------------------------------
+//
 // https://github.com/type-challenges/type-challenges/blob/main/questions/00090-hard-optional-keys/README.md
+//
+// Implement the advanced util type OptionalKeys<T>, which picks all the optional keys into a union.
+//
+// ------------------------------------------------------------------
 
 import Type from 'typebox'
 
@@ -16,7 +22,7 @@ const { Result } = Type.Script(`
 type Result = Type.Static<typeof Result>
 
 // ------------------------------------------------------------------
-// Assertion
+// Assert
 // ------------------------------------------------------------------
 import * as Assert from '../common/assert.ts'
 const Test = Assert.Context('Type.Challenge')

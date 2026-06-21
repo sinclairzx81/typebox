@@ -1,19 +1,22 @@
 // ------------------------------------------------------------------
 //
-// https://github.com/type-challenges/type-challenges/blob/main/questions/09384-hard-maximum/README.md
+// https://github.com/type-challenges/type-challenges/blob/main/questions/00274-extreme-integers-comparator/README.md
 //
-// Implement the type Maximum, which takes an input type T, and returns the maximum value in T.
+// Implement a type-level integers comparator. We've provided an enum for indicating the comparison result, like this:
 //
-// If T is an empty array, it returns never. Negative numbers are not considered.
+// - If a is greater than b, type should be Comparison.Greater.
+// - If a and b are equal, type should be Comparison.Equal.
+// - If a is lower than b, type should be Comparison.Lower.
 //
 // ------------------------------------------------------------------
 
 import Type from 'typebox'
 
 // ------------------------------------------------------------------
-// Solution:  Reduced to enable inference to pass (max-4)
+// Solution
 // ------------------------------------------------------------------
-const Comparers = Type.Script(`
+const { ResultA, ResultB, ResultC } = Type.Script(`
+
   type BuildTuple<Size extends number, Tuple extends unknown[] = []> = (
     Tuple['length'] extends Size 
       ? Tuple 
@@ -31,19 +34,15 @@ const Comparers = Type.Script(`
   export type GreaterThanEqual<Left extends number, Right extends number> = (
     LessThanEqual<Right, Left>
   )
-`)
 
-const { ResultA, ResultB, ResultC } = Type.Script(Comparers, `
-  type Maximum<T extends unknown[], N extends number = 0> = 
-    T extends [infer Left, ...infer Right]
-      ? GreaterThan<Left, N> extends true
-        ? Maximum<Right, Left>
-        : Maximum<Right, N>
-      : N extends 0 ? never : N
+  type Comparator<Left extends number, Right extends number> = 
+    GreaterThan<Left, Right> extends true ? 'Greater' :
+    LessThan<Left, Right> extends true ? 'Lower' :
+    'Equal'
 
-  type ResultA = Maximum<[]>               // never
-  type ResultB = Maximum<[0, 2, 1]>        // 2
-  type ResultC = Maximum<[0, 2, 4, 1, 2]>  // 4
+  type ResultA = Comparator<1, 2>
+  type ResultB = Comparator<2, 1>
+  type ResultC = Comparator<2, 2>
 
 `)
 
@@ -57,12 +56,12 @@ type ResultC = Type.Static<typeof ResultC>
 import * as Assert from '../common/assert.ts'
 const Test = Assert.Context('Type.Challenge')
 
-Test('09384-hard-maximum', () => {
-  Assert.IsExtendsMutual<ResultA, never>(true)
-  Assert.IsExtendsMutual<ResultB, 2>(true)
-  Assert.IsExtendsMutual<ResultC, 4>(true)
+Test('test', () => {
+  Assert.IsExtendsMutual<ResultA, 'Lower'>(true)
+  Assert.IsExtendsMutual<ResultB, 'Greater'>(true)
+  Assert.IsExtendsMutual<ResultC, 'Equal'>(true)
 
-  Assert.IsEqual(ResultA, Type.Script(`never`))
-  Assert.IsEqual(ResultB, Type.Script(`2`))
-  Assert.IsEqual(ResultC, Type.Script(`4`))
+  Assert.IsEqual(ResultA, Type.Script(`'Lower'`))
+  Assert.IsEqual(ResultB, Type.Script(`'Greater'`))
+  Assert.IsEqual(ResultC, Type.Script(`'Equal'`))
 })

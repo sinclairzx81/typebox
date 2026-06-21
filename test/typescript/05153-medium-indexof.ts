@@ -1,4 +1,11 @@
+// ------------------------------------------------------------------
+//
 // https://github.com/type-challenges/type-challenges/blob/main/questions/05153-medium-indexof/README.md
+//
+// Implement the type version of Array.indexOf, indexOf<T, U> takes an Array T, any U and returns the index 
+// of the first U in Array T.
+//
+// ------------------------------------------------------------------
 
 import Type from 'typebox'
 
@@ -27,7 +34,7 @@ type ResultB = Type.Static<typeof ResultB>
 type ResultC = Type.Static<typeof ResultC>
 
 // ------------------------------------------------------------------
-// Assertion
+// Assert
 // ------------------------------------------------------------------
 import * as Assert from '../common/assert.ts'
 const Test = Assert.Context('Type.Challenge')

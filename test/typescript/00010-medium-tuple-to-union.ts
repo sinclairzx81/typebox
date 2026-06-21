@@ -1,4 +1,10 @@
+// ------------------------------------------------------------------
+//
 // https://github.com/type-challenges/type-challenges/blob/main/questions/00010-medium-tuple-to-union/README.md
+//
+// Implement a generic TupleToUnion<T> which covers the values of a tuple to its values union
+//
+// ------------------------------------------------------------------
 
 import Type from 'typebox'
 
@@ -21,7 +27,7 @@ const { Result } = Type.Script(`
 type Result = Type.Static<typeof Result>
 
 // ------------------------------------------------------------------
-// Assertion
+// Assert
 // ------------------------------------------------------------------
 import * as Assert from '../common/assert.ts'
 const Test = Assert.Context('Type.Challenge')

@@ -1,4 +1,10 @@
+// ------------------------------------------------------------------
+//
 // https://github.com/type-challenges/type-challenges/blob/main/questions/00011-easy-tuple-to-object/README.md
+//
+// Given an array, transform it into an object type and the key/value must be in the provided array.
+//
+// ------------------------------------------------------------------
 
 import Type from 'typebox'
 
@@ -19,7 +25,7 @@ const { Result } = Type.Script(`
 type Result = Type.Static<typeof Result>
 
 // ------------------------------------------------------------------
-// Assertion
+// Assert
 // ------------------------------------------------------------------
 import * as Assert from '../common/assert.ts'
 const Test = Assert.Context('Type.Challenge')

@@ -1,4 +1,11 @@
+// ------------------------------------------------------------------
+//
 // https://github.com/type-challenges/type-challenges/blob/main/questions/05317-medium-lastindexof/README.md
+//
+// Implement the type version of Array.lastIndexOf, LastIndexOf<T, U> takes an Array T, any U and returns the 
+// index of the last U in Array T
+//
+// ------------------------------------------------------------------
 
 import Type from 'typebox'
 
@@ -23,7 +30,7 @@ type ResultA = Type.Static<typeof ResultA>
 type ResultB = Type.Static<typeof ResultB>
 
 // ------------------------------------------------------------------
-// Assertion
+// Assert
 // ------------------------------------------------------------------
 import * as Assert from '../common/assert.ts'
 const Test = Assert.Context('Type.Challenge')

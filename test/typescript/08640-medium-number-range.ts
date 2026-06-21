@@ -1,11 +1,15 @@
+// ------------------------------------------------------------------
+//
 // https://github.com/type-challenges/type-challenges/blob/main/questions/08640-medium-number-range/README.md
+//
+// Sometimes we want to limit the range of numbers ...
+//
+// ------------------------------------------------------------------
 
 import Type from 'typebox'
 
 // ------------------------------------------------------------------
-// Solution
-//
-// Reduced upper range from 9 -> 6 to enable inference to pass
+// Solution: Reduced range from 9 -> 6 to enable inference to pass
 // ------------------------------------------------------------------
 const { Result } = Type.Script(`
 
@@ -27,7 +31,7 @@ const { Result } = Type.Script(`
 type Result = Type.Static<typeof Result>
 
 // ------------------------------------------------------------------
-// Assertion
+// Assert
 // ------------------------------------------------------------------
 import * as Assert from '../common/assert.ts'
 const Test = Assert.Context('Type.Challenge')

@@ -1,4 +1,12 @@
+// ------------------------------------------------------------------
+//
 // https://github.com/type-challenges/type-challenges/blob/main/questions/00043-easy-exclude/README.md
+//
+// Implement the built-in Exclude<T, U>
+//
+// - Exclude from T those types that are assignable to U
+//
+// ------------------------------------------------------------------
 
 import Type from 'typebox'
 
@@ -7,7 +15,7 @@ import Type from 'typebox'
 // ------------------------------------------------------------------
 const { Result } = Type.Script(`
 
-  type MyExclude<T, U> = Exclude<T, U>
+  type MyExclude<T, U> =  T extends U ? never : T;
 
   type Result = MyExclude<'a' | 'b' | 'c', 'a'>
 
@@ -16,7 +24,7 @@ const { Result } = Type.Script(`
 type Result = Type.Static<typeof Result>
 
 // ------------------------------------------------------------------
-// Assertion
+// Assert
 // ------------------------------------------------------------------
 import * as Assert from '../common/assert.ts'
 const Test = Assert.Context('Type.Challenge')

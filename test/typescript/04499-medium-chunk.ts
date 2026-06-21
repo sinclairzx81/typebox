@@ -1,4 +1,11 @@
+// ------------------------------------------------------------------
+//
 // https://github.com/type-challenges/type-challenges/blob/main/questions/04499-medium-chunk/README.md
+//
+// Do you know lodash? Chunk is a very useful function in it, now let's implement it. Chunk<T, N> accepts 
+// two required type parameters, the T must be a tuple, and the N must be an integer >=1
+//
+// ------------------------------------------------------------------
 
 import Type from 'typebox'
 
@@ -29,7 +36,7 @@ type ResultB = Type.Static<typeof ResultB>
 type ResultC = Type.Static<typeof ResultC>
 
 // ------------------------------------------------------------------
-// Assertion
+// Assert
 // ------------------------------------------------------------------
 import * as Assert from '../common/assert.ts'
 const Test = Assert.Context('Type.Challenge')

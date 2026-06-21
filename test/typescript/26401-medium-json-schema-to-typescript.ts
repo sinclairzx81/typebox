@@ -1,4 +1,10 @@
+// ------------------------------------------------------------------
+//
 // https://github.com/type-challenges/type-challenges/blob/main/questions/26401-medium-json-schema-to-typescript/README.md
+//
+// Implement the generic type JSONSchema2TS which will return the TypeScript type corresponding to the given JSON schema.
+//
+// ------------------------------------------------------------------
 
 import Type from 'typebox'
 
@@ -24,7 +30,7 @@ type ResultA = Type.Static<typeof ResultA> // <--- meta schema
 type ResultB = Type.Static<ResultA>        // <--- inferred schema
 
 // ------------------------------------------------------------------
-// Assertion
+// Assert
 // ------------------------------------------------------------------
 import * as Assert from '../common/assert.ts'
 const Test = Assert.Context('Type.Challenge')

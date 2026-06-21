@@ -1,4 +1,12 @@
+// ------------------------------------------------------------------
+//
 // https://github.com/type-challenges/type-challenges/blob/main/questions/07561-extreme-subtract/README.md
+//
+// Implement the type Subtraction that is - in Javascript by using BuildTuple.
+//
+// If the minuend is less than the subtrahend, it should be never.
+//
+// ------------------------------------------------------------------
 
 import Type from 'typebox'
 
@@ -12,7 +20,7 @@ const { ResultA, ResultB, ResultC } = Type.Script(`
   // M => minuend, S => subtrahend
   type Subtract<M extends number, S extends number> = ConstructTuple<M> extends [...subtrahend: ConstructTuple<S>, ...rest: infer Rest] ? Rest["length"] : never
 
-  type ResultA = Subtract<2, 1> // expect to be 1
+  type ResultA = Subtract<2, 1>  // expect to be 1
   type ResultB = Subtract<1, 2>  // expect to be never
   type ResultC = Subtract<4, 2>  // expect to be 2
 
@@ -23,7 +31,7 @@ type ResultB = Type.Static<typeof ResultB>
 type ResultC = Type.Static<typeof ResultC>
 
 // ------------------------------------------------------------------
-// Assertion
+// Assert
 // ------------------------------------------------------------------
 import * as Assert from '../common/assert.ts'
 const Test = Assert.Context('Type.Challenge')

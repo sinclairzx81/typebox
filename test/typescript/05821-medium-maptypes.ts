@@ -1,4 +1,11 @@
+// ------------------------------------------------------------------
+//
 // https://github.com/type-challenges/type-challenges/blob/main/questions/05821-medium-maptypes/README.md
+//
+// Implement MapTypes<T, R> which will transform types in object T to different types defined by type R which 
+// has the following structure
+//
+// ------------------------------------------------------------------
 
 import Type from 'typebox'
 
@@ -27,7 +34,7 @@ const { Result } = Type.Script(`
 type Result = Type.Static<typeof Result>
 
 // ------------------------------------------------------------------
-// Assertion
+// Assert
 // ------------------------------------------------------------------
 import * as Assert from '../common/assert.ts'
 const Test = Assert.Context('Type.Challenge')

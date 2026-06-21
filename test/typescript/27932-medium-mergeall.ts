@@ -1,4 +1,10 @@
+// ------------------------------------------------------------------
+//
 // https://github.com/type-challenges/type-challenges/blob/main/questions/27932-medium-mergeall/README.md
+//
+// Merge variadic number of types into a new type. If the keys overlap, its values should be merged into an union.
+//
+// ------------------------------------------------------------------
 
 import Type from 'typebox'
 
@@ -23,7 +29,7 @@ const { Result } = Type.Script(`
 type Result = Type.Static<typeof Result>
 
 // ------------------------------------------------------------------
-// Assertion
+// Assert
 // ------------------------------------------------------------------
 import * as Assert from '../common/assert.ts'
 const Test = Assert.Context('Type.Challenge')

@@ -1,4 +1,16 @@
+// ------------------------------------------------------------------
+//
 // https://github.com/type-challenges/type-challenges/blob/main/questions/00213-hard-vue-basic-props/README.md
+//
+// In addition to the Simple Vue, we are now having a new props field in the options. This is a simplified 
+// version of Vue's props option. Here are some of the rules.
+//
+// props is an object containing each field as the key of the real props injected into this. The injected 
+// props will be accessible in all the context including data, computed, and methods.
+//
+// A prop will be defined either by a constructor or an object with a type field containing constructor(s).
+//
+// ------------------------------------------------------------------
 
 import Type from 'typebox'
 
@@ -29,7 +41,7 @@ const { Result } = Type.Script(`
 type Result = Type.Static<typeof Result>
 
 // ------------------------------------------------------------------
-// Assertion
+// Assert
 // ------------------------------------------------------------------
 import * as Assert from '../common/assert.ts'
 const Test = Assert.Context('Type.Challenge')

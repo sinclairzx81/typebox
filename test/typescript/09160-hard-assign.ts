@@ -1,10 +1,18 @@
+// ------------------------------------------------------------------
+//
 // https://github.com/type-challenges/type-challenges/blob/main/questions/09160-hard-assign/README.md
+//
+// You have a target object and a source array of objects. You need to copy property from source to 
+// target, if it has the same property as the source, you should always keep the source property, and 
+// drop the target property. (Inspired by the Object.assign API)
+//
+// ------------------------------------------------------------------
 
 import Type from 'typebox'
 
-// // ------------------------------------------------------------------
-// // Solution
-// // ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// Solution
+// ------------------------------------------------------------------
 const { Result } = Type.Script(`
 
   type Properties = Record<string, unknown>
@@ -25,7 +33,7 @@ const { Result } = Type.Script(`
 type Result = Type.Static<typeof Result>
 
 // ------------------------------------------------------------------
-// Assertion
+// Assert
 // ------------------------------------------------------------------
 import * as Assert from '../common/assert.ts'
 const Test = Assert.Context('Type.Challenge')

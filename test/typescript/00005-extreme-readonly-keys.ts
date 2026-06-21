@@ -1,4 +1,10 @@
+// ------------------------------------------------------------------
+//
 // https://github.com/type-challenges/type-challenges/blob/main/questions/00005-extreme-readonly-keys/README.md
+//
+// Implement a generic GetReadonlyKeys<T> that returns a union of the readonly keys of an Object.
+//
+// ------------------------------------------------------------------
 
 import Type from 'typebox'
 
@@ -24,7 +30,7 @@ export const { Result } = Type.Script(`
 type Result = Type.Static<typeof Result>
 
 // ------------------------------------------------------------------
-// Assertion
+// Assert
 // ------------------------------------------------------------------
 import * as Assert from '../common/assert.ts'
 const Test = Assert.Context('Type.Challenge')

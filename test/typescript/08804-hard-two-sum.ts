@@ -1,12 +1,16 @@
+// ------------------------------------------------------------------
+//
 // https://github.com/type-challenges/type-challenges/blob/main/questions/08804-hard-two-sum/README.md
+//
+// Given an array of integers nums and an integer target, return true if two numbers such that they add 
+// up to target.
+//
+// ------------------------------------------------------------------
 
 import Type from 'typebox'
 
 // ------------------------------------------------------------------
-// Solution
-//
-// Note: Reduced range on ResultB to allow inference to pass.
-//
+// Solution:  Reduced range on ResultB to allow inference to pass.
 // -----------------------------------------------------------------
 
 const { ResultA, ResultB } = Type.Script(`
@@ -34,7 +38,7 @@ type ResultA = Type.Static<typeof ResultA>
 type ResultB = Type.Static<typeof ResultB>
 
 // ------------------------------------------------------------------
-// Assertion
+// Assert
 // ------------------------------------------------------------------
 import * as Assert from '../common/assert.ts'
 const Test = Assert.Context('Type.Challenge')

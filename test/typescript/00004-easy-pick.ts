@@ -1,4 +1,12 @@
+// ------------------------------------------------------------------
+//
 // https://github.com/type-challenges/type-challenges/blob/main/questions/00004-easy-pick/README.md
+//
+// Implement the built-in Pick<T, K> generic without using it. 
+// 
+// Constructs a type by picking the set of properties K from T
+//
+// ------------------------------------------------------------------
 
 import Type from 'typebox'
 
@@ -21,7 +29,7 @@ const { Result } = Type.Script(`
 type Result = Type.Static<typeof Result>
 
 // ------------------------------------------------------------------
-// Assertion
+// Assert
 // ------------------------------------------------------------------
 import * as Assert from '../common/assert.ts'
 const Test = Assert.Context('Type.Challenge')

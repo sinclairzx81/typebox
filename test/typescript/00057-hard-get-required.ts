@@ -1,4 +1,10 @@
+// ------------------------------------------------------------------
+//
 // https://github.com/type-challenges/type-challenges/blob/main/questions/00057-hard-get-required/README.md
+//
+// Implement the advanced util type GetRequired<T>, which remains all the required fields
+//
+// ------------------------------------------------------------------
 
 import Type from 'typebox'
 
@@ -16,7 +22,7 @@ const { Result } = Type.Script(`
 type Result = Type.Static<typeof Result>
 
 // ------------------------------------------------------------------
-// Assertion
+// Assert
 // ------------------------------------------------------------------
 import * as Assert from '../common/assert.ts'
 const Test = Assert.Context('Type.Challenge')

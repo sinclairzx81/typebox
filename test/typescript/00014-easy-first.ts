@@ -1,4 +1,10 @@
+// ------------------------------------------------------------------
+//
 // https://github.com/type-challenges/type-challenges/blob/main/questions/00014-easy-first/README.md
+//
+// Implement a generic First<T> that takes an Array T and returns its first element's type.
+//
+// ------------------------------------------------------------------
 
 import Type from 'typebox'
 
@@ -21,7 +27,7 @@ type ResultA = Type.Static<typeof ResultA>
 type ResultB = Type.Static<typeof ResultB>
 
 // ------------------------------------------------------------------
-// Assertion
+// Assert
 // ------------------------------------------------------------------
 import * as Assert from '../common/assert.ts'
 const Test = Assert.Context('Type.Challenge')

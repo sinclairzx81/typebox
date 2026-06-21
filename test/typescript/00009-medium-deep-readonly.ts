@@ -1,4 +1,14 @@
+// ------------------------------------------------------------------
+//
 // https://github.com/type-challenges/type-challenges/blob/main/questions/00009-medium-deep-readonly/README.md
+//
+// Implement a generic DeepReadonly<T> which make every parameter of an object - and its sub-objects recursively - readonly.
+//
+// You can assume that we are only dealing with Objects in this challenge. Arrays, Functions, Classes and so on do not 
+// need to be taken into consideration. However, you can still challenge yourself by covering as many different cases 
+// as possible.
+//
+// ------------------------------------------------------------------
 
 import Type from 'typebox'
 
@@ -23,7 +33,7 @@ const { Result } = Type.Script(`
 type Result = Type.Static<typeof Result>
 
 // ------------------------------------------------------------------
-// Assertion
+// Assert
 // ------------------------------------------------------------------
 import * as Assert from '../common/assert.ts'
 const Test = Assert.Context('Type.Challenge')

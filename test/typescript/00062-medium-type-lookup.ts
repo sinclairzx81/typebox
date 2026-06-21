@@ -1,4 +1,14 @@
+// ------------------------------------------------------------------
+//
 // https://github.com/type-challenges/type-challenges/blob/main/questions/00062-medium-type-lookup/README.md
+//
+// Sometimes, you may want to look up a type in a union by its attributes.
+//
+// In this challenge, we would like to get the corresponding type by searching for the common type field in 
+// the union Cat | Dog. In other words, we will expect to get Dog for LookUp<Dog | Cat, 'dog'> and Cat for 
+// LookUp<Dog | Cat, 'cat'> in the following example.
+//
+// ------------------------------------------------------------------
 
 import Type from 'typebox'
 
@@ -27,7 +37,7 @@ const { Result } = Type.Script(`
 type Result = Type.Static<typeof Result>
 
 // ------------------------------------------------------------------
-// Assertion
+// Assert
 // ------------------------------------------------------------------
 import * as Assert from '../common/assert.ts'
 const Test = Assert.Context('Type.Challenge')

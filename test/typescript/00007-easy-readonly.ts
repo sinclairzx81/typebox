@@ -1,4 +1,13 @@
+// ------------------------------------------------------------------
+//
 // https://github.com/type-challenges/type-challenges/blob/main/questions/00007-easy-readonly/README.md
+//
+// Implement the built-in Readonly<T> generic without using it. 
+//
+// Constructs a type with all properties of T set to readonly, meaning the properties of the constructed 
+// type cannot be reassigned.
+//
+// ------------------------------------------------------------------
 
 import Type from 'typebox'
 
@@ -21,7 +30,7 @@ const { Result } = Type.Script(`
 type Result = Type.Static<typeof Result>
 
 // ------------------------------------------------------------------
-// Assertion
+// Assert
 // ------------------------------------------------------------------
 import * as Assert from '../common/assert.ts'
 const Test = Assert.Context('Type.Challenge')
