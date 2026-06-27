@@ -115,7 +115,7 @@ Task.run('metrics', () => Metrics())
 // ------------------------------------------------------------------
 // Native
 // ------------------------------------------------------------------
-Task.run('native', (target: string = `target/build`) => Task.tsgo('latest')
+Task.run('native', (target: string = `target/build`) => Task.tsgo('beta')
   .run('src/index.ts --target ESNext --module ESNext --strict --noEmit --ignoreConfig --allowImportingTsExtensions'))
 // ------------------------------------------------------------------
 // Range
@@ -128,5 +128,8 @@ Task.run('range', async () => {
   ])
   await Range.Modern([
     '6.0.2', '6.0.3', 'next', 'latest', 
+  ])
+  await Range.Modern([
+    '7.0.1-rc'
   ])
 })
