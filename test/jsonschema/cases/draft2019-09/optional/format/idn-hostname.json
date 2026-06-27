@@ -333,6 +333,12 @@
         "valid": false
       },
       {
+        "description": "zero width non-joiner must pass at every occurrence",
+        "comment": "https://www.rfc-editor.org/rfc/rfc5892#appendix-A.1",
+        "data": "क्‌षx‌y",
+        "valid": false
+      },
+      {
         "description": "non-canonical Punycode that does not re-encode to itself is invalid",
         "comment": "https://www.rfc-editor.org/rfc/rfc5891#section-5.4 a label decoded from Punycode must be identical to the original A-label",
         "data": "xn---9uc",

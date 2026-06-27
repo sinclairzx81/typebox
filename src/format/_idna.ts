@@ -63,7 +63,8 @@ const RFC5892_DISALLOWED = new Set([
 // ------------------------------------------------------------------
 // A set of Virama (halant) code points used to validate CONTEXTJ
 // rules (RFC 5892 Appendix A.1). These characters allow a subsequent
-// Zero Width Joiner (U+200D) to be valid in a label.
+// Zero Width Non-Joiner (U+200C) or Zero Width Joiner (U+200D) to
+// be valid in a label.
 // ------------------------------------------------------------------
 const VIRAMA_CPS = new Set<number>([
   0x094d,
@@ -163,9 +164,15 @@ function IsUnicodeLabel(value: string): boolean {
       case 0x05f4:
         if (prev === undefined || !IsHebrew(prev)) return false
         break // Hebrew GERESH
-      case 0x200d:
+      case 0x200c: // ZWNJ - RFC 5892 Appendix A.1
+        // Note: Full validation requires a Unicode joining type table. We reject
+        // only when preceded by ASCII (U+0000-U+007F), which can never satisfy
+        // the Virama or cursive-joining rules.
+        if (prev === undefined || (prev < 0x0080 && !IsVirama(prev))) return false
+        break
+      case 0x200d: // ZWJ  - RFC 5892 Appendix A.2
         if (prev === undefined || !IsVirama(prev)) return false
-        break // ZWJ
+        break
       case 0x30fb: /* Checked at end via hasJapanese */
         break // KATAKANA MIDDLE DOT
     }
