@@ -26,7 +26,6 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { Unreachable } from '../system/unreachable/unreachable.ts'
 import * as Puny from './_puny.ts'
 
 // ------------------------------------------------------------------
