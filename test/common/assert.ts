@@ -30,6 +30,18 @@ export function NotHasPropertyKey<K extends PropertyKey>(value: unknown, key: K)
   if (typeof value === 'object' && value !== null && !(key in value)) return
   throw new Error(`Expected value not to have property '${key as string}'`)
 }
+/** Property Exists and IS Enumerable */
+export function PropertyIsEnumerable<K extends PropertyKey>(value: unknown, key: K): asserts value is Record<K, unknown> {
+  HasPropertyKey(value, key)
+  if (globalThis.Object.getOwnPropertyDescriptor(value, key)?.enumerable ?? false) return
+  throw new Error(`Expected property to be enumerable '${key as string}'`)
+}
+/** Property Exists and IS-NOT Enumerable */
+export function NotPropertyIsEnumerable<K extends PropertyKey>(value: unknown, key: K): asserts value is Record<K, unknown> {
+  HasPropertyKey(value, key)
+  if (!(globalThis.Object.getOwnPropertyDescriptor(value, key)?.enumerable ?? false)) return
+  throw new Error(`Expected property to not be enumerable '${key as string}'`)
+}
 // ------------------------------------------------------------------
 // Logic
 // ------------------------------------------------------------------
