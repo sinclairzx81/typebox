@@ -131,10 +131,7 @@ function IsVirama(cp: number): boolean {
 // IsUnicodeLabel
 // ------------------------------------------------------------------
 function IsUnicodeLabel(value: string): boolean {
-  // deno-coverage-ignore-start - guarded by puny code check
-  if (value.length === 0) return Unreachable() // false
-  // deno-coverage-ignore-stop
-
+  if (value.length === 0) return false
   // Use spread to handle surrogate pairs and provide O(1) neighbor access
   const cps = [...value].map((c) => c.codePointAt(0)!)
   const len = cps.length
