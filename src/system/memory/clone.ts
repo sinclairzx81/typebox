@@ -43,15 +43,18 @@ function FromClassInstance(value: Record<PropertyKey, unknown>): Record<Property
   return value // atomic
 }
 // ------------------------------------------------------------------
-// KindedObject
+// TypeObject
 //
 // Types have non-enumerable properties that MUST be preserved on Clone. 
 // The following is the optimal path for TypeBox types.
 // ------------------------------------------------------------------
-function IsKindedObject(value: Record<PropertyKey, unknown>): boolean {
-  return Guard.HasPropertyKey(value, '~kind')
+function IsTypeObject(value: Record<PropertyKey, unknown>): boolean {
+  return (
+    Guard.HasPropertyKey(value, '~kind') || 
+    Guard.HasPropertyKey(value, '~unsafe')
+  )
 }
-function FromKindedObject(value: Record<PropertyKey, unknown>): Record<PropertyKey, unknown> {
+function FromTypeObject(value: Record<PropertyKey, unknown>): Record<PropertyKey, unknown> {
   const result = {} as Record<PropertyKey, unknown>
   const descriptors = Object.getOwnPropertyDescriptors(value)
   for (const key of Object.keys(descriptors)) {
@@ -83,7 +86,7 @@ function FromPlainObject(value: Record<PropertyKey, unknown>): Record<PropertyKe
 function FromObject(value: Record<PropertyKey, unknown>): Record<PropertyKey, unknown> {
   return (
     Guard.IsClassInstance(value) ? FromClassInstance(value) :
-    IsKindedObject(value) ? FromKindedObject(value) :
+    IsTypeObject(value) ? FromTypeObject(value) :
     FromPlainObject(value)
   )
 }

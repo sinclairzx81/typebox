@@ -1,5 +1,6 @@
 import { Memory, Settings } from 'typebox/system'
 import { Assert } from 'test'
+import Type from 'typebox'
 
 const Test = Assert.Context('System.Memory')
 
@@ -86,4 +87,31 @@ Test('Should Create 7', () => {
   const B = Memory.Clone(A)
   Assert.NotHasPropertyKey(B, '__proto__')
   Assert.HasPropertyKey(B, '~kind')
+})
+// ------------------------------------------------------------------
+// TypedObject (Kind + Unsafe)
+// ------------------------------------------------------------------
+Test('Should Create 8', () => {
+  const A = Type.String()
+  const B = Memory.Clone(A)
+  Assert.NotPropertyIsEnumerable(B, '~kind')
+})
+Test('Should Create 9', () => {
+  const A = Type.Unsafe({ type: 'Date' })
+  const B = Memory.Clone(A)
+  Assert.NotPropertyIsEnumerable(B, '~unsafe')
+})
+Test('Should Create 10', () => {
+  Settings.Set({ enumerableKind: true })
+  const A = Type.String()
+  const B = Memory.Clone(A)
+  Assert.PropertyIsEnumerable(B, '~kind')
+  Settings.Reset()
+})
+Test('Should Create 11', () => {
+  Settings.Set({ enumerableKind: true })
+  const A = Type.Unsafe({ type: 'Date' })
+  const B = Memory.Clone(A)
+  Assert.PropertyIsEnumerable(B, '~unsafe')
+  Settings.Reset()
 })
