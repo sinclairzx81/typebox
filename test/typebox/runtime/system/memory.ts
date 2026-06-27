@@ -71,22 +71,24 @@ Test('Should Create 4', () => {
 // UnsafePropertyKey
 // ------------------------------------------------------------------
 Test('Should Create 5', () => {
-  const A = { '__proto__': 1, '~kind': 'test' }
+  const A = { '~kind': 'test', '__proto__': 1 }
   const B = Memory.Clone(A)
-  Assert.NotHasPropertyKey(B, '__proto__')
   Assert.HasPropertyKey(B, '~kind')
+  Assert.HasPropertyKey(B, '__proto__')
+  Assert.NotEqual(B['__proto__'], 1)
 })
 Test('Should Create 6', () => {
-  const A = { 'constructor': 1, '~kind': 'test' }
+  const A = { '~kind': 'test', 'constructor': 1 }
   const B = Memory.Clone(A)
-  Assert.NotHasPropertyKey(B, '__proto__')
   Assert.HasPropertyKey(B, '~kind')
+  Assert.HasPropertyKey(B, 'constructor')
+  Assert.NotEqual(B['constructor'], 1)
 })
 Test('Should Create 7', () => {
-  const A = { 'prototype': 1, '~kind': 'test' }
+  const A = { '~kind': 'test', 'prototype': 1 }
   const B = Memory.Clone(A)
-  Assert.NotHasPropertyKey(B, '__proto__')
   Assert.HasPropertyKey(B, '~kind')
+  Assert.NotHasPropertyKey(B, 'prototype')
 })
 // ------------------------------------------------------------------
 // TypedObject (Kind + Unsafe)
