@@ -28,6 +28,7 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
+import { Guard } from '../../guard/index.ts'
 import { Memory } from '../../system/memory/index.ts'
 import { type TSchema, type TSchemaOptions, IsKind } from './schema.ts'
 import { type TTypeScriptEnumLike, IsTypeScriptEnumLike } from '../engine/enum/typescript_enum_to_enum_values.ts'
@@ -40,9 +41,17 @@ export type StaticEnum<Values extends TEnumValue[]> = (
   Values[number]
 )
 // ------------------------------------------------------------------
-// Type
+// EnumValue
 // ------------------------------------------------------------------
 export type TEnumValue = string | number
+
+/** Returns true if the given value is a EnumValue */
+export function IsEnumValue(value: unknown): value is TEnumValue {
+  return Guard.IsString(value) || Guard.IsNumber(value)
+}
+// ------------------------------------------------------------------
+// Type
+// ------------------------------------------------------------------
 
 /** Represents an Enum type. */
 export interface TEnum<Values extends TEnumValue[] = TEnumValue[]> extends TSchema {

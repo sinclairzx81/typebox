@@ -26,6 +26,8 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { Unreachable } from '../system/unreachable/index.ts'
+
 // ------------------------------------------------------------------
 // PunyCode (RFC 3492)
 // ------------------------------------------------------------------
@@ -77,7 +79,9 @@ export function Decode(value: string): string {
       let digit: number
       if (ch >= 0x61 && ch <= 0x7a) digit = ch - 0x61 // a-z => 0-25
       else if (ch >= 0x30 && ch <= 0x39) digit = ch - 0x30 + 26 // 0-9 => 26-35
-      else if (ch >= 0x41 && ch <= 0x5a) digit = ch - 0x41 // A-Z => 0-25
+      // deno-coverage-ignore-start - _idna.ts maps input to lowercase, so we can't reach here
+      else if (ch >= 0x41 && ch <= 0x5a) Unreachable() // digit = ch - 0x41 // A-Z => 0-25
+      // deno-coverage-ignore-stop
       else throw new Error('Invalid punycode: bad digit character')
       i += digit * w
       const t = k <= bias ? PUNYCODE_TMIN : k >= bias + PUNYCODE_TMAX ? PUNYCODE_TMAX : k - bias

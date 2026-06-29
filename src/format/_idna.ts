@@ -26,6 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+import { Unreachable } from '../system/unreachable/index.ts'
 import * as Puny from './_puny.ts'
 
 // ------------------------------------------------------------------
@@ -131,7 +132,10 @@ function IsVirama(cp: number): boolean {
 // IsUnicodeLabel
 // ------------------------------------------------------------------
 function IsUnicodeLabel(value: string): boolean {
-  if (value.length === 0) return false
+  // deno-coverage-ignore-start - unable to reach via format guards
+  if (value.length === 0) return Unreachable() // false
+  // deno-coverage-ignore-stop
+
   // Use spread to handle surrogate pairs and provide O(1) neighbor access
   const cps = [...value].map((c) => c.codePointAt(0)!)
   const len = cps.length

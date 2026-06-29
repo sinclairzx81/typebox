@@ -3,6 +3,21 @@ import * as Type from 'typebox'
 
 const Test = Assert.Context('Type.Enum')
 
+// ------------------------------------------------------------------
+// EnumValue
+// ------------------------------------------------------------------
+Test('Should not guard EnumValue', () => {
+  Assert.IsFalse(Type.IsEnumValue(null))
+})
+Test('Should not guard EnumValue', () => {
+  Assert.IsTrue(Type.IsEnumValue('hello'))
+})
+Test('Should not guard EnumValue', () => {
+  Assert.IsTrue(Type.IsEnumValue(12345))
+})
+// ------------------------------------------------------------------
+// Enum
+// ------------------------------------------------------------------
 Test('Should not guard Enum', () => {
   const T: Type.TNull = Type.Null()
   Assert.IsFalse(Type.IsEnum(T))

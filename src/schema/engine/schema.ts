@@ -39,7 +39,7 @@ import { BuildAdditionalItems, CheckAdditionalItems, ErrorAdditionalItems } from
 import { BuildAdditionalProperties, CheckAdditionalProperties, ErrorAdditionalProperties } from './additionalProperties.ts'
 import { BuildAllOf, CheckAllOf, ErrorAllOf } from './allOf.ts'
 import { BuildAnyOf, CheckAnyOf, ErrorAnyOf } from './anyOf.ts'
-import { BuildBooleanSchema, CheckBooleanSchema, ErrorBooleanSchema } from './boolean.ts'
+import { BuildSchemaBoolean, CheckSchemaBoolean, ErrorSchemaBoolean } from './boolean.ts'
 import { BuildConst, CheckConst, ErrorConst } from './const.ts'
 import { BuildContains, CheckContains, ErrorContains } from './contains.ts'
 import { BuildDependencies, CheckDependencies, ErrorDependencies } from './dependencies.ts'
@@ -167,7 +167,7 @@ export function BuildSchemaPushStack(stack: Stack, context: BuildContext, schema
 export function BuildSchema(stack: Stack, context: BuildContext, schema: Schema.XSchema, value: string): string {
   stack.Push(schema)
   const conditions: string[] = []
-  if (Schema.IsBooleanSchema(schema)) return BuildBooleanSchema(stack, context, schema, value)
+  if (Schema.IsSchemaBoolean(schema)) return BuildSchemaBoolean(stack, context, schema, value)
   if (Schema.IsType(schema)) conditions.push(BuildType(stack, context, schema, value))
   if (HasObjectKeywords(schema)) {
     const constraints = []
@@ -246,7 +246,7 @@ export function CheckSchemaPushStack(stack: Stack, context: CheckContext, schema
 }
 export function CheckSchema(stack: Stack, context: CheckContext, schema: Schema.XSchema, value: unknown): boolean {
   stack.Push(schema)
-  const result = Schema.IsBooleanSchema(schema) ? CheckBooleanSchema(stack, context, schema, value) : (
+  const result = Schema.IsSchemaBoolean(schema) ? CheckSchemaBoolean(stack, context, schema, value) : (
     (!Schema.IsType(schema) || CheckType(stack, context, schema, value)) &&
     (!(G.IsObject(value) && !G.IsArray(value)) || (
       (!Schema.IsRequired(schema) || CheckRequired(stack, context, schema, value)) &&
@@ -309,7 +309,7 @@ export function ErrorSchemaPushStack(stack: Stack, context: ErrorContext, schema
 }
 export function ErrorSchema(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XSchema, value: unknown): boolean {
   stack.Push(schema)
-  const result = (Schema.IsBooleanSchema(schema)) ? ErrorBooleanSchema(stack, context, schemaPath, instancePath, schema, value) : (
+  const result = (Schema.IsSchemaBoolean(schema)) ? ErrorSchemaBoolean(stack, context, schemaPath, instancePath, schema, value) : (
     !!(
       +(!Schema.IsType(schema) || ErrorType(stack, context, schemaPath, instancePath, schema, value)) &
       +(!(G.IsObject(value) && !G.IsArray(value)) || !!(
