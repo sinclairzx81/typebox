@@ -45,3 +45,10 @@ Test('Should Repair 8', () => {
   const result = Value.Repair(T, value)
   Assert.IsEqual(result, { a: 1, b: 2 })
 })
+// ------------------------------------------------------------------
+// CreateWhenUndefined
+// ------------------------------------------------------------------
+Test('Should Repair 9', () => {
+  const result = Value.Repair(Type.Any({ default: 42 }), undefined)
+  Assert.IsEqual(result, 42)
+})

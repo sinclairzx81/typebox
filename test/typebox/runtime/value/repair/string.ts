@@ -36,3 +36,14 @@ Test('Should Repair 6', () => {
   const result = Value.Repair(T, value)
   Assert.IsEqual(result, value)
 })
+// ------------------------------------------------------------------
+// CreateWhenUndefined
+// ------------------------------------------------------------------
+Test('Should Repair 7', () => {
+  const result = Value.Repair(Type.String({ default: 'hello' }), undefined)
+  Assert.IsEqual(result, 'hello')
+})
+Test('Should Repair 8', () => {
+  const result = Value.Repair(Type.String({ default: 12345 }), undefined)
+  Assert.IsEqual(result, '12345')
+})

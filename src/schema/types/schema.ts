@@ -45,7 +45,7 @@ export function IsSchemaObject(value: unknown): value is XSchemaObject {
 export type XSchemaBoolean = boolean 
 
 /** Returns true if this value is a boolean */
-export function IsBooleanSchema(value: unknown): value is XSchemaBoolean {
+export function IsSchemaBoolean(value: unknown): value is XSchemaBoolean {
   return Guard.IsBoolean(value)
 }
 // ------------------------------------------------------------------
@@ -55,5 +55,5 @@ export type XSchema = XSchemaObject | XSchemaBoolean
 
 /** Returns true if this value is schema like */
 export function IsSchema(value: unknown): value is XSchema {
-  return IsSchemaObject(value) || IsBooleanSchema(value)
+  return IsSchemaObject(value) || IsSchemaBoolean(value)
 }

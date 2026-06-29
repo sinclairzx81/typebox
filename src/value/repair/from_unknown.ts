@@ -28,14 +28,28 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import type { TProperties, TSchema } from '../../type/index.ts'
+import { Guard } from '../../guard/index.ts'
+import { type TProperties, type TSchema, IsUndefined } from '../../type/index.ts'
 import { Check } from '../check/index.ts'
 import { Create } from '../create/index.ts'
 import { Convert } from '../convert/index.ts'
 
+// ------------------------------------------------------------------
+// CreateWhenUndefined
+//
+// Note: If the value is 'undefined' AND the type is not TUndefined,
+// then we know the value must be created. We handle this case for
+// undefined only, as it enables 'default' values to be initialized,
+// which otherwise wouldn't occur when running the value through
+// Convert on the first failed Check.
+// ------------------------------------------------------------------
+function CreateIfUndefined(context: TProperties, type: TSchema, value: unknown): unknown {
+  return (Guard.IsUndefined(value) && !IsUndefined(type)) ? Create(context, type) : value
+}
 export function FromUnknown(context: TProperties, type: TSchema, value: unknown): unknown {
-  if (Check(context, type, value)) return value
-  const converted = Convert(context, type, value)
+  const candidate = CreateIfUndefined(context, type, value)
+  if (Check(context, type, candidate)) return candidate
+  const converted = Convert(context, type, candidate)
   if (Check(context, type, converted)) return converted
   return Create(context, type)
 }
