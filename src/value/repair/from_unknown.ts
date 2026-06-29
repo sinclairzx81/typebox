@@ -43,11 +43,11 @@ import { Convert } from '../convert/index.ts'
 // which otherwise wouldn't occur when running the value through
 // Convert on the first failed Check.
 // ------------------------------------------------------------------
-function CreateIfUndefined(context: TProperties, type: TSchema, value: unknown): unknown {
+function CreateWhenUndefined(context: TProperties, type: TSchema, value: unknown): unknown {
   return (Guard.IsUndefined(value) && !IsUndefined(type)) ? Create(context, type) : value
 }
 export function FromUnknown(context: TProperties, type: TSchema, value: unknown): unknown {
-  const candidate = CreateIfUndefined(context, type, value)
+  const candidate = CreateWhenUndefined(context, type, value)
   if (Check(context, type, candidate)) return candidate
   const converted = Convert(context, type, candidate)
   if (Check(context, type, converted)) return converted
