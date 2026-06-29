@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import { type TProperties, type TSchema } from '../../type/index.ts'
+import type { TProperties, TSchema } from '../../type/index.ts'
 import { Check } from '../check/index.ts'
 import { Create } from '../create/index.ts'
 import { Convert } from '../convert/index.ts'
