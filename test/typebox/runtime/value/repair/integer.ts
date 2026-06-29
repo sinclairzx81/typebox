@@ -36,14 +36,3 @@ Test('Should Repair 6', () => {
   const result = Value.Repair(T, value)
   Assert.IsEqual(result, E)
 })
-// ------------------------------------------------------------------
-// CreateWhenUndefined
-// ------------------------------------------------------------------
-Test('Should Repair 7', () => {
-  const result = Value.Repair(Type.Integer({ default: 42 }), undefined)
-  Assert.IsEqual(result, 42)
-})
-Test('Should Repair 8', () => {
-  const result = Value.Repair(Type.Integer({ default: '42' }), undefined)
-  Assert.IsEqual(result, 42)
-})

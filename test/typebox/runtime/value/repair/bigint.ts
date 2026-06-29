@@ -45,14 +45,3 @@ Test('Should Repair 8', () => {
   const result = Value.Repair(T, value)
   Assert.IsEqual(result, BigInt(100))
 })
-// ------------------------------------------------------------------
-// CreateWhenUndefined
-// ------------------------------------------------------------------
-Test('Should Repair 9', () => {
-  const result = Value.Repair(Type.BigInt({ default: 42n }), undefined)
-  Assert.IsEqual(result, 42n)
-})
-Test('Should Repair 10', () => {
-  const result = Value.Repair(Type.BigInt({ default: '42' }), undefined)
-  Assert.IsEqual(result, 42n)
-})

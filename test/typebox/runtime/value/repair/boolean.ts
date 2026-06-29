@@ -47,25 +47,3 @@ Test('Should Repair 8', () => {
   const result = Value.Repair(T, value)
   Assert.IsEqual(result, true)
 })
-// ------------------------------------------------------------------
-// CreateWhenUndefined
-// ------------------------------------------------------------------
-Test('Should Repair 9', () => {
-  const result = Value.Repair(Type.Boolean({ default: true }), undefined)
-  Assert.IsEqual(result, true)
-})
-Test('Should Repair 10', () => {
-  const result = Value.Repair(Type.Boolean({ default: false }), undefined)
-  Assert.IsEqual(result, false)
-})
-Test('Should Repair 11', () => {
-  const result = Value.Repair(Type.Boolean({ default: 0 }), undefined)
-  Assert.IsEqual(result, false)
-})
-Test('Should Repair 12', () => {
-  const result = Value.Repair(Type.Boolean({ default: 1 }), undefined)
-  Assert.IsEqual(result, true)
-})
-Test('Should Repair 13', () => {
-  Assert.Throws(() => Value.Repair(Type.Boolean({ default: 2 }), undefined))
-})

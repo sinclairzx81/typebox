@@ -71,6 +71,17 @@ function AssertRepairableType(context: T.TProperties, type: T.TSchema, value: un
   }
 }
 // ------------------------------------------------------------------
+// CreateWhenUndefined
+//
+// If the value is 'undefined' AND the type is not TUndefined, then 
+// we know the value must be created. We handle this case for undefined 
+// only as it enables 'default' annotation to be initialized via Create 
+// before we applying subsequent Repair logic.
+// ------------------------------------------------------------------
+function CreateWhenUndefined(context: T.TProperties, type: T.TSchema, value: unknown): unknown {
+  return (Guard.IsUndefined(value) && !T.IsUndefined(type)) ? Create(context, type) : value
+}
+// ------------------------------------------------------------------
 // FinalizeRepair
 //
 // When a type includes the ~refine modifier, a post-repair validation
@@ -93,17 +104,18 @@ function FinalizeRepair(context: T.TProperties, type: T.TSchema, repaired: unkno
 export function FromType(context: T.TProperties, type: T.TSchema, value: unknown): unknown {
   AssertRepairableValue(context, type, value)
   AssertRepairableType(context, type, value)
+  const candidate = CreateWhenUndefined(context, type, value)
   const repaired = (
-    T.IsArray(type) ? FromArray(context, type, value) :
-    T.IsEnum(type) ? FromEnum(context, type, value) :
-    T.IsIntersect(type) ? FromIntersect(context, type, value) :
-    T.IsObject(type) ? FromObject(context, type, value) :
-    T.IsRecord(type) ? FromRecord(context, type, value) :
-    T.IsRef(type) ? FromRef(context, type, value) :
-    T.IsTemplateLiteral(type) ? FromTemplateLiteral(context, type, value) :
-    T.IsTuple(type) ? FromTuple(context, type, value) :
-    T.IsUnion(type) ? FromUnion(context, type, value) :
-    FromUnknown(context, type, value)
+    T.IsArray(type) ? FromArray(context, type, candidate) :
+    T.IsEnum(type) ? FromEnum(context, type, candidate) :
+    T.IsIntersect(type) ? FromIntersect(context, type, candidate) :
+    T.IsObject(type) ? FromObject(context, type, candidate) :
+    T.IsRecord(type) ? FromRecord(context, type, candidate) :
+    T.IsRef(type) ? FromRef(context, type, candidate) :
+    T.IsTemplateLiteral(type) ? FromTemplateLiteral(context, type, candidate) :
+    T.IsTuple(type) ? FromTuple(context, type, candidate) :
+    T.IsUnion(type) ? FromUnion(context, type, candidate) :
+    FromUnknown(context, type, candidate)
   )
   return FinalizeRepair(context, type, repaired)
 }
