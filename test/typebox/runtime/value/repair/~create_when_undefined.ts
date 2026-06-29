@@ -33,7 +33,6 @@ Test('Should CreateWhenUndefined 5', () => {
   const result = Value.Repair(Type.BigInt({ default: '42' }), undefined)
   Assert.IsEqual(result, 42n)
 })
-
 // ------------------------------------------------------------------
 // Boolean
 // ------------------------------------------------------------------
