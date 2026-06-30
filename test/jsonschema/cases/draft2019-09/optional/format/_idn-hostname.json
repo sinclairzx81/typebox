@@ -1,0 +1,53 @@
+[
+  {
+    "description": "validation of internationalized host names",
+    "schema": {
+      "$schema": "https://json-schema.org/draft/2019-09/schema",
+      "format": "idn-hostname"
+    },
+    "tests": [
+      {
+        "description": "Bidi domain name with a digit-first label is invalid",
+        "comment": "https://www.rfc-editor.org/rfc/rfc5893#section-2 a label in a Bidi domain name must start with an L, R or AL character",
+        "data": "0a.א",
+        "valid": false
+      },
+      {
+        "description": "label starting with a digit before a right-to-left letter is invalid",
+        "comment": "https://www.rfc-editor.org/rfc/rfc5893#section-2",
+        "data": "0ا",
+        "valid": false
+      },
+      {
+        "description": "left-to-right label containing a right-to-left letter is invalid",
+        "comment": "https://www.rfc-editor.org/rfc/rfc5893#section-2",
+        "data": "aא",
+        "valid": false
+      },
+      {
+        "description": "right-to-left label mixing both digit types is invalid",
+        "comment": "https://www.rfc-editor.org/rfc/rfc5893#section-2",
+        "data": "א0٠",
+        "valid": false
+      },
+      {
+        "description": "A-label that decodes to a disallowed code point is invalid",
+        "comment": "https://www.rfc-editor.org/rfc/rfc5890#section-2.3.2.1 https://www.rfc-editor.org/rfc/rfc5892#section-2.6",
+        "data": "xn--7a",
+        "valid": false
+      },
+      {
+        "description": "A-label that decodes to a Bidi rule violation is invalid",
+        "comment": "https://www.rfc-editor.org/rfc/rfc5890#section-2.3.2.1 https://www.rfc-editor.org/rfc/rfc5893",
+        "data": "xn--0ca24w",
+        "valid": false
+      },
+      {
+        "description": "a U-label whose A-label form is longer than 63 octets is invalid",
+        "comment": "https://www.rfc-editor.org/rfc/rfc5891#section-4.2.4 the 63-octet limit is on the A-label form, not the code point count",
+        "data": "üüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüü",
+        "valid": false
+      }
+    ]
+  }
+]
