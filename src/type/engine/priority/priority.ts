@@ -87,19 +87,19 @@ function Sort<Types extends TSchema[]>(types: [...Types], result: TSchema[] = []
 // Priority
 // ------------------------------------------------------------------
 /** 
- * Priority sorts types in sequence of narrowest to broadest using a Drop Sort algorithm.
- * This function is typically used to sequence types for union variant checks to ensure
- * that values are checked against the most narrow types before the broadest, which in
- * turn helps ensure order-independent checking.
+ * Priority sorts types in sequence of narrowest to broadest using an Insertion Sort
+ * algorithm. This function is typically used to sequence types for union variant
+ * checks to ensure that values are checked against the most narrow types before
+ * the broadest, which in turn helps ensure order-independent Union checking.
  */
 export type TPriority<Types extends TSchema[],
   Result extends TSchema[] = TSort<Types>,
 > = Result
 /** 
- * Priority sorts types in sequence of narrowest to broadest using a Drop Sort algorithm.
- * This function is typically used to sequence types for union variant checks to ensure
- * that values are checked against the most narrow types before the broadest, which in
- * turn helps ensure order-independent checking.
+ * Priority sorts types in sequence of narrowest to broadest using an Insertion Sort
+ * algorithm. This function is typically used to sequence types for union variant
+ * checks to ensure that values are checked against the most narrow types before
+ * the broadest, which in turn helps ensure order-independent Union checking.
  */
 export function Priority<Types extends TSchema[]>
   (types: [...Types]): TPriority<Types> {
