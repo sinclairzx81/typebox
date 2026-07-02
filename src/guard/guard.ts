@@ -116,7 +116,7 @@ export function IsMultipleOf(dividend: bigint | number, divisor: bigint | number
   if (!IsNumber(dividend)) return true
   if (IsInteger(dividend) && (1 / divisor) % 1 === 0) return true
   const mod = dividend % divisor
-  return Math.min(Math.abs(mod), Math.abs(mod - divisor)) < tolerance
+  return Math.min(Math.abs(mod), Math.abs(mod - divisor), Math.abs(mod + divisor)) < tolerance
 }
 // ------------------------------------------------------------------
 // IsClassInstance

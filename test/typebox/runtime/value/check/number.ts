@@ -84,6 +84,15 @@ Test('Should validate multipleOf', () => {
   Ok(T, 2)
   Fail(T, 1)
 })
+Test('Should validate multipleOf (negative fractional)', () => {
+  const T = Type.Number({ multipleOf: 0.1 })
+  Ok(T, 9.9)
+  Ok(T, -9.9)
+  Ok(T, -0.3)
+  Ok(T, -0.7)
+  Ok(T, -2.3)
+  Fail(T, -0.15)
+})
 // ------------------------------------------------------------------
 // Constraints: BigInt
 // ------------------------------------------------------------------
