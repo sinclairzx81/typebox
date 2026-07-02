@@ -69,6 +69,10 @@ Test('Should Create 4', () => {
 })
 // ------------------------------------------------------------------
 // UnsafePropertyKey
+//
+// Note: If these tests fail, ensure you update to Deno to 2.9.0. The
+// Deno team has made changes to __proto__ handling that differs to
+// earlier versions. The following tests are written for 2.9.0.
 // ------------------------------------------------------------------
 Test('Should Create 5', () => {
   const A = { '~kind': 'test', '__proto__': 1 }
