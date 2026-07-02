@@ -1,0 +1,16 @@
+[
+  {
+    "description": "validation of an internationalized e-mail addresses",
+    "schema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "format": "idn-email"
+    },
+    "tests": [
+      {
+        "description": "a non-ASCII quoted local part is valid",
+        "data": "\"δοκιμή\"@example.com",
+        "valid": true
+      }
+    ]
+  }
+]

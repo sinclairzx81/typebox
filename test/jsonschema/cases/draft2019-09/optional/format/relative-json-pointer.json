@@ -72,6 +72,11 @@
         "valid": false
       },
       {
+        "description": "non-ASCII digit in the prefix is not allowed",
+        "data": "١/foo",
+        "valid": false
+      },
+      {
         "description": "## is not a valid json-pointer",
         "data": "0##",
         "valid": false
@@ -94,6 +99,11 @@
       {
         "description": "multi-digit integer prefix",
         "data": "120/foo/bar",
+        "valid": true
+      },
+      {
+        "description": "multi-digit prefix with a zero followed by another digit",
+        "data": "100",
         "valid": true
       }
     ]

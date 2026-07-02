@@ -50,6 +50,16 @@
         "description": "a valid e-mail address",
         "data": "joe.bloggs@example.com",
         "valid": true
+      },
+      {
+        "description": "a non-ASCII local part with an ASCII domain is valid",
+        "data": "δοκιμή@example.com",
+        "valid": true
+      },
+      {
+        "description": "a local part with a lone UTF-16 surrogate is invalid",
+        "data": "\ud800@example.com",
+        "valid": false
       }
     ]
   }

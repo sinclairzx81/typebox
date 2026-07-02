@@ -47,6 +47,12 @@
         "comment": "https://www.rfc-editor.org/rfc/rfc5891#section-4.2.4 the 63-octet limit is on the A-label form, not the code point count",
         "data": "üüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüüü",
         "valid": false
+      },
+      {
+        "description": "A-label that decodes to only ASCII is invalid",
+        "comment": "https://www.rfc-editor.org/rfc/rfc5890#section-2.3.2.1 a U-label must have at least one non-ASCII character",
+        "data": "xn--example-",
+        "valid": false
       }
     ]
   }
