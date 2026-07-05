@@ -35,45 +35,69 @@ import { BuildContext } from './_context.ts'
 import { EmitGuard as E } from '../../guard/index.ts'
 import { BuildSchema } from './schema.ts'
 
-const functions: Map<string, string> = new Map()
+// ------------------------------------------------------------------
+// State
+// ------------------------------------------------------------------
+type Href = string & { kind: 'Href' }
+type Name = string & { kind: 'Name' }
 
+const index = [0]
+const names = new Map<Schema.XSchema, Map<Href, Name>>
+const funcs = new Map<Name, string> ()
+
+// ------------------------------------------------------------------
+// CreateName
+// ------------------------------------------------------------------
+function NextName(): Name {
+  return Hashing.Hash(index[0]++) as Name
+}
+function CreateName(schema: Schema.XSchema, href: Href): Name {
+  if(!names.has(schema)) names.set(schema, new Map<Href, Name>())
+  const hrefs = names.get(schema)!
+  if(hrefs.has(href)) return hrefs.get(href)!
+  const name = NextName()
+  hrefs.set(href, name)
+  return name
+}
 // ------------------------------------------------------------------
 // CreateCallExpression
 // ------------------------------------------------------------------
-function CreateCallExpression(context: BuildContext, _schema: Schema.XSchema, hash: string, value: string): string {
+function CreateCallExpression(context: BuildContext, _schema: Schema.XSchema, name: string, value: string): string {
   return context.UseUnevaluated()
-    ? E.Call(`check_${hash}`, ['context', value])
-    : E.Call(`check_${hash}`, [value])
+    ? E.Call(`check_${name}`, ['context', value])
+    : E.Call(`check_${name}`, [value])
 }
 // ------------------------------------------------------------------
 // CreateFunctionExpression
 // ------------------------------------------------------------------
-function CreateFunctionExpression(stack: Stack, context: BuildContext, schema: Schema.XSchema, hash: string): string {
+function CreateFunctionExpression(stack: Stack, context: BuildContext, schema: Schema.XSchema, name: string): string {
   const expression = BuildSchema(stack, context, schema, 'value')
   return context.UseUnevaluated()
-    ? E.ConstDeclaration(`check_${hash}`, E.ArrowFunction(['context', 'value'], expression))
-    : E.ConstDeclaration(`check_${hash}`, E.ArrowFunction(['value'], expression))
+    ? E.ConstDeclaration(`check_${name}`, E.ArrowFunction(['context', 'value'], expression))
+    : E.ConstDeclaration(`check_${name}`, E.ArrowFunction(['value'], expression))
 }
 // ------------------------------------------------------------------
 // ResetFunctions
 // ------------------------------------------------------------------
 export function ResetFunctions(): void {
-  functions.clear()
+  index[0] = 0
+  names.clear()
+  funcs.clear()
 }
 // ------------------------------------------------------------------
 // GetFunctions
 // ------------------------------------------------------------------
 export function GetFunctions(): string[] {
-  return [...functions.values()]
+  return [...funcs.values()]
 }
 // ------------------------------------------------------------------
 // CreateFunction
 // ------------------------------------------------------------------
 export function CreateFunction(stack: Stack, context: BuildContext, schema: Schema.XSchema, value: string): string {
-  const hash = Schema.IsSchemaObject(schema) ? Hashing.Hash({ __baseURL: stack.BaseURL().href, ...schema }) : Hashing.Hash(schema)
-  const call = CreateCallExpression(context, schema, hash, value)
-  if (functions.has(hash)) return call
-  functions.set(hash, '')
-  functions.set(hash, CreateFunctionExpression(stack, context, schema, hash))
+  const name = CreateName(schema, stack.BaseURL().href as Href)
+  const call = CreateCallExpression(context, schema, name, value)
+  if (funcs.has(name)) return call
+  funcs.set(name, '')
+  funcs.set(name, CreateFunctionExpression(stack, context, schema, name))
   return call
 }

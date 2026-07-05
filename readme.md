@@ -298,29 +298,29 @@ The following table shows compile performance for various JSON Schema structures
 ┌──────────────────────┬─────────────┬─────────────┐
 │ Compile              │ TB1X        │ AJV8        │
 ├──────────────────────┼─────────────┼─────────────┤
-│ Boolean              │ 29.2K ops/s │  7.1K ops/s │
-│ Number               │ 34.5K ops/s │  7.6K ops/s │
-│ String               │ 48.9K ops/s │  8.7K ops/s │
-│ Null                 │ 39.6K ops/s │  7.6K ops/s │
-│ Literal_String       │ 46.8K ops/s │  6.8K ops/s │
-│ Literal_Number       │ 48.3K ops/s │  7.4K ops/s │
-│ Literal_Boolean      │ 48.8K ops/s │  7.3K ops/s │
-│ Pattern              │ 32.5K ops/s │  6.1K ops/s │
-│ Object_Open          │  6.6K ops/s │  1.4K ops/s │
-│ Object_Close         │  7.6K ops/s │    1K ops/s │
-│ Object_Vector3       │ 20.8K ops/s │  2.8K ops/s │
-│ Object_Basis3        │  7.5K ops/s │    1K ops/s │
-│ Intersect_And        │   23K ops/s │  3.9K ops/s │
-│ Intersect_Structural │  8.7K ops/s │  1.2K ops/s │
-│ Union_Or             │ 17.9K ops/s │  3.4K ops/s │
-│ Union_Structural     │ 11.3K ops/s │  2.1K ops/s │
-│ Tuple_Values         │  9.6K ops/s │  2.1K ops/s │
-│ Tuple_Objects        │  2.1K ops/s │   350 ops/s │
-│ Array_Numbers_4      │ 33.6K ops/s │  4.2K ops/s │
-│ Array_Numbers_8      │   39K ops/s │  3.7K ops/s │
-│ Array_Numbers_16     │ 29.6K ops/s │  3.8K ops/s │
-│ Array_Objects_Open   │  7.7K ops/s │   833 ops/s │
-│ Array_Objects_Close  │  7.6K ops/s │   860 ops/s │
+│ Boolean              │ 39.7K ops/s │  6.8K ops/s │
+│ Number               │ 86.2K ops/s │  7.5K ops/s │
+│ String               │ 82.6K ops/s │  8.2K ops/s │
+│ Null                 │   62K ops/s │  7.3K ops/s │
+│ Literal_String       │ 72.1K ops/s │  5.7K ops/s │
+│ Literal_Number       │ 72.7K ops/s │  6.9K ops/s │
+│ Literal_Boolean      │ 80.9K ops/s │    7K ops/s │
+│ Pattern              │ 38.7K ops/s │  5.7K ops/s │
+│ Object_Open          │ 16.3K ops/s │  1.3K ops/s │
+│ Object_Close         │ 15.7K ops/s │   952 ops/s │
+│ Object_Vector3       │ 40.2K ops/s │  3.2K ops/s │
+│ Object_Basis3        │ 16.1K ops/s │   834 ops/s │
+│ Intersect_And        │ 45.7K ops/s │  3.5K ops/s │
+│ Intersect_Structural │   21K ops/s │  1.6K ops/s │
+│ Union_Or             │ 45.1K ops/s │  3.4K ops/s │
+│ Union_Structural     │ 27.6K ops/s │    2K ops/s │
+│ Tuple_Values         │ 14.7K ops/s │    2K ops/s │
+│ Tuple_Objects        │  3.7K ops/s │   380 ops/s │
+│ Array_Numbers_4      │ 73.6K ops/s │  4.3K ops/s │
+│ Array_Numbers_8      │ 50.9K ops/s │  3.8K ops/s │
+│ Array_Numbers_16     │   85K ops/s │  3.9K ops/s │
+│ Array_Objects_Open   │ 18.9K ops/s │   789 ops/s │
+│ Array_Objects_Close  │ 17.9K ops/s │   909 ops/s │
 └──────────────────────┴─────────────┴─────────────┘
 ```
 
