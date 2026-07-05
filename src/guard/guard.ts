@@ -26,6 +26,8 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+// deno-fmt-ignore-file
+
 import * as String from './string.ts'
 
 // --------------------------------------------------------------------------
@@ -222,9 +224,11 @@ function DeepEqualArray(left: unknown[], right: unknown): boolean {
   return IsArray(right) && IsEqual(left.length, right.length) &&
     left.every((_, index) => IsDeepEqual(left[index], right[index]))
 }
-/** Tests values for deep equality */
+/** Returns true if left and right values are structurally equal */
 export function IsDeepEqual(left: unknown, right: unknown): boolean {
   return (
-    IsArray(left) ? DeepEqualArray(left, right) : IsObject(left) ? DeepEqualObject(left, right) : IsEqual(left, right)
+    IsArray(left) ? DeepEqualArray(left, right) : 
+    IsObject(left) ? DeepEqualObject(left, right) : 
+    IsEqual(left, right)
   )
 }

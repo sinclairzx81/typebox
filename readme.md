@@ -111,27 +111,24 @@ type User = Type.Static<typeof User>              // type User = {
 
 ## Script
 
-[Documentation](https://sinclairzx81.github.io/typebox/#/docs/script/overview) | [Example 1](https://www.typescriptlang.org/play/?target=99&module=7#code/JYWwDg9gTgLgBAFQJ5gKZwGZQiOByGFVAIwgA88AoSgehrgFonmXW32POv3b7k0AdAGUAxlGBgYACjwC5eAJS9G3VWvXdqdOADkAhiFQBnMHpGpKIiADsj8ALJ6YACzgBeREWFiJ0gAaUcHCEaHAAaqgiMNAATO5wAN5wZABccNYAriDEqFAANHBIaZnZuXAAvoHBROGR0VAAzPEAogBuegA2GU6oADwRUbFwAGSJcABexVk5UBUAfFUh6AP1ACwt7V09-XXQTaNJAO5TpbPlC35KygAiqGjWACao1vD6hiZmFla28En2xq5yvF+KhvOJJFIknIBI4XBUCn4gosahFYKgyPEElUgpAjMAYMAbGkVtBVnlseloCBOsTdo1yUEghlWrTBlAYlVKkElnAAOKoHCoGBQJCYimtXIE8xGWlosgAbQAugzGcBHsBpScZkrOcjQrDcsBOmLGXADMRgM8YKy1iqgg9gBgMBkjKgbaS7XATJEMh09FB3VBVrruTV-kZXB4saaAOYCwzCop8+NCkWe6kwQ00uAG8SdXWXLT0ABKGReoHQxdQGA6dUJ1ko4ecAjA2DQsEtRgEccFiZbbclnYEEo70oE+NQIC7rYg7YJxhbEDxBJs-dng4XZEbALXc6HPYTIt3G67I6lC4nU+PHYX1ipnWv867W6bj-3Kb7M73C7PGovmavL8TwEZk303bcIzArsMyzDooIEB0nRdUEgJvZ8IObVCnwEGC8zgrCh3NS0Xngl8dwIhdcKNfCBzQgRvREX1-VIos4CEGAnA1OAAElrAwXJnnMShnWsKJ6zgKBnieKApHeZw0hBYQOKlXolggDAcwBOYFESKo5O7D8j1-aV5QABkVRdl3rAQtyCfSD1TJBh0HEzzIEO8oGpODbLgezDKc4zjDMizQJ8-SqIfRDnVdGy9J3CK4KIq1Yrs+Kejw+i0EYv0oFi8ogA) | [Example 2](https://www.typescriptlang.org/play/?target=99&module=7#code/JYWwDg9gTgLgBAFQJ5gKZwGZQiOByGFVAIwgA88AoSgehrgFonmXW32POv3b7k0AdACpejbuImTu1OnAByAQxCoAzmAUBjVJQB2S1eq1wAsgpgALOAG9KcOKjKRYcDRB0r4ANVQaY0AExwALyIRAIA8sQAVj4wABRWcGQAXKGCcgCuIMSoUHEAlAA0cEip-KgCmdm5BXAAvvm29o7Q8K7uXrHQAMzBaRUAogBuCgA2GWaoceUCAJI6MLkqsXEA2t6+AcUzkTG+CXAAXmVhVTl5+fX5ALr5jXYOTm1uHnAbflAALH0zw2MTi2mYXmiygy326y6UG62zCuxWiQA7id0llzrUGrdGnUZPQACKoNA6AAmqAW8n0ak02nar28sAcPzh0QRTUgKmAMGAblSpgsAne0E+hSaOmgIDGvLM5gFUJhTQyQyl-MFUH8lAalFp8AA4qgcKgYFAkEzBPD9jY7ENclytCoURUAIJQKAKJBxemLMhFJrAEnAO0OgTO13umZnGp3DWNbUmSZQYBjU0Vc3xS1wJTEYBkmDKmWq4VNYnADAYDLLPOyzZfEV2NQ+DKjBRQSsF6Nal7wYyqSwhHYsi1NADm+uURtKcD1BvHtbgEtBidGytyi-bogAShkFqB0OvUBhRrFuTpKN2VDKwNg0LBsyoBCPp8aBJeINeuaoBNab3aBJzUCA7xfN9b2fCAOS5NxnyvG0QLIU8eyg18YI-B8xyfIDkLvL9bQ-P8AMQ4CPzFKAJVGAjMIEOCzwvaCbxQ0dDXQ2j3ywmCfzwwDmJAxVyLou8qIQjC+IEecVzGXiWIEYtS3LCohMkgTzwkkDRITcT5JAzNswWZSP0UmikOE1TF10u96w0Rtm1MyjcTgABlGAzADOB5gwXIyS0Sgyx0XxjzgKAyVJPJlHPIMHKcjQAB5CDQCAMBMHsAD5LnTEKZVQxikE-NjVFWAAGa5QPA48bLsNL7wY8dsu-XKCoEYjSNKucEIyqrsIDWrCp4uCyoQ4zxOkstlia8r+rIrScxGvr4xM8zLKgGy6iAA) | [Challenge](test/typescript/readme.md)
+[Documentation](https://sinclairzx81.github.io/typebox/#/docs/script/overview) | [Example 1](https://www.typescriptlang.org/play/?target=99&module=7#code/JYWwDg9gTgLgBAFQJ5gKZwGZQiOByGFVAIwgA88AoSgehrgFkIATAVwBtVKBjCAOwDO8BgEMYACzgBeREQB0AZW5RgYGAAoABpThxCaOADVU3GNABM0uAG84ZAFxw+rEMVRQANHCSPnr93AAvjp6REYmZlAAzFa2Dk4ubp7evonuXgBeqf5QQSH66Mam0AAssXbZSV4+CTmZlelwAO4NucGaAJTUdHAAIqhofMyofMIsHFy8gvC2DKgCkoFWyGiKyqoaohJemrr5YcawqGSxIbqQAsAwwPyORZElHmdO0CAi7HcR0FFPurqsADdPsUoOYQsFdAU4ABxVA4VAwKBIU5-OAA9zXbjzT5HMgAbQAur8-sAhsAsQJWoTwfsDFt3MB3ii-iJXMARjBgQ9ibpmMAMBhWAJUFzSjy4AI0NwOCIoKKoCUaZCwnMFszdABzOEgBFIxyw+GIpDit4wBnvRz0lTvGmdbr0ABKrFGoHQDtQGE4phufEoqvEcjA2DQsHZAjkWsNSMDwYxYbk6NDFLkV1QIHDQYgIeu80DEEu134MazcdzZD98wDmez8cjOqNxZrucTmNzqfTjdL4b4r3endDZYrC37OfDdd1SBH8Zb5LbZo71a7ckBU8H-tX4dN5vYG7kfIFQtQu-L68XA83Ym3u9ZxHZo2PQ6rsfPci31p3Z9HcklJhlUAftD0AoMBiOScAAJJ8Bg7gjFilCCnw3r8HAUAjMMUDqDqCyOCsR7AaB3AADwFBAGCMJWAB8HQ2CEWEBuODYzhSeIAAwEnmBY+nI5a6HREbahOCZxsxbFyD2UBvDuPFwHxDHRkx8ysexK7SXxb6Mju+6CsK3G0ZWr6Xu+cg3neMC6bx+nqX2P7Suwsq6YEQA) | [Example 2](https://www.typescriptlang.org/play/?target=99&module=7#code/JYWwDg9gTgLgBAFQJ5gKZwGZQiOByGFVAIwgA88AoSgehrgFkIATAVwBtVKA7AQxFQBnMLwDG6BrxgALOAG9KcOKjKRYcURG6D4ANVSiY0AExwAvIiIA6APLEAVgZgAKOXDIAuS2isA5ViDEqFDOAJQANHBIXsg+-oHBYXAAvqGKyqrQ8Jraek7QAMzm3qi2Dk6u7jHW8UEhEVHVcQF1YZEAXk2ltYmhKWlKKmrZWjpw+obQACzFsaV2joaVniV+Lb2R0as99R1dawm7cADu+ztJqZTJ1HRwACKoaNzMqNzwTGyclDlj+rAqs2sCwqCiUkEEwBgwC0XkkMisEyMUCm4XS3GgIF47FhUmkCPyUAKqKUrAAbjj4YiTFc0j94ABxVA4VAwKBIQE+YFLUFwUnBKHiQT7ACCUCgvCQzj+MBUEXSwGewEFIrFEuccwOrVCaUudMYUmCwCxHPm5W56X4xGArxgFLxVORxLgzGAGAwrEEqDt+MmjvSwgMHF4UG9DqmNO+o3eQlkFg1XJcPIA5kyBKytozmemnZiZVAjdj9XmCxHaPQAEqsN6gdDl1AYTiGaHcSgMGNWMDYNCwa2CKwprNsjtd-m9qx8nuCqyQ1AgPudiDdqFCDsQCFQrTDxejldkVvthdLscDtNDw87vsTgUrmdzrdHlfoqCY9j3i9WPdtwR4889lcnlkzxHP9L1HKdb3nYDlz7Mk3xAj992-ODoKsXNDSxZCxxdN0PVKX8UM-A8oLHND8ww-Cx0ta03kw3dEJ-YiV1IgtaL7ANRCDKBWIQss4AAZRgKQlTgABJbgMGCV5xEod1uCbLQ4CgV4XhCARv32AShNEAAeQg0AgDBGBjAA+PoeTUvEAPTccwKEABtAAGABdVd12bBClAs-tU0ApAbMneznKsJ8Xw8uAvKsocryVQKXNgvdPPbZiMOw91PTCrzktfKibQypKDTI192M4hDkiAA) | [Challenge](test/typescript/readme.md)
 
-TypeBox includes a syntax engine that can transform TypeScript declarations into JSON Schema. The engine is a full syntactic frontend to Type.* and supports many advanced type-level constructs such as Conditional, Mapped, Indexed, Infer, Generics, Distributed types and more. This feature is implemented symmetrically at runtime and statically via TypeScript Template Literal types. 
-
-Syntax highlighting is available via the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=sinclairzx81.typebox-script)
-
+TypeBox includes a runtime scripting engine that can transform TypeScript definitions into JSON Schema. The engine is implemented symmetrically at runtime and inside TypeScript's type system. It supports many programmable type-level constructs such as Conditional, Mapped, Indexed, Generic, Distributive Conditional, and more. The engine is designed for TypeScript 7 but is supported in TypeScript 5 and above.
 
 ### Example
 
-The following uses Script to parse TypeScript declarations into JSON Schema. 
+Syntax highlighting is available via the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=sinclairzx81.typebox-script)
 
 ```typescript
 // Module
 const Math = Type.Script(`
   type Vector2 = { x: number, y: number }
-  type Vector3 = Evaluate<Vector2 & { z: number }>
-  type Vector4 = Evaluate<Vector3 & { w: number }>
+  type Vector3 = { x: number, y: number, z: number }
+  type Vector4 = { x: number, y: number, z: number, w: number }
 `)
 
 // Dependent Module
-const { Mesh } = Type.Script({ ...Math }, `  
+const { Mesh } = Type.Script(Math, `  
   type Vertex = {
     position: Vector4,
     normal: Vector3,
@@ -298,29 +295,29 @@ The following table shows compile performance for various JSON Schema structures
 ┌──────────────────────┬─────────────┬─────────────┐
 │ Compile              │ TB1X        │ AJV8        │
 ├──────────────────────┼─────────────┼─────────────┤
-│ Boolean              │ 29.2K ops/s │  7.1K ops/s │
-│ Number               │ 34.5K ops/s │  7.6K ops/s │
-│ String               │ 48.9K ops/s │  8.7K ops/s │
-│ Null                 │ 39.6K ops/s │  7.6K ops/s │
-│ Literal_String       │ 46.8K ops/s │  6.8K ops/s │
-│ Literal_Number       │ 48.3K ops/s │  7.4K ops/s │
-│ Literal_Boolean      │ 48.8K ops/s │  7.3K ops/s │
-│ Pattern              │ 32.5K ops/s │  6.1K ops/s │
-│ Object_Open          │  6.6K ops/s │  1.4K ops/s │
-│ Object_Close         │  7.6K ops/s │    1K ops/s │
-│ Object_Vector3       │ 20.8K ops/s │  2.8K ops/s │
-│ Object_Basis3        │  7.5K ops/s │    1K ops/s │
-│ Intersect_And        │   23K ops/s │  3.9K ops/s │
-│ Intersect_Structural │  8.7K ops/s │  1.2K ops/s │
-│ Union_Or             │ 17.9K ops/s │  3.4K ops/s │
-│ Union_Structural     │ 11.3K ops/s │  2.1K ops/s │
-│ Tuple_Values         │  9.6K ops/s │  2.1K ops/s │
-│ Tuple_Objects        │  2.1K ops/s │   350 ops/s │
-│ Array_Numbers_4      │ 33.6K ops/s │  4.2K ops/s │
-│ Array_Numbers_8      │   39K ops/s │  3.7K ops/s │
-│ Array_Numbers_16     │ 29.6K ops/s │  3.8K ops/s │
-│ Array_Objects_Open   │  7.7K ops/s │   833 ops/s │
-│ Array_Objects_Close  │  7.6K ops/s │   860 ops/s │
+│ Boolean              │ 39.7K ops/s │  6.8K ops/s │
+│ Number               │ 86.2K ops/s │  7.5K ops/s │
+│ String               │ 82.6K ops/s │  8.2K ops/s │
+│ Null                 │   62K ops/s │  7.3K ops/s │
+│ Literal_String       │ 72.1K ops/s │  5.7K ops/s │
+│ Literal_Number       │ 72.7K ops/s │  6.9K ops/s │
+│ Literal_Boolean      │ 80.9K ops/s │    7K ops/s │
+│ Pattern              │ 38.7K ops/s │  5.7K ops/s │
+│ Object_Open          │ 16.3K ops/s │  1.3K ops/s │
+│ Object_Close         │ 15.7K ops/s │   952 ops/s │
+│ Object_Vector3       │ 40.2K ops/s │  3.2K ops/s │
+│ Object_Basis3        │ 16.1K ops/s │   834 ops/s │
+│ Intersect_And        │ 45.7K ops/s │  3.5K ops/s │
+│ Intersect_Structural │   21K ops/s │  1.6K ops/s │
+│ Union_Or             │ 45.1K ops/s │  3.4K ops/s │
+│ Union_Structural     │ 27.6K ops/s │    2K ops/s │
+│ Tuple_Values         │ 14.7K ops/s │    2K ops/s │
+│ Tuple_Objects        │  3.7K ops/s │   380 ops/s │
+│ Array_Numbers_4      │ 73.6K ops/s │  4.3K ops/s │
+│ Array_Numbers_8      │ 50.9K ops/s │  3.8K ops/s │
+│ Array_Numbers_16     │   85K ops/s │  3.9K ops/s │
+│ Array_Objects_Open   │ 18.9K ops/s │   789 ops/s │
+│ Array_Objects_Close  │ 17.9K ops/s │   909 ops/s │
 └──────────────────────┴─────────────┴─────────────┘
 ```
 

@@ -1,19 +1,18 @@
 <h1>Script</h1>
 <p>TypeScript Syntax Engine For JSON Schema</p>
 <h2>Overview</h2>
-<p>TypeBox includes a syntax engine that can transform TypeScript declarations into JSON Schema. The engine is a full syntactic frontend to Type.* and supports many advanced type-level constructs such as Conditional, Mapped, Indexed, Infer, Generics, Distributed types and more. This feature is implemented symmetrically at runtime and statically via TypeScript Template Literal types. </p>
-<p>Syntax highlighting is available via the <a href="https://marketplace.visualstudio.com/items?itemName=sinclairzx81.typebox-script">Visual Studio Marketplace</a></p>
+<p>TypeBox includes a runtime scripting engine that can transform TypeScript definitions into JSON Schema. The engine is implemented symmetrically at runtime and inside TypeScript&#39;s type system. It supports many programmable type-level constructs such as Conditional, Mapped, Indexed, Generic, Distributive Conditional, and more. The engine is designed for TypeScript 7 but is supported in TypeScript 5 and above.</p>
 <h3>Example</h3>
-<p>The following uses Script to parse TypeScript declarations into JSON Schema.</p>
+<p>Syntax highlighting is available via the <a href="https://marketplace.visualstudio.com/items?itemName=sinclairzx81.typebox-script">Visual Studio Marketplace</a></p>
 <pre><code class="language-typescript">// Module
 const Math = Type.Script(`
   type Vector2 = { x: number, y: number }
-  type Vector3 = Evaluate&lt;Vector2 &amp; { z: number }&gt;
-  type Vector4 = Evaluate&lt;Vector3 &amp; { w: number }&gt;
+  type Vector3 = { x: number, y: number, z: number }
+  type Vector4 = { x: number, y: number, z: number, w: number }
 `)
 
 // Dependent Module
-const { Mesh } = Type.Script({ ...Math }, `  
+const { Mesh } = Type.Script(Math, `  
   type Vertex = {
     position: Vector4,
     normal: Vector3,

@@ -26,6 +26,4 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export * from './discriminated_union.ts'
-export * from './dynamic.ts'
-export * from './reverse_static.ts'
+export * from './type.ts'

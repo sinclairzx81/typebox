@@ -1,12 +1,11 @@
 # Script.Syntax
 
-TypeBox is designed to be a programmable DSL for the JSON Schema specification. It uses JSON Schema as an intermediate representation for TypeScript types (tentatively named Type IR), and evaluates it using the type semantics of the TypeScript language.
+TypeBox is designed to be a programmable TypeScript based DSL for the JSON Schema specification. It uses JSON Schema as an intermediate representation (IR) for TypeScript types, and evaluates the IR using the semantics of the TypeScript language.
 
-The TypeBox Script function is the DSL interface. It accepts TypeScript type-level expressions and resolves them to their TypeBox equivalents. It supports interfaces, type aliases, conditional types, mapped types, indexed access, generics, and union distribution. The Script function returns parsed TypeBox types that can be inferred with `Static<T>`
 
 ## Types
 
-Script has support for most TypeScript types and structural constructs. Each type will map into its corresponding TypeBox representation, which can be serialized as JSON Schema or compiled into a validator.
+Script has support for most TypeScript types and syntactic constructs. Each type will map into its corresponding TypeBox IR representation.
 
 ```typescript
 // ------------------------------------------------------------------
