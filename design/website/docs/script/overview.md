@@ -4,24 +4,22 @@ TypeScript Syntax Engine For JSON Schema
 
 ## Overview
 
-TypeBox includes a syntax engine that can transform TypeScript declarations into JSON Schema. The engine is a full syntactic frontend to Type.* and supports many advanced type-level constructs such as Conditional, Mapped, Indexed, Infer, Generics, Distributed types and more. This feature is implemented symmetrically at runtime and statically via TypeScript Template Literal types. 
-
-Syntax highlighting is available via the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=sinclairzx81.typebox-script)
+TypeBox includes a micro TypeScript scripting engine that can parse TypeScript definitions into JSON Schema. The engine is implemented at runtime as well as statically inside TypeScript's type system, and supports many programmable constructs such as conditional, mapped, indexed, generic, and distributed types, and more.
 
 ### Example
 
-The following uses Script to parse TypeScript declarations into JSON Schema.
+Syntax highlighting is available via the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=sinclairzx81.typebox-script)
 
 ```typescript
 // Module
 const Math = Type.Script(`
   type Vector2 = { x: number, y: number }
-  type Vector3 = Evaluate<Vector2 & { z: number }>
-  type Vector4 = Evaluate<Vector3 & { w: number }>
+  type Vector3 = { x: number, y: number, z: number }
+  type Vector4 = { x: number, y: number, z: number, w: number }
 `)
 
 // Dependent Module
-const { Mesh } = Type.Script({ ...Math }, `  
+const { Mesh } = Type.Script(Math, `  
   type Vertex = {
     position: Vector4,
     normal: Vector3,

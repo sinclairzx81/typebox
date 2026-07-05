@@ -1,24 +1,8 @@
 # Type Challenges
 
-Various solutions to [Type Challenges](https://github.com/type-challenges/type-challenges) implemented with TypeBox
-
 ## Overview
 
-This test suite is used to stress test the TypeBox syntax engine
-
-```typescript
-const Input = Type.Script(`{
-  x: string
-  y: number
-  z: boolean
-}`)
-
-const Output = Type.Script({ Input }, `Input extends {
-  x: infer X,
-  y: infer Y,
-  z: infer Z
-} ? [X, Y, Z] : never`) // [string, number, boolean]
-```
+Solutions to [Type Challenges](https://github.com/type-challenges/type-challenges) implemented with TypeBox's scripting engine.
 
 ## Solutions
 

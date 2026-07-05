@@ -111,27 +111,24 @@ type User = Type.Static<typeof User>              // type User = {
 
 ## Script
 
-[Documentation](https://sinclairzx81.github.io/typebox/#/docs/script/overview) | [Example 1](https://www.typescriptlang.org/play/?target=99&module=7#code/JYWwDg9gTgLgBAFQJ5gKZwGZQiOByGFVAIwgA88AoSgehrgFonmXW32POv3b7k0AdAGUAxlGBgYACjwC5eAJS9G3VWvXdqdOADkAhiFQBnMHpGpKIiADsj8ALJ6YACzgBeREWFiJ0gAaUcHCEaHAAaqgiMNAATO5wAN5wZABccNYAriDEqFAANHBIaZnZuXAAvoHBROGR0VAAzPEAogBuegA2GU6oADwRUbFwAGSJcABexVk5UBUAfFUh6AP1ACwt7V09-XXQTaNJAO5TpbPlC35KygAiqGjWACao1vD6hiZmFla28En2xq5yvF+KhvOJJFIknIBI4XBUCn4gosahFYKgyPEElUgpAjMAYMAbGkVtBVnlseloCBOsTdo1yUEghlWrTBlAYlVKkElnAAOKoHCoGBQJCYimtXIE8xGWlosgAbQAugzGcBHsBpScZkrOcjQrDcsBOmLGXADMRgM8YKy1iqgg9gBgMBkjKgbaS7XATJEMh09FB3VBVrruTV-kZXB4saaAOYCwzCop8+NCkWe6kwQ00uAG8SdXWXLT0ABKGReoHQxdQGA6dUJ1ko4ecAjA2DQsEtRgEccFiZbbclnYEEo70oE+NQIC7rYg7YJxhbEDxBJs-dng4XZEbALXc6HPYTIt3G67I6lC4nU+PHYX1ipnWv867W6bj-3Kb7M73C7PGovmavL8TwEZk303bcIzArsMyzDooIEB0nRdUEgJvZ8IObVCnwEGC8zgrCh3NS0Xngl8dwIhdcKNfCBzQgRvREX1-VIos4CEGAnA1OAAElrAwXJnnMShnWsKJ6zgKBnieKApHeZw0hBYQOKlXolggDAcwBOYFESKo5O7D8j1-aV5QABkVRdl3rAQtyCfSD1TJBh0HEzzIEO8oGpODbLgezDKc4zjDMizQJ8-SqIfRDnVdGy9J3CK4KIq1Yrs+Kejw+i0EYv0oFi8ogA) | [Example 2](https://www.typescriptlang.org/play/?target=99&module=7#code/JYWwDg9gTgLgBAFQJ5gKZwGZQiOByGFVAIwgA88AoSgehrgFonmXW32POv3b7k0AdACpejbuImTu1OnAByAQxCoAzmAUBjVJQB2S1eq1wAsgpgALOAG9KcOKjKRYcDRB0r4ANVQaY0AExwALyIRAIA8sQAVj4wABRWcGQAXKGCcgCuIMSoUHEAlAA0cEip-KgCmdm5BXAAvvm29o7Q8K7uXrHQAMzBaRUAogBuCgA2GWaoceUCAJI6MLkqsXEA2t6+AcUzkTG+CXAAXmVhVTl5+fX5ALr5jXYOTm1uHnAbflAALH0zw2MTi2mYXmiygy326y6UG62zCuxWiQA7id0llzrUGrdGnUZPQACKoNA6AAmqAW8n0ak02nar28sAcPzh0QRTUgKmAMGAblSpgsAne0E+hSaOmgIDGvLM5gFUJhTQyQyl-MFUH8lAalFp8AA4qgcKgYFAkEzBPD9jY7ENclytCoURUAIJQKAKJBxemLMhFJrAEnAO0OgTO13umZnGp3DWNbUmSZQYBjU0Vc3xS1wJTEYBkmDKmWq4VNYnADAYDLLPOyzZfEV2NQ+DKjBRQSsF6Nal7wYyqSwhHYsi1NADm+uURtKcD1BvHtbgEtBidGytyi-bogAShkFqB0OvUBhRrFuTpKN2VDKwNg0LBsyoBCPp8aBJeINeuaoBNab3aBJzUCA7xfN9b2fCAOS5NxnyvG0QLIU8eyg18YI-B8xyfIDkLvL9bQ-P8AMQ4CPzFKAJVGAjMIEOCzwvaCbxQ0dDXQ2j3ywmCfzwwDmJAxVyLou8qIQjC+IEecVzGXiWIEYtS3LCohMkgTzwkkDRITcT5JAzNswWZSP0UmikOE1TF10u96w0Rtm1MyjcTgABlGAzADOB5gwXIyS0Sgyx0XxjzgKAyVJPJlHPIMHKcjQAB5CDQCAMBMHsAD5LnTEKZVQxikE-NjVFWAAGa5QPA48bLsNL7wY8dsu-XKCoEYjSNKucEIyqrsIDWrCp4uCyoQ4zxOkstlia8r+rIrScxGvr4xM8zLKgGy6iAA) | [Challenge](test/typescript/readme.md)
+[Documentation](https://sinclairzx81.github.io/typebox/#/docs/script/overview) | [Example 1](https://www.typescriptlang.org/play/?target=99&module=7#code/JYWwDg9gTgLgBAFQJ5gKZwGZQiOByGFVAIwgA88AoSgehrgFkIATAVwBtVKBjCAOwDO8BgEMYACzgBeREQB0AZW5RgYGAAoABpThxCaOADVU3GNABM0uAG84ZAFxw+rEMVRQANHCSPnr93AAvjp6REYmZlAAzFa2Dk4ubp7evonuXgBeqf5QQSH66Mam0AAssXbZSV4+CTmZlelwAO4NucGaAJTUdHAAIqhofMyofMIsHFy8gvC2DKgCkoFWyGiKyqoaohJemrr5YcawqGSxIbqQAsAwwPyORZElHmdO0CAi7HcR0FFPurqsADdPsUoOYQsFdAU4ABxVA4VAwKBIU5-OAA9zXbjzT5HMgAbQAur8-sAhsAsQJWoTwfsDFt3MB3ii-iJXMARjBgQ9ibpmMAMBhWAJUFzSjy4AI0NwOCIoKKoCUaZCwnMFszdABzOEgBFIxyw+GIpDit4wBnvRz0lTvGmdbr0ABKrFGoHQDtQGE4phufEoqvEcjA2DQsHZAjkWsNSMDwYxYbk6NDFLkV1QIHDQYgIeu80DEEu134MazcdzZD98wDmez8cjOqNxZrucTmNzqfTjdL4b4r3endDZYrC37OfDdd1SBH8Zb5LbZo71a7ckBU8H-tX4dN5vYG7kfIFQtQu-L68XA83Ym3u9ZxHZo2PQ6rsfPci31p3Z9HcklJhlUAftD0AoMBiOScAAJJ8Bg7gjFilCCnw3r8HAUAjMMUDqDqCyOCsR7AaB3AADwFBAGCMJWAB8HQ2CEWEBuODYzhSeIAAwEnmBY+nI5a6HREbahOCZxsxbFyD2UBvDuPFwHxDHRkx8ysexK7SXxb6Mju+6CsK3G0ZWr6Xu+cg3neMC6bx+nqX2P7Suwsq6YEQA) | [Example 2](https://www.typescriptlang.org/play/?target=99&module=7#code/JYWwDg9gTgLgBAFQJ5gKZwGZQiOByGFVAIwgA88AoSgehrgFkIATAVwBtVKA7AQxFQBnMLwDG6BrxgALOAG9KcOKjKRYcURG6D4ANVSiY0AExwAvIiIA6APLEAVgZgAKOXDIAuS2isA5ViDEqFDOAJQANHBIXsg+-oHBYXAAvqGKyqrQ8Jraek7QAMzm3qi2Dk6u7jHW8UEhEVHVcQF1YZEAXk2ltYmhKWlKKmrZWjpw+obQACzFsaV2joaVniV+Lb2R0as99R1dawm7cADu+ztJqZTJ1HRwACKoaNzMqNzwTGyclDlj+rAqs2sCwqCiUkEEwBgwC0XkkMisEyMUCm4XS3GgIF47FhUmkCPyUAKqKUrAAbjj4YiTFc0j94ABxVA4VAwKBIQE+YFLUFwUnBKHiQT7ACCUCgvCQzj+MBUEXSwGewEFIrFEuccwOrVCaUudMYUmCwCxHPm5W56X4xGArxgFLxVORxLgzGAGAwrEEqDt+MmjvSwgMHF4UG9DqmNO+o3eQlkFg1XJcPIA5kyBKytozmemnZiZVAjdj9XmCxHaPQAEqsN6gdDl1AYTiGaHcSgMGNWMDYNCwa2CKwprNsjtd-m9qx8nuCqyQ1AgPudiDdqFCDsQCFQrTDxejldkVvthdLscDtNDw87vsTgUrmdzrdHlfoqCY9j3i9WPdtwR4889lcnlkzxHP9L1HKdb3nYDlz7Mk3xAj992-ODoKsXNDSxZCxxdN0PVKX8UM-A8oLHND8ww-Cx0ta03kw3dEJ-YiV1IgtaL7ANRCDKBWIQss4AAZRgKQlTgABJbgMGCV5xEod1uCbLQ4CgV4XhCARv32AShNEAAeQg0AgDBGBjAA+PoeTUvEAPTccwKEABtAAGABdVd12bBClAs-tU0ApAbMneznKsJ8Xw8uAvKsocryVQKXNgvdPPbZiMOw91PTCrzktfKibQypKDTI192M4hDkiAA) | [Challenge](test/typescript/readme.md)
 
-TypeBox includes a syntax engine that can transform TypeScript declarations into JSON Schema. The engine is a full syntactic frontend to Type.* and supports many advanced type-level constructs such as Conditional, Mapped, Indexed, Infer, Generics, Distributed types and more. This feature is implemented symmetrically at runtime and statically via TypeScript Template Literal types. 
-
-Syntax highlighting is available via the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=sinclairzx81.typebox-script)
-
+TypeBox includes a micro TypeScript scripting engine that can parse TypeScript definitions into JSON Schema. The engine is implemented at runtime as well as statically inside TypeScript's type system, and supports many programmable constructs such as conditional, mapped, indexed, generic, and distributed types, and more.
 
 ### Example
 
-The following uses Script to parse TypeScript declarations into JSON Schema. 
+Syntax highlighting is available via the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=sinclairzx81.typebox-script)
 
 ```typescript
 // Module
 const Math = Type.Script(`
   type Vector2 = { x: number, y: number }
-  type Vector3 = Evaluate<Vector2 & { z: number }>
-  type Vector4 = Evaluate<Vector3 & { w: number }>
+  type Vector3 = { x: number, y: number, z: number }
+  type Vector4 = { x: number, y: number, z: number, w: number }
 `)
 
 // Dependent Module
-const { Mesh } = Type.Script({ ...Math }, `  
+const { Mesh } = Type.Script(Math, `  
   type Vertex = {
     position: Vector4,
     normal: Vector3,
