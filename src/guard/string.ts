@@ -116,10 +116,10 @@ function NextGraphemeClusterIndex(value: string, clusterStart: number): number {
 // --------------------------------------------------------------------------
 function IsGraphemeCodePoint(value: number): boolean {
   return (
-    IsHighSurrogate(value) || // High surrogate
-    IsCombiningMark(value) || // Combining marks
-    IsVariationSelector(value) || // Variation selectors
-    IsZeroWidthJoiner(value) // Zero-width joiner
+    IsHighSurrogate(value) ||
+    IsCombiningMark(value) ||
+    IsVariationSelector(value) ||
+    IsZeroWidthJoiner(value)
   )
 }
 // --------------------------------------------------------------------------
