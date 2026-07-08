@@ -54,3 +54,11 @@ export type TReadonlyObject<Type extends TSchema> = (
 export function ReadonlyObject<Type extends TSchema>(type: Type, options: TSchemaOptions = {}): TReadonlyObject<Type> {
   return ReadonlyObjectAction(type, options)
 }
+// ------------------------------------------------------------------
+// Alias
+// ------------------------------------------------------------------
+/** 
+ * This type has been renamed to ReadonlyObject.
+ * @deprecated
+*/
+export const ReadonlyType = ReadonlyObject

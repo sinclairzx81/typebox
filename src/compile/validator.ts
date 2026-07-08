@@ -44,10 +44,6 @@ export class Validator<Context extends TProperties = TProperties, Type extends T
   private readonly hasCodec: boolean
   private readonly buildResult: BuildResult
   private readonly evaluateResult: EvaluateResult
-  /** Constructs a Validator with the given Context and Type. */
-  constructor(context: Context, type: Type)
-  /** Constructs a Validator with the given arguments. */
-  constructor(hasCodec: boolean, buildResult: BuildResult, evaluateResult: EvaluateResult)
   /** Constructs a Validator. */
   constructor(context: Context, type: Type) {
     this.hasCodec = HasCodec(context, type)

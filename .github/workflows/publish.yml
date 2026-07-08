@@ -27,7 +27,7 @@ jobs:
       - name: Install Deno
         uses: denoland/setup-deno@v2
         with:
-          deno-version: 2.9.0
+          deno-version: 2.9.1
 
       # Update
       - name: Update
