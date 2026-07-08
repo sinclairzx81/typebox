@@ -33,6 +33,18 @@ function IsBetween(value: number, min: number, max: number): boolean {
   return value >= min && value <= max
 }
 // --------------------------------------------------------------------------
+// IsZeroWidthJoiner
+// --------------------------------------------------------------------------
+function IsZeroWidthJoiner(value: number): boolean {
+  return (value === 0x200D)
+}
+// --------------------------------------------------------------------------
+// IsHighSurrogate
+// --------------------------------------------------------------------------
+function IsHighSurrogate(value: number): boolean {
+  return IsBetween(value, 0xD800, 0xDBFF)
+}
+// --------------------------------------------------------------------------
 // IsRegionalIndicator
 // --------------------------------------------------------------------------
 function IsRegionalIndicator(value: number): boolean {
@@ -104,10 +116,10 @@ function NextGraphemeClusterIndex(value: string, clusterStart: number): number {
 // --------------------------------------------------------------------------
 function IsGraphemeCodePoint(value: number): boolean {
   return (
-    IsBetween(value, 0xD800, 0xDBFF) || // High surrogate
-    IsCombiningMark(value) || // Combining marks
-    IsVariationSelector(value) || // Variation selectors
-    (value === 0x200D) // Zero-width joiner
+    IsHighSurrogate(value) ||
+    IsCombiningMark(value) ||
+    IsVariationSelector(value) ||
+    IsZeroWidthJoiner(value)
   )
 }
 // --------------------------------------------------------------------------

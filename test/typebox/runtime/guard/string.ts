@@ -383,6 +383,8 @@ Test('Should FastPath 23', () => {
 })
 // ------------------------------------------------------------------
 // Guard.FastPath - Variation Selectors and Combining Marks (non-surrogate base)
+//
+// Ref: https://github.com/sinclairzx81/typebox/pull/1648
 // ------------------------------------------------------------------
 Test('Should FastPath 24', () => {
   Assert.IsTrue(Guard.IsMaxLength('❤️', 1)) // ❤️ base + variation selector
