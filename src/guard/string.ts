@@ -105,7 +105,8 @@ function NextGraphemeClusterIndex(value: string, clusterStart: number): number {
 function IsGraphemeCodePoint(value: number): boolean {
   return (
     IsBetween(value, 0xD800, 0xDBFF) || // High surrogate
-    IsBetween(value, 0x0300, 0x036F) || // Combining diacritical marks
+    IsCombiningMark(value) || // Combining marks
+    IsVariationSelector(value) || // Variation selectors
     (value === 0x200D) // Zero-width joiner
   )
 }
