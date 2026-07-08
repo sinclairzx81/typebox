@@ -381,3 +381,24 @@ Test('Should FastPath 22', () => {
 Test('Should FastPath 23', () => {
   Assert.IsEqual(Guard.GraphemeCount('\uDC00'), 1)
 })
+// ------------------------------------------------------------------
+// Guard.FastPath - Variation Selectors and Combining Marks (non-surrogate base)
+// ------------------------------------------------------------------
+Test('Should FastPath 24', () => {
+  Assert.IsTrue(Guard.IsMaxLength('❤️', 1)) // ❤️ base + variation selector
+})
+Test('Should FastPath 25', () => {
+  Assert.IsFalse(Guard.IsMinLength('❤️', 2)) // ❤️ base + variation selector
+})
+Test('Should FastPath 26', () => {
+  Assert.IsTrue(Guard.IsMaxLength('☀️', 1)) // ☀️ base + variation selector
+})
+Test('Should FastPath 27', () => {
+  Assert.IsTrue(Guard.IsMaxLength('a᪰', 1)) // base + combining mark U+1AB0
+})
+Test('Should FastPath 28', () => {
+  Assert.IsTrue(Guard.IsMaxLength('a᷀', 1)) // base + combining mark U+1DC0
+})
+Test('Should FastPath 29', () => {
+  Assert.IsTrue(Guard.IsMaxLength('a︠', 1)) // base + combining mark U+FE20
+})
