@@ -16,7 +16,7 @@ const Version = '1.3.6'
 // ------------------------------------------------------------------
 const BuildPackage = (target: string = `target/build`) => Task.build.esm('src', {
   outdir: target,
-  compiler: '6.0.3',
+  compiler: '7.0.2',
   additional: ['license', 'readme.md'],
   packageJson: {
     name: 'typebox',
@@ -82,14 +82,14 @@ Task.run('start', () => Task.shell('deno run -A --watch --no-check example/index
 // ------------------------------------------------------------------
 // Test
 // ------------------------------------------------------------------
-Task.run('test', async (filter: string = '') => 
-  Task.shell('deno lint src').catch(() => null).then(() => 
+Task.run('test', async (filter: string = '') =>
+  Task.shell('deno lint src').catch(() => null).then(() =>
     Task.test.run(['test/jsonschema', 'test/typebox'], { filter }))
 )
 // ------------------------------------------------------------------
 // Challenge
 // ------------------------------------------------------------------
-Task.run('challenge', async (filter: string = '') => 
+Task.run('challenge', async (filter: string = '') =>
   Task.test.run(['test/typescript'], { filter })
 )
 // ------------------------------------------------------------------
@@ -124,12 +124,12 @@ Task.run('range', async () => {
   await Range.Legacy([
     '5.0.4', '5.1.3', '5.1.6', '5.2.2', '5.3.2', '5.3.3',
     '5.4.3', '5.4.5', '5.5.2', '5.5.3', '5.5.4', '5.6.2',
-    '5.6.3', '5.7.2', '5.7.3', '5.9.2', '5.9.3', 
+    '5.6.3', '5.7.2', '5.7.3', '5.9.2', '5.9.3',
   ])
   await Range.Modern([
-    '6.0.2', '6.0.3', 'next', 'latest', 
+    '6.0.2', '6.0.3',
   ])
   await Range.Modern([
-    '7.0.1-rc'
+    '7.0.2', 'next', 'latest'
   ])
 })
