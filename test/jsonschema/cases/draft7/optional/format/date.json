@@ -356,6 +356,36 @@
         "description": "invalid: alphabetic characters in day field",
         "data": "2020-01-DD",
         "valid": false
+      },
+      {
+        "description": "invalid: colon separators",
+        "data": "2020:01:01",
+        "valid": false
+      },
+      {
+        "description": "invalid: dot separators",
+        "data": "2020.01.01",
+        "valid": false
+      },
+      {
+        "description": "invalid: space separators",
+        "data": "2020 01 01",
+        "valid": false
+      },
+      {
+        "description": "invalid: mixed slash and hyphen separators",
+        "data": "2020-01/01",
+        "valid": false
+      },
+      {
+        "description": "invalid: duplicated first hyphen",
+        "data": "2020--01-01",
+        "valid": false
+      },
+      {
+        "description": "invalid: duplicated second hyphen",
+        "data": "2020-01--01",
+        "valid": false
       }
     ]
   }

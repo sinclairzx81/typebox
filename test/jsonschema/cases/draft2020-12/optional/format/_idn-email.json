@@ -10,6 +10,16 @@
         "description": "a non-ASCII quoted local part is valid",
         "data": "\"δοκιμή\"@example.com",
         "valid": true
+      },
+      {
+        "description": "a domain label that is not in Unicode NFC is valid",
+        "data": "user@café.com",
+        "valid": true
+      },
+      {
+        "description": "a local part that is not in Unicode NFC is valid",
+        "data": "café@example.com",
+        "valid": true
       }
     ]
   }
