@@ -45,6 +45,12 @@ Test('Should Compile 4', () => {
   const validator = Schema.Compile({ type: 'string' })
   Assert.Throws(() => validator.Parse(1))
 })
+Test('Should Compile Type Array With Array Keywords', () => {
+  const validator = Schema.Compile({ type: ['array', 'null'], items: { type: 'string' } })
+  Assert.IsTrue(validator.Check(null))
+  Assert.IsTrue(validator.Check(['hello']))
+  Assert.IsFalse(validator.Check([1]))
+})
 // ------------------------------------------------------------------
 // With Context
 // ------------------------------------------------------------------

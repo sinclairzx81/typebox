@@ -79,18 +79,18 @@ import { BuildUnevaluatedProperties, CheckUnevaluatedProperties, ErrorUnevaluate
 import { BuildUniqueItems, CheckUniqueItems, ErrorUniqueItems } from './uniqueItems.ts'
 
 // ----------------------------------------------------------------
-// HasTypeName
+// HasOnlyTypeName
 // ----------------------------------------------------------------
-function HasTypeName(schema: Schema.XSchemaObject, typename: string): boolean {
+function HasOnlyTypeName(schema: Schema.XSchemaObject, typename: string): boolean {
   return Schema.IsType(schema) &&
-    (G.IsArray(schema.type) && schema.type.includes(typename) ||
+    (G.IsArray(schema.type) && schema.type.every(type => G.IsEqual(type, typename)) ||
       G.IsEqual(schema.type, typename))
 }
 // ----------------------------------------------------------------
 // HasObject
 // ----------------------------------------------------------------
 function HasObjectType(schema: Schema.XSchemaObject): boolean {
-  return HasTypeName(schema, 'object')
+  return HasOnlyTypeName(schema, 'object')
 }
 function HasObjectKeywords(schema: Schema.XSchemaObject): boolean {
   return Schema.IsSchemaObject(schema) && (
@@ -111,7 +111,7 @@ function HasObjectKeywords(schema: Schema.XSchemaObject): boolean {
 // HasArray
 // ----------------------------------------------------------------
 function HasArrayType(schema: Schema.XSchemaObject): boolean {
-  return HasTypeName(schema, 'array')
+  return HasOnlyTypeName(schema, 'array')
 }
 function HasArrayKeywords(schema: Schema.XSchemaObject): boolean {
   return Schema.IsSchemaObject(schema) && (
@@ -131,7 +131,7 @@ function HasArrayKeywords(schema: Schema.XSchemaObject): boolean {
 // HasString
 // ----------------------------------------------------------------
 function HasStringType(schema: Schema.XSchemaObject): boolean {
-  return HasTypeName(schema, 'string')
+  return HasOnlyTypeName(schema, 'string')
 }
 function HasStringKeywords(schema: Schema.XSchemaObject): boolean {
   return Schema.IsSchemaObject(schema) && (
@@ -145,7 +145,7 @@ function HasStringKeywords(schema: Schema.XSchemaObject): boolean {
 // HasNumber
 // ----------------------------------------------------------------
 function HasNumberType(schema: Schema.XSchemaObject): boolean {
-  return HasTypeName(schema, 'number') || HasTypeName(schema, 'bigint')
+  return HasOnlyTypeName(schema, 'number') || HasOnlyTypeName(schema, 'bigint')
 }
 function HasNumberKeywords(schema: Schema.XSchemaObject): boolean {
   return Schema.IsSchemaObject(schema) && (
