@@ -36,7 +36,7 @@ import { Errors as SchemaErrors,  } from '../../schema/index.ts'
 /** 
  * Performs an exhaustive Check on the specified value and reports any errors found.
  * If no errors are found, an empty array is returned. Unlike Check, this function
- * does not terminate at the first occurance of an error. For best performance, call 
+ * does not terminate at the first occurrence of an error. For best performance, call 
  * Check first and call Errors only if Check returns false.
  */
 export function Errors<Type extends TSchema>(type: Type, value: unknown): TLocalizedValidationError[]
@@ -44,7 +44,7 @@ export function Errors<Type extends TSchema>(type: Type, value: unknown): TLocal
 /** 
  * Performs an exhaustive Check on the specified value and reports any errors found.
  * If no errors are found, an empty array is returned. Unlike Check, this function
- * does not terminate at the first occurance of an error. For best performance, call 
+ * does not terminate at the first occurrence of an error. For best performance, call 
  * Check first and call Errors only if Check returns false.
  */
 export function Errors<Context extends TProperties, Type extends TSchema>(context: Context, type: Type, value: unknown): TLocalizedValidationError[]
@@ -52,7 +52,7 @@ export function Errors<Context extends TProperties, Type extends TSchema>(contex
 /** 
  * Performs an exhaustive Check on the specified value and reports any errors found.
  * If no errors are found, an empty array is returned. Unlike Check, this function
- * does not terminate at the first occurance of an error. For best performance, call 
+ * does not terminate at the first occurrence of an error. For best performance, call 
  * Check first and call Errors only if Check returns false.
  */
 export function Errors(...args: unknown[]): TLocalizedValidationError[] {
