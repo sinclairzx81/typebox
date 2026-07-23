@@ -114,7 +114,7 @@ Test('Should Coverage 8', () => {
   Assert.IsFalse(validator.Check(0))
 })
 // ------------------------------------------------------------------
-// Multi-Variant: Additional
+// Multi-Variant: Coverage
 // ------------------------------------------------------------------
 Test('Should Coverage 9', () => {
   const validator = Schema.Compile({ type: ['bigint', 'null'] })
@@ -157,5 +157,31 @@ Test('Should Coverage 14', () => {
   Assert.IsTrue(validator.Check({}))
   Assert.IsTrue(validator.Check(true))
   Assert.IsTrue(validator.Check(false))
+  Assert.IsFalse(validator.Check(0))
+})
+Test('Should Coverage 15', () => {
+  const validator = Schema.Compile({
+    type: ['array', 'object', 'null'],
+    items: { type: 'number' },
+    properties: { x: { type: 'number' } }
+  })
+  Assert.IsTrue(validator.Check([1, 2]))
+  Assert.IsTrue(validator.Check({ x: 1 }))
+  Assert.IsTrue(validator.Check(null))
+  Assert.IsFalse(validator.Check([1, null]))
+  Assert.IsFalse(validator.Check({ x: null }))
+  Assert.IsFalse(validator.Check(0))
+})
+Test('Should Coverage 16', () => {
+  const validator = Schema.Compile({
+    type: ['array', 'object', 'null'],
+    prefixItems: [{ type: 'number' }, { type: 'number' }],
+    properties: { x: { type: 'number' } }
+  })
+  Assert.IsTrue(validator.Check([1, 2]))
+  Assert.IsTrue(validator.Check({ x: 1 }))
+  Assert.IsTrue(validator.Check(null))
+  Assert.IsFalse(validator.Check([1, null]))
+  Assert.IsFalse(validator.Check({ x: null }))
   Assert.IsFalse(validator.Check(0))
 })
