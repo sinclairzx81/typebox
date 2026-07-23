@@ -49,16 +49,35 @@ export function BuildContains(stack: Stack, context: BuildContext, schema: Schem
   if (!IsValid(schema)) return E.Constant(true)
   const item = Unique()
   const isLength = E.Not(E.IsEqual(E.Member(value, 'length'), E.Constant(0)))
-  const isSome = E.Call(E.Member(value, 'some'), [E.ArrowFunction([item], BuildSchema(stack, context, schema.contains, item))])
+  if (!context.UseUnevaluated()) {
+    const isSome = E.Call(E.Member(value, 'some'), [E.ArrowFunction([item], BuildSchema(stack, context, schema.contains, item))])
+    return E.And(isLength, isSome)
+  }
+  // When unevaluated tracking is active, record the index of every matching
+  // item so unevaluatedItems treats them as evaluated. reduce (not some) is
+  // used so the scan does not short-circuit before all indices are recorded.
+  const index = Unique()
+  const accumulator = Unique()
+  const isSome = E.Call(E.Member(value, 'reduce'), [
+    E.ArrowFunction([accumulator, item, index], E.Ternary(BuildSchema(stack, context, schema.contains, item), context.AddIndex(index), accumulator)),
+    E.Constant(false),
+  ])
   return E.And(isLength, isSome)
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
 export function CheckContains(stack: Stack, context: CheckContext, schema: Schema.XContains, value: unknown[]): boolean {
-  if (!IsValid(schema)) return true
-  return !G.IsEqual(value.length, 0) &&
-    value.some((item) => CheckSchema(stack, context, schema.contains, item))
+  // Record the index of every matching item (not just whether one exists) so
+  // that unevaluatedItems treats contains-matched items as evaluated.
+  let contains = false
+  for (let index = 0; index < value.length; index++) {
+    if (CheckSchema(stack, context, schema.contains, value[index])) {
+      context.AddIndex(index)
+      contains = true
+    }
+  }
+  return contains || !IsValid(schema)
 }
 // ------------------------------------------------------------------
 // Error
