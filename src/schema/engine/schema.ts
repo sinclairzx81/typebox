@@ -83,7 +83,7 @@ import { BuildUniqueItems, CheckUniqueItems, ErrorUniqueItems } from './uniqueIt
 // ----------------------------------------------------------------
 function HasTypeName(schema: Schema.XSchemaObject, typename: string): boolean {
   return Schema.IsType(schema) &&
-    (G.IsArray(schema.type) && schema.type.includes(typename) ||
+    (G.IsArray(schema.type) && schema.type.length > 0 && schema.type.every(type => G.IsEqual(type, typename)) ||
       G.IsEqual(schema.type, typename))
 }
 // ----------------------------------------------------------------

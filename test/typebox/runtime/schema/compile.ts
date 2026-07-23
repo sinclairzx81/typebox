@@ -45,6 +45,30 @@ Test('Should Compile 4', () => {
   const validator = Schema.Compile({ type: 'string' })
   Assert.Throws(() => validator.Parse(1))
 })
+Test('Should Compile Type Array With Object Keywords', () => {
+  const validator = Schema.Compile({ type: ['object', 'null'], properties: { value: { type: 'string' } } })
+  Assert.IsTrue(validator.Check(null))
+  Assert.IsTrue(validator.Check({ value: 'hello' }))
+  Assert.IsFalse(validator.Check({ value: 1 }))
+})
+Test('Should Compile Type Array With Array Keywords', () => {
+  const validator = Schema.Compile({ type: ['array', 'null'], items: { type: 'string' } })
+  Assert.IsTrue(validator.Check(null))
+  Assert.IsTrue(validator.Check(['hello']))
+  Assert.IsFalse(validator.Check([1]))
+})
+Test('Should Compile Type Array With String Keywords', () => {
+  const validator = Schema.Compile({ type: ['string', 'null'], minLength: 1 })
+  Assert.IsTrue(validator.Check(null))
+  Assert.IsTrue(validator.Check('hello'))
+  Assert.IsFalse(validator.Check(''))
+})
+Test('Should Compile Type Array With Number Keywords', () => {
+  const validator = Schema.Compile({ type: ['number', 'null'], minimum: 1 })
+  Assert.IsTrue(validator.Check(null))
+  Assert.IsTrue(validator.Check(1))
+  Assert.IsFalse(validator.Check(0))
+})
 // ------------------------------------------------------------------
 // With Context
 // ------------------------------------------------------------------
