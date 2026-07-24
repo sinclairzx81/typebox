@@ -2,9 +2,7 @@
 
 TypeBox has broad support for all major JSON Schema drafts and asserts for specification compliance using the [Official JSON Schema Test Suite](https://github.com/json-schema-org/JSON-Schema-Test-Suite). TypeBox tracks specification coverage as JSON Schema moves closer to ECMA and IETF standardization. 
 
-## Supported Keywords
-
-The following table is specification coverage implemented by TypeBox
+## Required Keywords
 
 | Spec | 3 | 4 | 6 | 7 | 2019-09 | 2020-12 | v1 |
 |:-----|:--|:--|:--|:--|:--|:--|:--|
@@ -47,16 +45,14 @@ The following table is specification coverage implemented by TypeBox
 | properties | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | propertyNames | - | - | ✅ | ✅ | ✅ | ✅ | ✅ |
 | recursiveRef | - | - | - | - | ✅ | - | - |
-| ref | 23/27 | 37/45 | 67/70 | 75/78 | 79/81 | 77/79 | 77/79 |
+| ref | 22/27 | 37/45 | 67/70 | 75/78 | 79/81 | 77/79 | 77/79 |
 | required | 3/4 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | type | 73/80 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| unevaluatedItems | - | - | - | - | ✅ | 65/71 | 64/71 |
-| unevaluatedProperties | - | - | - | - | ✅ | ✅ | 124/125 |
+| unevaluatedItems | - | - | - | - | ✅ | ✅ | 70/71 |
+| unevaluatedProperties | - | - | - | - | ✅ | ✅ | 128/129 |
 | uniqueItems | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 
-## Optional Keywords, Formats and Proposals
-
-The following optional keywords, formats and proposals are also supported.
+## Optional Keywords and Proposals
 
 | Spec | 3 | 4 | 6 | 7 | 2019-09 | 2020-12 | v1 |
 |:-----|:--|:--|:--|:--|:--|:--|:--|
@@ -74,12 +70,12 @@ The following optional keywords, formats and proposals are also supported.
 | format/date | ✅ | - | - | ✅ | ✅ | ✅ | ✅ |
 | format/date-time | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | format/duration | - | - | - | - | ✅ | ✅ | ✅ |
-| format/ecmascript-regex | 1/2 | - | - | - | - | 0/1 | 0/1 |
+| format/ecmascript-regex | ✅ | - | - | - | - | 0/1 | 0/1 |
 | format/email | ✅ | ✅ | ✅ | ✅ | ✅ | 22/27 | 22/27 |
 | format/host-name | 2/12 | - | - | - | - | - | - |
 | format/hostname | - | 27/28 | 27/28 | ✅ | ✅ | ✅ | ✅ |
-| format/idn-email | - | - | - | ✅ | ✅ | ✅ | ✅ |
-| format/idn-hostname | - | - | - | ✅ | ✅ | ✅ | ✅ |
+| format/idn-email | - | - | - | 11/14 | 11/14 | 11/14 | 12/15 |
+| format/idn-hostname | - | - | - | 81/89 | 82/90 | 82/90 | 82/90 |
 | format/ip-address | 1/3 | - | - | - | - | - | - |
 | format/ipv4 | - | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | format/ipv6 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |

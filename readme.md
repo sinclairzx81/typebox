@@ -229,7 +229,7 @@ const value = Vector.Parse({                       // const value: {
 
 The following table shows specification coverage implemented by TypeBox.
 
-Ref: [JSON Schema Test Suite](https://github.com/json-schema-org/JSON-Schema-Test-Suite) 
+[JSON Schema Test Suite](https://github.com/json-schema-org/JSON-Schema-Test-Suite) 
 
 | Spec | 3 | 4 | 6 | 7 | 2019-09 | 2020-12 | v1 |
 |:-----|:--|:--|:--|:--|:--|:--|:--|
@@ -272,11 +272,11 @@ Ref: [JSON Schema Test Suite](https://github.com/json-schema-org/JSON-Schema-Tes
 | properties | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | propertyNames | - | - | ✅ | ✅ | ✅ | ✅ | ✅ |
 | recursiveRef | - | - | - | - | ✅ | - | - |
-| ref | 23/27 | 37/45 | 67/70 | 75/78 | 79/81 | 77/79 | 77/79 |
+| ref | 22/27 | 37/45 | 67/70 | 75/78 | 79/81 | 77/79 | 77/79 |
 | required | 3/4 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | type | 73/80 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| unevaluatedItems | - | - | - | - | ✅ | 65/71 | 64/71 |
-| unevaluatedProperties | - | - | - | - | ✅ | ✅ | 124/125 |
+| unevaluatedItems | - | - | - | - | ✅ | ✅ | 70/71 |
+| unevaluatedProperties | - | - | - | - | ✅ | ✅ | 128/129 |
 | uniqueItems | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 
 
