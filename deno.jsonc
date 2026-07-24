@@ -24,7 +24,7 @@
     // --------------------------------------------------------------
     // Build
     // --------------------------------------------------------------
-    "tasksmith": "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.14/src/index.ts",
+    "tasksmith": "https://raw.githubusercontent.com/sinclairzx81/tasksmith/0.9.15/src/index.ts",
     "parsebox": "https://raw.githubusercontent.com/sinclairzx81/parsebox/0.11.6/src/index.ts",
     // --------------------------------------------------------------
     // Test
