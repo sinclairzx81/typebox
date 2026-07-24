@@ -44,18 +44,18 @@ function IsValid(schema: Schema.XSchemaObject): schema is Schema.XItems & { item
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-function BuildAdditionalItemsFast(stack: Stack, context: BuildContext, schema: Schema.XAdditionalItems & Schema.XItems & { items: Schema.XSchema[] }, value: string): string {
-  const [item, index] = [Unique(), Unique()]
-  const isSchema = BuildSchemaPushStack(stack, context, schema.additionalItems, item)
-  const isLength = E.IsLessThan(index, E.Constant(schema.items.length))
-  return E.Every(value, E.Constant(0), [item, index], E.Or(isLength, isSchema))
-}
 function BuildAdditionalItemsStandard(stack: Stack, context: BuildContext, schema: Schema.XAdditionalItems & Schema.XItems & { items: Schema.XSchema[] }, value: string): string {
   const [item, index] = [Unique(), Unique()]
   const isSchema = BuildSchemaPushStack(stack, context, schema.additionalItems, item)
   const isLength = E.IsLessThan(index, E.Constant(schema.items.length))
   const addIndex = context.AddIndex(index)
   return E.Every(value, E.Constant(0), [item, index], E.Or(isLength, E.And(isSchema, addIndex)))
+}
+function BuildAdditionalItemsFast(stack: Stack, context: BuildContext, schema: Schema.XAdditionalItems & Schema.XItems & { items: Schema.XSchema[] }, value: string): string {
+  const [item, index] = [Unique(), Unique()]
+  const isSchema = BuildSchemaPushStack(stack, context, schema.additionalItems, item)
+  const isLength = E.IsLessThan(index, E.Constant(schema.items.length))
+  return E.Every(value, E.Constant(0), [item, index], E.Or(isLength, isSchema))
 }
 export function BuildAdditionalItems(stack: Stack, context: BuildContext, schema: Schema.XAdditionalItems, value: string): string {
   if (!IsValid(schema)) return E.Constant(true)
