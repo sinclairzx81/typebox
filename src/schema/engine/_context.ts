@@ -39,11 +39,11 @@ function HasUnevaluatedFromObject(value: Record<PropertyKey, unknown>): boolean 
   return (
     Schema.IsUnevaluatedItems(value)
     || Schema.IsUnevaluatedProperties(value)
-    || G.Keys(value).some(key => HasUnevaluatedFromUnknown(value[key]))
+    || G.Some(G.Keys(value), key => HasUnevaluatedFromUnknown(value[key]))
   )
 }
 function HasUnevaluatedFromArray(value: unknown[]): boolean {
-  return value.some(value => HasUnevaluatedFromUnknown(value))
+  return G.Some(value, value => HasUnevaluatedFromUnknown(value))
 }
 function HasUnevaluatedFromUnknown(value: unknown) {
   return (
@@ -53,7 +53,7 @@ function HasUnevaluatedFromUnknown(value: unknown) {
   )
 }
 export function HasUnevaluated(context: Record<PropertyKey, unknown>, schema: unknown): boolean {
-  return HasUnevaluatedFromUnknown(schema) || G.Keys(context).some(key => HasUnevaluatedFromUnknown(context[key]))
+  return HasUnevaluatedFromUnknown(schema) || G.Some(G.Keys(context), key => HasUnevaluatedFromUnknown(context[key]))
 }
 // ------------------------------------------------------------------
 // BuildContext

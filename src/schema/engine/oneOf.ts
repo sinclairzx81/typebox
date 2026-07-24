@@ -34,23 +34,24 @@ import { BuildContext, CheckContext, ErrorContext, AccumulatedErrorContext } fro
 import { Reducer } from './_reducer.ts'
 import { EmitGuard as E, Guard as G } from '../../guard/index.ts'
 import { BuildSchema, CheckSchema, ErrorSchema } from './schema.ts'
+import { Unique } from './_unique.ts'
 
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-function BuildOneOfUnevaluated(stack: Stack, context: BuildContext, schema: Schema.XOneOf, value: string): string {
+function BuildOneOfStandard(stack: Stack, context: BuildContext, schema: Schema.XOneOf, value: string): string {
   return Reducer(stack, context, schema.oneOf, value, E.IsEqual(E.Member('results', 'length'), E.Constant(1)))
 }
 function BuildOneOfFast(stack: Stack, context: BuildContext, schema: Schema.XOneOf, value: string): string {
+  const [result] = [Unique()]
   const results = E.ArrayLiteral(schema.oneOf.map((schema) => BuildSchema(stack, context, schema, value)))
-  const count = E.Call(E.Member(results, 'reduce'), [
-    E.ArrowFunction(['count', 'result'], E.Ternary(E.IsEqual('result', E.Constant(true)), E.PrefixIncrement('count'), 'count')),
-    E.Constant(0),
-  ])
+  const count = E.Counted(results, [result, '_'], E.IsEqual(result, E.Constant(true)))
   return E.IsEqual(count, E.Constant(1))
 }
 export function BuildOneOf(stack: Stack, context: BuildContext, schema: Schema.XOneOf, value: string): string {
-  return context.UseUnevaluated() ? BuildOneOfUnevaluated(stack, context, schema, value) : BuildOneOfFast(stack, context, schema, value)
+  return context.UseUnevaluated() 
+    ? BuildOneOfStandard(stack, context, schema, value) 
+    : BuildOneOfFast(stack, context, schema, value)
 }
 // ------------------------------------------------------------------
 // Check

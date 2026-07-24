@@ -37,14 +37,25 @@ import { BuildSchemaPushStack, CheckSchemaPushStack, ErrorSchemaPushStack } from
 // ------------------------------------------------------------------
 // ItemsSized
 // ------------------------------------------------------------------
-function BuildItemsSized(stack: Stack, context: BuildContext, schema: Schema.XItemsSized, value: string): string {
+function BuildItemsSizedStandard(stack: Stack, context: BuildContext, schema: Schema.XItemsSized, value: string): string {
   return E.ReduceAnd(schema.items.map((schema, index) => {
     const isLength = E.IsLessEqualThan(E.Member(value, 'length'), E.Constant(index))
     const isSchema = BuildSchemaPushStack(stack, context, schema, `${value}[${index}]`)
     const addIndex = context.AddIndex(E.Constant(index))
-    const guarded = context.UseUnevaluated() ? E.And(isSchema, addIndex) : isSchema
-    return E.Or(isLength, guarded)
+    return E.Or(isLength, E.And(isSchema, addIndex))
   }))
+}
+function BuildItemsSizedFast(stack: Stack, context: BuildContext, schema: Schema.XItemsSized, value: string): string {
+  return E.ReduceAnd(schema.items.map((schema, index) => {
+    const isLength = E.IsLessEqualThan(E.Member(value, 'length'), E.Constant(index))
+    const isSchema = BuildSchemaPushStack(stack, context, schema, `${value}[${index}]`)
+    return E.Or(isLength, isSchema)
+  }))
+}
+function BuildItemsSized(stack: Stack, context: BuildContext, schema: Schema.XItemsSized, value: string): string {
+  return context.UseUnevaluated()
+    ? BuildItemsSizedStandard(stack, context, schema, value)
+    : BuildItemsSizedFast(stack, context, schema, value)
 }
 function CheckItemsSized(stack: Stack, context: CheckContext, schema: Schema.XItemsSized, value: unknown[]): boolean {
   return G.Every(schema.items, 0, (schema, index) => {
@@ -63,12 +74,21 @@ function ErrorItemsSized(stack: Stack, context: ErrorContext, schemaPath: string
 // ------------------------------------------------------------------
 // ItemsUnsized
 // ------------------------------------------------------------------
-function BuildItemsUnsized(stack: Stack, context: BuildContext, schema: Schema.XItemsUnsized, value: string): string {
+function BuildItemsUnsizedStandard(stack: Stack, context: BuildContext, schema: Schema.XItemsUnsized, value: string): string {
   const offset = Schema.IsPrefixItems(schema) ? schema.prefixItems.length : 0
   const isSchema = BuildSchemaPushStack(stack, context, schema.items, 'element')
   const addIndex = context.AddIndex('index')
-  const guarded = context.UseUnevaluated() ? E.And(isSchema, addIndex) : isSchema
-  return E.Every(value, E.Constant(offset), ['element', 'index'], guarded)
+  return E.Every(value, E.Constant(offset), ['element', 'index'], E.And(isSchema, addIndex))
+}
+function BuildItemsUnsizedFast(stack: Stack, context: BuildContext, schema: Schema.XItemsUnsized, value: string): string {
+  const offset = Schema.IsPrefixItems(schema) ? schema.prefixItems.length : 0
+  const isSchema = BuildSchemaPushStack(stack, context, schema.items, 'element')
+  return E.Every(value, E.Constant(offset), ['element', 'index'], isSchema)
+}
+function BuildItemsUnsized(stack: Stack, context: BuildContext, schema: Schema.XItemsUnsized, value: string): string {
+  return context.UseUnevaluated()
+    ? BuildItemsUnsizedStandard(stack, context, schema, value)
+    : BuildItemsUnsizedFast(stack, context, schema, value)
 }
 function CheckItemsUnsized(stack: Stack, context: CheckContext, schema: Schema.XItemsUnsized, value: unknown[]): boolean {
   const offset = Schema.IsPrefixItems(schema) ? schema.prefixItems.length : 0

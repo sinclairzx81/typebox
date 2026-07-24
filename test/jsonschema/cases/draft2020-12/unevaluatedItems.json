@@ -818,6 +818,14 @@
     },
     "tests": [
       {
+        "description": "second item is evaluated by contains",
+        "data": [
+          1,
+          "foo"
+        ],
+        "valid": true
+      },
+      {
         "description": "contains fails, second item is not evaluated",
         "data": [
           1,
@@ -857,6 +865,17 @@
       }
     },
     "tests": [
+      {
+        "description": "5 not evaluated, passes unevaluatedItems",
+        "data": [
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "valid": true
+      },
       {
         "description": "7 not evaluated, fails unevaluatedItems",
         "data": [
@@ -899,6 +918,37 @@
       {
         "description": "empty array is valid",
         "data": [],
+        "valid": true
+      },
+      {
+        "description": "only a's are valid",
+        "data": [
+          "a",
+          "a"
+        ],
+        "valid": true
+      },
+      {
+        "description": "a's and b's are valid",
+        "data": [
+          "a",
+          "b",
+          "a",
+          "b",
+          "a"
+        ],
+        "valid": true
+      },
+      {
+        "description": "a's, b's and c's are valid",
+        "data": [
+          "c",
+          "a",
+          "c",
+          "c",
+          "b",
+          "a"
+        ],
         "valid": true
       },
       {
@@ -971,6 +1021,14 @@
           0
         ],
         "valid": false
+      },
+      {
+        "description": "all items evaluated by contains",
+        "data": [
+          "foo",
+          "bar"
+        ],
+        "valid": true
       }
     ]
   },

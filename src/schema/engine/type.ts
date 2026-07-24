@@ -83,7 +83,7 @@ function BuildTypeNames(stack: Stack, context: BuildContext, typenames: string[]
   return E.ReduceOr(typenames.map(type => BuildTypeName(stack, context, type, value)))
 }
 function CheckTypeNames(stack: Stack, context: CheckContext, types: string[], schema: Schema.XSchemaObject, value: unknown): boolean {
-  return types.some(type => CheckTypeName(stack, context, type, schema, value))
+  return G.Some(types, type => CheckTypeName(stack, context, type, schema, value))
 }
 // ------------------------------------------------------------------
 // Type

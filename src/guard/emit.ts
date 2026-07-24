@@ -140,6 +140,15 @@ export function Every(value: string, offset: string, params: [value: string, ind
     ? `${value}.every((${params[0]}, ${params[1]}) => ${expression})`
     : `((value, callback) => { for(let index = ${offset}; index < value.length; index++) if (!callback(value[index], index)) return false; return true })(${value}, (${params[0]}, ${params[1]}) => ${expression})`
 }
+export function Some(value: string, params: [value: string, index: string], expression: string): string {
+  return `${value}.some((${params[0]}, ${params[1]}) => ${expression})`
+}
+export function SomeAll(value: string, params: [value: string, index: string], expression: string): string {
+  return `((value, callback) => { let result = false; for(let index = 0; index < value.length; index++) if (callback(value[index], index)) result = true; return result })(${value}, (${params[0]}, ${params[1]}) => ${expression})`
+}
+export function Counted(value: string, params: [value: string, index: string], expression: string): string {
+  return `${value}.reduce((result, ${params[0]}, ${params[1]}) => (${expression}) ? ++result : result, 0)`
+}
 // --------------------------------------------------------------------------
 // Objects
 // --------------------------------------------------------------------------
@@ -175,6 +184,7 @@ export function Member(left: string, right: string): string {
   return `${left}${IsIdentifier(right) ? `.${right}` : `[${Constant(right)}]`}`
 }
 export function Constant(value: bigint | boolean | null | number | string | undefined): string {
+  if (!G.IsValueLike(value)) throw Error('Unsupported Constant')
   return G.IsString(value) ? JSON.stringify(value) : `${value}`
 }
 export function Ternary(condition: string, true_: string, false_: string): string {
@@ -202,15 +212,11 @@ export function ReduceAnd(operands: string[]): string {
   return G.IsEqual(operands.length, 0) ? 'true' : operands.reduce((left, right) => And(left, right))
 }
 export function ReduceOr(operands: string[]): string {
-  // deno-coverage-ignore - we never observe 0 operands
   return G.IsEqual(operands.length, 0) ? 'false' : operands.reduce((left, right) => Or(left, right))
 }
 // --------------------------------------------------------------------------
-// Arithmetic
+// MultipleOf
 // --------------------------------------------------------------------------
-export function PrefixIncrement(expression: string): string {
-  return `++${expression}`
-}
 export function MultipleOf(dividend: string, divisor: string): string {
   return `Guard.IsMultipleOf(${dividend}, ${divisor})`
 }
