@@ -45,39 +45,32 @@ function IsValid(schema: Schema.XContains): boolean {
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
+function BuildContainsStandard(stack: Stack, context: BuildContext, schema: Schema.XContains, value: string): string {
+  const [item, index] = [Unique(), Unique()]
+  const isLength = E.Not(E.IsEqual(E.Member(value, 'length'), E.Constant(0)))
+  const isSome = E.SomeAll(value, [item, index], E.And(BuildSchema(stack, context, schema.contains, item), context.AddIndex(index)))
+  return E.And(isLength, isSome)
+}
+function BuildContainsFast(stack: Stack, context: BuildContext, schema: Schema.XContains, value: string): string {
+  const [item] = [Unique()]
+  const isLength = E.Not(E.IsEqual(E.Member(value, 'length'), E.Constant(0)))
+  const isSome = E.Some(value, [item, '_'], BuildSchema(stack, context, schema.contains, item))
+  return E.And(isLength, isSome)
+}
 export function BuildContains(stack: Stack, context: BuildContext, schema: Schema.XContains, value: string): string {
   if (!IsValid(schema)) return E.Constant(true)
-  const item = Unique()
-  const isLength = E.Not(E.IsEqual(E.Member(value, 'length'), E.Constant(0)))
-  if (!context.UseUnevaluated()) {
-    const isSome = E.Call(E.Member(value, 'some'), [E.ArrowFunction([item], BuildSchema(stack, context, schema.contains, item))])
-    return E.And(isLength, isSome)
-  }
-  // When unevaluated tracking is active, record the index of every matching
-  // item so unevaluatedItems treats them as evaluated. reduce (not some) is
-  // used so the scan does not short-circuit before all indices are recorded.
-  const index = Unique()
-  const accumulator = Unique()
-  const isSome = E.Call(E.Member(value, 'reduce'), [
-    E.ArrowFunction([accumulator, item, index], E.Ternary(BuildSchema(stack, context, schema.contains, item), context.AddIndex(index), accumulator)),
-    E.Constant(false),
-  ])
-  return E.And(isLength, isSome)
+  return context.UseUnevaluated()
+    ? BuildContainsStandard(stack, context, schema, value)
+    : BuildContainsFast(stack, context, schema, value)
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
 export function CheckContains(stack: Stack, context: CheckContext, schema: Schema.XContains, value: unknown[]): boolean {
-  // Record the index of every matching item (not just whether one exists) so
-  // that unevaluatedItems treats contains-matched items as evaluated.
-  let contains = false
-  for (let index = 0; index < value.length; index++) {
-    if (CheckSchema(stack, context, schema.contains, value[index])) {
-      context.AddIndex(index)
-      contains = true
-    }
-  }
-  return contains || !IsValid(schema)
+  if (!IsValid(schema)) return true
+  return !G.IsEqual(value.length, 0) && G.SomeAll(value, (item, index) => {
+    return CheckSchema(stack, context, schema.contains, item) && context.AddIndex(index)
+  })
 }
 // ------------------------------------------------------------------
 // Error

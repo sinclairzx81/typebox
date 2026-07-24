@@ -4,7 +4,7 @@ TypeScript Syntax Engine For JSON Schema
 
 ## Overview
 
-TypeBox includes a runtime scripting engine that can transform TypeScript definitions into JSON Schema. The engine is implemented symmetrically at runtime and inside TypeScript's type system. It supports many programmable type-level constructs such as Conditional, Mapped, Indexed, Generic, Distributive Conditional, and more. The engine is designed for TypeScript 7 but is supported in TypeScript 5 and above.
+TypeBox includes a runtime TypeScript engine that can transform TypeScript definitions to JSON Schema. The engine is fully type-safe and supports many programmable constructs including Conditional, Mapped, Indexed, Generics, Distributive Generics, and more.
 
 ### Example
 
@@ -12,49 +12,42 @@ Syntax highlighting is available via the [Visual Studio Marketplace](https://mar
 
 ```typescript
 // Module
-const Math = Type.Script(`
-  type Vector2 = { x: number, y: number }
-  type Vector3 = { x: number, y: number, z: number }
-  type Vector4 = { x: number, y: number, z: number, w: number }
-`)
-
-// Dependent Module
-const { Mesh } = Type.Script(Math, `  
-  type Vertex = {
-    position: Vector4,
-    normal: Vector3,
-    uv: Vector2
+const { Post } = Type.Script(`
+  type User = {
+    id: number,
+    name: string
   }
-  type Geometry = {
-    vertices: Vertex[],
-    indices: number[]
+  type Comment = {
+    id: number,
+    text: string,
+    author: User
   }
-  type Material = {
-    ambient: Vector4,
-    diffuse: Vector4,
-    specular: Vector4
-  }
-  type Mesh = {
-    geometry: Geometry,
-    material: Material
+  type Post = {
+    id: number,
+    title: string,
+    body: string,
+    author: User,
+    comments: Comment[]
   }
 `)
 
-// Runtime Reflection
-Mesh.properties.geometry.properties.vertices.items.properties.position.properties.x
-Mesh.properties.geometry.properties.vertices.items.properties.normal.properties.x
-Mesh.properties.geometry.properties.vertices.items.properties.uv.properties.x
-Mesh.properties.material.properties.diffuse.properties.x
-Mesh.properties.material.properties.ambient.properties.x
-Mesh.properties.material.properties.specular.properties.x
+// Reflection
+Post.properties.id
+Post.properties.title
+Post.properties.author.properties.id
+Post.properties.author.properties.name
+Post.properties.comments.items.properties.text
+Post.properties.comments.items.properties.author.properties.id
+Post.properties.comments.items.properties.author.properties.name
 
-// Static Inference
-function render(mesh: Type.Static<typeof Mesh>) {
-  mesh.geometry.vertices[0].position.x
-  mesh.geometry.vertices[0].normal.x
-  mesh.geometry.vertices[0].uv.x
-  mesh.material.diffuse.x
-  mesh.material.ambient.x
-  mesh.material.specular.x
+// Inference
+function present(post: Type.Static<typeof Post>) {
+  post.id
+  post.title
+  post.author.id
+  post.author.name
+  post.comments[0].text
+  post.comments[0].author.id
+  post.comments[0].author.name
 }
 ```

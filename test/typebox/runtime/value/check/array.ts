@@ -96,13 +96,6 @@ Test('Should validate for contains', () => {
   Fail(T, [])
   Fail(T, [2])
 })
-Test('Should treat contains-matched items as evaluated for unevaluatedItems', () => {
-  const T = Type.Unsafe({ type: 'array', contains: Type.String(), unevaluatedItems: false })
-  Ok(T, ['foo'])
-  Ok(T, ['foo', 'bar'])
-  Fail(T, ['foo', 1])
-  Fail(T, [1])
-})
 Test('Should validate for minContains', () => {
   const T = Type.Array(Type.Number(), { contains: Type.Literal(1), minContains: 3 })
   Ok(T, [1, 1, 1, 2])
@@ -142,6 +135,16 @@ Test('Should produce illogical schema when contains is not sub type of items', (
   Fail(T, [1, 1, 1, 1])
   Fail(T, [1, 1, 1, 1, 1])
   Fail(T, [1, 1, 1, 1, 1, 1])
+})
+// ----------------------------------------------------------------
+// Contains: https://github.com/sinclairzx81/typebox/pull/1655
+// ----------------------------------------------------------------
+Test('Should treat contains-matched items as evaluated for unevaluatedItems', () => {
+  const T = Type.Unsafe({ type: 'array', contains: Type.String(), unevaluatedItems: false })
+  Ok(T, ['foo'])
+  Ok(T, ['foo', 'bar'])
+  Fail(T, ['foo', 1])
+  Fail(T, [1])
 })
 // ----------------------------------------------------------------
 // Issue: https://github.com/sinclairzx81/typebox/discussions/607

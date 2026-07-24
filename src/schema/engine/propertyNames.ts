@@ -40,7 +40,7 @@ import { BuildSchema, CheckSchema, ErrorSchema } from './schema.ts'
 // ------------------------------------------------------------------
 export function BuildPropertyNames(stack: Stack, context: BuildContext, schema: Schema.XPropertyNames, value: string): string {
   const [key, _index] = [Unique(), Unique()]
-  return E.Every(E.Keys(value), E.Constant(0), [key, _index],  BuildSchema(stack, context, schema.propertyNames, key))
+  return E.Every(E.Keys(value), E.Constant(0), [key, _index], BuildSchema(stack, context, schema.propertyNames, key))
 }
 // ------------------------------------------------------------------
 // Check

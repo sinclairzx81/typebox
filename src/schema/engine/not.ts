@@ -39,14 +39,16 @@ import { BuildSchema, CheckSchema } from './schema.ts'
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
-function BuildNotUnevaluated(stack: Stack, context: BuildContext, schema: Schema.XNot, value: string): string {
+function BuildNotStandard(stack: Stack, context: BuildContext, schema: Schema.XNot, value: string): string {
   return Reducer(stack, context, [schema.not], value, E.Not(E.IsEqual(E.Member('results', 'length'), E.Constant(1))))
 }
 function BuildNotFast(stack: Stack, context: BuildContext, schema: Schema.XNot, value: string): string {
   return E.Not(BuildSchema(stack, context, schema.not, value))
 }
 export function BuildNot(stack: Stack, context: BuildContext, schema: Schema.XNot, value: string): string {
-  return context.UseUnevaluated() ? BuildNotUnevaluated(stack, context, schema, value) : BuildNotFast(stack, context, schema, value)
+  return context.UseUnevaluated() 
+    ? BuildNotStandard(stack, context, schema, value) 
+    : BuildNotFast(stack, context, schema, value)
 }
 // ------------------------------------------------------------------
 // Check

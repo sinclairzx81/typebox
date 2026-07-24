@@ -36,7 +36,7 @@ import { EmitGuard as E } from '../../guard/index.ts'
 import { CheckSchema, ErrorSchema } from './schema.ts'
 
 // ------------------------------------------------------------------
-// BuildRefStandard
+// BuildRef
 // ------------------------------------------------------------------
 function BuildRefStandard(stack: Stack, context: BuildContext, target: Schema.XSchema, value: string): string {
   const interior = E.ArrowFunction(['context', 'value'], Functions.CreateFunction(stack, context, target, 'value'))
@@ -48,15 +48,9 @@ function BuildRefStandard(stack: Stack, context: BuildContext, target: Schema.XS
   ]))
   return E.Call(exterior, ['context', value])
 }
-// ------------------------------------------------------------------
-// BuildRefStandard
-// ------------------------------------------------------------------
 function BuildRefFast(stack: Stack, context: BuildContext, target: Schema.XSchema, value: string): string {
   return Functions.CreateFunction(stack, context, target, value)
 }
-// ------------------------------------------------------------------
-// BuildRef
-// ------------------------------------------------------------------
 export function BuildRef(stack: Stack, context: BuildContext, schema: Schema.XRef, value: string): string {
   const target = stack.Ref(schema) ?? false
   return context.UseUnevaluated()

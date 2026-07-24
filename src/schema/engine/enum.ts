@@ -48,7 +48,7 @@ export function BuildEnum(_stack: Stack, _context: BuildContext, schema: Schema.
 // Check
 // ------------------------------------------------------------------
 export function CheckEnum(_stack: Stack, _context: CheckContext, schema: Schema.XEnum, value: unknown): boolean {
-  return schema.enum.some(option => G.IsValueLike(option)
+  return G.Some(schema.enum, option => G.IsValueLike(option)
     ? G.IsEqual(value, option)
     : G.IsDeepEqual(value, option))
 }

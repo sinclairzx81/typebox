@@ -29,7 +29,6 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import * as Schema from '../types/index.ts'
-import { Hashing } from '../../system/hashing/index.ts'
 import { Stack } from './_stack.ts'
 import { BuildContext } from './_context.ts'
 import { EmitGuard as E } from '../../guard/index.ts'
@@ -49,7 +48,7 @@ const funcs = new Map<Name, string> ()
 // CreateName
 // ------------------------------------------------------------------
 function NextName(): Name {
-  return Hashing.Hash(index[0]++) as Name
+  return `${index[0]++}` as Name
 }
 function CreateName(schema: Schema.XSchema, href: Href): Name {
   if(!names.has(schema)) names.set(schema, new Map<Href, Name>())

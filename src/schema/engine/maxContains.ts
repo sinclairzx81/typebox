@@ -46,18 +46,16 @@ function IsValid(schema: Schema.XMaxContains): schema is Schema.XMaxContains & S
 // ------------------------------------------------------------------
 export function BuildMaxContains(stack: Stack, context: BuildContext, schema: Schema.XMaxContains, value: string): string {
   if (!IsValid(schema)) return E.Constant(true)
-  const [result, item] = [Unique(), Unique()]
-  const count = E.Call(E.Member(value, 'reduce'), [E.ArrowFunction([result, item], E.Ternary(BuildSchema(stack, context, schema.contains, item), E.PrefixIncrement(result), result)), E.Constant(0)])
+  const [item] = [Unique()]
+  const count = E.Counted(value, [item, '_'], BuildSchema(stack, context, schema.contains, item))
   return E.IsLessEqualThan(count, E.Constant(schema.maxContains))
 }
-
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
 export function CheckMaxContains(stack: Stack, context: CheckContext, schema: Schema.XMaxContains, value: unknown[]): boolean {
   if (!IsValid(schema)) return true
-
-  const count = value.reduce<number>((result, item) => CheckSchema(stack, context, schema.contains, item) ? ++result : result, 0)
+  const count = G.Counted(value, (item) => CheckSchema(stack, context, schema.contains, item))
   return G.IsLessEqualThan(count, schema.maxContains)
 }
 // ------------------------------------------------------------------

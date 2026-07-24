@@ -45,19 +45,30 @@ function IsValid(schema: Schema.XMinContains): schema is Schema.XMinContains & S
 // ------------------------------------------------------------------
 // Build
 // ------------------------------------------------------------------
+function BuildMinContainsStandard(stack: Stack, context: BuildContext, schema: Schema.XMinContains & Schema.XContains, value: string): string {
+  const [item, index] = [Unique(), Unique()]
+  const count = E.Counted(value, [item, index], E.And(BuildSchema(stack, context, schema.contains, item), context.AddIndex(index)))
+  return E.IsGreaterEqualThan(count, E.Constant(schema.minContains))
+}
+function BuildMinContainsFast(stack: Stack, context: BuildContext, schema: Schema.XMinContains & Schema.XContains, value: string): string {
+  const [item] = [Unique()]
+  const count = E.Counted(value, [item, '_'], BuildSchema(stack, context, schema.contains, item))
+  return E.IsGreaterEqualThan(count, E.Constant(schema.minContains))
+}
 export function BuildMinContains(stack: Stack, context: BuildContext, schema: Schema.XMinContains, value: string): string {
   if (!IsValid(schema)) return E.Constant(true)
-  const [result, item] = [Unique(), Unique()]
-  const count = E.Call(E.Member(value, 'reduce'), [E.ArrowFunction([result, item], E.Ternary(BuildSchema(stack, context, schema.contains, item), E.PrefixIncrement(result), result)), E.Constant(0)])
-  return E.IsGreaterEqualThan(count, E.Constant(schema.minContains))
+  return context.UseUnevaluated()
+    ? BuildMinContainsStandard(stack, context, schema, value)
+    : BuildMinContainsFast(stack, context, schema, value)
 }
 // ------------------------------------------------------------------
 // Check
 // ------------------------------------------------------------------
 export function CheckMinContains(stack: Stack, context: CheckContext, schema: Schema.XMinContains, value: unknown[]): boolean {
   if (!IsValid(schema)) return true
-
-  const count = value.reduce<number>((result, item) => CheckSchema(stack, context, schema.contains, item) ? ++result : result, 0)
+  const count = G.Counted(value, (item, index) => 
+    CheckSchema(stack, context, schema.contains, item) && context.AddIndex(index)
+  )
   return G.IsGreaterEqualThan(count, schema.minContains)
 }
 // ------------------------------------------------------------------
