@@ -121,3 +121,22 @@ Test('Should Create 11', () => {
   Assert.PropertyIsEnumerable(B, '~unsafe')
   Settings.Reset()
 })
+// ------------------------------------------------------------------
+// Metrics
+// ------------------------------------------------------------------
+Test('Should Increment Metrics', () => {
+  const A = Memory.Metrics.create
+  Type.String()
+  Assert.IsEqual(Memory.Metrics.create, A + 1)
+})
+// ------------------------------------------------------------------
+// Metrics Should Increment When Frozen
+//
+// https://github.com/sinclairzx81/typebox/issues/1658
+// ------------------------------------------------------------------
+Test('Should Increment Metrics When Frozen', () => {
+  Object.freeze(Memory.Metrics)
+  const A = Memory.Metrics.create
+  Type.String()
+  Assert.IsEqual(Memory.Metrics.create, A + 1)
+})
