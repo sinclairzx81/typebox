@@ -62,7 +62,7 @@ const Equals = '='
 // ------------------------------------------------------------------
 // Delimit: Generic Parser. Instanced for Sequence Grammar
 // ------------------------------------------------------------------
-const DelimitEmpty = () =>   Runtime.Tuple([])
+const DelimitEmpty = () => Runtime.Tuple([])
 const DelimitArray = <Element extends Runtime.IParser, Delimiter extends Runtime.IParser>(delimiter: Delimiter, element: Element) => 
   Runtime.Tuple([element, Runtime.Array(Runtime.Tuple([delimiter, element])), Runtime.Optional(delimiter)])
 const Delimit = <Element extends Runtime.IParser, Delimiter extends Runtime.IParser>(element: Element, delimiter: Delimiter) =>
