@@ -60,14 +60,13 @@ const DoubleQuote = '"'
 const Backtick = '`'
 const Equals = '='
 // ------------------------------------------------------------------
-// Delimit: Generic Parser. Instanced for Sequences
+// Delimit: Generic Parser. Instanced for Sequence Grammar
 // ------------------------------------------------------------------
-const DelimitHead = <Element extends Runtime.IParser, Delimiter extends Runtime.IParser>(element: Element, delimiter: Delimiter) =>
-  Runtime.Array(Runtime.Tuple([element, delimiter]))
-const DelimitTail = <Element extends Runtime.IParser>(element: Element) =>
-  Runtime.Union([Runtime.Tuple([element]), Runtime.Tuple([])])
+const DelimitEmpty = () => Runtime.Tuple([])
+const DelimitArray = <Element extends Runtime.IParser, Delimiter extends Runtime.IParser>(delimiter: Delimiter, element: Element) => 
+  Runtime.Tuple([element, Runtime.Array(Runtime.Tuple([delimiter, element])), Runtime.Optional(delimiter)])
 const Delimit = <Element extends Runtime.IParser, Delimiter extends Runtime.IParser>(element: Element, delimiter: Delimiter) =>
-  Runtime.Tuple([DelimitHead(element, delimiter), DelimitTail(element)])
+  Runtime.Union([DelimitArray(delimiter, element), DelimitEmpty()])
 // ------------------------------------------------------------------
 // GenericParameterExtendsEquals
 // ------------------------------------------------------------------
@@ -467,36 +466,15 @@ const ElementNamed = Runtime.Union([
   Runtime.Tuple([Runtime.Ident(), Runtime.Const(Colon), Runtime.Ref('Type')]),
 ])
 // ------------------------------------------------------------------
-// ElementReadonlyOptional
-// ------------------------------------------------------------------
-const ElementReadonlyOptional = Runtime.Tuple([
-  Runtime.Const('readonly'),
-  Runtime.Ref('Type'),
-  Runtime.Const(Question)
-])
-// ------------------------------------------------------------------
-// ElementReadonly
-// ------------------------------------------------------------------
-const ElementReadonly = Runtime.Tuple([
-  Runtime.Const('readonly'),
-  Runtime.Ref('Type')
-])
-// ------------------------------------------------------------------
-// ElementOptional
-// ------------------------------------------------------------------
-const ElementOptional = Runtime.Tuple([
-  Runtime.Ref('Type'),
-  Runtime.Const(Question)
-])
-// ------------------------------------------------------------------
 // ElementBase
 // ------------------------------------------------------------------
 const ElementBase = Runtime.Union([
   Runtime.Ref('ElementNamed'),
-  Runtime.Ref('ElementReadonlyOptional'),
-  Runtime.Ref('ElementReadonly'),
-  Runtime.Ref('ElementOptional'),
-  Runtime.Ref('Type')
+  Runtime.Tuple([
+    Runtime.Ref('Readonly'),
+    Runtime.Ref('Type'),
+    Runtime.Ref('Optional')
+  ])
 ])
 // ------------------------------------------------------------------
 // Element
@@ -1006,9 +984,6 @@ export const SyntaxModule = new Runtime.Module({
   // _Tuple_
   // ----------------------------------------------------------------
   ElementNamed,
-  ElementReadonlyOptional,
-  ElementReadonly,
-  ElementOptional,
   ElementBase,
   Element,
   ElementList,

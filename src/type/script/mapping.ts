@@ -103,37 +103,28 @@ function Unreachable(): never {
 //
 // Delimited
 //
-// Delimited sequences use an accumulated buffer to parse sequence
-// tokens. This approach is more scalable than using a Union + Tuple
-// + Epsilon pattern, as TypeScript can instantiate deeper when
-// tail-call recursive accumulators are employed. However, this
-// comes with a latent processing cost due to the need to decode
-// the accumulated buffer.
-//
-// - Encoding: [[<Ident>, ','][], [<Ident>] | []]
+// - Encoding: [Element, [Delimiter, Element][], Delimiter?] | []
 //
 // ------------------------------------------------------------------
-type TDelimitedDecode<Input extends ([unknown, unknown] | unknown)[], Result extends unknown[] = []> = (
-  Input extends [infer Left, ...infer Right]
-  ? Left extends [infer Item, infer _]
-  ? TDelimitedDecode<Right, [...Result, Item]>
-  : TDelimitedDecode<Right, [...Result, Left]>
-  : Result
+type TDelimitedDecode<Input extends [unknown, unknown][], Result extends unknown[] = []> = (
+  Input extends [infer Left extends [unknown, unknown], ...infer Right extends [unknown, unknown][]]
+    ? TDelimitedDecode<Right, [...Result, Left[1]]>
+    : Result
 )
-type TDelimited<Input extends [unknown, unknown]>
-  = Input extends [infer Left extends unknown[], infer Right extends unknown[]]
-  ? TDelimitedDecode<[...Left, ...Right]>
-  : []
-const DelimitedDecode = (input: ([unknown, unknown] | unknown)[], result: unknown[] = []) => {
-  return input.reduce<unknown[]>((result, left) => {
-    return Guard.IsArray(left) && Guard.IsEqual(left.length, 2)
-      ? [...result, left[0]]
-      : [...result, left]
-  }, [])
+function DelimitedDecode(input: unknown[], result: unknown[] = []): unknown[] {
+  return Guard.ShiftLeft(input, (left, right) => 
+    DelimitedDecode(right, [...result, (left as [unknown, unknown])[1]]),
+    () => result)
 }
-const Delimited = (input: [unknown, unknown]) => {
-  const [left, right] = input as [unknown[], unknown[]]
-  return DelimitedDecode([...left, ...right])
+type TDelimited<Input extends [unknown, unknown, unknown] | []> = (  
+  Input extends [infer Left extends unknown, infer Right extends [unknown, unknown][], infer _ extends unknown[]]
+    ? [Left, ...TDelimitedDecode<Right>]
+    : []
+)
+function Delimited(input: [unknown, unknown, unknown] | []): unknown[] {
+  return Guard.IsEqual(input.length, 3)
+    ? [input[0], ...DelimitedDecode(input[1] as [unknown, unknown][])]
+    : []
 }
 // -------------------------------------------------------------------
 // GenericParameterExtendsEquals: [<Ident>, 'extends', Type, '=', Type]
@@ -147,7 +138,7 @@ export function GenericParameterExtendsEqualsMapping(input: [unknown, unknown, u
   return T.Parameter(input[0] as string, input[2] as T.TSchema, input[4] as T.TSchema)
 }
 // -------------------------------------------------------------------
-// GenericParameterExtends. [<Ident>, 'extends', Type]
+// GenericParameterExtends: [<Ident>, 'extends', Type]
 // -------------------------------------------------------------------
 export type TGenericParameterExtendsMapping<Input extends [unknown, unknown, unknown]> = (
   Input extends [infer Name extends string, 'extends', infer Extends extends T.TSchema]
@@ -187,12 +178,12 @@ export function GenericParameterMapping(input: unknown): unknown {
   return input
 }
 // -------------------------------------------------------------------
-// GenericParameterList: [[GenericParameter, ','][], [GenericParameter] | []]
+// GenericParameterList: [GenericParameter, [',', GenericParameter][], ','?] | []
 // -------------------------------------------------------------------
-export type TGenericParameterListMapping<Input extends [unknown, unknown]> = (
+export type TGenericParameterListMapping<Input extends [unknown, unknown, unknown] | []> = (
   TDelimited<Input>
 )
-export function GenericParameterListMapping(input: [unknown, unknown]): unknown {
+export function GenericParameterListMapping(input: [unknown, unknown, unknown] | []): unknown {
   return Delimited(input)
 }
 // -------------------------------------------------------------------
@@ -207,12 +198,12 @@ export function GenericParametersMapping(input: [unknown, unknown, unknown]): un
   return input[1] as T.TParameter[]
 }
 // -------------------------------------------------------------------
-// GenericCallArgumentList: [[Type, ','][], [Type] | []]
+// GenericCallArgumentList: [Type, [',', Type][], ','?] | []
 // -------------------------------------------------------------------
-export type TGenericCallArgumentListMapping<Input extends [unknown, unknown]> = (
+export type TGenericCallArgumentListMapping<Input extends [unknown, unknown, unknown] | []> = (
   TDelimited<Input>
 )
-export function GenericCallArgumentListMapping(input: [unknown, unknown]): unknown {
+export function GenericCallArgumentListMapping(input: [unknown, unknown, unknown] | []): unknown {
   return Delimited(input)
 }
 // -------------------------------------------------------------------
@@ -505,7 +496,7 @@ export function IndexArrayMapping(input: ([unknown, unknown, unknown] | [unknown
   }, [] as unknown[])
 }
 // -------------------------------------------------------------------
-// Extends. ['extends', Type, '?', Type, ':', Type] | []
+// Extends: ['extends', Type, '?', Type, ':', Type] | []
 // -------------------------------------------------------------------
 export type TExtendsMapping<Input extends [unknown, unknown, unknown, unknown, unknown, unknown] | []> = (
   Input extends ['extends', infer Type extends T.TSchema, '?', infer True extends T.TSchema, ':', infer False extends T.TSchema]
@@ -855,12 +846,12 @@ export function PropertyDelimiterMapping(input: [unknown, unknown] | [unknown]):
   return input
 }
 // -------------------------------------------------------------------
-// PropertyList: [[Property, PropertyDelimiter][], [Property] | []]
+// PropertyList: [Property, [PropertyDelimiter, Property][], PropertyDelimiter?] | []
 // -------------------------------------------------------------------
-export type TPropertyListMapping<Input extends [unknown, unknown]> = (
+export type TPropertyListMapping<Input extends [unknown, unknown, unknown] | []> = (
   TDelimited<Input>
 )
-export function PropertyListMapping(input: [unknown, unknown]): unknown {
+export function PropertyListMapping(input: [unknown, unknown, unknown] | []): unknown {
   return Delimited(input)
 }
 // -------------------------------------------------------------------
@@ -945,40 +936,25 @@ export function ElementNamedMapping(input: [unknown, unknown, unknown, unknown, 
 }
 // deno-coverage-ignore-stop
 // -------------------------------------------------------------------
-// ElementReadonlyOptional: ['readonly', Type, '?']
+// ElementBase: ElementNamed | [Readonly, Type, Optional]
 // -------------------------------------------------------------------
-export type TElementReadonlyOptionalMapping<Input extends [unknown, unknown, unknown]> = (
-  Input extends ['readonly', infer Type extends T.TSchema, '?'] ? S.TAddReadonlyDeferred<S.TAddOptionalDeferred<Type>> : never
+export type TElementBaseMapping<Input extends unknown | [unknown, unknown, unknown]> = (
+  Input extends [infer IsReadonly extends boolean, infer Type extends T.TSchema, infer IsOptional extends boolean] ? (
+    [IsReadonly, IsOptional] extends [true, true] ? S.TAddReadonlyDeferred<S.TAddOptionalDeferred<Type>> :
+    [IsReadonly, IsOptional] extends [true, false] ? S.TAddReadonlyDeferred<Type> :
+    [IsReadonly, IsOptional] extends [false, true] ? S.TAddOptionalDeferred<Type> :
+    Type
+  ) : Input
 )
-export function ElementReadonlyOptionalMapping(input: [unknown, unknown, unknown]): unknown {
-  return S.AddReadonlyDeferred(S.AddOptionalDeferred(input[1] as T.TSchema))
-}
-// -------------------------------------------------------------------
-// ElementReadonly: ['readonly', Type]
-// -------------------------------------------------------------------
-export type TElementReadonlyMapping<Input extends [unknown, unknown]> = (
-  Input extends ['readonly', infer Type extends T.TSchema] ? S.TAddReadonlyDeferred<Type> : never
-)
-export function ElementReadonlyMapping(input: [unknown, unknown]): unknown {
-  return S.AddReadonlyDeferred(input[1] as T.TSchema)
-}
-// -------------------------------------------------------------------
-// ElementOptional: [Type, '?']
-// -------------------------------------------------------------------
-export type TElementOptionalMapping<Input extends [unknown, unknown]> = (
-  Input extends [infer Type extends T.TSchema, '?'] ? S.TAddOptionalDeferred<Type> : never
-)
-export function ElementOptionalMapping(input: [unknown, unknown]): unknown {
-  return S.AddOptionalDeferred(input[0] as T.TSchema)
-}
-// -------------------------------------------------------------------
-// ElementBase: ElementNamed | ElementReadonlyOptional | ElementReadonly | ElementOptional | Type
-// -------------------------------------------------------------------
-export type TElementBaseMapping<Input extends unknown> = (
-  Input
-)
-export function ElementBaseMapping(input: unknown): unknown {
-  return input
+export function ElementBaseMapping(input: unknown | [unknown, unknown, unknown]): unknown {
+  if (!Guard.IsArray(input) || !Guard.IsEqual(input.length, 3)) return input
+  const [isReadonly, type, isOptional] = input as [boolean, T.TSchema, boolean]
+  return (
+    isReadonly && isOptional ? S.AddReadonlyDeferred(S.AddOptionalDeferred(type)) :
+    isReadonly && !isOptional ? S.AddReadonlyDeferred(type) :
+    !isReadonly && isOptional ? S.AddOptionalDeferred(type) :
+    type
+  )
 }
 // -------------------------------------------------------------------
 // Element: ['...', ElementBase] | [ElementBase]
@@ -998,12 +974,12 @@ export function ElementMapping(input: [unknown, unknown] | [unknown]): unknown {
 }
 // deno-coverage-ignore-stop
 // -------------------------------------------------------------------
-// ElementList: [[Element, ','][], [Element] | []]
+// ElementList: [Element, [',', Element][], ','?] | []
 // -------------------------------------------------------------------
-export type TElementListMapping<Input extends [unknown, unknown]> = (
+export type TElementListMapping<Input extends [unknown, unknown, unknown] | []> = (
   TDelimited<Input>
 )
-export function ElementListMapping(input: [unknown, unknown]): unknown {
+export function ElementListMapping(input: [unknown, unknown, unknown] | []): unknown {
   return Delimited(input)
 }
 // -------------------------------------------------------------------
@@ -1078,12 +1054,12 @@ export function ParameterMapping(input: [unknown, unknown] | [unknown]): unknown
 }
 // deno-coverage-ignore-stop
 // -------------------------------------------------------------------
-// ParameterList: [[Parameter, ','][], [Parameter] | []]
+// ParameterList: [Parameter, [',', Parameter][], ','?] | []
 // -------------------------------------------------------------------
-export type TParameterListMapping<Input extends [unknown, unknown]> = (
+export type TParameterListMapping<Input extends [unknown, unknown, unknown] | []> = (
   TDelimited<Input>
 )
-export function ParameterListMapping(input: [unknown, unknown]): unknown {
+export function ParameterListMapping(input: [unknown, unknown, unknown] | []): unknown {
   return Delimited(input)
 }
 // -------------------------------------------------------------------
@@ -1098,7 +1074,7 @@ export function _Function_Mapping(input: [unknown, unknown, unknown, unknown, un
   return T._Function_(input[1] as T.TSchema[], input[4] as T.TSchema)
 }
 // -------------------------------------------------------------------
-// Constructor: ['new', '(', ParameterList, ')', '=>', Type]
+// _Constructor_: ['new', '(', ParameterList, ')', '=>', Type]
 // -------------------------------------------------------------------
 export type T_Constructor_Mapping<Input extends [unknown, unknown, unknown, unknown, unknown, unknown]> = (
   Input extends ['new', '(', infer ParameterList extends T.TSchema[], ')', '=>', infer InstanceType extends T.TSchema]
@@ -1180,7 +1156,7 @@ export function MappedAsMapping(input: [unknown, unknown] | []): unknown {
   return Guard.IsEqual(input.length, 2) ? [input[1]] : []
 }
 // -------------------------------------------------------------------
-// Mapped: ['{', MappedReadonly, '[', <Ident>, 'in', Type, MappedAs, ']', MappedOptional, ':', Type, OptionalSemiColon, '}']
+// _Mapped_: ['{', MappedReadonly, '[', <Ident>, 'in', Type, MappedAs, ']', MappedOptional, ':', Type, OptionalSemiColon, '}']
 // -------------------------------------------------------------------
 export type T_Mapped_Mapping<Input extends [unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown]> = (
   Input extends ['{', infer Readonly extends TModifierOperation, '[', infer Key extends string, 'in', infer Type extends T.TSchema, infer As extends T.TSchema[], ']', infer Optional extends TModifierOperation, ':', infer Property extends T.TSchema, null, '}']
@@ -1259,7 +1235,7 @@ export function WithUndefinedMapping(input: 'undefined'): unknown {
   return undefined
 }
 // -------------------------------------------------------------------
-// WithProperty: [PropertyKey, ':', Json]
+// WithProperty: [PropertyKey, ':', WithValue]
 // -------------------------------------------------------------------
 export type TWithPropertyMapping<Input extends [unknown, unknown, unknown]> = (
   Input extends [infer Key extends string, ':', infer Value extends unknown]
@@ -1270,12 +1246,12 @@ export function WithPropertyMapping(input: [unknown, unknown, unknown]): unknown
   return { [input[0] as string]: input[2] as unknown }
 }
 // -------------------------------------------------------------------
-// WithPropertyList: [[WithProperty, PropertyDelimiter][], [WithProperty] | []]
+// WithPropertyList: [WithProperty, [PropertyDelimiter, WithProperty][], PropertyDelimiter?] | []
 // -------------------------------------------------------------------
-export type TWithPropertyListMapping<Input extends [unknown, unknown]> = (
+export type TWithPropertyListMapping<Input extends [unknown, unknown, unknown] | []> = (
   TDelimited<Input>
 )
-export function WithPropertyListMapping(input: [unknown, unknown]): unknown {
+export function WithPropertyListMapping(input: [unknown, unknown, unknown] | []): unknown {
   return Delimited(input)
 }
 // -------------------------------------------------------------------
@@ -1301,12 +1277,12 @@ export function WithObjectMapping(input: [unknown, unknown, unknown]): unknown {
   return WithObjectMappingReduce(input[1] as Record<PropertyKey, unknown>[])
 }
 // -------------------------------------------------------------------
-// WithElementList: [[Json, ','][], [Json] | []]
+// WithElementList: [WithValue, [',', WithValue][], ','?] | []
 // -------------------------------------------------------------------
-export type TWithElementListMapping<Input extends [unknown, unknown]> = (
+export type TWithElementListMapping<Input extends [unknown, unknown, unknown] | []> = (
   TDelimited<Input>
 )
-export function WithElementListMapping(input: [unknown, unknown]): unknown {
+export function WithElementListMapping(input: [unknown, unknown, unknown] | []): unknown {
   return Delimited(input)
 }
 // -------------------------------------------------------------------
@@ -1446,12 +1422,12 @@ export function PatternMapping(input: [unknown, unknown, unknown]): unknown {
   return input[1]
 }
 // -------------------------------------------------------------------
-// InterfaceDeclarationHeritageList: [[Type, ','][], [Type] | []]
+// InterfaceDeclarationHeritageList: [Type, [',', Type][], ','?] | []
 // -------------------------------------------------------------------
-export type TInterfaceDeclarationHeritageListMapping<Input extends [unknown, unknown]> = (
+export type TInterfaceDeclarationHeritageListMapping<Input extends [unknown, unknown, unknown] | []> = (
   TDelimited<Input>
 )
-export function InterfaceDeclarationHeritageListMapping(input: [unknown, unknown]): unknown {
+export function InterfaceDeclarationHeritageListMapping(input: [unknown, unknown, unknown] | []): unknown {
   return Delimited(input)
 }
 // -------------------------------------------------------------------
@@ -1536,13 +1512,13 @@ export function ModuleDeclarationDelimiterMapping(input: [unknown, unknown] | [u
   return input
 }
 // -------------------------------------------------------------------
-// ModuleDeclarationList: [[ModuleDeclaration, ModuleDeclarationDelimiter][], [ModuleDeclaration] | []]
+// ModuleDeclarationList: [ModuleDeclaration, [ModuleDeclarationDelimiter, ModuleDeclaration][], ModuleDeclarationDelimiter?] | []
 // -------------------------------------------------------------------
-export type TModuleDeclarationListMapping<Input extends [unknown, unknown]> = (
-  TPropertiesReduce<TDelimited<Input>>
+export type TModuleDeclarationListMapping<Input extends [unknown, unknown, unknown] | []> = (
+  TDelimited<Input>
 )
-export function ModuleDeclarationListMapping(input: [unknown, unknown]): unknown {
-  return PropertiesReduce(Delimited(input) as never)
+export function ModuleDeclarationListMapping(input: [unknown, unknown, unknown] | []): unknown {
+  return Delimited(input)
 }
 // -------------------------------------------------------------------
 // ModuleDeclaration: [ExportKeyword, InterfaceDeclarationGeneric | InterfaceDeclaration | TypeAliasDeclarationGeneric | TypeAliasDeclaration, OptionalSemiColon]
@@ -1559,14 +1535,13 @@ export function ModuleDeclarationMapping(input: [unknown, unknown, unknown]): un
 // Module: [ModuleDeclaration, ModuleDeclarationList]
 // -------------------------------------------------------------------
 export type TModuleMapping<Input extends [unknown, unknown]> = (
-  Input extends [infer ModuleDeclaration extends T.TProperties, infer ModuleDeclarationList extends [T.TProperties, T.TProperties]]
-    ? S.TModuleDeferred<Memory.TAssign<ModuleDeclaration, ModuleDeclarationList[0]>>
+  Input extends [infer ModuleDeclaration extends T.TProperties, infer ModuleDeclarationList extends T.TProperties[]]
+    ? S.TModuleDeferred<Memory.TAssign<ModuleDeclaration, TPropertiesReduce<ModuleDeclarationList>[0]>>
     : never
 )
 export function ModuleMapping(input: [unknown, unknown]): unknown {
-  const moduleDeclaration = input[0] as T.TProperties
-  const moduleDeclarationList = input[1] as [T.TProperties, T.TProperties]
-  return S.ModuleDeferred(Memory.Assign(moduleDeclaration, moduleDeclarationList[0]))
+  const [moduleDeclaration, moduleDeclarationList] = [input[0], input[1]] as [T.TProperties, T.TProperties[]]
+  return S.ModuleDeferred(Memory.Assign(moduleDeclaration, PropertiesReduce(moduleDeclarationList)[0]))
 }
 // -------------------------------------------------------------------
 // Script: Module | GenericType | Type
