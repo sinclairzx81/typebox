@@ -156,7 +156,7 @@ type TCallImmediate<Context extends TProperties, State extends TState, Target ex
 > = Result
 function CallImmediate<Context extends TProperties, State extends TState, Target extends TRef, Parameters extends TParameter[], Expression extends TSchema, InstantiatedArguments extends TSchema[]>
   (context: Context, state: State, target: Target, parameters: [...Parameters], expression: Expression, arguments_: [...InstantiatedArguments]):
-    TCallImmediate<Context, State, Target, Parameters, Expression, InstantiatedArguments> {   
+    TCallImmediate<Context, State, Target, Parameters, Expression, InstantiatedArguments> {
   const distributedArguments = DistributeArguments(parameters, arguments_, expression) as TSchema[][]
   const returnTypes = CallDistributed(context, state, target, parameters, expression, distributedArguments) as TSchema[]
   const result = Guard.IsEqual(returnTypes.length, 1) ? returnTypes[0] : EvaluateUnion(returnTypes)
