@@ -53,6 +53,16 @@ export interface TSettings {
   maxErrors: number
 
   /**
+   * Specifies the maximum number of instantiations allowed within a top-level generic instantiation
+   * context. This setting can be used to bound generic calls to a fixed count, which can be useful if
+   * evaluating string-encoded types originating from untrusted sources. Setting this value to 0 will
+   * disallow generics entirely, ensuring type instantiation runs linear.
+   *
+   * @default 128
+   */
+  maxInstantiationCount: number
+
+  /**
    * Enables or disables the use of runtime code evaluation to accelerate validation. By default,
    * TypeBox checks for `unsafe-eval` support in the environment before attempting to evaluate
    * generated code. If evaluation is not permitted, it falls back to dynamic checking. Setting
@@ -108,6 +118,7 @@ export interface TSettings {
 const settings: TSettings = {
   immutableTypes: false,
   maxErrors: 8,
+  maxInstantiationCount: 128,
   useAcceleration: true,
   exactOptionalPropertyTypes: false,
   enumerableKind: false,
@@ -119,6 +130,7 @@ const settings: TSettings = {
 export function Reset(): void {
   settings.immutableTypes = false
   settings.maxErrors = 8
+  settings.maxInstantiationCount = 128
   settings.useAcceleration = true
   settings.exactOptionalPropertyTypes = false
   settings.enumerableKind = false

@@ -33,8 +33,16 @@ import { type TSchema } from '../../types/schema.ts'
 
 import { type TUnion, IsUnion } from '../../types/union.ts'
 import { type TDeferred, IsDeferred } from '../../types/deferred.ts'
+import { type TEnum, type TEnumValue, IsEnum } from '../../types/enum.ts'
+import { type TTemplateLiteral, IsTemplateLiteral } from '../../types/template_literal.ts'
 import { type TRef, IsRef } from '../../types/ref.ts'
 import { type TParameter } from '../../types/parameter.ts'
+
+// ------------------------------------------------------------------
+// Infrastructure
+// ------------------------------------------------------------------
+import { type TEvaluateTemplateLiteral, EvaluateTemplateLiteral } from '../evaluate/evaluate.ts'
+import { type TEvaluateEnum, EvaluateEnum } from '../evaluate/evaluate.ts'
 
 // ------------------------------------------------------------------
 // CollectDistributionNames
@@ -121,18 +129,35 @@ function ZipDistributionArray<Arguments extends TSchema[], DistributionArray ext
     () => result) as never
 }
 // ------------------------------------------------------------------
+// CanonicalArgument
+// ------------------------------------------------------------------
+type TCanonicalArgument<Type extends TSchema> = (
+  Type extends TTemplateLiteral<infer Pattern extends string> ? TEvaluateTemplateLiteral<Pattern> :
+  Type extends TEnum<infer Values extends TEnumValue[]> ? TEvaluateEnum<Values> :
+  Type
+)
+function CanonicalArgument<Type extends TSchema>(type: Type): TCanonicalArgument<Type> {
+  return (
+    IsTemplateLiteral(type) ? EvaluateTemplateLiteral(type.pattern) :
+    IsEnum(type) ? EvaluateEnum(type.enum) :
+    type
+  ) as never
+}
+// ------------------------------------------------------------------
 // Expand
 // ------------------------------------------------------------------
-type TExpand<Type extends TSchema> = (
-  Type extends TUnion<infer Types extends TSchema[]>
-  ? [...Types]
-  : [Type]
+type TExpand<Argument extends TSchema,
+  CanonicalArgument extends TSchema = TCanonicalArgument<Argument>
+> = (
+  CanonicalArgument extends TUnion<infer Types extends TSchema[]> 
+    ? [...Types] 
+    : [CanonicalArgument]
 )
 function Expand<Argument extends TSchema>(type: Argument): TExpand<Argument> {
-  return (
-    IsUnion(type)
-      ? [...type.anyOf]
-      : [type]
+  const canonicalArgument = CanonicalArgument(type) as TSchema
+  return (IsUnion(canonicalArgument) 
+    ? [...canonicalArgument.anyOf] 
+    : [canonicalArgument]
   ) as never
 }
 // ------------------------------------------------------------------

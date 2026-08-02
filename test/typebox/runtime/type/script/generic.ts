@@ -432,7 +432,6 @@ Test('Should Generic 26', () => {
   Assert.IsTrue(Type.IsUnion(T.items[0])) // A passthrough
   Assert.IsTrue(Type.IsUnion(T.items[1])) // B passthrough
 })
-
 Test('Should Generic 27', () => {
   const T: Type.TUnion<[
     Type.TTuple<[Type.TLiteral<0>, Type.TLiteral<0>, Type.TLiteral<0>]>,
@@ -552,4 +551,42 @@ Test('Should Generic 34', () => {
   `).R
   Assert.IsTrue(Type.IsTuple(T))
   Assert.IsEqual(T.items[0].const, 0)
+})
+// ------------------------------------------------------------------
+// Distributed Conditional Types: TemplateLiteral
+// ------------------------------------------------------------------
+Test('Should Generic 35', () => {
+  const A = Type.TemplateLiteral('x${0|1}${0|1}')
+  const T = Type.Script(
+    { A },
+    `
+    type Bin<A> = A extends 'x00' ? true : A
+    type T = Bin<A>
+  `
+  ).T
+  Assert.IsTrue(Type.IsUnion(T))
+  Assert.IsEqual(T.anyOf.length, 4)
+  Assert.IsEqual(T.anyOf[0].const, true)
+  Assert.IsEqual(T.anyOf[1].const, 'x10')
+  Assert.IsEqual(T.anyOf[2].const, 'x01')
+  Assert.IsEqual(T.anyOf[3].const, 'x11')
+})
+// ------------------------------------------------------------------
+// Distributed Conditional Types: Enum
+// ------------------------------------------------------------------
+Test('Should Generic 36', () => {
+  const A = Type.Enum(['x00', 'x10', 'x01', 'x11'])
+  const T = Type.Script(
+    { A },
+    `
+    type Bin<A> = A extends 'x00' ? true : A
+    type T = Bin<A>
+  `
+  ).T
+  Assert.IsTrue(Type.IsUnion(T))
+  Assert.IsEqual(T.anyOf.length, 4)
+  Assert.IsEqual(T.anyOf[0].const, true)
+  Assert.IsEqual(T.anyOf[1].const, 'x10')
+  Assert.IsEqual(T.anyOf[2].const, 'x01')
+  Assert.IsEqual(T.anyOf[3].const, 'x11')
 })
