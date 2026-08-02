@@ -1,7 +1,7 @@
 <h1>Script.Parameters</h1>
-<p>Script can accept named type parameters.</p>
-<h2>Example</h2>
-<p>The following passes an external String to Script and makes it nullable.</p>
+<p>Scripts can be parameterized using a leading context object, where each key is a referable type name. This can be used to pass exterior types into Script.</p>
+<h3>Parameters</h3>
+<p>The following creates a nullable string by passing an exterior string into the Script.</p>
 <pre><code class="language-typescript">const T = Type.String()
 
 const S = Type.Script({ T }, `T | null`)            // const S: TUnion&lt;[
@@ -9,7 +9,7 @@ const S = Type.Script({ T }, `T | null`)            // const S: TUnion&lt;[
                                                     //   TNull
                                                     // ]&gt;
 </code></pre>
-<p>External types are referenced by property name. You can pass many types.</p>
+<p>Multiple exterior types can be passed via the context object.</p>
 <pre><code class="language-typescript">const A = Type.Literal(1)
 const B = Type.Literal(2)
 const C = Type.Literal(3)
@@ -19,4 +19,40 @@ const T = Type.Script({ A, B, C }, `[A, B, C]`)     // const T: TTuple&lt;[
                                                     //   TLiteral&lt;2&gt;,
                                                     //   TLiteral&lt;3&gt;
                                                     // ]&gt;
+</code></pre>
+<h3>Module Dependencies</h3>
+<p>Script modules can be passed as the context for other modules, allowing type definitions to be shared across dependent modules.</p>
+<pre><code class="language-typescript">import Type from &#39;typebox&#39;
+
+const Math = Type.Script(`
+  type Vector4 = { x: number, y: number, z: number, w: number }
+  type Vector3 = { x: number, y: number, z: number }
+  type Vector2 = { x: number, y: number }
+`)
+
+const Graphics = Type.Script(Math, `
+  type Vertex = {
+    position: Vector4,
+    normal: Vector3,
+    uv: Vector2
+  }
+  type Geometry = {
+    vertices: Vertex[],
+    indices: number[]
+  }
+  type Material = {
+    ambient: Vector4,
+    diffuse: Vector4,
+    specular: Vector4,
+  }
+  type Mesh = {
+    geometry: Geometry
+    material: Material
+  }
+`)
+
+type Mesh = Type.Static&lt;typeof Graphics[&#39;Mesh&#39;]&gt;     // type Mesh = {
+                                                     //   geometry: { ... },
+                                                     //   material: { ... }
+                                                     // }
 </code></pre>

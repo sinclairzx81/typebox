@@ -1,8 +1,8 @@
-<h1>Script.Scaling</h1>
-<p>This page details type scaling behaviours for Script</p>
+<h1>Script.Limitations</h1>
+<p>TypeBox implements a symmetric runtime and type-level evaluator for TypeScript syntax. Runtime evaluation of types allows for moderately large declaration files to be parsed; however, type-level evaluation is subject to the instantiation limitations of the TypeScript compiler. This section details type inference limitations and scaling behaviours for Script.</p>
 <h2>Wide vs Deep</h2>
-<p>Script is designed to support wide data structures. These structures leverage TypeScript tail call optimizations to prevent +1 depth per sequence token or element. </p>
-<pre><code class="language-typescript">const T = Type.Script(`[   // 1 x depth
+<p>Script is designed to support wide data structures. These structures use TypeScript tail call optimizations to prevent +1 depth per sequence token or element.</p>
+<pre><code class="language-typescript">const T = Type.Script(`[   // depth + 1
   0, 1, 2, 3, 4, 5, 6, 7,  // 128 x elements  
   0, 1, 2, 3, 4, 5, 6, 7, 
   0, 1, 2, 3, 4, 5, 6, 7, 
@@ -21,12 +21,12 @@
   0, 1, 2, 3, 4, 5, 6, 7, 
 ]`)
 </code></pre>
-<p>However deep nested structures will hit TypeScript instantiation depth limits very quickly.</p>
+<p>However, deeply nested structures will hit TypeScript instantiation depth limits very quickly.</p>
 <pre><code class="language-typescript">const T = Type.Script(`{          // depth + 1
   a: {                            // depth + 2
     b: {                          // depth + 3
       c: {                        // depth + 4
-        d: {                      // instantiation too deep
+        d: {                      // error: instantiation too deep
           e: 1
         }
       }
@@ -34,7 +34,7 @@
   }  
 }`)
 </code></pre>
-<p>If you need to represent deep structures with Script consider refactoring in the following way.</p>
+<p>If you need to represent deep structures with Script, consider refactoring in the following way.</p>
 <pre><code class="language-typescript">const D = Type.Script(`{ e: 1 }`)                   // depth + 1
 const C = Type.Script({ D }, `{ d: D }`)            // depth + 1
 const B = Type.Script({ C }, `{ c: C }`)            // depth + 1
@@ -43,7 +43,7 @@ const A = Type.Script({ B }, `{ b: B }`)            // depth + 1
 const T = Type.Script({ A }, `{ a: A }`)            // ok
 </code></pre>
 <h2>Excessive Types</h2>
-<p>Script supports static inference for moderately sized types, but for excessive types, you will likely need to bail out of inference. This can be done by using a <code>as never</code> assertion. The Script will parse the type at runtime, but type inference will be lost. </p>
+<p>Script supports static inference for moderately sized types, but for very large types, you will likely need to bail out of inference. This can be done by using an <code>as never</code> assertion. The Script will parse the type at runtime, but type inference will be lost.</p>
 <blockquote>
 <p>⚠️ For large types it is recommended to use the standard Type API.</p>
 </blockquote>
@@ -55,5 +55,5 @@ const T = Type.Script({ A }, `{ a: A }`)            // ok
   // ... excessive properties
   x999999: string
 }
-` as never)  // bail out!!
+` as never)  // bail out
 </code></pre>

@@ -28,18 +28,19 @@ THE SOFTWARE.
 
 // ------------------------------------------------------------------
 //
-// Peano Axioms via Type.Script(...)
+// Peano Axioms implemented with TypeBox Script
 //
 // https://en.wikipedia.org/wiki/Peano_axioms
 //
-// Compute Time: 30 seconds approx
-//
 // ------------------------------------------------------------------
 
+import System from 'typebox/system'
 import Type from 'typebox'
 
+System.Settings.Set({ maxInstantiationCount: 2048 })
+
 console.time()
-console.log('Solving ... ')
+console.log('Solving ... Please Wait')
 const { Result } = Type.Script(`
 
   // --------------------------------------------------------------

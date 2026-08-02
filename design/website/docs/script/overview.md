@@ -11,43 +11,41 @@ TypeBox includes a runtime TypeScript engine that can transform TypeScript defin
 Syntax highlighting is available via the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=sinclairzx81.typebox-script)
 
 ```typescript
-// Module
-const { Post } = Type.Script(`
-  type User = {
-    id: number,
-    name: string
+import Type from 'typebox'
+
+// Math Module
+
+const Math = Type.Script(`
+  type Vector4 = { x: number, y: number, z: number, w: number }
+  type Vector3 = { x: number, y: number, z: number }
+  type Vector2 = { x: number, y: number }
+`)
+
+// Graphics Module
+
+const Graphics = Type.Script(Math, `
+  type Vertex = {
+    position: Vector4,
+    normal: Vector3,
+    uv: Vector2
   }
-  type Comment = {
-    id: number,
-    text: string,
-    author: User
+  type Geometry = {
+    vertices: Vertex[],
+    indices: number[]
   }
-  type Post = {
-    id: number,
-    title: string,
-    body: string,
-    author: User,
-    comments: Comment[]
+  type Material = {
+    ambient: Vector4,
+    diffuse: Vector4,
+    specular: Vector4
+  }
+  type Mesh = {
+    geometry: Geometry,
+    material: Material
   }
 `)
 
-// Reflection
-Post.properties.id
-Post.properties.title
-Post.properties.author.properties.id
-Post.properties.author.properties.name
-Post.properties.comments.items.properties.text
-Post.properties.comments.items.properties.author.properties.id
-Post.properties.comments.items.properties.author.properties.name
-
-// Inference
-function present(post: Type.Static<typeof Post>) {
-  post.id
-  post.title
-  post.author.id
-  post.author.name
-  post.comments[0].text
-  post.comments[0].author.id
-  post.comments[0].author.name
-}
+type Mesh = Type.Static<typeof Graphics['Mesh']>  // type Mesh = {
+                                                  //   geometry: { ... },
+                                                  //   material: { ... }
+                                                  // }
 ```

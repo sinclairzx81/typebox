@@ -111,7 +111,7 @@ type User = Type.Static<typeof User>              // type User = {
 
 ## Script
 
-[Documentation](https://sinclairzx81.github.io/typebox/#/docs/script/overview) | [Example 1](https://www.typescriptlang.org/play/?target=99&module=7#code/JYWwDg9gTgLgBAFQJ5gKZwGZQiOByGFVAIwgA88AoSgehrgFkIATAVwBtVKBjCAOwDO8AN5wAChCFwAvnAC8iIgDoAytyjAwMABQADSnDiE0cAKoDUUeXGEHDcYMwBccPqxDFLAGjuG+AQxBUFyENPgBzO2k7Y3QAYRwgvngFW3sHZ1d3TygfdJhUMhgQmDDwvPt-VhgAC2gXc0somKJxSRSbXwyXNw9vLphgGE4SsorDUmYkUeAI8bgq2vqzC1yu3hAkmAEXBM3UZIBtAF1m3QBKajo4ACVUDE5uQf5KCSElMGw0WGBUASVHK92h8vpZBn8lINhlw3jAQRBvuD-os6lB4Yjfv9AbD0WDMUoUdBcT8IQEgkD3p8EXiIRstliCiB-lSMRCCkUKXCWTT-nSDtsAYzmaCScjqqjiUiAcxOZL8XzkgzUEy5RDCWjuaKlGSuLR6ABJPgYSwHbhcDCsPhPYD8OCfP787SQIQuZBoVQwfyDbgAHliEAwbSEAD5zp1DM64YCI8CoZw7JGCeKidG7cD1drAlwY+8FdtDgAGY6QwowBPAvMCQvFjOpxOV6tJpZonWUaRAA) | [Example 2](https://www.typescriptlang.org/play/?target=99&module=7#code/JYWwDg9gTgLgBAFQJ5gKZwGZQiOByGFVAIwgA88AoSgehrgFkIATAVwBtVKBjCAOwDO8AKoDUUOAF5ERAHQB5YgCtU3GAAoA3pThxgzAFwy0sgHKsQxceoCUAGh1w+AQxCojyEwGUYUYHwBzW0oAXxsefiE4AGEcNz54aU9UBWVVDW1dfQ85c0tre0cYVDIYHO9ffyDC3WdWGAALaCNRcVDw3kF4AAUIKKS5RRU1LUds4xS8qyhbB10YYBhOcpSfP0DZx1JmJBXZNarN2vqmqBaxKDm4XhB4mAE9gEEoKGckdVjb1ATwsOo6OAAJVQGE4amA-EovSEsjA2DQsGAqAEsn0UL6MFh8PEC2RsgWSy40MxcIgCNxKLqjWgWLJOKRKLRxNp5IZsippxZ9LxLjc6JhpNZeJud0ZxRAKMF3JRxVK-JJ2MRwri33uqPFksVFPZJxpUqVjOY8q5BtkItVYtQEpN2o5eq1bN5XFo9AAknwMOJvtwuBhWHxwfw4HDkar1JAhHsfM4FtwADyENAQDBwYkAPhscEywYxqKNugjmIJnEchZ11KgedLubtlad1Zh5oSAgA2gAGAC6+JKMAbmKb93bXdrVYLuYHrc75c59ZCQA) | [Challenge](test/typescript/readme.md)
+[Documentation](https://sinclairzx81.github.io/typebox/#/docs/script/overview) | [Example 1](https://www.typescriptlang.org/play/?target=99&module=7#code/JYWwDg9gTgLgBAFQJ5gKZwGZQiOByGFVAIwgA88AoSgehrgFkBDGAC0YgBMBXAG1WoBjCADsAzvGZs4AXkREAdAGVBUYGBgAKAAaU4cQmjgA1VIJjQALLLgBvOGQBccEdxDFUUADRwkz1+6ePgBe-m4e3nAA7mGBUHAAvnoGRCZmFlAAzDb2Ti7hQb6xESHFnonJhuim5tAATDkOZZF++XEV2gCU1HRwAOJQTGCswIJiHDz8QqIS-YPDo+NyyGjKqupaUqw+uvpVabCoZDnJ+pBiwDDAos41GZZepy7QIEy8t+nQmY-6+twAbh9alA6skkntUn1UDhUDAoEgTr84P9PFdBKgxB9DmQANoAXR+v2AIk4owxzXxYMqqSknmAb0RvyY7mAqBEMCB90J+lJGAw3DEqE5Vm5cDEaEEfCYUGFUEsVIhRgYGPYclsTwA5tCQLD4c4oTC4UhRa8YHS3s5aWo3lSutR9sqxKr5KslDAWKMADxVCAYOZDEZjHF4R2sPB4gB8+l6DpVjKRCcTSeTKZTvX0WsNerscAUecSotTReLJfTcFN5veObzCgqJfrDeTvQSQA) | [Example 2](https://www.typescriptlang.org/play/?target=99&module=7#code/JYWwDg9gTgLgBAFQJ5gKZwGZQiOByGFVAIwgA88AoSgehrgFkBDGAC0YgBMBXAG1WoBjCADsAzvABqqQTGgAWOAF5ERAHQB5YgCsZMABQBvOGQBcqtGoBy3EMVRR9ASgA0cJOeSWbdh87cAXp7qPvaOrnAA7sHetmHOcAC+TpTC4lJ60ADMyhaomjp6RiYx+aF+ER551nEVgaU1vuFJKWkScNKy0ABMuV75WrqyxWbV5eFuVf2N8U4t1HRwAOJQTGCswIJiHDz8QqLt0rCoZH3qg0WGlHBwkGLAMMCi5p1yUPIu13Ai0CBMvC9MlAsp8btwAG6ArpQbqUZKpA7wJaoHCoGBQJBnSwXYZXG7ghyPQSoMQNACCUFWSH0RxgJ1cX2AIk4mxJ5MpTGp03GzhS8La8GYdKgwH+WIGhVxXyYdmAqBEMChbw+XxZGAw3DEqCVClBcDEaEEfCYUB170+-MRjBJ7BU0xxBjxcAA5iiQGiMeZkaj0Ug9X9haKAYwWA4g3CUpRCGhrWJbdUAMowFibAA80ZRGFjrAAfDd8wXC4sM9nck7CxXK1XqzX84sbq6fZ64MY1G2knra13u1363AA2H-uZW+3El8exPJ3X6IkgA)
 
 TypeBox includes a runtime TypeScript engine that can transform TypeScript definitions to JSON Schema. The engine is fully type-safe and supports many programmable constructs including Conditional, Mapped, Indexed, Generics, Distributive Generics, and more.
 
@@ -120,45 +120,43 @@ TypeBox includes a runtime TypeScript engine that can transform TypeScript defin
 Syntax highlighting is available via the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=sinclairzx81.typebox-script)
 
 ```typescript
-// Module
-const { Post } = Type.Script(`
-  type User = {
-    id: number,
-    name: string
+import Type from 'typebox'
+
+// Math Module
+
+const Math = Type.Script(`
+  type Vector4 = { x: number, y: number, z: number, w: number }
+  type Vector3 = { x: number, y: number, z: number }
+  type Vector2 = { x: number, y: number }
+`)
+
+// Graphics Module
+
+const Graphics = Type.Script(Math, `
+  type Vertex = {
+    position: Vector4,
+    normal: Vector3,
+    uv: Vector2
   }
-  type Comment = {
-    id: number,
-    text: string,
-    author: User
+  type Geometry = {
+    vertices: Vertex[],
+    indices: number[]
   }
-  type Post = {
-    id: number,
-    title: string,
-    body: string,
-    author: User,
-    comments: Comment[]
+  type Material = {
+    ambient: Vector4,
+    diffuse: Vector4,
+    specular: Vector4
+  }
+  type Mesh = {
+    geometry: Geometry,
+    material: Material
   }
 `)
 
-// Reflection
-Post.properties.id
-Post.properties.title
-Post.properties.author.properties.id
-Post.properties.author.properties.name
-Post.properties.comments.items.properties.text
-Post.properties.comments.items.properties.author.properties.id
-Post.properties.comments.items.properties.author.properties.name
-
-// Inference
-function present(post: Type.Static<typeof Post>) {
-  post.id
-  post.title
-  post.author.id
-  post.author.name
-  post.comments[0].text
-  post.comments[0].author.id
-  post.comments[0].author.name
-}
+type Mesh = Type.Static<typeof Graphics['Mesh']>  // type Mesh = {
+                                                  //   geometry: { ... },
+                                                  //   material: { ... }
+                                                  // }
 ```
 
 <a name="Schema"></a>
@@ -177,18 +175,21 @@ import Schema from 'typebox/schema'
 
 ### Compile
 
-The compiler accepts JSON Schema and returns Validator instances.
+The compiler accepts either TypeBox types or native JSON Schema.
 
 ```typescript
-const Vector = Schema.Compile(Type.Object({       // const Vector: Validator<TObject<{
+
+// Type
+
+const VectorA = Schema.Compile(Type.Object({       // const VectorA: Validator<TObject<{
   x: Type.Number(),                                //   x: TNumber
   y: Type.Number(),                                //   y: TNumber
   z: Type.Number()                                 //   z: TNumber
 }))                                                // }>>
-```
-With JSON Schema
-```typescript
-const Vector = Schema.Compile({                    // const Vector: Validator<{
+
+// Schema
+
+const VectorB = Schema.Compile({                   // const VectorB: Validator<{
   type: 'object',                                  //   type: "object";
   required: ['x', 'y', 'z'],                       //   required: ["x", "y", "z"];
   properties: {                                    //   properties: { ... };
@@ -201,29 +202,30 @@ const Vector = Schema.Compile({                    // const Vector: Validator<{
 
 ### Validate
 
-Validator instances provide functions to Check and Parse values.
+Compiled validator instances provide functions to Check and Parse values.
 
 ```typescript
+
+// Compile
+
 const Vector = Schema.Compile(Type.Script(`{
   x: number
   y: number
   z: number
 }`))
 
-const valid = Vector.Check({                       // const valid: boolean
-  x: 1,
-  y: 0,
-  z: 0
-}) 
+// Check
 
-const value = Vector.Parse({                       // const value: {      
-  x: 1,                                            //   x: number
-  y: 0,                                            //   y: number
-  z: 0                                             //   z: number
-})                                                 // }
+const valid = Vector.Check({ x: 1, y: 0, z: 0 })   // const valid: boolean
+
+// Parse
+
+const result = Vector.Parse({ x: 1, y: 0, z: 0 })  // const result: {      
+                                                   //   x: number
+                                                   //   y: number
+                                                   //   z: number
+                                                   // }
 ```
-
-
 
 ### Coverage
 

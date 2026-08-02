@@ -24,7 +24,7 @@ export interface TSettings {
    * Determines whether types should be instantiated as immutable using `Object.freeze(...)`.
    * This helps prevent unintended schema mutation. Enabling this option introduces a slight
    * performance overhead during instantiation.
-   * 
+   *
    * @default false
    */
   immutableTypes: boolean
@@ -34,10 +34,20 @@ export interface TSettings {
    * performs exhaustive checks to gather diagnostics for invalid values, which can result in
    * excessive buffering for large or complex types. This setting limits the number of buffered
    * errors and acts as a safeguard against potential denial-of-service (DoS) attacks.
-   * 
+   *
    * @default 8
    */
   maxErrors: number
+
+  /**
+   * Specifies the maximum number of instantiations allowed within a top-level generic instantiation
+   * context. This setting can be used to bound generic calls to a fixed count, which can be useful if
+   * evaluating string-encoded types originating from untrusted sources. Setting this value to 0 will
+   * disallow generics entirely, ensuring type instantiation runs linear.
+   *
+   * @default 128
+   */
+  maxInstantiationCount: number
 
   /**
    * Enables or disables the use of runtime code evaluation to accelerate validation. By default,
@@ -45,7 +55,7 @@ export interface TSettings {
    * generated code. If evaluation is not permitted, it falls back to dynamic checking. Setting
    * this to `false` disables evaluation entirely, which may be desirable in applications that
    * restrict runtime code evaluation, regardless of Content Security Policy (CSP).
-   * 
+   *
    * @default true
    */
   useAcceleration: boolean
@@ -57,14 +67,14 @@ export interface TSettings {
    * TypeScript semantics to remain consistent with the language. This option is provided to align
    * runtime check semantics with projects that configure 'exactOptionalPropertyTypes: true' in
    * tsconfig.json.
-   * 
+   *
    * @default false
    */
   exactOptionalPropertyTypes: boolean
 
   /**
    * Controls whether internal compositor properties (`~kind`, `~readonly`, `~optional`) are enumerable.
-   * 
+   *
    * @default false
    */
   enumerableKind: boolean
@@ -75,7 +85,7 @@ export interface TSettings {
    * the value, followed by a subsequent `Assert`. Enabling this option may incur significant performance
    * overhead for invalid values. It is recommended to keep this disabled in performance-sensitive
    * applications.
-   * 
+   *
    * @default false
    */
   correctiveParse: boolean
@@ -85,7 +95,7 @@ export interface TSettings {
    * that require deterministic value matching, such as Clean, Decode, and Encode. When enabled,
    * more specific types (e.g. Literal) always take precedence over broader types (e.g. String),
    * regardless of the order variants are declared.
-   * 
+   *
    * @default true
    */
   unionPrioritySort: boolean

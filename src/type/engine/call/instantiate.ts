@@ -28,6 +28,7 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
+import { Settings } from '../../../system/settings/index.ts'
 import { Guard } from '../../../guard/index.ts'
 import { type TSchema } from '../../types/schema.ts'
 import { type TParameter } from '../../types/parameter.ts'
@@ -48,6 +49,24 @@ import { type TDistributeArguments, DistributeArguments } from './distribute_arg
 import { type TResolveTarget, ResolveTarget } from './resolve_target.ts'
 import { type TResolveArgumentsContext, ResolveArgumentsContext } from './resolve_arguments.ts'
 
+// ------------------------------------------------------------------
+// InstantiationGuard
+// ------------------------------------------------------------------
+let instantiationDepth = 0
+let instantiationCount = 0
+function InstantiationAssert(): void {
+  if(Guard.IsLessThan(instantiationCount, Settings.Get().maxInstantiationCount)) return
+  throw Error('Type instantiation is excessively deep and possibly infinite')
+}
+function InstantiationIncrement(): void {
+  InstantiationAssert()
+  instantiationCount++
+  instantiationDepth++
+}
+function InstantiationDecrement(): void {
+  instantiationDepth--
+  if(Guard.IsEqual(instantiationDepth, 0)) instantiationCount = 0
+}
 // ------------------------------------------------------------------
 // Peek: Top Element in the Stack or Empty
 // ------------------------------------------------------------------
@@ -88,14 +107,19 @@ function IsTailCall<State extends TState, Name extends string>(state: State, nam
 // ------------------------------------------------------------------
 type TCallDispatch<Context extends TProperties, State extends TState, Target extends TRef, Parameters extends TParameter[], Expression extends TSchema, Arguments extends TSchema[],
   ArgumentsContext extends TProperties = TResolveArgumentsContext<Context, State, Parameters, Arguments>,
-  ReturnType extends TSchema = TInstantiateType<ArgumentsContext, TState<[...State['callstack'], Target['$ref']], State['visited']>, Expression>,
+  ReturnType extends TSchema = TInstantiateType<ArgumentsContext, TState<[...State['callstack'], Target['$ref']], State['visited']>, Expression>
 > = TInstantiateType<ArgumentsContext, TState<[], []>, ReturnType>
 function CallDispatch<Context extends TProperties, State extends TState, Target extends TRef, Parameters extends TParameter[], Expression extends TSchema, Arguments extends TSchema[]>
   (context: Context, state: State, target: Target, parameters: [...Parameters], expression: Expression, arguments_: [...Arguments]):
     TCallDispatch<Context, State, Target, Parameters, Expression, Arguments> {
-  const argumentsContext = ResolveArgumentsContext(context, state, parameters, arguments_) as TProperties
-  const returnType = InstantiateType(argumentsContext, State([...state['callstack'], target['$ref']], state['visited']), expression) as TSchema
-  return InstantiateType(argumentsContext, State([], []), returnType) as never
+  InstantiationIncrement()
+  try {
+    const argumentsContext = ResolveArgumentsContext(context, state, parameters, arguments_) as TProperties
+    const returnType = InstantiateType(argumentsContext, State([...state['callstack'], target['$ref']], state['visited']), expression) as TSchema
+    return InstantiateType(argumentsContext, State([], []), returnType) as never
+  } finally {
+    InstantiationDecrement()
+  }
 }
 // ------------------------------------------------------------------
 // CallDistributed
@@ -117,9 +141,10 @@ type TCallDistributed<Context extends TProperties, State extends TState, Target 
 function CallDistributed<Context extends TProperties, State extends TState, Target extends TRef, Parameters extends TParameter[], Expression extends TSchema, DistributedArguments extends TSchema[][]>
   (context: Context, state: State, target: Target, parameters: [...Parameters], expression: Expression, distributedArguments: [...DistributedArguments]):
     TCallDistributed<Context, State, Target, Parameters, Expression, DistributedArguments> {
-  return distributedArguments.reduce((result, arguments_) =>
-    [...result, CallDispatch(context, state, target, parameters, expression, arguments_) as never]
-  , []) as never
+  return distributedArguments.reduce((result, arguments_) => {
+    const returnType = CallDispatch(context, state, target, parameters, expression, arguments_)
+    return [...result, returnType] as never
+  }, []) as never
 }
 // ------------------------------------------------------------------
 // Immediate
@@ -131,7 +156,7 @@ type TCallImmediate<Context extends TProperties, State extends TState, Target ex
 > = Result
 function CallImmediate<Context extends TProperties, State extends TState, Target extends TRef, Parameters extends TParameter[], Expression extends TSchema, InstantiatedArguments extends TSchema[]>
   (context: Context, state: State, target: Target, parameters: [...Parameters], expression: Expression, arguments_: [...InstantiatedArguments]):
-    TCallImmediate<Context, State, Target, Parameters, Expression, InstantiatedArguments> {
+    TCallImmediate<Context, State, Target, Parameters, Expression, InstantiatedArguments> {   
   const distributedArguments = DistributeArguments(parameters, arguments_, expression) as TSchema[][]
   const returnTypes = CallDistributed(context, state, target, parameters, expression, distributedArguments) as TSchema[]
   const result = Guard.IsEqual(returnTypes.length, 1) ? returnTypes[0] : EvaluateUnion(returnTypes)

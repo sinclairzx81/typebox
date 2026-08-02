@@ -1,10 +1,10 @@
 # Script.Options
 
-Script types can be assigned options via the `with` keyword.
+Script types can be assigned options using the `with` keyword.
 
-## The `with` Keyword
+## With Keyword
 
-You can assign a script type options using the following
+The `with` keyword assigns arbitrary metadata directly to a type.
 
 ```typescript
 const Email = Type.Script(`string with { format: 'email' }`)
@@ -13,7 +13,8 @@ const Email = Type.Script(`string with { format: 'email' }`)
 
 const Email = { type: 'string', format: 'email' }
 ```
-The `with` keyword allows to assigned to embedded types.
+
+The same syntax extends to multiple embedded types within a single declaration.
 
 ```typescript
 const Vector = Type.Script(`{
@@ -21,9 +22,9 @@ const Vector = Type.Script(`{
   y: number with { minimum: 0, maximum: 1 },
   z: number with { minimum: 0, maximum: 1 },
 } with { additionalProperties: false }`)
-
 ```
-They can also be applied in generic type expressions
+
+It works equally well within computed type expressions, such as mapped types.
 
 ```typescript
 const { Vector, ClampedVector } = Type.Script(`
@@ -39,4 +40,12 @@ const { Vector, ClampedVector } = Type.Script(`
 
   type ClampedVector = Clamp<Vector>
 `)
+```
+
+## With Function
+
+The `with` keyword is a syntactic alias for the `With` function.
+
+```typescript
+const Email = Type.With(Type.String(), { format: 'email' })
 ```
