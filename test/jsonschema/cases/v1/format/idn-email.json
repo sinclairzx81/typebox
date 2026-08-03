@@ -60,6 +60,24 @@
         "description": "a non-ASCII local part with an ASCII domain is valid",
         "data": "δοκιμή@example.com",
         "valid": true
+      },
+      {
+        "description": "a local part at the 64-octet limit is valid",
+        "comment": "https://www.rfc-editor.org/rfc/rfc5321#section-4.5.3.1 every implementation must be able to receive a local part of 64 octets",
+        "data": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@example.com",
+        "valid": true
+      },
+      {
+        "description": "a fullwidth commercial at is not a local-part separator",
+        "comment": "https://www.rfc-editor.org/rfc/rfc5321#section-4.1.2 Mailbox = Local-part \"@\" ( Domain / address-literal ) splits on U+0040, and any IDN mapping applies only to the domain that split produces, so U+FF20 cannot become the delimiter",
+        "data": "user＠example.com",
+        "valid": false
+      },
+      {
+        "description": "a local part with a supplementary-plane character is valid",
+        "comment": "https://www.rfc-editor.org/rfc/rfc6531#section-3.3 atext =/ UTF8-non-ascii, and https://www.rfc-editor.org/rfc/rfc3629#section-4 UTF8-4 covers U+10000 and above",
+        "data": "𝕏@example.com",
+        "valid": true
       }
     ]
   }

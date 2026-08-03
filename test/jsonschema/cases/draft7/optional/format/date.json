@@ -386,6 +386,36 @@
         "description": "invalid: duplicated second hyphen",
         "data": "2020-01--01",
         "valid": false
+      },
+      {
+        "description": "valid: date inside the Julian to Gregorian reform gap",
+        "data": "1582-10-10",
+        "valid": true
+      },
+      {
+        "description": "invalid: year field numerically larger than a 32-bit signed integer",
+        "data": "2147483648-01-01",
+        "valid": false
+      },
+      {
+        "description": "invalid: character just above '9' as the second digit of the day",
+        "data": "2020-01-0:",
+        "valid": false
+      },
+      {
+        "description": "invalid: non-ASCII digit leaving ten UTF-8 bytes but eight characters",
+        "data": "২0-01-01",
+        "valid": false
+      },
+      {
+        "description": "invalid: en dash separators instead of hyphen-minus",
+        "data": "2020–01–01",
+        "valid": false
+      },
+      {
+        "description": "invalid: NUL character after an otherwise valid full-date",
+        "data": "2020-01-01\u0000",
+        "valid": false
       }
     ]
   }

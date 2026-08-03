@@ -139,6 +139,16 @@
         "description": "IDN label separator",
         "data": "example．com",
         "valid": false
+      },
+      {
+        "description": "trailing newline is invalid",
+        "data": "example.com\n",
+        "valid": false
+      },
+      {
+        "description": "invalid non-ASCII KELVIN SIGN (U+212A)",
+        "data": "Kelvin.example.com",
+        "valid": false
       }
     ]
   }

@@ -105,6 +105,31 @@
         "description": "multi-digit prefix with a zero followed by another digit",
         "data": "100",
         "valid": true
+      },
+      {
+        "description": "tilde not followed by 0 or 1 in the json-pointer part",
+        "data": "0/~2",
+        "valid": false
+      },
+      {
+        "description": "unescaped tilde at the end of the json-pointer part",
+        "data": "0/foo/bar~",
+        "valid": false
+      },
+      {
+        "description": "octothorpe followed by a json-pointer",
+        "data": "1#/foo/bar",
+        "valid": false
+      },
+      {
+        "description": "empty reference tokens in the json-pointer part",
+        "data": "0//",
+        "valid": true
+      },
+      {
+        "description": "trailing newline after the non-negative integer",
+        "data": "1\n",
+        "valid": false
       }
     ]
   }

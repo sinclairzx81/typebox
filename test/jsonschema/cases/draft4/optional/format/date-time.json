@@ -149,6 +149,16 @@
         "description": "invalid extended year",
         "data": "+11963-06-19T08:30:06.283185Z",
         "valid": false
+      },
+      {
+        "description": "a numeric offset without minutes is invalid",
+        "data": "1985-04-12T23:20:50+01",
+        "valid": false
+      },
+      {
+        "description": "a trailing newline is invalid",
+        "data": "1985-04-12T23:20:50Z\n",
+        "valid": false
       }
     ]
   }

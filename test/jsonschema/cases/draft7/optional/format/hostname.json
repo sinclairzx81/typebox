@@ -119,6 +119,21 @@
         "description": "exceeds maximum label length (63)",
         "data": "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijkl.com",
         "valid": false
+      },
+      {
+        "description": "trailing newline is invalid",
+        "data": "example.com\n",
+        "valid": false
+      },
+      {
+        "description": "invalid non-ASCII KELVIN SIGN (U+212A)",
+        "data": "Kelvin.example.com",
+        "valid": false
+      },
+      {
+        "description": "consecutive hyphens inside a label",
+        "data": "a--b.com",
+        "valid": true
       }
     ]
   },

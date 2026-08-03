@@ -148,6 +148,16 @@
         "valid": true
       },
       {
+        "description": "valid IPv4 with an octet in the 200 to 249 range",
+        "data": "200.0.0.0",
+        "valid": true
+      },
+      {
+        "description": "valid IPv4 with two-digit octets",
+        "data": "10.20.30.40",
+        "valid": true
+      },
+      {
         "description": "empty string is invalid",
         "data": "",
         "valid": false
@@ -190,6 +200,11 @@
       {
         "description": "with port number is invalid",
         "data": "192.168.0.1:80",
+        "valid": false
+      },
+      {
+        "description": "an IPv4-mapped IPv6 address is invalid",
+        "data": "::ffff:192.168.0.1",
         "valid": false
       },
       {

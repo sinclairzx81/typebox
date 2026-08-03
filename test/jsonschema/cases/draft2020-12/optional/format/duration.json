@@ -217,6 +217,26 @@
         "description": "minutes and seconds can appear without hour",
         "data": "PT1M2S",
         "valid": true
+      },
+      {
+        "description": "a leading sign is not allowed",
+        "data": "-P1D",
+        "valid": false
+      },
+      {
+        "description": "a number before the time separator has no unit",
+        "data": "P1D2T3H",
+        "valid": false
+      },
+      {
+        "description": "exponent notation is not allowed in a component",
+        "data": "P1e2D",
+        "valid": false
+      },
+      {
+        "description": "a trailing newline is invalid",
+        "data": "P1D\n",
+        "valid": false
       }
     ]
   }

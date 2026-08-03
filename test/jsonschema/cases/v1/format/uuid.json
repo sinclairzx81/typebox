@@ -130,6 +130,21 @@
         "description": "non-ASCII digit '২' (a Bengali 2) is invalid",
         "data": "২eb8aa08-aa98-11ea-b4aa-73b441d16380",
         "valid": false
+      },
+      {
+        "description": "an underscore in place of a hex digit is invalid",
+        "data": "2eb8aa08-aa98-11ea-b4aa-73b441d1_380",
+        "valid": false
+      },
+      {
+        "description": "a trailing newline after a complete UUID is invalid",
+        "data": "2eb8aa08-aa98-11ea-b4aa-73b441d16380\n",
+        "valid": false
+      },
+      {
+        "description": "a variant nibble not defined by RFC 4122 is valid",
+        "data": "2eb8aa08-aa98-11ea-f4aa-73b441d16380",
+        "valid": true
       }
     ]
   }

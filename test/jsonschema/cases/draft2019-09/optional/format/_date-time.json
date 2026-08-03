@@ -1,0 +1,21 @@
+[
+  {
+    "description": "validation of date-time strings",
+    "schema": {
+      "$schema": "https://json-schema.org/draft/2019-09/schema",
+      "format": "date-time"
+    },
+    "tests": [
+      {
+        "description": "hour 24 is invalid even with a leap second",
+        "data": "2016-12-31T24:59:60+01:00",
+        "valid": false
+      },
+      {
+        "description": "a second fraction of fifteen nines is valid",
+        "data": "1985-04-12T00:59:59.999999999999999Z",
+        "valid": true
+      }
+    ]
+  }
+]
