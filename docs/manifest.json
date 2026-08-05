@@ -50,9 +50,8 @@
     "1_syntax": "docs/script/1_syntax.html",
     "2_options": "docs/script/2_options.html",
     "3_parameters": "docs/script/3_parameters.html",
-    "4_limitations": "docs/script/4_limitations.html",
-    "5_restrict": "docs/script/5_restrict.html",
-    "6_challenge": "docs/script/6_challenge.html",
+    "4_inference": "docs/script/4_inference.html",
+    "5_challenge": "docs/script/5_challenge.html",
     "overview": "docs/script/overview.html"
   },
   "system": {

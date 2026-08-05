@@ -1,6 +1,6 @@
-# Script.Limitations
+# Script.Inference
 
-TypeBox implements a symmetric runtime and type-level evaluator for TypeScript syntax. Runtime evaluation of types allows for moderately large declaration files to be parsed; however, type-level evaluation is subject to the instantiation limitations of the TypeScript compiler. This section details type inference limitations and scaling behaviours for Script.
+TypeBox Script is a symmetric runtime and type-level evaluator for TypeScript syntax. Runtime evaluation of types allows for moderately large declaration files to be parsed; however, type-level evaluation is subject to the instantiation limitations of the TypeScript compiler. This section details type inference limitations and scaling behaviours for Script.
 
 ## Wide vs Deep
 

@@ -1,6 +1,6 @@
 # Script.Challenge
 
-TypeBox enables type-level programming in runtime environments, using the JSON Schema specification as a type representation format (IR). This page collects TypeBox solutions to problems from the community-run Type Challenges project, implemented using only Type.Script. These solutions are used to track functional parity with TypeScript.
+TypeBox Script enables type-level programming in runtime environments. This page collects TypeBox solutions to problems from the community-run [Type Challenges](https://github.com/type-challenges/type-challenges) project. These solutions are used to track functional parity with TypeScript.
 
 
 
