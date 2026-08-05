@@ -237,6 +237,36 @@
         "description": "a trailing newline is invalid",
         "data": "P1D\n",
         "valid": false
+      },
+      {
+        "description": "weeks cannot be combined with a time component",
+        "data": "P1WT1H",
+        "valid": false
+      },
+      {
+        "description": "weeks cannot be combined with a zero-valued component",
+        "data": "P0Y1W",
+        "valid": false
+      },
+      {
+        "description": "a leading zero in a component is valid",
+        "data": "P01D",
+        "valid": true
+      },
+      {
+        "description": "a component with many digits is valid",
+        "data": "P999999999999999999999999999999999999999999999999999999999999999999999999999999D",
+        "valid": true
+      },
+      {
+        "description": "a comma as the decimal separator is invalid",
+        "data": "PT0,5S",
+        "valid": false
+      },
+      {
+        "description": "a sign inside a component is invalid",
+        "data": "P-1D",
+        "valid": false
       }
     ]
   }

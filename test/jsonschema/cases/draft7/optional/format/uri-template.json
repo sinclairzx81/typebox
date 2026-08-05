@@ -54,6 +54,46 @@
         "description": "a valid relative uri-template",
         "data": "dictionary/{term:1}/{term}",
         "valid": true
+      },
+      {
+        "description": "an empty expression is invalid",
+        "data": "{}",
+        "valid": false
+      },
+      {
+        "description": "an empty varspec inside the variable list is invalid",
+        "data": "{a,,b}",
+        "valid": false
+      },
+      {
+        "description": "a zero prefix max-length is invalid",
+        "data": "{v:0}",
+        "valid": false
+      },
+      {
+        "description": "a five-digit prefix max-length is invalid",
+        "data": "{v:10000}",
+        "valid": false
+      },
+      {
+        "description": "an empty string is a valid uri-template",
+        "data": "",
+        "valid": true
+      },
+      {
+        "description": "an unmatched closing brace is invalid",
+        "data": "foo}bar",
+        "valid": false
+      },
+      {
+        "description": "a percent-encoded triplet in a literal is valid",
+        "data": "a%41b",
+        "valid": true
+      },
+      {
+        "description": "a supplementary plane character in a literal is valid",
+        "data": "a😀b",
+        "valid": true
       }
     ]
   }

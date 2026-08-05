@@ -68,13 +68,13 @@ TypeBox has broad support for all major JSON Schema drafts and asserts for speci
 | format-assertion | - | - | - | - | - | ✅ | - |
 | format/color | 3/6 | - | - | - | - | - | - |
 | format/date | ✅ | - | - | ✅ | ✅ | ✅ | ✅ |
-| format/date-time | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| format/date-time | 9/11 | 31/33 | 31/33 | 31/33 | 31/33 | 31/33 | 31/33 |
 | format/duration | - | - | - | - | ✅ | ✅ | ✅ |
-| format/ecmascript-regex | ✅ | - | - | - | - | 0/1 | 0/1 |
+| format/ecmascript-regex | ✅ | - | - | - | - | 11/12 | 11/12 |
 | format/email | ✅ | ✅ | ✅ | ✅ | ✅ | 22/27 | 22/27 |
 | format/host-name | 2/12 | - | - | - | - | - | - |
-| format/hostname | - | 27/28 | 27/28 | ✅ | ✅ | ✅ | ✅ |
-| format/idn-email | - | - | - | 11/14 | 11/14 | 11/14 | 12/15 |
+| format/hostname | - | 29/30 | 29/30 | ✅ | ✅ | ✅ | ✅ |
+| format/idn-email | - | - | - | 13/18 | 13/18 | 13/18 | 14/19 |
 | format/idn-hostname | - | - | - | 81/89 | 82/90 | 82/90 | 82/90 |
 | format/ip-address | 1/3 | - | - | - | - | - | - |
 | format/ipv4 | - | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
