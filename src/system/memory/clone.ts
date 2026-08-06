@@ -43,25 +43,27 @@ function FromClassInstance(value: Record<PropertyKey, unknown>): Record<Property
   return value // atomic
 }
 // ------------------------------------------------------------------
-// TypeObject
+// SchemaObject
 //
-// Types have non-enumerable properties that MUST be preserved on Clone. 
-// The following is the optimal path for TypeBox types.
+// Schema objects have non-enumerable properties that MUST be preserved 
+// on Clone. The following is the optimal path these objects.
 // ------------------------------------------------------------------
-function IsTypeObject(value: Record<PropertyKey, unknown>): boolean {
+function IsSchemaObject(value: Record<PropertyKey, unknown>): boolean {
   return (
     Guard.HasPropertyKey(value, '~kind') || 
     Guard.HasPropertyKey(value, '~unsafe')
   )
 }
-function FromTypeObject(value: Record<PropertyKey, unknown>): Record<PropertyKey, unknown> {
+function FromSchemaObject(value: Record<PropertyKey, unknown>): Record<PropertyKey, unknown> {
   const result = {} as Record<PropertyKey, unknown>
-  const descriptors = Object.getOwnPropertyDescriptors(value)
-  for (const key of Object.keys(descriptors)) {
+  for (const key of Object.getOwnPropertyNames(value)) {
     if (Guard.IsUnsafePropertyKey(key)) continue // (ignore: prototype-pollution)
-    const descriptor = descriptors[key]
-    if (Guard.HasPropertyKey(descriptor, 'value')) {
-      Object.defineProperty(result, key, { ...descriptor, value: FromValue(descriptor.value) })
+    const descriptor = Object.getOwnPropertyDescriptor(value, key)! // safe-name!
+    descriptor.value = FromValue(descriptor.value)
+    if(Guard.IsEqual(descriptor.enumerable, true)) {
+      result[key] = descriptor.value
+    } else {
+      Object.defineProperty(result, key, descriptor)
     }
   }
   return result
@@ -86,7 +88,7 @@ function FromPlainObject(value: Record<PropertyKey, unknown>): Record<PropertyKe
 function FromObject(value: Record<PropertyKey, unknown>): Record<PropertyKey, unknown> {
   return (
     Guard.IsClassInstance(value) ? FromClassInstance(value) :
-    IsTypeObject(value) ? FromTypeObject(value) :
+    IsSchemaObject(value) ? FromSchemaObject(value) :
     FromPlainObject(value)
   )
 }
