@@ -4,7 +4,7 @@ TypeBox
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2026 Haydn Paterson 
+Copyright (c) 2017-2026 Haydn Paterson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -38,8 +38,8 @@ type ObjectLike = Record<PropertyKey, any>
 export function Discard(value: ObjectLike, propertyKeys: PropertyKey[]): ObjectLike {
   Metrics.discard += 1
   const result: ObjectLike = {}
-  for(const key of Object.getOwnPropertyNames(value)) {
-    if(propertyKeys.includes(key)) continue
+  for (const key of Object.getOwnPropertyNames(value)) {
+    if (propertyKeys.includes(key)) continue
     const descriptor = Object.getOwnPropertyDescriptor(value, key)! // safe-name!
     descriptor.value = Clone(descriptor.value)
     Object.defineProperty(result, key, descriptor)
