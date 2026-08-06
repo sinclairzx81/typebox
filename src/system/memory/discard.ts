@@ -38,11 +38,11 @@ type ObjectLike = Record<PropertyKey, any>
 export function Discard(value: ObjectLike, propertyKeys: PropertyKey[]): ObjectLike {
   Metrics.discard += 1
   const result: ObjectLike = {}
-  const descriptors = Object.getOwnPropertyDescriptors(Clone(value))
-  const keysToDiscard = new Set(propertyKeys)
-  for (const key of Object.keys(descriptors)) {
-    if (keysToDiscard.has(key)) continue
-    Object.defineProperty(result, key, descriptors[key])
+  for(const key of Object.getOwnPropertyNames(value)) {
+    if(propertyKeys.includes(key)) continue
+    const descriptor = Object.getOwnPropertyDescriptor(value, key)! // safe-name!
+    descriptor.value = Clone(descriptor.value)
+    Object.defineProperty(result, key, descriptor)
   }
   return result
 }

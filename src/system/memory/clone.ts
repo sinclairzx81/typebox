@@ -56,12 +56,14 @@ function IsTypeObject(value: Record<PropertyKey, unknown>): boolean {
 }
 function FromTypeObject(value: Record<PropertyKey, unknown>): Record<PropertyKey, unknown> {
   const result = {} as Record<PropertyKey, unknown>
-  const descriptors = Object.getOwnPropertyDescriptors(value)
-  for (const key of Object.keys(descriptors)) {
+  for (const key of Object.getOwnPropertyNames(value)) {
     if (Guard.IsUnsafePropertyKey(key)) continue // (ignore: prototype-pollution)
-    const descriptor = descriptors[key]
-    if (Guard.HasPropertyKey(descriptor, 'value')) {
-      Object.defineProperty(result, key, { ...descriptor, value: FromValue(descriptor.value) })
+    const descriptor = Object.getOwnPropertyDescriptor(value, key)! // safe-name!
+    descriptor.value = FromValue(descriptor.value)
+    if(Guard.IsEqual(descriptor.enumerable, true)) {
+      result[key] = descriptor.value
+    } else {
+      Object.defineProperty(result, key, descriptor)
     }
   }
   return result
