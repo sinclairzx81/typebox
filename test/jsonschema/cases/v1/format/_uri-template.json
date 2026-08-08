@@ -1,0 +1,26 @@
+[
+  {
+    "description": "format: uri-template",
+    "schema": {
+      "$schema": "https://json-schema.org/v1",
+      "format": "uri-template"
+    },
+    "tests": [
+      {
+        "description": "a dotted variable name is valid",
+        "data": "{a.b}",
+        "valid": true
+      },
+      {
+        "description": "a delete character in a literal is invalid",
+        "data": "ab",
+        "valid": false
+      },
+      {
+        "description": "an apostrophe in a literal is valid",
+        "data": "a'b",
+        "valid": true
+      }
+    ]
+  }
+]
