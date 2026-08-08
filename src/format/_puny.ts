@@ -98,3 +98,61 @@ export function Decode(value: string): string {
   }
   return globalThis.String.fromCodePoint(...output)
 }
+// ------------------------------------------------------------------
+// DigitToChar
+// ------------------------------------------------------------------
+function DigitToChar(digit: number): string {
+  return digit < 26 ? String.fromCharCode(digit + 0x61) : String.fromCharCode(digit - 26 + 0x30)
+}
+// ------------------------------------------------------------------
+// Encode
+//
+// Encodes a Unicode string into its Punycode payload (the part that
+// follows the 'xn--' ACE prefix). Used to compute the true A-label
+// length of a U-label, since the 63-octet label length limit (RFC
+// 5891 §4.2.4) applies to the encoded form, not the code point count.
+// ------------------------------------------------------------------
+export function Encode(input: string): string {
+  const codePoints = [...input].map((c) => c.codePointAt(0)!)
+  const output: string[] = []
+  let n = PUNYCODE_INITIAL_N
+  let delta = 0
+  let bias = PUNYCODE_INITIAL_BIAS
+  let basicLength = 0
+  for (const cp of codePoints) {
+    if (cp < 0x80) {
+      output.push(String.fromCodePoint(cp))
+      basicLength++
+    }
+  }
+  let handledCPCount = basicLength
+  if (basicLength > 0) output.push('-')
+  while (handledCPCount < codePoints.length) {
+    let m = Infinity
+    for (const cp of codePoints) {
+      if (cp >= n && cp < m) m = cp
+    }
+    delta += (m - n) * (handledCPCount + 1)
+    n = m
+    for (const cp of codePoints) {
+      if (cp < n) delta++
+      if (cp === n) {
+        let q = delta
+        for (let k = PUNYCODE_BASE;; k += PUNYCODE_BASE) {
+          const t = k <= bias ? PUNYCODE_TMIN : k >= bias + PUNYCODE_TMAX ? PUNYCODE_TMAX : k - bias
+          if (q < t) break
+          const digit = t + ((q - t) % (PUNYCODE_BASE - t))
+          output.push(DigitToChar(digit))
+          q = Math.floor((q - t) / (PUNYCODE_BASE - t))
+        }
+        output.push(DigitToChar(q))
+        bias = Adapt(delta, handledCPCount + 1, handledCPCount === basicLength)
+        delta = 0
+        handledCPCount++
+      }
+    }
+    delta++
+    n++
+  }
+  return output.join('')
+}

@@ -26,20 +26,29 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { IsIdnLabel } from './_idna.ts'
+import { ContainsRtlCharacter, GetIdnLabelUnicodeForm, IsIdnLabel } from './_idna.ts'
 
 /**
  * Returns true if the value is a valid internationalized (IDN) hostname.
  * @specification https://tools.ietf.org/html/rfc3490
  * @specification https://tools.ietf.org/html/rfc5891
  * @specification https://tools.ietf.org/html/rfc5892
+ * @specification https://tools.ietf.org/html/rfc5893
  */
 export function IsIdnHostname(value: string): boolean {
   if (value.length === 0 || value.includes(' ')) return false
   const canonical = value.normalize('NFC').replace(/[\u002E\u3002\uFF0E\uFF61]/g, '.')
   if (canonical.length > 253) return false
-  for (const label of canonical.split('.')) {
-    if (!IsIdnLabel(label)) return false
+  const labels = canonical.split('.')
+  // RFC 5893 §1.4: a "Bidi domain name" is a domain name that contains at
+  // least one RTL label. Once that's true, the Bidi Rule (§2) must be
+  // satisfied by every label in the domain, not only the RTL ones.
+  const isBidiDomain = labels.some((label) => {
+    const unicodeForm = GetIdnLabelUnicodeForm(label)
+    return unicodeForm !== null && ContainsRtlCharacter(unicodeForm)
+  })
+  for (const label of labels) {
+    if (!IsIdnLabel(label, isBidiDomain)) return false
   }
   return true
 }

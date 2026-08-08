@@ -87,7 +87,7 @@ export function BuildAdditionalPropertiesFast(_context: BuildContext, schema: S.
 // ------------------------------------------------------------------
 export function BuildAdditionalPropertiesStandard(stack: Stack, context: BuildContext, schema: S.XAdditionalProperties, value: string): string {
   const [key, _index] = [Unique(), Unique()]
-  const regexp = V.CreateVariable(new RegExp(GetPropertiesPattern(schema)))
+  const regexp = V.CreateVariable(new RegExp(GetPropertiesPattern(schema), 'u'))
   const isSchema = BuildSchemaPushStack(stack, context, schema.additionalProperties, `${value}[${key}]`)
   const isKey = E.Call(E.Member(regexp, 'test'), [key])
   const addKey = context.AddKey(key)
@@ -107,7 +107,7 @@ export function BuildAdditionalProperties(stack: Stack, context: BuildContext, s
 // Check
 // ------------------------------------------------------------------
 export function CheckAdditionalProperties(stack: Stack, context: CheckContext, schema: S.XAdditionalProperties, value: Record<PropertyKey, unknown>): boolean {
-  const regexp = new RegExp(GetPropertiesPattern(schema))
+  const regexp = new RegExp(GetPropertiesPattern(schema), 'u')
   const isAdditionalProperties = G.Every(G.Keys(value), 0, (key, _index) => {
     return regexp.test(key) ||
       (CheckSchemaPushStack(stack, context, schema.additionalProperties, value[key]) && context.AddKey(key))
@@ -118,7 +118,7 @@ export function CheckAdditionalProperties(stack: Stack, context: CheckContext, s
 // Error
 // ------------------------------------------------------------------
 export function ErrorAdditionalProperties(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: S.XAdditionalProperties, value: Record<PropertyKey, unknown>): boolean {
-  const regexp = new RegExp(GetPropertiesPattern(schema))
+  const regexp = new RegExp(GetPropertiesPattern(schema), 'u')
   const additionalProperties: string[] = []
   const isAdditionalProperties = G.EveryAll(G.Keys(value), 0, (key, _index) => {
     const nextSchemaPath = `${schemaPath}/additionalProperties`

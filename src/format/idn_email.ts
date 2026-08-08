@@ -26,12 +26,24 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-const IdnEmail = /^(?!.*\.\.)[\p{L}\p{N}!#$%&'*+/=?^_`{|}~-]+(?:\.[\p{L}\p{N}!#$%&'*+/=?^_`{|}~-]+)*@[\p{L}\p{N}](?:[\p{L}\p{N}-]{0,61}[\p{L}\p{N}])?(?:\.[\p{L}\p{N}](?:[\p{L}\p{N}-]{0,61}[\p{L}\p{N}])?)*$/iu
+// ------------------------------------------------------------------
+// Local Part
+// ------------------------------------------------------------------
+// Note: consecutive dots are already structurally impossible here
+// (ATEXT excludes '.', and each dot separator is followed by ATEXT+),
+// so the previous `(?!.*\.\.)` lookahead was redundant and removed.
+const LOCAL_ATEXT = `[A-Za-z0-9!#$%&'*+/=?^_\`{|}~\\u{0080}-\\u{10FFFF}-]`
+const LOCAL_DOT_ATOM = `${LOCAL_ATEXT}+(?:\\.${LOCAL_ATEXT}+)*`
+const LOCAL_QUOTED = `"(?:[^"\\\\]|\\\\.)*"`
+const DOMAIN_LABEL = `[\\p{L}\\p{N}](?:[\\p{L}\\p{N}-]{0,62})(?<!-)`
+const DOMAIN = `${DOMAIN_LABEL}(?:\\.${DOMAIN_LABEL})*`
+
+const IdnEmail = new RegExp(`^(?:${LOCAL_DOT_ATOM}|${LOCAL_QUOTED})@${DOMAIN}$`, 'iu')
 
 /**
  * Returns true if the value is an IdnEmail
  * @specification ajv-formats (unicode-extension)
  */
 export function IsIdnEmail(value: string): boolean {
-  return IdnEmail.test(value)
+  return IdnEmail.test(value.normalize('NFC'))
 }

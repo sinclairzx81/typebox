@@ -36,7 +36,7 @@ export function IsRegex(value: string): boolean {
     return false
   }
   try {
-    new RegExp(value)
+    new RegExp(value, 'u')
     return true
   } catch {
     return false

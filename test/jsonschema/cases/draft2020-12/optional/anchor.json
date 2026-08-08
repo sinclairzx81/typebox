@@ -50,6 +50,11 @@
         "valid": false
       },
       {
+        "description": "match $ref to $anchor",
+        "data": "a string to match #/$defs/anchor_in_enum",
+        "valid": true
+      },
+      {
         "description": "no match on enum or $ref to $anchor",
         "data": 1,
         "valid": false

@@ -32,6 +32,7 @@ import { Guard } from '../../guard/index.ts'
 import { Pointer } from '../pointer/index.ts'
 import * as Schema from '../types/index.ts'
 
+
 // ------------------------------------------------------------------
 // Match: Id
 // ------------------------------------------------------------------
@@ -106,8 +107,14 @@ function FromArray(schema: unknown[], base: URL, ref: URL): Schema.XSchema | und
 // ------------------------------------------------------------------
 // FromObject
 // ------------------------------------------------------------------
+function SkipProperty(key: PropertyKey): boolean {
+  // these are explicit data encoded in a schema, they should not
+  // be considered valid targets used for de-referencing.
+  return Guard.IsEqual(key, 'const') || Guard.IsEqual(key, 'enum')
+}
 function FromObject(schema: Record<PropertyKey, unknown>, base: URL, ref: URL): Schema.XSchema | undefined {
   return Guard.Keys(schema).reduce<Schema.XSchema | undefined>((result, key) => {
+    if(SkipProperty(key)) return result
     const match = FromValue(schema[key], base, ref)
     return !Guard.IsUndefined(match) ? match : result
   }, undefined)
@@ -128,11 +135,15 @@ function FromValue(schema: unknown, base: URL, ref: URL): Schema.XSchema | undef
   return undefined
 }
 // ------------------------------------------------------------------
+// DefaultBase
+// ------------------------------------------------------------------
+export const DefaultBase = new URL('https://json-schema.org')
+
+// ------------------------------------------------------------------
 // Ref
 // ------------------------------------------------------------------
 export function Ref(schema: Schema.XSchemaObject, ref: string): Schema.XSchema | undefined {
-  const defaultBase = new URL('http://unknown/')
-  const initialBase = Schema.IsId(schema) ? new URL(schema.$id, defaultBase.href) : defaultBase
+  const initialBase = Schema.IsId(schema) ? new URL(schema.$id, DefaultBase.href) : DefaultBase
   const initialRef = new URL(ref, initialBase.href)
   return FromValue(schema, initialBase, initialRef)
 }
@@ -154,7 +165,7 @@ export function DynamicRef(root: Schema.XSchemaObject, base: Schema.XSchemaObjec
   // Extract the fragment portion of the reference. According to the test suite,
   // only plain fragment names (e.g., "#foo") trigger the dynamic scope; JSON 
   // Pointer fragments (e.g., "#/definitions/foo") bypass dynamic resolution.
-  const fragment = new URL(dynamicRef.$dynamicRef, 'http://unknown/').hash
+  const fragment = new URL(dynamicRef.$dynamicRef, DefaultBase).hash
   if (fragment.startsWith('#/')) return fragmentTarget
 
   // Search the live dynamic anchor stack for a schema whose $dynamicAnchor matches the

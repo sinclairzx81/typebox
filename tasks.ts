@@ -54,7 +54,7 @@ Task.run('clean', () => Task.folder('target').delete())
 // ------------------------------------------------------------------
 // Local
 // ------------------------------------------------------------------
-Task.run('local', (target: string = `../build-test/node_modules/typebox`) => BuildPackage(target))
+Task.run('local', (target: string = `../json-schema-compliance-suite/node_modules/typebox`) => BuildPackage(target))
 // ------------------------------------------------------------------
 // Publish
 // ------------------------------------------------------------------

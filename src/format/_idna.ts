@@ -129,9 +129,101 @@ function IsVirama(cp: number): boolean {
   return VIRAMA_CPS.has(cp)
 }
 // ------------------------------------------------------------------
+// General Category Enforcement (RFC 5892 §2 PVALID)
+//
+// A label may only contain letters, marks, decimal digits, the
+// hyphen (LDH), and the small set of CONTEXTO exception characters
+// that are separately validated by their neighbor rules above. Any
+// other general category (punctuation, symbols, etc.) is DISALLOWED.
+// ------------------------------------------------------------------
+const CONTEXTO_EXCEPTIONS = new Set([0x00b7, 0x0375, 0x05f3, 0x05f4, 0x200c, 0x200d, 0x30fb])
+// RFC 5892 §2.6 - PVALID exceptions: unconditionally permitted regardless of
+// general category (some, like U+00DF and U+03C2, are already letters and
+// listed here for documentation; others, like U+0F0B (Po), U+3007 (Nl), and
+// U+06FD/U+06FE (So), are not covered by the letter/mark/digit categories
+// below and would otherwise be rejected).
+const PVALID_EXCEPTIONS = new Set([0x00df, 0x03c2, 0x06fd, 0x06fe, 0x0f0b, 0x3007])
+function IsPermittedCategory(cp: number): boolean {
+  if (cp === 0x002d) return true // '-' LDH hyphen
+  if (CONTEXTO_EXCEPTIONS.has(cp)) return true
+  if (PVALID_EXCEPTIONS.has(cp)) return true
+  const ch = String.fromCodePoint(cp)
+  return /\p{L}/u.test(ch) || /\p{Mn}/u.test(ch) || /\p{Mc}/u.test(ch) || /\p{Nd}/u.test(ch)
+}
+// ------------------------------------------------------------------
+// Bidi Rule (RFC 5893 §2)
+// ------------------------------------------------------------------
+type BidiClass = 'L' | 'R' | 'AL' | 'EN' | 'AN' | 'ES' | 'ET' | 'CS' | 'NSM' | 'BN' | 'ON'
+function GetBidiClass(cp: number): BidiClass {
+  if (cp >= 0x0030 && cp <= 0x0039) return 'EN' // ASCII digits
+  if (cp >= 0x0660 && cp <= 0x0669) return 'AN' // Arabic-Indic digits
+  if (cp >= 0x06f0 && cp <= 0x06f9) return 'EN' // Extended Arabic-Indic digits (per UCD)
+  if (cp === 0x002d || cp === 0x002b) return 'ES' // hyphen-minus, plus
+  if (cp === 0x002e || cp === 0x002c || cp === 0x003a || cp === 0x002f) return 'CS' // . , : /
+  const ch = String.fromCodePoint(cp)
+  if (/\p{Mn}/u.test(ch) || /\p{Me}/u.test(ch)) return 'NSM'
+  if (/\p{Script=Hebrew}/u.test(ch)) return 'R'
+  if (
+    /\p{Script=Arabic}/u.test(ch) ||
+    /\p{Script=Syriac}/u.test(ch) ||
+    /\p{Script=Thaana}/u.test(ch) ||
+    /\p{Script=Mandaic}/u.test(ch)
+  ) return 'AL'
+  if (/\p{L}/u.test(ch)) return 'L'
+  return 'ON'
+}
+// ------------------------------------------------------------------
+// ContainsRtlCharacter
+//
+// Per RFC 5893 §1.4: "An RTL label is a label that contains at least
+// one character of type R, AL, or AN." Used to determine whether a
+// domain name is a "Bidi domain name" (RFC 5893 §1.4), in which case
+// the Bidi Rule below applies to every label in the domain.
+// ------------------------------------------------------------------
+export function ContainsRtlCharacter(value: string): boolean {
+  for (const ch of value) {
+    const bidiClass = GetBidiClass(ch.codePointAt(0)!)
+    if (bidiClass === 'R' || bidiClass === 'AL' || bidiClass === 'AN') return true
+  }
+  return false
+}
+// ------------------------------------------------------------------
+// SatisfiesBidiRule
+//
+// @specification https://tools.ietf.org/html/rfc5893#section-2
+// ------------------------------------------------------------------
+function SatisfiesBidiRule(cps: readonly number[]): boolean {
+  if (cps.length === 0) return true
+  const classes = cps.map(GetBidiClass)
+  const first = classes[0]
+  // 1. The first character must be a character with Bidi property L, R, or AL.
+  if (first !== 'L' && first !== 'R' && first !== 'AL') return false
+  const isRtl = first === 'R' || first === 'AL'
+  let end = classes.length - 1
+  while (end >= 0 && classes[end] === 'NSM') end--
+  if (end < 0) return false
+  const endClass = classes[end]
+  if (isRtl) {
+    // 2. In an RTL label, only R, AL, AN, EN, ES, CS, ET, ON, BN, or NSM are allowed.
+    const allowed = new Set<BidiClass>(['R', 'AL', 'AN', 'EN', 'ES', 'CS', 'ET', 'ON', 'BN', 'NSM'])
+    if (!classes.every((c) => allowed.has(c))) return false
+    // 3. The end of the label must be R, AL, EN, or AN (ignoring trailing NSM).
+    if (endClass !== 'R' && endClass !== 'AL' && endClass !== 'EN' && endClass !== 'AN') return false
+    // 4. If an EN is present, no AN may be present, and vice versa.
+    if (classes.includes('EN') && classes.includes('AN')) return false
+  } else {
+    // 5. In an LTR label, only L, EN, ES, CS, ET, ON, BN, or NSM are allowed.
+    const allowed = new Set<BidiClass>(['L', 'EN', 'ES', 'CS', 'ET', 'ON', 'BN', 'NSM'])
+    if (!classes.every((c) => allowed.has(c))) return false
+    // 6. The end of the label must be L or EN (ignoring trailing NSM).
+    if (endClass !== 'L' && endClass !== 'EN') return false
+  }
+  return true
+}
+// ------------------------------------------------------------------
 // IsUnicodeLabel
 // ------------------------------------------------------------------
-function IsUnicodeLabel(value: string): boolean {
+function IsUnicodeLabel(value: string, isBidiDomain: boolean = false): boolean {
   // deno-coverage-ignore-start - unable to reach via format guards
   if (value.length === 0) return Unreachable() // false
   // deno-coverage-ignore-stop
@@ -151,6 +243,8 @@ function IsUnicodeLabel(value: string): boolean {
     const cp = cps[i]
     // 1. DISALLOWED exceptions
     if (RFC5892_DISALLOWED.has(cp)) return false
+    // 1b. General category (PVALID) enforcement
+    if (!IsPermittedCategory(cp)) return false
     // 2. Collect Flags
     if (IsHiragana(cp) || IsKatakana(cp) || IsHan(cp)) hasJapanese = true
     if (IsArabicIndicDigit(cp)) hasArabicIndic = true
@@ -186,6 +280,8 @@ function IsUnicodeLabel(value: string): boolean {
   if (value.includes('\u30fb') && !hasJapanese) return false
   // RFC 5892 Appendix A.8/A.9 - Mixing Arabic Digits
   if (hasArabicIndic && hasExtendedArabicIndic) return false
+  // RFC 5893 - Bidi Rule (applies to every label once the domain is Bidi)
+  if (isBidiDomain && !SatisfiesBidiRule(cps)) return false
   return true
 }
 // ------------------------------------------------------------------
@@ -217,7 +313,7 @@ function IsAsciiLabel(value: string): boolean {
 function IsPuny(value: string): boolean {
   return value.toLowerCase().startsWith('xn--')
 }
-function IsPunyLabel(value: string): boolean {
+function IsPunyLabel(value: string, isBidiDomain: boolean = false): boolean {
   try {
     const payload = value.slice(4).toLowerCase()
     // 1. Structural Validation (RFC 3492 syntax)
@@ -236,18 +332,49 @@ function IsPunyLabel(value: string): boolean {
     // 2. Decode the payload
     const decoded = Puny.Decode(payload)
     if (!decoded) return false
-    // 3. Validate the output rules against RFC 5892
-    return IsUnicodeLabel(decoded)
+    // 2b. RFC 5890 §2.3.2.1 - a U-label (and therefore a valid A-label) must
+    // contain at least one non-ASCII character. An A-label that decodes to
+    // pure ASCII was never a legitimate A-label to begin with.
+    if ([...decoded].every((c) => c.codePointAt(0)! < 0x80)) return false
+    // 3. Validate the output rules against RFC 5892 / RFC 5893
+    return IsUnicodeLabel(decoded, isBidiDomain)
   } catch {
     return false
   }
 }
 // ------------------------------------------------------------------
+// GetIdnLabelUnicodeForm
+//
+// Returns the Unicode form of a label: the label itself if it's
+// already Unicode, or its decoded form if it's an A-label (xn--...).
+// Returns null if the label is a malformed A-label that can't be
+// decoded. Used to pre-scan a domain name to determine whether it is
+// a "Bidi domain name" (RFC 5893 §1.4) before validating any label.
+// ------------------------------------------------------------------
+export function GetIdnLabelUnicodeForm(value: string): string | null {
+  if (!IsPuny(value)) return value
+  try {
+    const payload = value.slice(4).toLowerCase()
+    if (payload.lastIndexOf('-') === 0) return null
+    const decoded = Puny.Decode(payload)
+    return decoded || null
+  } catch {
+    return null
+  }
+}
+// ------------------------------------------------------------------
 // IsIdnLabel
 // ------------------------------------------------------------------
-export function IsIdnLabel(value: string): boolean {
+export function IsIdnLabel(value: string, isBidiDomain: boolean = false): boolean {
   if (value.length === 0 || value.length > 63) return false
-  return IsPuny(value) ? IsPunyLabel(value) : IsUnicodeLabel(value)
+  if (IsPuny(value)) return IsPunyLabel(value, isBidiDomain)
+  if (!IsUnicodeLabel(value, isBidiDomain)) return false
+  // RFC 5891 §4.2.4 - the 63-octet limit applies to the A-label (encoded)
+  // form, not the raw code point count, for labels containing non-ASCII.
+  if ([...value].some((c) => c.codePointAt(0)! >= 0x80)) {
+    if (Puny.Encode(value).length + 4 > 63) return false
+  }
+  return true
 }
 // ------------------------------------------------------------------
 // IsLabel
