@@ -26,21 +26,17 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { IsPuny, IsPunyLabel } from './string/label-puny.ts'
-import { IsAsciiLabel } from './string/label-ascii.ts'
+import { ContainsRtlCharacter } from './bidi.ts'
+import { GetIdnLabelUnicodeForm } from './label-puny.ts'
 
-function IsLabel(value: string) {
-  if (value.length === 0 || value.length > 63) return false
-  return IsPuny(value) ? IsPunyLabel(value) : IsAsciiLabel(value)
-}
-/**
- * Returns true if the value is a valid hostname.
- * @specification https://tools.ietf.org/html/rfc1123
- * @specification https://tools.ietf.org/html/rfc5891
- * @specification https://tools.ietf.org/html/rfc5892
- */
-export function IsHostname(value: string): boolean {
-  if (value.length === 0 || value.length > 253) return false
-  if (value.charCodeAt(value.length - 1) === 46) return false
-  return value.split('.').every((label) => IsLabel(label))
+// ------------------------------------------------------------------
+// IsBidiLabel
+//
+// Decodes the label to its Unicode form (via puny-label.ts) first,
+// since RTL-ness has to be judged on the actual characters, not on
+// the ASCII-only A-label encoding.
+// ------------------------------------------------------------------
+export function IsBidiLabel(value: string): boolean {
+  const unicodeForm = GetIdnLabelUnicodeForm(value)
+  return unicodeForm !== null && ContainsRtlCharacter(unicodeForm)
 }

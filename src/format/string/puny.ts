@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { Unreachable } from '../system/unreachable/index.ts'
+import { Unreachable } from '../../system/unreachable/index.ts'
 
 // ------------------------------------------------------------------
 // PunyCode (RFC 3492)

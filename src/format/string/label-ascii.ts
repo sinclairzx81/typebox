@@ -26,21 +26,29 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { IsPuny, IsPunyLabel } from './string/label-puny.ts'
-import { IsAsciiLabel } from './string/label-ascii.ts'
+// ------------------------------------------------------------------
+// IsAsciiLabel
+//
+// No dependency on general-category or bidi logic - a plain ASCII
+// LDH (Letter-Digit-Hyphen) label check per RFC 5891 §4.2.3.1.
+// ------------------------------------------------------------------
+export function IsAsciiLabel(value: string): boolean {
+  // Must not start or end with a hyphen
+  if (value.charCodeAt(0) === 45 || value.charCodeAt(value.length - 1) === 45) return false
+  // RFC 5891 §4.2.3.1 : "--" at positions 3-4 is reserved for A-labels only
+  if (value.length >= 4 && value.charCodeAt(2) === 45 && value.charCodeAt(3) === 45) return false
+  // All characters must be alphanumeric or hyphen
+  for (let i = 0; i < value.length; i++) {
+    const ch = value.charCodeAt(i)
+    if (
+      !(
+        (ch >= 97 && ch <= 122) || // a-z
+        (ch >= 65 && ch <= 90) || // A-Z
+        (ch >= 48 && ch <= 57) || // 0-9
+        ch === 45 // '-'
+      )
+    ) return false
+  }
 
-function IsLabel(value: string) {
-  if (value.length === 0 || value.length > 63) return false
-  return IsPuny(value) ? IsPunyLabel(value) : IsAsciiLabel(value)
-}
-/**
- * Returns true if the value is a valid hostname.
- * @specification https://tools.ietf.org/html/rfc1123
- * @specification https://tools.ietf.org/html/rfc5891
- * @specification https://tools.ietf.org/html/rfc5892
- */
-export function IsHostname(value: string): boolean {
-  if (value.length === 0 || value.length > 253) return false
-  if (value.charCodeAt(value.length - 1) === 46) return false
-  return value.split('.').every((label) => IsLabel(label))
+  return true
 }
