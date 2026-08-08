@@ -4,7 +4,7 @@ TypeBox
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2026 Haydn Paterson 
+Copyright (c) 2017-2026 Haydn Paterson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,25 +26,15 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-fmt-ignore-file
+import * as Pattern from '../pattern/pattern.ts'
 
-import { Guard } from '../../guard/index.ts'
-import { type XSchemaObject } from './schema.ts'
-
-// ------------------------------------------------------------------
-// Type
-// ------------------------------------------------------------------
-export interface XContentEncoding<ContentEncoding extends string = string> {
-  contentEncoding: ContentEncoding
-}
-// ------------------------------------------------------------------
-// Guard
-// ------------------------------------------------------------------
-/** 
- * Returns true if the schema contains a valid contentEncoding property
- * @specification Json Schema 7
- */
-export function IsContentEncoding(schema: XSchemaObject): schema is XContentEncoding {
-  return Guard.HasPropertyKey(schema, 'contentEncoding') 
-    && Guard.IsString(schema.contentEncoding)
+// -------------------------------------------------------------------
+// Validates an ASCII LDH label per RFC 5891 §4.2.3.1
+// -------------------------------------------------------------------
+export function IsAsciiLabel(value: string): boolean {
+  return (
+    Pattern.RE_RULE_HYPHEN_PLACEMENT.test(value) &&
+    Pattern.RE_RULE_NOT_RESERVED_ACE.test(value) &&
+    Pattern.RE_ASCII_LDH.test(value)
+  )
 }

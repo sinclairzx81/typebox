@@ -42,6 +42,11 @@
         "valid": true
       },
       {
+        "description": "match $ref to id",
+        "data": "a string to match #/definitions/id_in_enum",
+        "valid": true
+      },
+      {
         "description": "no match on enum or $ref to id",
         "data": 1,
         "valid": false

@@ -36,7 +36,7 @@ Test('Should Uri 8', () => {
 })
 
 Test('Should Uri 9', () => {
-  Assert.IsTrue(Format.IsUri('http://例子.测试')) // unicode host
+  Assert.IsFalse(Format.IsUri('http://例子.测试')) // unicode host
 })
 
 Test('Should Uri 10', () => {
@@ -152,4 +152,8 @@ Test('Should IsUri 37', () => {
 
 Test('Should IsUri 38', () => {
   Assert.IsFalse(Format.IsUri('ldap://[2001:db8::7/c=GB')) // Missing ]
+})
+
+Test('Should IsUri 39', () => {
+  Assert.IsTrue(Format.IsUri('http://xn--fsqu00a.xn--0zwm56d')) // Punycode
 })

@@ -45,7 +45,7 @@ export class Stack {
   // Base
   // ----------------------------------------------------------------
   public BaseURL(): URL {
-    return this.ids.reduce((result, schema) => new URL(schema.$id, result), new URL('http://unknown'))
+    return this.ids.reduce((result, schema) => new URL(schema.$id, result), Resolve.DefaultBase)
   }
   public Base(): Schema.XSchemaObject {
     return this.ids[this.ids.length - 1] ?? this.schema

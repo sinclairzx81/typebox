@@ -31,10 +31,10 @@ import { IsTime } from './time.ts'
 
 /**
  * Returns true if the value is a ISO8601 DateTime string
- * @source ajv-formats
+ * @specification https://datatracker.ietf.org/doc/html/rfc3339
  * @example `2020-12-12T20:20:40+00:00`
  */
-export function IsDateTime(value: string, strictTimeZone: boolean = true): boolean {
+export function IsDateTime(value: string): boolean {
   const dateTime: string[] = value.split(/T/i)
-  return dateTime.length === 2 && IsDate(dateTime[0]) && IsTime(dateTime[1], strictTimeZone)
+  return dateTime.length === 2 && IsDate(dateTime[0]) && IsTime(dateTime[1])
 }

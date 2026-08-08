@@ -26,15 +26,20 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import * as Idna from './idna/index.ts'
+import * as LabelAscii from './label/ascii.ts'
+import * as LabelPuny from './label/puny.ts'
 
-/**
- * Returns true if the value is a valid internationalized (IDN) hostname.
- * @specification https://tools.ietf.org/html/rfc3490
- * @specification https://tools.ietf.org/html/rfc5891
- * @specification https://tools.ietf.org/html/rfc5892
- * @specification https://tools.ietf.org/html/rfc5893
- */
-export function IsIdnHostname(value: string): boolean {
-  return Idna.IsIdnHostname(value)
+function IsValidLabelLength(value: string): boolean {
+  return value.length > 0 && value.length <= 63
+}
+function IsLabel(value: string): boolean {
+  return IsValidLabelLength(value) && (
+    LabelPuny.IsPunyLabel(value) ||
+    LabelAscii.IsAsciiLabel(value)
+  )
+}
+export function IsHostname(value: string): boolean {
+  if (value.length === 0 || value.length > 253) return false
+  if (value.charCodeAt(value.length - 1) === 46) return false
+  return value.split('.').every((label) => IsLabel(label))
 }

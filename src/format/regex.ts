@@ -28,15 +28,11 @@ THE SOFTWARE.
 
 /**
  * Returns true if the value is a regular expression string pattern
- * @specification
- * @source ajv-formats
+ * @specification https://ecma-international.org/ecma-262
  */
 export function IsRegex(value: string): boolean {
-  if (value.length === 0) {
-    return false
-  }
   try {
-    new RegExp(value)
+    new RegExp(value, 'u')
     return true
   } catch {
     return false

@@ -79,12 +79,25 @@ import { BuildUnevaluatedProperties, CheckUnevaluatedProperties, ErrorUnevaluate
 import { BuildUniqueItems, CheckUniqueItems, ErrorUniqueItems } from './uniqueItems.ts'
 
 // ----------------------------------------------------------------
-// HasTypeName
+// HasTypeName (Optimization)
+//
+// We only consider a schema as having a type name when the schema 
+// has a single type string, or when every element in the type 
+// array is the same. For a type array, we must treat multi-variant 
+// types as unions and therefore can NOT use an optimized forward 
+// type check.
+//
 // ----------------------------------------------------------------
 function HasTypeName(schema: Schema.XSchemaObject, typename: string): boolean {
-  return Schema.IsType(schema) &&
-    (G.IsArray(schema.type) && G.IsGreaterThan(schema.type.length, 0) && G.Every(schema.type, 0, type => G.IsEqual(type, typename)) ||
-      G.IsEqual(schema.type, typename))
+  return (
+    Schema.IsType(schema) &&
+    (
+      (G.IsArray(schema.type) &&
+        G.IsGreaterThan(schema.type.length, 0) &&
+        G.Every(schema.type, 0, type => G.IsEqual(type, typename))) ||
+      G.IsEqual(schema.type, typename)
+    )
+  )
 }
 // ----------------------------------------------------------------
 // HasObject

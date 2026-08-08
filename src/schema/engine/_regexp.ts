@@ -4,7 +4,7 @@ TypeBox
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2026 Haydn Paterson 
+Copyright (c) 2017-2026 Haydn Paterson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,25 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-fmt-ignore-file
-
-import { Guard } from '../../guard/index.ts'
-import { type XSchemaObject } from './schema.ts'
-
-// ------------------------------------------------------------------
-// Type
-// ------------------------------------------------------------------
-export interface XContentMediaType<ContentMediaType extends string = string> {
-  contentMediaType: ContentMediaType
-}
-// ------------------------------------------------------------------
-// Guard
-// ------------------------------------------------------------------
-/** 
- * Returns true if the schema contains a valid contentMediaType property
- * @specification Json Schema 7
- */
-export function IsContentMediaType(schema: XSchemaObject): schema is XContentMediaType {
-  return Guard.HasPropertyKey(schema, 'contentMediaType') 
-    && Guard.IsString(schema.contentMediaType)
+/** Standard RegExp with Unicode */
+export function UnicodeRegExp(pattern: string): RegExp {
+  return new RegExp(pattern, 'u')
 }

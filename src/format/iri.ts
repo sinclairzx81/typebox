@@ -28,13 +28,8 @@ THE SOFTWARE.
 
 /**
  * Returns true if the value is a Iri
- * @specification
+ * @specification https://datatracker.ietf.org/doc/html/rfc3987
  */
 export function IsIri(value: string): boolean {
-  try {
-    new URL(value)
-    return true
-  } catch {
-    return false
-  }
+  return URL.canParse(value)
 }

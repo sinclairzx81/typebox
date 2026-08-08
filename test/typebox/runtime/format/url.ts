@@ -28,7 +28,7 @@ Test('Should Url 6', () => {
 })
 
 Test('Should Url 7', () => {
-  Assert.IsFalse(Format.IsUrl('http:///example.com')) // empty host
+  Assert.IsTrue(Format.IsUrl('http:///example.com')) // (update, inline with URL.canParse)
 })
 
 Test('Should Url 8', () => {

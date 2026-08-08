@@ -141,6 +141,11 @@
         "valid": true
       },
       {
+        "description": "a dotted variable name is valid",
+        "data": "{a.b}",
+        "valid": true
+      },
+      {
         "description": "a double dot in a variable name is invalid",
         "data": "{a..b}",
         "valid": false
@@ -166,6 +171,11 @@
         "valid": false
       },
       {
+        "description": "a delete character in a literal is invalid",
+        "data": "ab",
+        "valid": false
+      },
+      {
         "description": "a trailing comma in the variable list is invalid",
         "data": "{a,}",
         "valid": false
@@ -179,6 +189,11 @@
         "description": "an operator in place of the first varspec is invalid",
         "data": "{,+var}",
         "valid": false
+      },
+      {
+        "description": "an apostrophe in a literal is valid",
+        "data": "a'b",
+        "valid": true
       }
     ]
   }

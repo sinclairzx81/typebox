@@ -26,28 +26,31 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-const TIME = /^(\d\d):(\d\d):(\d\d(?:\.\d+)?)(?:Z|([+-])(\d\d):(\d\d))?$/i
+const TIME = /^(\d\d):(\d\d):(\d\d)(?:\.\d+)?(?:([Zz])|([+-])(\d\d):(\d\d))?$/
 
 /**
- * Returns true if the value is a ISO time string
- * @specification
+ * Returns true if the value is an ISO time string
+ * @specification https://datatracker.ietf.org/doc/html/rfc3339
  */
 export function IsTime(value: string, strictTimeZone: boolean = true): boolean {
-  const matches: string[] | null = TIME.exec(value)
+  const matches = TIME.exec(value)
   if (!matches) return false
-  const hr: number = +matches[1]
-  const min: number = +matches[2]
-  const sec: number = +matches[3]
-  const tzSign: number = matches[4] === '-' ? -1 : 1 // Use matches[4] for sign
-  const tzH: number = +(matches[5] || 0) // tzH is now matches[5]
-  const tzM: number = +(matches[6] || 0) // tzM is now matches[6]
-  if (tzH > 23 || tzM > 59) return false // Check for valid hour/minute range in offset
-  if (strictTimeZone && !matches[4] && value.toLowerCase().indexOf('z') === -1) {
-    // If strictTimeZone is true, and neither 'Z' nor a '+/-' offset was found
-    return false
+  // Require timezone offset or 'Z'/'z' when strictTimeZone is true
+  if (strictTimeZone && !matches[4] && !matches[5]) return false
+  const hr = +matches[1]
+  const min = +matches[2]
+  const sec = +matches[3]
+  if (hr > 23 || min > 59 || sec > 60) return false
+  if (matches[5]) {
+    const tzH = +matches[6]
+    const tzM = +matches[7]
+    if (tzH > 23 || tzM > 59) return false
   }
-  if (hr <= 23 && min <= 59 && sec < 60) return true
-  const utcMin = min - tzM * tzSign
-  const utcHr = hr - tzH * tzSign - (utcMin < 0 ? 1 : 0)
-  return (utcHr === 23 || utcHr === -1) && (utcMin === 59 || utcMin === -1) && sec < 61
+  if (sec < 60) return true
+  // Leap second handling: must normalize to 23:59:60 UTC (1439 total UTC minutes)
+  const tzSign = matches[5] === '-' ? -1 : 1
+  const tzH = +(matches[6] || 0)
+  const tzM = +(matches[7] || 0)
+  const totalUtcMin = (hr * 60 + min) - tzSign * (tzH * 60 + tzM)
+  return (totalUtcMin % 1440 + 1440) % 1440 === 1439
 }

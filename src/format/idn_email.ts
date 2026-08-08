@@ -26,12 +26,13 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-const IdnEmail = /^(?!.*\.\.)[\p{L}\p{N}!#$%&'*+/=?^_`{|}~-]+(?:\.[\p{L}\p{N}!#$%&'*+/=?^_`{|}~-]+)*@[\p{L}\p{N}](?:[\p{L}\p{N}-]{0,61}[\p{L}\p{N}])?(?:\.[\p{L}\p{N}](?:[\p{L}\p{N}-]{0,61}[\p{L}\p{N}])?)*$/iu
+const IdnEmail =
+  /^(?:[A-Za-z0-9!#$%&'*+\/=?^_`{|}~\u{0080}-\u{10FFFF}-]+(?:\.[A-Za-z0-9!#$%&'*+\/=?^_`{|}~\u{0080}-\u{10FFFF}-]+)*|"(?:[^"\\]|\\.)*")@[\p{L}\p{N}](?:[\p{L}\p{N}-]{0,62})(?<!-)(?:\.[\p{L}\p{N}](?:[\p{L}\p{N}-]{0,62})(?<!-))*$/iu
 
 /**
  * Returns true if the value is an IdnEmail
- * @specification ajv-formats (unicode-extension)
+ * @specification https://datatracker.ietf.org/doc/html/rfc4952
  */
 export function IsIdnEmail(value: string): boolean {
-  return IdnEmail.test(value)
+  return IdnEmail.test(value.normalize('NFC'))
 }

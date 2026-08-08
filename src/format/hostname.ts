@@ -26,7 +26,7 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import * as Idna from './_idna.ts'
+import * as Idna from './idna/index.ts'
 
 /**
  * Returns true if the value is a valid hostname.
@@ -35,10 +35,5 @@ import * as Idna from './_idna.ts'
  * @specification https://tools.ietf.org/html/rfc5892
  */
 export function IsHostname(value: string): boolean {
-  if (value.length === 0 || value.length > 253) return false
-  if (value.charCodeAt(value.length - 1) === 46) return false
-  for (const label of value.split('.')) {
-    if (!Idna.IsLabel(label)) return false
-  }
-  return true
+  return Idna.IsHostname(value)
 }

@@ -139,7 +139,7 @@ export function GraphemeCount(value: string): number {
 // IsMinLength
 // --------------------------------------------------------------------------
 /** Checks if a string has at least a minimum number of grapheme clusters */
-function IsMinLength(value: string, minLength: number): boolean {
+function IsMinLengthSegmented(value: string, minLength: number): boolean {
   // ----------------------------------------------------------------
   // Inaccessible via public interface (review)
   //
@@ -161,7 +161,7 @@ function IsMinLength(value: string, minLength: number): boolean {
 // IsMaxLength
 // --------------------------------------------------------------------------
 /** Checks if a string has at most a maximum number of grapheme clusters */
-function IsMaxLength(value: string, maxLength: number): boolean {
+function IsMaxLengthSegmented(value: string, maxLength: number): boolean {
   let count = 0
   let index = 0
   while (index < value.length) {
@@ -175,12 +175,12 @@ function IsMaxLength(value: string, maxLength: number): boolean {
 // IsMinLengthFast
 // --------------------------------------------------------------------------
 /** Fast check for minimum grapheme length, falls back to full check if needed */
-export function IsMinLengthFast(value: string, minLength: number): boolean {
+export function IsMinLength(value: string, minLength: number): boolean {
   if (minLength === 0) return true // 0-length
   let index = 0
   while (index < value.length) {
     if (IsGraphemeCodePoint(value.charCodeAt(index))) {
-      return IsMinLength(value, minLength)
+      return IsMinLengthSegmented(value, minLength)
     }
     index++
     if (index >= minLength) return true
@@ -191,11 +191,11 @@ export function IsMinLengthFast(value: string, minLength: number): boolean {
 // IsMaxLengthFast
 // --------------------------------------------------------------------------
 /** Fast check for maximum grapheme length, falls back to full check if needed */
-export function IsMaxLengthFast(value: string, maxLength: number): boolean {
+export function IsMaxLength(value: string, maxLength: number): boolean {
   let index = 0
   while (index < value.length) {
     if (IsGraphemeCodePoint(value.charCodeAt(index))) {
-      return IsMaxLength(value, maxLength)
+      return IsMaxLengthSegmented(value, maxLength)
     }
     index++
     if (index > maxLength) return false
