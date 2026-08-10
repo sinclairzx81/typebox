@@ -9,7 +9,7 @@ import { Metrics } from './task/metrics/index.ts'
 import { Spec } from './task/spec/index.ts'
 import { Task } from 'tasksmith'
 
-const Version = '1.3.11'
+const Version = '1.3.12'
 
 // ------------------------------------------------------------------
 // Build
