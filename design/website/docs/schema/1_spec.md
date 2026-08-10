@@ -56,26 +56,26 @@ TypeBox has broad support for all major JSON Schema drafts and asserts for speci
 
 | Spec | 3 | 4 | 6 | 7 | 2019-09 | 2020-12 | v1 |
 |:-----|:--|:--|:--|:--|:--|:--|:--|
-| anchor | - | - | - | - | 3/4 | 3/4 | 3/4 |
+| anchor | - | - | - | - | ✅ | ✅ | ✅ |
 | bignum | 7/9 | 7/9 | ✅ | ✅ | ✅ | ✅ | ✅ |
 | content | - | - | - | 6/10 | - | - | - |
 | cross-draft | - | - | - | 1/2 | 1/3 | 0/1 | - |
 | dependencies-compatibility | - | - | - | - | ✅ | ✅ | ✅ |
 | dynamicRef | - | - | - | - | - | ✅ | ✅ |
-| ecmascript-regex | - | 69/74 | 69/74 | 69/74 | 69/74 | 69/74 | 69/74 |
+| ecmascript-regex | - | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | float-overflow | - | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | format-annotation | - | - | - | - | - | - | 114/133 |
 | format-assertion | - | - | - | - | - | ✅ | - |
 | format/color | 3/6 | - | - | - | - | - | - |
 | format/date | ✅ | - | - | ✅ | ✅ | ✅ | ✅ |
-| format/date-time | 9/11 | 31/33 | 31/33 | 31/33 | 31/33 | 31/33 | 31/33 |
+| format/date-time | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | format/duration | - | - | - | - | ✅ | ✅ | ✅ |
-| format/ecmascript-regex | ✅ | - | - | - | - | 11/12 | 11/12 |
-| format/email | ✅ | ✅ | ✅ | ✅ | ✅ | 22/27 | 22/27 |
+| format/ecmascript-regex | ✅ | - | - | - | - | ✅ | ✅ |
+| format/email | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | format/host-name | 2/12 | - | - | - | - | - | - |
 | format/hostname | - | 29/30 | 29/30 | ✅ | ✅ | ✅ | ✅ |
-| format/idn-email | - | - | - | 13/18 | 13/18 | 13/18 | 14/19 |
-| format/idn-hostname | - | - | - | 81/89 | 82/90 | 82/90 | 82/90 |
+| format/idn-email | - | - | - | ✅ | ✅ | ✅ | ✅ |
+| format/idn-hostname | - | - | - | ✅ | ✅ | ✅ | ✅ |
 | format/ip-address | 1/3 | - | - | - | - | - | - |
 | format/ipv4 | - | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | format/ipv6 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -90,7 +90,7 @@ TypeBox has broad support for all major JSON Schema drafts and asserts for speci
 | format/uri-reference | - | - | ✅ | ✅ | ✅ | ✅ | ✅ |
 | format/uri-template | - | - | ✅ | ✅ | ✅ | ✅ | ✅ |
 | format/uuid | - | - | - | - | ✅ | ✅ | ✅ |
-| id | - | 2/3 | 6/7 | 6/7 | 2/3 | 2/3 | 2/3 |
+| id | - | 2/3 | ✅ | ✅ | ✅ | ✅ | ✅ |
 | no-schema | - | - | - | - | ✅ | ✅ | - |
 | non-bmp-regex | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | proposals/propertyDependencies/additionalProperties | - | - | - | - | - | - | ✅ |
