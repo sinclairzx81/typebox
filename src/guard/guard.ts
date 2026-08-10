@@ -152,11 +152,11 @@ export function GraphemeCount(value: string): number {
 }
 /** Returns true if the string has at most the given number of graphemes */
 export function IsMaxLength(value: string, length: number): boolean {
-  return String.IsMaxLengthFast(value, length)
+  return String.IsMaxLength(value, length)
 }
 /** Returns true if the string has at least the given number of graphemes */
 export function IsMinLength(value: string, length: number): boolean {
-  return String.IsMinLengthFast(value, length)
+  return String.IsMinLength(value, length)
 }
 // --------------------------------------------------------------------------
 // Array

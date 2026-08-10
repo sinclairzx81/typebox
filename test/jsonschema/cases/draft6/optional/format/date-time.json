@@ -156,6 +156,16 @@
         "valid": false
       },
       {
+        "description": "hour 24 is invalid even with a leap second",
+        "data": "2016-12-31T24:59:60+01:00",
+        "valid": false
+      },
+      {
+        "description": "a second fraction of fifteen nines is valid",
+        "data": "1985-04-12T00:59:59.999999999999999Z",
+        "valid": true
+      },
+      {
         "description": "a trailing newline is invalid",
         "data": "1985-04-12T23:20:50Z\n",
         "valid": false

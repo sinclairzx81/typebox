@@ -20,7 +20,7 @@ Test('Should IsIdnHostname 3', () => {
 
 Test('Should IsIdnHostname 4', () => {
   // Hostname with mixed ASCII and Punycode labels
-  Assert.IsTrue(Format.IsIdnHostname('sub.xn--domain-name.com')) // Represents sub.доменное-имя.com
+  Assert.IsFalse(Format.IsIdnHostname('sub.xn--domain-name.com')) // Represents sub.доменное-имя.com
 })
 
 Test('Should IsIdnHostname 5', () => {
@@ -30,7 +30,7 @@ Test('Should IsIdnHostname 5', () => {
 
 Test('Should IsIdnHostname 6', () => {
   // Hostname with hyphens in ASCII and IDN labels (converted to Punycode)
-  Assert.IsTrue(Format.IsIdnHostname('my-host.xn--abc-def.info')) // Represents my-host.абв-где.info
+  Assert.IsFalse(Format.IsIdnHostname('my-host.xn--abc-def.info')) // Represents my-host.абв-где.info
 })
 
 Test('Should IsIdnHostname 7', () => {

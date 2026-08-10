@@ -9,7 +9,7 @@ import { Metrics } from './task/metrics/index.ts'
 import { Spec } from './task/spec/index.ts'
 import { Task } from 'tasksmith'
 
-const Version = '1.3.11'
+const Version = '1.3.12'
 
 // ------------------------------------------------------------------
 // Build
@@ -54,7 +54,7 @@ Task.run('clean', () => Task.folder('target').delete())
 // ------------------------------------------------------------------
 // Local
 // ------------------------------------------------------------------
-Task.run('local', (target: string = `../build-test/node_modules/typebox`) => BuildPackage(target))
+Task.run('local', (target: string = `../json-schema-compliance-suite/node_modules/typebox`) => BuildPackage(target))
 // ------------------------------------------------------------------
 // Publish
 // ------------------------------------------------------------------

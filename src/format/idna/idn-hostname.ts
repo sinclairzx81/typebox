@@ -26,15 +26,27 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import * as Idna from './idna/index.ts'
+import * as FormatBidi from './format/bidi.ts'
+import * as LabelUnicode from './label/unicode.ts'
+import * as LabelPuny from './label/puny.ts'
 
-/**
- * Returns true if the value is a valid internationalized (IDN) hostname.
- * @specification https://tools.ietf.org/html/rfc3490
- * @specification https://tools.ietf.org/html/rfc5891
- * @specification https://tools.ietf.org/html/rfc5892
- * @specification https://tools.ietf.org/html/rfc5893
- */
+function IsValidLabelLength(value: string): boolean {
+  return value.length > 0 && value.length <= 63
+}
+function IsLabel(value: string): boolean {
+  return IsValidLabelLength(value) && (
+    LabelPuny.IsPunyLabel(value) ||
+    LabelUnicode.IsUnicodeLabel(value)
+  )
+}
+function NormalizeHostname(value: string): string {
+  return value.normalize('NFC').replace(/[\u002E\u3002\uFF0E\uFF61]/g, '.')
+}
 export function IsIdnHostname(value: string): boolean {
-  return Idna.IsIdnHostname(value)
+  if (value.length === 0 || value.includes(' ')) return false
+  const normalized = NormalizeHostname(value)
+  if (normalized.length > 253) return false
+  const labels = normalized.split('.')
+  const hasBidiChars = labels.some((label) => FormatBidi.HasBidiChars(label))
+  return labels.every((label) => IsLabel(label) && (!hasBidiChars || FormatBidi.SatisfiesBidiRule(label)))
 }

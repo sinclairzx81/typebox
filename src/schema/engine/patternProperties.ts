@@ -34,6 +34,7 @@ import { Stack } from './_stack.ts'
 import { Unique } from './_unique.ts'
 
 import { BuildContext, CheckContext, ErrorContext } from './_context.ts'
+import { UnicodeRegExp } from './_regexp.ts'
 import { Guard as G, EmitGuard as E } from '../../guard/index.ts'
 import { BuildSchemaPushStack, CheckSchemaPushStack, ErrorSchemaPushStack } from './schema.ts'
 
@@ -43,7 +44,7 @@ import { BuildSchemaPushStack, CheckSchemaPushStack, ErrorSchemaPushStack } from
 export function BuildPatternProperties(stack: Stack, context: BuildContext, schema: Schema.XPatternProperties, value: string): string {
   return E.ReduceAnd(G.Entries(schema.patternProperties).map(([pattern, schema]) => {
     const [key, prop] = [Unique(), Unique()]
-    const regexp = Externals.CreateVariable(new RegExp(pattern, 'u'))
+    const regexp = Externals.CreateVariable(UnicodeRegExp(pattern))
     const notKey = E.Not(E.Call(E.Member(regexp, 'test'), [key]))
     const isSchema = BuildSchemaPushStack(stack, context, schema, prop)
     const addKey = context.AddKey(key)
@@ -56,7 +57,7 @@ export function BuildPatternProperties(stack: Stack, context: BuildContext, sche
 // ------------------------------------------------------------------
 export function CheckPatternProperties(stack: Stack, context: CheckContext, schema: Schema.XPatternProperties, value: Record<PropertyKey, unknown>): boolean {
   return G.Every(G.Entries(schema.patternProperties), 0, ([pattern, schema]) => {
-    const regexp = new RegExp(pattern, 'u')
+    const regexp = UnicodeRegExp(pattern)
     return G.Every(G.Entries(value), 0, ([key, prop]) => {
       return !regexp.test(key) || CheckSchemaPushStack(stack, context, schema, prop) && context.AddKey(key)
     })
@@ -68,7 +69,7 @@ export function CheckPatternProperties(stack: Stack, context: CheckContext, sche
 export function ErrorPatternProperties(stack: Stack, context: ErrorContext, schemaPath: string, instancePath: string, schema: Schema.XPatternProperties, value: Record<PropertyKey, unknown>): boolean {
   return G.EveryAll(G.Entries(schema.patternProperties), 0, ([pattern, schema]) => {
     const nextSchemaPath = `${schemaPath}/patternProperties/${pattern}`
-    const regexp = new RegExp(pattern, 'u')
+    const regexp = UnicodeRegExp(pattern)
     return G.EveryAll(G.Entries(value), 0, ([key, value]) => {
       const nextInstancePath = `${instancePath}/${key}`
       const notKey = !regexp.test(key)

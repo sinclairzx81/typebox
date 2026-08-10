@@ -64,5 +64,5 @@ Test('Should RegEx 15', () => {
 })
 
 Test('Should RegEx 16', () => {
-  Assert.IsFalse(Format.IsRegex('')) // empty string
+  Assert.IsTrue(Format.IsRegex('')) // empty string
 })
