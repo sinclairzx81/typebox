@@ -229,9 +229,9 @@ const result = Vector.Parse({ x: 1, y: 0, z: 0 })  // const result: {
 
 ### Coverage
 
-The following table shows specification coverage implemented by TypeBox.
+[JSON Schema Test Suite](https://github.com/json-schema-org/JSON-Schema-Test-Suite) | [JSON Schema Compliance Suite](https://github.com/sinclairzx81/json-schema-compliance-suite)
 
-[JSON Schema Test Suite](https://github.com/json-schema-org/JSON-Schema-Test-Suite) 
+TypeBox supports all major JSON Schema draft versions and tracks compliance against the official JSON Schema Test Suite. It also maintains a separate JavaScript compliance suite to track ecosystem adoption as JSON Schema moves toward the Version 1 candidate. The following table shows TypeBox specification coverage.
 
 | Spec | 3 | 4 | 6 | 7 | 2019-09 | 2020-12 | v1 |
 |:-----|:--|:--|:--|:--|:--|:--|:--|
@@ -280,7 +280,6 @@ The following table shows specification coverage implemented by TypeBox.
 | unevaluatedItems | - | - | - | - | ✅ | ✅ | 70/71 |
 | unevaluatedProperties | - | - | - | - | ✅ | ✅ | 128/129 |
 | uniqueItems | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-
 
 ### Performance
 

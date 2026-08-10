@@ -26,7 +26,8 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-import { type Static, type TSchema } from 'typebox'
+import { Arguments } from 'typebox/system'
+import { type Static, type TSchema, type TProperties, type TScript, Script } from 'typebox'
 import { type TLocalizedValidationError } from 'typebox/error'
 import { Validator } from 'typebox/schema'
 import { Guard } from 'typebox/guard'
@@ -68,9 +69,9 @@ export class StandardSchemaProps<Value> implements StandardSchemaV1.Props<Value,
 // ------------------------------------------------------------------
 // StandardSchema
 // ------------------------------------------------------------------
-export class StandardSchema<Type extends TSchema, out Value extends unknown = Static<Type>> implements StandardSchemaV1<Value>, StandardJSONSchemaV1<Value> {
+export class StandardSchema<Value extends unknown = unknown> implements StandardSchemaV1<Value>, StandardJSONSchemaV1<Value> {
   '~standard': StandardSchemaV1.Props<Value, Value> & StandardJSONSchemaV1.Props<Value, Value>
-  constructor(type: Type) {
+  constructor(type: TSchema) {
     this['~standard'] = new StandardSchemaProps(type)
   }
 }
@@ -78,8 +79,25 @@ export class StandardSchema<Type extends TSchema, out Value extends unknown = St
 // Factory
 // ------------------------------------------------------------------
 /** Returns an implementation of Standard Schema + Standard JSON Schema */
-export function StandardSchemaV1<const Type extends TSchema>(type: Type): StandardSchema<Type> {
-  return new StandardSchema(type)
+export function StandardSchemaV1<Context extends TProperties, const Script extends string,
+  Schema extends TSchema = TScript<{}, Script>,
+  Value extends unknown = Static<Schema>
+>(script: Script): StandardSchema<Value>
+/** Returns an implementation of Standard Schema + Standard JSON Schema */
+export function StandardSchemaV1<const Script extends string,
+  Schema extends TSchema = TScript<{}, Script>,
+  Value extends unknown = Static<Schema>
+>(script: Script): StandardSchema<Value>
+/** Returns an implementation of Standard Schema + Standard JSON Schema */
+export function StandardSchemaV1<const Schema extends TSchema,
+  Value extends unknown = Static<Schema>
+>(schema: Schema): StandardSchema<Value>
+export function StandardSchemaV1(...args: unknown[]): unknown {
+  const schema = Arguments.Match<TSchema>(args, {
+    2: (context, script) => Script(context as TProperties, script as string),
+    1: (script_or_schema) => Guard.IsString(script_or_schema) ? Script({}, script_or_schema) : script_or_schema
+  })
+  return new StandardSchema(schema)
 }
 // ------------------------------------------------------------------
 // Standard Typed
