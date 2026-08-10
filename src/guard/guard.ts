@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
-import * as Unicode from './string.ts'
+import * as String from './string.ts'
 
 // --------------------------------------------------------------------------
 // Guards
@@ -148,15 +148,15 @@ export function IsValueLike(value: unknown): value is bigint | boolean | null | 
 // --------------------------------------------------------------------------
 /** Returns the number of grapheme clusters in the string */
 export function GraphemeCount(value: string): number {
-  return Unicode.GraphemeCount(value)
+  return String.GraphemeCount(value)
 }
 /** Returns true if the string has at most the given number of graphemes */
 export function IsMaxLength(value: string, length: number): boolean {
-  return Unicode.IsMaxLength(value, length)
+  return String.IsMaxLength(value, length)
 }
 /** Returns true if the string has at least the given number of graphemes */
 export function IsMinLength(value: string, length: number): boolean {
-  return Unicode.IsMinLength(value, length)
+  return String.IsMinLength(value, length)
 }
 // --------------------------------------------------------------------------
 // Array
