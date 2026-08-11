@@ -28,6 +28,7 @@ THE SOFTWARE.
 
 // deno-fmt-ignore-file
 
+import { Guard } from '../../../guard/index.ts'
 import { type TSchema } from '../../types/schema.ts'
 import { type TUnion, IsUnion } from '../../types/union.ts'
 
@@ -58,8 +59,8 @@ export type TFlatten<Types extends TSchema[], Result extends TSchema[] = []> = (
     ? TFlatten<Right, [...Result, ...TFlattenType<Left>]>
     : Result
 )
-export function Flatten<Types extends TSchema[]>(types: [...Types]): TFlatten<Types> {
-  return types.reduce((result: TSchema[], type) => {
-    return [...result, ...FlattenType(type)]
-  }, [] as TSchema[]) as never
+export function Flatten<Types extends TSchema[]>(types: [...Types], result: TSchema[] = []): TFlatten<Types> {
+  return Guard.ShiftLeft(types, (left, right) => 
+    Flatten(right, [...result, ...FlattenType(left)]),
+    () => result) as never
 }

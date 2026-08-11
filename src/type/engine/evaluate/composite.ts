@@ -29,7 +29,6 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 // deno-lint-ignore-file
 
-import { type TUnreachable, Unreachable } from '../../../system/unreachable/index.ts'
 import { Guard } from '../../../guard/index.ts'
 
 import { type TReadonly, IsReadonly } from '../../types/_readonly.ts'
@@ -49,8 +48,21 @@ import { type TRemoveOptional, RemoveOptional } from '../../action/_remove_optio
 import { type TTupleElementsToProperties, TupleElementsToProperties } from '../tuple/to_object.ts'
 import { type TEvaluateIntersect, EvaluateIntersect } from './evaluate.ts'
 
+// ------------------------------------------------------------------
+// CanComposite (note: TWith<T, ...> requires infer here. review)
+// ------------------------------------------------------------------
+/** Returns true if the type is a valid operand to Composite. */
+export type TCanComposite<Type extends TSchema> = (
+  Type extends TObject<infer _ extends TProperties> ? true :
+  Type extends TTuple<infer _ extends TSchema[]> ? true : 
+  false
+)
+/** Returns true if the type is a valid operand to Composite. */
+export function CanComposite<Type extends TSchema>(type: Type): TCanComposite<Type> {
+  return (IsObject(type) || IsTuple(type)) as never
+}
 // ----------------------------------------------------------------------------
-// GuardReadonlyProperty
+// IsReadonlyProperty
 // ----------------------------------------------------------------------------
 type TIsReadonlyProperty<Left extends TSchema, Right extends TSchema> = (
   Left extends TReadonly<Left> ? Right extends TReadonly<Right> ? true : false : false
@@ -59,7 +71,7 @@ function IsReadonlyProperty<Left extends TSchema, Right extends TSchema>(left: L
   return (IsReadonly(left) ? IsReadonly(right) ? true : false : false) as never
 }
 // ----------------------------------------------------------------------------
-// GuardOptionalProperty
+// IsOptionalProperty
 // ----------------------------------------------------------------------------
 type TIsOptionalProperty<Left extends TSchema, Right extends TSchema> = (
   Left extends TOptional<Left> ? Right extends TOptional<Right> ? true : false : false
@@ -107,23 +119,15 @@ function CompositeProperty<Left extends TSchema, Right extends TSchema>(left: Le
 type TCompositePropertyKey<Left extends TProperties, Right extends TProperties, Key extends PropertyKey,
   Result extends TSchema = (
     Key extends keyof Left 
-      ? Key extends keyof Right
-        ? TCompositeProperty<Left[Key], Right[Key]>
-        : Left[Key]
-      : Key extends keyof Right
-        ? Right[Key]
-        : TNever
+      ? Key extends keyof Right ? TCompositeProperty<Left[Key], Right[Key]> : Left[Key]
+      : Key extends keyof Right ? Right[Key] : TNever
   )
 > = Result
 function CompositePropertyKey<Left extends TProperties, Right extends TProperties, Key extends PropertyKey>(left: Left, right: Right, key: Key): TCompositePropertyKey<Left, Right, Key> {
   return (
     key in left
-      ? key in right
-        ? CompositeProperty(left[key], right[key])
-        : left[key]
-      : key in right 
-        ? right[key]
-        : Never()
+      ? key in right ? CompositeProperty(left[key], right[key]) : left[key]
+      : key in right ? right[key] : Never()
   ) as never
 }
 // deno-coverage-ignore-stop
@@ -131,15 +135,17 @@ function CompositePropertyKey<Left extends TProperties, Right extends TPropertie
 // CompositeProperties
 // ----------------------------------------------------------------------------
 type TCompositeProperties<Left extends TProperties, Right extends TProperties,
+  Keys extends PropertyKey = keyof (Left & Right),
   Result extends TProperties = {
-    [Key in keyof (Right & Left)]: TCompositePropertyKey<Left, Right, Key>
+    [Key in Keys]: TCompositePropertyKey<Left, Right, Key>
   }
 > = Result
 function CompositeProperties<Left extends TProperties, Right extends TProperties>(left: Left, right: Right): TCompositeProperties<Left, Right> {
-  const keys = new Set([ ...Guard.Keys(right), ...Guard.Keys(left)])
-  return [...keys].reduce((result, key) => {
+  const keys = new Set([ ...Guard.Keys(left), ...Guard.Keys(right)])
+  const result = [...keys].reduce((result, key) => {
     return { ...result, [key]: CompositePropertyKey(left, right, key) }
-  }, {}) as never
+  }, {})
+  return result as never
 }
 // ----------------------------------------------------------------------------
 // GetProperties
@@ -148,25 +154,17 @@ type TGetProperties<Type extends TSchema,
   Result extends TProperties = (
     Type extends TObject<infer Properties extends TProperties> ? Properties :
     Type extends TTuple<infer Types extends TSchema[]> ? TTupleElementsToProperties<Types> :
-    TUnreachable // {} 
+    {} 
   )
 > = Result
-// ------------------------------------------------------------------
-// deno-coverage-ignore-start - symmetric unreachable | internal
-//
-// Composite is called by Distribute which provisions the type as
-// either TObject ot TTuple. Fall-through unreachable.
-//
-// ------------------------------------------------------------------
 function GetProperties<Type extends TSchema>(type: Type): TGetProperties<Type> {
   const result = (
     IsObject(type) ? type.properties :
     IsTuple(type) ? TupleElementsToProperties(type.items) :
-    Unreachable() // {}
-  ) as never
+    {}
+  )
   return result as never
 }
-// deno-coverage-ignore-stop
 // ----------------------------------------------------------------------------
 // Composite
 // ----------------------------------------------------------------------------
@@ -180,5 +178,6 @@ export function Composite<Left extends TSchema, Right extends TSchema>(left: Lef
   const leftProperties = GetProperties(left) as TProperties
   const rightProperties = GetProperties(right) as TProperties
   const properties = CompositeProperties(leftProperties, rightProperties)
-  return Object(properties) as never
+  const result = Object(properties)
+  return result as never
 }

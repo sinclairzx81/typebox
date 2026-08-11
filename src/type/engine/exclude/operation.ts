@@ -29,6 +29,7 @@ THE SOFTWARE.
 // deno-lint-ignore-file ban-types
 // deno-fmt-ignore-file
 
+import { Guard } from '../../../guard/index.ts'
 import { type TSchema } from '../../types/schema.ts'
 import { type TUnion, IsUnion } from '../../types/union.ts'
 import { type TExtends, Extends, ExtendsResult } from '../../extends/index.ts'
@@ -56,10 +57,10 @@ type TExcludeUnion<Left extends TSchema[], Right extends TSchema, Result extends
     ? TExcludeUnion<Tail, Right, [...Result, ...TExcludeType<Head, Right>]>
     : Result
 )
-function ExcludeUnion<Left extends TSchema[], Right extends TSchema>(types: [...Left], right: Right): TExcludeUnion<Left, Right> {
-  return types.reduce((result, head) => {
-    return [...result, ...ExcludeType(head, right)]
-  }, [] as TSchema[]) as never
+function ExcludeUnion<Left extends TSchema[], Right extends TSchema>(left: [...Left], right: Right, result: TSchema[] = []): TExcludeUnion<Left, Right> {
+  return Guard.ShiftLeft(left, (head, tail) => 
+    ExcludeUnion(tail, right, [...result, ...ExcludeType(head, right)]),
+    () => result) as never
 }
 // ------------------------------------------------------------------
 // Operation
@@ -74,6 +75,5 @@ export function ExcludeOperation<Left extends TSchema, Right extends TSchema>(le
   const evaluated = EvaluateType(left)
   const canonical = IsUnion(evaluated) ? evaluated.anyOf : [evaluated]
   const remaining = ExcludeUnion(canonical, right)
-  const result = EvaluateUnion(remaining)
-  return result as never
+  return EvaluateUnion(remaining) as never
 }

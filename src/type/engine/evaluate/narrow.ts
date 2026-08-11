@@ -30,26 +30,74 @@ THE SOFTWARE.
 
 import { Guard } from '../../../guard/index.ts'
 import { type TSchema } from '../../types/schema.ts'
-import { type TNever, Never } from '../../types/never.ts'
-import { type TCompare, type TCompareResult, Compare, ResultLeftInside, ResultRightInside, ResultEqual } from './compare.ts'
+import { type TAny, IsAny } from '../../types/any.ts'
+import { type TNever, Never, IsNever } from '../../types/never.ts'
+import { type TUnknown, IsUnknown } from '../../types/unknown.ts'
+import { type TCompare, type TCompareResult, Compare, CompareResultLeftInside, CompareResultRightInside, CompareResultEqual } from './compare.ts'
+import { type TComposite, type TCanComposite, Composite, CanComposite } from './composite.ts'
 
+// ------------------------------------------------------------------
+// NarrowCompareRule
+// ------------------------------------------------------------------
+type TNarrowCompareRule<Left extends TSchema, Right extends TSchema,
+  Result extends TCompareResult = TCompare<Left, Right>,
+> = (
+  Result extends typeof CompareResultLeftInside  ? Left  :
+  Result extends typeof CompareResultRightInside ? Right :
+  Result extends typeof CompareResultEqual ? Right : 
+  TNever
+)
+function NarrowCompareRule<Left extends TSchema, Right extends TSchema>(left: Left, right: Right): TNarrow<Left, Right> {
+  const result = Compare(left, right) as TCompareResult
+  return (
+    Guard.IsEqual(result, CompareResultLeftInside) ? left :
+    Guard.IsEqual(result, CompareResultRightInside) ? right :
+    Guard.IsEqual(result, CompareResultEqual) ? right :
+    Never()
+  ) as never
+}
+// ------------------------------------------------------------------
+// NarrowCompositeRule
+// ------------------------------------------------------------------
+type TNarrowCompositeRule<Left extends TSchema, Right extends TSchema,
+  CanCompositeLeft extends boolean = TCanComposite<Left>,
+  CanCompositeRight extends boolean = TCanComposite<Right>,
+> = (
+  [CanCompositeLeft, CanCompositeRight] extends [true, true] ? TComposite<Left, Right> :
+  [CanCompositeLeft, CanCompositeRight] extends [true, false] ? Left :
+  [CanCompositeLeft, CanCompositeRight] extends [false, true] ? Right :
+  TNarrowCompareRule<Left, Right>
+)
+function NarrowCompositeRule<Left extends TSchema, Right extends TSchema>(left: Left, right: Right): TNarrowCompositeRule<Left, Right> {
+  const canCompositeLeft = CanComposite(left)
+  const canCompositeRight = CanComposite(right)
+  return (
+    canCompositeLeft && canCompositeRight ? Composite(left, right) :
+    canCompositeLeft && !canCompositeRight ? left :
+    !canCompositeLeft && canCompositeRight ? right :
+    NarrowCompareRule(left, right)
+  ) as never
+}
 // ------------------------------------------------------------------
 // Narrow
 // ------------------------------------------------------------------
-export type TNarrow<Left extends TSchema, Right extends TSchema,
-  Result extends TCompareResult = TCompare<Left, Right>,
-> = (
-  Result extends typeof ResultLeftInside  ? Left  :
-  Result extends typeof ResultRightInside ? Right :
-  Result extends typeof ResultEqual ? Right : 
-  TNever
+export type TNarrow<Left extends TSchema, Right extends TSchema> = (
+  Left extends TNever ? TNever :
+  Left extends TAny ? TAny :
+  Left extends TUnknown ? Right :
+  Right extends TNever ? TNever :
+  Right extends TAny ? TAny :
+  Right extends TUnknown ? Left :
+  TNarrowCompositeRule<Left, Right>
 )
 export function Narrow<Left extends TSchema, Right extends TSchema>(left: Left, right: Right): TNarrow<Left, Right> {
-  const result = Compare(left, right) as TCompareResult
   return (
-    Guard.IsEqual(result, ResultLeftInside) ? left :
-    Guard.IsEqual(result, ResultRightInside) ? right :
-    Guard.IsEqual(result, ResultEqual) ? right :
-    Never()
+    IsNever(left) ? left :
+    IsAny (left) ? left :
+    IsUnknown(left) ? right :
+    IsNever(right) ? right :
+    IsAny (right) ? right :
+    IsUnknown(right) ? left :
+    NarrowCompositeRule(left, right)
   ) as never
 }

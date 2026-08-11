@@ -33,106 +33,95 @@ import { type TSchema } from '../../types/schema.ts'
 import { type TAny, IsAny } from '../../types/any.ts'
 import { type TNever, IsNever } from '../../types/never.ts'
 import { type TObject, IsObject } from '../../types/object.ts'
-import { type TCompare, type TCompareResult, Compare, ResultRightInside, ResultLeftInside, ResultEqual } from './compare.ts'
+import { type TUnknown, IsUnknown } from '../../types/unknown.ts'
+
+import { type TCompare, Compare, CompareResultLeftInside, CompareResultEqual, CompareResultDisjoint } from './compare.ts'
 import { type TFlatten, Flatten } from './flatten.ts'
 import { type TEvaluateType, EvaluateType } from './evaluate.ts'
 
 // ------------------------------------------------------------------
-// BroadFilter
+// BroadenFilter
 //
-// BroadFilter iterates through a list of types and removes any 
-// that are less broad than a given reference type. It ensures that 
-// only the most generalized types remain.
+// Compares Type against each element of Types. If an existing element
+// already subsumes Type, Type is discarded and the original list is
+// returned untouched. Otherwise, any existing element that Type
+// subsumes is dropped, and Type is appended to what remains.
 //
 // ------------------------------------------------------------------
-type TBroadFilter<Type extends TSchema, Types extends TSchema[], Result extends TSchema[] = []> = (
+type TBroadenFilter<Type extends TSchema, Types extends TSchema[], Result extends TSchema[] = [], All extends TSchema[] = Types> = (
   Types extends [infer Left extends TSchema, ...infer Right extends TSchema[]]
-  ? TCompare<Type, Left> extends typeof ResultRightInside
-    ? TBroadFilter<Type, Right, [...Result]>
-      : TBroadFilter<Type, Right, [...Result, Left]>
-      : Result
+    ? TCompare<Type, Left> extends typeof CompareResultLeftInside | typeof CompareResultEqual
+      ? All // Left in set. Return original All set.
+      : TCompare<Type, Left> extends typeof CompareResultDisjoint
+        ? TBroadenFilter<Type, Right, [...Result, Left], All> // Left is disjoint, keep it
+        : TBroadenFilter<Type, Right, Result, All> // Left in Type, drop it
+    : [...Result, Type] // Type broadest in set
 )
-function BroadFilter(type: TSchema, types: TSchema[]): TSchema[] {
-  return types.filter(left => {
-    return (Compare(type, left) as TCompareResult) === ResultRightInside
-      ? false 
-      : true
-  })
-}
-// ------------------------------------------------------------------
-// GuardBroadestType
-//
-// Tests if the given Type is broader than those in Types.
-// ------------------------------------------------------------------
-type TIsBroadestType<Type extends TSchema, Types extends TSchema[]> = (
-  Types extends [infer Left extends TSchema, ...infer Right extends TSchema[]]
-    ? TCompare<Type, Left> extends typeof ResultLeftInside | typeof ResultEqual
-      ? false
-      : TIsBroadestType<Type, Right>
-    : true
-)
-function IsBroadestType(type: TSchema, types: TSchema[]): boolean {
-  const result = types.some(left => {
-    const result = Compare(type, left)
-    return Guard.IsEqual(result, ResultLeftInside) || Guard.IsEqual(result, ResultEqual)
-  })
-  return Guard.IsEqual(result, false)
+function BroadenFilter<Type extends TSchema, Types extends TSchema[]>
+  (type: Type, types: [...Types], result: TSchema[] = [], all: TSchema[] = types): TBroadenFilter<Type, Types> {
+  return Guard.ShiftLeft(types, (left, right) => {
+    const compare = Compare(type, left)
+    return (
+      (Guard.IsEqual(compare, CompareResultLeftInside) || Guard.IsEqual(compare, CompareResultEqual))
+        ? all // Left in set. Return original All set.
+        : Guard.IsEqual(compare, CompareResultDisjoint)
+          ? BroadenFilter(type, right, [...result, left], all) // Left is disjoint, keep it
+          : BroadenFilter(type, right, result, all) // Left in Type, drop it
+    )
+  }, () => [...result, type]) as never // Type broadest in set
 }
 // ------------------------------------------------------------------
 // BroadenType
 //
-// This function attempts to push the given Type into the broadest
-// set if the type is either disjoint, or more broad than an existing
-// element in the set.
+// Evaluates a single Type and folds it into the accumulated Result,
+// then continues on to the remaining Types. Any and Unknown terminate
+// immediately: both are top types that dominate every other type
+// unconditionally, so the remaining Types and Result are discarded
+// outright rather than compared.
+//
+// TObject is pushed into Result without comparison, since comparing
+// objects is currently too expensive.
+//
+// (revise-candidate-fast-path-property-sets)
 //
 // ------------------------------------------------------------------
-type TBroadenType<Type extends TSchema, Types extends TSchema[],
-  Evaluated extends TSchema = TEvaluateType<Type>,
-  Result extends TSchema[] = (
-    Evaluated extends TAny ? [Evaluated] :
-    TIsBroadestType<Evaluated, Types> extends true
-      ? [...TBroadFilter<Evaluated, Types>, Evaluated]
-      : Types
-  )
-> = Result
-function BroadenType<Type extends TSchema, Types extends TSchema[]>(type: Type, types: [...Types]): TBroadenType<Type, Types> {
+type TBroadenType<Type extends TSchema, Types extends TSchema[], Result extends TSchema[],
+  Evaluated extends TSchema = TEvaluateType<Type>
+> = (
+  Evaluated extends TAny ? [Evaluated] : // terminate (always the most broad)
+  Evaluated extends TUnknown ? [Evaluated] : // terminate (always the most broad)
+  Evaluated extends TNever ? TBroadenTypes<Types, Result> : // ignored: never is dropped
+  Evaluated extends TObject ? TBroadenTypes<Types, [...Result, Evaluated]> : // objects are always considered (too expensive to compare)
+  TBroadenTypes<Types, TBroadenFilter<Evaluated, Result>>
+)
+function BroadenType<Type extends TSchema, Types extends TSchema[], Result extends TSchema[]>
+  (type: Type, types: [...Types], result: [...Result]): TBroadenType<Type, Types, Result> {
   const evaluated = EvaluateType(type)
   return (
-    IsAny(evaluated) ? [evaluated] :
-    IsBroadestType(evaluated, types) 
-      ? [...BroadFilter(evaluated, types), evaluated]
-      : types
+    IsAny(evaluated) ? [evaluated] : // terminate (always the most broad)
+    IsUnknown(evaluated) ? [evaluated] : // terminate (always the most broad)
+    IsNever(evaluated) ? BroadenTypes(types, result) :  // ignored: never is dropped
+    IsObject(evaluated) ? BroadenTypes(types, [...result, evaluated]) : // objects are always considered (too expensive to compare)
+    BroadenTypes(types, BroadenFilter(evaluated, result))
   ) as never
 }
 // ------------------------------------------------------------------
 // BroadenTypes
 //
-// Note: We consider TObject types too expensive to apply a broaden
-// operation to (currently) so we just push the TObject into the
-// set on assumption that it is 'probably' distinct. TypeScript 
-// seems to do the same in some contexts. We should revise this 
-// code and revisit the TIsBroadestType, but expect we need 
-// TExtends optimizations first.
-//
-// (revise-candidate-fast-path-property-sets)
+// Folds a list of Types into their broadest set. Each element is
+// handed to BroadenType along with the remaining list and the
+// accumulator, so BroadenType decides how iteration continues.
 //
 // ------------------------------------------------------------------
 type TBroadenTypes<Types extends TSchema[], Result extends TSchema[] = []> = (
   Types extends [infer Left extends TSchema, ...infer Right extends TSchema[]]
-    ? (
-      Left extends TObject ? TBroadenTypes<Right, [...Result, Left]> : // push
-      Left extends TNever ? TBroadenTypes<Right, Result> : // ignore
-      TBroadenTypes<Right, TBroadenType<Left, Result>> // broaden
-    ) : Result
+    ? TBroadenType<Left, Right, Result>
+    : Result
 )
-function BroadenTypes<Types extends TSchema[]>(types: [...Types]): TBroadenTypes<Types> {
-  return types.reduce<TSchema[]>((result, left) => {
-    return (
-      IsObject(left) ? [...result, left] : // push
-      IsNever(left) ? result : // ignore
-      BroadenType(left, result) // broaden
-    )
-  }, []) as never
+function BroadenTypes<Types extends TSchema[]>(types: [...Types], result: TSchema[] = []): TBroadenTypes<Types> {
+  return Guard.ShiftLeft(types, (left, right) => (
+    BroadenType(left, right, result)
+  ), () => result) as never
 }
 // ------------------------------------------------------------------
 // Broaden
@@ -147,4 +136,3 @@ export function Broaden<Types extends TSchema[]>(types: [...Types]): TBroaden<Ty
   const flattened = Flatten(broadened) as TSchema[]
   return flattened as never
 }
-

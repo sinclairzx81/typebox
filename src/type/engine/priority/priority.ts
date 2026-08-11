@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 import { Guard } from '../../../guard/index.ts'
 import { type TSchema } from '../../types/schema.ts'
-import { type TCompare, type TCompareResult, Compare } from '../evaluate/compare.ts'
+import { type TCompare, type TCompareResult, Compare, CompareResultRightInside, CompareResultDisjoint } from '../evaluate/compare.ts'
 
 // ------------------------------------------------------------------
 // Comparer
@@ -38,20 +38,19 @@ import { type TCompare, type TCompareResult, Compare } from '../evaluate/compare
 type TComparer<Left extends TSchema, Right extends TSchema,
   CompareResult extends TCompareResult = TCompare<Left, Right>,
   Result extends 0 | 1 = (
-    CompareResult extends 'right-inside' ? 1 :
-    CompareResult extends 'disjoint' ? 1 :
+    CompareResult extends typeof CompareResultRightInside ? 1 :
+    CompareResult extends typeof CompareResultDisjoint ? 1 :
     0
   )
 > = Result
 function Comparer<Left extends TSchema, Right extends TSchema>
   (left: Left, right: Right): TComparer<Left, Right> {
   const compareResult = Compare(left, right)
-  const result = (
-    Guard.IsEqual(compareResult, 'right-inside') ? 1 : 
-    Guard.IsEqual(compareResult, 'disjoint') ? 1 :
+  return (
+    Guard.IsEqual(compareResult, CompareResultRightInside) ? 1 : 
+    Guard.IsEqual(compareResult, CompareResultDisjoint) ? 1 :
     0
-  )
-  return result as never
+  ) as never
 }
 // ------------------------------------------------------------------
 // Insert
@@ -95,7 +94,7 @@ function Sort<Types extends TSchema[]>(types: [...Types], result: TSchema[] = []
 export type TPriority<Types extends TSchema[],
   Result extends TSchema[] = TSort<Types>,
 > = Result
-/** 
+/**
  * Priority sorts types in sequence of narrowest to broadest using an Insertion Sort
  * algorithm. This function is typically used to sequence types for union variant
  * checks to ensure that values are checked against the most narrow types before
@@ -103,6 +102,5 @@ export type TPriority<Types extends TSchema[],
  */
 export function Priority<Types extends TSchema[]>
   (types: [...Types]): TPriority<Types> {
-  const result = Sort(types) as TSchema[]
-  return result as never
+  return Sort(types) as never
 }

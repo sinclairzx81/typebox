@@ -32,12 +32,15 @@ import { Guard } from '../../../guard/index.ts'
 import { type TSchema } from '../../types/schema.ts'
 import { type TDependent, IsDependent } from '../../types/dependent.ts'
 import { type TEnum, type TEnumValue, IsEnum } from '../../types/enum.ts'
+import { type TIntersect, IsIntersect } from '../../types/intersect.ts'
 import { type TLiteral, Literal } from '../../types/literal.ts'
-import { type TIntersect, IsIntersect, Intersect } from '../../types/intersect.ts'
 import { type TNever, Never } from '../../types/never.ts'
 import { type TTemplateLiteral, IsTemplateLiteral } from '../../types/template_literal.ts'
 import { type TUnion, Union, IsUnion } from '../../types/union.ts'
 
+// ------------------------------------------------------------------
+// Infrastructure
+// ------------------------------------------------------------------
 import { type TDistribute, Distribute } from './distribute.ts'
 import { type TBroaden, Broaden } from './broaden.ts'
 import { type TExcludeOperation, ExcludeOperation } from '../exclude/operation.ts'
@@ -47,15 +50,15 @@ import { type TTemplateLiteralDecode, TemplateLiteralDecode } from '../template_
 // EvaluateDependent
 // ------------------------------------------------------------------
 export type TEvaluateDependent<If extends TSchema, Then extends TSchema, Else extends TSchema,
-  Intersect extends TSchema = TIntersect<[If, Then]>,
+  Intersected extends TSchema = TEvaluateIntersect<[If, Then]>,
   Excluded extends TSchema = TExcludeOperation<Else, If>,
-  Result extends TSchema = TEvaluateUnion<[Intersect, Excluded]>
+  Result extends TSchema = TEvaluateUnion<[Intersected, Excluded]>
 > = Result
 export function EvaluateDependent<If extends TSchema, Then extends TSchema, Else extends TSchema>
   (if_: If, then_: Then, else_: Else): TEvaluateDependent<If, Then, Else> {
-  const intersect = Intersect([if_, then_])
+  const intersected = EvaluateIntersect([if_, then_])
   const excluded = ExcludeOperation(else_, if_)
-  const result = EvaluateUnion([intersect, excluded])
+  const result = EvaluateUnion([intersected, excluded])
   return result as never
 }
 // ------------------------------------------------------------------
@@ -63,12 +66,13 @@ export function EvaluateDependent<If extends TSchema, Then extends TSchema, Else
 // ------------------------------------------------------------------
 export type TEvaluateEnum<Values extends TEnumValue[], Result extends TSchema[] = []> = (
   Values extends [infer Left extends TEnumValue, ...infer Right extends TEnumValue[]]
-  ? TEvaluateEnum<Right, [...Result, TLiteral<Left>]>
-  : TEvaluateUnion<Result>
+    ? TEvaluateEnum<Right, [...Result, TLiteral<Left>]>
+    : TEvaluateUnion<Result>
 )
-export function EvaluateEnum<Values extends TEnumValue[]>(values: [...Values]): TEvaluateEnum<Values> {
-  const result = values.map(value => Literal(value))
-  return EvaluateUnion(result) as never
+export function EvaluateEnum<Values extends TEnumValue[]>(values: [...Values], result: TSchema[] = []): TEvaluateEnum<Values> {
+  return Guard.ShiftLeft(values, (left, right) => 
+    EvaluateEnum(right, [...result, Literal(left)]), 
+    () => EvaluateUnion(result)) as never
 }
 // ------------------------------------------------------------------
 // EvaluateIntersect
@@ -76,12 +80,12 @@ export function EvaluateEnum<Values extends TEnumValue[]>(values: [...Values]): 
 export type TEvaluateIntersect<Types extends TSchema[],
   Distribution extends TSchema[] = TDistribute<Types>,
   Broadend extends TSchema[] = TBroaden<Distribution>,
-  Result extends TSchema = TEvaluateUnionFast<Broadend>
+  Result extends TSchema = TEvaluateUnion<Broadend>
 > = Result
 export function EvaluateIntersect<Types extends TSchema[]>(types: [...Types]): TEvaluateIntersect<Types> {
   const distribution = Distribute(types) as TSchema[]
   const broadend = Broaden(distribution) as TSchema[]
-  const result = EvaluateUnionFast(broadend)
+  const result = EvaluateUnion(broadend)
   return result as never
 }
 // ------------------------------------------------------------------
@@ -122,14 +126,15 @@ export type TEvaluateType<Type extends TSchema,
   )
 > = Result
 export function EvaluateType<Type extends TSchema>(type: Type): TEvaluateType<Type> {
-  return (
+  const result = (
     IsDependent(type) ? EvaluateDependent(type.if, type.then, type.else) :
     IsEnum(type) ? EvaluateEnum(type.enum) :
     IsIntersect(type) ? EvaluateIntersect(type.allOf) :
     IsTemplateLiteral(type) ? EvaluateTemplateLiteral(type.pattern) :
     IsUnion(type) ? EvaluateUnion(type.anyOf) :
     type
-  ) as never
+  )
+  return result as never
 }
 // ------------------------------------------------------------------
 // EvaluateUnionFast
