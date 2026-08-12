@@ -124,7 +124,7 @@ Test('Should Composite 11', () => {
   }> = Type.Composite(A, B)
   Assert.IsTrue(Type.IsObject(R))
   Assert.IsTrue(Type.IsReadonly(R.properties.x))
-  Assert.IsEqual(Type.IsOptional(R.properties.x), false)
+  Assert.IsFalse(Type.IsOptional(R.properties.x))
 })
 Test('Should Composite 12', () => {
   const A = Type.Object({ x: Type.Readonly(Type.Number()) })
@@ -133,7 +133,7 @@ Test('Should Composite 12', () => {
     x: Type.TNumber
   }> = Type.Composite(A, B)
   Assert.IsTrue(Type.IsObject(R))
-  Assert.IsEqual(Type.IsReadonly(R.properties.x), false)
+  Assert.IsFalse(Type.IsReadonly(R.properties.x))
 })
 Test('Should Composite 13', () => {
   const A = Type.Object({ x: Type.Optional(Type.Number()) })
@@ -143,7 +143,7 @@ Test('Should Composite 13', () => {
   }> = Type.Composite(A, B)
   Assert.IsTrue(Type.IsObject(R))
   Assert.IsTrue(Type.IsOptional(R.properties.x))
-  Assert.IsEqual(Type.IsReadonly(R.properties.x), false)
+  Assert.IsFalse(Type.IsReadonly(R.properties.x))
 })
 Test('Should Composite 14', () => {
   const A = Type.Object({ x: Type.Optional(Type.Number()) })
@@ -152,7 +152,7 @@ Test('Should Composite 14', () => {
     x: Type.TNumber
   }> = Type.Composite(A, B)
   Assert.IsTrue(Type.IsObject(R))
-  Assert.IsEqual(Type.IsOptional(R.properties.x), false)
+  Assert.IsFalse(Type.IsOptional(R.properties.x))
 })
 Test('Should Composite 15', () => {
   const A = Type.Object({ x: Type.Readonly(Type.Optional(Type.Number())) })
@@ -174,6 +174,6 @@ Test('Should Composite 16', () => {
   Assert.IsTrue(Type.IsObject(R))
   Assert.IsTrue(Type.IsReadonly(R.properties.x))
   Assert.IsTrue(Type.IsOptional(R.properties.x))
-  Assert.IsEqual(Type.IsReadonly(R.properties.y), false)
-  Assert.IsEqual(Type.IsOptional(R.properties.y), false)
+  Assert.IsFalse(Type.IsReadonly(R.properties.y))
+  Assert.IsFalse(Type.IsOptional(R.properties.y))
 })
