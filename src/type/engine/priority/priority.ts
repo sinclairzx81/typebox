@@ -102,5 +102,6 @@ export type TPriority<Types extends TSchema[],
  */
 export function Priority<Types extends TSchema[]>
   (types: [...Types]): TPriority<Types> {
-  return Sort(types) as never
+  const result = Sort(types)
+  return result as never
 }

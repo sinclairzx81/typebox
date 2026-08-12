@@ -75,5 +75,6 @@ export function ExcludeOperation<Left extends TSchema, Right extends TSchema>(le
   const evaluated = EvaluateType(left)
   const canonical = IsUnion(evaluated) ? evaluated.anyOf : [evaluated]
   const remaining = ExcludeUnion(canonical, right)
-  return EvaluateUnion(remaining) as never
+  const result = EvaluateUnion(remaining)
+  return result as never
 }
