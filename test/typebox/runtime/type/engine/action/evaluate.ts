@@ -668,8 +668,8 @@ Test('Should Evaluate 60', () => {
   Assert.IsTrue(Type.IsNever(T))
 })
 Test('Should Evaluate 61', () => {
-  const T: Type.TUnknown = Type.Evaluate(Type.Intersect([Type.Unknown(), Type.Any()]))
-  Assert.IsTrue(Type.IsUnknown(T))
+  const T: Type.TAny = Type.Evaluate(Type.Intersect([Type.Unknown(), Type.Any()]))
+  Assert.IsTrue(Type.IsAny(T))
 })
 Test('Should Evaluate 62', () => {
   const T: Type.TObject<{
@@ -858,13 +858,10 @@ Test('Should Evaluate 72', () => {
   Assert.IsTrue(Type.IsString(T.properties.b))
 })
 Test('Should Evaluate 73', () => {
-  const T: Type.TUnion<[Type.TObject<{ a: Type.TNumber }>, Type.TString]> = Type.Evaluate(
+  const T: Type.TString = Type.Evaluate(
     Type.Dependent(Type.Object({ a: Type.Number() }), Type.Never(), Type.String())
   )
-  Assert.IsTrue(Type.IsUnion(T))
-  Assert.IsTrue(Type.IsObject(T.anyOf[0]))
-  Assert.IsTrue(Type.IsNumber(T.anyOf[0].properties.a))
-  Assert.IsTrue(Type.IsString(T.anyOf[1]))
+  Assert.IsTrue(Type.IsString(T))
 })
 Test('Should Evaluate 74', () => {
   const T: Type.TObject<{ a: Type.TNumber }> = Type.Evaluate(
@@ -891,13 +888,10 @@ Test('Should Evaluate 76', () => {
   Assert.IsTrue(Type.IsNever(T.properties[0]))
 })
 Test('Should Evaluate 77', () => {
-  const T: Type.TUnion<[Type.TTuple<[Type.TNumber]>, Type.TString]> = Type.Evaluate(
+  const T: Type.TString = Type.Evaluate(
     Type.Dependent(Type.Tuple([Type.Number()]), Type.Never(), Type.String())
   )
-  Assert.IsTrue(Type.IsUnion(T))
-  Assert.IsTrue(Type.IsTuple(T.anyOf[0]))
-  Assert.IsTrue(Type.IsNumber(T.anyOf[0].items![0]))
-  Assert.IsTrue(Type.IsString(T.anyOf[1]))
+  Assert.IsTrue(Type.IsString(T))
 })
 Test('Should Evaluate 78', () => {
   const T: Type.TTuple<[Type.TNumber, Type.TString]> = Type.Evaluate(
@@ -1079,25 +1073,23 @@ Test('Should Evaluate 101', () => {
   Assert.IsTrue(Type.IsString(T.properties.b))
 })
 Test('Should Evaluate 102', () => {
-  const T: Type.TUnion<[Type.TObject<{ a: Type.TNumber }>, Type.TTuple<[Type.TNumber, Type.TString]>]> = Type.Evaluate(
+  // type T = ({ a: number } & never) | [number, string] // [number, string]
+  const T: Type.TTuple<[Type.TNumber, Type.TString]> = Type.Evaluate(
     Type.Dependent(Type.Object({ a: Type.Number() }), Type.Never(), Type.Tuple([Type.Number(), Type.String()]))
   )
-  Assert.IsTrue(Type.IsUnion(T))
-  Assert.IsTrue(Type.IsObject(T.anyOf[0]))
-  Assert.IsTrue(Type.IsNumber(T.anyOf[0].properties.a))
-  Assert.IsTrue(Type.IsTuple(T.anyOf[1]))
-  Assert.IsTrue(Type.IsNumber(T.anyOf[1].items![0]))
-  Assert.IsTrue(Type.IsString(T.anyOf[1].items![1]))
+  Assert.IsTrue(Type.IsTuple(T))
+  Assert.IsTrue(Type.IsNumber(T.items![0]))
+  Assert.IsTrue(Type.IsString(T.items![1]))
 })
 Test('Should Evaluate 103', () => {
-  const T: Type.TUnion<[Type.TTuple<[Type.TNumber]>, Type.TObject<{ x: Type.TBoolean }>]> = Type.Evaluate(
+  // type T = ([number] & never) | { x: number } // { x: number }
+  const T: Type.TObject<{
+    x: Type.TBoolean
+  }> = Type.Evaluate(
     Type.Dependent(Type.Tuple([Type.Number()]), Type.Never(), Type.Object({ x: Type.Boolean() }))
   )
-  Assert.IsTrue(Type.IsUnion(T))
-  Assert.IsTrue(Type.IsTuple(T.anyOf[0]))
-  Assert.IsTrue(Type.IsNumber(T.anyOf[0].items![0]))
-  Assert.IsTrue(Type.IsObject(T.anyOf[1]))
-  Assert.IsTrue(Type.IsBoolean(T.anyOf[1].properties.x))
+  Assert.IsTrue(Type.IsObject(T))
+  Assert.IsTrue(Type.IsBoolean(T.properties.x))
 })
 Test('Should Evaluate 104', () => {
   const T: Type.TUnion<[Type.TObject<{ x: Type.TNumber; y: Type.TNumber }>, Type.TObject<{ x: Type.TNumber; z: Type.TNumber }>]> = Type.Evaluate(
@@ -1221,4 +1213,155 @@ Test('Should Evaluate 110', () => {
   Assert.NotHasPropertyKey(C, 'bar')
   Assert.HasPropertyKey(C, 'baz')
   Assert.IsEqual(C.baz, 1)
+})
+// ------------------------------------------------------------------
+// Any, Never and Unknown
+// ------------------------------------------------------------------
+Test('Should Evaluate 111', () => {
+  const R: Type.TAny = Type.Evaluate(Type.Intersect([Type.Any(), Type.String()]))
+  Assert.IsTrue(Type.IsAny(R))
+})
+Test('Should Evaluate 112', () => {
+  const R: Type.TAny = Type.Evaluate(Type.Intersect([Type.String(), Type.Any()]))
+  Assert.IsTrue(Type.IsAny(R))
+})
+Test('Should Evaluate 113', () => {
+  const R: Type.TAny = Type.Evaluate(Type.Intersect([Type.Any(), Type.Number(), Type.Object({ x: Type.Number() })]))
+  Assert.IsTrue(Type.IsAny(R))
+})
+Test('Should Evaluate 114', () => {
+  const R: Type.TAny = Type.Evaluate(Type.Intersect([Type.Number(), Type.Any(), Type.Object({ x: Type.Number() })]))
+  Assert.IsTrue(Type.IsAny(R))
+})
+Test('Should Evaluate 115', () => {
+  const R: Type.TAny = Type.Evaluate(Type.Intersect([Type.Number(), Type.Object({ x: Type.Number() }), Type.Any()]))
+  Assert.IsTrue(Type.IsAny(R))
+})
+Test('Should Evaluate 116', () => {
+  const R: Type.TNever = Type.Evaluate(Type.Intersect([Type.Never(), Type.String()]))
+  Assert.IsTrue(Type.IsNever(R))
+})
+Test('Should Evaluate 117', () => {
+  const R: Type.TNever = Type.Evaluate(Type.Intersect([Type.String(), Type.Never()]))
+  Assert.IsTrue(Type.IsNever(R))
+})
+Test('Should Evaluate 118', () => {
+  const R: Type.TNever = Type.Evaluate(Type.Intersect([Type.Never(), Type.Number(), Type.Object({ x: Type.Number() })]))
+  Assert.IsTrue(Type.IsNever(R))
+})
+Test('Should Evaluate 119', () => {
+  const R: Type.TNever = Type.Evaluate(Type.Intersect([Type.Number(), Type.Never(), Type.Object({ x: Type.Number() })]))
+  Assert.IsTrue(Type.IsNever(R))
+})
+Test('Should Evaluate 120', () => {
+  const R: Type.TNever = Type.Evaluate(Type.Intersect([Type.Number(), Type.Object({ x: Type.Number() }), Type.Never()]))
+  Assert.IsTrue(Type.IsNever(R))
+})
+Test('Should Evaluate 121', () => {
+  const R: Type.TNumber = Type.Evaluate(Type.Intersect([Type.Unknown(), Type.Number()]))
+  Assert.IsTrue(Type.IsNumber(R))
+})
+Test('Should Evaluate 122', () => {
+  const R: Type.TNumber = Type.Evaluate(Type.Intersect([Type.Number(), Type.Unknown()]))
+  Assert.IsTrue(Type.IsNumber(R))
+})
+Test('Should Evaluate 123', () => {
+  const R: Type.TNumber = Type.Evaluate(Type.Intersect([Type.Unknown(), Type.Unknown(), Type.Number()]))
+  Assert.IsTrue(Type.IsNumber(R))
+})
+Test('Should Evaluate 124', () => {
+  const R: Type.TNumber = Type.Evaluate(Type.Intersect([Type.Number(), Type.Unknown(), Type.Unknown()]))
+  Assert.IsTrue(Type.IsNumber(R))
+})
+Test('Should Evaluate 125', () => {
+  const R: Type.TNumber = Type.Evaluate(Type.Intersect([Type.Unknown(), Type.Number(), Type.Unknown()]))
+  Assert.IsTrue(Type.IsNumber(R))
+})
+Test('Should Evaluate 126', () => {
+  const R: Type.TAny = Type.Evaluate(Type.Intersect([
+    Type.Number(),
+    Type.Intersect([Type.Any(), Type.Object({ x: Type.Number() })])
+  ]))
+  Assert.IsTrue(Type.IsAny(R))
+})
+Test('Should Evaluate 127', () => {
+  const R: Type.TAny = Type.Evaluate(Type.Intersect([
+    Type.Intersect([Type.Number(), Type.Any()]),
+    Type.Object({ x: Type.Number() })
+  ]))
+  Assert.IsTrue(Type.IsAny(R))
+})
+Test('Should Evaluate 128', () => {
+  const R: Type.TNever = Type.Evaluate(Type.Intersect([
+    Type.Number(),
+    Type.Intersect([Type.Never(), Type.Object({ x: Type.Number() })])
+  ]))
+  Assert.IsTrue(Type.IsNever(R))
+})
+Test('Should Evaluate 129', () => {
+  const R: Type.TNever = Type.Evaluate(Type.Intersect([
+    Type.Intersect([Type.Number(), Type.Never()]),
+    Type.Object({ x: Type.Number() })
+  ]))
+  Assert.IsTrue(Type.IsNever(R))
+})
+Test('Should Evaluate 130', () => {
+  const T: Type.TObject<{ x: Type.TNumber }> = Type.Evaluate(Type.Intersect([
+    Type.Number(),
+    Type.Intersect([Type.Unknown(), Type.Object({ x: Type.Number() })])
+  ]))
+  Assert.IsTrue(Type.IsObject(T))
+})
+Test('Should Evaluate 131', () => {
+  const T: Type.TObject<{ x: Type.TNumber }> = Type.Evaluate(Type.Intersect([
+    Type.Intersect([Type.Number(), Type.Unknown()]),
+    Type.Object({ x: Type.Number() })
+  ]))
+  Assert.IsTrue(Type.IsObject(T))
+})
+Test('Should Evaluate 132', () => {
+  const R: Type.TAny = Type.Evaluate(Type.Intersect([
+    Type.Any(),
+    Type.Union([Type.Number(), Type.Object({ x: Type.Number() })])
+  ]))
+  Assert.IsTrue(Type.IsAny(R))
+})
+Test('Should Evaluate 133', () => {
+  const R: Type.TAny = Type.Evaluate(Type.Intersect([
+    Type.Union([Type.Number(), Type.Object({ x: Type.Number() })]),
+    Type.Any()
+  ]))
+  Assert.IsTrue(Type.IsAny(R))
+})
+Test('Should Evaluate 134', () => {
+  const R: Type.TNever = Type.Evaluate(Type.Intersect([
+    Type.Never(),
+    Type.Union([Type.Number(), Type.Object({ x: Type.Number() })])
+  ]))
+  Assert.IsTrue(Type.IsNever(R))
+})
+Test('Should Evaluate 135', () => {
+  const R: Type.TNever = Type.Evaluate(Type.Intersect([
+    Type.Union([Type.Number(), Type.Object({ x: Type.Number() })]),
+    Type.Never()
+  ]))
+  Assert.IsTrue(Type.IsNever(R))
+})
+Test('Should Evaluate 136', () => {
+  const R: Type.TUnion<[Type.TNumber, Type.TObject<{ x: Type.TNumber }>]> = Type.Evaluate(Type.Intersect([
+    Type.Unknown(),
+    Type.Union([Type.Number(), Type.Object({ x: Type.Number() })])
+  ]))
+  Assert.IsTrue(Type.IsUnion(R))
+  Assert.IsTrue(Type.IsNumber(R.anyOf[0]))
+  Assert.IsTrue(Type.IsObject(R.anyOf[1]))
+})
+Test('Should Evaluate 137', () => {
+  const R: Type.TUnion<[Type.TNumber, Type.TObject<{ x: Type.TNumber }>]> = Type.Evaluate(Type.Intersect([
+    Type.Union([Type.Number(), Type.Object({ x: Type.Number() })]),
+    Type.Unknown()
+  ]))
+  Assert.IsTrue(Type.IsUnion(R))
+  Assert.IsTrue(Type.IsNumber(R.anyOf[0]))
+  Assert.IsTrue(Type.IsObject(R.anyOf[1]))
 })

@@ -30,45 +30,38 @@ THE SOFTWARE.
 // deno-fmt-ignore-file
 
 import { type TSchema } from '../../types/index.ts'
-import { type TUnknown, IsUnknown } from '../../types/unknown.ts'
 import { type TExtends, Extends, ExtendsResult } from "../../extends/index.ts"
 
 // ------------------------------------------------------------------
 // TCompare
 // ------------------------------------------------------------------
-export const ResultEqual = 'equal'
-export const ResultDisjoint = 'disjoint'
-export const ResultLeftInside = 'left-inside'
-export const ResultRightInside = 'right-inside'
+export const CompareResultEqual = 0 // 'equal'
+export const CompareResultDisjoint = 1 // 'disjoint'
+export const CompareResultLeftInside = 2 // 'left-inside'
+export const CompareResultRightInside = 3 // 'right-inside'
 
-export type TCompareResult = 
-  | typeof ResultEqual         // left and right equal
-  | typeof ResultDisjoint      // left and right are disjoint
-  | typeof ResultLeftInside    // left inside right set
-  | typeof ResultRightInside   // right inside left set
-
+export type TCompareResult = (
+  | typeof CompareResultEqual // left and right equal
+  | typeof CompareResultDisjoint // left and right are disjoint
+  | typeof CompareResultLeftInside // left inside right set
+  | typeof CompareResultRightInside // right inside left set
+)
 /** Compares left and right types and determines their set relationship */
 export type TCompare<Left extends TSchema, Right extends TSchema, 
-  Extends extends [ExtendsResult.TResult, ExtendsResult.TResult] = [
-    Left extends TUnknown ? ExtendsResult.TExtendsFalse : TExtends<{}, Left, Right>,
-    Left extends TUnknown ? ExtendsResult.TExtendsTrue : TExtends<{}, Right, Left>,
-  ]
-> = ( // TCompareResult
-  Extends extends [ExtendsResult.TExtendsTrueLike, ExtendsResult.TExtendsTrueLike] ? typeof ResultEqual :
-  Extends extends [ExtendsResult.TExtendsTrueLike, ExtendsResult.TExtendsFalse] ? typeof ResultLeftInside :
-  Extends extends [ExtendsResult.TExtendsFalse, ExtendsResult.TExtendsTrueLike] ? typeof ResultRightInside :
-  typeof ResultDisjoint
+  Extends extends [ExtendsResult.TResult, ExtendsResult.TResult] = [TExtends<{}, Left, Right>, TExtends<{}, Right, Left>]
+> = (
+  Extends extends [ExtendsResult.TExtendsTrueLike, ExtendsResult.TExtendsTrueLike] ? typeof CompareResultEqual :
+  Extends extends [ExtendsResult.TExtendsTrueLike, ExtendsResult.TExtendsFalse] ? typeof CompareResultLeftInside :
+  Extends extends [ExtendsResult.TExtendsFalse, ExtendsResult.TExtendsTrueLike] ? typeof CompareResultRightInside :
+  typeof CompareResultDisjoint
 )
 /** Compares left and right types and determines their set relationship. */
 export function Compare<Left extends TSchema, Right extends TSchema>(left: Left, right: Right): TCompare<Left, Right> {
-  const extendsCheck = [
-    IsUnknown(left) ? ExtendsResult.ExtendsFalse() : Extends({}, left, right),
-    IsUnknown(left) ? ExtendsResult.ExtendsTrue({}) : Extends({}, right, left),
-  ]
+  const extendsCheck = [Extends({}, left, right), Extends({}, right, left)]
   return (
-    ExtendsResult.IsExtendsTrueLike(extendsCheck[0]) && ExtendsResult.IsExtendsTrueLike(extendsCheck[1]) ? ResultEqual :
-    ExtendsResult.IsExtendsTrueLike(extendsCheck[0]) && ExtendsResult.IsExtendsFalse(extendsCheck[1]) ? ResultLeftInside :
-    ExtendsResult.IsExtendsFalse(extendsCheck[0]) && ExtendsResult.IsExtendsTrueLike(extendsCheck[1]) ? ResultRightInside :
-    ResultDisjoint
+    ExtendsResult.IsExtendsTrueLike(extendsCheck[0]) && ExtendsResult.IsExtendsTrueLike(extendsCheck[1]) ? CompareResultEqual :
+    ExtendsResult.IsExtendsTrueLike(extendsCheck[0]) && ExtendsResult.IsExtendsFalse(extendsCheck[1]) ? CompareResultLeftInside :
+    ExtendsResult.IsExtendsFalse(extendsCheck[0]) && ExtendsResult.IsExtendsTrueLike(extendsCheck[1]) ? CompareResultRightInside :
+    CompareResultDisjoint
   ) as never
 }

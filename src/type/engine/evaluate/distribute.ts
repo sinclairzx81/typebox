@@ -31,40 +31,22 @@ THE SOFTWARE.
 
 import { Guard } from '../../../guard/index.ts'
 import { type TSchema } from '../../types/schema.ts'
-import { type TProperties } from '../../types/properties.ts'
 import { type TUnion, IsUnion } from '../../types/union.ts'
-import { type TObject, IsObject } from '../../types/object.ts'
-import { type TTuple, IsTuple } from '../../types/tuple.ts'
-import { type TComposite, Composite } from './composite.ts'
+
 import { type TNarrow, Narrow } from './narrow.ts'
-
-import { type TEvaluateType, EvaluateType } from './evaluate.ts'
 import { type TEvaluateIntersect, EvaluateIntersect } from './evaluate.ts'
+import { type TEvaluateType, EvaluateType } from './evaluate.ts'
 
 // ------------------------------------------------------------------
-// IsObjectLike (We need explicit destructuring here to ensure
-// that wrapped TWith<T..> types can be observed as ObjectLike)
+// ShouldEvaluate (if either operand is Union)
 // ------------------------------------------------------------------
-type TIsObjectLike<Type extends TSchema> = (
-  Type extends TObject<infer _ extends TProperties> ? true :
-  Type extends TTuple<infer _ extends TSchema[]> ? true : 
-  false
-)
-function IsObjectLike<Type extends TSchema>(type: Type) {
-  return IsObject(type) || IsTuple(type)
-}
-// ------------------------------------------------------------------
-// IsUnionOperand
-// ------------------------------------------------------------------
-type TIsUnionOperand<Left extends TSchema, Right extends TSchema,
+type TShouldEvaluate<Left extends TSchema, Right extends TSchema,
   IsUnionLeft extends boolean = Left extends TUnion ? true : false,
   IsUnionRight extends boolean = Right extends TUnion ? true : false,
   Result extends boolean = IsUnionLeft extends true ? true : IsUnionRight extends true ? true : false
 > = Result
-function IsUnionOperand<Left extends TSchema, Right extends TSchema>(left: Left, right: Right): TIsUnionOperand<Left, Right> {
-  const isUnionLeft = IsUnion(left)
-  const isUnionRight = IsUnion(right)
-  const result = isUnionLeft || isUnionRight
+function ShouldEvaluate<Left extends TSchema, Right extends TSchema>(left: Left, right: Right): TShouldEvaluate<Left, Right> {
+  const result = IsUnion(left) || IsUnion(right)
   return result as never
 }
 // -----------------------------------------------------------------------------------------
@@ -73,30 +55,18 @@ function IsUnionOperand<Left extends TSchema, Right extends TSchema>(left: Left,
 type TDistributeOperation<Left extends TSchema, Right extends TSchema,
   EvaluatedLeft extends TSchema = TEvaluateType<Left>,
   EvaluatedRight extends TSchema = TEvaluateType<Right>,
-  IsUnionOperand extends boolean = TIsUnionOperand<EvaluatedLeft, EvaluatedRight>,
-  IsObjectLeft extends boolean = TIsObjectLike<EvaluatedLeft>,
-  IsObjectRight extends boolean = TIsObjectLike<EvaluatedRight>,
-  Result extends TSchema = (
-    [IsUnionOperand] extends [true] ? TEvaluateIntersect<[EvaluatedLeft, EvaluatedRight]> :
-    [IsObjectLeft, IsObjectRight] extends [true, true] ? TComposite<EvaluatedLeft, EvaluatedRight> :
-    [IsObjectLeft, IsObjectRight] extends [true, false] ? EvaluatedLeft :
-    [IsObjectLeft, IsObjectRight] extends [false, true] ? EvaluatedRight :
-    TNarrow<EvaluatedLeft, EvaluatedRight>
-  )
+  ShouldEvaluate extends boolean = TShouldEvaluate<EvaluatedLeft, EvaluatedRight>,
+  Result extends TSchema = [ShouldEvaluate] extends [true] 
+    ? TEvaluateIntersect<[EvaluatedLeft, EvaluatedRight]> 
+    : TNarrow<EvaluatedLeft, EvaluatedRight>
 > = Result
 function DistributeOperation<Left extends TSchema, Right extends TSchema>(left: Left, right: Right): TDistributeOperation<Left, Right> {
   const evaluatedLeft = EvaluateType(left)
   const evaluatedRight = EvaluateType(right)
-  const isUnionOperand = IsUnionOperand(evaluatedLeft, evaluatedRight)
-  const isObjectLeft = IsObjectLike(evaluatedLeft)
-  const IsObjectRight = IsObjectLike(evaluatedRight)
-  const result = (
-    isUnionOperand ? EvaluateIntersect([evaluatedLeft, evaluatedRight]) :
-    isObjectLeft && IsObjectRight ? Composite(evaluatedLeft, evaluatedRight) :
-    isObjectLeft && !IsObjectRight ? evaluatedLeft :
-    !isObjectLeft && IsObjectRight ? evaluatedRight :
-    Narrow(evaluatedLeft, evaluatedRight)
-  )
+  const shouldEvaluate = ShouldEvaluate(evaluatedLeft, evaluatedRight)
+  const result = shouldEvaluate 
+    ? EvaluateIntersect([evaluatedLeft, evaluatedRight]) 
+    : Narrow(evaluatedLeft, evaluatedRight)
   return result as never
 }
 // -----------------------------------------------------------------------------------------
@@ -104,14 +74,14 @@ function DistributeOperation<Left extends TSchema, Right extends TSchema>(left: 
 // -----------------------------------------------------------------------------------------
 type TDistributeType<Type extends TSchema, Distribution extends TSchema[], Result extends TSchema[] = []> = (
   Distribution extends [infer Left extends TSchema, ...infer Right extends TSchema[]]
-    ? TDistributeType<Type, Right, [ ...Result, TDistributeOperation<Type, Left>]>
+    ? TDistributeType<Type, Right, [ ...Result, TDistributeOperation<Left, Type>]>
     : Result extends [] 
-      ? [Type] 
+      ? [Type]
       : Result
 )
 function DistributeType<Type extends TSchema, Distribution extends TSchema[]>(type: Type, types: [...Distribution], result: TSchema[] = []): TDistributeType<Type, Distribution> {
   return Guard.ShiftLeft(types, (left, right) => 
-    DistributeType(type, right, [...result, DistributeOperation(type, left)]),
+    DistributeType(type, right, [...result, DistributeOperation(left, type)]),
     () => Guard.IsEqual(result.length, 0)
       ? [type]
       : result) as never

@@ -29,6 +29,7 @@ THE SOFTWARE.
 // deno-lint-ignore-file no-explicit-any
 // deno-fmt-ignore-file
 
+import { Guard } from '../../guard/index.ts'
 import { Metrics } from './metrics.ts'
 import { Clone } from './clone.ts'
 
@@ -38,7 +39,7 @@ type ObjectLike = Record<PropertyKey, any>
 export function Discard(value: ObjectLike, propertyKeys: PropertyKey[]): ObjectLike {
   Metrics.discard += 1
   const result: ObjectLike = {}
-  for (const key of Object.getOwnPropertyNames(value)) {
+  for (const key of Guard.Keys(value)) {
     if (propertyKeys.includes(key)) continue
     const descriptor = Object.getOwnPropertyDescriptor(value, key)! // safe-name!
     descriptor.value = Clone(descriptor.value)

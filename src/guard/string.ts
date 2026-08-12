@@ -96,7 +96,7 @@ function NextGraphemeClusterIndex(value: string, clusterStart: number): number {
   // Consume combining marks & variation selectors
   clusterEnd = ConsumeModifiers(value, clusterEnd)
   // Handle multi-ZWJ sequences
-  while (clusterEnd < value.length - 1 && value[clusterEnd] === '\u200D') {
+  while (clusterEnd < value.length - 1 && IsZeroWidthJoiner(value.codePointAt(clusterEnd)!)) {
     const nextCP = value.codePointAt(clusterEnd + 1)!
     clusterEnd += 1 + CodePointLength(nextCP)
     clusterEnd = ConsumeModifiers(value, clusterEnd)

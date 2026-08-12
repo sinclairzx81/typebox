@@ -56,7 +56,7 @@ function IsSchemaObject(value: Record<PropertyKey, unknown>): boolean {
 }
 function FromSchemaObject(value: Record<PropertyKey, unknown>): Record<PropertyKey, unknown> {
   const result = {} as Record<PropertyKey, unknown>
-  for (const key of Object.getOwnPropertyNames(value)) {
+  for (const key of Guard.Keys(value)) {
     if (Guard.IsUnsafePropertyKey(key)) continue // (ignore: prototype-pollution)
     const descriptor = Object.getOwnPropertyDescriptor(value, key)! // safe-name!
     descriptor.value = FromValue(descriptor.value)
