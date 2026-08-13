@@ -91,6 +91,16 @@
         "valid": true
       },
       {
+        "description": "a trailing newline after a valid IRI is invalid",
+        "data": "http://ƒøø.ßår/\n",
+        "valid": false
+      },
+      {
+        "description": "an IPvFuture host with an uppercase version letter is valid",
+        "data": "http://[V1.fe]",
+        "valid": true
+      },
+      {
         "description": "a valid IRI with an IPv4 host",
         "data": "http://192.168.0.1/p",
         "valid": true

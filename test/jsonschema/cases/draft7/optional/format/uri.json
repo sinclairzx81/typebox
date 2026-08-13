@@ -228,6 +228,11 @@
         "valid": false
       },
       {
+        "description": "leading zero in an embedded IPv4 address is invalid",
+        "data": "http://[::ffff:01.2.3.4]",
+        "valid": false
+      },
+      {
         "description": "square brackets are not allowed in a path segment",
         "data": "http:/[::1]",
         "valid": false
