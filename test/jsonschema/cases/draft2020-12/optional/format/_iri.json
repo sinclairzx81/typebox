@@ -1,0 +1,21 @@
+[
+  {
+    "description": "validation of IRIs",
+    "schema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "format": "iri"
+    },
+    "tests": [
+      {
+        "description": "a trailing newline after a valid IRI is invalid",
+        "data": "http://ƒøø.ßår/\n",
+        "valid": false
+      },
+      {
+        "description": "an IPvFuture host with an uppercase version letter is valid",
+        "data": "http://[V1.fe]",
+        "valid": true
+      }
+    ]
+  }
+]

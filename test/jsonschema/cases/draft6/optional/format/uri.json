@@ -226,6 +226,11 @@
         "description": "non-numeric port is invalid",
         "data": "http://example.com:abc/path",
         "valid": false
+      },
+      {
+        "description": "square brackets are not allowed in a path segment",
+        "data": "http:/[::1]",
+        "valid": false
       }
     ]
   }
