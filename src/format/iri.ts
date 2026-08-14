@@ -30,12 +30,15 @@ THE SOFTWARE.
 
 const InvalidIriChars = /[\x00-\x20<>\^`{|}\\]/
 const IpvFutureMatch = /\[[vV][0-9a-fA-F]+\.[^\]]+\]/
+const MaxIriLength = 2048
 
 /**
  * Returns true if the value is an IRI.
  * @specification https://datatracker.ietf.org/doc/html/rfc3987
  */
 export function IsIri(value: string): boolean {
+  // 0. Too large (IpvFutureMatch - Review)
+  if (value.length > MaxIriLength) return false
   // 1. Strict rejection of unencoded whitespace and control characters
   if (InvalidIriChars.test(value)) return false
   // 2. Bypass WHATWG parser rejection of IPvFuture by swapping with a valid IPv6 literal
