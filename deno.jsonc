@@ -6,7 +6,8 @@
     "fast": "deno run -A tasks.ts fast",             // Interactive Tests
     "format": "deno run -A tasks.ts format",         // Formats Code
     "lint": "deno run -A tasks.ts lint",             // Lints Code
-    "local": "deno run -A tasks.ts local",           // Build Local Project
+    "compliance": "deno run -A tasks.ts compliance", // Build to Local Compliance Project
+    "local": "deno run -A tasks.ts local",           // Build to Local Test Project
     "metrics": "deno run -A tasks.ts metrics",       // Compression Metrics
     "native": "deno run -A tasks.ts native",         // Build Project With TypeScript Native
     "publish": "deno run -A tasks.ts publish",       // Publish Package

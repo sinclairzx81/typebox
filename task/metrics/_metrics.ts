@@ -4,6 +4,7 @@ export async function Metrics() {
   await Task.esbuild.metrics([
     'task/metrics/all.ts',
     'task/metrics/compile_all.ts',
+    'task/metrics/format.ts',
     'task/metrics/schema_bench.ts',
     'task/metrics/schema_all.ts',
     'task/metrics/schema_check.ts',

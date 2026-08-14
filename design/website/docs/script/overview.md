@@ -8,7 +8,7 @@ TypeBox includes a runtime TypeScript engine that can transform TypeScript defin
 
 ### Example
 
-Syntax highlighting is available via the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=sinclairzx81.typebox-script)
+Syntax highlighting is available via the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=sinclairzx81.typebox-script).
 
 ```typescript
 import Type from 'typebox'

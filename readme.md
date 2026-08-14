@@ -117,7 +117,7 @@ TypeBox includes a micro TypeScript engine that can transform TypeScript definit
 
 ### Example
 
-Syntax highlighting is available via the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=sinclairzx81.typebox-script)
+Syntax highlighting is available via the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=sinclairzx81.typebox-script).
 
 ```typescript
 import Type from 'typebox'
@@ -283,7 +283,11 @@ TypeBox supports all major JSON Schema draft versions and tracks compliance agai
 
 ### Performance
 
-The following table shows compile performance for various JSON Schema structures using AJV8 as a basis for comparison. 
+TypeBox tracks comparative performance against AJV8 as the de facto JSON Schema performance standard. For broader comparative benchmarks, refer to the community maintained projects below.
+
+[Runtime Benchmarks](https://moltar.github.io/typescript-runtime-type-benchmarks/) | [Schema Benchmarks](https://schemabenchmarks.dev/)
+
+The following table shows compilation performance for various JSON Schema structures. These benchmarks measure the time required to JIT compile schematics, with faster compilation resulting in faster application startup.
 
 ```python
 ┌──────────────────────┬─────────────┬─────────────┐
@@ -315,8 +319,7 @@ The following table shows compile performance for various JSON Schema structures
 └──────────────────────┴─────────────┴─────────────┘
 ```
 
-
-The following tables shows validation performance for various JSON Schema structures using AJV8 as a basis for comparison.
+The following tables shows validation performance for various JSON Schema structures. These benchmarks measure overall validation throughput for JIT compiled schematics.
 
 ```python
 ┌──────────────────────┬──────────────┬──────────────┐
