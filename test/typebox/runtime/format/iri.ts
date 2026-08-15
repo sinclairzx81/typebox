@@ -58,3 +58,25 @@ Test('Should IsIri 13', () => {
 Test('Should IsIri 14', () => {
   Assert.IsFalse(Format.IsIri('http://exa mple.com'))
 })
+// ------------------------------------------------------------------
+// Coverage: NarrowIpvFuture(...)
+//
+// Tests for inputs exceeding IpvFutureMatchMaxLength (2048 chars).
+// When value.length >= 2048, NarrowIpvFuture bypasses regex patching
+// to prevent ReDoS/performance impact and hands the un-substituted
+// string directly to native URL.canParse.
+//
+// These two tests can be removed if we find a better alternative
+// to IpvFuture requirement (which should ideally be handled by the
+// URL.canParse() infrastructure). We may be better off just writing
+// a regular expression similar to Uri handling.
+//
+// ------------------------------------------------------------------
+Test('Should isIri 15', () => {
+  const longIpvFuture = `http://[v1.a]/${'a'.repeat(5000)}`
+  Assert.IsFalse(Format.IsIri(longIpvFuture))
+})
+Test('Should isIri 16', () => {
+  const longValidIri = `http://example.com/${'a'.repeat(5000)}`
+  Assert.IsTrue(Format.IsIri(longValidIri))
+})
