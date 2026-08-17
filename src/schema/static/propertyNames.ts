@@ -36,8 +36,8 @@ import type { XStaticSchema } from './schema.ts'
 // XStaticPropertyNames
 // ------------------------------------------------------------------
 export type XStaticPropertyNames<Stack extends string[], Root extends XSchema, Schema extends XSchema,
-  AllowedKey extends unknown = XStaticSchema<Stack, Root, Schema>,
-  Result extends Record<string, unknown> = [AllowedKey] extends [PropertyKey] 
-   ? { [Key in AllowedKey]?: unknown }
+  StaticKey extends unknown = XStaticSchema<Stack, Root, Schema>,
+  Result extends Record<string, unknown> = [StaticKey] extends [PropertyKey] 
+   ? { [Key in StaticKey]?: unknown }
    : {}
 > = Result
