@@ -26,4 +26,195 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-export * from './ref.ts'
+// deno-fmt-ignore-file
+
+import { Guard } from '../../guard/index.ts'
+import { Pointer } from '../pointer/index.ts'
+import * as Schema from '../types/index.ts'
+
+// ------------------------------------------------------------------
+// DefaultBase
+// ------------------------------------------------------------------
+export const DefaultBase = new URL('https://json-schema.org')
+
+// ------------------------------------------------------------------
+// Match: Id
+// ------------------------------------------------------------------
+function MatchId(schema: Schema.XId, base: URL, ref: URL): Schema.XSchema | undefined {
+  if (schema.$id === ref.hash) return schema
+  const absoluteId = new URL(schema.$id, base.href)
+  const absoluteRef = new URL(ref.href, base.href)
+  if (Guard.IsEqual(absoluteId.pathname, absoluteRef.pathname)) {
+    return ref.hash.startsWith('#') ? MatchHash(schema, base, ref) : schema
+  }
+  return undefined
+}
+// ------------------------------------------------------------------
+// Match: Anchor
+// ------------------------------------------------------------------
+function MatchAnchor(schema: Schema.XAnchor, base: URL, ref: URL): Schema.XSchema | undefined {
+  const absoluteAnchor = new URL(`#${schema.$anchor}`, base.href)
+  const absoluteRef = new URL(ref.href, base.href)
+  return Guard.IsEqual(absoluteAnchor.href, absoluteRef.href) ? schema : undefined
+}
+// ------------------------------------------------------------------
+// Match: DynamicAnchor
+// ------------------------------------------------------------------
+function MatchDynamicAnchor(schema: Schema.XDynamicAnchor, base: URL, ref: URL): Schema.XSchema | undefined {
+  const absoluteAnchor = new URL(`#${schema.$dynamicAnchor}`, base.href)
+  const absoluteRef = new URL(ref.href, base.href)
+  return Guard.IsEqual(absoluteAnchor.href, absoluteRef.href) ? schema : undefined
+}
+// ------------------------------------------------------------------
+// Match: Hash
+//
+// Resolves JSON Pointer fragments only. Plain anchor-style fragments
+// (no leading '/') are handled exclusively by MatchAnchor and
+// MatchDynamicAnchor to prevent accidentally resolving an anchor name
+// as a pointer into the schema tree.
+//
+// ------------------------------------------------------------------
+function MatchHash(schema: Schema.XSchemaObject, _base: URL, ref: URL): Schema.XSchema | undefined {
+  if (ref.href.endsWith('#')) return schema
+  if (!ref.hash.startsWith('#')) return undefined
+  const fragment = decodeURIComponent(ref.hash.slice(1))
+  if (!fragment.startsWith('/')) return undefined
+  return Pointer.Get(schema, fragment) as Schema.XSchema | undefined
+}
+// ------------------------------------------------------------------
+// Match
+// ------------------------------------------------------------------
+function Match(schema: Schema.XSchemaObject, base: URL, ref: URL): Schema.XSchema | undefined {
+  if (Schema.IsId(schema)) {
+    const result = MatchId(schema, base, ref)
+    if (!Guard.IsUndefined(result)) return result
+  }
+  if (Schema.IsAnchor(schema)) {
+    const result = MatchAnchor(schema, base, ref)
+    if (!Guard.IsUndefined(result)) return result
+  }
+  if (Schema.IsDynamicAnchor(schema)) {
+    const result = MatchDynamicAnchor(schema, base, ref)
+    if (!Guard.IsUndefined(result)) return result
+  }
+  return MatchHash(schema, base, ref)
+}
+// ------------------------------------------------------------------
+// FromArray
+// ------------------------------------------------------------------
+function FromArray(schema: unknown[], base: URL, ref: URL): Schema.XSchema | undefined {
+  return schema.reduce<Schema.XSchema | undefined>((result, item) => {
+    const match = FromValue(item, base, ref)
+    return !Guard.IsUndefined(match) ? match : result
+  }, undefined)
+}
+// ------------------------------------------------------------------
+// FromObject
+// ------------------------------------------------------------------
+function SkipProperty(key: PropertyKey): boolean {
+  // these are explicit data encoded in a schema, they should not
+  // be considered valid targets used for de-referencing.
+  return Guard.IsEqual(key, 'const') || Guard.IsEqual(key, 'enum')
+}
+function FromObject(schema: Record<PropertyKey, unknown>, base: URL, ref: URL): Schema.XSchema | undefined {
+  return Guard.Keys(schema).reduce<Schema.XSchema | undefined>((result, key) => {
+    if(SkipProperty(key)) return result
+    const match = FromValue(schema[key], base, ref)
+    return !Guard.IsUndefined(match) ? match : result
+  }, undefined)
+}
+// ------------------------------------------------------------------
+// FromValue
+// ------------------------------------------------------------------
+function FromValue(schema: unknown, base: URL, ref: URL): Schema.XSchema | undefined {
+  const nextBase = Schema.IsSchemaObject(schema) && Schema.IsId(schema)
+    ? new URL(schema.$id, base.href)
+    : base
+  if (Schema.IsSchemaObject(schema)) {
+    const result = Match(schema, nextBase, ref)
+    if (!Guard.IsUndefined(result)) return result
+  }
+  if (Guard.IsArray(schema)) return FromArray(schema, nextBase, ref)
+  if (Guard.IsObject(schema)) return FromObject(schema, nextBase, ref)
+  return undefined
+}
+// ------------------------------------------------------------------
+// CanonicalHref
+//
+// Returns the URL's href with its fragment removed, as a string.
+// This is the canonical URI a document is identified and keyed by
+// in context.
+// ------------------------------------------------------------------
+function CanonicalHref(url: URL): string {
+  return url.href.split('#')[0]
+}
+// ------------------------------------------------------------------
+// RefContext: Phase 1
+//
+// A ContextRef targets a simple key name in the context and is
+// used for fast resolution of inline referential TypeBox types.
+// ------------------------------------------------------------------
+function RefContext(context: Record<string, Schema.XSchema>, ref: string): Schema.XSchema | undefined {
+  return Guard.HasPropertyKey(context, ref) ? context[ref] : undefined
+}
+// ------------------------------------------------------------------
+// RefLocal: Phase 2
+//
+// Resolves the ref's fragment within the current schema resource,
+// either as a JSON Pointer or a plain-name fragment ($anchor,
+// $dynamicAnchor), per the JSON Schema spec.
+// ------------------------------------------------------------------
+function RefLocal(schema: Schema.XSchemaObject, base: URL, ref: URL): Schema.XSchema | undefined {
+  return FromValue(schema, base, ref)
+}
+// ------------------------------------------------------------------
+// RefRemote: Phase 3
+//
+// Locates the schema resource identified by the ref's base URI, then
+// resolves the ref's fragment within that resource, either as a JSON
+// Pointer or a plain-name fragment, per the JSON Schema spec.
+// ------------------------------------------------------------------
+function RefRemote(context: Record<string, Schema.XSchema>, base: URL, ref: URL): Schema.XSchema | undefined {
+  const targetDocumentHref = CanonicalHref(ref)
+  if (Guard.IsEqual(targetDocumentHref, CanonicalHref(base))) return undefined
+  if (!Guard.HasPropertyKey(context, targetDocumentHref)) return undefined
+  const remoteSchema = context[targetDocumentHref]
+  const remoteBase = (Schema.IsSchemaObject(remoteSchema) && Schema.IsId(remoteSchema)) ? new URL(remoteSchema.$id, DefaultBase.href) : new URL(targetDocumentHref)
+  return FromValue(remoteSchema, remoteBase, ref)
+}
+// ------------------------------------------------------------------
+// Ref
+// ------------------------------------------------------------------
+export function Ref(context: Record<string, Schema.XSchema>, schema: Schema.XSchemaObject, ref: string): Schema.XSchema | undefined {
+  const initialBase = Schema.IsId(schema) ? new URL(schema.$id, DefaultBase.href) : DefaultBase
+  const initialRef = new URL(ref, initialBase.href)
+  return RefContext(context, ref) ?? RefLocal(schema, initialBase, initialRef) ?? RefRemote(context, initialBase, initialRef)
+}
+// ------------------------------------------------------------------
+// DynamicRef
+// ------------------------------------------------------------------
+export function DynamicRef(context: Record<string, Schema.XSchema>, root: Schema.XSchemaObject, base: Schema.XSchemaObject, dynamicRef: Schema.XDynamicRef, dynamicAnchors: Schema.XDynamicAnchor[]): Schema.XSchema | undefined {
+  // Resolve the static target using either the local base (for fragment‑only references)
+  // or the document root (for absolute URI references).
+  const fragmentTarget = dynamicRef.$dynamicRef.startsWith('#') 
+    ? Ref(context, base, dynamicRef.$dynamicRef) 
+    : Ref(context, root, dynamicRef.$dynamicRef)
+  if (Guard.IsUndefined(fragmentTarget)) return undefined
+
+  // Dynamic override only applies if the resolved target itself declares a $dynamicAnchor.
+  // If it does not, return the static target unchanged.
+  if (!Schema.IsSchemaObject(fragmentTarget) || !Schema.IsDynamicAnchor(fragmentTarget)) return fragmentTarget
+  
+  // Extract the fragment portion of the reference. According to the test suite,
+  // only plain fragment names (e.g., "#foo") trigger the dynamic scope; JSON 
+  // Pointer fragments (e.g., "#/definitions/foo") bypass dynamic resolution.
+  const fragment = new URL(dynamicRef.$dynamicRef, DefaultBase).hash
+  if (fragment.startsWith('#/')) return fragmentTarget
+
+  // Search the live dynamic anchor stack for a schema whose $dynamicAnchor matches the
+  // target's $dynamicAnchor. The stack reflects the current evaluation path, and
+  // find() returns the outermost (first encountered) match, which is the correct
+  // lexical scope per the specification.
+  const anchorTarget = dynamicAnchors.find(anchor => anchor.$dynamicAnchor === fragmentTarget.$dynamicAnchor)
+  return anchorTarget ?? fragmentTarget
+}

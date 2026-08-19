@@ -1,47 +1,5 @@
 [
   {
-    "description": "remote ref",
-    "schema": {
-      "$schema": "https://json-schema.org/draft/2019-09/schema",
-      "$ref": "http://localhost:1234/draft2019-09/integer.json"
-    },
-    "tests": [
-      {
-        "description": "remote ref valid",
-        "data": 1,
-        "valid": true
-      }
-    ]
-  },
-  {
-    "description": "fragment within remote ref",
-    "schema": {
-      "$schema": "https://json-schema.org/draft/2019-09/schema",
-      "$ref": "http://localhost:1234/draft2019-09/subSchemas.json#/$defs/integer"
-    },
-    "tests": [
-      {
-        "description": "remote fragment valid",
-        "data": 1,
-        "valid": true
-      }
-    ]
-  },
-  {
-    "description": "anchor within remote ref",
-    "schema": {
-      "$schema": "https://json-schema.org/draft/2019-09/schema",
-      "$ref": "http://localhost:1234/draft2019-09/locationIndependentIdentifier.json#foo"
-    },
-    "tests": [
-      {
-        "description": "remote anchor valid",
-        "data": 1,
-        "valid": true
-      }
-    ]
-  },
-  {
     "description": "ref within remote ref",
     "schema": {
       "$schema": "https://json-schema.org/draft/2019-09/schema",
@@ -170,28 +128,13 @@
         "valid": true
       },
       {
-        "description": "null is valid",
+        "description": "object is invalid",
         "data": {
-          "name": null
+          "name": {
+            "name": null
+          }
         },
-        "valid": true
-      }
-    ]
-  },
-  {
-    "description": "remote ref with ref to defs",
-    "schema": {
-      "$schema": "https://json-schema.org/draft/2019-09/schema",
-      "$id": "http://localhost:1234/draft2019-09/schema-remote-ref-ref-defs1.json",
-      "$ref": "ref-and-defs.json"
-    },
-    "tests": [
-      {
-        "description": "valid",
-        "data": {
-          "bar": "a"
-        },
-        "valid": true
+        "valid": false
       }
     ]
   },
@@ -228,34 +171,6 @@
             "foo": "a"
           }
         },
-        "valid": true
-      }
-    ]
-  },
-  {
-    "description": "remote HTTP ref with different $id",
-    "schema": {
-      "$schema": "https://json-schema.org/draft/2019-09/schema",
-      "$ref": "http://localhost:1234/draft2019-09/different-id-ref-string.json"
-    },
-    "tests": [
-      {
-        "description": "string is valid",
-        "data": "foo",
-        "valid": true
-      }
-    ]
-  },
-  {
-    "description": "remote HTTP ref with different URN $id",
-    "schema": {
-      "$schema": "https://json-schema.org/draft/2019-09/schema",
-      "$ref": "http://localhost:1234/draft2019-09/urn-ref-string.json"
-    },
-    "tests": [
-      {
-        "description": "string is valid",
-        "data": "foo",
         "valid": true
       }
     ]

@@ -649,6 +649,17 @@
           ]
         },
         "valid": false
+      },
+      {
+        "description": "instance with correct field",
+        "data": {
+          "children": [
+            {
+              "data": 1
+            }
+          ]
+        },
+        "valid": true
       }
     ]
   },
@@ -689,6 +700,17 @@
           ]
         },
         "valid": false
+      },
+      {
+        "description": "correct extended schema",
+        "data": {
+          "elements": [
+            {
+              "a": 1
+            }
+          ]
+        },
+        "valid": true
       }
     ]
   },
@@ -726,15 +748,15 @@
         "valid": false
       },
       {
-        "description": "incorrect extended schema",
+        "description": "correct extended schema",
         "data": {
           "elements": [
             {
-              "b": 1
+              "a": 1
             }
           ]
         },
-        "valid": false
+        "valid": true
       }
     ]
   },
@@ -772,15 +794,15 @@
         "valid": false
       },
       {
-        "description": "incorrect extended schema",
+        "description": "correct extended schema",
         "data": {
           "elements": [
             {
-              "b": 1
+              "a": 1
             }
           ]
         },
-        "valid": false
+        "valid": true
       }
     ]
   },

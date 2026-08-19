@@ -261,6 +261,13 @@
     },
     "tests": [
       {
+        "description": "remote ref valid",
+        "data": {
+          "bar": ""
+        },
+        "valid": true
+      },
+      {
         "description": "remote ref invalid",
         "data": {
           "bar": 0

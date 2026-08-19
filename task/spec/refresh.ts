@@ -48,13 +48,32 @@ async function clone() {
   await Task.shell(`cd ${CLONE_DIRECTORY} && git clone git@github.com:json-schema-org/JSON-Schema-Test-Suite.git`)
 }
 // ------------------------------------------------------------------
+// Remote
+// ------------------------------------------------------------------
+function collect_remote(current: string, relativePrefix: string, result: Record<string, Schema.XSchema>): void {
+  for (const entry of Deno.readDirSync(`${current}/${relativePrefix}`)) {
+    const relative = relativePrefix ? `${relativePrefix}/${entry.name}` : entry.name
+    if (entry.isDirectory) {
+      collect_remote(current, relative, result)
+    } else if (entry.isFile && entry.name.endsWith('.json')) {
+      result[`http://localhost:1234/${relative}`] = JSON.parse(Deno.readTextFileSync(`${current}/${relative}`))
+    }
+  }
+}
+function remotes(): Record<string, Schema.XSchema> {
+  const directory = `${CLONE_DIRECTORY}/JSON-Schema-Test-Suite/remotes`
+  const result: Record<string, Schema.XSchema> = {}
+  collect_remote(directory, '', result)
+  return result
+}
+// ------------------------------------------------------------------
 // Process
 // ------------------------------------------------------------------
-function process(): JSONSchemaTestSuite {
+function process(context: Record<string, Schema.XSchema>): JSONSchemaTestSuite {
   return Process.process(`${CLONE_DIRECTORY}/JSON-Schema-Test-Suite/tests`, (_draft, schema, value) => {
-    const build = Schema.Compile(schema).Check(value)
-    const check = Schema.Check(schema, value)
-    const error = Schema.Errors(schema, value)[0]
+    const build = Schema.Compile(context, schema).Check(value)
+    const check = Schema.Check(context, schema, value)
+    const error = Schema.Errors(context, schema, value)[0]
     const consistent = (check === build) && (check === error)
     if(!consistent) return null
     return check
@@ -82,8 +101,9 @@ function report(suite: JSONSchemaTestSuite): void {
 // ------------------------------------------------------------------
 // Write
 // ------------------------------------------------------------------
-async function write(directory: string, suite: JSONSchemaTestSuite): Promise<void> {
+async function write(directory: string, remotes: Record<string, Schema.XSchema>, suite: JSONSchemaTestSuite): Promise<void> {
   await Task.folder(directory).delete()
+  await Task.file(`${directory}/remote.json`).write(JSON.stringify(remotes, null, 2))
   for(const file of suite.files) {
     const path = `${directory}/${file.path}`
     const content = JSON.stringify(file.groups, null, 2)
@@ -99,9 +119,10 @@ async function cleanup(): Promise<void> {
 /** Refresh the test suite with the latest cases */
 export async function refresh(directory: string): Promise<void> {
   await clone()
-  const suite = process()
+  const context = remotes()
+  const suite = process(context)
   await report(suite)
-  await write(directory, suite)
+  await write(directory, context, suite)
   await cleanup()
 }
 

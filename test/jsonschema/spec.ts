@@ -85,13 +85,18 @@ function assertResult(op: Operation): void {
   }
 }
 // ------------------------------------------------------------------
+// Remote
+// ------------------------------------------------------------------
+const context = JSON.parse(Deno.readTextFileSync('./test/jsonschema/cases/remote.json'))
+
+// ------------------------------------------------------------------
 // Test runners
 // ------------------------------------------------------------------
 function runBuild(draft: string, path: string): void {
   const Test = Assert.Context('Schema.Build')
   for (const test of enumerateTests(path)) {
     Test(`${draft} ${test.filename}: ${test.description}`, () => {
-      const result = Build({}, test.schema).Evaluate().Check(test.data)
+      const result = Build(context, test.schema).Evaluate().Check(test.data)
       assertResult({ type: 'Build', schema: test.schema, data: test.data, description: test.description, valid: test.valid, result })
     })
   }
@@ -102,7 +107,7 @@ function runCheck(draft: string, path: string): void {
     Test(`${draft} ${test.filename}: ${test.description}`, () => {
       let result = false 
       try {
-        result = Check({}, test.schema, test.data)
+        result = Check(context, test.schema, test.data)
       } catch {
         assertThrow({ type: 'Check', schema: test.schema, data: test.data, description: test.description, valid: test.valid, result })
         return
@@ -115,7 +120,7 @@ function runError(draft: string, path: string): void {
   const Test = Assert.Context('Schema.Errors')
   for (const test of enumerateTests(path)) {
     Test(`${draft} ${test.filename}: ${test.description}`, () => {
-      const [result, errors] = Errors({}, test.schema, test.data)
+      const [result, errors] = Errors(context, test.schema, test.data)
       assertResult({ type: 'Errors', schema: test.schema, data: test.data, description: test.description, valid: test.valid, result, errors })
       if (result) return
       // if error, the schemaPath must point to subschema
