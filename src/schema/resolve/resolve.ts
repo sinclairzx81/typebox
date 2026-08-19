@@ -153,7 +153,6 @@ function CanonicalHref(url: URL): string {
 //
 // A ContextRef targets a simple key name in the context and is
 // used for fast resolution of inline referential TypeBox types.
-// 
 // ------------------------------------------------------------------
 function RefContext(context: Record<string, Schema.XSchema>, ref: string): Schema.XSchema | undefined {
   return Guard.HasPropertyKey(context, ref) ? context[ref] : undefined
@@ -164,7 +163,6 @@ function RefContext(context: Record<string, Schema.XSchema>, ref: string): Schem
 // Resolves the ref's fragment within the current schema resource,
 // either as a JSON Pointer or a plain-name fragment ($anchor,
 // $dynamicAnchor), per the JSON Schema spec.
-//
 // ------------------------------------------------------------------
 function RefLocal(schema: Schema.XSchemaObject, base: URL, ref: URL): Schema.XSchema | undefined {
   return FromValue(schema, base, ref)
@@ -175,7 +173,6 @@ function RefLocal(schema: Schema.XSchemaObject, base: URL, ref: URL): Schema.XSc
 // Locates the schema resource identified by the ref's base URI, then
 // resolves the ref's fragment within that resource, either as a JSON
 // Pointer or a plain-name fragment, per the JSON Schema spec.
-//
 // ------------------------------------------------------------------
 function RefRemote(context: Record<string, Schema.XSchema>, base: URL, ref: URL): Schema.XSchema | undefined {
   const targetDocumentHref = CanonicalHref(ref)
