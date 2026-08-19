@@ -91,31 +91,25 @@ export class Stack {
   // ----------------------------------------------------------------
   // Ref
   // ----------------------------------------------------------------
-  #FromContext(ref: Schema.XRef): Schema.XSchema | undefined {
-    return G.HasPropertyKey(this.context, ref.$ref) ? this.context[ref.$ref] : undefined
-  }
-  #FromRef(ref: Schema.XRef): Schema.XSchema | undefined {
+  public Ref(ref: Schema.XRef): Schema.XSchema | undefined {
     const root = this.schema as Schema.XSchemaObject
     return !ref.$ref.startsWith('#')
-      ? Resolve.Ref(root, ref.$ref)
-      : Resolve.Ref(this.Base(), ref.$ref)
-  }
-  public Ref(ref: Schema.XRef): Schema.XSchema | undefined {
-    return this.#FromContext(ref) ?? this.#FromRef(ref)
+      ? Resolve.Ref(this.context, root, ref.$ref)
+      : Resolve.Ref(this.context, this.Base(), ref.$ref)
   }
   // ----------------------------------------------------------------
   // RecursiveRef
   // ----------------------------------------------------------------
   public RecursiveRef(recursiveRef: Schema.XRecursiveRef): Schema.XSchema | undefined {
     return Schema.IsRecursiveAnchorTrue(this.Base())
-      ? Resolve.Ref(this.recursiveAnchors[0], recursiveRef.$recursiveRef)
-      : Resolve.Ref(this.Base(), recursiveRef.$recursiveRef)
+      ? Resolve.Ref(this.context, this.recursiveAnchors[0], recursiveRef.$recursiveRef)
+      : Resolve.Ref(this.context, this.Base(), recursiveRef.$recursiveRef)
   }
   // ----------------------------------------------------------------
   // DynamicRef
   // ----------------------------------------------------------------
   public DynamicRef(dynamicRef: Schema.XDynamicRef): Schema.XSchema | undefined {
     const root = this.schema as Schema.XSchemaObject
-    return Resolve.DynamicRef(root, this.Base(), dynamicRef, this.dynamicAnchors)
+    return Resolve.DynamicRef(this.context, root, this.Base(), dynamicRef, this.dynamicAnchors)
   }
 }

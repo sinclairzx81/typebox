@@ -16,6 +16,16 @@
           3
         ],
         "valid": false
+      },
+      {
+        "description": "first item is a string is valid",
+        "data": [
+          "a string",
+          1,
+          2,
+          3
+        ],
+        "valid": true
       }
     ]
   }

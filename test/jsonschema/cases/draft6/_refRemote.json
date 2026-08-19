@@ -1,31 +1,5 @@
 [
   {
-    "description": "remote ref",
-    "schema": {
-      "$ref": "http://localhost:1234/integer.json"
-    },
-    "tests": [
-      {
-        "description": "remote ref valid",
-        "data": 1,
-        "valid": true
-      }
-    ]
-  },
-  {
-    "description": "fragment within remote ref",
-    "schema": {
-      "$ref": "http://localhost:1234/draft6/subSchemas.json#/definitions/integer"
-    },
-    "tests": [
-      {
-        "description": "remote fragment valid",
-        "data": 1,
-        "valid": true
-      }
-    ]
-  },
-  {
     "description": "ref within remote ref",
     "schema": {
       "$ref": "http://localhost:1234/draft6/subSchemas.json#/definitions/refToInteger"
@@ -149,31 +123,13 @@
         "valid": true
       },
       {
-        "description": "null is valid",
+        "description": "object is invalid",
         "data": {
-          "name": null
+          "name": {
+            "name": null
+          }
         },
-        "valid": true
-      }
-    ]
-  },
-  {
-    "description": "remote ref with ref to definitions",
-    "schema": {
-      "$id": "http://localhost:1234/schema-remote-ref-ref-defs1.json",
-      "allOf": [
-        {
-          "$ref": "draft6/ref-and-definitions.json"
-        }
-      ]
-    },
-    "tests": [
-      {
-        "description": "valid",
-        "data": {
-          "bar": "a"
-        },
-        "valid": true
+        "valid": false
       }
     ]
   },

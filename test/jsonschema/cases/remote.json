@@ -1,0 +1,836 @@
+{
+  "http://localhost:1234/nested/string.json": {
+    "type": "string"
+  },
+  "http://localhost:1234/nested/foo-ref-string.json": {
+    "type": "object",
+    "properties": {
+      "foo": {
+        "$ref": "string.json"
+      }
+    }
+  },
+  "http://localhost:1234/baseUriChangeFolder/folderInteger.json": {
+    "type": "integer"
+  },
+  "http://localhost:1234/draft7/subSchemas.json": {
+    "definitions": {
+      "integer": {
+        "type": "integer"
+      },
+      "refToInteger": {
+        "$ref": "#/definitions/integer"
+      }
+    }
+  },
+  "http://localhost:1234/draft7/name.json": {
+    "definitions": {
+      "orNull": {
+        "anyOf": [
+          {
+            "type": "null"
+          },
+          {
+            "$ref": "#"
+          }
+        ]
+      }
+    },
+    "type": "string"
+  },
+  "http://localhost:1234/draft7/ignore-dependentRequired.json": {
+    "$id": "http://localhost:1234/draft7/integer.json",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "dependentRequired": {
+      "foo": [
+        "bar"
+      ]
+    }
+  },
+  "http://localhost:1234/draft7/ref-and-definitions.json": {
+    "$id": "http://localhost:1234/draft7/ref-and-definitions.json",
+    "definitions": {
+      "inner": {
+        "properties": {
+          "bar": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "allOf": [
+      {
+        "$ref": "#/definitions/inner"
+      }
+    ]
+  },
+  "http://localhost:1234/draft7/locationIndependentIdentifier.json": {
+    "definitions": {
+      "refToInteger": {
+        "$ref": "#foo"
+      },
+      "A": {
+        "$id": "#foo",
+        "type": "integer"
+      }
+    }
+  },
+  "http://localhost:1234/draft7/detached-ref.json": {
+    "$id": "http://localhost:1234/draft7/detached-ref.json",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "definitions": {
+      "foo": {
+        "$ref": "#detached"
+      },
+      "detached": {
+        "$id": "#detached",
+        "type": "integer"
+      }
+    }
+  },
+  "http://localhost:1234/integer.json": {
+    "type": "integer"
+  },
+  "http://localhost:1234/draft3/subSchemas.json": {
+    "definitions": {
+      "integer": {
+        "type": "integer"
+      },
+      "refToInteger": {
+        "$ref": "#/definitions/integer"
+      }
+    }
+  },
+  "http://localhost:1234/draft4/subSchemas.json": {
+    "definitions": {
+      "integer": {
+        "type": "integer"
+      },
+      "refToInteger": {
+        "$ref": "#/definitions/integer"
+      }
+    }
+  },
+  "http://localhost:1234/draft4/name.json": {
+    "definitions": {
+      "orNull": {
+        "anyOf": [
+          {
+            "type": "null"
+          },
+          {
+            "$ref": "#"
+          }
+        ]
+      }
+    },
+    "type": "string"
+  },
+  "http://localhost:1234/draft4/locationIndependentIdentifier.json": {
+    "definitions": {
+      "refToInteger": {
+        "$ref": "#foo"
+      },
+      "A": {
+        "id": "#foo",
+        "type": "integer"
+      }
+    }
+  },
+  "http://localhost:1234/v1/subSchemas.json": {
+    "$schema": "https://json-schema.org/v1",
+    "$defs": {
+      "integer": {
+        "type": "integer"
+      },
+      "refToInteger": {
+        "$ref": "#/$defs/integer"
+      }
+    }
+  },
+  "http://localhost:1234/v1/nested/string.json": {
+    "$schema": "https://json-schema.org/v1",
+    "type": "string"
+  },
+  "http://localhost:1234/v1/nested/foo-ref-string.json": {
+    "$schema": "https://json-schema.org/v1",
+    "type": "object",
+    "properties": {
+      "foo": {
+        "$ref": "string.json"
+      }
+    }
+  },
+  "http://localhost:1234/v1/extendible-dynamic-ref.json": {
+    "$schema": "https://json-schema.org/v1",
+    "description": "extendible array",
+    "$id": "http://localhost:1234/v1/extendible-dynamic-ref.json",
+    "type": "object",
+    "properties": {
+      "elements": {
+        "type": "array",
+        "items": {
+          "$dynamicRef": "#elements"
+        }
+      }
+    },
+    "required": [
+      "elements"
+    ],
+    "additionalProperties": false,
+    "$defs": {
+      "elements": {
+        "$dynamicAnchor": "elements"
+      }
+    }
+  },
+  "http://localhost:1234/v1/baseUriChangeFolder/folderInteger.json": {
+    "$schema": "https://json-schema.org/v1",
+    "type": "integer"
+  },
+  "http://localhost:1234/v1/integer.json": {
+    "$schema": "https://json-schema.org/v1",
+    "type": "integer"
+  },
+  "http://localhost:1234/v1/nested-absolute-ref-to-string.json": {
+    "$defs": {
+      "bar": {
+        "$id": "http://localhost:1234/v1/the-nested-id.json",
+        "type": "string"
+      }
+    },
+    "$ref": "http://localhost:1234/v1/the-nested-id.json"
+  },
+  "http://localhost:1234/v1/ref-and-defs.json": {
+    "$schema": "https://json-schema.org/v1",
+    "$id": "http://localhost:1234/v1/ref-and-defs.json",
+    "$defs": {
+      "inner": {
+        "properties": {
+          "bar": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "$ref": "#/$defs/inner"
+  },
+  "http://localhost:1234/v1/baseUriChangeFolderInSubschema/folderInteger.json": {
+    "$schema": "https://json-schema.org/v1",
+    "type": "integer"
+  },
+  "http://localhost:1234/v1/name-defs.json": {
+    "$schema": "https://json-schema.org/v1",
+    "$defs": {
+      "orNull": {
+        "anyOf": [
+          {
+            "type": "null"
+          },
+          {
+            "$ref": "#"
+          }
+        ]
+      }
+    },
+    "type": "string"
+  },
+  "http://localhost:1234/v1/urn-ref-string.json": {
+    "$id": "urn:uuid:feebdaed-ffff-0000-ff01-0000deadbeef",
+    "$defs": {
+      "bar": {
+        "type": "string"
+      }
+    },
+    "$ref": "#/$defs/bar"
+  },
+  "http://localhost:1234/v1/baseUriChange/folderInteger.json": {
+    "$schema": "https://json-schema.org/v1",
+    "type": "integer"
+  },
+  "http://localhost:1234/v1/locationIndependentIdentifier.json": {
+    "$schema": "https://json-schema.org/v1",
+    "$defs": {
+      "refToInteger": {
+        "$ref": "#foo"
+      },
+      "A": {
+        "$anchor": "foo",
+        "type": "integer"
+      }
+    }
+  },
+  "http://localhost:1234/v1/tree.json": {
+    "$schema": "https://json-schema.org/v1",
+    "description": "tree schema, extensible",
+    "$id": "http://localhost:1234/v1/tree.json",
+    "$dynamicAnchor": "node",
+    "type": "object",
+    "properties": {
+      "data": true,
+      "children": {
+        "type": "array",
+        "items": {
+          "$dynamicRef": "#node"
+        }
+      }
+    }
+  },
+  "http://localhost:1234/v1/different-id-ref-string.json": {
+    "$id": "http://localhost:1234/v1/real-id-ref-string.json",
+    "$defs": {
+      "bar": {
+        "type": "string"
+      }
+    },
+    "$ref": "#/$defs/bar"
+  },
+  "http://localhost:1234/v1/detached-ref.json": {
+    "$id": "http://localhost:1234/v1/detached-ref.json",
+    "$schema": "https://json-schema.org/v1",
+    "$defs": {
+      "foo": {
+        "$ref": "#detached"
+      },
+      "detached": {
+        "$anchor": "detached",
+        "type": "integer"
+      }
+    }
+  },
+  "http://localhost:1234/v1/detached-dynamicref.json": {
+    "$id": "http://localhost:1234/v1/detached-dynamicref.json",
+    "$schema": "https://json-schema.org/v1",
+    "$defs": {
+      "foo": {
+        "$dynamicRef": "#detached"
+      },
+      "detached": {
+        "$dynamicAnchor": "detached",
+        "type": "integer"
+      }
+    }
+  },
+  "http://localhost:1234/draft2019-09/subSchemas.json": {
+    "$schema": "https://json-schema.org/draft/2019-09/schema",
+    "$defs": {
+      "integer": {
+        "type": "integer"
+      },
+      "refToInteger": {
+        "$ref": "#/$defs/integer"
+      }
+    }
+  },
+  "http://localhost:1234/draft2019-09/nested/string.json": {
+    "$schema": "https://json-schema.org/draft/2019-09/schema",
+    "type": "string"
+  },
+  "http://localhost:1234/draft2019-09/nested/foo-ref-string.json": {
+    "$schema": "https://json-schema.org/draft/2019-09/schema",
+    "type": "object",
+    "properties": {
+      "foo": {
+        "$ref": "string.json"
+      }
+    }
+  },
+  "http://localhost:1234/draft2019-09/metaschema-optional-vocabulary.json": {
+    "$schema": "https://json-schema.org/draft/2019-09/schema",
+    "$id": "http://localhost:1234/draft2019-09/metaschema-optional-vocabulary.json",
+    "$vocabulary": {
+      "https://json-schema.org/draft/2019-09/vocab/validation": true,
+      "https://json-schema.org/draft/2019-09/vocab/core": true,
+      "http://localhost:1234/draft/2019-09/vocab/custom": false
+    },
+    "$recursiveAnchor": true,
+    "allOf": [
+      {
+        "$ref": "https://json-schema.org/draft/2019-09/meta/validation"
+      },
+      {
+        "$ref": "https://json-schema.org/draft/2019-09/meta/core"
+      }
+    ]
+  },
+  "http://localhost:1234/draft2019-09/extendible-dynamic-ref.json": {
+    "description": "extendible array",
+    "$schema": "https://json-schema.org/draft/2019-09/schema",
+    "$id": "http://localhost:1234/draft2019-09/extendible-dynamic-ref.json",
+    "type": "object",
+    "properties": {
+      "elements": {
+        "type": "array",
+        "items": {
+          "$dynamicRef": "#elements"
+        }
+      }
+    },
+    "required": [
+      "elements"
+    ],
+    "additionalProperties": false,
+    "$defs": {
+      "elements": {
+        "$dynamicAnchor": "elements"
+      }
+    }
+  },
+  "http://localhost:1234/draft2019-09/baseUriChangeFolder/folderInteger.json": {
+    "$schema": "https://json-schema.org/draft/2019-09/schema",
+    "type": "integer"
+  },
+  "http://localhost:1234/draft2019-09/integer.json": {
+    "$schema": "https://json-schema.org/draft/2019-09/schema",
+    "type": "integer"
+  },
+  "http://localhost:1234/draft2019-09/nested-absolute-ref-to-string.json": {
+    "$defs": {
+      "bar": {
+        "$id": "http://localhost:1234/draft2019-09/the-nested-id.json",
+        "type": "string"
+      }
+    },
+    "$ref": "http://localhost:1234/draft2019-09/the-nested-id.json"
+  },
+  "http://localhost:1234/draft2019-09/ref-and-defs.json": {
+    "$schema": "https://json-schema.org/draft/2019-09/schema",
+    "$id": "http://localhost:1234/draft2019-09/ref-and-defs.json",
+    "$defs": {
+      "inner": {
+        "properties": {
+          "bar": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "$ref": "#/$defs/inner"
+  },
+  "http://localhost:1234/draft2019-09/dependentRequired.json": {
+    "$id": "http://localhost:1234/draft2019-09/dependentRequired.json",
+    "$schema": "https://json-schema.org/draft/2019-09/schema",
+    "dependentRequired": {
+      "foo": [
+        "bar"
+      ]
+    }
+  },
+  "http://localhost:1234/draft2019-09/ignore-prefixItems.json": {
+    "$id": "http://localhost:1234/draft2019-09/ignore-prefixItems.json",
+    "$schema": "https://json-schema.org/draft/2019-09/schema",
+    "prefixItems": [
+      {
+        "type": "string"
+      }
+    ]
+  },
+  "http://localhost:1234/draft2019-09/baseUriChangeFolderInSubschema/folderInteger.json": {
+    "$schema": "https://json-schema.org/draft/2019-09/schema",
+    "type": "integer"
+  },
+  "http://localhost:1234/draft2019-09/name-defs.json": {
+    "$schema": "https://json-schema.org/draft/2019-09/schema",
+    "$defs": {
+      "orNull": {
+        "anyOf": [
+          {
+            "type": "null"
+          },
+          {
+            "$ref": "#"
+          }
+        ]
+      }
+    },
+    "type": "string"
+  },
+  "http://localhost:1234/draft2019-09/urn-ref-string.json": {
+    "$id": "urn:uuid:feebdaed-ffff-0000-2019-0900deadbeef",
+    "$defs": {
+      "bar": {
+        "type": "string"
+      }
+    },
+    "$ref": "#/$defs/bar"
+  },
+  "http://localhost:1234/draft2019-09/baseUriChange/folderInteger.json": {
+    "$schema": "https://json-schema.org/draft/2019-09/schema",
+    "type": "integer"
+  },
+  "http://localhost:1234/draft2019-09/locationIndependentIdentifier.json": {
+    "$schema": "https://json-schema.org/draft/2019-09/schema",
+    "$defs": {
+      "refToInteger": {
+        "$ref": "#foo"
+      },
+      "A": {
+        "$anchor": "foo",
+        "type": "integer"
+      }
+    }
+  },
+  "http://localhost:1234/draft2019-09/metaschema-no-validation.json": {
+    "$schema": "https://json-schema.org/draft/2019-09/schema",
+    "$id": "http://localhost:1234/draft2019-09/metaschema-no-validation.json",
+    "$vocabulary": {
+      "https://json-schema.org/draft/2019-09/vocab/applicator": true,
+      "https://json-schema.org/draft/2019-09/vocab/core": true
+    },
+    "$recursiveAnchor": true,
+    "allOf": [
+      {
+        "$ref": "https://json-schema.org/draft/2019-09/meta/applicator"
+      },
+      {
+        "$ref": "https://json-schema.org/draft/2019-09/meta/core"
+      }
+    ]
+  },
+  "http://localhost:1234/draft2019-09/different-id-ref-string.json": {
+    "$id": "http://localhost:1234/draft2019-09/real-id-ref-string.json",
+    "$defs": {
+      "bar": {
+        "type": "string"
+      }
+    },
+    "$ref": "#/$defs/bar"
+  },
+  "http://localhost:1234/draft2019-09/detached-ref.json": {
+    "$id": "http://localhost:1234/draft2019-09/detached-ref.json",
+    "$schema": "https://json-schema.org/draft/2019-09/schema",
+    "$defs": {
+      "foo": {
+        "$ref": "#detached"
+      },
+      "detached": {
+        "$anchor": "detached",
+        "type": "integer"
+      }
+    }
+  },
+  "http://localhost:1234/baseUriChangeFolderInSubschema/folderInteger.json": {
+    "type": "integer"
+  },
+  "http://localhost:1234/baseUriChange/folderInteger.json": {
+    "type": "integer"
+  },
+  "http://localhost:1234/draft2020-12/subSchemas.json": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$defs": {
+      "integer": {
+        "type": "integer"
+      },
+      "refToInteger": {
+        "$ref": "#/$defs/integer"
+      }
+    }
+  },
+  "http://localhost:1234/draft2020-12/nested/string.json": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "string"
+  },
+  "http://localhost:1234/draft2020-12/nested/foo-ref-string.json": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "foo": {
+        "$ref": "string.json"
+      }
+    }
+  },
+  "http://localhost:1234/draft2020-12/metaschema-optional-vocabulary.json": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "http://localhost:1234/draft2020-12/metaschema-optional-vocabulary.json",
+    "$vocabulary": {
+      "https://json-schema.org/draft/2020-12/vocab/validation": true,
+      "https://json-schema.org/draft/2020-12/vocab/core": true,
+      "http://localhost:1234/draft/2020-12/vocab/custom": false
+    },
+    "$dynamicAnchor": "meta",
+    "allOf": [
+      {
+        "$ref": "https://json-schema.org/draft/2020-12/meta/validation"
+      },
+      {
+        "$ref": "https://json-schema.org/draft/2020-12/meta/core"
+      }
+    ]
+  },
+  "http://localhost:1234/draft2020-12/extendible-dynamic-ref.json": {
+    "description": "extendible array",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "http://localhost:1234/draft2020-12/extendible-dynamic-ref.json",
+    "type": "object",
+    "properties": {
+      "elements": {
+        "type": "array",
+        "items": {
+          "$dynamicRef": "#elements"
+        }
+      }
+    },
+    "required": [
+      "elements"
+    ],
+    "additionalProperties": false,
+    "$defs": {
+      "elements": {
+        "$dynamicAnchor": "elements"
+      }
+    }
+  },
+  "http://localhost:1234/draft2020-12/baseUriChangeFolder/folderInteger.json": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "integer"
+  },
+  "http://localhost:1234/draft2020-12/integer.json": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "integer"
+  },
+  "http://localhost:1234/draft2020-12/nested-absolute-ref-to-string.json": {
+    "$defs": {
+      "bar": {
+        "$id": "http://localhost:1234/draft2020-12/the-nested-id.json",
+        "type": "string"
+      }
+    },
+    "$ref": "http://localhost:1234/draft2020-12/the-nested-id.json"
+  },
+  "http://localhost:1234/draft2020-12/ref-and-defs.json": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "http://localhost:1234/draft2020-12/ref-and-defs.json",
+    "$defs": {
+      "inner": {
+        "properties": {
+          "bar": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "$ref": "#/$defs/inner"
+  },
+  "http://localhost:1234/draft2020-12/baseUriChangeFolderInSubschema/folderInteger.json": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "integer"
+  },
+  "http://localhost:1234/draft2020-12/name-defs.json": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$defs": {
+      "orNull": {
+        "anyOf": [
+          {
+            "type": "null"
+          },
+          {
+            "$ref": "#"
+          }
+        ]
+      }
+    },
+    "type": "string"
+  },
+  "http://localhost:1234/draft2020-12/urn-ref-string.json": {
+    "$id": "urn:uuid:feebdaed-ffff-0000-2020-1200deadbeef",
+    "$defs": {
+      "bar": {
+        "type": "string"
+      }
+    },
+    "$ref": "#/$defs/bar"
+  },
+  "http://localhost:1234/draft2020-12/format-assertion-true.json": {
+    "$id": "http://localhost:1234/draft2020-12/format-assertion-true.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$vocabulary": {
+      "https://json-schema.org/draft/2020-12/vocab/core": true,
+      "https://json-schema.org/draft/2020-12/vocab/format-assertion": true
+    },
+    "$dynamicAnchor": "meta",
+    "allOf": [
+      {
+        "$ref": "https://json-schema.org/draft/2020-12/meta/core"
+      },
+      {
+        "$ref": "https://json-schema.org/draft/2020-12/meta/format-assertion"
+      }
+    ]
+  },
+  "http://localhost:1234/draft2020-12/baseUriChange/folderInteger.json": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "integer"
+  },
+  "http://localhost:1234/draft2020-12/locationIndependentIdentifier.json": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$defs": {
+      "refToInteger": {
+        "$ref": "#foo"
+      },
+      "A": {
+        "$anchor": "foo",
+        "type": "integer"
+      }
+    }
+  },
+  "http://localhost:1234/draft2020-12/tree.json": {
+    "description": "tree schema, extensible",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "http://localhost:1234/draft2020-12/tree.json",
+    "$dynamicAnchor": "node",
+    "type": "object",
+    "properties": {
+      "data": true,
+      "children": {
+        "type": "array",
+        "items": {
+          "$dynamicRef": "#node"
+        }
+      }
+    }
+  },
+  "http://localhost:1234/draft2020-12/metaschema-no-validation.json": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "http://localhost:1234/draft2020-12/metaschema-no-validation.json",
+    "$vocabulary": {
+      "https://json-schema.org/draft/2020-12/vocab/applicator": true,
+      "https://json-schema.org/draft/2020-12/vocab/core": true
+    },
+    "$dynamicAnchor": "meta",
+    "allOf": [
+      {
+        "$ref": "https://json-schema.org/draft/2020-12/meta/applicator"
+      },
+      {
+        "$ref": "https://json-schema.org/draft/2020-12/meta/core"
+      }
+    ]
+  },
+  "http://localhost:1234/draft2020-12/different-id-ref-string.json": {
+    "$id": "http://localhost:1234/draft2020-12/real-id-ref-string.json",
+    "$defs": {
+      "bar": {
+        "type": "string"
+      }
+    },
+    "$ref": "#/$defs/bar"
+  },
+  "http://localhost:1234/draft2020-12/format-assertion-false.json": {
+    "$id": "http://localhost:1234/draft2020-12/format-assertion-false.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$vocabulary": {
+      "https://json-schema.org/draft/2020-12/vocab/core": true,
+      "https://json-schema.org/draft/2020-12/vocab/format-assertion": false
+    },
+    "$dynamicAnchor": "meta",
+    "allOf": [
+      {
+        "$ref": "https://json-schema.org/draft/2020-12/meta/core"
+      },
+      {
+        "$ref": "https://json-schema.org/draft/2020-12/meta/format-assertion"
+      }
+    ]
+  },
+  "http://localhost:1234/draft2020-12/prefixItems.json": {
+    "$id": "http://localhost:1234/draft2020-12/prefixItems.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "prefixItems": [
+      {
+        "type": "string"
+      }
+    ]
+  },
+  "http://localhost:1234/draft2020-12/detached-ref.json": {
+    "$id": "http://localhost:1234/draft2020-12/detached-ref.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$defs": {
+      "foo": {
+        "$ref": "#detached"
+      },
+      "detached": {
+        "$anchor": "detached",
+        "type": "integer"
+      }
+    }
+  },
+  "http://localhost:1234/draft2020-12/detached-dynamicref.json": {
+    "$id": "http://localhost:1234/draft2020-12/detached-dynamicref.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$defs": {
+      "foo": {
+        "$dynamicRef": "#detached"
+      },
+      "detached": {
+        "$dynamicAnchor": "detached",
+        "type": "integer"
+      }
+    }
+  },
+  "http://localhost:1234/draft6/subSchemas.json": {
+    "definitions": {
+      "integer": {
+        "type": "integer"
+      },
+      "refToInteger": {
+        "$ref": "#/definitions/integer"
+      }
+    }
+  },
+  "http://localhost:1234/draft6/name.json": {
+    "definitions": {
+      "orNull": {
+        "anyOf": [
+          {
+            "type": "null"
+          },
+          {
+            "$ref": "#"
+          }
+        ]
+      }
+    },
+    "type": "string"
+  },
+  "http://localhost:1234/draft6/ref-and-definitions.json": {
+    "$id": "http://localhost:1234/draft6/ref-and-definitions.json",
+    "definitions": {
+      "inner": {
+        "properties": {
+          "bar": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "allOf": [
+      {
+        "$ref": "#/definitions/inner"
+      }
+    ]
+  },
+  "http://localhost:1234/draft6/locationIndependentIdentifier.json": {
+    "definitions": {
+      "refToInteger": {
+        "$ref": "#foo"
+      },
+      "A": {
+        "$id": "#foo",
+        "type": "integer"
+      }
+    }
+  },
+  "http://localhost:1234/draft6/detached-ref.json": {
+    "$id": "http://localhost:1234/draft6/detached-ref.json",
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "definitions": {
+      "foo": {
+        "$ref": "#detached"
+      },
+      "detached": {
+        "$id": "#detached",
+        "type": "integer"
+      }
+    }
+  }
+}

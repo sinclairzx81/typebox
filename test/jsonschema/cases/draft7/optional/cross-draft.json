@@ -22,6 +22,14 @@
           "foo": "any value"
         },
         "valid": false
+      },
+      {
+        "description": "present bar is valid",
+        "data": {
+          "foo": "any value",
+          "bar": "also any value"
+        },
+        "valid": true
       }
     ]
   }

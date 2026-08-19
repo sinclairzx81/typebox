@@ -19,7 +19,7 @@ TypeBox has broad support for all major JSON Schema drafts and asserts for speci
 | dependencies | 17/18 | ✅ | ✅ | ✅ | - | - | - |
 | dependentRequired | - | - | - | - | ✅ | ✅ | ✅ |
 | dependentSchemas | - | - | - | - | ✅ | ✅ | ✅ |
-| dynamicRef | - | - | - | - | - | 38/44 | 19/27 |
+| dynamicRef | - | - | - | - | - | 40/44 | 21/27 |
 | enum | 14/16 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | exclusiveMaximum | - | - | ✅ | ✅ | ✅ | ✅ | ✅ |
 | exclusiveMinimum | - | - | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -45,7 +45,7 @@ TypeBox has broad support for all major JSON Schema drafts and asserts for speci
 | properties | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | propertyNames | - | - | ✅ | ✅ | ✅ | ✅ | ✅ |
 | recursiveRef | - | - | - | - | ✅ | - | - |
-| ref | 22/27 | 37/45 | 67/70 | 75/78 | 79/81 | 77/79 | 77/79 |
+| ref | 22/27 | 37/45 | 67/70 | 75/78 | 79/81 | 77/79 | 78/79 |
 | required | 3/4 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | type | 73/80 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | unevaluatedItems | - | - | - | - | ✅ | ✅ | 70/71 |
@@ -59,7 +59,7 @@ TypeBox has broad support for all major JSON Schema drafts and asserts for speci
 | anchor | - | - | - | - | ✅ | ✅ | ✅ |
 | bignum | 7/9 | 7/9 | ✅ | ✅ | ✅ | ✅ | ✅ |
 | content | - | - | - | 6/10 | - | - | - |
-| cross-draft | - | - | - | 1/2 | 1/3 | 0/1 | - |
+| cross-draft | - | - | - | ✅ | 2/3 | 0/1 | - |
 | dependencies-compatibility | - | - | - | - | ✅ | ✅ | ✅ |
 | dynamicRef | - | - | - | - | - | ✅ | ✅ |
 | ecmascript-regex | - | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -70,7 +70,7 @@ TypeBox has broad support for all major JSON Schema drafts and asserts for speci
 | format/date | ✅ | - | - | ✅ | ✅ | ✅ | ✅ |
 | format/date-time | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | format/duration | - | - | - | - | ✅ | ✅ | ✅ |
-| format/ecmascript-regex | ✅ | - | - | - | - | ✅ | ✅ |
+| format/ecmascript-regex | ✅ | - | - | ✅ | ✅ | ✅ | ✅ |
 | format/email | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | format/host-name | 2/12 | - | - | - | - | - | - |
 | format/hostname | - | 29/30 | 29/30 | ✅ | ✅ | ✅ | ✅ |

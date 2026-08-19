@@ -6,6 +6,11 @@
     },
     "tests": [
       {
+        "description": "remote ref valid",
+        "data": 1,
+        "valid": true
+      },
+      {
         "description": "remote ref invalid",
         "data": "a",
         "valid": false
@@ -18,6 +23,11 @@
       "$ref": "http://localhost:1234/draft6/subSchemas.json#/definitions/integer"
     },
     "tests": [
+      {
+        "description": "remote fragment valid",
+        "data": 1,
+        "valid": true
+      },
       {
         "description": "remote fragment invalid",
         "data": "a",
@@ -142,13 +152,11 @@
     },
     "tests": [
       {
-        "description": "object is invalid",
+        "description": "null is valid",
         "data": {
-          "name": {
-            "name": null
-          }
+          "name": null
         },
-        "valid": false
+        "valid": true
       }
     ]
   },
@@ -169,6 +177,13 @@
           "bar": 1
         },
         "valid": false
+      },
+      {
+        "description": "valid",
+        "data": {
+          "bar": "a"
+        },
+        "valid": true
       }
     ]
   },
