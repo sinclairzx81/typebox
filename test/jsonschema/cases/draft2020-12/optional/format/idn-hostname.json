@@ -338,6 +338,36 @@
         "valid": false
       },
       {
+        "description": "fullwidth digits are mapped to ASCII digits",
+        "comment": "IdnaMappingTable.txt maps U+FF11 to 0031, so this label maps to 123",
+        "data": "１２３",
+        "valid": true
+      },
+      {
+        "description": "a zero width space is ignored by the mapping",
+        "comment": "IdnaMappingTable.txt lists U+200B as ignored, so this label maps to ab",
+        "data": "a​b",
+        "valid": true
+      },
+      {
+        "description": "an A-label with an uppercase Punycode body is valid",
+        "comment": "https://www.rfc-editor.org/rfc/rfc5891#section-5.3 lowercases the A-label before the round-trip test, and RFC 3492 section 5 gives A-Z and a-z the same digit-values",
+        "data": "xn--NXASMQ6B",
+        "valid": true
+      },
+      {
+        "description": "the two Arabic-Indic digit blocks may appear in different labels",
+        "comment": "https://www.rfc-editor.org/rfc/rfc5892#appendix-A.8 scopes the rule to \"this label\", so one block per label is valid",
+        "data": "ب٠.ب۰",
+        "valid": true
+      },
+      {
+        "description": "a label of only Arabic-Indic digits is invalid",
+        "comment": "https://www.rfc-editor.org/rfc/rfc5893#section-2 condition 1 allows only L, R or AL as the first character, and an Arabic-Indic digit is AN",
+        "data": "٠١",
+        "valid": false
+      },
+      {
         "description": "zero width non-joiner must pass at every occurrence",
         "comment": "https://www.rfc-editor.org/rfc/rfc5892#appendix-A.1",
         "data": "क्‌षx‌y",
