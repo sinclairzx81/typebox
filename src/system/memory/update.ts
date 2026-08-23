@@ -61,5 +61,5 @@ export function Update(current: ObjectLike, hidden: ObjectLike, enumerable: Obje
       value: enumerable[key]
     })
   }
-  return result
+  return settings.immutableTypes ? Object.freeze(result) : result
 }

@@ -121,3 +121,23 @@ Test('Should Create 11', () => {
   Assert.PropertyIsEnumerable(B, '~unsafe')
   Settings.Reset()
 })
+// ------------------------------------------------------------------
+// Update: ImmutableTypes
+// ------------------------------------------------------------------
+Test('Should Update 1', () => {
+  Settings.Set({ immutableTypes: true })
+  const A = Type.Object({ x: Type.Number() })
+  const B: any = Memory.Update(A, {}, { $id: 'A' })
+  Assert.IsEqual(B.$id, 'A')
+  Assert.IsTrue(Object.isFrozen(B))
+  Assert.Throws(() => {
+    B.sneaky = 1
+  })
+  Settings.Reset()
+})
+Test('Should Update 2', () => {
+  const A = Type.Object({ x: Type.Number() })
+  const B: any = Memory.Update(A, {}, { $id: 'A' })
+  Assert.IsEqual(B.$id, 'A')
+  Assert.IsFalse(Object.isFrozen(B))
+})
