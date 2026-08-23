@@ -30,6 +30,9 @@ import * as FormatBidi from './format/bidi.ts'
 import * as LabelUnicode from './label/unicode.ts'
 import * as LabelPuny from './label/puny.ts'
 
+// ------------------------------------------------------------------
+// IsLabel
+// ------------------------------------------------------------------
 function IsValidLabelLength(value: string): boolean {
   return value.length > 0 && value.length <= 63
 }
@@ -39,9 +42,24 @@ function IsLabel(value: string): boolean {
     LabelUnicode.IsUnicodeLabel(value)
   )
 }
+// ------------------------------------------------------------------
+// NormalizeHostname
+//
+// Normalizes a hostname for label validation. Normalizes for NFC
+// such that equivalent codepoint sequences can be uniformly
+// compared. It also removes codepoints that IDNA mapping ignores,
+// and converts full stop variants to ASCII '.' so the hostname can
+// be split into labels.
+// ------------------------------------------------------------------
 function NormalizeHostname(value: string): string {
-  return value.normalize('NFC').replace(/[\u002E\u3002\uFF0E\uFF61]/g, '.')
+  return value
+    .normalize('NFC')
+    .replace(/[\u00ad\u034f\u180b-\u180d\u200b\ufe00-\ufe0f\u{e0100}-\u{e01ef}]/gu, '') // RE_IGNORED_MAPPING
+    .replace(/[\u002E\u3002\uFF0E\uFF61]/g, '.') // RE_FULL_STOP_MAPPING
 }
+// ------------------------------------------------------------------
+// IsIdnHostname
+// ------------------------------------------------------------------
 export function IsIdnHostname(value: string): boolean {
   if (value.length === 0 || value.includes(' ')) return false
   const normalized = NormalizeHostname(value)

@@ -204,6 +204,61 @@
         "description": "invalid non-ASCII '৪' (a Bengali 4) in the IPv4 portion",
         "data": "1:2::192.16৪.0.1",
         "valid": false
+      },
+      {
+        "description": "a bracketed address is invalid",
+        "data": "[::1]",
+        "valid": false
+      },
+      {
+        "description": "a leading zero in the last IPv4 octet is invalid",
+        "data": "::ffff:192.168.0.01",
+        "valid": false
+      },
+      {
+        "description": "uppercase hex digits are valid",
+        "data": "2001:DB8::1",
+        "valid": true
+      },
+      {
+        "description": "leading zeros in every group are valid",
+        "data": "2001:0db8:0000:0000:0000:0000:0000:0001",
+        "valid": true
+      },
+      {
+        "description": "two groups before '::' and four groups after is valid",
+        "data": "1:2::3:4:5:6",
+        "valid": true
+      },
+      {
+        "description": "eight groups alongside '::' is invalid",
+        "data": "1:2:3:4:5:6:7:8::",
+        "valid": false
+      },
+      {
+        "description": "trailing newline is invalid",
+        "data": "::1\n",
+        "valid": false
+      },
+      {
+        "description": "an out-of-range first octet in the embedded IPv4 is invalid",
+        "data": "::ffff:256.1.1.1",
+        "valid": false
+      },
+      {
+        "description": "one group before '::' and five groups after is valid",
+        "data": "1::2:3:4:5:6",
+        "valid": true
+      },
+      {
+        "description": "'::' followed by six groups is valid",
+        "data": "::1:2:3:4:5:6",
+        "valid": true
+      },
+      {
+        "description": "leading '::' before five groups and an embedded IPv4 is valid",
+        "data": "::1:2:3:4:5:1.2.3.4",
+        "valid": true
       }
     ]
   }
