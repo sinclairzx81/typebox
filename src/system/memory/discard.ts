@@ -27,7 +27,6 @@ THE SOFTWARE.
 ---------------------------------------------------------------------------*/
 
 // deno-lint-ignore-file no-explicit-any
-// deno-fmt-ignore-file
 
 import { Guard } from '../../guard/index.ts'
 import { Metrics } from './metrics.ts'

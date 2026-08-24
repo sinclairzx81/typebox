@@ -26,9 +26,10 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+// deno-lint-ignore-file no-explicit-any
+
 import { Settings } from '../settings/index.ts'
 
-// deno-lint-ignore no-explicit-any
 type ObjectLike = Record<PropertyKey, any>
 
 /** Conditionally freezes the value if `immutableTypes` is true, otherwise no action. */

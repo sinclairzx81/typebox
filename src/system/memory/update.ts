@@ -4,7 +4,7 @@ TypeBox
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2026 Haydn Paterson 
+Copyright (c) 2017-2026 Haydn Paterson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,8 +26,6 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
-// deno-fmt-ignore-file
-
 import { Settings } from '../settings/index.ts'
 import { Metrics } from './metrics.ts'
 import { Freeze } from './freeze.ts'
@@ -36,16 +34,16 @@ import { Clone } from './clone.ts'
 // deno-lint-ignore no-explicit-any
 type ObjectLike = Record<PropertyKey, any>
 
-/**  
- * Updates a value with new properties while preserving property enumerability. Use this function to modify 
- * existing types without altering their configuration.  
- */  
+/**
+ * Updates a value with new properties while preserving property enumerability. Use this function to modify
+ * existing types without altering their configuration.
+ */
 export function Update(current: ObjectLike, hidden: ObjectLike, enumerable: ObjectLike): ObjectLike {
   Metrics.update += 1
   const settings = Settings.Get()
   const result = Clone(current)
   // hidden
-  for(const key of Object.keys(hidden)) {
+  for (const key of Object.keys(hidden)) {
     Object.defineProperty(result, key, {
       configurable: true,
       writable: true,
@@ -54,7 +52,7 @@ export function Update(current: ObjectLike, hidden: ObjectLike, enumerable: Obje
     })
   }
   // enumerable
-  for(const key of Object.keys(enumerable)) {
+  for (const key of Object.keys(enumerable)) {
     Object.defineProperty(result, key, {
       configurable: true,
       enumerable: true,
