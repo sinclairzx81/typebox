@@ -31,7 +31,7 @@ THE SOFTWARE.
 
 import { Settings } from '../settings/index.ts'
 import { Metrics } from './metrics.ts'
-
+import { Freeze } from './freeze.ts'
 
 type ObjectLike = Record<PropertyKey, any>
 
@@ -53,11 +53,10 @@ function Merge(left: ObjectLike, right: ObjectLike): ObjectLike {
  * Creates an object with hidden, enumerable, and optional property sets. This function 
  * ensures types are instantiated according to configuration rules for enumerable and 
  * non-enumerable properties.  
- */  
+ */
 export function Create(hidden: ObjectLike, enumerable: ObjectLike, options: ObjectLike = {}): ObjectLike {
   Metrics.create += 1
-  const settings = Settings.Get()
   const withOptions = Merge(enumerable, options)
-  const withHidden = settings.enumerableKind ? Merge(withOptions, hidden) : MergeHidden(withOptions, hidden) 
-  return settings.immutableTypes ? Object.freeze(withHidden) : withHidden
+  const withHidden = Settings.Get().enumerableKind ? Merge(withOptions, hidden) : MergeHidden(withOptions, hidden) 
+  return Freeze(withHidden)
 }
