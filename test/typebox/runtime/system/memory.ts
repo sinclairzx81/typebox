@@ -168,3 +168,17 @@ Test('Should Update 17', () => {
   })
   Settings.Reset()
 })
+// ------------------------------------------------------------------
+// ImmutableTypes: Assign
+// ------------------------------------------------------------------
+Test('Should Update 18', () => {
+  Settings.Set({ immutableTypes: true })
+  const A: any = Memory.Assign({ x: 1 }, { y: 2 })
+  Assert.IsEqual(A.x, 1)
+  Assert.IsEqual(A.y, 2)
+  Assert.IsTrue(Object.isFrozen(A))
+  Assert.Throws(() => {
+    A.z = 3
+  })
+  Settings.Reset()
+})
