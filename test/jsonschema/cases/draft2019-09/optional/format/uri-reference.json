@@ -158,6 +158,18 @@
         "comment": "RFC 3986, Section 4.2: \"Such a segment must be preceded by a dot-segment (e.g., \\\"./this:that\\\") to make a relative-path reference.\"",
         "data": "./this:that",
         "valid": true
+      },
+      {
+        "description": "a trailing line feed",
+        "comment": "RFC 3986, Appendix A: no production admits %x0A.",
+        "data": "/p\n",
+        "valid": false
+      },
+      {
+        "description": "an uppercase version character in an IPvFuture literal",
+        "comment": "RFC 3986, Section 3.2.2 gives IPvFuture = \"v\" 1*HEXDIG \".\" 1*( unreserved / sub-delims / \":\" ), and RFC 5234, Section 2.3 makes ABNF literals case-insensitive.",
+        "data": "//[V1.fe]/p",
+        "valid": true
       }
     ]
   }
