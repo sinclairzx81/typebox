@@ -31,6 +31,7 @@ THE SOFTWARE.
 
 import { Guard } from '../../guard/index.ts'
 import { Metrics } from './metrics.ts'
+import { Freeze } from './freeze.ts'
 import { Clone } from './clone.ts'
 
 type ObjectLike = Record<PropertyKey, any>
@@ -45,5 +46,5 @@ export function Discard(value: ObjectLike, propertyKeys: PropertyKey[]): ObjectL
     descriptor.value = Clone(descriptor.value)
     Object.defineProperty(result, key, descriptor)
   }
-  return result
+  return Freeze(result)
 }
