@@ -59,6 +59,56 @@
         "description": "a trailing newline is invalid",
         "data": "1985-04-12T23:20:50Z\n",
         "valid": false
+      },
+      {
+        "description": "an invalid date-time string without seconds",
+        "data": "1985-04-12T23:20Z",
+        "valid": false
+      },
+      {
+        "description": "an invalid date-time string with trailing content after the offset",
+        "data": "1985-04-12T23:20:50Ztail",
+        "valid": false
+      },
+      {
+        "description": "an invalid minute in date-time string, with a numeric offset",
+        "data": "1985-04-12T23:60:00+00:01",
+        "valid": false
+      },
+      {
+        "description": "a valid date-time string with 28 days in February (normal)",
+        "data": "2021-02-28T00:00:00Z",
+        "valid": true
+      },
+      {
+        "description": "an invalid date-time string with 30 days in February (leap)",
+        "data": "2020-02-30T00:00:00Z",
+        "valid": false
+      },
+      {
+        "description": "2021 is not a leap year",
+        "data": "2021-02-29T00:00:00Z",
+        "valid": false
+      },
+      {
+        "description": "2020 is a leap year",
+        "data": "2020-02-29T00:00:00Z",
+        "valid": true
+      },
+      {
+        "description": "century year 0100 is not a leap year",
+        "data": "0100-02-29T00:00:00Z",
+        "valid": false
+      },
+      {
+        "description": "century year 0400 is a leap year",
+        "data": "0400-02-29T00:00:00Z",
+        "valid": true
+      },
+      {
+        "description": "century year 2100 is not a leap year",
+        "data": "2100-02-29T00:00:00Z",
+        "valid": false
       }
     ]
   }

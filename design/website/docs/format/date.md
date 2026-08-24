@@ -4,12 +4,20 @@ Returns true if the string is a [RFC 3339](https://datatracker.ietf.org/doc/html
 
 ## Function
 
+Test with format function
+
 ```typescript
+import Format from 'typebox/format'
+
 const R = Format.IsDate('2025-08-22')
 ```
 
 ## Schema 
 
+Test with format keyword
+
 ```typescript 
-{ format: 'date' }
+import Schema from 'typebox/schema'
+
+const R = Schema.Check({ format: 'date' }, '2025-08-22')
 ```

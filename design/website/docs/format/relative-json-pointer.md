@@ -4,12 +4,20 @@ Returns true if the string is a relative [RFC 6901](https://datatracker.ietf.org
 
 ## Function
 
+Test with format function
+
 ```typescript
+import Format from 'typebox/format'
+
 const R = Format.IsRelativeJsonPointer('0/name')
 ```
 
 ## Schema
 
-```typescript 
-{ format: 'relative-json-pointer' }
+Test with format keyword
+
+```typescript
+import Schema from 'typebox/schema'
+
+const R = Schema.Check({ format: 'relative-json-pointer' }, '0/name')
 ```

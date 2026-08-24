@@ -1,8 +1,14 @@
 <h1>Format.IsTime</h1>
 <p>Returns true if the string is a <a href="https://datatracker.ietf.org/doc/html/rfc3339">RFC 3339</a> time component.</p>
 <h2>Function</h2>
-<pre><code class="language-typescript">const R = Format.IsTime(&#39;14:30:00Z&#39;)
+<p>Test with format function</p>
+<pre><code class="language-typescript">import Format from &#39;typebox/format&#39;
+
+const R = Format.IsTime(&#39;14:30:00Z&#39;)
 </code></pre>
 <h2>Schema</h2>
-<pre><code class="language-typescript">{ format: &#39;time&#39; }
+<p>Test with format keyword</p>
+<pre><code class="language-typescript">import Schema from &#39;typebox/schema&#39;
+
+const R = Schema.Check({ format: &#39;time&#39; }, &#39;14:30:00Z&#39;)
 </code></pre>

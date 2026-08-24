@@ -1,8 +1,14 @@
 <h1>Format.IsDuration</h1>
 <p>Returns true if the string is a <a href="https://en.wikipedia.org/wiki/ISO_8601">ISO 8601</a> duration</p>
 <h2>Function</h2>
-<pre><code class="language-typescript">const R = Format.IsDuration(&#39;PT2H30M&#39;)
+<p>Test with format function</p>
+<pre><code class="language-typescript">import Format from &#39;typebox/format&#39;
+
+const R = Format.IsDuration(&#39;PT2H30M&#39;)
 </code></pre>
 <h2>Schema</h2>
-<pre><code class="language-typescript">{ format: &#39;duration&#39; }
+<p>Test with format keyword</p>
+<pre><code class="language-typescript">import Schema from &#39;typebox/schema&#39;
+
+const R = Schema.Check({ format: &#39;duration&#39; }, &#39;PT2H30M&#39;)
 </code></pre>

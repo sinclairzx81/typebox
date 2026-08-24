@@ -4,17 +4,20 @@ Returns true if the string is an IPv4 address
 
 ## Function
 
+Test with format function
+
 ```typescript
+import Format from 'typebox/format'
+
 const R = Format.IsIPv4('192.168.0.1')
 ```
 
 ## Schema
 
+Test with format keyword
+
 ```typescript 
-{ format: 'ipv4' }
+import Schema from 'typebox/schema'
+
+const R = Schema.Check({ format: 'ipv4' }, '192.168.0.1')
 ```
-
-
-## Remarks
-
-Checks whether the input string is a valid IPv4 address (four decimal octets, 0–255).
