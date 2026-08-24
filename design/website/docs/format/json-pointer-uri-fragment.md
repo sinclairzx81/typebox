@@ -5,11 +5,15 @@ Returns true if the string is a [RFC 6901](https://datatracker.ietf.org/doc/html
 ## Function
 
 ```typescript
+import Format from 'typebox/format'
+
 const R = Format.IsJsonPointerUriFragment('#/paths/~1users/123')
 ```
 
 ## Schema
 
 ```typescript 
-{ format: 'json-pointer-uri-fragment' }
+import Schema from 'typebox/schema'
+
+const R = Schema.Check({ format: 'json-pointer-uri-fragment' }, '#/paths/~1users/123')
 ```

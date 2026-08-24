@@ -5,11 +5,15 @@ Returns true if the string is an email
 ## Function
 
 ```typescript
+import Format from 'typebox/format'
+
 const R = Format.IsEmail('user@example.com')
 ```
 
 ## Schema 
 
-```typescript 
-{ format: 'email' }
+```typescript
+import Schema from 'typebox/schema'
+
+const R = Schema.Check({ format: 'email' }, 'user@example.com')
 ```

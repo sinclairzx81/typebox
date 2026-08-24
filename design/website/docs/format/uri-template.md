@@ -5,11 +5,15 @@ Returns true if the string is a [RFC 6570](https://www.rfc-editor.org/rfc/rfc657
 ## Function
 
 ```typescript
+import Format from 'typebox/format'
+
 const R = Format.IsUriTemplate('https://example.com/{user}/profile')
 ```
 
 ## Schema
 
-```typescript 
-{ format: 'uri-template' }
+```typescript
+import Schema from 'typebox/schema'
+
+const R = Schema.Check({ format: 'uri-template' }, 'https://example.com/{user}/profile')
 ```

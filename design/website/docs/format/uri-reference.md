@@ -5,11 +5,15 @@ Returns true if the string is a [RFC 3986](https://datatracker.ietf.org/doc/html
 ## Function
 
 ```typescript
+import Format from 'typebox/format'
+
 const R = Format.IsUriReference('https://example.com/path')
 ```
 
 ## Schema
 
-```typescript 
-{ format: 'uri-reference' }
+```typescript
+import Schema from 'typebox/schema'
+
+const R = Schema.Check({ format: 'uri-reference' }, 'https://example.com/path')
 ```

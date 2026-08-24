@@ -1,10 +1,12 @@
 <h1>Format.IsIPv4</h1>
 <p>Returns true if the string is an IPv4 address</p>
 <h2>Function</h2>
-<pre><code class="language-typescript">const R = Format.IsIPv4(&#39;192.168.0.1&#39;)
+<pre><code class="language-typescript">import Format from &#39;typebox/format&#39;
+
+const R = Format.IsIPv4(&#39;192.168.0.1&#39;)
 </code></pre>
 <h2>Schema</h2>
-<pre><code class="language-typescript">{ format: &#39;ipv4&#39; }
+<pre><code class="language-typescript">import Schema from &#39;typebox/schema&#39;
+
+const R = Schema.Check({ format: &#39;ipv4&#39; }, &#39;192.168.0.1&#39;)
 </code></pre>
-<h2>Remarks</h2>
-<p>Checks whether the input string is a valid IPv4 address (four decimal octets, 0–255).</p>

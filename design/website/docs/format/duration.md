@@ -5,11 +5,15 @@ Returns true if the string is a [ISO 8601](https://en.wikipedia.org/wiki/ISO_860
 ## Function
 
 ```typescript
+import Format from 'typebox/format'
+
 const R = Format.IsDuration('PT2H30M')
 ```
 
 ## Schema 
 
 ```typescript
-{ format: 'duration' }
+import Schema from 'typebox/schema'
+
+const R = Schema.Check({ format: 'duration' }, 'PT2H30M')
 ```

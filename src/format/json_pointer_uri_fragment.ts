@@ -30,8 +30,8 @@ const JsonPointerUriFragment = /^#(?:\/(?:[a-z0-9_\-.!$&'()*+,;:=@]|%[0-9a-f]{2}
 
 /**
  * Returns true if the value is a json pointer uri fragment
- * @specification
- * @source ajv-formats
+ * @specification https://datatracker.ietf.org/doc/html/rfc6901
+ * @source https://github.com/ajv-validator/ajv-formats
  */
 export function IsJsonPointerUriFragment(value: string): boolean {
   return JsonPointerUriFragment.test(value)

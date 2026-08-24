@@ -30,8 +30,8 @@ const JsonPointer = /^(?:\/(?:[^~/]|~0|~1)*)*$/
 
 /**
  * Returns true if the value is a json pointer
- * @specification
- * @source ajv-formats
+ * @specification https://datatracker.ietf.org/doc/html/rfc6901
+ * @source https://github.com/ajv-validator/ajv-formats
  */
 export function IsJsonPointer(value: string): boolean {
   return JsonPointer.test(value)
