@@ -26,12 +26,13 @@ THE SOFTWARE.
 
 ---------------------------------------------------------------------------*/
 
+// deno-lint-ignore-file no-explicit-any
+
 import { Settings } from '../settings/index.ts'
 import { Metrics } from './metrics.ts'
 import { Freeze } from './freeze.ts'
 import { Clone } from './clone.ts'
 
-// deno-lint-ignore no-explicit-any
 type ObjectLike = Record<PropertyKey, any>
 
 /**
