@@ -39,11 +39,48 @@ export interface TMetrics {
   update: number
 }
 
+// ------------------------------------------------------------------
+// Counters
+// ------------------------------------------------------------------
+// Metrics exposes these counters as accessors so they remain writable when
+// Metrics is frozen. Hosts that share one module graph between isolated
+// consumers deep-freeze it, and incrementing a frozen data property throws.
+let assign = 0
+let create = 0
+let clone = 0
+let discard = 0
+let update = 0
+
 /** TypeBox instantiation metrics */
 export const Metrics: TMetrics = {
-  assign: 0,
-  create: 0,
-  clone: 0,
-  discard: 0,
-  update: 0
+  get assign() {
+    return assign
+  },
+  set assign(value: number) {
+    assign = value
+  },
+  get create() {
+    return create
+  },
+  set create(value: number) {
+    create = value
+  },
+  get clone() {
+    return clone
+  },
+  set clone(value: number) {
+    clone = value
+  },
+  get discard() {
+    return discard
+  },
+  set discard(value: number) {
+    discard = value
+  },
+  get update() {
+    return update
+  },
+  set update(value: number) {
+    update = value
+  }
 }
