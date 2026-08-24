@@ -1,11 +1,13 @@
 <h1>Format.IsUriTemplate</h1>
 <p>Returns true if the string is a <a href="https://www.rfc-editor.org/rfc/rfc6570.html">RFC 6570</a> Uri template</p>
 <h2>Function</h2>
+<p>Test with format function</p>
 <pre><code class="language-typescript">import Format from &#39;typebox/format&#39;
 
 const R = Format.IsUriTemplate(&#39;https://example.com/{user}/profile&#39;)
 </code></pre>
 <h2>Schema</h2>
+<p>Test with format keyword</p>
 <pre><code class="language-typescript">import Schema from &#39;typebox/schema&#39;
 
 const R = Schema.Check({ format: &#39;uri-template&#39; }, &#39;https://example.com/{user}/profile&#39;)

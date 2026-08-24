@@ -1,11 +1,13 @@
 <h1>Format.IsDate</h1>
 <p>Returns true if the string is a <a href="https://datatracker.ietf.org/doc/html/rfc3339">RFC 3339</a> date component.</p>
 <h2>Function</h2>
+<p>Test with format function</p>
 <pre><code class="language-typescript">import Format from &#39;typebox/format&#39;
 
 const R = Format.IsDate(&#39;2025-08-22&#39;)
 </code></pre>
 <h2>Schema</h2>
+<p>Test with format keyword</p>
 <pre><code class="language-typescript">import Schema from &#39;typebox/schema&#39;
 
 const R = Schema.Check({ format: &#39;date&#39; }, &#39;2025-08-22&#39;)

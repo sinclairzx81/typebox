@@ -1,11 +1,13 @@
 <h1>Format.IsEmail</h1>
 <p>Returns true if the string is an email</p>
 <h2>Function</h2>
+<p>Test with format function</p>
 <pre><code class="language-typescript">import Format from &#39;typebox/format&#39;
 
 const R = Format.IsEmail(&#39;user@example.com&#39;)
 </code></pre>
 <h2>Schema</h2>
+<p>Test with format keyword</p>
 <pre><code class="language-typescript">import Schema from &#39;typebox/schema&#39;
 
 const R = Schema.Check({ format: &#39;email&#39; }, &#39;user@example.com&#39;)

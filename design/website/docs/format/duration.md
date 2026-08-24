@@ -4,6 +4,8 @@ Returns true if the string is a [ISO 8601](https://en.wikipedia.org/wiki/ISO_860
 
 ## Function
 
+Test with format function
+
 ```typescript
 import Format from 'typebox/format'
 
@@ -11,6 +13,8 @@ const R = Format.IsDuration('PT2H30M')
 ```
 
 ## Schema 
+
+Test with format keyword
 
 ```typescript
 import Schema from 'typebox/schema'

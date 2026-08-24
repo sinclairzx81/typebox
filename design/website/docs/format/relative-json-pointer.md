@@ -4,6 +4,8 @@ Returns true if the string is a relative [RFC 6901](https://datatracker.ietf.org
 
 ## Function
 
+Test with format function
+
 ```typescript
 import Format from 'typebox/format'
 
@@ -11,6 +13,8 @@ const R = Format.IsRelativeJsonPointer('0/name')
 ```
 
 ## Schema
+
+Test with format keyword
 
 ```typescript
 import Schema from 'typebox/schema'

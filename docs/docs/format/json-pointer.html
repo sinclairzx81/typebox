@@ -1,11 +1,13 @@
 <h1>Format.IsJsonPointer</h1>
 <p>Returns true if the string is a <a href="https://datatracker.ietf.org/doc/html/rfc6901">RFC 6901</a> Json Pointer</p>
 <h2>Function</h2>
+<p>Test with format function</p>
 <pre><code class="language-typescript">import Format from &#39;typebox/format&#39;
 
 const R = Format.IsJsonPointer(&#39;/paths/~1users/123&#39;)
 </code></pre>
 <h2>Schema</h2>
+<p>Test with format keyword</p>
 <pre><code class="language-typescript">import Schema from &#39;typebox/schema&#39;
 
 const R = Schema.Check({ format: &#39;json-pointer&#39; }, &#39;/paths/~1users/123&#39;)

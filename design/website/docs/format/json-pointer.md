@@ -4,6 +4,8 @@ Returns true if the string is a [RFC 6901](https://datatracker.ietf.org/doc/html
 
 ## Function
 
+Test with format function
+
 ```typescript
 import Format from 'typebox/format'
 
@@ -11,6 +13,8 @@ const R = Format.IsJsonPointer('/paths/~1users/123')
 ```
 
 ## Schema
+
+Test with format keyword
 
 ```typescript 
 import Schema from 'typebox/schema'
