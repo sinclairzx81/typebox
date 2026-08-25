@@ -362,6 +362,24 @@
         "valid": false
       },
       {
+        "description": "a non-NFC U-label is valid after UTS 46 normalisation",
+        "comment": "UTS 46 section 4 normalises to NFC before validating, so the decomposed form is accepted",
+        "data": "café.com",
+        "valid": true
+      },
+      {
+        "description": "a label of 63 fullwidth characters is valid after mapping",
+        "comment": "UTS 46 maps each U+FF41 to an ASCII letter, so this label is 63 octets in its mapped form",
+        "data": "ａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａａ",
+        "valid": true
+      },
+      {
+        "description": "an ACE prefix produced by the mapping step is decoded as an A-label",
+        "comment": "UTS 46 maps U+FF58 U+FF4E to \"xn\", so the mapped label is the A-label xn--nxasmq6b",
+        "data": "ｘｎ--nxasmq6b",
+        "valid": true
+      },
+      {
         "description": "zero width non-joiner must pass at every occurrence",
         "comment": "https://www.rfc-editor.org/rfc/rfc5892#appendix-A.1",
         "data": "क्‌षx‌y",

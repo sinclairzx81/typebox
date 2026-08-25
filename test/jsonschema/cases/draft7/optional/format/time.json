@@ -177,16 +177,6 @@
         "valid": false
       },
       {
-        "description": "an invalid time string with invalid leap second (wrong hour)",
-        "data": "22:59:60Z",
-        "valid": false
-      },
-      {
-        "description": "an invalid time string with invalid leap second (wrong minute)",
-        "data": "23:58:60Z",
-        "valid": false
-      },
-      {
         "description": "an invalid time string with invalid time numoffset hour",
         "data": "01:02:03+24:00",
         "valid": false
@@ -239,6 +229,66 @@
       {
         "description": "an invalid time string in date-time format",
         "data": "2020-11-28T23:55:45Z",
+        "valid": false
+      },
+      {
+        "description": "a numeric time-offset requires the colon separator",
+        "comment": "RFC 3339 section 5.6: time-numoffset = (\"+\" / \"-\") time-hour \":\" time-minute",
+        "data": "08:30:06+0130",
+        "valid": false
+      },
+      {
+        "description": "a numeric time-offset requires the minutes component",
+        "comment": "RFC 3339 section 5.6: time-numoffset = (\"+\" / \"-\") time-hour \":\" time-minute",
+        "data": "08:30:06+01",
+        "valid": false
+      },
+      {
+        "description": "a trailing newline after a valid time",
+        "comment": "RFC 3339 section 5.6: no production of full-time emits a line feed",
+        "data": "08:30:06Z\n",
+        "valid": false
+      },
+      {
+        "description": "hour 24 is invalid with a numeric time-offset",
+        "comment": "RFC 3339 section 5.6: time-hour = 2DIGIT ; 00-23, and section 5.7 only allows 00 to 23",
+        "data": "24:59:00+01:00",
+        "valid": false
+      },
+      {
+        "description": "minute 60 is invalid with a numeric time-offset",
+        "comment": "RFC 3339 section 5.6: time-minute = 2DIGIT ; 00-59",
+        "data": "23:60:00+00:01",
+        "valid": false
+      },
+      {
+        "description": "a valid time string with a 15 digit second fraction",
+        "comment": "RFC 3339 section 5.6: time-secfrac = \".\" 1*DIGIT, with no upper bound on the number of digits",
+        "data": "00:59:59.999999999999999Z",
+        "valid": true
+      },
+      {
+        "description": "a second fraction with no digits",
+        "comment": "RFC 3339 section 5.6: time-secfrac = \".\" 1*DIGIT requires at least one digit",
+        "data": "08:30:06.Z",
+        "valid": false
+      },
+      {
+        "description": "partial-time requires the seconds component",
+        "comment": "RFC 3339 section 5.6: partial-time = time-hour \":\" time-minute \":\" time-second [time-secfrac]",
+        "data": "12:00Z",
+        "valid": false
+      },
+      {
+        "description": "a comma decimal separator with a time-offset",
+        "comment": "RFC 3339 section 5.6: the decimal separator in time-secfrac is \".\" - the ISO 8601 comma is not part of this profile",
+        "data": "08:30:06,5Z",
+        "valid": false
+      },
+      {
+        "description": "leading whitespace before a valid time",
+        "comment": "RFC 3339 section 5.6: no production of full-time emits whitespace",
+        "data": " 08:30:06Z",
         "valid": false
       }
     ]
