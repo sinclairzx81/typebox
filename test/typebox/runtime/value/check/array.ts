@@ -184,3 +184,55 @@ Test('Should correctly handle undefined array properties', () => {
     ]
   })
 })
+// ------------------------------------------------------------------
+// PR: https://github.com/sinclairzx81/typebox/pull/1675
+//
+// Sparse Arrays
+//
+// An array hole reads as undefined and is validated as such. The
+// accelerated validator must agree with Schema.Check, which iterates
+// by index rather than through the hole-skipping array methods.
+// ------------------------------------------------------------------
+function ArrayPartial(): unknown[] {
+  const value: unknown[] = []
+  value[2] = 1
+  return value // [<hole>, <hole>, 1]
+}
+function ArrayEmpty(): unknown[] {
+  return new Array(3) // [<hole>, <hole>, <hole>]
+}
+Test('Should correctly handle sparse arrays 1', () => {
+  const schema = { type: 'array', items: { type: 'number' } }
+  Fail(schema, ArrayPartial())
+})
+Test('Should correctly handle sparse arrays 2', () => {
+  const schema = { type: 'array', items: { type: 'number' }, maxItems: 3 }
+  Fail(schema, ArrayEmpty())
+})
+Test('Should correctly handle sparse arrays 3', () => {
+  const schema = { type: 'array', items: false }
+  Fail(schema, ArrayEmpty())
+})
+Test('Should correctly handle sparse arrays 4', () => {
+  const schema = { type: 'array', unevaluatedItems: false }
+  Fail(schema, ArrayEmpty())
+})
+Test('Should correctly handle sparse arrays 5', () => {
+  const schema = { type: 'array', unevaluatedItems: { type: 'number' } }
+  Fail(schema, ArrayEmpty())
+})
+Test('Should correctly handle sparse arrays 6', () => {
+  const schema = { type: 'array', contains: { type: 'undefined' } }
+  Ok(schema, ArrayPartial())
+})
+Test('Should correctly handle sparse arrays 7', () => {
+  const schema = { type: 'array', contains: { type: 'undefined' } }
+  Ok(schema, ArrayEmpty())
+})
+// dense arrays are unchanged
+Test('Should correctly handle sparse arrays 8', () => {
+  const schema = { type: 'array', items: { type: 'number' } }
+  Ok(schema, [1, 2, 3])
+  Fail(schema, [1, 'x', 3])
+  Ok(schema, [])
+})
