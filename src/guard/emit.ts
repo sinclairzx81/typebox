@@ -136,15 +136,13 @@ export function IsMaxLength(value: string, length: string): string {
 // Array
 // --------------------------------------------------------------------------
 export function Every(value: string, offset: string, params: [value: string, index: string], expression: string): string {
-  return G.IsEqual(offset, '0')
-    ? `${value}.every((${params[0]}, ${params[1]}) => ${expression})`
-    : `((value, callback) => { for(let index = ${offset}; index < value.length; index++) if (!callback(value[index], index)) return false; return true })(${value}, (${params[0]}, ${params[1]}) => ${expression})`
+  return G.IsEqual(offset, '0') ? `${value}.every((${params[0]}, ${params[1]}) => (${expression}))` : `${value}.every((${params[0]}, ${params[1]}) => (${params[1]} < ${offset}) || (${expression}))`
 }
 export function Some(value: string, params: [value: string, index: string], expression: string): string {
   return `${value}.some((${params[0]}, ${params[1]}) => ${expression})`
 }
 export function SomeAll(value: string, params: [value: string, index: string], expression: string): string {
-  return `((value, callback) => { let result = false; for(let index = 0; index < value.length; index++) if (callback(value[index], index)) result = true; return result })(${value}, (${params[0]}, ${params[1]}) => ${expression})`
+  return `((value) => { let result = false; value.forEach((${params[0]}, ${params[1]}) => { if (${expression}) result = true }); return result })(${value})`
 }
 export function Counted(value: string, params: [value: string, index: string], expression: string): string {
   return `${value}.reduce((result, ${params[0]}, ${params[1]}) => (${expression}) ? ++result : result, 0)`
