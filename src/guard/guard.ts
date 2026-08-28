@@ -163,32 +163,22 @@ export function IsMinLength(value: string, length: number): boolean {
 // --------------------------------------------------------------------------
 /** Returns true if every element from offset satisfies the callback, short-circuiting on the first failure */
 export function Every<T>(value: T[], offset: number, callback: (value: T, index: number) => boolean): boolean {
-  for (let index = offset; index < value.length; index++) {
-    if (!callback(value[index], index)) return false
-  }
-  return true
+  return value.every((item, index) => (index < offset) || callback(item, index))
 }
 /** Returns true if every element from offset satisfies the callback, using exhaustive enumeration */
 export function EveryAll<T>(value: T[], offset: number, callback: (value: T, index: number) => boolean): boolean {
   let result = true
-  for (let index = offset; index < value.length; index++) {
-    if (!callback(value[index], index)) result = false
-  }
+  value.forEach((item, index) => { if ((index >= offset) && !callback(item, index)) result = false })
   return result
 }
 /** Returns true if some element satisfies the callback, short-circuiting on the first success */
 export function Some<T>(value: T[], callback: (value: T, index: number) => boolean): boolean {
-  for (let index = 0; index < value.length; index++) {
-    if (callback(value[index], index)) return true
-  }
-  return false
+  return value.some((value, index) => callback(value, index))
 }
 /** Returns true if some element satisfies the callback, using exhaustive enumeration */
 export function SomeAll<T>(value: T[], callback: (value: T, index: number) => boolean): boolean {
   let result = false
-  for (let index = 0; index < value.length; index++) {
-    if (callback(value[index], index)) result = true
-  }
+  value.forEach((item, index) => { if (callback(item, index)) result = true })
   return result
 }
 /** Returns the count of elements that satisfy the callback */
