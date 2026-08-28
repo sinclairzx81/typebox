@@ -185,7 +185,7 @@ function Cross<Current extends TSchema[][], Variants extends TSchema[]>
   (current: [...Current], variants: [...Variants]):
   TCross<Current, Variants> {
   return variants.reduce((result, left) => {
-    return [...result, ...Append(current, left)]
+    return result.push(...Append(current, left)), result // [...result, ...Append(current, left)]
   }, [] as TSchema[][]) as never
 }
 // -----------------------------------------------------------------------

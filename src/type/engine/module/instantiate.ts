@@ -57,8 +57,8 @@ function InstantiateCyclics<Context extends TProperties, Declarations extends TP
   const declarationContext = Memory.Assign(context, declarations)
   const declarationKeys = Guard.Keys(declarations).filter(key => cyclicKeys.includes(key))
   return declarationKeys.reduce((result, key) => {
-    return { ...result, [key]: InstantiateCyclic(declarationContext, key, declarations[key]) }
-  }, {}) as never
+    return result[key] = InstantiateCyclic(declarationContext, key, declarations[key]), result // { ...result, [key]: InstantiateCyclic(declarationContext, key, declarations[key]) }
+  }, {} as TProperties) as never
 }
 // ------------------------------------------------------------------
 // InstantiateNonCyclics
@@ -75,8 +75,8 @@ function InstantiateNonCyclics<Context extends TProperties, Declarations extends
   const declarationContext = Memory.Assign(context, declarations)
   const declarationKeys = Guard.Keys(declarations).filter(key => !cyclicKeys.includes(key))
   return declarationKeys.reduce((result, key) => {
-    return { ...result, [key]: InstantiateType(declarationContext, State([], []), declarations[key]) }
-  }, {}) as never
+    return result[key] = InstantiateType(declarationContext, State([], []), declarations[key]), result // { ...result, [key]: InstantiateType(declarationContext, State([], []), declarations[key]) }
+  }, {} as TProperties) as never
 }
 // ------------------------------------------------------------------
 // InstantiateModule

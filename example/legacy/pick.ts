@@ -50,7 +50,7 @@ type TFromTypes<Types extends Type.TSchema[], UnionKeys extends Type.TSchema, Re
 )
 function FromTypes<Types extends Type.TSchema[], UnionKeys extends Type.TSchema>(types: [...Types], unionKeys: UnionKeys): TFromTypes<Types, UnionKeys> {
   return types.reduce((result, left) => {
-    return [...result, FromType(left, unionKeys)]
+    return result.push(FromType(left, unionKeys)), result // [...result, FromType(left, unionKeys)]
   }, [] as Type.TSchema[]) as never
 }
 // ------------------------------------------------------------------

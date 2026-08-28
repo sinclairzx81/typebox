@@ -35,6 +35,6 @@ import { FromType } from './from_type.ts'
 export function FromObject(context: TProperties, type: TObject): unknown {
   const required = Guard.IsUndefined(type.required) ? [] : type.required
   return required.reduce((result, key) => {
-    return { ...result, [key]: FromType(context, type.properties[key]) }
-  }, {})
+    return result[key] = FromType(context, type.properties[key]), result // { ...result, [key]: FromType(context, type.properties[key]) }
+  }, {} as Record<PropertyKey, unknown>)
 }

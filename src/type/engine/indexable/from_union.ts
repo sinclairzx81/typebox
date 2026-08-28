@@ -38,6 +38,6 @@ export type TFromUnion<Types extends TSchema[], Result extends string[] = []> = 
 )
 export function FromUnion<Types extends TSchema[]>(types: [...Types]): TFromUnion<Types> {
   return types.reduce((result, left) => {
-    return [...result, ...FromType(left)]
+    return result.push(...FromType(left)), result // [...result, ...FromType(left)]
   }, [] as string[]) as never
 }

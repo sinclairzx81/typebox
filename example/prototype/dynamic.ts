@@ -329,8 +329,8 @@ type TFromProperties<Schema extends S.XProperties,
 > = Result
 function FromProperties<Schema extends S.XProperties>(schema: Schema): TFromProperties<Schema> {
   const properties = Guard.Keys(schema.properties).reduce((result, key) => {
-    return {...result, [key]: T.Optional(FromSchema(schema.properties[key])) }
-  }, {}) as T.TProperties
+    return result[key] = T.Optional(FromSchema(schema.properties[key])), result // { ...result, [key]: T.Optional(FromSchema(schema.properties[key])) }
+  }, {} as T.TProperties)
   return T.Object(properties) as never
 }
 // ------------------------------------------------------------------
@@ -347,8 +347,8 @@ type TFromRequired<Schema extends S.XRequired,
 > = Result
 function FromRequired<Schema extends S.XRequired>(schema: Schema): TFromRequired<Schema> {
   const properties = schema.required.reduce((result, key) => {
-    return { ...result, [key]: T.Unknown() }
-  }, {}) as T.TProperties
+    return result[key] = T.Unknown(), result // { ...result, [key]: T.Unknown() }
+  }, {} as T.TProperties)
   const result = T.Object(properties) 
   return result as never
 }

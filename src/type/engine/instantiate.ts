@@ -144,8 +144,8 @@ export function InstantiateProperties<Context extends TProperties, State extends
   (context: Context, state: State, properties: TProperties):
   TInstantiateProperties<Context, State, Properties> {
   return Guard.Keys(properties).reduce((result, key) => {
-    return { ...result, [key]: InstantiateType(context, state, properties[key] as never) as never }
-  }, {}) as never
+    return result[key] = InstantiateType(context, state, properties[key]), result // { ...result, [key]: InstantiateType(context, state, properties[key] as never) as never }
+  }, {} as TProperties) as never
 }
 // ------------------------------------------------------------------
 // InstantiateElements

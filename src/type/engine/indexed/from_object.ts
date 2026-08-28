@@ -66,7 +66,7 @@ function IndexProperties<Properties extends TProperties, Keys extends string[]>
   (properties: Properties, keys: [...Keys]): 
     TIndexProperties<Properties, Keys> {
   return keys.reduce((result, left) => {
-    return [...result, IndexProperty(properties, left)]
+    return result.push(IndexProperty(properties, left)), result // [...result, IndexProperty(properties, left)]
   }, [] as TSchema[]) as never
 }
 // ------------------------------------------------------------------

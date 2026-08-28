@@ -143,8 +143,8 @@ type TCompositeProperties<Left extends TProperties, Right extends TProperties,
 function CompositeProperties<Left extends TProperties, Right extends TProperties>(left: Left, right: Right): TCompositeProperties<Left, Right> {
   const keys = new Set([ ...Guard.Keys(left), ...Guard.Keys(right)])
   const result = [...keys].reduce((result, key) => {
-    return { ...result, [key]: CompositePropertyKey(left, right, key) }
-  }, {})
+    return result[key] = CompositePropertyKey(left, right, key), result // { ...result, [key]: CompositePropertyKey(left, right, key) }
+  }, {} as TProperties)
   return result as never
 }
 // ----------------------------------------------------------------------------

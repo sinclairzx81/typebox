@@ -82,8 +82,7 @@ export type TRestSpread<Types extends TSchema[], Result extends TSchema[] = []> 
     : Result
 )
 export function RestSpread<Types extends TSchema[]>(types: [...Types]): TRestSpread<Types> {
-  const result = types.reduce((result, left) => {
-    return [...result, ...SpreadElement(left)]
+  return types.reduce((result, left) => {
+    return result.push(...SpreadElement(left)), result // [...result, ...SpreadElement(left)]
   }, [] as TSchema[]) as never
-  return result as never
 }

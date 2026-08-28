@@ -49,8 +49,8 @@ function CollapseUnionProperties<Left extends TProperties, Right extends TProper
   TCollapseUnionProperties<Left, Right> {
   const sharedKeys = Guard.Keys(left).filter((key) => key in right)
   const result = sharedKeys.reduce((result, key) => {
-    return { ...result, [key]: EvaluateUnion([left[key], right[key]]) }
-  }, {}) as never
+    return result[key] = EvaluateUnion([left[key], right[key]]), result // { ...result, [key]: EvaluateUnion([left[key], right[key]]) }
+  }, {} as TProperties) as never
   return result as never
 }
 // ------------------------------------------------------------------

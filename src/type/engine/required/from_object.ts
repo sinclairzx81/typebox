@@ -40,7 +40,7 @@ export type TFromObject<Properties extends TProperties,
 > = Result
 export function FromObject<Properties extends TProperties>(properties: Properties): TFromObject<Properties> {
   const mapped = Guard.Keys(properties).reduce((result, left) => {
-    return { ...result, [left]: RemoveOptional(properties[left]) }
+    return result[left] = RemoveOptional(properties[left]), result // { ...result, [left]: RemoveOptional(properties[left]) }
   }, {} as TProperties)
   const result = Object(mapped)
   return result as never

@@ -142,9 +142,9 @@ function CallDistributed<Context extends TProperties, State extends TState, Targ
   (context: Context, state: State, target: Target, parameters: [...Parameters], expression: Expression, distributedArguments: [...DistributedArguments]):
     TCallDistributed<Context, State, Target, Parameters, Expression, DistributedArguments> {
   return distributedArguments.reduce((result, arguments_) => {
-    const returnType = CallDispatch(context, state, target, parameters, expression, arguments_)
-    return [...result, returnType] as never
-  }, []) as never
+    const returnType = CallDispatch(context, state, target, parameters, expression, arguments_) as TSchema
+    return result.push(returnType), result // [...result, returnType] as never
+  }, [] as TSchema[]) as never
 }
 // ------------------------------------------------------------------
 // Immediate

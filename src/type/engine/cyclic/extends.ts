@@ -63,7 +63,7 @@ type TFromProperties<Properties extends TProperties, Result extends TProperties 
 
 function FromProperties<Properties extends TProperties>(properties: Properties): TFromProperties<Properties> {
   return Guard.Keys(properties).reduce((result, key) => {
-    return { ...result, [key]: FromType(properties[key]) }
+    return result[key] = FromType(properties[key]), result // { ...result, [key]: FromType(properties[key]) }
   }, {} as TProperties) as never
 }
 // ------------------------------------------------------------------
@@ -76,7 +76,7 @@ type TFromTypes<Types extends TSchema[], Result extends TSchema[] = []> =
 
 function FromTypes<Types extends TSchema[]>(types: [...Types]): TFromTypes<Types> {
   return types.reduce((result, left) => {
-    return [...result, FromType(left)]
+    return result.push(FromType(left)), result // [...result, FromType(left)]
   }, [] as TSchema[]) as never
 }
 // ------------------------------------------------------------------

@@ -91,7 +91,7 @@ function MappedProperties<Context extends TProperties, State extends TState, Ide
   (context: Context, state: State, identifier: Identifier, variants: [...Variants], as: As, property: Property): 
     TMappedProperties<Context, State, Identifier, Variants, As, Property> {
   return variants.reduce((result, left) => {
-    return [...result, MappedVariant(context, state, identifier, left, as, property) ]
+    return result.push(MappedVariant(context, state, identifier, left, as, property)), result // [...result, MappedVariant(context, state, identifier, left, as, property) ]
   }, [] as TProperties[]) as never
 }
 // ------------------------------------------------------------------
@@ -104,8 +104,8 @@ type TReduceProperties<Properties extends TProperties[], Result extends TSchema[
 )
 function MappedObjects<Properties extends TProperties[]>(properties: [...Properties]): TReduceProperties<Properties> {
   return properties.reduce<TSchema[]>((result, left) => {
-    return [...result, Object(left)]
-  }, []) as never
+    return result.push(Object(left)), result // [...result, Object(left)]
+  }, [] as TSchema[]) as never
 }
 // ------------------------------------------------------------------
 // MappedAction

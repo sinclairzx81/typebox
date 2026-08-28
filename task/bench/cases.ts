@@ -87,7 +87,7 @@ export const Tests = () => Object.getOwnPropertyNames(Cases).reduce<{
   const factory = Cases[name as never] as () => TSchema
   const type = factory()
   const value = Value.Create(type)
-  return [...result, { name, type, value }]
+  return result.push({ name, type, value }), result // [...result, { name, type, value }]
 }, [] as {
   name: string
   type: TSchema,

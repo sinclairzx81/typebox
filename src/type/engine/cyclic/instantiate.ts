@@ -90,8 +90,8 @@ function CyclicDefinitions<Context extends TProperties, Dependencies extends str
       type.parameters[0] as TSchema[], 
       type.parameters[1] as TProperties
     ) : type
-    return { ...result, [key]: instantiatedType }
-  }, {}) as never
+    return result[key] = instantiatedType, result // { ...result, [key]: instantiatedType }
+  }, {} as TProperties) as never
 }
 // ------------------------------------------------------------------
 // InstantiateCyclic

@@ -60,7 +60,7 @@ export interface TCyclic<Defs extends TProperties = TProperties, Ref extends str
 export function Cyclic<Defs extends TProperties, Ref extends string>($defs: Defs, $ref: Ref, options?: TSchemaOptions): TCyclic<Defs, Ref> {
   // $defs require an $id per definition to enable Ajv to resolve correctly
   const defs = Guard.Keys($defs).reduce((result, key) => {
-    return { ...result, [key]: Memory.Update($defs[key], {}, { $id: key }) }
+    return result[key] = Memory.Update($defs[key], {}, { $id: key }), result // { ...result, [key]: Memory.Update($defs[key], {}, { $id: key }) }
   }, {} as TProperties)
   return Memory.Create({ ['~kind']: 'Cyclic' }, { $defs: defs, $ref }, options) as never
 }

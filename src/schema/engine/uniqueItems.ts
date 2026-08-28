@@ -67,7 +67,7 @@ export function ErrorUniqueItems(_stack: Stack, context: ErrorContext, schemaPat
   const set = new Set<string>()
   const duplicateItems = value.reduce<number[]>((result, value, index) => {
     const hash = Hashing.Hash(value)
-    if (set.has(hash)) return [...result, index]
+    if (set.has(hash)) return result.push(index), result // [...result, index]
     set.add(hash)
     return result
   }, [] as number[])

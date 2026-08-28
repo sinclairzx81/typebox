@@ -60,7 +60,7 @@ type TFromUnion<Types extends TSchema[], Result extends TSchema[] = []> = (
 )
 function FromUnion<Types extends TSchema[]>(types: [...Types]): TFromUnion<Types> {
   return types.reduce((result, left) => {
-    return [...result, ...FromType(left)]
+    return result.push(...FromType(left)), result // [...result, ...FromType(left)]
   }, [] as TSchema[]) as never
 }
 // ------------------------------------------------------------------
