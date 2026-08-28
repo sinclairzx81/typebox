@@ -142,7 +142,7 @@ export function Some(value: string, params: [value: string, index: string], expr
   return `${value}.some((${params[0]}, ${params[1]}) => ${expression})`
 }
 export function SomeAll(value: string, params: [value: string, index: string], expression: string): string {
-  return `((value) => { let result = false; ${value}.forEach((${params[0]}, ${params[1]}) => { if (${expression}) result = true }); return result })(${value})`
+  return `((value) => { let result = false; value.forEach((${params[0]}, ${params[1]}) => { if (${expression}) result = true }); return result })(${value})`
 }
 export function Counted(value: string, params: [value: string, index: string], expression: string): string {
   return `${value}.reduce((result, ${params[0]}, ${params[1]}) => (${expression}) ? ++result : result, 0)`
