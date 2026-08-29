@@ -116,10 +116,12 @@ function NextGraphemeClusterIndex(value: string, clusterStart: number): number {
 // --------------------------------------------------------------------------
 function IsGraphemeCodePoint(value: number): boolean {
   return (
-    IsHighSurrogate(value) ||
-    IsCombiningMark(value) ||
-    IsVariationSelector(value) ||
-    IsZeroWidthJoiner(value)
+    (value >= 0x0300) && ( // above special range
+      IsHighSurrogate(value) ||
+      IsCombiningMark(value) ||
+      IsVariationSelector(value) ||
+      IsZeroWidthJoiner(value)
+    )
   )
 }
 // --------------------------------------------------------------------------
@@ -136,29 +138,21 @@ export function GraphemeCount(value: string): number {
   return count
 }
 // --------------------------------------------------------------------------
-// IsMinLength
+// IsMinLengthSegmented
 // --------------------------------------------------------------------------
 /** Checks if a string has at least a minimum number of grapheme clusters */
 function IsMinLengthSegmented(value: string, minLength: number): boolean {
-  // ----------------------------------------------------------------
-  // Inaccessible via public interface (review)
-  //
-  // deno-coverage-ignore-start
-  // ----------------------------------------------------------------
-  if (minLength === 0) return true // 0-length
-  // deno-coverage-ignore-stop
-
+  // if (minLength === 0) return true // 0-length (unreachable)
   let count = 0
   let index = 0
   while (index < value.length) {
     index = NextGraphemeClusterIndex(value, index)
-    count++
-    if (count >= minLength) return true
+    if ((++count) >= minLength) return true
   }
   return false
 }
 // --------------------------------------------------------------------------
-// IsMaxLength
+// IsMaxLengthSegmented
 // --------------------------------------------------------------------------
 /** Checks if a string has at most a maximum number of grapheme clusters */
 function IsMaxLengthSegmented(value: string, maxLength: number): boolean {
@@ -166,8 +160,7 @@ function IsMaxLengthSegmented(value: string, maxLength: number): boolean {
   let index = 0
   while (index < value.length) {
     index = NextGraphemeClusterIndex(value, index)
-    count++
-    if (count > maxLength) return false
+    if ((++count) > maxLength) return false
   }
   return true
 }
@@ -177,28 +170,26 @@ function IsMaxLengthSegmented(value: string, maxLength: number): boolean {
 /** Fast check for minimum grapheme length, falls back to full check if needed */
 export function IsMinLength(value: string, minLength: number): boolean {
   if (minLength === 0) return true // 0-length
+  if (value.length < minLength) return false // length is upper bound on grapheme count
   let index = 0
-  while (index < value.length) {
+  while (true) {
     if (IsGraphemeCodePoint(value.charCodeAt(index))) {
       return IsMinLengthSegmented(value, minLength)
     }
-    index++
-    if (index >= minLength) return true
+    if ((++index) >= minLength) return true
   }
-  return false
 }
 // --------------------------------------------------------------------------
 // IsMaxLengthFast
 // --------------------------------------------------------------------------
 /** Fast check for maximum grapheme length, falls back to full check if needed */
 export function IsMaxLength(value: string, maxLength: number): boolean {
+  if (value.length <= maxLength) return true // length is upper bound on grapheme count
   let index = 0
-  while (index < value.length) {
+  while (true) {
     if (IsGraphemeCodePoint(value.charCodeAt(index))) {
       return IsMaxLengthSegmented(value, maxLength)
     }
-    index++
-    if (index > maxLength) return false
+    if ((++index) > maxLength) return false
   }
-  return true
 }
