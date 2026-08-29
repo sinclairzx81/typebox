@@ -37,9 +37,20 @@ import { UnicodeRegExp } from './_regexp.ts'
 import { EmitGuard as E, Guard as G } from '../../guard/index.ts'
 import { BuildSchemaPushStack, CheckSchemaPushStack, ErrorSchemaPushStack } from './schema.ts'
 
-
 // ------------------------------------------------------------------
-// Common: GetPropertiesPattern
+// Optimization: IsAdditionalPropertiesIgnored
+//
+// We can ignore additionalProperties if the schema is true-like and
+// we are not in an unevaluated context, noting that additional
+// properties are considered tracked, evaluated keys.
+// ------------------------------------------------------------------
+function IsAdditionalPropertiesIgnored(context: BuildContext, additionalProperties: S.XSchema): boolean {
+  return !context.UseUnevaluated() &&
+    (G.IsEqual(additionalProperties, true) ||
+      (G.IsObject(additionalProperties) && G.IsEqual(G.Keys(additionalProperties).length, 0)))
+}
+// ------------------------------------------------------------------
+// Optimization: GetPropertiesPattern
 //
 // Constructs a regular expression that matches all property keys
 // and pattern properties defined in a schema. This approach unifies
@@ -101,6 +112,7 @@ export function BuildAdditionalPropertiesStandard(stack: Stack, context: BuildCo
 // Build
 // ------------------------------------------------------------------
 export function BuildAdditionalProperties(stack: Stack, context: BuildContext, schema: S.XAdditionalProperties, value: string): string {
+  if (IsAdditionalPropertiesIgnored(context, schema.additionalProperties)) return E.Constant(true)
   return CanAdditionalPropertiesFast(context, schema, value)
     ? BuildAdditionalPropertiesFast(context, schema, value)
     : BuildAdditionalPropertiesStandard(stack, context, schema, value)
