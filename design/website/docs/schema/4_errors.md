@@ -1,6 +1,6 @@
 # Schema.Errors
 
-The `Errors(...)` function returns a validation result containing a boolean success value, and an array of validation errors.
+The Errors(...) function returns a validation result containing a boolean success value, and an array of validation errors.
 
 ## Example
 

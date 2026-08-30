@@ -1,6 +1,7 @@
 import { Arguments } from 'typebox/system'
 import { Compile } from 'typebox/compile'
 import { Value } from 'typebox/value'
+import { Intern } from 'typebox/schema'
 import { type TProperties, type TSchema } from 'typebox'
 
 // -------------------------------------------------------------------------
@@ -13,14 +14,16 @@ export function Ok(...args: unknown[]): void {
     3: (context, type, value) => [context, type, value],
     2: (type, value) => [{}, type, value]
   })
+  const errors = Value.Errors(context, type, value)
   const result_1 = Compile(context, type).Check(value)
   const result_2 = Value.Check(context, type, value)
-  const errors = Value.Errors(context, type, value)
   const result_3 = errors.length === 0
-  if ((result_1 !== result_2)) throw Error('Compile | Value Check mismatch')
-  if ((result_1 !== result_3)) throw Error('Compile | Error Check mismatch')
-  if ((result_2 !== result_3)) throw Error('Value | Error Check mismatch')
-  if (result_3 === false && errors.length === 0) throw Error('expected at least 1 error')
+  const result_4 = (args.length === 2) ? Compile(Intern(type)).Check(value) : result_1
+  const result_5 = (args.length === 2) ? Value.Check(Intern(type), value) : result_2
+  if (result_1 !== result_2) throw Error('Mismatch: Compile | Check')
+  if (result_1 !== result_3) throw Error('Mismatch: Compile | Error')
+  if (result_1 !== result_4) throw Error('Mismatch: Compile | Intern Compile')
+  if (result_1 !== result_5) throw Error('Mismatch: Compile | Intern Check')
   if (result_1 === false) {
     console.log('---------------------------')
     console.log('type')
@@ -51,14 +54,16 @@ export function Fail(...args: unknown[]): void {
     3: (context, type, value) => [context, type, value],
     2: (type, value) => [{}, type, value]
   })
+  const errors = Value.Errors(context, type, value)
   const result_1 = Compile(context, type).Check(value)
   const result_2 = Value.Check(context, type, value)
-  const errors = Value.Errors(context, type, value)
   const result_3 = errors.length === 0
-  if ((result_1 !== result_2)) throw Error('Compile | Value Check mismatch')
-  if ((result_1 !== result_3)) throw Error('Compile | Error Check mismatch')
-  if ((result_2 !== result_3)) throw Error('Value | Error Check mismatch')
-  if (result_3 === false && errors.length === 0) throw Error('expected at least 1 error')
+  const result_4 = (args.length === 2) ? Compile(Intern(type)).Check(value) : result_1
+  const result_5 = (args.length === 2) ? Value.Check(Intern(type), value) : result_2
+  if (result_1 !== result_2) throw Error('Mismatch: Compile | Check')
+  if (result_1 !== result_3) throw Error('Mismatch: Compile | Error')
+  if (result_1 !== result_4) throw Error('Mismatch: Compile | Intern Compile')
+  if (result_1 !== result_5) throw Error('Mismatch: Compile | Intern Check')
   if (result_1 === true) {
     console.log('---------------------------')
     console.log('type')
